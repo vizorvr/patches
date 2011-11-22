@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="LibreOffice 3.4  (Unix)">
+	<META NAME="AUTHOR" CONTENT="Lasse Nielsen">
+	<META NAME="CREATED" CONTENT="20111120;22163200">
+	<META NAME="CHANGEDBY" CONTENT="Lasse Nielsen">
+	<META NAME="CHANGED" CONTENT="20111120;22472800">
+	<STYLE TYPE="text/css">
+	<!--
+		@page { margin: 0.79in }
+		P { margin-bottom: 0.08in }
+		A:link { so-language: zxx }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P STYLE="margin-bottom: 0in"><FONT SIZE=4 STYLE="font-size: 16pt">Technical
+notes</FONT></P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in">Plugins are implemented as javascripts
+that are executed in the global scope on load, each consisting of an
+assignment to a global dictionary. Ugly and unsafe, but very
+effective for the time being. The key assigned to much match the
+filename of the given plugin. Each key must be initialized to a
+function taking a core instance reference as parameter. This function
+defines a scope that contains the plugin interface:</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><B>state</B>: a dictionary with keys to
+be persisted as part of the plugin serialization data. The plugin
+implementation must store all relevant state in this object.
+Serialization and de-serialization is handled by core logic and needs
+no further per-plugin logic. Of course, each plugin must initialize
+its UI from the relevant state fields and ensure that the state is
+updated to reflect any UI changes.</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><SPAN STYLE="font-style: normal"><B>create_ui</B></SPAN>:
+mandatory function, no parameters. Returns a jQuery DOM object
+representing the base element of the control surface. A convenience
+function 'make('tag')' is available for condensing UI creation code.</P>
+<P STYLE="margin-bottom: 0in"> 
+</P>
+<P STYLE="margin-bottom: 0in"><B>update_input</B>: optional function.
+Receives input slot index and data of the slots data type. Should be
+implemented by modulators and emitters so that internal state is
+updated as appropriate. This will be called by the core once for each
+active input connection. Implementors cannot assume any connections
+will be made, and so default state values must be initialized so that
+a plugin will still yield reasonable output in lieu of input data, if
+at all possible. All input slots will be called, as will update_state
+(see below), before any output values are requested.</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><B>update_state</B>: optional function.
+No parameters. Called by the core once all connected inputs have been
+processed. Should carry out any recomputation of internal data to be
+delivered to outputs based on the updated internal state. Do not
+implement such recomputation in the update_input method. It belongs
+here. 
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><B>update_output</B>: optional
+function. Receives output slot index and returns emitted value.
+Should be implemented for generators and modulators. Will be called
+only once for each output slot with connections, even if multiple
+exist. The core will cache the returned value for transmission to all
+connected plugins.</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><B>Note</B>: Right now there's no
+editor-enforced protection against the creation of cyclical links in
+the graph, which there should be. The editor attempt to make this
+psychologically clear by encouraging layout of connected plugins
+left-to-right, following natural western reading direction. Because
+of the rendering method, making right-to-left plugin connections are
+visually awkward, which tends to discourage users from making
+connections that might be cyclical. A graph traversal check should be
+implemented before general use however.</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+</BODY>
+</HTML>

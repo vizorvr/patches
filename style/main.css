@@ -1,0 +1,114 @@
+.fundamental
+{
+	font-family: Helvetica, Arial, Sans-serif;
+	font-size: 10pt;
+	line-height: 1.5em;
+	margin-top: 10px;
+}
+
+.notification
+{
+	background-color: #ddd;
+	border: solid 1px #ccc;
+	color: #888888;
+	padding: 8px;
+	display: table;
+	width: 600px;
+}
+
+.centered
+{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#content
+{
+	display: none;
+}
+
+#controls
+{
+	width: 1024px;
+}
+
+h2
+{
+	font-size: 24pt;
+	width: 1024px;
+}
+
+pre 
+{
+	margin-left: 5px;
+	margin-top: 5px;
+	float: left;
+	width: 700px;
+	height: 240px;
+	font-size: 8pt;
+	background-color: #eee;
+	overflow: scroll;
+}
+
+#main_layout
+{
+	text-align: left;
+	vertical-align: top;
+	width: 1024px;
+}
+
+#structure
+{
+	width: 320px;
+	height: 768px;
+	float: left;
+	background-color: #eee;
+}
+
+#canvas_parent
+{
+	float: right;
+	background-color: #ccc;
+	width: 700px;
+	height: 520px;
+	z-index: 1;
+}
+
+#canvas
+{
+	float: right;
+	width: 700px;
+	height: 520px;
+	position: relative; /* Required so children can be placed absolutely in conjunction with this element */
+	z-index: 2;
+}
+
+.plugin
+{
+	font-size: 8pt;
+	position: absolute;
+	background-color: #ff8;
+	border: 1px solid #888;
+	z-index: 100;
+	padding: 4px;
+	cursor: move;
+}
+
+.pl_layout
+{
+  border-collapse: separate;
+  border-spacing: 0px;
+}
+
+.pl_header
+{
+	background-color: #dde;
+	padding: 0px;
+	margin: 2px;
+}
+
+.pl_slot
+{
+	cursor: pointer;
+}
+

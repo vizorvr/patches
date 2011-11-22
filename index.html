@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>PoC</title>
+		<link href="style/reset.css" rel="Stylesheet" type="text/css" />
+		<link href="style/main.css" rel="Stylesheet" type="text/css" />
+		<link href="style/jquery.contextMenu.css" rel="Stylesheet" type="text/css" />
+		<link href="style/smoothness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" type="text/css"  />
+		<script type="text/javascript" src="scripts/jquery-1.7.min.js"></script>
+		<script type="text/javascript" src="scripts/jquery.cookie.js"></script>
+		<script type="text/javascript" src="scripts/jquery.hotkeys.js"></script>
+		<script type="text/javascript" src="scripts/jquery.jstree.js"></script>
+		<script type="text/javascript" src="scripts/jquery.contextMenu.js"></script>
+		<script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="scripts/core.js"></script>
+	</head>
+	<body class="fundamental">
+		<noscript>
+			<div class="centered notification">
+				<div style="float: left; display: table-cell; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
+				<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
+			</div>
+		</noscript>
+		<div id="content">
+			<h2 class="centered">PoC</h2>
+			<br />
+			<br />
+			<div id="context_menu"></div>
+			<div id="controls" class="centered">
+				<button id="play" class=".ui-icon-play">Play</button>
+				<button id="pause">Pause</button>
+				<button id="stop">Stop</button>
+				<input id="frame" type="text" value="0" style="float: right; width: 80px;"></input>
+			</div>
+			<br />
+			<div id="main_layout" class="centered">
+				<div id="structure">
+					<ul>
+						<li id="gn_root">
+							<a href="#">Root</a>
+						</li>
+					</ul>
+				</div>
+				<div id="canvas_parent">
+					<canvas id="canvas" class="centered" width="700" height="520"></canvas>
+				</div>
+			</div>
+			<pre id="dbg"></pre>
+		</div>
+	</body>
+</html>
