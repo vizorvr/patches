@@ -200,6 +200,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.ui = null;
 	this.id = plugin_id;
 	this.uid = parent_graph.getNodeUID();
+	this.rendering_state = 0;
 	
 	this.createUI = function()
 	{
@@ -213,6 +214,24 @@ function Node(parent_graph, plugin_id, x, y) {
 		
 		self.ui = null;
 	};
+	
+	this.updateInputs = function(conns)
+	{
+		var uid = self.uid;
+		
+		if(self.rendering_state == 0)
+		{
+			var inputs = [];
+			
+			for(var i = 0; i < conns.length; i++)
+			{
+				var c = conns[i];
+				
+				if(c.dst_node.parent_node.uid == uid)
+					inputs.push(c);
+			}
+		}
+	}
 }
 
 
@@ -235,6 +254,29 @@ function Graph(parent_graph) {
 		
 		self.nodes.push(n);
 		return n;
+	};
+	
+	this.updateGraph = function(delta_t)
+	{
+		var nodes = self.nodes;
+		var roots = [];
+		
+		for(var i = 0; i < nodes.length; i++)
+		{
+			var node = nodes[i];
+			
+			if(node.plugin.output_slots.length == 0)
+				roots.push(node);
+				
+			node.rendering_state = 0;
+		}
+		
+		for(var i = 0; i < roots.length; i++)
+		{
+			var root = roots[i];
+			
+			root.updateInput(self.connections);
+		}
 	};
 }
 
@@ -454,7 +496,7 @@ function Application() {
 	this.onNodeDragged = function(node) { return function(e)
 	{
 		var conns = self.core.active_graph.connections;
-		var tuid = node.ui.dom.attr('id');
+		var uid = node.ui.dom.attr('id');
 		var canvas_dirty = false;
 		
 		for(var i = 0; i < conns.length; i++)
