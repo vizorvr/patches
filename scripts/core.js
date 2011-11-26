@@ -113,14 +113,11 @@ function NodeUI(parent_node, x, y) {
 			
 			if(type == 0)
 			{
-				div.mouseenter(app.onSlotEntered(div));
-				div.mouseleave(app.onSlotExited(div));
+				div.mouseenter(app.onSlotEntered(parent_node, div));
+				div.mouseleave(app.onSlotExited(parent_node, div));
 			}
 			else
-				div.mousedown(app.onSlotClicked(div));
-			
-			/*if(i > 0)
-				col.append(make('br'));*/
+				div.mousedown(app.onSlotClicked(parent_node, div));
 			
 			col.append(div);
 		}
@@ -308,8 +305,10 @@ function Application() {
 	this.core = new Core();
 	this.canvas = canvas;
 	this.c2d = canvas[0].getContext('2d');
-	this.source_slot = null;
-	this.dest_slot = null;
+	this.src_node = null;
+	this.dst_node = null;
+	this.src_slot = null;
+	this.dst_slot = null;
 	this.edit_conn = null;
 	this.last_mouse_pos = [0, 0];
 	this.current_state = this.state.STOPPED;
@@ -350,44 +349,50 @@ function Application() {
 		node.createUI();
 	};
 	
-	this.onSlotClicked = function(slot) { return function(e)
+	this.onSlotClicked = function(node, slot) { return function(e)
 	{
 		e.stopPropagation();
 		
-		self.source_slot = slot;
+		self.src_node = node;
+		self.src_slot = slot;
 		self.edit_conn = new Connection(null, null, null, null);
 		self.edit_conn.createUI();
-		self.edit_conn.ui.src_pos = self.getSlotPosition(self.source_slot, 1);
+		self.edit_conn.ui.src_pos = self.getSlotPosition(self.src_slot, 1);
 		
 		slot.css('color', '#0f0');
 		
 		return false;
 	}};
 
-	this.onSlotEntered = function(slot) { return function(e)
+	this.onSlotEntered = function(node, slot) { return function(e)
 	{
-		if(self.source_slot)
+		if(self.src_slot)
 		{
-			if(self.source_slot.definition.dt === slot.definition.dt && !slot.is_connected) // Only allo connection, if datatypes match
+			if(self.src_slot.definition.dt === slot.definition.dt && !slot.is_connected) // Only allow connection if datatypes match and slot is unconnected.
 			{
-				self.dest_slot = slot;
+				self.dst_node = node;
+				self.dst_slot = slot;
 				slot.css('color', '#0f0');
 				slot.is_connected = true;
 			}
 			else
 			{
-				self.dest_slot = null;
+				self.dst_node = null;
+				self.dst_slot = null;
 				slot.css('color', '#f00');
 			}
 		}
 	}};
 
-	this.onSlotExited = function(slot) { return function(e)
+	this.onSlotExited = function(node, slot) { return function(e)
 	{
 		slot.css('color', '#000');
 		
-		if(self.dest_slot === slot)
-			self.dest_slot = null;
+		if(self.dst_node === node)
+			self.dst_node = null;
+
+		if(self.dst_slot === slot)
+			self.dst_slot = null;
 	}};
 
 	this.drawConnection = function(c2d, conn)
@@ -457,7 +462,7 @@ function Application() {
 	
 	this.onMouseMoved = function(e)
 	{
-		if(self.source_slot)
+		if(self.src_slot)
 			self.updateCanvas();
 			
 		self.last_mouse_pos = [e.pageX, e.pageY];
@@ -465,30 +470,32 @@ function Application() {
 	
 	this.onMouseReleased = function(e)
 	{
-		if(self.dest_slot) // If dest_slot is set, we should create a permanent connection.
+		if(self.dst_slot) // If dest_slot is set, we should create a permanent connection.
 		{
-			var sn = $('#n' + self.getNIDFromSlot(self.source_slot.attr('id')));
-			var dn = $('#n' + self.getNIDFromSlot(self.dest_slot.attr('id')));
-			var ss = self.source_slot;
-			var ds = self.dest_slot;
-			var c = new Connection(sn, dn, ss, ds);
+			/*var sn = $('#n' + self.getNIDFromSlot(self.source_slot.attr('id')));
+			var dn = $('#n' + self.getNIDFromSlot(self.dest_slot.attr('id')));*/
+			var ss = self.src_slot;
+			var ds = self.dst_slot;
+			var c = new Connection(self.src_node, self.dst_node, ss, ds);
 			
 			c.createUI();
 			c.ui.src_pos = self.edit_conn.ui.src_pos.slice(0);
-			c.ui.dst_pos = self.getSlotPosition(self.dest_slot);
+			c.ui.dst_pos = self.getSlotPosition(ds);
 			
 			self.core.active_graph.connections.push(c);
 			
-			self.dest_slot.css('color', '#000');
-			self.dest_slot = null;
+			self.dst_slot.css('color', '#000');
+			self.dst_slot = null;
 		}
 
-		if(self.source_slot)
+		if(self.src_slot)
 		{
-			self.source_slot.css('color', '#000');
-			self.source_slot = null;
+			self.src_slot.css('color', '#000');
+			self.src_slot = null;
 		}
 		
+		self.dst_node = null;
+		self.src_node = null;
 		self.edit_conn = null;
 		self.updateCanvas();
 	};
@@ -496,19 +503,19 @@ function Application() {
 	this.onNodeDragged = function(node) { return function(e)
 	{
 		var conns = self.core.active_graph.connections;
-		var uid = node.ui.dom.attr('id');
+		var uid = node.uid;
 		var canvas_dirty = false;
 		
 		for(var i = 0; i < conns.length; i++)
 		{
 			var c = conns[i];
 			
-			if(c.src_node.attr('id') == tuid)
+			if(c.src_node.uid == uid)
 			{
 				c.ui.src_pos = self.getSlotPosition(c.src_slot, 1);
 				canvas_dirty = true;
 			}
-			else if(c.dst_node.attr('id') == tuid)
+			else if(c.dst_node.uid == uid)
 			{
 				c.ui.dst_pos = self.getSlotPosition(c.dst_slot, 0);
 				canvas_dirty = true;
