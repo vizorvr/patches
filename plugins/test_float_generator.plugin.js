@@ -10,8 +10,15 @@ g_Plugins["test_float_generator"] = function(core) {
 		var inp = $('<input type="text" value="1.0" style="width: 30px;" />');
 		
 		inp.change(function(e) {
-			try { self.state.val = parseFloat(inp.text()); }
-			catch(e) {}
+			try 
+			{ 
+				self.state.val = parseFloat(inp.val()); 
+			}
+			catch(e) 
+			{
+				self.state.val = 1.0;
+				inp.val('1.0');
+			}
 		});
 		
 		return inp;

@@ -16,7 +16,7 @@ g_Plugins["test_string_generator"] = function(core) {
 		return inp;
 	};
 
-	this.update_state = function()
+	this.update_state = function(delta_t)
 	{
 	};
 	

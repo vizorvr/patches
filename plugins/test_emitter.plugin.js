@@ -6,6 +6,7 @@ g_Plugins["test_emitter"] = function(core) {
 		{ name: 'string', dt: core.datatypes.STRING },
 		{ name: 'texture', dt: core.datatypes.TEXTURE },
 	];
+	
 	this.output_slots = [];
 
 	this.create_ui = function()
@@ -17,9 +18,10 @@ g_Plugins["test_emitter"] = function(core) {
 	
 	this.update_input = function(index, data)
 	{
+		self.label.text(data);
 	};
 
-	this.update_state = function()
+	this.update_state = function(delta_t)
 	{
 	};
 	

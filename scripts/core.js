@@ -29,6 +29,11 @@ function make_menu_plugin(id)
 	return li;
 }
 
+function global_update()
+{
+	app.onUpdate();
+}
+
 function PluginManager(core, base_url) {
 	this.base_url = base_url;
 	this.core = core;
@@ -199,6 +204,12 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.uid = parent_graph.getNodeUID();
 	this.rendering_state = 0;
 	
+	for(var i = 0; i < this.plugin.input_slots.length; i++)
+		this.plugin.input_slots[i].index = i;
+		
+	for(var i = 0; i < this.plugin.output_slots.length; i++)
+		this.plugin.output_slots[i].index = i;
+
 	this.createUI = function()
 	{
 		self.ui = new NodeUI(self, self.x, self.y);
@@ -212,22 +223,39 @@ function Node(parent_graph, plugin_id, x, y) {
 		self.ui = null;
 	};
 	
-	this.updateInputs = function(conns)
+	this.update_recursive = function(conns, delta_t)
 	{
-		var uid = self.uid;
+		if(self.rendering_state == 1)
+			return;
 		
-		if(self.rendering_state == 0)
+		var uid = self.uid;
+		var inputs = self.inputs = [];
+		
+		for(var i = 0; i < conns.length; i++) // TODO: Cache these somewhere, so we don't have to search for them.
 		{
-			var inputs = [];
+			var c = conns[i];
 			
-			for(var i = 0; i < conns.length; i++)
-			{
-				var c = conns[i];
-				
-				if(c.dst_node.parent_node.uid == uid)
-					inputs.push(c);
-			}
+			if(c.dst_node.uid == uid)
+				inputs.push(c);
 		}
+		
+		for(var i = 0; i < inputs.length; i++)
+		{
+			var i = inputs[i];
+			
+			i.src_node.update_recursive(conns, delta_t);
+			
+			var value = i.src_node.plugin.update_output(i.src_slot.index);
+			
+			self.plugin.update_input(i.dst_slot.index, value);
+		}
+		
+		if(self.plugin.update_state)
+			self.plugin.update_state(delta_t);
+	
+		if(self.ui)
+			self.ui.dom.css('background-color', '#0f0');
+		self.rendering_state = 1;
 	}
 }
 
@@ -253,7 +281,7 @@ function Graph(parent_graph) {
 		return n;
 	};
 	
-	this.updateGraph = function(delta_t)
+	this.update = function(delta_t)
 	{
 		var nodes = self.nodes;
 		var roots = [];
@@ -272,7 +300,7 @@ function Graph(parent_graph) {
 		{
 			var root = roots[i];
 			
-			root.updateInput(self.connections);
+			root.update_recursive(self.connections, delta_t);
 		}
 	};
 }
@@ -288,8 +316,9 @@ function Core() {
 	
 	this.active_graph = this.root_graph = new Graph(null);
 	
-	this.update = function()
+	this.update = function(delta_t)
 	{
+		self.active_graph.update(delta_t);
 	}
 }
 
@@ -312,6 +341,9 @@ function Application() {
 	this.edit_conn = null;
 	this.last_mouse_pos = [0, 0];
 	this.current_state = this.state.STOPPED;
+	this.interval = null;
+	this.start_time = (new Date()).getTime();
+	this.last_time = this.start_time;
 	
 	var self = this;
 	
@@ -373,7 +405,6 @@ function Application() {
 				self.dst_node = node;
 				self.dst_slot = slot;
 				slot.css('color', '#0f0');
-				slot.is_connected = true;
 			}
 			else
 			{
@@ -485,6 +516,7 @@ function Application() {
 			self.core.active_graph.connections.push(c);
 			
 			self.dst_slot.css('color', '#000');
+			self.dst_slot.is_connected = true;
 			self.dst_slot = null;
 		}
 
@@ -539,27 +571,46 @@ function Application() {
 	{
 		self.current_state = self.state.PLAYING;
 		self.changeControlState();
-		setInterval('app.onUpdate', 0);
+		
+		self.start_time = (new Date()).getTime();
+		self.last_time = self.start_time;
+		self.interval = setInterval(function() {
+			app.onUpdate();
+		}, 0);
 	};
 	
 	this.onPauseClicked = function()
 	{
 		self.current_state = self.state.PAUSED;
 		self.changeControlState();
+		
+		if(self.interval != null)
+		{
+			clearInterval(self.interval);
+			self.interval = null;
+		}
 	};
 
 	this.onStopClicked = function()
 	{
 		self.current_state = self.state.STOPPED;
 		self.changeControlState();
+		
+		if(self.interval != null)
+		{
+			clearInterval(self.interval);
+			self.interval = null;
+		}
 	};
 
-	this.frame = 0;
 	this.onUpdate = function()
 	{
-		self.frame++;
-		$('#frame').text('' + self.frame);
-		setInterval('app.onUpdate', 0);
+		var time = (new Date()).getTime();
+		var delta_t = (time - self.last_time) * 0.001;
+		
+		self.core.update(delta_t);
+		$('#frame').val(delta_t.toFixed(4));
+		self.last_time = time;
 	}
 	
 	$(document).mouseup(this.onMouseReleased);

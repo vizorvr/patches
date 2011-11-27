@@ -8,11 +8,15 @@ g_Plugins["test_modulator"] = function(core) {
 	
 	this.create_ui = function()
 	{
-		var inp = $('<input type="text" value="10.0" style="width: 30px;" />');
+		var inp = $('<input type="text" value="1.0" style="width: 30px;" />');
 		
 		inp.change(function(e) {
-			try { self.state.val = parseFloat(inp.text()); }
-			catch(e) {}
+			try { self.state.val = parseFloat(inp.val()); }
+			catch(e) 
+			{
+				self.state.val = 1.0;
+				inp.val('1.0');
+			}
 		});
 		
 		return inp;
@@ -23,7 +27,7 @@ g_Plugins["test_modulator"] = function(core) {
 		self.state.input_val = data;
 	};	
 
-	this.update_state = function()
+	this.update_state = function(delta_t)
 	{
 		self.output_val = self.state.input_val * self.state.val;
 	};
