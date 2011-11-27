@@ -29,11 +29,6 @@ function make_menu_plugin(id)
 	return li;
 }
 
-function global_update()
-{
-	app.onUpdate();
-}
-
 function PluginManager(core, base_url) {
 	this.base_url = base_url;
 	this.core = core;
@@ -87,12 +82,12 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	
 	var self = this;
 	
-	this.createUI = function()
+	this.create_ui = function()
 	{
 		self.ui = new ConnectionUI();
 	};
 	
-	this.destroyUI = function()
+	this.destroy_ui = function()
 	{
 		self.ui = null;
 	};
@@ -201,8 +196,11 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.y = y;
 	this.ui = null;
 	this.id = plugin_id;
-	this.uid = parent_graph.getNodeUID();
+	this.uid = parent_graph.get_node_uid();
 	this.rendering_state = 0;
+	
+	// Decorate the slots with their index to make this immediately resolvable
+	// from a slot reference, allowing for faster code elsewhere.
 	
 	for(var i = 0; i < this.plugin.input_slots.length; i++)
 		this.plugin.input_slots[i].index = i;
@@ -210,12 +208,12 @@ function Node(parent_graph, plugin_id, x, y) {
 	for(var i = 0; i < this.plugin.output_slots.length; i++)
 		this.plugin.output_slots[i].index = i;
 
-	this.createUI = function()
+	this.create_ui = function()
 	{
 		self.ui = new NodeUI(self, self.x, self.y);
 	};
 	
-	this.destroyUI = function()
+	this.destroy_ui = function()
 	{
 		if(self.ui)
 			self.ui.remove();
@@ -268,12 +266,12 @@ function Graph(parent_graph) {
 	this.connections = [];
 	this.node_uid = 0;
 
-	this.getNodeUID = function()
+	this.get_node_uid = function()
 	{
 		return self.node_uid++;
 	};
 	
-	this.createInstance = function(plugin_id, x, y)
+	this.create_instance = function(plugin_id, x, y)
 	{
 		n = new Node(self, plugin_id, x, y);
 		
@@ -303,6 +301,8 @@ function Graph(parent_graph) {
 			root.update_recursive(self.connections, delta_t);
 		}
 	};
+	
+	
 }
 
 function Core() {
@@ -344,6 +344,7 @@ function Application() {
 	this.interval = null;
 	this.start_time = (new Date()).getTime();
 	this.last_time = this.start_time;
+	this.ctrlPressed = false;
 	
 	var self = this;
 	
@@ -376,9 +377,9 @@ function Application() {
 
 	this.onPluginInstantiated = function(action, el, pos)
 	{	
-		var node = self.core.active_graph.createInstance(action, pos.docX, pos.docY);
+		var node = self.core.active_graph.create_instance(action, pos.docX, pos.docY);
 		
-		node.createUI();
+		node.create_ui();
 	};
 	
 	this.onSlotClicked = function(node, slot) { return function(e)
@@ -388,7 +389,7 @@ function Application() {
 		self.src_node = node;
 		self.src_slot = slot;
 		self.edit_conn = new Connection(null, null, null, null);
-		self.edit_conn.createUI();
+		self.edit_conn.create_ui();
 		self.edit_conn.ui.src_pos = self.getSlotPosition(self.src_slot, 1);
 		
 		slot.css('color', '#0f0');
@@ -425,7 +426,7 @@ function Application() {
 		if(self.dst_slot === slot)
 			self.dst_slot = null;
 	}};
-
+	
 	this.drawConnection = function(c2d, conn)
 	{
 		var c = conn.ui;
@@ -509,7 +510,7 @@ function Application() {
 			var ds = self.dst_slot;
 			var c = new Connection(self.src_node, self.dst_node, ss, ds);
 			
-			c.createUI();
+			c.create_ui();
 			c.ui.src_pos = self.edit_conn.ui.src_pos.slice(0);
 			c.ui.dst_pos = self.getSlotPosition(ds);
 			
@@ -558,6 +559,18 @@ function Application() {
 			self.updateCanvas();
 	}};
 	
+	this.onKeyPressed = function(e)
+	{
+		if(e.controlKey)
+			self.ctrlPressed = true;
+	};
+	
+	this.onKeyReleased = function(e)
+	{
+		if(e.controlKey)
+			self.ctrlPressed = false;
+	};
+
 	this.changeControlState = function()
 	{
 		var cs = self.current_state;
@@ -614,6 +627,8 @@ function Application() {
 	}
 	
 	$(document).mouseup(this.onMouseReleased);
+	$(document).keydown(this.onKeyPressed);
+	$(document).keyup(this.onKeyReleased);
 	canvas.mousemove(this.onMouseMoved);
 }
 
