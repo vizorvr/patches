@@ -66,10 +66,15 @@ function PluginManager(core, base_url) {
 	}
 }
  
-function ConnectionUI()
+function ConnectionUI(parent_conn)
 {
 	this.src_pos = [0, 0];
 	this.dst_pos = [0, 0];
+	this.src_slot_div = null;
+	this.dst_slot_div = null;
+	this.color = '#000';
+	this.parent_conn = parent_conn;
+	this.offset = 0;
 }
 
 function Connection(src_node, dst_node, src_slot, dst_slot)
@@ -84,12 +89,16 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	
 	this.create_ui = function()
 	{
-		self.ui = new ConnectionUI();
+		self.ui = new ConnectionUI(self);
 	};
 	
 	this.destroy_ui = function()
 	{
-		self.ui = null;
+		if(self.ui)
+		{
+			self.ui.remove();
+			self.ui = null;
+		}
 	};
 }
 
@@ -105,33 +114,20 @@ function NodeUI(parent_node, x, y) {
 			var s = slots[i];
 			var div = make('div');
 			
-			div.attr('id', nid + (type == 0 ? 'si' : 'so') + i);
+			div.attr('id', nid + (type === 0 ? 'si' : 'so') + i);
 			div.text(s.name);
 			div.addClass('pl_slot');
 			div.disableSelection();
 			div.definition = s;
 			
-			if(type == 0)
-			{
-				div.mouseenter(app.onSlotEntered(parent_node, div));
-				div.mouseleave(app.onSlotExited(parent_node, div));
-			}
-			else
-				div.mousedown(app.onSlotClicked(parent_node, div));
+			div.mouseenter(app.onSlotEntered(parent_node, s, div));
+			div.mouseleave(app.onSlotExited(parent_node, s, div));
+
+			if(type === 1)
+				div.mousedown(app.onSlotClicked(parent_node, s, div));
 			
 			col.append(div);
 		}
-	};
-	
-	this.onClick = function(e)
-	{
-		e.stopPropagation();
-		
-		// TODO: Keep track of global modifier key state, so we can delete
-		// modules with CTRL + left click or something.
-		
-		//alert("Click!");
-		return false;
 	};
 	
 	var nid = 'n' + parent_node.uid;
@@ -140,7 +136,7 @@ function NodeUI(parent_node, x, y) {
 	this.dom.addClass('plugin');
 	this.dom.addClass('ui-widget-content')
 	this.dom.attr('id', nid);
-	this.dom.mousemove(app.onMouseMoved);
+	this.dom.mousemove(app.onMouseMoved); // Make sure we don't stall during slot connection, when the mouse enters a node.
 	
 	this.dom.css('top', '' + y + 'px');
 	this.dom.css('left', '' + x + 'px');
@@ -158,8 +154,12 @@ function NodeUI(parent_node, x, y) {
 	h_cell.disableSelection();
 	h_row.append(h_cell);
 	h_row.addClass('pl_header');
-	h_row.click(this.onClick);
+	h_row.click(app.onNodeHeaderClicked);
+	h_row.mouseenter(app.onNodeHeaderEntered(parent_node));
+	h_row.mouseleave(app.onNodeHeaderExited);
 	table.append(h_row);
+	
+	this.header_row = h_row;
 	
 	var row = make('tr');
 	
@@ -201,13 +201,24 @@ function Node(parent_graph, plugin_id, x, y) {
 	
 	// Decorate the slots with their index to make this immediately resolvable
 	// from a slot reference, allowing for faster code elsewhere.
+	// Additionally tagged with the type (0 = input, 1 = output) for similar reasons.
 	
 	for(var i = 0; i < this.plugin.input_slots.length; i++)
-		this.plugin.input_slots[i].index = i;
+	{
+		var s = this.plugin.input_slots[i];
+		
+		s.index = i;
+		s.type = 0;
+	}
 		
 	for(var i = 0; i < this.plugin.output_slots.length; i++)
-		this.plugin.output_slots[i].index = i;
-
+	{
+		var s = this.plugin.output_slots[i];
+		
+		s.index = i;
+		s.type = 1;
+	}
+	
 	this.create_ui = function()
 	{
 		self.ui = new NodeUI(self, self.x, self.y);
@@ -216,10 +227,35 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.destroy_ui = function()
 	{
 		if(self.ui)
-			self.ui.remove();
+			$("#canvas_parent").append(self.ui.dom)
 		
 		self.ui = null;
 	};
+	
+	this.destroy = function()
+	{
+		var graph = self.parent_graph;
+		var index = graph.nodes.indexOf(self);
+		
+		if(index != -1)
+			graph.nodes.splice(index, 1);
+		
+		var pending = [];
+		var conns = graph.connections;
+		
+		for(var i = 0; i < conns.length; i++)
+		{
+			var c = conns[i];
+			
+			if(c.src_node.uid === self.uid || c.dst_node.uid === self.uid)
+				pending.push(c);
+		}
+		
+		for(var i = 0; i < pending.length; i++)
+			graph.destroy_connection(pending[i]);
+		
+		self.destroy_ui();
+	}
 	
 	this.update_recursive = function(conns, delta_t)
 	{
@@ -229,7 +265,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		var uid = self.uid;
 		var inputs = self.inputs = [];
 		
-		for(var i = 0; i < conns.length; i++) // TODO: Cache these somewhere, so we don't have to search for them.
+		for(var i = 0; i < conns.length; i++)
 		{
 			var c = conns[i];
 			
@@ -253,6 +289,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	
 		if(self.ui)
 			self.ui.dom.css('background-color', '#0f0');
+		
 		self.rendering_state = 1;
 	}
 }
@@ -302,7 +339,61 @@ function Graph(parent_graph) {
 		}
 	};
 	
+	this.destroy_connection = function(c)
+	{
+		var index = self.connections.indexOf(c);
+		
+		if(index != -1)
+			self.connections.splice(index, 1);
+		
+		c.src_slot.is_connected = false;
+		c.dst_slot.is_connected = false;
+	};
 	
+	this.find_connection_to = function(node, slot)
+	{
+		if(slot.type !== 0)
+			return null;
+		
+		var conns = self.connections;
+		var uid = node.uid;
+		
+		for(var i = 0; i < conns.length; i++)
+		{
+			var c = conns[i];
+			
+			if(c.dst_node.uid = uid && c.dst_slot == slot)
+				return c;			
+		}
+		
+		return null;
+	};
+	
+	this.find_connections_from = function(node, slot)
+	{
+		if(slot.type !== 1)
+			return [];
+		
+		var conns = self.connections;
+		var uid = node.uid;
+		var result = [];
+		
+		msg('search ' + conns.length);
+		
+		for(var i = 0; i < conns.length; i++)
+		{
+			var c = conns[i];
+			
+			msg('uid = ' + uid + ', src_uid = ' + c.src_node.uid);
+			if(c.src_node.uid === uid && c.src_slot === slot)
+			{
+				msg('found match');
+				result.push(c);			
+			}
+		}
+		
+		return result;
+	};
 }
 
 function Core() {
@@ -337,7 +428,9 @@ function Application() {
 	this.src_node = null;
 	this.dst_node = null;
 	this.src_slot = null;
+	this.src_slot_div = null;
 	this.dst_slot = null;
+	this.dst_slot_div = null;
 	this.edit_conn = null;
 	this.last_mouse_pos = [0, 0];
 	this.current_state = this.state.STOPPED;
@@ -345,6 +438,10 @@ function Application() {
 	this.start_time = (new Date()).getTime();
 	this.last_time = this.start_time;
 	this.ctrlPressed = false;
+	this.hover_slot = null;
+	this.hover_slot_div = null;
+	this.hover_connections = [];
+	this.hover_node = null;
 	
 	var self = this;
 	
@@ -358,23 +455,15 @@ function Application() {
 		return parseInt(id.slice(id.indexOf('s') + 2, id.length));
 	};
 	
-	this.getSlotPosition = function(slot, type)
+	this.getSlotPosition = function(slot_div, type)
 	{
-		var o = slot.offset();
+		var o = slot_div.offset();
 		var co = canvas.offset();
-		var x = type == 0 ? (o.left - co.left) : (o.left - co.left) + slot.width();
+		var x = type == 0 ? (o.left - co.left) : (o.left - co.left) + slot_div.width();
 		
-		return [x, (o.top - co.top) + (slot.height() / 2)];
+		return [x, (o.top - co.top) + (slot_div.height() / 2)];
 	};
 	
-	this.mapActiveNodes = function(delegate)
-	{
-		var nodes = self.core.active_graph.nodes;
-		
-		for(var i = 0; i < nodes.length; i++)
-			delegate(nodes[i]);
-	};
-
 	this.onPluginInstantiated = function(action, el, pos)
 	{	
 		var node = self.core.active_graph.create_instance(action, pos.docX, pos.docY);
@@ -382,72 +471,152 @@ function Application() {
 		node.create_ui();
 	};
 	
-	this.onSlotClicked = function(node, slot) { return function(e)
+	this.onSlotClicked = function(node, slot, slot_div) { return function(e)
 	{
 		e.stopPropagation();
 		
-		self.src_node = node;
-		self.src_slot = slot;
-		self.edit_conn = new Connection(null, null, null, null);
-		self.edit_conn.create_ui();
-		self.edit_conn.ui.src_pos = self.getSlotPosition(self.src_slot, 1);
+		if(!self.ctrlPressed)
+		{
+			self.src_node = node;
+			self.src_slot = slot;
+			self.src_slot_div = slot_div;
+			self.edit_conn = new Connection(null, null, null, null);
+			self.edit_conn.create_ui();
+			self.edit_conn.ui.src_pos = self.getSlotPosition(slot_div, 1);
 		
-		slot.css('color', '#0f0');
-		
+			var graph = self.core.active_graph;
+			var ocs = graph.find_connections_from(node, slot);
+			var offset = 0;
+			
+			ocs.sort(function(a, b) {
+				return a.ui.offset < b.ui.offset ? - 1 : a.ui.offset > b.ui.offset ? 1 : 0;
+			});
+			
+			for(var i = 0; i < ocs.length; i++)
+			{
+				ocs[i].offset = i;
+
+				if(oc.ui.offset != i)
+				{
+					offset = i;
+					break;
+				}
+				
+				offset = i + 1;
+			}
+			
+			self.edit_conn.ui.offset = offset;
+			slot_div.css('color', '#0f0');
+		}
+		else
+		{
+			self.onMousePressed(e);
+		}
+				
 		return false;
 	}};
 
-	this.onSlotEntered = function(node, slot) { return function(e)
+	this.activateHoverSlot = function()
+	{
+		var hs = self.hover_slot;
+		
+		if(!hs)
+			return;
+		
+		self.hover_slot_div.css('background-color', '#f00');
+		
+		// Mark any attached connection
+		var conns = self.core.active_graph.connections;
+		var dirty = false;
+		
+		for(var i = 0; i < conns.length; i++)
+		{
+			var c = conns[i];
+			
+			if(c.dst_slot === hs || c.src_slot === hs)
+			{
+				c.ui.color = '#f00';
+				self.hover_connections.push(c);
+				dirty = true;
+								
+				if(hs.type == 0)
+					break; // Early out if this is an input slot, but continue searching if it's an output slot. There might be multiple connections.
+			}
+		}
+		
+		if(dirty)
+			self.updateCanvas();
+	}
+	
+	this.releaseHoverSlot = function()
+	{
+		if(self.hover_slot != null)
+		{
+			self.hover_slot_div.css('background-color', 'inherit');
+			self.hover_slot_div = null;
+			self.hover_slot = null;
+		}
+		
+		var hcs = self.hover_connections;
+		
+		if(hcs.length > 0)
+		{
+			for(var i = 0; i < hcs.length; i++)
+				hcs[i].ui.color = '#000';
+
+			self.hover_connections = [];
+			self.updateCanvas();
+		}
+		
+		if(self.dst_slot_div != null)
+		{
+			self.dst_slot_div.css('color', '#000');
+			self.dst_slot_div = null;
+		}
+
+	}
+	
+	this.onSlotEntered = function(node, slot, slot_div) { return function(e)
 	{
 		if(self.src_slot)
 		{
-			if(self.src_slot.definition.dt === slot.definition.dt && !slot.is_connected) // Only allow connection if datatypes match and slot is unconnected.
+			self.dst_slot_div = slot_div;
+
+			if(self.src_slot_div.definition.dt === slot.dt && !slot.is_connected) // Only allow connection if datatypes match and slot is unconnected.
 			{
 				self.dst_node = node;
 				self.dst_slot = slot;
-				slot.css('color', '#0f0');
+				slot_div.css('color', '#0f0');
 			}
 			else
 			{
 				self.dst_node = null;
 				self.dst_slot = null;
-				slot.css('color', '#f00');
+				slot_div.css('color', '#f00');
 			}
 		}
+		
+		self.hover_slot = slot;
+		self.hover_slot_div = slot_div;
+
+		if(self.ctrlPressed)
+			self.activateHoverSlot();
 	}};
 
-	this.onSlotExited = function(node, slot) { return function(e)
+	this.onSlotExited = function(node, slot, slot_div) { return function(e)
 	{
-		slot.css('color', '#000');
-		
 		if(self.dst_node === node)
 			self.dst_node = null;
-
+		
 		if(self.dst_slot === slot)
 			self.dst_slot = null;
+			
+		self.releaseHoverSlot();
 	}};
 	
 	this.drawConnection = function(c2d, conn)
 	{
 		var c = conn.ui;
-		
-		/*c2d.moveTo(c.src_pos[0], c.src_pos[1]);
-		c2d.lineTo(c.dst_pos[0], c.dst_pos[1]);
-		c2d.stroke();*/
-		
-		/*var x1 = c.src_pos[0];
-		var y1 = c.src_pos[1];
-		var x4 = c.dst_pos[0];
-		var y4 = c.dst_pos[1];
-		var diffx = Math.max(16, x4 - x1);
-		var x2 = x1 + diffx * 0.5;
-		var x3 = x4 - diffx * 0.5;
-		
-		c2d.beginPath();
-		c2d.moveTo(x1, y1);
-		c2d.bezierCurveTo(x2, y1, x3, y4, x4, y4);
-		c2d.stroke();*/
-	
 		var x1 = c.src_pos[0];
 		var y1 = c.src_pos[1];
 		var x4 = c.dst_pos[0];
@@ -456,8 +625,9 @@ function Application() {
 		var mx = (x1 + x4) / 2;
 		var my = (y1 + y4) / 2;
 	
-		var x2 = Math.min(x1 + 10, mx);
+		var x2 = Math.min(x1 + 10 + (c.offset * 3), mx);
 		
+		c2d.strokeStyle = c.color;
 		c2d.beginPath();
 		c2d.moveTo(x1, y1);
 		c2d.lineTo(x2, y1);
@@ -470,12 +640,7 @@ function Application() {
 	{
 		var c = self.c2d;
 		
-		/*c.fillStyle = '#ccc';
-		c.fillRect(0, 0, self.canvas.width(), self.canvas.height());*/
-		// c.clearRect(0, 0, self.canvas[0].width, self.canvas[0].height);
-		self.canvas[0].width = self.canvas[0].width; // This works, but the above does not (FF 7)
-		
-		c.stokeStyle = '#000';
+		self.canvas[0].width = self.canvas[0].width;
 		
 		var conns = self.core.active_graph.connections;
 		
@@ -502,29 +667,34 @@ function Application() {
 	
 	this.onMouseReleased = function(e)
 	{
-		if(self.dst_slot) // If dest_slot is set, we should create a permanent connection.
+		if(self.dst_node && self.dst_slot) // If dest_slot is set, we should create a permanent connection.
 		{
-			/*var sn = $('#n' + self.getNIDFromSlot(self.source_slot.attr('id')));
-			var dn = $('#n' + self.getNIDFromSlot(self.dest_slot.attr('id')));*/
 			var ss = self.src_slot;
 			var ds = self.dst_slot;
 			var c = new Connection(self.src_node, self.dst_node, ss, ds);
 			
 			c.create_ui();
 			c.ui.src_pos = self.edit_conn.ui.src_pos.slice(0);
-			c.ui.dst_pos = self.getSlotPosition(ds);
+			c.ui.dst_pos = self.getSlotPosition(self.dst_slot_div);
+			c.ui.src_slot_div = self.src_slot_div;
+			c.ui.dst_slot_div = self.dst_slot_div;
+			c.ui.offset = self.edit_conn.ui.offset;
 			
-			self.core.active_graph.connections.push(c);
+			var graph = self.core.active_graph; 
 			
-			self.dst_slot.css('color', '#000');
+			graph.connections.push(c);
+			
+			self.dst_slot_div.css('color', '#000');
 			self.dst_slot.is_connected = true;
+			self.dst_slot_div = null;
 			self.dst_slot = null;
 		}
 
 		if(self.src_slot)
 		{
-			self.src_slot.css('color', '#000');
+			self.src_slot_div.css('color', '#000');
 			self.src_slot = null;
+			self.src_slot_div = null;
 		}
 		
 		self.dst_node = null;
@@ -533,6 +703,68 @@ function Application() {
 		self.updateCanvas();
 	};
 
+	this.onMousePressed = function(e)
+	{
+		var hcs = self.hover_connections;
+		
+		if(hcs.length > 0)
+		{
+			var graph = self.core.active_graph;
+			
+			for(var i = 0; i < hcs.length; i++)
+				graph.destroy_connection(hcs[i]);
+			
+			self.hover_connections = [];
+			self.updateCanvas();
+		}
+	}
+	
+	this.activateHoverNode = function()
+	{
+		if(self.hover_node !== null)
+			self.hover_node.ui.header_row.css('background-color', '#f00');
+	};
+	
+	this.releaseHoverNode = function()
+	{
+		if(self.hover_node !== null)
+		{
+			self.hover_node.ui.header_row.css('background-color', '#dde'); // TODO: Ugly. All this belongs an a style sheet!
+			self.hover_node = null;
+		}
+	};
+
+	this.onNodeHeaderEntered = function(node) { return function(e)
+	{
+		self.hover_node = node;
+
+		if(self.ctrlPressed)
+			self.activateHoverNode();
+	}};
+	
+	this.onNodeHeaderExited = function(e)
+	{
+		self.releaseHoverNode();
+		self.hover_node = null;
+	};
+	
+	this.onNodeHeaderClicked = function(e)
+	{
+		e.stopPropagation();
+		
+		if(self.hover_node !== null)
+		{
+			var hn = self.hover_node;
+			
+			self.releaseHoverNode();
+			hn.destroy();
+			
+			self.updateCanvas();
+		}
+		
+		return false;
+	};
+	
 	this.onNodeDragged = function(node) { return function(e)
 	{
 		var conns = self.core.active_graph.connections;
@@ -545,12 +777,12 @@ function Application() {
 			
 			if(c.src_node.uid == uid)
 			{
-				c.ui.src_pos = self.getSlotPosition(c.src_slot, 1);
+				c.ui.src_pos = self.getSlotPosition(c.ui.src_slot_div, 1);
 				canvas_dirty = true;
 			}
 			else if(c.dst_node.uid == uid)
 			{
-				c.ui.dst_pos = self.getSlotPosition(c.dst_slot, 0);
+				c.ui.dst_pos = self.getSlotPosition(c.ui.dst_slot_div, 0);
 				canvas_dirty = true;
 			}
 		}
@@ -561,14 +793,22 @@ function Application() {
 	
 	this.onKeyPressed = function(e)
 	{
-		if(e.controlKey)
+		if(e.ctrlKey)
+		{
 			self.ctrlPressed = true;
+			self.activateHoverSlot();
+			self.activateHoverNode();
+		}
 	};
 	
 	this.onKeyReleased = function(e)
 	{
-		if(e.controlKey)
+		if(e.ctrlKey)
+		{
 			self.ctrlPressed = false;
+			self.releaseHoverSlot();
+			self.releaseHoverNode();
+		}
 	};
 
 	this.changeControlState = function()
@@ -627,6 +867,7 @@ function Application() {
 	}
 	
 	$(document).mouseup(this.onMouseReleased);
+	$(document).mousedown(this.onMousePressed);
 	$(document).keydown(this.onKeyPressed);
 	$(document).keyup(this.onKeyReleased);
 	canvas.mousemove(this.onMouseMoved);
