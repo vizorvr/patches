@@ -29,7 +29,6 @@ g_Plugins["test_emitter"] = function(core) {
 	{
 		var is_null = value === null;
 		
-		self.label.css('background-color', is_null ? '#f00' : '#0f0');
-		self.label.html(is_null ? 'No value' : '' + value); 
+		self.label.html(is_null ? 'N/A' : '' + value); 
 	};
 };
