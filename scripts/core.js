@@ -95,10 +95,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	this.destroy_ui = function()
 	{
 		if(self.ui)
-		{
-			self.ui.remove();
 			self.ui = null;
-		}
 	};
 }
 
@@ -227,7 +224,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.destroy_ui = function()
 	{
 		if(self.ui)
-			$("#canvas_parent").append(self.ui.dom)
+			self.ui.dom.remove();
 		
 		self.ui = null;
 	};
@@ -344,7 +341,10 @@ function Graph(parent_graph) {
 		var index = self.connections.indexOf(c);
 		
 		if(index != -1)
+		{
 			self.connections.splice(index, 1);
+			msg('Destroying connection = ' + index);
+		}
 		
 		c.src_slot.is_connected = false;
 		c.dst_slot.is_connected = false;
@@ -437,7 +437,7 @@ function Application() {
 	this.interval = null;
 	this.start_time = (new Date()).getTime();
 	this.last_time = this.start_time;
-	this.ctrlPressed = false;
+	this.ctrl_pressed = false;
 	this.hover_slot = null;
 	this.hover_slot_div = null;
 	this.hover_connections = [];
@@ -475,7 +475,7 @@ function Application() {
 	{
 		e.stopPropagation();
 		
-		if(!self.ctrlPressed)
+		if(!self.ctrl_pressed)
 		{
 			self.src_node = node;
 			self.src_slot = slot;
@@ -494,7 +494,9 @@ function Application() {
 			
 			for(var i = 0; i < ocs.length; i++)
 			{
-				ocs[i].offset = i;
+				var oc = ocs[i];
+				
+				oc.offset = i;
 
 				if(oc.ui.offset != i)
 				{
@@ -599,7 +601,7 @@ function Application() {
 		self.hover_slot = slot;
 		self.hover_slot_div = slot_div;
 
-		if(self.ctrlPressed)
+		if(self.ctrl_pressed)
 			self.activateHoverSlot();
 	}};
 
@@ -738,7 +740,7 @@ function Application() {
 	{
 		self.hover_node = node;
 
-		if(self.ctrlPressed)
+		if(self.ctrl_pressed)
 			self.activateHoverNode();
 	}};
 	
@@ -752,7 +754,7 @@ function Application() {
 	{
 		e.stopPropagation();
 		
-		if(self.hover_node !== null)
+		if(self.ctrl_pressed && self.hover_node !== null)
 		{
 			var hn = self.hover_node;
 			
@@ -795,7 +797,7 @@ function Application() {
 	{
 		if(e.ctrlKey)
 		{
-			self.ctrlPressed = true;
+			self.ctrl_pressed = true;
 			self.activateHoverSlot();
 			self.activateHoverNode();
 		}
@@ -805,7 +807,7 @@ function Application() {
 	{
 		if(e.ctrlKey)
 		{
-			self.ctrlPressed = false;
+			self.ctrl_pressed = false;
 			self.releaseHoverSlot();
 			self.releaseHoverNode();
 		}
