@@ -341,10 +341,7 @@ function Graph(parent_graph) {
 		var index = self.connections.indexOf(c);
 		
 		if(index != -1)
-		{
 			self.connections.splice(index, 1);
-			msg('Destroying connection = ' + index);
-		}
 		
 		c.src_slot.is_connected = false;
 		c.dst_slot.is_connected = false;
@@ -378,18 +375,12 @@ function Graph(parent_graph) {
 		var uid = node.uid;
 		var result = [];
 		
-		msg('search ' + conns.length);
-		
 		for(var i = 0; i < conns.length; i++)
 		{
 			var c = conns[i];
 			
-			msg('uid = ' + uid + ', src_uid = ' + c.src_node.uid);
 			if(c.src_node.uid === uid && c.src_slot === slot)
-			{
-				msg('found match');
 				result.push(c);			
-			}
 		}
 		
 		return result;
