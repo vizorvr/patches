@@ -38,7 +38,7 @@ function PluginManager(core, base_url) {
 		      "test_string_generator",
 		      "test_interval_generator",
 		      "test_modulator",
-		      "test_emitter" ]; // TODO: Get this from a JSON file or something.
+		      "test_emitter" ]; // TODO: Get this from a JSON file (or something) in the root of the plugins dir.
 	
 	var menu = make('ul');
 	
@@ -724,7 +724,27 @@ function Application() {
 	this.activateHoverNode = function()
 	{
 		if(self.hover_node !== null)
+		{
 			self.hover_node.ui.header_row.css('background-color', '#f00');
+		
+			var hcs = self.hover_connections;
+			var conns = self.core.active_graph.connections;
+			var uid = self.hover_node.uid;
+			
+			for(var i = 0; i < conns.length; i++)
+			{
+				var c = conns[i];
+				
+				if(c.src_node.uid == uid || c.dst_node.uid == uid)
+				{
+					c.ui.color = '#f00';
+					hcs.push(c);
+				}
+			}
+			
+			if(hcs.length > 0)
+				self.updateCanvas();
+		}
 	};
 	
 	this.releaseHoverNode = function()
@@ -733,6 +753,16 @@ function Application() {
 		{
 			self.hover_node.ui.header_row.css('background-color', '#dde'); // TODO: Ugly. All this belongs an a style sheet!
 			self.hover_node = null;
+			
+			var hcs = self.hover_connections;
+			
+			if(hcs.length > 0)
+			{
+				for(var i = 0; i < hcs.length; i++)
+					hcs[i].ui.color = '#000';
+
+				self.updateCanvas();
+			}
 		}
 	};
 
