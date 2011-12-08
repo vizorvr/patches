@@ -3,5 +3,6 @@
 	"Generators/FloatInterval": "test_interval_generator",
 	"Modulators/Multiplier":    "test_modulator",
 	"Emitters/DebugEmitter":    "test_emitter",
-	"Emitters/MeshRenderer":    "render_mesh"
+	"Emitters/MeshRenderer":    "render_mesh",
+	"Generators/FlatShader":    "flat_shader"
 }

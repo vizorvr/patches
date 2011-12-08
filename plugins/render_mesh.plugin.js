@@ -3,11 +3,11 @@ g_Plugins["render_mesh"] = function(core) {
 	var gl = core.renderer.context;
 	
 	this.input_slots = [ 
-		{ name: 'rotation', dt: core.datatypes.FLOAT }
+		{ name: 'shader', dt: core.datatypes.SHADER }
 	];
 	
 	this.output_slots = [];
-	this.state = { rotation: 0.0 };
+	this.state = { shader: null };
 	this.meshVertices = gl.createBuffer();
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.meshVertices);
@@ -24,12 +24,6 @@ g_Plugins["render_mesh"] = function(core) {
 	this.meshVertices.itemSize = 3;
 	this.meshVertices.numItems = 4;
 	
-	var p_mat = mat4.create();
-	var m_mat = mat4.create();
-	
-	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p_mat);
-	mat4.identity(m_mat);
-	
 	this.create_ui = function()
 	{
 		return null;
@@ -37,7 +31,7 @@ g_Plugins["render_mesh"] = function(core) {
 	
 	this.update_input = function(index, data)
 	{
-		self.state.rotation = data;
+		self.state.shader = data;
 	};
 
 	this.update_state = function(delta_t)
@@ -49,7 +43,10 @@ g_Plugins["render_mesh"] = function(core) {
     		
     		gl.bindBuffer(gl.ARRAY_BUFFER, this.meshVertices);
         	gl.vertexAttribPointer(program.vertexPositionAttribute, this.meshVertices.itemSize, gl.FLOAT, false, 0, 0);
-        	// setMatrixUniforms();
+        	
+        	if(self.state.shader != null)
+        		self.state.shader.enable();
+        	
         	gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.meshVertices.numItems);
 	};
 };

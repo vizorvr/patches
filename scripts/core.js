@@ -159,6 +159,7 @@ function PluginManager(core, base_url)
 				selector: '#canvas_parent',
 				callback: app.onPluginInstantiated,
 				animation: {show: "show", hide: "hide"},
+				zIndex: 10000,
 				items: items 
 			});
   		}
