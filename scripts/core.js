@@ -14,22 +14,109 @@ function make(tag)
 	return $(document.createElement(tag));
 }
 
-function make_menu_plugin(id)
+function make_menu_item(id, nested)
 {
 	var li = make('li');
 	
-	li.addClass('menu_item');
+	//li.addClass('menu_item');
 	
 	var a = make('a');
 	
-	li.append(a);
-	a.attr('href', '#' + id);
 	a.text(id);
+	li.append(a);
+	
+	a.attr('href', '#' + ((nested == null) ? id : ''));
+
+	if(nested != null)
+		li.append(nested);
 	
 	return li;
 }
 
-function PluginManager(core, base_url) {
+function sort_dict(dict)
+{
+	var s = [];
+	
+	for(key in dict)
+		s.push(key);
+		
+	s.sort();
+	return s;
+}
+
+function PluginGroup(id)
+{
+	var self = this;
+	
+	this.id = id;
+	this.children = {};
+	this.entries = {};
+	
+	this.get_or_create_group = function(id)
+	{
+		var g = self.children[id];
+		
+		if(!g)
+		{
+			g = new PluginGroup(id);
+			self.children[id] = g;
+		}
+		
+		return g;
+	};
+	
+	this.add_entry = function(name, id)
+	{
+		var e = self.entries[name];
+		
+		assert(!e, 'Plugin keys must be unique, but a duplicate instance of the key "' + id + '" was found in plugins.json.');
+	
+		self.entries[name] = id;
+	};
+	
+	this.insert_relative = function(key, id)
+	{
+		var tokens = key.split('/');
+		
+		assert(tokens.length > 0, 'Plugin key cannot be empty.');
+		
+		var g = self;
+		
+		for(var i = 0; i < tokens.length - 1; i++)
+			g = g.get_or_create_group(tokens[i]);
+		
+		g.add_entry(tokens[tokens.length-1], id);
+	};
+	
+	this.create_items = function()
+	{
+		var items = {}
+		var sorted = sort_dict(self.children);
+		
+		for(var i = 0; i < sorted.length; i++)
+		{
+			var id = sorted[i];
+			var child = self.children[id];
+	
+			items[id] = { name: id, items: child.create_items() };
+		}
+		
+		sorted = sort_dict(self.entries);
+		
+		for(var i = 0; i < sorted.length; i++)
+		{
+			var id = sorted[i];
+			var entry = self.entries[id];
+			
+			items[entry] = { name: id };
+		}
+			
+		return items;
+	};
+}
+
+function PluginManager(core, base_url) 
+{
 	this.base_url = base_url;
 	this.core = core;
 
@@ -42,6 +129,7 @@ function PluginManager(core, base_url) {
 		success: function(data)
 		{
 			var menu = make('ul');
+			var pg_root = new PluginGroup('root');
 			
 			$.each(data, function(key, id) 
 			{
@@ -56,7 +144,7 @@ function PluginManager(core, base_url) {
 					{
 						if(status == "success")
 						{	
-							menu.append(make_menu_plugin(id))
+							pg_root.insert_relative(key, id);
 							msg("Loaded " + id);
 						}
 						else
@@ -65,8 +153,14 @@ function PluginManager(core, base_url) {
 				});
 			});
 			
-			$('#context_menu').append(menu);
-			$('#canvas').contextMenu({ menu: "context_menu" }, app.onPluginInstantiated);
+			var items = pg_root.create_items();
+			
+			$.contextMenu({
+				selector: '#canvas_parent',
+				callback: app.onPluginInstantiated,
+				animation: {show: "show", hide: "hide"},
+				items: items 
+			});
   		}
 	});
 	
@@ -465,9 +559,10 @@ function Application() {
 		return [x, (o.top - co.top) + (slot_div.height() / 2)];
 	};
 	
-	this.onPluginInstantiated = function(action, el, pos)
+	this.onPluginInstantiated = function(id, opt)
 	{	
-		var node = self.core.active_graph.create_instance(action, pos.docX, pos.docY);
+		var pos = opt.$menu.offset();
+		var node = self.core.active_graph.create_instance(id, pos.left, pos.top);
 		
 		node.create_ui();
 	};
