@@ -34,33 +34,42 @@ function PluginManager(core, base_url) {
 	this.core = core;
 
 	var self = this;
-	var plugs = [ "test_float_generator",
-		      "test_string_generator",
-		      "test_interval_generator",
-		      "test_modulator",
-		      "test_emitter" ]; // TODO: Get this from a JSON file (or something) in the root of the plugins dir.
 	
-	var menu = make('ul');
-	
-	for(var i = 0; i < plugs.length; i++) {
-		var id = plugs[i];
+	$.ajax({
+		url: self.base_url + '/plugins.json',
+		dataType: 'json',
+		async: false,
+		success: function(data)
+		{
+			var menu = make('ul');
+			
+			$.each(data, function(key, id) 
+			{
+				// Load the plugin, constrain filenames.
+				var url = self.base_url + "/" + id + ".plugin.js";
 		
-		// Load the plugin, constrain filenames.
-		url = self.base_url + "/" + id + ".plugin.js";
-		
-		$.getScript(url, (function(id) { return function(data, status) {
-			if(status == "success")
-			{	
-				menu.append(make_menu_plugin(id))
-				msg("Loaded " + id);
-			}
-			else
-				msg("Failed to load plugin '" + id + "'");
-		}})(id));  	
-	}
+				$.ajax({
+					url: url,
+					dataType: "script",
+					async: false,
+					success: (function(id) { return function(data, status) 
+					{
+						if(status == "success")
+						{	
+							menu.append(make_menu_plugin(id))
+							msg("Loaded " + id);
+						}
+						else
+							msg("Failed to load plugin '" + id + "'");
+					}})(id)
+				});
+			});
+			
+			$('#context_menu').append(menu);
+			$('#canvas').contextMenu({ menu: "context_menu" }, app.onPluginInstantiated);
+  		}
+	});
 	
-	$('#context_menu').append(menu);
-	$('#canvas').contextMenu({ menu: "context_menu" }, app.onPluginInstantiated);
 	this.create = function(id) {
 		return new g_Plugins[id](self.core);
 	}
@@ -392,10 +401,11 @@ function Core() {
 	
 	this.datatypes = {
 		FLOAT: { id: 0, name: 'Float' },
-		STRING: { id: 1, name: 'String' },
+		SHADER: { id: 1, name: 'Shader' },
 		TEXTURE: { id: 2, name: 'Texture' }
 	};
 	
+	this.renderer = new Renderer('#webgl-canvas');
 	this.active_graph = this.root_graph = new Graph(null);
 	
 	this.update = function(delta_t)

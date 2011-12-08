@@ -2,9 +2,7 @@ g_Plugins["test_emitter"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 
-		{ name: 'float', dt: core.datatypes.FLOAT },
-		{ name: 'string', dt: core.datatypes.STRING },
-		{ name: 'texture', dt: core.datatypes.TEXTURE },
+		{ name: 'float', dt: core.datatypes.FLOAT }
 	];
 	
 	this.output_slots = [];
@@ -29,6 +27,7 @@ g_Plugins["test_emitter"] = function(core) {
 	{
 		var is_null = value === null;
 		
-		self.label.html(is_null ? 'N/A' : '' + value); 
+		self.label.html(is_null ? 'N/A' : '' + value);
+		self.label.css('text-align', 'right'); 
 	};
 };
