@@ -997,9 +997,15 @@ function Application() {
 	
 	$(document).mouseup(this.onMouseReleased);
 	$(document).mousedown(this.onMousePressed);
-	$(document).keydown(this.onKeyPressed);
-	$(document).keyup(this.onKeyReleased);
+	$(window).keydown(this.onKeyPressed);
+	$(window).keyup(this.onKeyReleased);
 	canvas.mousemove(this.onMouseMoved);
+	
+	// Make sure all the input fields blur themselves when they gain focus --
+	// otherwise they trap the control key document events.
+	$('#play').focus(function(e) { $('#play').blur(); });
+	$('#pause').focus(function(e) { $('#pause').blur(); });
+	$('#stop').focus(function(e) { $('#stop').blur(); });
 }
 
 $(document).ready(function() {
