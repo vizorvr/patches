@@ -51,7 +51,12 @@ function ShaderProgram(gl)
 		self.gl.linkProgram(self.program);
 
 		if(!self.gl.getProgramParameter(self.program, gl.LINK_STATUS))
-      			msg('Shader linking failed.');
+      			msg('Shader linking failed:\n' + gl.getProgramInfoLog(self.program));
+		
+		gl.validateProgram(self.program);
+		
+		if(!gl.getProgramParameter(self.program, gl.VALIDATE_STATUS))
+      			msg('Shader validation failed:\n' + gl.getProgramInfoLog(self.program));
       	};
       	
       	// TODO: Resume from: https://github.com/gpjt/webgl-lessons/blob/35a02ac2360da4d1e3a9d6fa389832711b0c8d84/lesson01/index.html
