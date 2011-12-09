@@ -1,5 +1,7 @@
 function Renderer(canvas_id)
 {
+	var self = this;
+	
 	if(!window.WebGLRenderingContext)
 		window.location = 'http://get.webgl.org';
 
@@ -11,16 +13,25 @@ function Renderer(canvas_id)
 	
 	if(this.context)
 	{
-		this.context.viewportWidth = canvas.width();
-		this.context.viewportHeight = canvas.height();
+		this.context.viewportWidth = 0;
+		this.context.viewportHeight = 0;
 		this.p_mat = mat4.create();
 		this.m_mat = mat4.create();
-	
-		mat4.perspective(45, this.context.viewportWidth / this.context.viewportHeight, 0.1, 100.0, this.p_mat);
-		mat4.identity(this.m_mat);	
 	}
 	else
 		msg('Error: WebGL initialization failed.');
+		
+	this.update = function()
+	{
+		if(this.context)
+		{
+			self.context.viewportWidth = canvas.width();
+			self.context.viewportHeight = canvas.height();
+			
+			mat4.perspective(45, self.context.viewportWidth / self.context.viewportHeight, 0.1, 100.0, self.p_mat);
+			mat4.identity(self.m_mat);
+		}	
+	};
 }
 
 function Shader(gl, type, src)

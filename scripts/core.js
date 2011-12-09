@@ -505,6 +505,7 @@ function Core() {
 	
 	this.update = function(delta_t)
 	{
+		self.renderer.update();
 		self.active_graph.update(delta_t);
 	}
 }
