@@ -45,11 +45,11 @@ g_Plugins["flat_shader"] = function(core) {
 	this.s.attach(this.ps);
 	this.s.link();
 	
-        this.s.vertexPosAttribute = gl.getUniformLocation(prog, "pos");
+        this.s.vertexPosAttribute = gl.getAttribLocation(prog, "pos");
         this.s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
         this.s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
         this.s.colorUniform = gl.getUniformLocation(prog, "color");
-        
+      	
       	this.s.apply_uniforms = this.apply_uniforms = function()
       	{
 		gl.uniformMatrix4fv(self.s.pMatUniform, false, renderer.p_mat);

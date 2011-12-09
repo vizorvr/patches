@@ -36,7 +36,7 @@ g_Plugins["render_mesh"] = function(core) {
 
 	this.update_state = function(delta_t)
 	{
-		// TODO: We shouldn't be clearing here. We may need an 'execution order' dummy emitter...
+		// TODO: We shouldn't be clearing here. We may need an 'execution order' dummy emitter... Sort of implies dynamic slot support, eh?
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
     		gl.enable(gl.DEPTH_TEST);
     		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -49,10 +49,12 @@ g_Plugins["render_mesh"] = function(core) {
         	
         	if(shader != null)
         	{
-			gl.bindBuffer(gl.ARRAY_BUFFER, self.vertices);
-			gl.vertexAttribPointer(shader.vertexPosAttribute, self.itemSize, gl.FLOAT, false, 0, 0);
-
         		shader.enable();
+
+			gl.bindBuffer(gl.ARRAY_BUFFER, self.vertices);
+			gl.enableVertexAttribArray(shader.vertexPosAttribute);
+			gl.vertexAttribPointer(shader.vertexPosAttribute, self.itemSize, gl.FLOAT, false, 0, 0);
+			
                		shader.apply_uniforms();
         	
 	        	gl.drawArrays(gl.TRIANGLE_STRIP, 0, self.numItems);
