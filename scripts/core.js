@@ -282,8 +282,11 @@ function NodeUI(parent_node, x, y) {
 	render_slots(nid, output_col, parent_node.plugin.output_slots, 1);
 	
 	content_col.append(parent_node.plugin.create_ui());
-	
-	this.dom.draggable({containment:'parent', drag: app.onNodeDragged(parent_node) });
+
+	this.dom.draggable({ 
+		containment:'parent', 
+		drag: app.onNodeDragged(parent_node)
+    	});
 	
 	$("#canvas_parent").append(this.dom)
 }
@@ -387,9 +390,6 @@ function Node(parent_graph, plugin_id, x, y) {
 		
 		if(self.plugin.update_state)
 			self.plugin.update_state(delta_t);
-	
-		if(self.ui)
-			self.ui.dom.css('background-color', '#0f0');
 		
 		self.rendering_state = 1;
 	}

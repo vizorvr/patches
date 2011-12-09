@@ -43,7 +43,7 @@ function ShaderProgram(gl)
 
 	this.attach = function(shader)
 	{
-		self.gl.attachShader(self.program, shader);
+		self.gl.attachShader(self.program, shader.shader);
 	};
 	
 	this.link = function()
