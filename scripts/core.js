@@ -223,9 +223,7 @@ function NodeUI(parent_node, x, y) {
 			
 			div.mouseenter(app.onSlotEntered(parent_node, s, div));
 			div.mouseleave(app.onSlotExited(parent_node, s, div));
-
-			if(type === 1)
-				div.mousedown(app.onSlotClicked(parent_node, s, div));
+			div.mousedown(app.onSlotClicked(parent_node, s, div, type));
 			
 			col.append(div);
 		}
@@ -569,11 +567,11 @@ function Application() {
 		node.create_ui();
 	};
 	
-	this.onSlotClicked = function(node, slot, slot_div) { return function(e)
+	this.onSlotClicked = function(node, slot, slot_div, type) { return function(e)
 	{
 		e.stopPropagation();
 		
-		if(!self.ctrl_pressed)
+		if(!self.ctrl_pressed && type == 1)
 		{
 			self.src_node = node;
 			self.src_slot = slot;
@@ -608,10 +606,9 @@ function Application() {
 			self.edit_conn.ui.offset = offset;
 			slot_div.css('color', '#0f0');
 		}
-		else
-		{
-			self.onMousePressed(e);
-		}
+		
+		if(self.ctrl_pressed)
+			self.removeHoverConnections();
 				
 		return false;
 	}};
@@ -725,7 +722,7 @@ function Application() {
 		var mx = (x1 + x4) / 2;
 		var my = (y1 + y4) / 2;
 	
-		var x2 = Math.min(x1 + 10 + (c.offset * 3), mx);
+		var x2 = Math.min(x1 + 10 + (c.offset * 5), mx);
 		
 		c2d.strokeStyle = c.color;
 		c2d.beginPath();
@@ -802,22 +799,6 @@ function Application() {
 		self.edit_conn = null;
 		self.updateCanvas();
 	};
-
-	this.onMousePressed = function(e)
-	{
-		var hcs = self.hover_connections;
-		
-		if(hcs.length > 0)
-		{
-			var graph = self.core.active_graph;
-			
-			for(var i = 0; i < hcs.length; i++)
-				graph.destroy_connection(hcs[i]);
-			
-			self.hover_connections = [];
-			self.updateCanvas();
-		}
-	}
 	
 	this.activateHoverNode = function()
 	{
@@ -864,6 +845,22 @@ function Application() {
 		}
 	};
 
+	this.removeHoverConnections = function()
+	{
+			var hcs = self.hover_connections;
+		
+			if(hcs.length > 0)
+			{
+				var graph = self.core.active_graph;
+			
+				for(var i = 0; i < hcs.length; i++)
+					graph.destroy_connection(hcs[i]);
+			
+				self.hover_connections = [];
+				self.updateCanvas();
+			}
+	};
+		
 	this.onNodeHeaderEntered = function(node) { return function(e)
 	{
 		self.hover_node = node;
@@ -890,6 +887,7 @@ function Application() {
 			hn.destroy();
 			
 			self.updateCanvas();
+			self.removeHoverConnections();
 		}
 		
 		return false;
@@ -997,7 +995,6 @@ function Application() {
 	}
 	
 	$(document).mouseup(this.onMouseReleased);
-	$(document).mousedown(this.onMousePressed);
 	$(window).keydown(this.onKeyPressed);
 	$(window).keyup(this.onKeyReleased);
 	canvas.mousemove(this.onMouseMoved);
