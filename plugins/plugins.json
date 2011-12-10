@@ -1,8 +1,8 @@
 {
-	"Generators/Float":         "test_float_generator",
-	"Generators/FloatInterval": "test_interval_generator",
-	"Modulators/Multiplier":    "test_modulator",
-	"Emitters/DebugEmitter":    "test_emitter",
-	"Emitters/MeshRenderer":    "render_mesh",
-	"Generators/FlatShader":    "flat_shader"
+	"Generators/Values/ConstFloat": "const_float_generator",
+	"Generators/Values/SliderFloat": "slider_float_generator",
+	"Modulators/Multiplier": "multiply_modulator",
+	"Emitters/Debug/FloatDisplay": "float_display",
+	"Emitters/3D/MeshRenderer": "render_mesh",
+	"Generators/Shaders/FlatShader": "flat_shader"
 }

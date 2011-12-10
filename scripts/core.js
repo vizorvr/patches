@@ -82,7 +82,11 @@ function PluginGroup(id)
 		for(var i = 0; i < tokens.length - 1; i++)
 			g = g.get_or_create_group(tokens[i]);
 		
-		g.add_entry(tokens[tokens.length-1], id);
+		var key = tokens[tokens.length-1];
+		
+		g.add_entry(key, id);
+		
+		return key;
 	};
 	
 	this.create_items = function()
@@ -116,7 +120,8 @@ function PluginManager(core, base_url)
 {
 	this.base_url = base_url;
 	this.core = core;
-
+	this.keybyid = {};
+	
 	var self = this;
 	
 	$.ajax({
@@ -141,7 +146,7 @@ function PluginManager(core, base_url)
 					{
 						if(status == "success")
 						{	
-							pg_root.insert_relative(key, id);
+							self.keybyid[id] = pg_root.insert_relative(key, id);
 							msg("Loaded " + id);
 						}
 						else
@@ -299,7 +304,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.x = x;
 	this.y = y;
 	this.ui = null;
-	this.id = plugin_id;
+	this.id = app.core.plugin_mgr.keybyid[plugin_id];
 	this.uid = parent_graph.get_node_uid();
 	this.rendering_state = 0;
 	

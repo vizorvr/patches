@@ -1,4 +1,4 @@
-g_Plugins["test_emitter"] = function(core) {
+g_Plugins["float_display"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

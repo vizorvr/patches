@@ -1,4 +1,4 @@
-g_Plugins["test_modulator"] = function(core) {
+g_Plugins["multiply_modulator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];

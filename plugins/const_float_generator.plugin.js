@@ -1,4 +1,4 @@
-g_Plugins["test_float_generator"] = function(core) {
+g_Plugins["const_float_generator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [];
