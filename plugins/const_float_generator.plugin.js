@@ -7,7 +7,7 @@ g_Plugins["const_float_generator"] = function(core) {
 	
 	this.create_ui = function()
 	{
-		var inp = $('<input type="text" value="1.0" style="width: 30px;" />');
+		var inp = $('<input type="text" value="1.0" style="width: 50px;" />');
 		
 		inp.change(function(e) {
 			try 

@@ -276,7 +276,7 @@ function NodeUI(parent_node, x, y) {
 	var output_col = make('td');
 	
 	input_col.css('text-align', 'left');
-	content_col.css('width', '100%');
+	content_col.addClass('pui_col');
 	output_col.css('text-align', 'right');
 	
 	row.append(input_col)
@@ -285,7 +285,7 @@ function NodeUI(parent_node, x, y) {
 	
 	render_slots(nid, input_col, parent_node.plugin.input_slots, 0);
 	render_slots(nid, output_col, parent_node.plugin.output_slots, 1);
-	
+
 	content_col.append(parent_node.plugin.create_ui());
 
 	this.dom.draggable({ 
@@ -507,9 +507,13 @@ function Core() {
 	
 	this.renderer = new Renderer('#webgl-canvas');
 	this.active_graph = this.root_graph = new Graph(null);
+	this.abs_t = 0.0;
+	this.delta_t = 0.0;
 	
-	this.update = function(delta_t)
+	this.update = function(abs_t, delta_t)
 	{
+		self.abs_t = abs_t;
+		self.delta_t = delta_t;
 		self.renderer.update();
 		self.active_graph.update(delta_t);
 	}
@@ -996,9 +1000,10 @@ function Application() {
 	this.onUpdate = function()
 	{
 		var time = (new Date()).getTime();
+		var abs_t = (time - self.start_time) * 0.001;
 		var delta_t = (time - self.last_time) * 0.001;
 		
-		self.core.update(delta_t);
+		self.core.update(abs_t, delta_t);
 		$('#frame').val(delta_t.toFixed(4));
 		self.last_time = time;
 	}

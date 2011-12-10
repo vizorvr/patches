@@ -1,4 +1,4 @@
-g_Plugins["multiply_modulator"] = function(core) {
+g_Plugins["add_modulator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -8,7 +8,7 @@ g_Plugins["multiply_modulator"] = function(core) {
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
 	this.state = null;
 	this.input_val = 0.0;
-	this.mult_val = 1.0;
+	this.add_val = 1.0;
 	this.output_val = 0.0;
 	
 	this.create_ui = function()
@@ -21,12 +21,12 @@ g_Plugins["multiply_modulator"] = function(core) {
 		if(index === 0)
 			self.input_val = data;
 		else
-			self.mult_val = data;
+			self.add_val = data;
 	};	
 
 	this.update_state = function(delta_t)
 	{
-		self.output_val = self.input_val * self.mult_val;
+		self.output_val = self.input_val + self.add_val;
 	};
 	
 	this.update_output = function(index)

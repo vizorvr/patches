@@ -112,3 +112,9 @@ pre
 	cursor: pointer;
 }
 
+.pui_col
+{
+	width: 100%;
+	padding: 3px;
+}
+

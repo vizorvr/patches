@@ -1,8 +1,14 @@
 {
 	"Generators/Values/ConstFloat": "const_float_generator",
 	"Generators/Values/SliderFloat": "slider_float_generator",
-	"Modulators/Multiplier": "multiply_modulator",
+	"Modulators/Multiply": "multiply_modulator",
+	"Modulators/Add": "add_modulator",
 	"Emitters/Debug/FloatDisplay": "float_display",
 	"Emitters/3D/MeshRenderer": "render_mesh",
-	"Generators/Shaders/FlatShader": "flat_shader"
+	"Generators/Shaders/FlatShader": "flat_shader",
+	"Generators/Time/Clock": "clock_generator",
+	"Generators/Time/Delta time": "delta_t_generator",
+	"Modulators/Oscilators/Sine": "sine_modulator",
+	"Modulators/Oscilators/Square": "square_modulator",
+	"Modulators/Filters/Lowpass": "lowpass_filter_modulator"
 }

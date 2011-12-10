@@ -16,7 +16,7 @@ g_Plugins["float_display"] = function(core) {
 	
 	this.update_input = function(index, data)
 	{
-		self.label.text(data);
+		self.label.text(data.toFixed(2));
 	};
 
 	this.update_state = function(delta_t)

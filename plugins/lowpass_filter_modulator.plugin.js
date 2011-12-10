@@ -1,15 +1,16 @@
-g_Plugins["multiply_modulator"] = function(core) {
+g_Plugins["lowpass_filter_modulator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT },
-		{ name: 'operand', dt: core.datatypes.FLOAT } 
+		{ name: 'amount', dt: core.datatypes.FLOAT } 
 	];
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
 	this.state = null;
 	this.input_val = 0.0;
-	this.mult_val = 1.0;
+	this.amount = 0.9;
 	this.output_val = 0.0;
+	this.last_val = 0.0;
 	
 	this.create_ui = function()
 	{
@@ -21,12 +22,13 @@ g_Plugins["multiply_modulator"] = function(core) {
 		if(index === 0)
 			self.input_val = data;
 		else
-			self.mult_val = data;
+			self.amount = data;
 	};	
 
 	this.update_state = function(delta_t)
 	{
-		self.output_val = self.input_val * self.mult_val;
+		self.output_val = (self.input_val * (1.0 - self.amount)) + (self.last_val * self.amount);
+		self.last_val = self.output_val; 
 	};
 	
 	this.update_output = function(index)
