@@ -17,9 +17,6 @@ function make(tag)
 function make_menu_item(id, nested)
 {
 	var li = make('li');
-	
-	//li.addClass('menu_item');
-	
 	var a = make('a');
 	
 	a.text(id);
@@ -201,6 +198,11 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		if(self.ui)
 			self.ui = null;
 	};
+	
+	this.toString = function()
+	{
+		return 'connection from ' + self.src_node.uid + '(' + self.src_slot.index + ') to ' + self.dst_node.uid + '(' + self.dst_slot.index + ')';
+	}
 }
 
 function NodeUI(parent_node, x, y) {
@@ -371,19 +373,19 @@ function Node(parent_graph, plugin_id, x, y) {
 		{
 			var c = conns[i];
 			
-			if(c.dst_node.uid == uid)
-				inputs.push(c);
+			if(c.dst_node.uid === uid)
+				self.inputs.push(c);
 		}
 		
 		for(var i = 0; i < inputs.length; i++)
 		{
-			var i = inputs[i];
+			var inp = inputs[i];
 			
-			i.src_node.update_recursive(conns, delta_t);
+			inp.src_node.update_recursive(conns, delta_t);
 			
-			var value = i.src_node.plugin.update_output(i.src_slot.index);
+			var value = inp.src_node.plugin.update_output(inp.src_slot.index);
 			
-			self.plugin.update_input(i.dst_slot.index, value);
+			self.plugin.update_input(inp.dst_slot.index, value);
 		}
 		
 		if(self.plugin.update_state)
@@ -770,6 +772,8 @@ function Application() {
 			var ds = self.dst_slot;
 			var c = new Connection(self.src_node, self.dst_node, ss, ds);
 			
+			msg('New ' + c);
+
 			c.create_ui();
 			c.ui.src_pos = self.edit_conn.ui.src_pos.slice(0);
 			c.ui.dst_pos = self.getSlotPosition(self.dst_slot_div);

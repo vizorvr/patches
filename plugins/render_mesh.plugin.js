@@ -13,10 +13,10 @@ g_Plugins["render_mesh"] = function(core) {
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices);
 	
 	var v_data = [
-		 1.0,  1.0,  0.0,
-		-1.0,  1.0,  0.0,
-		 1.0, -1.0,  0.0,
-		-1.0, -1.0,  0.0
+		 1.0,  1.0,  1.0,
+		-1.0,  1.0,  1.0,
+		 1.0, -1.0,  1.0,
+		-1.0, -1.0,  1.0
        	];
 
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v_data), gl.STATIC_DRAW);
@@ -52,7 +52,6 @@ g_Plugins["render_mesh"] = function(core) {
         		shader.enable();
 
 			gl.bindBuffer(gl.ARRAY_BUFFER, self.vertices);
-			gl.enableVertexAttribArray(shader.vertexPosAttribute);
 			gl.vertexAttribPointer(shader.vertexPosAttribute, self.itemSize, gl.FLOAT, false, 0, 0);
 			
                		shader.apply_uniforms();

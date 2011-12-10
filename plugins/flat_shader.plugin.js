@@ -50,11 +50,15 @@ g_Plugins["flat_shader"] = function(core) {
         this.s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
         this.s.colorUniform = gl.getUniformLocation(prog, "color");
       	
+      	// Note: Shader implementations must decorate the shader prototype with this
+      	// method, so the rendering plugins can call it to update the shader uniforms
+      	// at the appropriate point in its rendering logic.
       	this.s.apply_uniforms = this.apply_uniforms = function()
       	{
 		gl.uniformMatrix4fv(self.s.pMatUniform, false, renderer.p_mat);
 		gl.uniformMatrix4fv(self.s.mMatUniform, false, renderer.m_mat);
 		gl.uniform4fv(self.s.colorUniform, new Float32Array(self.state.rgba));
+		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
       	};
       	
       	this.create_ui = function()

@@ -30,6 +30,7 @@ function Renderer(canvas_id)
 			
 			mat4.perspective(45, self.context.viewportWidth / self.context.viewportHeight, 0.1, 100.0, self.p_mat);
 			mat4.identity(self.m_mat);
+			mat4.translate(self.m_mat, [0.0, 0.0, -7.0]);
 		}	
 	};
 }
