@@ -1,11 +1,11 @@
 var app = null;
 var g_Plugins = {};
 
-function msg(msg)
+function msg(txt)
 {
 	var d = $("#dbg");
 
-	d.append(msg + '\n');
+	d.append(txt + '\n');
 	d.scrollTop(d[0].scrollHeight - d.height());
 }
 
@@ -22,9 +22,9 @@ function make_menu_item(id, nested)
 	a.text(id);
 	li.append(a);
 	
-	a.attr('href', '#' + ((nested == null) ? id : ''));
+	a.attr('href', '#' + ((nested === null) ? id : ''));
 
-	if(nested != null)
+	if(nested !== null)
 		li.append(nested);
 	
 	return li;
@@ -32,7 +32,7 @@ function make_menu_item(id, nested)
 
 function sort_dict(dict)
 {
-	var s = [];
+	var s = [], key;
 	
 	for(key in dict)
 		s.push(key);
@@ -541,8 +541,8 @@ function Application() {
 	this.last_mouse_pos = [0, 0];
 	this.current_state = this.state.STOPPED;
 	this.interval = null;
-	this.start_time = (new Date()).getTime();
-	this.last_time = this.start_time;
+	this.abs_time = 0.0;
+	this.last_time = (new Date()).getTime();
 	this.ctrl_pressed = false;
 	this.hover_slot = null;
 	this.hover_slot_div = null;
@@ -966,8 +966,7 @@ function Application() {
 		self.current_state = self.state.PLAYING;
 		self.changeControlState();
 		
-		self.start_time = (new Date()).getTime();
-		self.last_time = self.start_time;
+		self.last_time = (new Date()).getTime();
 		self.interval = setInterval(function() {
 			app.onUpdate();
 		}, 0);
@@ -987,6 +986,7 @@ function Application() {
 
 	this.onStopClicked = function()
 	{
+		self.abs_time = 0.0;
 		self.current_state = self.state.STOPPED;
 		self.changeControlState();
 		
@@ -1000,12 +1000,12 @@ function Application() {
 	this.onUpdate = function()
 	{
 		var time = (new Date()).getTime();
-		var abs_t = (time - self.start_time) * 0.001;
 		var delta_t = (time - self.last_time) * 0.001;
 		
-		self.core.update(abs_t, delta_t);
+		self.core.update(self.abs_time, delta_t);
 		$('#frame').val(delta_t.toFixed(4));
 		self.last_time = time;
+		self.abs_time += delta_t;
 	}
 	
 	$(document).mouseup(this.onMouseReleased);
