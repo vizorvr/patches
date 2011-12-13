@@ -240,7 +240,7 @@ function NodeUI(parent_node, x, y) {
 	
 	this.dom = make('div');
 	this.dom.addClass('plugin');
-	this.dom.addClass('ui-widget-content')
+	this.dom.addClass('ui-widget-content');
 	this.dom.attr('id', nid);
 	this.dom.mousemove(app.onMouseMoved); // Make sure we don't stall during slot connection, when the mouse enters a node.
 	

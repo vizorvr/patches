@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>PoC</title>
+		<link href="../style/reset.css" rel="Stylesheet" type="text/css" />
+		<style type="text/css">
+			.fundamental
+			{
+				font-family: Helvetica, Arial, Sans-serif;
+				font-size: 10pt;
+				line-height: 1.5em;
+				margin-top: 10px;
+			}
+
+			.notification
+			{
+				background-color: #ddd;
+				border: solid 1px #ccc;
+				color: #888888;
+				padding: 8px;
+				display: table;
+				width: 600px;
+			}
+
+			.centered
+			{
+				margin-left: 8px;
+				margin-right: auto;
+			}
+
+			#content
+			{
+				display: none;
+			}
+
+			#controls
+			{
+				width: 1024px;
+			}
+
+			h2
+			{
+				font-size: 24pt;
+				width: 1024px;
+			}
+
+			#main_layout
+			{
+				text-align: left;
+				vertical-align: top;
+				width: 1024px;
+			}
+
+			.plugin
+			{
+				font-size: 8pt;
+				background-color: #ff8;
+				border: 1px solid #888;
+				z-index: 100;
+				padding: 4px;
+				cursor: move;
+			}
+
+			#canvas
+			{
+				float: right;
+				width: 700px;
+				height: 520px;
+				position: relative; /* Required so children can be placed absolutely in conjunction with this element */
+				z-index: 2;
+			}
+			
+			#canvas_parent
+			{
+				float: right;
+				background-color: #ccc;
+				width: 700px;
+				height: 520px;
+				z-index: 1;
+				overflow: auto;
+			}
+		</style>
+		<link href="../style/smoothness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" type="text/css"  />
+		<script type="text/javascript" src="../scripts/jquery-1.7.min.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-ui.min.js"></script>
+		<script type="text/javascript">
+			function make(tag)
+			{
+				return $(document.createElement(tag));
+			}
+
+			function add_new_node()
+			{
+				var dom = make('div');
+				
+				dom.addClass('plugin');
+				dom.addClass('ui-widget-content');
+
+				dom.css('width', '80px');
+				dom.css('height', '30px');
+				
+				dom.draggable();
+	
+				$("#canvas_parent").append(dom);
+			}
+			
+			function on_canvas_redraw()
+			{
+				var canvas = $('canvas')[0];
+				var parent = $('canvas_parent');
+				var c2d = canvas.getContext('2d');
+				
+				canvas.width = parent.width();
+				canvas.height = parent.height();
+
+				c2d.strokeStyle = '#000';
+				c2d.beginPath();
+				c2d.strokeRect(10, 10, 100, 100);
+				c2d.stroke();
+			}
+			
+			function on_canvas_resized()
+			{
+				on_canvas_redraw();
+			}
+
+			$(document).ready(function() 
+			{
+				add_new_node();
+				on_canvas_redraw();
+				$('#canvas_parent').scroll(on_canvas_resized);
+				$('#add_node').click(add_new_node);
+				$('#content').css('display', 'block');
+			});
+		</script>
+	</head>
+	<body class="fundamental">
+		<noscript>
+			<div class="centered notification">
+				<div style="float: left; display: table-cell; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
+				<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
+			</div>
+		</noscript>
+		<div id="content">
+			<h2 class="centered">Draggable TC</h2>
+			<br />
+			<br />
+			
+			<div id="main_layout" class="centered">
+				<button id="add_node" class=".ui-icon-plus">Add node</button>
+				<div id="canvas_parent">
+					<canvas id="canvas" class="centered" width="700" height="520"></canvas>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
