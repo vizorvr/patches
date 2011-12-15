@@ -72,6 +72,7 @@ pre
 	width: 700px;
 	height: 520px;
 	z-index: 1;
+	overflow: auto;
 }
 
 #canvas
@@ -86,7 +87,6 @@ pre
 .plugin
 {
 	font-size: 8pt;
-	position: absolute;
 	background-color: #ff8;
 	border: 1px solid #888;
 	z-index: 100;
@@ -114,7 +114,6 @@ pre
 
 .pui_col
 {
-	width: 100%;
 	padding: 3px;
 }
 

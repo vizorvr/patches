@@ -238,7 +238,7 @@ function NodeUI(parent_node, x, y) {
 	
 	var nid = 'n' + parent_node.uid;
 	
-	this.dom = make('div');
+	this.dom = make('table');
 	this.dom.addClass('plugin');
 	this.dom.addClass('ui-widget-content');
 	this.dom.attr('id', nid);
@@ -247,10 +247,7 @@ function NodeUI(parent_node, x, y) {
 	this.dom.css('top', '' + y + 'px');
 	this.dom.css('left', '' + x + 'px');
 	
-	var table = make('table');
-	
-	table.addClass('pl_layout');
-	this.dom.append(table);
+	this.dom.addClass('pl_layout');
 	
 	var h_row = make('tr');
 	var h_cell = make('td');
@@ -263,13 +260,13 @@ function NodeUI(parent_node, x, y) {
 	h_row.click(app.onNodeHeaderClicked);
 	h_row.mouseenter(app.onNodeHeaderEntered(parent_node));
 	h_row.mouseleave(app.onNodeHeaderExited);
-	table.append(h_row);
+	this.dom.append(h_row);
 	
 	this.header_row = h_row;
 	
 	var row = make('tr');
 	
-	table.append(row)
+	this.dom.append(row)
 	
 	var input_col = make('td');
 	var content_col = make('td');
@@ -289,7 +286,6 @@ function NodeUI(parent_node, x, y) {
 	content_col.append(parent_node.plugin.create_ui());
 
 	this.dom.draggable({ 
-		containment:'parent', 
 		drag: app.onNodeDragged(parent_node)
     	});
 	
@@ -572,8 +568,10 @@ function Application() {
 	
 	this.onPluginInstantiated = function(id, opt)
 	{	
+		var c_pos = $('#canvas_parent').offset();
 		var pos = opt.$menu.offset();
-		var node = self.core.active_graph.create_instance(id, pos.left, pos.top);
+		
+		var node = self.core.active_graph.create_instance(id, pos.left - c_pos.left, pos.top - c_pos.top);
 		
 		node.create_ui();
 	};
