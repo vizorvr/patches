@@ -9,7 +9,10 @@ function Renderer(canvas_id)
 	
 	var canvas = $(canvas_id);
 
-	this.context = WebGLDebugUtils.makeDebugContext(canvas[0].getContext('experimental-webgl'));
+	this.context = canvas[0].getContext('experimental-webgl');
+	
+	if(false) // Use debugging context? Caution: Causes trouble on Chrome...
+		this.context = WebGLDebugUtils.makeDebugContext(this.context);
 	
 	if(this.context)
 	{

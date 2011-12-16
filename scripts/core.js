@@ -137,8 +137,8 @@ function PluginManager(core, base_url)
 			{
 				// Load the plugin, constrain filenames.
 				var url = self.base_url + "/" + id + ".plugin.js";
-		
-				$.ajax({
+
+   				$.ajax({
 					url: url,
 					dataType: "script",
 					async: false,
@@ -516,6 +516,7 @@ function Core() {
 }
 
 function Application() {
+	var canvas_parent = $("#canvas_parent");
 	var canvas = $("#canvas");
 		
 	this.state = {
@@ -544,6 +545,7 @@ function Application() {
 	this.hover_slot_div = null;
 	this.hover_connections = [];
 	this.hover_node = null;
+	this.lastSize = [canvas_parent[0].scrollWidth, canvas_parent[0].scrollHeight];
 	
 	var self = this;
 	
@@ -568,7 +570,7 @@ function Application() {
 	
 	this.onPluginInstantiated = function(id, opt)
 	{	
-		var cp = $('#canvas_parent');
+		var cp = canvas_parent;
 		var cp_pos = cp.offset();
 		var cp_h = cp.height();
 		var pos = opt.$menu.offset();
@@ -911,6 +913,8 @@ function Application() {
 		var uid = node.uid;
 		var canvas_dirty = false;
 		
+		// TODO: Enforce minimum constraints on the canvas top / left boundary.
+		
 		for(var i = 0; i < conns.length; i++)
 		{
 			var c = conns[i];
@@ -931,9 +935,9 @@ function Application() {
 			self.updateCanvas();
 	}};
 	
-	this.onKeyPressed = function(e)
+	this.onKeyDown = function(e)
 	{
-		if(e.ctrlKey)
+		if(e.keyCode === 17) // .isCtrl doesn't work on Chrome.
 		{
 			self.ctrl_pressed = true;
 			self.activateHoverSlot();
@@ -941,9 +945,9 @@ function Application() {
 		}
 	};
 	
-	this.onKeyReleased = function(e)
+	this.onKeyUp = function(e)
 	{
-		if(e.ctrlKey)
+		if(e.keyCode === 17)
 		{
 			self.ctrl_pressed = false;
 			self.releaseHoverSlot();
@@ -1008,9 +1012,19 @@ function Application() {
 	}
 	
 	$(document).mouseup(this.onMouseReleased);
-	$(window).keydown(this.onKeyPressed);
-	$(window).keyup(this.onKeyReleased);
+	$(window).keydown(this.onKeyDown);
+	$(window).keyup(this.onKeyUp);
 	canvas.mousemove(this.onMouseMoved);
+	canvas_parent.scroll(function()
+	{
+		if(self.lastSize[0] !== this.scrollWidth || self.lastSize[1] !== this.scrollHeight)
+		{
+			canvas.attr({ width: this.scrollWidth, height: this.scrollHeight });
+			msg('Resize to width = ' + this.scrollWidth + ', height = ' + this.scrollHeight);
+			self.lastSize = [this.scrollWidth, this.scrollHeight];
+			self.updateCanvas();
+		}
+	});
 	
 	// Make sure all the input fields blur themselves when they gain focus --
 	// otherwise they trap the control key document events.
