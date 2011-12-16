@@ -568,10 +568,11 @@ function Application() {
 	
 	this.onPluginInstantiated = function(id, opt)
 	{	
-		var c_pos = $('#canvas_parent').offset();
+		var cp = $('#canvas_parent');
+		var cp_pos = cp.offset();
+		var cp_h = cp.height();
 		var pos = opt.$menu.offset();
-		
-		var node = self.core.active_graph.create_instance(id, pos.left - c_pos.left, pos.top - c_pos.top);
+		var node = self.core.active_graph.create_instance(id, pos.left - cp_pos.left, (pos.top - cp_pos.top) - cp_h);
 		
 		node.create_ui();
 	};
