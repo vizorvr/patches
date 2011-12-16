@@ -285,7 +285,7 @@ function NodeUI(parent_node, x, y) {
 
 	content_col.append(parent_node.plugin.create_ui());
 
-	this.dom.draggable({ 
+	this.dom.draggable({
 		drag: app.onNodeDragged(parent_node)
     	});
 	
@@ -545,7 +545,7 @@ function Application() {
 	this.hover_slot_div = null;
 	this.hover_connections = [];
 	this.hover_node = null;
-	this.lastSize = [canvas_parent[0].scrollWidth, canvas_parent[0].scrollHeight];
+	this.scrollOffset = [0, 0];
 	
 	var self = this;
 	
@@ -564,17 +564,15 @@ function Application() {
 		var o = slot_div.offset();
 		var co = canvas.offset();
 		var x = type == 0 ? (o.left - co.left) : (o.left - co.left) + slot_div.width();
+		var so = self.scrollOffset;
 		
-		return [x, (o.top - co.top) + (slot_div.height() / 2)];
+		return [x + so[0], ((o.top - co.top) + (slot_div.height() / 2)) + so[1]];
 	};
 	
 	this.onPluginInstantiated = function(id, opt)
 	{	
-		var cp = canvas_parent;
-		var cp_pos = cp.offset();
-		var cp_h = cp.height();
 		var pos = opt.$menu.offset();
-		var node = self.core.active_graph.create_instance(id, pos.left - cp_pos.left, (pos.top - cp_pos.top) - cp_h);
+		var node = self.core.active_graph.create_instance(id, pos.left, pos.top);
 		
 		node.create_ui();
 	};
@@ -726,10 +724,11 @@ function Application() {
 	this.drawConnection = function(c2d, conn)
 	{
 		var c = conn.ui;
-		var x1 = c.src_pos[0];
-		var y1 = c.src_pos[1];
-		var x4 = c.dst_pos[0];
-		var y4 = c.dst_pos[1];
+		var so = self.scrollOffset;
+		var x1 = c.src_pos[0] - so[0];
+		var y1 = c.src_pos[1] - so[1];
+		var x4 = c.dst_pos[0] - so[0];
+		var y4 = c.dst_pos[1] - so[1];
 
 		var mx = (x1 + x4) / 2;
 		var my = (y1 + y4) / 2;
@@ -913,8 +912,6 @@ function Application() {
 		var uid = node.uid;
 		var canvas_dirty = false;
 		
-		// TODO: Enforce minimum constraints on the canvas top / left boundary.
-		
 		for(var i = 0; i < conns.length; i++)
 		{
 			var c = conns[i];
@@ -1017,13 +1014,10 @@ function Application() {
 	canvas.mousemove(this.onMouseMoved);
 	canvas_parent.scroll(function()
 	{
-		if(self.lastSize[0] !== this.scrollWidth || self.lastSize[1] !== this.scrollHeight)
-		{
-			canvas.attr({ width: this.scrollWidth, height: this.scrollHeight });
-			msg('Resize to width = ' + this.scrollWidth + ', height = ' + this.scrollHeight);
-			self.lastSize = [this.scrollWidth, this.scrollHeight];
-			self.updateCanvas();
-		}
+		self.scrollOffset = [canvas_parent.scrollLeft(), canvas_parent.scrollTop()];
+		canvas.css('left', '' + self.scrollOffset[0] + 'px');
+		canvas.css('top', '' + self.scrollOffset[1] + 'px');
+		self.updateCanvas();
 	});
 	
 	// Make sure all the input fields blur themselves when they gain focus --
