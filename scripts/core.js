@@ -757,10 +757,7 @@ function Application() {
 		
 		if(self.edit_conn)
 		{
-			var c_o = self.canvas.offset();
-			var m_r = [self.last_mouse_pos[0] - c_o.left, self.last_mouse_pos[1] - c_o.top];
-		
-			self.edit_conn.ui.dst_pos = m_r.slice(0);
+			self.edit_conn.ui.dst_pos = self.last_mouse_pos.slice(0);
 			self.drawConnection(c, self.edit_conn);
 		}
 	};
@@ -769,8 +766,10 @@ function Application() {
 	{
 		if(self.src_slot)
 			self.updateCanvas();
-			
-		self.last_mouse_pos = [e.pageX, e.pageY];
+		
+		var ofs = canvas_parent.offset();
+		
+		self.last_mouse_pos = [(e.pageX - ofs.left) + self.scrollOffset[0], (e.pageY - ofs.top) + self.scrollOffset[1]];
 	};
 	
 	this.onMouseReleased = function(e)
