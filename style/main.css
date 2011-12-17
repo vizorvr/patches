@@ -43,7 +43,7 @@ pre
 	margin-left: 5px;
 	margin-top: 5px;
 	float: left;
-	width: 700px;
+	width: 840px;
 	height: 240px;
 	font-size: 8pt;
 	background-color: #eee;
@@ -59,7 +59,7 @@ pre
 
 #structure
 {
-	width: 320px;
+	width: 180px;
 	height: 768px;
 	float: left;
 	background-color: #eee;
@@ -69,7 +69,7 @@ pre
 {
 	float: right;
 	background-color: #ccc;
-	width: 700px;
+	width: 840px;
 	height: 520px;
 	z-index: 1;
 	overflow: auto;
@@ -77,7 +77,7 @@ pre
 
 #canvas
 {
-	width: 700px;
+	width: 840px;
 	height: 520px;
 	position: relative;
 	top: 0px;
