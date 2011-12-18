@@ -3,7 +3,7 @@ var g_Plugins = {};
 
 function msg(txt)
 {
-	var d = $("#dbg");
+	var d = $('#dbg');
 
 	d.append(txt + '\n');
 	d.scrollTop(d[0].scrollHeight - d.height());
@@ -136,21 +136,21 @@ function PluginManager(core, base_url)
 			$.each(data, function(key, id) 
 			{
 				// Load the plugin, constrain filenames.
-				var url = self.base_url + "/" + id + ".plugin.js";
+				var url = self.base_url + '/' + id + '.plugin.js';
 
    				$.ajax({
 					url: url,
-					dataType: "script",
+					dataType: 'script',
 					async: false,
 					success: (function(id) { return function(data, status) 
 					{
-						if(status == "success")
+						if(status == 'success')
 						{	
 							self.keybyid[id] = pg_root.insert_relative(key, id);
-							msg("Loaded " + id);
+							msg('Loaded ' + id);
 						}
 						else
-							msg("Failed to load plugin '" + id + "'");
+							msg('Failed to load plugin \'' + id + '\'');
 					}})(id)
 				});
 			});
@@ -160,7 +160,7 @@ function PluginManager(core, base_url)
 			$.contextMenu({
 				selector: '#canvas_parent',
 				callback: app.onPluginInstantiated,
-				animation: {show: "show", hide: "hide"},
+				animation: { show: 'show', hide: 'hide' },
 				zIndex: 10000,
 				items: items 
 			});
@@ -289,7 +289,7 @@ function NodeUI(parent_node, x, y) {
 		drag: app.onNodeDragged(parent_node)
     	});
 	
-	$("#canvas_parent").append(this.dom)
+	$('#canvas_parent').append(this.dom)
 }
 
 function Node(parent_graph, plugin_id, x, y) {
@@ -1042,9 +1042,9 @@ $(document).ready(function() {
 		} 
 	});
 
-	msg("Welcome to WebFx. " + (new Date()));
+	msg('Welcome to WebFx. ' + (new Date()));
 	
-	$("#dbg").ajaxError(function(e, jqxhr, settings, exception) {
+	$('#dbg').ajaxError(function(e, jqxhr, settings, exception) {
 		if(settings.dataType=='script') {
 			msg(e + exception);
 		}
@@ -1053,22 +1053,23 @@ $(document).ready(function() {
 	app = new Application();
 	app.core.plugin_mgr = new PluginManager(app.core, 'plugins');
 	
-	$('#play').button({ icons: { primary: "ui-icon-play" } }).click(app.onPlayClicked);
-	$('#pause').button({ icons: { primary: "ui-icon-pause" }, disabled: true }).click(app.onPauseClicked);
-	$('#stop').button({ icons: { primary: "ui-icon-stop" }, disabled: true }).click(app.onStopClicked);
+	$('#play').button({ icons: { primary: 'ui-icon-play' } }).click(app.onPlayClicked);
+	$('#pause').button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(app.onPauseClicked);
+	$('#stop').button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(app.onStopClicked);
 
-	$("#structure")
-		.jstree({
+	$('#structure').jstree({
 			// the `plugins` array allows you to configure the active plugins on this instance
-			"plugins" : ["themes","html_data","ui","crrm","hotkeys"],
+			'plugins': ['themes', 'html_data', 'ui', 'crrm', 'hotkeys'],
+			'themes': { 'theme': 'apple' }
 			// each plugin you have included can have its own config object
 			// "core" : { "initially_open" : [ "phtml_1" ] }
 		})
-		.bind("loaded.jstree", function (event, data) {
+		.bind('loaded.jstree', function(event, data) 
+		{
 			// you get two params - event & data - check the core docs for a detailed description
 		});
 
-  	msg("Ready.");
+  	msg('Ready.');
 	
 	$('#content').css('display', 'block');
 });

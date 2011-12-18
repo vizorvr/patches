@@ -11,6 +11,9 @@ function Renderer(canvas_id)
 
 	this.context = canvas[0].getContext('experimental-webgl');
 	
+	if(!this.context)
+		window.location = 'http://get.webgl.org';
+
 	if(false) // Use debugging context? Caution: Causes trouble on Chrome...
 		this.context = WebGLDebugUtils.makeDebugContext(this.context);
 	
