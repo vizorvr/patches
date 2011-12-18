@@ -14,7 +14,16 @@ def glob_recursive(base_path, pattern):
 	
 	return matches
 
+# 0: Yahoo YUI-compressor (system version), 1: Google Closure compiler (./tools/google-closure)
+# Note that YUI is always used for css compression (closure doesn't do that), so it's required.
+compressor = 1
 build_dir = './build'
+
+def compress(in_name, out_name):
+	if compressor == 0:
+		os.system('yui-compressor --type js --preserve-semi -o ' + out_name + ' ' + in_name)
+	elif compressor == 1:
+		os.system('java -jar ./tools/google-closure/compiler.jar --js ' + in_name + ' --js_output_file ' + out_name)
 
 print 'Rebuilding...'
 shutil.rmtree(build_dir)
@@ -27,7 +36,7 @@ scripts = map(lambda x: x[len(scripts_path):], glob.glob(scripts_path + '*.js'))
 
 for script in scripts:
 	print '\tCompressing ' + script
-	os.system('yui-compressor --type js --preserve-semi -o ' + build_dir + '/' + scripts_path + script + ' ./' + scripts_path + script)
+	compress('./' + scripts_path + script, build_dir + '/' + scripts_path + script)
 	
 print 'Copying structure themes...'
 themes_path = scripts_path + 'themes'
@@ -40,7 +49,7 @@ plugins = map(lambda x: x[len(plugins_path):], glob.glob(plugins_path + '*.js'))
 
 for plugin in plugins:
 	print '\tCompressing ' + plugin
-	os.system('yui-compressor --type js --preserve-semi -o ' + build_dir + '/' + plugins_path + plugin + ' ./' + plugins_path + plugin)
+	compress('./' + plugins_path + plugin, build_dir + '/' + plugins_path + plugin)
 
 print 'Concatenating plugins...'
 
@@ -59,7 +68,7 @@ plugs_concat_file.close()
 
 print '\tReobfuscating merged plugin package.'
 
-os.system('yui-compressor --type js --preserve-semi -o ' + plugs_concat_filename + '.js ./' + plugs_concat_filename)
+compress('./' + plugs_concat_filename, plugs_concat_filename + '.js')
 os.remove(plugs_concat_filename)
 
 print '\tDeleting temporary files...'

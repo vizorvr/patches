@@ -94,7 +94,7 @@ var glValidEnumContexts = {
   // Culling
 
   'cullFace': { 0:true },
-  'frontFace': { 0:true },
+  'frontFace': { 0:true } // LJN: Removed trailing comma that made google-closure fail.
 };
 
 /**
