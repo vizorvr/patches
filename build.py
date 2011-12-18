@@ -14,7 +14,8 @@ def glob_recursive(base_path, pattern):
 	
 	return matches
 
-# 0: Yahoo YUI-compressor (system version), 1: Google Closure compiler (./tools/google-closure)
+# 0: Yahoo YUI-compressor (system version), 1: Google Closure compiler (./tools/google-closure),
+# 2: Google Closure compiler with advanced optimizations (doesn't work yet).
 # Note that YUI is always used for css compression (closure doesn't do that), so it's required.
 compressor = 1
 build_dir = './build'
@@ -24,6 +25,8 @@ def compress(in_name, out_name):
 		os.system('yui-compressor --type js --preserve-semi -o ' + out_name + ' ' + in_name)
 	elif compressor == 1:
 		os.system('java -jar ./tools/google-closure/compiler.jar --js ' + in_name + ' --js_output_file ' + out_name)
+	elif compressor == 2:
+		os.system('java -jar ./tools/google-closure/compiler.jar --compilation_level ADVANCED_OPTIMIZATIONS --js ' + in_name + ' --js_output_file ' + out_name)
 
 print 'Rebuilding...'
 shutil.rmtree(build_dir)
