@@ -72,7 +72,8 @@ pre
 	width: 840px;
 	height: 520px;
 	z-index: 1;
-	overflow: auto;
+	overflow: scroll;
+	position: relative;
 }
 
 #canvas
@@ -93,6 +94,7 @@ pre
 	z-index: 100;
 	padding: 4px;
 	cursor: move;
+	position: absolute;
 }
 
 .pl_layout

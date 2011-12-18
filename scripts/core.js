@@ -558,6 +558,7 @@ function Application() {
 	
 	this.core = new Core();
 	this.canvas = canvas;
+	this.sh = -canvas_parent[0].offsetHeight;
 	this.c2d = canvas[0].getContext('2d');
 	this.src_node = null;
 	this.dst_node = null;
@@ -578,6 +579,7 @@ function Application() {
 	this.hover_node = null;
 	this.scrollOffset = [0, 0];
 	
+	msg('sh = ' + this.sh);
 	var self = this;
 	
 	this.getNIDFromSlot = function(id)
@@ -612,8 +614,7 @@ function Application() {
 		var pos = opt.$menu.offset();
 		var cp = canvas_parent;
 		var co = cp.offset();
-		var ch_neg = -cp[0].scrollHeight;
-		var node = self.core.active_graph.create_instance(id, (pos.left - co.left) + cp.scrollLeft(), ch_neg + (pos.top - co.top) + cp.scrollTop());
+		var node = self.core.active_graph.create_instance(id, (pos.left - co.left) + cp.scrollLeft(), self.sh + (pos.top - co.top) + cp.scrollTop());
 		
 		node.create_ui();
 	};
