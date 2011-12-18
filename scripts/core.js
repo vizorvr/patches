@@ -593,17 +593,27 @@ function Application() {
 	this.getSlotPosition = function(slot_div, type)
 	{
 		var o = slot_div.offset();
-		var co = canvas.offset();
-		var x = type == 0 ? (o.left - co.left) : (o.left - co.left) + slot_div.width();
+		var co = canvas_parent.offset();
 		var so = self.scrollOffset;
 		
-		return [x + so[0], ((o.top - co.top) + (slot_div.height() / 2)) + so[1]];
+		o.left -= co.left;
+		o.top -= co.top;
+
+		o.left += so[0];
+		o.top += so[1];
+		
+		var x = type == 0 ? o.left : o.left + slot_div.width();
+		
+		return [x, o.top + (slot_div.height() / 2)];
 	};
 	
 	this.onPluginInstantiated = function(id, opt)
 	{	
 		var pos = opt.$menu.offset();
-		var node = self.core.active_graph.create_instance(id, pos.left, pos.top);
+		var cp = canvas_parent;
+		var co = cp.offset();
+		var ch_neg = -cp[0].scrollHeight;
+		var node = self.core.active_graph.create_instance(id, (pos.left - co.left) + cp.scrollLeft(), ch_neg + (pos.top - co.top) + cp.scrollTop());
 		
 		node.create_ui();
 	};
@@ -1039,15 +1049,24 @@ function Application() {
 	}
 	
 	$(document).mouseup(this.onMouseReleased);
-	$(window).keydown(this.onKeyDown);
-	$(window).keyup(this.onKeyUp);
+	$(document).keydown(this.onKeyDown);
+	$(document).keyup(this.onKeyUp);
 	canvas.mousemove(this.onMouseMoved);
 	canvas_parent.scroll(function()
 	{
-		self.scrollOffset = [canvas_parent.scrollLeft(), canvas_parent.scrollTop()];
+		self.scrollOffset = [ canvas_parent.scrollLeft(), canvas_parent.scrollTop() ];
 		canvas.css('left', '' + self.scrollOffset[0] + 'px');
 		canvas.css('top', '' + self.scrollOffset[1] + 'px');
 		self.updateCanvas();
+	});
+	
+	// If the user uses any of the existing browser CTRL hotkeys (like new tab!),
+	// make sure we clear our hover state.
+	$(window).blur(function()
+	{
+		self.ctrl_pressed = false;
+		self.releaseHoverSlot();
+		self.releaseHoverNode();
 	});
 	
 	// Make sure all the input fields blur themselves when they gain focus --
