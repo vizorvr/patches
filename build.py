@@ -47,7 +47,7 @@ print 'Concatenating plugins...'
 plugin_data = []
 
 for plugin in plugins:
-	'Munching ' + plugin
+	'\tMunching ' + plugin
 	
 	for line in open(plugins_path + plugin, 'r'):
 		plugin_data.append(line)
@@ -57,9 +57,51 @@ plugs_concat_file = open(plugs_concat_filename, 'w')
 plugs_concat_file.write(''.join(plugin_data))
 plugs_concat_file.close()
 
-print 'Reobfuscating merged plugin package...'
+print '\tReobfuscating merged plugin package.'
 
 os.system('yui-compressor --type js --preserve-semi -o ' + plugs_concat_filename + '.js ./' + plugs_concat_filename)
 os.remove(plugs_concat_filename)
 
+print '\tDeleting temporary files...'
 
+for plugin in plugins:
+	print '\t\tRemoving ' + plugin
+	os.remove(build_dir + '/' + plugins_path + plugin)
+
+print '\tCopying plugin catalogue.'
+os.system('cp ' + plugins_path + 'plugins.json ' + build_dir + '/' + plugins_path)
+
+print 'Compressing stylesheets...'
+css_path = 'style/'
+os.mkdir(build_dir + '/' + css_path)
+cssfiles = map(lambda x: x[len(css_path):], glob.glob(css_path + '*.css'))
+
+for cssfile in cssfiles:
+	print '\tCompressing ' + cssfile
+	os.system('yui-compressor --type css -o ' + build_dir + '/' + css_path + cssfile + ' ./' + css_path + cssfile)
+
+jq_theme = 'smoothness'
+
+print 'Copying jQuery theme \'' + jq_theme + '\'...'
+jq_theme_path = css_path + jq_theme
+shutil.copytree(jq_theme_path, build_dir + '/' + jq_theme_path)
+
+jq_cssfilename = 'jquery-ui-1.8.16.custom.css'
+jq_cssfilepath = jq_theme_path + '/' + jq_cssfilename
+
+print '\tCompressing ' + jq_cssfilename
+os.system('yui-compressor --type css -o ' + build_dir + '/' + jq_cssfilepath + ' ./' + jq_cssfilepath)
+
+print 'Copying remaining required files...'
+
+print '\tCopying images folder.'
+shutil.copytree('images/', build_dir + '/images/')
+
+print '\tCopying data folder.'
+shutil.copytree('data/', build_dir + '/data/')
+
+print '\tCopying index.html folder.'
+os.system('cp index.html ' + build_dir)
+
+print '\tCopying serve script.'
+os.system('cp serve ' + build_dir)

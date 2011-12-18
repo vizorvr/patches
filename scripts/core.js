@@ -118,12 +118,41 @@ function PluginGroup(id)
 
 function PluginManager(core, base_url) 
 {
+	var self = this;
+
 	this.base_url = base_url;
 	this.core = core;
 	this.keybyid = {};
+	this.release_mode = false;
 	
-	var self = this;
+	// First check if we're running a release build by checking for the existence
+	// of 'all.plugins.js'
+	var url = self.base_url + '/all.plugins.js';
 	
+	$.ajax({
+		url: url,
+		dataType: 'script',
+		async: false,
+		success: function(data, status) 
+		{
+			if(status == 'success')
+			{	
+				msg('PluginMgr: Running in release mode');
+				self.release_mode = true;
+			}
+		},
+		error: function()
+		{
+			msg('PluginMgr: Running in debug mode');
+		}
+	});
+
+	this.register_plugin = function(pg_root, key, id)
+	{
+		self.keybyid[id] = pg_root.insert_relative(key, id);
+		msg('Loaded ' + id);
+	};
+
 	$.ajax({
 		url: self.base_url + '/plugins.json',
 		dataType: 'json',
@@ -138,21 +167,23 @@ function PluginManager(core, base_url)
 				// Load the plugin, constrain filenames.
 				var url = self.base_url + '/' + id + '.plugin.js';
 
-   				$.ajax({
-					url: url,
-					dataType: 'script',
-					async: false,
-					success: (function(id) { return function(data, status) 
-					{
-						if(status == 'success')
-						{	
-							self.keybyid[id] = pg_root.insert_relative(key, id);
-							msg('Loaded ' + id);
-						}
-						else
-							msg('Failed to load plugin \'' + id + '\'');
-					}})(id)
-				});
+   				if(!self.release_mode)
+   				{
+	   				$.ajax({
+						url: url,
+						dataType: 'script',
+						async: false,
+						success: (function(id) { return function(data, status) 
+						{
+							if(status == 'success')
+								self.register_plugin(pg_root, key, id)
+							else
+								msg('Failed to load plugin \'' + id + '\'');
+						}})(id)
+					});
+   				}
+   				else
+   					self.register_plugin(pg_root, key, id);
 			});
 			
 			var items = pg_root.create_items();
