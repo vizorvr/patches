@@ -763,11 +763,12 @@ function Application() {
 	
 	this.drawConnection = function(c2d, conn)
 	{
+		var odd_scale = 0.84; // Where in the universe is this comming from?
 		var c = conn.ui;
 		var so = self.scrollOffset;
-		var x1 = c.src_pos[0] - so[0];
+		var x1 = (c.src_pos[0] - so[0]) * odd_scale;
 		var y1 = c.src_pos[1] - so[1];
-		var x4 = c.dst_pos[0] - so[0];
+		var x4 = (c.dst_pos[0] - so[0]) * odd_scale;
 		var y4 = c.dst_pos[1] - so[1];
 		var mx = (x1 + x4) / 2;
 		var my = (y1 + y4) / 2;
