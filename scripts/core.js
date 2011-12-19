@@ -6,7 +6,7 @@ function msg(txt)
 	var d = $('#dbg');
 
 	d.append(txt + '\n');
-	d.scrollTop(d[0].scrollHeight - d.height());
+	d.scrollTop(d[0].scrollHeight);
 }
 
 function make(tag)
@@ -769,10 +769,8 @@ function Application() {
 		var y1 = c.src_pos[1] - so[1];
 		var x4 = c.dst_pos[0] - so[0];
 		var y4 = c.dst_pos[1] - so[1];
-
 		var mx = (x1 + x4) / 2;
 		var my = (y1 + y4) / 2;
-	
 		var x2 = Math.min(x1 + 10 + (c.offset * 5), mx);
 		
 		c2d.strokeStyle = c.color;
