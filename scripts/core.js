@@ -529,7 +529,8 @@ function Core() {
 	this.datatypes = {
 		FLOAT: { id: 0, name: 'Float' },
 		SHADER: { id: 1, name: 'Shader' },
-		TEXTURE: { id: 2, name: 'Texture' }
+		TEXTURE: { id: 2, name: 'Texture' },
+		COLOR: { id: 3, name: 'Color' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');

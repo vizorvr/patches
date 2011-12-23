@@ -1,10 +1,11 @@
-g_Plugins["flat_shader"] = function(core) {
+g_Plugins["texture_diffuse_shader"] = function(core) {
 	var self = this;
 	var renderer = core.renderer; 
 	var gl = renderer.context;
 	
 	this.input_slots = [
 		 { name: 'color', dt: core.datatypes.COLOR },
+		 { name: 'texture', dt: core.datatypes.TEXTURE }
 	];
 	
 	this.output_slots = [ 

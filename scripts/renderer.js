@@ -41,6 +41,11 @@ function Renderer(canvas_id)
 	};
 }
 
+function Color(r, g, b, a)
+{
+	this.rgba = [r, g, b, a];
+}
+
 function Shader(gl, type, src)
 {
 	this.shader = gl.createShader(type);
@@ -77,9 +82,67 @@ function ShaderProgram(gl)
       			msg('Shader validation failed:\n' + gl.getProgramInfoLog(self.program));
       	};
       	
-      	// TODO: Resume from: https://github.com/gpjt/webgl-lessons/blob/35a02ac2360da4d1e3a9d6fa389832711b0c8d84/lesson01/index.html
       	this.enable = function()
       	{
 		self.gl.useProgram(self.program);
       	}
 }
+
+function Texture(gl)
+{
+	var self = this;
+	
+	this.gl = gl;
+    	this.min_filter = gl.LINEAR;
+	this.mag_filter = gl.LINEAR;
+	this.texture = gl.createTexture();
+	this.width = 0;
+	this.height = 0;
+	
+	this.create = function(width, height)
+	{
+		self.upload(new Image(width, height));
+	};
+	
+	this.load = function(src)
+	{
+		var img = new Image();
+		
+		img.onload = function()
+		{
+			self.upload(img);
+		};
+		
+		img.src = src;	
+	};
+	
+	this.enable = function()
+	{
+		gl.bindTexture(gl.TEXTURE_2D, this.texture);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.min_filter);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.mag_filter);
+	};
+	
+	this.disable = function()
+	{
+		gl.bindTexture(gl.TEXTURE_2D, null);
+	};
+	
+	this.upload = function(img)
+	{
+		this.width = img.width;
+		this.height = img.height;
+
+		self.enable();
+		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+    		self.disable();
+	};
+	
+	this.set_filtering = function(down, up)
+	{
+	    	this.min_filter = down;
+		this.mag_filter = up;
+	};
+}
+
