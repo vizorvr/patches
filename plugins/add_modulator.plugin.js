@@ -3,7 +3,7 @@ g_Plugins["add_modulator"] = function(core) {
 	
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT },
-		{ name: 'operand', dt: core.datatypes.FLOAT } 
+		{ name: 'value', dt: core.datatypes.FLOAT } 
 	];
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
 	this.state = null;

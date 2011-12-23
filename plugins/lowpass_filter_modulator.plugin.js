@@ -22,7 +22,7 @@ g_Plugins["lowpass_filter_modulator"] = function(core) {
 		if(index === 0)
 			self.input_val = data;
 		else
-			self.amount = data;
+			self.amount = data < 0.0 ? 0.0 : data > 0.999 ? 0.999 : data;
 	};	
 
 	this.update_state = function(delta_t)

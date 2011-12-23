@@ -10,13 +10,19 @@ g_Plugins["float_display"] = function(core) {
 	this.create_ui = function()
 	{
 		self.label = make('div');
+		self.label.css('text-align', 'right'); 
 		self.update_value(null);
 		return self.label;
 	};
 	
+	this.disconnect_input = function(index)
+	{
+		self.update_value(null);
+	};
+
 	this.update_input = function(index, data)
 	{
-		self.label.text(data.toFixed(2));
+		self.update_value(data);
 	};
 
 	this.update_state = function(delta_t)
@@ -25,9 +31,6 @@ g_Plugins["float_display"] = function(core) {
 	
 	this.update_value = function(value)
 	{
-		var is_null = value === null;
-		
-		self.label.html(is_null ? 'N/A' : '' + value);
-		self.label.css('text-align', 'right'); 
+		self.label.html(value === null ? 'N/A' : value.toFixed(2));
 	};
 };
