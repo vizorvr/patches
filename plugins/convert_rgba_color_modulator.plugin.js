@@ -16,19 +16,10 @@ g_Plugins["convert_rgba_color_modulator"] = function(core) {
 	
 	this.state = { color: new Color(1.0, 1.0, 1.0, 1.0) };
 	
-      	this.create_ui = function()
-	{
-		return null;
-	};
-	
 	this.update_input = function(index, data)
 	{
 		self.state.color.rgba[index] = data;
 	};
-	
-	this.update_state = function()
-	{
-       	};
 	
 	this.update_output = function(index)
 	{

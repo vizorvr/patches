@@ -24,10 +24,6 @@ g_Plugins["led_display"] = function(core) {
 	{
 		self.update_value(data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data);
 	};
-
-	this.update_state = function(delta_t)
-	{
-	};
 	
 	this.update_value = function(value)
 	{

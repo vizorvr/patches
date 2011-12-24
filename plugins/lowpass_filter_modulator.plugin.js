@@ -12,11 +12,6 @@ g_Plugins["lowpass_filter_modulator"] = function(core) {
 	this.output_val = 0.0;
 	this.last_val = 0.0;
 	
-	this.create_ui = function()
-	{
-		return null;
-	};
-	
 	this.update_input = function(index, data)
 	{
 		if(index === 0)

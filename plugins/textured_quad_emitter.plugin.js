@@ -34,11 +34,6 @@ g_Plugins["textured_quad_emitter"] = function(core) {
 	this.itemSize = 3;
 	this.numItems = 4;
 	
-	this.create_ui = function()
-	{
-		return null;
-	};
-	
 	this.update_input = function(index, data)
 	{
 		self.state.shader = data;

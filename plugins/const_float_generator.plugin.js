@@ -24,10 +24,6 @@ g_Plugins["const_float_generator"] = function(core) {
 		return inp;
 	};
 	
-	this.update_state = function()
-	{
-	};
-	
 	this.update_output = function(index)
 	{
 		return self.state.val;

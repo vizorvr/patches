@@ -98,14 +98,10 @@ g_Plugins["slider_float_generator"] = function(core) {
 		return table;
 	};
 	
-	this.update_state = function(delta_t)
-	{
-	}
-	
 	this.update_output = function(index)
 	{
 		return self.state.val;
-	}
+	};
 	
 	this.calc_step = function()
 	{
@@ -116,5 +112,5 @@ g_Plugins["slider_float_generator"] = function(core) {
 	{
 		self.state.val = value;
 		self.v_col.text(value.toFixed(2));
-	}
+	};
 };

@@ -58,19 +58,10 @@ g_Plugins["flat_shader"] = function(core) {
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
       	};
       	
-      	this.create_ui = function()
-	{
-		return null;
-	};
-	
 	this.update_input = function(index, data)
 	{
 		self.state.color = data;
 	};
-	
-	this.update_state = function()
-	{
-       	};
 	
 	this.update_output = function(index)
 	{

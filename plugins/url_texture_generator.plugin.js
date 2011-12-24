@@ -42,10 +42,6 @@ g_Plugins["url_texture_generator"] = function(core) {
 		return inp;
 	};
 	
-	this.update_state = function()
-	{
-	};
-	
 	this.update_output = function(index)
 	{
 		return self.state.texture;

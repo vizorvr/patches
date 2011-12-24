@@ -24,10 +24,6 @@ g_Plugins["float_display"] = function(core) {
 	{
 		self.update_value(data);
 	};
-
-	this.update_state = function(delta_t)
-	{
-	};
 	
 	this.update_value = function(value)
 	{

@@ -7,11 +7,6 @@ g_Plugins["sine_modulator"] = function(core) {
 	this.time = 0.0;
 	this.result = 0.0;
 	
-	this.create_ui = function()
-	{
-		return null;
-	};
-	
 	this.update_input = function(index, data)
 	{
 		self.time = data;
