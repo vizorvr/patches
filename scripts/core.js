@@ -320,7 +320,8 @@ function NodeUI(parent_node, x, y) {
 		content_col.append(plugin.create_ui());
 
 	this.dom.draggable({
-		drag: app.onNodeDragged(parent_node)
+		drag: app.onNodeDragged(parent_node),
+		stop: app.onNodeDragStopped(parent_node)
     	});
 	
 	$('#canvas_parent').append(this.dom)
@@ -594,21 +595,26 @@ function Application() {
 		return parseInt(id.slice(id.indexOf('s') + 2, id.length));
 	};
 	
-	this.getSlotPosition = function(slot_div, type)
+	this.offsetToCanvasCoord = function(ofs)
 	{
-		var o = slot_div.offset();
+		var o = [ofs .left, ofs.top];
 		var co = canvas_parent.offset();
 		var so = self.scrollOffset;
 		
-		o.left -= co.left;
-		o.top -= co.top;
-
-		o.left += so[0];
-		o.top += so[1];
+		o[0] -= co.left;
+		o[1] -= co.top;
+		o[0] += so[0];
+		o[1] += so[1];
 		
-		var x = type == 0 ? o.left : o.left + slot_div.width();
+		return o;
+	};
+	
+	this.getSlotPosition = function(slot_div, type)
+	{
+		var o = self.offsetToCanvasCoord(slot_div.offset());
+		var x = type == 0 ? o[0] : o[0] + slot_div.width();
 		
-		return [x, o.top + (slot_div.height() / 2)];
+		return [x, o[1] + (slot_div.height() / 2)];
 	};
 	
 	this.onPluginInstantiated = function(id, opt)
@@ -981,6 +987,11 @@ function Application() {
 		
 		if(canvas_dirty)
 			self.updateCanvas();
+	}};
+	
+	this.onNodeDragStopped = function(node) { return function(e)
+	{
+		self.onNodeDragged(node)(e);
 	}};
 	
 	this.onKeyDown = function(e)
