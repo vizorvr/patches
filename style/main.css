@@ -95,6 +95,7 @@ pre
 	padding: 4px;
 	cursor: move;
 	position: absolute;
+	white-space: nowrap;
 }
 
 .pl_layout

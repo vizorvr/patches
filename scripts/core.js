@@ -313,9 +313,11 @@ function NodeUI(parent_node, x, y) {
 	
 	render_slots(nid, input_col, parent_node.plugin.input_slots, 0);
 	render_slots(nid, output_col, parent_node.plugin.output_slots, 1);
-
-	if(parent_node.plugin.create_ui)
-		content_col.append(parent_node.plugin.create_ui());
+	
+	var plugin = parent_node.plugin;
+	
+	if(plugin.create_ui)
+		content_col.append(plugin.create_ui());
 
 	this.dom.draggable({
 		drag: app.onNodeDragged(parent_node)
