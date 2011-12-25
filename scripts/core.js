@@ -534,7 +534,9 @@ function Core() {
 		FLOAT: { id: 0, name: 'Float' },
 		SHADER: { id: 1, name: 'Shader' },
 		TEXTURE: { id: 2, name: 'Texture' },
-		COLOR: { id: 3, name: 'Color' }
+		COLOR: { id: 3, name: 'Color' },
+		TRANSFORM: { id: 4, name: 'Transform' },
+		VERTEX: { id: 5, name: 'Vertex' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');

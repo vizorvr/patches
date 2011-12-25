@@ -5,32 +5,45 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 	
 	this.input_slots = [
 		 { name: 'color', dt: core.datatypes.COLOR },
-		 { name: 'texture', dt: core.datatypes.TEXTURE }
+		 { name: 'texture', dt: core.datatypes.TEXTURE },
+		 { name: 'transform', dt: core.datatypes.MATRIX }
 	];
 	
 	this.output_slots = [ 
 		{ name: 'shader', dt: core.datatypes.SHADER } 
 	];
 	
-	this.state = { color: new Color(1.0, 1.0, 1.0, 1.0) };
+	this.state = null;
+	this.color = new Color(1.0, 1.0, 1.0, 1.0);
+	this.tex = null;
+	this.transf = mat4.create();
+	
+	mat4.identity(this.transf);
 	
 	var vs_src = '\
 		attribute vec3 pos;\n\
+		attribute vec2 uv;\n\
+		\n\
+		varying vec2 uv_coord;\n\
 		\n\
 		uniform mat4 m_mat;\n\
 		uniform mat4 p_mat;\n\
 		\n\
 		void main(void) {\n\
 			gl_Position = p_mat * m_mat * vec4(pos, 1.0);\n\
+			uv_coord = uv;\n\
 		}';
 		
 	var ps_src = '\
 		precision mediump float;\n\
 		\n\
-		uniform vec4 color;\n\
+		varying vec2 uv_coord;\n\
+		\n\
+    		uniform sampler2D tex0;\n\
+    		uniform vec4 color;\n\
 		\n\
 		void main(void) {\n\
-			gl_FragColor = color;\n\
+			gl_FragColor = vec4(color.rgb * texture2D(tex0, uv_coord.st).rgb, 1.0);\n\
 		}';
 
 	this.s = new ShaderProgram(gl);
@@ -44,24 +57,66 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 	this.s.link();
 	
         this.s.vertexPosAttribute = gl.getAttribLocation(prog, "pos");
+        this.s.uvCoordAttribute = gl.getAttribLocation(prog, "uv");
         this.s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
         this.s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
         this.s.colorUniform = gl.getUniformLocation(prog, "color");
+        this.s.tex0Uniform = gl.getUniformLocation(prog, "tex0");
       	
-      	// Note: Shader implementations must decorate the shader prototype with this
-      	// method, so the rendering plugins can call it to update the shader uniforms
-      	// at the appropriate point in its rendering logic.
+      	// Note: Shader implementations must decorate the shader prototype with these
+      	// two methods, so the rendering plugins can call it to update the shader uniforms
+      	// / bind vertex data at the appropriate point in its rendering logic. It also
+      	// means that the rendering logic is kept independent of the renderer logic:
+      	// if an array type in unknown by the shader, but requested by the renderer,
+      	// the request can be silently droppred, which gives us a nice weak API.
+
+      	this.s.bind_array = function(type, data, item_size)
+      	{
+      		var types = core.renderer.array_type;
+      		
+      		if(type === types.VERTEX)
+      		{
+			gl.bindBuffer(gl.ARRAY_BUFFER, data);
+			gl.vertexAttribPointer(self.s.vertexPosAttribute, item_size, gl.FLOAT, false, 0, 0);
+      		}
+      		else if(type === types.UV0)
+      		{
+			gl.bindBuffer(gl.ARRAY_BUFFER, data);
+			gl.vertexAttribPointer(self.s.uvCoordAttribute, item_size, gl.FLOAT, false, 0, 0);
+      		}
+      	}
+
       	this.s.apply_uniforms = this.apply_uniforms = function()
       	{
 		gl.uniformMatrix4fv(self.s.pMatUniform, false, renderer.p_mat);
-		gl.uniformMatrix4fv(self.s.mMatUniform, false, renderer.m_mat);
-		gl.uniform4fv(self.s.colorUniform, new Float32Array(self.state.color.rgba));
+		gl.uniformMatrix4fv(self.s.mMatUniform, false, self.transf);
+		gl.uniform4fv(self.s.colorUniform, new Float32Array(self.color.rgba));
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
+		gl.enableVertexAttribArray(self.s.uvCoordAttribute);
+      		
+      		if(self.tex !== null)
+      		{
+			gl.uniform1i(self.s.tex0Uniform, 0);
+      			self.tex.enable(gl.TEXTURE0);
+      		}
       	};
       	
+	this.disconnect_input = function(index)
+	{
+		if(index === 1)
+			self.tex = null;
+		else if(index === 2)
+			mat4.identity(self.transf);
+	};
+	
 	this.update_input = function(index, data)
 	{
-		self.state.color = data;
+		if(index === 0)
+			self.color = data;
+		else if(index === 1)
+			self.tex = data;
+		else if(index === 2)
+			self.transf = data;
 	};
 	
 	this.update_output = function(index)

@@ -5,6 +5,16 @@ function Renderer(canvas_id)
 	if(!window.WebGLRenderingContext)
 		window.location = 'http://get.webgl.org';
 
+	this.array_type = 
+	{
+		VERTEX: 0,
+		COLOR: 1,
+		UV0: 2,
+		UV1: 3,
+		UV2: 4,
+		UV3: 5
+	};
+
   	this.canvas_id = canvas_id;
 	
 	var canvas = $(canvas_id);
@@ -116,8 +126,9 @@ function Texture(gl)
 		img.src = src;	
 	};
 	
-	this.enable = function()
+	this.enable = function(stage)
 	{
+		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.min_filter);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.mag_filter);

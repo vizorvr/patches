@@ -121,3 +121,8 @@ pre
 	padding: 3px;
 }
 
+li.context-menu-item span
+{
+	white-space: nowrap;
+}
+
