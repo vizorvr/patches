@@ -31,8 +31,6 @@ function Renderer(canvas_id)
 	{
 		this.context.viewportWidth = 0;
 		this.context.viewportHeight = 0;
-		this.p_mat = mat4.create();
-		this.m_mat = mat4.create();
 	}
 	else
 		msg('Error: WebGL initialization failed.');
@@ -41,12 +39,14 @@ function Renderer(canvas_id)
 	{
 		if(this.context)
 		{
-			self.context.viewportWidth = canvas.width();
-			self.context.viewportHeight = canvas.height();
+			var gl = self.context;
 			
-			mat4.perspective(45, self.context.viewportWidth / self.context.viewportHeight, 0.1, 100.0, self.p_mat);
-			mat4.identity(self.m_mat);
-			mat4.translate(self.m_mat, [0.0, 0.0, -7.0]);
+			gl.viewportWidth = canvas.width();
+			gl.viewportHeight = canvas.height();
+			
+			gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	    		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+	    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		}	
 	};
 }
@@ -96,6 +96,18 @@ function ShaderProgram(gl)
       	{
 		self.gl.useProgram(self.program);
       	}
+}
+
+function Camera(gl)
+{
+	var self = this;
+	
+	this.gl = gl;
+	this.projection = mat4.create();
+	this.view = mat4.create();
+	
+	mat4.identity(this.projection);
+	mat4.identity(this.view);
 }
 
 function Texture(gl)

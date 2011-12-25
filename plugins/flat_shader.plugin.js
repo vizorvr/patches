@@ -5,22 +5,30 @@ g_Plugins["flat_shader"] = function(core) {
 	
 	this.input_slots = [
 		 { name: 'color', dt: core.datatypes.COLOR },
+		 { name: 'camera', dt: core.datatypes.CAMERA },
+		 { name: 'transform', dt: core.datatypes.MATRIX }
 	];
 	
 	this.output_slots = [ 
 		{ name: 'shader', dt: core.datatypes.SHADER } 
 	];
 	
-	this.state = { color: new Color(1.0, 1.0, 1.0, 1.0) };
+	this.state = null;
+	this.color = new Color(1.0, 1.0, 1.0, 1.0);
+	this.camera = new Camera(gl);
+	this.transform = mat4.create();
+	
+	mat4.identity(this.transform);
 	
 	var vs_src = '\
 		attribute vec3 pos;\n\
 		\n\
 		uniform mat4 m_mat;\n\
+		uniform mat4 v_mat;\n\
 		uniform mat4 p_mat;\n\
 		\n\
 		void main(void) {\n\
-			gl_Position = p_mat * m_mat * vec4(pos, 1.0);\n\
+			gl_Position = p_mat * m_mat * v_mat * vec4(pos, 1.0);\n\
 		}';
 		
 	var ps_src = '\
@@ -43,32 +51,39 @@ g_Plugins["flat_shader"] = function(core) {
 	this.s.link();
 	
         this.s.vertexPosAttribute = gl.getAttribLocation(prog, "pos");
-        this.s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
         this.s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
+        this.s.vMatUniform = gl.getUniformLocation(prog, "v_mat");
+        this.s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
         this.s.colorUniform = gl.getUniformLocation(prog, "color");
       	
-      	this.s.bind_array(type, data, item_size)
+      	this.s.bind_array = function(type, data, item_size)
       	{
       		var t = core.renderer.array_type;
       		
       		if(type === t.VERTEX)
       		{
 			gl.bindBuffer(gl.ARRAY_BUFFER, data);
-			gl.vertexAttribPointer(shader.vertexPosAttribute, item_size, gl.FLOAT, false, 0, 0);
+			gl.vertexAttribPointer(self.s.vertexPosAttribute, item_size, gl.FLOAT, false, 0, 0);
       		}
       	}
       	
       	this.s.apply_uniforms = this.apply_uniforms = function()
       	{
-		gl.uniformMatrix4fv(self.s.pMatUniform, false, renderer.p_mat);
-		gl.uniformMatrix4fv(self.s.mMatUniform, false, renderer.m_mat);
-		gl.uniform4fv(self.s.colorUniform, new Float32Array(self.state.color.rgba));
+		gl.uniformMatrix4fv(self.s.mMatUniform, false, self.transform);
+		gl.uniformMatrix4fv(self.s.vMatUniform, false, self.camera.view);
+		gl.uniformMatrix4fv(self.s.pMatUniform, false, self.camera.projection);
+		gl.uniform4fv(self.s.colorUniform, new Float32Array(self.color.rgba));
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
       	};
       	
 	this.update_input = function(index, data)
 	{
-		self.state.color = data;
+		if(index === 0)
+			self.color = data;
+		else if(index === 1)
+			self.camera = data;
+		else if(index === 2)
+			self.transform = data;
 	};
 	
 	this.update_output = function(index)

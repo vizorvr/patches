@@ -198,8 +198,13 @@ function PluginManager(core, base_url)
   		}
 	});
 	
-	this.create = function(id) {
-		return new g_Plugins[id](self.core);
+	this.create = function(id) 
+	{
+		if(g_Plugins.hasOwnProperty(id))
+			return new g_Plugins[id](self.core);
+			 
+		msg('Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
+		return null;
 	}
 }
  
@@ -536,7 +541,8 @@ function Core() {
 		TEXTURE: { id: 2, name: 'Texture' },
 		COLOR: { id: 3, name: 'Color' },
 		TRANSFORM: { id: 4, name: 'Transform' },
-		VERTEX: { id: 5, name: 'Vertex' }
+		VERTEX: { id: 5, name: 'Vertex' },
+		CAMERA: { id: 6, name: 'Camera' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');

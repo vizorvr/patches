@@ -6,6 +6,7 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 	this.input_slots = [
 		 { name: 'color', dt: core.datatypes.COLOR },
 		 { name: 'texture', dt: core.datatypes.TEXTURE },
+		 { name: 'camera', dt: core.datatypes.CAMERA },
 		 { name: 'transform', dt: core.datatypes.MATRIX }
 	];
 	
@@ -16,9 +17,10 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 	this.state = null;
 	this.color = new Color(1.0, 1.0, 1.0, 1.0);
 	this.tex = null;
-	this.transf = mat4.create();
+	this.camera = new Camera();
+	this.transform = mat4.create();
 	
-	mat4.identity(this.transf);
+	mat4.identity(this.transform);
 	
 	var vs_src = '\
 		attribute vec3 pos;\n\
@@ -27,10 +29,11 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 		varying vec2 uv_coord;\n\
 		\n\
 		uniform mat4 m_mat;\n\
+		uniform mat4 v_mat;\n\
 		uniform mat4 p_mat;\n\
 		\n\
 		void main(void) {\n\
-			gl_Position = p_mat * m_mat * vec4(pos, 1.0);\n\
+			gl_Position = p_mat * m_mat * v_mat * vec4(pos, 1.0);\n\
 			uv_coord = uv;\n\
 		}';
 		
@@ -58,8 +61,9 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 	
         this.s.vertexPosAttribute = gl.getAttribLocation(prog, "pos");
         this.s.uvCoordAttribute = gl.getAttribLocation(prog, "uv");
-        this.s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
         this.s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
+        this.s.vMatUniform = gl.getUniformLocation(prog, "v_mat");
+        this.s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
         this.s.colorUniform = gl.getUniformLocation(prog, "color");
         this.s.tex0Uniform = gl.getUniformLocation(prog, "tex0");
       	
@@ -88,8 +92,9 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 
       	this.s.apply_uniforms = this.apply_uniforms = function()
       	{
-		gl.uniformMatrix4fv(self.s.pMatUniform, false, renderer.p_mat);
-		gl.uniformMatrix4fv(self.s.mMatUniform, false, self.transf);
+		gl.uniformMatrix4fv(self.s.mMatUniform, false, self.transform);
+		gl.uniformMatrix4fv(self.s.vMatUniform, false, self.camera.view);
+		gl.uniformMatrix4fv(self.s.pMatUniform, false, self.camera.projection);
 		gl.uniform4fv(self.s.colorUniform, new Float32Array(self.color.rgba));
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
 		gl.enableVertexAttribArray(self.s.uvCoordAttribute);
@@ -105,8 +110,6 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 	{
 		if(index === 1)
 			self.tex = null;
-		else if(index === 2)
-			mat4.identity(self.transf);
 	};
 	
 	this.update_input = function(index, data)
@@ -116,7 +119,9 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 		else if(index === 1)
 			self.tex = data;
 		else if(index === 2)
-			self.transf = data;
+			self.camera = data;
+		else if(index === 3)
+			self.transform = data;
 	};
 	
 	this.update_output = function(index)

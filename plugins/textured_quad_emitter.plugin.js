@@ -38,11 +38,7 @@ g_Plugins["textured_quad_emitter"] = function(core) {
 
 	this.update_state = function(delta_t)
 	{
-		// TODO: We shouldn't be clearing here. We may need an 'execution order' dummy emitter... Sort of implies dynamic slot support, eh?
-		gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    		gl.enable(gl.DEPTH_TEST);
-    		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    		gl.disable(gl.DEPTH_TEST);
     		
         	var shader = self.state.shader;
         	

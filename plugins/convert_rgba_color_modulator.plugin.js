@@ -4,25 +4,26 @@ g_Plugins["convert_rgba_color_modulator"] = function(core) {
 	var gl = renderer.context;
 	
 	this.input_slots = [
-		 { name: 'R', dt: core.datatypes.FLOAT },
-		 { name: 'G', dt: core.datatypes.FLOAT },
-		 { name: 'B', dt: core.datatypes.FLOAT },
-		 { name: 'A', dt: core.datatypes.FLOAT }
+		 { name: 'red', dt: core.datatypes.FLOAT },
+		 { name: 'green', dt: core.datatypes.FLOAT },
+		 { name: 'blue', dt: core.datatypes.FLOAT },
+		 { name: 'alpha', dt: core.datatypes.FLOAT }
 	];
 	
 	this.output_slots = [ 
 		{ name: 'color', dt: core.datatypes.COLOR } 
 	];
 	
-	this.state = { color: new Color(1.0, 1.0, 1.0, 1.0) };
+	this.state = null;
+	this.color = new Color(1.0, 1.0, 1.0, 1.0);
 	
 	this.update_input = function(index, data)
 	{
-		self.state.color.rgba[index] = data;
+		self.color.rgba[index] = data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data;
 	};
 	
 	this.update_output = function(index)
 	{
-		return self.state.color;
+		return self.color;
 	};
 };
