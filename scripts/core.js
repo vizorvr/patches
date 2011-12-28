@@ -215,6 +215,7 @@ function ConnectionUI(parent_conn)
 	this.src_slot_div = null;
 	this.dst_slot_div = null;
 	this.color = '#000';
+	this.select_color = null;
 	this.parent_conn = parent_conn;
 	this.offset = 0;
 }
@@ -226,6 +227,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	this.src_slot = src_slot;
 	this.dst_slot = dst_slot;
 	this.ui = null;
+	this.cached_value = null;
 	
 	var self = this;
 	
@@ -409,6 +411,10 @@ function Node(parent_graph, plugin_id, x, y) {
 		
 		var uid = self.uid;
 		var inputs = self.inputs = [];
+		var needs_update = false;
+		var s_plugin = self.plugin;
+		
+		s_plugin.needs_update = false;
 		
 		for(var i = 0; i < conns.length; i++)
 		{
@@ -426,11 +432,26 @@ function Node(parent_graph, plugin_id, x, y) {
 			
 			var value = inp.src_node.plugin.update_output(inp.src_slot.index);
 			
-			self.plugin.update_input(inp.dst_slot.index, value);
+			if(inp.src_node.plugin.needs_update || value !== inp.cached_value)
+			{
+				self.plugin.update_input(inp.dst_slot.index, value);
+				inp.cached_value = value;
+				needs_update = true;
+				
+				if(inp.ui)
+					inp.ui.color = '#44e';
+			}
+			else if(inp.ui)
+				inp.ui.color = '#000';
 		}
 		
-		if(self.plugin.update_state)
-			self.plugin.update_state(delta_t);
+		if(needs_update || self.plugin.output_slots.length === 0)
+		{
+			if(s_plugin.update_state)
+				s_plugin.update_state(delta_t);
+
+			s_plugin.needs_update = true;
+		}
 		
 		self.rendering_state = 1;
 	}
@@ -530,6 +551,21 @@ function Graph(parent_graph) {
 		
 		return result;
 	};
+	
+	this.reset_connections = function()
+	{
+		var conns = self.connections;
+
+		for(var i = 0; i < conns.length; i++)
+		{
+			var c = conns[i];
+			
+			c.cached_value = null;
+			
+			if(c.ui)
+				c.ui.color = '#000';
+		}
+	};
 }
 
 function Core() {
@@ -556,6 +592,9 @@ function Core() {
 		self.delta_t = delta_t;
 		self.renderer.update();
 		self.active_graph.update(delta_t);
+
+		// So we can show dataflow, see update_recursive.
+		app.updateCanvas();
 	}
 }
 
@@ -700,7 +739,7 @@ function Application() {
 			
 			if(c.dst_slot === hs || c.src_slot === hs)
 			{
-				c.ui.color = '#f00';
+				c.ui.select_color = '#f00';
 				self.hover_connections.push(c);
 				dirty = true;
 								
@@ -727,7 +766,7 @@ function Application() {
 		if(hcs.length > 0)
 		{
 			for(var i = 0; i < hcs.length; i++)
-				hcs[i].ui.color = '#000';
+				hcs[i].ui.select_color = null;
 
 			self.hover_connections = [];
 			self.updateCanvas();
@@ -792,7 +831,7 @@ function Application() {
 		var my = (y1 + y4) / 2;
 		var x2 = Math.min(x1 + 10 + (c.offset * 5), mx);
 		
-		c2d.strokeStyle = c.color;
+		c2d.strokeStyle = c.select_color !== null ? c.select_color : c.color;
 		c2d.beginPath();
 		c2d.moveTo(x1, y1);
 		c2d.lineTo(x2, y1);
@@ -885,7 +924,7 @@ function Application() {
 				
 				if(c.src_node.uid == uid || c.dst_node.uid == uid)
 				{
-					c.ui.color = '#f00';
+					c.ui.select_color = '#f00';
 					hcs.push(c);
 				}
 			}
@@ -1065,6 +1104,9 @@ function Application() {
 			clearInterval(self.interval);
 			self.interval = null;
 		}
+		
+		self.core.active_graph.reset_connections();
+		self.updateCanvas();
 	};
 
 	this.onUpdate = function()
