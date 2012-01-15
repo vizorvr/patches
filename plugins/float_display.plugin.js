@@ -7,11 +7,17 @@ g_Plugins["float_display"] = function(core) {
 	
 	this.output_slots = [];
 
+	this.reset = function(ui)
+	{
+		self.update_value(null);
+	}
+	
 	this.create_ui = function()
 	{
 		self.label = make('div');
 		self.label.css('text-align', 'right'); 
 		self.update_value(null);
+		
 		return self.label;
 	};
 	

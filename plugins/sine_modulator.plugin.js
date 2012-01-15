@@ -3,9 +3,12 @@ g_Plugins["sine_modulator"] = function(core) {
 	
 	this.input_slots = [ { name: 'time', dt: core.datatypes.FLOAT } ];
 	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
-	this.state = { };
-	this.time = 0.0;
-	this.result = 0.0;
+
+	this.reset = function(ui)
+	{
+		self.time = 0.0;
+		self.result = 0.0;
+	};
 	
 	this.update_input = function(index, data)
 	{

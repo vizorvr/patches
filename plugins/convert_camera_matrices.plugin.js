@@ -9,8 +9,11 @@ g_Plugins["convert_camera_matrices"] = function(core) {
 		{ name: 'projection', dt: core.datatypes.MATRIX },
 		{ name: 'view', dt: core.datatypes.MATRIX } 
 	];
-	this.state = null;
-	this.camera = new Camera(gl);
+	
+	this.reset = function(ui)
+	{
+		self.camera = new Camera(gl);
+	};
 	
 	this.update_input = function(index, data)
 	{

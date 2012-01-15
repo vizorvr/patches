@@ -6,11 +6,17 @@ g_Plugins["matrix_display"] = function(core) {
 	];
 	
 	this.output_slots = [];
-	this.cell_vals = ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'];
 		
+	this.reset = function(ui)
+	{
+		self.cell_vals = ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'];
+		self.update_values();
+	};
+	
 	this.create_ui = function()
 	{
-		self.table = make('table');
+		var table = make('table');
+		
 		self.columns = [];
 		
 		for(var r = 0; r < 4; r++)
@@ -29,16 +35,15 @@ g_Plugins["matrix_display"] = function(core) {
 				row.append(col);
 			}
 			
-			self.table.append(row);
+			table.append(row);
 		}		
 
-		return self.table;
+		return table;
 	};
 	
 	this.disconnect_input = function(index)
 	{
-		self.cell_vals = ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'];
-		self.update_values();
+		self.reset(null);
 	};
 
 	this.update_input = function(index, data)
@@ -53,7 +58,10 @@ g_Plugins["matrix_display"] = function(core) {
 	
 	this.update_values = function()
 	{
+		if(!self.columns)
+			return;
+		
 		for(var i = 0; i < 16; i++)
-			self.columns[i].html(self.cell_vals[i])
+			self.columns[i].html(self.cell_vals[i]);
 	};
 };

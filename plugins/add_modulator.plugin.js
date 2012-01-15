@@ -5,11 +5,15 @@ g_Plugins["add_modulator"] = function(core) {
 		{ name: 'value', dt: core.datatypes.FLOAT },
 		{ name: 'value', dt: core.datatypes.FLOAT } 
 	];
+	
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
-	this.state = null;
-	this.input_val = 0.0;
-	this.add_val = 1.0;
-	this.output_val = 0.0;
+	
+	this.reset = function(ui)
+	{
+		self.input_val = 0.0;
+		self.add_val = 1.0;
+		self.output_val = 0.0;
+	};
 	
 	this.update_input = function(index, data)
 	{

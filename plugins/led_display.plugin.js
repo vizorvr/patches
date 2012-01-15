@@ -7,11 +7,17 @@ g_Plugins["led_display"] = function(core) {
 	
 	this.output_slots = [];
 
+	this.reset = function(ui)
+	{
+		self.update_value(0);
+	};
+	
 	this.create_ui = function()
 	{
 		self.label = make('span');
 		self.label.html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;') 
-		self.update_value(null);
+		self.update_value(0);
+		
 		return self.label;
 	};
 	

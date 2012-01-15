@@ -4,8 +4,11 @@ g_Plugins["screenspace_camera"] = function(core) {
 	
 	this.input_slots = [];
 	this.output_slots = [ { name: 'camera', dt: core.datatypes.CAMERA } ];
-	this.state = null;
-	this.camera = new Camera(gl);
+
+	this.reset = function(ui)
+	{
+		self.camera = new Camera(gl);
+	};
 	
 	this.update_output = function(index)
 	{

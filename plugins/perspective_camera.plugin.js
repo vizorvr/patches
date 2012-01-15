@@ -10,13 +10,16 @@ g_Plugins["perspective_camera"] = function(core) {
 		{ name: 'target', dt: core.datatypes.VECTOR }
 	];
 	this.output_slots = [ { name: 'camera', dt: core.datatypes.CAMERA } ];
-	this.state = null;
-	this.camera = new Camera(gl);
-	this.fov = 45.0;
-	this.near = 0.01;
-	this.far = 100.0;
-	this.position = [0.0, 0.0, 1.0];
-	this.target = [0.0, 0.0, 0.0];
+
+	this.reset = function(ui)
+	{
+		self.camera = new Camera(gl);
+		self.fov = 45.0;
+		self.near = 0.01;
+		self.far = 100.0;
+		self.position = [0.0, 0.0, 1.0];
+		self.target = [0.0, 0.0, 0.0];
+	};
 	
 	this.update_input = function(index, data)
 	{

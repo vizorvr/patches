@@ -3,8 +3,9 @@ g_Plugins["slider_float_generator"] = function(core) {
 	
 	this.input_slots = [];
 	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
+	this.state = { val: 0.0, min: 0.0, max: 1.0 };
 	this.v_col = null;
-	this.state = { min: 0.0, max: 1.0, val: 0.0 };
+	this.slider = null;
 	
 	this.create_ui = function()
 	{
@@ -16,6 +17,7 @@ g_Plugins["slider_float_generator"] = function(core) {
 		var inp_hi = $('<input id="hi" type="text" value="1.0" style="width: 30px;" />');
 		var slider = make('div');
 		
+		slider.attr('id', 'sl');
 		slider.css('width', '100px');
 		table.css('width', '160px');
 		table.addClass('pl_layout');

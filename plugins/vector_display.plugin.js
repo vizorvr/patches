@@ -6,7 +6,14 @@ g_Plugins["vector_display"] = function(core) {
 	];
 	
 	this.output_slots = [];
-	this.vec = ['-', '-', '-'];
+
+	this.reset = function(ui)
+	{
+		msg('vector_display: reset');
+		self.vec = ['-', '-', '-'];
+		msg('vector_display: self.vec = ' + self.vec);
+		self.update_values();
+	};
 	
 	this.create_ui = function()
 	{
@@ -31,8 +38,7 @@ g_Plugins["vector_display"] = function(core) {
 	
 	this.disconnect_input = function(index)
 	{
-		self.vec = ['-', '-', '-'];
-		self.update_values();
+		self.reset(null);
 	};
 
 	this.update_input = function(index, data)
@@ -45,6 +51,9 @@ g_Plugins["vector_display"] = function(core) {
 	
 	this.update_values = function()
 	{
+		if(!self.columns)
+			return;
+		
 		for(var i = 0; i < 3; i++)
 			self.columns[i].html(self.vec[i])
 	};

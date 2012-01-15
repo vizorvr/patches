@@ -502,6 +502,31 @@ function Graph(parent_graph) {
 		}
 	};
 	
+	this.reset = function()
+	{
+		var conns = self.connections;
+		
+		for(var i = 0; i < conns.length; i++)
+		{
+			var c = conns[i];
+			
+			c.cached_value = null;
+
+			if(c.ui)
+				c.ui.color = '#000';
+		}
+			
+		var nodes = self.nodes;
+		
+		for(var i = 0; i < nodes.length; i++)
+		{
+			var n = nodes[i];
+			
+			if(n.plugin.reset)
+				n.plugin.reset(n.ui);
+		}
+	};
+	
 	this.destroy_connection = function(c)
 	{
 		var index = self.connections.indexOf(c);
@@ -550,21 +575,6 @@ function Graph(parent_graph) {
 		}
 		
 		return result;
-	};
-	
-	this.reset_connections = function()
-	{
-		var conns = self.connections;
-
-		for(var i = 0; i < conns.length; i++)
-		{
-			var c = conns[i];
-			
-			c.cached_value = null;
-			
-			if(c.ui)
-				c.ui.color = '#000';
-		}
 	};
 }
 
@@ -671,6 +681,9 @@ function Application() {
 		var co = cp.offset();
 		var node = self.core.active_graph.create_instance(id, (pos.left - co.left) + cp.scrollLeft(), (pos.top - co.top) + cp.scrollTop());
 		
+		if(node.plugin.reset)
+			node.plugin.reset(node.ui);
+
 		node.create_ui();
 	};
 	
@@ -1105,7 +1118,8 @@ function Application() {
 			self.interval = null;
 		}
 		
-		self.core.active_graph.reset_connections();
+		self.core.active_graph.reset();
+		self.core.renderer.update(); // Clear the WebGL view.
 		self.updateCanvas();
 	};
 

@@ -7,8 +7,7 @@ g_Plugins["textured_quad_emitter"] = function(core) {
 	];
 	
 	this.output_slots = [];
-	this.state = { shader: null };
-	
+
 	var v_data = [
 		 1.0,  1.0,  1.0,
 		-1.0,  1.0,  1.0,
@@ -31,16 +30,21 @@ g_Plugins["textured_quad_emitter"] = function(core) {
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.uv_coords);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uv_data), gl.STATIC_DRAW);
 	
+	this.reset = function(ui)
+	{
+		self.shader = null;
+	};
+	
 	this.update_input = function(index, data)
 	{
-		self.state.shader = data;
+		self.shader = data;
 	};
 
 	this.update_state = function(delta_t)
 	{
     		gl.disable(gl.DEPTH_TEST);
     		
-        	var shader = self.state.shader;
+        	var shader = self.shader;
         	
         	if(shader !== null)
         	{

@@ -14,14 +14,6 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 		{ name: 'shader', dt: core.datatypes.SHADER } 
 	];
 	
-	this.state = null;
-	this.color = new Color(1.0, 1.0, 1.0, 1.0);
-	this.tex = null;
-	this.camera = new Camera();
-	this.transform = mat4.create();
-	
-	mat4.identity(this.transform);
-	
 	var vs_src = '\
 		attribute vec3 pos;\n\
 		attribute vec2 uv;\n\
@@ -106,6 +98,16 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
       		}
       	};
       	
+	this.reset = function(ui)
+	{
+		self.color = new Color(1.0, 1.0, 1.0, 1.0);
+		self.tex = null;
+		self.camera = new Camera();
+		self.transform = mat4.create();
+	
+		mat4.identity(self.transform);
+	};
+	
 	this.disconnect_input = function(index)
 	{
 		if(index === 1)

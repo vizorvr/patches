@@ -6,13 +6,16 @@ g_Plugins["concatenate_matrix_modulator"] = function(core) {
 		{ name: 'matrix B', dt: core.datatypes.MATRIX }
 	];
 	this.output_slots = [ { name: 'matrix', dt: core.datatypes.MATRIX } ];
-	this.state = null;
-	this.matrices = [mat4.create(), mat4.create()];
-	this.matrix = mat4.create();
+
+	this.reset = function(ui)
+	{
+		self.matrices = [mat4.create(), mat4.create()];
+		self.matrix = mat4.create();
 	
-	mat4.identity(this.matrices[0]);
-	mat4.identity(this.matrices[1]);
-	mat4.identity(this.matrix);
+		mat4.identity(self.matrices[0]);
+		mat4.identity(self.matrices[1]);
+		mat4.identity(self.matrix);
+	};
 	
 	this.disconnect_input = function(index)
 	{

@@ -13,13 +13,6 @@ g_Plugins["flat_shader"] = function(core) {
 		{ name: 'shader', dt: core.datatypes.SHADER } 
 	];
 	
-	this.state = null;
-	this.color = new Color(1.0, 1.0, 1.0, 1.0);
-	this.camera = new Camera(gl);
-	this.transform = mat4.create();
-	
-	mat4.identity(this.transform);
-	
 	var vs_src = '\
 		attribute vec3 pos;\n\
 		\n\
@@ -30,7 +23,7 @@ g_Plugins["flat_shader"] = function(core) {
 		void main(void) {\n\
 			gl_Position = p_mat * m_mat * v_mat * vec4(pos, 1.0);\n\
 		}';
-		
+	
 	var ps_src = '\
 		precision mediump float;\n\
 		\n\
@@ -43,19 +36,19 @@ g_Plugins["flat_shader"] = function(core) {
 	this.s = new ShaderProgram(gl);
 	this.vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
 	this.ps = new Shader(gl, gl.FRAGMENT_SHADER, ps_src);
-	
+
 	var prog = this.s.program;
-	
+
 	this.s.attach(this.vs);
 	this.s.attach(this.ps);
 	this.s.link();
-	
-        this.s.vertexPosAttribute = gl.getAttribLocation(prog, "pos");
-        this.s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
-        this.s.vMatUniform = gl.getUniformLocation(prog, "v_mat");
-        this.s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
-        this.s.colorUniform = gl.getUniformLocation(prog, "color");
-      	
+
+	this.s.vertexPosAttribute = gl.getAttribLocation(prog, "pos");
+	this.s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
+	this.s.vMatUniform = gl.getUniformLocation(prog, "v_mat");
+	this.s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
+	this.s.colorUniform = gl.getUniformLocation(prog, "color");
+
       	this.s.bind_array = function(type, data, item_size)
       	{
       		var t = core.renderer.array_type;
@@ -76,6 +69,15 @@ g_Plugins["flat_shader"] = function(core) {
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
       	};
       	
+	this.reset = function(ui)
+	{
+		self.color = new Color(1.0, 1.0, 1.0, 1.0);
+		self.camera = new Camera(gl);
+		self.transform = mat4.create();
+	
+		mat4.identity(this.transform);
+	}
+	
 	this.update_input = function(index, data)
 	{
 		if(index === 0)

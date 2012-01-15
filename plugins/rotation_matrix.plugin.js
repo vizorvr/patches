@@ -6,13 +6,16 @@ g_Plugins["rotation_matrix"] = function(core) {
 		{ name: 'axis', dt: core.datatypes.VECTOR }
 	];
 	this.output_slots = [ { name: 'matrix', dt: core.datatypes.MATRIX } ];
-	this.state = null;
-	this.angle = 0.0;
-	this.axis = [0.0, 0.0, 0.0];
-	this.matrix = mat4.create();
+
+	this.reset = function(ui)
+	{
+		self.angle = 0.0;
+		self.axis = [0.0, 0.0, 0.0];
+		self.matrix = mat4.create();
 	
-	mat4.identity(this.matrix);
-		
+		mat4.identity(self.matrix);
+	};
+	
 	this.update_input = function(index, data)
 	{
 		if(index === 0)

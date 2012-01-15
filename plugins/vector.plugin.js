@@ -7,8 +7,11 @@ g_Plugins["vector"] = function(core) {
 		{ name: 'z', dt: core.datatypes.FLOAT }
 	];
 	this.output_slots = [ { name: 'vector', dt: core.datatypes.VECTOR } ];
-	this.state = null;
-	this.xyz = [0.0, 0.0, 0.0];
+	
+	this.reset = function(ui)
+	{
+		self.xyz = [0.0, 0.0, 0.0];
+	};
 	
 	this.update_input = function(index, data)
 	{
