@@ -1156,10 +1156,13 @@ function Application() {
 	});
 	
 	// Make sure all the input fields blur themselves when they gain focus --
-	// otherwise they trap the control key document events.
+	// otherwise they trap the control key document events. TODO: Surely there is a
+	// better way to deal with this?
 	$('#play').focus(function(e) { $('#play').blur(); });
 	$('#pause').focus(function(e) { $('#pause').blur(); });
 	$('#stop').focus(function(e) { $('#stop').blur(); });
+	$('#save').focus(function(e) { $('#save').blur(); });
+	$('#load').focus(function(e) { $('#load').blur(); });
 }
 
 $(document).ready(function() {
@@ -1192,6 +1195,8 @@ $(document).ready(function() {
 	$('#play').button({ icons: { primary: 'ui-icon-play' } }).click(app.onPlayClicked);
 	$('#pause').button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(app.onPauseClicked);
 	$('#stop').button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(app.onStopClicked);
+	$('#save').button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(app.onStopClicked);
+	$('#load').button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(app.onStopClicked);
 
 	$('#structure').jstree({
 			// the `plugins` array allows you to configure the active plugins on this instance

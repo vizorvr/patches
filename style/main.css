@@ -25,6 +25,7 @@
 #content
 {
 	display: none;
+	width: 1400px;
 }
 
 #controls
@@ -86,6 +87,25 @@ pre
 	z-index: 2;
 }
 
+#webgl-canvas
+{
+	background-color: #000; 
+	position: absolute; 
+	left: 1036px; 
+	top: 124px;
+	width: 320px;
+	height: 240px;
+}
+
+#persist
+{
+	position: absolute; 
+	width: 320px;
+	height: 516px;
+	left: 1033px; 
+	top: 370px;
+}
+
 .plugin
 {
 	font-size: 8pt;
@@ -97,7 +117,7 @@ pre
 	position: absolute;
 	white-space: nowrap;
 }
-
+	
 .pl_layout
 {
   border-collapse: separate;
