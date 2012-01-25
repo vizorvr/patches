@@ -33,6 +33,7 @@ g_Plugins["float_display"] = function(core) {
 	
 	this.update_value = function(value)
 	{
-		self.label.html(value === null ? 'N/A' : value.toFixed(2));
+		if(self.label)
+			self.label.html(value === null ? 'N/A' : value.toFixed(2));
 	};
 };

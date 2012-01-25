@@ -39,7 +39,7 @@ h2
 	width: 1024px;
 }
 
-pre 
+#dbg 
 {
 	margin-left: 5px;
 	margin-top: 5px;
@@ -99,11 +99,19 @@ pre
 
 #persist
 {
+	margin-left: 5px;
+	margin-top: 5px;
 	position: absolute; 
 	width: 320px;
 	height: 516px;
 	left: 1033px; 
 	top: 370px;
+	font-size: 8pt;
+	background-color: #eee;
+	word-wrap: break-word;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	font-family: monospace;
 }
 
 .plugin

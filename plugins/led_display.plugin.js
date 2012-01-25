@@ -33,6 +33,7 @@ g_Plugins["led_display"] = function(core) {
 	
 	this.update_value = function(value)
 	{
-		self.label.css('background-color', 'rgb(' + Math.round(value * 255.0) + ', 40, 40)');
+		if(self.label)
+			self.label.css('background-color', 'rgb(' + Math.round(value * 255.0) + ', 40, 40)');
 	};
 };

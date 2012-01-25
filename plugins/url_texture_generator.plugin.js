@@ -3,8 +3,14 @@ g_Plugins["url_texture_generator"] = function(core) {
 	
 	this.input_slots = [];
 	this.output_slots = [ { name: 'texture', dt: core.datatypes.TEXTURE } ];
-	this.state = { texture: null, url: '' };
+	this.state = { url: '' };
 	this.gl = core.renderer.context;
+	this.texture = null;
+	
+	this.reset = function(ui)
+	{
+		self.reload();
+	};
 	
 	this.create_ui = function()
 	{
@@ -12,8 +18,13 @@ g_Plugins["url_texture_generator"] = function(core) {
 		
 		inp.click(function(e) 
 		{
+			var url = document.URL;
+			
+			if(url[url.length-1] !== '/')
+				url = url.substring(0, url.lastIndexOf('/') + 1);
+			
 			var diag = make('div');
-			var url_inp = $('<input type="input" value="' + document.URL + 'data/textures/" />'); 
+			var url_inp = $('<input type="input" value="' + url + 'data/textures/" />'); 
 			
 			url_inp.css('width', '400px');
 			diag.append(url_inp);
@@ -44,15 +55,15 @@ g_Plugins["url_texture_generator"] = function(core) {
 	
 	this.update_output = function(index)
 	{
-		return self.state.texture;
+		return self.texture;
 	};
 	
 	this.reload = function()
 	{
-		var st = self.state;
-		
-		st.texture = new Texture(self.gl);
-		
-		st.texture.load(st.url);
+		if(self.state.url !== '')
+		{
+			self.texture = new Texture(self.gl);	
+			self.texture.load(self.state.url);
+		}
 	};
 };

@@ -77,12 +77,12 @@ function PluginGroup(id)
 		
 		assert(tokens.length > 0, 'Plugin key cannot be empty.');
 		
-		var g = self;
+		var g = self, len = tokens.length - 1;
 		
-		for(var i = 0; i < tokens.length - 1; i++)
+		for(var i = 0; i < len; i++)
 			g = g.get_or_create_group(tokens[i]);
 		
-		var key = tokens[tokens.length-1];
+		var key = tokens[len];
 		
 		g.add_entry(key, id);
 		
@@ -94,7 +94,7 @@ function PluginGroup(id)
 		var items = {}
 		var sorted = sort_dict(self.children);
 		
-		for(var i = 0; i < sorted.length; i++)
+		for(var i = 0, len = sorted.length; i < len; i++)
 		{
 			var id = sorted[i];
 			var child = self.children[id];
@@ -104,7 +104,7 @@ function PluginGroup(id)
 		
 		sorted = sort_dict(self.entries);
 		
-		for(var i = 0; i < sorted.length; i++)
+		for(var i = 0, len = sorted.length; i < len; i++)
 		{
 			var id = sorted[i];
 			var entry = self.entries[id];
@@ -201,7 +201,13 @@ function PluginManager(core, base_url)
 	this.create = function(id) 
 	{
 		if(g_Plugins.hasOwnProperty(id))
-			return new g_Plugins[id](self.core);
+		{
+			var p = new g_Plugins[id](self.core);
+			
+			p.id = id;
+			
+			return p;
+		}
 			 
 		msg('Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
 		return null;
@@ -246,6 +252,32 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	{
 		return 'connection from ' + self.src_node.uid + '(' + self.src_slot.index + ') to ' + self.dst_node.uid + '(' + self.dst_slot.index + ')';
 	}
+
+	this.serialise = function()
+	{
+		var d = {};
+		
+		d.src_nuid = self.src_node.uid;
+		d.dst_nuid = self.dst_node.uid;
+		d.src_slot = self.src_slot.index;
+		d.dst_slot = self.dst_slot.index;
+		d.ui = self.ui !== null;
+		
+		return d;
+	};
+	
+	this.deserialise = function(d)
+	{
+		// TODO: Patch up after load completes!
+		self.src_node = d.src_nuid;
+		self.dst_node = d.src_nuid;
+		self.src_slot = d.src_slot;
+		self.dst_slot = d.dst_slot;
+		self.cached_value = null;
+		
+		if(d.ui)
+			self.ui = new ConnectionUI(self);
+	};
 }
 
 function NodeUI(parent_node, x, y) {
@@ -255,7 +287,7 @@ function NodeUI(parent_node, x, y) {
 	
 	var render_slots = function(nid, col, slots, type)
 	{
-		for(var i = 0; i < slots.length; i++)
+		for(var i = 0, len = slots.length; i < len; i++)
 		{
 			var s = slots[i];
 			var div = make('div');
@@ -337,33 +369,41 @@ function NodeUI(parent_node, x, y) {
 function Node(parent_graph, plugin_id, x, y) {
 	var self = this;
 	
-	this.parent_graph = parent_graph;
-	this.plugin = app.core.plugin_mgr.create(plugin_id);
-	this.x = x;
-	this.y = y;
-	this.ui = null;
-	this.id = app.core.plugin_mgr.keybyid[plugin_id];
-	this.uid = parent_graph.get_node_uid();
-	this.rendering_state = 0;
-	
-	// Decorate the slots with their index to make this immediately resolvable
-	// from a slot reference, allowing for faster code elsewhere.
-	// Additionally tagged with the type (0 = input, 1 = output) for similar reasons.
-	
-	for(var i = 0; i < this.plugin.input_slots.length; i++)
+	self.set_plugin = function(plugin)
 	{
-		var s = this.plugin.input_slots[i];
+		self.plugin = plugin;
 		
-		s.index = i;
-		s.type = 0;
-	}
+		// Decorate the slots with their index to make this immediately resolvable
+		// from a slot reference, allowing for faster code elsewhere.
+		// Additionally tagged with the type (0 = input, 1 = output) for similar reasons.
+		for(var i = 0, len = plugin.input_slots.length; i < len; i++)
+		{
+			var s = plugin.input_slots[i];
 		
-	for(var i = 0; i < this.plugin.output_slots.length; i++)
+			s.index = i;
+			s.type = 0;
+		}
+		
+		for(var i = 0, len = plugin.output_slots.length; i < len; i++)
+		{
+			var s = plugin.output_slots[i];
+		
+			s.index = i;
+			s.type = 1;
+		}
+	};
+		
+	if(plugin_id !== null) // Don't initialise if we're loading.
 	{
-		var s = this.plugin.output_slots[i];
+		this.parent_graph = parent_graph;
+		this.x = x;
+		this.y = y;
+		this.ui = null;
+		this.id = app.core.plugin_mgr.keybyid[plugin_id];
+		this.uid = parent_graph.get_node_uid();
+		this.rendering_state = 0;
 		
-		s.index = i;
-		s.type = 1;
+		self.set_plugin(app.core.plugin_mgr.create(plugin_id));
 	}
 	
 	this.create_ui = function()
@@ -390,7 +430,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		var pending = [];
 		var conns = graph.connections;
 		
-		for(var i = 0; i < conns.length; i++)
+		for(var i = 0, len = conns.length; i < len; i++)
 		{
 			var c = conns[i];
 			
@@ -398,7 +438,7 @@ function Node(parent_graph, plugin_id, x, y) {
 				pending.push(c);
 		}
 		
-		for(var i = 0; i < pending.length; i++)
+		for(var i = 0, len = pending.length; i < len; i++)
 			graph.destroy_connection(pending[i]);
 		
 		self.destroy_ui();
@@ -413,10 +453,11 @@ function Node(parent_graph, plugin_id, x, y) {
 		var inputs = self.inputs = [];
 		var needs_update = false;
 		var s_plugin = self.plugin;
+		var dirty = false;
 		
 		s_plugin.needs_update = false;
 		
-		for(var i = 0; i < conns.length; i++)
+		for(var i = 0, len = conns.length; i < len; i++)
 		{
 			var c = conns[i];
 			
@@ -424,7 +465,7 @@ function Node(parent_graph, plugin_id, x, y) {
 				self.inputs.push(c);
 		}
 		
-		for(var i = 0; i < inputs.length; i++)
+		for(var i = 0, len = inputs.length; i < len; i++)
 		{
 			var inp = inputs[i];
 			
@@ -439,10 +480,16 @@ function Node(parent_graph, plugin_id, x, y) {
 				needs_update = true;
 				
 				if(inp.ui)
+				{
 					inp.ui.color = '#44e';
+					dirty = true;
+				}
 			}
-			else if(inp.ui)
+			else if(inp.ui && inp.ui.color !== '#000')
+			{
 				inp.ui.color = '#000';
+				dirty = true;
+			}
 		}
 		
 		if(needs_update || self.plugin.output_slots.length === 0)
@@ -454,13 +501,49 @@ function Node(parent_graph, plugin_id, x, y) {
 		}
 		
 		self.rendering_state = 1;
+		
+		return dirty;
 	}
+	
+	this.serialise = function()
+	{
+		var d = {};
+		
+		d.parent_uid = self.parent_graph.uid;
+		d.plugin = self.plugin.id;
+		d.state = self.plugin.state || null;
+		d.x = self.x;
+		d.y = self.y;
+		d.ui = self.ui != null;
+		d.uid = self.uid;
+		
+		return d;
+	};
+	
+	this.deserialise = function(d)
+	{
+		self.parent_graph = d.parent_uid; // TODO: Patch up after load completes!
+		self.x = d.x;
+		self.y = d.y;
+		self.id = app.core.plugin_mgr.keybyid[d.plugin];
+		self.uid = d.uid;
+		
+		self.set_plugin(app.core.plugin_mgr.create(d.plugin));
+		
+		if(d.state != null)
+			self.plugin.state = d.state;
+		
+		if(d.ui)
+			self.ui = new NodeUI(self, self.x, self.y);
+	};
 }
 
 
-function Graph(parent_graph) {
+function Graph(parent_graph) 
+{
 	var self = this;
 	
+	this.uid = app.core.get_graph_uid();
 	this.parent_graph = parent_graph;
 	this.nodes = [];
 	this.connections = [];
@@ -483,8 +566,9 @@ function Graph(parent_graph) {
 	{
 		var nodes = self.nodes;
 		var roots = [];
+		var dirty = false;
 		
-		for(var i = 0; i < nodes.length; i++)
+		for(var i = 0, len = nodes.length; i < len; i++)
 		{
 			var node = nodes[i];
 			
@@ -494,19 +578,21 @@ function Graph(parent_graph) {
 			node.rendering_state = 0;
 		}
 		
-		for(var i = 0; i < roots.length; i++)
+		for(var i = 0, len = roots.length; i < len; i++)
 		{
 			var root = roots[i];
 			
-			root.update_recursive(self.connections, delta_t);
+			dirty = dirty || root.update_recursive(self.connections, delta_t);
 		}
+		
+		return dirty;
 	};
 	
 	this.reset = function()
 	{
 		var conns = self.connections;
 		
-		for(var i = 0; i < conns.length; i++)
+		for(var i = 0, len = conns.length; i < len; i++)
 		{
 			var c = conns[i];
 			
@@ -518,7 +604,7 @@ function Graph(parent_graph) {
 			
 		var nodes = self.nodes;
 		
-		for(var i = 0; i < nodes.length; i++)
+		for(var i = 0, len = nodes.length; i < len; i++)
 		{
 			var n = nodes[i];
 			
@@ -546,7 +632,7 @@ function Graph(parent_graph) {
 		var conns = self.connections;
 		var uid = node.uid;
 		
-		for(var i = 0; i < conns.length; i++)
+		for(var i = 0, len = conns.length; i < len; i++)
 		{
 			var c = conns[i];
 			
@@ -566,7 +652,7 @@ function Graph(parent_graph) {
 		var uid = node.uid;
 		var result = [];
 		
-		for(var i = 0; i < conns.length; i++)
+		for(var i = 0, len = conns.length; i < len; i++)
 		{
 			var c = conns[i];
 			
@@ -575,6 +661,54 @@ function Graph(parent_graph) {
 		}
 		
 		return result;
+	};
+	
+	this.serialise = function()
+	{
+		var d = {};
+		
+		d.node_uid = self.node_uid;
+		d.uid = self.uid;
+		d.parent_uid = self.parent_graph ? self.parent_graph.uid : -1;
+		
+		d.nodes = [];
+		
+		for(var i = 0, len = self.nodes.length; i < len; i++)
+			d.nodes.push(self.nodes[i].serialise());
+			
+		d.conns = [];
+		
+		for(var i = 0, len = self.connections.length; i < len; i++)
+			d.conns.push(self.connections[i].serialise());
+
+		return d;
+	};
+	
+	this.deserialise = function(d)
+	{
+		self.node_uid = d.node_uid;
+		self.uid = d.uid;
+		self.parent_graph = d.parent_uid; // TODO: Patch up when all graphs are loaded!
+		
+		self.nodes = [];
+		
+		for(var i = 0, len = d.nodes.length; i < len; i++)
+		{
+			var n = new Node(null, null, null, null);
+			
+			n.deserialise(d.nodes[i]);
+			self.nodes.push(n);
+		}
+
+		self.connections = [];
+
+		for(var i = 0, len = d.conns.length; i < len; i++)
+		{
+			var c = new Connection(null, null, null, null);
+			
+			c.deserialise(d.conns[i]);
+			self.connections.push(c);
+		}
 	};
 }
 
@@ -592,19 +726,49 @@ function Core() {
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');
-	this.active_graph = this.root_graph = new Graph(null);
+	this.active_graph = this.root_graph = null;
 	this.abs_t = 0.0;
 	this.delta_t = 0.0;
+	this.graph_uid = 0;
+	
+	this.get_graph_uid = function()
+	{
+		return self.graph_uid++;
+	};
 	
 	this.update = function(abs_t, delta_t)
 	{
 		self.abs_t = abs_t;
 		self.delta_t = delta_t;
 		self.renderer.update();
-		self.active_graph.update(delta_t);
-
-		// So we can show dataflow, see update_recursive.
-		app.updateCanvas();
+		
+		if(self.active_graph.update(delta_t)) // Did connection state change?
+		{
+			// So we can show dataflow, see update_recursive.
+			app.updateCanvas();
+		}
+	}
+	
+	this.serialise = function()
+	{
+		var d = {};
+		
+		d.abs_t = self.abs_t;	
+		d.active_graph = self.active_graph.serialise();
+		d.graph_uid = self.graph_uid;
+		
+		return JSON.stringify(d);
+	}
+	
+	this.deserialise = function(str)
+	{
+		var d = JSON.parse(str);
+		
+		self.abs_t = d.abs_t;
+		self.delta_t = 0.0;
+		self.graph_uid = d.graph_uid;
+		
+		self.active_graph.deserialise(d.active_graph);
 	}
 }
 
@@ -708,7 +872,7 @@ function Application() {
 				return a.ui.offset < b.ui.offset ? - 1 : a.ui.offset > b.ui.offset ? 1 : 0;
 			});
 			
-			for(var i = 0; i < ocs.length; i++)
+			for(var i = 0, len = ocs.length; i < len; i++)
 			{
 				var oc = ocs[i];
 				
@@ -746,7 +910,7 @@ function Application() {
 		var conns = self.core.active_graph.connections;
 		var dirty = false;
 		
-		for(var i = 0; i < conns.length; i++)
+		for(var i = 0, len = conns.length; i < len; i++)
 		{
 			var c = conns[i];
 			
@@ -778,7 +942,7 @@ function Application() {
 		
 		if(hcs.length > 0)
 		{
-			for(var i = 0; i < hcs.length; i++)
+			for(var i = 0, len = hcs.length; i < len; i++)
 				hcs[i].ui.select_color = null;
 
 			self.hover_connections = [];
@@ -861,7 +1025,7 @@ function Application() {
 		
 		var conns = self.core.active_graph.connections;
 		
-		for(var i = 0; i < conns.length; i++)
+		for(var i = 0, len = conns.length; i < len; i++)
 			self.drawConnection(c, conns[i]);
 		
 		if(self.edit_conn)
@@ -901,6 +1065,7 @@ function Application() {
 			var graph = self.core.active_graph; 
 			
 			graph.connections.push(c);
+			self.dst_node.plugin.needs_update = true;
 			
 			self.dst_slot_div.css('color', '#000');
 			self.dst_slot.is_connected = true;
@@ -931,7 +1096,7 @@ function Application() {
 			var conns = self.core.active_graph.connections;
 			var uid = self.hover_node.uid;
 			
-			for(var i = 0; i < conns.length; i++)
+			for(var i = 0, len = conns.length; i < len; i++)
 			{
 				var c = conns[i];
 				
@@ -958,7 +1123,7 @@ function Application() {
 			
 			if(hcs.length > 0)
 			{
-				for(var i = 0; i < hcs.length; i++)
+				for(var i = 0, len = hcs.length; i < len; i++)
 					hcs[i].ui.color = '#000';
 
 				self.updateCanvas();
@@ -974,7 +1139,7 @@ function Application() {
 			{
 				var graph = self.core.active_graph;
 			
-				for(var i = 0; i < hcs.length; i++)
+				for(var i = 0, len = hcs.length; i < len; i++)
 				{
 					var c = hcs[i];
 					var p = c.dst_node.plugin;
@@ -1029,7 +1194,7 @@ function Application() {
 		var uid = node.uid;
 		var canvas_dirty = false;
 		
-		for(var i = 0; i < conns.length; i++)
+		for(var i = 0, len = conns.length; i < len; i++)
 		{
 			var c = conns[i];
 			
@@ -1123,6 +1288,16 @@ function Application() {
 		self.updateCanvas();
 	};
 
+	this.onSaveClicked = function()
+	{
+		$('#persist').text(self.core.serialise());
+	};
+	
+	this.onLoadClicked = function()
+	{
+		self.core.deserialise($('#persist').text());
+	};
+
 	this.onUpdate = function()
 	{
 		var time = (new Date()).getTime();
@@ -1155,9 +1330,17 @@ function Application() {
 		self.releaseHoverNode();
 	});
 	
+	// Handle paste in persistence field
+	$('#persist').bind('paste', function(e)
+	{
+		// window.clipboardData.getData('Text') // IE
+		if(event.clipboardData)
+			$('#persist').text(event.clipboardData.getData('text/plain'));
+	});
+	
 	// Make sure all the input fields blur themselves when they gain focus --
 	// otherwise they trap the control key document events. TODO: Surely there is a
-	// better way to deal with this?
+	// better way to deal with this atrocious nonsense?
 	$('#play').focus(function(e) { $('#play').blur(); });
 	$('#pause').focus(function(e) { $('#pause').blur(); });
 	$('#stop').focus(function(e) { $('#stop').blur(); });
@@ -1192,11 +1375,18 @@ $(document).ready(function() {
 	app = new Application();
 	app.core.plugin_mgr = new PluginManager(app.core, 'plugins');
 	
+	// TODO: Because graphs depend on the existence of the core singleton
+	// we can't create graph instances in the core initialisation code. Moreover,
+	// even though we could introduce a UID manager to move this out of the core,
+	// where would *that* singleton live? In the core... Most awkward.
+	// The alternative is to have the UID manager singleton be global? Ugh..
+	app.core.active_graph = app.core.root_graph = new Graph(null);
+	
 	$('#play').button({ icons: { primary: 'ui-icon-play' } }).click(app.onPlayClicked);
 	$('#pause').button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(app.onPauseClicked);
 	$('#stop').button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(app.onStopClicked);
-	$('#save').button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(app.onStopClicked);
-	$('#load').button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(app.onStopClicked);
+	$('#save').button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(app.onSaveClicked);
+	$('#load').button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(app.onLoadClicked);
 
 	$('#structure').jstree({
 			// the `plugins` array allows you to configure the active plugins on this instance
