@@ -1,9 +1,10 @@
 var app = null;
 var g_Plugins = {};
+var g_DOM = {};
 
 function msg(txt)
 {
-	var d = $('#dbg');
+	var d = g_DOM.dbg;
 
 	d.append(txt + '\n');
 	d.scrollTop(d[0].scrollHeight);
@@ -278,6 +279,25 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		if(d.ui)
 			self.ui = new ConnectionUI(self);
 	};
+	
+	this.patch_up = function(nodes)
+	{
+		var resolve_node = function(nuid)
+		{
+			for(var i = 0, len = nodes.length; i < len; i++)
+			{
+				if(nodes[i].uid === nuid)
+					return nodes[i];
+			}
+			
+			msg('ERROR: Failed to resolve node with uid = ' + nuid);
+			return null;
+		};
+		
+		self.src_node = resolve_node(self.src_node);
+		self.dst_node = resolve_node(self.dst_node);
+		self.src_slot = self.src_node
+	}
 }
 
 function NodeUI(parent_node, x, y) {
@@ -363,7 +383,7 @@ function NodeUI(parent_node, x, y) {
 		stop: app.onNodeDragStopped(parent_node)
     	});
 	
-	$('#canvas_parent').append(this.dom)
+	g_DOM.canvas_parent.append(this.dom)
 }
 
 function Node(parent_graph, plugin_id, x, y) {
@@ -1020,8 +1040,9 @@ function Application() {
 	this.updateCanvas = function()
 	{
 		var c = self.c2d;
-		
-		self.canvas[0].width = self.canvas[0].width;
+		var canvas = self.canvas[0];
+		 
+		c.clearRect(0, 0, canvas.width, canvas.height);
 		
 		var conns = self.core.active_graph.connections;
 		
@@ -1243,9 +1264,9 @@ function Application() {
 	{
 		var cs = self.current_state;
 		
-		$('#play').button(cs == self.state.PLAYING ? 'disable' : 'enable');
-		$('#pause').button(cs == self.state.PAUSED || cs == self.state.STOPPED ? 'disable' : 'enable');
-		$('#stop').button(cs == self.state.STOPPED ? 'disable' : 'enable');
+		g_DOM.play.button(cs == self.state.PLAYING ? 'disable' : 'enable');
+		g_DOM.pause.button(cs == self.state.PAUSED || cs == self.state.STOPPED ? 'disable' : 'enable');
+		g_DOM.stop.button(cs == self.state.STOPPED ? 'disable' : 'enable');
 	}
 	
 	this.onPlayClicked = function()
@@ -1290,12 +1311,12 @@ function Application() {
 
 	this.onSaveClicked = function()
 	{
-		$('#persist').text(self.core.serialise());
+		g_DOM.persist.text(self.core.serialise());
 	};
 	
 	this.onLoadClicked = function()
 	{
-		self.core.deserialise($('#persist').text());
+		self.core.deserialise(g_DOM.persist.text());
 	};
 
 	this.onUpdate = function()
@@ -1304,7 +1325,7 @@ function Application() {
 		var delta_t = (time - self.last_time) * 0.001;
 		
 		self.core.update(self.abs_time, delta_t);
-		$('#frame').val(delta_t.toFixed(4));
+		g_DOM.frame.val(delta_t.toFixed(4));
 		self.last_time = time;
 		self.abs_time += delta_t;
 	}
@@ -1331,24 +1352,34 @@ function Application() {
 	});
 	
 	// Handle paste in persistence field
-	$('#persist').bind('paste', function(e)
+	g_DOM.persist.bind('paste', function(e)
 	{
 		// window.clipboardData.getData('Text') // IE
 		if(event.clipboardData)
-			$('#persist').text(event.clipboardData.getData('text/plain'));
+			g_DOM.persist.text(event.clipboardData.getData('text/plain'));
 	});
 	
 	// Make sure all the input fields blur themselves when they gain focus --
 	// otherwise they trap the control key document events. TODO: Surely there is a
 	// better way to deal with this atrocious nonsense?
-	$('#play').focus(function(e) { $('#play').blur(); });
-	$('#pause').focus(function(e) { $('#pause').blur(); });
-	$('#stop').focus(function(e) { $('#stop').blur(); });
-	$('#save').focus(function(e) { $('#save').blur(); });
-	$('#load').focus(function(e) { $('#load').blur(); });
+	g_DOM.play.focus(function(e) { g_DOM.play.blur(); });
+	g_DOM.pause.focus(function(e) { g_DOM.pause.blur(); });
+	g_DOM.stop.focus(function(e) { g_DOM.stop.blur(); });
+	g_DOM.save.focus(function(e) { g_DOM.save.blur(); });
+	g_DOM.load.focus(function(e) { g_DOM.load.blur(); });
 }
 
 $(document).ready(function() {
+	g_DOM.canvas_parent = $('#canvas_parent');
+	g_DOM.dbg = $('#dbg');
+	g_DOM.play = $('#play');
+	g_DOM.pause = $('#pause');
+	g_DOM.stop = $('#stop');
+	g_DOM.save = $('#save');
+	g_DOM.load = $('#load');
+	g_DOM.frame = $('#frame');
+	g_DOM.persist = $('#persist');
+	
 	$.ajaxSetup({ cache: false });
 	
 	$.fn.extend({ disableSelection: function() { 
@@ -1366,7 +1397,7 @@ $(document).ready(function() {
 
 	msg('Welcome to WebFx. ' + (new Date()));
 	
-	$('#dbg').ajaxError(function(e, jqxhr, settings, exception) {
+	g_DOM.dbg.ajaxError(function(e, jqxhr, settings, exception) {
 		if(settings.dataType=='script') {
 			msg(e + exception);
 		}
@@ -1382,11 +1413,11 @@ $(document).ready(function() {
 	// The alternative is to have the UID manager singleton be global? Ugh..
 	app.core.active_graph = app.core.root_graph = new Graph(null);
 	
-	$('#play').button({ icons: { primary: 'ui-icon-play' } }).click(app.onPlayClicked);
-	$('#pause').button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(app.onPauseClicked);
-	$('#stop').button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(app.onStopClicked);
-	$('#save').button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(app.onSaveClicked);
-	$('#load').button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(app.onLoadClicked);
+	g_DOM.play.button({ icons: { primary: 'ui-icon-play' } }).click(app.onPlayClicked);
+	g_DOM.pause.button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(app.onPauseClicked);
+	g_DOM.stop.button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(app.onStopClicked);
+	g_DOM.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(app.onSaveClicked);
+	g_DOM.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(app.onLoadClicked);
 
 	$('#structure').jstree({
 			// the `plugins` array allows you to configure the active plugins on this instance
