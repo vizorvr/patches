@@ -389,6 +389,8 @@ function NodeUI(parent_node, x, y) {
 function Node(parent_graph, plugin_id, x, y) {
 	var self = this;
 	
+	this.inputs = [];
+	
 	self.set_plugin = function(plugin)
 	{
 		self.plugin = plugin;
@@ -470,20 +472,12 @@ function Node(parent_graph, plugin_id, x, y) {
 			return;
 		
 		var uid = self.uid;
-		var inputs = self.inputs = [];
+		var inputs = self.inputs;
 		var needs_update = false;
 		var s_plugin = self.plugin;
 		var dirty = false;
 		
 		s_plugin.needs_update = false;
-		
-		for(var i = 0, len = conns.length; i < len; i++)
-		{
-			var c = conns[i];
-			
-			if(c.dst_node.uid === uid)
-				self.inputs.push(c);
-		}
 		
 		for(var i = 0, len = inputs.length; i < len; i++)
 		{
@@ -505,7 +499,7 @@ function Node(parent_graph, plugin_id, x, y) {
 					dirty = true;
 				}
 			}
-			else if(inp.ui && inp.ui.color !== '#000')
+			else if(inp.ui && inp.ui.color !== '#000') // TODO: Get rid of this string compare. Add a bool flag instead.
 			{
 				inp.ui.color = '#000';
 				dirty = true;
@@ -642,6 +636,11 @@ function Graph(parent_graph)
 		
 		c.src_slot.is_connected = false;
 		c.dst_slot.is_connected = false;
+		
+		index = c.dst_node.inputs.indexOf(c);
+		
+		if(index != -1)
+			c.dst_node.inputs.splice(index, 1);
 	};
 	
 	this.find_connection_to = function(node, slot)
@@ -1073,6 +1072,8 @@ function Application() {
 			var ss = self.src_slot;
 			var ds = self.dst_slot;
 			var c = new Connection(self.src_node, self.dst_node, ss, ds);
+			
+			self.dst_node.inputs.push(c);
 			
 			msg('New ' + c);
 
