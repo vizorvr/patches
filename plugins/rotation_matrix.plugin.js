@@ -10,7 +10,7 @@ g_Plugins["rotation_matrix"] = function(core) {
 	this.reset = function(ui)
 	{
 		self.angle = 0.0;
-		self.axis = [0.0, 0.0, 0.0];
+		self.axis = [0.0, 0.0, 1.0];
 		self.matrix = mat4.create();
 	
 		mat4.identity(self.matrix);
