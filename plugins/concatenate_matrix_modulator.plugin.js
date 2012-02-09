@@ -29,7 +29,7 @@ g_Plugins["concatenate_matrix_modulator"] = function(core) {
 
 	this.update_state = function(index, data)
 	{
-		mat4.multiply(self.matrices[0], self.matrices[1], self.matrix); // Output is the last parameter, bizarrely.
+		mat4.multiply(self.matrices[0], self.matrices[1], self.matrix);
 	};	
 
 	this.update_output = function(index)

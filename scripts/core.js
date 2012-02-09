@@ -1,3 +1,13 @@
+/*
+To do:
+
+1. Fix bug in camera operation. Especially the perspective camera.
+2. Finish post-deserialisation patchup code and verify operation with all plugins.
+3. Implement dynamic slots and nested graphs.
+4. Begin timeline implementation.
+ 
+*/
+
 var app = null;
 var g_Plugins = {};
 var g_DOM = {};
@@ -222,6 +232,7 @@ function ConnectionUI(parent_conn)
 	this.src_slot_div = null;
 	this.dst_slot_div = null;
 	this.color = '#000';
+	this.flow = false;
 	this.select_color = null;
 	this.parent_conn = parent_conn;
 	this.offset = 0;
@@ -390,6 +401,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	var self = this;
 	
 	this.inputs = [];
+	this.outputs = [];
 	
 	self.set_plugin = function(plugin)
 	{
@@ -468,16 +480,21 @@ function Node(parent_graph, plugin_id, x, y) {
 	
 	this.update_recursive = function(conns, delta_t)
 	{
-		if(self.rendering_state == 1)
+		if(self.rendering_state !== 0)
+		{
+			self.rendering_state++;
+			
+			if(self.rendering_state === self.outputs.length - 1)
+				self.plugin.needs_update = false;
+			
 			return;
+		}
 		
 		var uid = self.uid;
 		var inputs = self.inputs;
 		var needs_update = false;
 		var s_plugin = self.plugin;
 		var dirty = false;
-		
-		s_plugin.needs_update = false;
 		
 		for(var i = 0, len = inputs.length; i < len; i++)
 		{
@@ -493,15 +510,12 @@ function Node(parent_graph, plugin_id, x, y) {
 				inp.cached_value = value;
 				needs_update = true;
 				
-				if(inp.ui)
-				{
-					inp.ui.color = '#44e';
-					dirty = true;
-				}
+				if(inp.ui && !inp.ui.flow)
+					dirty = inp.ui.flow = true;
 			}
-			else if(inp.ui && inp.ui.color !== '#000') // TODO: Get rid of this string compare. Add a bool flag instead.
+			else if(inp.ui && inp.ui.flow)
 			{
-				inp.ui.color = '#000';
+				inp.ui.flow = false;
 				dirty = true;
 			}
 		}
@@ -596,7 +610,7 @@ function Graph(parent_graph)
 		{
 			var root = roots[i];
 			
-			dirty = dirty || root.update_recursive(self.connections, delta_t);
+			dirty = root.update_recursive(self.connections, delta_t) || dirty;
 		}
 		
 		return dirty;
@@ -1016,7 +1030,7 @@ function Application() {
 	
 	this.drawConnection = function(c2d, conn)
 	{
-		var odd_scale = 0.84; // Where in the universe is this comming from?
+		var odd_scale = 0.84; // TODO: Where in the universe is this comming from?
 		var c = conn.ui;
 		var so = self.scrollOffset;
 		var x1 = (c.src_pos[0] - so[0]) * odd_scale;
@@ -1027,7 +1041,7 @@ function Application() {
 		var my = (y1 + y4) / 2;
 		var x2 = Math.min(x1 + 10 + (c.offset * 5), mx);
 		
-		c2d.strokeStyle = c.select_color !== null ? c.select_color : c.color;
+		c2d.strokeStyle = c.select_color !== null ? c.select_color : c.flow ? '#44e' : c.color;
 		c2d.beginPath();
 		c2d.moveTo(x1, y1);
 		c2d.lineTo(x2, y1);
@@ -1073,6 +1087,7 @@ function Application() {
 			var ds = self.dst_slot;
 			var c = new Connection(self.src_node, self.dst_node, ss, ds);
 			
+			self.src_node.outputs.push(c);
 			self.dst_node.inputs.push(c);
 			
 			msg('New ' + c);

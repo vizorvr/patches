@@ -14,32 +14,19 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 		{ name: 'shader', dt: core.datatypes.SHADER } 
 	];
 	
-	var vs_src = '\
-		attribute vec3 pos;\n\
-		attribute vec2 uv;\n\
-		\n\
-		varying vec2 uv_coord;\n\
-		\n\
-		uniform mat4 m_mat;\n\
-		uniform mat4 v_mat;\n\
-		uniform mat4 p_mat;\n\
-		\n\
-		void main(void) {\n\
-			gl_Position = p_mat * m_mat * v_mat * vec4(pos, 1.0);\n\
-			uv_coord = uv;\n\
-		}';
+	var vs_src = 'attribute vec3 pos;' +
+		     'attribute vec2 uv;' +
+		     'varying vec2 uv_coord;' +
+		     'uniform mat4 m_mat;' +
+		     'uniform mat4 v_mat;' +
+		     'uniform mat4 p_mat;' +
+		     'void main(void) { gl_Position = p_mat * m_mat * v_mat * vec4(pos, 1.0); uv_coord = uv; }';
 		
-	var ps_src = '\
-		precision mediump float;\n\
-		\n\
-		varying vec2 uv_coord;\n\
-		\n\
-    		uniform sampler2D tex0;\n\
-    		uniform vec4 color;\n\
-		\n\
-		void main(void) {\n\
-			gl_FragColor = vec4(color.rgb * texture2D(tex0, uv_coord.st).rgb, 1.0);\n\
-		}';
+	var ps_src = 'precision mediump float;' +
+		     'varying vec2 uv_coord;' +
+    		     'uniform sampler2D tex0;' +
+    		     'uniform vec4 color;' +
+		     'void main(void) { gl_FragColor = vec4(color.rgb * texture2D(tex0, uv_coord.st).rgb, 1.0); }';
 
 	this.s = new ShaderProgram(gl);
 	this.vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);

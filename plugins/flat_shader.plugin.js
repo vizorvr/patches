@@ -13,25 +13,15 @@ g_Plugins["flat_shader"] = function(core) {
 		{ name: 'shader', dt: core.datatypes.SHADER } 
 	];
 	
-	var vs_src = '\
-		attribute vec3 pos;\n\
-		\n\
-		uniform mat4 m_mat;\n\
-		uniform mat4 v_mat;\n\
-		uniform mat4 p_mat;\n\
-		\n\
-		void main(void) {\n\
-			gl_Position = p_mat * m_mat * v_mat * vec4(pos, 1.0);\n\
-		}';
+	var vs_src = 'attribute vec3 pos;' +
+		     'uniform mat4 m_mat;' +
+		     'uniform mat4 v_mat;' +
+		     'uniform mat4 p_mat;' +
+		     'void main(void) { gl_Position = p_mat * m_mat * v_mat * vec4(pos, 1.0); }';
 	
-	var ps_src = '\
-		precision mediump float;\n\
-		\n\
-		uniform vec4 color;\n\
-		\n\
-		void main(void) {\n\
-			gl_FragColor = color;\n\
-		}';
+	var ps_src = 'precision mediump float;' +
+		     'uniform vec4 color;' +
+		     'void main(void) { gl_FragColor = color; }';
 
 	this.s = new ShaderProgram(gl);
 	this.vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
