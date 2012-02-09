@@ -816,7 +816,7 @@ function Application() {
 	this.interval = null;
 	this.abs_time = 0.0;
 	this.last_time = (new Date()).getTime();
-	this.ctrl_pressed = false;
+	this.shift_pressed = false;
 	this.hover_slot = null;
 	this.hover_slot_div = null;
 	this.hover_connections = [];
@@ -874,7 +874,7 @@ function Application() {
 	{
 		e.stopPropagation();
 		
-		if(!self.ctrl_pressed && type == 1)
+		if(!self.shift_pressed && type == 1)
 		{
 			self.src_node = node;
 			self.src_slot = slot;
@@ -910,7 +910,7 @@ function Application() {
 			slot_div.css('color', '#0f0');
 		}
 		
-		if(self.ctrl_pressed)
+		if(self.shift_pressed)
 			self.removeHoverConnections();
 				
 		return false;
@@ -999,7 +999,7 @@ function Application() {
 		self.hover_slot = slot;
 		self.hover_slot_div = slot_div;
 
-		if(self.ctrl_pressed)
+		if(self.shift_pressed)
 			self.activateHoverSlot();
 	}};
 
@@ -1182,7 +1182,7 @@ function Application() {
 	{
 		self.hover_node = node;
 
-		if(self.ctrl_pressed)
+		if(self.shift_pressed)
 			self.activateHoverNode();
 	}};
 	
@@ -1196,7 +1196,7 @@ function Application() {
 	{
 		e.stopPropagation();
 		
-		if(self.ctrl_pressed && self.hover_node !== null)
+		if(self.shift_pressed && self.hover_node !== null)
 		{
 			var hn = self.hover_node;
 			
@@ -1243,9 +1243,9 @@ function Application() {
 	
 	this.onKeyDown = function(e)
 	{
-		if(e.keyCode === 17) // .isCtrl doesn't work on Chrome.
+		if(e.keyCode === 16) // .isShift doesn't work on Chrome.
 		{
-			self.ctrl_pressed = true;
+			self.shift_pressed = true;
 			self.activateHoverSlot();
 			self.activateHoverNode();
 		}
@@ -1253,9 +1253,9 @@ function Application() {
 	
 	this.onKeyUp = function(e)
 	{
-		if(e.keyCode === 17)
+		if(e.keyCode === 16)
 		{
-			self.ctrl_pressed = false;
+			self.shift_pressed = false;
 			self.releaseHoverSlot();
 			self.releaseHoverNode();
 		}
@@ -1343,11 +1343,11 @@ function Application() {
 		self.updateCanvas();
 	});
 	
-	// If the user uses any of the existing browser CTRL hotkeys (like new tab!),
+	// If the user uses any of the existing browser SHIFT hotkey (like new tab!),
 	// make sure we clear our hover state.
 	$(window).blur(function()
 	{
-		self.ctrl_pressed = false;
+		self.shift_pressed = false;
 		self.releaseHoverSlot();
 		self.releaseHoverNode();
 	});
