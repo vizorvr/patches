@@ -435,7 +435,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.ui = null;
 		this.id = app.core.plugin_mgr.keybyid[plugin_id];
 		this.uid = parent_graph.get_node_uid();
-		this.rendering_state = 0;
+		this.is_updated = false;
 		
 		self.set_plugin(app.core.plugin_mgr.create(plugin_id));
 	}
@@ -480,21 +480,16 @@ function Node(parent_graph, plugin_id, x, y) {
 	
 	this.update_recursive = function(conns, delta_t)
 	{
-		if(self.rendering_state !== 0)
-		{
-			self.rendering_state++;
-			
-			if(self.rendering_state === self.outputs.length - 1)
-				self.plugin.needs_update = false;
-			
+		if(self.is_updated)
 			return;
-		}
 		
 		var uid = self.uid;
 		var inputs = self.inputs;
 		var needs_update = false;
 		var s_plugin = self.plugin;
 		var dirty = false;
+		
+		self.plugin.needs_update = false;
 		
 		for(var i = 0, len = inputs.length; i < len; i++)
 		{
@@ -528,7 +523,7 @@ function Node(parent_graph, plugin_id, x, y) {
 			s_plugin.needs_update = true;
 		}
 		
-		self.rendering_state = 1;
+		self.is_updated = true;
 		
 		return dirty;
 	}
@@ -574,6 +569,7 @@ function Graph(parent_graph)
 	this.uid = app.core.get_graph_uid();
 	this.parent_graph = parent_graph;
 	this.nodes = [];
+	this.roots = [];
 	this.connections = [];
 	this.node_uid = 0;
 
@@ -587,31 +583,24 @@ function Graph(parent_graph)
 		n = new Node(self, plugin_id, x, y);
 		
 		self.nodes.push(n);
+		
+		if(n.plugin.output_slots.length == 0)
+			self.roots.push(n);
+		
 		return n;
 	};
 	
 	this.update = function(delta_t)
 	{
 		var nodes = self.nodes;
-		var roots = [];
+		var roots = self.roots;
 		var dirty = false;
 		
 		for(var i = 0, len = nodes.length; i < len; i++)
-		{
-			var node = nodes[i];
-			
-			if(node.plugin.output_slots.length == 0)
-				roots.push(node);
-				
-			node.rendering_state = 0;
-		}
+			nodes[i].is_updated = false;
 		
 		for(var i = 0, len = roots.length; i < len; i++)
-		{
-			var root = roots[i];
-			
-			dirty = root.update_recursive(self.connections, delta_t) || dirty;
-		}
+			dirty = roots[i].update_recursive(self.connections, delta_t) || dirty;
 		
 		return dirty;
 	};
@@ -626,8 +615,11 @@ function Graph(parent_graph)
 			
 			c.cached_value = null;
 
-			if(c.ui)
+			if(c.ui && c.ui.flow)
+			{
+				c.ui.flow = false;
 				c.ui.color = '#000';
+			}
 		}
 			
 		var nodes = self.nodes;
@@ -724,6 +716,7 @@ function Graph(parent_graph)
 		self.parent_graph = d.parent_uid; // TODO: Patch up when all graphs are loaded!
 		
 		self.nodes = [];
+		self.roots = [];
 		
 		for(var i = 0, len = d.nodes.length; i < len; i++)
 		{
@@ -731,6 +724,9 @@ function Graph(parent_graph)
 			
 			n.deserialise(d.nodes[i]);
 			self.nodes.push(n);
+			
+			if(n.plugin.output_slots.length == 0)
+				self.roots.push(n);
 		}
 
 		self.connections = [];
