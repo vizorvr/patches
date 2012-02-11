@@ -895,7 +895,7 @@ function Core() {
 		
 		self.active_graph.destroy_ui();
 		self.active_graph.deserialise(d.active_graph);
-		self.graphs.push(d.active_graph);
+		self.graphs.push(self.active_graph);
 		self.active_graph.patch_up(self.graphs);
 	}
 }
@@ -1422,13 +1422,13 @@ function Application() {
 
 	this.onSaveClicked = function()
 	{
-		g_DOM.persist.text(self.core.serialise());
+		g_DOM.persist.val(self.core.serialise());
 	};
 	
 	this.onLoadClicked = function()
 	{
 		self.onStopClicked();
-		self.core.deserialise(g_DOM.persist.text());
+		self.core.deserialise(g_DOM.persist.val());
 		self.updateCanvas();
 	};
 
@@ -1462,14 +1462,6 @@ function Application() {
 		self.shift_pressed = false;
 		self.releaseHoverSlot();
 		self.releaseHoverNode();
-	});
-	
-	// Handle paste in persistence field
-	g_DOM.persist.bind('paste', function(e)
-	{
-		// window.clipboardData.getData('Text') // IE
-		if(event.clipboardData)
-			g_DOM.persist.text(event.clipboardData.getData('text/plain'));
 	});
 	
 	// Make sure all the input fields blur themselves when they gain focus --

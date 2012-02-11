@@ -102,7 +102,7 @@ h2
 	margin-left: 5px;
 	margin-top: 5px;
 	position: absolute; 
-	width: 320px;
+	width: 316px;
 	height: 516px;
 	left: 1033px; 
 	top: 370px;
@@ -112,6 +112,7 @@ h2
 	overflow-y: scroll;
 	overflow-x: hidden;
 	font-family: monospace;
+	border: none;
 }
 
 .plugin
