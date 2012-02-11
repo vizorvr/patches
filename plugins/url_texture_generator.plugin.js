@@ -20,7 +20,9 @@ g_Plugins["url_texture_generator"] = function(core) {
 				url = document.URL;
 				
 				if(url[url.length-1] !== '/')
-					url = url.substring(0, url.lastIndexOf('/') + 1) + 'data/textures/';
+					url = url.substring(0, url.lastIndexOf('/') + 1);
+				
+				url = url + 'data/textures/';
 			}
 			
 			var diag = make('div');

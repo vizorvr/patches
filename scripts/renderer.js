@@ -29,8 +29,8 @@ function Renderer(canvas_id)
 	
 	if(this.context)
 	{
-		this.context.viewportWidth = 0;
-		this.context.viewportHeight = 0;
+		this.context.viewportWidth = canvas.width();
+		this.context.viewportHeight = canvas.height();
 	}
 	else
 		msg('Error: WebGL initialization failed.');
@@ -40,9 +40,6 @@ function Renderer(canvas_id)
 		if(this.context)
 		{
 			var gl = self.context;
-			
-			gl.viewportWidth = canvas.width();
-			gl.viewportHeight = canvas.height();
 			
 			gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	    		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
