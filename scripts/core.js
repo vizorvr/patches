@@ -247,9 +247,8 @@ function ConnectionUI(parent_conn)
 	this.dst_pos = [0, 0];
 	this.src_slot_div = null;
 	this.dst_slot_div = null;
-	this.color = '#000';
 	this.flow = false;
-	this.select_color = null;
+	this.selected = false;
 	this.parent_conn = parent_conn;
 	this.offset = 0;
 	
@@ -845,8 +844,7 @@ function Core() {
 		self.delta_t = delta_t;
 		self.renderer.update();
 		
-		if(self.active_graph.update(delta_t)) // Did connection state change?
-			app.updateCanvas(); // Update canvas to show changes in data flow state
+		return self.active_graph.update(delta_t); // Did connection state change?
 	}
 	
 	this.serialise = function()
@@ -1021,7 +1019,7 @@ function Application() {
 			
 			if(c.dst_slot === hs || c.src_slot === hs)
 			{
-				c.ui.select_color = '#f00';
+				c.ui.selected = true;
 				self.hover_connections.push(c);
 				dirty = true;
 								
@@ -1048,7 +1046,7 @@ function Application() {
 		if(hcs.length > 0)
 		{
 			for(var i = 0, len = hcs.length; i < len; i++)
-				hcs[i].ui.select_color = null;
+				hcs[i].ui.selected = false;
 
 			self.hover_connections = [];
 			self.updateCanvas();
@@ -1113,7 +1111,7 @@ function Application() {
 		var my = (y1 + y4) / 2;
 		var x2 = Math.min(x1 + 10 + (c.offset * 5), mx);
 		
-		c2d.strokeStyle = c.select_color !== null ? c.select_color : c.flow ? '#44e' : c.color;
+		c2d.strokeStyle = c.selected ? '#f00' : c.flow ? '#44e' : '#000';
 		c2d.beginPath();
 		c2d.moveTo(x1, y1);
 		c2d.lineTo(x2, y1);
@@ -1211,7 +1209,7 @@ function Application() {
 				
 				if(c.src_node.uid == uid || c.dst_node.uid == uid)
 				{
-					c.ui.select_color = '#f00';
+					c.ui.selected = true;
 					hcs.push(c);
 				}
 			}
@@ -1233,7 +1231,7 @@ function Application() {
 			if(hcs.length > 0)
 			{
 				for(var i = 0, len = hcs.length; i < len; i++)
-					hcs[i].ui.color = '#000';
+					hcs[i].ui.selected = false;
 
 				self.updateCanvas();
 			}
@@ -1416,7 +1414,12 @@ function Application() {
 		var time = (new Date()).getTime();
 		var delta_t = (time - self.last_time) * 0.001;
 		
-		self.core.update(self.abs_time, delta_t);
+		if(self.core.update(self.abs_time, delta_t))
+		{
+			msg('canvas update.');
+			self.updateCanvas();
+		}
+		
 		g_DOM.frame.val(delta_t.toFixed(4));
 		self.last_time = time;
 		self.abs_time += delta_t;
