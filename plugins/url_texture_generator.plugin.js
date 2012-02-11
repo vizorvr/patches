@@ -14,7 +14,7 @@ g_Plugins["url_texture_generator"] = function(core) {
 	
 	this.create_ui = function()
 	{
-		var inp = $('<input type="button" value="Source" title="No texture selected." />');
+		var inp = $('<input id="url" type="button" value="Source" title="No texture selected." />');
 		
 		inp.click(function(e) 
 		{
@@ -26,14 +26,16 @@ g_Plugins["url_texture_generator"] = function(core) {
 			var diag = make('div');
 			var url_inp = $('<input type="input" value="' + url + 'data/textures/" />'); 
 			
-			url_inp.css('width', '400px');
+			url_inp.css('width', '410px');
 			diag.append(url_inp);
 			
 			diag.dialog({
-				width: 420,
+				width: 460,
 				height: 150,
 				modal: true,
 				title: 'Select image URL.',
+				show: 'slide',
+				hide: 'slide',
 				buttons: {
 					'OK': function()
 					{
@@ -46,7 +48,11 @@ g_Plugins["url_texture_generator"] = function(core) {
 					{
 						$(this).dialog('close');
 					}
-				}
+				},
+				open: function(url) { return function()
+				{
+					url.focus().val(url.val());
+				}}(url_inp)
 			});
 		});
 		

@@ -20,7 +20,7 @@ def glob_recursive(base_path, pattern):
 # 3: SlimIt
 
 # Note that YUI is always used for css compression (closure doesn't do that), so it's required.
-compressor = 1
+compressor = 0
 build_dir = './build'
 
 def compress(in_name, out_name):

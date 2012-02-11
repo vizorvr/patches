@@ -1,8 +1,8 @@
 /*
 To do:
 
-1. Fix bug in camera operation. Especially the perspective camera.
-2. Finish post-deserialisation patchup code and verify operation with all plugins.
+1. Finish post-deserialisation patchup code and verify operation with all plugins.
+2. Fix bug in camera operation. Especially the perspective camera.
 3. Implement dynamic slots and nested graphs.
 4. Begin timeline implementation.
  
@@ -51,6 +51,18 @@ function sort_dict(dict)
 	s.sort();
 	return s;
 }
+
+function resolve_graph(graphs, guid)
+{
+	for(var i = 0, len = graphs.length; i < len; i++)
+	{
+		if(graphs[i].uid === guid)
+			return graphs[i]; 
+	}
+
+	msg('ERROR: Failed to resolve graph with uid = ' + guid);
+	return null;
+};
 
 function PluginGroup(id)
 {
@@ -227,6 +239,8 @@ function PluginManager(core, base_url)
  
 function ConnectionUI(parent_conn)
 {
+	var self = this;
+	
 	this.src_pos = [0, 0];
 	this.dst_pos = [0, 0];
 	this.src_slot_div = null;
@@ -236,6 +250,24 @@ function ConnectionUI(parent_conn)
 	this.select_color = null;
 	this.parent_conn = parent_conn;
 	this.offset = 0;
+	
+	this.serialise = function()
+	{
+		var d = {};
+		
+		d.src_pos = self.src_pos;
+		d.dst_pos = self.dst_pos;
+		d.offset = self.offset;
+		
+		return d;
+	};
+	
+	this.deserialise = function(d)
+	{
+		self.src_pos = d.src_pos;
+		self.dst_pos = d.dst_pos;
+		self.offset = d.offset;
+	};
 }
 
 function Connection(src_node, dst_node, src_slot, dst_slot)
@@ -275,6 +307,9 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		d.dst_slot = self.dst_slot.index;
 		d.ui = self.ui !== null;
 		
+		if(d.ui)
+			d.ui_data = self.ui.serialise();
+		
 		return d;
 	};
 	
@@ -282,13 +317,16 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	{
 		// TODO: Patch up after load completes!
 		self.src_node = d.src_nuid;
-		self.dst_node = d.src_nuid;
+		self.dst_node = d.dst_nuid;
 		self.src_slot = d.src_slot;
 		self.dst_slot = d.dst_slot;
 		self.cached_value = null;
 		
 		if(d.ui)
+		{
 			self.ui = new ConnectionUI(self);
+			self.ui.deserialise(d.ui_data);
+		}
 	};
 	
 	this.patch_up = function(nodes)
@@ -307,7 +345,18 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		
 		self.src_node = resolve_node(self.src_node);
 		self.dst_node = resolve_node(self.dst_node);
-		self.src_slot = self.src_node
+		
+		if(self.ui)
+		{
+			self.ui.src_slot_div = self.src_node.ui.dom.find('#n' + self.src_node.uid + 'so' + self.src_slot);
+			self.ui.dst_slot_div = self.dst_node.ui.dom.find('#n' + self.dst_node.uid + 'si' + self.dst_slot);
+		}
+		
+		self.src_slot = self.src_node.plugin.output_slots[self.src_slot];
+		self.dst_slot = self.dst_node.plugin.input_slots[self.dst_slot];
+
+		self.src_node.outputs.push(self);
+		self.dst_node.inputs.push(self);
 	}
 }
 
@@ -394,7 +443,9 @@ function NodeUI(parent_node, x, y) {
 		stop: app.onNodeDragStopped(parent_node)
     	});
 	
-	g_DOM.canvas_parent.append(this.dom)
+	this.dom.css('display', 'none');
+	g_DOM.canvas_parent.append(this.dom);
+	this.dom.show('fast');
 }
 
 function Node(parent_graph, plugin_id, x, y) {
@@ -448,9 +499,13 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.destroy_ui = function()
 	{
 		if(self.ui)
-			self.ui.dom.remove();
-		
-		self.ui = null;
+		{
+			self.ui.dom.hide('fast', function()
+			{
+				self.ui.dom.remove();
+				self.ui = null;
+			});
+		}
 	};
 	
 	this.destroy = function()
@@ -559,6 +614,11 @@ function Node(parent_graph, plugin_id, x, y) {
 		if(d.ui)
 			self.ui = new NodeUI(self, self.x, self.y);
 	};
+	
+	this.patch_up = function(graphs)
+	{
+		self.parent_graph = resolve_graph(graphs, self.parent_graph);
+	}
 }
 
 
@@ -647,6 +707,14 @@ function Graph(parent_graph)
 		
 		if(index != -1)
 			c.dst_node.inputs.splice(index, 1);
+	};
+	
+	this.destroy_ui = function()
+	{
+		var nodes = self.nodes;
+		
+		for(var i = 0, len = nodes.length; i < len; i++)
+			nodes[i].destroy_ui()
 	};
 	
 	this.find_connection_to = function(node, slot)
@@ -739,6 +807,19 @@ function Graph(parent_graph)
 			self.connections.push(c);
 		}
 	};
+	
+	this.patch_up = function(graphs)
+	{
+		var nodes = self.nodes, conns = self.connections;
+		
+		self.parent_graph = resolve_graph(graphs, self.parent_graph);
+		
+		for(var i = 0, len = nodes.length; i < len; i++)
+			nodes[i].patch_up(graphs); 
+
+		for(var i = 0, len = conns.length; i < len; i++)
+			conns[i].patch_up(nodes); 
+	};
 }
 
 function Core() {
@@ -756,6 +837,8 @@ function Core() {
 	
 	this.renderer = new Renderer('#webgl-canvas');
 	this.active_graph = this.root_graph = null;
+	this.graphs = [];
+	
 	this.abs_t = 0.0;
 	this.delta_t = 0.0;
 	this.graph_uid = 0;
@@ -772,10 +855,7 @@ function Core() {
 		self.renderer.update();
 		
 		if(self.active_graph.update(delta_t)) // Did connection state change?
-		{
-			// So we can show dataflow, see update_recursive.
-			app.updateCanvas();
-		}
+			app.updateCanvas(); // Update canvas to show changes in data flow state
 	}
 	
 	this.serialise = function()
@@ -797,7 +877,12 @@ function Core() {
 		self.delta_t = 0.0;
 		self.graph_uid = d.graph_uid;
 		
+		self.graphs = [];
+		
+		self.active_graph.destroy_ui();
 		self.active_graph.deserialise(d.active_graph);
+		self.graphs.push(d.active_graph);
+		self.active_graph.patch_up(self.graphs);
 	}
 }
 
@@ -1328,7 +1413,9 @@ function Application() {
 	
 	this.onLoadClicked = function()
 	{
+		self.onStopClicked();
 		self.core.deserialise(g_DOM.persist.text());
+		self.updateCanvas();
 	};
 
 	this.onUpdate = function()
@@ -1424,6 +1511,7 @@ $(document).ready(function() {
 	// where would *that* singleton live? In the core... Most awkward.
 	// The alternative is to have the UID manager singleton be global? Ugh..
 	app.core.active_graph = app.core.root_graph = new Graph(null);
+	app.core.graphs.push(app.core.root_graph);
 	
 	g_DOM.play.button({ icons: { primary: 'ui-icon-play' } }).click(app.onPlayClicked);
 	g_DOM.pause.button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(app.onPauseClicked);

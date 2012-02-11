@@ -15,7 +15,7 @@ g_Plugins["perspective_camera"] = function(core) {
 	this.reset = function(ui)
 	{
 		self.camera = new Camera(gl);
-		self.fov = 45.0;
+		self.fov = 30.0;
 		self.near = 0.01;
 		self.far = 100.0;
 		self.position = [0.0, 0.0, 1.0];
@@ -38,7 +38,7 @@ g_Plugins["perspective_camera"] = function(core) {
 
 	this.update_state = function()
 	{
-		mat4.perspective(self.fov, gl.viewportWidth / gl.viewportHeight, self.near, self.far, self.camera.projection);
+		mat4.perspective(self.fov * Math.PI / 180.0, gl.viewportWidth / gl.viewportHeight, self.near, self.far, self.camera.projection);
 		mat4.lookAt(self.position, self.target, up, self.camera.view);
 	};
 	
