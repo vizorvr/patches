@@ -28,4 +28,9 @@ g_Plugins["const_float_generator"] = function(core) {
 	{
 		return self.state.val;
 	};
+	
+	this.state_changed = function(ui)
+	{
+		ui.val('' + self.state.val);
+	};
 };

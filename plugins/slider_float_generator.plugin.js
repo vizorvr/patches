@@ -97,6 +97,7 @@ g_Plugins["slider_float_generator"] = function(core) {
 		
 		self.v_col = v_col;
 		self.update_value(0.0);
+		self.slider = slider;
 		return table;
 	};
 	
@@ -114,5 +115,12 @@ g_Plugins["slider_float_generator"] = function(core) {
 	{
 		self.state.val = value;
 		self.v_col.text(value.toFixed(2));
+	};
+	
+	this.state_changed = function(ui)
+	{
+		self.slider.slider('option', 'min', state.min);
+		self.slider.slider('option', 'max', state.max);
+		self.slider.slider('option', 'val', state.val);
 	};
 };

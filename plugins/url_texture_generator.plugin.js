@@ -7,24 +7,24 @@ g_Plugins["url_texture_generator"] = function(core) {
 	this.gl = core.renderer.context;
 	this.texture = null;
 	
-	this.reset = function(ui)
-	{
-		self.reload();
-	};
-	
 	this.create_ui = function()
 	{
 		var inp = $('<input id="url" type="button" value="Source" title="No texture selected." />');
 		
 		inp.click(function(e) 
 		{
-			var url = document.URL;
+			var url = self.state.url;
 			
-			if(url[url.length-1] !== '/')
-				url = url.substring(0, url.lastIndexOf('/') + 1);
+			if(url === '')
+			{
+				url = document.URL;
+				
+				if(url[url.length-1] !== '/')
+					url = url.substring(0, url.lastIndexOf('/') + 1) + 'data/textures/';
+			}
 			
 			var diag = make('div');
-			var url_inp = $('<input type="input" value="' + url + 'data/textures/" />'); 
+			var url_inp = $('<input type="input" value="' + url + '" />'); 
 			
 			url_inp.css('width', '410px');
 			diag.append(url_inp);
@@ -40,9 +40,8 @@ g_Plugins["url_texture_generator"] = function(core) {
 					'OK': function()
 					{
 						self.state.url = url_inp.val();
-						self.reload();
+						self.state_changed(inp);
 						$(this).dialog('close');
-						inp.attr('title', self.state.url);
 					},
 					'Cancel': function()
 					{
@@ -64,12 +63,13 @@ g_Plugins["url_texture_generator"] = function(core) {
 		return self.texture;
 	};
 	
-	this.reload = function()
+	this.state_changed = function(ui)
 	{
 		if(self.state.url !== '')
 		{
 			self.texture = new Texture(self.gl);	
 			self.texture.load(self.state.url);
+			ui.attr('title', self.state.url);
 		}
 	};
 };

@@ -60,7 +60,9 @@ function resolve_graph(graphs, guid)
 			return graphs[i]; 
 	}
 
-	msg('ERROR: Failed to resolve graph with uid = ' + guid);
+	if(guid !== -1)
+		msg('ERROR: Failed to resolve graph with uid = ' + guid);
+	
 	return null;
 };
 
@@ -364,6 +366,7 @@ function NodeUI(parent_node, x, y) {
 	this.parent_node = parent_node;
 	this.x = x;
 	this.y = y;
+	this.plugin_ui = null;
 	
 	var render_slots = function(nid, col, slots, type)
 	{
@@ -436,8 +439,12 @@ function NodeUI(parent_node, x, y) {
 	var plugin = parent_node.plugin;
 	
 	if(plugin.create_ui)
-		content_col.append(plugin.create_ui());
-
+	{
+		this.plugin_ui = plugin.create_ui();
+		
+		content_col.append(this.plugin_ui);
+	}
+	
 	this.dom.draggable({
 		drag: app.onNodeDragged(parent_node),
 		stop: app.onNodeDragStopped(parent_node)
@@ -608,11 +615,16 @@ function Node(parent_graph, plugin_id, x, y) {
 		
 		self.set_plugin(app.core.plugin_mgr.create(d.plugin));
 		
-		if(d.state != null)
-			self.plugin.state = d.state;
-		
 		if(d.ui)
 			self.ui = new NodeUI(self, self.x, self.y);
+
+		if(d.state != null)
+		{
+			self.plugin.state = d.state;
+		
+			if(self.plugin.state_changed)
+				self.plugin.state_changed(self.ui ? self.ui.plugin_ui : null);
+		}
 	};
 	
 	this.patch_up = function(graphs)
@@ -689,7 +701,7 @@ function Graph(parent_graph)
 			var n = nodes[i];
 			
 			if(n.plugin.reset)
-				n.plugin.reset(n.ui);
+				n.plugin.reset(n.ui.plugin_ui);
 		}
 	};
 	
@@ -818,7 +830,9 @@ function Graph(parent_graph)
 			nodes[i].patch_up(graphs); 
 
 		for(var i = 0, len = conns.length; i < len; i++)
-			conns[i].patch_up(nodes); 
+			conns[i].patch_up(nodes);
+			
+		self.reset();
 	};
 }
 
@@ -1171,7 +1185,7 @@ function Application() {
 			self.src_node.outputs.push(c);
 			self.dst_node.inputs.push(c);
 			
-			msg('New ' + c);
+			// msg('New ' + c);
 
 			c.create_ui();
 			c.ui.src_pos = self.edit_conn.ui.src_pos.slice(0);
