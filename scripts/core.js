@@ -552,7 +552,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		{
 			var inp = inputs[i];
 			
-			inp.src_node.update_recursive(conns, delta_t);
+			dirty = inp.src_node.update_recursive(conns, delta_t) || dirty;
 			
 			var value = inp.src_node.plugin.update_output(inp.src_slot.index);
 			
@@ -563,7 +563,10 @@ function Node(parent_graph, plugin_id, x, y) {
 				needs_update = true;
 				
 				if(inp.ui && !inp.ui.flow)
-					dirty = inp.ui.flow = true;
+				{
+					dirty = true;
+					inp.ui.flow = true;
+				}
 			}
 			else if(inp.ui && inp.ui.flow)
 			{
@@ -1415,10 +1418,7 @@ function Application() {
 		var delta_t = (time - self.last_time) * 0.001;
 		
 		if(self.core.update(self.abs_time, delta_t))
-		{
-			msg('canvas update.');
 			self.updateCanvas();
-		}
 		
 		g_DOM.frame.val(delta_t.toFixed(4));
 		self.last_time = time;
