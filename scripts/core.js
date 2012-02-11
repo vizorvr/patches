@@ -519,21 +519,17 @@ function Node(parent_graph, plugin_id, x, y) {
 	{
 		var graph = self.parent_graph;
 		var index = graph.nodes.indexOf(self);
+		var pending = [];
 		
 		if(index != -1)
 			graph.nodes.splice(index, 1);
 		
-		var pending = [];
-		var conns = graph.connections;
-		
-		for(var i = 0, len = conns.length; i < len; i++)
-		{
-			var c = conns[i];
-			
-			if(c.src_node.uid === self.uid || c.dst_node.uid === self.uid)
-				pending.push(c);
-		}
-		
+		for(var i = 0, len = self.inputs.length; i < len; i++)
+			pending.push(self.inputs[i]);
+
+		for(var i = 0, len = self.outputs.length; i < len; i++)
+			pending.push(self.outputs[i]);
+
 		for(var i = 0, len = pending.length; i < len; i++)
 			graph.destroy_connection(pending[i]);
 		
@@ -727,25 +723,6 @@ function Graph(parent_graph)
 		
 		for(var i = 0, len = nodes.length; i < len; i++)
 			nodes[i].destroy_ui()
-	};
-	
-	this.find_connection_to = function(node, slot)
-	{
-		if(slot.type !== 0)
-			return null;
-		
-		var conns = self.connections;
-		var uid = node.uid;
-		
-		for(var i = 0, len = conns.length; i < len; i++)
-		{
-			var c = conns[i];
-			
-			if(c.dst_node.uid = uid && c.dst_slot == slot)
-				return c;			
-		}
-		
-		return null;
 	};
 	
 	this.find_connections_from = function(node, slot)
