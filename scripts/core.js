@@ -1103,24 +1103,21 @@ function Application() {
 	
 	this.drawConnection = function(c2d, conn)
 	{
-		var odd_scale = 0.84; // TODO: Where in the universe is this comming from?
-		var c = conn.ui;
-		var so = self.scrollOffset;
-		var x1 = (c.src_pos[0] - so[0]) * odd_scale;
-		var y1 = c.src_pos[1] - so[1];
-		var x4 = (c.dst_pos[0] - so[0]) * odd_scale;
-		var y4 = c.dst_pos[1] - so[1];
-		var mx = (x1 + x4) / 2;
-		var my = (y1 + y4) / 2;
-		var x2 = Math.min(x1 + 10 + (c.offset * 5), mx);
+		var odd_scale = 0.84, // TODO: Where in the universe is this comming from?
+		    c = conn.ui,
+		    so = self.scrollOffset,
+		    x1 = (c.src_pos[0] - so[0]) * odd_scale,
+		    y1 = c.src_pos[1] - so[1],
+		    x4 = (c.dst_pos[0] - so[0]) * odd_scale,
+		    y4 = c.dst_pos[1] - so[1],
+		    mx = (x1 + x4) / 2,
+		    my = (y1 + y4) / 2,
+		    x2 = Math.min(x1 + 10 + (c.offset * 5), mx);
 		
-		c2d.strokeStyle = c.selected ? '#f00' : c.flow ? '#44e' : '#000';
-		c2d.beginPath();
 		c2d.moveTo(x1, y1);
 		c2d.lineTo(x2, y1);
 		c2d.lineTo(x2, y4);
 		c2d.lineTo(x4, y4);
-		c2d.stroke();
 	};
 	
 	this.updateCanvas = function()
@@ -1131,14 +1128,36 @@ function Application() {
 		c.clearRect(0, 0, canvas.width, canvas.height);
 		
 		var conns = self.core.active_graph.connections;
+		var cb = [[], [], []];
+		var styles = ['#f00', '#44e', '#000'];
 		
 		for(var i = 0, len = conns.length; i < len; i++)
-			self.drawConnection(c, conns[i]);
+		{
+			var con = conns[i];
+
+			cb[con.ui.selected ? 0 : con.ui.flow ? 1 : 2].push(con);
+		}
 		
 		if(self.edit_conn)
 		{
 			self.edit_conn.ui.dst_pos = self.last_mouse_pos.slice(0);
-			self.drawConnection(c, self.edit_conn);
+			cb[2].push(self.edit_conn);
+		}
+		
+		for(var bin = 0; bin < 3; bin++)
+		{
+			var b = cb[bin];
+
+			if(b.length > 0)
+			{
+				c.strokeStyle = styles[bin];
+				c.beginPath();
+			
+				for(var i = 0, len = b.length; i < len; i++)
+					self.drawConnection(c, b[i]);
+				
+				c.stroke()
+			}
 		}
 	};
 	
