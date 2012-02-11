@@ -1325,24 +1325,26 @@ function Application() {
 		var conns = self.core.active_graph.connections;
 		var uid = node.uid;
 		var canvas_dirty = false;
+		var pos = node.ui.dom.position();
 		
-		for(var i = 0, len = conns.length; i < len; i++)
+		node.x = pos.left;
+		node.y = pos.top;
+		
+		for(var i = 0, len = node.outputs.length; i < len; i++)
 		{
-			var c = conns[i];
+			var c = node.outputs[i];
 			
-			if(c.src_node.uid == uid)
-			{
-				c.ui.src_pos = self.getSlotPosition(c.ui.src_slot_div, 1);
-				canvas_dirty = true;
-			}
-			else if(c.dst_node.uid == uid)
-			{
-				c.ui.dst_pos = self.getSlotPosition(c.ui.dst_slot_div, 0);
-				canvas_dirty = true;
-			}
+			c.ui.src_pos = self.getSlotPosition(c.ui.src_slot_div, 1);
 		}
 		
-		if(canvas_dirty)
+		for(var i = 0, len = node.inputs.length; i < len; i++)
+		{
+			var c = node.inputs[i];
+			
+			c.ui.dst_pos = self.getSlotPosition(c.ui.dst_slot_div, 0);
+		}
+		
+		if(node.inputs.length + node.outputs.length > 0)
 			self.updateCanvas();
 	}};
 	
