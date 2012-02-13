@@ -8,7 +8,7 @@ g_Plugins["lowpass_filter_modulator"] = function(core) {
 	
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
 
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.input_val = 0.0;
 		self.amount = 0.9;

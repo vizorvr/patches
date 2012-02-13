@@ -7,7 +7,7 @@ g_Plugins["rotation_matrix"] = function(core) {
 	];
 	this.output_slots = [ { name: 'matrix', dt: core.datatypes.MATRIX } ];
 
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.angle = 0.0;
 		self.axis = [0.0, 0.0, 1.0];

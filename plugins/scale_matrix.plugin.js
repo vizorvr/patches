@@ -6,7 +6,7 @@ g_Plugins["scale_matrix"] = function(core) {
 	];
 	this.output_slots = [ { name: 'matrix', dt: core.datatypes.MATRIX } ];
 
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.matrix = mat4.create();
 	

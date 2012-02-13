@@ -256,8 +256,8 @@ function ConnectionUI(parent_conn)
 	{
 		var d = {};
 		
-		d.src_pos = self.src_pos;
-		d.dst_pos = self.dst_pos;
+		d.src_pos = [Math.round(self.src_pos[0]), Math.round(self.src_pos[1])];
+		d.dst_pos = [Math.round(self.dst_pos[0]), Math.round(self.dst_pos[1])];
 		d.offset = self.offset;
 		
 		return d;
@@ -595,8 +595,8 @@ function Node(parent_graph, plugin_id, x, y) {
 		d.parent_uid = self.parent_graph.uid;
 		d.plugin = self.plugin.id;
 		d.state = self.plugin.state || null;
-		d.x = self.x;
-		d.y = self.y;
+		d.x = Math.round(self.x);
+		d.y = Math.round(self.y);
 		d.ui = self.ui != null;
 		d.uid = self.uid;
 		
@@ -699,7 +699,7 @@ function Graph(parent_graph)
 			var n = nodes[i];
 			
 			if(n.plugin.reset)
-				n.plugin.reset(n.ui.plugin_ui);
+				n.plugin.reset();
 		}
 	};
 	
@@ -952,7 +952,7 @@ function Application() {
 		var node = self.core.active_graph.create_instance(id, (pos.left - co.left) + cp.scrollLeft(), (pos.top - co.top) + cp.scrollTop());
 		
 		if(node.plugin.reset)
-			node.plugin.reset(node.ui);
+			node.plugin.reset();
 
 		node.create_ui();
 	};

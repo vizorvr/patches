@@ -30,7 +30,7 @@ g_Plugins["textured_quad_emitter"] = function(core) {
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.uv_coords);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uv_data), gl.STATIC_DRAW);
 	
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.shader = null;
 	};

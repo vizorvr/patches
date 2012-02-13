@@ -7,7 +7,7 @@ g_Plugins["concatenate_matrix_modulator"] = function(core) {
 	];
 	this.output_slots = [ { name: 'matrix', dt: core.datatypes.MATRIX } ];
 
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.matrices = [mat4.create(), mat4.create()];
 		self.matrix = mat4.create();

@@ -59,7 +59,7 @@ g_Plugins["flat_shader"] = function(core) {
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
       	};
       	
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.color = new Color(1.0, 1.0, 1.0, 1.0);
 		self.camera = new Camera(gl);

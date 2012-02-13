@@ -120,8 +120,5 @@ shutil.copytree('data/', build_dir + '/data/')
 print '\tCopying index.html folder.'
 os.system('cp index.html ' + build_dir)
 
-print '\tCopying serve script.'
-os.system('cp serve ' + build_dir)
-
 print '\tCreating change log.'
 os.system('git log --pretty="%H%x09%an%x09%ad%x09%s" > build/changelog.txt')

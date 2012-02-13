@@ -7,7 +7,7 @@ g_Plugins["multiply_modulator"] = function(core) {
 	];
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
 
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.input_val = 0.0;
 		self.mult_val = 1.0;

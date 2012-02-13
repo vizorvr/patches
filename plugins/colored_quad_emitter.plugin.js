@@ -23,7 +23,7 @@ g_Plugins["colored_quad_emitter"] = function(core) {
 
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v_data), gl.STATIC_DRAW);
 
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.shader = null;
 	};

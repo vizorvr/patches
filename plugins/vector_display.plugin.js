@@ -7,11 +7,9 @@ g_Plugins["vector_display"] = function(core) {
 	
 	this.output_slots = [];
 
-	this.reset = function(ui)
+	this.reset = function()
 	{
-		msg('vector_display: reset');
 		self.vec = ['-', '-', '-'];
-		msg('vector_display: self.vec = ' + self.vec);
 		self.update_values();
 	};
 	

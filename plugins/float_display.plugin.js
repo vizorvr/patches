@@ -7,7 +7,7 @@ g_Plugins["float_display"] = function(core) {
 	
 	this.output_slots = [];
 
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.update_value(null);
 	}

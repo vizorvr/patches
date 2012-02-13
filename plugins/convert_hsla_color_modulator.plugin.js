@@ -14,7 +14,7 @@ g_Plugins["convert_hsla_color_modulator"] = function(core) {
 		{ name: 'color', dt: core.datatypes.COLOR } 
 	];
 	
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.hsla = [1.0, 1.0, 1.0, 1.0];
 		self.color = new Color(1.0, 1.0, 1.0, 1.0);

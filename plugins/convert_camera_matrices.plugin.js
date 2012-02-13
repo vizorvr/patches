@@ -10,7 +10,7 @@ g_Plugins["convert_camera_matrices"] = function(core) {
 		{ name: 'view', dt: core.datatypes.MATRIX } 
 	];
 	
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.camera = new Camera(gl);
 	};

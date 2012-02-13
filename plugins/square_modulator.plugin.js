@@ -4,7 +4,7 @@ g_Plugins["square_modulator"] = function(core) {
 	this.input_slots = [ { name: 'time', dt: core.datatypes.FLOAT } ];
 	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
 	
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.time = 0.0;
 		self.result = 0.0;

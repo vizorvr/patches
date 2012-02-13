@@ -85,7 +85,7 @@ g_Plugins["texture_diffuse_shader"] = function(core) {
 		}
 	};
 	
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.color = new Color(1.0, 1.0, 1.0, 1.0);
 		self.tex = null;

@@ -12,7 +12,7 @@ g_Plugins["perspective_camera"] = function(core) {
 	];
 	this.output_slots = [ { name: 'camera', dt: core.datatypes.CAMERA } ];
 
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.camera = new Camera(gl);
 		self.fov = 30.0;

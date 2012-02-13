@@ -7,7 +7,7 @@ g_Plugins["modulate_modulator"] = function(core) {
 	];
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
 
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.input_val = 0.0;
 		self.limit_val = 1.0;

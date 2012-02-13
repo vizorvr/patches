@@ -7,7 +7,7 @@ g_Plugins["matrix_display"] = function(core) {
 	
 	this.output_slots = [];
 		
-	this.reset = function(ui)
+	this.reset = function()
 	{
 		self.cell_vals = ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'];
 		self.update_values();
