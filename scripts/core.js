@@ -1504,7 +1504,7 @@ $(document).ready(function() {
 	msg('Welcome to WebFx. ' + (new Date()));
 	
 	g_DOM.dbg.ajaxError(function(e, jqxhr, settings, exception) {
-		if(settings.dataType=='script') {
+		if(settings.dataType=='script' && !settings.url.match(/^plugins\/all.plugins\.js/)) {
 			msg(e + exception);
 		}
 	});
