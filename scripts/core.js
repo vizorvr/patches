@@ -637,7 +637,7 @@ function Node(parent_graph, plugin_id, x, y) {
 }
 
 
-function Graph(parent_graph) 
+function Graph(parent_graph, tree_node) 
 {
 	var self = this;
 	
@@ -647,7 +647,8 @@ function Graph(parent_graph)
 	this.roots = [];
 	this.connections = [];
 	this.node_uid = 0;
-
+	this.tree_node = tree_node;
+	
 	this.get_node_uid = function()
 	{
 		return self.node_uid++;
@@ -962,7 +963,13 @@ function Application() {
 				node.plugin.reset();
 
 			if(name !== null) // Graph?
+			{
 				node.title = name;
+				node.plugin.state.graph.tree_node = node.parent_graph.tree_node.addChild({
+					title: name,
+					isFolder: true
+				});
+			}
 			
 			node.create_ui();			
 		};
@@ -1568,6 +1575,7 @@ $(document).ready(function() {
 	g_DOM.load = $('#load');
 	g_DOM.frame = $('#frame');
 	g_DOM.persist = $('#persist');
+	g_DOM.structure = $('#structure');
 	
 	$.ajaxSetup({ cache: false });
 	
@@ -1595,12 +1603,27 @@ $(document).ready(function() {
 	app = new Application();
 	app.core.plugin_mgr = new PluginManager(app.core, 'plugins');
 	
+	g_DOM.structure.dynatree({
+		title: "Structure",
+		fx: { height: 'toggle', duration: 200 },
+		onActivate: function(node) 
+		{
+			alert(node.getKeyPath());
+		}
+	});
+    
+	var root_node = g_DOM.structure.dynatree('getRoot');
+	var gn_root = root_node.addChild({
+		title: 'Root',
+		isFolder: true
+	});	
+	
 	// TODO: Because graphs depend on the existence of the core singleton
 	// we can't create graph instances in the core initialisation code. Moreover,
 	// even though we could introduce a UID manager to move this out of the core,
 	// where would *that* singleton live? In the core... Most awkward.
 	// The alternative is to have the UID manager singleton be global? Ugh..
-	app.core.active_graph = app.core.root_graph = new Graph(null);
+	app.core.active_graph = app.core.root_graph = new Graph(null, gn_root);
 	app.core.graphs.push(app.core.root_graph);
 	
 	g_DOM.play.button({ icons: { primary: 'ui-icon-play' } }).click(app.onPlayClicked);
@@ -1609,19 +1632,6 @@ $(document).ready(function() {
 	g_DOM.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(app.onSaveClicked);
 	g_DOM.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(app.onLoadClicked);
 
-	$('#structure').jstree({
-			// the `plugins` array allows you to configure the active plugins on this instance
-			'plugins': ['themes', 'html_data', 'ui', 'crrm', 'hotkeys'],
-			'themes': { 'theme': 'apple' }
-			// each plugin you have included can have its own config object
-			// "core" : { "initially_open" : [ "phtml_1" ] }
-		})
-		.bind('loaded.jstree', function(event, data) 
-		{
-			// you get two params - event & data - check the core docs for a detailed description
-		});
-
-  	msg('Ready.');
-	
+  	msg('Ready.');	
 	$('#content').css('display', 'block');
 });
