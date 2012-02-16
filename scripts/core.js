@@ -405,11 +405,13 @@ function NodeUI(parent_node, x, y) {
 	var h_cell = make('td');
 	
 	h_cell.text(parent_node.title === null ? parent_node.id : parent_node.title);
+	h_cell.attr('id', 't');
 	h_cell.attr('colspan', '3');
 	h_cell.disableSelection();
 	h_row.append(h_cell);
 	h_row.addClass('pl_header');
 	h_row.click(app.onNodeHeaderClicked);
+	h_row.dblclick(app.onNodeHeaderDblClicked(parent_node));
 	h_row.mouseenter(app.onNodeHeaderEntered(parent_node));
 	h_row.mouseleave(app.onNodeHeaderExited);
 	this.dom.append(h_row);
@@ -968,10 +970,10 @@ function Application() {
 		if(id === 'graph')
 		{
 			var diag = make('div');
-			var url_inp = $('<input type="input" value="graph(' + self.core.active_graph.node_uid + ')" />'); 
+			var inp = $('<input type="input" value="graph(' + self.core.active_graph.node_uid + ')" />'); 
 		
-			url_inp.css('width', '410px');
-			diag.append(url_inp);
+			inp.css('width', '410px');
+			diag.append(inp);
 		
 			diag.dialog({
 				width: 460,
@@ -983,7 +985,7 @@ function Application() {
 				buttons: {
 					'OK': function()
 					{
-						createPlugin(url_inp.val());
+						createPlugin(inp.val());
 						$(this).dialog('close');
 					},
 					'Cancel': function()
@@ -991,10 +993,10 @@ function Application() {
 						$(this).dialog('close');
 					}
 				},
-				open: function(url) { return function()
+				open: function(i) { return function()
 				{
-					url.focus().val(url.val());
-				}}(url_inp)
+					i.focus().select();
+				}}(inp)
 			});
 		}
 		else
@@ -1360,6 +1362,43 @@ function Application() {
 		
 		return false;
 	};
+	
+	this.onNodeHeaderDblClicked = function(node) { return function(e)
+	{
+		var diag = make('div');
+		var inp = $('<input type="input" value="' + (node.title === null ? node.id : node.title) + '" />'); 
+	
+		inp.css('width', '410px');
+		diag.append(inp);
+	
+		diag.dialog({
+			width: 460,
+			height: 150,
+			modal: true,
+			title: 'Rename node.',
+			show: 'slide',
+			hide: 'slide',
+			buttons: {
+				'OK': function()
+				{
+					node.title = inp.val();
+					
+					if(node.ui !== null)
+						node.ui.dom.find('#t').text(node.title);
+					
+					$(this).dialog('close');
+				},
+				'Cancel': function()
+				{
+					$(this).dialog('close');
+				}
+			},
+			open: function(i) { return function()
+			{
+				i.focus().select();
+			}}(inp)
+		});
+	}};
 	
 	this.onNodeDragged = function(node) { return function(e)
 	{
