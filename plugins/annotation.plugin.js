@@ -9,6 +9,8 @@ g_Plugins["annotation"] = function(core) {
 	{
 		var inp = $('<textarea placeholder="Type text here" />');
 		
+		inp.css('font-size', '8pt');
+		
 		inp.bind('blur', function()
 		{
 			self.state.text = $(this).val();
