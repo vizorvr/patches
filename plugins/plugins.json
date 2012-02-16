@@ -28,5 +28,6 @@
 	"Emitters/Debug/Led display": "led_display",
 	"Emitters/Debug/Matrix display": "matrix_display",
 	"Emitters/Debug/Vector display": "vector_display",
-	"Structure/Annotation": "annotation"
+	"Structure/Annotation": "annotation",
+	"Structure/Graph": "graph"
 }

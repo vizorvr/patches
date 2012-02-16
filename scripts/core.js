@@ -404,7 +404,7 @@ function NodeUI(parent_node, x, y) {
 	var h_row = make('tr');
 	var h_cell = make('td');
 	
-	h_cell.text(parent_node.id);
+	h_cell.text(parent_node.title === null ? parent_node.id : parent_node.title);
 	h_cell.attr('colspan', '3');
 	h_cell.disableSelection();
 	h_row.append(h_cell);
@@ -493,6 +493,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.id = app.core.plugin_mgr.keybyid[plugin_id];
 		this.uid = parent_graph.get_node_uid();
 		this.is_updated = false;
+		this.title = null;
 		
 		self.set_plugin(app.core.plugin_mgr.create(plugin_id));
 	}
@@ -599,6 +600,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		d.y = Math.round(self.y);
 		d.ui = self.ui != null;
 		d.uid = self.uid;
+		d.title = self.title;
 		
 		return d;
 	};
@@ -610,6 +612,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		self.y = d.y;
 		self.id = app.core.plugin_mgr.keybyid[d.plugin];
 		self.uid = d.uid;
+		self.title = d.title;
 		
 		self.set_plugin(app.core.plugin_mgr.create(d.plugin));
 		
@@ -949,12 +952,53 @@ function Application() {
 		var pos = opt.$menu.offset();
 		var cp = canvas_parent;
 		var co = cp.offset();
-		var node = self.core.active_graph.create_instance(id, (pos.left - co.left) + cp.scrollLeft(), (pos.top - co.top) + cp.scrollTop());
+		var createPlugin = function(name)
+		{
+			var node = self.core.active_graph.create_instance(id, (pos.left - co.left) + cp.scrollLeft(), (pos.top - co.top) + cp.scrollTop());
 		
-		if(node.plugin.reset)
-			node.plugin.reset();
+			if(node.plugin.reset)
+				node.plugin.reset();
 
-		node.create_ui();
+			if(name !== null) // Graph?
+				node.title = name;
+			
+			node.create_ui();			
+		};
+		
+		if(id === 'graph')
+		{
+			var diag = make('div');
+			var url_inp = $('<input type="input" value="graph(' + self.core.active_graph.node_uid + ')" />'); 
+		
+			url_inp.css('width', '410px');
+			diag.append(url_inp);
+		
+			diag.dialog({
+				width: 460,
+				height: 150,
+				modal: true,
+				title: 'Name new graph.',
+				show: 'slide',
+				hide: 'slide',
+				buttons: {
+					'OK': function()
+					{
+						createPlugin(url_inp.val());
+						$(this).dialog('close');
+					},
+					'Cancel': function()
+					{
+						$(this).dialog('close');
+					}
+				},
+				open: function(url) { return function()
+				{
+					url.focus().val(url.val());
+				}}(url_inp)
+			});
+		}
+		else
+			createPlugin(null);
 	};
 	
 	this.onSlotClicked = function(node, slot, slot_div, type) { return function(e)
