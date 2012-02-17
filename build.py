@@ -46,10 +46,6 @@ for script in scripts:
 	print '\tCompressing ' + script
 	compress('./' + scripts_path + script, build_dir + '/' + scripts_path + script)
 	
-print 'Copying structure themes...'
-themes_path = scripts_path + 'themes'
-shutil.copytree(themes_path, build_dir + '/' + themes_path)
-
 print 'Compressing plugins...'
 plugins_path = 'plugins/'
 os.mkdir(build_dir + '/' + plugins_path)
@@ -96,6 +92,11 @@ cssfiles = map(lambda x: x[len(css_path):], glob.glob(css_path + '*.css'))
 for cssfile in cssfiles:
 	print '\tCompressing ' + cssfile
 	os.system('yui-compressor --type css -o ' + build_dir + '/' + css_path + cssfile + ' ./' + css_path + cssfile)
+
+print 'Copying dynatree skin and compressing css...'
+skin_path = css_path + 'skin'
+shutil.copytree(skin_path, build_dir + '/' + skin_path)
+os.system('yui-compressor --type css -o ' + build_dir + '/' + skin_path + '/ui.dynatree.css' + ' ./' + skin_path + '/ui.dynatree.css')
 
 jq_theme = 'smoothness'
 
