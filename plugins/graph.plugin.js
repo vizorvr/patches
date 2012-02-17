@@ -3,7 +3,4 @@ g_Plugins["graph"] = function(core) {
 	
 	this.input_slots = [];
 	this.output_slots = [];
-	this.state = { graph: new Graph() }
-	
-	
 };

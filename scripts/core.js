@@ -649,6 +649,8 @@ function Graph(parent_graph, tree_node)
 	this.node_uid = 0;
 	this.tree_node = tree_node;
 	
+	tree_node.graph = this;
+	
 	this.get_node_uid = function()
 	{
 		return self.node_uid++;
@@ -965,10 +967,10 @@ function Application() {
 			if(name !== null) // Graph?
 			{
 				node.title = name;
-				node.plugin.state.graph.tree_node = node.parent_graph.tree_node.addChild({
+				node.plugin.graph = new Graph(node.parent_graph, node.parent_graph.tree_node.addChild({
 					title: name,
 					isFolder: true
-				});
+				}));
 			}
 			
 			node.create_ui();			
