@@ -1,10 +1,9 @@
 /*
 To do:
 
-1. Finish post-deserialisation patchup code and verify operation with all plugins.
+1. Implement dynamic slots and nested graphs.
 2. Fix bug in camera operation. Especially the perspective camera.
-3. Implement dynamic slots and nested graphs.
-4. Begin timeline implementation.
+3. Begin timeline implementation.
  
 */
 
@@ -236,7 +235,7 @@ function PluginManager(core, base_url)
 			 
 		msg('Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
 		return null;
-	}
+	};
 }
  
 function ConnectionUI(parent_conn)
@@ -250,7 +249,16 @@ function ConnectionUI(parent_conn)
 	this.flow = false;
 	this.selected = false;
 	this.parent_conn = parent_conn;
-	this.offset = 0;
+	
+	this.resolve_slot_divs = function()
+	{
+		var pc = self.parent_conn;
+		
+		self.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + 'so' + pc.src_slot.index);
+		self.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + 'si' + pc.dst_slot.index);
+		self.src_pos = app.getSlotPosition(self.src_slot_div, 1);
+		self.dst_pos = app.getSlotPosition(self.dst_slot_div, 0);
+	};
 	
 	this.serialise = function()
 	{
@@ -258,7 +266,6 @@ function ConnectionUI(parent_conn)
 		
 		d.src_pos = [Math.round(self.src_pos[0]), Math.round(self.src_pos[1])];
 		d.dst_pos = [Math.round(self.dst_pos[0]), Math.round(self.dst_pos[1])];
-		d.offset = self.offset;
 		
 		return d;
 	};
@@ -267,20 +274,20 @@ function ConnectionUI(parent_conn)
 	{
 		self.src_pos = d.src_pos;
 		self.dst_pos = d.dst_pos;
-		self.offset = d.offset;
 	};
 }
 
 function Connection(src_node, dst_node, src_slot, dst_slot)
 {
+	var self = this;
+	
 	this.src_node = src_node;
 	this.dst_node = dst_node;
 	this.src_slot = src_slot;
 	this.dst_slot = dst_slot;
 	this.ui = null;
 	this.cached_value = null;
-	
-	var self = this;
+	this.offset = 0;
 	
 	this.create_ui = function()
 	{
@@ -296,7 +303,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	this.toString = function()
 	{
 		return 'connection from ' + self.src_node.uid + '(' + self.src_slot.index + ') to ' + self.dst_node.uid + '(' + self.dst_slot.index + ')';
-	}
+	};
 
 	this.serialise = function()
 	{
@@ -306,6 +313,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		d.dst_nuid = self.dst_node.uid;
 		d.src_slot = self.src_slot.index;
 		d.dst_slot = self.dst_slot.index;
+		d.offset = self.offset;
 		d.ui = self.ui !== null;
 		
 		if(d.ui)
@@ -321,6 +329,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		self.dst_node = d.dst_nuid;
 		self.src_slot = d.src_slot;
 		self.dst_slot = d.dst_slot;
+		self.offset = d.offset;
 		self.cached_value = null;
 		
 		if(d.ui)
@@ -347,18 +356,15 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		self.src_node = resolve_node(self.src_node);
 		self.dst_node = resolve_node(self.dst_node);
 		
-		if(self.ui)
-		{
-			self.ui.src_slot_div = self.src_node.ui.dom.find('#n' + self.src_node.uid + 'so' + self.src_slot);
-			self.ui.dst_slot_div = self.dst_node.ui.dom.find('#n' + self.dst_node.uid + 'si' + self.dst_slot);
-		}
-		
 		self.src_slot = self.src_node.plugin.output_slots[self.src_slot];
 		self.dst_slot = self.dst_node.plugin.input_slots[self.dst_slot];
 
+		if(self.ui)
+			self.ui.resolve_slot_divs();
+		
 		self.src_node.outputs.push(self);
 		self.dst_node.inputs.push(self);
-	}
+	};
 }
 
 function NodeUI(parent_node, x, y) {
@@ -404,7 +410,7 @@ function NodeUI(parent_node, x, y) {
 	var h_row = make('tr');
 	var h_cell = make('td');
 	
-	h_cell.text(parent_node.title === null ? parent_node.id : parent_node.title);
+	h_cell.text(parent_node.get_disp_name());
 	h_cell.attr('id', 't');
 	h_cell.attr('colspan', '3');
 	h_cell.disableSelection();
@@ -453,7 +459,7 @@ function NodeUI(parent_node, x, y) {
 	
 	this.dom.css('display', 'none');
 	g_DOM.canvas_parent.append(this.dom);
-	this.dom.show('fast');
+	this.dom.show(/*'fast'*/	);
 }
 
 function Node(parent_graph, plugin_id, x, y) {
@@ -498,7 +504,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.title = null;
 		
 		self.set_plugin(app.core.plugin_mgr.create(plugin_id));
-	}
+	};
 	
 	this.create_ui = function()
 	{
@@ -509,11 +515,14 @@ function Node(parent_graph, plugin_id, x, y) {
 	{
 		if(self.ui)
 		{
-			self.ui.dom.hide('fast', function()
+			self.ui.dom.remove();
+			self.ui = null;
+
+			/*self.ui.dom.hide('fast', function() // This threw an exception during graph transitions.
 			{
 				self.ui.dom.remove();
 				self.ui = null;
-			});
+			});*/
 		}
 	};
 	
@@ -526,17 +535,19 @@ function Node(parent_graph, plugin_id, x, y) {
 		if(index != -1)
 			graph.nodes.splice(index, 1);
 		
-		for(var i = 0, len = self.inputs.length; i < len; i++)
-			pending.push(self.inputs[i]);
-
-		for(var i = 0, len = self.outputs.length; i < len; i++)
-			pending.push(self.outputs[i]);
-
+		pending.push.apply(pending, self.inputs);
+		pending.push.apply(pending, self.outputs);
+		
 		for(var i = 0, len = pending.length; i < len; i++)
 			graph.destroy_connection(pending[i]);
 		
 		self.destroy_ui();
-	}
+	};
+	
+	this.get_disp_name = function()
+	{
+		return self.title === null ? self.id : self.title;
+	};
 	
 	this.update_recursive = function(conns, delta_t)
 	{
@@ -589,7 +600,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		self.is_updated = true;
 		
 		return dirty;
-	}
+	};
 	
 	this.serialise = function()
 	{
@@ -604,12 +615,15 @@ function Node(parent_graph, plugin_id, x, y) {
 		d.uid = self.uid;
 		d.title = self.title;
 		
+		if(self.plugin.id === 'graph')
+			d.graph = self.plugin.graph.serialise();
+		
 		return d;
 	};
 	
 	this.deserialise = function(d)
 	{
-		self.parent_graph = d.parent_uid; // TODO: Patch up after load completes!
+		self.parent_graph = d.parent_uid;
 		self.x = d.x;
 		self.y = d.y;
 		self.id = app.core.plugin_mgr.keybyid[d.plugin];
@@ -619,8 +633,14 @@ function Node(parent_graph, plugin_id, x, y) {
 		self.set_plugin(app.core.plugin_mgr.create(d.plugin));
 		
 		if(d.ui)
-			self.ui = new NodeUI(self, self.x, self.y);
+			self.create_ui();
 
+		if(self.plugin.id === 'graph')
+		{
+			self.plugin.graph = new Graph(null, null);
+			self.plugin.graph.deserialise(d.graph);
+		}
+		
 		if(d.state != null)
 		{
 			self.plugin.state = d.state;
@@ -633,7 +653,10 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.patch_up = function(graphs)
 	{
 		self.parent_graph = resolve_graph(graphs, self.parent_graph);
-	}
+
+		if(self.plugin.id === 'graph')
+			self.plugin.graph.patch_up(graphs);
+	};
 }
 
 
@@ -641,15 +664,19 @@ function Graph(parent_graph, tree_node)
 {
 	var self = this;
 	
-	this.uid = app.core.get_graph_uid();
-	this.parent_graph = parent_graph;
-	this.nodes = [];
-	this.roots = [];
-	this.connections = [];
-	this.node_uid = 0;
 	this.tree_node = tree_node;
+
+	if(tree_node !== null) // Only initialise if we're not deserialising.
+	{
+		this.uid = app.core.get_graph_uid();
+		this.parent_graph = parent_graph;
+		this.nodes = [];
+		this.roots = [];
+		this.connections = [];
+		this.node_uid = 0;
 	
-	tree_node.graph = this;
+		tree_node.graph = this;
+	}
 	
 	this.get_node_uid = function()
 	{
@@ -683,14 +710,27 @@ function Graph(parent_graph, tree_node)
 		return dirty;
 	};
 	
+	this.enum_all = function(n_delegate, c_delegate)
+	{
+		var nodes = self.nodes,
+		    conns = self.connections;
+		    
+		for(var i = 0, len = nodes.length; i < len; i++)
+			n_delegate(nodes[i]);
+
+		for(var i = 0, len = conns.length; i < len; i++)
+			c_delegate(conns[i]);
+	};
+	
 	this.reset = function()
 	{
-		var conns = self.connections;
-		
-		for(var i = 0, len = conns.length; i < len; i++)
+		self.enum_all(function(n)
 		{
-			var c = conns[i];
-			
+			if(n.plugin.reset)
+				n.plugin.reset();
+		},
+		function(c)
+		{
 			c.cached_value = null;
 
 			if(c.ui && c.ui.flow)
@@ -698,17 +738,7 @@ function Graph(parent_graph, tree_node)
 				c.ui.flow = false;
 				c.ui.color = '#000';
 			}
-		}
-			
-		var nodes = self.nodes;
-		
-		for(var i = 0, len = nodes.length; i < len; i++)
-		{
-			var n = nodes[i];
-			
-			if(n.plugin.reset)
-				n.plugin.reset();
-		}
+		});
 	};
 	
 	this.destroy_connection = function(c)
@@ -727,12 +757,28 @@ function Graph(parent_graph, tree_node)
 			c.dst_node.inputs.splice(index, 1);
 	};
 	
+	this.create_ui = function()
+	{
+		self.enum_all(function(n)
+		{
+			if(n.reset)
+				n.reset();
+			
+			n.create_ui();
+
+			if(n.plugin.state_changed)
+				n.plugin.state_changed(n.ui ? n.ui.plugin_ui : null);
+		},
+		function(c)
+		{
+			c.create_ui();
+			c.ui.resolve_slot_divs();
+		});
+	};
+
 	this.destroy_ui = function()
 	{
-		var nodes = self.nodes;
-		
-		for(var i = 0, len = nodes.length; i < len; i++)
-			nodes[i].destroy_ui()
+		self.enum_all(function(n) { n.destroy_ui(); }, function(c) { c.destroy_ui(); });
 	};
 	
 	this.find_connections_from = function(node, slot)
@@ -764,14 +810,9 @@ function Graph(parent_graph, tree_node)
 		d.parent_uid = self.parent_graph ? self.parent_graph.uid : -1;
 		
 		d.nodes = [];
-		
-		for(var i = 0, len = self.nodes.length; i < len; i++)
-			d.nodes.push(self.nodes[i].serialise());
-			
 		d.conns = [];
 		
-		for(var i = 0, len = self.connections.length; i < len; i++)
-			d.conns.push(self.connections[i].serialise());
+		self.enum_all(function(n) { d.nodes.push(n.serialise()); }, function(c) { d.conns.push(c.serialise()); });
 
 		return d;
 	};
@@ -809,16 +850,9 @@ function Graph(parent_graph, tree_node)
 	
 	this.patch_up = function(graphs)
 	{
-		var nodes = self.nodes, conns = self.connections;
-		
 		self.parent_graph = resolve_graph(graphs, self.parent_graph);
 		
-		for(var i = 0, len = nodes.length; i < len; i++)
-			nodes[i].patch_up(graphs); 
-
-		for(var i = 0, len = conns.length; i < len; i++)
-			conns[i].patch_up(nodes);
-			
+		self.enum_all(function(n) { n.patch_up(graphs); }, function(c) { c.patch_up(self.nodes); });
 		self.reset();
 	};
 }
@@ -856,18 +890,29 @@ function Core() {
 		self.renderer.update();
 		
 		return self.active_graph.update(delta_t); // Did connection state change?
-	}
+	};
+	
+	this.onGraphSelected = function(graph)
+	{
+		self.active_graph.destroy_ui();
+		self.active_graph = graph;
+		self.active_graph.create_ui();
+	};
 	
 	this.serialise = function()
 	{
 		var d = {};
 		
-		d.abs_t = self.abs_t;	
-		d.active_graph = self.active_graph.serialise();
+		d.abs_t = self.abs_t;
+		d.active_graph = self.active_graph.uid;
 		d.graph_uid = self.graph_uid;
+		d.graphs = [];
+		
+		for(var i = 0, len = self.graphs.length; i < len; i++)
+			d.graphs.push(self.graphs[i].serialise());
 		
 		return JSON.stringify(d);
-	}
+	};
 	
 	this.deserialise = function(str)
 	{
@@ -876,14 +921,55 @@ function Core() {
 		self.abs_t = d.abs_t;
 		self.delta_t = 0.0;
 		self.graph_uid = d.graph_uid;
-		
-		self.graphs = [];
-		
+
 		self.active_graph.destroy_ui();
-		self.active_graph.deserialise(d.active_graph);
-		self.graphs.push(self.active_graph);
-		self.active_graph.patch_up(self.graphs);
-	}
+		
+		var graphs = self.graphs = [];
+		
+		for(var i = 0, len = d.graphs.length; i < len; i++)
+		{
+			var g = new Graph(null, null);
+			
+			g.deserialise(d.graphs[i]);
+			self.graphs.push(g);
+			
+			if(g.parent_graph === -1)
+				self.root_graph = g;
+		}
+		
+		for(var i = 0, len = graphs.length; i < len; i++)
+			graphs[i].patch_up(self.graphs);
+			
+		self.active_graph = resolve_graph(self.graphs, d.active_graph); 
+		self.rebuild_structure_tree();
+	};
+	
+	this.rebuild_structure_tree = function()
+	{
+		g_DOM.structure.dynatree('getRoot').removeChildren();
+		var build = function(graph, name)
+		{
+			var nodes = graph.nodes;
+			var pnode = graph.parent_graph !== null ? graph.parent_graph.tree_node : g_DOM.structure.dynatree('getRoot');
+			var tnode = pnode.addChild({
+				title: name,
+				isFolder: true
+			});
+			
+			graph.tree_node = tnode;
+			tnode.graph = graph;
+			
+			for(var i = 0, len = nodes.length; i < len; i++)
+			{
+				var n = nodes[i];
+				
+				if(n.plugin.id === 'graph')
+					build(n.plugin.graph, n.get_disp_name());
+			}
+		};
+		
+		build(self.root_graph, 'Root');
+	};
 }
 
 function Application() {
@@ -932,7 +1018,7 @@ function Application() {
 	
 	this.offsetToCanvasCoord = function(ofs)
 	{
-		var o = [ofs .left, ofs.top];
+		var o = [ofs.left, ofs.top];
 		var co = canvas_parent.offset();
 		var so = self.scrollOffset;
 		
@@ -971,6 +1057,8 @@ function Application() {
 					title: name,
 					isFolder: true
 				}));
+				
+				self.core.graphs.push(node.plugin.graph);
 			}
 			
 			node.create_ui();			
@@ -1030,7 +1118,7 @@ function Application() {
 			var offset = 0;
 			
 			ocs.sort(function(a, b) {
-				return a.ui.offset < b.ui.offset ? - 1 : a.ui.offset > b.ui.offset ? 1 : 0;
+				return a.offset < b.offset ? - 1 : a.offset > b.offset ? 1 : 0;
 			});
 			
 			for(var i = 0, len = ocs.length; i < len; i++)
@@ -1039,7 +1127,7 @@ function Application() {
 				
 				oc.offset = i;
 
-				if(oc.ui.offset != i)
+				if(oc.offset != i)
 				{
 					offset = i;
 					break;
@@ -1048,7 +1136,7 @@ function Application() {
 				offset = i + 1;
 			}
 			
-			self.edit_conn.ui.offset = offset;
+			self.edit_conn.offset = offset;
 			slot_div.css('color', '#0f0');
 		}
 		
@@ -1088,7 +1176,7 @@ function Application() {
 		
 		if(dirty)
 			self.updateCanvas();
-	}
+	};
 	
 	this.releaseHoverSlot = function()
 	{
@@ -1116,7 +1204,7 @@ function Application() {
 			self.dst_slot_div = null;
 		}
 
-	}
+	};
 	
 	this.onSlotEntered = function(node, slot, slot_div) { return function(e)
 	{
@@ -1167,7 +1255,7 @@ function Application() {
 		    y4 = c.dst_pos[1] - so[1],
 		    mx = (x1 + x4) / 2,
 		    my = (y1 + y4) / 2,
-		    x2 = Math.min(x1 + 10 + (c.offset * 5), mx);
+		    x2 = Math.min(x1 + 10 + (conn.offset * 5), mx);
 		
 		c2d.moveTo(x1, y1);
 		c2d.lineTo(x2, y1);
@@ -1244,7 +1332,7 @@ function Application() {
 			c.ui.dst_pos = self.getSlotPosition(self.dst_slot_div);
 			c.ui.src_slot_div = self.src_slot_div;
 			c.ui.dst_slot_div = self.dst_slot_div;
-			c.ui.offset = self.edit_conn.ui.offset;
+			c.offset = self.edit_conn.offset;
 			
 			var graph = self.core.active_graph; 
 			
@@ -1444,7 +1532,7 @@ function Application() {
 	
 	this.onKeyDown = function(e)
 	{
-		if(e.keyCode === 16) // .isShift doesn't work on Chrome.
+		if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
 		{
 			self.shift_pressed = true;
 			self.activateHoverSlot();
@@ -1536,7 +1624,8 @@ function Application() {
 		self.abs_time += delta_t;
 	}
 	
-	$(document).mouseup(this.onMouseReleased);
+	// $(document).mouseup(this.onMouseReleased);
+	g_DOM.canvas_parent.mouseup(this.onMouseReleased);
 	$(document).keydown(this.onKeyDown);
 	$(document).keyup(this.onKeyUp);
 	canvas.mousemove(this.onMouseMoved);
@@ -1608,9 +1697,13 @@ $(document).ready(function() {
 	g_DOM.structure.dynatree({
 		title: "Structure",
 		fx: { height: 'toggle', duration: 200 },
+		clickFolderMode: 1, // Activate, don't expand.
+		selectMode: 1, // Single.
+		debugLevel: 0, // Quiet.
 		onActivate: function(node) 
 		{
-			alert(node.getKeyPath());
+			app.core.onGraphSelected(node.graph);
+			app.updateCanvas();
 		}
 	});
     
