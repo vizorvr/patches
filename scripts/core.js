@@ -359,7 +359,8 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		
 		self.src_slot = self.src_node.plugin.output_slots[self.src_slot];
 		self.dst_slot = self.dst_node.plugin.input_slots[self.dst_slot];
-
+		self.dst_slot.is_connected = true;
+		
 		if(self.ui)
 			self.ui.resolve_slot_divs();
 		
@@ -750,7 +751,6 @@ function Graph(parent_graph, tree_node)
 		if(index != -1)
 			self.connections.splice(index, 1);
 		
-		c.src_slot.is_connected = false;
 		c.dst_slot.is_connected = false;
 		
 		index = c.dst_node.inputs.indexOf(c);
