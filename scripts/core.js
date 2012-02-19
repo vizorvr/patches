@@ -490,14 +490,14 @@ function Node(parent_graph, plugin_id, x, y) {
 	{
 		if(self.ui)
 		{
-			self.ui.dom.remove();
-			self.ui = null;
+			/*self.ui.dom.remove();
+			self.ui = null;*/
 
-			/*self.ui.dom.hide('fast', function() // This threw an exception during graph transitions.
+			self.ui.dom.hide('fast', function() // This threw an exception during graph transitions.
 			{
 				self.ui.dom.remove();
 				self.ui = null;
-			});*/
+			});
 		}
 	};
 	
