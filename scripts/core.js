@@ -1476,6 +1476,9 @@ function Application() {
 					if(node.ui !== null)
 						node.ui.dom.find('#t').text(node.title);
 					
+					if(node.plugin.id === 'graph')
+						node.plugin.graph.tree_node.setTitle(node.title);
+					
 					$(this).dialog('close');
 				},
 				'Cancel': function()
