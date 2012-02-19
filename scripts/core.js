@@ -869,7 +869,8 @@ function Core() {
 		COLOR: { id: 3, name: 'Color' },
 		TRANSFORM: { id: 4, name: 'Transform' },
 		VERTEX: { id: 5, name: 'Vertex' },
-		CAMERA: { id: 6, name: 'Camera' }
+		CAMERA: { id: 6, name: 'Camera' },
+		BOOL: { id: 7, name: 'Boolean' },
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');

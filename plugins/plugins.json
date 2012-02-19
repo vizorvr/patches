@@ -1,6 +1,7 @@
 {
 	"Generators/Values/Float constant": "const_float_generator",
 	"Generators/Values/Float slider": "slider_float_generator",
+	"Generators/Values/Toggle button": "toggle_button",
 	"Generators/Matrix/Translation": "translation_matrix",
 	"Generators/Matrix/Rotation": "rotation_matrix",
 	"Generators/Matrix/Scale": "scale_matrix",
