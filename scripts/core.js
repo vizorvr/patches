@@ -299,7 +299,9 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		d.dst_nuid = self.dst_node.uid;
 		d.src_slot = self.src_slot.index;
 		d.dst_slot = self.dst_slot.index;
-		d.offset = self.offset;
+		
+		if(self.offset !== 0)
+			d.offset = self.offset;
 		
 		return d;
 	};
@@ -310,7 +312,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		self.dst_node = d.dst_nuid;
 		self.src_slot = d.src_slot;
 		self.dst_slot = d.dst_slot;
-		self.offset = d.offset;
+		self.offset = d.offset ? d.offset : 0;
 		self.cached_value = null;
 	};
 	
@@ -432,7 +434,7 @@ function NodeUI(parent_node, x, y) {
 	
 	this.dom.css('display', 'none');
 	g_DOM.canvas_parent.append(this.dom);
-	this.dom.show(/*'fast'*/	);
+	this.dom.show(/*'fast'*/);
 }
 
 function Node(parent_graph, plugin_id, x, y) {
@@ -580,11 +582,15 @@ function Node(parent_graph, plugin_id, x, y) {
 		var d = {};
 		
 		d.plugin = self.plugin.id;
-		d.state = self.plugin.state || null;
 		d.x = Math.round(self.x);
 		d.y = Math.round(self.y);
 		d.uid = self.uid;
-		d.title = self.title;
+		
+		if(self.plugin.state)
+			d.state = self.plugin.state;
+
+		if(self.title)
+			d.title = self.title;
 		
 		if(self.plugin.id === 'graph')
 			d.graph = self.plugin.graph.serialise();
@@ -599,7 +605,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		self.y = d.y;
 		self.id = app.core.plugin_mgr.keybyid[d.plugin];
 		self.uid = d.uid;
-		self.title = d.title;
+		self.title = d.title ? d.title : null;
 		
 		self.set_plugin(app.core.plugin_mgr.create(d.plugin));
 		
@@ -610,7 +616,7 @@ function Node(parent_graph, plugin_id, x, y) {
 			app.core.graphs.push(self.plugin.graph);
 		}
 		
-		if(d.state != null)
+		if(d.state)
 			self.plugin.state = d.state;
 	};
 	
