@@ -71,7 +71,9 @@ g_Plugins["url_texture_generator"] = function(core) {
 		{
 			self.texture = new Texture(self.gl);	
 			self.texture.load(self.state.url);
-			ui.attr('title', self.state.url);
+			
+			if(ui)
+				ui.attr('title', self.state.url);
 		}
 	};
 };

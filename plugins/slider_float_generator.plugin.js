@@ -125,9 +125,12 @@ g_Plugins["slider_float_generator"] = function(core) {
 	
 	this.state_changed = function(ui)
 	{
-		self.slider.slider('option', 'min', self.state.min);
-		self.slider.slider('option', 'max', self.state.max);
-		self.slider.slider('option', 'value', self.state.val);
-		self.update_value(self.state.val);
+		if(ui)
+		{
+			self.slider.slider('option', 'min', self.state.min);
+			self.slider.slider('option', 'max', self.state.max);
+			self.slider.slider('option', 'value', self.state.val);
+			self.update_value(self.state.val);
+		}
 	};
 };

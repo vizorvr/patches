@@ -620,6 +620,9 @@ function Node(parent_graph, plugin_id, x, y) {
 
 		if(self.plugin.id === 'graph')
 			self.plugin.graph.patch_up(graphs);
+		
+		if(self.plugin.state_changed)
+			self.plugin.state_changed(null);
 	};
 }
 

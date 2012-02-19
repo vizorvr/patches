@@ -27,6 +27,7 @@ g_Plugins["toggle_button"] = function(core) {
 	
 	this.state_changed = function(ui)
 	{
-		ui.prop('value', self.state.enabled ? 'Disable' : 'Enable');
+		if(ui)
+			ui.prop('value', self.state.enabled ? 'Disable' : 'Enable');
 	};
 };
