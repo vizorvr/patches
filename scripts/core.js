@@ -894,8 +894,7 @@ function Core() {
 			
 		self.active_graph = resolve_graph(self.graphs, d.active_graph); 
 		self.rebuild_structure_tree();
-		self.active_graph.tree_node.focus();
-		self.active_graph.create_ui();
+		self.active_graph.tree_node.activate();
 	};
 	
 	this.rebuild_structure_tree = function()
