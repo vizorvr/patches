@@ -1,7 +1,7 @@
 /*
 To do:
 
-1. Implement dynamic slots and nested graphs.
+1. Implement dynamic slots.
 2. Fix bug in camera operation. Especially the perspective camera.
 3. Begin timeline implementation.
  
@@ -324,7 +324,6 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	
 	this.deserialise = function(d)
 	{
-		// TODO: Patch up after load completes!
 		self.src_node = d.src_nuid;
 		self.dst_node = d.dst_nuid;
 		self.src_slot = d.src_slot;
@@ -639,14 +638,15 @@ function Node(parent_graph, plugin_id, x, y) {
 		{
 			self.plugin.graph = new Graph(null, null);
 			self.plugin.graph.deserialise(d.graph);
+			app.core.graphs.push(self.plugin.graph);
 		}
 		
 		if(d.state != null)
 		{
 			self.plugin.state = d.state;
 		
-			if(self.plugin.state_changed)
-				self.plugin.state_changed(self.ui ? self.ui.plugin_ui : null);
+			if(self.ui && self.plugin.state_changed)
+				self.plugin.state_changed(self.ui.plugin_ui);
 		}
 	};
 	
@@ -766,8 +766,8 @@ function Graph(parent_graph, tree_node)
 			
 			n.create_ui();
 
-			if(n.plugin.state_changed)
-				n.plugin.state_changed(n.ui ? n.ui.plugin_ui : null);
+			if(n.ui && n.plugin.state_changed)
+				n.plugin.state_changed(n.ui.plugin_ui);
 		},
 		function(c)
 		{
@@ -821,7 +821,7 @@ function Graph(parent_graph, tree_node)
 	{
 		self.node_uid = d.node_uid;
 		self.uid = d.uid;
-		self.parent_graph = d.parent_uid; // TODO: Patch up when all graphs are loaded!
+		self.parent_graph = d.parent_uid;
 		
 		self.nodes = [];
 		self.roots = [];
@@ -906,10 +906,7 @@ function Core() {
 		d.abs_t = self.abs_t;
 		d.active_graph = self.active_graph.uid;
 		d.graph_uid = self.graph_uid;
-		d.graphs = [];
-		
-		for(var i = 0, len = self.graphs.length; i < len; i++)
-			d.graphs.push(self.graphs[i].serialise());
+		d.root = self.root_graph.serialise();
 		
 		return JSON.stringify(d);
 	};
@@ -926,19 +923,10 @@ function Core() {
 		
 		var graphs = self.graphs = [];
 		
-		for(var i = 0, len = d.graphs.length; i < len; i++)
-		{
-			var g = new Graph(null, null);
-			
-			g.deserialise(d.graphs[i]);
-			self.graphs.push(g);
-			
-			if(g.parent_graph === -1)
-				self.root_graph = g;
-		}
-		
-		for(var i = 0, len = graphs.length; i < len; i++)
-			graphs[i].patch_up(self.graphs);
+		self.root_graph = new Graph(null, null);
+		self.root_graph.deserialise(d.root);
+		self.graphs.push(self.root_graph);
+		self.root_graph.patch_up(self.graphs);
 			
 		self.active_graph = resolve_graph(self.graphs, d.active_graph); 
 		self.rebuild_structure_tree();
@@ -1388,7 +1376,7 @@ function Application() {
 	{
 		if(self.hover_node !== null)
 		{
-			self.hover_node.ui.header_row.css('background-color', '#dde'); // TODO: Ugly. All this belongs an a style sheet!
+			self.hover_node.ui.header_row.css('background-color', '#dde'); // TODO: Ugly. This belongs in a style sheet.
 			self.hover_node = null;
 			
 			var hcs = self.hover_connections;
