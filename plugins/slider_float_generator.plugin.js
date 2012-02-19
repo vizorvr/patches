@@ -34,6 +34,7 @@ g_Plugins["slider_float_generator"] = function(core) {
 		slider.slider( { slide: (function(v_col) { return function(event, ui)
 		{
 			self.update_value(ui.value);
+			self.state.val = ui.value;
 		}})(v_col), 
 			min: self.state.min, 
 			max: self.state.max, 
@@ -56,7 +57,7 @@ g_Plugins["slider_float_generator"] = function(core) {
 			return function()
 			{
 				var nv = parseFloat(sender.val());
-				var cv = slider.slider('option', 'val');
+				var cv = slider.slider('option', 'value');
 				var clo = slider.slider('option', 'min');
 				var chi = slider.slider('option', 'max');
 				var id = sender.attr('id');
@@ -86,8 +87,9 @@ g_Plugins["slider_float_generator"] = function(core) {
 				var v = (((cv - clo) / rng) * (nhi - nlo)) + nlo;
 				
 				// TODO: This needs more... Dur... Smartness! Map the current value to the new interval
-				slider.slider('option', 'val', v);
+				slider.slider('option', 'value', v);
 				self.update_value(v);
+				self.state.val = v;
 			}
 		};
 		
@@ -118,14 +120,14 @@ g_Plugins["slider_float_generator"] = function(core) {
 	
 	this.update_value = function(value)
 	{
-		self.state.val = value;
 		self.v_col.text(value.toFixed(2));
 	};
 	
 	this.state_changed = function(ui)
 	{
-		self.slider.slider('option', 'min', state.min);
-		self.slider.slider('option', 'max', state.max);
-		self.slider.slider('option', 'val', state.val);
+		self.slider.slider('option', 'min', self.state.min);
+		self.slider.slider('option', 'max', self.state.max);
+		self.slider.slider('option', 'value', self.state.val);
+		self.update_value(self.state.val);
 	};
 };
