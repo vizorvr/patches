@@ -876,7 +876,7 @@ function Core() {
 	{
 		var d = {};
 		
-		d.abs_t = self.abs_t;
+		d.abs_t = Math.round(self.abs_t * Math.pow(10, 4)) / Math.pow(10, 4);
 		d.active_graph = self.active_graph.uid;
 		d.graph_uid = self.graph_uid;
 		d.root = self.root_graph.serialise();
