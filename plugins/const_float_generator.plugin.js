@@ -9,6 +9,7 @@ g_Plugins["const_float_generator"] = function(core) {
 	{
 		var inp = $('<input type="text" value="1.0" style="width: 50px;" />');
 		
+		inp.css('border', '1px solid #999');
 		inp.change(function(e) {
 			try 
 			{ 

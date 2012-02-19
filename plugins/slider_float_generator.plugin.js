@@ -18,13 +18,18 @@ g_Plugins["slider_float_generator"] = function(core) {
 		var slider = make('div');
 		
 		slider.attr('id', 'sl');
-		slider.css('width', '100px');
-		table.css('width', '160px');
+		slider.css('width', '60px');
+		slider.css('margin-right', '5px');
+		slider.css('margin-left', '6px');
+		table.css('width', '150px');
 		table.addClass('pl_layout');
+		inp_lo.css('border', '1px solid #999');
+		inp_hi.css('border', '1px solid #999');
 		
 		var v_col = make('td');
 		
 		v_col.attr('colspan', '3');
+		v_col.css('text-align', 'center');
 		
 		slider.slider( { slide: (function(v_col) { return function(event, ui)
 		{
