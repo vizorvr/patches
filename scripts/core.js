@@ -60,7 +60,7 @@ function resolve_graph(graphs, guid)
 	}
 
 	if(guid !== -1)
-		msg('ERROR: Failed to resolve graph with uid = ' + guid);
+		assert(false, 'Failed to resolve graph with uid = ' + guid);
 	
 	return null;
 };
@@ -233,7 +233,7 @@ function PluginManager(core, base_url)
 			return p;
 		}
 			 
-		msg('Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
+		assert(true, 'Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
 		return null;
 	};
 }
@@ -256,8 +256,10 @@ function ConnectionUI(parent_conn)
 		
 		self.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + 'so' + pc.src_slot.index);
 		self.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + 'si' + pc.dst_slot.index);
+		assert(self.src_slot_div !== null && self.dst_slot_div !== null, 'Failed to resolve connection slot div.'); 
 		self.src_pos = app.getSlotPosition(self.src_slot_div, 1);
 		self.dst_pos = app.getSlotPosition(self.dst_slot_div, 0);
+		assert(self.src_pos !== null && self.dst_pos !== null, 'Failed to resolve connection slot div position.'); 
 	};
 	
 	this.serialise = function()
@@ -941,7 +943,8 @@ function Core() {
 			var pnode = graph.parent_graph !== null ? graph.parent_graph.tree_node : g_DOM.structure.dynatree('getRoot');
 			var tnode = pnode.addChild({
 				title: name,
-				isFolder: true
+				isFolder: true,
+				expand: true
 			});
 			
 			graph.tree_node = tnode;
@@ -1043,7 +1046,8 @@ function Application() {
 				node.title = name;
 				node.plugin.graph = new Graph(node.parent_graph, node.parent_graph.tree_node.addChild({
 					title: name,
-					isFolder: true
+					isFolder: true,
+					expand: true
 				}));
 				
 				self.core.graphs.push(node.plugin.graph);
@@ -1698,7 +1702,8 @@ $(document).ready(function() {
 	var root_node = g_DOM.structure.dynatree('getRoot');
 	var gn_root = root_node.addChild({
 		title: 'Root',
-		isFolder: true
+		isFolder: true,
+		expand: true
 	});	
 	
 	// TODO: Because graphs depend on the existence of the core singleton
