@@ -261,22 +261,6 @@ function ConnectionUI(parent_conn)
 		self.dst_pos = app.getSlotPosition(self.dst_slot_div, 0);
 		assert(self.src_pos !== null && self.dst_pos !== null, 'Failed to resolve connection slot div position.'); 
 	};
-	
-	this.serialise = function()
-	{
-		var d = {};
-		
-		d.src_pos = [Math.round(self.src_pos[0]), Math.round(self.src_pos[1])];
-		d.dst_pos = [Math.round(self.dst_pos[0]), Math.round(self.dst_pos[1])];
-		
-		return d;
-	};
-	
-	this.deserialise = function(d)
-	{
-		self.src_pos = d.src_pos;
-		self.dst_pos = d.dst_pos;
-	};
 }
 
 function Connection(src_node, dst_node, src_slot, dst_slot)
@@ -316,10 +300,6 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		d.src_slot = self.src_slot.index;
 		d.dst_slot = self.dst_slot.index;
 		d.offset = self.offset;
-		d.ui = self.ui !== null;
-		
-		if(d.ui)
-			d.ui_data = self.ui.serialise();
 		
 		return d;
 	};
@@ -332,12 +312,6 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		self.dst_slot = d.dst_slot;
 		self.offset = d.offset;
 		self.cached_value = null;
-		
-		if(d.ui)
-		{
-			self.ui = new ConnectionUI(self);
-			self.ui.deserialise(d.ui_data);
-		}
 	};
 	
 	this.patch_up = function(nodes)
@@ -360,9 +334,6 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		self.src_slot = self.src_node.plugin.output_slots[self.src_slot];
 		self.dst_slot = self.dst_node.plugin.input_slots[self.dst_slot];
 		self.dst_slot.is_connected = true;
-		
-		if(self.ui)
-			self.ui.resolve_slot_divs();
 		
 		self.src_node.outputs.push(self);
 		self.dst_node.inputs.push(self);
@@ -608,12 +579,10 @@ function Node(parent_graph, plugin_id, x, y) {
 	{
 		var d = {};
 		
-		d.parent_uid = self.parent_graph.uid;
 		d.plugin = self.plugin.id;
 		d.state = self.plugin.state || null;
 		d.x = Math.round(self.x);
 		d.y = Math.round(self.y);
-		d.ui = self.ui != null;
 		d.uid = self.uid;
 		d.title = self.title;
 		
@@ -623,9 +592,9 @@ function Node(parent_graph, plugin_id, x, y) {
 		return d;
 	};
 	
-	this.deserialise = function(d)
+	this.deserialise = function(guid, d)
 	{
-		self.parent_graph = d.parent_uid;
+		self.parent_graph = guid;
 		self.x = d.x;
 		self.y = d.y;
 		self.id = app.core.plugin_mgr.keybyid[d.plugin];
@@ -634,9 +603,6 @@ function Node(parent_graph, plugin_id, x, y) {
 		
 		self.set_plugin(app.core.plugin_mgr.create(d.plugin));
 		
-		if(d.ui)
-			self.create_ui();
-
 		if(self.plugin.id === 'graph')
 		{
 			self.plugin.graph = new Graph(null, null);
@@ -645,12 +611,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		}
 		
 		if(d.state != null)
-		{
 			self.plugin.state = d.state;
-		
-			if(self.ui && self.plugin.state_changed)
-				self.plugin.state_changed(self.ui.plugin_ui);
-		}
 	};
 	
 	this.patch_up = function(graphs)
@@ -832,7 +793,7 @@ function Graph(parent_graph, tree_node)
 		{
 			var n = new Node(null, null, null, null);
 			
-			n.deserialise(d.nodes[i]);
+			n.deserialise(self.uid, d.nodes[i]);
 			self.nodes.push(n);
 			
 			if(n.plugin.output_slots.length == 0)
@@ -933,6 +894,8 @@ function Core() {
 			
 		self.active_graph = resolve_graph(self.graphs, d.active_graph); 
 		self.rebuild_structure_tree();
+		self.active_graph.tree_node.focus();
+		self.active_graph.create_ui();
 	};
 	
 	this.rebuild_structure_tree = function()
