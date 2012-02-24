@@ -7,13 +7,17 @@ To do:
  
 */
 
-var app = null;
-var g_Plugins = {};
-var g_DOM = {};
+function E2()
+{
+};
+
+E2.app = null;
+E2.dom = {};
+E2.plugins = {};
 
 function msg(txt)
 {
-	var d = g_DOM.dbg;
+	var d = E2.dom.dbg;
 
 	d.append(txt + '\n');
 	d.scrollTop(d[0].scrollHeight);
@@ -214,7 +218,7 @@ function PluginManager(core, base_url)
 			
 			$.contextMenu({
 				selector: '#canvas_parent',
-				callback: app.onPluginInstantiated,
+				callback: E2.app.onPluginInstantiated,
 				animation: { show: 'show', hide: 'hide' },
 				zIndex: 10000,
 				items: items 
@@ -224,9 +228,9 @@ function PluginManager(core, base_url)
 	
 	this.create = function(id) 
 	{
-		if(g_Plugins.hasOwnProperty(id))
+		if(E2.plugins.hasOwnProperty(id))
 		{
-			var p = new g_Plugins[id](self.core);
+			var p = new E2.plugins[id](self.core);
 			
 			p.id = id;
 			
@@ -257,8 +261,8 @@ function ConnectionUI(parent_conn)
 		self.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + 'so' + pc.src_slot.index);
 		self.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + 'si' + pc.dst_slot.index);
 		assert(self.src_slot_div !== null && self.dst_slot_div !== null, 'Failed to resolve connection slot div.'); 
-		self.src_pos = app.getSlotPosition(self.src_slot_div, 1);
-		self.dst_pos = app.getSlotPosition(self.dst_slot_div, 0);
+		self.src_pos = E2.app.getSlotPosition(self.src_slot_div, 1);
+		self.dst_pos = E2.app.getSlotPosition(self.dst_slot_div, 0);
 		assert(self.src_pos !== null && self.dst_pos !== null, 'Failed to resolve connection slot div position.'); 
 	};
 }
@@ -361,9 +365,9 @@ function NodeUI(parent_node, x, y) {
 			div.disableSelection();
 			div.definition = s;
 			
-			div.mouseenter(app.onSlotEntered(parent_node, s, div));
-			div.mouseleave(app.onSlotExited(parent_node, s, div));
-			div.mousedown(app.onSlotClicked(parent_node, s, div, type));
+			div.mouseenter(E2.app.onSlotEntered(parent_node, s, div));
+			div.mouseleave(E2.app.onSlotExited(parent_node, s, div));
+			div.mousedown(E2.app.onSlotClicked(parent_node, s, div, type));
 			
 			col.append(div);
 		}
@@ -375,7 +379,7 @@ function NodeUI(parent_node, x, y) {
 	this.dom.addClass('plugin');
 	this.dom.addClass('ui-widget-content');
 	this.dom.attr('id', nid);
-	this.dom.mousemove(app.onMouseMoved); // Make sure we don't stall during slot connection, when the mouse enters a node.
+	this.dom.mousemove(E2.app.onMouseMoved); // Make sure we don't stall during slot connection, when the mouse enters a node.
 	
 	this.dom.css('top', '' + y + 'px');
 	this.dom.css('left', '' + x + 'px');
@@ -391,10 +395,10 @@ function NodeUI(parent_node, x, y) {
 	h_cell.disableSelection();
 	h_row.append(h_cell);
 	h_row.addClass('pl_header');
-	h_row.click(app.onNodeHeaderClicked);
-	h_row.dblclick(app.onNodeHeaderDblClicked(parent_node));
-	h_row.mouseenter(app.onNodeHeaderEntered(parent_node));
-	h_row.mouseleave(app.onNodeHeaderExited);
+	h_row.click(E2.app.onNodeHeaderClicked);
+	h_row.dblclick(E2.app.onNodeHeaderDblClicked(parent_node));
+	h_row.mouseenter(E2.app.onNodeHeaderEntered(parent_node));
+	h_row.mouseleave(E2.app.onNodeHeaderExited);
 	this.dom.append(h_row);
 	
 	this.header_row = h_row;
@@ -428,12 +432,12 @@ function NodeUI(parent_node, x, y) {
 	}
 	
 	this.dom.draggable({
-		drag: app.onNodeDragged(parent_node),
-		stop: app.onNodeDragStopped(parent_node)
+		drag: E2.app.onNodeDragged(parent_node),
+		stop: E2.app.onNodeDragStopped(parent_node)
     	});
 	
 	this.dom.css('display', 'none');
-	g_DOM.canvas_parent.append(this.dom);
+	E2.dom.canvas_parent.append(this.dom);
 	this.dom.show(/*'fast'*/);
 }
 
@@ -442,6 +446,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	
 	this.inputs = [];
 	this.outputs = [];
+	this.dyn_slot_uid = 0;
 	
 	self.set_plugin = function(plugin)
 	{
@@ -473,12 +478,12 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.x = x;
 		this.y = y;
 		this.ui = null;
-		this.id = app.core.plugin_mgr.keybyid[plugin_id];
+		this.id = E2.app.core.plugin_mgr.keybyid[plugin_id];
 		this.uid = parent_graph.get_node_uid();
 		this.is_updated = false;
 		this.title = null;
 		
-		self.set_plugin(app.core.plugin_mgr.create(plugin_id));
+		self.set_plugin(E2.app.core.plugin_mgr.create(plugin_id));
 	};
 	
 	this.create_ui = function()
@@ -522,6 +527,20 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.get_disp_name = function()
 	{
 		return self.title === null ? self.id : self.title;
+	};
+	
+	this.rebuild_slot_ui = function(slot_type)
+	{
+		if(!self.ui)
+			return;
+	};
+	
+	this.add_slot = function(slot_type, def)
+	{
+	};
+	
+	this.remove_slot = function(slot_type)
+	{
 	};
 	
 	this.update_recursive = function(conns, delta_t)
@@ -603,17 +622,17 @@ function Node(parent_graph, plugin_id, x, y) {
 		self.parent_graph = guid;
 		self.x = d.x;
 		self.y = d.y;
-		self.id = app.core.plugin_mgr.keybyid[d.plugin];
+		self.id = E2.app.core.plugin_mgr.keybyid[d.plugin];
 		self.uid = d.uid;
 		self.title = d.title ? d.title : null;
 		
-		self.set_plugin(app.core.plugin_mgr.create(d.plugin));
+		self.set_plugin(E2.app.core.plugin_mgr.create(d.plugin));
 		
 		if(self.plugin.id === 'graph')
 		{
 			self.plugin.graph = new Graph(null, null);
 			self.plugin.graph.deserialise(d.graph);
-			app.core.graphs.push(self.plugin.graph);
+			E2.app.core.graphs.push(self.plugin.graph);
 		}
 		
 		if(d.state)
@@ -641,7 +660,7 @@ function Graph(parent_graph, tree_node)
 
 	if(tree_node !== null) // Only initialise if we're not deserialising.
 	{
-		this.uid = app.core.get_graph_uid();
+		this.uid = E2.app.core.get_graph_uid();
 		this.parent_graph = parent_graph;
 		this.nodes = [];
 		this.roots = [];
@@ -908,11 +927,11 @@ function Core() {
 	
 	this.rebuild_structure_tree = function()
 	{
-		g_DOM.structure.dynatree('getRoot').removeChildren();
+		E2.dom.structure.dynatree('getRoot').removeChildren();
 		var build = function(graph, name)
 		{
 			var nodes = graph.nodes;
-			var pnode = graph.parent_graph !== null ? graph.parent_graph.tree_node : g_DOM.structure.dynatree('getRoot');
+			var pnode = graph.parent_graph !== null ? graph.parent_graph.tree_node : E2.dom.structure.dynatree('getRoot');
 			var tnode = pnode.addChild({
 				title: name,
 				isFolder: true,
@@ -1521,9 +1540,9 @@ function Application() {
 	{
 		var cs = self.current_state;
 		
-		g_DOM.play.button(cs == self.state.PLAYING ? 'disable' : 'enable');
-		g_DOM.pause.button(cs == self.state.PAUSED || cs == self.state.STOPPED ? 'disable' : 'enable');
-		g_DOM.stop.button(cs == self.state.STOPPED ? 'disable' : 'enable');
+		E2.dom.play.button(cs == self.state.PLAYING ? 'disable' : 'enable');
+		E2.dom.pause.button(cs == self.state.PAUSED || cs == self.state.STOPPED ? 'disable' : 'enable');
+		E2.dom.stop.button(cs == self.state.STOPPED ? 'disable' : 'enable');
 	}
 	
 	this.onPlayClicked = function()
@@ -1533,7 +1552,7 @@ function Application() {
 		
 		self.last_time = (new Date()).getTime();
 		self.interval = setInterval(function() {
-			app.onUpdate();
+			E2.app.onUpdate();
 		}, 0);
 	};
 	
@@ -1568,13 +1587,13 @@ function Application() {
 
 	this.onSaveClicked = function()
 	{
-		g_DOM.persist.val(self.core.serialise());
+		E2.dom.persist.val(self.core.serialise());
 	};
 	
 	this.onLoadClicked = function()
 	{
 		self.onStopClicked();
-		self.core.deserialise(g_DOM.persist.val());
+		self.core.deserialise(E2.dom.persist.val());
 		self.updateCanvas();
 	};
 
@@ -1586,13 +1605,13 @@ function Application() {
 		if(self.core.update(self.abs_time, delta_t))
 			self.updateCanvas();
 		
-		g_DOM.frame.val(delta_t.toFixed(4));
+		E2.dom.frame.val(delta_t.toFixed(4));
 		self.last_time = time;
 		self.abs_time += delta_t;
 	}
 	
 	// $(document).mouseup(this.onMouseReleased);
-	g_DOM.canvas_parent.mouseup(this.onMouseReleased);
+	E2.dom.canvas_parent.mouseup(this.onMouseReleased);
 	$(document).keydown(this.onKeyDown);
 	$(document).keyup(this.onKeyUp);
 	canvas.mousemove(this.onMouseMoved);
@@ -1616,24 +1635,24 @@ function Application() {
 	// Make sure all the input fields blur themselves when they gain focus --
 	// otherwise they trap the control key document events. TODO: Surely there is a
 	// better way to deal with this atrocious nonsense?
-	g_DOM.play.focus(function(e) { g_DOM.play.blur(); });
-	g_DOM.pause.focus(function(e) { g_DOM.pause.blur(); });
-	g_DOM.stop.focus(function(e) { g_DOM.stop.blur(); });
-	g_DOM.save.focus(function(e) { g_DOM.save.blur(); });
-	g_DOM.load.focus(function(e) { g_DOM.load.blur(); });
+	E2.dom.play.focus(function(e) { E2.dom.play.blur(); });
+	E2.dom.pause.focus(function(e) { E2.dom.pause.blur(); });
+	E2.dom.stop.focus(function(e) { E2.dom.stop.blur(); });
+	E2.dom.save.focus(function(e) { E2.dom.save.blur(); });
+	E2.dom.load.focus(function(e) { E2.dom.load.blur(); });
 }
 
 $(document).ready(function() {
-	g_DOM.canvas_parent = $('#canvas_parent');
-	g_DOM.dbg = $('#dbg');
-	g_DOM.play = $('#play');
-	g_DOM.pause = $('#pause');
-	g_DOM.stop = $('#stop');
-	g_DOM.save = $('#save');
-	g_DOM.load = $('#load');
-	g_DOM.frame = $('#frame');
-	g_DOM.persist = $('#persist');
-	g_DOM.structure = $('#structure');
+	E2.dom.canvas_parent = $('#canvas_parent');
+	E2.dom.dbg = $('#dbg');
+	E2.dom.play = $('#play');
+	E2.dom.pause = $('#pause');
+	E2.dom.stop = $('#stop');
+	E2.dom.save = $('#save');
+	E2.dom.load = $('#load');
+	E2.dom.frame = $('#frame');
+	E2.dom.persist = $('#persist');
+	E2.dom.structure = $('#structure');
 	
 	$.ajaxSetup({ cache: false });
 	
@@ -1652,16 +1671,16 @@ $(document).ready(function() {
 
 	msg('Welcome to WebFx. ' + (new Date()));
 	
-	g_DOM.dbg.ajaxError(function(e, jqxhr, settings, exception) {
+	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, exception) {
 		if(settings.dataType=='script' && !settings.url.match(/^plugins\/all.plugins\.js/)) {
 			msg(e + exception);
 		}
 	});
 
-	app = new Application();
-	app.core.plugin_mgr = new PluginManager(app.core, 'plugins');
+	E2.app = new Application();
+	E2.app.core.plugin_mgr = new PluginManager(E2.app.core, 'plugins');
 	
-	g_DOM.structure.dynatree({
+	E2.dom.structure.dynatree({
 		title: "Structure",
 		fx: { height: 'toggle', duration: 200 },
 		clickFolderMode: 1, // Activate, don't expand.
@@ -1669,12 +1688,12 @@ $(document).ready(function() {
 		debugLevel: 0, // Quiet.
 		onActivate: function(node) 
 		{
-			app.core.onGraphSelected(node.graph);
-			app.updateCanvas();
+			E2.app.core.onGraphSelected(node.graph);
+			E2.app.updateCanvas();
 		}
 	});
     
-	var root_node = g_DOM.structure.dynatree('getRoot');
+	var root_node = E2.dom.structure.dynatree('getRoot');
 	var gn_root = root_node.addChild({
 		title: 'Root',
 		isFolder: true,
@@ -1686,14 +1705,14 @@ $(document).ready(function() {
 	// even though we could introduce a UID manager to move this out of the core,
 	// where would *that* singleton live? In the core... Most awkward.
 	// The alternative is to have the UID manager singleton be global? Ugh..
-	app.core.active_graph = app.core.root_graph = new Graph(null, gn_root);
-	app.core.graphs.push(app.core.root_graph);
+	E2.app.core.active_graph = E2.app.core.root_graph = new Graph(null, gn_root);
+	E2.app.core.graphs.push(E2.app.core.root_graph);
 	
-	g_DOM.play.button({ icons: { primary: 'ui-icon-play' } }).click(app.onPlayClicked);
-	g_DOM.pause.button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(app.onPauseClicked);
-	g_DOM.stop.button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(app.onStopClicked);
-	g_DOM.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(app.onSaveClicked);
-	g_DOM.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(app.onLoadClicked);
+	E2.dom.play.button({ icons: { primary: 'ui-icon-play' } }).click(E2.app.onPlayClicked);
+	E2.dom.pause.button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(E2.app.onPauseClicked);
+	E2.dom.stop.button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(E2.app.onStopClicked);
+	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
+	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
 
   	msg('Ready.');	
 	$('#content').css('display', 'block');

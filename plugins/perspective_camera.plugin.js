@@ -1,4 +1,4 @@
-g_Plugins["perspective_camera"] = function(core) {
+E2.plugins["perspective_camera"] = function(core) {
 	var self = this;
 	var gl = core.renderer.context;
 	var up = [0.0, 1.0, 0.0];

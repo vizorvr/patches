@@ -1,4 +1,4 @@
-g_Plugins["translation_matrix"] = function(core) {
+E2.plugins["translation_matrix"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

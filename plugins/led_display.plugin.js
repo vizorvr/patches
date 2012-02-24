@@ -1,4 +1,4 @@
-g_Plugins["led_display"] = function(core) {
+E2.plugins["led_display"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

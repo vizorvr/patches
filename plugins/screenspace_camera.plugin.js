@@ -1,4 +1,4 @@
-g_Plugins["screenspace_camera"] = function(core) {
+E2.plugins["screenspace_camera"] = function(core) {
 	var self = this;
 	var gl = core.renderer.context;
 	

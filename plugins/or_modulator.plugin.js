@@ -1,4 +1,4 @@
-g_Plugins["or_modulator"] = function(core) {
+E2.plugins["or_modulator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

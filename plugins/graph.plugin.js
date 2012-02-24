@@ -1,4 +1,4 @@
-g_Plugins["graph"] = function(core) {
+E2.plugins["graph"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [{ name: 'enabled', dt: core.datatypes.BOOL }];

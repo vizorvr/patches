@@ -1,4 +1,4 @@
-g_Plugins["convert_camera_matrices"] = function(core) {
+E2.plugins["convert_camera_matrices"] = function(core) {
 	var self = this;
 	var gl = core.renderer.context;
 	

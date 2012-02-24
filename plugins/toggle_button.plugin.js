@@ -1,4 +1,4 @@
-g_Plugins["toggle_button"] = function(core) {
+E2.plugins["toggle_button"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [];

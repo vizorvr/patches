@@ -1,4 +1,4 @@
-g_Plugins["clock_generator"] = function(core) {
+E2.plugins["clock_generator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [];

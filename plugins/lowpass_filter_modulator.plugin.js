@@ -1,4 +1,4 @@
-g_Plugins["lowpass_filter_modulator"] = function(core) {
+E2.plugins["lowpass_filter_modulator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

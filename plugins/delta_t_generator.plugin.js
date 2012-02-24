@@ -1,4 +1,4 @@
-g_Plugins["delta_t_generator"] = function(core) {
+E2.plugins["delta_t_generator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [];

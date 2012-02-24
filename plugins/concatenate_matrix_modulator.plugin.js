@@ -1,4 +1,4 @@
-g_Plugins["concatenate_matrix_modulator"] = function(core) {
+E2.plugins["concatenate_matrix_modulator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

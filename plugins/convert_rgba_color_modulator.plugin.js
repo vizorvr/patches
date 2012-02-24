@@ -1,4 +1,4 @@
-g_Plugins["convert_rgba_color_modulator"] = function(core) {
+E2.plugins["convert_rgba_color_modulator"] = function(core) {
 	var self = this;
 	var renderer = core.renderer; 
 	var gl = renderer.context;

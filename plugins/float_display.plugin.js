@@ -1,4 +1,4 @@
-g_Plugins["float_display"] = function(core) {
+E2.plugins["float_display"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

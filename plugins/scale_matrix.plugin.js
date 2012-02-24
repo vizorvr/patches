@@ -1,4 +1,4 @@
-g_Plugins["scale_matrix"] = function(core) {
+E2.plugins["scale_matrix"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

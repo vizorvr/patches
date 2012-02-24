@@ -1,4 +1,4 @@
-g_Plugins["less_than_modulator"] = function(core) {
+E2.plugins["less_than_modulator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

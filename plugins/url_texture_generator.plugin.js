@@ -1,4 +1,4 @@
-g_Plugins["url_texture_generator"] = function(core) {
+E2.plugins["url_texture_generator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [];

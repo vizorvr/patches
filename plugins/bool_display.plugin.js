@@ -1,4 +1,4 @@
-g_Plugins["bool_display"] = function(core) {
+E2.plugins["bool_display"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

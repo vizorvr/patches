@@ -1,4 +1,4 @@
-g_Plugins["sine_modulator"] = function(core) {
+E2.plugins["sine_modulator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ { name: 'time', dt: core.datatypes.FLOAT } ];

@@ -1,4 +1,4 @@
-g_Plugins["vector"] = function(core) {
+E2.plugins["vector"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

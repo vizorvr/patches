@@ -1,4 +1,4 @@
-g_Plugins["flat_shader"] = function(core) {
+E2.plugins["flat_shader"] = function(core) {
 	var self = this;
 	var renderer = core.renderer; 
 	var gl = renderer.context;

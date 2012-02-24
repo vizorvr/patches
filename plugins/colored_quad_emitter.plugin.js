@@ -1,4 +1,4 @@
-g_Plugins["colored_quad_emitter"] = function(core) {
+E2.plugins["colored_quad_emitter"] = function(core) {
 	var self = this;
 	var gl = core.renderer.context;
 	

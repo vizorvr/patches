@@ -1,4 +1,4 @@
-g_Plugins["round_modulator"] = function(core) {
+E2.plugins["round_modulator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

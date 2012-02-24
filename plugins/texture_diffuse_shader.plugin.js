@@ -1,4 +1,4 @@
-g_Plugins["texture_diffuse_shader"] = function(core) {
+E2.plugins["texture_diffuse_shader"] = function(core) {
 	var self = this;
 	var renderer = core.renderer; 
 	var gl = renderer.context;

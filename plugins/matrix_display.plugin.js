@@ -1,4 +1,4 @@
-g_Plugins["matrix_display"] = function(core) {
+E2.plugins["matrix_display"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [ 

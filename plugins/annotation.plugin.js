@@ -1,4 +1,4 @@
-g_Plugins["annotation"] = function(core) {
+E2.plugins["annotation"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [];

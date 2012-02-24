@@ -1,4 +1,4 @@
-g_Plugins["const_float_generator"] = function(core) {
+E2.plugins["const_float_generator"] = function(core) {
 	var self = this;
 	
 	this.input_slots = [];
