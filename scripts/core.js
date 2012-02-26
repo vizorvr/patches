@@ -543,6 +543,9 @@ function Node(parent_graph, plugin_id, x, y) {
 		for(var i = 0, len = pending.length; i < len; i++)
 			graph.destroy_connection(pending[i]);
 		
+		if(self.id === 'Graph')
+			self.plugin.graph.tree_node.remove();
+		
 		self.destroy_ui();
 	};
 	
@@ -571,6 +574,7 @@ function Node(parent_graph, plugin_id, x, y) {
 				self.dyn_inputs = [];
 			
 			def.index = self.dyn_inputs.length;
+			def.type = E2.slot_type.input;
 			self.dyn_inputs.push(def);			
 		}
 		else
@@ -579,6 +583,7 @@ function Node(parent_graph, plugin_id, x, y) {
 				self.dyn_outputs = [];
 			
 			def.index = self.dyn_outputs.length;
+			def.type = E2.slot_type.output;
 			self.dyn_outputs.push(def);			
 		}
 		
@@ -709,7 +714,7 @@ function Node(parent_graph, plugin_id, x, y) {
 			}
 		}
 		
-		if(needs_update || self.plugin.output_slots.length === 0)
+		if(needs_update || self.plugin.output_slots.length === 0 || (self.plugin.outputs && self.plugin.outputs.length === 0))
 		{
 			if(s_plugin.update_state)
 				s_plugin.update_state(delta_t);
@@ -787,24 +792,29 @@ function Node(parent_graph, plugin_id, x, y) {
 		
 		if(d.dyn_in || d.dyn_out)
 		{
-			var unpack_dt = function(slots)
+			var patch_slot = function(slots, type)
 			{
 				var rdt = E2.app.core.resolve_dt;
 				
 				for(var i = 0, len = slots.length; i < len; i++)
-					slots[i].dt = rdt[slots[i].dt];
+				{
+					var s = slots[i];
+					 
+					s.dt = rdt[s.dt];
+					s.type = type;
+				}
 			};
 			
 			if(d.dyn_in)
 			{
 				self.dyn_inputs = d.dyn_in;
-				unpack_dt(self.dyn_inputs);
+				patch_slot(self.dyn_inputs, E2.slot_type.input);
 			}
 			
 			if(d.dyn_out)
 			{
 				self.dyn_outputs = d.dyn_out;
-				unpack_dt(self.dyn_outputs);
+				patch_slot(self.dyn_outputs, E2.slot_type.output);
 			}
 		}
 	};
