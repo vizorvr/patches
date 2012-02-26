@@ -551,6 +551,14 @@ function Node(parent_graph, plugin_id, x, y) {
 		return self.title === null ? self.id : self.title;
 	};
 	
+	this.reset = function()
+	{
+		var p = self.plugin;
+		
+		if(p.reset)
+			p.reset();
+	};
+	
 	this.add_slot = function(slot_type, def)
 	{
 		var suid = self.dyn_slot_uid++;
@@ -880,8 +888,7 @@ function Graph(parent_graph, tree_node)
 	{
 		self.enum_all(function(n)
 		{
-			if(n.plugin.reset)
-				n.plugin.reset();
+			n.reset();
 		},
 		function(c)
 		{
@@ -922,9 +929,7 @@ function Graph(parent_graph, tree_node)
 	{
 		self.enum_all(function(n)
 		{
-			if(n.reset)
-				n.reset();
-			
+			n.reset();
 			n.create_ui();
 
 			if(n.ui && n.plugin.state_changed)
@@ -1209,8 +1214,7 @@ function Application() {
 		{
 			var node = self.core.active_graph.create_instance(id, (pos.left - co.left) + cp.scrollLeft(), (pos.top - co.top) + cp.scrollTop());
 		
-			if(node.plugin.reset)
-				node.plugin.reset();
+			node.reset();
 
 			if(name !== null) // Graph?
 			{
