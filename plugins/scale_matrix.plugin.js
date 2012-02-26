@@ -1,4 +1,4 @@
-E2.plugins["scale_matrix"] = function(core) {
+E2.plugins["scale_matrix"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -13,13 +13,13 @@ E2.plugins["scale_matrix"] = function(core) {
 		mat4.identity(self.matrix);
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
 		mat4.identity(self.matrix);
 		mat4.scale(self.matrix, data);
 	};	
 
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.matrix;
 	};	

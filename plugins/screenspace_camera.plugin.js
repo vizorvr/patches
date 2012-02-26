@@ -1,4 +1,4 @@
-E2.plugins["screenspace_camera"] = function(core) {
+E2.plugins["screenspace_camera"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
@@ -10,7 +10,7 @@ E2.plugins["screenspace_camera"] = function(core) {
 		self.camera = new Camera(gl);
 	};
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.camera;
 	};	

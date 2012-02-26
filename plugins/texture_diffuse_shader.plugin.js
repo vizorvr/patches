@@ -1,4 +1,4 @@
-E2.plugins["texture_diffuse_shader"] = function(core) {
+E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	var self = this;
 	var renderer = core.renderer; 
 	var gl = renderer.context;
@@ -95,25 +95,25 @@ E2.plugins["texture_diffuse_shader"] = function(core) {
 		mat4.identity(self.transform);
 	};
 	
-	this.disconnect_input = function(index)
+	this.disconnect_input = function(slot)
 	{
-		if(index === 1)
+		if(slot.index === 1)
 			self.tex = null;
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		if(index === 0)
+		if(slot.index === 0)
 			self.color = data;
-		else if(index === 1)
+		else if(slot.index === 1)
 			self.tex = data;
-		else if(index === 2)
+		else if(slot.index === 2)
 			self.camera = data;
-		else if(index === 3)
+		else
 			self.transform = data;
 	};
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.s;
 	};

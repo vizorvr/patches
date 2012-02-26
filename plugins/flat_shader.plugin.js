@@ -1,4 +1,4 @@
-E2.plugins["flat_shader"] = function(core) {
+E2.plugins["flat_shader"] = function(core, node) {
 	var self = this;
 	var renderer = core.renderer; 
 	var gl = renderer.context;
@@ -68,17 +68,17 @@ E2.plugins["flat_shader"] = function(core) {
 		mat4.identity(this.transform);
 	}
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		if(index === 0)
+		if(slot.index === 0)
 			self.color = data;
-		else if(index === 1)
+		else if(slot.index === 1)
 			self.camera = data;
-		else if(index === 2)
+		else
 			self.transform = data;
 	};
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.s;
 	};

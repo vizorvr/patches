@@ -1,4 +1,4 @@
-E2.plugins["floor_modulator"] = function(core) {
+E2.plugins["floor_modulator"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -12,13 +12,13 @@ E2.plugins["floor_modulator"] = function(core) {
 		self.value = 0;
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		if(index === 0)
+		if(slot.index === 0)
 			self.value = Math.floor(data);
 	};	
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.value;
 	};	

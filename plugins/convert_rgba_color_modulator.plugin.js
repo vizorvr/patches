@@ -1,4 +1,4 @@
-E2.plugins["convert_rgba_color_modulator"] = function(core) {
+E2.plugins["convert_rgba_color_modulator"] = function(core, node) {
 	var self = this;
 	var renderer = core.renderer; 
 	var gl = renderer.context;
@@ -19,12 +19,12 @@ E2.plugins["convert_rgba_color_modulator"] = function(core) {
 		self.color = new Color(1.0, 1.0, 1.0, 1.0);
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		self.color.rgba[index] = data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data;
+		self.color.rgba[slot.index] = data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data;
 	};
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.color;
 	};

@@ -1,4 +1,4 @@
-E2.plugins["perspective_camera"] = function(core) {
+E2.plugins["perspective_camera"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	var up = [0.0, 1.0, 0.0];
@@ -22,17 +22,17 @@ E2.plugins["perspective_camera"] = function(core) {
 		self.target = [0.0, 0.0, 0.0];
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		if(index === 0)
+		if(slot.index === 0)
 			self.fov = data;
-		else if(index === 1)
+		else if(slot.index === 1)
 			self.near = data;
-		else if(index === 2)
+		else if(slot.index === 2)
 			self.far = data;
-		else if(index === 3)
+		else if(slot.index === 3)
 			self.position = data;
-		else if(index === 3)
+		else
 			self.target = data;
 	};
 
@@ -42,7 +42,7 @@ E2.plugins["perspective_camera"] = function(core) {
 		mat4.lookAt(self.position, self.target, up, self.camera.view);
 	};
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.camera;
 	};	

@@ -1,4 +1,4 @@
-E2.plugins["matrix_display"] = function(core) {
+E2.plugins["matrix_display"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -41,12 +41,12 @@ E2.plugins["matrix_display"] = function(core) {
 		return table;
 	};
 	
-	this.disconnect_input = function(index)
+	this.disconnect_input = function(slot)
 	{
 		self.reset(null);
 	};
 
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
 		var ofs = 0;
 		

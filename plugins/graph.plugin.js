@@ -1,4 +1,4 @@
-E2.plugins["graph"] = function(core) {
+E2.plugins["graph"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [{ name: 'enabled', dt: core.datatypes.BOOL }];
@@ -13,10 +13,13 @@ E2.plugins["graph"] = function(core) {
 			self.graph.reset();
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		if(index === 0)
-			self.state.enabled = data;
+		if(slot.uid === undefined)
+		{
+			if(slot.index === 0)
+				self.state.enabled = data;
+		}
 	};
 	
 	this.update_state = function(delta_t)

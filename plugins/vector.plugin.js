@@ -1,4 +1,4 @@
-E2.plugins["vector"] = function(core) {
+E2.plugins["vector"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -13,12 +13,12 @@ E2.plugins["vector"] = function(core) {
 		self.xyz = [0.0, 0.0, 0.0];
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		self.xyz[index] = data;
+		self.xyz[slot.index] = data;
 	};	
 
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.xyz;
 	};	

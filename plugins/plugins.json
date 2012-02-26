@@ -38,5 +38,6 @@
 	"Emitters/Debug/Matrix display": "matrix_display",
 	"Emitters/Debug/Vector display": "vector_display",
 	"Structure/Annotation": "annotation",
-	"Structure/Graph": "graph"
+	"Structure/Graph": "graph",
+	"Testing/Test dyn slots": "test_dyn_slots"
 }

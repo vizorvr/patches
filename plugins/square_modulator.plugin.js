@@ -1,4 +1,4 @@
-E2.plugins["square_modulator"] = function(core) {
+E2.plugins["square_modulator"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ { name: 'time', dt: core.datatypes.FLOAT } ];
@@ -10,7 +10,7 @@ E2.plugins["square_modulator"] = function(core) {
 		self.result = 0.0;
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
 		self.time = data;
 	};	
@@ -21,7 +21,7 @@ E2.plugins["square_modulator"] = function(core) {
 
 	};
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.result;
 	};	

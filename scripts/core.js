@@ -2,8 +2,7 @@
 To do:
 
 1. Implement dynamic slots.
-2. Fix bug in camera operation. Especially the perspective camera.
-3. Begin timeline implementation.
+2. Begin timeline implementation.
  
 */
 
@@ -14,6 +13,7 @@ function E2()
 E2.app = null;
 E2.dom = {};
 E2.plugins = {};
+E2.slot_type = { input: 0, output: 1 };
 
 function msg(txt)
 {
@@ -226,11 +226,11 @@ function PluginManager(core, base_url)
   		}
 	});
 	
-	this.create = function(id) 
+	this.create = function(id, node) 
 	{
 		if(E2.plugins.hasOwnProperty(id))
 		{
-			var p = new E2.plugins[id](self.core);
+			var p = new E2.plugins[id](self.core, node);
 			
 			p.id = id;
 			
@@ -258,11 +258,14 @@ function ConnectionUI(parent_conn)
 	{
 		var pc = self.parent_conn;
 		
-		self.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + 'so' + pc.src_slot.index);
-		self.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + 'si' + pc.dst_slot.index);
+		self.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + (pc.src_slot.uid !== undefined ? 'do' + pc.src_slot.uid : 'so' + pc.src_slot.index));
+		self.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + (pc.dst_slot.uid !== undefined ? 'di' + pc.dst_slot.uid : 'si' + pc.dst_slot.index));
+		
 		assert(self.src_slot_div !== null && self.dst_slot_div !== null, 'Failed to resolve connection slot div.'); 
-		self.src_pos = E2.app.getSlotPosition(self.src_slot_div, 1);
-		self.dst_pos = E2.app.getSlotPosition(self.dst_slot_div, 0);
+		
+		self.src_pos = E2.app.getSlotPosition(self.src_slot_div, E2.slot_type.output);
+		self.dst_pos = E2.app.getSlotPosition(self.dst_slot_div, E2.slot_type.input);
+		
 		assert(self.src_pos !== null && self.dst_pos !== null, 'Failed to resolve connection slot div position.'); 
 	};
 }
@@ -304,6 +307,12 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		d.src_slot = self.src_slot.index;
 		d.dst_slot = self.dst_slot.index;
 		
+		if(self.src_slot.uid !== undefined)
+			d.src_dyn = true;
+		
+		if(self.dst_slot.uid !== undefined)
+			d.dst_dyn = true;
+
 		if(self.offset !== 0)
 			d.offset = self.offset;
 		
@@ -314,8 +323,8 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	{
 		self.src_node = d.src_nuid;
 		self.dst_node = d.dst_nuid;
-		self.src_slot = d.src_slot;
-		self.dst_slot = d.dst_slot;
+		self.src_slot = { index: d.src_slot, dynamic: d.src_dyn ? true : false };
+		self.dst_slot = { index: d.dst_slot, dynamic: d.dst_dyn ? true : false };
 		self.offset = d.offset ? d.offset : 0;
 		self.cached_value = null;
 	};
@@ -337,8 +346,8 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		self.src_node = resolve_node(self.src_node);
 		self.dst_node = resolve_node(self.dst_node);
 		
-		self.src_slot = self.src_node.plugin.output_slots[self.src_slot];
-		self.dst_slot = self.dst_node.plugin.input_slots[self.dst_slot];
+		self.src_slot = (self.src_slot.dynamic ? self.src_node.dyn_outputs : self.src_node.plugin.output_slots)[self.src_slot.index];
+		self.dst_slot = (self.dst_slot.dynamic ? self.dst_node.dyn_inputs : self.dst_node.plugin.input_slots)[self.dst_slot.index];
 		self.dst_slot.is_connected = true;
 		
 		self.src_node.outputs.push(self);
@@ -347,30 +356,38 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 }
 
 function NodeUI(parent_node, x, y) {
+	var self = this;
+	
 	this.parent_node = parent_node;
 	this.x = x;
 	this.y = y;
 	this.plugin_ui = null;
 	
+	this.create_slot = function(nid, col, s, type)
+	{
+		var div = make('div');
+	
+		if(s.uid !== undefined)
+			div.attr('id', nid + (type === E2.slot_type.input ? 'di' : 'do') + s.uid);
+		else
+			div.attr('id', nid + (type === E2.slot_type.input ? 'si' : 'so') + s.index);
+	
+		div.text(s.name);
+		div.addClass('pl_slot');
+		div.disableSelection();
+		div.definition = s;
+	
+		div.mouseenter(E2.app.onSlotEntered(parent_node, s, div));
+		div.mouseleave(E2.app.onSlotExited(parent_node, s, div));
+		div.mousedown(E2.app.onSlotClicked(parent_node, s, div, type));
+	
+		col.append(div);
+	};
+	
 	var render_slots = function(nid, col, slots, type)
 	{
 		for(var i = 0, len = slots.length; i < len; i++)
-		{
-			var s = slots[i];
-			var div = make('div');
-			
-			div.attr('id', nid + (type === 0 ? 'si' : 'so') + i);
-			div.text(s.name);
-			div.addClass('pl_slot');
-			div.disableSelection();
-			div.definition = s;
-			
-			div.mouseenter(E2.app.onSlotEntered(parent_node, s, div));
-			div.mouseleave(E2.app.onSlotExited(parent_node, s, div));
-			div.mousedown(E2.app.onSlotClicked(parent_node, s, div, type));
-			
-			col.append(div);
-		}
+			self.create_slot(nid, col, slots[i], type);
 	};
 	
 	var nid = 'n' + parent_node.uid;
@@ -412,16 +429,24 @@ function NodeUI(parent_node, x, y) {
 	var output_col = make('td');
 	
 	input_col.css('text-align', 'left');
+	input_col.attr('id', 'ic');
 	content_col.addClass('pui_col');
 	output_col.css('text-align', 'right');
+	output_col.attr('id', 'oc');
 	
 	row.append(input_col)
 	row.append(content_col)
 	row.append(output_col)
 	
-	render_slots(nid, input_col, parent_node.plugin.input_slots, 0);
-	render_slots(nid, output_col, parent_node.plugin.output_slots, 1);
+	render_slots(nid, input_col, parent_node.plugin.input_slots, E2.slot_type.input);
+	render_slots(nid, output_col, parent_node.plugin.output_slots, E2.slot_type.output);
 	
+	if(parent_node.dyn_inputs)
+		render_slots(nid, input_col, parent_node.dyn_inputs, E2.slot_type.input);
+	
+	if(parent_node.dyn_outputs)
+		render_slots(nid, output_col, parent_node.dyn_outputs, E2.slot_type.output);
+
 	var plugin = parent_node.plugin;
 	
 	if(plugin.create_ui)
@@ -460,7 +485,7 @@ function Node(parent_graph, plugin_id, x, y) {
 			var s = plugin.input_slots[i];
 		
 			s.index = i;
-			s.type = 0;
+			s.type = E2.slot_type.input;
 		}
 		
 		for(var i = 0, len = plugin.output_slots.length; i < len; i++)
@@ -468,7 +493,7 @@ function Node(parent_graph, plugin_id, x, y) {
 			var s = plugin.output_slots[i];
 		
 			s.index = i;
-			s.type = 1;
+			s.type = E2.slot_type.output;
 		}
 	};
 		
@@ -483,7 +508,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.is_updated = false;
 		this.title = null;
 		
-		self.set_plugin(E2.app.core.plugin_mgr.create(plugin_id));
+		self.set_plugin(E2.app.core.plugin_mgr.create(plugin_id, this));
 	};
 	
 	this.create_ui = function()
@@ -495,10 +520,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	{
 		if(self.ui)
 		{
-			/*self.ui.dom.remove();
-			self.ui = null;*/
-
-			self.ui.dom.hide('fast', function() // This threw an exception during graph transitions.
+			self.ui.dom.hide('fast', function()
 			{
 				self.ui.dom.remove();
 				self.ui = null;
@@ -529,18 +551,114 @@ function Node(parent_graph, plugin_id, x, y) {
 		return self.title === null ? self.id : self.title;
 	};
 	
-	this.rebuild_slot_ui = function(slot_type)
-	{
-		if(!self.ui)
-			return;
-	};
-	
 	this.add_slot = function(slot_type, def)
 	{
+		var suid = self.dyn_slot_uid++;
+		var is_inp = slot_type === E2.slot_type.input;
+		def.uid = suid;
+		
+		if(is_inp)
+		{
+			if(!self.dyn_inputs)
+				self.dyn_inputs = [];
+			
+			def.index = self.dyn_inputs.length;
+			self.dyn_inputs.push(def);			
+		}
+		else
+		{
+			if(!self.dyn_outputs)
+				self.dyn_outputs = [];
+			
+			def.index = self.dyn_outputs.length;
+			self.dyn_outputs.push(def);			
+		}
+		
+		if(self.ui)
+		{
+			var col = self.ui.dom.find(is_inp ? '#ic' : '#oc');
+			
+			self.ui.create_slot('n' + self.uid, col, def, slot_type);
+		}
+		
+		return suid;
 	};
 	
-	this.remove_slot = function(slot_type)
+	this.remove_slot = function(slot_type, suid)
 	{
+		var is_inp = slot_type === E2.slot_type.input;
+		var slots = is_inp ? self.dyn_inputs : self.dyn_outputs;
+		
+		if(!slots)
+			return;
+		
+		var slot = null;
+		var idx = -1;
+		
+		for(var i = 0, len = slots.length; i < len; i++)
+		{
+			var s = slots[i];
+			
+			if(s.uid === suid)
+			{
+				slot = s;
+				idx = i;
+				slots.splice(i, 1)
+				break;
+			}
+		} 
+		
+		if(!slot)
+			return;
+		
+		if(slots.length < 1) // To prevent these to be serialised or allocated if all slots have been removed.
+		{
+			if(is_inp)
+				self.dyn_inputs = undefined;
+			else
+				self.dyn_outputs = undefined;
+		}
+		
+		if(self.ui)
+			self.ui.dom.find('#n' + self.uid + (is_inp ? 'di' : 'do') + slot.uid).remove();
+		
+		var att = is_inp ? self.inputs : self.outputs;
+		var pending = [];
+		var canvas_dirty = false;
+		
+		for(var i = 0, len = att.length; i < len; i++)
+		{
+			var c = att[i];
+			var s = is_inp ? c.dst_slot : c.src_slot;
+		
+			if(s === slot)
+			{
+				pending.push(c);
+				
+				if(c.ui)
+					canvas_dirty = true;
+			}
+			else if(s.uid !== undefined && s.index > idx)
+			{
+				s.index--;
+				
+				if(c.ui)
+				{
+					if(is_inp)
+						c.ui.dst_pos = E2.app.getSlotPosition(c.ui.dst_slot_div, E2.slot_type.input);
+					else
+						c.ui.src_pos = E2.app.getSlotPosition(c.ui.src_slot_div, E2.slot_type.output);
+					
+					canvas_dirty = true;
+				}
+			}
+		}
+		
+		for(var i = 0, len = pending.length; i < len; i++)
+			self.parent_graph.destroy_connection(pending[i]);
+			
+		if(canvas_dirty)
+			E2.app.updateCanvas();
 	};
 	
 	this.update_recursive = function(conns, delta_t)
@@ -562,11 +680,11 @@ function Node(parent_graph, plugin_id, x, y) {
 			
 			dirty = inp.src_node.update_recursive(conns, delta_t) || dirty;
 			
-			var value = inp.src_node.plugin.update_output(inp.src_slot.index);
+			var value = inp.src_node.plugin.update_output(inp.src_slot);
 			
 			if(inp.src_node.plugin.needs_update || value !== inp.cached_value)
 			{
-				self.plugin.update_input(inp.dst_slot.index, value);
+				self.plugin.update_input(inp.dst_slot, value);
 				inp.cached_value = value;
 				needs_update = true;
 				
@@ -614,6 +732,27 @@ function Node(parent_graph, plugin_id, x, y) {
 		if(self.plugin.id === 'graph')
 			d.graph = self.plugin.graph.serialise();
 		
+		if(self.dyn_inputs || self.dyn_outputs)
+		{
+			var pack_dt = function(slots)
+			{
+				for(var i = 0, len = slots.length; i < len; i++)
+					slots[i].dt = slots[i].dt.id;
+			};
+			
+			if(self.dyn_inputs)
+			{
+				d.dyn_in = self.dyn_inputs.slice(0);
+				pack_dt(d.dyn_in);
+			}
+			
+			if(self.dyn_outputs)
+			{
+				d.dyn_out = self.dyn_outputs.slice(0);
+				pack_dt(d.dyn_out);
+			}
+		}
+
 		return d;
 	};
 	
@@ -626,7 +765,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		self.uid = d.uid;
 		self.title = d.title ? d.title : null;
 		
-		self.set_plugin(E2.app.core.plugin_mgr.create(d.plugin));
+		self.set_plugin(E2.app.core.plugin_mgr.create(d.plugin, self));
 		
 		if(self.plugin.id === 'graph')
 		{
@@ -637,6 +776,29 @@ function Node(parent_graph, plugin_id, x, y) {
 		
 		if(d.state)
 			self.plugin.state = d.state;
+		
+		if(d.dyn_in || d.dyn_out)
+		{
+			var unpack_dt = function(slots)
+			{
+				var rdt = E2.app.core.resolve_dt;
+				
+				for(var i = 0, len = slots.length; i < len; i++)
+					slots[i].dt = rdt[slots[i].dt];
+			};
+			
+			if(d.dyn_in)
+			{
+				self.dyn_inputs = d.dyn_in;
+				unpack_dt(self.dyn_inputs);
+			}
+			
+			if(d.dyn_out)
+			{
+				self.dyn_outputs = d.dyn_out;
+				unpack_dt(self.dyn_outputs);
+			}
+		}
 	};
 	
 	this.patch_up = function(graphs)
@@ -742,10 +904,18 @@ function Graph(parent_graph, tree_node)
 		
 		c.dst_slot.is_connected = false;
 		
-		index = c.dst_node.inputs.indexOf(c);
+		var slots = c.dst_node.inputs;
 		
+		index = slots.indexOf(c);
+	
 		if(index != -1)
-			c.dst_node.inputs.splice(index, 1);
+			slots.splice(index, 1);
+
+		slots = c.src_node.outputs;
+		index = slots.indexOf(c);
+	
+		if(index != -1)
+			slots.splice(index, 1);
 	};
 	
 	this.create_ui = function()
@@ -774,7 +944,7 @@ function Graph(parent_graph, tree_node)
 	
 	this.find_connections_from = function(node, slot)
 	{
-		if(slot.type !== 1)
+		if(slot.type !== E2.slot_type.output)
 			return [];
 		
 		var conns = self.connections;
@@ -859,7 +1029,7 @@ function Core() {
 		TRANSFORM: { id: 4, name: 'Transform' },
 		VERTEX: { id: 5, name: 'Vertex' },
 		CAMERA: { id: 6, name: 'Camera' },
-		BOOL: { id: 7, name: 'Boolean' },
+		BOOL: { id: 7, name: 'Boolean' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');
@@ -869,6 +1039,15 @@ function Core() {
 	this.abs_t = 0.0;
 	this.delta_t = 0.0;
 	this.graph_uid = 0;
+	
+	this.resolve_dt = []; // Make a table for easy reverse lookup of dt reference by id.
+	
+	for(var i in this.datatypes)
+	{
+		var dt = this.datatypes[i];
+		
+		this.resolve_dt[dt.id] = dt;
+	}
 	
 	this.get_graph_uid = function()
 	{
@@ -985,6 +1164,7 @@ function Application() {
 	this.hover_connections = [];
 	this.hover_node = null;
 	this.scrollOffset = [0, 0];
+	this.accum_delta = 0.0;
 	
 	var self = this;
 	
@@ -1015,7 +1195,7 @@ function Application() {
 	this.getSlotPosition = function(slot_div, type)
 	{
 		var o = self.offsetToCanvasCoord(slot_div.offset());
-		var x = type == 0 ? o[0] : o[0] + slot_div.width();
+		var x = type == E2.slot_type.input ? o[0] : o[0] + slot_div.width();
 		
 		return [x, o[1] + (slot_div.height() / 2)];
 	};
@@ -1087,7 +1267,7 @@ function Application() {
 	{
 		e.stopPropagation();
 		
-		if(!self.shift_pressed && type == 1)
+		if(!self.shift_pressed && type == E2.slot_type.output)
 		{
 			self.src_node = node;
 			self.src_slot = slot;
@@ -1152,7 +1332,7 @@ function Application() {
 				self.hover_connections.push(c);
 				dirty = true;
 								
-				if(hs.type == 0)
+				if(hs.type == E2.slot_type.input)
 					break; // Early out if this is an input slot, but continue searching if it's an output slot. There might be multiple connections.
 			}
 		}
@@ -1194,8 +1374,10 @@ function Application() {
 		if(self.src_slot)
 		{
 			self.dst_slot_div = slot_div;
-
-			if(self.src_slot_div.definition.dt === slot.dt && !slot.is_connected) // Only allow connection if datatypes match and slot is unconnected.
+			
+			// Only allow connection if datatypes match and slot is unconnected. Don't allow self-connections.
+			// There no complete check for cyclic redundacies, though we should probably institute one.
+			if(self.src_slot_div.definition.dt === slot.dt && !slot.is_connected && self.src_node !== node)
 			{
 				self.dst_node = node;
 				self.dst_slot = slot;
@@ -1401,7 +1583,7 @@ function Application() {
 					
 					// Signal the destruction of the connection to the target
 					if(p.disconnect_input)
-						p.disconnect_input(c.dst_slot.index);
+						p.disconnect_input(c.dst_slot);
 					
 					graph.destroy_connection(c);
 				}
@@ -1605,7 +1787,14 @@ function Application() {
 		if(self.core.update(self.abs_time, delta_t))
 			self.updateCanvas();
 		
-		E2.dom.frame.val(delta_t.toFixed(4));
+		self.accum_delta += delta_t;
+		
+		if(self.accum_delta > 0.05)
+		{
+			E2.dom.frame.val(delta_t.toFixed(4));
+			self.accum_delta = 0.0;
+		}
+		
 		self.last_time = time;
 		self.abs_time += delta_t;
 	}
@@ -1673,7 +1862,7 @@ $(document).ready(function() {
 	
 	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, exception) {
 		if(settings.dataType=='script' && !settings.url.match(/^plugins\/all.plugins\.js/)) {
-			msg(e + exception);
+			msg(exception.message + exception.stack);
 		}
 	});
 

@@ -1,4 +1,4 @@
-E2.plugins["url_texture_generator"] = function(core) {
+E2.plugins["url_texture_generator"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [];
@@ -60,7 +60,7 @@ E2.plugins["url_texture_generator"] = function(core) {
 		return inp;
 	};
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.texture;
 	};

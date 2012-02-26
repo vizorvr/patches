@@ -1,4 +1,4 @@
-E2.plugins["equals_modulator"] = function(core) {
+E2.plugins["equals_modulator"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -15,9 +15,9 @@ E2.plugins["equals_modulator"] = function(core) {
 		self.state = false;
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		if(index === 0)
+		if(slot.index === 0)
 			self.value = data;
 		else
 			self.ref = data;
@@ -28,7 +28,7 @@ E2.plugins["equals_modulator"] = function(core) {
 		self.state = self.value === self.ref;
 	};
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.state;
 	};	

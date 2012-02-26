@@ -1,4 +1,4 @@
-E2.plugins["or_modulator"] = function(core) {
+E2.plugins["or_modulator"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -14,9 +14,9 @@ E2.plugins["or_modulator"] = function(core) {
 		self.state = false;
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		self.conds[index] = data;
+		self.conds[slot.index] = data;
 	};	
 
 	this.update_state = function(delta_t)
@@ -24,7 +24,7 @@ E2.plugins["or_modulator"] = function(core) {
 		self.state = self.conds[0] || self.conds[1];
 	};
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.state;
 	};	

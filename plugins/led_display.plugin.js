@@ -1,4 +1,4 @@
-E2.plugins["led_display"] = function(core) {
+E2.plugins["led_display"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -21,12 +21,12 @@ E2.plugins["led_display"] = function(core) {
 		return self.label;
 	};
 	
-	this.disconnect_input = function(index, data)
+	this.disconnect_input = function(slot)
 	{
 		self.update_value(0);
 	};
 
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
 		self.update_value(data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data);
 	};

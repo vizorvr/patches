@@ -1,4 +1,4 @@
-E2.plugins["float_display"] = function(core) {
+E2.plugins["float_display"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -21,12 +21,12 @@ E2.plugins["float_display"] = function(core) {
 		return self.label;
 	};
 	
-	this.disconnect_input = function(index)
+	this.disconnect_input = function(slot)
 	{
 		self.update_value(null);
 	};
 
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
 		self.update_value(data);
 	};

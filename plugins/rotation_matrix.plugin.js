@@ -1,4 +1,4 @@
-E2.plugins["rotation_matrix"] = function(core) {
+E2.plugins["rotation_matrix"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -16,11 +16,11 @@ E2.plugins["rotation_matrix"] = function(core) {
 		mat4.identity(self.matrix);
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		if(index === 0)
+		if(slot.index === 0)
 			self.angle = data;
-		else if(index === 1)
+		else
 			self.axis = data;
 	};
 	
@@ -30,7 +30,7 @@ E2.plugins["rotation_matrix"] = function(core) {
 		mat4.rotate(self.matrix, self.angle, self.axis);
 	};
 
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.matrix;
 	};	

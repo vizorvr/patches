@@ -1,4 +1,4 @@
-E2.plugins["convert_camera_matrices"] = function(core) {
+E2.plugins["convert_camera_matrices"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
@@ -15,16 +15,16 @@ E2.plugins["convert_camera_matrices"] = function(core) {
 		self.camera = new Camera(gl);
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
 		self.camera = data;
 	};	
 
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
-		if(index === 0)
+		if(slot.index === 0)
 			return self.camera.projection;
-		else if(index === 1)
+		else
 			return self.camera.view;
 	};	
 };

@@ -1,4 +1,4 @@
-E2.plugins["vector_display"] = function(core) {
+E2.plugins["vector_display"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -34,12 +34,12 @@ E2.plugins["vector_display"] = function(core) {
 		return self.table;
 	};
 	
-	this.disconnect_input = function(index)
+	this.disconnect_input = function(slot)
 	{
 		self.reset(null);
 	};
 
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
 		for(var i = 0; i < 3; i++)
 			self.vec[i] = data[i].toFixed(2);

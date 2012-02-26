@@ -1,4 +1,4 @@
-E2.plugins["convert_hsla_color_modulator"] = function(core) {
+E2.plugins["convert_hsla_color_modulator"] = function(core, node) {
 	var self = this;
 	var renderer = core.renderer; 
 	var gl = renderer.context;
@@ -20,9 +20,9 @@ E2.plugins["convert_hsla_color_modulator"] = function(core) {
 		self.color = new Color(1.0, 1.0, 1.0, 1.0);
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		self.hsla[index] = data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data;
+		self.hsla[slot.index] = data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data;
 	};
 	
 	this.update_state = function(delta_t)
@@ -64,7 +64,7 @@ E2.plugins["convert_hsla_color_modulator"] = function(core) {
 		}
        	};
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.color;
 	};

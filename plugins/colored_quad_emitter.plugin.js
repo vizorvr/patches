@@ -1,4 +1,4 @@
-E2.plugins["colored_quad_emitter"] = function(core) {
+E2.plugins["colored_quad_emitter"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
@@ -28,7 +28,7 @@ E2.plugins["colored_quad_emitter"] = function(core) {
 		self.shader = null;
 	};
 	
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
 		self.shader = data;
 	};

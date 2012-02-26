@@ -1,11 +1,9 @@
-E2.plugins["toggle_button"] = function(core) {
+E2.plugins["toggle_button"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [];
 	this.output_slots = [ { name: 'enabled', dt: core.datatypes.BOOL } ];
 	this.state = { enabled: false };
-	this.gl = core.renderer.context;
-	this.texture = null;
 	
 	this.create_ui = function()
 	{
@@ -20,7 +18,7 @@ E2.plugins["toggle_button"] = function(core) {
 		return inp;
 	};
 	
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.state.enabled;
 	};

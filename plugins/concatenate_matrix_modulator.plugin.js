@@ -1,4 +1,4 @@
-E2.plugins["concatenate_matrix_modulator"] = function(core) {
+E2.plugins["concatenate_matrix_modulator"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -17,22 +17,22 @@ E2.plugins["concatenate_matrix_modulator"] = function(core) {
 		mat4.identity(self.matrix);
 	};
 	
-	this.disconnect_input = function(index)
+	this.disconnect_input = function(slot)
 	{
-		mat4.identity(this.matrices[index]);
+		mat4.identity(this.matrices[slot.index]);
 	};	
 
-	this.update_input = function(index, data)
+	this.update_input = function(slot, data)
 	{
-		self.matrices[index] = data;
+		self.matrices[slot.index] = data;
 	};	
 
-	this.update_state = function(index, data)
+	this.update_state = function(delta_t)
 	{
 		mat4.multiply(self.matrices[0], self.matrices[1], self.matrix);
 	};	
 
-	this.update_output = function(index)
+	this.update_output = function(slot)
 	{
 		return self.matrix;
 	};	
