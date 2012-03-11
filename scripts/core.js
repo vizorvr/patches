@@ -703,7 +703,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	{
 		self.update_count++;
 		
-		if(self.update_count >= self.outputs.length)
+		if(self.update_count > self.outputs.length)
 			self.plugin.needs_update = false;
 
 		if(self.update_count > 1)
