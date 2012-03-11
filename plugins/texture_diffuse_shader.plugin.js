@@ -83,6 +83,10 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 			gl.uniform1i(self.s.tex0Uniform, 0);
 			self.tex.enable(gl.TEXTURE0);
 		}
+		else
+		{
+			gl.bindTexture(gl.TEXTURE_2D, null);
+		}
 	};
 	
 	this.reset = function()
@@ -95,9 +99,9 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		mat4.identity(self.transform);
 	};
 	
-	this.disconnect_input = function(slot)
+	this.disconnected = function(slot)
 	{
-		if(slot.index === 1)
+		if(slot.type === E2.slot_type.input && slot.index === 1)
 			self.tex = null;
 	};
 	

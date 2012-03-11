@@ -1,4 +1,5 @@
 {
+	"Generators/Values/Color picker": "color_picker",
 	"Generators/Values/Float constant": "const_float_generator",
 	"Generators/Values/Float slider": "slider_float_generator",
 	"Generators/Values/Toggle button": "toggle_button",

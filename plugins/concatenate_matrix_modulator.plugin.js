@@ -17,9 +17,10 @@ E2.plugins["concatenate_matrix_modulator"] = function(core, node) {
 		mat4.identity(self.matrix);
 	};
 	
-	this.disconnect_input = function(slot)
+	this.disconnected = function(slot)
 	{
-		mat4.identity(this.matrices[slot.index]);
+		if(slot.type === E2.slot_type.input)
+			mat4.identity(this.matrices[slot.index]);
 	};	
 
 	this.update_input = function(slot, data)

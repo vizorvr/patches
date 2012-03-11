@@ -17,7 +17,7 @@ E2.plugins["perspective_camera"] = function(core, node) {
 		self.camera = new Camera(gl);
 		self.fov = 30.0;
 		self.near = 0.01;
-		self.far = 100.0;
+		self.far = 1000.0;
 		self.position = [0.0, 0.0, 1.0];
 		self.target = [0.0, 0.0, 0.0];
 	};

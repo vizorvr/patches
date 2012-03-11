@@ -41,7 +41,7 @@ E2.plugins["matrix_display"] = function(core, node) {
 		return table;
 	};
 	
-	this.disconnect_input = function(slot)
+	this.disconnected = function(slot)
 	{
 		self.reset(null);
 	};

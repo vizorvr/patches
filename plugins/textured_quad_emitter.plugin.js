@@ -40,6 +40,11 @@ E2.plugins["textured_quad_emitter"] = function(core, node) {
 		self.shader = data;
 	};
 
+	this.disconnected = function(slot)
+	{
+		self.shader = null;
+	};
+	
 	this.update_state = function(delta_t)
 	{
     		gl.disable(gl.DEPTH_TEST);

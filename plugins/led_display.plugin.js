@@ -21,7 +21,7 @@ E2.plugins["led_display"] = function(core, node) {
 		return self.label;
 	};
 	
-	this.disconnect_input = function(slot)
+	this.disconnected = function(slot)
 	{
 		self.update_value(0);
 	};

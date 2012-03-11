@@ -34,7 +34,7 @@ E2.plugins["vector_display"] = function(core, node) {
 		return self.table;
 	};
 	
-	this.disconnect_input = function(slot)
+	this.disconnected = function(slot)
 	{
 		self.reset(null);
 	};

@@ -298,6 +298,26 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		return 'connection from ' + self.src_node.uid + '(' + self.src_slot.index + ') to ' + self.dst_node.uid + '(' + self.dst_slot.index + ')';
 	};
 
+	this.signal_disconnect = function()
+	{
+		var n = self.src_node;
+		
+		if(n.plugin.disconnected)
+		{
+			n.plugin.disconnected(self.src_slot);
+			n.plugin.needs_update = true;
+		}
+			
+		n = self.dst_node;
+		n.inputs_changed = true;
+		
+		if(n.plugin.disconnected)
+		{
+			n.plugin.disconnected(self.dst_slot);
+			n.plugin.needs_update = true;
+		}
+	};
+	
 	this.serialise = function()
 	{
 		var d = {};
@@ -429,9 +449,12 @@ function NodeUI(parent_node, x, y) {
 	var output_col = make('td');
 	
 	input_col.css('text-align', 'left');
+	input_col.css('vertical-align', 'top');
 	input_col.attr('id', 'ic');
 	content_col.addClass('pui_col');
+	content_col.attr('id', 'cc');
 	output_col.css('text-align', 'right');
+	output_col.css('vertical-align', 'top');
 	output_col.attr('id', 'oc');
 	
 	row.append(input_col)
@@ -458,12 +481,13 @@ function NodeUI(parent_node, x, y) {
 	
 	this.dom.draggable({
 		drag: E2.app.onNodeDragged(parent_node),
-		stop: E2.app.onNodeDragStopped(parent_node)
+		stop: E2.app.onNodeDragStopped(parent_node),
+		cancel: '#cc'
     	});
 	
 	this.dom.css('display', 'none');
 	E2.dom.canvas_parent.append(this.dom);
-	this.dom.show(/*'fast'*/);
+	this.dom.show('fast');
 }
 
 function Node(parent_graph, plugin_id, x, y) {
@@ -505,8 +529,9 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.ui = null;
 		this.id = E2.app.core.plugin_mgr.keybyid[plugin_id];
 		this.uid = parent_graph.get_node_uid();
-		this.is_updated = false;
+		this.update_count = 0;
 		this.title = null;
+		this.inputs_changed = false;
 		
 		self.set_plugin(E2.app.core.plugin_mgr.create(plugin_id, this));
 	};
@@ -676,28 +701,34 @@ function Node(parent_graph, plugin_id, x, y) {
 	
 	this.update_recursive = function(conns, delta_t)
 	{
-		if(self.is_updated)
-			return;
+		self.update_count++;
+		
+		if(self.update_count >= self.outputs.length)
+			self.plugin.needs_update = false;
+
+		if(self.update_count > 1)
+			return false;
 		
 		var uid = self.uid;
 		var inputs = self.inputs;
-		var needs_update = false;
+		var needs_update = self.inputs_changed;
 		var s_plugin = self.plugin;
 		var dirty = false;
 		
-		self.plugin.needs_update = false;
+		// self.plugin.needs_update = false;
 		
 		for(var i = 0, len = inputs.length; i < len; i++)
 		{
 			var inp = inputs[i];
+			var sn = inp.src_node;
+			 
+			dirty = sn.update_recursive(conns, delta_t) || dirty;
 			
-			dirty = inp.src_node.update_recursive(conns, delta_t) || dirty;
+			var value = sn.plugin.update_output(inp.src_slot);
 			
-			var value = inp.src_node.plugin.update_output(inp.src_slot);
-			
-			if(inp.src_node.plugin.needs_update || value !== inp.cached_value)
+			if(sn.plugin.needs_update || value !== inp.cached_value)
 			{
-				self.plugin.update_input(inp.dst_slot, value);
+				s_plugin.update_input(inp.dst_slot, value);
 				inp.cached_value = value;
 				needs_update = true;
 				
@@ -714,15 +745,14 @@ function Node(parent_graph, plugin_id, x, y) {
 			}
 		}
 		
-		if(needs_update || self.plugin.output_slots.length === 0 || (self.plugin.outputs && self.plugin.outputs.length === 0))
+		if(needs_update || s_plugin.output_slots.length === 0 || (s_plugin.outputs && s_plugin.outputs.length === 0))
 		{
 			if(s_plugin.update_state)
 				s_plugin.update_state(delta_t);
 
 			s_plugin.needs_update = true;
+			self.inputs_changed = false;
 		}
-		
-		self.is_updated = true;
 		
 		return dirty;
 	};
@@ -861,7 +891,7 @@ function Graph(parent_graph, tree_node)
 		
 		self.nodes.push(n);
 		
-		if(n.plugin.output_slots.length == 0)
+		if(n.plugin.output_slots.length === 0)
 			self.roots.push(n);
 		
 		return n;
@@ -874,7 +904,7 @@ function Graph(parent_graph, tree_node)
 		var dirty = false;
 		
 		for(var i = 0, len = nodes.length; i < len; i++)
-			nodes[i].is_updated = false;
+			nodes[i].update_count = 0;
 		
 		for(var i = 0, len = roots.length; i < len; i++)
 			dirty = roots[i].update_recursive(self.connections, delta_t) || dirty;
@@ -1082,6 +1112,7 @@ function Core() {
 	{
 		self.active_graph.destroy_ui();
 		self.active_graph = graph;
+		// self.active_graph.reset();
 		self.active_graph.create_ui();
 	};
 	
@@ -1238,7 +1269,10 @@ function Application() {
 				self.core.graphs.push(node.plugin.graph);
 			}
 			
-			node.create_ui();			
+			node.create_ui();
+			
+			if(node.plugin.state_changed)
+				node.plugin.state_changed(node.ui.plugin_ui);			
 		};
 		
 		if(id === 'graph')
@@ -1593,12 +1627,8 @@ function Application() {
 				for(var i = 0, len = hcs.length; i < len; i++)
 				{
 					var c = hcs[i];
-					var p = c.dst_node.plugin;
 					
-					// Signal the destruction of the connection to the target
-					if(p.disconnect_input)
-						p.disconnect_input(c.dst_slot);
-					
+					c.signal_disconnect();
 					graph.destroy_connection(c);
 				}
 				
@@ -1875,7 +1905,7 @@ $(document).ready(function() {
 	msg('Welcome to WebFx. ' + (new Date()));
 	
 	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, exception) {
-		if(settings.dataType=='script' && !settings.url.match(/^plugins\/all.plugins\.js/)) {
+		if(settings.dataType === 'script' && !settings.url.match(/^plugins\/all.plugins\.js/)) {
 			msg(exception.message + exception.stack);
 		}
 	});
