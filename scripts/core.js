@@ -814,6 +814,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		{
 			self.plugin.graph = new Graph(null, null);
 			self.plugin.graph.deserialise(d.graph);
+			self.plugin.graph.reg_listener(self.plugin.graph_event);
 			E2.app.core.graphs.push(self.plugin.graph);
 		}
 		
@@ -867,6 +868,7 @@ function Graph(parent_graph, tree_node)
 	var self = this;
 	
 	this.tree_node = tree_node;
+	this.listeners = [];
 
 	if(tree_node !== null) // Only initialise if we're not deserialising.
 	{
@@ -876,7 +878,7 @@ function Graph(parent_graph, tree_node)
 		this.roots = [];
 		this.connections = [];
 		this.node_uid = 0;
-	
+			
 		tree_node.graph = this;
 	}
 	
@@ -894,6 +896,7 @@ function Graph(parent_graph, tree_node)
 		if(n.plugin.output_slots.length === 0)
 			self.roots.push(n);
 		
+		self.emit_event({ type: 'node-created', node: n });
 		return n;
 	};
 	
@@ -1060,6 +1063,24 @@ function Graph(parent_graph, tree_node)
 		
 		self.enum_all(function(n) { n.patch_up(graphs); }, function(c) { c.patch_up(self.nodes); });
 		self.reset();
+	};
+	
+	this.reg_listener = function(delegate)
+	{
+		if(!self.listeners.indexOf(delegate) !== -1)
+			self.listeners.push(delegate);
+	};
+	
+	this.emit_event = function(ev)
+	{
+		var l = self.listeners,
+		    len = l.length;
+		
+		if(len === 0)
+			return;
+		
+		for(var i = 0; i < len; i++)
+			l[i](ev);
 	};
 }
 
@@ -1266,6 +1287,7 @@ function Application() {
 					expand: true
 				}));
 				
+				node.plugin.graph.reg_listener(node.plugin.graph_event);
 				self.core.graphs.push(node.plugin.graph);
 			}
 			

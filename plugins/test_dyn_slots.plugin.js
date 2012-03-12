@@ -54,7 +54,6 @@ E2.plugins["test_dyn_slots"] = function(core, node) {
 	this.update_input = function(slot, data)
 	{
 		self.state.slot_vals[slot.index] = data;
-		msg('Received dynamic input: index = ' + slot.index + ' is ' + data);
 	};
 	
 	this.update_output = function(slot)
