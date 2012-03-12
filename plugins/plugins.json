@@ -34,6 +34,7 @@
 	"Emitters/2D/Colored quad": "colored_quad_emitter",
 	"Emitters/2D/Textured quad": "textured_quad_emitter",
 	"Emitters/Debug/Bool display": "bool_display",
+	"Emitters/Debug/Color display": "color_display",
 	"Emitters/Debug/Float display": "float_display",
 	"Emitters/Debug/Led display": "led_display",
 	"Emitters/Debug/Matrix display": "matrix_display",
