@@ -41,9 +41,10 @@ E2.plugins["matrix_display"] = function(core, node) {
 		return table;
 	};
 	
-	this.disconnected = function(slot)
+	this.connection_changed = function(on, conn, slot)
 	{
-		self.reset(null);
+		if(!on)
+			self.reset(null);
 	};
 
 	this.update_input = function(slot, data)

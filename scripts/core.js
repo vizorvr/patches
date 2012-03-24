@@ -152,6 +152,7 @@ function PluginManager(core, base_url)
 	this.core = core;
 	this.keybyid = {};
 	this.release_mode = false;
+	this.lid = 1;
 	
 	// First check if we're running a release build by checking for the existence
 	// of 'all.plugins.js'
@@ -178,7 +179,8 @@ function PluginManager(core, base_url)
 	this.register_plugin = function(pg_root, key, id)
 	{
 		self.keybyid[id] = pg_root.insert_relative(key, id);
-		msg('Loaded ' + id);
+		msg('Loaded ' + id + ' (' + self.lid + ')');
+		self.lid++;
 	};
 
 	$.ajax({
@@ -298,24 +300,52 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		return 'connection from ' + self.src_node.uid + '(' + self.src_slot.index + ') to ' + self.dst_node.uid + '(' + self.dst_slot.index + ')';
 	};
 
-	this.signal_disconnect = function()
+	this.reset = function()
+	{
+		self.cached_value = null;
+
+		if(self.ui && self.ui.flow)
+		{
+			self.ui.flow = false;
+			self.ui.color = '#000';
+		}
+	};
+	
+	this.reset_inbound_conns = function(node)
+	{
+		for(var i = 0, len = node.inputs.length; i < len; i++)
+		{
+			var c = node.inputs[i];
+			
+			c.reset();
+			self.reset_inbound_conns(c.src_node);
+		}
+	};
+	
+	this.signal_change = function(on)
 	{
 		var n = self.src_node;
 		
-		if(n.plugin.disconnected)
+		if(n.plugin.connection_changed)
+			n.plugin.connection_changed(on, self, self.src_slot);
+
+		n.plugin.needs_update = true;
+
+		if(!on)
 		{
-			n.plugin.disconnected(self.src_slot);
-			n.plugin.needs_update = true;
-		}
+			self.reset_inbound_conns(n);
 			
+			if(n.plugin.reset)
+				n.plugin.reset();
+		}
+		
 		n = self.dst_node;
 		n.inputs_changed = true;
 		
-		if(n.plugin.disconnected)
-		{
-			n.plugin.disconnected(self.dst_slot);
-			n.plugin.needs_update = true;
-		}
+		if(n.plugin.connection_changed)
+			n.plugin.connection_changed(on, self, self.dst_slot);
+
+		n.plugin.needs_update = true;
 	};
 	
 	this.serialise = function()
@@ -478,6 +508,8 @@ function NodeUI(parent_node, x, y) {
 		
 		content_col.append(this.plugin_ui);
 	}
+	else
+		this.plugin_ui = {}; // We must set a dummy object so plugins can tell why they're being called.
 	
 	this.dom.draggable({
 		drag: E2.app.onNodeDragged(parent_node),
@@ -487,7 +519,7 @@ function NodeUI(parent_node, x, y) {
 	
 	this.dom.css('display', 'none');
 	E2.dom.canvas_parent.append(this.dom);
-	this.dom.show('fast');
+	this.dom.show();
 }
 
 function Node(parent_graph, plugin_id, x, y) {
@@ -521,21 +553,6 @@ function Node(parent_graph, plugin_id, x, y) {
 		}
 	};
 		
-	if(plugin_id !== null) // Don't initialise if we're loading.
-	{
-		this.parent_graph = parent_graph;
-		this.x = x;
-		this.y = y;
-		this.ui = null;
-		this.id = E2.app.core.plugin_mgr.keybyid[plugin_id];
-		this.uid = parent_graph.get_node_uid();
-		this.update_count = 0;
-		this.title = null;
-		this.inputs_changed = false;
-		
-		self.set_plugin(E2.app.core.plugin_mgr.create(plugin_id, this));
-	};
-	
 	this.create_ui = function()
 	{
 		self.ui = new NodeUI(self, self.x, self.y);
@@ -545,11 +562,9 @@ function Node(parent_graph, plugin_id, x, y) {
 	{
 		if(self.ui)
 		{
-			self.ui.dom.hide('fast', function()
-			{
-				self.ui.dom.remove();
-				self.ui = null;
-			});
+			self.ui.dom.hide();
+			self.ui.dom.remove();
+			self.ui = null;
 		}
 	};
 	
@@ -558,6 +573,8 @@ function Node(parent_graph, plugin_id, x, y) {
 		var graph = self.parent_graph;
 		var index = graph.nodes.indexOf(self);
 		var pending = [];
+		
+		graph.emit_event({ type: 'node-destroyed', node: self });
 		
 		if(index != -1)
 			graph.nodes.splice(index, 1);
@@ -693,17 +710,67 @@ function Node(parent_graph, plugin_id, x, y) {
 		}
 		
 		for(var i = 0, len = pending.length; i < len; i++)
+		{
+			pending[i].signal_change(false);
 			self.parent_graph.destroy_connection(pending[i]);
+		}
 			
 		if(canvas_dirty)
 			E2.app.updateCanvas();
+	};
+	
+	this.rename_slot = function(slot_type, suid, name)
+	{
+		var is_inp = slot_type === E2.slot_type.input;
+		var slots = is_inp ? self.dyn_inputs : self.dyn_outputs;
+		
+		if(!slots)
+			return;
+		
+		var slot = null;
+		
+		for(var i = 0, len = slots.length; i < len; i++)
+		{
+			if(slots[i].uid === suid)
+			{
+				slot = slots[i];
+				break;
+			}
+		}
+		
+		if(slot)
+		{
+			slot.name = name;
+
+			if(self.ui)
+				self.ui.dom.find('#n' + self.uid + (is_inp ? 'di' : 'do') + slot.uid).text(name);
+		} 
+	};
+		
+	this.update_connections = function()
+	{
+		var gsp = E2.app.getSlotPosition;
+		
+		for(var i = 0, len = self.outputs.length; i < len; i++)
+		{
+			var c = self.outputs[i];
+			
+			c.ui.src_pos = gsp(c.ui.src_slot_div, E2.slot_type.output);
+		}
+		
+		for(var i = 0, len = self.inputs.length; i < len; i++)
+		{
+			var c = self.inputs[i];
+			
+			c.ui.dst_pos = gsp(c.ui.dst_slot_div, E2.slot_type.input);
+		}
 	};
 	
 	this.update_recursive = function(conns, delta_t)
 	{
 		self.update_count++;
 		
-		if(self.update_count > self.outputs.length)
+		if(self.update_count >= self.outputs.length)
 			self.plugin.needs_update = false;
 
 		if(self.update_count > 1)
@@ -749,7 +816,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		{
 			if(s_plugin.update_state)
 				s_plugin.update_state(delta_t);
-
+			
 			s_plugin.needs_update = true;
 			self.inputs_changed = false;
 		}
@@ -813,6 +880,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		if(self.plugin.id === 'graph')
 		{
 			self.plugin.graph = new Graph(null, null);
+			self.plugin.graph.plugin = self.plugin;
 			self.plugin.graph.deserialise(d.graph);
 			self.plugin.graph.reg_listener(self.plugin.graph_event);
 			E2.app.core.graphs.push(self.plugin.graph);
@@ -859,6 +927,26 @@ function Node(parent_graph, plugin_id, x, y) {
 		
 		if(self.plugin.state_changed)
 			self.plugin.state_changed(null);
+	};
+
+	// Initialisation. Must be declared last in the Node definition due to a quirk
+	// in JS parsing: The plugin initialization code cannot call a method on its
+	// node parent unless this is declared before the code that invokes the plugin
+	// initialization code below. In short: This is placed here for a reason and must
+	// stay no matter how counterintuitive and inconsistent it makes the code layout.
+	if(plugin_id !== null) // Don't initialise if we're loading.
+	{
+		this.parent_graph = parent_graph;
+		this.x = x;
+		this.y = y;
+		this.ui = null;
+		this.id = E2.app.core.plugin_mgr.keybyid[plugin_id];
+		this.uid = parent_graph.get_node_uid();
+		this.update_count = 0;
+		this.title = null;
+		this.inputs_changed = false;
+		
+		self.set_plugin(E2.app.core.plugin_mgr.create(plugin_id, this));
 	};
 }
 
@@ -935,13 +1023,7 @@ function Graph(parent_graph, tree_node)
 		},
 		function(c)
 		{
-			c.cached_value = null;
-
-			if(c.ui && c.ui.flow)
-			{
-				c.ui.flow = false;
-				c.ui.color = '#000';
-			}
+			c.reset();
 		});
 	};
 	
@@ -1095,7 +1177,8 @@ function Core() {
 		TRANSFORM: { id: 4, name: 'Transform' },
 		VERTEX: { id: 5, name: 'Vertex' },
 		CAMERA: { id: 6, name: 'Camera' },
-		BOOL: { id: 7, name: 'Boolean' }
+		BOOL: { id: 7, name: 'Boolean' },
+		ANY: { id: 8, name: 'Arbitrary' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');
@@ -1133,7 +1216,7 @@ function Core() {
 	{
 		self.active_graph.destroy_ui();
 		self.active_graph = graph;
-		// self.active_graph.reset();
+		self.active_graph.reset();
 		self.active_graph.create_ui();
 	};
 	
@@ -1344,7 +1427,7 @@ function Application() {
 			self.src_slot_div = slot_div;
 			self.edit_conn = new Connection(null, null, null, null);
 			self.edit_conn.create_ui();
-			self.edit_conn.ui.src_pos = self.getSlotPosition(slot_div, 1);
+			self.edit_conn.ui.src_pos = self.getSlotPosition(slot_div, E2.slot_type.output);
 		
 			var graph = self.core.active_graph;
 			var ocs = graph.find_connections_from(node, slot);
@@ -1445,9 +1528,18 @@ function Application() {
 		{
 			self.dst_slot_div = slot_div;
 			
-			// Only allow connection if datatypes match and slot is unconnected. Don't allow self-connections.
-			// There no complete check for cyclic redundacies, though we should probably institute one.
-			if(self.src_slot_div.definition.dt === slot.dt && !slot.is_connected && self.src_node !== node)
+			var ss_dt = self.src_slot_div.definition.dt;
+			
+			// Only allow connection if datatypes match and slot is unconnected. 
+			// Don't allow self-connections. There no complete check for cyclic 
+			// redundacies, though we should probably institute one.
+			// Additionally, don't allow connections between two ANY slots.
+			if((ss_dt === self.core.datatypes.ANY || 
+			    slot.dt === self.core.datatypes.ANY || 
+			    ss_dt === slot.dt) && 
+			    	    !(ss_dt === self.core.datatypes.ANY && slot.dt === self.core.datatypes.ANY) &&
+				    !slot.is_connected && 
+				    self.src_node !== node)
 			{
 				self.dst_node = node;
 				self.dst_slot = slot;
@@ -1560,11 +1652,23 @@ function Application() {
 			self.src_node.outputs.push(c);
 			self.dst_node.inputs.push(c);
 			
+			if(ss.dt === self.core.datatypes.ANY)
+			{
+				ss.dt = ds.dt;
+				ss.any = true;
+			}
+			
+			if(ds.dt === self.core.datatypes.ANY)
+			{
+				ds.dt = ss.dt;
+				ds.any = true;
+			}
+
 			// msg('New ' + c);
 
 			c.create_ui();
 			c.ui.src_pos = self.edit_conn.ui.src_pos.slice(0);
-			c.ui.dst_pos = self.getSlotPosition(self.dst_slot_div);
+			c.ui.dst_pos = self.getSlotPosition(self.dst_slot_div, E2.slot_type.input);
 			c.ui.src_slot_div = self.src_slot_div;
 			c.ui.dst_slot_div = self.dst_slot_div;
 			c.offset = self.edit_conn.offset;
@@ -1574,6 +1678,8 @@ function Application() {
 			graph.connections.push(c);
 			self.dst_node.plugin.needs_update = true;
 			
+			c.signal_change(true);
+
 			self.dst_slot_div.css('color', '#000');
 			self.dst_slot.is_connected = true;
 			self.dst_slot_div = null;
@@ -1650,7 +1756,7 @@ function Application() {
 				{
 					var c = hcs[i];
 					
-					c.signal_disconnect();
+					c.signal_change(false);
 					graph.destroy_connection(c);
 				}
 				
@@ -1717,6 +1823,7 @@ function Application() {
 					if(node.plugin.id === 'graph')
 						node.plugin.graph.tree_node.setTitle(node.title);
 					
+					node.parent_graph.emit_event({ type: 'node-renamed', node: node });
 					$(this).dialog('close');
 				},
 				'Cancel': function()
@@ -1734,26 +1841,13 @@ function Application() {
 	this.onNodeDragged = function(node) { return function(e)
 	{
 		var conns = self.core.active_graph.connections;
-		var uid = node.uid;
 		var canvas_dirty = false;
 		var pos = node.ui.dom.position();
 		
 		node.x = pos.left;
 		node.y = pos.top;
 		
-		for(var i = 0, len = node.outputs.length; i < len; i++)
-		{
-			var c = node.outputs[i];
-			
-			c.ui.src_pos = self.getSlotPosition(c.ui.src_slot_div, 1);
-		}
-		
-		for(var i = 0, len = node.inputs.length; i < len; i++)
-		{
-			var c = node.inputs[i];
-			
-			c.ui.dst_pos = self.getSlotPosition(c.ui.dst_slot_div, 0);
-		}
+		node.update_connections();
 		
 		if(node.inputs.length + node.outputs.length > 0)
 			self.updateCanvas();

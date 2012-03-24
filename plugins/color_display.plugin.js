@@ -22,9 +22,10 @@ E2.plugins["color_display"] = function(core, node) {
 		return self.label;
 	};
 	
-	this.disconnected = function(slot)
+	this.connection_changed = function(on, conn, slot)
 	{
-		self.update_value(0);
+		if(!on)
+			self.update_value(0);
 	};
 
 	this.update_input = function(slot, data)

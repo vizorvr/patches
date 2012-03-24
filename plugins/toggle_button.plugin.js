@@ -13,6 +13,10 @@ E2.plugins["toggle_button"] = function(core, node) {
 		{
 			self.state.enabled = !self.state.enabled;
 			self.state_changed(inp);
+			
+			// Since this changes our layout, update any attached connections.
+			node.update_connections();
+			E2.app.updateCanvas();
 		});
 		
 		return inp;

@@ -1,7 +1,5 @@
 E2.plugins["convert_rgba_color_modulator"] = function(core, node) {
 	var self = this;
-	var renderer = core.renderer; 
-	var gl = renderer.context;
 	
 	this.input_slots = [
 		 { name: 'red', dt: core.datatypes.FLOAT },

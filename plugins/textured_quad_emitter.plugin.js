@@ -40,9 +40,10 @@ E2.plugins["textured_quad_emitter"] = function(core, node) {
 		self.shader = data;
 	};
 
-	this.disconnected = function(slot)
+	this.connection_changed = function(on, conn, slot)
 	{
-		self.shader = null;
+		if(!on)
+			self.shader = null;
 	};
 	
 	this.update_state = function(delta_t)

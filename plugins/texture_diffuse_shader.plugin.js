@@ -99,9 +99,9 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		mat4.identity(self.transform);
 	};
 	
-	this.disconnected = function(slot)
+	this.connection_changed = function(on, conn, slot)
 	{
-		if(slot.type === E2.slot_type.input && slot.index === 1)
+		if(!on && slot.type === E2.slot_type.input && slot.index === 1)
 			self.tex = null;
 	};
 	

@@ -21,9 +21,10 @@ E2.plugins["float_display"] = function(core, node) {
 		return self.label;
 	};
 	
-	this.disconnected = function(slot)
+	this.connection_changed = function(on, conn, slot)
 	{
-		self.update_value(null);
+		if(!on)
+			self.update_value(null);
 	};
 
 	this.update_input = function(slot, data)

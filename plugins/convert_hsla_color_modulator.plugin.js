@@ -1,7 +1,5 @@
 E2.plugins["convert_hsla_color_modulator"] = function(core, node) {
 	var self = this;
-	var renderer = core.renderer; 
-	var gl = renderer.context;
 	
 	this.input_slots = [
 		 { name: 'hue', dt: core.datatypes.FLOAT },

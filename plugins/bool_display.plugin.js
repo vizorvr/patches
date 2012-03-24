@@ -6,7 +6,7 @@ E2.plugins["bool_display"] = function(core, node) {
 	];
 	
 	this.output_slots = [];
-
+	
 	this.reset = function()
 	{
 		self.update_value(null);
@@ -21,9 +21,10 @@ E2.plugins["bool_display"] = function(core, node) {
 		return self.label;
 	};
 	
-	this.disconnected = function(slot)
+	this.connection_changed = function(on, conn, slot)
 	{
-		self.update_value(null);
+		if(!on)
+			self.update_value(null);
 	};
 
 	this.update_input = function(slot, data)
@@ -32,7 +33,7 @@ E2.plugins["bool_display"] = function(core, node) {
 	};
 	
 	this.update_value = function(value)
-	{
+	{	
 		if(self.label)
 			self.label.html(value === null ? '-' : value ? 'True' : 'False');
 	};
