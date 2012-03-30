@@ -770,7 +770,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	{
 		self.update_count++;
 		
-		if(self.update_count >= self.outputs.length)
+		if(self.update_count > self.outputs.length)
 			self.plugin.needs_update = false;
 
 		if(self.update_count > 1)
@@ -981,7 +981,7 @@ function Graph(parent_graph, tree_node)
 		
 		self.nodes.push(n);
 		
-		if(n.plugin.output_slots.length === 0)
+		if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
 			self.roots.push(n);
 		
 		self.emit_event({ type: 'node-created', node: n });
@@ -999,6 +999,9 @@ function Graph(parent_graph, tree_node)
 		
 		for(var i = 0, len = roots.length; i < len; i++)
 			dirty = roots[i].update_recursive(self.connections, delta_t) || dirty;
+		
+		if(self === E2.app.core.active_graph)
+			E2.app.core.active_graph_dirty = dirty;
 		
 		return dirty;
 	};
@@ -1124,7 +1127,7 @@ function Graph(parent_graph, tree_node)
 			n.deserialise(self.uid, d.nodes[i]);
 			self.nodes.push(n);
 			
-			if(n.plugin.output_slots.length == 0)
+			if(n.plugin.output_slots.length === 0 && !n.dyn_outputs)
 				self.roots.push(n);
 		}
 
@@ -1183,6 +1186,7 @@ function Core() {
 	
 	this.renderer = new Renderer('#webgl-canvas');
 	this.active_graph = this.root_graph = null;
+	this.active_graph_dirty = true;
 	this.graphs = [];
 	
 	this.abs_t = 0.0;
@@ -1209,7 +1213,18 @@ function Core() {
 		self.delta_t = delta_t;
 		self.renderer.update();
 		
-		return self.active_graph.update(delta_t); // Did connection state change?
+		self.root_graph.update(delta_t);
+		
+		var dirty = self.active_graph_dirty;
+		
+		if(dirty)
+		{
+			debugger;
+		}
+		
+		self.active_graph_dirty = false;
+		
+		return dirty; // Did connection state change?
 	};
 	
 	this.onGraphSelected = function(graph)

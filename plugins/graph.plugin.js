@@ -7,6 +7,7 @@ E2.plugins["graph"] = function(core, node) {
 	
 	this.input_nodes = {};
 	this.output_nodes = {};
+	this.is_reset = true;
 	
 	this.reset = function()
 	{
@@ -224,11 +225,30 @@ E2.plugins["graph"] = function(core, node) {
 		if(slot.uid === undefined)
 		{
 			if(slot.index === 0)
+			{
 				self.state.enabled = data;
+			
+				if(!data)
+				{
+					if(self.graph && !self.is_reset)
+					{
+						self.graph.reset();
+						self.is_reset = true;
+						
+						if(self.graph === E2.app.core.active_graph)
+							E2.app.updateCanvas();
+					}
+				}
+				else
+					self.is_reset = false;
+			}
 		}
 		else
 		{
-			self.input_nodes[slot.uid].plugin.input_updated(data);
+			var plug = self.input_nodes[slot.uid].plugin;
+			
+			plug.input_updated(data);
+			plug.needs_update = true;
 		}
 	};
 	
@@ -240,7 +260,7 @@ E2.plugins["graph"] = function(core, node) {
 	this.update_state = function(delta_t)
 	{
 		if(self.graph && self.state.enabled)
-			self.graph.update(delta_t); 
+			self.graph.update(delta_t);
        	};
        	
        	this.destroy_slot = function(type, sid)
