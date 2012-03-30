@@ -8,7 +8,8 @@ E2.plugins["output_proxy"] = function(core, node) {
 	this.state.slot_id = node.add_slot(E2.slot_type.input, { name: 'input', dt: core.datatypes.ANY });
 	this.data = null;
 	
-	node.title = 'Output ' + node.uid;
+	if(!node.title)
+		node.title = 'Output ' + node.uid;
 	
 	this.connection_changed = function(on, conn, slot)
 	{

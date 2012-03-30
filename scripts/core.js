@@ -782,8 +782,6 @@ function Node(parent_graph, plugin_id, x, y) {
 		var s_plugin = self.plugin;
 		var dirty = false;
 		
-		// self.plugin.needs_update = false;
-		
 		for(var i = 0, len = inputs.length; i < len; i++)
 		{
 			var inp = inputs[i];
@@ -833,6 +831,9 @@ function Node(parent_graph, plugin_id, x, y) {
 		d.y = Math.round(self.y);
 		d.uid = self.uid;
 		
+		if(self.dyn_slot_uid)
+			d.dsid = self.dyn_slot_uid;
+		
 		if(self.plugin.state)
 			d.state = self.plugin.state;
 
@@ -873,6 +874,10 @@ function Node(parent_graph, plugin_id, x, y) {
 		self.y = d.y;
 		self.id = E2.app.core.plugin_mgr.keybyid[d.plugin];
 		self.uid = d.uid;
+		
+		if(d.dsid)
+			self.dyn_slot_uid = d.dsid;
+		
 		self.title = d.title ? d.title : null;
 		
 		self.set_plugin(E2.app.core.plugin_mgr.create(d.plugin, self));
@@ -1216,11 +1221,6 @@ function Core() {
 		self.root_graph.update(delta_t);
 		
 		var dirty = self.active_graph_dirty;
-		
-		if(dirty)
-		{
-			debugger;
-		}
 		
 		self.active_graph_dirty = false;
 		

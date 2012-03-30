@@ -8,7 +8,8 @@ E2.plugins["input_proxy"] = function(core, node) {
 	this.state.slot_id = node.add_slot(E2.slot_type.output, { name: 'output', dt: core.datatypes.ANY });
 	this.data = null;
 	
-	node.title = 'Input ' + node.uid;
+	if(!node.title)
+		node.title = 'Input ' + node.uid;
 
 	this.input_updated = function(data)
 	{

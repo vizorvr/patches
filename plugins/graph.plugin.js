@@ -133,7 +133,7 @@ E2.plugins["graph"] = function(core, node) {
 		
 		var change_slots = function(last, g_slot, p_slot)
 		{
-			msg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid);
+			msg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid + ', dt = ' + t_slot.dt.name);
 			
 			p_slot.connected = true;
 			
@@ -260,7 +260,12 @@ E2.plugins["graph"] = function(core, node) {
 	this.update_state = function(delta_t)
 	{
 		if(self.graph && self.state.enabled)
+		{
 			self.graph.update(delta_t);
+
+       			for(var i = 0, len = node.outputs.length; i < len; i++)
+       				node.outputs[i].cached_value = null;
+       		}
        	};
        	
        	this.destroy_slot = function(type, sid)
