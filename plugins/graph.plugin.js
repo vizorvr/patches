@@ -5,8 +5,8 @@ E2.plugins["graph"] = function(core, node) {
 	this.output_slots = [];
 	this.state = { enabled: true, input_sids: {}, output_sids: {} };
 	
-	this.input_plgs = {};
-	this.output_plgs = {};
+	this.input_nodes = {};
+	this.output_nodes = {};
 	
 	this.reset = function()
 	{
@@ -16,6 +16,209 @@ E2.plugins["graph"] = function(core, node) {
 			self.graph.reset();
 	};
 	
+	this.connection_changed = function(on, conn, slot)
+	{
+		if(slot.uid !== undefined)
+		{
+			var psl = null;
+				
+			if(!on)
+			{
+				if(slot.type === E2.slot_type.input)
+					psl = self.input_nodes[slot.uid].dyn_outputs[0];
+				else if(slot.type === E2.slot_type.output)
+				{
+					var count = 0;
+					
+					for(var i = 0, len = node.outputs.length; i < len; i++)
+					{
+						var c = node.outputs[i];
+						
+						if(c.src_slot === slot)
+							count++;
+					}
+					
+					debugger;
+					
+					if(count === 1)
+						psl = self.output_nodes[slot.uid].dyn_inputs[0];
+				}
+
+				if(psl && !psl.connected)
+				{
+					psl.dt = slot.dt = core.datatypes.ANY;
+					msg('Resetting PDT/GDT for slot(' + slot.uid + ')');
+				}
+			}
+			else
+			{
+				if(slot.type === E2.slot_type.input)
+				{
+					if(slot.dt === core.datatypes.ANY)
+					{
+						slot.dt = conn.src_slot.dt;
+						msg('Setting GDT for slot(' + slot.uid + ') to ' + conn.src_slot.dt.name);
+					}
+					
+					psl = self.input_nodes[slot.uid].dyn_outputs[0];
+				}
+				else
+				{
+					if(slot.dt === core.datatypes.ANY)
+					{
+						slot.dt = conn.dst_slot.dt;
+						msg('Setting GDT for slot(' + slot.uid + ') to ' + conn.dst_slot.dt.name);
+					}
+					
+					psl = self.output_nodes[slot.uid].dyn_inputs[0];
+				}
+				
+				if(psl.dt === core.datatypes.ANY)
+				{
+					msg('Setting PDT for slot(' + psl.uid + ') to ' + slot.dt.name);
+					psl.dt = slot.dt;
+				}
+			}
+		}
+	};
+	
+	this.proxy_connection_changed = function(on, p_node, t_node, slot, t_slot)
+	{
+		var find_sid = function(nodes, uid)
+		{
+			for(var n in nodes)
+			{		
+				if(nodes[n].uid === uid)
+					return parseInt(n);
+			}
+			
+			return -1;
+		};
+		
+		var find_slot = function(slots, sid)
+		{
+			for(var i = 0, len = slots.length; i < len; i++)
+			{
+				var s = slots[i];
+				
+				if(s.uid === sid)
+					return s;
+			}
+			
+			return null;
+		};
+		
+		var is_gslot_connected = function(gslot)
+		{
+			if(gslot.type === E2.slot_type.input)
+			{
+				for(var i = 0, len = node.inputs.length; i < len; i++)
+				{
+					if(node.inputs[i].dst_slot === gslot)
+						return true;
+				} 
+			}
+			else
+			{
+				for(var i = 0, len = node.outputs.length; i < len; i++)
+				{
+					if(node.outputs[i].src_slot === gslot)
+						return true;
+				} 
+			}
+			
+			return false;
+		};
+		
+		var change_slots = function(last, g_slot, p_slot)
+		{
+			msg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid);
+			
+			p_slot.connected = true;
+			
+			if(on)
+			{
+				if(g_slot.dt === core.datatypes.ANY)
+				{
+					g_slot.dt = t_slot.dt;		
+					msg('    Setting GDT.');
+				}
+
+				if(p_slot.dt === core.datatypes.ANY)
+				{
+					p_slot.dt = t_slot.dt;		
+					msg('    Setting PDT.');
+				}
+			}
+			else if(last)
+			{
+				var conns = node.parent_graph.connections;
+				var connected = false;
+				
+				for(var i = 0, len = conns.length; i < len; i++)
+				{
+					var c = conns[i];
+					
+					if((g_slot.type === E2.slot_type.input && c.dst_node === node)
+					|| (g_slot.type === E2.slot_type.output && c.src_node === node))
+					{
+						connected = true;
+						break;
+					}
+				}
+				
+				p_slot.connected = false;
+
+				if(!connected)
+				{
+					p_slot.dt = g_slot.dt = core.datatypes.ANY;
+					msg('    Reverting to PDT/GDT to ANY.');
+				}
+
+				if(t_node.plugin.id === 'input_proxy')
+				{
+					connected = false;
+					
+					for(var i = 0, len = t_node.outputs.length; i < len; i++)
+					{
+						if(t_node.outputs[i].src_slot === t_slot)
+						{
+							connected = true;
+							break;
+						}
+					}
+					
+					if(!connected && !is_gslot_connected(find_slot(node.dyn_inputs, find_sid(self.input_nodes, t_node.uid))))
+					{
+						msg('    Reverting remote proxy slot to PDT/GDT to ANY.');
+					}
+				}
+				else if(t_node.plugin.id === 'output_proxy')
+				{
+					if(!is_gslot_connected(find_slot(node.dyn_outputs, find_sid(self.output_nodes, t_node.uid))))
+					{
+						msg('    Reverting remote proxy slot to PDT/GDT to ANY.');
+					}
+				}
+			}
+		};
+		
+		if(p_node.plugin.id === 'input_proxy')
+		{
+			var last = p_node.outputs.length === 1;
+			
+			change_slots(last, find_slot(node.dyn_inputs, find_sid(self.input_nodes, p_node.uid)), slot);
+			msg('    Output count = ' + p_node.outputs.length);
+		}
+		else
+		{
+			var last = p_node.inputs.length === 1;
+			
+			change_slots(last, find_slot(node.dyn_outputs, find_sid(self.output_nodes, p_node.uid)), slot);
+			msg('    Input count = ' + p_node.inputs.length);
+		}
+	};
+	 
 	this.update_input = function(slot, data)
 	{
 		if(slot.uid === undefined)
@@ -25,13 +228,13 @@ E2.plugins["graph"] = function(core, node) {
 		}
 		else
 		{
-			self.input_plgs[slot.uid].input_updated(data);
+			self.input_nodes[slot.uid].plugin.input_updated(data);
 		}
 	};
 	
 	this.update_output = function(slot)
 	{
-		return self.output_plgs[slot.uid].data;
+		return self.output_nodes[slot.uid].plugin.data;
 	};
 	
 	this.update_state = function(delta_t)
@@ -60,14 +263,14 @@ E2.plugins["graph"] = function(core, node) {
        				var sid = node.add_slot(E2.slot_type.input, { name: '' + ev.node.title, dt: core.datatypes.ANY });
        				
        				self.state.input_sids[ev.node.uid] = sid;
-       				self.input_plgs[sid] = ev.node.plugin;
+       				self.input_nodes[sid] = ev.node;
        			}
        			else if(pid === 'output_proxy')
        			{
        				var sid = node.add_slot(E2.slot_type.output, { name: '' + ev.node.title, dt: core.datatypes.ANY });
        				
        				self.state.output_sids[ev.node.uid] = sid;
-       				self.output_plgs[sid] = ev.node.plugin;
+       				self.output_nodes[sid] = ev.node;
        			}
        		}
        		else if(ev.type === 'node-destroyed')
@@ -94,23 +297,23 @@ E2.plugins["graph"] = function(core, node) {
 		if(ui)
 			return;
 
-		var find_plugin = function(uid)
+		var find_node = function(uid)
 		{
 			var nodes = self.graph.nodes;
 
 			for(var i = 0, len = nodes.length; i < len; i++)
 			{
 				if(nodes[i].uid === uid)
-					return nodes[i].plugin;
+					return nodes[i];
 			}
 
 			return null;
 		};
 
 		for(var uid in self.state.input_sids)
-			self.input_plgs[self.state.input_sids[uid]] = find_plugin(parseInt(uid));
+			self.input_nodes[self.state.input_sids[uid]] = find_node(parseInt(uid));
 
 		for(var uid in self.state.output_sids)
-			self.output_plgs[self.state.output_sids[uid]] = find_plugin(parseInt(uid));
+			self.output_nodes[self.state.output_sids[uid]] = find_node(parseInt(uid));
 	};
 };

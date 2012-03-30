@@ -516,7 +516,7 @@ function NodeUI(parent_node, x, y) {
 		stop: E2.app.onNodeDragStopped(parent_node),
 		cancel: '#cc'
     	});
-	
+    	
 	this.dom.css('display', 'none');
 	E2.dom.canvas_parent.append(this.dom);
 	this.dom.show();
@@ -1229,7 +1229,7 @@ function Core() {
 		d.graph_uid = self.graph_uid;
 		d.root = self.root_graph.serialise();
 		
-		return JSON.stringify(d);
+		return JSON.stringify(d, undefined, 4);
 	};
 	
 	this.deserialise = function(str)
@@ -1370,6 +1370,7 @@ function Application() {
 					expand: true
 				}));
 				
+				node.plugin.graph.plugin = node.plugin;
 				node.plugin.graph.reg_listener(node.plugin.graph_event);
 				self.core.graphs.push(node.plugin.graph);
 			}
@@ -1652,18 +1653,6 @@ function Application() {
 			self.src_node.outputs.push(c);
 			self.dst_node.inputs.push(c);
 			
-			if(ss.dt === self.core.datatypes.ANY)
-			{
-				ss.dt = ds.dt;
-				ss.any = true;
-			}
-			
-			if(ds.dt === self.core.datatypes.ANY)
-			{
-				ds.dt = ss.dt;
-				ds.any = true;
-			}
-
 			// msg('New ' + c);
 
 			c.create_ui();

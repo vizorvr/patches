@@ -108,9 +108,10 @@ h2
 	top: 370px;
 	font-size: 8pt;
 	background-color: #eee;
-	word-wrap: break-word;
+	white-space: pre;
+	word-wrap: normal;
 	overflow-y: scroll;
-	overflow-x: hidden;
+	overflow-x: scroll;
 	font-family: monospace;
 	border: none;
 }
