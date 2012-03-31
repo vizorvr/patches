@@ -2,10 +2,10 @@ E2.plugins["concatenate_matrix_modulator"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
-		{ name: 'matrix A', dt: core.datatypes.MATRIX },
-		{ name: 'matrix B', dt: core.datatypes.MATRIX }
+		{ name: 'matrix A', dt: core.datatypes.TRANSFORM },
+		{ name: 'matrix B', dt: core.datatypes.TRANSFORM }
 	];
-	this.output_slots = [ { name: 'matrix', dt: core.datatypes.MATRIX } ];
+	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM } ];
 
 	this.reset = function()
 	{

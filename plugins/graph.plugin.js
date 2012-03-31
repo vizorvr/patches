@@ -133,7 +133,10 @@ E2.plugins["graph"] = function(core, node) {
 		
 		var change_slots = function(last, g_slot, p_slot)
 		{
-			msg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid + ', dt = ' + t_slot.dt.name);
+			msg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid);
+			
+			if(!t_slot.dt)
+				debugger;
 			
 			p_slot.connected = true;
 			

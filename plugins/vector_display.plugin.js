@@ -2,7 +2,7 @@ E2.plugins["vector_display"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
-		{ name: 'vector', dt: core.datatypes.VECTOR }
+		{ name: 'vector', dt: core.datatypes.VERTEX }
 	];
 	
 	this.output_slots = [];

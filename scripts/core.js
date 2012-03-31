@@ -533,24 +533,23 @@ function Node(parent_graph, plugin_id, x, y) {
 	{
 		self.plugin = plugin;
 		
+		var init_slot = function(slot, index, type)
+		{
+			slot.index = index;
+			slot.type = type;
+			
+			if(!slot.dt)
+				msg('ERROR: The slot \'' + slot.name + '\' does not declare a datatype.');
+		};
+		
 		// Decorate the slots with their index to make this immediately resolvable
 		// from a slot reference, allowing for faster code elsewhere.
 		// Additionally tagged with the type (0 = input, 1 = output) for similar reasons.
 		for(var i = 0, len = plugin.input_slots.length; i < len; i++)
-		{
-			var s = plugin.input_slots[i];
-		
-			s.index = i;
-			s.type = E2.slot_type.input;
-		}
+			init_slot(plugin.input_slots[i], i, E2.slot_type.input);
 		
 		for(var i = 0, len = plugin.output_slots.length; i < len; i++)
-		{
-			var s = plugin.output_slots[i];
-		
-			s.index = i;
-			s.type = E2.slot_type.output;
-		}
+			init_slot(plugin.output_slots[i], i, E2.slot_type.output);
 	};
 		
 	this.create_ui = function()

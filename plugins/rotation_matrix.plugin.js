@@ -3,10 +3,10 @@ E2.plugins["rotation_matrix"] = function(core, node) {
 	
 	this.input_slots = [ 
 		{ name: 'angle', dt: core.datatypes.FLOAT },
-		{ name: 'axis', dt: core.datatypes.VECTOR }
+		{ name: 'axis', dt: core.datatypes.VERTEX }
 	];
-	this.output_slots = [ { name: 'matrix', dt: core.datatypes.MATRIX } ];
-
+	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM } ];
+	
 	this.reset = function()
 	{
 		self.angle = 0.0;

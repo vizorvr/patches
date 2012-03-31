@@ -7,7 +7,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		 { name: 'color', dt: core.datatypes.COLOR },
 		 { name: 'texture', dt: core.datatypes.TEXTURE },
 		 { name: 'camera', dt: core.datatypes.CAMERA },
-		 { name: 'transform', dt: core.datatypes.MATRIX }
+		 { name: 'transform', dt: core.datatypes.TRANSFORM }
 	];
 	
 	this.output_slots = [ 

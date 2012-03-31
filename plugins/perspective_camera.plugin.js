@@ -7,8 +7,8 @@ E2.plugins["perspective_camera"] = function(core, node) {
 		{ name: 'FOV', dt: core.datatypes.FLOAT },
 		{ name: 'near', dt: core.datatypes.FLOAT },
 		{ name: 'far', dt: core.datatypes.FLOAT },
-		{ name: 'position', dt: core.datatypes.VECTOR },
-		{ name: 'target', dt: core.datatypes.VECTOR }
+		{ name: 'position', dt: core.datatypes.VERTEX },
+		{ name: 'target', dt: core.datatypes.VERTEX }
 	];
 	this.output_slots = [ { name: 'camera', dt: core.datatypes.CAMERA } ];
 

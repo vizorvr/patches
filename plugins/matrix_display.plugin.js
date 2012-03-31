@@ -2,7 +2,7 @@ E2.plugins["matrix_display"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
-		{ name: 'matrix', dt: core.datatypes.MATRIX }
+		{ name: 'matrix', dt: core.datatypes.TRANSFORM }
 	];
 	
 	this.output_slots = [];

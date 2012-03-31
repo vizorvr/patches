@@ -6,8 +6,8 @@ E2.plugins["convert_camera_matrices"] = function(core, node) {
 		{ name: 'camera', dt: core.datatypes.CAMERA },
 	];
 	this.output_slots = [ 
-		{ name: 'projection', dt: core.datatypes.MATRIX },
-		{ name: 'view', dt: core.datatypes.MATRIX } 
+		{ name: 'projection', dt: core.datatypes.TRANSFORM },
+		{ name: 'view', dt: core.datatypes.TRANSFORM } 
 	];
 	
 	this.reset = function()

@@ -6,7 +6,7 @@ E2.plugins["flat_shader"] = function(core, node) {
 	this.input_slots = [
 		 { name: 'color', dt: core.datatypes.COLOR },
 		 { name: 'camera', dt: core.datatypes.CAMERA },
-		 { name: 'transform', dt: core.datatypes.MATRIX }
+		 { name: 'transform', dt: core.datatypes.TRANSFORM }
 	];
 	
 	this.output_slots = [ 

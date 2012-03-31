@@ -2,9 +2,9 @@ E2.plugins["scale_matrix"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
-		{ name: 'vector', dt: core.datatypes.VECTOR },
+		{ name: 'vector', dt: core.datatypes.VERTEX },
 	];
-	this.output_slots = [ { name: 'matrix', dt: core.datatypes.MATRIX } ];
+	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM } ];
 
 	this.reset = function()
 	{
