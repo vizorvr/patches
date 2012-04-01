@@ -9,10 +9,10 @@ E2.plugins["textured_quad_emitter"] = function(core, node) {
 	this.output_slots = [];
 
 	var v_data = [
-		 1.0,  1.0,  1.0,
-		-1.0,  1.0,  1.0,
-		 1.0, -1.0,  1.0,
-		-1.0, -1.0,  1.0
+		 1.0,  1.0,  0.0,
+		-1.0,  1.0,  0.0,
+		 1.0, -1.0,  0.0,
+		-1.0, -1.0,  0.0
        	];
 
 	this.vertices = gl.createBuffer();

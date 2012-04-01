@@ -6,6 +6,13 @@ E2.plugins["url_texture_generator"] = function(core, node) {
 	this.state = { url: '' };
 	this.gl = core.renderer.context;
 	this.texture = null;
+	this.changed = true;
+	
+	this.reset = function()
+	{
+		// Retransmit the texture handle if we've been stopped.
+		self.changed = true;
+	};
 	
 	this.create_ui = function()
 	{
@@ -42,7 +49,9 @@ E2.plugins["url_texture_generator"] = function(core, node) {
 					'OK': function()
 					{
 						self.state.url = url_inp.val();
+						self.state_changed(null);
 						self.state_changed(inp);
+						self.changed = true;
 						$(this).dialog('close');
 					},
 					'Cancel': function()
@@ -60,6 +69,15 @@ E2.plugins["url_texture_generator"] = function(core, node) {
 		return inp;
 	};
 	
+	this.update_state = function(delta_t)
+	{
+		if(self.changed)
+		{
+			self.changed = false;
+			self.updated = true;
+		}
+	};
+	
 	this.update_output = function(slot)
 	{
 		return self.texture;
@@ -69,11 +87,13 @@ E2.plugins["url_texture_generator"] = function(core, node) {
 	{
 		if(self.state.url !== '')
 		{
-			self.texture = new Texture(self.gl);	
-			self.texture.load(self.state.url);
-			
 			if(ui)
 				ui.attr('title', self.state.url);
+			else
+			{
+				self.texture = new Texture(self.gl);	
+				self.texture.load(self.state.url);
+			}
 		}
 	};
 };

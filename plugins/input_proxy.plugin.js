@@ -14,6 +14,7 @@ E2.plugins["input_proxy"] = function(core, node) {
 	this.input_updated = function(data)
 	{
 		self.data = data;
+		self.updated = true;
 	};
 	
 	this.connection_changed = function(on, conn, slot)

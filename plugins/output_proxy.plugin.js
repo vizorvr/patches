@@ -7,6 +7,7 @@ E2.plugins["output_proxy"] = function(core, node) {
 	
 	this.state.slot_id = node.add_slot(E2.slot_type.input, { name: 'input', dt: core.datatypes.ANY });
 	this.data = null;
+	this.changed = false;
 	
 	if(!node.title)
 		node.title = 'Output ' + node.uid;
@@ -25,5 +26,6 @@ E2.plugins["output_proxy"] = function(core, node) {
 	this.update_input = function(slot, data)
 	{
 		self.data = data;
+		self.changed = true;
 	};
 };

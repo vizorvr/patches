@@ -6,6 +6,12 @@ E2.plugins["slider_float_generator"] = function(core, node) {
 	this.state = { val: 0.0, min: 0.0, max: 1.0 };
 	this.v_col = null;
 	this.slider = null;
+	this.changed = true;
+	
+	this.reset = function()
+	{
+		self.changed = true;
+	};
 	
 	this.create_ui = function()
 	{
@@ -108,6 +114,16 @@ E2.plugins["slider_float_generator"] = function(core, node) {
 		return table;
 	};
 	
+	
+	this.update_state = function(delta_t)
+	{
+		if(self.changed)
+		{
+			self.changed = false;
+			self.updated = true;
+		}
+	};
+	
 	this.update_output = function(slot)
 	{
 		return self.state.val;
@@ -120,6 +136,7 @@ E2.plugins["slider_float_generator"] = function(core, node) {
 	
 	this.update_value = function(value)
 	{
+		self.changed = true;
 		self.v_col.text(value.toFixed(2));
 	};
 	

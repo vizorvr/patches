@@ -15,10 +15,10 @@ E2.plugins["colored_quad_emitter"] = function(core, node) {
 	gl.bindBuffer(gl.ARRAY_BUFFER, self.vertices);
 
 	var v_data = [
-		 1.0,  1.0,  1.0,
-		-1.0,  1.0,  1.0,
-		 1.0, -1.0,  1.0,
-		-1.0, -1.0,  1.0
+		 1.0,  1.0,  0.0,
+		-1.0,  1.0,  0.0,
+		 1.0, -1.0,  0.0,
+		-1.0, -1.0,  0.0
        	];
 
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v_data), gl.STATIC_DRAW);

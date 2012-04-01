@@ -1,8 +1,7 @@
 /*
 To do:
 
-1. Implement dynamic slots.
-2. Begin timeline implementation.
+1. Begin timeline implementation.
  
 */
 
@@ -255,6 +254,7 @@ function ConnectionUI(parent_conn)
 	this.flow = false;
 	this.selected = false;
 	this.parent_conn = parent_conn;
+	this.color = '#000';
 	
 	this.resolve_slot_divs = function()
 	{
@@ -281,7 +281,6 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	this.src_slot = src_slot;
 	this.dst_slot = dst_slot;
 	this.ui = null;
-	this.cached_value = null;
 	this.offset = 0;
 	
 	this.create_ui = function()
@@ -302,8 +301,6 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 
 	this.reset = function()
 	{
-		self.cached_value = null;
-
 		if(self.ui && self.ui.flow)
 		{
 			self.ui.flow = false;
@@ -329,8 +326,6 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		if(n.plugin.connection_changed)
 			n.plugin.connection_changed(on, self, self.src_slot);
 
-		n.plugin.needs_update = true;
-
 		if(!on)
 		{
 			self.reset_inbound_conns(n);
@@ -344,8 +339,6 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		
 		if(n.plugin.connection_changed)
 			n.plugin.connection_changed(on, self, self.dst_slot);
-
-		n.plugin.needs_update = true;
 	};
 	
 	this.serialise = function()
@@ -376,7 +369,6 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		self.src_slot = { index: d.src_slot, dynamic: d.src_dyn ? true : false };
 		self.dst_slot = { index: d.dst_slot, dynamic: d.dst_dyn ? true : false };
 		self.offset = d.offset ? d.offset : 0;
-		self.cached_value = null;
 	};
 	
 	this.patch_up = function(nodes)
@@ -532,6 +524,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	self.set_plugin = function(plugin)
 	{
 		self.plugin = plugin;
+		self.plugin.updated = true;
 		
 		var init_slot = function(slot, index, type)
 		{
@@ -600,7 +593,10 @@ function Node(parent_graph, plugin_id, x, y) {
 		var p = self.plugin;
 		
 		if(p.reset)
+		{
 			p.reset();
+			p.updated = true;
+		}
 	};
 	
 	this.add_slot = function(slot_type, def)
@@ -767,57 +763,59 @@ function Node(parent_graph, plugin_id, x, y) {
 	
 	this.update_recursive = function(conns, delta_t)
 	{
-		self.update_count++;
-		
-		if(self.update_count > self.outputs.length)
-			self.plugin.needs_update = false;
-
-		if(self.update_count > 1)
-			return false;
-		
-		var uid = self.uid;
-		var inputs = self.inputs;
-		var needs_update = self.inputs_changed;
-		var s_plugin = self.plugin;
 		var dirty = false;
-		
-		for(var i = 0, len = inputs.length; i < len; i++)
+
+		if(self.update_count < 1)
 		{
-			var inp = inputs[i];
-			var sn = inp.src_node;
-			 
-			dirty = sn.update_recursive(conns, delta_t) || dirty;
-			
-			var value = sn.plugin.update_output(inp.src_slot);
-			
-			if(sn.plugin.needs_update || value !== inp.cached_value)
+			var uid = self.uid;
+			var inputs = self.inputs;
+			var needs_update = self.inputs_changed;
+			var s_plugin = self.plugin;
+		
+			for(var i = 0, len = inputs.length; i < len; i++)
 			{
-				s_plugin.update_input(inp.dst_slot, value);
-				inp.cached_value = value;
-				needs_update = true;
-				
-				if(inp.ui && !inp.ui.flow)
+				var inp = inputs[i];
+				var sn = inp.src_node;
+				 
+				dirty = sn.update_recursive(conns, delta_t) || dirty;
+			
+				var value = sn.plugin.update_output(inp.src_slot);
+			
+				if(sn.plugin.updated)
 				{
+					s_plugin.update_input(inp.dst_slot, value);
+					s_plugin.updated = true;
+					needs_update = true;
+				
+					if(inp.ui && !inp.ui.flow)
+					{
+						dirty = true;
+						inp.ui.flow = true;
+					}
+				}
+				else if(inp.ui && inp.ui.flow)
+				{
+					inp.ui.flow = false;
 					dirty = true;
-					inp.ui.flow = true;
 				}
 			}
-			else if(inp.ui && inp.ui.flow)
+		
+			if(needs_update || s_plugin.output_slots.length === 0 || (s_plugin.outputs && s_plugin.outputs.length === 0))
 			{
-				inp.ui.flow = false;
-				dirty = true;
+				if(s_plugin.update_state)
+					s_plugin.update_state(delta_t);
+			
+				self.inputs_changed = false;
+			}
+			else if(s_plugin.input_slots.length === 0 || (s_plugin.inputs && s_plugin.inputs.length === 0))
+			{
+				if(s_plugin.update_state)
+					s_plugin.update_state(delta_t);
 			}
 		}
 		
-		if(needs_update || s_plugin.output_slots.length === 0 || (s_plugin.outputs && s_plugin.outputs.length === 0))
-		{
-			if(s_plugin.update_state)
-				s_plugin.update_state(delta_t);
-			
-			s_plugin.needs_update = true;
-			self.inputs_changed = false;
-		}
-		
+		self.update_count++;
+
 		return dirty;
 	};
 	
@@ -1006,6 +1004,9 @@ function Graph(parent_graph, tree_node)
 		
 		if(self === E2.app.core.active_graph)
 			E2.app.core.active_graph_dirty = dirty;
+		
+		for(var i = 0, len = nodes.length; i < len; i++)
+			nodes[i].plugin.updated = false;
 		
 		return dirty;
 	};
@@ -1679,7 +1680,6 @@ function Application() {
 			var graph = self.core.active_graph; 
 			
 			graph.connections.push(c);
-			self.dst_node.plugin.needs_update = true;
 			
 			c.signal_change(true);
 

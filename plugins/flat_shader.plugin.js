@@ -17,7 +17,7 @@ E2.plugins["flat_shader"] = function(core, node) {
 		     'uniform mat4 m_mat;' +
 		     'uniform mat4 v_mat;' +
 		     'uniform mat4 p_mat;' +
-		     'void main(void) { gl_Position = p_mat * m_mat * v_mat * vec4(pos, 1.0); }';
+		     'void main(void) { gl_Position = p_mat * v_mat * m_mat * vec4(pos, 1.0); }';
 	
 	var ps_src = 'precision mediump float;' +
 		     'uniform vec4 color;' +

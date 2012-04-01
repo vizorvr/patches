@@ -4,15 +4,11 @@ E2.plugins["color_picker"] = function(core, node) {
 	this.input_slots = [];
 	this.output_slots = [ { name: 'color', dt: core.datatypes.COLOR } ];
 	this.state = { hue: 0.0, sat: 0.0, lum: 1.0 };
+	this.changed = true;
 	
 	this.reset = function()
 	{
-		self.hue_rgb = [255.0, 0.0, 0.0];
-		self.hue_drag = false;
-		self.color_drag = false;
-		self.hue_clipped = false;
-		self.color_clipped = false;
-		self.color = new Color(1.0, 1.0, 1.0, 1.0);
+		self.changed = true;
 	};
 	
 	this.create_ui = function()
@@ -131,9 +127,15 @@ E2.plugins["color_picker"] = function(core, node) {
 		var cnv2 = function(cmp) { return Math.floor(nc[cmp] * 255.0); };
 
 		nc = [cnv(0), cnv(1), cnv(2)];
-		self.color = new Color(nc[0], nc[1], nc[2]);
+		var rgb = self.color.rgba;
+		
+		if(rgb[0] !== nc[0] || rgb[1] !== nc[1] || rgb[2] !== nc[2])
+		{
+			self.color = new Color(nc[0], nc[1], nc[2]);
+			self.changed = true;
+		}
+		
 		nc = [cnv2(0), cnv2(1), cnv2(2)];
-
 		self.div.css('background-color', 'rgb(' + nc[0] + ', ' + nc[1] + ', ' + nc[2] + ')');
 	};
 
@@ -219,6 +221,16 @@ E2.plugins["color_picker"] = function(core, node) {
 		return ev.pageX < o.left || ev.pageX > o.left + e.width() || ev.pageY < o.top || ev.pageY > o.top + e.height();
 	};
 	
+	this.update_state = function(delta_t)
+	{
+		if(self.changed)
+		{
+			msg('Updated');
+			self.changed = false;
+			self.updated = true;
+		}
+	};
+	
 	this.state_changed = function(ui)
 	{
 		if(ui)
@@ -230,6 +242,15 @@ E2.plugins["color_picker"] = function(core, node) {
 		
 			self.update_hue(i, h, hs);
 			self.update_picker(ui, s);
+		}
+		else
+		{
+			self.hue_rgb = [255.0, 0.0, 0.0];
+			self.hue_drag = false;
+			self.color_drag = false;
+			self.hue_clipped = false;
+			self.color_clipped = false;
+			self.color = new Color(1.0, 1.0, 1.0, 1.0);
 		}
 	};
 };

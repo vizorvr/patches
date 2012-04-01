@@ -16,10 +16,9 @@ function Renderer(canvas_id)
 	};
 
   	this.canvas_id = canvas_id;
+	this.canvas = $(canvas_id);
 	
-	var canvas = $(canvas_id);
-
-	this.context = canvas[0].getContext('experimental-webgl');
+	this.context = this.canvas[0].getContext('experimental-webgl');
 	
 	if(!this.context)
 		window.location = 'http://get.webgl.org';
@@ -27,12 +26,7 @@ function Renderer(canvas_id)
 	if(false)
 		this.context = WebGLDebugUtils.makeDebugContext(this.context);
 	
-	if(this.context)
-	{
-		this.context.viewportWidth = canvas.width();
-		this.context.viewportHeight = canvas.height();
-	}
-	else
+	if(!this.context)
 		msg('Error: WebGL initialization failed.');
 		
 	this.update = function()
@@ -42,7 +36,7 @@ function Renderer(canvas_id)
 			var gl = self.context;
 			
 			gl.clearColor(0.0, 0.0, 0.0, 1.0);
-	    		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+	    		// gl.viewport(0, 0, self.canvas[0].clientWidth, self.canvas[0].clientHeight);
 	    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		}	
 	};
@@ -129,10 +123,11 @@ function Texture(gl)
 		
 		img.onload = function()
 		{
-			self.upload(img);
+			msg('NOTE: Loaded texture \'' + src + '\'.');
+			self.upload(img, src);
 		};
 		
-		img.src = src;	
+		img.src = src + '?d=' + Math.random();	
 	};
 	
 	this.enable = function(stage)
@@ -148,11 +143,25 @@ function Texture(gl)
 		gl.bindTexture(gl.TEXTURE_2D, null);
 	};
 	
-	this.upload = function(img)
+	this.isPow2 = function(n)
 	{
-		this.width = img.width;
-		this.height = img.height;
+		var v =  Math.log(n) / Math.log(2);	
+		var v_int = Math.floor(v);
+		
+		return (v - v_int === 0.0);
+	};
+	
+	this.upload = function(img, src)
+	{
+		self.width = img.width;
+		self.height = img.height;
 
+		if(!self.isPow2(self.width))
+			msg('WARNING: The width (' + self.width + ') of the texture \'' + src + '\' is not a power of two.');
+
+		if(!self.isPow2(self.height))
+			msg('WARNING: The height (' + self.height + ') of the texture \'' + src + '\' is not a power of two.');
+		
 		self.enable();
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
@@ -161,8 +170,8 @@ function Texture(gl)
 	
 	this.set_filtering = function(down, up)
 	{
-	    	this.min_filter = down;
-		this.mag_filter = up;
+	    	self.min_filter = down;
+		self.mag_filter = up;
 	};
 }
 

@@ -248,10 +248,7 @@ E2.plugins["graph"] = function(core, node) {
 		}
 		else
 		{
-			var plug = self.input_nodes[slot.uid].plugin;
-			
-			plug.input_updated(data);
-			plug.needs_update = true;
+			self.input_nodes[slot.uid].plugin.input_updated(data);
 		}
 	};
 	
@@ -269,6 +266,8 @@ E2.plugins["graph"] = function(core, node) {
        			for(var i = 0, len = node.outputs.length; i < len; i++)
        				node.outputs[i].cached_value = null;
        		}
+       		else
+       			self.updated = false;
        	};
        	
        	this.destroy_slot = function(type, sid)

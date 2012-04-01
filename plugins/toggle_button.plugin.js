@@ -4,7 +4,8 @@ E2.plugins["toggle_button"] = function(core, node) {
 	this.input_slots = [];
 	this.output_slots = [ { name: 'enabled', dt: core.datatypes.BOOL } ];
 	this.state = { enabled: false };
-	
+	this.changed = true;
+		
 	this.create_ui = function()
 	{
 		var inp = $('<input id="state" type="button" value="Enable" />');
@@ -16,10 +17,20 @@ E2.plugins["toggle_button"] = function(core, node) {
 			
 			// Since this changes our layout, update any attached connections.
 			node.update_connections();
-			E2.app.updateCanvas();
+			
+			self.changed = true;
 		});
 		
 		return inp;
+	};
+	
+	this.update_state = function(delta_t)
+	{
+		if(self.changed)
+		{
+			self.changed = false;
+			self.updated = true;
+		}
 	};
 	
 	this.update_output = function(slot)

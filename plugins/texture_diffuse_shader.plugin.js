@@ -20,7 +20,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		     'uniform mat4 m_mat;' +
 		     'uniform mat4 v_mat;' +
 		     'uniform mat4 p_mat;' +
-		     'void main(void) { gl_Position = p_mat * m_mat * v_mat * vec4(pos, 1.0); uv_coord = uv; }';
+		     'void main(void) { gl_Position = p_mat * v_mat * m_mat * vec4(pos, 1.0); uv_coord = uv; }';
 		
 	var ps_src = 'precision mediump float;' +
 		     'varying vec2 uv_coord;' +
@@ -107,6 +107,9 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	
 	this.update_input = function(slot, data)
 	{
+		if(slot.index === 0)
+			debugger;
+
 		if(slot.index === 0)
 			self.color = data;
 		else if(slot.index === 1)
