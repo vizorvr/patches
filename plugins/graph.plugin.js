@@ -33,15 +33,11 @@ E2.plugins["graph"] = function(core, node) {
 					
 					for(var i = 0, len = node.outputs.length; i < len; i++)
 					{
-						var c = node.outputs[i];
-						
-						if(c.src_slot === slot)
+						if(node.outputs[i].src_slot === slot)
 							count++;
 					}
 					
-					debugger;
-					
-					if(count === 1)
+					if(count === 0)
 						psl = self.output_nodes[slot.uid].dyn_inputs[0];
 				}
 
@@ -53,6 +49,8 @@ E2.plugins["graph"] = function(core, node) {
 			}
 			else
 			{
+				var tn = null;
+				
 				if(slot.type === E2.slot_type.input)
 				{
 					if(slot.dt === core.datatypes.ANY)
@@ -61,7 +59,8 @@ E2.plugins["graph"] = function(core, node) {
 						msg('Setting GDT for slot(' + slot.uid + ') to ' + conn.src_slot.dt.name);
 					}
 					
-					psl = self.input_nodes[slot.uid].dyn_outputs[0];
+					tn = self.input_nodes[slot.uid];
+					psl = tn.dyn_outputs[0];
 				}
 				else
 				{
@@ -71,13 +70,15 @@ E2.plugins["graph"] = function(core, node) {
 						msg('Setting GDT for slot(' + slot.uid + ') to ' + conn.dst_slot.dt.name);
 					}
 					
-					psl = self.output_nodes[slot.uid].dyn_inputs[0];
+					tn = self.output_nodes[slot.uid];
+					psl = tn.dyn_inputs[0];
 				}
 				
 				if(psl.dt === core.datatypes.ANY)
 				{
 					msg('Setting PDT for slot(' + psl.uid + ') to ' + slot.dt.name);
 					psl.dt = slot.dt;
+					tn.plugin.data = core.get_default_value(slot.dt);
 				}
 			}
 		}
@@ -135,23 +136,25 @@ E2.plugins["graph"] = function(core, node) {
 		{
 			msg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid);
 			
-			if(!t_slot.dt)
-				debugger;
-			
 			p_slot.connected = true;
 			
 			if(on)
 			{
-				if(g_slot.dt === core.datatypes.ANY)
-				{
-					g_slot.dt = t_slot.dt;		
-					msg('    Setting GDT.');
-				}
-
 				if(p_slot.dt === core.datatypes.ANY)
 				{
 					p_slot.dt = t_slot.dt;		
-					msg('    Setting PDT.');
+					msg('    Setting PDT to ' + t_slot.dt.name + '.');
+				
+					if(g_slot.dt === core.datatypes.ANY)
+					{
+						p_node.plugin.data = core.get_default_value(t_slot.dt);
+					}
+				}
+
+				if(g_slot.dt === core.datatypes.ANY)
+				{
+					g_slot.dt = t_slot.dt;		
+					msg('    Setting GDT to ' + t_slot.dt.name + '.');
 				}
 			}
 			else if(last)
@@ -163,8 +166,8 @@ E2.plugins["graph"] = function(core, node) {
 				{
 					var c = conns[i];
 					
-					if((g_slot.type === E2.slot_type.input && c.dst_node === node)
-					|| (g_slot.type === E2.slot_type.output && c.src_node === node))
+					if((g_slot.type === E2.slot_type.input && c.dst_slot === g_slot)
+					|| (g_slot.type === E2.slot_type.output && c.src_slot === g_slot))
 					{
 						connected = true;
 						break;
@@ -192,15 +195,21 @@ E2.plugins["graph"] = function(core, node) {
 						}
 					}
 					
-					if(!connected && !is_gslot_connected(find_slot(node.dyn_inputs, find_sid(self.input_nodes, t_node.uid))))
+					var rgsl = find_slot(node.dyn_inputs, find_sid(self.input_nodes, t_node.uid));
+					
+					if(!connected && !is_gslot_connected(rgsl))
 					{
+						t_slot.dt = rgsl.dt = core.datatypes.ANY;
 						msg('    Reverting remote proxy slot to PDT/GDT to ANY.');
 					}
 				}
 				else if(t_node.plugin.id === 'output_proxy')
 				{
-					if(!is_gslot_connected(find_slot(node.dyn_outputs, find_sid(self.output_nodes, t_node.uid))))
+					var rgsl = find_slot(node.dyn_outputs, find_sid(self.output_nodes, t_node.uid));
+					
+					if(!is_gslot_connected(rgsl))
 					{
+						t_slot.dt = rgsl.dt = core.datatypes.ANY;
 						msg('    Reverting remote proxy slot to PDT/GDT to ANY.');
 					}
 				}
@@ -209,14 +218,14 @@ E2.plugins["graph"] = function(core, node) {
 		
 		if(p_node.plugin.id === 'input_proxy')
 		{
-			var last = p_node.outputs.length === 1;
+			var last = p_node.outputs.length === 0;
 			
 			change_slots(last, find_slot(node.dyn_inputs, find_sid(self.input_nodes, p_node.uid)), slot);
 			msg('    Output count = ' + p_node.outputs.length);
 		}
 		else
 		{
-			var last = p_node.inputs.length === 1;
+			var last = p_node.inputs.length === 0;
 			
 			change_slots(last, find_slot(node.dyn_outputs, find_sid(self.output_nodes, p_node.uid)), slot);
 			msg('    Input count = ' + p_node.inputs.length);

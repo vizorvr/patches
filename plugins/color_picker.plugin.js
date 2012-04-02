@@ -127,9 +127,9 @@ E2.plugins["color_picker"] = function(core, node) {
 		var cnv2 = function(cmp) { return Math.floor(nc[cmp] * 255.0); };
 
 		nc = [cnv(0), cnv(1), cnv(2)];
-		var rgb = self.color.rgba;
+		var rgb = self.color ? self.color.rgba : null;
 		
-		if(rgb[0] !== nc[0] || rgb[1] !== nc[1] || rgb[2] !== nc[2])
+		if(!rgb || rgb[0] !== nc[0] || rgb[1] !== nc[1] || rgb[2] !== nc[2])
 		{
 			self.color = new Color(nc[0], nc[1], nc[2]);
 			self.changed = true;
@@ -225,7 +225,6 @@ E2.plugins["color_picker"] = function(core, node) {
 	{
 		if(self.changed)
 		{
-			msg('Updated');
 			self.changed = false;
 			self.updated = true;
 		}

@@ -26,7 +26,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		     'varying vec2 uv_coord;' +
     		     'uniform sampler2D tex0;' +
     		     'uniform vec4 color;' +
-		     'void main(void) { gl_FragColor = vec4(color.rgb * texture2D(tex0, uv_coord.st).rgb, 1.0); }';
+		     'void main(void) { vec4 c = texture2D(tex0, uv_coord.st); gl_FragColor = vec4(color.rgb * c.rgb, c.a); }';
 
 	this.s = new ShaderProgram(gl);
 	this.vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
@@ -107,9 +107,6 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	
 	this.update_input = function(slot, data)
 	{
-		if(slot.index === 0)
-			debugger;
-
 		if(slot.index === 0)
 			self.color = data;
 		else if(slot.index === 1)

@@ -18,7 +18,7 @@ function Renderer(canvas_id)
   	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
 	
-	this.context = this.canvas[0].getContext('experimental-webgl');
+	this.context = this.canvas[0].getContext('experimental-webgl', { alpha: false });
 	
 	if(!this.context)
 		window.location = 'http://get.webgl.org';
@@ -36,6 +36,10 @@ function Renderer(canvas_id)
 			var gl = self.context;
 			
 			gl.clearColor(0.0, 0.0, 0.0, 1.0);
+			gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+			gl.enable(gl.BLEND);
+			gl.disable(gl.DEPTH_TEST);
+			gl.depthMask(false);
 	    		// gl.viewport(0, 0, self.canvas[0].clientWidth, self.canvas[0].clientHeight);
 	    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		}	
@@ -163,6 +167,7 @@ function Texture(gl)
 			msg('WARNING: The height (' + self.height + ') of the texture \'' + src + '\' is not a power of two.');
 		
 		self.enable();
+		gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
     		self.disable();

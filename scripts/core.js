@@ -326,6 +326,8 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		if(n.plugin.connection_changed)
 			n.plugin.connection_changed(on, self, self.src_slot);
 
+		n.plugin.updated = true;
+		
 		if(!on)
 		{
 			self.reset_inbound_conns(n);
@@ -350,6 +352,9 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		d.src_slot = self.src_slot.index;
 		d.dst_slot = self.dst_slot.index;
 		
+		d.src_connected = self.src_slot.connected;
+		d.dst_connected = self.dst_slot.connected;
+		
 		if(self.src_slot.uid !== undefined)
 			d.src_dyn = true;
 		
@@ -366,8 +371,8 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	{
 		self.src_node = d.src_nuid;
 		self.dst_node = d.dst_nuid;
-		self.src_slot = { index: d.src_slot, dynamic: d.src_dyn ? true : false };
-		self.dst_slot = { index: d.dst_slot, dynamic: d.dst_dyn ? true : false };
+		self.src_slot = { index: d.src_slot, dynamic: d.src_dyn ? true : false, connected: d.src_connected };
+		self.dst_slot = { index: d.dst_slot, dynamic: d.dst_dyn ? true : false, connected: d.dst_connected };
 		self.offset = d.offset ? d.offset : 0;
 	};
 	
@@ -388,10 +393,19 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		self.src_node = resolve_node(self.src_node);
 		self.dst_node = resolve_node(self.dst_node);
 		
+		var src_c = self.src_slot.connected;
+		var dst_c = self.dst_slot.connected;
+		
 		self.src_slot = (self.src_slot.dynamic ? self.src_node.dyn_outputs : self.src_node.plugin.output_slots)[self.src_slot.index];
 		self.dst_slot = (self.dst_slot.dynamic ? self.dst_node.dyn_inputs : self.dst_node.plugin.input_slots)[self.dst_slot.index];
 		self.dst_slot.is_connected = true;
 		
+		if(src_c)
+			self.src_slot.connected = true;
+
+		if(dst_c)
+			self.dst_slot.connected = true;
+
 		self.src_node.outputs.push(self);
 		self.dst_node.inputs.push(self);
 	};
@@ -599,6 +613,9 @@ function Node(parent_graph, plugin_id, x, y) {
 			p.reset();
 			p.updated = true;
 		}
+		
+		if(p.input_slots.length === 0 && self.dyn_inputs && self.dyn_inputs === 0)
+			p.updated = true;
 	};
 	
 	this.add_slot = function(slot_type, def)
@@ -724,24 +741,20 @@ function Node(parent_graph, plugin_id, x, y) {
 		if(!slots)
 			return;
 		
-		var slot = null;
-		
 		for(var i = 0, len = slots.length; i < len; i++)
 		{
 			if(slots[i].uid === suid)
 			{
-				slot = slots[i];
-				break;
+				var slot = slots[i];
+
+				slot.name = name;
+
+				if(self.ui)
+					self.ui.dom.find('#n' + self.uid + (is_inp ? 'di' : 'do') + slot.uid).text(name);
+
+				break; // Early out.
 			}
 		}
-		
-		if(slot)
-		{
-			slot.name = name;
-
-			if(self.ui)
-				self.ui.dom.find('#n' + self.uid + (is_inp ? 'di' : 'do') + slot.uid).text(name);
-		} 
 	};
 		
 	this.update_connections = function()
@@ -1233,8 +1246,32 @@ function Core() {
 	{
 		self.active_graph.destroy_ui();
 		self.active_graph = graph;
-		self.active_graph.reset();
+		self.root_graph.reset();
 		self.active_graph.create_ui();
+	};
+	
+	this.get_default_value = function(dt)
+	{
+		if(dt === self.datatypes.FLOAT)
+			return 0.0;
+		else if(dt === self.datatypes.COLOR)
+			return new Color(1, 1, 1);
+		else if(dt === self.datatypes.TRANSFORM)
+		{
+			var m = mat4.create();
+	
+			mat4.identity(m);
+			return m;
+		}
+		else if(dt === self.datatypes.VERTEX)
+			return [0.0, 0.0, 0.0];
+		else if(dt === self.datatypes.CAMERA)
+			return new Camera(self.renderer.context);
+		else if(dt === self.datatypes.BOOL)
+			return false;
+		
+		// Shaders and textures legally default to null.
+		return null;
 	};
 	
 	this.serialise = function()
@@ -1313,6 +1350,11 @@ function Application() {
 	this.core = new Core();
 	this.canvas = canvas;
 	this.c2d = canvas[0].getContext('2d');
+	this.last_mouse_pos = [0, 0];
+	this.current_state = this.state.STOPPED;
+	this.interval = null;
+	this.abs_time = 0.0;
+	this.last_time = (new Date()).getTime();
 	this.src_node = null;
 	this.dst_node = null;
 	this.src_slot = null;
@@ -1320,11 +1362,6 @@ function Application() {
 	this.dst_slot = null;
 	this.dst_slot_div = null;
 	this.edit_conn = null;
-	this.last_mouse_pos = [0, 0];
-	this.current_state = this.state.STOPPED;
-	this.interval = null;
-	this.abs_time = 0.0;
-	this.last_time = (new Date()).getTime();
 	this.shift_pressed = false;
 	this.hover_slot = null;
 	this.hover_slot_div = null;
@@ -1617,19 +1654,21 @@ function Application() {
 		
 		var conns = self.core.active_graph.connections;
 		var cb = [[], [], []];
-		var styles = ['#f00', '#44e', '#000'];
+		var styles = ['#000', '#44e', '#f00'];
 		
 		for(var i = 0, len = conns.length; i < len; i++)
 		{
 			var con = conns[i];
 
-			cb[con.ui.selected ? 0 : con.ui.flow ? 1 : 2].push(con);
+			// Draw inactive connections first, then connections with data flow
+			// and finally selected connections to ensure they get rendered on top.
+			cb[con.ui.selected ? 2 : con.ui.flow ? 1 : 0].push(con);
 		}
 		
 		if(self.edit_conn)
 		{
 			self.edit_conn.ui.dst_pos = self.last_mouse_pos.slice(0);
-			cb[2].push(self.edit_conn);
+			cb[0].push(self.edit_conn);
 		}
 		
 		for(var bin = 0; bin < 3; bin++)
@@ -1749,6 +1788,22 @@ function Application() {
 		}
 	};
 
+	this.clearEditState = function()
+	{
+		self.src_node = null;
+		self.dst_node = null;
+		self.src_slot = null;
+		self.src_slot_div = null;
+		self.dst_slot = null;
+		self.dst_slot_div = null;
+		self.edit_conn = null;
+		self.shift_pressed = false;
+		self.hover_slot = null;
+		self.hover_slot_div = null;
+		self.hover_connections = [];
+		self.hover_node = null;
+	};
+	
 	this.removeHoverConnections = function()
 	{
 			var hcs = self.hover_connections;
@@ -1756,14 +1811,24 @@ function Application() {
 			if(hcs.length > 0)
 			{
 				var graph = self.core.active_graph;
-			
+				var conns = graph.connections;
+				
+				// Remove the pending connections from the graph list,
+				// so that plugins that rely on notification of graph
+				// events can scan this list with meaningful results.
 				for(var i = 0, len = hcs.length; i < len; i++)
 				{
 					var c = hcs[i];
+					var idx = conns.indexOf(c);
 					
-					c.signal_change(false);
+					if(idx > -1)
+						conns.splice(idx, 1);
+
 					graph.destroy_connection(c);
 				}
+				
+				for(var i = 0, len = hcs.length; i < len; i++)
+					hcs[i].signal_change(false);
 				
 				self.hover_connections = [];
 				self.updateCanvas();
@@ -2042,6 +2107,7 @@ $(document).ready(function() {
 		debugLevel: 0, // Quiet.
 		onActivate: function(node) 
 		{
+			E2.app.clearEditState();
 			E2.app.core.onGraphSelected(node.graph);
 			E2.app.updateCanvas();
 		}

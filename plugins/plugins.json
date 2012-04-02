@@ -45,6 +45,5 @@
 	"Structure/Annotation": "annotation",
 	"Structure/Input proxy": "input_proxy",
 	"Structure/Graph": "graph",
-	"Structure/Output proxy": "output_proxy",
-	"Testing/Test dyn slots": "test_dyn_slots"
+	"Structure/Output proxy": "output_proxy"
 }

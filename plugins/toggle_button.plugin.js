@@ -2,10 +2,15 @@ E2.plugins["toggle_button"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [];
-	this.output_slots = [ { name: 'enabled', dt: core.datatypes.BOOL } ];
+	this.output_slots = [ { name: 'bool', dt: core.datatypes.BOOL } ];
 	this.state = { enabled: false };
 	this.changed = true;
 		
+	this.reset = function()
+	{
+		self.updated = true;
+	};
+	
 	this.create_ui = function()
 	{
 		var inp = $('<input id="state" type="button" value="Enable" />');
