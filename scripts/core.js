@@ -440,9 +440,6 @@ function NodeUI(parent_node, x, y) {
 	this.dom.attr('id', nid);
 	this.dom.mousemove(E2.app.onMouseMoved); // Make sure we don't stall during slot connection, when the mouse enters a node.
 	
-	this.dom.css('top', '' + y + 'px');
-	this.dom.css('left', '' + x + 'px');
-	
 	this.dom.addClass('pl_layout');
 	
 	var h_row = make('tr');
@@ -510,7 +507,12 @@ function NodeUI(parent_node, x, y) {
     	});
     	
 	this.dom.css('display', 'none');
+	
 	E2.dom.canvas_parent.append(this.dom);
+
+	this.dom.css('top', '' + y + 'px');
+	this.dom.css('left', '' + x + 'px');
+
 	this.dom.show();
 }
 
@@ -1121,7 +1123,7 @@ function Graph(parent_graph, tree_node)
 		self.node_uid = d.node_uid;
 		self.uid = d.uid;
 		self.parent_graph = d.parent_uid;
-		
+				
 		self.nodes = [];
 		self.roots = [];
 		
@@ -1847,8 +1849,8 @@ function Application() {
 		var canvas_dirty = false;
 		var pos = node.ui.dom.position();
 		
-		node.x = pos.left;
-		node.y = pos.top;
+		node.x = canvas_parent.scrollLeft() + pos.left;
+		node.y = canvas_parent.scrollTop() + pos.top;
 		
 		node.update_connections();
 		
