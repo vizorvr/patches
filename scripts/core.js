@@ -14,6 +14,23 @@ E2.dom = {};
 E2.plugins = {};
 E2.slot_type = { input: 0, output: 1 };
 
+function clone(o)
+{
+	var no = (o instanceof Array) ? [] : {};
+
+	for(var i in o) 
+	{
+		if(o[i] && typeof o[i] === 'object') 
+		{
+			no[i] = clone(o[i]);
+		} 
+		else
+			no[i] = o[i];
+	} 
+	
+	return no;
+};
+
 function msg(txt)
 {
 	var d = E2.dom.dbg;
@@ -815,14 +832,14 @@ function Node(parent_graph, plugin_id, x, y) {
 				}
 			}
 		
-			if(needs_update || s_plugin.output_slots.length === 0 || (s_plugin.outputs && s_plugin.outputs.length === 0))
+			if(needs_update || s_plugin.output_slots.length === 0 || !s_plugin.outputs || s_plugin.outputs.length === 0)
 			{
 				if(s_plugin.update_state)
 					s_plugin.update_state(delta_t);
 			
 				self.inputs_changed = false;
 			}
-			else if(s_plugin.input_slots.length === 0 || (s_plugin.inputs && s_plugin.inputs.length === 0))
+			else if(s_plugin.input_slots.length === 0 || !s_plugin.inputs || s_plugin.inputs.length === 0)
 			{
 				if(s_plugin.update_state)
 					s_plugin.update_state(delta_t);
@@ -865,13 +882,13 @@ function Node(parent_graph, plugin_id, x, y) {
 			
 			if(self.dyn_inputs)
 			{
-				d.dyn_in = self.dyn_inputs.slice(0);
+				d.dyn_in = clone(self.dyn_inputs);
 				pack_dt(d.dyn_in);
 			}
 			
 			if(self.dyn_outputs)
 			{
-				d.dyn_out = self.dyn_outputs.slice(0);
+				d.dyn_out = clone(self.dyn_outputs);
 				pack_dt(d.dyn_out);
 			}
 		}

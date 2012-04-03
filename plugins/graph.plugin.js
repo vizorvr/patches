@@ -17,6 +17,14 @@ E2.plugins["graph"] = function(core, node) {
 			self.graph.reset();
 	};
 	
+	this.get_dt_name = function(dt)
+	{
+		if(!dt || !dt.name)
+			return 'ERROR';
+			
+		return dt.name;
+	};
+	
 	this.connection_changed = function(on, conn, slot)
 	{
 		if(slot.uid !== undefined)
@@ -56,7 +64,7 @@ E2.plugins["graph"] = function(core, node) {
 					if(slot.dt === core.datatypes.ANY)
 					{
 						slot.dt = conn.src_slot.dt;
-						msg('Setting GDT for slot(' + slot.uid + ') to ' + conn.src_slot.dt.name);
+						msg('Setting GDT for slot(' + slot.uid + ') to ' + self.get_dt_name(conn.src_slot.dt));
 					}
 					
 					tn = self.input_nodes[slot.uid];
@@ -67,7 +75,7 @@ E2.plugins["graph"] = function(core, node) {
 					if(slot.dt === core.datatypes.ANY)
 					{
 						slot.dt = conn.dst_slot.dt;
-						msg('Setting GDT for slot(' + slot.uid + ') to ' + conn.dst_slot.dt.name);
+						msg('Setting GDT for slot(' + slot.uid + ') to ' + self.get_dt_name(conn.dst_slot.dt));
 					}
 					
 					tn = self.output_nodes[slot.uid];
@@ -76,7 +84,7 @@ E2.plugins["graph"] = function(core, node) {
 				
 				if(psl.dt === core.datatypes.ANY)
 				{
-					msg('Setting PDT for slot(' + psl.uid + ') to ' + slot.dt.name);
+					msg('Setting PDT for slot(' + psl.uid + ') to ' + self.get_dt_name(slot.dt));
 					psl.dt = slot.dt;
 					tn.plugin.data = core.get_default_value(slot.dt);
 				}
@@ -143,7 +151,7 @@ E2.plugins["graph"] = function(core, node) {
 				if(p_slot.dt === core.datatypes.ANY)
 				{
 					p_slot.dt = t_slot.dt;		
-					msg('    Setting PDT to ' + t_slot.dt.name + '.');
+					msg('    Setting PDT to ' + self.get_dt_name(t_slot.dt) + '.');
 				
 					if(g_slot.dt === core.datatypes.ANY)
 					{
@@ -154,7 +162,7 @@ E2.plugins["graph"] = function(core, node) {
 				if(g_slot.dt === core.datatypes.ANY)
 				{
 					g_slot.dt = t_slot.dt;		
-					msg('    Setting GDT to ' + t_slot.dt.name + '.');
+					msg('    Setting GDT to ' + self.get_dt_name(t_slot.dt) + '.');
 				}
 			}
 			else if(last)
