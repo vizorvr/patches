@@ -28,6 +28,12 @@ E2.plugins["colored_quad_emitter"] = function(core, node) {
 		self.shader = null;
 	};
 	
+	this.connection_changed = function(on, conn, slot)
+	{
+		if(!on)
+			self.shader = null;
+	};
+	
 	this.update_input = function(slot, data)
 	{
 		self.shader = data;
