@@ -253,7 +253,7 @@ E2.plugins["graph"] = function(core, node) {
 				{
 					if(self.graph && !self.is_reset)
 					{
-						self.graph.reset();
+						// self.graph.reset();
 						self.is_reset = true;
 						
 						if(self.graph === E2.app.core.active_graph)
