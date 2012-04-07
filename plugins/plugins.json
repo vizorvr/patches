@@ -14,6 +14,7 @@
 	"Generators/Cameras/Screenspace": "screenspace_camera",
 	"Generators/Shaders/Flat": "flat_shader",
 	"Generators/Shaders/From mesh": "from_mesh_shader",
+	"Generators/Shaders/Normal as color": "normal_as_color_shader",
 	"Generators/Shaders/Texture": "texture_diffuse_shader",
 	"Generators/Time/Clock": "clock_generator",
 	"Generators/Time/Delta time": "delta_t_generator",

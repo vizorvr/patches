@@ -114,17 +114,6 @@ function Renderer(canvas_id)
 	if(!window.WebGLRenderingContext)
 		window.location = 'http://get.webgl.org';
 
-	// TODO: Remove this. Refactor to use the copy in VertexBuffer instead.
-	this.array_type = 
-	{
-		VERTEX: 0,
-		COLOR: 1,
-		UV0: 2,
-		UV1: 3,
-		UV2: 4,
-		UV3: 5
-	};
-
 	this.blend_mode = 
 	{
 		NONE: 0,

@@ -52,7 +52,7 @@ E2.plugins["textured_quad_emitter"] = function(core, node) {
         	
         	if(shader !== null)
         	{
-			var types = core.renderer.array_type;
+			var types = VertexBuffer.vertex_type;
 			
         		shader.enable();
 			shader.bind_array(types.VERTEX, self.vertices, 3);

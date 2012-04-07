@@ -46,7 +46,7 @@ E2.plugins["colored_quad_emitter"] = function(core, node) {
         	if(s !== null)
         	{
         		s.enable();
-			s.bind_array(core.renderer.array_type.VERTEX, self.vertices, 3); 
+			s.bind_array(VertexBuffer.vertex_type.VERTEX, self.vertices, 3); 
                		s.apply_uniforms();
 	        	
 	        	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
