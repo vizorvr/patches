@@ -148,6 +148,8 @@ E2.plugins["slider_float_generator"] = function(core, node) {
 			self.slider.slider('option', 'max', self.state.max);
 			self.slider.slider('option', 'value', self.state.val);
 			self.update_value(self.state.val);
+			ui.find('#lo').val(self.state.min);
+			ui.find('#hi').val(self.state.max);
 		}
 	};
 };

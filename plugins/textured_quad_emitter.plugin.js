@@ -48,8 +48,6 @@ E2.plugins["textured_quad_emitter"] = function(core, node) {
 	
 	this.update_state = function(delta_t)
 	{
-    		gl.disable(gl.DEPTH_TEST);
-    		
         	var shader = self.shader;
         	
         	if(shader !== null)

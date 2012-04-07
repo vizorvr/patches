@@ -325,7 +325,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		}
 	};
 	
-	this.reset_inbound_conns = function(node)
+	/*this.reset_inbound_conns = function(node)
 	{
 		for(var i = 0, len = node.inputs.length; i < len; i++)
 		{
@@ -334,30 +334,62 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 			c.reset();
 			self.reset_inbound_conns(c.src_node);
 		}
-	};
+	};*/
 	
+	this.r_update_inbound = function(node)
+	{
+		node.queued_update = 1;
+		
+		if(node.plugin.id !== 'input_proxy')
+		{
+			for(var i = 0, len = node.inputs.length; i < len; i++)
+				self.r_update_inbound(node.inputs[i].src_node);
+		}
+		else
+		{
+			var rp = node.parent_graph.plugin;
+			
+			if(rp.parent_node.queued_update < 1 && rp.state.enabled)
+				self.r_update_inbound(rp.parent_node);
+		}
+	}
+
+	this.r_update_outbound = function(node)
+	{
+		node.queued_update = 2;
+		
+		if(node.plugin.id !== 'output_proxy')
+		{
+			for(var i = 0, len = node.outputs.length; i < len; i++)
+				self.r_update_outbound(node.outputs[i].dst_node);
+		}
+		else
+		{
+			var rp = node.parent_graph.plugin;
+			
+			if(rp.parent_node.queued_update < 2 && rp.state.enabled)
+				self.r_update_outbound(rp.parent_node);
+		}
+	}
+
 	this.signal_change = function(on)
 	{
 		var n = self.src_node;
 		
 		if(n.plugin.connection_changed)
 			n.plugin.connection_changed(on, self, self.src_slot);
-
-		n.plugin.updated = true;
-		
-		if(!on)
-		{
-			self.reset_inbound_conns(n);
-			
-			if(n.plugin.reset)
-				n.plugin.reset();
-		}
 		
 		n = self.dst_node;
 		n.inputs_changed = true;
 		
 		if(n.plugin.connection_changed)
 			n.plugin.connection_changed(on, self, self.dst_slot);
+
+		if(on)
+		{
+			self.r_update_inbound(n);
+			self.r_update_outbound(n);
+		}
 	};
 	
 	this.serialise = function()
@@ -553,6 +585,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.inputs = [];
 	this.outputs = [];
 	this.dyn_slot_uid = 0;
+	this.queued_update = 0;
 	
 	self.set_plugin = function(plugin)
 	{
@@ -630,9 +663,6 @@ function Node(parent_graph, plugin_id, x, y) {
 			p.reset();
 			p.updated = true;
 		}
-		
-		if(p.input_slots.length === 0 && self.dyn_inputs && self.dyn_inputs === 0)
-			p.updated = true;
 	};
 	
 	this.add_slot = function(slot_type, def)
@@ -832,7 +862,15 @@ function Node(parent_graph, plugin_id, x, y) {
 				}
 			}
 		
-			if(needs_update || s_plugin.output_slots.length === 0 || !s_plugin.outputs || s_plugin.outputs.length === 0)
+			if(self.queued_update > 0)
+			{
+				if(s_plugin.update_state)
+					s_plugin.update_state(delta_t);
+
+				self.plugin.updated = true;
+				self.queued_update = 0;
+			}
+			else if(needs_update || s_plugin.output_slots.length === 0 || !s_plugin.outputs || s_plugin.outputs.length === 0)
 			{
 				if(s_plugin.update_state)
 					s_plugin.update_state(delta_t);
@@ -1094,7 +1132,6 @@ function Graph(parent_graph, tree_node)
 	{
 		self.enum_all(function(n)
 		{
-			n.reset();
 			n.create_ui();
 
 			if(n.ui && n.plugin.state_changed)
@@ -1218,7 +1255,8 @@ function Core() {
 		VERTEX: { id: 5, name: 'Vertex' },
 		CAMERA: { id: 6, name: 'Camera' },
 		BOOL: { id: 7, name: 'Boolean' },
-		ANY: { id: 8, name: 'Arbitrary' }
+		ANY: { id: 8, name: 'Arbitrary' },
+		MESH: { id: 9, name: 'Mesh' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');
@@ -1263,7 +1301,7 @@ function Core() {
 	{
 		self.active_graph.destroy_ui();
 		self.active_graph = graph;
-		self.root_graph.reset();
+		// self.root_graph.reset();
 		self.active_graph.create_ui();
 	};
 	
@@ -1449,7 +1487,10 @@ function Application() {
 			node.create_ui();
 			
 			if(node.plugin.state_changed)
+			{
+				node.plugin.state_changed(null);			
 				node.plugin.state_changed(node.ui.plugin_ui);			
+			}
 		};
 		
 		if(id === 'graph')
@@ -1478,10 +1519,18 @@ function Application() {
 						$(this).dialog('close');
 					}
 				},
-				open: function(i) { return function()
+				open: function()
 				{
-					i.focus().select();
-				}}(inp)
+					inp.focus().select();
+					diag.keyup(function(e)
+					{
+						if(e.keyCode == $.ui.keyCode.ENTER)
+						{
+							createPlugin(inp.val());
+							diag.dialog('close');
+						}
+					});
+				}
 			});
 		}
 		else
@@ -1892,6 +1941,20 @@ function Application() {
 		inp.css('width', '410px');
 		diag.append(inp);
 	
+		var done_func = function()
+		{
+			node.title = inp.val();
+		
+			if(node.ui !== null)
+				node.ui.dom.find('#t').text(node.title);
+		
+			if(node.plugin.id === 'graph')
+				node.plugin.graph.tree_node.setTitle(node.title);
+		
+			node.parent_graph.emit_event({ type: 'node-renamed', node: node });
+			diag.dialog('close');
+		};
+		
 		diag.dialog({
 			width: 460,
 			height: 150,
@@ -1902,26 +1965,22 @@ function Application() {
 			buttons: {
 				'OK': function()
 				{
-					node.title = inp.val();
-					
-					if(node.ui !== null)
-						node.ui.dom.find('#t').text(node.title);
-					
-					if(node.plugin.id === 'graph')
-						node.plugin.graph.tree_node.setTitle(node.title);
-					
-					node.parent_graph.emit_event({ type: 'node-renamed', node: node });
-					$(this).dialog('close');
+					done_func();
 				},
 				'Cancel': function()
 				{
-					$(this).dialog('close');
+					diag.dialog('close');
 				}
 			},
-			open: function(i) { return function()
+			open: function()
 			{
-				i.focus().select();
-			}}(inp)
+				inp.focus().select();
+				diag.keyup(function(e)
+				{
+					if(e.keyCode == $.ui.keyCode.ENTER)
+						done_func();
+				});
+			}
 		});
 	}};
 	
@@ -1999,16 +2058,17 @@ function Application() {
 
 	this.onStopClicked = function()
 	{
-		self.abs_time = 0.0;
-		self.current_state = self.state.STOPPED;
-		self.changeControlState();
-		
 		if(self.interval != null)
 		{
 			clearInterval(self.interval);
 			self.interval = null;
 		}
 		
+		self.abs_time = 0.0;
+		self.current_state = self.state.STOPPED;
+		self.changeControlState();
+		self.core.abs_t = 0.0;
+
 		self.core.active_graph.reset();
 		self.core.renderer.update(); // Clear the WebGL view.
 		self.updateCanvas();
@@ -2022,6 +2082,7 @@ function Application() {
 	this.onLoadClicked = function()
 	{
 		self.onStopClicked();
+		self.core.renderer.texture_cache.clear();
 		self.core.deserialise(E2.dom.persist.val());
 		self.updateCanvas();
 	};

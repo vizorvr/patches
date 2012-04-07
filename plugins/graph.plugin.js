@@ -8,6 +8,7 @@ E2.plugins["graph"] = function(core, node) {
 	this.input_nodes = {};
 	this.output_nodes = {};
 	this.is_reset = true;
+	this.parent_node = node; // For reverse lookup in the core.
 	
 	this.reset = function()
 	{
@@ -239,7 +240,7 @@ E2.plugins["graph"] = function(core, node) {
 			msg('    Input count = ' + p_node.inputs.length);
 		}
 	};
-	 
+	
 	this.update_input = function(slot, data)
 	{
 		if(slot.uid === undefined)

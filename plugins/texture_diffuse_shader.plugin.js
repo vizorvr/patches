@@ -4,7 +4,9 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	var gl = renderer.context;
 	
 	this.input_slots = [
+		 { name: 'is3d', dt: core.datatypes.BOOL },
 		 { name: 'color', dt: core.datatypes.COLOR },
+		 { name: 'blend mode', dt: core.datatypes.FLOAT },
 		 { name: 'texture', dt: core.datatypes.TEXTURE },
 		 { name: 'camera', dt: core.datatypes.CAMERA },
 		 { name: 'transform', dt: core.datatypes.TRANSFORM }
@@ -26,7 +28,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		     'varying vec2 uv_coord;' +
     		     'uniform sampler2D tex0;' +
     		     'uniform vec4 color;' +
-		     'void main(void) { vec4 c = texture2D(tex0, uv_coord.st); gl_FragColor = vec4(color.rgb * c.rgb, c.a); }';
+		     'void main(void) { vec4 c = texture2D(tex0, uv_coord.st); gl_FragColor = vec4(color * c); }';
 
 	this.s = new ShaderProgram(gl);
 	this.vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
@@ -48,25 +50,26 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	
 	// Note: Shader implementations must decorate the shader prototype with these
 	// two methods, so the rendering plugins can call it to update the shader uniforms
-	// / bind vertex data at the appropriate point in its rendering logic. It also
+	// and bind vertex data at the appropriate point in its rendering logic. It also
 	// means that the rendering logic is kept independent of the renderer logic:
 	// if an array type in unknown by the shader, but requested by the renderer,
 	// the request can be silently droppred, which gives us a nice weak API.
 
 	this.s.bind_array = function(type, data, item_size)
 	{
-		var types = core.renderer.array_type;
+		var types = VertexBuffer.vertex_type;
+		var attr = null;
 		
 		if(type === types.VERTEX)
-		{
-			gl.bindBuffer(gl.ARRAY_BUFFER, data);
-			gl.vertexAttribPointer(self.s.vertexPosAttribute, item_size, gl.FLOAT, false, 0, 0);
-		}
+			attr = this.vertexPosAttribute;
 		else if(type === types.UV0)
-		{
-			gl.bindBuffer(gl.ARRAY_BUFFER, data);
-			gl.vertexAttribPointer(self.s.uvCoordAttribute, item_size, gl.FLOAT, false, 0, 0);
-		}
+			attr = this.uvCoordAttribute;
+		else
+			return;
+			
+		gl.bindBuffer(gl.ARRAY_BUFFER, data);
+		gl.enableVertexAttribArray(attr);
+		gl.vertexAttribPointer(attr, item_size, gl.FLOAT, false, 0, 0);
 	}
 
 	this.s.apply_uniforms = this.apply_uniforms = function()
@@ -87,31 +90,30 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		{
 			gl.bindTexture(gl.TEXTURE_2D, null);
 		}
-	};
-	
-	this.reset = function()
-	{
-		self.color = new Color(1.0, 1.0, 1.0, 1.0);
-		self.tex = null;
-		self.camera = new Camera();
-		self.transform = mat4.create();
-	
-		mat4.identity(self.transform);
+		
+		var r = core.renderer;
+		
+		r.set_depth_enable(self.is3d);
+		r.set_blend_mode(self.blend_mode);
 	};
 	
 	this.connection_changed = function(on, conn, slot)
 	{
-		if(!on && slot.type === E2.slot_type.input && slot.index === 1)
+		if(!on && slot.type === E2.slot_type.input && slot.index === 3)
 			self.tex = null;
 	};
 	
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
-			self.color = data;
+			self.is3d = data;
 		else if(slot.index === 1)
-			self.tex = data;
+			self.color = data;
 		else if(slot.index === 2)
+			self.blend_mode = data;
+		else if(slot.index === 3)
+			self.tex = data;
+		else if(slot.index === 4)
 			self.camera = data;
 		else
 			self.transform = data;
@@ -120,5 +122,20 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	this.update_output = function(slot)
 	{
 		return self.s;
+	};
+	
+	this.state_changed = function(ui)
+	{
+		if(!ui)
+		{
+			self.is3d = false;
+			self.color = new Color(1.0, 1.0, 1.0, 1.0);
+			self.blend_mode = core.renderer.blend_mode.NORMAL;
+			self.tex = null;
+			self.camera = new Camera();
+			self.transform = mat4.create();
+
+			mat4.identity(self.transform);
+		}
 	};
 };

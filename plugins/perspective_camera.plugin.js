@@ -12,16 +12,6 @@ E2.plugins["perspective_camera"] = function(core, node) {
 	];
 	this.output_slots = [ { name: 'camera', dt: core.datatypes.CAMERA } ];
 
-	this.reset = function()
-	{
-		self.camera = new Camera(gl);
-		self.fov = 30.0;
-		self.near = 0.01;
-		self.far = 1000.0;
-		self.position = [0.0, 0.0, 1.0];
-		self.target = [0.0, 0.0, -1.0];
-	};
-	
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
@@ -47,5 +37,18 @@ E2.plugins["perspective_camera"] = function(core, node) {
 	this.update_output = function(slot)
 	{
 		return self.camera;
-	};	
+	};
+	
+	this.state_changed = function(ui)
+	{
+		if(!ui)
+		{
+			self.camera = new Camera(gl);
+			self.fov = 30.0;
+			self.near = 0.01;
+			self.far = 1000.0;
+			self.position = [0.0, 0.0, 1.0];
+			self.target = [0.0, 0.0, -1.0];
+		}
+	};
 };

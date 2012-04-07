@@ -7,16 +7,6 @@ E2.plugins["concatenate_matrix_modulator"] = function(core, node) {
 	];
 	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM } ];
 
-	this.reset = function()
-	{
-		self.matrices = [mat4.create(), mat4.create()];
-		self.matrix = mat4.create();
-	
-		mat4.identity(self.matrices[0]);
-		mat4.identity(self.matrices[1]);
-		mat4.identity(self.matrix);
-	};
-	
 	this.connection_changed = function(on, conn, slot)
 	{
 		if(!on && slot.type === E2.slot_type.input)
@@ -36,5 +26,18 @@ E2.plugins["concatenate_matrix_modulator"] = function(core, node) {
 	this.update_output = function(slot)
 	{
 		return self.matrix;
-	};	
+	};
+	
+	this.state_changed = function(ui)
+	{
+		if(!ui)
+		{
+			self.matrices = [mat4.create(), mat4.create()];
+			self.matrix = mat4.create();
+	
+			mat4.identity(self.matrices[0]);
+			mat4.identity(self.matrices[1]);
+			mat4.identity(self.matrix);
+		}
+	};
 };

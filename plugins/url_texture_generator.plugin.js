@@ -38,6 +38,15 @@ E2.plugins["url_texture_generator"] = function(core, node) {
 			url_inp.css('width', '410px');
 			diag.append(url_inp);
 			
+			var done_func = function()
+			{
+				self.state.url = url_inp.val();
+				self.state_changed(null);
+				self.state_changed(inp);
+				self.changed = true;
+				diag.dialog('close');
+			};
+			
 			diag.dialog({
 				width: 460,
 				height: 150,
@@ -48,21 +57,22 @@ E2.plugins["url_texture_generator"] = function(core, node) {
 				buttons: {
 					'OK': function()
 					{
-						self.state.url = url_inp.val();
-						self.state_changed(null);
-						self.state_changed(inp);
-						self.changed = true;
-						$(this).dialog('close');
+						done_func();
 					},
 					'Cancel': function()
 					{
 						$(this).dialog('close');
 					}
 				},
-				open: function(url) { return function()
+				open: function()
 				{
-					url.focus().val(url.val());
-				}}(url_inp)
+					url_inp.focus().val(url_inp.val());
+					diag.keyup(function(e)
+					{
+						if(e.keyCode == $.ui.keyCode.ENTER)
+							done_func();
+					});
+				}
 			});
 		});
 		
@@ -90,10 +100,7 @@ E2.plugins["url_texture_generator"] = function(core, node) {
 			if(ui)
 				ui.attr('title', self.state.url);
 			else
-			{
-				self.texture = new Texture(self.gl);	
-				self.texture.load(self.state.url);
-			}
+				self.texture = core.renderer.texture_cache.get(self.state.url);
 		}
 	};
 };

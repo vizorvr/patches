@@ -4,7 +4,9 @@ E2.plugins["flat_shader"] = function(core, node) {
 	var gl = renderer.context;
 	
 	this.input_slots = [
+		 { name: 'is3d', dt: core.datatypes.BOOL },
 		 { name: 'color', dt: core.datatypes.COLOR },
+		 { name: 'blend mode', dt: core.datatypes.FLOAT },
 		 { name: 'camera', dt: core.datatypes.CAMERA },
 		 { name: 'transform', dt: core.datatypes.TRANSFORM }
 	];
@@ -57,22 +59,22 @@ E2.plugins["flat_shader"] = function(core, node) {
 		gl.uniformMatrix4fv(self.s.pMatUniform, false, self.camera.projection);
 		gl.uniform4fv(self.s.colorUniform, new Float32Array(self.color.rgba));
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
+		
+		var r = core.renderer;
+		
+		r.set_depth_enable(self.is3d);
+		r.set_blend_mode(self.blend_mode);
       	};
       	
-	this.reset = function()
-	{
-		self.color = new Color(1.0, 1.0, 1.0, 1.0);
-		self.camera = new Camera(gl);
-		self.transform = mat4.create();
-	
-		mat4.identity(this.transform);
-	}
-	
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
-			self.color = data;
+			self.is3d = data;
 		else if(slot.index === 1)
+			self.color = data;
+		else if(slot.index === 2)
+			self.blend_mode = data;
+		else if(slot.index === 3)
 			self.camera = data;
 		else
 			self.transform = data;
@@ -82,4 +84,20 @@ E2.plugins["flat_shader"] = function(core, node) {
 	{
 		return self.s;
 	};
+	
+	this.state_changed = function(ui)
+	{
+		if(!ui)
+		{
+			self.is3d = false;
+			self.color = new Color(1.0, 1.0, 1.0, 1.0);
+			self.blend_mode = core.renderer.blend_mode.NORMAL;
+			self.camera = new Camera(gl);
+			self.transform = mat4.create();
+	
+			mat4.identity(this.transform);
+		}
+	};
+
+      	this.state_changed(null);
 };

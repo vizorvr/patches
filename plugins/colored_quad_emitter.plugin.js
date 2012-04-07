@@ -39,8 +39,6 @@ E2.plugins["colored_quad_emitter"] = function(core, node) {
         	
         	if(s !== null)
         	{
-	    		gl.disable(gl.DEPTH_TEST);
-
         		s.enable();
 			s.bind_array(core.renderer.array_type.VERTEX, self.vertices, 3); 
                		s.apply_uniforms();

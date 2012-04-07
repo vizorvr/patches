@@ -30,7 +30,10 @@ E2.plugins["color_picker"] = function(core, node) {
 		h.css('border', '1px solid #888');
 		h.css('cursor', 'crosshair');
 		h.css('z-index', '100');
-		h.css('float', 'right');
+		// h.css('float', 'right');
+		hs.css('position', 'absolute');
+		hs.css('top', '0px');
+		hs.css('left', '114px');
 		h.attr('src', 'images/color_picker/hue.png');
 		h.attr('id', 'hue');
 
@@ -131,7 +134,7 @@ E2.plugins["color_picker"] = function(core, node) {
 		
 		if(!rgb || rgb[0] !== nc[0] || rgb[1] !== nc[1] || rgb[2] !== nc[2])
 		{
-			self.color = new Color(nc[0], nc[1], nc[2]);
+			self.color = new Color(nc[0], nc[1], nc[2], 1.0);
 			self.changed = true;
 		}
 		

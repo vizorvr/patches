@@ -22,5 +22,5 @@ E2.plugins["translation_matrix"] = function(core, node) {
 	this.update_output = function(slot)
 	{
 		return self.matrix;
-	};	
+	};
 };

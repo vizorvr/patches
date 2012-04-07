@@ -8,11 +8,6 @@ E2.plugins["vector"] = function(core, node) {
 	];
 	this.output_slots = [ { name: 'vector', dt: core.datatypes.VERTEX } ];
 	
-	this.reset = function()
-	{
-		self.xyz = [0.0, 0.0, 0.0];
-	};
-	
 	this.update_input = function(slot, data)
 	{
 		self.xyz[slot.index] = data;
@@ -21,5 +16,13 @@ E2.plugins["vector"] = function(core, node) {
 	this.update_output = function(slot)
 	{
 		return self.xyz;
+	};
+	
+	this.state_changed = function(ui)
+	{
+		if(!ui)
+		{
+			self.xyz = [0.0, 0.0, 0.0];
+		}
 	};	
 };
