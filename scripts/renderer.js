@@ -157,10 +157,13 @@ function Renderer(canvas_id)
 			var gl = self.context;
 			
 			gl.clearColor(0.0, 0.0, 0.0, 1.0);
+			gl.clearDepth(0.0);
 			gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 			gl.enable(gl.BLEND);
 			gl.disable(gl.DEPTH_TEST);
 			gl.depthMask(false);
+			gl.enable(gl.CULL_FACE);
+			gl.cullFace(gl.FRONT); 
 	    		// gl.viewport(0, 0, self.canvas[0].clientWidth, self.canvas[0].clientHeight);
 	    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		}	
@@ -174,6 +177,7 @@ function Renderer(canvas_id)
 		{
 			gl.enable(gl.DEPTH_TEST);
 			gl.depthMask(true);
+			gl.depthFunc(gl.LEQUAL);
 			return;
 		}
 

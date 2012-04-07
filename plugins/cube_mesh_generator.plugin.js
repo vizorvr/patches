@@ -63,7 +63,7 @@ E2.plugins["cube_mesh_generator"] = function(core, node) {
 				-1.0,  1.0, -1.0
 			]);
 				
-			/*var norms = self.mesh.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL);
+			var norms = self.mesh.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL);
 			
 			norms.bind_data([
 				// Front
@@ -101,9 +101,9 @@ E2.plugins["cube_mesh_generator"] = function(core, node) {
 				-1.0,  0.0,  0.0,
 				-1.0,  0.0,  0.0,
 				-1.0,  0.0,  0.0
-			]);*/
+			]);
 
-			var face_colors = [
+			/*var face_colors = [
 				[1.0,  1.0,  1.0,  1.0],    // Front face: white
 				[1.0,  0.0,  0.0,  1.0],    // Back face: red
 				[0.0,  1.0,  0.0,  1.0],    // Top face: green
@@ -124,7 +124,7 @@ E2.plugins["cube_mesh_generator"] = function(core, node) {
 			
   			var colors = self.mesh.vertex_buffers['COLOR'] = new VertexBuffer(gl, VertexBuffer.vertex_type.COLOR);
   			
-  			colors.bind_data(c_data);
+  			colors.bind_data(c_data);*/
 
   			var uv0 = self.mesh.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0);
 			
