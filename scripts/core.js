@@ -1256,7 +1256,8 @@ function Core() {
 		CAMERA: { id: 6, name: 'Camera' },
 		BOOL: { id: 7, name: 'Boolean' },
 		ANY: { id: 8, name: 'Arbitrary' },
-		MESH: { id: 9, name: 'Mesh' }
+		MESH: { id: 9, name: 'Mesh' },
+		AUDIO: { id: 10, name: 'Audio' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');

@@ -4,12 +4,6 @@ E2.plugins["not_modulator"] = function(core, node) {
 	this.input_slots = [ { name: 'bool', dt: core.datatypes.BOOL } ];
 	this.output_slots = [ { name: 'bool', dt: core.datatypes.BOOL } ];
 	
-	this.reset = function()
-	{
-		self.input = false;
-		self.output = true;
-	};
-	
 	this.update_input = function(slot, data)
 	{
 		self.input = data;
@@ -23,5 +17,14 @@ E2.plugins["not_modulator"] = function(core, node) {
 	this.update_output = function(slot)
 	{
 		return self.output;
-	};	
+	};
+	
+	this.state_changed = function(ui)
+	{
+		if(ui)
+		{
+			self.input = false;
+			self.output = true;
+		}
+	}
 };
