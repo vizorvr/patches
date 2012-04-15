@@ -30,7 +30,7 @@ E2.plugins["perspective_camera"] = function(core, node) {
 	{
 		var c = core.renderer.canvas;
 		
-		mat4.perspective(self.fov * Math.PI / 180.0, c.width() / c.height(), self.near, self.far, self.camera.projection);
+		mat4.perspective(self.fov, c.width() / c.height(), self.near, self.far, self.camera.projection);
 		mat4.lookAt(self.position, self.target, up, self.camera.view);
 	};
 	
@@ -44,7 +44,7 @@ E2.plugins["perspective_camera"] = function(core, node) {
 		if(!ui)
 		{
 			self.camera = new Camera(gl);
-			self.fov = 30.0;
+			self.fov = 45.0;
 			self.near = 1.0;
 			self.far = 1000.0;
 			self.position = [0.0, 0.0, 1.0];

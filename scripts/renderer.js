@@ -24,6 +24,11 @@ function Texture(gl)
 			self.upload(img, src);
 		};
 		
+		img.onerror = function()
+		{
+			msg('ERROR: Failed loading texture \'' + src + '\'.');
+		};
+		
 		img.src = src + '?d=' + Math.random();	
 	};
 	
@@ -139,24 +144,28 @@ function Renderer(canvas_id)
 		
 	this.texture_cache = new TextureCache(this.context);
 	
-	this.update = function()
+	this.begin_frame = function()
 	{
-		if(this.context)
+		var gl = this.context;
+
+		if(gl)
 		{
-			var gl = self.context;
-			
 			gl.clearColor(0.0, 0.0, 0.0, 1.0);
-			gl.clearDepth(0.0);
-			gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-			gl.enable(gl.BLEND);
-			gl.disable(gl.DEPTH_TEST);
-			gl.depthMask(false);
+			gl.clearDepth(1.0);
 			gl.enable(gl.CULL_FACE);
 			gl.cullFace(gl.FRONT); 
 	    		// gl.viewport(0, 0, self.canvas[0].clientWidth, self.canvas[0].clientHeight);
 	    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		}	
 	};
+	
+	this.end_frame = function()
+	{
+		var gl = this.context;
+		
+		if(gl)
+			gl.flush();
+	}
 	
 	this.set_depth_enable = function(on)
 	{
@@ -281,19 +290,108 @@ function IndexBuffer(gl)
 	};
 }
 
-function Mesh(gl, prim_type)
+function Mesh(gl, prim_type, t_cache, data, base_path)
 {
 	var self = this;
 	
 	this.prim_type = prim_type;
 	this.vertex_buffers = {}; // VertexBuffer.vertex_type
 	this.index_buffer = null;
+	this.t_cache = t_cache;
+	this.material = {};
 	
 	for(var v_type in VertexBuffer.vertex_type)
 		this.vertex_buffers[v_type] = null;
 		
+	if(data)
+	{
+		var m = data.material;
+		
+		var parse_color = function(name)
+		{
+			var c = m[name];
+			
+			if(c)
+				self.material[name] = new Color(c[0], c[1], c[2], c[3]);
+		};
+		
+		var parse_tex = function(name)
+		{
+			var t = m[name];
+			
+			if(t)
+				self.material[name] = t_cache.get(base_path + t);
+		};
+		
+		// Load material
+		parse_color('diffuse_color');
+		parse_color('emission_color');
+		parse_color('specular_color');
+		parse_color('ambient_color');
+		parse_tex('diffuse_tex');
+		parse_tex('emission_tex');
+		parse_tex('specular_tex');
+		parse_tex('normal_tex');		 
+
+		this.material.shininess = data.shininess ? data.shininess : 0.0;
+		this.material.double_sided = data.double_sided ? true : false;
+		
+		if(data.verts)
+		{
+			var verts = this.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);
+		
+			verts.bind_data(data.verts);
+		}
+
+		if(data.norms)
+		{
+			var norms = this.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL);
+		
+			norms.bind_data(data.norms);
+		}
+
+		if(data.uv0)
+		{
+  			var uv0 = this.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0);
+		
+			uv0.bind_data(data.uv0);
+		}
+	}
+	
+	this.render = function(camera, transform)
+	{
+        	var verts = self.vertex_buffers['VERTEX'];
+        	var shader = self.shader;
+        	
+        	if(!verts || !shader)
+        		return;
+        	
+        	shader.enable();
+        	
+        	for(var v_type in VertexBuffer.vertex_type)
+        	{
+        		var vb = self.vertex_buffers[v_type];
+        		
+        		if(vb)
+        			vb.bind_to_shader(self.shader);
+        	}
+
+		shader.bind_camera(camera);
+		shader.bind_transform(transform);	
+       		shader.apply_uniforms();
+       		
+       		if(!self.index_buffer)
+        		gl.drawArrays(self.prim_type, 0, verts.count);
+		else
+		{
+			self.index_buffer.enable();
+			gl.drawElements(self.prim_type, self.index_buffer.count, gl.UNSIGNED_SHORT, 0);
+		}
+	};
+
 	this.generate_shader = function()
 	{
+		// TODO: Adapt shader to handle the remaining maps and material attributes.
 		var flags = [];
 		var v_types = VertexBuffer.vertex_type;
 		
@@ -349,11 +447,14 @@ function Mesh(gl, prim_type)
 			ps_src.push('    fc = fc * texture2D(tex0, f_uv0.st);');
 			
 		ps_src.push('    gl_FragColor = fc;');
-		// ps_src.push('    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);');
 		ps_src.push('}');
 		
 		vs_src = vs_src.join('\n');
 		ps_src = ps_src.join('\n');
+		
+		// TODO: For debugging. Remove!
+		/*this.material.vs_src = vs_src;
+		this.material.ps_src = ps_src;*/
 		
 		var s = new ShaderProgram(gl);
 		var vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
@@ -403,11 +504,32 @@ function Mesh(gl, prim_type)
 			gl.bindBuffer(gl.ARRAY_BUFFER, data);
 			gl.enableVertexAttribArray(attr);
 			gl.vertexAttribPointer(attr, item_size, gl.FLOAT, false, 0, 0);
-		}
+		};
 		
-		// Must be decorated by the caller with an appropriate implementation of
+		s.apply_uniforms = function()
+		{
+			var m = self.material;
+			
+			gl.enableVertexAttribArray(this.vertexPosAttribute);
+
+			if(m.diffuse_color)
+				gl.uniform4fv(this.diffuseColorUniform, new Float32Array(m.diffuse_color.rgba));	
+			else
+				gl.uniform4fv(this.diffuseColorUniform, new Float32Array([1.0, 1.0, 1.0, 1.0]));	
+					
+			if(m.diffuse_tex && this.uv0CoordAttribute !== undefined)
+			{
+				gl.enableVertexAttribArray(this.uv0CoordAttribute);
+				gl.uniform1i(this.tex0Uniform, 0);
+				m.diffuse_tex.enable(gl.TEXTURE0);
+			}
+		};
+		
+		// Can be monkey-patched by the caller with an appropriate implementation of
 		// apply_uniforms() that pipes data to the generated shader by mapping input
-		// values to stored shader uniform / attribute locations.
+		// values to stored shader uniform / attribute locations, if the default
+		// generated here won't suffice.
+		
 		return s;
 	}
 }
@@ -457,6 +579,17 @@ function ShaderProgram(gl)
       	{
 		self.gl.useProgram(self.program);
       	}
+
+	this.bind_camera = function(camera)
+	{
+		gl.uniformMatrix4fv(self.vMatUniform, false, camera.view);
+		gl.uniformMatrix4fv(self.pMatUniform, false, camera.projection);
+	};
+	
+	this.bind_transform = function(transform)
+	{
+		gl.uniformMatrix4fv(self.mMatUniform, false, transform);
+	};
 }
 
 function Camera(gl)
@@ -469,5 +602,66 @@ function Camera(gl)
 	
 	mat4.identity(this.projection);
 	mat4.identity(this.view);
+}
+
+function Scene(gl, data, base_path)
+{
+	var self = this;
+	
+	this.gl = gl;
+	this.texture_cache = new TextureCache(gl);
+	this.meshes = [];
+	this.id = 'n/a';
+	
+	if(data)
+	{
+		this.id = data.id;
+		
+		for(var i = 0, len = data.meshes.length; i < len; i++)
+		{
+			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, data.meshes[i], base_path);
+			
+			mesh.shader = mesh.generate_shader();
+			this.meshes.push(mesh);
+		}
+	}
+	
+	this.render = function(gl, camera, transform)
+	{
+		var meshes = self.meshes;
+		
+		gl.enable(gl.CULL_FACE);
+		gl.cullFace(gl.BACK); 
+		gl.enable(gl.DEPTH_TEST);
+		gl.depthMask(true);
+		gl.depthFunc(gl.LEQUAL);
+		gl.enable(gl.BLEND);
+		gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
+		gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+		for(var i = 0, len = meshes.length; i < len; i++)
+			meshes[i].render(camera, transform);
+	}
+};
+
+Scene.load = function(gl, url)
+{
+	var scene = null;
+	
+	jQuery.ajax({
+		url: url, 
+		dataType: 'json',
+		success: function(data) 
+		{
+			scene = new Scene(gl, data, url.substr(0, url.lastIndexOf('/') + 1));
+		},
+		error: function(jqXHR, textStatus, errorThrown)
+		{
+			msg('Scene: Failed to load "' + url + '": ' + textStatus + ', ' + errorThrown);
+		},
+		async:   false
+	});
+	
+	return scene;
 }
 

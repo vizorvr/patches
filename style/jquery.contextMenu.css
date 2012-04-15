@@ -2,8 +2,7 @@
     margin:0; 
     padding:0;
     
-    min-width: 120px;
-    max-width: 350px;
+    width: 140px;
     display: inline-block;
     position: absolute;
     list-style-type: none;
@@ -26,7 +25,7 @@
     background-color: #EEE;
     position: relative;
     -moz-user-select: -moz-none;
-	white-space: nowrap;
+    white-space: nowrap;
 }
 
 .context-menu-separator {
@@ -55,6 +54,7 @@
 
 .context-menu-submenu:after {
     content: ">";
+    font-size: 10pt;
     color: #666;
     position: absolute;
     right: 3px;

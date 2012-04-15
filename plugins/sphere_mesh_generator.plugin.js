@@ -72,7 +72,7 @@ E2.plugins["sphere_mesh_generator"] = function(core, node) {
 				norms.push(z0 * l);
 				
 				uvs.push(h / h_res);
-				uvs.push(v / v_res);
+				uvs.push(1.0 - (v / v_res));
 				
 				if(v !== v_res)
 				{

@@ -20,10 +20,8 @@ function clone(o)
 
 	for(var i in o) 
 	{
-		if(o[i] && typeof o[i] === 'object') 
-		{
+		if(o[i] && typeof(o[i]) === 'object') 
 			no[i] = clone(o[i]);
-		} 
 		else
 			no[i] = o[i];
 	} 
@@ -1257,7 +1255,8 @@ function Core() {
 		BOOL: { id: 7, name: 'Boolean' },
 		ANY: { id: 8, name: 'Arbitrary' },
 		MESH: { id: 9, name: 'Mesh' },
-		AUDIO: { id: 10, name: 'Audio' }
+		AUDIO: { id: 10, name: 'Audio' },
+		SCENE: { id: 11, name: 'Scene' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');
@@ -1287,14 +1286,15 @@ function Core() {
 	{
 		self.abs_t = abs_t;
 		self.delta_t = delta_t;
-		self.renderer.update();
 		
+		self.renderer.begin_frame();
 		self.root_graph.update(delta_t);
-		
+		self.renderer.end_frame();
+				
 		var dirty = self.active_graph_dirty;
-		
+				
 		self.active_graph_dirty = false;
-		
+				
 		return dirty; // Did connection state change?
 	};
 	
@@ -2071,7 +2071,8 @@ function Application() {
 		self.core.abs_t = 0.0;
 
 		self.core.active_graph.reset();
-		self.core.renderer.update(); // Clear the WebGL view.
+		self.core.renderer.begin_frame(); // Clear the WebGL view.
+		self.core.renderer.end_frame();
 		self.updateCanvas();
 	};
 

@@ -1,10 +1,9 @@
-E2.plugins["mesh_renderer_emitter"] = function(core, node) {
+E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
 	this.input_slots = [ 
-		{ name: 'mesh', dt: core.datatypes.MESH },
-		{ name: 'shader', dt: core.datatypes.SHADER },
+		{ name: 'scene', dt: core.datatypes.SCENE },
 		{ name: 'camera', dt: core.datatypes.CAMERA },
 		{ name: 'transform', dt: core.datatypes.TRANSFORM }
 	];
@@ -13,19 +12,16 @@ E2.plugins["mesh_renderer_emitter"] = function(core, node) {
 
 	this.reset = function()
 	{
-		self.mesh = null;
-		self.shader = null;
+		self.scene = null;
 	};
 	
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
-			self.mesh = data;
+			self.scene = data;
 		else if(slot.index === 1)
-			self.shader = data;
-		else if(slot.index === 2)
 			self.camera = data;
-		else if(slot.index === 3)
+		else if(slot.index === 2)
 			self.transform = data;
 	};
 
@@ -34,32 +30,24 @@ E2.plugins["mesh_renderer_emitter"] = function(core, node) {
 		if(!on)
 		{
 			if(slot.index === 0)
-				self.mesh = null;
-			else if(slot.index === 1)
-				self.shader = null;
+				self.scene = null;
 		}
 	};
 	
 	this.update_state = function(delta_t)
 	{
-        	var mesh = self.mesh;
-        	var shader = self.shader;
-        	
-        	if(!mesh || !shader)
-        		return;
-        		
-        	mesh.shader = shader;
-		mesh.render(self.camera, self.transform);
+		if(self.scene)
+			self.scene.render(gl, self.camera, self.transform);
 	};
 	
 	this.state_changed = function(ui)
 	{
 		if(!ui)
 		{
-			this.camera = new Camera();
+			self.camera = new Camera();
 			self.transform = mat4.create();
 
 			mat4.identity(self.transform);
 		}
-	};
+	}
 };

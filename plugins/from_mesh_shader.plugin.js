@@ -8,9 +8,7 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 		 { name: 'is3d', dt: core.datatypes.BOOL },
 		 { name: 'color', dt: core.datatypes.COLOR },
 		 { name: 'blend mode', dt: core.datatypes.FLOAT },
-		 { name: 'texture', dt: core.datatypes.TEXTURE },
-		 { name: 'camera', dt: core.datatypes.CAMERA },
-		 { name: 'transform', dt: core.datatypes.TRANSFORM }
+		 { name: 'texture', dt: core.datatypes.TEXTURE }
 	];
 	
 	this.output_slots = [ 
@@ -47,9 +45,6 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 				// our values to the generated shader.
 				self.shader.apply_uniforms = function()
 				{
-					gl.uniformMatrix4fv(this.mMatUniform, false, self.transform);
-					gl.uniformMatrix4fv(this.vMatUniform, false, self.camera.view);
-					gl.uniformMatrix4fv(this.pMatUniform, false, self.camera.projection);
 					gl.uniform4fv(this.diffuseColorUniform, new Float32Array(self.color.rgba));
 					
 					if(this.uv0CoordAttribute !== undefined)
@@ -82,10 +77,6 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 			self.blend_mode = data;
 		else if(slot.index === 4)
 			self.tex = data;
-		else if(slot.index === 5)
-			self.camera = data;
-		else
-			self.transform = data;
 	};
 	
 	this.update_output = function(slot)
@@ -102,10 +93,6 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 			self.color = new Color(1.0, 1.0, 1.0, 1.0);
 			self.blend_mode = core.renderer.blend_mode.NORMAL;
 			self.tex = null;
-			self.camera = new Camera();
-			self.transform = mat4.create();
-
-			mat4.identity(self.transform);
 		}
 	};
 };
