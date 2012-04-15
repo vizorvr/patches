@@ -110,6 +110,17 @@ function TextureCache(gl)
 	{
 		this.textures = {};
 	};
+
+	this.count = function()
+	{
+		var c = 0;
+		
+		for(t in self.textures)
+			++c;
+			
+		return c;
+
+	};
 }
 
 function Renderer(canvas_id)
@@ -299,6 +310,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 	this.index_buffer = null;
 	this.t_cache = t_cache;
 	this.material = {};
+	this.vertex_count = 0;
 	
 	for(var v_type in VertexBuffer.vertex_type)
 		this.vertex_buffers[v_type] = null;
@@ -323,23 +335,27 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 				self.material[name] = t_cache.get(base_path + t);
 		};
 		
-		// Load material
-		parse_color('diffuse_color');
-		parse_color('emission_color');
-		parse_color('specular_color');
-		parse_color('ambient_color');
-		parse_tex('diffuse_tex');
-		parse_tex('emission_tex');
-		parse_tex('specular_tex');
-		parse_tex('normal_tex');		 
+		// Load material, if any
+		if(m)
+		{
+			parse_color('diffuse_color');
+			parse_color('emission_color');
+			parse_color('specular_color');
+			parse_color('ambient_color');
+			parse_tex('diffuse_tex');
+			parse_tex('emission_tex');
+			parse_tex('specular_tex');
+			parse_tex('normal_tex');		 
 
-		this.material.shininess = data.shininess ? data.shininess : 0.0;
-		this.material.double_sided = data.double_sided ? true : false;
+			this.material.shininess = data.shininess ? data.shininess : 0.0;
+			this.material.double_sided = data.double_sided ? true : false;
+		}
 		
 		if(data.verts)
 		{
 			var verts = this.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);
 		
+			self.vertex_count = data.verts.length / 3;
 			verts.bind_data(data.verts);
 		}
 
@@ -389,7 +405,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		}
 	};
 
-	this.generate_shader = function()
+	this.generate_shader = function(shader_cache)
 	{
 		// TODO: Adapt shader to handle the remaining maps and material attributes.
 		var flags = [];
@@ -402,69 +418,84 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			flags[index] = this.vertex_buffers[v_type] !== null;
 		}
 		
-		var vs_src = [];
-		var ps_src = [];
-		
-		vs_src.push('attribute vec3 v_pos;');
-		vs_src.push('uniform vec4 color;');
-		vs_src.push('varying lowp vec4 f_col;');
-		ps_src.push('varying lowp vec4 f_col;');
-		
-		if(flags[v_types.COLOR])
-			vs_src.push('attribute vec4 v_col;');
-		
-		if(flags[v_types.UV0])
+		var exists = false;
+		var ext_prog = null;
+				
+		if(shader_cache)
 		{
-			vs_src.push('attribute vec2 v_uv0;');
-			vs_src.push('varying mediump vec2 f_uv0;');
-			ps_src.push('varying mediump vec2 f_uv0;');
-		}
-
-		vs_src.push('uniform mat4 m_mat;');
-		vs_src.push('uniform mat4 v_mat;');
-		vs_src.push('uniform mat4 p_mat;');
-		
-		vs_src.push('void main(void) {');		
-		vs_src.push('    vec4 dc = color;');		
-		vs_src.push('    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);');		
-
-		if(flags[v_types.COLOR])
-			vs_src.push('    dc = dc * v_col;');		
-
-		if(flags[v_types.UV0])
-			vs_src.push('    f_uv0 = v_uv0;');		
-
-		vs_src.push('    f_col = dc;');		
-		vs_src.push('}');
-
-		if(flags[v_types.UV0])
-				ps_src.push('uniform sampler2D tex0;');
-
-		ps_src.push('void main(void) {');		
-		ps_src.push('    mediump vec4 fc = f_col;');
-
-		if(flags[v_types.UV0])
-			ps_src.push('    fc = fc * texture2D(tex0, f_uv0.st);');
+			var cached = shader_cache.get(self.material);
 			
-		ps_src.push('    gl_FragColor = fc;');
-		ps_src.push('}');
+			exists = cached[0];
+			ext_prog = cached[1]; 
+		}
 		
-		vs_src = vs_src.join('\n');
-		ps_src = ps_src.join('\n');
+		var s = new ShaderProgram(gl, ext_prog);
+			
+		if(!exists)
+		{
+			var vs_src = [];
+			var ps_src = [];
 		
-		// TODO: For debugging. Remove!
-		/*this.material.vs_src = vs_src;
-		this.material.ps_src = ps_src;*/
+			vs_src.push('attribute vec3 v_pos;');
+			vs_src.push('uniform vec4 color;');
+			vs_src.push('varying lowp vec4 f_col;');
+			ps_src.push('varying lowp vec4 f_col;');
 		
-		var s = new ShaderProgram(gl);
-		var vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
-		var ps = new Shader(gl, gl.FRAGMENT_SHADER, ps_src);
+			if(flags[v_types.COLOR])
+				vs_src.push('attribute vec4 v_col;');
 		
-		var prog = s.program;
+			if(flags[v_types.UV0])
+			{
+				vs_src.push('attribute vec2 v_uv0;');
+				vs_src.push('varying mediump vec2 f_uv0;');
+				ps_src.push('varying mediump vec2 f_uv0;');
+			}
+
+			vs_src.push('uniform mat4 m_mat;');
+			vs_src.push('uniform mat4 v_mat;');
+			vs_src.push('uniform mat4 p_mat;');
+		
+			vs_src.push('void main(void) {');		
+			vs_src.push('    vec4 dc = color;');		
+			vs_src.push('    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);');		
+
+			if(flags[v_types.COLOR])
+				vs_src.push('    dc = dc * v_col;');		
+
+			if(flags[v_types.UV0])
+				vs_src.push('    f_uv0 = v_uv0;');		
+
+			vs_src.push('    f_col = dc;');		
+			vs_src.push('}');
+
+			if(flags[v_types.UV0])
+					ps_src.push('uniform sampler2D tex0;');
+
+			ps_src.push('void main(void) {');		
+			ps_src.push('    mediump vec4 fc = f_col;');
+
+			if(flags[v_types.UV0])
+				ps_src.push('    fc = fc * texture2D(tex0, f_uv0.st);');
+			
+			ps_src.push('    gl_FragColor = fc;');
+			ps_src.push('}');
+		
+			vs_src = vs_src.join('\n');
+			ps_src = ps_src.join('\n');
+		
+			// TODO: For debugging. Remove!
+			/*this.material.vs_src = vs_src;
+			this.material.ps_src = ps_src;*/
+		
+			var vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
+			var ps = new Shader(gl, gl.FRAGMENT_SHADER, ps_src);
+		
+			s.attach(vs);
+			s.attach(ps);
+			s.link();
+		}
 	
-		s.attach(vs);
-		s.attach(ps);
-		s.link();
+		var prog = s.program;
 	
 		s.vertexPosAttribute = gl.getAttribLocation(prog, "v_pos");
 		s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
@@ -539,6 +570,55 @@ function Color(r, g, b, a)
 	this.rgba = [r, g, b, a || 1.0];
 }
 
+function ShaderCache(gl)
+{
+	var self = this;
+	
+	this.programs = {};
+	
+	this.build_key = function(m)
+	{
+		var k = '';
+		
+		k += m.diffuse_color ? '1' : '0';
+		k += m.emission_color ? '1' : '0';
+		k += m.specular_color ? '1' : '0';
+		k += m.ambient_color ? '1' : '0';
+		k += m.diffuse_tex ? '1' : '0';
+		k += m.emission_tex ? '1' : '0';
+		k += m.specular_tex ? '1' : '0';
+		k += m.normal_tex ? '1' : '0';
+		k += m.shininess ? '1' : '0';
+		k += m.double_sided ? '1' : '0';
+	
+		return k;
+	};
+	
+	this.get = function(mat)
+	{
+		var key = self.build_key(mat);
+		var exists = key in self.programs;
+		var prog = null;
+		
+		if(exists)
+			prog = self.programs[key];
+		else
+			self.programs[key] = prog = gl.createProgram();
+		
+		return [exists, prog];
+	}
+	
+	this.count = function()
+	{
+		var c = 0;
+		
+		for(p in self.programs)
+			++c;
+			
+		return c;
+	};
+}
+
 function Shader(gl, type, src)
 {
 	this.shader = gl.createShader(type);
@@ -550,12 +630,12 @@ function Shader(gl, type, src)
 		msg('Shader compilation failed:\n' + gl.getShaderInfoLog(this.shader));
 }
 
-function ShaderProgram(gl)
+function ShaderProgram(gl, program)
 {
 	var self = this;
 	
 	this.gl = gl;
-	this.program = gl.createProgram();
+	this.program = program || gl.createProgram();
 
 	this.attach = function(shader)
 	{
@@ -610,8 +690,10 @@ function Scene(gl, data, base_path)
 	
 	this.gl = gl;
 	this.texture_cache = new TextureCache(gl);
+	this.shader_cache = new ShaderCache(gl);
 	this.meshes = [];
 	this.id = 'n/a';
+	this.vertex_count = 0;
 	
 	if(data)
 	{
@@ -621,8 +703,9 @@ function Scene(gl, data, base_path)
 		{
 			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, data.meshes[i], base_path);
 			
-			mesh.shader = mesh.generate_shader();
+			mesh.shader = mesh.generate_shader(self.shader_cache);
 			this.meshes.push(mesh);
+			this.vertex_count += mesh.vertex_count;
 		}
 	}
 	
@@ -653,7 +736,10 @@ Scene.load = function(gl, url)
 		dataType: 'json',
 		success: function(data) 
 		{
-			scene = new Scene(gl, data, url.substr(0, url.lastIndexOf('/') + 1));
+			var bp = url.substr(0, url.lastIndexOf('/') + 1);
+			
+			scene = new Scene(gl, data, bp);
+			msg('Scene: Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
 		},
 		error: function(jqXHR, textStatus, errorThrown)
 		{
