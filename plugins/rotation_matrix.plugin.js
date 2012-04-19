@@ -19,7 +19,7 @@ E2.plugins["rotation_matrix"] = function(core, node) {
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
-			self.angle = data;
+			self.angle = ((data % 360) / 180.0) * Math.PI;
 		else
 			self.axis = data;
 	};
