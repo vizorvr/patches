@@ -4,6 +4,7 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	
 	this.input_slots = [ 
 		{ name: 'scene', dt: core.datatypes.SCENE },
+		{ name: 'shader', dt: core.datatypes.SHADER },
 		{ name: 'camera', dt: core.datatypes.CAMERA },
 		{ name: 'transform', dt: core.datatypes.TRANSFORM }
 	];
@@ -12,16 +13,23 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 
 	this.reset = function()
 	{
+		debugger;
+		
 		self.scene = null;
+		self.shader = null;
 	};
 	
 	this.update_input = function(slot, data)
 	{
+		debugger;
+		
 		if(slot.index === 0)
 			self.scene = data;
 		else if(slot.index === 1)
-			self.camera = data;
+			self.shader = data;
 		else if(slot.index === 2)
+			self.camera = data;
+		else if(slot.index === 3)
 			self.transform = data;
 	};
 
@@ -29,15 +37,19 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	{
 		if(!on)
 		{
+			debugger;
+			
 			if(slot.index === 0)
 				self.scene = null;
+			else if(slot.index === 1)
+				self.shader = null;
 		}
 	};
 	
 	this.update_state = function(delta_t)
 	{
 		if(self.scene)
-			self.scene.render(gl, self.camera, self.transform);
+			self.scene.render(gl, self.camera, self.transform, self.shader);
 	};
 	
 	this.state_changed = function(ui)

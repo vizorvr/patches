@@ -709,7 +709,7 @@ function Scene(gl, data, base_path)
 		}
 	}
 	
-	this.render = function(gl, camera, transform)
+	this.render = function(gl, camera, transform, shader)
 	{
 		var meshes = self.meshes;
 		
@@ -722,11 +722,21 @@ function Scene(gl, data, base_path)
 		gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
 		gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
-		for(var i = 0, len = meshes.length; i < len; i++)
+		debugger;
+		
+		if(shader)
 		{
-			var m = meshes[i];
+			for(var i = 0, len = meshes.length; i < len; i++)
+				meshes[i].render(camera, transform, shader);
+		}
+		else
+		{
+			for(var i = 0, len = meshes.length; i < len; i++)
+			{
+				var m = meshes[i];
 			
-			m.render(camera, transform, m.shader);
+				m.render(camera, transform, m.shader);
+			}
 		}
 	}
 };

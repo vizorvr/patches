@@ -4,9 +4,7 @@ E2.plugins["normal_as_color_shader"] = function(core, node) {
 	var gl = renderer.context;
 	
 	this.input_slots = [
-		 { name: 'is3d', dt: core.datatypes.BOOL },
-		 { name: 'camera', dt: core.datatypes.CAMERA },
-		 { name: 'transform', dt: core.datatypes.TRANSFORM }
+		 { name: 'is3d', dt: core.datatypes.BOOL }
 	];
 	
 	this.output_slots = [ 
@@ -45,7 +43,6 @@ E2.plugins["normal_as_color_shader"] = function(core, node) {
       	{
       		var t = VertexBuffer.vertex_type;
       		
-      			debugger;
       		if(type === t.VERTEX)
       		{
 			gl.bindBuffer(gl.ARRAY_BUFFER, data);
@@ -60,9 +57,6 @@ E2.plugins["normal_as_color_shader"] = function(core, node) {
       	
       	this.s.apply_uniforms = this.apply_uniforms = function()
       	{
-		gl.uniformMatrix4fv(self.s.mMatUniform, false, self.transform);
-		gl.uniformMatrix4fv(self.s.vMatUniform, false, self.camera.view);
-		gl.uniformMatrix4fv(self.s.pMatUniform, false, self.camera.projection);
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
 		gl.enableVertexAttribArray(self.s.vertexNormAttribute);
 		
@@ -76,10 +70,6 @@ E2.plugins["normal_as_color_shader"] = function(core, node) {
 	{
 		if(slot.index === 0)
 			self.is3d = data;
-		else if(slot.index === 1)
-			self.camera = data;
-		else
-			self.transform = data;
 	};
 	
 	this.update_output = function(slot)
@@ -90,13 +80,7 @@ E2.plugins["normal_as_color_shader"] = function(core, node) {
 	this.state_changed = function(ui)
 	{
 		if(!ui)
-		{
 			self.is3d = false;
-			self.camera = new Camera(gl);
-			self.transform = mat4.create();
-	
-			mat4.identity(this.transform);
-		}
 	};
 
       	this.state_changed(null);

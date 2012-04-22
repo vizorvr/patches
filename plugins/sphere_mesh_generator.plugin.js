@@ -20,12 +20,12 @@ E2.plugins["sphere_mesh_generator"] = function(core, node) {
 	{
 		if(slot.index === 0 && self.state.v_res !== data && data > 1)
 		{
-			self.state.v_res = data;
+			self.state.v_res = Math.floor(data < 3.0 ? 3.0 : data > 25.0 ? 25.0 : data);
 			self.generate_mesh();
 		}
 		else if(slot.index === 1 && self.state.h_res !== data && data > 1)
 		{
-			self.state.h_res = data;
+			self.state.h_res = Math.floor(data < 3.0 ? 3.0 : data > 25.0 ? 25.0 : data);
 			self.generate_mesh();
 		}
 	};
