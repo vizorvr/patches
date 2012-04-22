@@ -6,6 +6,7 @@
 	"Generators/Load/Scene from URL": "url_scene_generator",
 	"Generators/Matrix/Translation": "translation_matrix",
 	"Generators/Matrix/Rotation": "rotation_matrix",
+	"Generators/Matrix/Rotation XYZ": "rotation_xyz_matrix",
 	"Generators/Matrix/Scale": "scale_matrix",
 	"Generators/Mesh/Cube": "cube_mesh_generator",
 	"Generators/Mesh/Sphere": "sphere_mesh_generator",
