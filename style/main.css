@@ -93,8 +93,8 @@ h2
 	position: absolute; 
 	left: 1036px; 
 	top: 124px;
-	width: 320px;
-	height: 240px;
+	width: 480px;
+	height: 360px;
 }
 
 #persist
@@ -102,10 +102,10 @@ h2
 	margin-left: 5px;
 	margin-top: 5px;
 	position: absolute; 
-	width: 316px;
-	height: 516px;
+	width: 474px;
+	height: 396px;
 	left: 1033px; 
-	top: 370px;
+	top: 485px;
 	font-size: 8pt;
 	background-color: #eee;
 	white-space: pre;

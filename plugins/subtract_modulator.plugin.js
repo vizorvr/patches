@@ -1,4 +1,4 @@
-E2.plugins["add_modulator"] = function(core, node) {
+E2.plugins["subtract_modulator"] = function(core, node) {
 	var self = this;
 	
 	this.input_slots = [ 
@@ -11,7 +11,7 @@ E2.plugins["add_modulator"] = function(core, node) {
 	this.reset = function()
 	{
 		self.input_val = 0.0;
-		self.add_val = 0.0;
+		self.sub_val = 0.0;
 		self.output_val = 0.0;
 	};
 	
@@ -20,12 +20,12 @@ E2.plugins["add_modulator"] = function(core, node) {
 		if(slot.index === 0)
 			self.input_val = data;
 		else
-			self.add_val = data;
+			self.sub_val = data;
 	};	
 
 	this.update_state = function(delta_t)
 	{
-		self.output_val = self.input_val + self.add_val;
+		self.output_val = self.input_val - self.sub_val;
 	};
 	
 	this.update_output = function(slot)

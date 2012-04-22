@@ -1625,16 +1625,7 @@ function Application() {
 			self.hover_slot = null;
 		}
 		
-		var hcs = self.hover_connections;
-		
-		if(hcs.length > 0)
-		{
-			for(var i = 0, len = hcs.length; i < len; i++)
-				hcs[i].ui.selected = false;
-
-			self.hover_connections = [];
-			self.updateCanvas();
-		}
+		self.releaseHoverConnections();
 		
 		if(self.dst_slot_div != null)
 		{
@@ -1836,22 +1827,15 @@ function Application() {
 		}
 	};
 	
-	this.releaseHoverNode = function()
+	this.releaseHoverNode = function(release_conns)
 	{
 		if(self.hover_node !== null)
 		{
 			self.hover_node.ui.header_row.css('background-color', '#dde'); // TODO: Ugly. This belongs in a style sheet.
 			self.hover_node = null;
 			
-			var hcs = self.hover_connections;
-			
-			if(hcs.length > 0)
-			{
-				for(var i = 0, len = hcs.length; i < len; i++)
-					hcs[i].ui.selected = false;
-
-				self.updateCanvas();
-			}
+			if(release_conns)
+				self.releaseHoverConnections();
 		}
 	};
 
@@ -1869,6 +1853,21 @@ function Application() {
 		self.hover_slot_div = null;
 		self.hover_connections = [];
 		self.hover_node = null;
+	};
+	
+	this.releaseHoverConnections = function()
+	{
+		var hcs = self.hover_connections;
+		
+		if(hcs.length > 0)
+		{
+			for(var i = 0, len = hcs.length; i < len; i++)
+				hcs[i].ui.selected = false;
+			
+			self.hover_connections = [];
+			self.updateCanvas();
+		}
+		
 	};
 	
 	this.removeHoverConnections = function()
@@ -1912,7 +1911,7 @@ function Application() {
 	
 	this.onNodeHeaderExited = function(e)
 	{
-		self.releaseHoverNode();
+		self.releaseHoverNode(true);
 		self.hover_node = null;
 	};
 	
@@ -1924,7 +1923,7 @@ function Application() {
 		{
 			var hn = self.hover_node;
 			
-			self.releaseHoverNode();
+			self.releaseHoverNode(false);
 			hn.destroy();
 			
 			self.updateCanvas();
@@ -2021,7 +2020,7 @@ function Application() {
 		{
 			self.shift_pressed = false;
 			self.releaseHoverSlot();
-			self.releaseHoverNode();
+			self.releaseHoverNode(false);
 		}
 	};
 
@@ -2128,7 +2127,7 @@ function Application() {
 	{
 		self.shift_pressed = false;
 		self.releaseHoverSlot();
-		self.releaseHoverNode();
+		self.releaseHoverNode(false);
 	});
 	
 	// Make sure all the input fields blur themselves when they gain focus --

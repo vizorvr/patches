@@ -374,10 +374,10 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		}
 	}
 	
-	this.render = function(camera, transform)
+	this.render = function(camera, transform, shader)
 	{
         	var verts = self.vertex_buffers['VERTEX'];
-        	var shader = self.shader;
+        	var shader = shader || self.shader;
         	
         	if(!verts || !shader)
         		return;
@@ -389,7 +389,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
         		var vb = self.vertex_buffers[v_type];
         		
         		if(vb)
-        			vb.bind_to_shader(self.shader);
+        			vb.bind_to_shader(shader);
         	}
 
 		shader.bind_camera(camera);
@@ -723,7 +723,11 @@ function Scene(gl, data, base_path)
 		gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
 		for(var i = 0, len = meshes.length; i < len; i++)
-			meshes[i].render(camera, transform);
+		{
+			var m = meshes[i];
+			
+			m.render(camera, transform, m.shader);
+		}
 	}
 };
 

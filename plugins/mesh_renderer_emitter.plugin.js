@@ -43,13 +43,11 @@ E2.plugins["mesh_renderer_emitter"] = function(core, node) {
 	this.update_state = function(delta_t)
 	{
         	var mesh = self.mesh;
-        	var shader = self.shader;
         	
-        	if(!mesh || !shader)
+        	if(!mesh)
         		return;
         		
-        	mesh.shader = shader;
-		mesh.render(self.camera, self.transform);
+		mesh.render(self.camera, self.transform, self.shader ? self.shader : mesh.shader);
 	};
 	
 	this.state_changed = function(ui)
