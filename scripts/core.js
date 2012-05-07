@@ -1424,6 +1424,7 @@ function Application() {
 	this.hover_slot_div = null;
 	this.hover_connections = [];
 	this.hover_node = null;
+	this.hover_nodes = [];
 	this.scrollOffset = [0, 0];
 	this.accum_delta = 0.0;
 	this.selection_start = null;
@@ -1836,17 +1837,43 @@ function Application() {
 		
 			var hcs = self.hover_connections;
 			var conns = self.core.active_graph.connections;
-			var uid = self.hover_node.uid;
 			
-			for(var i = 0, len = conns.length; i < len; i++)
+			var iterate_conns = function(hcs, uid)
 			{
-				var c = conns[i];
-				
-				if(c.src_node.uid == uid || c.dst_node.uid == uid)
+				for(var i = 0, len = conns.length; i < len; i++)
 				{
-					c.ui.deleting = true;
-					hcs.push(c);
+					var c = conns[i];
+				
+					if(c.src_node.uid == uid || c.dst_node.uid == uid)
+					{
+						c.ui.deleting = true;
+						hcs.push(c);
+					}
 				}
+			};
+			
+			self.hover_nodes.push(self.hover_node);
+
+			if(self.isNodeInSelection(self.hover_node))
+			{
+				var nodes = self.selection_nodes;
+				
+				for(var n = 0, len2 = nodes.length; n < len2; n++)
+				{
+					var node = nodes[n];
+
+					if(node === self.hover_node)
+						continue;
+
+					node.ui.header_row.css('background-color', '#f00');
+					self.hover_nodes.push(node);
+					
+					iterate_conns(hcs, node.uid);
+				}
+			}
+			else
+			{
+				iterate_conns(hcs, self.hover_node.uid);
 			}
 			
 			if(hcs.length > 0)
@@ -1858,8 +1885,12 @@ function Application() {
 	{
 		if(self.hover_node !== null)
 		{
-			self.hover_node.ui.header_row.css('background-color', '#dde'); // TODO: Ugly. This belongs in a style sheet.
 			self.hover_node = null;
+			
+			for(var i = 0, len = self.hover_nodes.length; i < len; i++)
+				self.hover_nodes[i].ui.header_row.css('background-color', '#dde'); // TODO: Ugly. This belongs in a style sheet.
+			
+			self.hover_nodes = [];
 			
 			if(release_conns)
 				self.releaseHoverConnections();
@@ -1949,10 +1980,13 @@ function Application() {
 		
 		if(self.shift_pressed && self.hover_node !== null)
 		{
-			var hn = self.hover_node;
+			var hns = self.hover_nodes.slice(0);
 			
 			self.releaseHoverNode(false);
-			hn.destroy();
+			self.clearSelection();
+
+			for(var i = 0, len = hns.length; i < len; i++)
+				hns[i].destroy();
 			
 			self.updateCanvas();
 			self.removeHoverConnections();
@@ -2074,6 +2108,26 @@ function Application() {
 		self.onNodeDragged(node)(e);
 	}};
 	
+	this.clearSelection = function()
+	{
+		// TODO: Rememeber to clear these arrays when the graph changes!!
+		for(var i = 0, len = self.selection_nodes.length; i < len; i++)
+		{
+			var nui = self.selection_nodes[i].ui;
+			
+			if(nui) 
+				nui.dom.css('border', '1px solid #aaa');
+		}
+			
+		for(var i = 0, len = self.selection_conns.length; i < len; i++)
+		{
+			var cui = self.selection_conns[i].ui;
+			
+			if(cui) 
+				cui.selected = false;
+		}
+	};
+	
 	this.onCanvasMouseDown = function(e)
 	{
 		if($(e.target).attr('id') !== 'canvas')
@@ -2084,12 +2138,7 @@ function Application() {
 			self.selection_start = self.mouseEventPosToCanvasCoord(e);
 			self.selection_end = self.selection_start.slice(0);
 		
-			// TODO: Rememeber to clear these arrays when the graph changes!!
-			for(var i = 0, len = self.selection_nodes.length; i < len; i++)
-				self.selection_nodes[i].ui.dom.css('border', '1px solid #aaa');
-				
-			for(var i = 0, len = self.selection_conns.length; i < len; i++)
-				self.selection_conns[i].ui.selected = false;
+			self.clearSelection();
 		}
 		else
 		{
