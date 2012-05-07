@@ -268,6 +268,7 @@ function ConnectionUI(parent_conn)
 	this.dst_slot_div = null;
 	this.flow = false;
 	this.selected = false;
+	this.deleting = false;
 	this.parent_conn = parent_conn;
 	this.color = '#000';
 	
@@ -477,7 +478,6 @@ function NodeUI(parent_node, x, y) {
 	
 		div.text(s.name);
 		div.addClass('pl_slot');
-		div.disableSelection();
 		div.definition = s;
 	
 		div.mouseenter(E2.app.onSlotEntered(parent_node, s, div));
@@ -509,7 +509,6 @@ function NodeUI(parent_node, x, y) {
 	h_cell.text(parent_node.get_disp_name());
 	h_cell.attr('id', 't');
 	h_cell.attr('colspan', '3');
-	h_cell.disableSelection();
 	h_row.append(h_cell);
 	h_row.addClass('pl_header');
 	h_row.click(E2.app.onNodeHeaderClicked);
@@ -1256,7 +1255,8 @@ function Core() {
 		ANY: { id: 8, name: 'Arbitrary' },
 		MESH: { id: 9, name: 'Mesh' },
 		AUDIO: { id: 10, name: 'Audio' },
-		SCENE: { id: 11, name: 'Scene' }
+		SCENE: { id: 11, name: 'Scene' },
+		CANVAS: { id: 12, name: 'Canvas' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');
@@ -1419,12 +1419,18 @@ function Application() {
 	this.dst_slot_div = null;
 	this.edit_conn = null;
 	this.shift_pressed = false;
+	this.ctrl_pressed = false;
 	this.hover_slot = null;
 	this.hover_slot_div = null;
 	this.hover_connections = [];
 	this.hover_node = null;
 	this.scrollOffset = [0, 0];
 	this.accum_delta = 0.0;
+	this.selection_start = null;
+	this.selection_end = null;
+	this.selection_nodes = [];
+	this.selection_conns = [];
+	this.frames = 0;
 	
 	var self = this;
 	
@@ -1603,7 +1609,7 @@ function Application() {
 			
 			if(c.dst_slot === hs || c.src_slot === hs)
 			{
-				c.ui.selected = true;
+				c.ui.deleting = true;
 				self.hover_connections.push(c);
 				dirty = true;
 								
@@ -1709,18 +1715,19 @@ function Application() {
 		var canvas = self.canvas[0];
 		 
 		c.clearRect(0, 0, canvas.width, canvas.height);
-		
+				
 		var conns = self.core.active_graph.connections;
-		var cb = [[], [], []];
-		var styles = ['#000', '#44e', '#f00'];
+		var cb = [[], [], [], []];
+		var styles = ['#000', '#44e', '#88d', '#f00'];
 		
 		for(var i = 0, len = conns.length; i < len; i++)
 		{
-			var con = conns[i];
+			var cui = conns[i].ui;
 
-			// Draw inactive connections first, then connections with data flow
-			// and finally selected connections to ensure they get rendered on top.
-			cb[con.ui.selected ? 2 : con.ui.flow ? 1 : 0].push(con);
+			// Draw inactive connections first, then connections with data flow,
+			// next selected connections and finally selected connections to 
+			// ensure they get rendered on top.
+			cb[cui.deleting ? 3 : cui.selected ? 2 : cui.flow ? 1 : 0].push(cui.parent_conn);
 		}
 		
 		if(self.edit_conn)
@@ -1729,7 +1736,7 @@ function Application() {
 			cb[0].push(self.edit_conn);
 		}
 		
-		for(var bin = 0; bin < 3; bin++)
+		for(var bin = 0; bin < 4; bin++)
 		{
 			var b = cb[bin];
 
@@ -1744,16 +1751,36 @@ function Application() {
 				c.stroke()
 			}
 		}
+		
+		// Draw selection fence (if any)
+		if(self.selection_start)
+		{
+			var ss = self.selection_start;
+			var se = self.selection_end;
+			var so = self.scrollOffset;
+			var odd_scale = 0.84; // Why?
+			var s = [(ss[0] - so[0]) * odd_scale, ss[1] - so[1]];
+			var e = [(se[0] - so[0]) * odd_scale, se[1] - so[1]];
+			
+			c.strokeStyle = '#000';
+			c.strokeRect(s[0], s[1], e[0] - s[0], e[1] - s[1]);
+		}
+	};
+	
+	this.mouseEventPosToCanvasCoord = function(e)
+	{
+		var ofs = canvas_parent.offset();
+		
+		return [(e.pageX - ofs.left) + self.scrollOffset[0], (e.pageY - ofs.top) + self.scrollOffset[1]];
 	};
 	
 	this.onMouseMoved = function(e)
 	{
 		if(self.src_slot)
+		{
+			self.last_mouse_pos = self.mouseEventPosToCanvasCoord(e);
 			self.updateCanvas();
-		
-		var ofs = canvas_parent.offset();
-		
-		self.last_mouse_pos = [(e.pageX - ofs.left) + self.scrollOffset[0], (e.pageY - ofs.top) + self.scrollOffset[1]];
+		}
 	};
 	
 	this.onMouseReleased = function(e)
@@ -1817,7 +1844,7 @@ function Application() {
 				
 				if(c.src_node.uid == uid || c.dst_node.uid == uid)
 				{
-					c.ui.selected = true;
+					c.ui.deleting = true;
 					hcs.push(c);
 				}
 			}
@@ -1849,6 +1876,7 @@ function Application() {
 		self.dst_slot_div = null;
 		self.edit_conn = null;
 		self.shift_pressed = false;
+		self.ctrl_pressed = false;
 		self.hover_slot = null;
 		self.hover_slot_div = null;
 		self.hover_connections = [];
@@ -1862,7 +1890,7 @@ function Application() {
 		if(hcs.length > 0)
 		{
 			for(var i = 0, len = hcs.length; i < len; i++)
-				hcs[i].ui.selected = false;
+				hcs[i].ui.deleting = false;
 			
 			self.hover_connections = [];
 			self.updateCanvas();
@@ -1984,16 +2012,58 @@ function Application() {
 		});
 	}};
 	
+	this.isNodeInSelection = function(node)
+	{
+		var sn = self.selection_nodes;
+		 
+		if(sn.length)
+		{
+			for(var i = 0, len = sn.length; i < len; i++)
+			{
+				if(sn[i] === node)
+					return true;
+			}
+		}
+		
+		return false;
+	};
+	
 	this.onNodeDragged = function(node) { return function(e)
 	{
-		var conns = self.core.active_graph.connections;
-		var canvas_dirty = false;
+		var sl = canvas_parent.scrollLeft();
+		var st = canvas_parent.scrollTop();
 		var pos = node.ui.dom.position();
 		
-		node.x = canvas_parent.scrollLeft() + pos.left;
-		node.y = canvas_parent.scrollTop() + pos.top;
+		var dx = (pos.left + sl) - node.x;
+		var dy = (pos.top + st) - node.y;
+		
+		node.x = sl + pos.left;
+		node.y = st + pos.top;
 		
 		node.update_connections();
+		
+		if(self.isNodeInSelection(node))
+		{
+			var sn = self.selection_nodes;
+			
+			for(var i = 0, len = sn.length; i < len; i++)
+			{
+				var n = sn[i];
+				
+				if(n === node) // Already at the desired location
+					continue;
+				
+				var p = n.ui.dom.position();
+				var nx = sl + p.left + dx;
+				var ny = st + p.top + dy;
+				
+				n.x = nx;
+				n.y = ny;
+				n.ui.dom.css('left', nx);
+				n.ui.dom.css('top', ny);
+				n.update_connections();
+			}
+		}
 		
 		if(node.inputs.length + node.outputs.length > 0)
 			self.updateCanvas();
@@ -2004,19 +2074,174 @@ function Application() {
 		self.onNodeDragged(node)(e);
 	}};
 	
+	this.onCanvasMouseDown = function(e)
+	{
+		if($(e.target).attr('id') !== 'canvas')
+			return;
+		
+		if(e.which === 1)
+		{
+			self.selection_start = self.mouseEventPosToCanvasCoord(e);
+			self.selection_end = self.selection_start.slice(0);
+		
+			// TODO: Rememeber to clear these arrays when the graph changes!!
+			for(var i = 0, len = self.selection_nodes.length; i < len; i++)
+				self.selection_nodes[i].ui.dom.css('border', '1px solid #aaa');
+				
+			for(var i = 0, len = self.selection_conns.length; i < len; i++)
+				self.selection_conns[i].ui.selected = false;
+		}
+		else
+		{
+			self.selection_start = self.selection_end = null; 
+		}
+		
+		self.selection_nodes = [];
+		self.selection_conns = [];
+		self.updateCanvas();
+	};
+	
+	this.releaseSelection = function()
+	{
+		self.selection_start = null;
+		self.selection_end = null;
+	};
+	
+	this.onCanvasMouseUp = function(e)
+	{
+		self.releaseSelection();
+		
+		var nodes = self.selection_nodes;
+		
+		if(nodes.length)
+		{
+			var is_in_set = function(c)
+			{
+				for(var i = 0, len = nodes.length; i < len; i++)
+				{
+					var n = nodes[i];
+				
+					if(c.src_node === n || c.dst_node === n)
+						return true;
+				}
+			
+				return false;
+			};
+				
+			// Select all pertinent connections...
+			var conns = self.core.active_graph.connections;
+		
+			for(var i = 0, len = conns.length; i < len; i++)
+			{
+				var c = conns[i];
+			
+				if(is_in_set(c))
+				{
+					c.ui.selected = true;
+					self.selection_conns.push(c);
+				}
+			}
+		}
+
+		self.updateCanvas();
+	};
+
+	this.onCanvasMouseMoved = function(e)
+	{
+		var ss = self.selection_start;
+
+		if(!ss)
+			return;
+
+		var se = self.selection_end = self.mouseEventPosToCanvasCoord(e);
+		var nodes = self.core.active_graph.nodes;
+		
+		ss = ss.slice(0);
+		se = se.slice(0);
+		
+		for(var i = 0; i < 2; i++)
+		{
+			if(se[i] < ss[i])
+			{
+				var t = ss[i];
+			
+				ss[i] = se[i];
+				se[i] = t;
+			}
+		}
+		
+		for(var i = 0, len = self.selection_nodes.length; i < len; i++)
+			self.selection_nodes[i].ui.dom.css('border', '1px solid #aaa');
+
+		self.selection_nodes = [];
+		
+		for(var i = 0, len = nodes.length; i < len; i++)
+		{
+			var n = nodes[i],
+			    nui = n.ui.dom[0],
+			    p_x = nui.offsetLeft,
+			    p_y = nui.offsetTop,
+			    p_x2 = p_x + nui.clientWidth,
+			    p_y2 = p_y + nui.clientHeight;
+			    
+			if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
+				continue; // No intersection.
+				
+			n.ui.dom.css('border', '2px solid #88d');
+			self.selection_nodes.push(n);
+		}
+		
+		self.updateCanvas();
+	};
+
+	this.onCopy = function(e)
+	{
+		if(e.target.id === 'persist' || e.target.tagName === 'INPUT')
+			return;
+
+		msg('Copy event (not implemented)');
+	};
+	
+	this.onCut = function(e)
+	{
+		msg('Cut event (not implemented)');
+	};
+
+	this.onPaste = function(e)
+	{
+		msg('Paste event (not implemented)');
+	};
+
 	this.onKeyDown = function(e)
 	{
-		if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
+		if(e.keyCode === 17) // CTRL
+		{
+			self.ctrl_pressed = true;
+		}
+		else if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
 		{
 			self.shift_pressed = true;
 			self.activateHoverSlot();
 			self.activateHoverNode();
 		}
+		else if(self.ctrl_pressed)
+		{
+			if(e.keyCode === 67) // CTRL+c
+				self.onCopy(e);
+			else if(e.keyCode === 88) // CTRL+x
+				self.onCut(e);
+			else if(e.keyCode === 86) // CTRL+v
+				self.onPaste(e);
+		}
 	};
 	
 	this.onKeyUp = function(e)
 	{
-		if(e.keyCode === 16)
+		if(e.keyCode === 17) // CTRL
+		{
+			self.ctrl_pressed = false;
+		}
+		else if(e.keyCode === 16)
 		{
 			self.shift_pressed = false;
 			self.releaseHoverSlot();
@@ -2065,6 +2290,7 @@ function Application() {
 		}
 		
 		self.abs_time = 0.0;
+		self.frames = 0;
 		self.current_state = self.state.STOPPED;
 		self.changeControlState();
 		self.core.abs_t = 0.0;
@@ -2100,15 +2326,15 @@ function Application() {
 		
 		if(self.accum_delta > 0.05)
 		{
-			E2.dom.frame.val(delta_t.toFixed(4));
+			E2.dom.frame.val((self.frames / self.abs_time).toFixed(2));
 			self.accum_delta = 0.0;
 		}
 		
 		self.last_time = time;
 		self.abs_time += delta_t;
+		self.frames++;
 	}
 	
-	// $(document).mouseup(this.onMouseReleased);
 	E2.dom.canvas_parent.mouseup(this.onMouseReleased);
 	$(document).keydown(this.onKeyDown);
 	$(document).keyup(this.onKeyUp);
@@ -2121,23 +2347,33 @@ function Application() {
 		self.updateCanvas();
 	});
 	
-	// If the user uses any of the existing browser SHIFT hotkey (like new tab!),
-	// make sure we clear our hover state.
+	canvas_parent.mousedown(this.onCanvasMouseDown);
+	canvas_parent.mouseup(this.onCanvasMouseUp);
+	canvas_parent.mousemove(this.onCanvasMouseMoved);
+	
+	// Clear hover state on window blur. Typically when the user switches
+	// to another tab.
 	$(window).blur(function()
 	{
 		self.shift_pressed = false;
+		self.ctrl_pressed = false;
 		self.releaseHoverSlot();
 		self.releaseHoverNode(false);
 	});
 	
-	// Make sure all the input fields blur themselves when they gain focus --
-	// otherwise they trap the control key document events. TODO: Surely there is a
-	// better way to deal with this atrocious nonsense?
-	E2.dom.play.focus(function(e) { E2.dom.play.blur(); });
-	E2.dom.pause.focus(function(e) { E2.dom.pause.blur(); });
-	E2.dom.stop.focus(function(e) { E2.dom.stop.blur(); });
-	E2.dom.save.focus(function(e) { E2.dom.save.blur(); });
-	E2.dom.load.focus(function(e) { E2.dom.load.blur(); });
+	var add_button_events = function(btn)
+	{
+		// We have to forward key events that would otherwise get trapped when
+		// the user hovers over the playback control buttons.
+		btn.keydown(this.onKeyDown);
+		btn.keyup(this.onKeyUp);
+	};
+	
+	add_button_events(E2.dom.play);
+	add_button_events(E2.dom.pause);
+	add_button_events(E2.dom.stop);
+	add_button_events(E2.dom.save);
+	add_button_events(E2.dom.load);
 }
 
 $(document).ready(function() {
@@ -2153,19 +2389,6 @@ $(document).ready(function() {
 	E2.dom.structure = $('#structure');
 	
 	$.ajaxSetup({ cache: false });
-	
-	$.fn.extend({ disableSelection: function() { 
-			this.each(function() { 
-				if (typeof this.onselectstart != 'undefined') {
-					this.onselectstart = function() { return false; };
-				} else if (typeof this.style.MozUserSelect != 'undefined') {
-					this.style.MozUserSelect = 'none';
-				} else {
-					this.onmousedown = function() { return false; };
-				}
-			}); 
-		} 
-	});
 
 	msg('Welcome to WebFx. ' + (new Date()));
 	

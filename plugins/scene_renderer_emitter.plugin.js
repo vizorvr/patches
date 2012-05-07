@@ -13,16 +13,12 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 
 	this.reset = function()
 	{
-		debugger;
-		
 		self.scene = null;
 		self.shader = null;
 	};
 	
 	this.update_input = function(slot, data)
 	{
-		debugger;
-		
 		if(slot.index === 0)
 			self.scene = data;
 		else if(slot.index === 1)
