@@ -22,6 +22,17 @@
 	margin-right: auto;
 }
 
+body
+{
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	background-color: #eee;
+}
+
 #content
 {
 	display: none;
@@ -41,14 +52,19 @@ h2
 
 #dbg 
 {
-	margin-left: 5px;
-	margin-top: 5px;
+	margin-left: 3px;
+	margin-top: 6px;
 	float: left;
-	width: 840px;
-	height: 240px;
+	width: 835px;
+	height: 245px;
 	font-size: 8pt;
-	background-color: #eee;
+	background-color: #fff;
 	overflow: scroll;
+	border-left: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	border-right: none;
+	border-bottom: none;
+	padding: 2px;
 }
 
 #main_layout
@@ -75,6 +91,7 @@ h2
 	z-index: 1;
 	overflow: scroll;
 	position: relative;
+	border: none;
 }
 
 #canvas
@@ -92,33 +109,43 @@ h2
 	background-color: #000; 
 	position: absolute; 
 	left: 1036px; 
-	top: 124px;
+	top: 128px;
 	width: 480px;
 	height: 360px;
 }
 
 #persist
 {
-	margin-left: 5px;
-	margin-top: 5px;
 	position: absolute; 
-	width: 474px;
-	height: 396px;
-	left: 1033px; 
-	top: 485px;
+	width: 476px;
+	height: 405px;
+	left: 1036px; 
+	top: 493px;
 	font-size: 8pt;
-	background-color: #eee;
+	background-color: #fff;
 	white-space: pre;
 	word-wrap: normal;
 	overflow-y: scroll;
 	overflow-x: scroll;
 	font-family: monospace;
-	border: none;
+	border-left: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	border-right: none;
+	border-bottom: none;
+	-webkit-touch-callout: auto;
+	-webkit-user-select: auto;
+	-khtml-user-select: auto;
+	-moz-user-select: auto;
+	-ms-user-select: auto;
+	user-select: auto;
+	padding: 2px;
 }
 
 #frame
 {
 	border: 1px solid #aaa;
+	position: relative;
+	top: 5px;
 }
 
 .plugin
@@ -137,12 +164,6 @@ h2
 {
 	border-collapse: separate;
 	border-spacing: 0px;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
 }
 
 .pl_header
