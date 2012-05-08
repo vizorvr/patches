@@ -1432,6 +1432,7 @@ function Application() {
 	this.selection_nodes = [];
 	this.selection_conns = [];
 	this.frames = 0;
+	this.clipboard = null;
 	
 	var self = this;
 	
@@ -2248,7 +2249,32 @@ function Application() {
 		if(e.target.id === 'persist' || e.target.tagName === 'INPUT')
 			return;
 
-		msg('Copy event (not implemented)');
+		var d = {};
+		
+		d.nodes = [];
+		d.conns = [];
+		
+		var nodes = self.selection_nodes,
+		    conns = self.selection_conns;
+		    
+		for(var i = 0, len = nodes.length; i < len; i++)
+		{
+			var n = nodes[i].serialise();
+			
+			// Offset the nodes slightly, so that a paste to the originating canvas
+			// does not exactly overlap the originals.
+			n.x += 30;
+			n.y += 30;
+			
+			d.nodes.push(n);
+		}
+		
+		for(var i = 0, len = conns.length; i < len; i++)
+			d.conns.push(conns[i].serialise());
+			
+		self.clipboard = JSON.stringify(d);
+		msg('Copy event. Buffer:');
+		msg(self.clipboard);
 	};
 	
 	this.onCut = function(e)
@@ -2258,7 +2284,67 @@ function Application() {
 
 	this.onPaste = function(e)
 	{
-		msg('Paste event (not implemented)');
+		if(self.clipboard === null)
+			return;
+		
+		self.clearSelection();
+		self.selection_nodes = [];
+		self.selection_conns = [];
+				
+		var d = JSON.parse(self.clipboard);
+		var ag = self.core.active_graph;
+		var n_lut = {};
+		
+		for(var i = 0, len = d.nodes.length; i < len; i++)
+		{
+			var n = new Node(null, null, null, null);
+			var new_uid = ag.get_node_uid();
+				
+			n.deserialise(ag.uid, d.nodes[i]);
+			n_lut[n.uid] = new_uid;
+			n.uid = new_uid;
+			
+			ag.nodes.push(n);
+			if(n.plugin.output_slots.length === 0 && !n.dyn_outputs)
+				ag.roots.push(n);
+				
+			n.patch_up(self.core.graphs);
+			n.create_ui();
+
+			n.ui.dom.css('border', '2px solid #88d');
+			self.selection_nodes.push(n);
+		}
+
+		for(var i = 0, len = d.conns.length; i < len; i++)
+		{
+			var c = new Connection(null, null, null, null);
+			
+			debugger;
+			
+			c.deserialise(d.conns[i]);
+			
+			var suid = n_lut[c.src_node];
+			var duid = n_lut[c.dst_node];
+			
+			if(!suid || !duid)
+				continue;
+			
+			c.src_node = suid;
+			c.dst_node = duid;
+			
+			c.patch_up(ag.nodes);
+			ag.connections.push(c);
+
+			c.create_ui();
+			c.ui.resolve_slot_divs();
+			c.ui.selected = true;
+			self.selection_conns.push(c);
+		}
+		
+		if(d.conns.length)
+			self.updateCanvas();
+		
+		msg('Paste event');
 	};
 
 	this.onKeyDown = function(e)
