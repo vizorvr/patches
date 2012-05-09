@@ -2509,6 +2509,12 @@ function Application() {
 	add_button_events(E2.dom.stop);
 	add_button_events(E2.dom.save);
 	add_button_events(E2.dom.load);
+	
+	// Ask user for confirmation on page unload
+	$(window).bind('beforeunload', function()
+	{
+		return 'Oh... Please don\'t go.';
+	});
 }
 
 $(document).ready(function() {
