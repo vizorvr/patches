@@ -1,6 +1,8 @@
 {
 	"Generators/Cameras/Perspective": "perspective_camera",
 	"Generators/Cameras/Screenspace": "screenspace_camera",
+	"Generators/Input/Mouse buttons": "mouse_button_generator",
+	"Generators/Input/Mouse position": "mouse_position_generator",
 	"Generators/Load/Audio from URL": "url_audio_generator",
 	"Generators/Load/Image from URL": "url_texture_generator",
 	"Generators/Load/Scene from URL": "url_scene_generator",
