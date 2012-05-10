@@ -32,14 +32,14 @@ E2.plugins["quad_mesh_generator"] = function(core, node) {
 				-1.0, -1.0,  0.0
 			]);
 				
-			/*var norms = self.mesh.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL);
+			var norms = self.mesh.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL);
 			
 			norms.bind_data([
 				0.0,  0.0,  1.0,
 				0.0,  0.0,  1.0,
 				0.0,  0.0,  1.0,
 				0.0,  0.0,  1.0
-			]);*/
+			]);
 
   			var uv0 = self.mesh.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0);
 			
@@ -50,11 +50,9 @@ E2.plugins["quad_mesh_generator"] = function(core, node) {
 				 0.0,  0.0
 			]);
   
-			/*var indices = self.mesh.index_buffer = new IndexBuffer(gl);
+			var indices = self.mesh.index_buffer = new IndexBuffer(gl);
 			
-			indices.bind_data([
-				0,  1,  2, 0,  2,  3
-			]);*/
+			indices.bind_data([ 3, 1, 0, 3, 2, 0 ]);
 		}
 	};
 };
