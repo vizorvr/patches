@@ -2320,6 +2320,12 @@ function Application() {
 
 			n.ui.dom.css('border', '2px solid #88d');
 			self.selection_nodes.push(n);
+
+			if(n.plugin.state_changed)
+			{
+				n.plugin.state_changed(null);			
+				n.plugin.state_changed(n.ui.plugin_ui);			
+			}
 		}
 
 		for(var i = 0, len = d.conns.length; i < len; i++)
