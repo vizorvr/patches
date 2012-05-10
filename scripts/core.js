@@ -859,7 +859,14 @@ function Node(parent_graph, plugin_id, x, y) {
 				}
 			}
 		
-			if(self.queued_update > 0)
+			if(self.plugin.id === 'graph')
+			{
+				if(s_plugin.update_state)
+					s_plugin.update_state(delta_t);
+
+				self.plugin.updated = true;
+			}			
+			else if(self.queued_update > 0)
 			{
 				if(s_plugin.update_state)
 					s_plugin.update_state(delta_t);
@@ -2319,14 +2326,12 @@ function Application() {
 		{
 			var c = new Connection(null, null, null, null);
 			
-			debugger;
-			
 			c.deserialise(d.conns[i]);
 			
 			var suid = n_lut[c.src_node];
 			var duid = n_lut[c.dst_node];
 			
-			if(!suid || !duid)
+			if(suid === null || duid === null)
 				continue;
 			
 			c.src_node = suid;
@@ -2519,6 +2524,7 @@ function Application() {
 
 $(document).ready(function() {
 	E2.dom.canvas_parent = $('#canvas_parent');
+	E2.dom.webgl_canvas = $('#webgl-canvas');
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
 	E2.dom.pause = $('#pause');
