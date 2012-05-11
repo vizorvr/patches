@@ -484,6 +484,14 @@ function NodeUI(parent_node, x, y) {
 		div.mouseleave(E2.app.onSlotExited(parent_node, s, div));
 		div.mousedown(E2.app.onSlotClicked(parent_node, s, div, type));
 	
+		if(s.desc)
+		{
+			debugger;
+			
+			div.attr('title', s.desc);
+			div.colorTip();
+		}
+
 		col.append(div);
 	};
 	
@@ -2322,9 +2330,18 @@ function Application() {
 			self.selection_nodes.push(n);
 
 			if(n.plugin.state_changed)
-			{
-				n.plugin.state_changed(null);			
 				n.plugin.state_changed(n.ui.plugin_ui);			
+			
+			if(n.plugin.id === 'graph')
+			{
+				n.plugin.graph.tree_node = n.parent_graph.tree_node.addChild({
+					title: n.title,
+					isFolder: true,
+					expand: true
+				});
+				
+				n.plugin.graph.tree_node.graph = n.plugin.graph;
+				n.plugin.graph.uid = E2.app.core.get_graph_uid();
 			}
 		}
 
