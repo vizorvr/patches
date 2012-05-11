@@ -130,7 +130,8 @@
 			if(this.shown) return;
 			
 			// Center the tip and start a fadeIn animation
-			this.tip.css('margin-left',-this.tip.outerWidth()/2).fadeIn('fast');
+			this.tip.css('margin-left',-this.tip.outerWidth()/2)
+				.css('top', -(this.tip.outerHeight() + 5)).fadeIn('fast');
 			this.shown = true;
 		},
 		hide: function(){

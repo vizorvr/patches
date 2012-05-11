@@ -324,17 +324,6 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		}
 	};
 	
-	/*this.reset_inbound_conns = function(node)
-	{
-		for(var i = 0, len = node.inputs.length; i < len; i++)
-		{
-			var c = node.inputs[i];
-			
-			c.reset();
-			self.reset_inbound_conns(c.src_node);
-		}
-	};*/
-	
 	this.r_update_inbound = function(node)
 	{
 		node.queued_update = 1;
@@ -484,13 +473,11 @@ function NodeUI(parent_node, x, y) {
 		div.mouseleave(E2.app.onSlotExited(parent_node, s, div));
 		div.mousedown(E2.app.onSlotClicked(parent_node, s, div, type));
 	
-		if(s.desc)
+		/*if(s.desc)
 		{
-			debugger;
-			
 			div.attr('title', s.desc);
 			div.colorTip();
-		}
+		}*/
 
 		col.append(div);
 	};
@@ -523,6 +510,13 @@ function NodeUI(parent_node, x, y) {
 	h_row.dblclick(E2.app.onNodeHeaderDblClicked(parent_node));
 	h_row.mouseenter(E2.app.onNodeHeaderEntered(parent_node));
 	h_row.mouseleave(E2.app.onNodeHeaderExited);
+
+	if(parent_node.plugin.description)
+	{
+		h_row.attr('title', parent_node.plugin.description);
+		h_row.colorTip();
+	}
+
 	this.dom.append(h_row);
 	
 	this.header_row = h_row;
