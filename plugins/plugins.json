@@ -60,6 +60,8 @@
 	"Modulators/Oscilators/Triangle": "triangle_modulator",
 	"Modulators/Scene/Get mesh by index": "scene_get_mesh_by_index",
 	"Modulators/Scene/Get mesh count": "scene_get_mesh_count",
+	"Modulators/Vector/Normalize": "vector_normalize",
+	"Modulators/Vector/Scale": "vector_scale",
 	"Modulators/Vector/Transform": "vector_transform",
 	"Emitters/2D/Colored quad": "colored_quad_emitter",
 	"Emitters/2D/Textured quad": "textured_quad_emitter",
