@@ -142,7 +142,7 @@ function Renderer(canvas_id)
   	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
 	
-	this.context = this.canvas[0].getContext('experimental-webgl', { alpha: false });
+	this.context = this.canvas[0].getContext('experimental-webgl', { alpha: false, preserveDrawingBuffer: false, antialias: true });
 	
 	if(!this.context)
 		window.location = 'http://get.webgl.org';
