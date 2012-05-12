@@ -511,9 +511,11 @@ function NodeUI(parent_node, x, y) {
 	h_row.mouseenter(E2.app.onNodeHeaderEntered(parent_node));
 	h_row.mouseleave(E2.app.onNodeHeaderExited);
 
-	if(parent_node.plugin.description)
+	if(parent_node.plugin.desc)
 	{
-		h_row.attr('alt', parent_node.plugin.description);
+		var p_name = E2.app.core.plugin_mgr.keybyid[parent_node.plugin.id];
+		
+		h_row.attr('alt', '<b>' + p_name + '</b><br/><hr/>' + parent_node.plugin.desc);
 		h_row.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
 	}
 
@@ -1442,6 +1444,7 @@ function Application() {
 	this.selection_conns = [];
 	this.frames = 0;
 	this.clipboard = null;
+	this.fullscreen = false;
 	
 	var self = this;
 	
@@ -2394,6 +2397,8 @@ function Application() {
 	
 	this.onKeyUp = function(e)
 	{
+		debugger;
+		
 		if(e.keyCode === 17) // CTRL
 		{
 			self.ctrl_pressed = false;
@@ -2403,6 +2408,11 @@ function Application() {
 			self.shift_pressed = false;
 			self.releaseHoverSlot();
 			self.releaseHoverNode(false);
+		}
+		else if(e.keyCode === 27 && self.fullscreen)
+		{
+			E2.dom.webgl_canvas.attr('class', 'webgl-canvas-normal');
+			self.fullscreen = false;
 		}
 	};
 
@@ -2473,7 +2483,14 @@ function Application() {
 
 	this.onShowTooltip = function(e)
 	{
-		E2.dom.info.html($(e.currentTarget).attr('alt'));
+		var i_txt = $(e.currentTarget).attr('alt');
+		
+		i_txt = i_txt.replace('\n', '<br/>');
+		i_txt = i_txt.replace('Type:', '<b>Type:</b>');
+		i_txt = i_txt.replace('Range:', '<b>Range:</b>');
+		i_txt = i_txt.replace('<break>', '<br/><hr/>');
+		
+		E2.dom.info.html(i_txt);
 	};
 	
 	this.onHideTooltip = function()
@@ -2547,6 +2564,12 @@ function Application() {
 	{
 		return 'Oh... Please don\'t go.';
 	});
+
+	$('#fullscreen').button().click(function()
+	{
+		E2.dom.webgl_canvas.attr('class', 'webgl-canvas-fs');
+		self.fullscreen = true;
+	});
 }
 
 $(document).ready(function() {
@@ -2610,11 +2633,6 @@ $(document).ready(function() {
 	E2.dom.stop.button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(E2.app.onStopClicked);
 	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
 	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
-
-	$('#fullscreen').button().click(function()
-	{
-		E2.dom.webgl_canvas.css('width', '100%').css('height', '100%').css('top', '0px').css('left', '0px').css('zIndex', 10000);
-	});
 
   	msg('Ready.');	
 	$('#content').css('display', 'block');

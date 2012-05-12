@@ -87,6 +87,7 @@ h2
 	font-size: 8pt;
 	margin-top: 13px;
 	margin-left: 8px;
+	padding: 2px;
 	width: 178px;
 	height: 247px;
 	float: left;
@@ -116,7 +117,7 @@ h2
 	z-index: 2;
 }
 
-#webgl-canvas
+.webgl-canvas-normal
 {
 	background-color: #000; 
 	position: absolute; 
@@ -124,6 +125,17 @@ h2
 	top: 128px;
 	width: 480px;
 	height: 360px;
+}
+
+.webgl-canvas-fs
+{
+	background-color: #000; 
+	position: absolute; 
+	left: 0px; 
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 10000;
 }
 
 #persist
