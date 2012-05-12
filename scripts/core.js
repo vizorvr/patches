@@ -473,11 +473,11 @@ function NodeUI(parent_node, x, y) {
 		div.mouseleave(E2.app.onSlotExited(parent_node, s, div));
 		div.mousedown(E2.app.onSlotClicked(parent_node, s, div, type));
 	
-		/*if(s.desc)
+		if(s.desc)
 		{
-			div.attr('title', s.desc);
-			div.colorTip();
-		}*/
+			div.attr('alt', s.desc);
+			div.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
+		}
 
 		col.append(div);
 	};
@@ -513,8 +513,8 @@ function NodeUI(parent_node, x, y) {
 
 	if(parent_node.plugin.description)
 	{
-		h_row.attr('title', parent_node.plugin.description);
-		h_row.colorTip();
+		h_row.attr('alt', parent_node.plugin.description);
+		h_row.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
 	}
 
 	this.dom.append(h_row);
@@ -2471,6 +2471,16 @@ function Application() {
 		self.updateCanvas();
 	};
 
+	this.onShowTooltip = function(e)
+	{
+		E2.dom.info.html($(e.currentTarget).attr('alt'));
+	};
+	
+	this.onHideTooltip = function()
+	{
+		E2.dom.info.html('');
+	};
+
 	this.onUpdate = function()
 	{
 		var time = (new Date()).getTime();
@@ -2551,6 +2561,7 @@ $(document).ready(function() {
 	E2.dom.frame = $('#frame');
 	E2.dom.persist = $('#persist');
 	E2.dom.structure = $('#structure');
+	E2.dom.info = $('#info');
 	
 	$.ajaxSetup({ cache: false });
 

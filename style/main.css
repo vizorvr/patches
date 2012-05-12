@@ -77,9 +77,21 @@ h2
 #structure
 {
 	width: 180px;
-	height: 768px;
+	height: 513px;
 	float: left;
 	background-color: #eee;
+}
+
+#info
+{
+	font-size: 8pt;
+	margin-top: 13px;
+	margin-left: 8px;
+	width: 178px;
+	height: 247px;
+	float: left;
+	background-color: #fff;
+	border: 1px dotted #ccc;
 }
 
 #canvas_parent
