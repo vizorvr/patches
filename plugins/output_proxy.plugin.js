@@ -28,4 +28,10 @@ E2.plugins["output_proxy"] = function(core, node) {
 		self.data = data;
 		self.changed = true;
 	};
+	
+	this.state_changed = function(ui)
+	{
+		if(ui)
+			node.ui.dom.addClass('proxy');
+	};
 };

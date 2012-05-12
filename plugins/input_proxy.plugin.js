@@ -32,4 +32,10 @@ E2.plugins["input_proxy"] = function(core, node) {
 	{
 		return self.data;
 	};
+	
+	this.state_changed = function(ui)
+	{
+		if(ui)
+			node.ui.dom.addClass('proxy');
+	};
 };

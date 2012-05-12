@@ -160,6 +160,30 @@ h2
 	white-space: nowrap;
 }
 	
+.graph
+{
+	background: #ffa !important;
+}
+
+.graph .pl_header
+{
+	background: #888 !important;
+	color: #fff !important;
+	font-weight: bold;
+}
+
+.proxy
+{
+	background: #aff !important;
+}
+
+.proxy .pl_header
+{
+	background: #888 !important;
+	color: #fff !important;
+	font-weight: bold;
+}
+
 .pl_layout
 {
 	border-collapse: separate;
@@ -169,8 +193,13 @@ h2
 .pl_header
 {
 	background-color: #dde;
+}
+
+.pl_header #t
+{
 	padding: 0px;
-	margin: 2px;
+	padding-left: 2px;
+	padding-right: 2px;
 }
 
 .pl_slot

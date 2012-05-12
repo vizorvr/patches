@@ -340,8 +340,13 @@ E2.plugins["graph"] = function(core, node) {
 		// during which 'ui' will be null. Otherwise the lists would have been rebuilt 
 		// every time we switch to the graph containing this node in the editor.
 		if(ui)
+		{
+			// Decorate the auto generated dom base element with an
+			// additional class to allow custom styling.
+			node.ui.dom.addClass('graph');
 			return;
-
+		}
+		
 		var find_node = function(uid)
 		{
 			var nodes = self.graph.nodes;

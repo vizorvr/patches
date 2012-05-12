@@ -2600,6 +2600,11 @@ $(document).ready(function() {
 	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
 	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
 
+	$('#fullscreen').button().click(function()
+	{
+		E2.dom.webgl_canvas.css('width', '100%').css('height', '100%').css('top', '0px').css('left', '0px').css('zIndex', 10000);
+	});
+
   	msg('Ready.');	
 	$('#content').css('display', 'block');
 });
