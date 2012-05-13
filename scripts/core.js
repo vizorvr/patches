@@ -1987,22 +1987,27 @@ function Application() {
 		self.hover_node = null;
 	};
 	
+	this.deleteHoverNodes = function()
+	{
+		var hns = self.hover_nodes.slice(0);
+	
+		self.releaseHoverNode(false);
+		self.clearSelection();
+
+		for(var i = 0, len = hns.length; i < len; i++)
+			hns[i].destroy();
+	
+		self.updateCanvas();
+		self.removeHoverConnections();
+	};
+	
 	this.onNodeHeaderClicked = function(e)
 	{
 		e.stopPropagation();
 		
 		if(self.shift_pressed && self.hover_node !== null)
 		{
-			var hns = self.hover_nodes.slice(0);
-			
-			self.releaseHoverNode(false);
-			self.clearSelection();
-
-			for(var i = 0, len = hns.length; i < len; i++)
-				hns[i].destroy();
-			
-			self.updateCanvas();
-			self.removeHoverConnections();
+			self.deleteHoverNodes();
 		}
 		
 		return false;
@@ -2291,7 +2296,15 @@ function Application() {
 	
 	this.onCut = function(e)
 	{
-		msg('Cut event (not implemented)');
+		msg('Cut event');
+		
+		if(self.selection_nodes.length > 0)
+		{
+			self.onCopy(e);
+			self.hover_node = self.selection_nodes[0];
+			self.activateHoverNode();
+			self.deleteHoverNodes();
+		}
 	};
 
 	this.onPaste = function(e)
