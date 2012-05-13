@@ -1,6 +1,7 @@
 E2.plugins["url_texture_generator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Load a texture from an URL. JPEG and PNG supported.';
 	this.input_slots = [];
 	this.output_slots = [ { name: 'texture', dt: core.datatypes.TEXTURE } ];
 	this.state = { url: '' };

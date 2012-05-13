@@ -1,6 +1,7 @@
 E2.plugins["subtract_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Subtract the second value from the first and emit the result.';
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT },
 		{ name: 'value', dt: core.datatypes.FLOAT } 

@@ -2,6 +2,7 @@ E2.plugins["screenspace_camera"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
+	this.desc = 'Create a screen space (2D) camera.';
 	this.input_slots = [];
 	this.output_slots = [ { name: 'camera', dt: core.datatypes.CAMERA } ];
 

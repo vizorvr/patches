@@ -1,6 +1,7 @@
 E2.plugins["floor_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Round the supplied float to the closest lower interger.';
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT }
 	];

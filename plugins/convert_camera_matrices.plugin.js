@@ -2,6 +2,7 @@ E2.plugins["convert_camera_matrices"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
+	this.desc = 'Extract the projection and view matrices from a camera.';
 	this.input_slots = [ 
 		{ name: 'camera', dt: core.datatypes.CAMERA },
 	];

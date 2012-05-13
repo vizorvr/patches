@@ -1,9 +1,10 @@
 E2.plugins["scene_get_mesh_by_index"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Extract a single mesh from a scene by index, so it can be rendered individually.';
 	this.input_slots = [ 
 		{ name: 'scene', dt: core.datatypes.SCENE },
-		{ name: 'index', dt: core.datatypes.FLOAT } 
+		{ name: 'index', dt: core.datatypes.FLOAT }
 	];
 	
 	this.output_slots = [ { name: 'mesh', dt: core.datatypes.MESH } ];

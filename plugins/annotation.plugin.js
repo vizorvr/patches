@@ -1,6 +1,7 @@
 E2.plugins["annotation"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Add textural hints to the graph.';
 	this.input_slots = [];
 	this.output_slots = [];
 	this.state = { text: '', width: 0, height: 0 };

@@ -1,6 +1,7 @@
 E2.plugins["convert_bool_float_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Convert a bool to a float. True emits 1 and false 0.';
 	this.input_slots = [
 		{ name: 'bool', dt: core.datatypes.BOOL } 
 	];

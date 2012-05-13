@@ -2,6 +2,7 @@ E2.plugins["cube_mesh_generator"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
+	this.desc = 'Create a cube mesh of unit size with normals and one set of UV-cordinates.';
 	this.input_slots = [];
 	this.output_slots = [ { name: 'mesh', dt: core.datatypes.MESH } ];
 	this.mesh = null;

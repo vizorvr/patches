@@ -1,6 +1,7 @@
 E2.plugins["lowpass_filter_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Perform simple 1st-order lowpass filtering of the supplied value. Caution: Do not use to filter infrequently updated values. This plugin expects continuous input every frame.';
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT },
 		{ name: 'amount', dt: core.datatypes.FLOAT } 

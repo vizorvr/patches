@@ -1,7 +1,8 @@
 E2.plugins["graph"] = function(core, node) {
 	var self = this;
 	
-	this.input_slots = [{ name: 'enabled', dt: core.datatypes.BOOL }];
+	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed.';
+	this.input_slots = [{ name: 'enabled', dt: core.datatypes.BOOL, desc: 'Type: Bool<break>En- or disable the processing of the nested graph logic.' }];
 	this.output_slots = [];
 	this.state = { enabled: true, input_sids: {}, output_sids: {} };
 	

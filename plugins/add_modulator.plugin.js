@@ -1,6 +1,8 @@
 E2.plugins["add_modulator"] = function(core, node) {
 	var self = this;
 	
+	
+	this.desc = 'Add two floating point values.';
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT },
 		{ name: 'value', dt: core.datatypes.FLOAT } 

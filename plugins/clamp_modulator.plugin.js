@@ -1,10 +1,11 @@
 E2.plugins["clip_filter_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Emit a float value no less than \'min\' and no greater than \'max\'.';
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT },
-		{ name: 'min', dt: core.datatypes.FLOAT },
-		{ name: 'max', dt: core.datatypes.FLOAT } 
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Type: Float<break>Value to be clipped.' },
+		{ name: 'min', dt: core.datatypes.FLOAT, desc: 'Type: Float<break>Minimum output value.' },
+		{ name: 'max', dt: core.datatypes.FLOAT, desc: 'Type: Float<break>Maximum output value.' } 
 	];
 	
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];

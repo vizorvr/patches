@@ -1,9 +1,8 @@
 E2.plugins["translation_matrix"] = function(core, node) {
 	var self = this;
 	
-	this.input_slots = [ 
-		{ name: 'vector', dt: core.datatypes.VERTEX },
-	];
+	this.desc = 'Create a matrix that represent a translation of all axis.';
+	this.input_slots = [ { name: 'vector', dt: core.datatypes.VERTEX } ];
 	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM } ];
 		
 	this.reset = function()

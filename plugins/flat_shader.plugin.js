@@ -3,6 +3,7 @@ E2.plugins["flat_shader"] = function(core, node) {
 	var renderer = core.renderer; 
 	var gl = renderer.context;
 	
+	this.desc = 'Simple shader for rendering meshes with diffuse color only.';
 	this.input_slots = [
 		 { name: 'is3d', dt: core.datatypes.BOOL },
 		 { name: 'color', dt: core.datatypes.COLOR },

@@ -1,6 +1,7 @@
 E2.plugins["equals_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Emit true if value equals the reference value and false otherwise.';
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT },
 		{ name: 'reference', dt: core.datatypes.FLOAT } 

@@ -1,6 +1,7 @@
 E2.plugins["convert_vector_xyz_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Decompose a vector to its individual XYZ components so they can be manipulated individually.';
 	this.input_slots = [
 		{ name: 'vector', dt: core.datatypes.VERTEX } 
 	];

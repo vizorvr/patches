@@ -1,13 +1,9 @@
 E2.plugins["convert_oscilator_unit_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.input_slots = [
-		{ name: '[-1;1]', dt: core.datatypes.FLOAT } 
-	];
-	
-	this.output_slots = [ 
-		 { name: '[0;1]', dt: core.datatypes.FLOAT }
-	];
+	this.desc = 'Rescales a number in the range -1;1 to the range 0;1.';
+	this.input_slots = [ { name: 'value', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: -1;1<break>' } ];	
+	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: 0;1<break>' } ];
 	
 	this.reset = function()
 	{

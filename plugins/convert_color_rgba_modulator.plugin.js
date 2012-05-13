@@ -1,6 +1,7 @@
 E2.plugins["convert_color_rgba_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Convert a color to its individual RGBA components to they can be individually manipulated.';
 	this.input_slots = [
 		{ name: 'color', dt: core.datatypes.COLOR } 
 	];

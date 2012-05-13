@@ -1,9 +1,10 @@
 E2.plugins["rotation_matrix"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Create a matrix that performs a rotation about an arbitrary axis.';
 	this.input_slots = [ 
-		{ name: 'angle', dt: core.datatypes.FLOAT },
-		{ name: 'axis', dt: core.datatypes.VERTEX }
+		{ name: 'angle', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: -360;360<break>Number of degrees to rotate.' },
+		{ name: 'axis', dt: core.datatypes.VERTEX, desc: 'Type: Vertex<break>Normalized vector descriping the axis around which the rotation is desired performed.' }
 	];
 	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM } ];
 	

@@ -1,6 +1,7 @@
 E2.plugins["concatenate_matrix_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Combine two matrixes. Order is significant.';
 	this.input_slots = [ 
 		{ name: 'matrix A', dt: core.datatypes.TRANSFORM },
 		{ name: 'matrix B', dt: core.datatypes.TRANSFORM }

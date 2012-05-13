@@ -1,6 +1,7 @@
 E2.plugins["vector_normalize"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Normalize the supplied vector so that its magnitude is 1.';
 	this.input_slots = [ { name: 'vector', dt: core.datatypes.VERTEX } ];
 	this.output_slots = [ { name: 'vector', dt: core.datatypes.VERTEX } ];
 	

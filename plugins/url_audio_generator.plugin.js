@@ -1,6 +1,7 @@
 E2.plugins["url_audio_generator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Load a sample from an URL. Each sample should be encoded as .wav, .mp3, .mp4 and .ogg, and no extension should be specified. This plugin will load the appropriate filetype for the current execution environment.';
 	this.input_slots = [];
 	this.output_slots = [ { name: 'audio', dt: core.datatypes.AUDIO } ];
 	this.state = { url: '' };

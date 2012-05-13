@@ -3,6 +3,7 @@ E2.plugins["normal_as_color_shader"] = function(core, node) {
 	var renderer = core.renderer; 
 	var gl = renderer.context;
 	
+	this.desc = 'Render interpolated normals as RGB colors for debugging or as a visual effect.';
 	this.input_slots = [
 		 { name: 'is3d', dt: core.datatypes.BOOL }
 	];

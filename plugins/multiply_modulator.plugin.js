@@ -1,6 +1,7 @@
 E2.plugins["multiply_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Multiply the two supplied values and emit the result.';
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT },
 		{ name: 'value', dt: core.datatypes.FLOAT } 

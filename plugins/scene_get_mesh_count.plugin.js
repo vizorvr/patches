@@ -1,10 +1,8 @@
 E2.plugins["scene_get_mesh_count"] = function(core, node) {
 	var self = this;
 	
-	this.input_slots = [ 
-		{ name: 'scene', dt: core.datatypes.SCENE }
-	];
-	
+	this.desc = 'Emit the number of meshes in the supplied scene. Note that the maximum index is one less than the mesh count emitted by this plugin.';
+	this.input_slots = [ { name: 'scene', dt: core.datatypes.SCENE } ];
 	this.output_slots = [ { name: 'count', dt: core.datatypes.FLOAT } ];
 	
 	this.update_input = function(slot, data)

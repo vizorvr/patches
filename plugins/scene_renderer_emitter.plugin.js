@@ -2,6 +2,7 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
+	this.desc = 'Render the supplied scene. If no shader is specified, the internal shaders of the scene meshes are used.';
 	this.input_slots = [ 
 		{ name: 'scene', dt: core.datatypes.SCENE },
 		{ name: 'shader', dt: core.datatypes.SHADER },

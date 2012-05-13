@@ -2,9 +2,10 @@ E2.plugins["sphere_mesh_generator"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
+	this.desc = 'Create a sphere mesh of unit size with normals and one set of UV-cordinates. Vertical and horizontal resolution is customizable.';
 	this.input_slots = [
-		{ name: 'v res', dt: core.datatypes.FLOAT },
-		{ name: 'h res', dt: core.datatypes.FLOAT }
+		{ name: 'v res', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: 3;25<break>Vertical resolution.' },
+		{ name: 'h res', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: 3;25<break>Horizontal resolution.' }
 	];
 	this.output_slots = [ { name: 'mesh', dt: core.datatypes.MESH } ];
 	this.state = { v_res: 15, h_res: 15 };

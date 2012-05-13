@@ -2,6 +2,7 @@ E2.plugins["url_scene_generator"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
+	this.desc = 'Load a scene from an URL.';
 	this.input_slots = [];
 	this.output_slots = [ { name: 'scene', dt: core.datatypes.SCENE } ];
 	this.state = { url: '' };

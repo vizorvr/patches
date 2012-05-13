@@ -1,6 +1,7 @@
 E2.plugins["const_float_generator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Emit a float constant.';
 	this.input_slots = [];
 	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
 	this.state = { val: 1.0 };

@@ -1,6 +1,7 @@
 E2.plugins["less_than_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Emit true if the supplied value is less than the reference value and false otherwise.';
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT },
 		{ name: 'reference', dt: core.datatypes.FLOAT } 

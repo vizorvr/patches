@@ -1,10 +1,11 @@
 E2.plugins["mouse_position_generator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Emit the current mouse position.';
 	this.input_slots = [];
 	this.output_slots = [ 
-		{ name: 'x', dt: core.datatypes.FLOAT },
-		{ name: 'y', dt: core.datatypes.FLOAT } 
+		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'Type: Float<break>0 at left edge of canvas and 1 at the right edge. Can be both smaller than 0 and larger than one if the mouse is outside the canvas bounds.' },
+		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'Type: Float<break>0 at top edge of canvas and 1 at the bottom edge. Can be both smaller than 0 and larger than one if the mouse is outside the canvas bounds.' } 
 	];	
 
 	this.update_output = function(slot)

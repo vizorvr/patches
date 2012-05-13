@@ -1,6 +1,7 @@
 E2.plugins["vector_scale"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Scale the X, Y and Z components of the supplied vector by the supplied scale.';
 	this.input_slots = [ 
 		{ name: 'vector', dt: core.datatypes.VERTEX }, 
 		{ name: 'scale', dt: core.datatypes.FLOAT } 

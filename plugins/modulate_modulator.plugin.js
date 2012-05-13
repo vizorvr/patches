@@ -1,6 +1,7 @@
 E2.plugins["modulate_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Modulate the supplied value such that the result will always be larger than zero but less than the supplied reference value.';
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT },
 		{ name: 'limit', dt: core.datatypes.FLOAT } 

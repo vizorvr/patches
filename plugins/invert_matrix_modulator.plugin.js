@@ -1,9 +1,8 @@
 E2.plugins["invert_matrix_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.input_slots = [ 
-		{ name: 'matrix', dt: core.datatypes.TRANSFORM }
-	];
+	this.desc = 'Emits the inverse of the supplied matrix.';
+	this.input_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM } ];
 	this.output_slots = [ { name: 'inverse', dt: core.datatypes.TRANSFORM } ];
 
 	this.reset = function()

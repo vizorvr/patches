@@ -1,6 +1,7 @@
 E2.plugins["vector_transform"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Transform a vector by the supplied matrix.';
 	this.input_slots = [ 
 		{ name: 'vector', dt: core.datatypes.VERTEX },
 		{ name: 'matrix', dt: core.datatypes.TRANSFORM } 

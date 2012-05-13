@@ -1,6 +1,7 @@
 E2.plugins["output_proxy"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Create a new type-less slot to route data out of the current graph to its parent. When connected to a slot, it will assume its type until disconnected.';
 	this.input_slots = [];
 	this.output_slots = [];
 	this.state = {};

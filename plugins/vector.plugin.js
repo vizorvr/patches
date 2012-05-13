@@ -1,6 +1,7 @@
 E2.plugins["vector"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Create a vector from individual X, Y and Z components.';
 	this.input_slots = [ 
 		{ name: 'x', dt: core.datatypes.FLOAT },
 		{ name: 'y', dt: core.datatypes.FLOAT },

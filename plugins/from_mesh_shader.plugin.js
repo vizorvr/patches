@@ -3,10 +3,11 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 	var renderer = core.renderer; 
 	var gl = renderer.context;
 	
+	this.desc = 'Auto-generate a shader tailored to correctly and optimally render the supplied mesh.';
 	this.input_slots = [
 		 { name: 'mesh', dt: core.datatypes.MESH },
-		 { name: 'is3d', dt: core.datatypes.BOOL },
-		 { name: 'color', dt: core.datatypes.COLOR },
+		 { name: 'is3d', dt: core.datatypes.BOOL, desc: 'Type: Bool<break>En- or disable depth buffer write and masking.' },
+		 { name: 'color', dt: core.datatypes.COLOR, desc: 'Type: Color<break>Diffuse color. Will module the texture color.' },
 		 { name: 'blend mode', dt: core.datatypes.FLOAT },
 		 { name: 'texture', dt: core.datatypes.TEXTURE }
 	];

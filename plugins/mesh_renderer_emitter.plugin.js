@@ -2,6 +2,7 @@ E2.plugins["mesh_renderer_emitter"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
+	this.desc = 'Render the supplied mesh. If no shader is specified, the internal shader (if any) of the mesh is used.';
 	this.input_slots = [ 
 		{ name: 'mesh', dt: core.datatypes.MESH },
 		{ name: 'shader', dt: core.datatypes.SHADER },

@@ -1,6 +1,7 @@
 E2.plugins["square_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Square oscilator. A time value incrementing by one per second will yield a 1Hz output signal.';
 	this.input_slots = [ { name: 'time', dt: core.datatypes.FLOAT } ];
 	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
 	

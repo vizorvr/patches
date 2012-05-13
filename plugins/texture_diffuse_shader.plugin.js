@@ -3,6 +3,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	var renderer = core.renderer; 
 	var gl = renderer.context;
 	
+	this.desc = 'Simple shader for rendering meshes with one texture modulated by a diffuse color.';
 	this.input_slots = [
 		 { name: 'is3d', dt: core.datatypes.BOOL },
 		 { name: 'color', dt: core.datatypes.COLOR },

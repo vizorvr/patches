@@ -1,11 +1,12 @@
 E2.plugins["convert_hsla_color_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Create an RGBA color from hue, saturation and luminosity.';
 	this.input_slots = [
-		 { name: 'hue', dt: core.datatypes.FLOAT },
-		 { name: 'saturation', dt: core.datatypes.FLOAT },
-		 { name: 'luminosity', dt: core.datatypes.FLOAT },
-		 { name: 'alpha', dt: core.datatypes.FLOAT }
+		 { name: 'hue', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: 0;1<break>' },
+		 { name: 'saturation', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: 0;1<break>' },
+		 { name: 'luminosity', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: 0;1<break>' },
+		 { name: 'alpha', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: 0;1<break>' }
 	];
 	
 	this.output_slots = [ 

@@ -1,6 +1,7 @@
 E2.plugins["color_add_modulator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Adds a constant value to all components of a color. Each channel is clipped to the range 0;1.';
 	this.input_slots = [ 
 		{ name: 'color', dt: core.datatypes.COLOR },
 		{ name: 'value', dt: core.datatypes.FLOAT } 
