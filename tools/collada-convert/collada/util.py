@@ -17,14 +17,12 @@ import math
 import sys
 
 if sys.version_info[0] > 2:
-    import unittest
     from io import StringIO, BytesIO
 
     bytes = bytes
     basestring = (str,bytes)
     xrange = range
 else:
-    import unittest2 as unittest
     from StringIO import StringIO
 
     BytesIO = StringIO
