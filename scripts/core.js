@@ -1706,12 +1706,11 @@ function Application() {
 	
 	this.drawConnection = function(c2d, conn)
 	{
-		var odd_scale = 0.84, // TODO: Where in the universe is this comming from?
-		    c = conn.ui,
+		var c = conn.ui,
 		    so = self.scrollOffset,
-		    x1 = (c.src_pos[0] - so[0]) * odd_scale,
+		    x1 = c.src_pos[0] - so[0],
 		    y1 = c.src_pos[1] - so[1],
-		    x4 = (c.dst_pos[0] - so[0]) * odd_scale,
+		    x4 = c.dst_pos[0] - so[0],
 		    y4 = c.dst_pos[1] - so[1],
 		    mx = (x1 + x4) / 2,
 		    my = (y1 + y4) / 2,
@@ -1772,9 +1771,8 @@ function Application() {
 			var ss = self.selection_start;
 			var se = self.selection_end;
 			var so = self.scrollOffset;
-			var odd_scale = 0.84; // Why?
-			var s = [(ss[0] - so[0]) * odd_scale, ss[1] - so[1]];
-			var e = [(se[0] - so[0]) * odd_scale, se[1] - so[1]];
+			var s = [ss[0] - so[0], ss[1] - so[1]];
+			var e = [se[0] - so[0], se[1] - so[1]];
 			
 			c.strokeStyle = '#000';
 			c.strokeRect(s[0], s[1], e[0] - s[0], e[1] - s[1]);
@@ -2410,8 +2408,6 @@ function Application() {
 	
 	this.onKeyUp = function(e)
 	{
-		debugger;
-		
 		if(e.keyCode === 17) // CTRL
 		{
 			self.ctrl_pressed = false;
