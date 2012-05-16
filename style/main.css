@@ -1,3 +1,11 @@
+@font-face 
+{
+	font-family: 'Exo';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Exo Regular'), local('Exo-Regular'), url('exo.ttf') format('truetype');
+}
+
 .fundamental
 {
 	font-family: Helvetica, Arial, Sans-serif;
@@ -44,10 +52,13 @@ body
 	width: 1024px;
 }
 
-h2
+#logo
 {
-	font-size: 24pt;
-	width: 1024px;
+	font-size: 18pt;
+	font-weight: bold;
+	font-family: 'Exo', sans-serif;
+	margin-left: 10px;
+	margin-right: 18px;
 }
 
 #dbg 
@@ -72,6 +83,7 @@ h2
 	text-align: left;
 	vertical-align: top;
 	width: 1024px;
+	margin-top: 3px;
 }
 
 #structure
@@ -88,8 +100,8 @@ h2
 	margin-top: 13px;
 	margin-left: 8px;
 	padding: 2px;
-	width: 178px;
-	height: 247px;
+	width: 174px;
+	height: 245px;
 	float: left;
 	background-color: #fff;
 	border: 1px dotted #ccc;
@@ -122,7 +134,7 @@ h2
 	background-color: #000; 
 	position: absolute; 
 	left: 1036px; 
-	top: 128px;
+	top: 50px;
 	width: 480px;
 	height: 360px;
 }
@@ -144,7 +156,7 @@ h2
 	width: 476px;
 	height: 405px;
 	left: 1036px; 
-	top: 493px;
+	top: 415px;
 	font-size: 8pt;
 	background-color: #fff;
 	white-space: pre;
@@ -168,8 +180,10 @@ h2
 #frame
 {
 	border: 1px solid #aaa;
-	position: relative;
-	top: 5px;
+	position: absolute;
+	width: 60px;
+	left: 950px;
+	top: 15px;
 }
 
 .plugin
