@@ -66,7 +66,7 @@ body
 	margin-left: 3px;
 	margin-top: 6px;
 	float: left;
-	width: 835px;
+	width: 935px;
 	height: 245px;
 	font-size: 8pt;
 	background-color: #fff;
@@ -82,7 +82,7 @@ body
 {
 	text-align: left;
 	vertical-align: top;
-	width: 1024px;
+	width: 1124px;
 	margin-top: 3px;
 }
 
@@ -101,7 +101,7 @@ body
 	margin-left: 8px;
 	padding: 2px;
 	width: 174px;
-	height: 245px;
+	height: 345px;
 	float: left;
 	background-color: #fff;
 	border: 1px dotted #ccc;
@@ -111,8 +111,8 @@ body
 {
 	float: right;
 	background-color: #ccc;
-	width: 840px;
-	height: 520px;
+	width: 940px;
+	height: 620px;
 	z-index: 1;
 	overflow: scroll;
 	position: relative;
@@ -121,8 +121,8 @@ body
 
 #canvas
 {
-	width: 840px;
-	height: 520px;
+	width: 940px;
+	height: 620px;
 	position: relative;
 	top: 0px;
 	left: 0px;
@@ -133,7 +133,7 @@ body
 {
 	background-color: #000; 
 	position: absolute; 
-	left: 1036px; 
+	left: 1136px; 
 	top: 50px;
 	width: 480px;
 	height: 360px;
@@ -154,8 +154,8 @@ body
 {
 	position: absolute; 
 	width: 476px;
-	height: 405px;
-	left: 1036px; 
+	height: 505px;
+	left: 1136px; 
 	top: 415px;
 	font-size: 8pt;
 	background-color: #fff;
@@ -182,7 +182,7 @@ body
 	border: 1px solid #aaa;
 	position: absolute;
 	width: 60px;
-	left: 950px;
+	left: 1050px;
 	top: 15px;
 }
 
