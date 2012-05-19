@@ -1417,7 +1417,6 @@ function Application() {
 	this.core = new Core();
 	this.canvas = canvas;
 	this.c2d = canvas[0].getContext('2d');
-	this.last_mouse_pos = [0, 0];
 	this.current_state = this.state.STOPPED;
 	this.interval = null;
 	this.abs_time = 0.0;
@@ -1744,10 +1743,7 @@ function Application() {
 		}
 		
 		if(self.edit_conn)
-		{
-			self.edit_conn.ui.dst_pos = self.last_mouse_pos.slice(0);
 			cb[0].push(self.edit_conn);
-		}
 		
 		for(var bin = 0; bin < 4; bin++)
 		{
@@ -1790,7 +1786,24 @@ function Application() {
 	{
 		if(self.src_slot)
 		{
-			self.last_mouse_pos = self.mouseEventPosToCanvasCoord(e);
+			var cp = E2.dom.canvas_parent;
+			var pos = cp.position();
+			var w = cp.width();
+			var h = cp.height();
+			var x2 = pos.left + w;
+			var y2 = pos.top + h;
+			
+			if(e.pageX < pos.left)
+				cp.scrollLeft(cp.scrollLeft() + (e.pageX - pos.left));
+			else if(e.pageX > x2)
+				cp.scrollLeft(cp.scrollLeft() + (e.pageX - x2));
+						
+			if(e.pageY < pos.top)
+				cp.scrollTop(cp.scrollTop() + (e.pageY - pos.top));
+			else if(e.pageY > y2)
+				cp.scrollTop(cp.scrollTop() + (e.pageY - y2));
+
+			self.edit_conn.ui.dst_pos = self.mouseEventPosToCanvasCoord(e);
 			self.updateCanvas();
 		}
 	};
@@ -2528,10 +2541,11 @@ function Application() {
 		self.frames++;
 	}
 	
-	E2.dom.canvas_parent.mouseup(this.onMouseReleased);
-	$(document).keydown(this.onKeyDown);
-	$(document).keyup(this.onKeyUp);
-	canvas.mousemove(this.onMouseMoved);
+	$(document).mouseup(this.onMouseReleased);
+	$(document).mousemove(this.onMouseMoved);
+	$(window).keydown(this.onKeyDown);
+	$(window).keyup(this.onKeyUp);
+	
 	canvas_parent.scroll(function()
 	{
 		self.scrollOffset = [ canvas_parent.scrollLeft(), canvas_parent.scrollTop() ];
