@@ -2398,6 +2398,9 @@ function Application() {
 			n.ui.dom.css('border', '2px solid #88d');
 			self.selection_nodes.push(n);
 
+			if(n.plugin.reset)
+				n.plugin.reset();			
+
 			if(n.plugin.state_changed)
 				n.plugin.state_changed(n.ui.plugin_ui);			
 			
