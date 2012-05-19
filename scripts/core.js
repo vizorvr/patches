@@ -2282,6 +2282,9 @@ function Application() {
 			return;
 
 		var d = {};
+		var sx = E2.dom.canvas_parent.scrollLeft();
+		var sy = E2.dom.canvas_parent.scrollTop();
+		var x1 = 9999999.0, y1 = 9999999.0, x2 = 0, y2 = 0;
 		
 		d.nodes = [];
 		d.conns = [];
@@ -2291,15 +2294,32 @@ function Application() {
 		    
 		for(var i = 0, len = nodes.length; i < len; i++)
 		{
-			var n = nodes[i].serialise();
+			var n = nodes[i];
+			var dom = n.ui.dom;
+			var p = dom.position();
+			var b = [p.left, p.top, p.left + dom.width(), p.top + dom.height()]; 
 			
-			// Offset the nodes slightly, so that a paste to the originating canvas
-			// does not exactly overlap the originals.
-			n.x += 30;
-			n.y += 30;
+			n = n.serialise();
+			
+			if(b[0] < x1)
+				x1 = b[0];
+			
+			if(b[1] < y1)
+				y1 = b[1];
+			
+			if(b[2] > x2)
+				x2 = b[2];
+				
+			if(b[3] > y2)
+				y2 = b[3];
 			
 			d.nodes.push(n);
 		}
+		
+		d.x1 = x1 + sx;
+		d.y1 = y1 + sy;
+		d.x2 = x2 + sx;
+		d.y2 = y2 + sy;
 		
 		for(var i = 0, len = conns.length; i < len; i++)
 			d.conns.push(conns[i].serialise());
@@ -2332,19 +2352,43 @@ function Application() {
 		self.selection_conns = [];
 				
 		var d = JSON.parse(self.clipboard);
+		var cp = E2.dom.canvas_parent;
 		var ag = self.core.active_graph;
 		var n_lut = {};
+		var sx = cp.scrollLeft();
+		var sy = cp.scrollTop();
+		var w2 = cp.width() / 2.0;
+		var h2 = cp.height() / 2.0;
+		var bw2 = (d.x2 - d.x1) / 2.0;
+		var bh2 = (d.y2 - d.y1) / 2.0;
+		
+		w2 -= bw2;
+		h2 -= bh2;
+		
+		bw2 = sx + w2;
+		bh2 = sy + h2;
+		
+		bw2 = bw2 < 0 ? 0 : bw2;
+		bh2 = bh2 < 0 ? 0 : bh2;
 		
 		for(var i = 0, len = d.nodes.length; i < len; i++)
 		{
+			var node = d.nodes[i];
 			var n = new Node(null, null, null, null);
 			var new_uid = ag.get_node_uid();
 				
-			n.deserialise(ag.uid, d.nodes[i]);
+			// Insert the pasted nodes in the center of the current view,
+			// maintaining relative placement of the nodes.
+			node.x = (node.x - d.x1) + bw2;
+			node.y = (node.y - d.y1) + bh2;
+
+			n.deserialise(ag.uid, node);
+			
 			n_lut[n.uid] = new_uid;
 			n.uid = new_uid;
 			
 			ag.nodes.push(n);
+			
 			if(n.plugin.output_slots.length === 0 && !n.dyn_outputs)
 				ag.roots.push(n);
 				
@@ -2372,15 +2416,17 @@ function Application() {
 
 		for(var i = 0, len = d.conns.length; i < len; i++)
 		{
-			var c = new Connection(null, null, null, null);
+			var cn = d.conns[i];
 			
-			c.deserialise(d.conns[i]);
+			var suid = n_lut[cn.src_nuid];
+			var duid = n_lut[cn.dst_nuid];
 			
-			var suid = n_lut[c.src_node];
-			var duid = n_lut[c.dst_node];
-			
-			if(suid === null || duid === null)
+			if(suid === undefined || duid === undefined)
 				continue;
+			
+			var c = new Connection(null, null, null, null);
+
+			c.deserialise(cn);
 			
 			c.src_node = suid;
 			c.dst_node = duid;
@@ -2405,6 +2451,24 @@ function Application() {
 		if(e.keyCode === 17) // CTRL
 		{
 			self.ctrl_pressed = true;
+			
+			if(e.target.id !== 'persist')
+			{
+				// Clear any current text selection anywhere in the window
+				// if we're not the the persistence view, so that it does not
+				// interferre with out own implementation.
+				if (window.getSelection) 
+				{
+					if (window.getSelection().empty) // Chrome
+						window.getSelection().empty();
+					else if(window.getSelection().removeAllRanges) // Firefox
+						window.getSelection().removeAllRanges();
+				} 
+				else if(document.selection) // IE? 
+				{
+					document.selection.empty();
+				}
+			}
 		}
 		else if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
 		{
