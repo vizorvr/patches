@@ -1,9 +1,12 @@
 /*
-To do:
-
-1. Begin timeline implementation.
- 
-*/
+ * visualTHING PoC.
+ *
+ * Authors: Lasse Jul Nielsen.
+ * Web: http://www.effekts.dk
+ *
+ * Not for public dessemination. No license is granted for unauthorized use.
+ *
+ */
 
 function E2()
 {
@@ -140,8 +143,9 @@ function PluginGroup(id)
 		{
 			var id = sorted[i];
 			var child = self.children[id];
-	
-			items[id] = { name: id, items: child.create_items() };
+			
+			items[id] = { name: id, icon: 'group', items: child.create_items() };
+			
 		}
 		
 		sorted = sort_dict(self.entries);
@@ -151,7 +155,7 @@ function PluginGroup(id)
 			var id = sorted[i];
 			var entry = self.entries[id];
 			
-			items[entry] = { name: id };
+			items[entry] = { name: id, icon: entry };
 		}
 			
 		return items;
