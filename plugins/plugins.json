@@ -63,8 +63,6 @@
 	"Modulators/Vector/Normalize": "vector_normalize",
 	"Modulators/Vector/Scale": "vector_scale",
 	"Modulators/Vector/Transform": "vector_transform",
-	"Emitters/2D/Colored quad": "colored_quad_emitter",
-	"Emitters/2D/Textured quad": "textured_quad_emitter",
 	"Emitters/3D/Mesh renderer": "mesh_renderer_emitter",
 	"Emitters/3D/Scene renderer": "scene_renderer_emitter",
 	"Emitters/Audio/Audio player": "audio_player",
@@ -74,8 +72,8 @@
 	"Emitters/Debug/Led display": "led_display",
 	"Emitters/Debug/Matrix display": "matrix_display",
 	"Emitters/Debug/Vector display": "vector_display",
-	"Structure/Annotation": "annotation",
 	"Structure/Input proxy": "input_proxy",
 	"Structure/Graph": "graph",
-	"Structure/Output proxy": "output_proxy"
+	"Structure/Output proxy": "output_proxy",
+	"Annotation": "annotation"
 }
