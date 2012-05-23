@@ -58,6 +58,24 @@ E2.plugins["slider_float_generator"] = function(core, node) {
 		cols[1].append(slider);
 		cols[2].append(inp_hi);
 		
+		var apply_constraints = function(st)
+		{
+			var bad = st.min > st.max;
+			
+			if(bad)
+			{
+				var t = st.min;
+			
+				st.min = st.max;
+				st.max = t;
+			}
+		
+			st.val = st.val < st.min ? st.min : st.val > st.max ? st.max : st.val;
+			
+			if(bad)
+				self.state_changed(table);
+		};
+		
 		var blur_handler = function(sender, slider) 
 		{ 
 			return function()
@@ -69,33 +87,25 @@ E2.plugins["slider_float_generator"] = function(core, node) {
 				var id = sender.attr('id');
 				var nlo = clo;
 				var nhi = chi;
+				var st = self.state;
 				
 				if(id == 'lo')
 				{
 					slider.slider('option', 'min', nv);
-					self.state.min = nv;
+					st.min = nv;
 					nlo = nv;
+					apply_constraints(st);
 				}
 				else if(id == 'hi')
 				{
 					slider.slider('option', 'max', nv);
-					self.state.max = nv;
+					st.max = nv;
 					nhi = nv;
+					apply_constraints(st);
 				}
 					
 				slider.slider('option', 'step', self.calc_step());
-				
-				var rng = chi - clo;
-				
-				if(rng == 0.0)
-					rng = 1.0;
-				
-				var v = (((cv - clo) / rng) * (nhi - nlo)) + nlo;
-				
-				// TODO: This needs more... Dur... Smartness! Map the current value to the new interval
-				slider.slider('option', 'value', v);
-				self.update_value(v);
-				self.state.val = v;
+				slider.slider('option', 'value', st.val);
 			}
 		};
 		
