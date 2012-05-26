@@ -17,6 +17,14 @@ E2.dom = {};
 E2.plugins = {};
 E2.slot_type = { input: 0, output: 1 };
 
+Array.prototype.remove = function(obj)
+{
+	var i = this.indexOf(obj);
+	
+	if(i !== -1)
+		this.splice(i, 1);
+};
+
 function clone(o)
 {
 	var no = (o instanceof Array) ? [] : {};
@@ -283,12 +291,12 @@ function ConnectionUI(parent_conn)
 		self.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + (pc.src_slot.uid !== undefined ? 'do' + pc.src_slot.uid : 'so' + pc.src_slot.index));
 		self.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + (pc.dst_slot.uid !== undefined ? 'di' + pc.dst_slot.uid : 'si' + pc.dst_slot.index));
 		
-		assert(self.src_slot_div !== null && self.dst_slot_div !== null, 'Failed to resolve connection slot div.'); 
+		// assert(self.src_slot_div !== null && self.dst_slot_div !== null, 'Failed to resolve connection slot div.'); 
 		
 		self.src_pos = E2.app.getSlotPosition(self.src_slot_div, E2.slot_type.output);
 		self.dst_pos = E2.app.getSlotPosition(self.dst_slot_div, E2.slot_type.input);
 		
-		assert(self.src_pos !== null && self.dst_pos !== null, 'Failed to resolve connection slot div position.'); 
+		// assert(self.src_pos !== null && self.dst_pos !== null, 'Failed to resolve connection slot div position.'); 
 	};
 }
 
@@ -1048,6 +1056,8 @@ function Graph(parent_graph, tree_node)
 		this.parent_graph = parent_graph;
 		this.nodes = [];
 		this.roots = [];
+		this.children = [];
+		this.children = [];
 		this.connections = [];
 		this.node_uid = 0;
 			
@@ -1059,16 +1069,33 @@ function Graph(parent_graph, tree_node)
 		return self.node_uid++;
 	};
 	
-	this.create_instance = function(plugin_id, x, y)
+	this.register_node = function(n)
 	{
-		n = new Node(self, plugin_id, x, y);
-		
 		self.nodes.push(n);
 		
 		if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
 			self.roots.push(n);
+		else if(n.plugin.id === 'graph')
+			self.children.push(n);
+	};
+	
+	this.unregister_node = function(n)
+	{
+		self.nodes.remove(n);
 		
+		if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
+			self.roots.remove(n);
+		else if(n.plugin.id === 'graph')
+			self.children.remove(n);
+	};
+
+	this.create_instance = function(plugin_id, x, y)
+	{
+		n = new Node(self, plugin_id, x, y);
+		
+		self.register_node(n);
 		self.emit_event({ type: 'node-created', node: n });
+
 		return n;
 	};
 	
@@ -1076,6 +1103,7 @@ function Graph(parent_graph, tree_node)
 	{
 		var nodes = self.nodes;
 		var roots = self.roots;
+		var children = self.children;
 		var dirty = false;
 		
 		for(var i = 0, len = nodes.length; i < len; i++)
@@ -1084,6 +1112,14 @@ function Graph(parent_graph, tree_node)
 		for(var i = 0, len = roots.length; i < len; i++)
 			dirty = roots[i].update_recursive(self.connections, delta_t) || dirty;
 		
+		for(var i = 0, len = children.length; i < len; i++)
+		{
+			var c = children[i];
+			
+			if(!c.plugin.texture)
+				dirty = c.update_recursive(self.connections, delta_t) || dirty;
+		}
+
 		if(self === E2.app.core.active_graph)
 			E2.app.core.active_graph_dirty = dirty;
 		
@@ -1121,7 +1157,7 @@ function Graph(parent_graph, tree_node)
 	{
 		var index = self.connections.indexOf(c);
 		
-		if(index != -1)
+		if(index !== -1)
 			self.connections.splice(index, 1);
 		
 		c.dst_slot.is_connected = false;
@@ -1130,13 +1166,13 @@ function Graph(parent_graph, tree_node)
 		
 		index = slots.indexOf(c);
 	
-		if(index != -1)
+		if(index !== -1)
 			slots.splice(index, 1);
 
 		slots = c.src_node.outputs;
 		index = slots.indexOf(c);
 	
-		if(index != -1)
+		if(index !== -1)
 			slots.splice(index, 1);
 	};
 	
@@ -1205,16 +1241,14 @@ function Graph(parent_graph, tree_node)
 				
 		self.nodes = [];
 		self.roots = [];
+		self.children = [];
 		
 		for(var i = 0, len = d.nodes.length; i < len; i++)
 		{
 			var n = new Node(null, null, null, null);
 			
 			n.deserialise(self.uid, d.nodes[i]);
-			self.nodes.push(n);
-			
-			if(n.plugin.output_slots.length === 0 && !n.dyn_outputs)
-				self.roots.push(n);
+			self.register_node(n);
 		}
 
 		self.connections = [];
@@ -1232,7 +1266,16 @@ function Graph(parent_graph, tree_node)
 	{
 		self.parent_graph = resolve_graph(graphs, self.parent_graph);
 		
-		self.enum_all(function(n) { n.patch_up(graphs); }, function(c) { c.patch_up(self.nodes); });
+//		self.enum_all(function(n) { n.patch_up(graphs); }, function(c) { c.patch_up(self.nodes); });
+		var nodes = self.nodes,
+		    conns = self.connections;
+		    
+		for(var i = 0, len = conns.length; i < len; i++)
+			conns[i].patch_up(self.nodes);
+
+		for(var i = 0, len = nodes.length; i < len; i++)
+			nodes[i].patch_up(graphs);
+
 		self.reset();
 	};
 	
@@ -1317,7 +1360,16 @@ function Core() {
 	{
 		self.active_graph.destroy_ui();
 		self.active_graph = graph;
-		// self.root_graph.reset();
+		
+		// TODO: Fix this up later. We need to reset this position to make
+		// copy / paste and switching graphs more humane, but right now this 
+		// introduces a bug the the connection rendering logic for some (copied)
+		// nested subgraphs.
+		
+		/*E2.dom.canvas_parent.scrollTop(0);
+		E2.dom.canvas_parent.scrollLeft(0);
+		self.scrollOffset = [0, 0];*/
+		
 		self.active_graph.create_ui();
 	};
 	
@@ -1567,6 +1619,8 @@ function Application() {
 		
 		if(!self.shift_pressed && type == E2.slot_type.output)
 		{
+			self.set_persist_select(false);
+
 			self.src_node = node;
 			self.src_slot = slot;
 			self.src_slot_div = slot_div;
@@ -1707,24 +1761,6 @@ function Application() {
 		self.releaseHoverSlot();
 	}};
 	
-	this.drawConnection = function(c2d, conn)
-	{
-		var c = conn.ui,
-		    so = self.scrollOffset,
-		    x1 = c.src_pos[0] - so[0],
-		    y1 = c.src_pos[1] - so[1],
-		    x4 = c.dst_pos[0] - so[0],
-		    y4 = c.dst_pos[1] - so[1],
-		    mx = (x1 + x4) / 2,
-		    my = (y1 + y4) / 2,
-		    x2 = Math.min(x1 + 10 + (conn.offset * 5), mx);
-		
-		c2d.moveTo(x1, y1);
-		c2d.lineTo(x2, y1);
-		c2d.lineTo(x2, y4);
-		c2d.lineTo(x4, y4);
-	};
-	
 	this.updateCanvas = function()
 	{
 		var c = self.c2d;
@@ -1749,6 +1785,8 @@ function Application() {
 		if(self.edit_conn)
 			cb[0].push(self.edit_conn);
 		
+		var so = self.scrollOffset;
+		
 		for(var bin = 0; bin < 4; bin++)
 		{
 			var b = cb[bin];
@@ -1759,7 +1797,24 @@ function Application() {
 				c.beginPath();
 			
 				for(var i = 0, len = b.length; i < len; i++)
-					self.drawConnection(c, b[i]);
+				{
+					var conn = b[i],
+					    cui = conn.ui,
+					    x1 = cui.src_pos[0] - so[0],
+					    y1 = cui.src_pos[1] - so[1],
+					    x4 = cui.dst_pos[0] - so[0],
+					    y4 = cui.dst_pos[1] - so[1],
+					    mx = (x1 + x4) * 0.5,
+					    my = (y1 + y4) * 0.5,
+					    x2 = x1 + 10 + (conn.offset * 5);
+		
+					x2 = x2 < mx ? x2 : mx;
+					
+					c.moveTo(x1, y1);
+					c.lineTo(x2, y1);
+					c.lineTo(x2, y4);
+					c.lineTo(x4, y4);
+				}
 				
 				c.stroke()
 			}
@@ -1849,6 +1904,7 @@ function Application() {
 			self.src_slot_div.css('color', '#000');
 			self.src_slot = null;
 			self.src_slot_div = null;
+			self.set_persist_select(true);
 		}
 		
 		self.dst_node = null;
@@ -1925,6 +1981,11 @@ function Application() {
 		}
 	};
 
+	this.set_persist_select = function(on)
+	{
+		E2.dom.persist.attr('class', on ? 'selection_on' : 'selection_off');
+	};
+	
 	this.clearEditState = function()
 	{
 		self.src_node = null;
@@ -1940,6 +2001,8 @@ function Application() {
 		self.hover_slot_div = null;
 		self.hover_connections = [];
 		self.hover_node = null;
+
+		self.set_persist_select(true);
 	};
 	
 	this.releaseHoverConnections = function()
@@ -2005,13 +2068,19 @@ function Application() {
 	this.deleteHoverNodes = function()
 	{
 		var hns = self.hover_nodes.slice(0);
-	
+		var ag = self.core.active_graph;
+		
 		self.releaseHoverNode(false);
 		self.clearSelection();
 
 		for(var i = 0, len = hns.length; i < len; i++)
-			hns[i].destroy();
-	
+		{
+			var n = hns[i];
+			
+			ag.unregister_node(n);
+			n.destroy();
+		}
+		
 		self.updateCanvas();
 		self.removeHoverConnections();
 	};
@@ -2168,15 +2237,14 @@ function Application() {
 		
 		if(e.which === 1)
 		{
+			self.set_persist_select(false);
 			self.selection_start = self.mouseEventPosToCanvasCoord(e);
 			self.selection_end = self.selection_start.slice(0);
 		
 			self.clearSelection();
 		}
 		else
-		{
-			self.selection_start = self.selection_end = null; 
-		}
+			self.releaseSelection();
 		
 		self.selection_nodes = [];
 		self.selection_conns = [];
@@ -2187,6 +2255,7 @@ function Application() {
 	{
 		self.selection_start = null;
 		self.selection_end = null;
+		self.set_persist_select(true);
 	};
 	
 	this.onCanvasMouseUp = function(e)
@@ -2331,6 +2400,9 @@ function Application() {
 	
 	this.onCut = function(e)
 	{
+		if(e.target.id === 'persist' || e.target.tagName === 'INPUT')
+			return;
+
 		msg('Cut event');
 		
 		if(self.selection_nodes.length > 0)
@@ -2344,6 +2416,9 @@ function Application() {
 
 	this.onPaste = function(e)
 	{
+		if(e.target.id === 'persist' || e.target.tagName === 'INPUT')
+			return;
+		
 		if(self.clipboard === null)
 			return;
 		
@@ -2387,11 +2462,8 @@ function Application() {
 			n_lut[n.uid] = new_uid;
 			n.uid = new_uid;
 			
-			ag.nodes.push(n);
-			
-			if(n.plugin.output_slots.length === 0 && !n.dyn_outputs)
-				ag.roots.push(n);
-				
+			ag.register_node(n);
+
 			n.patch_up(self.core.graphs);
 			n.create_ui();
 
@@ -2414,6 +2486,7 @@ function Application() {
 				
 				n.plugin.graph.tree_node.graph = n.plugin.graph;
 				n.plugin.graph.uid = E2.app.core.get_graph_uid();
+				n.plugin.graph.parent_graph = ag;
 			}
 		}
 
@@ -2603,7 +2676,7 @@ function Application() {
 		
 		if(self.accum_delta > 0.05)
 		{
-			E2.dom.frame.val((self.frames / self.abs_time).toFixed(2));
+			E2.dom.frame.val((delta_t * 1000.0).toFixed(0));
 			self.accum_delta = 0.0;
 		}
 		

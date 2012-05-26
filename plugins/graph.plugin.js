@@ -1,9 +1,10 @@
 E2.plugins["graph"] = function(core, node) {
 	var self = this;
+	var gl = core.renderer.context;
 	
 	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed.';
-	this.input_slots = [{ name: 'enabled', dt: core.datatypes.BOOL, desc: 'Type: Bool<break>En- or disable the processing of the nested graph logic.' }];
-	this.output_slots = [];
+	this.input_slots = [ { name: 'enabled', dt: core.datatypes.BOOL, desc: 'Type: Bool<break>En- or disable the processing of the nested graph logic.' } ];
+	this.output_slots = [ { name: 'texture', dt: core.datatypes.TEXTURE, desc: 'Type: Texture<break>When connected, all enclosed plugins will render to this texture instead of the framebuffer. Also, when connected two dynamic input slots will appear that allows control of the texture resolution.' } ];
 	this.state = { enabled: true, input_sids: {}, output_sids: {} };
 	
 	this.input_nodes = {};
@@ -27,6 +28,11 @@ E2.plugins["graph"] = function(core, node) {
 		return dt.name;
 	};
 	
+	this.dbg = function(str)
+	{
+		// msg('Graph: ' + str);
+	};
+	
 	this.connection_changed = function(on, conn, slot)
 	{
 		if(slot.uid !== undefined)
@@ -37,7 +43,7 @@ E2.plugins["graph"] = function(core, node) {
 			{
 				if(slot.type === E2.slot_type.input)
 					psl = self.input_nodes[slot.uid].dyn_outputs[0];
-				else if(slot.type === E2.slot_type.output)
+				else
 				{
 					var count = 0;
 					
@@ -54,7 +60,7 @@ E2.plugins["graph"] = function(core, node) {
 				if(psl && !psl.connected)
 				{
 					psl.dt = slot.dt = core.datatypes.ANY;
-					msg('Resetting PDT/GDT for slot(' + slot.uid + ')');
+					self.dbg('Resetting PDT/GDT for slot(' + slot.uid + ')');
 				}
 			}
 			else
@@ -66,7 +72,7 @@ E2.plugins["graph"] = function(core, node) {
 					if(slot.dt === core.datatypes.ANY)
 					{
 						slot.dt = conn.src_slot.dt;
-						msg('Setting GDT for slot(' + slot.uid + ') to ' + self.get_dt_name(conn.src_slot.dt));
+						self.dbg('Setting GDT for slot(' + slot.uid + ') to ' + self.get_dt_name(conn.src_slot.dt));
 					}
 					
 					tn = self.input_nodes[slot.uid];
@@ -77,7 +83,7 @@ E2.plugins["graph"] = function(core, node) {
 					if(slot.dt === core.datatypes.ANY)
 					{
 						slot.dt = conn.dst_slot.dt;
-						msg('Setting GDT for slot(' + slot.uid + ') to ' + self.get_dt_name(conn.dst_slot.dt));
+						self.dbg('Setting GDT for slot(' + slot.uid + ') to ' + self.get_dt_name(conn.dst_slot.dt));
 					}
 					
 					tn = self.output_nodes[slot.uid];
@@ -86,14 +92,61 @@ E2.plugins["graph"] = function(core, node) {
 				
 				if(psl.dt === core.datatypes.ANY)
 				{
-					msg('Setting PDT for slot(' + psl.uid + ') to ' + self.get_dt_name(slot.dt));
+					self.dbg('Setting PDT for slot(' + psl.uid + ') to ' + self.get_dt_name(slot.dt));
 					psl.dt = slot.dt;
 					tn.plugin.data = core.get_default_value(slot.dt);
 				}
 			}
 		}
+		else if(slot.type === E2.slot_type.output)
+		{
+			self.set_render_target_state(on);
+		}
 	};
 	
+	this.set_render_target_state = function(on)
+	{
+		if(on)
+		{
+			self.framebuffer = gl.createFramebuffer();
+			gl.bindFramebuffer(gl.FRAMEBUFFER, self.framebuffer);
+			self.framebuffer.width = 512;
+			self.framebuffer.height = 512;
+			self.texture = gl.createTexture();
+			gl.bindTexture(gl.TEXTURE_2D, self.texture);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, self.framebuffer.width, self.framebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+			self.renderbuffer = gl.createRenderbuffer();
+			
+			gl.bindRenderbuffer(gl.RENDERBUFFER, self.renderbuffer);
+			gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, self.framebuffer.width, self.framebuffer.height);
+
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, self.texture, 0);
+			gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, self.renderbuffer);
+
+			gl.bindTexture(gl.TEXTURE_2D, null);
+			gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			
+			var t = self.texture;
+			
+			self.texture = new Texture(gl);
+			
+			self.texture.texture = t;
+		}
+		else
+		{
+			gl.deleteFramebuffer(self.framebuffer);
+			delete self.framebuffer;
+			gl.deleteRenderbuffer(self.renderbuffer);
+			delete self.renderbuffer;
+			gl.deleteTexture(self.framebuffer);
+			delete self.texture;
+		}
+	};
+		
 	this.proxy_connection_changed = function(on, p_node, t_node, slot, t_slot)
 	{
 		var find_sid = function(nodes, uid)
@@ -144,7 +197,7 @@ E2.plugins["graph"] = function(core, node) {
 		
 		var change_slots = function(last, g_slot, p_slot)
 		{
-			msg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid);
+			self.dbg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid);
 			
 			p_slot.connected = true;
 			
@@ -153,7 +206,7 @@ E2.plugins["graph"] = function(core, node) {
 				if(p_slot.dt === core.datatypes.ANY)
 				{
 					p_slot.dt = t_slot.dt;		
-					msg('    Setting PDT to ' + self.get_dt_name(t_slot.dt) + '.');
+					self.dbg('    Setting PDT to ' + self.get_dt_name(t_slot.dt) + '.');
 				
 					if(g_slot.dt === core.datatypes.ANY)
 					{
@@ -164,7 +217,7 @@ E2.plugins["graph"] = function(core, node) {
 				if(g_slot.dt === core.datatypes.ANY)
 				{
 					g_slot.dt = t_slot.dt;		
-					msg('    Setting GDT to ' + self.get_dt_name(t_slot.dt) + '.');
+					self.dbg('    Setting GDT to ' + self.get_dt_name(t_slot.dt) + '.');
 				}
 			}
 			else if(last)
@@ -189,7 +242,7 @@ E2.plugins["graph"] = function(core, node) {
 				if(!connected)
 				{
 					p_slot.dt = g_slot.dt = core.datatypes.ANY;
-					msg('    Reverting to PDT/GDT to ANY.');
+					self.dbg('    Reverting to PDT/GDT to ANY.');
 				}
 
 				if(t_node.plugin.id === 'input_proxy')
@@ -210,7 +263,7 @@ E2.plugins["graph"] = function(core, node) {
 					if(!connected && !is_gslot_connected(rgsl))
 					{
 						t_slot.dt = rgsl.dt = core.datatypes.ANY;
-						msg('    Reverting remote proxy slot to PDT/GDT to ANY.');
+						self.dbg('    Reverting remote proxy slot to PDT/GDT to ANY.');
 					}
 				}
 				else if(t_node.plugin.id === 'output_proxy')
@@ -220,7 +273,7 @@ E2.plugins["graph"] = function(core, node) {
 					if(!is_gslot_connected(rgsl))
 					{
 						t_slot.dt = rgsl.dt = core.datatypes.ANY;
-						msg('    Reverting remote proxy slot to PDT/GDT to ANY.');
+						self.dbg('    Reverting remote proxy slot to PDT/GDT to ANY.');
 					}
 				}
 			}
@@ -231,14 +284,14 @@ E2.plugins["graph"] = function(core, node) {
 			var last = p_node.outputs.length === 0;
 			
 			change_slots(last, find_slot(node.dyn_inputs, find_sid(self.input_nodes, p_node.uid)), slot);
-			msg('    Output count = ' + p_node.outputs.length);
+			self.dbg('    Output count = ' + p_node.outputs.length);
 		}
 		else
 		{
 			var last = p_node.inputs.length === 0;
 			
 			change_slots(last, find_slot(node.dyn_outputs, find_sid(self.output_nodes, p_node.uid)), slot);
-			msg('    Input count = ' + p_node.inputs.length);
+			self.dbg('    Input count = ' + p_node.inputs.length);
 		}
 	};
 	
@@ -273,15 +326,32 @@ E2.plugins["graph"] = function(core, node) {
 	
 	this.update_output = function(slot)
 	{
-		return self.output_nodes[slot.uid].plugin.data;
+		if(slot.uid !== undefined)
+			return self.output_nodes[slot.uid].plugin.data;
+			
+		return self.texture;
 	};
 	
 	this.update_state = function(delta_t)
 	{
 		if(self.graph && self.state.enabled)
 		{
+			if(self.framebuffer)
+			{
+				gl.viewport(0, 0, self.framebuffer.width, self.framebuffer.height);
+				gl.bindFramebuffer(gl.FRAMEBUFFER, self.framebuffer);
+			}
+			
 			self.graph.update(delta_t);
 
+       			if(self.framebuffer)
+       			{
+				var canvas = core.renderer.canvas[0];
+
+				gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+				gl.viewport(0, 0, canvas.width, canvas.height);
+       			}
+       			
        			for(var i = 0, len = node.outputs.length; i < len; i++)
        				node.outputs[i].cached_value = null;
        		}
@@ -301,7 +371,7 @@ E2.plugins["graph"] = function(core, node) {
        	{
 		var pid = ev.node.plugin.id;
 		
-		msg('Gevent type = ' + ev.type + ', node uid = ' + ev.node.uid);
+		self.dbg('Gevent type = ' + ev.type + ', node uid = ' + ev.node.uid);
 		if(ev.type === 'node-created')
        		{
        			if(pid === 'input_proxy')
@@ -366,5 +436,18 @@ E2.plugins["graph"] = function(core, node) {
 
 		for(var uid in self.state.output_sids)
 			self.output_nodes[self.state.output_sids[uid]] = find_node(parseInt(uid));
+			
+		var conns = node.outputs;
+		
+		for(var i = 0, len = conns.length; i < len; i++)
+		{
+			var c = conns[i];
+			
+			if(c.src_node === node && c.src_slot.uid === undefined && c.src_slot.index === 0)
+			{
+				self.set_render_target_state(true);
+				break; // Early out and don't double init if connected to multiple inputs.
+			}
+		}
 	};
 };
