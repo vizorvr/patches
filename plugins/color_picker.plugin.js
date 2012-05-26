@@ -134,12 +134,15 @@ E2.plugins["color_picker"] = function(core, node) {
 		
 		if(!rgb || rgb[0] !== nc[0] || rgb[1] !== nc[1] || rgb[2] !== nc[2])
 		{
+			
 			self.color = new Color(nc[0], nc[1], nc[2], 1.0);
 			self.changed = true;
 		}
 		
 		nc = [cnv2(0), cnv2(1), cnv2(2)];
-		self.div.css('background-color', 'rgb(' + nc[0] + ', ' + nc[1] + ', ' + nc[2] + ')');
+		
+		if(self.div)
+			self.div.css('background-color', 'rgb(' + nc[0] + ', ' + nc[1] + ', ' + nc[2] + ')');
 	};
 
 	this.update_picker_ev = function(c, i, s, e)
@@ -207,12 +210,17 @@ E2.plugins["color_picker"] = function(core, node) {
 		}
 
 		self.hue_rgb = c;
-		p.css('background-color', 'rgb(' + c[0] + ', ' + c[1] + ', ' + c[2] + ')');
-
-		var ofs = h.offset();
 		
-		hs.css('left', (ofs.left - p.offset().left));
-		hs.css('top', Math.floor((self.state.hue * 100.0) - 2));
+		if(p)
+			p.css('background-color', 'rgb(' + c[0] + ', ' + c[1] + ', ' + c[2] + ')');
+
+		if(h && hs)
+		{
+			var ofs = h.offset();
+		
+			hs.css('left', (ofs.left - p.offset().left));
+			hs.css('top', Math.floor((self.state.hue * 100.0) - 2));
+		}
 
 		self.update_value();
 	};
@@ -253,6 +261,7 @@ E2.plugins["color_picker"] = function(core, node) {
 			self.hue_clipped = false;
 			self.color_clipped = false;
 			self.color = new Color(1.0, 1.0, 1.0, 1.0);
+			self.update_hue(null, null, null);
 		}
 	};
 };
