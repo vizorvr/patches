@@ -34,8 +34,6 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	{
 		if(!on)
 		{
-			debugger;
-			
 			if(slot.index === 0)
 				self.scene = null;
 			else if(slot.index === 1)
