@@ -23,6 +23,7 @@
 	"Generators/Values/Color picker": "color_picker",
 	"Generators/Values/Float constant": "const_float_generator",
 	"Generators/Values/Float slider": "slider_float_generator",
+	"Generators/Values/Random float": "random_float_generator",
 	"Generators/Values/Toggle button": "toggle_button",
 	"Modulators/Color/Add": "color_add_modulator",	
 	"Modulators/Color/Blend": "color_blend_modulator",

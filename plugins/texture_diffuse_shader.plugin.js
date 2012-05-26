@@ -8,6 +8,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		 { name: 'is3d', dt: core.datatypes.BOOL },
 		 { name: 'color', dt: core.datatypes.COLOR },
 		 { name: 'blend mode', dt: core.datatypes.FLOAT },
+		 { name: 'tex transform', dt: core.datatypes.TRANSFORM },
 		 { name: 'texture', dt: core.datatypes.TEXTURE }
 	];
 	
@@ -18,10 +19,11 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	var vs_src = 'attribute vec3 pos;' +
 		     'attribute vec2 uv;' +
 		     'varying vec2 uv_coord;' +
+		     'uniform mat4 t_mat;' +
 		     'uniform mat4 m_mat;' +
 		     'uniform mat4 v_mat;' +
 		     'uniform mat4 p_mat;' +
-		     'void main(void) { gl_Position = p_mat * v_mat * m_mat * vec4(pos, 1.0); uv_coord = uv; }';
+		     'void main(void) { gl_Position = p_mat * v_mat * m_mat * vec4(pos, 1.0); uv_coord = uv * mat2(t_mat); }';
 		
 	var ps_src = 'precision mediump float;' +
 		     'varying vec2 uv_coord;' +
@@ -41,6 +43,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	
 	this.s.vertexPosAttribute = gl.getAttribLocation(prog, "pos");
 	this.s.uvCoordAttribute = gl.getAttribLocation(prog, "uv");
+	this.s.tMatUniform = gl.getUniformLocation(prog, "t_mat");
 	this.s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
 	this.s.vMatUniform = gl.getUniformLocation(prog, "v_mat");
 	this.s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
@@ -81,6 +84,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		{
 			gl.uniform1i(self.s.tex0Uniform, 0);
 			self.tex.enable(gl.TEXTURE0);
+			gl.uniformMatrix4fv(self.s.tMatUniform, false, self.texture_transform);			
 		}
 		else
 		{
@@ -108,6 +112,8 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		else if(slot.index === 2)
 			self.blend_mode = data;
 		else if(slot.index === 3)
+			self.texture_transform = data;
+		else if(slot.index === 4)
 			self.tex = data;
 	};
 	
@@ -124,6 +130,9 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 			self.color = new Color(1.0, 1.0, 1.0, 1.0);
 			self.blend_mode = core.renderer.blend_mode.NORMAL;
 			self.tex = null;
+			self.texture_transform = mat4.create();
+			
+			mat4.identity(self.texture_transform);
 		}
 	};
 };
