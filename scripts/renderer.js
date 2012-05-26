@@ -164,8 +164,8 @@ function Renderer(canvas_id)
 			gl.clearColor(0.0, 0.0, 0.0, 1.0);
 			gl.clearDepth(1.0);
 			gl.enable(gl.CULL_FACE);
-			gl.cullFace(gl.FRONT); 
-	    		// gl.viewport(0, 0, self.canvas[0].clientWidth, self.canvas[0].clientHeight);
+			gl.cullFace(gl.FRONT);
+	    		gl.viewport(0, 0, self.canvas[0].width, self.canvas[0].height) ;
 	    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		}	
 	};
