@@ -79,10 +79,18 @@ for cssfile in cssfiles:
 	print '\tCompressing ' + cssfile
 	os.system('yui-compressor --type css -o ' + build_dir + '/' + css_path + cssfile + ' ./' + css_path + cssfile)
 
+print 'Copying logo TrueType font.'
+os.system('cp ./' + css_path + 'exo.ttf ' + build_dir + '/' + css_path + 'exo.ttf')
+
+print 'Copying plugin icons and compressing css...'
+icon_path = css_path + 'icons'
+shutil.copytree(icon_path, build_dir + '/' + icon_path)
+os.system('yui-compressor --type css -o ' + build_dir + '/' + icon_path + '/style.css ./' + icon_path + '/style.css')
+
 print 'Copying dynatree skin and compressing css...'
 skin_path = css_path + 'skin'
 shutil.copytree(skin_path, build_dir + '/' + skin_path)
-os.system('yui-compressor --type css -o ' + build_dir + '/' + skin_path + '/ui.dynatree.css' + ' ./' + skin_path + '/ui.dynatree.css')
+os.system('yui-compressor --type css -o ' + build_dir + '/' + skin_path + '/ui.dynatree.css ./' + skin_path + '/ui.dynatree.css')
 
 jq_theme = 'smoothness'
 
