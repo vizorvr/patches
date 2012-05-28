@@ -1,6 +1,7 @@
 E2.plugins["slider_float_generator"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Emit a user controllable float value between a specified minimum and maximum.';
 	this.input_slots = [];
 	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
 	this.state = { val: 0.0, min: 0.0, max: 1.0 };
@@ -19,8 +20,8 @@ E2.plugins["slider_float_generator"] = function(core, node) {
 		var row = make('tr');
 		var cols = [make('td'), make('td'), make('td')];
 		
-		var inp_lo = $('<input id="lo" type="text" value="0.0" style="width: 30px;" />');
-		var inp_hi = $('<input id="hi" type="text" value="1.0" style="width: 30px;" />');
+		var inp_lo = $('<input id="lo" type="text" style="width: 30px;" />');
+		var inp_hi = $('<input id="hi" type="text" style="width: 30px;" />');
 		var slider = make('div');
 		
 		slider.attr('id', 'sl');

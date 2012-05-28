@@ -24,6 +24,13 @@
 	width: 600px;
 }
 
+input[type=text]
+{
+	background-color: #eaeaea;
+	/*height: 15px;*/
+	line-height: 1.0em;
+}
+
 .centered
 {
 	margin-left: 8px;
