@@ -4,7 +4,7 @@
 
 // Various functions for helping debug WebGL apps.
 
-WebGLDebugUtils = function() {
+var WebGLDebugUtils = function() {
 
 /**
  * Wrapped logging function.
