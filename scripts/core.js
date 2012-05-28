@@ -213,6 +213,7 @@ function PluginManager(core, base_url)
 		url: self.base_url + '/plugins.json',
 		dataType: 'json',
 		async: false,
+		headers: {},
 		success: function(data)
 		{
 			var menu = make('ul');
@@ -460,6 +461,85 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	};
 }
 
+function draggable_mouseup(data) { return function(e)
+{
+	data.doc.unbind('mouseup.draggable');
+	data.doc.unbind('mousemove.draggable');
+		
+	data.stop(e);
+
+	if(e.stopPropagation) e.stopPropagation();
+	if(e.preventDefault) e.preventDefault();
+	return false;
+};}
+
+function draggable_mousemove(data) { return function(e)
+{
+	var ui = data.ui[0];
+	var nx = data.oleft + (e.pageX || e.screenX) - data.ox;
+	var ny = data.otop + (e.pageY || e.screenY) - data.oy;
+	var cp = E2.dom.canvas_parent;
+	var co = cp.offset();
+	var w = cp.width();
+	var h = cp.height();
+	
+	if(e.pageX < co.left)
+	{	cp.scrollLeft(cp.scrollLeft() - 20); nx -= 20; }
+	else if(e.pageX > co.left + w)
+	{	cp.scrollLeft(cp.scrollLeft() + 20); nx += 20; }
+	
+	if(e.pageY < co.top)
+	{	cp.scrollTop(cp.scrollTop() - 20); ny -= 20; }
+	else if(e.pageY > co.top + h)
+	{	cp.scrollTop(cp.scrollTop() + 20); ny += 20 }
+
+	nx = nx < 0 ? 0 : nx;
+	ny = ny < 0 ? 0 : ny;
+	
+	ui.style.left = nx + 'px';
+	ui.style.top = ny + 'px';
+	data.oleft = nx;
+	data.otop = ny;
+	data.ox = e.pageX || e.screenX;
+	data.oy = e.pageY || e.screenY;
+	
+	data.drag(e);
+	
+	if(e.stopPropagation) e.stopPropagation();
+	if(e.preventDefault) e.preventDefault();
+	return false;
+};}
+
+function draggable_mousedown(ui, drag, stop) { return function(e)
+{
+	if(e.target.id !== 't')
+		return true;
+
+	var data = 
+	{ 
+		ui: ui,
+		oleft: parseInt(ui[0].style.left) || 0,
+		otop: parseInt(ui[0].style.top) || 0,
+		ox: e.pageX || e.screenX,
+		oy: e.pageY || e.screenY,
+		drag: drag,
+		stop: stop,
+		doc: $(document)
+	};
+
+	data.doc.bind('mouseup.draggable', draggable_mouseup(data));
+	data.doc.bind('mousemove.draggable', draggable_mousemove(data));
+	
+	if(e.stopPropagation) e.stopPropagation();
+	if(e.preventDefault) e.preventDefault();
+	return false;
+};}
+
+function make_draggable(ui, drag, stop)
+{
+	ui.mousedown(draggable_mousedown(ui, drag, stop));
+}
+
 function NodeUI(parent_node, x, y) {
 	var self = this;
 	
@@ -576,11 +656,12 @@ function NodeUI(parent_node, x, y) {
 	else
 		this.plugin_ui = {}; // We must set a dummy object so plugins can tell why they're being called.
 	
-	this.dom.draggable({
+	make_draggable(this.dom, E2.app.onNodeDragged(parent_node), E2.app.onNodeDragStopped(parent_node));
+	/*this.dom.ppdrag({
 		drag: E2.app.onNodeDragged(parent_node),
 		stop: E2.app.onNodeDragStopped(parent_node),
 		cancel: '#cc'
-    	});
+    	});*/
     	
 	this.dom.css('display', 'none');
 	
@@ -1495,11 +1576,13 @@ function Application() {
 	this.accum_delta = 0.0;
 	this.selection_start = null;
 	this.selection_end = null;
+	this.selection_last = null;
 	this.selection_nodes = [];
 	this.selection_conns = [];
 	this.frames = 0;
 	this.clipboard = null;
 	this.fullscreen = false;
+	this.in_drag = false;
 	
 	var self = this;
 	
@@ -1853,14 +1936,14 @@ function Application() {
 			var y2 = pos.top + h;
 			
 			if(e.pageX < pos.left)
-				cp.scrollLeft(cp.scrollLeft() + (e.pageX - pos.left));
+				cp.scrollLeft(cp.scrollLeft() - 20);
 			else if(e.pageX > x2)
-				cp.scrollLeft(cp.scrollLeft() + (e.pageX - x2));
-						
+				cp.scrollLeft(cp.scrollLeft() + 20);
+					
 			if(e.pageY < pos.top)
-				cp.scrollTop(cp.scrollTop() + (e.pageY - pos.top));
+				cp.scrollTop(cp.scrollTop() - 20);
 			else if(e.pageY > y2)
-				cp.scrollTop(cp.scrollTop() + (e.pageY - y2));
+				cp.scrollTop(cp.scrollTop() + 20);
 
 			self.edit_conn.ui.dst_pos = self.mouseEventPosToCanvasCoord(e);
 			self.updateCanvas();
@@ -2166,6 +2249,8 @@ function Application() {
 	
 	this.onNodeDragged = function(node) { return function(e)
 	{
+		self.in_drag = true;
+
 		var sl = canvas_parent.scrollLeft();
 		var st = canvas_parent.scrollTop();
 		var pos = node.ui.dom.position();
@@ -2208,6 +2293,7 @@ function Application() {
 	this.onNodeDragStopped = function(node) { return function(e)
 	{
 		self.onNodeDragged(node)(e);
+		self.in_drag = false;
 	}};
 	
 	this.clearSelection = function()
@@ -2240,6 +2326,7 @@ function Application() {
 			self.set_persist_select(false);
 			self.selection_start = self.mouseEventPosToCanvasCoord(e);
 			self.selection_end = self.selection_start.slice(0);
+			self.selection_last = [e.pageX, e.pageY];
 		
 			self.clearSelection();
 		}
@@ -2255,6 +2342,7 @@ function Application() {
 	{
 		self.selection_start = null;
 		self.selection_end = null;
+		self.selection_last = null;
 		self.set_persist_select(true);
 	};
 	
@@ -2306,6 +2394,7 @@ function Application() {
 
 		var se = self.selection_end = self.mouseEventPosToCanvasCoord(e);
 		var nodes = self.core.active_graph.nodes;
+		var cp = E2.dom.canvas_parent;
 		
 		ss = ss.slice(0);
 		se = se.slice(0);
@@ -2341,6 +2430,21 @@ function Application() {
 			n.ui.dom.css('border', '2px solid #88d');
 			self.selection_nodes.push(n);
 		}
+		
+		var co = cp.offset();
+		var w = cp.width();
+		var h = cp.height();
+		var dx = e.pageX - self.selection_last[0];
+		var dy = e.pageY - self.selection_last[1];
+
+		if((dx < 0 && e.pageX < co.left + (w * 0.25)) || (dx > 0 && e.pageX > co.left + (w * 0.75)))
+			cp.scrollLeft(cp.scrollLeft() + dx);
+		
+		if((dy < 0 && e.pageY < co.top + (h * 0.25)) || (dy > 0 && e.pageY > co.top + (h * 0.75)))
+			cp.scrollTop(cp.scrollTop() + dy);
+		
+		
+		self.selection_last = [e.pageX, e.pageY];
 		
 		self.updateCanvas();
 	};
@@ -2649,6 +2753,9 @@ function Application() {
 
 	this.onShowTooltip = function(e)
 	{
+		if(self.in_drag)
+			return false;
+		
 		var i_txt = $(e.currentTarget).attr('alt');
 		
 		i_txt = i_txt.replace('\n', '<br/>');
@@ -2661,6 +2768,9 @@ function Application() {
 	
 	this.onHideTooltip = function()
 	{
+		if(self.in_drag)
+			return false;
+
 		E2.dom.info.html('');
 	};
 
