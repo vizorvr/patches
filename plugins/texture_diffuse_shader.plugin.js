@@ -15,7 +15,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	this.output_slots = [ 
 		{ name: 'shader', dt: core.datatypes.SHADER } 
 	];
-	
+
 	var vs_src = 'attribute vec3 pos;' +
 		     'attribute vec2 uv;' +
 		     'varying vec2 uv_coord;' +
@@ -23,7 +23,10 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		     'uniform mat4 m_mat;' +
 		     'uniform mat4 v_mat;' +
 		     'uniform mat4 p_mat;' +
-		     'void main(void) { gl_Position = p_mat * v_mat * m_mat * vec4(pos, 1.0); uv_coord = uv * mat2(t_mat); }';
+		     'void main(void) {' +
+		     '    gl_Position = p_mat * v_mat * m_mat * vec4(pos, 1.0);' + 
+		     '    uv_coord = (uv * mat2(vec2(t_mat[0][0], t_mat[0][1]), vec2(t_mat[1][0], t_mat[1][1]))) + vec2(t_mat[3][0], t_mat[3][1]);' +
+		     '}';
 		
 	var ps_src = 'precision mediump float;' +
 		     'varying vec2 uv_coord;' +
@@ -80,11 +83,12 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
 		gl.enableVertexAttribArray(self.s.uvCoordAttribute);
 		
+		gl.uniformMatrix4fv(self.s.tMatUniform, false, self.texture_transform);			
+
 		if(self.tex !== null)
 		{
 			gl.uniform1i(self.s.tex0Uniform, 0);
 			self.tex.enable(gl.TEXTURE0);
-			gl.uniformMatrix4fv(self.s.tMatUniform, false, self.texture_transform);			
 		}
 		else
 		{
