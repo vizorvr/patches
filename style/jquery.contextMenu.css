@@ -21,7 +21,7 @@
 }
 
 .context-menu-item {
-    padding: 2px 2px 2px 24px;
+    padding: 2px 2px 2px 2px;
     background-color: #EEE;
     position: relative;
     -moz-user-select: -moz-none;

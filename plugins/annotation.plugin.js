@@ -27,7 +27,7 @@ E2.plugins["annotation"] = function(core, node) {
 			self.state.width = ta.width();
 			self.state.height = ta.height();
 		});
-
+		
 		return inp;
 	};
 	

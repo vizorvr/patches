@@ -82,10 +82,12 @@ for cssfile in cssfiles:
 print 'Copying logo TrueType font.'
 os.system('cp ./' + css_path + 'exo.ttf ' + build_dir + '/' + css_path + 'exo.ttf')
 
-print 'Copying plugin icons and compressing css...'
-icon_path = css_path + 'icons'
-shutil.copytree(icon_path, build_dir + '/' + icon_path)
-os.system('yui-compressor --type css -o ' + build_dir + '/' + icon_path + '/style.css ./' + icon_path + '/style.css')
+print 'Compressing plugin icons to CSS sprite sheet...'
+#icon_path = css_path + 'icons'
+#shutil.copytree(icon_path, build_dir + '/' + icon_path)
+#os.system('yui-compressor --type css -o ' + build_dir + '/' + icon_path + '/style.css ./' + icon_path + '/style.css')
+os.system('mkdir build/style/icons')
+os.system('tools/compress-plugin-icons.py')
 
 print 'Copying dynatree skin and compressing css...'
 skin_path = css_path + 'skin'

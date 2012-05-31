@@ -866,7 +866,11 @@ var // currently active contextMenu trigger
                 
                     // add icons
                     if (item.icon) {
-                        $t.addClass("icon icon-" + item.icon);
+                        $t.addClass("icon");
+                        var img = $('<img />');
+                        // img.attr('src', 'images/blank.png');
+                        img.addClass("icon-img icon-" + item.icon);
+                        $t.prepend(img);
                     }
                 }
                 
