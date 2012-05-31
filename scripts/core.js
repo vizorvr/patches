@@ -44,7 +44,11 @@ function msg(txt)
 {
 	var d = E2.dom.dbg;
 
-	d.append(txt + '\n');
+	if(txt.substring(0,  7) !== 'ERROR: ')
+		d.append(txt + '\n');
+	else
+		d.append('<span style="color:#f00">' + txt + '</span>\n');
+
 	d.scrollTop(d[0].scrollHeight);
 }
 
@@ -196,8 +200,10 @@ function PluginManager(core, base_url)
 				self.release_mode = true;
 			}
 		},
-		error: function()
+		error: function(opts, error)
 		{
+			// NOTE: This won't trigger because jQuery uses JSONP to load
+			// the script into the global namespace. We can't trap the 404.
 			msg('PluginMgr: Running in debug mode');
 		}
 	});
@@ -323,11 +329,6 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 			self.ui = null;
 	};
 	
-	this.toString = function()
-	{
-		return 'connection from ' + self.src_node.uid + '(' + self.src_slot.index + ') to ' + self.dst_node.uid + '(' + self.dst_slot.index + ')';
-	};
-
 	this.reset = function()
 	{
 		if(self.ui && self.ui.flow)
@@ -476,21 +477,19 @@ function draggable_mouseup(data) { return function(e)
 function draggable_mousemove(data) { return function(e)
 {
 	var ui = data.ui[0];
-	var nx = data.oleft + (e.pageX || e.screenX) - data.ox;
-	var ny = data.otop + (e.pageY || e.screenY) - data.oy;
+	var nx = data.oleft + e.pageX - data.ox;
+	var ny = data.otop + e.pageY - data.oy;
 	var cp = E2.dom.canvas_parent;
 	var co = cp.offset();
-	var w = cp.width();
-	var h = cp.height();
 	
 	if(e.pageX < co.left)
 	{	cp.scrollLeft(cp.scrollLeft() - 20); nx -= 20; }
-	else if(e.pageX > co.left + w)
+	else if(e.pageX > co.left + cp.width())
 	{	cp.scrollLeft(cp.scrollLeft() + 20); nx += 20; }
 	
 	if(e.pageY < co.top)
 	{	cp.scrollTop(cp.scrollTop() - 20); ny -= 20; }
-	else if(e.pageY > co.top + h)
+	else if(e.pageY > co.top + cp.height())
 	{	cp.scrollTop(cp.scrollTop() + 20); ny += 20 }
 
 	nx = nx < 0 ? 0 : nx;
@@ -498,10 +497,11 @@ function draggable_mousemove(data) { return function(e)
 	
 	ui.style.left = nx + 'px';
 	ui.style.top = ny + 'px';
+	
 	data.oleft = nx;
 	data.otop = ny;
-	data.ox = e.pageX || e.screenX;
-	data.oy = e.pageY || e.screenY;
+	data.ox = e.pageX;
+	data.oy = e.pageY;
 	
 	data.drag(e);
 	
@@ -657,11 +657,6 @@ function NodeUI(parent_node, x, y) {
 		this.plugin_ui = {}; // We must set a dummy object so plugins can tell why they're being called.
 	
 	make_draggable(this.dom, E2.app.onNodeDragged(parent_node), E2.app.onNodeDragStopped(parent_node));
-	/*this.dom.ppdrag({
-		drag: E2.app.onNodeDragged(parent_node),
-		stop: E2.app.onNodeDragStopped(parent_node),
-		cancel: '#cc'
-    	});*/
     	
 	this.dom.css('display', 'none');
 	
@@ -737,7 +732,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		for(var i = 0, len = pending.length; i < len; i++)
 			graph.destroy_connection(pending[i]);
 		
-		if(self.id === 'Graph')
+		if(self.plugin.id === 'graph')
 			self.plugin.graph.tree_node.remove();
 		
 		self.destroy_ui();
@@ -1097,11 +1092,17 @@ function Node(parent_graph, plugin_id, x, y) {
 
 		if(self.plugin.id === 'graph')
 			self.plugin.graph.patch_up(graphs);
-		
-		if(self.plugin.state_changed)
-			self.plugin.state_changed(null);
 	};
 
+	this.initialise = function()
+	{
+		if(self.plugin.state_changed)
+			self.plugin.state_changed(null);
+
+		if(self.plugin.id === 'graph')
+			self.plugin.graph.initialise();
+	};
+	
 	// Initialisation. Must be declared last in the Node definition due to a quirk
 	// in JS parsing: The plugin initialization code cannot call a method on its
 	// node parent unless this is declared before the code that invokes the plugin
@@ -1351,11 +1352,20 @@ function Graph(parent_graph, tree_node)
 		var nodes = self.nodes,
 		    conns = self.connections;
 		    
+		for(var i = 0, len = nodes.length; i < len; i++)
+			nodes[i].patch_up(graphs);
+
 		for(var i = 0, len = conns.length; i < len; i++)
 			conns[i].patch_up(self.nodes);
 
+	};
+	
+	this.initialise = function()
+	{
+		var nodes = self.nodes;
+		
 		for(var i = 0, len = nodes.length; i < len; i++)
-			nodes[i].patch_up(graphs);
+			nodes[i].initialise();
 
 		self.reset();
 	};
@@ -1506,6 +1516,7 @@ function Core() {
 		self.root_graph.deserialise(d.root);
 		self.graphs.push(self.root_graph);
 		self.root_graph.patch_up(self.graphs);
+		self.root_graph.initialise(self.graphs);
 			
 		self.active_graph = resolve_graph(self.graphs, d.active_graph); 
 		self.rebuild_structure_tree();
@@ -2298,7 +2309,6 @@ function Application() {
 	
 	this.clearSelection = function()
 	{
-		// TODO: Rememeber to clear these arrays when the graph changes!!
 		for(var i = 0, len = self.selection_nodes.length; i < len; i++)
 		{
 			var nui = self.selection_nodes[i].ui;
@@ -2314,6 +2324,9 @@ function Application() {
 			if(cui) 
 				cui.selected = false;
 		}
+
+		self.selection_nodes = [];
+		self.selection_conns = [];
 	};
 	
 	this.onCanvasMouseDown = function(e)
@@ -2327,14 +2340,15 @@ function Application() {
 			self.selection_start = self.mouseEventPosToCanvasCoord(e);
 			self.selection_end = self.selection_start.slice(0);
 			self.selection_last = [e.pageX, e.pageY];
-		
 			self.clearSelection();
 		}
 		else
+		{
 			self.releaseSelection();
+			self.selection_nodes = [];
+			self.selection_conns = [];
+		}
 		
-		self.selection_nodes = [];
-		self.selection_conns = [];
 		self.updateCanvas();
 	};
 	
@@ -2354,34 +2368,42 @@ function Application() {
 		
 		if(nodes.length)
 		{
-			var is_in_set = function(c)
-			{
-				for(var i = 0, len = nodes.length; i < len; i++)
-				{
-					var n = nodes[i];
-				
-					if(c.src_node === n || c.dst_node === n)
-						return true;
-				}
+			var sconns = self.selection_conns;
 			
-				return false;
+			var insert_all = function(clist)
+			{
+				for(var i = 0, len = clist.length; i < len; i++)
+				{
+					var c = clist[i];
+					var found = false;
+										
+					for(var ci = 0, cl = sconns.length; ci < cl; ci++)
+					{
+						if(c === sconns[ci])
+						{
+							found = true;
+							break;
+						}
+					}
+			
+					if(!found)
+					{
+						c.ui.selected = true;
+						sconns.push(c);
+					}
+				}
 			};
-				
-			// Select all pertinent connections...
-			var conns = self.core.active_graph.connections;
-		
-			for(var i = 0, len = conns.length; i < len; i++)
-			{
-				var c = conns[i];
 			
-				if(is_in_set(c))
-				{
-					c.ui.selected = true;
-					self.selection_conns.push(c);
-				}
+			// Select all pertinent connections
+			for(var i = 0, len = nodes.length; i < len; i++)
+			{
+				var n = nodes[i];
+			    				
+				insert_all(n.inputs);
+				insert_all(n.outputs);
 			}
 		}
-
+		
 		self.updateCanvas();
 	};
 
@@ -2437,10 +2459,10 @@ function Application() {
 		var dx = e.pageX - self.selection_last[0];
 		var dy = e.pageY - self.selection_last[1];
 
-		if((dx < 0 && e.pageX < co.left + (w * 0.25)) || (dx > 0 && e.pageX > co.left + (w * 0.75)))
+		if((dx < 0 && e.pageX < co.left + (w * 0.15)) || (dx > 0 && e.pageX > co.left + (w * 0.85)))
 			cp.scrollLeft(cp.scrollLeft() + dx);
 		
-		if((dy < 0 && e.pageY < co.top + (h * 0.25)) || (dy > 0 && e.pageY > co.top + (h * 0.75)))
+		if((dy < 0 && e.pageY < co.top + (h * 0.15)) || (dy > 0 && e.pageY > co.top + (h * 0.85)))
 			cp.scrollTop(cp.scrollTop() + dy);
 		
 		
@@ -2451,9 +2473,16 @@ function Application() {
 
 	this.onCopy = function(e)
 	{
-		if(e.target.id === 'persist' || e.target.tagName === 'INPUT')
-			return;
-
+		if(e.target.id === 'persist')
+			return true;
+		
+		if(self.selection_nodes.length < 1)
+		{
+			msg('Copy: Nothing selected.');
+			e.stopPropagation();
+			return false;
+		}
+		
 		var d = {};
 		var sx = E2.dom.canvas_parent.scrollLeft();
 		var sy = E2.dom.canvas_parent.scrollTop();
@@ -2474,17 +2503,10 @@ function Application() {
 			
 			n = n.serialise();
 			
-			if(b[0] < x1)
-				x1 = b[0];
-			
-			if(b[1] < y1)
-				y1 = b[1];
-			
-			if(b[2] > x2)
-				x2 = b[2];
-				
-			if(b[3] > y2)
-				y2 = b[3];
+			if(b[0] < x1) x1 = b[0];
+			if(b[1] < y1) y1 = b[1];
+			if(b[2] > x2) x2 = b[2];
+			if(b[3] > y2) y2 = b[3];
 			
 			d.nodes.push(n);
 		}
@@ -2500,11 +2522,14 @@ function Application() {
 		self.clipboard = JSON.stringify(d);
 		msg('Copy event. Buffer:');
 		msg(self.clipboard);
+		
+		e.stopPropagation();
+		return false;
 	};
 	
 	this.onCut = function(e)
 	{
-		if(e.target.id === 'persist' || e.target.tagName === 'INPUT')
+		if(e.target.id === 'persist')
 			return;
 
 		msg('Cut event');
@@ -2520,15 +2545,13 @@ function Application() {
 
 	this.onPaste = function(e)
 	{
-		if(e.target.id === 'persist' || e.target.tagName === 'INPUT')
+		if(e.target.id === 'persist')
 			return;
 		
 		if(self.clipboard === null)
 			return;
 		
 		self.clearSelection();
-		self.selection_nodes = [];
-		self.selection_conns = [];
 				
 		var d = JSON.parse(self.clipboard);
 		var cp = E2.dom.canvas_parent;
@@ -2569,29 +2592,7 @@ function Application() {
 			ag.register_node(n);
 
 			n.patch_up(self.core.graphs);
-			n.create_ui();
-
-			n.ui.dom.css('border', '2px solid #88d');
 			self.selection_nodes.push(n);
-
-			if(n.plugin.reset)
-				n.plugin.reset();			
-
-			if(n.plugin.state_changed)
-				n.plugin.state_changed(n.ui.plugin_ui);			
-			
-			if(n.plugin.id === 'graph')
-			{
-				n.plugin.graph.tree_node = n.parent_graph.tree_node.addChild({
-					title: n.title,
-					isFolder: true,
-					expand: true
-				});
-				
-				n.plugin.graph.tree_node.graph = n.plugin.graph;
-				n.plugin.graph.uid = E2.app.core.get_graph_uid();
-				n.plugin.graph.parent_graph = ag;
-			}
 		}
 
 		for(var i = 0, len = d.conns.length; i < len; i++)
@@ -2615,10 +2616,55 @@ function Application() {
 			ag.connections.push(c);
 
 			c.create_ui();
-			c.ui.resolve_slot_divs();
 			c.ui.selected = true;
 			self.selection_conns.push(c);
 		}
+		
+		var r_init_struct = function(pg, n)
+		{
+			n.parent_graph = pg;
+			
+			if(n.plugin.id !== 'graph')
+				return;
+
+			debugger;
+			
+			n.plugin.graph.tree_node = n.parent_graph.tree_node.addChild({
+				title: n.title,
+				isFolder: true,
+				expand: true
+			});
+			
+			n.plugin.graph.tree_node.graph = n.plugin.graph;
+			n.plugin.graph.uid = E2.app.core.get_graph_uid();
+			n.plugin.graph.parent_graph = ag;
+		
+			var nodes = n.plugin.graph.nodes;
+			
+			for(var i = 0, len = nodes.length; i < len; i++)
+				r_init_struct(n.plugin.graph, nodes[i]);
+		};
+		
+		for(var i = 0, len = self.selection_nodes.length; i < len; i++)
+		{
+			var n = self.selection_nodes[i];
+
+			n.initialise();
+			n.create_ui();
+
+			n.ui.dom.css('border', '2px solid #88d');
+
+			if(n.plugin.reset)
+				n.plugin.reset();			
+
+			if(n.plugin.state_changed)
+				n.plugin.state_changed(n.ui.plugin_ui);			
+			
+			r_init_struct(ag, n);
+		}
+		
+		for(var i = 0, len = self.selection_conns.length; i < len; i++)
+			self.selection_conns[i].ui.resolve_slot_divs();
 		
 		if(d.conns.length)
 			self.updateCanvas();
@@ -2631,24 +2677,6 @@ function Application() {
 		if(e.keyCode === 17) // CTRL
 		{
 			self.ctrl_pressed = true;
-			
-			if(e.target.id !== 'persist')
-			{
-				// Clear any current text selection anywhere in the window
-				// if we're not the the persistence view, so that it does not
-				// interferre with out own implementation.
-				if (window.getSelection) 
-				{
-					if (window.getSelection().empty) // Chrome
-						window.getSelection().empty();
-					else if(window.getSelection().removeAllRanges) // Firefox
-						window.getSelection().removeAllRanges();
-				} 
-				else if(document.selection) // IE? 
-				{
-					document.selection.empty();
-				}
-			}
 		}
 		else if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
 		{
@@ -2658,6 +2686,11 @@ function Application() {
 		}
 		else if(self.ctrl_pressed)
 		{
+			var tgt = e.target.tagName;
+			
+			if(tgt === 'INPUT' || tgt === 'TEXTAREA')
+				return;
+				
 			if(e.keyCode === 67) // CTRL+c
 				self.onCopy(e);
 			else if(e.keyCode === 88) // CTRL+x
@@ -2885,6 +2918,7 @@ $(document).ready(function() {
 		onActivate: function(node) 
 		{
 			E2.app.clearEditState();
+			E2.app.clearSelection();
 			E2.app.core.onGraphSelected(node.graph);
 			E2.app.updateCanvas();
 		}
@@ -2911,6 +2945,6 @@ $(document).ready(function() {
 	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
 	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
 
-  	msg('Ready.');	
 	$('#content').css('display', 'block');
+	
 });
