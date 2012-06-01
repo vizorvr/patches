@@ -1,0 +1,405 @@
+{
+    "abs_t": 0,
+    "active_graph": 0,
+    "graph_uid": 1,
+    "root": {
+        "node_uid": 50,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "mesh_renderer_emitter",
+                "x": 1117,
+                "y": 30,
+                "uid": 0
+            },
+            {
+                "plugin": "texture_diffuse_shader",
+                "x": 978,
+                "y": 135,
+                "uid": 9
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 837,
+                "y": 279,
+                "uid": 10,
+                "state": {
+                    "url": "http://www.effekts.dk/poc/data/textures/backdrop_landscape.jpg"
+                }
+            },
+            {
+                "plugin": "quad_mesh_generator",
+                "x": 1045,
+                "y": 14,
+                "uid": 11
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 501,
+                "y": 180,
+                "uid": 16,
+                "state": {
+                    "val": 0
+                }
+            },
+            {
+                "plugin": "vector",
+                "x": 654,
+                "y": 491,
+                "uid": 18
+            },
+            {
+                "plugin": "slider_float_generator",
+                "x": 323,
+                "y": 623,
+                "uid": 19,
+                "state": {
+                    "val": 1,
+                    "min": 0,
+                    "max": 1
+                },
+                "title": "Y Scale"
+            },
+            {
+                "plugin": "scale_matrix",
+                "x": 746,
+                "y": 334,
+                "uid": 20
+            },
+            {
+                "plugin": "slider_float_generator",
+                "x": 326,
+                "y": 340,
+                "uid": 21,
+                "state": {
+                    "val": 1,
+                    "min": 0,
+                    "max": 1
+                },
+                "title": "X Scale"
+            },
+            {
+                "plugin": "translation_matrix",
+                "x": 741,
+                "y": 24,
+                "uid": 22
+            },
+            {
+                "plugin": "vector",
+                "x": 626,
+                "y": 100,
+                "uid": 23
+            },
+            {
+                "plugin": "concatenate_matrix_modulator",
+                "x": 866,
+                "y": 161,
+                "uid": 26
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 544,
+                "y": 589,
+                "uid": 27,
+                "state": {
+                    "val": 1
+                }
+            },
+            {
+                "plugin": "mouse_position_generator",
+                "x": 316,
+                "y": 100,
+                "uid": 29
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 447,
+                "y": 9,
+                "uid": 30
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 61,
+                "y": 9,
+                "uid": 31,
+                "state": {
+                    "val": -1
+                }
+            },
+            {
+                "plugin": "mouse_button_generator",
+                "x": 32,
+                "y": 259,
+                "uid": 32
+            },
+            {
+                "plugin": "convert_bool_float_modulator",
+                "x": 274,
+                "y": 214,
+                "uid": 33
+            },
+            {
+                "plugin": "convert_bool_float_modulator",
+                "x": 271,
+                "y": 443,
+                "uid": 34
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 371,
+                "y": 214,
+                "uid": 37
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 368,
+                "y": 443,
+                "uid": 38
+            },
+            {
+                "plugin": "add_modulator",
+                "x": 464,
+                "y": 247,
+                "uid": 42
+            },
+            {
+                "plugin": "add_modulator",
+                "x": 449,
+                "y": 484,
+                "uid": 43
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 42,
+                "y": 100,
+                "uid": 44,
+                "state": {
+                    "val": 2
+                }
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 553,
+                "y": 276,
+                "uid": 45
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 543,
+                "y": 511,
+                "uid": 46
+            },
+            {
+                "plugin": "not_modulator",
+                "x": 188,
+                "y": 443,
+                "uid": 47
+            },
+            {
+                "plugin": "not_modulator",
+                "x": 188,
+                "y": 214,
+                "uid": 48
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 9,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 10,
+                "dst_nuid": 9,
+                "src_slot": 0,
+                "dst_slot": 4
+            },
+            {
+                "src_nuid": 11,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 18,
+                "dst_nuid": 20,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 23,
+                "dst_nuid": 22,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 22,
+                "dst_nuid": 26,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 20,
+                "dst_nuid": 26,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 16,
+                "dst_nuid": 23,
+                "src_slot": 0,
+                "dst_slot": 2,
+                "offset": 2
+            },
+            {
+                "src_nuid": 27,
+                "dst_nuid": 18,
+                "src_slot": 0,
+                "dst_slot": 2
+            },
+            {
+                "src_nuid": 29,
+                "dst_nuid": 23,
+                "src_slot": 1,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 26,
+                "dst_nuid": 9,
+                "src_slot": 0,
+                "dst_slot": 3
+            },
+            {
+                "src_nuid": 29,
+                "dst_nuid": 30,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 31,
+                "dst_nuid": 30,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 30,
+                "dst_nuid": 23,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 33,
+                "dst_nuid": 37,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 34,
+                "dst_nuid": 38,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 44,
+                "dst_nuid": 37,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 44,
+                "dst_nuid": 38,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "offset": 1
+            },
+            {
+                "src_nuid": 37,
+                "dst_nuid": 42,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 38,
+                "dst_nuid": 43,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 31,
+                "dst_nuid": 42,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "offset": 1
+            },
+            {
+                "src_nuid": 31,
+                "dst_nuid": 43,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "offset": 2
+            },
+            {
+                "src_nuid": 42,
+                "dst_nuid": 45,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 43,
+                "dst_nuid": 46,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 21,
+                "dst_nuid": 45,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 19,
+                "dst_nuid": 46,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 45,
+                "dst_nuid": 18,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 46,
+                "dst_nuid": 18,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 32,
+                "dst_nuid": 47,
+                "src_slot": 2,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 47,
+                "dst_nuid": 34,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 32,
+                "dst_nuid": 48,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 48,
+                "dst_nuid": 33,
+                "src_slot": 0,
+                "dst_slot": 0
+            }
+        ]
+    }
+}

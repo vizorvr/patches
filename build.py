@@ -114,7 +114,17 @@ shutil.copytree('images/', build_dir + '/images/')
 print '\tCopying data folder.'
 shutil.copytree('data/', build_dir + '/data/')
 
-print '\tCopying index.html folder.'
+print '\tCopying help folder.'
+shutil.copytree('help/', build_dir + '/help/', False, shutil.ignore_patterns('*.markdown'))
+
+print '\tBuilding help files...'
+markdown_files = glob.glob('help/*.markdown')
+
+for markdown in markdown_files:
+	print '\t' + markdown
+	os.system('markdown ' + markdown + ' > build/' + markdown[:-9] + '.html')
+
+print '\tCopying index.html.'
 os.system('cp index.html ' + build_dir)
 
 print '\tCreating change log.'
