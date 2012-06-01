@@ -1864,7 +1864,7 @@ function Application() {
 				
 		var conns = self.core.active_graph.connections;
 		var cb = [[], [], [], []];
-		var styles = ['#000', '#44e', '#88d', '#f00'];
+		var styles = ['#000', '#44f', '#09f', '#f00'];
 		
 		for(var i = 0, len = conns.length; i < len; i++)
 		{
@@ -2449,7 +2449,7 @@ function Application() {
 			if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
 				continue; // No intersection.
 				
-			n.ui.dom.css('border', '2px solid #88d');
+			n.ui.dom.css('border', '2px solid #09f');
 			self.selection_nodes.push(n);
 		}
 		
@@ -2652,7 +2652,7 @@ function Application() {
 			n.initialise();
 			n.create_ui();
 
-			n.ui.dom.css('border', '2px solid #88d');
+			n.ui.dom.css('border', '2px solid #09f');
 
 			if(n.plugin.reset)
 				n.plugin.reset();			
