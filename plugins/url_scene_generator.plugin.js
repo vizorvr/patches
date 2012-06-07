@@ -24,14 +24,7 @@ E2.plugins["url_scene_generator"] = function(core, node) {
 			var url = self.state.url;
 			
 			if(url === '')
-			{
-				url = document.URL;
-				
-				if(url[url.length-1] !== '/')
-					url = url.substring(0, url.lastIndexOf('/') + 1);
-				
-				url = url + 'data/scenes/';
-			}
+				url = 'data/scenes/';
 			
 			var diag = make('div');
 			var url_inp = $('<input type="input" value="' + url + '" />'); 

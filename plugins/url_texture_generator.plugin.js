@@ -24,14 +24,7 @@ E2.plugins["url_texture_generator"] = function(core, node) {
 			var url = self.state.url;
 			
 			if(url === '')
-			{
-				url = document.URL;
-				
-				if(url[url.length-1] !== '/')
-					url = url.substring(0, url.lastIndexOf('/') + 1);
-				
-				url = url + 'data/textures/';
-			}
+				url = 'data/textures/';
 			
 			var diag = make('div');
 			var url_inp = $('<input type="input" value="' + url + '" />'); 

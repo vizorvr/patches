@@ -24,14 +24,7 @@ E2.plugins["url_audio_generator"] = function(core, node) {
 			var url = self.state.url;
 			
 			if(url === '')
-			{
-				url = document.URL;
-				
-				if(url[url.length-1] !== '/')
-					url = url.substring(0, url.lastIndexOf('/') + 1);
-				
-				url = url + 'data/audio/';
-			}
+				url = 'data/audio/';
 			
 			var diag = make('div');
 			var url_inp = $('<input type="input" value="' + url + '" />'); 
