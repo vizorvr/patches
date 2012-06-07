@@ -63,7 +63,7 @@
                                         "y": 336,
                                         "uid": 3,
                                         "state": {
-                                            "url": "http://www.effekts.dk/poc/data/textures/overlay_paper.jpg"
+                                            "url": "data/textures/overlay_paper.jpg"
                                         }
                                     },
                                     {
@@ -179,7 +179,7 @@
                                         "y": 191,
                                         "uid": 1,
                                         "state": {
-                                            "url": "http://www.effekts.dk/poc/data/textures/cutout_butterfly3.png"
+                                            "url": "data/textures/cutout_butterfly3.png"
                                         }
                                     },
                                     {

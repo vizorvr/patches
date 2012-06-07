@@ -47,7 +47,7 @@
                             "y": 176,
                             "uid": 3,
                             "state": {
-                                "url": "http://www.effekts.dk/poc/data/textures/backdrop_darkgrey.jpg"
+                                "url": "data/textures/backdrop_darkgrey.jpg"
                             }
                         }
                     ],
@@ -101,7 +101,7 @@
                             "y": 8,
                             "uid": 1,
                             "state": {
-                                "url": "http://www.effekts.dk/poc/data/scenes/roma/scene.json"
+                                "url": "data/scenes/roma/scene.json"
                             }
                         },
                         {
@@ -281,7 +281,7 @@
                             "y": 286,
                             "uid": 3,
                             "state": {
-                                "url": "http://www.effekts.dk/poc/data/textures/overlay_leather.jpg"
+                                "url": "data/textures/overlay_leather.jpg"
                             }
                         },
                         {
