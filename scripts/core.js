@@ -2471,6 +2471,14 @@ function Application() {
 		self.updateCanvas();
 	};
 
+	this.selectAll = function()
+	{
+		self.selection_nodes = [];
+		self.selections_conns = [];
+		
+		
+	};
+	
 	this.onCopy = function(e)
 	{
 		if(e.target.id === 'persist')
@@ -2627,8 +2635,6 @@ function Application() {
 			if(n.plugin.id !== 'graph')
 				return;
 
-			debugger;
-			
 			n.plugin.graph.tree_node = n.parent_graph.tree_node.addChild({
 				title: n.title,
 				isFolder: true,
@@ -2650,12 +2656,13 @@ function Application() {
 			var n = self.selection_nodes[i];
 
 			n.initialise();
-			n.create_ui();
-
-			n.ui.dom.css('border', '2px solid #09f');
 
 			if(n.plugin.reset)
 				n.plugin.reset();			
+
+			n.create_ui();
+
+			n.ui.dom.css('border', '2px solid #09f');
 
 			if(n.plugin.state_changed)
 				n.plugin.state_changed(n.ui.plugin_ui);			
