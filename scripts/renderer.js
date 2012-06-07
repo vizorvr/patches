@@ -699,7 +699,7 @@ function Scene(gl, data, base_path)
 	{
 		this.id = data.id;
 		
-		this.bounding_box = data.bounding_box;
+		this.bounding_box = data.bounding_box || { "lo": [0.0, 0.0, 0.0], "hi": [0.0, 0.0, 0.0] };
 		 
 		for(var i = 0, len = data.meshes.length; i < len; i++)
 		{
