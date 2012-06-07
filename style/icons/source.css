@@ -1,7 +1,21 @@
-.icon-accumulate_modulator { background: url('none.png'); }
-.icon-add_modulator { background: url('none.png'); }
-.icon-alpha_modulator { background: url('none.png'); }
-.icon-aspect_ratio_generator { background: url('none.png'); }
+.icon-img
+{
+	display: block;
+	float: left;
+	position: relative !important;
+	top: 2px !important;
+	padding: 0px !important;
+	margin: 0px !important;
+	margin-right: 2px !important;
+	background-clip: content-box !important;
+	width: 16px;
+	height: 16px;
+}
+
+.icon-accumulate_modulator { background: url('accumulate_modulator.png'); }
+.icon-add_modulator { background: url('add_modulator.png'); }
+.icon-alpha_modulator { background: url('alpha_modulator.png'); }
+.icon-aspect_ratio_generator { background: url('aspect_ratio_generator.png'); }
 .icon-and_modulator { background: url('none.png'); }
 .icon-annotation { background: url('none.png'); }
 .icon-audio_player { background: url('none.png'); }
@@ -34,8 +48,10 @@
 .icon-floor_modulator { background: url('none.png'); }
 .icon-from_mesh_shader { background: url('none.png'); }
 .icon-graph { background: url('none.png'); }
+.icon-if_modulator { background: url('none.png'); }
+.icon-if_else_modulator { background: url('none.png'); }
 .icon-image_buffer_generator { background: url('none.png'); }
-.icon-input_proxy { background: url('none.png'); }
+.icon-input_proxy { background: url('input_proxy.png'); }
 .icon-invert_matrix_modulator { background: url('none.png'); }
 .icon-led_display { background: url('none.png'); }
 .icon-less_than_modulator { background: url('none.png'); }
@@ -50,8 +66,8 @@
 .icon-normal_as_color_shader { background: url('none.png'); }
 .icon-not_modulator { background: url('none.png'); }
 .icon-or_modulator { background: url('none.png'); }
-.icon-output_proxy { background: url('none.png'); }
-.icon-perspective_camera { background: url('none.png'); }
+.icon-output_proxy { background: url('output_proxy.png'); }
+.icon-perspective_camera { background: url('perspective_camera.png'); }
 .icon-quad_mesh_generator { background: url('none.png'); }
 .icon-random_float_generator { background: url('none.png'); }
 .icon-rotation_matrix { background: url('none.png'); }
@@ -59,10 +75,11 @@
 .icon-round_modulator { background: url('none.png'); }
 .icon-sawtooth_modulator { background: url('none.png'); }
 .icon-scale_matrix { background: url('none.png'); }
+.icon-scene_get_bounding_box { background: url('none.png'); }
 .icon-scene_get_mesh_by_index { background: url('none.png'); }
 .icon-scene_get_mesh_count { background: url('none.png'); }
 .icon-scene_renderer_emitter { background: url('none.png'); }
-.icon-screenspace_camera { background: url('none.png'); }
+.icon-screenspace_camera { background: url('screenspace_camera.png'); }
 .icon-sine_modulator { background: url('none.png'); }
 .icon-slider_float_generator { background: url('none.png'); }
 .icon-sphere_mesh_generator { background: url('none.png'); }

@@ -11,11 +11,11 @@ folder = 'style/icons'
 images = []
 css_rules = {}
 
-with open('style/icons/style.css') as css_file:
+with open('style/icons/source.css') as css_file:
 	css_data = css_file.read()
 
 	for line in css_data.split('\n'):
-		if len(line) < 1 or line[0] != '.':
+		if len(line) < 1 or line[0] != '.' or line[:9] == '.icon-img':
 			continue
 		
 		css_rules[line.split(' ')[0]] = line.split('\'')[1]
@@ -35,12 +35,13 @@ class SourceImage:
 		self.uncropped = Rect(0,0, self.img.size[0]-1, self.img.size[1]-1)
 		
 		# Grab the bounding box from the alpha channel.
-		alpha = self.img.split()[3]
-		bbox = alpha.getbbox()
-		alpha = None
+		# alpha = self.img.split()[3]
+		# bbox = alpha.getbbox()
+		# alpha = None
 		
-		if bbox == None:
-			bbox = [0,0,1,1];
+		# if bbox == None:
+		#	bbox = [0,0,1,1];
+		bbox = [0, 0, self.img.size[0]-1, self.img.size[1]-1]
 		
 		# Crop it and get the new extents.
 		self.img = self.img.crop(bbox)
@@ -139,6 +140,8 @@ def writeCSS(images, atlasW, atlasH):
 	css.write('\tpadding: 0px !important;\n')
 	css.write('\tmargin: 0px !important;\n')
 	css.write('\tmargin-right: 2px !important;\n')
+	css.write('\twidth: 15px !important;\n')
+	css.write('\theight: 15px !important;\n')
 	css.write('\tbackground-clip: content-box !important;\n}\n\n')
 		
 	for rule in sorted(css_rules.keys()):
@@ -147,8 +150,8 @@ def writeCSS(images, atlasW, atlasH):
 		for i in images:
 			if i.fileName == img_fname:
 				css.write(rule + ' { ')
-				css.write('width: ' + str(i.img.destRect.width()) + 'px; ')
-				css.write('height: ' + str(i.img.destRect.height()) + 'px; ')
+				#css.write('width: ' + str(i.img.destRect.width()) + 'px; ')
+				#css.write('height: ' + str(i.img.destRect.height()) + 'px; ')
 				css.write('background: url(\'icons.png\') ' + str(-i.img.destRect.xmin+i.offset[0]) + 'px ' + str(-i.img.destRect.ymin+i.offset[1]) + 'px no-repeat; }\n')
 	
 	css.close()
@@ -170,7 +173,7 @@ def addFolder(folder):
 			addFolder(fullPath)
 		else:
 			# Create source image structs and give them a unique index.
-			if fullPath[-4:] == '.png':
+			if fullPath[-4:] == '.png' and fullPath[-9:] != 'icons.png':
 				images.append(SourceImage(folder, folderName, originalIndex))
 				originalIndex = originalIndex + 1
 
@@ -244,7 +247,7 @@ print('AtlasDimensions: ' + str(atlasW) + 'x' + str(atlasH) + '  :  ' + str(int(
 
 writeAtlas(images, atlasW, atlasH)
 
-for i in images:
+"""for i in images:
 	ofs = [i.offset[0], i.offset[1]]
 	
 	if ofs[0] != 0:
@@ -253,6 +256,6 @@ for i in images:
 	if ofs[1] != 0:
 		ofs[1] -= 1
 	
-	i.offset = (ofs[0], ofs[1])
+	i.offset = (ofs[0], ofs[1])"""
 
 writeCSS(images, atlasW, atlasH)

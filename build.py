@@ -88,6 +88,8 @@ print 'Compressing plugin icons to CSS sprite sheet...'
 #os.system('yui-compressor --type css -o ' + build_dir + '/' + icon_path + '/style.css ./' + icon_path + '/style.css')
 os.system('mkdir build/style/icons')
 os.system('tools/compress-plugin-icons.py')
+shutil.copy('build/style/icons/style.css', 'style/icons/style.css')
+shutil.copy('build/style/icons/icons.png', 'style/icons/icons.png')
 
 print 'Copying dynatree skin and compressing css...'
 skin_path = css_path + 'skin'
