@@ -694,11 +694,13 @@ function Scene(gl, data, base_path)
 	this.meshes = [];
 	this.id = 'n/a';
 	this.vertex_count = 0;
-	
+
 	if(data)
 	{
 		this.id = data.id;
 		
+		this.bounding_box = data.bounding_box;
+		 
 		for(var i = 0, len = data.meshes.length; i < len; i++)
 		{
 			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, data.meshes[i], base_path);
