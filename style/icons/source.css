@@ -12,6 +12,7 @@
 	height: 16px;
 }
 
+.icon-absolute_modulator { background: url('accumulate_modulator.png'); }
 .icon-accumulate_modulator { background: url('accumulate_modulator.png'); }
 .icon-add_modulator { background: url('add_modulator.png'); }
 .icon-alpha_modulator { background: url('alpha_modulator.png'); }
@@ -40,8 +41,10 @@
 .icon-convert_oscilator_unit_modulator { background: url('none.png'); }
 .icon-convert_rgba_color_modulator { background: url('none.png'); }
 .icon-convert_vector_xyz_modulator { background: url('none.png'); }
+.icon-cosine_modulator { background: url('none.png'); }
 .icon-cube_mesh_generator { background: url('none.png'); }
 .icon-delta_t_generator { background: url('none.png'); }
+.icon-divide_modulator { background: url('none.png'); }
 .icon-equals_modulator { background: url('none.png'); }
 .icon-flat_shader { background: url('none.png'); }
 .icon-float_display { background: url('none.png'); }
@@ -57,7 +60,9 @@
 .icon-less_than_modulator { background: url('none.png'); }
 .icon-lowpass_filter_modulator { background: url('none.png'); }
 .icon-matrix_display { background: url('none.png'); }
+.icon-max_modulator { background: url('none.png'); }
 .icon-mesh_renderer_emitter { background: url('none.png'); }
+.icon-min_modulator { background: url('none.png'); }
 .icon-modulate_modulator { background: url('none.png'); }
 .icon-more_than_modulator { background: url('none.png'); }
 .icon-mouse_button_generator { background: url('none.png'); }

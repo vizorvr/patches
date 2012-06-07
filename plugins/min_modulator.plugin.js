@@ -1,32 +1,32 @@
-E2.plugins["add_modulator"] = function(core, node) {
+E2.plugins["min_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Add two floating point values.';
+	this.desc = 'Emit the lesser of the two input values.';
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT },
 		{ name: 'value', dt: core.datatypes.FLOAT } 
 	];
 	
-	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
+	this.output_slots = [ { name: 'min', dt: core.datatypes.FLOAT } ];
 	
 	this.reset = function()
 	{
-		self.input_val = 0.0;
-		self.add_val = 0.0;
+		self.val_a = 0.0;
+		self.val_b = 0.0;
 		self.output_val = 0.0;
 	};
 	
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
-			self.input_val = data;
+			self.val_a = data;
 		else
-			self.add_val = data;
+			self.val_b = data;
 	};	
 
 	this.update_state = function(delta_t)
 	{
-		self.output_val = self.input_val + self.add_val;
+		self.output_val = Math.min(self.val_a, self.val_b);
 	};
 	
 	this.update_output = function(slot)

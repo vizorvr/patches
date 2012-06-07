@@ -1,36 +1,36 @@
-E2.plugins["add_modulator"] = function(core, node) {
+E2.plugins["divide_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Add two floating point values.';
+	this.desc = 'Divides \'value\' by \'scalar\' and emits the result.';
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT },
-		{ name: 'value', dt: core.datatypes.FLOAT } 
+		{ name: 'scalar', dt: core.datatypes.FLOAT } 
 	];
 	
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
 	
 	this.reset = function()
 	{
-		self.input_val = 0.0;
-		self.add_val = 0.0;
-		self.output_val = 0.0;
+		self.value = 0.0;
+		self.scalar = 1.0;
+		self.result = 0.0;
 	};
 	
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
-			self.input_val = data;
+			self.value = data;
 		else
-			self.add_val = data;
+			self.scalar = data < 0.0000001 ? 1.0 : data;
 	};	
 
 	this.update_state = function(delta_t)
 	{
-		self.output_val = self.input_val + self.add_val;
+		self.result = self.value / self.scalar;
 	};
 	
 	this.update_output = function(slot)
 	{
-		return self.output_val;
+		return self.result;
 	};	
 };
