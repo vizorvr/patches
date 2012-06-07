@@ -48,21 +48,22 @@ def write_mat_attr(delim, attr, attr_name):
 		delim = ',\n'
 		
 		if not tex_fname in textures:
+			print 'Reading texture ' + tex_in_path
 			tex = Image.open(tex_in_path)
 			ow2 = math.floor(math.log(tex.size[0]) / math.log(2))
 			oh2 = math.floor(math.log(tex.size[1]) / math.log(2))
 			
 			# Reduce to at most 256 and at minumum 2 pixels on any axis, unless the
 			# aspect ratio is too extreme in which case we clip to 256, apect be damned.
-			while ow2 > 1 and oh2 > 1 and (ow2 > 8 or oh2 > 8):
+			while ow2 > 1 and oh2 > 1 and (ow2 > 9 or oh2 > 9):
 				ow2 = ow2 - 1
 				oh2 = oh2 - 1
 			
-			if ow2 > 8:
-				ow2 = 8
+			if ow2 > 9:
+				ow2 = 9
 			
-			if oh2 > 8:
-				oh2 = 8
+			if oh2 > 9:
+				oh2 = 9
 			
 			ow = int(math.pow(2, ow2))
 			oh = int(math.pow(2, oh2))
@@ -115,6 +116,7 @@ def write_material(mat):
 	o.write('            }')
 
 mesh_delim = ''
+scene_bounds = [[9999999.0, 9999999.0, 9999999.0], [-9999999.0, -9999999.0, -9999999.0]]
 
 for geom in mesh.geometries:
 	for prim in geom.primitives:
@@ -148,6 +150,13 @@ for geom in mesh.geometries:
 			o.write(','.join(fmt(v) for v in f_v) + ']')
 			v_count = v_count + (len(f_v) / 3)
 			
+			for i in range(3):
+				if f_v[i] < scene_bounds[0][i]:
+					scene_bounds[0][i] = f_v[i]
+			
+				if f_v[i] > scene_bounds[1][i]:
+					scene_bounds[1][i] = f_v[i]
+			
 			# Disable normals to save size for now.
 			# f_n = triset.normal[triset.normal_index]
 			# f_n.shape = (-1)
@@ -174,6 +183,13 @@ for geom in mesh.geometries:
 		#else:
 		#	print 'Warning: Skipping unhandled primitive type \'' + prim_type.__name__ + '\''
 	
-o.write('    ]\n')
+o.write('    ],\n')
+o.write('    "bounding_box":\n')
+o.write('    {\n')
+o.write('        "lo": [%f, %f, %f],\n' % (scene_bounds[0][0], scene_bounds[0][1], scene_bounds[0][2]))
+o.write('        "hi": [%f, %f, %f]\n' % (scene_bounds[1][0], scene_bounds[1][1], scene_bounds[1][2]))
+o.write('    }\n')
 o.write('}\n')
+
 print 'Wrote %d vertices, %d normals and %d tex coords.' % (v_count, n_count, uv_count)
+print 'Bounds: ' + str(scene_bounds[0]) + ' - ' + str(scene_bounds[1])
