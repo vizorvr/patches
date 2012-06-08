@@ -15,7 +15,7 @@ E2.plugins["clamped_accumulate_modulator"] = function(core, node) {
 	{
 		self.value = 0.0;
 		self.lo = 0.0;
-		self.high = 1.0;
+		self.hi = 1.0;
 		self.updated = true;
 	};
 	
@@ -27,20 +27,12 @@ E2.plugins["clamped_accumulate_modulator"] = function(core, node) {
 
 			self.state.value += self.value;
 
-			if(self.state.value < self.lo)
-				self.state.value = self.lo;
-
-			if(self.state.value > self.hi)
-				self.state.value = self.hi;
+			self.state.value = self.state.value < self.lo ? self.lo : self.state.value > self.hi ? self.hi : self.state.value;
 		}
 		if(slot.index === 1)
 			self.lo = data;
 		if(slot.index === 2)
-			self.high = data;
-	};	
-
-	this.update_state = function(delta_t)
-	{
+			self.hi = data;
 	};
 	
 	this.update_output = function(slot)
