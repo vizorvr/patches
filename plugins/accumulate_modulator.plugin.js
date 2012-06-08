@@ -14,8 +14,7 @@ E2.plugins["accumulate_modulator"] = function(core, node) {
 	
 	this.update_input = function(slot, data)
 	{
-		if(slot.index === 0)
-			self.state.value += data;
+		self.state.value += data;
 	};	
 
 	this.update_output = function(slot)

@@ -48,6 +48,8 @@
 	"Modulators/Logic/More than": "more_than_modulator",
 	"Modulators/Logic/Not": "not_modulator",
 	"Modulators/Logic/Or": "or_modulator",
+	"Modulators/Logic/Sample and hold": "sample_and_hold_modulator",
+	"Modulators/Logic/Toggle": "toggle_modulator",
 	"Modulators/Math/Absolute": "absolute_modulator",
 	"Modulators/Math/Accumulate": "accumulate_modulator",
 	"Modulators/Math/Add": "add_modulator",

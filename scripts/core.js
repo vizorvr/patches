@@ -2909,7 +2909,7 @@ $(document).ready(function() {
 	
 	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, exception) {
 		if(settings.dataType === 'script' && !settings.url.match(/^plugins\/all.plugins\.js/)) {
-			msg(exception.message + exception.stack);
+			msg(/*exception.message + exception.stack*/exception);
 		}
 	});
 
