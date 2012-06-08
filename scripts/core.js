@@ -2611,7 +2611,27 @@ function Application() {
 			var duid = n_lut[cn.dst_nuid];
 			
 			if(suid === undefined || duid === undefined)
+			{
+				// We have to clear the the is_connected flag from the destination
+				// slot. Otherwise the user will be unable to connect to it. 
+				if(duid !== undefined)
+				{
+					for(var n = 0, len2 = self.selection_nodes.length; n < len2; n++)
+					{
+						var n = self.selection_nodes[n];
+						
+						if(n.uid === duid)
+						{
+							var slots = cn.dst_dyn ? n.dyn_inputs : n.plugin.input_slots;
+							
+							slots[cn.dst_slot].is_connected = false;
+							break; // Early out
+						}
+					}
+				}
+				
 				continue;
+			}
 			
 			var c = new Connection(null, null, null, null);
 

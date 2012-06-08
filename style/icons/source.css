@@ -12,7 +12,7 @@
 	height: 16px;
 }
 
-.icon-absolute_modulator { background: url('accumulate_modulator.png'); }
+.icon-absolute_modulator { background: url('none.png'); }
 .icon-accumulate_modulator { background: url('accumulate_modulator.png'); }
 .icon-add_modulator { background: url('add_modulator.png'); }
 .icon-alpha_modulator { background: url('alpha_modulator.png'); }
@@ -23,6 +23,7 @@
 .icon-blend_mode_generator { background: url('none.png'); }
 .icon-bool_display { background: url('none.png'); }
 .icon-clamp_modulator { background: url('none.png'); }
+.icon-clamped_accumulate_modulator { background: url('none.png'); }
 .icon-clock_generator { background: url('none.png'); }
 .icon-color_add_modulator { background: url('none.png'); }
 .icon-color_blend_modulator { background: url('none.png'); }
@@ -67,6 +68,7 @@
 .icon-more_than_modulator { background: url('none.png'); }
 .icon-mouse_button_generator { background: url('none.png'); }
 .icon-mouse_position_generator { background: url('none.png'); }
+.icon-mouse_wheel_generator { background: url('none.png'); }
 .icon-multiply_modulator { background: url('none.png'); }
 .icon-normal_as_color_shader { background: url('none.png'); }
 .icon-not_modulator { background: url('none.png'); }
@@ -78,6 +80,7 @@
 .icon-rotation_matrix { background: url('none.png'); }
 .icon-rotation_xyz_matrix { background: url('none.png'); }
 .icon-round_modulator { background: url('none.png'); }
+.icon-sample_and_hold_modulator { background: url('none.png'); }
 .icon-sawtooth_modulator { background: url('none.png'); }
 .icon-scale_matrix { background: url('none.png'); }
 .icon-scene_get_bounding_box { background: url('none.png'); }
@@ -93,12 +96,16 @@
 .icon-texture_diffuse_shader { background: url('none.png'); }
 .icon-textured_quad_emitter { background: url('none.png'); }
 .icon-toggle_button { background: url('none.png'); }
+.icon-toggle_modulator { background: url('none.png'); }
 .icon-translation_matrix { background: url('none.png'); }
 .icon-triangle_modulator { background: url('none.png'); }
 .icon-url_audio_generator { background: url('none.png'); }
 .icon-url_scene_generator { background: url('none.png'); }
 .icon-url_texture_generator { background: url('none.png'); }
+.icon-vector_add { background: url('none.png'); }
 .icon-vector_display { background: url('none.png'); }
+.icon-vector_magnitude { background: url('none.png'); }
+.icon-vector_multiply { background: url('none.png'); }
 .icon-vector_normalize { background: url('none.png'); }
 .icon-vector { background: url('none.png'); }
 .icon-vector_scale { background: url('none.png'); }
