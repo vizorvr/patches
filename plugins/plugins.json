@@ -70,6 +70,8 @@
 	"Modulators/Scene/Get bounding box": "scene_get_bounding_box",
 	"Modulators/Scene/Get mesh by index": "scene_get_mesh_by_index",
 	"Modulators/Scene/Get mesh count": "scene_get_mesh_count",
+	"Modulators/Vector/Add": "vector_add",
+	"Modulators/Vector/Multiply": "vector_multiply",
 	"Modulators/Vector/Normalize": "vector_normalize",
 	"Modulators/Vector/Scale": "vector_scale",
 	"Modulators/Vector/Transform": "vector_transform",
