@@ -1,4 +1,4 @@
-E2.plugins["clip_filter_modulator"] = function(core, node) {
+E2.plugins["clamp_modulator"] = function(core, node) {
 	var self = this;
 	
 	this.desc = 'Emit a float value no less than \'min\' and no greater than \'max\'.';
