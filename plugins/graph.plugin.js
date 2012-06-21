@@ -324,14 +324,6 @@ E2.plugins["graph"] = function(core, node) {
 		}
 	};
 	
-	this.update_output = function(slot)
-	{
-		if(slot.uid !== undefined)
-			return self.output_nodes[slot.uid].plugin.data;
-			
-		return self.texture;
-	};
-	
 	this.update_state = function(delta_t)
 	{
 		if(self.graph && self.state.enabled)
@@ -354,11 +346,35 @@ E2.plugins["graph"] = function(core, node) {
        			
        			for(var i = 0, len = node.outputs.length; i < len; i++)
        				node.outputs[i].cached_value = null;
+       				
+       			/*var live = false;
+       			
+       			debugger;
+       			
+       			for(var i = 0, len = self.output_nodes.length; i < len; i++)
+			{
+				if(self.output_nodes[i].plugin.updated)
+				{
+					live = true;
+					break;
+				}
+			}
+			
+			if(!live)
+				self.updated = false;*/
        		}
        		else
        			self.updated = false;
        	};
        	
+       	this.update_output = function(slot)
+	{
+		if(slot.uid !== undefined)
+			return self.output_nodes[slot.uid].plugin.data;
+			
+		return self.texture;
+	};
+
        	this.destroy_slot = function(type, sid)
        	{
        		var slots = (type === E2.slot_type.input) ? self.state.input_sids : self.state.output_sids;
