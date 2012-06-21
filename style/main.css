@@ -61,11 +61,13 @@ body
 
 #logo
 {
-	font-size: 18pt;
+	font-size: 22pt;
 	font-weight: bold;
 	font-family: 'Exo', sans-serif;
 	margin-left: 10px;
-	margin-right: 18px;
+	margin-right: 48px;
+	position: relative;
+	top: 4px;
 }
 
 #dbg 

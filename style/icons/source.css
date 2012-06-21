@@ -44,6 +44,7 @@
 .icon-convert_vector_xyz_modulator { background: url('none.png'); }
 .icon-cosine_modulator { background: url('none.png'); }
 .icon-cube_mesh_generator { background: url('none.png'); }
+.icon-delta_modulator { background: url('none.png'); }
 .icon-delta_t_generator { background: url('none.png'); }
 .icon-divide_modulator { background: url('none.png'); }
 .icon-equals_modulator { background: url('none.png'); }
@@ -70,6 +71,7 @@
 .icon-mouse_position_generator { background: url('none.png'); }
 .icon-mouse_wheel_generator { background: url('none.png'); }
 .icon-multiply_modulator { background: url('none.png'); }
+.icon-negate_modulator { background: url('none.png'); }
 .icon-normal_as_color_shader { background: url('none.png'); }
 .icon-not_modulator { background: url('none.png'); }
 .icon-or_modulator { background: url('none.png'); }
