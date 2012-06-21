@@ -2,3 +2,5 @@ build
 data
 style/icons/icons.png
 style/icons/style.css
+tools/assimp
+tools/pyassimp
