@@ -18,7 +18,8 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 	
 	this.state = { 
 		vs_src: 'void main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n\n\tf_col = dc;\n}',
-		ps_src: 'void main(void)\n{\n\tgl_FragColor = f_col;\n}' 
+		ps_src: 'void main(void)\n{\n\tgl_FragColor = f_col;\n}',
+		slot_ids: [] 
 	};
 
 	this.shader = null;
@@ -35,15 +36,55 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		var diag = make('span');
 		var src = $('<textarea></textarea>'); 
 		
-		src.css('margin-top', '12px');
-		src.css('border', '1px solid #888');
-		src.css('width', '430px');
+		diag.css('margin', '0px');
+		diag.css('padding', '2px');
+
+		src.css('margin', '0px');
+		src.css('padding', '0px');
+		src.css('margin-top', '2px');
+		src.css('border', 'none');
+		src.css('width', '455px');
 		src.css('height', '400px');
 		src.css('resize', 'none');
+		src.css('font-size', '9pt');
+		src.css('font-family', 'Monospace');
+		src.css('overflow', 'scroll');
+		src.css('word-wrap', 'normal');
+		src.css('white-space', 'pre');
+		src.css('background-color', '#ddd');
 		
 		src.val(self.state[src_id]);
 		
 		diag.append(src);
+		
+		var btn_span = make('span');
+		var comp_btn = $('<input id="comp_btn" type="button" value="Compile" title="Click to rebuild the shader." />');
+		var add_btn = $('<input id="add_btn" type="button" value="Add slot" title="Click to add new shader input slot." />');
+		var rem_btn = $('<input id="rem_btn" type="button" value="Remove slot" title="Click to remove the selected slot(s)." />');
+		var slot_list = $('<select size="4" multiple="multiple" />');
+		
+		slot_list.css('border', 'none');
+		slot_list.css('width', '457px');
+		slot_list.css('margin-left', '2px');
+		slot_list.css('background-color', '#ddd');
+
+		var slot_ids = self.state.slot_ids;
+		
+		btn_span.css('width', '455px');
+		btn_span.append(comp_btn);
+		btn_span.append(add_btn);
+		btn_span.append(rem_btn);
+		
+		diag.append(make('br'));
+		diag.append(btn_span);
+		diag.append(make('br'));
+		diag.append(slot_list);
+
+		comp_btn.click(function(e)
+		{
+			dest(src.val());
+			done_func(null);
+		});
 		
 		diag.dialog({
 			width: 460,
@@ -79,7 +120,9 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		{
 			self.rebuild_shader();
 			self.changed = true;
-			diag.dialog('close');
+			
+			if(diag)
+				diag.dialog('close');
 		};
 		
 		inp_vs.click(self.open_editor('vs_src', 'vertex', done_func, function(v) { self.state.vs_src = v; }));
