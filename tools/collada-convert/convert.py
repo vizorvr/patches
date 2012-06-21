@@ -12,8 +12,19 @@ input_filename = sys.argv[1]
 output_dir = os.path.abspath(sys.argv[2])
 base_path = os.path.split(os.path.abspath(input_filename))[0]
 
-if not os.path.isdir(output_dir):
-	sys.exit('Error: The second argument must be an existing directory.')
+if output_dir[len(output_dir)-1] == '/':
+	output_dir = output_dir[:-1]
+
+output_dir = os.path.expanduser(output_dir)
+ 
+def ensure_dir(f):
+	print 'Output to ' + f + ' (exists = ' + str(os.path.exists(f)) + ').'
+	
+	if not os.path.exists(f):
+		print '\t* Doesn\'t exist, creating...'
+		os.makedirs(f)
+
+ensure_dir(output_dir)
 	
 o = open(output_dir + '/scene.json', 'w')
 
@@ -29,15 +40,18 @@ o.write('    "meshes": [\n')
 
 def get_material(name):
 	for mat in mesh.materials:
-		if mat.id[:-2] == name:
+		if mat.name == name:
 			return mat
-	
+		
 	return None
 
 def fmt(f32):
 	return '%f' % f32
 
-def write_mat_attr(delim, attr, attr_name):
+def is_black(c):
+	return c[0] == 0.0 and c[1] == 0.0 and c[2] == 0.0 and c[3] == 1.0
+
+def write_mat_attr(delim, attr, attr_name, write_col):
 	if isinstance(attr, material.Map):
 		rel_path = attr.sampler.surface.image.path
 		tex_fname = os.path.split(rel_path)[1]
@@ -48,7 +62,6 @@ def write_mat_attr(delim, attr, attr_name):
 		delim = ',\n'
 		
 		if not tex_fname in textures:
-			print 'Reading texture ' + tex_in_path
 			tex = Image.open(tex_in_path)
 			ow2 = math.floor(math.log(tex.size[0]) / math.log(2))
 			oh2 = math.floor(math.log(tex.size[1]) / math.log(2))
@@ -82,7 +95,7 @@ def write_mat_attr(delim, attr, attr_name):
 				tex.save(tex_out_path, 'JPEG')
 			
 			textures[tex_fname] = True
-	elif type(attr) is tuple:
+	elif type(attr) is tuple and write_col(attr):
 		o.write(delim + '                "' + attr_name + '_color": [%f,%f,%f,%f]' % (attr[0], attr[1], attr[2], attr[3]))
 		delim = ',\n'
 	
@@ -91,22 +104,22 @@ def write_mat_attr(delim, attr, attr_name):
 
 def write_material(mat):
 	effect = mat.effect
+	shine = getattr(mat.effect, 'shininess')
 	
 	o.write('            "material": {\n')
 	
 	delim = ''
-	delim = write_mat_attr(delim, getattr(mat.effect, 'diffuse'), 'diffuse')
-	delim = write_mat_attr(delim, getattr(mat.effect, 'emission'), 'emission')
-	delim = write_mat_attr(delim, getattr(mat.effect, 'specular'), 'specular')
-	delim = write_mat_attr(delim, getattr(mat.effect, 'bumpmap'), 'normal')
+	delim = write_mat_attr(delim, getattr(mat.effect, 'diffuse'), 'diffuse', lambda c: True)
+	delim = write_mat_attr(delim, getattr(mat.effect, 'emission'), 'emission', lambda c: not is_black(c))
+	delim = write_mat_attr(delim, getattr(mat.effect, 'specular'), 'specular', lambda c: shine)
+	delim = write_mat_attr(delim, getattr(mat.effect, 'bumpmap'), 'bump', lambda c: False)
+	# delim = write_mat_attr(delim, getattr(mat.effect, 'normalmap'), 'normal', lambda c: False)
 	
 	attr = getattr(mat.effect, 'ambient')
 	
-	if type(attr) is tuple:
+	if type(attr) is tuple and not is_black(attr):
 		o.write(delim + '                "ambient_color": [%f,%f,%f,%f]' % (attr[0], attr[1], attr[2], attr[3]))
 		delim = ',\n'
-	
-	shine = getattr(mat.effect, 'shininess')
 	
 	if shine:
 		o.write(delim + '                "shininess": %f' % shine)
@@ -157,7 +170,7 @@ for geom in mesh.geometries:
 				if f_v[i] > scene_bounds[1][i]:
 					scene_bounds[1][i] = f_v[i]
 			
-			# Disable normals to save size for now.
+			# Disable normals to save size for now. Or recompute them at load time.
 			# f_n = triset.normal[triset.normal_index]
 			# f_n.shape = (-1)
 			# 
