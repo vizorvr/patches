@@ -63,7 +63,7 @@ E2.plugins["url_scene_generator"] = function(core, node) {
 					url_inp.focus().val(url_inp.val());
 					diag.keyup(function(e)
 					{
-						if(e.keyCode == $.ui.keyCode.ENTER)
+						if(e.keyCode === $.ui.keyCode.ENTER)
 							done_func();
 					});
 				}

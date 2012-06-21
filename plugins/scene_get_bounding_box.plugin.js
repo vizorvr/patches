@@ -17,10 +17,13 @@ E2.plugins["scene_get_bounding_box"] = function(core, node) {
 
 	this.update_state = function(delta_t)
 	{
-		var bb = self.scene.bounding_box;
+		if(self.scene)
+		{
+			var bb = self.scene.bounding_box;
 		
-		self.lo = bb.lo;
-		self.hi = bb.hi;
+			self.lo = bb.lo;
+			self.hi = bb.hi;
+		}
 	};
 	
 	this.update_output = function(slot)
