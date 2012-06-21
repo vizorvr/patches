@@ -1,6 +1,6 @@
 {
     "abs_t": 0,
-    "active_graph": 3,
+    "active_graph": 2,
     "graph_uid": 4,
     "root": {
         "node_uid": 17,
@@ -9,8 +9,8 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 277,
-                "y": 50,
+                "x": 149,
+                "y": 28,
                 "uid": 11,
                 "state": {
                     "enabled": true,
@@ -25,26 +25,26 @@
                     "nodes": [
                         {
                             "plugin": "mesh_renderer_emitter",
-                            "x": 669,
-                            "y": 45,
+                            "x": 281,
+                            "y": 33,
                             "uid": 0
                         },
                         {
                             "plugin": "quad_mesh_generator",
-                            "x": 356,
-                            "y": 31,
+                            "x": 216,
+                            "y": 13,
                             "uid": 1
                         },
                         {
                             "plugin": "texture_diffuse_shader",
-                            "x": 462,
-                            "y": 109,
+                            "x": 146,
+                            "y": 88,
                             "uid": 2
                         },
                         {
                             "plugin": "url_texture_generator",
-                            "x": 261,
-                            "y": 176,
+                            "x": 15,
+                            "y": 168,
                             "uid": 3,
                             "state": {
                                 "url": "data/textures/backdrop_darkgrey.jpg"
@@ -75,8 +75,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 280,
-                "y": 117,
+                "x": 149,
+                "y": 109,
                 "uid": 12,
                 "state": {
                     "enabled": true,
@@ -91,13 +91,13 @@
                     "nodes": [
                         {
                             "plugin": "scene_renderer_emitter",
-                            "x": 675,
-                            "y": -1,
+                            "x": 588,
+                            "y": 8,
                             "uid": 0
                         },
                         {
                             "plugin": "url_scene_generator",
-                            "x": 311,
+                            "x": 458,
                             "y": 8,
                             "uid": 1,
                             "state": {
@@ -118,8 +118,8 @@
                         },
                         {
                             "plugin": "slider_float_generator",
-                            "x": 42,
-                            "y": 88,
+                            "x": 59,
+                            "y": 150,
                             "uid": 4,
                             "state": {
                                 "val": 240,
@@ -129,20 +129,20 @@
                         },
                         {
                             "plugin": "rotation_xyz_matrix",
-                            "x": 548,
-                            "y": 253,
+                            "x": 493,
+                            "y": 255,
                             "uid": 5
                         },
                         {
                             "plugin": "delta_t_generator",
-                            "x": 50,
-                            "y": 252,
+                            "x": 137,
+                            "y": 313,
                             "uid": 6
                         },
                         {
                             "plugin": "multiply_modulator",
-                            "x": 273,
-                            "y": 348,
+                            "x": 218,
+                            "y": 350,
                             "uid": 7
                         },
                         {
@@ -158,17 +158,17 @@
                         },
                         {
                             "plugin": "accumulate_modulator",
-                            "x": 406,
-                            "y": 355,
+                            "x": 301,
+                            "y": 350,
                             "uid": 9,
                             "state": {
-                                "value": 25881.687000000104
+                                "value": 0
                             }
                         },
                         {
                             "plugin": "slider_float_generator",
-                            "x": 219,
-                            "y": 249,
+                            "x": 284,
+                            "y": 240,
                             "uid": 10,
                             "state": {
                                 "val": 295.2,
@@ -243,8 +243,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 280,
-                "y": 183,
+                "x": 149,
+                "y": 190,
                 "uid": 13,
                 "state": {
                     "enabled": true,
@@ -259,26 +259,26 @@
                     "nodes": [
                         {
                             "plugin": "mesh_renderer_emitter",
-                            "x": 1052,
-                            "y": 35,
+                            "x": 921,
+                            "y": 47,
                             "uid": 0
                         },
                         {
                             "plugin": "quad_mesh_generator",
-                            "x": 952,
-                            "y": 24,
+                            "x": 821,
+                            "y": 36,
                             "uid": 1
                         },
                         {
                             "plugin": "texture_diffuse_shader",
-                            "x": 914,
-                            "y": 151,
+                            "x": 783,
+                            "y": 163,
                             "uid": 2
                         },
                         {
                             "plugin": "url_texture_generator",
-                            "x": 787,
-                            "y": 286,
+                            "x": 656,
+                            "y": 298,
                             "uid": 3,
                             "state": {
                                 "url": "data/textures/overlay_leather.jpg"
@@ -286,20 +286,20 @@
                         },
                         {
                             "plugin": "scale_matrix",
-                            "x": 684,
-                            "y": 477,
+                            "x": 559,
+                            "y": 407,
                             "uid": 4
                         },
                         {
                             "plugin": "translation_matrix",
-                            "x": 499,
-                            "y": 121,
+                            "x": 368,
+                            "y": 34,
                             "uid": 5
                         },
                         {
                             "plugin": "random_float_generator",
-                            "x": 223,
-                            "y": 35,
+                            "x": 150,
+                            "y": 34,
                             "uid": 6
                         },
                         {
@@ -322,20 +322,20 @@
                         },
                         {
                             "plugin": "random_float_generator",
-                            "x": 220,
-                            "y": 115,
+                            "x": 149,
+                            "y": 113,
                             "uid": 9
                         },
                         {
                             "plugin": "vector",
-                            "x": 399,
-                            "y": 62,
+                            "x": 258,
+                            "y": 34,
                             "uid": 10
                         },
                         {
                             "plugin": "vector",
-                            "x": 584,
-                            "y": 476,
+                            "x": 459,
+                            "y": 406,
                             "uid": 11
                         },
                         {
@@ -349,50 +349,50 @@
                         },
                         {
                             "plugin": "concatenate_matrix_modulator",
-                            "x": 810,
-                            "y": 211,
+                            "x": 679,
+                            "y": 223,
                             "uid": 14
                         },
                         {
                             "plugin": "random_float_generator",
-                            "x": 265,
+                            "x": 148,
                             "y": 357,
                             "uid": 15
                         },
                         {
                             "plugin": "square_modulator",
-                            "x": 367,
+                            "x": 250,
                             "y": 366,
                             "uid": 17
                         },
                         {
                             "plugin": "random_float_generator",
-                            "x": 247,
-                            "y": 470,
+                            "x": 149,
+                            "y": 466,
                             "uid": 19
                         },
                         {
                             "plugin": "square_modulator",
-                            "x": 354,
-                            "y": 480,
+                            "x": 256,
+                            "y": 476,
                             "uid": 20
                         },
                         {
                             "plugin": "multiply_modulator",
-                            "x": 453,
+                            "x": 336,
                             "y": 316,
                             "uid": 21
                         },
                         {
                             "plugin": "multiply_modulator",
-                            "x": 435,
-                            "y": 430,
+                            "x": 337,
+                            "y": 426,
                             "uid": 22
                         },
                         {
                             "plugin": "blend_mode_generator",
-                            "x": 750,
-                            "y": 26,
+                            "x": 620,
+                            "y": 151,
                             "uid": 23,
                             "state": {
                                 "mode": 3
@@ -400,8 +400,8 @@
                         },
                         {
                             "plugin": "toggle_button",
-                            "x": 800,
-                            "y": 91,
+                            "x": 663,
+                            "y": 83,
                             "uid": 24,
                             "state": {
                                 "enabled": true
@@ -409,8 +409,8 @@
                         },
                         {
                             "plugin": "convert_rgba_color_modulator",
-                            "x": 385,
-                            "y": 196,
+                            "x": 148,
+                            "y": 197,
                             "uid": 26
                         }
                     ],
@@ -643,8 +643,8 @@
             },
             {
                 "plugin": "toggle_button",
-                "x": 76,
-                "y": 35,
+                "x": 33,
+                "y": 28,
                 "uid": 14,
                 "state": {
                     "enabled": true
@@ -652,8 +652,8 @@
             },
             {
                 "plugin": "toggle_button",
-                "x": 69,
-                "y": 117,
+                "x": 33,
+                "y": 109,
                 "uid": 15,
                 "state": {
                     "enabled": true
@@ -661,8 +661,8 @@
             },
             {
                 "plugin": "toggle_button",
-                "x": 78,
-                "y": 204,
+                "x": 34,
+                "y": 190,
                 "uid": 16,
                 "state": {
                     "enabled": true
