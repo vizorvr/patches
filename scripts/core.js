@@ -211,7 +211,7 @@ function PluginManager(core, base_url)
 	this.register_plugin = function(pg_root, key, id)
 	{
 		self.keybyid[id] = pg_root.insert_relative(key, id);
-		msg('Loaded ' + id + ' (' + self.lid + ')');
+		msg('\tLoaded ' + id + ' (' + self.lid + ')');
 		self.lid++;
 	};
 
@@ -232,6 +232,7 @@ function PluginManager(core, base_url)
 
    				if(!self.release_mode)
    				{
+	   				msg('Loading ' + id);
 	   				$.ajax({
 						url: url,
 						dataType: 'script',
@@ -240,8 +241,6 @@ function PluginManager(core, base_url)
 						{
 							if(status == 'success')
 								self.register_plugin(pg_root, key, id)
-							else
-								msg('Failed to load plugin \'' + id + '\'');
 						}})(id)
 					});
    				}
@@ -1694,7 +1693,7 @@ function Application() {
 					inp.focus().select();
 					diag.keyup(function(e)
 					{
-						if(e.keyCode == $.ui.keyCode.ENTER)
+						if(e.keyCode === $.ui.keyCode.ENTER)
 						{
 							createPlugin(inp.val());
 							diag.dialog('close');
@@ -2235,7 +2234,7 @@ function Application() {
 				inp.focus().select();
 				diag.keyup(function(e)
 				{
-					if(e.keyCode == $.ui.keyCode.ENTER)
+					if(e.keyCode === $.ui.keyCode.ENTER)
 						done_func();
 				});
 			}
@@ -2739,10 +2738,10 @@ function Application() {
 			self.releaseHoverSlot();
 			self.releaseHoverNode(false);
 		}
-		else if(e.keyCode === 27 && self.fullscreen)
+		else if(e.keyCode === 27)
 		{
-			E2.dom.webgl_canvas.attr('class', 'webgl-canvas-normal');
-			self.fullscreen = false;
+			E2.dom.webgl_canvas.attr('class', self.fullscreen ? 'webgl-canvas-normal' : 'webgl-canvas-fs');
+			self.fullscreen = !self.fullscreen;
 		}
 	};
 
@@ -2927,9 +2926,28 @@ $(document).ready(function() {
 
 	msg('Welcome to WebFx. ' + (new Date()));
 	
-	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, exception) {
-		if(settings.dataType === 'script' && !settings.url.match(/^plugins\/all.plugins\.js/)) {
-			msg(/*exception.message + exception.stack*/exception);
+	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, ex) 
+	{
+		if(settings.dataType === 'script' && !settings.url.match(/^plugins\/all.plugins\.js/)) 
+		{
+			if(typeof(ex) === 'string')
+			{
+				msg(ex);
+				return;
+			}
+				
+			var m = 'ERROR: Script exception:\n';
+			
+			if(ex.fileName)
+				m += '\tFilename: ' + ex.fileName;
+				
+			if(ex.lineNumber)
+				m += '\tLine number: ' + ex.lineNumber;
+			
+			if(ex.message)
+				m += '\tMessage: ' + ex.message;
+				
+			msg(m);
 		}
 	});
 

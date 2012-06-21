@@ -164,7 +164,7 @@ function Renderer(canvas_id)
 			gl.clearColor(0.0, 0.0, 0.0, 1.0);
 			gl.clearDepth(1.0);
 			gl.enable(gl.CULL_FACE);
-			gl.cullFace(gl.FRONT);
+			gl.cullFace(gl.BACK);
 	    		gl.viewport(0, 0, self.canvas[0].width, self.canvas[0].height) ;
 	    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		}	
@@ -405,7 +405,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		}
 	};
 
-	this.generate_shader = function(shader_cache)
+	this.generate_shader = function(shader_cache, custom_vs_src, custom_ps_src)
 	{
 		// TODO: Adapt shader to handle the remaining maps and material attributes.
 		var flags = [];
@@ -444,6 +444,13 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			if(flags[v_types.COLOR])
 				vs_src.push('attribute vec4 v_col;');
 		
+/*			if(flags[v_types.NORMAL])
+			{
+				vs_src.push('attribute vec3 v_norm;');
+				vs_src.push('varying mediump vec3 f_norm;');
+				ps_src.push('varying mediump vec3 f_norm;');
+			}*/
+			
 			if(flags[v_types.UV0])
 			{
 				vs_src.push('attribute vec2 v_uv0;');
@@ -455,31 +462,44 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			vs_src.push('uniform mat4 v_mat;');
 			vs_src.push('uniform mat4 p_mat;');
 		
-			vs_src.push('void main(void) {');		
-			vs_src.push('    vec4 dc = color;');		
-			vs_src.push('    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);');		
+			if(!custom_vs_src)
+			{
+				vs_src.push('void main(void) {');		
+				vs_src.push('    vec4 dc = color;');		
+				vs_src.push('    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);');		
 
-			if(flags[v_types.COLOR])
-				vs_src.push('    dc = dc * v_col;');		
+				if(flags[v_types.COLOR])
+					vs_src.push('    dc = dc * v_col;');		
 
-			if(flags[v_types.UV0])
-				vs_src.push('    f_uv0 = v_uv0;');		
+	/*			if(flags[v_types.NORMAL])
+					vs_src.push('    f_norm = v_norm;');*/
 
-			vs_src.push('    f_col = dc;');		
-			vs_src.push('}');
+				if(flags[v_types.UV0])
+					vs_src.push('    f_uv0 = v_uv0;');		
 
+				vs_src.push('    f_col = dc;');		
+				vs_src.push('}');
+			}
+			else
+				vs_src.push(custom_vs_src);		
+			
 			if(flags[v_types.UV0])
 					ps_src.push('uniform sampler2D tex0;');
 
-			ps_src.push('void main(void) {');		
-			ps_src.push('    mediump vec4 fc = f_col;');
+			if(!custom_ps_src)
+			{
+				ps_src.push('void main(void) {');		
+				ps_src.push('    mediump vec4 fc = f_col;');
 
-			if(flags[v_types.UV0])
-				ps_src.push('    fc = fc * texture2D(tex0, f_uv0.st);');
+				if(flags[v_types.UV0])
+					ps_src.push('    fc = fc * texture2D(tex0, f_uv0.st);');
 			
-			ps_src.push('    gl_FragColor = fc;');
-			ps_src.push('}');
-		
+				ps_src.push('    gl_FragColor = fc;');
+				ps_src.push('}');
+			}
+			else
+				ps_src.push(custom_ps_src);		
+
 			vs_src = vs_src.join('\n');
 			ps_src = ps_src.join('\n');
 		
@@ -498,6 +518,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		var prog = s.program;
 	
 		s.vertexPosAttribute = gl.getAttribLocation(prog, "v_pos");
+		// s.vertexNormAttribute = gl.getAttribLocation(prog, "v_norm");
 		s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
 		s.vMatUniform = gl.getUniformLocation(prog, "v_mat");
 		s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
@@ -525,6 +546,8 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			
 			if(type === types.VERTEX)
 				attr = this.vertexPosAttribute;
+			/*else if(type === types.NORMAL)
+				attr = this.vertexNormAttribute;*/
 			else if(type === types.COLOR)
 				attr = this.vertexColAttribute;
 			else if(type === types.UV0)
@@ -554,6 +577,11 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 				gl.uniform1i(this.tex0Uniform, 0);
 				m.diffuse_tex.enable(gl.TEXTURE0);
 			}
+			
+			if(m.double_sided)
+				gl.disable(gl.CULL_FACE);
+			else
+				gl.enable(gl.CULL_FACE);
 		};
 		
 		// Can be monkey-patched by the caller with an appropriate implementation of
