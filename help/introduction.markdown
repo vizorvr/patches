@@ -122,6 +122,14 @@ transparent element in them.
 
   
 ##Example JSON files:
+<a href="examples/scene-viewer-example.json">scene-viewer-example.json</a>
+
+A heavily annotated example that demonstrates how to contruct a mouse controlled
+scene viewer that - amongst other things - auto-fits the scene to the camera setup,
+uses the sample-and-hold and toggle plugins to implement complex control 
+schemes, uses delta and acumulator combinations to maintain state and many other
+tricks.
+ 
 <a href="examples/render-to-texture-example.json">render-to-texture-example.json</a>
 
 Any nested graph can now be rendered to a texture instead of the frame
