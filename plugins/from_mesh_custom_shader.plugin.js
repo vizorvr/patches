@@ -19,7 +19,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 	this.state = { 
 		vs_src: 'void main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n\n\tf_col = dc;\n}',
 		ps_src: 'void main(void)\n{\n\tgl_FragColor = f_col;\n}',
-		slot_ids: [] 
+		slot_ids: {} 
 	};
 
 	this.shader = null;
@@ -61,15 +61,13 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		var comp_btn = $('<input id="comp_btn" type="button" value="Compile" title="Click to rebuild the shader." />');
 		var add_btn = $('<input id="add_btn" type="button" value="Add slot" title="Click to add new shader input slot." />');
 		var rem_btn = $('<input id="rem_btn" type="button" value="Remove slot" title="Click to remove the selected slot(s)." />');
-		var slot_list = $('<select size="4" multiple="multiple" />');
+		var slot_list = $('<select size="4" />');
 		
 		slot_list.css('border', 'none');
 		slot_list.css('width', '457px');
 		slot_list.css('margin-left', '2px');
 		slot_list.css('background-color', '#ddd');
 
-		var slot_ids = self.state.slot_ids;
-		
 		btn_span.css('width', '455px');
 		btn_span.append(comp_btn);
 		btn_span.append(add_btn);
@@ -84,6 +82,116 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		{
 			dest(src.val());
 			done_func(null);
+		});
+		
+		add_btn.click(function(e)
+		{
+			var diag2 = make('div');
+			var inp = $('<input type="input" />'); 
+			var dt_sel = $('<select />');
+			var dts = core.datatypes;
+			var allowed = [dts.FLOAT, dts.COLOR, dts.TRANSFORM, dts.VERTEX];
+			
+			for(var i = 0, len = allowed.length; i < len; i++)
+			{
+				var dt = allowed[i];
+				
+				dt_sel.append($('<option>', { value : dt.id }).text(dt.name));
+			}
+			
+			var l1 = make('span');
+			var lbl = $('<div>Identifier:</div>');
+			
+			inp.css('width', '220px');
+			lbl.css('padding-top', '3px');
+			lbl.css('float', 'left');
+			lbl.css('width', '80px');
+			
+			l1.append(lbl);
+			l1.append(inp);
+			
+			diag2.append(l1);
+			diag2.append(make('br'));
+			
+			var l2 = make('span');
+			
+			lbl = $('<div>Data type:</div>');
+			lbl.css('padding-top', '3px');
+			lbl.css('float', 'left');
+			lbl.css('width', '78px');
+			l2.append(lbl);
+			l2.append(dt_sel);
+			
+			diag2.append(l2);
+			
+			var done_func = function()
+			{
+				var sname = inp.val();
+				var cdt = parseInt(dt_sel.val());
+		
+				for(var sdt in core.datatypes)
+				{
+					sdt = core.datatypes[sdt];
+					
+					if(sdt.id === cdt)
+					{
+						var cid = sname.replace(' ', '_').toLowerCase();
+						var sid = node.add_slot(E2.slot_type.input, { name: cid, dt: sdt });
+	
+						self.state.slot_ids[cid] = { id: sid, dt: sdt, uniform: null, value: null };
+						slot_list.append($('<option>', { value: sid }).text(cid));
+						break;
+					}
+				}
+				
+				diag2.dialog('close');
+				self.rebuild_shader();
+				self.changed = true;
+			};
+			
+			diag2.dialog({
+				width: 360,
+				height: 170,
+				modal: true,
+				title: 'Create new slot.',
+				show: 'slide',
+				hide: 'slide',
+				buttons: {
+					'OK': function()
+					{
+						done_func();
+					},
+					'Cancel': function()
+					{
+						$(this).dialog('close');
+					}
+				},
+				open: function()
+				{
+					diag2.keyup(function(e)
+					{
+						if(e.keyCode === $.ui.keyCode.ENTER)
+							done_func();
+					});
+				}
+			});
+		});
+		
+		rem_btn.click(function(e)
+		{
+			var sel = slot_list.val();
+			
+			if(sel === null)
+				return;
+				
+			var cid = slot_list.find("option[value='" + sel + "']").remove().text();
+			
+			sel = parseInt(sel);
+			
+			delete self.state.slot_ids[cid];
+			node.remove_slot(E2.slot_type.input, sel);
+			self.rebuild_shader();
+			self.changed = true;
 		});
 		
 		diag.dialog({
@@ -154,8 +262,35 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		if(!self.mesh)
 			return;
 
-		self.shader = self.mesh.generate_shader(null, self.state.vs_src, self.state.ps_src);
+		var uniforms = '';
+		
+		for(var ident in self.state.slot_ids)
+		{
+			var dt = '';
+			var slot = self.state.slot_ids[ident];
+			var dtid = slot.dt.id;
+			
+			if(dtid === core.datatypes.FLOAT.id)
+				dt = 'mediump float';
+			else if(dtid === core.datatypes.COLOR.id)
+				dt = 'vec4';
+			else if(dtid === core.datatypes.TRANSFORM.id)
+				dt = 'mat4';
+			else if(dtid === core.datatypes.VECTOR.id)
+				dt = 'vec3';
+			
+			uniforms += 'uniform ' + dt + ' ' + ident + ';\n';
+		}
+		
+		self.shader = self.mesh.generate_shader(null, uniforms + self.state.vs_src, uniforms + self.state.ps_src);
 	
+		for(var ident in self.state.slot_ids)
+		{
+			var slot = self.state.slot_ids[ident];
+			
+			slot.uniform = gl.getUniformLocation(self.shader.program, ident);
+		}
+		
 		// Decorate with an apply_uniforms method that maps
 		// our values to the generated shader.
 		self.shader.apply_uniforms = function()
@@ -177,6 +312,26 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 				}
 			}
 	
+			for(var ident in self.state.slot_ids)
+			{
+				var slot = self.state.slot_ids[ident];
+			
+				
+				if(slot.uniform === null || slot.value === null)
+					continue;
+					
+				var dtid = slot.dt.id;
+				
+				if(dtid === core.datatypes.FLOAT.id)
+					gl.uniform1f(slot.uniform, slot.value);
+				else if(dtid === core.datatypes.COLOR.id)
+					gl.uniform4fv(slot.uniform, new Float32Array(slot.value));	
+				else if(dtid === core.datatypes.TRANSFORM.id)
+					gl.uniformMatrix4fv(slot.uniform, false, slot.value);
+				else if(dtid === core.datatypes.VECTOR.id)
+					gl.uniform3fv(slot.uniform, new Float32Array(slot.value));	
+			}
+			
 			var r = core.renderer;
 
 			r.set_depth_enable(self.is3d);
@@ -186,19 +341,26 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 	
 	this.update_input = function(slot, data)
 	{
-		if(slot.index === 0)
+		if(slot.uid === undefined)
 		{
-			self.mesh = data;
-			self.rebuild_shader();
+			if(slot.index === 0)
+			{
+				self.mesh = data;
+				self.rebuild_shader();
+			}
+			else if(slot.index === 1)
+				self.is3d = data;
+			else if(slot.index === 2)
+				self.color = data;
+			else if(slot.index === 3)
+				self.blend_mode = data;
+			else if(slot.index === 4)
+				self.tex = data;
 		}
-		else if(slot.index === 1)
-			self.is3d = data;
-		else if(slot.index === 2)
-			self.color = data;
-		else if(slot.index === 3)
-			self.blend_mode = data;
-		else if(slot.index === 4)
-			self.tex = data;
+		else
+		{
+			self.state.slot_ids[slot.name].value = data;
+		}
 	};
 	
 	this.update_state = function(delta_t)

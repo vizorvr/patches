@@ -47,8 +47,11 @@ function msg(txt)
 	if(txt.substring(0,  7) !== 'ERROR: ')
 		d.append(txt + '\n');
 	else
+	{
 		d.append('<span style="color:#f00">' + txt + '</span>\n');
-
+		alert(txt);
+	}
+	
 	d.scrollTop(d[0].scrollHeight);
 }
 
