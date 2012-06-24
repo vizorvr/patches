@@ -444,12 +444,12 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			if(flags[v_types.COLOR])
 				vs_src.push('attribute vec4 v_col;');
 		
-/*			if(flags[v_types.NORMAL])
+			if(flags[v_types.NORMAL])
 			{
 				vs_src.push('attribute vec3 v_norm;');
 				vs_src.push('varying mediump vec3 f_norm;');
 				ps_src.push('varying mediump vec3 f_norm;');
-			}*/
+			}
 			
 			if(flags[v_types.UV0])
 			{
@@ -471,8 +471,8 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 				if(flags[v_types.COLOR])
 					vs_src.push('    dc = dc * v_col;');		
 
-	/*			if(flags[v_types.NORMAL])
-					vs_src.push('    f_norm = v_norm;');*/
+				if(flags[v_types.NORMAL])
+					vs_src.push('    f_norm = v_norm;');
 
 				if(flags[v_types.UV0])
 					vs_src.push('    f_uv0 = v_uv0;');		
@@ -518,7 +518,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		var prog = s.program;
 	
 		s.vertexPosAttribute = gl.getAttribLocation(prog, "v_pos");
-		// s.vertexNormAttribute = gl.getAttribLocation(prog, "v_norm");
+		s.vertexNormAttribute = gl.getAttribLocation(prog, "v_norm");
 		s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
 		s.vMatUniform = gl.getUniformLocation(prog, "v_mat");
 		s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
@@ -546,8 +546,8 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			
 			if(type === types.VERTEX)
 				attr = this.vertexPosAttribute;
-			/*else if(type === types.NORMAL)
-				attr = this.vertexNormAttribute;*/
+			else if(type === types.NORMAL)
+				attr = this.vertexNormAttribute;
 			else if(type === types.COLOR)
 				attr = this.vertexColAttribute;
 			else if(type === types.UV0)
@@ -655,7 +655,7 @@ function Shader(gl, type, src)
 	gl.compileShader(this.shader);
 	
 	if(!gl.getShaderParameter(this.shader, gl.COMPILE_STATUS))
-		msg('Shader compilation failed:\n' + gl.getShaderInfoLog(this.shader));
+		msg('Shader compilation failed:\n' + gl.getShaderInfoLog(this.shader) + '\n' + src + '\n\n');
 }
 
 function ShaderProgram(gl, program)

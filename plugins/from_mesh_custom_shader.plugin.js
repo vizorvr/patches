@@ -24,6 +24,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 
 	this.shader = null;
 	this.changed = true;
+	this.slot_data = [];
 	
 	this.reset = function()
 	{
@@ -78,6 +79,14 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		diag.append(make('br'));
 		diag.append(slot_list);
 
+		// Rebuild slot list.
+		for(var ident in self.state.slot_ids)
+		{
+			var slot = self.state.slot_ids[ident];
+
+			slot_list.append($('<option>', { value: slot.id }).text(ident));
+		}			
+
 		comp_btn.click(function(e)
 		{
 			dest(src.val());
@@ -90,7 +99,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 			var inp = $('<input type="input" />'); 
 			var dt_sel = $('<select />');
 			var dts = core.datatypes;
-			var allowed = [dts.FLOAT, dts.COLOR, dts.TRANSFORM, dts.VERTEX];
+			var allowed = [dts.FLOAT, dts.TEXTURE, dts.COLOR, dts.TRANSFORM, dts.VERTEX];
 			
 			for(var i = 0, len = allowed.length; i < len; i++)
 			{
@@ -138,7 +147,8 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 						var cid = sname.replace(' ', '_').toLowerCase();
 						var sid = node.add_slot(E2.slot_type.input, { name: cid, dt: sdt });
 	
-						self.state.slot_ids[cid] = { id: sid, dt: sdt, uniform: null, value: null };
+						self.state.slot_ids[cid] = { id: sid, dt: sdt, uniform: null };
+						self.slot_data[sid] = null;
 						slot_list.append($('<option>', { value: sid }).text(cid));
 						break;
 					}
@@ -262,7 +272,8 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		if(!self.mesh)
 			return;
 
-		var uniforms = '';
+		var u_vs = '';
+		var u_ps = '';
 		
 		for(var ident in self.state.slot_ids)
 		{
@@ -272,17 +283,22 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 			
 			if(dtid === core.datatypes.FLOAT.id)
 				dt = 'mediump float';
+			else if(dtid === core.datatypes.TEXTURE.id)
+				dt = 'sampler2D';
 			else if(dtid === core.datatypes.COLOR.id)
-				dt = 'vec4';
+				dt = 'mediump vec4';
 			else if(dtid === core.datatypes.TRANSFORM.id)
-				dt = 'mat4';
-			else if(dtid === core.datatypes.VECTOR.id)
-				dt = 'vec3';
+				dt = 'mediump mat4';
+			else if(dtid === core.datatypes.VERTEX.id)
+				dt = 'mediump vec3';
 			
-			uniforms += 'uniform ' + dt + ' ' + ident + ';\n';
+			if(dtid !== core.datatypes.TEXTURE.id)
+				u_vs += 'uniform ' + dt + ' ' + ident + ';\n';
+			
+			u_ps += 'uniform ' + dt + ' ' + ident + ';\n';
 		}
-		
-		self.shader = self.mesh.generate_shader(null, uniforms + self.state.vs_src, uniforms + self.state.ps_src);
+			
+		self.shader = self.mesh.generate_shader(null, u_vs + self.state.vs_src, u_ps + self.state.ps_src);
 	
 		for(var ident in self.state.slot_ids)
 		{
@@ -312,24 +328,33 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 				}
 			}
 	
+			var tex_slot = 1;
+			var sd = self.slot_data;
+			
 			for(var ident in self.state.slot_ids)
 			{
 				var slot = self.state.slot_ids[ident];
 			
-				
-				if(slot.uniform === null || slot.value === null)
+				if(slot.uniform === null || sd[slot.id] === null)
 					continue;
 					
 				var dtid = slot.dt.id;
 				
 				if(dtid === core.datatypes.FLOAT.id)
-					gl.uniform1f(slot.uniform, slot.value);
+					gl.uniform1f(slot.uniform, sd[slot.id]);
+				else if(dtid === core.datatypes.TEXTURE.id)
+				{
+					debugger;
+					gl.uniform1i(slot.uniform, tex_slot);
+					sd[slot.id].enable(gl.TEXTURE0 + tex_slot);
+					tex_slot++;
+				}
 				else if(dtid === core.datatypes.COLOR.id)
-					gl.uniform4fv(slot.uniform, new Float32Array(slot.value));	
+					gl.uniform4fv(slot.uniform, new Float32Array(sd[slot.id].rgba));	
 				else if(dtid === core.datatypes.TRANSFORM.id)
-					gl.uniformMatrix4fv(slot.uniform, false, slot.value);
-				else if(dtid === core.datatypes.VECTOR.id)
-					gl.uniform3fv(slot.uniform, new Float32Array(slot.value));	
+					gl.uniformMatrix4fv(slot.uniform, false, sd[slot.id]);
+				else if(dtid === core.datatypes.VERTEX.id)
+					gl.uniform3fv(slot.uniform, new Float32Array(sd[slot.id]));	
 			}
 			
 			var r = core.renderer;
@@ -359,7 +384,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		}
 		else
 		{
-			self.state.slot_ids[slot.name].value = data;
+			self.slot_data[slot.uid] = data;
 		}
 	};
 	
