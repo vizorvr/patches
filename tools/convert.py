@@ -33,8 +33,10 @@ print 'Loading ' + input_filename
 
 process = 0
 
+process = process | 0x1 # Generate tangents and bitangents
 # process = process | 0x2 # JoinIdenticalVertices
 process = process | 0x8 # Triangulate
+process = process | 0x40 # Generate smooth normals
 process = process | 0x100 # PretransformVertices (bake graph transforms, remove anmations)
 process = process | 0x400 # ValidateDataStructure
 process = process | 0x800 # ImproveCacheLocality
@@ -98,7 +100,7 @@ def process_texture(filename):
 def get_mat_prop(props, name):
 	if name in props:
 		return props[name]
-		
+	
 	return None
 	
 
@@ -118,24 +120,23 @@ def write_material(mat):
 		
 		o.write(delim + '                "diffuse_color": [%f,%f,%f,%f]' % (diffuse[0], diffuse[1], diffuse[2], opacity[0]))
 		delim = ',\n'
-		
+	
 	ambient = get_mat_prop(props, '$clr.ambient')
 	
 	if ambient:
 		o.write(delim + '                "ambient_color": [%f,%f,%f,1.0]' % (ambient[0], ambient[1], ambient[2]))
 		delim = ',\n'
-		
+	
 	d_tex = get_mat_prop(props, '$tex.file')
 	
 	if d_tex:
 		o.write(delim + '                "diffuse_tex": "%s"' % process_texture(d_tex))
 		delim = ',\n'
-		
+	
 	shine = get_mat_prop(props, '$mat.shininess')
 	
 	if shine:
 		o.write(delim + '                "shininess": %f' % shine[0])
-		
 	
 	o.write('\n            }')
 
@@ -147,7 +148,7 @@ for index, mesh in enumerate(scene.meshes):
 	
 	o.write(mesh_delim + '        {\n')
 	delim = ',\n'
-
+	
 	write_material(scene.materials[mesh.mMaterialIndex])
 	
 	o.write(delim + '            "verts": [\n')
@@ -156,18 +157,21 @@ for index, mesh in enumerate(scene.meshes):
 		for i in range(3):
 			if v[i] < scene_bounds[0][i]:
 				scene_bounds[0][i] = v[i]
-	
+			
 			if v[i] > scene_bounds[1][i]:
 				scene_bounds[1][i] = v[i]
-		
+	
 	o.write(','.join([str(v) for sv in mesh.vertices for v in sv]) + ']')
+	
+	if mesh.normals._GetSize() > 0:
+		o.write(delim + '            "normals": [\n')
+		o.write(','.join([str(n) for sn in mesh.normals for n in sn]) + ']')
 	
 	for i in xrange(4):
 		if mesh.mNumUVComponents[i] > 0:
 			ident = 'uv' + str(i)
 			o.write(delim + '            "%s": [\n' % ident)
 			o.write(','.join([str(sv[0])+','+str(sv[1]) for sv in mesh.texcoords[i]]) + ']')
-		
 	
 	o.write('\n        }')
 	mesh_delim = ',\n'	
