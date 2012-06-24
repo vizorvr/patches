@@ -69,6 +69,7 @@
 	"Modulators/Math/Subtract": "subtract_modulator",
 	"Modulators/Matrix/Concatenate": "concatenate_matrix_modulator",
 	"Modulators/Matrix/Invert": "invert_matrix_modulator",
+	"Modulators/Matrix/Transpose": "transpose_matrix_modulator",
 	"Modulators/Oscilators/Cosine": "cosine_modulator",
 	"Modulators/Oscilators/Sawtooth": "sawtooth_modulator",
 	"Modulators/Oscilators/Sine": "sine_modulator",
