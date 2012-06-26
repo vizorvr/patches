@@ -145,7 +145,7 @@ body
 	left: 1136px; 
 	top: 50px;
 	width: 480px;
-	height: 360px;
+	height: 270px;
 }
 
 .webgl-canvas-fs
@@ -163,9 +163,9 @@ body
 {
 	position: absolute; 
 	width: 476px;
-	height: 505px;
+	height: 595px;
 	left: 1136px; 
-	top: 415px;
+	top: 325px;
 	font-size: 8pt;
 	background-color: #fff;
 	white-space: pre;
