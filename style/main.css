@@ -6,14 +6,6 @@
 	src: local('Exo Regular'), local('Exo-Regular'), url('exo.ttf') format('truetype');
 }
 
-.fundamental
-{
-	font-family: Helvetica, Arial, Sans-serif;
-	font-size: 10pt;
-	line-height: 1.5em;
-	margin-top: 10px;
-}
-
 .notification
 {
 	background-color: #ddd;
@@ -39,19 +31,33 @@ input[type=text]
 
 body
 {
+	font-family: Helvetica, Arial, Sans-serif;
+	font-size: 10pt;
+	line-height: 1.5em;
+	background-color: #e2e2e2;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	background-color: #eee;
+}
+
+html, body
+{
+	padding: 0px;
+	margin: 0px;
 }
 
 #content
 {
 	display: none;
-	width: 1400px;
+	width: 100%;
+	height: 46px;
+	background: url('../images/topnavi_gradient.png') repeat repeat;
+	margin: 0px;
+	padding: 0px;
+	padding-top: 4px;
 }
 
 #controls
@@ -65,7 +71,7 @@ body
 	font-weight: bold;
 	font-family: 'Exo', sans-serif;
 	margin-left: 10px;
-	margin-right: 48px;
+	margin-right: 40px;
 	position: relative;
 	top: 4px;
 }
@@ -126,6 +132,9 @@ body
 	overflow: scroll;
 	position: relative;
 	border: none;
+	-moz-box-shadow: inset 2px 2px 2px 2px #999;
+	-webkit-box-shadow: inset 2px 2px 2px 2px #999;
+	box-shadow: inset 2px 2px 2px 2px #999;
 }
 
 #canvas
@@ -143,7 +152,7 @@ body
 	background-color: #000; 
 	position: absolute; 
 	left: 1136px; 
-	top: 50px;
+	top: 45px;
 	width: 480px;
 	height: 270px;
 }
@@ -159,13 +168,25 @@ body
 	z-index: 10000;
 }
 
-#persist
+#tabs
 {
 	position: absolute; 
-	width: 476px;
-	height: 595px;
+	width: 472px;
+	height: 592px;
 	left: 1136px; 
-	top: 325px;
+	top: 318px;
+}
+
+.ui-tabs-panel
+{
+	padding: 5px 4px !important;
+}
+
+#persist
+{
+	width: 462px;
+	height: 540px;
+	resize: none;
 	font-size: 8pt;
 	background-color: #fff;
 	white-space: pre;
@@ -192,7 +213,7 @@ body
 	position: absolute;
 	width: 60px;
 	left: 1050px;
-	top: 15px;
+	top: 10px;
 }
 
 .plugin

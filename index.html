@@ -20,7 +20,7 @@
 		<script type="text/javascript" src="scripts/renderer.js"></script>
 		<script type="text/javascript" src="scripts/core.js"></script>
 	</head>
-	<body class="fundamental">
+	<body>
 		<noscript>
 			<div class="centered notification">
 				<div style="float: left; display: table-cell; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
@@ -28,9 +28,8 @@
 			</div>
 		</noscript>
 		<div id="content">
-			<div>
-			<span id="logo"><a href="help/introduction.html" target=_blank" style="color: #888; text-decoration: none;" title="Click to display a brief introduction in a new window...">Cogent&#8482;</a></span>
 			<span id="controls" class="centered">
+				<span id="logo"><a href="help/introduction.html" target=_blank" style="color: #888; text-decoration: none;" title="Click to display a brief introduction in a new window...">Cogent&#8482;</a></span>
 				<button id="play">Play</button>
 				<button id="pause">Pause</button>
 				<button id="stop">Stop</button>
@@ -50,7 +49,12 @@
 			<div id="info"></div>
 			<pre id="dbg"></pre>
 			<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="360" oncontextmenu="return false;"></canvas>
-			<textarea id="persist"></textarea>
+			<div id="tabs">
+					<ul>
+						<li><a href="#persist-tab">Persistence</a></li>
+					</ul>
+					<div id="persist-tab" class="ui-tabs-hide"><textarea id="persist"></textarea></div>
+			</div>
 		</div>
 	</body>
 </html>

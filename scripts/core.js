@@ -2993,6 +2993,7 @@ $(document).ready(function() {
 	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
 	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
 
+	$('#tabs').tabs();
 	$('#content').css('display', 'block');
 	
 });
