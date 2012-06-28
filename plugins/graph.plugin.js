@@ -346,22 +346,6 @@ E2.plugins["graph"] = function(core, node) {
        			
        			for(var i = 0, len = node.outputs.length; i < len; i++)
        				node.outputs[i].cached_value = null;
-       				
-       			/*var live = false;
-       			
-       			debugger;
-       			
-       			for(var i = 0, len = self.output_nodes.length; i < len; i++)
-			{
-				if(self.output_nodes[i].plugin.updated)
-				{
-					live = true;
-					break;
-				}
-			}
-			
-			if(!live)
-				self.updated = false;*/
        		}
        		else
        			self.updated = false;
@@ -441,7 +425,13 @@ E2.plugins["graph"] = function(core, node) {
 			for(var i = 0, len = nodes.length; i < len; i++)
 			{
 				if(nodes[i].uid === uid)
-					return nodes[i];
+				{
+					var n = nodes[i];
+					var p = n.plugin;
+					
+					p.data = core.get_default_value((p.id === 'input_proxy' ? node.dyn_inputs : node.dyn_output)[p.state.slot_id].dt);
+					return n;
+				}
 			}
 
 			return null;
