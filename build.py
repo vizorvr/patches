@@ -26,11 +26,14 @@ os.mkdir(build_dir)
 print 'Compressing scripts...'
 scripts_path = 'scripts/'
 os.mkdir(build_dir + '/' + scripts_path)
+
 scripts = map(lambda x: x[len(scripts_path):], glob.glob(scripts_path + '*.js'))
 
 for script in scripts:
-	print '\tCompressing ' + script
-	compress('./' + scripts_path + script, build_dir + '/' + scripts_path + script)
+	print './' + scripts_path + script + ' -> ' + build_dir + '/' + scripts_path + script
+	shutil.copy('./' + scripts_path + script, build_dir + '/' + scripts_path + script)
+
+compress(build_dir + '/' + scripts_path + '*.js', '.js:.js')
 	
 print 'Compressing plugins...'
 plugins_path = 'plugins/'
@@ -38,8 +41,9 @@ os.mkdir(build_dir + '/' + plugins_path)
 plugins = map(lambda x: x[len(plugins_path):], glob.glob(plugins_path + '*.js'))
 
 for plugin in plugins:
-	print '\tCompressing ' + plugin
-	compress('./' + plugins_path + plugin, build_dir + '/' + plugins_path + plugin)
+	shutil.copy('./' + plugins_path + plugin, build_dir + '/' + plugins_path + plugin)
+
+compress(build_dir + '/' + plugins_path + '*.js', '.js:.js')
 
 print 'Concatenating plugins...'
 
