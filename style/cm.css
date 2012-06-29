@@ -1,0 +1,61 @@
+.menu-panel
+{
+	position:relative;
+	left: 20px;
+	
+	padding: 0px 4px;
+	background-color: #eee;
+	-moz-box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.5);
+	box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.5);
+	display: table-cell;
+	cursor: pointer;
+}
+
+.menu-item
+{
+	padding: 2px;
+	height: 16px;
+	margin: 4px 0px;
+	white-space: nowrap;
+}
+
+.menu-grp-item
+{
+	padding: 2px;
+	padding-left: 21px;
+	height: 16px;
+	margin: 4px 0px;
+}
+
+.menu-icon
+{
+	float: left;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	margin: 0;
+	margin-right: 2px;
+}
+
+.menu-lbl
+{
+	font-size: 9pt;
+	position: relative;
+	top: -3px;
+	padding: 2px;
+	padding-right: 4px;
+	margin: 0px;
+	white-space: nowrap;
+}
+
+.menu-grp-img
+{
+	float: right;
+	background: url('../images/group.png');
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	margin: 0;
+	margin-left: 18px;
+}

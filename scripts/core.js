@@ -151,7 +151,7 @@ function PluginGroup(id)
 	
 	this.create_items = function()
 	{
-		var items = {}
+		var items = []
 		var sorted = sort_dict(self.children);
 		
 		for(var i = 0, len = sorted.length; i < len; i++)
@@ -159,7 +159,7 @@ function PluginGroup(id)
 			var id = sorted[i];
 			var child = self.children[id];
 			
-			items[id] = { name: id, icon: 'group', items: child.create_items() };
+			items.push({ name: id, items: child.create_items() });
 			
 		}
 		
@@ -170,7 +170,7 @@ function PluginGroup(id)
 			var id = sorted[i];
 			var entry = self.entries[id];
 			
-			items[entry] = { name: id, icon: entry };
+			items.push({ name: id, icon: entry });
 		}
 			
 		return items;
@@ -186,6 +186,7 @@ function PluginManager(core, base_url)
 	this.keybyid = {};
 	this.release_mode = false;
 	this.lid = 1;
+	this.context_menu = null;
 	
 	// First check if we're running a release build by checking for the existence
 	// of 'all.plugins.js'
@@ -251,15 +252,7 @@ function PluginManager(core, base_url)
    					self.register_plugin(pg_root, key, id);
 			});
 			
-			var items = pg_root.create_items();
-			
-			$.contextMenu({
-				selector: '#canvas_parent',
-				callback: E2.app.onPluginInstantiated,
-				animation: { show: 'show', hide: 'hide' },
-				zIndex: 10000,
-				items: items 
-			});
+			self.context_menu = new ContextMenu(E2.dom.canvas_parent, pg_root.create_items(), E2.app.onPluginInstantiated);
   		}
 	});
 	
@@ -1631,14 +1624,13 @@ function Application() {
 		return [x, o[1] + (slot_div.height() / 2)];
 	};
 	
-	this.onPluginInstantiated = function(id, opt)
+	this.onPluginInstantiated = function(id, pos)
 	{	
-		var pos = opt.$menu.offset();
 		var cp = canvas_parent;
 		var co = cp.offset();
 		var createPlugin = function(name)
 		{
-			var node = self.core.active_graph.create_instance(id, (pos.left - co.left) + cp.scrollLeft(), (pos.top - co.top) + cp.scrollTop());
+			var node = self.core.active_graph.create_instance(id, (pos[0] - co.left) + cp.scrollLeft(), (pos[1] - co.top) + cp.scrollTop());
 		
 			node.reset();
 
