@@ -30,7 +30,6 @@ os.mkdir(build_dir + '/' + scripts_path)
 scripts = map(lambda x: x[len(scripts_path):], glob.glob(scripts_path + '*.js'))
 
 for script in scripts:
-	print './' + scripts_path + script + ' -> ' + build_dir + '/' + scripts_path + script
 	shutil.copy('./' + scripts_path + script, build_dir + '/' + scripts_path + script)
 
 compress(build_dir + '/' + scripts_path + '*.js', '.js:.js')
