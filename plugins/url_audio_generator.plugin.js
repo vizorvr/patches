@@ -47,7 +47,7 @@ E2.plugins["url_audio_generator"] = function(core, node) {
 				width: 460,
 				height: 150,
 				modal: true,
-				title: 'Select audio URL (no extension required).',
+				title: 'Select audio URL (no extension).',
 				show: 'slide',
 				hide: 'slide',
 				buttons: {
@@ -97,6 +97,8 @@ E2.plugins["url_audio_generator"] = function(core, node) {
 				ui.attr('title', self.state.url);
 			else
 			{
+				var src = null;
+				
 				if(typeof(Audio) !== 'undefined')
 				{
 					self.audio = new Audio();
@@ -106,18 +108,24 @@ E2.plugins["url_audio_generator"] = function(core, node) {
 				
 					// Damn browser wars. Select file type based on cap sniffing.
 					if(self.audio.canPlayType('audio/mp4; codecs="mp4a.40.2"'))
-						self.audio.src = self.state.url + '.mp4';
+						src = self.state.url + '.mp4';
 					else if(self.audio.canPlayType('audio/ogg; codecs="vorbis"'))
-						self.audio.src = self.state.url + '.ogg';
+						src = self.state.url + '.ogg';
 					else if(self.audio.canPlayType('audio/mpeg'))
-						self.audio.src = self.state.url + '.mp3';
+						src = self.state.url + '.mp3';
 					else if(self.audio.canPlayType('audio/wav; codecs="1"'))
-						self.audio.src = self.state.url + '.wav';
+						src = self.state.url + '.wav';
 					else
 						msg('URL Audio generator: This browser supports neither mp4, mp3, ogg vorbis or wav playback.');
 				}
 				else
 					msg('URL Audio generator: This browser does not support the Audio API.');
+			
+				if(src !== null)
+				{
+					msg('URL Audio generator: Loading ' + src + '.');
+					self.audio.src = src;
+				}
 			}
 		}
 	};
