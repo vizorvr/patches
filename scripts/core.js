@@ -1,5 +1,5 @@
 /*
- * visualTHING PoC.
+ * Cogent.
  *
  * Authors: Lasse Jul Nielsen.
  * Web: http://www.effekts.dk
