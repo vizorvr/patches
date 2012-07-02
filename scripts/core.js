@@ -177,6 +177,19 @@ function PluginGroup(id)
 	};
 }
 
+function load_script(url)
+{
+	var script = document.createElement('script');
+	var async = document.createAttribute('async');
+	
+	async.nodeValue = 'false';
+
+	script.src = url;
+	script.attributes.setNamedItem(async);
+	
+	document.getElementById('head').appendChild(script);
+}
+
 function PluginManager(core, base_url) 
 {
 	var self = this;
@@ -194,20 +207,16 @@ function PluginManager(core, base_url)
 	
 	$.ajax({
 		url: url,
-		dataType: 'script',
+		type: 'HEAD',
 		async: false,
-		success: function(data, status) 
+		success: function() 
 		{
-			if(status == 'success')
-			{	
-				msg('PluginMgr: Running in release mode');
-				self.release_mode = true;
-			}
+			msg('PluginMgr: Running in release mode');
+			self.release_mode = true;
+			load_script(url);
 		},
-		error: function(opts, error)
+		error: function()
 		{
-			// NOTE: This won't trigger because jQuery uses JSONP to load
-			// the script into the global namespace. We can't trap the 404.
 			msg('PluginMgr: Running in debug mode');
 		}
 	});
@@ -237,16 +246,8 @@ function PluginManager(core, base_url)
    				if(!self.release_mode)
    				{
 	   				msg('Loading ' + id);
-	   				$.ajax({
-						url: url,
-						dataType: 'script',
-						async: false,
-						success: (function(id) { return function(data, status) 
-						{
-							if(status == 'success')
-								self.register_plugin(pg_root, key, id)
-						}})(id)
-					});
+					load_script(url);
+					self.register_plugin(pg_root, key, id)
    				}
    				else
    					self.register_plugin(pg_root, key, id);
