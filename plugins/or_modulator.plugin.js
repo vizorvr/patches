@@ -1,7 +1,7 @@
 E2.plugins["or_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Emit true if both input values are true and false otherwise.';
+	this.desc = 'Emit true if either input value is true and false otherwise.';
 	this.input_slots = [ 
 		{ name: 'bool', dt: core.datatypes.BOOL },
 		{ name: 'bool', dt: core.datatypes.BOOL } 
