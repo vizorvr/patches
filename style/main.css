@@ -275,6 +275,12 @@ html, body
 	padding: 2px;
 }
 
+#snippets-list
+{
+	width: 462px;
+	height: 540px;
+	font-size: 8pt;
+}
 #frame
 {
 	border: 1px solid #aaa;
