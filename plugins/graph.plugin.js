@@ -429,7 +429,7 @@ E2.plugins["graph"] = function(core, node) {
 					var n = nodes[i];
 					var p = n.plugin;
 					
-					p.data = core.get_default_value((p.id === 'input_proxy' ? node.dyn_inputs : node.dyn_output)[p.state.slot_id].dt);
+					p.data = core.get_default_value((p.id === 'input_proxy' ? n.dyn_outputs : n.dyn_inputs)[0].dt);
 					return n;
 				}
 			}
