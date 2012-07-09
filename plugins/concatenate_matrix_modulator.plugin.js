@@ -21,7 +21,12 @@ E2.plugins["concatenate_matrix_modulator"] = function(core, node) {
 
 	this.update_state = function(delta_t)
 	{
-		mat4.multiply(self.matrices[0], self.matrices[1], self.matrix);
+		var m = self.matrices;
+		
+		if(m[0] === null || m[1] === null)
+			return;
+		
+		mat4.multiply(m[0], m[1], self.matrix);
 	};	
 
 	this.update_output = function(slot)
