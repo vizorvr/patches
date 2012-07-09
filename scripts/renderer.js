@@ -165,7 +165,7 @@ function Renderer(canvas_id)
 			gl.clearDepth(1.0);
 			gl.enable(gl.CULL_FACE);
 			gl.cullFace(gl.BACK);
-	    		gl.viewport(0, 0, self.canvas[0].width, self.canvas[0].height) ;
+	    		self.update_viewport();
 	    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		}	
 	};
@@ -177,6 +177,11 @@ function Renderer(canvas_id)
 		if(gl)
 			gl.flush();
 	}
+	
+	this.update_viewport = function(w, h)
+	{
+		self.context.viewport(0, 0, self.canvas[0].width, self.canvas[0].height);
+	};
 	
 	this.set_depth_enable = function(on)
 	{
