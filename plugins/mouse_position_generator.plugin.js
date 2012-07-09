@@ -18,10 +18,10 @@ E2.plugins["mouse_position_generator"] = function(core, node) {
 	
 	this.mouse_moved = function(e)
 	{
-		var pos = E2.dom.webgl_canvas.position();
+		var wgl_c = E2.dom.webgl_canvas[0]; 
 		
-		self.x = (e.pageX - pos.left) / E2.dom.webgl_canvas.width();
-		self.y = (e.pageY - pos.top) / E2.dom.webgl_canvas.height();
+		self.x = (e.pageX - wgl_c.offsetLeft) / wgl_c.width;
+		self.y = (e.pageY - wgl_c.offsetTop) / wgl_c.height;
 		self.updated = true;
 	};
 	
