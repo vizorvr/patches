@@ -56,5 +56,5 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 
 			mat4.identity(self.transform);
 		}
-	}
+	};
 };
