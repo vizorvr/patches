@@ -1,2 +1,2 @@
 #!/bin/sh
-sudo apt-get install git git-gui yui-compressor markdown lftp ccrypt
+sudo apt-get install git git-gui yui-compressor markdown lftp ccrypt nodejs node-uglify ffmpeg libavcodec-extra-53
