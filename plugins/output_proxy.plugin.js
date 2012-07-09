@@ -30,6 +30,6 @@ E2.plugins["output_proxy"] = function(core, node) {
 	this.state_changed = function(ui)
 	{
 		if(ui)
-			node.ui.dom.css('background-color', '#efef98');
+			node.ui.dom.addClass('proxy');
 	};
 };
