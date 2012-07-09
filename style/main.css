@@ -253,7 +253,7 @@ html, body
 #persist
 {
 	width: 462px;
-	height: 540px;
+	height: 495px;
 	resize: none;
 	font-size: 8pt;
 	background-color: #fff;
@@ -275,12 +275,38 @@ html, body
 	padding: 2px;
 }
 
+#save
+{
+	float: right;
+	margin-top: 5px;
+}
+
+#load
+{
+	float: right;
+	margin-top: 5px;
+	margin-right: 5px;
+}
+
+#load-clipboard
+{
+	float: right;
+	margin-top: 5px;
+	margin-right: 5px;
+}
+
 #snippets-list
 {
 	width: 462px;
-	height: 540px;
-	font-size: 8pt;
+	height: 500px;
 }
+
+#load-snippet
+{
+	float: right;
+	margin-top: 5px;
+}
+
 #frame
 {
 	border: 1px solid #aaa;
@@ -307,24 +333,24 @@ html, body
 	background: #ffa !important;
 }
 
-.graph .pl_header
+/*.graph .pl_header
 {
 	background: #888 !important;
 	color: #fff !important;
 	font-weight: bold;
-}
+}*/
 
 .proxy
 {
-	background: #aff !important;
+	background: #ffa !important;
 }
 
-.proxy .pl_header
+/*.proxy .pl_header
 {
 	background: #888 !important;
 	color: #fff !important;
 	font-weight: bold;
-}
+}*/
 
 .pl_layout
 {
@@ -334,7 +360,9 @@ html, body
 
 .pl_header
 {
-	background-color: #dde;
+/*	background-color: #dde; */
+	background-color: #656974;
+	color: #fff;
 }
 
 .pl_header #t

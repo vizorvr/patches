@@ -16,6 +16,7 @@ E2.app = null;
 E2.dom = {};
 E2.plugins = {};
 E2.slot_type = { input: 0, output: 1 };
+E2.erase_color = '#ff3b3b'; // '#ff4f4f';
 
 Array.prototype.remove = function(obj)
 {
@@ -273,6 +274,62 @@ function PluginManager(core, base_url)
 	};
 }
  
+function SnippetManager(base_url)
+{
+	var self = this;
+	
+	this.listbox = $('#snippets-list');
+	this.base_url = base_url;
+	
+	var url = self.base_url + '/snippets.json';
+	
+	this.register_snippet = function(name, url)
+	{
+		self.listbox.append('<option value="' + url + '">' + name + '</option>');
+	};
+	
+	$.ajax({
+		url: url,
+		dataType: 'json',
+		async: false,
+		headers: {},
+		success: function(data) 
+		{
+			msg('SnippetsMgr: Loading snippets from: ' + url);
+
+			$.each(data, function(key, id) 
+			{
+				// Load the plugin, constrain filenames.
+				var url = self.base_url + '/' + id + '.json';
+
+				self.register_snippet(key, url)
+			});
+		},
+		error: function()
+		{
+			msg('SnippetsMgr: No snippets found.');
+		}
+	});
+	
+	$('#load-snippet').button().click(function()
+	{
+		var url = self.listbox.val();
+		
+		msg('Loading snippet from: ' + url);
+		
+		$.ajax({
+			url: url,
+			dataType: 'json',
+			async: false,
+			headers: {},
+			success: function(data)
+			{
+	  			E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
+	  		}
+		});
+	});
+}
+
 function ConnectionUI(parent_conn)
 {
 	var self = this;
@@ -458,13 +515,14 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	};
 }
 
-function draggable_mouseup(data) { return function(e)
+function draggable_mouseup(move, data) { return function(e)
 {
 	data.doc.unbind('mouseup.draggable');
 	data.doc.unbind('mousemove.draggable');
 		
 	data.stop(e);
-
+	// data.doc[0].removeEventListener('mousemove', move, false);
+	
 	if(e.stopPropagation) e.stopPropagation();
 	if(e.preventDefault) e.preventDefault();
 	return false;
@@ -479,9 +537,9 @@ function draggable_mousemove(data) { return function(e)
 	var co = cp.offset();
 	
 	if(e.pageX < co.left)
-	{	cp.scrollLeft(cp.scrollLeft() - 20); nx -= 20; }
+	{	cp.scrollLeft(E2.app.scrollOffset[0] - 20); nx -= 20; }
 	else if(e.pageX > co.left + cp.width())
-	{	cp.scrollLeft(cp.scrollLeft() + 20); nx += 20; }
+	{	cp.scrollLeft(E2.app.scrollOffset[1] + 20); nx += 20; }
 	
 	if(e.pageY < co.top)
 	{	cp.scrollTop(cp.scrollTop() - 20); ny -= 20; }
@@ -523,7 +581,11 @@ function draggable_mousedown(ui, drag, stop) { return function(e)
 		doc: $(document)
 	};
 
-	data.doc.bind('mouseup.draggable', draggable_mouseup(data));
+	var move = draggable_mousemove(data);
+	
+	data.doc.bind('mouseup.draggable', draggable_mouseup(move, data));
+	// data.doc[0].addEventListener('mousemove', move, false);
+	
 	data.doc.bind('mousemove.draggable', draggable_mousemove(data));
 	
 	if(e.stopPropagation) e.stopPropagation();
@@ -1135,7 +1197,6 @@ function Graph(parent_graph, tree_node)
 		this.nodes = [];
 		this.roots = [];
 		this.children = [];
-		this.children = [];
 		this.connections = [];
 		this.node_uid = 0;
 			
@@ -1343,8 +1404,8 @@ function Graph(parent_graph, tree_node)
 	this.patch_up = function(graphs)
 	{
 		self.parent_graph = resolve_graph(graphs, self.parent_graph);
-		
-//		self.enum_all(function(n) { n.patch_up(graphs); }, function(c) { c.patch_up(self.nodes); });
+
+		// Cannot use self.enum_all for this!
 		var nodes = self.nodes,
 		    conns = self.connections;
 		    
@@ -1631,7 +1692,7 @@ function Application() {
 		var co = cp.offset();
 		var createPlugin = function(name)
 		{
-			var node = self.core.active_graph.create_instance(id, (pos[0] - co.left) + cp.scrollLeft(), (pos[1] - co.top) + cp.scrollTop());
+			var node = self.core.active_graph.create_instance(id, (pos[0] - co.left) + self.scrollOffset[0], (pos[1] - co.top) + self.scrollOffset[1]);
 		
 			node.reset();
 
@@ -1757,7 +1818,7 @@ function Application() {
 		if(!hs)
 			return;
 		
-		self.hover_slot_div.css('background-color', '#f00');
+		self.hover_slot_div.css('background-color', E2.erase_color);
 		
 		// Mark any attached connection
 		var conns = self.core.active_graph.connections;
@@ -1828,7 +1889,7 @@ function Application() {
 			{
 				self.dst_node = null;
 				self.dst_slot = null;
-				slot_div.css('color', '#f00');
+				slot_div.css('color', E2.erase_color);
 			}
 		}
 		
@@ -1859,7 +1920,7 @@ function Application() {
 				
 		var conns = self.core.active_graph.connections;
 		var cb = [[], [], [], []];
-		var styles = ['#000', '#44f', '#09f', '#f00'];
+		var styles = ['#000', '#44f', '#09f', E2.erase_color];
 		
 		for(var i = 0, len = conns.length; i < len; i++)
 		{
@@ -1942,14 +2003,14 @@ function Application() {
 			var y2 = pos.top + h;
 			
 			if(e.pageX < pos.left)
-				cp.scrollLeft(cp.scrollLeft() - 20);
+				cp.scrollLeft(self.scrollOffset[0] - 20);
 			else if(e.pageX > x2)
-				cp.scrollLeft(cp.scrollLeft() + 20);
+				cp.scrollLeft(self.scrollOffset[0] + 20);
 					
 			if(e.pageY < pos.top)
-				cp.scrollTop(cp.scrollTop() - 20);
+				cp.scrollTop(self.scrollOffset[1] - 20);
 			else if(e.pageY > y2)
-				cp.scrollTop(cp.scrollTop() + 20);
+				cp.scrollTop(self.scrollOffset[1] + 20);
 
 			self.edit_conn.ui.dst_pos = self.mouseEventPosToCanvasCoord(e);
 			self.updateCanvas();
@@ -2006,7 +2067,7 @@ function Application() {
 	{
 		if(self.hover_node !== null)
 		{
-			self.hover_node.ui.header_row.css('background-color', '#f00');
+			self.hover_node.ui.header_row.css('background-color', E2.erase_color);
 		
 			var hcs = self.hover_connections;
 			var conns = self.core.active_graph.connections;
@@ -2038,7 +2099,7 @@ function Application() {
 					if(node === self.hover_node)
 						continue;
 
-					node.ui.header_row.css('background-color', '#f00');
+					node.ui.header_row.css('background-color', E2.erase_color);
 					self.hover_nodes.push(node);
 					
 					iterate_conns(hcs, node.uid);
@@ -2061,7 +2122,7 @@ function Application() {
 			self.hover_node = null;
 			
 			for(var i = 0, len = self.hover_nodes.length; i < len; i++)
-				self.hover_nodes[i].ui.header_row.css('background-color', '#dde'); // TODO: Ugly. This belongs in a style sheet.
+				self.hover_nodes[i].ui.header_row.css('background-color', '#656974'); // TODO: Ugly. This belongs in a style sheet.
 			
 			self.hover_nodes = [];
 			
@@ -2455,10 +2516,10 @@ function Application() {
 		var dy = e.pageY - self.selection_last[1];
 
 		if((dx < 0 && e.pageX < co.left + (w * 0.15)) || (dx > 0 && e.pageX > co.left + (w * 0.85)))
-			cp.scrollLeft(cp.scrollLeft() + dx);
+			cp.scrollLeft(self.scrollOffset[0] + dx);
 		
 		if((dy < 0 && e.pageY < co.top + (h * 0.15)) || (dy > 0 && e.pageY > co.top + (h * 0.85)))
-			cp.scrollTop(cp.scrollTop() + dy);
+			cp.scrollTop(self.scrollOffset[1] + dy);
 		
 		
 		self.selection_last = [e.pageX, e.pageY];
@@ -2474,37 +2535,23 @@ function Application() {
 		
 	};
 	
-	this.onCopy = function(e)
+	this.fillCopyBuffer = function(nodes, conns, sx, sy)
 	{
-		if(e.target.id === 'persist')
-			return true;
-		
-		if(self.selection_nodes.length < 1)
-		{
-			msg('Copy: Nothing selected.');
-			e.stopPropagation();
-			return false;
-		}
-		
 		var d = {};
-		var sx = E2.dom.canvas_parent.scrollLeft();
-		var sy = E2.dom.canvas_parent.scrollTop();
 		var x1 = 9999999.0, y1 = 9999999.0, x2 = 0, y2 = 0;
 		
 		d.nodes = [];
 		d.conns = [];
 		
-		var nodes = self.selection_nodes,
-		    conns = self.selection_conns;
-		    
 		for(var i = 0, len = nodes.length; i < len; i++)
 		{
 			var n = nodes[i];
-			var dom = n.ui.dom;
-			var p = dom.position();
-			var b = [p.left, p.top, p.left + dom.width(), p.top + dom.height()]; 
+			var dom = n.ui ? n.ui.dom : null;
+			var p = dom ? dom.position() : { left: n.x, top: n.y };
+			var b = [p.left, p.top, p.left + (dom ? dom.width() : 0), p.top + (dom ? dom.height() : 0)]; 
 			
-			n = n.serialise();
+			if(dom)
+				n = n.serialise();
 			
 			if(b[0] < x1) x1 = b[0];
 			if(b[1] < y1) y1 = b[1];
@@ -2520,12 +2567,30 @@ function Application() {
 		d.y2 = y2 + sy;
 		
 		for(var i = 0, len = conns.length; i < len; i++)
-			d.conns.push(conns[i].serialise());
+		{
+			var c = conns[i];
+			
+			d.conns.push(c.ui ? c.serialise() : c);
+		}
 			
 		self.clipboard = JSON.stringify(d);
 		msg('Copy event. Buffer:');
 		msg(self.clipboard);
+	};
+	
+	this.onCopy = function(e)
+	{
+		if(e.target.id === 'persist')
+			return true;
 		
+		if(self.selection_nodes.length < 1)
+		{
+			msg('Copy: Nothing selected.');
+			e.stopPropagation();
+			return false;
+		}
+		
+		self.fillCopyBuffer(self.selection_nodes, self.selection_conns, self.scrollOffset[0], self.scrollOffset[1]);
 		e.stopPropagation();
 		return false;
 	};
@@ -2560,8 +2625,8 @@ function Application() {
 		var cp = E2.dom.canvas_parent;
 		var ag = self.core.active_graph;
 		var n_lut = {};
-		var sx = cp.scrollLeft();
-		var sy = cp.scrollTop();
+		var sx = self.scrollOffset[0];
+		var sy = self.scrollOffset[1];
 		var w2 = cp.width() / 2.0;
 		var h2 = cp.height() / 2.0;
 		var bw2 = (d.x2 - d.x1) / 2.0;
@@ -2658,7 +2723,7 @@ function Application() {
 			
 			n.plugin.graph.tree_node.graph = n.plugin.graph;
 			n.plugin.graph.uid = E2.app.core.get_graph_uid();
-			n.plugin.graph.parent_graph = ag;
+			n.plugin.graph.parent_graph = pg;
 		
 			var nodes = n.plugin.graph.nodes;
 			
@@ -2736,7 +2801,9 @@ function Application() {
 		}
 		else if(e.keyCode === 27)
 		{
-			E2.dom.webgl_canvas.attr('class', self.fullscreen ? 'webgl-canvas-normal' : 'webgl-canvas-fs');
+			var c = E2.dom.webgl_canvas;
+			
+			c.attr('class', self.fullscreen ? 'webgl-canvas-normal' : 'webgl-canvas-fs');
 			self.fullscreen = !self.fullscreen;
 		}
 	};
@@ -2804,6 +2871,13 @@ function Application() {
 		self.core.renderer.texture_cache.clear();
 		self.core.deserialise(E2.dom.persist.val());
 		self.updateCanvas();
+	};
+
+	this.onLoadClipboardClicked = function()
+	{
+		var d = JSON.parse(E2.dom.persist.val());
+
+		self.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
 	};
 
 	this.onShowTooltip = function(e)
@@ -2899,7 +2973,13 @@ function Application() {
 
 	$('#fullscreen').button().click(function()
 	{
-		E2.dom.webgl_canvas.attr('class', 'webgl-canvas-fs');
+		var c = E2.dom.webgl_canvas;
+		
+		c.attr('class', 'webgl-canvas-fs');
+		c.attr('width', c.width());
+		c.attr('height', c.height());
+		
+		self.core.renderer.update_viewport();
 		self.fullscreen = true;
 	});
 }
@@ -2913,6 +2993,7 @@ $(document).ready(function() {
 	E2.dom.stop = $('#stop');
 	E2.dom.save = $('#save');
 	E2.dom.load = $('#load');
+	E2.dom.load_clipboard = $('#load-clipboard');
 	E2.dom.frame = $('#frame');
 	E2.dom.persist = $('#persist');
 	E2.dom.structure = $('#structure');
@@ -2949,6 +3030,7 @@ $(document).ready(function() {
 
 	E2.app = new Application();
 	E2.app.core.plugin_mgr = new PluginManager(E2.app.core, 'plugins');
+	E2.app.core.snippet_mgr = new SnippetManager('snippets');
 	
 	E2.dom.structure.dynatree({
 		title: "Structure",
@@ -2985,6 +3067,7 @@ $(document).ready(function() {
 	E2.dom.stop.button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(E2.app.onStopClicked);
 	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
 	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
+	E2.dom.load_clipboard.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClipboardClicked);
 
 	$('#tabs').tabs();
 	$('#content').css('display', 'block');
