@@ -17,7 +17,8 @@ def glob_recursive(base_path, pattern):
 build_dir = './build'
 
 def compress(in_name, out_name):
-	os.system('yui-compressor --type js --preserve-semi -o ' + out_name + ' ' + in_name)
+	# os.system('yui-compressor --type js --preserve-semi -o ' + out_name + ' ' + in_name)
+	os.system('uglifyjs -nc -o ' + out_name + ' ' + in_name)
 
 print 'Rebuilding...'
 shutil.rmtree(build_dir)
@@ -30,19 +31,25 @@ os.mkdir(build_dir + '/' + scripts_path)
 scripts = map(lambda x: x[len(scripts_path):], glob.glob(scripts_path + '*.js'))
 
 for script in scripts:
-	shutil.copy('./' + scripts_path + script, build_dir + '/' + scripts_path + script)
-
-compress(build_dir + '/' + scripts_path + '*.js', '.js:.js')
+	print '\t' + script
+	compress('./' + scripts_path + script, build_dir + '/' + scripts_path + script)
 	
+print 'Compressing snippets...'
+snippets_path = 'snippets/'
+os.mkdir(build_dir + '/' + snippets_path)
+snippets = map(lambda x: x[len(snippets_path):], glob.glob(snippets_path + '*.json'))
+
+for snippet in snippets:
+	shutil.copy('./' + snippets_path + snippet, build_dir + '/' + snippets_path + snippet)
+
 print 'Compressing plugins...'
 plugins_path = 'plugins/'
 os.mkdir(build_dir + '/' + plugins_path)
 plugins = map(lambda x: x[len(plugins_path):], glob.glob(plugins_path + '*.js'))
 
 for plugin in plugins:
-	shutil.copy('./' + plugins_path + plugin, build_dir + '/' + plugins_path + plugin)
-
-compress(build_dir + '/' + plugins_path + '*.js', '.js:.js')
+	print '\t' + plugin
+	compress('./' + plugins_path + plugin, build_dir + '/' + plugins_path + plugin)
 
 print 'Concatenating plugins...'
 
