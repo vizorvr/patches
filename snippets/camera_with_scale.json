@@ -1,0 +1,111 @@
+{
+    "abs_t": 65.138,
+    "active_graph": 0,
+    "graph_uid": 5,
+    "root": {
+        "node_uid": 22,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 225,
+                "y": 242,
+                "uid": 21,
+                "dsid": 1,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "3": 0
+                    }
+                },
+                "title": "Camera with scale",
+                "graph": {
+                    "node_uid": 4,
+                    "uid": 4,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "perspective_camera",
+                            "x": 590,
+                            "y": 305,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 491,
+                            "y": 364,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 271,
+                            "y": 321,
+                            "uid": 2,
+                            "state": {
+                                "val": 3.9,
+                                "min": 0,
+                                "max": 10
+                            }
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 709,
+                            "y": 309,
+                            "uid": 3,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "camera",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 6,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "camera",
+                        "dt": 6,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

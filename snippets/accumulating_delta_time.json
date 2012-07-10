@@ -1,0 +1,141 @@
+{
+    "abs_t": 187.294,
+    "active_graph": 0,
+    "graph_uid": 3,
+    "root": {
+        "node_uid": 2,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 401,
+                "y": 342,
+                "uid": 1,
+                "dsid": 1,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "5": 0
+                    }
+                },
+                "title": "Accumulating delta time",
+                "graph": {
+                    "node_uid": 6,
+                    "uid": 2,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "delta_t_generator",
+                            "x": 323,
+                            "y": 358,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "float_display",
+                            "x": 624,
+                            "y": 250,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "accumulate_modulator",
+                            "x": 496,
+                            "y": 378,
+                            "uid": 2,
+                            "state": {
+                                "value": 448.5140000000076
+                            }
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 415,
+                            "y": 370,
+                            "uid": 3
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 169,
+                            "y": 424,
+                            "uid": 4,
+                            "state": {
+                                "val": 0.3,
+                                "min": 0,
+                                "max": 50
+                            },
+                            "title": "Speed"
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 625,
+                            "y": 384,
+                            "uid": 5,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "delta float",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 0,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 5,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "dst_dyn": true,
+                            "offset": 1
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "delta float",
+                        "dt": 0,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

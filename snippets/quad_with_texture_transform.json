@@ -1,0 +1,157 @@
+{
+    "abs_t": 96.588,
+    "active_graph": 0,
+    "graph_uid": 3,
+    "root": {
+        "node_uid": 2,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 427,
+                "y": 235,
+                "uid": 0,
+                "dsid": 2,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {
+                        "4": 0,
+                        "5": 1
+                    },
+                    "output_sids": {}
+                },
+                "title": "Quad w/ tex transform",
+                "graph": {
+                    "node_uid": 6,
+                    "uid": 1,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 250,
+                            "y": 282,
+                            "uid": 0,
+                            "state": {
+                                "url": "data/textures/cutout_audrey5.png"
+                            }
+                        },
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 701,
+                            "y": 248,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "texture_diffuse_shader",
+                            "x": 427,
+                            "y": 306,
+                            "uid": 2
+                        },
+                        {
+                            "plugin": "cube_mesh_generator",
+                            "x": 386,
+                            "y": 194,
+                            "uid": 3
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 601,
+                            "y": 456,
+                            "uid": 4,
+                            "dsid": 3,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "transform",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 4,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 313,
+                            "y": 471,
+                            "uid": 5,
+                            "dsid": 3,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "tex transform",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 4,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 4
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "src_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "transform",
+                        "dt": 4,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0
+                    },
+                    {
+                        "name": "tex transform",
+                        "dt": 4,
+                        "uid": 1,
+                        "index": 1,
+                        "type": 0
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

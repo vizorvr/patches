@@ -1,0 +1,467 @@
+{
+    "abs_t": 522.556,
+    "active_graph": 0,
+    "graph_uid": 49,
+    "root": {
+        "node_uid": 16,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 353,
+                "y": 132,
+                "uid": 5,
+                "dsid": 2,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {
+                        "4": 0,
+                        "5": 1
+                    },
+                    "output_sids": {}
+                },
+                "title": "flashing bg",
+                "graph": {
+                    "node_uid": 8,
+                    "uid": 9,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "quad_mesh_generator",
+                            "x": 261,
+                            "y": 213,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "from_mesh_shader",
+                            "x": 404,
+                            "y": 307,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 573,
+                            "y": 243,
+                            "uid": 2
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 187,
+                            "y": 350,
+                            "uid": 3,
+                            "state": {
+                                "url": "data/textures/backdrop_darkgrey.jpg"
+                            }
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 482,
+                            "y": 463,
+                            "uid": 4,
+                            "dsid": 4,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "Transform",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 4,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 248,
+                            "y": 406,
+                            "uid": 7,
+                            "dsid": 1,
+                            "state": {
+                                "enabled": true,
+                                "input_sids": {},
+                                "output_sids": {
+                                    "5": 0
+                                }
+                            },
+                            "title": "Color - HSLA",
+                            "graph": {
+                                "node_uid": 7,
+                                "uid": 18,
+                                "parent_uid": 9,
+                                "nodes": [
+                                    {
+                                        "plugin": "convert_hsla_color_modulator",
+                                        "x": 583,
+                                        "y": 360,
+                                        "uid": 0
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 348,
+                                        "y": 273,
+                                        "uid": 1,
+                                        "state": {
+                                            "val": 0.58,
+                                            "min": 0,
+                                            "max": 1
+                                        },
+                                        "title": "Hue"
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 339,
+                                        "y": 355,
+                                        "uid": 2,
+                                        "state": {
+                                            "val": 1,
+                                            "min": 0,
+                                            "max": 1
+                                        },
+                                        "title": "Saturation"
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 345,
+                                        "y": 436,
+                                        "uid": 3,
+                                        "state": {
+                                            "val": 0.56,
+                                            "min": 0,
+                                            "max": 1
+                                        },
+                                        "title": "Luminosity"
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 368,
+                                        "y": 524,
+                                        "uid": 4,
+                                        "state": {
+                                            "val": 1,
+                                            "min": 0,
+                                            "max": 1
+                                        },
+                                        "title": "Alpha"
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 726,
+                                        "y": 395,
+                                        "uid": 5,
+                                        "dsid": 2,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "color",
+                                        "dyn_in": [
+                                            {
+                                                "name": "input",
+                                                "dt": 3,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 0,
+                                                "connected": true,
+                                                "is_connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "graph",
+                                        "x": 147,
+                                        "y": 352,
+                                        "uid": 6,
+                                        "dsid": 1,
+                                        "state": {
+                                            "enabled": true,
+                                            "input_sids": {},
+                                            "output_sids": {
+                                                "7": 0
+                                            }
+                                        },
+                                        "title": "Scale oscillator",
+                                        "graph": {
+                                            "node_uid": 11,
+                                            "uid": 19,
+                                            "parent_uid": 18,
+                                            "nodes": [
+                                                {
+                                                    "plugin": "clock_generator",
+                                                    "x": 212,
+                                                    "y": 254,
+                                                    "uid": 0
+                                                },
+                                                {
+                                                    "plugin": "multiply_modulator",
+                                                    "x": 321,
+                                                    "y": 260,
+                                                    "uid": 1
+                                                },
+                                                {
+                                                    "plugin": "slider_float_generator",
+                                                    "x": 97,
+                                                    "y": 318,
+                                                    "uid": 2,
+                                                    "state": {
+                                                        "val": 0.58,
+                                                        "min": 0,
+                                                        "max": 1
+                                                    },
+                                                    "title": "Speed 1"
+                                                },
+                                                {
+                                                    "plugin": "sine_modulator",
+                                                    "x": 450,
+                                                    "y": 259,
+                                                    "uid": 3
+                                                },
+                                                {
+                                                    "plugin": "multiply_modulator",
+                                                    "x": 655,
+                                                    "y": 275,
+                                                    "uid": 4
+                                                },
+                                                {
+                                                    "plugin": "slider_float_generator",
+                                                    "x": 374,
+                                                    "y": 345,
+                                                    "uid": 5,
+                                                    "state": {
+                                                        "val": 0.23,
+                                                        "min": 0,
+                                                        "max": 1
+                                                    },
+                                                    "title": "Speed 2"
+                                                },
+                                                {
+                                                    "plugin": "float_display",
+                                                    "x": 719,
+                                                    "y": 190,
+                                                    "uid": 6
+                                                },
+                                                {
+                                                    "plugin": "output_proxy",
+                                                    "x": 839,
+                                                    "y": 264,
+                                                    "uid": 7,
+                                                    "dsid": 11,
+                                                    "state": {
+                                                        "slot_id": 0
+                                                    },
+                                                    "title": "Oscillator",
+                                                    "dyn_in": [
+                                                        {
+                                                            "name": "input",
+                                                            "dt": 0,
+                                                            "uid": 0,
+                                                            "index": 0,
+                                                            "type": 0,
+                                                            "connected": true,
+                                                            "is_connected": true
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "plugin": "convert_oscilator_unit_modulator",
+                                                    "x": 520,
+                                                    "y": 261,
+                                                    "uid": 8
+                                                },
+                                                {
+                                                    "plugin": "add_modulator",
+                                                    "x": 757,
+                                                    "y": 280,
+                                                    "uid": 9
+                                                },
+                                                {
+                                                    "plugin": "slider_float_generator",
+                                                    "x": 594,
+                                                    "y": 405,
+                                                    "uid": 10,
+                                                    "state": {
+                                                        "val": 0.2,
+                                                        "min": 0,
+                                                        "max": 0.2
+                                                    },
+                                                    "title": "Minimum size"
+                                                }
+                                            ],
+                                            "conns": [
+                                                {
+                                                    "src_nuid": 0,
+                                                    "dst_nuid": 1,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 0
+                                                },
+                                                {
+                                                    "src_nuid": 2,
+                                                    "dst_nuid": 1,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 1
+                                                },
+                                                {
+                                                    "src_nuid": 1,
+                                                    "dst_nuid": 3,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 0
+                                                },
+                                                {
+                                                    "src_nuid": 5,
+                                                    "dst_nuid": 4,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 1
+                                                },
+                                                {
+                                                    "src_nuid": 3,
+                                                    "dst_nuid": 8,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 0
+                                                },
+                                                {
+                                                    "src_nuid": 8,
+                                                    "dst_nuid": 4,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 0
+                                                },
+                                                {
+                                                    "src_nuid": 4,
+                                                    "dst_nuid": 9,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 0
+                                                },
+                                                {
+                                                    "src_nuid": 10,
+                                                    "dst_nuid": 9,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 1
+                                                },
+                                                {
+                                                    "src_nuid": 9,
+                                                    "dst_nuid": 7,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 0,
+                                                    "dst_connected": true,
+                                                    "dst_dyn": true
+                                                }
+                                            ]
+                                        },
+                                        "dyn_out": [
+                                            {
+                                                "name": "Oscillator",
+                                                "dt": 0,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": 1,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 2,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 4,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 3
+                                    },
+                                    {
+                                        "src_nuid": 0,
+                                        "dst_nuid": 5,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 6,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 2,
+                                        "src_dyn": true
+                                    }
+                                ]
+                            },
+                            "dyn_out": [
+                                {
+                                    "name": "color",
+                                    "dt": 3,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 4
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "Transform",
+                        "dt": 4,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": false
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

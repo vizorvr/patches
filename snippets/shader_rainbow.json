@@ -1,0 +1,151 @@
+{
+    "abs_t": 46.067,
+    "active_graph": 0,
+    "graph_uid": 4,
+    "root": {
+        "node_uid": 2,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 470,
+                "y": 310,
+                "uid": 1,
+                "dsid": 1,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {
+                        "14": 0
+                    },
+                    "output_sids": {}
+                },
+                "title": "rainbow shader",
+                "graph": {
+                    "node_uid": 15,
+                    "uid": 3,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 786,
+                            "y": 44,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "cube_mesh_generator",
+                            "x": 353,
+                            "y": 20,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "from_mesh_shader",
+                            "x": 453,
+                            "y": 85,
+                            "uid": 2
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 221,
+                            "y": 227,
+                            "uid": 3,
+                            "state": {
+                                "url": "data/textures/cutout_audrey4.png"
+                            }
+                        },
+                        {
+                            "plugin": "from_mesh_custom_shader",
+                            "x": 452,
+                            "y": 218,
+                            "uid": 8,
+                            "state": {
+                                "vs_src": "varying mediump vec3 f_cust;\nvoid main(void)\n{\n    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n    \n    f_uv0 = v_uv0;\n    f_col = color;\n  f_cust = gl_Position.xyz;\n}",
+                                "ps_src": "varying mediump vec3 f_cust;\nvoid main(void)\n{\n    gl_FragColor = f_col * texture2D(tex0, f_uv0.st) * vec4(f_cust, 1.0);\n\n}"
+                            }
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 661,
+                            "y": 359,
+                            "uid": 14,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "transform",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 4,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 2
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 4
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 4,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 14,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "src_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "transform",
+                        "dt": 4,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

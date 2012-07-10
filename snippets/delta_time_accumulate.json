@@ -1,0 +1,140 @@
+{
+    "abs_t": 0,
+    "active_graph": 0,
+    "graph_uid": 3,
+    "root": {
+        "node_uid": 2,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 340,
+                "y": 166,
+                "uid": 1,
+                "dsid": 1,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "5": 0
+                    }
+                },
+                "title": "Delta time accumulate",
+                "graph": {
+                    "node_uid": 6,
+                    "uid": 2,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "delta_t_generator",
+                            "x": 209,
+                            "y": 228,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 321,
+                            "y": 233,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 89,
+                            "y": 303,
+                            "uid": 2,
+                            "state": {
+                                "val": 11.5,
+                                "min": 0,
+                                "max": 50
+                            }
+                        },
+                        {
+                            "plugin": "float_display",
+                            "x": 618,
+                            "y": 135,
+                            "uid": 3
+                        },
+                        {
+                            "plugin": "accumulate_modulator",
+                            "x": 434,
+                            "y": 248,
+                            "uid": 4,
+                            "state": {
+                                "value": 0
+                            }
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 572,
+                            "y": 259,
+                            "uid": 5,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "value",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 0,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 5,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "dst_dyn": true,
+                            "offset": 1
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "value",
+                        "dt": 0,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

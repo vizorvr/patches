@@ -1,0 +1,167 @@
+{
+    "abs_t": 67.666,
+    "active_graph": 0,
+    "graph_uid": 61,
+    "root": {
+        "node_uid": 55,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 182,
+                "y": 223,
+                "uid": 54,
+                "dsid": 1,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "7": 0
+                    }
+                },
+                "title": "Oscillator 1",
+                "graph": {
+                    "node_uid": 8,
+                    "uid": 60,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "clock_generator",
+                            "x": 197,
+                            "y": 521,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 306,
+                            "y": 527,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 82,
+                            "y": 585,
+                            "uid": 2,
+                            "state": {
+                                "val": 0.71,
+                                "min": 0,
+                                "max": 1
+                            },
+                            "title": "Speed 1"
+                        },
+                        {
+                            "plugin": "sine_modulator",
+                            "x": 435,
+                            "y": 526,
+                            "uid": 3
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 581,
+                            "y": 539,
+                            "uid": 4
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 359,
+                            "y": 612,
+                            "uid": 5,
+                            "state": {
+                                "val": 86.4,
+                                "min": 0,
+                                "max": 360
+                            },
+                            "title": "Speed 2"
+                        },
+                        {
+                            "plugin": "float_display",
+                            "x": 563,
+                            "y": 433,
+                            "uid": 6
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 681,
+                            "y": 531,
+                            "uid": 7,
+                            "dsid": 9,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "Oscillate",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 0,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 6,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "dst_dyn": true,
+                            "offset": 1
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "Oscillate",
+                        "dt": 0,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}
