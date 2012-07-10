@@ -117,6 +117,16 @@ html, body
 	margin: 0px;
 }
 
+.noselect
+{
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
 #content
 {
 	display: none;
@@ -239,8 +249,8 @@ html, body
 #tabs
 {
 	position: absolute; 
-	width: 472px;
-	height: 592px;
+	width: 473px;
+	height: 595px;
 	left: 1136px; 
 	top: 318px;
 }
@@ -252,7 +262,7 @@ html, body
 
 #persist
 {
-	width: 462px;
+	width: 460px;
 	height: 495px;
 	resize: none;
 	font-size: 8pt;
@@ -275,35 +285,48 @@ html, body
 	padding: 2px;
 }
 
-#save
+#save-minified-div
 {
 	float: right;
+	color: #666;
+	margin-top: 12px;
+}
+
+#save
+{
+	float: left;
 	margin-top: 5px;
 }
 
 #load
 {
-	float: right;
+	float: left;
 	margin-top: 5px;
 	margin-right: 5px;
 }
 
 #load-clipboard
 {
-	float: right;
+	float: left;
 	margin-top: 5px;
 	margin-right: 5px;
 }
 
 #snippets-list
 {
-	width: 462px;
+	font-family: tahoma, arial, helvetica;
+	font-size: 13px;
+	width: 465px;
 	height: 500px;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-right: none;
+	padding: 2px;
 }
 
 #load-snippet
 {
-	float: right;
+	float: left;
 	margin-top: 5px;
 }
 

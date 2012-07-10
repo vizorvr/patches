@@ -1545,7 +1545,7 @@ function Core() {
 		return null;
 	};
 	
-	this.serialise = function()
+	this.serialise = function(minify)
 	{
 		var d = {};
 		
@@ -1554,7 +1554,7 @@ function Core() {
 		d.graph_uid = self.graph_uid;
 		d.root = self.root_graph.serialise();
 		
-		return JSON.stringify(d, undefined, 4);
+		return minify ? JSON.stringify(d) : JSON.stringify(d, undefined, 4);
 	};
 	
 	this.deserialise = function(str)
@@ -1647,6 +1647,8 @@ function Application() {
 	this.selection_last = null;
 	this.selection_nodes = [];
 	this.selection_conns = [];
+	this.selection_dom = null;
+	
 	this.frames = 0;
 	this.clipboard = null;
 	this.fullscreen = false;
@@ -2397,6 +2399,7 @@ function Application() {
 			self.selection_end = self.selection_start.slice(0);
 			self.selection_last = [e.pageX, e.pageY];
 			self.clearSelection();
+			self.selection_dom = E2.dom.canvas_parent.find(':input').addClass('noselect'); //.attr('disabled', 'disabled');
 		}
 		else
 		{
@@ -2414,6 +2417,8 @@ function Application() {
 		self.selection_end = null;
 		self.selection_last = null;
 		self.set_persist_select(true);
+		self.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
+		self.selection_dom = null;
 	};
 	
 	this.onCanvasMouseUp = function(e)
@@ -2862,7 +2867,9 @@ function Application() {
 
 	this.onSaveClicked = function()
 	{
-		E2.dom.persist.val(self.core.serialise());
+		var minify = E2.dom.save_minified.is(':checked');
+		
+		E2.dom.persist.val(self.core.serialise(minify));
 	};
 	
 	this.onLoadClicked = function()
@@ -2998,6 +3005,7 @@ $(document).ready(function() {
 	E2.dom.persist = $('#persist');
 	E2.dom.structure = $('#structure');
 	E2.dom.info = $('#info');
+	E2.dom.save_minified = $('#save-minified');
 	
 	$.ajaxSetup({ cache: false });
 
