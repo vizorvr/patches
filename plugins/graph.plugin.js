@@ -328,21 +328,15 @@ E2.plugins["graph"] = function(core, node) {
 	{
 		if(self.graph && self.state.enabled)
 		{
+			var old_fb = null;
+			
 			if(self.framebuffer)
-			{
-				gl.viewport(0, 0, self.framebuffer.width, self.framebuffer.height);
-				gl.bindFramebuffer(gl.FRAMEBUFFER, self.framebuffer);
-			}
+				core.renderer.push_framebuffer(self.framebuffer, self.framebuffer.width, self.framebuffer.height);
 			
 			self.graph.update(delta_t);
 
        			if(self.framebuffer)
-       			{
-				var canvas = core.renderer.canvas[0];
-
-				gl.bindFramebuffer(gl.FRAMEBUFFER, null)
-				gl.viewport(0, 0, canvas.width, canvas.height);
-       			}
+				core.renderer.pop_framebuffer();
        			
        			for(var i = 0, len = node.outputs.length; i < len; i++)
        				node.outputs[i].cached_value = null;
@@ -451,6 +445,7 @@ E2.plugins["graph"] = function(core, node) {
 			
 			if(c.src_node === node && c.src_slot.uid === undefined && c.src_slot.index === 0)
 			{
+				debugger;
 				self.set_render_target_state(true);
 				break; // Early out and don't double init if connected to multiple inputs.
 			}

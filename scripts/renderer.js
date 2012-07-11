@@ -141,6 +141,7 @@ function Renderer(canvas_id)
 	
   	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
+	this.framebuffer_stack = [];
 	
 	this.context = this.canvas[0].getContext('experimental-webgl', { alpha: false, preserveDrawingBuffer: false, antialias: true });
 	
@@ -150,9 +151,6 @@ function Renderer(canvas_id)
 	if(false)
 		this.context = WebGLDebugUtils.makeDebugContext(this.context);
 	
-	if(!this.context)
-		msg('Error: WebGL initialization failed.');
-		
 	this.texture_cache = new TextureCache(this.context);
 	
 	this.begin_frame = function()
@@ -176,7 +174,39 @@ function Renderer(canvas_id)
 		
 		if(gl)
 			gl.flush();
-	}
+	};
+	
+	this.push_framebuffer = function(fb, w, h)
+	{
+		var gl = this.context;
+		
+		gl.viewport(0, 0, w, h);
+		gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+		self.framebuffer_stack.push([fb, w, h]);
+	};
+	
+	this.pop_framebuffer = function()
+	{
+		var fbs = self.framebuffer_stack;
+		var gl = self.context;
+		
+		fbs.pop();
+		
+		if(fbs.length > 0)
+		{
+			var fb = fbs[fbs.length-1];
+			
+			gl.bindFramebuffer(gl.FRAMEBUFFER, fb[0]);
+			gl.viewport(0, 0, fb[1], fb[2]);
+		}
+		else
+		{
+			var c = self.canvas[0];
+			
+			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			gl.viewport(0, 0, c.width, c.height);
+		}
+	};
 	
 	this.update_viewport = function(w, h)
 	{
@@ -509,8 +539,8 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			ps_src = ps_src.join('\n');
 		
 			// TODO: For debugging. Remove!
-			/*this.material.vs_src = vs_src;
-			this.material.ps_src = ps_src;*/
+			/*s.vs_src = vs_src;
+			s.ps_src = ps_src;*/
 		
 			var vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
 			var ps = new Shader(gl, gl.FRAGMENT_SHADER, ps_src);
@@ -559,7 +589,12 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 				attr = this.uv0CoordAttribute;
 			else
 				return;
-				
+			
+			 // This can happen if the symbol is declared but unused. Some
+			 // drivers optimize the shaders and eliminate dead code.
+			if(attr === -1)
+				return;
+			
 			gl.bindBuffer(gl.ARRAY_BUFFER, data);
 			gl.enableVertexAttribArray(attr);
 			gl.vertexAttribPointer(attr, item_size, gl.FLOAT, false, 0, 0);
@@ -660,7 +695,7 @@ function Shader(gl, type, src)
 	gl.compileShader(this.shader);
 	
 	if(!gl.getShaderParameter(this.shader, gl.COMPILE_STATUS))
-		msg('Shader compilation failed:\n' + gl.getShaderInfoLog(this.shader) + '\n' + src + '\n\n');
+		msg('ERROR: Shader compilation failed:\n' + gl.getShaderInfoLog(this.shader) + '\n' + src + '\n\n');
 }
 
 function ShaderProgram(gl, program)
@@ -680,12 +715,12 @@ function ShaderProgram(gl, program)
 		self.gl.linkProgram(self.program);
 
 		if(!self.gl.getProgramParameter(self.program, gl.LINK_STATUS))
-      			msg('Shader linking failed:\n' + gl.getProgramInfoLog(self.program));
+      			msg('ERROR: Shader linking failed:\n' + gl.getProgramInfoLog(self.program));
 		
 		gl.validateProgram(self.program);
 		
 		if(!gl.getProgramParameter(self.program, gl.VALIDATE_STATUS))
-      			msg('Shader validation failed:\n' + gl.getProgramInfoLog(self.program));
+      			msg('ERROR: Shader validation failed:\n' + gl.getProgramInfoLog(self.program));
       	};
       	
       	this.enable = function()
@@ -790,7 +825,7 @@ Scene.load = function(gl, url)
 		},
 		error: function(jqXHR, textStatus, errorThrown)
 		{
-			msg('Scene: Failed to load "' + url + '": ' + textStatus + ', ' + errorThrown);
+			msg('ERROR: Scene: Failed to load "' + url + '": ' + textStatus + ', ' + errorThrown);
 		},
 		async:   false
 	});
