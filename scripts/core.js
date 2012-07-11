@@ -2417,7 +2417,10 @@ function Application() {
 		self.selection_end = null;
 		self.selection_last = null;
 		self.set_persist_select(true);
-		self.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
+		
+		if(self.selection_dom)
+			self.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
+		
 		self.selection_dom = null;
 	};
 	
