@@ -1,0 +1,175 @@
+{
+    "abs_t": 443.167,
+    "active_graph": 0,
+    "graph_uid": 2,
+    "root": {
+        "node_uid": 6,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 248,
+                "y": 113,
+                "uid": 0,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {},
+                    "output_sids": {}
+                },
+                "title": "Scene",
+                "graph": {
+                    "node_uid": 4,
+                    "uid": 1,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "quad_mesh_generator",
+                            "x": 56,
+                            "y": 24,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 527,
+                            "y": 26,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "from_mesh_shader",
+                            "x": 276,
+                            "y": 104,
+                            "uid": 2
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 37,
+                            "y": 199,
+                            "uid": 3,
+                            "state": {
+                                "url": "data/textures/backdrop_orange.jpg"
+                            }
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 4
+                        }
+                    ]
+                }
+            },
+            {
+                "plugin": "from_mesh_custom_shader",
+                "x": 387,
+                "y": 81,
+                "uid": 1,
+                "dsid": 11,
+                "state": {
+                    "vs_src": "void main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n\n\tf_col = dc;\n        f_uv0 = v_uv0;\n}",
+                    "ps_src": "void main(void)\n{\n\tmediump vec2 p = -1.0 + (2.0 * f_uv0);\n        mediump vec2 s = p;\n        mediump vec3 total = vec3(0.0);\n        mediump vec2 d = (vec2(0.0, 0.0) - p) / 40.0;\n        mediump float w = 1.0;\n\n        for(int i=0; i<40; i++)\n        {\n             mediump vec3 c = texture2D(tex0, (s * 0.5) + 0.5).rgb;\n\n             c = smoothstep(0.1, 1.0, c*c);\n             total += w * c;\n             w *= 0.99;\n             s += d;  \n        }\n        \n\ttotal /= 40.0;\n\n        mediump float r = gain / (1.0 + dot(p, p));\n\n\tgl_FragColor = vec4(total * r, 1.0);\n}",
+                    "slot_ids": {
+                        "gain": {
+                            "id": 10,
+                            "dt": {
+                                "id": 0,
+                                "name": "Float"
+                            },
+                            "uniform": {}
+                        }
+                    }
+                },
+                "title": "Posterize",
+                "dyn_in": [
+                    {
+                        "name": "gain",
+                        "dt": 0,
+                        "uid": 10,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "mesh_renderer_emitter",
+                "x": 622,
+                "y": 16,
+                "uid": 2
+            },
+            {
+                "plugin": "quad_mesh_generator",
+                "x": 295,
+                "y": 16,
+                "uid": 3
+            },
+            {
+                "plugin": "slider_float_generator",
+                "x": 11,
+                "y": 164,
+                "uid": 4,
+                "state": {
+                    "val": 1.666,
+                    "min": 0.1,
+                    "max": 3
+                },
+                "title": "Gain"
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 1,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 3,
+                "dst_nuid": 1,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 3,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 1
+            },
+            {
+                "src_nuid": 0,
+                "dst_nuid": 1,
+                "src_slot": 0,
+                "dst_slot": 4
+            },
+            {
+                "src_nuid": 4,
+                "dst_nuid": 1,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            }
+        ]
+    }
+}

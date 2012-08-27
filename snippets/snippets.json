@@ -1,5 +1,10 @@
 {
 	"Example: Lighting w. custom shader": "example-lighting",
+	"Post Process: Analogue monitor": "post_process_analogue_monitor",
+	"Post Process: Gaussian blur": "post_process_gaussian_blur",
+	"Post Process: X-hatch": "post_process_x_hatch",
+	"Post Process: Posterize": "post_process_posterize",
+	"Post Process: Radial Blur": "post_process_radial_blur",
 	"oscillator with big values": "oscillator_big_values",
 	"oscillator from -1 to 1": "oscillator2",
 	"oscillator in unit with offset": "scale_oscillator",

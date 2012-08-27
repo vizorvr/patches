@@ -127,9 +127,6 @@ function Renderer(canvas_id)
 {
 	var self = this;
 	
-	if(!window.WebGLRenderingContext)
-		window.location = 'http://get.webgl.org';
-
 	this.blend_mode = 
 	{
 		NONE: 0,
@@ -142,8 +139,15 @@ function Renderer(canvas_id)
   	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
 	this.framebuffer_stack = [];
-	
-	this.context = this.canvas[0].getContext('experimental-webgl', { alpha: false, preserveDrawingBuffer: false, antialias: true });
+		
+	try
+	{
+		this.context = this.canvas[0].getContext('experimental-webgl', { alpha: false, preserveDrawingBuffer: false, antialias: true });
+	}
+	catch(e)
+	{
+		this.context = null;
+	}
 	
 	if(!this.context)
 		window.location = 'http://get.webgl.org';

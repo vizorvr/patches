@@ -2225,6 +2225,8 @@ function Application() {
 		self.releaseHoverNode(false);
 		self.clearSelection();
 
+		self.removeHoverConnections();
+
 		for(var i = 0, len = hns.length; i < len; i++)
 		{
 			var n = hns[i];
@@ -2234,7 +2236,6 @@ function Application() {
 		}
 		
 		self.updateCanvas();
-		self.removeHoverConnections();
 	};
 	
 	this.onNodeHeaderClicked = function(e)
@@ -2666,6 +2667,7 @@ function Application() {
 			n.uid = new_uid;
 			
 			ag.register_node(n);
+			ag.emit_event({ type: 'node-created', node: n });
 
 			n.patch_up(self.core.graphs);
 			self.selection_nodes.push(n);
