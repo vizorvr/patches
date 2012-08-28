@@ -2693,8 +2693,10 @@ function Application() {
 						if(n.uid === duid)
 						{
 							var slots = cn.dst_dyn ? n.dyn_inputs : n.plugin.input_slots;
+							var slot = slots[cn.dst_slot];
 							
-							slots[cn.dst_slot].is_connected = false;
+							slot.is_connected = false;
+							slot.connected = false;
 							break; // Early out
 						}
 					}
