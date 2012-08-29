@@ -1,3 +1,38 @@
+function TextureSampler(tex)
+{
+	var self = this;
+	
+	this.texture = tex;
+	
+	var canvas = document.createElement('canvas');
+	var image = tex.image;
+	
+	canvas.width = image.width;
+	canvas.height = image.height;
+
+	var context = canvas.getContext('2d');
+
+	context.drawImage(image, 0, 0);
+
+	this.imgdata = context.getImageData(0, 0, image.width, image.height);
+	
+	this.get_pixel = function(x, y)
+	{
+		var img = self.texture.image;
+		
+		x = x < 0 ? 0 : x > 1.0 ? 1.0 : x;
+		y = y < 0 ? 0 : y > 1.0 ? 1.0 : y;
+
+		x *= img.width - 1;
+		y *= img.height - 1;
+		
+		var o = (Math.round(x) + (img.width * Math.round(y))) * 4
+		var d = self.imgdata.data;
+		
+		return [d[o], d[o+1], d[o+2], d[o+3]];
+	}
+};
+
 function Texture(gl)
 {
 	var self = this;
@@ -8,6 +43,7 @@ function Texture(gl)
 	this.texture = gl.createTexture();
 	this.width = 0;
 	this.height = 0;
+	this.image = null;
 	
 	this.create = function(width, height)
 	{
@@ -57,7 +93,8 @@ function Texture(gl)
 	{
 		self.width = img.width;
 		self.height = img.height;
-
+		self.image = img;
+		
 		if(!self.isPow2(self.width))
 			msg('WARNING: The width (' + self.width + ') of the texture \'' + src + '\' is not a power of two.');
 
@@ -75,6 +112,11 @@ function Texture(gl)
 	{
 	    	self.min_filter = down;
 		self.mag_filter = up;
+	};
+	
+	this.get_sampler = function()
+	{
+		return new TextureSampler(self);
 	};
 }
 
@@ -432,15 +474,33 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
         	}
 
 		shader.bind_camera(camera);
-		shader.bind_transform(transform);	
        		shader.apply_uniforms();
-       		
-       		if(!self.index_buffer)
-        		gl.drawArrays(self.prim_type, 0, verts.count);
-		else
+		
+		var draw = (!self.index_buffer) ? function()
+		{
+			gl.drawArrays(self.prim_type, 0, verts.count);
+		} : function()
 		{
 			self.index_buffer.enable();
 			gl.drawElements(self.prim_type, self.index_buffer.count, gl.UNSIGNED_SHORT, 0);
+		};
+		
+		if(!self.instances)
+		{
+			shader.bind_transform(transform);	
+			draw();
+		}
+		else
+		{
+			var inst = self.instances;
+			var ft = mat4.create();
+			
+			for(var i = 0, len = inst.length; i < len; i++)
+			{
+				mat4.multiply(inst[i], transform, ft);
+				shader.bind_transform(ft);	
+				draw();
+			}
 		}
 	};
 
@@ -454,7 +514,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		{
 			var index = v_types[v_type];
 			
-			flags[index] = this.vertex_buffers[v_type] !== null;
+			flags[index] = self.vertex_buffers[v_type] !== null;
 		}
 		
 		var exists = false;
