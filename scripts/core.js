@@ -2686,9 +2686,9 @@ function Application() {
 				// slot. Otherwise the user will be unable to connect to it. 
 				if(duid !== undefined)
 				{
-					for(var n = 0, len2 = self.selection_nodes.length; n < len2; n++)
+					for(var ni = 0, len2 = self.selection_nodes.length; ni < len2; ni++)
 					{
-						var n = self.selection_nodes[n];
+						var n = self.selection_nodes[ni];
 						
 						if(n.uid === duid)
 						{
@@ -2697,6 +2697,11 @@ function Application() {
 							
 							slot.is_connected = false;
 							slot.connected = false;
+							n.inputs_changed = true;
+		
+							// TODO: Does any of the graph internal state need clearing at this point?
+							// Do we need to find a way to correctly call connection_changed() here?
+							
 							break; // Early out
 						}
 					}
