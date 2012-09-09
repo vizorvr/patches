@@ -292,6 +292,13 @@ html, body
 	margin-top: 12px;
 }
 
+#save-min-lbl
+{
+	font-size: 12px;
+	position: relative;
+	top: -2px;
+}
+
 #save
 {
 	float: left;
