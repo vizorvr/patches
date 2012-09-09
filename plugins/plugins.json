@@ -1,5 +1,6 @@
 {
 	"Generators/Cameras/Aspect ratio": "aspect_ratio_generator",
+	"Generators/Cameras/Orthographic": "orthographic_camera",
 	"Generators/Cameras/Perspective": "perspective_camera",
 	"Generators/Cameras/Screenspace": "screenspace_camera",
 	"Generators/Input/Mouse buttons": "mouse_button_generator",
