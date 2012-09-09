@@ -816,6 +816,28 @@ function Camera(gl)
 	mat4.identity(this.view);
 }
 
+Camera.create_ortho = function(gl, l, r, t, b, n, f)
+{
+	var c = new Camera(gl);
+	var p = c.projection;
+	var rl = r - l;
+	var tb = t - b;
+	var fn = f - n;
+	
+	rl = (rl < 0.00001) ? 0.00001 : rl;
+	tb = (tb < 0.00001) ? 0.00001 : tb;
+	fn = (fn < 0.00001) ? 0.00001 : fn;
+	
+	p[0] = 2.0 / rl;
+	p[3] = -(r + l) / rl;
+	p[5] = 2.0 / tb;
+	p[7] = -(t + b) / tb;
+	p[10] = -2.0 / fn;
+	p[11] = -(f + n) / fn;
+	
+	return c;
+};
+	
 function Scene(gl, data, base_path)
 {
 	var self = this;
@@ -895,5 +917,5 @@ Scene.load = function(gl, url)
 	});
 	
 	return scene;
-}
+};
 
