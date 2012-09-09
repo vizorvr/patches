@@ -1,4 +1,5 @@
 {
+	"Example: Instancing meshes in arrays, cubes or texture-distributions": "instancing_array",
 	"Example: Lighting w. custom shader": "example-lighting",
 	"Post Process: Analogue monitor": "post_process_analogue_monitor",
 	"Post Process: Gaussian blur": "post_process_gaussian_blur",
