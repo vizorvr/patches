@@ -325,6 +325,10 @@ function SnippetManager(base_url)
 			success: function(data)
 			{
 	  			E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
+	  		},
+	  		error: function()
+	  		{
+	  			msg('ERROR: Failed to load the selected snippet.');
 	  		}
 		});
 	});
