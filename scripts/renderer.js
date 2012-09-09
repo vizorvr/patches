@@ -593,6 +593,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 				if(flags[v_types.UV0])
 					ps_src.push('    fc = fc * texture2D(tex0, f_uv0.st);');
 			
+				ps_src.push('    if(fc.a < 0.5) discard;');
 				ps_src.push('    gl_FragColor = fc;');
 				ps_src.push('}');
 			}
