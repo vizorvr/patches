@@ -791,7 +791,7 @@ function ShaderProgram(gl, program)
       	this.enable = function()
       	{
 		self.gl.useProgram(self.program);
-      	}
+      	};
 
 	this.bind_camera = function(camera)
 	{
@@ -816,28 +816,6 @@ function Camera(gl)
 	mat4.identity(this.projection);
 	mat4.identity(this.view);
 }
-
-Camera.create_ortho = function(gl, l, r, t, b, n, f)
-{
-	var c = new Camera(gl);
-	var p = c.projection;
-	var rl = r - l;
-	var tb = t - b;
-	var fn = f - n;
-	
-	rl = (rl < 0.00001) ? 0.00001 : rl;
-	tb = (tb < 0.00001) ? 0.00001 : tb;
-	fn = (fn < 0.00001) ? 0.00001 : fn;
-	
-	p[0] = 2.0 / rl;
-	p[3] = -(r + l) / rl;
-	p[5] = 2.0 / tb;
-	p[7] = -(t + b) / tb;
-	p[10] = -2.0 / fn;
-	p[11] = -(f + n) / fn;
-	
-	return c;
-};
 	
 function Scene(gl, data, base_path)
 {
@@ -893,7 +871,31 @@ function Scene(gl, data, base_path)
 				m.render(camera, transform, m.shader);
 			}
 		}
+	};
+	
+	this.create_autofit_camera = function()
+	{
+		var bb = self.bounding_box;
+		var cam = new Camera();
+		var c = E2.app.core.renderer.canvas;
+		var pos = [bb.hi[0] * 3.0, bb.hi[1] * 3.0, bb.hi[2] * 3.0];
+		var d = vec3.create(), tar = vec3.create();
+		
+		vec3.subtract(bb.hi, bb.lo, d);
+		
+		var dist = Math.sqrt(d[0] * d[0] + d[1] * d[1] + d[2] + d[2]) * 8.0;
+		
+		vec3.add(bb.lo, vec3.scale(d, 0.5, tar), tar);
+		
+		pos[0] = tar[0];
+		
+		msg('New autofit camera: ' + pos + ' ... ' + tar[0] + ',' + tar[1] + ',' + tar[2] + ' ... ' + dist);
+		mat4.perspective(45.0, c.width() / c.height(), 1.0, 1.0 + dist, cam.projection);
+		mat4.lookAt(pos, tar, [0.0, 0.0, 1.0], cam.view);
+		
+		return cam;
 	}
+	
 };
 
 Scene.load = function(gl, url)

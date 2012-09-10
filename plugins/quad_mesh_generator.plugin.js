@@ -4,7 +4,7 @@ E2.plugins["quad_mesh_generator"] = function(core, node) {
 	
 	this.desc = 'Create a planar quad mesh of unit size with normals and one set of UV-cordinates.';
 	this.input_slots = [];
-	this.output_slots = [ { name: 'mesh', dt: core.datatypes.MESH } ];
+	this.output_slots = [ { name: 'mesh', dt: core.datatypes.MESH, desc: 'Quad mesh.' } ];
 	this.mesh = null;
 	
 	this.reset = function()
@@ -21,7 +21,6 @@ E2.plugins["quad_mesh_generator"] = function(core, node) {
 	{
 		if(!ui)
 		{
-			msg('Quad: Generating mesh.');
 			self.mesh = new Mesh(gl, gl.TRIANGLE_STRIP);
 			
 			var verts = self.mesh.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);

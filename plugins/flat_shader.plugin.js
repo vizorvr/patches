@@ -5,13 +5,12 @@ E2.plugins["flat_shader"] = function(core, node) {
 	
 	this.desc = 'Simple shader for rendering meshes with diffuse color only.';
 	this.input_slots = [
-		 { name: 'is3d', dt: core.datatypes.BOOL },
-		 { name: 'color', dt: core.datatypes.COLOR },
-		 { name: 'blend mode', dt: core.datatypes.FLOAT }
-	];
-	
+		 { name: 'is3d', dt: core.datatypes.BOOL, desc: 'En- or disable depth buffer write and masking.', def: 'False' },
+		 { name: 'color', dt: core.datatypes.COLOR, desc: 'Diffuse surface color.', def: 'White' },
+		 { name: 'blend mode', dt: core.datatypes.FLOAT, desc: 'Fragment blend mode.', def: 'Normal' }
+	];	
 	this.output_slots = [ 
-		{ name: 'shader', dt: core.datatypes.SHADER } 
+		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'The resulting shader.' } 
 	];
 	
 	var vs_src = 'attribute vec3 pos;' +

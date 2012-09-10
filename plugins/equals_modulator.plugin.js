@@ -1,13 +1,13 @@
 E2.plugins["equals_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Emit true if value equals the reference value and false otherwise.';
+	this.desc = 'Emits true if <b>value</b> equals <b>reference</b> and false otherwise.';
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT },
-		{ name: 'reference', dt: core.datatypes.FLOAT } 
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value.', def: 0 },
+		{ name: 'reference', dt: core.datatypes.FLOAT, desc: 'Reference value to comprate <b>value</b> to.', def: 0 } 
 	];
 	
-	this.output_slots = [ { name: 'bool', dt: core.datatypes.BOOL } ];
+	this.output_slots = [ { name: 'bool', dt: core.datatypes.BOOL, desc: 'True if <b>value</b> equals <b>reference</b> and false otherwise.', def: 'False' } ];
 	
 	this.reset = function()
 	{

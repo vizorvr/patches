@@ -1,10 +1,10 @@
 E2.plugins["color_display"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Displays the supplied color in a rectangle on the plugin.';
 	this.input_slots = [ 
-		{ name: 'color', dt: core.datatypes.COLOR }
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Input color to be displayed.', def: 'White' }
 	];
-	
 	this.output_slots = [];
 
 	this.reset = function()

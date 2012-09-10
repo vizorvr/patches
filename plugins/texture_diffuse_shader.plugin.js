@@ -5,15 +5,15 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	
 	this.desc = 'Simple shader for rendering meshes with one texture modulated by a diffuse color.';
 	this.input_slots = [
-		 { name: 'is3d', dt: core.datatypes.BOOL },
-		 { name: 'color', dt: core.datatypes.COLOR },
-		 { name: 'blend mode', dt: core.datatypes.FLOAT },
-		 { name: 'tex transform', dt: core.datatypes.TRANSFORM },
-		 { name: 'texture', dt: core.datatypes.TEXTURE }
+		 { name: 'is3d', dt: core.datatypes.BOOL, desc: 'En- or disable depth buffer write and masking.', def: 'False' },
+		 { name: 'color', dt: core.datatypes.COLOR, desc: 'Diffuse surface color.', def: 'White' },
+		 { name: 'blend mode', dt: core.datatypes.FLOAT, desc: 'Fragment blend mode.', def: 'Normal' },
+		 { name: 'tex transform', dt: core.datatypes.TRANSFORM, desc: 'Texture transform supplied as an 4x4 matrix. All operation should be constrained to the XY plane.', def: 'Identity' },
+		 { name: 'texture', dt: core.datatypes.TEXTURE, desc: 'Diffuse texture map.' }
 	];
 	
 	this.output_slots = [ 
-		{ name: 'shader', dt: core.datatypes.SHADER } 
+		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'The resulting shader.' } 
 	];
 
 	var vs_src = 'attribute vec3 pos;' +

@@ -1,8 +1,9 @@
 E2.plugins["color_picker"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Provides an intuitive way of picking arbitary colors via a hue slider and saturation / luminosity selection area.';
 	this.input_slots = [];
-	this.output_slots = [ { name: 'color', dt: core.datatypes.COLOR } ];
+	this.output_slots = [ { name: 'color', dt: core.datatypes.COLOR, desc: 'The selected color.', def: 'White' } ];
 	this.state = { hue: 0.0, sat: 0.0, lum: 1.0 };
 	this.changed = true;
 	

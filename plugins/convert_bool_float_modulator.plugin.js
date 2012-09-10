@@ -3,11 +3,11 @@ E2.plugins["convert_bool_float_modulator"] = function(core, node) {
 	
 	this.desc = 'Convert a bool to a float. True emits 1 and false 0.';
 	this.input_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL } 
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Input boolean to be converted.', def: 'False' } 
 	];
 	
 	this.output_slots = [ 
-		 { name: 'value', dt: core.datatypes.FLOAT }
+		 { name: 'value', dt: core.datatypes.FLOAT, desc: 'Emits 0 when the input is false and 1 otherwise.', lo: 0, hi: 1, def: 0 }
 	];
 	
 	this.reset = function()

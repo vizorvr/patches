@@ -1,10 +1,10 @@
 E2.plugins["matrix_display"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Displays the supplied matrix as a 4x4 grid of values.';
 	this.input_slots = [ 
-		{ name: 'matrix', dt: core.datatypes.TRANSFORM }
+		{ name: 'matrix', dt: core.datatypes.TRANSFORM, desc: 'The input matrix to be displayed.' }
 	];
-	
 	this.output_slots = [];
 		
 	this.reset = function()

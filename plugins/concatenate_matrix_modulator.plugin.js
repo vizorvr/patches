@@ -1,12 +1,12 @@
 E2.plugins["concatenate_matrix_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Combine two matrixes. Order is significant.';
+	this.desc = 'Combine two matrices. Order is significant.';
 	this.input_slots = [ 
-		{ name: 'matrix A', dt: core.datatypes.TRANSFORM },
-		{ name: 'matrix B', dt: core.datatypes.TRANSFORM }
+		{ name: 'matrix', dt: core.datatypes.TRANSFORM, desc: 'The first matrix operand.' },
+		{ name: 'matrix', dt: core.datatypes.TRANSFORM, desc: 'The second matrix operand.' }
 	];
-	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM } ];
+	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM, desc: 'Emits <b>first</b> * <b>second</b>.' } ];
 
 	this.connection_changed = function(on, conn, slot)
 	{

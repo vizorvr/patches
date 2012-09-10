@@ -1,13 +1,13 @@
 E2.plugins["delta_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Emits the derivative of the incomming value.';
+	this.desc = 'Emits the derivative of the incoming <b>value</b>.';
 	this.input_slots = 
 	[ 
-		{ name: 'reset', dt: core.datatypes.BOOL },
-		{ name: 'value', dt: core.datatypes.FLOAT }
+		{ name: 'reset', dt: core.datatypes.BOOL, desc: 'Send true to this slot to clear the internal state.' },
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value.' }
 	];
-	this.output_slots = [ { name: 'delta', dt: core.datatypes.FLOAT } ];
+	this.output_slots = [ { name: 'delta', dt: core.datatypes.FLOAT, desc: 'The delta value from the last frame update.' } ];
 	
 	this.reset = function()
 	{

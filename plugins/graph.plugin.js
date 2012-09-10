@@ -2,9 +2,9 @@ E2.plugins["graph"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
-	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed.';
-	this.input_slots = [ { name: 'enabled', dt: core.datatypes.BOOL, desc: 'Type: Bool<break>En- or disable the processing of the nested graph logic.' } ];
-	this.output_slots = [ { name: 'texture', dt: core.datatypes.TEXTURE, desc: 'Type: Texture<break>When connected, all enclosed plugins will render to this texture instead of the framebuffer. Also, when connected two dynamic input slots will appear that allows control of the texture resolution.' } ];
+	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and the encapsulated logic of which can be optinally rendered to a <b>texture</b> instead of the framebuffer.';
+	this.input_slots = [ { name: 'enabled', dt: core.datatypes.BOOL, desc: 'En- or disable the processing of the nested graph logic.', def: 'True' } ];
+	this.output_slots = [ { name: 'texture', dt: core.datatypes.TEXTURE, desc: 'When connected, all enclosed plugins will render to this texture instead of the framebuffer. Also, when connected two dynamic input slots will appear that allows control of the texture resolution.', def: 'Render to framebuffer' } ];
 	this.state = { enabled: true, input_sids: {}, output_sids: {} };
 	
 	this.input_nodes = {};

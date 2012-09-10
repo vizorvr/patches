@@ -1,9 +1,9 @@
 E2.plugins["round_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Emit the input value rounded to the nerest integer.';
-	this.input_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
-	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
+	this.desc = 'Emits the input <b>value</b> rounded to the nearest integer.';
+	this.input_slots = [ { name: 'value', dt: core.datatypes.FLOAT, desc: 'The input value to be rounded.', def: 0 } ];
+	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT, desc: 'The rounded integer.', def: 0 } ];
 	
 	this.reset = function()
 	{
@@ -12,8 +12,7 @@ E2.plugins["round_modulator"] = function(core, node) {
 	
 	this.update_input = function(slot, data)
 	{
-		if(slot.index === 0)
-			self.value = Math.round(data);
+		self.value = Math.round(data);
 	};	
 	
 	this.update_output = function(slot)

@@ -3,11 +3,11 @@ E2.plugins["color_multiply_modulator"] = function(core, node) {
 	
 	this.desc = 'Scale the RGB components of a color by a supplied factor.';
 	this.input_slots = [ 
-		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Type: Color<break>Color to be modulated.' },
-		{ name: 'factor', dt: core.datatypes.FLOAT, desc: 'Factor to scale the RGB components of the supplied color with.' } 
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Color to be modulated.' },
+		{ name: 'factor', dt: core.datatypes.FLOAT, desc: 'Factor to scale the RGB components of the supplied color with.', def: 1 } 
 	];
 	
-	this.output_slots = [ { name: 'color', dt: core.datatypes.COLOR } ];
+	this.output_slots = [ { name: 'color', dt: core.datatypes.COLOR, desc: 'Output color: R * V, G * V, B * V, A' } ];
 	
 	this.reset = function()
 	{

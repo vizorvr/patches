@@ -3,13 +3,13 @@ E2.plugins["normal_as_color_shader"] = function(core, node) {
 	var renderer = core.renderer; 
 	var gl = renderer.context;
 	
-	this.desc = 'Render interpolated normals as RGB colors for debugging or as a visual effect.';
+	this.desc = 'Render interpolated normals as RGB colors.';
 	this.input_slots = [
-		 { name: 'is3d', dt: core.datatypes.BOOL }
+		 { name: 'is3d', dt: core.datatypes.BOOL, desc: 'En- or disable depth buffer write and masking.', def: 'False' }
 	];
 	
 	this.output_slots = [ 
-		{ name: 'shader', dt: core.datatypes.SHADER } 
+		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'The resulting shader.' } 
 	];
 	
 	var vs_src = 'attribute vec3 pos;'  +

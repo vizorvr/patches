@@ -1,12 +1,12 @@
 E2.plugins["mouse_button_generator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Return the current mouse button state.';
+	this.desc = 'Emits the current mouse button state.';
 	this.input_slots = [];
 	this.output_slots = [ 
-		{ name: 'Left', dt: core.datatypes.BOOL, desc: 'Type: Bool<break>True if the left mouse button is pressed and false otherwise.' },
-		{ name: 'Middle', dt: core.datatypes.BOOL, desc: 'Type: Bool<break>True if the middle mouse button is pressed and false otherwise.' },
-		{ name: 'Right', dt: core.datatypes.BOOL, desc: 'Type: Bool<break>True if the right mouse button is pressed and false otherwise.' }
+		{ name: 'Left', dt: core.datatypes.BOOL, desc: 'True if the left mouse button is pressed and false otherwise.', def: 'False' },
+		{ name: 'Middle', dt: core.datatypes.BOOL, desc: 'True if the middle mouse button is pressed and false otherwise.', def: 'False' },
+		{ name: 'Right', dt: core.datatypes.BOOL, desc: 'True if the right mouse button is pressed and false otherwise.', def: 'False' }
 	];	
 
 	this.update_output = function(slot)

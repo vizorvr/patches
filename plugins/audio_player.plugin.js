@@ -3,8 +3,8 @@ E2.plugins["audio_player"] = function(core, node) {
 	
 	this.desc = 'Play an audio stream. Playback loops.';
 	this.input_slots = [ 
-		{ name: 'audio', dt: core.datatypes.AUDIO },
-		{ name: 'play', dt: core.datatypes.BOOL, desc: 'Type: Bool<break>Send true to start playback and false to stop.' }
+		{ name: 'audio', dt: core.datatypes.AUDIO, desc: 'The audio stream to play.' },
+		{ name: 'play', dt: core.datatypes.BOOL, desc: 'Send true to start playback and false to stop.' }
 	];
 	
 	this.output_slots = [];

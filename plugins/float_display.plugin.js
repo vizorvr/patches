@@ -1,8 +1,9 @@
 E2.plugins["float_display"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Display the supplied float value on the plugin surface.';
 	this.input_slots = [ 
-		{ name: 'float', dt: core.datatypes.FLOAT }
+		{ name: 'float', dt: core.datatypes.FLOAT, desc: 'Input value to be displayed.' }
 	];
 	
 	this.output_slots = [];

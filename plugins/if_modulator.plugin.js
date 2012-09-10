@@ -1,13 +1,13 @@
 E2.plugins["if_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Allows \'value\' though if \'condition\' is true and inhibits futher flow otherwise.';
+	this.desc = 'Allows <b>value</b> though if <b>condition</b> is true and inhibits futher data-flow otherwise.';
 	this.input_slots = [ 
-		{ name: 'condition', dt: core.datatypes.BOOL },
-		{ name: 'value', dt: core.datatypes.FLOAT } 
+		{ name: 'condition', dt: core.datatypes.BOOL, desc: 'Condition that, if true, allows <b>value</b> to be emitted.', def: 'False' },
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Value to be emitted if <b>condition</b> is true.', def: 0 } 
 	];
 	
-	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
+	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT, desc: 'Emits <b>value</b> if <b>condition</b> is true and nothing otherwise.' } ];
 	
 	this.reset = function()
 	{

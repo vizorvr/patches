@@ -2,13 +2,13 @@ E2.plugins["convert_matrices_camera"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
-	this.desc = 'Create camera from a projection and view matrix.';
+	this.desc = 'Create a new camera from a projection and view matrix.';
 	this.input_slots = [ 
-		{ name: 'projection', dt: core.datatypes.TRANSFORM },
-		{ name: 'view', dt: core.datatypes.TRANSFORM } 
+		{ name: 'projection', dt: core.datatypes.TRANSFORM, desc: 'The projection matrix.', def: 'Identity' },
+		{ name: 'view', dt: core.datatypes.TRANSFORM, desc: 'The view matrix.', def: 'Identity' } 
 	];
 	this.output_slots = [ 
-		{ name: 'camera', dt: core.datatypes.CAMERA }
+		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'The resulting camera.', def: 'Screenspace camera' }
 	];
 	
 	this.update_input = function(slot, data)

@@ -2,15 +2,15 @@ E2.plugins["instance_cube_modulator"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 		
-	this.desc = 'Create a scene that represents \'count\' instances of the supplied \'mesh\', starting at position \'start\', offset by \'delta\' each instance.';
+	this.desc = 'Create a scene that represents <b>count</b>^3 instances of the supplied <b>mesh</b>, starting at position <b>start</b> and forming an axis-aligned cube of instances, with each offset according to <b>offset</b> on each axis separately.';
 	this.input_slots = [ 
-		{ name: 'count', dt: core.datatypes.VERTEX },
-		{ name: 'mesh', dt: core.datatypes.MESH },
-		{ name: 'start', dt: core.datatypes.VERTEX },
-		{ name: 'offset', dt: core.datatypes.VERTEX }
+		{ name: 'count', dt: core.datatypes.VERTEX, desc: 'The cube root of the number of instances to create.', lo: 0, def: 1 },
+		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The mesh to instantiate.' },
+		{ name: 'start', dt: core.datatypes.VERTEX, desc: 'The starting position for one cube corner.', def: '0, 0, 0' },
+		{ name: 'offset', dt: core.datatypes.VERTEX, desc: 'The axis-offset for each instance.', def: '0, 0, 0' }
 	];
 	
-	this.output_slots = [ { name: 'scene', dt: core.datatypes.SCENE } ];
+	this.output_slots = [ { name: 'scene', dt: core.datatypes.SCENE, desc: 'Scene representing <b>count</b>^3 instances.' } ];
 
 	this.update_input = function(slot, data)
 	{

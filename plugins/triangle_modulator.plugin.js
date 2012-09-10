@@ -1,9 +1,9 @@
 E2.plugins["triangle_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Triangle oscilator. A time value incrementing by one per second will yield a 1Hz output signal.';
-	this.input_slots = [ { name: 'time', dt: core.datatypes.FLOAT } ];
-	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
+	this.desc = 'Triangle oscilator. A <b>time</b> value incrementing by one per second will yield a 1Hz output signal.';
+	this.input_slots = [ { name: 'time', dt: core.datatypes.FLOAT, desc: 'The current time in seconds.', def: 0 } ];
+	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT, desc: 'Emits ((0.5 - |(<b>time</b> % 1.0) - 0.5|) - 0.25) * 4.', def: 0 } ];
 	
 	this.reset = function()
 	{

@@ -1,9 +1,9 @@
 E2.plugins["translation_matrix"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Create a matrix that represent a translation of all axis.';
-	this.input_slots = [ { name: 'vector', dt: core.datatypes.VERTEX } ];
-	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM } ];
+	this.desc = 'Create a matrix that represent a translation.';
+	this.input_slots = [ { name: 'vector', dt: core.datatypes.VERTEX, desc: 'Translation vector.', def: '0, 0, 0' } ];
+	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM, desc: 'The resulting translation matrix.', def: 'Identity' } ];
 	
 	this.reset = function()
 	{
@@ -14,8 +14,11 @@ E2.plugins["translation_matrix"] = function(core, node) {
 	
 	this.update_input = function(slot, data)
 	{
-		mat4.identity(self.matrix);
-		mat4.translate(self.matrix, data);
+		var m = self.matrix;
+		
+		m[12] = data[0];
+		m[13] = data[1];
+		m[14] = data[2];
 	};	
 
 	this.update_output = function(slot)

@@ -1,12 +1,12 @@
 E2.plugins["random_float_generator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Emits a random float constant in a specified interval.';
+	this.desc = 'Emits a random float constant in a specified range.';
 	this.input_slots = [ 
-		{ name: 'min', dt: core.datatypes.FLOAT },
-		{ name: 'max', dt: core.datatypes.FLOAT } 
+		{ name: 'min', dt: core.datatypes.FLOAT, desc: 'Minimum output value.', def: 0 },
+		{ name: 'max', dt: core.datatypes.FLOAT, desc: 'Maximum output value.', def: 1 } 
 	];
-	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
+	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT, desc: 'Random output value between <b>min</b> and <b>max</b>.' } ];
 	
 	this.lo = 0.0;
 	this.hi = 1.0;

@@ -5,15 +5,15 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 	
 	this.desc = 'Auto-generate a shader tailored to correctly and optimally render the supplied mesh.';
 	this.input_slots = [
-		 { name: 'mesh', dt: core.datatypes.MESH },
-		 { name: 'is3d', dt: core.datatypes.BOOL, desc: 'Type: Bool<break>En- or disable depth buffer write and masking.' },
-		 { name: 'color', dt: core.datatypes.COLOR, desc: 'Type: Color<break>Diffuse color. Will module the texture color.' },
-		 { name: 'blend mode', dt: core.datatypes.FLOAT },
-		 { name: 'texture', dt: core.datatypes.TEXTURE }
+		 { name: 'mesh', dt: core.datatypes.MESH, desc: 'Mesh to adapt the shader to.' },
+		 { name: 'is3d', dt: core.datatypes.BOOL, desc: 'En- or disable depth buffer write and masking.', def: 'False' },
+		 { name: 'color', dt: core.datatypes.COLOR, desc: 'Diffuse color. Will modulate the texture color.', def: 'White' },
+		 { name: 'blend mode', dt: core.datatypes.FLOAT, desc: 'Fragment blend mode.', def: 'Normal' },
+		 { name: 'texture', dt: core.datatypes.TEXTURE, desc: 'Diffuse texture map.' }
 	];
 	
 	this.output_slots = [ 
-		{ name: 'shader', dt: core.datatypes.SHADER } 
+		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'The resulting shader.' } 
 	];
 	
 	this.shader = null;

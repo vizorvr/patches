@@ -1,13 +1,13 @@
 E2.plugins["vector_multiply"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Multiples the X, Y and Z components of the supplied vectors and emit the result.';
+	this.desc = 'Multiples the X, Y and Z components of the supplied vectors and emits the result.';
 	this.input_slots = [ 
-		{ name: 'vector', dt: core.datatypes.VERTEX }, 
-		{ name: 'vector', dt: core.datatypes.VERTEX } 
+		{ name: 'vector', dt: core.datatypes.VERTEX, desc: 'The first operand.', def: '0, 0, 0' }, 
+		{ name: 'vector', dt: core.datatypes.VERTEX, desc: 'The second operand.', def: '0, 0, 0' } 
 	];
 	
-	this.output_slots = [ { name: 'vector', dt: core.datatypes.VERTEX } ];
+	this.output_slots = [ { name: 'vector', dt: core.datatypes.VERTEX, desc: 'Emits Fx * Sx, Fy * Sy, Fz * Sz.', def: '0, 0, 0' } ];
 	
 	this.update_input = function(slot, data)
 	{

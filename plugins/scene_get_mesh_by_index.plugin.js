@@ -1,13 +1,13 @@
 E2.plugins["scene_get_mesh_by_index"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Extract a single mesh from a scene by index, so it can be rendered individually.';
+	this.desc = 'Extract a single <b>mesh</b> from a <b>scene</b> by <b>index</b> so it can be rendered individually.';
 	this.input_slots = [ 
-		{ name: 'scene', dt: core.datatypes.SCENE },
-		{ name: 'index', dt: core.datatypes.FLOAT }
+		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'The scene to extract a mesh reference from.' },
+		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'The desired mesh index.' }
 	];
 	
-	this.output_slots = [ { name: 'mesh', dt: core.datatypes.MESH } ];
+	this.output_slots = [ { name: 'mesh', dt: core.datatypes.MESH, desc: 'The extracted mesh reference.' } ];
 
 	this.connection_changed = function(on, conn, slot)
 	{

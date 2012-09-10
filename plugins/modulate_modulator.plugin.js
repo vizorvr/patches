@@ -1,12 +1,12 @@
 E2.plugins["modulate_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Modulate the supplied value such that the result will always be larger than zero but less than the supplied reference value.';
+	this.desc = 'Modulate <b>value</b> such that the result will always be never be negative and less than or equal to <b>limit</b>.';
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT },
-		{ name: 'limit', dt: core.datatypes.FLOAT } 
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value to be modulated.', def: 0 },
+		{ name: 'limit', dt: core.datatypes.FLOAT, desc: 'Divisor.', lo: '>0', def: 1 } 
 	];
-	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
+	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT, desc: 'Emits the remainder of <b>value</b> divided by <b>limit</b>', def: 0 } ];
 
 	this.reset = function()
 	{

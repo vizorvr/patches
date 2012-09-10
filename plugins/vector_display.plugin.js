@@ -1,8 +1,9 @@
 E2.plugins["vector_display"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Displays the supplied vector as a three-cell row of values.';
 	this.input_slots = [ 
-		{ name: 'vector', dt: core.datatypes.VERTEX }
+		{ name: 'vector', dt: core.datatypes.VERTEX, desc: 'The vector to be displayed.' }
 	];
 	
 	this.output_slots = [];

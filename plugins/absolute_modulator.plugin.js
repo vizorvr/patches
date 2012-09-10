@@ -2,8 +2,8 @@ E2.plugins["absolute_modulator"] = function(core, node) {
 	var self = this;
 	
 	this.desc = 'Emit the absolute value of the input.';
-	this.input_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
-	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
+	this.input_slots = [ { name: 'value', dt: core.datatypes.FLOAT, desc: 'Positive or negative input value', def: 0 } ];
+	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT, desc: 'Positive output value', def: 0 } ];
 	
 	this.reset = function()
 	{

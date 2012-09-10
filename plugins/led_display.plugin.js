@@ -1,10 +1,10 @@
 E2.plugins["led_display"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Displays the supplied normalised float value as a red LED, with a 8 bit color granularity.';
 	this.input_slots = [ 
-		{ name: 'float', dt: core.datatypes.FLOAT }
+		{ name: 'float', dt: core.datatypes.FLOAT, desc: 'Normalised input value.', lo: 0, hi: 1, def: 0 }
 	];
-	
 	this.output_slots = [];
 
 	this.reset = function()

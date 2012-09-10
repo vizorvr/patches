@@ -1,9 +1,9 @@
 E2.plugins["const_float_generator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Emit a float constant.';
+	this.desc = 'Emits a float constant specified in an input field. If an invalid string in entered, the field is reset to the previous value.';
 	this.input_slots = [];
-	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
+	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT, desc: 'The currently entered value.', def: 1 } ];
 	this.state = { val: 1.0 };
 	this.changed = true;
 	
@@ -24,12 +24,18 @@ E2.plugins["const_float_generator"] = function(core, node) {
 			}
 			catch(e) 
 			{
-				self.state.val = 1.0;
-				inp.val('1.0');
 			}
 			
-			 // Don't set the updated flag directly from an asynchronous function.
-			 // This could lead to aliasing with the core update logic.
+			// parseFloat has no qualms parsing any string that merely begins
+			// with one or more digits, and nothing beyond those will cause a
+			// parse exception (e.g., '99A)BOLLCKS' = 99...
+			// Here we set the field value to the internal state, so the text
+			// field is reset to the correct value, even if parseFloat has
+			// no problem with the string.
+			inp.val('' + self.state.val);
+			
+			// Don't set the updated flag directly from an asynchronous function.
+			// This could lead to aliasing with the core update logic.
 			self.changed = true;
 		});
 		

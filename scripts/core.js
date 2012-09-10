@@ -627,12 +627,21 @@ function NodeUI(parent_node, x, y) {
 		div.mouseleave(E2.app.onSlotExited(parent_node, s, div));
 		div.mousedown(E2.app.onSlotClicked(parent_node, s, div, type));
 	
-		if(s.desc)
-		{
-			div.attr('alt', s.desc);
-			div.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
-		}
+		dsc = 'Type: ' + s.dt.name;
+		
+		if(s.lo !== undefined || s.hi !== undefined)
+			dsc += '\nRange: ' + (s.lo !== undefined ? 'min. ' + s.lo : '') + (s.hi !== undefined ? (s.lo !== undefined ? ', ' : '') + 'max. ' + s.hi : '')
+		
+		if(s.def !== undefined)
+			dsc += '\nDefault: ' + s.def
 
+		dsc += '<break>';
+		
+		if(s.desc)
+			dsc += s.desc;
+
+		div.attr('alt', dsc);
+		div.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
 		col.append(div);
 	};
 	
@@ -1880,12 +1889,13 @@ function Application() {
 			// Don't allow self-connections. There no complete check for cyclic 
 			// redundacies, though we should probably institute one.
 			// Additionally, don't allow connections between two ANY slots.
-			if((ss_dt === self.core.datatypes.ANY || 
-			    slot.dt === self.core.datatypes.ANY || 
-			    ss_dt === slot.dt) && 
-			    	    !(ss_dt === self.core.datatypes.ANY && slot.dt === self.core.datatypes.ANY) &&
-				    !slot.is_connected && 
-				    self.src_node !== node)
+			if(slot.type === E2.slot_type.input && 
+			    (ss_dt === self.core.datatypes.ANY || 
+			     slot.dt === self.core.datatypes.ANY || 
+			     ss_dt === slot.dt) && 
+			   !(ss_dt === self.core.datatypes.ANY && slot.dt === self.core.datatypes.ANY) &&
+			   !slot.is_connected && 
+			   self.src_node !== node)
 			{
 				self.dst_node = node;
 				self.dst_slot = slot;
@@ -2390,6 +2400,9 @@ function Application() {
 
 		self.selection_nodes = [];
 		self.selection_conns = [];
+		
+		// Clear the info view contents.
+		E2.dom.info.html('');
 	};
 	
 	this.onCanvasMouseDown = function(e)
@@ -2910,8 +2923,9 @@ function Application() {
 		
 		var i_txt = $(e.currentTarget).attr('alt');
 		
-		i_txt = i_txt.replace('\n', '<br/>');
+		i_txt = i_txt.replace(/\n/g, '<br/>');
 		i_txt = i_txt.replace('Type:', '<b>Type:</b>');
+		i_txt = i_txt.replace('Default:', '<b>Default:</b>');
 		i_txt = i_txt.replace('Range:', '<b>Range:</b>');
 		i_txt = i_txt.replace('<break>', '<br/><hr/>');
 		

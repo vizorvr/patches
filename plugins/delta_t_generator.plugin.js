@@ -1,9 +1,9 @@
 E2.plugins["delta_t_generator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Emit the current frame delta time in fractional seconds.';
+	this.desc = 'Emits the current frame delta time in seconds.';
 	this.input_slots = [];
-	this.output_slots = [ { name: 'seconds', dt: core.datatypes.FLOAT } ];
+	this.output_slots = [ { name: 'seconds', dt: core.datatypes.FLOAT, desc: 'Last frame delta time in seconds.' } ];
 	
 	this.update_state = function(delta_t)
 	{

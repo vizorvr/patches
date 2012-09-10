@@ -3,11 +3,11 @@ E2.plugins["color_add_modulator"] = function(core, node) {
 	
 	this.desc = 'Adds a constant value to all components of a color. Each channel is clipped to the range 0;1.';
 	this.input_slots = [ 
-		{ name: 'color', dt: core.datatypes.COLOR },
-		{ name: 'value', dt: core.datatypes.FLOAT } 
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Input color.' },
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Value to be added to the R, G and B channels.' } 
 	];
 	
-	this.output_slots = [ { name: 'color', dt: core.datatypes.COLOR } ];
+	this.output_slots = [ { name: 'color', dt: core.datatypes.COLOR, desc: 'Output color: R+V, G+V, B+V, A' } ];
 	
 	this.reset = function()
 	{

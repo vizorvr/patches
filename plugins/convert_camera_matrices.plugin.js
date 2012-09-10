@@ -4,11 +4,11 @@ E2.plugins["convert_camera_matrices"] = function(core, node) {
 	
 	this.desc = 'Extract the projection and view matrices from a camera.';
 	this.input_slots = [ 
-		{ name: 'camera', dt: core.datatypes.CAMERA },
+		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'The input camera to be split into constituent matrices.', def: 'Screenspace camera' },
 	];
 	this.output_slots = [ 
-		{ name: 'projection', dt: core.datatypes.TRANSFORM },
-		{ name: 'view', dt: core.datatypes.TRANSFORM } 
+		{ name: 'projection', dt: core.datatypes.TRANSFORM, desc: 'The camera projection matrix.', def: 'Identity' },
+		{ name: 'view', dt: core.datatypes.TRANSFORM, desc: 'The camera view matrix.', def: 'Identity' } 
 	];
 	
 	this.reset = function()

@@ -1,13 +1,13 @@
 E2.plugins["rotation_xyz_matrix"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Create a matrix that rotates individually about the X, Y and Z axis.';
+	this.desc = 'Create a matrix that rotates individually around the X, Y and Z axis.';
 	this.input_slots = [ 
-		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: -360;360<break>Number of degrees to rotate about the X-axis.' },
-		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: -360;360<break>Number of degrees to rotate about the Y-axis.' },
-		{ name: 'z', dt: core.datatypes.FLOAT, desc: 'Type: Float\nRange: -360;360<break>Number of degrees to rotate about the Z-axis.' }
+		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'Number of degrees to rotate around the X-axis.', lo: -360, hi: 360, def: 0 },
+		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'Number of degrees to rotate around the Y-axis.', lo: -360, hi: 360, def: 0 },
+		{ name: 'z', dt: core.datatypes.FLOAT, desc: 'Number of degrees to rotate around the Z-axis.', lo: -360, hi: 360, def: 0 }
 	];
-	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM } ];
+	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM, desc: 'The resulting rotation matrix.', def: 'Identity' } ];
 	
 	this.reset = function()
 	{

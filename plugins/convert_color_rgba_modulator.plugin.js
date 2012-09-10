@@ -1,16 +1,16 @@
 E2.plugins["convert_color_rgba_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Convert a color to its individual RGBA components to they can be individually manipulated.';
+	this.desc = 'Convert a color to its individual RGBA components so they can be individually manipulated.';
 	this.input_slots = [
-		{ name: 'color', dt: core.datatypes.COLOR } 
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Input color to be split.', def: 'White' } 
 	];
 	
 	this.output_slots = [ 
-		 { name: 'red', dt: core.datatypes.FLOAT },
-		 { name: 'green', dt: core.datatypes.FLOAT },
-		 { name: 'blue', dt: core.datatypes.FLOAT },
-		 { name: 'alpha', dt: core.datatypes.FLOAT }
+		 { name: 'red', dt: core.datatypes.FLOAT, desc: 'Red channel value.', def: 1 },
+		 { name: 'green', dt: core.datatypes.FLOAT, desc: 'Green channel value.', def: 1 },
+		 { name: 'blue', dt: core.datatypes.FLOAT, desc: 'Blue channel value.', def: 1 },
+		 { name: 'alpha', dt: core.datatypes.FLOAT, desc: 'Alpha channel value.', def: 1 }
 	];
 	
 	this.reset = function()

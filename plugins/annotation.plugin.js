@@ -12,6 +12,9 @@ E2.plugins["annotation"] = function(core, node) {
 		
 		inp.css('font-size', '8pt');
 		inp.css('border', '1px solid #999');
+		inp.css('margin', '0px');
+		inp.css('margin-top', '2px');
+		inp.css('padding', '2px');
 		
 		inp.bind('blur', function()
 		{

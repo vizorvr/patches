@@ -1,14 +1,14 @@
 E2.plugins["if_else_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Allows \'true\' though if \'condition\' is true or \'false\' otherwise.';
+	this.desc = 'Emits <b>true value</b> if <b>condition</b> is true and <b>false value</b> otherwise. The output only updates when the <b>condition</b> or relavant input value does. Any incoming data-flow to the value slot excluded by <b>condition</b> does not result in data emission.';
 	this.input_slots = [ 
-		{ name: 'condition', dt: core.datatypes.BOOL },
-		{ name: 'true', dt: core.datatypes.FLOAT } ,
-		{ name: 'false', dt: core.datatypes.FLOAT }
+		{ name: 'condition', dt: core.datatypes.BOOL, desc: 'Send true to route <b>true value</b> to the output and false to route <b>false value</b>.', def: 'False' },
+		{ name: 'true value', dt: core.datatypes.FLOAT, desc: 'Value to be send to output if <b>condition</b> is true', def: 0 } ,
+		{ name: 'false value', dt: core.datatypes.FLOAT, desc: 'Value to be send to output if <b>condition</b> is false', def: 0  }
 	];
 	
-	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
+	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT, desc: 'Emits <b>true value</b> if <b>condition</b> is true and <b>false value</b> otherwise.', def: 'False value' } ];
 	
 	this.reset = function()
 	{

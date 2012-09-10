@@ -1,9 +1,9 @@
 E2.plugins["slider_float_generator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Emit a user controllable float value between a specified minimum and maximum.';
+	this.desc = 'Emits a user controllable float value between a specified minimum and maximum.';
 	this.input_slots = [];
-	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
+	this.output_slots = [ { name: 'value', dt: core.datatypes.FLOAT, desc: 'Emits the current value when the slider is adjusted.', def: 0 } ];
 	this.state = { val: 0.0, min: 0.0, max: 1.0 };
 	this.v_col = null;
 	this.slider = null;

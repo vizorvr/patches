@@ -3,11 +3,11 @@ E2.plugins["min_modulator"] = function(core, node) {
 	
 	this.desc = 'Emit the lesser of the two input values.';
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT },
-		{ name: 'value', dt: core.datatypes.FLOAT } 
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The first input value', def: 0 },
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The second input value', def: 0 } 
 	];
 	
-	this.output_slots = [ { name: 'min', dt: core.datatypes.FLOAT } ];
+	this.output_slots = [ { name: 'min', dt: core.datatypes.FLOAT, desc: 'The smaller of the two supplied values.', def: 0 } ];
 	
 	this.reset = function()
 	{

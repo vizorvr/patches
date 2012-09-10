@@ -1,8 +1,9 @@
 E2.plugins["toggle_button"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Toggle button that emits true and false as it is clicked.';
 	this.input_slots = [];
-	this.output_slots = [ { name: 'bool', dt: core.datatypes.BOOL } ];
+	this.output_slots = [ { name: 'bool', dt: core.datatypes.BOOL, desc: 'True or false is emitted on the next update after the buttons has been clicked.', def: 'False' } ];
 	this.state = { enabled: false };
 	this.changed = true;
 		

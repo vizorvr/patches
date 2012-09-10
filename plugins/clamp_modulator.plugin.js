@@ -1,14 +1,14 @@
 E2.plugins["clamp_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Emit a float value no less than \'min\' and no greater than \'max\'.';
+	this.desc = 'Emit a float <b>value</b> no less than <b>min</b> and no greater than <b>max</b>.';
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Type: Float<break>Value to be clipped.' },
-		{ name: 'min', dt: core.datatypes.FLOAT, desc: 'Type: Float<break>Minimum output value.' },
-		{ name: 'max', dt: core.datatypes.FLOAT, desc: 'Type: Float<break>Maximum output value.' } 
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Value to be clipped.', def: 0 },
+		{ name: 'min', dt: core.datatypes.FLOAT, desc: 'Minimum output value.', def: 0 },
+		{ name: 'max', dt: core.datatypes.FLOAT, desc: 'Maximum output value.', def: 1 } 
 	];
 	
-	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT } ];
+	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT, desc: 'Emits <b>min</b> <= <b>value</b> >= <b>max</b>.', def: 0 } ];
 
 	this.reset = function()
 	{

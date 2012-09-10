@@ -2,15 +2,15 @@ E2.plugins["instance_texture_modulator"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 		
-	this.desc = 'Create a scene that represents \'count\' instances of the supplied \'mesh\', distributed according to the intensity of the red channel of the supplied \'texture\', whereas the green channel specifies instance elevation.';
+	this.desc = 'Create a scene that represents <b>count</b> instances of the supplied </b>mesh</b>, distributed according to the intensity of the red channel of the supplied <b>texture</b>, whereas the green channel specifies instance elevation.';
 	this.input_slots = [ 
-		{ name: 'count', dt: core.datatypes.FLOAT },
-		{ name: 'mesh', dt: core.datatypes.MESH },
-		{ name: 'texture', dt: core.datatypes.TEXTURE },
-		{ name: 'scale', dt: core.datatypes.VERTEX }
+		{ name: 'count', dt: core.datatypes.FLOAT, desc: 'The number of instances to create.', lo: 0, def: 1 },
+		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The mesh to instantiate.' },
+		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The instantiation parameter texture map.' },
+		{ name: 'scale', dt: core.datatypes.VERTEX, desc: 'The scale of the generated instance map.', def: '1, 1, 1' }
 	];
 	
-	this.output_slots = [ { name: 'scene', dt: core.datatypes.SCENE } ];
+	this.output_slots = [ { name: 'scene', dt: core.datatypes.SCENE, desc: 'Scene representing <b>count</b> instances.' } ];
 
 	this.update_input = function(slot, data)
 	{
@@ -79,7 +79,7 @@ E2.plugins["instance_texture_modulator"] = function(core, node) {
 		if(!ui)
 		{
 			self.scene = new Scene(gl, null, null);
-			self.count = [1, 0, 1];
+			self.count = 1;
 			self.texture = null;
 			self.scale = [1, 1, 1];
 			self.dirty = true;

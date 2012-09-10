@@ -2,9 +2,9 @@ E2.plugins["url_scene_generator"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
-	this.desc = 'Load a scene from an URL.';
+	this.desc = 'Load a scene from an URL. Hover over the Source button to see the url of the current file.';
 	this.input_slots = [];
-	this.output_slots = [ { name: 'scene', dt: core.datatypes.SCENE } ];
+	this.output_slots = [ { name: 'scene', dt: core.datatypes.SCENE, desc: 'The loaded scene if one has been selected.' } ];
 	this.state = { url: '' };
 	this.scene = null;
 	this.changed = true;

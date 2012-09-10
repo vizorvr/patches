@@ -1,8 +1,9 @@
 E2.plugins["bool_display"] = function(core, node) {
 	var self = this;
 	
+	this.desc = 'Displays the text \'True\' or \'False\' depending on the state of the supplied bool or \'-\', if no data is being received.';
 	this.input_slots = [ 
-		{ name: 'bool', dt: core.datatypes.BOOL }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The input boolean to display.' }
 	];
 	
 	this.output_slots = [];

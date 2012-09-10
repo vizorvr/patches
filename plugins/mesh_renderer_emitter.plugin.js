@@ -2,12 +2,12 @@ E2.plugins["mesh_renderer_emitter"] = function(core, node) {
 	var self = this;
 	var gl = core.renderer.context;
 	
-	this.desc = 'Render the supplied mesh. If no shader is specified, the internal shader (if any) of the mesh is used.';
+	this.desc = 'Render the supplied <b>mesh</b>. If no <b>shader</b> is specified, the internal shader (if any) of the <b>mesh</b> is used.';
 	this.input_slots = [ 
-		{ name: 'mesh', dt: core.datatypes.MESH },
-		{ name: 'shader', dt: core.datatypes.SHADER },
-		{ name: 'camera', dt: core.datatypes.CAMERA },
-		{ name: 'transform', dt: core.datatypes.TRANSFORM }
+		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The input mesh to be rendered.' },
+		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'Connect to this slot to use the supplied shader in favor of the one specified by the mesh (if any).', def: 'Use mesh shader' },
+		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'Camera to use for rendering.', def: 'Screenspace camera.' },
+		{ name: 'transform', dt: core.datatypes.TRANSFORM, desc: 'Mesh transform.', def: 'Identity' }
 	];
 	
 	this.output_slots = [];

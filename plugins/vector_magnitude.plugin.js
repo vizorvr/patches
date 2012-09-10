@@ -1,9 +1,9 @@
 E2.plugins["vector_magnitude"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Emit the magnitude (length) of the supplied vector.';
-	this.input_slots = [ { name: 'vector', dt: core.datatypes.VERTEX } ];
-	this.output_slots = [ { name: 'mag', dt: core.datatypes.FLOAT } ];
+	this.desc = 'Emits the magnitude (length) of the supplied vector.';
+	this.input_slots = [ { name: 'vector', dt: core.datatypes.VERTEX, desc: 'Input vector to compute the length of.', def: '0, 0, 0' } ];
+	this.output_slots = [ { name: 'mag', dt: core.datatypes.FLOAT, desc: 'Emits the magnitude of the input vector.', def: 0 } ];
 	
 	this.update_input = function(slot, data)
 	{

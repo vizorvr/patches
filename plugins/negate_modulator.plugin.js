@@ -1,19 +1,18 @@
 E2.plugins["negate_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Emit the sign inverted input value.';
-	this.input_slots = [ { name: 'value', dt: core.datatypes.FLOAT } ];
-	this.output_slots = [ { name: 'inverse', dt: core.datatypes.FLOAT } ];
+	this.desc = 'Emits the sign inverted input value.';
+	this.input_slots = [ { name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value to be negated.', def: 0 } ];
+	this.output_slots = [ { name: '-value', dt: core.datatypes.FLOAT, desc: 'The sign-inverted input value.', def: 0 } ];
 	
 	this.reset = function()
 	{
-		self.value = 0;
+		self.value = 0.0;
 	};
 	
 	this.update_input = function(slot, data)
 	{
-		if(slot.index === 0)
-			self.value = -data;
+		self.value = -data;
 	};	
 	
 	this.update_output = function(slot)

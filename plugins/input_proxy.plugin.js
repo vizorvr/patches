@@ -1,16 +1,16 @@
 E2.plugins["input_proxy"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Create a new type-less slot to route data into the current graph from its parent. When connected to a slot, it will assume its type until disconnected.';
+	this.desc = 'Create a new type-less slot to route data into the current graph from its parent. When connected to a slot, it will assume its type until disconnected. Renaming this plugin will rename the corresponding parent slot.';
 	this.input_slots = [];
 	this.output_slots = [];
 	this.state = {};
 	
-	this.state.slot_id = node.add_slot(E2.slot_type.output, { name: 'output', dt: core.datatypes.ANY });
+	this.state.slot_id = node.add_slot(E2.slot_type.output, { name: 'output', dt: core.datatypes.ANY, desc: 'Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.' });
 	this.data = null;
 	
 	if(!node.title)
-		node.title = 'Input ' + node.uid;
+		node.title = 'input_' + node.uid;
 
 	this.input_updated = function(data)
 	{

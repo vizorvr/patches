@@ -3,12 +3,11 @@ E2.plugins["color_blend_modulator"] = function(core, node) {
 	
 	this.desc = 'Color x-fader. Perform linear blend between two colors.';
 	this.input_slots = [ 
-		{ name: 'color A', dt: core.datatypes.COLOR },
-		{ name: 'color B', dt: core.datatypes.COLOR }, 
-		{ name: 'mix', dt: core.datatypes.FLOAT, desc: 'Type: Float.\nRange: 0-1\n<break>0: Emit pure color A<br>1: Emit pure color B' } 
+		{ name: 'color A', dt: core.datatypes.COLOR, desc: 'First color operand.', def: 'Black' },
+		{ name: 'color B', dt: core.datatypes.COLOR, desc: 'Second color operand.', def: 'Black' }, 
+		{ name: 'mix', dt: core.datatypes.FLOAT, desc: '0: Emit pure color A\n1: Emit pure color B', lo: 0, hi: 1, def: 0.5 } 
 	];
-	
-	this.output_slots = [ { name: 'color', dt: core.datatypes.COLOR } ];
+	this.output_slots = [ { name: 'color', dt: core.datatypes.COLOR, desc: 'Linear mix of color A and B:\n\nA * (1 - mix) + B * mix' } ];
 	
 	this.reset = function()
 	{
@@ -48,7 +47,7 @@ E2.plugins["color_blend_modulator"] = function(core, node) {
 			self.color_a = new Color(0, 0, 0);
 			self.color_b = new Color(0, 0, 0);
 			self.output_color = new Color(0, 0, 0);
-			self.mix = 0.0;
+			self.mix = 0.5;
 		}
 	};	
 };
