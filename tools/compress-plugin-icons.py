@@ -29,6 +29,9 @@ class SourceImage:
 		self.fullPath = filePath + '/' + fileName
 		self.origIndex = oi
 		
+		if not os.path.exists(self.fullPath):
+			print "Error: '%s' does not exist." % self.fullPath
+		
 		# Open the image and make sure it's in RGBA mode.
 		self.img = Image.open(self.fullPath)
 		self.img = self.img.convert('RGBA')
@@ -41,13 +44,13 @@ class SourceImage:
 		
 		# if bbox == None:
 		#	bbox = [0,0,1,1];
-		bbox = [0, 0, self.img.size[0]-1, self.img.size[1]-1]
+		bbox = [0, 0, self.img.size[0], self.img.size[1]]
 		
 		# Crop it and get the new extents.
 		self.img = self.img.crop(bbox)
 		self.img.load()
 		self.offset = (bbox[0], bbox[1])
-		self.rect = Rect(0,0, self.img.size[0]-1, self.img.size[1]-1)
+		self.rect = Rect(0,0, self.img.size[0], self.img.size[1])
 
 # A simple rect class using inclusive coordinates.
 class Rect:
@@ -119,7 +122,7 @@ def writeAtlas(images, atlasW, atlasH):
 	atlasImg = Image.new('RGBA', [atlasW, atlasH])
 	
 	for i in images:
-		atlasImg.paste(i.img, [int(i.img.destRect.xmin), int(i.img.destRect.ymin), int(i.img.destRect.xmax + 1), int(i.img.destRect.ymax + 1)])
+		atlasImg.paste(i.img, [int(i.img.destRect.xmin), int(i.img.destRect.ymin), int(i.img.destRect.xmax), int(i.img.destRect.ymax)])
 	
 	atlasImg.save('build/style/icons/icons.png')
 	atlasImg = None
@@ -146,13 +149,19 @@ def writeCSS(images, atlasW, atlasH):
 		
 	for rule in sorted(css_rules.keys()):
 		img_fname = css_rules[rule]
+		found = False
 		
 		for i in images:
 			if i.fileName == img_fname:
 				css.write(rule + ' { ')
 				#css.write('width: ' + str(i.img.destRect.width()) + 'px; ')
 				#css.write('height: ' + str(i.img.destRect.height()) + 'px; ')
-				css.write('background: url(\'icons.png\') ' + str(-i.img.destRect.xmin+i.offset[0]) + 'px ' + str(-i.img.destRect.ymin+i.offset[1]) + 'px no-repeat; }\n')
+				css.write('background: url(\'icons.png\') ' + str(-i.img.destRect.xmin) + 'px ' + str(-i.img.destRect.ymin) + 'px no-repeat; }\n')
+				found = True
+				break
+		
+		if not found:
+			print "Error: The rule '%s' has no known source image." % rule
 	
 	css.close()
 
