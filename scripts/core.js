@@ -671,6 +671,7 @@ function NodeUI(parent_node, x, y) {
 	icon.css('position', 'relative');
 	icon.css('top', '2px');
 	icon.css('left', '2px');
+	icon.css('background-color', '#eee');
 	
 	h_cell.append(icon);
 	lbl.text(parent_node.get_disp_name());
