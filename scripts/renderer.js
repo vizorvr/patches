@@ -62,7 +62,7 @@ function Texture(gl)
 		
 		img.onerror = function()
 		{
-			msg('ERROR: Failed loading texture \'' + src + '\'.');
+			Notifier.error('Failed to load texture \'' + src + '\'', 'Renderer');
 		};
 		
 		img.src = src + '?d=' + Math.random();	
@@ -760,7 +760,7 @@ function Shader(gl, type, src)
 	gl.compileShader(this.shader);
 	
 	if(!gl.getShaderParameter(this.shader, gl.COMPILE_STATUS))
-		msg('ERROR: Shader compilation failed:\n' + gl.getShaderInfoLog(this.shader) + '\n' + src + '\n\n');
+		Notifier.error('Shader compilation failed:\n' + gl.getShaderInfoLog(this.shader), 'Renderer');
 }
 
 function ShaderProgram(gl, program)
@@ -780,12 +780,12 @@ function ShaderProgram(gl, program)
 		self.gl.linkProgram(self.program);
 
 		if(!self.gl.getProgramParameter(self.program, gl.LINK_STATUS))
-      			msg('ERROR: Shader linking failed:\n' + gl.getProgramInfoLog(self.program));
+      			Notifier.error('Shader linking failed:\n' + gl.getProgramInfoLog(self.program), 'Renderer');
 		
 		gl.validateProgram(self.program);
 		
 		if(!gl.getProgramParameter(self.program, gl.VALIDATE_STATUS))
-      			msg('ERROR: Shader validation failed:\n' + gl.getProgramInfoLog(self.program));
+      			Notifier.error('Shader validation failed:\n' + gl.getProgramInfoLog(self.program), 'Renderer');
       	};
       	
       	this.enable = function()
@@ -914,7 +914,7 @@ Scene.load = function(gl, url)
 		},
 		error: function(jqXHR, textStatus, errorThrown)
 		{
-			msg('ERROR: Scene: Failed to load "' + url + '": ' + textStatus + ', ' + errorThrown);
+			Notifier.error('Failed to load scene "' + url + '": ' + textStatus + ', ' + errorThrown, 'Renderer');
 		},
 		async:   false
 	});

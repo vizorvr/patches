@@ -50,7 +50,7 @@ function msg(txt)
 	else
 	{
 		d.append('<span style="color:#f00">' + txt + '</span>\n');
-		alert(txt);
+		Notifier.error(txt.substring(7, txt.length-7));
 	}
 	
 	d.scrollTop(d[0].scrollHeight);
@@ -328,7 +328,7 @@ function SnippetManager(base_url)
 	  		},
 	  		error: function()
 	  		{
-	  			msg('ERROR: Failed to load the selected snippet.');
+	  			Notifier.error('Failed to load the selected snippet.', 'Cogent');
 	  		}
 		});
 	});
@@ -676,7 +676,7 @@ function NodeUI(parent_node, x, y) {
 	var h_row = make('tr');
 	var h_cell = make('td');
 	var icon = make('span');
-	var lbl = make('div');
+	var lbl = make('span');
 	
 	icon.addClass('menu-icon');
 	icon.addClass('icon-' + parent_node.plugin.id);
@@ -691,7 +691,8 @@ function NodeUI(parent_node, x, y) {
 	h_cell.append(icon);
 	lbl.text(parent_node.get_disp_name());
 	lbl.attr('id', 't');
-	lbl.css({'width': '100%', 'position': 'relative', 'left': '2px'});
+	lbl.css({'display': 'inline-block', 'width': '100%'});
+	
 	h_cell.append(lbl);
 	h_cell.attr('colspan', '3');
 	h_row.append(h_cell);
@@ -3134,5 +3135,6 @@ $(document).ready(function() {
 
 	$('#tabs').tabs();
 	$('#content').css('display', 'block');
-	
+	Notifier.init();
+	Notifier.info('Cogent is ready for use.');
 });
