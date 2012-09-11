@@ -676,7 +676,7 @@ function NodeUI(parent_node, x, y) {
 	var h_row = make('tr');
 	var h_cell = make('td');
 	var icon = make('span');
-	var lbl = make('span');
+	var lbl = make('div');
 	
 	icon.addClass('menu-icon');
 	icon.addClass('icon-' + parent_node.plugin.id);
@@ -684,12 +684,14 @@ function NodeUI(parent_node, x, y) {
 		'position': 'relative',
 		'top': '2px',
 		'left': '2px',
-		'background-color': '#eee'
+		'background-color': '#eee',
+		'margin-right': '2px'
 	});
 	
 	h_cell.append(icon);
 	lbl.text(parent_node.get_disp_name());
 	lbl.attr('id', 't');
+	lbl.css({'width': '100%', 'position': 'relative', 'left': '2px'});
 	h_cell.append(lbl);
 	h_cell.attr('colspan', '3');
 	h_row.append(h_cell);
