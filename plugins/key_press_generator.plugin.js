@@ -60,8 +60,6 @@ E2.plugins["key_press_generator"] = function(core, node) {
 
 	this.key_down = function(e)
 	{
-		debugger;
-		
 		if(e.originalEvent.keyCode !== self.state.key)
 			return;
 		
