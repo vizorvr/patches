@@ -3,6 +3,7 @@
 	"Generators/Cameras/Orthographic": "orthographic_camera",
 	"Generators/Cameras/Perspective": "perspective_camera",
 	"Generators/Cameras/Screenspace": "screenspace_camera",
+	"Generators/Input/Key press": "key_press_generator",
 	"Generators/Input/Mouse buttons": "mouse_button_generator",
 	"Generators/Input/Mouse position": "mouse_position_generator",
 	"Generators/Input/Mouse wheel": "mouse_wheel_generator",
