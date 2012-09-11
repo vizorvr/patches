@@ -541,14 +541,26 @@ function draggable_mousemove(data) { return function(e)
 	var co = cp.offset();
 	
 	if(e.pageX < co.left)
-	{	cp.scrollLeft(E2.app.scrollOffset[0] - 20); nx -= 20; }
+	{	
+		cp.scrollLeft(cp.scrollLeft() - 20); 
+		nx -= 20;
+	}
 	else if(e.pageX > co.left + cp.width())
-	{	cp.scrollLeft(E2.app.scrollOffset[1] + 20); nx += 20; }
+	{	
+		cp.scrollLeft(cp.scrollLeft() + 20); 
+		nx += 20;
+	}
 	
 	if(e.pageY < co.top)
-	{	cp.scrollTop(cp.scrollTop() - 20); ny -= 20; }
+	{
+		cp.scrollTop(cp.scrollTop() - 20);
+		ny -= 20;
+	}
 	else if(e.pageY > co.top + cp.height())
-	{	cp.scrollTop(cp.scrollTop() + 20); ny += 20 }
+	{
+		cp.scrollTop(cp.scrollTop() + 20);
+		ny += 20;
+	}
 
 	nx = nx < 0 ? 0 : nx;
 	ny = ny < 0 ? 0 : ny;
@@ -668,10 +680,12 @@ function NodeUI(parent_node, x, y) {
 	
 	icon.addClass('menu-icon');
 	icon.addClass('icon-' + parent_node.plugin.id);
-	icon.css('position', 'relative');
-	icon.css('top', '2px');
-	icon.css('left', '2px');
-	icon.css('background-color', '#eee');
+	icon.css({
+		'position': 'relative',
+		'top': '2px',
+		'left': '2px',
+		'background-color': '#eee'
+	});
 	
 	h_cell.append(icon);
 	lbl.text(parent_node.get_disp_name());
@@ -705,13 +719,11 @@ function NodeUI(parent_node, x, y) {
 	var content_col = make('td');
 	var output_col = make('td');
 	
-	input_col.css('text-align', 'left');
-	input_col.css('vertical-align', 'top');
+	input_col.css({'text-align': 'left', 'vertical-align': 'top'});
 	input_col.attr('id', 'ic');
 	content_col.addClass('pui_col');
 	content_col.attr('id', 'cc');
-	output_col.css('text-align', 'right');
-	output_col.css('vertical-align', 'top');
+	output_col.css({'text-align': 'right', 'vertical-align': 'top'});
 	output_col.attr('id', 'oc');
 	
 	row.append(input_col)
@@ -744,9 +756,7 @@ function NodeUI(parent_node, x, y) {
 	
 	E2.dom.canvas_parent.append(this.dom);
 
-	this.dom.css('top', '' + y + 'px');
-	this.dom.css('left', '' + x + 'px');
-
+	this.dom.css({'top': '' + y + 'px', 'left': '' + x + 'px'});
 	this.dom.show();
 }
 
@@ -2146,10 +2156,12 @@ function Application() {
 	{
 		if(self.hover_node !== null)
 		{
+			var hn = self.hover_nodes;
+			
 			self.hover_node = null;
 			
 			for(var i = 0, len = self.hover_nodes.length; i < len; i++)
-				self.hover_nodes[i].ui.header_row.css('background-color', '#656974'); // TODO: Ugly. This belongs in a style sheet.
+				hn[i].ui.header_row.css('background-color', '#656974'); // TODO: Ugly. This belongs in a style sheet.
 			
 			self.hover_nodes = [];
 			
@@ -2375,8 +2387,7 @@ function Application() {
 				
 				n.x = nx;
 				n.y = ny;
-				n.ui.dom.css('left', nx);
-				n.ui.dom.css('top', ny);
+				n.ui.dom.css({'left': nx, 'top': ny});
 				n.update_connections();
 			}
 		}
@@ -2525,8 +2536,10 @@ function Application() {
 			}
 		}
 		
+		var sn = self.selection_nodes;
+		
 		for(var i = 0, len = self.selection_nodes.length; i < len; i++)
-			self.selection_nodes[i].ui.dom.css('border', '1px solid #aaa');
+			sn[i].ui.dom.css('border', '1px solid #aaa');
 
 		self.selection_nodes = [];
 		
@@ -2980,8 +2993,7 @@ function Application() {
 	canvas_parent.scroll(function()
 	{
 		self.scrollOffset = [ canvas_parent.scrollLeft(), canvas_parent.scrollTop() ];
-		canvas.css('left', '' + self.scrollOffset[0] + 'px');
-		canvas.css('top', '' + self.scrollOffset[1] + 'px');
+		canvas.css({'left': self.scrollOffset[0], 'top': self.scrollOffset[1]});
 		self.updateCanvas();
 	});
 	
