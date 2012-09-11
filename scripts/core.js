@@ -663,9 +663,19 @@ function NodeUI(parent_node, x, y) {
 	
 	var h_row = make('tr');
 	var h_cell = make('td');
+	var icon = make('span');
+	var lbl = make('span');
 	
-	h_cell.text(parent_node.get_disp_name());
-	h_cell.attr('id', 't');
+	icon.addClass('menu-icon');
+	icon.addClass('icon-' + parent_node.plugin.id);
+	icon.css('position', 'relative');
+	icon.css('top', '2px');
+	icon.css('left', '2px');
+	
+	h_cell.append(icon);
+	lbl.text(parent_node.get_disp_name());
+	lbl.attr('id', 't');
+	h_cell.append(lbl);
 	h_cell.attr('colspan', '3');
 	h_row.append(h_cell);
 	h_row.addClass('pl_header');
