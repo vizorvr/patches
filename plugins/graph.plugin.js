@@ -445,7 +445,6 @@ E2.plugins["graph"] = function(core, node) {
 			
 			if(c.src_node === node && c.src_slot.uid === undefined && c.src_slot.index === 0)
 			{
-				debugger;
 				self.set_render_target_state(true);
 				break; // Early out and don't double init if connected to multiple inputs.
 			}

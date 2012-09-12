@@ -344,7 +344,6 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 					gl.uniform1f(slot.uniform, sd[slot.id]);
 				else if(dtid === core.datatypes.TEXTURE.id)
 				{
-					debugger;
 					gl.uniform1i(slot.uniform, tex_slot);
 					sd[slot.id].enable(gl.TEXTURE0 + tex_slot);
 					tex_slot++;
