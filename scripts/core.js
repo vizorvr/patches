@@ -519,13 +519,12 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 	};
 }
 
-function draggable_mouseup(move, data) { return function(e)
+function draggable_mouseup(data) { return function(e)
 {
 	data.doc.unbind('mouseup.draggable');
 	data.doc.unbind('mousemove.draggable');
 		
 	data.stop(e);
-	// data.doc[0].removeEventListener('mousemove', move, false);
 	
 	if(e.stopPropagation) e.stopPropagation();
 	if(e.preventDefault) e.preventDefault();
@@ -597,11 +596,7 @@ function draggable_mousedown(ui, drag, stop) { return function(e)
 		doc: $(document)
 	};
 
-	var move = draggable_mousemove(data);
-	
-	data.doc.bind('mouseup.draggable', draggable_mouseup(move, data));
-	// data.doc[0].addEventListener('mousemove', move, false);
-	
+	data.doc.bind('mouseup.draggable', draggable_mouseup(data));
 	data.doc.bind('mousemove.draggable', draggable_mousemove(data));
 	
 	if(e.stopPropagation) e.stopPropagation();
