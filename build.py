@@ -4,6 +4,7 @@ import sys
 import fnmatch
 import glob
 import shutil
+import subprocess
 
 def glob_recursive(base_path, pattern):
 	matches = []
@@ -16,9 +17,21 @@ def glob_recursive(base_path, pattern):
 
 build_dir = './build'
 
+def run(exe):    
+	p = os.popen(exe)
+	return p.read()
+
 def compress(in_name, out_name):
 	# os.system('yui-compressor --type js --preserve-semi -o ' + out_name + ' ' + in_name)
 	os.system('uglifyjs -nc -o ' + out_name + ' ' + in_name)
+
+print 'Checking for residual debugger statements...'
+
+if os.system('grep -n "debugger;" plugins/*.js') == 0:
+	sys.exit(0)
+
+if os.system('grep -n "debugger;" scripts/*.js') == 0:
+	sys.exit(0)
 
 print 'Rebuilding...'
 shutil.rmtree(build_dir)
