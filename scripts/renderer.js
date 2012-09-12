@@ -497,8 +497,12 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			
 			for(var i = 0, len = inst.length; i < len; i++)
 			{
-				mat4.multiply(inst[i], transform, ft);
-				shader.bind_transform(ft);	
+				if(!transform.invert)
+					mat4.multiply(inst[i], transform, ft);
+				else
+					mat4.multiply(transform, inst[i], ft);
+				
+				shader.bind_transform(ft);
 				draw();
 			}
 		}
@@ -877,6 +881,12 @@ function Scene(gl, data, base_path)
 	{
 		var bb = self.bounding_box;
 		var cam = new Camera();
+		
+		// If we have no bounding box, default to the old-fashioned 
+		//screenspace cam in lieu of something better.
+		if(!bb)
+			return cam;
+		
 		var c = E2.app.core.renderer.canvas;
 		var pos = [bb.hi[0] * 3.0, bb.hi[1] * 3.0, bb.hi[2] * 3.0];
 		var d = vec3.create(), tar = vec3.create();

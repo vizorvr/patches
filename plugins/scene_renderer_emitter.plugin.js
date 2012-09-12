@@ -9,8 +9,8 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'The camera to use for rendering.', def: 'Screenspace camera.' },
 		{ name: 'transform', dt: core.datatypes.TRANSFORM, desc: 'The scene transform to use for rendering.', def: 'Identity' }
 	];
-	
 	this.output_slots = [];
+	this.state = { invert_transform: false };
 
 	this.reset = function()
 	{
@@ -18,6 +18,26 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 		self.shader = null;
 	};
 	
+	this.create_ui = function()
+	{
+		var div = make('div');
+		var inp = $('<input type="checkbox" id="iv_trans" />');
+		var lbl = $('<label for="iv_trans">Invert transform order</label>');
+		
+		inp.change(function() 
+		{
+			self.state.invert_transform = inp.prop('checked');
+			self.state_changed(div);
+			self.changed = true;
+		});
+		
+		div.append(inp);
+		div.append(lbl);
+		
+		return div;
+	};
+	
+	// <input type="checkbox" value="first checkbox" id="cb1" /> <label for="cb1">first checkbox</label>
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
@@ -59,7 +79,10 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	this.update_state = function(delta_t)
 	{
 		if(self.scene)
+		{
+			self.transform.invert = self.state.invert_transform;
 			self.scene.render(gl, self.camera, self.transform, self.shader);
+		}
 	};
 	
 	this.state_changed = function(ui)
