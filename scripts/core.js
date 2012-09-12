@@ -678,20 +678,12 @@ function NodeUI(parent_node, x, y) {
 	var icon = make('span');
 	var lbl = make('span');
 	
-	icon.addClass('menu-icon');
+	icon.addClass('plugin-icon');
 	icon.addClass('icon-' + parent_node.plugin.id);
-	icon.css({
-		'position': 'relative',
-		'top': '2px',
-		'left': '2px',
-		'background-color': '#eee',
-		'margin-right': '2px'
-	});
 	
 	h_cell.append(icon);
 	lbl.text(parent_node.get_disp_name());
 	lbl.attr('id', 't');
-	lbl.css({'display': 'inline-block', 'width': '100%'});
 	
 	h_cell.append(lbl);
 	h_cell.attr('colspan', '3');
@@ -722,11 +714,9 @@ function NodeUI(parent_node, x, y) {
 	var content_col = make('td');
 	var output_col = make('td');
 	
-	input_col.css({'text-align': 'left', 'vertical-align': 'top'});
 	input_col.attr('id', 'ic');
 	content_col.addClass('pui_col');
 	content_col.attr('id', 'cc');
-	output_col.css({'text-align': 'right', 'vertical-align': 'top'});
 	output_col.attr('id', 'oc');
 	
 	row.append(input_col)
@@ -755,12 +745,8 @@ function NodeUI(parent_node, x, y) {
 	
 	make_draggable(this.dom, E2.app.onNodeDragged(parent_node), E2.app.onNodeDragStopped(parent_node));
     	
-	this.dom.css('display', 'none');
-	
+	this.dom.css({'top': y, 'left': x});
 	E2.dom.canvas_parent.append(this.dom);
-
-	this.dom.css({'top': '' + y + 'px', 'left': '' + x + 'px'});
-	this.dom.show();
 }
 
 function Node(parent_graph, plugin_id, x, y) {
