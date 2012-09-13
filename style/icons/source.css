@@ -57,9 +57,11 @@
 .icon-input_proxy { background: url('input-proxy.png'); }
 .icon-instance_array_modulator { background: url('instance-array-modulator.png'); }
 .icon-instance_cube_modulator { background: url('instance-cube-modulator.png'); }
+.icon-instance_ifs_modulator { background: url('instance-ifs-modulator.png'); }
 .icon-instance_texture_modulator { background: url('instance-texture-modulator.png'); }
 .icon-invert_matrix_modulator { background: url('invert-matrix-modulator.png'); }
 .icon-key_press_generator { background: url('key-press-generator.png'); }
+.icon-knob_float_generator { background: url('knob-float-generator.png'); }
 .icon-led_display { background: url('led-display.png'); }
 .icon-less_than_modulator { background: url('less-than-modulator.png'); }
 .icon-lowpass_filter_modulator { background: url('lowpass-filter-modulator.png'); }
