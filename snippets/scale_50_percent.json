@@ -1,73 +1,63 @@
 {
-    "abs_t": 31.351,
-    "active_graph": 0,
-    "graph_uid": 4,
+    "abs_t": 0,
+    "active_graph": 1,
+    "graph_uid": 2,
     "root": {
-        "node_uid": 2,
+        "node_uid": 1,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 356,
-                "y": 331,
+                "x": 470,
+                "y": 310,
                 "uid": 0,
-                "dsid": 1,
+                "dsid": 2,
                 "state": {
                     "enabled": true,
-                    "input_sids": {},
+                    "input_sids": {
+                        "3": 0
+                    },
                     "output_sids": {
-                        "4": 0
+                        "4": 1
                     }
                 },
-                "title": "Translate xyz",
+                "title": "Scale",
                 "graph": {
-                    "node_uid": 6,
+                    "node_uid": 9,
                     "uid": 1,
                     "parent_uid": 0,
                     "nodes": [
                         {
-                            "plugin": "translation_matrix",
-                            "x": 520,
-                            "y": 365,
+                            "plugin": "scale_matrix",
+                            "x": 785,
+                            "y": 192,
                             "uid": 0
                         },
                         {
                             "plugin": "vector",
-                            "x": 412,
-                            "y": 368,
+                            "x": 659,
+                            "y": 211,
                             "uid": 1
                         },
                         {
                             "plugin": "slider_float_generator",
-                            "x": 177,
-                            "y": 377,
+                            "x": 258,
+                            "y": 153,
                             "uid": 2,
                             "state": {
-                                "val": 0,
-                                "min": -1,
-                                "max": 1
+                                "val": 0.52,
+                                "min": 0,
+                                "max": 2
                             },
                             "title": "X"
                         },
                         {
-                            "plugin": "slider_float_generator",
-                            "x": 177,
-                            "y": 464,
-                            "uid": 3,
-                            "state": {
-                                "val": 0,
-                                "min": -1,
-                                "max": 1
-                            },
-                            "title": "Y"
-                        },
-                        {
                             "plugin": "output_proxy",
-                            "x": 633,
-                            "y": 358,
+                            "x": 912,
+                            "y": 138,
                             "uid": 4,
-                            "dsid": 12,
+                            "dsid": 11,
                             "state": {
                                 "slot_id": 0
                             },
@@ -83,18 +73,6 @@
                                     "is_connected": true
                                 }
                             ]
-                        },
-                        {
-                            "plugin": "slider_float_generator",
-                            "x": 179,
-                            "y": 555,
-                            "uid": 5,
-                            "state": {
-                                "val": 0,
-                                "min": -1,
-                                "max": 1
-                            },
-                            "title": "Z"
                         }
                     ],
                     "conns": [
@@ -105,18 +83,6 @@
                             "dst_slot": 0
                         },
                         {
-                            "src_nuid": 2,
-                            "dst_nuid": 1,
-                            "src_slot": 0,
-                            "dst_slot": 0
-                        },
-                        {
-                            "src_nuid": 3,
-                            "dst_nuid": 1,
-                            "src_slot": 0,
-                            "dst_slot": 1
-                        },
-                        {
                             "src_nuid": 0,
                             "dst_nuid": 4,
                             "src_slot": 0,
@@ -125,10 +91,24 @@
                             "dst_dyn": true
                         },
                         {
-                            "src_nuid": 5,
+                            "src_nuid": 2,
                             "dst_nuid": 1,
                             "src_slot": 0,
-                            "dst_slot": 2
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "offset": 2
                         }
                     ]
                 },
@@ -136,7 +116,7 @@
                     {
                         "name": "matrix",
                         "dt": 4,
-                        "uid": 0,
+                        "uid": 1,
                         "index": 0,
                         "type": 1
                     }

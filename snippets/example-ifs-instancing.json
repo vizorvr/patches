@@ -1,706 +1,726 @@
 {
-    "abs_t": 0,
-    "active_graph": 0,
-    "graph_uid": 3,
+    "abs_t": 26.128,
+    "active_graph": 1,
+    "graph_uid": 2,
     "root": {
-        "node_uid": 65,
+        "node_uid": 1,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
-                "plugin": "instance_ifs_modulator",
-                "x": 1023,
-                "y": 34,
-                "uid": 0
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 872,
-                "y": 22,
-                "uid": 1,
+                "plugin": "graph",
+                "x": 470,
+                "y": 310,
+                "uid": 0,
                 "state": {
-                    "val": 4
-                }
-            },
-            {
-                "plugin": "cube_mesh_generator",
-                "x": 772,
-                "y": 24,
-                "uid": 2
-            },
-            {
-                "plugin": "scene_renderer_emitter",
-                "x": 1299,
-                "y": 66,
-                "uid": 3,
-                "state": {
-                    "invert_transform": false
-                }
-            },
-            {
-                "plugin": "from_mesh_shader",
-                "x": 1059,
-                "y": 173,
-                "uid": 4
-            },
-            {
-                "plugin": "url_texture_generator",
-                "x": 910,
-                "y": 261,
-                "uid": 5,
-                "state": {
-                    "url": "data/textures/backdrop_orange.jpg"
-                }
-            },
-            {
-                "plugin": "toggle_button",
-                "x": 789,
-                "y": 261,
-                "uid": 6,
-                "state": {
-                    "enabled": true
-                }
-            },
-            {
-                "plugin": "perspective_camera",
-                "x": 1111,
-                "y": 317,
-                "uid": 7
-            },
-            {
-                "plugin": "vector",
-                "x": 980,
-                "y": 341,
-                "uid": 8
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 861,
-                "y": 382,
-                "uid": 9,
-                "state": {
-                    "val": 30
-                }
-            },
-            {
-                "plugin": "translation_matrix",
-                "x": 544,
-                "y": 649,
-                "uid": 12
-            },
-            {
-                "plugin": "scale_matrix",
-                "x": 554,
-                "y": 861,
-                "uid": 13
-            },
-            {
-                "plugin": "rotation_xyz_matrix",
-                "x": 645,
-                "y": 1106,
-                "uid": 14
-            },
-            {
-                "plugin": "vector",
-                "x": 397,
-                "y": 649,
-                "uid": 15
-            },
-            {
-                "plugin": "vector",
-                "x": 396,
-                "y": 861,
-                "uid": 16
-            },
-            {
-                "plugin": "concatenate_matrix_modulator",
-                "x": 649,
-                "y": 707,
-                "uid": 17
-            },
-            {
-                "plugin": "concatenate_matrix_modulator",
-                "x": 766,
-                "y": 815,
-                "uid": 18
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 77,
-                "y": 649,
-                "uid": 19,
-                "state": {
-                    "val": 0,
-                    "min": -4,
-                    "max": 4
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 78,
-                "y": 734,
-                "uid": 20,
-                "state": {
-                    "val": 0,
-                    "min": -4,
-                    "max": 4
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 78,
-                "y": 819,
-                "uid": 21,
-                "state": {
-                    "val": 0,
-                    "min": -4,
-                    "max": 4
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 79,
-                "y": 953,
-                "uid": 22,
-                "state": {
-                    "val": 1,
-                    "min": 0.1,
-                    "max": 2
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 80,
-                "y": 1038,
-                "uid": 23,
-                "state": {
-                    "val": 1,
-                    "min": 0.1,
-                    "max": 2
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 80,
-                "y": 1123,
-                "uid": 24,
-                "state": {
-                    "val": 1,
-                    "min": 0.1,
-                    "max": 2
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 394,
-                "y": 962,
-                "uid": 25,
-                "state": {
-                    "val": 0,
-                    "min": -180,
-                    "max": 180
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 394,
-                "y": 1048,
-                "uid": 26,
-                "state": {
-                    "val": 0,
-                    "min": -180,
-                    "max": 180
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 393,
-                "y": 1134,
-                "uid": 27,
-                "state": {
-                    "val": 0,
-                    "min": -180,
-                    "max": 180
-                }
-            },
-            {
-                "plugin": "translation_matrix",
-                "x": 491,
-                "y": 16,
-                "uid": 44
-            },
-            {
-                "plugin": "scale_matrix",
-                "x": 501,
-                "y": 228,
-                "uid": 45
-            },
-            {
-                "plugin": "rotation_xyz_matrix",
-                "x": 592,
-                "y": 473,
-                "uid": 46
-            },
-            {
-                "plugin": "vector",
-                "x": 344,
-                "y": 16,
-                "uid": 47
-            },
-            {
-                "plugin": "vector",
-                "x": 343,
-                "y": 228,
-                "uid": 48
-            },
-            {
-                "plugin": "concatenate_matrix_modulator",
-                "x": 596,
-                "y": 74,
-                "uid": 49
-            },
-            {
-                "plugin": "concatenate_matrix_modulator",
-                "x": 713,
-                "y": 182,
-                "uid": 50
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 24,
-                "y": 16,
-                "uid": 51,
-                "state": {
-                    "val": 0,
-                    "min": -4,
-                    "max": 4
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 25,
-                "y": 101,
-                "uid": 52,
-                "state": {
-                    "val": 0,
-                    "min": -4,
-                    "max": 4
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 25,
-                "y": 186,
-                "uid": 53,
-                "state": {
-                    "val": 0,
-                    "min": -4,
-                    "max": 4
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 26,
-                "y": 320,
-                "uid": 54,
-                "state": {
-                    "val": 1,
-                    "min": 0.1,
-                    "max": 2
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 27,
-                "y": 405,
-                "uid": 55,
-                "state": {
-                    "val": 1,
-                    "min": 0.1,
-                    "max": 2
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 27,
-                "y": 490,
-                "uid": 56,
-                "state": {
-                    "val": 1,
-                    "min": 0.1,
-                    "max": 2
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 341,
-                "y": 329,
-                "uid": 57,
-                "state": {
-                    "val": 0,
-                    "min": -180,
-                    "max": 180
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 341,
-                "y": 415,
-                "uid": 58,
-                "state": {
-                    "val": 0,
-                    "min": -180,
-                    "max": 180
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 340,
-                "y": 501,
-                "uid": 59,
-                "state": {
-                    "val": 0,
-                    "min": -180,
-                    "max": 180
-                }
-            },
-            {
-                "plugin": "translation_matrix",
-                "x": 1139,
-                "y": 481,
-                "uid": 60
-            },
-            {
-                "plugin": "vector",
-                "x": 992,
-                "y": 481,
-                "uid": 61
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 776,
-                "y": 471,
-                "uid": 62,
-                "state": {
-                    "val": 0,
-                    "min": -4,
-                    "max": 4
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 777,
-                "y": 556,
-                "uid": 63,
-                "state": {
-                    "val": 0,
-                    "min": -4,
-                    "max": 4
-                }
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 777,
-                "y": 641,
-                "uid": 64,
-                "state": {
-                    "val": 0,
-                    "min": -4,
-                    "max": 4
+                    "enabled": true,
+                    "input_sids": {},
+                    "output_sids": {}
+                },
+                "title": "IFS instancing",
+                "graph": {
+                    "node_uid": 47,
+                    "uid": 1,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "instance_ifs_modulator",
+                            "x": 1019,
+                            "y": 45,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 868,
+                            "y": 33,
+                            "uid": 1,
+                            "state": {
+                                "val": 4
+                            }
+                        },
+                        {
+                            "plugin": "cube_mesh_generator",
+                            "x": 768,
+                            "y": 35,
+                            "uid": 2
+                        },
+                        {
+                            "plugin": "scene_renderer_emitter",
+                            "x": 1295,
+                            "y": 77,
+                            "uid": 3,
+                            "state": {
+                                "invert_transform": false
+                            }
+                        },
+                        {
+                            "plugin": "from_mesh_shader",
+                            "x": 1055,
+                            "y": 184,
+                            "uid": 4
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 906,
+                            "y": 272,
+                            "uid": 5,
+                            "state": {
+                                "url": "data/textures/backdrop_orange.jpg"
+                            }
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 785,
+                            "y": 272,
+                            "uid": 6,
+                            "state": {
+                                "enabled": true
+                            }
+                        },
+                        {
+                            "plugin": "perspective_camera",
+                            "x": 1107,
+                            "y": 328,
+                            "uid": 7
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 976,
+                            "y": 352,
+                            "uid": 8
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 857,
+                            "y": 393,
+                            "uid": 9,
+                            "state": {
+                                "val": 30
+                            }
+                        },
+                        {
+                            "plugin": "translation_matrix",
+                            "x": 540,
+                            "y": 660,
+                            "uid": 10
+                        },
+                        {
+                            "plugin": "scale_matrix",
+                            "x": 550,
+                            "y": 872,
+                            "uid": 11
+                        },
+                        {
+                            "plugin": "rotation_xyz_matrix",
+                            "x": 641,
+                            "y": 1117,
+                            "uid": 12
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 393,
+                            "y": 660,
+                            "uid": 13
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 392,
+                            "y": 872,
+                            "uid": 14
+                        },
+                        {
+                            "plugin": "concatenate_matrix_modulator",
+                            "x": 645,
+                            "y": 718,
+                            "uid": 15
+                        },
+                        {
+                            "plugin": "concatenate_matrix_modulator",
+                            "x": 762,
+                            "y": 826,
+                            "uid": 16
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 73,
+                            "y": 660,
+                            "uid": 17,
+                            "state": {
+                                "val": 0,
+                                "min": -4,
+                                "max": 4
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 74,
+                            "y": 745,
+                            "uid": 18,
+                            "state": {
+                                "val": 0,
+                                "min": -4,
+                                "max": 4
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 74,
+                            "y": 830,
+                            "uid": 19,
+                            "state": {
+                                "val": 0,
+                                "min": -4,
+                                "max": 4
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 75,
+                            "y": 964,
+                            "uid": 20,
+                            "state": {
+                                "val": 1,
+                                "min": 0.1,
+                                "max": 2
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 76,
+                            "y": 1049,
+                            "uid": 21,
+                            "state": {
+                                "val": 1,
+                                "min": 0.1,
+                                "max": 2
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 76,
+                            "y": 1134,
+                            "uid": 22,
+                            "state": {
+                                "val": 1,
+                                "min": 0.1,
+                                "max": 2
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 390,
+                            "y": 973,
+                            "uid": 23,
+                            "state": {
+                                "val": 0,
+                                "min": -180,
+                                "max": 180
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 390,
+                            "y": 1059,
+                            "uid": 24,
+                            "state": {
+                                "val": 0,
+                                "min": -180,
+                                "max": 180
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 389,
+                            "y": 1145,
+                            "uid": 25,
+                            "state": {
+                                "val": 0,
+                                "min": -180,
+                                "max": 180
+                            }
+                        },
+                        {
+                            "plugin": "translation_matrix",
+                            "x": 487,
+                            "y": 27,
+                            "uid": 26
+                        },
+                        {
+                            "plugin": "scale_matrix",
+                            "x": 497,
+                            "y": 239,
+                            "uid": 27
+                        },
+                        {
+                            "plugin": "rotation_xyz_matrix",
+                            "x": 588,
+                            "y": 484,
+                            "uid": 28
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 340,
+                            "y": 27,
+                            "uid": 29
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 339,
+                            "y": 239,
+                            "uid": 30
+                        },
+                        {
+                            "plugin": "concatenate_matrix_modulator",
+                            "x": 592,
+                            "y": 85,
+                            "uid": 31
+                        },
+                        {
+                            "plugin": "concatenate_matrix_modulator",
+                            "x": 709,
+                            "y": 193,
+                            "uid": 32
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 20,
+                            "y": 27,
+                            "uid": 33,
+                            "state": {
+                                "val": 0,
+                                "min": -4,
+                                "max": 4
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 21,
+                            "y": 112,
+                            "uid": 34,
+                            "state": {
+                                "val": 0,
+                                "min": -4,
+                                "max": 4
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 21,
+                            "y": 197,
+                            "uid": 35,
+                            "state": {
+                                "val": 0,
+                                "min": -4,
+                                "max": 4
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 22,
+                            "y": 331,
+                            "uid": 36,
+                            "state": {
+                                "val": 1,
+                                "min": 0.1,
+                                "max": 2
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 23,
+                            "y": 416,
+                            "uid": 37,
+                            "state": {
+                                "val": 1,
+                                "min": 0.1,
+                                "max": 2
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 23,
+                            "y": 501,
+                            "uid": 38,
+                            "state": {
+                                "val": 1,
+                                "min": 0.1,
+                                "max": 2
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 337,
+                            "y": 340,
+                            "uid": 39,
+                            "state": {
+                                "val": 0,
+                                "min": -180,
+                                "max": 180
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 337,
+                            "y": 426,
+                            "uid": 40,
+                            "state": {
+                                "val": 0,
+                                "min": -180,
+                                "max": 180
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 336,
+                            "y": 512,
+                            "uid": 41,
+                            "state": {
+                                "val": 0,
+                                "min": -180,
+                                "max": 180
+                            }
+                        },
+                        {
+                            "plugin": "translation_matrix",
+                            "x": 1135,
+                            "y": 492,
+                            "uid": 42
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 988,
+                            "y": 492,
+                            "uid": 43
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 772,
+                            "y": 482,
+                            "uid": 44,
+                            "state": {
+                                "val": 0,
+                                "min": -4,
+                                "max": 4
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 773,
+                            "y": 567,
+                            "uid": 45,
+                            "state": {
+                                "val": 0,
+                                "min": -4,
+                                "max": 4
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 773,
+                            "y": 652,
+                            "uid": 46,
+                            "state": {
+                                "val": 0,
+                                "min": -4,
+                                "max": 4
+                            }
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 16,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 4
+                        },
+                        {
+                            "src_nuid": 32,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 42,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 4
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 9,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 13,
+                            "dst_nuid": 10,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 15,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 14,
+                            "dst_nuid": 11,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 11,
+                            "dst_nuid": 15,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 23,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 24,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 25,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 12,
+                            "dst_nuid": 16,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 17,
+                            "dst_nuid": 13,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 18,
+                            "dst_nuid": 13,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 19,
+                            "dst_nuid": 13,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 20,
+                            "dst_nuid": 14,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 21,
+                            "dst_nuid": 14,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 22,
+                            "dst_nuid": 14,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 15,
+                            "dst_nuid": 16,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 29,
+                            "dst_nuid": 26,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 26,
+                            "dst_nuid": 31,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 30,
+                            "dst_nuid": 27,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 27,
+                            "dst_nuid": 31,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 39,
+                            "dst_nuid": 28,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 40,
+                            "dst_nuid": 28,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 41,
+                            "dst_nuid": 28,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 28,
+                            "dst_nuid": 32,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 33,
+                            "dst_nuid": 29,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 34,
+                            "dst_nuid": 29,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 35,
+                            "dst_nuid": 29,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 36,
+                            "dst_nuid": 30,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 37,
+                            "dst_nuid": 30,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 38,
+                            "dst_nuid": 30,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 31,
+                            "dst_nuid": 32,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 43,
+                            "dst_nuid": 42,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 44,
+                            "dst_nuid": 43,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 45,
+                            "dst_nuid": 43,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 46,
+                            "dst_nuid": 43,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        }
+                    ]
                 }
             }
         ],
-        "conns": [
-            {
-                "src_nuid": 1,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 1,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "offset": 1
-            },
-            {
-                "src_nuid": 2,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 0,
-                "dst_nuid": 3,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 2,
-                "dst_nuid": 4,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "offset": 1
-            },
-            {
-                "src_nuid": 4,
-                "dst_nuid": 3,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 5,
-                "dst_nuid": 4,
-                "src_slot": 0,
-                "dst_slot": 4
-            },
-            {
-                "src_nuid": 6,
-                "dst_nuid": 4,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 7,
-                "dst_nuid": 3,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 8,
-                "dst_nuid": 7,
-                "src_slot": 0,
-                "dst_slot": 3
-            },
-            {
-                "src_nuid": 9,
-                "dst_nuid": 8,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 15,
-                "dst_nuid": 12,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 12,
-                "dst_nuid": 17,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 16,
-                "dst_nuid": 13,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 13,
-                "dst_nuid": 17,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 25,
-                "dst_nuid": 14,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 26,
-                "dst_nuid": 14,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 27,
-                "dst_nuid": 14,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 14,
-                "dst_nuid": 18,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 19,
-                "dst_nuid": 15,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 20,
-                "dst_nuid": 15,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 21,
-                "dst_nuid": 15,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 22,
-                "dst_nuid": 16,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 23,
-                "dst_nuid": 16,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 24,
-                "dst_nuid": 16,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 17,
-                "dst_nuid": 18,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 18,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 4
-            },
-            {
-                "src_nuid": 47,
-                "dst_nuid": 44,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 44,
-                "dst_nuid": 49,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 48,
-                "dst_nuid": 45,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 45,
-                "dst_nuid": 49,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 57,
-                "dst_nuid": 46,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 58,
-                "dst_nuid": 46,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 59,
-                "dst_nuid": 46,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 46,
-                "dst_nuid": 50,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 51,
-                "dst_nuid": 47,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 52,
-                "dst_nuid": 47,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 53,
-                "dst_nuid": 47,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 54,
-                "dst_nuid": 48,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 55,
-                "dst_nuid": 48,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 56,
-                "dst_nuid": 48,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 49,
-                "dst_nuid": 50,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 50,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 3
-            },
-            {
-                "src_nuid": 61,
-                "dst_nuid": 60,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 62,
-                "dst_nuid": 61,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 63,
-                "dst_nuid": 61,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 64,
-                "dst_nuid": 61,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 60,
-                "dst_nuid": 3,
-                "src_slot": 0,
-                "dst_slot": 3
-            }
-        ]
+        "conns": []
     }
 }

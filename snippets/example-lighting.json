@@ -1,712 +1,732 @@
 {
-    "abs_t": 0,
+    "abs_t": 5.473,
     "active_graph": 0,
-    "graph_uid": 2,
+    "graph_uid": 4,
     "root": {
-        "node_uid": 29,
+        "node_uid": 28,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
-                "plugin": "mesh_renderer_emitter",
-                "x": 1002,
-                "y": 424,
-                "uid": 0
-            },
-            {
-                "plugin": "cube_mesh_generator",
-                "x": 607,
-                "y": 19,
-                "uid": 1
-            },
-            {
-                "plugin": "from_mesh_custom_shader",
-                "x": 674,
-                "y": 79,
-                "uid": 2,
-                "dsid": 6,
-                "state": {
-                    "vs_src": "varying mediump vec3 light_vec;\nvarying mediump vec3 eye_vec;\n\nvoid main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n        vec4 tnorm = normal_mat * vec4(v_norm, 1.0);\n\n        light_vec = normalize(light_pos - v_pos);\n        eye_vec = normalize(-v_pos);\n        f_uv0 = v_uv0;\n        f_norm = normalize(tnorm.xyz);\n\tf_col = dc;\n}",
-                    "ps_src": "varying mediump vec3 light_vec;\nvarying mediump vec3 eye_vec;\n\nvoid main(void)\n{\n    mediump float lambert = max(dot(f_norm, light_pos), 0.0);\n    mediump vec3 c = ambient_col.rgb + (f_col.rgb * light_color.rgb * lambert);\n    mediump vec3 r = reflect(light_pos, f_norm);\n    mediump vec3 s = specular_col.rgb * pow(max(dot(r, eye_vec), 0.0), shinyness);\n \n    gl_FragColor = vec4(c+s, f_col.a) * texture2D(tex0, f_uv0);\n}",
-                    "slot_ids": {
-                        "ambient_col": {
-                            "id": 0,
-                            "dt": {
-                                "id": 3,
-                                "name": "Color"
-                            },
-                            "uniform": {},
-                            "value": {
-                                "rgba": [
-                                    0.148,
-                                    0.24781176470588234,
-                                    0.4,
-                                    1
-                                ]
-                            }
-                        },
-                        "light_pos": {
-                            "id": 1,
-                            "dt": {
-                                "id": 5,
-                                "name": "Vertex"
-                            },
-                            "uniform": {},
-                            "value": [
-                                -0.8881364489634066,
-                                -0.45957986033187986,
-                                -0.2729519358310154
-                            ]
-                        },
-                        "light_color": {
-                            "id": 2,
-                            "dt": {
-                                "id": 3,
-                                "name": "Color"
-                            },
-                            "uniform": {},
-                            "value": {
-                                "rgba": [
-                                    0.47058823529411764,
-                                    0.4608,
-                                    0.96,
-                                    1
-                                ]
-                            }
-                        },
-                        "normal_mat": {
-                            "id": 3,
-                            "dt": {
-                                "id": 4,
-                                "name": "Transform"
-                            },
-                            "uniform": {},
-                            "value": {
-                                "0": 1,
-                                "1": 0,
-                                "2": 0,
-                                "3": 0,
-                                "4": 0,
-                                "5": 1,
-                                "6": 0,
-                                "7": 0,
-                                "8": 0,
-                                "9": 0,
-                                "10": 1,
-                                "11": 0,
-                                "12": 0,
-                                "13": 0,
-                                "14": 0,
-                                "15": 1,
-                                "byteLength": 64,
-                                "byteOffset": 0,
-                                "buffer": {
-                                    "byteLength": 64
-                                },
-                                "length": 16
-                            }
-                        },
-                        "specular_col": {
-                            "id": 4,
-                            "dt": {
-                                "id": 3,
-                                "name": "Color"
-                            },
-                            "uniform": {},
-                            "value": {
-                                "rgba": [
-                                    0.97,
-                                    0.9715596078431372,
-                                    0.9797,
-                                    1
-                                ]
-                            }
-                        },
-                        "shinyness": {
-                            "id": 5,
-                            "dt": {
-                                "id": 0,
-                                "name": "Float"
-                            },
-                            "uniform": {},
-                            "value": 5
-                        }
-                    }
-                },
-                "dyn_in": [
-                    {
-                        "name": "ambient_col",
-                        "dt": 3,
-                        "uid": 0,
-                        "index": 0,
-                        "type": 0,
-                        "is_connected": true
-                    },
-                    {
-                        "name": "light_pos",
-                        "dt": 5,
-                        "uid": 1,
-                        "index": 1,
-                        "type": 0,
-                        "is_connected": true
-                    },
-                    {
-                        "name": "light_color",
-                        "dt": 3,
-                        "uid": 2,
-                        "index": 2,
-                        "type": 0,
-                        "is_connected": true
-                    },
-                    {
-                        "name": "normal_mat",
-                        "dt": 4,
-                        "uid": 3,
-                        "index": 3,
-                        "type": 0,
-                        "is_connected": true
-                    },
-                    {
-                        "name": "specular_col",
-                        "dt": 3,
-                        "uid": 4,
-                        "index": 4,
-                        "type": 0,
-                        "is_connected": true
-                    },
-                    {
-                        "name": "shinyness",
-                        "dt": 0,
-                        "uid": 5,
-                        "index": 5,
-                        "type": 0,
-                        "is_connected": true
-                    }
-                ]
-            },
-            {
-                "plugin": "color_picker",
-                "x": 6,
-                "y": 6,
-                "uid": 3,
-                "state": {
-                    "hue": 0.87,
-                    "sat": 0.82,
-                    "lum": 0.55
-                },
-                "title": "Diffuse color"
-            },
-            {
-                "plugin": "perspective_camera",
-                "x": 513,
-                "y": 379,
-                "uid": 4
-            },
-            {
-                "plugin": "vector",
-                "x": 414,
-                "y": 389,
-                "uid": 5
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 207,
-                "y": 380,
-                "uid": 6,
-                "state": {
-                    "val": 2.9,
-                    "min": 0,
-                    "max": 10
-                }
-            },
-            {
-                "plugin": "rotation_xyz_matrix",
-                "x": 332,
-                "y": 639,
-                "uid": 7
-            },
-            {
-                "plugin": "clock_generator",
-                "x": 18,
-                "y": 646,
-                "uid": 8
-            },
-            {
-                "plugin": "multiply_modulator",
-                "x": 241,
-                "y": 634,
-                "uid": 9
-            },
-            {
-                "plugin": "multiply_modulator",
-                "x": 245,
-                "y": 717,
-                "uid": 10
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 105,
-                "y": 685,
-                "uid": 11,
-                "state": {
-                    "val": 17
-                }
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 105,
-                "y": 761,
-                "uid": 12,
-                "state": {
-                    "val": 13
-                }
-            },
-            {
-                "plugin": "url_texture_generator",
-                "x": 534,
-                "y": 159,
-                "uid": 13,
-                "state": {
-                    "url": "data/textures/looping_lava.jpg"
-                }
-            },
-            {
-                "plugin": "color_picker",
-                "x": 5,
-                "y": 154,
-                "uid": 14,
-                "state": {
-                    "hue": 0.4,
-                    "sat": 0.63,
-                    "lum": 0.4
-                },
-                "title": "Ambient color"
-            },
-            {
-                "plugin": "color_picker",
-                "x": 8,
-                "y": 454,
-                "uid": 15,
-                "state": {
-                    "hue": 0.33,
-                    "sat": 0.52,
-                    "lum": 0.96
-                },
-                "title": "Light color"
-            },
-            {
-                "plugin": "vector",
-                "x": 509,
-                "y": 274,
-                "uid": 17
-            },
-            {
                 "plugin": "graph",
-                "x": 500,
-                "y": 538,
-                "uid": 19,
-                "dsid": 2,
+                "x": 597,
+                "y": 145,
+                "uid": 27,
                 "state": {
                     "enabled": true,
-                    "input_sids": {
-                        "0": 0
-                    },
-                    "output_sids": {
-                        "1": 1
-                    }
+                    "input_sids": {},
+                    "output_sids": {}
                 },
-                "title": "Normal matrix",
+                "title": "Lighting with custom shader",
                 "graph": {
-                    "node_uid": 4,
-                    "uid": 1,
+                    "node_uid": 27,
+                    "uid": 2,
                     "parent_uid": 0,
                     "nodes": [
                         {
-                            "plugin": "input_proxy",
-                            "x": 21,
-                            "y": 18,
-                            "uid": 0,
-                            "dsid": 5,
-                            "state": {
-                                "slot_id": 0
-                            },
-                            "title": "model mat",
-                            "dyn_out": [
-                                {
-                                    "name": "output",
-                                    "dt": 4,
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1,
-                                    "connected": true
-                                }
-                            ]
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 1261,
+                            "y": 418,
+                            "uid": 0
                         },
                         {
-                            "plugin": "output_proxy",
-                            "x": 432,
-                            "y": 20,
-                            "uid": 1,
-                            "dsid": 5,
+                            "plugin": "cube_mesh_generator",
+                            "x": 866,
+                            "y": 13,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "from_mesh_custom_shader",
+                            "x": 933,
+                            "y": 73,
+                            "uid": 2,
+                            "dsid": 6,
                             "state": {
-                                "slot_id": 0
+                                "vs_src": "varying mediump vec3 light_vec;\nvarying mediump vec3 eye_vec;\n\nvoid main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n        vec4 tnorm = normal_mat * vec4(v_norm, 1.0);\n\n        light_vec = normalize(light_pos - v_pos);\n        eye_vec = normalize(-v_pos);\n        f_uv0 = v_uv0;\n        f_norm = normalize(tnorm.xyz);\n\tf_col = dc;\n}",
+                                "ps_src": "varying mediump vec3 light_vec;\nvarying mediump vec3 eye_vec;\n\nvoid main(void)\n{\n    mediump float lambert = max(dot(f_norm, light_pos), 0.0);\n    mediump vec3 c = ambient_col.rgb + (f_col.rgb * light_color.rgb * lambert);\n    mediump vec3 r = reflect(light_pos, f_norm);\n    mediump vec3 s = specular_col.rgb * pow(max(dot(r, eye_vec), 0.0), shinyness);\n \n    gl_FragColor = vec4(c+s, f_col.a) * texture2D(tex0, f_uv0);\n}",
+                                "slot_ids": {
+                                    "ambient_col": {
+                                        "id": 0,
+                                        "dt": {
+                                            "id": 3,
+                                            "name": "Color"
+                                        },
+                                        "uniform": {},
+                                        "value": {
+                                            "rgba": [
+                                                0.148,
+                                                0.24781176470588234,
+                                                0.4,
+                                                1
+                                            ]
+                                        }
+                                    },
+                                    "light_pos": {
+                                        "id": 1,
+                                        "dt": {
+                                            "id": 5,
+                                            "name": "Vertex"
+                                        },
+                                        "uniform": {},
+                                        "value": [
+                                            -0.8881364489634066,
+                                            -0.45957986033187986,
+                                            -0.2729519358310154
+                                        ]
+                                    },
+                                    "light_color": {
+                                        "id": 2,
+                                        "dt": {
+                                            "id": 3,
+                                            "name": "Color"
+                                        },
+                                        "uniform": {},
+                                        "value": {
+                                            "rgba": [
+                                                0.47058823529411764,
+                                                0.4608,
+                                                0.96,
+                                                1
+                                            ]
+                                        }
+                                    },
+                                    "normal_mat": {
+                                        "id": 3,
+                                        "dt": {
+                                            "id": 4,
+                                            "name": "Transform"
+                                        },
+                                        "uniform": {},
+                                        "value": {
+                                            "0": 1,
+                                            "1": 0,
+                                            "2": 0,
+                                            "3": 0,
+                                            "4": 0,
+                                            "5": 1,
+                                            "6": 0,
+                                            "7": 0,
+                                            "8": 0,
+                                            "9": 0,
+                                            "10": 1,
+                                            "11": 0,
+                                            "12": 0,
+                                            "13": 0,
+                                            "14": 0,
+                                            "15": 1,
+                                            "byteLength": 64,
+                                            "byteOffset": 0,
+                                            "buffer": {
+                                                "byteLength": 64
+                                            },
+                                            "length": 16
+                                        }
+                                    },
+                                    "specular_col": {
+                                        "id": 4,
+                                        "dt": {
+                                            "id": 3,
+                                            "name": "Color"
+                                        },
+                                        "uniform": {},
+                                        "value": {
+                                            "rgba": [
+                                                0.97,
+                                                0.9715596078431372,
+                                                0.9797,
+                                                1
+                                            ]
+                                        }
+                                    },
+                                    "shinyness": {
+                                        "id": 5,
+                                        "dt": {
+                                            "id": 0,
+                                            "name": "Float"
+                                        },
+                                        "uniform": {},
+                                        "value": 5
+                                    }
+                                }
                             },
-                            "title": "normal mat",
                             "dyn_in": [
                                 {
-                                    "name": "input",
-                                    "dt": 4,
+                                    "name": "ambient_col",
+                                    "dt": 3,
                                     "uid": 0,
                                     "index": 0,
                                     "type": 0,
-                                    "connected": true,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "light_pos",
+                                    "dt": 5,
+                                    "uid": 1,
+                                    "index": 1,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "light_color",
+                                    "dt": 3,
+                                    "uid": 2,
+                                    "index": 2,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "normal_mat",
+                                    "dt": 4,
+                                    "uid": 3,
+                                    "index": 3,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "specular_col",
+                                    "dt": 3,
+                                    "uid": 4,
+                                    "index": 4,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "shinyness",
+                                    "dt": 0,
+                                    "uid": 5,
+                                    "index": 5,
+                                    "type": 0,
                                     "is_connected": true
                                 }
                             ]
                         },
                         {
-                            "plugin": "invert_matrix_modulator",
-                            "x": 143,
-                            "y": 79,
-                            "uid": 2
+                            "plugin": "color_picker",
+                            "x": 265,
+                            "y": 0,
+                            "uid": 3,
+                            "state": {
+                                "hue": 0.87,
+                                "sat": 0.82,
+                                "lum": 0.55
+                            },
+                            "title": "Diffuse color"
                         },
                         {
-                            "plugin": "transpose_matrix_modulator",
-                            "x": 275,
-                            "y": 79,
-                            "uid": 3
+                            "plugin": "perspective_camera",
+                            "x": 772,
+                            "y": 373,
+                            "uid": 4
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 673,
+                            "y": 383,
+                            "uid": 5
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 466,
+                            "y": 374,
+                            "uid": 6,
+                            "state": {
+                                "val": 2.9,
+                                "min": 0,
+                                "max": 10
+                            }
+                        },
+                        {
+                            "plugin": "rotation_xyz_matrix",
+                            "x": 591,
+                            "y": 633,
+                            "uid": 7
+                        },
+                        {
+                            "plugin": "clock_generator",
+                            "x": 277,
+                            "y": 640,
+                            "uid": 8
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 500,
+                            "y": 628,
+                            "uid": 9
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 504,
+                            "y": 711,
+                            "uid": 10
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 364,
+                            "y": 679,
+                            "uid": 11,
+                            "state": {
+                                "val": 17
+                            }
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 364,
+                            "y": 755,
+                            "uid": 12,
+                            "state": {
+                                "val": 13
+                            }
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 793,
+                            "y": 153,
+                            "uid": 13,
+                            "state": {
+                                "url": "data/textures/looping_lava.jpg"
+                            }
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 264,
+                            "y": 148,
+                            "uid": 14,
+                            "state": {
+                                "hue": 0.4,
+                                "sat": 0.63,
+                                "lum": 0.4
+                            },
+                            "title": "Ambient color"
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 267,
+                            "y": 448,
+                            "uid": 15,
+                            "state": {
+                                "hue": 0.33,
+                                "sat": 0.52,
+                                "lum": 0.96
+                            },
+                            "title": "Light color"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 768,
+                            "y": 268,
+                            "uid": 16
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 759,
+                            "y": 532,
+                            "uid": 17,
+                            "dsid": 2,
+                            "state": {
+                                "enabled": true,
+                                "input_sids": {
+                                    "0": 0
+                                },
+                                "output_sids": {
+                                    "1": 1
+                                }
+                            },
+                            "title": "Normal matrix",
+                            "graph": {
+                                "node_uid": 4,
+                                "uid": 3,
+                                "parent_uid": 2,
+                                "nodes": [
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 21,
+                                        "y": 18,
+                                        "uid": 0,
+                                        "dsid": 7,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "model mat",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 4,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 432,
+                                        "y": 20,
+                                        "uid": 1,
+                                        "dsid": 7,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "normal mat",
+                                        "dyn_in": [
+                                            {
+                                                "name": "input",
+                                                "dt": 4,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 0,
+                                                "connected": true,
+                                                "is_connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "invert_matrix_modulator",
+                                        "x": 143,
+                                        "y": 79,
+                                        "uid": 2
+                                    },
+                                    {
+                                        "plugin": "transpose_matrix_modulator",
+                                        "x": 275,
+                                        "y": 79,
+                                        "uid": 3
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": 0,
+                                        "dst_nuid": 2,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 2,
+                                        "dst_nuid": 3,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 3,
+                                        "dst_nuid": 1,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    }
+                                ]
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "model mat",
+                                    "dt": 4,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ],
+                            "dyn_out": [
+                                {
+                                    "name": "normal mat",
+                                    "dt": 4,
+                                    "uid": 1,
+                                    "index": 0,
+                                    "type": 1
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "cosine_modulator",
+                            "x": 674,
+                            "y": 204,
+                            "uid": 18
+                        },
+                        {
+                            "plugin": "sine_modulator",
+                            "x": 674,
+                            "y": 259,
+                            "uid": 19
+                        },
+                        {
+                            "plugin": "add_modulator",
+                            "x": 586,
+                            "y": 254,
+                            "uid": 20
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 464,
+                            "y": 76,
+                            "uid": 21,
+                            "state": {
+                                "val": 0.13
+                            }
+                        },
+                        {
+                            "plugin": "cosine_modulator",
+                            "x": 673,
+                            "y": 315,
+                            "uid": 22
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 267,
+                            "y": 295,
+                            "uid": 23,
+                            "state": {
+                                "hue": 0.86,
+                                "sat": -0.01,
+                                "lum": 0.97
+                            },
+                            "title": "Specular color"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 466,
+                            "y": 465,
+                            "uid": 24,
+                            "state": {
+                                "val": 5,
+                                "min": 0.01,
+                                "max": 5
+                            },
+                            "title": "Shinyness"
+                        },
+                        {
+                            "plugin": "sphere_mesh_generator",
+                            "x": 778,
+                            "y": 46,
+                            "uid": 25,
+                            "state": {
+                                "v_res": 25,
+                                "h_res": 25
+                            }
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 603,
+                            "y": 43,
+                            "uid": 26,
+                            "state": {
+                                "val": 25
+                            }
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": 0,
+                            "src_nuid": 2,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 25,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 13,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 4
+                        },
+                        {
+                            "src_nuid": 14,
                             "dst_nuid": 2,
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "src_connected": true,
-                            "src_dyn": true
+                            "dst_dyn": true
                         },
                         {
-                            "src_nuid": 2,
-                            "dst_nuid": 3,
+                            "src_nuid": 15,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 16,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 17,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 23,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 4,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 24,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 5,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 25,
+                            "dst_nuid": 2,
                             "src_slot": 0,
                             "dst_slot": 0
                         },
                         {
-                            "src_nuid": 3,
-                            "dst_nuid": 1,
+                            "src_nuid": 5,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 5,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 9,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 17,
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "dst_connected": true,
-                            "dst_dyn": true
+                            "dst_dyn": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 9,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 10,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 18,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 2
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 19,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 3
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 20,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 4
+                        },
+                        {
+                            "src_nuid": 11,
+                            "dst_nuid": 9,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 12,
+                            "dst_nuid": 10,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 18,
+                            "dst_nuid": 16,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 19,
+                            "dst_nuid": 16,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 22,
+                            "dst_nuid": 16,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 21,
+                            "dst_nuid": 20,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 20,
+                            "dst_nuid": 22,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 26,
+                            "dst_nuid": 25,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 26,
+                            "dst_nuid": 25,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "offset": 1
                         }
                     ]
-                },
-                "dyn_in": [
-                    {
-                        "name": "model mat",
-                        "dt": 4,
-                        "uid": 0,
-                        "index": 0,
-                        "type": 0,
-                        "is_connected": true
-                    }
-                ],
-                "dyn_out": [
-                    {
-                        "name": "normal mat",
-                        "dt": 4,
-                        "uid": 1,
-                        "index": 0,
-                        "type": 1
-                    }
-                ]
-            },
-            {
-                "plugin": "cosine_modulator",
-                "x": 415,
-                "y": 210,
-                "uid": 20
-            },
-            {
-                "plugin": "sine_modulator",
-                "x": 415,
-                "y": 265,
-                "uid": 21
-            },
-            {
-                "plugin": "add_modulator",
-                "x": 327,
-                "y": 260,
-                "uid": 22
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 205,
-                "y": 82,
-                "uid": 23,
-                "state": {
-                    "val": 0.13
-                }
-            },
-            {
-                "plugin": "cosine_modulator",
-                "x": 414,
-                "y": 321,
-                "uid": 24
-            },
-            {
-                "plugin": "color_picker",
-                "x": 8,
-                "y": 301,
-                "uid": 25,
-                "state": {
-                    "hue": 0.86,
-                    "sat": -0.01,
-                    "lum": 0.97
-                },
-                "title": "Specular color"
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 207,
-                "y": 471,
-                "uid": 26,
-                "state": {
-                    "val": 5,
-                    "min": 0.01,
-                    "max": 5
-                },
-                "title": "Shinyness"
-            },
-            {
-                "plugin": "sphere_mesh_generator",
-                "x": 519,
-                "y": 52,
-                "uid": 27,
-                "state": {
-                    "v_res": 25,
-                    "h_res": 25
-                }
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 344,
-                "y": 49,
-                "uid": 28,
-                "state": {
-                    "val": 25
                 }
             }
         ],
-        "conns": [
-            {
-                "src_nuid": 2,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 3,
-                "dst_nuid": 2,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 4,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 5,
-                "dst_nuid": 4,
-                "src_slot": 0,
-                "dst_slot": 3
-            },
-            {
-                "src_nuid": 6,
-                "dst_nuid": 5,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 7,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 3
-            },
-            {
-                "src_nuid": 8,
-                "dst_nuid": 9,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 8,
-                "dst_nuid": 10,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "offset": 1
-            },
-            {
-                "src_nuid": 11,
-                "dst_nuid": 9,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 12,
-                "dst_nuid": 10,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 9,
-                "dst_nuid": 7,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 10,
-                "dst_nuid": 7,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 13,
-                "dst_nuid": 2,
-                "src_slot": 0,
-                "dst_slot": 4
-            },
-            {
-                "src_nuid": 14,
-                "dst_nuid": 2,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 15,
-                "dst_nuid": 2,
-                "src_slot": 0,
-                "dst_slot": 2,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 17,
-                "dst_nuid": 2,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 7,
-                "dst_nuid": 19,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "dst_dyn": true,
-                "offset": 1
-            },
-            {
-                "src_nuid": 19,
-                "dst_nuid": 2,
-                "src_slot": 0,
-                "dst_slot": 3,
-                "src_dyn": true,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 8,
-                "dst_nuid": 20,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "offset": 2
-            },
-            {
-                "src_nuid": 8,
-                "dst_nuid": 21,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "offset": 3
-            },
-            {
-                "src_nuid": 20,
-                "dst_nuid": 17,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 21,
-                "dst_nuid": 17,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 8,
-                "dst_nuid": 22,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "offset": 4
-            },
-            {
-                "src_nuid": 23,
-                "dst_nuid": 22,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 22,
-                "dst_nuid": 24,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 24,
-                "dst_nuid": 17,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 25,
-                "dst_nuid": 2,
-                "src_slot": 0,
-                "dst_slot": 4,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 26,
-                "dst_nuid": 2,
-                "src_slot": 0,
-                "dst_slot": 5,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 28,
-                "dst_nuid": 27,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 28,
-                "dst_nuid": 27,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "offset": 1
-            },
-            {
-                "src_nuid": 27,
-                "dst_nuid": 2,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 27,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "offset": 1
-            }
-        ]
+        "conns": []
     }
 }

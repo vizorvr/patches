@@ -1,17 +1,17 @@
 {
-    "abs_t": 57.287,
+    "abs_t": 200.398,
     "active_graph": 0,
-    "graph_uid": 6,
+    "graph_uid": 10,
     "root": {
-        "node_uid": 3,
+        "node_uid": 6,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 470,
-                "y": 310,
-                "uid": 2,
+                "x": 124,
+                "y": 296,
+                "uid": 5,
                 "dsid": 2,
                 "state": {
                     "enabled": true,
@@ -21,16 +21,16 @@
                     },
                     "output_sids": {}
                 },
-                "title": "Quad loader",
+                "title": "Overlay",
                 "graph": {
-                    "node_uid": 7,
-                    "uid": 5,
+                    "node_uid": 9,
+                    "uid": 9,
                     "parent_uid": 0,
                     "nodes": [
                         {
                             "plugin": "quad_mesh_generator",
-                            "x": 261,
-                            "y": 213,
+                            "x": 367,
+                            "y": 105,
                             "uid": 0
                         },
                         {
@@ -47,11 +47,11 @@
                         },
                         {
                             "plugin": "url_texture_generator",
-                            "x": 187,
-                            "y": 350,
+                            "x": 35,
+                            "y": 314,
                             "uid": 3,
                             "state": {
-                                "url": "data/textures/backdrop_darkgrey.jpg"
+                                "url": "data/textures/overlay_paper.jpg"
                             }
                         },
                         {
@@ -59,7 +59,7 @@
                             "x": 482,
                             "y": 463,
                             "uid": 4,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -77,11 +77,22 @@
                         },
                         {
                             "plugin": "blend_mode_generator",
-                            "x": 169,
-                            "y": 287,
+                            "x": 34,
+                            "y": 252,
                             "uid": 6,
                             "state": {
-                                "mode": 4
+                                "mode": 3
+                            }
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 32,
+                            "y": 110,
+                            "uid": 8,
+                            "state": {
+                                "hue": 0.16,
+                                "sat": -0.01,
+                                "lum": 1
                             }
                         }
                     ],
@@ -124,6 +135,12 @@
                             "dst_nuid": 1,
                             "src_slot": 0,
                             "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 2
                         }
                     ]
                 },

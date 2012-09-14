@@ -1,9 +1,9 @@
 {
-    "abs_t": 46.067,
+    "abs_t": 39.646,
     "active_graph": 0,
-    "graph_uid": 4,
+    "graph_uid": 2,
     "root": {
-        "node_uid": 2,
+        "node_uid": 1,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
@@ -11,68 +11,59 @@
                 "plugin": "graph",
                 "x": 470,
                 "y": 310,
-                "uid": 1,
-                "dsid": 1,
+                "uid": 0,
+                "dsid": 2,
                 "state": {
                     "enabled": true,
                     "input_sids": {
-                        "14": 0
+                        "4": 0,
+                        "5": 1
                     },
                     "output_sids": {}
                 },
-                "title": "rainbow shader",
+                "title": "Background texture",
                 "graph": {
-                    "node_uid": 15,
-                    "uid": 3,
+                    "node_uid": 8,
+                    "uid": 1,
                     "parent_uid": 0,
                     "nodes": [
                         {
-                            "plugin": "mesh_renderer_emitter",
-                            "x": 786,
-                            "y": 44,
+                            "plugin": "quad_mesh_generator",
+                            "x": 261,
+                            "y": 213,
                             "uid": 0
                         },
                         {
-                            "plugin": "cube_mesh_generator",
-                            "x": 353,
-                            "y": 20,
+                            "plugin": "from_mesh_shader",
+                            "x": 404,
+                            "y": 307,
                             "uid": 1
                         },
                         {
-                            "plugin": "from_mesh_shader",
-                            "x": 453,
-                            "y": 85,
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 635,
+                            "y": 243,
                             "uid": 2
                         },
                         {
                             "plugin": "url_texture_generator",
-                            "x": 221,
-                            "y": 227,
+                            "x": 187,
+                            "y": 350,
                             "uid": 3,
                             "state": {
-                                "url": "data/textures/cutout_audrey4.png"
-                            }
-                        },
-                        {
-                            "plugin": "from_mesh_custom_shader",
-                            "x": 452,
-                            "y": 218,
-                            "uid": 8,
-                            "state": {
-                                "vs_src": "varying mediump vec3 f_cust;\nvoid main(void)\n{\n    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n    \n    f_uv0 = v_uv0;\n    f_col = color;\n  f_cust = gl_Position.xyz;\n}",
-                                "ps_src": "varying mediump vec3 f_cust;\nvoid main(void)\n{\n    gl_FragColor = f_col * texture2D(tex0, f_uv0.st) * vec4(f_cust, 1.0);\n\n}"
+                                "url": "data/textures/backdrop_darkgrey.jpg"
                             }
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 661,
-                            "y": 359,
-                            "uid": 14,
-                            "dsid": 1,
+                            "x": 482,
+                            "y": 463,
+                            "uid": 4,
+                            "dsid": 6,
                             "state": {
                                 "slot_id": 0
                             },
-                            "title": "transform",
+                            "title": "Transform",
                             "dyn_out": [
                                 {
                                     "name": "output",
@@ -83,65 +74,84 @@
                                     "connected": true
                                 }
                             ]
+                        },
+                        {
+                            "plugin": "blend_mode_generator",
+                            "x": 169,
+                            "y": 287,
+                            "uid": 6,
+                            "state": {
+                                "mode": 4
+                            }
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 47,
+                            "y": 86,
+                            "uid": 7,
+                            "state": {
+                                "hue": 0.42,
+                                "sat": 0.02,
+                                "lum": 1.01
+                            }
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": 1,
-                            "dst_nuid": 0,
+                            "src_nuid": 0,
+                            "dst_nuid": 1,
                             "src_slot": 0,
                             "dst_slot": 0
                         },
                         {
-                            "src_nuid": 8,
-                            "dst_nuid": 0,
+                            "src_nuid": 1,
+                            "dst_nuid": 2,
                             "src_slot": 0,
                             "dst_slot": 1
                         },
                         {
-                            "src_nuid": 1,
+                            "src_nuid": 0,
                             "dst_nuid": 2,
                             "src_slot": 0,
                             "dst_slot": 0,
                             "offset": 1
                         },
                         {
-                            "src_nuid": 1,
-                            "dst_nuid": 8,
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "offset": 2
-                        },
-                        {
                             "src_nuid": 3,
-                            "dst_nuid": 2,
+                            "dst_nuid": 1,
                             "src_slot": 0,
                             "dst_slot": 4
                         },
                         {
-                            "src_nuid": 3,
-                            "dst_nuid": 8,
-                            "src_slot": 0,
-                            "dst_slot": 4,
-                            "offset": 1
-                        },
-                        {
-                            "src_nuid": 14,
-                            "dst_nuid": 0,
+                            "src_nuid": 4,
+                            "dst_nuid": 2,
                             "src_slot": 0,
                             "dst_slot": 3,
                             "src_connected": true,
                             "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 2
                         }
                     ]
                 },
                 "dyn_in": [
                     {
-                        "name": "transform",
+                        "name": "Transform",
                         "dt": 4,
                         "uid": 0,
                         "index": 0,
-                        "type": 0
+                        "type": 0,
+                        "is_connected": false
                     }
                 ]
             }

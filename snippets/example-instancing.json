@@ -1,825 +1,848 @@
 {
-    "abs_t": 0,
+    "abs_t": 70.688,
     "active_graph": 0,
-    "graph_uid": 3,
+    "graph_uid": 6,
     "root": {
-        "node_uid": 67,
+        "node_uid": 33,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
-                "plugin": "from_mesh_shader",
-                "x": 480,
-                "y": 94,
-                "uid": 1
-            },
-            {
-                "plugin": "perspective_camera",
-                "x": 606,
-                "y": 139,
-                "uid": 3
-            },
-            {
-                "plugin": "url_texture_generator",
-                "x": 309,
-                "y": 174,
-                "uid": 4,
-                "state": {
-                    "url": "data/textures/cutout_audrey5.png"
-                }
-            },
-            {
-                "plugin": "vector",
-                "x": 215,
-                "y": 239,
-                "uid": 6
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 9,
-                "y": 150,
-                "uid": 7,
-                "state": {
-                    "val": 54,
-                    "min": 0,
-                    "max": 100
-                },
-                "title": "Zoom"
-            },
-            {
-                "plugin": "instance_array_modulator",
-                "x": 989,
-                "y": 41,
-                "uid": 20
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 586,
-                "y": 17,
-                "uid": 21,
-                "state": {
-                    "val": 6
-                }
-            },
-            {
-                "plugin": "scene_renderer_emitter",
-                "x": 1080,
-                "y": 74,
-                "uid": 22
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 543,
-                "y": 327,
-                "uid": 24,
-                "state": {
-                    "val": 1
-                }
-            },
-            {
-                "plugin": "toggle_button",
-                "x": 315,
-                "y": 98,
-                "uid": 25,
-                "state": {
-                    "enabled": true
-                }
-            },
-            {
                 "plugin": "graph",
-                "x": 729,
-                "y": 267,
-                "uid": 26,
-                "dsid": 6,
+                "x": 48,
+                "y": 322,
+                "uid": 32,
                 "state": {
                     "enabled": true,
-                    "input_sids": {
-                        "1": 0,
-                        "2": 1,
-                        "3": 2,
-                        "4": 3
-                    },
-                    "output_sids": {
-                        "10": 4,
-                        "11": 5
-                    }
+                    "input_sids": {},
+                    "output_sids": {}
                 },
-                "title": "Compute array params",
+                "title": "Instancing example",
                 "graph": {
-                    "node_uid": 12,
-                    "uid": 1,
+                    "node_uid": 31,
+                    "uid": 4,
                     "parent_uid": 0,
                     "nodes": [
                         {
-                            "plugin": "vector",
-                            "x": 417,
-                            "y": 92,
-                            "uid": 0,
-                            "title": "offset"
+                            "plugin": "from_mesh_shader",
+                            "x": 492,
+                            "y": 379,
+                            "uid": 0
                         },
                         {
-                            "plugin": "input_proxy",
-                            "x": 292,
-                            "y": 67,
-                            "uid": 1,
-                            "dsid": 16,
-                            "state": {
-                                "slot_id": 0
-                            },
-                            "title": "x",
-                            "dyn_out": [
-                                {
-                                    "name": "output",
-                                    "dt": 0,
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1,
-                                    "connected": true
-                                }
-                            ]
+                            "plugin": "perspective_camera",
+                            "x": 618,
+                            "y": 424,
+                            "uid": 1
                         },
                         {
-                            "plugin": "input_proxy",
-                            "x": 292,
-                            "y": 134,
+                            "plugin": "url_texture_generator",
+                            "x": 321,
+                            "y": 459,
                             "uid": 2,
-                            "dsid": 16,
                             "state": {
-                                "slot_id": 0
-                            },
-                            "title": "y",
-                            "dyn_out": [
-                                {
-                                    "name": "output",
-                                    "dt": 0,
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1,
-                                    "connected": true
-                                }
-                            ]
+                                "url": "data/textures/cutout_audrey5.png"
+                            }
                         },
                         {
-                            "plugin": "input_proxy",
-                            "x": 295,
-                            "y": 196,
-                            "uid": 3,
-                            "dsid": 16,
-                            "state": {
-                                "slot_id": 0
-                            },
-                            "title": "z",
-                            "dyn_out": [
-                                {
-                                    "name": "output",
-                                    "dt": 0,
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1,
-                                    "connected": true
-                                }
-                            ]
+                            "plugin": "vector",
+                            "x": 227,
+                            "y": 524,
+                            "uid": 3
                         },
                         {
-                            "plugin": "input_proxy",
-                            "x": 431,
-                            "y": 199,
+                            "plugin": "slider_float_generator",
+                            "x": 21,
+                            "y": 435,
                             "uid": 4,
-                            "dsid": 16,
                             "state": {
-                                "slot_id": 0
+                                "val": 54,
+                                "min": 0,
+                                "max": 100
                             },
-                            "title": "count",
-                            "dyn_out": [
-                                {
-                                    "name": "output",
-                                    "dt": 0,
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1,
-                                    "connected": true
-                                }
-                            ]
+                            "title": "Zoom"
                         },
                         {
-                            "plugin": "vector_scale",
-                            "x": 529,
-                            "y": 104,
+                            "plugin": "instance_array_modulator",
+                            "x": 1001,
+                            "y": 326,
                             "uid": 5
                         },
                         {
-                            "plugin": "vector_scale",
-                            "x": 644,
-                            "y": 144,
-                            "uid": 7
+                            "plugin": "const_float_generator",
+                            "x": 598,
+                            "y": 302,
+                            "uid": 6,
+                            "state": {
+                                "val": 6
+                            }
+                        },
+                        {
+                            "plugin": "scene_renderer_emitter",
+                            "x": 1092,
+                            "y": 359,
+                            "uid": 7,
+                            "state": {
+                                "invert_transform": false
+                            }
                         },
                         {
                             "plugin": "const_float_generator",
-                            "x": 521,
-                            "y": 205,
+                            "x": 555,
+                            "y": 612,
                             "uid": 8,
                             "state": {
-                                "val": -0.5
+                                "val": 1
+                            }
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 327,
+                            "y": 383,
+                            "uid": 9,
+                            "state": {
+                                "enabled": true
+                            }
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 741,
+                            "y": 552,
+                            "uid": 10,
+                            "dsid": 6,
+                            "state": {
+                                "enabled": true,
+                                "input_sids": {
+                                    "1": 0,
+                                    "2": 1,
+                                    "3": 2,
+                                    "4": 3
+                                },
+                                "output_sids": {
+                                    "10": 4,
+                                    "11": 5
+                                }
+                            },
+                            "title": "Compute array params",
+                            "graph": {
+                                "node_uid": 12,
+                                "uid": 5,
+                                "parent_uid": 4,
+                                "nodes": [
+                                    {
+                                        "plugin": "vector",
+                                        "x": 417,
+                                        "y": 92,
+                                        "uid": 0,
+                                        "title": "offset"
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 292,
+                                        "y": 67,
+                                        "uid": 1,
+                                        "dsid": 18,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "x",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 0,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 292,
+                                        "y": 134,
+                                        "uid": 2,
+                                        "dsid": 18,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "y",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 0,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 295,
+                                        "y": 196,
+                                        "uid": 3,
+                                        "dsid": 18,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "z",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 0,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 431,
+                                        "y": 199,
+                                        "uid": 4,
+                                        "dsid": 18,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "count",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 0,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "vector_scale",
+                                        "x": 529,
+                                        "y": 104,
+                                        "uid": 5
+                                    },
+                                    {
+                                        "plugin": "vector_scale",
+                                        "x": 644,
+                                        "y": 144,
+                                        "uid": 7
+                                    },
+                                    {
+                                        "plugin": "const_float_generator",
+                                        "x": 521,
+                                        "y": 205,
+                                        "uid": 8,
+                                        "state": {
+                                            "val": -0.5
+                                        }
+                                    },
+                                    {
+                                        "plugin": "annotation",
+                                        "x": 520,
+                                        "y": 271,
+                                        "uid": 9,
+                                        "state": {
+                                            "text": "^ Divide by two,\nflip the sign.",
+                                            "width": 0,
+                                            "height": 0
+                                        }
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 832,
+                                        "y": 101,
+                                        "uid": 10,
+                                        "dsid": 18,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "start",
+                                        "dyn_in": [
+                                            {
+                                                "name": "input",
+                                                "dt": 5,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 0,
+                                                "connected": true,
+                                                "is_connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 836,
+                                        "y": 32,
+                                        "uid": 11,
+                                        "dsid": 18,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "offset",
+                                        "dyn_in": [
+                                            {
+                                                "name": "input",
+                                                "dt": 5,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 0,
+                                                "connected": true,
+                                                "is_connected": true
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": 1,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 2,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 3,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 2,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 0,
+                                        "dst_nuid": 5,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 4,
+                                        "dst_nuid": 5,
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 5,
+                                        "dst_nuid": 7,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 8,
+                                        "dst_nuid": 7,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 0,
+                                        "dst_nuid": 11,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "dst_connected": true,
+                                        "dst_dyn": true,
+                                        "offset": 1
+                                    },
+                                    {
+                                        "src_nuid": 7,
+                                        "dst_nuid": 10,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    }
+                                ]
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "x",
+                                    "dt": 0,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "y",
+                                    "dt": 0,
+                                    "uid": 1,
+                                    "index": 1,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "z",
+                                    "dt": 0,
+                                    "uid": 2,
+                                    "index": 2,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "count",
+                                    "dt": 0,
+                                    "uid": 3,
+                                    "index": 3,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ],
+                            "dyn_out": [
+                                {
+                                    "name": "start",
+                                    "dt": 5,
+                                    "uid": 4,
+                                    "index": 0,
+                                    "type": 1
+                                },
+                                {
+                                    "name": "offset",
+                                    "dt": 5,
+                                    "uid": 5,
+                                    "index": 1,
+                                    "type": 1
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "instance_cube_modulator",
+                            "x": 1000,
+                            "y": 457,
+                            "uid": 11
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 768,
+                            "y": 352,
+                            "uid": 12
+                        },
+                        {
+                            "plugin": "vector_transform",
+                            "x": 521,
+                            "y": 524,
+                            "uid": 13
+                        },
+                        {
+                            "plugin": "rotation_xyz_matrix",
+                            "x": 425,
+                            "y": 585,
+                            "uid": 14
+                        },
+                        {
+                            "plugin": "instance_texture_modulator",
+                            "x": 997,
+                            "y": 642,
+                            "uid": 15
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 829,
+                            "y": 692,
+                            "uid": 16,
+                            "state": {
+                                "url": "data/textures/instance-distribution-map.jpg"
+                            }
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 886,
+                            "y": 582,
+                            "uid": 17,
+                            "state": {
+                                "val": 400
+                            },
+                            "title": "Instance count"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 859,
+                            "y": 781,
+                            "uid": 18
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 709,
+                            "y": 801,
+                            "uid": 19,
+                            "state": {
+                                "val": 70
+                            }
+                        },
+                        {
+                            "plugin": "quad_mesh_generator",
+                            "x": 397,
+                            "y": 307,
+                            "uid": 20
+                        },
+                        {
+                            "plugin": "rotation_xyz_matrix",
+                            "x": 588,
+                            "y": 794,
+                            "uid": 21
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 628,
+                            "y": 709,
+                            "uid": 22,
+                            "state": {
+                                "val": 10,
+                                "min": 0,
+                                "max": 10
+                            }
+                        },
+                        {
+                            "plugin": "clock_generator",
+                            "x": 19,
+                            "y": 659,
+                            "uid": 23
+                        },
+                        {
+                            "plugin": "sine_modulator",
+                            "x": 79,
+                            "y": 659,
+                            "uid": 24
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 338,
+                            "y": 717,
+                            "uid": 25
+                        },
+                        {
+                            "plugin": "convert_oscilator_unit_modulator",
+                            "x": 233,
+                            "y": 659,
+                            "uid": 26
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 226,
+                            "y": 780,
+                            "uid": 27,
+                            "state": {
+                                "val": -90
+                            }
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 471,
+                            "y": 762,
+                            "uid": 28,
+                            "state": {
+                                "val": 0
                             }
                         },
                         {
                             "plugin": "annotation",
-                            "x": 520,
-                            "y": 271,
-                            "uid": 9,
+                            "x": 20,
+                            "y": 716,
+                            "uid": 29,
                             "state": {
-                                "text": "^ Divide by two,\nflip the sign.",
-                                "width": 0,
-                                "height": 0
+                                "text": "^ Faked bill-boarding. The instance scene transform is used to rotate each instance exactly counter to the camera.",
+                                "width": 155,
+                                "height": 84
                             }
                         },
                         {
-                            "plugin": "output_proxy",
-                            "x": 832,
-                            "y": 101,
-                            "uid": 10,
-                            "dsid": 16,
+                            "plugin": "annotation",
+                            "x": 1091,
+                            "y": 477,
+                            "uid": 30,
                             "state": {
-                                "slot_id": 0
-                            },
-                            "title": "start",
-                            "dyn_in": [
-                                {
-                                    "name": "input",
-                                    "dt": 5,
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 0,
-                                    "connected": true,
-                                    "is_connected": true
-                                }
-                            ]
-                        },
-                        {
-                            "plugin": "output_proxy",
-                            "x": 836,
-                            "y": 32,
-                            "uid": 11,
-                            "dsid": 16,
-                            "state": {
-                                "slot_id": 0
-                            },
-                            "title": "offset",
-                            "dyn_in": [
-                                {
-                                    "name": "input",
-                                    "dt": 5,
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 0,
-                                    "connected": true,
-                                    "is_connected": true
-                                }
-                            ]
+                                "text": "^ Hook up the output of the Array, Cube or Texture instance creation plugins to the scene renderer to see the result.",
+                                "width": 151,
+                                "height": 87
+                            }
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": 1,
-                            "dst_nuid": 0,
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "src_connected": true,
-                            "src_dyn": true
-                        },
-                        {
                             "src_nuid": 2,
                             "dst_nuid": 0,
                             "src_slot": 0,
-                            "dst_slot": 1,
-                            "src_connected": true,
-                            "src_dyn": true
+                            "dst_slot": 4
                         },
                         {
-                            "src_nuid": 3,
+                            "src_nuid": 9,
                             "dst_nuid": 0,
                             "src_slot": 0,
-                            "dst_slot": 2,
-                            "src_connected": true,
-                            "src_dyn": true
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 20,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0
                         },
                         {
                             "src_nuid": 0,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 13,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 13,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 6,
                             "dst_nuid": 5,
                             "src_slot": 0,
                             "dst_slot": 0
                         },
                         {
-                            "src_nuid": 4,
+                            "src_nuid": 10,
                             "dst_nuid": 5,
                             "src_slot": 0,
-                            "dst_slot": 1,
-                            "src_connected": true,
+                            "dst_slot": 2,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": 5,
+                            "src_nuid": 10,
+                            "dst_nuid": 5,
+                            "src_slot": 1,
+                            "dst_slot": 3,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 20,
+                            "dst_nuid": 5,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 10,
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "dst_dyn": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 2
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "offset": 3
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "offset": 4
+                        },
+                        {
+                            "src_nuid": 21,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 15,
                             "dst_nuid": 7,
                             "src_slot": 0,
                             "dst_slot": 0
                         },
                         {
                             "src_nuid": 8,
-                            "dst_nuid": 7,
-                            "src_slot": 0,
-                            "dst_slot": 1
-                        },
-                        {
-                            "src_nuid": 0,
-                            "dst_nuid": 11,
+                            "dst_nuid": 10,
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 10,
+                            "src_slot": 0,
+                            "dst_slot": 1,
                             "dst_dyn": true,
                             "offset": 1
                         },
                         {
-                            "src_nuid": 7,
+                            "src_nuid": 8,
                             "dst_nuid": 10,
                             "src_slot": 0,
+                            "dst_slot": 2,
+                            "dst_dyn": true,
+                            "offset": 2
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 11,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "src_dyn": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 11,
+                            "src_slot": 1,
+                            "dst_slot": 3,
+                            "src_dyn": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 12,
+                            "dst_nuid": 11,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 20,
+                            "dst_nuid": 11,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "offset": 2
+                        },
+                        {
+                            "src_nuid": 14,
+                            "dst_nuid": 13,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 25,
+                            "dst_nuid": 14,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 16,
+                            "dst_nuid": 15,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 17,
+                            "dst_nuid": 15,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 18,
+                            "dst_nuid": 15,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 20,
+                            "dst_nuid": 15,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "offset": 3
+                        },
+                        {
+                            "src_nuid": 19,
+                            "dst_nuid": 18,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 19,
+                            "dst_nuid": 18,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 22,
+                            "dst_nuid": 18,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 28,
+                            "dst_nuid": 21,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 28,
+                            "dst_nuid": 21,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 25,
+                            "dst_nuid": 21,
+                            "src_slot": 0,
                             "dst_slot": 0,
-                            "dst_connected": true,
-                            "dst_dyn": true
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 23,
+                            "dst_nuid": 24,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 24,
+                            "dst_nuid": 26,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 26,
+                            "dst_nuid": 25,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 27,
+                            "dst_nuid": 25,
+                            "src_slot": 0,
+                            "dst_slot": 1
                         }
                     ]
-                },
-                "dyn_in": [
-                    {
-                        "name": "x",
-                        "dt": 0,
-                        "uid": 0,
-                        "index": 0,
-                        "type": 0,
-                        "is_connected": true
-                    },
-                    {
-                        "name": "y",
-                        "dt": 0,
-                        "uid": 1,
-                        "index": 1,
-                        "type": 0,
-                        "is_connected": true
-                    },
-                    {
-                        "name": "z",
-                        "dt": 0,
-                        "uid": 2,
-                        "index": 2,
-                        "type": 0,
-                        "is_connected": true
-                    },
-                    {
-                        "name": "count",
-                        "dt": 0,
-                        "uid": 3,
-                        "index": 3,
-                        "type": 0,
-                        "is_connected": true
-                    }
-                ],
-                "dyn_out": [
-                    {
-                        "name": "start",
-                        "dt": 5,
-                        "uid": 4,
-                        "index": 0,
-                        "type": 1
-                    },
-                    {
-                        "name": "offset",
-                        "dt": 5,
-                        "uid": 5,
-                        "index": 1,
-                        "type": 1
-                    }
-                ]
-            },
-            {
-                "plugin": "instance_cube_modulator",
-                "x": 988,
-                "y": 172,
-                "uid": 31
-            },
-            {
-                "plugin": "vector",
-                "x": 756,
-                "y": 67,
-                "uid": 32
-            },
-            {
-                "plugin": "vector_transform",
-                "x": 509,
-                "y": 239,
-                "uid": 35
-            },
-            {
-                "plugin": "rotation_xyz_matrix",
-                "x": 413,
-                "y": 300,
-                "uid": 36
-            },
-            {
-                "plugin": "instance_texture_modulator",
-                "x": 985,
-                "y": 357,
-                "uid": 39
-            },
-            {
-                "plugin": "url_texture_generator",
-                "x": 817,
-                "y": 407,
-                "uid": 40,
-                "state": {
-                    "url": "data/textures/instance-distribution-map.jpg"
-                }
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 874,
-                "y": 297,
-                "uid": 42,
-                "state": {
-                    "val": 400
-                },
-                "title": "Instance count"
-            },
-            {
-                "plugin": "vector",
-                "x": 847,
-                "y": 496,
-                "uid": 43
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 697,
-                "y": 516,
-                "uid": 44,
-                "state": {
-                    "val": 70
-                }
-            },
-            {
-                "plugin": "quad_mesh_generator",
-                "x": 385,
-                "y": 22,
-                "uid": 45
-            },
-            {
-                "plugin": "rotation_xyz_matrix",
-                "x": 576,
-                "y": 509,
-                "uid": 49
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 616,
-                "y": 424,
-                "uid": 53,
-                "state": {
-                    "val": 10,
-                    "min": 0,
-                    "max": 10
-                }
-            },
-            {
-                "plugin": "clock_generator",
-                "x": 7,
-                "y": 374,
-                "uid": 54
-            },
-            {
-                "plugin": "sine_modulator",
-                "x": 67,
-                "y": 374,
-                "uid": 55
-            },
-            {
-                "plugin": "multiply_modulator",
-                "x": 326,
-                "y": 432,
-                "uid": 56
-            },
-            {
-                "plugin": "convert_oscilator_unit_modulator",
-                "x": 221,
-                "y": 374,
-                "uid": 57
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 214,
-                "y": 495,
-                "uid": 58,
-                "state": {
-                    "val": -90
-                }
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 459,
-                "y": 477,
-                "uid": 62,
-                "state": {
-                    "val": 0
-                }
-            },
-            {
-                "plugin": "annotation",
-                "x": 8,
-                "y": 431,
-                "uid": 63,
-                "state": {
-                    "text": "^ Faked bill-boarding. The instance scene transform is used to rotate each instance exactly counter to the camera.",
-                    "width": 155,
-                    "height": 84
-                }
-            },
-            {
-                "plugin": "annotation",
-                "x": 1079,
-                "y": 192,
-                "uid": 64,
-                "state": {
-                    "text": "^ Hook up the output of the Array, Cube or Texture instance creation plugins to the scene renderer to see the result.",
-                    "width": 151,
-                    "height": 87
                 }
             }
         ],
-        "conns": [
-            {
-                "src_nuid": 4,
-                "dst_nuid": 1,
-                "src_slot": 0,
-                "dst_slot": 4
-            },
-            {
-                "src_nuid": 7,
-                "dst_nuid": 6,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 21,
-                "dst_nuid": 20,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 1,
-                "dst_nuid": 22,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 3,
-                "dst_nuid": 22,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 25,
-                "dst_nuid": 1,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 24,
-                "dst_nuid": 26,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 21,
-                "dst_nuid": 26,
-                "src_slot": 0,
-                "dst_slot": 3,
-                "dst_dyn": true,
-                "offset": 1
-            },
-            {
-                "src_nuid": 26,
-                "dst_nuid": 20,
-                "src_slot": 0,
-                "dst_slot": 2,
-                "src_dyn": true
-            },
-            {
-                "src_nuid": 26,
-                "dst_nuid": 20,
-                "src_slot": 1,
-                "dst_slot": 3,
-                "src_dyn": true
-            },
-            {
-                "src_nuid": 21,
-                "dst_nuid": 32,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "offset": 2
-            },
-            {
-                "src_nuid": 21,
-                "dst_nuid": 32,
-                "src_slot": 0,
-                "dst_slot": 2,
-                "offset": 3
-            },
-            {
-                "src_nuid": 32,
-                "dst_nuid": 31,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 26,
-                "dst_nuid": 31,
-                "src_slot": 0,
-                "dst_slot": 2,
-                "src_dyn": true,
-                "offset": 1
-            },
-            {
-                "src_nuid": 26,
-                "dst_nuid": 31,
-                "src_slot": 1,
-                "dst_slot": 3,
-                "src_dyn": true,
-                "offset": 1
-            },
-            {
-                "src_nuid": 24,
-                "dst_nuid": 26,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "dst_dyn": true,
-                "offset": 1
-            },
-            {
-                "src_nuid": 24,
-                "dst_nuid": 26,
-                "src_slot": 0,
-                "dst_slot": 2,
-                "dst_dyn": true,
-                "offset": 2
-            },
-            {
-                "src_nuid": 6,
-                "dst_nuid": 35,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 36,
-                "dst_nuid": 35,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 35,
-                "dst_nuid": 3,
-                "src_slot": 0,
-                "dst_slot": 3
-            },
-            {
-                "src_nuid": 21,
-                "dst_nuid": 32,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "offset": 4
-            },
-            {
-                "src_nuid": 40,
-                "dst_nuid": 39,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 42,
-                "dst_nuid": 39,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 43,
-                "dst_nuid": 39,
-                "src_slot": 0,
-                "dst_slot": 3
-            },
-            {
-                "src_nuid": 44,
-                "dst_nuid": 43,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 44,
-                "dst_nuid": 43,
-                "src_slot": 0,
-                "dst_slot": 2,
-                "offset": 1
-            },
-            {
-                "src_nuid": 45,
-                "dst_nuid": 1,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 45,
-                "dst_nuid": 20,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "offset": 1
-            },
-            {
-                "src_nuid": 45,
-                "dst_nuid": 31,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "offset": 2
-            },
-            {
-                "src_nuid": 45,
-                "dst_nuid": 39,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "offset": 3
-            },
-            {
-                "src_nuid": 49,
-                "dst_nuid": 22,
-                "src_slot": 0,
-                "dst_slot": 3
-            },
-            {
-                "src_nuid": 53,
-                "dst_nuid": 43,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 54,
-                "dst_nuid": 55,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 55,
-                "dst_nuid": 57,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 57,
-                "dst_nuid": 56,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 58,
-                "dst_nuid": 56,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 56,
-                "dst_nuid": 36,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 62,
-                "dst_nuid": 49,
-                "src_slot": 0,
-                "dst_slot": 2
-            },
-            {
-                "src_nuid": 62,
-                "dst_nuid": 49,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "offset": 1
-            },
-            {
-                "src_nuid": 56,
-                "dst_nuid": 49,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "offset": 1
-            },
-            {
-                "src_nuid": 39,
-                "dst_nuid": 22,
-                "src_slot": 0,
-                "dst_slot": 0
-            }
-        ]
+        "conns": []
     }
 }

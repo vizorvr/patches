@@ -1,0 +1,141 @@
+{
+    "abs_t": 739.563,
+    "active_graph": 0,
+    "graph_uid": 1,
+    "root": {
+        "node_uid": 11,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "knob_float_generator",
+                "x": 17,
+                "y": 18,
+                "uid": 0,
+                "state": {
+                    "val": 0
+                }
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 17,
+                "y": 121,
+                "uid": 1,
+                "state": {
+                    "val": 10
+                },
+                "title": "Minimum"
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 19,
+                "y": 181,
+                "uid": 2,
+                "state": {
+                    "val": -10
+                },
+                "title": "Maximum"
+            },
+            {
+                "plugin": "subtract_modulator",
+                "x": 139,
+                "y": 105,
+                "uid": 3
+            },
+            {
+                "plugin": "absolute_modulator",
+                "x": 225,
+                "y": 105,
+                "uid": 4
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 318,
+                "y": 48,
+                "uid": 5
+            },
+            {
+                "plugin": "float_display",
+                "x": 478,
+                "y": 37,
+                "uid": 7
+            },
+            {
+                "plugin": "add_modulator",
+                "x": 398,
+                "y": 48,
+                "uid": 8
+            },
+            {
+                "plugin": "min_modulator",
+                "x": 141,
+                "y": 178,
+                "uid": 9
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 2,
+                "dst_nuid": 3,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 1,
+                "dst_nuid": 3,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 3,
+                "dst_nuid": 4,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 0,
+                "dst_nuid": 5,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 4,
+                "dst_nuid": 5,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 5,
+                "dst_nuid": 8,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 8,
+                "dst_nuid": 7,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 1,
+                "dst_nuid": 9,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 2
+            },
+            {
+                "src_nuid": 2,
+                "dst_nuid": 9,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "offset": 1
+            },
+            {
+                "src_nuid": 9,
+                "dst_nuid": 8,
+                "src_slot": 0,
+                "dst_slot": 1
+            }
+        ]
+    }
+}
