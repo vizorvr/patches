@@ -10,7 +10,7 @@ E2.plugins["key_press_generator"] = function(core, node) {
 	
 	this.update_output = function(slot)
 	{
-		return self.output;
+		return self.key_state;
 	};
 	
 	this.create_ui = function()
@@ -96,12 +96,14 @@ E2.plugins["key_press_generator"] = function(core, node) {
 
 	this.reset_keystate = function()
 	{
-		self.output = self.last_state = self.key_state = false;
+		self.last_state = self.key_state = false;
 	};
 	
 	this.update_state = function(delta_t)
 	{
-		self.output = (self.state.type === 0 && self.key_state === self.last_state) ? false : self.key_state;
+		if(self.state.type === 0 && self.key_state === self.last_state)
+			self.updated = false;
+		
 		self.last_state = self.key_state;
 	};
 	
