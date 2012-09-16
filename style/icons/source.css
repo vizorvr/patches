@@ -22,6 +22,7 @@
 .icon-audio_player { background: url('audio-player.png'); }
 .icon-blend_mode_generator { background: url('color-blend-modulator.png'); }
 .icon-bool_display { background: url('bool-display.png'); }
+.icon-ceiling_modulator { background: url('ceiling-modulator.png'); }
 .icon-clamp_modulator { background: url('clamp-modulator.png'); }
 .icon-clamped_accumulate_modulator { background: url('clamped-accumulate-modulator.png'); }
 .icon-clock_generator { background: url('clock-generator.png'); }
@@ -36,16 +37,19 @@
 .icon-convert_camera_matrices { background: url('convert-generic.png'); }
 .icon-convert_color_rgba_modulator { background: url('convert-generic.png'); }
 .icon-convert_hsla_color_modulator { background: url('convert-generic.png'); }
+.icon-convert_color_hsla_modulator { background: url('convert-generic.png'); }
 .icon-convert_matrices_camera { background: url('convert-generic.png'); }
 .icon-convert_oscilator_unit_modulator { background: url('convert-generic.png'); }
 .icon-convert_rgba_color_modulator { background: url('convert-generic.png'); }
 .icon-convert_vector_xyz_modulator { background: url('convert-generic.png'); }
 .icon-cosine_modulator { background: url('cosine-modulator.png'); }
+.icon-cos_modulator { background: url('cosine-modulator.png'); }
 .icon-cube_mesh_generator { background: url('cube-mesh-generator.png'); }
 .icon-delta_modulator { background: url('delta-modulator.png'); }
 .icon-delta_t_generator { background: url('delta-t-generator.png'); } 	
 .icon-divide_modulator { background: url('divide-modulator.png'); }
 .icon-equals_modulator { background: url('equals-modulator.png'); }
+.icon-exp_modulator { background: url('exp-modulator.png'); }
 .icon-flat_shader { background: url('shader.png'); }
 .icon-float_display { background: url('float-display.png'); }
 .icon-floor_modulator { background: url('floor-modulator.png'); }
@@ -63,6 +67,7 @@
 .icon-key_press_generator { background: url('key-press-generator.png'); }
 .icon-knob_float_generator { background: url('knob-float-generator.png'); }
 .icon-led_display { background: url('led-display.png'); }
+.icon-log_modulator { background: url('log-modulator.png'); }
 .icon-less_than_modulator { background: url('less-than-modulator.png'); }
 .icon-lowpass_filter_modulator { background: url('lowpass-filter-modulator.png'); }
 .icon-matrix_display { background: url('matrix-display.png'); }
@@ -75,6 +80,7 @@
 .icon-mouse_position_generator { background: url('mouse-position-generator.png'); }
 .icon-mouse_wheel_generator { background: url('mouse-wheel-generator.png'); }
 .icon-multiply_modulator { background: url('multiply-modulator.png'); }
+.icon-nand_modulator { background: url('nand-modulator.png'); }
 .icon-negate_modulator { background: url('negate-modulator.png'); }
 .icon-normal_as_color_shader { background: url('shader.png'); }
 .icon-not_modulator { background: url('not-modulator.png'); }
@@ -82,6 +88,8 @@
 .icon-orthographic_camera { background: url('orthographic-camera.png'); }
 .icon-output_proxy { background: url('output-proxy.png'); }
 .icon-perspective_camera { background: url('perspective-camera.png'); }
+.icon-pi_generator { background: url('pi-generator.png'); }
+.icon-plot_display { background: url('plot-display.png'); }
 .icon-quad_mesh_generator { background: url('quad-mesh-generator.png'); }
 .icon-random_float_generator { background: url('random-float-generator.png'); }
 .icon-rotation_matrix { background: url('rotation-matrix.png'); }
@@ -96,16 +104,33 @@
 .icon-scene_renderer_emitter { background: url('scene-renderer-emitter.png'); }
 .icon-screenspace_camera { background: url('screenspace-camera.png'); }
 .icon-sine_modulator { background: url('sine-modulator.png'); }
+.icon-sin_modulator { background: url('sine-modulator.png'); }
 .icon-slider_float_generator { background: url('slider-float-generator.png'); }
 .icon-sphere_mesh_generator { background: url('sphere-mesh-generator.png'); }
+.icon-sqrt_modulator { background: url('sqrt-modulator.png'); }
 .icon-square_modulator { background: url('square-modulator.png'); }
 .icon-subtract_modulator { background: url('subtract-modulator.png'); }
+.icon-tan_modulator { background: url('tan-modulator.png'); }
 .icon-texture_diffuse_shader { background: url('shader.png'); }
 .icon-toggle_button { background: url('toggle-button.png'); }
 .icon-toggle_modulator { background: url('toggle-modulator.png'); }
 .icon-translation_matrix { background: url('translation-matrix.png'); }
 .icon-transpose_matrix_modulator { background: url('transpose-matrix-modulator.png'); }
 .icon-triangle_modulator { background: url('triangle-modulator.png'); }
+.icon-tween_circular_in_modulator { background: url('tween-circular-in-modulator.png'); }
+.icon-tween_circular_out_modulator { background: url('tween-circular-out-modulator.png'); }
+.icon-tween_cubic_in_modulator { background: url('tween-cubic-in-modulator.png'); }
+.icon-tween_cubic_out_modulator { background: url('tween-cubic-out-modulator.png'); }
+.icon-tween_exponential_in_modulator { background: url('tween-exponential-in-modulator.png'); }
+.icon-tween_exponential_out_modulator { background: url('tween-exponential-out-modulator.png'); }
+.icon-tween_quadratic_in_modulator { background: url('tween-quadratic-in-modulator.png'); }
+.icon-tween_quadratic_out_modulator { background: url('tween-quadratic-out-modulator.png'); }
+.icon-tween_quartic_in_modulator { background: url('tween-quartic-in-modulator.png'); }
+.icon-tween_quartic_out_modulator { background: url('tween-quartic-out-modulator.png'); }
+.icon-tween_quintic_in_modulator { background: url('tween-quintic-in-modulator.png'); }
+.icon-tween_quintic_out_modulator { background: url('tween-quintic-out-modulator.png'); }
+.icon-tween_sinusoidal_in_modulator { background: url('tween-sinusoidal-in-modulator.png'); }
+.icon-tween_sinusoidal_out_modulator { background: url('tween-sinusoidal-out-modulator.png'); }
 .icon-url_audio_generator { background: url('url-audio-generator.png'); }
 .icon-url_scene_generator { background: url('url-scene-generator.png'); }
 .icon-url_texture_generator { background: url('url-texture-generator.png'); }
@@ -117,6 +142,7 @@
 .icon-vector { background: url('convert-generic.png'); }
 .icon-vector_scale { background: url('vector-scale.png'); }
 .icon-vector_transform { background: url('vector-transform.png'); }
+.icon-xor_modulator { background: url('xor-modulator.png'); }
 
 
 /* Groups */

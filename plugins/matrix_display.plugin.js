@@ -44,7 +44,7 @@ E2.plugins["matrix_display"] = function(core, node) {
 	this.connection_changed = function(on, conn, slot)
 	{
 		if(!on)
-			self.reset(null);
+			self.reset();
 	};
 
 	this.update_input = function(slot, data)
