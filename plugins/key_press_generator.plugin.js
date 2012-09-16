@@ -6,11 +6,11 @@ E2.plugins["key_press_generator"] = function(core, node) {
 	this.output_slots = [ 
 		{ name: 'signal', dt: core.datatypes.BOOL, desc: 'Emits true once when the set key is pressed.' }
 	];	
-	this.state = { key: 0 };
+	this.state = { key: 0, type: 0 };
 	
 	this.update_output = function(slot)
 	{
-		return self.key_state;
+		return self.output;
 	};
 	
 	this.create_ui = function()
@@ -38,7 +38,9 @@ E2.plugins["key_press_generator"] = function(core, node) {
 			[90, 'z']
 		];
 		
-		var inp = $('<select />', { selectedIndex: 4 });
+		var dom = make('div');
+		var inp = $('<select id="key" title="Select key" />', { selectedIndex: 0 });
+		var inp_type = $('<select id="o_type" title="Select output type" />', { selectedIndex: 0 });
 		
 		for(var i = 0, len = items.length; i < len; i++)
 		{
@@ -46,16 +48,32 @@ E2.plugins["key_press_generator"] = function(core, node) {
 			$('<option />', { value: item[0], text: item[1] }).appendTo(inp);
 		}
 		 
+		$('<option />', { value: 0, text: 'Impulse' }).appendTo(inp_type);
+		$('<option />', { value: 1, text: 'Continuous' }).appendTo(inp_type);
+		
 		inp.change(function() 
 		{
 			self.state.key = parseInt(inp.val());
-			self.state_changed(inp);
-			self.key_state = false;
+			self.reset_keystate();
 			self.updated = true;
 			inp.blur();
 		});
 		
-		return inp;
+		inp_type.change(function() 
+		{
+			self.state.type = parseInt(inp_type.val());
+			self.updated = true;
+			inp_type.blur();
+		});
+
+		inp.css('width', '100px');
+		inp_type.css('width', '100px');
+		
+		dom.append(inp);
+		dom.append(make('br'));
+		dom.append(inp_type);
+		
+		return dom;
 	};
 
 	this.key_down = function(e)
@@ -76,13 +94,29 @@ E2.plugins["key_press_generator"] = function(core, node) {
 		self.updated = true;
 	};
 
+	this.reset_keystate = function()
+	{
+		self.output = self.last_state = self.key_state = false;
+	};
+	
+	this.update_state = function(delta_t)
+	{
+		self.output = (self.state.type === 0 && self.key_state === self.last_state) ? false : self.key_state;
+		self.last_state = self.key_state;
+	};
+	
 	this.state_changed = function(ui)
 	{
 		if(!ui)
 		{
-			self.key_state = false;
+			self.reset_keystate();
 			$(document).keydown(self.key_down);
 			$(document).keyup(self.key_up);
+		}
+		else
+		{
+			ui.find('#key').val(self.state.key);
+			ui.find('#o_type').val(self.state.type);
 		}
 	};	
 };
