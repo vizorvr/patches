@@ -254,7 +254,7 @@ function Renderer(canvas_id)
 		}
 	};
 	
-	this.update_viewport = function(w, h)
+	this.update_viewport = function()
 	{
 		self.context.viewport(0, 0, self.canvas[0].width, self.canvas[0].height);
 	};

@@ -2846,6 +2846,7 @@ function Application() {
 			var c = E2.dom.webgl_canvas;
 			
 			c.attr('class', self.fullscreen ? 'webgl-canvas-normal' : 'webgl-canvas-fs');
+			self.core.renderer.update_viewport();
 			self.fullscreen = !self.fullscreen;
 		}
 	};
