@@ -40,7 +40,7 @@ E2.plugins["key_press_generator"] = function(core, node) {
 		
 		var dom = make('div');
 		var inp = $('<select id="key" title="Select key" />', { selectedIndex: 0 });
-		var inp_type = $('<select id="o_type" title="Select output type" />', { selectedIndex: 0 });
+		var inp_type = $('<select id="o_type" title="Select output signal type" />', { selectedIndex: 0 });
 		
 		for(var i = 0, len = items.length; i < len; i++)
 		{
