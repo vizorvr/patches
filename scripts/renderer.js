@@ -465,20 +465,25 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 					p2 = idx[i+1]*3;
 					p3 = idx[i+2]*3;
 					
-					var v1 = [vts[p2] - vts[p1], vts[p2+1] - vts[p1+1], vts[p2+2] - vts[p1+2]];
-					var v2 = [vts[p3] - vts[p1], vts[p3+1] - vts[p1+1], vts[p3+2] - vts[p1+2]];
+					var v1 = [vts[p1] - vts[p3], vts[p1+1] - vts[p3+1], vts[p1+2] - vts[p3+2]];
+					var v2 = [vts[p1] - vts[p2], vts[p1+1] - vts[p2+1], vts[p1+2] - vts[p2+2]];
 					
 					var n = [v1[1] * v2[2] - v1[2] * v2[1],
 					         v1[2] * v2[0] - v1[0] * v2[2],
-					         v2[0] * v2[1] - v1[1] * v2[0]];
+					         v1[0] * v2[1] - v1[1] * v2[0]];
 					         
 					var l = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
 					
-					l = l < 0.000001 ? 0.000001 : l;
+					if(l > 0.000001)
+					{
+						n[0] /= l;
+						n[1] /= l;
+						n[2] /= l;
+					}
 					
-					self.face_norms.push(n[0] / l);
-					self.face_norms.push(n[1] / l);
-					self.face_norms.push(n[2] / l);
+					self.face_norms.push(n[0]);
+					self.face_norms.push(n[1]);
+					self.face_norms.push(n[2]);
 				}
 			}
 			else
@@ -491,21 +496,22 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 					p2 = (i+1)*3;
 					p3 = (i+2)*3;
 					
-					var v1 = [vts[p2] - vts[p1], vts[p2+1] - vts[p1+1], vts[p2+2] - vts[p1+2]];
-					var v2 = [vts[p3] - vts[p1], vts[p3+1] - vts[p1+1], vts[p3+2] - vts[p1+2]];
+					var v1 = [vts[p1] - vts[p3], vts[p1+1] - vts[p3+1], vts[p1+2] - vts[p3+2]];
+					var v2 = [vts[p1] - vts[p2], vts[p1+1] - vts[p2+1], vts[p1+2] - vts[p2+2]];
 					
 					var n = [v1[1] * v2[2] - v1[2] * v2[1],
 					         v1[2] * v2[0] - v1[0] * v2[2],
-					         v2[0] * v2[1] - v1[1] * v2[0]];
+					         v1[0] * v2[1] - v1[1] * v2[0]];
 					         
 					var l = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
 					
-					l = l < 0.000001 ? 0.000001 : l;
+					if(l > 0.000001)
+					{
+						n[0] /= l;
+						n[1] /= l;
+						n[2] /= l;
+					}
 					
-					n[0] /= l;
-					n[1] /= l;
-					n[2] /= l;
-
 					self.face_norms.push(n[0]);
 					self.face_norms.push(n[1]);
 					self.face_norms.push(n[2]);
