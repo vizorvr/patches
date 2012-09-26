@@ -85,7 +85,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		gl.vertexAttribPointer(attr, item_size, gl.FLOAT, false, 0, 0);
 	}
 
-	this.s.apply_uniforms = this.apply_uniforms = function()
+	this.s.apply_uniforms = this.apply_uniforms = function(mesh)
 	{
 		gl.uniform4fv(self.s.colorUniform, new Float32Array(self.color.rgba));
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
@@ -100,6 +100,11 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		{
 			gl.uniform1i(self.s.tex0Uniform, 0);
 			self.tex.enable(gl.TEXTURE0);
+		}
+		else if(mesh.material.diffuse_tex)
+		{
+			gl.uniform1i(this.tex0Uniform, 0);
+			mesh.material.diffuse_tex.enable(gl.TEXTURE0);
 		}
 		else
 		{

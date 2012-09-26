@@ -56,7 +56,7 @@ E2.plugins["normal_as_color_shader"] = function(core, node) {
       		}
       	}
       	
-      	this.s.apply_uniforms = this.apply_uniforms = function()
+      	this.s.apply_uniforms = this.apply_uniforms = function(mesh)
       	{
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
 		gl.enableVertexAttribArray(self.s.vertexNormAttribute);

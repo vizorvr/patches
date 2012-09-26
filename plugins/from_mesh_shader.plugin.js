@@ -44,7 +44,7 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 				
 				// Decorate with an apply_uniforms method that maps
 				// our values to the generated shader.
-				self.shader.apply_uniforms = function()
+				self.shader.apply_uniforms = function(mesh)
 				{
 					gl.uniform4fv(this.diffuseColorUniform, new Float32Array(self.color.rgba));
 					
@@ -56,6 +56,11 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 						{
 							gl.uniform1i(this.tex0Uniform, 0);
 							self.tex.enable(gl.TEXTURE0);
+						}
+						else if(mesh.material.diffuse_tex)
+						{
+							gl.uniform1i(this.tex0Uniform, 0);
+							mesh.material.diffuse_tex.enable(gl.TEXTURE0);
 						}
 						else
 						{

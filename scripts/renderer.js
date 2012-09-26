@@ -446,12 +446,96 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		
 			norms.bind_data(data.norms);
 		}
+		else // Compute normals
+		{
+			var vts = data.verts,
+			    p1 = null,
+			    p2 = null,
+			    p3 = null;
+			
+			self.face_norms = [];
+			
+			if(data.indices)
+			{
+				var idx = data.indices;
+				
+				for(var i = 0, len = idx.length; i < len; i += 3)
+				{
+					p1 = idx[i]*3;
+					p2 = idx[i+1]*3;
+					p3 = idx[i+2]*3;
+					
+					var v1 = [vts[p2] - vts[p1], vts[p2+1] - vts[p1+1], vts[p2+2] - vts[p1+2]];
+					var v2 = [vts[p3] - vts[p1], vts[p3+1] - vts[p1+1], vts[p3+2] - vts[p1+2]];
+					
+					var n = [v1[1] * v2[2] - v1[2] * v2[1],
+					         v1[2] * v2[0] - v1[0] * v2[2],
+					         v2[0] * v2[1] - v1[1] * v2[0]];
+					         
+					var l = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
+					
+					l = l < 0.000001 ? 0.000001 : l;
+					
+					self.face_norms.push(n[0] / l);
+					self.face_norms.push(n[1] / l);
+					self.face_norms.push(n[2] / l);
+				}
+			}
+			else
+			{
+				var ndata = [];
+				
+				for(var i = 0, len = vts.length/3; i < len; i += 3)
+				{
+					p1 = i*3;
+					p2 = (i+1)*3;
+					p3 = (i+2)*3;
+					
+					var v1 = [vts[p2] - vts[p1], vts[p2+1] - vts[p1+1], vts[p2+2] - vts[p1+2]];
+					var v2 = [vts[p3] - vts[p1], vts[p3+1] - vts[p1+1], vts[p3+2] - vts[p1+2]];
+					
+					var n = [v1[1] * v2[2] - v1[2] * v2[1],
+					         v1[2] * v2[0] - v1[0] * v2[2],
+					         v2[0] * v2[1] - v1[1] * v2[0]];
+					         
+					var l = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
+					
+					l = l < 0.000001 ? 0.000001 : l;
+					
+					n[0] /= l;
+					n[1] /= l;
+					n[2] /= l;
 
+					self.face_norms.push(n[0]);
+					self.face_norms.push(n[1]);
+					self.face_norms.push(n[2]);
+					
+					for(var c = 0; c < 3; c++)
+					{
+						ndata.push(n[0]);
+						ndata.push(n[1]);
+						ndata.push(n[2]);
+					}
+				}
+				
+				var norms = this.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL);
+
+				norms.bind_data(ndata);
+			}
+		}
+		
 		if(data.uv0)
 		{
   			var uv0 = this.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0);
 		
 			uv0.bind_data(data.uv0);
+		}
+		
+		if(data.indices)
+		{
+			var idx = this.index_buffer = new IndexBuffer(gl);
+			
+			idx.bind_data(data.indices);
 		}
 	}
 	
@@ -474,7 +558,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
         	}
 
 		shader.bind_camera(camera);
-       		shader.apply_uniforms();
+       		shader.apply_uniforms(this);
 		
 		var draw = (!self.index_buffer) ? function()
 		{
@@ -669,9 +753,9 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			gl.vertexAttribPointer(attr, item_size, gl.FLOAT, false, 0, 0);
 		};
 		
-		s.apply_uniforms = function()
+		s.apply_uniforms = function(mesh)
 		{
-			var m = self.material;
+			var m = mesh.material;
 			
 			gl.enableVertexAttribArray(this.vertexPosAttribute);
 

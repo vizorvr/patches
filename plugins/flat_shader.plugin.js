@@ -48,7 +48,7 @@ E2.plugins["flat_shader"] = function(core, node) {
       		}
       	}
       	
-      	this.s.apply_uniforms = this.apply_uniforms = function()
+      	this.s.apply_uniforms = this.apply_uniforms = function(mesh)
       	{
 		gl.uniform4fv(self.s.colorUniform, new Float32Array(self.color.rgba));
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
