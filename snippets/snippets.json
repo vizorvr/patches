@@ -1,8 +1,4 @@
 {
-	"Example: Lighting w. custom shader": "example-lighting",
-	"Example: IFS instancing": "example-ifs-instancing",
-	"Example: Instancing meshes in arrays, cubes or texture-distributions": "example-instancing",
-	"Example: Tweens": "example-tweens",
 	"Post Process: Gaussian blur": "post_process_gaussian_blur",
 	"Post Process: X-hatch": "post_process_x_hatch",
 	"Post Process: Posterize": "post_process_posterize",
@@ -47,7 +43,11 @@
 	"Overlay: Plain color": "overlay_color",
 	"Overlay: Texture with blend mode": "overlay_blendmode",
 	"Overlay: Noise with blend mode": "overlay_noise",
+	"Example: Lighting w. custom shader": "example-lighting",
+	"Example: IFS instancing": "example-ifs-instancing",
+	"Example: Instancing meshes in arrays, cubes or texture-distributions": "example-instancing",
+	"Example: Keyboard input": "example-keyboard-input",
+	"Example: Tweens": "example-tweens",
 	"Test: Blur setup": "blur",
 	"Test: Posterize setup": "posterize"
-
 }
