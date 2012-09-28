@@ -413,7 +413,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 			self.mesh = null;
 			self.is3d = false;
 			self.color = new Color(1.0, 1.0, 1.0, 1.0);
-			self.blend_mode = core.renderer.blend_mode.NORMAL;
+			self.blend_mode = Renderer.blend_mode.NORMAL;
 			self.tex = null;
 		}
 	};

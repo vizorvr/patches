@@ -64,7 +64,7 @@ E2.plugins["normal_as_color_shader"] = function(core, node) {
 		var r = core.renderer;
 		
 		r.set_depth_enable(self.is3d);
-		r.set_blend_mode(r.blend_mode.NORMAL);
+		r.set_blend_mode(Renderer.blend_mode.NORMAL);
       	};
       	
 	this.update_input = function(slot, data)

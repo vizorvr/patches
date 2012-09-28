@@ -169,15 +169,6 @@ function Renderer(canvas_id)
 {
 	var self = this;
 	
-	this.blend_mode = 
-	{
-		NONE: 0,
-		ADDITIVE: 1,
-		SUBTRACTIVE: 2,
-		MULTIPLY: 3,
-		NORMAL: 4
-	};
-	
   	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
 	this.framebuffer_stack = [];
@@ -278,7 +269,7 @@ function Renderer(canvas_id)
 	this.set_blend_mode = function(mode)
 	{
 		var gl = self.context;
-		var bm = self.blend_mode;
+		var bm = Renderer.blend_mode;
 		
 		switch(mode)
 		{
@@ -314,6 +305,15 @@ function Renderer(canvas_id)
 	};
 	
 }
+
+Renderer.blend_mode = 
+{
+	NONE: 0,
+	ADDITIVE: 1,
+	SUBTRACTIVE: 2,
+	MULTIPLY: 3,
+	NORMAL: 4
+};
 
 function VertexBuffer(gl, v_type)
 {
@@ -382,6 +382,92 @@ function IndexBuffer(gl)
 	};
 }
 
+function Material(gl, t_cache, data, base_path)
+{
+	var self = this;
+	
+	this.t_cache = t_cache;
+	this.depth_test = true;
+	this.depth_write = true;
+	this.alpha_clip = false;
+	this.shininess = 0.0;
+	this.double_sided = false;
+	this.blend_mode = Renderer.blend_mode.NORMAL;
+	this.textures = [];
+	
+	if(data)
+	{
+		var parse_color = function(name)
+		{
+			var c = data[name];
+			
+			if(c)
+				self[name] = new Color(c[0], c[1], c[2], c[3]);
+		};
+		
+		// TODO: Change all this!
+		var parse_tex = function(name, tgt, old)
+		{
+			var t = data[name];
+			
+			if(t)
+			{
+				if(old)
+					self.textures[tgt] = t_cache.get(base_path + t);
+				else
+					self.textures[tgt] = t_cache.get(base_path + t.url);
+			}
+		};
+		
+		parse_color('diffuse_color');
+		parse_color('ambient_color');
+		
+		// Old style
+		parse_tex('diffuse_tex', Material.texture_type.DIFFUSE_COLOR);
+		parse_tex('emission_tex', Material.texture_type.EMISSION_COLOR);
+		parse_tex('specular_tex', Material.texture_type.SPECULAR_COLOR);
+		parse_tex('normal_tex', Material.texture_type.NORMAL);		 
+
+		// New style
+		parse_tex('alpha_map', Material.texture_type.ALPHA);
+		parse_tex('diffuse_color_map', Material.texture_type.DIFFUSE_COLOR);
+		parse_tex('emission_intensity_map', Material.texture_type.EMISSION_INTENSITY);
+		parse_tex('specular_intensity_map', Material.texture_type.SPECULAR_INTENSITY);
+		parse_tex('specular_color_map', Material.texture_type.SPECULAR_COLOR);
+		parse_tex('emission_color_map', Material.texture_type.EMISSION_COLOR);
+		parse_tex('normal_map', Material.texture_type.NORMAL);
+		
+		self.shininess = data.shininess ? data.shininess : 0.0;
+		self.double_sided = data.double_sided ? true : false;
+	}
+	
+	this.enable = function()
+	{
+		var r = core.renderer;
+		var gl = r.context;
+		
+		if(self.depth_test)
+			gl.enable(gl.DEPTH_TEST);
+		else
+			gl.disable(gl.DEPTH_TEST);
+		
+		gl.depthMask(self.depth_write);
+
+		r.set_blend_mode(self.blend_mode);
+	};
+}
+
+Material.texture_type =
+{
+	ALPHA: 0,
+	DIFFUSE_COLOR: 1,
+	EMISSION_INTENSITY: 2,
+	SPECULAR_INTENSITY: 3,
+	SPECULAR_COLOR: 4,
+	EMISSION_COLOR: 5,
+	NORMAL: 6
+};
+
 function Mesh(gl, prim_type, t_cache, data, base_path)
 {
 	var self = this;
@@ -398,39 +484,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		
 	if(data)
 	{
-		var m = data.material;
-		
-		var parse_color = function(name)
-		{
-			var c = m[name];
-			
-			if(c)
-				self.material[name] = new Color(c[0], c[1], c[2], c[3]);
-		};
-		
-		var parse_tex = function(name)
-		{
-			var t = m[name];
-			
-			if(t)
-				self.material[name] = t_cache.get(base_path + t);
-		};
-		
-		// Load material, if any
-		if(m)
-		{
-			parse_color('diffuse_color');
-			parse_color('emission_color');
-			parse_color('specular_color');
-			parse_color('ambient_color');
-			parse_tex('diffuse_tex');
-			parse_tex('emission_tex');
-			parse_tex('specular_tex');
-			parse_tex('normal_tex');		 
-
-			this.material.shininess = data.shininess ? data.shininess : 0.0;
-			this.material.double_sided = data.double_sided ? true : false;
-		}
+		this.material = new Material(gl, t_cache, data.material, base_path);
 		
 		if(data.verts)
 		{
@@ -629,10 +683,12 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			var vs_src = [];
 			var ps_src = [];
 		
+			vs_src.push('precision lowp float;');
 			vs_src.push('attribute vec3 v_pos;');
 			vs_src.push('uniform vec4 color;');
-			vs_src.push('varying lowp vec4 f_col;');
-			ps_src.push('varying lowp vec4 f_col;');
+			vs_src.push('varying vec4 f_col;');
+			ps_src.push('precision mediump float;');
+			ps_src.push('varying vec4 f_col;');
 		
 			if(flags[v_types.COLOR])
 				vs_src.push('attribute vec4 v_col;');
@@ -640,15 +696,15 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			if(flags[v_types.NORMAL])
 			{
 				vs_src.push('attribute vec3 v_norm;');
-				vs_src.push('varying mediump vec3 f_norm;');
-				ps_src.push('varying mediump vec3 f_norm;');
+				vs_src.push('varying vec3 f_norm;');
+				ps_src.push('varying vec3 f_norm;');
 			}
 			
 			if(flags[v_types.UV0])
 			{
 				vs_src.push('attribute vec2 v_uv0;');
-				vs_src.push('varying mediump vec2 f_uv0;');
-				ps_src.push('varying mediump vec2 f_uv0;');
+				vs_src.push('varying vec2 f_uv0;');
+				ps_src.push('varying vec2 f_uv0;');
 			}
 
 			vs_src.push('uniform mat4 m_mat;');
@@ -682,7 +738,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			if(!custom_ps_src)
 			{
 				ps_src.push('void main(void) {');		
-				ps_src.push('    mediump vec4 fc = f_col;');
+				ps_src.push('    vec4 fc = f_col;');
 
 				if(flags[v_types.UV0])
 					ps_src.push('    fc = fc * texture2D(tex0, f_uv0.st);');
@@ -916,7 +972,7 @@ function Scene(gl, data, base_path)
 	var self = this;
 	
 	this.gl = gl;
-	this.texture_cache = new TextureCache(gl);
+	this.texture_cache = E2.app.core.renderer.texture_cache /*new TextureCache(gl)*/;
 	this.shader_cache = new ShaderCache(gl);
 	this.meshes = [];
 	this.id = 'n/a';

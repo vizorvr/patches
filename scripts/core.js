@@ -1480,14 +1480,13 @@ function Core() {
 		MESH: { id: 9, name: 'Mesh' },
 		AUDIO: { id: 10, name: 'Audio' },
 		SCENE: { id: 11, name: 'Scene' },
-		CANVAS: { id: 12, name: 'Canvas' }
+		MATERIAL: { id: 12, name: 'Material' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');
 	this.active_graph = this.root_graph = null;
 	this.active_graph_dirty = true;
 	this.graphs = [];
-	
 	this.abs_t = 0.0;
 	this.delta_t = 0.0;
 	this.graph_uid = 0;
@@ -1541,23 +1540,27 @@ function Core() {
 	
 	this.get_default_value = function(dt)
 	{
-		if(dt === self.datatypes.FLOAT)
+		var dts = self.datatypes;
+		
+		if(dt === dts.FLOAT)
 			return 0.0;
-		else if(dt === self.datatypes.COLOR)
+		else if(dt === dts.COLOR)
 			return new Color(1, 1, 1);
-		else if(dt === self.datatypes.TRANSFORM)
+		else if(dt === dts.TRANSFORM)
 		{
 			var m = mat4.create();
 	
 			mat4.identity(m);
 			return m;
 		}
-		else if(dt === self.datatypes.VERTEX)
+		else if(dt === dts.VERTEX)
 			return [0.0, 0.0, 0.0];
-		else if(dt === self.datatypes.CAMERA)
+		else if(dt === dts.CAMERA)
 			return new Camera(self.renderer.context);
-		else if(dt === self.datatypes.BOOL)
+		else if(dt === dts.BOOL)
 			return false;
+		else if(dt === dts.MATERIAL)
+			return new Material(null, null, null, null);
 		
 		// Shaders and textures legally default to null.
 		return null;
@@ -1659,7 +1662,6 @@ function Application() {
 	this.hover_node = null;
 	this.hover_nodes = [];
 	this.scrollOffset = [0, 0];
-	this.accum_delta = 0.0;
 	this.selection_start = null;
 	this.selection_end = null;
 	this.selection_last = null;
@@ -2957,14 +2959,6 @@ function Application() {
 		if(self.core.update(self.abs_time, delta_t))
 			self.updateCanvas();
 		
-		self.accum_delta += delta_t;
-		
-		if(self.accum_delta > 0.05)
-		{
-			E2.dom.frame.val((delta_t * 1000.0).toFixed(0));
-			self.accum_delta = 0.0;
-		}
-		
 		self.last_time = time;
 		self.abs_time += delta_t;
 		self.frames++;
@@ -3027,6 +3021,11 @@ function Application() {
 		self.core.renderer.update_viewport();
 		self.fullscreen = true;
 	});
+	
+	$('#help').button().click(function()
+	{
+		window.open('help/introduction.html', 'Engi Help');
+	});
 }
 
 $(document).ready(function() {
@@ -3039,7 +3038,6 @@ $(document).ready(function() {
 	E2.dom.save = $('#save');
 	E2.dom.load = $('#load');
 	E2.dom.load_clipboard = $('#load-clipboard');
-	E2.dom.frame = $('#frame');
 	E2.dom.persist = $('#persist');
 	E2.dom.structure = $('#structure');
 	E2.dom.info = $('#info');
@@ -3118,5 +3116,4 @@ $(document).ready(function() {
 	$('#tabs').tabs();
 	$('#content').css('display', 'block');
 	Notifier.init();
-	Notifier.info('Cogent is ready for use.');
 });

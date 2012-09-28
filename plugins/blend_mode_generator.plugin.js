@@ -4,7 +4,7 @@ E2.plugins["blend_mode_generator"] = function(core, node) {
 	this.desc = 'Select blend mode.';
 	this.input_slots = [];
 	this.output_slots = [ { name: 'blend mode', dt: core.datatypes.FLOAT, desc: 'Emits the selected blend mode when requested or the selection state changes.', def: 'Normal' } ];
-	this.state = { mode: core.renderer.blend_mode.NORMAL };
+	this.state = { mode: Renderer.blend_mode.NORMAL };
 	this.changed = true;
 		
 	this.reset = function()
@@ -14,7 +14,7 @@ E2.plugins["blend_mode_generator"] = function(core, node) {
 	
 	this.create_ui = function()
 	{
-		var bm = core.renderer.blend_mode;
+		var bm = Renderer.blend_mode;
 		var items = {
 			None: bm.NONE,
 			Additive: bm.ADDITIVE,

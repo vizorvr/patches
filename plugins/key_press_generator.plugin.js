@@ -15,7 +15,6 @@ E2.plugins["key_press_generator"] = function(core, node) {
 	
 	this.create_ui = function()
 	{
-		var bm = core.renderer.blend_mode;
 		var items = [
 			[-1, '[Pick a key]'],
 			[8, 'Backspace'], [9, 'Tab'], [13, 'Enter'],
