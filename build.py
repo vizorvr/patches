@@ -102,8 +102,8 @@ for cssfile in cssfiles:
 	print '\tCompressing ' + cssfile
 	os.system('yui-compressor --type css -o ' + build_dir + '/' + css_path + cssfile + ' ./' + css_path + cssfile)
 
-print 'Copying logo TrueType font.'
-os.system('cp ./' + css_path + 'exo.ttf ' + build_dir + '/' + css_path + 'exo.ttf')
+print 'Copying TrueType fonts.'
+os.system('cp ./' + css_path + '*.ttf ' + build_dir + '/' + css_path)
 
 print 'Compressing plugin icons to CSS sprite sheet...'
 #icon_path = css_path + 'icons'
@@ -151,6 +151,9 @@ for markdown in markdown_files:
 
 print '\tCopying index.html.'
 os.system('cp index.html ' + build_dir)
+
+print '\tCopying favicon.'
+os.system('cp favicon.ico ' + build_dir)
 
 print '\tCreating change log.'
 os.system('git log --pretty="%H%x09%an%x09%ad%x09%s" > build/changelog.txt')
