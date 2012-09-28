@@ -148,10 +148,10 @@ html, body
 	font-size: 22pt;
 	font-weight: bold;
 	font-family: 'Exo', sans-serif;
-	margin-left: 10px;
-	margin-right: 40px;
-	position: relative;
-	top: 4px;
+	margin: 0px;
+	margin-top: 10px;
+	float: left;
+	width: 182px;
 }
 
 #dbg 
@@ -335,15 +335,6 @@ html, body
 {
 	float: left;
 	margin-top: 5px;
-}
-
-#frame
-{
-	border: 1px solid #aaa;
-	position: absolute;
-	width: 60px;
-	left: 1050px;
-	top: 10px;
 }
 
 .plugin
