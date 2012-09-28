@@ -1,9 +1,9 @@
 @font-face 
 {
-	font-family: 'Exo';
+	font-family: 'greyscale_basic_regular';
 	font-style: normal;
 	font-weight: 400;
-	src: local('Exo Regular'), local('Exo-Regular'), url('../style/exo.ttf') format('truetype');
+	src: local('greyscale_basic_regular'), local('greyscale_basic_regular'), url('../style/greyscale_basic_regular.ttf') format('truetype');
 }
 body{
     margin: 0 auto;
