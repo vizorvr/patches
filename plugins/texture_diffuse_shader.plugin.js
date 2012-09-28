@@ -101,10 +101,10 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 			gl.uniform1i(self.s.tex0Uniform, 0);
 			self.tex.enable(gl.TEXTURE0);
 		}
-		else if(mesh.material.diffuse_tex)
+		else if(mesh.material.textures[Material.texture_type.DIFFUSE_COLOR])
 		{
 			gl.uniform1i(this.tex0Uniform, 0);
-			mesh.material.diffuse_tex.enable(gl.TEXTURE0);
+			mesh.material.textures[Material.texture_type.DIFFUSE_COLOR].enable(gl.TEXTURE0);
 		}
 		else
 		{

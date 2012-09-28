@@ -423,10 +423,10 @@ function Material(gl, t_cache, data, base_path)
 		parse_color('ambient_color');
 		
 		// Old style
-		parse_tex('diffuse_tex', Material.texture_type.DIFFUSE_COLOR);
-		parse_tex('emission_tex', Material.texture_type.EMISSION_COLOR);
-		parse_tex('specular_tex', Material.texture_type.SPECULAR_COLOR);
-		parse_tex('normal_tex', Material.texture_type.NORMAL);		 
+		parse_tex('diffuse_tex', Material.texture_type.DIFFUSE_COLOR, true);
+		parse_tex('emission_tex', Material.texture_type.EMISSION_COLOR, true);
+		parse_tex('specular_tex', Material.texture_type.SPECULAR_COLOR, true);
+		parse_tex('normal_tex', Material.texture_type.NORMAL, true);	 
 
 		// New style
 		parse_tex('alpha_map', Material.texture_type.ALPHA);
@@ -826,11 +826,13 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			else
 				gl.uniform4fv(this.diffuseColorUniform, new Float32Array([1.0, 1.0, 1.0, 1.0]));	
 					
-			if(m.diffuse_tex && this.uv0CoordAttribute !== undefined)
+			var dt = m.textures[Material.texture_type.DIFFUSE_COLOR];
+			
+			if(dt && this.uv0CoordAttribute !== undefined)
 			{
 				gl.enableVertexAttribArray(this.uv0CoordAttribute);
 				gl.uniform1i(this.tex0Uniform, 0);
-				m.diffuse_tex.enable(gl.TEXTURE0);
+				dt.enable(gl.TEXTURE0);
 			}
 			
 			if(m.double_sided)
