@@ -1042,14 +1042,14 @@ function Node(parent_graph, plugin_id, x, y) {
 				self.plugin.updated = true;
 				self.queued_update = 0;
 			}
-			else if(needs_update || s_plugin.output_slots.length === 0 || !s_plugin.outputs || s_plugin.outputs.length === 0)
+			else if(needs_update || s_plugin.output_slots.length === 0 || !self.outputs || self.outputs.length === 0)
 			{
 				if(s_plugin.update_state)
 					s_plugin.update_state(delta_t);
 			
 				self.inputs_changed = false;
 			}
-			else if(s_plugin.input_slots.length === 0 || !s_plugin.inputs || s_plugin.inputs.length === 0)
+			else if(s_plugin.input_slots.length === 0 || !self.inputs || self.inputs.length === 0)
 			{
 				if(s_plugin.update_state)
 					s_plugin.update_state(delta_t);
