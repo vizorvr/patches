@@ -501,21 +501,32 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		self.src_node = resolve_node(self.src_node);
 		self.dst_node = resolve_node(self.dst_node);
 		
-		var src_c = self.src_slot.connected;
-		var dst_c = self.dst_slot.connected;
-		
+		if(!self.src_node || !self.dst_node)
+		{
+			msg('ERROR: Source or destination node invalid - dropping connection.');
+			return false;
+		}
 		self.src_slot = (self.src_slot.dynamic ? self.src_node.dyn_outputs : self.src_node.plugin.output_slots)[self.src_slot.index];
 		self.dst_slot = (self.dst_slot.dynamic ? self.dst_node.dyn_inputs : self.dst_node.plugin.input_slots)[self.dst_slot.index];
+		
+		if(!self.src_slot || !self.dst_slot)
+		{
+			msg('ERROR: Source or destination slot invalid - dropping connection.');
+			return false;
+		}
+			
 		self.dst_slot.is_connected = true;
 		
-		if(src_c)
+		if(self.src_slot.connected)
 			self.src_slot.connected = true;
 
-		if(dst_c)
+		if(self.dst_slot.connected)
 			self.dst_slot.connected = true;
 
 		self.src_node.outputs.push(self);
 		self.dst_node.inputs.push(self);
+		
+		return true;
 	};
 }
 
@@ -1430,9 +1441,21 @@ function Graph(parent_graph, tree_node)
 		for(var i = 0, len = nodes.length; i < len; i++)
 			nodes[i].patch_up(graphs);
 
+		prune = [];
+		
 		for(var i = 0, len = conns.length; i < len; i++)
-			conns[i].patch_up(self.nodes);
-
+		{
+			var c = conns[i];
+			
+			if(!c.patch_up(self.nodes))
+				prune.push(c);
+		}
+		
+		for(var i = 0, len = prune.length; i < len; i++)
+		{
+			debugger;
+			conns.remove(prune[i]);
+		}
 	};
 	
 	this.initialise = function()
@@ -2744,12 +2767,14 @@ function Application() {
 			c.src_node = suid;
 			c.dst_node = duid;
 			
-			c.patch_up(ag.nodes);
-			ag.connections.push(c);
+			if(c.patch_up(ag.nodes))
+			{
+				ag.connections.push(c);
 
-			c.create_ui();
-			c.ui.selected = true;
-			self.selection_conns.push(c);
+				c.create_ui();
+				c.ui.selected = true;
+				self.selection_conns.push(c);
+			}
 		}
 		
 		var r_init_struct = function(pg, n)
