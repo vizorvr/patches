@@ -23,6 +23,9 @@ E2.plugins["instance_ifs_modulator"] = function(core, node) {
 		{
 			var s = self.scene;
 			
+			if(s.meshes[0]) // Copy old instance list to new mesh instead of generating it.
+				data.instances = s.meshes[0].instances;
+			
 			s.meshes = [data];
 			s.vertex_count = data.vertex_count;
 		}
