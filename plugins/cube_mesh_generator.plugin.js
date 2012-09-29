@@ -104,29 +104,6 @@ E2.plugins["cube_mesh_generator"] = function(core, node) {
 				-1.0,  0.0,  0.0
 			]);
 
-			/*var face_colors = [
-				[1.0,  1.0,  1.0,  1.0],    // Front face: white
-				[1.0,  0.0,  0.0,  1.0],    // Back face: red
-				[0.0,  1.0,  0.0,  1.0],    // Top face: green
-				[0.0,  0.0,  1.0,  1.0],    // Bottom face: blue
-				[1.0,  1.0,  0.0,  1.0],    // Right face: yellow
-				[1.0,  0.0,  1.0,  1.0]     // Left face: purple
-			];
-
-			var c_data = [];
-
-			for(var j = 0; j < 6; j++) 
-			{
-				var c = face_colors[j];
-
-				for(var i = 0; i < 4; i++) 
-					c_data = c_data.concat(c);
-			}
-			
-  			var colors = self.mesh.vertex_buffers['COLOR'] = new VertexBuffer(gl, VertexBuffer.vertex_type.COLOR);
-  			
-  			colors.bind_data(c_data);*/
-
   			var uv0 = self.mesh.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0);
 			
 			uv0.bind_data([
