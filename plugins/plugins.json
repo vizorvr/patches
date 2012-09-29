@@ -32,6 +32,7 @@
 	"Generators/Mesh/Cube": "cube_mesh_generator",
 	"Generators/Mesh/Sphere": "sphere_mesh_generator",
 	"Generators/Mesh/Quad": "quad_mesh_generator",
+	"Generators/Shaders/Custom": "custom_shader",
 	"Generators/Shaders/Flat": "flat_shader",
 	"Generators/Shaders/From mesh": "from_mesh_shader",
 	"Generators/Shaders/From mesh custom": "from_mesh_custom_shader",
