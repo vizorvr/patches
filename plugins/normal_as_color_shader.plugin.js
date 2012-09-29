@@ -3,10 +3,8 @@ E2.plugins["normal_as_color_shader"] = function(core, node) {
 	var renderer = core.renderer; 
 	var gl = renderer.context;
 	
-	this.desc = 'Render interpolated normals as RGB colors.';
-	this.input_slots = [
-		 { name: 'is3d', dt: core.datatypes.BOOL, desc: 'En- or disable depth buffer write and masking.', def: 'False' }
-	];
+	this.desc = 'Render vertex normals as interpolated RGB colors.';
+	this.input_slots = [];
 	
 	this.output_slots = [ 
 		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'The resulting shader.' } 
@@ -63,26 +61,12 @@ E2.plugins["normal_as_color_shader"] = function(core, node) {
 		
 		var r = core.renderer;
 		
-		r.set_depth_enable(self.is3d);
+		r.set_depth_enable(true);
 		r.set_blend_mode(Renderer.blend_mode.NORMAL);
       	};
       	
-	this.update_input = function(slot, data)
-	{
-		if(slot.index === 0)
-			self.is3d = data;
-	};
-	
 	this.update_output = function(slot)
 	{
 		return self.s;
 	};
-	
-	this.state_changed = function(ui)
-	{
-		if(!ui)
-			self.is3d = false;
-	};
-
-      	this.state_changed(null);
 };

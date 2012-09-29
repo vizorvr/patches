@@ -15,13 +15,6 @@ E2.plugins["blend_mode_generator"] = function(core, node) {
 	this.create_ui = function()
 	{
 		var bm = Renderer.blend_mode;
-		var items = {
-			None: bm.NONE,
-			Additive: bm.ADDITIVE,
-			Subtractive: bm.SUBTRACTIVE,
-			Multiply: bm.MULTIPLY,
-			Normal: bm.NORMAL
-		};
 		var inp = $('<select />', { selectedIndex: 4 });
 		
 		$('<option />', { value: bm.NONE, text: 'None' }).appendTo(inp);

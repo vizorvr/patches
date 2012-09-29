@@ -5,10 +5,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	
 	this.desc = 'Simple shader for rendering meshes with one texture modulated by a diffuse color.';
 	this.input_slots = [
-		 { name: 'is3d', dt: core.datatypes.BOOL, desc: 'En- or disable depth buffer write and masking.', def: 'False' },
-		 { name: 'color', dt: core.datatypes.COLOR, desc: 'Diffuse surface color.', def: 'White' },
-		 { name: 'blend mode', dt: core.datatypes.FLOAT, desc: 'Fragment blend mode.', def: 'Normal' },
-		 { name: 'texture', dt: core.datatypes.TEXTURE, desc: 'Diffuse texture map.' },
+		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.' },
 		 { name: 'uv offset', dt: core.datatypes.VERTEX, desc: 'UV translation. Only the x and y components are used with the z axis disregarded.' },
 		 { name: 'uv scale', dt: core.datatypes.VERTEX, desc: 'UV scale. Only the x and y components are used with the z axis factor disregarded.' },
 		 { name: 'uv rotation', dt: core.datatypes.FLOAT, desc: 'UV rotation in degrees.' },
@@ -87,58 +84,64 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 
 	this.s.apply_uniforms = this.apply_uniforms = function(mesh)
 	{
-		gl.uniform4fv(self.s.colorUniform, new Float32Array(self.color.rgba));
+		var mat = self.material ? self.material : mesh.material;
+		
+		gl.uniform4fv(self.s.colorUniform, new Float32Array(mat.diffuse_color.rgba));
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
 		gl.enableVertexAttribArray(self.s.uvCoordAttribute);
 		
-		gl.uniformMatrix4fv(self.s.tMatUniform, false, self.texture_transform);			
 		gl.uniform2fv(self.s.uvOffsetUniform, self.uv_offset);	
 		gl.uniform2fv(self.s.uvScaleUniform, self.uv_scale);	
 		gl.uniform1f(self.s.uvRotationUniform, self.uv_rotation);
 
-		if(self.tex !== null)
+		var diffuse_set = false;
+		
+		if(self.material)
 		{
-			gl.uniform1i(self.s.tex0Uniform, 0);
-			self.tex.enable(gl.TEXTURE0);
-		}
-		else if(mesh.material.textures[Material.texture_type.DIFFUSE_COLOR])
-		{
-			gl.uniform1i(this.tex0Uniform, 0);
-			mesh.material.textures[Material.texture_type.DIFFUSE_COLOR].enable(gl.TEXTURE0);
-		}
-		else
-		{
-			gl.bindTexture(gl.TEXTURE_2D, null);
+			var dt = self.material.textures[Material.texture_type.DIFFUSE_COLOR];
+			
+			if(dt)
+			{
+				gl.uniform1i(self.s.tex0Uniform, 0);
+				dt.enable(gl.TEXTURE0);
+				diffuse_set = true;
+			}
 		}
 		
-		var r = core.renderer;
+		if(!diffuse_set)
+		{
+			var dt = mesh.material.textures[Material.texture_type.DIFFUSE_COLOR];
+			
+			if(dt)
+			{
+				gl.uniform1i(this.tex0Uniform, 0);
+				dt.enable(gl.TEXTURE0);
+			}
+			else
+			{
+				gl.bindTexture(gl.TEXTURE_2D, null);
+			}
+		}
 		
-		r.set_depth_enable(self.is3d);
-		r.set_blend_mode(self.blend_mode);
-	};
-	
-	this.connection_changed = function(on, conn, slot)
-	{
-		if(!on && slot.type === E2.slot_type.input && slot.index === 3)
-			self.tex = null;
+		mat.enable();
 	};
 	
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
-			self.is3d = data;
+			self.material = data;
 		else if(slot.index === 1)
-			self.color = data;
-		else if(slot.index === 2)
-			self.blend_mode = data;
-		else if(slot.index === 3)
-			self.tex = data;
-		else if(slot.index === 4)
 			self.uv_offset = new Float32Array([data[0], data[1]]);
-		else if(slot.index === 5)
+		else if(slot.index === 2)
 			self.uv_scale = new Float32Array([data[0], data[1]]);
-		else if(slot.index === 6)
+		else if(slot.index === 3)
 			self.uv_rotation = ((data % 360.0) / 180.0) * Math.PI;
+	};
+
+	this.connection_changed = function(on, conn, slot)
+	{
+		if(!on && slot.type === E2.slot_type.input)
+			self.material = null;
 	};
 	
 	this.update_output = function(slot)
@@ -150,16 +153,10 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	{
 		if(!ui)
 		{
-			self.is3d = false;
-			self.color = new Color(1.0, 1.0, 1.0, 1.0);
-			self.blend_mode = Renderer.blend_mode.NORMAL;
-			self.tex = null;
-			self.texture_transform = mat4.create();
+			self.material = null;
 			self.uv_offset = new Float32Array([0.0, 0.0]);
 			self.uv_scale = new Float32Array([1.0, 1.0]);
 			self.uv_rotation = 0.0;
-			
-			mat4.identity(self.texture_transform);
 		}
 	};
 };

@@ -1560,7 +1560,7 @@ function Core() {
 		else if(dt === dts.BOOL)
 			return false;
 		else if(dt === dts.MATERIAL)
-			return new Material(null, null, null, null);
+			return new Material();
 		
 		// Shaders and textures legally default to null.
 		return null;

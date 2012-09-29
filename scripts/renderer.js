@@ -389,10 +389,12 @@ function Material(gl, t_cache, data, base_path)
 	this.t_cache = t_cache;
 	this.depth_test = true;
 	this.depth_write = true;
+	this.depth_func = Material.depth_func.LEQUAL;
 	this.alpha_clip = false;
 	this.shininess = 0.0;
 	this.double_sided = false;
 	this.blend_mode = Renderer.blend_mode.NORMAL;
+	this.diffuse_color = new Color(1, 1, 1, 1);
 	this.textures = [];
 	
 	if(data)
@@ -443,16 +445,25 @@ function Material(gl, t_cache, data, base_path)
 	
 	this.enable = function()
 	{
-		var r = core.renderer;
+		var r = E2.app.core.renderer;
 		var gl = r.context;
 		
 		if(self.depth_test)
+		{
 			gl.enable(gl.DEPTH_TEST);
+			gl.depthFunc([gl.NEVER, 
+				      gl.LESS,
+				      gl.EQUAL,
+				      gl.LEQUAL,
+				      gl.GREATER,
+				      gl.NOTEQUAL,
+				      gl.GEQUAL,
+				      gl.ALWAYS][self.depth_func]);
+		}
 		else
 			gl.disable(gl.DEPTH_TEST);
 		
 		gl.depthMask(self.depth_write);
-
 		r.set_blend_mode(self.blend_mode);
 	};
 }
@@ -461,11 +472,23 @@ Material.texture_type =
 {
 	ALPHA: 0,
 	DIFFUSE_COLOR: 1,
-	EMISSION_INTENSITY: 2,
-	SPECULAR_INTENSITY: 3,
-	SPECULAR_COLOR: 4,
-	EMISSION_COLOR: 5,
-	NORMAL: 6
+	SPECULAR_COLOR: 2,
+	EMISSION_COLOR: 3,
+	NORMAL: 4,
+	COUNT: 5 // Always last!
+};
+
+Material.depth_func =
+{
+	NEVER: 0,
+	LESS: 1,
+	EQUAL: 2,
+	LEQUAL: 3,
+	GREATER: 4,
+	NOTEQUAL: 5,
+	GEQUAL: 6,
+	ALWAYS: 7,
+	COUNT: 8 // Always last!
 };
 
 function Mesh(gl, prim_type, t_cache, data, base_path)

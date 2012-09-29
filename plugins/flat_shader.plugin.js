@@ -5,9 +5,7 @@ E2.plugins["flat_shader"] = function(core, node) {
 	
 	this.desc = 'Simple shader for rendering meshes with diffuse color only.';
 	this.input_slots = [
-		 { name: 'is3d', dt: core.datatypes.BOOL, desc: 'En- or disable depth buffer write and masking.', def: 'False' },
-		 { name: 'color', dt: core.datatypes.COLOR, desc: 'Diffuse surface color.', def: 'White' },
-		 { name: 'blend mode', dt: core.datatypes.FLOAT, desc: 'Fragment blend mode.', def: 'Normal' }
+		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.' }
 	];	
 	this.output_slots = [ 
 		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'The resulting shader.' } 
@@ -50,23 +48,24 @@ E2.plugins["flat_shader"] = function(core, node) {
       	
       	this.s.apply_uniforms = this.apply_uniforms = function(mesh)
       	{
-		gl.uniform4fv(self.s.colorUniform, new Float32Array(self.color.rgba));
+		var mat = self.material ? self.material : mesh.material;
+		
+		gl.uniform4fv(self.s.colorUniform, new Float32Array(mat.diffuse_color.rgba));
 		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
 		
-		var r = core.renderer;
-		
-		r.set_depth_enable(self.is3d);
-		r.set_blend_mode(self.blend_mode);
+		mat.enable();
       	};
       	
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
-			self.is3d = data;
-		else if(slot.index === 1)
-			self.color = data;
-		else if(slot.index === 2)
-			self.blend_mode = data;
+			self.material = data;
+	};
+	
+	this.connection_changed = function(on, conn, slot)
+	{
+		if(!on && slot.type === E2.slot_type.input)
+			self.material = null;
 	};
 	
 	this.update_output = function(slot)
@@ -77,11 +76,7 @@ E2.plugins["flat_shader"] = function(core, node) {
 	this.state_changed = function(ui)
 	{
 		if(!ui)
-		{
-			self.is3d = false;
-			self.color = new Color(1.0, 1.0, 1.0, 1.0);
-			self.blend_mode = Renderer.blend_mode.NORMAL;
-		}
+			self.material = null;
 	};
 
       	this.state_changed(null);

@@ -6,10 +6,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 	this.desc = 'Auto-generate a shader embedding user-defined main bodies tailored to correctly and optimally render the supplied mesh.';
 	this.input_slots = [
 		 { name: 'mesh', dt: core.datatypes.MESH, desc: 'Mesh to adapt the shader to.' },
-		 { name: 'is3d', dt: core.datatypes.BOOL, desc: 'En- or disable depth buffer write and masking.', def: 'False' },
-		 { name: 'color', dt: core.datatypes.COLOR, desc: 'Diffuse color. Will modulate the texture color.', def: 'White' },
-		 { name: 'blend mode', dt: core.datatypes.FLOAT, desc: 'Fragment blend mode.', def: 'Normal' },
-		 { name: 'texture', dt: core.datatypes.TEXTURE, desc: 'Diffuse texture map.' }
+		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.' }
 	];
 	
 	this.output_slots = [ 
@@ -228,8 +225,8 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 	this.create_ui = function()
 	{
 		var layout = make('div');
-		var inp_vs = $('<input id="vs_btn" type="button" value="Vertex" title="Click to edit source." />');
-		var inp_ps = $('<input id="ps_btn" type="button" value="Pixel" title="Click to edit source." />');
+		var inp_vs = $('<input id="vs_btn" type="button" value="Vertex" title="Click to edit the vertex shader source." />');
+		var inp_ps = $('<input id="ps_btn" type="button" value="Pixel" title="Click to edit the pixel shader source." />');
 		
 		inp_vs.css('width', '55px');
 		inp_ps.css('width', '55px');
@@ -262,8 +259,10 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 				self.mesh = null;
 				self.shader = null;
 			}
-			else if(slot.index === 4)
-				self.tex = null;
+			else if(slot.index === 1)
+			{
+				self.material = null;
+			}
 		}
 	};
 	
@@ -311,25 +310,41 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		// our values to the generated shader.
 		self.shader.apply_uniforms = function(mesh)
 		{
-			gl.uniform4fv(this.diffuseColorUniform, new Float32Array(self.color.rgba));
+			var mat = self.material ? self.material : mesh.material;
+
+			gl.uniform4fv(this.diffuseColorUniform, new Float32Array(mat.diffuse_color.rgba));
 		
 			if(this.uv0CoordAttribute !== undefined)
 			{
-				gl.enableVertexAttribArray(this.uv0CoordAttribute);
+				var diffuse_set = false;
 
-				if(self.tex !== null)
+				gl.enableVertexAttribArray(self.shader.uv0CoordAttribute);
+
+				if(self.material)
 				{
-					gl.uniform1i(this.tex0Uniform, 0);
-					self.tex.enable(gl.TEXTURE0);
+					var dt = self.material.textures[Material.texture_type.DIFFUSE_COLOR];
+
+					if(dt)
+					{
+						gl.uniform1i(this.tex0Uniform, 0);
+						dt.enable(gl.TEXTURE0);
+						diffuse_set = true;
+					}
 				}
-				else if(mesh.material.textures[Material.texture_type.DIFFUSE_COLOR])
+
+				if(!diffuse_set)
 				{
-					gl.uniform1i(this.tex0Uniform, 0);
-					mesh.material.textures[Material.texture_type.DIFFUSE_COLOR].enable(gl.TEXTURE0);
-				}
-				else
-				{
-					gl.bindTexture(gl.TEXTURE_2D, null);
+					var dt = mesh.material.textures[Material.texture_type.DIFFUSE_COLOR];
+
+					if(dt)
+					{
+						gl.uniform1i(this.tex0Uniform, 0);
+						dt.enable(gl.TEXTURE0);
+					}
+					else
+					{
+						gl.bindTexture(gl.TEXTURE_2D, null);
+					}
 				}
 			}
 	
@@ -361,10 +376,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 					gl.uniform3fv(slot.uniform, new Float32Array(sd[slot.id]));	
 			}
 			
-			var r = core.renderer;
-
-			r.set_depth_enable(self.is3d);
-			r.set_blend_mode(self.blend_mode);
+			mat.enable();	
 		};
 	};
 	
@@ -378,13 +390,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 				self.rebuild_shader();
 			}
 			else if(slot.index === 1)
-				self.is3d = data;
-			else if(slot.index === 2)
-				self.color = data;
-			else if(slot.index === 3)
-				self.blend_mode = data;
-			else if(slot.index === 4)
-				self.tex = data;
+				self.material = data;
 		}
 		else
 		{
@@ -411,10 +417,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		if(!ui)
 		{
 			self.mesh = null;
-			self.is3d = false;
-			self.color = new Color(1.0, 1.0, 1.0, 1.0);
-			self.blend_mode = Renderer.blend_mode.NORMAL;
-			self.tex = null;
+			self.material = null;
 		}
 	};
 };
