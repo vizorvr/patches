@@ -20,15 +20,14 @@ E2.plugins["sphere_mesh_generator"] = function(core, node) {
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0 && self.state.v_res !== data && data > 1)
-		{
 			self.state.v_res = Math.floor(data < 3.0 ? 3.0 : data > 25.0 ? 25.0 : data);
-			self.generate_mesh();
-		}
 		else if(slot.index === 1 && self.state.h_res !== data && data > 1)
-		{
 			self.state.h_res = Math.floor(data < 3.0 ? 3.0 : data > 25.0 ? 25.0 : data);
-			self.generate_mesh();
-		}
+	};
+	
+	this.update_state = function(delta_t)
+	{
+		self.generate_mesh();
 	};
 	
 	this.update_output = function(slot)
@@ -92,18 +91,22 @@ E2.plugins["sphere_mesh_generator"] = function(core, node) {
 		var vb = self.mesh.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);
 		
 		vb.bind_data(verts);
-
+		delete verts;
+		
 		var nb = self.mesh.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL);
 		
 		nb.bind_data(norms);
+		delete norms;
 
 		var uvb = self.mesh.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0);
 		
 		uvb.bind_data(uvs);
+		delete uvs;
 
 		var ib = self.mesh.index_buffer = new IndexBuffer(gl);
 		
 		ib.bind_data(indices);
+		delete indices;
 	};
 	
 	this.state_changed = function(ui)
