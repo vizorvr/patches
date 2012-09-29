@@ -1452,10 +1452,7 @@ function Graph(parent_graph, tree_node)
 		}
 		
 		for(var i = 0, len = prune.length; i < len; i++)
-		{
-			debugger;
 			conns.remove(prune[i]);
-		}
 	};
 	
 	this.initialise = function()
