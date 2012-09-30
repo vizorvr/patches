@@ -189,6 +189,7 @@ function Renderer(canvas_id)
 		this.context = WebGLDebugUtils.makeDebugContext(this.context);
 	
 	this.texture_cache = new TextureCache(this.context);
+	this.shader_cache = new ShaderCache(this.context);
 	
 	this.begin_frame = function()
 	{
@@ -434,10 +435,17 @@ function Material(gl, t_cache, data, base_path)
 			
 			if(t)
 			{
-				if(old)
-					self.textures[tgt] = t_cache.get(base_path + t);
-				else
-					self.textures[tgt] = t_cache.get(base_path + t.url);
+				var url = t;
+				
+				if(!old)
+					url = t.url;
+				
+				self.textures[tgt] = t_cache.get(base_path + url);
+				
+				var ext = url.substring(url.length - 3, url.length).toLowerCase();
+				
+				if(ext == 'png')
+					self.alpha_clip = true;
 			}
 		};
 		
@@ -885,7 +893,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			var m = mesh.material;
 
 			gl.enableVertexAttribArray(this.vertexPosAttribute);
-			gl.uniform1i(this.e2alphaClipUniform, m.alpha_clip ? 1 : 0);
+			gl.uniform1i(this.alphaClipUniform, m.alpha_clip ? 1 : 0);
 			
 			if(m.diffuse_color)
 				gl.uniform4fv(this.diffuseColorUniform, new Float32Array(m.diffuse_color.rgba));	
@@ -935,13 +943,20 @@ function ShaderCache(gl)
 		k += m.emission_color ? '1' : '0';
 		k += m.specular_color ? '1' : '0';
 		k += m.ambient_color ? '1' : '0';
-		k += m.diffuse_tex ? '1' : '0';
-		k += m.emission_tex ? '1' : '0';
-		k += m.specular_tex ? '1' : '0';
-		k += m.normal_tex ? '1' : '0';
-		k += m.shininess ? '1' : '0';
-		k += m.double_sided ? '1' : '0';
+		k += m.alpha_clip ? '1' : '0';
+		k += m.textures[Material.texture_type.DIFFUSE_COLOR] ? '1' : '0';
+		k += m.textures[Material.texture_type.EMISSION_COLOR] ? '1' : '0';
+		k += m.textures[Material.texture_type.SPECULAR_COLOR] ? '1' : '0';
+		k += m.textures[Material.texture_type.NORMAL] ? '1' : '0';
 	
+		for(var i in m.lights)
+		{
+			if(!m.lights.hasOwnProperty(i))
+				continue;
+				
+			k += 'l' + i;
+		}
+		
 		return k;
 	};
 	
@@ -954,7 +969,10 @@ function ShaderCache(gl)
 		if(exists)
 			prog = self.programs[key];
 		else
+		{
 			self.programs[key] = prog = gl.createProgram();
+			msg('Caching shader: ' + key);
+		}
 		
 		return [exists, prog];
 	}
@@ -1041,7 +1059,7 @@ function Scene(gl, data, base_path)
 	
 	this.gl = gl;
 	this.texture_cache = E2.app.core.renderer.texture_cache /*new TextureCache(gl)*/;
-	this.shader_cache = new ShaderCache(gl);
+	this.shader_cache = E2.app.core.renderer.shader_cache /*new ShaderCache(gl)*/;
 	this.meshes = [];
 	this.id = 'n/a';
 	this.vertex_count = 0;
@@ -1132,9 +1150,11 @@ Scene.load = function(gl, url)
 		success: function(data) 
 		{
 			var bp = url.substr(0, url.lastIndexOf('/') + 1);
+			var r = E2.app.core.renderer;
 			
 			scene = new Scene(gl, data, bp);
 			msg('Scene: Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
+			msg('Global cache state: ' + r.texture_cache.count() + ' textures. ' + r.shader_cache.count() + ' shaders.');
 		},
 		error: function(jqXHR, textStatus, errorThrown)
 		{
