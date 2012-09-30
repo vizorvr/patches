@@ -15,9 +15,8 @@ E2.plugins["texture_type_generator"] = function(core, node) {
 	this.create_ui = function()
 	{
 		var tt = Material.texture_type;
-		var inp = $('<select />', { selectedIndex: 1 });
+		var inp = $('<select />', { selectedIndex: 0 });
 		
-		$('<option />', { value: tt.ALPHA, text: 'Alpha' }).appendTo(inp);
 		$('<option />', { value: tt.DIFFUSE_COLOR, text: 'Diffuse color' }).appendTo(inp);
 		$('<option />', { value: tt.EMISSION_COLOR, text: 'Emission color' }).appendTo(inp);
 		$('<option />', { value: tt.SPECULAR_COLOR, text: 'Specular color' }).appendTo(inp);

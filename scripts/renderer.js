@@ -490,12 +490,11 @@ function Material(gl, t_cache, data, base_path)
 
 Material.texture_type =
 {
-	ALPHA: 0,
-	DIFFUSE_COLOR: 1,
-	SPECULAR_COLOR: 2,
-	EMISSION_COLOR: 3,
-	NORMAL: 4,
-	COUNT: 5 // Always last!
+	DIFFUSE_COLOR: 0,
+	SPECULAR_COLOR: 1,
+	EMISSION_COLOR: 2,
+	NORMAL: 3,
+	COUNT: 4 // Always last!
 };
 
 Material.depth_func =
