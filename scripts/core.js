@@ -953,7 +953,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		}
 			
 		if(canvas_dirty)
-			E2.app.updateCanvas();
+			E2.app.updateCanvas(true);
 	};
 	
 	this.rename_slot = function(slot_type, suid, name)
@@ -1882,7 +1882,7 @@ function Application() {
 		}
 		
 		if(dirty)
-			self.updateCanvas();
+			self.updateCanvas(false);
 	};
 	
 	this.releaseHoverSlot = function()
@@ -1954,16 +1954,17 @@ function Application() {
 		self.releaseHoverSlot();
 	}};
 	
-	this.updateCanvas = function()
+	this.updateCanvas = function(clear)
 	{
 		var c = self.c2d;
 		var canvas = self.canvas[0];
 		 
-		c.clearRect(0, 0, canvas.width, canvas.height);
+		if(clear)
+			c.clearRect(0, 0, canvas.width, canvas.height);
 				
 		var conns = self.core.active_graph.connections;
 		var cb = [[], [], [], []];
-		var styles = ['#000', '#44f', '#09f', E2.erase_color];
+		var styles = ['#888', '#000', '#09f', E2.erase_color];
 		
 		for(var i = 0, len = conns.length; i < len; i++)
 		{
@@ -1980,6 +1981,10 @@ function Application() {
 		
 		var so = self.scrollOffset;
 		
+		c.lineWidth = 1;
+		c.lineCap = 'square';
+		c.lineJoin = 'miter';
+		
 		for(var bin = 0; bin < 4; bin++)
 		{
 			var b = cb[bin];
@@ -1993,12 +1998,12 @@ function Application() {
 				{
 					var conn = b[i],
 					    cui = conn.ui,
-					    x1 = cui.src_pos[0] - so[0],
-					    y1 = cui.src_pos[1] - so[1],
-					    x4 = cui.dst_pos[0] - so[0],
-					    y4 = cui.dst_pos[1] - so[1],
-					    mx = (x1 + x4) * 0.5,
-					    my = (y1 + y4) * 0.5,
+					    x1 = (cui.src_pos[0] - so[0]) + 0.5,
+					    y1 = (cui.src_pos[1] - so[1]) + 0.5,
+					    x4 = (cui.dst_pos[0] - so[0]) + 0.5,
+					    y4 = (cui.dst_pos[1] - so[1]) + 0.5,
+					    mx = (x1 + x4) / 2,
+					    my = (y1 + y4) / 2,
 					    x2 = x1 + 10 + (conn.offset * 5);
 		
 					x2 = x2 < mx ? x2 : mx;
@@ -2056,7 +2061,7 @@ function Application() {
 				cp.scrollTop(self.scrollOffset[1] + 20);
 
 			self.edit_conn.ui.dst_pos = self.mouseEventPosToCanvasCoord(e);
-			self.updateCanvas();
+			self.updateCanvas(true);
 		}
 	};
 	
@@ -2103,7 +2108,7 @@ function Application() {
 		self.dst_node = null;
 		self.src_node = null;
 		self.edit_conn = null;
-		self.updateCanvas();
+		self.updateCanvas(true);
 	};
 	
 	this.activateHoverNode = function()
@@ -2154,7 +2159,7 @@ function Application() {
 			}
 			
 			if(hcs.length > 0)
-				self.updateCanvas();
+				self.updateCanvas(false);
 		}
 	};
 	
@@ -2210,7 +2215,7 @@ function Application() {
 				hcs[i].ui.deleting = false;
 			
 			self.hover_connections = [];
-			self.updateCanvas();
+			self.updateCanvas(false);
 		}
 		
 	};
@@ -2242,7 +2247,7 @@ function Application() {
 					hcs[i].signal_change(false);
 				
 				self.hover_connections = [];
-				self.updateCanvas();
+				self.updateCanvas(true);
 			}
 	};
 		
@@ -2278,7 +2283,7 @@ function Application() {
 			n.destroy();
 		}
 		
-		self.updateCanvas();
+		self.updateCanvas(false);
 	};
 	
 	this.onNodeHeaderClicked = function(e)
@@ -2399,7 +2404,7 @@ function Application() {
 		}
 		
 		if(node.inputs.length + node.outputs.length > 0)
-			self.updateCanvas();
+			self.updateCanvas(true);
 	}};
 	
 	this.onNodeDragStopped = function(node) { return function(e)
@@ -2454,7 +2459,7 @@ function Application() {
 			self.selection_conns = [];
 		}
 		
-		self.updateCanvas();
+		self.updateCanvas(false);
 	};
 	
 	this.releaseSelection = function()
@@ -2514,7 +2519,7 @@ function Application() {
 			}
 		}
 		
-		self.updateCanvas();
+		self.updateCanvas(true);
 	};
 
 	this.onCanvasMouseMoved = function(e)
@@ -2580,7 +2585,7 @@ function Application() {
 		
 		self.selection_last = [e.pageX, e.pageY];
 		
-		self.updateCanvas();
+		self.updateCanvas(true);
 	};
 
 	this.selectAll = function()
@@ -2820,7 +2825,7 @@ function Application() {
 			self.selection_conns[i].ui.resolve_slot_divs();
 		
 		if(d.conns.length)
-			self.updateCanvas();
+			self.updateCanvas(false);
 		
 		msg('Paste event');
 	};
@@ -2924,7 +2929,7 @@ function Application() {
 		self.core.active_graph.reset();
 		self.core.renderer.begin_frame(); // Clear the WebGL view.
 		self.core.renderer.end_frame();
-		self.updateCanvas();
+		self.updateCanvas(false);
 	};
 
 	this.onSaveClicked = function()
@@ -2939,7 +2944,7 @@ function Application() {
 		self.onStopClicked();
 		self.core.renderer.texture_cache.clear();
 		self.core.deserialise(E2.dom.persist.val());
-		self.updateCanvas();
+		self.updateCanvas(false);
 	};
 
 	this.onLoadClipboardClicked = function()
@@ -2979,7 +2984,7 @@ function Application() {
 		var delta_t = (time - self.last_time) * 0.001;
 		
 		if(self.core.update(self.abs_time, delta_t))
-			self.updateCanvas();
+			self.updateCanvas(false);
 		
 		self.last_time = time;
 		self.abs_time += delta_t;
@@ -2995,7 +3000,7 @@ function Application() {
 	{
 		self.scrollOffset = [ canvas_parent.scrollLeft(), canvas_parent.scrollTop() ];
 		canvas.css({'left': self.scrollOffset[0], 'top': self.scrollOffset[1]});
-		self.updateCanvas();
+		self.updateCanvas(true);
 	});
 	
 	canvas_parent.mousedown(this.onCanvasMouseDown);
@@ -3109,7 +3114,7 @@ $(document).ready(function() {
 			E2.app.clearEditState();
 			E2.app.clearSelection();
 			E2.app.core.onGraphSelected(node.graph);
-			E2.app.updateCanvas();
+			E2.app.updateCanvas(true);
 		}
 	});
     

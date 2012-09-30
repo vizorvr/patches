@@ -311,7 +311,7 @@ E2.plugins["graph"] = function(core, node) {
 						self.is_reset = true;
 						
 						if(self.graph === E2.app.core.active_graph)
-							E2.app.updateCanvas();
+							E2.app.updateCanvas(false);
 					}
 				}
 				else
