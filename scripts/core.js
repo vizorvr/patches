@@ -751,7 +751,10 @@ function NodeUI(parent_node, x, y) {
 	
 	make_draggable(this.dom, E2.app.onNodeDragged(parent_node), E2.app.onNodeDragStopped(parent_node));
     	
-	this.dom.css({'top': y, 'left': x});
+	var s = this.dom[0].style;
+	
+	s.left = '' + x + 'px';
+	s.top = '' + y + 'px';
 	E2.dom.canvas_parent.append(this.dom);
 }
 
@@ -1844,7 +1847,7 @@ function Application() {
 			}
 			
 			self.edit_conn.offset = offset;
-			slot_div.css('color', '#0f0');
+			slot_div[0].style.color = '#0f0';
 		}
 		
 		if(self.shift_pressed)
@@ -1860,7 +1863,7 @@ function Application() {
 		if(!hs)
 			return;
 		
-		self.hover_slot_div.css('background-color', E2.erase_color);
+		self.hover_slot_div[0].style.backgroundColor = E2.erase_color;
 		
 		// Mark any attached connection
 		var conns = self.core.active_graph.connections;
@@ -1889,7 +1892,7 @@ function Application() {
 	{
 		if(self.hover_slot != null)
 		{
-			self.hover_slot_div.css('background-color', 'inherit');
+			self.hover_slot_div[0].style.backgroundColor = 'inherit';
 			self.hover_slot_div = null;
 			self.hover_slot = null;
 		}
@@ -1898,7 +1901,7 @@ function Application() {
 		
 		if(self.dst_slot_div != null)
 		{
-			self.dst_slot_div.css('color', '#000');
+			self.dst_slot_div[0].style.color = '#000';
 			self.dst_slot_div = null;
 		}
 
@@ -1926,13 +1929,13 @@ function Application() {
 			{
 				self.dst_node = node;
 				self.dst_slot = slot;
-				slot_div.css('color', '#0f0');
+				slot_div[0].style.color = '#0f0';
 			}
 			else
 			{
 				self.dst_node = null;
 				self.dst_slot = null;
-				slot_div.css('color', E2.erase_color);
+				slot_div[0].style.color = E2.erase_color;
 			}
 		}
 		
@@ -2092,7 +2095,7 @@ function Application() {
 			
 			c.signal_change(true);
 
-			self.dst_slot_div.css('color', '#000');
+			self.dst_slot_div[0].style.color = '#000';
 			self.dst_slot.is_connected = true;
 			self.dst_slot_div = null;
 			self.dst_slot = null;
@@ -2100,7 +2103,7 @@ function Application() {
 
 		if(self.src_slot)
 		{
-			self.src_slot_div.css('color', '#000');
+			self.src_slot_div[0].style.color = '#000';
 			self.src_slot = null;
 			self.src_slot_div = null;
 			self.set_persist_select(true);
@@ -2116,7 +2119,7 @@ function Application() {
 	{
 		if(self.hover_node !== null)
 		{
-			self.hover_node.ui.header_row.css('background-color', E2.erase_color);
+			self.hover_node.ui.header_row[0].style.backgroundColor = E2.erase_color;
 		
 			var hcs = self.hover_connections;
 			var conns = self.core.active_graph.connections;
@@ -2148,7 +2151,7 @@ function Application() {
 					if(node === self.hover_node)
 						continue;
 
-					node.ui.header_row.css('background-color', E2.erase_color);
+					node.ui.header_row[0].style.backgroundColor = E2.erase_color;
 					self.hover_nodes.push(node);
 					
 					iterate_conns(hcs, node.uid);
@@ -2173,7 +2176,7 @@ function Application() {
 			self.hover_node = null;
 			
 			for(var i = 0, len = self.hover_nodes.length; i < len; i++)
-				hn[i].ui.header_row.css('background-color', '#656974'); // TODO: Ugly. This belongs in a style sheet.
+				hn[i].ui.header_row[0].style.backgroundColor = '#656974'; // TODO: Ugly. This belongs in a style sheet.
 			
 			self.hover_nodes = [];
 			
@@ -2394,13 +2397,14 @@ function Application() {
 				if(n === node) // Already at the desired location
 					continue;
 				
-				var p = n.ui.dom.position();
-				var nx = sl + p.left + dx;
-				var ny = st + p.top + dy;
+				var d = n.ui.dom[0];
+				var nx = sl + d.offsetLeft + dx;
+				var ny = st + d.offsetTop + dy;
 				
 				n.x = nx;
 				n.y = ny;
-				n.ui.dom.css({'left': nx, 'top': ny});
+				d.style.left = '' + (nx - sl) + 'px';
+				d.style.top = '' + (ny - st) + 'px';
 				n.update_connections();
 				dirty = dirty || (n.inputs.length + n.outputs.length > 0);
 			}
@@ -2423,7 +2427,7 @@ function Application() {
 			var nui = self.selection_nodes[i].ui;
 			
 			if(nui) 
-				nui.dom.css('border', '1px solid #aaa');
+				nui.dom[0].style.border = '1px solid #aaa';
 		}
 			
 		for(var i = 0, len = self.selection_conns.length; i < len; i++)
@@ -2553,7 +2557,7 @@ function Application() {
 		var sn = self.selection_nodes;
 		
 		for(var i = 0, len = self.selection_nodes.length; i < len; i++)
-			sn[i].ui.dom.css('border', '1px solid #aaa');
+			sn[i].ui.dom[0].style.border = '1px solid #aaa';
 
 		self.selection_nodes = [];
 		
@@ -2569,7 +2573,7 @@ function Application() {
 			if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
 				continue; // No intersection.
 				
-			n.ui.dom.css('border', '2px solid #09f');
+			n.ui.dom[0].style.border = '2px solid #09f';
 			self.selection_nodes.push(n);
 		}
 		
@@ -2816,7 +2820,7 @@ function Application() {
 
 			n.create_ui();
 
-			n.ui.dom.css('border', '2px solid #09f');
+			n.ui.dom[0].border = '2px solid #09f';
 
 			if(n.plugin.state_changed)
 				n.plugin.state_changed(n.ui.plugin_ui);			
@@ -3002,7 +3006,10 @@ function Application() {
 	canvas_parent.scroll(function()
 	{
 		self.scrollOffset = [ canvas_parent.scrollLeft(), canvas_parent.scrollTop() ];
-		canvas.css({'left': self.scrollOffset[0], 'top': self.scrollOffset[1]});
+		var s = canvas[0].style;
+		
+		s.left = '' + self.scrollOffset[0] + 'px';
+		s.top = '' + self.scrollOffset[1] + 'px';
 		self.updateCanvas(true);
 	});
 	
@@ -3144,6 +3151,6 @@ $(document).ready(function() {
 	E2.dom.load_clipboard.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClipboardClicked);
 
 	$('#tabs').tabs();
-	$('#content').css('display', 'block');
+	$('#content')[0].style.display = 'block';
 	Notifier.init();
 });
