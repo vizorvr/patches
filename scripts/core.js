@@ -2038,9 +2038,9 @@ function Application() {
 	
 	this.mouseEventPosToCanvasCoord = function(e)
 	{
-		var ofs = canvas_parent.offset();
+		var cp = canvas_parent[0];
 		
-		return [(e.pageX - ofs.left) + self.scrollOffset[0], (e.pageY - ofs.top) + self.scrollOffset[1]];
+		return [(e.pageX - cp.offsetLeft) + self.scrollOffset[0], (e.pageY - cp.offsetTop) + self.scrollOffset[1]];
 	};
 	
 	this.onMouseMoved = function(e)
