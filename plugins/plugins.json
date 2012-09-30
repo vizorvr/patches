@@ -24,7 +24,6 @@
 	"Generators/Load/Audio from URL": "url_audio_generator",
 	"Generators/Load/Image from URL": "url_texture_generator",
 	"Generators/Load/Scene from URL": "url_scene_generator",
-	"Generators/Material/Default": "default_material",
 	"Generators/Matrix/Translation": "translation_matrix",
 	"Generators/Matrix/Rotation": "rotation_matrix",
 	"Generators/Matrix/Rotation XYZ": "rotation_xyz_matrix",
