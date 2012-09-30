@@ -1503,7 +1503,8 @@ function Core() {
 		MESH: { id: 9, name: 'Mesh' },
 		AUDIO: { id: 10, name: 'Audio' },
 		SCENE: { id: 11, name: 'Scene' },
-		MATERIAL: { id: 12, name: 'Material' }
+		MATERIAL: { id: 12, name: 'Material' },
+		LIGHT: { id: 13, name: 'Light' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');

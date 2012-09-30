@@ -382,6 +382,25 @@ function IndexBuffer(gl)
 	};
 }
 
+function Light()
+{
+	var self = this;
+	
+	this.type = Light.type.POINT;
+	this.diffuse_color = new Color(1, 1, 1, 1);
+	this.specular_color = new Color(1, 1, 1, 1);
+	this.position = [0, 1, 0];
+	this.direction = [0, -1, 0];
+	this.intensity = 1.0;
+}
+
+Light.type = 
+{
+	POINT: 0,
+	DIRECTIONAL: 1,
+	COUNT: 2 // Always last!
+};
+
 function Material(gl, t_cache, data, base_path)
 {
 	var self = this;
@@ -396,6 +415,7 @@ function Material(gl, t_cache, data, base_path)
 	this.blend_mode = Renderer.blend_mode.NORMAL;
 	this.diffuse_color = new Color(1, 1, 1, 1);
 	this.textures = [];
+	this.lights = [];
 	
 	if(data)
 	{
