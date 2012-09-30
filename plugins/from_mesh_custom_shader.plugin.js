@@ -312,7 +312,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		{
 			var mat = self.material ? self.material : mesh.material;
 
-			gl.uniform1i(this.e2alphaClipUniform, m.alpha_clip ? 1 : 0);
+			gl.uniform1i(this.e2alphaClipUniform, mat.alpha_clip ? 1 : 0);
 			gl.uniform4fv(this.diffuseColorUniform, new Float32Array(mat.diffuse_color.rgba));
 		
 			if(this.uv0CoordAttribute !== undefined)
