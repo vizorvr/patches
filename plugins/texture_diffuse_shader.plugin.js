@@ -35,7 +35,8 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		     'varying vec2 uv_coord;' +
     		     'uniform sampler2D tex0;' +
     		     'uniform vec4 color;' +
-		     'void main(void) { vec4 c = texture2D(tex0, uv_coord.st); gl_FragColor = vec4(color * c); }';
+    		     'uniform int alpha_clip;' +
+		     'void main(void) { vec4 c = texture2D(tex0, uv_coord.st); c *= color; if(alpha_clip > 0 && c.a < 0.5) discard; gl_FragColor = vec4(c); }';
 
 	this.s = new ShaderProgram(gl);
 	this.vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
@@ -57,6 +58,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	this.s.uvOffsetUniform = gl.getUniformLocation(prog, "uv_offset");
 	this.s.uvScaleUniform = gl.getUniformLocation(prog, "uv_scale");
 	this.s.uvRotationUniform = gl.getUniformLocation(prog, "uv_rotation");
+	this.s.alphaClipUniform = gl.getUniformLocation(prog, "alpha_clip");
 	
 	// Note: Shader implementations must decorate the shader prototype with these
 	// two methods, so the rendering plugins can call it to update the shader uniforms
@@ -93,6 +95,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		gl.uniform2fv(self.s.uvOffsetUniform, self.uv_offset);	
 		gl.uniform2fv(self.s.uvScaleUniform, self.uv_scale);	
 		gl.uniform1f(self.s.uvRotationUniform, self.uv_rotation);
+		gl.uniform1i(self.s.alphaClipUniform, mat.alpha_clip ? 1 : 0);
 
 		var diffuse_set = false;
 		

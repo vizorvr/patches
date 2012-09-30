@@ -562,6 +562,8 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 					self.face_norms.push(n[1]);
 					self.face_norms.push(n[2]);
 				}
+				
+				// TODO: Use index buffer to calculate proper vertex normals.
 			}
 			else
 			{
@@ -643,34 +645,52 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		shader.bind_camera(camera);
        		shader.apply_uniforms(this);
 		
-		var draw = (!self.index_buffer) ? function()
-		{
-			gl.drawArrays(self.prim_type, 0, verts.count);
-		} : function()
-		{
-			self.index_buffer.enable();
-			gl.drawElements(self.prim_type, self.index_buffer.count, gl.UNSIGNED_SHORT, 0);
-		};
-		
 		if(!self.instances)
 		{
-			shader.bind_transform(transform);	
-			draw();
+			gl.uniformMatrix4fv(shader.mMatUniform, false, transform);
+			
+			if(!self.index_buffer)
+			{
+				gl.drawArrays(self.prim_type, 0, verts.count);
+			}
+			else
+			{
+				self.index_buffer.enable();
+				gl.drawElements(self.prim_type, self.index_buffer.count, gl.UNSIGNED_SHORT, 0);
+			}
 		}
 		else
 		{
 			var inst = self.instances;
 			var ft = mat4.create();
 			
-			for(var i = 0, len = inst.length; i < len; i++)
+			if(!self.index_buffer)
 			{
-				if(!transform.invert)
-					mat4.multiply(inst[i], transform, ft);
-				else
-					mat4.multiply(transform, inst[i], ft);
+				for(var i = 0, len = inst.length; i < len; i++)
+				{
+					if(!transform.invert)
+						mat4.multiply(inst[i], transform, ft);
+					else
+						mat4.multiply(transform, inst[i], ft);
 				
-				shader.bind_transform(ft);
-				draw();
+					gl.uniformMatrix4fv(shader.mMatUniform, false, ft);
+					gl.drawArrays(self.prim_type, 0, verts.count);
+				}
+			}
+			else
+			{
+				self.index_buffer.enable();
+
+				for(var i = 0, len = inst.length; i < len; i++)
+				{
+					if(!transform.invert)
+						mat4.multiply(inst[i], transform, ft);
+					else
+						mat4.multiply(transform, inst[i], ft);
+				
+					gl.uniformMatrix4fv(shader.mMatUniform, false, ft);
+					gl.drawElements(self.prim_type, self.index_buffer.count, gl.UNSIGNED_SHORT, 0);
+				}
 			}
 		}
 	};
@@ -712,7 +732,9 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			vs_src.push('varying vec4 f_col;');
 			ps_src.push('precision mediump float;');
 			ps_src.push('varying vec4 f_col;');
-		
+			
+			ps_src.push('uniform int e2_alpha_clip;');
+			
 			if(flags[v_types.COLOR])
 				vs_src.push('attribute vec4 v_col;');
 		
@@ -766,7 +788,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 				if(flags[v_types.UV0])
 					ps_src.push('    fc = fc * texture2D(tex0, f_uv0.st);');
 			
-				ps_src.push('    if(fc.a < 0.5) discard;');
+				ps_src.push('    if(e2_alpha_clip > 0 && fc.a < 0.5) discard;');
 				ps_src.push('    gl_FragColor = fc;');
 				ps_src.push('}');
 			}
@@ -796,6 +818,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		s.vMatUniform = gl.getUniformLocation(prog, "v_mat");
 		s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
 		s.diffuseColorUniform = gl.getUniformLocation(prog, "color");
+		s.alphaClipUniform = gl.getUniformLocation(prog, "e2_alpha_clip");
 
 		if(flags[v_types.COLOR])
 			s.vertexColAttribute = gl.getAttribLocation(prog, "v_col");
@@ -841,9 +864,10 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		s.apply_uniforms = function(mesh)
 		{
 			var m = mesh.material;
-			
-			gl.enableVertexAttribArray(this.vertexPosAttribute);
 
+			gl.enableVertexAttribArray(this.vertexPosAttribute);
+			gl.uniform1i(this.e2alphaClipUniform, m.alpha_clip ? 1 : 0);
+			
 			if(m.diffuse_color)
 				gl.uniform4fv(this.diffuseColorUniform, new Float32Array(m.diffuse_color.rgba));	
 			else
