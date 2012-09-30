@@ -90,7 +90,7 @@ E2.plugins["custom_shader"] = function(core, node) {
 			var inp = $('<input type="input" />'); 
 			var dt_sel = $('<select />');
 			var dts = core.datatypes;
-			var allowed = [dts.FLOAT, dts.TEXTURE, dts.COLOR, dts.TRANSFORM, dts.VERTEX];
+			var allowed = [dts.FLOAT, dts.TEXTURE, dts.COLOR, dts.MATRIX, dts.VECTOR];
 			
 			for(var i = 0, len = allowed.length; i < len; i++)
 			{
@@ -261,9 +261,9 @@ E2.plugins["custom_shader"] = function(core, node) {
 				dt = 'sampler2D';
 			else if(dtid === core.datatypes.COLOR.id)
 				dt = 'mediump vec4';
-			else if(dtid === core.datatypes.TRANSFORM.id)
+			else if(dtid === core.datatypes.MATRIX.id)
 				dt = 'mediump mat4';
-			else if(dtid === core.datatypes.VERTEX.id)
+			else if(dtid === core.datatypes.VECTOR.id)
 				dt = 'mediump vec3';
 			
 			if(dtid !== core.datatypes.TEXTURE.id)
@@ -310,9 +310,9 @@ E2.plugins["custom_shader"] = function(core, node) {
 				}
 				else if(dtid === dt.COLOR.id)
 					gl.uniform4fv(slot.uniform, new Float32Array(sd[slot.id].rgba));	
-				else if(dtid === dt.TRANSFORM.id)
+				else if(dtid === dt.MATRIX.id)
 					gl.uniformMatrix4fv(slot.uniform, false, sd[slot.id]);
-				else if(dtid === dt.VERTEX.id)
+				else if(dtid === dt.VECTOR.id)
 					gl.uniform3fv(slot.uniform, new Float32Array(sd[slot.id]));	
 			}
 		};

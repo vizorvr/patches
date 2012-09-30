@@ -6,8 +6,8 @@ E2.plugins["instance_array_modulator"] = function(core, node) {
 	this.input_slots = [ 
 		{ name: 'count', dt: core.datatypes.FLOAT, desc: 'The number of instances to create.', lo: 0, def: 1 },
 		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The mesh to instantiate.' },
-		{ name: 'start', dt: core.datatypes.VERTEX, desc: 'The starting position.', def: '0, 0, 0' },
-		{ name: 'offset', dt: core.datatypes.VERTEX, desc: 'The offset vector.', def: '0, 0, 0' }
+		{ name: 'start', dt: core.datatypes.VECTOR, desc: 'The starting position.', def: '0, 0, 0' },
+		{ name: 'offset', dt: core.datatypes.VECTOR, desc: 'The offset vector.', def: '0, 0, 0' }
 	];
 	
 	this.output_slots = [ { name: 'scene', dt: core.datatypes.SCENE, desc: 'Scene representing <b>count</b> instances.' } ];

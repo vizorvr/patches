@@ -7,8 +7,8 @@ E2.plugins["instance_ifs_modulator"] = function(core, node) {
 		{ name: 'recursion depth', dt: core.datatypes.FLOAT, desc: 'Level to resurse to.', lo: 1, hi: 6, def: 1 },
 		{ name: 'level resolution', dt: core.datatypes.FLOAT, desc: 'Number of instances per recursion level.', lo: 1, hi: 4, def: 1 },
 		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The mesh to instantiate.' },
-		{ name: 'level transform', dt: core.datatypes.TRANSFORM, desc: 'Transform applied between branches.', def: 'Identity' },
-		{ name: 'branch transform', dt: core.datatypes.TRANSFORM, desc: 'Transform applied between instances on the same level.', def: 'Identity' }
+		{ name: 'level transform', dt: core.datatypes.MATRIX, desc: 'Transform applied between branches.', def: 'Identity' },
+		{ name: 'branch transform', dt: core.datatypes.MATRIX, desc: 'Transform applied between instances on the same level.', def: 'Identity' }
 	];
 	
 	this.output_slots = [ { name: 'scene', dt: core.datatypes.SCENE, desc: 'Scene representing the resulting IFS.' } ];

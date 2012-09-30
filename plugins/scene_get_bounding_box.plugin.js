@@ -5,8 +5,8 @@ E2.plugins["scene_get_bounding_box"] = function(core, node) {
 	this.input_slots = [ { name: 'scene', dt: core.datatypes.SCENE, desc: 'The input scene.' } ];
 	this.output_slots = 
 	[ 
-		{ name: 'min', dt: core.datatypes.VERTEX, desc: 'The lowest <b>scene</b> extent.', def: '0, 0, 0' }, 
-		{ name: 'max', dt: core.datatypes.VERTEX, desc: 'The highest <b>scene</b> extent.', def: '0, 0, 0' } 
+		{ name: 'min', dt: core.datatypes.VECTOR, desc: 'The lowest <b>scene</b> extent.', def: '0, 0, 0' }, 
+		{ name: 'max', dt: core.datatypes.VECTOR, desc: 'The highest <b>scene</b> extent.', def: '0, 0, 0' } 
 	];
 	
 	this.update_input = function(slot, data)

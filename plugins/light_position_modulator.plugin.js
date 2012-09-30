@@ -4,7 +4,7 @@ E2.plugins["light_position_modulator"] = function(core, node) {
 	this.desc = 'Sets the position of the light source to a given vector.';
 	this.input_slots = [ 
 		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light.' },
-		{ name: 'position', dt: core.datatypes.VERTEX, desc: 'The light position.', def: '0, 1, 0' } 
+		{ name: 'position', dt: core.datatypes.VECTOR, desc: 'The light position.', def: '0, 1, 0' } 
 	];
 	
 	this.output_slots = [ { name: 'light', dt: core.datatypes.LIGHT, desc: 'The modified light.' } ];

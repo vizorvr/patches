@@ -4,9 +4,9 @@ E2.plugins["rotation_matrix"] = function(core, node) {
 	this.desc = 'Create a matrix that performs a rotation around an arbitrary axis.';
 	this.input_slots = [ 
 		{ name: 'angle', dt: core.datatypes.FLOAT, desc: 'Number of degrees to rotate.', lo: -360, hi: 360, def: 0 },
-		{ name: 'axis', dt: core.datatypes.VERTEX, desc: 'Normalized vector describing the axis around which the rotation is performed.', def: '0, 0, 1' }
+		{ name: 'axis', dt: core.datatypes.VECTOR, desc: 'Normalized vector describing the axis around which the rotation is performed.', def: '0, 0, 1' }
 	];
-	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM, desc: 'The resulting rotation matrix.', def: 'Identity' } ];
+	this.output_slots = [ { name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The resulting rotation matrix.', def: 'Identity' } ];
 	
 	this.reset = function()
 	{

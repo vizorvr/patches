@@ -7,7 +7,7 @@ E2.plugins["instance_texture_modulator"] = function(core, node) {
 		{ name: 'count', dt: core.datatypes.FLOAT, desc: 'The number of instances to create.', lo: 0, def: 1 },
 		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The mesh to instantiate.' },
 		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The instantiation parameter texture map.' },
-		{ name: 'scale', dt: core.datatypes.VERTEX, desc: 'The scale of the generated instance map.', def: '1, 1, 1' }
+		{ name: 'scale', dt: core.datatypes.VECTOR, desc: 'The scale of the generated instance map.', def: '1, 1, 1' }
 	];
 	
 	this.output_slots = [ { name: 'scene', dt: core.datatypes.SCENE, desc: 'Scene representing <b>count</b> instances.' } ];

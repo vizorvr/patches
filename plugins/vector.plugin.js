@@ -7,7 +7,7 @@ E2.plugins["vector"] = function(core, node) {
 		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'The input y-component.', def: 0 },
 		{ name: 'z', dt: core.datatypes.FLOAT, desc: 'The input z-component.', def: 0 }
 	];
-	this.output_slots = [ { name: 'vector', dt: core.datatypes.VERTEX, desc: 'The resulting vector.', def: '0, 0, 0' } ];
+	this.output_slots = [ { name: 'vector', dt: core.datatypes.VECTOR, desc: 'The resulting vector.', def: '0, 0, 0' } ];
 	
 	this.update_input = function(slot, data)
 	{

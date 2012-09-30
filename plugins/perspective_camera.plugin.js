@@ -8,8 +8,8 @@ E2.plugins["perspective_camera"] = function(core, node) {
 		{ name: 'FOV', dt: core.datatypes.FLOAT, desc: 'Field of view in degrees.', def: 45 },
 		{ name: 'near', dt: core.datatypes.FLOAT, desc: 'Depth of the near clipping plane.', def: 1 },
 		{ name: 'far', dt: core.datatypes.FLOAT, desc: 'Depth of the far clipping plane.', def: 1000 },
-		{ name: 'position', dt: core.datatypes.VERTEX, desc: 'Camera position.', def: '0, 0, -1' },
-		{ name: 'target', dt: core.datatypes.VERTEX, desc: 'Camera target.', def: '0, 0, 0' }
+		{ name: 'position', dt: core.datatypes.VECTOR, desc: 'Camera position.', def: '0, 0, -1' },
+		{ name: 'target', dt: core.datatypes.VECTOR, desc: 'Camera target.', def: '0, 0, 0' }
 	];
 	this.output_slots = [ { name: 'camera', dt: core.datatypes.CAMERA, desc: 'The resulting camera.' } ];
 

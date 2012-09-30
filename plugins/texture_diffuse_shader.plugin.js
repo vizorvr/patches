@@ -6,8 +6,8 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	this.desc = 'Simple shader for rendering meshes with one texture modulated by a diffuse color.';
 	this.input_slots = [
 		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.' },
-		 { name: 'uv offset', dt: core.datatypes.VERTEX, desc: 'UV translation. Only the x and y components are used with the z axis disregarded.' },
-		 { name: 'uv scale', dt: core.datatypes.VERTEX, desc: 'UV scale. Only the x and y components are used with the z axis factor disregarded.' },
+		 { name: 'uv offset', dt: core.datatypes.VECTOR, desc: 'UV translation. Only the x and y components are used with the z axis disregarded.' },
+		 { name: 'uv scale', dt: core.datatypes.VECTOR, desc: 'UV scale. Only the x and y components are used with the z axis factor disregarded.' },
 		 { name: 'uv rotation', dt: core.datatypes.FLOAT, desc: 'UV rotation in degrees.' },
 	];
 	

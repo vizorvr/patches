@@ -7,7 +7,7 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'The scene to be rendered.', def: 'Render nothing.' },
 		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'A shader to use in favour of the ones specified by the individual meshes in the scene.', def: 'Use mesh shaders.' },
 		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'The camera to use for rendering.', def: 'Screenspace camera.' },
-		{ name: 'transform', dt: core.datatypes.TRANSFORM, desc: 'The scene transform to use for rendering.', def: 'Identity' },
+		{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'The scene transform to use for rendering.', def: 'Identity' },
 		{ name: 'inv. transform', dt: core.datatypes.BOOL, desc: 'Send true to this slot to apply <b>transform</b> in inverse order when rendering instances.', def: 'False' }
 	];
 	this.output_slots = [];

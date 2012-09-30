@@ -3,11 +3,11 @@ E2.plugins["vector_transform"] = function(core, node) {
 	
 	this.desc = 'Transform a vector by the supplied matrix.';
 	this.input_slots = [ 
-		{ name: 'vector', dt: core.datatypes.VERTEX, desc: 'Input vector to transform.', def: '0, 0, 0' },
-		{ name: 'matrix', dt: core.datatypes.TRANSFORM, desc: 'Transformation matrix to multiply the vector by.', def: 'Identity' } 
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Input vector to transform.', def: '0, 0, 0' },
+		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'Transformation matrix to multiply the vector by.', def: 'Identity' } 
 	];
 	
-	this.output_slots = [ { name: 'vector', dt: core.datatypes.VERTEX, desc: 'Emits the transformed input vector.', def: '0, 0, 0' } ];
+	this.output_slots = [ { name: 'vector', dt: core.datatypes.VECTOR, desc: 'Emits the transformed input vector.', def: '0, 0, 0' } ];
 	
 	this.update_input = function(slot, data)
 	{

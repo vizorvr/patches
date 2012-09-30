@@ -1495,8 +1495,8 @@ function Core() {
 		SHADER: { id: 1, name: 'Shader' },
 		TEXTURE: { id: 2, name: 'Texture' },
 		COLOR: { id: 3, name: 'Color' },
-		TRANSFORM: { id: 4, name: 'Transform' },
-		VERTEX: { id: 5, name: 'Vertex' },
+		MATRIX: { id: 4, name: 'Matrix' },
+		VECTOR: { id: 5, name: 'Vector' },
 		CAMERA: { id: 6, name: 'Camera' },
 		BOOL: { id: 7, name: 'Boolean' },
 		ANY: { id: 8, name: 'Arbitrary' },
@@ -1570,14 +1570,14 @@ function Core() {
 			return 0.0;
 		else if(dt === dts.COLOR)
 			return new Color(1, 1, 1);
-		else if(dt === dts.TRANSFORM)
+		else if(dt === dts.MATRIX)
 		{
 			var m = mat4.create();
 	
 			mat4.identity(m);
 			return m;
 		}
-		else if(dt === dts.VERTEX)
+		else if(dt === dts.VECTOR)
 			return [0.0, 0.0, 0.0];
 		else if(dt === dts.CAMERA)
 			return new Camera(self.renderer.context);

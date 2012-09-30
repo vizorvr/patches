@@ -7,7 +7,7 @@ E2.plugins["mesh_renderer_emitter"] = function(core, node) {
 		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The input mesh to be rendered.' },
 		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'Connect to this slot to use the supplied shader in favor of the one specified by the mesh (if any).', def: 'Use mesh shader' },
 		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'Camera to use for rendering.', def: 'Screenspace camera.' },
-		{ name: 'transform', dt: core.datatypes.TRANSFORM, desc: 'Mesh transform.', def: 'Identity' }
+		{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'Mesh transform.', def: 'Identity' }
 	];
 	
 	this.output_slots = [];

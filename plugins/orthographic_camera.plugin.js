@@ -10,7 +10,7 @@ E2.plugins["orthographic_camera"] = function(core, node) {
 		{ name: 'bottom', dt: core.datatypes.FLOAT, desc: 'Bottom plane y-coordinate.', def: 1 },
 		{ name: 'near', dt: core.datatypes.FLOAT, desc: 'Near plane z-coordinate.', def: 1 },
 		{ name: 'far', dt: core.datatypes.FLOAT, desc: 'Far plane x-coordinate.', def: 1000 },
-		{ name: 'transform', dt: core.datatypes.TRANSFORM, desc: 'Camera transform.', def: 'Identity' }
+		{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'Camera transform.', def: 'Identity' }
 	];
 	this.output_slots = [ { name: 'camera', dt: core.datatypes.CAMERA, desc: 'The resulting camera.' } ];
 	

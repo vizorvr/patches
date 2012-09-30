@@ -4,7 +4,7 @@ E2.plugins["light_direction_modulator"] = function(core, node) {
 	this.desc = 'Sets the direction normal of the light source to a given vector. The user is responsible for ensuring the normalization of the input vector.';
 	this.input_slots = [ 
 		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light.' },
-		{ name: 'direction', dt: core.datatypes.VERTEX, desc: 'The light direction. Should be normalized.', def: '0, -1, 0' }
+		{ name: 'direction', dt: core.datatypes.VECTOR, desc: 'The light direction. Should be normalized.', def: '0, -1, 0' }
 	];
 	
 	this.output_slots = [ { name: 'light', dt: core.datatypes.LIGHT, desc: 'The modified light.' } ];

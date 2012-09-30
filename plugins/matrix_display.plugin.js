@@ -3,7 +3,7 @@ E2.plugins["matrix_display"] = function(core, node) {
 	
 	this.desc = 'Displays the supplied matrix as a 4x4 grid of values.';
 	this.input_slots = [ 
-		{ name: 'matrix', dt: core.datatypes.TRANSFORM, desc: 'The input matrix to be displayed.' }
+		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The input matrix to be displayed.' }
 	];
 	this.output_slots = [];
 		

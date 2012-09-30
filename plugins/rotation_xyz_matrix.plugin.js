@@ -7,7 +7,7 @@ E2.plugins["rotation_xyz_matrix"] = function(core, node) {
 		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'Number of degrees to rotate around the Y-axis.', lo: -360, hi: 360, def: 0 },
 		{ name: 'z', dt: core.datatypes.FLOAT, desc: 'Number of degrees to rotate around the Z-axis.', lo: -360, hi: 360, def: 0 }
 	];
-	this.output_slots = [ { name: 'matrix', dt: core.datatypes.TRANSFORM, desc: 'The resulting rotation matrix.', def: 'Identity' } ];
+	this.output_slots = [ { name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The resulting rotation matrix.', def: 'Identity' } ];
 	
 	this.reset = function()
 	{
