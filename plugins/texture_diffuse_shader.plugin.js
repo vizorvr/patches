@@ -143,7 +143,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 
 	this.connection_changed = function(on, conn, slot)
 	{
-		if(!on && slot.type === E2.slot_type.input)
+		if(!on && slot.type === E2.slot_type.input && slot.index === 0)
 			self.material = null;
 	};
 	
