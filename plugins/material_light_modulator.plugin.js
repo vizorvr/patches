@@ -35,14 +35,14 @@ E2.plugins["material_light_modulator"] = function(core, node) {
 	
 	this.update_output = function(slot)
 	{
-		return self.light;
+		return self.material;
 	};
 	
 	this.state_changed = function(ui)
 	{
 		if(!ui)
 		{
-			self.light = new Light();
+			self.material = new Material();
 			self.next_index = self.index = 0;
 			self.light = null;
 		}
