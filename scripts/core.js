@@ -1981,7 +1981,7 @@ function Application() {
 		
 		var so = self.scrollOffset;
 		
-		c.lineWidth = 1;
+		c.lineWidth = 1; // Doesn't work in Chrome with lineWidth > 1 :(
 		c.lineCap = 'square';
 		c.lineJoin = 'miter';
 		
@@ -2027,6 +2027,7 @@ function Application() {
 			var s = [ss[0] - so[0], ss[1] - so[1]];
 			var e = [se[0] - so[0], se[1] - so[1]];
 			
+			c.lineWidth = 2;
 			c.strokeStyle = '#000';
 			c.strokeRect(s[0], s[1], e[0] - s[0], e[1] - s[1]);
 		}
@@ -2375,6 +2376,7 @@ function Application() {
 		
 		var dx = (pos.left + sl) - node.x;
 		var dy = (pos.top + st) - node.y;
+		var dirty = false;
 		
 		node.x = sl + pos.left;
 		node.y = st + pos.top;
@@ -2400,10 +2402,11 @@ function Application() {
 				n.y = ny;
 				n.ui.dom.css({'left': nx, 'top': ny});
 				n.update_connections();
+				dirty = dirty || (n.inputs.length + n.outputs.length > 0);
 			}
 		}
 		
-		if(node.inputs.length + node.outputs.length > 0)
+		if(dirty)
 			self.updateCanvas(true);
 	}};
 	
