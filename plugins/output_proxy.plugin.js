@@ -13,6 +13,11 @@ E2.plugins["output_proxy"] = function(core, node) {
 	if(!node.title)
 		node.title = 'output_' + node.uid;
 	
+	this.reset = function()
+	{
+		self.updated = true;
+	};
+	
 	this.connection_changed = function(on, conn, slot)
 	{
 		var plg = node.parent_graph.plugin;

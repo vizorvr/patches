@@ -12,6 +12,11 @@ E2.plugins["input_proxy"] = function(core, node) {
 	if(!node.title)
 		node.title = 'input_' + node.uid;
 
+	this.reset = function()
+	{
+		self.updated = true;
+	};
+	
 	this.input_updated = function(data)
 	{
 		self.data = data;
