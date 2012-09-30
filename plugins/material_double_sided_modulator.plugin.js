@@ -14,7 +14,7 @@ E2.plugins["material_double_sided_modulator"] = function(core, node) {
 		if(slot.index === 0)
 			self.material = data;
 		else
-			self.double_sided = data
+			self.double_sided = data;
 	};
 	
 	this.update_state = function(delta_t)

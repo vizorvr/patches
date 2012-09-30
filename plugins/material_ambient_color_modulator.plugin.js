@@ -14,7 +14,7 @@ E2.plugins["material_ambient_color_modulator"] = function(core, node) {
 		if(slot.index === 0)
 			self.material = data;
 		else
-			self.color = data
+			self.color = data;
 	};
 	
 	this.update_state = function(delta_t)

@@ -16,9 +16,9 @@ E2.plugins["material_z_buffer_modulator"] = function(core, node) {
 		if(slot.index === 0)
 			self.material = data;
 		else if(slot.index === 1)
-			self.depth_test = data
+			self.depth_test = data;
 		else if(slot.index === 2)
-			self.depth_write = data
+			self.depth_write = data;
 		else if(slot.index === 3)
 			self.depth_func = data < 0 ? 0 : data % Material.depth_func.COUNT;
 	};

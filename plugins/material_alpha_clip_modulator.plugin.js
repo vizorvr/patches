@@ -14,7 +14,7 @@ E2.plugins["material_alpha_clip_modulator"] = function(core, node) {
 		if(slot.index === 0)
 			self.material = data;
 		else
-			self.alpha_clip = data
+			self.alpha_clip = data;
 	};
 	
 	this.update_state = function(delta_t)

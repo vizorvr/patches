@@ -17,7 +17,7 @@ E2.plugins["material_texture_modulator"] = function(core, node) {
 		else if(slot.index === 1)
 			self.next_type = data < 0 ? 0 : data % Material.texture_type.COUNT;
 		else if(slot.index === 2)
-			self.texture = data
+			self.texture = data;
 	};
 	
 	this.connection_changed = function(on, conn, slot)
