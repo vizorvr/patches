@@ -30,6 +30,9 @@ E2.plugins["output_proxy"] = function(core, node) {
 	{
 		self.data = data;
 		self.changed = true;
+		
+		if(node.parent_graph.plugin)
+			node.parent_graph.plugin.updated = true;
 	};
 	
 	this.state_changed = function(ui)

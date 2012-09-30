@@ -1041,14 +1041,14 @@ function Node(parent_graph, plugin_id, x, y) {
 				}
 			}
 		
-			if(self.plugin.id === 'graph')
+			/*if(self.plugin.id === 'graph')
 			{
 				if(s_plugin.update_state)
 					s_plugin.update_state(delta_t);
 
 				self.plugin.updated = true;
 			}			
-			else if(self.queued_update > 0)
+			else */if(self.queued_update > 0)
 			{
 				if(s_plugin.update_state)
 					s_plugin.update_state(delta_t);
