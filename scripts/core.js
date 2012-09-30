@@ -2376,7 +2376,7 @@ function Application() {
 		
 		var dx = (pos.left + sl) - node.x;
 		var dy = (pos.top + st) - node.y;
-		var dirty = false;
+		var dirty = node.inputs.length + node.outputs.length > 0;
 		
 		node.x = sl + pos.left;
 		node.y = st + pos.top;
