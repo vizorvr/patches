@@ -1,117 +1,387 @@
 {
-    "abs_t": 14.054,
+    "abs_t": 0,
     "active_graph": 0,
     "graph_uid": 4,
     "root": {
-        "node_uid": 11,
+        "node_uid": 5,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 283,
-                "y": 147,
-                "uid": 5,
+                "x": 353,
+                "y": 84,
+                "uid": 0,
                 "dsid": 2,
                 "state": {
                     "enabled": true,
                     "input_sids": {
-                        "5": 0,
-                        "6": 1
+                        "0": 0,
+                        "2": 1
                     },
                     "output_sids": {}
                 },
-                "title": "Horizontal blur",
+                "title": "Vertical blur",
                 "graph": {
-                    "node_uid": 7,
-                    "uid": 2,
+                    "node_uid": 6,
+                    "uid": 1,
                     "parent_uid": 0,
                     "nodes": [
                         {
-                            "plugin": "graph",
-                            "x": 62,
-                            "y": 121,
+                            "plugin": "input_proxy",
+                            "x": 113,
+                            "y": 189,
                             "uid": 0,
+                            "dsid": 2,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "blur amount",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 220,
+                            "y": 83,
+                            "uid": 1,
+                            "dsid": 2,
                             "state": {
                                 "enabled": true,
-                                "input_sids": {},
+                                "input_sids": {
+                                    "0": 0,
+                                    "3": 1
+                                },
                                 "output_sids": {}
                             },
-                            "title": "Scene",
+                            "title": "Horizontal blur",
                             "graph": {
-                                "node_uid": 4,
-                                "uid": 3,
-                                "parent_uid": 2,
+                                "node_uid": 7,
+                                "uid": 2,
+                                "parent_uid": 1,
                                 "nodes": [
                                     {
-                                        "plugin": "quad_mesh_generator",
-                                        "x": 56,
-                                        "y": 24,
-                                        "uid": 0
+                                        "plugin": "input_proxy",
+                                        "x": 379,
+                                        "y": 247,
+                                        "uid": 0,
+                                        "dsid": 2,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "blur amount",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 0,
+                                                "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "graph",
+                                        "x": 184,
+                                        "y": 153,
+                                        "uid": 1,
+                                        "dsid": 1,
+                                        "state": {
+                                            "enabled": true,
+                                            "input_sids": {
+                                                "5": 0
+                                            },
+                                            "output_sids": {}
+                                        },
+                                        "title": "Scene",
+                                        "graph": {
+                                            "node_uid": 6,
+                                            "uid": 3,
+                                            "parent_uid": 2,
+                                            "nodes": [
+                                                {
+                                                    "plugin": "mesh_renderer_emitter",
+                                                    "x": 647,
+                                                    "y": 34,
+                                                    "uid": 0
+                                                },
+                                                {
+                                                    "plugin": "texture_diffuse_shader",
+                                                    "x": 504,
+                                                    "y": 113,
+                                                    "uid": 2
+                                                },
+                                                {
+                                                    "plugin": "material_texture_modulator",
+                                                    "x": 346,
+                                                    "y": 163,
+                                                    "uid": 3
+                                                },
+                                                {
+                                                    "plugin": "url_texture_generator",
+                                                    "x": 197,
+                                                    "y": 182,
+                                                    "uid": 4,
+                                                    "state": {
+                                                        "url": "data/textures/backdrop_landscape.jpg"
+                                                    }
+                                                },
+                                                {
+                                                    "plugin": "input_proxy",
+                                                    "x": 545,
+                                                    "y": 23,
+                                                    "uid": 5,
+                                                    "dsid": 2,
+                                                    "state": {
+                                                        "slot_id": 0
+                                                    },
+                                                    "title": "quad",
+                                                    "dyn_out": [
+                                                        {
+                                                            "name": "output",
+                                                            "dt": 9,
+                                                            "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                                            "uid": 0,
+                                                            "index": 0,
+                                                            "type": 1,
+                                                            "connected": true
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "conns": [
+                                                {
+                                                    "src_nuid": 2,
+                                                    "dst_nuid": 0,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 1
+                                                },
+                                                {
+                                                    "src_nuid": 3,
+                                                    "dst_nuid": 2,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 0
+                                                },
+                                                {
+                                                    "src_nuid": 4,
+                                                    "dst_nuid": 3,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 2
+                                                },
+                                                {
+                                                    "src_nuid": 5,
+                                                    "dst_nuid": 0,
+                                                    "src_slot": 0,
+                                                    "dst_slot": 0,
+                                                    "src_connected": true,
+                                                    "src_dyn": true
+                                                }
+                                            ]
+                                        },
+                                        "dyn_in": [
+                                            {
+                                                "name": "quad",
+                                                "dt": 9,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 0,
+                                                "is_connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "from_mesh_custom_shader",
+                                        "x": 513,
+                                        "y": 83,
+                                        "uid": 2,
+                                        "dsid": 1,
+                                        "state": {
+                                            "vs_src": "void main(void)\n{\n    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n    f_col = color;\n    f_uv0 = v_uv0;\n}",
+                                            "ps_src": "float blurSize = (1.0/512.0) * blur_amount;\n\nvoid main(void)\n{\n    vec4 sum = vec4(0.0);\n\n    sum += texture2D(tex0, vec2(f_uv0.x - 4.0 * blurSize, f_uv0.y)) * 0.05;\n    sum += texture2D(tex0, vec2(f_uv0.x - 3.0*blurSize, f_uv0.y)) * 0.09;\n    sum += texture2D(tex0, vec2(f_uv0.x - 2.0*blurSize, f_uv0.y)) * 0.12;\n    sum += texture2D(tex0, vec2(f_uv0.x - blurSize, f_uv0.y)) * 0.15;\n    sum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y)) * 0.16;\n    sum += texture2D(tex0, vec2(f_uv0.x + blurSize, f_uv0.y)) * 0.15;\n    sum += texture2D(tex0, vec2(f_uv0.x + 2.0*blurSize, f_uv0.y)) * 0.12;\n    sum += texture2D(tex0, vec2(f_uv0.x + 3.0 * blurSize, f_uv0.y)) * 0.09;\n    sum += texture2D(tex0, vec2(f_uv0.x + 4.0*blurSize, f_uv0.y)) * 0.05;\n\n    gl_FragColor = sum;\n}",
+                                            "slot_ids": {
+                                                "blur_amount": {
+                                                    "id": 0,
+                                                    "dt": {
+                                                        "id": 0,
+                                                        "name": "Float"
+                                                    },
+                                                    "uniform": {}
+                                                }
+                                            }
+                                        },
+                                        "dyn_in": [
+                                            {
+                                                "name": "blur_amount",
+                                                "dt": 0,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 0,
+                                                "is_connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 59,
+                                        "y": 94,
+                                        "uid": 3,
+                                        "dsid": 2,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "quad",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 9,
+                                                "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "material_texture_modulator",
+                                        "x": 304,
+                                        "y": 133,
+                                        "uid": 4
                                     },
                                     {
                                         "plugin": "mesh_renderer_emitter",
-                                        "x": 527,
-                                        "y": 26,
-                                        "uid": 1
-                                    },
-                                    {
-                                        "plugin": "from_mesh_shader",
-                                        "x": 276,
-                                        "y": 104,
-                                        "uid": 2
-                                    },
-                                    {
-                                        "plugin": "url_texture_generator",
-                                        "x": 37,
-                                        "y": 199,
-                                        "uid": 3,
-                                        "state": {
-                                            "url": "data/textures/backdrop_orange.jpg"
-                                        }
+                                        "x": 748,
+                                        "y": 31,
+                                        "uid": 5
                                     }
                                 ],
                                 "conns": [
                                     {
-                                        "src_nuid": 0,
+                                        "src_nuid": 3,
                                         "dst_nuid": 1,
                                         "src_slot": 0,
-                                        "dst_slot": 0
+                                        "dst_slot": 0,
+                                        "src_connected": true,
+                                        "src_dyn": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 3,
+                                        "dst_nuid": 2,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "src_connected": true,
+                                        "src_dyn": true,
+                                        "offset": 1
                                     },
                                     {
                                         "src_nuid": 0,
                                         "dst_nuid": 2,
                                         "src_slot": 0,
                                         "dst_slot": 0,
-                                        "offset": 1
+                                        "src_connected": true,
+                                        "src_dyn": true,
+                                        "dst_dyn": true
                                     },
                                     {
-                                        "src_nuid": 2,
-                                        "dst_nuid": 1,
+                                        "src_nuid": 4,
+                                        "dst_nuid": 2,
                                         "src_slot": 0,
                                         "dst_slot": 1
                                     },
                                     {
                                         "src_nuid": 3,
-                                        "dst_nuid": 2,
+                                        "dst_nuid": 5,
                                         "src_slot": 0,
-                                        "dst_slot": 4
+                                        "dst_slot": 0,
+                                        "src_connected": true,
+                                        "src_dyn": true,
+                                        "offset": 2
+                                    },
+                                    {
+                                        "src_nuid": 1,
+                                        "dst_nuid": 4,
+                                        "src_slot": 0,
+                                        "dst_slot": 2
+                                    },
+                                    {
+                                        "src_nuid": 2,
+                                        "dst_nuid": 5,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
                                     }
                                 ]
-                            }
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "blur amount",
+                                    "dt": 0,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "quad",
+                                    "dt": 9,
+                                    "uid": 1,
+                                    "index": 1,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ]
                         },
                         {
-                            "plugin": "from_mesh_custom_shader",
-                            "x": 201,
-                            "y": 89,
+                            "plugin": "input_proxy",
+                            "x": 124,
+                            "y": 13,
                             "uid": 2,
                             "dsid": 2,
                             "state": {
-                                "vs_src": "void main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n\n\tf_col = dc;\n        f_uv0 = v_uv0;\n}",
-                                "ps_src": "mediump float blurSize = (1.0/512.0) * blur_scale;\n\nvoid main(void)\n{\n\tmediump vec4 sum = vec4(0.0);\n\n\t// blur in y (vertical)\n\t// take nine samples, with the distance blurSize between them\n\tsum += texture2D(tex0, vec2(f_uv0.x - 4.0*blurSize, f_uv0.y)) * 0.05;\n\tsum += texture2D(tex0, vec2(f_uv0.x - 3.0*blurSize, f_uv0.y)) * 0.09;\n\tsum += texture2D(tex0, vec2(f_uv0.x - 2.0*blurSize, f_uv0.y)) * 0.12;\n\tsum += texture2D(tex0, vec2(f_uv0.x - blurSize, f_uv0.y)) * 0.15;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y)) * 0.16;\n\tsum += texture2D(tex0, vec2(f_uv0.x + blurSize, f_uv0.y)) * 0.15;\n\tsum += texture2D(tex0, vec2(f_uv0.x + 2.0*blurSize, f_uv0.y)) * 0.12;\n\tsum += texture2D(tex0, vec2(f_uv0.x + 3.0*blurSize, f_uv0.y)) * 0.09;\n\tsum += texture2D(tex0, vec2(f_uv0.x + 4.0*blurSize, f_uv0.y)) * 0.05;\n\n\tgl_FragColor = sum;\n}",
+                                "slot_id": 0
+                            },
+                            "title": "quad",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 9,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 650,
+                            "y": 37,
+                            "uid": 3
+                        },
+                        {
+                            "plugin": "from_mesh_custom_shader",
+                            "x": 468,
+                            "y": 149,
+                            "uid": 4,
+                            "dsid": 1,
+                            "state": {
+                                "vs_src": "void main(void)\n{\n    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n    f_col = color;\n    f_uv0 = v_uv0;\n}",
+                                "ps_src": "float blurSize = (1.0/512.0) * blur_amount;\n\nvoid main(void)\n{\n\tvec4 sum = vec4(0.0);\n\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 4.0*blurSize)) * 0.0;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 3.0*blurSize)) * 0.09;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 2.0*blurSize)) * 0.12;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - blurSize)) * 0.15;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y)) * 0.16;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + blurSize)) * 0.15;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 2.0*blurSize)) * 0.12;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 3.0*blurSize)) * 0.09;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 4.0*blurSize)) * 0.05;\n\n\tgl_FragColor = sum;\n}",
                                 "slot_ids": {
-                                    "blur_scale": {
-                                        "id": 1,
+                                    "blur_amount": {
+                                        "id": 0,
                                         "dt": {
                                             "id": 0,
                                             "name": "Float"
@@ -120,12 +390,11 @@
                                     }
                                 }
                             },
-                            "title": "Horizontal blur",
                             "dyn_in": [
                                 {
-                                    "name": "blur_scale",
+                                    "name": "blur_amount",
                                     "dt": 0,
-                                    "uid": 1,
+                                    "uid": 0,
                                     "index": 0,
                                     "type": 0,
                                     "is_connected": true
@@ -133,70 +402,25 @@
                             ]
                         },
                         {
-                            "plugin": "mesh_renderer_emitter",
-                            "x": 436,
-                            "y": 24,
-                            "uid": 3
-                        },
-                        {
-                            "plugin": "input_proxy",
-                            "x": 88,
-                            "y": 240,
-                            "uid": 5,
-                            "dsid": 6,
-                            "state": {
-                                "slot_id": 0
-                            },
-                            "title": "blur_scale",
-                            "dyn_out": [
-                                {
-                                    "name": "output",
-                                    "dt": 0,
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1,
-                                    "connected": true
-                                }
-                            ]
-                        },
-                        {
-                            "plugin": "input_proxy",
-                            "x": 105,
-                            "y": 24,
-                            "uid": 6,
-                            "dsid": 4,
-                            "state": {
-                                "slot_id": 0
-                            },
-                            "title": "mesh",
-                            "dyn_out": [
-                                {
-                                    "name": "output",
-                                    "dt": 9,
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1,
-                                    "connected": true
-                                }
-                            ]
+                            "plugin": "material_texture_modulator",
+                            "x": 353,
+                            "y": 88,
+                            "uid": 5
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": 0,
-                            "dst_nuid": 2,
-                            "src_slot": 0,
-                            "dst_slot": 4
-                        },
-                        {
                             "src_nuid": 2,
-                            "dst_nuid": 3,
+                            "dst_nuid": 1,
                             "src_slot": 0,
-                            "dst_slot": 1
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true
                         },
                         {
-                            "src_nuid": 5,
-                            "dst_nuid": 2,
+                            "src_nuid": 0,
+                            "dst_nuid": 1,
                             "src_slot": 0,
                             "dst_slot": 0,
                             "src_connected": true,
@@ -204,27 +428,56 @@
                             "dst_dyn": true
                         },
                         {
-                            "src_nuid": 6,
-                            "dst_nuid": 2,
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "src_connected": true,
-                            "src_dyn": true
-                        },
-                        {
-                            "src_nuid": 6,
+                            "src_nuid": 2,
                             "dst_nuid": 3,
                             "src_slot": 0,
                             "dst_slot": 0,
                             "src_connected": true,
                             "src_dyn": true,
                             "offset": 1
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "offset": 2
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 5,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true,
+                            "offset": 1
                         }
                     ]
                 },
                 "dyn_in": [
                     {
-                        "name": "blur_scale",
+                        "name": "blur amount",
                         "dt": 0,
                         "uid": 0,
                         "index": 0,
@@ -232,7 +485,7 @@
                         "is_connected": true
                     },
                     {
-                        "name": "mesh",
+                        "name": "quad",
                         "dt": 9,
                         "uid": 1,
                         "index": 1,
@@ -242,109 +495,62 @@
                 ]
             },
             {
+                "plugin": "knob_float_generator",
+                "x": 101,
+                "y": 52,
+                "uid": 1,
+                "state": {
+                    "val": 0
+                }
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 218,
+                "y": 104,
+                "uid": 2
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 99,
+                "y": 165,
+                "uid": 3,
+                "state": {
+                    "val": 15
+                }
+            },
+            {
                 "plugin": "quad_mesh_generator",
-                "x": 165,
-                "y": 25,
-                "uid": 6
-            },
-            {
-                "plugin": "mesh_renderer_emitter",
-                "x": 630,
-                "y": 27,
-                "uid": 8
-            },
-            {
-                "plugin": "slider_float_generator",
-                "x": 15,
-                "y": 207,
-                "uid": 9,
-                "state": {
-                    "val": 1.9,
-                    "min": 0,
-                    "max": 10
-                },
-                "title": "Blur amount"
-            },
-            {
-                "plugin": "from_mesh_custom_shader",
-                "x": 440,
-                "y": 106,
-                "uid": 10,
-                "dsid": 1,
-                "state": {
-                    "vs_src": "void main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n\n\tf_col = dc;\n        f_uv0 = v_uv0;\n}",
-                    "ps_src": "mediump float blurSize = (1.0/512.0) * blur_scale;\n\nvoid main(void)\n{\n        mediump vec4 sum = vec4(0.0);\n\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 4.0*blurSize)) * 0.0;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 3.0*blurSize)) * 0.09;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 2.0*blurSize)) * 0.12;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - blurSize)) * 0.15;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y)) * 0.16;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + blurSize)) * 0.15;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 2.0*blurSize)) * 0.12;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 3.0*blurSize)) * 0.09;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 4.0*blurSize)) * 0.05;\n\n\tgl_FragColor = sum;\n}",
-                    "slot_ids": {
-                        "blur_scale": {
-                            "id": 0,
-                            "dt": {
-                                "id": 0,
-                                "name": "Float"
-                            },
-                            "uniform": {}
-                        }
-                    }
-                },
-                "dyn_in": [
-                    {
-                        "name": "blur_scale",
-                        "dt": 0,
-                        "uid": 0,
-                        "index": 0,
-                        "type": 0,
-                        "is_connected": true
-                    }
-                ]
+                "x": 276,
+                "y": 192,
+                "uid": 4
             }
         ],
         "conns": [
             {
-                "src_nuid": 6,
-                "dst_nuid": 8,
+                "src_nuid": 1,
+                "dst_nuid": 2,
                 "src_slot": 0,
                 "dst_slot": 0
             },
             {
-                "src_nuid": 6,
-                "dst_nuid": 10,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "offset": 1
-            },
-            {
-                "src_nuid": 10,
-                "dst_nuid": 8,
+                "src_nuid": 3,
+                "dst_nuid": 2,
                 "src_slot": 0,
                 "dst_slot": 1
             },
             {
-                "src_nuid": 9,
-                "dst_nuid": 10,
+                "src_nuid": 4,
+                "dst_nuid": 0,
                 "src_slot": 0,
-                "dst_slot": 0,
+                "dst_slot": 1,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 9,
-                "dst_nuid": 5,
+                "src_nuid": 2,
+                "dst_nuid": 0,
                 "src_slot": 0,
                 "dst_slot": 0,
-                "dst_dyn": true,
-                "offset": 1
-            },
-            {
-                "src_nuid": 5,
-                "dst_nuid": 10,
-                "src_slot": 0,
-                "dst_slot": 4
-            },
-            {
-                "src_nuid": 6,
-                "dst_nuid": 5,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "dst_dyn": true,
-                "offset": 2
+                "dst_dyn": true
             }
         ]
     }
