@@ -824,7 +824,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		for(var i = 0, len = pending.length; i < len; i++)
 			graph.destroy_connection(pending[i]);
 		
-		if(self.plugin.id === 'graph')
+		if(self.plugin.e2_is_graph)
 			self.plugin.graph.tree_node.remove();
 		
 		self.destroy_ui();
@@ -1046,7 +1046,7 @@ function Node(parent_graph, plugin_id, x, y) {
 				}
 			}
 		
-			if(self.plugin.id === 'graph')
+			if(self.plugin.e2_is_graph)
 			{
 				if(s_plugin.update_state)
 					s_plugin.update_state(delta_t);
@@ -1096,7 +1096,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		if(self.title)
 			d.title = self.title;
 		
-		if(self.plugin.id === 'graph')
+		if(self.plugin.e2_is_graph)
 			d.graph = self.plugin.graph.serialise();
 		
 		if(self.dyn_inputs || self.dyn_outputs)
@@ -1138,7 +1138,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		
 		self.set_plugin(E2.app.core.plugin_mgr.create(d.plugin, self));
 		
-		if(self.plugin.id === 'graph')
+		if(self.plugin.e2_is_graph)
 		{
 			self.plugin.graph = new Graph(null, null);
 			self.plugin.graph.plugin = self.plugin;
@@ -1183,7 +1183,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	{
 		self.parent_graph = resolve_graph(graphs, self.parent_graph);
 
-		if(self.plugin.id === 'graph')
+		if(self.plugin.e2_is_graph)
 			self.plugin.graph.patch_up(graphs);
 	};
 
@@ -1192,7 +1192,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		if(self.plugin.state_changed)
 			self.plugin.state_changed(null);
 
-		if(self.plugin.id === 'graph')
+		if(self.plugin.e2_is_graph)
 			self.plugin.graph.initialise();
 	};
 	
@@ -1249,7 +1249,7 @@ function Graph(parent_graph, tree_node)
 		
 		if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
 			self.roots.push(n);
-		else if(n.plugin.id === 'graph')
+		else if(n.plugin.e2_is_graph)
 			self.children.push(n);
 	};
 	
@@ -1259,7 +1259,7 @@ function Graph(parent_graph, tree_node)
 		
 		if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
 			self.roots.remove(n);
-		else if(n.plugin.id === 'graph')
+		else if(n.plugin.e2_is_graph)
 			self.children.remove(n);
 	};
 
@@ -1563,6 +1563,7 @@ function Core() {
 		self.scrollOffset = [0, 0];*/
 		
 		self.active_graph.create_ui();
+		self.active_graph.reset();
 	};
 	
 	this.get_default_value = function(dt)
@@ -1648,7 +1649,7 @@ function Core() {
 			{
 				var n = nodes[i];
 				
-				if(n.plugin.id === 'graph')
+				if(n.plugin.e2_is_graph)
 					build(n.plugin.graph, n.get_disp_name());
 			}
 		};
@@ -2321,7 +2322,7 @@ function Application() {
 			if(node.ui !== null)
 				node.ui.dom.find('#t').text(node.title);
 		
-			if(node.plugin.id === 'graph')
+			if(node.plugin.e2_is_graph)
 				node.plugin.graph.tree_node.setTitle(node.title);
 		
 			node.parent_graph.emit_event({ type: 'node-renamed', node: node });
@@ -2804,7 +2805,7 @@ function Application() {
 		{
 			n.parent_graph = pg;
 			
-			if(n.plugin.id !== 'graph')
+			if(n.plugin.e2_is_graph)
 				return;
 
 			n.plugin.graph.tree_node = n.parent_graph.tree_node.addChild({
