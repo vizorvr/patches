@@ -526,7 +526,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 	this.vertex_buffers = {}; // VertexBuffer.vertex_type
 	this.index_buffer = null;
 	this.t_cache = t_cache;
-	this.material = {};
+	this.material = new Material();
 	this.vertex_count = 0;
 	
 	for(var v_type in VertexBuffer.vertex_type)
