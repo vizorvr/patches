@@ -35,7 +35,7 @@ E2.plugins["output_proxy"] = function(core, node) {
 		{
 			var p = node.parent_graph.plugin;
 			
-			p.updated_sids.push(node.uid);
+			p.updated_sids.push(p.state.output_sids[node.uid])
 			p.updated = true;
 		}
 	};
