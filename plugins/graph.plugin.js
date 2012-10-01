@@ -326,6 +326,8 @@ E2.plugins["graph"] = function(core, node) {
 	
 	this.update_state = function(delta_t)
 	{
+		self.updated = false;
+
 		if(self.graph && self.state.enabled)
 		{
 			var old_fb = null;
@@ -333,16 +335,18 @@ E2.plugins["graph"] = function(core, node) {
 			if(self.framebuffer)
 				core.renderer.push_framebuffer(self.framebuffer, self.framebuffer.width, self.framebuffer.height);
 			
+			debugger;
 			self.graph.update(delta_t);
 
        			if(self.framebuffer)
 				core.renderer.pop_framebuffer();
        			
-       			for(var i = 0, len = node.outputs.length; i < len; i++)
-       				node.outputs[i].cached_value = null;
+       			if(self.updated)
+       			{
+	       			for(var i = 0, len = node.outputs.length; i < len; i++)
+	       				node.outputs[i].cached_value = null;
+       			}
        		}
-       		else
-       			self.updated = false;
        	};
        	
        	this.update_output = function(slot)

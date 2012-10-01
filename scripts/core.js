@@ -626,6 +626,8 @@ function NodeUI(parent_node, x, y) {
 	this.parent_node = parent_node;
 	this.x = x;
 	this.y = y;
+	this.sl = E2.app.scrollOffset[0];
+	this.st = E2.app.scrollOffset[1];
 	this.plugin_ui = null;
 	
 	this.create_slot = function(nid, col, s, type)
@@ -1041,14 +1043,12 @@ function Node(parent_graph, plugin_id, x, y) {
 				}
 			}
 		
-			/*if(self.plugin.id === 'graph')
+			if(self.plugin.id === 'graph')
 			{
 				if(s_plugin.update_state)
 					s_plugin.update_state(delta_t);
-
-				self.plugin.updated = true;
 			}			
-			else */if(self.queued_update > 0)
+			else if(self.queued_update > 0)
 			{
 				if(s_plugin.update_state)
 					s_plugin.update_state(delta_t);
@@ -2374,16 +2374,24 @@ function Application() {
 	{
 		self.in_drag = true;
 
-		var sl = canvas_parent.scrollLeft();
-		var st = canvas_parent.scrollTop();
-		var pos = node.ui.dom.position();
+		// var sl = canvas_parent.scrollLeft();
+		// var st = canvas_parent.scrollTop();
+		var sl = E2.app.scrollOffset[0];
+		var st = E2.app.scrollOffset[1];
+		// var pos = node.ui.dom.position();
+		var nui = node.ui;
+		var nd = nui.dom[0];
 		
-		var dx = (pos.left + sl) - node.x;
-		var dy = (pos.top + st) - node.y;
+		// debugger;
+		
+		var dx = (/*pos.left*/nd.offsetLeft + nui.sl) - node.x;
+		var dy = (/*pos.top*/nd.offsetTop + nui.st) - node.y;
 		var dirty = node.inputs.length + node.outputs.length > 0;
 		
-		node.x = sl + pos.left;
-		node.y = st + pos.top;
+		node.x = sl + /*pos.left*/nd.offsetLeft;
+		node.y = st + /*pos.top*/nd.offsetTop;
+		nui.sl = sl;
+		nui.st = st;
 		
 		node.update_connections();
 		
@@ -2398,14 +2406,18 @@ function Application() {
 				if(n === node) // Already at the desired location
 					continue;
 				
-				var d = n.ui.dom[0];
+				var dui = n.ui;
+				var d = dui.dom[0];
 				var nx = sl + d.offsetLeft + dx;
 				var ny = st + d.offsetTop + dy;
 				
-				n.x = nx;
-				n.y = ny;
-				d.style.left = '' + (nx - sl) + 'px';
-				d.style.top = '' + (ny - st) + 'px';
+				n.x += dx;
+				n.y += dy;
+				d.style.left = '' + (d.offsetLeft + dx) + 'px';
+				d.style.top = '' + (d.offsetTop + dy) + 'px';
+				dui.sl = sl;
+				dui.st = st;
+				// msg('' + d.offsetLeft + ', ' + d.offsetTop);
 				n.update_connections();
 				dirty = dirty || (n.inputs.length + n.outputs.length > 0);
 			}
