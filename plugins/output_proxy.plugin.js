@@ -32,7 +32,12 @@ E2.plugins["output_proxy"] = function(core, node) {
 		self.changed = true;
 		
 		if(node.parent_graph.plugin)
-			node.parent_graph.plugin.updated = true;
+		{
+			var p = node.parent_graph.plugin;
+			
+			p.updated_sids.push(node.uid);
+			p.updated = true;
+		}
 	};
 	
 	this.state_changed = function(ui)

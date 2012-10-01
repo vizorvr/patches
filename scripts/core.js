@@ -16,7 +16,7 @@ E2.app = null;
 E2.dom = {};
 E2.plugins = {};
 E2.slot_type = { input: 0, output: 1 };
-E2.erase_color = '#ff3b3b'; // '#ff4f4f';
+E2.erase_color = '#ff3b3b';
 
 Array.prototype.remove = function(obj)
 {
@@ -1026,14 +1026,17 @@ function Node(parent_graph, plugin_id, x, y) {
 			
 				if(sn.plugin.updated)
 				{
-					s_plugin.update_input(inp.dst_slot, value);
-					s_plugin.updated = true;
-					needs_update = true;
-				
-					if(inp.ui && !inp.ui.flow)
+					if(!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))
 					{
-						dirty = true;
-						inp.ui.flow = true;
+						s_plugin.update_input(inp.dst_slot, value);
+						s_plugin.updated = true;
+						needs_update = true;
+				
+						if(inp.ui && !inp.ui.flow)
+						{
+							dirty = true;
+							inp.ui.flow = true;
+						}
 					}
 				}
 				else if(inp.ui && inp.ui.flow)
@@ -2381,8 +2384,6 @@ function Application() {
 		// var pos = node.ui.dom.position();
 		var nui = node.ui;
 		var nd = nui.dom[0];
-		
-		// debugger;
 		
 		var dx = (/*pos.left*/nd.offsetLeft + nui.sl) - node.x;
 		var dy = (/*pos.top*/nd.offsetTop + nui.st) - node.y;

@@ -11,6 +11,7 @@ E2.plugins["graph"] = function(core, node) {
 	this.output_nodes = {};
 	this.is_reset = true;
 	this.parent_node = node; // For reverse lookup in the core.
+	this.updated_sids = [];
 	
 	this.reset = function()
 	{
@@ -307,7 +308,6 @@ E2.plugins["graph"] = function(core, node) {
 				{
 					if(self.graph && !self.is_reset)
 					{
-						// self.graph.reset();
 						self.is_reset = true;
 						
 						if(self.graph === E2.app.core.active_graph)
@@ -327,7 +327,8 @@ E2.plugins["graph"] = function(core, node) {
 	this.update_state = function(delta_t)
 	{
 		self.updated = false;
-
+		self.updated_sids = [];
+		
 		if(self.graph && self.state.enabled)
 		{
 			var old_fb = null;
@@ -335,17 +336,10 @@ E2.plugins["graph"] = function(core, node) {
 			if(self.framebuffer)
 				core.renderer.push_framebuffer(self.framebuffer, self.framebuffer.width, self.framebuffer.height);
 			
-			debugger;
 			self.graph.update(delta_t);
 
        			if(self.framebuffer)
 				core.renderer.pop_framebuffer();
-       			
-       			if(self.updated)
-       			{
-	       			for(var i = 0, len = node.outputs.length; i < len; i++)
-	       				node.outputs[i].cached_value = null;
-       			}
        		}
        	};
        	
@@ -357,6 +351,11 @@ E2.plugins["graph"] = function(core, node) {
 		return self.texture;
 	};
 
+       	this.query_output = function(slot)
+       	{
+       		return self.updated_sids.indexOf(slot.uid) > -1;
+       	};
+       	
        	this.destroy_slot = function(type, sid)
        	{
        		var slots = (type === E2.slot_type.input) ? self.state.input_sids : self.state.output_sids;
