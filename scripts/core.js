@@ -408,7 +408,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		{
 			var rp = node.parent_graph.plugin;
 			
-			if(rp.parent_node.queued_update < 1 && rp.state.enabled)
+			if(rp && rp.parent_node.queued_update < 1 && rp.state.enabled)
 				self.r_update_inbound(rp.parent_node);
 		}
 	}
@@ -426,7 +426,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot)
 		{
 			var rp = node.parent_graph.plugin;
 			
-			if(rp.parent_node.queued_update < 2 && rp.state.enabled)
+			if(rp && rp.parent_node.queued_update < 2 && rp.state.enabled)
 				self.r_update_outbound(rp.parent_node);
 		}
 	}
