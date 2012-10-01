@@ -12,6 +12,7 @@ E2.plugins["graph"] = function(core, node) {
 	this.is_reset = true;
 	this.parent_node = node; // For reverse lookup in the core.
 	this.updated_sids = [];
+	this.e2_is_graph = true; // Constant. To get rid of string compares from the core.
 	
 	this.reset = function()
 	{
@@ -348,12 +349,13 @@ E2.plugins["graph"] = function(core, node) {
 		if(slot.uid !== undefined)
 			return self.output_nodes[slot.uid].plugin.data;
 			
+		self.updated = true; // Oooh!
 		return self.texture;
 	};
 
        	this.query_output = function(slot)
        	{
-       		return self.updated_sids.indexOf(slot.uid) > -1;
+       		return (slot.uid === undefined) || self.updated_sids.indexOf(slot.uid) > -1;
        	};
        	
        	this.destroy_slot = function(type, sid)
