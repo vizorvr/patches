@@ -2713,6 +2713,11 @@ function Application() {
 		for(var i = 0, len = d.nodes.length; i < len; i++)
 		{
 			var node = d.nodes[i];
+			
+			// TODO: Prevent paste of proxies for now, but should be fixed to work later.
+			if(node.plugin === 'input_proxy' || node.plugin === 'output_proxy')
+				continue;
+			
 			var n = new Node(null, null, null, null);
 			var new_uid = ag.get_node_uid();
 				
