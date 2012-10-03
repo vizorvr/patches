@@ -159,6 +159,7 @@ E2.plugins["graph"] = function(core, node) {
 					return parseInt(n);
 			}
 			
+			msg('ERROR: Failed to resolve node(' + uid + ') in graph(' + self.graph.plugin.parent_node.title + ').');
 			return -1;
 		};
 		
@@ -172,6 +173,7 @@ E2.plugins["graph"] = function(core, node) {
 					return s;
 			}
 			
+			msg('ERROR: Failed to resolve slot(' + sid + ') in graph(' + self.graph.plugin.parent_node.title + ').');
 			return null;
 		};
 		
@@ -358,11 +360,12 @@ E2.plugins["graph"] = function(core, node) {
        		return (slot.uid === undefined) || self.updated_sids.indexOf(slot.uid) > -1;
        	};
        	
-       	this.destroy_slot = function(type, sid)
+       	this.destroy_slot = function(type, nuid)
        	{
        		var slots = (type === E2.slot_type.input) ? self.state.input_sids : self.state.output_sids;
+       		var sid = slots[nuid];
        		
-       		delete slots[sid];
+       		delete slots[nuid];
        		node.remove_slot(type, sid);
        	};
 
@@ -394,9 +397,9 @@ E2.plugins["graph"] = function(core, node) {
        		else if(ev.type === 'node-destroyed')
        		{
        			if(pid === 'input_proxy')
-       				self.destroy_slot(E2.slot_type.input, self.state.input_sids[ev.node.uid]);
+       				self.destroy_slot(E2.slot_type.input, ev.node.uid);
        			else if(pid === 'output_proxy')
-       				self.destroy_slot(E2.slot_type.output, self.state.output_sids[ev.node.uid]);
+       				self.destroy_slot(E2.slot_type.output, ev.node.uid);
        		}
        		else if(ev.type === 'node-renamed')
        		{
@@ -436,7 +439,7 @@ E2.plugins["graph"] = function(core, node) {
 				}
 			}
 
-			msg('ERROR: Failed to find registered proxy node(' + uid + ') in graph(' + self.graph.uid + ').'); 
+			msg('ERROR: Failed to find registered proxy node(' + uid + ') in graph(' + self.graph.plugin.parent_node.title + ').'); 
 			return null;
 		};
 
