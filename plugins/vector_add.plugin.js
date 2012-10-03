@@ -19,7 +19,7 @@ E2.plugins["vector_add"] = function(core, node) {
 
 	this.update_state = function(delta_t)
 	{
-		var r = self.result, va = self.vector_a, vb = self.vector_a;
+		var r = self.result, va = self.vector_a, vb = self.vector_b;
 		
 		r[0] = va[0] + vb[0];
 		r[1] = va[1] + vb[1];
