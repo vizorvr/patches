@@ -97,7 +97,7 @@ function resolve_graph(graphs, guid)
 	}
 
 	if(guid !== -1)
-		assert(false, 'Failed to resolve graph with uid = ' + guid);
+		msg('ERROR: Failed to resolve graph(' + guid + ')');
 	
 	return null;
 };
@@ -915,7 +915,20 @@ function Node(parent_graph, plugin_id, x, y) {
 			else
 				self.dyn_outputs = undefined;
 		}
+		else
+		{
+			// Patch up cached slot indices.
+			for(var i = 0, len = slots.length; i < len; i++)
+			{
+				var s = slots[i];
+			
+				if(s.index > idx)
+					s.index--;
+			}
+		}
 		
+		// Although impossible now, conceivably a plugin could create or destroy slots
+		// in response to a clicked button on its control surface or something similar.
 		if(self.ui)
 			self.ui.dom.find('#n' + self.uid + (is_inp ? 'di' : 'do') + slot.uid).remove();
 		
@@ -937,8 +950,6 @@ function Node(parent_graph, plugin_id, x, y) {
 			}
 			else if(s.uid !== undefined && s.index > idx)
 			{
-				s.index--;
-				
 				if(c.ui)
 				{
 					if(is_inp)
@@ -2713,10 +2724,6 @@ function Application() {
 		for(var i = 0, len = d.nodes.length; i < len; i++)
 		{
 			var node = d.nodes[i];
-			
-			// TODO: Prevent paste of proxies for now, but should be fixed to work later.
-			if(node.plugin === 'input_proxy' || node.plugin === 'output_proxy')
-				continue;
 			
 			var n = new Node(null, null, null, null);
 			var new_uid = ag.get_node_uid();

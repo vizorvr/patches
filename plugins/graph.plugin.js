@@ -370,6 +370,9 @@ E2.plugins["graph"] = function(core, node) {
        	{
 		var pid = ev.node.plugin.id;
 		
+		if(pid !== 'input_proxy' && pid !== 'output_proxy')
+			return;
+		
 		self.dbg('Gevent type = ' + ev.type + ', node uid = ' + ev.node.uid);
 		if(ev.type === 'node-created')
        		{
@@ -433,6 +436,7 @@ E2.plugins["graph"] = function(core, node) {
 				}
 			}
 
+			msg('ERROR: Failed to find registered proxy node(' + uid + ') in graph(' + self.graph.uid + ').'); 
 			return null;
 		};
 
