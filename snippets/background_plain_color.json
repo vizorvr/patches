@@ -1,0 +1,224 @@
+{
+    "abs_t": 128.32,
+    "active_graph": 0,
+    "graph_uid": 6,
+    "root": {
+        "node_uid": 7,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 422,
+                "y": 253,
+                "uid": 5,
+                "dsid": 1,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {
+                        "11": 0
+                    },
+                    "output_sids": {}
+                },
+                "title": "Background color",
+                "graph": {
+                    "node_uid": 14,
+                    "uid": 2,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 753,
+                            "y": 255,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "flat_shader",
+                            "x": 633,
+                            "y": 271,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "quad_mesh_generator",
+                            "x": 457,
+                            "y": 195,
+                            "uid": 10
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 333,
+                            "y": 365,
+                            "uid": 12,
+                            "state": {
+                                "hue": 0.35,
+                                "sat": 0.47,
+                                "lum": 0.43999999999999995
+                            }
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 542,
+                            "y": 347,
+                            "uid": 13,
+                            "dsid": 10,
+                            "state": {
+                                "enabled": true,
+                                "input_sids": {
+                                    "13": 1,
+                                    "15": 3,
+                                    "21": 4,
+                                    "22": 5,
+                                    "23": 6,
+                                    "24": 7,
+                                    "25": 8,
+                                    "26": 9
+                                },
+                                "output_sids": {
+                                    "9": 0,
+                                    "14": 2
+                                }
+                            },
+                            "title": "Material chain",
+                            "graph": {
+                                "node_uid": 27,
+                                "uid": 5,
+                                "parent_uid": 2,
+                                "nodes": [
+                                    {
+                                        "plugin": "material_diffuse_color_modulator",
+                                        "x": 633,
+                                        "y": 248,
+                                        "uid": 1
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 937,
+                                        "y": 290,
+                                        "uid": 9,
+                                        "dsid": 10,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "material",
+                                        "dyn_in": [
+                                            {
+                                                "name": "input",
+                                                "dt": 12,
+                                                "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 0,
+                                                "connected": true,
+                                                "is_connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "material_blend_mode_modulator",
+                                        "x": 522,
+                                        "y": 141,
+                                        "uid": 10
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 477,
+                                        "y": 337,
+                                        "uid": 26,
+                                        "dsid": 2,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "color picker",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 3,
+                                                "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": 10,
+                                        "dst_nuid": 1,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 1,
+                                        "dst_nuid": 9,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 26,
+                                        "dst_nuid": 1,
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "src_dyn": true
+                                    }
+                                ]
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "color picker",
+                                    "dt": 3,
+                                    "uid": 9,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true,
+                                    "connected": false
+                                }
+                            ],
+                            "dyn_out": [
+                                {
+                                    "name": "material",
+                                    "dt": 12,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 13,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 12,
+                            "dst_nuid": 13,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": false,
+                            "dst_dyn": true
+                        }
+                    ]
+                }
+            }
+        ],
+        "conns": []
+    }
+}

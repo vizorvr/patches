@@ -1,0 +1,212 @@
+{
+    "abs_t": 0,
+    "active_graph": 0,
+    "graph_uid": 2,
+    "root": {
+        "node_uid": 1,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 300,
+                "y": 214,
+                "uid": 0,
+                "dsid": 4,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {
+                        "3": 1,
+                        "4": 2,
+                        "5": 3
+                    },
+                    "output_sids": {
+                        "2": 0
+                    }
+                },
+                "title": "Concatenate x2",
+                "graph": {
+                    "node_uid": 6,
+                    "uid": 1,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "concatenate_matrix_modulator",
+                            "x": 392,
+                            "y": 263,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "concatenate_matrix_modulator",
+                            "x": 268,
+                            "y": 302,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 532,
+                            "y": 244,
+                            "uid": 2,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "matrix",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 4,
+                                    "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 229,
+                            "y": 195,
+                            "uid": 3,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "matrix",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 4,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 148,
+                            "y": 343,
+                            "uid": 4,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "matrix",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 4,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 171,
+                            "y": 500,
+                            "uid": 5,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "matrix",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 4,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "matrix",
+                        "dt": 4,
+                        "uid": 1,
+                        "index": 0,
+                        "type": 0
+                    },
+                    {
+                        "name": "matrix",
+                        "dt": 4,
+                        "uid": 2,
+                        "index": 1,
+                        "type": 0
+                    },
+                    {
+                        "name": "matrix",
+                        "dt": 4,
+                        "uid": 3,
+                        "index": 2,
+                        "type": 0
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "matrix",
+                        "dt": 4,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

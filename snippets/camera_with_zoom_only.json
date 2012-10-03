@@ -1,0 +1,152 @@
+{
+    "abs_t": 35.377,
+    "active_graph": 0,
+    "graph_uid": 5,
+    "root": {
+        "node_uid": 3,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 280,
+                "y": 214,
+                "uid": 1,
+                "dsid": 2,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {
+                        "2": 0
+                    },
+                    "output_sids": {
+                        "3": 1
+                    }
+                },
+                "title": "Camera zoom",
+                "graph": {
+                    "node_uid": 4,
+                    "uid": 4,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "perspective_camera",
+                            "x": 557,
+                            "y": 219,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 343,
+                            "y": 322,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 198,
+                            "y": 359,
+                            "uid": 2,
+                            "dsid": 3,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "zoom",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 683,
+                            "y": 218,
+                            "uid": 3,
+                            "dsid": 3,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "camera",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 8,
+                                    "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "zoom",
+                        "dt": 0,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "camera",
+                        "dt": 8,
+                        "uid": 1,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            },
+            {
+                "plugin": "slider_float_generator",
+                "x": 68,
+                "y": 298,
+                "uid": 2,
+                "state": {
+                    "val": 2,
+                    "min": 0,
+                    "max": 100
+                }
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 2,
+                "dst_nuid": 1,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            }
+        ]
+    }
+}

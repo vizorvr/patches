@@ -1,73 +1,255 @@
 {
-    "abs_t": 1667.07,
+    "abs_t": 0,
     "active_graph": 0,
-    "graph_uid": 2,
+    "graph_uid": 3,
     "root": {
-        "node_uid": 7,
+        "node_uid": 9,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 168,
-                "y": 123,
+                "x": 244,
+                "y": 115,
                 "uid": 0,
+                "dsid": 4,
                 "state": {
                     "enabled": true,
-                    "input_sids": {},
-                    "output_sids": {}
+                    "input_sids": {
+                        "5": 0,
+                        "7": 2,
+                        "8": 3
+                    },
+                    "output_sids": {
+                        "6": 1
+                    }
                 },
-                "title": "Scene",
+                "title": "Analogue monitor",
                 "graph": {
-                    "node_uid": 4,
+                    "node_uid": 10,
                     "uid": 1,
                     "parent_uid": 0,
                     "nodes": [
                         {
-                            "plugin": "quad_mesh_generator",
-                            "x": 56,
-                            "y": 24,
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 477,
+                            "y": 34,
                             "uid": 0
                         },
                         {
-                            "plugin": "mesh_renderer_emitter",
-                            "x": 527,
-                            "y": 26,
+                            "plugin": "quad_mesh_generator",
+                            "x": 152,
+                            "y": 8,
                             "uid": 1
                         },
                         {
-                            "plugin": "from_mesh_shader",
-                            "x": 276,
-                            "y": 104,
-                            "uid": 2
+                            "plugin": "from_mesh_custom_shader",
+                            "x": 265,
+                            "y": 112,
+                            "uid": 2,
+                            "dsid": 6,
+                            "state": {
+                                "vs_src": "void main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n\n\tf_col = dc;\n        f_uv0 = v_uv0;\n}",
+                                "ps_src": "float rand(vec2 n)\n{\n     return 0.5 * fract(sin(dot(n.xy, vec2(12.9898, 78.233)))* 43758.5453);\n}\n\nvoid main(void)\n{\n    vec3 oricol = texture2D(tex0, vec2(f_uv0.x,1.0-f_uv0.y)).xyz;\n    vec3 col;\n    vec2 co = vec2(time + f_uv0.x, time + f_uv0.y);\n    float na = noise * 0.003;\n    float ro = rand(co) * na;\n    float go = rand(co) * na;\n    float bo = rand(co) * na;\n\n    col.r = texture2D(tex0, vec2(f_uv0.x+0.003+ro, f_uv0.y-go)).x;\n    col.g = texture2D(tex0, vec2(f_uv0.x+go, f_uv0.y-bo)).y;\n    col.b = texture2D(tex0, vec2(f_uv0.x-0.003+bo, f_uv0.y-ro)).z;\n\n    col = clamp(col*0.5+0.5*col*col*1.2,0.0,1.0);\n    col *= 0.5+0.5*16.0*f_uv0.x*f_uv0.y*(1.0-f_uv0.x)*(1.0-f_uv0.y);\n    col *= vec3(0.8, 1.0, 0.7);\n    col *= 0.9+0.1*sin(10.0*time+f_uv0.y*band_scale*1000.0);\n    col *= 0.97+0.03*sin(110.0*time);\n  \n    gl_FragColor = vec4(col, 1.0);\n}",
+                                "slot_ids": {
+                                    "time": {
+                                        "id": 3,
+                                        "dt": {
+                                            "id": 0,
+                                            "name": "Float"
+                                        },
+                                        "uniform": {}
+                                    },
+                                    "noise": {
+                                        "id": 4,
+                                        "dt": {
+                                            "id": 0,
+                                            "name": "Float"
+                                        },
+                                        "uniform": {}
+                                    },
+                                    "band_scale": {
+                                        "id": 5,
+                                        "dt": {
+                                            "id": 0,
+                                            "name": "Float"
+                                        },
+                                        "uniform": {}
+                                    }
+                                }
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "time",
+                                    "dt": 0,
+                                    "uid": 3,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "noise",
+                                    "dt": 0,
+                                    "uid": 4,
+                                    "index": 1,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "band_scale",
+                                    "dt": 0,
+                                    "uid": 5,
+                                    "index": 2,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ]
                         },
                         {
-                            "plugin": "url_texture_generator",
-                            "x": 37,
-                            "y": 199,
-                            "uid": 3,
+                            "plugin": "material_texture_modulator",
+                            "x": 117,
+                            "y": 63,
+                            "uid": 3
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 11,
+                            "y": 63,
+                            "uid": 4,
                             "state": {
-                                "url": "data/textures/cutout_audrey2.png"
+                                "enabled": true,
+                                "input_sids": {},
+                                "output_sids": {}
+                            },
+                            "title": "Scene",
+                            "graph": {
+                                "node_uid": 6,
+                                "uid": 2,
+                                "parent_uid": 1,
+                                "nodes": [
+                                    {
+                                        "plugin": "mesh_renderer_emitter",
+                                        "x": 485,
+                                        "y": 31,
+                                        "uid": 0
+                                    },
+                                    {
+                                        "plugin": "quad_mesh_generator",
+                                        "x": 286,
+                                        "y": 12,
+                                        "uid": 1
+                                    },
+                                    {
+                                        "plugin": "material_texture_modulator",
+                                        "x": 177,
+                                        "y": 120,
+                                        "uid": 3
+                                    },
+                                    {
+                                        "plugin": "texture_diffuse_shader",
+                                        "x": 325,
+                                        "y": 120,
+                                        "uid": 4
+                                    },
+                                    {
+                                        "plugin": "url_texture_generator",
+                                        "x": 14,
+                                        "y": 132,
+                                        "uid": 5,
+                                        "state": {
+                                            "url": "data/textures/typography3.jpg"
+                                        }
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": 1,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 4,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 3,
+                                        "dst_nuid": 4,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 5,
+                                        "dst_nuid": 3,
+                                        "src_slot": 0,
+                                        "dst_slot": 2
+                                    }
+                                ]
                             }
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 159,
+                            "y": 194,
+                            "uid": 5,
+                            "dsid": 2,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "noise",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 159,
+                            "y": 247,
+                            "uid": 8,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "band_scale",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "clock_generator",
+                            "x": 87,
+                            "y": 161,
+                            "uid": 9
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": 0,
-                            "dst_nuid": 1,
+                            "src_nuid": 1,
+                            "dst_nuid": 0,
                             "src_slot": 0,
                             "dst_slot": 0
                         },
                         {
-                            "src_nuid": 0,
-                            "dst_nuid": 2,
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "offset": 1
-                        },
-                        {
                             "src_nuid": 2,
-                            "dst_nuid": 1,
+                            "dst_nuid": 0,
                             "src_slot": 0,
                             "dst_slot": 1
                         },
@@ -75,53 +257,53 @@
                             "src_nuid": 3,
                             "dst_nuid": 2,
                             "src_slot": 0,
-                            "dst_slot": 4
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 9,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_dyn": true
                         }
                     ]
-                }
-            },
-            {
-                "plugin": "from_mesh_custom_shader",
-                "x": 307,
-                "y": 91,
-                "uid": 1,
-                "dsid": 14,
-                "state": {
-                    "vs_src": "void main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n\n\tf_col = dc;\n        f_uv0 = v_uv0;\n}",
-                    "ps_src": "mediump float rand(mediump vec2 n)\n{\n     return 0.5 * fract(sin(dot(n.xy, vec2(12.9898, 78.233)))* 43758.5453);\n}\n\nvoid main(void)\n{\n    mediump vec3 oricol = texture2D(tex0, vec2(f_uv0.x,1.0-f_uv0.y)).xyz;\n    mediump vec3 col;\n    mediump vec2 co = vec2(time + f_uv0.x, time + f_uv0.y);\n    mediump float na = noise * 0.003;\n    mediump float ro = rand(co) * na;\n    mediump float go = rand(co) * na;\n    mediump float bo = rand(co) * na;\n\n    col.r = texture2D(tex0, vec2(f_uv0.x+0.003+ro, f_uv0.y-go)).x;\n    col.g = texture2D(tex0, vec2(f_uv0.x+go, f_uv0.y-bo)).y;\n    col.b = texture2D(tex0, vec2(f_uv0.x-0.003+bo, f_uv0.y-ro)).z;\n\n    col = clamp(col*0.5+0.5*col*col*1.2,0.0,1.0);\n    col *= 0.5+0.5*16.0*f_uv0.x*f_uv0.y*(1.0-f_uv0.x)*(1.0-f_uv0.y);\n    col *= vec3(0.8, 1.0, 0.7);\n    col *= 0.9+0.1*sin(10.0*time+f_uv0.y*band_scale*1000.0);\n    col *= 0.97+0.03*sin(110.0*time);\n  \n    gl_FragColor = vec4(col, 1.0);\n}",
-                    "slot_ids": {
-                        "time": {
-                            "id": 11,
-                            "dt": {
-                                "id": 0,
-                                "name": "Float"
-                            },
-                            "uniform": {}
-                        },
-                        "band_scale": {
-                            "id": 12,
-                            "dt": {
-                                "id": 0,
-                                "name": "Float"
-                            },
-                            "uniform": {}
-                        },
-                        "noise": {
-                            "id": 13,
-                            "dt": {
-                                "id": 0,
-                                "name": "Float"
-                            },
-                            "uniform": {}
-                        }
-                    }
                 },
-                "title": "Posterize",
                 "dyn_in": [
                     {
-                        "name": "time",
+                        "name": "noise",
                         "dt": 0,
-                        "uid": 11,
+                        "uid": 0,
                         "index": 0,
                         "type": 0,
                         "is_connected": true
@@ -129,109 +311,99 @@
                     {
                         "name": "band_scale",
                         "dt": 0,
-                        "uid": 12,
+                        "uid": 3,
                         "index": 1,
-                        "type": 0,
-                        "is_connected": true
-                    },
-                    {
-                        "name": "noise",
-                        "dt": 0,
-                        "uid": 13,
-                        "index": 2,
                         "type": 0,
                         "is_connected": true
                     }
                 ]
             },
             {
-                "plugin": "mesh_renderer_emitter",
-                "x": 542,
-                "y": 26,
-                "uid": 2
+                "plugin": "knob_float_generator",
+                "x": 21,
+                "y": 49,
+                "uid": 3,
+                "state": {
+                    "val": 0.48999999999999966
+                }
             },
             {
-                "plugin": "quad_mesh_generator",
-                "x": 215,
-                "y": 26,
-                "uid": 3
-            },
-            {
-                "plugin": "clock_generator",
-                "x": 44,
-                "y": 23,
+                "plugin": "multiply_modulator",
+                "x": 153,
+                "y": 74,
                 "uid": 4
             },
             {
-                "plugin": "slider_float_generator",
-                "x": 55,
-                "y": 248,
+                "plugin": "const_float_generator",
+                "x": 21,
+                "y": 146,
                 "uid": 5,
                 "state": {
-                    "val": 0.68,
-                    "min": 0,
-                    "max": 1
-                },
-                "title": "Band scale"
+                    "val": 2
+                }
             },
             {
-                "plugin": "slider_float_generator",
-                "x": 69,
-                "y": 335,
+                "plugin": "knob_float_generator",
+                "x": 21,
+                "y": 217,
                 "uid": 6,
                 "state": {
-                    "val": 1,
-                    "min": 0,
-                    "max": 2
-                },
-                "title": "Noise"
+                    "val": 0.48999999999999966
+                }
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 153,
+                "y": 242,
+                "uid": 7
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 21,
+                "y": 314,
+                "uid": 8,
+                "state": {
+                    "val": 2
+                }
             }
         ],
         "conns": [
             {
-                "src_nuid": 1,
-                "dst_nuid": 2,
-                "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
                 "src_nuid": 3,
-                "dst_nuid": 1,
+                "dst_nuid": 4,
                 "src_slot": 0,
                 "dst_slot": 0
             },
             {
-                "src_nuid": 3,
-                "dst_nuid": 2,
+                "src_nuid": 5,
+                "dst_nuid": 4,
                 "src_slot": 0,
-                "dst_slot": 0,
-                "offset": 1
+                "dst_slot": 1
             },
             {
                 "src_nuid": 4,
-                "dst_nuid": 1,
+                "dst_nuid": 0,
                 "src_slot": 0,
                 "dst_slot": 0,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 0,
-                "dst_nuid": 1,
-                "src_slot": 0,
-                "dst_slot": 4
-            },
-            {
-                "src_nuid": 5,
-                "dst_nuid": 1,
-                "src_slot": 0,
-                "dst_slot": 1,
                 "dst_dyn": true
             },
             {
                 "src_nuid": 6,
-                "dst_nuid": 1,
+                "dst_nuid": 7,
                 "src_slot": 0,
-                "dst_slot": 2,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 8,
+                "dst_nuid": 7,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 7,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 1,
                 "dst_dyn": true
             }
         ]

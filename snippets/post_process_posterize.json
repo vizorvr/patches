@@ -1,73 +1,232 @@
 {
-    "abs_t": 115.174,
+    "abs_t": 0,
     "active_graph": 0,
-    "graph_uid": 2,
+    "graph_uid": 4,
     "root": {
-        "node_uid": 10,
+        "node_uid": 5,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 290,
-                "y": 106,
+                "x": 303,
+                "y": 22,
                 "uid": 0,
+                "dsid": 3,
                 "state": {
                     "enabled": true,
-                    "input_sids": {},
-                    "output_sids": {}
+                    "input_sids": {
+                        "5": 0,
+                        "7": 2
+                    },
+                    "output_sids": {
+                        "6": 1
+                    }
                 },
-                "title": "Scene",
+                "title": "Posterize",
                 "graph": {
-                    "node_uid": 4,
+                    "node_uid": 8,
                     "uid": 1,
                     "parent_uid": 0,
                     "nodes": [
                         {
-                            "plugin": "quad_mesh_generator",
-                            "x": 56,
-                            "y": 24,
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 694,
+                            "y": 50,
                             "uid": 0
                         },
                         {
-                            "plugin": "mesh_renderer_emitter",
-                            "x": 527,
-                            "y": 26,
+                            "plugin": "quad_mesh_generator",
+                            "x": 369,
+                            "y": 24,
                             "uid": 1
                         },
                         {
-                            "plugin": "from_mesh_shader",
-                            "x": 276,
-                            "y": 104,
-                            "uid": 2
+                            "plugin": "from_mesh_custom_shader",
+                            "x": 503,
+                            "y": 126,
+                            "uid": 2,
+                            "dsid": 2,
+                            "state": {
+                                "vs_src": "void main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n\n\tf_col = dc;\n        f_uv0 = v_uv0;\n}",
+                                "ps_src": "void main(void)\n{\n\tvec3 c = texture2D(tex0, f_uv0).rgb;\n\t\n\tc = pow(c, vec3(gamma, gamma, gamma));\n\tc = c * color_count;\n\tc = floor(c);\n\tc = c / color_count;\n\tc = pow(c, vec3(1.0 / gamma));\n\t\n\tgl_FragColor = vec4(c, 1.0);\n}",
+                                "slot_ids": {
+                                    "gamma": {
+                                        "id": 0,
+                                        "dt": {
+                                            "id": 0,
+                                            "name": "Float"
+                                        },
+                                        "uniform": {}
+                                    },
+                                    "color_count": {
+                                        "id": 1,
+                                        "dt": {
+                                            "id": 0,
+                                            "name": "Float"
+                                        },
+                                        "uniform": {}
+                                    }
+                                }
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "gamma",
+                                    "dt": 0,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "color_count",
+                                    "dt": 0,
+                                    "uid": 1,
+                                    "index": 1,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ]
                         },
                         {
-                            "plugin": "url_texture_generator",
-                            "x": 37,
-                            "y": 199,
-                            "uid": 3,
+                            "plugin": "material_texture_modulator",
+                            "x": 318,
+                            "y": 95,
+                            "uid": 3
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 154,
+                            "y": 118,
+                            "uid": 4,
                             "state": {
-                                "url": "data/textures/backdrop_orange.jpg"
+                                "enabled": true,
+                                "input_sids": {},
+                                "output_sids": {}
+                            },
+                            "title": "Scene",
+                            "graph": {
+                                "node_uid": 6,
+                                "uid": 2,
+                                "parent_uid": 1,
+                                "nodes": [
+                                    {
+                                        "plugin": "mesh_renderer_emitter",
+                                        "x": 485,
+                                        "y": 31,
+                                        "uid": 0
+                                    },
+                                    {
+                                        "plugin": "quad_mesh_generator",
+                                        "x": 286,
+                                        "y": 12,
+                                        "uid": 1
+                                    },
+                                    {
+                                        "plugin": "material_texture_modulator",
+                                        "x": 177,
+                                        "y": 120,
+                                        "uid": 3
+                                    },
+                                    {
+                                        "plugin": "texture_diffuse_shader",
+                                        "x": 325,
+                                        "y": 120,
+                                        "uid": 4
+                                    },
+                                    {
+                                        "plugin": "url_texture_generator",
+                                        "x": 14,
+                                        "y": 132,
+                                        "uid": 5,
+                                        "state": {
+                                            "url": "data/textures/looping_sky.jpg"
+                                        }
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": 1,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 4,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 3,
+                                        "dst_nuid": 4,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 5,
+                                        "dst_nuid": 3,
+                                        "src_slot": 0,
+                                        "dst_slot": 2
+                                    }
+                                ]
                             }
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 321,
+                            "y": 211,
+                            "uid": 5,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "gamma",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 323,
+                            "y": 290,
+                            "uid": 7,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "color_count",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": 0,
-                            "dst_nuid": 1,
+                            "src_nuid": 1,
+                            "dst_nuid": 0,
                             "src_slot": 0,
                             "dst_slot": 0
                         },
                         {
-                            "src_nuid": 0,
-                            "dst_nuid": 2,
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "offset": 1
-                        },
-                        {
                             "src_nuid": 2,
-                            "dst_nuid": 1,
+                            "dst_nuid": 0,
                             "src_slot": 0,
                             "dst_slot": 1
                         },
@@ -75,45 +234,46 @@
                             "src_nuid": 3,
                             "dst_nuid": 2,
                             "src_slot": 0,
-                            "dst_slot": 4
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 2
                         }
                     ]
-                }
-            },
-            {
-                "plugin": "from_mesh_custom_shader",
-                "x": 429,
-                "y": 74,
-                "uid": 1,
-                "dsid": 9,
-                "state": {
-                    "vs_src": "void main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n\n\tf_col = dc;\n        f_uv0 = v_uv0;\n}",
-                    "ps_src": "void main(void)\n{\n\tmediump vec3 c = texture2D(tex0, f_uv0).rgb;\n\t\n\tc = pow(c, vec3(gamma, gamma, gamma));\n\tc = c * color_count;\n\tc = floor(c);\n\tc = c / color_count;\n\tc = pow(c, vec3(1.0 / gamma));\n\t\n\tgl_FragColor = vec4(c, 1.0);\n}",
-                    "slot_ids": {
-                        "gamma": {
-                            "id": 7,
-                            "dt": {
-                                "id": 0,
-                                "name": "Float"
-                            },
-                            "uniform": {}
-                        },
-                        "color_count": {
-                            "id": 8,
-                            "dt": {
-                                "id": 0,
-                                "name": "Float"
-                            },
-                            "uniform": {}
-                        }
-                    }
                 },
-                "title": "Posterize",
                 "dyn_in": [
                     {
                         "name": "gamma",
                         "dt": 0,
-                        "uid": 7,
+                        "uid": 0,
                         "index": 0,
                         "type": 0,
                         "is_connected": true
@@ -121,7 +281,7 @@
                     {
                         "name": "color_count",
                         "dt": 0,
-                        "uid": 8,
+                        "uid": 2,
                         "index": 1,
                         "type": 0,
                         "is_connected": true
@@ -129,78 +289,39 @@
                 ]
             },
             {
-                "plugin": "mesh_renderer_emitter",
-                "x": 664,
-                "y": 9,
-                "uid": 2
-            },
-            {
-                "plugin": "quad_mesh_generator",
-                "x": 337,
-                "y": 9,
-                "uid": 3
-            },
-            {
                 "plugin": "slider_float_generator",
-                "x": 53,
-                "y": 157,
-                "uid": 8,
+                "x": 12,
+                "y": 115,
+                "uid": 1,
                 "state": {
-                    "val": 0.604,
-                    "min": 0.1,
-                    "max": 1
+                    "val": 16.3,
+                    "min": 1,
+                    "max": 256
                 }
             },
             {
-                "plugin": "slider_float_generator",
-                "x": 54,
-                "y": 249,
-                "uid": 9,
+                "plugin": "knob_float_generator",
+                "x": 207,
+                "y": 12,
+                "uid": 4,
                 "state": {
-                    "val": 3.4,
-                    "min": 1,
-                    "max": 16
+                    "val": 0.49999999999999967
                 }
             }
         ],
         "conns": [
             {
-                "src_nuid": 0,
-                "dst_nuid": 1,
-                "src_slot": 0,
-                "dst_slot": 4
-            },
-            {
                 "src_nuid": 1,
-                "dst_nuid": 2,
+                "dst_nuid": 0,
                 "src_slot": 0,
-                "dst_slot": 1
-            },
-            {
-                "src_nuid": 3,
-                "dst_nuid": 1,
-                "src_slot": 0,
-                "dst_slot": 0
-            },
-            {
-                "src_nuid": 3,
-                "dst_nuid": 2,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "offset": 1
-            },
-            {
-                "src_nuid": 8,
-                "dst_nuid": 1,
-                "src_slot": 0,
-                "dst_slot": 0,
+                "dst_slot": 1,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 9,
-                "dst_nuid": 1,
+                "src_nuid": 4,
+                "dst_nuid": 0,
                 "src_slot": 0,
-                "dst_slot": 1,
+                "dst_slot": 0,
                 "dst_dyn": true
             }
         ]

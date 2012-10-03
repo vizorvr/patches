@@ -1,0 +1,172 @@
+{
+    "abs_t": 10.143,
+    "active_graph": 0,
+    "graph_uid": 3,
+    "root": {
+        "node_uid": 6,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 399,
+                "y": 135,
+                "uid": 4,
+                "dsid": 2,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {
+                        "7": 1
+                    },
+                    "output_sids": {
+                        "6": 0
+                    }
+                },
+                "title": "Time",
+                "graph": {
+                    "node_uid": 8,
+                    "uid": 2,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "delta_t_generator",
+                            "x": 358,
+                            "y": 292,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "accumulate_modulator",
+                            "x": 564,
+                            "y": 292,
+                            "uid": 1,
+                            "state": {
+                                "value": 1.330499999999992
+                            }
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 461,
+                            "y": 292,
+                            "uid": 2
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 682,
+                            "y": 289,
+                            "uid": 6,
+                            "dsid": 4,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "time",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 0,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 383,
+                            "y": 484,
+                            "uid": 7,
+                            "dsid": 2,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "Speed",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 6,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "dst_dyn": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "Speed",
+                        "dt": 0,
+                        "uid": 1,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "time",
+                        "dt": 0,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            },
+            {
+                "plugin": "slider_float_generator",
+                "x": 198,
+                "y": 195,
+                "uid": 5,
+                "state": {
+                    "val": 0.5,
+                    "min": 0,
+                    "max": 1
+                },
+                "title": "Speed"
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 5,
+                "dst_nuid": 4,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            }
+        ]
+    }
+}
