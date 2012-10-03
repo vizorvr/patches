@@ -16,12 +16,9 @@
                 "state": {
                     "enabled": true,
                     "input_sids": {
-                        "5": 0,
-                        "7": 2,
-                        "8": 3
+                        "5": 0
                     },
                     "output_sids": {
-                        "6": 1
                     }
                 },
                 "title": "Analogue monitor",
