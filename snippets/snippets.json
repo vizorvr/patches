@@ -13,7 +13,6 @@
  	"Util: Aspect ratio corrector": "util_aspect_ratio",
 	"Util: Concatenate x 2": "util_concatenate_x2",
 	"Util: Concatenate x 3": "util_concatenate_x3",
-	"Util: Get mesh from scene": "util_get_mesh_from_scene",
 	"Util: Knob with min and max values": "util_knob_with_min_max",
 	"3D: Scene loader with camera and transforms": "3d_scene_loader_with_camera_and_transforms",
 	"3D: Scene loader with mouse controls": "3d_scene_loader_with_mousecontrol",

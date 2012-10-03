@@ -1,6 +1,6 @@
 {
-    "abs_t": 20.638,
-    "active_graph": 0,
+    "abs_t": 0,
+    "active_graph": 1,
     "graph_uid": 2,
     "root": {
         "node_uid": 2,
@@ -9,15 +9,14 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 507,
-                "y": 319,
+                "x": 98,
+                "y": 7,
                 "uid": 0,
                 "dsid": 3,
                 "state": {
                     "enabled": true,
                     "input_sids": {
-                        "9": 0,
-                        "10": 1
+                        "9": 0
                     },
                     "output_sids": {
                         "12": 2
@@ -31,8 +30,8 @@
                     "nodes": [
                         {
                             "plugin": "const_float_generator",
-                            "x": 185,
-                            "y": 371,
+                            "x": 27,
+                            "y": 190,
                             "uid": 2,
                             "state": {
                                 "val": -10
@@ -41,40 +40,40 @@
                         },
                         {
                             "plugin": "subtract_modulator",
-                            "x": 320,
-                            "y": 287,
+                            "x": 144,
+                            "y": 65,
                             "uid": 3
                         },
                         {
                             "plugin": "absolute_modulator",
-                            "x": 406,
-                            "y": 287,
+                            "x": 232,
+                            "y": 65,
                             "uid": 4
                         },
                         {
                             "plugin": "multiply_modulator",
-                            "x": 499,
-                            "y": 230,
+                            "x": 319,
+                            "y": 45,
                             "uid": 5
                         },
                         {
                             "plugin": "add_modulator",
-                            "x": 579,
-                            "y": 230,
+                            "x": 401,
+                            "y": 122,
                             "uid": 7
                         },
                         {
                             "plugin": "min_modulator",
-                            "x": 322,
-                            "y": 360,
+                            "x": 143,
+                            "y": 142,
                             "uid": 8
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 208,
-                            "y": 114,
+                            "x": 248,
+                            "y": 9,
                             "uid": 9,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -93,8 +92,8 @@
                         },
                         {
                             "plugin": "const_float_generator",
-                            "x": 184,
-                            "y": 299,
+                            "x": 10,
+                            "y": 85,
                             "uid": 11,
                             "state": {
                                 "val": 10
@@ -103,10 +102,10 @@
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 692,
-                            "y": 232,
+                            "x": 486,
+                            "y": 122,
                             "uid": 12,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -216,8 +215,8 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 418,
-                "y": 320,
+                "x": 8,
+                "y": 7,
                 "uid": 1,
                 "state": {
                     "val": 0

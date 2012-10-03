@@ -1,7 +1,7 @@
 {
     "abs_t": 0,
-    "active_graph": 0,
-    "graph_uid": 1,
+    "active_graph": 1,
+    "graph_uid": 2,
     "root": {
         "node_uid": 1,
         "uid": 0,
@@ -9,8 +9,8 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 470,
-                "y": 310,
+                "x": 9,
+                "y": 11,
                 "uid": 0,
                 "dsid": 5,
                 "state": {
@@ -28,33 +28,33 @@
                 "title": "Concatanate x 3",
                 "graph": {
                     "node_uid": 8,
-                    "uid": 2,
+                    "uid": 1,
                     "parent_uid": 0,
                     "nodes": [
                         {
                             "plugin": "concatenate_matrix_modulator",
-                            "x": 491,
-                            "y": 234,
+                            "x": 341,
+                            "y": 9,
                             "uid": 0
                         },
                         {
                             "plugin": "concatenate_matrix_modulator",
-                            "x": 360,
-                            "y": 275,
+                            "x": 230,
+                            "y": 9,
                             "uid": 1
                         },
                         {
                             "plugin": "concatenate_matrix_modulator",
-                            "x": 240,
-                            "y": 326,
+                            "x": 109,
+                            "y": 9,
                             "uid": 2
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 623,
-                            "y": 213,
+                            "x": 457,
+                            "y": 9,
                             "uid": 3,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -73,10 +73,10 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 435,
-                            "y": 379,
+                            "x": 260,
+                            "y": 87,
                             "uid": 4,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -94,10 +94,10 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 349,
-                            "y": 483,
+                            "x": 140,
+                            "y": 86,
                             "uid": 5,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -115,10 +115,10 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 117,
-                            "y": 425,
+                            "x": 11,
+                            "y": 9,
                             "uid": 6,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -136,10 +136,10 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 207,
-                            "y": 533,
+                            "x": 11,
+                            "y": 70,
                             "uid": 7,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },

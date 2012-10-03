@@ -1,17 +1,17 @@
 {
-    "abs_t": 36.054,
+    "abs_t": 0,
     "active_graph": 0,
-    "graph_uid": 4,
+    "graph_uid": 2,
     "root": {
-        "node_uid": 5,
+        "node_uid": 4,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 380,
-                "y": 251,
-                "uid": 1,
+                "x": 270,
+                "y": 59,
+                "uid": 0,
                 "dsid": 4,
                 "state": {
                     "enabled": true,
@@ -27,15 +27,15 @@
                 "title": "Camera",
                 "graph": {
                     "node_uid": 16,
-                    "uid": 3,
+                    "uid": 1,
                     "parent_uid": 0,
                     "nodes": [
                         {
                             "plugin": "input_proxy",
-                            "x": 234,
-                            "y": 191,
+                            "x": 39,
+                            "y": 137,
                             "uid": 0,
-                            "dsid": 8,
+                            "dsid": 9,
                             "state": {
                                 "slot_id": 0
                             },
@@ -57,7 +57,7 @@
                             "x": 34,
                             "y": 21,
                             "uid": 1,
-                            "dsid": 8,
+                            "dsid": 9,
                             "state": {
                                 "slot_id": 0
                             },
@@ -79,7 +79,7 @@
                             "x": 55,
                             "y": 79,
                             "uid": 2,
-                            "dsid": 8,
+                            "dsid": 9,
                             "state": {
                                 "slot_id": 0
                             },
@@ -98,10 +98,10 @@
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 762,
-                            "y": 27,
+                            "x": 478,
+                            "y": 50,
                             "uid": 3,
-                            "dsid": 8,
+                            "dsid": 9,
                             "state": {
                                 "slot_id": 0
                             },
@@ -121,26 +121,26 @@
                         },
                         {
                             "plugin": "perspective_camera",
-                            "x": 652,
-                            "y": 67,
+                            "x": 368,
+                            "y": 90,
                             "uid": 4
                         },
                         {
                             "plugin": "vector",
-                            "x": 418,
-                            "y": 15,
+                            "x": 134,
+                            "y": 38,
                             "uid": 5
                         },
                         {
                             "plugin": "rotation_xyz_matrix",
-                            "x": 422,
-                            "y": 133,
+                            "x": 138,
+                            "y": 156,
                             "uid": 6
                         },
                         {
                             "plugin": "vector_transform",
-                            "x": 546,
-                            "y": 69,
+                            "x": 262,
+                            "y": 92,
                             "uid": 7
                         }
                     ],
@@ -235,9 +235,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 26,
-                "y": 205,
-                "uid": 2,
+                "x": 35,
+                "y": 12,
+                "uid": 1,
                 "state": {
                     "val": 0,
                     "min": -180,
@@ -247,9 +247,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 26,
-                "y": 291,
-                "uid": 3,
+                "x": 35,
+                "y": 98,
+                "uid": 2,
                 "state": {
                     "val": 2.14,
                     "min": -20,
@@ -259,9 +259,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 26,
-                "y": 376,
-                "uid": 4,
+                "x": 35,
+                "y": 183,
+                "uid": 3,
                 "state": {
                     "val": 5.1,
                     "min": 0,
@@ -272,22 +272,22 @@
         ],
         "conns": [
             {
-                "src_nuid": 2,
-                "dst_nuid": 1,
+                "src_nuid": 1,
+                "dst_nuid": 0,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 3,
-                "dst_nuid": 1,
+                "src_nuid": 2,
+                "dst_nuid": 0,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 4,
-                "dst_nuid": 1,
+                "src_nuid": 3,
+                "dst_nuid": 0,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_dyn": true

@@ -1,6 +1,6 @@
 {
     "abs_t": 0,
-    "active_graph": 0,
+    "active_graph": 1,
     "graph_uid": 2,
     "root": {
         "node_uid": 1,
@@ -9,8 +9,8 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 300,
-                "y": 214,
+                "x": 10,
+                "y": 7,
                 "uid": 0,
                 "dsid": 4,
                 "state": {
@@ -32,22 +32,22 @@
                     "nodes": [
                         {
                             "plugin": "concatenate_matrix_modulator",
-                            "x": 392,
-                            "y": 263,
+                            "x": 274,
+                            "y": 13,
                             "uid": 0
                         },
                         {
                             "plugin": "concatenate_matrix_modulator",
-                            "x": 268,
-                            "y": 302,
+                            "x": 92,
+                            "y": 13,
                             "uid": 1
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 532,
-                            "y": 244,
+                            "x": 394,
+                            "y": 13,
                             "uid": 2,
-                            "dsid": 1,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },
@@ -67,10 +67,10 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 229,
-                            "y": 195,
+                            "x": 197,
+                            "y": 14,
                             "uid": 3,
-                            "dsid": 1,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },
@@ -89,10 +89,10 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 148,
-                            "y": 343,
+                            "x": 9,
+                            "y": 13,
                             "uid": 4,
-                            "dsid": 1,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },
@@ -111,10 +111,10 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 171,
-                            "y": 500,
+                            "x": 9,
+                            "y": 71,
                             "uid": 5,
-                            "dsid": 1,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },

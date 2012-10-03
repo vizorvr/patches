@@ -1,17 +1,17 @@
 {
-    "abs_t": 10.143,
-    "active_graph": 0,
-    "graph_uid": 3,
+    "abs_t": 0,
+    "active_graph": 1,
+    "graph_uid": 2,
     "root": {
-        "node_uid": 6,
+        "node_uid": 2,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 399,
-                "y": 135,
-                "uid": 4,
+                "x": 211,
+                "y": 6,
+                "uid": 0,
                 "dsid": 2,
                 "state": {
                     "enabled": true,
@@ -25,36 +25,36 @@
                 "title": "Time",
                 "graph": {
                     "node_uid": 8,
-                    "uid": 2,
+                    "uid": 1,
                     "parent_uid": 0,
                     "nodes": [
                         {
                             "plugin": "delta_t_generator",
-                            "x": 358,
-                            "y": 292,
+                            "x": 7,
+                            "y": 7,
                             "uid": 0
                         },
                         {
                             "plugin": "accumulate_modulator",
-                            "x": 564,
-                            "y": 292,
+                            "x": 181,
+                            "y": 7,
                             "uid": 1,
                             "state": {
-                                "value": 1.330499999999992
+                                "value": 0
                             }
                         },
                         {
                             "plugin": "multiply_modulator",
-                            "x": 461,
-                            "y": 292,
+                            "x": 101,
+                            "y": 7,
                             "uid": 2
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 682,
-                            "y": 289,
+                            "x": 283,
+                            "y": 7,
                             "uid": 6,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -73,10 +73,10 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 383,
-                            "y": 484,
+                            "x": 23,
+                            "y": 66,
                             "uid": 7,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -148,9 +148,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 198,
-                "y": 195,
-                "uid": 5,
+                "x": 9,
+                "y": 26,
+                "uid": 1,
                 "state": {
                     "val": 0.5,
                     "min": 0,
@@ -161,8 +161,8 @@
         ],
         "conns": [
             {
-                "src_nuid": 5,
-                "dst_nuid": 4,
+                "src_nuid": 1,
+                "dst_nuid": 0,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true

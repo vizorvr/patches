@@ -1,45 +1,43 @@
 {
-    "abs_t": 106.511,
+    "abs_t": 0,
     "active_graph": 0,
-    "graph_uid": 12,
+    "graph_uid": 2,
     "root": {
-        "node_uid": 13,
+        "node_uid": 2,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 529,
-                "y": 279,
-                "uid": 11,
+                "x": 136,
+                "y": 9,
+                "uid": 0,
                 "dsid": 4,
                 "state": {
                     "enabled": true,
                     "input_sids": {
-                        "13": 1,
                         "15": 3
                     },
                     "output_sids": {
-                        "9": 0,
-                        "14": 2
+                        "9": 0
                     }
                 },
                 "title": "Material chain",
                 "graph": {
                     "node_uid": 16,
-                    "uid": 11,
+                    "uid": 1,
                     "parent_uid": 0,
                     "nodes": [
                         {
                             "plugin": "material_diffuse_color_modulator",
-                            "x": 472,
-                            "y": 237,
+                            "x": 321,
+                            "y": 69,
                             "uid": 1
                         },
                         {
                             "plugin": "color_picker",
-                            "x": 144,
-                            "y": 208,
+                            "x": 8,
+                            "y": 94,
                             "uid": 2,
                             "state": {
                                 "hue": 0,
@@ -50,14 +48,14 @@
                         },
                         {
                             "plugin": "alpha_modulator",
-                            "x": 380,
-                            "y": 276,
+                            "x": 227,
+                            "y": 167,
                             "uid": 3
                         },
                         {
                             "plugin": "knob_float_generator",
-                            "x": 284,
-                            "y": 358,
+                            "x": 115,
+                            "y": 241,
                             "uid": 4,
                             "state": {
                                 "val": 1
@@ -66,14 +64,14 @@
                         },
                         {
                             "plugin": "material_alpha_clip_modulator",
-                            "x": 589,
-                            "y": 262,
+                            "x": 440,
+                            "y": 69,
                             "uid": 5
                         },
                         {
                             "plugin": "toggle_button",
-                            "x": 411,
-                            "y": 353,
+                            "x": 317,
+                            "y": 145,
                             "uid": 6,
                             "state": {
                                 "enabled": false
@@ -82,16 +80,16 @@
                         },
                         {
                             "plugin": "material_texture_modulator",
-                            "x": 705,
-                            "y": 275,
+                            "x": 559,
+                            "y": 69,
                             "uid": 7
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 833,
-                            "y": 290,
+                            "x": 669,
+                            "y": 69,
                             "uid": 9,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -111,14 +109,14 @@
                         },
                         {
                             "plugin": "material_blend_mode_modulator",
-                            "x": 347,
-                            "y": 55,
+                            "x": 169,
+                            "y": 10,
                             "uid": 10
                         },
                         {
                             "plugin": "blend_mode_generator",
-                            "x": 169,
-                            "y": 122,
+                            "x": 8,
+                            "y": 10,
                             "uid": 12,
                             "state": {
                                 "mode": 4
@@ -126,10 +124,10 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 576,
-                            "y": 456,
+                            "x": 477,
+                            "y": 145,
                             "uid": 15,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -236,9 +234,9 @@
             },
             {
                 "plugin": "url_texture_generator",
-                "x": 411,
-                "y": 342,
-                "uid": 12,
+                "x": 12,
+                "y": 29,
+                "uid": 1,
                 "state": {
                     "url": "data/textures/cutout_vogue1.png"
                 },
@@ -247,8 +245,8 @@
         ],
         "conns": [
             {
-                "src_nuid": 12,
-                "dst_nuid": 11,
+                "src_nuid": 1,
+                "dst_nuid": 0,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true

@@ -9,8 +9,8 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 470,
-                "y": 410,
+                "x": 9,
+                "y": 5,
                 "uid": 0,
                 "dsid": 1,
                 "state": {
@@ -28,20 +28,20 @@
                     "nodes": [
                         {
                             "plugin": "scale_matrix",
-                            "x": 668,
-                            "y": 448,
+                            "x": 394,
+                            "y": 19,
                             "uid": 0
                         },
                         {
                             "plugin": "vector",
-                            "x": 475,
-                            "y": 464,
+                            "x": 276,
+                            "y": 19,
                             "uid": 1
                         },
                         {
                             "plugin": "const_float_generator",
-                            "x": 224,
-                            "y": 396,
+                            "x": 10,
+                            "y": 6,
                             "uid": 2,
                             "state": {
                                 "val": 1
@@ -49,22 +49,22 @@
                         },
                         {
                             "plugin": "divide_modulator",
-                            "x": 338,
-                            "y": 575,
+                            "x": 159,
+                            "y": 101,
                             "uid": 3
                         },
                         {
                             "plugin": "aspect_ratio_generator",
-                            "x": 205,
-                            "y": 477,
+                            "x": 9,
+                            "y": 72,
                             "uid": 4
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 778,
-                            "y": 441,
+                            "x": 488,
+                            "y": 19,
                             "uid": 5,
-                            "dsid": 11,
+                            "dsid": 12,
                             "state": {
                                 "slot_id": 0
                             },

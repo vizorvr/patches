@@ -1,16 +1,16 @@
 {
-    "abs_t": 148.809,
-    "active_graph": 1,
-    "graph_uid": 4,
+    "abs_t": 0,
+    "active_graph": 2,
+    "graph_uid": 3,
     "root": {
-        "node_uid": 5,
+        "node_uid": 1,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 256,
-                "y": 125,
+                "x": 470,
+                "y": 310,
                 "uid": 0,
                 "dsid": 2,
                 "state": {
@@ -29,31 +29,29 @@
                     "nodes": [
                         {
                             "plugin": "mesh_renderer_emitter",
-                            "x": 819,
-                            "y": 259,
+                            "x": 412,
+                            "y": 75,
                             "uid": 0
                         },
                         {
                             "plugin": "texture_diffuse_shader",
-                            "x": 458,
-                            "y": 357,
+                            "x": 261,
+                            "y": 94,
                             "uid": 2
                         },
                         {
                             "plugin": "graph",
-                            "x": 319,
-                            "y": 301,
+                            "x": 141,
+                            "y": 74,
                             "uid": 3,
                             "dsid": 4,
                             "state": {
                                 "enabled": true,
                                 "input_sids": {
-                                    "13": 1,
                                     "15": 3
                                 },
                                 "output_sids": {
-                                    "9": 0,
-                                    "14": 2
+                                    "9": 0
                                 }
                             },
                             "title": "Material chain",
@@ -64,14 +62,14 @@
                                 "nodes": [
                                     {
                                         "plugin": "material_diffuse_color_modulator",
-                                        "x": 472,
-                                        "y": 237,
+                                        "x": 301,
+                                        "y": 9,
                                         "uid": 1
                                     },
                                     {
                                         "plugin": "color_picker",
-                                        "x": 144,
-                                        "y": 208,
+                                        "x": 8,
+                                        "y": 88,
                                         "uid": 2,
                                         "state": {
                                             "hue": 0,
@@ -82,14 +80,14 @@
                                     },
                                     {
                                         "plugin": "alpha_modulator",
-                                        "x": 380,
-                                        "y": 276,
+                                        "x": 208,
+                                        "y": 88,
                                         "uid": 3
                                     },
                                     {
                                         "plugin": "knob_float_generator",
-                                        "x": 284,
-                                        "y": 358,
+                                        "x": 113,
+                                        "y": 237,
                                         "uid": 4,
                                         "state": {
                                             "val": 1
@@ -98,14 +96,14 @@
                                     },
                                     {
                                         "plugin": "material_alpha_clip_modulator",
-                                        "x": 589,
-                                        "y": 262,
+                                        "x": 411,
+                                        "y": 9,
                                         "uid": 5
                                     },
                                     {
                                         "plugin": "toggle_button",
-                                        "x": 411,
-                                        "y": 353,
+                                        "x": 296,
+                                        "y": 88,
                                         "uid": 6,
                                         "state": {
                                             "enabled": false
@@ -114,16 +112,16 @@
                                     },
                                     {
                                         "plugin": "material_texture_modulator",
-                                        "x": 705,
-                                        "y": 275,
+                                        "x": 529,
+                                        "y": 9,
                                         "uid": 7
                                     },
                                     {
                                         "plugin": "output_proxy",
-                                        "x": 833,
-                                        "y": 290,
+                                        "x": 643,
+                                        "y": 9,
                                         "uid": 9,
-                                        "dsid": 8,
+                                        "dsid": 9,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -143,14 +141,14 @@
                                     },
                                     {
                                         "plugin": "material_blend_mode_modulator",
-                                        "x": 347,
-                                        "y": 55,
+                                        "x": 167,
+                                        "y": 9,
                                         "uid": 10
                                     },
                                     {
                                         "plugin": "blend_mode_generator",
-                                        "x": 169,
-                                        "y": 122,
+                                        "x": 9,
+                                        "y": 9,
                                         "uid": 12,
                                         "state": {
                                             "mode": 4
@@ -158,10 +156,10 @@
                                     },
                                     {
                                         "plugin": "input_proxy",
-                                        "x": 576,
-                                        "y": 456,
+                                        "x": 446,
+                                        "y": 88,
                                         "uid": 15,
-                                        "dsid": 8,
+                                        "dsid": 9,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -268,8 +266,8 @@
                         },
                         {
                             "plugin": "url_texture_generator",
-                            "x": 161,
-                            "y": 377,
+                            "x": 13,
+                            "y": 94,
                             "uid": 4,
                             "state": {
                                 "url": "data/textures/looping_oak.jpg"
@@ -278,10 +276,10 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 560,
-                            "y": 469,
+                            "x": 293,
+                            "y": 211,
                             "uid": 5,
-                            "dsid": 6,
+                            "dsid": 7,
                             "state": {
                                 "slot_id": 0
                             },
@@ -300,10 +298,10 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 626,
-                            "y": 503,
+                            "x": 313,
+                            "y": 270,
                             "uid": 6,
-                            "dsid": 6,
+                            "dsid": 7,
                             "state": {
                                 "slot_id": 0
                             },
@@ -322,8 +320,8 @@
                         },
                         {
                             "plugin": "sphere_mesh_generator",
-                            "x": 596,
-                            "y": 172,
+                            "x": 325,
+                            "y": 9,
                             "uid": 11,
                             "state": {
                                 "v_res": 15,
