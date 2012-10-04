@@ -234,7 +234,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		var done_func = function(diag)
 		{
 			self.rebuild_shader();
-			self.changed = true;
+			self.updated = self.changed = true;
 			
 			if(diag)
 				diag.dialog('close');
