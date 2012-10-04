@@ -1,5 +1,6 @@
 {
 	"Post Process: Analogue monitor": "post_process_analogue_monitor",	
+	"Post Process: Bloom": "post_process_bloom",	
 	"Post Process: Gaussian blur": "post_process_gaussian_blur",	
 	"Post Process: Posterize": "post_process_posterize",	
 	"Post Process: Radial blur": "post_process_radial_blur",	
@@ -29,5 +30,6 @@
 	"Matrix: Translate (move)": "matrix_translate",
 	"Color: Hue / Saturation / Luminosity / Alpha": "color_hsla",
 	"Color: Red / Green / Blue / Alpha": "color_rgba",
+	"Shader: Render depth buffer (8 bps)": "shader_render_depth_buffer",
 	"Background: Plain color": "background_plain_color"
 }

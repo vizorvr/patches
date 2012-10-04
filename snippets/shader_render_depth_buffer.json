@@ -1,0 +1,411 @@
+{
+    "abs_t": 0,
+    "active_graph": 0,
+    "graph_uid": 1,
+    "root": {
+        "node_uid": 24,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "scene_renderer_emitter",
+                "x": 1118,
+                "y": 30,
+                "uid": 0
+            },
+            {
+                "plugin": "url_scene_generator",
+                "x": 5,
+                "y": 6,
+                "uid": 1,
+                "state": {
+                    "url": "data/scenes/sansabak/scene.json"
+                }
+            },
+            {
+                "plugin": "scene_get_bounding_box",
+                "x": 147,
+                "y": 383,
+                "uid": 2
+            },
+            {
+                "plugin": "vector_magnitude",
+                "x": 275,
+                "y": 338,
+                "uid": 3
+            },
+            {
+                "plugin": "vector_magnitude",
+                "x": 276,
+                "y": 446,
+                "uid": 4
+            },
+            {
+                "plugin": "max_modulator",
+                "x": 374,
+                "y": 376,
+                "uid": 5
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 370,
+                "y": 312,
+                "uid": 6,
+                "state": {
+                    "val": 1
+                },
+                "title": "Mesh scale"
+            },
+            {
+                "plugin": "divide_modulator",
+                "x": 479,
+                "y": 356,
+                "uid": 7
+            },
+            {
+                "plugin": "vector",
+                "x": 587,
+                "y": 412,
+                "uid": 8
+            },
+            {
+                "plugin": "scale_matrix",
+                "x": 704,
+                "y": 412,
+                "uid": 9
+            },
+            {
+                "plugin": "rotation_xyz_matrix",
+                "x": 677,
+                "y": 273,
+                "uid": 10
+            },
+            {
+                "plugin": "clock_generator",
+                "x": 389,
+                "y": 106,
+                "uid": 11
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 464,
+                "y": 145,
+                "uid": 12
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 340,
+                "y": 199,
+                "uid": 13,
+                "state": {
+                    "val": 30
+                },
+                "title": "Rot. speed"
+            },
+            {
+                "plugin": "concatenate_matrix_modulator",
+                "x": 804,
+                "y": 331,
+                "uid": 14
+            },
+            {
+                "plugin": "perspective_camera",
+                "x": 795,
+                "y": 92,
+                "uid": 15
+            },
+            {
+                "plugin": "vector",
+                "x": 656,
+                "y": 107,
+                "uid": 16
+            },
+            {
+                "plugin": "slider_float_generator",
+                "x": 446,
+                "y": 9,
+                "uid": 17,
+                "state": {
+                    "val": 1.02,
+                    "min": 0,
+                    "max": 2
+                }
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 563,
+                "y": 223,
+                "uid": 18,
+                "state": {
+                    "val": -90
+                },
+                "title": "Fix"
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 536,
+                "y": 94,
+                "uid": 19,
+                "state": {
+                    "val": 1
+                },
+                "title": "Elevation"
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 681,
+                "y": 4,
+                "uid": 20,
+                "state": {
+                    "val": 0.1
+                },
+                "title": "Rot. speed"
+            },
+            {
+                "plugin": "from_mesh_custom_shader",
+                "x": 945,
+                "y": 212,
+                "uid": 21,
+                "dsid": 2,
+                "state": {
+                    "vs_src": "void main(void)\n{\n        vec4 eyepos = v_mat * m_mat * vec4(v_pos, 1.0);\n        float d = (-eyepos.z - near) / (far - near);\n\n\tgl_Position = p_mat * eyepos;\n        f_col = vec4(d, d, d, 1.0);\n}",
+                    "ps_src": "void main(void)\n{\n\tgl_FragColor = f_col;\n}",
+                    "slot_ids": {
+                        "near": {
+                            "id": 0,
+                            "dt": {
+                                "id": 0,
+                                "name": "Float"
+                            },
+                            "uniform": {}
+                        },
+                        "far": {
+                            "id": 1,
+                            "dt": {
+                                "id": 0,
+                                "name": "Float"
+                            },
+                            "uniform": {}
+                        }
+                    }
+                },
+                "dyn_in": [
+                    {
+                        "name": "near",
+                        "dt": 0,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "far",
+                        "dt": 0,
+                        "uid": 1,
+                        "index": 1,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "quad_mesh_generator",
+                "x": 824,
+                "y": 230,
+                "uid": 22
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 675,
+                "y": 208,
+                "uid": 23,
+                "state": {
+                    "val": 2.3
+                }
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 1,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 1,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 1
+            },
+            {
+                "src_nuid": 2,
+                "dst_nuid": 3,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 2,
+                "dst_nuid": 4,
+                "src_slot": 1,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 3,
+                "dst_nuid": 5,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 4,
+                "dst_nuid": 5,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 6,
+                "dst_nuid": 7,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 5,
+                "dst_nuid": 7,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 7,
+                "dst_nuid": 8,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 7,
+                "dst_nuid": 8,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "offset": 1
+            },
+            {
+                "src_nuid": 7,
+                "dst_nuid": 8,
+                "src_slot": 0,
+                "dst_slot": 2,
+                "offset": 2
+            },
+            {
+                "src_nuid": 8,
+                "dst_nuid": 9,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 11,
+                "dst_nuid": 12,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 13,
+                "dst_nuid": 12,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 12,
+                "dst_nuid": 10,
+                "src_slot": 0,
+                "dst_slot": 2
+            },
+            {
+                "src_nuid": 10,
+                "dst_nuid": 14,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 9,
+                "dst_nuid": 14,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 14,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 3
+            },
+            {
+                "src_nuid": 15,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 2
+            },
+            {
+                "src_nuid": 16,
+                "dst_nuid": 15,
+                "src_slot": 0,
+                "dst_slot": 3
+            },
+            {
+                "src_nuid": 17,
+                "dst_nuid": 16,
+                "src_slot": 0,
+                "dst_slot": 2
+            },
+            {
+                "src_nuid": 18,
+                "dst_nuid": 10,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 19,
+                "dst_nuid": 16,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 20,
+                "dst_nuid": 15,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 22,
+                "dst_nuid": 21,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 20,
+                "dst_nuid": 21,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true,
+                "offset": 1
+            },
+            {
+                "src_nuid": 23,
+                "dst_nuid": 15,
+                "src_slot": 0,
+                "dst_slot": 2
+            },
+            {
+                "src_nuid": 23,
+                "dst_nuid": 21,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "dst_dyn": true,
+                "offset": 1
+            },
+            {
+                "src_nuid": 21,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 1
+            }
+        ]
+    }
+}
