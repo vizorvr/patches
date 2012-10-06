@@ -250,7 +250,6 @@ function Renderer(canvas_id)
 	this.on_fullscreen_change = function()
 	{
 		var c = E2.dom.webgl_canvas;
-		debugger;
 		
 		if(self.fullscreen && !document.fullscreenElement && !document.webkitFullScreenElement && !document.mozFullscreenElement)
 		{

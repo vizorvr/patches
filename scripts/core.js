@@ -1745,7 +1745,7 @@ function Application() {
 		var o = self.offsetToCanvasCoord(slot_div.offset());
 		var x = type == E2.slot_type.input ? o[0] : o[0] + slot_div.width();
 		
-		return [x, o[1] + (slot_div.height() / 2)];
+		return [Math.round(x), Math.round(o[1] + (slot_div.height() / 2))];
 	};
 	
 	this.onPluginInstantiated = function(id, pos)
