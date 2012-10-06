@@ -1712,7 +1712,6 @@ function Application() {
 	
 	this.frames = 0;
 	this.clipboard = null;
-	this.fullscreen = false;
 	this.in_drag = false;
 	
 	var self = this;
@@ -2892,11 +2891,7 @@ function Application() {
 		}
 		else if(e.keyCode === 27)
 		{
-			var c = E2.dom.webgl_canvas;
-			
-			c.attr('class', self.fullscreen ? 'webgl-canvas-normal' : 'webgl-canvas-fs');
-			self.core.renderer.update_viewport();
-			self.fullscreen = !self.fullscreen;
+			self.core.renderer.set_fullscreen(false);
 		}
 	};
 
@@ -3062,14 +3057,7 @@ function Application() {
 
 	$('#fullscreen').button().click(function()
 	{
-		var c = E2.dom.webgl_canvas;
-		
-		c.attr('class', 'webgl-canvas-fs');
-		c.attr('width', c.width());
-		c.attr('height', c.height());
-		
-		self.core.renderer.update_viewport();
-		self.fullscreen = true;
+		self.core.renderer.set_fullscreen(true);
 	});
 	
 	$('#help').button().click(function()

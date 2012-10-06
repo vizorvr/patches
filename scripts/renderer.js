@@ -190,6 +190,7 @@ function Renderer(canvas_id)
 	
 	this.texture_cache = new TextureCache(this.context);
 	this.shader_cache = new ShaderCache(this.context);
+	this.fullscreen = false;
 	
 	this.begin_frame = function()
 	{
@@ -243,6 +244,72 @@ function Renderer(canvas_id)
 			
 			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 			gl.viewport(0, 0, c.width, c.height);
+		}
+	};
+	
+	this.on_fullscreen_change = function()
+	{
+		var c = E2.dom.webgl_canvas;
+		debugger;
+		
+		if(self.fullscreen && !document.fullscreenElement && !document.webkitFullScreenElement && !document.mozFullscreenElement)
+		{
+			c.attr('class', 'webgl-canvas-normal');
+			c.attr('width', '480px');
+			c.attr('height', '270px');
+			self.fullscreen = false;
+		}
+		else
+			self.fullscreen = true;
+	};
+	
+	this.set_fullscreen = function(state)
+	{
+		var c = E2.dom.webgl_canvas;
+		var cd = c[0];
+
+		if(state)
+		{
+			if(!self.fullscreen)
+			{
+				var test = null;
+				
+				document.addEventListener('fullscreenchange', self.on_fullscreen_change);
+				document.addEventListener('webkitfullscreenchange', self.on_fullscreen_change);
+				document.addEventListener('mozfullscreenchange', self.on_fullscreen_change);
+				
+				if(cd.requestFullscreen)
+					cd.requestFullscreen();
+				if(cd.webkitRequestFullScreen)
+					cd.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+				else if(cd.mozRequestFullScreen)
+					cd.mozRequestFullScreen();
+
+  				if(cd.requestFullscreen || cd.webkitRequestFullScreen || cd.mozRequestFullScreen)
+  				{
+	  				c.attr('class', 'webgl-canvas-fs');
+					c.attr('width', '960px');
+					c.attr('height', '540px');
+					self.update_viewport();
+  				}
+  			}
+		}
+		else
+		{
+			if(self.fullscreen)
+			{
+				var cfs = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen;
+				
+				if(cfs)
+				{
+					self.fullscreen = false;
+					c.attr('class', 'webgl-canvas-normal');
+					c.attr('width', '480px');
+					c.attr('height', '270px');
+					self.update_viewport();
+					cfs();
+				}
+			}
 		}
 	};
 	
