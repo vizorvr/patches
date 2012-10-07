@@ -2904,15 +2904,19 @@ function Application() {
 		E2.dom.stop.button(cs == self.state.STOPPED ? 'disable' : 'enable');
 	}
 	
+	this.onAnimFrame = function()
+	{
+		self.interval = requestAnimFrame(self.onAnimFrame);
+		E2.app.onUpdate();
+	};
+	
 	this.onPlayClicked = function()
 	{
 		self.current_state = self.state.PLAYING;
 		self.changeControlState();
 		
 		self.last_time = (new Date()).getTime();
-		self.interval = setInterval(function() {
-			E2.app.onUpdate();
-		}, 0);
+		self.interval = requestAnimFrame(self.onAnimFrame);
 	};
 	
 	this.onPauseClicked = function()
@@ -2922,7 +2926,7 @@ function Application() {
 		
 		if(self.interval != null)
 		{
-			clearInterval(self.interval);
+			cancelAnimFrame(self.interval);
 			self.interval = null;
 		}
 	};
@@ -2931,7 +2935,7 @@ function Application() {
 	{
 		if(self.interval != null)
 		{
-			clearInterval(self.interval);
+			cancelAnimFrame(self.interval);
 			self.interval = null;
 		}
 		
@@ -3006,7 +3010,22 @@ function Application() {
 		self.frames++;
 	}
 	
-	$(document).mouseup(this.onMouseReleased);
+	// Monkey-patch the window object with a request/cancelAnimationFrame shims.
+	window.requestAnimFrame = (function()
+	{
+		return window.requestAnimationFrame       || 
+			window.webkitRequestAnimationFrame || 
+			window.mozRequestAnimationFrame
+	})();
+	
+	window.cancelAnimFrame = (function()
+	{
+		return window.cancelAnimationFrame       || 
+			window.webkitCancelAnimationFrame || 
+			window.mozCancelAnimationFrame
+	})();
+
+    	$(document).mouseup(this.onMouseReleased);
 	$(document).mousemove(this.onMouseMoved);
 	$(window).keydown(this.onKeyDown);
 	$(window).keyup(this.onKeyUp);
