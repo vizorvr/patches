@@ -337,7 +337,10 @@ E2.plugins["graph"] = function(core, node) {
 			var old_fb = null;
 			
 			if(self.framebuffer)
+			{
 				core.renderer.push_framebuffer(self.framebuffer, self.framebuffer.width, self.framebuffer.height);
+		    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+			}
 			
 			self.graph.update(delta_t);
 
