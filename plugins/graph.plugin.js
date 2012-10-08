@@ -142,12 +142,31 @@ E2.plugins["graph"] = function(core, node) {
 		}
 		else
 		{
-			gl.deleteFramebuffer(self.framebuffer);
-			delete self.framebuffer;
-			gl.deleteRenderbuffer(self.renderbuffer);
-			delete self.renderbuffer;
-			gl.deleteTexture(self.framebuffer);
-			delete self.texture;
+			// Check whether there remains any residual connected consumers
+			// of our render target texture.
+			var in_use = false;
+			var outputs = node.outputs;
+			
+			for(var i = 0, len = outputs.length; i < len; i++)
+			{
+				var ss = outputs[i].src_slot;
+				
+				if(ss.uid === undefined && ss.type === E2.slot_type.output)
+				{
+					in_use = true;
+					break;
+				}
+			}
+			
+			if(!in_use)
+			{
+				gl.deleteFramebuffer(self.framebuffer);
+				delete self.framebuffer;
+				gl.deleteRenderbuffer(self.renderbuffer);
+				delete self.renderbuffer;
+				gl.deleteTexture(self.framebuffer);
+				delete self.texture;
+			}
 		}
 	};
 		
