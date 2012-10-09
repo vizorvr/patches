@@ -1023,7 +1023,6 @@ function Node(parent_graph, plugin_id, x, y) {
 
 		if(self.update_count < 1)
 		{
-			var uid = self.uid;
 			var inputs = self.inputs;
 			var needs_update = self.inputs_changed;
 			var s_plugin = self.plugin;
