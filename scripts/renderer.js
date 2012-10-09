@@ -301,7 +301,6 @@ function Renderer(canvas_id)
 				
 				if(cfs)
 				{
-					self.fullscreen = false;
 					c.attr('class', 'webgl-canvas-normal');
 					c.attr('width', '480px');
 					c.attr('height', '270px');
