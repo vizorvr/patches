@@ -3,7 +3,7 @@ E2.plugins["particle_mesh_generator"] = function(core, node) {
 	var gl = core.renderer.context;
 	
 	this.desc = 'Create a mesh of <b>count</b> unconnected vertices at the origin.';
-	this.input_slots = [ { name: 'count', dt: core.datatypes.FLOAT, desc: 'Number of vertices to generate.', lo: 1, hi: 65535, def: 100 } ];
+	this.input_slots = [ { name: 'count', dt: core.datatypes.FLOAT, desc: 'Number of vertices to generate.', lo: 1, hi: 65535, def: 10 } ];
 	this.output_slots = [ { name: 'mesh', dt: core.datatypes.MESH, desc: 'Quad mesh.' } ];
 	this.mesh = null;
 	
@@ -12,7 +12,7 @@ E2.plugins["particle_mesh_generator"] = function(core, node) {
 		self.updated = true;
 	};
 	
-	this.update_input = function(slot)
+	this.update_input = function(slot, data)
 	{
 		self.count = data < 1 ? 1 : data > 65535 ? 65535 : data;
 		self.generate_mesh();
@@ -45,8 +45,8 @@ E2.plugins["particle_mesh_generator"] = function(core, node) {
 	{
 		if(!ui)
 		{
-			self.count = 100;
-			self.mesh = new Mesh(gl, gl.POINTS);	
+			self.count = 10;
+			self.mesh = new Mesh(gl, gl.POINTS);
 			self.mesh.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);
 			self.generate_mesh();
 		}
