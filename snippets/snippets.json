@@ -34,6 +34,5 @@
 	"Matrix: Translate (move)": "matrix_translate",
 	"Color: Hue / Saturation / Luminosity / Alpha": "color_hsla",
 	"Color: Red / Green / Blue / Alpha": "color_rgba",
-	"Shader: Render depth buffer (8 bps)": "shader_render_depth_buffer",
 	"Background: Plain color": "background_plain_color"
 }
