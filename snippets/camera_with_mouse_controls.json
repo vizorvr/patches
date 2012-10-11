@@ -1,0 +1,692 @@
+{
+    "abs_t": 0,
+    "active_graph": 0,
+    "graph_uid": 2,
+    "root": {
+        "node_uid": 2,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 281,
+                "y": 123,
+                "uid": 0,
+                "dsid": 2,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {
+                        "32": 0
+                    },
+                    "output_sids": {
+                        "39": 1
+                    }
+                },
+                "title": "Mouse cam",
+                "graph": {
+                    "node_uid": 40,
+                    "uid": 1,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "perspective_camera",
+                            "x": 1801,
+                            "y": 42,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 1418,
+                            "y": 89,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "vector_transform",
+                            "x": 1584,
+                            "y": 129,
+                            "uid": 2
+                        },
+                        {
+                            "plugin": "rotation_xyz_matrix",
+                            "x": 1302,
+                            "y": 326,
+                            "uid": 3
+                        },
+                        {
+                            "plugin": "rotation_xyz_matrix",
+                            "x": 1378,
+                            "y": 605,
+                            "uid": 4
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 1235,
+                            "y": 580,
+                            "uid": 5,
+                            "state": {
+                                "val": -90
+                            },
+                            "title": "X rotation"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 1235,
+                            "y": 645,
+                            "uid": 6,
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Y/Z rotation"
+                        },
+                        {
+                            "plugin": "mouse_position_generator",
+                            "x": 0,
+                            "y": 470,
+                            "uid": 7
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 1025,
+                            "y": 365,
+                            "uid": 8
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 915,
+                            "y": 447,
+                            "uid": 9,
+                            "state": {
+                                "val": -360
+                            },
+                            "title": "Rotation range"
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 846,
+                            "y": 793,
+                            "uid": 10
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 724,
+                            "y": 841,
+                            "uid": 11,
+                            "state": {
+                                "val": -10
+                            },
+                            "title": "Elev. sensitivity"
+                        },
+                        {
+                            "plugin": "subtract_modulator",
+                            "x": 646,
+                            "y": 753,
+                            "uid": 12
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 514,
+                            "y": 840,
+                            "uid": 13,
+                            "state": {
+                                "val": 0.5
+                            },
+                            "title": "Elevation bias"
+                        },
+                        {
+                            "plugin": "mouse_button_generator",
+                            "x": 222,
+                            "y": 581,
+                            "uid": 14
+                        },
+                        {
+                            "plugin": "toggle_modulator",
+                            "x": 395,
+                            "y": 581,
+                            "uid": 15,
+                            "state": {
+                                "value": true
+                            }
+                        },
+                        {
+                            "plugin": "sample_and_hold_modulator",
+                            "x": 502,
+                            "y": 753,
+                            "uid": 16,
+                            "state": {
+                                "value": 0
+                            }
+                        },
+                        {
+                            "plugin": "sample_and_hold_modulator",
+                            "x": 513,
+                            "y": 450,
+                            "uid": 17,
+                            "state": {
+                                "value": 0
+                            }
+                        },
+                        {
+                            "plugin": "clock_generator",
+                            "x": 0,
+                            "y": 302,
+                            "uid": 18
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 106,
+                            "y": 247,
+                            "uid": 19
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 0,
+                            "y": 233,
+                            "uid": 20,
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Zero"
+                        },
+                        {
+                            "plugin": "add_modulator",
+                            "x": 647,
+                            "y": 385,
+                            "uid": 21
+                        },
+                        {
+                            "plugin": "lowpass_filter_modulator",
+                            "x": 1129,
+                            "y": 401,
+                            "uid": 22
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 718,
+                            "y": 448,
+                            "uid": 23,
+                            "state": {
+                                "val": 0.95
+                            },
+                            "title": "LP filt. amt."
+                        },
+                        {
+                            "plugin": "mouse_wheel_generator",
+                            "x": 810,
+                            "y": 0,
+                            "uid": 24
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 963,
+                            "y": 0,
+                            "uid": 25
+                        },
+                        {
+                            "plugin": "clamped_accumulate_modulator",
+                            "x": 1098,
+                            "y": 47,
+                            "uid": 26,
+                            "state": {
+                                "value": 1
+                            },
+                            "title": "Clamped acc."
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 980,
+                            "y": 177,
+                            "uid": 27,
+                            "state": {
+                                "val": 20
+                            },
+                            "title": "Max. dolly"
+                        },
+                        {
+                            "plugin": "lowpass_filter_modulator",
+                            "x": 1304,
+                            "y": 184,
+                            "uid": 28
+                        },
+                        {
+                            "plugin": "add_modulator",
+                            "x": 1219,
+                            "y": 119,
+                            "uid": 29
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 969,
+                            "y": 113,
+                            "uid": 30,
+                            "state": {
+                                "val": 1
+                            },
+                            "title": "Min. dolly"
+                        },
+                        {
+                            "plugin": "negate_modulator",
+                            "x": 730,
+                            "y": 753,
+                            "uid": 31
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 810,
+                            "y": 55,
+                            "uid": 32,
+                            "dsid": 18,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "Mouse sensitivity",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 1591,
+                            "y": 328,
+                            "uid": 33
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 1460,
+                            "y": 368,
+                            "uid": 34,
+                            "state": {
+                                "val": 0
+                            }
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 1464,
+                            "y": 305,
+                            "uid": 35,
+                            "state": {
+                                "val": 0.1
+                            }
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 1473,
+                            "y": 432,
+                            "uid": 36,
+                            "state": {
+                                "val": 0.5
+                            }
+                        },
+                        {
+                            "plugin": "add_modulator",
+                            "x": 934,
+                            "y": 366,
+                            "uid": 37
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 782,
+                            "y": 516,
+                            "uid": 38,
+                            "state": {
+                                "val": 0.5
+                            },
+                            "title": "Offset"
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1897,
+                            "y": 41,
+                            "uid": 39,
+                            "dsid": 5,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "camera",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 6,
+                                    "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 33,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 4
+                        },
+                        {
+                            "src_nuid": 35,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 39,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 28,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 2
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 22,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 16,
+                            "src_slot": 1,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 17,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 9,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 37,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 22,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 11,
+                            "dst_nuid": 10,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 31,
+                            "dst_nuid": 10,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 13,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 16,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 12,
+                            "dst_nuid": 31,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 14,
+                            "dst_nuid": 15,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 15,
+                            "dst_nuid": 16,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 15,
+                            "dst_nuid": 17,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 17,
+                            "dst_nuid": 21,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 18,
+                            "dst_nuid": 19,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 20,
+                            "dst_nuid": 19,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 19,
+                            "dst_nuid": 21,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 19,
+                            "dst_nuid": 29,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 21,
+                            "dst_nuid": 37,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 23,
+                            "dst_nuid": 22,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 23,
+                            "dst_nuid": 28,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 24,
+                            "dst_nuid": 25,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 32,
+                            "dst_nuid": 25,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 25,
+                            "dst_nuid": 26,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 27,
+                            "dst_nuid": 26,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 30,
+                            "dst_nuid": 26,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 26,
+                            "dst_nuid": 29,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 29,
+                            "dst_nuid": 28,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 34,
+                            "dst_nuid": 33,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 34,
+                            "dst_nuid": 33,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "offset": 2
+                        },
+                        {
+                            "src_nuid": 36,
+                            "dst_nuid": 33,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 38,
+                            "dst_nuid": 37,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "Mouse sensitivity",
+                        "dt": 0,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "camera",
+                        "dt": 6,
+                        "uid": 1,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 153,
+                "y": 187,
+                "uid": 1,
+                "state": {
+                    "val": 1
+                },
+                "title": "Mouse sensitivity"
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 1,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            }
+        ]
+    }
+}
