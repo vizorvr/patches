@@ -106,8 +106,8 @@ Menu.prototype.create = function(parent, pos, is_root)
 	if(pos[1] + h >= win.innerHeight - 16)
 		pos[1] = pos[1] >= h ? pos[1] - (h - 18) : 0; 
 	
-	ul.css('left', pos[0]);
-	ul.css('top', pos[1]);
+	ul.css('left', Math.round(pos[0]));
+	ul.css('top', Math.round(pos[1]));
 
 	ul.show();
 };

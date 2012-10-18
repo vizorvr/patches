@@ -61,22 +61,6 @@ function make(tag)
 	return $(document.createElement(tag));
 }
 
-function make_menu_item(id, nested)
-{
-	var li = make('li');
-	var a = make('a');
-	
-	a.text(id);
-	li.append(a);
-	
-	a.attr('href', '#' + ((nested === null) ? id : ''));
-
-	if(nested !== null)
-		li.append(nested);
-	
-	return li;
-}
-
 function sort_dict(dict)
 {
 	var s = [], key;
