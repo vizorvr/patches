@@ -16,6 +16,7 @@ E2.plugins["mouse_button_generator"] = function(core, node) {
 	
 	this.mouse_down = function(e)
 	{
+		e.preventDefault();
 		self.buttons[e.which - 1] = true;
 		self.updated = true;
 	};
