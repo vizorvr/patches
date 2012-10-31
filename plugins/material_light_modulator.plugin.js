@@ -5,7 +5,7 @@ E2.plugins["material_light_modulator"] = function(core, node) {
 	this.input_slots = [ 
 		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.' },
 		{ name: 'light index', dt: core.datatypes.FLOAT, desc: 'The index of the light in the supplied <b>material</b>.', def: 0, lo: 0, hi: 9 },
-		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'The light to use in the specified <b>index</b> of the supplied <b>material</b>.', def: 0, lo: 0 },
+		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'The light to use in the specified <b>index</b> of the supplied <b>material</b>.', def: 0, lo: 0, hi: 7 },
 	];
 	
 	this.output_slots = [ { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The modified material.' } ];
@@ -15,7 +15,7 @@ E2.plugins["material_light_modulator"] = function(core, node) {
 		if(slot.index === 0)
 			self.material = data;
 		else if(slot.index === 1)
-			self.next_index = data < 0 ? 0 : data > 9 ? 9 : data;
+			self.next_index = data < 0 ? 0 : data > 7 ? 7 : data;
 		else if(slot.index === 2)
 			self.light = data;
 	};

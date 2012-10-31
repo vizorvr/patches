@@ -14,19 +14,18 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 	];
 	
 	this.state = { 
-		vs_src: 'void main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n\n\tf_col = dc;\n}',
-		ps_src: 'void main(void)\n{\n\tgl_FragColor = f_col;\n}',
+		vs_src: '',
+		ps_src: '',
 		slot_ids: {} 
 	};
 
 	this.shader = null;
-	this.changed = true;
 	this.slot_data = [];
 	
 	this.reset = function()
 	{
 		// Retransmit the shader handle if we've been stopped.
-		self.changed = true;
+		self.dirty = true;
 	};
 	
 	this.open_editor = function(src_id, title, done_func, dest) { return function(e)
@@ -153,7 +152,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 				
 				diag2.dialog('close');
 				self.rebuild_shader();
-				self.changed = true;
+				self.dirty = true;
 			};
 			
 			diag2.dialog({
@@ -197,8 +196,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 			
 			delete self.state.slot_ids[cid];
 			node.remove_slot(E2.slot_type.input, sel);
-			self.rebuild_shader();
-			self.changed = true;
+			self.dirty = true;
 		});
 		
 		diag.dialog({
@@ -233,8 +231,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		
 		var done_func = function(diag)
 		{
-			self.rebuild_shader();
-			self.updated = self.changed = true;
+			self.updated = self.dirty = true;
 			
 			if(diag)
 				diag.dialog('close');
@@ -273,23 +270,24 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 
 		var u_vs = '';
 		var u_ps = '';
+		var st = self.state;
 		
-		for(var ident in self.state.slot_ids)
+		for(var ident in st.slot_ids)
 		{
 			var dt = '';
-			var slot = self.state.slot_ids[ident];
+			var slot = st.slot_ids[ident];
 			var dtid = slot.dt.id;
 			
 			if(dtid === core.datatypes.FLOAT.id)
-				dt = 'mediump float';
+				dt = 'float';
 			else if(dtid === core.datatypes.TEXTURE.id)
 				dt = 'sampler2D';
 			else if(dtid === core.datatypes.COLOR.id)
-				dt = 'mediump vec4';
+				dt = 'vec4';
 			else if(dtid === core.datatypes.MATRIX.id)
-				dt = 'mediump mat4';
+				dt = 'mat4';
 			else if(dtid === core.datatypes.VECTOR.id)
-				dt = 'mediump vec3';
+				dt = 'vec3';
 			
 			if(dtid !== core.datatypes.TEXTURE.id)
 				u_vs += 'uniform ' + dt + ' ' + ident + ';\n';
@@ -297,64 +295,23 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 			u_ps += 'uniform ' + dt + ' ' + ident + ';\n';
 		}
 			
-		self.shader = self.mesh.generate_shader(null, u_vs + self.state.vs_src, u_ps + self.state.ps_src);
-	
-		for(var ident in self.state.slot_ids)
+		self.shader = ComposeShader(null, self.mesh, self.material, u_vs, u_ps, st.vs_src ? st.vs_src : null, st.ps_src ? st.ps_src : null);
+		
+		for(var ident in st.slot_ids)
 		{
-			var slot = self.state.slot_ids[ident];
+			var slot = st.slot_ids[ident];
 			
 			slot.uniform = gl.getUniformLocation(self.shader.program, ident);
 		}
 		
-		// Decorate with an apply_uniforms method that maps
-		// our values to the generated shader.
-		self.shader.apply_uniforms = function(mesh)
+		self.shader.apply_uniforms_custom = function()
 		{
-			var mat = self.material ? self.material : mesh.material;
-
-			gl.uniform1i(this.e2alphaClipUniform, mat.alpha_clip ? 1 : 0);
-			gl.uniform4fv(this.diffuseColorUniform, new Float32Array(mat.diffuse_color.rgba));
-		
-			if(this.uv0CoordAttribute !== undefined)
-			{
-				var diffuse_set = false;
-
-				gl.enableVertexAttribArray(self.shader.uv0CoordAttribute);
-
-				if(self.material)
-				{
-					var dt = self.material.textures[Material.texture_type.DIFFUSE_COLOR];
-
-					if(dt)
-					{
-						gl.uniform1i(this.tex0Uniform, 0);
-						dt.enable(gl.TEXTURE0);
-						diffuse_set = true;
-					}
-				}
-
-				if(!diffuse_set)
-				{
-					var dt = mesh.material.textures[Material.texture_type.DIFFUSE_COLOR];
-
-					if(dt)
-					{
-						gl.uniform1i(this.tex0Uniform, 0);
-						dt.enable(gl.TEXTURE0);
-					}
-					else
-					{
-						gl.bindTexture(gl.TEXTURE_2D, null);
-					}
-				}
-			}
-	
 			var tex_slot = 1;
 			var sd = self.slot_data;
 			
-			for(var ident in self.state.slot_ids)
+			for(var ident in st.slot_ids)
 			{
-				var slot = self.state.slot_ids[ident];
+				var slot = st.slot_ids[ident];
 			
 				if(slot.uniform === null || sd[slot.id] === null)
 					continue;
@@ -376,9 +333,13 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 				else if(dtid === core.datatypes.VECTOR.id)
 					gl.uniform3fv(slot.uniform, new Float32Array(sd[slot.id]));	
 			}
-			
-			mat.enable();	
 		};
+
+		if(st.vs_src === '')
+			st.vs_src = self.shader.vs_c_src;
+
+		if(st.ps_src === '')
+			st.ps_src = self.shader.ps_c_src;
 	};
 	
 	this.update_input = function(slot, data)
@@ -387,11 +348,26 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		{
 			if(slot.index === 0)
 			{
-				self.mesh = data;
-				self.rebuild_shader();
+				if(self.mesh !== data)
+				{
+					self.mesh = data;
+					dirty = true;
+				}
 			}
 			else if(slot.index === 1)
+			{
 				self.material = data;
+			
+				var msk = self.material.get_light_mask();
+			
+				if(self.lightmask !== msk)
+					self.dirty = true;
+			
+				if(self.dirty)
+					self.lightmask = msk;
+				else if(self.shader)
+					self.shader.material = self.material;
+			}
 		}
 		else
 		{
@@ -401,11 +377,12 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 	
 	this.update_state = function(delta_t)
 	{
-		if(self.changed)
-		{
-			self.changed = false;
-			self.updated = true;
-		}
+		if(!self.mesh || !self.dirty)
+			return;
+		
+		self.dirty = false;
+		self.rebuild_shader();
+		self.updated = true;
 	};
 	
 	this.update_output = function(slot)
@@ -419,6 +396,8 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		{
 			self.mesh = null;
 			self.material = null;
+			self.lightmask = Light.mask_no_light;
+			self.dirty = true;
 		}
 	};
 };

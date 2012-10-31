@@ -15,9 +15,9 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'The resulting shader.' } 
 	];
 
-	var vs_src = 'attribute vec3 pos;' +
-		     'attribute vec2 uv;' +
-		     'varying vec2 uv_coord;' +
+	var vs_src = 'attribute vec3 v_pos;' +
+		     'attribute vec2 v_uv0;' +
+		     'varying vec2 f_uv0;' +
 		     'uniform mat4 m_mat;' +
 		     'uniform mat4 v_mat;' +
 		     'uniform mat4 p_mat;' +
@@ -25,19 +25,23 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		     'uniform vec2 uv_scale;' +
 		     'uniform float uv_rotation;' +
 		     'void main(void) {' +
-		     '    gl_Position = p_mat * v_mat * m_mat * vec4(pos, 1.0);' + 
+		     '    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);' + 
 		     '    float cs = cos(uv_rotation);' +
 		     '    float sn = sin(uv_rotation);' +
-		     '    uv_coord = vec2((((uv.x * cs) - (uv.y * sn)) * uv_scale.x) + uv_offset.x, (((uv.x * sn) + (uv.y * cs)) * uv_scale.y) + uv_offset.y);' +
+		     '    f_uv0 = vec2((((v_uv0.x * cs) - (v_uv0.y * sn)) * uv_scale.x) + uv_offset.x, (((v_uv0.x * sn) + (v_uv0.y * cs)) * uv_scale.y) + uv_offset.y);' +
 		     '}';
 		
 	var ps_src = 'precision mediump float;' +
-		     'varying vec2 uv_coord;' +
+		     'varying vec2 f_uv0;' +
     		     'uniform sampler2D tex0;' +
-    		     'uniform vec4 color;' +
-    		     'uniform int alpha_clip;' +
-		     'void main(void) { vec4 c = texture2D(tex0, uv_coord.st); c *= color; if(alpha_clip > 0 && c.a < 0.5) discard; gl_FragColor = vec4(c); }';
+    		     'uniform vec4 a_col;' +
+    		     'uniform vec4 d_col;' +
+    		     'uniform int e2_alpha_clip;' +
+		     'void main(void) { vec4 c = texture2D(tex0, f_uv0.st); c *= d_col; c.rgb += a_col.rgb; if(e2_alpha_clip > 0 && c.a < 0.5) discard; gl_FragColor = vec4(c); }';
 
+	this.def_ambient = new Float32Array([0, 0, 0, 1]);
+	this.def_diffuse = new Float32Array([1, 1, 1, 1]);
+	
 	this.s = new ShaderProgram(gl);
 	this.vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
 	this.ps = new Shader(gl, gl.FRAGMENT_SHADER, ps_src);
@@ -48,17 +52,18 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	this.s.attach(this.ps);
 	this.s.link();
 	
-	this.s.vertexPosAttribute = gl.getAttribLocation(prog, "pos");
-	this.s.uvCoordAttribute = gl.getAttribLocation(prog, "uv");
-	this.s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
-	this.s.vMatUniform = gl.getUniformLocation(prog, "v_mat");
-	this.s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
-	this.s.colorUniform = gl.getUniformLocation(prog, "color");
-	this.s.tex0Uniform = gl.getUniformLocation(prog, "tex0");
-	this.s.uvOffsetUniform = gl.getUniformLocation(prog, "uv_offset");
-	this.s.uvScaleUniform = gl.getUniformLocation(prog, "uv_scale");
-	this.s.uvRotationUniform = gl.getUniformLocation(prog, "uv_rotation");
-	this.s.alphaClipUniform = gl.getUniformLocation(prog, "alpha_clip");
+	this.s.v_pos = gl.getAttribLocation(prog, "v_pos");
+	this.s.v_uv0 = gl.getAttribLocation(prog, "v_uv0");
+	this.s.m_mat = gl.getUniformLocation(prog, "m_mat");
+	this.s.v_mat = gl.getUniformLocation(prog, "v_mat");
+	this.s.p_mat = gl.getUniformLocation(prog, "p_mat");
+	this.s.a_col = gl.getUniformLocation(prog, "a_col");
+	this.s.d_col = gl.getUniformLocation(prog, "d_col");
+	this.s.tex0 = gl.getUniformLocation(prog, "tex0");
+	this.s.uv_offset = gl.getUniformLocation(prog, "uv_offset");
+	this.s.uv_scale = gl.getUniformLocation(prog, "uv_scale");
+	this.s.uv_rotation = gl.getUniformLocation(prog, "uv_rotation");
+	this.s.e2_alpha_clip = gl.getUniformLocation(prog, "e2_alpha_clip");
 	
 	// Note: Shader implementations must decorate the shader prototype with these
 	// two methods, so the rendering plugins can call it to update the shader uniforms
@@ -73,9 +78,9 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		var attr = null;
 		
 		if(type === types.VERTEX)
-			attr = this.vertexPosAttribute;
+			attr = this.v_pos;
 		else if(type === types.UV0)
-			attr = this.uvCoordAttribute;
+			attr = this.v_uv0;
 		else
 			return;
 			
@@ -88,14 +93,15 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	{
 		var mat = self.material ? self.material : mesh.material;
 		
-		gl.uniform4fv(self.s.colorUniform, new Float32Array(mat.diffuse_color.rgba));
-		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
-		gl.enableVertexAttribArray(self.s.uvCoordAttribute);
+		gl.uniform4fv(self.s.a_col, mat.ambient_color ? new Float32Array(mat.ambient_color.rgba) : this.def_ambient);
+		gl.uniform4fv(self.s.d_col, mat.diffuse_color ? new Float32Array(mat.diffuse_color.rgba) : this.def_diffuse);
+		gl.enableVertexAttribArray(self.s.v_pos);
+		gl.enableVertexAttribArray(self.s.v_uv0);
 		
-		gl.uniform2fv(self.s.uvOffsetUniform, self.uv_offset);	
-		gl.uniform2fv(self.s.uvScaleUniform, self.uv_scale);	
-		gl.uniform1f(self.s.uvRotationUniform, self.uv_rotation);
-		gl.uniform1i(self.s.alphaClipUniform, mat.alpha_clip ? 1 : 0);
+		gl.uniform2fv(self.s.uv_offset, self.uv_offset);	
+		gl.uniform2fv(self.s.uv_scale, self.uv_scale);	
+		gl.uniform1f(self.s.uv_rotation, self.uv_rotation);
+		gl.uniform1i(self.s.e2_alpha_clip, mat.alpha_clip ? 1 : 0);
 
 		var diffuse_set = false;
 		

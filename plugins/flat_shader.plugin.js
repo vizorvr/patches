@@ -11,15 +11,15 @@ E2.plugins["flat_shader"] = function(core, node) {
 		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'The resulting shader.' } 
 	];
 	
-	var vs_src = 'attribute vec3 pos;' +
+	var vs_src = 'attribute vec3 v_pos;' +
 		     'uniform mat4 m_mat;' +
 		     'uniform mat4 v_mat;' +
 		     'uniform mat4 p_mat;' +
-		     'void main(void) { gl_Position = p_mat * v_mat * m_mat * vec4(pos, 1.0); }';
+		     'void main(void) { gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0); }';
 	
 	var ps_src = 'precision mediump float;' +
-		     'uniform vec4 color;' +
-		     'void main(void) { gl_FragColor = color; }';
+		     'uniform vec4 d_col;' +
+		     'void main(void) { gl_FragColor = d_col; }';
 
 	this.s = new ShaderProgram(gl);
 	this.vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
@@ -31,27 +31,27 @@ E2.plugins["flat_shader"] = function(core, node) {
 	this.s.attach(this.ps);
 	this.s.link();
 
-	this.s.vertexPosAttribute = gl.getAttribLocation(prog, "pos");
-	this.s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
-	this.s.vMatUniform = gl.getUniformLocation(prog, "v_mat");
-	this.s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
-	this.s.colorUniform = gl.getUniformLocation(prog, "color");
+	this.s.v_pos = gl.getAttribLocation(prog, "v_pos");
+	this.s.m_mat = gl.getUniformLocation(prog, "m_mat");
+	this.s.v_mat = gl.getUniformLocation(prog, "v_mat");
+	this.s.p_mat = gl.getUniformLocation(prog, "p_mat");
+	this.s.d_col = gl.getUniformLocation(prog, "d_col");
 
       	this.s.bind_array = function(type, data, item_size)
       	{
-      		if(type === VertexBuffer.vertex_type.VERTEX)
-      		{
-			gl.bindBuffer(gl.ARRAY_BUFFER, data);
-			gl.vertexAttribPointer(self.s.vertexPosAttribute, item_size, gl.FLOAT, false, 0, 0);
-      		}
+      		if(type !== VertexBuffer.vertex_type.VERTEX)
+      			return;
+      		
+		gl.bindBuffer(gl.ARRAY_BUFFER, data);
+		gl.vertexAttribPointer(self.s.v_pos, item_size, gl.FLOAT, false, 0, 0);
       	}
       	
       	this.s.apply_uniforms = this.apply_uniforms = function(mesh)
       	{
 		var mat = self.material ? self.material : mesh.material;
 		
-		gl.uniform4fv(self.s.colorUniform, new Float32Array(mat.diffuse_color.rgba));
-		gl.enableVertexAttribArray(self.s.vertexPosAttribute);
+		gl.uniform4fv(self.s.d_col, mat.diffuse_color ? new Float32Array(mat.diffuse_color.rgba) : this.s);
+		gl.enableVertexAttribArray(self.s.v_pos);
 		
 		mat.enable();
       	};

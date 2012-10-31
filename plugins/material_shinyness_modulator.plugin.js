@@ -32,7 +32,7 @@ E2.plugins["material_shinyness_modulator"] = function(core, node) {
 		if(!ui)
 		{
 			self.material = new Material();
-			self.shinyness = 0.0;
+			self.shinyness = 1.0;
 		}
 	};
 };

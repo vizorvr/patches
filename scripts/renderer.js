@@ -172,6 +172,9 @@ function Renderer(canvas_id)
   	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
 	this.framebuffer_stack = [];
+	this.def_ambient = new Float32Array([0.0, 0.0, 0.0, 1.0]);
+	this.def_diffuse = new Float32Array([1.0, 1.0, 1.0, 1.0]);
+	this.def_specular = new Float32Array([1.0, 1.0, 1.0, 1.0]);
 		
 	try
 	{
@@ -182,8 +185,8 @@ function Renderer(canvas_id)
 		this.context = null;
 	}
 	
-	if(!this.context)
-		window.location = 'http://get.webgl.org';
+	/*if(!this.context)
+		window.location = 'http://get.webgl.org';*/
 
 	if(false)
 		this.context = WebGLDebugUtils.makeDebugContext(this.context);
@@ -415,7 +418,8 @@ VertexBuffer.vertex_type =
 	UV0: 3,
 	UV1: 4,
 	UV2: 5,
-	UV3: 6
+	UV3: 6,
+	COUNT: 7 // Always last
 };
 
 VertexBuffer.type_stride = [
@@ -467,6 +471,8 @@ Light.type =
 	COUNT: 2 // Always last!
 };
 
+Light.mask_no_light = '--------';
+
 function Material(gl, t_cache, data, base_path)
 {
 	var self = this;
@@ -476,12 +482,13 @@ function Material(gl, t_cache, data, base_path)
 	this.depth_write = true;
 	this.depth_func = Material.depth_func.LEQUAL;
 	this.alpha_clip = false;
-	this.shininess = 0.0;
+	this.shinyness = 1.0;
 	this.double_sided = false;
 	this.blend_mode = Renderer.blend_mode.NORMAL;
+	this.ambient_color = new Color(0, 0, 0, 1);
 	this.diffuse_color = new Color(1, 1, 1, 1);
 	this.textures = [];
-	this.lights = [];
+	this.lights = [null, null, null, null, null, null, null, null];
 	
 	if(data)
 	{
@@ -558,6 +565,16 @@ function Material(gl, t_cache, data, base_path)
 		
 		gl.depthMask(self.depth_write);
 		r.set_blend_mode(self.blend_mode);
+	};
+	
+	this.get_light_mask = function()
+	{
+		var msk = '';
+		
+		for(var i = 0; i < 8; i++)
+			msk += self.lights[i] ? '' + self.lights[i].type : '-';
+	
+		return msk;
 	};
 }
 
@@ -739,7 +756,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		
 		if(!self.instances)
 		{
-			gl.uniformMatrix4fv(shader.mMatUniform, false, transform);
+			gl.uniformMatrix4fv(shader.m_mat, false, transform);
 			
 			if(!self.index_buffer)
 			{
@@ -765,7 +782,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 					else
 						mat4.multiply(transform, inst[i], ft);
 				
-					gl.uniformMatrix4fv(shader.mMatUniform, false, ft);
+					gl.uniformMatrix4fv(shader.m_mat, false, ft);
 					gl.drawArrays(self.prim_type, 0, verts.count);
 				}
 			}
@@ -780,218 +797,391 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 					else
 						mat4.multiply(transform, inst[i], ft);
 				
-					gl.uniformMatrix4fv(shader.mMatUniform, false, ft);
+					gl.uniformMatrix4fv(shader.m_mat, false, ft);
 					gl.drawElements(self.prim_type, self.index_buffer.count, gl.UNSIGNED_SHORT, 0);
 				}
 			}
 		}
 	};
-
-	this.generate_shader = function(shader_cache, custom_vs_src, custom_ps_src)
-	{
-		// TODO: Adapt shader to handle the remaining maps and material attributes.
-		var flags = [];
-		var v_types = VertexBuffer.vertex_type;
-		
-		for(var v_type in v_types)
-		{
-			var index = v_types[v_type];
-			
-			flags[index] = self.vertex_buffers[v_type] !== null;
-		}
-		
-		var exists = false;
-		var ext_prog = null;
-				
-		if(shader_cache)
-		{
-			var cached = shader_cache.get(self.material);
-			
-			exists = cached[0];
-			ext_prog = cached[1]; 
-		}
-		
-		var s = new ShaderProgram(gl, ext_prog);
-			
-		if(!exists)
-		{
-			var vs_src = [];
-			var ps_src = [];
-		
-			vs_src.push('precision lowp float;');
-			vs_src.push('attribute vec3 v_pos;');
-			vs_src.push('uniform vec4 color;');
-			vs_src.push('varying vec4 f_col;');
-			ps_src.push('precision mediump float;');
-			ps_src.push('varying vec4 f_col;');
-			
-			ps_src.push('uniform int e2_alpha_clip;');
-			
-			if(flags[v_types.COLOR])
-				vs_src.push('attribute vec4 v_col;');
-		
-			if(flags[v_types.NORMAL])
-			{
-				vs_src.push('attribute vec3 v_norm;');
-				vs_src.push('varying vec3 f_norm;');
-				ps_src.push('varying vec3 f_norm;');
-			}
-			
-			if(flags[v_types.UV0])
-			{
-				vs_src.push('attribute vec2 v_uv0;');
-				vs_src.push('varying vec2 f_uv0;');
-				ps_src.push('varying vec2 f_uv0;');
-			}
-
-			vs_src.push('uniform mat4 m_mat;');
-			vs_src.push('uniform mat4 v_mat;');
-			vs_src.push('uniform mat4 p_mat;');
-		
-			if(!custom_vs_src)
-			{
-				vs_src.push('void main(void) {');		
-				vs_src.push('    vec4 dc = color;');		
-				vs_src.push('    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);');		
-
-				if(flags[v_types.COLOR])
-					vs_src.push('    dc = dc * v_col;');		
-
-				if(flags[v_types.NORMAL])
-					vs_src.push('    f_norm = v_norm;');
-
-				if(flags[v_types.UV0])
-					vs_src.push('    f_uv0 = v_uv0;');		
-
-				vs_src.push('    f_col = dc;');		
-				vs_src.push('}');
-			}
-			else
-				vs_src.push(custom_vs_src);		
-			
-			if(flags[v_types.UV0])
-					ps_src.push('uniform sampler2D tex0;');
-
-			if(!custom_ps_src)
-			{
-				ps_src.push('void main(void) {');		
-				ps_src.push('    vec4 fc = f_col;');
-
-				if(flags[v_types.UV0])
-					ps_src.push('    fc = fc * texture2D(tex0, f_uv0.st);');
-			
-				ps_src.push('    if(e2_alpha_clip > 0 && fc.a < 0.5) discard;');
-				ps_src.push('    gl_FragColor = fc;');
-				ps_src.push('}');
-			}
-			else
-				ps_src.push(custom_ps_src);		
-
-			vs_src = vs_src.join('\n');
-			ps_src = ps_src.join('\n');
-		
-			// TODO: For debugging. Remove!
-			/*s.vs_src = vs_src;
-			s.ps_src = ps_src;*/
-		
-			var vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
-			var ps = new Shader(gl, gl.FRAGMENT_SHADER, ps_src);
-		
-			s.attach(vs);
-			s.attach(ps);
-			s.link();
-		}
-	
-		var prog = s.program;
-	
-		s.vertexPosAttribute = gl.getAttribLocation(prog, "v_pos");
-		s.vertexNormAttribute = gl.getAttribLocation(prog, "v_norm");
-		s.mMatUniform = gl.getUniformLocation(prog, "m_mat");
-		s.vMatUniform = gl.getUniformLocation(prog, "v_mat");
-		s.pMatUniform = gl.getUniformLocation(prog, "p_mat");
-		s.diffuseColorUniform = gl.getUniformLocation(prog, "color");
-		s.alphaClipUniform = gl.getUniformLocation(prog, "e2_alpha_clip");
-
-		if(flags[v_types.COLOR])
-			s.vertexColAttribute = gl.getAttribLocation(prog, "v_col");
-
-		if(flags[v_types.UV0])
-		{
-			s.uv0CoordAttribute = gl.getAttribLocation(prog, "v_uv0");
-			s.tex0Uniform = gl.getUniformLocation(prog, "tex0");
-		}
-
-		// Note: Shader implementations must decorate the shader prototype with these
-		// two methods, so the rendering plugins can call it to update the shader uniforms
-		// and bind vertex data at the appropriate point in its rendering logic. It also
-		// means that the rendering logic is kept independent of the renderer logic:
-		// if an array type in unknown by the shader, but requested by the renderer,
-		// the request can be silently droppred, which gives us a nice weak API.
-		s.bind_array = function(type, data, item_size)
-		{
-			var types = VertexBuffer.vertex_type;
-			var attr = null;
-			
-			if(type === types.VERTEX)
-				attr = this.vertexPosAttribute;
-			else if(type === types.NORMAL)
-				attr = this.vertexNormAttribute;
-			else if(type === types.COLOR)
-				attr = this.vertexColAttribute;
-			else if(type === types.UV0)
-				attr = this.uv0CoordAttribute;
-			else
-				return;
-			
-			 // This can happen if the symbol is declared but unused. Some
-			 // drivers optimize the shaders and eliminate dead code.
-			if(attr === -1)
-				return;
-			
-			gl.bindBuffer(gl.ARRAY_BUFFER, data);
-			gl.enableVertexAttribArray(attr);
-			gl.vertexAttribPointer(attr, item_size, gl.FLOAT, false, 0, 0);
-		};
-		
-		s.apply_uniforms = function(mesh)
-		{
-			var m = mesh.material;
-
-			gl.enableVertexAttribArray(this.vertexPosAttribute);
-			gl.uniform1i(this.alphaClipUniform, m.alpha_clip ? 1 : 0);
-			
-			if(m.diffuse_color)
-				gl.uniform4fv(this.diffuseColorUniform, new Float32Array(m.diffuse_color.rgba));	
-			else
-				gl.uniform4fv(this.diffuseColorUniform, new Float32Array([1.0, 1.0, 1.0, 1.0]));	
-					
-			var dt = m.textures[Material.texture_type.DIFFUSE_COLOR];
-			
-			if(dt && this.uv0CoordAttribute !== undefined)
-			{
-				gl.enableVertexAttribArray(this.uv0CoordAttribute);
-				gl.uniform1i(this.tex0Uniform, 0);
-				dt.enable(gl.TEXTURE0);
-			}
-			
-			if(m.double_sided)
-				gl.disable(gl.CULL_FACE);
-			else
-				gl.enable(gl.CULL_FACE);
-		};
-		
-		// Can be monkey-patched by the caller with an appropriate implementation of
-		// apply_uniforms() that pipes data to the generated shader by mapping input
-		// values to stored shader uniform / attribute locations, if the default
-		// generated here won't suffice.
-		
-		return s;
-	}
 }
 
 function Color(r, g, b, a)
 {
 	this.rgba = [r, g, b, a || 1.0];
+}
+
+function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custom, ps_custom)
+{
+	var gl = E2.app.core.renderer.context;
+	var self = this;
+	var streams = [];
+	var v_types = VertexBuffer.vertex_type;
+	var has_lights = false;
+	var lights = material ? material.lights : [null, null, null, null, null, null, null, null];
+	
+	for(var v_type in v_types)
+	{
+		var index = v_types[v_type];
+		
+		streams[index] = mesh.vertex_buffers[v_type] !== null;
+	}		
+	
+	this.material = material;
+	this.apply_uniforms_custom = null;
+		
+	var exists = false;
+	var prog = null;
+			
+	if(cache)
+	{
+		// TODO: This need revision, badly.
+		var cached = cache.get(mesh, material);
+		
+		exists = cached[0];
+		prog = cached[1]; 
+	}
+
+	var shader = new ShaderProgram(gl, prog);
+	
+	shader.material = self.material;
+	
+	prog = shader.program;
+	
+	if(!exists)
+	{
+		var vs_src = [];
+		var ps_src = [];
+		var vs_c_src = [];
+		var ps_c_src = [];
+
+		shader.streams = streams;
+	
+		var vs_dp = function(s)
+		{
+			vs_src.push(s);
+			vs_c_src.push(s);
+		};
+	
+		var ps_dp = function(s)
+		{
+			ps_src.push(s);
+			ps_c_src.push(s);
+		};
+
+		vs_src.push('precision lowp float;');
+		vs_src.push('attribute vec3 v_pos;');
+		vs_src.push('uniform vec4 d_col;');
+		vs_src.push('uniform mat4 m_mat;');
+		vs_src.push('uniform mat4 v_mat;');
+		vs_src.push('uniform mat4 p_mat;');
+		vs_src.push('varying vec4 f_col;');
+		vs_src.push(uniforms_vs);
+	
+		ps_src.push('precision lowp float;');
+		ps_src.push('uniform vec4 a_col;');
+		ps_src.push('uniform int e2_alpha_clip;');
+		ps_src.push('varying vec4 f_col;');
+		ps_src.push(uniforms_ps);
+	
+		if(streams[v_types.COLOR])
+			vs_src.push('attribute vec4 v_col;');
+
+		if(streams[v_types.NORMAL])
+		{
+			vs_src.push('uniform mat4 n_mat;');
+			vs_src.push('attribute vec3 v_norm;');
+			vs_src.push('varying vec3 f_norm;');
+		
+			ps_src.push('varying vec3 f_norm;');
+		
+			for(var i = 0; i < 8; i++)
+			{
+				var l = lights[i];
+			
+				if(l)
+				{
+					var lid = 'l' + i;
+				
+					ps_src.push('uniform vec3 ' + lid + '_pos;');
+					ps_src.push('uniform vec4 ' + lid + '_d_col;');
+					ps_src.push('uniform vec4 ' + lid + '_s_col;');
+					ps_src.push('uniform float ' + lid + '_power;');
+				
+					if(l.type === Light.type.DIRECTIONAL)
+						ps_src.push('uniform vec3 ' + lid + '_dir;');
+				
+					has_lights = true;
+					break;
+				}
+			}
+		
+			if(has_lights)
+			{
+				vs_src.push('varying vec3 view_pos;');
+				ps_src.push('varying vec3 view_pos;');
+				ps_src.push('uniform vec4 s_col;');
+				ps_src.push('uniform float shinyness;');
+			}
+		}
+	
+		if(streams[v_types.UV0])
+		{
+			vs_src.push('attribute vec2 v_uv0;');
+			vs_src.push('varying vec2 f_uv0;');
+
+			ps_src.push('uniform sampler2D tex0;');
+			ps_src.push('varying vec2 f_uv0;');
+		}
+
+		if(!vs_custom)
+		{
+			vs_dp('void main(void) {');
+	
+			if(has_lights)
+				vs_dp('    view_pos = (v_mat * m_mat * vec4(v_pos, 1.0)).xyz;');	
+	
+			vs_dp('    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);');
+
+			if(streams[v_types.NORMAL])
+				vs_dp('    f_norm = normalize((n_mat * vec4(v_norm, 0.0)).xyz);');
+	
+			if(streams[v_types.COLOR])
+				vs_dp('    dc = dc * v_col;');
+
+			if(streams[v_types.UV0])
+				vs_dp('    f_uv0 = v_uv0;');		
+
+			vs_dp('    f_col = d_col;');
+			vs_dp('}');
+		}
+		else
+		{
+			vs_dp(vs_custom);
+		}
+	
+		if(!ps_custom)
+		{
+			ps_dp('void main(void) {');
+			ps_dp('    vec4 fc = vec4(a_col.rgb, f_col.a);');
+
+			if(streams[v_types.NORMAL] && has_lights)
+			{
+				ps_dp('    vec3 n_dir = normalize(f_norm);');
+				ps_dp('    vec3 v_dir = -normalize(view_pos);');
+		
+				for(var i = 0; i < 8; i++)
+				{
+					var l = lights[i];
+			
+					if(l)
+					{
+						var lid = 'l' + i;
+						var liddir = lid + '_dir';
+				
+						if(l.type === Light.type.DIRECTIONAL)
+							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos);');
+						else
+							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos - view_pos);');
+				
+						ps_dp('    float ' + lid + '_dd = dot(n_dir, ' + liddir + ');');
+						ps_dp('    fc += ' + lid + '_d_col * f_col * max(0.0, ' + lid + '_dd) * ' + lid + '_power;');
+						ps_dp('    if(' + lid +'_dd >= 0.0)');
+			
+						var s = '        fc += ' + lid + '_power * vec4(';
+				
+						if(l.type !== Light.type.DIRECTIONAL)
+							s += '(1.0 / length(' + liddir + ')) * ';
+					
+						ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 1.0 / (1.0 + shinyness)), 0.0);');
+					}
+				}
+			}
+	
+			if(streams[v_types.UV0])
+			{
+				if(has_lights)
+					ps_dp('    fc = fc * texture2D(tex0, f_uv0.st);');
+				else
+					ps_dp('    fc = vec4(fc.rgb + f_col.rgb, f_col.a) * texture2D(tex0, f_uv0.st);');
+			}
+	
+			ps_dp('    if(e2_alpha_clip > 0 && fc.a < 0.5) discard;');
+			ps_dp('    gl_FragColor = fc;');
+			ps_dp('}');
+		}
+		else
+		{
+			ps_dp(ps_custom);
+		}
+
+		shader.vs_src = vs_src.join('\n');
+		shader.ps_src = ps_src.join('\n');
+		shader.vs_c_src = vs_c_src.join('\n');
+		shader.ps_c_src = ps_c_src.join('\n');
+
+		var vs = new Shader(gl, gl.VERTEX_SHADER, shader.vs_src);
+		var ps = new Shader(gl, gl.FRAGMENT_SHADER, shader.ps_src);
+
+		shader.attach(vs);
+		shader.attach(ps);
+		shader.link();
+	}
+	
+	var gl_resolve = function(uid)
+	{
+		var ep = gl.getAttribLocation(prog, uid);
+		
+		return ep !== undefined && ep !== -1 ? ep : undefined;
+	};
+	 
+	shader.v_pos = gl.getAttribLocation(prog, "v_pos");
+	shader.v_norm = gl.getAttribLocation(prog, "v_norm");
+	shader.m_mat = gl.getUniformLocation(prog, "m_mat");
+	shader.v_mat = gl.getUniformLocation(prog, "v_mat");
+	shader.p_mat = gl.getUniformLocation(prog, "p_mat");
+	shader.a_col = gl.getUniformLocation(prog, "a_col");
+	shader.d_col = gl.getUniformLocation(prog, "d_col");
+	shader.e2_alpha_clip = gl.getUniformLocation(prog, "e2_alpha_clip");
+
+	if(has_lights)
+	{
+		shader.s_col = gl.getUniformLocation(prog, "s_col");
+		shader.shinyness = gl.getUniformLocation(prog, "shinyness");
+		shader.n_mat = gl.getUniformLocation(prog, "n_mat");
+	
+		for(var i = 0; i < 8; i++)
+		{
+			var l = lights[i];
+			
+			if(l)
+			{
+				var lid = 'l' + i;
+
+				shader[lid + '_pos'] = gl.getUniformLocation(prog, lid + '_pos');
+				shader[lid + '_d_col'] = gl.getUniformLocation(prog, lid + '_d_col');
+				shader[lid + '_s_col'] = gl.getUniformLocation(prog, lid + '_s_col');
+				shader[lid + '_power'] = gl.getUniformLocation(prog, lid + '_power');
+				
+				if(l.type === Light.type.DIRECTIONAL)
+					shader[lid + '_dir'] = gl.getUniformLocation(prog, lid + '_dir');
+			}
+		}
+	}
+
+	if(streams[v_types.COLOR])
+		shader.v_col = gl.getAttribLocation(prog, "v_col");
+
+	if(streams[v_types.UV0])
+	{
+		shader.v_uv0 = gl.getAttribLocation(prog, "v_uv0");
+		shader.tex0 = gl.getUniformLocation(prog, "tex0");
+	}
+	
+	shader.bind_array = function(type, data, item_size)
+	{
+		var types = VertexBuffer.vertex_type;
+		var attr = -1;
+		
+		if(type === types.VERTEX)
+			attr = this.v_pos;
+		else if(type === types.UV0)
+			attr = this.v_uv0;
+		else if(type === types.NORMAL)
+			attr = this.v_norm;
+		else if(type === types.COLOR)
+			attr = this.v_col;
+		
+		// This can happen if the symbol is declared but unused. Some
+		// drivers optimize the shaders and eliminate dead code.
+		if(attr === -1)
+			return;
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, data);
+		gl.enableVertexAttribArray(attr);
+		gl.vertexAttribPointer(attr, item_size, gl.FLOAT, false, 0, 0);
+	};
+	
+	shader.apply_uniforms = function(mesh)
+	{
+		var r = E2.app.core.renderer;
+		var m = this.material ? this.material : mesh.material;
+
+		gl.enableVertexAttribArray(this.v_pos);
+		gl.uniform1i(this.e2_alpha_clip, m.alpha_clip ? 1 : 0);
+		gl.uniform4fv(this.a_col, (m.ambient_color) ? new Float32Array(m.ambient_color.rgba) : r.def_ambient);
+		gl.uniform4fv(this.d_col, (m.diffuse_color) ? new Float32Array(m.diffuse_color.rgba) : r.def_diffuse);
+		
+		if(this.s_col !== undefined)
+			gl.uniform4fv(this.s_col, (m.specular_color) ? new Float32Array(m.specular_color.rgba) : r.def_specular);
+		
+		if(this.shinyness !== undefined)
+			gl.uniform1f(this.shinyness, m.shinyness);
+		
+		for(var i = 0; i < 8; i++)
+		{
+			var l = lights[i];
+			
+			if(l)
+			{
+				var lid = 'l' + i;
+
+				gl.uniform3fv(this[lid + '_pos'], l.position);
+				gl.uniform4fv(this[lid + '_d_col'], l.diffuse_color.rgba);
+				gl.uniform4fv(this[lid + '_s_col'], l.specular_color.rgba);
+				gl.uniform1f(this[lid + '_power'], l.intensity);
+				
+				if(l.type === Light.type.DIRECTIONAL)
+					gl.uniform3fv(this[lid + '_dir'], l.direction);
+			}
+		}
+
+		if(this.v_norm !== undefined && this.v_norm !== -1)
+			gl.enableVertexAttribArray(this.v_norm);
+		
+		if(this.v_uv0 !== undefined && this.v_uv0 !== -1)
+		{
+			var diffuse_set = false;
+
+			gl.enableVertexAttribArray(this.v_uv0);
+
+			if(self.material)
+			{
+				var dt = this.material.textures[Material.texture_type.DIFFUSE_COLOR];
+
+				if(dt)
+				{
+					gl.uniform1i(this.tex0, 0);
+					dt.enable(gl.TEXTURE0);
+					diffuse_set = true;
+				}
+			}
+
+			if(!diffuse_set)
+			{
+				var dt = mesh.material.textures[Material.texture_type.DIFFUSE_COLOR];
+
+				if(dt)
+				{
+					gl.uniform1i(this.tex0, 0);
+					dt.enable(gl.TEXTURE0);
+				}
+				else
+					gl.bindTexture(gl.TEXTURE_2D, null);
+			}
+		}
+		
+		if(this.apply_uniforms_custom)
+			this.apply_uniforms_custom();
+		
+		if(m.double_sided)
+			gl.disable(gl.CULL_FACE);
+		else
+			gl.enable(gl.CULL_FACE);
+	
+		m.enable();
+	};
+	
+	return shader;
 }
 
 function ShaderCache(gl)
@@ -1000,10 +1190,13 @@ function ShaderCache(gl)
 	
 	this.programs = {};
 	
-	this.build_key = function(m)
+	this.build_key = function(mesh, m)
 	{
 		var k = '';
 		
+		for(var i = 0, len = VertexBuffer.vertex_type.COUNT; i <len; i++)
+			k += mesh.vertex_buffers[i] ? '1' : '0';
+		 
 		k += m.diffuse_color ? '1' : '0';
 		k += m.emission_color ? '1' : '0';
 		k += m.specular_color ? '1' : '0';
@@ -1014,20 +1207,15 @@ function ShaderCache(gl)
 		k += m.textures[Material.texture_type.SPECULAR_COLOR] ? '1' : '0';
 		k += m.textures[Material.texture_type.NORMAL] ? '1' : '0';
 	
-		for(var i in m.lights)
-		{
-			if(!m.lights.hasOwnProperty(i))
-				continue;
-				
-			k += 'l' + i;
-		}
+		for(var i = 0; i < 8; i++)
+			k += m.lights[i] ? '1' : '0';
 		
 		return k;
 	};
 	
-	this.get = function(mat)
+	this.get = function(mesh, mat)
 	{
-		var key = self.build_key(mat);
+		var key = self.build_key(mesh, mat);
 		var exists = key in self.programs;
 		var prog = null;
 		
@@ -1061,7 +1249,10 @@ function Shader(gl, type, src)
 	gl.compileShader(this.shader);
 	
 	if(!gl.getShaderParameter(this.shader, gl.COMPILE_STATUS))
+	{
 		Notifier.error('Shader compilation failed:\n' + gl.getShaderInfoLog(this.shader), 'Renderer');
+		msg('Shader compilation failed:\n' + gl.getShaderInfoLog(this.shader));
+	}
 }
 
 function ShaderProgram(gl, program)
@@ -1081,12 +1272,18 @@ function ShaderProgram(gl, program)
 		self.gl.linkProgram(self.program);
 
 		if(!self.gl.getProgramParameter(self.program, gl.LINK_STATUS))
+		{
       			Notifier.error('Shader linking failed:\n' + gl.getProgramInfoLog(self.program), 'Renderer');
+			msg('Shader linking failed:\n' + gl.getProgramInfoLog(self.program));
+		}
 		
 		gl.validateProgram(self.program);
 		
 		if(!gl.getProgramParameter(self.program, gl.VALIDATE_STATUS))
+		{
       			Notifier.error('Shader validation failed:\n' + gl.getProgramInfoLog(self.program), 'Renderer');
+      			msg('Shader validation failed:\n' + gl.getProgramInfoLog(self.program));
+      		}
       	};
       	
       	this.enable = function()
@@ -1096,13 +1293,16 @@ function ShaderProgram(gl, program)
 
 	this.bind_camera = function(camera)
 	{
-		gl.uniformMatrix4fv(self.vMatUniform, false, camera.view);
-		gl.uniformMatrix4fv(self.pMatUniform, false, camera.projection);
+		gl.uniformMatrix4fv(self.v_mat, false, camera.view);
+		gl.uniformMatrix4fv(self.p_mat, false, camera.projection);
+		
+		if(self.n_mat)
+			gl.uniformMatrix4fv(self.n_mat, false, camera.normal);
 	};
 	
 	this.bind_transform = function(transform)
 	{
-		gl.uniformMatrix4fv(self.mMatUniform, false, transform);
+		gl.uniformMatrix4fv(self.m_mat, false, transform);
 	};
 }
 
@@ -1113,9 +1313,19 @@ function Camera(gl)
 	this.gl = gl;
 	this.projection = mat4.create();
 	this.view = mat4.create();
+	this.normal = mat4.create();
 	
 	mat4.identity(this.projection);
 	mat4.identity(this.view);
+	mat4.identity(this.normal);
+	
+	this.update_normal = function()
+	{
+		var inv = mat4.create();
+		
+		mat4.inverse(self.view, inv);
+		mat4.transpose(inv, self.normal);
+	};
 }
 	
 function Scene(gl, data, base_path)
@@ -1139,7 +1349,8 @@ function Scene(gl, data, base_path)
 		{
 			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, data.meshes[i], base_path);
 			
-			mesh.shader = mesh.generate_shader(self.shader_cache);
+			// mesh.shader = mesh.generate_shader(self.shader_cache);
+			mesh.shader = ComposeShader(self.shader_cache, mesh, mesh.material, null, null, null, null);
 			this.meshes.push(mesh);
 			this.vertex_count += mesh.vertex_count;
 		}

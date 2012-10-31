@@ -33,61 +33,33 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 	{
 		if(slot.index === 0)
 		{
-			self.mesh = data;
-			
-			if(self.mesh)
+			if(self.mesh !== data)
 			{
-				self.shader = self.mesh.generate_shader();
-				
-				// Decorate with an apply_uniforms method that maps
-				// our values to the generated shader.
-				self.shader.apply_uniforms = function(mesh)
-				{
-					var mat = self.material ? self.material : mesh.material;
-					
-					gl.uniform1i(this.e2alphaClipUniform, mat.alpha_clip ? 1 : 0);
-					gl.uniform4fv(this.diffuseColorUniform, new Float32Array(mat.diffuse_color.rgba));
-					
-					if(this.uv0CoordAttribute !== undefined)
-					{
-						var diffuse_set = false;
-
-						gl.enableVertexAttribArray(self.shader.uv0CoordAttribute);
-	
-						if(self.material)
-						{
-							var dt = self.material.textures[Material.texture_type.DIFFUSE_COLOR];
-			
-							if(dt)
-							{
-								gl.uniform1i(this.tex0Uniform, 0);
-								dt.enable(gl.TEXTURE0);
-								diffuse_set = true;
-							}
-						}
-		
-						if(!diffuse_set)
-						{
-							var dt = mesh.material.textures[Material.texture_type.DIFFUSE_COLOR];
-			
-							if(dt)
-							{
-								gl.uniform1i(this.tex0Uniform, 0);
-								dt.enable(gl.TEXTURE0);
-							}
-							else
-							{
-								gl.bindTexture(gl.TEXTURE_2D, null);
-							}
-						}
-					}
-					
-					mat.enable();	
-				};
+				self.mesh = data;
+				self.dirty = true;
 			}
 		}
 		else if(slot.index === 1)
+		{
 			self.material = data;
+
+			var msk = data.get_light_mask();
+			
+			if(self.lightmask !== msk)
+			{
+				self.dirty = true;
+				self.lightmask = msk;
+			}
+		}
+	};
+	
+	this.update_state = function(delta_t)
+	{
+		if(!self.mesh || !self.dirty)
+			return;
+		
+		self.dirty = false;
+		self.shader = ComposeShader(E2.app.core.renderer.shader_cache, self.mesh, self.material, null, null, null, null);
 	};
 	
 	this.update_output = function(slot)
@@ -101,6 +73,8 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 		{
 			self.mesh = null;
 			self.material = null;
+			self.dirty = true;
+			self.lightmask = Light.mask_no_light;
 		}
 	};
 };
