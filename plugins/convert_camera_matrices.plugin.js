@@ -8,7 +8,8 @@ E2.plugins["convert_camera_matrices"] = function(core, node) {
 	];
 	this.output_slots = [ 
 		{ name: 'projection', dt: core.datatypes.MATRIX, desc: 'The camera projection matrix.', def: 'Identity' },
-		{ name: 'view', dt: core.datatypes.MATRIX, desc: 'The camera view matrix.', def: 'Identity' } 
+		{ name: 'view', dt: core.datatypes.MATRIX, desc: 'The camera view matrix.', def: 'Identity' },
+		{ name: 'normal', dt: core.datatypes.MATRIX, desc: 'The camera normal matrix.', def: 'Identity' } 
 	];
 	
 	this.reset = function()
@@ -25,7 +26,9 @@ E2.plugins["convert_camera_matrices"] = function(core, node) {
 	{
 		if(slot.index === 0)
 			return self.camera.projection;
-		else
+		else if(slot.index === 1)
 			return self.camera.view;
+		else
+			return self.camera.normal;
 	};	
 };
