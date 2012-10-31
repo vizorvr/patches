@@ -1,47 +1,47 @@
 {
-    "abs_t": 0.0,
+    "abs_t": 0,
     "active_graph": 0,
-    "graph_uid": 15,
+    "graph_uid": 6,
     "root": {
-        "node_uid": 19,
+        "node_uid": 13,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "knob_float_generator",
-                "x": 78,
-                "y": 8,
-                "uid": 1,
+                "x": 73,
+                "y": 11,
+                "uid": 0,
                 "state": {
-                    "val": 0.2999999999999994
+                    "val": 0.31999999999999945
                 }
             },
             {
                 "plugin": "multiply_modulator",
-                "x": 184,
-                "y": 37,
-                "uid": 2
+                "x": 179,
+                "y": 40,
+                "uid": 1
             },
             {
                 "plugin": "const_float_generator",
-                "x": 61,
-                "y": 87,
-                "uid": 3,
+                "x": 56,
+                "y": 90,
+                "uid": 2,
                 "state": {
                     "val": 15
                 }
             },
             {
                 "plugin": "quad_mesh_generator",
-                "x": 61,
-                "y": 158,
-                "uid": 4
+                "x": 56,
+                "y": 161,
+                "uid": 3
             },
             {
                 "plugin": "graph",
-                "x": 139,
-                "y": 291,
-                "uid": 5,
+                "x": 134,
+                "y": 294,
+                "uid": 4,
                 "dsid": 1,
                 "state": {
                     "enabled": true,
@@ -53,7 +53,7 @@
                 "title": "Scene",
                 "graph": {
                     "node_uid": 6,
-                    "uid": 9,
+                    "uid": 1,
                     "parent_uid": 0,
                     "nodes": [
                         {
@@ -88,7 +88,7 @@
                             "x": 545,
                             "y": 23,
                             "uid": 5,
-                            "dsid": 7,
+                            "dsid": 8,
                             "state": {
                                 "slot_id": 0
                             },
@@ -149,9 +149,9 @@
             },
             {
                 "plugin": "graph",
-                "x": 377,
-                "y": 137,
-                "uid": 6,
+                "x": 372,
+                "y": 140,
+                "uid": 5,
                 "dsid": 3,
                 "state": {
                     "enabled": true,
@@ -165,7 +165,7 @@
                 "title": "H-Blur",
                 "graph": {
                     "node_uid": 6,
-                    "uid": 10,
+                    "uid": 2,
                     "parent_uid": 0,
                     "nodes": [
                         {
@@ -173,7 +173,7 @@
                             "x": 178,
                             "y": 8,
                             "uid": 0,
-                            "dsid": 5,
+                            "dsid": 6,
                             "state": {
                                 "slot_id": 0
                             },
@@ -195,7 +195,7 @@
                             "x": 131,
                             "y": 195,
                             "uid": 1,
-                            "dsid": 5,
+                            "dsid": 6,
                             "state": {
                                 "slot_id": 0
                             },
@@ -217,7 +217,7 @@
                             "x": 50,
                             "y": 10,
                             "uid": 2,
-                            "dsid": 5,
+                            "dsid": 6,
                             "state": {
                                 "slot_id": 0
                             },
@@ -241,7 +241,7 @@
                             "uid": 3,
                             "dsid": 1,
                             "state": {
-                                "vs_src": "void main(void)\n{\n    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n    f_col = color;\n    f_uv0 = v_uv0;\n}",
+                                "vs_src": "void main(void)\n{\n    gl_Position = vec4(v_pos, 1.0);\n    f_uv0 = v_uv0;\n}",
                                 "ps_src": "float blurSize = (1.0/512.0) * blur_amount;\n\nvoid main(void)\n{\n    vec4 sum = vec4(0.0);\n\n    sum += texture2D(tex0, vec2(f_uv0.x - 4.0 * blurSize, f_uv0.y)) * 0.05;\n    sum += texture2D(tex0, vec2(f_uv0.x - 3.0*blurSize, f_uv0.y)) * 0.09;\n    sum += texture2D(tex0, vec2(f_uv0.x - 2.0*blurSize, f_uv0.y)) * 0.12;\n    sum += texture2D(tex0, vec2(f_uv0.x - blurSize, f_uv0.y)) * 0.15;\n    sum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y)) * 0.16;\n    sum += texture2D(tex0, vec2(f_uv0.x + blurSize, f_uv0.y)) * 0.15;\n    sum += texture2D(tex0, vec2(f_uv0.x + 2.0*blurSize, f_uv0.y)) * 0.12;\n    sum += texture2D(tex0, vec2(f_uv0.x + 3.0 * blurSize, f_uv0.y)) * 0.09;\n    sum += texture2D(tex0, vec2(f_uv0.x + 4.0*blurSize, f_uv0.y)) * 0.05;\n\n    gl_FragColor = sum;\n}",
                                 "slot_ids": {
                                     "blur_amount": {
@@ -360,9 +360,9 @@
             },
             {
                 "plugin": "graph",
-                "x": 505,
-                "y": 137,
-                "uid": 11,
+                "x": 500,
+                "y": 140,
+                "uid": 6,
                 "dsid": 3,
                 "state": {
                     "enabled": true,
@@ -376,7 +376,7 @@
                 "title": "V-Blur",
                 "graph": {
                     "node_uid": 6,
-                    "uid": 12,
+                    "uid": 3,
                     "parent_uid": 0,
                     "nodes": [
                         {
@@ -384,7 +384,7 @@
                             "x": 134,
                             "y": 6,
                             "uid": 0,
-                            "dsid": 1,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },
@@ -406,7 +406,7 @@
                             "x": 89,
                             "y": 170,
                             "uid": 1,
-                            "dsid": 1,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },
@@ -428,7 +428,7 @@
                             "x": 9,
                             "y": 73,
                             "uid": 2,
-                            "dsid": 1,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },
@@ -458,7 +458,7 @@
                             "uid": 4,
                             "dsid": 1,
                             "state": {
-                                "vs_src": "void main(void)\n{\n    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n    f_col = color;\n    f_uv0 = v_uv0;\n}",
+                                "vs_src": "void main(void)\n{\n    gl_Position = vec4(v_pos, 1.0);\n    f_uv0 = v_uv0;\n}",
                                 "ps_src": "float blurSize = (1.0/512.0) * blur_amount;\n\nvoid main(void)\n{\n\tvec4 sum = vec4(0.0);\n\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 4.0*blurSize)) * 0.0;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 3.0*blurSize)) * 0.09;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 2.0*blurSize)) * 0.12;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - blurSize)) * 0.15;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y)) * 0.16;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + blurSize)) * 0.15;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 2.0*blurSize)) * 0.12;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 3.0*blurSize)) * 0.09;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 4.0*blurSize)) * 0.05;\n\n\tgl_FragColor = sum;\n}",
                                 "slot_ids": {
                                     "blur_amount": {
@@ -509,7 +509,6 @@
                             "src_slot": 0,
                             "dst_slot": 2,
                             "src_connected": true,
-                            "dst_connected": false,
                             "src_dyn": true
                         },
                         {
@@ -528,7 +527,6 @@
                             "src_slot": 0,
                             "dst_slot": 0,
                             "src_connected": true,
-                            "dst_connected": false,
                             "src_dyn": true
                         },
                         {
@@ -537,7 +535,6 @@
                             "src_slot": 0,
                             "dst_slot": 0,
                             "src_connected": true,
-                            "dst_connected": false,
                             "src_dyn": true,
                             "offset": 1
                         }
@@ -572,9 +569,9 @@
             },
             {
                 "plugin": "graph",
-                "x": 266,
-                "y": 295,
-                "uid": 12,
+                "x": 261,
+                "y": 298,
+                "uid": 7,
                 "dsid": 4,
                 "state": {
                     "enabled": true,
@@ -589,7 +586,7 @@
                 "title": "Threshold",
                 "graph": {
                     "node_uid": 7,
-                    "uid": 13,
+                    "uid": 4,
                     "parent_uid": 0,
                     "nodes": [
                         {
@@ -597,7 +594,7 @@
                             "x": 134,
                             "y": 6,
                             "uid": 0,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -619,7 +616,7 @@
                             "x": 113,
                             "y": 172,
                             "uid": 1,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -641,7 +638,7 @@
                             "x": 9,
                             "y": 73,
                             "uid": 2,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -671,7 +668,7 @@
                             "uid": 4,
                             "dsid": 3,
                             "state": {
-                                "vs_src": "void main(void)\n{\n    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n    f_col = color;\n    f_uv0 = v_uv0;\n}",
+                                "vs_src": "void main(void)\n{\n    gl_Position = vec4(v_pos, 1.0);\n    f_uv0 = v_uv0;\n}",
                                 "ps_src": "void main(void)\n{\n\tvec4 c = texture2D(tex0, f_uv0.st);\n\n        c.r = min(1.0, (max(level, c.r) - level) * gamma);\n        c.g = min(1.0, (max(level, c.g) - level) * gamma);\n        c.b = min(1.0, (max(level, c.b) - level) * gamma);\n\n\tgl_FragColor = c;\n}",
                                 "slot_ids": {
                                     "gamma": {
@@ -722,7 +719,7 @@
                             "x": 125,
                             "y": 233,
                             "uid": 6,
-                            "dsid": 1,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },
@@ -838,42 +835,42 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 32,
-                "y": 364,
-                "uid": 13,
+                "x": 27,
+                "y": 367,
+                "uid": 8,
                 "state": {
                     "val": 0.8799999999999999
                 }
             },
             {
                 "plugin": "multiply_modulator",
-                "x": 138,
-                "y": 393,
-                "uid": 14
+                "x": 133,
+                "y": 396,
+                "uid": 9
             },
             {
                 "plugin": "const_float_generator",
-                "x": 15,
-                "y": 443,
-                "uid": 15,
+                "x": 10,
+                "y": 446,
+                "uid": 10,
                 "state": {
                     "val": 4
                 }
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 139,
-                "y": 471,
-                "uid": 17,
+                "x": 134,
+                "y": 474,
+                "uid": 11,
                 "state": {
                     "val": 0.2799999999999997
                 }
             },
             {
                 "plugin": "graph",
-                "x": 654,
-                "y": 206,
-                "uid": 18,
+                "x": 649,
+                "y": 209,
+                "uid": 12,
                 "dsid": 3,
                 "state": {
                     "enabled": true,
@@ -887,7 +884,7 @@
                 "title": "Texture add mix",
                 "graph": {
                     "node_uid": 6,
-                    "uid": 14,
+                    "uid": 5,
                     "parent_uid": 0,
                     "nodes": [
                         {
@@ -895,7 +892,7 @@
                             "x": 22,
                             "y": 22,
                             "uid": 0,
-                            "dsid": 1,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },
@@ -917,7 +914,7 @@
                             "x": 21,
                             "y": 88,
                             "uid": 1,
-                            "dsid": 1,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },
@@ -939,7 +936,7 @@
                             "x": 20,
                             "y": 158,
                             "uid": 2,
-                            "dsid": 1,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },
@@ -969,7 +966,7 @@
                             "uid": 4,
                             "dsid": 4,
                             "state": {
-                                "vs_src": "void main(void)\n{\n    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n    f_col = color;\n    f_uv0 = v_uv0;\n}",
+                                "vs_src": "void main(void)\n{\n    gl_Position = vec4(v_pos, 1.0);\n    f_uv0 = v_uv0;\n}",
                                 "ps_src": "void main(void)\n{\n\tgl_FragColor = texture2D(tex0, f_uv0.st) + texture2D(bloom_tex, f_uv0.st);\n}",
                                 "slot_ids": {
                                     "bloom_tex": {
@@ -1019,7 +1016,6 @@
                             "src_slot": 0,
                             "dst_slot": 2,
                             "src_connected": true,
-                            "dst_connected": false,
                             "src_dyn": true
                         },
                         {
@@ -1028,7 +1024,6 @@
                             "src_slot": 0,
                             "dst_slot": 0,
                             "src_connected": true,
-                            "dst_connected": false,
                             "src_dyn": true
                         },
                         {
@@ -1037,7 +1032,6 @@
                             "src_slot": 0,
                             "dst_slot": 0,
                             "src_connected": true,
-                            "dst_connected": false,
                             "src_dyn": true,
                             "offset": 1
                         },
@@ -1082,36 +1076,36 @@
         ],
         "conns": [
             {
-                "src_nuid": 1,
-                "dst_nuid": 2,
+                "src_nuid": 0,
+                "dst_nuid": 1,
                 "src_slot": 0,
                 "dst_slot": 0
             },
             {
-                "src_nuid": 3,
-                "dst_nuid": 2,
+                "src_nuid": 2,
+                "dst_nuid": 1,
                 "src_slot": 0,
                 "dst_slot": 1
             },
             {
-                "src_nuid": 2,
-                "dst_nuid": 6,
+                "src_nuid": 1,
+                "dst_nuid": 5,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_connected": false,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 4,
-                "dst_nuid": 5,
+                "src_nuid": 3,
+                "dst_nuid": 4,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_connected": false,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 4,
-                "dst_nuid": 6,
+                "src_nuid": 3,
+                "dst_nuid": 5,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_connected": false,
@@ -1119,31 +1113,31 @@
                 "offset": 1
             },
             {
-                "src_nuid": 6,
-                "dst_nuid": 11,
+                "src_nuid": 5,
+                "dst_nuid": 6,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 2,
-                "dst_nuid": 11,
+                "src_nuid": 1,
+                "dst_nuid": 6,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_dyn": true,
                 "offset": 1
             },
             {
-                "src_nuid": 4,
-                "dst_nuid": 11,
+                "src_nuid": 3,
+                "dst_nuid": 6,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true,
                 "offset": 2
             },
             {
-                "src_nuid": 4,
-                "dst_nuid": 12,
+                "src_nuid": 3,
+                "dst_nuid": 7,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_connected": false,
@@ -1151,66 +1145,66 @@
                 "offset": 3
             },
             {
-                "src_nuid": 13,
-                "dst_nuid": 14,
+                "src_nuid": 8,
+                "dst_nuid": 9,
                 "src_slot": 0,
                 "dst_slot": 0
             },
             {
-                "src_nuid": 15,
-                "dst_nuid": 14,
+                "src_nuid": 10,
+                "dst_nuid": 9,
                 "src_slot": 0,
                 "dst_slot": 1
             },
             {
-                "src_nuid": 14,
-                "dst_nuid": 12,
+                "src_nuid": 9,
+                "dst_nuid": 7,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_connected": false,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 17,
-                "dst_nuid": 12,
+                "src_nuid": 11,
+                "dst_nuid": 7,
                 "src_slot": 0,
                 "dst_slot": 3,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 5,
-                "dst_nuid": 12,
+                "src_nuid": 4,
+                "dst_nuid": 7,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_connected": false,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 12,
-                "dst_nuid": 6,
+                "src_nuid": 7,
+                "dst_nuid": 5,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 4,
-                "dst_nuid": 18,
+                "src_nuid": 3,
+                "dst_nuid": 12,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true,
                 "offset": 4
             },
             {
-                "src_nuid": 5,
-                "dst_nuid": 18,
+                "src_nuid": 4,
+                "dst_nuid": 12,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_dyn": true,
                 "offset": 1
             },
             {
-                "src_nuid": 11,
-                "dst_nuid": 18,
+                "src_nuid": 6,
+                "dst_nuid": 12,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_dyn": true

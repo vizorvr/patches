@@ -9,8 +9,8 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 353,
-                "y": 84,
+                "x": 274,
+                "y": 44,
                 "uid": 0,
                 "dsid": 2,
                 "state": {
@@ -32,7 +32,7 @@
                             "x": 113,
                             "y": 189,
                             "uid": 0,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -71,10 +71,10 @@
                                 "nodes": [
                                     {
                                         "plugin": "input_proxy",
-                                        "x": 379,
-                                        "y": 247,
+                                        "x": 237,
+                                        "y": 253,
                                         "uid": 0,
-                                        "dsid": 2,
+                                        "dsid": 3,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -93,8 +93,8 @@
                                     },
                                     {
                                         "plugin": "graph",
-                                        "x": 184,
-                                        "y": 153,
+                                        "x": 107,
+                                        "y": 143,
                                         "uid": 1,
                                         "dsid": 1,
                                         "state": {
@@ -106,43 +106,43 @@
                                         },
                                         "title": "Scene",
                                         "graph": {
-                                            "node_uid": 6,
+                                            "node_uid": 8,
                                             "uid": 3,
                                             "parent_uid": 2,
                                             "nodes": [
                                                 {
                                                     "plugin": "mesh_renderer_emitter",
-                                                    "x": 647,
-                                                    "y": 34,
+                                                    "x": 412,
+                                                    "y": 26,
                                                     "uid": 0
                                                 },
                                                 {
                                                     "plugin": "texture_diffuse_shader",
-                                                    "x": 504,
-                                                    "y": 113,
+                                                    "x": 269,
+                                                    "y": 105,
                                                     "uid": 2
                                                 },
                                                 {
                                                     "plugin": "material_texture_modulator",
-                                                    "x": 346,
-                                                    "y": 163,
+                                                    "x": 148,
+                                                    "y": 177,
                                                     "uid": 3
                                                 },
                                                 {
                                                     "plugin": "url_texture_generator",
-                                                    "x": 197,
-                                                    "y": 182,
+                                                    "x": 8,
+                                                    "y": 256,
                                                     "uid": 4,
                                                     "state": {
-                                                        "url": "data/textures/backdrop_landscape.jpg"
+                                                        "url": "data/textures/cutout_vogue3.png"
                                                     }
                                                 },
                                                 {
                                                     "plugin": "input_proxy",
-                                                    "x": 545,
-                                                    "y": 23,
+                                                    "x": 310,
+                                                    "y": 15,
                                                     "uid": 5,
-                                                    "dsid": 2,
+                                                    "dsid": 3,
                                                     "state": {
                                                         "slot_id": 0
                                                     },
@@ -202,12 +202,12 @@
                                     },
                                     {
                                         "plugin": "from_mesh_custom_shader",
-                                        "x": 513,
-                                        "y": 83,
+                                        "x": 353,
+                                        "y": 66,
                                         "uid": 2,
                                         "dsid": 1,
                                         "state": {
-                                            "vs_src": "void main(void)\n{\n    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n    f_col = color;\n    f_uv0 = v_uv0;\n}",
+                                            "vs_src": "void main(void)\n{\n    gl_Position = vec4(v_pos, 1.0);\n    f_uv0 = v_uv0;\n}",
                                             "ps_src": "float blurSize = (1.0/512.0) * blur_amount;\n\nvoid main(void)\n{\n    vec4 sum = vec4(0.0);\n\n    sum += texture2D(tex0, vec2(f_uv0.x - 4.0 * blurSize, f_uv0.y)) * 0.05;\n    sum += texture2D(tex0, vec2(f_uv0.x - 3.0*blurSize, f_uv0.y)) * 0.09;\n    sum += texture2D(tex0, vec2(f_uv0.x - 2.0*blurSize, f_uv0.y)) * 0.12;\n    sum += texture2D(tex0, vec2(f_uv0.x - blurSize, f_uv0.y)) * 0.15;\n    sum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y)) * 0.16;\n    sum += texture2D(tex0, vec2(f_uv0.x + blurSize, f_uv0.y)) * 0.15;\n    sum += texture2D(tex0, vec2(f_uv0.x + 2.0*blurSize, f_uv0.y)) * 0.12;\n    sum += texture2D(tex0, vec2(f_uv0.x + 3.0 * blurSize, f_uv0.y)) * 0.09;\n    sum += texture2D(tex0, vec2(f_uv0.x + 4.0*blurSize, f_uv0.y)) * 0.05;\n\n    gl_FragColor = sum;\n}",
                                             "slot_ids": {
                                                 "blur_amount": {
@@ -233,10 +233,10 @@
                                     },
                                     {
                                         "plugin": "input_proxy",
-                                        "x": 59,
-                                        "y": 94,
+                                        "x": 25,
+                                        "y": 15,
                                         "uid": 3,
-                                        "dsid": 2,
+                                        "dsid": 3,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -255,14 +255,14 @@
                                     },
                                     {
                                         "plugin": "material_texture_modulator",
-                                        "x": 304,
-                                        "y": 133,
+                                        "x": 227,
+                                        "y": 123,
                                         "uid": 4
                                     },
                                     {
                                         "plugin": "mesh_renderer_emitter",
-                                        "x": 748,
-                                        "y": 31,
+                                        "x": 588,
+                                        "y": 14,
                                         "uid": 5
                                     }
                                 ],
@@ -347,7 +347,7 @@
                             "x": 124,
                             "y": 13,
                             "uid": 2,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -377,7 +377,7 @@
                             "uid": 4,
                             "dsid": 1,
                             "state": {
-                                "vs_src": "void main(void)\n{\n    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n    f_col = color;\n    f_uv0 = v_uv0;\n}",
+                                "vs_src": "void main(void)\n{\n    gl_Position = vec4(v_pos, 1.0);\n    f_uv0 = v_uv0;\n}",
                                 "ps_src": "float blurSize = (1.0/512.0) * blur_amount;\n\nvoid main(void)\n{\n\tvec4 sum = vec4(0.0);\n\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 4.0*blurSize)) * 0.0;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 3.0*blurSize)) * 0.09;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - 2.0*blurSize)) * 0.12;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y - blurSize)) * 0.15;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y)) * 0.16;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + blurSize)) * 0.15;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 2.0*blurSize)) * 0.12;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 3.0*blurSize)) * 0.09;\n\tsum += texture2D(tex0, vec2(f_uv0.x, f_uv0.y + 4.0*blurSize)) * 0.05;\n\n\tgl_FragColor = sum;\n}",
                                 "slot_ids": {
                                     "blur_amount": {
@@ -496,23 +496,23 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 101,
-                "y": 52,
+                "x": 22,
+                "y": 12,
                 "uid": 1,
                 "state": {
-                    "val": 0
+                    "val": 0.15999999999999998
                 }
             },
             {
                 "plugin": "multiply_modulator",
-                "x": 218,
-                "y": 104,
+                "x": 139,
+                "y": 64,
                 "uid": 2
             },
             {
                 "plugin": "const_float_generator",
-                "x": 99,
-                "y": 165,
+                "x": 20,
+                "y": 125,
                 "uid": 3,
                 "state": {
                     "val": 15
@@ -520,8 +520,8 @@
             },
             {
                 "plugin": "quad_mesh_generator",
-                "x": 276,
-                "y": 192,
+                "x": 197,
+                "y": 152,
                 "uid": 4
             }
         ],

@@ -46,7 +46,7 @@
                             "uid": 2,
                             "dsid": 6,
                             "state": {
-                                "vs_src": "void main(void)\n{\n\tvec4 dc = color;\n\tgl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n\n\tf_col = dc;\n        f_uv0 = v_uv0;\n}",
+                                "vs_src": "void main(void)\n{\n\tgl_Position = vec4(v_pos, 1.0);\n\n\tf_uv0 = v_uv0;\n}",
                                 "ps_src": "void main(void)\n{\n\tvec2 p = -1.0 + (2.0 * f_uv0);\n        vec2 s = p;\n        vec3 total = vec3(0.0);\n        vec2 d = (vec2(0.0, 0.0) - p) / focus;\n        float w = 1.0;\n\n        for(int i=0; i<20; i++)\n        {\n             vec3 c = texture2D(tex0, (s * tex_scale) + tex_offset).rgb;\n\n             c = smoothstep(0.1, 1.0, c*c);\n             total += w * c;\n             w *= 0.99;\n             s += d;  \n        }\n        \n\ttotal /= 20.0;\n\n        float r = gain / (1.0 + dot(p, p));\n\n\tgl_FragColor = vec4(total * r, 1.0);\n}",
                                 "slot_ids": {
                                     "gain": {
