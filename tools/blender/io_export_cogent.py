@@ -53,18 +53,18 @@ class CogentContext:
             if not img.filepath:
                 continue
             
-            in_path = os.path.split(bpy.data.filepath)[0] + '/'
-            
             if img.name in self.unique_textures: 
                 continue
             
-            fn = os.path.abspath(in_path + img.filepath[2:])
+            print('Caching unique texture [%s]' % img.name)
             
-            if not os.path.exists(fn):
+            fn = os.path.abspath(img.filepath)
+            
+            if not img.packed_file and not os.path.exists(fn):
                 print('[Error]: Failed to find referenced texture \'%s\'' % fn)
                 continue
             
-            self.unique_textures[img.name] = { 'filename': fn, 'outfn': '', 'width': img.size[0], 'height': img.size[1], 'used': False, 'image': img }
+            self.unique_textures[img.name] = { 'filename': fn, 'outfn': '', 'width': img.size[0], 'height': img.size[1], 'used': False, 'image': img, 'alpha': None }
         
         if self.world:
             self.world_amb = self.world.ambient_color
@@ -92,7 +92,7 @@ class CogentContext:
             
             ext = '.jpg'
             
-            if img['image'].depth != 24: # Convert all 24bpp images to JPEG, everything else to PNG
+            if img['image'].depth != 24 or img['alpha']: # Convert all 24bpp images to JPEG, everything else to PNG
                 ext = '.png'
                 rs.image_settings.file_format = 'PNG'
             else:
@@ -107,11 +107,11 @@ class CogentContext:
             
             print('Texture("%s", %dx%d) -> ("%s", %dx%d)' %  (img['filename'], img['width'], img['height'], out_filename, ow, oh))
             
-            rs.resolution_x = ow
-            rs.resolution_y = oh
+            imgc = img['image'].copy()
+            imgc.scale(ow, oh)
             
             rs.filepath = out_filename
-            img['image'].save_render(out_filename, self.render_settings)
+            imgc.save_render(out_filename, self.render_settings)
             
     def clean_up(self):
         bpy.data.scenes.remove(self.render_settings)
@@ -186,10 +186,15 @@ class CogentMaterial:
         
         def format_map(name, factor, ctx, ts):
             img = ts.texture.image
-            data = ctx.unique_textures[img.name]
             
-            return ',\n\t\t\t\t"%s_map": { "factor": %s, "url": "%s" }' % (name, cnr(factor), data['outfn'])
-        
+            if img.name in ctx.unique_textures:
+                data = ctx.unique_textures[img.name]
+                return ',\n\t\t\t\t"%s_map": { "factor": %s, "url": "%s" }' % (name, cnr(factor), data['outfn'])
+            else:
+                print('Error: Failed to find unique texture by name: [%s]' % img.name)
+            
+            return ''
+	        
         for ts in self.material.texture_slots:
             if not ts or not ts.texture or not ts.texture.image:
                 continue
@@ -197,10 +202,15 @@ class CogentMaterial:
             # We cannot support using a single map for multiple things, although the
             # same texture image may be used for different mapping, provided a texture
             # slot per mapping is used.
-            if ts.use_map_alpha:
-                json += format_map('alpha', ts.alpha_factor, self.ctx, ts)
-            elif ts.use_map_color_diffuse:
+            #if ts.use_map_alpha:
+            #    json += format_map('alpha', ts.alpha_factor, self.ctx, ts)
+            if ts.use_map_color_diffuse:
                 json += format_map('diffuse_color', ts.diffuse_color_factor, self.ctx, ts)
+                
+                if ts.use_map_alpha:
+                    img = ts.texture.image_settings
+                    
+                    self.ctx.unique_textures[img.name].alpha = img 
             elif ts.use_map_emission:
                 json += format_map('emission_intensity', ts.emission_factor, self.ctx, ts)
             elif ts.use_map_specular:
@@ -223,10 +233,20 @@ class CogentBatch:
         self.verts = []
         self.norms = []
         self.uvs = [[], [], [], []]
+        self.bb_lo = [9999999.0, 9999999.0, 9999999.0]
+        self.bb_hi = [-9999999.0, -9999999.0, -9999999.0]
         
         for poly in polygons:
             for v in [mesh.vertices[v] for v in list(poly.vertices)]:
                 self.verts.append(v)
+                
+                self.bb_lo[0] = v.co[0] if v.co[0] < self.bb_lo[0] else self.bb_lo[0]
+                self.bb_lo[1] = v.co[1] if v.co[1] < self.bb_lo[1] else self.bb_lo[1]
+                self.bb_lo[2] = v.co[2] if v.co[2] < self.bb_lo[2] else self.bb_lo[2]
+                
+                self.bb_hi[0] = v.co[0] if v.co[0] > self.bb_hi[0] else self.bb_hi[0]
+                self.bb_hi[1] = v.co[1] if v.co[1] > self.bb_hi[1] else self.bb_hi[1]
+                self.bb_hi[2] = v.co[2] if v.co[2] > self.bb_hi[2] else self.bb_hi[2]
                 
                 if poly.use_smooth: # Use vertex normals, if available.
                     self.norms.append(v.normal)
@@ -263,8 +283,8 @@ class CogentBatch:
         json += '\t\t\t\t\t"material": "%s"' % self.material.material.name
         
         def serialise_stream(stream):
-            #return '[' + ','.join(map(cnr, stream)) + ']'
-            return '"' + base64.b64encode(struct.pack('f' * len(stream), *stream)).decode('utf-8') + '"'
+            return '[' + ','.join(map(cnr, stream)) + ']'
+            #return '"' + base64.b64encode(struct.pack('f' * len(stream), *stream)).decode('utf-8') + '"'
         
         ident = ',\n\t\t\t\t\t'
         json += '%s"vertices": %s' % (ident, serialise_stream(self.verts))
@@ -285,6 +305,8 @@ class CogentMesh:
         self.obj = obj
         self.mesh = mesh
         self.batches = []
+        self.bb_lo = [9999999.0, 9999999.0, 9999999.0]
+        self.bb_hi = [-9999999.0, -9999999.0, -9999999.0]
         
         materials = {}
         mats = mesh.materials
@@ -305,7 +327,17 @@ class CogentMesh:
                 if poly.material_index == i:
                     polys.append(poly)
             
-            self.batches.append(CogentBatch(ctx, materials[i], mesh, polys))
+            b = CogentBatch(ctx, materials[i], mesh, polys)
+            
+            self.bb_lo[0] = b.bb_lo[0] if b.bb_lo[0] < self.bb_lo[0] else self.bb_lo[0]
+            self.bb_lo[1] = b.bb_lo[1] if b.bb_lo[1] < self.bb_lo[1] else self.bb_lo[1]
+            self.bb_lo[2] = b.bb_lo[2] if b.bb_lo[2] < self.bb_lo[2] else self.bb_lo[2]
+
+            self.bb_hi[0] = b.bb_hi[0] if b.bb_hi[0] > self.bb_hi[0] else self.bb_hi[0]
+            self.bb_hi[1] = b.bb_hi[1] if b.bb_hi[1] > self.bb_hi[1] else self.bb_hi[1]
+            self.bb_hi[2] = b.bb_hi[2] if b.bb_hi[2] > self.bb_hi[2] else self.bb_hi[2]
+            
+            self.batches.append(b)
     
     def serialise(self):
         json = '\t\t"%s": {\n' % self.obj.name
@@ -331,18 +363,26 @@ def sanitize_name(name):
 class JSONExporter(bpy.types.Operator, ExportHelper):
     bl_idname = 'export.json'
     bl_label = 'Export Cogent (.json)'
-    filename_ext = "scene.json"
+    bl_options = {'PRESET'}
+    filename_ext = ".json"
+    filter_glob = StringProperty(default="*.json", options={'HIDDEN'})
 
-    filepath = StringProperty()
+    #filepath = StringProperty()
     filename = StringProperty()
     directory = StringProperty()
-
+    
+    # Black Magic...
+    check_extension = True
+    
     def execute(self, context):
         world_amb = Color((0.0, 0.0, 0.0))
         filename = os.path.splitext(self.filename)[0] + '.json'
         print('Target path = %s' % (self.directory + filename)) 
+        bb_lo = None
+        bb_hi = None
         
-        ctx = CogentContext(bpy.context.scene, self.directory) # Export the active scene
+        scene = bpy.context.scene # Export the active scene
+        ctx = CogentContext(scene, self.directory)
         
         mjson = ''
         json = ''
@@ -352,24 +392,68 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         mjson += '\t"meshes": {\n'
         delim = ''
         
+        for i in scene.objects:
+            i.select = False # deselect all objects
+        
         for obj in bpy.data.objects:
             if obj.type == 'MESH':
-                mesh = None
+                # Copy the object temporarily, so we can maniulate the copy prior
+                # to export, without altering the original scene.
+                objc = obj.copy()
+                objc.data = objc.to_mesh(scene, True, 'PREVIEW')
+                scene.objects.link(objc)
+                scene.update()
                 
-                try:
-                    mesh = obj.to_mesh(ctx.scene, True, 'PREVIEW')
-                except RuntimeError:
-                    pass
+                objc.select = True
+                scene.objects.active = objc
                 
-                if not mesh:
-                    continue
+                bpy.ops.object.mode_set(mode='EDIT')
+                bpy.ops.mesh.select_all(action='SELECT')
+                bpy.ops.object.mode_set(mode='EDIT')
+                bpy.ops.mesh.quads_convert_to_tris()
+                bpy.ops.mesh.faces_shade_smooth()
+                scene.update()
+                
+                bpy.ops.object.mode_set(mode='OBJECT')
+                objc.data = objc.to_mesh(scene, True, 'PREVIEW') #write data object
+                scene.update()
+                
+                mesh = objc.data
                 
                 # Transform from local to world space.
                 mesh.transform(obj.matrix_world)
-                mjson += '%s%s' % (delim, CogentMesh(ctx, obj, mesh).serialise())
+                mesh.update()
+                
+                cmesh = CogentMesh(ctx, obj, mesh)
+                
+                # Remove the temporary object
+                scene.objects.unlink(objc)
+                scene.update()
+                
+                if len(cmesh.batches) < 1:
+                    continue
+                
+                # Update bounds
+                bbl = cmesh.bb_lo
+                bbh = cmesh.bb_hi
+                
+                if not bb_lo:
+                    bb_lo = list(bbl)
+                else:
+                    for i in range(3):
+                        bb_lo[i] = bbl[i] if bbl[i] < bb_lo[i] else bb_lo[i]
+                
+                if not bb_hi:
+                    bb_hi = list(bbh)
+                else:
+                    for i in range(3):
+                        bb_hi[i] = bbh[i] if bbh[i] > bb_hi[i] else bb_hi[i]
+
+                mjson += '%s%s' % (delim, cmesh.serialise())
                 delim = ',\n'
         
-        mjson += '\n\t}\n'
+        mjson += '\n\t},'
+        mjson += '\n\t"bounding_box": { "lo": [' + cnr(bb_lo[0]) + ', ' + cnr(bb_lo[1]) + ', ' + cnr(bb_lo[2]) + '], "hi": [' + cnr(bb_hi[0]) + ', ' + cnr(bb_hi[1]) + ', ' + cnr(bb_hi[2]) + '] }\n';
         
         ctx.process_textures()
         
@@ -392,11 +476,6 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         ctx.clean_up()
         
         return {'FINISHED'}
-    
-    def invoke(self, context, event):
-        context.window_manager.fileselect_add(self)
-        return {'RUNNING_MODAL'}
-
 
 def menu_func(self, context):
     self.layout.operator(JSONExporter.bl_idname, text="Cogent (.json)")

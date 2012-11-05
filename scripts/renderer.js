@@ -531,10 +531,7 @@ function Material(gl, t_cache, data, base_path)
 		parse_tex('normal_tex', Material.texture_type.NORMAL, true);	 
 
 		// New style
-		parse_tex('alpha_map', Material.texture_type.ALPHA);
 		parse_tex('diffuse_color_map', Material.texture_type.DIFFUSE_COLOR);
-		parse_tex('emission_intensity_map', Material.texture_type.EMISSION_INTENSITY);
-		parse_tex('specular_intensity_map', Material.texture_type.SPECULAR_INTENSITY);
 		parse_tex('specular_color_map', Material.texture_type.SPECULAR_COLOR);
 		parse_tex('emission_color_map', Material.texture_type.EMISSION_COLOR);
 		parse_tex('normal_map', Material.texture_type.NORMAL);
@@ -616,21 +613,19 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		
 	if(data)
 	{
-		this.material = new Material(gl, t_cache, data.material, base_path);
-		
-		if(data.verts)
+		if(data.vertices)
 		{
 			var verts = this.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);
 		
-			self.vertex_count = data.verts.length / 3;
-			verts.bind_data(data.verts);
+			self.vertex_count = data.vertices.length / 3;
+			verts.bind_data(data.vertices);
 		}
 
-		if(data.norms)
+		if(data.normals)
 		{
 			var norms = this.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL);
 		
-			norms.bind_data(data.norms);
+			norms.bind_data(data.normals);
 		}
 		else // Compute normals
 		{
@@ -832,14 +827,14 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 	var exists = false;
 	var prog = null;
 			
-	if(cache)
+	/*if(cache)
 	{
 		// TODO: This need revision, badly.
 		var cached = cache.get(mesh, material);
 		
 		exists = cached[0];
 		prog = cached[1]; 
-	}
+	}*/
 
 	var shader = new ShaderProgram(gl, prog);
 	
@@ -911,7 +906,6 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 						ps_src.push('uniform vec3 ' + lid + '_dir;');
 				
 					has_lights = true;
-					break;
 				}
 			}
 		
@@ -1336,6 +1330,7 @@ function Scene(gl, data, base_path)
 	this.texture_cache = E2.app.core.renderer.texture_cache /*new TextureCache(gl)*/;
 	this.shader_cache = E2.app.core.renderer.shader_cache /*new ShaderCache(gl)*/;
 	this.meshes = [];
+	this.materials = {};
 	this.id = 'n/a';
 	this.vertex_count = 0;
 
@@ -1345,14 +1340,33 @@ function Scene(gl, data, base_path)
 		
 		this.bounding_box = data.bounding_box || { "lo": [0.0, 0.0, 0.0], "hi": [0.0, 0.0, 0.0] };
 		 
-		for(var i = 0, len = data.meshes.length; i < len; i++)
+		for(var id in data.materials)
 		{
-			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, data.meshes[i], base_path);
+			if(!data.materials.hasOwnProperty(id))
+				continue;
 			
-			// mesh.shader = mesh.generate_shader(self.shader_cache);
-			mesh.shader = ComposeShader(self.shader_cache, mesh, mesh.material, null, null, null, null);
-			this.meshes.push(mesh);
-			this.vertex_count += mesh.vertex_count;
+			self.materials[id] = new Material(gl, self.texture_cache, data.materials[id], base_path);
+		}
+		
+		for(var id in data.meshes)
+		{
+			if(!data.meshes.hasOwnProperty(id))
+				continue;
+				
+			var m = data.meshes[id];
+			
+			for(var b = 0, len = m.batches.length; b < len; b++)
+			{
+				var batch = m.batches[b];
+				var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, batch, base_path);
+			
+				mesh.id = id + '_b' + b;
+				mesh.material = self.materials[batch.material];
+				mesh.shader = ComposeShader(self.shader_cache, mesh, mesh.material, null, null, null, null);
+			
+				this.meshes.push(mesh);
+				this.vertex_count += mesh.vertex_count;
+			}
 		}
 	}
 	
