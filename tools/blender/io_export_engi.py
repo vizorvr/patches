@@ -1,4 +1,4 @@
-# Part of the Cogent-WebGL suite.
+# Part of the Engi-WebGL suite.
 # No rights reserved. Do what thou wilt shall be the whole of the law.
 
 from bpy.props import *
@@ -8,12 +8,12 @@ from functools import reduce
 import os, os.path, bpy, bmesh, math, struct, base64
 
 bl_info = {
-    'name': 'Cogent Export (.json)',
+    'name': 'Engi Export (.json)',
     'author': 'Lasse Nielsen',
     'version': (0, 1),
     'blender': (2, 63, 17),
-    'location': 'File > Export > Cogent (.json)',
-    'description': 'Cogent Export (.json)',
+    'location': 'File > Export > Engi (.json)',
+    'description': 'Engi Export (.json)',
     'url': 'http://www.engine.gl',
     'category': 'Import-Export'
 }
@@ -37,15 +37,15 @@ def cnr(n):
 def format_stream(ident, id, s):
     return '%s%s: [%s]' % (ident, id, ','.join(map(str, s)))
 
-class CogentContext:
+class EngiContext:
     def __init__(self, scene, directory):
         self.scene = scene
         self.directory = directory
         self.world = scene.world
         self.world_amb = Color((0, 0, 0))
-        self.material_cache = CogentMaterialCache()
+        self.material_cache = EngiMaterialCache()
         self.unique_textures = {}
-        self.render_settings = bpy.data.scenes.new('CogentRenderSettings') # Dummy scene with custom render settings used for resaving textures.
+        self.render_settings = bpy.data.scenes.new('EngiRenderSettings') # Dummy scene with custom render settings used for resaving textures.
         
         self.render_settings.render.resolution_percentage = 100
         
@@ -136,13 +136,13 @@ class CogentContext:
         bpy.data.scenes.remove(self.render_settings)
                         
 
-class CogentMaterialCache:
+class EngiMaterialCache:
     def __init__(self):
         self.materials = {}
         
     def add(self, ctx, mat, mesh):
         if mat.name not in self.materials:
-            self.materials[mat.name] = CogentMaterial(ctx, mat, mesh)
+            self.materials[mat.name] = EngiMaterial(ctx, mat, mesh)
         
         return self.materials[mat.name]
     
@@ -158,7 +158,7 @@ class CogentMaterialCache:
         
         return json
 
-class CogentMaterial:
+class EngiMaterial:
     def __init__(self, ctx, mat, mesh):
         self.ctx = ctx
         self.material = mat
@@ -247,7 +247,7 @@ class CogentMaterial:
         
         return json
 
-class CogentBatch:
+class EngiBatch:
     def __init__(self, ctx, mat, mesh, polygons):
         self.ctx = ctx
         self.material = ctx.material_cache.add(ctx, mat, mesh)
@@ -320,7 +320,7 @@ class CogentBatch:
         json += '\n\t\t\t\t}'
         return json
 
-class CogentMesh:
+class EngiMesh:
     def __init__(self, ctx, obj, mesh):
         self.ctx = ctx
         self.obj = obj
@@ -348,7 +348,7 @@ class CogentMesh:
                 if poly.material_index == i:
                     polys.append(poly)
             
-            b = CogentBatch(ctx, materials[i], mesh, polys)
+            b = EngiBatch(ctx, materials[i], mesh, polys)
             
             self.bb_lo[0] = b.bb_lo[0] if b.bb_lo[0] < self.bb_lo[0] else self.bb_lo[0]
             self.bb_lo[1] = b.bb_lo[1] if b.bb_lo[1] < self.bb_lo[1] else self.bb_lo[1]
@@ -383,7 +383,7 @@ def sanitize_name(name):
 
 class JSONExporter(bpy.types.Operator, ExportHelper):
     bl_idname = 'export.json'
-    bl_label = 'Export Cogent (.json)'
+    bl_label = 'Export Engi (.json)'
     bl_options = {'PRESET'}
     filename_ext = ".json"
     
@@ -414,7 +414,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         bb_hi = None
         
         scene = bpy.context.scene # Export the active scene
-        ctx = CogentContext(scene, self.directory)
+        ctx = EngiContext(scene, self.directory)
         
         ctx.merge_alpha = self.merge_alpha
         
@@ -461,7 +461,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 mesh.transform(obj.matrix_world)
                 mesh.update()
                 
-                cmesh = CogentMesh(ctx, obj, mesh)
+                cmesh = EngiMesh(ctx, obj, mesh)
                 
                 # Remove the temporary object
                 scene.objects.unlink(objc)
@@ -516,7 +516,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         return {'FINISHED'}
 
 def menu_func(self, context):
-    self.layout.operator(JSONExporter.bl_idname, text="Cogent (.json)")
+    self.layout.operator(JSONExporter.bl_idname, text="Engi (.json)")
 
 
 def register():
