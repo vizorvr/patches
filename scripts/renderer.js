@@ -536,6 +536,9 @@ function Material(gl, t_cache, data, base_path)
 		parse_tex('emission_color_map', Material.texture_type.EMISSION_COLOR);
 		parse_tex('normal_map', Material.texture_type.NORMAL);
 		
+		this.depth_test = data.depth_test ? data.depth_test : true;
+		this.depth_write = data.depth_write ? data.depth_write : true;
+		this.alpha_clip = data.alpha_clip ? data.alpha_clip : false;
 		self.shininess = data.shininess ? data.shininess : 0.0;
 		self.double_sided = data.double_sided ? true : false;
 	}

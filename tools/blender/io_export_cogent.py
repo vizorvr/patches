@@ -14,7 +14,7 @@ bl_info = {
     'blender': (2, 63, 17),
     'location': 'File > Export > Cogent (.json)',
     'description': 'Cogent Export (.json)',
-    'url': 'http://www.effekts.dk',
+    'url': 'http://www.engine.gl',
     'category': 'Import-Export'
 }
 
@@ -64,7 +64,7 @@ class CogentContext:
                 print('[Error]: Failed to find referenced texture \'%s\'' % fn)
                 continue
             
-            self.unique_textures[img.name] = { 'filename': fn, 'outfn': '', 'width': img.size[0], 'height': img.size[1], 'used': False, 'image': img, 'alpha': None }
+            self.unique_textures[img.name] = { 'filename': fn, 'outfn': '', 'width': img.size[0], 'height': img.size[1], 'used': False, 'image': img, 'alpha': None, 'achannel': None }
         
         if self.world:
             self.world_amb = self.world.ambient_color
@@ -76,8 +76,9 @@ class CogentContext:
             img = self.unique_textures[img]
             
             if not img['used']:
+                print('Skipping unused texture: ' + img['image'].name)
                 continue
-            
+                
             ow = math.floor(math.log(img['width']) / math.log(2))
             oh = math.floor(math.log(img['height']) / math.log(2))
             
@@ -92,9 +93,12 @@ class CogentContext:
             
             ext = '.jpg'
             
-            if img['image'].depth != 24 or img['alpha']: # Convert all 24bpp images to JPEG, everything else to PNG
+            if img['image'].depth != 24 or (self.merge_alpha and img['alpha']): # Convert all 24bpp images to JPEG, everything else to PNG
                 ext = '.png'
                 rs.image_settings.file_format = 'PNG'
+                rs.image_settings.color_mode = 'RGBA'
+                img['achannel'] = True
+                print('Texture has alpha, switching to PNG: ' + img['image'].name)
             else:
                 rs.image_settings.file_format = 'JPEG'
             
@@ -109,6 +113,21 @@ class CogentContext:
             
             imgc = img['image'].copy()
             imgc.scale(ow, oh)
+            
+            if self.merge_alpha and img['alpha']:
+                print('Found diffuse texture with alpha, merging the a channel.')
+                alphac = img['alpha'].copy()
+                alphac.scale(ow, oh)
+                cp = list(imgc.pixels)
+                ap = list(alphac.pixels)
+                ofs = 0
+                
+                for y in range(imgc.size[1]):
+                    for x in range(imgc.size[0]):
+                        cp[ofs+3] = ap[ofs]
+                        ofs += 4
+                
+                imgc.pixels = cp
             
             rs.filepath = out_filename
             imgc.save_render(out_filename, self.render_settings)
@@ -144,22 +163,28 @@ class CogentMaterial:
         self.ctx = ctx
         self.material = mat
         self.mesh = mesh
+    
+        alpha = None
+        d_name = None
         
-        def tag_map(ctx, ts):
-            img = ts.texture.image
-            url = os.path.split(img.filepath[2:])[1]
-            
-            if img.name in ctx.unique_textures:
-                ctx.unique_textures[img.name]['used'] = True
-            else:
-                print('Error: "%s" - no such texture found in image cache. This shouldn\'t happen unless Blender is broken.' % img.name)
-                    
-        # Mark all referenced textures as in use.
         for ts in self.material.texture_slots:
             if not ts or not ts.texture or not ts.texture.image:
                 continue
             
-            tag_map(self.ctx, ts)
+            if ts.use_map_alpha:
+                alpha = ts.texture.image
+                print('Found alpha map = ' + alpha.name)
+            elif ts.use_map_color_diffuse:
+                d_name = ts.texture.image.name
+                print('Found diffuse map = ' + d_name)
+                
+            if ts.texture.image.name in self.ctx.unique_textures:
+                self.ctx.unique_textures[ts.texture.image.name]['used'] = True
+
+        if alpha and d_name:
+            print('Enabling alpha merge for material: ' + self.material.name)
+            self.ctx.unique_textures[alpha.name]['used'] = False
+            self.ctx.unique_textures[d_name]['alpha'] =  alpha
     
     def serialise(self):
         m = self.material
@@ -202,15 +227,11 @@ class CogentMaterial:
             # We cannot support using a single map for multiple things, although the
             # same texture image may be used for different mapping, provided a texture
             # slot per mapping is used.
-            #if ts.use_map_alpha:
-            #    json += format_map('alpha', ts.alpha_factor, self.ctx, ts)
             if ts.use_map_color_diffuse:
-                json += format_map('diffuse_color', ts.diffuse_color_factor, self.ctx, ts)
+                if self.ctx.unique_textures[ts.texture.image.name]['achannel']:
+                    json += ',\n\t\t\t\t"depth_write": false,\n\t\t\t\t"depth_test": false,\n\t\t\t\t"alpha_clip": true'
                 
-                if ts.use_map_alpha:
-                    img = ts.texture.image_settings
-                    
-                    self.ctx.unique_textures[img.name].alpha = img 
+                json += format_map('diffuse_color', ts.diffuse_color_factor, self.ctx, ts)
             elif ts.use_map_emission:
                 json += format_map('emission_intensity', ts.emission_factor, self.ctx, ts)
             elif ts.use_map_specular:
@@ -221,7 +242,7 @@ class CogentMaterial:
                 json += format_map('emission_color', ts.emission_color_factor, self.ctx, ts)
             elif ts.use_map_normal:
                 json += format_map('normal', ts.normal_factor, self.ctx, ts)
-                    
+        
         json += '\n\t\t\t}'
         
         return json
@@ -365,14 +386,25 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
     bl_label = 'Export Cogent (.json)'
     bl_options = {'PRESET'}
     filename_ext = ".json"
+    
     filter_glob = StringProperty(default="*.json", options={'HIDDEN'})
-
-    #filepath = StringProperty()
+    smooth_normals = BoolProperty(name="Smooth normals", default=True)
+    merge_alpha = BoolProperty(name="Merge alpha into diffuse", default=False)
+    
+            #filepath = StringProperty()
     filename = StringProperty()
     directory = StringProperty()
     
     # Black Magic...
     check_extension = True
+    
+    def draw(self, context):
+        layout = self.layout
+        
+        box = layout.box()
+        box.label('Options:')
+        box.prop(self, 'smooth_normals')
+        box.prop(self, 'merge_alpha')
     
     def execute(self, context):
         world_amb = Color((0.0, 0.0, 0.0))
@@ -383,6 +415,8 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         
         scene = bpy.context.scene # Export the active scene
         ctx = CogentContext(scene, self.directory)
+        
+        ctx.merge_alpha = self.merge_alpha
         
         mjson = ''
         json = ''
@@ -411,7 +445,10 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 bpy.ops.mesh.select_all(action='SELECT')
                 bpy.ops.object.mode_set(mode='EDIT')
                 bpy.ops.mesh.quads_convert_to_tris()
-                bpy.ops.mesh.faces_shade_smooth()
+                
+                if self.smooth_normals:
+                    bpy.ops.mesh.faces_shade_smooth()
+                
                 scene.update()
                 
                 bpy.ops.object.mode_set(mode='OBJECT')
@@ -455,6 +492,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         mjson += '\n\t},'
         mjson += '\n\t"bounding_box": { "lo": [' + cnr(bb_lo[0]) + ', ' + cnr(bb_lo[1]) + ', ' + cnr(bb_lo[2]) + '], "hi": [' + cnr(bb_hi[0]) + ', ' + cnr(bb_hi[1]) + ', ' + cnr(bb_hi[2]) + '] }\n';
         
+        # Convert textures
         ctx.process_textures()
         
         # Write the material cache
