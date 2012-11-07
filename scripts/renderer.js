@@ -976,7 +976,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 						var liddir = lid + '_dir';
 				
 						if(l.type === Light.type.DIRECTIONAL)
-							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos);');
+							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_dir);');
 						else
 							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos - view_pos);');
 				
