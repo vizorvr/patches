@@ -26,6 +26,21 @@ Array.prototype.remove = function(obj)
 		this.splice(i, 1);
 };
 
+// Monkey-patch the window object with a request/cancelAnimationFrame shims.
+window.requestAnimFrame = (function()
+{
+	return window.requestAnimationFrame       || 
+		window.webkitRequestAnimationFrame || 
+		window.mozRequestAnimationFrame
+})();
+
+window.cancelAnimFrame = (function()
+{
+	return window.cancelAnimationFrame       || 
+		window.webkitCancelAnimationFrame || 
+		window.mozCancelAnimationFrame
+})();
+
 function clone(o)
 {
 	var no = (o instanceof Array) ? [] : {};
@@ -45,6 +60,9 @@ function msg(txt)
 {
 	var d = E2.dom.dbg;
 
+	if(d === undefined)
+		return;
+	
 	if(txt.substring(0,  7) !== 'ERROR: ')
 		d.append(txt + '\n');
 	else
@@ -175,7 +193,7 @@ function load_script(url)
 	document.getElementById('head').appendChild(script);
 }
 
-function PluginManager(core, base_url) 
+function PluginManager(core, base_url, creation_listener) 
 {
 	var self = this;
 
@@ -220,7 +238,6 @@ function PluginManager(core, base_url)
 		headers: {},
 		success: function(data)
 		{
-			var menu = make('ul');
 			var pg_root = new PluginGroup('root');
 			
 			$.each(data, function(key, id) 
@@ -232,13 +249,13 @@ function PluginManager(core, base_url)
    				{
 	   				msg('Loading ' + id);
 					load_script(url);
-					self.register_plugin(pg_root, key, id)
    				}
-   				else
-   					self.register_plugin(pg_root, key, id);
+   				
+				self.register_plugin(pg_root, key, id);
 			});
 			
-			self.context_menu = new ContextMenu(E2.dom.canvas_parent, pg_root.create_items(), E2.app.onPluginInstantiated);
+			if(creation_listener)
+				self.context_menu = new ContextMenu(E2.dom.canvas_parent, pg_root.create_items(), creation_listener);
   		}
 	});
 	
@@ -688,7 +705,7 @@ function NodeUI(parent_node, x, y) {
 
 	if(parent_node.plugin.desc)
 	{
-		var p_name = E2.app.core.plugin_mgr.keybyid[parent_node.plugin.id];
+		var p_name = E2.app.player.core.plugin_mgr.keybyid[parent_node.plugin.id];
 		
 		h_row.attr('alt', '<b>' + p_name + '</b><br/><hr/>' + parent_node.plugin.desc);
 		h_row.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
@@ -1124,7 +1141,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		self.parent_graph = guid;
 		self.x = d.x;
 		self.y = d.y;
-		self.id = E2.app.core.plugin_mgr.keybyid[d.plugin];
+		self.id = E2.app.player.core.plugin_mgr.keybyid[d.plugin];
 		self.uid = d.uid;
 		
 		if(d.dsid)
@@ -1132,15 +1149,15 @@ function Node(parent_graph, plugin_id, x, y) {
 		
 		self.title = d.title ? d.title : null;
 		
-		self.set_plugin(E2.app.core.plugin_mgr.create(d.plugin, self));
+		self.set_plugin(E2.app.player.core.plugin_mgr.create(d.plugin, self));
 		
 		if(self.plugin.e2_is_graph)
 		{
-			self.plugin.graph = new Graph(null, null);
+			self.plugin.graph = new Graph(E2.app.player.core, null, null);
 			self.plugin.graph.plugin = self.plugin;
 			self.plugin.graph.deserialise(d.graph);
 			self.plugin.graph.reg_listener(self.plugin.graph_event);
-			E2.app.core.graphs.push(self.plugin.graph);
+			E2.app.player.core.graphs.push(self.plugin.graph);
 		}
 		
 		if(d.state)
@@ -1150,7 +1167,7 @@ function Node(parent_graph, plugin_id, x, y) {
 		{
 			var patch_slot = function(slots, type)
 			{
-				var rdt = E2.app.core.resolve_dt;
+				var rdt = E2.app.player.core.resolve_dt;
 				
 				for(var i = 0, len = slots.length; i < len; i++)
 				{
@@ -1203,32 +1220,33 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.x = x;
 		this.y = y;
 		this.ui = null;
-		this.id = E2.app.core.plugin_mgr.keybyid[plugin_id];
+		this.id = E2.app.player.core.plugin_mgr.keybyid[plugin_id];
 		this.uid = parent_graph.get_node_uid();
 		this.update_count = 0;
 		this.title = null;
 		this.inputs_changed = false;
 		
-		self.set_plugin(E2.app.core.plugin_mgr.create(plugin_id, this));
+		self.set_plugin(E2.app.player.core.plugin_mgr.create(plugin_id, this));
 	};
 }
 
 
-function Graph(parent_graph, tree_node) 
+function Graph(core, parent_graph, tree_node) 
 {
 	var self = this;
 	
 	this.tree_node = tree_node;
 	this.listeners = [];
-
+	this.nodes = [];
+	this.connections = [];
+	this.core = core;
+	
 	if(tree_node !== null) // Only initialise if we're not deserialising.
 	{
-		this.uid = E2.app.core.get_graph_uid();
+		this.uid = self.core.get_graph_uid();
 		this.parent_graph = parent_graph;
-		this.nodes = [];
 		this.roots = [];
 		this.children = [];
-		this.connections = [];
 		this.node_uid = 0;
 			
 		tree_node.graph = this;
@@ -1290,8 +1308,8 @@ function Graph(parent_graph, tree_node)
 				dirty = c.update_recursive(self.connections, delta_t) || dirty;
 		}
 
-		if(self === E2.app.core.active_graph)
-			E2.app.core.active_graph_dirty = dirty;
+		if(self === E2.app.player.core.active_graph)
+			E2.app.player.core.active_graph_dirty = dirty;
 		
 		for(var i = 0, len = nodes.length; i < len; i++)
 			nodes[i].plugin.updated = false;
@@ -1486,7 +1504,7 @@ function Graph(parent_graph, tree_node)
 	};
 }
 
-function Core() {
+function Core(app) {
 	var self = this;
 	
 	this.datatypes = {
@@ -1513,6 +1531,8 @@ function Core() {
 	this.abs_t = 0.0;
 	this.delta_t = 0.0;
 	this.graph_uid = 0;
+	this.app = app;
+	this.plugin_mgr = new PluginManager(this, 'plugins', E2.app ? E2.app.onPluginInstantiated : null);
 	
 	this.resolve_dt = []; // Make a table for easy reverse lookup of dt reference by id.
 	
@@ -1614,15 +1634,19 @@ function Core() {
 		
 		var graphs = self.graphs = [];
 		
-		self.root_graph = new Graph(null, null);
+		self.root_graph = new Graph(this, null, null);
 		self.root_graph.deserialise(d.root);
 		self.graphs.push(self.root_graph);
 		self.root_graph.patch_up(self.graphs);
 		self.root_graph.initialise(self.graphs);
 			
 		self.active_graph = resolve_graph(self.graphs, d.active_graph); 
-		self.rebuild_structure_tree();
-		self.active_graph.tree_node.activate();
+		
+		if(E2.dom.structure)
+		{
+			self.rebuild_structure_tree();
+			self.active_graph.tree_node.activate();
+		}
 	};
 	
 	this.rebuild_structure_tree = function()
@@ -1655,6 +1679,7 @@ function Core() {
 }
 
 function Application() {
+	var self = this;
 	var canvas_parent = $("#canvas_parent");
 	var canvas = $("#canvas");
 		
@@ -1664,13 +1689,10 @@ function Application() {
 		PAUSED: 2
 	};
 	
-	this.core = new Core();
+	this.snippet_mgr = new SnippetManager('snippets');
+	this.player = null;
 	this.canvas = canvas;
 	this.c2d = canvas[0].getContext('2d');
-	this.current_state = this.state.STOPPED;
-	this.interval = null;
-	this.abs_time = 0.0;
-	this.last_time = (new Date()).getTime();
 	this.src_node = null;
 	this.dst_node = null;
 	this.src_slot = null;
@@ -1692,12 +1714,8 @@ function Application() {
 	this.selection_nodes = [];
 	this.selection_conns = [];
 	this.selection_dom = null;
-	
-	this.frames = 0;
 	this.clipboard = null;
 	this.in_drag = false;
-	
-	var self = this;
 	
 	this.getNIDFromSlot = function(id)
 	{
@@ -1737,14 +1755,14 @@ function Application() {
 		var co = cp.offset();
 		var createPlugin = function(name)
 		{
-			var node = self.core.active_graph.create_instance(id, (pos[0] - co.left) + self.scrollOffset[0], (pos[1] - co.top) + self.scrollOffset[1]);
+			var node = self.player.core.active_graph.create_instance(id, (pos[0] - co.left) + self.scrollOffset[0], (pos[1] - co.top) + self.scrollOffset[1]);
 		
 			node.reset();
 
 			if(name !== null) // Graph?
 			{
 				node.title = name;
-				node.plugin.graph = new Graph(node.parent_graph, node.parent_graph.tree_node.addChild({
+				node.plugin.graph = new Graph(this.player.core, node.parent_graph, node.parent_graph.tree_node.addChild({
 					title: name,
 					isFolder: true,
 					expand: true
@@ -1752,7 +1770,7 @@ function Application() {
 				
 				node.plugin.graph.plugin = node.plugin;
 				node.plugin.graph.reg_listener(node.plugin.graph_event);
-				self.core.graphs.push(node.plugin.graph);
+				self.player.core.graphs.push(node.plugin.graph);
 			}
 			
 			node.create_ui();
@@ -1767,7 +1785,7 @@ function Application() {
 		if(id === 'graph')
 		{
 			var diag = make('div');
-			var inp = $('<input type="input" value="graph(' + self.core.active_graph.node_uid + ')" />'); 
+			var inp = $('<input type="input" value="graph(' + self.player.core.active_graph.node_uid + ')" />'); 
 		
 			inp.css('width', '410px');
 			diag.append(inp);
@@ -1823,7 +1841,7 @@ function Application() {
 			self.edit_conn.create_ui();
 			self.edit_conn.ui.src_pos = self.getSlotPosition(slot_div, E2.slot_type.output);
 		
-			var graph = self.core.active_graph;
+			var graph = self.player.core.active_graph;
 			var ocs = graph.find_connections_from(node, slot);
 			var offset = 0;
 			
@@ -1866,7 +1884,7 @@ function Application() {
 		self.hover_slot_div[0].style.backgroundColor = E2.erase_color;
 		
 		// Mark any attached connection
-		var conns = self.core.active_graph.connections;
+		var conns = self.player.core.active_graph.connections;
 		var dirty = false;
 		
 		for(var i = 0, len = conns.length; i < len; i++)
@@ -1911,6 +1929,7 @@ function Application() {
 	{
 		if(self.src_slot)
 		{
+			var any_dt = self.player.core.datatypes.ANY;
 			self.dst_slot_div = slot_div;
 			
 			var ss_dt = self.src_slot_div.definition.dt;
@@ -1920,10 +1939,10 @@ function Application() {
 			// redundacies, though we should probably institute one.
 			// Additionally, don't allow connections between two ANY slots.
 			if(slot.type === E2.slot_type.input && 
-			    (ss_dt === self.core.datatypes.ANY || 
-			     slot.dt === self.core.datatypes.ANY || 
+			    (ss_dt === any_dt || 
+			     slot.dt === any_dt || 
 			     ss_dt === slot.dt) && 
-			   !(ss_dt === self.core.datatypes.ANY && slot.dt === self.core.datatypes.ANY) &&
+			   !(ss_dt === any_dt && slot.dt === any_dt) &&
 			   !slot.is_connected && 
 			   self.src_node !== node)
 			{
@@ -1965,7 +1984,7 @@ function Application() {
 		if(clear)
 			c.clearRect(0, 0, canvas.width, canvas.height);
 				
-		var conns = self.core.active_graph.connections;
+		var conns = self.player.core.active_graph.connections;
 		var cb = [[], [], [], []];
 		var styles = ['#888', '#000', '#09f', E2.erase_color];
 		
@@ -2089,7 +2108,7 @@ function Application() {
 			c.ui.dst_slot_div = self.dst_slot_div;
 			c.offset = self.edit_conn.offset;
 			
-			var graph = self.core.active_graph; 
+			var graph = self.player.core.active_graph; 
 			
 			graph.connections.push(c);
 			
@@ -2122,7 +2141,7 @@ function Application() {
 			self.hover_node.ui.header_row[0].style.backgroundColor = E2.erase_color;
 		
 			var hcs = self.hover_connections;
-			var conns = self.core.active_graph.connections;
+			var conns = self.player.core.active_graph.connections;
 			
 			var iterate_conns = function(hcs, uid)
 			{
@@ -2230,7 +2249,7 @@ function Application() {
 		
 			if(hcs.length > 0)
 			{
-				var graph = self.core.active_graph;
+				var graph = self.player.core.active_graph;
 				var conns = graph.connections;
 				
 				// Remove the pending connections from the graph list,
@@ -2272,7 +2291,7 @@ function Application() {
 	this.deleteHoverNodes = function()
 	{
 		var hns = self.hover_nodes.slice(0);
-		var ag = self.core.active_graph;
+		var ag = self.player.core.active_graph;
 		
 		self.releaseHoverNode(false);
 		self.clearSelection();
@@ -2531,7 +2550,7 @@ function Application() {
 			return;
 
 		var se = self.selection_end = self.mouseEventPosToCanvasCoord(e);
-		var nodes = self.core.active_graph.nodes;
+		var nodes = self.player.core.active_graph.nodes;
 		var cp = E2.dom.canvas_parent;
 		
 		ss = ss.slice(0);
@@ -2685,7 +2704,7 @@ function Application() {
 				
 		var d = JSON.parse(self.clipboard);
 		var cp = E2.dom.canvas_parent;
-		var ag = self.core.active_graph;
+		var ag = self.player.core.active_graph;
 		var n_lut = {};
 		var sx = self.scrollOffset[0];
 		var sy = self.scrollOffset[1];
@@ -2723,7 +2742,7 @@ function Application() {
 			ag.register_node(n);
 			ag.emit_event({ type: 'node-created', node: n });
 
-			n.patch_up(self.core.graphs);
+			n.patch_up(self.player.core.graphs);
 			self.selection_nodes.push(n);
 		}
 
@@ -2795,7 +2814,7 @@ function Application() {
 			});
 			
 			n.plugin.graph.tree_node.graph = n.plugin.graph;
-			n.plugin.graph.uid = E2.app.core.get_graph_uid();
+			n.plugin.graph.uid = E2.app.player.core.get_graph_uid();
 			n.plugin.graph.parent_graph = pg;
 		
 			var nodes = n.plugin.graph.nodes;
@@ -2874,63 +2893,36 @@ function Application() {
 		}
 		else if(e.keyCode === 27)
 		{
-			self.core.renderer.set_fullscreen(false);
+			self.player.core.renderer.set_fullscreen(false);
 		}
 	};
 
 	this.changeControlState = function()
 	{
-		var cs = self.current_state;
+		var s = self.player.state;
+		var cs = self.player.current_state;
 		
-		E2.dom.play.button(cs == self.state.PLAYING ? 'disable' : 'enable');
-		E2.dom.pause.button(cs == self.state.PAUSED || cs == self.state.STOPPED ? 'disable' : 'enable');
-		E2.dom.stop.button(cs == self.state.STOPPED ? 'disable' : 'enable');
+		E2.dom.play.button(cs == s.PLAYING ? 'disable' : 'enable');
+		E2.dom.pause.button(cs == s.PAUSED || cs == s.STOPPED ? 'disable' : 'enable');
+		E2.dom.stop.button(cs == s.STOPPED ? 'disable' : 'enable');
 	}
-	
-	this.onAnimFrame = function()
-	{
-		self.interval = requestAnimFrame(self.onAnimFrame);
-		E2.app.onUpdate();
-	};
 	
 	this.onPlayClicked = function()
 	{
-		self.current_state = self.state.PLAYING;
+		self.player.play();
 		self.changeControlState();
-		
-		self.last_time = (new Date()).getTime();
-		self.interval = requestAnimFrame(self.onAnimFrame);
 	};
 	
 	this.onPauseClicked = function()
 	{
-		self.current_state = self.state.PAUSED;
+		self.player.pause();
 		self.changeControlState();
-		
-		if(self.interval != null)
-		{
-			cancelAnimFrame(self.interval);
-			self.interval = null;
-		}
 	};
 
 	this.onStopClicked = function()
 	{
-		if(self.interval != null)
-		{
-			cancelAnimFrame(self.interval);
-			self.interval = null;
-		}
-		
-		self.abs_time = 0.0;
-		self.frames = 0;
-		self.current_state = self.state.STOPPED;
+		self.player.stop();
 		self.changeControlState();
-		self.core.abs_t = 0.0;
-
-		self.core.active_graph.reset();
-		self.core.renderer.begin_frame(); // Clear the WebGL view.
-		self.core.renderer.end_frame();
 		self.updateCanvas(false);
 	};
 
@@ -2938,14 +2930,13 @@ function Application() {
 	{
 		var minify = E2.dom.save_minified.is(':checked');
 		
-		E2.dom.persist.val(self.core.serialise(minify));
+		E2.dom.persist.val(self.player.core.serialise(minify));
 	};
 	
 	this.onLoadClicked = function()
 	{
 		self.onStopClicked();
-		self.core.renderer.texture_cache.clear();
-		self.core.deserialise(E2.dom.persist.val());
+		self.player.load_from_json(E2.dom.persist.val());
 		self.updateCanvas(false);
 	};
 
@@ -2979,35 +2970,7 @@ function Application() {
 
 		E2.dom.info.html('');
 	};
-
-	this.onUpdate = function()
-	{
-		var time = (new Date()).getTime();
-		var delta_t = (time - self.last_time) * 0.001;
-		
-		if(self.core.update(self.abs_time, delta_t))
-			self.updateCanvas(false);
-		
-		self.last_time = time;
-		self.abs_time += delta_t;
-		self.frames++;
-	}
 	
-	// Monkey-patch the window object with a request/cancelAnimationFrame shims.
-	window.requestAnimFrame = (function()
-	{
-		return window.requestAnimationFrame       || 
-			window.webkitRequestAnimationFrame || 
-			window.mozRequestAnimationFrame
-	})();
-	
-	window.cancelAnimFrame = (function()
-	{
-		return window.cancelAnimationFrame       || 
-			window.webkitCancelAnimationFrame || 
-			window.mozCancelAnimationFrame
-	})();
-
     	$(document).mouseup(this.onMouseReleased);
 	$(document).mousemove(this.onMouseMoved);
 	$(window).keydown(this.onKeyDown);
@@ -3059,16 +3022,170 @@ function Application() {
 
 	$('#fullscreen').button().click(function()
 	{
-		self.core.renderer.set_fullscreen(true);
+		self.player.core.renderer.set_fullscreen(true);
 	});
 	
 	$('#help').button().click(function()
 	{
 		window.open('help/introduction.html', 'Engi Help');
 	});
+	
 }
 
-$(document).ready(function() {
+function Player(canvas, app, root_node)
+{
+	var self = this;
+	
+	this.state = {
+		STOPPED: 0,
+		PLAYING: 1,
+		PAUSED: 2
+	};
+
+	this.app = app;
+	this.core = new Core(app);
+	this.core.plugin_mgr = new PluginManager(this.core, 'plugins', null);
+	this.interval = null;
+	this.abs_time = 0.0;
+	this.last_time = (new Date()).getTime();
+	this.current_state = this.state.STOPPED;
+	this.frames = 0;
+
+	// TODO: Because graphs depend on the existence of the core singleton
+	// we can't create graph instances in the core initialisation code. Moreover,
+	// even though we could introduce a UID manager to move this out of the core,
+	// where would *that* singleton live? In the core... Most awkward.
+	// The alternative is to have the UID manager singleton be global? Ugh..
+	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, root_node);
+	this.core.graphs.push(this.core.root_graph);
+
+	this.play = function()
+	{
+		self.current_state = self.state.PLAYING;
+		self.last_time = (new Date()).getTime();
+		self.interval = requestAnimFrame(self.on_anim_frame);
+	};
+	
+	this.pause = function()
+	{
+		self.current_state = self.state.PAUSED;
+		
+		if(self.interval != null)
+		{
+			cancelAnimFrame(self.interval);
+			self.interval = null;
+		}
+	};
+
+	this.stop = function()
+	{
+		if(self.interval != null)
+		{
+			cancelAnimFrame(self.interval);
+			self.interval = null;
+		}
+		
+		self.abs_time = 0.0;
+		self.frames = 0;
+		self.current_state = self.state.STOPPED;
+		self.core.abs_t = 0.0;
+
+		self.core.active_graph.reset();
+		self.core.renderer.begin_frame(); // Clear the WebGL view.
+		self.core.renderer.end_frame();
+		
+		if(app)
+			app.updateCanvas(false);
+	};
+
+	this.on_anim_frame = function()
+	{
+		self.interval = requestAnimFrame(self.on_anim_frame);
+		self.on_update();
+	};
+
+	this.on_update = function()
+	{
+		var time = (new Date()).getTime();
+		var delta_t = (time - self.last_time) * 0.001;
+		
+		if(self.core.update(self.abs_time, delta_t) && app.updateCanvas)
+			app.updateCanvas(false);
+		
+		self.last_time = time;
+		self.abs_time += delta_t;
+		self.frames++;
+	}
+	
+	this.load_from_json = function(json)
+	{
+		var c = self.core;
+		
+		c.renderer.texture_cache.clear();
+		c.renderer.shader_cache.clear();
+		c.deserialise(json);
+	};
+	
+	this.load_from_url = function(url)
+	{
+		$.ajax({
+			url: url,
+			dataType: 'text',
+			async: false,
+			headers: {},
+			success: function(json) 
+			{
+				self.load_from_json(json);
+			}
+		});
+	};
+}
+
+function CreatePlayer(init_callback)
+{
+	$.ajaxSetup({ cache: false });
+	$(document).ajaxError(function(e, jqxhr, settings, ex) 
+	{
+		if(typeof(ex) === 'string')
+		{
+			console.log(ex);
+			return;
+		}
+			
+		var m = 'ERROR: Script exception:\n';
+		
+		if(ex.fileName)
+			m += '\tFilename: ' + ex.fileName;
+			
+		if(ex.lineNumber)
+			m += '\tLine number: ' + ex.lineNumber;
+		
+		if(ex.message)
+			m += '\tMessage: ' + ex.message;
+			
+		console.log(m);
+	});
+	
+	E2.dom.webgl_canvas = $('#webgl-canvas');
+	E2.app = {};
+	E2.app.player = new Player(new Core(E2.app), E2.app, null);
+	
+	// Block while plugins are loading...
+	var wait_for_plugins = function()
+	{
+		var kl = Object.keys(E2.plugins).length;
+		
+		if(kl === E2.app.player.core.plugin_mgr.lid - 1)
+			init_callback(E2.app.player);
+		else 
+			setTimeout(wait_for_plugins, 100);
+	};
+	
+	wait_for_plugins();	
+}
+
+function InitialiseEngi()
+{
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
 	E2.dom.dbg = $('#dbg');
@@ -3113,8 +3230,6 @@ $(document).ready(function() {
 	});
 
 	E2.app = new Application();
-	E2.app.core.plugin_mgr = new PluginManager(E2.app.core, 'plugins');
-	E2.app.core.snippet_mgr = new SnippetManager('snippets');
 	
 	E2.dom.structure.dynatree({
 		title: "Structure",
@@ -3126,26 +3241,19 @@ $(document).ready(function() {
 		{
 			E2.app.clearEditState();
 			E2.app.clearSelection();
-			E2.app.core.onGraphSelected(node.graph);
+			E2.app.player.core.onGraphSelected(node.graph);
 			E2.app.updateCanvas(true);
 		}
 	});
     
 	var root_node = E2.dom.structure.dynatree('getRoot');
-	var gn_root = root_node.addChild({
+
+	E2.app.player = new Player(E2.app.core, E2.app, root_node.addChild({
 		title: 'Root',
 		isFolder: true,
 		expand: true
-	});	
-	
-	// TODO: Because graphs depend on the existence of the core singleton
-	// we can't create graph instances in the core initialisation code. Moreover,
-	// even though we could introduce a UID manager to move this out of the core,
-	// where would *that* singleton live? In the core... Most awkward.
-	// The alternative is to have the UID manager singleton be global? Ugh..
-	E2.app.core.active_graph = E2.app.core.root_graph = new Graph(null, gn_root);
-	E2.app.core.graphs.push(E2.app.core.root_graph);
-	
+	}));
+
 	E2.dom.play.button({ icons: { primary: 'ui-icon-play' } }).click(E2.app.onPlayClicked);
 	E2.dom.pause.button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(E2.app.onPauseClicked);
 	E2.dom.stop.button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(E2.app.onStopClicked);
@@ -3156,4 +3264,5 @@ $(document).ready(function() {
 	$('#tabs').tabs();
 	$('#content')[0].style.display = 'block';
 	Notifier.init();
-});
+}
+

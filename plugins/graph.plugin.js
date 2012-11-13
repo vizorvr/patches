@@ -334,8 +334,11 @@ E2.plugins["graph"] = function(core, node) {
 					{
 						self.is_reset = true;
 						
-						if(self.graph === E2.app.core.active_graph)
-							E2.app.updateCanvas(false);
+						// If we're the active graph and the editor is active,
+						// update the canvas to reflect potentially changed 
+						// connection state.
+						if(self.graph === core.active_graph && core.app)
+							core.app.updateCanvas(false);
 					}
 				}
 				else

@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head id="head">
+		<title>ENGI&#8482; Player Demo</title>
+		<link href="style/main.css" rel="Stylesheet" type="text/css" />
+		<link href="style/icons/style.css" rel="Stylesheet" type="text/css" />
+		<link href="style/smoothness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" type="text/css"  />
+		<link href="style/skin/ui.dynatree.css" rel="stylesheet" type="text/css">
+		<script type="text/javascript" src="scripts/json-serialization.js"></script>
+		<script type="text/javascript" src="scripts/jquery-1.7.js"></script>
+		<script type="text/javascript" src="scripts/jquery.event.fastfix.js"></script>
+		<script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="scripts/jquery.mousewheel.js"></script>
+		<script type="text/javascript" src="scripts/gl-matrix.js"></script>
+		<script type="text/javascript" src="scripts/debug.js"></script>
+		<script type="text/javascript" src="scripts/webgl-debug.js"></script>
+		<script type="text/javascript" src="scripts/renderer.js"></script>
+		<script type="text/javascript" src="scripts/core.js"></script>
+		<script type="text/javascript">
+			var player = null;
+			
+			$(document).ready(function() 
+			{
+				$('#webgl-canvas').css({
+					'position': 'absolute',
+					'top': '10px',
+					'left': '10px',
+					'width': '640px',
+					'height': '480px'
+				});
+				
+				player = CreatePlayer(function wait_for_init(player)
+				{
+					player.load_from_url('player_scene.json');
+					player.play();
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<noscript>
+			<div class="centered notification">
+				<div style="float: left; display: table-cell; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
+				<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
+			</div>
+		</noscript>
+		<div id="main_layout" class="centered">
+			<canvas id="webgl-canvas" class="webgl-canvas-normal" width="640" height="480" oncontextmenu="return false;"></canvas>
+		</div>
+	</body>
+</html>

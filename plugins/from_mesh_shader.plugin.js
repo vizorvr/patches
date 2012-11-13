@@ -61,7 +61,7 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 		if(self.dirty)
 		{
 			self.dirty = false;
-			self.shader = ComposeShader(E2.app.core.renderer.shader_cache, self.mesh, self.material, null, null, null, null);
+			self.shader = ComposeShader(core.renderer.shader_cache, self.mesh, self.material, null, null, null, null);
 		}
 		else
 			self.shader.material = self.material;

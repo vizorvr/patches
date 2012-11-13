@@ -545,7 +545,7 @@ function Material(gl, t_cache, data, base_path)
 	
 	this.enable = function()
 	{
-		var r = E2.app.core.renderer;
+		var r = E2.app.player.core.renderer;
 		var gl = r.context;
 		
 		if(self.depth_test)
@@ -810,12 +810,13 @@ function Color(r, g, b, a)
 
 function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custom, ps_custom)
 {
-	var gl = E2.app.core.renderer.context;
+	var gl = E2.app.player.core.renderer.context;
 	var self = this;
 	var streams = [];
 	var v_types = VertexBuffer.vertex_type;
 	var has_lights = false;
-	var lights = material ? material.lights : [null, null, null, null, null, null, null, null];
+	var lights = material ? material.lights : mesh.material.textures.lights;
+	var tt = Material.texture_type;
 	
 	for(var v_type in v_types)
 	{
@@ -926,8 +927,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			vs_src.push('attribute vec2 v_uv0;');
 			vs_src.push('varying vec2 f_uv0;');
 
-			ps_src.push('uniform sampler2D tex0;');
 			ps_src.push('varying vec2 f_uv0;');
+			ps_src.push('uniform sampler2D d_tex;');
 		}
 
 		if(!vs_custom)
@@ -964,6 +965,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(streams[v_types.NORMAL] && has_lights)
 			{
 				ps_dp('    vec3 n_dir = normalize(f_norm);');
+				
 				ps_dp('    vec3 v_dir = -normalize(view_pos);');
 		
 				for(var i = 0; i < 8; i++)
@@ -978,7 +980,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 						if(l.type === Light.type.DIRECTIONAL)
 							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_dir);');
 						else
-							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos - view_pos);');
+							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos);');
 				
 						ps_dp('    float ' + lid + '_dd = dot(n_dir, ' + liddir + ');');
 						ps_dp('    fc += ' + lid + '_d_col * f_col * max(0.0, ' + lid + '_dd) * ' + lid + '_power;');
@@ -997,9 +999,9 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(streams[v_types.UV0])
 			{
 				if(has_lights)
-					ps_dp('    fc = fc * texture2D(tex0, f_uv0.st);');
+					ps_dp('    fc *= texture2D(d_tex, f_uv0.st);');
 				else
-					ps_dp('    fc = vec4(fc.rgb + f_col.rgb, f_col.a) * texture2D(tex0, f_uv0.st);');
+					ps_dp('    fc = vec4(fc.rgb + f_col.rgb, f_col.a) * texture2D(d_tex, f_uv0.st);');
 			}
 	
 			ps_dp('    if(e2_alpha_clip > 0 && fc.a < 0.5) discard;');
@@ -1023,13 +1025,6 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		shader.attach(ps);
 		shader.link();
 	}
-	
-	var gl_resolve = function(uid)
-	{
-		var ep = gl.getAttribLocation(prog, uid);
-		
-		return ep !== undefined && ep !== -1 ? ep : undefined;
-	};
 	 
 	shader.v_pos = gl.getAttribLocation(prog, "v_pos");
 	shader.v_norm = gl.getAttribLocation(prog, "v_norm");
@@ -1071,7 +1066,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 	if(streams[v_types.UV0])
 	{
 		shader.v_uv0 = gl.getAttribLocation(prog, "v_uv0");
-		shader.tex0 = gl.getUniformLocation(prog, "tex0");
+		shader.d_tex = gl.getUniformLocation(prog, "d_tex");
 	}
 	
 	shader.bind_array = function(type, data, item_size)
@@ -1100,7 +1095,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 	
 	shader.apply_uniforms = function(mesh)
 	{
-		var r = E2.app.core.renderer;
+		var r = E2.app.player.core.renderer;
 		var m = this.material ? this.material : mesh.material;
 
 		gl.enableVertexAttribArray(this.v_pos);
@@ -1137,33 +1132,20 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 		if(this.v_uv0 !== undefined && this.v_uv0 !== -1)
 		{
-			var diffuse_set = false;
-
+			var dt = null;
+			var tm = this.material;
+			
 			gl.enableVertexAttribArray(this.v_uv0);
 
-			if(self.material)
+			if(tm)
+				dt = tm.textures[tt.DIFFUSE_COLOR];
+
+			dt = dt ? dt : mesh.material.textures[tt.DIFFUSE_COLOR];
+
+			if(dt && this.d_tex !== undefined)
 			{
-				var dt = this.material.textures[Material.texture_type.DIFFUSE_COLOR];
-
-				if(dt)
-				{
-					gl.uniform1i(this.tex0, 0);
-					dt.enable(gl.TEXTURE0);
-					diffuse_set = true;
-				}
-			}
-
-			if(!diffuse_set)
-			{
-				var dt = mesh.material.textures[Material.texture_type.DIFFUSE_COLOR];
-
-				if(dt)
-				{
-					gl.uniform1i(this.tex0, 0);
-					dt.enable(gl.TEXTURE0);
-				}
-				else
-					gl.bindTexture(gl.TEXTURE_2D, null);
+				gl.uniform1i(this.d_tex, 0);
+				dt.enable(gl.TEXTURE0);
 			}
 		}
 		
@@ -1235,6 +1217,11 @@ function ShaderCache(gl)
 			++c;
 			
 		return c;
+	};
+	
+	this.clear = function()
+	{
+		this.programs = {};
 	};
 }
 
@@ -1330,8 +1317,8 @@ function Scene(gl, data, base_path)
 	var self = this;
 	
 	this.gl = gl;
-	this.texture_cache = E2.app.core.renderer.texture_cache /*new TextureCache(gl)*/;
-	this.shader_cache = E2.app.core.renderer.shader_cache /*new ShaderCache(gl)*/;
+	this.texture_cache = E2.app.player.core.renderer.texture_cache /*new TextureCache(gl)*/;
+	this.shader_cache = E2.app.player.core.renderer.shader_cache /*new ShaderCache(gl)*/;
 	this.meshes = [];
 	this.materials = {};
 	this.id = 'n/a';
@@ -1412,7 +1399,7 @@ function Scene(gl, data, base_path)
 		if(!bb)
 			return cam;
 		
-		var c = E2.app.core.renderer.canvas;
+		var c = E2.app.player.core.renderer.canvas;
 		var pos = [bb.hi[0] * 3.0, bb.hi[1] * 3.0, bb.hi[2] * 3.0];
 		var d = vec3.create(), tar = vec3.create();
 		
@@ -1443,7 +1430,7 @@ Scene.load = function(gl, url)
 		success: function(data) 
 		{
 			var bp = url.substr(0, url.lastIndexOf('/') + 1);
-			var r = E2.app.core.renderer;
+			var r = E2.app.player.core.renderer;
 			
 			scene = new Scene(gl, data, bp);
 			msg('Scene: Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
@@ -1453,7 +1440,7 @@ Scene.load = function(gl, url)
 		{
 			Notifier.error('Failed to load scene "' + url + '": ' + textStatus + ', ' + errorThrown, 'Renderer');
 		},
-		async:   false
+		async: false // TODO: We should definitely change this to be asynchronous!
 	});
 	
 	return scene;
