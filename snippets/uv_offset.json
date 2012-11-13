@@ -1,0 +1,203 @@
+{
+    "abs_t": 169.341,
+    "active_graph": 0,
+    "graph_uid": 4,
+    "root": {
+        "node_uid": 6,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 487,
+                "y": 259,
+                "uid": 2,
+                "dsid": 3,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {
+                        "4": 1,
+                        "5": 2
+                    },
+                    "output_sids": {
+                        "3": 0
+                    }
+                },
+                "title": "UV Offset",
+                "graph": {
+                    "node_uid": 6,
+                    "uid": 3,
+                    "parent_uid": 0,
+                    "nodes": [
+                        {
+                            "plugin": "vector",
+                            "x": 387,
+                            "y": 149,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 610,
+                            "y": 210,
+                            "uid": 3,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "vector",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 5,
+                                    "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 282,
+                            "y": 131,
+                            "uid": 4,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "X offset",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 284,
+                            "y": 191,
+                            "uid": 5,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "Y offset",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "X offset",
+                        "dt": 0,
+                        "uid": 1,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "Y offset",
+                        "dt": 0,
+                        "uid": 2,
+                        "index": 1,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "vector",
+                        "dt": 5,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            },
+            {
+                "plugin": "slider_float_generator",
+                "x": 290,
+                "y": 259,
+                "uid": 4,
+                "state": {
+                    "val": 0,
+                    "min": 0,
+                    "max": 1
+                },
+                "title": "X offset"
+            },
+            {
+                "plugin": "slider_float_generator",
+                "x": 291,
+                "y": 323,
+                "uid": 5,
+                "state": {
+                    "val": 0,
+                    "min": 0,
+                    "max": 1
+                },
+                "title": "Y offset"
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 4,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 5,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "dst_dyn": true
+            }
+        ]
+    }
+}

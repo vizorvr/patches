@@ -9,8 +9,8 @@
         "nodes": [
             {
                 "plugin": "knob_float_generator",
-                "x": 416,
-                "y": 196,
+                "x": 171,
+                "y": 199,
                 "uid": 0,
                 "state": {
                     "val": 0
@@ -19,8 +19,8 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 416,
-                "y": 271,
+                "x": 243,
+                "y": 199,
                 "uid": 1,
                 "state": {
                     "val": 0
@@ -29,8 +29,8 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 416,
-                "y": 347,
+                "x": 322,
+                "y": 199,
                 "uid": 2,
                 "state": {
                     "val": 1
@@ -39,8 +39,8 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 416,
-                "y": 424,
+                "x": 405,
+                "y": 199,
                 "uid": 3,
                 "state": {
                     "val": 1
@@ -49,8 +49,8 @@
             },
             {
                 "plugin": "convert_hsla_color_modulator",
-                "x": 524,
-                "y": 251,
+                "x": 482,
+                "y": 199,
                 "uid": 4
             }
         ],

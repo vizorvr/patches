@@ -3,15 +3,15 @@
     "active_graph": 0,
     "graph_uid": 1,
     "root": {
-        "node_uid": 6,
+        "node_uid": 10,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "knob_float_generator",
-                "x": 416,
+                "x": 248,
                 "y": 196,
-                "uid": 0,
+                "uid": 5,
                 "state": {
                     "val": 0
                 },
@@ -19,9 +19,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 416,
-                "y": 271,
-                "uid": 1,
+                "x": 320,
+                "y": 196,
+                "uid": 6,
                 "state": {
                     "val": 0
                 },
@@ -29,9 +29,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 416,
-                "y": 347,
-                "uid": 2,
+                "x": 393,
+                "y": 196,
+                "uid": 7,
                 "state": {
                     "val": 0
                 },
@@ -39,9 +39,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 416,
-                "y": 424,
-                "uid": 3,
+                "x": 466,
+                "y": 196,
+                "uid": 8,
                 "state": {
                     "val": 1
                 },
@@ -49,33 +49,33 @@
             },
             {
                 "plugin": "convert_rgba_color_modulator",
-                "x": 515,
-                "y": 251,
-                "uid": 5
+                "x": 542,
+                "y": 196,
+                "uid": 9
             }
         ],
         "conns": [
             {
-                "src_nuid": 0,
-                "dst_nuid": 5,
+                "src_nuid": 5,
+                "dst_nuid": 9,
                 "src_slot": 0,
                 "dst_slot": 0
             },
             {
-                "src_nuid": 1,
-                "dst_nuid": 5,
+                "src_nuid": 6,
+                "dst_nuid": 9,
                 "src_slot": 0,
                 "dst_slot": 1
             },
             {
-                "src_nuid": 2,
-                "dst_nuid": 5,
+                "src_nuid": 7,
+                "dst_nuid": 9,
                 "src_slot": 0,
                 "dst_slot": 2
             },
             {
-                "src_nuid": 3,
-                "dst_nuid": 5,
+                "src_nuid": 8,
+                "dst_nuid": 9,
                 "src_slot": 0,
                 "dst_slot": 3
             }
