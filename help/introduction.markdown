@@ -11,7 +11,7 @@ Chrome + Firefox on OSX, Linux, Win7
 - Select and multiselect plugins with mouse.
 - To delete plugins & connections hold SHIFT and mouseover them. Click & hold to delete.
 - Navigate into subgraphs by selecting them in the graphtree on the left.
-- Press ESC to toggle fullscreen
+- The draw order of subgraphs is determined by the creation order
 
 ###The info box:
 On the bottom left of the screen is an info box. Mouseover plugins and node names
@@ -71,6 +71,7 @@ transparent element in them.
 	cutout_audrey3.png
 	cutout_audrey2.png
 	cutout_audrey1.png
+	flare1 to flare7.png
 	looping_art.jpg
 	looping_oak.jpg
 	looping_tundra.jpg
@@ -84,6 +85,7 @@ transparent element in them.
 	overlay_paper.jpg
 	overlay_cardboard.jpg
 	overlay_leather.jpg
+	particle1 to particle4.png
 	indus.jpg
 	portrait.png
 	bacon.jpg
@@ -98,48 +100,68 @@ These are the default scenes we are including at the moment. They must be referr
 		<td style="text-align: center"><b>Content</b></td>
 	</tr>
 	<tr>
-		<td><nobr>data/scenes/ant2/scene.json</nobr></td>
-		<td>an ant.</td>
+		<td><nobr>data/scenes/auron/scene.json</nobr></td>
+		<td>a character</td>
 	</tr>
 	<tr>
-		<td><nobr>data/scenes/ayersrock/scene.json</nobr></td>
-		<td>ayers rock.</td>
+		<td><nobr>data/scenes/clementine/scene.json</nobr></td>
+		<td>a character</td>
 	</tr>
 	<tr>
-		<td><nobr>data/scenes/bud/scene.json</nobr></td>
-		<td>a buddha.</td>
+		<td><nobr>data/scenes/corn/scene.json</nobr></td>
+		<td>corn field</td>
 	</tr>
 	<tr>
-		<td><nobr>data/scenes/businessman/scene.json</nobr></td>
-		<td>businessman.</td>
+		<td><nobr>data/scenes/dragon/scene.json</nobr></td>
+		<td>dragon from skyrim</td>
 	</tr>
 	<tr>
-		<td><nobr>data/scenes/businessman2/scene.json</nobr></td>
-		<td>businessman 2.</td>
+		<td><nobr>data/scenes/dropship/scene.json</nobr></td>
+		<td>spaceship</td>
 	</tr>
 	<tr>
-		<td><nobr>data/scenes/horse/scene.json</nobr></td>
-		<td>a horse. </td>
+		<td><nobr>data/scenes/feisar/scene.json</nobr></td>
+		<td>ship from wipeout</td>
 	</tr>
 	<tr>
-		<td><nobr>data/scenes/love/scene.json</nobr></td>
-		<td>LOVE sculpture.</td>
+		<td><nobr>data/scenes/ladybug/scene.json</nobr></td>
+		<td>a ladybug</td>
 	</tr>
 	<tr>
-		<td><nobr>data/scenes/man2/scene.json</nobr></td>
-		<td>cool dude model</td>
+		<td><nobr>data/scenes/leon/scene.json</nobr></td>
+		<td>a character</td>
 	</tr>
 		<tr>
-		<td><nobr>data/scenes/roma/scene.json</nobr></td>
-		<td>model buildings in ancient rome.</td>
+		<td><nobr>data/scenes/roadblock_1/scene.json</nobr></td>
+		<td>a roadblock object</td>
+	</tr>
+			<tr>
+		<td><nobr>data/scenes/roadblock_2/scene.json</nobr></td>
+		<td>another roadblock object</td>
 	</tr>
 		<tr>
-		<td><nobr>data/scenes/ryoan-ji/scene.json</nobr></td>
-		<td>a japanese temple.</td>
+		<td><nobr>data/scenes/statue/scene.json</nobr></td>
+		<td>classical statue</td>
+	</tr>
+			<tr>
+		<td><nobr>data/scenes/sorceress/scene.json</nobr></td>
+		<td>a sorceress character</td>
 	</tr>
 	<tr>
-		<td><nobr>data/scenes/sphinx/scene.json</nobr></td>
-		<td>the sphinx of giza.</td>
+		<td><nobr>data/scenes/tree/scene.json</nobr></td>
+		<td>a complex tree model</td>
+	</tr>
+		<tr>
+		<td><nobr>data/scenes/link/scene.json</nobr></td>
+		<td>link from zelda</td>
+	</tr>
+			<tr>
+		<td><nobr>data/scenes/tv/scene.json</nobr></td>
+		<td>a television</td>
+	</tr>
+				<tr>
+		<td><nobr>data/scenes/werewolf/scene.json</nobr></td>
+		<td>a werewolf character</td>
 	</tr>
 </table>
 
