@@ -150,7 +150,7 @@ for markdown in markdown_files:
 	os.system('markdown ' + markdown + ' > build/' + markdown[:-9] + '.html')
 
 print '\tCopying index.html.'
-os.system('cp index.html ' + build_dir)
+os.system('cp index.html player.html player_scene.json ' + build_dir)
 
 print '\tCopying favicon.'
 os.system('cp favicon.ico ' + build_dir)
