@@ -908,7 +908,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				
 					if(l.type === Light.type.DIRECTIONAL)
 						ps_src.push('uniform vec3 ' + lid + '_dir;');
-				
+					
 					has_lights = true;
 				}
 			}
@@ -936,8 +936,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			vs_dp('void main(void) {');
 	
 			if(has_lights)
-				vs_dp('    view_pos = (v_mat * m_mat * vec4(v_pos, 1.0)).xyz;');	
-	
+				vs_dp('    view_pos = (v_mat * m_mat * vec4(v_pos, 1.0)).xyz;');
+			
 			vs_dp('    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);');
 
 			if(streams[v_types.NORMAL])
@@ -980,7 +980,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 						if(l.type === Light.type.DIRECTIONAL)
 							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_dir);');
 						else
-							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos);');
+							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos - view_pos);');
 				
 						ps_dp('    float ' + lid + '_dd = dot(n_dir, ' + liddir + ');');
 						ps_dp('    fc += ' + lid + '_d_col * f_col * max(0.0, ' + lid + '_dd) * ' + lid + '_power;');
