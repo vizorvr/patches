@@ -815,7 +815,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 	var streams = [];
 	var v_types = VertexBuffer.vertex_type;
 	var has_lights = false;
-	var lights = material ? material.lights : mesh.material.textures.lights;
+	var lights = material ? material.lights : mesh.material.lights;
 	var tt = Material.texture_type;
 	
 	for(var v_type in v_types)
