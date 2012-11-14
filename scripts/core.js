@@ -3044,18 +3044,12 @@ function Player(canvas, app, root_node)
 
 	this.app = app;
 	this.core = new Core(app);
-	this.core.plugin_mgr = new PluginManager(this.core, 'plugins', null);
 	this.interval = null;
 	this.abs_time = 0.0;
 	this.last_time = (new Date()).getTime();
 	this.current_state = this.state.STOPPED;
 	this.frames = 0;
 
-	// TODO: Because graphs depend on the existence of the core singleton
-	// we can't create graph instances in the core initialisation code. Moreover,
-	// even though we could introduce a UID manager to move this out of the core,
-	// where would *that* singleton live? In the core... Most awkward.
-	// The alternative is to have the UID manager singleton be global? Ugh..
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, root_node);
 	this.core.graphs.push(this.core.root_graph);
 
@@ -3168,7 +3162,7 @@ function CreatePlayer(init_callback)
 	
 	E2.dom.webgl_canvas = $('#webgl-canvas');
 	E2.app = {};
-	E2.app.player = new Player(new Core(E2.app), E2.app, null);
+	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, null);
 	
 	// Block while plugins are loading...
 	var wait_for_plugins = function()
@@ -3248,7 +3242,7 @@ function InitialiseEngi()
     
 	var root_node = E2.dom.structure.dynatree('getRoot');
 
-	E2.app.player = new Player(E2.app.core, E2.app, root_node.addChild({
+	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, root_node.addChild({
 		title: 'Root',
 		isFolder: true,
 		expand: true
