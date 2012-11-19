@@ -471,8 +471,6 @@ Light.type =
 	COUNT: 2 // Always last!
 };
 
-Light.mask_no_light = '--------';
-
 function Material(gl, t_cache, data, base_path)
 {
 	var self = this;
@@ -566,17 +564,54 @@ function Material(gl, t_cache, data, base_path)
 		gl.depthMask(self.depth_write);
 		r.set_blend_mode(self.blend_mode);
 	};
-	
-	this.get_light_mask = function()
-	{
-		var msk = '';
-		
-		for(var i = 0; i < 8; i++)
-			msk += self.lights[i] ? '' + self.lights[i].type : '-';
-	
-		return msk;
-	};
 }
+
+Material.get_caps_hash = function(mesh, o_mat)
+{
+	var h = '', tt = Material.texture_type;
+	var mat = o_mat ? o_mat : mesh.material;
+	
+	for(var i = 0, len = VertexBuffer.vertex_type.COUNT; i <len; i++)
+		h += mesh && mesh.vertex_buffers[i] ? '1' : '0';
+	 
+	h += mat.diffuse_color ? '1' : '0';
+	h += mat.emission_color ? '1' : '0';
+	h += mat.specular_color ? '1' : '0';
+	h += mat.ambient_color ? '1' : '0';
+	h += mat.alpha_clip ? '1' : '0';
+	
+	if(o_mat)
+	{
+		if(mesh)
+		{
+			var mm = mesh.material;
+		
+			h += (o_mat.textures[tt.DIFFUSE_COLOR] || mm.textures[tt.DIFFUSE_COLOR]) ? '1' : '0';
+			h += (o_mat.textures[tt.EMISSION_COLOR] || mm.textures[tt.EMISSION_COLOR]) ? '1' : '0';
+			h += (o_mat.textures[tt.SPECULAR_COLOR] || mm.textures[tt.SPECULAR_COLOR]) ? '1' : '0';
+			h += (o_mat.textures[tt.NORMAL] || mm.textures[tt.NORMAL]) ? '1' : '0';
+		}
+		else
+		{
+			h += o_mat.textures[tt.DIFFUSE_COLOR] ? '1' : '0';
+			h += o_mat.textures[tt.EMISSION_COLOR] ? '1' : '0';
+			h += o_mat.textures[tt.SPECULAR_COLOR] ? '1' : '0';
+			h += o_mat.textures[tt.NORMAL] ? '1' : '0';
+		}
+	}
+	else
+	{
+		h += mat.textures[tt.DIFFUSE_COLOR] ? '1' : '0';
+		h += mat.textures[tt.EMISSION_COLOR] ? '1' : '0';
+		h += mat.textures[tt.SPECULAR_COLOR] ? '1' : '0';
+		h += mat.textures[tt.NORMAL] ? '1' : '0';
+	}
+
+	for(var i = 0; i < 8; i++)
+		h += mat.lights[i] ? '1' : '0';
+	
+	return h;
+};
 
 Material.texture_type =
 {
@@ -731,7 +766,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		}
 	}
 	
-	this.render = function(camera, transform, shader)
+	this.render = function(camera, transform, shader, material)
 	{
         	var verts = self.vertex_buffers['VERTEX'];
         	var shader = shader || self.shader;
@@ -750,7 +785,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
         	}
 
 		shader.bind_camera(camera);
-       		shader.apply_uniforms(this);
+       		shader.apply_uniforms(this, material);
 		
 		if(!self.instances)
 		{
@@ -825,29 +860,23 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		streams[index] = mesh.vertex_buffers[v_type] !== null;
 	}		
 	
-	this.material = material;
 	this.apply_uniforms_custom = null;
 		
-	var exists = false;
-	var prog = null;
-			
-	/*if(cache)
+	var cached = [null, ''];
+	
+	if(cache)
 	{
-		// TODO: This need revision, badly.
-		var cached = cache.get(mesh, material);
+		var caps = Material.get_caps_hash(mesh, material);
 		
-		exists = cached[0];
-		prog = cached[1]; 
-	}*/
+		cached = [cache.get(caps), caps];
+	}
 
-	var shader = new ShaderProgram(gl, prog);
-	
-	shader.material = self.material;
-	
-	prog = shader.program;
-	
-	if(!exists)
+	if(!cached[0])
 	{
+		var prog = gl.createProgram();
+		var shader = new ShaderProgram(gl, prog);
+		var d_tex = (material ? material.textures[tt.DIFFUSE_COLOR] : undefined) || mesh.material.textures[tt.DIFFUSE_COLOR];
+		var s_tex = (material ? material.textures[tt.SPECULAR_COLOR] : undefined) || mesh.material.textures[tt.SPECULAR_COLOR];
 		var vs_src = [];
 		var ps_src = [];
 		var vs_c_src = [];
@@ -928,7 +957,12 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			vs_src.push('varying vec2 f_uv0;');
 
 			ps_src.push('varying vec2 f_uv0;');
-			ps_src.push('uniform sampler2D d_tex;');
+			
+			if(d_tex)
+				ps_src.push('uniform sampler2D d_tex;');
+			
+			if(s_tex)
+				ps_src.push('uniform sampler2D s_tex;');
 		}
 
 		if(!vs_custom)
@@ -960,12 +994,11 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		if(!ps_custom)
 		{
 			ps_dp('void main(void) {');
-			ps_dp('    vec4 fc = vec4(a_col.rgb, f_col.a);');
+			ps_dp('    vec4 fc = vec4(0.0, 0.0, 0.0, f_col.a);');
 
 			if(streams[v_types.NORMAL] && has_lights)
 			{
 				ps_dp('    vec3 n_dir = normalize(f_norm);');
-				
 				ps_dp('    vec3 v_dir = -normalize(view_pos);');
 		
 				for(var i = 0; i < 8; i++)
@@ -991,19 +1024,24 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 						if(l.type !== Light.type.DIRECTIONAL)
 							s += '(1.0 / length(' + liddir + ')) * ';
 					
-						ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 1.0 / (1.0 + shinyness)), 0.0);');
+						if(streams[v_types.UV0] && s_tex)
+							ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * texture2D(s_tex, f_uv0.st).rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 1.0 / (1.0 + shinyness)), 0.0);');
+						else
+							ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 1.0 / (1.0 + shinyness)), 0.0);');
 					}
 				}
 			}
-	
-			if(streams[v_types.UV0])
+			
+			if(!has_lights)
+				ps_dp('    fc.rgb += f_col.rgb;');
+			
+			if(streams[v_types.UV0] && d_tex)
 			{
-				if(has_lights)
+				if(d_tex)
 					ps_dp('    fc *= texture2D(d_tex, f_uv0.st);');
-				else
-					ps_dp('    fc = vec4(fc.rgb + f_col.rgb, f_col.a) * texture2D(d_tex, f_uv0.st);');
 			}
-	
+			
+			ps_dp('    fc.rgb += a_col.rgb;');
 			ps_dp('    if(e2_alpha_clip > 0 && fc.a < 0.5) discard;');
 			ps_dp('    gl_FragColor = fc;');
 			ps_dp('}');
@@ -1024,142 +1062,160 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		shader.attach(vs);
 		shader.attach(ps);
 		shader.link();
+
+		shader.v_pos = gl.getAttribLocation(prog, "v_pos");
+		shader.v_norm = gl.getAttribLocation(prog, "v_norm");
+		shader.m_mat = gl.getUniformLocation(prog, "m_mat");
+		shader.v_mat = gl.getUniformLocation(prog, "v_mat");
+		shader.p_mat = gl.getUniformLocation(prog, "p_mat");
+		shader.a_col = gl.getUniformLocation(prog, "a_col");
+		shader.d_col = gl.getUniformLocation(prog, "d_col");
+		shader.e2_alpha_clip = gl.getUniformLocation(prog, "e2_alpha_clip");
+
+		if(has_lights)
+		{
+			shader.s_col = gl.getUniformLocation(prog, "s_col");
+			shader.shinyness = gl.getUniformLocation(prog, "shinyness");
+			shader.n_mat = gl.getUniformLocation(prog, "n_mat");
+	
+			for(var i = 0; i < 8; i++)
+			{
+				var l = lights[i];
+			
+				if(l)
+				{
+					var lid = 'l' + i;
+
+					shader[lid + '_pos'] = gl.getUniformLocation(prog, lid + '_pos');
+					shader[lid + '_d_col'] = gl.getUniformLocation(prog, lid + '_d_col');
+					shader[lid + '_s_col'] = gl.getUniformLocation(prog, lid + '_s_col');
+					shader[lid + '_power'] = gl.getUniformLocation(prog, lid + '_power');
+				
+					if(l.type === Light.type.DIRECTIONAL)
+						shader[lid + '_dir'] = gl.getUniformLocation(prog, lid + '_dir');
+				}
+			}
+		}
+
+		if(streams[v_types.COLOR])
+			shader.v_col = gl.getAttribLocation(prog, "v_col");
+
+		if(streams[v_types.UV0])
+		{
+			shader.v_uv0 = gl.getAttribLocation(prog, "v_uv0");
+			shader.d_tex = gl.getUniformLocation(prog, "d_tex");
+		
+			if(s_tex)
+				shader.s_tex = gl.getUniformLocation(prog, "s_tex");
+		}
+	
+		shader.bind_array = function(type, data, item_size)
+		{
+			var types = VertexBuffer.vertex_type;
+			var attr = -1;
+		
+			if(type === types.VERTEX)
+				attr = this.v_pos;
+			else if(type === types.UV0)
+				attr = this.v_uv0;
+			else if(type === types.NORMAL)
+				attr = this.v_norm;
+			else if(type === types.COLOR)
+				attr = this.v_col;
+		
+			// This can happen if the symbol is declared but unused. Some
+			// drivers optimize the shaders and eliminate dead code.
+			if(attr === -1)
+				return;
+		
+			gl.bindBuffer(gl.ARRAY_BUFFER, data);
+			gl.enableVertexAttribArray(attr);
+			gl.vertexAttribPointer(attr, item_size, gl.FLOAT, false, 0, 0);
+		};
+	
+		shader.apply_uniforms = function(mesh, mat)
+		{
+			var r = E2.app.player.core.renderer;
+			var m = mat ? mat : mesh.material;
+
+			gl.enableVertexAttribArray(this.v_pos);
+			gl.uniform1i(this.e2_alpha_clip, m.alpha_clip ? 1 : 0);
+			gl.uniform4fv(this.a_col, (m.ambient_color) ? new Float32Array(m.ambient_color.rgba) : r.def_ambient);
+			gl.uniform4fv(this.d_col, (m.diffuse_color) ? new Float32Array(m.diffuse_color.rgba) : r.def_diffuse);
+		
+			if(this.s_col !== undefined)
+				gl.uniform4fv(this.s_col, (m.specular_color) ? new Float32Array(m.specular_color.rgba) : r.def_specular);
+		
+			if(this.shinyness !== undefined)
+				gl.uniform1f(this.shinyness, m.shinyness);
+		
+			for(var i = 0; i < 8; i++)
+			{
+				var l = lights[i];
+			
+				if(l)
+				{
+					var lid = 'l' + i;
+
+					gl.uniform3fv(this[lid + '_pos'], l.position);
+					gl.uniform4fv(this[lid + '_d_col'], l.diffuse_color.rgba);
+					gl.uniform4fv(this[lid + '_s_col'], l.specular_color.rgba);
+					gl.uniform1f(this[lid + '_power'], l.intensity);
+				
+					if(l.type === Light.type.DIRECTIONAL)
+						gl.uniform3fv(this[lid + '_dir'], l.direction);
+				}
+			}
+
+			if(this.v_norm !== undefined && this.v_norm !== -1)
+				gl.enableVertexAttribArray(this.v_norm);
+		
+			if(this.v_uv0 !== undefined && this.v_uv0 !== -1)
+			{
+				var dt = null, st = null;
+				var mm = mesh.material;
+			
+				if(mat)
+				{
+					dt = mat.textures[tt.DIFFUSE_COLOR] || mm.textures[tt.DIFFUSE_COLOR];
+					st = mat.textures[tt.SPECULAR_COLOR] || mm.textures[tt.SPECULAR_COLOR];
+				}
+				else
+				{
+					dt = mm.textures[tt.DIFFUSE_COLOR];
+					st = mm.textures[tt.SPECULAR_COLOR];
+				}
+			
+				gl.enableVertexAttribArray(this.v_uv0);
+
+				if(dt && this.d_tex !== undefined)
+				{
+					gl.uniform1i(this.d_tex, 0);
+					dt.enable(gl.TEXTURE0);
+				}
+
+				if(st && this.s_tex !== undefined)
+				{
+					gl.uniform1i(this.s_tex, 1);
+					dt.enable(gl.TEXTURE1);
+				}
+			}
+		
+			if(this.apply_uniforms_custom)
+				this.apply_uniforms_custom();
+		
+			if(m.double_sided)
+				gl.disable(gl.CULL_FACE);
+			else
+				gl.enable(gl.CULL_FACE);
+	
+			m.enable();
+		};
+		
+		debugger;
+		cache.set_shader(cached[1], shader);
 	}
 	 
-	shader.v_pos = gl.getAttribLocation(prog, "v_pos");
-	shader.v_norm = gl.getAttribLocation(prog, "v_norm");
-	shader.m_mat = gl.getUniformLocation(prog, "m_mat");
-	shader.v_mat = gl.getUniformLocation(prog, "v_mat");
-	shader.p_mat = gl.getUniformLocation(prog, "p_mat");
-	shader.a_col = gl.getUniformLocation(prog, "a_col");
-	shader.d_col = gl.getUniformLocation(prog, "d_col");
-	shader.e2_alpha_clip = gl.getUniformLocation(prog, "e2_alpha_clip");
-
-	if(has_lights)
-	{
-		shader.s_col = gl.getUniformLocation(prog, "s_col");
-		shader.shinyness = gl.getUniformLocation(prog, "shinyness");
-		shader.n_mat = gl.getUniformLocation(prog, "n_mat");
-	
-		for(var i = 0; i < 8; i++)
-		{
-			var l = lights[i];
-			
-			if(l)
-			{
-				var lid = 'l' + i;
-
-				shader[lid + '_pos'] = gl.getUniformLocation(prog, lid + '_pos');
-				shader[lid + '_d_col'] = gl.getUniformLocation(prog, lid + '_d_col');
-				shader[lid + '_s_col'] = gl.getUniformLocation(prog, lid + '_s_col');
-				shader[lid + '_power'] = gl.getUniformLocation(prog, lid + '_power');
-				
-				if(l.type === Light.type.DIRECTIONAL)
-					shader[lid + '_dir'] = gl.getUniformLocation(prog, lid + '_dir');
-			}
-		}
-	}
-
-	if(streams[v_types.COLOR])
-		shader.v_col = gl.getAttribLocation(prog, "v_col");
-
-	if(streams[v_types.UV0])
-	{
-		shader.v_uv0 = gl.getAttribLocation(prog, "v_uv0");
-		shader.d_tex = gl.getUniformLocation(prog, "d_tex");
-	}
-	
-	shader.bind_array = function(type, data, item_size)
-	{
-		var types = VertexBuffer.vertex_type;
-		var attr = -1;
-		
-		if(type === types.VERTEX)
-			attr = this.v_pos;
-		else if(type === types.UV0)
-			attr = this.v_uv0;
-		else if(type === types.NORMAL)
-			attr = this.v_norm;
-		else if(type === types.COLOR)
-			attr = this.v_col;
-		
-		// This can happen if the symbol is declared but unused. Some
-		// drivers optimize the shaders and eliminate dead code.
-		if(attr === -1)
-			return;
-		
-		gl.bindBuffer(gl.ARRAY_BUFFER, data);
-		gl.enableVertexAttribArray(attr);
-		gl.vertexAttribPointer(attr, item_size, gl.FLOAT, false, 0, 0);
-	};
-	
-	shader.apply_uniforms = function(mesh)
-	{
-		var r = E2.app.player.core.renderer;
-		var m = this.material ? this.material : mesh.material;
-
-		gl.enableVertexAttribArray(this.v_pos);
-		gl.uniform1i(this.e2_alpha_clip, m.alpha_clip ? 1 : 0);
-		gl.uniform4fv(this.a_col, (m.ambient_color) ? new Float32Array(m.ambient_color.rgba) : r.def_ambient);
-		gl.uniform4fv(this.d_col, (m.diffuse_color) ? new Float32Array(m.diffuse_color.rgba) : r.def_diffuse);
-		
-		if(this.s_col !== undefined)
-			gl.uniform4fv(this.s_col, (m.specular_color) ? new Float32Array(m.specular_color.rgba) : r.def_specular);
-		
-		if(this.shinyness !== undefined)
-			gl.uniform1f(this.shinyness, m.shinyness);
-		
-		for(var i = 0; i < 8; i++)
-		{
-			var l = lights[i];
-			
-			if(l)
-			{
-				var lid = 'l' + i;
-
-				gl.uniform3fv(this[lid + '_pos'], l.position);
-				gl.uniform4fv(this[lid + '_d_col'], l.diffuse_color.rgba);
-				gl.uniform4fv(this[lid + '_s_col'], l.specular_color.rgba);
-				gl.uniform1f(this[lid + '_power'], l.intensity);
-				
-				if(l.type === Light.type.DIRECTIONAL)
-					gl.uniform3fv(this[lid + '_dir'], l.direction);
-			}
-		}
-
-		if(this.v_norm !== undefined && this.v_norm !== -1)
-			gl.enableVertexAttribArray(this.v_norm);
-		
-		if(this.v_uv0 !== undefined && this.v_uv0 !== -1)
-		{
-			var dt = null;
-			var tm = this.material;
-			
-			gl.enableVertexAttribArray(this.v_uv0);
-
-			if(tm)
-				dt = tm.textures[tt.DIFFUSE_COLOR];
-
-			dt = dt ? dt : mesh.material.textures[tt.DIFFUSE_COLOR];
-
-			if(dt && this.d_tex !== undefined)
-			{
-				gl.uniform1i(this.d_tex, 0);
-				dt.enable(gl.TEXTURE0);
-			}
-		}
-		
-		if(this.apply_uniforms_custom)
-			this.apply_uniforms_custom();
-		
-		if(m.double_sided)
-			gl.disable(gl.CULL_FACE);
-		else
-			gl.enable(gl.CULL_FACE);
-	
-		m.enable();
-	};
-	
 	return shader;
 }
 
@@ -1167,61 +1223,37 @@ function ShaderCache(gl)
 {
 	var self = this;
 	
-	this.programs = {};
+	this.shaders = {};
 	
-	this.build_key = function(mesh, m)
+	this.get = function(key)
 	{
-		var k = '';
-		
-		for(var i = 0, len = VertexBuffer.vertex_type.COUNT; i <len; i++)
-			k += mesh.vertex_buffers[i] ? '1' : '0';
-		 
-		k += m.diffuse_color ? '1' : '0';
-		k += m.emission_color ? '1' : '0';
-		k += m.specular_color ? '1' : '0';
-		k += m.ambient_color ? '1' : '0';
-		k += m.alpha_clip ? '1' : '0';
-		k += m.textures[Material.texture_type.DIFFUSE_COLOR] ? '1' : '0';
-		k += m.textures[Material.texture_type.EMISSION_COLOR] ? '1' : '0';
-		k += m.textures[Material.texture_type.SPECULAR_COLOR] ? '1' : '0';
-		k += m.textures[Material.texture_type.NORMAL] ? '1' : '0';
-	
-		for(var i = 0; i < 8; i++)
-			k += m.lights[i] ? '1' : '0';
-		
-		return k;
-	};
-	
-	this.get = function(mesh, mat)
-	{
-		var key = self.build_key(mesh, mat);
-		var exists = key in self.programs;
-		var prog = null;
-		
-		if(exists)
-			prog = self.programs[key];
-		else
+		if(key in self.shaders)
 		{
-			self.programs[key] = prog = gl.createProgram();
-			msg('Caching shader: ' + key);
+			msg('Returning cached shader: ' + key);
+			return self.shaders[key];
 		}
 		
-		return [exists, prog];
+		return null;
 	}
 	
 	this.count = function()
 	{
 		var c = 0;
 		
-		for(p in self.programs)
+		for(p in self.shaders)
 			++c;
 			
 		return c;
 	};
 	
+	this.set_shader = function(key, shader)
+	{
+		self.shaders[key] = shader;
+	};
+	
 	this.clear = function()
 	{
-		this.programs = {};
+		this.shaders = {};
 	};
 }
 
@@ -1360,7 +1392,7 @@ function Scene(gl, data, base_path)
 		}
 	}
 	
-	this.render = function(gl, camera, transform, shader)
+	this.render = function(gl, camera, transform, overload_shaders, material)
 	{
 		var meshes = self.meshes;
 		
@@ -1373,10 +1405,10 @@ function Scene(gl, data, base_path)
 		gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
 		gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
-		if(shader)
+		if(overload_shaders)
 		{
 			for(var i = 0, len = meshes.length; i < len; i++)
-				meshes[i].render(camera, transform, shader);
+				meshes[i].render(camera, transform, overload_shaders[i], material);
 		}
 		else
 		{
@@ -1384,9 +1416,29 @@ function Scene(gl, data, base_path)
 			{
 				var m = meshes[i];
 			
-				m.render(camera, transform, m.shader);
+				m.render(camera, transform, m.shader, null);
 			}
 		}
+	};
+	
+	this.build_overload_shaders = function(material)
+	{
+		var s_cache = self.shader_cache;
+		var meshes = self.meshes;
+		var o_shaders = [];
+		
+		for(var i = 0, len = meshes.length; i < len; i++)
+		{
+			var mesh = meshes[i];
+			var cached = s_cache.get(Material.get_caps_hash(mesh, material));
+			
+			if(cached)
+				o_shaders[i] = cached;
+			else
+				o_shaders[i] = ComposeShader(s_cache, mesh, material, null, null, null, null);
+		}
+		
+		return o_shaders;
 	};
 	
 	this.create_autofit_camera = function()

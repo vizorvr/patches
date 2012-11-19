@@ -265,9 +265,6 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 	
 	this.rebuild_shader = function()
 	{
-		if(!self.mesh)
-			return;
-
 		var u_vs = '';
 		var u_ps = '';
 		var st = self.state;
@@ -296,7 +293,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		}
 			
 		self.shader = ComposeShader(null, self.mesh, self.material, u_vs, u_ps, st.vs_src ? st.vs_src : null, st.ps_src ? st.ps_src : null);
-		
+
 		for(var ident in st.slot_ids)
 		{
 			var slot = st.slot_ids[ident];
@@ -357,16 +354,6 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 			else if(slot.index === 1)
 			{
 				self.material = data;
-			
-				var msk = self.material.get_light_mask();
-			
-				if(self.lightmask !== msk)
-					self.dirty = true;
-			
-				if(self.dirty)
-					self.lightmask = msk;
-				else if(self.shader)
-					self.shader.material = self.material;
 			}
 		}
 		else
@@ -377,12 +364,22 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 	
 	this.update_state = function(delta_t)
 	{
-		if(!self.mesh || !self.dirty)
+		if(!self.mesh)
 			return;
 		
-		self.dirty = false;
+		var caps = Material.get_caps_hash(self.mesh, self.material);
+
+		if(!dirty && self.caps_hash === caps)
+		{
+			self.shader.material = self.material;
+			return;
+		}
+		
+		self.caps_hash = caps;
+				
 		self.rebuild_shader();
 		self.updated = true;
+		self.dirty = false;
 	};
 	
 	this.update_output = function(slot)
@@ -396,8 +393,8 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		{
 			self.mesh = null;
 			self.material = null;
-			self.lightmask = Light.mask_no_light;
-			self.dirty = true;
+			self.caps_mask = '';
+			dirty = false;
 		}
 	};
 };

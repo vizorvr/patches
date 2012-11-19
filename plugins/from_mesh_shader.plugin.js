@@ -42,14 +42,6 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 		else if(slot.index === 1)
 		{
 			self.material = data;
-
-			var msk = data.get_light_mask();
-			
-			if(self.lightmask !== msk)
-			{
-				self.dirty = true;
-				self.lightmask = msk;
-			}
 		}
 	};
 	
@@ -58,13 +50,21 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 		if(!self.mesh)
 			return;
 		
-		if(self.dirty)
+		var caps = Material.get_caps_hash(self.mesh, self.material);
+
+		if(!self.dirty && self.caps_hash === caps)
 		{
-			self.dirty = false;
-			self.shader = ComposeShader(core.renderer.shader_cache, self.mesh, self.material, null, null, null, null);
-		}
-		else
 			self.shader.material = self.material;
+			return;
+		}
+		
+		self.caps_hash = caps;
+		
+		debugger;
+		msg('Recomposing shader with caps: ' + self.caps_hash);
+		self.shader = ComposeShader(core.renderer.shader_cache, self.mesh, self.material, null, null, null, null);
+		self.updated = true;
+		self.dirty = false;
 	};
 	
 	this.update_output = function(slot)
@@ -78,8 +78,8 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 		{
 			self.mesh = null;
 			self.material = null;
+			self.caps_hash = '';
 			self.dirty = true;
-			self.lightmask = Light.mask_no_light;
 		}
 	};
 };

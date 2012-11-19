@@ -5,7 +5,7 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	this.desc = 'Render the supplied <b>scene</b>. If no <b>shader</b> is specified, the internal shaders of the scene meshes are used.';
 	this.input_slots = [ 
 		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'The scene to be rendered.', def: 'Render nothing.' },
-		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'A shader to use in favour of the ones specified by the individual meshes in the scene.', def: 'Use mesh shaders.' },
+		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'If a material is specified, internal shaders are generated to render each scene mesh using this material as an overload.', def: 'Use scene materials and shaders.' },
 		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'The camera to use for rendering.', def: 'Screenspace camera.' },
 		{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'The scene transform to use for rendering.', def: 'Identity' },
 		{ name: 'inv. transform', dt: core.datatypes.BOOL, desc: 'Send true to this slot to apply <b>transform</b> in inverse order when rendering instances.', def: 'False' }
@@ -26,9 +26,21 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 			
 			if(!self.ext_camera)
 				self.camera = self.scene.create_autofit_camera();
+				
+			self.material_dirty = true;
 		}
 		else if(slot.index === 1)
-			self.shader = data;
+		{
+			self.material = data;
+			
+			var caps = Material.get_caps_hash(null, data);
+			
+			if(self.material_caps !== caps)
+			{
+				self.material_caps = caps;
+				self.material_dirty = true;
+			}
+		}
 		else if(slot.index === 2)
 		{
 			self.camera = data;
@@ -43,9 +55,16 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 		if(!on)
 		{
 			if(slot.index === 0)
+			{
 				self.scene = null;
+				self.material_dirty = true;
+			}
 			else if(slot.index === 1)
-				self.shader = null;
+			{
+				self.material = null;
+				self.material_caps = '';
+				self.overload_shaders = null;
+			}
 			else if(slot.index === 2)
 			{
 				self.ext_camera = false;
@@ -60,8 +79,14 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	{
 		if(self.scene)
 		{
+			if(self.material_dirty && self.material)
+			{
+				self.overload_shaders = self.scene.build_overload_shaders(self.material)
+				self.material_dirty = false;
+			}
+			
 			self.transform.invert = self.inv_transform;
-			self.scene.render(gl, self.camera, self.transform, self.shader);
+			self.scene.render(gl, self.camera, self.transform, self.overload_shaders, self.material);
 		}
 	};
 	
@@ -69,6 +94,10 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	{
 		if(!ui)
 		{
+			self.material = null;
+			self.material_caps = '';
+			self.material_dirty = false;
+			self.overload_shaders = null;
 			self.camera = new Camera();
 			self.transform = mat4.create();
 
