@@ -37,6 +37,10 @@ E2.plugins["url_texture_generator"] = function(core, node) {
 				self.state.url = url_inp.val();
 				self.state_changed(null);
 				self.state_changed(inp);
+				
+				if(self.state.url === '')
+					inp.attr('title', 'No texture selected.');
+
 				self.changed = true;
 				diag.dialog('close');
 			};
