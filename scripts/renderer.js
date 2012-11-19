@@ -1254,7 +1254,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			m.enable();
 		};
 		
-		cache.set_shader(cached[1], shader);
+		if(cache)
+			cache.set_shader(cached[1], shader);
 	}
 	 
 	return shader;
