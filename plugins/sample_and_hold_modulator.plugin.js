@@ -49,7 +49,6 @@ E2.plugins["sample_and_hold_modulator"] = function(core, node) {
 	{
 		if(!ui)
 		{
-			debugger;
 			self.state.value = 0.0;
 			self.buffer = 0.0;
 			self.sample = true;
