@@ -22,8 +22,13 @@ E2.plugins["material_texture_modulator"] = function(core, node) {
 	
 	this.connection_changed = function(on, conn, slot)
 	{
-		if(!on && slot.type === E2.slot_type.input && slot.index === 2)
-			self.texture = null;
+		if(!on && slot.type === E2.slot_type.input)
+		{
+			if(slot.index === 0)
+				self.material = new Material();
+			else if(slot.index === 2)
+				self.texture = null;
+		}
 	};
 	
 	this.update_state = function(delta_t)

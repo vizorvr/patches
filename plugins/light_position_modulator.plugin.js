@@ -17,6 +17,12 @@ E2.plugins["light_position_modulator"] = function(core, node) {
 			self.position = data;
 	};
 	
+	this.connection_changed = function(on, conn, slot)
+	{
+		if(!on && slot.type === E2.slot_type.input && slot.index === 0)
+			self.light = new Light();
+	};
+
 	this.update_state = function(delta_t)
 	{
 		self.light.position = self.position;

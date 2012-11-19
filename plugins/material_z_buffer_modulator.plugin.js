@@ -23,6 +23,12 @@ E2.plugins["material_z_buffer_modulator"] = function(core, node) {
 			self.depth_func = data < 0 ? 0 : data % Material.depth_func.COUNT;
 	};
 	
+	this.connection_changed = function(on, conn, slot)
+	{
+		if(!on && slot.type === E2.slot_type.input && slot.index === 0)
+			self.material = new Material();
+	};
+
 	this.update_state = function(delta_t)
 	{
 		self.material.depth_test = self.depth_test;

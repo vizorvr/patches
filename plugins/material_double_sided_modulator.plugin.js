@@ -17,6 +17,12 @@ E2.plugins["material_double_sided_modulator"] = function(core, node) {
 			self.double_sided = data;
 	};
 	
+	this.connection_changed = function(on, conn, slot)
+	{
+		if(!on && slot.type === E2.slot_type.input && slot.index === 0)
+			self.material = new Material();
+	};
+
 	this.update_state = function(delta_t)
 	{
 		self.material.double_sided = self.double_sided;

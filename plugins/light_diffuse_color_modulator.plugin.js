@@ -17,6 +17,12 @@ E2.plugins["light_diffuse_color_modulator"] = function(core, node) {
 			self.color = data;
 	};
 	
+	this.connection_changed = function(on, conn, slot)
+	{
+		if(!on && slot.type === E2.slot_type.input && slot.index === 0)
+			self.light = new Light();
+	};
+
 	this.update_state = function(delta_t)
 	{
 		self.light.diffuse_color = self.color;

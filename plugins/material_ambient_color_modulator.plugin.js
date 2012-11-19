@@ -17,6 +17,12 @@ E2.plugins["material_ambient_color_modulator"] = function(core, node) {
 			self.color = data;
 	};
 	
+	this.connection_changed = function(on, conn, slot)
+	{
+		if(!on && slot.type === E2.slot_type.input && slot.index === 0)
+			self.material = new Material();
+	};
+
 	this.update_state = function(delta_t)
 	{
 		self.material.ambient_color = self.color;
