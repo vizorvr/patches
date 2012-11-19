@@ -44,7 +44,13 @@ E2.plugins["graph"] = function(core, node) {
 			if(!on)
 			{
 				if(slot.type === E2.slot_type.input)
-					psl = self.input_nodes[slot.uid].dyn_outputs[0];
+				{
+					var inode = self.input_nodes[slot.uid];
+					
+					psl = inode.dyn_outputs[0];
+					inode.plugin.data = core.get_default_value(slot.dt);
+					inode.reset();
+				}
 				else
 				{
 					var count = 0;
