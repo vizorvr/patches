@@ -1,17 +1,17 @@
 {
-    "abs_t": 265.158,
-    "active_graph": 2,
-    "graph_uid": 11,
+    "abs_t": 71.114,
+    "active_graph": 0,
+    "graph_uid": 9,
     "root": {
-        "node_uid": 13,
+        "node_uid": 1,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 229,
-                "y": 170,
-                "uid": 12,
+                "x": 470,
+                "y": 310,
+                "uid": 0,
                 "state": {
                     "enabled": true,
                     "input_sids": {},
@@ -20,7 +20,7 @@
                 "title": "Scene controls",
                 "graph": {
                     "node_uid": 47,
-                    "uid": 2,
+                    "uid": 1,
                     "parent_uid": 0,
                     "nodes": [
                         {
@@ -43,8 +43,8 @@
                             "title": "Scene loader",
                             "graph": {
                                 "node_uid": 25,
-                                "uid": 3,
-                                "parent_uid": 2,
+                                "uid": 2,
+                                "parent_uid": 1,
                                 "nodes": [
                                     {
                                         "plugin": "scene_renderer_emitter",
@@ -57,7 +57,7 @@
                                         "x": 11,
                                         "y": 308,
                                         "uid": 1,
-                                        "dsid": 6,
+                                        "dsid": 7,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -79,7 +79,7 @@
                                         "x": 788,
                                         "y": 63,
                                         "uid": 2,
-                                        "dsid": 6,
+                                        "dsid": 7,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -116,8 +116,8 @@
                                         "title": "Concatenate x2",
                                         "graph": {
                                             "node_uid": 6,
-                                            "uid": 4,
-                                            "parent_uid": 3,
+                                            "uid": 3,
+                                            "parent_uid": 2,
                                             "nodes": [
                                                 {
                                                     "plugin": "concatenate_matrix_modulator",
@@ -136,7 +136,7 @@
                                                     "x": 394,
                                                     "y": 9,
                                                     "uid": 2,
-                                                    "dsid": 7,
+                                                    "dsid": 8,
                                                     "state": {
                                                         "slot_id": 0
                                                     },
@@ -159,7 +159,7 @@
                                                     "x": 205,
                                                     "y": 9,
                                                     "uid": 3,
-                                                    "dsid": 7,
+                                                    "dsid": 8,
                                                     "state": {
                                                         "slot_id": 0
                                                     },
@@ -181,7 +181,7 @@
                                                     "x": 10,
                                                     "y": 9,
                                                     "uid": 4,
-                                                    "dsid": 7,
+                                                    "dsid": 8,
                                                     "state": {
                                                         "slot_id": 0
                                                     },
@@ -203,7 +203,7 @@
                                                     "x": 10,
                                                     "y": 74,
                                                     "uid": 5,
-                                                    "dsid": 7,
+                                                    "dsid": 8,
                                                     "state": {
                                                         "slot_id": 0
                                                     },
@@ -345,7 +345,7 @@
                                         "x": 280,
                                         "y": 204,
                                         "uid": 10,
-                                        "dsid": 6,
+                                        "dsid": 7,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -391,7 +391,7 @@
                                         "x": 647,
                                         "y": 265,
                                         "uid": 21,
-                                        "dsid": 5,
+                                        "dsid": 6,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -408,17 +408,11 @@
                                         ]
                                     },
                                     {
-                                        "plugin": "from_mesh_shader",
-                                        "x": 735,
-                                        "y": 333,
-                                        "uid": 22
-                                    },
-                                    {
                                         "plugin": "input_proxy",
                                         "x": 569,
                                         "y": 434,
                                         "uid": 23,
-                                        "dsid": 2,
+                                        "dsid": 3,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -434,12 +428,6 @@
                                                 "connected": true
                                             }
                                         ]
-                                    },
-                                    {
-                                        "plugin": "quad_mesh_generator",
-                                        "x": 567,
-                                        "y": 323,
-                                        "uid": 24
                                     }
                                 ],
                                 "conns": [
@@ -581,24 +569,12 @@
                                         "dst_dyn": true
                                     },
                                     {
-                                        "src_nuid": 22,
-                                        "dst_nuid": 0,
-                                        "src_slot": 0,
-                                        "dst_slot": 1
-                                    },
-                                    {
                                         "src_nuid": 23,
-                                        "dst_nuid": 22,
+                                        "dst_nuid": 0,
                                         "src_slot": 0,
                                         "dst_slot": 1,
                                         "src_connected": true,
                                         "src_dyn": true
-                                    },
-                                    {
-                                        "src_nuid": 24,
-                                        "dst_nuid": 22,
-                                        "src_slot": 0,
-                                        "dst_slot": 0
                                     }
                                 ]
                             },
@@ -651,7 +627,7 @@
                             "y": 50,
                             "uid": 1,
                             "state": {
-                                "url": "data/scenes/humming_bird/scene.json"
+                                "url": "data/scenes/statue/scene.json"
                             }
                         },
                         {
@@ -674,15 +650,15 @@
                             "title": "Camera",
                             "graph": {
                                 "node_uid": 16,
-                                "uid": 5,
-                                "parent_uid": 2,
+                                "uid": 4,
+                                "parent_uid": 1,
                                 "nodes": [
                                     {
                                         "plugin": "input_proxy",
                                         "x": 40,
                                         "y": 138,
                                         "uid": 0,
-                                        "dsid": 14,
+                                        "dsid": 15,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -704,7 +680,7 @@
                                         "x": 34,
                                         "y": 21,
                                         "uid": 1,
-                                        "dsid": 14,
+                                        "dsid": 15,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -726,7 +702,7 @@
                                         "x": 55,
                                         "y": 79,
                                         "uid": 2,
-                                        "dsid": 14,
+                                        "dsid": 15,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -748,7 +724,7 @@
                                         "x": 488,
                                         "y": 86,
                                         "uid": 3,
-                                        "dsid": 14,
+                                        "dsid": 15,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -948,15 +924,15 @@
                             "title": "Translate",
                             "graph": {
                                 "node_uid": 17,
-                                "uid": 6,
-                                "parent_uid": 2,
+                                "uid": 5,
+                                "parent_uid": 1,
                                 "nodes": [
                                     {
                                         "plugin": "output_proxy",
                                         "x": 303,
                                         "y": 53,
                                         "uid": 2,
-                                        "dsid": 7,
+                                        "dsid": 8,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -985,7 +961,7 @@
                                         "x": 23,
                                         "y": 11,
                                         "uid": 13,
-                                        "dsid": 7,
+                                        "dsid": 8,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1007,7 +983,7 @@
                                         "x": 23,
                                         "y": 73,
                                         "uid": 14,
-                                        "dsid": 7,
+                                        "dsid": 8,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1029,7 +1005,7 @@
                                         "x": 23,
                                         "y": 135,
                                         "uid": 15,
-                                        "dsid": 7,
+                                        "dsid": 8,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1160,7 +1136,7 @@
                             "y": 242,
                             "uid": 22,
                             "state": {
-                                "val": 0,
+                                "val": -2.6,
                                 "min": -10,
                                 "max": 10
                             },
@@ -1195,8 +1171,8 @@
                             "title": "Light chain",
                             "graph": {
                                 "node_uid": 29,
-                                "uid": 7,
-                                "parent_uid": 2,
+                                "uid": 6,
+                                "parent_uid": 1,
                                 "nodes": [
                                     {
                                         "plugin": "light_type_modulator",
@@ -1245,7 +1221,7 @@
                                         "x": 609,
                                         "y": 401,
                                         "uid": 13,
-                                        "dsid": 8,
+                                        "dsid": 9,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1267,7 +1243,7 @@
                                         "x": 413,
                                         "y": 532,
                                         "uid": 14,
-                                        "dsid": 8,
+                                        "dsid": 9,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1289,7 +1265,7 @@
                                         "x": 412,
                                         "y": 581,
                                         "uid": 15,
-                                        "dsid": 9,
+                                        "dsid": 10,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1311,7 +1287,7 @@
                                         "x": 412,
                                         "y": 627,
                                         "uid": 16,
-                                        "dsid": 10,
+                                        "dsid": 11,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1333,7 +1309,7 @@
                                         "x": 350,
                                         "y": 358,
                                         "uid": 17,
-                                        "dsid": 8,
+                                        "dsid": 9,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1355,7 +1331,7 @@
                                         "x": 196,
                                         "y": 340,
                                         "uid": 18,
-                                        "dsid": 8,
+                                        "dsid": 9,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1377,7 +1353,7 @@
                                         "x": 80,
                                         "y": 347,
                                         "uid": 19,
-                                        "dsid": 9,
+                                        "dsid": 10,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1411,7 +1387,7 @@
                                         "x": 146,
                                         "y": 479,
                                         "uid": 22,
-                                        "dsid": 9,
+                                        "dsid": 10,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1433,7 +1409,7 @@
                                         "x": 145,
                                         "y": 528,
                                         "uid": 23,
-                                        "dsid": 10,
+                                        "dsid": 11,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1455,7 +1431,7 @@
                                         "x": 145,
                                         "y": 574,
                                         "uid": 24,
-                                        "dsid": 11,
+                                        "dsid": 12,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1483,7 +1459,7 @@
                                         "x": 681,
                                         "y": 135,
                                         "uid": 26,
-                                        "dsid": 7,
+                                        "dsid": 8,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1505,7 +1481,7 @@
                                         "x": 900,
                                         "y": 133,
                                         "uid": 27,
-                                        "dsid": 7,
+                                        "dsid": 8,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1528,7 +1504,7 @@
                                         "x": 569,
                                         "y": 134,
                                         "uid": 28,
-                                        "dsid": 7,
+                                        "dsid": 8,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1829,9 +1805,9 @@
                             "y": 599,
                             "uid": 25,
                             "state": {
-                                "val": 0.4,
+                                "val": 0.64,
                                 "min": 0,
-                                "max": 10
+                                "max": 2
                             },
                             "title": "Intensity"
                         },
@@ -1865,7 +1841,7 @@
                             "y": 806,
                             "uid": 28,
                             "state": {
-                                "val": -0.44,
+                                "val": 2.8,
                                 "min": -10,
                                 "max": 10
                             },
@@ -1968,8 +1944,8 @@
                             "title": "Material chain",
                             "graph": {
                                 "node_uid": 47,
-                                "uid": 8,
-                                "parent_uid": 2,
+                                "uid": 7,
+                                "parent_uid": 1,
                                 "nodes": [
                                     {
                                         "plugin": "material_diffuse_color_modulator",
@@ -1998,7 +1974,7 @@
                                         "x": 1250,
                                         "y": 71,
                                         "uid": 9,
-                                        "dsid": 23,
+                                        "dsid": 24,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -2027,7 +2003,7 @@
                                         "x": 800,
                                         "y": 134,
                                         "uid": 21,
-                                        "dsid": 17,
+                                        "dsid": 18,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -2049,7 +2025,7 @@
                                         "x": 798,
                                         "y": 183,
                                         "uid": 22,
-                                        "dsid": 17,
+                                        "dsid": 18,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -2071,7 +2047,7 @@
                                         "x": 800,
                                         "y": 231,
                                         "uid": 23,
-                                        "dsid": 17,
+                                        "dsid": 18,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -2093,7 +2069,7 @@
                                         "x": 799,
                                         "y": 279,
                                         "uid": 24,
-                                        "dsid": 17,
+                                        "dsid": 18,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -2115,7 +2091,7 @@
                                         "x": 800,
                                         "y": 70,
                                         "uid": 25,
-                                        "dsid": 17,
+                                        "dsid": 18,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -2177,8 +2153,8 @@
                                         "title": "min max calc",
                                         "graph": {
                                             "node_uid": 13,
-                                            "uid": 9,
-                                            "parent_uid": 8,
+                                            "uid": 8,
+                                            "parent_uid": 7,
                                             "nodes": [
                                                 {
                                                     "plugin": "const_float_generator",
@@ -2225,7 +2201,7 @@
                                                     "x": 248,
                                                     "y": 9,
                                                     "uid": 9,
-                                                    "dsid": 15,
+                                                    "dsid": 16,
                                                     "state": {
                                                         "slot_id": 0
                                                     },
@@ -2257,7 +2233,7 @@
                                                     "x": 486,
                                                     "y": 122,
                                                     "uid": 12,
-                                                    "dsid": 15,
+                                                    "dsid": 16,
                                                     "state": {
                                                         "slot_id": 0
                                                     },
@@ -2370,7 +2346,7 @@
                                         "x": 426,
                                         "y": 241,
                                         "uid": 34,
-                                        "dsid": 11,
+                                        "dsid": 12,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -2414,7 +2390,7 @@
                                         "x": 63,
                                         "y": 153,
                                         "uid": 39,
-                                        "dsid": 18,
+                                        "dsid": 19,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -2436,7 +2412,7 @@
                                         "x": 60,
                                         "y": 202,
                                         "uid": 40,
-                                        "dsid": 18,
+                                        "dsid": 19,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -2458,7 +2434,7 @@
                                         "x": 63,
                                         "y": 250,
                                         "uid": 41,
-                                        "dsid": 18,
+                                        "dsid": 19,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -2486,7 +2462,7 @@
                                         "x": 58,
                                         "y": 70,
                                         "uid": 44,
-                                        "dsid": 7,
+                                        "dsid": 8,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -2845,7 +2821,7 @@
                             "y": 486,
                             "uid": 44,
                             "state": {
-                                "val": 0.25999999999999934
+                                "val": 0
                             },
                             "title": "Ambient Lum"
                         }
