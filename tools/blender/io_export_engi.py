@@ -46,6 +46,7 @@ class EngiContext:
         self.material_cache = EngiMaterialCache()
         self.unique_textures = {}
         self.render_settings = bpy.data.scenes.new('EngiRenderSettings') # Dummy scene with custom render settings used for resaving textures.
+        self.default_mat = bpy.data.materials.new('EngiDefault')
         
         self.render_settings.render.resolution_percentage = 100
         
@@ -93,7 +94,8 @@ class EngiContext:
             
             ext = '.jpg'
             
-            if img['image'].depth != 24 or (self.merge_alpha and img['alpha']): # Convert all 24bpp images to JPEG, everything else to PNG
+            # img['image'].depth != 24 or (
+            if self.merge_alpha and img['alpha']: # Convert all 24bpp images to JPEG, everything else to PNG
                 ext = '.png'
                 rs.image_settings.file_format = 'PNG'
                 rs.image_settings.color_mode = 'RGBA'
@@ -134,7 +136,7 @@ class EngiContext:
             
     def clean_up(self):
         bpy.data.scenes.remove(self.render_settings)
-                        
+        bpy.data.materials.remove(self.default_mat)                        
 
 class EngiMaterialCache:
     def __init__(self):
@@ -158,6 +160,9 @@ class EngiMaterialCache:
         
         return json
 
+def ts_invalid(ts):
+    return not ts or not ts.texture or ts.texture.type != 'IMAGE' or not ts.texture.image
+
 class EngiMaterial:
     def __init__(self, ctx, mat, mesh):
         self.ctx = ctx
@@ -168,7 +173,7 @@ class EngiMaterial:
         d_name = None
         
         for ts in self.material.texture_slots:
-            if not ts or not ts.texture or not ts.texture.image:
+            if ts_invalid(ts):
                 continue
             
             if ts.use_map_alpha:
@@ -221,7 +226,7 @@ class EngiMaterial:
             return ''
 	        
         for ts in self.material.texture_slots:
-            if not ts or not ts.texture or not ts.texture.image:
+            if ts_invalid(ts):
                 continue
             
             # We cannot support using a single map for multiple things, although the
@@ -296,7 +301,7 @@ class EngiBatch:
             uv = self.uvs[idx]
             
             if len(uv) > 0:
-                uv = flatten(map(lambda v: [v.uv[0], v.uv[1]], uv))
+                uv = flatten(map(lambda v: [math.fmod(v.uv[0], 1.0), math.fmod(v.uv[1], 1.0)], uv))
                 self.uvs[idx] = uv
             
     def serialise(self):
@@ -339,26 +344,31 @@ class EngiMesh:
             for poly in mesh.polygons:
                 if mats[poly.material_index] not in materials:
                     materials[poly.material_index] = mats[poly.material_index]
+            
+            # Create material batches
+            b = None
+            
+            for i in materials:
+                polys = []
+                
+                for poly in mesh.polygons:
+                    if poly.material_index == i:
+                        polys.append(poly)
+                
+                b = EngiBatch(ctx, materials[i], mesh, polys)
+        else:
+            # Create one batch with a default material
+            b = EngiBatch(ctx, ctx.default_mat, mesh, mesh.polygons)
         
-        # Create material batches
-        for i in materials:
-            polys = []
-            
-            for poly in mesh.polygons:
-                if poly.material_index == i:
-                    polys.append(poly)
-            
-            b = EngiBatch(ctx, materials[i], mesh, polys)
-            
-            self.bb_lo[0] = b.bb_lo[0] if b.bb_lo[0] < self.bb_lo[0] else self.bb_lo[0]
-            self.bb_lo[1] = b.bb_lo[1] if b.bb_lo[1] < self.bb_lo[1] else self.bb_lo[1]
-            self.bb_lo[2] = b.bb_lo[2] if b.bb_lo[2] < self.bb_lo[2] else self.bb_lo[2]
+        self.bb_lo[0] = b.bb_lo[0] if b.bb_lo[0] < self.bb_lo[0] else self.bb_lo[0]
+        self.bb_lo[1] = b.bb_lo[1] if b.bb_lo[1] < self.bb_lo[1] else self.bb_lo[1]
+        self.bb_lo[2] = b.bb_lo[2] if b.bb_lo[2] < self.bb_lo[2] else self.bb_lo[2]
 
-            self.bb_hi[0] = b.bb_hi[0] if b.bb_hi[0] > self.bb_hi[0] else self.bb_hi[0]
-            self.bb_hi[1] = b.bb_hi[1] if b.bb_hi[1] > self.bb_hi[1] else self.bb_hi[1]
-            self.bb_hi[2] = b.bb_hi[2] if b.bb_hi[2] > self.bb_hi[2] else self.bb_hi[2]
-            
-            self.batches.append(b)
+        self.bb_hi[0] = b.bb_hi[0] if b.bb_hi[0] > self.bb_hi[0] else self.bb_hi[0]
+        self.bb_hi[1] = b.bb_hi[1] if b.bb_hi[1] > self.bb_hi[1] else self.bb_hi[1]
+        self.bb_hi[2] = b.bb_hi[2] if b.bb_hi[2] > self.bb_hi[2] else self.bb_hi[2]
+        
+        self.batches.append(b)
     
     def serialise(self):
         json = '\t\t"%s": {\n' % self.obj.name
@@ -391,7 +401,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
     smooth_normals = BoolProperty(name="Smooth normals", default=True)
     merge_alpha = BoolProperty(name="Merge alpha into diffuse", default=False)
     
-            #filepath = StringProperty()
+    #filepath = StringProperty()
     filename = StringProperty()
     directory = StringProperty()
     
@@ -430,6 +440,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
             i.select = False # deselect all objects
         
         for obj in bpy.data.objects:
+            print('Found object ' + obj.name + ' of type ' + obj.type)
             if obj.type == 'MESH':
                 # Copy the object temporarily, so we can maniulate the copy prior
                 # to export, without altering the original scene.
@@ -465,6 +476,8 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 
                 # Remove the temporary object
                 scene.objects.unlink(objc)
+                bpy.data.objects.remove(objc)
+                
                 scene.update()
                 
                 if len(cmesh.batches) < 1:
@@ -486,12 +499,18 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                     for i in range(3):
                         bb_hi[i] = bbh[i] if bbh[i] > bb_hi[i] else bb_hi[i]
 
+                print(bb_lo)
+                print(bb_hi)
                 mjson += '%s%s' % (delim, cmesh.serialise())
                 delim = ',\n'
         
         mjson += '\n\t},'
-        mjson += '\n\t"bounding_box": { "lo": [' + cnr(bb_lo[0]) + ', ' + cnr(bb_lo[1]) + ', ' + cnr(bb_lo[2]) + '], "hi": [' + cnr(bb_hi[0]) + ', ' + cnr(bb_hi[1]) + ', ' + cnr(bb_hi[2]) + '] }\n';
         
+        if bb_lo and bb_hi:
+            mjson += '\n\t"bounding_box": { "lo": [' + cnr(bb_lo[0]) + ', ' + cnr(bb_lo[1]) + ', ' + cnr(bb_lo[2]) + '], "hi": [' + cnr(bb_hi[0]) + ', ' + cnr(bb_hi[1]) + ', ' + cnr(bb_hi[2]) + '] }\n';
+        else:
+            mjson += '\n\t"bounding_box": { "lo": [-0.5, -0.5, -0.5], "hi": [0.5, 0.5, 0.5] }\n';
+            
         # Convert textures
         ctx.process_textures()
         
