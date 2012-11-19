@@ -885,7 +885,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		var ps_c_src = [];
 
 		shader.streams = streams;
-	
+		shader.material = material;
+		
 		var vs_dp = function(s)
 		{
 			vs_src.push(s);
