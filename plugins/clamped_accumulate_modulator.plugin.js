@@ -13,9 +13,6 @@ E2.plugins["clamped_accumulate_modulator"] = function(core, node) {
 	
 	this.reset = function()
 	{
-		self.value = 0.0;
-		self.lo = 0.0;
-		self.hi = 1.0;
 		self.updated = true;
 	};
 	
@@ -39,4 +36,14 @@ E2.plugins["clamped_accumulate_modulator"] = function(core, node) {
 	{
 		return self.state.value;
 	};	
+
+	this.state_changed = function(ui)
+	{
+		if(!ui)
+		{
+			self.value = 0.0;
+			self.lo = 0.0;
+			self.hi = 1.0;
+		}
+	};
 };

@@ -6,13 +6,6 @@ E2.plugins["toggle_modulator"] = function(core, node) {
 	this.output_slots = [ { name: 'bool', dt: core.datatypes.BOOL, desc: 'The current state.', def: 'True' } ];
 	this.state = { value: true };
 	
-	this.reset = function()
-	{
-		self.state.value = true;
-		self.updated = true;
-		self.triggered = false;
-	};
-	
 	this.update_input = function(slot, data)
 	{
 		if(!self.triggered && data)
@@ -28,4 +21,13 @@ E2.plugins["toggle_modulator"] = function(core, node) {
 	{
 		return self.state.value;
 	};	
+
+	this.state_changed = function(ui)
+	{
+		if(!ui)
+		{
+			self.state.value = true;
+			self.triggered = false;
+		}
+	};
 };

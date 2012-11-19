@@ -12,11 +12,8 @@ E2.plugins["sample_and_hold_modulator"] = function(core, node) {
 	
 	this.reset = function()
 	{
-		self.state.value = 0.0;
-		self.buffer = 0.0;
 		self.has_updated = false;
 		self.updated = true;
-		self.sample = true;
 		self.last_state = true;
 	};
 	
@@ -47,4 +44,15 @@ E2.plugins["sample_and_hold_modulator"] = function(core, node) {
 		self.has_updated = true;
 		return self.state.value;
 	};	
+
+	this.state_changed = function(ui)
+	{
+		if(!ui)
+		{
+			debugger;
+			self.state.value = 0.0;
+			self.buffer = 0.0;
+			self.sample = true;
+		}
+	};
 };

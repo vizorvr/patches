@@ -9,14 +9,6 @@ E2.plugins["lowpass_filter_modulator"] = function(core, node) {
 	
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT, desc: 'The smoothed output value', def: 0 } ];
 
-	this.reset = function()
-	{
-		self.input_val = 0.0;
-		self.amount = 0.9;
-		self.output_val = 0.0;
-		self.last_val = 0.0;
-	};
-	
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
@@ -35,4 +27,15 @@ E2.plugins["lowpass_filter_modulator"] = function(core, node) {
 	{
 		return self.output_val;
 	};	
+
+	this.state_changed = function(ui)
+	{
+		if(!ui)
+		{
+			self.input_val = 0.0;
+			self.amount = 0.9;
+			self.output_val = 0.0;
+			self.last_val = 0.0;
+		}
+	};
 };

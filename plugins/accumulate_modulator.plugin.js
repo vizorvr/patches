@@ -8,7 +8,6 @@ E2.plugins["accumulate_modulator"] = function(core, node) {
 	
 	this.reset = function()
 	{
-		self.state.value = 0.0;
 		self.updated = true;
 	};
 	
