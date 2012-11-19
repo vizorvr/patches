@@ -292,7 +292,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 			u_ps += 'uniform ' + dt + ' ' + ident + ';\n';
 		}
 			
-		self.shader = ComposeShader(null, self.mesh, self.material, u_vs, u_ps, st.vs_src ? st.vs_src : null, st.ps_src ? st.ps_src : null);
+		self.shader = ComposeShader(E2.app.player.core.renderer.shader_cache, self.mesh, self.material, u_vs, u_ps, st.vs_src ? st.vs_src : null, st.ps_src ? st.ps_src : null);
 
 		for(var ident in st.slot_ids)
 		{
@@ -348,7 +348,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 				if(self.mesh !== data)
 				{
 					self.mesh = data;
-					dirty = true;
+					self.dirty = true;
 				}
 			}
 			else if(slot.index === 1)
@@ -369,15 +369,16 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 		
 		var caps = Material.get_caps_hash(self.mesh, self.material);
 
-		if(!dirty && self.caps_hash === caps)
+		if(!self.dirty && self.caps_hash === caps)
 		{
 			self.shader.material = self.material;
 			return;
 		}
 		
+		if(self.caps_hash !== caps)	
+			self.rebuild_shader();
+
 		self.caps_hash = caps;
-				
-		self.rebuild_shader();
 		self.updated = true;
 		self.dirty = false;
 	};
@@ -394,7 +395,7 @@ E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 			self.mesh = null;
 			self.material = null;
 			self.caps_mask = '';
-			dirty = false;
+			self.dirty = false;
 		}
 	};
 };
