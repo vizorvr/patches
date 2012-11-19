@@ -530,7 +530,7 @@ function Material(gl, t_cache, data, base_path)
 
 		// New style
 		parse_tex('diffuse_color_map', Material.texture_type.DIFFUSE_COLOR);
-		parse_tex('specular_color_map', Material.texture_type.SPECULAR_COLOR);
+		parse_tex('specular_intensity_map', Material.texture_type.SPECULAR_COLOR);
 		parse_tex('emission_color_map', Material.texture_type.EMISSION_COLOR);
 		parse_tex('normal_map', Material.texture_type.NORMAL);
 		
@@ -877,6 +877,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		var shader = new ShaderProgram(gl, prog);
 		var d_tex = (material ? material.textures[tt.DIFFUSE_COLOR] : undefined) || mesh.material.textures[tt.DIFFUSE_COLOR];
 		var s_tex = (material ? material.textures[tt.SPECULAR_COLOR] : undefined) || mesh.material.textures[tt.SPECULAR_COLOR];
+		var n_tex = (material ? material.textures[tt.NORMAL] : undefined) || mesh.material.textures[tt.NORMAL];
 		var vs_src = [];
 		var ps_src = [];
 		var vs_c_src = [];
@@ -963,6 +964,9 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			
 			if(s_tex)
 				ps_src.push('uniform sampler2D s_tex;');
+
+			if(n_tex)
+				ps_src.push('uniform sampler2D n_tex;');
 		}
 
 		if(!vs_custom)
@@ -998,8 +1002,12 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 
 			if(streams[v_types.NORMAL] && has_lights)
 			{
-				ps_dp('    vec3 n_dir = normalize(f_norm);');
-				ps_dp('    vec3 v_dir = -normalize(view_pos);');
+				if(streams[v_types.NORMAL] && streams[v_types.UV0] && n_tex)
+					ps_dp('    vec3 n_dir = -normalize(f_norm * (texture2D(n_tex, f_uv0.st).rgb - 0.5 * 2.0));');
+				else
+					ps_dp('    vec3 n_dir = normalize(f_norm);');
+
+				ps_dp('    vec3 v_dir = normalize(view_pos);');
 		
 				for(var i = 0; i < 8; i++)
 				{
@@ -1013,7 +1021,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 						if(l.type === Light.type.DIRECTIONAL)
 							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_dir);');
 						else
-							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos - view_pos);');
+							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos);');
 				
 						ps_dp('    float ' + lid + '_dd = dot(n_dir, ' + liddir + ');');
 						ps_dp('    fc += ' + lid + '_d_col * f_col * max(0.0, ' + lid + '_dd) * ' + lid + '_power;');
@@ -1025,9 +1033,9 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 							s += '(1.0 / length(' + liddir + ')) * ';
 					
 						if(streams[v_types.UV0] && s_tex)
-							ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * texture2D(s_tex, f_uv0.st).rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 1.0 / (1.0 + shinyness)), 0.0);');
+							ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * texture2D(s_tex, f_uv0.st).rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 5.0 / shinyness), 0.0);');
 						else
-							ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 1.0 / (1.0 + shinyness)), 0.0);');
+							ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 5.0 / shinyness), 0.0);');
 					}
 				}
 			}
@@ -1103,10 +1111,15 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		if(streams[v_types.UV0])
 		{
 			shader.v_uv0 = gl.getAttribLocation(prog, "v_uv0");
-			shader.d_tex = gl.getUniformLocation(prog, "d_tex");
+			
+			if(d_tex)
+				shader.d_tex = gl.getUniformLocation(prog, "d_tex");
 		
 			if(s_tex)
 				shader.s_tex = gl.getUniformLocation(prog, "s_tex");
+
+			if(n_tex)
+				shader.n_tex = gl.getUniformLocation(prog, "n_tex");
 		}
 	
 		shader.bind_array = function(type, data, item_size)
@@ -1172,18 +1185,20 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 			if(this.v_uv0 !== undefined && this.v_uv0 !== -1)
 			{
-				var dt = null, st = null;
+				var dt = null, st = null, nt = null;
 				var mm = mesh.material;
 			
 				if(mat)
 				{
 					dt = mat.textures[tt.DIFFUSE_COLOR] || mm.textures[tt.DIFFUSE_COLOR];
 					st = mat.textures[tt.SPECULAR_COLOR] || mm.textures[tt.SPECULAR_COLOR];
+					nt = mat.textures[tt.NORMAL] || mm.textures[tt.NORMAL];
 				}
 				else
 				{
 					dt = mm.textures[tt.DIFFUSE_COLOR];
 					st = mm.textures[tt.SPECULAR_COLOR];
+					nt = mm.textures[tt.NORMAL];
 				}
 			
 				gl.enableVertexAttribArray(this.v_uv0);
@@ -1197,7 +1212,13 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				if(st && this.s_tex !== undefined)
 				{
 					gl.uniform1i(this.s_tex, 1);
-					dt.enable(gl.TEXTURE1);
+					st.enable(gl.TEXTURE1);
+				}
+
+				if(nt && this.n_tex !== undefined)
+				{
+					gl.uniform1i(this.n_tex, 2);
+					nt.enable(gl.TEXTURE2);
 				}
 			}
 		
@@ -1212,7 +1233,6 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			m.enable();
 		};
 		
-		debugger;
 		cache.set_shader(cached[1], shader);
 	}
 	 
