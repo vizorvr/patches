@@ -878,6 +878,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		var d_tex = (material ? material.textures[tt.DIFFUSE_COLOR] : undefined) || mesh.material.textures[tt.DIFFUSE_COLOR];
 		var s_tex = (material ? material.textures[tt.SPECULAR_COLOR] : undefined) || mesh.material.textures[tt.SPECULAR_COLOR];
 		var n_tex = (material ? material.textures[tt.NORMAL] : undefined) || mesh.material.textures[tt.NORMAL];
+		var e_tex = (material ? material.textures[tt.EMISSION_COLOR] : undefined) || mesh.material.textures[tt.EMISSION_COLOR];
 		var vs_src = [];
 		var ps_src = [];
 		var vs_c_src = [];
@@ -967,6 +968,9 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 
 			if(n_tex)
 				ps_src.push('uniform sampler2D n_tex;');
+
+			if(e_tex)
+				ps_src.push('uniform sampler2D e_tex;');
 		}
 
 		if(!vs_custom)
@@ -1043,13 +1047,17 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(!has_lights)
 				ps_dp('    fc.rgb += f_col.rgb;');
 			
-			if(streams[v_types.UV0] && d_tex)
+			if(streams[v_types.UV0])
 			{
 				if(d_tex)
 					ps_dp('    fc *= texture2D(d_tex, f_uv0.st);');
+				
+				if(e_tex)
+					ps_dp('    fc.rgb += a_col.rgb + texture2D(e_tex, f_uv0.st).rgb;');
 			}
+			else
+				ps_dp('    fc.rgb += a_col.rgb;');
 			
-			ps_dp('    fc.rgb += a_col.rgb;');
 			ps_dp('    if(e2_alpha_clip > 0 && fc.a < 0.5) discard;');
 			ps_dp('    gl_FragColor = fc;');
 			ps_dp('}');
@@ -1120,6 +1128,9 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 
 			if(n_tex)
 				shader.n_tex = gl.getUniformLocation(prog, "n_tex");
+
+			if(e_tex)
+				shader.e_tex = gl.getUniformLocation(prog, "e_tex");
 		}
 	
 		shader.bind_array = function(type, data, item_size)
@@ -1185,7 +1196,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 			if(this.v_uv0 !== undefined && this.v_uv0 !== -1)
 			{
-				var dt = null, st = null, nt = null;
+				var dt = null, st = null, nt = null, et = null;
 				var mm = mesh.material;
 			
 				if(mat)
@@ -1193,12 +1204,14 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 					dt = mat.textures[tt.DIFFUSE_COLOR] || mm.textures[tt.DIFFUSE_COLOR];
 					st = mat.textures[tt.SPECULAR_COLOR] || mm.textures[tt.SPECULAR_COLOR];
 					nt = mat.textures[tt.NORMAL] || mm.textures[tt.NORMAL];
+					et = mat.textures[tt.EMISSION_COLOR] || mm.textures[tt.EMISSION_COLOR];
 				}
 				else
 				{
 					dt = mm.textures[tt.DIFFUSE_COLOR];
 					st = mm.textures[tt.SPECULAR_COLOR];
 					nt = mm.textures[tt.NORMAL];
+					et = mm.textures[tt.EMISSION_COLOR];
 				}
 			
 				gl.enableVertexAttribArray(this.v_uv0);
@@ -1219,6 +1232,12 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				{
 					gl.uniform1i(this.n_tex, 2);
 					nt.enable(gl.TEXTURE2);
+				}
+
+				if(et && this.e_tex !== undefined)
+				{
+					gl.uniform1i(this.e_tex, 3);
+					et.enable(gl.TEXTURE3);
 				}
 			}
 		
