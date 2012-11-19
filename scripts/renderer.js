@@ -1048,17 +1048,18 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(!has_lights)
 				ps_dp('    fc.rgb += f_col.rgb;');
 			
+			var has_amb = false;
+			
 			if(streams[v_types.UV0])
 			{
 				if(d_tex)
 					ps_dp('    fc *= texture2D(d_tex, f_uv0.st);');
 				
 				if(e_tex)
-					ps_dp('    fc.rgb += a_col.rgb + texture2D(e_tex, f_uv0.st).rgb;');
+					ps_dp('    fc.rgb += texture2D(e_tex, f_uv0.st).rgb;');
 			}
-			else
-				ps_dp('    fc.rgb += a_col.rgb;');
-			
+
+			ps_dp('    fc.rgb += a_col.rgb;');
 			ps_dp('    if(e2_alpha_clip > 0 && fc.a < 0.5) discard;');
 			ps_dp('    gl_FragColor = fc;');
 			ps_dp('}');
