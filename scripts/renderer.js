@@ -608,7 +608,7 @@ Material.get_caps_hash = function(mesh, o_mat)
 	}
 
 	for(var i = 0; i < 8; i++)
-		h += mat.lights[i] ? '1' : '0';
+		h += mat.lights[i] ? (mat.lights[i].type === Light.type.POINT ? 'p' : 'd') : '0';
 	
 	return h;
 };
@@ -984,7 +984,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			vs_dp('    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);');
 
 			if(streams[v_types.NORMAL])
-				vs_dp('    f_norm = normalize((n_mat * vec4(v_norm, 0.0)).xyz);');
+				vs_dp('    f_norm = normalize(mat3(n_mat) * v_norm);');
 	
 			if(streams[v_types.COLOR])
 				vs_dp('    dc = dc * v_col;');
@@ -1026,9 +1026,9 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 						if(l.type === Light.type.DIRECTIONAL)
 							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_dir);');
 						else
-							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos);');
+							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos - view_pos);');
 				
-						ps_dp('    float ' + lid + '_dd = dot(n_dir, ' + liddir + ');');
+						ps_dp('    float ' + lid + '_dd = dot(' + liddir + ', n_dir);');
 						ps_dp('    fc += ' + lid + '_d_col * f_col * max(0.0, ' + lid + '_dd) * ' + lid + '_power;');
 						ps_dp('    if(' + lid +'_dd >= 0.0)');
 			
