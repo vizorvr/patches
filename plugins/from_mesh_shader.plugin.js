@@ -58,10 +58,14 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 			return;
 		}
 		
+		if(self.dirty || self.caps_hash !== caps)
+		{
+			msg('Recomposing shader with caps: ' + self.caps_hash);
+			self.shader = ComposeShader(null, self.mesh, self.material, null, null, null, null);
+		}
+
 		self.caps_hash = caps;
 		
-		msg('Recomposing shader with caps: ' + self.caps_hash);
-		self.shader = ComposeShader(core.renderer.shader_cache, self.mesh, self.material, null, null, null, null);
 		self.updated = true;
 		self.dirty = false;
 	};
