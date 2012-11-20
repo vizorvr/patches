@@ -1762,7 +1762,7 @@ function Application() {
 			if(name !== null) // Graph?
 			{
 				node.title = name;
-				node.plugin.graph = new Graph(this.player.core, node.parent_graph, node.parent_graph.tree_node.addChild({
+				node.plugin.graph = new Graph(self.player.core, node.parent_graph, node.parent_graph.tree_node.addChild({
 					title: name,
 					isFolder: true,
 					expand: true
