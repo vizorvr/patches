@@ -19,15 +19,25 @@ E2.plugins["sphere_mesh_generator"] = function(core, node) {
 	
 	this.update_input = function(slot, data)
 	{
-		if(slot.index === 0 && self.state.v_res !== data && data > 1)
+		if(slot.index === 0 && self.state.v_res !== Math.floor(data) && data > 1)
+		{
 			self.state.v_res = Math.floor(data < 3.0 ? 3.0 : data > 25.0 ? 25.0 : data);
-		else if(slot.index === 1 && self.state.h_res !== data && data > 1)
+			self.dirty = true;
+		}
+		else if(slot.index === 1 && self.state.h_res !== Math.floor(data) && data > 1)
+		{
 			self.state.h_res = Math.floor(data < 3.0 ? 3.0 : data > 25.0 ? 25.0 : data);
+			self.dirty = true;
+		}
 	};
 	
 	this.update_state = function(delta_t)
 	{
-		self.generate_mesh();
+		if(self.dirty)
+		{
+			self.generate_mesh();
+			self.dirty = false;
+		}
 	};
 	
 	this.update_output = function(slot)
@@ -112,6 +122,9 @@ E2.plugins["sphere_mesh_generator"] = function(core, node) {
 	this.state_changed = function(ui)
 	{
 		if(!ui)
+		{
 			self.generate_mesh();
+			self.dirty = false;
+		}
 	};
 };
