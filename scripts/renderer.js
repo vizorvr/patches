@@ -977,22 +977,24 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		if(!vs_custom)
 		{
 			vs_dp('void main(void) {');
-	
+				vs_dp('    mat4 mv_mat = v_mat * m_mat;\n');
+
 			if(has_lights)
-				vs_dp('    view_pos = (v_mat * m_mat * vec4(v_pos, 1.0)).xyz;');
+				vs_dp('    view_pos = mat3(mv_mat) * v_pos;');
 			
-			vs_dp('    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);');
+			vs_dp('    gl_Position = p_mat * mv_mat * vec4(v_pos, 1.0);');
 
 			if(streams[v_types.NORMAL])
-				vs_dp('    f_norm = normalize(mat3(n_mat) * v_norm);');
+				vs_dp('    f_norm = normalize(mat3(mv_mat) * v_norm);');
 	
-			if(streams[v_types.COLOR])
-				vs_dp('    dc = dc * v_col;');
-
 			if(streams[v_types.UV0])
 				vs_dp('    f_uv0 = v_uv0;');		
 
-			vs_dp('    f_col = d_col;');
+			if(streams[v_types.COLOR])
+				vs_dp('    f_col = d_col * v_col;');
+			else
+				vs_dp('    f_col = d_col;');
+			
 			vs_dp('}');
 		}
 		else
@@ -1028,8 +1030,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 						else
 							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos - view_pos);');
 				
-						ps_dp('    float ' + lid + '_dd = dot(' + liddir + ', n_dir);');
-						ps_dp('    fc += ' + lid + '_d_col * f_col * max(0.0, ' + lid + '_dd) * ' + lid + '_power;');
+						ps_dp('    float ' + lid + '_dd = dot(' + liddir + ', n_dir);\n');
+						ps_dp('    fc += ' + lid + '_d_col * f_col * max(0.0, ' + lid + '_dd) * ' + lid + '_power;\n');
 						ps_dp('    if(' + lid +'_dd >= 0.0)');
 			
 						var s = '        fc += ' + lid + '_power * vec4(';
@@ -1038,9 +1040,9 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 							s += '(1.0 / length(' + liddir + ')) * ';
 					
 						if(streams[v_types.UV0] && s_tex)
-							ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * texture2D(s_tex, f_uv0.st).rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 5.0 / shinyness), 0.0);');
+							ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * texture2D(s_tex, f_uv0.st).rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 5.0 / shinyness), 0.0);\n');
 						else
-							ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 5.0 / shinyness), 0.0);');
+							ps_dp(s + 'vec3(' + lid + '_s_col) * s_col.rgb * pow(max(0.0, dot(-reflect(' + liddir + ', n_dir), v_dir)), 5.0 / shinyness), 0.0);\n');
 					}
 				}
 			}
@@ -1059,8 +1061,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 					ps_dp('    fc.rgb += texture2D(e_tex, f_uv0.st).rgb;');
 			}
 
-			ps_dp('    fc.rgb += a_col.rgb;');
-			ps_dp('    if(e2_alpha_clip > 0 && fc.a < 0.5) discard;');
+			ps_dp('    fc.rgb += a_col.rgb;\n');
+			ps_dp('    if(e2_alpha_clip > 0 && fc.a < 0.5)\n        discard;\n');
 			ps_dp('    gl_FragColor = fc;');
 			ps_dp('}');
 		}
