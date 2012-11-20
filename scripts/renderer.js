@@ -985,7 +985,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			vs_dp('    gl_Position = p_mat * mv_mat * vec4(v_pos, 1.0);');
 
 			if(streams[v_types.NORMAL])
-				vs_dp('    f_norm = normalize(mat3(mv_mat) * v_norm);');
+				vs_dp('    f_norm = normalize(mat3(n_mat) * v_norm);');
 	
 			if(streams[v_types.UV0])
 				vs_dp('    f_uv0 = v_uv0;');		
