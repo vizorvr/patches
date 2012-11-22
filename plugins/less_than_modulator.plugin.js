@@ -26,7 +26,12 @@ E2.plugins["less_than_modulator"] = function(core, node) {
 
 	this.update_state = function(delta_t)
 	{
-		self.state = self.value < self.ref;
+		var nst = self.value < self.ref;
+		
+		if(nst !== self.state)
+			self.state = nst;
+		else
+			self.updated = false;
 	};
 	
 	this.update_output = function(slot)
