@@ -33,7 +33,6 @@ E2.plugins["perspective_camera"] = function(core, node) {
 		
 		mat4.perspective(self.fov, c.width() / c.height(), self.near, self.far, self.camera.projection);
 		mat4.lookAt(self.position, self.target, up, self.camera.view);
-		self.camera.update_normal();
 	};
 	
 	this.update_output = function(slot)

@@ -34,7 +34,6 @@ E2.plugins["orthographic_camera"] = function(core, node) {
 		self.camera = new Camera();
 		mat4.ortho(p[0], p[1], p[2], p[3], p[4], p[5], self.camera.projection);
 		self.camera.view = self.view;
-		self.camera.update_normal();
 	};
 	
 	this.update_output = function(slot)
