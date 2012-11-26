@@ -26,21 +26,6 @@ Array.prototype.remove = function(obj)
 		this.splice(i, 1);
 };
 
-// Monkey-patch the window object with a request/cancelAnimationFrame shims.
-window.requestAnimFrame = (function()
-{
-	return window.requestAnimationFrame       || 
-		window.webkitRequestAnimationFrame || 
-		window.mozRequestAnimationFrame
-})();
-
-window.cancelAnimFrame = (function()
-{
-	return window.cancelAnimationFrame       || 
-		window.webkitCancelAnimationFrame || 
-		window.mozCancelAnimationFrame
-})();
-
 function clone(o)
 {
 	var no = (o instanceof Array) ? [] : {};
@@ -104,82 +89,6 @@ function resolve_graph(graphs, guid)
 	return null;
 };
 
-function PluginGroup(id)
-{
-	var self = this;
-	
-	this.id = id;
-	this.children = {};
-	this.entries = {};
-	
-	this.get_or_create_group = function(id)
-	{
-		var g = self.children[id];
-		
-		if(!g)
-		{
-			g = new PluginGroup(id);
-			self.children[id] = g;
-		}
-		
-		return g;
-	};
-	
-	this.add_entry = function(name, id)
-	{
-		var e = self.entries[name];
-		
-		assert(!e, 'Plugin keys must be unique, but a duplicate instance of the key "' + id + '" was found in plugins.json.');
-	
-		self.entries[name] = id;
-	};
-	
-	this.insert_relative = function(key, id)
-	{
-		var tokens = key.split('/');
-		
-		assert(tokens.length > 0, 'Plugin key cannot be empty.');
-		
-		var g = self, len = tokens.length - 1;
-		
-		for(var i = 0; i < len; i++)
-			g = g.get_or_create_group(tokens[i]);
-		
-		var key = tokens[len];
-		
-		g.add_entry(key, id);
-		
-		return key;
-	};
-	
-	this.create_items = function()
-	{
-		var items = []
-		var sorted = sort_dict(self.children);
-		
-		for(var i = 0, len = sorted.length; i < len; i++)
-		{
-			var id = sorted[i];
-			var child = self.children[id];
-			
-			items.push({ name: id, items: child.create_items() });
-			
-		}
-		
-		sorted = sort_dict(self.entries);
-		
-		for(var i = 0, len = sorted.length; i < len; i++)
-		{
-			var id = sorted[i];
-			var entry = self.entries[id];
-			
-			items.push({ name: id, icon: entry });
-		}
-			
-		return items;
-	};
-}
-
 function load_script(url)
 {
 	var script = document.createElement('script');
@@ -192,6 +101,81 @@ function load_script(url)
 	
 	document.getElementById('head').appendChild(script);
 }
+
+function PluginGroup(id)
+{
+	var self = this;
+	
+	this.id = id;
+	this.children = {};
+	this.entries = {};
+}
+	
+PluginGroup.prototype.get_or_create_group = function(id)
+{
+	var g = this.children[id];
+	
+	if(!g)
+	{
+		g = new PluginGroup(id);
+		this.children[id] = g;
+	}
+	
+	return g;
+};
+	
+PluginGroup.prototype.add_entry = function(name, id)
+{
+	var e = this.entries[name];
+	
+	assert(!e, 'Plugin keys must be unique, but a duplicate instance of the key "' + id + '" was found in plugins.json.');
+	this.entries[name] = id;
+};
+	
+PluginGroup.prototype.insert_relative = function(key, id)
+{
+	var tokens = key.split('/');
+	
+	assert(tokens.length > 0, 'Plugin key cannot be empty.');
+	
+	var g = this, len = tokens.length - 1;
+	
+	for(var i = 0; i < len; i++)
+		g = g.get_or_create_group(tokens[i]);
+	
+	var key = tokens[len];
+	
+	g.add_entry(key, id);
+	
+	return key;
+};
+	
+PluginGroup.prototype.create_items = function()
+{
+	var items = []
+	var sorted = sort_dict(this.children);
+	
+	for(var i = 0, len = sorted.length; i < len; i++)
+	{
+		var id = sorted[i];
+		var child = this.children[id];
+		
+		items.push({ name: id, items: child.create_items() });
+		
+	}
+	
+	sorted = sort_dict(this.entries);
+	
+	for(var i = 0, len = sorted.length; i < len; i++)
+	{
+		var id = sorted[i];
+		var entry = this.entries[id];
+		
+		items.push({ name: id, icon: entry });
+	}
+		
+	return items;
+};
 
 function PluginManager(core, base_url, creation_listener) 
 {
@@ -258,23 +242,23 @@ function PluginManager(core, base_url, creation_listener)
 				self.context_menu = new ContextMenu(E2.dom.canvas_parent, pg_root.create_items(), creation_listener);
   		}
 	});
-	
-	this.create = function(id, node) 
-	{
-		if(E2.plugins.hasOwnProperty(id))
-		{
-			var p = new E2.plugins[id](self.core, node);
-			
-			p.id = id;
-			
-			return p;
-		}
-			 
-		assert(true, 'Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
-		return null;
-	};
 }
  
+PluginManager.prototype.create = function(id, node) 
+{
+	if(E2.plugins.hasOwnProperty(id))
+	{
+		var p = new E2.plugins[id](this.core, node);
+		
+		p.id = id;
+		
+		return p;
+	}
+		 
+	assert(true, 'Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
+	return null;
+};
+
 function SnippetManager(base_url)
 {
 	var self = this;
@@ -283,11 +267,6 @@ function SnippetManager(base_url)
 	this.base_url = base_url;
 	
 	var url = self.base_url + '/snippets.json';
-	
-	this.register_snippet = function(name, url)
-	{
-		self.listbox.append('<option value="' + url + '">' + name + '</option>');
-	};
 	
 	$.ajax({
 		url: url,
@@ -335,10 +314,13 @@ function SnippetManager(base_url)
 	});
 }
 
+SnippetManager.prototype.register_snippet = function(name, url)
+{
+	this.listbox.append('<option value="' + url + '">' + name + '</option>');
+};
+	
 function ConnectionUI(parent_conn)
 {
-	var self = this;
-	
 	this.src_pos = [0, 0];
 	this.dst_pos = [0, 0];
 	this.src_slot_div = null;
@@ -348,188 +330,185 @@ function ConnectionUI(parent_conn)
 	this.deleting = false;
 	this.parent_conn = parent_conn;
 	this.color = '#000';
-	
-	this.resolve_slot_divs = function()
-	{
-		var pc = self.parent_conn;
-		
-		self.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + (pc.src_slot.uid !== undefined ? 'do' + pc.src_slot.uid : 'so' + pc.src_slot.index));
-		self.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + (pc.dst_slot.uid !== undefined ? 'di' + pc.dst_slot.uid : 'si' + pc.dst_slot.index));
-		
-		// assert(self.src_slot_div !== null && self.dst_slot_div !== null, 'Failed to resolve connection slot div.'); 
-		
-		self.src_pos = E2.app.getSlotPosition(self.src_slot_div, E2.slot_type.output);
-		self.dst_pos = E2.app.getSlotPosition(self.dst_slot_div, E2.slot_type.input);
-		
-		// assert(self.src_pos !== null && self.dst_pos !== null, 'Failed to resolve connection slot div position.'); 
-	};
 }
+
+ConnectionUI.prototype.resolve_slot_divs = function()
+{
+	var pc = this.parent_conn;
+	
+	this.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + (pc.src_slot.uid !== undefined ? 'do' + pc.src_slot.uid : 'so' + pc.src_slot.index));
+	this.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + (pc.dst_slot.uid !== undefined ? 'di' + pc.dst_slot.uid : 'si' + pc.dst_slot.index));
+	// assert(self.src_slot_div !== null && self.dst_slot_div !== null, 'Failed to resolve connection slot div.'); 
+	
+	this.src_pos = E2.app.getSlotPosition(this.src_slot_div, E2.slot_type.output);
+	this.dst_pos = E2.app.getSlotPosition(this.dst_slot_div, E2.slot_type.input);
+	// assert(self.src_pos !== null && self.dst_pos !== null, 'Failed to resolve connection slot div position.'); 
+};
 
 function Connection(src_node, dst_node, src_slot, dst_slot)
 {
-	var self = this;
-	
 	this.src_node = src_node;
 	this.dst_node = dst_node;
 	this.src_slot = src_slot;
 	this.dst_slot = dst_slot;
 	this.ui = null;
 	this.offset = 0;
-	
-	this.create_ui = function()
-	{
-		self.ui = new ConnectionUI(self);
-	};
-	
-	this.destroy_ui = function()
-	{
-		if(self.ui)
-			self.ui = null;
-	};
-	
-	this.reset = function()
-	{
-		if(self.ui && self.ui.flow)
-		{
-			self.ui.flow = false;
-			self.ui.color = '#000';
-		}
-	};
-	
-	this.r_update_inbound = function(node)
-	{
-		node.queued_update = 1;
-		
-		if(node.plugin.id !== 'input_proxy')
-		{
-			for(var i = 0, len = node.inputs.length; i < len; i++)
-				self.r_update_inbound(node.inputs[i].src_node);
-		}
-		else
-		{
-			var rp = node.parent_graph.plugin;
-			
-			if(rp && rp.parent_node.queued_update < 1 && rp.state.enabled)
-				self.r_update_inbound(rp.parent_node);
-		}
-	}
-
-	this.r_update_outbound = function(node)
-	{
-		node.queued_update = 2;
-		
-		if(node.plugin.id !== 'output_proxy')
-		{
-			for(var i = 0, len = node.outputs.length; i < len; i++)
-				self.r_update_outbound(node.outputs[i].dst_node);
-		}
-		else
-		{
-			var rp = node.parent_graph.plugin;
-			
-			if(rp && rp.parent_node.queued_update < 2 && rp.state.enabled)
-				self.r_update_outbound(rp.parent_node);
-		}
-	}
-
-	this.signal_change = function(on)
-	{
-		var n = self.src_node;
-		
-		if(n.plugin.connection_changed)
-			n.plugin.connection_changed(on, self, self.src_slot);
-		
-		n = self.dst_node;
-		n.inputs_changed = true;
-		
-		if(n.plugin.connection_changed)
-			n.plugin.connection_changed(on, self, self.dst_slot);
-
-		if(on)
-		{
-			self.r_update_inbound(n);
-			self.r_update_outbound(n);
-		}
-	};
-	
-	this.serialise = function()
-	{
-		var d = {};
-		
-		d.src_nuid = self.src_node.uid;
-		d.dst_nuid = self.dst_node.uid;
-		d.src_slot = self.src_slot.index;
-		d.dst_slot = self.dst_slot.index;
-		
-		d.src_connected = self.src_slot.connected;
-		d.dst_connected = self.dst_slot.connected;
-		
-		if(self.src_slot.uid !== undefined)
-			d.src_dyn = true;
-		
-		if(self.dst_slot.uid !== undefined)
-			d.dst_dyn = true;
-
-		if(self.offset !== 0)
-			d.offset = self.offset;
-		
-		return d;
-	};
-	
-	this.deserialise = function(d)
-	{
-		self.src_node = d.src_nuid;
-		self.dst_node = d.dst_nuid;
-		self.src_slot = { index: d.src_slot, dynamic: d.src_dyn ? true : false, connected: d.src_connected };
-		self.dst_slot = { index: d.dst_slot, dynamic: d.dst_dyn ? true : false, connected: d.dst_connected };
-		self.offset = d.offset ? d.offset : 0;
-	};
-	
-	this.patch_up = function(nodes)
-	{
-		var resolve_node = function(nuid)
-		{
-			for(var i = 0, len = nodes.length; i < len; i++)
-			{
-				if(nodes[i].uid === nuid)
-					return nodes[i];
-			}
-			
-			msg('ERROR: Failed to resolve node with uid = ' + nuid);
-			return null;
-		};
-		
-		self.src_node = resolve_node(self.src_node);
-		self.dst_node = resolve_node(self.dst_node);
-		
-		if(!self.src_node || !self.dst_node)
-		{
-			msg('ERROR: Source or destination node invalid - dropping connection.');
-			return false;
-		}
-		self.src_slot = (self.src_slot.dynamic ? self.src_node.dyn_outputs : self.src_node.plugin.output_slots)[self.src_slot.index];
-		self.dst_slot = (self.dst_slot.dynamic ? self.dst_node.dyn_inputs : self.dst_node.plugin.input_slots)[self.dst_slot.index];
-		
-		if(!self.src_slot || !self.dst_slot)
-		{
-			msg('ERROR: Source or destination slot invalid - dropping connection.');
-			return false;
-		}
-			
-		self.dst_slot.is_connected = true;
-		
-		if(self.src_slot.connected)
-			self.src_slot.connected = true;
-
-		if(self.dst_slot.connected)
-			self.dst_slot.connected = true;
-
-		self.src_node.outputs.push(self);
-		self.dst_node.inputs.push(self);
-		
-		return true;
-	};
 }
+
+Connection.prototype.create_ui = function()
+{
+	this.ui = new ConnectionUI(this);
+};
+
+Connection.prototype.destroy_ui = function()
+{
+	if(this.ui)
+		this.ui = null;
+};
+
+Connection.prototype.reset = function()
+{
+	if(this.ui && this.ui.flow)
+	{
+		this.ui.flow = false;
+		this.ui.color = '#000';
+	}
+};
+
+Connection.prototype.r_update_inbound = function(node)
+{
+	node.queued_update = 1;
+	
+	if(node.plugin.id !== 'input_proxy')
+	{
+		for(var i = 0, len = node.inputs.length; i < len; i++)
+			this.r_update_inbound(node.inputs[i].src_node);
+	}
+	else
+	{
+		var rp = node.parent_graph.plugin;
+		
+		if(rp && rp.parent_node.queued_update < 1 && rp.state.enabled)
+			this.r_update_inbound(rp.parent_node);
+	}
+}
+
+Connection.prototype.r_update_outbound = function(node)
+{
+	node.queued_update = 2;
+	
+	if(node.plugin.id !== 'output_proxy')
+	{
+		for(var i = 0, len = node.outputs.length; i < len; i++)
+			this.r_update_outbound(node.outputs[i].dst_node);
+	}
+	else
+	{
+		var rp = node.parent_graph.plugin;
+		
+		if(rp && rp.parent_node.queued_update < 2 && rp.state.enabled)
+			this.r_update_outbound(rp.parent_node);
+	}
+}
+
+Connection.prototype.signal_change = function(on)
+{
+	var n = this.src_node;
+	
+	if(n.plugin.connection_changed)
+		n.plugin.connection_changed(on, this, this.src_slot);
+	
+	n = this.dst_node;
+	n.inputs_changed = true;
+	
+	if(n.plugin.connection_changed)
+		n.plugin.connection_changed(on, this, this.dst_slot);
+
+	if(on)
+	{
+		this.r_update_inbound(n);
+		this.r_update_outbound(n);
+	}
+};
+
+Connection.prototype.serialise = function()
+{
+	var d = {};
+	
+	d.src_nuid = this.src_node.uid;
+	d.dst_nuid = this.dst_node.uid;
+	d.src_slot = this.src_slot.index;
+	d.dst_slot = this.dst_slot.index;
+	
+	d.src_connected = this.src_slot.connected;
+	d.dst_connected = this.dst_slot.connected;
+	
+	if(this.src_slot.uid !== undefined)
+		d.src_dyn = true;
+	
+	if(this.dst_slot.uid !== undefined)
+		d.dst_dyn = true;
+
+	if(this.offset !== 0)
+		d.offset = this.offset;
+	
+	return d;
+};
+
+Connection.prototype.deserialise = function(d)
+{
+	this.src_node = d.src_nuid;
+	this.dst_node = d.dst_nuid;
+	this.src_slot = { index: d.src_slot, dynamic: d.src_dyn ? true : false, connected: d.src_connected };
+	this.dst_slot = { index: d.dst_slot, dynamic: d.dst_dyn ? true : false, connected: d.dst_connected };
+	this.offset = d.offset ? d.offset : 0;
+};
+
+Connection.prototype.patch_up = function(nodes)
+{
+	var resolve_node = function(nuid)
+	{
+		for(var i = 0, len = nodes.length; i < len; i++)
+		{
+			if(nodes[i].uid === nuid)
+				return nodes[i];
+		}
+		
+		msg('ERROR: Failed to resolve node with uid = ' + nuid);
+		return null;
+	};
+	
+	this.src_node = resolve_node(this.src_node);
+	this.dst_node = resolve_node(this.dst_node);
+	
+	if(!this.src_node || !this.dst_node)
+	{
+		msg('ERROR: Source or destination node invalid - dropping connection.');
+		return false;
+	}
+	
+	this.src_slot = (this.src_slot.dynamic ? this.src_node.dyn_outputs : this.src_node.plugin.output_slots)[this.src_slot.index];
+	this.dst_slot = (this.dst_slot.dynamic ? this.dst_node.dyn_inputs : this.dst_node.plugin.input_slots)[this.dst_slot.index];
+	
+	if(!this.src_slot || !this.dst_slot)
+	{
+		msg('ERROR: Source or destination slot invalid - dropping connection.');
+		return false;
+	}
+		
+	this.dst_slot.is_connected = true;
+	
+	if(this.src_slot.connected)
+		this.src_slot.connected = true;
+
+	if(this.dst_slot.connected)
+		this.dst_slot.connected = true;
+
+	this.src_node.outputs.push(this);
+	this.dst_node.inputs.push(this);
+	
+	return true;
+};
 
 function draggable_mouseup(data) { return function(e)
 {
@@ -622,8 +601,6 @@ function make_draggable(ui, drag, stop)
 }
 
 function NodeUI(parent_node, x, y) {
-	var self = this;
-	
 	this.parent_node = parent_node;
 	this.x = x;
 	this.y = y;
@@ -631,56 +608,14 @@ function NodeUI(parent_node, x, y) {
 	this.st = E2.app.scrollOffset[1];
 	this.plugin_ui = null;
 	
-	this.create_slot = function(nid, col, s, type)
-	{
-		var div = make('div');
+	var nid = 'n' + parent_node.uid, dom = this.dom = make('table');
 	
-		if(s.uid !== undefined)
-			div.attr('id', nid + (type === E2.slot_type.input ? 'di' : 'do') + s.uid);
-		else
-			div.attr('id', nid + (type === E2.slot_type.input ? 'si' : 'so') + s.index);
+	dom.addClass('plugin');
+	dom.addClass('ui-widget-content');
+	dom.attr('id', nid);
+	dom.mousemove(E2.app.onMouseMoved); // Make sure we don't stall during slot connection, when the mouse enters a node.
 	
-		div.text(s.name);
-		div.addClass('pl_slot');
-		div.definition = s;
-	
-		div.mouseenter(E2.app.onSlotEntered(parent_node, s, div));
-		div.mouseleave(E2.app.onSlotExited(parent_node, s, div));
-		div.mousedown(E2.app.onSlotClicked(parent_node, s, div, type));
-	
-		dsc = 'Type: ' + s.dt.name;
-		
-		if(s.lo !== undefined || s.hi !== undefined)
-			dsc += '\nRange: ' + (s.lo !== undefined ? 'min. ' + s.lo : '') + (s.hi !== undefined ? (s.lo !== undefined ? ', ' : '') + 'max. ' + s.hi : '')
-		
-		if(s.def !== undefined)
-			dsc += '\nDefault: ' + s.def
-
-		dsc += '<break>';
-		
-		if(s.desc)
-			dsc += s.desc;
-
-		div.attr('alt', dsc);
-		div.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
-		col.append(div);
-	};
-	
-	var render_slots = function(nid, col, slots, type)
-	{
-		for(var i = 0, len = slots.length; i < len; i++)
-			self.create_slot(nid, col, slots[i], type);
-	};
-	
-	var nid = 'n' + parent_node.uid;
-	
-	this.dom = make('table');
-	this.dom.addClass('plugin');
-	this.dom.addClass('ui-widget-content');
-	this.dom.attr('id', nid);
-	this.dom.mousemove(E2.app.onMouseMoved); // Make sure we don't stall during slot connection, when the mouse enters a node.
-	
-	this.dom.addClass('pl_layout');
+	dom.addClass('pl_layout');
 	
 	var h_row = make('tr');
 	var h_cell = make('td');
@@ -711,13 +646,13 @@ function NodeUI(parent_node, x, y) {
 		h_row.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
 	}
 
-	this.dom.append(h_row);
+	dom.append(h_row);
 	
 	this.header_row = h_row;
 	
 	var row = make('tr');
 	
-	this.dom.append(row)
+	dom.append(row)
 	
 	var input_col = make('td');
 	var content_col = make('td');
@@ -732,14 +667,14 @@ function NodeUI(parent_node, x, y) {
 	row.append(content_col)
 	row.append(output_col)
 	
-	render_slots(nid, input_col, parent_node.plugin.input_slots, E2.slot_type.input);
-	render_slots(nid, output_col, parent_node.plugin.output_slots, E2.slot_type.output);
+	NodeUI.render_slots(parent_node, nid, input_col, parent_node.plugin.input_slots, E2.slot_type.input);
+	NodeUI.render_slots(parent_node, nid, output_col, parent_node.plugin.output_slots, E2.slot_type.output);
 	
 	if(parent_node.dyn_inputs)
-		render_slots(nid, input_col, parent_node.dyn_inputs, E2.slot_type.input);
+		NodeUI.render_slots(parent_node, nid, input_col, parent_node.dyn_inputs, E2.slot_type.input);
 	
 	if(parent_node.dyn_outputs)
-		render_slots(nid, output_col, parent_node.dyn_outputs, E2.slot_type.output);
+		NodeUI.render_slots(parent_node, nid, output_col, parent_node.dyn_outputs, E2.slot_type.output);
 
 	var plugin = parent_node.plugin;
 	
@@ -752,468 +687,63 @@ function NodeUI(parent_node, x, y) {
 	else
 		this.plugin_ui = {}; // We must set a dummy object so plugins can tell why they're being called.
 	
-	make_draggable(this.dom, E2.app.onNodeDragged(parent_node), E2.app.onNodeDragStopped(parent_node));
+	make_draggable(dom, E2.app.onNodeDragged(parent_node), E2.app.onNodeDragStopped(parent_node));
     	
-	var s = this.dom[0].style;
+	var s = dom[0].style;
 	
 	s.left = '' + x + 'px';
 	s.top = '' + y + 'px';
-	E2.dom.canvas_parent.append(this.dom);
+	E2.dom.canvas_parent.append(dom);
 }
 
-function Node(parent_graph, plugin_id, x, y) {
-	var self = this;
+NodeUI.create_slot = function(parent_node, nid, col, s, type)
+{
+	var div = make('div');
+
+	if(s.uid !== undefined)
+		div.attr('id', nid + (type === E2.slot_type.input ? 'di' : 'do') + s.uid);
+	else
+		div.attr('id', nid + (type === E2.slot_type.input ? 'si' : 'so') + s.index);
+
+	div.text(s.name);
+	div.addClass('pl_slot');
+	div.definition = s;
+
+	div.mouseenter(E2.app.onSlotEntered(parent_node, s, div));
+	div.mouseleave(E2.app.onSlotExited(parent_node, s, div));
+	div.mousedown(E2.app.onSlotClicked(parent_node, s, div, type));
+
+	dsc = 'Type: ' + s.dt.name;
 	
+	if(s.lo !== undefined || s.hi !== undefined)
+		dsc += '\nRange: ' + (s.lo !== undefined ? 'min. ' + s.lo : '') + (s.hi !== undefined ? (s.lo !== undefined ? ', ' : '') + 'max. ' + s.hi : '')
+	
+	if(s.def !== undefined)
+		dsc += '\nDefault: ' + s.def
+
+	dsc += '<break>';
+	
+	if(s.desc)
+		dsc += s.desc;
+
+	div.attr('alt', dsc);
+	div.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
+	col.append(div);
+};
+
+NodeUI.render_slots = function(parent_node, nid, col, slots, type)
+{
+	for(var i = 0, len = slots.length; i < len; i++)
+		NodeUI.create_slot(parent_node, nid, col, slots[i], type);
+};
+
+function Node(parent_graph, plugin_id, x, y)
+{
 	this.inputs = [];
 	this.outputs = [];
 	this.dyn_slot_uid = 0;
 	this.queued_update = 0;
 	
-	self.set_plugin = function(plugin)
-	{
-		self.plugin = plugin;
-		self.plugin.updated = true;
-		
-		var init_slot = function(slot, index, type)
-		{
-			slot.index = index;
-			slot.type = type;
-			
-			if(!slot.dt)
-				msg('ERROR: The slot \'' + slot.name + '\' does not declare a datatype.');
-		};
-		
-		// Decorate the slots with their index to make this immediately resolvable
-		// from a slot reference, allowing for faster code elsewhere.
-		// Additionally tagged with the type (0 = input, 1 = output) for similar reasons.
-		for(var i = 0, len = plugin.input_slots.length; i < len; i++)
-			init_slot(plugin.input_slots[i], i, E2.slot_type.input);
-		
-		for(var i = 0, len = plugin.output_slots.length; i < len; i++)
-			init_slot(plugin.output_slots[i], i, E2.slot_type.output);
-	};
-		
-	this.create_ui = function()
-	{
-		self.ui = new NodeUI(self, self.x, self.y);
-	};
-	
-	this.destroy_ui = function()
-	{
-		if(self.ui)
-		{
-			self.ui.dom.hide();
-			self.ui.dom.remove();
-			self.ui = null;
-		}
-	};
-	
-	this.destroy = function()
-	{
-		var graph = self.parent_graph;
-		var index = graph.nodes.indexOf(self);
-		var pending = [];
-		
-		graph.emit_event({ type: 'node-destroyed', node: self });
-		
-		if(index != -1)
-			graph.nodes.splice(index, 1);
-		
-		pending.push.apply(pending, self.inputs);
-		pending.push.apply(pending, self.outputs);
-		
-		for(var i = 0, len = pending.length; i < len; i++)
-			graph.destroy_connection(pending[i]);
-		
-		if(self.plugin.e2_is_graph)
-			self.plugin.graph.tree_node.remove();
-		
-		self.destroy_ui();
-	};
-	
-	this.get_disp_name = function()
-	{
-		return self.title === null ? self.id : self.title;
-	};
-	
-	this.reset = function()
-	{
-		var p = self.plugin;
-		
-		if(p.reset)
-		{
-			p.reset();
-			p.updated = true;
-		}
-	};
-	
-	this.add_slot = function(slot_type, def)
-	{
-		var suid = self.dyn_slot_uid++;
-		var is_inp = slot_type === E2.slot_type.input;
-		def.uid = suid;
-		
-		if(is_inp)
-		{
-			if(!self.dyn_inputs)
-				self.dyn_inputs = [];
-			
-			def.index = self.dyn_inputs.length;
-			def.type = E2.slot_type.input;
-			self.dyn_inputs.push(def);			
-		}
-		else
-		{
-			if(!self.dyn_outputs)
-				self.dyn_outputs = [];
-			
-			def.index = self.dyn_outputs.length;
-			def.type = E2.slot_type.output;
-			self.dyn_outputs.push(def);			
-		}
-		
-		if(self.ui)
-		{
-			var col = self.ui.dom.find(is_inp ? '#ic' : '#oc');
-			
-			self.ui.create_slot('n' + self.uid, col, def, slot_type);
-		}
-		
-		return suid;
-	};
-	
-	this.remove_slot = function(slot_type, suid)
-	{
-		var is_inp = slot_type === E2.slot_type.input;
-		var slots = is_inp ? self.dyn_inputs : self.dyn_outputs;
-		
-		if(!slots)
-			return;
-		
-		var slot = null;
-		var idx = -1;
-		
-		for(var i = 0, len = slots.length; i < len; i++)
-		{
-			var s = slots[i];
-			
-			if(s.uid === suid)
-			{
-				slot = s;
-				idx = i;
-				slots.splice(i, 1)
-				break;
-			}
-		} 
-		
-		if(!slot)
-			return;
-		
-		if(slots.length < 1) // To prevent these to be serialised or allocated if all slots have been removed.
-		{
-			if(is_inp)
-				self.dyn_inputs = undefined;
-			else
-				self.dyn_outputs = undefined;
-		}
-		else
-		{
-			// Patch up cached slot indices.
-			for(var i = 0, len = slots.length; i < len; i++)
-			{
-				var s = slots[i];
-			
-				if(s.index > idx)
-					s.index--;
-			}
-		}
-		
-		// Although impossible now, conceivably a plugin could create or destroy slots
-		// in response to a clicked button on its control surface or something similar.
-		if(self.ui)
-			self.ui.dom.find('#n' + self.uid + (is_inp ? 'di' : 'do') + slot.uid).remove();
-		
-		var att = is_inp ? self.inputs : self.outputs;
-		var pending = [];
-		var canvas_dirty = false;
-		
-		for(var i = 0, len = att.length; i < len; i++)
-		{
-			var c = att[i];
-			var s = is_inp ? c.dst_slot : c.src_slot;
-		
-			if(s === slot)
-			{
-				pending.push(c);
-				
-				if(c.ui)
-					canvas_dirty = true;
-			}
-			else if(s.uid !== undefined && s.index > idx)
-			{
-				if(c.ui)
-				{
-					if(is_inp)
-						c.ui.dst_pos = E2.app.getSlotPosition(c.ui.dst_slot_div, E2.slot_type.input);
-					else
-						c.ui.src_pos = E2.app.getSlotPosition(c.ui.src_slot_div, E2.slot_type.output);
-					
-					canvas_dirty = true;
-				}
-			}
-		}
-		
-		for(var i = 0, len = pending.length; i < len; i++)
-		{
-			pending[i].signal_change(false);
-			self.parent_graph.destroy_connection(pending[i]);
-		}
-			
-		if(canvas_dirty)
-			E2.app.updateCanvas(true);
-	};
-	
-	this.rename_slot = function(slot_type, suid, name)
-	{
-		var is_inp = slot_type === E2.slot_type.input;
-		var slots = is_inp ? self.dyn_inputs : self.dyn_outputs;
-		
-		if(!slots)
-			return;
-		
-		for(var i = 0, len = slots.length; i < len; i++)
-		{
-			if(slots[i].uid === suid)
-			{
-				var slot = slots[i];
-
-				slot.name = name;
-
-				if(self.ui)
-					self.ui.dom.find('#n' + self.uid + (is_inp ? 'di' : 'do') + slot.uid).text(name);
-
-				break; // Early out.
-			}
-		}
-	};
-		
-	this.update_connections = function()
-	{
-		var gsp = E2.app.getSlotPosition;
-		
-		for(var i = 0, len = self.outputs.length; i < len; i++)
-		{
-			var c = self.outputs[i];
-			
-			c.ui.src_pos = gsp(c.ui.src_slot_div, E2.slot_type.output);
-		}
-		
-		for(var i = 0, len = self.inputs.length; i < len; i++)
-		{
-			var c = self.inputs[i];
-			
-			c.ui.dst_pos = gsp(c.ui.dst_slot_div, E2.slot_type.input);
-		}
-		
-		return self.inputs.length + self.outputs.length;
-	};
-	
-	this.update_recursive = function(conns, delta_t)
-	{
-		var dirty = false;
-
-		if(self.update_count < 1)
-		{
-			var inputs = self.inputs;
-			var needs_update = self.inputs_changed;
-			var s_plugin = self.plugin;
-		
-			for(var i = 0, len = inputs.length; i < len; i++)
-			{
-				var inp = inputs[i];
-				var sn = inp.src_node;
-				 
-				dirty = sn.update_recursive(conns, delta_t) || dirty;
-			
-				var value = sn.plugin.update_output(inp.src_slot);
-			
-				if(sn.plugin.updated)
-				{
-					if(!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))
-					{
-						s_plugin.update_input(inp.dst_slot, value);
-						s_plugin.updated = true;
-						needs_update = true;
-				
-						if(inp.ui && !inp.ui.flow)
-						{
-							dirty = true;
-							inp.ui.flow = true;
-						}
-					}
-				}
-				else if(inp.ui && inp.ui.flow)
-				{
-					inp.ui.flow = false;
-					dirty = true;
-				}
-			}
-		
-			if(self.plugin.e2_is_graph)
-			{
-				if(s_plugin.update_state)
-					s_plugin.update_state(delta_t);
-			}			
-			else if(self.queued_update > 0)
-			{
-				if(s_plugin.update_state)
-					s_plugin.update_state(delta_t);
-
-				self.plugin.updated = true;
-				self.queued_update = 0;
-			}
-			else if(needs_update || (s_plugin.output_slots.length === 0 && (!self.outputs || self.outputs.length === 0)))
-			{
-				if(s_plugin.update_state)
-					s_plugin.update_state(delta_t);
-			
-				self.inputs_changed = false;
-			}
-			else if(s_plugin.input_slots.length === 0 && (!self.inputs || self.inputs.length === 0))
-			{
-				if(s_plugin.update_state)
-					s_plugin.update_state(delta_t);
-			}
-		}
-		
-		self.update_count++;
-
-		return dirty;
-	};
-	
-	this.serialise = function()
-	{
-		var d = {};
-		
-		d.plugin = self.plugin.id;
-		d.x = Math.round(self.x);
-		d.y = Math.round(self.y);
-		d.uid = self.uid;
-		
-		if(self.dyn_slot_uid)
-			d.dsid = self.dyn_slot_uid;
-		
-		if(self.plugin.state)
-			d.state = self.plugin.state;
-
-		if(self.title)
-			d.title = self.title;
-		
-		if(self.plugin.e2_is_graph)
-			d.graph = self.plugin.graph.serialise();
-		
-		if(self.dyn_inputs || self.dyn_outputs)
-		{
-			var pack_dt = function(slots)
-			{
-				for(var i = 0, len = slots.length; i < len; i++)
-					slots[i].dt = slots[i].dt.id;
-			};
-			
-			if(self.dyn_inputs)
-			{
-				d.dyn_in = clone(self.dyn_inputs);
-				pack_dt(d.dyn_in);
-			}
-			
-			if(self.dyn_outputs)
-			{
-				d.dyn_out = clone(self.dyn_outputs);
-				pack_dt(d.dyn_out);
-			}
-		}
-
-		return d;
-	};
-	
-	this.deserialise = function(guid, d)
-	{
-		self.parent_graph = guid;
-		self.x = d.x;
-		self.y = d.y;
-		self.id = E2.app.player.core.plugin_mgr.keybyid[d.plugin];
-		self.uid = d.uid;
-		
-		if(d.dsid)
-			self.dyn_slot_uid = d.dsid;
-		
-		self.title = d.title ? d.title : null;
-		
-		self.set_plugin(E2.app.player.core.plugin_mgr.create(d.plugin, self));
-		
-		if(self.plugin.e2_is_graph)
-		{
-			self.plugin.graph = new Graph(E2.app.player.core, null, null);
-			self.plugin.graph.plugin = self.plugin;
-			self.plugin.graph.deserialise(d.graph);
-			self.plugin.graph.reg_listener(self.plugin.graph_event);
-			E2.app.player.core.graphs.push(self.plugin.graph);
-		}
-		
-		if(d.state)
-			self.plugin.state = d.state;
-		
-		if(d.dyn_in || d.dyn_out)
-		{
-			var patch_slot = function(slots, type)
-			{
-				var rdt = E2.app.player.core.resolve_dt;
-				
-				for(var i = 0, len = slots.length; i < len; i++)
-				{
-					var s = slots[i];
-					 
-					s.dt = rdt[s.dt];
-					s.type = type;
-				}
-			};
-			
-			if(d.dyn_in)
-			{
-				self.dyn_inputs = d.dyn_in;
-				patch_slot(self.dyn_inputs, E2.slot_type.input);
-			}
-			
-			if(d.dyn_out)
-			{
-				self.dyn_outputs = d.dyn_out;
-				patch_slot(self.dyn_outputs, E2.slot_type.output);
-			}
-		}
-	};
-	
-	this.patch_up = function(graphs)
-	{
-		self.parent_graph = resolve_graph(graphs, self.parent_graph);
-
-		if(self.plugin.e2_is_graph)
-			self.plugin.graph.patch_up(graphs);
-	};
-
-	this.initialise = function()
-	{
-		if(self.plugin.state_changed)
-			self.plugin.state_changed(null);
-
-		if(self.plugin.e2_is_graph)
-			self.plugin.graph.initialise();
-	};
-	
-	// Initialisation. Must be declared last in the Node definition due to a quirk
-	// in JS parsing: The plugin initialization code cannot call a method on its
-	// node parent unless this is declared before the code that invokes the plugin
-	// initialization code below. In short: This is placed here for a reason and must
-	// stay no matter how counterintuitive and inconsistent it makes the code layout.
 	if(plugin_id !== null) // Don't initialise if we're loading.
 	{
 		this.parent_graph = parent_graph;
@@ -1226,15 +756,452 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.title = null;
 		this.inputs_changed = false;
 		
-		self.set_plugin(E2.app.player.core.plugin_mgr.create(plugin_id, this));
+		this.set_plugin(E2.app.player.core.plugin_mgr.create(plugin_id, this));
 	};
 }
 
+Node.prototype.set_plugin = function(plugin)
+{
+	this.plugin = plugin;
+	this.plugin.updated = true;
+	
+	var init_slot = function(slot, index, type)
+	{
+		slot.index = index;
+		slot.type = type;
+		
+		if(!slot.dt)
+			msg('ERROR: The slot \'' + slot.name + '\' does not declare a datatype.');
+	};
+	
+	// Decorate the slots with their index to make this immediately resolvable
+	// from a slot reference, allowing for faster code elsewhere.
+	// Additionally tagged with the type (0 = input, 1 = output) for similar reasons.
+	for(var i = 0, len = plugin.input_slots.length; i < len; i++)
+		init_slot(plugin.input_slots[i], i, E2.slot_type.input);
+	
+	for(var i = 0, len = plugin.output_slots.length; i < len; i++)
+		init_slot(plugin.output_slots[i], i, E2.slot_type.output);
+};
+	
+Node.prototype.create_ui = function()
+{
+	this.ui = new NodeUI(this, this.x, this.y);
+};
 
+Node.prototype.destroy_ui = function()
+{
+	if(this.ui)
+	{
+		this.ui.dom.hide();
+		this.ui.dom.remove();
+		this.ui = null;
+	}
+};
+
+Node.prototype.destroy = function()
+{
+	var graph = this.parent_graph;
+	var index = graph.nodes.indexOf(this);
+	var pending = [];
+	
+	graph.emit_event({ type: 'node-destroyed', node: this });
+	
+	if(index != -1)
+		graph.nodes.splice(index, 1);
+	
+	pending.push.apply(pending, this.inputs);
+	pending.push.apply(pending, this.outputs);
+	
+	for(var i = 0, len = pending.length; i < len; i++)
+		graph.destroy_connection(pending[i]);
+	
+	if(this.plugin.e2_is_graph)
+		this.plugin.graph.tree_node.remove();
+	
+	this.destroy_ui();
+};
+
+Node.prototype.get_disp_name = function()
+{
+	return this.title === null ? this.id : this.title;
+};
+
+Node.prototype.reset = function()
+{
+	var p = this.plugin;
+	
+	if(p.reset)
+	{
+		p.reset();
+		p.updated = true;
+	}
+};
+
+Node.prototype.add_slot = function(slot_type, def)
+{
+	var suid = this.dyn_slot_uid++;
+	var is_inp = slot_type === E2.slot_type.input;
+	def.uid = suid;
+	
+	if(is_inp)
+	{
+		if(!this.dyn_inputs)
+			this.dyn_inputs = [];
+		
+		def.index = this.dyn_inputs.length;
+		def.type = E2.slot_type.input;
+		this.dyn_inputs.push(def);			
+	}
+	else
+	{
+		if(!this.dyn_outputs)
+			this.dyn_outputs = [];
+		
+		def.index = this.dyn_outputs.length;
+		def.type = E2.slot_type.output;
+		this.dyn_outputs.push(def);			
+	}
+	
+	if(this.ui)
+	{
+		var col = this.ui.dom.find(is_inp ? '#ic' : '#oc');
+		
+		this.ui.create_slot('n' + this.uid, col, def, slot_type);
+	}
+	
+	return suid;
+};
+
+Node.prototype.remove_slot = function(slot_type, suid)
+{
+	var is_inp = slot_type === E2.slot_type.input;
+	var slots = is_inp ? this.dyn_inputs : this.dyn_outputs;
+	
+	if(!slots)
+		return;
+	
+	var slot = null;
+	var idx = -1;
+	
+	for(var i = 0, len = slots.length; i < len; i++)
+	{
+		var s = slots[i];
+		
+		if(s.uid === suid)
+		{
+			slot = s;
+			idx = i;
+			slots.splice(i, 1)
+			break;
+		}
+	} 
+	
+	if(!slot)
+		return;
+	
+	if(slots.length < 1) // To prevent these to be serialised or allocated if all slots have been removed.
+	{
+		if(is_inp)
+			this.dyn_inputs = undefined;
+		else
+			this.dyn_outputs = undefined;
+	}
+	else
+	{
+		// Patch up cached slot indices.
+		for(var i = 0, len = slots.length; i < len; i++)
+		{
+			var s = slots[i];
+		
+			if(s.index > idx)
+				s.index--;
+		}
+	}
+	
+	// Although impossible now, conceivably a plugin could create or destroy slots
+	// in response to a clicked button on its control surface or something similar.
+	if(this.ui)
+		this.ui.dom.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid).remove();
+	
+	var att = is_inp ? this.inputs : this.outputs;
+	var pending = [];
+	var canvas_dirty = false;
+	
+	for(var i = 0, len = att.length; i < len; i++)
+	{
+		var c = att[i];
+		var s = is_inp ? c.dst_slot : c.src_slot;
+	
+		if(s === slot)
+		{
+			pending.push(c);
+			
+			if(c.ui)
+				canvas_dirty = true;
+		}
+		else if(s.uid !== undefined && s.index > idx)
+		{
+			if(c.ui)
+			{
+				if(is_inp)
+					c.ui.dst_pos = E2.app.getSlotPosition(c.ui.dst_slot_div, E2.slot_type.input);
+				else
+					c.ui.src_pos = E2.app.getSlotPosition(c.ui.src_slot_div, E2.slot_type.output);
+				
+				canvas_dirty = true;
+			}
+		}
+	}
+	
+	for(var i = 0, len = pending.length; i < len; i++)
+	{
+		pending[i].signal_change(false);
+		this.parent_graph.destroy_connection(pending[i]);
+	}
+		
+	if(canvas_dirty)
+		E2.app.updateCanvas(true);
+};
+
+Node.prototype.rename_slot = function(slot_type, suid, name)
+{
+	var is_inp = slot_type === E2.slot_type.input;
+	var slots = is_inp ? this.dyn_inputs : this.dyn_outputs;
+	
+	if(!slots)
+		return;
+	
+	for(var i = 0, len = slots.length; i < len; i++)
+	{
+		if(slots[i].uid === suid)
+		{
+			var slot = slots[i];
+
+			slot.name = name;
+
+			if(this.ui)
+				this.ui.dom.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid).text(name);
+
+			break; // Early out.
+		}
+	}
+};
+	
+Node.prototype.update_connections = function()
+{
+	var gsp = E2.app.getSlotPosition;
+	
+	for(var i = 0, len = this.outputs.length; i < len; i++)
+	{
+		var c = this.outputs[i];
+		
+		c.ui.src_pos = gsp(c.ui.src_slot_div, E2.slot_type.output);
+	}
+	
+	for(var i = 0, len = this.inputs.length; i < len; i++)
+	{
+		var c = this.inputs[i];
+		
+		c.ui.dst_pos = gsp(c.ui.dst_slot_div, E2.slot_type.input);
+	}
+	
+	return this.inputs.length + this.outputs.length;
+};
+
+Node.prototype.update_recursive = function(conns, delta_t)
+{
+	var dirty = false;
+
+	if(this.update_count < 1)
+	{
+		var inputs = this.inputs;
+		var needs_update = this.inputs_changed;
+		var s_plugin = this.plugin;
+	
+		for(var i = 0, len = inputs.length; i < len; i++)
+		{
+			var inp = inputs[i];
+			var sn = inp.src_node;
+			 
+			dirty = sn.update_recursive(conns, delta_t) || dirty;
+		
+			var value = sn.plugin.update_output(inp.src_slot);
+		
+			if(sn.plugin.updated)
+			{
+				if(!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))
+				{
+					s_plugin.update_input(inp.dst_slot, value);
+					s_plugin.updated = true;
+					needs_update = true;
+			
+					if(inp.ui && !inp.ui.flow)
+					{
+						dirty = true;
+						inp.ui.flow = true;
+					}
+				}
+			}
+			else if(inp.ui && inp.ui.flow)
+			{
+				inp.ui.flow = false;
+				dirty = true;
+			}
+		}
+	
+		if(this.plugin.e2_is_graph)
+		{
+			if(s_plugin.update_state)
+				s_plugin.update_state(delta_t);
+		}			
+		else if(this.queued_update > 0)
+		{
+			if(s_plugin.update_state)
+				s_plugin.update_state(delta_t);
+
+			this.plugin.updated = true;
+			this.queued_update = 0;
+		}
+		else if(needs_update || (s_plugin.output_slots.length === 0 && (!this.outputs || this.outputs.length === 0)))
+		{
+			if(s_plugin.update_state)
+				s_plugin.update_state(delta_t);
+		
+			this.inputs_changed = false;
+		}
+		else if(s_plugin.input_slots.length === 0 && (!this.inputs || this.inputs.length === 0))
+		{
+			if(s_plugin.update_state)
+				s_plugin.update_state(delta_t);
+		}
+	}
+	
+	this.update_count++;
+
+	return dirty;
+};
+
+Node.prototype.serialise = function()
+{
+	var d = {};
+	
+	d.plugin = this.plugin.id;
+	d.x = Math.round(this.x);
+	d.y = Math.round(this.y);
+	d.uid = this.uid;
+	
+	if(this.dyn_slot_uid)
+		d.dsid = this.dyn_slot_uid;
+	
+	if(this.plugin.state)
+		d.state = this.plugin.state;
+
+	if(this.title)
+		d.title = this.title;
+	
+	if(this.plugin.e2_is_graph)
+		d.graph = this.plugin.graph.serialise();
+	
+	if(this.dyn_inputs || this.dyn_outputs)
+	{
+		var pack_dt = function(slots)
+		{
+			for(var i = 0, len = slots.length; i < len; i++)
+				slots[i].dt = slots[i].dt.id;
+		};
+		
+		if(this.dyn_inputs)
+		{
+			d.dyn_in = clone(this.dyn_inputs);
+			pack_dt(d.dyn_in);
+		}
+		
+		if(this.dyn_outputs)
+		{
+			d.dyn_out = clone(this.dyn_outputs);
+			pack_dt(d.dyn_out);
+		}
+	}
+
+	return d;
+};
+
+Node.prototype.deserialise = function(guid, d)
+{
+	this.parent_graph = guid;
+	this.x = d.x;
+	this.y = d.y;
+	this.id = E2.app.player.core.plugin_mgr.keybyid[d.plugin];
+	this.uid = d.uid;
+	
+	if(d.dsid)
+		this.dyn_slot_uid = d.dsid;
+	
+	this.title = d.title ? d.title : null;
+	
+	this.set_plugin(E2.app.player.core.plugin_mgr.create(d.plugin, this));
+	
+	if(this.plugin.e2_is_graph)
+	{
+		this.plugin.graph = new Graph(E2.app.player.core, null, null);
+		this.plugin.graph.plugin = this.plugin;
+		this.plugin.graph.deserialise(d.graph);
+		this.plugin.graph.reg_listener(this.plugin.graph_event);
+		E2.app.player.core.graphs.push(this.plugin.graph);
+	}
+	
+	if(d.state)
+		this.plugin.state = d.state;
+	
+	if(d.dyn_in || d.dyn_out)
+	{
+		var patch_slot = function(slots, type)
+		{
+			var rdt = E2.app.player.core.resolve_dt;
+			
+			for(var i = 0, len = slots.length; i < len; i++)
+			{
+				var s = slots[i];
+				 
+				s.dt = rdt[s.dt];
+				s.type = type;
+			}
+		};
+		
+		if(d.dyn_in)
+		{
+			this.dyn_inputs = d.dyn_in;
+			patch_slot(this.dyn_inputs, E2.slot_type.input);
+		}
+		
+		if(d.dyn_out)
+		{
+			this.dyn_outputs = d.dyn_out;
+			patch_slot(this.dyn_outputs, E2.slot_type.output);
+		}
+	}
+};
+
+Node.prototype.patch_up = function(graphs)
+{
+	this.parent_graph = resolve_graph(graphs, this.parent_graph);
+
+	if(this.plugin.e2_is_graph)
+		this.plugin.graph.patch_up(graphs);
+};
+
+Node.prototype.initialise = function()
+{
+	if(this.plugin.state_changed)
+		this.plugin.state_changed(null);
+
+	if(this.plugin.e2_is_graph)
+		this.plugin.graph.initialise();
+};
+	
 function Graph(core, parent_graph, tree_node) 
 {
-	var self = this;
-	
 	this.tree_node = tree_node;
 	this.listeners = [];
 	this.nodes = [];
@@ -1243,7 +1210,7 @@ function Graph(core, parent_graph, tree_node)
 	
 	if(tree_node !== null) // Only initialise if we're not deserialising.
 	{
-		this.uid = self.core.get_graph_uid();
+		this.uid = this.core.get_graph_uid();
 		this.parent_graph = parent_graph;
 		this.roots = [];
 		this.children = [];
@@ -1251,259 +1218,259 @@ function Graph(core, parent_graph, tree_node)
 			
 		tree_node.graph = this;
 	}
-	
-	this.get_node_uid = function()
-	{
-		return self.node_uid++;
-	};
-	
-	this.register_node = function(n)
-	{
-		self.nodes.push(n);
-		
-		if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
-			self.roots.push(n);
-		else if(n.plugin.e2_is_graph)
-			self.children.push(n);
-	};
-	
-	this.unregister_node = function(n)
-	{
-		self.nodes.remove(n);
-		
-		if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
-			self.roots.remove(n);
-		else if(n.plugin.e2_is_graph)
-			self.children.remove(n);
-	};
-
-	this.create_instance = function(plugin_id, x, y)
-	{
-		n = new Node(self, plugin_id, x, y);
-		
-		self.register_node(n);
-		self.emit_event({ type: 'node-created', node: n });
-
-		return n;
-	};
-	
-	this.update = function(delta_t)
-	{
-		var nodes = self.nodes;
-		var roots = self.roots;
-		var children = self.children;
-		var dirty = false;
-		
-		for(var i = 0, len = nodes.length; i < len; i++)
-			nodes[i].update_count = 0;
-		
-		for(var i = 0, len = roots.length; i < len; i++)
-			dirty = roots[i].update_recursive(self.connections, delta_t) || dirty;
-		
-		for(var i = 0, len = children.length; i < len; i++)
-		{
-			var c = children[i];
-			
-			if(!c.plugin.texture)
-				dirty = c.update_recursive(self.connections, delta_t) || dirty;
-		}
-
-		if(self === E2.app.player.core.active_graph)
-			E2.app.player.core.active_graph_dirty = dirty;
-		
-		for(var i = 0, len = nodes.length; i < len; i++)
-			nodes[i].plugin.updated = false;
-		
-		return dirty;
-	};
-	
-	this.enum_all = function(n_delegate, c_delegate)
-	{
-		var nodes = self.nodes,
-		    conns = self.connections;
-		    
-		for(var i = 0, len = nodes.length; i < len; i++)
-			n_delegate(nodes[i]);
-
-		for(var i = 0, len = conns.length; i < len; i++)
-			c_delegate(conns[i]);
-	};
-	
-	this.reset = function()
-	{
-		self.enum_all(function(n)
-		{
-			n.reset();
-		},
-		function(c)
-		{
-			c.reset();
-		});
-	};
-	
-	this.destroy_connection = function(c)
-	{
-		var index = self.connections.indexOf(c);
-		
-		if(index !== -1)
-			self.connections.splice(index, 1);
-		
-		c.dst_slot.is_connected = false;
-		
-		var slots = c.dst_node.inputs;
-		
-		index = slots.indexOf(c);
-	
-		if(index !== -1)
-			slots.splice(index, 1);
-
-		slots = c.src_node.outputs;
-		index = slots.indexOf(c);
-	
-		if(index !== -1)
-			slots.splice(index, 1);
-	};
-	
-	this.create_ui = function()
-	{
-		self.enum_all(function(n)
-		{
-			n.create_ui();
-
-			if(n.ui && n.plugin.state_changed)
-				n.plugin.state_changed(n.ui.plugin_ui);
-		},
-		function(c)
-		{
-			c.create_ui();
-			c.ui.resolve_slot_divs();
-		});
-	};
-
-	this.destroy_ui = function()
-	{
-		self.enum_all(function(n) { n.destroy_ui(); }, function(c) { c.destroy_ui(); });
-	};
-	
-	this.find_connections_from = function(node, slot)
-	{
-		if(slot.type !== E2.slot_type.output)
-			return [];
-		
-		var conns = self.connections;
-		var uid = node.uid;
-		var result = [];
-		
-		for(var i = 0, len = conns.length; i < len; i++)
-		{
-			var c = conns[i];
-			
-			if(c.src_node.uid === uid && c.src_slot === slot)
-				result.push(c);			
-		}
-		
-		return result;
-	};
-	
-	this.serialise = function()
-	{
-		var d = {};
-		
-		d.node_uid = self.node_uid;
-		d.uid = self.uid;
-		d.parent_uid = self.parent_graph ? self.parent_graph.uid : -1;
-		
-		d.nodes = [];
-		d.conns = [];
-		
-		self.enum_all(function(n) { d.nodes.push(n.serialise()); }, function(c) { d.conns.push(c.serialise()); });
-
-		return d;
-	};
-	
-	this.deserialise = function(d)
-	{
-		self.node_uid = d.node_uid;
-		self.uid = d.uid;
-		self.parent_graph = d.parent_uid;
-				
-		self.nodes = [];
-		self.roots = [];
-		self.children = [];
-		
-		for(var i = 0, len = d.nodes.length; i < len; i++)
-		{
-			var n = new Node(null, null, null, null);
-			
-			n.deserialise(self.uid, d.nodes[i]);
-			self.register_node(n);
-		}
-
-		self.connections = [];
-
-		for(var i = 0, len = d.conns.length; i < len; i++)
-		{
-			var c = new Connection(null, null, null, null);
-			
-			c.deserialise(d.conns[i]);
-			self.connections.push(c);
-		}
-	};
-	
-	this.patch_up = function(graphs)
-	{
-		self.parent_graph = resolve_graph(graphs, self.parent_graph);
-
-		// Cannot use self.enum_all for this!
-		var nodes = self.nodes,
-		    conns = self.connections;
-		    
-		for(var i = 0, len = nodes.length; i < len; i++)
-			nodes[i].patch_up(graphs);
-
-		prune = [];
-		
-		for(var i = 0, len = conns.length; i < len; i++)
-		{
-			var c = conns[i];
-			
-			if(!c.patch_up(self.nodes))
-				prune.push(c);
-		}
-		
-		for(var i = 0, len = prune.length; i < len; i++)
-			conns.remove(prune[i]);
-	};
-	
-	this.initialise = function()
-	{
-		var nodes = self.nodes;
-		
-		for(var i = 0, len = nodes.length; i < len; i++)
-			nodes[i].initialise();
-
-		self.reset();
-	};
-	
-	this.reg_listener = function(delegate)
-	{
-		if(!self.listeners.indexOf(delegate) !== -1)
-			self.listeners.push(delegate);
-	};
-	
-	this.emit_event = function(ev)
-	{
-		var l = self.listeners,
-		    len = l.length;
-		
-		if(len === 0)
-			return;
-		
-		for(var i = 0; i < len; i++)
-			l[i](ev);
-	};
 }
 
+Graph.prototype.get_node_uid = function()
+{
+	return this.node_uid++;
+};
+
+Graph.prototype.register_node = function(n)
+{
+	this.nodes.push(n);
+	
+	if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
+		this.roots.push(n);
+	else if(n.plugin.e2_is_graph)
+		this.children.push(n);
+};
+
+Graph.prototype.unregister_node = function(n)
+{
+	this.nodes.remove(n);
+	
+	if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
+		this.roots.remove(n);
+	else if(n.plugin.e2_is_graph)
+		this.children.remove(n);
+};
+
+Graph.prototype.create_instance = function(plugin_id, x, y)
+{
+	n = new Node(this, plugin_id, x, y);
+	
+	this.register_node(n);
+	this.emit_event({ type: 'node-created', node: n });
+
+	return n;
+};
+
+Graph.prototype.update = function(delta_t)
+{
+	var nodes = this.nodes;
+	var roots = this.roots;
+	var children = this.children;
+	var dirty = false;
+	
+	for(var i = 0, len = nodes.length; i < len; i++)
+		nodes[i].update_count = 0;
+	
+	for(var i = 0, len = roots.length; i < len; i++)
+		dirty = roots[i].update_recursive(this.connections, delta_t) || dirty;
+	
+	for(var i = 0, len = children.length; i < len; i++)
+	{
+		var c = children[i];
+		
+		if(!c.plugin.texture)
+			dirty = c.update_recursive(this.connections, delta_t) || dirty;
+	}
+
+	if(this === E2.app.player.core.active_graph)
+		E2.app.player.core.active_graph_dirty = dirty;
+	
+	for(var i = 0, len = nodes.length; i < len; i++)
+		nodes[i].plugin.updated = false;
+	
+	return dirty;
+};
+
+Graph.prototype.enum_all = function(n_delegate, c_delegate)
+{
+	var nodes = this.nodes,
+	    conns = this.connections;
+	    
+	for(var i = 0, len = nodes.length; i < len; i++)
+		n_delegate(nodes[i]);
+
+	for(var i = 0, len = conns.length; i < len; i++)
+		c_delegate(conns[i]);
+};
+
+Graph.prototype.reset = function()
+{
+	this.enum_all(function(n)
+	{
+		n.reset();
+	},
+	function(c)
+	{
+		c.reset();
+	});
+};
+
+Graph.prototype.destroy_connection = function(c)
+{
+	var index = this.connections.indexOf(c);
+	
+	if(index !== -1)
+		this.connections.splice(index, 1);
+	
+	c.dst_slot.is_connected = false;
+	
+	var slots = c.dst_node.inputs;
+	
+	index = slots.indexOf(c);
+
+	if(index !== -1)
+		slots.splice(index, 1);
+
+	slots = c.src_node.outputs;
+	index = slots.indexOf(c);
+
+	if(index !== -1)
+		slots.splice(index, 1);
+};
+
+Graph.prototype.create_ui = function()
+{
+	this.enum_all(function(n)
+	{
+		n.create_ui();
+
+		if(n.ui && n.plugin.state_changed)
+			n.plugin.state_changed(n.ui.plugin_ui);
+	},
+	function(c)
+	{
+		c.create_ui();
+		c.ui.resolve_slot_divs();
+	});
+};
+
+Graph.prototype.destroy_ui = function()
+{
+	this.enum_all(function(n) { n.destroy_ui(); }, function(c) { c.destroy_ui(); });
+};
+
+Graph.prototype.find_connections_from = function(node, slot)
+{
+	if(slot.type !== E2.slot_type.output)
+		return [];
+	
+	var conns = this.connections;
+	var uid = node.uid;
+	var result = [];
+	
+	for(var i = 0, len = conns.length; i < len; i++)
+	{
+		var c = conns[i];
+		
+		if(c.src_node.uid === uid && c.src_slot === slot)
+			result.push(c);			
+	}
+	
+	return result;
+};
+
+Graph.prototype.serialise = function()
+{
+	var d = {};
+	
+	d.node_uid = this.node_uid;
+	d.uid = this.uid;
+	d.parent_uid = this.parent_graph ? this.parent_graph.uid : -1;
+	
+	d.nodes = [];
+	d.conns = [];
+	
+	this.enum_all(function(n) { d.nodes.push(n.serialise()); }, function(c) { d.conns.push(c.serialise()); });
+
+	return d;
+};
+
+Graph.prototype.deserialise = function(d)
+{
+	this.node_uid = d.node_uid;
+	this.uid = d.uid;
+	this.parent_graph = d.parent_uid;
+			
+	this.nodes = [];
+	this.roots = [];
+	this.children = [];
+	
+	for(var i = 0, len = d.nodes.length; i < len; i++)
+	{
+		var n = new Node(null, null, null, null);
+		
+		n.deserialise(this.uid, d.nodes[i]);
+		this.register_node(n);
+	}
+
+	this.connections = [];
+
+	for(var i = 0, len = d.conns.length; i < len; i++)
+	{
+		var c = new Connection(null, null, null, null);
+		
+		c.deserialise(d.conns[i]);
+		this.connections.push(c);
+	}
+};
+
+Graph.prototype.patch_up = function(graphs)
+{
+	this.parent_graph = resolve_graph(graphs, this.parent_graph);
+
+	// Cannot use enum_all for this!
+	var nodes = this.nodes,
+	    conns = this.connections;
+	    
+	for(var i = 0, len = nodes.length; i < len; i++)
+		nodes[i].patch_up(graphs);
+
+	prune = [];
+	
+	for(var i = 0, len = conns.length; i < len; i++)
+	{
+		var c = conns[i];
+		
+		if(!c.patch_up(this.nodes))
+			prune.push(c);
+	}
+	
+	for(var i = 0, len = prune.length; i < len; i++)
+		conns.remove(prune[i]);
+};
+
+Graph.prototype.initialise = function()
+{
+	var nodes = this.nodes;
+	
+	for(var i = 0, len = nodes.length; i < len; i++)
+		nodes[i].initialise();
+
+	this.reset();
+};
+
+Graph.prototype.reg_listener = function(delegate)
+{
+	if(!this.listeners.indexOf(delegate) !== -1)
+		this.listeners.push(delegate);
+};
+
+Graph.prototype.emit_event = function(ev)
+{
+	var l = this.listeners,
+	    len = l.length;
+	
+	if(len === 0)
+		return;
+	
+	for(var i = 0; i < len; i++)
+		l[i](ev);
+};
+	
 function Core(app) {
 	var self = this;
 	
@@ -2306,7 +2273,7 @@ function Application() {
 			n.destroy();
 		}
 		
-		self.updateCanvas(false);
+		self.updateCanvas(true);
 	};
 	
 	this.onNodeHeaderClicked = function(e)
@@ -3195,6 +3162,21 @@ function InitialiseEngi()
 	E2.dom.save_minified = $('#save-minified');
 	
 	$.ajaxSetup({ cache: false });
+
+	// Monkey-patch the window object with a request/cancelAnimationFrame shims.
+	window.requestAnimFrame = (function()
+	{
+		return window.requestAnimationFrame       || 
+			window.webkitRequestAnimationFrame || 
+			window.mozRequestAnimationFrame
+	})();
+
+	window.cancelAnimFrame = (function()
+	{
+		return window.cancelAnimationFrame       || 
+			window.webkitCancelAnimationFrame || 
+			window.mozCancelAnimationFrame
+	})();
 
 	msg('Welcome to WebFx. ' + (new Date()));
 	
