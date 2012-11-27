@@ -43,6 +43,8 @@ E2.p.prototype.update_state = function(delta_t)
 	var diff = hi - lo;
 	var s = diff;
 	
+	this.hsla[2] = l;
+
 	if(s > 0.0)
 		s /= (l <= 0.5) ? (lo + hi) : (2.0 - hi - lo);
 	else
@@ -62,7 +64,6 @@ E2.p.prototype.update_state = function(delta_t)
 		
 	this.hsla[0] = h / 6.0;
 	this.hsla[1] = s;
-	this.hsla[2] = l;
 };
 
 E2.p.prototype.update_output = function(slot)
