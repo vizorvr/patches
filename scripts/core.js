@@ -422,8 +422,11 @@ Connection.prototype.signal_change = function(on)
 	n.inputs_changed = true;
 	
 	if(n.plugin.connection_changed)
+	{
 		n.plugin.connection_changed(on, this, this.dst_slot);
-
+		n.plugin.updated = true;
+	}
+	
 	if(on)
 	{
 		this.r_update_inbound(n);
