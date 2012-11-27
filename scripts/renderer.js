@@ -1,9 +1,20 @@
+/*
+ * Engi.
+ *
+ * Authors: Lasse Jul Nielsen.
+ * Web: http://www.effekts.dk
+ *
+ * Not for public dessemination. No license is granted for any use not explicitly authorized.
+ *
+ */
+
+function Color(r, g, b, a)
+{
+	this.rgba = [r, g, b, a || 1.0];
+}
+
 function TextureSampler(tex)
 {
-	var self = this;
-	
-	this.texture = tex;
-	
 	var canvas = document.createElement('canvas');
 	var image = tex.image;
 	
@@ -15,28 +26,27 @@ function TextureSampler(tex)
 	context.drawImage(image, 0, 0);
 
 	this.imgdata = context.getImageData(0, 0, image.width, image.height);
-	
-	this.get_pixel = function(x, y)
-	{
-		var img = self.texture.image;
-		
-		x = x < 0 ? 0 : x > 1.0 ? 1.0 : x;
-		y = y < 0 ? 0 : y > 1.0 ? 1.0 : y;
-
-		x *= img.width - 1;
-		y *= img.height - 1;
-		
-		var o = (Math.round(x) + (img.width * Math.round(y))) * 4
-		var d = self.imgdata.data;
-		
-		return [d[o], d[o+1], d[o+2], d[o+3]];
-	}
+	this.texture = tex;
 };
+
+TextureSampler.prototype.get_pixel = function(x, y)
+{
+	var img = this.texture.image;
+	
+	x = x < 0 ? 0 : x > 1.0 ? 1.0 : x;
+	y = y < 0 ? 0 : y > 1.0 ? 1.0 : y;
+
+	x *= img.width - 1;
+	y *= img.height - 1;
+	
+	var o = (Math.round(x) + (img.width * Math.round(y))) * 4
+	var d = this.imgdata.data;
+	
+	return [d[o], d[o+1], d[o+2], d[o+3]];
+}
 
 function Texture(gl)
 {
-	var self = this;
-	
 	this.gl = gl;
     	this.min_filter = gl.LINEAR;
 	this.mag_filter = gl.LINEAR;
@@ -44,131 +54,133 @@ function Texture(gl)
 	this.width = 0;
 	this.height = 0;
 	this.image = null;
-	
-	this.create = function(width, height)
-	{
-		self.upload(new Image(width, height));
-	};
-	
-	this.load = function(src)
-	{
-		var img = new Image();
-		
-		img.onload = function()
-		{
-			msg('Finished loading texture \'' + src + '\'.');
-			self.upload(img, src);
-		};
-		
-		img.onerror = function()
-		{
-			Notifier.error('Failed to load texture \'' + src + '\'', 'Renderer');
-		};
-		
-		img.src = src + '?d=' + Math.random();	
-	};
-	
-	this.enable = function(stage)
-	{
-		gl.activeTexture(stage || gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, this.texture);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.min_filter);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.mag_filter);
-	};
-	
-	this.disable = function()
-	{
-		gl.bindTexture(gl.TEXTURE_2D, null);
-	};
-	
-	this.isPow2 = function(n)
-	{
-		var v =  Math.log(n) / Math.log(2);	
-		var v_int = Math.floor(v);
-		
-		return (v - v_int === 0.0);
-	};
-	
-	this.upload = function(img, src)
-	{
-		self.width = img.width;
-		self.height = img.height;
-		self.image = img;
-		
-		if(!self.isPow2(self.width))
-			msg('WARNING: The width (' + self.width + ') of the texture \'' + src + '\' is not a power of two.');
-
-		if(!self.isPow2(self.height))
-			msg('WARNING: The height (' + self.height + ') of the texture \'' + src + '\' is not a power of two.');
-		
-		self.enable();
-		gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-    		self.disable();
-	};
-	
-	this.set_filtering = function(down, up)
-	{
-	    	self.min_filter = down;
-		self.mag_filter = up;
-	};
-	
-	this.get_sampler = function()
-	{
-		return new TextureSampler(self);
-	};
 }
+
+Texture.prototype.create = function(width, height)
+{
+	this.upload(new Image(width, height));
+};
+
+Texture.prototype.load = function(src)
+{
+	var img = new Image();
+	
+	img.onload = function(self, src) { return function()
+	{
+		msg('Finished loading texture \'' + src + '\'.');
+		self.upload(img, src);
+	}}(this, src);
+	
+	img.onerror = function(src) { return function()
+	{
+		Notifier.error('Failed to load texture \'' + src + '\'', 'Renderer');
+	}}(src);
+	
+	img.src = src + '?d=' + Math.random();	
+};
+
+Texture.prototype.enable = function(stage)
+{
+	var gl = this.gl;
+	
+	gl.activeTexture(stage || gl.TEXTURE0);
+	gl.bindTexture(gl.TEXTURE_2D, this.texture);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.min_filter);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.mag_filter);
+};
+
+Texture.prototype.disable = function()
+{
+	var gl = this.gl;
+	
+	gl.bindTexture(gl.TEXTURE_2D, null);
+};
+
+Texture.prototype.isPow2 = function(n)
+{
+	var v =  Math.log(n) / Math.log(2);	
+	var v_int = Math.floor(v);
+	
+	return (v - v_int === 0.0);
+};
+
+Texture.prototype.upload = function(img, src)
+{
+	this.width = img.width;
+	this.height = img.height;
+	this.image = img;
+	
+	if(!this.isPow2(this.width))
+		msg('WARNING: The width (' + this.width + ') of the texture \'' + src + '\' is not a power of two.');
+
+	if(!this.isPow2(this.height))
+		msg('WARNING: The height (' + this.height + ') of the texture \'' + src + '\' is not a power of two.');
+	
+	var gl = this.gl;
+	
+	this.enable();
+	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+	this.disable();
+};
+
+Texture.prototype.set_filtering = function(down, up)
+{
+    	this.min_filter = down;
+	this.mag_filter = up;
+};
+
+Texture.prototype.get_sampler = function()
+{
+	return new TextureSampler(this);
+};
 
 function TextureCache(gl)
 {
-	var self = this;
-	
-	self.gl = gl;
+	this.gl = gl;
 	this.textures = {};
-	
-	this.get = function(url)
-	{
-		var ce = self.textures[url];
-
-		if(ce !== undefined)
-		{
-			msg('Returning cahed version of texture \'' + url + '\'.');
-			ce.count++;
-			return ce.texture;
-		}
-		
-		var t = new Texture(self.gl);
-		
-		msg('Fetching texture \'' + url + '\'.');
-		
-		t.load(url);
-		self.textures[url] = { count:0, texture:t };
-		
-		return t;
-	};
-	
-	this.clear = function()
-	{
-		this.textures = {};
-	};
-
-	this.count = function()
-	{
-		var c = 0;
-		
-		for(t in self.textures)
-			++c;
-			
-		return c;
-
-	};
 }
+
+TextureCache.prototype.get = function(url)
+{
+	var ce = this.textures[url];
+
+	if(ce !== undefined)
+	{
+		msg('Returning cahed version of texture \'' + url + '\'.');
+		ce.count++;
+		return ce.texture;
+	}
+	
+	var t = new Texture(this.gl);
+	
+	msg('Fetching texture \'' + url + '\'.');
+	
+	t.load(url);
+	this.textures[url] = { count:0, texture:t };
+	
+	return t;
+};
+
+TextureCache.prototype.clear = function()
+{
+	this.textures = {};
+};
+
+TextureCache.prototype.count = function()
+{
+	var c = 0;
+	
+	for(t in this.textures)
+		++c;
+		
+	return c;
+
+};
 
 function Renderer(canvas_id)
 {
-	var self = this;
-	
   	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
 	this.framebuffer_stack = [];
@@ -194,185 +206,6 @@ function Renderer(canvas_id)
 	this.texture_cache = new TextureCache(this.context);
 	this.shader_cache = new ShaderCache(this.context);
 	this.fullscreen = false;
-	
-	this.begin_frame = function()
-	{
-		var gl = this.context;
-
-		if(gl)
-		{
-			gl.clearColor(0.0, 0.0, 0.0, 1.0);
-			gl.clearDepth(1.0);
-			gl.enable(gl.CULL_FACE);
-			gl.cullFace(gl.BACK);
-	    		self.update_viewport();
-	    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		}	
-	};
-	
-	this.end_frame = function()
-	{
-		var gl = this.context;
-		
-		if(gl)
-			gl.flush();
-	};
-	
-	this.push_framebuffer = function(fb, w, h)
-	{
-		var gl = this.context;
-		
-		gl.viewport(0, 0, w, h);
-		gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
-		self.framebuffer_stack.push([fb, w, h]);
-	};
-	
-	this.pop_framebuffer = function()
-	{
-		var fbs = self.framebuffer_stack;
-		var gl = self.context;
-		
-		fbs.pop();
-		
-		if(fbs.length > 0)
-		{
-			var fb = fbs[fbs.length-1];
-			
-			gl.bindFramebuffer(gl.FRAMEBUFFER, fb[0]);
-			gl.viewport(0, 0, fb[1], fb[2]);
-		}
-		else
-		{
-			var c = self.canvas[0];
-			
-			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-			gl.viewport(0, 0, c.width, c.height);
-		}
-	};
-	
-	this.on_fullscreen_change = function()
-	{
-		var c = E2.dom.webgl_canvas;
-		
-		if(self.fullscreen && !document.fullscreenElement && !document.webkitFullScreenElement && !document.mozFullscreenElement)
-		{
-			c.attr('class', 'webgl-canvas-normal');
-			c.attr('width', '480px');
-			c.attr('height', '270px');
-			self.fullscreen = false;
-		}
-		else
-			self.fullscreen = true;
-	};
-	
-	this.set_fullscreen = function(state)
-	{
-		var c = E2.dom.webgl_canvas;
-		var cd = c[0];
-
-		if(state)
-		{
-			if(!self.fullscreen)
-			{
-				var test = null;
-				
-				document.addEventListener('fullscreenchange', self.on_fullscreen_change);
-				document.addEventListener('webkitfullscreenchange', self.on_fullscreen_change);
-				document.addEventListener('mozfullscreenchange', self.on_fullscreen_change);
-				
-				if(cd.requestFullscreen)
-					cd.requestFullscreen();
-				if(cd.webkitRequestFullScreen)
-					cd.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-				else if(cd.mozRequestFullScreen)
-					cd.mozRequestFullScreen();
-
-  				if(cd.requestFullscreen || cd.webkitRequestFullScreen || cd.mozRequestFullScreen)
-  				{
-	  				c.attr('class', 'webgl-canvas-fs');
-					c.attr('width', '960px');
-					c.attr('height', '540px');
-					self.update_viewport();
-  				}
-  			}
-		}
-		else
-		{
-			if(self.fullscreen)
-			{
-				var cfs = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen;
-				
-				if(cfs)
-				{
-					c.attr('class', 'webgl-canvas-normal');
-					c.attr('width', '480px');
-					c.attr('height', '270px');
-					self.update_viewport();
-					cfs();
-				}
-			}
-		}
-	};
-	
-	this.update_viewport = function()
-	{
-		self.context.viewport(0, 0, self.canvas[0].width, self.canvas[0].height);
-	};
-	
-	this.set_depth_enable = function(on)
-	{
-		var gl = self.context;
-
-		if(on)
-		{
-			gl.enable(gl.DEPTH_TEST);
-			gl.depthMask(true);
-			gl.depthFunc(gl.LEQUAL);
-			return;
-		}
-
-		gl.disable(gl.DEPTH_TEST);
-		gl.depthMask(false);
-	};
-	
-	this.set_blend_mode = function(mode)
-	{
-		var gl = self.context;
-		var bm = Renderer.blend_mode;
-		
-		switch(mode)
-		{
-			case bm.NONE:
-				gl.disable(gl.BLEND);
-				break;
-				
-			case bm.ADDITIVE:
-				gl.enable(gl.BLEND);
-				gl.blendEquation(gl.FUNC_ADD);
-				gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-				break;
-
-			case bm.SUBTRACTIVE:
-				gl.enable(gl.BLEND);
-				gl.blendEquation(gl.FUNC_ADD);
-				gl.blendFunc(gl.ZERO, gl.ONE_MINUS_SRC_COLOR);
-				break;
-
-			case bm.MULTIPLY:
-				gl.enable(gl.BLEND);
-				gl.blendEquation(gl.FUNC_ADD);
-				gl.blendFunc(gl.ZERO, gl.SRC_COLOR);
-				break;
-
-			case bm.MULTIPLY:
-			default:
-				gl.enable(gl.BLEND);
-				gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
-				gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-				break;
-		}
-	};
-	
 }
 
 Renderer.blend_mode = 
@@ -384,30 +217,192 @@ Renderer.blend_mode =
 	NORMAL: 4
 };
 
+Renderer.prototype.begin_frame = function()
+{
+	var gl = this.context;
+
+	if(gl)
+	{
+		gl.clearColor(0.0, 0.0, 0.0, 1.0);
+		gl.clearDepth(1.0);
+		gl.enable(gl.CULL_FACE);
+		gl.cullFace(gl.BACK);
+    		this.update_viewport();
+    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	}	
+};
+
+Renderer.prototype.end_frame = function()
+{
+	var gl = this.context;
+	
+	if(gl)
+		gl.flush();
+};
+
+Renderer.prototype.push_framebuffer = function(fb, w, h)
+{
+	var gl = this.context;
+	
+	gl.viewport(0, 0, w, h);
+	gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+	this.framebuffer_stack.push([fb, w, h]);
+};
+
+Renderer.prototype.pop_framebuffer = function()
+{
+	var fbs = this.framebuffer_stack;
+	var gl = this.context;
+	
+	fbs.pop();
+	
+	if(fbs.length > 0)
+	{
+		var fb = fbs[fbs.length-1];
+		
+		gl.bindFramebuffer(gl.FRAMEBUFFER, fb[0]);
+		gl.viewport(0, 0, fb[1], fb[2]);
+	}
+	else
+	{
+		var c = this.canvas[0];
+		
+		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		gl.viewport(0, 0, c.width, c.height);
+	}
+};
+
+Renderer.prototype.on_fullscreen_change = function()
+{
+	var c = E2.dom.webgl_canvas;
+	
+	if(this.fullscreen && !document.fullscreenElement && !document.webkitFullScreenElement && !document.mozFullscreenElement)
+	{
+		c.attr('class', 'webgl-canvas-normal');
+		c.attr('width', '480px');
+		c.attr('height', '270px');
+		this.fullscreen = false;
+	}
+	else
+		this.fullscreen = true;
+};
+
+Renderer.prototype.set_fullscreen = function(state)
+{
+	var c = E2.dom.webgl_canvas;
+	var cd = c[0];
+
+	if(state)
+	{
+		if(!this.fullscreen)
+		{
+			var test = null;
+			
+			document.addEventListener('fullscreenchange', this.on_fullscreen_change);
+			document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change);
+			document.addEventListener('mozfullscreenchange', this.on_fullscreen_change);
+			
+			if(cd.requestFullscreen)
+				cd.requestFullscreen();
+			if(cd.webkitRequestFullScreen)
+				cd.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+			else if(cd.mozRequestFullScreen)
+				cd.mozRequestFullScreen();
+
+			if(cd.requestFullscreen || cd.webkitRequestFullScreen || cd.mozRequestFullScreen)
+			{
+  				c.attr('class', 'webgl-canvas-fs');
+				c.attr('width', '960px');
+				c.attr('height', '540px');
+				this.update_viewport();
+			}
+		}
+	}
+	else
+	{
+		if(this.fullscreen)
+		{
+			var cfs = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen;
+			
+			if(cfs)
+			{
+				c.attr('class', 'webgl-canvas-normal');
+				c.attr('width', '480px');
+				c.attr('height', '270px');
+				this.update_viewport();
+				cfs();
+			}
+		}
+	}
+};
+
+Renderer.prototype.update_viewport = function()
+{
+	var c = this.canvas[0];
+	
+	this.context.viewport(0, 0, c.width, c.height);
+};
+
+Renderer.prototype.set_depth_enable = function(on)
+{
+	var gl = this.context;
+
+	if(on)
+	{
+		gl.enable(gl.DEPTH_TEST);
+		gl.depthMask(true);
+		gl.depthFunc(gl.LEQUAL);
+		return;
+	}
+
+	gl.disable(gl.DEPTH_TEST);
+	gl.depthMask(false);
+};
+
+Renderer.prototype.set_blend_mode = function(mode)
+{
+	var gl = this.context;
+	var bm = Renderer.blend_mode;
+	
+	switch(mode)
+	{
+		case bm.NONE:
+			gl.disable(gl.BLEND);
+			break;
+			
+		case bm.ADDITIVE:
+			gl.enable(gl.BLEND);
+			gl.blendEquation(gl.FUNC_ADD);
+			gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+			break;
+
+		case bm.SUBTRACTIVE:
+			gl.enable(gl.BLEND);
+			gl.blendEquation(gl.FUNC_ADD);
+			gl.blendFunc(gl.ZERO, gl.ONE_MINUS_SRC_COLOR);
+			break;
+
+		case bm.MULTIPLY:
+			gl.enable(gl.BLEND);
+			gl.blendEquation(gl.FUNC_ADD);
+			gl.blendFunc(gl.ZERO, gl.SRC_COLOR);
+			break;
+
+		case bm.MULTIPLY:
+		default:
+			gl.enable(gl.BLEND);
+			gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
+			gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+			break;
+	}
+};
+
 function VertexBuffer(gl, v_type)
 {
-	var self = this;
-	
+	this.gl = gl;
 	this.type = v_type;
 	this.buffer = gl.createBuffer();
 	this.count = 0;
-	
-	this.enable = function()
-	{
-		gl.bindBuffer(gl.ARRAY_BUFFER, self.buffer);
-	};
-	
-	this.bind_data = function(v_data)
-	{
-		self.count = v_data.length / VertexBuffer.type_stride[v_type];
-		self.enable();
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v_data), gl.STATIC_DRAW);
-	};
-	
-	this.bind_to_shader = function(shader)
-	{
-		shader.bind_array(self.type, self.buffer, VertexBuffer.type_stride[self.type]);
-	};
 }
 
 VertexBuffer.vertex_type = 
@@ -431,31 +426,53 @@ VertexBuffer.type_stride = [
 	2,
 	2
 ];
+
+VertexBuffer.prototype.enable = function()
+{
+	var gl = this.gl;
 	
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+};
+
+VertexBuffer.prototype.bind_data = function(v_data)
+{
+	var gl = this.gl;
+
+	this.count = v_data.length / VertexBuffer.type_stride[this.type];
+	this.enable();
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v_data), gl.STATIC_DRAW);
+};
+
+VertexBuffer.prototype.bind_to_shader = function(shader)
+{
+	shader.bind_array(this.type, this.buffer, VertexBuffer.type_stride[this.type]);
+};
+
 function IndexBuffer(gl)
 {
-	var self = this;
-	
+	this.gl = gl;
 	this.buffer = gl.createBuffer();
 	this.count = 0;
-	
-	this.enable = function()
-	{
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, self.buffer);
-	};
-	
-	this.bind_data = function(i_data)
-	{
-		self.count = i_data.length;
-		self.enable();
-		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(i_data), gl.STATIC_DRAW);
-	};
 }
+
+IndexBuffer.prototype.enable = function()
+{
+	var gl = this.gl;
+	
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffer);
+};
+
+IndexBuffer.prototype.bind_data = function(i_data)
+{
+	var gl = this.gl;
+	
+	this.count = i_data.length;
+	this.enable();
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(i_data), gl.STATIC_DRAW);
+};
 
 function Light()
 {
-	var self = this;
-	
 	this.type = Light.type.POINT;
 	this.diffuse_color = new Color(1, 1, 1, 1);
 	this.specular_color = new Color(1, 1, 1, 1);
@@ -473,8 +490,6 @@ Light.type =
 
 function Material(gl, t_cache, data, base_path)
 {
-	var self = this;
-	
 	this.t_cache = t_cache;
 	this.depth_test = true;
 	this.depth_write = true;
@@ -490,6 +505,8 @@ function Material(gl, t_cache, data, base_path)
 	
 	if(data)
 	{
+		var self = this;
+
 		var parse_color = function(name)
 		{
 			var c = data[name];
@@ -498,73 +515,84 @@ function Material(gl, t_cache, data, base_path)
 				self[name] = new Color(c[0], c[1], c[2], c[3]);
 		};
 		
-		// TODO: Change all this!
 		var parse_tex = function(name, tgt, old)
 		{
 			var t = data[name];
 			
 			if(t)
 			{
-				var url = t;
-				
-				if(!old)
-					url = t.url;
+				var url = t.url;
+				var len = url.length;
 				
 				self.textures[tgt] = t_cache.get(base_path + url);
 				
-				var ext = url.substring(url.length - 3, url.length).toLowerCase();
-				
-				if(ext == 'png')
+				if(url.substring(len - 3).toLowerCase() == 'png')
 					self.alpha_clip = true;
 			}
 		};
 		
 		parse_color('diffuse_color');
 		parse_color('ambient_color');
-		
-		// Old style
-		parse_tex('diffuse_tex', Material.texture_type.DIFFUSE_COLOR, true);
-		parse_tex('emission_tex', Material.texture_type.EMISSION_COLOR, true);
-		parse_tex('specular_tex', Material.texture_type.SPECULAR_COLOR, true);
-		parse_tex('normal_tex', Material.texture_type.NORMAL, true);	 
-
-		// New style
 		parse_tex('diffuse_color_map', Material.texture_type.DIFFUSE_COLOR);
 		parse_tex('specular_intensity_map', Material.texture_type.SPECULAR_COLOR);
+		parse_tex('specular_color_map', Material.texture_type.SPECULAR_COLOR);
+		parse_tex('emission_intensity_map', Material.texture_type.EMISSION_COLOR);
 		parse_tex('emission_color_map', Material.texture_type.EMISSION_COLOR);
 		parse_tex('normal_map', Material.texture_type.NORMAL);
 		
 		this.depth_test = data.depth_test ? data.depth_test : true;
 		this.depth_write = data.depth_write ? data.depth_write : true;
 		this.alpha_clip = data.alpha_clip ? data.alpha_clip : false;
-		self.shininess = data.shininess ? data.shininess : 0.0;
-		self.double_sided = data.double_sided ? true : false;
+		this.shininess = data.shininess ? data.shininess : 0.0;
+		this.double_sided = data.double_sided ? true : false;
 	}
-	
-	this.enable = function()
-	{
-		var r = E2.app.player.core.renderer;
-		var gl = r.context;
-		
-		if(self.depth_test)
-		{
-			gl.enable(gl.DEPTH_TEST);
-			gl.depthFunc([gl.NEVER, 
-				      gl.LESS,
-				      gl.EQUAL,
-				      gl.LEQUAL,
-				      gl.GREATER,
-				      gl.NOTEQUAL,
-				      gl.GEQUAL,
-				      gl.ALWAYS][self.depth_func]);
-		}
-		else
-			gl.disable(gl.DEPTH_TEST);
-		
-		gl.depthMask(self.depth_write);
-		r.set_blend_mode(self.blend_mode);
-	};
 }
+
+Material.texture_type =
+{
+	DIFFUSE_COLOR: 0,
+	SPECULAR_COLOR: 1,
+	EMISSION_COLOR: 2,
+	NORMAL: 3,
+	COUNT: 4 // Always last!
+};
+
+Material.depth_func =
+{
+	NEVER: 0,
+	LESS: 1,
+	EQUAL: 2,
+	LEQUAL: 3,
+	GREATER: 4,
+	NOTEQUAL: 5,
+	GEQUAL: 6,
+	ALWAYS: 7,
+	COUNT: 8 // Always last!
+};
+
+Material.prototype.enable = function()
+{
+	var r = E2.app.player.core.renderer;
+	var gl = r.context;
+	
+	if(this.depth_test)
+	{
+		gl.enable(gl.DEPTH_TEST);
+		gl.depthFunc([gl.NEVER, 
+			      gl.LESS,
+			      gl.EQUAL,
+			      gl.LEQUAL,
+			      gl.GREATER,
+			      gl.NOTEQUAL,
+			      gl.GEQUAL,
+			      gl.ALWAYS][this.depth_func]);
+	}
+	else
+		gl.disable(gl.DEPTH_TEST);
+	
+	gl.depthMask(this.depth_write);
+	r.set_blend_mode(this.blend_mode);
+};
 
 Material.get_caps_hash = function(mesh, o_mat)
 {
@@ -613,34 +641,11 @@ Material.get_caps_hash = function(mesh, o_mat)
 	return h;
 };
 
-Material.texture_type =
-{
-	DIFFUSE_COLOR: 0,
-	SPECULAR_COLOR: 1,
-	EMISSION_COLOR: 2,
-	NORMAL: 3,
-	COUNT: 4 // Always last!
-};
-
-Material.depth_func =
-{
-	NEVER: 0,
-	LESS: 1,
-	EQUAL: 2,
-	LEQUAL: 3,
-	GREATER: 4,
-	NOTEQUAL: 5,
-	GEQUAL: 6,
-	ALWAYS: 7,
-	COUNT: 8 // Always last!
-};
-
 function Mesh(gl, prim_type, t_cache, data, base_path)
 {
-	var self = this;
-	
+	this.gl = gl;
 	this.prim_type = prim_type;
-	this.vertex_buffers = {}; // VertexBuffer.vertex_type
+	this.vertex_buffers = {};
 	this.index_buffer = null;
 	this.t_cache = t_cache;
 	this.material = new Material();
@@ -655,7 +660,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		{
 			var verts = this.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);
 		
-			self.vertex_count = data.vertices.length / 3;
+			this.vertex_count = data.vertices.length / 3;
 			verts.bind_data(data.vertices);
 		}
 
@@ -672,7 +677,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			    p2 = null,
 			    p3 = null;
 			
-			self.face_norms = [];
+			this.face_norms = [];
 			
 			if(data.indices)
 			{
@@ -700,9 +705,9 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 						n[2] /= l;
 					}
 					
-					self.face_norms.push(n[0]);
-					self.face_norms.push(n[1]);
-					self.face_norms.push(n[2]);
+					this.face_norms.push(n[0]);
+					this.face_norms.push(n[1]);
+					this.face_norms.push(n[2]);
 				}
 				
 				// TODO: Use index buffer to calculate proper vertex normals.
@@ -733,9 +738,9 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 						n[2] /= l;
 					}
 					
-					self.face_norms.push(n[0]);
-					self.face_norms.push(n[1]);
-					self.face_norms.push(n[2]);
+					this.face_norms.push(n[0]);
+					this.face_norms.push(n[1]);
+					this.face_norms.push(n[2]);
 					
 					for(var c = 0; c < 3; c++)
 					{
@@ -765,88 +770,83 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 			idx.bind_data(data.indices);
 		}
 	}
-	
-	this.render = function(camera, transform, shader, material)
-	{
-        	var verts = self.vertex_buffers['VERTEX'];
-        	var shader = shader || self.shader;
-        	
-        	if(!verts || !shader)
-        		return;
-        	
-        	shader.enable();
-        	
-        	for(var v_type in VertexBuffer.vertex_type)
-        	{
-        		var vb = self.vertex_buffers[v_type];
-        		
-        		if(vb)
-        			vb.bind_to_shader(shader);
-        	}
+}
 
-		shader.bind_camera(camera);
-       		shader.apply_uniforms(this, material);
+Mesh.prototype.render = function(camera, transform, shader, material)
+{
+	var verts = this.vertex_buffers['VERTEX'];
+	var shader = shader || this.shader;
+	var gl = this.gl;
+	
+	if(!verts || !shader)
+		return;
+	
+	shader.enable();
+	
+	for(var v_type in VertexBuffer.vertex_type)
+	{
+		var vb = this.vertex_buffers[v_type];
 		
-		if(!self.instances)
+		if(vb)
+			vb.bind_to_shader(shader);
+	}
+
+	shader.bind_camera(camera);
+	shader.apply_uniforms(this, material);
+	
+	if(!this.instances)
+	{
+		shader.bind_transform(camera.view, transform);
+		
+		if(!this.index_buffer)
 		{
-			shader.bind_transform(camera.view, transform);
+			gl.drawArrays(this.prim_type, 0, verts.count);
+		}
+		else
+		{
+			this.index_buffer.enable();
+			gl.drawElements(this.prim_type, this.index_buffer.count, gl.UNSIGNED_SHORT, 0);
+		}
+	}
+	else
+	{
+		var inst = this.instances;
+		var ft = mat4.create();
+		
+		if(!this.index_buffer)
+		{
+			for(var i = 0, len = inst.length; i < len; i++)
+			{
+				if(!transform.invert)
+					mat4.multiply(inst[i], transform, ft);
+				else
+					mat4.multiply(transform, inst[i], ft);
 			
-			if(!self.index_buffer)
-			{
-				gl.drawArrays(self.prim_type, 0, verts.count);
-			}
-			else
-			{
-				self.index_buffer.enable();
-				gl.drawElements(self.prim_type, self.index_buffer.count, gl.UNSIGNED_SHORT, 0);
+				shader.bind_transform(camera.view, ft);
+				gl.drawArrays(this.prim_type, 0, verts.count);
 			}
 		}
 		else
 		{
-			var inst = self.instances;
-			var ft = mat4.create();
-			
-			if(!self.index_buffer)
-			{
-				for(var i = 0, len = inst.length; i < len; i++)
-				{
-					if(!transform.invert)
-						mat4.multiply(inst[i], transform, ft);
-					else
-						mat4.multiply(transform, inst[i], ft);
-				
-					shader.bind_transform(camera.view, ft);
-					gl.drawArrays(self.prim_type, 0, verts.count);
-				}
-			}
-			else
-			{
-				self.index_buffer.enable();
+			this.index_buffer.enable();
 
-				for(var i = 0, len = inst.length; i < len; i++)
-				{
-					if(!transform.invert)
-						mat4.multiply(inst[i], transform, ft);
-					else
-						mat4.multiply(transform, inst[i], ft);
-				
-					shader.bind_transform(camera.view, ft);
-					gl.drawElements(self.prim_type, self.index_buffer.count, gl.UNSIGNED_SHORT, 0);
-				}
+			for(var i = 0, len = inst.length; i < len; i++)
+			{
+				if(!transform.invert)
+					mat4.multiply(inst[i], transform, ft);
+				else
+					mat4.multiply(transform, inst[i], ft);
+			
+				shader.bind_transform(camera.view, ft);
+				gl.drawElements(this.prim_type, this.index_buffer.count, gl.UNSIGNED_SHORT, 0);
 			}
 		}
-	};
-}
-
-function Color(r, g, b, a)
-{
-	this.rgba = [r, g, b, a || 1.0];
-}
+	}
+};
 
 function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custom, ps_custom)
 {
 	var gl = E2.app.player.core.renderer.context;
-	var self = this;
 	var streams = [];
 	var v_types = VertexBuffer.vertex_type;
 	var has_lights = false;
@@ -1274,41 +1274,39 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 
 function ShaderCache(gl)
 {
-	var self = this;
-	
 	this.shaders = {};
-	
-	this.get = function(key)
+}
+
+ShaderCache.prototype.get = function(key)
+{
+	if(key in this.shaders)
 	{
-		if(key in self.shaders)
-		{
-			msg('Returning cached shader: ' + key);
-			return self.shaders[key];
-		}
-		
-		return null;
+		msg('Returning cached shader: ' + key);
+		return this.shaders[key];
 	}
 	
-	this.count = function()
-	{
-		var c = 0;
-		
-		for(p in self.shaders)
-			++c;
-			
-		return c;
-	};
-	
-	this.set_shader = function(key, shader)
-	{
-		self.shaders[key] = shader;
-	};
-	
-	this.clear = function()
-	{
-		this.shaders = {};
-	};
+	return null;
 }
+
+ShaderCache.prototype.count = function()
+{
+	var c = 0;
+	
+	for(p in this.shaders)
+		++c;
+		
+	return c;
+};
+
+ShaderCache.prototype.set_shader = function(key, shader)
+{
+	this.shaders[key] = shader;
+};
+
+ShaderCache.prototype.clear = function()
+{
+	this.shaders = {};
+};
 
 function Shader(gl, type, src)
 {
@@ -1342,67 +1340,70 @@ function Shader(gl, type, src)
 
 function ShaderProgram(gl, program)
 {
-	var self = this;
-	
 	this.gl = gl;
 	this.program = program || gl.createProgram();
-
-	this.attach = function(shader)
-	{
-		self.gl.attachShader(self.program, shader.shader);
-	};
-	
-	this.link = function()
-	{
-		self.gl.linkProgram(self.program);
-
-		if(!self.gl.getProgramParameter(self.program, gl.LINK_STATUS))
-		{
-      			Notifier.error('Shader linking failed:\n' + gl.getProgramInfoLog(self.program), 'Renderer');
-			msg('Shader linking failed:\n' + gl.getProgramInfoLog(self.program));
-		}
-		
-		gl.validateProgram(self.program);
-		
-		if(!gl.getProgramParameter(self.program, gl.VALIDATE_STATUS))
-		{
-      			Notifier.error('Shader validation failed:\n' + gl.getProgramInfoLog(self.program), 'Renderer');
-      			msg('Shader validation failed:\n' + gl.getProgramInfoLog(self.program));
-      		}
-      	};
-      	
-      	this.enable = function()
-      	{
-		self.gl.useProgram(self.program);
-      	};
-
-	this.bind_camera = function(camera)
-	{
-		gl.uniformMatrix4fv(self.v_mat, false, camera.view);
-		gl.uniformMatrix4fv(self.p_mat, false, camera.projection);
-	};
-	
-	this.bind_transform = function(view, m_mat)
-	{
-		gl.uniformMatrix4fv(self.m_mat, false, m_mat);
-		
-		if(self.n_mat)
-		{
-			var mv_mat = mat4.create(), n_mat = mat3.create();
-			
-			mat4.multiply(view, m_mat, mv_mat);
-			mat4.toInverseMat3(mv_mat, n_mat);
-			mat3.transpose(n_mat);
-			gl.uniformMatrix3fv(self.n_mat, false, n_mat);
-		}
-	};
+	this.n_mat = null;
 }
 
+ShaderProgram.prototype.attach = function(shader)
+{
+	this.gl.attachShader(this.program, shader.shader);
+};
+
+ShaderProgram.prototype.link = function()
+{
+	var gl = this.gl;
+	var prog = this.program;
+	
+	gl.linkProgram(prog);
+
+	if(!gl.getProgramParameter(prog, gl.LINK_STATUS))
+	{
+		Notifier.error('Shader linking failed:\n' + gl.getProgramInfoLog(prog), 'Renderer');
+		msg('Shader linking failed:\n' + gl.getProgramInfoLog(prog));
+	}
+	
+	gl.validateProgram(prog);
+	
+	if(!gl.getProgramParameter(prog, gl.VALIDATE_STATUS))
+	{
+		Notifier.error('Shader validation failed:\n' + gl.getProgramInfoLog(prog), 'Renderer');
+		msg('Shader validation failed:\n' + gl.getProgramInfoLog(prog));
+	}
+};
+
+ShaderProgram.prototype.enable = function()
+{
+	this.gl.useProgram(this.program);
+};
+
+ShaderProgram.prototype.bind_camera = function(camera)
+{
+	var gl = this.gl;
+	
+	gl.uniformMatrix4fv(this.v_mat, false, camera.view);
+	gl.uniformMatrix4fv(this.p_mat, false, camera.projection);
+};
+
+ShaderProgram.prototype.bind_transform = function(view, m_mat)
+{
+	var gl = this.gl;
+	
+	gl.uniformMatrix4fv(this.m_mat, false, m_mat);
+	
+	if(this.n_mat)
+	{
+		var mv_mat = mat4.create(), n_mat = mat3.create();
+		
+		mat4.multiply(view, m_mat, mv_mat);
+		mat4.toInverseMat3(mv_mat, n_mat);
+		mat3.transpose(n_mat);
+		gl.uniformMatrix3fv(this.n_mat, false, n_mat);
+	}
+};
+	
 function Camera(gl)
 {
-	var self = this;
-	
-	this.gl = gl;
 	this.projection = mat4.create();
 	this.view = mat4.create();
 	
@@ -1412,8 +1413,6 @@ function Camera(gl)
 	
 function Scene(gl, data, base_path)
 {
-	var self = this;
-	
 	this.gl = gl;
 	this.texture_cache = E2.app.player.core.renderer.texture_cache /*new TextureCache(gl)*/;
 	this.shader_cache = E2.app.player.core.renderer.shader_cache /*new ShaderCache(gl)*/;
@@ -1433,7 +1432,7 @@ function Scene(gl, data, base_path)
 			if(!data.materials.hasOwnProperty(id))
 				continue;
 			
-			self.materials[id] = new Material(gl, self.texture_cache, data.materials[id], base_path);
+			this.materials[id] = new Material(gl, this.texture_cache, data.materials[id], base_path);
 		}
 		
 		for(var id in data.meshes)
@@ -1449,95 +1448,94 @@ function Scene(gl, data, base_path)
 				var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, batch, base_path);
 			
 				mesh.id = id + '_b' + b;
-				mesh.material = self.materials[batch.material];
-				mesh.shader = ComposeShader(self.shader_cache, mesh, mesh.material, null, null, null, null);
+				mesh.material = this.materials[batch.material];
+				mesh.shader = ComposeShader(this.shader_cache, mesh, mesh.material, null, null, null, null);
 			
 				this.meshes.push(mesh);
 				this.vertex_count += mesh.vertex_count;
 			}
 		}
 	}
-	
-	this.render = function(gl, camera, transform, overload_shaders, material)
-	{
-		var meshes = self.meshes;
-		
-		gl.enable(gl.CULL_FACE);
-		gl.cullFace(gl.BACK); 
-		gl.enable(gl.DEPTH_TEST);
-		gl.depthMask(true);
-		gl.depthFunc(gl.LEQUAL);
-		gl.enable(gl.BLEND);
-		gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
-		gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
-		if(overload_shaders)
-		{
-			for(var i = 0, len = meshes.length; i < len; i++)
-				meshes[i].render(camera, transform, overload_shaders[i], material);
-		}
-		else
-		{
-			for(var i = 0, len = meshes.length; i < len; i++)
-			{
-				var m = meshes[i];
-			
-				m.render(camera, transform, m.shader, null);
-			}
-		}
-	};
-	
-	this.build_overload_shaders = function(material)
-	{
-		var s_cache = self.shader_cache;
-		var meshes = self.meshes;
-		var o_shaders = [];
-		
-		for(var i = 0, len = meshes.length; i < len; i++)
-		{
-			var mesh = meshes[i];
-			var cached = s_cache.get(Material.get_caps_hash(mesh, material));
-			
-			if(cached)
-				o_shaders[i] = cached;
-			else
-				o_shaders[i] = ComposeShader(s_cache, mesh, material, null, null, null, null);
-		}
-		
-		return o_shaders;
-	};
-	
-	this.create_autofit_camera = function()
-	{
-		var bb = self.bounding_box;
-		var cam = new Camera();
-		
-		// If we have no bounding box, default to the old-fashioned 
-		//screenspace cam in lieu of something better.
-		if(!bb)
-			return cam;
-		
-		var c = E2.app.player.core.renderer.canvas;
-		var pos = [bb.hi[0] * 3.0, bb.hi[1] * 3.0, bb.hi[2] * 3.0];
-		var d = vec3.create(), tar = vec3.create();
-		
-		vec3.subtract(bb.hi, bb.lo, d);
-		
-		var dist = Math.sqrt(d[0] * d[0] + d[1] * d[1] + d[2] + d[2]) * 8.0;
-		
-		vec3.add(bb.lo, vec3.scale(d, 0.5, tar), tar);
-		
-		pos[0] = tar[0];
-		
-		msg('New autofit camera: ' + pos + ' ... ' + tar[0] + ',' + tar[1] + ',' + tar[2] + ' ... ' + dist);
-		mat4.perspective(45.0, c.width() / c.height(), 1.0, 1.0 + dist, cam.projection);
-		mat4.lookAt(pos, tar, [0.0, 0.0, 1.0], cam.view);
-		
-		return cam;
-	}
-	
 };
 
+Scene.prototype.render = function(gl, camera, transform, overload_shaders, material)
+{
+	var meshes = this.meshes;
+	
+	gl.enable(gl.CULL_FACE);
+	gl.cullFace(gl.BACK); 
+	gl.enable(gl.DEPTH_TEST);
+	gl.depthMask(true);
+	gl.depthFunc(gl.LEQUAL);
+	gl.enable(gl.BLEND);
+	gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
+	gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+	if(overload_shaders)
+	{
+		for(var i = 0, len = meshes.length; i < len; i++)
+			meshes[i].render(camera, transform, overload_shaders[i], material);
+	}
+	else
+	{
+		for(var i = 0, len = meshes.length; i < len; i++)
+		{
+			var m = meshes[i];
+		
+			m.render(camera, transform, m.shader, null);
+		}
+	}
+};
+
+Scene.prototype.build_overload_shaders = function(material)
+{
+	var s_cache = this.shader_cache;
+	var meshes = this.meshes;
+	var o_shaders = [];
+	
+	for(var i = 0, len = meshes.length; i < len; i++)
+	{
+		var mesh = meshes[i];
+		var cached = s_cache.get(Material.get_caps_hash(mesh, material));
+		
+		if(cached)
+			o_shaders[i] = cached;
+		else
+			o_shaders[i] = ComposeShader(s_cache, mesh, material, null, null, null, null);
+	}
+	
+	return o_shaders;
+};
+
+Scene.prototype.create_autofit_camera = function()
+{
+	var bb = this.bounding_box;
+	var cam = new Camera();
+	
+	// If we have no bounding box, default to the old-fashioned 
+	//screenspace cam in lieu of something better.
+	if(!bb)
+		return cam;
+	
+	var c = E2.app.player.core.renderer.canvas;
+	var pos = [bb.hi[0] * 3.0, bb.hi[1] * 3.0, bb.hi[2] * 3.0];
+	var d = vec3.create(), tar = vec3.create();
+	
+	vec3.subtract(bb.hi, bb.lo, d);
+	
+	var dist = Math.sqrt(d[0] * d[0] + d[1] * d[1] + d[2] + d[2]) * 8.0;
+	
+	vec3.add(bb.lo, vec3.scale(d, 0.5, tar), tar);
+	
+	pos[0] = tar[0];
+	
+	msg('New autofit camera: ' + pos + ' ... ' + tar[0] + ',' + tar[1] + ',' + tar[2] + ' ... ' + dist);
+	mat4.perspective(45.0, c.width() / c.height(), 1.0, 1.0 + dist, cam.projection);
+	mat4.lookAt(pos, tar, [0.0, 0.0, 1.0], cam.view);
+	
+	return cam;
+};
+	
 Scene.load = function(gl, url)
 {
 	var scene = null;
