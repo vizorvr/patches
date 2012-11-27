@@ -1,10 +1,10 @@
 /*
- * Cogent.
+ * Engi.
  *
  * Authors: Lasse Jul Nielsen.
  * Web: http://www.effekts.dk
  *
- * Not for public dessemination. No license is granted for unauthorized use.
+ * Not for public dessemination. No license is granted for any use not explicitly authorized.
  *
  */
 
@@ -1541,7 +1541,7 @@ function Core(app) {
 		
 		// TODO: Fix this up later. We need to reset this position to make
 		// copy / paste and switching graphs more humane, but right now this 
-		// introduces a bug the the connection rendering logic for some (copied)
+		// introduces a bug in the connection rendering logic for some (copied)
 		// nested subgraphs.
 		
 		/*E2.dom.canvas_parent.scrollTop(0);
