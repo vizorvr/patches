@@ -1,12 +1,12 @@
-E2.plugins["sqrt_modulator"] = function(core, node) {
+E2.plugins["exp_modulator"] = function(core, node) {
 	var self = this;
 	
-	this.desc = 'Sqrt(x).';
+	this.desc = 'Exp(x).';
 	this.input_slots = [ 
 		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value.', def: 0 }
 	];
 	
-	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT, desc: 'sqrt(<b>value</b>).', def: 0 } ];
+	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT, desc: 'exp(<b>value</b>).', def: 0 } ];
 	
 	this.reset = function()
 	{
@@ -16,7 +16,7 @@ E2.plugins["sqrt_modulator"] = function(core, node) {
 	this.update_input = function(slot, data)
 	{
 		if(slot.index === 0)
-			self.value = Math.sqrt(data);
+			self.value = Math.exp(data);
 	};	
 	
 	this.update_output = function(slot)
