@@ -1,7 +1,7 @@
-E2.plugins["convert_rgba_color_modulator"] = function(core, node) {
-	var self = this;
-	
+E2.p = E2.plugins["convert_rgba_color_modulator"] = function(core, node)
+{
 	this.desc = 'Creates a new color from individual RGBA components.';
+	
 	this.input_slots = [
 		 { name: 'red', dt: core.datatypes.FLOAT, desc: 'Red channel value.', lo: 0, hi: 1, def: 1 },
 		 { name: 'green', dt: core.datatypes.FLOAT, desc: 'Green channel value.', lo: 0, hi: 1, def: 1 },
@@ -12,19 +12,19 @@ E2.plugins["convert_rgba_color_modulator"] = function(core, node) {
 	this.output_slots = [ 
 		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The output color', def: 'White' } 
 	];
-	
-	this.reset = function()
-	{
-		self.color = new Color(1.0, 1.0, 1.0, 1.0);
-	};
-	
-	this.update_input = function(slot, data)
-	{
-		self.color.rgba[slot.index] = data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data;
-	};
-	
-	this.update_output = function(slot)
-	{
-		return self.color;
-	};
+};
+
+E2.p.prototype.reset = function()
+{
+	this.color = new Color(1.0, 1.0, 1.0, 1.0);
+};
+
+E2.p.prototype.update_input = function(slot, data)
+{
+	this.color.rgba[slot.index] = data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data;
+};
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.color;
 };
