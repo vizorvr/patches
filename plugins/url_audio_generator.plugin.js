@@ -123,6 +123,7 @@ E2.plugins["url_audio_generator"] = function(core, node) {
 			
 				if(src !== null)
 				{
+					// TODO: This needs error handling. Load failures are currently silent.
 					msg('URL Audio generator: Loading ' + src + '.');
 					self.audio.src = src;
 				}
