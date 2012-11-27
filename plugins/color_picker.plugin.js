@@ -147,8 +147,9 @@ E2.p.prototype.update_value = function(c)
 	
 	if(!rgb || rgb[0] !== nc[0] || rgb[1] !== nc[1] || rgb[2] !== nc[2])
 	{
-		
-		this.color = new Color(nc[0], nc[1], nc[2], 1.0);
+		rgb[0] = nc[0];
+		rgb[1] = nc[1];
+		rgb[2] = nc[2];
 		this.changed = true;
 	}
 	
@@ -164,10 +165,14 @@ E2.p.prototype.update_picker_ev = function(e, c, s, i)
 		return;
 
 	var i_o = i.offset();
-
-	this.state.sat = (e.pageX - i_o.left) / 100.0;
-	this.state.lum = 1.0 - ((e.pageY - i_o.top) / 100.0);
+	var st = this.state;
 	
+	st.sat = (e.pageX - i_o.left) / 100.0;
+	st.lum = 1.0 - ((e.pageY - i_o.top) / 100.0);
+	
+	st.sat = st.sat < 0.0 ? 0.0 : st.sat > 1.0 ? 1.0 : st.sat;
+	st.lum = st.lum < 0.0 ? 0.0 : st.lum > 1.0 ? 1.0 : st.lum;
+
 	this.update_picker(c, s);
 };
 
