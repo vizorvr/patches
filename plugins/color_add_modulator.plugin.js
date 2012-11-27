@@ -1,47 +1,49 @@
-E2.plugins["color_add_modulator"] = function(core, node) {
-	var self = this;
-	
+E2.p = E2.plugins["color_add_modulator"] = function(core, node)
+{
 	this.desc = 'Adds a constant value to all components of a color. Each channel is clipped to the range 0;1.';
+	
 	this.input_slots = [ 
 		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Input color.' },
 		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Value to be added to the R, G and B channels.' } 
 	];
 	
-	this.output_slots = [ { name: 'color', dt: core.datatypes.COLOR, desc: 'Output color: R+V, G+V, B+V, A' } ];
+	this.output_slots = [
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Output color: R+V, G+V, B+V, A' }
+	];
+};
+
+E2.p.prototype.reset = function()
+{
+	this.color = new Color(1, 1, 1);
+	this.output_color = new Color(1, 1, 1);
+	this.value = 0.0;
+};
+
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+		this.color = data;
+	else
+		this.value = data;
+};
+
+E2.p.prototype.update_state = function(delta_t)
+{
+	var rgba = this.color.rgba;
+	var o_rgba = this.output_color.rgba;
+	var val = this.value;
 	
-	this.reset = function()
+	for(var i = 0; i < 3; i++)
 	{
-		self.color = new Color(1, 1, 1);
-		self.output_color = new Color(1, 1, 1);
-		self.value = 0.0;
-	};
-	
-	this.update_input = function(slot, data)
-	{
-		if(slot.index === 0)
-			self.color = data;
-		else
-			self.value = data;
-	};
-	
-	this.update_state = function(delta_t)
-	{
-		var rgba = self.color.rgba;
-		var o_rgba = self.output_color.rgba;
-		var val = self.value;
+		var v = rgba[i] + val;
 		
-		for(var i = 0; i < 3; i++)
-		{
-			var v = rgba[i] + val;
-			
-			o_rgba[i] = v < 0.0 ? 0.0 : v > 1.0 ? 1.0 : v;
-		}
-		
-		o_rgba[3] = rgba[4];
-	};
+		o_rgba[i] = v < 0.0 ? 0.0 : v > 1.0 ? 1.0 : v;
+	}
 	
-	this.update_output = function(slot)
-	{
-		return self.output_color;
-	};	
+	o_rgba[3] = rgba[4];
+};
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.output_color;
 };
