@@ -1,17 +1,23 @@
-E2.plugins["delta_t_generator"] = function(core, node) {
-	var self = this;
-	
+E2.p = E2.plugins["delta_t_generator"] = function(core, node)
+{
 	this.desc = 'Emits the current frame delta time in seconds.';
+	
 	this.input_slots = [];
-	this.output_slots = [ { name: 'seconds', dt: core.datatypes.FLOAT, desc: 'Last frame delta time in seconds.' } ];
 	
-	this.update_state = function(delta_t)
-	{
-		self.updated = true;
-	};
+	this.output_slots = [
+		{ name: 'seconds', dt: core.datatypes.FLOAT, desc: 'Last frame delta time in seconds.' }
+	];
 	
-	this.update_output = function(slot)
-	{
-		return core.delta_t;
-	};
+	this.core = core;
+};
+
+E2.p.prototype.update_state = function(delta_t)
+{
+	// Ensure that we continously update
+	this.updated = true;
+};
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.core.delta_t;
 };
