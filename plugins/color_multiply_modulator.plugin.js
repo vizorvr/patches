@@ -1,47 +1,49 @@
-E2.plugins["color_multiply_modulator"] = function(core, node) {
-	var self = this;
-	
+E2.p = E2.plugins["color_multiply_modulator"] = function(core, node)
+{
 	this.desc = 'Scale the RGB components of a color by a supplied factor.';
+	
 	this.input_slots = [ 
 		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Color to be modulated.' },
 		{ name: 'factor', dt: core.datatypes.FLOAT, desc: 'Factor to scale the RGB components of the supplied color with.', def: 1 } 
 	];
 	
-	this.output_slots = [ { name: 'color', dt: core.datatypes.COLOR, desc: 'Output color: R * V, G * V, B * V, A' } ];
+	this.output_slots = [
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Output color: R * V, G * V, B * V, A' }
+	];
+};
+
+E2.p.prototype.reset = function()
+{
+	this.color = new Color(1, 1, 1);
+	this.output_color = new Color(1, 1, 1);
+	this.factor = 1.0;
+};
+
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+		this.color = data;
+	else
+		this.factor = data;
+};
+
+E2.p.prototype.update_state = function(delta_t)
+{
+	var rgba = this.color.rgba;
+	var o_rgba = this.output_color.rgba;
+	var f = this.factor;
 	
-	this.reset = function()
+	for(var i = 0; i < 3; i++)
 	{
-		self.color = new Color(1, 1, 1);
-		self.output_color = new Color(1, 1, 1);
-		self.factor = 1.0;
-	};
-	
-	this.update_input = function(slot, data)
-	{
-		if(slot.index === 0)
-			self.color = data;
-		else
-			self.factor = data;
-	};
-	
-	this.update_state = function(delta_t)
-	{
-		var rgba = self.color.rgba;
-		var o_rgba = self.output_color.rgba;
-		var f = self.factor;
+		var v = rgba[i] * f;
 		
-		for(var i = 0; i < 3; i++)
-		{
-			var v = rgba[i] * f;
-			
-			o_rgba[i] = v < 0.0 ? 0.0 : v > 1.0 ? 1.0 : v;
-		}
-		
-		o_rgba[3] = rgba[4];
-	};
+		o_rgba[i] = v < 0.0 ? 0.0 : v > 1.0 ? 1.0 : v;
+	}
 	
-	this.update_output = function(slot)
-	{
-		return self.output_color;
-	};	
+	o_rgba[3] = rgba[4];
+};
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.output_color;
 };
