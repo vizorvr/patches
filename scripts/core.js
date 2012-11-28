@@ -416,7 +416,14 @@ Connection.prototype.signal_change = function(on)
 	var n = this.src_node;
 	
 	if(n.plugin.connection_changed)
+	{
 		n.plugin.connection_changed(on, this, this.src_slot);
+		
+		if(n.plugin.reset)
+		{
+			n.plugin.reset();
+		}
+	}
 	
 	n = this.dst_node;
 	n.inputs_changed = true;
@@ -1055,8 +1062,7 @@ Node.prototype.update_recursive = function(conns, delta_t)
 	
 		if(this.plugin.e2_is_graph)
 		{
-			if(s_plugin.update_state)
-				s_plugin.update_state(delta_t);
+			s_plugin.update_state(delta_t);
 		}			
 		else if(this.queued_update > 0)
 		{
