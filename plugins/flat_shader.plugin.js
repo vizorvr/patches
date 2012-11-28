@@ -1,22 +1,23 @@
-E2.plugins["flat_shader"] = function(core, node) {
-	var self = this;
-	var renderer = core.renderer; 
-	var gl = renderer.context;
-	
+E2.p = E2.plugins["flat_shader"] = function(core, node)
+{
 	this.desc = 'Simple shader for rendering meshes with diffuse color only.';
+	
 	this.input_slots = [
 		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.' }
-	];	
+	];
+	
 	this.output_slots = [ 
 		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'The resulting shader.' } 
 	];
+
+	var gl = core.renderer.context;
 	
 	var vs_src = 'attribute vec3 v_pos;' +
 		     'uniform mat4 m_mat;' +
 		     'uniform mat4 v_mat;' +
 		     'uniform mat4 p_mat;' +
 		     'void main(void) { gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0); }';
-	
+
 	var ps_src = 'precision mediump float;' +
 		     'uniform vec4 d_col;' +
 		     'void main(void) { gl_FragColor = d_col; }';
@@ -37,16 +38,16 @@ E2.plugins["flat_shader"] = function(core, node) {
 	this.s.p_mat = gl.getUniformLocation(prog, "p_mat");
 	this.s.d_col = gl.getUniformLocation(prog, "d_col");
 
-      	this.s.bind_array = function(type, data, item_size)
+      	this.s.bind_array = function(self, gl) { return function(type, data, item_size)
       	{
       		if(type !== VertexBuffer.vertex_type.VERTEX)
       			return;
       		
 		gl.bindBuffer(gl.ARRAY_BUFFER, data);
 		gl.vertexAttribPointer(self.s.v_pos, item_size, gl.FLOAT, false, 0, 0);
-      	}
+      	}}(this, gl);
       	
-      	this.s.apply_uniforms = this.apply_uniforms = function(mesh)
+      	this.s.apply_uniforms = this.apply_uniforms = function(self, gl) { return function(mesh)
       	{
 		var mat = self.material ? self.material : mesh.material;
 		
@@ -54,30 +55,30 @@ E2.plugins["flat_shader"] = function(core, node) {
 		gl.enableVertexAttribArray(self.s.v_pos);
 		
 		mat.enable();
-      	};
-      	
-	this.update_input = function(slot, data)
-	{
-		if(slot.index === 0)
-			self.material = data;
-	};
-	
-	this.connection_changed = function(on, conn, slot)
-	{
-		if(!on && slot.type === E2.slot_type.input)
-			self.material = null;
-	};
-	
-	this.update_output = function(slot)
-	{
-		return self.s;
-	};
-	
-	this.state_changed = function(ui)
-	{
-		if(!ui)
-			self.material = null;
-	};
+      	}}(this, gl);
 
       	this.state_changed(null);
+};
+
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+		this.material = data;
+};
+
+E2.p.prototype.connection_changed = function(on, conn, slot)
+{
+	if(!on && slot.type === E2.slot_type.input)
+		this.material = null;
+};
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.s;
+};
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
+		this.material = null;
 };
