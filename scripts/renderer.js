@@ -866,8 +866,6 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		streams[index] = mesh.vertex_buffers[v_type] !== null;
 	}		
 	
-	this.apply_uniforms_custom = null;
-		
 	var cached = [null, ''];
 	
 	if(cache)
@@ -891,6 +889,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		var vs_c_src = [];
 		var ps_c_src = [];
 
+		shader.apply_uniforms_custom = null;
 		shader.streams = streams;
 		shader.material = material;
 		
@@ -1089,7 +1088,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		shader.ps_src = ps_src.join('\n');
 		shader.vs_c_src = vs_c_src.join('\n');
 		shader.ps_c_src = ps_c_src.join('\n');
-
+		
 		var vs = new Shader(gl, gl.VERTEX_SHADER, shader.vs_src);
 		var ps = new Shader(gl, gl.FRAGMENT_SHADER, shader.ps_src);
 
