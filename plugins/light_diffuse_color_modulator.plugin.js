@@ -1,44 +1,46 @@
-E2.plugins["light_diffuse_color_modulator"] = function(core, node) {
-	var self = this;
-	
+E2.p = E2.plugins["light_diffuse_color_modulator"] = function(core, node)
+{
 	this.desc = 'Sets the diffuse color of the light source.';
+	
 	this.input_slots = [ 
 		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light.' },
 		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The light diffuse color.', def: 'White' } 
 	];
 	
-	this.output_slots = [ { name: 'light', dt: core.datatypes.LIGHT, desc: 'The modified light.' } ];
-	
-	this.update_input = function(slot, data)
-	{
-		if(slot.index === 0)
-			self.light = data;
-		else
-			self.color = data;
-	};
-	
-	this.connection_changed = function(on, conn, slot)
-	{
-		if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-			self.light = new Light();
-	};
+	this.output_slots = [
+		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'The modified light.' }
+	];
+};
 
-	this.update_state = function(delta_t)
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+		this.light = data;
+	else
+		this.color = data;
+};
+
+E2.p.prototype.connection_changed = function(on, conn, slot)
+{
+	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
+		this.light = new Light();
+};
+
+E2.p.prototype.update_state = function(delta_t)
+{
+	this.light.diffuse_color = this.color;
+};
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.light;
+};
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
 	{
-		self.light.diffuse_color = self.color;
-	};
-	
-	this.update_output = function(slot)
-	{
-		return self.light;
-	};
-	
-	this.state_changed = function(ui)
-	{
-		if(!ui)
-		{
-			self.light = new Light();
-			self.color = new Color(1, 1, 1, 1);
-		}
-	};
+		this.light = new Light();
+		this.color = new Color(1, 1, 1, 1);
+	}
 };
