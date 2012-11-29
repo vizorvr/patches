@@ -1,44 +1,46 @@
-E2.plugins["material_shinyness_modulator"] = function(core, node) {
-	var self = this;
-	
+E2.p = E2.plugins["material_shinyness_modulator"] = function(core, node)
+{
 	this.desc = 'Set the specularity coefficient.';
+	
 	this.input_slots = [ 
 		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.' },
 		{ name: 'shinyness', dt: core.datatypes.FLOAT, desc: 'Higher values indicates higher specularity.', def: 0, lo: 0, hi: 10 } 
 	];
 	
-	this.output_slots = [ { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The modified material.' } ];
-	
-	this.update_input = function(slot, data)
-	{
-		if(slot.index === 0)
-			self.material = data;
-		else
-			self.shinyness = data < 0.0 ? 0.0 : data > 10.0 ? 10.0 : data;
-	};
-	
-	this.connection_changed = function(on, conn, slot)
-	{
-		if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-			self.material = new Material();
-	};
+	this.output_slots = [
+		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'The modified material.' }
+	];
+};
 
-	this.update_state = function(delta_t)
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+		this.material = data;
+	else
+		this.shinyness = data < 0.0 ? 0.0 : data > 10.0 ? 10.0 : data;
+};
+
+E2.p.prototype.connection_changed = function(on, conn, slot)
+{
+	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
+		this.material = new Material();
+};
+
+E2.p.prototype.update_state = function(delta_t)
+{
+	this.material.shinyness = this.shinyness;
+};
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.material;
+};
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
 	{
-		self.material.shinyness = self.shinyness;
-	};
-	
-	this.update_output = function(slot)
-	{
-		return self.material;
-	};
-	
-	this.state_changed = function(ui)
-	{
-		if(!ui)
-		{
-			self.material = new Material();
-			self.shinyness = 1.0;
-		}
-	};
+		this.material = new Material();
+		this.shinyness = 1.0;
+	}
 };
