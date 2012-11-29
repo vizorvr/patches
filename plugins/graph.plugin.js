@@ -182,9 +182,15 @@ E2.p.prototype.set_render_target_state = function(on)
 		
 		if(!in_use)
 		{
-			gl.deleteFramebuffer(this.framebuffer);
-			gl.deleteRenderbuffer(this.renderbuffer);
-			this.texture.drop();
+			if(this.framebuffer)
+				gl.deleteFramebuffer(this.framebuffer);
+			
+			if(this.renderbuffer)
+				gl.deleteRenderbuffer(this.renderbuffer);
+				
+			if(this.texture)
+				this.texture.drop();
+			
 			this.framebuffer = null;
 			this.renderbuffer = null;
 			this.texture = null;
