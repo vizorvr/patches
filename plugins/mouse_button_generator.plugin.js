@@ -1,40 +1,41 @@
-E2.plugins["mouse_button_generator"] = function(core, node) {
-	var self = this;
-	
+E2.p = E2.plugins["mouse_button_generator"] = function(core, node)
+{
 	this.desc = 'Emits the current mouse button state.';
+	
 	this.input_slots = [];
+	
 	this.output_slots = [ 
 		{ name: 'Left', dt: core.datatypes.BOOL, desc: 'True if the left mouse button is pressed and false otherwise.', def: 'False' },
 		{ name: 'Middle', dt: core.datatypes.BOOL, desc: 'True if the middle mouse button is pressed and false otherwise.', def: 'False' },
 		{ name: 'Right', dt: core.datatypes.BOOL, desc: 'True if the right mouse button is pressed and false otherwise.', def: 'False' }
 	];	
+};
 
-	this.update_output = function(slot)
-	{
-		return self.buttons[slot.index];
-	};
-	
-	this.mouse_down = function(e)
-	{
-		e.preventDefault();
-		self.buttons[e.which - 1] = true;
-		self.updated = true;
-	};
-	
-	this.mouse_up = function(e)
-	{
-		self.buttons[e.which - 1] = false;
-		self.updated = true;
-	};
+E2.p.prototype.update_output = function(slot)
+{
+	return this.buttons[slot.index];
+};
 
-	this.state_changed = function(ui)
+E2.p.prototype.mouse_down = function(self) { return function(e)
+{
+	e.preventDefault();
+	self.buttons[e.which - 1] = true;
+	self.updated = true;
+}};
+
+E2.p.prototype.mouse_up = function(self) { return function(e)
+{
+	self.buttons[e.which - 1] = false;
+	self.updated = true;
+}};
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
 	{
-		if(!ui)
-		{
-			self.buttons = [];
-			self.buttons[0] = self.buttons[1] = self.buttons[2] = false;
-			E2.dom.webgl_canvas.mousedown(self.mouse_down);
-			E2.dom.webgl_canvas.mouseup(self.mouse_up);
-		}
-	};	
+		this.buttons = [];
+		this.buttons[0] = this.buttons[1] = this.buttons[2] = false;
+		E2.dom.webgl_canvas.mousedown(this.mouse_down(this));
+		E2.dom.webgl_canvas.mouseup(this.mouse_up(this));
+	}
 };
