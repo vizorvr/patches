@@ -37,5 +37,5 @@ E2.p.prototype.update_input = function(slot, data)
 E2.p.prototype.update_value = function(value)
 {
 	if(this.label)
-		this.label.html(value === null ? '-' : value.toFixed(2));
+		this.label[0].innerHTML = value === null ? '-' : value.toFixed(2);
 };
