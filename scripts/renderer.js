@@ -45,12 +45,12 @@ TextureSampler.prototype.get_pixel = function(x, y)
 	return [d[o], d[o+1], d[o+2], d[o+3]];
 }
 
-function Texture(gl)
+function Texture(gl, handle)
 {
 	this.gl = gl;
     	this.min_filter = gl.LINEAR;
 	this.mag_filter = gl.LINEAR;
-	this.texture = gl.createTexture();
+	this.texture = handle || gl.createTexture();
 	this.width = 0;
 	this.height = 0;
 	this.image = null;
@@ -59,6 +59,12 @@ function Texture(gl)
 Texture.prototype.create = function(width, height)
 {
 	this.upload(new Image(width, height));
+};
+
+Texture.prototype.drop = function()
+{
+	this.gl.destroyTexture(this.texture);
+	this.texture = null;
 };
 
 Texture.prototype.load = function(src)
