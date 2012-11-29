@@ -1050,7 +1050,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 						s += lid + '_s_col.rgb * s_col.rgb * spec_fac';
 						
 						if(streams[v_types.UV0] && s_tex)
-							ps_dp(s + ' * texture2D(s_tex, f_uv0.st).rgb');
+							s += ' * texture2D(s_tex, f_uv0.st).rgb';
 
 						ps_dp(s + ';\n');
 					}
