@@ -57,6 +57,7 @@
                             "state": {
                                 "vs_src": "void main(void) {\n    view_pos = (v_mat * m_mat * vec4(v_pos, 1.0)).xyz;\n    gl_Position = p_mat * v_mat * m_mat * vec4(v_pos, 1.0);\n    f_norm = normalize((n_mat * vec4(v_norm, 0.0)).xyz);\n\n    float cs = cos(uv_rotation);\n    float sn = sin(uv_rotation);\n\n    f_uv0 = f_uv0 = vec2((((v_uv0.x * cs) - (v_uv0.y * sn)) * uv_scale.x) + uv_offset.x, (((v_uv0.x * sn) + (v_uv0.y * cs)) * uv_scale.y) + uv_offset.y);\n    f_col = d_col;\n}",
                                 "ps_src": "void main(void) {\n    vec4 fc = vec4(a_col.rgb, f_col.a);\n    vec3 n_dir = normalize(f_norm);\n    vec3 v_dir = -normalize(view_pos);\n    vec3 l0_dir = normalize(l0_pos - view_pos);\n    float l0_dd = dot(n_dir, l0_dir);\n    fc += l0_d_col * f_col * max(0.0, l0_dd) * l0_power;\n    if(l0_dd >= 0.0)\n        fc += l0_power * vec4((1.0 / length(l0_dir)) * vec3(l0_s_col) * s_col.rgb * pow(max(0.0, dot(-reflect(l0_dir, n_dir), v_dir)), 1.0 / (1.0 + shinyness)), 0.0);\n    fc = fc * texture2D(tex0, f_uv0.st);\n    if(e2_alpha_clip > 0 && fc.a < 0.5) discard;\n    gl_FragColor = fc;\n}",
+                                "changed": true,
                                 "slot_ids": {
                                     "uv_offset": {
                                         "id": 0,

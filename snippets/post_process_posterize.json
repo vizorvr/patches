@@ -49,6 +49,7 @@
                             "state": {
                                 "vs_src": "void main(void)\n{\n\tgl_Position = vec4(v_pos, 1.0);\n\n\tf_uv0 = v_uv0;\n}",
                                 "ps_src": "void main(void)\n{\n\tvec3 c = texture2D(d_tex, f_uv0).rgb;\n\t\n\tc = pow(c, vec3(gamma, gamma, gamma));\n\tc = c * color_count;\n\tc = floor(c);\n\tc = c / color_count;\n\tc = pow(c, vec3(1.0 / gamma));\n\t\n\tgl_FragColor = vec4(c, 1.0);\n}",
+                                "changed": true,
                                 "slot_ids": {
                                     "gamma": {
                                         "id": 0,

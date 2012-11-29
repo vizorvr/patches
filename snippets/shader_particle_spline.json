@@ -56,6 +56,7 @@
                             "state": {
                                 "vs_src": "void main(void)\n{\n        vec3 pos = vec3(tan(v_pos.x * mul1 + time), cos(v_pos.x * mul2 + time), 2.0 + cos(v_pos.x * mul3 + time));\n\tgl_Position = p_mat * v_mat * m_mat * vec4(pos, 1.0);\n\n\tgl_PointSize = size;\n        f_col = d_col;\n}",
                                 "ps_src": "void main(void)\n{\n        vec4 t = texture2D(diffuse_tex, gl_PointCoord);\n    vec4 c = t * f_col;\n\n        if(c.a < 0.5) discard;\n\n        gl_FragColor = c;\n}",
+                                "changed": true,
                                 "slot_ids": {
                                     "time": {
                                         "id": 0,

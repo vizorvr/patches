@@ -49,6 +49,7 @@
                             "state": {
                                 "vs_src": "void main(void)\n{\n\tgl_Position = vec4(v_pos, 1.0);\n\n        f_uv0 = v_uv0;\n}",
                                 "ps_src": "float rand(vec2 n)\n{\n     return 0.5 * fract(sin(dot(n.xy, vec2(12.9898, 78.233))) * 43758.5453);\n}\n\nvoid main(void)\n{\n    vec3 oricol = texture2D(d_tex, vec2(f_uv0.x,1.0-f_uv0.y)).xyz;\n    vec3 col;\n    vec2 co = vec2(time + f_uv0.x, time + f_uv0.y);\n    float na = noise * 0.003;\n    float ro = rand(co) * na;\n    float go = rand(co) * na;\n    float bo = rand(co) * na;\n\n    col.r = texture2D(d_tex, vec2(f_uv0.x+0.003+ro, f_uv0.y-go)).x;\n    col.g = texture2D(d_tex, vec2(f_uv0.x+go, f_uv0.y-bo)).y;\n    col.b = texture2D(d_tex, vec2(f_uv0.x-0.003+bo, f_uv0.y-ro)).z;\n\n    col = clamp(col*0.5+0.5*col*col*1.2,0.0,1.0);\n    col *= 0.5+0.5*16.0*f_uv0.x*f_uv0.y*(1.0-f_uv0.x)*(1.0-f_uv0.y);\n    col *= vec3(0.8, 1.0, 0.7);\n    col *= 0.9+0.1*sin(10.0*time+f_uv0.y*band_scale*1000.0);\n    col *= 0.97+0.03*sin(110.0*time);\n  \n    gl_FragColor = vec4(col, 1.0);\n}",
+                                "changed": true,
                                 "slot_ids": {
                                     "time": {
                                         "id": 3,

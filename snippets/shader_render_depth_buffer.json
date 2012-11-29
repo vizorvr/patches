@@ -186,6 +186,7 @@
                             "state": {
                                 "vs_src": "void main(void)\n{\n        vec4 eyepos = v_mat * m_mat * vec4(v_pos, 1.0);\n        float d = (-eyepos.z - near) / (far - near);\n\n\tgl_Position = p_mat * eyepos;\n        f_col = vec4(d, d, d, 1.0);\n}",
                                 "ps_src": "void main(void)\n{\n\tgl_FragColor = f_col;\n}",
+                                "changed": true,
                                 "slot_ids": {
                                     "near": {
                                         "id": 0,
