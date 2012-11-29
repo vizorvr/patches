@@ -48,7 +48,10 @@ E2.plugins["mesh_renderer_emitter"] = function(core, node) {
         	if(!mesh)
         		return;
         		
-		mesh.render(self.camera, self.transform, self.shader ? self.shader : mesh.shader, self.shader.material);
+		if(self.shader)
+			mesh.render(self.camera, self.transform, self.shader, self.shader.material);
+		else
+			mesh.render(self.camera, self.transform, mesh.shader, mesh.material);
 	};
 	
 	this.state_changed = function(ui)
