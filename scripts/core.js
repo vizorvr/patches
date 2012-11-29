@@ -2308,8 +2308,13 @@ function Application() {
 			node.title = inp.val();
 		
 			if(node.ui !== null)
+			{
 				node.ui.dom.find('#t').text(node.title);
-		
+				
+				if(node.update_connections())
+					E2.app.updateCanvas(true);
+			}
+			
 			if(node.plugin.e2_is_graph)
 				node.plugin.graph.tree_node.setTitle(node.title);
 		
