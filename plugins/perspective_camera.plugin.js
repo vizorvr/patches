@@ -1,9 +1,7 @@
-E2.plugins["perspective_camera"] = function(core, node) {
-	var self = this;
-	var gl = core.renderer.context;
-	var up = [0.0, 1.0, 0.0];
-	
+E2.p = E2.plugins["perspective_camera"] = function(core, node)
+{
 	this.desc = 'Create a new perspective (3D) camera.';
+	
 	this.input_slots = [
 		{ name: 'FOV', dt: core.datatypes.FLOAT, desc: 'Field of view in degrees.', def: 45 },
 		{ name: 'near', dt: core.datatypes.FLOAT, desc: 'Depth of the near clipping plane.', def: 1 },
@@ -11,45 +9,52 @@ E2.plugins["perspective_camera"] = function(core, node) {
 		{ name: 'position', dt: core.datatypes.VECTOR, desc: 'Camera position.', def: '0, 0, -1' },
 		{ name: 'target', dt: core.datatypes.VECTOR, desc: 'Camera target.', def: '0, 0, 0' }
 	];
-	this.output_slots = [ { name: 'camera', dt: core.datatypes.CAMERA, desc: 'The resulting camera.' } ];
-
-	this.update_input = function(slot, data)
-	{
-		if(slot.index === 0)
-			self.fov = data;
-		else if(slot.index === 1)
-			self.near = data;
-		else if(slot.index === 2)
-			self.far = data;
-		else if(slot.index === 3)
-			self.position = data;
-		else
-			self.target = data;
-	};
-
-	this.update_state = function()
-	{
-		var c = core.renderer.canvas;
-		
-		mat4.perspective(self.fov, c.width() / c.height(), self.near, self.far, self.camera.projection);
-		mat4.lookAt(self.position, self.target, up, self.camera.view);
-	};
 	
-	this.update_output = function(slot)
-	{
-		return self.camera;
-	};
+	this.output_slots = [
+		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'The resulting camera.' }
+	];
+
+	this.gl = core.renderer.context;
+	this.canvas = core.renderer.canvas[0];
+	this.up = [0.0, 1.0, 0.0];
+};
+
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+		this.fov = data;
+	else if(slot.index === 1)
+		this.near = data;
+	else if(slot.index === 2)
+		this.far = data;
+	else if(slot.index === 3)
+		this.position = data;
+	else
+		this.target = data;
+};
+
+E2.p.prototype.update_state = function()
+{
+	var c = this.canvas;
 	
-	this.state_changed = function(ui)
+	mat4.perspective(this.fov, c.width / c.height, this.near, this.far, this.camera.projection);
+	mat4.lookAt(this.position, this.target, this.up, this.camera.view);
+};
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.camera;
+};
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
 	{
-		if(!ui)
-		{
-			self.camera = new Camera(gl);
-			self.fov = 45.0;
-			self.near = 1.0;
-			self.far = 1000.0;
-			self.position = [0.0, 0.0, 1.0];
-			self.target = [0.0, 0.0, 0.0];
-		}
-	};
+		this.camera = new Camera(this.gl);
+		this.fov = 45.0;
+		this.near = 1.0;
+		this.far = 1000.0;
+		this.position = [0.0, 0.0, 1.0];
+		this.target = [0.0, 0.0, 0.0];
+	}
 };
