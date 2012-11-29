@@ -1,8 +1,7 @@
-E2.plugins["instance_ifs_modulator"] = function(core, node) {
-	var self = this;
-	var gl = core.renderer.context;
-		
+E2.p = E2.plugins["instance_ifs_modulator"] = function(core, node)
+{
 	this.desc = 'Create a scene that represents <b>count</b> instances of the supplied <b>mesh</b>, starting at position <b>start</b>, offset by <b>delta</b> each instance.';
+	
 	this.input_slots = [ 
 		{ name: 'recursion depth', dt: core.datatypes.FLOAT, desc: 'Level to resurse to.', lo: 1, hi: 6, def: 1 },
 		{ name: 'level resolution', dt: core.datatypes.FLOAT, desc: 'Number of instances per recursion level.', lo: 1, hi: 4, def: 1 },
@@ -11,83 +10,87 @@ E2.plugins["instance_ifs_modulator"] = function(core, node) {
 		{ name: 'branch transform', dt: core.datatypes.MATRIX, desc: 'Transform applied between instances on the same level.', def: 'Identity' }
 	];
 	
-	this.output_slots = [ { name: 'scene', dt: core.datatypes.SCENE, desc: 'Scene representing the resulting IFS.' } ];
+	this.output_slots = [
+		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'Scene representing the resulting IFS.' }
+	];
 
-	this.update_input = function(slot, data)
-	{
-		if(slot.index === 0)
-			self.r_depth = data;
-		if(slot.index === 1)
-			self.l_res = data;
-		else if(slot.index === 2)
-		{
-			var s = self.scene;
-			
-			if(s.meshes[0]) // Copy old instance list to new mesh instead of generating it.
-				data.instances = s.meshes[0].instances;
-			
-			s.meshes = [data];
-			s.vertex_count = data.vertex_count;
-		}
-		else if(slot.index === 3)
-			self.l_transform = data;
-		else if(slot.index === 4)
-			self.b_transform = data;
-			
-		if(slot.index !== 2)
-			self.dirty = true;
-	};	
+	this.gl = core.renderer.context;
+};
 
-	this.update_state = function(delta_t)
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+		this.r_depth = data;
+	if(slot.index === 1)
+		this.l_res = data;
+	else if(slot.index === 2)
 	{
-		var s = self.scene;
+		var s = this.scene;
 		
-		if(self.dirty)
+		if(s.meshes[0]) // Copy old instance list to new mesh instead of generating it.
+			data.instances = s.meshes[0].instances;
+		
+		s.meshes = [data];
+		s.vertex_count = data.vertex_count;
+	}
+	else if(slot.index === 3)
+		this.l_transform = data;
+	else if(slot.index === 4)
+		this.b_transform = data;
+		
+	if(slot.index !== 2)
+		this.dirty = true;
+};	
+
+E2.p.prototype.update_state = function(delta_t)
+{
+	var s = this.scene;
+	
+	if(this.dirty)
+	{
+		var m = s.meshes[0];
+		var r_gen = function(self, inst, t, level)
 		{
-			var m = s.meshes[0];
-			var r_gen = function(inst, t, level)
+			if(level === self.r_depth)
+				return;
+			
+			for(var i = 0; i < self.l_res; i++)
 			{
-				if(level === self.r_depth)
-					return;
-				
-				for(var i = 0; i < self.l_res; i++)
-				{
-					inst.push(mat4.create(t));
-					mat4.multiply(t, self.b_transform);
-				}
-				
-				mat4.multiply(t, self.l_transform);
-				r_gen(inst, t, level + 1);
-			};
-						
-			var inst = [];
-			var bm = mat4.create();
+				inst.push(mat4.create(t));
+				mat4.multiply(t, self.b_transform);
+			}
 			
-			mat4.identity(bm);
-			r_gen(inst, bm, 0);
-			m.instances = inst;
-			self.dirty = false;
-		}
-	};	
+			mat4.multiply(t, self.l_transform);
+			r_gen(self, inst, t, level + 1);
+		};
+					
+		var inst = [];
+		var bm = mat4.create();
+		
+		mat4.identity(bm);
+		r_gen(this, inst, bm, 0);
+		m.instances = inst;
+		this.dirty = false;
+	}
+};	
 
-	this.update_output = function(slot)
-	{
-		return self.scene;
-	};
+E2.p.prototype.update_output = function(slot)
+{
+	return this.scene;
+};
 
-	this.state_changed = function(ui)
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
 	{
-		if(!ui)
-		{
-			self.scene = new Scene(gl, null, null);
-			self.r_depth = 1;
-			self.l_res = 1;
-			self.l_transform = mat4.create();
-			self.b_transform = mat4.create();
-			self.dirty = false;
-			
-			mat4.identity(self.l_transform);
-			mat4.identity(self.b_transform);
-		}
-	};
+		this.scene = new Scene(this.gl, null, null);
+		this.r_depth = 1;
+		this.l_res = 1;
+		this.l_transform = mat4.create();
+		this.b_transform = mat4.create();
+		this.dirty = false;
+		
+		mat4.identity(this.l_transform);
+		mat4.identity(this.b_transform);
+	}
 };
