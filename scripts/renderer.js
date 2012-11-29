@@ -63,7 +63,7 @@ Texture.prototype.create = function(width, height)
 
 Texture.prototype.drop = function()
 {
-	this.gl.destroyTexture(this.texture);
+	this.gl.deleteTexture(this.texture);
 	this.texture = null;
 };
 
