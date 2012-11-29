@@ -420,9 +420,7 @@ Connection.prototype.signal_change = function(on)
 		n.plugin.connection_changed(on, this, this.src_slot);
 		
 		if(n.plugin.reset)
-		{
 			n.plugin.reset();
-		}
 	}
 	
 	n = this.dst_node;
@@ -877,7 +875,7 @@ Node.prototype.add_slot = function(slot_type, def)
 	{
 		var col = this.ui.dom.find(is_inp ? '#ic' : '#oc');
 		
-		this.ui.create_slot('n' + this.uid, col, def, slot_type);
+		NodeUI.create_slot(this, 'n' + this.uid, col, def, slot_type);
 	}
 	
 	return suid;
@@ -1156,7 +1154,7 @@ Node.prototype.deserialise = function(guid, d)
 		this.plugin.graph = new Graph(E2.app.player.core, null, null);
 		this.plugin.graph.plugin = this.plugin;
 		this.plugin.graph.deserialise(d.graph);
-		this.plugin.graph.reg_listener(this.plugin.graph_event);
+		this.plugin.graph.reg_listener(this.plugin.graph_event(this.plugin));
 		E2.app.player.core.graphs.push(this.plugin.graph);
 	}
 	
@@ -1745,7 +1743,7 @@ function Application() {
 				}));
 				
 				node.plugin.graph.plugin = node.plugin;
-				node.plugin.graph.reg_listener(node.plugin.graph_event);
+				node.plugin.graph.reg_listener(node.plugin.graph_event(node.plugin));
 				self.player.core.graphs.push(node.plugin.graph);
 			}
 			
