@@ -1,9 +1,7 @@
-E2.plugins["from_mesh_shader"] = function(core, node) {
-	var self = this;
-	var renderer = core.renderer; 
-	var gl = renderer.context;
-	
+E2.p = E2.plugins["from_mesh_shader"] = function(core, node)
+{
 	this.desc = 'Auto-generate a shader tailored to correctly and optimally render the supplied mesh.';
+	
 	this.input_slots = [
 		 { name: 'mesh', dt: core.datatypes.MESH, desc: 'Mesh to adapt the shader to.' },
 		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.' }
@@ -14,75 +12,74 @@ E2.plugins["from_mesh_shader"] = function(core, node) {
 	];
 	
 	this.shader = null;
-	
-	this.connection_changed = function(on, conn, slot)
-	{
-		if(!on && slot.type === E2.slot_type.input)
-		{
-			if(slot.index === 0)
-			{
-				self.mesh = null;
-				self.shader = null;
-			}
-			else if(slot.index === 1)
-				self.material = null;
-		}
-	};
-	
-	this.update_input = function(slot, data)
+};
+
+E2.p.prototype.connection_changed = function(on, conn, slot)
+{
+	if(!on && slot.type === E2.slot_type.input)
 	{
 		if(slot.index === 0)
 		{
-			if(self.mesh !== data)
-			{
-				self.mesh = data;
-				self.dirty = true;
-			}
+			this.mesh = null;
+			this.shader = null;
 		}
 		else if(slot.index === 1)
-		{
-			self.material = data;
-		}
-	};
-	
-	this.update_state = function(delta_t)
-	{
-		if(!self.mesh)
-			return;
-		
-		var caps = Material.get_caps_hash(self.mesh, self.material);
+			this.material = null;
+	}
+};
 
-		if(!self.dirty && self.caps_hash === caps)
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+	{
+		if(this.mesh !== data)
 		{
-			self.shader.material = self.material;
-			return;
+			this.mesh = data;
+			this.dirty = true;
 		}
-		
-		if(self.dirty || self.caps_hash !== caps)
-		{
-			msg('Recomposing shader with caps: ' + self.caps_hash);
-			self.shader = ComposeShader(null, self.mesh, self.material, null, null, null, null);
-		}
+	}
+	else if(slot.index === 1)
+	{
+		this.material = data;
+	}
+};
 
-		self.caps_hash = caps;
-		
-		self.updated = true;
-		self.dirty = false;
-	};
+E2.p.prototype.update_state = function(delta_t)
+{
+	if(!this.mesh)
+		return;
 	
-	this.update_output = function(slot)
+	var caps = Material.get_caps_hash(this.mesh, this.material);
+
+	if(!this.dirty && this.caps_hash === caps)
 	{
-		return self.shader;
-	};
+		this.shader.material = this.material;
+		return;
+	}
 	
-	this.state_changed = function(ui)
+	if(this.dirty || this.caps_hash !== caps)
 	{
-		if(!ui)
-		{
-			self.mesh = null;
-			self.material = null;
-			self.caps_hash = '';
-			self.dirty = true;
-		}
-	};
+		msg('Recomposing shader with caps: ' + this.caps_hash);
+		this.shader = ComposeShader(null, this.mesh, this.material, null, null, null, null);
+	}
+
+	this.caps_hash = caps;
+	this.updated = true;
+	this.dirty = false;
+};
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.shader;
+};
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
+	{
+		this.mesh = null;
+		this.material = null;
+		this.caps_hash = '';
+		this.dirty = true;
+	}
 };
