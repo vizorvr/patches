@@ -1,33 +1,45 @@
-E2.plugins["toggle_modulator"] = function(core, node) {
-	var self = this;
-	
+E2.p = E2.plugins["toggle_modulator"] = function(core, node)
+{
 	this.desc = 'For every continous sequence of \'true\' values sent to the \'trigger\' input slot the emitted value will switch from true to false and visa versa. The initial value is true.';
-	this.input_slots = [ { name: 'trigger', dt: core.datatypes.BOOL, desc: 'Every time true is sent one or more times in a row, the emitted value will switch between true and false, starting with true.' } ];
-	this.output_slots = [ { name: 'bool', dt: core.datatypes.BOOL, desc: 'The current state.', def: 'True' } ];
-	this.state = { value: true };
 	
-	this.update_input = function(slot, data)
-	{
-		if(!self.triggered && data)
-		{
-			self.triggered = true;
-			self.state.value = !self.state.value;
-		}
-		else if(!data)
-			self.triggered = false;
-	};	
+	this.input_slots = [
+		{ name: 'trigger', dt: core.datatypes.BOOL, desc: 'Every time true is sent one or more times in a row, the emitted value will switch between true and false, starting with true.' }
+	];
+	
+	this.output_slots = [
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The current state.', def: 'True' }
+	];
+	
+	this.state = { value: true };
+};
 
-	this.update_output = function(slot)
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(data)
 	{
-		return self.state.value;
-	};	
+		this.triggered = true;
+		this.state.value = !this.state.value;
+	}
+};	
 
-	this.state_changed = function(ui)
+E2.p.prototype.update_state = function(delta_t)
+{
+	if(!this.triggered)
+		this.updated = false;
+	
+	this.triggered = false;
+};	
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.state.value;
+};	
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
 	{
-		if(!ui)
-		{
-			self.state.value = true;
-			self.triggered = false;
-		}
-	};
+		this.state.value = true;
+		this.triggered = true;
+	}
 };
