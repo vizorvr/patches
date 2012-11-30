@@ -1,9 +1,7 @@
-E2.plugins["texture_diffuse_shader"] = function(core, node) {
-	var self = this;
-	var renderer = core.renderer; 
-	var gl = renderer.context;
-	
+E2.p = E2.plugins["texture_diffuse_shader"] = function(core, node)
+{
 	this.desc = 'Simple shader for rendering meshes with one texture modulated by a diffuse color.';
+	
 	this.input_slots = [
 		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.' },
 		 { name: 'uv offset', dt: core.datatypes.VECTOR, desc: 'UV translation. Only the x and y components are used with the z axis disregarded.' },
@@ -39,6 +37,8 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
     		     'uniform int e2_alpha_clip;' +
 		     'void main(void) { vec4 c = texture2D(tex0, f_uv0.st); c *= d_col; c.rgb += a_col.rgb; if(e2_alpha_clip > 0 && c.a < 0.5) discard; gl_FragColor = vec4(c); }';
 
+	var gl = this.gl = core.renderer.context;
+	
 	this.def_ambient = new Float32Array([0, 0, 0, 1]);
 	this.def_diffuse = new Float32Array([1, 1, 1, 1]);
 	
@@ -72,7 +72,7 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 	// if an array type in unknown by the shader, but requested by the renderer,
 	// the request can be silently droppred, which gives us a nice weak API.
 
-	this.s.bind_array = function(type, data, item_size)
+	this.s.bind_array = function(s, gl) { return function(type, data, item_size)
 	{
 		var types = VertexBuffer.vertex_type;
 		var attr = null;
@@ -87,9 +87,9 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		gl.bindBuffer(gl.ARRAY_BUFFER, data);
 		gl.enableVertexAttribArray(attr);
 		gl.vertexAttribPointer(attr, item_size, gl.FLOAT, false, 0, 0);
-	}
+	}}(this.s, gl);
 
-	this.s.apply_uniforms = this.apply_uniforms = function(mesh)
+	this.s.apply_uniforms = function(self, gl) { return function(mesh)
 	{
 		var mat = self.material ? self.material : mesh.material;
 		
@@ -133,39 +133,39 @@ E2.plugins["texture_diffuse_shader"] = function(core, node) {
 		}
 		
 		mat.enable();
-	};
-	
-	this.update_input = function(slot, data)
-	{
-		if(slot.index === 0)
-			self.material = data;
-		else if(slot.index === 1)
-			self.uv_offset = new Float32Array([data[0], data[1]]);
-		else if(slot.index === 2)
-			self.uv_scale = new Float32Array([data[0], data[1]]);
-		else if(slot.index === 3)
-			self.uv_rotation = ((data % 360.0) / 180.0) * Math.PI;
-	};
+	}}(this, gl);
+};
 
-	this.connection_changed = function(on, conn, slot)
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+		this.material = data;
+	else if(slot.index === 1)
+		this.uv_offset = new Float32Array([data[0], data[1]]);
+	else if(slot.index === 2)
+		this.uv_scale = new Float32Array([data[0], data[1]]);
+	else if(slot.index === 3)
+		this.uv_rotation = ((data % 360.0) / 180.0) * Math.PI;
+};
+
+E2.p.prototype.connection_changed = function(on, conn, slot)
+{
+	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
+		this.material = null;
+};
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.s;
+};
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
 	{
-		if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-			self.material = null;
-	};
-	
-	this.update_output = function(slot)
-	{
-		return self.s;
-	};
-	
-	this.state_changed = function(ui)
-	{
-		if(!ui)
-		{
-			self.material = null;
-			self.uv_offset = new Float32Array([0.0, 0.0]);
-			self.uv_scale = new Float32Array([1.0, 1.0]);
-			self.uv_rotation = 0.0;
-		}
-	};
+		this.material = null;
+		this.uv_offset = new Float32Array([0.0, 0.0]);
+		this.uv_scale = new Float32Array([1.0, 1.0]);
+		this.uv_rotation = 0.0;
+	}
 };
