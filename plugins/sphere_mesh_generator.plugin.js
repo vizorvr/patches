@@ -51,6 +51,8 @@ E2.p.prototype.update_output = function(slot)
 
 E2.p.prototype.generate_mesh = function()
 {
+	var gl = this.gl;
+	
 	msg('Sphere: Generating mesh.');
 	this.mesh = new Mesh(gl, gl.TRIANGLES);
 
