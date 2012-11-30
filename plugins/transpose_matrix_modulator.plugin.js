@@ -1,40 +1,45 @@
-E2.plugins["transpose_matrix_modulator"] = function(core, node) {
-	var self = this;
-	
+E2.p = E2.plugins["transpose_matrix_modulator"] = function(core, node)
+{
 	this.desc = 'Emits the transposed version of the supplied <b>matrix</b>.';
-	this.input_slots = [ { name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The input matrix to be transposed.', def: 'Identity' } ];
-	this.output_slots = [ { name: 'transposed', dt: core.datatypes.MATRIX, desc: 'Emits the transposed input <b>matrix</b>.', def: 'Identity' } ];
-
-	this.reset = function()
-	{
-		self.matrix = mat4.create();
-		self.transposed = mat4.create();
-
-		mat4.identity(self.matrix);
-		mat4.identity(self.transposed);
-	};
 	
-	this.connection_changed = function(on, conn, slot)
-	{
-		if(!on && slot.type === E2.slot_type.input)
-		{
-			mat4.identity(this.matrix);
-			mat4.identity(this.transposed);
-		}
-	};	
+	this.input_slots = [
+		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The input matrix to be transposed.', def: 'Identity' }
+	];
+	
+	this.output_slots = [
+		{ name: 'transposed', dt: core.datatypes.MATRIX, desc: 'Emits the transposed input <b>matrix</b>.', def: 'Identity' }
+	];
+};
 
-	this.update_input = function(slot, data)
-	{
-		self.matrix = data;
-	};	
+E2.p.prototype.reset = function()
+{
+	this.matrix = mat4.create();
+	this.transposed = mat4.create();
 
-	this.update_state = function(delta_t)
-	{
-		mat4.transpose(self.matrix, self.tranposed);
-	};	
+	mat4.identity(this.matrix);
+	mat4.identity(this.transposed);
+};
 
-	this.update_output = function(slot)
+E2.p.prototype.connection_changed = function(on, conn, slot)
+{
+	if(!on && slot.type === E2.slot_type.input)
 	{
-		return self.transposed;
-	};
+		mat4.identity(this.matrix);
+		mat4.identity(this.transposed);
+	}
+};	
+
+E2.p.prototype.update_input = function(slot, data)
+{
+	this.matrix = data;
+};	
+
+E2.p.prototype.update_state = function(delta_t)
+{
+	mat4.transpose(this.matrix, this.transposed);
+};	
+
+E2.p.prototype.update_output = function(slot)
+{
+	return this.transposed;
 };
