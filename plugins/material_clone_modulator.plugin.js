@@ -27,8 +27,8 @@ E2.p.prototype.update_input = function(slot, data)
 	m.blend_mode = data.blend_mode;
 	m.ambient_color = new Color(ac[0], ac[1], ac[2], ac[3]);
 	m.diffuse_color = new Color(dc[0], dc[1], dc[2], dc[3]);
-	m.textures = clone(data.textures);
-	m.lights = clone(data.lights);
+	m.textures = data.textures.slice(0);
+	m.lights = data.lights.slice(0);
 };
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
