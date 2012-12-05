@@ -67,6 +67,7 @@
 	"Modulators/Filters/Lowpass": "lowpass_filter_modulator",
 	"Modulators/Filters/Sample and hold": "sample_and_hold_modulator",
 	"Modulators/Filters/Toggle": "toggle_modulator",
+	"Modulators/Light/Clone": "light_clone_modulator",
 	"Modulators/Light/Diffuse color": "light_diffuse_color_modulator",
 	"Modulators/Light/Direction": "light_direction_modulator",
 	"Modulators/Light/Intensity": "light_intensity_modulator",
