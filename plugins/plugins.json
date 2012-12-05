@@ -85,6 +85,7 @@
 	"Modulators/Logic/Xor": "xor_modulator",
 	"Modulators/Material/Alpha clip": "material_alpha_clip_modulator",
 	"Modulators/Material/Ambient color": "material_ambient_color_modulator",
+	"Modulators/Material/Clone": "material_clone_modulator",
 	"Modulators/Material/Blend mode": "material_blend_mode_modulator",
 	"Modulators/Material/Diffuse color": "material_diffuse_color_modulator",
 	"Modulators/Material/Double-sided": "material_double_sided_modulator",
