@@ -827,7 +827,9 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 	else
 	{
 		var inst = this.instances;
+		var inst_t = this.instance_transforms;
 		var ft = mat4.create();
+		var ift = inst_t ? mat4.create() : null;
 		
 		if(!this.index_buffer)
 		{
@@ -837,8 +839,11 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 					mat4.multiply(inst[i], transform, ft);
 				else
 					mat4.multiply(transform, inst[i], ft);
-			
-				shader.bind_transform(camera.view, ft);
+				
+				if(ift)
+					mat4.multiply(ft, inst_t[i], ift);
+					
+				shader.bind_transform(camera.view, ift ? ift : ft);
 				gl.drawArrays(this.prim_type, 0, verts.count);
 			}
 		}
@@ -853,7 +858,10 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 				else
 					mat4.multiply(transform, inst[i], ft);
 			
-				shader.bind_transform(camera.view, ft);
+				if(ift)
+					mat4.multiply(ft, inst_t[i], ift);
+
+				shader.bind_transform(camera.view, ift ? ift : ft);
 				gl.drawElements(this.prim_type, this.index_buffer.count, gl.UNSIGNED_SHORT, 0);
 			}
 		}
