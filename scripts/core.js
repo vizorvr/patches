@@ -102,6 +102,13 @@ function load_script(url)
 	document.getElementById('head').appendChild(script);
 }
 
+function Delegate(delegate, lo, hi)
+{
+	this.delegate = delegate;
+	this.lo = lo;
+	this.hi = hi;
+}
+
 function PluginGroup(id)
 {
 	var self = this;
@@ -876,6 +883,7 @@ Node.prototype.add_slot = function(slot_type, def)
 		var col = this.ui.dom.find(is_inp ? '#ic' : '#oc');
 		
 		NodeUI.create_slot(this, 'n' + this.uid, col, def, slot_type);
+		this.update_connections();
 	}
 	
 	return suid;
@@ -1495,7 +1503,8 @@ function Core(app) {
 		AUDIO: { id: 10, name: 'Audio' },
 		SCENE: { id: 11, name: 'Scene' },
 		MATERIAL: { id: 12, name: 'Material' },
-		LIGHT: { id: 13, name: 'Light' }
+		LIGHT: { id: 13, name: 'Light' },
+		DELEGATE: { id: 14, name: 'Delegate' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');
