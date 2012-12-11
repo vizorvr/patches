@@ -22,12 +22,15 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	{
 		if(slot.index === 0)
 		{
-			self.scene = data;
+			if(data !== self.scene)
+			{
+				self.scene = data;
 			
-			if(!self.ext_camera)
-				self.camera = self.scene.create_autofit_camera();
+				if(!self.ext_camera)
+					self.camera = self.scene.create_autofit_camera();
 				
-			self.material_dirty = true;
+				self.material_dirty = true;
+			}
 		}
 		else if(slot.index === 1)
 		{
