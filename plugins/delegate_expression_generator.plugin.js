@@ -25,23 +25,20 @@ E2.p.prototype.delegate_func = function(self) { return function(x)
 	if(self.state.expression === '')
 		return 0;
 	
-	with(x)
+	with(Math)
 	{
-		with(Math)
+		with(self.slot_data)
 		{
-			with(self.slot_data)
+			try
 			{
-				try
-				{
-					var r = eval(self.state.expression);
-					
-					return typeof(r) === 'number' ? r : 0;
-				}
-				catch(e)
-				{
-					msg('ERROR: Failed to evaluate expression: ' + e);
-					return 0;
-				}
+				var r = eval(self.state.expression);
+				
+				return typeof(r) === 'number' ? r : 0;
+			}
+			catch(e)
+			{
+				msg('ERROR: Failed to evaluate expression: ' + e);
+				return 0;
 			}
 		}
 	}
