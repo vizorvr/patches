@@ -70,6 +70,7 @@ E2.p.prototype.update_state = function(delta_t)
 		mat4.identity(bm);
 		r_gen(this, inst, bm, 0);
 		m.instances = inst;
+		m.instance_transforms = null;
 		this.dirty = false;
 	}
 };	

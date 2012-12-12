@@ -69,6 +69,7 @@ E2.p.prototype.update_state = function(delta_t)
 		}
 					
 		m.instances = inst;
+		m.instance_transforms = null;
 		this.dirty = false;
 	}
 };	
