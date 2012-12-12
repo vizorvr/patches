@@ -53,8 +53,8 @@ E2.p.prototype.update_state = function(delta_t)
 			
 			if(mesh.instance_transforms)
 			{
-				var m = mat4.create();
-				var d = vec3.create();
+				var m = this.m;
+				var d = this.d;
 				
 				for(var i2 = 0, len2 = mesh.instances.length; i2 < len2; i2++)
 				{
@@ -87,6 +87,8 @@ E2.p.prototype.state_changed = function(ui)
 	if(!ui)
 	{
 		this.scene = null;
+		this.m = mat4.create();
+		this.d = vec3.create();
 		this.x_delegate = null;
 		this.y_delegate = null;
 		this.z_delegate = null;
