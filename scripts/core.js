@@ -1699,6 +1699,7 @@ function Application() {
 	this.selection_dom = null;
 	this.clipboard = null;
 	this.in_drag = false;
+	this.resize_timer = null;
 	
 	this.getNIDFromSlot = function(id)
 	{
@@ -2839,6 +2840,18 @@ function Application() {
 		msg('Paste event');
 	};
 
+	this.onWindowResize = function()
+	{
+		var win = $(window);
+		var win_width = win.width();
+		var win_height = win.height();
+		var used_height = $('#controls').height() + $('#dbg').height();
+		
+		
+		
+		msg('Resize - width: ' + win_width + ' , height: ' + win_height);
+	};
+	
 	this.onKeyDown = function(e)
 	{
 		if(e.keyCode === 17) // CTRL
@@ -2987,6 +3000,15 @@ function Application() {
 		self.releaseHoverSlot();
 		self.releaseHoverNode(false);
 	});
+	
+	$(window).resize(function(self) { return function()
+	{
+		// To avoid UI lag, we don't respond to window resize events directly.
+		// Instead, we set up a timer that gets superceeded for each (spurious) 
+		// resize event within a 100 ms window.
+		clearTimeout(self.resize_timer);
+		self.resize_timer = setTimeout(self.onWindowResize, 100);
+	}}(this));
 	
 	var add_button_events = function(btn)
 	{
