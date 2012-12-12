@@ -25,10 +25,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.l_res = data;
 	else if(slot.index === 2)
 	{
-		var s = this.scene;
-		
-		if(s.meshes[0]) // Copy old instance list to new mesh instead of generating it.
-			data.instances = s.meshes[0].instances;
+		var s = this.scene = new Scene(this.gl, null, null);
 		
 		s.meshes = [data];
 		s.vertex_count = data.vertex_count;
@@ -37,42 +34,34 @@ E2.p.prototype.update_input = function(slot, data)
 		this.l_transform = data;
 	else if(slot.index === 4)
 		this.b_transform = data;
-		
-	if(slot.index !== 2)
-		this.dirty = true;
 };	
 
 E2.p.prototype.update_state = function(delta_t)
 {
 	var s = this.scene;
-	
-	if(this.dirty)
+	var m = s.meshes[0];
+	var r_gen = function(self, inst, t, level)
 	{
-		var m = s.meshes[0];
-		var r_gen = function(self, inst, t, level)
-		{
-			if(level === self.r_depth)
-				return;
-			
-			for(var i = 0; i < self.l_res; i++)
-			{
-				inst.push(mat4.create(t));
-				mat4.multiply(t, self.b_transform);
-			}
-			
-			mat4.multiply(t, self.l_transform);
-			r_gen(self, inst, t, level + 1);
-		};
-					
-		var inst = [];
-		var bm = mat4.create();
+		if(level === self.r_depth)
+			return;
 		
-		mat4.identity(bm);
-		r_gen(this, inst, bm, 0);
-		m.instances = inst;
-		m.instance_transforms = null;
-		this.dirty = false;
-	}
+		for(var i = 0; i < self.l_res; i++)
+		{
+			inst.push(mat4.create(t));
+			mat4.multiply(t, self.b_transform);
+		}
+		
+		mat4.multiply(t, self.l_transform);
+		r_gen(self, inst, t, level + 1);
+	};
+				
+	var inst = [];
+	var bm = mat4.create();
+	
+	mat4.identity(bm);
+	r_gen(this, inst, bm, 0);
+	m.instances = inst;
+	m.instance_transforms = null;
 };	
 
 E2.p.prototype.update_output = function(slot)
@@ -89,7 +78,6 @@ E2.p.prototype.state_changed = function(ui)
 		this.l_res = 1;
 		this.l_transform = mat4.create();
 		this.b_transform = mat4.create();
-		this.dirty = false;
 		
 		mat4.identity(this.l_transform);
 		mat4.identity(this.b_transform);

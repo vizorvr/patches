@@ -22,7 +22,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.count = data;
 	else if(slot.index === 1)
 	{
-		var s = this.scene;
+		var s = this.scene = new Scene(this.gl, null, null);
 		
 		s.meshes = [data];
 		s.vertex_count = data.vertex_count;
@@ -31,40 +31,32 @@ E2.p.prototype.update_input = function(slot, data)
 		this.start = data;
 	else
 		this.offset = data;
-		
-	if(slot.index !== 1)
-		this.dirty = true;
 };	
 
 E2.p.prototype.update_state = function(delta_t)
 {
 	var s = this.scene;
+	var m = s.meshes[0];
+	var st = this.start;
+	var of = this.offset;
+	var inst = [];
+	var o = st.slice(0);
 	
-	if(this.dirty)
+	for(var i = 0; i < this.count; i++)
 	{
-		var m = s.meshes[0];
-		var st = this.start;
-		var of = this.offset;
-		var inst = [];
-		var o = st.slice(0);
+		var mat = mat4.create();
 		
-		for(var i = 0; i < this.count; i++)
-		{
-			var mat = mat4.create();
-			
-			// TODO: Inline these two ops here for better performance.
-			mat4.identity(mat);
-			mat4.translate(mat, o);
-			inst.push(mat);
-			o[0] += of[0];
-			o[1] += of[1];
-			o[2] += of[2];
-		}
-		
-		m.instances = inst;
-		m.instance_transforms = null;
-		this.dirty = false;
+		// TODO: Inline these two ops here for better performance.
+		mat4.identity(mat);
+		mat4.translate(mat, o);
+		inst.push(mat);
+		o[0] += of[0];
+		o[1] += of[1];
+		o[2] += of[2];
 	}
+	
+	m.instances = inst;
+	m.instance_transforms = null;
 };	
 
 E2.p.prototype.update_output = function(slot)
@@ -80,6 +72,5 @@ E2.p.prototype.state_changed = function(ui)
 		this.count = 1;
 		this.start = [0, 0, 0];
 		this.offset = [0, 0, 0];
-		this.dirty = true;
 	}
 };

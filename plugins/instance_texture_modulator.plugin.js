@@ -22,7 +22,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.count = Math.round(data);
 	else if(slot.index === 1)
 	{
-		var s = this.scene;
+		var s = this.scene = new Scene(this.gl, null, null);
 		
 		s.meshes = [data];
 		s.vertex_count = data.vertex_count;
@@ -31,16 +31,13 @@ E2.p.prototype.update_input = function(slot, data)
 		this.texture_sampler = data.get_sampler();
 	else if(slot.index === 3)
 		this.scale = data;
-	
-	if(slot.index !== 1)
-		this.dirty = true;
 };	
 
 E2.p.prototype.update_state = function(delta_t)
 {
 	var s = this.scene;
 	
-	if(this.dirty && this.texture_sampler)
+	if(this.texture_sampler)
 	{
 		var m = s.meshes[0];
 		var inst = [];
@@ -70,7 +67,6 @@ E2.p.prototype.update_state = function(delta_t)
 					
 		m.instances = inst;
 		m.instance_transforms = null;
-		this.dirty = false;
 	}
 };	
 
@@ -87,6 +83,5 @@ E2.p.prototype.state_changed = function(ui)
 		this.count = 1;
 		this.texture = null;
 		this.scale = [1, 1, 1];
-		this.dirty = true;
 	}
 };
