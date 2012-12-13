@@ -2845,11 +2845,34 @@ function Application() {
 		var win = $(window);
 		var win_width = win.width();
 		var win_height = win.height();
-		var used_height = $('#controls').height() + $('#dbg').height();
+		var cont_h = E2.dom.controls.height();
+		var info_w = E2.dom.info.width();
+		var used_width = info_w + E2.dom.webgl_canvas.width();
+		var used_height = cont_h + 250;
+		var c_width = (win_width - used_width) - 35;
+		var c_height = (win_height - used_height);
+		var col1_x = info_w + 20;
+		var col2_x = info_w + c_width + 27;
+		var col2_y = cont_h + c_height;
+		var col2_h = (win_height - (c_height + cont_h)) - 32;
+		var tabs_h = (win_height - (cont_h + E2.dom.webgl_canvas.height())) - 32;
 		
+		E2.dom.canvas_parent.css({ 'position': 'absolute', 'left': col1_x });
+		E2.dom.webgl_canvas.css({ 'left':  col2_x });
+		E2.dom.tabs.css({ 'left':  col2_x, 'height': tabs_h });
+		E2.dom.persist.css({ 'height': tabs_h - 100 });
+		E2.dom.structure.css({ 'height': c_height - 8 });
+		E2.dom.info.css({ 'position': 'absolute', 'left': 0, 'top': col2_y, 'height': col2_h });
+		E2.dom.dbg.css({ 'position': 'absolute', 'left': col1_x - 3, 'top': col2_y + 7, 'width': c_width - 4, 'height': col2_h });
+		E2.dom.canvas_parent.css({ 'width': c_width, 'height': c_height });
+		E2.dom.canvas.css({ 'width': c_width, 'height': c_height });
 		
+		// More hackery
+		E2.dom.canvas[0].width = E2.dom.canvas.width();
+		E2.dom.canvas[0].height = E2.dom.canvas.height();
 		
-		msg('Resize - width: ' + win_width + ' , height: ' + win_height);
+		if(self.player)
+			self.updateCanvas(true);
 	};
 	
 	this.onKeyDown = function(e)
@@ -3039,7 +3062,6 @@ function Application() {
 	{
 		window.open('help/introduction.html', 'Engi Help');
 	});
-	
 }
 
 function Player(canvas, app, root_node)
@@ -3191,6 +3213,8 @@ function CreatePlayer(init_callback)
 function InitialiseEngi()
 {
 	E2.dom.canvas_parent = $('#canvas_parent');
+	E2.dom.canvas = $('#canvas');
+	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
@@ -3203,6 +3227,7 @@ function InitialiseEngi()
 	E2.dom.structure = $('#structure');
 	E2.dom.info = $('#info');
 	E2.dom.save_minified = $('#save-minified');
+	E2.dom.tabs = $('#tabs');
 	
 	$.ajaxSetup({ cache: false });
 
@@ -3282,6 +3307,8 @@ function InitialiseEngi()
 
 	$('#tabs').tabs();
 	$('#content')[0].style.display = 'block';
+	
+	E2.app.onWindowResize();
 	Notifier.init();
 }
 
