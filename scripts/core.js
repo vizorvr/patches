@@ -2861,6 +2861,7 @@ function Application() {
 		E2.dom.webgl_canvas.css({ 'left':  col2_x });
 		E2.dom.tabs.css({ 'left':  col2_x, 'height': tabs_h });
 		E2.dom.persist.css({ 'height': tabs_h - 100 });
+		E2.dom.snippets_list.css({ 'height': tabs_h - 100 });
 		E2.dom.structure.css({ 'height': c_height - 8 });
 		E2.dom.info.css({ 'position': 'absolute', 'left': 0, 'top': col2_y, 'height': col2_h });
 		E2.dom.dbg.css({ 'position': 'absolute', 'left': col1_x - 3, 'top': col2_y + 7, 'width': c_width - 4, 'height': col2_h });
@@ -3228,6 +3229,7 @@ function InitialiseEngi()
 	E2.dom.info = $('#info');
 	E2.dom.save_minified = $('#save-minified');
 	E2.dom.tabs = $('#tabs');
+	E2.dom.snippets_list = $('#snippets-list');
 	
 	$.ajaxSetup({ cache: false });
 
