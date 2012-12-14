@@ -17,6 +17,7 @@ E2.p.prototype.reset = function()
 E2.p.prototype.create_ui = function()
 {
 	this.label = make('span');
+	
 	this.label.html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;') 
 	this.update_value(0);
 	
