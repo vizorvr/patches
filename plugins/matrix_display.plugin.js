@@ -18,6 +18,7 @@ E2.p.prototype.reset = function()
 E2.p.prototype.create_ui = function()
 {
 	var table = make('table');
+	var css = { 'text-align': 'right', 'padding-left': '10px' };
 	
 	this.columns = [];
 	
@@ -29,9 +30,8 @@ E2.p.prototype.create_ui = function()
 		{
 			var col = make('td');
 		
-			col.html('-');
-			col.css('text-align', 'right');
-			col.css('padding-left', '10px');
+			col.text('-');
+			col.css(css);
 			this.columns.push(col[0]);
 		
 			row.append(col);
