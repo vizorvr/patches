@@ -13,11 +13,13 @@ E2.p.prototype.create_ui = function()
 {
 	var inp = $('<textarea placeholder="Type text here" />');
 	
-	inp.css('font-size', '8pt');
-	inp.css('border', '1px solid #999');
-	inp.css('margin', '0px');
-	inp.css('margin-top', '2px');
-	inp.css('padding', '2px');
+	inp.css({
+		'font-size': '8pt',
+		'border': '1px solid #999',
+		'margin': '0px',
+		'margin-top': '2px',
+		'padding': '2px'
+	});
 	
 	inp.bind('blur', function(self) { return function()
 	{
