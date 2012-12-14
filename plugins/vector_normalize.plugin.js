@@ -1,52 +1,59 @@
-E2.plugins["vector_normalize"] = function(core, node) {
-	var self = this;
-	
+E2.p = E2.plugins["vector_normalize"] = function(core, node)
+{
 	this.desc = 'Emit a normalized version of the supplied vector with a magnitude of 1.';
-	this.input_slots = [ { name: 'vector', dt: core.datatypes.VECTOR, desc: 'The input vector to be normalised.', def: '0, 0, 0' } ];
-	this.output_slots = [ { name: 'vector', dt: core.datatypes.VECTOR, desc: 'Emits the normalised input vector.', def: '0, 0, 0' } ];
 	
-	this.update_input = function(slot, data)
-	{
-		if(slot.index === 0)
-			self.vector = data;
-	};	
+	this.input_slots = [
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The input vector to be normalised.', def: '0, 0, 0' }
+	];
+	
+	this.output_slots = [
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Emits the normalised input vector.', def: '0, 0, 0' }
+	];
+};
 
-	this.update_state = function(delta_t)
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+		this.vector = data;
+};	
+
+E2.p.prototype.update_state = function(delta_t)
+{
+	var x = this.vector[0], y = this.vector[1], z = this.vector[2], sn = this.normalized;
+	var len = Math.sqrt(x*x + y*y + z*z);
+
+	if(!len) 
 	{
-		var x = self.vector[0], y = self.vector[1], z = self.vector[2];
-		var len = Math.sqrt(x*x + y*y + z*z);
-	
-		if (!len) 
-		{
-			self.normalized[0] = 0;
-			self.normalized[1] = 0;
-			self.normalized[2] = 0;
-		} 
-		else if(len === 1) 
-		{
-			self.normalized[0] = x;
-			self.normalized[1] = y;
-			self.normalized[2] = z;
-		}
-	
+		sn[0] = 0;
+		sn[1] = 0;
+		sn[2] = 0;
+	} 
+	else if(len === 1) 
+	{
+		sn[0] = x;
+		sn[1] = y;
+		sn[2] = z;
+	}
+	else
+	{
 		len = 1.0 / len;
-		
-		self.normalized[0] = x * len;
-		self.normalized[1] = y * len;
-		self.normalized[2] = z * len;
-	};
 	
-	this.update_output = function(slot)
-	{
-		return self.normalized;
-	};	
+		sn[0] = x * len;
+		sn[1] = y * len;
+		sn[2] = z * len;
+	}
+};
 
-	this.state_changed = function(ui)
+E2.p.prototype.update_output = function(slot)
+{
+	return this.normalized;
+};	
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
 	{
-		if(!ui)
-		{
-			self.vector = [0, 0, 0];
-			self.normalized = [0, 0, 0];
-		}
-	};
+		this.vector = [0, 0, 0];
+		this.normalized = [0, 0, 0];
+	}
 };
