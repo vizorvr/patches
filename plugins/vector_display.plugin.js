@@ -19,16 +19,16 @@ E2.p.prototype.create_ui = function()
 {
 	var table = make('table');
 	var row = make('tr');
-
+	var css = { 'text-align': 'right', 'padding-left': '10px' };
+	
 	this.columns = [make('td'), make('td'), make('td')];
 
 	for(var i = 0; i < 3; i++)
 	{
 		var c = this.columns[i];
 		
-		c.html(this.vec[i]);
-		c.css('text-align', 'right');
-		c.css('padding-left', '10px');
+		c.text(this.vec[i]);
+		c.css(css);
 		row.append(c);
 	}
 	
