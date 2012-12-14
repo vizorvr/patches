@@ -25,47 +25,56 @@ E2.p.prototype.create_ui = function()
 	var h = this.h = make('img');
 	var hs = this.hs = make('img');
 
-	c.css('width', '130px');
-	c.css('height', '102px');
-	c.css('margin-right', '10px');
-	c.css('position', 'relative');
-	h.attr('id', 'cont');
-	
-	h.css('width', '14px');
-	h.css('height', '100px');
-	h.css('border', '1px solid #888');
-	h.css('cursor', 'crosshair');
-	h.css('z-index', '100');
-	hs.css('position', 'absolute');
-	hs.css('top', '0px');
-	hs.css('left', '114px');
+	c.css({
+		'width': '130px',
+		'height': '102px',
+		'margin-right': '10px',
+		'position': 'relative'
+	});
+
 	h.attr('src', 'images/color_picker/hue.png');
 	h.attr('id', 'hue');
-
-	s.css('width', '11px');
-	s.css('height', '11px');
-	s.css('cursor', 'crosshair');
-	s.css('z-index', '101');
-	s.css('position', 'absolute');
 	s.attr('src', 'images/color_picker/select.gif');
 	s.attr('id', 'sel');
-
-	hs.css('width', '20px');
-	hs.css('height', '5px');
-	hs.css('cursor', 'crosshair');
-	hs.css('z-index', '101');
-	hs.css('position', 'absolute');
 	hs.attr('src', 'images/color_picker/hue-select.png');
 	hs.attr('id', 'hue-sel');
-
-	i.css('width', '100px');
-	i.css('height', '100px');
-	i.css('border', '1px solid #888');
-	i.css('cursor', 'crosshair');
-	i.css('z-index', '100');
-	i.css('background-color', '#f00');
 	i.attr('src', 'images/color_picker/picker.png');
 	i.attr('id', 'img');
+
+	h.css({
+		'width': '14px',
+		'height': '100px',
+		'border': '1px solid #888',
+		'cursor': 'crosshair',
+		'z-index': '100'
+	});
+
+	hs.css({
+		'position': 'absolute',
+		'top': '0px',
+		'left': '114px',
+		'width': '20px',
+		'height': '5px',
+		'cursor': 'crosshair',
+		'z-index': '101'
+	});
+
+	s.css({
+		'width': '11px',
+		'height': '11px',
+		'cursor': 'crosshair',
+		'z-index': '101',
+		'position': 'absolute'
+	});
+
+	i.css({
+		'width': '100px',
+		'height': '100px',
+		'border': '1px solid #888',
+		'cursor': 'crosshair',
+		'z-index': '100',
+		'background-color': '#f00'
+	});
 
 	c.append(i);
 	c.append(s);
