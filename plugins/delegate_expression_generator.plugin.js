@@ -53,22 +53,26 @@ E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e
 	var diag = make('span');
 	var src = $('<textarea></textarea>'); 
 	
-	diag.css('margin', '0px');
-	diag.css('padding', '2px');
+	diag.css({
+		'margin': '0px',
+		'padding': '2px'
+	});
 
-	src.css('margin', '0px');
-	src.css('padding', '0px');
-	src.css('margin-top', '2px');
-	src.css('border', 'none');
-	src.css('width', '455px');
-	src.css('height', '400px');
-	src.css('resize', 'none');
-	src.css('font-size', '9pt');
-	src.css('font-family', 'Monospace');
-	src.css('overflow', 'scroll');
-	src.css('word-wrap', 'normal');
-	src.css('white-space', 'pre');
-	src.css('background-color', '#ddd');
+	src.css({
+		'margin': '0px',
+		'padding': '0px',
+		'margin-top': '2px',
+		'border': 'none',
+		'width': '455px',
+		'height': '400px',
+		'resize': 'none',
+		'font-size': '9pt',
+		'font-family': 'Monospace',
+		'overflow': 'scroll',
+		'word-wrap': 'normal',
+		'white-space': 'pre',
+		'background-color': '#ddd'
+	});
 	
 	src.val(self.state.expression);
 	
@@ -79,10 +83,12 @@ E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e
 	var rem_btn = $('<input id="rem_btn" type="button" value="Remove slot" title="Click to remove the selected slot(s)." />');
 	var slot_list = $('<select size="4" />');
 	
-	slot_list.css('border', 'none');
-	slot_list.css('width', '457px');
-	slot_list.css('margin-left', '2px');
-	slot_list.css('background-color', '#ddd');
+	slot_list.css({
+		'border': 'none',
+		'width': '457px',
+		'margin-left': '2px',
+		'background-color': '#ddd'
+	});
 
 	btn_span.css('width', '455px');
 	btn_span.append(add_btn);
@@ -110,9 +116,12 @@ E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e
 		var lbl = $('<div>Identifier:</div>');
 		
 		inp.css('width', '220px');
-		lbl.css('padding-top', '3px');
-		lbl.css('float', 'left');
-		lbl.css('width', '80px');
+		
+		lbl.css({
+			'padding-top': '3px',
+			'float': 'left',
+			'width': '80px'
+		});
 		
 		l1.append(lbl);
 		l1.append(inp);
