@@ -33,6 +33,19 @@ E2.p.prototype.reset = function()
 		this.graph.reset();
 };
 
+E2.p.prototype.create_ui = function()
+{
+	var inp = $('<input id="state" type="button" value="Edit" title="Open this graph for editing." />');
+	
+	inp.click(function(self) { return function(e) 
+	{
+		if(self.graph)
+			self.graph.tree_node.activate();
+	}}(this));
+	
+	return inp;
+};
+
 E2.p.prototype.get_dt_name = function(dt)
 {
 	if(!dt || !dt.name)
