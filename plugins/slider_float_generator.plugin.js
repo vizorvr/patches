@@ -30,9 +30,13 @@ E2.p.prototype.create_ui = function()
 	var slider = make('div');
 	
 	slider.attr('id', 'sl');
-	slider.css('width', '60px');
-	slider.css('margin-right', '5px');
-	slider.css('margin-left', '6px');
+	
+	slider.css({
+		'width': '60px',
+		'margin-right': '5px',
+		'margin-left': '6px'
+	});
+	
 	table.css('width', '150px');
 	table.addClass('pl_layout');
 	inp_lo.css('border', '1px solid #999');
