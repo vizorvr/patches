@@ -17,9 +17,9 @@ E2.p.prototype.reset = function()
 E2.p.prototype.create_ui = function()
 {
 	this.label = make('span');
+
 	this.label.html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;') 
-	this.label.css('background-color', '#fff');
-	this.label.css('border', '1px #aaa solid');
+	this.label.css({ 'background-color': '#fff', 'border': '1px #aaa solid' });
 	
 	return this.label;
 };
