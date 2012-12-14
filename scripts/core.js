@@ -1486,6 +1486,28 @@ Graph.prototype.emit_event = function(ev)
 		l[i](ev);
 };
 	
+Graph.prototype.build_breadcrumb = function(parent, add_handler)
+{
+	debugger;
+	var sp = $('<span>' + this.tree_node.data.title + '</span>');
+	
+	if(add_handler)
+	{
+		sp.click(function(self) { return function()
+		{
+			self.tree_node.activate();
+		}}(this));
+		
+		sp.css({ 'text-decoration': 'underline', 'cursor': 'pointer' });
+	}
+	
+	parent.prepend($('<span> / </span>'));
+	parent.prepend(sp);
+	
+	if(this.parent_graph)
+		this.parent_graph.build_breadcrumb(parent, true);
+};
+
 function Core(app) {
 	var self = this;
 	
@@ -1560,6 +1582,10 @@ function Core(app) {
 		/*E2.dom.canvas_parent.scrollTop(0);
 		E2.dom.canvas_parent.scrollLeft(0);
 		self.scrollOffset = [0, 0];*/
+		
+		// Clear the current breadcrumb elements and rebuild.
+		E2.dom.breadcrumb.children().remove();
+		self.active_graph.build_breadcrumb(E2.dom.breadcrumb, false);
 		
 		self.active_graph.create_ui();
 		self.active_graph.reset();
@@ -2857,6 +2883,7 @@ function Application() {
 		var col2_h = (win_height - (c_height + cont_h)) - 32;
 		var tabs_h = (win_height - (cont_h + E2.dom.webgl_canvas.height())) - 32;
 		
+		E2.dom.breadcrumb.css({ 'position': 'absolute', 'left': col1_x + 8, 'top': cont_h +16 });
 		E2.dom.canvas_parent.css({ 'position': 'absolute', 'left': col1_x });
 		E2.dom.webgl_canvas.css({ 'left':  col2_x });
 		E2.dom.tabs.css({ 'left':  col2_x, 'height': tabs_h });
@@ -3230,6 +3257,7 @@ function InitialiseEngi()
 	E2.dom.save_minified = $('#save-minified');
 	E2.dom.tabs = $('#tabs');
 	E2.dom.snippets_list = $('#snippets-list');
+	E2.dom.breadcrumb = $('#breadcrumb');
 	
 	$.ajaxSetup({ cache: false });
 

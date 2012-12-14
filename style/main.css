@@ -200,6 +200,19 @@ html, body
 	border: 1px dotted #ccc;
 }
 
+#breadcrumb
+{
+	position: absolute;
+	background-color: #000;
+	color: #fff;
+	opacity: 0.75;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	z-index: 10000;
+}
+
 #canvas_parent
 {
 	float: right;
