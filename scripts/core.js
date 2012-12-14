@@ -1488,7 +1488,6 @@ Graph.prototype.emit_event = function(ev)
 	
 Graph.prototype.build_breadcrumb = function(parent, add_handler)
 {
-	debugger;
 	var sp = $('<span>' + this.tree_node.data.title + '</span>');
 	
 	if(add_handler)
