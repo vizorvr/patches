@@ -1490,6 +1490,8 @@ Graph.prototype.build_breadcrumb = function(parent, add_handler)
 {
 	var sp = $('<span>' + this.tree_node.data.title + '</span>');
 	
+	sp.css('cursor', 'pointer');
+	
 	if(add_handler)
 	{
 		sp.click(function(self) { return function()
@@ -1497,7 +1499,7 @@ Graph.prototype.build_breadcrumb = function(parent, add_handler)
 			self.tree_node.activate();
 		}}(this));
 		
-		sp.css({ 'text-decoration': 'underline', 'cursor': 'pointer' });
+		sp.css({ 'text-decoration': 'underline' });
 	}
 	
 	parent.prepend($('<span> / </span>'));
