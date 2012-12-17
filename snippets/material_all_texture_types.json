@@ -1,0 +1,176 @@
+{
+    "abs_t": 200.128,
+    "active_graph": 0,
+    "graph_uid": 9,
+    "root": {
+        "node_uid": 13,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "material_texture_modulator",
+                "x": 221,
+                "y": 55,
+                "uid": 1
+            },
+            {
+                "plugin": "texture_type_generator",
+                "x": 69,
+                "y": 54,
+                "uid": 2,
+                "state": {
+                    "type": 0
+                }
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 108,
+                "y": 109,
+                "uid": 3,
+                "state": {
+                    "url": ""
+                }
+            },
+            {
+                "plugin": "material_texture_modulator",
+                "x": 226,
+                "y": 176,
+                "uid": 4
+            },
+            {
+                "plugin": "texture_type_generator",
+                "x": 66,
+                "y": 171,
+                "uid": 5,
+                "state": {
+                    "type": 2
+                }
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 105,
+                "y": 227,
+                "uid": 6,
+                "state": {
+                    "url": ""
+                }
+            },
+            {
+                "plugin": "material_texture_modulator",
+                "x": 471,
+                "y": 56,
+                "uid": 7
+            },
+            {
+                "plugin": "texture_type_generator",
+                "x": 317,
+                "y": 56,
+                "uid": 8,
+                "state": {
+                    "type": 1
+                }
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 357,
+                "y": 109,
+                "uid": 9,
+                "state": {
+                    "url": ""
+                }
+            },
+            {
+                "plugin": "material_texture_modulator",
+                "x": 477,
+                "y": 175,
+                "uid": 10
+            },
+            {
+                "plugin": "texture_type_generator",
+                "x": 323,
+                "y": 175,
+                "uid": 11,
+                "state": {
+                    "type": 3
+                }
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 363,
+                "y": 228,
+                "uid": 12,
+                "state": {
+                    "url": ""
+                }
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 2,
+                "dst_nuid": 1,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 3,
+                "dst_nuid": 1,
+                "src_slot": 0,
+                "dst_slot": 2
+            },
+            {
+                "src_nuid": 1,
+                "dst_nuid": 4,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 5,
+                "dst_nuid": 4,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 6,
+                "dst_nuid": 4,
+                "src_slot": 0,
+                "dst_slot": 2
+            },
+            {
+                "src_nuid": 4,
+                "dst_nuid": 7,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 8,
+                "dst_nuid": 7,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 9,
+                "dst_nuid": 7,
+                "src_slot": 0,
+                "dst_slot": 2
+            },
+            {
+                "src_nuid": 7,
+                "dst_nuid": 10,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 11,
+                "dst_nuid": 10,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 12,
+                "dst_nuid": 10,
+                "src_slot": 0,
+                "dst_slot": 2
+            }
+        ]
+    }
+}

@@ -1,17 +1,17 @@
 {
     "abs_t": 0,
-    "active_graph": 1,
-    "graph_uid": 2,
+    "active_graph": 0,
+    "graph_uid": 3,
     "root": {
-        "node_uid": 4,
+        "node_uid": 7,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 214,
-                "y": 56,
-                "uid": 0,
+                "x": 562,
+                "y": 225,
+                "uid": 3,
                 "dsid": 8,
                 "state": {
                     "enabled": true,
@@ -27,7 +27,7 @@
                 "title": "Translate",
                 "graph": {
                     "node_uid": 17,
-                    "uid": 1,
+                    "uid": 2,
                     "parent_uid": 0,
                     "nodes": [
                         {
@@ -35,7 +35,7 @@
                             "x": 291,
                             "y": 50,
                             "uid": 2,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -64,7 +64,7 @@
                             "x": 8,
                             "y": 10,
                             "uid": 13,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -86,7 +86,7 @@
                             "x": 8,
                             "y": 70,
                             "uid": 14,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -108,7 +108,7 @@
                             "x": 8,
                             "y": 129,
                             "uid": 15,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -211,9 +211,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 5,
-                "y": 7,
-                "uid": 1,
+                "x": 366,
+                "y": 225,
+                "uid": 4,
                 "state": {
                     "val": 0,
                     "min": -2,
@@ -223,9 +223,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 5,
-                "y": 96,
-                "uid": 2,
+                "x": 366,
+                "y": 286,
+                "uid": 5,
                 "state": {
                     "val": 0,
                     "min": -2,
@@ -235,9 +235,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 5,
-                "y": 184,
-                "uid": 3,
+                "x": 366,
+                "y": 348,
+                "uid": 6,
                 "state": {
                     "val": 0,
                     "min": -2,
@@ -248,22 +248,22 @@
         ],
         "conns": [
             {
-                "src_nuid": 1,
-                "dst_nuid": 0,
+                "src_nuid": 4,
+                "dst_nuid": 3,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 2,
-                "dst_nuid": 0,
+                "src_nuid": 5,
+                "dst_nuid": 3,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 3,
-                "dst_nuid": 0,
+                "src_nuid": 6,
+                "dst_nuid": 3,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_dyn": true

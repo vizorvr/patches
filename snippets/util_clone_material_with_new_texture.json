@@ -1,0 +1,48 @@
+{
+    "abs_t": 537.051,
+    "active_graph": 0,
+    "graph_uid": 9,
+    "root": {
+        "node_uid": 37,
+        "uid": 0,
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "material_clone_modulator",
+                "x": 90,
+                "y": 47,
+                "uid": 34
+            },
+            {
+                "plugin": "material_texture_modulator",
+                "x": 195,
+                "y": 47,
+                "uid": 35
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 86,
+                "y": 100,
+                "uid": 36,
+                "state": {
+                    "url": "data/textures/terrain1.jpg"
+                },
+                "title": "Image"
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 34,
+                "dst_nuid": 35,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 36,
+                "dst_nuid": 35,
+                "src_slot": 0,
+                "dst_slot": 2
+            }
+        ]
+    }
+}

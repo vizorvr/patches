@@ -1,6 +1,6 @@
 {
     "abs_t": 0,
-    "active_graph": 1,
+    "active_graph": 0,
     "graph_uid": 2,
     "root": {
         "node_uid": 4,
@@ -9,8 +9,8 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 218,
-                "y": 54,
+                "x": 309,
+                "y": 66,
                 "uid": 0,
                 "dsid": 5,
                 "state": {
@@ -65,7 +65,7 @@
                             "x": 660,
                             "y": 64,
                             "uid": 12,
-                            "dsid": 5,
+                            "dsid": 6,
                             "state": {
                                 "slot_id": 0
                             },
@@ -87,7 +87,7 @@
                             "x": 25,
                             "y": 67,
                             "uid": 13,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -109,7 +109,7 @@
                             "x": 279,
                             "y": 119,
                             "uid": 14,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -131,7 +131,7 @@
                             "x": 345,
                             "y": 124,
                             "uid": 15,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -295,8 +295,8 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 8,
-                "y": 8,
+                "x": 112,
+                "y": 66,
                 "uid": 1,
                 "state": {
                     "val": 0.42,
@@ -307,8 +307,8 @@
             },
             {
                 "plugin": "const_float_generator",
-                "x": 105,
-                "y": 93,
+                "x": 112,
+                "y": 128,
                 "uid": 2,
                 "state": {
                     "val": 0
@@ -317,8 +317,8 @@
             },
             {
                 "plugin": "const_float_generator",
-                "x": 105,
-                "y": 157,
+                "x": 208,
+                "y": 128,
                 "uid": 3,
                 "state": {
                     "val": 1

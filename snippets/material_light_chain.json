@@ -1,18 +1,18 @@
 {
     "abs_t": 0,
     "active_graph": 0,
-    "graph_uid": 2,
+    "graph_uid": 4,
     "root": {
-        "node_uid": 12,
+        "node_uid": 22,
         "uid": 0,
         "parent_uid": -1,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 692,
-                "y": 166,
-                "uid": 0,
-                "dsid": 14,
+                "x": 438,
+                "y": 94,
+                "uid": 11,
+                "dsid": 16,
                 "state": {
                     "enabled": true,
                     "input_sids": {
@@ -25,18 +25,16 @@
                         "19": 7,
                         "22": 8,
                         "23": 9,
-                        "24": 10,
-                        "26": 11,
-                        "28": 13
+                        "24": 10
                     },
                     "output_sids": {
-                        "27": 12
+                        "30": 15
                     }
                 },
                 "title": "Light chain",
                 "graph": {
-                    "node_uid": 29,
-                    "uid": 1,
+                    "node_uid": 31,
+                    "uid": 3,
                     "parent_uid": 0,
                     "nodes": [
                         {
@@ -86,7 +84,7 @@
                             "x": 609,
                             "y": 401,
                             "uid": 13,
-                            "dsid": 6,
+                            "dsid": 9,
                             "state": {
                                 "slot_id": 0
                             },
@@ -108,7 +106,7 @@
                             "x": 413,
                             "y": 532,
                             "uid": 14,
-                            "dsid": 6,
+                            "dsid": 9,
                             "state": {
                                 "slot_id": 0
                             },
@@ -130,7 +128,7 @@
                             "x": 412,
                             "y": 581,
                             "uid": 15,
-                            "dsid": 7,
+                            "dsid": 10,
                             "state": {
                                 "slot_id": 0
                             },
@@ -152,7 +150,7 @@
                             "x": 412,
                             "y": 627,
                             "uid": 16,
-                            "dsid": 8,
+                            "dsid": 11,
                             "state": {
                                 "slot_id": 0
                             },
@@ -174,7 +172,7 @@
                             "x": 350,
                             "y": 358,
                             "uid": 17,
-                            "dsid": 6,
+                            "dsid": 9,
                             "state": {
                                 "slot_id": 0
                             },
@@ -196,7 +194,7 @@
                             "x": 196,
                             "y": 340,
                             "uid": 18,
-                            "dsid": 6,
+                            "dsid": 9,
                             "state": {
                                 "slot_id": 0
                             },
@@ -218,7 +216,7 @@
                             "x": 80,
                             "y": 347,
                             "uid": 19,
-                            "dsid": 7,
+                            "dsid": 10,
                             "state": {
                                 "slot_id": 0
                             },
@@ -252,7 +250,7 @@
                             "x": 146,
                             "y": 479,
                             "uid": 22,
-                            "dsid": 7,
+                            "dsid": 10,
                             "state": {
                                 "slot_id": 0
                             },
@@ -274,7 +272,7 @@
                             "x": 145,
                             "y": 528,
                             "uid": 23,
-                            "dsid": 8,
+                            "dsid": 11,
                             "state": {
                                 "slot_id": 0
                             },
@@ -296,7 +294,7 @@
                             "x": 145,
                             "y": 574,
                             "uid": 24,
-                            "dsid": 9,
+                            "dsid": 12,
                             "state": {
                                 "slot_id": 0
                             },
@@ -314,75 +312,25 @@
                             ]
                         },
                         {
-                            "plugin": "material_light_modulator",
-                            "x": 777,
-                            "y": 133,
-                            "uid": 25
-                        },
-                        {
-                            "plugin": "input_proxy",
-                            "x": 681,
-                            "y": 135,
-                            "uid": 26,
-                            "dsid": 5,
-                            "state": {
-                                "slot_id": 0
-                            },
-                            "title": "material",
-                            "dyn_out": [
-                                {
-                                    "name": "output",
-                                    "dt": 12,
-                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1,
-                                    "connected": true
-                                }
-                            ]
-                        },
-                        {
                             "plugin": "output_proxy",
-                            "x": 900,
-                            "y": 133,
-                            "uid": 27,
-                            "dsid": 5,
+                            "x": 795,
+                            "y": 219,
+                            "uid": 30,
+                            "dsid": 2,
                             "state": {
                                 "slot_id": 0
                             },
-                            "title": "material",
+                            "title": "light",
                             "dyn_in": [
                                 {
                                     "name": "input",
-                                    "dt": 12,
+                                    "dt": 13,
                                     "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
                                     "uid": 0,
                                     "index": 0,
                                     "type": 0,
                                     "connected": true,
                                     "is_connected": true
-                                }
-                            ]
-                        },
-                        {
-                            "plugin": "input_proxy",
-                            "x": 569,
-                            "y": 134,
-                            "uid": 28,
-                            "dsid": 5,
-                            "state": {
-                                "slot_id": 0
-                            },
-                            "title": "light index",
-                            "dyn_out": [
-                                {
-                                    "name": "output",
-                                    "dt": 0,
-                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1,
-                                    "connected": true
                                 }
                             ]
                         }
@@ -518,29 +466,7 @@
                         },
                         {
                             "src_nuid": 0,
-                            "dst_nuid": 25,
-                            "src_slot": 0,
-                            "dst_slot": 2
-                        },
-                        {
-                            "src_nuid": 26,
-                            "dst_nuid": 25,
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "src_connected": true,
-                            "src_dyn": true
-                        },
-                        {
-                            "src_nuid": 28,
-                            "dst_nuid": 25,
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "src_connected": true,
-                            "src_dyn": true
-                        },
-                        {
-                            "src_nuid": 25,
-                            "dst_nuid": 27,
+                            "dst_nuid": 30,
                             "src_slot": 0,
                             "dst_slot": 0,
                             "dst_connected": true,
@@ -628,28 +554,13 @@
                         "index": 9,
                         "type": 0,
                         "is_connected": true
-                    },
-                    {
-                        "name": "material",
-                        "dt": 12,
-                        "uid": 11,
-                        "index": 10,
-                        "type": 0
-                    },
-                    {
-                        "name": "light index",
-                        "dt": 0,
-                        "uid": 13,
-                        "index": 11,
-                        "type": 0,
-                        "is_connected": true
                     }
                 ],
                 "dyn_out": [
                     {
-                        "name": "material",
-                        "dt": 12,
-                        "uid": 12,
+                        "name": "light",
+                        "dt": 13,
+                        "uid": 15,
                         "index": 0,
                         "type": 1
                     }
@@ -657,20 +568,20 @@
             },
             {
                 "plugin": "light_type_generator",
-                "x": 248,
-                "y": 166,
-                "uid": 1,
+                "x": 36,
+                "y": 94,
+                "uid": 12,
                 "state": {
                     "type": 0
                 }
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 490,
-                "y": 166,
-                "uid": 2,
+                "x": 238,
+                "y": 94,
+                "uid": 13,
                 "state": {
-                    "val": 1.8,
+                    "val": 1.6,
                     "min": 0,
                     "max": 10
                 },
@@ -678,45 +589,45 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 289,
-                "y": 239,
-                "uid": 3,
+                "x": 37,
+                "y": 167,
+                "uid": 14,
                 "state": {
                     "val": 0,
-                    "min": -2,
-                    "max": 2
+                    "min": -20,
+                    "max": 20
                 },
                 "title": "Light position X"
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 289,
-                "y": 305,
-                "uid": 4,
+                "x": 37,
+                "y": 233,
+                "uid": 15,
                 "state": {
                     "val": 0,
-                    "min": -2,
-                    "max": 2
+                    "min": -20,
+                    "max": 20
                 },
                 "title": "Light position Y"
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 289,
-                "y": 373,
-                "uid": 5,
+                "x": 37,
+                "y": 301,
+                "uid": 16,
                 "state": {
-                    "val": 0.96,
-                    "min": -2,
-                    "max": 2
+                    "val": 1.2,
+                    "min": -20,
+                    "max": 20
                 },
                 "title": "Light position Z"
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 487,
-                "y": 240,
-                "uid": 6,
+                "x": 235,
+                "y": 168,
+                "uid": 17,
                 "state": {
                     "val": 0,
                     "min": -2,
@@ -726,9 +637,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 487,
-                "y": 309,
-                "uid": 7,
+                "x": 235,
+                "y": 237,
+                "uid": 18,
                 "state": {
                     "val": 0.04,
                     "min": -2,
@@ -738,9 +649,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 487,
-                "y": 374,
-                "uid": 8,
+                "x": 235,
+                "y": 302,
+                "uid": 19,
                 "state": {
                     "val": 0,
                     "min": -2,
@@ -750,9 +661,9 @@
             },
             {
                 "plugin": "color_picker",
-                "x": 291,
-                "y": 454,
-                "uid": 9,
+                "x": 39,
+                "y": 382,
+                "uid": 20,
                 "state": {
                     "hue": 0,
                     "sat": 0,
@@ -762,103 +673,86 @@
             },
             {
                 "plugin": "color_picker",
-                "x": 477,
-                "y": 455,
-                "uid": 10,
+                "x": 225,
+                "y": 383,
+                "uid": 21,
                 "state": {
                     "hue": 0,
                     "sat": 0,
                     "lum": 1
                 },
                 "title": "Specular color"
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 385,
-                "y": 166,
-                "uid": 11,
-                "state": {
-                    "val": 0
-                },
-                "title": "Light index"
             }
         ],
         "conns": [
             {
-                "src_nuid": 1,
-                "dst_nuid": 0,
+                "src_nuid": 12,
+                "dst_nuid": 11,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 2,
-                "dst_nuid": 0,
+                "src_nuid": 13,
+                "dst_nuid": 11,
                 "src_slot": 0,
                 "dst_slot": 4,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 3,
-                "dst_nuid": 0,
+                "src_nuid": 14,
+                "dst_nuid": 11,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 4,
-                "dst_nuid": 0,
+                "src_nuid": 15,
+                "dst_nuid": 11,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 5,
-                "dst_nuid": 0,
+                "src_nuid": 16,
+                "dst_nuid": 11,
                 "src_slot": 0,
                 "dst_slot": 3,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 6,
-                "dst_nuid": 0,
+                "src_nuid": 17,
+                "dst_nuid": 11,
                 "src_slot": 0,
                 "dst_slot": 7,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 7,
-                "dst_nuid": 0,
+                "src_nuid": 18,
+                "dst_nuid": 11,
                 "src_slot": 0,
                 "dst_slot": 8,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 8,
-                "dst_nuid": 0,
+                "src_nuid": 19,
+                "dst_nuid": 11,
                 "src_slot": 0,
                 "dst_slot": 9,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 9,
-                "dst_nuid": 0,
+                "src_nuid": 20,
+                "dst_nuid": 11,
                 "src_slot": 0,
                 "dst_slot": 6,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 10,
-                "dst_nuid": 0,
+                "src_nuid": 21,
+                "dst_nuid": 11,
                 "src_slot": 0,
                 "dst_slot": 5,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 11,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 11,
                 "dst_dyn": true
             }
         ]
