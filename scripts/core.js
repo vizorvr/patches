@@ -2495,6 +2495,7 @@ function Application() {
 			self.selection_conns = [];
 		}
 		
+		self.in_drag = true;
 		self.updateCanvas(false);
 	};
 	
@@ -2555,6 +2556,7 @@ function Application() {
 			}
 		}
 		
+		self.in_drag = false;
 		self.updateCanvas(true);
 	};
 
