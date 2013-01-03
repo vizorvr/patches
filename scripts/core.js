@@ -18,6 +18,37 @@ E2.plugins = {};
 E2.slot_type = { input: 0, output: 1 };
 E2.erase_color = '#ff3b3b';
 
+// Monkey-patch the window object with a request/cancelAnimationFrame shims.
+window.requestAnimFrame = (function()
+{
+	return window.requestAnimationFrame       || 
+		window.webkitRequestAnimationFrame || 
+		window.mozRequestAnimationFrame
+})();
+
+window.cancelAnimFrame = (function()
+{
+	return window.cancelAnimationFrame       || 
+		window.webkitCancelAnimationFrame || 
+		window.mozCancelAnimationFrame
+})();
+
+function AssertException(message) 
+{ 
+	this.message = message;
+	
+	this.toString = function()
+	{
+		return 'AssertException: ' + this.message;
+	};
+}
+
+function assert(exp, message) 
+{
+	if (!exp)
+		throw new AssertException(message);
+}
+
 Array.prototype.remove = function(obj)
 {
 	var i = this.indexOf(obj);
@@ -2985,7 +3016,10 @@ function Application() {
 	{
 		var minify = E2.dom.save_minified.is(':checked');
 		
-		E2.dom.persist.val(self.player.core.serialise(minify));
+		E2.dom.persist.val(' ');
+		setTimeout(function(m) { return function() {
+			E2.dom.persist.val(self.player.core.serialise(minify));
+		}}(minify), 100);
 	};
 	
 	this.onLoadClicked = function()
@@ -2993,6 +3027,7 @@ function Application() {
 		self.onStopClicked();
 		self.player.load_from_json(E2.dom.persist.val());
 		self.updateCanvas(false);
+		E2.dom.persist.val(' ');
 	};
 
 	this.onLoadClipboardClicked = function()
@@ -3000,6 +3035,7 @@ function Application() {
 		var d = JSON.parse(E2.dom.persist.val());
 
 		self.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
+		E2.dom.persist.val(' ');
 	};
 
 	this.onShowTooltip = function(e)
@@ -3263,21 +3299,6 @@ function InitialiseEngi()
 	E2.dom.breadcrumb = $('#breadcrumb');
 	
 	$.ajaxSetup({ cache: false });
-
-	// Monkey-patch the window object with a request/cancelAnimationFrame shims.
-	window.requestAnimFrame = (function()
-	{
-		return window.requestAnimationFrame       || 
-			window.webkitRequestAnimationFrame || 
-			window.mozRequestAnimationFrame
-	})();
-
-	window.cancelAnimFrame = (function()
-	{
-		return window.cancelAnimationFrame       || 
-			window.webkitCancelAnimationFrame || 
-			window.mozCancelAnimationFrame
-	})();
 
 	msg('Welcome to WebFx. ' + (new Date()));
 	
