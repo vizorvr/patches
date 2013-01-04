@@ -204,6 +204,9 @@ function Renderer(canvas_id)
 	this.def_diffuse = new Float32Array([1.0, 1.0, 1.0, 1.0]);
 	this.def_specular = new Float32Array([1.0, 1.0, 1.0, 1.0]);
 		
+	this.org_width = this.canvas.width();
+	this.org_height = this.canvas.height();
+	
 	try
 	{
 		this.context = this.canvas[0].getContext('experimental-webgl', { alpha: false, preserveDrawingBuffer: false, antialias: true });
@@ -243,7 +246,7 @@ Renderer.prototype.begin_frame = function()
 		gl.clearDepth(1.0);
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
-    		this.update_viewport();
+    		// this.update_viewport();
     		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	}	
 };
@@ -288,20 +291,21 @@ Renderer.prototype.pop_framebuffer = function()
 	}
 };
 
-Renderer.prototype.on_fullscreen_change = function()
+Renderer.prototype.on_fullscreen_change = function(self) { return function()
 {
 	var c = E2.dom.webgl_canvas;
 	
-	if(this.fullscreen && !document.fullscreenElement && !document.webkitFullScreenElement && !document.mozFullscreenElement)
+	if(self.fullscreen && !document.fullscreenElement && !document.webkitFullScreenElement && !document.mozFullscreenElement)
 	{
 		c.attr('class', 'webgl-canvas-normal');
-		c.attr('width', '480px');
-		c.attr('height', '270px');
-		this.fullscreen = false;
+		c.attr('width', '' + self.org_width + 'px');
+		c.attr('height', '' + self.org_height + 'px');
+		self.update_viewport();
+		self.fullscreen = false;
 	}
 	else
-		this.fullscreen = true;
-};
+		self.fullscreen = true;
+}};
 
 Renderer.prototype.set_fullscreen = function(state)
 {
@@ -314,9 +318,9 @@ Renderer.prototype.set_fullscreen = function(state)
 		{
 			var test = null;
 			
-			document.addEventListener('fullscreenchange', this.on_fullscreen_change);
-			document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change);
-			document.addEventListener('mozfullscreenchange', this.on_fullscreen_change);
+			document.addEventListener('fullscreenchange', this.on_fullscreen_change(this));
+			document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change(this));
+			document.addEventListener('mozfullscreenchange', this.on_fullscreen_change(this));
 			
 			if(cd.requestFullscreen)
 				cd.requestFullscreen();
@@ -343,8 +347,8 @@ Renderer.prototype.set_fullscreen = function(state)
 			if(cfs)
 			{
 				c.attr('class', 'webgl-canvas-normal');
-				c.attr('width', '480px');
-				c.attr('height', '270px');
+				c.attr('width', '' + this.org_width + 'px');
+				c.attr('height', '' + this.org_height + 'px');
 				this.update_viewport();
 				cfs();
 			}
