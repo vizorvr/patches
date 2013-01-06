@@ -1540,6 +1540,29 @@ Graph.prototype.build_breadcrumb = function(parent, add_handler)
 		this.parent_graph.build_breadcrumb(parent, true);
 };
 
+Graph.prototype.reorder_children = function(node, src, hit_mode)
+{
+	var nn = node.graph.plugin.parent_node;
+	var sn = src.graph.plugin.parent_node;
+	
+	var reorder = function(arr)
+	{
+		arr.remove(sn);
+		
+		var i = arr.indexOf(nn);
+		
+		if(hit_mode === 'after')
+			i++;
+		
+		arr.splice(i, 0, sn);
+	};
+	
+	// We have to reorder the .nodes array too, since the .children array is not persisted and
+	// is rebuilt from .nodes during deserialization.
+	reorder(this.children, node, src, hit_mode);
+	reorder(this.nodes, node, src, hit_mode);
+};
+
 function Core(app) {
 	var self = this;
 	
@@ -3115,10 +3138,10 @@ function Application() {
 	add_button_events(E2.dom.load);
 	
 	// Ask user for confirmation on page unload
-	$(window).bind('beforeunload', function()
+	/*$(window).bind('beforeunload', function()
 	{
 		return 'Oh... Please don\'t go.';
-	});
+	});*/
 
 	$('#fullscreen').button().click(function()
 	{
@@ -3335,6 +3358,25 @@ function InitialiseEngi()
 		clickFolderMode: 1, // Activate, don't expand.
 		selectMode: 1, // Single.
 		debugLevel: 0, // Quiet.
+		dnd: {
+			preventVoidMoves: true,
+			onDragStart: function(node)
+			{
+				return true;
+			},
+			onDragEnter: function(node, src)
+			{
+				if(node.parent !== src.parent)
+					return false;
+
+				return ['before', 'after'];
+			},
+			onDrop: function(node, src, hit_mode, ui, draggable)
+			{
+				src.move(node, hit_mode);
+				node.parent.graph.reorder_children(node, src, hit_mode);
+			}
+		},
 		onActivate: function(node) 
 		{
 			E2.app.clearEditState();
