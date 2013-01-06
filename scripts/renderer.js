@@ -225,6 +225,10 @@ function Renderer(canvas_id)
 	this.texture_cache = new TextureCache(this.context);
 	this.shader_cache = new ShaderCache(this.context);
 	this.fullscreen = false;
+
+	document.addEventListener('fullscreenchange', this.on_fullscreen_change(this));
+	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change(this));
+	document.addEventListener('mozfullscreenchange', this.on_fullscreen_change(this));
 }
 
 Renderer.blend_mode = 
@@ -304,7 +308,10 @@ Renderer.prototype.on_fullscreen_change = function(self) { return function()
 		self.fullscreen = false;
 	}
 	else
+	{
 		self.fullscreen = true;
+		document.fullscreenElement = document.webkitFullScreenElement = document.mozFullscreenElement = null;
+	}
 }};
 
 Renderer.prototype.set_fullscreen = function(state)
@@ -316,21 +323,15 @@ Renderer.prototype.set_fullscreen = function(state)
 	{
 		if(!this.fullscreen)
 		{
-			var test = null;
-			
-			document.addEventListener('fullscreenchange', this.on_fullscreen_change(this));
-			document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change(this));
-			document.addEventListener('mozfullscreenchange', this.on_fullscreen_change(this));
-			
-			if(cd.requestFullscreen)
-				cd.requestFullscreen();
-			if(cd.webkitRequestFullScreen)
-				cd.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-			else if(cd.mozRequestFullScreen)
-				cd.mozRequestFullScreen();
-
 			if(cd.requestFullscreen || cd.webkitRequestFullScreen || cd.mozRequestFullScreen)
 			{
+				if(cd.requestFullscreen)
+					cd.requestFullscreen();
+				if(cd.webkitRequestFullScreen)
+					cd.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+				else if(cd.mozRequestFullScreen)
+					cd.mozRequestFullScreen();
+				
   				c.attr('class', 'webgl-canvas-fs');
 				c.attr('width', '960px');
 				c.attr('height', '540px');
