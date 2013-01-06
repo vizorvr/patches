@@ -240,6 +240,7 @@ span.dynatree-radio:hover
 
 span.dynatree-icon /* Default icon */
 {
+	margin-top: 3px;
 	margin-left: 3px;
 	background-position: 0px 0px;
 }
@@ -360,11 +361,13 @@ div.dynatree-drag-helper
 }
 div.dynatree-drag-helper a
 {
-	border: 1px solid gray;
-	background-color: white;
+	border: 1px solid #ddd;
+	background-color: #000;
 	padding-left: 5px;
 	padding-right: 5px;
-	opacity: 0.8;
+	padding-top: 1px;
+	padding-bottom: 2px;
+	color: #ddd;
 }
 span.dynatree-drag-helper-img
 {
@@ -420,22 +423,14 @@ div.dynatree-drop-reject span.dynatree-drag-helper-img
 span.dynatree-drag-source
 {
 	/* border: 1px dotted gray; */
-	background-color: #e0e0e0;
+	/* background-color: #e0e0e0; */
 }
 span.dynatree-drag-source a
 {
 	color: gray;
 }
 
-/*** Target node while dragging cursor is over it *****************************/
 
-span.dynatree-drop-target
-{
-	/*border: 1px solid gray;*/
-}
-span.dynatree-drop-target a
-{
-}
 span.dynatree-drop-target.dynatree-drop-accept a
 {
 	/*border: 1px solid green;*/
