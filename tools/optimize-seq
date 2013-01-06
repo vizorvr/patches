@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+fs = require('fs');
+
+var debug = false;
+
+if(process.argv.length < 3)
+{
+	console.log('Usage: optimize-seq <JSON>');
+	return;
+}
+
+function process_dynamic_slots(d_slots)
+{
+	for(var i = 0, len = d_slots.length; i < len; i++)
+	{
+		var slot = d_slots[i];
+		
+		delete slot.name;
+		delete slot.desc;
+	}
+}
+
+function process_graph(graph)
+{
+	var nodes = graph.nodes;
+	
+	// TODO: Graph pruning.
+	
+	for(var i = 0, len = nodes.length; i < len; i++)
+	{
+		var node = nodes[i];
+		
+		if(node.plugin === 'graph')
+			process_graph(node.graph);
+	
+		delete node.x;
+		delete node.y;
+		delete node.title;
+
+		if(node.dyn_in)
+			process_dynamic_slots(node.dyn_in);
+
+		if(node.dyn_out)
+			process_dynamic_slots(node.dyn_out);
+	}
+}
+
+var data = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+
+process_graph(data.root);
+
+if(debug)
+	console.log(JSON.stringify(data, undefined, 4));
+else
+	console.log(JSON.stringify(data));
