@@ -1426,7 +1426,7 @@ Graph.prototype.serialise = function()
 	d.node_uid = this.node_uid;
 	d.uid = this.uid;
 	d.parent_uid = this.parent_graph ? this.parent_graph.uid : -1;
-	
+	d.open = this.tree_node.isExpanded();
 	d.nodes = [];
 	d.conns = [];
 	
@@ -1444,6 +1444,7 @@ Graph.prototype.deserialise = function(d)
 	this.nodes = [];
 	this.roots = [];
 	this.children = [];
+	this.open = d.open || false;
 	
 	for(var i = 0, len = d.nodes.length; i < len; i++)
 	{
@@ -1723,7 +1724,7 @@ function Core(app) {
 			var tnode = pnode.addChild({
 				title: name,
 				isFolder: true,
-				expand: true
+				expand: graph.open
 			});
 			
 			graph.tree_node = tnode;
