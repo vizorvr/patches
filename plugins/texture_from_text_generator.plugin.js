@@ -6,6 +6,8 @@ E2.p = E2.plugins["texture_from_text_generator"] = function(core, node)
 		{ name: 'text', dt: core.datatypes.TEXT, desc: 'The text to be rendered to <b>texture</b>.', def: 'Empty string' },
 		{ name: 'width', dt: core.datatypes.FLOAT, desc: 'The width of the output <b>texture</b>. Will be rounded to nearest 2^n.', lo: 2, hi: 1024, def: 128 },
 		{ name: 'height', dt: core.datatypes.FLOAT, desc: 'The height of the output <b>texture</b>. Will be rounded to nearest 2^n.', lo: 2, hi: 1024, def: 128 },
+		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'The x position of the text.', def: 10 },
+		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'The y position of the text.', def: 10 },
 		{ name: 'font style', dt: core.datatypes.TEXT, desc: 'The desired font style (CSS standard).', def: 'bold 16px arial' },
 		{ name: 'fill style', dt: core.datatypes.TEXT, desc: 'The desired fill style (CSS standard).', def: '#fff' },
 		{ name: 'stroke style', dt: core.datatypes.TEXT, desc: 'The desired stroke style (CSS standard).', def: 'none' },
@@ -49,21 +51,29 @@ E2.p.prototype.update_input = function(slot, data)
 	else if(slot.index === 2)
 		this.height = this.sanitize_size(data);
 	else if(slot.index === 3)
-		this.font_style = data;
+		this.x = data;
 	else if(slot.index === 4)
-		this.fill_style = data;
+		this.y = data;
 	else if(slot.index === 5)
-		this.stroke_style = data;
+		this.font_style = data;
 	else if(slot.index === 6)
-		this.stroke_width = data;
+		this.fill_style = data;
 	else if(slot.index === 7)
-		this.align = data;
+		this.stroke_style = data;
 	else if(slot.index === 8)
+		this.stroke_width = data;
+	else if(slot.index === 9)
+		this.align = data;
+	else if(slot.index === 10)
 		this.baseline = data;
 };
 
 E2.p.prototype.update_state = function(delta_t)
 {
+	if(this.text === '')
+		return;
+	
+	var lines = this.text.split('\n');
 	var cv = E2.app.player.canvas2d;
 	var ctx = E2.app.player.c2d_ctx;
 	
@@ -76,10 +86,18 @@ E2.p.prototype.update_state = function(delta_t)
 	ctx.font = this.font_style;
 	ctx.textAlign = this.align;
 	ctx.textBaseline = this.baseline;
-	var left = ctx.canvas.width / 2;
-	var top = ctx.canvas.height / 2;
-	ctx.strokeText(this.text, left, top);
-	ctx.fillText(this.text, left, top);
+	
+	var l_height = ctx.measureText('M').width * 2; // This is very, very silly...
+	
+	for(var i = 0, len = lines.length; i < len; i++)
+	{
+		var y = this.y + (i * l_height);
+		var line = lines[i];
+		
+		ctx.strokeText(line, this.x, y);
+		ctx.fillText(line, this.x, y);
+	}
+	
 	ctx.restore();
 	
 	this.texture.upload(cv, 'Rendered text');
@@ -98,6 +116,8 @@ E2.p.prototype.state_changed = function(ui)
 		this.text = '';
 		this.width = 128;
 		this.height = 128;
+		this.x = 10;
+		this.y = 10;
 		this.font_style = 'bold 16px arial';
 		this.fill_style = '#fff';
 		this.stroke_style = 'none';
