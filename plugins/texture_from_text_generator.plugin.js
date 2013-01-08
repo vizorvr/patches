@@ -13,7 +13,8 @@ E2.p = E2.plugins["texture_from_text_generator"] = function(core, node)
 		{ name: 'stroke style', dt: core.datatypes.TEXT, desc: 'The desired stroke style (CSS standard).', def: 'none' },
 		{ name: 'stroke width', dt: core.datatypes.FLOAT, desc: 'The desired stroke width in pixels.', def: '0' },
 		{ name: 'align', dt: core.datatypes.TEXT, desc: 'Text alignment.', def: 'center' },
-		{ name: 'baseline', dt: core.datatypes.TEXT, desc: 'Text baseline.', def: 'middle' }
+		{ name: 'baseline', dt: core.datatypes.TEXT, desc: 'Text baseline.', def: 'middle' },
+		{ name: 'line height', dt: core.datatypes.FLOAT, desc: 'Line height scalar.', def: '1.2' }
 	];
 	
 	this.output_slots = [
@@ -66,6 +67,8 @@ E2.p.prototype.update_input = function(slot, data)
 		this.align = data;
 	else if(slot.index === 10)
 		this.baseline = data;
+	else if(slot.index === 11)
+		this.line_height = data;
 };
 
 E2.p.prototype.update_state = function(delta_t)
@@ -87,7 +90,7 @@ E2.p.prototype.update_state = function(delta_t)
 	ctx.textAlign = this.align;
 	ctx.textBaseline = this.baseline;
 	
-	var l_height = ctx.measureText('M').width * 2; // This is very, very silly...
+	var l_height = ctx.measureText('M').width * this.line_height; // This is very, very silly...
 	
 	for(var i = 0, len = lines.length; i < len; i++)
 	{
@@ -124,5 +127,6 @@ E2.p.prototype.state_changed = function(ui)
 		this.stroke_width = 0;
 		this.align = 'center';
 		this.baseline = 'middle';
+		this.line_height = 1.2;
 	}
 }
