@@ -1582,7 +1582,8 @@ function Core(app) {
 		SCENE: { id: 11, name: 'Scene' },
 		MATERIAL: { id: 12, name: 'Material' },
 		LIGHT: { id: 13, name: 'Light' },
-		DELEGATE: { id: 14, name: 'Delegate' }
+		DELEGATE: { id: 14, name: 'Delegate' },
+		TEXT: { id: 15, name: 'Text' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');
@@ -3172,7 +3173,9 @@ function Player(canvas, app, root_node)
 	this.last_time = (new Date()).getTime();
 	this.current_state = this.state.STOPPED;
 	this.frames = 0;
-
+	this.canvas2d = $('<canvas style="display:none" width="128" height="128"></canvas>')[0];
+	this.c2d_ctx  = this.canvas2d.getContext('2d');
+	
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, root_node);
 	this.core.graphs.push(this.core.root_graph);
 

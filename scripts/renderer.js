@@ -68,7 +68,7 @@ function Texture(gl, handle)
 
 Texture.prototype.create = function(width, height)
 {
-	this.upload(new Image(width, height));
+	this.upload(new Image(width, height), 'Internal Create');
 };
 
 Texture.prototype.drop = function()
@@ -120,6 +120,7 @@ Texture.prototype.isPow2 = function(n)
 	return (v - v_int === 0.0);
 };
 
+// Accepts both Image and Canvas instances.
 Texture.prototype.upload = function(img, src)
 {
 	this.width = img.width;

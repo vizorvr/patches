@@ -33,6 +33,7 @@
 .icon-color_picker { background: url('color-picker.png'); }
 .icon-concatenate_matrix_modulator { background: url('concatenate-matrix-modulator.png'); }
 .icon-const_float_generator { background: url('const-float-generator.png'); }
+.icon-const_text_generator { background: url('text-display.png'); }
 .icon-convert_bool_float_modulator { background: url('convert-generic.png'); }
 .icon-convert_camera_matrices { background: url('convert-generic.png'); }
 .icon-convert_color_rgba_modulator { background: url('convert-generic.png'); }
@@ -137,7 +138,9 @@
 .icon-square_modulator { background: url('square-modulator.png'); }
 .icon-subtract_modulator { background: url('subtract-modulator.png'); }
 .icon-tan_modulator { background: url('tan-modulator.png'); }
+.icon-text_display { background: url('text-display.png'); }
 .icon-texture_diffuse_shader { background: url('shader.png'); }
+.icon-texture_from_text_generator { background: url('text-display.png'); }
 .icon-texture_type_generator { background: url('texture-type-generator.png'); }
 .icon-toggle_button { background: url('toggle-button.png'); }
 .icon-toggle_modulator { background: url('toggle-modulator.png'); }
