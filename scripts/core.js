@@ -1671,6 +1671,8 @@ function Core(app) {
 			return false;
 		else if(dt === dts.MATERIAL)
 			return new Material();
+		else if(dt === dts.TEXT)
+			return '';
 		
 		// Shaders and textures legally default to null.
 		return null;
