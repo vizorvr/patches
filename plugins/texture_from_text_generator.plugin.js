@@ -23,6 +23,8 @@ E2.p = E2.plugins["texture_from_text_generator"] = function(core, node)
 	
 	this.gl = core.renderer.context;
 	this.mesh = null;
+	this.canvas2d = $('<canvas style="display:none" width="128" height="128"></canvas>')[0];
+	this.c2d_ctx  = this.canvas2d.getContext('2d');
 };
 
 E2.p.prototype.reset = function()
@@ -76,16 +78,18 @@ E2.p.prototype.update_state = function(delta_t)
 	if(this.text === '')
 		return;
 	
+	debugger;
+	
 	var lines = this.text.split('\n');
-	var cv = E2.app.player.canvas2d;
-	var ctx = E2.app.player.c2d_ctx;
+	var cv = this.canvas2d;
+	var ctx = this.c2d_ctx;
 	
 	cv.width = this.width;
 	cv.height = this.height;
+	ctx.clearRect(0, 0, this.width, this.height);
 	ctx.fillStyle = this.fill_style;
 	ctx.lineWidth = this.stroke_width;
 	ctx.strokeStyle = this.stroke_style;
-	ctx.save();
 	ctx.font = this.font_style;
 	ctx.textAlign = this.align;
 	ctx.textBaseline = this.baseline;
@@ -100,8 +104,6 @@ E2.p.prototype.update_state = function(delta_t)
 		ctx.strokeText(line, this.x, y);
 		ctx.fillText(line, this.x, y);
 	}
-	
-	ctx.restore();
 	
 	this.texture.upload(cv, 'Rendered text');
 };

@@ -3175,8 +3175,6 @@ function Player(canvas, app, root_node)
 	this.last_time = (new Date()).getTime();
 	this.current_state = this.state.STOPPED;
 	this.frames = 0;
-	this.canvas2d = $('<canvas style="display:none" width="128" height="128"></canvas>')[0];
-	this.c2d_ctx  = this.canvas2d.getContext('2d');
 	
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, root_node);
 	this.core.graphs.push(this.core.root_graph);
