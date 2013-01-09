@@ -55,14 +55,9 @@ snippets = map(lambda x: x[len(snippets_path):], glob.glob(snippets_path + '*.js
 for snippet in snippets:
 	shutil.copy('./' + snippets_path + snippet, build_dir + '/' + snippets_path + snippet)
 
-print 'Compressing plugins...'
 plugins_path = 'plugins/'
 os.mkdir(build_dir + '/' + plugins_path)
 plugins = map(lambda x: x[len(plugins_path):], glob.glob(plugins_path + '*.js'))
-
-for plugin in plugins:
-	print '\t' + plugin
-	compress('./' + plugins_path + plugin, build_dir + '/' + plugins_path + plugin)
 
 print 'Concatenating plugins...'
 
@@ -79,16 +74,10 @@ plugs_concat_file = open(plugs_concat_filename, 'w')
 plugs_concat_file.write(''.join(plugin_data))
 plugs_concat_file.close()
 
-print '\tReobfuscating merged plugin package.'
+print '\tMinifying plugin package.'
 
 compress('./' + plugs_concat_filename, plugs_concat_filename + '.js')
 os.remove(plugs_concat_filename)
-
-print '\tDeleting temporary files...'
-
-for plugin in plugins:
-	print '\t\tRemoving ' + plugin
-	os.remove(build_dir + '/' + plugins_path + plugin)
 
 print '\tCopying plugin catalogue.'
 os.system('cp ' + plugins_path + 'plugins.json ' + build_dir + '/' + plugins_path)
