@@ -78,8 +78,6 @@ E2.p.prototype.update_state = function(delta_t)
 	if(this.text === '')
 		return;
 	
-	debugger;
-	
 	var lines = this.text.split('\n');
 	var cv = this.canvas2d;
 	var ctx = this.c2d_ctx;

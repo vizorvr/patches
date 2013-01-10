@@ -9,12 +9,6 @@ E2.p = E2.plugins["const_float_generator"] = function(core, node)
 	];
 	
 	this.state = { val: 1.0 };
-	this.changed = true;
-};
-
-E2.p.prototype.reset = function()
-{
-	this.updated = true;
 };
 
 E2.p.prototype.create_ui = function()
@@ -25,7 +19,10 @@ E2.p.prototype.create_ui = function()
 	inp.change(function(self) { return function(e) {
 		try 
 		{ 
-			self.state.val = parseFloat(inp.val()); 
+			var v = parseFloat(inp.val());
+			
+			if(!isNaN(v))
+				self.state.val = v;
 		}
 		catch(e) 
 		{
@@ -41,19 +38,10 @@ E2.p.prototype.create_ui = function()
 		
 		// Don't set the updated flag directly from an asynchronous function.
 		// This could lead to aliasing with the core update logic.
-		self.changed = true;
+		self.updated = true;
 	}}(this));
 	
 	return inp;
-};
-
-E2.p.prototype.update_state = function(delta_t)
-{
-	if(this.changed)
-	{
-		this.changed = false;
-		this.updated = true;
-	}
 };
 
 E2.p.prototype.update_output = function(slot)
