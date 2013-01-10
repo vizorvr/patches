@@ -12,13 +12,10 @@ E2.p = E2.plugins["url_texture_generator"] = function(core, node)
 	this.gl = core.renderer.context;
 	this.core = core;
 	this.texture = null;
-	this.changed = true;
 };
 
 E2.p.prototype.reset = function()
 {
-	// Retransmit the texture handle if we've been stopped.
-	this.changed = true;
 };
 
 E2.p.prototype.create_ui = function()
@@ -47,7 +44,7 @@ E2.p.prototype.create_ui = function()
 			if(self.state.url === '')
 				inp.attr('title', 'No texture selected.');
 
-			self.changed = true;
+			self.updated = true;
 			diag.dialog('close');
 		};
 		
@@ -81,15 +78,6 @@ E2.p.prototype.create_ui = function()
 	}}(this));
 	
 	return inp;
-};
-
-E2.p.prototype.update_state = function(delta_t)
-{
-	if(this.changed)
-	{
-		this.changed = false;
-		this.updated = true;
-	}
 };
 
 E2.p.prototype.update_output = function(slot)

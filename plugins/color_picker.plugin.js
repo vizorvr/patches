@@ -9,12 +9,10 @@ E2.p = E2.plugins["color_picker"] = function(core, node)
 	];
 	
 	this.state = { hue: 0.0, sat: 0.0, lum: 1.0 };
-	this.changed = true;
 };
 
 E2.p.prototype.reset = function()
 {
-	this.changed = true;
 };
 
 E2.p.prototype.create_ui = function()
@@ -107,12 +105,12 @@ E2.p.prototype.create_ui = function()
 	i.mouseup(c_up);
 	i.mousemove(c_move);
 
-	var h_down = function(self, i, h, hs) { return function(e) 
+	var h_down = function(self, ui, i, h, hs) { return function(e) 
 	{ 
 		e.preventDefault(); 
 		self.hue_drag = true;
-		self.update_hue_ev(e, i, h, hs);
-	}}(this, i, h, hs);
+		self.update_hue_ev(ui, e, i, h, hs);
+	}}(this, c, i, h, hs);
 
 	var h_up = function(self) { return function(e)
 	{
@@ -120,11 +118,11 @@ E2.p.prototype.create_ui = function()
 		self.hue_drag = false;
 	}}(this);
 
-	var h_move = function(self, i, h, hs) { return function(e)
+	var h_move = function(self, ui, i, h, hs) { return function(e)
 	{
-		self.update_hue_ev(e, i, h, hs);
+		self.update_hue_ev(ui, e, i, h, hs);
 		self.hue_clipped = self.clip(e, h);
-	}}(this, i, h, hs);
+	}}(this, c, i, h, hs);
 
 	hs.mousedown(h_down);
 	hs.mouseup(h_up);
@@ -159,7 +157,7 @@ E2.p.prototype.update_value = function(c)
 		rgb[0] = nc[0];
 		rgb[1] = nc[1];
 		rgb[2] = nc[2];
-		this.changed = true;
+		this.updated = true;
 	}
 	
 	if(c)
@@ -193,7 +191,7 @@ E2.p.prototype.update_picker = function(c, s)
 	this.update_value(c);
 };
 
-E2.p.prototype.update_hue_ev = function(e, i, h, hs)
+E2.p.prototype.update_hue_ev = function(ui, e, i, h, hs)
 {
 	e.preventDefault();
 
@@ -201,10 +199,10 @@ E2.p.prototype.update_hue_ev = function(e, i, h, hs)
 		return;
 
 	this.state.hue = (e.pageY - h.offset().top) / 100.0;
-	this.update_hue(i, h, hs);
+	this.update_hue(ui, i, h, hs);
 };
 
-E2.p.prototype.update_hue = function(i, h, hs)
+E2.p.prototype.update_hue = function(ui, i, h, hs)
 {
 	var hue = 1.0 - this.state.hue;
 
@@ -247,7 +245,7 @@ E2.p.prototype.update_hue = function(i, h, hs)
 		hs.css('top', Math.floor((this.state.hue * 100.0) - 2));
 	}
 
-	this.update_value();
+	this.update_value(ui);
 };
 
 E2.p.prototype.clip = function(ev, e)
@@ -257,20 +255,11 @@ E2.p.prototype.clip = function(ev, e)
 	return ev.pageX < o.left || ev.pageX > o.left + e.width() || ev.pageY < o.top || ev.pageY > o.top + e.height();
 };
 
-E2.p.prototype.update_state = function(delta_t)
-{
-	if(this.changed)
-	{
-		this.changed = false;
-		this.updated = true;
-	}
-};
-
 E2.p.prototype.state_changed = function(ui)
 {
 	if(ui)
 	{
-		this.update_hue(ui.find('#img'), ui.find('#hue'), ui.find('#hue-sel'));
+		this.update_hue(ui, ui.find('#img'), ui.find('#hue'), ui.find('#hue-sel'));
 		this.update_picker(ui, ui.find('#sel'));
 	}
 	else
@@ -281,6 +270,6 @@ E2.p.prototype.state_changed = function(ui)
 		this.hue_clipped = false;
 		this.color_clipped = false;
 		this.color = new Color(1.0, 1.0, 1.0, 1.0);
-		this.update_hue(null, null, null);
+		this.update_hue(null, null, null, null);
 	}
 };

@@ -9,12 +9,10 @@ E2.p = E2.plugins["url_audio_generator"] = function(core, node)
 	this.state = { url: '' };
 	this.gl = core.renderer.context;
 	this.audio = null;
-	this.changed = true;
 };
 
 E2.p.prototype.reset = function()
 {
-	this.changed = true;
 };
 
 E2.p.prototype.create_ui = function()
@@ -41,7 +39,7 @@ E2.p.prototype.create_ui = function()
 			self.state.url = u.substr(0, u.lastIndexOf('.')) || u;
 			self.state_changed(null);
 			self.state_changed(inp);
-			self.changed = true;
+			self.updated = true;
 			diag.dialog('close');
 		};
 		
@@ -75,15 +73,6 @@ E2.p.prototype.create_ui = function()
 	}}(this));
 	
 	return inp;
-};
-
-E2.p.prototype.update_state = function(delta_t)
-{
-	if(this.changed)
-	{
-		this.changed = false;
-		this.updated = true;
-	}
 };
 
 E2.p.prototype.update_output = function(slot)

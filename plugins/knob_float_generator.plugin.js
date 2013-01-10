@@ -10,12 +10,10 @@ E2.p = E2.plugins["knob_float_generator"] = function(core, node)
 
 	this.state = { val: 0.0 };
 	this.knob = null;
-	this.changed = true;
 };
 
 E2.p.prototype.reset = function()
 {
-	this.changed = true;
 };
 
 E2.p.prototype.set_rotation = function()
@@ -57,7 +55,7 @@ E2.p.prototype.create_ui = function()
 		if(self.state.val !== old_val)
 		{
 			self.set_rotation();
-			self.changed = true;
+			self.updated = true;
 		}
 
 		if(e.stopPropagation) e.stopPropagation();
@@ -99,16 +97,6 @@ E2.p.prototype.create_ui = function()
 	this.knob.mousedown(knob_mousedown(this));
 	
 	return shadow;
-};
-
-
-E2.p.prototype.update_state = function(delta_t)
-{
-	if(this.changed)
-	{
-		this.changed = false;
-		this.updated = true;
-	}
 };
 
 E2.p.prototype.update_output = function(slot)

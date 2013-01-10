@@ -11,12 +11,10 @@ E2.p = E2.plugins["slider_float_generator"] = function(core, node)
 	this.state = { val: 0.0, min: 0.0, max: 1.0 };
 	this.v_col = null;
 	this.slider = null;
-	this.changed = true;
 };
 
 E2.p.prototype.reset = function()
 {
-	this.changed = true;
 };
 
 E2.p.prototype.create_ui = function()
@@ -134,16 +132,6 @@ E2.p.prototype.create_ui = function()
 	return table;
 };
 
-
-E2.p.prototype.update_state = function(delta_t)
-{
-	if(this.changed)
-	{
-		this.changed = false;
-		this.updated = true;
-	}
-};
-
 E2.p.prototype.update_output = function(slot)
 {
 	return this.state.val;
@@ -156,7 +144,7 @@ E2.p.prototype.calc_step = function()
 
 E2.p.prototype.update_value = function(value)
 {
-	this.changed = true;
+	this.updated = true;
 	this.v_col.text(value.toFixed(2));
 };
 

@@ -11,6 +11,10 @@ E2.p = E2.plugins["const_float_generator"] = function(core, node)
 	this.state = { val: 1.0 };
 };
 
+E2.p.prototype.reset = function()
+{
+}
+
 E2.p.prototype.create_ui = function()
 {
 	var inp = $('<input type="text" value="1.0" style="width: 50px;" />');

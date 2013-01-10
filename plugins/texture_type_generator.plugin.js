@@ -7,12 +7,10 @@ E2.p = E2.plugins["texture_type_generator"] = function(core, node)
 	this.output_slots = [ { name: 'type', dt: core.datatypes.FLOAT, desc: 'Emits the selected texture type when requested or the selection state changes.', def: 'Diffuse color' } ];
 	
 	this.state = { type: Material.texture_type.DIFFUSE_COLOR };
-	this.changed = true;
 };
 
 E2.p.prototype.reset = function()
 {
-	this.updated = true;
 };
 
 E2.p.prototype.create_ui = function()
@@ -29,19 +27,10 @@ E2.p.prototype.create_ui = function()
 	{
 		self.state.type = parseInt(inp.val());
 		self.state_changed(inp);
-		self.changed = true;
+		self.updated = true;
 	}}(this));
 	
 	return inp;
-};
-
-E2.p.prototype.update_state = function(delta_t)
-{
-	if(this.changed)
-	{
-		this.changed = false;
-		this.updated = true;
-	}
 };
 
 E2.p.prototype.update_output = function(slot)

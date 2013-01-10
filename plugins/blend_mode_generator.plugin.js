@@ -9,13 +9,11 @@ E2.p = E2.plugins["blend_mode_generator"] = function(core, node)
 	];
 	
 	this.state = { mode: Renderer.blend_mode.NORMAL };
-	this.changed = true;
 };
 
 E2.p.prototype.reset = function()
 {
-	this.updated = true;
-};
+}
 
 E2.p.prototype.create_ui = function()
 {
@@ -32,19 +30,10 @@ E2.p.prototype.create_ui = function()
 	{
 		self.state.mode = parseInt(inp.val());
 		self.state_changed(inp);
-		self.changed = true;
+		self.updated = true;
 	}}(this));
 	
 	return inp;
-};
-
-E2.p.prototype.update_state = function(delta_t)
-{
-	if(this.changed)
-	{
-		this.changed = false;
-		this.updated = true;
-	}
 };
 
 E2.p.prototype.update_output = function(slot)

@@ -9,12 +9,10 @@ E2.p = E2.plugins["light_type_generator"] = function(core, node)
 	];
 	
 	this.state = { type: Light.type.POINT };
-	this.changed = true;
 };
 
 E2.p.prototype.reset = function()
 {
-	this.updated = true;
 };
 
 E2.p.prototype.create_ui = function()
@@ -29,19 +27,10 @@ E2.p.prototype.create_ui = function()
 	{
 		self.state.type = parseInt(inp.val());
 		self.state_changed(inp);
-		self.changed = true;
+		self.updated = true;
 	}}(this));
 	
 	return inp;
-};
-
-E2.p.prototype.update_state = function(delta_t)
-{
-	if(this.changed)
-	{
-		this.changed = false;
-		this.updated = true;
-	}
 };
 
 E2.p.prototype.update_output = function(slot)

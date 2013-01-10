@@ -10,12 +10,10 @@ E2.p = E2.plugins["toggle_button"] = function(core, node)
 	
 	this.state = { enabled: false };
 	this.node = node;
-	this.changed = true;
 };
 
 E2.p.prototype.reset = function()
 {
-	this.updated = true;
 };
 
 E2.p.prototype.create_ui = function()
@@ -31,19 +29,10 @@ E2.p.prototype.create_ui = function()
 		if(self.node.update_connections())
 			E2.app.updateCanvas(true);
 		
-		self.changed = true;
+		self.updated = true;
 	}}(this));
 	
 	return inp;
-};
-
-E2.p.prototype.update_state = function(delta_t)
-{
-	if(this.changed)
-	{
-		this.changed = false;
-		this.updated = true;
-	}
 };
 
 E2.p.prototype.update_output = function(slot)
