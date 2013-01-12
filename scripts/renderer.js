@@ -1451,38 +1451,43 @@ function Scene(gl, data, base_path)
 	this.vertex_count = 0;
 
 	if(data)
+		this.load_json(data, base_path);
+};
+
+Scene.prototype.load_json = function(data, base_path)
+{
+	var gl = this.gl;
+	
+	this.id = data.id;
+	
+	this.bounding_box = data.bounding_box || { "lo": [0.0, 0.0, 0.0], "hi": [0.0, 0.0, 0.0] };
+	 
+	for(var id in data.materials)
 	{
-		this.id = data.id;
+		if(!data.materials.hasOwnProperty(id))
+			continue;
 		
-		this.bounding_box = data.bounding_box || { "lo": [0.0, 0.0, 0.0], "hi": [0.0, 0.0, 0.0] };
-		 
-		for(var id in data.materials)
-		{
-			if(!data.materials.hasOwnProperty(id))
-				continue;
+		this.materials[id] = new Material(gl, this.texture_cache, data.materials[id], base_path);
+	}
+	
+	for(var id in data.meshes)
+	{
+		if(!data.meshes.hasOwnProperty(id))
+			continue;
 			
-			this.materials[id] = new Material(gl, this.texture_cache, data.materials[id], base_path);
-		}
+		var m = data.meshes[id];
 		
-		for(var id in data.meshes)
+		for(var b = 0, len = m.batches.length; b < len; b++)
 		{
-			if(!data.meshes.hasOwnProperty(id))
-				continue;
-				
-			var m = data.meshes[id];
-			
-			for(var b = 0, len = m.batches.length; b < len; b++)
-			{
-				var batch = m.batches[b];
-				var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, batch, base_path);
-			
-				mesh.id = id + '_b' + b;
-				mesh.material = this.materials[batch.material];
-				mesh.shader = ComposeShader(this.shader_cache, mesh, mesh.material, null, null, null, null);
-			
-				this.meshes.push(mesh);
-				this.vertex_count += mesh.vertex_count;
-			}
+			var batch = m.batches[b];
+			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, batch, base_path);
+		
+			mesh.id = id + '_b' + b;
+			mesh.material = this.materials[batch.material];
+			mesh.shader = ComposeShader(this.shader_cache, mesh, mesh.material, null, null, null, null);
+		
+			this.meshes.push(mesh);
+			this.vertex_count += mesh.vertex_count;
 		}
 	}
 };
@@ -1567,25 +1572,26 @@ Scene.prototype.create_autofit_camera = function()
 	
 Scene.load = function(gl, url)
 {
-	var scene = null;
+	// Create dummy impostor scene and can be used as a null-proxy until asynchronous load completes.
+	var scene = new Scene(gl, null, null);
 	
 	jQuery.ajax({
 		url: url, 
 		dataType: 'json',
-		success: function(data) 
+		success: function(scene) { return function(data) 
 		{
 			var bp = url.substr(0, url.lastIndexOf('/') + 1);
 			var r = E2.app.player.core.renderer;
 			
-			scene = new Scene(gl, data, bp);
+			scene.load_json(data, bp);
 			msg('Scene: Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
 			msg('Global cache state: ' + r.texture_cache.count() + ' textures. ' + r.shader_cache.count() + ' shaders.');
-		},
+		}}(scene),
 		error: function(jqXHR, textStatus, errorThrown)
 		{
 			Notifier.error('Failed to load scene "' + url + '": ' + textStatus + ', ' + errorThrown, 'Renderer');
 		},
-		async: false // TODO: We should definitely change this to be asynchronous!
+		async: true // TODO: We should definitely change this to be asynchronous!
 	});
 	
 	return scene;
