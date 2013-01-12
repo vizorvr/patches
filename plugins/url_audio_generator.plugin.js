@@ -107,15 +107,18 @@ E2.p.prototype.state_changed = function(ui)
 				else if(this.audio.canPlayType('audio/wav; codecs="1"'))
 					src = this.state.url + '.wav';
 				else
-					msg('URL Audio generator: This browser supports neither mp4, mp3, ogg vorbis or wav playback.');
+					msg('Audio: This browser supports neither mp4, mp3, ogg vorbis or wav playback.');
 			}
 			else
-				msg('URL Audio generator: This browser does not support the Audio API.');
+				msg('Audio: This browser does not support the Audio API.');
 		
 			if(src !== null)
 			{
-				// TODO: This needs error handling. Load failures are currently silent.
-				msg('URL Audio generator: Loading ' + src + '.');
+				this.audio.addEventListener('error', function(src) { return function(at) {
+					msg('ERROR: Audio: Failed to load ' + src);
+				}}(src));
+				
+				msg('Audio: Loading ' + src + '.');
 				this.audio.src = src;
 			}
 		}
