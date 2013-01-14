@@ -97,17 +97,13 @@ E2.p.prototype.state_changed = function(ui)
 				this.audio.loop = true;
 				this.audio.preload = true;
 			
-				// Damn browser wars. Select file type based on cap sniffing.
-				if(this.audio.canPlayType('audio/mp4; codecs="mp4a.40.2"'))
-					src = this.state.url + '.mp4';
-				else if(this.audio.canPlayType('audio/ogg; codecs="vorbis"'))
+				// Select file type based on cap sniffing.
+				if(this.audio.canPlayType('audio/ogg; codecs="vorbis"'))
 					src = this.state.url + '.ogg';
 				else if(this.audio.canPlayType('audio/mpeg'))
 					src = this.state.url + '.mp3';
-				else if(this.audio.canPlayType('audio/wav; codecs="1"'))
-					src = this.state.url + '.wav';
 				else
-					msg('Audio: This browser supports neither mp4, mp3, ogg vorbis or wav playback.');
+					msg('Audio: This browser supports neither ogg vorbis or mp3 audio playback.');
 			}
 			else
 				msg('Audio: This browser does not support the Audio API.');

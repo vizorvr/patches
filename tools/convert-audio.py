@@ -25,8 +25,5 @@ def ensure_dir(f):
 ensure_dir(output_dir)
 fname = os.path.splitext(os.path.split(input_filename)[1])[0]
 
-os.system('ffmpeg -i "%s" "%s/%s.wav"' % (input_filename, output_dir, fname))
 os.system('ffmpeg -i "%s" "%s/%s.ogg"' % (input_filename, output_dir, fname))
 os.system('ffmpeg -i "%s" "%s/%s.mp3"' % (input_filename, output_dir, fname))
-os.system('ffmpeg -i "%s" "%s/%s.mp4"' % (input_filename, output_dir, fname))
-os.system('ffmpeg -i "%s" "%s/%s.webm"' % (input_filename, output_dir, fname))
