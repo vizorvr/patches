@@ -18,8 +18,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	if(slot.index === 0)
-		this.value = Math.tan(data);
+	this.value = Math.tan(data);
 };	
 
 E2.p.prototype.update_output = function(slot)
