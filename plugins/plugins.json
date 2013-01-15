@@ -54,6 +54,8 @@
 	"Generators/Values/Text": "const_text_generator",
 	"Generators/Values/Texture type": "texture_type_generator",
 	"Generators/Values/Toggle button": "toggle_button",
+	"Modulators/Audio/Duration": "audio_get_duration_modulator",	
+	"Modulators/Audio/Current time": "audio_get_current_time_modulator",	
 	"Modulators/Color/Add": "color_add_modulator",	
 	"Modulators/Color/Blend": "color_blend_modulator",
 	"Modulators/Color/Multiply": "color_multiply_modulator",	
