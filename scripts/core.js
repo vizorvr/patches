@@ -3210,7 +3210,7 @@ function Player(canvas, app, root_node)
 		self.current_state = self.state.STOPPED;
 		self.core.abs_t = 0.0;
 
-		self.core.active_graph.reset();
+		self.core.root_graph.reset();
 		self.core.renderer.begin_frame(); // Clear the WebGL view.
 		self.core.renderer.end_frame();
 		
