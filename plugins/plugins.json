@@ -1,4 +1,5 @@
 {
+	"Emitters/3D/Framebuffer recorder": "record_framebuffer",
 	"Emitters/3D/Mesh renderer": "mesh_renderer_emitter",
 	"Emitters/3D/Scene renderer": "scene_renderer_emitter",
 	"Emitters/3D/Instancing/Array": "instance_array_modulator",
@@ -19,6 +20,7 @@
 	"Generators/Cameras/Perspective": "perspective_camera",
 	"Generators/Cameras/Screenspace": "screenspace_camera",
 	"Generators/Delegates/Expression": "delegate_expression_generator",
+	"Generators/Delegates/Array from JSON": "delegate_json_array_generator",
 	"Generators/Input/Key press": "key_press_generator",
 	"Generators/Input/Mouse buttons": "mouse_button_generator",
 	"Generators/Input/Mouse position": "mouse_position_generator",

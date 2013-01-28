@@ -174,6 +174,7 @@ E2.p.prototype.set_render_target_state = function(on)
 		this.texture = new Texture(gl, t);
 		this.texture.width = this.framebuffer.width;
 		this.texture.height = this.framebuffer.height;
+		this.texture.framebuffer = this.framebuffer;
 	}
 	else
 	{

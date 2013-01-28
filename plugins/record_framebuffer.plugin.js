@@ -1,0 +1,84 @@
+E2.p = E2.plugins["record_framebuffer"] = function(core, node)
+{
+	this.desc = 'Grab the current framebuffer and transmit frame size and RGB data to a specified recording server.';
+	
+	this.input_slots = [ 
+		{ name: 'url', dt: core.datatypes.TEXT, desc: 'URL of the recording server.' },
+		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The texture output of a graph.' }
+	];
+	
+	this.output_slots = [];
+	this.gl = core.renderer.context;
+};
+
+E2.p.prototype.reset = function()
+{
+	this.url = null;
+	this.texture = null;
+}
+
+E2.p.prototype.connection_changed = function(on, conn, slot)
+{
+	if(!on)
+	{
+		if(slot.index === 0)
+			this.url = null;
+		else
+			this.texture = null;
+	}
+};
+
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+		this.url = data;
+	else
+		this.texture = data;
+};
+
+E2.p.prototype.update_state = function(delta_t)
+{
+	if(!this.url || !this.texture || !this.texture.framebuffer)
+		return;
+	
+	var gl = this.gl;
+	var data = new FormData();
+	var w = this.texture.width;
+	var h = this.texture.height;
+	var size = w * h * 4;
+	var img_data = new Uint8Array(size);
+	
+	gl.bindFramebuffer(gl.FRAMEBUFFER, this.texture.framebuffer);
+	gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, img_data);
+	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+	
+	var s_rep = [];
+	
+	for(var i = 0; i < size; i += 4)
+	{
+		s_rep.push(img_data[i]);
+		s_rep.push(img_data[i+1]);
+		s_rep.push(img_data[i+2]);
+	}
+	
+	data.append('width', w);
+	data.append('height', h);
+	data.append('img_data', s_rep);
+
+	$.ajax({
+		url: this.url,
+		data: data,
+		async: false,
+		contentType: false,
+		processData: false,
+		type: 'POST',
+		success: function(data)
+		{
+			msg('Successfully transmitted frame to ' + this.url);
+		},
+		error: function()
+		{
+			msg('ERROR: Could not transmit frame to ' + this.url);
+		}
+	});
+};
