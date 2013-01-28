@@ -11,14 +11,16 @@ E2.p = E2.plugins["delegate_json_array_generator"] = function(core, node)
 	];
 	
 	this.state = {};
-	this.array = null;
+	this.data = null;
 	this.delegate = new Delegate(function(x) { return 0.0; }, 0, 0);
 	this.url = '';
 };
 
 E2.p.prototype.delegate_func = function(self) { return function(x)
 {
-	return (self.array && x > -1 && x < self.array.length) ? self.array[x] : 0.0;
+	var i = Math.floor(x);
+	
+	return (self.data && i > -1 && i < self.data.length) ? self.data[i] : 0.0;
 }};
 
 E2.p.prototype.reset = function()
@@ -40,20 +42,24 @@ E2.p.prototype.update_input = function(slot, data)
 		dataType: 'json',
 		async: false,
 		headers: {},
-		success: function(json) 
+		success: function(self, url) { return function(json) 
 		{
 			if(json.data)
 			{
-				self.array = json.data;
-				self.delegate = new Delegate(self.delegate_func(self), 0, self.array.length);
+				self.data = json.data;
+				self.delegate = new Delegate(self.delegate_func(self), 0, self.data.length);
+			
+				msg('0: ' + self.delegate.delegate(0));
+				msg('30: ' + self.delegate.delegate(30));
+				msg('60: ' + self.delegate.delegate(60));
 			}
 			else
-				msg('ERROR: JSON array delegate: The file \'\' did not contain the expected array named \'data\'.');	
-		},
-		error: function()
+				msg('ERROR: JSON array delegate: The file \'' + url + '\' did not contain the expected array named \'data\'.');	
+		}}(self, data),
+		error: function(url) { return function()
 		{
-			msg('ERROR: JSON array delegate: Couldn\'t load ' + data);
-		}
+			msg('ERROR: JSON array delegate: Couldn\'t load ' + url);
+		}}(data)
 	});
 };
 
