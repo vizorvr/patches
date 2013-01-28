@@ -88,10 +88,10 @@ E2.p.prototype.state_changed = function(ui)
 			ui.attr('title', this.state.url);
 		else
 		{
-			var src = null;
-			
 			if(typeof(Audio) !== 'undefined')
 			{
+				var src = null;
+
 				this.audio = new Audio();
 			
 				this.audio.loop = true;
@@ -104,19 +104,20 @@ E2.p.prototype.state_changed = function(ui)
 					src = this.state.url + '.mp3';
 				else
 					msg('Audio: This browser supports neither ogg vorbis or mp3 audio playback.');
+
+				if(src !== null)
+				{
+					this.audio.addEventListener('error', function(self, src) { return function(at) {
+						msg('ERROR: Audio: Failed to load \'' + src + '\'.');
+						self.audio = null;
+					}}(this, src));
+				
+					msg('Audio: Loading ' + src + '.');
+					this.audio.src = src;
+				}
 			}
 			else
 				msg('Audio: This browser does not support the Audio API.');
-		
-			if(src !== null)
-			{
-				this.audio.addEventListener('error', function(src) { return function(at) {
-					msg('ERROR: Audio: Failed to load ' + src);
-				}}(src));
-				
-				msg('Audio: Loading ' + src + '.');
-				this.audio.src = src;
-			}
 		}
 	}
 };

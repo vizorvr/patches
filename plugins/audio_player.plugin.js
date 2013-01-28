@@ -56,10 +56,11 @@ E2.p.prototype.update_state = function(delta_t)
 			if(this.should_play)
 				audio.play();
 			else
-				audio.pause();			
+				audio.pause();
+			
+			this.playing = this.should_play;
 		}
 		
-		this.playing = this.should_play;
 	}
 	
 	if(!this.playing)
