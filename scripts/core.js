@@ -133,11 +133,10 @@ function load_script(url)
 	document.getElementById('head').appendChild(script);
 }
 
-function Delegate(delegate, lo, hi)
+function Delegate(delegate, count)
 {
 	this.delegate = delegate;
-	this.lo = lo;
-	this.hi = hi;
+	this.count = count;
 }
 
 function PluginGroup(id)
@@ -851,6 +850,9 @@ Node.prototype.destroy = function()
 	var index = graph.nodes.indexOf(this);
 	var pending = [];
 	
+	if(this.plugin.destroy)
+		this.plugin.destroy();
+	
 	graph.emit_event({ type: 'node-destroyed', node: this });
 	
 	if(index != -1)
@@ -1011,30 +1013,45 @@ Node.prototype.remove_slot = function(slot_type, suid)
 		E2.app.updateCanvas(true);
 };
 
+
+Node.prototype.find_dynamic_slot = function(slot_type, suid)
+{
+	var slots = (slot_type === E2.slot_type.input) ? this.dyn_inputs : this.dyn_outputs;
+	
+	if(slots)
+	{
+		for(var i = 0, len = slots.length; i < len; i++)
+		{
+			if(slots[i].uid === suid)
+				return slots[i];
+		}
+	}
+
+	return null;
+};
+
 Node.prototype.rename_slot = function(slot_type, suid, name)
 {
-	var is_inp = slot_type === E2.slot_type.input;
-	var slots = is_inp ? this.dyn_inputs : this.dyn_outputs;
+	var slot = this.find_dynamic_slot(slot_type, suid);
 	
-	if(!slots)
-		return;
-	
-	for(var i = 0, len = slots.length; i < len; i++)
+	if(slot)
 	{
-		if(slots[i].uid === suid)
-		{
-			var slot = slots[i];
+		slot.name = name;
 
-			slot.name = name;
-
-			if(this.ui)
-				this.ui.dom.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid).text(name);
-
-			break; // Early out.
-		}
+		if(this.ui)
+			this.ui.dom.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid).text(name);
 	}
 };
 	
+Node.prototype.change_slot_datatype = function(slot_type, suid, dt)
+{
+	var slot = this.find_dynamic_slot(slot_type, suid);
+	
+	if(slot)
+	{
+	}
+};
+
 Node.prototype.update_connections = function()
 {
 	var gsp = E2.app.getSlotPosition;
@@ -1253,7 +1270,7 @@ function Graph(core, parent_graph, tree_node)
 	this.nodes = [];
 	this.connections = [];
 	this.core = core;
-	
+	this.registers = {};
 	if(tree_node !== null) // Only initialise if we're not deserialising.
 	{
 		this.uid = this.core.get_graph_uid();
@@ -1333,14 +1350,21 @@ Graph.prototype.update = function(delta_t)
 
 Graph.prototype.enum_all = function(n_delegate, c_delegate)
 {
-	var nodes = this.nodes,
-	    conns = this.connections;
-	    
-	for(var i = 0, len = nodes.length; i < len; i++)
-		n_delegate(nodes[i]);
+	if(n_delegate)
+	{
+		var nodes = this.nodes;
+		    
+		for(var i = 0, len = nodes.length; i < len; i++)
+			n_delegate(nodes[i]);
+	}
 
-	for(var i = 0, len = conns.length; i < len; i++)
-		c_delegate(conns[i]);
+	if(c_delegate)
+	{
+		var conns = this.connections;
+	    
+		for(var i = 0, len = conns.length; i < len; i++)
+			c_delegate(conns[i]);
+	}
 };
 
 Graph.prototype.reset = function()
@@ -1353,6 +1377,33 @@ Graph.prototype.reset = function()
 	{
 		c.reset();
 	});
+};
+
+Graph.prototype.play = function()
+{
+	this.enum_all(function(n)
+	{
+		if(n.plugin.play)
+			n.plugin.play();
+	}, null);
+};
+
+Graph.prototype.pause = function()
+{
+	this.enum_all(function(n)
+	{
+		if(n.plugin.pause)
+			n.plugin.pause();
+	}, null);
+};
+
+Graph.prototype.stop = function()
+{
+	this.enum_all(function(n)
+	{
+		if(n.plugin.stop)
+			n.plugin.stop();
+	}, null);
 };
 
 Graph.prototype.destroy_connection = function(c)
@@ -1417,6 +1468,43 @@ Graph.prototype.find_connections_from = function(node, slot)
 	}
 	
 	return result;
+};
+
+Graph.prototype.lock_register = function(node, name)
+{
+	if(!this.registers.hasOwnProperty(name))
+		this.registers[name] = { dt: E2.app.player.core.datatypes.ANY, value: null, readers: [], ref_count: 1 };
+	else
+		this.registers[name].ref_count++;
+	
+	var readers = this.registers[name].readers;
+	
+	if(node && readers.indexOf(node) === -1)
+		readers.push(node);
+};
+
+Graph.prototype.unlock_register = function(node, name)
+{
+	if(this.registers.hasOwnProperty(name))
+	{
+		if(--this.registers[name].ref_count === 0)
+			delete this.registers[name];
+	}
+
+	var readers = this.registers[name].readers;
+	
+	if(node && readers.indexOf(node) !== -1)
+		readers.remove(node);
+};
+
+Graph.prototype.write_register = function(name, value)
+{
+	var reg = this.registers[name];
+	
+	reg.value = value;
+	
+	for(var i = 0, len = reg.readers.length; i < len; i++)
+		reg.readers[i].plugin.register_value_updated(reg.value);
 };
 
 Graph.prototype.serialise = function()
@@ -2413,6 +2501,9 @@ function Application() {
 			if(node.plugin.e2_is_graph)
 				node.plugin.graph.tree_node.setTitle(node.title);
 		
+			if(node.plugin.renamed)
+				node.plugin.renamed();
+				
 			node.parent_graph.emit_event({ type: 'node-renamed', node: node });
 			diag.dialog('close');
 		};
@@ -3181,6 +3272,7 @@ function Player(canvas, app, root_node)
 
 	this.play = function()
 	{
+		this.core.root_graph.play();
 		self.current_state = self.state.PLAYING;
 		self.last_time = (new Date()).getTime();
 		self.interval = requestAnimFrame(self.on_anim_frame);
@@ -3195,6 +3287,8 @@ function Player(canvas, app, root_node)
 			cancelAnimFrame(self.interval);
 			self.interval = null;
 		}
+
+		this.core.root_graph.pause();
 	};
 
 	this.stop = function()
@@ -3205,6 +3299,8 @@ function Player(canvas, app, root_node)
 			self.interval = null;
 		}
 		
+		this.core.root_graph.stop();
+
 		self.abs_time = 0.0;
 		self.frames = 0;
 		self.current_state = self.state.STOPPED;

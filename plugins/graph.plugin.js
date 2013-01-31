@@ -33,6 +33,24 @@ E2.p.prototype.reset = function()
 		this.graph.reset();
 };
 
+E2.p.prototype.play = function()
+{
+	if(this.graph)
+		this.graph.pause();
+};
+
+E2.p.prototype.pause = function()
+{
+	if(this.graph)
+		this.graph.pause();
+};
+
+E2.p.prototype.stop = function()
+{
+	if(this.graph)
+		this.graph.stop();
+};
+
 E2.p.prototype.create_ui = function()
 {
 	var inp = $('<input id="state" type="button" value="Edit" title="Open this graph for editing." />');
@@ -214,6 +232,7 @@ E2.p.prototype.set_render_target_state = function(on)
 	
 E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_slot)
 {
+	var self = this;
 	var core = this.core;
 	var node = this.parent_node;
 	
@@ -225,22 +244,8 @@ E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_s
 				return parseInt(n);
 		}
 		
-		msg('ERROR: Failed to resolve node(' + uid + ') in graph(' + this.graph.plugin.parent_node.title + ').');
+		msg('ERROR: Failed to resolve node(' + uid + ') in graph(' + self.graph.plugin.parent_node.title + ').');
 		return -1;
-	};
-	
-	var find_slot = function(slots, sid)
-	{
-		for(var i = 0, len = slots.length; i < len; i++)
-		{
-			var s = slots[i];
-			
-			if(s.uid === sid)
-				return s;
-		}
-		
-		msg('ERROR: Failed to resolve slot(' + sid + ') in graph(' + this.graph.plugin.parent_node.title + ').');
-		return null;
 	};
 	
 	var is_gslot_connected = function(gslot)
@@ -265,7 +270,7 @@ E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_s
 		return false;
 	};
 	
-	var change_slots = function(self, last, g_slot, p_slot)
+	var change_slots = function(last, g_slot, p_slot)
 	{
 		self.dbg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid);
 		
@@ -328,7 +333,7 @@ E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_s
 					}
 				}
 				
-				var rgsl = find_slot(node.dyn_inputs, find_sid(self.input_nodes, t_node.uid));
+				var rgsl = node.find_dynamic_slot(E2.slot_type.input, find_sid(self.input_nodes, t_node.uid));
 				
 				if(!connected && !is_gslot_connected(rgsl))
 				{
@@ -338,7 +343,7 @@ E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_s
 			}
 			else if(t_node.plugin.id === 'output_proxy')
 			{
-				var rgsl = find_slot(node.dyn_outputs, find_sid(self.output_nodes, t_node.uid));
+				var rgsl = node.find_dynamic_slot(E2.slot_type.output, find_sid(self.output_nodes, t_node.uid));
 				
 				if(!is_gslot_connected(rgsl))
 				{
@@ -353,14 +358,14 @@ E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_s
 	{
 		var last = p_node.outputs.length === 0;
 		
-		change_slots(this, last, find_slot(node.dyn_inputs, find_sid(this.input_nodes, p_node.uid)), slot);
+		change_slots(last, node.find_dynamic_slot(E2.slot_type.input, find_sid(this.input_nodes, p_node.uid)), slot);
 		this.dbg('    Output count = ' + p_node.outputs.length);
 	}
 	else
 	{
 		var last = p_node.inputs.length === 0;
 		
-		change_slots(this, last, find_slot(node.dyn_outputs, find_sid(this.output_nodes, p_node.uid)), slot);
+		change_slots(last, node.find_dynamic_slot(E2.slot_type.output, find_sid(this.output_nodes, p_node.uid)), slot);
 		this.dbg('    Input count = ' + p_node.inputs.length);
 	}
 };
@@ -493,6 +498,7 @@ E2.p.prototype.state_changed = function(ui)
 {
 	var core = this.core;
 	var node = this.parent_node;
+	var self = this;
 	
 	// Only rebuild the node lists during post-load patch up of the graph, 
 	// during which 'ui' will be null. Otherwise the lists would have been rebuilt 
@@ -519,7 +525,7 @@ E2.p.prototype.state_changed = function(ui)
 			}
 		}
 
-		msg('ERROR: Failed to find registered proxy node(' + uid + ') in graph(' + this.graph.plugin.parent_node.title + ').'); 
+		msg('ERROR: Failed to find registered proxy node(' + uid + ') in graph(' + self.graph.plugin.parent_node.title + ').'); 
 		return null;
 	};
 

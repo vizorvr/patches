@@ -250,7 +250,7 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.delegate = new Delegate(this.delegate_func(this), Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
+		this.delegate = new Delegate(this.delegate_func(this), Number.POSITIVE_INFINITY);
 		
 		var sids = this.state.slot_ids;
 		

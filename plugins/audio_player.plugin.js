@@ -21,12 +21,35 @@ E2.p = E2.plugins["audio_player"] = function(core, node)
 	this.time = null;
 };
 
-E2.p.prototype.reset = function()
+E2.p.prototype.play = function()
+{
+	if(this.audio && !this.playing && this.should_play)
+	{
+		this.playing = this.should_play = true;
+		this.audio.play();
+	}
+};
+
+E2.p.prototype.pause = function()
 {
 	if(this.audio && this.playing)
 	{
-		this.playing = this.should_play = false;
+		this.playing = false;
+		this.should_play = true;
 		this.audio.pause();
+	}
+};
+
+E2.p.prototype.stop = function()
+{
+	if(this.audio)
+	{
+		if(this.playing)
+		{
+			this.playing = this.should_play = false;
+			this.audio.pause();
+		}
+		
 		this.audio.currentTime = 0;
 	}
 };

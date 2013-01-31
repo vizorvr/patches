@@ -12,7 +12,7 @@ E2.p = E2.plugins["delegate_json_array_generator"] = function(core, node)
 	
 	this.state = {};
 	this.data = null;
-	this.delegate = new Delegate(function(x) { return 0.0; }, 0, 0);
+	this.delegate = new Delegate(function(x) { return 0.0; }, 0);
 	this.url = '';
 };
 
@@ -47,11 +47,7 @@ E2.p.prototype.update_input = function(slot, data)
 			if(json.data)
 			{
 				self.data = json.data;
-				self.delegate = new Delegate(self.delegate_func(self), 0, self.data.length);
-			
-				msg('0: ' + self.delegate.delegate(0));
-				msg('30: ' + self.delegate.delegate(30));
-				msg('60: ' + self.delegate.delegate(60));
+				self.delegate = new Delegate(self.delegate_func(self), self.data.length);
 			}
 			else
 				msg('ERROR: JSON array delegate: The file \'' + url + '\' did not contain the expected array named \'data\'.');	
