@@ -20,6 +20,9 @@ def cnr(n):
 
     return s
     
+print '{ "data": [',
+delim = ''
+
 for i in xrange(0, w.getnframes()):
 	# Assume stereo, mix the channels.
 	data = struct.unpack('<hh', w.readframes(1))
@@ -34,8 +37,11 @@ for i in xrange(0, w.getnframes()):
 		if value < 0.00001:
 			value = 0.0
 
-		amps.append(value)
+		sys.stdout.write("%s%s" % (delim, cnr(value)))
+		sys.stdout.flush()
+		delim = ','
 		sum = 0
 
-print '{ "data": ' + str(map(cnr, amps)) + '}'
+
+print ']}'
 
