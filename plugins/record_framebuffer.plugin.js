@@ -3,6 +3,7 @@ E2.p = E2.plugins["record_framebuffer"] = function(core, node)
 	this.desc = 'Grab the current framebuffer and transmit frame size and RGB data to a specified recording server.';
 	
 	this.input_slots = [ 
+		{ name: 'record', dt: core.datatypes.BOOL, desc: 'Switch recording on or off.', def: false },
 		{ name: 'url', dt: core.datatypes.TEXT, desc: 'URL of the recording server.' },
 		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The texture output of a graph.' }
 	];
@@ -21,9 +22,9 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 {
 	if(!on)
 	{
-		if(slot.index === 0)
+		if(slot.index === 1)
 			this.url = null;
-		else
+		else if(slot.index === 2)
 			this.texture = null;
 	}
 };
@@ -31,14 +32,16 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
+		this.record = data;
+	else if(slot.index === 1)
 		this.url = data;
-	else
+	else if(slot.index === 2)
 		this.texture = data;
 };
 
 E2.p.prototype.update_state = function(delta_t)
 {
-	if(!this.url || !this.texture || !this.texture.framebuffer)
+	if(!this.record || !this.url || !this.texture || !this.texture.framebuffer)
 		return;
 	
 	var gl = this.gl;
