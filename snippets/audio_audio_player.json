@@ -1,0 +1,156 @@
+{
+    "abs_t": 0,
+    "active_graph": 0,
+    "graph_uid": 1,
+    "root": {
+        "node_uid": 10,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "url_audio_generator",
+                "x": 149,
+                "y": 214,
+                "uid": 0,
+                "state": {
+                    "url": "data/audio/ilkae/inedible_candy"
+                }
+            },
+            {
+                "plugin": "audio_get_current_time_modulator",
+                "x": 307,
+                "y": 163,
+                "uid": 1
+            },
+            {
+                "plugin": "float_display",
+                "x": 417,
+                "y": 89,
+                "uid": 2
+            },
+            {
+                "plugin": "audio_player",
+                "x": 626,
+                "y": 262,
+                "uid": 3
+            },
+            {
+                "plugin": "toggle_button",
+                "x": 309,
+                "y": 275,
+                "uid": 4,
+                "state": {
+                    "enabled": false
+                },
+                "title": "Play"
+            },
+            {
+                "plugin": "toggle_button",
+                "x": 309,
+                "y": 336,
+                "uid": 5,
+                "state": {
+                    "enabled": false
+                },
+                "title": "Mute audio"
+            },
+            {
+                "plugin": "knob_float_generator",
+                "x": 309,
+                "y": 396,
+                "uid": 6,
+                "state": {
+                    "val": 0.49999999999999956
+                },
+                "title": "Volume"
+            },
+            {
+                "plugin": "audio_get_duration_modulator",
+                "x": 309,
+                "y": 537,
+                "uid": 7
+            },
+            {
+                "plugin": "knob_float_generator",
+                "x": 309,
+                "y": 465,
+                "uid": 8,
+                "state": {
+                    "val": 0
+                },
+                "title": "Playback position"
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 450,
+                "y": 496,
+                "uid": 9
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 0,
+                "dst_nuid": 1,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 1,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 0,
+                "dst_nuid": 3,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 1
+            },
+            {
+                "src_nuid": 4,
+                "dst_nuid": 3,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 5,
+                "dst_nuid": 3,
+                "src_slot": 0,
+                "dst_slot": 2
+            },
+            {
+                "src_nuid": 6,
+                "dst_nuid": 3,
+                "src_slot": 0,
+                "dst_slot": 3
+            },
+            {
+                "src_nuid": 0,
+                "dst_nuid": 7,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 2
+            },
+            {
+                "src_nuid": 8,
+                "dst_nuid": 9,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 7,
+                "dst_nuid": 9,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 9,
+                "dst_nuid": 3,
+                "src_slot": 0,
+                "dst_slot": 4
+            }
+        ]
+    }
+}

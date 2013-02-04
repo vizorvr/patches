@@ -344,6 +344,12 @@ html, body
 	padding: 2px;
 }
 
+optgroup
+{
+	color: #fff;
+	background-color: #444;
+}
+
 #load-snippet
 {
 	float: left;
