@@ -314,12 +314,14 @@ function SnippetManager(base_url)
 		{
 			msg('SnippetsMgr: Loading snippets from: ' + url);
 
-			$.each(data, function(key, id) 
+			$.each(data, function(key, snippets)
 			{
-				// Load the plugin, constrain filenames.
-				var url = self.base_url + '/' + id + '.json';
-
-				self.register_snippet(key, url)
+				self.register_group(key);
+				
+				$.each(snippets, function(name, id)
+				{
+					self.register_snippet(name, self.base_url + '/' + id + '.json')
+				});
 			});
 		},
 		error: function()
@@ -341,7 +343,9 @@ function SnippetManager(base_url)
 			headers: {},
 			success: function(data)
 			{
+	  			debugger;
 	  			E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
+	  			E2.app.onPaste({ target: { id: 'notpersist' }});
 	  		},
 	  		error: function()
 	  		{
@@ -350,6 +354,11 @@ function SnippetManager(base_url)
 		});
 	});
 }
+
+SnippetManager.prototype.register_group = function(label)
+{
+	this.listbox.append('<optgroup label="' + label + '" class="snippet-group"></optgroup>');
+};
 
 SnippetManager.prototype.register_snippet = function(name, url)
 {
@@ -2663,6 +2672,9 @@ function Application() {
 	
 	this.onCanvasMouseUp = function(e)
 	{
+		if(!self.selection_start)
+			return;
+		
 		self.releaseSelection();
 		
 		var nodes = self.selection_nodes;
@@ -3196,8 +3208,8 @@ function Application() {
 	});
 	
 	canvas_parent.mousedown(this.onCanvasMouseDown);
-	canvas_parent.mouseup(this.onCanvasMouseUp);
-	canvas_parent.mousemove(this.onCanvasMouseMoved);
+	$(document).mouseup(this.onCanvasMouseUp);
+	$(document).mousemove(this.onCanvasMouseMoved);
 	
 	// Clear hover state on window blur. Typically when the user switches
 	// to another tab.
