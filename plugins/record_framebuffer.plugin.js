@@ -45,7 +45,6 @@ E2.p.prototype.update_state = function(delta_t)
 		return;
 	
 	var gl = this.gl;
-	var data = new FormData();
 	var w = this.texture.width;
 	var h = this.texture.height;
 	var size = w * h * 4;
@@ -63,6 +62,8 @@ E2.p.prototype.update_state = function(delta_t)
 		s_rep.push(img_data[i+1]);
 		s_rep.push(img_data[i+2]);
 	}
+	
+	var data = new FormData();
 	
 	data.append('width', w);
 	data.append('height', h);
