@@ -1,5 +1,5 @@
 #/bin/sh
 opt="vbitrate=19160000:mbd=2:keyint=132:vqblur=1.0:cmp=2:subcmp=2:dia=2:mv0:last_pred=3"
-mencoder "mf://./framedump/*.png" -mf fps=25 -ovc lavc -lavcopts vcodec=mpeg4:vpass=1:$opt -nosound -o /dev/null
-mencoder "mf://./framedump/*.png" -mf fps=25 -ovc lavc -lavcopts vcodec=mpeg4:vpass=2:$opt -nosound -o framedump.avi
+mencoder "mf://./cache/*.png" -mf fps=25 -ovc lavc -lavcopts vcodec=mpeg4:vpass=1:$opt -nosound -o /dev/null
+mencoder "mf://./cache/*.png" -mf fps=25 -ovc lavc -lavcopts vcodec=mpeg4:vpass=2:$opt -nosound -o framedump.avi
 rm -f divx2pass.log
