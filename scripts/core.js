@@ -343,7 +343,6 @@ function SnippetManager(base_url)
 			headers: {},
 			success: function(data)
 			{
-	  			debugger;
 	  			E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
 	  			E2.app.onPaste({ target: { id: 'notpersist' }});
 	  		},
