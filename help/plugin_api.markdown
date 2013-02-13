@@ -79,6 +79,13 @@ Is scheduled for deprecation in favour of `stop()`, and should not be used unles
 
 ---
 
+#####E2.p.prototype.destroy = function()
+
+If declared, this method will be called by the core immediately before its parent Node is destroyed
+along with all associated resources.
+
+---
+
 #####E2.p.prototype.play = function()
     
 Called immediately before graph playback begins.
