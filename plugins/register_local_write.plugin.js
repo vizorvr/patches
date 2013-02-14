@@ -22,18 +22,29 @@ E2.p.prototype.reset = function()
 	this.updated = true;
 };
 
+E2.p.prototype.destroy = function()
+{
+	this.node.parent_graph.unlock_register(this, this.node.title);
+};
+
+E2.p.prototype.register_dt_changed = function(dt)
+{
+	this.node.change_slot_datatype(E2.slot_type.input, this.state.slot_id, dt);
+};
+
 E2.p.prototype.renamed = function()
 {
-	this.node.parent_graph.unlock_register(this.old_title);
-	this.node.parent_graph.lock_register(null, this.node.title);
+	this.node.parent_graph.unlock_register(this, this.old_title);
+	this.node.parent_graph.lock_register(this, this.node.title);
 };
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
 {
-	// This will also be called when we're destroyed, thus neatly taking care
-	// of decresing the reference count in that case too.
-	if(!on)
-		this.node.parent_graph.unlock_register(this.node.title);
+	var pg = this.node.parent_graph;
+	var reg_conn_count = pg.register_connection_changed(this.node.title, on);
+	
+	if(on && reg_conn_count === 1)
+		pg.set_register_dt(this.node.title, conn.src_slot.dt);
 };
 
 E2.p.prototype.update_input = function(slot, data)
@@ -44,6 +55,8 @@ E2.p.prototype.update_input = function(slot, data)
 E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
-		this.node.parent_graph.lock_register(null, this.node.title);
+		this.node.parent_graph.lock_register(this, this.node.title);
+	else
+		this.node.ui.dom.addClass('register');
 };
 

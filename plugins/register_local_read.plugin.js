@@ -18,24 +18,36 @@ E2.p = E2.plugins["register_local_read"] = function(core, node)
 		this.old_title = node.title = 'reg_' + node.uid;
 };
 
-E2.p.prototype.renamed = function()
+E2.p.prototype.destroy = function()
 {
-	this.node.parent_graph.unlock_register(this.old_title);
-	this.node.parent_graph.lock_register(this.node, this.node.title);
+	this.node.parent_graph.unlock_register(this, this.node.title);
 };
 
-E2.p.prototype.register_value_updated = function(value)
+E2.p.prototype.renamed = function()
+{
+	this.node.parent_graph.unlock_register(this, this.old_title);
+	this.node.parent_graph.lock_register(this, this.node.title);
+};
+
+E2.p.prototype.register_dt_changed = function(dt)
+{
+	this.node.change_slot_datatype(E2.slot_type.output, this.state.slot_id, dt);
+};
+
+E2.p.prototype.register_updated = function(value)
 {
 	this.updated = true;
+	this.node.queued_update = 1; // Update next frame too...
 	this.data = value;
 };
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
 {
-	// This will also be called when we're destroyed, thus neatly taking care
-	// of decresing the reference count in that case too.
-	if(!on)
-		this.node.parent_graph.unlock_register(this.node.title);
+	var pg = this.node.parent_graph;
+	var reg_conn_count = pg.register_connection_changed(this.node.title, on);
+	
+	if(on && reg_conn_count === 1)
+		pg.set_register_dt(this.node.title, conn.dst_slot.dt);
 };
 
 E2.p.prototype.update_output = function(slot)
@@ -46,6 +58,8 @@ E2.p.prototype.update_output = function(slot)
 E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
-		this.node.parent_graph.lock_register(this.node, this.node.title);
+		this.node.parent_graph.lock_register(this, this.node.title);
+	else
+		this.node.ui.dom.addClass('register');
 };
 

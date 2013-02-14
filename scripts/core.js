@@ -1059,10 +1059,32 @@ Node.prototype.rename_slot = function(slot_type, suid, name)
 Node.prototype.change_slot_datatype = function(slot_type, suid, dt)
 {
 	var slot = this.find_dynamic_slot(slot_type, suid);
+	var pg = this.parent_graph;
 	
-	if(slot)
+	if(slot.dt === dt) // Anything to do?
+		return false;
+	
+	if(slot.dt !== pg.core.datatypes.ANY)
 	{
+		// Destroy all attached connections.
+		var conns = slot_type === E2.slot_type.input ? this.inputs : this.outputs;
+		var pending = [];
+		var c = null;
+	
+		for(var i = 0, len = conns.length; i < len; i++)
+		{
+			c = conns[i];
+		
+			if(c.src_node === this || c.dst_node === this)
+				pending.push(c);
+		}
+
+		for(var i = 0, len = pending.length; i < len; i++)
+			pg.destroy_connection(pending[i]);
 	}
+		
+	slot.dt = dt;
+	return true;
 };
 
 Node.prototype.update_connections = function()
@@ -1483,41 +1505,83 @@ Graph.prototype.find_connections_from = function(node, slot)
 	return result;
 };
 
-Graph.prototype.lock_register = function(node, name)
+Graph.prototype.lock_register = function(plugin, name)
 {
-	if(!this.registers.hasOwnProperty(name))
-		this.registers[name] = { dt: E2.app.player.core.datatypes.ANY, value: null, readers: [], ref_count: 1 };
-	else
+	if(name in this.registers)
 		this.registers[name].ref_count++;
+	else
+		this.registers[name] = { dt: E2.app.player.core.datatypes.ANY, value: null, users: [], ref_count: 1, connections: 0 };
 	
-	var readers = this.registers[name].readers;
+	var u = this.registers[name].users;
 	
-	if(node && readers.indexOf(node) === -1)
-		readers.push(node);
+	if(!(plugin in u))
+		u.push(plugin);
 };
 
-Graph.prototype.unlock_register = function(node, name)
+Graph.prototype.unlock_register = function(plugin, name)
 {
-	if(this.registers.hasOwnProperty(name))
+	if(name in this.registers)
 	{
+		var u = this.registers[name].users;
+
+		if(!(plugin in u))
+			u.remove(plugin);
+		
 		if(--this.registers[name].ref_count === 0)
 			delete this.registers[name];
 	}
+};
 
-	var readers = this.registers[name].readers;
+Graph.prototype.register_connection_changed = function(name, added)
+{
+	var r = this.registers[name];
+
+	if(!added)
+	{
+		r.connections--;
+		
+		if(r.connections === 0)
+		{
+			var u = r.users;
+			var any = E2.app.player.core.datatypes.ANY;
+			
+			for(var i = 0, len = u.length; i < len; i++)
+				u[i].register_dt_changed(any);
+		}
+	}
+	else
+		r.connections++;
+		
+	return r.connections;
+};
+
+Graph.prototype.set_register_dt = function(name, dt)
+{
+	var r = this.registers[name];
+	var u = r.users;
 	
-	if(node && readers.indexOf(node) !== -1)
-		readers.remove(node);
+	assert(r.dt === E2.app.player.core.datatypes.ANY);
+	
+	r.value = this.core.get_default_value(dt);
+	
+	for(var i = 0, len = u.length; i < len; i++)
+		u[i].register_dt_changed(dt);
 };
 
 Graph.prototype.write_register = function(name, value)
 {
-	var reg = this.registers[name];
+	var r = this.registers[name];
+	var u = r.users;
 	
-	reg.value = value;
+	r.value = value;
 	
-	for(var i = 0, len = reg.readers.length; i < len; i++)
-		reg.readers[i].plugin.register_value_updated(reg.value);
+	for(var i = 0, len = u.length; i < len; i++)
+	{
+		var plg = u[i];
+		
+		if(plg.register_updated)
+			plg.register_updated(value);
+	}
 };
 
 Graph.prototype.serialise = function()
