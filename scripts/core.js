@@ -2677,17 +2677,23 @@ function Application() {
 	
 	this.clearSelection = function()
 	{
-		for(var i = 0, len = self.selection_nodes.length; i < len; i++)
+		var sn = self.selection_nodes;
+		var sc = self.selection_conns;
+		
+		for(var i = 0, len = sn.length; i < len; i++)
 		{
-			var nui = self.selection_nodes[i].ui;
+			var nui = sn[i].ui;
 			
-			if(nui) 
+			if(nui)
+			{
+				nui.selected = false;
 				nui.dom[0].style.border = '1px solid #aaa';
+			}
 		}
 			
-		for(var i = 0, len = self.selection_conns.length; i < len; i++)
+		for(var i = 0, len = sc.length; i < len; i++)
 		{
-			var cui = self.selection_conns[i].ui;
+			var cui = sc[i].ui;
 			
 			if(cui) 
 				cui.selected = false;
@@ -2815,12 +2821,11 @@ function Application() {
 		}
 		
 		var sn = self.selection_nodes;
+		var ns = [];
 		
-		for(var i = 0, len = self.selection_nodes.length; i < len; i++)
-			sn[i].ui.dom[0].style.border = '1px solid #aaa';
+		for(var i = 0, len = sn.length; i < len; i++)
+			sn[i].ui.selected = false;
 
-		self.selection_nodes = [];
-		
 		for(var i = 0, len = nodes.length; i < len; i++)
 		{
 			var n = nodes[i],
@@ -2833,9 +2838,23 @@ function Application() {
 			if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
 				continue; // No intersection.
 				
-			n.ui.dom[0].style.border = '2px solid #09f';
-			self.selection_nodes.push(n);
+			if(!n.ui.selected)
+			{
+				n.ui.dom[0].style.border = '2px solid #09f';
+				n.ui.selected = true;
+				ns.push(n);
+			}
 		}
+		
+		for(var i = 0, len = sn.length; i < len; i++)
+		{
+			var n = sn[i];
+			
+			if(!n.ui.selected)
+				n.ui.dom[0].style.border = '1px solid #aaa';
+		}
+		
+		self.selection_nodes = ns;
 		
 		var co = cp.offset();
 		var w = cp.width();
