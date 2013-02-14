@@ -17,6 +17,8 @@
 .icon-add_modulator { background: url('add-modulator.png'); }
 .icon-alpha_modulator { background: url('alpha-modulator.png'); }
 .icon-aspect_ratio_generator { background: url('aspect-ratio-generator.png'); }
+.icon-audio_get_current_time_modulator { background: url('clock-generator.png'); }
+.icon-audio_get_duration_modulator { background: url('audio-get-duration-modulator.png'); }
 .icon-and_modulator { background: url('and-modulator.png'); }
 .icon-annotation { background: url('annotation.png'); }
 .icon-audio_player { background: url('audio-player.png'); }
@@ -47,6 +49,7 @@
 .icon-cos_modulator { background: url('cosine-modulator.png'); }
 .icon-cube_mesh_generator { background: url('cube-mesh-generator.png'); }
 .icon-delegate_expression_generator { background: url('delegate-expression-generator.png'); }
+.icon-delegate_get_length_modulator { background: url('delegate-get-length-modulator.png'); }
 .icon-delegate_sample_modulator { background: url('delegate-sample-modulator.png'); }
 .icon-delta_modulator { background: url('delta-modulator.png'); }
 .icon-delta_t_generator { background: url('delta-t-generator.png'); } 	
@@ -119,6 +122,10 @@
 .icon-plot_display { background: url('plot-display.png'); }
 .icon-quad_mesh_generator { background: url('quad-mesh-generator.png'); }
 .icon-random_float_generator { background: url('random-float-generator.png'); }
+.icon-record_framebuffer { background: url('record-framebuffer.png'); }
+.icon-register_local_read { background: url('input-proxy.png'); }
+.icon-register_local_write { background: url('output-proxy.png'); }
+.icon-reset_framebuffer_recorder { background: url('record-framebuffer.png'); }
 .icon-rotation_matrix { background: url('rotation-matrix.png'); }
 .icon-rotation_xyz_matrix { background: url('rotation-xyz-matrix.png'); }
 .icon-round_modulator { background: url('round-modulator.png'); }

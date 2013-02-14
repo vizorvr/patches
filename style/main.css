@@ -373,24 +373,16 @@ optgroup
 	background: #ffa !important;
 }
 
-/*.graph .pl_header
-{
-	background: #888 !important;
-	color: #fff !important;
-	font-weight: bold;
-}*/
-
 .proxy
 {
 	background: #ffa !important;
 }
 
-/*.proxy .pl_header
+.register
 {
-	background: #888 !important;
-	color: #fff !important;
-	font-weight: bold;
-}*/
+	background: #bdd1ff !important;
+}
+
 
 .pl_layout
 {
