@@ -304,8 +304,7 @@ E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_s
 			{
 				var c = conns[i];
 				
-				if((g_slot.type === E2.slot_type.input && c.dst_slot === g_slot)
-				|| (g_slot.type === E2.slot_type.output && c.src_slot === g_slot))
+				if(c.dst_slot === g_slot || c.src_slot === g_slot)
 				{
 					connected = true;
 					break;
