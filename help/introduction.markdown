@@ -94,10 +94,12 @@ transparent element in them.
 ##3D Scenes:
 These are the default scenes we are including at the moment. They must be referred to by their 'scene.json file', for example 'data/scenes/roma/scene.json'. If you have scenes or models you would like to include, please contact us.
 
-<table style="padding: 10px">
+<table cellpadding="2" width="890">
+	<col width="350px" />
+	<col />
 	<tr>
-		<td style="text-align: center"><b>Relative filename</b></td>
-		<td style="text-align: center"><b>Content</b></td>
+		<td style="border-bottom: 1px solid #888"><b>Relative filename</b></td>
+		<td style="border-bottom: 1px solid #888"><b>Content</b></td>
 	</tr>
 	<tr>
 		<td><nobr>data/scenes/auron/scene.json</nobr></td>

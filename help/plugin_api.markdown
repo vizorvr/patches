@@ -205,6 +205,15 @@ will be called seperately with `ui` equal to the root DOM element returned by `c
 `update_state()` need to be called as a consequence.
 * **e2\_is\_graph** (boolean): A special state-flag used to identity nested graphs.
 
+###Core class interfaces:
+
+####Node
+
+####Connection
+####Graph
+####Core
+####Renderer
+
 ###Common pitfalls:
 
 * **Performing computation in `update_output()`**:
