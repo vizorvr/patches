@@ -70,6 +70,7 @@
 	"Modulators/Convert/Color/Color to RGBA": "convert_color_rgba_modulator",
 	"Modulators/Convert/Color/HSLA to Color": "convert_hsla_color_modulator",
 	"Modulators/Convert/Color/RGBA to Color": "convert_rgba_color_modulator",
+	"Modulators/Convert/Format/Float as string": "format_string_float",
 	"Modulators/Convert/Bool to Float": "convert_bool_float_modulator",
 	"Modulators/Convert/Oscilator to unit": "convert_oscilator_unit_modulator",
 	"Modulators/Convert/Vector to XYZ": "convert_vector_xyz_modulator",
