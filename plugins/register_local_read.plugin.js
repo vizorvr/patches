@@ -59,8 +59,13 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.node.parent_graph.lock_register(this, this.node.title);
-		this.data = this.node.parent_graph.registers[this.node.title].value;
+		var id = this.node.title;
+		var n = this.node;
+		var pg = n.parent_graph;
+		
+		pg.lock_register(this, id);
+		pg.set_register_dt(id, n.find_dynamic_slot(E2.slot_type.output, this.state.slot_id).dt);
+		this.data = pg.registers[id].value;
 	}
 	else
 		this.node.ui.dom.addClass('register');

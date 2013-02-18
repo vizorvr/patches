@@ -55,7 +55,14 @@ E2.p.prototype.update_input = function(slot, data)
 E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
-		this.node.parent_graph.lock_register(this, this.node.title);
+	{
+		var id = this.node.title;
+		var n = this.node;
+		var pg = n.parent_graph;
+		
+		pg.lock_register(this, id);
+		pg.set_register_dt(id, n.find_dynamic_slot(E2.slot_type.input, this.state.slot_id).dt);
+	}
 	else
 		this.node.ui.dom.addClass('register');
 };
