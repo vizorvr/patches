@@ -226,6 +226,7 @@ function Renderer(canvas_id)
 	this.texture_cache = new TextureCache(this.context);
 	this.shader_cache = new ShaderCache(this.context);
 	this.fullscreen = false;
+	this.default_tex = new Texture(this.context);
 
 	document.addEventListener('fullscreenchange', this.on_fullscreen_change(this));
 	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change(this));
@@ -1309,10 +1310,7 @@ function ShaderCache(gl)
 ShaderCache.prototype.get = function(key)
 {
 	if(key in this.shaders)
-	{
-		msg('Returning cached shader: ' + key);
 		return this.shaders[key];
-	}
 	
 	return null;
 }

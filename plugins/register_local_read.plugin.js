@@ -58,7 +58,10 @@ E2.p.prototype.update_output = function(slot)
 E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
+	{
 		this.node.parent_graph.lock_register(this, this.node.title);
+		this.data = this.node.parent_graph.registers[this.node.title].value;
+	}
 	else
 		this.node.ui.dom.addClass('register');
 };

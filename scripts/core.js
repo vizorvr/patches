@@ -1562,10 +1562,10 @@ Graph.prototype.set_register_dt = function(name, dt)
 	
 	assert(r.dt === E2.app.player.core.datatypes.ANY);
 	
-	r.value = this.core.get_default_value(dt);
-	
 	for(var i = 0, len = u.length; i < len; i++)
 		u[i].register_dt_changed(dt);
+	
+	this.write_register(name, this.core.get_default_value(dt))
 };
 
 Graph.prototype.write_register = function(name, value)
@@ -1597,6 +1597,21 @@ Graph.prototype.serialise = function()
 	
 	this.enum_all(function(n) { d.nodes.push(n.serialise()); }, function(c) { d.conns.push(c.serialise()); });
 
+	var regs = this.registers;
+	
+	if(regs.length > 0)
+	{
+		d.registers = [];
+		
+		for(id in regs)
+		{
+			if(!regs.hasOwnProperty(regs))
+				continue;
+			
+			d.registers.push({ id: id, dt: r.dt.id });
+		}
+	}
+	
 	return d;
 };
 
@@ -1627,6 +1642,20 @@ Graph.prototype.deserialise = function(d)
 		
 		c.deserialise(d.conns[i]);
 		this.connections.push(c);
+	}
+	
+	if(d.registers)
+	{
+		var rdt = E2.app.player.core.resolve_dt;
+
+		for(var i = 0, len = d.registers.length; i < len; i++)
+		{
+			var r = d.registers[i];
+			var r_dt = rdt[r.dt];
+			
+			this.registers[r.id] = { dt: r_dt, value: null, users: [], ref_count: 1, connections: 0 };
+			this.write_register(r.id, this.core.get_default_value(r_dt));
+		}
 	}
 };
 
@@ -1828,6 +1857,8 @@ function Core(app) {
 			mat4.identity(m);
 			return m;
 		}
+		else if (dt === dts.TEXTURE)
+			return self.renderer.default_tex;
 		else if(dt === dts.VECTOR)
 			return [0.0, 0.0, 0.0];
 		else if(dt === dts.CAMERA)
@@ -2289,37 +2320,12 @@ function Application() {
 		}
 	};
 	
-	this.mouseEventPosToCanvasCoord = function(e)
+	this.mouseEventPosToCanvasCoord = function(e, result)
 	{
 		var cp = canvas_parent[0];
 		
-		return [(e.pageX - cp.offsetLeft) + self.scrollOffset[0], (e.pageY - cp.offsetTop) + self.scrollOffset[1]];
-	};
-	
-	this.onMouseMoved = function(e)
-	{
-		if(self.src_slot)
-		{
-			var cp = E2.dom.canvas_parent;
-			var pos = cp.position();
-			var w = cp.width();
-			var h = cp.height();
-			var x2 = pos.left + w;
-			var y2 = pos.top + h;
-			
-			if(e.pageX < pos.left)
-				cp.scrollLeft(self.scrollOffset[0] - 20);
-			else if(e.pageX > x2)
-				cp.scrollLeft(self.scrollOffset[0] + 20);
-					
-			if(e.pageY < pos.top)
-				cp.scrollTop(self.scrollOffset[1] - 20);
-			else if(e.pageY > y2)
-				cp.scrollTop(self.scrollOffset[1] + 20);
-
-			self.edit_conn.ui.dst_pos = self.mouseEventPosToCanvasCoord(e);
-			self.updateCanvas(true);
-		}
+		result[0] = (e.pageX - cp.offsetLeft) + self.scrollOffset[0];
+		result[1] = (e.pageY - cp.offsetTop) + self.scrollOffset[1];
 	};
 	
 	this.onMouseReleased = function(e)
@@ -2641,7 +2647,6 @@ function Application() {
 		node.x += dx;
 		node.y += dy;
 		
-		
 		var dirty = node.update_connections();
 		
 		if(self.isNodeInSelection(node))
@@ -2714,7 +2719,8 @@ function Application() {
 		if(e.which === 1)
 		{
 			self.set_persist_select(false);
-			self.selection_start = self.mouseEventPosToCanvasCoord(e);
+			self.selection_start = [0, 0];
+			self.mouseEventPosToCanvasCoord(e, self.selection_start);
 			self.selection_end = self.selection_start.slice(0);
 			self.selection_last = [e.pageX, e.pageY];
 			self.clearSelection();
@@ -2795,19 +2801,41 @@ function Application() {
 		self.updateCanvas(true);
 	};
 
-	this.onCanvasMouseMoved = function(e)
+	this.onMouseMoved = function(e)
 	{
-		var ss = self.selection_start;
+		if(self.src_slot)
+		{
+			var cp = E2.dom.canvas_parent;
+			var pos = cp.position();
+			var w = cp.width();
+			var h = cp.height();
+			var x2 = pos.left + w;
+			var y2 = pos.top + h;
+			
+			if(e.pageX < pos.left)
+				cp.scrollLeft(self.scrollOffset[0] - 20);
+			else if(e.pageX > x2)
+				cp.scrollLeft(self.scrollOffset[0] + 20);
+					
+			if(e.pageY < pos.top)
+				cp.scrollTop(self.scrollOffset[1] - 20);
+			else if(e.pageY > y2)
+				cp.scrollTop(self.scrollOffset[1] + 20);
 
-		if(!ss)
+			self.mouseEventPosToCanvasCoord(e, self.edit_conn.ui.dst_pos);
+			self.updateCanvas(true);
+		}
+
+		if(!self.selection_start)
 			return;
 
-		var se = self.selection_end = self.mouseEventPosToCanvasCoord(e);
+		self.mouseEventPosToCanvasCoord(e, self.selection_end);
+		
 		var nodes = self.player.core.active_graph.nodes;
 		var cp = E2.dom.canvas_parent;
 		
-		ss = ss.slice(0);
-		se = se.slice(0);
+		var ss = self.selection_start.slice(0);
+		var se = self.selection_end.slice(0);
 		
 		for(var i = 0; i < 2; i++)
 		{
@@ -3296,7 +3324,6 @@ function Application() {
 	
 	canvas_parent.mousedown(this.onCanvasMouseDown);
 	$(document).mouseup(this.onCanvasMouseUp);
-	$(document).mousemove(this.onCanvasMouseMoved);
 	
 	// Clear hover state on window blur. Typically when the user switches
 	// to another tab.
