@@ -158,7 +158,7 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 					var sid = self.node.add_slot(E2.slot_type.input, { name: cid, dt: sdt });
 
 					self.state.slot_ids[cid] = { id: sid, dt: sdt, uniform: null };
-					self.slot_data[sid] = null;
+					self.slot_data[sid] = self.core.get_default_value(E2.slot_type.input, sdt);
 					slot_list.append($('<option>', { value: sid }).text(cid));
 					break;
 				}
