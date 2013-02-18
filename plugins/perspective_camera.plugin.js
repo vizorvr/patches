@@ -4,9 +4,9 @@ E2.p = E2.plugins["perspective_camera"] = function(core, node)
 	
 	this.input_slots = [
 		{ name: 'FOV', dt: core.datatypes.FLOAT, desc: 'Field of view in degrees.', def: 45 },
-		{ name: 'near', dt: core.datatypes.FLOAT, desc: 'Depth of the near clipping plane.', def: 1 },
+		{ name: 'near', dt: core.datatypes.FLOAT, desc: 'Depth of the near clipping plane.', def: 0.01 },
 		{ name: 'far', dt: core.datatypes.FLOAT, desc: 'Depth of the far clipping plane.', def: 1000 },
-		{ name: 'position', dt: core.datatypes.VECTOR, desc: 'Camera position.', def: '0, 0, -1' },
+		{ name: 'position', dt: core.datatypes.VECTOR, desc: 'Camera position.', def: '0, 0, -2' },
 		{ name: 'target', dt: core.datatypes.VECTOR, desc: 'Camera target.', def: '0, 0, 0' }
 	];
 	
@@ -52,9 +52,9 @@ E2.p.prototype.state_changed = function(ui)
 	{
 		this.camera = new Camera(this.gl);
 		this.fov = 45.0;
-		this.near = 1.0;
+		this.near = 0.01;
 		this.far = 1000.0;
-		this.position = [0.0, 0.0, 1.0];
+		this.position = [0.0, 0.0, -2.0];
 		this.target = [0.0, 0.0, 0.0];
 	}
 };
