@@ -126,6 +126,8 @@ def writeAtlas(images, atlasW, atlasH):
 	
 	atlasImg.save('build/style/icons/icons.png')
 	atlasImg = None
+	
+	os.system('tools/imgopt/imgopt build/style/icons/icons.png')
 
 def writeCSS(images, atlasW, atlasH):
 	css = open('build/style/icons/style.css', 'w')

@@ -1,0 +1,161 @@
+#!/bin/bash
+
+# Simple bash script to use find to recursively locate JPEG/PNG files
+# and process them with jpegtran, jfifremove, optipng, advpng and pngout 
+# using settings to minimize file size and strip all metadata headers.
+#
+# To change optimization programs/settings, edit/comment out in functions
+# do_jpeg and do_png below.
+#
+# Author: Joel Hardi
+# Version: 0.1.2 2009-04-02
+#
+# For more information and usage examples, see:
+# http://lyncd.com/2009/03/imgopt-lossless-optimize-png-jpeg/
+
+# Usage help text
+usage () {
+  echo "Usage: imgopt [FILE/DIR] [FILE/DIR] [FILE/DIR] ..."
+  echo
+  echo "Optimizes any combination of files and directories. Directories are searched"
+  echo "recursively, and all image files in any subdirectories are optimized."
+  echo
+  echo "Examples:"
+  echo
+  echo " imgopt .      Optimize all images in current directory and any subdirectories"
+  echo " imgopt *.png  Optimize all pngs in current directory only"
+  echo
+}
+
+# Optimize PNG file in place
+# (edit here to add/remove PNG optimizing steps or change parameters)
+# More information on PNG optimization techniques:
+# http://optipng.sourceforge.net/pngtech/optipng.html
+do_png () {
+  # $1 is filename
+
+  # advpng, part of AdvanceCOMP, is available here:
+  # http://advancemame.sourceforge.net/comp-download.html
+  advpng -z -4 -q "$1"
+
+  # OptiPNG is available here:
+  # http://optipng.sourceforge.net/
+  optipng -q -zc1-9 -zm1-9 -zs0-3 -f0-5 "$1"
+
+  # pngout is available here (binaries only):
+  # http://www.jonof.id.au/index.php?p=kenutils
+  # pngout "$1" $TMPF -q -y
+  
+  # Sometimes (not always) pngout appends ".PNG" to output filename
+  #if [ -f "$TMPF.PNG" ]; then
+  #  mv -f $TMPF.PNG $TMPF
+  #fi
+
+  return 0
+}
+
+# Optimize JPEG file in place
+# (edit here to add/remove JPEG optimizing steps or change parameters)
+do_jpeg () {
+  # $1 is filename
+  TMPJ=`mktemp -t tmp.XXXXXX` || return 1
+
+  # jpegtran is part of libjpeg (almost surely already on your system).
+  # If not, it's here:
+  # http://www.ijg.org/
+  jpegtran -copy none -optimize -outfile $TMPJ "$1" && mv -f $TMPJ "$1"
+
+  # jfifremove is included with this script, be sure to compile and install
+  ./jfifremove < "$1" > $TMPJ && mv -f $TMPJ "$1"
+
+  return 0
+}
+
+# Optimize file, only replace original if optimized version is smaller
+do_file () {
+  # $1 is name of file
+  if [ -w "$1" ]; then
+
+    # Copy file to tmp file and optimize in place
+    cp -f "$1" $TMPF
+    case "$1" in
+      *.[Pp][Nn][Gg] )
+      do_png $TMPF
+      ;;
+      *.[Jj][Pp][Ee][Gg] )
+      do_jpeg $TMPF
+      ;;
+      *.[Jj][Pp][Gg] )
+      do_jpeg $TMPF
+      ;;
+      * )
+      echo "$1 could not be identified, please rename to .jpg or .png"
+      return 1
+      ;;
+    esac
+
+    # If optimized file is smaller, copy it over original
+    BEFORE=`ls -la "$1" | awk '{print $5}'`
+    AFTER=`ls -la $TMPF | awk '{print $5}'`
+    let REDUCED=$BEFORE-$AFTER
+    if [ $AFTER -lt $BEFORE ]; then
+      cp -f $TMPF $1
+      echo "$1 reduced $REDUCED bytes to $AFTER bytes"
+    else
+      echo "$1 unchanged at $BEFORE bytes"
+    fi
+
+    return 0
+  else
+    echo "$1 is not writable, skipping"
+    return 1
+  fi
+}
+
+# Optimize recursively all files in a directory
+do_dir () {
+  # $1 is name of dir
+  RETURNVAL=""
+  IFS=$'\n'
+  # Doing 2 finds for compatibility with both BSD and GNU find syntax
+  # extended regex like .*\.(jpe?|pn)g$ would be better but syntax differs
+  for x in `find "$1" -type f -iregex '.*\.[jp][pn]g$' ; find "$1" -type f -iregex '.*\.jpeg$'`; do
+    do_file $x
+    if [ "$RETURNVAL" != "0" ]; then
+      RETURNVAL=$?
+    fi
+  done
+  if [ "$RETURNVAL" == "" ]; then
+    RETURNVAL=0
+  fi
+  return $RETURNVAL
+}
+
+
+# If run with args, optimize these files or recursively all files in a dir
+if [[ -n "$1" && "$1" != '-h' && "$1" != '--help' ]]; then
+  TMPF=`mktemp tmp.XXXXXX` || exit 1
+  RETURNVAL=1
+  until [ -z "$1" ]; do
+    if [ -d "$1" ]; then
+      do_dir "$1"
+      if [ "$RETURNVAL" != "0" ]; then
+        RETURNVAL=$?
+      fi
+    elif [ -f "$1" ]; then
+      do_file "$1"
+      if [ "$RETURNVAL" != "0" ]; then
+        RETURNVAL=$?
+      fi
+    else
+      echo "$1 is neither a file nor directory, skipping"
+    fi
+    shift
+  done
+  rm -f $TMPF
+  exit $RETURNVAL
+# If run without args, print usage help
+else
+  usage
+  exit 1
+fi
