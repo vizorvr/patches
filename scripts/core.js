@@ -268,7 +268,7 @@ function PluginManager(core, base_url, creation_listener)
 
    				if(!self.release_mode)
    				{
-	   				msg('Loading ' + id);
+	   				// msg('Loading ' + id);
 					load_script(url);
    				}
    				
