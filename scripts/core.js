@@ -2669,7 +2669,7 @@ function Application() {
 		// TODO: For some reason (investigate) this doesn't work for output connections
 		// on the drag-node.
 		// gconns(node, conns);
-		node.update_connections();
+		var dirty = node.update_connections();
 		
 		if(self.isNodeInSelection(node))
 		{
@@ -2693,7 +2693,7 @@ function Application() {
 			}
 		}
 		
-		if(conns.length)
+		if(dirty || conns.length)
 		{
 			var gsp = E2.app.getSlotPosition;
 			
