@@ -2643,15 +2643,38 @@ function Application() {
 		var nd = node.ui.dom[0];
 		var dx = nd.offsetLeft - node.x;
 		var dy = nd.offsetTop - node.y;
+		var conns = [];
+		var gconns = function(n, coll)
+		{
+			for(var i = 0, len = n.inputs.length; i < len; i++)
+			{
+				var c = n.inputs[i];
+			
+				if(!(c in coll))
+					coll.push(c);
+			}
+
+			for(var i = 0, len = n.outputs.length; i < len; i++)
+			{
+				var c = n.outputs[i];
+			
+				if(!(c in coll))
+					coll.push(c);
+			}
+		};
 		
 		node.x += dx;
 		node.y += dy;
 		
-		var dirty = node.update_connections();
+		// TODO: For some reason (investigate) this doesn't work for output connections
+		// on the drag-node.
+		// gconns(node, conns);
+		node.update_connections();
 		
 		if(self.isNodeInSelection(node))
 		{
 			var sn = self.selection_nodes;
+			var conns = [];
 			
 			for(var i = 0, len = sn.length; i < len; i++)
 			{
@@ -2666,12 +2689,24 @@ function Application() {
 				n.y += dy;
 				s.left = '' + (n.x) + 'px';
 				s.top = '' + (n.y) + 'px';
-				dirty = n.update_connections() || dirty;
+				gconns(n, conns);
 			}
 		}
 		
-		if(dirty)
+		if(conns.length)
+		{
+			var gsp = E2.app.getSlotPosition;
+			
+			for(var i = 0, len = conns.length; i < len; i++)
+			{
+				var c = conns[i].ui;
+				
+				c.src_pos = gsp(c.src_slot_div, E2.slot_type.output);
+				c.dst_pos = gsp(c.dst_slot_div, E2.slot_type.input);
+			}
+			
 			self.updateCanvas(true);
+		}
 	}};
 	
 	this.onNodeDragStopped = function(node) { return function(e)
@@ -2896,20 +2931,12 @@ function Application() {
 		if((dy < 0 && e.pageY < co.top + (h * 0.15)) || (dy > 0 && e.pageY > co.top + (h * 0.85)))
 			cp.scrollTop(self.scrollOffset[1] + dy);
 		
-		
-		self.selection_last = [e.pageX, e.pageY];
+		self.selection_last[0] = e.pageX;
+		self.selection_last[1] = e.pageY;
 		
 		self.updateCanvas(true);
 	};
 
-	this.selectAll = function()
-	{
-		self.selection_nodes = [];
-		self.selections_conns = [];
-		
-		
-	};
-	
 	this.fillCopyBuffer = function(nodes, conns, sx, sy)
 	{
 		var d = {};
