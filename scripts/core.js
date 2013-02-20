@@ -2130,7 +2130,7 @@ function Application() {
 			}
 			
 			self.edit_conn.offset = offset;
-			slot_div[0].style.color = '#0f0';
+			slot_div[0].style.color = '#080';
 		}
 		
 		if(self.shift_pressed)
@@ -2213,7 +2213,7 @@ function Application() {
 			{
 				self.dst_node = node;
 				self.dst_slot = slot;
-				slot_div[0].style.color = '#0f0';
+				slot_div[0].style.color = '#080';
 			}
 			else
 			{
@@ -3221,12 +3221,21 @@ function Application() {
 			self.activateHoverSlot();
 			self.activateHoverNode();
 		}
-		else if(e.keyCode == 32)
+		else if(e.keyCode === 32)
 		{
 			if(self.player.current_state === self.player.state.PLAYING)
-				self.onStopClicked();
+			{
+				if(self.shift_pressed)
+					self.onPauseClicked();
+				else
+					self.onStopClicked();
+			}
 			else
 				self.onPlayClicked();
+			
+			
+			e.preventDefault();
+			return false;
 		}
 		else if(self.ctrl_pressed)
 		{
