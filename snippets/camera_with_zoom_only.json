@@ -1,16 +1,17 @@
 {
     "abs_t": 0,
-    "active_graph": 1,
+    "active_graph": 0,
     "graph_uid": 2,
     "root": {
         "node_uid": 2,
         "uid": 0,
         "parent_uid": -1,
+        "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 217,
-                "y": 9,
+                "x": 686,
+                "y": 343,
                 "uid": 0,
                 "dsid": 2,
                 "state": {
@@ -27,25 +28,26 @@
                     "node_uid": 4,
                     "uid": 1,
                     "parent_uid": 0,
+                    "open": true,
                     "nodes": [
                         {
                             "plugin": "perspective_camera",
-                            "x": 211,
-                            "y": 13,
+                            "x": 220,
+                            "y": 67,
                             "uid": 0
                         },
                         {
                             "plugin": "vector",
-                            "x": 88,
-                            "y": 11,
+                            "x": 97,
+                            "y": 65,
                             "uid": 1
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 10,
-                            "y": 10,
+                            "x": 19,
+                            "y": 64,
                             "uid": 2,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -57,16 +59,17 @@
                                     "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
                                     "uid": 0,
                                     "index": 0,
-                                    "type": 1
+                                    "type": 1,
+                                    "connected": true
                                 }
                             ]
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 314,
-                            "y": 13,
+                            "x": 323,
+                            "y": 67,
                             "uid": 3,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -74,12 +77,13 @@
                             "dyn_in": [
                                 {
                                     "name": "input",
-                                    "dt": 8,
+                                    "dt": 6,
                                     "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
                                     "uid": 0,
                                     "index": 0,
                                     "type": 0,
-                                    "is_connected": true
+                                    "is_connected": true,
+                                    "connected": true
                                 }
                             ]
                         }
@@ -96,6 +100,7 @@
                             "dst_nuid": 3,
                             "src_slot": 0,
                             "dst_slot": 0,
+                            "dst_connected": true,
                             "dst_dyn": true
                         },
                         {
@@ -103,6 +108,7 @@
                             "dst_nuid": 1,
                             "src_slot": 0,
                             "dst_slot": 2,
+                            "src_connected": true,
                             "src_dyn": true
                         }
                     ]
@@ -120,7 +126,7 @@
                 "dyn_out": [
                     {
                         "name": "camera",
-                        "dt": 8,
+                        "dt": 6,
                         "uid": 1,
                         "index": 0,
                         "type": 1
@@ -129,8 +135,8 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 11,
-                "y": 29,
+                "x": 480,
+                "y": 363,
                 "uid": 1,
                 "state": {
                     "val": 2,
