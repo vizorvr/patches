@@ -1982,6 +1982,7 @@ function Application() {
 	this.in_drag = false;
 	this.resize_timer = null;
 	this.is_osx = /os x 10/.test(navigator.userAgent.toLowerCase());
+	this.condensed_view = false;
 	
 	this.getNIDFromSlot = function(id)
 	{
@@ -3180,12 +3181,12 @@ function Application() {
 		var win_height = win.height();
 		var cont_h = E2.dom.controls.height();
 		var info_w = E2.dom.info.width();
-		var used_width = info_w + E2.dom.webgl_canvas.width();
-		var used_height = cont_h + 250;
+		var used_width = (this.condensed_view ? -15 : info_w) + E2.dom.webgl_canvas.width();
+		var used_height = cont_h + (this.condensed_view ? 20 : 250);
 		var c_width = (win_width - used_width) - 35;
 		var c_height = (win_height - used_height);
-		var col1_x = info_w + 20;
-		var col2_x = info_w + c_width + 27;
+		var col1_x = this.condensed_view ? 5 : info_w + 20;
+		var col2_x = col1_x + c_width + 7;
 		var col2_y = cont_h + c_height;
 		var col2_h = (win_height - (c_height + cont_h)) - 32;
 		var tabs_h = (win_height - (cont_h + E2.dom.webgl_canvas.height())) - 32;
@@ -3196,11 +3197,23 @@ function Application() {
 		E2.dom.tabs.css({ 'left':  col2_x, 'height': tabs_h });
 		E2.dom.persist.css({ 'height': tabs_h - 100 });
 		E2.dom.snippets_list.css({ 'height': tabs_h - 100 });
-		E2.dom.structure.css({ 'height': c_height - 8 });
-		E2.dom.info.css({ 'position': 'absolute', 'left': 0, 'top': col2_y, 'height': col2_h });
-		E2.dom.dbg.css({ 'position': 'absolute', 'left': col1_x - 3, 'top': col2_y + 7, 'width': c_width - 4, 'height': col2_h });
 		E2.dom.canvas_parent.css({ 'width': c_width, 'height': c_height });
 		E2.dom.canvas.css({ 'width': c_width, 'height': c_height });
+		
+		var disp = this.condensed_view ? 'none' : 'inherit';
+		
+		if(this.condensed_view)
+		{
+			E2.dom.structure.css('display', 'none');
+			E2.dom.info.css('display', 'none');
+			E2.dom.dbg.css('display', 'none');
+		}
+		else
+		{
+			E2.dom.structure.css({ 'height': c_height - 8, display: 'inherit' });
+			E2.dom.info.css({ 'position': 'absolute', 'left': 0, 'top': col2_y, 'height': col2_h, display: 'inherit' });
+			E2.dom.dbg.css({ 'position': 'absolute', 'left': col1_x - 3, 'top': col2_y + 7, 'width': c_width - 4, 'height': col2_h, display: 'inherit' });
+		}
 		
 		// More hackery
 		E2.dom.canvas[0].width = E2.dom.canvas.width();
@@ -3249,7 +3262,8 @@ function Application() {
 		{
 			if(e.keyCode === 66) // CTRL+b
 			{
-				
+				self.condensed_view = !self.condensed_view;
+				self.onWindowResize();
 				return;
 			}
 			
