@@ -1981,6 +1981,7 @@ function Application() {
 	this.clipboard = null;
 	this.in_drag = false;
 	this.resize_timer = null;
+	this.is_osx = /os x 10/.test(navigator.userAgent.toLowerCase());
 	
 	this.getNIDFromSlot = function(id)
 	{
@@ -3211,7 +3212,8 @@ function Application() {
 	
 	this.onKeyDown = function(e)
 	{
-		if(e.keyCode === 17) // CTRL
+				
+		if(e.keyCode === (this.is_osx ? 91 : 17))  // CMD on OSX, CTRL on everything else
 		{
 			self.ctrl_pressed = true;
 		}
@@ -3245,6 +3247,12 @@ function Application() {
 		}
 		else if(self.ctrl_pressed)
 		{
+			if(e.keyCode === 66) // CTRL+b
+			{
+				
+				return;
+			}
+			
 			var tgt = e.target.tagName;
 			
 			if(tgt === 'INPUT' || tgt === 'TEXTAREA')
@@ -3261,7 +3269,7 @@ function Application() {
 	
 	this.onKeyUp = function(e)
 	{
-		if(e.keyCode === 17) // CTRL
+		if(e.keyCode === (this.is_osx ? 91 : 17)) // CMD on OSX, CTRL on everything else
 		{
 			self.ctrl_pressed = false;
 		}
