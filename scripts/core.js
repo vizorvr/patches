@@ -1126,7 +1126,7 @@ Node.prototype.update_recursive = function(conns, delta_t)
 			dirty = sn.update_recursive(conns, delta_t) || dirty;
 		
 			var value = sn.plugin.update_output(inp.src_slot);
-		
+			
 			if(sn.plugin.updated)
 			{
 				if(!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))
@@ -3220,6 +3220,13 @@ function Application() {
 			self.shift_pressed = true;
 			self.activateHoverSlot();
 			self.activateHoverNode();
+		}
+		else if(e.keyCode == 32)
+		{
+			if(self.player.current_state === self.player.state.PLAYING)
+				self.onStopClicked();
+			else
+				self.onPlayClicked();
 		}
 		else if(self.ctrl_pressed)
 		{
