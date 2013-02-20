@@ -3223,19 +3223,25 @@ function Application() {
 		}
 		else if(e.keyCode === 32)
 		{
+			var pd = false;
+			
 			if(self.player.current_state === self.player.state.PLAYING)
 			{
+				pd = self.shift_pressed || self.ctrl_pressed;
+				
 				if(self.shift_pressed)
 					self.onPauseClicked();
-				else
+				else if(self.ctrl_pressed)
 					self.onStopClicked();
 			}
 			else
+			{
 				self.onPlayClicked();
+				pd = true;
+			}
 			
-			
-			e.preventDefault();
-			return false;
+			if(pd)
+				e.preventDefault();
 		}
 		else if(self.ctrl_pressed)
 		{
