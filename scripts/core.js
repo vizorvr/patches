@@ -3264,6 +3264,7 @@ function Application() {
 			{
 				self.condensed_view = !self.condensed_view;
 				self.onWindowResize();
+				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 				return;
 			}
 			
@@ -3278,6 +3279,8 @@ function Application() {
 				self.onCut(e);
 			else if(e.keyCode === 86) // CTRL+v
 				self.onPaste(e);
+			
+			e.preventDefault();
 		}
 	};
 	
