@@ -3176,6 +3176,9 @@ function Application() {
 
 	this.onWindowResize = function()
 	{
+		if(this === window)
+			return;
+		
 		var win = $(window);
 		var win_width = win.width();
 		var win_height = win.height();
@@ -3279,8 +3282,6 @@ function Application() {
 				self.onCut(e);
 			else if(e.keyCode === 86) // CTRL+v
 				self.onPaste(e);
-			
-			e.preventDefault();
 		}
 	};
 	
