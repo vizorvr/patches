@@ -209,10 +209,62 @@ will be called seperately with `ui` equal to the root DOM element returned by `c
 
 ####Node
 
-####Connection
-####Graph
+#####Node.prototype.get\_disp\_name = function()
+
+Returns the string currently being used for the visible header of the node.
+
+---
+
+#####Node.prototype.add\_slot = function(slot_type, def)
+
+Adds a new dynamic slot to the current node.
+
+* **slot_type**: Either E2.slot\_type.input or E2.slot\_type.output.
+* **def**: Slot definition. An object equivalent of a static slot definition.
+* **returns**: A unique integer slot id.
+---
+
+#####Node.prototype.remove\_slot = function(slot_type, suid)
+
+Removes a dynamic slot from this node.
+
+* **slot_type**: Either E2.slot\_type.input or E2.slot\_type.output.
+* **suid**: Unique id of slot to remove.
+
+---
+
+#####Node.prototype.find_dynamic_slot = function(slot_type, suid)
+
+Returns the slot definition for a given dynamic slot.
+
+* **slot_type**: Either E2.slot\_type.input or E2.slot\_type.output.
+* **suid**: Unique id of slot to remove.
+* **returns**: A slot definition or **null** if the slot could not be found.
+
+---
+
+#####Node.prototype.rename_slot = function(slot_type, suid, name)
+
+Renames the specified slot.
+
+* **slot_type**: Either E2.slot\_type.input or E2.slot\_type.output.
+* **suid**: Unique id of slot to remove.
+* **name**: Desired new name for the specified slot.
+
+#####Node.prototype.change_slot_datatype = function(slot_type, suid, dt)
+
+Changes the data type of the specified slot. Unless the new data type is ANY,
+existing connection to or from the specified slot are destroyed.
+
+* **slot_type**: Either E2.slot\_type.input or E2.slot\_type.output.
+* **suid**: Unique id of slot to remove.
+* **dt**: Desired new data type for the specified slot.
+
 ####Core
-####Renderer
+
+#####Core.get_default_value = function(dt)
+
+Returns the default value for the supplied data type.
 
 ###Common pitfalls:
 
