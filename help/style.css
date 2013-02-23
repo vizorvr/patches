@@ -106,3 +106,19 @@ hr {
     margin: 10px auto 10px 0;
     color: #999;
 }
+table {
+    border-collapse: collapse;
+}
+th {
+    padding-bottom: 4px;
+    border-bottom: 4px double #888;
+}
+td {
+    padding-right: 40px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #aaa;
+}
+td:nth-last-child(1) {
+    padding-right: 0px;
+}
