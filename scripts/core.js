@@ -3176,19 +3176,16 @@ function Application() {
 
 	this.onWindowResize = function()
 	{
-		if(this === window)
-			return;
-		
 		var win = $(window);
 		var win_width = win.width();
 		var win_height = win.height();
 		var cont_h = E2.dom.controls.height();
 		var info_w = E2.dom.info.width();
-		var used_width = (this.condensed_view ? -15 : info_w) + E2.dom.webgl_canvas.width();
-		var used_height = cont_h + (this.condensed_view ? 20 : 250);
+		var used_width = (self.condensed_view ? -15 : info_w) + E2.dom.webgl_canvas.width();
+		var used_height = cont_h + (self.condensed_view ? 20 : 250);
 		var c_width = (win_width - used_width) - 35;
 		var c_height = (win_height - used_height);
-		var col1_x = this.condensed_view ? 5 : info_w + 20;
+		var col1_x = self.condensed_view ? 5 : info_w + 20;
 		var col2_x = col1_x + c_width + 7;
 		var col2_y = cont_h + c_height;
 		var col2_h = (win_height - (c_height + cont_h)) - 32;
@@ -3203,9 +3200,9 @@ function Application() {
 		E2.dom.canvas_parent.css({ 'width': c_width, 'height': c_height });
 		E2.dom.canvas.css({ 'width': c_width, 'height': c_height });
 		
-		var disp = this.condensed_view ? 'none' : 'inherit';
+		var disp = self.condensed_view ? 'none' : 'inherit';
 		
-		if(this.condensed_view)
+		if(self.condensed_view)
 		{
 			E2.dom.structure.css('display', 'none');
 			E2.dom.info.css('display', 'none');
