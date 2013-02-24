@@ -36,7 +36,9 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 
 E2.p.prototype.update_state = function(delta_t)
 {
-	this.material.textures[this.type] = null;
+	if(this.type !== -1)
+		this.material.textures[this.type] = null;
+	
 	this.material.textures[this.next_type] = this.texture;
 	this.type = this.next_type;
 };
@@ -51,7 +53,8 @@ E2.p.prototype.state_changed = function(ui)
 	if(!ui)
 	{
 		this.material = new Material();
-		this.next_type = this.type = Material.texture_type.DIFFUSE_COLOR;
+		this.type = -1;
+		this.next_type = Material.texture_type.DIFFUSE_COLOR;
 		this.texture = null;
 	}
 };
