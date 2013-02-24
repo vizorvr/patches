@@ -246,7 +246,8 @@ E2.p.prototype.create_ui = function()
 	var done_func = function(self) { return function(diag)
 	{
 		self.updated = self.dirty = true;
-		
+		self.node.queued_update = 1;
+				
 		if(diag)
 			diag.dialog('close');
 	}}(this);
