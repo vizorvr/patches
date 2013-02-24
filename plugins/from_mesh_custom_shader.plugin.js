@@ -154,7 +154,7 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 				
 				if(sdt.id === cdt)
 				{
-					var cid = sname.replace(' ', '_').toLowerCase();
+					var cid = sname.replace(/[^\w]/gi, '_').toLowerCase();
 					var sid = self.node.add_slot(E2.slot_type.input, { name: cid, dt: sdt });
 
 					self.state.slot_ids[cid] = { id: sid, dt: sdt, uniform: null };
