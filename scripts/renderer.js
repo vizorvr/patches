@@ -1589,7 +1589,7 @@ Scene.load = function(gl, url)
 		{
 			Notifier.error('Failed to load scene "' + url + '": ' + textStatus + ', ' + errorThrown, 'Renderer');
 		},
-		async: true // TODO: We should definitely change this to be asynchronous!
+		async: false // TODO: We should definitely change this to be asynchronous!
 	});
 	
 	return scene;
