@@ -60,7 +60,10 @@ E2.p.prototype.stop = function()
 E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
+	{
 		this.video = data;
+		this.playing = false;
+	}
 	else if(slot.index === 1)
 		this.should_play = data;
 	else if(slot.index === 2)

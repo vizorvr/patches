@@ -90,6 +90,12 @@ E2.p.prototype.state_changed = function(ui)
 		{
 			if(typeof(Audio) !== 'undefined')
 			{
+				if(this.audio !== null)
+				{
+					this.audio.pause();
+					delete this.audio;
+				}
+			
 				var src = null;
 
 				this.audio = new Audio();

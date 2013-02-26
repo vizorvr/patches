@@ -86,6 +86,12 @@ E2.p.prototype.state_changed = function(ui)
 			ui.attr('title', this.state.url);
 		else
 		{
+			if(this.video !== null)
+			{
+				this.video.pause();
+				delete this.video;
+			}
+			
 			this.video = document.createElement('video');
 
 			if(this.video !== 'undefined')
