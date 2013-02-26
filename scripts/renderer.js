@@ -123,8 +123,8 @@ Texture.prototype.isPow2 = function(n)
 // Accepts both Image and Canvas instances.
 Texture.prototype.upload = function(img, src)
 {
-	this.width = img.width;
-	this.height = img.height;
+	this.width = img.width || img.videoWidth;
+	this.height = img.height || img.videoHeight;
 	this.image = img;
 	
 	if(!this.isPow2(this.width))
@@ -1340,7 +1340,16 @@ function Shader(gl, type, src)
 	this.shader = gl.createShader(type);
 	this.compiled = false;
 	
-	gl.shaderSource(this.shader, src);
+	try
+	{
+		gl.shaderSource(this.shader, src);
+	}
+	catch(e)
+	{
+		msg('ERROR: Shader source invalid: ' + e);
+		return;
+	}
+	
 	gl.compileShader(this.shader);
 	
 	if(!gl.getShaderParameter(this.shader, gl.COMPILE_STATUS))

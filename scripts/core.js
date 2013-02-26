@@ -1777,7 +1777,8 @@ function Core(app) {
 		MATERIAL: { id: 12, name: 'Material' },
 		LIGHT: { id: 13, name: 'Light' },
 		DELEGATE: { id: 14, name: 'Delegate' },
-		TEXT: { id: 15, name: 'Text' }
+		TEXT: { id: 15, name: 'Text' },
+		VIDEO: { id: 16, name: 'Video' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas');

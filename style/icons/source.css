@@ -11,7 +11,6 @@
 	width: 16px;
 	height: 16px;
 }
-
 .icon-absolute_modulator { background: url('absolute-modulator.png'); }
 .icon-accumulate_modulator { background: url('accumulate-modulator.png'); }
 .icon-add_modulator { background: url('add-modulator.png'); }
@@ -48,9 +47,11 @@
 .icon-cosine_modulator { background: url('cosine-modulator.png'); }
 .icon-cos_modulator { background: url('cosine-modulator.png'); }
 .icon-cube_mesh_generator { background: url('cube-mesh-generator.png'); }
+.icon-data_info_display { background: url('none.png'); }
 .icon-delegate_expression_generator { background: url('delegate-expression-generator.png'); }
 .icon-delegate_get_length_modulator { background: url('delegate-get-length-modulator.png'); }
 .icon-delegate_json_array_generator { background: url('delegate-json-array-generator.png'); }
+.icon-delegate_loop_generator { background: url('rotation-xyz-matrix.png'); }
 .icon-delegate_sample_modulator { background: url('delegate-sample-modulator.png'); }
 .icon-delta_modulator { background: url('delta-modulator.png'); }
 .icon-delta_t_generator { background: url('delta-t-generator.png'); } 	
@@ -160,6 +161,7 @@
 .icon-url_audio_generator { background: url('url-audio-generator.png'); }
 .icon-url_scene_generator { background: url('url-scene-generator.png'); }
 .icon-url_texture_generator { background: url('url-texture-generator.png'); }
+.icon-url_video_generator { background: url('record-framebuffer.png'); }
 .icon-vector_add { background: url('vector-add.png'); }
 .icon-vector_display { background: url('vector-display.png'); }
 .icon-vector_magnitude { background: url('vector-magnitude.png'); }
@@ -168,6 +170,9 @@
 .icon-vector { background: url('convert-generic.png'); }
 .icon-vector_scale { background: url('vector-scale.png'); }
 .icon-vector_transform { background: url('vector-transform.png'); }
+.icon-video_get_current_time_modulator { background: url('clock-generator.png'); }
+.icon-video_get_duration_modulator { background: url('audio-get-duration-modulator.png'); }
+.icon-video_player { background: url('record-framebuffer.png'); }
 .icon-xor_modulator { background: url('xor-modulator.png'); }
 
 
