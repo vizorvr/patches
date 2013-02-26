@@ -62,6 +62,7 @@
 .icon-flat_shader { background: url('shader.png'); }
 .icon-float_display { background: url('float-display.png'); }
 .icon-floor_modulator { background: url('floor-modulator.png'); }
+.icon-format_string_float { background: url('float-display.png'); }
 .icon-from_mesh_shader { background: url('shader.png'); }
 .icon-from_mesh_custom_shader { background: url('shader.png'); }
 .icon-graph { background: url('graph.png'); }
@@ -121,6 +122,7 @@
 .icon-particle_mesh_generator { background: url('particle-mesh-generator.png'); }
 .icon-perspective_camera { background: url('perspective-camera.png'); }
 .icon-pi_generator { background: url('pi-generator.png'); }
+.icon-planar_projection_matrix { background: url('planar-projection-matrix.png'); }
 .icon-plot_display { background: url('plot-display.png'); }
 .icon-quad_mesh_generator { background: url('quad-mesh-generator.png'); }
 .icon-random_float_generator { background: url('random-float-generator.png'); }
