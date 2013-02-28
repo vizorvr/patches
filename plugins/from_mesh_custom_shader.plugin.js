@@ -174,8 +174,6 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 			height: 170,
 			modal: true,
 			title: 'Create new slot.',
-			show: 'slide',
-			hide: 'slide',
 			buttons: {
 				'OK': function()
 				{
@@ -218,8 +216,6 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 		height: 150,
 		modal: true,
 		title: 'Edit ' + title + ' shader.',
-		show: 'slide',
-		hide: 'slide',
 		buttons: {
 			'OK': function()
 			{
