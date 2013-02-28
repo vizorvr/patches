@@ -27,7 +27,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.scalar = data < 0.0000001 ? 1.0 : data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	this.result = this.value / this.scalar;
 };

@@ -20,7 +20,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.x = data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	if(this.delegate)
 		this.result = this.delegate.delegate(this.x);

@@ -35,7 +35,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.url = data;
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	if(!this.clear || !this.url || this.url.length < 1)
 		return;

@@ -78,7 +78,7 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 		}
 	};
 	
-	this.update_state = function(delta_t)
+	this.update_state = function()
 	{
 		if(self.scene)
 		{

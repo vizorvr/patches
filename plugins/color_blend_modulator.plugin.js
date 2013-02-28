@@ -28,7 +28,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.mix = data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	var mix = this.mix;
 	var inv_mix = 1.0 - mix;

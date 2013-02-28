@@ -24,7 +24,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.hi = data;
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	var l = this.lo;
 	var h = this.hi;

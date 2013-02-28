@@ -158,7 +158,7 @@ between input to dynamic vs. static slots. Remember that **slot.uid** can legall
 
 ---
 
-#####E2.p.prototype.update\_state = function(delta\_t)
+#####E2.p.prototype.update\_state = function()
 
 Called one every frame after all calls to `update_input()` has completed, if:
 
@@ -166,8 +166,6 @@ Called one every frame after all calls to `update_input()` has completed, if:
 * This plugin has no output slots
 * This plugin has no input slots
 * This plugin is a nested graph
-
-The **delta_t** parameter is the delta time from the last frame was rendered in fractional seconds.
 
 ---
 

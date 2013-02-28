@@ -27,7 +27,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.value = data;
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	var rgba = this.color.rgba;
 	var o_rgba = this.output_color.rgba;

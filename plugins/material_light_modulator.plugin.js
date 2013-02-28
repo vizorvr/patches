@@ -34,7 +34,7 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 	}
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	this.material.lights[this.index] = null;
 	this.material.lights[this.next_index] = this.light;

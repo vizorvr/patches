@@ -20,7 +20,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.matrix = data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	mat4.multiplyVec3(this.matrix, this.vector, this.transformed);
 };

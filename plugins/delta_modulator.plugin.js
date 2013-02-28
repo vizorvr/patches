@@ -29,7 +29,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.input_val = data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	if(this.clear)
 	{

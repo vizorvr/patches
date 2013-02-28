@@ -30,7 +30,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.buffer = data;
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	if(this.sample)
 		this.state.value = this.buffer;

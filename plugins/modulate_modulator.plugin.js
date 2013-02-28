@@ -27,7 +27,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.limit_val = data == 0.0 ? 1.0 : data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	this.output_val = this.input_val % this.limit_val;
 };

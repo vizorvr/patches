@@ -25,7 +25,7 @@ E2.p.prototype.update_input = function(slot, data)
 	this.hsla[slot.index] = data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data;
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	var s = this.hsla[1];
 	var l = this.hsla[2];

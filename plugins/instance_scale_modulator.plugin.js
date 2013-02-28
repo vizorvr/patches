@@ -41,7 +41,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.z_delegate = data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	if(this.scene && (this.x_delegate || this.y_delegate || this.z_delegate))
 	{

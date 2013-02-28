@@ -34,7 +34,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.light_pos = data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	var n = this.plane_normal;
 	var l = this.light_pos;

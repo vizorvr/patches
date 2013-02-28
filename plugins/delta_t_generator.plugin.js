@@ -11,7 +11,7 @@ E2.p = E2.plugins["delta_t_generator"] = function(core, node)
 	this.core = core;
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	// Ensure that we continously update
 	this.updated = true;

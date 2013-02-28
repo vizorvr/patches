@@ -32,7 +32,7 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 		this.material = new Material();
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	this.material.depth_test = this.depth_test;
 	this.material.depth_write = this.depth_write;

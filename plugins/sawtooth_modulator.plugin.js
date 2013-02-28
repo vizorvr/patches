@@ -22,7 +22,7 @@ E2.p.prototype.update_input = function(slot, data)
 	this.time = data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	this.result = ((this.time % 1.0) - 0.5) * 2.0;
 };

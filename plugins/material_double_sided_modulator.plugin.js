@@ -26,7 +26,7 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 		this.material = new Material();
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	this.material.double_sided = this.double_sided;
 };

@@ -39,7 +39,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.texture = data;
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	if(!this.record || !this.url || !this.texture || !this.texture.framebuffer)
 		return;

@@ -33,7 +33,7 @@ E2.p.prototype.update_input = function(slot, data)
 	this.upd_state[slot.index] = true;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	var us = this.upd_state;
 	

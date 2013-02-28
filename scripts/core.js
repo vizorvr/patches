@@ -1108,7 +1108,7 @@ Node.prototype.update_connections = function()
 	return this.inputs.length + this.outputs.length;
 };
 
-Node.prototype.update_recursive = function(conns, delta_t)
+Node.prototype.update_recursive = function(conns)
 {
 	var dirty = false;
 
@@ -1123,7 +1123,7 @@ Node.prototype.update_recursive = function(conns, delta_t)
 			var inp = inputs[i];
 			var sn = inp.src_node;
 			 
-			dirty = sn.update_recursive(conns, delta_t) || dirty;
+			dirty = sn.update_recursive(conns) || dirty;
 		
 			var value = sn.plugin.update_output(inp.src_slot);
 			
@@ -1151,12 +1151,12 @@ Node.prototype.update_recursive = function(conns, delta_t)
 	
 		if(this.plugin.e2_is_graph)
 		{
-			s_plugin.update_state(delta_t);
+			s_plugin.update_state();
 		}			
 		else if(this.queued_update > 0)
 		{
 			if(s_plugin.update_state)
-				s_plugin.update_state(delta_t);
+				s_plugin.update_state();
 
 			this.plugin.updated = true;
 			this.queued_update = 0;
@@ -1164,14 +1164,14 @@ Node.prototype.update_recursive = function(conns, delta_t)
 		else if(needs_update || (s_plugin.output_slots.length === 0 && (!this.outputs || this.outputs.length === 0)))
 		{
 			if(s_plugin.update_state)
-				s_plugin.update_state(delta_t);
+				s_plugin.update_state();
 		
 			this.inputs_changed = false;
 		}
 		else if(s_plugin.input_slots.length === 0 && (!this.inputs || this.inputs.length === 0))
 		{
 			if(s_plugin.update_state)
-				s_plugin.update_state(delta_t);
+				s_plugin.update_state();
 		}
 	}
 	
@@ -1364,14 +1364,14 @@ Graph.prototype.update = function(delta_t)
 		nodes[i].update_count = 0;
 	
 	for(var i = 0, len = roots.length; i < len; i++)
-		dirty = roots[i].update_recursive(this.connections, delta_t) || dirty;
+		dirty = roots[i].update_recursive(this.connections) || dirty;
 	
 	for(var i = 0, len = children.length; i < len; i++)
 	{
 		var c = children[i];
 		
 		if(!c.plugin.texture)
-			dirty = c.update_recursive(this.connections, delta_t) || dirty;
+			dirty = c.update_recursive(this.connections) || dirty;
 	}
 
 	if(this === E2.app.player.core.active_graph)

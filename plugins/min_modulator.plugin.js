@@ -27,7 +27,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.val_b = data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	this.output_val = Math.min(this.val_a, this.val_b);
 };

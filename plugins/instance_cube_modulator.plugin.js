@@ -33,7 +33,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.offset = data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	var s = this.scene;
 	

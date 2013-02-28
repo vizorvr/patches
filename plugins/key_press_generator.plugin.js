@@ -101,7 +101,7 @@ E2.p.prototype.reset_keystate = function()
 	this.last_state = this.key_state = false;
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	if(this.state.type === 0 && this.key_state === this.last_state)
 		this.updated = false;

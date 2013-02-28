@@ -20,7 +20,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.amount = data < 0.0 ? 0.0 : data > 0.999 ? 0.999 : data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	this.output_val = (this.input_val * (1.0 - this.amount)) + (this.last_val * this.amount);
 	this.last_val = this.output_val; 

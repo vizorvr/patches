@@ -26,7 +26,7 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 		this.light = new Light();
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	this.light.specular_color = this.color;
 };

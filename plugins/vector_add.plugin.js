@@ -20,7 +20,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.vector_b = data;
 };	
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	var r = this.result, va = this.vector_a, vb = this.vector_b;
 	

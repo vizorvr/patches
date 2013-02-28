@@ -402,7 +402,7 @@ E2.p.prototype.update_input = function(slot, data)
 	}
 };
 
-E2.p.prototype.update_state = function(delta_t)
+E2.p.prototype.update_state = function()
 {
 	this.updated = false;
 	this.updated_sids = [];
@@ -419,7 +419,7 @@ E2.p.prototype.update_state = function(delta_t)
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		}
 		
-		this.graph.update(delta_t);
+		this.graph.update();
 
 		if(this.framebuffer)
 			this.core.renderer.pop_framebuffer();
