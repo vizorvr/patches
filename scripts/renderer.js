@@ -891,7 +891,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		streams[index] = mesh.vertex_buffers[v_type] !== null;
 	}		
 	
-	var cached = [null, ''];
+	var cached = [null, ''], shader = null;
 	
 	if(cache)
 	{
@@ -903,7 +903,6 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 	if(!cached[0])
 	{
 		var prog = gl.createProgram();
-		var shader = new ShaderProgram(gl, prog);
 		var d_tex = (material ? material.textures[tt.DIFFUSE_COLOR] : undefined) || mesh.material.textures[tt.DIFFUSE_COLOR];
 		var s_tex = (material ? material.textures[tt.SPECULAR_COLOR] : undefined) || mesh.material.textures[tt.SPECULAR_COLOR];
 		var n_tex = (material ? material.textures[tt.NORMAL] : undefined) || mesh.material.textures[tt.NORMAL];
@@ -914,6 +913,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		var vs_c_src = [];
 		var ps_c_src = [];
 
+		shader = new ShaderProgram(gl, prog);
 		shader.apply_uniforms_custom = null;
 		shader.streams = streams;
 		shader.material = material;
@@ -1298,7 +1298,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		if(cache)
 			cache.set_shader(cached[1], shader);
 	}
-	 
+	else
+		shader = cached[0];
+	
+	debugger;	 
 	return shader;
 }
 
