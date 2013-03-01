@@ -566,7 +566,7 @@ function Material(gl, t_cache, data, base_path)
 		this.depth_test = data.depth_test ? data.depth_test : true;
 		this.depth_write = data.depth_write ? data.depth_write : true;
 		this.alpha_clip = data.alpha_clip ? data.alpha_clip : false;
-		this.shininess = data.shininess ? data.shininess : 0.0;
+		this.shinyness = data.shininess ? data.shininess : 0.0; // TODO: Fix this in the exporter, re-export all relevant assets.
 		this.double_sided = data.double_sided ? true : false;
 	}
 }
@@ -695,7 +695,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		}
 		else // Compute normals
 		{
-			var vts = data.verts,
+			var vts = data.vertices,
 			    p1 = null,
 			    p2 = null,
 			    p3 = null;
@@ -1301,7 +1301,6 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 	else
 		shader = cached[0];
 	
-	debugger;	 
 	return shader;
 }
 
