@@ -7,7 +7,7 @@ E2.p = E2.plugins["url_scene_generator"] = function(core, node)
 	];
 	
 	this.state = { url: '' };
-	this.gl = core.renderer.context;
+	this.core = core;
 	this.scene = null;
 };
 
@@ -85,6 +85,6 @@ E2.p.prototype.state_changed = function(ui)
 		if(ui)
 			ui.attr('title', this.state.url);
 		else
-			this.scene = Scene.load(this.gl, this.state.url);
+			this.scene = Scene.load(this.core.renderer.context, this.state.url, this.core);
 	}
 };

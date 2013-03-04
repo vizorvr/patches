@@ -7,7 +7,6 @@ E2.p = E2.plugins["url_audio_generator"] = function(core, node)
 	];
 	
 	this.state = { url: '' };
-	this.gl = core.renderer.context;
 	this.audio = null;
 };
 

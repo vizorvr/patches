@@ -77,21 +77,24 @@ Texture.prototype.drop = function()
 	this.texture = null;
 };
 
-Texture.prototype.load = function(src)
+Texture.prototype.load = function(src, core)
 {
 	var img = new Image();
 	
-	img.onload = function(self, src) { return function()
+	img.onload = function(self, src, c) { return function()
 	{
 		msg('Finished loading texture \'' + src + '\'.');
 		self.upload(img, src);
-	}}(this, src);
+		c.asset_tracker.signal_completed();
+	}}(this, src, core);
 	
-	img.onerror = function(src) { return function()
+	img.onerror = function(src, c) { return function()
 	{
 		Notifier.error('Failed to load texture \'' + src + '\'', 'Renderer');
-	}}(src);
+		c.asset_tracker.signal_failed();
+	}}(src, core);
 	
+	core.asset_tracker.signal_started();
 	img.src = src + '?d=' + Math.random();	
 };
 
@@ -153,9 +156,10 @@ Texture.prototype.get_sampler = function()
 	return new TextureSampler(this);
 };
 
-function TextureCache(gl)
+function TextureCache(gl, core)
 {
 	this.gl = gl;
+	this.core = core;
 	this.textures = {};
 }
 
@@ -174,7 +178,7 @@ TextureCache.prototype.get = function(url)
 	
 	msg('Fetching texture \'' + url + '\'.');
 	
-	t.load(url);
+	t.load(url, this.core);
 	this.textures[url] = { count:0, texture:t };
 	
 	return t;
@@ -196,7 +200,7 @@ TextureCache.prototype.count = function()
 
 };
 
-function Renderer(canvas_id)
+function Renderer(canvas_id, core)
 {
   	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
@@ -223,7 +227,7 @@ function Renderer(canvas_id)
 	if(false)
 		this.context = WebGLDebugUtils.makeDebugContext(this.context);
 	
-	this.texture_cache = new TextureCache(this.context);
+	this.texture_cache = new TextureCache(this.context, core);
 	this.shader_cache = new ShaderCache(this.context);
 	this.fullscreen = false;
 	this.default_tex = new Texture(this.context);
@@ -1579,15 +1583,17 @@ Scene.prototype.create_autofit_camera = function()
 	return cam;
 };
 	
-Scene.load = function(gl, url)
+Scene.load = function(gl, url, core)
 {
 	// Create dummy impostor scene and can be used as a null-proxy until asynchronous load completes.
 	var scene = new Scene(gl, null, null);
 	
+	core.asset_tracker.signal_started();
+	
 	jQuery.ajax({
 		url: url, 
 		dataType: 'json',
-		success: function(scene) { return function(data) 
+		success: function(scene, c) { return function(data) 
 		{
 			var bp = url.substr(0, url.lastIndexOf('/') + 1);
 			var r = E2.app.player.core.renderer;
@@ -1595,11 +1601,13 @@ Scene.load = function(gl, url)
 			scene.load_json(data, bp);
 			msg('Scene: Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
 			msg('Global cache state: ' + r.texture_cache.count() + ' textures. ' + r.shader_cache.count() + ' shaders.');
-		}}(scene),
-		error: function(jqXHR, textStatus, errorThrown)
+			c.asset_tracker.signal_completed();
+		}}(scene, core),
+		error: function(c) { return function(jqXHR, textStatus, errorThrown)
 		{
 			Notifier.error('Failed to load scene "' + url + '": ' + textStatus + ', ' + errorThrown, 'Renderer');
-		},
+			c.asset_tracker.signal_failed();
+		}}(core),
 		async: false // TODO: We should definitely change this to be asynchronous!
 	});
 	

@@ -1758,6 +1758,50 @@ Graph.prototype.reorder_children = function(node, src, hit_mode)
 	reorder(this.nodes, node, src, hit_mode);
 };
 
+function AssetTracker()
+{
+	this.started = 0;
+	this.completed = 0;
+	this.failed = 0;
+	this.listeners = [];
+}
+
+AssetTracker.prototype.add_listener = function(listener)
+{
+	this.listeners.push(listener);
+};
+
+AssetTracker.prototype.remove_listener = function(listener)
+{
+	this.listeners.remove(listener);
+};
+
+AssetTracker.prototype.signal_started = function()
+{
+	this.started++;
+	this.signal_update();
+};
+
+AssetTracker.prototype.signal_completed = function()
+{
+	this.completed++;
+	this.signal_update();
+};
+
+AssetTracker.prototype.signal_failed = function()
+{
+	this.failed++;
+	this.signal_update();
+};
+
+AssetTracker.prototype.signal_update = function()
+{
+	var l = this.listeners;
+	
+	for(var i = 0, len = l.length; i < len; i++)
+		l[i]();
+};
+
 function Core(app) {
 	var self = this;
 	
@@ -1781,7 +1825,7 @@ function Core(app) {
 		VIDEO: { id: 16, name: 'Video' }
 	};
 	
-	this.renderer = new Renderer('#webgl-canvas');
+	this.renderer = new Renderer('#webgl-canvas', this);
 	this.active_graph = this.root_graph = null;
 	this.active_graph_dirty = true;
 	this.graphs = [];
@@ -1790,7 +1834,8 @@ function Core(app) {
 	this.graph_uid = 0;
 	this.app = app;
 	this.plugin_mgr = new PluginManager(this, 'plugins', E2.app ? E2.app.onPluginInstantiated : null);
-	
+	this.asset_tracker = new AssetTracker();
+		
 	this.resolve_dt = []; // Make a table for easy reverse lookup of dt reference by id.
 	
 	for(var i in this.datatypes)
