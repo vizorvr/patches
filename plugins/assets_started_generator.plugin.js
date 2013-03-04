@@ -9,9 +9,11 @@ E2.p = E2.plugins["assets_started_generator"] = function(core, node)
 	];
 	
 	this.core = core;
+	this.node = node;
+	
 	this.asset_listener = function(self) { return function()
 	{
-		self.updated = true;
+		self.node.queued_update = 1;
 	}}(this);
 	
 	core.asset_tracker.add_listener(this.asset_listener);

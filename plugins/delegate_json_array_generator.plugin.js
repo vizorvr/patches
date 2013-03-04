@@ -11,6 +11,7 @@ E2.p = E2.plugins["delegate_json_array_generator"] = function(core, node)
 	];
 	
 	this.state = {};
+	this.core = core;
 	this.data = null;
 	this.delegate = new Delegate(function(x) { return 0.0; }, 0);
 	this.url = '';
@@ -36,26 +37,32 @@ E2.p.prototype.update_input = function(slot, data)
 	
 	msg('JSON array delegate: Loading : ' + data);
 	this.url = data;
+	this.core.asset_tracker.signal_started();
 	
 	$.ajax({
 		url: data,
 		dataType: 'json',
 		async: false,
 		headers: {},
-		success: function(self, url) { return function(json) 
+		success: function(self, url, c) { return function(json) 
 		{
 			if(json.data)
 			{
 				self.data = json.data;
 				self.delegate = new Delegate(self.delegate_func(self), self.data.length);
+				c.asset_tracker.signal_completed();
 			}
 			else
+			{
 				msg('ERROR: JSON array delegate: The file \'' + url + '\' did not contain the expected array named \'data\'.');	
-		}}(self, data),
-		error: function(url) { return function()
+				c.asset_tracker.signal_failed();
+			}
+		}}(self, data, this.core),
+		error: function(url, c) { return function()
 		{
 			msg('ERROR: JSON array delegate: Couldn\'t load ' + url);
-		}}(data)
+			c.asset_tracker.signal_failed();
+		}}(data, this.core)
 	});
 };
 
