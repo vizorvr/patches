@@ -9,6 +9,19 @@ if(process.argv.length < 3)
 	return;
 }
 
+var filtered_plugins = [
+	'annotation',
+	'bool_display',
+	'color_display',
+	'data_info_display',
+	'float_display',
+	'led_display',
+	'matrix_display',
+	'plot_display',
+	'text_display',
+	'vector_display'
+];
+
 function process_dynamic_slots(d_slots)
 {
 	for(var i = 0, len = d_slots.length; i < len; i++)
@@ -17,22 +30,53 @@ function process_dynamic_slots(d_slots)
 		
 		delete slot.name;
 		delete slot.desc;
+		delete slot.index;
+		delete slot.type;
 	}
+}
+
+function removeItem(coll, item)
+{
+	var idx = coll.indexOf(item);
+	
+	if(idx > -1)
+		coll.removeAt(idx);
+}
+
+function delete_node(graph, node)
+{
+	var conns = graph.conns;
+	var pruned = [];
+	var nuid = node.uid;
+
+	removeItem(graph.nodes, node);
+	
+	for(var i = 0, len = conns.length; i < len; i++)
+	{
+		var c = conns[i];
+		
+		if(c.src_nuid === nuid || c.dst_nuid === nuid)
+			pruned.push(c);
+	}
+	
+	for(var i = 0, len = pruned.length; i < len; i++)
+		removeItem(conns, pruned[i]);
 }
 
 function process_graph(graph)
 {
 	var nodes = graph.nodes;
-	
-	// TODO: Graph pruning.
-	
+	var pruned = [];
+
 	for(var i = 0, len = nodes.length; i < len; i++)
 	{
 		var node = nodes[i];
 		
 		if(node.plugin === 'graph')
 			process_graph(node.graph);
-	
+		else if(node.plugin in filtered_plugins)
+			pruned.push(node);
+		
 		delete node.x;
 		delete node.y;
 		delete node.title;
@@ -43,6 +87,10 @@ function process_graph(graph)
 		if(node.dyn_out)
 			process_dynamic_slots(node.dyn_out);
 	}
+	
+	// Delete pruned nodes and any associated connections.
+	for(var i = 0, len = pruned.length; i < len; i++)
+		delete_node(graph, pruned[i]);
 }
 
 var data = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
