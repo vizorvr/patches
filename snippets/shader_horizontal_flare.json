@@ -1,0 +1,273 @@
+{
+    "abs_t": 7.669,
+    "active_graph": 0,
+    "graph_uid": 4,
+    "root": {
+        "node_uid": 14,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 125,
+                "y": 409,
+                "uid": 13,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {},
+                    "output_sids": {}
+                },
+                "title": "Flare horizontal",
+                "graph": {
+                    "node_uid": 13,
+                    "uid": 2,
+                    "parent_uid": 0,
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "graph",
+                            "x": 156,
+                            "y": 262,
+                            "uid": 0,
+                            "state": {
+                                "enabled": true,
+                                "input_sids": {},
+                                "output_sids": {}
+                            },
+                            "title": "Scene",
+                            "graph": {
+                                "node_uid": 2,
+                                "uid": 3,
+                                "parent_uid": 2,
+                                "open": true,
+                                "nodes": [],
+                                "conns": []
+                            }
+                        },
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 625,
+                            "y": 222,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "quad_mesh_generator",
+                            "x": 360,
+                            "y": 176,
+                            "uid": 2
+                        },
+                        {
+                            "plugin": "from_mesh_custom_shader",
+                            "x": 454,
+                            "y": 285,
+                            "uid": 3,
+                            "dsid": 5,
+                            "state": {
+                                "vs_src": "void main(void) {\n    mat4 mv_mat = v_mat * m_mat;\n    vec4 tp = mv_mat * vec4(v_pos, 1.0);\n\n    gl_Position = p_mat * tp;\n    f_norm = normalize(n_mat * v_norm);\n    f_uv0 = v_uv0;\n    f_col = d_col;\n}",
+                                "ps_src": "void main(void) {\n    vec4 fc = vec4(0.0, 0.0, 0.0, f_col.a);\n    float d = pow(length(pos.xy - f_uv0.st), 2.0);\n    float d2 = abs(pos.y - f_uv0.t);\n    float m = pow(abs(pos.x - f_uv0.s), 5.0);\n\n    d = (d * m) + (d2 * (1.0 - m));\n    d = (1.0 / d) * size;\n\n    fc.r = 0.1 * d;\n    fc.g = 0.5 * d;\n    fc.b = 1.0 * d;\n\n    gl_FragColor = fc;\n}",
+                                "changed": true,
+                                "slot_ids": {
+                                    "size": {
+                                        "id": 3,
+                                        "dt": {
+                                            "id": 0,
+                                            "name": "Float"
+                                        },
+                                        "uniform": {}
+                                    },
+                                    "pos": {
+                                        "id": 4,
+                                        "dt": {
+                                            "id": 5,
+                                            "name": "Vector"
+                                        },
+                                        "uniform": {}
+                                    }
+                                }
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "size",
+                                    "dt": 0,
+                                    "uid": 3,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "pos",
+                                    "dt": 5,
+                                    "uid": 4,
+                                    "index": 1,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "material_texture_modulator",
+                            "x": 314,
+                            "y": 362,
+                            "uid": 4
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 318,
+                            "y": 465,
+                            "uid": 5
+                        },
+                        {
+                            "plugin": "subtract_modulator",
+                            "x": 197,
+                            "y": 557,
+                            "uid": 6
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 68,
+                            "y": 568,
+                            "uid": 7,
+                            "state": {
+                                "val": 1
+                            }
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 216,
+                            "y": 179,
+                            "uid": 8,
+                            "state": {
+                                "val": 0.7599999999999998
+                            },
+                            "title": "Size"
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 325,
+                            "y": 240,
+                            "uid": 9
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 186,
+                            "y": 335,
+                            "uid": 10,
+                            "state": {
+                                "val": 0.01
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 6,
+                            "y": 478,
+                            "uid": 11,
+                            "state": {
+                                "val": 0.42,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "position y"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 7,
+                            "y": 402,
+                            "uid": 12,
+                            "state": {
+                                "val": 0.52,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "position x"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 9,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 5,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 12,
+                            "dst_nuid": 5,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 6,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 11,
+                            "dst_nuid": 6,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 9,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 9,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        }
+                    ]
+                }
+            }
+        ],
+        "conns": []
+    }
+}

@@ -1,0 +1,497 @@
+{
+    "abs_t": 0,
+    "active_graph": 0,
+    "graph_uid": 3,
+    "root": {
+        "node_uid": 3,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 667,
+                "y": 200,
+                "uid": 0,
+                "dsid": 17,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {
+                        "36": 13,
+                        "38": 15,
+                        "39": 16
+                    },
+                    "output_sids": {
+                        "27": 6
+                    }
+                },
+                "title": "1 Step sequencer",
+                "graph": {
+                    "node_uid": 40,
+                    "uid": 1,
+                    "parent_uid": 0,
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "graph",
+                            "x": 570,
+                            "y": 258,
+                            "uid": 8,
+                            "dsid": 5,
+                            "state": {
+                                "enabled": true,
+                                "input_sids": {
+                                    "3": 0,
+                                    "4": 1,
+                                    "6": 2,
+                                    "7": 3
+                                },
+                                "output_sids": {
+                                    "8": 4
+                                }
+                            },
+                            "title": "more/less/and",
+                            "graph": {
+                                "node_uid": 9,
+                                "uid": 2,
+                                "parent_uid": 1,
+                                "open": true,
+                                "nodes": [
+                                    {
+                                        "plugin": "more_than_modulator",
+                                        "x": 380,
+                                        "y": 230,
+                                        "uid": 0
+                                    },
+                                    {
+                                        "plugin": "less_than_modulator",
+                                        "x": 378,
+                                        "y": 330,
+                                        "uid": 1
+                                    },
+                                    {
+                                        "plugin": "and_modulator",
+                                        "x": 516,
+                                        "y": 256,
+                                        "uid": 2
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 287,
+                                        "y": 223,
+                                        "uid": 3,
+                                        "dsid": 68,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "clock",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 0,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 289,
+                                        "y": 285,
+                                        "uid": 4,
+                                        "dsid": 68,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "constant",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 0,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 290,
+                                        "y": 353,
+                                        "uid": 6,
+                                        "dsid": 68,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "clock",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 0,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 289,
+                                        "y": 418,
+                                        "uid": 7,
+                                        "dsid": 68,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "constant",
+                                        "dyn_out": [
+                                            {
+                                                "name": "output",
+                                                "dt": 0,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 612,
+                                        "y": 253,
+                                        "uid": 8,
+                                        "dsid": 68,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "bool",
+                                        "dyn_in": [
+                                            {
+                                                "name": "input",
+                                                "dt": 7,
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 0,
+                                                "connected": true,
+                                                "is_connected": true
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": 0,
+                                        "dst_nuid": 2,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 1,
+                                        "dst_nuid": 2,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 3,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 4,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 6,
+                                        "dst_nuid": 1,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 7,
+                                        "dst_nuid": 1,
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 2,
+                                        "dst_nuid": 8,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    }
+                                ]
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "clock",
+                                    "dt": 0,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "constant",
+                                    "dt": 0,
+                                    "uid": 1,
+                                    "index": 1,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "clock",
+                                    "dt": 0,
+                                    "uid": 2,
+                                    "index": 2,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "constant",
+                                    "dt": 0,
+                                    "uid": 3,
+                                    "index": 3,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ],
+                            "dyn_out": [
+                                {
+                                    "name": "bool",
+                                    "dt": 7,
+                                    "uid": 4,
+                                    "index": 0,
+                                    "type": 1
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 735,
+                            "y": 284,
+                            "uid": 27,
+                            "dsid": 51,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "Scene",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 7,
+                                    "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 327,
+                            "y": 314,
+                            "uid": 36,
+                            "dsid": 49,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "Time",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 448,
+                            "y": 239,
+                            "uid": 38,
+                            "dsid": 51,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "Step 0",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 439,
+                            "y": 355,
+                            "uid": 39,
+                            "dsid": 53,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "Step 1",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 27,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 36,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 36,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 38,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 39,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "Time",
+                        "dt": 0,
+                        "uid": 13,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": false
+                    },
+                    {
+                        "name": "Step 0",
+                        "dt": 0,
+                        "uid": 15,
+                        "index": 1,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "Step 1",
+                        "dt": 0,
+                        "uid": 16,
+                        "index": 2,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "Scene",
+                        "dt": 7,
+                        "uid": 6,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 548,
+                "y": 261,
+                "uid": 1,
+                "state": {
+                    "val": 2
+                },
+                "title": "Scene off"
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 548,
+                "y": 207,
+                "uid": 2,
+                "state": {
+                    "val": 0
+                },
+                "title": "Scene on"
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 2,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 1,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 2,
+                "dst_dyn": true
+            }
+        ]
+    }
+}
