@@ -1,0 +1,80 @@
+#!/usr/bin/env node
+fs = require('fs');
+
+var debug = false;
+
+if(process.argv.length < 4)
+{
+	console.log('Usage: validate-seq <JSON> <OUTPUT>');
+	return;
+}
+
+function warn(msg)
+{
+	console.log('[Warning]: ' + msg);
+}
+
+function get_node_id(g_name, node)
+{
+	return "'" + node.title + ' in ' + g_name + "'";
+}
+
+function process_dynamic_slots(type, g_name, node, d_slots)
+{
+	for(var i = 0, len = d_slots.length; i < len; i++)
+	{
+		var slot = d_slots[i];
+		
+		if(slot.dt === 8) // Type: ANY
+		{
+			warn('The node ' + get_node_id(g_name, node) + ' has a dynamic ' + type + ' slot that has type ANY, even though it\'s connected.');
+		}
+	}
+}
+
+function process_graph(g_name, graph)
+{
+	var nodes = graph.nodes;
+	
+	for(var i = 0, len = nodes.length; i < len; i++)
+	{
+		var node = nodes[i];
+		
+		if(node.plugin === 'graph')
+			process_graph(node.title, node.graph);
+	
+		// Check that node coordinates are not in negative space, and clamp them if they are.
+		if(node.x < 0)
+		{
+			console.log('[Warning]: Canvas X coordinate of the node ' + get_node_id(g_name, node) + ' is negative and will be clamped to the canvas bounds.');
+			node.x = 0;
+		}
+				
+		if(node.y < 0)
+		{
+			console.log('[Warning]: Canvas Y coordinate of the node ' + get_node_id(g_name, node) + ' is negative and will be clamped to the canvas bounds.');
+			node.y = 0;
+		}
+		
+		if(node.dyn_in)
+			process_dynamic_slots('input', g_name, node, node.dyn_in);
+
+		if(node.dyn_out)
+			process_dynamic_slots('output', g_name, node, node.dyn_out);
+	}
+	
+	var conns = graph.conns;
+	
+	for(var i = 0, len = conns.length; i < len; i++)
+	{
+		var conn = conns[i];
+		
+		
+	}
+}
+
+var data = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+
+process_graph('root', data.root);
+
+fs.writeFileSync(process.argv[3], JSON.stringify(data, undefined, 4));
