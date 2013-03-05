@@ -86,12 +86,13 @@ Menu.prototype.create = function(parent, pos, is_root)
 	}
 	
 	this.dom = ul;
-	ul.hide();
 
 	$('body').append(ul);
 	
-	var w = ul.width();
-	var h = ul.height();
+	ul.show();
+
+	var w = ul[0].clientWidth;
+	var h = ul[0].clientHeight;
 	
 	var win = window;
 	
@@ -106,10 +107,7 @@ Menu.prototype.create = function(parent, pos, is_root)
 	if(pos[1] + h >= win.innerHeight - 16)
 		pos[1] = pos[1] >= h ? pos[1] - (h - 18) : 0; 
 	
-	ul.css('left', Math.round(pos[0]));
-	ul.css('top', Math.round(pos[1]));
-
-	ul.show();
+	ul.css({ 'left': Math.round(pos[0]), 'top': Math.round(pos[1]) });
 };
 
 Menu.prototype.select = function(elem)
