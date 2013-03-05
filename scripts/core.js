@@ -846,7 +846,6 @@ Node.prototype.destroy_ui = function()
 {
 	if(this.ui)
 	{
-		this.ui.dom.hide();
 		this.ui.dom.remove();
 		this.ui = null;
 	}
