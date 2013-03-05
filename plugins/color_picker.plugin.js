@@ -135,6 +135,11 @@ E2.p.prototype.create_ui = function()
 	return c;
 };
 
+E2.p.prototype.update_state = function()
+{
+	this.update_value(this.c);
+};
+
 E2.p.prototype.update_output = function(slot)
 {
 	return this.color;
