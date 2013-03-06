@@ -16,6 +16,9 @@
 .icon-add_modulator { background: url('add-modulator.png'); }
 .icon-alpha_modulator { background: url('alpha-modulator.png'); }
 .icon-aspect_ratio_generator { background: url('aspect-ratio-generator.png'); }
+.icon-assets_started_generator { background: url('assets-started-generator.png'); }
+.icon-assets_completed_generator { background: url('assets-completed-generator.png'); }
+.icon-assets_failed_generator { background: url('assets-failed-generator.png'); }
 .icon-audio_get_current_time_modulator { background: url('clock-generator.png'); }
 .icon-audio_get_duration_modulator { background: url('audio-get-duration-modulator.png'); }
 .icon-and_modulator { background: url('and-modulator.png'); }
@@ -147,6 +150,8 @@
 .icon-sphere_mesh_generator { background: url('sphere-mesh-generator.png'); }
 .icon-sqrt_modulator { background: url('sqrt-modulator.png'); }
 .icon-square_modulator { background: url('square-modulator.png'); }
+.icon-stop_emitter { background: url('stop-emitter.png'); }
+.icon-string_concatenate_modulator { background: url('string-concatenate-modulator.png'); }
 .icon-subtract_modulator { background: url('subtract-modulator.png'); }
 .icon-tan_modulator { background: url('tan-modulator.png'); }
 .icon-text_display { background: url('text-display.png'); }
