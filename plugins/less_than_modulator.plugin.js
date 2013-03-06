@@ -14,7 +14,7 @@ E2.p.prototype.reset = function()
 {
 	this.value = 0.0;
 	this.ref = 0.0;
-	this.state = false;
+	this.state = null;
 };
 
 E2.p.prototype.update_input = function(slot, data)
