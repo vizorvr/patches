@@ -3371,7 +3371,6 @@ function Application() {
 	{
 		self.player.stop();
 		self.changeControlState();
-		self.updateCanvas(false);
 	};
 
 	this.onSaveClicked = function()
