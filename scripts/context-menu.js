@@ -89,8 +89,6 @@ Menu.prototype.create = function(parent, pos, is_root)
 
 	$('body').append(ul);
 	
-	ul.show();
-
 	var w = ul[0].clientWidth;
 	var h = ul[0].clientHeight;
 	
