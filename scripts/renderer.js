@@ -90,7 +90,7 @@ Texture.prototype.load = function(src, core)
 	
 	img.onerror = function(src, c) { return function()
 	{
-		Notifier.error('Failed to load texture \'' + src + '\'', 'Renderer');
+		msg('ERROR: Failed to load texture \'' + src + '\'', 'Renderer');
 		c.asset_tracker.signal_failed();
 	}}(src, core);
 	
@@ -1364,8 +1364,7 @@ function Shader(gl, type, src)
 		var info_lines = info.split('\n');
 		var src_lines = src.split('\n');
 		
-		Notifier.error('Shader compilation failed:\n' + info, 'Renderer');
-		msg('Shader compilation failed:\n');	
+		msg('ERROR: Shader compilation failed:\n');	
 		
 		for(var l = 0, len = info_lines.length; l != len; l++)
 		{
@@ -1401,16 +1400,14 @@ ShaderProgram.prototype.link = function()
 
 	if(!gl.getProgramParameter(prog, gl.LINK_STATUS))
 	{
-		Notifier.error('Shader linking failed:\n' + gl.getProgramInfoLog(prog), 'Renderer');
-		msg('Shader linking failed:\n' + gl.getProgramInfoLog(prog));
+		msg('ERROR: Shader linking failed:\n' + gl.getProgramInfoLog(prog));
 	}
 	
 	gl.validateProgram(prog);
 	
 	if(!gl.getProgramParameter(prog, gl.VALIDATE_STATUS))
 	{
-		Notifier.error('Shader validation failed:\n' + gl.getProgramInfoLog(prog), 'Renderer');
-		msg('Shader validation failed:\n' + gl.getProgramInfoLog(prog));
+		msg('ERROR: Shader validation failed:\n' + gl.getProgramInfoLog(prog));
 	}
 };
 
@@ -1605,7 +1602,7 @@ Scene.load = function(gl, url, core)
 		}}(scene, core),
 		error: function(c) { return function(jqXHR, textStatus, errorThrown)
 		{
-			Notifier.error('Failed to load scene "' + url + '": ' + textStatus + ', ' + errorThrown, 'Renderer');
+			msg('ERROR: Failed to load scene "' + url + '": ' + textStatus + ', ' + errorThrown, 'Renderer');
 			c.asset_tracker.signal_failed();
 		}}(core),
 		async: false // TODO: We should definitely change this to be asynchronous!

@@ -82,10 +82,7 @@ function msg(txt)
 	if(txt.substring(0,  7) !== 'ERROR: ')
 		d.append(txt + '\n');
 	else
-	{
 		d.append('<span style="color:#f00">' + txt + '</span>\n');
-		Notifier.error(txt.substring(7, txt.length-7));
-	}
 	
 	d.scrollTop(d[0].scrollHeight);
 }
@@ -348,7 +345,7 @@ function SnippetManager(base_url)
 	  		},
 	  		error: function()
 	  		{
-	  			Notifier.error('Failed to load the selected snippet.', 'Cogent');
+	  			msg('ERROR: Failed to load the selected snippet.', 'Cogent');
 	  		}
 		});
 	});
@@ -3747,5 +3744,4 @@ function InitialiseEngi()
 	$('#content')[0].style.display = 'block';
 	
 	E2.app.onWindowResize();
-	Notifier.init();
 }
