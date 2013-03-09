@@ -156,6 +156,8 @@
 	"Modulators/Tweens/In": "tween_in_modulator",
 	"Modulators/Tweens/Out": "tween_out_modulator",
 	"Modulators/Vector/Add": "vector_add",
+	"Modulators/Vector/Cross": "vector_cross",
+	"Modulators/Vector/Dot": "vector_dot",
 	"Modulators/Vector/Magnitude": "vector_magnitude",
 	"Modulators/Vector/Multiply": "vector_multiply",
 	"Modulators/Vector/Normalize": "vector_normalize",

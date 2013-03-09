@@ -170,6 +170,8 @@
 .icon-url_texture_generator { background: url('url-texture-generator.png'); }
 .icon-url_video_generator { background: url('record-framebuffer.png'); }
 .icon-vector_add { background: url('vector-add.png'); }
+.icon-vector_cross { background: url('vector-cross.png'); }
+.icon-vector_dot { background: url('vector-dot.png'); }
 .icon-vector_display { background: url('vector-display.png'); }
 .icon-vector_magnitude { background: url('vector-magnitude.png'); }
 .icon-vector_multiply { background: url('vector-multiply.png'); }
