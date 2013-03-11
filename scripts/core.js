@@ -2774,7 +2774,7 @@ function Application() {
 				var c = cn.ui;
 				
 				gsp(cn.src_node, c.src_slot_div, E2.slot_type.output, c.src_pos);
-				gsp(cn.dst_node, c.dst_slot_div, E2.slot_ype.input, c.dst_pos);
+				gsp(cn.dst_node, c.dst_slot_div, E2.slot_type.input, c.dst_pos);
 			}
 			
 			self.updateCanvas(true);
