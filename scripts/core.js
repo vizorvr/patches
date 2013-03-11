@@ -382,8 +382,8 @@ ConnectionUI.prototype.resolve_slot_divs = function()
 	this.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + (pc.dst_slot.uid !== undefined ? 'di' + pc.dst_slot.uid : 'si' + pc.dst_slot.index));
 	// assert(self.src_slot_div !== null && self.dst_slot_div !== null, 'Failed to resolve connection slot div.'); 
 	
-	this.src_pos = E2.app.getSlotPosition(this.src_slot_div, E2.slot_type.output);
-	this.dst_pos = E2.app.getSlotPosition(this.dst_slot_div, E2.slot_type.input);
+	E2.app.getSlotPosition(this.parent_conn.src_node, this.src_slot_div, E2.slot_type.output, this.src_pos);
+	E2.app.getSlotPosition(this.parent_conn.dst_node, this.dst_slot_div, E2.slot_type.input, this.dst_pos);
 	// assert(self.src_pos !== null && self.dst_pos !== null, 'Failed to resolve connection slot div position.'); 
 };
 
@@ -674,6 +674,13 @@ function NodeUI(parent_node, x, y) {
 	
 	icon.addClass('plugin-icon');
 	icon.addClass('icon-' + parent_node.plugin.id);
+	icon.click(function(self) { return function()
+	{
+		self.parent_node.open = !self.parent_node.open;
+		self.content_row.css('display', self.parent_node.open ? 'table-row' : 'none');
+		self.parent_node.update_connections();
+		E2.app.updateCanvas(true);
+	}}(this));
 	
 	h_cell.append(icon);
 	lbl.text(parent_node.get_disp_name());
@@ -700,8 +707,9 @@ function NodeUI(parent_node, x, y) {
 	
 	this.header_row = h_row;
 	
-	var row = make('tr');
+	var row = this.content_row = make('tr');
 	
+	row.css('display', parent_node.open ? 'table-row' : 'none');
 	dom.append(row)
 	
 	var input_col = make('td');
@@ -805,6 +813,7 @@ function Node(parent_graph, plugin_id, x, y)
 		this.update_count = 0;
 		this.title = null;
 		this.inputs_changed = false;
+		this.open = true;
 		
 		this.set_plugin(E2.app.player.core.plugin_mgr.create(plugin_id, this));
 	};
@@ -1003,9 +1012,9 @@ Node.prototype.remove_slot = function(slot_type, suid)
 			if(c.ui)
 			{
 				if(is_inp)
-					c.ui.dst_pos = E2.app.getSlotPosition(c.ui.dst_slot_div, E2.slot_type.input);
+					E2.app.getSlotPosition(c.src_node, c.ui.dst_slot_div, E2.slot_type.input, c.ui.dst_pos);
 				else
-					c.ui.src_pos = E2.app.getSlotPosition(c.ui.src_slot_div, E2.slot_type.output);
+					E2.app.getSlotPosition(c.dst_node, c.ui.src_slot_div, E2.slot_type.output, c.ui.src_pos);
 				
 				canvas_dirty = true;
 			}
@@ -1091,14 +1100,14 @@ Node.prototype.update_connections = function()
 	{
 		var c = this.outputs[i];
 		
-		c.ui.src_pos = gsp(c.ui.src_slot_div, E2.slot_type.output);
+		gsp(c.src_node, c.ui.src_slot_div, E2.slot_type.output, c.ui.src_pos);
 	}
 	
 	for(var i = 0, len = this.inputs.length; i < len; i++)
 	{
 		var c = this.inputs[i];
 		
-		c.ui.dst_pos = gsp(c.ui.dst_slot_div, E2.slot_type.input);
+		gsp(c.dst_node, c.ui.dst_slot_div, E2.slot_type.input, c.ui.dst_pos);
 	}
 	
 	return this.inputs.length + this.outputs.length;
@@ -1185,6 +1194,9 @@ Node.prototype.serialise = function()
 	d.y = Math.round(this.y);
 	d.uid = this.uid;
 	
+	if(!this.open)
+		d.open = this.open;
+	
 	if(this.dyn_slot_uid)
 		d.dsid = this.dyn_slot_uid;
 	
@@ -1228,6 +1240,7 @@ Node.prototype.deserialise = function(guid, d)
 	this.y = d.y;
 	this.id = E2.app.player.core.plugin_mgr.keybyid[d.plugin];
 	this.uid = d.uid;
+	this.open = d.open !== undefined ? d.open : true;
 	
 	if(d.dsid)
 		this.dyn_slot_uid = d.dsid;
@@ -2050,12 +2063,13 @@ function Application() {
 		return o;
 	};
 	
-	this.getSlotPosition = function(slot_div, type)
+	this.getSlotPosition = function(node, slot_div, type, result)
 	{
-		var o = self.offsetToCanvasCoord(slot_div.offset());
-		var x = type == E2.slot_type.input ? o[0] : o[0] + slot_div.width();
-		
-		return [Math.round(x), Math.round(o[1] + (slot_div.height() / 2))];
+		var area = node.open ? slot_div : node.ui.dom;
+		var o = self.offsetToCanvasCoord(area.offset());
+	
+		result[0] = Math.round(type == E2.slot_type.input ? o[0] : o[0] + area.width() + (node.open ? 0 : 5));
+		result[1] = Math.round(o[1] + (area.height() / 2));
 	};
 	
 	this.onPluginInstantiated = function(id, pos)
@@ -2148,7 +2162,8 @@ function Application() {
 			self.src_slot_div = slot_div;
 			self.edit_conn = new Connection(null, null, null, null);
 			self.edit_conn.create_ui();
-			self.edit_conn.ui.src_pos = self.getSlotPosition(slot_div, E2.slot_type.output);
+			
+			self.getSlotPosition(node, slot_div, E2.slot_type.output, self.edit_conn.ui.src_pos);
 		
 			var graph = self.player.core.active_graph;
 			var ocs = graph.find_connections_from(node, slot);
@@ -2343,6 +2358,7 @@ function Application() {
 					c.lineTo(x2, y1);
 					c.lineTo(x2, y4);
 					c.lineTo(x4, y4);
+					// Noodles!
 					/*var cn = b[i].ui;
 					var x1 = (cn.src_pos[0] - so[0]) + 0.5;
 					var y1 = (cn.src_pos[1] - so[1]) + 0.5;
@@ -2398,7 +2414,7 @@ function Application() {
 
 			c.create_ui();
 			c.ui.src_pos = self.edit_conn.ui.src_pos.slice(0);
-			c.ui.dst_pos = self.getSlotPosition(self.dst_slot_div, E2.slot_type.input);
+			self.getSlotPosition(self.dest_node, self.dst_slot_div, E2.slot_type.input, c.ui.dst_pos);
 			c.ui.src_slot_div = self.src_slot_div;
 			c.ui.dst_slot_div = self.dst_slot_div;
 			c.offset = self.edit_conn.offset;
@@ -2754,10 +2770,11 @@ function Application() {
 			
 			for(var i = 0, len = conns.length; i < len; i++)
 			{
-				var c = conns[i].ui;
+				var cn = conns[i];
+				var c = cn.ui;
 				
-				c.src_pos = gsp(c.src_slot_div, E2.slot_type.output);
-				c.dst_pos = gsp(c.dst_slot_div, E2.slot_type.input);
+				gsp(cn.src_node, c.src_slot_div, E2.slot_type.output, c.src_pos);
+				gsp(cn.dst_node, c.dst_slot_div, E2.slot_ype.input, c.dst_pos);
 			}
 			
 			self.updateCanvas(true);

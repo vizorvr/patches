@@ -486,6 +486,7 @@ li.context-menu-item span
 	top: 2px;
 	left: 2px;
 	background-color: #eee;
+	cursor: default;
 }
 
 .menu-lbl
