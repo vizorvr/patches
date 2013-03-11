@@ -2343,6 +2343,17 @@ function Application() {
 					c.lineTo(x2, y1);
 					c.lineTo(x2, y4);
 					c.lineTo(x4, y4);
+					/*var cn = b[i].ui;
+					var x1 = (cn.src_pos[0] - so[0]) + 0.5;
+					var y1 = (cn.src_pos[1] - so[1]) + 0.5;
+					var x4 = (cn.dst_pos[0] - so[0]) + 0.5;
+					var y4 = (cn.dst_pos[1] - so[1]) + 0.5;
+					var diffx = Math.max(16, x4 - x1);
+					var x2 = x1 + diffx * 0.5;
+					var x3 = x4 - diffx * 0.5;
+		
+					c.moveTo(x1, y1);
+					c.bezierCurveTo(x2, y1, x3, y4, x4, y4);*/
 				}
 				
 				c.stroke()
