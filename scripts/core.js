@@ -2414,7 +2414,7 @@ function Application() {
 
 			c.create_ui();
 			c.ui.src_pos = self.edit_conn.ui.src_pos.slice(0);
-			self.getSlotPosition(self.dest_node, self.dst_slot_div, E2.slot_type.input, c.ui.dst_pos);
+			self.getSlotPosition(self.dst_node, self.dst_slot_div, E2.slot_type.input, c.ui.dst_pos);
 			c.ui.src_slot_div = self.src_slot_div;
 			c.ui.dst_slot_div = self.dst_slot_div;
 			c.offset = self.edit_conn.offset;
