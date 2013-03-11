@@ -1,17 +1,18 @@
 {
-    "abs_t": 45.728,
-    "active_graph": 0,
+    "abs_t": 0,
+    "active_graph": 1,
     "graph_uid": 2,
     "root": {
-        "node_uid": 25,
+        "node_uid": 1,
         "uid": 0,
         "parent_uid": -1,
+        "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 246,
-                "y": 95,
-                "uid": 24,
+                "x": 583,
+                "y": 353,
+                "uid": 0,
                 "state": {
                     "enabled": true,
                     "input_sids": {},
@@ -19,23 +20,18 @@
                 },
                 "title": "Render depth buffer",
                 "graph": {
-                    "node_uid": 24,
+                    "node_uid": 26,
                     "uid": 1,
                     "parent_uid": 0,
+                    "open": true,
                     "nodes": [
-                        {
-                            "plugin": "scene_renderer_emitter",
-                            "x": 1113,
-                            "y": 115,
-                            "uid": 0
-                        },
                         {
                             "plugin": "url_scene_generator",
                             "x": 0,
                             "y": 91,
                             "uid": 1,
                             "state": {
-                                "url": "data/scenes/dragon/scene.json"
+                                "url": "data/scenes/macaba/scene.json"
                             }
                         },
                         {
@@ -239,15 +235,21 @@
                             "state": {
                                 "val": 2.3
                             }
+                        },
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 1107,
+                            "y": 58,
+                            "uid": 24
+                        },
+                        {
+                            "plugin": "scene_get_mesh_by_index",
+                            "x": 960,
+                            "y": 38,
+                            "uid": 25
                         }
                     ],
                     "conns": [
-                        {
-                            "src_nuid": 1,
-                            "dst_nuid": 0,
-                            "src_slot": 0,
-                            "dst_slot": 0
-                        },
                         {
                             "src_nuid": 1,
                             "dst_nuid": 2,
@@ -348,18 +350,6 @@
                             "dst_slot": 1
                         },
                         {
-                            "src_nuid": 14,
-                            "dst_nuid": 0,
-                            "src_slot": 0,
-                            "dst_slot": 3
-                        },
-                        {
-                            "src_nuid": 15,
-                            "dst_nuid": 0,
-                            "src_slot": 0,
-                            "dst_slot": 2
-                        },
-                        {
                             "src_nuid": 16,
                             "dst_nuid": 15,
                             "src_slot": 0,
@@ -418,10 +408,37 @@
                             "offset": 1
                         },
                         {
+                            "src_nuid": 1,
+                            "dst_nuid": 25,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 2
+                        },
+                        {
+                            "src_nuid": 25,
+                            "dst_nuid": 24,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
                             "src_nuid": 21,
-                            "dst_nuid": 0,
+                            "dst_nuid": 24,
                             "src_slot": 0,
                             "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 15,
+                            "dst_nuid": 24,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 14,
+                            "dst_nuid": 24,
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "offset": 1
                         }
                     ]
                 }

@@ -20,6 +20,7 @@
 		"Shader: Horizontal flare": "shader_horizontal_flare",
 		"Shader: Ice": "shader_ice",
 		"Shader: Graffiti grunge": "shader_graffiti_grunge",
+		"Shader: Render depth buffer": "shader_render_depth_buffer",
 		"Shader: Vertex transforms": "shader_vertex_transforms",
 		"Shader: Vertex and normal transforms": "shader_vertex_and_normal_transforms",
 		"Shader: Distance gradient mapping": "shader_distance_gradient_mapping",
