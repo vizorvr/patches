@@ -1307,6 +1307,123 @@ Node.prototype.initialise = function()
 		this.plugin.graph.initialise();
 };
 	
+function Registers(core)
+{
+	this.core = core;
+	this.registers = {};
+}
+
+Registers.prototype.lock = function(plugin, name)
+{
+	if(name in this.registers)
+		this.registers[name].ref_count++;
+	else
+		this.registers[name] = { dt: E2.app.player.core.datatypes.ANY, value: null, users: [], ref_count: 1, connections: 0 };
+	
+	var u = this.registers[name].users;
+	
+	if(!(plugin in u))
+		u.push(plugin);
+};
+
+Registers.prototype.unlock = function(plugin, name)
+{
+	if(name in this.registers)
+	{
+		var u = this.registers[name].users;
+
+		if(!(plugin in u))
+			u.remove(plugin);
+		
+		if(--this.registers[name].ref_count === 0)
+			delete this.registers[name];
+	}
+};
+
+Registers.prototype.connection_changed = function(name, added)
+{
+	var r = this.registers[name];
+
+	if(!added)
+	{
+		r.connections--;
+		
+		if(r.connections === 0)
+		{
+			var u = r.users;
+			var any = E2.app.player.core.datatypes.ANY;
+			
+			for(var i = 0, len = u.length; i < len; i++)
+				u[i].register_dt_changed(any);
+		}
+	}
+	else
+		r.connections++;
+		
+	return r.connections;
+};
+
+Registers.prototype.set_datatype = function(name, dt)
+{
+	var r = this.registers[name];
+	var u = r.users;
+	
+	assert(r.dt === E2.app.player.core.datatypes.ANY);
+	
+	for(var i = 0, len = u.length; i < len; i++)
+		u[i].register_dt_changed(dt);
+	
+	this.write(name, this.core.get_default_value(dt))
+};
+
+Registers.prototype.write = function(name, value)
+{
+	var r = this.registers[name];
+	var u = r.users;
+	
+	r.value = value;
+	
+	for(var i = 0, len = u.length; i < len; i++)
+	{
+		var plg = u[i];
+		
+		if(plg.register_updated)
+			plg.register_updated(value);
+	}
+};
+
+Registers.prototype.serialise = function(d)
+{
+	var regs = this.registers;
+
+	if(regs.length > 0)
+	{
+		d.registers = [];
+	
+		for(id in regs)
+		{
+			if(!regs.hasOwnProperty(regs))
+				continue;
+		
+			d.registers.push({ id: id, dt: r.dt.id });
+		}
+	}
+};
+
+Registers.prototype.deserialise = function(regs)
+{
+	var rdt = E2.app.player.core.resolve_dt;
+
+	for(var i = 0, len = regs.length; i < len; i++)
+	{
+		var r = regs[i];
+		var r_dt = rdt[r.dt];
+	
+		this.registers[r.id] = { dt: r_dt, value: null, users: [], ref_count: 1, connections: 0 };
+		this.write(r.id, this.core.get_default_value(r_dt));
+	}
+};
+
 function Graph(core, parent_graph, tree_node) 
 {
 	this.tree_node = tree_node;
@@ -1314,7 +1431,8 @@ function Graph(core, parent_graph, tree_node)
 	this.nodes = [];
 	this.connections = [];
 	this.core = core;
-	this.registers = {};
+	this.registers = new Registers(core);
+	
 	if(tree_node !== null) // Only initialise if we're not deserialising.
 	{
 		this.uid = this.core.get_graph_uid();
@@ -1514,85 +1632,6 @@ Graph.prototype.find_connections_from = function(node, slot)
 	return result;
 };
 
-Graph.prototype.lock_register = function(plugin, name)
-{
-	if(name in this.registers)
-		this.registers[name].ref_count++;
-	else
-		this.registers[name] = { dt: E2.app.player.core.datatypes.ANY, value: null, users: [], ref_count: 1, connections: 0 };
-	
-	var u = this.registers[name].users;
-	
-	if(!(plugin in u))
-		u.push(plugin);
-};
-
-Graph.prototype.unlock_register = function(plugin, name)
-{
-	if(name in this.registers)
-	{
-		var u = this.registers[name].users;
-
-		if(!(plugin in u))
-			u.remove(plugin);
-		
-		if(--this.registers[name].ref_count === 0)
-			delete this.registers[name];
-	}
-};
-
-Graph.prototype.register_connection_changed = function(name, added)
-{
-	var r = this.registers[name];
-
-	if(!added)
-	{
-		r.connections--;
-		
-		if(r.connections === 0)
-		{
-			var u = r.users;
-			var any = E2.app.player.core.datatypes.ANY;
-			
-			for(var i = 0, len = u.length; i < len; i++)
-				u[i].register_dt_changed(any);
-		}
-	}
-	else
-		r.connections++;
-		
-	return r.connections;
-};
-
-Graph.prototype.set_register_dt = function(name, dt)
-{
-	var r = this.registers[name];
-	var u = r.users;
-	
-	assert(r.dt === E2.app.player.core.datatypes.ANY);
-	
-	for(var i = 0, len = u.length; i < len; i++)
-		u[i].register_dt_changed(dt);
-	
-	this.write_register(name, this.core.get_default_value(dt))
-};
-
-Graph.prototype.write_register = function(name, value)
-{
-	var r = this.registers[name];
-	var u = r.users;
-	
-	r.value = value;
-	
-	for(var i = 0, len = u.length; i < len; i++)
-	{
-		var plg = u[i];
-		
-		if(plg.register_updated)
-			plg.register_updated(value);
-	}
-};
-
 Graph.prototype.serialise = function()
 {
 	var d = {};
@@ -1605,21 +1644,7 @@ Graph.prototype.serialise = function()
 	d.conns = [];
 	
 	this.enum_all(function(n) { d.nodes.push(n.serialise()); }, function(c) { d.conns.push(c.serialise()); });
-
-	var regs = this.registers;
-	
-	if(regs.length > 0)
-	{
-		d.registers = [];
-		
-		for(id in regs)
-		{
-			if(!regs.hasOwnProperty(regs))
-				continue;
-			
-			d.registers.push({ id: id, dt: r.dt.id });
-		}
-	}
+	this.registers.serialise(d);
 	
 	return d;
 };
@@ -1654,18 +1679,7 @@ Graph.prototype.deserialise = function(d)
 	}
 	
 	if(d.registers)
-	{
-		var rdt = E2.app.player.core.resolve_dt;
-
-		for(var i = 0, len = d.registers.length; i < len; i++)
-		{
-			var r = d.registers[i];
-			var r_dt = rdt[r.dt];
-			
-			this.registers[r.id] = { dt: r_dt, value: null, users: [], ref_count: 1, connections: 0 };
-			this.write_register(r.id, this.core.get_default_value(r_dt));
-		}
-	}
+		this.registers.deserialise(d.registers);
 };
 
 Graph.prototype.patch_up = function(graphs)
