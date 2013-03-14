@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head id="head">
+		<title>ENGI&#8482; Player Demo</title>
+		<link href="style/main.css" rel="Stylesheet" type="text/css" />
+		<link href="style/icons/style.css" rel="Stylesheet" type="text/css" />
+		<link href="style/smoothness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" type="text/css"  />
+		<link href="style/skin/ui.dynatree.css" rel="stylesheet" type="text/css">
+		<style type="text/css">
+			.slider { width: 170px; margin-bottom: 30px !important; }
+			.ui-slider-handle { background: #729fcf !important; }
+		</style>
+		<script type="text/javascript" src="scripts/json-serialization.js"></script>
+		<script type="text/javascript" src="scripts/jquery-1.7.js"></script>
+		<script type="text/javascript" src="scripts/jquery.event.fastfix.js"></script>
+		<script type="text/javascript" src="scripts/jquery-ui.js"></script>
+		<script type="text/javascript" src="scripts/jquery.mousewheel.js"></script>
+		<script type="text/javascript" src="scripts/gl-matrix.js"></script>
+		<script type="text/javascript" src="scripts/webgl-debug.js"></script>
+		<script type="text/javascript" src="scripts/renderer.js"></script>
+		<script type="text/javascript" src="scripts/core.js"></script>
+		<script type="text/javascript">
+			var player = null;
+			
+			var init_sliders = function(player)
+			{
+				var params = [
+					{ id: 'particle-size', min: 0.0, max: 8.0, def: 4.56 },
+					{ id: 'speed', min: 0.0, max: 1.0, def: 0.16 },
+					{ id: 'spline-scale', min: 0.0, max: 5.0, def: 3.95 },
+					{ id: 'spline-shape-1', min: 0.0, max: 0.1, def: 0.05 },
+					{ id: 'rotation', min: -180.0, max: 180.0, def: -3.6 },
+					{ id: 'x-position', min: -2.0, max: 2.0, def: -1.08 },
+					{ id: 'spline-shape-2', min: 0.0, max: 5.0, def: 1.85 },
+					{ id: 'elevation', min: -20.0, max: 20.0, def: 8.4 },
+					{ id: 'y-position', min: -2.0, max: 2.0, def: -0.32 },
+					{ id: 'spline-shape-3', min: 0.0, max: 5.0, def: 4.0 },
+					{ id: 'dolly', min: 0.0, max: 120.0, def: 13.2 },
+					{ id: 'z-position', min: -2.0, max: 2.0, def: -2.0 }
+				];
+				
+				for(var i = 0, len = params.length; i < len; i++)
+				{
+					var param = params[i];
+											
+					$('#' + param.id).slider({
+						slide: function(p, id) { return function(e, ui)
+						{
+							p.set_parameter(id, ui.value);
+						}}(player, param.id),
+						min: param.min,
+						max: param.max,
+						value: param.def,
+						step: (param.max - param.min) / 100.0
+					});
+					
+					player.set_parameter(param.id, param.def);
+				}
+			};
+			
+			$(document).ready(function() 
+			{
+				$('#webgl-canvas').css({
+					'position': 'absolute',
+					'top': '10px',
+					'left': '10px',
+					'width': '640px',
+					'height': '480px',
+					'background-color': '#000'
+				});
+				
+				player = CreatePlayer(function wait_for_init(player)
+				{
+					player.load_from_url('embedding_scene.json');
+					init_sliders(player);
+					player.play();
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<noscript>
+			<div class="centered notification">
+				<div style="float: left; display: table-cell; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
+				<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
+			</div>
+		</noscript>
+		<div id="main_layout" class="centered">
+			<canvas id="webgl-canvas" class="webgl-canvas-normal" width="640" height="480" oncontextmenu="return false;"></canvas>
+			<table style="position: absolute; top: 500px; left: 10px; width: 640px;">
+				<tr>
+					<td>Particle size: <div id="particle-size" class="slider"></div></td>
+					<td>Speed: <div id="speed" class="slider"></div></td>
+					<td>Spline scale: <div id="spline-scale" class="slider"></div></td>
+				</tr>
+				<tr>
+					<td>Spline shape 1: <div id="spline-shape-1" class="slider"></div></td>
+					<td>Rotation: <div id="rotation" class="slider"></div></td>
+					<td>X position: <div id="x-position" class="slider"></div></td>
+				</tr>
+				<tr>
+					<td>Spline shape 2: <div id="spline-shape-2" class="slider"></div></td>
+					<td>Elevation: <div id="elevation" class="slider"></div></td>
+					<td>Y position: <div id="y-position" class="slider"></div></td>
+				</tr>
+				<tr>
+					<td>Spline shape 3: <div id="spline-shape-3" class="slider"></div></td>
+					<td>Dolly: <div id="dolly" class="dolly"></div></td>
+					<td>Z position: <div id="z-position" class="slider"></div></td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>

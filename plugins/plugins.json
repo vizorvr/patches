@@ -167,6 +167,8 @@
 	"Modulators/Video/Current time": "video_get_current_time_modulator",	
 	"State/Register read": "register_local_read",
 	"State/Register write": "register_local_write",
+	"State/Global read": "register_global_read",
+	"State/Global write": "register_global_write",
 	"Structure/Input proxy": "input_proxy",
 	"Structure/Graph": "graph",
 	"Structure/Output proxy": "output_proxy",
