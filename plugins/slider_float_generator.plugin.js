@@ -52,7 +52,7 @@ E2.p.prototype.create_ui = function()
 	}})(this, v_col), 
 		min: this.state.min, 
 		max: this.state.max, 
-		val: this.state.val, 
+		value: this.state.val, 
 		step: this.calc_step(), 
 		animate: true 
 	});
