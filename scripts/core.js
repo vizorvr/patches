@@ -1330,12 +1330,11 @@ Registers.prototype.unlock = function(plugin, name)
 {
 	if(name in this.registers)
 	{
-		var u = this.registers[name].users;
-
-		if(!(plugin in u))
-			u.remove(plugin);
+		var reg = this.registers[name];
 		
-		if(--this.registers[name].ref_count === 0)
+		reg.users.remove(plugin);
+		
+		if(--reg.ref_count === 0)
 			delete this.registers[name];
 	}
 };
@@ -1373,6 +1372,7 @@ Registers.prototype.set_datatype = function(name, dt)
 	for(var i = 0, len = u.length; i < len; i++)
 		u[i].register_dt_changed(dt);
 	
+	r.dt = dt;
 	this.write(name, this.core.get_default_value(dt))
 };
 
@@ -1395,19 +1395,18 @@ Registers.prototype.write = function(name, value)
 Registers.prototype.serialise = function(d)
 {
 	var regs = this.registers;
-
-	if(regs.length > 0)
-	{
-		d.registers = [];
+	var dregs = [];
 	
-		for(id in regs)
-		{
-			if(!regs.hasOwnProperty(regs))
-				continue;
-		
-			d.registers.push({ id: id, dt: r.dt.id });
-		}
+	for(id in regs)
+	{
+		if(!regs.hasOwnProperty(id))
+			continue;
+	
+		dregs.push({ id: id, dt: regs[id].dt.id });
 	}
+	
+	if(dregs.length > 0)
+		d.registers = dregs;
 };
 
 Registers.prototype.deserialise = function(regs)
