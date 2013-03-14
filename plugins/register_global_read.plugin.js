@@ -1,4 +1,4 @@
-E2.p = E2.plugins["register_local_read"] = function(core, node)
+E2.p = E2.plugins["register_global_read"] = function(core, node)
 {
 	this.desc = 'Read from a local register using the name of the node.';
 	
@@ -78,10 +78,8 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		var n = this.node;
-
-		this.regs = n.parent_graph.registers;
-		this.target_reg(n.title);
+		this.regs = this.core.registers;
+		this.target_reg(this.node.title);
 	}
 	else
 		this.node.ui.dom.addClass('register');
