@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+fs = require('fs');
+
+var debug = false;
+
+if(process.argv.length < 3)
+{
+	console.log('Usage: unique-plugins-seq <JSON>');
+	return;
+}
+
+function warn(msg)
+{
+	console.log('[Warning]: ' + msg);
+}
+
+var unique_plugins = [];
+
+function process_graph(g_name, graph)
+{
+	var nodes = graph.nodes;
+	
+	for(var i = 0, len = nodes.length; i < len; i++)
+	{
+		var node = nodes[i];
+		var plg = node.plugin;
+		
+		if(unique_plugins.indexOf(plg) === -1)
+		{
+			unique_plugins.push(plg);
+			console.log(plg);
+		}
+			
+		if(plg === 'graph')
+			process_graph(node.title, node.graph);
+	}
+}
+
+var data = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+
+process_graph('root', data.root);
