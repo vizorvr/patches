@@ -130,9 +130,10 @@ function load_script(url)
 	document.getElementById('head').appendChild(script);
 }
 
-function Delegate(delegate, count)
+function Delegate(delegate, dt, count)
 {
 	this.delegate = delegate;
+	this.dt = dt;
 	this.count = count;
 }
 

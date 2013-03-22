@@ -1,19 +1,19 @@
 E2.p = E2.plugins["delegate_json_array_generator"] = function(core, node)
 {
-	this.desc = 'Emit a delegate that can load and expose that values of a JSON array from a given URL. The identifier of the array is expected to be \'<b>data</b>\'.';
+	this.desc = 'Emit a float delegate that can load and expose the (float) values of a JSON array from a given URL. The identifier of the array is expected to be \'<b>data</b>\'.';
 	
 	this.input_slots = [
 		{ name: 'json url', dt: core.datatypes.TEXT, desc: 'The URL of a JSON file containing an array.' } 
 	];
 	
 	this.output_slots = [ 
-		{ name: 'delegate', dt: core.datatypes.DELEGATE, desc: 'The resulting delegate.' } 
+		{ name: 'delegate', dt: core.datatypes.DELEGATE, desc: 'The resulting float delegate.' } 
 	];
 	
 	this.state = {};
 	this.core = core;
 	this.data = null;
-	this.delegate = new Delegate(function(x) { return 0.0; }, 0);
+	this.delegate = new Delegate(function(x) { return 0.0; }, core.datatypes.FLOAT, 0);
 	this.url = '';
 };
 
@@ -49,7 +49,7 @@ E2.p.prototype.update_input = function(slot, data)
 			if(json.data)
 			{
 				self.data = json.data;
-				self.delegate = new Delegate(self.delegate_func(self), self.data.length);
+				self.delegate = new Delegate(self.delegate_func(self), c.datatypes.FLOAT, self.data.length);
 				c.asset_tracker.signal_completed();
 			}
 			else

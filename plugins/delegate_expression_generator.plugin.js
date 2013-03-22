@@ -1,11 +1,11 @@
 E2.p = E2.plugins["delegate_expression_generator"] = function(core, node)
 {
-	this.desc = 'Emit a value delegate that resolves an integer parameter \'<b>x</b>\' to the value of an arbitrary javascript expression that can be contingent on an arbitrary number of dynamic input float slots.';
+	this.desc = 'Emit a float delegate that resolves an integer parameter \'<b>x</b>\' to the value of an arbitrary javascript expression that can be contingent on an arbitrary number of dynamic input float slots.';
 	
 	this.input_slots = [];
 	
 	this.output_slots = [ 
-		{ name: 'delegate', dt: core.datatypes.DELEGATE, desc: 'The resulting delegate.' } 
+		{ name: 'delegate', dt: core.datatypes.DELEGATE, desc: 'The resulting float delegate.' } 
 	];
 	
 	this.state = {
@@ -250,7 +250,7 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.delegate = new Delegate(this.delegate_func(this), Number.POSITIVE_INFINITY);
+		this.delegate = new Delegate(this.delegate_func(this), this.core.datatypes.FLOAT, Number.POSITIVE_INFINITY);
 		
 		var sids = this.state.slot_ids;
 		

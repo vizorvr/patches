@@ -9,14 +9,14 @@ E2.p = E2.plugins["delegate_loop_generator"] = function(core, node)
 	];
 	
 	this.output_slots = [ 
-		{ name: 'delegate', dt: core.datatypes.DELEGATE, desc: 'The resulting sequence delegate.' } 
+		{ name: 'delegate', dt: core.datatypes.DELEGATE, desc: 'The resulting sequence float delegate.' } 
 	];
 	
 	this.state = {};
 	this.lo = 0;
 	this.hi = 0;
 	this.step = 1;
-	this.delegate = new Delegate(this.delegate_func(this), 0, 0);
+	this.delegate = new Delegate(this.delegate_func(this), core.datatypes.FLOAT, 0);
 };
 
 E2.p.prototype.delegate_func = function(self) { return function(x)
