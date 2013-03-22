@@ -68,8 +68,6 @@ function process_graph(g_name, graph)
 	for(var i = 0, len = conns.length; i < len; i++)
 	{
 		var conn = conns[i];
-		
-		
 	}
 }
 
