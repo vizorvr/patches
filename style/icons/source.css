@@ -130,6 +130,8 @@
 .icon-quad_mesh_generator { background: url('quad-mesh-generator.png'); }
 .icon-random_float_generator { background: url('random-float-generator.png'); }
 .icon-record_framebuffer { background: url('record-framebuffer.png'); }
+.icon-register_global_read { background: url('input-proxy.png'); }
+.icon-register_global_write { background: url('output-proxy.png'); }
 .icon-register_local_read { background: url('input-proxy.png'); }
 .icon-register_local_write { background: url('output-proxy.png'); }
 .icon-reset_framebuffer_recorder { background: url('record-framebuffer.png'); }
