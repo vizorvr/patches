@@ -6,17 +6,31 @@ E2.p = E2.plugins["stop_emitter"] = function(core, node)
 		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'When true is received by this slot, graph playback is stopped.' }
 	];
 	
-	this.core = core;
 	this.output_slots = [];
+
+	this.core = core;
+	this.stop_seq = false;
 };
+
+E2.p.prototype.reset = function()
+{
+	this.stop_seq = false;
+}
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	if(data)
-	{
-		if(E2.app.onStopClicked)
-			E2.app.onStopClicked();
-		else
-			this.core.player.stop();
-	}
+	this.stop_seq = data;
+};
+
+E2.p.prototype.update_state = function()
+{
+	if(!this.stop_seq)
+		return;
+		
+	if(E2.app.onStopClicked)
+		E2.app.onStopClicked();
+	else
+		this.core.player.stop();
+		
+	this.stop_seq = false;
 };

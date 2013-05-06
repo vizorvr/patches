@@ -3553,6 +3553,7 @@ function Player(canvas, app, root_node)
 	this.last_time = (new Date()).getTime();
 	this.current_state = this.state.STOPPED;
 	this.frames = 0;
+	this.scheduled_stop = false;
 	
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, root_node);
 	this.core.graphs.push(this.core.root_graph);
@@ -3578,6 +3579,11 @@ function Player(canvas, app, root_node)
 		this.core.root_graph.pause();
 	};
 
+	this.schedule_stop = function()
+	{
+		this.scheduled_stop = true;
+	};
+	
 	this.stop = function()
 	{
 		if(self.interval != null)
@@ -3597,7 +3603,7 @@ function Player(canvas, app, root_node)
 		self.core.renderer.begin_frame(); // Clear the WebGL view.
 		self.core.renderer.end_frame();
 		
-		if(app)
+		if(app && app.updateCanvas)
 			app.updateCanvas(false);
 	};
 
@@ -3609,6 +3615,13 @@ function Player(canvas, app, root_node)
 
 	this.on_update = function()
 	{
+		if(this.scheduled_stop === true)
+		{
+			this.scheduled_stop = false;
+			this.stop();
+			return;
+		}
+		
 		var time = (new Date()).getTime();
 		var delta_t = (time - self.last_time) * 0.001;
 		
