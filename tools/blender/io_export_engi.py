@@ -59,7 +59,7 @@ class EngiContext:
             
             print('Caching unique texture [%s]' % img.name)
             
-            fn = os.path.abspath(img.filepath)
+            fn = bpy.path.abspath(img.filepath)
             
             if not img.packed_file and not os.path.exists(fn):
                 print('[Error]: Failed to find referenced texture \'%s\'' % fn)
@@ -83,9 +83,9 @@ class EngiContext:
             ow = math.floor(math.log(img['width']) / math.log(2))
             oh = math.floor(math.log(img['height']) / math.log(2))
             
-            # Reduce to at most 512 and at minumum 2 pixels on any axis, unless the
-            # aspect ratio is too extreme in which case we clip to 512, aspect be damned.
-            while ow > 1 and oh > 1 and (ow > 9 or oh > 9):
+            # Reduce to at most 2048 and minimum 2 pixels on any axis, unless the
+            # aspect ratio is too extreme in which case we clip to 2048, aspect be damned. The user was asking for it.
+            while ow > 1 and oh > 1 and (ow > 11 or oh > 11):
                 ow = ow - 1
                 oh = oh - 1
                 
@@ -221,7 +221,10 @@ class EngiMaterial:
                 data = ctx.unique_textures[img.name]
                 return ',\n\t\t\t\t"%s_map": { "factor": %s, "url": "%s" }' % (name, cnr(factor), data['outfn'])
             else:
-                print('Error: Failed to find unique texture by name: [%s]' % img.name)
+                print('Error: Failed to find unique texture by name: [%s]\n\nThe full collection contains:' % img.name)
+                
+                for name in ctx.unique_textures:
+                        print('[%s]' % name)
             
             return ''
 	        
@@ -233,7 +236,7 @@ class EngiMaterial:
             # same texture image may be used for different mapping, provided a texture
             # slot per mapping is used.
             if ts.use_map_color_diffuse:
-                if self.ctx.unique_textures[ts.texture.image.name]['achannel']:
+                if ts.texture.image.name in self.ctx.unique_textures and self.ctx.unique_textures[ts.texture.image.name]['achannel']:
                     json += ',\n\t\t\t\t"depth_write": false,\n\t\t\t\t"depth_test": false,\n\t\t\t\t"alpha_clip": true'
                 
                 json += format_map('diffuse_color', ts.diffuse_color_factor, self.ctx, ts)
@@ -253,7 +256,7 @@ class EngiMaterial:
         return json
 
 class EngiBatch:
-    def __init__(self, ctx, mat, mesh, polygons):
+    def __init__(self, ctx, mat, mesh, polygons, export_normals):
         self.ctx = ctx
         self.material = ctx.material_cache.add(ctx, mat, mesh)
         self.verts = []
@@ -274,10 +277,11 @@ class EngiBatch:
                 self.bb_hi[1] = v.co[1] if v.co[1] > self.bb_hi[1] else self.bb_hi[1]
                 self.bb_hi[2] = v.co[2] if v.co[2] > self.bb_hi[2] else self.bb_hi[2]
                 
-                if poly.use_smooth: # Use vertex normals, if available.
-                    self.norms.append(v.normal)
-                else: # Use face normals otherwise.
-                    self.norms.append(poly.normal)
+                if export_normals:
+                    if poly.use_smooth: # Use vertex normals, if available.
+                        self.norms.append(v.normal)
+                    else: # Use face normals otherwise.
+                        self.norms.append(poly.normal)
             
             uvi = 0
             
@@ -304,7 +308,7 @@ class EngiBatch:
                 uv = flatten(map(lambda v: [math.fmod(v.uv[0], 1.0), math.fmod(v.uv[1], 1.0)], uv))
                 self.uvs[idx] = uv
             
-    def serialise(self):
+    def serialise(self, export_normals):
         json = '\t\t\t\t{\n'
         json += '\t\t\t\t\t"material": "%s"' % self.material.material.name
         
@@ -314,7 +318,9 @@ class EngiBatch:
         
         ident = ',\n\t\t\t\t\t'
         json += '%s"vertices": %s' % (ident, serialise_stream(self.verts))
-        json += '%s"normals": %s' % (ident, serialise_stream(self.norms))
+        
+        if export_normals:
+        	json += '%s"normals": %s' % (ident, serialise_stream(self.norms))
         
         for idx in range(4):
             uv = self.uvs[idx]
@@ -326,13 +332,15 @@ class EngiBatch:
         return json
 
 class EngiMesh:
-    def __init__(self, ctx, obj, mesh):
+    def __init__(self, ctx, obj, mesh, export_normals):
         self.ctx = ctx
         self.obj = obj
         self.mesh = mesh
         self.batches = []
         self.bb_lo = [9999999.0, 9999999.0, 9999999.0]
         self.bb_hi = [-9999999.0, -9999999.0, -9999999.0]
+        self.v_count = 0
+        self.export_normals = export_normals
         
         materials = {}
         mats = mesh.materials
@@ -355,10 +363,10 @@ class EngiMesh:
                     if poly.material_index == i:
                         polys.append(poly)
                 
-                b = EngiBatch(ctx, materials[i], mesh, polys)
+                b = EngiBatch(ctx, materials[i], mesh, polys, export_normals)
         else:
             # Create one batch with a default material
-            b = EngiBatch(ctx, ctx.default_mat, mesh, mesh.polygons)
+            b = EngiBatch(ctx, ctx.default_mat, mesh, mesh.polygons, export_normals)
         
         self.bb_lo[0] = b.bb_lo[0] if b.bb_lo[0] < self.bb_lo[0] else self.bb_lo[0]
         self.bb_lo[1] = b.bb_lo[1] if b.bb_lo[1] < self.bb_lo[1] else self.bb_lo[1]
@@ -368,6 +376,7 @@ class EngiMesh:
         self.bb_hi[1] = b.bb_hi[1] if b.bb_hi[1] > self.bb_hi[1] else self.bb_hi[1]
         self.bb_hi[2] = b.bb_hi[2] if b.bb_hi[2] > self.bb_hi[2] else self.bb_hi[2]
         
+        self.v_count += len(b.verts)
         self.batches.append(b)
     
     def serialise(self):
@@ -377,7 +386,7 @@ class EngiMesh:
         b_delim = ''
         
         for batch in self.batches:
-                json += '%s%s' % (b_delim, batch.serialise())
+                json += '%s%s' % (b_delim, batch.serialise(self.export_normals))
                 b_delim = ',\n'
         
         json += '\n\t\t\t]\n\t\t}'
@@ -398,6 +407,8 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
     filename_ext = ".json"
     
     filter_glob = StringProperty(default="*.json", options={'HIDDEN'})
+    export_cameras = BoolProperty(name="Export cameras", default=True)
+    export_normals = BoolProperty(name="Export normals", default=True)
     smooth_normals = BoolProperty(name="Smooth normals", default=True)
     merge_alpha = BoolProperty(name="Merge alpha into diffuse", default=False)
     
@@ -413,6 +424,8 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         
         box = layout.box()
         box.label('Options:')
+        box.prop(self, 'export_cameras')
+        box.prop(self, 'export_normals')
         box.prop(self, 'smooth_normals')
         box.prop(self, 'merge_alpha')
     
@@ -423,21 +436,48 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         bb_lo = None
         bb_hi = None
         
+        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.select_all(action='DESELECT')
+        
         scene = bpy.context.scene # Export the active scene
         ctx = EngiContext(scene, self.directory)
         
         ctx.merge_alpha = self.merge_alpha
         
         mjson = ''
+        
         json = ''
         json += '{\n'
         json += '\t"id": "%s",\n' % sanitize_name(filename) 
         
-        mjson += '\t"meshes": {\n'
-        delim = ''
-        
         for i in scene.objects:
             i.select = False # deselect all objects
+            
+            if self.export_cameras:
+                cams = []
+                
+                for obj in bpy.data.objects:
+                    if obj.type == 'CAMERA':
+                        cams.append(obj)
+                        
+                if len(cams) > 0:
+                    mjson = '\t"cameras": {'
+                    cdelim = ''
+                    
+                    for cam in cams:
+                        mjson += '%s\n\t\t"%s" {' % (cdelim, cam.name)
+                        mjson += ',\n\t\t\t"fov": %s' % cnr(math.degrees(cam.data.angle))
+                        mjson += ',\n\t\t\t"near_clip": %s' % cnr(cam.data.clip_start)
+                        mjson += ',\n\t\t\t"far_clip": %s' % cnr(cam.data.clip_end)
+                        mjson += ',\n\t\t\t"position": [%s, %s, %s]' % (cnr(cam.location.x), cnr(cam.location.y), cnr(cam.location.z))
+                        mjson += ',\n\t\t\t"rotation": [%s, %s, %s]' % (cnr(cam.rotation_euler.x), cnr(cam.rotation_euler.y), cnr(cam.rotation_euler.z))
+                        mjson += '\n\t\t}'
+                        cdelim = ','
+                    
+                    mjson += '\n\t},\n'
+                        
+        mjson += '\t"meshes": {\n'
+        delim = ''
         
         for obj in bpy.data.objects:
             print('Found object ' + obj.name + ' of type ' + obj.type)
@@ -472,7 +512,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 mesh.transform(obj.matrix_world)
                 mesh.update()
                 
-                cmesh = EngiMesh(ctx, obj, mesh)
+                cmesh = EngiMesh(ctx, obj, mesh, self.export_normals)
                 
                 # Remove the temporary object
                 scene.objects.unlink(objc)
@@ -480,7 +520,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 
                 scene.update()
                 
-                if len(cmesh.batches) < 1:
+                if len(cmesh.batches) < 1 or cmesh.v_count < 1:
                     continue
                 
                 # Update bounds
