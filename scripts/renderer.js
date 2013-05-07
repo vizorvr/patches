@@ -1238,10 +1238,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				}
 			}
 
-			if(this.v_norm !== undefined && this.v_norm !== -1)
+			if(this.v_norm !== undefined)
 				gl.enableVertexAttribArray(this.v_norm);
 		
-			if(this.v_uv0 !== undefined && this.v_uv0 !== -1)
+			if(this.v_uv0 !== undefined)
 			{
 				var dt = null, st = null, nt = null, et = null;
 				var mm = mesh.material;
