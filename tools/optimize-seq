@@ -63,11 +63,18 @@ function delete_node(graph, node)
 		removeItem(conns, pruned[i]);
 }
 
+var maintain_title = [
+	'register_global_read',
+	'register_global_write',
+	'register_local_read',
+	'register_local_write'
+];
+
 function process_graph(graph)
 {
 	var nodes = graph.nodes;
 	var pruned = [];
-
+	
 	for(var i = 0, len = nodes.length; i < len; i++)
 	{
 		var node = nodes[i];
@@ -79,7 +86,9 @@ function process_graph(graph)
 		
 		delete node.x;
 		delete node.y;
-		delete node.title;
+		
+		if(maintain_title.indexOf(node.plugin) === -1)
+			delete node.title;
 
 		if(node.dyn_in)
 			process_dynamic_slots(node.dyn_in);
