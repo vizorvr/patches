@@ -81,15 +81,9 @@ E2.p.prototype.generate_mesh = function()
 			verts.push(y0);
 			verts.push(z0);
 			
-			var l = Math.sqrt((x0 * x0) + (y0 * y0) + (z0 * z0));
-		
-			if(l < 0.00001)
-				l = 1.0;
-			
-			l = 1.0 / l;
-			norms.push(x0 * l);
-			norms.push(y0 * l);
-			norms.push(z0 * l);
+			norms.push(x0);
+			norms.push(y0);
+			norms.push(z0);
 			
 			uvs.push(h / h_res);
 			uvs.push(1.0 - (v / v_res));
