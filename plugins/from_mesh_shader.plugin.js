@@ -59,7 +59,7 @@ E2.p.prototype.update_state = function()
 	
 	if(this.dirty || this.caps_hash !== caps)
 	{
-		msg('Recomposing shader with caps: ' + this.caps_hash);
+		msg('Recomposing shader with caps: ' + caps);
 		this.shader = ComposeShader(null, this.mesh, this.material, null, null, null, null);
 	}
 
