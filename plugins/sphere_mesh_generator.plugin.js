@@ -74,8 +74,9 @@ E2.p.prototype.generate_mesh = function()
 		
 		for(var h = 0; h < h_res + 1; h++)
 		{
-			var x0 = r0 * Math.sin(h * d_ang_h);
-			var z0 = r0 * Math.cos(h * d_ang_h);
+			var hd = h * d_ang_h;
+			var x0 = r0 * Math.sin(hd);
+			var z0 = r0 * Math.cos(hd);
 			
 			verts.push(x0);
 			verts.push(y0);
