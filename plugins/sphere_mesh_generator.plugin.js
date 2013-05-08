@@ -23,14 +23,21 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	if(slot.index === 0 && this.state.v_res !== Math.floor(data) && data > 1)
+	var v = Math.floor(data);
+	
+	if(v < 3)
+		return;
+	
+	v = v > 25 ? 25 : v;
+	
+	if(slot.index === 0 && this.state.v_res !== v)
 	{
-		this.state.v_res = Math.floor(data < 3.0 ? 3.0 : data > 25.0 ? 25.0 : data);
+		this.state.v_res = v;
 		this.dirty = true;
 	}
-	else if(slot.index === 1 && this.state.h_res !== Math.floor(data) && data > 1)
+	else if(slot.index === 1 && this.state.h_res !== v)
 	{
-		this.state.h_res = Math.floor(data < 3.0 ? 3.0 : data > 25.0 ? 25.0 : data);
+		this.state.h_res = v;
 		this.dirty = true;
 	}
 };
@@ -38,10 +45,7 @@ E2.p.prototype.update_input = function(slot, data)
 E2.p.prototype.update_state = function()
 {
 	if(this.dirty)
-	{
 		this.generate_mesh();
-		this.dirty = false;
-	}
 };
 
 E2.p.prototype.update_output = function(slot)
@@ -104,25 +108,12 @@ E2.p.prototype.generate_mesh = function()
 		}
 	}
 
-	var vb = this.mesh.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);
-	
-	vb.bind_data(verts);
-	delete verts;
-	
-	var nb = this.mesh.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL);
-	
-	nb.bind_data(norms);
-	delete norms;
+	(this.mesh.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX)).bind_data(verts);
+	(this.mesh.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL)).bind_data(norms);
+	(this.mesh.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0)).bind_data(uvs);
+	(this.mesh.index_buffer = new IndexBuffer(gl)).bind_data(indices);
 
-	var uvb = this.mesh.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0);
-	
-	uvb.bind_data(uvs);
-	delete uvs;
-
-	var ib = this.mesh.index_buffer = new IndexBuffer(gl);
-	
-	ib.bind_data(indices);
-	delete indices;
+	this.dirty = false;
 };
 
 E2.p.prototype.state_changed = function(ui)
