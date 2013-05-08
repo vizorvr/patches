@@ -114,8 +114,5 @@ E2.p.prototype.generate_mesh = function()
 E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
-	{
 		this.generate_mesh();
-		this.dirty = false;
-	}
 };
