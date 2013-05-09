@@ -3341,6 +3341,9 @@ function Application() {
 			}
 			else
 			{
+				if(e.target.type === 'textarea' || e.target.type === 'input')
+					return;
+
 				self.onPlayClicked();
 				pd = true;
 			}
