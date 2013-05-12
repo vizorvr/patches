@@ -16,7 +16,7 @@ E2.p = E2.plugins["perspective_camera"] = function(core, node)
 
 	this.gl = core.renderer.context;
 	this.canvas = core.renderer.canvas[0];
-	this.up = [0.0, 1.0, 0.0];
+	this.up = [0.0, 0.0, 1.0];
 };
 
 E2.p.prototype.update_input = function(slot, data)

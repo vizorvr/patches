@@ -10,8 +10,8 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 583,
-                "y": 353,
+                "x": 16,
+                "y": 45,
                 "uid": 0,
                 "state": {
                     "enabled": true,
@@ -142,16 +142,6 @@
                                 "min": 0,
                                 "max": 2
                             }
-                        },
-                        {
-                            "plugin": "const_float_generator",
-                            "x": 558,
-                            "y": 308,
-                            "uid": 18,
-                            "state": {
-                                "val": -90
-                            },
-                            "title": "Fix"
                         },
                         {
                             "plugin": "const_float_generator",
@@ -360,12 +350,6 @@
                             "dst_nuid": 16,
                             "src_slot": 0,
                             "dst_slot": 2
-                        },
-                        {
-                            "src_nuid": 18,
-                            "dst_nuid": 10,
-                            "src_slot": 0,
-                            "dst_slot": 0
                         },
                         {
                             "src_nuid": 19,

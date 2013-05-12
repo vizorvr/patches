@@ -1,17 +1,18 @@
 {
     "abs_t": 0,
     "active_graph": 0,
-    "graph_uid": 2,
+    "graph_uid": 7,
     "root": {
-        "node_uid": 2,
+        "node_uid": 3,
         "uid": 0,
         "parent_uid": -1,
+        "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 281,
-                "y": 123,
-                "uid": 0,
+                "x": 146,
+                "y": 24,
+                "uid": 1,
                 "dsid": 2,
                 "state": {
                     "enabled": true,
@@ -24,9 +25,10 @@
                 },
                 "title": "Mouse cam",
                 "graph": {
-                    "node_uid": 40,
-                    "uid": 1,
+                    "node_uid": 41,
+                    "uid": 6,
                     "parent_uid": 0,
+                    "open": true,
                     "nodes": [
                         {
                             "plugin": "perspective_camera",
@@ -36,14 +38,14 @@
                         },
                         {
                             "plugin": "vector",
-                            "x": 1418,
-                            "y": 89,
+                            "x": 1530,
+                            "y": 48,
                             "uid": 1
                         },
                         {
                             "plugin": "vector_transform",
-                            "x": 1584,
-                            "y": 129,
+                            "x": 1664,
+                            "y": 102,
                             "uid": 2
                         },
                         {
@@ -144,7 +146,7 @@
                             "y": 581,
                             "uid": 15,
                             "state": {
-                                "value": true
+                                "value": false
                             }
                         },
                         {
@@ -153,7 +155,7 @@
                             "y": 753,
                             "uid": 16,
                             "state": {
-                                "value": 0
+                                "value": 0.5962962962962963
                             }
                         },
                         {
@@ -162,7 +164,7 @@
                             "y": 450,
                             "uid": 17,
                             "state": {
-                                "value": 0
+                                "value": 0.48541666666666666
                             }
                         },
                         {
@@ -274,7 +276,7 @@
                             "x": 810,
                             "y": 55,
                             "uid": 32,
-                            "dsid": 18,
+                            "dsid": 20,
                             "state": {
                                 "slot_id": 0
                             },
@@ -320,7 +322,7 @@
                             "y": 432,
                             "uid": 36,
                             "state": {
-                                "val": 0.5
+                                "val": 0
                             }
                         },
                         {
@@ -344,7 +346,7 @@
                             "x": 1897,
                             "y": 41,
                             "uid": 39,
-                            "dsid": 5,
+                            "dsid": 7,
                             "state": {
                                 "slot_id": 0
                             },
@@ -361,6 +363,12 @@
                                     "is_connected": true
                                 }
                             ]
+                        },
+                        {
+                            "plugin": "negate_modulator",
+                            "x": 1403,
+                            "y": 94,
+                            "uid": 40
                         }
                     ],
                     "conns": [
@@ -392,19 +400,6 @@
                             "dst_dyn": true
                         },
                         {
-                            "src_nuid": 10,
-                            "dst_nuid": 1,
-                            "src_slot": 0,
-                            "dst_slot": 1
-                        },
-                        {
-                            "src_nuid": 28,
-                            "dst_nuid": 1,
-                            "src_slot": 0,
-                            "dst_slot": 2,
-                            "offset": 1
-                        },
-                        {
                             "src_nuid": 6,
                             "dst_nuid": 1,
                             "src_slot": 0,
@@ -420,12 +415,6 @@
                         {
                             "src_nuid": 3,
                             "dst_nuid": 2,
-                            "src_slot": 0,
-                            "dst_slot": 1
-                        },
-                        {
-                            "src_nuid": 22,
-                            "dst_nuid": 3,
                             "src_slot": 0,
                             "dst_slot": 1
                         },
@@ -645,6 +634,30 @@
                             "dst_nuid": 37,
                             "src_slot": 0,
                             "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 22,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 28,
+                            "dst_nuid": 40,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 40,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 1
                         }
                     ]
                 },
@@ -670,9 +683,9 @@
             },
             {
                 "plugin": "const_float_generator",
-                "x": 153,
-                "y": 187,
-                "uid": 1,
+                "x": 18,
+                "y": 88,
+                "uid": 2,
                 "state": {
                     "val": 1
                 },
@@ -681,8 +694,8 @@
         ],
         "conns": [
             {
-                "src_nuid": 1,
-                "dst_nuid": 0,
+                "src_nuid": 2,
+                "dst_nuid": 1,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true
