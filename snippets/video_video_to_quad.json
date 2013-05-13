@@ -1,5 +1,5 @@
 {
-    "abs_t": 7.796,
+    "abs_t": 0,
     "active_graph": 0,
     "graph_uid": 2,
     "root": {
@@ -10,14 +10,14 @@
         "nodes": [
             {
                 "plugin": "video_player",
-                "x": 239,
-                "y": 107,
+                "x": 173,
+                "y": 70,
                 "uid": 0
             },
             {
                 "plugin": "toggle_button",
-                "x": 87,
-                "y": 158,
+                "x": 21,
+                "y": 121,
                 "uid": 1,
                 "state": {
                     "enabled": true
@@ -26,17 +26,17 @@
             },
             {
                 "plugin": "url_video_generator",
-                "x": 87,
-                "y": 99,
+                "x": 21,
+                "y": 49,
                 "uid": 2,
                 "state": {
-                    "url": "data/video/helicopter_la.ogv"
+                    "url": "data/video/water_loop.ogv"
                 }
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 119,
-                "y": 281,
+                "x": 21,
+                "y": 265,
                 "uid": 3,
                 "state": {
                     "val": 0.47
@@ -44,8 +44,8 @@
             },
             {
                 "plugin": "toggle_button",
-                "x": 88,
-                "y": 219,
+                "x": 21,
+                "y": 193,
                 "uid": 4,
                 "state": {
                     "enabled": false
@@ -54,8 +54,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 371,
-                "y": 107,
+                "x": 305,
+                "y": 70,
                 "uid": 5,
                 "dsid": 3,
                 "state": {
@@ -90,7 +90,7 @@
                             "x": 624,
                             "y": 163,
                             "uid": 5,
-                            "dsid": 60,
+                            "dsid": 61,
                             "state": {
                                 "slot_id": 0
                             },
@@ -118,7 +118,7 @@
                             "x": 483,
                             "y": 375,
                             "uid": 34,
-                            "dsid": 52,
+                            "dsid": 53,
                             "state": {
                                 "slot_id": 0
                             },
