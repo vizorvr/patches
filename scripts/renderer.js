@@ -1039,7 +1039,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			}
 			
 			vs_dp('    tp = v_mat * tp;');
-			vs_dp('    eye_pos = normalize(tp.xyz) * vec3(-1, -1, 1);');
+			vs_dp('    eye_pos = -normalize(tp.xyz);');
 			vs_dp('    gl_Position = p_mat * tp;');
 
 			if(streams[v_types.COLOR])
