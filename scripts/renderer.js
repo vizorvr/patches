@@ -823,7 +823,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 	
 	if(!this.instances)
 	{
-		shader.bind_transform(camera.view, transform);
+		shader.bind_transform(transform);
 		
 		if(!this.index_buffer)
 		{
@@ -854,7 +854,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 				if(ift)
 					mat4.multiply(ft, inst_t[i], ift);
 					
-				shader.bind_transform(camera.view, ift ? ift : ft);
+				shader.bind_transform(ift ? ift : ft);
 				gl.drawArrays(this.prim_type, 0, verts.count);
 			}
 		}
@@ -872,7 +872,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 				if(ift)
 					mat4.multiply(ft, inst_t[i], ift);
 
-				shader.bind_transform(camera.view, ift ? ift : ft);
+				shader.bind_transform(ift ? ift : ft);
 				gl.drawElements(this.prim_type, this.index_buffer.count, gl.UNSIGNED_SHORT, 0);
 			}
 		}
@@ -941,12 +941,14 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		vs_src.push('uniform mat4 v_mat;');
 		vs_src.push('uniform mat4 p_mat;');
 		vs_src.push('varying vec4 f_col;');
+		vs_src.push('varying vec3 eye_pos;');
 		vs_src.push(uniforms_vs);
 	
 		ps_src.push('precision lowp float;');
 		ps_src.push('uniform vec4 a_col;');
 		ps_src.push('uniform mat4 v_mat;');
 		ps_src.push('varying vec4 f_col;');
+		ps_src.push('varying vec3 eye_pos;');
 		ps_src.push(uniforms_ps);
 	
 		if(streams[v_types.COLOR])
@@ -968,13 +970,19 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				{
 					var lid = 'l' + i;
 				
+					vs_src.push('uniform vec3 ' + lid + '_pos;');
 					ps_src.push('uniform vec3 ' + lid + '_pos;');
 					ps_src.push('uniform vec4 ' + lid + '_d_col;');
 					ps_src.push('uniform vec4 ' + lid + '_s_col;');
 					ps_src.push('uniform float ' + lid + '_power;');
-				
+					vs_src.push('varying vec3 ' + lid + '_v2l;');
+					ps_src.push('varying vec3 ' + lid + '_v2l;');
+					
 					if(l.type === Light.type.DIRECTIONAL)
+					{
+						vs_src.push('uniform vec3 ' + lid + '_dir;');
 						ps_src.push('uniform vec3 ' + lid + '_dir;');
+					}
 					
 					has_lights = true;
 				}
@@ -982,8 +990,6 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 			if(has_lights)
 			{
-				vs_src.push('varying vec3 view_pos;');
-				ps_src.push('varying vec3 view_pos;');
 				ps_src.push('uniform vec4 s_col;');
 				ps_src.push('uniform float shinyness;');
 			}
@@ -1012,26 +1018,41 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		if(!vs_custom)
 		{
 			vs_dp('void main(void) {');
-				vs_dp('    mat4 mv_mat = v_mat * m_mat;');
-
-			vs_dp('    vec4 tp = mv_mat * vec4(v_pos, 1.0);\n');
+			vs_dp('    vec4 tp = m_mat * vec4(v_pos, 1.0);\n');
 
 			if(has_lights)
-				vs_dp('    view_pos = vec3(tp);');
+			{
+				for(var i = 0; i < 8; i++)
+				{
+					var l = lights[i];
 			
+					if(l)
+					{
+						var lid = 'l' + i;
+						
+						if(l.type === Light.type.DIRECTIONAL)
+							vs_dp('    ' + lid + '_v2l = ' + lid + '_dir;');
+						else
+							vs_dp('    ' + lid + '_v2l = ' + lid + '_pos - tp.xyz;');
+					}
+				}
+			}
+			
+			vs_dp('    tp = v_mat * tp;');
+			vs_dp('    eye_pos = normalize(tp.xyz) * vec3(-1, -1, 1);');
 			vs_dp('    gl_Position = p_mat * tp;');
-
-			if(streams[v_types.NORMAL])
-				vs_dp('    f_norm = normalize(n_mat * v_norm);');
-	
-			if(streams[v_types.UV0])
-				vs_dp('    f_uv0 = v_uv0;');		
 
 			if(streams[v_types.COLOR])
 				vs_dp('    f_col = d_col * v_col;');
 			else
 				vs_dp('    f_col = d_col;');
 			
+			if(streams[v_types.NORMAL])
+				vs_dp('    f_norm = n_mat * v_norm;');
+			
+			if(streams[v_types.UV0])
+				vs_dp('    f_uv0 = v_uv0;');		
+
 			vs_dp('}');
 		}
 		else
@@ -1051,8 +1072,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				else
 					ps_dp('    vec3 n_dir = normalize(f_norm);');
 
-				ps_dp('    vec3 v_dir = normalize(-view_pos);');
-		
+				ps_dp('    float shine = max(1.0, shinyness);');
+				
 				for(var i = 0; i < 8; i++)
 				{
 					var l = lights[i];
@@ -1060,23 +1081,16 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 					if(l)
 					{
 						var lid = 'l' + i;
-						var liddir = lid + '_c_dir';
+						var liddir = lid + '_v2l_n';
 				
-						if(l.type === Light.type.DIRECTIONAL)
-							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_dir);');
-						else
-							ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_pos - view_pos);');
+						ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_v2l);');
+						ps_dp('    float ' + lid + '_dd = max(0.0, dot(n_dir, ' + liddir + '));');
+						ps_dp('    float ' + lid + '_spec_fac = pow(max(0.0, dot(reflect(-' + liddir + ', n_dir), eye_pos)), shinyness + 1.0);\n');
+						ps_dp('\n    fc.rgb += ' + lid + '_d_col.rgb * f_col.rgb * ' + lid + '_dd * ' + lid + '_power;\n');
+						
+						var s = '    fc.rgb += shine * ' + lid + '_power * ';
 				
-						ps_dp('    float ' + lid + '_dd = max(dot(n_dir, ' + liddir + '), 0.0);');
-						ps_dp('    float spec_fac = pow(max(0.0, dot(reflect(-' + liddir + ', n_dir), v_dir)), 1.0 / shinyness);\n');
-						ps_dp('    fc.rgb += ' + lid + '_d_col.rgb * f_col.rgb * ' + lid + '_dd * ' + lid + '_power;\n');
-
-						var s = '    fc.rgb += ' + lid + '_power * ';
-				
-						if(l.type === Light.type.DIRECTIONAL)
-							s += '(1.0 / length(' + liddir + ')) * ';
-					
-						s += lid + '_s_col.rgb * s_col.rgb * spec_fac';
+						s += lid + '_s_col.rgb * s_col.rgb * ' + lid + '_spec_fac';
 						
 						if(streams[v_types.UV0] && s_tex)
 							s += ' * texture2D(s_tex, f_uv0.st).rgb';
@@ -1087,7 +1101,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			}
 			
 			if(!has_lights)
-				ps_dp('    fc.rgb += f_col.rgb;');
+				ps_dp('    fc.rgb = f_col.rgb;');
 			
 			var has_amb = false;
 			
@@ -1128,8 +1142,12 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			shader.link();
 		}
 
-		shader.v_pos = gl.getAttribLocation(prog, "v_pos");
-		shader.v_norm = gl.getAttribLocation(prog, "v_norm");
+		if(streams[v_types.VERTEX])
+			shader.v_pos = gl.getAttribLocation(prog, "v_pos");
+		
+		if(streams[v_types.NORMAL])
+			shader.v_norm = gl.getAttribLocation(prog, "v_norm");
+		
 		shader.m_mat = gl.getUniformLocation(prog, "m_mat");
 		shader.v_mat = gl.getUniformLocation(prog, "v_mat");
 		shader.p_mat = gl.getUniformLocation(prog, "p_mat");
@@ -1424,7 +1442,7 @@ ShaderProgram.prototype.bind_camera = function(camera)
 	gl.uniformMatrix4fv(this.p_mat, false, camera.projection);
 };
 
-ShaderProgram.prototype.bind_transform = function(view, m_mat)
+ShaderProgram.prototype.bind_transform = function(m_mat)
 {
 	var gl = this.gl;
 	
@@ -1432,10 +1450,9 @@ ShaderProgram.prototype.bind_transform = function(view, m_mat)
 	
 	if(this.n_mat)
 	{
-		var mv_mat = mat4.create(), n_mat = mat3.create();
+		var n_mat = mat3.create();
 		
-		mat4.multiply(view, m_mat, mv_mat);
-		mat4.toInverseMat3(mv_mat, n_mat);
+		mat4.toInverseMat3(m_mat, n_mat);
 		mat3.transpose(n_mat);
 		gl.uniformMatrix3fv(this.n_mat, false, n_mat);
 	}
