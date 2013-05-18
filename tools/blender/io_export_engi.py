@@ -7,6 +7,8 @@ from mathutils import *
 from functools import reduce
 import os, os.path, bpy, bmesh, math, struct, base64
 
+debug = True
+
 bl_info = {
     'name': 'Engi Export (.json)',
     'author': 'Lasse Nielsen',
@@ -17,6 +19,10 @@ bl_info = {
     'url': 'http://www.engine.gl',
     'category': 'Import-Export'
 }
+
+def dbg(msg):
+    if debug:
+        print msg
 
 # Compress number representation to save as much space as possible. We could really
 # use support for 8 bit mesh compression. We'd need to subpartition into many more batches
@@ -76,12 +82,16 @@ class EngiContext:
         for img in self.unique_textures:
             img = self.unique_textures[img]
             
-            if not img['used']:
+            if not img['used'] or img['image'].users < 1:
                 print('Skipping unused texture: ' + img['image'].name)
                 continue
                 
             ow = math.floor(math.log(img['width']) / math.log(2))
             oh = math.floor(math.log(img['height']) / math.log(2))
+            
+            if ow < 1 or oh < 1:
+                print('Skipping texture with no image data: ' + img['image'].name)
+                continue
             
             # Reduce to at most 2048 and minimum 2 pixels on any axis, unless the
             # aspect ratio is too extreme in which case we clip to 2048, aspect be damned. The user was asking for it.
@@ -133,6 +143,7 @@ class EngiContext:
             
             rs.filepath = out_filename
             imgc.save_render(out_filename, self.render_settings)
+            bpy.data.images.remove(imgc)
             
     def clean_up(self):
         bpy.data.scenes.remove(self.render_settings)
@@ -171,9 +182,12 @@ class EngiMaterial:
     
         alpha = None
         d_name = None
+        idx = -1
         
         for ts in self.material.texture_slots:
-            if ts_invalid(ts):
+            idx = idx + 1
+            
+            if ts_invalid(ts) or not mat.use_textures[idx]:
                 continue
             
             if ts.use_map_alpha:
@@ -342,6 +356,7 @@ class EngiMesh:
         self.v_count = 0
         self.export_normals = export_normals
         
+        n_batches = []
         materials = {}
         mats = mesh.materials
         
@@ -353,9 +368,6 @@ class EngiMesh:
                 if mats[poly.material_index] not in materials:
                     materials[poly.material_index] = mats[poly.material_index]
             
-            # Create material batches
-            b = None
-            
             for i in materials:
                 polys = []
                 
@@ -363,21 +375,23 @@ class EngiMesh:
                     if poly.material_index == i:
                         polys.append(poly)
                 
-                b = EngiBatch(ctx, materials[i], mesh, polys, export_normals)
+                n_batches.append(EngiBatch(ctx, materials[i], mesh, polys, export_normals))
         else:
             # Create one batch with a default material
-            b = EngiBatch(ctx, ctx.default_mat, mesh, mesh.polygons, export_normals)
+            n_batches.append(EngiBatch(ctx, ctx.default_mat, mesh, mesh.polygons, export_normals))
         
-        self.bb_lo[0] = b.bb_lo[0] if b.bb_lo[0] < self.bb_lo[0] else self.bb_lo[0]
-        self.bb_lo[1] = b.bb_lo[1] if b.bb_lo[1] < self.bb_lo[1] else self.bb_lo[1]
-        self.bb_lo[2] = b.bb_lo[2] if b.bb_lo[2] < self.bb_lo[2] else self.bb_lo[2]
-
-        self.bb_hi[0] = b.bb_hi[0] if b.bb_hi[0] > self.bb_hi[0] else self.bb_hi[0]
-        self.bb_hi[1] = b.bb_hi[1] if b.bb_hi[1] > self.bb_hi[1] else self.bb_hi[1]
-        self.bb_hi[2] = b.bb_hi[2] if b.bb_hi[2] > self.bb_hi[2] else self.bb_hi[2]
-        
-        self.v_count += len(b.verts)
-        self.batches.append(b)
+        for b in n_batches:
+            if len(b.verts) > 0:
+                self.bb_lo[0] = b.bb_lo[0] if b.bb_lo[0] < self.bb_lo[0] else self.bb_lo[0]
+                self.bb_lo[1] = b.bb_lo[1] if b.bb_lo[1] < self.bb_lo[1] else self.bb_lo[1]
+                self.bb_lo[2] = b.bb_lo[2] if b.bb_lo[2] < self.bb_lo[2] else self.bb_lo[2]
+                
+                self.bb_hi[0] = b.bb_hi[0] if b.bb_hi[0] > self.bb_hi[0] else self.bb_hi[0]
+                self.bb_hi[1] = b.bb_hi[1] if b.bb_hi[1] > self.bb_hi[1] else self.bb_hi[1]
+                self.bb_hi[2] = b.bb_hi[2] if b.bb_hi[2] > self.bb_hi[2] else self.bb_hi[2]
+                
+                self.v_count += len(b.verts)
+                self.batches.append(b)
     
     def serialise(self):
         json = '\t\t"%s": {\n' % self.obj.name
@@ -407,7 +421,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
     filename_ext = ".json"
     
     filter_glob = StringProperty(default="*.json", options={'HIDDEN'})
-    export_cameras = BoolProperty(name="Export cameras", default=True)
+    export_cameras = BoolProperty(name="Export cameras", default=False)
     export_normals = BoolProperty(name="Export normals", default=True)
     smooth_normals = BoolProperty(name="Smooth normals", default=True)
     merge_alpha = BoolProperty(name="Merge alpha into diffuse", default=False)
@@ -436,11 +450,15 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         bb_lo = None
         bb_hi = None
         
-        bpy.ops.object.mode_set(mode='OBJECT')
-        bpy.ops.object.select_all(action='DESELECT')
-        
         scene = bpy.context.scene # Export the active scene
         ctx = EngiContext(scene, self.directory)
+        
+        if scene.objects.active:
+            try:
+                bpy.ops.object.mode_set(mode='OBJECT')
+                bpy.ops.object.select_all(action='DESELECT')
+            except:
+                pass
         
         ctx.merge_alpha = self.merge_alpha
         
@@ -480,7 +498,8 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         delim = ''
         
         for obj in bpy.data.objects:
-            print('Found object ' + obj.name + ' of type ' + obj.type)
+            dbg('Found object ' + obj.name + ' of type ' + obj.type)
+            
             if obj.type == 'MESH':
                 # Copy the object temporarily, so we can maniulate the copy prior
                 # to export, without altering the original scene.
@@ -492,10 +511,13 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 objc.select = True
                 scene.objects.active = objc
                 
-                bpy.ops.object.mode_set(mode='EDIT')
-                bpy.ops.mesh.select_all(action='SELECT')
-                bpy.ops.object.mode_set(mode='EDIT')
-                bpy.ops.mesh.quads_convert_to_tris()
+                try:
+                    bpy.ops.object.mode_set(mode='EDIT')
+                    bpy.ops.mesh.select_all(action='SELECT')
+                    bpy.ops.object.mode_set(mode='EDIT')
+                    bpy.ops.mesh.quads_convert_to_tris()
+                except:
+                    continue
                 
                 if self.smooth_normals:
                     bpy.ops.mesh.faces_shade_smooth()
