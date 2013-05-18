@@ -22,7 +22,7 @@ bl_info = {
 
 def dbg(msg):
     if debug:
-        print msg
+        print(msg)
 
 # Compress number representation to save as much space as possible. We could really
 # use support for 8 bit mesh compression. We'd need to subpartition into many more batches
