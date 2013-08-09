@@ -1,5 +1,4 @@
 # Part of the Engi-WebGL suite.
-# No rights reserved. Do what thou wilt shall be the whole of the law.
 
 from bpy.props import *
 from bpy_extras.io_utils import ExportHelper
@@ -24,10 +23,13 @@ def dbg(msg):
     if debug:
         print(msg)
 
-# Compress number representation to save as much space as possible. We could really
-# use support for 8 bit mesh compression. We'd need to subpartition into many more batches
-# for that to make practical sense though. 16 bit doesn't really make as much sense in
-# an ASCII representation.
+def sanitize_name(name):
+    name = name.replace('.', '_')
+    name = name.replace('-', '_')
+    name = name.replace('"', '')
+    return name
+
+# Compress number representation to save as much space as possible.
 def cnr(n):
     s = '%.4f' % n
 
@@ -39,9 +41,66 @@ def cnr(n):
 
     return s
 
-
 def format_stream(ident, id, s):
     return '%s%s: [%s]' % (ident, id, ','.join(map(str, s)))
+
+def median_factor(n):
+    fact = [1,n]
+    check = 2
+    rootn = math.sqrt(n)
+    
+    while check < rootn:
+        if n % check==0:
+            fact.append(check)
+            fact.append(n/check)
+            
+        check += 1
+            
+    if rootn == check:
+        fact.append(check)
+        
+    fact.sort()
+    return fact[math.floor(len(fact) / 2)]
+
+def stream_to_image(ctx, filename, stream):
+    pixel_count = len(stream) / 4
+    
+    # Find ideal size
+    w = int(median_factor(pixel_count))
+    h = int(pixel_count / w)
+    
+    r_settings = ctx.render_settings.render
+    settings = r_settings.image_settings
+    
+    bpy.data.images.new(name = filename, width = w, height = h)
+    img = bpy.data.images[filename]
+    
+    # img.pixels = [(float(stream[i]) / 255.0) for i in range(w * h * 4)]
+    data = []
+    
+    for y in range(h):
+        s_ofs = ((h - 1) - y) * w
+        for x in range(s_ofs, s_ofs + (w * 4)):
+            data.append(float(stream[x]) / 255.0)
+        
+    img.pixels = data
+    print('Stream to image: %s.png (%d x %d, %d) %d %d %d %d %f.' % (filename, w, h, pixel_count, stream[0], stream[1], stream[2], stream[3], data[0]))
+    
+    r_settings.alpha_mode = 'STRAIGHT'
+    r_settings.use_antialiasing = False
+    r_settings.use_compositing = False
+    r_settings.use_sequencer = False
+    r_settings.resolution_percentage = 100
+    
+    settings.file_format = 'PNG'
+    settings.compression = 100
+    settings.color_mode = 'RGBA'
+    
+    img.save_render(ctx.base_path + filename + '.png', ctx.render_settings)
+    bpy.data.images.remove(img)
+    
+    # Allow chaining
+    return filename
 
 class EngiContext:
     def __init__(self, scene, directory):
@@ -53,6 +112,8 @@ class EngiContext:
         self.unique_textures = {}
         self.render_settings = bpy.data.scenes.new('EngiRenderSettings') # Dummy scene with custom render settings used for resaving textures.
         self.default_mat = bpy.data.materials.new('EngiDefault')
+        self.file_base_name = ''
+        self.base_path = ''
         
         self.render_settings.render.resolution_percentage = 100
         
@@ -270,7 +331,7 @@ class EngiMaterial:
         return json
 
 class EngiBatch:
-    def __init__(self, ctx, mat, mesh, polygons, export_normals):
+    def __init__(self, ctx, m_name, index, mat, mesh, polygons, export_normals):
         self.ctx = ctx
         self.material = ctx.material_cache.add(ctx, mat, mesh)
         self.verts = []
@@ -278,6 +339,8 @@ class EngiBatch:
         self.uvs = [[], [], [], []]
         self.bb_lo = [9999999.0, 9999999.0, 9999999.0]
         self.bb_hi = [-9999999.0, -9999999.0, -9999999.0]
+        self.index = index
+        self.m_name = m_name
         
         for poly in polygons:
             for v in [mesh.vertices[v] for v in list(poly.vertices)]:
@@ -326,21 +389,17 @@ class EngiBatch:
         json = '\t\t\t\t{\n'
         json += '\t\t\t\t\t"material": "%s"' % self.material.material.name
         
-        def serialise_stream(stream):
-            return '[' + ','.join(map(cnr, stream)) + ']'
-            #return '"' + base64.b64encode(struct.pack('f' * len(stream), *stream)).decode('utf-8') + '"'
-        
         ident = ',\n\t\t\t\t\t'
-        json += '%s"vertices": %s' % (ident, serialise_stream(self.verts))
+        json += '%s"vertices": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_v%d' % (self.ctx.file_base_name, self.m_name, self.index), struct.pack('<' + ('f' * len(self.verts)), *self.verts)))
         
         if export_normals:
-        	json += '%s"normals": %s' % (ident, serialise_stream(self.norms))
+            json += '%s"normals": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_n%d' % (self.ctx.file_base_name, self.m_name, self.index), struct.pack('<' + ('f' * len(self.norms)), *self.norms)))
         
         for idx in range(4):
             uv = self.uvs[idx]
             
             if len(uv) > 0:
-                json += '%s"uv%d": %s' % (ident, idx, serialise_stream(uv))
+                json += '%s"uv%d": "%s"' % (ident, idx, stream_to_image(self.ctx, '%s_%s_t%d%d' % (self.ctx.file_base_name, self.m_name, idx, self.index), struct.pack('<' + ('f' * len(uv)), *uv)))
             
         json += '\n\t\t\t\t}'
         return json
@@ -355,6 +414,7 @@ class EngiMesh:
         self.bb_hi = [-9999999.0, -9999999.0, -9999999.0]
         self.v_count = 0
         self.export_normals = export_normals
+        self.name = sanitize_name(self.obj.name)
         
         n_batches = []
         materials = {}
@@ -368,6 +428,8 @@ class EngiMesh:
                 if mats[poly.material_index] not in materials:
                     materials[poly.material_index] = mats[poly.material_index]
             
+            idx = 0
+            
             for i in materials:
                 polys = []
                 
@@ -375,10 +437,11 @@ class EngiMesh:
                     if poly.material_index == i:
                         polys.append(poly)
                 
-                n_batches.append(EngiBatch(ctx, materials[i], mesh, polys, export_normals))
+                n_batches.append(EngiBatch(ctx, self.name, idx, materials[i], mesh, polys, export_normals))
+                idx += 1
         else:
             # Create one batch with a default material
-            n_batches.append(EngiBatch(ctx, ctx.default_mat, mesh, mesh.polygons, export_normals))
+            n_batches.append(EngiBatch(ctx, self.name, 0, ctx.default_mat, mesh, mesh.polygons, export_normals))
         
         for b in n_batches:
             if len(b.verts) > 0:
@@ -394,7 +457,7 @@ class EngiMesh:
                 self.batches.append(b)
     
     def serialise(self):
-        json = '\t\t"%s": {\n' % self.obj.name
+        json = '\t\t"%s": {\n' % self.name
         json += '\t\t\t"batches": [\n'
         
         b_delim = ''
@@ -406,14 +469,6 @@ class EngiMesh:
         json += '\n\t\t\t]\n\t\t}'
         return json
         
-
-def sanitize_name(name):
-    name = name.replace('.', '_')
-    name = name.replace('-', '_')
-    name = name.replace('"', '')
-    return name
-
-
 class JSONExporter(bpy.types.Operator, ExportHelper):
     bl_idname = 'export.json'
     bl_label = 'Export Engi (.json)'
@@ -444,19 +499,24 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         box.prop(self, 'merge_alpha')
     
     def execute(self, context):
+        scene = bpy.context.scene # Export the active scene
+        ctx = EngiContext(scene, self.directory)
+        
         world_amb = Color((0.0, 0.0, 0.0))
-        filename = os.path.splitext(self.filename)[0] + '.json'
+        filename = os.path.splitext(self.filename)[0]
+        ctx.file_base_name = filename
+        ctx.base_path = self.directory
+        
+        filename = filename + '.json'
+        
         print('Target path = %s' % (self.directory + filename)) 
         bb_lo = None
         bb_hi = None
         
-        scene = bpy.context.scene # Export the active scene
-        ctx = EngiContext(scene, self.directory)
-        
         if scene.objects.active:
             try:
-                bpy.ops.object.mode_set(mode='OBJECT')
-                bpy.ops.object.select_all(action='DESELECT')
+                bpy.ops.object.mode_set(mode = 'OBJECT')
+                bpy.ops.object.select_all(action = 'DESELECT')
             except:
                 pass
         
@@ -504,7 +564,6 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 # Copy the object temporarily, so we can maniulate the copy prior
                 # to export, without altering the original scene.
                 objc = obj.copy()
-                objc.data = objc.to_mesh(scene, True, 'PREVIEW')
                 scene.objects.link(objc)
                 scene.update()
                 
@@ -525,18 +584,18 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 scene.update()
                 
                 bpy.ops.object.mode_set(mode='OBJECT')
-                objc.data = objc.to_mesh(scene, True, 'PREVIEW') #write data object
+                mesh = objc.to_mesh(scene, True, 'PREVIEW') #write data object
                 scene.update()
-                
-                mesh = objc.data
                 
                 # Transform from local to world space.
                 mesh.transform(obj.matrix_world)
                 mesh.update()
                 
                 cmesh = EngiMesh(ctx, obj, mesh, self.export_normals)
+
+                m_name = mesh.name
                 
-                # Remove the temporary object
+                # Remove the temporary objects
                 scene.objects.unlink(objc)
                 bpy.data.objects.remove(objc)
                 
@@ -565,7 +624,9 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 print(bb_hi)
                 mjson += '%s%s' % (delim, cmesh.serialise())
                 delim = ',\n'
-        
+                
+                bpy.data.meshes.remove(bpy.data.meshes[m_name])
+                
         mjson += '\n\t},'
         
         if bb_lo and bb_hi:

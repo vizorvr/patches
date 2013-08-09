@@ -668,7 +668,7 @@ Material.get_caps_hash = function(mesh, o_mat)
 	return h;
 };
 
-function Mesh(gl, prim_type, t_cache, data, base_path)
+function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 {
 	this.gl = gl;
 	this.prim_type = prim_type;
@@ -683,20 +683,67 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 		
 	if(data)
 	{
-		if(data.vertices)
+		var load_stream = function(url, stream, parent)
 		{
-			var verts = this.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);
+			var img = new Image();
 		
-			this.vertex_count = data.vertices.length / 3;
-			verts.bind_data(data.vertices);
-		}
+			asset_tracker.signal_started();
+		
+			img.onload = function()
+			{
+				var canvas = document.createElement('canvas');
+				var ctx = canvas.getContext('2d');
+				var img = this;
+				
+				ctx.imageSmoothingEnabled = false;
+				ctx.webkitImageSmoothingEnabled = false;
+				ctx.globalCompositeOperation = 'copy';
+				
+				canvas.width = img.width;
+				canvas.height = img.height;
+			
+				ctx.drawImage(img, 0, 0);
+			
+				var pd = ctx.getImageData(0, 0, img.width, img.height);
+				var count = (pd.width * pd.height) / 4;
+				var dv = new DataView(pd.data.buffer);
+				var data = [];
+			
+				dv.setUint8(0, 0);
+				dv.setUint8(1, 85);
+				dv.setUint8(2, 220);
+				dv.setUint8(3, 59);
+				
+				for(var i = 0; i < count; i++)
+					data.push(dv.getFloat32(i, true)); // Little endian.
+			
+				stream.bind_data(data);
+			
+				if(parent)
+					parent.vertex_count = data.length / 3;
+				
+				msg('Finished loading stream from ' + img.src + ' with ' + data.length + ' elements. ' + dv.getUint8(0) + ', '  + dv.getUint8(1) + ', '  + dv.getUint8(2) + ', '  + dv.getUint8(3) + ', ' + dv.getFloat32(0, true));
+				asset_tracker.signal_completed();
+			};
+		
+			img.onerror = function()
+			{
+				asset_tracker.signal_failed();
+			};
+		
+			img.onabort = function()
+			{
+				asset_tracker.signal_failed();
+			};
+
+			img.src = base_path + url + '.png';
+		};
+		
+		if(data.vertices)
+			load_stream(data.vertices, this.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX), this);
 
 		if(data.normals)
-		{
-			var norms = this.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL);
-		
-			norms.bind_data(data.normals);
-		}
+			load_stream(data.normals, this.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL))
 		else // Compute normals
 		{
 			var vts = data.vertices,
@@ -777,17 +824,13 @@ function Mesh(gl, prim_type, t_cache, data, base_path)
 					}
 				}
 				
-				var norms = this.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL);
-
-				norms.bind_data(ndata);
+				(this.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL)).bind_data(ndata);
 			}
 		}
 		
 		if(data.uv0)
 		{
-  			var uv0 = this.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0);
-		
-			uv0.bind_data(data.uv0);
+  			load_stream(data.uv0, this.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0))
 		}
 		
 		if(data.indices)
@@ -1467,7 +1510,7 @@ function Camera(gl)
 	mat4.identity(this.view);
 }
 	
-function Scene(gl, data, base_path)
+function Scene(gl, core, data, base_path)
 {
 	this.gl = gl;
 	this.texture_cache = E2.app.player.core.renderer.texture_cache /*new TextureCache(gl)*/;
@@ -1476,7 +1519,8 @@ function Scene(gl, data, base_path)
 	this.materials = {};
 	this.id = 'n/a';
 	this.vertex_count = 0;
-
+	this.core = core;
+	
 	if(data)
 		this.load_json(data, base_path);
 };
@@ -1507,7 +1551,7 @@ Scene.prototype.load_json = function(data, base_path)
 		for(var b = 0, len = m.batches.length; b < len; b++)
 		{
 			var batch = m.batches[b];
-			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, batch, base_path);
+			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, batch, base_path, this.core.asset_tracker);
 		
 			mesh.id = id + '_b' + b;
 			mesh.material = this.materials[batch.material];
@@ -1600,7 +1644,7 @@ Scene.prototype.create_autofit_camera = function()
 Scene.load = function(gl, url, core)
 {
 	// Create dummy impostor scene and can be used as a null-proxy until asynchronous load completes.
-	var scene = new Scene(gl, null, null);
+	var scene = new Scene(gl, core, null, null);
 	
 	core.asset_tracker.signal_started();
 	
@@ -1610,7 +1654,7 @@ Scene.load = function(gl, url, core)
 		success: function(scene, c) { return function(data) 
 		{
 			var bp = url.substr(0, url.lastIndexOf('/') + 1);
-			var r = E2.app.player.core.renderer;
+			var r = c.renderer;
 			
 			scene.load_json(data, bp);
 			msg('Scene: Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
