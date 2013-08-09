@@ -695,34 +695,84 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 				var ctx = canvas.getContext('2d');
 				var img = this;
 				
-				ctx.imageSmoothingEnabled = false;
-				ctx.webkitImageSmoothingEnabled = false;
-				ctx.globalCompositeOperation = 'copy';
-				
 				canvas.width = img.width;
 				canvas.height = img.height;
-			
+				
 				ctx.drawImage(img, 0, 0);
 			
 				var pd = ctx.getImageData(0, 0, img.width, img.height);
-				var count = (pd.width * pd.height) / 4;
+				var count = pd.width * pd.height;
 				var dv = new DataView(pd.data.buffer);
+				var ab = new ArrayBuffer(count);
+				var abdv = new DataView(ab);
 				var data = [];
-			
-				dv.setUint8(0, 0);
-				dv.setUint8(1, 85);
-				dv.setUint8(2, 220);
-				dv.setUint8(3, 59);
+				var decodeFloat = function decodeFloat(bytes, signBits, exponentBits, fractionBits, eMin, eMax, littleEndian) 
+				{
+					var totalBits = (signBits + exponentBits + fractionBits);
+					var binary = '';
+					
+					for(var i = 0, l = bytes.length; i < l; i++)
+					{
+						var bits = bytes[i].toString(2);
+						
+						while(bits.length < 8)
+							bits = '0' + bits;
+					 
+						if(littleEndian)
+							binary = bits + binary;
+						else
+							binary += bits;
+					}
+					 
+					var sign = (binary.charAt(0) == '1') ? -1 : 1;
+					var exponent = parseInt(binary.substr(signBits, exponentBits), 2) - eMax;
+					var significandBase = binary.substr(signBits + exponentBits, fractionBits);
+					var significandBin = '1' + significandBase;
+					var i = 0;
+					var val = 1;
+					var significand = 0;
+					 
+					if (exponent == -eMax)
+					{
+						if (significandBase.indexOf('1') == -1)
+							return 0;
+						else
+						{
+							exponent = eMin;
+							significandBin = '0'+significandBase;
+						}
+					}
+					 
+					while (i < significandBin.length)
+					{
+						significand += val * parseInt(significandBin.charAt(i));
+						val = val / 2;
+						i++;
+					}
+					 
+					return sign * significand * Math.pow(2, exponent);
+				};
+    
+				for(var i = 0, o = 0; o < count; i += 4, o++)
+				{
+					var d = dv.getUint8(i);
+					
+					abdv.setUint8(o, d);
+				}
 				
-				for(var i = 0; i < count; i++)
-					data.push(dv.getFloat32(i, true)); // Little endian.
-			
+				for(var i = 0; i < count; i += 4)
+				{
+					debugger;
+					var f = decodeFloat([abdv.getUint8(i), abdv.getUint8(i+1), abdv.getUint8(i+2), abdv.getUint8(i+3)], 1, 23, 8, -999999, 999999, true);
+					data.push(f);
+				}
+				
 				stream.bind_data(data);
 			
 				if(parent)
 					parent.vertex_count = data.length / 3;
 				
-				msg('Finished loading stream from ' + img.src + ' with ' + data.length + ' elements. ' + dv.getUint8(0) + ', '  + dv.getUint8(1) + ', '  + dv.getUint8(2) + ', '  + dv.getUint8(3) + ', ' + dv.getFloat32(0, true));
+				msg('Finished loading stream from ' + img.src + ' with ' + data.length + ' elements. ' + abdv.getUint8(0) + ', '  + abdv.getUint8(1) + ', '  + abdv.getUint8(2) + ', '  + abdv.getUint8(3) + ', ' + abdv.getFloat32(0, true).toFixed(10));
 				asset_tracker.signal_completed();
 			};
 		

@@ -62,8 +62,20 @@ def median_factor(n):
     fact.sort()
     return fact[math.floor(len(fact) / 2)]
 
-def stream_to_image(ctx, filename, stream):
-    pixel_count = len(stream) / 4
+def get_stream_bounds(stream):
+    lo = 0, hi = 0
+    
+    for v in stream:
+        if lo > s:
+            lo = s
+        
+        if hi < s:
+            hi = s
+    
+    return lo, hi
+
+def stream_to_image(ctx, filename, stream, d_stream):
+    pixel_count = len(stream)
     
     # Find ideal size
     w = int(median_factor(pixel_count))
@@ -75,16 +87,17 @@ def stream_to_image(ctx, filename, stream):
     bpy.data.images.new(name = filename, width = w, height = h)
     img = bpy.data.images[filename]
     
-    # img.pixels = [(float(stream[i]) / 255.0) for i in range(w * h * 4)]
+    # img.pixels = [(float(stream[i]) / 255.0) for i in range(w * h)]
     data = []
     
     for y in range(h):
-        s_ofs = ((h - 1) - y) * w
-        for x in range(s_ofs, s_ofs + (w * 4)):
-            data.append(float(stream[x]) / 255.0)
+        o = y * w
+        for x in range(w):
+            l = float(stream[o + x]) / 255.0
+            data.extend([l, l, l, 1.0])
         
     img.pixels = data
-    print('Stream to image: %s.png (%d x %d, %d) %d %d %d %d %f.' % (filename, w, h, pixel_count, stream[0], stream[1], stream[2], stream[3], data[0]))
+    print('Stream to image: %s.png (%d x %d, %d) %d %d %d %d %f.' % (filename, w, h, pixel_count, stream[(h - 1) * w], stream[((h - 1) * w) + 1], stream[((h - 1) * w) + 2], stream[((h - 1) * w) + 3], d_stream[0]))
     
     r_settings.alpha_mode = 'STRAIGHT'
     r_settings.use_antialiasing = False
@@ -94,7 +107,7 @@ def stream_to_image(ctx, filename, stream):
     
     settings.file_format = 'PNG'
     settings.compression = 100
-    settings.color_mode = 'RGBA'
+    settings.color_mode = 'BW'
     
     img.save_render(ctx.base_path + filename + '.png', ctx.render_settings)
     bpy.data.images.remove(img)
@@ -173,6 +186,7 @@ class EngiContext:
                 img['achannel'] = True
                 print('Texture has alpha, switching to PNG: ' + img['image'].name)
             else:
+                rs.image_settings.color_mode = 'RGB'
                 rs.image_settings.file_format = 'JPEG'
             
             # This is slightly tricky. To find out whether the alpha channel of this 
@@ -390,16 +404,16 @@ class EngiBatch:
         json += '\t\t\t\t\t"material": "%s"' % self.material.material.name
         
         ident = ',\n\t\t\t\t\t'
-        json += '%s"vertices": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_v%d' % (self.ctx.file_base_name, self.m_name, self.index), struct.pack('<' + ('f' * len(self.verts)), *self.verts)))
+        json += '%s"vertices": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_v%d' % (self.ctx.file_base_name, self.m_name, self.index), struct.pack('<' + ('f' * len(self.verts)), *self.verts), self.verts))
         
         if export_normals:
-            json += '%s"normals": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_n%d' % (self.ctx.file_base_name, self.m_name, self.index), struct.pack('<' + ('f' * len(self.norms)), *self.norms)))
+            json += '%s"normals": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_n%d' % (self.ctx.file_base_name, self.m_name, self.index), struct.pack('<' + ('f' * len(self.norms)), *self.norms), self.norms))
         
         for idx in range(4):
             uv = self.uvs[idx]
             
             if len(uv) > 0:
-                json += '%s"uv%d": "%s"' % (ident, idx, stream_to_image(self.ctx, '%s_%s_t%d%d' % (self.ctx.file_base_name, self.m_name, idx, self.index), struct.pack('<' + ('f' * len(uv)), *uv)))
+                json += '%s"uv%d": "%s"' % (ident, idx, stream_to_image(self.ctx, '%s_%s_t%d%d' % (self.ctx.file_base_name, self.m_name, idx, self.index), struct.pack('<' + ('f' * len(uv)), *uv), uv))
             
         json += '\n\t\t\t\t}'
         return json
