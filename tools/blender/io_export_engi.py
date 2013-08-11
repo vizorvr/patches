@@ -4,7 +4,7 @@ from bpy.props import *
 from bpy_extras.io_utils import ExportHelper
 from mathutils import *
 from functools import reduce
-import os, os.path, bpy, bmesh, math, struct, base64
+import os, sys, os.path, bpy, bmesh, math, struct, base64, itertools
 
 debug = True
 
@@ -63,19 +63,21 @@ def median_factor(n):
     return fact[math.floor(len(fact) / 2)]
 
 def get_stream_bounds(stream):
-    lo = 0, hi = 0
+    lo = 0
+    hi = 0
     
     for v in stream:
-        if lo > s:
-            lo = s
+        if lo > v:
+            lo = v
         
-        if hi < s:
-            hi = s
+        if hi < v:
+            hi = v
     
-    return lo, hi
+    return lo, hi - lo
 
-def stream_to_image(ctx, filename, stream, d_stream):
-    pixel_count = len(stream)
+def stream_to_image(ctx, filename, d_stream, lo, rng):
+    pixel_count = len(d_stream) * 4
+    data = []
     
     # Find ideal size
     w = int(median_factor(pixel_count))
@@ -87,17 +89,36 @@ def stream_to_image(ctx, filename, stream, d_stream):
     bpy.data.images.new(name = filename, width = w, height = h)
     img = bpy.data.images[filename]
     
+    for f in d_stream:
+        data.append(int(((f - lo) / rng) * 4294967295.0))
+        
+    stream = struct.pack('>' + ('I' * len(data)), *data)
+    
+    print(data[0])
+    print(stream[0] << 24 | stream[1] << 16 | stream[2] << 8 | stream[3])
+    
     # img.pixels = [(float(stream[i]) / 255.0) for i in range(w * h)]
     data = []
+    o = 0
     
     for y in range(h):
-        o = y * w
-        for x in range(w):
-            l = float(stream[o + x]) / 255.0
-            data.extend([l, l, l, 1.0])
+        l = []
         
+        for x in range(w):
+            v = float(stream[o]) / 255.0
+            l.extend([v, v, v, 1.0])
+            o = o + 1
+        
+        data.append(l)
+    
+    # Invert scanlines, damnit Blender.
+    data.reverse()
+    
+    # Flatten
+    data = list(itertools.chain(*data))
+    
     img.pixels = data
-    print('Stream to image: %s.png (%d x %d, %d) %d %d %d %d %f.' % (filename, w, h, pixel_count, stream[(h - 1) * w], stream[((h - 1) * w) + 1], stream[((h - 1) * w) + 2], stream[((h - 1) * w) + 3], d_stream[0]))
+    print('Stream to image: %s.png (%d x %d, %d) %d %d %d %d %f.' % (filename, w, h, pixel_count, stream[0], stream[1], stream[2], stream[3], d_stream[0]))
     
     r_settings.alpha_mode = 'STRAIGHT'
     r_settings.use_antialiasing = False
@@ -404,17 +425,26 @@ class EngiBatch:
         json += '\t\t\t\t\t"material": "%s"' % self.material.material.name
         
         ident = ',\n\t\t\t\t\t'
-        json += '%s"vertices": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_v%d' % (self.ctx.file_base_name, self.m_name, self.index), struct.pack('<' + ('f' * len(self.verts)), *self.verts), self.verts))
+        vlo, vrng = get_stream_bounds(self.verts)
+        json += '%s"vertices": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_v%d' % (self.ctx.file_base_name, self.m_name, self.index), self.verts, vlo, vrng))
+        json += '%s"v_lo": "%f"' % (ident, vlo)
+        json += '%s"v_rng": "%f"' % (ident, vrng)
         
         if export_normals:
-            json += '%s"normals": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_n%d' % (self.ctx.file_base_name, self.m_name, self.index), struct.pack('<' + ('f' * len(self.norms)), *self.norms), self.norms))
-        
+            nlo, nrng = get_stream_bounds(self.norms)
+            json += '%s"normals": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_n%d' % (self.ctx.file_base_name, self.m_name, self.index), self.norms, nlo, nrng))
+            json += '%s"n_lo": "%f"' % (ident, nlo)
+            json += '%s"n_rng": "%f"' % (ident, nrng)
+            
         for idx in range(4):
             uv = self.uvs[idx]
             
             if len(uv) > 0:
-                json += '%s"uv%d": "%s"' % (ident, idx, stream_to_image(self.ctx, '%s_%s_t%d%d' % (self.ctx.file_base_name, self.m_name, idx, self.index), struct.pack('<' + ('f' * len(uv)), *uv), uv))
-            
+                uvlo, uvrng = get_stream_bounds(uv)
+                json += '%s"uv%d": "%s"' % (ident, idx, stream_to_image(self.ctx, '%s_%s_t%d%d' % (self.ctx.file_base_name, self.m_name, idx, self.index), uv, uvlo, uvrng))
+                json += '%s"uv%d_lo": "%f"' % (ident, idx, uvlo)
+                json += '%s"uv%d_rng": "%f"' % (ident, idx, uvrng)
+                
         json += '\n\t\t\t\t}'
         return json
 

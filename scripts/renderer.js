@@ -683,20 +683,26 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 		
 	if(data)
 	{
-		var load_stream = function(url, stream, parent)
+		var load_stream = function(url, lo, rng, stream, parent)
 		{
 			var img = new Image();
 		
+			lo = parseFloat(lo);
+			rng = parseFloat(rng);
+			
 			asset_tracker.signal_started();
 		
 			img.onload = function()
 			{
 				var canvas = document.createElement('canvas');
 				var ctx = canvas.getContext('2d');
-				var img = this;
 				
 				canvas.width = img.width;
 				canvas.height = img.height;
+				
+				ctx.imageSmoothingEnabled = false;
+				ctx.webkitImageSmoothingEnabled = false;
+				ctx.globalCompositeOperation = 'copy';
 				
 				ctx.drawImage(img, 0, 0);
 			
@@ -706,65 +712,29 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 				var ab = new ArrayBuffer(count);
 				var abdv = new DataView(ab);
 				var data = [];
-				var decodeFloat = function decodeFloat(bytes, signBits, exponentBits, fractionBits, eMin, eMax, littleEndian) 
-				{
-					var totalBits = (signBits + exponentBits + fractionBits);
-					var binary = '';
-					
-					for(var i = 0, l = bytes.length; i < l; i++)
-					{
-						var bits = bytes[i].toString(2);
-						
-						while(bits.length < 8)
-							bits = '0' + bits;
-					 
-						if(littleEndian)
-							binary = bits + binary;
-						else
-							binary += bits;
-					}
-					 
-					var sign = (binary.charAt(0) == '1') ? -1 : 1;
-					var exponent = parseInt(binary.substr(signBits, exponentBits), 2) - eMax;
-					var significandBase = binary.substr(signBits + exponentBits, fractionBits);
-					var significandBin = '1' + significandBase;
-					var i = 0;
-					var val = 1;
-					var significand = 0;
-					 
-					if (exponent == -eMax)
-					{
-						if (significandBase.indexOf('1') == -1)
-							return 0;
-						else
-						{
-							exponent = eMin;
-							significandBin = '0'+significandBase;
-						}
-					}
-					 
-					while (i < significandBin.length)
-					{
-						significand += val * parseInt(significandBin.charAt(i));
-						val = val / 2;
-						i++;
-					}
-					 
-					return sign * significand * Math.pow(2, exponent);
-				};
-    
+				
+				debugger;
+				
 				for(var i = 0, o = 0; o < count; i += 4, o++)
 				{
-					var d = dv.getUint8(i);
+					var v = dv.getUint8(i);
 					
-					abdv.setUint8(o, d);
+					abdv.setUint8(o, v);
 				}
 				
-				for(var i = 0; i < count; i += 4)
+				debugger;
+				
+				for(var i = 0; i < count; i+=4)
 				{
-					debugger;
-					var f = decodeFloat([abdv.getUint8(i), abdv.getUint8(i+1), abdv.getUint8(i+2), abdv.getUint8(i+3)], 1, 23, 8, -999999, 999999, true);
-					data.push(f);
+					var a = abdv.getUint8(i) >>> 0;
+					var b = abdv.getUint8(i+1) >>> 0;
+					var c = abdv.getUint8(i+2) >>> 0;
+					var d = abdv.getUint8(i+3) >>> 0;
+					var v = a << 24 | b << 16 | c << 8 | d;
+					// var v = abdv.getUint32(i, false);
+					
+					v = ((v / 4294967295.0) * rng) + lo;
+					data.push(v);
 				}
 				
 				stream.bind_data(data);
@@ -772,8 +742,9 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 				if(parent)
 					parent.vertex_count = data.length / 3;
 				
-				msg('Finished loading stream from ' + img.src + ' with ' + data.length + ' elements. ' + abdv.getUint8(0) + ', '  + abdv.getUint8(1) + ', '  + abdv.getUint8(2) + ', '  + abdv.getUint8(3) + ', ' + abdv.getFloat32(0, true).toFixed(10));
+				msg('Finished loading stream from ' + img.src + ' with ' + data.length + ' elements. ' + abdv.getUint8(0) + ', '  + abdv.getUint8(1) + ', '  + abdv.getUint8(2) + ', '  + abdv.getUint8(3) + ', ' + data[0]);
 				asset_tracker.signal_completed();
+				document.body.removeChild(img);
 			};
 		
 			img.onerror = function()
@@ -786,14 +757,18 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 				asset_tracker.signal_failed();
 			};
 
+			img.style.position = 'absolute';
+			img.style.left -999999;
+			
+			document.body.appendChild(img);
 			img.src = base_path + url + '.png';
 		};
 		
 		if(data.vertices)
-			load_stream(data.vertices, this.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX), this);
+			load_stream(data.vertices, data.v_lo, data.v_rng, this.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX), this);
 
 		if(data.normals)
-			load_stream(data.normals, this.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL))
+			load_stream(data.normals, data.n_lo, data.n_rng, this.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL))
 		else // Compute normals
 		{
 			var vts = data.vertices,
@@ -880,7 +855,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 		
 		if(data.uv0)
 		{
-  			load_stream(data.uv0, this.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0))
+  			load_stream(data.uv0, data.uv0_lo, data.uv0_rng, this.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0))
 		}
 		
 		if(data.indices)
