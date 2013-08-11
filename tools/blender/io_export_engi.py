@@ -118,6 +118,16 @@ def stream_to_image(ctx, filename, d_stream):
     # Allow chaining
     return filename
 
+def img_uses_alpha(img):
+    p = list(img.pixels)
+    count = len(p)
+    
+    for pi in range(0, count, 4):
+        if int(p[pi + 3] * 255.0) < 255:
+            return True
+    
+    return False
+
 class EngiContext:
     def __init__(self, scene, directory):
         self.scene = scene
@@ -148,7 +158,7 @@ class EngiContext:
                 print('[Error]: Failed to find referenced texture \'%s\'' % fn)
                 continue
             
-            self.unique_textures[img.name] = { 'filename': fn, 'outfn': '', 'width': img.size[0], 'height': img.size[1], 'used': False, 'image': img, 'alpha': None, 'achannel': None }
+            self.unique_textures[img.name] = { 'filename': fn, 'outfn': '', 'width': img.size[0], 'height': img.size[1], 'used': False, 'image': img, 'alpha': None, 'achannel': None, 'is_diffuse': False }
         
         if self.world:
             self.world_amb = self.world.ambient_color
@@ -180,14 +190,17 @@ class EngiContext:
             oh = int(math.pow(2, oh))
             
             ext = '.jpg'
+            img_alpha = img['is_diffuse'] and img_uses_alpha(img['image'])
             
             # img['image'].depth != 24 or (
-            if self.merge_alpha and img['alpha']: # Convert all 24bpp images to JPEG, everything else to PNG
+            if (self.merge_alpha and img['alpha'] != None) or img_alpha: # Convert all 24bpp images to JPEG, everything else to PNG
                 ext = '.png'
                 rs.image_settings.file_format = 'PNG'
                 rs.image_settings.color_mode = 'RGBA'
                 img['achannel'] = True
                 print('Texture has alpha, switching to PNG: ' + img['image'].name)
+                print('Is Alpha: ' + str(self.merge_alpha and img['alpha'] != None))
+                print('ImgAlpha: ' + str(img_alpha))
             else:
                 rs.image_settings.color_mode = 'RGB'
                 rs.image_settings.file_format = 'JPEG'
@@ -276,7 +289,13 @@ class EngiMaterial:
                 print('Found diffuse map = ' + d_name)
                 
             if ts.texture.image.name in self.ctx.unique_textures:
-                self.ctx.unique_textures[ts.texture.image.name]['used'] = True
+                img = self.ctx.unique_textures[ts.texture.image.name]
+                
+                img['used'] = True
+                
+                # Tag diffuse textures
+                if ts.use_map_color_diffuse:
+                    img['is_diffuse'] = True
 
         if alpha and d_name:
             print('Enabling alpha merge for material: ' + self.material.name)
@@ -309,6 +328,7 @@ class EngiMaterial:
             
             if img.name in ctx.unique_textures:
                 data = ctx.unique_textures[img.name]
+                
                 return ',\n\t\t\t\t"%s_map": { "factor": %s, "url": "%s" }' % (name, cnr(factor), data['outfn'])
             else:
                 print('Error: Failed to find unique texture by name: [%s]\n\nThe full collection contains:' % img.name)
@@ -494,7 +514,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
     export_cameras = BoolProperty(name="Export cameras", default=False)
     export_normals = BoolProperty(name="Export normals", default=True)
     smooth_normals = BoolProperty(name="Smooth normals", default=True)
-    merge_alpha = BoolProperty(name="Merge alpha into diffuse", default=False)
+    merge_alpha = BoolProperty(name="Merge alpha into diffuse", default=True)
     
     #filepath = StringProperty()
     filename = StringProperty()
@@ -651,7 +671,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
             
         # Convert textures
         ctx.process_textures()
-        
+            
         # Write the material cache
         json += ctx.material_cache.serialise()
         
