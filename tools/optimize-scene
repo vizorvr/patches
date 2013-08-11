@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+import os
+import sys
+import simplejson
+
+if len(sys.argv) < 2:
+	sys.exit('Usage: optimize-scene <JSON>')
+
+abs_path = os.path.abspath(sys.argv[1])
+base_path = os.path.dirname(abs_path)
+json = None
+
+def process_png(png):
+	filename = png + '.png'
+	path = os.path.join(base_path, filename)
+	
+	os.system('pngcrush -rem gAMA -rem cHRM -rem iCCP -rem sRGB -rem alla -rem iTXt -rem sTER -rem hIST -rem zTXt -rem bKGD -rem tRNS -rem tIME -e ".pngo" ' + path)
+	os.system('mv ' + path + 'o ' + path)
+
+def process_map(m):
+	if not m:
+		return
+	
+	if m['url'] and m['url'][-4:].lower() == '.png':
+		process_png(m['url'][:-4])
+
+def process_stream(stream):
+	if not stream:
+		return
+	
+	process_png(stream)	
+
+def process_scene(scene):
+	meshes = scene['meshes']
+	
+	for m in meshes:
+		mesh = meshes[m]
+		batches = mesh['batches']
+		
+		for b in batches:
+			process_stream(b.get('vertices'))
+			process_stream(b.get('normals'))
+			process_stream(b.get('uv0'))
+	
+	materials = scene['materials']
+	
+	for m in materials:
+		material = materials[m]
+		
+		process_map(material.get('diffuse_color_map'));
+		process_map(material.get('emission_intensity_map'));
+		process_map(material.get('specular_intensity_map'));
+		process_map(material.get('specular_color_map'));
+		process_map(material.get('emission_color_map'));
+		process_map(material.get('normal_map'));
+	
+f = open(abs_path, 'r')
+json = simplejson.load(f)
+f.close()
+
+process_scene(json)
