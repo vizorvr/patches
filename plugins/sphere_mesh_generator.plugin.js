@@ -58,7 +58,7 @@ E2.p.prototype.generate_mesh = function()
 	var gl = this.gl;
 	
 	msg('Sphere: Generating mesh.');
-	this.mesh = new Mesh(gl, gl.TRIANGLES);
+	this.mesh = new Mesh(gl, gl.TRIANGLES, null);
 
 	var verts = [], norms = [], uvs = [], indices = [];
 	var d_ang_v = Math.PI / this.state.v_res; 

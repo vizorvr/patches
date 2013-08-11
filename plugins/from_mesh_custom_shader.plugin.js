@@ -333,7 +333,7 @@ E2.p.prototype.rebuild_shader = function()
 		{
 			var slot = st.slot_ids[ident];
 		
-			if(slot.uniform === null || sd[slot.id] === null)
+			if(slot.uniform === null || sd[slot.id] === undefined || sd[slot.id] === null)
 				continue;
 				
 			var dtid = slot.dt.id;

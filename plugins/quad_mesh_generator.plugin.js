@@ -28,7 +28,7 @@ E2.p.prototype.state_changed = function(ui)
 	{
 		var gl = this.gl;
 		
-		this.mesh = new Mesh(gl, gl.TRIANGLE_STRIP);
+		this.mesh = new Mesh(gl, gl.TRIANGLE_STRIP, null);
 		
 		var verts = this.mesh.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);
 		

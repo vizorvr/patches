@@ -32,7 +32,7 @@ E2.p.prototype.generate_mesh = function()
 {
 	var gl = this.gl;
 	
-	this.mesh = new Mesh(gl, gl.LINES);
+	this.mesh = new Mesh(gl, gl.LINES, null);
 	
 	(this.mesh.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX)).bind_data([
 		0.0, 0.0, 0.0,

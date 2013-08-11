@@ -55,7 +55,7 @@ E2.p.prototype.state_changed = function(ui)
 		var gl = this.gl;
 		
 		this.count = 10;
-		this.mesh = new Mesh(gl, gl.POINTS);
+		this.mesh = new Mesh(gl, gl.POINTS, null);
 		this.mesh.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);
 		this.generate_mesh();
 	}

@@ -29,7 +29,7 @@ E2.p.prototype.state_changed = function(ui)
 		var gl = this.gl;
 		
 		msg('Cube: Generating mesh.');
-		this.mesh = new Mesh(gl, gl.TRIANGLES);
+		this.mesh = new Mesh(gl, gl.TRIANGLES, null);
 		
 		var verts = this.mesh.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX);
 		

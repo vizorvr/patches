@@ -713,38 +713,21 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 				var abdv = new DataView(ab);
 				var data = [];
 				
-				debugger;
-				
+				// Extract the datastream from the canvas RGBA data.
 				for(var i = 0, o = 0; o < count; i += 4, o++)
-				{
-					var v = dv.getUint8(i);
-					
-					abdv.setUint8(o, v);
-				}
+					abdv.setUint8(o, dv.getUint8(i));
 				
-				debugger;
-				
+				// Decode
 				for(var i = 0; i < count; i+=4)
-				{
-					var a = abdv.getUint8(i) >>> 0;
-					var b = abdv.getUint8(i+1) >>> 0;
-					var c = abdv.getUint8(i+2) >>> 0;
-					var d = abdv.getUint8(i+3) >>> 0;
-					var v = a << 24 | b << 16 | c << 8 | d;
-					// var v = abdv.getUint32(i, false);
-					
-					v = ((v / 4294967295.0) * rng) + lo;
-					data.push(v);
-				}
+					data.push(abdv.getFloat32(i, false));
 				
 				stream.bind_data(data);
 			
 				if(parent)
-					parent.vertex_count = data.length / 3;
+					parent.vertex_count = count / (4 * 3);
 				
-				msg('Finished loading stream from ' + img.src + ' with ' + data.length + ' elements. ' + abdv.getUint8(0) + ', '  + abdv.getUint8(1) + ', '  + abdv.getUint8(2) + ', '  + abdv.getUint8(3) + ', ' + data[0]);
+				msg('Finished loading stream from ' + img.src + ' with ' + (count / 4) + ' elements.');
 				asset_tracker.signal_completed();
-				document.body.removeChild(img);
 			};
 		
 			img.onerror = function()
@@ -757,10 +740,6 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 				asset_tracker.signal_failed();
 			};
 
-			img.style.position = 'absolute';
-			img.style.left -999999;
-			
-			document.body.appendChild(img);
 			img.src = base_path + url + '.png';
 		};
 		

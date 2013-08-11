@@ -62,20 +62,7 @@ def median_factor(n):
     fact.sort()
     return fact[math.floor(len(fact) / 2)]
 
-def get_stream_bounds(stream):
-    lo = 0
-    hi = 0
-    
-    for v in stream:
-        if lo > v:
-            lo = v
-        
-        if hi < v:
-            hi = v
-    
-    return lo, hi - lo
-
-def stream_to_image(ctx, filename, d_stream, lo, rng):
+def stream_to_image(ctx, filename, d_stream):
     pixel_count = len(d_stream) * 4
     data = []
     
@@ -89,15 +76,7 @@ def stream_to_image(ctx, filename, d_stream, lo, rng):
     bpy.data.images.new(name = filename, width = w, height = h)
     img = bpy.data.images[filename]
     
-    for f in d_stream:
-        data.append(int(((f - lo) / rng) * 4294967295.0))
-        
-    stream = struct.pack('>' + ('I' * len(data)), *data)
-    
-    print(data[0])
-    print(stream[0] << 24 | stream[1] << 16 | stream[2] << 8 | stream[3])
-    
-    # img.pixels = [(float(stream[i]) / 255.0) for i in range(w * h)]
+    stream = struct.pack('>' + ('f' * len(d_stream)), *d_stream)
     data = []
     o = 0
     
@@ -118,7 +97,7 @@ def stream_to_image(ctx, filename, d_stream, lo, rng):
     data = list(itertools.chain(*data))
     
     img.pixels = data
-    print('Stream to image: %s.png (%d x %d, %d) %d %d %d %d %f.' % (filename, w, h, pixel_count, stream[0], stream[1], stream[2], stream[3], d_stream[0]))
+    print('Stream to image: %s.png (%d x %d, %d).' % (filename, w, h, pixel_count))
     
     r_settings.alpha_mode = 'STRAIGHT'
     r_settings.use_antialiasing = False
@@ -126,6 +105,9 @@ def stream_to_image(ctx, filename, d_stream, lo, rng):
     r_settings.use_sequencer = False
     r_settings.resolution_percentage = 100
     
+    # We save as greyscale 8BPC because some browsers apply gamma and / or color space correction, even when
+    # the PNG doesn't include any color space chunks. Greyscale side-steps this issue at a slight computational
+    # and memory consumption cost when decoding client-side.
     settings.file_format = 'PNG'
     settings.compression = 100
     settings.color_mode = 'BW'
@@ -307,7 +289,6 @@ class EngiMaterial:
         json += '\t\t\t"%s": {\n' % m.name
         amb = [0, 0, 0]
         d = { 'r': 1.0, 'g': 1.0, 'b': 1.0 }
-        di = 1.0
         alpha = 1.0
         
         if m.alpha:
@@ -315,12 +296,11 @@ class EngiMaterial:
             
         if m.diffuse_color:
             d = m.diffuse_color
-            di = m.diffuse_intensity
                 
         amb = m.ambient * self.ctx.world_amb
         
         json += '\t\t\t\t"ambient_color": [%s, %s, %s, 1],\n' % (cnr(amb[0]), cnr(amb[1]), cnr(amb[2]))
-        json += '\t\t\t\t"diffuse_color": [%s, %s, %s, %s],\n' % (cnr(d.r * di), cnr(d.g * di), cnr(d.b * di), cnr(alpha))
+        json += '\t\t\t\t"diffuse_color": [%s, %s, %s, %s],\n' % (cnr(d.r), cnr(d.g), cnr(d.b), cnr(alpha))
         json += '\t\t\t\t"double_sided": %s' % (str(self.mesh.show_double_sided).lower())
         uvi = 0
         
@@ -425,25 +405,16 @@ class EngiBatch:
         json += '\t\t\t\t\t"material": "%s"' % self.material.material.name
         
         ident = ',\n\t\t\t\t\t'
-        vlo, vrng = get_stream_bounds(self.verts)
-        json += '%s"vertices": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_v%d' % (self.ctx.file_base_name, self.m_name, self.index), self.verts, vlo, vrng))
-        json += '%s"v_lo": "%f"' % (ident, vlo)
-        json += '%s"v_rng": "%f"' % (ident, vrng)
+        json += '%s"vertices": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_v%d' % (self.ctx.file_base_name, self.m_name, self.index), self.verts))
         
         if export_normals:
-            nlo, nrng = get_stream_bounds(self.norms)
-            json += '%s"normals": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_n%d' % (self.ctx.file_base_name, self.m_name, self.index), self.norms, nlo, nrng))
-            json += '%s"n_lo": "%f"' % (ident, nlo)
-            json += '%s"n_rng": "%f"' % (ident, nrng)
+            json += '%s"normals": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_n%d' % (self.ctx.file_base_name, self.m_name, self.index), self.norms))
             
         for idx in range(4):
             uv = self.uvs[idx]
             
             if len(uv) > 0:
-                uvlo, uvrng = get_stream_bounds(uv)
-                json += '%s"uv%d": "%s"' % (ident, idx, stream_to_image(self.ctx, '%s_%s_t%d%d' % (self.ctx.file_base_name, self.m_name, idx, self.index), uv, uvlo, uvrng))
-                json += '%s"uv%d_lo": "%f"' % (ident, idx, uvlo)
-                json += '%s"uv%d_rng": "%f"' % (ident, idx, uvrng)
+                json += '%s"uv%d": "%s"' % (ident, idx, stream_to_image(self.ctx, '%s_%s_t%d%d' % (self.ctx.file_base_name, self.m_name, idx, self.index), uv))
                 
         json += '\n\t\t\t\t}'
         return json
