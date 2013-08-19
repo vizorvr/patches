@@ -107,7 +107,8 @@ E2.p.prototype.generate_mesh = function()
 	(this.mesh.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL)).bind_data(norms);
 	(this.mesh.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0)).bind_data(uvs);
 	(this.mesh.index_buffer = new IndexBuffer(gl)).bind_data(indices);
-
+	this.mesh.generate_shader();
+	
 	this.dirty = false;
 };
 

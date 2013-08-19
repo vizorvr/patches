@@ -60,5 +60,6 @@ E2.p.prototype.state_changed = function(ui)
 		var indices = this.mesh.index_buffer = new IndexBuffer(gl);
 		
 		indices.bind_data([ 3, 1, 0, 3, 2, 0 ]);
+		this.mesh.generate_shader();
 	}
 };

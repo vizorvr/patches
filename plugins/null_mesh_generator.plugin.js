@@ -56,6 +56,7 @@ E2.p.prototype.generate_mesh = function()
 		0.0, 0.0, 1.0, 1.0
 	]);
 
+	this.mesh.generate_shader();
 	this.dirty = false;
 };
 

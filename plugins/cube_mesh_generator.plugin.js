@@ -156,5 +156,7 @@ E2.p.prototype.state_changed = function(ui)
 			16, 17, 18,     16, 18, 19,   // right
 			20, 21, 22,     20, 22, 23    // left
 		]);
+		
+		this.mesh.generate_shader();
 	}
 };

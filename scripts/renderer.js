@@ -846,6 +846,11 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 	}
 }
 
+Mesh.prototype.generate_shader = function()
+{
+	this.shader = ComposeShader(E2.app.player.core.renderer.shader_cache, this, this.material, null, null, null, null);
+}
+
 Mesh.prototype.render = function(camera, transform, shader, material)
 {
 	var verts = this.vertex_buffers['VERTEX'];

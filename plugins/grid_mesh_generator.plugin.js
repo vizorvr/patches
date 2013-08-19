@@ -86,6 +86,7 @@ E2.p.prototype.generate_mesh = function()
 	}
 
 	(this.mesh.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX)).bind_data(v_data);
+	this.mesh.generate_shader();
 	this.dirty = false;
 };
 
