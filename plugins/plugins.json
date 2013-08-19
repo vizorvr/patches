@@ -85,6 +85,7 @@
 	"Modulators/Convert/Bool to Float": "convert_bool_float_modulator",
 	"Modulators/Convert/Oscilator to unit": "convert_oscilator_unit_modulator",
 	"Modulators/Convert/Vector to XYZ": "convert_vector_xyz_modulator",
+	"Modulators/Convert/Vector to screenspace": "vector_to_screenspace",
 	"Modulators/Convert/XYZ to Vector": "vector",
 	"Modulators/Delegates/Get length": "delegate_get_length_modulator",
 	"Modulators/Delegates/Sample": "delegate_sample_modulator",
