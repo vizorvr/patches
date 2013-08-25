@@ -69,6 +69,7 @@
 .icon-from_mesh_shader { background: url('shader.png'); }
 .icon-from_mesh_custom_shader { background: url('shader.png'); }
 .icon-graph { background: url('graph.png'); }
+.icon-grid_mesh_generator { background: url('grid-mesh-generator.png'); }
 .icon-if_modulator { background: url('if-modulator.png'); }
 .icon-if_else_modulator { background: url('if-else-modulator.png'); }
 .icon-input_proxy { background: url('input-proxy.png'); }
@@ -107,6 +108,8 @@
 .icon-material_z_buffer_modulator { background: url('material-z-buffer-modulator.png'); }
 .icon-matrix_display { background: url('matrix-display.png'); }
 .icon-max_modulator { background: url('max-modulator.png'); }
+.icon-mesh_primtype_generator { background: url('mesh-primtype-generator.png'); }
+.icon-mesh_primtype_modulator { background: url('mesh-primtype-generator.png'); }
 .icon-mesh_renderer_emitter { background: url('mesh-renderer-emitter.png'); }
 .icon-min_modulator { background: url('min-modulator.png'); }
 .icon-modulate_modulator { background: url('modulate-modulator.png'); }
@@ -119,6 +122,7 @@
 .icon-negate_modulator { background: url('negate-modulator.png'); }
 .icon-normal_as_color_shader { background: url('shader.png'); }
 .icon-not_modulator { background: url('not-modulator.png'); }
+.icon-null_mesh_generator { background: url('null-mesh-generator.png'); }
 .icon-or_modulator { background: url('or-modulator.png'); }
 .icon-orthographic_camera { background: url('orthographic-camera.png'); }
 .icon-output_proxy { background: url('output-proxy.png'); }
@@ -180,6 +184,7 @@
 .icon-vector_normalize { background: url('vector-normalize.png'); }
 .icon-vector { background: url('convert-generic.png'); }
 .icon-vector_scale { background: url('vector-scale.png'); }
+.icon-vector_to_screenspace { background: url('vector-to-screenspace.png'); }
 .icon-vector_transform { background: url('vector-transform.png'); }
 .icon-video_get_current_time_modulator { background: url('clock-generator.png'); }
 .icon-video_get_duration_modulator { background: url('audio-get-duration-modulator.png'); }
