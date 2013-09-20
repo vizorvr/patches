@@ -176,6 +176,7 @@
 	"State/Global write": "register_global_write",
 	"Structure/Input proxy": "input_proxy",
 	"Structure/Graph": "graph",
+	"Structure/Loop": "loop",
 	"Structure/Output proxy": "output_proxy",
 	"Annotation": "annotation"
 }

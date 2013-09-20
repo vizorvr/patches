@@ -38,6 +38,7 @@ E2.p.prototype.renamed = function()
 
 E2.p.prototype.register_dt_changed = function(dt)
 {
+	this.dt = dt;
 	this.node.change_slot_datatype(E2.slot_type.output, this.state.slot_id, dt);
 };
 
@@ -52,7 +53,7 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 {
 	var reg_conn_count = this.regs.connection_changed(this.node.title, on);
 	
-	if(on && reg_conn_count === 1)
+	if(on && reg_conn_count === 1 && this.dt === this.core.datatypes.ANY)
 		this.regs.set_datatype(this.node.title, conn.dst_slot.dt);
 };
 
@@ -67,6 +68,8 @@ E2.p.prototype.target_reg = function(id)
 	
 	var rdt = this.regs.registers[id].dt;
 	
+	this.dt = rdt;
+
 	if(rdt !== this.core.datatypes.ANY)
 	{
 		this.register_dt_changed(rdt);

@@ -1497,11 +1497,11 @@ Graph.prototype.update = function(delta_t)
 	{
 		var c = children[i];
 		
-		if(!c.plugin.texture)
+		if(!c.plugin.texture) // TODO: Huh? Comment this.
 			dirty = c.update_recursive(this.connections) || dirty;
 	}
 
-	if(this === E2.app.player.core.active_graph)
+	if(dirty && this === E2.app.player.core.active_graph)
 		E2.app.player.core.active_graph_dirty = dirty;
 	
 	for(var i = 0, len = nodes.length; i < len; i++)
@@ -2165,6 +2165,8 @@ function Application() {
 				}
 			});
 		}
+		else if(id === 'loop')
+			createPlugin('Loop');
 		else
 			createPlugin(null);
 	};

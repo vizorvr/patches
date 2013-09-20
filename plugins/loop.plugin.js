@@ -1,33 +1,29 @@
-E2.p = E2.plugins["graph"] = function(core, node)
+E2.p = E2.plugins["loop"] = function(core, node)
 {
-	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and the encapsulated logic of which can be optinally rendered to a <b>texture</b> instead of the framebuffer.';
+	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and run the enclosed logic once per loop iteration. The loop counter is made available to enclosing logic as a local register with the name <b>index_id<\/b>.';
 	
 	this.input_slots = [
-		{ name: 'enabled', dt: core.datatypes.BOOL, desc: 'En- or disable the processing of the nested graph logic.', def: 'True' }
+		{ name: 'index id', dt: core.datatypes.TEXT, desc: 'The index register name.', def: 'cnt' },
+		{ name: 'first', dt: core.datatypes.FLOAT, desc: 'The start index.', def: '0' },
+		{ name: 'last', dt: core.datatypes.FLOAT, desc: 'The end index.', def: '0' },
+		{ name: 'step', dt: core.datatypes.FLOAT, desc: 'Loop index increment.', def: '1' }
 	];
 	
 	this.output_slots = [
-		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'When connected, all enclosed plugins will render to this texture instead of the framebuffer. Also, when connected two dynamic input slots will appear that allows control of the texture resolution.', def: 'Render to framebuffer' }
 	];
 	
-	this.state = { enabled: true, input_sids: {}, output_sids: {} };
+	this.state = { input_sids: {}, output_sids: {} };
 		
 	this.gl = core.renderer.context;
 	this.core = core;
 	this.input_nodes = {};
 	this.output_nodes = {};
-	this.is_reset = true;
 	this.parent_node = node; // For reverse lookup in the core.
-	this.framebuffer = null;
-	this.texture = null;
-	this.renderbuffer = null;
 	this.e2_is_graph = true; // Constant. To get rid of string compares from the core.
 };
 
 E2.p.prototype.reset = function()
 {
-	this.state.enabled = true;
-	
 	if(this.graph)
 		this.graph.reset();
 };
@@ -52,7 +48,7 @@ E2.p.prototype.stop = function()
 
 E2.p.prototype.create_ui = function()
 {
-	var inp = $('<input id="state" type="button" value="Edit" title="Open this graph for editing." />');
+	var inp = $('<input id="state" type="button" value="Edit" title="Open this loop for editing." />');
 	
 	inp.click(function(self) { return function(e) 
 	{
@@ -149,86 +145,8 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 			}
 		}
 	}
-	else if(slot.type === E2.slot_type.output)
-	{
-		this.set_render_target_state(on);
-	}
 };
 
-E2.p.prototype.set_render_target_state = function(on)
-{
-	var gl = this.gl;
-	
-	if(on)
-	{
-		this.framebuffer = gl.createFramebuffer();
-		this.framebuffer.width = 512;
-		this.framebuffer.height = 512;
-
-		gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
-
-		var t = gl.createTexture();
-
-		gl.bindTexture(gl.TEXTURE_2D, t);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.framebuffer.width, this.framebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-
-		this.renderbuffer = gl.createRenderbuffer();
-		
-		gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderbuffer);
-		gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.framebuffer.width, this.framebuffer.height);
-
-		gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
-		gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.renderbuffer);
-
-		gl.bindTexture(gl.TEXTURE_2D, null);
-		gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-		
-		this.texture = new Texture(gl, t);
-		this.texture.width = this.framebuffer.width;
-		this.texture.height = this.framebuffer.height;
-		this.texture.framebuffer = this.framebuffer;
-	}
-	else
-	{
-		// Check whether there remains any residual connected consumers
-		// of our render target texture.
-		var in_use = false;
-		var outputs = this.parent_node.outputs;
-		
-		for(var i = 0, len = outputs.length; i < len; i++)
-		{
-			var ss = outputs[i].src_slot;
-			
-			if(ss.uid === undefined && ss.type === E2.slot_type.output)
-			{
-				in_use = true;
-				break;
-			}
-		}
-		
-		if(!in_use)
-		{
-			if(this.framebuffer)
-				gl.deleteFramebuffer(this.framebuffer);
-			
-			if(this.renderbuffer)
-				gl.deleteRenderbuffer(this.renderbuffer);
-				
-			if(this.texture)
-				this.texture.drop();
-			
-			this.framebuffer = null;
-			this.renderbuffer = null;
-			this.texture = null;
-		}
-	}
-};
-	
 E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_slot)
 {
 	var self = this;
@@ -368,36 +286,33 @@ E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_s
 	}
 };
 
+E2.p.prototype.register_dt_changed = function(dt)
+{
+};
+
 E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.uid === undefined)
 	{
 		if(slot.index === 0)
 		{
-			this.state.enabled = data;
-		
-			if(!data)
+			if(this.index_id !== data)
 			{
-				if(this.graph && !this.is_reset)
-				{
-					var core = this.core;
-					
-					this.is_reset = true;
-					
-					// If we're the active graph and the editor is active,
-					// update the canvas to reflect potentially changed 
-					// connection state.
-					if(this.graph === core.active_graph && core.app)
-						core.app.updateCanvas(false);
-				}
+				this.graph.registers.unlock(this, this.index_id);
+				this.graph.registers.lock(this, data);
+				this.index_id = data;
 			}
-			else
-				this.is_reset = false;
 		}
+		else if(slot.index === 1)
+			this.first = Math.floor(data);
+		else if(slot.index === 2)
+			this.last = Math.floor(data);
+		else
+			this.step = Math.floor(data);
 	}
 	else
 	{
-		this.input_nodes[slot.uid].plugin.input_updated(data);
+		this.input_nodes[slot.uid].plugin.input_updated(data)
 	}
 };
 
@@ -405,22 +320,13 @@ E2.p.prototype.update_state = function()
 {
 	this.updated = false;
 	
-	if(this.graph && this.state.enabled)
+	if(this.graph)
 	{
-		var old_fb = null;
-		
-		if(this.framebuffer)
+		for(var cnt = this.first; cnt < this.last; cnt += this.step)
 		{
-			var gl = this.gl;
-			
-			this.core.renderer.push_framebuffer(this.framebuffer, this.framebuffer.width, this.framebuffer.height);
-			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+			this.graph.registers.write(this.index_id, cnt);
+			this.graph.update();
 		}
-		
-		this.graph.update();
-
-		if(this.framebuffer)
-			this.core.renderer.pop_framebuffer();
 	}
 };
 
@@ -532,16 +438,14 @@ E2.p.prototype.state_changed = function(ui)
 	for(var uid in this.state.output_sids)
 		this.output_nodes[this.state.output_sids[uid]] = find_node(this.graph.nodes, parseInt(uid));
 		
-	var conns = node.outputs;
+	this.index_id = 'cnt';
+	this.first = 0;
+	this.last = 0;
+	this.step = 1;
 	
-	for(var i = 0, len = conns.length; i < len; i++)
-	{
-		var c = conns[i];
-		
-		if(c.src_node === node && c.src_slot.uid === undefined && c.src_slot.index === 0)
-		{
-			this.set_render_target_state(true);
-			break; // Early out and don't double init if connected to multiple inputs.
-		}
-	}
+	this.graph.registers.lock(this, this.index_id);
+	var rdt = this.graph.registers.registers[this.index_id].dt;
+	
+	if(rdt === this.core.datatypes.ANY)
+		this.graph.registers.set_datatype(this.index_id, core.datatypes.FLOAT);
 };
