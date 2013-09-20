@@ -993,15 +993,16 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		vs_src.push('uniform mat4 v_mat;');
 		vs_src.push('uniform mat4 p_mat;');
 		vs_src.push('varying vec4 f_col;');
-		vs_src.push('varying vec3 eye_pos;');
-		vs_src.push(uniforms_vs);
+		
+		if(uniforms_vs)
+			vs_src.push(uniforms_vs);
 	
 		ps_src.push('precision lowp float;');
 		ps_src.push('uniform vec4 a_col;');
-		ps_src.push('uniform mat4 v_mat;');
 		ps_src.push('varying vec4 f_col;');
-		ps_src.push('varying vec3 eye_pos;');
-		ps_src.push(uniforms_ps);
+		
+		if(uniforms_ps)
+			ps_src.push(uniforms_ps);
 	
 		if(streams[v_types.COLOR])
 			vs_src.push('attribute vec4 v_col;');
@@ -1042,6 +1043,9 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 			if(has_lights)
 			{
+				vs_src.push('varying vec3 eye_pos;');
+				ps_src.push('uniform mat4 v_mat;');
+				ps_src.push('varying vec3 eye_pos;');
 				ps_src.push('uniform vec4 s_col;');
 				ps_src.push('uniform float shinyness;');
 			}
@@ -1072,6 +1076,9 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			vs_dp('void main(void) {');
 			vs_dp('    vec4 tp = m_mat * vec4(v_pos, 1.0);\n');
 
+			vs_dp('    tp = v_mat * tp;');
+			vs_dp('    gl_Position = p_mat * tp;');
+
 			if(has_lights)
 			{
 				for(var i = 0; i < 8; i++)
@@ -1088,12 +1095,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 							vs_dp('    ' + lid + '_v2l = ' + lid + '_pos - tp.xyz;');
 					}
 				}
+				
+				vs_dp('    eye_pos = -normalize(tp.xyz);');
 			}
 			
-			vs_dp('    tp = v_mat * tp;');
-			vs_dp('    eye_pos = -normalize(tp.xyz);');
-			vs_dp('    gl_Position = p_mat * tp;');
-
 			if(streams[v_types.COLOR])
 				vs_dp('    f_col = d_col * v_col;');
 			else
@@ -1155,8 +1160,6 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(!has_lights)
 				ps_dp('    fc.rgb = f_col.rgb;');
 			
-			var has_amb = false;
-			
 			if(streams[v_types.UV0])
 			{
 				if(d_tex)
@@ -1187,6 +1190,13 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		var vs = new Shader(gl, gl.VERTEX_SHADER, shader.vs_src);
 		var ps = new Shader(gl, gl.FRAGMENT_SHADER, shader.ps_src);
 
+		var resolve_attr = function(id)
+		{
+			var idx = gl.getAttribLocation(prog, id);
+			
+			return idx < 0 ? undefined : idx;
+		};
+		
 		if(vs.compiled && ps.compiled)
 		{
 			shader.attach(vs);
@@ -1195,22 +1205,22 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		}
 
 		if(streams[v_types.VERTEX])
-			shader.v_pos = gl.getAttribLocation(prog, "v_pos");
+			shader.v_pos = resolve_attr('v_pos');
 		
 		if(streams[v_types.NORMAL])
-			shader.v_norm = gl.getAttribLocation(prog, "v_norm");
+			shader.v_norm = resolve_attr('v_norm');
 		
-		shader.m_mat = gl.getUniformLocation(prog, "m_mat");
-		shader.v_mat = gl.getUniformLocation(prog, "v_mat");
-		shader.p_mat = gl.getUniformLocation(prog, "p_mat");
-		shader.a_col = gl.getUniformLocation(prog, "a_col");
-		shader.d_col = gl.getUniformLocation(prog, "d_col");
+		shader.m_mat = gl.getUniformLocation(prog, 'm_mat');
+		shader.v_mat = gl.getUniformLocation(prog, 'v_mat');
+		shader.p_mat = gl.getUniformLocation(prog, 'p_mat');
+		shader.a_col = gl.getUniformLocation(prog, 'a_col');
+		shader.d_col = gl.getUniformLocation(prog, 'd_col');
 
 		if(has_lights)
 		{
-			shader.s_col = gl.getUniformLocation(prog, "s_col");
-			shader.shinyness = gl.getUniformLocation(prog, "shinyness");
-			shader.n_mat = gl.getUniformLocation(prog, "n_mat");
+			shader.s_col = gl.getUniformLocation(prog, 's_col');
+			shader.shinyness = gl.getUniformLocation(prog, 'shinyness');
+			shader.n_mat = gl.getUniformLocation(prog, 'n_mat');
 	
 			for(var i = 0; i < 8; i++)
 			{
@@ -1232,29 +1242,29 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		}
 
 		if(streams[v_types.COLOR])
-			shader.v_col = gl.getAttribLocation(prog, "v_col");
-
+			shader.v_col = resolve_attr('v_col');
+		
 		if(streams[v_types.UV0])
 		{
-			shader.v_uv0 = gl.getAttribLocation(prog, "v_uv0");
+			shader.v_uv0 = resolve_attr('v_uv0');
 			
 			if(d_tex)
-				shader.d_tex = gl.getUniformLocation(prog, "d_tex");
+				shader.d_tex = gl.getUniformLocation(prog, 'd_tex');
 		
 			if(s_tex)
-				shader.s_tex = gl.getUniformLocation(prog, "s_tex");
+				shader.s_tex = gl.getUniformLocation(prog, 's_tex');
 
 			if(n_tex)
-				shader.n_tex = gl.getUniformLocation(prog, "n_tex");
+				shader.n_tex = gl.getUniformLocation(prog, 'n_tex');
 
 			if(e_tex)
-				shader.e_tex = gl.getUniformLocation(prog, "e_tex");
+				shader.e_tex = gl.getUniformLocation(prog, 'e_tex');
 		}
 	
 		shader.bind_array = function(type, data, item_size)
 		{
 			var types = VertexBuffer.vertex_type;
-			var attr = -1;
+			var attr = undefined;
 		
 			if(type === types.VERTEX)
 				attr = this.v_pos;
@@ -1265,9 +1275,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			else if(type === types.COLOR)
 				attr = this.v_col;
 		
-			// This can happen if the symbol is declared but unused. Some
-			// drivers optimize the shaders and eliminate dead code.
-			if(attr === -1)
+			if(attr === undefined)
 				return;
 		
 			gl.bindBuffer(gl.ARRAY_BUFFER, data);
