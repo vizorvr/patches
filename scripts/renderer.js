@@ -102,10 +102,15 @@ Texture.prototype.enable = function(stage)
 {
 	var gl = this.gl;
 	
-	gl.activeTexture(stage || gl.TEXTURE0);
-	gl.bindTexture(gl.TEXTURE_2D, this.texture);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.min_filter);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.mag_filter);
+	if(gl.bound_tex_stage !== stage || gl.bound_tex !== this.texture) // Don't rebind
+	{
+		gl.activeTexture(stage || gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, this.texture);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.min_filter);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.mag_filter);
+		gl.bound_tex_stage = stage;
+		gl.bound_tex = this.texture;
+	}
 };
 
 Texture.prototype.disable = function()
@@ -256,6 +261,10 @@ Renderer.prototype.begin_frame = function()
 		gl.clearDepth(1.0);
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
+		gl.bound_tex = null;
+		gl.bound_tex_stage = null;
+		gl.bound_shader = null;
+		
     		// this.update_viewport();
     		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	}	
@@ -860,18 +869,24 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 	if(!verts || !shader)
 		return;
 	
-	shader.enable();
+	var unbound = gl.bound_shader !== shader;
 	
-	for(var v_type in VertexBuffer.vertex_type)
+	if(unbound)
 	{
-		var vb = this.vertex_buffers[v_type];
+		shader.enable();
+	
+		for(var v_type in VertexBuffer.vertex_type)
+		{
+			var vb = this.vertex_buffers[v_type];
 		
-		if(vb)
-			vb.bind_to_shader(shader);
-	}
+			if(vb)
+				vb.bind_to_shader(shader);
+		}
 
-	shader.bind_camera(camera);
-	shader.apply_uniforms(this, material);
+		shader.bind_camera(camera);
+		shader.apply_uniforms(this, material);
+		gl.bound_shader = shader;
+	}
 	
 	if(!this.instances)
 	{
@@ -883,7 +898,9 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 		}
 		else
 		{
-			this.index_buffer.enable();
+			if(unbound)
+				this.index_buffer.enable();
+			
 			gl.drawElements(this.prim_type, this.index_buffer.count, gl.UNSIGNED_SHORT, 0);
 		}
 	}
