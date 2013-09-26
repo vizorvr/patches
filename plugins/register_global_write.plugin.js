@@ -7,14 +7,14 @@ E2.p = E2.plugins["register_global_write"] = function(core, node)
 	
 	this.state = 
 	{
-		slot_id: node.add_slot(E2.slot_type.input, { name: 'value', dt: core.datatypes.ANY, desc: '' })
+		slot_id: null
 	};
 	
 	this.core = core;
 	this.node = node;
 	
 	if(!node.title)
-		this.old_title = node.title = 'reg_' + node.uid;
+		this.old_title = node.title = 'reg_' + (core.registers.count() + 1);
 	else
 		this.old_title = node.title;
 };
@@ -69,6 +69,9 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
+		if(this.state.slot_id === null)
+			this.state.slot_id = this.node.add_slot(E2.slot_type.input, { name: 'value', dt: this.core.datatypes.ANY, desc: '' });
+			
 		this.regs = this.core.registers;
 		this.target_reg(this.node.title);
 	}
