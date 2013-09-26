@@ -18,6 +18,7 @@ E2.p = E2.plugins["graph"] = function(core, node)
 	this.output_nodes = {};
 	this.is_reset = true;
 	this.parent_node = node; // For reverse lookup in the core.
+	this.updated_sids = [];
 	this.framebuffer = null;
 	this.texture = null;
 	this.renderbuffer = null;
@@ -404,6 +405,7 @@ E2.p.prototype.update_input = function(slot, data)
 E2.p.prototype.update_state = function()
 {
 	this.updated = false;
+	this.updated_sids.length = 0;
 	
 	if(this.graph && this.state.enabled)
 	{
@@ -435,7 +437,7 @@ E2.p.prototype.update_output = function(slot)
 
 E2.p.prototype.query_output = function(slot)
 {
-	return slot.uid === undefined; // TODO: Make this a useful flter on connection activity.
+	return (slot.uid === undefined) || this.updated_sids.indexOf(slot.uid) > -1;
 };
 
 E2.p.prototype.destroy_slot = function(type, nuid)
