@@ -263,6 +263,7 @@ Renderer.prototype.begin_frame = function()
 		gl.cullFace(gl.BACK);
 		gl.bound_tex = null;
 		gl.bound_tex_stage = null;
+		gl.bound_mesh = null;
 		gl.bound_shader = null;
 		
     		// this.update_viewport();
@@ -869,7 +870,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 	if(!verts || !shader)
 		return;
 	
-	var unbound = gl.bound_shader !== shader;
+	var unbound = gl.bound_mesh !== this || gl.bound_shader !== shader;
 	
 	if(unbound)
 	{
@@ -885,6 +886,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 
 		shader.bind_camera(camera);
 		shader.apply_uniforms(this, material);
+		gl.bound_mesh = this;
 		gl.bound_shader = shader;
 	}
 	
