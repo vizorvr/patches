@@ -1393,6 +1393,19 @@ Registers.prototype.write = function(name, value)
 	}
 };
 
+Registers.prototype.count = function()
+{
+	var size = 0;
+	
+	for(var key in this.registers)
+	{
+		if(!this.registers.hasOwnProperty(key))
+			size++;
+	}
+	
+	return size;
+};
+
 Registers.prototype.serialise = function(d)
 {
 	var regs = this.registers;
