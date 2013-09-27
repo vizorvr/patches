@@ -86,7 +86,6 @@ E2.p.prototype.state_changed = function(ui)
 		if(this.state.slot_id === null)
 			this.state.slot_id = n.add_slot(E2.slot_type.output, { name: 'value', dt: this.core.datatypes.ANY, desc: '' });
 		
-		debugger;
 		this.regs = n.parent_graph.registers;
 		this.target_reg(n.title);
 	}
