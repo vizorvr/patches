@@ -1,4 +1,4 @@
-E2.p = E2.plugins["delegate_loop_generator"] = function(core, node)
+E2.p = E2.plugins["delegate_sequence_generator"] = function(core, node)
 {
 	this.desc = 'Emits a delegate that represents the list of indices in a sequence [<b>lo</b>...<b>hi</b>] in increments of <b>step</b>. These can be iterated over to form loops or to generate uniform integer sequences for other purposes.';
 	
