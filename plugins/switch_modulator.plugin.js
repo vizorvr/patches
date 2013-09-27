@@ -1,6 +1,6 @@
 E2.p = E2.plugins["switch_modulator"] = function(core, node)
 {
-	this.desc = 'Given an <b>index<\/>, emit the supplied <b>true<\/b> value on the output slot matching the index and the <b>false<\/> value on all others. If the index is invalid, the <b>false<\/> value is emitted on all outputs.';
+	this.desc = 'Given an <b>index</b>, emit the supplied <b>true</b> value on the output slot matching the index and the <b>false</b> value on all others. If the index is invalid, the <b>false</b> value is emitted on all outputs.';
 	
 	this.input_slots = [ 
 		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'The selected index.', def: '-1' }
@@ -10,14 +10,14 @@ E2.p = E2.plugins["switch_modulator"] = function(core, node)
 	];
 	
 	this.state = {
-		slot_uids: [],
-		true_uid: node.add_slot(E2.slot_type.input, { name: 'true', dt: core.datatypes.ANY }),
-		false_uid: node.add_slot(E2.slot_type.input, { name: 'true', dt: core.datatypes.ANY }),
-		attach_count: 0
+		slot_uids: []
 	};
 	
+	this.core = core;
 	this.node = node;
 	this.dt = core.datatypes.ANY;
+	this.slot_t_id = null;
+	this.slot_f_id = null;
 };
 
 E2.p.prototype.create_ui = function()
@@ -56,15 +56,9 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
 {
-	if((slot.index > 0 && slot.type === E2.slot_type.input) || slot.type === E2.slot_type.output)
+	if(slot.uid !== undefined) // Custom slot?
 	{
-		if(on)
-		{
-			this.dt = slot.dt;
-			
-			if(
-			this.state.attach_count++;
-		}
+		
 	}
 };
 
@@ -83,12 +77,16 @@ E2.p.prototype.update_output = function(slot)
 	return slot.index === this.index ? this.true_value : this.false_value;
 };
 
-E2.p.prototype.state_updated = function(ui)
+E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
 		this.index = -1;
-		this.true_value = null;
-		this.false_value = null;
+		
+		if(this.slot_t_id === null)
+			this.slot_t_id = this.node.add_slot(E2.slot_type.input, { name: 'true', dt: this.core.datatypes.ANY });
+			
+		if(this.slot_f_id === null)
+			this.slot_f_id = this.node.add_slot(E2.slot_type.input, { name: 'false', dt: this.core.datatypes.ANY });
 	}
 };
