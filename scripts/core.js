@@ -2941,6 +2941,10 @@ function Application() {
 		
 		self.in_drag = false;
 		self.updateCanvas(true);
+		
+		// Clear focus to prevent problems with the user dragging over text areas (bringing them in focus) during selection.
+		if(document.activeElement)
+    			document.activeElement.blur();
 	};
 
 	this.onMouseMoved = function(e)
@@ -3083,8 +3087,8 @@ function Application() {
 		}
 			
 		self.clipboard = JSON.stringify(d);
-		msg('Copy event. Buffer:');
-		msg(self.clipboard);
+		msg('Copy.');
+		// msg(self.clipboard);
 	};
 	
 	this.onCopy = function(e)
@@ -3109,7 +3113,7 @@ function Application() {
 		if(e.target.id === 'persist')
 			return;
 
-		msg('Cut event');
+		msg('Cut.');
 		
 		if(self.selection_nodes.length > 0)
 		{
@@ -3276,7 +3280,7 @@ function Application() {
 		if(d.conns.length)
 			self.updateCanvas(false);
 		
-		msg('Paste event');
+		msg('Paste.');
 	};
 
 	this.onWindowResize = function()
@@ -3343,28 +3347,25 @@ function Application() {
 		}
 		else if(e.keyCode === 32)
 		{
-			var pd = false;
+			debugger;
+			
+			if(e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT')
+				return;
 			
 			if(self.player.current_state === self.player.state.PLAYING)
 			{
-				pd = self.shift_pressed || self.ctrl_pressed;
-				
-				if(self.shift_pressed)
+				if(self.ctrl_pressed)
 					self.onPauseClicked();
-				else if(self.ctrl_pressed)
+				else
 					self.onStopClicked();
 			}
 			else
 			{
-				if(e.target.type === 'textarea' || e.target.type === 'input')
-					return;
-
 				self.onPlayClicked();
-				pd = true;
 			}
 			
-			if(pd)
-				e.preventDefault();
+			e.preventDefault();
+			return false;
 		}
 		else if(self.ctrl_pressed)
 		{
