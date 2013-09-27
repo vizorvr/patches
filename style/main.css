@@ -426,6 +426,8 @@ optgroup
 .pui_col
 {
 	padding: 3px;
+	padding-left: 8px;
+	padding-right: 8px;
 }
 
 li.context-menu-item span
