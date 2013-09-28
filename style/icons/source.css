@@ -54,6 +54,7 @@
 .icon-delegate_json_array_generator { background: url('delegate-json-array-generator.png'); }
 .icon-delegate_loop_generator { background: url('rotation-xyz-matrix.png'); }
 .icon-delegate_sample_modulator { background: url('delegate-sample-modulator.png'); }
+.icon-delegate_sequence_generator { background: url('delegate-sequence-generator.png'); }
 .icon-delta_modulator { background: url('delta-modulator.png'); }
 .icon-delta_t_generator { background: url('delta-t-generator.png'); } 	
 .icon-depth_func_generator { background: url('material-z-buffer-modulator.png'); } 	
@@ -70,6 +71,7 @@
 .icon-grid_mesh_generator { background: url('grid-mesh-generator.png'); }
 .icon-if_modulator { background: url('if-modulator.png'); }
 .icon-if_else_modulator { background: url('if-else-modulator.png'); }
+.icon-initialise_generator { background: url('initialise-generator.png'); }
 .icon-input_proxy { background: url('input-proxy.png'); }
 .icon-instance_array_modulator { background: url('instance-array-modulator.png'); }
 .icon-instance_clear_transform_modulator { background: url('instance-clear-transform-modulator.png'); }
@@ -158,6 +160,7 @@
 .icon-stop_emitter { background: url('stop-emitter.png'); }
 .icon-string_concatenate_modulator { background: url('string-concatenate-modulator.png'); }
 .icon-subtract_modulator { background: url('subtract-modulator.png'); }
+.icon-switch_modulator { background: url('switch-modulator.png'); }
 .icon-tan_modulator { background: url('tan-modulator.png'); }
 .icon-text_display { background: url('text-display.png'); }
 .icon-texture_diffuse_shader { background: url('shader.png'); }
