@@ -3132,6 +3132,7 @@ function Application() {
 		if(self.clipboard === null)
 			return;
 		
+		msg('Paste.');
 		self.clearSelection();
 				
 		var d = JSON.parse(self.clipboard);
@@ -3279,8 +3280,6 @@ function Application() {
 		
 		if(d.conns.length)
 			self.updateCanvas(false);
-		
-		msg('Paste.');
 	};
 
 	this.onWindowResize = function()
@@ -3300,7 +3299,7 @@ function Application() {
 		var col2_h = (win_height - (c_height + cont_h)) - 32;
 		var tabs_h = (win_height - (cont_h + E2.dom.webgl_canvas.height())) - 32;
 		
-		E2.dom.breadcrumb.css({ 'position': 'absolute', 'left': col1_x + 8, 'top': cont_h +16 });
+		E2.dom.breadcrumb.css({ 'position': 'absolute', 'left': col1_x + 8, 'top': cont_h + 16 });
 		E2.dom.canvas_parent.css({ 'position': 'absolute', 'left': col1_x });
 		E2.dom.webgl_canvas.css({ 'left':  col2_x });
 		E2.dom.tabs.css({ 'left':  col2_x, 'height': tabs_h });
@@ -3347,8 +3346,6 @@ function Application() {
 		}
 		else if(e.keyCode === 32)
 		{
-			debugger;
-			
 			if(e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT')
 				return;
 			
