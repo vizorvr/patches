@@ -5,11 +5,47 @@ import sys
 import codecs
 import json
 import fnmatch
+import shlex
 
 ANSI_BLUE = '\033[94m'
 ANSI_GREEN = '\033[92m'
 ANSI_YELLOW = '\033[93m'
+ANSI_RED = '\033[91m'
+ANSI_PROMPT = '\033[95m'
 ANSI_ENDC = '\033[0m'
+
+help_txt = """
+The following commands are available:
+-------------------------------------
+
+* Where """ + ANSI_GREEN + """<sel>""" + ANSI_ENDC + """ is specified, this means: wildcard pattern
+or id <n>, where <n> is the uid of the desired object.
+
+* Where """ + ANSI_GREEN + """-gnc""" + ANSI_ENDC + """ flags can be supplied these limit the operation 
+to (g)raphs, (n)odes or (c)onnections. Any combination can be
+specified, ex.: -gc, -gn and so on. The default is to operatate
+on all three.
+
+-------------------------------------
+
+""" + ANSI_GREEN + """cd <sel | ..>""" + ANSI_ENDC + """:
+Moves up to the parent graph or into the first child graph
+matching the name pattern or uid supplied.
+
+""" + ANSI_GREEN + """ls [-gnc] [sel]""" + ANSI_ENDC + """:
+List the contents of the current graph. If no selector is given,
+everything is listed.
+
+""" + ANSI_GREEN + """rm [-gnc] <sel>""" + ANSI_ENDC + """:
+Removes the specified items from the current graph. Will display
+the pending set and ask for confirmation before proceeding.
+
+""" + ANSI_GREEN + """(d)ump [-gnc] [sel]""" + ANSI_ENDC + """:
+Dumps the json of the matching objects.
+
+""" + ANSI_GREEN + """(r)efac [-gnc] <property name> <old value> <new value> <sel>""" + ANSI_ENDC + """:
+Dumps the json of the matching objects.
+"""
 
 if len(sys.argv) < 2:
 	sys.exit('Usage: edit-graph.py <graph.json>')
@@ -54,7 +90,7 @@ class Graph:
 		self.name = name
 		self.parent_graph = parent_graph
 		self.parent_node = parent_node
-		self.uid = data['uid']
+		self.uid = -1
 		self.nodes = []
 		self.all_nodes = []
 		self.conns = []
@@ -62,32 +98,89 @@ class Graph:
 		self.data = data
 		self.conn_index = 0
 		
-		for n in data['nodes']:
-			node = Node(self, n)
+		if data:
+			self.uid = data['uid']
 			
-			if hasattr(node, 'graph'):
-				self.graphs.append(node.graph)
-			else:
-				self.nodes.append(node)
+			for n in data['nodes']:
+				node = Node(self, n)
 			
-			self.all_nodes.append(node)
+				if hasattr(node, 'graph'):
+					self.graphs.append(node.graph)
+				else:
+					self.nodes.append(node)
 			
-		for c in data['conns']:
-			conn = Connection(self, c)
+				self.all_nodes.append(node)
 			
-			self.conns.append(conn)
+			for c in data['conns']:
+				conn = Connection(self, c)
+			
+				self.conns.append(conn)
 	
+	def parse_by_id(self, pat):
+		t = shlex.split(pat)
+		is_digit = len(t) > 1 and t[1].isdigit()
+		
+		return t[0] == 'id' and is_digit, int(t[1]) if is_digit else -1
+	
+	def remove_dyn_slot(self, is_output, uid):
+		dslots = self.parent_node.data['dyn_out'] if is_output else self.parent_node.data['dyn_in']
+		
+		for slot in dslots:
+			if slot['uid'] == uid:
+				print('Removed slot ' + slot.uid)
+				dslots.remove(slot)
+				break
+	
+	def delete(self, graph):
+		for g in graph.graphs:
+			self.delete_graph(g)
+
+		for n in graph.nodes:
+			self.delete_node(n)
+			
+		for c in graph.conns:
+			self.delete_conn(c)
+
+	def delete_node(self, node):
+		if node in self.nodes: self.nodes.remove(node)
+		if node in self.all_nodes: self.all_nodes.remove(node)
+
+		nodes = self.data['nodes']
+
+		if node.data in nodes: nodes.remove(node.data)
+		
+		if hasattr(self.parent_graph, 'parent_node'):
+			if node.plugin == 'input_proxy':
+				self.parent_graph.parent_node.remove_dyn_slot(False, self.data['state']['slot_id'])
+			elif node.plugin == 'output_proxy':
+				self.parent_graph.parent_node.remove_dyn_slot(True, self.data['state']['slot_id'])
+				
+	def delete_conn(self, conn):
+		if conn in self.conns: self.conns.remove(conn)
+		
+		conns = self.data['conns']
+		
+		if conn.data in conns: conns.remove(conn.data)
+
+	def delete_graph(self, graph):
+		if graph in self.graphs: self.graphs.remove(graph)
+		
+		self.delete_node(graph.parent_node)
+
 	def find_node_by_uid(self, uid):
 		for node in self.all_nodes:
 			if node.uid == uid:
 				return node
 	
-	def parse_by_id(self, pat):
-		t = pat.split(' ')
-		is_digit = len(t) > 1 and t[1].isdigit()
+	def find_all(self, pat, mask = [True, True, True]):
+		g = Graph('Internal search graph', None, None, None)
 		
-		return t[0] == 'id' and is_digit, int(t[1]) if is_digit else -1
-	
+		g.graphs = self.find_graphs(pat) if mask[0] else [];
+		g.nodes = self.find_nodes(pat) if mask[1] else [];
+		g.conns = self.find_conns(pat) if mask[2] else [];
+		
+		return g
+		
 	def find_nodes(self, pat):
 		results = []
 		by_id, uid = self.parse_by_id(pat)
@@ -132,47 +225,40 @@ class Graph:
 			if graph.uid == uid:
 				return graph
 	
-	def dump_nodes(self, pat, cb):
-		count = 0
-		
-		for node in self.find_nodes(pat):
-			print(ANSI_BLUE + '<NODE> ' + ANSI_ENDC + node.title + ' (' + str(node.uid) + ')')
-			
-			if cb:
-				cb(node)
-			
-			count = count + 1
-		
-		return count
-		
-	def dump_conns(self, pat, cb):
-		count = 0
-		
-		for conn in self.find_conns(pat):
-			print(ANSI_YELLOW + '<CONN> ' + ANSI_ENDC + conn.desc)
-			
-			if cb:
-				cb(conn)
-				
-			count = count + 1
-		
-		return count
-	
-	def dump_graphs(self, pat, cb):
-		count = 0
-		
-		for graph in self.find_graphs(pat):
+	def echo(self, cbs = [None, None, None]):
+		for graph in self.graphs:
 			print(ANSI_GREEN + '<GRAPH> ' + ANSI_ENDC + graph.name + ' (' + str(graph.uid) + ')')
-			
-			if cb:
-				cb(graph)
-				
-			count = count + 1
+			if cbs[0]: cbs[0](graph)
+
+		for node in self.nodes:
+			print(ANSI_BLUE + '<NODE> ' + ANSI_ENDC + node.title + ' (' + str(node.uid) + ')')
+			if cbs[1]: cbs[1](node)
+
+		for conn in self.conns:
+			print(ANSI_YELLOW + '<CONN> ' + ANSI_ENDC + conn.desc)
+			if cbs[2]: cbs[2](conn)
 		
-		return count
+	def dump(self, pat, mask, cbs):
+		g = self.find_all(pat, mask)
+		g.echo(cbs)
+		return [len(g.graphs), len(g.nodes), len(g.conns)]
+	
+	def iterate(self, cbs = [None, None, None], mask = [True, True, True]):
+		array = [self.graphs, self.nodes, self.conns]
+		
+		for i in range(3):
+			if not mask[i] or not cbs[i]:
+				continue
+			
+			cb = cbs[i]
+			
+			for item in array[i]:
+				cb(item)
 		
 class Context:
-	def __init__(self, data):
+	def __init__(self, data, filename):
+		self.data = data
+		self.filename = filename
 		self.root_graph = Graph('Root', None, None, data['root'])
 		self.current_graph = self.root_graph
 		self.cwd = 'Root/'
@@ -231,56 +317,95 @@ class Context:
 					else:
 						return 'Unrecognized switch ' + args[0]
 			else:
-				pat = args[-1]
+				pat = ' '.join(args)
 			
 			if len(args) > 1:
-				pat = args[-1]
+				pat = ' '.join(args[1:])
 
 		if not mask[0]	and not mask[1] and not mask[2]:
 			mask = [True, True, True]
 		
 		return pat, mask
 		
-	def ls(self, args):
-		pat, mask = self.parse_pattern(args)
-		count = [0, 0, 0]
-		
-		if mask[0]:
-			count[0] = self.current_graph.dump_graphs(pat, None)
-		
-		if mask[1]:
-			count[1] = self.current_graph.dump_nodes(pat, None)
-			
-		if mask[2]:
-			count[2] = self.current_graph.dump_conns(pat, None)
-			
+	def print_summary(self, count):
 		print('\n%d graphs, %d nodes and %d connections.' % (count[0], count[1], count[2]))
 	
-	def rm(self, args):
+	def ls(self, args):
 		pat, mask = self.parse_pattern(args)
-		graphs, nodes, conns = [], [], []
 		
-		if mask[0]:
-			graphs = self.current_graph.find_graphs(pat)
+		self.print_summary(self.current_graph.dump(pat, mask, [None, None, None]))
+	
+	def rm(self, args):
+		if len(args) < 1:
+			return 'Nothing to remove.'
+		
+		pat, mask = self.parse_pattern(args)
+		g = self.current_graph.find_all(pat, mask)
+		
 		if mask[1]:
-			nodes = self.current_graph.find_nodes(pat)
+			for node in g.nodes:
+				g.conns.extend(node.get_conns())
+		
+		g.conns = list(set(g.conns))
+		pending = len(g.graphs) + len(g.nodes) + len(g.conns)
+		
+		if pending > 0:
+			print('\n' + ANSI_RED + 'This action will delete the following objects:\n' + ANSI_ENDC)
 			
-			for node in nodes:
-				conns.extend(node.get_conns())
-		if mask[2]:
-			conns.extend(self.current_graph.find_conns(pat))
+			g.echo()
+			
+			answer = raw_input('\nThis operation will destroy data. Continue (y/n)? ')
+			
+			if answer == 'yes' or answer == 'y':
+				self.current_graph.delete(g)
+				print('\nRemoved %d graphs, %d nodes and %d connections.' % (len(g.graphs), len(g.nodes), len(g.conns)))
+		else:
+			return 'Nothing to remove.'
+	
+	def dump(self, args):
+		pat, mask = self.parse_pattern(args)
 		
-		conns = list(set(conns))
+		def dump_json(i): print(json.dumps(i.data, indent = 2, sort_keys = False) + '\n')
 		
-		print('\nRemoved %d graphs, %d nodes and %d connections.' % (len(graphs), len(nodes), len(conns)))
+		self.print_summary(self.current_graph.dump(pat, mask, [dump_json, dump_json, dump_json]))
+	
+	def refac(self, args):
+		pat, mask = self.parse_pattern(args)
+		tok = shlex.split(pat)
+		
+		if len(tok) < 4:
+			return 'Missing argument(s).'
+		
+		print(pat, mask)
+		prop = tok[0]
+		old_val = tok[1]
+		new_val = tok[2]
+		pat = tok[3]
+		
+		#def ex_prop(i):
+		#	if hasattr(i, prop) and i[prop] == old_val: i[prop] = new_value
+		
+		def ex_prop(i):
+			print(prop, type(i.data[prop]), i.data[prop])
 
-context = Context(data)
+		self.current_graph.find_all(pat).iterate([ex_prop, ex_prop, ex_prop], mask)
+
+	def save(self, args):
+		f = open(self.filename, 'w')
+		
+		# TODO: The ordering of the keys is not maintained!
+		f.write(json.dumps(self.data, indent=4, sort_keys=False))
+		f.close()
+		
+		print('Saved to ' + self.filename)
+
+context = Context(data, sys.argv[1])
 	
 def parse(cmd):
 	if cmd == "":
 		return None
 	
-	t = cmd.split(' ')
+	t = shlex.split(cmd)
 	args = t[1:]
 	
 	if t[0] == 'cd':
@@ -290,26 +415,13 @@ def parse(cmd):
 	elif t[0] == 'rm':
 		return context.rm(args)
 	elif t[0] == 'dump' or t[0] == 'd':
-		if len(t) < 2:
-			return 'Dump what [(g)raph, (n)ode or (c)onn]?'
-		
-		if t[1] == 'graph' or t[1] == 'g':
-			if len(t) < 3:
-				return 'Dump what graph(s)?'
-			
-			context.dump_graphs(' '.join(t[2:]), lambda graph: print(json.dumps(graph.data, indent=2, sort_keys=True) + '\n'))
-		elif t[1] == 'node' or t[1] == 'n':
-			if len(t) < 3:
-				return 'Dump what node(s)?'
-			
-			context.dump_nodes(' '.join(t[2:]), lambda node: print(json.dumps(node.data, indent=2, sort_keys=True) + '\n'))
-		elif t[1] == 'conn' or t[1] == 'c':
-			if len(t) < 3:
-				return 'Dump what connections(s)?'
-			
-			context.dump_conns(' '.join(t[2:]), lambda conn: print(json.dumps(conn.data, indent=2, sort_keys=True) + '\n'))
-		else:
-			return 'Unknown object type: ' + t[1]
+		return context.dump(args)
+	elif t[0] == 'refac' or t[0] == 'r':
+		return context.refac(args)
+	elif t[0] == 'save' or t[0] == 's':
+		return context.save(args)
+	elif t[0] == 'help' or t[0] == 'h' or t[0] == '?':
+		print(help_txt)
 	elif t[0] == 'exit' or t[0] == 'quit' or  t[0] == 'e'  or t[0] == 'q':
 		sys.exit('Session closed.')
 	else:
@@ -317,7 +429,7 @@ def parse(cmd):
 
 def repl():
     while True:
-        val = parse(raw_input('\n' + context.cwd + '> '))
+        val = parse(raw_input('\n' + ANSI_PROMPT + context.cwd + '>' + ANSI_ENDC + ' '))
 	
         if val is not None:
 		print(str(val))
