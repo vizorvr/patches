@@ -6,6 +6,7 @@ import codecs
 import json
 import fnmatch
 import shlex
+import collections
 
 ANSI_BLUE = '\033[94m'
 ANSI_GREEN = '\033[92m'
@@ -51,7 +52,7 @@ if len(sys.argv) < 2:
 	sys.exit('Usage: edit-graph.py <graph.json>')
 
 with codecs.open(sys.argv[1], 'r', 'utf-8-sig') as json_data:
-	data = json.load(json_data)
+	data = json.load(json_data, object_pairs_hook = collections.OrderedDict)
 
 print('Loaded ' + sys.argv[1])
 
@@ -59,17 +60,17 @@ class Connection:
 	def __init__(self, parent_graph, data):
 		self.parent_graph = parent_graph
 		self.data = data
-		self.index = parent_graph.conn_index
+		self.uid = parent_graph.conn_index
 		parent_graph.conn_index = parent_graph.conn_index + 1
 		self.src_node = parent_graph.find_node_by_uid(data['src_nuid'])
 		self.dst_node = parent_graph.find_node_by_uid(data['dst_nuid'])
-		self.desc = '[%d] %s (%d) -> %s (%d)' % (self.index, self.src_node.title, self.src_node.uid, self.dst_node.title, self.dst_node.uid)
+		self.name = '%s (%d) -> %s (%d)' % (self.src_node.name, self.src_node.uid, self.dst_node.name, self.dst_node.uid)
 
 class Node:
 	def __init__(self, parent_graph, data):
 		self.parent_graph = parent_graph
 		self.uid = data['uid']
-		self.title = data.get('title') or data['plugin']
+		self.name = data.get('title') or data['plugin']
 		self.data = data
 		self.plugin = data['plugin']
 		
@@ -132,14 +133,7 @@ class Graph:
 				break
 	
 	def delete(self, graph):
-		for g in graph.graphs:
-			self.delete_graph(g)
-
-		for n in graph.nodes:
-			self.delete_node(n)
-			
-		for c in graph.conns:
-			self.delete_conn(c)
+		graph.iterate([self.delete_graph, self.delete_node, self.delete_conn])
 
 	def delete_node(self, node):
 		if node in self.nodes: self.nodes.remove(node)
@@ -175,69 +169,38 @@ class Graph:
 	def find_all(self, pat, mask = [True, True, True]):
 		g = Graph('Internal search graph', None, None, None)
 		
-		g.graphs = self.find_graphs(pat) if mask[0] else [];
-		g.nodes = self.find_nodes(pat) if mask[1] else [];
-		g.conns = self.find_conns(pat) if mask[2] else [];
+		g.graphs = self.find_item(self.graphs, pat) if mask[0] else [];
+		g.nodes = self.find_item(self.nodes, pat) if mask[1] else [];
+		g.conns = self.find_item(self.conns, pat) if mask[2] else [];
 		
 		return g
 		
-	def find_nodes(self, pat):
+	def find_item(self, arr, pat):
 		results = []
 		by_id, uid = self.parse_by_id(pat)
 		
-		for node in self.nodes:
+		for item in arr:
 			if by_id:
-				if node.uid == uid:
-					results.append(node)
-			elif fnmatch.fnmatch(node.title, pat):
-				results.append(node)
+				if item.uid == uid:
+					results.append(item)
+			elif fnmatch.fnmatch(item.name, pat):
+				results.append(item)
 		
 		return results
-
-	def find_conns(self, pat):
-		results = []
-		by_id, idx = self.parse_by_id(pat)
-		
-		for conn in self.conns:
-			if by_id:
-				if conn.index == idx:
-					results.append(conn)
-			elif fnmatch.fnmatch(conn.desc, pat):
-				results.append(conn)
-		
-		return results
-	
-	def find_graphs(self, pat):
-		results = []
-		by_id, uid = self.parse_by_id(pat)
-		
-		for graph in self.graphs:
-			if by_id:
-				if graph.uid == uid:
-					results.append(graph)
-			elif fnmatch.fnmatch(graph.name, pat):
-				results.append(graph)
-		
-		return results
-
-	def find_graph_by_uid(self, uid):
-		for graph in self.graphs:
-			if graph.uid == uid:
-				return graph
 	
 	def echo(self, cbs = [None, None, None]):
-		for graph in self.graphs:
-			print(ANSI_GREEN + '<GRAPH> ' + ANSI_ENDC + graph.name + ' (' + str(graph.uid) + ')')
-			if cbs[0]: cbs[0](graph)
-
-		for node in self.nodes:
-			print(ANSI_BLUE + '<NODE> ' + ANSI_ENDC + node.title + ' (' + str(node.uid) + ')')
-			if cbs[1]: cbs[1](node)
-
-		for conn in self.conns:
-			print(ANSI_YELLOW + '<CONN> ' + ANSI_ENDC + conn.desc)
-			if cbs[2]: cbs[2](conn)
+		headers = [ANSI_GREEN + '<GRAPH> ', ANSI_BLUE + '<NODE> ', ANSI_YELLOW + '<CONN> ']
+		arrs = [self.graphs, self.nodes, self.conns]
 		
+		for i in range(3):
+			cb = cbs[i]
+			
+			for item in arrs[i]:
+				print(headers[i] + ANSI_ENDC + item.name + ' (' + str(item.uid) +')')
+				
+				if cb:
+					cb(item)
+	
 	def dump(self, pat, mask, cbs):
 		g = self.find_all(pat, mask)
 		g.echo(cbs)
@@ -285,20 +248,18 @@ class Context:
 				self.update_cwd()
 		else:
 			name = ' '.join(args)
-			graphs = self.current_graph.find_graphs(name)
+			g = self.current_graph.find_all(name, [True, False, False])
 			
-			if len(graphs) < 1:
+			if len(g.graphs) < 1:
 				return 'No such graph: ' + name
 			
-			if len(graphs) > 1:
-				msg = 'The specified graph \'' + name + '\' is named ambigously. Which graph did you mean:\n'
-				
-				for graph in graphs:
-					msg = msg + ('\n%s<GRAPH> %s (%d) %s' % (ANSI_GREEN, ANSI_ENDC, graph.uid, graph.name))
+			if len(g.graphs) > 1:
+				print('\nThe specified graph \'' + name + '\' is named ambigously. Which graph did you mean:\n')
+				g.echo()
 					
-				return msg
+				return
 
-			self.current_graph = graphs[0]
+			self.current_graph = g.graphs[0]
 			self.update_cwd()
 		
 	def parse_pattern(self, args):
