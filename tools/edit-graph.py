@@ -22,10 +22,11 @@ The following commands are available:
 * Where """ + ANSI_GREEN + """<sel>""" + ANSI_ENDC + """ is specified, this means: wildcard pattern
 or id <n>, where <n> is the uid of the desired object.
 
-* Where """ + ANSI_GREEN + """-gnc""" + ANSI_ENDC + """ flags can be supplied these limit the operation 
-to (g)raphs, (n)odes or (c)onnections. Any combination can be
-specified, ex.: -gc, -gn and so on. The default is to operatate
-on all three.
+* Where """ + ANSI_GREEN + """-gncr""" + ANSI_ENDC + """ flags can be supplied these limit the operation 
+to (g)raphs, (n)odes or (c)onnections or (r)ecurses into
+child graphs. Any combination can be specified, ex.: -gc,
+-rgn and so on. The default is to operatate on all three
+types without recursion.
 
 -------------------------------------
 
@@ -33,18 +34,19 @@ on all three.
 Moves up to the parent graph or into the first child graph
 matching the name pattern or uid supplied.
 
-""" + ANSI_GREEN + """ls [-gnc] [sel]""" + ANSI_ENDC + """:
+""" + ANSI_GREEN + """ls [-gncr] [sel]""" + ANSI_ENDC + """:
 List the contents of the current graph. If no selector is given,
 everything is listed.
 
-""" + ANSI_GREEN + """rm [-gnc] <sel>""" + ANSI_ENDC + """:
+""" + ANSI_GREEN + """rm [-gncr] <sel>""" + ANSI_ENDC + """:
 Removes the specified items from the current graph. Will display
 the pending set and ask for confirmation before proceeding.
 
-""" + ANSI_GREEN + """(d)ump [-gnc] [sel]""" + ANSI_ENDC + """:
-Dumps the json of the matching objects.
+""" + ANSI_GREEN + """(d)ump [-gncr] [sel]""" + ANSI_ENDC + """:
+Dumps the json of the matching objects. If not selector is given,
+everything is dumped.
 
-""" + ANSI_GREEN + """(r)efac [-gnc] <property name> <old value> <new value> <sel>""" + ANSI_ENDC + """:
+""" + ANSI_GREEN + """(r)efac [-gncr] <property name> <old value> <new value> <sel>""" + ANSI_ENDC + """:
 Dumps the json of the matching objects.
 """
 
@@ -54,7 +56,7 @@ if len(sys.argv) < 2:
 with codecs.open(sys.argv[1], 'r', 'utf-8-sig') as json_data:
 	data = json.load(json_data, object_pairs_hook = collections.OrderedDict)
 
-print('Loaded ' + sys.argv[1])
+print(ANSI_GREEN + '\nEdit Graph\n----------' + ANSI_ENDC + '\n\nEditing ' + sys.argv[1])
 
 class Connection:
 	def __init__(self, parent_graph, data):
@@ -92,10 +94,10 @@ class Graph:
 		self.parent_graph = parent_graph
 		self.parent_node = parent_node
 		self.uid = -1
+		self.graphs = []
 		self.nodes = []
 		self.all_nodes = []
 		self.conns = []
-		self.graphs = []
 		self.data = data
 		self.conn_index = 0
 		
@@ -116,6 +118,9 @@ class Graph:
 				conn = Connection(self, c)
 			
 				self.conns.append(conn)
+	
+	def get_item_count(self):
+		return len(self.graphs) + len(self.nodes) + len(self.conns)
 	
 	def parse_by_id(self, pat):
 		t = shlex.split(pat)
@@ -166,27 +171,37 @@ class Graph:
 			if node.uid == uid:
 				return node
 	
-	def find_all(self, pat, mask = [True, True, True]):
+	def find_all(self, pat, mask = [True, True, True, False], pred = [None, None, None]):
 		g = Graph('Internal search graph', None, None, None)
 		
-		g.graphs = self.find_item(self.graphs, pat) if mask[0] else [];
-		g.nodes = self.find_item(self.nodes, pat) if mask[1] else [];
-		g.conns = self.find_item(self.conns, pat) if mask[2] else [];
+		g.graphs = self.find_items('graphs', pat, pred[0], mask[3]) if mask[0] else []
+		g.nodes = self.find_items('nodes', pat, pred[1], mask[3]) if mask[1] else []
+		g.conns = self.find_items('conns', pat, pred[2], mask[3]) if mask[2] else []
 		
 		return g
 		
-	def find_item(self, arr, pat):
-		results = []
+	def find_items(self, arr_prop, pat, pred, recurse = False):
 		by_id, uid = self.parse_by_id(pat)
 		
-		for item in arr:
-			if by_id:
-				if item.uid == uid:
-					results.append(item)
-			elif fnmatch.fnmatch(item.name, pat):
-				results.append(item)
+		return self.find_items_recursive(arr_prop, by_id, uid, pat, pred, recurse)
+			
+	def find_items_recursive(self, arr_prop, by_id, uid, pat, pred, recurse):
+		items = []
+		arr = getattr(self, arr_prop)
 		
-		return results
+		for item in arr:
+			if not pred or pred(item):
+				if by_id:
+					if item.uid == uid:
+						items.append(item)
+				elif fnmatch.fnmatch(item.name, pat):
+					items.append(item)
+
+		if recurse:
+			for graph in self.graphs:
+				items.extend(graph.find_items_recursive(arr_prop, by_id, uid, pat, pred, recurse))
+		
+		return items
 	
 	def echo(self, cbs = [None, None, None]):
 		headers = [ANSI_GREEN + '<GRAPH> ', ANSI_BLUE + '<NODE> ', ANSI_YELLOW + '<CONN> ']
@@ -204,6 +219,7 @@ class Graph:
 	def dump(self, pat, mask, cbs):
 		g = self.find_all(pat, mask)
 		g.echo(cbs)
+		
 		return [len(g.graphs), len(g.nodes), len(g.conns)]
 	
 	def iterate(self, cbs = [None, None, None], mask = [True, True, True]):
@@ -248,15 +264,14 @@ class Context:
 				self.update_cwd()
 		else:
 			name = ' '.join(args)
-			g = self.current_graph.find_all(name, [True, False, False])
+			g = self.current_graph.find_all(name, [True, False, False, False])
+			count = g.get_item_count()
 			
-			if len(g.graphs) < 1:
+			if count < 1:
 				return 'No such graph: ' + name
-			
-			if len(g.graphs) > 1:
+			elif count > 1:
 				print('\nThe specified graph \'' + name + '\' is named ambigously. Which graph did you mean:\n')
-				g.echo()
-					
+				g.echo()		
 				return
 
 			self.current_graph = g.graphs[0]
@@ -264,7 +279,7 @@ class Context:
 		
 	def parse_pattern(self, args):
 		pat = '*'
-		mask = [ False, False, False ]
+		mask = [False, False, False, False] # Graph, Node, Connection, Recursive
 		
 		if len(args) > 0:
 			if args[0][0] == '-':
@@ -275,6 +290,8 @@ class Context:
 						mask[1] = True
 					elif c == 'c':
 						mask[2] = True
+					elif c == 'r':
+						mask[3] = True
 					else:
 						return 'Unrecognized switch ' + args[0]
 			else:
@@ -284,17 +301,30 @@ class Context:
 				pat = ' '.join(args[1:])
 
 		if not mask[0]	and not mask[1] and not mask[2]:
-			mask = [True, True, True]
+			mask[0] = mask[1] = mask[2] = True
 		
 		return pat, mask
 		
 	def print_summary(self, count):
-		print('\n%d graphs, %d nodes and %d connections.' % (count[0], count[1], count[2]))
+		delim = ''
+		
+		if count[0] == 0 and count[1] == 0 and count[2] == 0:
+			delim = '---\n'
+		
+		print(delim + '\n%d graphs, %d nodes and %d connections.' % (count[0], count[1], count[2]))
 	
 	def ls(self, args):
 		pat, mask = self.parse_pattern(args)
 		
+		print('')
 		self.print_summary(self.current_graph.dump(pat, mask, [None, None, None]))
+	
+	def alter_data_query(self, cb, desc, query):
+		print('\n' + ANSI_RED + desc + ':\n' + ANSI_ENDC)
+		cb()
+		inp = raw_input('\n' + query + '. Continue (y/n)? ')
+		
+		return inp == 'yes' or inp == 'y'
 	
 	def rm(self, args):
 		if len(args) < 1:
@@ -308,16 +338,10 @@ class Context:
 				g.conns.extend(node.get_conns())
 		
 		g.conns = list(set(g.conns))
-		pending = len(g.graphs) + len(g.nodes) + len(g.conns)
+		pending = g.get_item_count()
 		
 		if pending > 0:
-			print('\n' + ANSI_RED + 'This action will delete the following objects:\n' + ANSI_ENDC)
-			
-			g.echo()
-			
-			answer = raw_input('\nThis operation will destroy data. Continue (y/n)? ')
-			
-			if answer == 'yes' or answer == 'y':
+			if self.alter_data_query(lambda: g.echo(), 'This action will delete the following objects', 'This operation will destroy data'):
 				self.current_graph.delete(g)
 				print('\nRemoved %d graphs, %d nodes and %d connections.' % (len(g.graphs), len(g.nodes), len(g.conns)))
 		else:
@@ -337,19 +361,34 @@ class Context:
 		if len(tok) < 4:
 			return 'Missing argument(s).'
 		
-		print(pat, mask)
 		prop = tok[0]
 		old_val = tok[1]
 		new_val = tok[2]
 		pat = tok[3]
 		
-		#def ex_prop(i):
-		#	if hasattr(i, prop) and i[prop] == old_val: i[prop] = new_value
+		if old_val.isdigit():
+			old_val = int(old_val)
+			new_val = int(new_val)
 		
-		def ex_prop(i):
-			print(prop, type(i.data[prop]), i.data[prop])
-
-		self.current_graph.find_all(pat).iterate([ex_prop, ex_prop, ex_prop], mask)
+		def pred(i):
+			print(i.data[prop])
+			return hasattr(i, prop) and i.data[prop] == old_val
+		
+		def show_prop(i):
+			print('(%s).%s: %s -> %s' % (i.name, prop, str(i.data[prop]), tok[2]))
+		
+		def set_prop(i):
+			i.data[prop] = new_val
+		
+		g = self.current_graph.find_all(pat, mask, [pred, pred, pred])
+		pending = g.get_item_count()
+				
+		if pending > 0:
+			if self.alter_data_query(lambda: g.iterate([show_prop, show_prop, show_prop], mask), 'This action will change the following objects', 'This operation will alter data'):
+				g.iterate([set_prop, set_prop, set_prop], mask)
+				print('\nChanged %d graphs, %d nodes and %d connections.' % (len(g.graphs), len(g.nodes), len(g.conns)))
+		else:
+			return 'Nothing to refactor.'
 
 	def save(self, args):
 		f = open(self.filename, 'w')
