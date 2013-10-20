@@ -7,6 +7,7 @@ import json
 import fnmatch
 import shlex
 import collections
+import cmd
 
 ANSI_BLUE = '\033[94m'
 ANSI_GREEN = '\033[92m'
@@ -15,48 +16,46 @@ ANSI_RED = '\033[91m'
 ANSI_PROMPT = '\033[95m'
 ANSI_ENDC = '\033[0m'
 
-help_txt = """
-The following commands are available:
--------------------------------------
+class DelegationException(Exception):
+	pass
 
-* Where """ + ANSI_GREEN + """<sel>""" + ANSI_ENDC + """ is specified, this means: wildcard pattern
-or id <n>, where <n> is the uid of the desired object.
+class ParsedSelectors:
+	def __init__(self, args):
+		self.pat = []
+		self.predicate = [None] * 4
+		self.mask = [False] * 4
+		
+		it = iter(args)
 
-* Where """ + ANSI_GREEN + """-gncr""" + ANSI_ENDC + """ flags can be supplied these limit the operation 
-to (g)raphs, (n)odes or (c)onnections or (r)ecurses into
-child graphs. Any combination can be specified, ex.: -gc,
--rgn and so on. The default is to operatate on all three
-types without recursion.
+		for arg in it:
+			if arg[0] == '-':
+				for c in arg[1:]:
+					if c == 'g':
+						self.mask[0] = True
+					elif c == 'n':
+						self.mask[1] = True
+					elif c == 'c':
+						self.mask[2] = True
+					elif c == 'r':
+						self.mask[3] = True
+					elif c == 'p':
+						try:
+							self.predicate = it.next()
+						except StopIteration:
+							print('*** Error: Expected predicate expression after the \'-p\' switch.')
+							raise DelegationException()
+					else:
+						return '*** Error: Unrecognized switch ' + arg
+			else:
+				self.pat.append(arg)
+		
+		if len(self.pat) < 1:
+			self.pat.append('*')
 
--------------------------------------
-
-""" + ANSI_GREEN + """cd <sel | ..>""" + ANSI_ENDC + """:
-Moves up to the parent graph or into the first child graph
-matching the name pattern or uid supplied.
-
-""" + ANSI_GREEN + """ls [-gncr] [sel]""" + ANSI_ENDC + """:
-List the contents of the current graph. If no selector is given,
-everything is listed.
-
-""" + ANSI_GREEN + """rm [-gncr] <sel>""" + ANSI_ENDC + """:
-Removes the specified items from the current graph. Will display
-the pending set and ask for confirmation before proceeding.
-
-""" + ANSI_GREEN + """(d)ump [-gncr] [sel]""" + ANSI_ENDC + """:
-Dumps the json of the matching objects. If not selector is given,
-everything is dumped.
-
-""" + ANSI_GREEN + """(r)efac [-gncr] <property name> <old value> <new value> <sel>""" + ANSI_ENDC + """:
-Dumps the json of the matching objects.
-"""
-
-if len(sys.argv) < 2:
-	sys.exit('Usage: edit-graph.py <graph.json>')
-
-with codecs.open(sys.argv[1], 'r', 'utf-8-sig') as json_data:
-	data = json.load(json_data, object_pairs_hook = collections.OrderedDict)
-
-print(ANSI_GREEN + '\nEdit Graph\n----------' + ANSI_ENDC + '\n\nEditing ' + sys.argv[1])
+		if not self.mask[0] and not self.mask[1] and not self.mask[2]:
+			self.mask[0] = self.mask[1] = self.mask[2] = True
+		
+		self.pat = ' '.join(self.pat)
 
 class Connection:
 	def __init__(self, parent_graph, data):
@@ -171,35 +170,41 @@ class Graph:
 			if node.uid == uid:
 				return node
 	
-	def find_all(self, pat, mask = [True, True, True, False], pred = [None, None, None]):
+	def find_all(self, ps, pred = [None, None, None]):
 		g = Graph('Internal search graph', None, None, None)
 		
-		g.graphs = self.find_items('graphs', pat, pred[0], mask[3]) if mask[0] else []
-		g.nodes = self.find_items('nodes', pat, pred[1], mask[3]) if mask[1] else []
-		g.conns = self.find_items('conns', pat, pred[2], mask[3]) if mask[2] else []
+		g.graphs = self.find_items('graphs', 0, ps, pred[0])
+		g.nodes = self.find_items('nodes', 1, ps, pred[1])
+		g.conns = self.find_items('conns', 2, ps, pred[2])
 		
 		return g
 		
-	def find_items(self, arr_prop, pat, pred, recurse = False):
-		by_id, uid = self.parse_by_id(pat)
+	def find_items(self, arr_prop, idx, ps, pred):
+		if not ps.mask[idx]:
+			return []
 		
-		return self.find_items_recursive(arr_prop, by_id, uid, pat, pred, recurse)
+		by_id, uid = self.parse_by_id(ps.pat)
+		
+		return self.find_items_recursive(arr_prop, idx, by_id, uid, ps, pred)
 			
-	def find_items_recursive(self, arr_prop, by_id, uid, pat, pred, recurse):
+	def find_items_recursive(self, arr_prop, idx, by_id, uid, ps, pred):
 		items = []
 		arr = getattr(self, arr_prop)
 		
 		for item in arr:
-			if not pred or pred(item):
-				if by_id:
-					if item.uid == uid:
+			try:
+				if (not pred or pred(item)) and (not ps.predicate[idx] or eval(ps.predicate[idx])):
+					if by_id:
+						if item.uid == uid:
+							items.append(item)
+					elif fnmatch.fnmatch(item.name, ps.pat):
 						items.append(item)
-				elif fnmatch.fnmatch(item.name, pat):
-					items.append(item)
+			except:
+				continue
 
-		if recurse:
+		if ps.mask[3]:
 			for graph in self.graphs:
-				items.extend(graph.find_items_recursive(arr_prop, by_id, uid, pat, pred, recurse))
+				items.extend(graph.find_items_recursive(arr_prop, idx, by_id, uid, ps, pred))
 		
 		return items
 	
@@ -216,8 +221,8 @@ class Graph:
 				if cb:
 					cb(item)
 	
-	def dump(self, pat, mask, cbs):
-		g = self.find_all(pat, mask)
+	def dump(self, ps, cbs):
+		g = self.find_all(ps)
 		g.echo(cbs)
 		
 		return [len(g.graphs), len(g.nodes), len(g.conns)]
@@ -237,8 +242,8 @@ class Graph:
 class Context:
 	def __init__(self, data, filename):
 		self.data = data
-		self.filename = filename
-		self.root_graph = Graph('Root', None, None, data['root'])
+		self.filename = filename if filename else ''
+		self.root_graph = Graph('Root', None, None, data['root']) if filename else Graph('Default graph', None, None, None)
 		self.current_graph = self.root_graph
 		self.cwd = 'Root/'
 		
@@ -254,56 +259,32 @@ class Context:
 		self.cwd = self.build_path_recursive('', self.current_graph)		
 	
 	def cd(self, args):
-		if not args: return
+		if args == '': return
+		
+		args = shlex.split(args)
 		
 		if args[0] == '..':
 			if self.current_graph.parent_graph == None:
-				return 'You\'re already in the root.'
+				print('*** You\'re already in the root.')
 			else:
 				self.current_graph = self.current_graph.parent_graph
 				self.update_cwd()
 		else:
-			name = ' '.join(args)
-			g = self.current_graph.find_all(name, [True, False, False, False])
+			ps = ParsedSelectors(args)
+			ps.mask = [True, False, False, False]
+			g = self.current_graph.find_all(ps)
 			count = g.get_item_count()
 			
 			if count < 1:
-				return 'No such graph: ' + name
+				print('*** No such graph: ' + ps.pat)
+				return
 			elif count > 1:
-				print('\nThe specified graph \'' + name + '\' is named ambigously. Which graph did you mean:\n')
+				print('\nThe specified graph \'' + ps.pat + '\' is named ambigously. Which graph did you mean:\n')
 				g.echo()		
 				return
 
 			self.current_graph = g.graphs[0]
 			self.update_cwd()
-		
-	def parse_pattern(self, args):
-		pat = '*'
-		mask = [False, False, False, False] # Graph, Node, Connection, Recursive
-		
-		if len(args) > 0:
-			if args[0][0] == '-':
-				for c in args[0][1:]:
-					if c == 'g':
-						mask[0] = True
-					elif c == 'n':
-						mask[1] = True
-					elif c == 'c':
-						mask[2] = True
-					elif c == 'r':
-						mask[3] = True
-					else:
-						return 'Unrecognized switch ' + args[0]
-			else:
-				pat = ' '.join(args)
-			
-			if len(args) > 1:
-				pat = ' '.join(args[1:])
-
-		if not mask[0]	and not mask[1] and not mask[2]:
-			mask[0] = mask[1] = mask[2] = True
-		
-		return pat, mask
 		
 	def print_summary(self, count):
 		delim = ''
@@ -314,10 +295,9 @@ class Context:
 		print(delim + '\n%d graphs, %d nodes and %d connections.' % (count[0], count[1], count[2]))
 	
 	def ls(self, args):
-		pat, mask = self.parse_pattern(args)
-		
+		args = shlex.split(args)
 		print('')
-		self.print_summary(self.current_graph.dump(pat, mask, [None, None, None]))
+		self.print_summary(self.current_graph.dump(ParsedSelectors(args), [None, None, None]))
 	
 	def alter_data_query(self, cb, desc, query):
 		print('\n' + ANSI_RED + desc + ':\n' + ANSI_ENDC)
@@ -327,13 +307,15 @@ class Context:
 		return inp == 'yes' or inp == 'y'
 	
 	def rm(self, args):
+		args = shlex.split(args)
+		
 		if len(args) < 1:
-			return 'Nothing to remove.'
+			print('*** Nothing to remove.')
 		
-		pat, mask = self.parse_pattern(args)
-		g = self.current_graph.find_all(pat, mask)
+		ps = ParsedSelectors(args)
+		g = self.current_graph.find_all(ps)
 		
-		if mask[1]:
+		if ps.mask[1]:
 			for node in g.nodes:
 				g.conns.extend(node.get_conns())
 		
@@ -345,26 +327,27 @@ class Context:
 				self.current_graph.delete(g)
 				print('\nRemoved %d graphs, %d nodes and %d connections.' % (len(g.graphs), len(g.nodes), len(g.conns)))
 		else:
-			return 'Nothing to remove.'
+			print('*** Nothing to remove.')
 	
 	def dump(self, args):
-		pat, mask = self.parse_pattern(args)
+		args = shlex.split(args)
 		
 		def dump_json(i): print(json.dumps(i.data, indent = 2, sort_keys = False) + '\n')
 		
-		self.print_summary(self.current_graph.dump(pat, mask, [dump_json, dump_json, dump_json]))
+		self.print_summary(self.current_graph.dump(ParsedSelectors(args), [dump_json, dump_json, dump_json]))
 	
 	def refac(self, args):
-		pat, mask = self.parse_pattern(args)
-		tok = shlex.split(pat)
+		args = shlex.split(args)
+		ps = ParsedSelectors(args)
+		tok = shlex.split(ps.pat)
 		
 		if len(tok) < 4:
-			return 'Missing argument(s).'
+			print('*** Missing argument(s).')
 		
 		prop = tok[0]
 		old_val = tok[1]
 		new_val = tok[2]
-		pat = tok[3]
+		ps.pat = tok[3]
 		
 		if old_val.isdigit():
 			old_val = int(old_val)
@@ -380,7 +363,7 @@ class Context:
 		def set_prop(i):
 			i.data[prop] = new_val
 		
-		g = self.current_graph.find_all(pat, mask, [pred, pred, pred])
+		g = self.current_graph.find_all(ps, [pred, pred, pred])
 		pending = g.get_item_count()
 				
 		if pending > 0:
@@ -388,9 +371,10 @@ class Context:
 				g.iterate([set_prop, set_prop, set_prop], mask)
 				print('\nChanged %d graphs, %d nodes and %d connections.' % (len(g.graphs), len(g.nodes), len(g.conns)))
 		else:
-			return 'Nothing to refactor.'
+			print('Nothing to refactor.')
 
 	def save(self, args):
+		args = shlex.split(args)
 		f = open(self.filename, 'w')
 		
 		# TODO: The ordering of the keys is not maintained!
@@ -399,39 +383,93 @@ class Context:
 		
 		print('Saved to ' + self.filename)
 
-context = Context(data, sys.argv[1])
+class Expression:
+	def __init__(self, context, args):
+		g = context.current_graph.find_all()
+
+context = Context({}, None)
+
+def load_file(filename):
+	global context
 	
-def parse(cmd):
-	if cmd == "":
-		return None
+	with codecs.open(filename, 'r', 'utf-8-sig') as json_data:
+		context = Context(json.load(json_data, object_pairs_hook = collections.OrderedDict), filename)
 	
-	t = shlex.split(cmd)
-	args = t[1:]
+	print('Editing: ' + filename)
 	
-	if t[0] == 'cd':
-		return context.cd(args)
-	elif t[0] == 'ls':
-		return context.ls(args)
-	elif t[0] == 'rm':
-		return context.rm(args)
-	elif t[0] == 'dump' or t[0] == 'd':
-		return context.dump(args)
-	elif t[0] == 'refac' or t[0] == 'r':
-		return context.refac(args)
-	elif t[0] == 'save' or t[0] == 's':
-		return context.save(args)
-	elif t[0] == 'help' or t[0] == 'h' or t[0] == '?':
-		print(help_txt)
-	elif t[0] == 'exit' or t[0] == 'quit' or  t[0] == 'e'  or t[0] == 'q':
+class Shell(cmd.Cmd):
+	def set_prompt(self):
+		self.prompt = '\n' + ANSI_PROMPT + context.cwd + '> ' + ANSI_ENDC
+	
+	def help_flags(self):
+		print('* Where ' + ANSI_GREEN + '<sel>' + ANSI_ENDC + ' is specified, this means: wildcard pattern')
+		print('or id <n>, where <n> is the uid of the desired object.')
+		print('')
+		print('* Where ' + ANSI_GREEN + '-gncr' + ANSI_ENDC + ' flags can be supplied these limit the operation')
+		print('to (g)raphs, (n)odes or (c)onnections or (r)ecurses into')
+		print('child graphs. Any combination can be specified, ex.: -gc,')
+		print('-rgn and so on. The default is to operatate on all three')
+		print('types without recursion.')
+	
+	def do_cd(self, args):
+		context.cd(args)
+		self.set_prompt()
+	
+	def help_cd(self):
+		print(ANSI_GREEN + 'cd <sel | ..>' + ANSI_ENDC + ':\nMoves up to the parent graph or into the first child graph\nthe name pattern or uid supplied.')
+	
+	def do_ls(self, args):
+		context.ls(args)
+	
+	def help_ls(self):
+		print(ANSI_GREEN + 'ls [-gncr] [-p <python>] [sel]' + ANSI_ENDC + ':\nList the contents of the current graph. If no selector is given,\neverything is listed.')
+	
+	def do_rm(self, args):
+		context.rm(args)
+	
+	def help_rm(self):
+		print(ANSI_GREEN + 'rm [-gncr] [-p <python>] <sel>' + ANSI_ENDC + ':\nRemoves the specified items from the current graph. Will display\nthe pending set and ask for confirmation before proceeding.')
+	
+	def do_dump(self, args):
+		context.dump(args)
+	
+	def help_dump(self):
+		print(ANSI_GREEN + 'dump [-gncr] [-p <python>] [sel]' + ANSI_ENDC + ':\nDumps the json of the matching objects. If not selector is given,\neverything is dumped.')
+		
+	def do_refac(self, args):
+		context.refac(args)
+	
+	def help_refac(self):
+		print(ANSI_GREEN + 'refac [-gncr] [-p <python>] <property name> <old value> <new value> <sel>' + ANSI_ENDC + ':\nDumps the json of the matching objects.')
+	
+	def do_save(self, args):
+		context.save(args)
+	
+	def help_save(self):
+		print(ANSI_GREEN + 'save' + ANSI_ENDC + ':\nSaves the current file to the original filename.')
+	
+	def do_exit(self, args):
 		sys.exit('Session closed.')
-	else:
-		print('Unrecognized command: ' + t[0])
+		
+	def help_exit(self):
+		print(ANSI_GREEN + 'exit' + ANSI_ENDC + ':\nEnd the current session, discarding all unsaved changes.')
+	
+	def help_help(self):
+		pass
 
 def repl():
-    while True:
-        val = parse(raw_input('\n' + ANSI_PROMPT + context.cwd + '>' + ANSI_ENDC + ' '))
+	s = Shell()
+	s.set_prompt()
 	
-        if val is not None:
-		print(str(val))
+	try:
+		s.cmdloop()
+	except DelegationException:
+		s.cmdloop()
 
+print(ANSI_GREEN + '\nEdit Graph\n----------' + ANSI_ENDC + '\n')
+
+if len(sys.argv) < 2:
+	sys.exit('Usage: edit-graph.py <graph.json>')
+	
+load_file(sys.argv[1])
 repl()
