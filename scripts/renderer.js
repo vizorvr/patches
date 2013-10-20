@@ -37,7 +37,7 @@ function TextureSampler(tex)
 
 	this.imgdata = context.getImageData(0, 0, image.width, image.height);
 	this.texture = tex;
-};
+}
 
 TextureSampler.prototype.get_pixel = function(x, y)
 {
@@ -49,17 +49,16 @@ TextureSampler.prototype.get_pixel = function(x, y)
 	x *= img.width - 1;
 	y *= img.height - 1;
 	
-	var o = (Math.round(x) + (img.width * Math.round(y))) * 4
+	var o = (Math.round(x) + (img.width * Math.round(y))) * 4;
 	var d = this.imgdata.data;
 	
 	return [d[o], d[o+1], d[o+2], d[o+3]];
-}
+};
 
 function Texture(gl, handle)
 {
 	this.gl = gl;
-    	this.min_filter = gl.LINEAR;
-	this.mag_filter = gl.LINEAR;
+	this.min_filter = this.mag_filter = gl.LINEAR;
 	this.texture = handle || gl.createTexture();
 	this.width = 0;
 	this.height = 0;
@@ -152,7 +151,7 @@ Texture.prototype.upload = function(img, src)
 
 Texture.prototype.set_filtering = function(down, up)
 {
-    	this.min_filter = down;
+	this.min_filter = down;
 	this.mag_filter = up;
 };
 
@@ -197,9 +196,13 @@ TextureCache.prototype.clear = function()
 TextureCache.prototype.count = function()
 {
 	var c = 0;
+	var ts = this.textures;
 	
-	for(t in this.textures)
-		++c;
+	for(var t in ts)
+	{
+		if(ts.hasOwnProperty(t))
+			++c;
+	}
 		
 	return c;
 
@@ -207,7 +210,7 @@ TextureCache.prototype.count = function()
 
 function Renderer(canvas_id, core)
 {
-  	this.canvas_id = canvas_id;
+	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
 	this.framebuffer_stack = [];
 	this.def_ambient = new Float32Array([0.0, 0.0, 0.0, 1.0]);
@@ -266,8 +269,8 @@ Renderer.prototype.begin_frame = function()
 		gl.bound_mesh = null;
 		gl.bound_shader = null;
 		
-    		// this.update_viewport();
-    		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		// this.update_viewport();
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	}	
 };
 
@@ -348,7 +351,7 @@ Renderer.prototype.set_fullscreen = function(state)
 				else if(cd.mozRequestFullScreen)
 					cd.mozRequestFullScreen();
 				
-  				c.attr('class', 'webgl-canvas-fs');
+				c.attr('class', 'webgl-canvas-fs');
 				c.attr('width', '960px');
 				c.attr('height', '540px');
 				this.update_viewport();
@@ -425,7 +428,6 @@ Renderer.prototype.set_blend_mode = function(mode)
 			gl.blendFunc(gl.ZERO, gl.SRC_COLOR);
 			break;
 
-		case bm.MULTIPLY:
 		default:
 			gl.enable(gl.BLEND);
 			gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
@@ -614,15 +616,19 @@ Material.prototype.enable = function()
 	
 	if(this.depth_test)
 	{
+		var depth_flags = [
+			gl.NEVER, 
+			gl.LESS,
+			gl.EQUAL,
+			gl.LEQUAL,
+			gl.GREATER,
+			gl.NOTEQUAL,
+			gl.GEQUAL,
+			gl.ALWAYS
+		];
+		
 		gl.enable(gl.DEPTH_TEST);
-		gl.depthFunc([gl.NEVER, 
-			      gl.LESS,
-			      gl.EQUAL,
-			      gl.LEQUAL,
-			      gl.GREATER,
-			      gl.NOTEQUAL,
-			      gl.GEQUAL,
-			      gl.ALWAYS][this.depth_func]);
+		gl.depthFunc(depth_flags[this.depth_func]);
 	}
 	else
 		gl.disable(gl.DEPTH_TEST);
@@ -672,7 +678,7 @@ Material.get_caps_hash = function(mesh, o_mat)
 		h += mat.textures[tt.NORMAL] ? '1' : '0';
 	}
 
-	for(var i = 0; i < 8; i++)
+	for(i = 0; i < 8; i++)
 		h += mat.lights[i] ? (mat.lights[i].type === Light.type.POINT ? 'p' : 'd') : '0';
 	
 	return h;
@@ -728,7 +734,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 					abdv.setUint8(o, dv.getUint8(i));
 				
 				// Decode
-				for(var i = 0; i < count; i+=4)
+				for(i = 0; i < count; i+=4)
 					data.push(abdv.getFloat32(i, false));
 				
 				stream.bind_data(data);
@@ -754,16 +760,16 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 		};
 		
 		if(data.vertices)
-			load_stream(data.vertices, data.v_lo, data.v_rng, this.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX), this);
+			load_stream(data.vertices, data.v_lo, data.v_rng, this.vertex_buffers.VERTEX = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX), this);
 
 		if(data.normals)
-			load_stream(data.normals, data.n_lo, data.n_rng, this.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL))
+			load_stream(data.normals, data.n_lo, data.n_rng, this.vertex_buffers.NORMAL = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL));
 		else // Compute normals
 		{
 			var vts = data.vertices,
-			    p1 = null,
-			    p2 = null,
-			    p3 = null;
+                                  p1 = null,
+                                  p2 = null,
+                                  p3 = null;
 			
 			this.face_norms = [];
 			
@@ -781,9 +787,9 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 					var v2 = [vts[p1] - vts[p2], vts[p1+1] - vts[p2+1], vts[p1+2] - vts[p2+2]];
 					
 					var n = [v1[1] * v2[2] - v1[2] * v2[1],
-					         v1[2] * v2[0] - v1[0] * v2[2],
-					         v1[0] * v2[1] - v1[1] * v2[0]];
-					         
+                                                 v1[2] * v2[0] - v1[0] * v2[2],
+                                                 v1[0] * v2[1] - v1[1] * v2[0]];
+					
 					var l = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
 					
 					if(l > 0.000001)
