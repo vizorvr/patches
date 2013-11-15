@@ -12,6 +12,7 @@
 	height: 16px;
 }
 .icon-absolute_modulator { background: url('absolute-modulator.png'); }
+.icon-accumulate_modulator { background: url('accumulate-modulator.png'); }
 .icon-add_modulator { background: url('add-modulator.png'); }
 .icon-alpha_modulator { background: url('alpha-modulator.png'); }
 .icon-aspect_ratio_generator { background: url('aspect-ratio-generator.png'); }
@@ -27,6 +28,7 @@
 .icon-bool_display { background: url('bool-display.png'); }
 .icon-ceiling_modulator { background: url('ceiling-modulator.png'); }
 .icon-clamp_modulator { background: url('clamp-modulator.png'); }
+.icon-clamped_accumulate_modulator { background: url('clamped-accumulate-modulator.png'); }
 .icon-clock_generator { background: url('clock-generator.png'); }
 .icon-color_add_modulator { background: url('color-add-modulator.png'); }
 .icon-color_blend_modulator { background: url('color-blend-modulator.png'); }
@@ -167,6 +169,7 @@
 .icon-texture_from_text_generator { background: url('text-display.png'); }
 .icon-texture_type_generator { background: url('texture-type-generator.png'); }
 .icon-toggle_button { background: url('toggle-button.png'); }
+.icon-toggle_modulator { background: url('toggle-modulator.png'); }
 .icon-translation_matrix { background: url('translation-matrix.png'); }
 .icon-transpose_matrix_modulator { background: url('transpose-matrix-modulator.png'); }
 .icon-triangle_modulator { background: url('triangle-modulator.png'); }
