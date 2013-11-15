@@ -71,6 +71,8 @@
 	"UTILS":
 	{
 	 	"Util: Aspect ratio corrector": "util_aspect_ratio",
+	 	"Util: Accumulator": "util_accumulator",
+	 	"Util: Clamped accumulator": "util_clamped_accumulator",
 		"Util: Concatenate x 2": "util_concatenate_x2",
 		"Util: Concatenate x 3": "util_concatenate_x3",
 		"Util: Knob with min and max values": "util_knob_with_min_max",
