@@ -137,6 +137,7 @@ markdown_files = glob.glob('help/*.markdown')
 for markdown in markdown_files:
 	print '\t' + markdown
 	os.system('multimarkdown --process-html ' + markdown + ' > build/' + markdown[:-9] + '.html')
+	os.system('cp build/' + markdown[:-9] + '.html help') 
 
 print '\tCopying index.html.'
 os.system('cp index.html player.html player_scene.json ' + build_dir)
