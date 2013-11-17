@@ -360,9 +360,9 @@ optgroup
 {
 	font-size: 8pt;
 	background-color: #ff8;
-	border: 1px solid #888;
+	border: 1px solid #444 !important;
 	z-index: 100;
-	padding: 4px;
+	padding: 2px;
 	cursor: move;
 	position: absolute;
 	white-space: nowrap;
@@ -400,10 +400,11 @@ optgroup
 .pl_header #t
 {
 	padding: 0px;
-	padding-left: 2px;
+	padding-left: 1px;
 	padding-right: 2px;
 	display: inline-block;
 	width: 100%;
+	font-weight: bold;
 }
 
 #ic
@@ -485,9 +486,10 @@ li.context-menu-item span
 	margin: 0;
 	margin-right: 2px;
 	position: relative;
-	top: 2px;
-	left: 2px;
-	background-color: #eee;
+	top: 1px;
+	left: 1px;
+	background-color: #ddd !important;
+	border: 1px solid #ddd;
 	cursor: default;
 }
 
