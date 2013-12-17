@@ -29,7 +29,7 @@ E2.p.prototype.create_ui = function()
 	inp.change(function(self) { return function() 
 	{
 		self.state.mode = parseInt(inp.val());
-		self.state_changed(inp);
+		// self.state_changed(inp);
 		self.updated = true;
 	}}(this));
 	
