@@ -184,6 +184,19 @@ class Graph:
 			return []
 		
 		by_id, uid = self.parse_by_id(ps.pat)
+		ps.pred_funcs = []
+		
+		def splitkeepsep(s, sep):
+			return reduce(lambda acc, elem: acc[:-1] + [acc[-1] + elem] if elem == sep else acc + [elem], re.split("(%s)" % re.escape(sep), s), [])
+		
+		for i in range(3):
+			if not ps.predicate[i]:
+				ps.pred_func.append(None)
+				continue
+			
+			pred_toks = splitkeepsep(ps.predicate[i], '=<>! ')
+			
+			# TODO:
 		
 		return self.find_items_recursive(arr_prop, idx, by_id, uid, ps, pred)
 			
@@ -468,8 +481,14 @@ def repl():
 
 print(ANSI_GREEN + '\nEdit Graph\n----------' + ANSI_ENDC + '\n')
 
-if len(sys.argv) < 2:
-	sys.exit('Usage: edit-graph.py <graph.json>')
+arg_count = len(sys.argv)
+
+if arg_count < 2 or arg_count > 3:
+	sys.exit('Usage: edit-graph.py <graph.json> OR edit-graph.py <script> <json file pattern>')
 	
-load_file(sys.argv[1])
-repl()
+if arg_count == 2:
+	load_file(sys.argv[1])
+	repl()
+elif arg_count == 3:
+	pass
+
