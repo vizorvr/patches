@@ -32,48 +32,71 @@ E2.p.prototype.reset = function()
 E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { return function(e)
 {
 	var diag = make('span');
-	var src = $('<textarea></textarea>'); 
+	var src = $('<pre id="editor"></pre>'); 
+	var btn_span = make('span');
+	var comp_btn = $('<input id="comp_btn" type="button" value="Compile" title="Click to rebuild the shader." />');
+	var add_btn = $('<input id="add_btn" type="button" value="+" title="Click to add new shader input slot." />');
+	var rem_btn = $('<input id="rem_btn" type="button" value="-" title="Click to remove the selected slot(s)." />');
+	var slot_list = $('<select size="4" />');
+	var shader_lbl = $('<div>Shader</div>');
+	var slot_lbl = $('<div>Inputs</div>');
 	
 	diag.css({
 		'margin': '0px',
-		'padding': '2px',
+		'padding': '2px'
 	});
 
 	src.css({
 		'margin': '0px',
 		'padding': '0px',
 		'margin-top': '2px',
-		'border': 'none',
-		'width': '455px',
+		'border': '1px solid #bbb',
+		'width': '755px',
 		'height': '400px',
 		'resize': 'none',
-		'font-size': '9pt',
+		'font-size': '12px',
 		'font-family': 'Monospace',
-		'overflow': 'scroll',
-		'word-wrap': 'normal',
-		'white-space': 'pre',
-		'background-color': '#ddd'
+		'scroll': 'none'
 	});
 	
-	src.val(self.state[src_id]);
+	var lbl_css = {
+		'font-size': '16px',
+		'float': 'left',
+		'padding': '8px 0px 2px 2px'
+	};
 	
-	diag.append(src);
-	
-	var btn_span = make('span');
-	var comp_btn = $('<input id="comp_btn" type="button" value="Compile" title="Click to rebuild the shader." />');
-	var add_btn = $('<input id="add_btn" type="button" value="Add slot" title="Click to add new shader input slot." />');
-	var rem_btn = $('<input id="rem_btn" type="button" value="Remove slot" title="Click to remove the selected slot(s)." />');
-	var slot_list = $('<select size="4" />');
-	
+	var cmp_btn_css = {
+		'float': 'right',
+		'margin': '3px',
+		'padding': '2px'
+	};
+
+	var slt_btn_css = {
+		'float': 'right',
+		'margin': '2px',
+		'padding': '2px',
+		'width': '30px'
+	};
+
 	slot_list.css({
-		'border': 'none',
-		'width': '457px',
+		'border': '1px solid #bbb',
+		'width': '757px',
 		'margin-left': '2px',
 		'background-color': '#ddd'
 	});
 
-	btn_span.css('width', '455px');
-	btn_span.append(comp_btn);
+	shader_lbl.css(lbl_css);
+	slot_lbl.css(lbl_css);
+	comp_btn.css(cmp_btn_css);
+	rem_btn.css(slt_btn_css);
+	add_btn.css(slt_btn_css);
+		
+	diag.append(shader_lbl);
+	diag.append(comp_btn);
+  	diag.append(src);
+	
+	btn_span.css('width', '755px');
+	btn_span.append(slot_lbl);
 	btn_span.append(add_btn);
 	btn_span.append(rem_btn);
 	
@@ -82,6 +105,17 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 	diag.append(make('br'));
 	diag.append(slot_list);
 
+	var editor = ace.edit(src[0]);
+	
+	editor.setTheme('ace/theme/chrome');
+	editor.getSession().setUseWrapMode(false);
+	editor.setBehavioursEnabled(false);
+	editor.setShowPrintMargin(false);
+	editor.getSession().setMode('ace/mode/glsl');
+	editor.setValue(self.state[src_id]);
+	editor.gotoLine(0);
+	editor.session.selection.clearSelection();
+	
 	// Rebuild slot list.
 	for(var ident in self.state.slot_ids)
 	{
@@ -90,11 +124,13 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 		slot_list.append($('<option>', { value: slot.id }).text(ident));
 	}			
 
-	comp_btn.click(function(e)
+	var store_state = function(editor, dest, done_func, diag) { return function()
 	{
-		dest(src.val());
-		done_func(null);
-	});
+		dest(editor.getValue());
+		done_func(diag);
+	}};
+	
+	comp_btn.click(store_state(editor, dest, done_func, null));
 	
 	add_btn.click(function(self) { return function(e)
 	{
@@ -114,13 +150,21 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 		var l1 = make('span');
 		var lbl = $('<div>Identifier:</div>');
 		
-		inp.css('width', '220px');
+		inp.css({
+			'width': '240px',
+			'border': '1px solid #999'
+		});
 		
-		lbl.css({
+		dt_sel.css('margin-left', '0px');
+		
+		var lbl_css = {
 			'padding-top': '3px',
 			'float': 'left',
-			'width': '80px'
-		});
+			'width': '80px',
+			'font-size': '13px'
+		};
+		
+		lbl.css(lbl_css);
 		
 		l1.append(lbl);
 		l1.append(inp);
@@ -130,13 +174,9 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 		
 		var l2 = make('span');
 		
-		lbl = $('<div>Data type:</div>');
+		lbl = $('<div>Type:</div>');
 		
-		lbl.css({
-			'padding-top': '3px',
-			'float': 'left',
-			'width': '78px'
-		});
+		lbl.css(lbl_css);
 
 		l2.append(lbl);
 		l2.append(dt_sel);
@@ -171,10 +211,12 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 		
 		diag2.dialog({
 			width: 360,
-			height: 170,
+			height: 180,
 			modal: true,
+			resizable: false,
 			title: 'Create new slot.',
-			buttons: {
+			buttons:
+			{
 				'OK': function()
 				{
 					finish_func();
@@ -212,16 +254,14 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 	}}(self));
 	
 	diag.dialog({
-		width: 460,
+		width: 760,
 		height: 150,
 		modal: true,
+		resizable: false,
 		title: 'Edit ' + title + ' shader.',
-		buttons: {
-			'OK': function()
-			{
-				dest(src.val());
-				done_func(diag);
-			},
+		buttons:
+		{
+			'OK': store_state(editor, dest, done_func, diag),
 			'Cancel': function()
 			{
 				$(this).dialog('close');
@@ -419,5 +459,9 @@ E2.p.prototype.state_changed = function(ui)
 		this.material = null;
 		this.caps_mask = '';
 		this.dirty = false;
+	}
+	else
+	{
+		this.core.add_aux_script('ace/ace.js');
 	}
 };
