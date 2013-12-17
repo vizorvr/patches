@@ -130,6 +130,17 @@ function load_script(url)
 	document.getElementById('head').appendChild(script);
 }
 
+function load_style(url)
+{
+	var link = document.createElement('link');
+	var rel = document.createAttribute('rel');
+	
+	link.rel = 'stylesheet';
+	link.href = url;
+	
+	document.getElementById('head').appendChild(link);
+}
+
 function Delegate(delegate, dt, count)
 {
 	this.delegate = delegate;
@@ -1858,7 +1869,8 @@ function Core(app) {
 		LIGHT: { id: 13, name: 'Light' },
 		DELEGATE: { id: 14, name: 'Delegate' },
 		TEXT: { id: 15, name: 'Text' },
-		VIDEO: { id: 16, name: 'Video' }
+		VIDEO: { id: 16, name: 'Video' },
+		ARRAY: { id: 17, name: 'Array' }
 	};
 	
 	this.renderer = new Renderer('#webgl-canvas', this);
@@ -1872,6 +1884,8 @@ function Core(app) {
 	this.plugin_mgr = new PluginManager(this, 'plugins', E2.app ? E2.app.onPluginInstantiated : null);
 	this.asset_tracker = new AssetTracker();
 	this.registers = new Registers(this);
+	this.aux_scripts = {};
+	this.aux_styles = {};
 	
 	this.resolve_dt = []; // Make a table for easy reverse lookup of dt reference by id.
 	
@@ -2027,6 +2041,24 @@ function Core(app) {
 		};
 		
 		build(self.root_graph, 'Root');
+	};
+	
+	this.add_aux_script = function(script_url)
+	{
+		if(self.aux_scripts.hasOwnProperty(script_url))
+			return;
+		
+		load_script('plugins/' + script_url);
+		self.aux_scripts[script_url] = true;
+	};
+
+	this.add_aux_style = function(style_url)
+	{
+		if(self.aux_styles.hasOwnProperty(style_url))
+			return;
+		
+		load_style('plugins/' + style_url);
+		self.aux_styles[style_url] = true;
 	};
 }
 
