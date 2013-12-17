@@ -82,6 +82,15 @@ os.remove(plugs_concat_filename)
 print '\tCopying plugin catalogue.'
 os.system('cp ' + plugins_path + 'plugins.json ' + build_dir + '/' + plugins_path)
 
+print '\tProcessing plugin dependencies'
+print '\t\tACE Editor + plugins'
+os.system('mkdir ' + build_dir + '/plugins/ace')
+ace_files = glob.glob('plugins/ace/*.js')
+
+for ace_file in ace_files:
+	print('\t\t+ ' + ace_file)
+	compress(ace_file, build_dir + '/' + ace_file)
+
 print 'Compressing stylesheets...'
 css_path = 'style/'
 os.mkdir(build_dir + '/' + css_path)
