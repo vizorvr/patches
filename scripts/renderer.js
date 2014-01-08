@@ -873,7 +873,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 	var shader = shader || this.shader;
 	var gl = this.gl;
 	
-	if(!verts || !shader)
+	if(!verts || !shader || !shader.linked)
 		return;
 	
 	var unbound = gl.bound_mesh !== this || gl.bound_shader !== shader;
@@ -1214,6 +1214,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 		var vs = new Shader(gl, gl.VERTEX_SHADER, shader.vs_src);
 		var ps = new Shader(gl, gl.FRAGMENT_SHADER, shader.ps_src);
+		var compiled = vs.compiled && ps.compiled;
 
 		var resolve_attr = function(id)
 		{
@@ -1222,68 +1223,68 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			return idx < 0 ? undefined : idx;
 		};
 		
-		if(vs.compiled && ps.compiled)
+		if(compiled)
 		{
 			shader.attach(vs);
 			shader.attach(ps);
 			shader.link();
-		}
-
-		if(streams[v_types.VERTEX])
-			shader.v_pos = resolve_attr('v_pos');
-		
-		if(streams[v_types.NORMAL])
-			shader.v_norm = resolve_attr('v_norm');
-		
-		shader.m_mat = gl.getUniformLocation(prog, 'm_mat');
-		shader.v_mat = gl.getUniformLocation(prog, 'v_mat');
-		shader.p_mat = gl.getUniformLocation(prog, 'p_mat');
-		shader.a_col = gl.getUniformLocation(prog, 'a_col');
-		shader.d_col = gl.getUniformLocation(prog, 'd_col');
-
-		if(has_lights)
-		{
-			shader.s_col = gl.getUniformLocation(prog, 's_col');
-			shader.shinyness = gl.getUniformLocation(prog, 'shinyness');
-			shader.n_mat = gl.getUniformLocation(prog, 'n_mat');
-	
-			for(var i = 0; i < 8; i++)
-			{
-				var l = lights[i];
 			
-				if(l)
-				{
-					var lid = 'l' + i;
+			if(streams[v_types.VERTEX])
+				shader.v_pos = resolve_attr('v_pos');
+		
+			if(streams[v_types.NORMAL])
+				shader.v_norm = resolve_attr('v_norm');
+		
+			shader.m_mat = gl.getUniformLocation(prog, 'm_mat');
+			shader.v_mat = gl.getUniformLocation(prog, 'v_mat');
+			shader.p_mat = gl.getUniformLocation(prog, 'p_mat');
+			shader.a_col = gl.getUniformLocation(prog, 'a_col');
+			shader.d_col = gl.getUniformLocation(prog, 'd_col');
 
-					shader[lid + '_pos'] = gl.getUniformLocation(prog, lid + '_pos');
-					shader[lid + '_d_col'] = gl.getUniformLocation(prog, lid + '_d_col');
-					shader[lid + '_s_col'] = gl.getUniformLocation(prog, lid + '_s_col');
-					shader[lid + '_power'] = gl.getUniformLocation(prog, lid + '_power');
+			if(has_lights)
+			{
+				shader.s_col = gl.getUniformLocation(prog, 's_col');
+				shader.shinyness = gl.getUniformLocation(prog, 'shinyness');
+				shader.n_mat = gl.getUniformLocation(prog, 'n_mat');
+	
+				for(var i = 0; i < 8; i++)
+				{
+					var l = lights[i];
+			
+					if(l)
+					{
+						var lid = 'l' + i;
+
+						shader[lid + '_pos'] = gl.getUniformLocation(prog, lid + '_pos');
+						shader[lid + '_d_col'] = gl.getUniformLocation(prog, lid + '_d_col');
+						shader[lid + '_s_col'] = gl.getUniformLocation(prog, lid + '_s_col');
+						shader[lid + '_power'] = gl.getUniformLocation(prog, lid + '_power');
 				
-					if(l.type === Light.type.DIRECTIONAL)
-						shader[lid + '_dir'] = gl.getUniformLocation(prog, lid + '_dir');
+						if(l.type === Light.type.DIRECTIONAL)
+							shader[lid + '_dir'] = gl.getUniformLocation(prog, lid + '_dir');
+					}
 				}
 			}
-		}
 
-		if(streams[v_types.COLOR])
-			shader.v_col = resolve_attr('v_col');
+			if(streams[v_types.COLOR])
+				shader.v_col = resolve_attr('v_col');
 		
-		if(streams[v_types.UV0])
-		{
-			shader.v_uv0 = resolve_attr('v_uv0');
+			if(streams[v_types.UV0])
+			{
+				shader.v_uv0 = resolve_attr('v_uv0');
 			
-			if(d_tex)
-				shader.d_tex = gl.getUniformLocation(prog, 'd_tex');
+				if(d_tex)
+					shader.d_tex = gl.getUniformLocation(prog, 'd_tex');
 		
-			if(s_tex)
-				shader.s_tex = gl.getUniformLocation(prog, 's_tex');
+				if(s_tex)
+					shader.s_tex = gl.getUniformLocation(prog, 's_tex');
 
-			if(n_tex)
-				shader.n_tex = gl.getUniformLocation(prog, 'n_tex');
+				if(n_tex)
+					shader.n_tex = gl.getUniformLocation(prog, 'n_tex');
 
-			if(e_tex)
-				shader.e_tex = gl.getUniformLocation(prog, 'e_tex');
+				if(e_tex)
+					shader.e_tex = gl.getUniformLocation(prog, 'e_tex');
+			}
 		}
 	
 		shader.bind_array = function(type, data, item_size)
@@ -1308,7 +1309,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			gl.vertexAttribPointer(attr, item_size, gl.FLOAT, false, 0, 0);
 		};
 	
-		shader.apply_uniforms = function(mesh, mat)
+		shader.apply_uniforms = !compiled ? function(mesh, mat) {} : function(mesh, mat)
 		{
 			var r = E2.app.player.core.renderer;
 			var m = mat ? mat : mesh.material;
@@ -1448,6 +1449,9 @@ function Shader(gl, type, src)
 {
 	this.shader = gl.createShader(type);
 	this.compiled = false;
+	this.linked = false;
+	this.compile_info = ''
+	this.link_info = ''
 	
 	try
 	{
@@ -1467,6 +1471,7 @@ function Shader(gl, type, src)
 		var info_lines = info.split('\n');
 		var src_lines = src.split('\n');
 		
+		this.compile_info = info;
 		msg('ERROR: Shader compilation failed:\n');	
 		
 		for(var l = 0, len = info_lines.length; l != len; l++)
@@ -1500,10 +1505,14 @@ ShaderProgram.prototype.link = function()
 	var prog = this.program;
 	
 	gl.linkProgram(prog);
-
+	this.linked = true;
+	this.link_info = '';
+	
 	if(!gl.getProgramParameter(prog, gl.LINK_STATUS))
 	{
 		msg('ERROR: Shader linking failed:\n' + gl.getProgramInfoLog(prog));
+		this.link_info += gl.getProgramInfoLog(prog);
+		this.linked = false;
 	}
 	
 	gl.validateProgram(prog);
@@ -1511,6 +1520,8 @@ ShaderProgram.prototype.link = function()
 	if(!gl.getProgramParameter(prog, gl.VALIDATE_STATUS))
 	{
 		msg('ERROR: Shader validation failed:\n' + gl.getProgramInfoLog(prog));
+		this.link_info += gl.getProgramInfoLog(prog);
+		this.linked = false;
 	}
 };
 

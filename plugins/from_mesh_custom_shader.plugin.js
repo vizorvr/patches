@@ -356,45 +356,48 @@ E2.p.prototype.rebuild_shader = function()
 		
 	this.shader = ComposeShader(null, this.mesh, this.material, u_vs, u_ps, st.vs_src && st.changed ? st.vs_src : null, st.ps_src && st.changed ? st.ps_src : null);
 
-	for(var ident in st.slot_ids)
+	if(this.shader.linked)
 	{
-		var slot = st.slot_ids[ident];
-		
-		slot.uniform = gl.getUniformLocation(this.shader.program, ident);
-	}
-	
-	this.shader.apply_uniforms_custom = function(self) { return function()
-	{
-		var tex_slot = 1;
-		var sd = self.slot_data;
-		var dts = self.core.datatypes;
-		
 		for(var ident in st.slot_ids)
 		{
 			var slot = st.slot_ids[ident];
 		
-			if(slot.uniform === null || sd[slot.id] === undefined || sd[slot.id] === null)
-				continue;
-				
-			var dtid = slot.dt.id;
-			
-			if(dtid === dts.FLOAT.id)
-				gl.uniform1f(slot.uniform, sd[slot.id]);
-			else if(dtid === dts.TEXTURE.id)
-			{
-				gl.uniform1i(slot.uniform, tex_slot);
-				sd[slot.id].enable(gl.TEXTURE0 + tex_slot);
-				tex_slot++;
-			}
-			else if(dtid === dts.COLOR.id)
-				gl.uniform4fv(slot.uniform, new Float32Array(sd[slot.id].rgba));	
-			else if(dtid === dts.MATRIX.id)
-				gl.uniformMatrix4fv(slot.uniform, false, sd[slot.id]);
-			else if(dtid === dts.VECTOR.id)
-				gl.uniform3fv(slot.uniform, new Float32Array(sd[slot.id]));	
+			slot.uniform = gl.getUniformLocation(this.shader.program, ident);
 		}
-	}}(this);
-
+	
+		this.shader.apply_uniforms_custom = function(self) { return function()
+		{
+			var tex_slot = 1;
+			var sd = self.slot_data;
+			var dts = self.core.datatypes;
+		
+			for(var ident in st.slot_ids)
+			{
+				var slot = st.slot_ids[ident];
+		
+				if(slot.uniform === null || sd[slot.id] === undefined || sd[slot.id] === null)
+					continue;
+				
+				var dtid = slot.dt.id;
+			
+				if(dtid === dts.FLOAT.id)
+					gl.uniform1f(slot.uniform, sd[slot.id]);
+				else if(dtid === dts.TEXTURE.id)
+				{
+					gl.uniform1i(slot.uniform, tex_slot);
+					sd[slot.id].enable(gl.TEXTURE0 + tex_slot);
+					tex_slot++;
+				}
+				else if(dtid === dts.COLOR.id)
+					gl.uniform4fv(slot.uniform, new Float32Array(sd[slot.id].rgba));	
+				else if(dtid === dts.MATRIX.id)
+					gl.uniformMatrix4fv(slot.uniform, false, sd[slot.id]);
+				else if(dtid === dts.VECTOR.id)
+					gl.uniform3fv(slot.uniform, new Float32Array(sd[slot.id]));	
+			}
+		}}(this);
+	}
+	
 	if(st.vs_src === '')
 		st.vs_src = this.shader.vs_c_src;
 
