@@ -1,9 +1,8 @@
 E2.p = E2.plugins["loop"] = function(core, node)
 {
-	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and run the enclosed logic once per loop iteration. The loop counter is made available to enclosing logic as a local register with the name <b>index_id<\/b>.';
+	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and run the enclosed logic once per loop iteration. The loop counter is made available to enclosing logic as a local register with the name <b>index<\/b>.';
 	
 	this.input_slots = [
-		{ name: 'index id', dt: core.datatypes.TEXT, desc: 'The index register name.', def: 'cnt' },
 		{ name: 'first', dt: core.datatypes.FLOAT, desc: 'The start index.', def: '0' },
 		{ name: 'last', dt: core.datatypes.FLOAT, desc: 'The end index.', def: '0' },
 		{ name: 'step', dt: core.datatypes.FLOAT, desc: 'Loop index increment.', def: '1' }
@@ -190,6 +189,9 @@ E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_s
 	
 	var change_slots = function(last, g_slot, p_slot)
 	{
+		if(!g_slot) // 'index' slot?
+			return;
+		
 		self.dbg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid);
 		
 		p_slot.connected = true;
@@ -296,17 +298,8 @@ E2.p.prototype.update_input = function(slot, data)
 	if(slot.uid === undefined)
 	{
 		if(slot.index === 0)
-		{
-			if(this.index_id !== data)
-			{
-				this.graph.registers.unlock(this, this.index_id);
-				this.graph.registers.lock(this, data);
-				this.index_id = data;
-			}
-		}
-		else if(slot.index === 1)
 			this.first = Math.floor(data);
-		else if(slot.index === 2)
+		else if(slot.index === 1)
 			this.last = Math.floor(data);
 		else
 			this.step = Math.floor(data);
@@ -326,7 +319,7 @@ E2.p.prototype.update_state = function()
 	{
 		for(var cnt = this.first; cnt < this.last; cnt += this.step)
 		{
-			this.graph.registers.write(this.index_id, cnt);
+			this.graph.registers.write('index', cnt);
 			this.graph.update();
 		}
 	}
@@ -385,7 +378,7 @@ E2.p.prototype.graph_event = function(self) { return function(ev)
 	}
 	else if(ev.type === 'node-destroyed')
 	{
-		if(pid === 'input_proxy')
+		if(pid === 'input_proxy' && ev.node.title !== 'index')
 			self.destroy_slot(E2.slot_type.input, ev.node.uid);
 		else if(pid === 'output_proxy')
 			self.destroy_slot(E2.slot_type.output, ev.node.uid);
@@ -393,7 +386,12 @@ E2.p.prototype.graph_event = function(self) { return function(ev)
 	else if(ev.type === 'node-renamed')
 	{
 		if(pid === 'input_proxy')
-			node.rename_slot(E2.slot_type.input, self.state.input_sids[ev.node.uid], ev.node.title);
+		{
+			if(ev.node.title === 'index')
+				self.destroy_slot(E2.slot_type.input, ev.node.uid);
+			else
+				node.rename_slot(E2.slot_type.input, self.state.input_sids[ev.node.uid], ev.node.title);
+		}
 		else if(pid === 'output_proxy')
 			node.rename_slot(E2.slot_type.output, self.state.output_sids[ev.node.uid], ev.node.title);
 	}
@@ -440,14 +438,13 @@ E2.p.prototype.state_changed = function(ui)
 	for(var uid in this.state.output_sids)
 		this.output_nodes[this.state.output_sids[uid]] = find_node(this.graph.nodes, parseInt(uid));
 		
-	this.index_id = 'cnt';
 	this.first = 0;
 	this.last = 0;
 	this.step = 1;
 	
-	this.graph.registers.lock(this, this.index_id);
-	var rdt = this.graph.registers.registers[this.index_id].dt;
+	this.graph.registers.lock(this, 'index');
+	var rdt = this.graph.registers.registers['index'].dt;
 	
 	if(rdt === this.core.datatypes.ANY)
-		this.graph.registers.set_datatype(this.index_id, core.datatypes.FLOAT);
+		this.graph.registers.set_datatype('index', core.datatypes.FLOAT);
 };
