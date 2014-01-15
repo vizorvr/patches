@@ -99,7 +99,7 @@ def stream_to_image(ctx, filename, d_stream):
     img.pixels = data
     print('Stream to image: %s.png (%d x %d, %d).' % (filename, w, h, pixel_count))
     
-    r_settings.alpha_mode = 'STRAIGHT'
+    r_settings.alpha_mode = 'TRANSPARENT'
     r_settings.use_antialiasing = False
     r_settings.use_compositing = False
     r_settings.use_sequencer = False
