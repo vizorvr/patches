@@ -51,8 +51,14 @@ E2.p.prototype.reset = function()
 E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e)
 {
 	var diag = make('span');
-	var src = $('<textarea></textarea>'); 
-	
+	var src = $('<pre id="editor"></pre>'); 
+	var btn_span = make('span');
+	var add_btn = $('<input id="add_btn" type="button" value="+" title="Click to add new delegate input slot." />');
+	var rem_btn = $('<input id="rem_btn" type="button" value="-" title="Click to remove the selected slot(s)." />');
+	var slot_list = $('<select size="4" />');
+	var exp_lbl = $('<div>Expression</div>');
+	var slot_lbl = $('<div>Inputs</div>');
+		
 	diag.css({
 		'margin': '0px',
 		'padding': '2px'
@@ -62,35 +68,45 @@ E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e
 		'margin': '0px',
 		'padding': '0px',
 		'margin-top': '2px',
-		'border': 'none',
-		'width': '455px',
+		'border': '1px solid #bbb',
+		'width': '755px',
 		'height': '400px',
 		'resize': 'none',
-		'font-size': '9pt',
+		'font-size': '12px',
 		'font-family': 'Monospace',
-		'overflow': 'scroll',
-		'word-wrap': 'normal',
-		'white-space': 'pre',
-		'background-color': '#ddd'
+		'scroll': 'none'
 	});
 	
-	src.val(self.state.expression);
+	var lbl_css = {
+		'font-size': '16px',
+		'float': 'left',
+		'padding': '8px 0px 2px 2px'
+	};
 	
-	diag.append(src);
-	
-	var btn_span = make('span');
-	var add_btn = $('<input id="add_btn" type="button" value="Add slot" title="Click to add new delegate input slot." />');
-	var rem_btn = $('<input id="rem_btn" type="button" value="Remove slot" title="Click to remove the selected slot(s)." />');
-	var slot_list = $('<select size="4" />');
-	
+	var slt_btn_css = {
+		'float': 'right',
+		'margin': '2px',
+		'padding': '2px',
+		'width': '30px'
+	};
+
 	slot_list.css({
-		'border': 'none',
-		'width': '457px',
+		'border': '1px solid #bbb',
+		'width': '757px',
 		'margin-left': '2px',
 		'background-color': '#ddd'
 	});
 
-	btn_span.css('width', '455px');
+	exp_lbl.css(lbl_css);
+	slot_lbl.css(lbl_css);
+	rem_btn.css(slt_btn_css);
+	add_btn.css(slt_btn_css);
+		
+	diag.append(exp_lbl);
+  	diag.append(src);
+	
+	btn_span.css('width', '755px');
+	btn_span.append(slot_lbl);
 	btn_span.append(add_btn);
 	btn_span.append(rem_btn);
 	
@@ -98,6 +114,17 @@ E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e
 	diag.append(btn_span);
 	diag.append(make('br'));
 	diag.append(slot_list);
+
+	var editor = ace.edit(src[0]);
+	
+	editor.setTheme('ace/theme/chrome');
+	editor.getSession().setUseWrapMode(false);
+	editor.setBehavioursEnabled(false);
+	editor.setShowPrintMargin(false);
+	editor.getSession().setMode('ace/mode/javascript');
+	editor.setValue(self.state.expression);
+	editor.gotoLine(0);
+	editor.session.selection.clearSelection();
 
 	// Rebuild slot list.
 	for(var ident in self.state.slot_ids)
@@ -128,7 +155,7 @@ E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e
 		
 		diag2.append(l1);
 		
-		var finish_func = function(self) { return function()
+		var finish_func = function(self) { return function(e)
 		{
 			var sname = inp.val();
 			var cid = sname.replace(' ', '_').toLowerCase();
@@ -142,32 +169,7 @@ E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e
 			diag2.dialog('close');
 		}}(self);
 		
-		diag2.dialog({
-			width: 360,
-			height: 170,
-			modal: true,
-			title: 'Create new slot.',
-			show: 'slide',
-			hide: 'slide',
-			buttons: {
-				'OK': function()
-				{
-					finish_func();
-				},
-				'Cancel': function()
-				{
-					$(this).dialog('close');
-				}
-			},
-			open: function()
-			{
-				diag2.keyup(function(e)
-				{
-					if(e.keyCode === $.ui.keyCode.ENTER)
-						finish_func();
-				});
-			}
-		});
+		self.core.create_dialog(diag2, 'Create new slot.', finish_func);
 	}}(self));
 	
 	rem_btn.click(function(self) { return function(e)
@@ -185,25 +187,16 @@ E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e
 		self.node.remove_slot(E2.slot_type.input, sel);
 	}}(self));
 	
-	diag.dialog({
-		width: 460,
-		height: 150,
-		modal: true,
-		title: 'Edit expression.',
-		show: 'slide',
-		hide: 'slide',
-		buttons: {
-			'OK': function()
-			{
-				dest(src.val());
-				done_func(diag);
-			},
-			'Cancel': function()
-			{
-				$(this).dialog('close');
-			}
-		}
-	});
+	var store_state = function(editor, dest, done_func, diag) { return function(e)
+	{
+		if(e && e.target.className === 'ace_text-input')
+			return;
+		
+		dest(editor.getValue());
+		done_func(diag);
+	}};
+	
+	self.core.create_dialog(diag, 'Edit expression.', 760, 150, store_state(editor, dest, done_func, diag));
 }};
 
 E2.p.prototype.create_ui = function()
@@ -264,5 +257,9 @@ E2.p.prototype.state_changed = function(ui)
 			this.slot_name[sid] = cid;
 			this.slot_data[cid] = null;
 		}
+	}
+	else
+	{
+		this.core.add_aux_script('ace/ace.js');
 	}
 };
