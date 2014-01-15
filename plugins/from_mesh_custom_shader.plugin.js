@@ -124,8 +124,11 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 		slot_list.append($('<option>', { value: slot.id }).text(ident));
 	}			
 
-	var store_state = function(editor, dest, done_func, diag) { return function()
+	var store_state = function(editor, dest, done_func, diag) { return function(e)
 	{
+		if(e && e.target.className === 'ace_text-input')
+			return;
+		
 		dest(editor.getValue());
 		done_func(diag);
 	}};
@@ -183,7 +186,7 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 		
 		diag2.append(l2);
 		
-		var finish_func = function(self) { return function()
+		var finish_func = function(self) { return function(e)
 		{
 			var sname = inp.val();
 			var cdt = parseInt(dt_sel.val());
@@ -209,32 +212,7 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 			self.dirty = true;
 		}}(self);
 		
-		diag2.dialog({
-			width: 360,
-			height: 180,
-			modal: true,
-			resizable: false,
-			title: 'Create new slot.',
-			buttons:
-			{
-				'OK': function()
-				{
-					finish_func();
-				},
-				'Cancel': function()
-				{
-					$(this).dialog('close');
-				}
-			},
-			open: function()
-			{
-				diag2.keyup(function(e)
-				{
-					if(e.keyCode === $.ui.keyCode.ENTER)
-						finish_func();
-				});
-			}
-		});
+		self.core.create_dialog(diag2, 'Create new slot.', 360, 180, finish_func);
 	}}(self));
 	
 	rem_btn.click(function(self) { return function(e)
@@ -253,21 +231,7 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 		self.dirty = true;
 	}}(self));
 	
-	diag.dialog({
-		width: 760,
-		height: 150,
-		modal: true,
-		resizable: false,
-		title: 'Edit ' + title + ' shader.',
-		buttons:
-		{
-			'OK': store_state(editor, dest, done_func, diag),
-			'Cancel': function()
-			{
-				$(this).dialog('close');
-			}
-		}
-	});
+	self.core.create_dialog(diag, 'Edit ' + title + ' shader.', 760, 150, store_state(editor, dest, done_func, diag));
 }};
 
 E2.p.prototype.create_ui = function()
