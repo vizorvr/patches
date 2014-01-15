@@ -449,7 +449,7 @@ Connection.prototype.r_update_inbound = function(node)
 
 Connection.prototype.r_update_outbound = function(node)
 {
-	node.queued_update = 2;
+	node.queued_update = 1;
 	
 	if(node.plugin.id !== 'output_proxy')
 	{
@@ -460,7 +460,7 @@ Connection.prototype.r_update_outbound = function(node)
 	{
 		var rp = node.parent_graph.plugin;
 		
-		if(rp && rp.parent_node.queued_update < 2 && rp.state.enabled)
+		if(rp && rp.parent_node.queued_update < 1 && rp.state.enabled)
 			this.r_update_outbound(rp.parent_node);
 	}
 }
@@ -1166,29 +1166,31 @@ Node.prototype.update_recursive = function(conns)
 			}
 		}
 	
-		if(this.plugin.e2_is_graph)
+		var pl = this.plugin;
+
+		if(pl.e2_is_graph) // TODO: Config.
 		{
-			s_plugin.update_state();
+			pl.update_state();
 		}			
 		else if(this.queued_update > 0)
 		{
-			if(s_plugin.update_state)
-				s_plugin.update_state();
+			if(pl.update_state)
+				pl.update_state();
 
-			this.plugin.updated = true;
+			pl.updated = true;
 			this.queued_update = 0;
 		}
-		else if(needs_update || (s_plugin.output_slots.length === 0 && (!this.outputs || this.outputs.length === 0)))
+		else if(needs_update || (pl.output_slots.length === 0 && (!this.outputs || this.outputs.length === 0)))
 		{
-			if(s_plugin.update_state)
-				s_plugin.update_state();
+			if(pl.update_state)
+				pl.update_state();
 		
 			this.inputs_changed = false;
 		}
-		else if(s_plugin.input_slots.length === 0 && (!this.inputs || this.inputs.length === 0))
+		else if(pl.input_slots.length === 0 && (!this.inputs || this.inputs.length === 0))
 		{
-			if(s_plugin.update_state)
-				s_plugin.update_state();
+			if(pl.update_state)
+				pl.update_state();
 		}
 	}
 	
@@ -1371,7 +1373,6 @@ Registers.prototype.connection_changed = function(name, added)
 	else
 		r.connections++;
 		
-	return r.connections;
 };
 
 Registers.prototype.set_datatype = function(name, dt)
@@ -1937,6 +1938,41 @@ function Core(app) {
 		
 		self.active_graph.create_ui();
 		self.active_graph.reset();
+		self.active_graph_dirty = true;
+	};
+	
+	this.create_dialog = function(diag, title, w, h, done_func, open_func)
+	{
+		diag.dialog(
+		{
+			title: title,
+			width: w,
+			height: h,
+			modal: true,
+			resizable: false,
+			buttons:
+			{
+				'OK': function()
+				{
+					done_func();
+				},
+				'Cancel': function()
+				{
+					$(this).dialog('close');
+				}
+			},
+			open: function()
+			{
+				if(open_func)
+					open_func();
+				
+				diag.keyup(function(e)
+				{
+					if(e.keyCode === $.ui.keyCode.ENTER)
+						done_func(e);
+				});
+			}
+		});
 	};
 	
 	this.get_default_value = function(dt)
