@@ -1,8 +1,6 @@
-E2.plugins["scene_renderer_emitter"] = function(core, node) {
-	var self = this;
-	var gl = core.renderer.context;
-	
+E2.p = E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	this.desc = 'Render the supplied <b>scene</b>. If no <b>shader</b> is specified, the internal shaders of the scene meshes are used.';
+	
 	this.input_slots = [ 
 		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'The scene to be rendered.', def: 'Render nothing.' },
 		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'If a material is specified, internal shaders are generated to render each scene mesh using this material as an overload.', def: 'Use scene materials and shaders.' },
@@ -10,103 +8,107 @@ E2.plugins["scene_renderer_emitter"] = function(core, node) {
 		{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'The scene transform to use for rendering.', def: 'Identity' },
 		{ name: 'inv. transform', dt: core.datatypes.BOOL, desc: 'Send true to this slot to apply <b>transform</b> in inverse order when rendering instances.', def: 'False' }
 	];
-	this.output_slots = [];
-
-	this.reset = function()
-	{
-		self.scene = null;
-		self.shader = null;
-	};
 	
-	this.update_input = function(slot, data)
+	this.output_slots = [];
+	
+	this.gl = core.renderer.context;
+};
+
+E2.p.prototype.reset = function()
+{
+	this.scene = null;
+	this.shader = null;
+};
+
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+	{
+		if(data !== this.scene)
+		{
+			this.scene = data;
+		
+			if(!this.ext_camera)
+				this.camera = this.scene.create_autofit_camera();
+			
+			this.material_dirty = true;
+		}
+	}
+	else if(slot.index === 1)
+	{
+		this.material = data;
+		
+		var caps = Material.get_caps_hash(null, data);
+		
+		if(this.material_caps !== caps)
+		{
+			this.material_caps = caps;
+			this.material_dirty = true;
+		}
+	}
+	else if(slot.index === 2)
+	{
+		this.camera = data;
+		this.ext_camera = true;
+	}
+	else if(slot.index === 3)
+		this.transform = data;
+};
+
+E2.p.prototype.connection_changed = function(on, conn, slot)
+{
+	if(!on)
 	{
 		if(slot.index === 0)
 		{
-			if(data !== self.scene)
-			{
-				self.scene = data;
-			
-				if(!self.ext_camera)
-					self.camera = self.scene.create_autofit_camera();
-				
-				self.material_dirty = true;
-			}
+			this.scene = null;
+			this.material_dirty = true;
 		}
 		else if(slot.index === 1)
 		{
-			self.material = data;
-			
-			var caps = Material.get_caps_hash(null, data);
-			
-			if(self.material_caps !== caps)
-			{
-				self.material_caps = caps;
-				self.material_dirty = true;
-			}
+			this.material = null;
+			this.material_caps = '';
+			this.overload_shaders = null;
 		}
 		else if(slot.index === 2)
 		{
-			self.camera = data;
-			self.ext_camera = true;
-		}
-		else if(slot.index === 3)
-			self.transform = data;
-	};
-
-	this.connection_changed = function(on, conn, slot)
-	{
-		if(!on)
-		{
-			if(slot.index === 0)
-			{
-				self.scene = null;
-				self.material_dirty = true;
-			}
-			else if(slot.index === 1)
-			{
-				self.material = null;
-				self.material_caps = '';
-				self.overload_shaders = null;
-			}
-			else if(slot.index === 2)
-			{
-				self.ext_camera = false;
-				
-				if(self.scene)
-					self.camera = self.scene.create_autofit_camera();
-			}
-		}
-	};
-	
-	this.update_state = function()
-	{
-		if(self.scene)
-		{
-			if(self.material_dirty && self.material)
-			{
-				self.overload_shaders = self.scene.build_overload_shaders(self.material)
-				self.material_dirty = false;
-			}
+			this.ext_camera = false;
 			
-			self.transform.invert = self.inv_transform;
-			self.scene.render(gl, self.camera, self.transform, self.overload_shaders, self.material);
+			if(this.scene)
+				this.camera = this.scene.create_autofit_camera();
 		}
-	};
-	
-	this.state_changed = function(ui)
-	{
-		if(!ui)
-		{
-			self.material = null;
-			self.material_caps = '';
-			self.material_dirty = false;
-			self.overload_shaders = null;
-			self.camera = new Camera();
-			self.transform = mat4.create();
-
-			mat4.identity(self.transform);
-			self.ext_camera = false;
-			self.inv_transform = false;
-		}
-	};
+	}
 };
+
+E2.p.prototype.update_state = function()
+{
+	if(this.scene)
+	{
+		if(this.material_dirty && this.material)
+		{
+			this.overload_shaders = this.scene.build_overload_shaders(this.material)
+			this.material_dirty = false;
+		}
+		
+		this.transform.invert = this.inv_transform;
+		this.scene.render(this.gl, this.camera, this.transform, this.overload_shaders, this.material);
+	}
+};
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
+	{
+		this.material = null;
+		this.material_caps = '';
+		this.material_dirty = false;
+		this.overload_shaders = null;
+		this.camera = new Camera();
+		this.transform = mat4.create();
+
+		mat4.identity(this.transform);
+		this.ext_camera = false;
+		this.inv_transform = false;
+	}
+};
+
