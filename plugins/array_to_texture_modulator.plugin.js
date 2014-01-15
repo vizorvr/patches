@@ -24,7 +24,7 @@ E2.p.prototype.reset = function()
 E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
-		this.array = data;
+		this.array = new Uint8Array(data);
 	else
 		this.width = Math.floor(data);
 };	
@@ -42,6 +42,7 @@ E2.p.prototype.update_state = function()
 	
 	var gl = this.gl;
 	var t = this.texture;
+	
 	var w = this.width;
 	var h = (this.array.byteLength / 4) / this.width;
 	
@@ -58,14 +59,21 @@ E2.p.prototype.update_state = function()
 	}
 	
 	msg('Uploading texture from array with size ' + w + 'x' + h);
-	t.enable();
+	t.width = w;
+	t.height = h;
+	
+	gl.bindTexture(gl.TEXTURE_2D, t.texture);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
 	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(this.array));
-	t.disable();
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.array);
+	gl.bindTexture(gl.TEXTURE_2D, null);
 };
 
 E2.p.prototype.update_output = function(slot)
 {
-	return this.output_val;
+	return this.texture;
 };

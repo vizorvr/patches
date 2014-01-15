@@ -29,7 +29,7 @@ E2.p.prototype.reset = function()
 E2.p.prototype.create_ui = function()
 {
 	var inp = $('<select />', { selectedIndex: 1 });
-	
+
 	$('<option />', { value: 0, text: 'Int8' }).appendTo(inp);
 	$('<option />', { value: 1, text: 'Uint8' }).appendTo(inp);
 	$('<option />', { value: 2, text: 'Int16' }).appendTo(inp);
@@ -85,7 +85,6 @@ E2.p.prototype.update_state = function()
 		return;
 	
 	this.value = this.accessor(off);
-	msg('Getting: ' + this.value);
 };
 
 E2.p.prototype.update_output = function(slot)
