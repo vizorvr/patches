@@ -22,7 +22,7 @@ E2.p.prototype.create_ui = function()
 {
 	var inp = $('<input id="url" type="button" value="Source" title="No texture selected." />');
 	
-	inp.click(function(self) { return function(e) 
+	inp.click(function(self, inp) { return function(e) 
 	{
 		var url = self.state.url;
 		
@@ -32,10 +32,14 @@ E2.p.prototype.create_ui = function()
 		var diag = make('div');
 		var url_inp = $('<input type="input" value="' + url + '" />'); 
 		
-		url_inp.css('width', '410px');
+		url_inp.css({
+			'width': '410px',
+			'border': '1px solid #999'
+		});
+		
 		diag.append(url_inp);
 		
-		var done_func = function()
+		var done_func = function(self, url_inp, diag, inp) { return function(e)
 		{
 			self.state.url = url_inp.val();
 			self.state_changed(null);
@@ -46,36 +50,16 @@ E2.p.prototype.create_ui = function()
 
 			self.updated = true;
 			diag.dialog('close');
-		};
+		}}(self, url_inp, diag, inp);
 		
-		diag.dialog({
-			width: 460,
-			height: 150,
-			modal: true,
-			title: 'Select image URL.',
-			show: 'slide',
-			hide: 'slide',
-			buttons: {
-				'OK': function()
-				{
-					done_func();
-				},
-				'Cancel': function()
-				{
-					$(this).dialog('close');
-				}
-			},
-			open: function()
-			{
-				url_inp.focus().val(url_inp.val());
-				diag.keyup(function(e)
-				{
-					if(e.keyCode === $.ui.keyCode.ENTER)
-						done_func();
-				});
-			}
-		});
-	}}(this));
+		
+		var open_func = function(url_inp) { return function()
+		{
+			url_inp.focus().val(url_inp.val());
+		}}(url_inp);
+		
+		self.core.create_dialog(diag, 'Select image URL.', 445, 155, done_func, open_func);
+	}}(this, inp));
 	
 	return inp;
 };

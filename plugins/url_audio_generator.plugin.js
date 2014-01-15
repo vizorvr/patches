@@ -7,6 +7,7 @@ E2.p = E2.plugins["url_audio_generator"] = function(core, node)
 	];
 	
 	this.state = { url: '' };
+	this.core = core;
 	this.audio = null;
 };
 
@@ -18,7 +19,7 @@ E2.p.prototype.create_ui = function()
 {
 	var inp = $('<input id="url" type="button" value="Source" title="No audio selected." />');
 	
-	inp.click(function(self) { return function(e) 
+	inp.click(function(self, inp) { return function(e) 
 	{
 		var url = self.state.url;
 		
@@ -28,10 +29,14 @@ E2.p.prototype.create_ui = function()
 		var diag = make('div');
 		var url_inp = $('<input type="input" value="' + url + '" />'); 
 		
-		url_inp.css('width', '410px');
+		url_inp.css({
+			'width': '410px',
+			'border': '1px solid #999'
+		});
+
 		diag.append(url_inp);
 		
-		var done_func = function()
+		var done_func = function(self, url_inp, diag, inp) { return function(e)
 		{
 			var u = url_inp.val();
 
@@ -40,36 +45,15 @@ E2.p.prototype.create_ui = function()
 			self.state_changed(inp);
 			self.updated = true;
 			diag.dialog('close');
-		};
+		}}(self, url_inp, diag, inp);
 		
-		diag.dialog({
-			width: 460,
-			height: 150,
-			modal: true,
-			title: 'Select audio URL (no extension).',
-			show: 'slide',
-			hide: 'slide',
-			buttons: {
-				'OK': function()
-				{
-					done_func();
-				},
-				'Cancel': function()
-				{
-					$(this).dialog('close');
-				}
-			},
-			open: function()
-			{
-				url_inp.focus().val(url_inp.val());
-				diag.keyup(function(e)
-				{
-					if(e.keyCode === $.ui.keyCode.ENTER)
-						done_func();
-				});
-			}
-		});
-	}}(this));
+		var open_func = function(url_inp) { return function()
+		{
+			url_inp.focus().val(url_inp.val());
+		}}(url_inp);
+		
+		self.core.create_dialog(diag, 'Select audio URL (no extension).', 445, 155, done_func, open_func);
+	}}(this, inp));
 	
 	return inp;
 };
