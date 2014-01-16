@@ -11,7 +11,7 @@ E2.p = E2.plugins["loop"] = function(core, node)
 	this.output_slots = [
 	];
 	
-	this.state = { input_sids: {}, output_sids: {} };
+	this.state = { input_sids: {}, output_sids: {}, always_update: true };
 		
 	this.gl = core.renderer.context;
 	this.core = core;
@@ -46,17 +46,73 @@ E2.p.prototype.stop = function()
 		this.graph.stop();
 };
 
+E2.p.prototype.open_editor = function(self)
+{
+	var diag = make('div');
+	var always_upd = $('<input id="always_upd" type="checkbox" title="If false, this graph is updated only when one of its inputs updates." />');
+	var upd_lbl = $('<div>Always update:</div>');
+	var r1 = make('div');
+
+	var lbl_css = {
+		'font-size': '14px',
+		'float': 'left',
+		'padding': '8px 0px 2px 2px',
+	};
+	
+	var inp_css = {
+		'float': 'right',
+		'margin': '2px',
+		'padding': '2px',
+		'width': '13px',
+		'margin-top': '8px'
+	};
+
+	diag.css({
+		'margin': '0px',
+		'padding': '2px',
+	});
+
+	r1.css('clear', 'both');
+	always_upd.css(inp_css);
+	upd_lbl.css(lbl_css);
+	
+	always_upd.attr('checked', self.state.always_update);
+	
+	r1.append(upd_lbl);
+	r1.append(always_upd);
+	diag.append(r1);
+	
+	var store_state = function(self, always_upd) { return function(e)
+	{
+		self.state.always_update = always_upd.is(":checked");
+	}};
+	
+	self.core.create_dialog(diag, 'Edit Preferences.', 460, 250, store_state(self, always_upd));
+};
+
 E2.p.prototype.create_ui = function()
 {
-	var inp = $('<input id="state" type="button" value="Edit" title="Open this loop for editing." />');
+	var ui = make('div');
+	var inp_edit = $('<input id="state" type="button" value="Edit" title="Open this loop for editing." />');
+	var inp_config = $('<input id="state" type="button" value="..." title="Edit preferences." />');
 	
-	inp.click(function(self) { return function(e) 
+	inp_edit.click(function(self) { return function(e) 
 	{
 		if(self.graph)
 			self.graph.tree_node.activate();
 	}}(this));
 	
-	return inp;
+	inp_config.click(function(self) { return function(e) 
+	{
+		self.open_editor(self);
+	}}(this));
+
+	ui.css('text-align', 'center');
+	ui.append(inp_edit);
+	ui.append(make('br'));
+	ui.append(inp_config);
+	
+	return ui;
 };
 
 E2.p.prototype.get_dt_name = function(dt)

@@ -1168,7 +1168,7 @@ Node.prototype.update_recursive = function(conns)
 	
 		var pl = this.plugin;
 
-		if(pl.e2_is_graph) // TODO: Config.
+		if(pl.e2_is_graph && pl.state.always_update)
 		{
 			pl.update_state();
 		}			
@@ -1273,7 +1273,16 @@ Node.prototype.deserialise = function(guid, d)
 	}
 	
 	if(d.state)
-		this.plugin.state = d.state;
+	{
+		for(var key in d.state)
+		{
+			if(!d.state.hasOwnProperty(key))
+				continue;
+				
+			if(key in this.plugin.state)
+				this.plugin.state[key] = d.state[key];
+		}
+	}
 	
 	if(d.dyn_in || d.dyn_out)
 	{
@@ -1955,6 +1964,7 @@ function Core(app) {
 				'OK': function()
 				{
 					done_func();
+					$(this).dialog('close');
 				},
 				'Cancel': function()
 				{

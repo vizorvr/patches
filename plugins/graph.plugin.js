@@ -10,7 +10,14 @@ E2.p = E2.plugins["graph"] = function(core, node)
 		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'When connected, all enclosed plugins will render to this texture instead of the framebuffer. Also, when connected two dynamic input slots will appear that allows control of the texture resolution.', def: 'Render to framebuffer' }
 	];
 	
-	this.state = { enabled: true, input_sids: {}, output_sids: {} };
+	this.state = { 
+		enabled: true, 
+		always_update: true, 
+		rt_width: 512, 
+		rt_height: 512,
+		input_sids: {}, 
+		output_sids: {}
+	};
 		
 	this.gl = core.renderer.context;
 	this.core = core;
@@ -51,17 +58,115 @@ E2.p.prototype.stop = function()
 		this.graph.stop();
 };
 
+E2.p.prototype.open_editor = function(self)
+{
+	var diag = make('div');
+	var always_upd = $('<input id="always_upd" type="checkbox" title="If false, this graph is updated only when one of its inputs updates." />');
+	var width_inp = $('<select />');
+	var height_inp = $('<select />');
+	var upd_lbl = $('<div>Always update:</div>');
+	var width_lbl = $('<div>Texture width:</div>');
+	var height_lbl = $('<div>Texture height:</div>');
+	var r1 = make('div');
+	var r2 = make('div');
+	var r3 = make('div');
+
+	var lbl_css = {
+		'font-size': '14px',
+		'float': 'left',
+		'padding': '8px 0px 2px 2px',
+	};
+	
+	var inp_css = {
+		'float': 'right',
+		'margin': '2px',
+		'padding': '2px',
+		'width': '60px'
+	};
+
+	diag.css({
+		'margin': '0px',
+		'padding': '2px',
+	});
+
+	for(var i = 1; i < 13; i++)
+	{
+		var d = Math.pow(2, i);
+		
+		$('<option />', { value: d, text: '' + d }).appendTo(width_inp);
+		$('<option />', { value: d, text: '' + d }).appendTo(height_inp);
+	}
+	
+	r1.css('clear', 'both');
+	r2.css('clear', 'both');
+	r3.css('clear', 'both');
+	always_upd.css(inp_css);
+	width_inp.css(inp_css);
+	height_inp.css(inp_css);
+	upd_lbl.css(lbl_css);
+	width_lbl.css(lbl_css);
+	height_lbl.css(lbl_css);
+	always_upd.css({ 'width': '13px', 'margin-top': '8px' });
+	
+	always_upd.attr('checked', self.state.always_update);
+	width_inp.val(self.state.rt_width);
+	height_inp.val(self.state.rt_height);
+	
+	r1.append(upd_lbl);
+	r1.append(always_upd);
+	diag.append(r1);
+	diag.append(make('br'));
+	r2.append(width_lbl);
+	r2.append(width_inp);
+	diag.append(r2);
+	diag.append(make('br'));
+	r3.append(height_lbl);
+	r3.append(height_inp);
+	diag.append(r3);
+	
+	var store_state = function(self, always_upd, width_inp, height_inp) { return function(e)
+	{
+		self.state.always_update = always_upd.is(":checked");
+		
+		var w = width_inp.val(), h = height_inp.val();
+		var refresh = self.state.rt_width !== w || self.state.rt_height !== h;
+		
+		self.state.rt_width = w;
+		self.state.rt_height = h;
+		
+		if(self.framebuffer && refresh)
+		{
+			self.delete_framebuffer();
+			self.set_render_target_state(true);
+		}
+	}};
+	
+	self.core.create_dialog(diag, 'Edit Preferences.', 460, 250, store_state(self, always_upd, width_inp, height_inp));
+};
+
 E2.p.prototype.create_ui = function()
 {
-	var inp = $('<input id="state" type="button" value="Edit" title="Open this graph for editing." />');
+	var ui = make('div');
+	var inp_edit = $('<input id="state" type="button" value="Edit" title="Open this graph for editing." />');
+	var inp_config = $('<input id="state" type="button" value="..." title="Edit preferences." />');
 	
-	inp.click(function(self) { return function(e) 
+	inp_edit.click(function(self) { return function(e) 
 	{
 		if(self.graph)
 			self.graph.tree_node.activate();
 	}}(this));
 	
-	return inp;
+	inp_config.click(function(self) { return function(e) 
+	{
+		self.open_editor(self);
+	}}(this));
+
+	ui.css('text-align', 'center');
+	ui.append(inp_edit);
+	ui.append(make('br'));
+	ui.append(inp_config);
+	
+	return ui;
 };
 
 E2.p.prototype.get_dt_name = function(dt)
@@ -156,6 +261,24 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 	}
 };
 
+E2.p.prototype.delete_framebuffer = function(on)
+{
+	var gl = this.gl;
+	
+	if(this.framebuffer)
+		gl.deleteFramebuffer(this.framebuffer);
+
+	if(this.renderbuffer)
+		gl.deleteRenderbuffer(this.renderbuffer);
+	
+	if(this.texture)
+		this.texture.drop();
+
+	this.framebuffer = null;
+	this.renderbuffer = null;
+	this.texture = null;
+};
+
 E2.p.prototype.set_render_target_state = function(on)
 {
 	var gl = this.gl;
@@ -163,8 +286,8 @@ E2.p.prototype.set_render_target_state = function(on)
 	if(on)
 	{
 		this.framebuffer = gl.createFramebuffer();
-		this.framebuffer.width = 512;
-		this.framebuffer.height = 512;
+		this.framebuffer.width = this.state.rt_width;
+		this.framebuffer.height = this.state.rt_height;
 
 		gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
 
@@ -213,20 +336,7 @@ E2.p.prototype.set_render_target_state = function(on)
 		}
 		
 		if(!in_use)
-		{
-			if(this.framebuffer)
-				gl.deleteFramebuffer(this.framebuffer);
-			
-			if(this.renderbuffer)
-				gl.deleteRenderbuffer(this.renderbuffer);
-				
-			if(this.texture)
-				this.texture.drop();
-			
-			this.framebuffer = null;
-			this.renderbuffer = null;
-			this.texture = null;
-		}
+			this.delete_framebuffer();
 	}
 };
 	
