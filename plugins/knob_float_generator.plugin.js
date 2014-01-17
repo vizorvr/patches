@@ -35,8 +35,8 @@ E2.p.prototype.create_ui = function()
 	
 	var knob_mouseup = function(data) { return function(e)
 	{
-		data.doc.unbind('mouseup.knob');
-		data.doc.unbind('mousemove.knob');
+		document.removeEventListener('mouseup', data.mouseup);
+		document.removeEventListener('mousemove', data.mousemove);
 
 		if(e.stopPropagation) e.stopPropagation();
 		if(e.preventDefault) e.preventDefault();
@@ -65,14 +65,13 @@ E2.p.prototype.create_ui = function()
 	
 	var knob_mousedown = function(self) { return function(e)
 	{
-		var data = {
-			doc: $(document),
-			last_y: e.pageY
-		};
+		var data = { last_y: e.pageY };
 		
 		// Defer registration of event listeners until needed.
-		data.doc.bind('mouseup.knob', knob_mouseup(data));
-		data.doc.bind('mousemove.knob', knob_mousemove(self, data));
+		data.mouseup = knob_mouseup(data);
+		data.mousemove = knob_mousemove(self, data);
+		document.addEventListener('mouseup', data.mouseup);
+		document.addEventListener('mousemove', data.mousemove);
 		
 		if(e.stopPropagation) e.stopPropagation();
 		if(e.preventDefault) e.preventDefault();
@@ -94,7 +93,7 @@ E2.p.prototype.create_ui = function()
 	});
 
 	shadow.append(this.knob);
-	this.knob.mousedown(knob_mousedown(this));
+	this.knob[0].addEventListener('mousedown', knob_mousedown(this));
 	
 	return shadow;
 };
