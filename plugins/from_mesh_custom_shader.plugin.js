@@ -127,7 +127,7 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 	var store_state = function(editor, dest, done_func, diag) { return function(e)
 	{
 		if(e && e.target.className === 'ace_text-input')
-			return;
+			return false;
 		
 		dest(editor.getValue());
 		done_func(diag);
@@ -207,7 +207,6 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 				}
 			}
 			
-			diag2.dialog('close');
 			// self.rebuild_shader();
 			self.dirty = true;
 		}}(self);

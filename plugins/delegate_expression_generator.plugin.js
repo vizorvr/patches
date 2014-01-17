@@ -142,7 +142,10 @@ E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e
 		var l1 = make('span');
 		var lbl = $('<div>Identifier:</div>');
 		
-		inp.css('width', '220px');
+		inp.css({
+			'width': '185px',
+			'border': '1px solid #999'
+		});
 		
 		lbl.css({
 			'padding-top': '3px',
@@ -165,11 +168,9 @@ E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e
 			self.slot_name[sid] = cid;
 			self.slot_data[cid] = null;
 			slot_list.append($('<option>', { value: sid }).text(cid));
-			
-			diag2.dialog('close');
 		}}(self);
 		
-		self.core.create_dialog(diag2, 'Create new slot.', finish_func);
+		self.core.create_dialog(diag2, 'Create new slot.', 305, 160, finish_func);
 	}}(self));
 	
 	rem_btn.click(function(self) { return function(e)
@@ -190,10 +191,10 @@ E2.p.prototype.open_editor = function(self, done_func, dest) { return function(e
 	var store_state = function(editor, dest, done_func, diag) { return function(e)
 	{
 		if(e && e.target.className === 'ace_text-input')
-			return;
+			return false;
 		
 		dest(editor.getValue());
-		done_func(diag);
+		done_func();
 	}};
 	
 	self.core.create_dialog(diag, 'Edit expression.', 760, 150, store_state(editor, dest, done_func, diag));
@@ -206,12 +207,9 @@ E2.p.prototype.create_ui = function()
 	
 	inp.css('width', '55px');
 	
-	var done_func = function(self) { return function(diag)
+	var done_func = function(self) { return function()
 	{
 		self.updated = true;
-		
-		if(diag)
-			diag.dialog('close');
 	}}(this);
 	
 	inp.click(this.open_editor(this, done_func, function(self) { return function(ex)

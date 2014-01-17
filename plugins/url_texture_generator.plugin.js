@@ -42,14 +42,13 @@ E2.p.prototype.create_ui = function()
 		var done_func = function(self, url_inp, diag, inp) { return function(e)
 		{
 			self.state.url = url_inp.val();
+			self.state.url = self.state.url === 'data/textures/' ? '' : self.state.url;
 			self.state_changed(null);
 			self.state_changed(inp);
-			
+			self.updated = true;
+
 			if(self.state.url === '')
 				inp.attr('title', 'No texture selected.');
-
-			self.updated = true;
-			diag.dialog('close');
 		}}(self, url_inp, diag, inp);
 		
 		

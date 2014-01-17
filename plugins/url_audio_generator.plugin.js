@@ -40,11 +40,14 @@ E2.p.prototype.create_ui = function()
 		{
 			var u = url_inp.val();
 
+			u = u === 'data/audio/' ? '' : u;
 			self.state.url = u.substr(0, u.lastIndexOf('.')) || u;
 			self.state_changed(null);
 			self.state_changed(inp);
 			self.updated = true;
-			diag.dialog('close');
+
+			if(self.state.url === '')
+				inp.attr('title', 'No audio selected.');
 		}}(self, url_inp, diag, inp);
 		
 		var open_func = function(url_inp) { return function()
@@ -52,7 +55,7 @@ E2.p.prototype.create_ui = function()
 			url_inp.focus().val(url_inp.val());
 		}}(url_inp);
 		
-		self.core.create_dialog(diag, 'Select audio URL (no extension).', 445, 155, done_func, open_func);
+		self.core.create_dialog(diag, 'Select audio URL (omit file extension).', 445, 155, done_func, open_func);
 	}}(this, inp));
 	
 	return inp;

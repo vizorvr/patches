@@ -674,6 +674,7 @@ function NodeUI(parent_node, x, y) {
 	
 	dom.addClass('plugin');
 	dom.addClass('ui-widget-content');
+	dom.css('border', '1px solid #444');
 	dom.attr('id', nid);
 	dom.mousemove(E2.app.onMouseMoved); // Make sure we don't stall during slot connection, when the mouse enters a node.
 	
@@ -1978,8 +1979,8 @@ function Core(app) {
 				
 				diag.keyup(function(e)
 				{
-					if(e.keyCode === $.ui.keyCode.ENTER)
-						done_func(e);
+					if(e.keyCode === $.ui.keyCode.ENTER && done_func(e) !== false)
+						$(this).dialog('close');
 				});
 			}
 		});
@@ -2221,39 +2222,20 @@ function Application() {
 			var diag = make('div');
 			var inp = $('<input type="input" value="graph(' + self.player.core.active_graph.node_uid + ')" />'); 
 		
-			inp.css('width', '410px');
+			inp.css({
+				'width': '240px',
+				'border': '1px solid #999'
+			});
+		
 			diag.append(inp);
 		
-			diag.dialog({
-				width: 460,
-				height: 150,
-				modal: true,
-				title: 'Name new graph.',
-				show: 'slide',
-				hide: 'slide',
-				buttons: {
-					'OK': function()
-					{
-						createPlugin(inp.val());
-						$(this).dialog('close');
-					},
-					'Cancel': function()
-					{
-						$(this).dialog('close');
-					}
-				},
-				open: function()
-				{
-					inp.focus().select();
-					diag.keyup(function(e)
-					{
-						if(e.keyCode === $.ui.keyCode.ENTER)
-						{
-							createPlugin(inp.val());
-							diag.dialog('close');
-						}
-					});
-				}
+			self.player.core.create_dialog(diag, 'Name new graph.', 275, 170, function()
+			{
+				createPlugin(inp.val());
+			},
+			function()
+			{
+				inp.focus().select();
 			});
 		}
 		else if(id === 'loop')
@@ -2600,10 +2582,8 @@ function Application() {
 					iterate_conns(hcs, node.uid);
 				}
 			}
-			else
-			{
-				iterate_conns(hcs, self.hover_node.uid);
-			}
+
+			iterate_conns(hcs, self.hover_node.uid);
 			
 			if(hcs.length > 0)
 				self.updateCanvas(false);
@@ -2669,33 +2649,33 @@ function Application() {
 	
 	this.removeHoverConnections = function()
 	{
-			var hcs = self.hover_connections;
-		
-			if(hcs.length > 0)
+		var hcs = self.hover_connections;
+	
+		if(hcs.length > 0)
+		{
+			var graph = self.player.core.active_graph;
+			var conns = graph.connections;
+			
+			// Remove the pending connections from the graph list,
+			// so that plugins that rely on notification of graph
+			// events can scan this list with meaningful results.
+			for(var i = 0, len = hcs.length; i < len; i++)
 			{
-				var graph = self.player.core.active_graph;
-				var conns = graph.connections;
+				var c = hcs[i];
+				var idx = conns.indexOf(c);
 				
-				// Remove the pending connections from the graph list,
-				// so that plugins that rely on notification of graph
-				// events can scan this list with meaningful results.
-				for(var i = 0, len = hcs.length; i < len; i++)
-				{
-					var c = hcs[i];
-					var idx = conns.indexOf(c);
-					
-					if(idx > -1)
-						conns.splice(idx, 1);
+				if(idx > -1)
+					conns.splice(idx, 1);
 
-					graph.destroy_connection(c);
-				}
-				
-				for(var i = 0, len = hcs.length; i < len; i++)
-					hcs[i].signal_change(false);
-				
-				self.hover_connections = [];
-				self.updateCanvas(true);
+				graph.destroy_connection(c);
 			}
+			
+			for(var i = 0, len = hcs.length; i < len; i++)
+				hcs[i].signal_change(false);
+			
+			self.hover_connections = [];
+			self.updateCanvas(true);
+		}
 	};
 		
 	this.onNodeHeaderEntered = function(node) { return function(e)
@@ -2750,7 +2730,11 @@ function Application() {
 		var diag = make('div');
 		var inp = $('<input type="input" value="' + (node.title === null ? node.id : node.title) + '" />'); 
 	
-		inp.css('width', '410px');
+		inp.css({
+			'width': '240px',
+			'border': '1px solid #999'
+		});
+		
 		diag.append(inp);
 	
 		var done_func = function()
@@ -2772,36 +2756,13 @@ function Application() {
 				node.plugin.renamed();
 				
 			node.parent_graph.emit_event({ type: 'node-renamed', node: node });
-			diag.dialog('close');
 		};
 		
-		diag.dialog({
-			width: 460,
-			height: 150,
-			modal: true,
-			title: 'Rename node.',
-			show: 'slide',
-			hide: 'slide',
-			buttons: {
-				'OK': function()
-				{
-					done_func();
-				},
-				'Cancel': function()
-				{
-					diag.dialog('close');
-				}
-			},
-			open: function()
+		self.player.core.create_dialog(diag, 'Rename node.', 275, 170, done_func,
+			function()
 			{
 				inp.focus().select();
-				diag.keyup(function(e)
-				{
-					if(e.keyCode === $.ui.keyCode.ENTER)
-						done_func();
-				});
-			}
-		});
+			});
 	}};
 	
 	this.isNodeInSelection = function(node)
@@ -2850,9 +2811,6 @@ function Application() {
 		node.x += dx;
 		node.y += dy;
 		
-		// TODO: For some reason (investigate) this doesn't work for output connections
-		// on the drag-node.
-		// gconns(node, conns);
 		var dirty = node.update_connections();
 		
 		if(self.isNodeInSelection(node))
@@ -2912,7 +2870,7 @@ function Application() {
 			if(nui)
 			{
 				nui.selected = false;
-				nui.dom[0].style.border = '1px solid #aaa';
+				nui.dom[0].style.border = '1px solid #444';
 			}
 		}
 			
@@ -3103,7 +3061,7 @@ function Application() {
 			var n = sn[i];
 			
 			if(!n.ui.selected)
-				n.ui.dom[0].style.border = '1px solid #aaa';
+				n.ui.dom[0].style.border = '1px solid #444';
 		}
 		
 		self.selection_nodes = ns;
