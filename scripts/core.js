@@ -1145,19 +1145,16 @@ Node.prototype.update_recursive = function(conns)
 		
 			var value = sn.plugin.update_output(inp.src_slot);
 			
-			if(sn.plugin.updated)
+			if(sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot)))
 			{
-				if(!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))
+				s_plugin.update_input(inp.dst_slot, value);
+				s_plugin.updated = true;
+				needs_update = true;
+		
+				if(inp.ui && !inp.ui.flow)
 				{
-					s_plugin.update_input(inp.dst_slot, value);
-					s_plugin.updated = true;
-					needs_update = true;
-			
-					if(inp.ui && !inp.ui.flow)
-					{
-						dirty = true;
-						inp.ui.flow = true;
-					}
+					dirty = true;
+					inp.ui.flow = true;
 				}
 			}
 			else if(inp.ui && inp.ui.flow)

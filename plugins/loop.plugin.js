@@ -378,6 +378,9 @@ E2.p.prototype.update_state = function()
 			this.graph.registers.write('index', cnt);
 			this.graph.update();
 		}
+
+		if(this.graph.update() && this === E2.app.player.core.active_graph)
+			E2.app.updateCanvas(false);
 	}
 };
 

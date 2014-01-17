@@ -495,6 +495,11 @@ E2.p.prototype.update_input = function(slot, data)
 					
 					this.is_reset = true;
 					
+					var conns = this.graph.connections;
+		
+					for(var i = 0, len = conns.length; i < len; i++)
+						conns[i].ui.flow = false;
+					
 					// If we're the active graph and the editor is active,
 					// update the canvas to reflect potentially changed 
 					// connection state.
@@ -508,7 +513,8 @@ E2.p.prototype.update_input = function(slot, data)
 	}
 	else
 	{
-		this.input_nodes[slot.uid].plugin.input_updated(data);
+		if(this.state.enabled)
+			this.input_nodes[slot.uid].plugin.input_updated(data);
 	}
 };
 
@@ -529,7 +535,8 @@ E2.p.prototype.update_state = function()
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		}
 		
-		this.graph.update();
+		if(this.graph.update() && this === E2.app.player.core.active_graph)
+			E2.app.updateCanvas(false);
 
 		if(this.framebuffer)
 			this.core.renderer.pop_framebuffer();
