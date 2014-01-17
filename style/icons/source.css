@@ -23,7 +23,11 @@
 .icon-audio_get_duration_modulator { background: url('audio-get-duration-modulator.png'); }
 .icon-and_modulator { background: url('and-modulator.png'); }
 .icon-annotation { background: url('annotation.png'); }
-.icon-array_generator { background: url('delegate-json-array-generator.png'); }
+.icon-array_generator { background: url('array-generator.png'); }
+.icon-array_to_texture_modulator { background: url('array-to-texture-modulator.png'); }
+.icon-array_get_modulator { background: url('array-get-modulator.png'); }
+.icon-array_length_modulator { background: url('array-length-modulator.png'); }
+.icon-array_set_modulator { background: url('array-set-modulator.png'); }
 .icon-audio_player { background: url('audio-player.png'); }
 .icon-blend_mode_generator { background: url('color-blend-modulator.png'); }
 .icon-bool_display { background: url('bool-display.png'); }
