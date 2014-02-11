@@ -115,6 +115,9 @@
 .icon-material_texture_modulator { background: url('texture-type-generator.png'); }
 .icon-material_z_buffer_modulator { background: url('material-z-buffer-modulator.png'); }
 .icon-matrix_display { background: url('matrix-display.png'); }
+.icon-matrix_clone_modulator { background: url('clone-modulator.png'); }
+.icon-get_matrix_modulator { background: url('array-get-modulator.png'); }
+.icon-set_matrix_modulator { background: url('array-set-modulator.png'); }
 .icon-max_modulator { background: url('max-modulator.png'); }
 .icon-mesh_primtype_generator { background: url('mesh-primtype-generator.png'); }
 .icon-mesh_primtype_modulator { background: url('mesh-primtype-generator.png'); }
