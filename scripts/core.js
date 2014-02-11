@@ -1960,11 +1960,13 @@ function Core(app) {
 				'OK': function()
 				{
 					done_func();
-					$(this).dialog('close');
+					$(this).dialog('destroy');
+					diag.remove();
 				},
 				'Cancel': function()
 				{
-					$(this).dialog('close');
+					$(this).dialog('destroy');
+					diag.remove();
 				}
 			},
 			open: function()
@@ -1975,7 +1977,10 @@ function Core(app) {
 				diag.keyup(function(e)
 				{
 					if(e.keyCode === $.ui.keyCode.ENTER && done_func(e) !== false)
-						$(this).dialog('close');
+					{
+						$(this).dialog('destroy');
+						diag.remove();
+					}
 				});
 			}
 		});
