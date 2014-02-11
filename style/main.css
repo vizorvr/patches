@@ -388,11 +388,9 @@ optgroup
 {
 	width: 16px;
 	height: 16px;
-	padding: none !important;
 	margin: 2px;
 	border: 1px;
-	float: right;
-	background: url('../images/config.jpg') no-repeat;
+	background: url('../images/config.png') no-repeat;
 }
 
 .pl_layout
@@ -413,8 +411,10 @@ optgroup
 	padding: 0px;
 	padding-left: 1px;
 	padding-right: 2px;
-	/*display: inline-block;*/
-	width: 100%;
+	vertical-align: top;
+	display: inline-block;
+	width: calc(100% - 40px);
+	height: 16px;
 	font-weight: bold;
 }
 
@@ -496,6 +496,7 @@ li.context-menu-item span
 	padding: 0;
 	margin: 0;
 	margin-right: 2px;
+	margin-bottom: 2px;
 	position: relative;
 	top: 1px;
 	left: 1px;

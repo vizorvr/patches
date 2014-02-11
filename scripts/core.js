@@ -693,12 +693,12 @@ function NodeUI(parent_node, x, y) {
 		E2.app.updateCanvas(true);
 	}}(this));
 	
-	h_cell.append(icon);
 	lbl.text(parent_node.get_disp_name());
 	lbl.attr('id', 't');
-	
-	h_cell.append(lbl);
+
 	h_cell.attr('colspan', '3');
+	h_cell.append(icon);
+	h_cell.append(lbl);
 	h_row.append(h_cell);
 	h_row.addClass('pl_header');
 	h_row.click(E2.app.onNodeHeaderClicked);
@@ -2448,6 +2448,7 @@ function Application() {
 					c.lineTo(x2, y1);
 					c.lineTo(x2, y4);
 					c.lineTo(x4, y4);
+					
 					// Noodles!
 					/*var cn = b[i].ui;
 					var x1 = (cn.src_pos[0] - so[0]) + 0.5;
