@@ -392,11 +392,9 @@ ConnectionUI.prototype.resolve_slot_divs = function()
 	
 	this.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + (pc.src_slot.uid !== undefined ? 'do' + pc.src_slot.uid : 'so' + pc.src_slot.index));
 	this.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + (pc.dst_slot.uid !== undefined ? 'di' + pc.dst_slot.uid : 'si' + pc.dst_slot.index));
-	// assert(self.src_slot_div !== null && self.dst_slot_div !== null, 'Failed to resolve connection slot div.'); 
-	
-	E2.app.getSlotPosition(this.parent_conn.src_node, this.src_slot_div, E2.slot_type.output, this.src_pos);
-	E2.app.getSlotPosition(this.parent_conn.dst_node, this.dst_slot_div, E2.slot_type.input, this.dst_pos);
-	// assert(self.src_pos !== null && self.dst_pos !== null, 'Failed to resolve connection slot div position.'); 
+
+	E2.app.getSlotPosition(pc.src_node, this.src_slot_div, E2.slot_type.output, this.src_pos);
+	E2.app.getSlotPosition(pc.dst_node, this.dst_slot_div, E2.slot_type.input, this.dst_pos);
 };
 
 function Connection(src_node, dst_node, src_slot, dst_slot)
@@ -574,9 +572,8 @@ Connection.prototype.patch_up = function(nodes)
 
 function draggable_mouseup(data) { return function(e)
 {
-	data.doc.unbind('mouseup.draggable');
-	data.doc.unbind('mousemove.draggable');
-		
+	document.removeEventListener('mouseup', data.mouseup);
+	document.removeEventListener('mousemove', data.mousemove);		
 	data.stop(e);
 	
 	if(e.stopPropagation) e.stopPropagation();
@@ -646,11 +643,12 @@ function draggable_mousedown(ui, drag, stop) { return function(e)
 		oy: e.pageY || e.screenY,
 		drag: drag,
 		stop: stop,
-		doc: $(document)
 	};
 
-	data.doc.bind('mouseup.draggable', draggable_mouseup(data));
-	data.doc.bind('mousemove.draggable', draggable_mousemove(data));
+	data.mouseup = draggable_mouseup(data);
+	data.mousemove = draggable_mousemove(data);
+	document.addEventListener('mouseup', data.mouseup);
+	document.addEventListener('mousemove', data.mousemove);
 	
 	if(e.stopPropagation) e.stopPropagation();
 	if(e.preventDefault) e.preventDefault();
@@ -659,7 +657,7 @@ function draggable_mousedown(ui, drag, stop) { return function(e)
 
 function make_draggable(ui, drag, stop)
 {
-	ui.mousedown(draggable_mousedown(ui, drag, stop));
+	ui[0].addEventListener('mousedown', draggable_mousedown(ui, drag, stop));
 }
 
 function NodeUI(parent_node, x, y) {
@@ -3309,7 +3307,13 @@ function Application() {
 		}
 		
 		for(var i = 0, len = self.selection_conns.length; i < len; i++)
-			self.selection_conns[i].ui.resolve_slot_divs();
+		{
+			var cui = self.selection_conns[i].ui;
+			
+			cui.resolve_slot_divs();
+			E2.app.getSlotPosition(cui.parent_conn.src_node, cui.src_slot_div, E2.slot_type.output, cui.src_pos);
+			E2.app.getSlotPosition(cui.parent_conn.dst_node, cui.dst_slot_div, E2.slot_type.input, cui.dst_pos);
+		}
 		
 		if(d.conns.length)
 			self.updateCanvas(false);
@@ -3467,6 +3471,116 @@ function Application() {
 		self.changeControlState();
 	};
 
+	this.onLayoutClicked = function()
+	{
+		var spc = 10; // pixels
+		var nodes = self.player.core.active_graph.nodes;
+		var data = [];
+		var intersect = false;
+		var pass = 0;
+		
+		for(var i = 0, len = nodes.length; i < len; i++)
+		{
+			var d = nodes[i].ui.dom[0];
+			var dat = {
+				x: d.offsetLeft,
+				y: d.offsetTop,
+				w: d.clientWidth,
+				h: d.clientHeight,
+				r2: d.clientWidth + d.clientHeight
+			};
+			
+			data.push(dat);
+			nodes[i].data = dat;
+		}
+
+		
+		do
+		{
+			intersect = false;
+
+			for(var i = 0, len = nodes.length; i < len; i++)
+			{
+				var id = data[i];
+				var ind = nodes[i];
+
+				for(var c = 0, clen = ind.inputs.length; c < clen; c++)
+				{
+					var con = ind.inputs[c];
+					var dat = con.src_node.data;
+					var right = dat.x + dat.w + 20 + (con.offset * 10);
+					var nx = id.x < right ? right - id.x : 0;
+				
+					id.x += nx;
+					intersect = true;
+				}
+			
+				for(var i2 = 0, len2 = nodes.length; i2 < len2; i2++)
+				{
+					if(i === i2)
+						continue;
+					
+					var i2d = data[i2];
+					var n_x = id.x - i2d.x;
+					var n_y = id.y - i2d.y;
+					var ind2 = nodes[i2];
+
+					if(((i2d.x >= id.x - spc && i2d.x <= (id.x + id.w + spc)) || (id.x >= i2d.x - spc && id.x <= (i2d.x + i2d.w + spc))) &&
+					   ((i2d.y >= id.y - spc && i2d.y <= (id.y + id.h + spc)) || (id.y >= i2d.y - spc && id.y <= (i2d.y + i2d.h + spc))))
+					{
+						intersect = true;
+				
+						i2d.x += Math.floor(-n_x * 0.15);
+						i2d.y += Math.floor(-n_y * 0.15);
+					}
+					
+					i2d.x = i2d.x < 5 ? 5 : i2d.x;
+					i2d.y = i2d.y < 5 ? 5 : i2d.y;
+				}
+			}
+			
+			pass++;
+		}
+		while(intersect && pass < 20);
+
+		var mx = 10000000;
+		var my = 10000000;
+		
+		for(var i = 0, len = nodes.length; i < len; i++)
+		{
+			var d = data[i];
+			
+			mx = d.x < mx ? d.x : mx;
+			my = d.y < my ? d.y : my;
+		}
+		
+		mx -= 10;
+		my -= 40;
+		
+		for(var i = 0, len = nodes.length; i < len; i++)
+		{
+			var n = nodes[i];
+			var d = n.ui.dom[0];
+			var dt = data[i];
+			
+			n.x = Math.floor(dt.x) - mx;
+			n.y = Math.floor(dt.y) - my;
+			
+			d.style.left = '' + n.x + 'px';
+			d.style.top = '' + n.y + 'px';
+			delete n.data;
+		}
+		
+		var conns = self.player.core.active_graph.connections;
+		
+		for(var i = 0, len = conns.length; i < len; i++)
+			conns[i].ui.resolve_slot_divs();
+		
+		canvas_parent.scrollLeft(0);
+		canvas_parent.scrollTop(0);
+		self.updateCanvas(true);
+	};
+
 	this.onSaveClicked = function()
 	{
 		var minify = E2.dom.save_minified.is(':checked');
@@ -3517,12 +3631,12 @@ function Application() {
 		E2.dom.info.html('');
 	};
 	
-    	$(document).mouseup(this.onMouseReleased);
-	$(document).mousemove(this.onMouseMoved);
-	$(window).keydown(this.onKeyDown);
-	$(window).keyup(this.onKeyUp);
+    	document.addEventListener('mouseup', this.onMouseReleased);
+	document.addEventListener('mousemove', this.onMouseMoved);
+	window.addEventListener('keydown', this.onKeyDown);
+	window.addEventListener('keyup', this.onKeyUp);
 	
-	canvas_parent.scroll(function()
+	canvas_parent[0].addEventListener('scroll', function()
 	{
 		self.scrollOffset = [ canvas_parent.scrollLeft(), canvas_parent.scrollTop() ];
 		var s = canvas[0].style;
@@ -3532,12 +3646,12 @@ function Application() {
 		self.updateCanvas(true);
 	});
 	
-	canvas_parent.mousedown(this.onCanvasMouseDown);
-	$(document).mouseup(this.onCanvasMouseUp);
+	canvas_parent[0].addEventListener('mousedown', this.onCanvasMouseDown);
+	document.addEventListener('mouseup', this.onCanvasMouseUp);
 	
 	// Clear hover state on window blur. Typically when the user switches
 	// to another tab.
-	$(window).blur(function()
+	window.addEventListener('blur', function()
 	{
 		self.shift_pressed = false;
 		self.ctrl_pressed = false;
@@ -3545,7 +3659,7 @@ function Application() {
 		self.releaseHoverNode(false);
 	});
 	
-	$(window).resize(function(self) { return function()
+	window.addEventListener('resize', function(self) { return function()
 	{
 		// To avoid UI lag, we don't respond to window resize events directly.
 		// Instead, we set up a timer that gets superceeded for each (spurious) 
@@ -3558,8 +3672,8 @@ function Application() {
 	{
 		// We have to forward key events that would otherwise get trapped when
 		// the user hovers over the playback control buttons.
-		btn.keydown(this.onKeyDown);
-		btn.keyup(this.onKeyUp);
+		btn[0].addEventListener('keydown', this.onKeyDown);
+		btn[0].addEventListener('keyup', this.onKeyUp);
 	};
 	
 	add_button_events(E2.dom.play);
@@ -3780,6 +3894,7 @@ function InitialiseEngi()
 	E2.dom.play = $('#play');
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
+	E2.dom.layout = $('#layout');
 	E2.dom.save = $('#save');
 	E2.dom.load = $('#load');
 	E2.dom.load_clipboard = $('#load-clipboard');
@@ -3867,6 +3982,7 @@ function InitialiseEngi()
 	E2.dom.play.button({ icons: { primary: 'ui-icon-play' } }).click(E2.app.onPlayClicked);
 	E2.dom.pause.button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(E2.app.onPauseClicked);
 	E2.dom.stop.button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(E2.app.onStopClicked);
+	E2.dom.layout.button({ icons: { primary: 'ui-icon-shuffle' }, disabled: false }).click(E2.app.onLayoutClicked);
 	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
 	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
 	E2.dom.load_clipboard.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClipboardClicked);
