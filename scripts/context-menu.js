@@ -16,6 +16,11 @@ Menu.prototype.create = function(parent, pos, is_root)
 	ul.css('position', 'absolute');
 	ul.css('z-index', '10000');
 	
+	ul.bind('contextmenu', function()
+	{
+		return false;
+	});
+	
 	if(!is_root)
 	{
 		ul.mouseleave(function(self) { return function(e)
