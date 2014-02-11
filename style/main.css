@@ -384,6 +384,17 @@ optgroup
 }
 
 
+.config_btn
+{
+	width: 16px;
+	height: 16px;
+	padding: none !important;
+	margin: 2px;
+	border: 1px;
+	float: right;
+	background: url('../images/config.jpg') no-repeat;
+}
+
 .pl_layout
 {
 	border-collapse: separate;
@@ -402,7 +413,7 @@ optgroup
 	padding: 0px;
 	padding-left: 1px;
 	padding-right: 2px;
-	display: inline-block;
+	/*display: inline-block;*/
 	width: 100%;
 	font-weight: bold;
 }

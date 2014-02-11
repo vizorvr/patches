@@ -94,7 +94,6 @@ E2.p.prototype.create_ui = function()
 {
 	var ui = make('div');
 	var inp_edit = $('<input id="state" type="button" value="Edit" title="Open this loop for editing." />');
-	var inp_config = $('<input id="state" type="button" value="..." title="Edit preferences." />');
 	
 	inp_edit.click(function(self) { return function(e) 
 	{
@@ -102,15 +101,8 @@ E2.p.prototype.create_ui = function()
 			self.graph.tree_node.activate();
 	}}(this));
 	
-	inp_config.click(function(self) { return function(e) 
-	{
-		self.open_editor(self);
-	}}(this));
-
 	ui.css('text-align', 'center');
 	ui.append(inp_edit);
-	ui.append(make('br'));
-	ui.append(inp_config);
 	
 	return ui;
 };
@@ -470,6 +462,15 @@ E2.p.prototype.state_changed = function(ui)
 		// Decorate the auto generated dom base element with an
 		// additional class to allow custom styling.
 		node.ui.dom.addClass('graph');
+		
+		var inp_config = $('<input id="config" class="config_btn" type="button" title="Edit preferences." />');
+
+		inp_config.click(function(self) { return function(e) 
+		{
+			self.open_editor(self);
+		}}(this));
+		
+		$(node.ui.dom[0].children[0].children[0].children[0]).append(inp_config);
 		return;
 	}
 	
