@@ -350,7 +350,10 @@ E2.p.prototype.update_input = function(slot, data)
 		else if(slot.index === 1)
 			this.last = Math.floor(data);
 		else
-			this.step = Math.floor(data);
+		{
+			this.step = Math.abs(data);
+			this.step = this.step < 1.0 ? 1 : Math.floor(this.step);
+		}
 	}
 	else
 	{
@@ -363,7 +366,15 @@ E2.p.prototype.update_state = function()
 	this.updated = false;
 	this.updated_sids.length = 0;
 	
-	if(this.graph)
+	if(this.first > this.last)
+	{
+		var t = this.first;
+		
+		this.first = this.last;
+		this.last = t;
+	}
+	
+	if(this.graph && this.step > 0)
 	{
 		for(var cnt = this.first; cnt < this.last; cnt += this.step)
 		{
