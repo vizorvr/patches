@@ -1,34 +1,37 @@
 {
-    "abs_t": 91.408,
-    "active_graph": 8,
-    "graph_uid": 15,
+    "abs_t": 11.045,
+    "active_graph": 0,
+    "graph_uid": 8,
     "root": {
-        "node_uid": 4,
+        "node_uid": 6,
         "uid": 0,
         "parent_uid": -1,
         "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 470,
-                "y": 373,
+                "x": 549,
+                "y": 117,
                 "uid": 3,
+                "dsid": 1,
                 "state": {
                     "enabled": true,
-                    "input_sids": {},
+                    "input_sids": {
+                        "91": 0
+                    },
                     "output_sids": {}
                 },
                 "title": "Scene controls",
                 "graph": {
-                    "node_uid": 91,
-                    "uid": 8,
+                    "node_uid": 92,
+                    "uid": 1,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
                         {
                             "plugin": "graph",
-                            "x": 798,
-                            "y": 104,
+                            "x": 858,
+                            "y": 174,
                             "uid": 0,
                             "dsid": 7,
                             "state": {
@@ -45,8 +48,8 @@
                             "title": "Scene loader",
                             "graph": {
                                 "node_uid": 26,
-                                "uid": 9,
-                                "parent_uid": 8,
+                                "uid": 2,
+                                "parent_uid": 1,
                                 "open": true,
                                 "nodes": [
                                     {
@@ -406,8 +409,8 @@
                             "title": "Camera",
                             "graph": {
                                 "node_uid": 17,
-                                "uid": 10,
-                                "parent_uid": 8,
+                                "uid": 3,
+                                "parent_uid": 1,
                                 "open": true,
                                 "nodes": [
                                     {
@@ -631,7 +634,7 @@
                             "y": 113,
                             "uid": 3,
                             "state": {
-                                "val": 10.8,
+                                "val": -36,
                                 "min": -180,
                                 "max": 180
                             },
@@ -643,9 +646,9 @@
                             "y": 183,
                             "uid": 4,
                             "state": {
-                                "val": 0.4,
-                                "min": -2,
-                                "max": 2
+                                "val": 1.2,
+                                "min": -20,
+                                "max": 20
                             },
                             "title": "Camera Elevation"
                         },
@@ -655,8 +658,8 @@
                             "y": 255,
                             "uid": 5,
                             "state": {
-                                "val": 2.17,
-                                "min": 1,
+                                "val": 5.1,
+                                "min": 0,
                                 "max": 10
                             },
                             "title": "Camera Dolly"
@@ -667,7 +670,7 @@
                             "y": 30,
                             "uid": 6,
                             "state": {
-                                "val": 1.6,
+                                "val": 3.5,
                                 "min": 0,
                                 "max": 10
                             },
@@ -693,8 +696,8 @@
                             "title": "Translate",
                             "graph": {
                                 "node_uid": 17,
-                                "uid": 11,
-                                "parent_uid": 8,
+                                "uid": 4,
+                                "parent_uid": 1,
                                 "open": true,
                                 "nodes": [
                                     {
@@ -894,7 +897,7 @@
                             "y": 178,
                             "uid": 21,
                             "state": {
-                                "val": 0,
+                                "val": -1,
                                 "min": -10,
                                 "max": 10
                             },
@@ -906,7 +909,7 @@
                             "y": 242,
                             "uid": 22,
                             "state": {
-                                "val": -0.2,
+                                "val": -1.6,
                                 "min": -10,
                                 "max": 10
                             },
@@ -914,8 +917,8 @@
                         },
                         {
                             "plugin": "graph",
-                            "x": 463,
-                            "y": 570,
+                            "x": 472,
+                            "y": 575,
                             "uid": 69,
                             "dsid": 14,
                             "state": {
@@ -941,8 +944,8 @@
                             "title": "Light chain",
                             "graph": {
                                 "node_uid": 29,
-                                "uid": 12,
-                                "parent_uid": 8,
+                                "uid": 5,
+                                "parent_uid": 1,
                                 "open": true,
                                 "nodes": [
                                     {
@@ -1540,7 +1543,8 @@
                                     "dt": 12,
                                     "uid": 11,
                                     "index": 10,
-                                    "type": 0
+                                    "type": 0,
+                                    "is_connected": true
                                 },
                                 {
                                     "name": "light index",
@@ -1576,9 +1580,9 @@
                             "y": 575,
                             "uid": 71,
                             "state": {
-                                "val": 1.06,
+                                "val": 3.8,
                                 "min": 0,
-                                "max": 2
+                                "max": 10
                             },
                             "title": "Intensity"
                         },
@@ -1588,7 +1592,7 @@
                             "y": 648,
                             "uid": 72,
                             "state": {
-                                "val": -0.08,
+                                "val": 0,
                                 "min": -2,
                                 "max": 2
                             },
@@ -1600,7 +1604,7 @@
                             "y": 714,
                             "uid": 73,
                             "state": {
-                                "val": -0.28,
+                                "val": 0,
                                 "min": -2,
                                 "max": 2
                             },
@@ -1612,7 +1616,7 @@
                             "y": 782,
                             "uid": 74,
                             "state": {
-                                "val": 1.16,
+                                "val": 1.08,
                                 "min": -2,
                                 "max": 2
                             },
@@ -1624,7 +1628,7 @@
                             "y": 649,
                             "uid": 75,
                             "state": {
-                                "val": -0.44,
+                                "val": 0,
                                 "min": -2,
                                 "max": 2
                             },
@@ -1662,7 +1666,7 @@
                             "state": {
                                 "hue": 0,
                                 "sat": 0,
-                                "lum": 0.95
+                                "lum": 1
                             },
                             "title": "Diffuse color"
                         },
@@ -1674,7 +1678,7 @@
                             "state": {
                                 "hue": 0,
                                 "sat": 0,
-                                "lum": 0.97
+                                "lum": 1
                             },
                             "title": "Specular color"
                         },
@@ -1684,14 +1688,14 @@
                             "y": 575,
                             "uid": 80,
                             "state": {
-                                "val": 1
+                                "val": 0
                             },
                             "title": "Light index"
                         },
                         {
                             "plugin": "graph",
-                            "x": 619,
-                            "y": 349,
+                            "x": 667,
+                            "y": 335,
                             "uid": 81,
                             "dsid": 18,
                             "state": {
@@ -1715,8 +1719,8 @@
                             "title": "Material chain",
                             "graph": {
                                 "node_uid": 47,
-                                "uid": 13,
-                                "parent_uid": 8,
+                                "uid": 6,
+                                "parent_uid": 1,
                                 "open": true,
                                 "nodes": [
                                     {
@@ -1925,8 +1929,8 @@
                                         "title": "min max calc",
                                         "graph": {
                                             "node_uid": 13,
-                                            "uid": 14,
-                                            "parent_uid": 13,
+                                            "uid": 7,
+                                            "parent_uid": 6,
                                             "open": true,
                                             "nodes": [
                                                 {
@@ -2564,7 +2568,7 @@
                             "y": 415,
                             "uid": 87,
                             "state": {
-                                "val": 0.2599999999999999
+                                "val": 0
                             },
                             "title": "Shinyness"
                         },
@@ -2584,7 +2588,7 @@
                             "y": 487,
                             "uid": 89,
                             "state": {
-                                "val": 0
+                                "val": 1
                             },
                             "title": "Ambient Sat"
                         },
@@ -2594,9 +2598,31 @@
                             "y": 487,
                             "uid": 90,
                             "state": {
-                                "val": 0.04
+                                "val": 0
                             },
                             "title": "Ambient Lum"
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 108,
+                            "y": 425,
+                            "uid": 91,
+                            "dsid": 3,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "material",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 12,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
                         }
                     ],
                     "conns": [
@@ -2827,11 +2853,59 @@
                             "dst_slot": 4,
                             "src_dyn": true,
                             "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 91,
+                            "dst_nuid": 69,
+                            "src_slot": 0,
+                            "dst_slot": 10,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true
                         }
                     ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "material",
+                        "dt": 12,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "material_texture_modulator",
+                "x": 411,
+                "y": 180,
+                "uid": 4
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 271,
+                "y": 287,
+                "uid": 5,
+                "state": {
+                    "url": "data/textures/backdrop_darkgrey.jpg"
                 }
             }
         ],
-        "conns": []
+        "conns": [
+            {
+                "src_nuid": 4,
+                "dst_nuid": 3,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 5,
+                "dst_nuid": 4,
+                "src_slot": 0,
+                "dst_slot": 2
+            }
+        ]
     }
 }

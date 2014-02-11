@@ -1,23 +1,23 @@
 {
-    "abs_t": 0,
+    "abs_t": 30.615,
     "active_graph": 0,
     "graph_uid": 2,
     "root": {
-        "node_uid": 6,
+        "node_uid": 7,
         "uid": 0,
         "parent_uid": -1,
         "open": true,
         "nodes": [
             {
                 "plugin": "video_player",
-                "x": 173,
-                "y": 70,
+                "x": 329,
+                "y": 205,
                 "uid": 0
             },
             {
                 "plugin": "toggle_button",
-                "x": 21,
-                "y": 121,
+                "x": 177,
+                "y": 256,
                 "uid": 1,
                 "state": {
                     "enabled": true
@@ -26,49 +26,48 @@
             },
             {
                 "plugin": "url_video_generator",
-                "x": 21,
-                "y": 49,
+                "x": 177,
+                "y": 197,
                 "uid": 2,
                 "state": {
-                    "url": "data/video/water_loop.ogv"
+                    "url": "data/video/helicopter_la.ogv"
                 }
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 21,
-                "y": 265,
+                "x": 188,
+                "y": 383,
                 "uid": 3,
                 "state": {
-                    "val": 0.47
+                    "val": 1
                 }
             },
             {
                 "plugin": "toggle_button",
-                "x": 21,
-                "y": 193,
+                "x": 178,
+                "y": 317,
                 "uid": 4,
                 "state": {
-                    "enabled": false
+                    "enabled": true
                 },
                 "title": "Mute"
             },
             {
                 "plugin": "graph",
-                "x": 305,
-                "y": 70,
+                "x": 563,
+                "y": 146,
                 "uid": 5,
                 "dsid": 3,
                 "state": {
                     "enabled": true,
                     "input_sids": {
-                        "5": 0,
                         "34": 2
                     },
                     "output_sids": {}
                 },
-                "title": "Video container",
+                "title": "Plain video",
                 "graph": {
-                    "node_uid": 38,
+                    "node_uid": 40,
                     "uid": 1,
                     "parent_uid": 0,
                     "open": true,
@@ -86,28 +85,6 @@
                             "uid": 1
                         },
                         {
-                            "plugin": "input_proxy",
-                            "x": 624,
-                            "y": 163,
-                            "uid": 5,
-                            "dsid": 61,
-                            "state": {
-                                "slot_id": 0
-                            },
-                            "title": "camera",
-                            "dyn_out": [
-                                {
-                                    "name": "output",
-                                    "dt": 6,
-                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1,
-                                    "connected": true
-                                }
-                            ]
-                        },
-                        {
                             "plugin": "from_mesh_shader",
                             "x": 701,
                             "y": 248,
@@ -118,11 +95,11 @@
                             "x": 483,
                             "y": 375,
                             "uid": 34,
-                            "dsid": 53,
+                            "dsid": 56,
                             "state": {
                                 "slot_id": 0
                             },
-                            "title": "image",
+                            "title": "Texture",
                             "dyn_out": [
                                 {
                                     "name": "output",
@@ -155,6 +132,21 @@
                             "state": {
                                 "enabled": false
                             }
+                        },
+                        {
+                            "plugin": "blend_mode_generator",
+                            "x": 53,
+                            "y": 172,
+                            "uid": 38,
+                            "state": {
+                                "mode": 4
+                            }
+                        },
+                        {
+                            "plugin": "material_blend_mode_modulator",
+                            "x": 239,
+                            "y": 151,
+                            "uid": 39
                         }
                     ],
                     "conns": [
@@ -163,14 +155,6 @@
                             "dst_nuid": 0,
                             "src_slot": 0,
                             "dst_slot": 0
-                        },
-                        {
-                            "src_nuid": 5,
-                            "dst_nuid": 0,
-                            "src_slot": 0,
-                            "dst_slot": 2,
-                            "src_connected": true,
-                            "src_dyn": true
                         },
                         {
                             "src_nuid": 22,
@@ -210,26 +194,40 @@
                             "dst_nuid": 36,
                             "src_slot": 0,
                             "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 39,
+                            "dst_nuid": 36,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 38,
+                            "dst_nuid": 39,
+                            "src_slot": 0,
+                            "dst_slot": 1
                         }
                     ]
                 },
                 "dyn_in": [
                     {
-                        "name": "camera",
-                        "dt": 6,
-                        "uid": 0,
-                        "index": 0,
-                        "type": 0
-                    },
-                    {
-                        "name": "image",
+                        "name": "Texture",
                         "dt": 2,
                         "uid": 2,
-                        "index": 1,
+                        "index": 0,
                         "type": 0,
                         "is_connected": true
                     }
                 ]
+            },
+            {
+                "plugin": "toggle_button",
+                "x": 466,
+                "y": 116,
+                "uid": 6,
+                "state": {
+                    "enabled": true
+                }
             }
         ],
         "conns": [
@@ -258,10 +256,16 @@
                 "dst_slot": 2
             },
             {
+                "src_nuid": 6,
+                "dst_nuid": 5,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
                 "src_nuid": 0,
                 "dst_nuid": 5,
                 "src_slot": 0,
-                "dst_slot": 1,
+                "dst_slot": 0,
                 "dst_dyn": true
             }
         ]

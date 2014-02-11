@@ -1,0 +1,183 @@
+{
+    "abs_t": 19.764,
+    "active_graph": 0,
+    "graph_uid": 20,
+    "root": {
+        "node_uid": 30,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 319,
+                "y": 104,
+                "uid": 21,
+                "dsid": 1,
+                "state": {
+                    "enabled": false,
+                    "input_sids": {
+                        "6": 0
+                    },
+                    "output_sids": {}
+                },
+                "title": "Graffiti grunge",
+                "graph": {
+                    "node_uid": 7,
+                    "uid": 13,
+                    "parent_uid": 0,
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 714,
+                            "y": 285,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "quad_mesh_generator",
+                            "x": 449,
+                            "y": 239,
+                            "uid": 2
+                        },
+                        {
+                            "plugin": "from_mesh_custom_shader",
+                            "x": 543,
+                            "y": 348,
+                            "uid": 3,
+                            "dsid": 1,
+                            "state": {
+                                "vs_src": "void main(void) {\n    mat4 mv_mat = v_mat * m_mat;\n    vec4 tp = mv_mat * vec4(v_pos, 1.0);\n\n    gl_Position = p_mat * tp;\n    f_norm = normalize(n_mat * v_norm);\n    f_uv0 = v_uv0;\n    f_col = d_col;\n}",
+                                "ps_src": "void main(void) {\n    vec4 fc = vec4(0.0, 0.0, 0.0, f_col.a);\n    vec4 td = texture2D(d_tex, f_uv0.st + (vec2(cos(time*3.45) * 0.1, sin(time*4.563) * 0.1) * 0.05));\n    float po = sin(time * 13.97)/(128.0 * cos(time*47.53));\n    vec3 grey = vec3(0.299, 0.587, 0.114);\n\n    float d = abs(dot(texture2D(d_tex, f_uv0.st + vec2(0.0, -po)).rgb, grey) - dot(texture2D(d_tex, f_uv0.st + vec2(0.0, po)).rgb, grey));\n\n    d += abs(dot(texture2D(d_tex, f_uv0.st + vec2(0.0, -po)).rgb, grey) - dot(texture2D(d_tex, f_uv0.st + vec2(0.0, po)).rgb, grey));\n    d *= 10.0;\n\n    fc.rgb += f_col.rgb;\n    fc *= td;\n    fc.rgb += a_col.rgb;\n\n    gl_FragColor = vec4(fc.rgb+vec3(d, d * 0.5, d * 0.2), 1.0);\n}",
+                                "changed": true,
+                                "slot_ids": {
+                                    "time": {
+                                        "id": 0,
+                                        "dt": {
+                                            "id": 0,
+                                            "name": "Float"
+                                        },
+                                        "uniform": {}
+                                    }
+                                }
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "time",
+                                    "dt": 0,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "material_texture_modulator",
+                            "x": 403,
+                            "y": 425,
+                            "uid": 4
+                        },
+                        {
+                            "plugin": "clock_generator",
+                            "x": 390,
+                            "y": 277,
+                            "uid": 5
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 241,
+                            "y": 431,
+                            "uid": 6,
+                            "dsid": 2,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "texture",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 2,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "src_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "texture",
+                        "dt": 2,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": false
+                    }
+                ]
+            },
+            {
+                "plugin": "toggle_button",
+                "x": 203,
+                "y": 64,
+                "uid": 29,
+                "state": {
+                    "enabled": false
+                }
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 29,
+                "dst_nuid": 21,
+                "src_slot": 0,
+                "dst_slot": 0
+            }
+        ]
+    }
+}

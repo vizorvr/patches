@@ -1,0 +1,314 @@
+{
+    "abs_t": 197.041,
+    "active_graph": 0,
+    "graph_uid": 25,
+    "root": {
+        "node_uid": 10,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 477,
+                "y": 314,
+                "uid": 8,
+                "dsid": 1,
+                "state": {
+                    "enabled": true,
+                    "input_sids": {
+                        "16": 0
+                    },
+                    "output_sids": {}
+                },
+                "title": "Chromakeyed layer",
+                "graph": {
+                    "node_uid": 18,
+                    "uid": 24,
+                    "parent_uid": 0,
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "video_player",
+                            "x": 230,
+                            "y": 123,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 47,
+                            "y": 195,
+                            "uid": 2,
+                            "state": {
+                                "enabled": true
+                            }
+                        },
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 789,
+                            "y": 23,
+                            "uid": 3
+                        },
+                        {
+                            "plugin": "material_texture_modulator",
+                            "x": 348,
+                            "y": 230,
+                            "uid": 5
+                        },
+                        {
+                            "plugin": "quad_mesh_generator",
+                            "x": 379,
+                            "y": 18,
+                            "uid": 6
+                        },
+                        {
+                            "plugin": "from_mesh_custom_shader",
+                            "x": 528,
+                            "y": 167,
+                            "uid": 7,
+                            "dsid": 3,
+                            "state": {
+                                "vs_src": "void main(void) {\n    mat4 mv_mat = v_mat * m_mat;\n    vec4 tp = mv_mat * vec4(v_pos, 1.0);\n\n    gl_Position = p_mat * tp;\n    f_norm = normalize(n_mat * v_norm);\n    f_uv0 = v_uv0;\n    f_col = d_col;\n}",
+                                "ps_src": "void main(void) {\n    vec4 fc = vec4(0.0, 0.0, 0.0, f_col.a);\n    vec3 vc = texture2D(d_tex, f_uv0.st).rgb;\n    float mask = clamp(pow(length(vc - key.rgb), contrast) * gamma, 0.0, 1.0);\n\n    fc.rgb += f_col.rgb;\n    fc *= vec4(vc - (key.rgb * (1.0 - mask)), mask);\n    fc.rgb += a_col.rgb;\n\n    gl_FragColor = fc;\n}",
+                                "changed": true,
+                                "slot_ids": {
+                                    "contrast": {
+                                        "id": 0,
+                                        "dt": {
+                                            "id": 0,
+                                            "name": "Float"
+                                        },
+                                        "uniform": {}
+                                    },
+                                    "gamma": {
+                                        "id": 1,
+                                        "dt": {
+                                            "id": 0,
+                                            "name": "Float"
+                                        },
+                                        "uniform": {}
+                                    },
+                                    "key": {
+                                        "id": 2,
+                                        "dt": {
+                                            "id": 3,
+                                            "name": "Color"
+                                        },
+                                        "uniform": {}
+                                    }
+                                }
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "contrast",
+                                    "dt": 0,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "gamma",
+                                    "dt": 0,
+                                    "uid": 1,
+                                    "index": 1,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "key",
+                                    "dt": 3,
+                                    "uid": 2,
+                                    "index": 2,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "material_z_buffer_modulator",
+                            "x": 205,
+                            "y": 305,
+                            "uid": 8
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 56,
+                            "y": 297,
+                            "uid": 9,
+                            "state": {
+                                "enabled": false
+                            }
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 347,
+                            "y": 328,
+                            "uid": 10,
+                            "state": {
+                                "val": 2.5
+                            }
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 364,
+                            "y": 398,
+                            "uid": 11,
+                            "state": {
+                                "val": 6
+                            }
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 89,
+                            "y": 65,
+                            "uid": 16,
+                            "dsid": 2,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "video",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 16,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 116,
+                            "y": 443,
+                            "uid": 17,
+                            "state": {
+                                "hue": 0.64,
+                                "sat": 0.85,
+                                "lum": 0.8
+                            }
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 5,
+                            "src_slot": 0,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 5,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 9,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 9,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 11,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 16,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 17,
+                            "dst_nuid": 7,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "dst_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "video",
+                        "dt": 16,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "url_video_generator",
+                "x": 344,
+                "y": 383,
+                "uid": 9,
+                "state": {
+                    "url": "data/video/chromakey.ogv"
+                }
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 9,
+                "dst_nuid": 8,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            }
+        ]
+    }
+}

@@ -1,5 +1,5 @@
 {
-    "abs_t": 0,
+    "abs_t": 3.568,
     "active_graph": 1,
     "graph_uid": 2,
     "root": {
@@ -10,8 +10,8 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 16,
-                "y": 45,
+                "x": 370,
+                "y": 250,
                 "uid": 0,
                 "state": {
                     "enabled": true,
@@ -31,7 +31,7 @@
                             "y": 91,
                             "uid": 1,
                             "state": {
-                                "url": "data/scenes/macaba/scene.json"
+                                "url": "data/scenes/effekt/blob/scene.json"
                             }
                         },
                         {

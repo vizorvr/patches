@@ -1,18 +1,19 @@
 {
-    "abs_t": 0,
+    "abs_t": 32.9,
     "active_graph": 0,
-    "graph_uid": 3,
+    "graph_uid": 5,
     "root": {
-        "node_uid": 12,
+        "node_uid": 23,
         "uid": 0,
         "parent_uid": -1,
         "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 371,
-                "y": 147,
-                "uid": 6,
+                "x": 344,
+                "y": 267,
+                "uid": 17,
+                "open": false,
                 "dsid": 6,
                 "state": {
                     "enabled": true,
@@ -29,7 +30,7 @@
                 "title": "Camera",
                 "graph": {
                     "node_uid": 26,
-                    "uid": 2,
+                    "uid": 4,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
@@ -334,9 +335,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 152,
-                "y": 104,
-                "uid": 7,
+                "x": 145,
+                "y": 266,
+                "uid": 18,
                 "state": {
                     "val": -7.2,
                     "min": -180,
@@ -346,9 +347,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 152,
-                "y": 187,
-                "uid": 8,
+                "x": 145,
+                "y": 336,
+                "uid": 19,
                 "state": {
                     "val": -0.8,
                     "min": -20,
@@ -358,9 +359,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 152,
-                "y": 270,
-                "uid": 9,
+                "x": 145,
+                "y": 410,
+                "uid": 20,
                 "state": {
                     "val": 2.9,
                     "min": 0,
@@ -369,47 +370,88 @@
                 "title": "Dolly"
             },
             {
+                "plugin": "register_global_write",
+                "x": 421,
+                "y": 267,
+                "uid": 21,
+                "open": false,
+                "dsid": 3,
+                "state": {
+                    "slot_id": 0
+                },
+                "title": "camera",
+                "dyn_in": [
+                    {
+                        "name": "value",
+                        "dt": 8,
+                        "desc": "",
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
                 "plugin": "slider_float_generator",
-                "x": 153,
-                "y": 352,
-                "uid": 11,
+                "x": 145,
+                "y": 486,
+                "uid": 22,
                 "state": {
                     "val": 0,
                     "min": 0,
                     "max": 10
                 },
-                "title": "target elevation"
+                "title": "Target elevation"
             }
         ],
         "conns": [
             {
-                "src_nuid": 7,
-                "dst_nuid": 6,
+                "src_nuid": 18,
+                "dst_nuid": 17,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 8,
-                "dst_nuid": 6,
+                "src_nuid": 19,
+                "dst_nuid": 17,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 9,
-                "dst_nuid": 6,
+                "src_nuid": 20,
+                "dst_nuid": 17,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 11,
-                "dst_nuid": 6,
+                "src_nuid": 17,
+                "dst_nuid": 21,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "src_dyn": true,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 22,
+                "dst_nuid": 17,
                 "src_slot": 0,
                 "dst_slot": 3,
                 "dst_dyn": true
             }
         ]
-    }
+    },
+    "registers": [
+        {
+            "id": "camera",
+            "dt": 8
+        },
+        {
+            "id": "shinyness",
+            "dt": 8
+        }
+    ]
 }

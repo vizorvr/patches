@@ -1,0 +1,140 @@
+{
+    "abs_t": 0,
+    "active_graph": 0,
+    "graph_uid": 1791,
+    "root": {
+        "node_uid": 226,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "register_global_read",
+                "x": 282,
+                "y": 457,
+                "uid": 221,
+                "dsid": 2,
+                "state": {
+                    "slot_id": 0
+                },
+                "title": "synch",
+                "dyn_out": [
+                    {
+                        "name": "value",
+                        "dt": 0,
+                        "desc": "",
+                        "uid": 0,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 308,
+                "y": 540,
+                "uid": 222,
+                "state": {
+                    "val": 1
+                },
+                "title": "Base value"
+            },
+            {
+                "plugin": "add_modulator",
+                "x": 440,
+                "y": 498,
+                "uid": 223,
+                "open": false
+            },
+            {
+                "plugin": "lowpass_filter_modulator",
+                "x": 530,
+                "y": 489,
+                "uid": 224
+            },
+            {
+                "plugin": "knob_float_generator",
+                "x": 441,
+                "y": 531,
+                "uid": 225,
+                "state": {
+                    "val": 0.8400000000000004
+                },
+                "title": "Filter"
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 221,
+                "dst_nuid": 223,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "src_dyn": true
+            },
+            {
+                "src_nuid": 222,
+                "dst_nuid": 223,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 223,
+                "dst_nuid": 224,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 225,
+                "dst_nuid": 224,
+                "src_slot": 0,
+                "dst_slot": 1
+            }
+        ]
+    },
+    "registers": [
+        {
+            "id": "amps",
+            "dt": 0
+        },
+        {
+            "id": "bd",
+            "dt": 0
+        },
+        {
+            "id": "sd",
+            "dt": 0
+        },
+        {
+            "id": "synch",
+            "dt": 0
+        },
+        {
+            "id": "camera",
+            "dt": 8
+        },
+        {
+            "id": "matrix",
+            "dt": 8
+        },
+        {
+            "id": "lightx",
+            "dt": 8
+        },
+        {
+            "id": "lighty",
+            "dt": 8
+        },
+        {
+            "id": "lightz",
+            "dt": 8
+        },
+        {
+            "id": "light",
+            "dt": 8
+        },
+        {
+            "id": "shinyness",
+            "dt": 8
+        }
+    ]
+}

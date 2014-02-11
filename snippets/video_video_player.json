@@ -3,21 +3,21 @@
     "active_graph": 0,
     "graph_uid": 1,
     "root": {
-        "node_uid": 5,
+        "node_uid": 6,
         "uid": 0,
         "parent_uid": -1,
         "open": true,
         "nodes": [
             {
                 "plugin": "video_player",
-                "x": 172,
-                "y": 67,
+                "x": 421,
+                "y": 226,
                 "uid": 0
             },
             {
                 "plugin": "toggle_button",
-                "x": 18,
-                "y": 115,
+                "x": 269,
+                "y": 277,
                 "uid": 1,
                 "state": {
                     "enabled": true
@@ -26,27 +26,27 @@
             },
             {
                 "plugin": "url_video_generator",
-                "x": 19,
-                "y": 43,
+                "x": 269,
+                "y": 218,
                 "uid": 2,
                 "state": {
-                    "url": "data/video/water_loop.ogv"
+                    "url": "data/video/helicopter_la.ogv"
                 }
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 18,
-                "y": 259,
-                "uid": 3,
+                "x": 301,
+                "y": 400,
+                "uid": 4,
                 "state": {
                     "val": 0.47
                 }
             },
             {
                 "plugin": "toggle_button",
-                "x": 18,
-                "y": 187,
-                "uid": 4,
+                "x": 270,
+                "y": 338,
+                "uid": 5,
                 "state": {
                     "enabled": false
                 },
@@ -67,13 +67,13 @@
                 "dst_slot": 0
             },
             {
-                "src_nuid": 3,
+                "src_nuid": 4,
                 "dst_nuid": 0,
                 "src_slot": 0,
                 "dst_slot": 3
             },
             {
-                "src_nuid": 4,
+                "src_nuid": 5,
                 "dst_nuid": 0,
                 "src_slot": 0,
                 "dst_slot": 2

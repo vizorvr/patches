@@ -1,17 +1,18 @@
 {
     "abs_t": 0,
-    "active_graph": 1,
-    "graph_uid": 2,
+    "active_graph": 0,
+    "graph_uid": 3,
     "root": {
-        "node_uid": 2,
+        "node_uid": 6,
         "uid": 0,
         "parent_uid": -1,
+        "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 211,
-                "y": 6,
-                "uid": 0,
+                "x": 471,
+                "y": 240,
+                "uid": 4,
                 "dsid": 2,
                 "state": {
                     "enabled": true,
@@ -24,9 +25,10 @@
                 },
                 "title": "Time",
                 "graph": {
-                    "node_uid": 8,
-                    "uid": 1,
+                    "node_uid": 9,
+                    "uid": 2,
                     "parent_uid": 0,
+                    "open": true,
                     "nodes": [
                         {
                             "plugin": "delta_t_generator",
@@ -54,7 +56,7 @@
                             "x": 283,
                             "y": 7,
                             "uid": 6,
-                            "dsid": 5,
+                            "dsid": 6,
                             "state": {
                                 "slot_id": 0
                             },
@@ -76,7 +78,7 @@
                             "x": 23,
                             "y": 66,
                             "uid": 7,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -92,6 +94,15 @@
                                     "connected": true
                                 }
                             ]
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 97,
+                            "y": 93,
+                            "uid": 8,
+                            "state": {
+                                "val": 0
+                            }
                         }
                     ],
                     "conns": [
@@ -123,6 +134,12 @@
                             "dst_slot": 1,
                             "src_connected": true,
                             "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 1
                         }
                     ]
                 },
@@ -148,9 +165,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 9,
-                "y": 26,
-                "uid": 1,
+                "x": 269,
+                "y": 260,
+                "uid": 5,
                 "state": {
                     "val": 0.5,
                     "min": 0,
@@ -161,8 +178,8 @@
         ],
         "conns": [
             {
-                "src_nuid": 1,
-                "dst_nuid": 0,
+                "src_nuid": 5,
+                "dst_nuid": 4,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true

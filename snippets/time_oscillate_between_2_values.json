@@ -6,11 +6,12 @@
         "node_uid": 4,
         "uid": 0,
         "parent_uid": -1,
+        "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 309,
-                "y": 66,
+                "x": 468,
+                "y": 219,
                 "uid": 0,
                 "dsid": 5,
                 "state": {
@@ -26,9 +27,10 @@
                 },
                 "title": "Oscillate",
                 "graph": {
-                    "node_uid": 24,
+                    "node_uid": 25,
                     "uid": 1,
                     "parent_uid": 0,
+                    "open": true,
                     "nodes": [
                         {
                             "plugin": "sine_modulator",
@@ -65,7 +67,7 @@
                             "x": 660,
                             "y": 64,
                             "uid": 12,
-                            "dsid": 6,
+                            "dsid": 7,
                             "state": {
                                 "slot_id": 0
                             },
@@ -87,7 +89,7 @@
                             "x": 25,
                             "y": 67,
                             "uid": 13,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -109,7 +111,7 @@
                             "x": 279,
                             "y": 119,
                             "uid": 14,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -131,7 +133,7 @@
                             "x": 345,
                             "y": 124,
                             "uid": 15,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -168,6 +170,16 @@
                             "x": 102,
                             "y": 9,
                             "uid": 20
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 106,
+                            "y": 111,
+                            "uid": 24,
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "reset"
                         }
                     ],
                     "conns": [
@@ -254,6 +266,12 @@
                             "dst_slot": 1,
                             "src_connected": true,
                             "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 24,
+                            "dst_nuid": 19,
+                            "src_slot": 0,
+                            "dst_slot": 1
                         }
                     ]
                 },
@@ -295,8 +313,8 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 112,
-                "y": 66,
+                "x": 271,
+                "y": 219,
                 "uid": 1,
                 "state": {
                     "val": 0.42,
@@ -307,8 +325,8 @@
             },
             {
                 "plugin": "const_float_generator",
-                "x": 112,
-                "y": 128,
+                "x": 271,
+                "y": 281,
                 "uid": 2,
                 "state": {
                     "val": 0
@@ -317,8 +335,8 @@
             },
             {
                 "plugin": "const_float_generator",
-                "x": 208,
-                "y": 128,
+                "x": 367,
+                "y": 281,
                 "uid": 3,
                 "state": {
                     "val": 1

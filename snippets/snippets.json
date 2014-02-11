@@ -1,4 +1,21 @@
 {
+	"NEW SET":
+	{
+		"3D: Scene with full controls": "newset_3d_scene_with_full_controls",
+		"3D: Scene loader": "newset_3d_scene_loader",
+		"3D: Scene loader with camera": "newset_3d_scene_loader_with_camera",
+		"3D: Grid helper": "newset_grid_helper",
+		"Camera: Perspective camera setup": "newset_camera_setup",
+		"Transform: Matrix Transform setup": "newset_matrix_transform_setup",
+		"Transform: Translate": "newset_transform_translate",
+		"Lights: Point light 1": "newset_point_light",
+		"Light: Light indicator": "newset_light_indicator",
+		"Synch: Add": "newset_synch_add",
+		"Synch: Substract": "newset_synch_substract",
+		"Synch: Synchtrack": "newset_synch_synchtrack"
+
+	},
+
 	"3D, GRAPHICS AND TEXT":
 	{
 		"3D: Plain scene loader": "3d_plain_scene_loader",	
@@ -6,24 +23,14 @@
 		"3D: Scene loader with camera and transforms": "3d_scene_loader_with_camera_and_transforms",
 		"3D: Scene loader with mouse controls": "3d_scene_loader_with_mousecontrol",
 		"3D: Scene with camera, material & lights": "3d_scene_with_camera_material_lights", 
+		"3D: Scene with texture out": "3d_scene_with_texture_out",
 		"3D: Quad": "3d_quad_loader_fullscreen",
+		"3D: Quad : Overlay graphic": "3d_overlay_graphic",
 		"3D: Cube": "3d_cube_loader",
 		"3D: Sphere": "3d_sphere_loader", 
 		"3D: Mesh with camera, material and light": "3d_mesh_with_camera_material_and_light",
 		"3D: Mesh with outputs for camera, transform and light": "3d_mesh_with_camera_transform_and_light_out",
-		"Shader: Full custom shader": "shader_full_custom_shader",
-		"Shader: Shaders from Heroku GLSL gallery": "shader_from_heroku_glsl_gallery",
-		"Shader: Tunnel": "shader_tunnel",
-		"Shader: Particle spline": "shader_particle_spline",
-		"Shader: Particle spline with big particles": "shader_particle_spline_with_big_particles",
-		"Shader: Cross flare": "shader_cross_flare",
-		"Shader: Horizontal flare": "shader_horizontal_flare",
-		"Shader: Ice": "shader_ice",
-		"Shader: Graffiti grunge": "shader_graffiti_grunge",
-		"Shader: Render depth buffer": "shader_render_depth_buffer",
-		"Shader: Vertex transforms": "shader_vertex_transforms",
-		"Shader: Vertex and normal transforms": "shader_vertex_and_normal_transforms",
-		"Shader: Distance gradient mapping": "shader_distance_gradient_mapping",
+		"3D: Mesh with material": "mesh_with_material",
 		"Instancing: Cube setup with controls": "instancing_cube",
 		"Instancing: Array setup with controls": "instancing_array",
 		"Instancing: IFS setup with controls": "instancing_ifs",
@@ -39,40 +46,51 @@
 		"Background: Tunnelsphere": "background_tunnelsphere",
 		"Background: Moving quad": "background_moving_quad"
 	},
-	"CAMERAS, MATERIALS AND LIGHTS":
+	
+	"CAMERAS":
 	{
 		"Camera: Perspective camera setup": "camera_perspective_camera_setup",
 		"Camera: Perspective with zoom only": "camera_with_zoom_only",
-		"Camera: Mouse controlled camera": "camera_with_mouse_controls",
+		"Camera: Mouse controlled camera": "camera_with_mouse_controls"
+	},
+
+	"MATERIALS AND LIGHTS":
+	{
 		"Material: Full material chain": "material_full_material_chain",
 		"Material: Point light chain": "material_point_light_chain",
 		"Material: Full light chain": "material_light_chain",
 		"Material: Full material and light chain": "material_material_and_light",
 		"Material: Material and light, no texture": "material_material_and_light_no_texture",
 		"Material: Material and point light chain": "material_material_and_point_light_chain",
-		"Material: All texture types": "material_all_texture_types"
+		"Material: All texture types": "material_all_texture_types",
+		"Light: Light indicator helper": "lights_indicator"
 	},
-	"TIME, ANIMATION & TRANSFORMS":
+	"TIME & ANIMATION ":
 	{
 		"Time: Oscillate between 2 values": "time_oscillate_between_2_values",
 		"Time: Oscillate 2 values with in tween": "time_oscillate_2_values_in_tween",
 		"Time: Oscillate 2 values with out tween": "time_oscillate_2_values_out_tween",
 		"Time: Accumulating time": "time_accumulating_time",
 		"Time: Circular motion to XYZ": "time_circular_motion_to_xyz",
+		"Time: Shaky random between 0 & 1": "time_shaky_random",
 		"Util: Float array sequencer": "util_float_array_sequencer",
 		"Util: Float array sequencer with oscillator level up": "util_float_array_sequencer_oscillator_out",
-		"Util: Float array sequencer with interpolation": "util_float_array_sequencer_with_interpolation",
+		"Util: Float array sequencer with interpolation": "util_float_array_sequencer_with_interpolation"
+	},
+		"MATRIX TRANSFORMS":
+	{
 		"Transform: Rotate": "matrix_rotate_with_knobs",
 		"Transform: Scale": "matrix_scale",
 		"Transform: Translate (move)": "matrix_translate",
-		"Transform: Circular motion": "matrix_circular_motion",
-		"Transform: Rotator with animation": "matrix_rotate_animated"
+		"Transform: Circular motion to translate matrix": "matrix_circular_motion",
+		"Transform: Circular movement to X + Y": "transform_circular_movement_to_xy",
+		"Transform: Rotator with animation": "matrix_rotate_animated",
+		"Transform: Matrix transform setup": "matrix_transforms_setup",
+		"Transform: Shaky translate to X + Y": "matrix_shaky_translate_to_xy"
 	},
 	"UTILS":
 	{
 	 	"Util: Aspect ratio corrector": "util_aspect_ratio",
-	 	"Util: Accumulator": "util_accumulator",
-	 	"Util: Clamped accumulator": "util_clamped_accumulator",
 		"Util: Concatenate x 2": "util_concatenate_x2",
 		"Util: Concatenate x 3": "util_concatenate_x3",
 		"Util: Knob with min and max values": "util_knob_with_min_max",
@@ -88,9 +106,40 @@
 		"Audio: Audio player": "audio_audio_player",	
 		"Video: Video player": "video_video_player",
 		"Video: Video to quad": "video_video_to_quad",
+		"Video: Chromakeyed video": "video_chromakey",
 		"UV: Offset": "uv_offset",
 		"UV: Scale": "uv_scale"
 	},
+
+	"CUSTOM SHADERS":
+	
+	{
+		"Shader: Full custom shader": "shader_full_custom_shader",
+		"Shader: Template for Shadertoy.com pixel shaders": "shader_from_shadertoy",
+
+		"Shader: Particle spline": "shader_particle_spline",
+		"Shader: Particle spline with big particles": "shader_particle_spline_with_big_particles",
+		"Shader: Cross flare": "shader_cross_flare",
+		"Shader: Horizontal flare": "shader_horizontal_flare",
+		"Shader: Render depth buffer": "shader_render_depth_buffer",
+		"Shader: Vertex transforms": "shader_vertex_transforms",
+		"Shader: Vertex and normal transforms": "shader_vertex_and_normal_transforms",
+		"Shader: Distance gradient mapping": "shader_distance_gradient_mapping"
+	
+
+	},
+
+
+	"2D EFFECT SHADERS":
+	
+	{
+
+	"Effect: Tunnel": "effect_tunnel",
+	"Effect: Doubletunnel": "effect_doubletunnel",
+	"Effect: Attract tickler": "effect_attract_tickler"
+
+	},
+
 	"POST PROCESSING":
 	{
 		"Post Process: Analogue monitor": "post_process_analogue_monitor",	
@@ -99,6 +148,20 @@
 		"Post Process: Feedback filter": "post_process_feedback_filter",
 		"Post Process: Posterize": "post_process_posterize",	
 		"Post Process: Radial blur": "post_process_radial_blur",	
-		"Post Process: Bloom": "post_process_bloom"
+		"Post Process: Bloom": "post_process_bloom",
+		"Post Process: Barrel blur": "post_process_barrel_blur",
+		"Post Process: Edge detection": "post_process_edge_detection",
+		"Post Process: Water paint": "postprocess_waterpaint",
+		"Post Process: RGB display": "postprocess_rgb_display",
+		"Post Process: Psychedelic plasma": "postprocess_psychedelic_plasma",
+		"Post Process: Wobbly": "postprocess_wobbly",
+		"Post Process: Convolve": "postprocess_convolve",
+		"Post Process: Emboss": "postprocess_emboss",
+		"Post Process: Cheap bokeh": "postprocess_cheap_bokeh",
+		"Post Process: Pixelate": "postprocess_pixelate",
+		"Post Process: Chrome": "postprocess_chrome",
+		"Post Process: Ice": "postprocess_ice",
+		"Post Process: Graffiti grunge": "postprocess_graffiti_grunge",
+		"Post Process: Chroma key": "postprocess_chromakey"
 	}
 }
