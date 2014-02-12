@@ -13,6 +13,7 @@
 }
 .icon-absolute_modulator { background: url('absolute-modulator.png'); }
 .icon-accumulate_modulator { background: url('accumulate-modulator.png'); }
+.icon-action_button { background: url('toggle-button.png'); }
 .icon-add_modulator { background: url('add-modulator.png'); }
 .icon-alpha_modulator { background: url('alpha-modulator.png'); }
 .icon-aspect_ratio_generator { background: url('aspect-ratio-generator.png'); }
@@ -51,6 +52,7 @@
 .icon-convert_matrices_camera { background: url('convert-generic.png'); }
 .icon-convert_oscilator_unit_modulator { background: url('convert-generic.png'); }
 .icon-convert_rgba_color_modulator { background: url('convert-generic.png'); }
+.icon-convert_float_bool_modulator { background: url('convert-generic.png'); }
 .icon-convert_vector_xyz_modulator { background: url('convert-generic.png'); }
 .icon-cosine_modulator { background: url('cosine-modulator.png'); }
 .icon-cos_modulator { background: url('cosine-modulator.png'); }
