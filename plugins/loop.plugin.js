@@ -376,13 +376,17 @@ E2.p.prototype.update_state = function()
 	
 	if(this.graph && this.step > 0)
 	{
+		var updated = false;
+		
 		for(var cnt = this.first; cnt < this.last; cnt += this.step)
 		{
 			this.graph.registers.write('index', cnt);
-			this.graph.update();
+			
+			if(this.graph.update())
+				updated = true;
 		}
 
-		if(this.graph.update() && this === E2.app.player.core.active_graph)
+		if(updated && this === E2.app.player.core.active_graph)
 			E2.app.updateCanvas(false);
 	}
 };
