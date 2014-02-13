@@ -31,7 +31,7 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.matrix = new mat4();
+		this.matrix = mat4.create();
 		
 		mat4.identity(this.matrix);
 	}
