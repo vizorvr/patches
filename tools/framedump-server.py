@@ -4,6 +4,7 @@ from flask import request
 from flask import make_response
 from werkzeug import secure_filename
 from PIL import Image
+from PIL import ImageOps
 import numpy
 import os
 import sys
@@ -110,7 +111,7 @@ def upload_file():
 	fname = 'cache/%08d.png' % index
 	
 	img = Image.frombuffer('RGB', [w,h], d, 'raw', 'RGB', 0, 1)
-	img.save(fname)
+	ImageOps.flip(img).save(fname)
 	cache_size = cache_size + os.path.getsize(fname)
 	index += 1
 	
