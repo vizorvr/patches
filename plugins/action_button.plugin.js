@@ -13,8 +13,8 @@ E2.p = E2.plugins["action_button"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.value = true;
-	this.next_value = true;
+	this.value = false;
+	this.output_value = false;
 };
 
 E2.p.prototype.create_ui = function()
@@ -23,7 +23,8 @@ E2.p.prototype.create_ui = function()
 	
 	inp.click(function(self) { return function(e) 
 	{
-		self.reset();
+		self.output_value = false;
+		self.value = true;
 		self.updated = true;
 	}}(this));
 	
@@ -32,11 +33,12 @@ E2.p.prototype.create_ui = function()
 
 E2.p.prototype.update_state = function()
 {
-	this.value = this.next_value;
-	this.next_value = false;
+	this.output_value = this.value;
+	this.value = false;
+	this.updated = true;
 };
 
 E2.p.prototype.update_output = function(slot)
 {
-	return this.value;
+	return this.output_value;
 };
