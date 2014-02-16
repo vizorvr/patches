@@ -66,7 +66,7 @@ E2.p.prototype.create_ui = function()
 		return false;				
 	}};
 	
-	var slider_mousedown = function(self, handle) { return function(e)
+	var slider_mousedown = function(self, il, ih, handle) { return function(e)
 	{
 		var data = {
 			last_x: e.pageX,
@@ -79,16 +79,19 @@ E2.p.prototype.create_ui = function()
 		document.addEventListener('mouseup', data.mouseup);
 		document.addEventListener('mousemove', data.mousemove);
 		
+		il.blur();
+		ih.blur();
+		
 		if(e.stopPropagation) e.stopPropagation();
 		if(e.preventDefault) e.preventDefault();
 		return false;
 	}};
 	
 	slider.addClass('ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all');
-	slider.css({ 'width': '60px', 'margin-left': '4px' });
+	slider.css({ 'width': '60px', 'margin-left': '8px', 'margin-right': '8px' });
 	handle.addClass('ui-slider-handle ui-state-hover ui-corner-all');
 	handle[0].style.left = '0px';
-	handle[0].addEventListener('mousedown', slider_mousedown(this, handle));
+	handle[0].addEventListener('mousedown', slider_mousedown(this, inp_lo, inp_hi, handle));
 	
 	slider.append(handle);
 	
@@ -96,6 +99,9 @@ E2.p.prototype.create_ui = function()
 	table.addClass('pl_layout');
 	inp_lo.css('border', '1px solid #999');
 	inp_hi.css('border', '1px solid #999');
+	
+	ExpandableTextfield(inp_lo, 3);
+	ExpandableTextfield(inp_hi, 3);
 	
 	var v_col = make('td');
 	
