@@ -9,6 +9,7 @@ E2.p = E2.plugins["toggle_button"] = function(core, node)
 	];
 	
 	this.state = { enabled: false };
+	this.core = core;
 	this.node = node;
 };
 
@@ -24,11 +25,6 @@ E2.p.prototype.create_ui = function()
 	{
 		self.state.enabled = !self.state.enabled;
 		self.state_changed(inp);
-		
-		// Since this changes our layout, update any attached connections.
-		if(self.node.update_connections())
-			E2.app.updateCanvas(true);
-		
 		self.updated = true;
 	}}(this));
 	
@@ -43,5 +39,15 @@ E2.p.prototype.update_output = function(slot)
 E2.p.prototype.state_changed = function(ui)
 {
 	if(ui)
-		ui.prop('value', this.state.enabled ? 'Disable' : 'Enable');
+	{
+		this.core.add_aux_style('toggle-button/style.css');
+
+		ui.prop('value', this.state.enabled ? 'On' : 'Off');
+		ui.addClass('toggle_btn');
+		
+		if(!this.state.enabled)
+			ui.addClass('toggle_btn_off');
+		else
+			ui.removeClass('toggle_btn_off');
+	}
 };

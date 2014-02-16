@@ -1,0 +1,37 @@
+.toggle_btn
+{
+	font-size:12px;
+	font-family:Arial;
+	font-weight:normal;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+	border:1px solid #444;
+	padding:3px 4px;
+	text-decoration:none;
+	color:#000;
+	display:inline-block;
+	text-shadow:1px 48px 0px #ffffff;
+ 	-webkit-box-shadow:inset 1px 1px 0px 0px #ffffff;
+ 	-moz-box-shadow:inset 1px 1px 0px 0px #ffffff;
+ 	box-shadow:inset 1px 1px 0px 0px #ffffff;
+ 	width: 45px;
+	background:-moz-linear-gradient(center top, #edfded 5%, #a8b8a8 100%);
+	background:-ms-linear-gradient(top, #edfded 5%, #a8b8a8 100%);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(5%, #edfded), color-stop(100%, #a8b8a8));
+	background-color:#fdeded !important;
+}
+
+.toggle_btn_off
+{
+	background:-moz-linear-gradient(center top, #fdeded 5%, #b8a8a8 100%) !important;
+	background:-ms-linear-gradient(top, #fdeded 5%, #b8a8a8 100%) !important;
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(5%, #fdeded), color-stop(100%, #b8a8a8)) !important;
+	background-color:#edfded !important;
+}
+
+.toggle_btn:active
+{
+	position:relative;
+	top:1px;
+}
