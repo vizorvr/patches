@@ -339,7 +339,7 @@ function SnippetManager(base_url)
 		}
 	});
 	
-	$('#load-snippet').button().click(function()
+	var load = function()
 	{
 		var url = self.listbox.val();
 		
@@ -360,7 +360,10 @@ function SnippetManager(base_url)
 	  			msg('ERROR: Failed to load the selected snippet.', 'Cogent');
 	  		}
 		});
-	});
+	};
+	
+	$('#load-snippet').button().click(load);
+	this.listbox.dblclick(load);
 }
 
 SnippetManager.prototype.register_group = function(label)
