@@ -15,10 +15,10 @@
  	-webkit-box-shadow:inset 1px 1px 0px 0px #ffffff;
  	-moz-box-shadow:inset 1px 1px 0px 0px #ffffff;
  	box-shadow:inset 1px 1px 0px 0px #ffffff;
- 	width: 45px;
-	background:-moz-linear-gradient(center top, #edfded 5%, #a8b8a8 100%);
-	background:-ms-linear-gradient(top, #edfded 5%, #a8b8a8 100%);
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(5%, #edfded), color-stop(100%, #a8b8a8));
+ 	width: 35px;
+	background:-moz-linear-gradient(center top, #edfded 100%, #a8b8a8 5%);
+	background:-ms-linear-gradient(top, #edfded 100%, #a8b8a8 5%);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(100%, #edfded), color-stop(5%, #a8b8a8));
 	background-color:#fdeded !important;
 }
 
