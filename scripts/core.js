@@ -440,7 +440,7 @@ Connection.prototype.r_update_inbound = function(node)
 	{
 		var rp = node.parent_graph.plugin;
 		
-		if(rp && rp.parent_node.queued_update < 1 && rp.state.enabled)
+		if(rp && rp.parent_node.queued_update < 0 && rp.state.enabled)
 			this.r_update_inbound(rp.parent_node);
 	}
 }
@@ -458,7 +458,7 @@ Connection.prototype.r_update_outbound = function(node)
 	{
 		var rp = node.parent_graph.plugin;
 		
-		if(rp && rp.parent_node.queued_update < 1 && rp.state.enabled)
+		if(rp && rp.parent_node.queued_update < 0 && rp.state.enabled)
 			this.r_update_outbound(rp.parent_node);
 	}
 }
@@ -732,6 +732,9 @@ function NodeUI(parent_node, x, y) {
 	content_col.attr('id', 'cc');
 	output_col.attr('id', 'oc');
 	
+	if((parent_node.dyn_inputs ? parent_node.dyn_inputs.length : 0) + parent_node.plugin.input_slots.length)
+		input_col.css('padding-right', '6px');
+	
 	row.append(input_col)
 	row.append(content_col)
 	row.append(output_col)
@@ -811,7 +814,7 @@ function Node(parent_graph, plugin_id, x, y)
 	this.inputs = [];
 	this.outputs = [];
 	this.dyn_slot_uid = 0;
-	this.queued_update = 0;
+	this.queued_update = -1;
 	
 	if(plugin_id !== null) // Don't initialise if we're loading.
 	{
@@ -1168,13 +1171,13 @@ Node.prototype.update_recursive = function(conns)
 		{
 			pl.update_state();
 		}			
-		else if(this.queued_update > 0)
+		else if(this.queued_update > -1)
 		{
 			if(pl.update_state)
 				pl.update_state();
 
 			pl.updated = true;
-			this.queued_update = 0;
+			this.queued_update--;
 		}
 		else if(needs_update || (pl.output_slots.length === 0 && (!this.outputs || this.outputs.length === 0)))
 		{
