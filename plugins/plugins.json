@@ -58,7 +58,7 @@
 	"Generators/Time/Clock": "clock_generator",
 	"Generators/Time/Delta time": "delta_t_generator",
 	"Generators/Typed arrays/Array": "array_generator",
-	"Generators/Values/Action button": "action_button",
+	"Generators/Values/Action": "action_button",
 	"Generators/Values/Blend mode": "blend_mode_generator",
 	"Generators/Values/Color picker": "color_picker",
 	"Generators/Values/Depth function": "depth_func_generator",

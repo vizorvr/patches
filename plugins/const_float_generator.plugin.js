@@ -10,6 +10,7 @@ E2.p = E2.plugins["const_float_generator"] = function(core, node)
 	
 	this.state = { val: 1.0 };
 	this.core = core;
+	this.node = node;
 };
 
 E2.p.prototype.reset = function()
@@ -46,8 +47,7 @@ E2.p.prototype.create_ui = function()
 		self.updated = true;
 	}}(this));
 	
-	ExpandableTextfield(inp, 7);
-	
+	ExpandableTextfield(this.node, inp, 7);
 	return inp;
 };
 

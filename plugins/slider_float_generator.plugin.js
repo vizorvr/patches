@@ -100,8 +100,8 @@ E2.p.prototype.create_ui = function()
 	inp_lo.css('border', '1px solid #999');
 	inp_hi.css('border', '1px solid #999');
 	
-	ExpandableTextfield(inp_lo, 3);
-	ExpandableTextfield(inp_hi, 3);
+	ExpandableTextfield(this.node, inp_lo, 3);
+	ExpandableTextfield(this.node, inp_hi, 3);
 	
 	var v_col = make('td');
 	
