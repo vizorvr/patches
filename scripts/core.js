@@ -921,6 +921,21 @@ Node.prototype.reset = function()
 	}
 };
 
+Node.prototype.geometry_updated = function()
+{
+	if(this.outputs.length < 1)
+		return;
+	
+	for(var i = 0, len = this.outputs.length; i < len; i++)
+	{
+		var c = this.outputs[i];
+		
+		E2.app.getSlotPosition(c.src_node, c.ui.src_slot_div, E2.slot_type.output, c.ui.src_pos);
+	}
+	
+	E2.app.updateCanvas(true);
+};
+
 Node.prototype.add_slot = function(slot_type, def)
 {
 	var suid = this.dyn_slot_uid++;
@@ -2914,8 +2929,8 @@ function Application() {
 		else
 		{
 			self.releaseSelection();
-			self.selection_nodes = [];
-			self.selection_conns = [];
+			self.clearSelection();
+			E2.app.updateCanvas();
 		}
 		
 		self.in_drag = true;
@@ -3479,8 +3494,7 @@ function Application() {
 
 	this.onStopClicked = function()
 	{
-		self.player.stop();
-		self.changeControlState();
+		self.player.schedule_stop(self.changeControlState);
 	};
 
 	this.onLayoutClicked = function()
@@ -3728,7 +3742,7 @@ function Player(canvas, app, root_node)
 	this.last_time = (new Date()).getTime();
 	this.current_state = this.state.STOPPED;
 	this.frames = 0;
-	this.scheduled_stop = false;
+	this.scheduled_stop = null;
 	
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, root_node);
 	this.core.graphs.push(this.core.root_graph);
@@ -3754,9 +3768,9 @@ function Player(canvas, app, root_node)
 		this.core.root_graph.pause();
 	};
 
-	this.schedule_stop = function()
+	this.schedule_stop = function(delegate)
 	{
-		this.scheduled_stop = true;
+		this.scheduled_stop = delegate;
 	};
 	
 	this.stop = function()
@@ -3790,10 +3804,11 @@ function Player(canvas, app, root_node)
 
 	this.on_update = function()
 	{
-		if(this.scheduled_stop === true)
+		if(this.scheduled_stop)
 		{
-			this.scheduled_stop = false;
 			this.stop();
+			this.scheduled_stop();
+			this.scheduled_stop = null;
 			return;
 		}
 		
