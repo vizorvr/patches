@@ -30,7 +30,7 @@ E2.p.prototype.update_state = function()
 	if(E2.app.onStopClicked)
 		E2.app.onStopClicked();
 	else
-		this.core.player.stop();
+		this.core.player.schedule_stop();
 		
 	this.stop_seq = false;
 };
