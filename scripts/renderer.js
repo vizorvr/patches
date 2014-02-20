@@ -477,7 +477,7 @@ VertexBuffer.prototype.bind_data = function(v_data)
 {
 	var gl = this.gl;
 
-	this.count = v_data.length / VertexBuffer.type_stride[this.type];
+	this.count = (v_data.toString() === '[object ArrayBuffer]' ? v_data.byteLength / 4 : v_data.length) / VertexBuffer.type_stride[this.type];
 	this.enable();
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v_data), gl.STATIC_DRAW);
 };
