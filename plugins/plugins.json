@@ -64,6 +64,7 @@
 	"Generators/Values/Blend mode": "blend_mode_generator",
 	"Generators/Values/Color picker": "color_picker",
 	"Generators/Values/Depth function": "depth_func_generator",
+	"Generators/Values/Editor": "text_editor_generator",
 	"Generators/Values/Float": "const_float_generator",
 	"Generators/Values/Knob": "knob_float_generator",
 	"Generators/Values/Light type": "light_type_generator",
