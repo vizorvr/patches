@@ -1289,7 +1289,7 @@ Node.prototype.deserialise = function(guid, d)
 		E2.app.player.core.graphs.push(this.plugin.graph);
 	}
 	
-	if(d.state)
+	if(d.state && this.plugin.state)
 	{
 		for(var key in d.state)
 		{
