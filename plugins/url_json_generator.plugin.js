@@ -86,7 +86,7 @@ E2.p.prototype.state_changed = function(ui)
 				}}(self),
 				error: function(self) { return function(jqXHR, textStatus, errorThrown)
 				{
-					msg('ERROR: Failed to load JSON "' + this.state.url + '": ' + textStatus + ', ' + errorThrown);
+					msg('ERROR: Failed to load JSON "' + self.state.url + '": ' + textStatus + ', ' + errorThrown);
 					self.core.asset_tracker.signal_failed();
 				}}(self),
 				async: false
