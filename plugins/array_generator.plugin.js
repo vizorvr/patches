@@ -31,7 +31,7 @@ E2.p.prototype.create_ui = function()
 	inp.change(function(self) { return function() 
 	{
 		self.state.datatype = parseInt(inp.val());
-		this.update_array();
+		self.update_array();
 		self.updated = true;
 	}}(this));
 	
