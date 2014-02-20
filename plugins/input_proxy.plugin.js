@@ -8,7 +8,7 @@ E2.p = E2.plugins["input_proxy"] = function(core, node)
 	
 	this.state = 
 	{
-		slot_id: node.add_slot(E2.slot_type.output, { name: 'output', dt: core.datatypes.ANY, desc: 'Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.' })
+		slot_id: node.add_slot(E2.slot_type.output, { name: 'input', dt: core.datatypes.ANY, desc: 'Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.' })
 	};
 
 	this.data = null;
