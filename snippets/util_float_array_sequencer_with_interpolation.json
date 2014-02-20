@@ -1,361 +1,104 @@
 {
-    "abs_t": 26.871,
+    "abs_t": 0,
     "active_graph": 0,
-    "graph_uid": 28,
+    "graph_uid": 4,
     "root": {
-        "node_uid": 12,
+        "node_uid": 37,
         "uid": 0,
         "parent_uid": -1,
         "open": true,
         "nodes": [
             {
+                "plugin": "slider_float_generator",
+                "x": 383,
+                "y": 263,
+                "uid": 2,
+                "state": {
+                    "val": 0.15,
+                    "min": 0,
+                    "max": 1
+                },
+                "title": "speed"
+            },
+            {
+                "plugin": "text_editor_generator",
+                "x": 27,
+                "y": 40,
+                "uid": 4,
+                "state": {
+                    "text": "{\n    \"data\": [1.35, 1.35, 3.65, 3.65, 3.65]\n}"
+                }
+            },
+            {
+                "plugin": "parse_json_modulator",
+                "x": 135,
+                "y": 40,
+                "uid": 5
+            },
+            {
+                "plugin": "member_to_typed_array_modulator",
+                "x": 245,
+                "y": 40,
+                "uid": 6,
+                "state": {
+                    "datatype": 6
+                }
+            },
+            {
+                "plugin": "label_generator",
+                "x": 127,
+                "y": 103,
+                "uid": 7,
+                "state": {
+                    "text": "data"
+                }
+            },
+            {
                 "plugin": "graph",
-                "x": 281,
-                "y": 97,
-                "uid": 8,
-                "dsid": 4,
+                "x": 617,
+                "y": 243,
+                "uid": 9,
+                "dsid": 5,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
                     "input_sids": {
-                        "8": 1,
-                        "10": 2,
-                        "11": 3
+                        "13": 1,
+                        "15": 3
                     },
                     "output_sids": {
-                        "7": 0
+                        "12": 0
                     }
                 },
-                "title": "Float sequence",
+                "title": "Oscillate",
                 "graph": {
-                    "node_uid": 12,
-                    "uid": 26,
+                    "node_uid": 26,
+                    "uid": 3,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
                         {
-                            "plugin": "delegate_sample_modulator",
-                            "x": 656,
-                            "y": 254,
-                            "uid": 1
-                        },
-                        {
-                            "plugin": "float_display",
-                            "x": 795,
-                            "y": 218,
-                            "uid": 2
-                        },
-                        {
-                            "plugin": "graph",
-                            "x": 535,
-                            "y": 343,
-                            "uid": 3,
-                            "dsid": 5,
-                            "state": {
-                                "enabled": true,
-                                "input_sids": {
-                                    "13": 1,
-                                    "14": 2,
-                                    "15": 3
-                                },
-                                "output_sids": {
-                                    "12": 0
-                                }
-                            },
-                            "title": "Oscillate",
-                            "graph": {
-                                "node_uid": 26,
-                                "uid": 27,
-                                "parent_uid": 26,
-                                "open": true,
-                                "nodes": [
-                                    {
-                                        "plugin": "subtract_modulator",
-                                        "x": 405,
-                                        "y": 124,
-                                        "uid": 4
-                                    },
-                                    {
-                                        "plugin": "multiply_modulator",
-                                        "x": 494,
-                                        "y": 9,
-                                        "uid": 6
-                                    },
-                                    {
-                                        "plugin": "add_modulator",
-                                        "x": 577,
-                                        "y": 64,
-                                        "uid": 7
-                                    },
-                                    {
-                                        "plugin": "output_proxy",
-                                        "x": 660,
-                                        "y": 64,
-                                        "uid": 12,
-                                        "dsid": 15,
-                                        "state": {
-                                            "slot_id": 0
-                                        },
-                                        "title": "float",
-                                        "dyn_in": [
-                                            {
-                                                "name": "input",
-                                                "dt": 0,
-                                                "uid": 0,
-                                                "index": 0,
-                                                "type": 0,
-                                                "connected": true,
-                                                "is_connected": true
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "plugin": "input_proxy",
-                                        "x": 25,
-                                        "y": 67,
-                                        "uid": 13,
-                                        "dsid": 13,
-                                        "state": {
-                                            "slot_id": 0
-                                        },
-                                        "title": "Speed",
-                                        "dyn_out": [
-                                            {
-                                                "name": "output",
-                                                "dt": 0,
-                                                "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
-                                                "uid": 0,
-                                                "index": 0,
-                                                "type": 1,
-                                                "connected": true
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "plugin": "input_proxy",
-                                        "x": 279,
-                                        "y": 119,
-                                        "uid": 14,
-                                        "dsid": 13,
-                                        "state": {
-                                            "slot_id": 0
-                                        },
-                                        "title": "Min",
-                                        "dyn_out": [
-                                            {
-                                                "name": "output",
-                                                "dt": 0,
-                                                "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
-                                                "uid": 0,
-                                                "index": 0,
-                                                "type": 1,
-                                                "connected": true
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "plugin": "input_proxy",
-                                        "x": 345,
-                                        "y": 124,
-                                        "uid": 15,
-                                        "dsid": 13,
-                                        "state": {
-                                            "slot_id": 0
-                                        },
-                                        "title": "Max",
-                                        "dyn_out": [
-                                            {
-                                                "name": "output",
-                                                "dt": 0,
-                                                "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
-                                                "uid": 0,
-                                                "index": 0,
-                                                "type": 1,
-                                                "connected": true
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "plugin": "delta_t_generator",
-                                        "x": 8,
-                                        "y": 9,
-                                        "uid": 18
-                                    },
-                                    {
-                                        "plugin": "accumulate_modulator",
-                                        "x": 187,
-                                        "y": 9,
-                                        "uid": 19,
-                                        "state": {
-                                            "value": 3152.740650004164
-                                        }
-                                    },
-                                    {
-                                        "plugin": "multiply_modulator",
-                                        "x": 102,
-                                        "y": 9,
-                                        "uid": 20
-                                    },
-                                    {
-                                        "plugin": "sawtooth_modulator",
-                                        "x": 281,
-                                        "y": 11,
-                                        "uid": 24
-                                    },
-                                    {
-                                        "plugin": "convert_oscilator_unit_modulator",
-                                        "x": 364,
-                                        "y": 12,
-                                        "uid": 25
-                                    }
-                                ],
-                                "conns": [
-                                    {
-                                        "src_nuid": 4,
-                                        "dst_nuid": 6,
-                                        "src_slot": 0,
-                                        "dst_slot": 1
-                                    },
-                                    {
-                                        "src_nuid": 6,
-                                        "dst_nuid": 7,
-                                        "src_slot": 0,
-                                        "dst_slot": 0
-                                    },
-                                    {
-                                        "src_nuid": 7,
-                                        "dst_nuid": 12,
-                                        "src_slot": 0,
-                                        "dst_slot": 0,
-                                        "dst_connected": true,
-                                        "dst_dyn": true,
-                                        "offset": 1
-                                    },
-                                    {
-                                        "src_nuid": 14,
-                                        "dst_nuid": 7,
-                                        "src_slot": 0,
-                                        "dst_slot": 1,
-                                        "src_connected": true,
-                                        "src_dyn": true
-                                    },
-                                    {
-                                        "src_nuid": 14,
-                                        "dst_nuid": 4,
-                                        "src_slot": 0,
-                                        "dst_slot": 1,
-                                        "src_connected": true,
-                                        "src_dyn": true,
-                                        "offset": 1
-                                    },
-                                    {
-                                        "src_nuid": 15,
-                                        "dst_nuid": 4,
-                                        "src_slot": 0,
-                                        "dst_slot": 0,
-                                        "src_connected": true,
-                                        "src_dyn": true
-                                    },
-                                    {
-                                        "src_nuid": 18,
-                                        "dst_nuid": 20,
-                                        "src_slot": 0,
-                                        "dst_slot": 0
-                                    },
-                                    {
-                                        "src_nuid": 20,
-                                        "dst_nuid": 19,
-                                        "src_slot": 0,
-                                        "dst_slot": 0
-                                    },
-                                    {
-                                        "src_nuid": 13,
-                                        "dst_nuid": 20,
-                                        "src_slot": 0,
-                                        "dst_slot": 1,
-                                        "src_connected": true,
-                                        "src_dyn": true
-                                    },
-                                    {
-                                        "src_nuid": 25,
-                                        "dst_nuid": 6,
-                                        "src_slot": 0,
-                                        "dst_slot": 0
-                                    },
-                                    {
-                                        "src_nuid": 19,
-                                        "dst_nuid": 24,
-                                        "src_slot": 0,
-                                        "dst_slot": 0
-                                    },
-                                    {
-                                        "src_nuid": 24,
-                                        "dst_nuid": 25,
-                                        "src_slot": 0,
-                                        "dst_slot": 0
-                                    }
-                                ]
-                            },
-                            "dyn_in": [
-                                {
-                                    "name": "Speed",
-                                    "dt": 0,
-                                    "uid": 1,
-                                    "index": 0,
-                                    "type": 0,
-                                    "is_connected": true
-                                },
-                                {
-                                    "name": "Min",
-                                    "dt": 0,
-                                    "uid": 2,
-                                    "index": 1,
-                                    "type": 0,
-                                    "is_connected": true
-                                },
-                                {
-                                    "name": "Max",
-                                    "dt": 0,
-                                    "uid": 3,
-                                    "index": 2,
-                                    "type": 0,
-                                    "is_connected": true
-                                }
-                            ],
-                            "dyn_out": [
-                                {
-                                    "name": "float",
-                                    "dt": 0,
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1
-                                }
-                            ]
-                        },
-                        {
-                            "plugin": "const_float_generator",
-                            "x": 332,
-                            "y": 388,
-                            "uid": 5,
-                            "state": {
-                                "val": 0
-                            },
-                            "title": "Min"
+                            "plugin": "multiply_modulator",
+                            "x": 537,
+                            "y": 40,
+                            "uid": 6
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 788,
-                            "y": 290,
-                            "uid": 7,
-                            "dsid": 8,
+                            "x": 629,
+                            "y": 40,
+                            "uid": 12,
+                            "dsid": 17,
                             "state": {
                                 "slot_id": 0
                             },
-                            "title": "float sequence",
+                            "title": "index",
                             "dyn_in": [
                                 {
                                     "name": "input",
                                     "dt": 0,
-                                    "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
                                     "uid": 0,
                                     "index": 0,
                                     "type": 0,
@@ -366,36 +109,14 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 477,
-                            "y": 269,
-                            "uid": 8,
-                            "dsid": 8,
+                            "x": 27,
+                            "y": 99,
+                            "uid": 13,
+                            "dsid": 15,
                             "state": {
                                 "slot_id": 0
                             },
-                            "title": "expression",
-                            "dyn_out": [
-                                {
-                                    "name": "output",
-                                    "dt": 14,
-                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
-                                    "uid": 0,
-                                    "index": 0,
-                                    "type": 1,
-                                    "connected": true
-                                }
-                            ]
-                        },
-                        {
-                            "plugin": "input_proxy",
-                            "x": 436,
-                            "y": 331,
-                            "uid": 10,
-                            "dsid": 8,
-                            "state": {
-                                "slot_id": 0
-                            },
-                            "title": "speed",
+                            "title": "Speed",
                             "dyn_out": [
                                 {
                                     "name": "output",
@@ -410,14 +131,14 @@
                         },
                         {
                             "plugin": "input_proxy",
-                            "x": 265,
-                            "y": 280,
-                            "uid": 11,
-                            "dsid": 7,
+                            "x": 468,
+                            "y": 118,
+                            "uid": 15,
+                            "dsid": 15,
                             "state": {
                                 "slot_id": 0
                             },
-                            "title": "steps",
+                            "title": "Max",
                             "dyn_out": [
                                 {
                                     "name": "output",
@@ -429,95 +150,121 @@
                                     "connected": true
                                 }
                             ]
+                        },
+                        {
+                            "plugin": "delta_t_generator",
+                            "x": 10,
+                            "y": 41,
+                            "uid": 18
+                        },
+                        {
+                            "plugin": "accumulate_modulator",
+                            "x": 203,
+                            "y": 41,
+                            "uid": 19,
+                            "state": {
+                                "value": 3167.548350004012
+                            }
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 110,
+                            "y": 41,
+                            "uid": 20
+                        },
+                        {
+                            "plugin": "sawtooth_modulator",
+                            "x": 308,
+                            "y": 41,
+                            "uid": 24
+                        },
+                        {
+                            "plugin": "convert_oscilator_unit_modulator",
+                            "x": 408,
+                            "y": 40,
+                            "uid": 25
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": 3,
-                            "dst_nuid": 1,
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "src_dyn": true
-                        },
-                        {
-                            "src_nuid": 1,
-                            "dst_nuid": 2,
+                            "src_nuid": 18,
+                            "dst_nuid": 20,
                             "src_slot": 0,
                             "dst_slot": 0
                         },
                         {
-                            "src_nuid": 5,
-                            "dst_nuid": 3,
+                            "src_nuid": 20,
+                            "dst_nuid": 19,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 13,
+                            "dst_nuid": 20,
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "dst_dyn": true
-                        },
-                        {
-                            "src_nuid": 1,
-                            "dst_nuid": 7,
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "dst_connected": true,
-                            "dst_dyn": true,
-                            "offset": 1
-                        },
-                        {
-                            "src_nuid": 8,
-                            "dst_nuid": 1,
-                            "src_slot": 0,
-                            "dst_slot": 0,
                             "src_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": 10,
-                            "dst_nuid": 3,
+                            "src_nuid": 25,
+                            "dst_nuid": 6,
                             "src_slot": 0,
-                            "dst_slot": 0,
-                            "src_connected": true,
-                            "src_dyn": true,
-                            "dst_dyn": true
+                            "dst_slot": 0
                         },
                         {
-                            "src_nuid": 11,
-                            "dst_nuid": 3,
+                            "src_nuid": 19,
+                            "dst_nuid": 24,
                             "src_slot": 0,
-                            "dst_slot": 2,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 24,
+                            "dst_nuid": 25,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 15,
+                            "dst_nuid": 6,
+                            "src_slot": 0,
+                            "dst_slot": 1,
                             "src_connected": true,
-                            "src_dyn": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
                             "dst_dyn": true
                         }
                     ]
                 },
                 "dyn_in": [
                     {
-                        "name": "expression",
-                        "dt": 14,
+                        "name": "Speed",
+                        "dt": 0,
                         "uid": 1,
                         "index": 0,
                         "type": 0,
-                        "is_connected": true
+                        "is_connected": true,
+                        "connected": false
                     },
                     {
-                        "name": "speed",
-                        "dt": 0,
-                        "uid": 2,
-                        "index": 1,
-                        "type": 0,
-                        "is_connected": true
-                    },
-                    {
-                        "name": "steps",
+                        "name": "Max",
                         "dt": 0,
                         "uid": 3,
-                        "index": 2,
+                        "index": 1,
                         "type": 0,
-                        "is_connected": true
+                        "is_connected": true,
+                        "connected": false
                     }
                 ],
                 "dyn_out": [
                     {
-                        "name": "float sequence",
+                        "name": "index",
                         "dt": 0,
                         "uid": 0,
                         "index": 0,
@@ -526,60 +273,360 @@
                 ]
             },
             {
-                "plugin": "delegate_expression_generator",
-                "x": 62,
-                "y": 90,
-                "uid": 9,
-                "state": {
-                    "expression": "var d = [1.35, 1.35, 3.65, 3.65, 3.65];\n\nx = x % d.length;\n\nvar xi = Math.floor(x);\nvar xf = x - xi;\nvar xn = xi + 1;\n\nxn = xn > d.length - 1 ? d.length - 1 : xn;\n\n// Linear interpolation\n// (d[xi] * xf) + (d[xn] * (1.0 - xf));\n\n// Cosine interpolation -- this is the best we can do\n// with only two samples.\nvar xf2 = (1.0 - Math.cos(xf * PI)) * 0.5;\n\n(d[xi] * (1.0 - xf2)) + (d[xn] * xf);",
-                    "slot_ids": {}
-                },
-                "title": "Float array"
+                "plugin": "array_length_modulator",
+                "x": 433,
+                "y": 48,
+                "uid": 11
             },
             {
-                "plugin": "slider_float_generator",
-                "x": 60,
-                "y": 151,
-                "uid": 10,
-                "state": {
-                    "val": 0.15,
-                    "min": 0,
-                    "max": 1
-                },
-                "title": "speed"
+                "plugin": "subtract_modulator",
+                "x": 521,
+                "y": 120,
+                "uid": 12
             },
             {
                 "plugin": "const_float_generator",
-                "x": 176,
-                "y": 91,
-                "uid": 11,
+                "x": 383,
+                "y": 183,
+                "uid": 13,
                 "state": {
-                    "val": 5
+                    "val": 1
                 },
-                "title": "steps"
+                "title": "one"
+            },
+            {
+                "plugin": "floor_modulator",
+                "x": 768,
+                "y": 306,
+                "uid": 15
+            },
+            {
+                "plugin": "subtract_modulator",
+                "x": 868,
+                "y": 242,
+                "uid": 16
+            },
+            {
+                "plugin": "add_modulator",
+                "x": 871,
+                "y": 330,
+                "uid": 17
+            },
+            {
+                "plugin": "min_modulator",
+                "x": 971,
+                "y": 357,
+                "uid": 18
+            },
+            {
+                "plugin": "subtract_modulator",
+                "x": 1145,
+                "y": 72,
+                "uid": 19
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 963,
+                "y": 180,
+                "uid": 20
+            },
+            {
+                "plugin": "pi_generator",
+                "x": 904,
+                "y": 165,
+                "uid": 21
+            },
+            {
+                "plugin": "cos_modulator",
+                "x": 1056,
+                "y": 180,
+                "uid": 22
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 1242,
+                "y": 228,
+                "uid": 23
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 1126,
+                "y": 279,
+                "uid": 24,
+                "state": {
+                    "val": 0.5
+                }
+            },
+            {
+                "plugin": "array_get_modulator",
+                "x": 1268,
+                "y": 8,
+                "uid": 25
+            },
+            {
+                "plugin": "array_get_modulator",
+                "x": 1057,
+                "y": 399,
+                "uid": 26
+            },
+            {
+                "plugin": "subtract_modulator",
+                "x": 1345,
+                "y": 113,
+                "uid": 27
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 1440,
+                "y": 61,
+                "uid": 28
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 1259,
+                "y": 314,
+                "uid": 29
+            },
+            {
+                "plugin": "add_modulator",
+                "x": 1534,
+                "y": 185,
+                "uid": 30
+            },
+            {
+                "plugin": "float_display",
+                "x": 1624,
+                "y": 185,
+                "uid": 35
             }
         ],
         "conns": [
             {
-                "src_nuid": 9,
-                "dst_nuid": 8,
+                "src_nuid": 4,
+                "dst_nuid": 5,
                 "src_slot": 0,
-                "dst_slot": 0,
-                "dst_dyn": true
+                "dst_slot": 0
             },
             {
-                "src_nuid": 10,
-                "dst_nuid": 8,
+                "src_nuid": 5,
+                "dst_nuid": 6,
                 "src_slot": 0,
-                "dst_slot": 1,
-                "dst_dyn": true
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 7,
+                "dst_nuid": 6,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 6,
+                "dst_nuid": 11,
+                "src_slot": 0,
+                "dst_slot": 0
             },
             {
                 "src_nuid": 11,
-                "dst_nuid": 8,
+                "dst_nuid": 12,
                 "src_slot": 0,
-                "dst_slot": 2,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 13,
+                "dst_nuid": 12,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 12,
+                "dst_nuid": 9,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "dst_connected": false,
                 "dst_dyn": true
+            },
+            {
+                "src_nuid": 2,
+                "dst_nuid": 9,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_connected": false,
+                "dst_dyn": true,
+                "offset": 1
+            },
+            {
+                "src_nuid": 9,
+                "dst_nuid": 15,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "src_dyn": true
+            },
+            {
+                "src_nuid": 9,
+                "dst_nuid": 16,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "src_dyn": true,
+                "offset": 1
+            },
+            {
+                "src_nuid": 15,
+                "dst_nuid": 16,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 15,
+                "dst_nuid": 17,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 1
+            },
+            {
+                "src_nuid": 13,
+                "dst_nuid": 17,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "offset": 1
+            },
+            {
+                "src_nuid": 17,
+                "dst_nuid": 18,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 12,
+                "dst_nuid": 18,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "offset": 1
+            },
+            {
+                "src_nuid": 13,
+                "dst_nuid": 19,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 2
+            },
+            {
+                "src_nuid": 16,
+                "dst_nuid": 20,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 21,
+                "dst_nuid": 20,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 20,
+                "dst_nuid": 22,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 22,
+                "dst_nuid": 19,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 19,
+                "dst_nuid": 23,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 24,
+                "dst_nuid": 23,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 15,
+                "dst_nuid": 25,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "offset": 2
+            },
+            {
+                "src_nuid": 6,
+                "dst_nuid": 25,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 1
+            },
+            {
+                "src_nuid": 6,
+                "dst_nuid": 26,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 2
+            },
+            {
+                "src_nuid": 18,
+                "dst_nuid": 26,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 23,
+                "dst_nuid": 27,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 13,
+                "dst_nuid": 27,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 3
+            },
+            {
+                "src_nuid": 27,
+                "dst_nuid": 28,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 25,
+                "dst_nuid": 28,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 26,
+                "dst_nuid": 29,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 16,
+                "dst_nuid": 29,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 1
+            },
+            {
+                "src_nuid": 28,
+                "dst_nuid": 30,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 29,
+                "dst_nuid": 30,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 30,
+                "dst_nuid": 35,
+                "src_slot": 0,
+                "dst_slot": 0
             }
         ]
     }

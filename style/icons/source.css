@@ -47,6 +47,8 @@
 .icon-concatenate_matrix_modulator { background: url('concatenate-matrix-modulator.png'); }
 .icon-const_float_generator { background: url('const-float-generator.png'); }
 .icon-const_text_generator { background: url('text-display.png'); }
+.icon-label_generator { background: url('text-display.png'); }
+.icon-text_editor_generator { background: url('text-display.png'); }
 .icon-convert_bool_float_modulator { background: url('convert-generic.png'); }
 .icon-convert_camera_matrices { background: url('convert-generic.png'); }
 .icon-convert_color_rgba_modulator { background: url('convert-generic.png'); }
@@ -61,12 +63,6 @@
 .icon-cos_modulator { background: url('cosine-modulator.png'); }
 .icon-cube_mesh_generator { background: url('cube-mesh-generator.png'); }
 .icon-data_info_display { background: url('none.png'); }
-.icon-delegate_expression_generator { background: url('delegate-expression-generator.png'); }
-.icon-delegate_get_length_modulator { background: url('delegate-get-length-modulator.png'); }
-.icon-delegate_json_array_generator { background: url('delegate-json-array-generator.png'); }
-.icon-delegate_loop_generator { background: url('rotation-xyz-matrix.png'); }
-.icon-delegate_sample_modulator { background: url('delegate-sample-modulator.png'); }
-.icon-delegate_sequence_generator { background: url('delegate-sequence-generator.png'); }
 .icon-delta_modulator { background: url('delta-modulator.png'); }
 .icon-delta_t_generator { background: url('delta-t-generator.png'); } 	
 .icon-depth_func_generator { background: url('material-z-buffer-modulator.png'); } 	
@@ -191,6 +187,7 @@
 .icon-tween_in_modulator { background: url('tween-in-modulator.png'); }
 .icon-tween_out_modulator { background: url('tween-out-modulator.png'); }
 .icon-url_audio_generator { background: url('url-audio-generator.png'); }
+.icon-url_json_generator { background: url('url-json-generator.png'); }
 .icon-url_scene_generator { background: url('url-scene-generator.png'); }
 .icon-url_texture_generator { background: url('url-texture-generator.png'); }
 .icon-url_video_generator { background: url('record-framebuffer.png'); }

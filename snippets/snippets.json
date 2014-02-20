@@ -36,7 +36,6 @@
 		"Instancing: IFS setup with controls": "instancing_ifs",
 		"Instancing: IFS with camera and light out": "instancing_ifs_with_camera_and_light_out",
 		"Instancing: Texture instancing setup": "instancing_texture",
-		"Instancing: Array with full expression delegate chain": "instancing_array_with_full_expression_delegate_chain",
 		"Text: Text quad": "text_quad",
 		"Text: Text with texture inside with custom shader": "text_with_texture_inside_custom_shader",
 		"Background: Sky box": "background_skybox",
@@ -163,5 +162,10 @@
 		"Post Process: Ice": "postprocess_ice",
 		"Post Process: Graffiti grunge": "postprocess_graffiti_grunge",
 		"Post Process: Chroma key": "postprocess_chromakey"
+	},
+
+	"HI-RES RENDERING":
+	{
+		"Render segmented": "render_segmented"
 	}
 }
