@@ -84,7 +84,7 @@ E2.p.prototype.update_state = function()
 	if(off < 0 || off >= this.array.byteLength)
 		return;
 	
-	this.value = this.accessor(off);
+	this.value = (this.state.datatype < 2) ? this.accessor(off) : this.accessor(off, true);
 };
 
 E2.p.prototype.update_output = function(slot)
