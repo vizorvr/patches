@@ -203,6 +203,8 @@
 .icon-video_get_current_time_modulator { background: url('clock-generator.png'); }
 .icon-video_get_duration_modulator { background: url('audio-get-duration-modulator.png'); }
 .icon-video_player { background: url('record-framebuffer.png'); }
+.icon-viewport_width_generator { background: url('viewport-width-generator.png'); }
+.icon-viewport_height_generator { background: url('viewport-height-generator.png'); }
 .icon-xor_modulator { background: url('xor-modulator.png'); }
 
 
