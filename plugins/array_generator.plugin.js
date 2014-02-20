@@ -51,8 +51,13 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_array = function()
 {
+	var stride = [1, 1, 2, 2, 4, 4, 4][this.state.datatype];
+	
 	msg('Creating new array of size: ' + this.size);
-	this.array = new ArrayBuffer([1, 1, 2, 2, 4, 4, 4][this.state.datatype] * this.size);
+	
+	this.array = new ArrayBuffer(stride * this.size);
+	this.array.datatype = this.state.datatype;
+	this.array.stride = stride;
 };
 
 E2.p.prototype.update_output = function(slot)

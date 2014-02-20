@@ -81,6 +81,8 @@ E2.p.prototype.update_state = function()
 	}
 	
 	this.array = this.array.buffer; // Grrr..
+	this.array.datatype = this.state.datatype;
+	this.array.stride = [1, 1, 2, 2, 4, 4, 4][this.state.datatype];
 };
 
 E2.p.prototype.update_output = function(slot)

@@ -27,7 +27,7 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_output = function(slot)
 {
-	return this.array ? this.array.byteLength : 0;
+	return this.array ? this.array.byteLength / this.array.stride : 0;
 };
 
 E2.p.prototype.state_changed = function(ui)
