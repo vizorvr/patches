@@ -9,6 +9,10 @@ E2.p = E2.plugins["pi_generator"] = function(core, node)
 	];
 };
 
+E2.p.prototype.reset = function()
+{
+};
+
 E2.p.prototype.update_output = function(slot)
 {
 	return Math.PI;
