@@ -8,7 +8,8 @@ E2.p = E2.plugins["array_get_modulator"] = function(core, node)
 	];
 	
 	this.output_slots = [ 
-		 { name: 'value', dt: core.datatypes.FLOAT, desc: 'The value of the chosen item.' }
+		{ name: 'array', dt: core.datatypes.ARRAY, desc: 'The modified array.' },
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The value of the chosen item.' }
 	];
 
 	this.node = node;
@@ -63,5 +64,8 @@ E2.p.prototype.update_state = function()
 
 E2.p.prototype.update_output = function(slot)
 {
-	return this.value;
+	if(slot.index === 0)
+		return this.array;
+	else
+		return this.value;
 };
