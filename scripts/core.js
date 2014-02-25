@@ -1832,6 +1832,17 @@ Graph.prototype.reorder_children = function(node, src, hit_mode)
 	reorder(this.nodes, node, src, hit_mode);
 };
 
+function LinkedSlotGroup(node, input_slot_ids, output_slot_ids)
+{
+	this.node = node;
+	this.input_slot_ids = input_slot_ids;
+	this.output_slot_ids = output_slot_ids;
+}
+
+LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot)
+{
+};
+
 function AssetTracker()
 {
 	this.started = 0;
@@ -2035,8 +2046,17 @@ function Core(app) {
 			return new Material();
 		else if(dt === dts.TEXT)
 			return '';
+		else if(dt === dts.ARRAY)
+		{
+			var a = new ArrayBuffer(0);
+			
+			a.stride = a.datatype = 1; // Uint8
+			return a;
+		}
+		else if(dt === dts.OBJECT)
+			return {};
 		
-		// Shaders and textures legally default to null.
+		// Shaders, textures, scenes, light and delegates legally default to null.
 		return null;
 	};
 	
@@ -2172,6 +2192,7 @@ function Application() {
 	this.resize_timer = null;
 	this.is_osx = /os x 10/.test(navigator.userAgent.toLowerCase());
 	this.condensed_view = false;
+	this.collapse_log = true;
 	
 	this.getNIDFromSlot = function(id)
 	{
@@ -2908,8 +2929,7 @@ function Application() {
 		self.selection_nodes = [];
 		self.selection_conns = [];
 		
-		// Clear the info view contents.
-		E2.dom.info.html('');
+		this.onHideTooltip();
 	};
 	
 	this.onCanvasMouseDown = function(e)
@@ -3363,6 +3383,19 @@ function Application() {
 		var col2_y = cont_h + c_height;
 		var col2_h = (win_height - (c_height + cont_h)) - 32;
 		var tabs_h = (win_height - (cont_h + E2.dom.webgl_canvas.height())) - 32;
+		var s_height = c_height;
+		
+		if(self.condensed_view)
+		{
+			E2.dom.dbg.css('display', 'none');
+		}
+		else
+		{
+			E2.dom.dbg.css({ 'position': 'absolute', 'left': col1_x - 3, 'top': col2_y + 7, 'width': c_width - 4, 'height': col2_h, display: 'inherit' });
+
+			if(self.collapse_log)
+				c_height += 230;
+		}
 		
 		E2.dom.breadcrumb.css({ 'position': 'absolute', 'left': col1_x + 8, 'top': cont_h + 16 });
 		E2.dom.canvas_parent.css({ 'position': 'absolute', 'left': col1_x });
@@ -3379,13 +3412,11 @@ function Application() {
 		{
 			E2.dom.structure.css('display', 'none');
 			E2.dom.info.css('display', 'none');
-			E2.dom.dbg.css('display', 'none');
 		}
 		else
 		{
-			E2.dom.structure.css({ 'height': c_height - 8, display: 'inherit' });
+			E2.dom.structure.css({ 'height': s_height - 8, display: 'inherit' });
 			E2.dom.info.css({ 'position': 'absolute', 'left': 0, 'top': col2_y, 'height': col2_h, display: 'inherit' });
-			E2.dom.dbg.css({ 'position': 'absolute', 'left': col1_x - 3, 'top': col2_y + 7, 'width': c_width - 4, 'height': col2_h, display: 'inherit' });
 		}
 		
 		// More hackery
@@ -3436,6 +3467,13 @@ function Application() {
 				self.condensed_view = !self.condensed_view;
 				self.onWindowResize();
 				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
+				return;
+			}
+			else if(e.keyCode === 76) // CTRL+l
+			{
+				self.collapse_log = !self.collapse_log;
+				self.onWindowResize();
+				e.preventDefault();
 				return;
 			}
 			
@@ -3655,7 +3693,7 @@ function Application() {
 		if(self.in_drag)
 			return false;
 
-		E2.dom.info.html('');
+		E2.dom.info.html('<b>Info view</b><br /><br />Hover over node instances or their slots to display their documentation here.');
 	};
 	
     	document.addEventListener('mouseup', this.onMouseReleased);
@@ -3724,6 +3762,8 @@ function Application() {
 	{
 		window.open('help/introduction.html', 'Engi Help');
 	});
+	
+	this.onHideTooltip();
 }
 
 function Player(canvas, app, root_node)
@@ -4015,7 +4055,7 @@ function InitialiseEngi()
 	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
 	E2.dom.load_clipboard.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClipboardClicked);
 
-	$('#tabs').tabs();
+	$('#tabs').tabs({ active: 1 });
 	$('#content')[0].style.display = 'block';
 	
 	E2.app.onWindowResize();
