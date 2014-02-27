@@ -1,50 +1,58 @@
 {
-	"NEW SET":
+	
+	"3D GRAPHICS":
 	{
-		"3D: Scene with full controls": "newset_3d_scene_with_full_controls",
-		"3D: Scene loader": "newset_3d_scene_loader",
-		"3D: Scene loader with camera": "newset_3d_scene_loader_with_camera",
-		"3D: Grid helper": "newset_grid_helper",
-		"Camera: Perspective camera setup": "newset_camera_setup",
-		"Transform: Matrix Transform setup": "newset_matrix_transform_setup",
-		"Transform: Translate": "newset_transform_translate",
-		"Lights: Point light 1": "newset_point_light",
-		"Light: Light indicator": "newset_light_indicator",
-		"Synch: Add": "newset_synch_add",
-		"Synch: Substract": "newset_synch_substract",
-		"Synch: Synchtrack": "newset_synch_synchtrack"
-
-	},
-
-	"3D, GRAPHICS AND TEXT":
-	{
-		"3D: Plain scene loader": "3d_plain_scene_loader",	
-		"3D: Plain scene loader with camera and light out": "3d_plain_scene_loader_with_camera_and_light_out",
-		"3D: Scene loader with camera and transforms": "3d_scene_loader_with_camera_and_transforms",
-		"3D: Scene loader with mouse controls": "3d_scene_loader_with_mousecontrol",
 		"3D: Scene with camera, material & lights": "3d_scene_with_camera_material_lights", 
+		"3D: Scene loader with camera and transforms": "3d_scene_loader_with_camera_and_transforms",
+		"3D: Plain scene loader (no camera)": "3d_plain_scene_loader",	
+		"3D: Scene loader with mouse controls": "3d_scene_loader_with_mousecontrol",
 		"3D: Scene with texture out": "3d_scene_with_texture_out",
 		"3D: Quad": "3d_quad_loader_fullscreen",
-		"3D: Quad : Overlay graphic": "3d_overlay_graphic",
-		"3D: Cube": "3d_cube_loader",
-		"3D: Sphere": "3d_sphere_loader", 
+		"3D: Cube (no camera)": "3d_cube_loader",
+		"3D: Sphere (no camera)": "3d_sphere_loader", 
 		"3D: Mesh with camera, material and light": "3d_mesh_with_camera_material_and_light",
 		"3D: Mesh with outputs for camera, transform and light": "3d_mesh_with_camera_transform_and_light_out",
 		"3D: Mesh with material": "mesh_with_material",
-		"Instancing: Cube setup with controls": "instancing_cube",
-		"Instancing: Array setup with controls": "instancing_array",
-		"Instancing: IFS setup with controls": "instancing_ifs",
-		"Instancing: IFS with camera and light out": "instancing_ifs_with_camera_and_light_out",
-		"Instancing: Texture instancing setup": "instancing_texture",
-		"Text: Text quad": "text_quad",
-		"Text: Text with texture inside with custom shader": "text_with_texture_inside_custom_shader",
+		"3D Instancing: Cube setup with controls": "instancing_cube",
+		"3D Instancing: Array setup with controls": "instancing_array",
+		"3D Instancing: IFS setup with controls": "instancing_ifs",
+		"3D Instancing: IFS with camera and light out": "instancing_ifs_with_camera_and_light_out",
+		"3D Instancing: Texture instancing setup": "instancing_texture"
+	},
+
+	"BACKGROUND & OVERLAY GRAPHICS":
+	{
 		"Background: Sky box": "background_skybox",
 		"Background: Plain color": "background_plain_color",
-		"Background: A round floor pane": "background_round_floor_pane",
 		"Background: Inside a sphere": "background_inside_sphere",
 		"Background: Tunnelsphere": "background_tunnelsphere",
-		"Background: Moving quad": "background_moving_quad"
+		"Background: Moving quad": "background_moving_quad",
+		"Overlay: Overlay graphic": "3d_overlay_graphic"
 	},
+
+
+	"VIDEO":
+	{
+		"Video: Video player": "video_video_player",
+		"Video: Video to quad": "video_video_to_quad",
+		"Video: Chromakeyed video": "video_chromakey"
+	},
+
+	"AUDIO":
+	{
+		"Audio: Audio player": "audio_audio_player",	
+		"Synch: Add": "synch_add",
+		"Synch: Substract": "synch_substract",
+		"Synch: Synchtrack": "synch_synchtrack"
+	},
+
+	"TEXT":
+	{
+		"Text: Basic text on screen setup": "text_quad",
+		"Text: Text with texture inside with custom shader": "text_with_texture_inside_custom_shader",
+		"Background: Moving quad": "background_moving_quad"
+	},	
+	
 	
 	"CAMERAS":
 	{
@@ -102,10 +110,6 @@
 		"Util: VU-meter": "util_vu-meter",
 		"Color: Hue / Saturation / Luminosity / Alpha": "color_hsla",
 		"Color: Red / Green / Blue / Alpha": "color_rgba",
-		"Audio: Audio player": "audio_audio_player",	
-		"Video: Video player": "video_video_player",
-		"Video: Video to quad": "video_video_to_quad",
-		"Video: Chromakeyed video": "video_chromakey",
 		"UV: Offset": "uv_offset",
 		"UV: Scale": "uv_scale"
 	},
@@ -115,7 +119,6 @@
 	{
 		"Shader: Full custom shader": "shader_full_custom_shader",
 		"Shader: Template for Shadertoy.com pixel shaders": "shader_from_shadertoy",
-
 		"Shader: Particle spline": "shader_particle_spline",
 		"Shader: Particle spline with big particles": "shader_particle_spline_with_big_particles",
 		"Shader: Cross flare": "shader_cross_flare",

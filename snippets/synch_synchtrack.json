@@ -1,0 +1,452 @@
+{
+    "abs_t": 69.067,
+    "active_graph": 0,
+    "graph_uid": 2,
+    "root": {
+        "node_uid": 31,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "url_audio_generator",
+                "x": 58,
+                "y": 126,
+                "uid": 20,
+                "state": {
+                    "url": "data/audio"
+                }
+            },
+            {
+                "plugin": "audio_player",
+                "x": 606,
+                "y": 253,
+                "uid": 21
+            },
+            {
+                "plugin": "toggle_button",
+                "x": 459,
+                "y": 186,
+                "uid": 22,
+                "open": false,
+                "state": {
+                    "enabled": true
+                },
+                "title": "Play"
+            },
+            {
+                "plugin": "toggle_button",
+                "x": 459,
+                "y": 230,
+                "uid": 23,
+                "open": false,
+                "state": {
+                    "enabled": false
+                },
+                "title": "Mute audio"
+            },
+            {
+                "plugin": "knob_float_generator",
+                "x": 460,
+                "y": 267,
+                "uid": 24,
+                "open": false,
+                "state": {
+                    "val": 0.49999999999999956
+                },
+                "title": "Volume"
+            },
+            {
+                "plugin": "audio_get_duration_modulator",
+                "x": 380,
+                "y": 303,
+                "uid": 25,
+                "open": false
+            },
+            {
+                "plugin": "knob_float_generator",
+                "x": 368,
+                "y": 228,
+                "uid": 26,
+                "state": {
+                    "val": 0
+                },
+                "title": "Position"
+            },
+            {
+                "plugin": "multiply_modulator",
+                "x": 473,
+                "y": 303,
+                "uid": 27,
+                "open": false
+            },
+            {
+                "plugin": "graph",
+                "x": 223,
+                "y": 118,
+                "uid": 28,
+                "dsid": 4,
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "input_sids": {
+                        "9": 0,
+                        "10": 1
+                    },
+                    "output_sids": {
+                        "12": 3
+                    }
+                },
+                "title": "Synchtrack for audio",
+                "graph": {
+                    "node_uid": 17,
+                    "uid": 1,
+                    "parent_uid": 0,
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "audio_get_current_time_modulator",
+                            "x": 109,
+                            "y": 258,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 109,
+                            "y": 190,
+                            "uid": 5,
+                            "state": {
+                                "val": 30
+                            }
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 252,
+                            "y": 179,
+                            "uid": 6
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 455,
+                            "y": 168,
+                            "uid": 8,
+                            "title": "Amp signal"
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 26,
+                            "y": 259,
+                            "uid": 9,
+                            "dsid": 4,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "audio",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 10,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 247,
+                            "y": 257,
+                            "uid": 10,
+                            "dsid": 4,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "Amp amount",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 562,
+                            "y": 169,
+                            "uid": 12,
+                            "dsid": 4,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "synch",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 0,
+                                    "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "url_json_generator",
+                            "x": 10,
+                            "y": 40,
+                            "uid": 13,
+                            "state": {
+                                "url": "data/demos/radix/tiger-drums-bd.json"
+                            }
+                        },
+                        {
+                            "plugin": "member_to_typed_array_modulator",
+                            "x": 151,
+                            "y": 62,
+                            "uid": 14,
+                            "state": {
+                                "datatype": 6
+                            }
+                        },
+                        {
+                            "plugin": "label_generator",
+                            "x": 11,
+                            "y": 124,
+                            "uid": 15,
+                            "state": {
+                                "text": "data"
+                            }
+                        },
+                        {
+                            "plugin": "array_get_modulator",
+                            "x": 360,
+                            "y": 133,
+                            "uid": 16
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 6,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 3
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 6,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 9,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 13,
+                            "dst_nuid": 14,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 15,
+                            "dst_nuid": 14,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 14,
+                            "dst_nuid": 16,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 16,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 16,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "audio",
+                        "dt": 10,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "Amp amount",
+                        "dt": 0,
+                        "uid": 1,
+                        "index": 1,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "synch",
+                        "dt": 0,
+                        "uid": 3,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 57,
+                "y": 193,
+                "uid": 29,
+                "state": {
+                    "val": 100
+                },
+                "title": "Amp"
+            },
+            {
+                "plugin": "register_global_write",
+                "x": 417,
+                "y": 118,
+                "uid": 30,
+                "dsid": 5,
+                "state": {
+                    "slot_id": 0
+                },
+                "title": "synch",
+                "dyn_in": [
+                    {
+                        "name": "value",
+                        "dt": 0,
+                        "desc": "",
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true,
+                        "connected": false
+                    }
+                ]
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 20,
+                "dst_nuid": 21,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 20,
+                "dst_nuid": 25,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 1
+            },
+            {
+                "src_nuid": 22,
+                "dst_nuid": 21,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 23,
+                "dst_nuid": 21,
+                "src_slot": 0,
+                "dst_slot": 2
+            },
+            {
+                "src_nuid": 24,
+                "dst_nuid": 21,
+                "src_slot": 0,
+                "dst_slot": 3
+            },
+            {
+                "src_nuid": 27,
+                "dst_nuid": 21,
+                "src_slot": 0,
+                "dst_slot": 4
+            },
+            {
+                "src_nuid": 25,
+                "dst_nuid": 27,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 26,
+                "dst_nuid": 27,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 29,
+                "dst_nuid": 28,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 28,
+                "dst_nuid": 30,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_connected": false,
+                "src_dyn": true,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 20,
+                "dst_nuid": 28,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true,
+                "offset": 2
+            }
+        ]
+    },
+    "registers": [
+        {
+            "id": "synch",
+            "dt": 8
+        }
+    ]
+}
