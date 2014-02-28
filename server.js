@@ -2,6 +2,7 @@
 
 var fspath = require('path')
 var connect = require('express')
+var browserify = require('browserify')
 var fs = require('fs')
 
 var WEBROOT = './browser/'
@@ -22,6 +23,25 @@ function showFolderListing(reTest) {
 			}))
 		})
 	}
+}
+
+function bundle(req, res) {
+	var b = browserify({ debug: true })
+
+	b.add(WEBROOT + '/scripts/core.js')
+
+	b.on('syntaxError', function(e) {
+		console.error('SyntaxError: '+e)
+		return res.end(500)
+	})
+
+	b.bundle().pipe(res);
+
+	// var str = b.bundle()
+	// res.setHeader('Content-Type', 'text/javascript')
+	// res.setHeader('Content-Length', new Buffer(str).length)
+	// res.setHeader('Cache-Control', 'private, no-cache, max-age=1')
+	// res.end(str)
 }
 
 var app = connect()
@@ -49,6 +69,9 @@ var app = connect()
 		res.setHeader('Expires', 0)
 		next()
 	})
+
+	// App bundle (browserify)
+	.get('/_bundle.js', bundle)
 
 	// Graphs
 	.get('/graphs', showFolderListing(/\.json$/))

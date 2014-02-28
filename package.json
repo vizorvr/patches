@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "dependencies": {
-    "express": "~3.4.8"
+    "express": "~3.4.8",
+    "browserify": "^3.31.2"
   },
   "devDependencies": {},
   "scripts": {
