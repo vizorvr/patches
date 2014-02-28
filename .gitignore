@@ -1,5 +1,6 @@
-build
-data
-tools/assimp
-tools/pyassimp
-tools/node_modules
+.DS_Store
+/browser/build
+/browser/data
+/browser/tools/assimp
+/browser/tools/pyassimp
+/browser/tools/node_modules

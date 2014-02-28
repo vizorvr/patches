@@ -13,14 +13,21 @@ table, caption, tbody, tfoot, thead, tr, th, td
     padding: 0;
     border: 0;
     outline: 0;
-    font-size: 100%;
     vertical-align: baseline;
     background: transparent;
+	font-size: 12px;
 }
 
-body 
-{
-    line-height: 1;
+body {
+	font-family: Helvetica, Arial, Sans-serif;
+	line-height: 1.5em;
+	background-color: #e2e2e2;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 ol, ul 
@@ -95,26 +102,6 @@ input[type=text]
 {
 	margin-left: 8px;
 	margin-right: auto;
-}
-
-body
-{
-	font-family: Helvetica, Arial, Sans-serif;
-	font-size: 10pt;
-	line-height: 1.5em;
-	background-color: #e2e2e2;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-html, body
-{
-	padding: 0px;
-	margin: 0px;
 }
 
 .noselect
@@ -261,9 +248,8 @@ html, body
 
 #tabs
 {
-	position: absolute; 
+	position: absolute;
 	width: 473px;
-	height: 595px;
 	left: 1136px; 
 	top: 318px;
 }
@@ -273,69 +259,27 @@ html, body
 	padding: 5px 4px !important;
 }
 
-#persist
-{
-	width: 460px;
-	height: 495px;
-	resize: none;
-	font-size: 8pt;
-	background-color: #fff;
-	white-space: pre;
-	word-wrap: normal;
-	overflow-y: scroll;
-	overflow-x: scroll;
-	font-family: monospace;
-	border-left: 1px solid #ccc;
-	border-top: 1px solid #ccc;
-	border-right: none;
-	border-bottom: none;
-	-webkit-touch-callout: auto;
-	-webkit-user-select: auto;
-	-khtml-user-select: auto;
-	-moz-user-select: auto;
-	-ms-user-select: auto;
-	user-select: auto;
-	padding: 2px;
-}
-
-#save-minified-div
-{
-	float: right;
-	color: #666;
-	margin-top: 12px;
-}
-
-#save-min-lbl
-{
+#graphs-list {
 	font-size: 12px;
-	position: relative;
-	top: -2px;
+	overflow: scroll;
 }
 
-#save
-{
-	float: left;
-	margin-top: 5px;
+.fileListEntry:hover {
+	cursor: pointer;
+	background-color: #eee;
 }
 
-#load
-{
+#persist-tab button {
 	float: left;
-	margin-top: 5px;
-	margin-right: 5px;
 }
 
-#load-clipboard
-{
-	float: left;
-	margin-top: 5px;
-	margin-right: 5px;
+#persist-tab label {
+	white-space: nowrap;
 }
 
 #snippets-list
 {
 	font-family: tahoma, arial, helvetica;
-	font-size: 13px;
 	width: 465px;
 	height: 500px;
 	background-color: #fff;
@@ -354,6 +298,10 @@ optgroup
 {
 	float: left;
 	margin-top: 5px;
+}
+
+#textureImageSelect {
+	border: 0;
 }
 
 .e_btn

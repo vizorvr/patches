@@ -19,6 +19,8 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+var URL_GRAPHS = '/graphs/'
+
 function E2()
 {
 };
@@ -2304,8 +2306,6 @@ function Application() {
 		
 		if(!self.shift_pressed && type == E2.slot_type.output)
 		{
-			self.set_persist_select(false);
-
 			self.src_node = node;
 			self.src_slot = slot;
 			self.src_slot_div = slot_div;
@@ -2586,7 +2586,6 @@ function Application() {
 			self.src_slot_div[0].style.color = '#000';
 			self.src_slot = null;
 			self.src_slot_div = null;
-			self.set_persist_select(true);
 		}
 		
 		self.dst_node = null;
@@ -2663,11 +2662,6 @@ function Application() {
 		}
 	};
 
-	this.set_persist_select = function(on)
-	{
-		E2.dom.persist.attr('class', on ? 'selection_on' : 'selection_off');
-	};
-	
 	this.clearEditState = function()
 	{
 		self.src_node = null;
@@ -2683,8 +2677,6 @@ function Application() {
 		self.hover_slot_div = null;
 		self.hover_connections = [];
 		self.hover_node = null;
-
-		self.set_persist_select(true);
 	};
 	
 	this.releaseHoverConnections = function()
@@ -2950,7 +2942,6 @@ function Application() {
 		
 		if(e.which === 1)
 		{
-			self.set_persist_select(false);
 			self.selection_start = [0, 0];
 			self.mouseEventPosToCanvasCoord(e, self.selection_start);
 			self.selection_end = self.selection_start.slice(0);
@@ -2974,7 +2965,6 @@ function Application() {
 		self.selection_start = null;
 		self.selection_end = null;
 		self.selection_last = null;
-		self.set_persist_select(true);
 		
 		if(self.selection_dom)
 			self.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
@@ -3412,7 +3402,7 @@ function Application() {
 		E2.dom.canvas_parent.css({ 'position': 'absolute', 'left': col1_x });
 		E2.dom.webgl_canvas.css({ 'left':  col2_x });
 		E2.dom.tabs.css({ 'left':  col2_x, 'height': tabs_h });
-		E2.dom.persist.css({ 'height': tabs_h - 100 });
+		E2.dom.graphs_list.css({ 'height': tabs_h - 100 });
 		E2.dom.snippets_list.css({ 'height': tabs_h - 100 });
 		E2.dom.canvas_parent.css({ 'width': c_width, 'height': c_height });
 		E2.dom.canvas.css({ 'width': c_width, 'height': c_height });
@@ -3659,30 +3649,48 @@ function Application() {
 		self.updateCanvas(true);
 	};
 
+	this.onRefreshClicked = function() {
+		return renderGraphList()
+	};
+
 	this.onSaveClicked = function()
 	{
 		var minify = E2.dom.save_minified.is(':checked');
-		
-		E2.dom.persist.val(' ');
-		setTimeout(function(m) { return function() {
-			E2.dom.persist.val(self.player.core.serialise(minify));
-		}}(minify), 100);
+		var filename = E2.dom.filenameInput.val();
+
+		if (!/\.json$/.test(filename))
+			filename = filename+'.json'
+
+		var ser = self.player.core.serialise(minify);
+
+		$.ajax({
+			type: 'POST',
+			url: URL_GRAPHS + filename,
+			data: ser,
+			dataType: 'json',
+			success: function() {
+				self.onRefreshClicked();
+				window.location.hash = '#' + URL_GRAPHS + filename;
+			},
+			error: function(_x, _t, err) {
+				alert('error '+err);
+			}
+		});
 	};
+	
 	
 	this.onLoadClicked = function()
 	{
-		self.onStopClicked();
-		self.player.load_from_json(E2.dom.persist.val());
-		self.updateCanvas(false);
-		E2.dom.persist.val(' ');
+		window.location.hash = '#' + URL_GRAPHS + E2.dom.filenameInput.val();
 	};
 
 	this.onLoadClipboardClicked = function()
 	{
-		var d = JSON.parse(E2.dom.persist.val());
+		var url = URL_GRAPHS + E2.dom.filenameInput.val();
 
-		self.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
-		E2.dom.persist.val(' ');
+		$.get(url, function(d) {
+			self.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
+		});
 	};
 
 	this.onShowTooltip = function(e)
@@ -3976,17 +3984,20 @@ function InitialiseEngi()
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.layout = $('#layout');
+	E2.dom.refresh = $('#refresh');
 	E2.dom.save = $('#save');
 	E2.dom.load = $('#load');
 	E2.dom.load_clipboard = $('#load-clipboard');
-	E2.dom.persist = $('#persist');
 	E2.dom.structure = $('#structure');
 	E2.dom.info = $('#info');
 	E2.dom.save_minified = $('#save-minified');
 	E2.dom.tabs = $('#tabs');
+	E2.dom.graphs_list = $('#graphs-list');
 	E2.dom.snippets_list = $('#snippets-list');
 	E2.dom.breadcrumb = $('#breadcrumb');
-	
+
+	E2.dom.filenameInput = $('#filenameInput');
+
 	$.ajaxSetup({ cache: false });
 
 	msg('Welcome to WebFx. ' + (new Date()));
@@ -4064,6 +4075,7 @@ function InitialiseEngi()
 	E2.dom.pause.button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(E2.app.onPauseClicked);
 	E2.dom.stop.button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(E2.app.onStopClicked);
 	E2.dom.layout.button({ icons: { primary: 'ui-icon-shuffle' }, disabled: false }).click(E2.app.onLayoutClicked);
+	E2.dom.refresh.button({ icons: { primary: 'ui-icon-arrowrefresh-1-w' } }).click(E2.app.onRefreshClicked);
 	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
 	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
 	E2.dom.load_clipboard.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClipboardClicked);
@@ -4071,5 +4083,39 @@ function InitialiseEngi()
 	$('#tabs').tabs({ active: 1 });
 	$('#content')[0].style.display = 'block';
 	
+	E2.app.onRefreshClicked();
+
 	E2.app.onWindowResize();
+
+	setupLocationHash();
+}
+
+function getLocationHash() {
+	var loc = window.location + ''
+
+	if (window.location.hash)
+		loc = loc.substring(0, loc.indexOf(window.location.hash))
+
+	return loc +
+		'#' + URL_GRAPHS +
+		encodeURIComponent(E2.dom.filenameInput.val())
+}
+
+function loadLocationHash() {
+	var graphName = decodeURIComponent(window.location.hash).replace('#'+URL_GRAPHS,'')
+	console.log('loading graph from location hash:', graphName)
+	E2.dom.filenameInput.val(graphName);
+	E2.app.onStopClicked();
+	E2.app.player.load_from_url(URL_GRAPHS+graphName);
+	E2.app.updateCanvas(false);
+}
+
+function setupLocationHash() {
+	$(window).on('hashchange', loadLocationHash)
+
+	$(document).ready(function() {
+		if (window.location.hash) {
+			setTimeout(loadLocationHash, 1000)
+		}
+	})
 }
