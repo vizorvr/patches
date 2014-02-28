@@ -1,0 +1,16 @@
+{
+  "name": "Engi Editor",
+  "main": "index.html",
+  "window": {
+    "icon": "engi.png",
+    "toolbar": false,
+    "width": 800,
+    "height": 500,
+    "position": "mouse",
+    "min_width": 400,
+    "min_height": 200
+  },
+  "webkit": {
+    "plugin": false
+  }
+}

@@ -1,16 +1,16 @@
 {
-  "name": "Engi Editor",
-  "main": "index.html",
-  "window": {
-    "icon": "engi.png",
-    "toolbar": false,
-    "width": 800,
-    "height": 500,
-    "position": "mouse",
-    "min_width": 400,
-    "min_height": 200
+  "name": "Engi",
+  "version": "0.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "express": "~3.4.8"
   },
-  "webkit": {
-    "plugin": false
-  }
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "MIT"
 }

@@ -3,6 +3,8 @@ Engi
 
 Engi is a HTML5/WebGL-compliant [dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming) editor.
 
+# Introduction
+
 By routing data between nodes in a directed acyclic graph, arbitrary logic can be constructed. This is a 
 particularly effective approach for rapid prototyping or creative exploration when compared with more 
 traditional modes of programming. The editor is fully featured and comes with live preview, data flow
@@ -73,3 +75,18 @@ embedded into any context the user may desire with the included stand-alone play
 instance, which permits sequences to be leveraged in other javascript projects as a domain specific visual
 scripting language by providing the embedded graph with appropriate values from its host, updating the graph
 and acting on the emitted output values.
+
+# Running Engi
+
+Install [Node.js](http://nodejs.org/), then the required npm packages:
+
+	$ npm install
+
+Run the server:
+
+	$ node server.js
+
+Open Engi in the browser:
+
+	http://localhost:8000/
+

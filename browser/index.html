@@ -6,24 +6,62 @@
 		<link href="style/icons/style.css" rel="Stylesheet" type="text/css" />
 		<link href="style/smoothness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" type="text/css"  />
 		<link href="style/skin/ui.dynatree.css" rel="stylesheet" type="text/css">
-		<script type="text/javascript" src="scripts/json-serialization.js"></script>
-		<script type="text/javascript" src="scripts/jquery-1.7.js"></script>
-		<script type="text/javascript" src="scripts/jquery.event.fastfix.js"></script>
-		<script type="text/javascript" src="scripts/jquery-ui.js"></script>
-		<script type="text/javascript" src="scripts/jquery.dynatree.js"></script>
+
+		<script type="text/javascript" src="vendor/jquery-1.7.js"></script>
+		<script type="text/javascript" src="vendor/jquery.event.fastfix.js"></script>
+		<script type="text/javascript" src="vendor/jquery-ui.js"></script>
+		<script type="text/javascript" src="vendor/jquery.dynatree.js"></script>
+		<script type="text/javascript" src="vendor/jquery.mousewheel.js"></script>
+		<script type="text/javascript" src="vendor/gl-matrix.js"></script>
+		<script type="text/javascript" src="vendor/webgl-debug.js"></script>
+		<script type="text/javascript" src="vendor/handlebars-v1.3.0.js"></script>
+
 		<script type="text/javascript" src="scripts/context-menu.js"></script>
-		<script type="text/javascript" src="scripts/jquery.mousewheel.js"></script>
-		<script type="text/javascript" src="scripts/gl-matrix.js"></script>
-		<script type="text/javascript" src="scripts/webgl-debug.js"></script>
 		<script type="text/javascript" src="scripts/renderer.js"></script>
-		<script type="text/javascript" src="scripts/core.js"></script>
 		<script type="text/javascript" src="scripts/ui.js"></script>
+		<script type="text/javascript" src="scripts/graphList.js"></script>
+		<script type="text/javascript" src="scripts/core.js"></script>
+
 		<script type="text/javascript">
-			$(document).ready(function() 
+			$(document).ready(function()
 			{
 				InitialiseEngi();
 			});
 		</script>
+
+		<script id="fileListEntryTemplate" type="text/x-handlebars-template">
+			{{#each files}}
+				<li class="fileListEntry">{{this}}</li>
+			{{/each}}
+		</script>
+
+		<script id="textureImageSelectTemplate" type="text/x-handlebars-template">
+			<div>
+				<form style="height: 100%">
+					<select id="textureImageSelect" size="20">
+						{{#each images}}
+							<option 
+								{{#if selected}}
+									selected
+								{{/if}}
+								value="{{url}}">
+							{{url}}
+							</option>
+						{{/each}}
+					</select>
+				</form>
+
+				<label for="textureImageUrl">URL</label>
+				<input
+					id="textureImageUrl"
+					size="40"
+					type="text"
+					name="textureImageUrl"
+					value=""
+					placeholder="Enter URL"/>
+			</div>
+		</script>
+
 	</head>
 	<body>
 		<noscript>
@@ -57,17 +95,34 @@
 			<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
 			<div id="tabs">
 					<ul>
-						<li><a href="#persist-tab">Load / save</a></li>
+						<li><a href="#persist-tab">Load / Save</a></li>
 						<li><a href="#snippets-tab">Snippets</a></li>
 					</ul>
+
 					<div id="persist-tab">
-						<textarea id="persist"></textarea>
-						<br />
-						<button id="save">Save</button>
-						<button id="load">Load</button>
-						<button id="load-clipboard">Load to clipboard</button>
-						<div id="save-minified-div"><input id="save-minified" type="checkbox"></input><span id="save-min-lbl">Save minified</span></div>
+						<div>
+							<ul id="graphs-list"></ul>
+							
+							<input
+								id="filenameInput"
+								size="40"
+								type="text"
+								name="filename"
+								value=""
+								placeholder="Enter file name"/>
+
+							<input id="save-minified" type="checkbox"/>
+							<label for="save-minified">Save minified</label>
+						</div>
+
+						<div>
+							<button id="refresh">Refresh</button>
+							<button id="save">Save</button>
+							<button id="load">Load</button>
+							<button id="load-clipboard">Load to clipboard</button>
+						</div>
 					</div>
+
 					<div id="snippets-tab">
 						<form style="height: 100%">
 							<select id="snippets-list" size="4"></select>
