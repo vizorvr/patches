@@ -35,19 +35,20 @@ var app = connect()
 	})
 
 	// Engi static files
-	.use(connect['static'](WEBROOT))
+	.use(connect['static'](WEBROOT, { maxAge: 60 * 60 * 24 * 1000 }))
 
 	// Project static files
-	.use(connect['static'](PROJECT))
+	.use(connect['static'](PROJECT, { maxAge: 0 }))
 
+	// Textures
+	.get('/data/textures', showFolderListing(/^[^.].*$/))
+
+	// set no-cache headers for the rest
 	.use(function(req, res, next) {
 		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
 		res.setHeader('Expires', 0)
 		next()
 	})
-
-	// Textures
-	.get('/data/textures', showFolderListing(/^[^.].*$/))
 
 	// Graphs
 	.get('/graphs', showFolderListing(/\.json$/))
