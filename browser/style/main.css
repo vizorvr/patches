@@ -15,12 +15,13 @@ table, caption, tbody, tfoot, thead, tr, th, td
     outline: 0;
     vertical-align: baseline;
     background: transparent;
-	font-size: 12px;
+    font-size: 100%;
 }
 
 body {
 	font-family: Helvetica, Arial, Sans-serif;
 	line-height: 1.5em;
+	font-size: 10pt;
 	background-color: #e2e2e2;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
