@@ -113,27 +113,17 @@
 		"UV: Offset": "uv_offset",
 		"UV: Scale": "uv_scale"
 	},
-
 	"CUSTOM SHADERS":
-	
-	{
-		"Shader: Full custom shader": "shader_full_custom_shader",
+	{	
+
 		"Shader: Template for Shadertoy.com pixel shaders": "shader_from_shadertoy",
 		"Shader: Particle spline": "shader_particle_spline",
 		"Shader: Particle spline with big particles": "shader_particle_spline_with_big_particles",
 		"Shader: Cross flare": "shader_cross_flare",
 		"Shader: Horizontal flare": "shader_horizontal_flare",
-		"Shader: Render depth buffer": "shader_render_depth_buffer",
-		"Shader: Vertex transforms": "shader_vertex_transforms",
-		"Shader: Vertex and normal transforms": "shader_vertex_and_normal_transforms",
-		"Shader: Distance gradient mapping": "shader_distance_gradient_mapping"
-	
-
+		"Shader: Render depth buffer": "shader_render_depth_buffer"
 	},
-
-
 	"2D EFFECT SHADERS":
-	
 	{
 
 	"Effect: Tunnel": "effect_tunnel",
@@ -141,7 +131,6 @@
 	"Effect: Attract tickler": "effect_attract_tickler"
 
 	},
-
 	"POST PROCESSING":
 	{
 		"Post Process: Analogue monitor": "post_process_analogue_monitor",	

@@ -1,5 +1,5 @@
 {
-    "abs_t": 3.568,
+    "abs_t": 59.104,
     "active_graph": 1,
     "graph_uid": 2,
     "root": {
@@ -10,11 +10,14 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 370,
-                "y": 250,
+                "x": 376,
+                "y": 455,
                 "uid": 0,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
                     "input_sids": {},
                     "output_sids": {}
                 },
@@ -31,7 +34,7 @@
                             "y": 91,
                             "uid": 1,
                             "state": {
-                                "url": "data/scenes/effekt/blob/scene.json"
+                                "url": "data/scenes/spikeball/scene.json"
                             }
                         },
                         {
