@@ -1,0 +1,259 @@
+<p><link href="style.css" rel="stylesheet"></link></p>
+
+<h1 id="spanstylefont-family:greyscale_basic_regularsans-serifengispan"><span style="font-family: 'greyscale_basic_regular', sans-serif;">E N G I</span></h1>
+
+<h2 id="authoringcustomshaders">Authoring custom shaders</h2>
+
+<h3 id="introduction:">Introduction:</h3>
+
+<p>The &#8216;From mesh shader custom&#8217; plugin is provided for those who wish to write arbitrary shaders. Some
+knowledge of how Engi&#8217;s renderer composes shaders automatically to integrate with the material and
+lighting system is required to effectively do so, and will be summarized in the sections below. To
+compose an automatically generated default shader the following procedure is used:</p>
+
+<ol>
+<li>Create a new &#8216;from mesh custom shader&#8217; plugin instance and connect it to a mesh renderer. If left
+ unconnected, the plugin will not be updated.</li>
+<li>Connect a mesh to the shader and optionally an external material to overload the mesh defaults.</li>
+<li>Connect the mesh to the renderer and hit play to update the graph and then stop playback again.</li>
+</ol>
+
+<p>Since no custom code has been added, the shader plugin will populate itself with a default shader
+matching the supplied mesh and / or material. You can now open either the vertex or pixel shader editor
+and revise the default shader in any way desired. Once generated, the shader code will not be overwritten,
+even if the mesh or material changes. To force automatic recompilation of the shader, clear both
+vertex and pixel shader and play the graph to update the plugin state.</p>
+
+<h3 id="automaticallydeclaredvertexattributes">Automatically declared vertex attributes</h3>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Name</th>
+	<th style="text-align:left;">Type</th>
+	<th style="text-align:left;">Will be generated if</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">v_pos</td>
+	<td style="text-align:left;">vec3</td>
+	<td style="text-align:left;">Always</td>
+</tr>
+<tr>
+	<td style="text-align:left;">v_col</td>
+	<td style="text-align:left;">vec4</td>
+	<td style="text-align:left;">Mesh has per-vertex color</td>
+</tr>
+<tr>
+	<td style="text-align:left;">v_norm</td>
+	<td style="text-align:left;">vec3</td>
+	<td style="text-align:left;">Mesh has normals</td>
+</tr>
+<tr>
+	<td style="text-align:left;">v_uv0</td>
+	<td style="text-align:left;">vec2</td>
+	<td style="text-align:left;">Mesh has UV map</td>
+</tr>
+<tr>
+	<td style="text-align:left;">v_uv1</td>
+	<td style="text-align:left;">vec2</td>
+	<td style="text-align:left;">Reserved for future use</td>
+</tr>
+<tr>
+	<td style="text-align:left;">v_uv2</td>
+	<td style="text-align:left;">vec2</td>
+	<td style="text-align:left;">Reserved for future use</td>
+</tr>
+<tr>
+	<td style="text-align:left;">v_uv3</td>
+	<td style="text-align:left;">vec2</td>
+	<td style="text-align:left;">Reserved for future use</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automaticallydeclaredvertexshaderuniforms">Automatically declared vertex shader uniforms</h3>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Name</th>
+	<th style="text-align:left;">Type</th>
+	<th style="text-align:left;">Comment</th>
+	<th style="text-align:left;">Will be generated if</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">d_col</td>
+	<td style="text-align:left;">vec4</td>
+	<td style="text-align:left;">Diffuse color</td>
+	<td style="text-align:left;">Always</td>
+</tr>
+<tr>
+	<td style="text-align:left;">m_mat</td>
+	<td style="text-align:left;">mat4</td>
+	<td style="text-align:left;">Model matrix</td>
+	<td style="text-align:left;">Always</td>
+</tr>
+<tr>
+	<td style="text-align:left;">v_mat</td>
+	<td style="text-align:left;">mat4</td>
+	<td style="text-align:left;">View matrix</td>
+	<td style="text-align:left;">Always</td>
+</tr>
+<tr>
+	<td style="text-align:left;">p_mat</td>
+	<td style="text-align:left;">mat4</td>
+	<td style="text-align:left;">Projection matrix</td>
+	<td style="text-align:left;">Always</td>
+</tr>
+<tr>
+	<td style="text-align:left;">n_mat</td>
+	<td style="text-align:left;">mat4</td>
+	<td style="text-align:left;">Normal matrix</td>
+	<td style="text-align:left;">Mesh has normals</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automaticallydeclaredpixelshaderuniforms">Automatically declared pixel shader uniforms</h3>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Name</th>
+	<th style="text-align:left;">Type</th>
+	<th style="text-align:left;">Comment</th>
+	<th style="text-align:left;">Will be generated if</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">a_col</td>
+	<td style="text-align:left;">vec4</td>
+	<td style="text-align:left;">Ambient color</td>
+	<td style="text-align:left;">Always</td>
+</tr>
+<tr>
+	<td style="text-align:left;">s_col</td>
+	<td style="text-align:left;">vec4</td>
+	<td style="text-align:left;">Specular color</td>
+	<td style="text-align:left;">Mesh has normals and material at least one light</td>
+</tr>
+<tr>
+	<td style="text-align:left;">v_mat</td>
+	<td style="text-align:left;">mat4</td>
+	<td style="text-align:left;">View matrix</td>
+	<td style="text-align:left;">Always</td>
+</tr>
+<tr>
+	<td style="text-align:left;">shinyness</td>
+	<td style="text-align:left;">float</td>
+	<td style="text-align:left;">Specular intensity</td>
+	<td style="text-align:left;">Mesh has normals and material at least one light</td>
+</tr>
+<tr>
+	<td style="text-align:left;">d_tex</td>
+	<td style="text-align:left;">sampler2D</td>
+	<td style="text-align:left;">Diffuse texture</td>
+	<td style="text-align:left;">Mesh has UV map and material has diffuse texture</td>
+</tr>
+<tr>
+	<td style="text-align:left;">s_tex</td>
+	<td style="text-align:left;">sampler2D</td>
+	<td style="text-align:left;">Specular texture</td>
+	<td style="text-align:left;">Mesh has UV map and material has specular texture</td>
+</tr>
+<tr>
+	<td style="text-align:left;">n_tex</td>
+	<td style="text-align:left;">sampler2D</td>
+	<td style="text-align:left;">Normal map</td>
+	<td style="text-align:left;">Mesh has UV map and material has normal map</td>
+</tr>
+<tr>
+	<td style="text-align:left;">e_tex</td>
+	<td style="text-align:left;">sampler2D</td>
+	<td style="text-align:left;">Emissive texture</td>
+	<td style="text-align:left;">Mesh has UV map and material has emissive texture</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automaticallydeclaredpixelshaderuniformsforeachlight">Automatically declared pixel shader uniforms for each light</h3>
+
+<p>Light related uniforms will be created only if the mesh has normals. In the following
+table, &#8216;X&#8217; denotes the light index (0&#8211;7) as defined by the material chain.</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Name</th>
+	<th style="text-align:left;">Type</th>
+	<th style="text-align:left;">Comment</th>
+	<th style="text-align:left;">Will be generated if</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">lX_pos</td>
+	<td style="text-align:left;">vec3</td>
+	<td style="text-align:left;">Light position</td>
+	<td style="text-align:left;">Always</td>
+</tr>
+<tr>
+	<td style="text-align:left;">lX_d_col</td>
+	<td style="text-align:left;">vec4</td>
+	<td style="text-align:left;">Diffuse color</td>
+	<td style="text-align:left;">Always</td>
+</tr>
+<tr>
+	<td style="text-align:left;">lX_s_col</td>
+	<td style="text-align:left;">vec4</td>
+	<td style="text-align:left;">Specular color</td>
+	<td style="text-align:left;">Always</td>
+</tr>
+<tr>
+	<td style="text-align:left;">lX_power</td>
+	<td style="text-align:left;">float</td>
+	<td style="text-align:left;">Light intensity</td>
+	<td style="text-align:left;">Always</td>
+</tr>
+<tr>
+	<td style="text-align:left;">lX_dir</td>
+	<td style="text-align:left;">vec3</td>
+	<td style="text-align:left;">Light direction</td>
+	<td style="text-align:left;">Light is directional</td>
+</tr>
+</tbody>
+</table>
+

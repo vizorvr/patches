@@ -1,0 +1,340 @@
+<p><link href="style.css" rel="stylesheet"></link></p>
+
+<h1 id="spanstylefont-family:greyscale_basic_regularsans-serifengispan"><span style="font-family: 'greyscale_basic_regular', sans-serif;">E N G I</span></h1>
+
+<h2 id="plugindevelopmentandapi">Plugin development and API</h2>
+
+<h3 id="introduction:">Introduction:</h3>
+
+<p>Each plugin is implemented as a script placed in the <em>plugins</em> folder and having the extension .plugin.js.</p>
+
+<p>Individial plugins are registered with the system and placed in the editor context menu by adding them to
+<em>plugins/plugins.json</em>, each line having the following syntax:</p>
+
+<pre><code>&quot;Contextmenu path&quot;: &quot;filename_without_extension&quot;
+</code></pre>
+
+<p>The context menu path is similar to a normal UNIX path (using forward slashes), with each path element
+corresponding to a subgroup in the menu and the leaf node being the name of the plugin itself.</p>
+
+<h3 id="pluginconceptualoperation:">Plugin conceptual operation:</h3>
+
+<p>Each plugins can be roughly categorized into one of three groups:</p>
+
+<ul>
+<li><p><strong>Generators</strong>: Plugins that only have output slots. Represents sources of data, which can be anything from
+user input to execution context values.</p></li>
+<li><p><strong>Modulators</strong>: Plugins with both in- and outputs. Can be considered filters and represent operations on data
+from one or more sources.</p></li>
+<li><p><strong>Emitters</strong>: Plugins with only input slots. Usually provide final presentation of data wich can be rendering,
+playback or recording.</p></li>
+</ul>
+
+<p>A few plugins have neither in- or outputs and these usually serve cosmetic purposes. One example is the
+Annotation plugin, which provides a persistent on-canvas note or comment.</p>
+
+<h3 id="pluginimplementation:">Plugin implementation:</h3>
+
+<p>The beginning of each plugin implemenatation starts with the declaration of a constructor function and its
+assignment to a property in the <em>plugins</em> registry contained in the <em>E2</em> namespace. To avoid leaving a dangling
+temporary variable around after load of the last registered plugin, this is typically simultaneously assigned
+to the <em>E2.p</em> variable to aid in subsequent prototypical declaration of plugin methods.</p>
+
+<p>Example:</p>
+
+<p><pre style="font-size: 10px; font-weight:bolder;">
+ E2.p = E2.plugins[&#8220;filename_without_extension&#8221;] = function(core, node)
+ {
+ this.desc = &#8216;Text string describing the plugin and its operation.&#8217;;</p>
+
+<pre><code>    this.input_slots = [ 
+        { name: 'in', dt: core.datatypes.FLOAT, desc: 'Positive or negative input value', def: 0 }
+    ];
+
+    this.output_slots = [
+        { name: 'out', dt: core.datatypes.BOOL, desc: 'True if &lt;b&gt;in&lt;/b&gt; &gt; 0', def: true }
+    ];
+
+    this.state = {} // Optional. Declaration can be ommitted.
+};
+</code></pre>
+</pre>
+
+<p>The name of the property of <em>E2.plugins</em> the constructor is assigned to must match the filename of the plugin
+implementation sans extension, and also the identifier used to register it in <em>plugins/plugins.json</em>.</p>
+
+<p>In- and output slot arrays can be empty, but must be present. Slots declared at plugin creation time are
+termed <em>static</em>, as opposed to slots created arbitrily after plugin instantiation, which are called <em>dynamic</em>.</p>
+
+<p>The state member object is automatically persisted and deserialized by the Core. If a plugin does not require
+persistent state, the <em>plugin.state</em> member can be left undefined.</p>
+
+<p>The plugin model is event driven. Event handlers are simply methods using reserved names that - if declared
+by a given plugin - are automatically called by the Core at appropriate times. Plugins implementators can
+choose to implement any subset of these that are relevant for the behaviour of a given plugin. In the
+following section, all reserved methods will be described:</p>
+
+<h3 id="pluginapi:">Plugin API:</h3>
+
+<h5 id="e2.p.prototype.resetfunction">E2.p.prototype.reset = function()</h5>
+
+<p>Called on plugin load, instantiation and when playback is stopped.
+Is scheduled for deprecation in favour of <code>stop()</code>, and should not be used unless strictly necessary.</p>
+
+<hr />
+
+<h5 id="e2.p.prototype.destroyfunction">E2.p.prototype.destroy = function()</h5>
+
+<p>If declared, this method will be called by the core immediately before its parent Node is destroyed
+along with all associated resources.</p>
+
+<hr />
+
+<h5 id="e2.p.prototype.playfunction">E2.p.prototype.play = function()</h5>
+
+<p>Called immediately before graph playback begins.</p>
+
+<hr />
+
+<h5 id="e2.p.prototype.pausefunction">E2.p.prototype.pause = function()</h5>
+
+<p>Called immediately after graph playback is paused.</p>
+
+<hr />
+
+<h5 id="e2.p.prototype.stopfunction">E2.p.prototype.stop = function()</h5>
+
+<p>Called immediately after graph playback is stopped.</p>
+
+<hr />
+
+<h5 id="e2.p.prototype.connection_changedfunctiononconnslot">E2.p.prototype.connection_changed = function(on, conn, slot)</h5>
+
+<p>Called when the state of a given in- or outbound connection to or from this plugin changes.</p>
+
+<ul>
+<li><strong>on</strong> (boolean): True is a new connection was formed and false is an existing connection was deleted.</li>
+<li><strong>conn</strong> (connection instance): The object representing the connection that was just made ot is about
+to be destroyed. It has the following properties:</li>
+<li><strong>src_node</strong> (node instance): The source node of the connection. If the connection is outbound, this
+ will be equivalent to the <strong>node</strong> parameter given to our construction function when the plugin is
+ first instantiated.</li>
+<li><strong>dst_node</strong> (node instance): The destination node of the connection. If the connection is inbound, this
+ will similarly be equivalent to the <strong>node</strong> parameter given to our construction function when the plugin is
+ first instantiated.</li>
+<li><strong>src_slot</strong> (slot instance): The originating slot (see <code>update_input()</code> below for more details).</li>
+<li><strong>dst_slot</strong> (slot instance): The destination slot.</li>
+<li><strong>ui</strong> (connectionui instance): Only set when the plugin is on the currently active canvas and false
+ otherwise.</li>
+<li><strong>slot</strong> (slot declaration): The slot to which a connection was made to or from.</li>
+</ul>
+
+<p>This method is typically implemented when a plugin need to respond to disconnection of inbound sources of
+data.</p>
+
+<hr />
+
+<h5 id="e2.p.prototype.update_inputfunctionslotdata">E2.p.prototype.update_input = function(slot, data)</h5>
+
+<p>Called whenever an input slot has new data to deliver. </p>
+
+<ul>
+<li><strong>slot</strong>: The decorated slot declaration that received the data</li>
+<li><strong>data</strong>: The new data value. This is guranteed to be of the correct type and match that of the slot.</li>
+</ul>
+
+<p>The <strong>slot</strong> parameter is an object containing the following members:</p>
+
+<ul>
+<li><strong>slot.desc</strong> (string): Slot description.</li>
+<li><strong>slot.dt</strong> (core.datatypes reference). In turn contains:</li>
+<li><strong>slot.dt.id</strong> (integer): Numeric datatype id.</li>
+<li><strong>slot.dt.name</strong> (string): Human-redable datatype name</li>
+<li><strong>slot.index</strong> (integer): Static slot index. Equivalent to the index of the corresponding slot declaration as
+specified in the contructor function of the plugin.</li>
+<li><strong>slot.is_connected</strong> (boolean): Indicates whether the slot is currently connected.</li>
+<li><strong>slot.name</strong> (string): The slot name as show in the UI.</li>
+<li><strong>slot.type</strong> (integer): The slot type. 0 = input, 1 = output.</li>
+<li><strong>slot.uid</strong> (integer): <em>Optional</em> &#8211; only present if this is a dynamic slot.</li>
+</ul>
+
+<p>To check what static slot is currently receiving input <strong>slot.index</strong> is used. The data can either be
+stored in plugin trainsient state by storing it in an arbitrary class property, be stored in the persisted
+<strong>plugin.state</strong> object, change UI state in response on incoming data and so on.</p>
+
+<p>If the plugin declares dynamic slots, whether <strong>slot.uid</strong> is defined can be used to differenciate
+between input to dynamic vs. static slots. Remember that <strong>slot.uid</strong> can legally be zero, so use
+<code>(slot.uid !== undefined)</code> to check for this.</p>
+
+<hr />
+
+<h5 id="e2.p.prototype.update_statefunction">E2.p.prototype.update_state = function()</h5>
+
+<p>Called one every frame after all calls to <code>update_input()</code> has completed, if:</p>
+
+<ul>
+<li>One or more of the connected input slots have changed value.</li>
+<li>This plugin has no output slots</li>
+<li>This plugin has no input slots</li>
+<li>This plugin is a nested graph</li>
+</ul>
+
+<hr />
+
+<h5 id="e2.p.prototype.update_outputfunctionslot">E2.p.prototype.update_output = function(slot)</h5>
+
+<p>Called once for every connected output slot if <code>update_state()</code> was previously called this frame.
+Like <code>update_input()</code>, the <strong>slot</strong> parameter is a slot declaration and contains exactly the same members.</p>
+
+<hr />
+
+<h5 id="e2.p.prototype.create_uifunction">E2.p.prototype.create_ui = function()</h5>
+
+<p>Called when the canvas on which the plugin resides is being switched to for editing. </p>
+
+<p>jQuery is guaranteed to be available globally, so <strong>$</strong> can be used, although the used of jQuery,
+especially for event handling is discouraged in production code for performance reasons.</p>
+
+<p>Plugin implementators can create any nested set of DOM objects here, set up their own event
+handling and anything else they might like. When done, <code>create_ui()</code> is expected to return the
+root DOM element created, which will be dynamically shown on the surface of the plugin instance
+whenever visible in the editor.</p>
+
+<hr />
+
+<h5 id="e2.p.prototype.state_changedfunctionui">E2.p.prototype.state_changed = function(ui)</h5>
+
+<p>This method is called once after plugin creation or deserialization with <strong>ui</strong> set to <em>null</em>. This call
+can be used to do fundamental plugin instance initialization. If the plugin declares a UI, this method
+will be called seperately with <code>ui</code> equal to the root DOM element returned by <code>create_ui()</code> earlier.</p>
+
+<h3 id="otherreservedpluginmembernames:">Other reserved plugin member names:</h3>
+
+<ul>
+<li><strong>id</strong> (string): The plugin type name as declared in <em>plugins/plugins.json</em>.</li>
+<li><strong>updated</strong> (boolean): Flag indicating whether any input slots have updated this frame and whether
+<code>update_state()</code> need to be called as a consequence.</li>
+<li><strong>e2_is_graph</strong> (boolean): A special state-flag used to identity nested graphs.</li>
+</ul>
+
+<h3 id="coreclassinterfaces:">Core class interfaces:</h3>
+
+<h4 id="node">Node</h4>
+
+<h5 id="node.prototype.get_disp_namefunction">Node.prototype.get_disp_name = function()</h5>
+
+<p>Returns the string currently being used for the visible header of the node.</p>
+
+<hr />
+
+<h5 id="node.prototype.add_slotfunctionslot_typedef">Node.prototype.add_slot = function(slot_type, def)</h5>
+
+<p>Adds a new dynamic slot to the current node.</p>
+
+<ul>
+<li><strong>slot_type</strong>: Either E2.slot_type.input or E2.slot_type.output.</li>
+<li><strong>def</strong>: Slot definition. An object equivalent of a static slot definition.</li>
+<li><strong>returns</strong>: A unique integer slot id.</li>
+</ul>
+
+<hr />
+
+<h5 id="node.prototype.remove_slotfunctionslot_typesuid">Node.prototype.remove_slot = function(slot_type, suid)</h5>
+
+<p>Removes a dynamic slot from this node.</p>
+
+<ul>
+<li><strong>slot_type</strong>: Either E2.slot_type.input or E2.slot_type.output.</li>
+<li><strong>suid</strong>: Unique id of slot to remove.</li>
+</ul>
+
+<hr />
+
+<h5 id="node.prototype.find_dynamic_slotfunctionslot_typesuid">Node.prototype.find_dynamic_slot = function(slot_type, suid)</h5>
+
+<p>Returns the slot definition for a given dynamic slot.</p>
+
+<ul>
+<li><strong>slot_type</strong>: Either E2.slot_type.input or E2.slot_type.output.</li>
+<li><strong>suid</strong>: Unique id of slot to remove.</li>
+<li><strong>returns</strong>: A slot definition or <strong>null</strong> if the slot could not be found.</li>
+</ul>
+
+<hr />
+
+<h5 id="node.prototype.rename_slotfunctionslot_typesuidname">Node.prototype.rename_slot = function(slot_type, suid, name)</h5>
+
+<p>Renames the specified slot.</p>
+
+<ul>
+<li><strong>slot_type</strong>: Either E2.slot_type.input or E2.slot_type.output.</li>
+<li><strong>suid</strong>: Unique id of slot to remove.</li>
+<li><strong>name</strong>: Desired new name for the specified slot.</li>
+</ul>
+
+<h5 id="node.prototype.change_slot_datatypefunctionslot_typesuiddt">Node.prototype.change_slot_datatype = function(slot_type, suid, dt)</h5>
+
+<p>Changes the data type of the specified slot. Unless the new data type is ANY,
+existing connection to or from the specified slot are destroyed.</p>
+
+<ul>
+<li><strong>slot_type</strong>: Either E2.slot_type.input or E2.slot_type.output.</li>
+<li><strong>suid</strong>: Unique id of slot to remove.</li>
+<li><strong>dt</strong>: Desired new data type for the specified slot.</li>
+</ul>
+
+<h4 id="core">Core</h4>
+
+<h5 id="core.get_default_valuefunctiondt">Core.get_default_value = function(dt)</h5>
+
+<p>Returns the default value for the supplied data type.</p>
+
+<h3 id="commonpitfalls:">Common pitfalls:</h3>
+
+<ul>
+<li><strong>Performing computation in <code>update_output()</code></strong>:
+Since output slots can be connected to more than once receiver concurrently, <code>update_output()</code> will be
+called once for each outbound connection that&#8217;s attached when the Core detects a successful run of
+<code>update_state()</code>. Thus calculations should always be performed in <code>update_state()</code> which will at most
+be run once per frame, and cached later to be returned on request from <code>update_output()</code>.</li>
+</ul>
+
+<h3 id="advancedtopics:">Advanced topics:</h3>
+
+<ul>
+<li><p><strong>WebGL rendering</strong>:
+The current WebGL graphics context of the active rendering canvas can be obtained via the <code>core</code> parameter
+supplied to the plugin constructor function as: <strong>core.renderer.context</strong></p></li>
+<li><p><strong>Computing and caching output values in <code>update_input()</code></strong>:
+As an exception to the above rule, it is possible is very simple cases to perform a calculation directly
+in <code>update_input()</code> and cache it for later emission by <code>update_output()</code>, omitting implementation of
+<code>update_state()</code> which will yield slightly better performance. This can only be done where the calculation
+depend on the value of a single input only, since the update order of input slots are not guranteed. In
+cases where the result of a plugin depends on the value of more than one input, the input values must be
+cached and the calculation be performed in <code>update_state()</code>.</p></li>
+</ul>
+
+<p>For example, we can imagine a plugin which adds 1 to an input float value implement its <code>update_input()</code>
+and <code>update_output()</code> as follows:</p>
+
+<pre><code>E2.p.prototype.update_input = function(slot, data)
+{
+    // We have only one input, no need to mask on slot.index -- it will always be 0
+    // 'data' is guaranteed to be a float.
+    this.output_value = data + 1;
+};
+
+// No need for update_state() here...
+
+E2.p.prototype.update_output = function(slot, data)
+{
+    return this.output_value;
+}
+</code></pre>
+
+<ul>
+<li><strong>Blocking plugin data output based on logic in <code>update_state()</code></strong>:
+Whenever <code>update_state()</code> is called, it&#8217;s implied that the plugin <code>updated</code> property is <strong>true</strong>. It
+is possible for a plugin implementation to abort data output based on logic in <code>update_state()</code>by setting
+<code>updated</code> to <strong>false</strong>, in which case no calls to <code>update_output()</code> will occur.</li>
+</ul>

@@ -1,10 +1,5 @@
 build
 data
-help/introduction.html
-help/custom_shaders.html
-help/plugin_api.html
-style/icons/icons.png
-style/icons/style.css
 tools/assimp
 tools/pyassimp
 tools/node_modules
