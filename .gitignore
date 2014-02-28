@@ -1,6 +1,8 @@
 .DS_Store
-/browser/build
-/browser/data
-/browser/tools/assimp
-/browser/tools/pyassimp
-/browser/tools/node_modules
+browser/build
+browser/data
+browser/tools/assimp
+browser/tools/pyassimp
+browser/tools/node_modules
+browser/graphs
+node_modules
