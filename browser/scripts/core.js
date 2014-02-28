@@ -2073,7 +2073,7 @@ function Core(app) {
 		return null;
 	};
 	
-	this.serialise = function(minify)
+	this.serialise = function()
 	{
 		var d = {};
 		
@@ -2083,7 +2083,7 @@ function Core(app) {
 		d.root = self.root_graph.serialise();
 		this.registers.serialise(d);
 		
-		return minify ? JSON.stringify(d) : JSON.stringify(d, undefined, 4);
+		return JSON.stringify(d, undefined, 4);
 	};
 	
 	this.deserialise = function(str)
@@ -3402,7 +3402,7 @@ function Application() {
 		E2.dom.canvas_parent.css({ 'position': 'absolute', 'left': col1_x });
 		E2.dom.webgl_canvas.css({ 'left':  col2_x });
 		E2.dom.tabs.css({ 'left':  col2_x, 'height': tabs_h });
-		E2.dom.graphs_list.css({ 'height': tabs_h - 100 });
+		E2.dom.graphs_list.css({ 'height': tabs_h - 120 });
 		E2.dom.snippets_list.css({ 'height': tabs_h - 100 });
 		E2.dom.canvas_parent.css({ 'width': c_width, 'height': c_height });
 		E2.dom.canvas.css({ 'width': c_width, 'height': c_height });
@@ -3655,7 +3655,6 @@ function Application() {
 
 	this.onSaveClicked = function()
 	{
-		var minify = E2.dom.save_minified.is(':checked');
 		var filename = E2.dom.filenameInput.val();
 
 		if (!filename)
@@ -3664,7 +3663,7 @@ function Application() {
 		if (!/\.json$/.test(filename))
 			filename = filename + '.json'
 
-		var ser = self.player.core.serialise(minify);
+		var ser = self.player.core.serialise();
 
 		$.ajax({
 			type: 'POST',
@@ -3993,7 +3992,6 @@ function InitialiseEngi()
 	E2.dom.load_clipboard = $('#load-clipboard');
 	E2.dom.structure = $('#structure');
 	E2.dom.info = $('#info');
-	E2.dom.save_minified = $('#save-minified');
 	E2.dom.tabs = $('#tabs');
 	E2.dom.graphs_list = $('#graphs-list');
 	E2.dom.snippets_list = $('#snippets-list');
