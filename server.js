@@ -3,15 +3,17 @@
 var fspath = require('path')
 var connect = require('express')
 var fs = require('fs')
-var WEBROOT = './browser/'
 
-console.log('using webroot ', WEBROOT)
+var WEBROOT = './browser/'
+var PROJECT = process.argv[2] || WEBROOT
+
+console.log('using webroot ', WEBROOT, 'project root', PROJECT)
 
 function showFolderListing(reTest) {
-	return function(req, res) {
+	return function(req, res, next) {
 		console.log('showFolderListing', req.path)
 
-		fs.readdir(WEBROOT + req.path, function(err, files) {
+		fs.readdir(PROJECT + req.path, function(err, files) {
 			if (err)
 				return next(err)
 
@@ -32,8 +34,17 @@ var app = connect()
 		next()
 	})
 
-	// Static files (plugins, graphs, textures, ...)
+	// Engi static files
 	.use(connect['static'](WEBROOT))
+
+	// Project static files
+	.use(connect['static'](PROJECT))
+
+	.use(function(req, res, next) {
+		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
+		res.setHeader('Expires', 0)
+		next()
+	})
 
 	// Textures
 	.get('/data/textures', showFolderListing(/^[^.].*$/))
@@ -44,10 +55,13 @@ var app = connect()
 		var savePath = decodeURIComponent(req.path)
 			.replace(/graphs\/[^a-zA-Z0-9\ \.\-\_]/, '_')
 
+		if (!savePath)
+			return res.send(400)
+
 		if (!/\.json$/.test(savePath))
 			savePath = savePath+'.json'
 
-		var stream = fs.createWriteStream(WEBROOT + savePath)
+		var stream = fs.createWriteStream(PROJECT + savePath)
 
 		stream.on('error', next)
 		stream.on('close', function() {
