@@ -8,7 +8,7 @@ var WEBROOT = './browser/'
 console.log('using webroot ', WEBROOT)
 
 function showFolderListing(reTest) {
-	return function(req, res) {
+	return function(req, res, next) {
 		console.log('showFolderListing', req.path)
 
 		fs.readdir(WEBROOT + req.path, function(err, files) {
@@ -35,6 +35,12 @@ var app = connect()
 	// Static files (plugins, graphs, textures, ...)
 	.use(connect['static'](WEBROOT))
 
+	.use(function(req, res, next) {
+		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
+		res.setHeader('Expires', 0)
+		next()
+	})
+
 	// Textures
 	.get('/data/textures', showFolderListing(/^[^.].*$/))
 
@@ -43,6 +49,9 @@ var app = connect()
 	.post(/\/graphs\/.*/, function(req, res, next) {
 		var savePath = decodeURIComponent(req.path)
 			.replace(/graphs\/[^a-zA-Z0-9\ \.\-\_]/, '_')
+
+		if (!savePath)
+			return res.send(400)
 
 		if (!/\.json$/.test(savePath))
 			savePath = savePath+'.json'
