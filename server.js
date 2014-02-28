@@ -55,9 +55,6 @@ var app = connect()
 		var savePath = decodeURIComponent(req.path)
 			.replace(/graphs\/[^a-zA-Z0-9\ \.\-\_]/, '_')
 
-		if (!savePath)
-			return res.send(400)
-
 		if (!/\.json$/.test(savePath))
 			savePath = savePath+'.json'
 

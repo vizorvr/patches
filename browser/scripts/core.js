@@ -3658,8 +3658,11 @@ function Application() {
 		var minify = E2.dom.save_minified.is(':checked');
 		var filename = E2.dom.filenameInput.val();
 
+		if (!filename)
+			return alert('Please enter a filename')
+
 		if (!/\.json$/.test(filename))
-			filename = filename+'.json'
+			filename = filename + '.json'
 
 		var ser = self.player.core.serialise(minify);
 
