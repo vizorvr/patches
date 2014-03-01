@@ -23,7 +23,7 @@ def run(exe):
 
 def compress(in_name, out_name):
 	# os.system('yui-compressor --type js --preserve-semi -o ' + out_name + ' ' + in_name)
-	os.system('uglifyjs -nc -o ' + out_name + ' ' + in_name)
+	os.system('../node_modules/uglify-js2/bin/uglifyjs2 -c dead-code=false,unused=false -o ' + out_name + ' ' + in_name)
 
 print 'Checking for residual debugger statements...'
 

@@ -8,7 +8,8 @@
     "browserify": "^3.31.2"
   },
   "devDependencies": {
-    "mocha": "^1.17.1"
+    "mocha": "^1.17.1",
+    "uglify-js2": "^2.1.11"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha",

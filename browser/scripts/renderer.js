@@ -229,11 +229,9 @@ function Renderer(canvas_id, core)
 		this.context = null;
 	}
 	
-	/*if(!this.context)
-		window.location = 'http://get.webgl.org';*/
-
-	if(false)
+	/*
 		this.context = WebGLDebugUtils.makeDebugContext(this.context);
+	*/
 	
 	this.texture_cache = new TextureCache(this.context, core);
 	this.shader_cache = new ShaderCache(this.context);

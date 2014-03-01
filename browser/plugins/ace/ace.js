@@ -2870,11 +2870,11 @@ var Editor = function(renderer, session) {
         var rows = dir * Math.floor(config.height / config.lineHeight);
 
         this.$blockScrolling++;
-        if (select == true) {
+        if (select === true) {
             this.selection.$moveSelection(function(){
                 this.moveCursorBy(rows, 0);
             });
-        } else if (select == false) {
+        } else if (select === false) {
             this.selection.moveCursorBy(rows, 0);
             this.selection.clearSelection();
         }
@@ -3173,7 +3173,7 @@ var Editor = function(renderer, session) {
 
         var scrollTop = this.renderer.scrollTop;
         this.renderer.scrollSelectionIntoView(range.start, range.end, 0.5);
-        if (animate != false)
+        if (animate !== false)
             this.renderer.animateScrolling(scrollTop);
     };
     this.undo = function() {
@@ -5446,7 +5446,7 @@ var KeyBinding = function(editor) {
                 success = commands.exec(toExecute.command, this.$editor, toExecute.args, e);                
             }
             if (success && e && hashId != -1 && 
-                toExecute.passEvent != true && toExecute.command.passEvent != true
+                toExecute.passEvent !== true && toExecute.command.passEvent !== true
             ) {
                 event.stopEvent(e);
             }
@@ -11361,8 +11361,8 @@ var Search = function() {
     };
 
     this.$lineIterator = function(session, options) {
-        var backwards = options.backwards == true;
-        var skipCurrent = options.skipCurrent != false;
+        var backwards = options.backwards === true;
+        var skipCurrent = options.skipCurrent !== false;
 
         var range = options.range;
         var start = options.start;
@@ -11386,7 +11386,7 @@ var Search = function() {
                     if (callback(session.getLine(row), row))
                         return;
 
-                if (options.wrap == false)
+                if (options.wrap === false)
                     return;
 
                 for (row = lastRow, firstRow = start.row; row >= firstRow; row--)
@@ -11403,7 +11403,7 @@ var Search = function() {
                     if (callback(session.getLine(row), row))
                         return;
 
-                if (options.wrap == false)
+                if (options.wrap === false)
                     return;
 
                 for (row = firstRow, lastRow = start.row; row <= lastRow; row++)
@@ -13670,7 +13670,7 @@ var VirtualRenderer = function(container, theme) {
         return this.$themeValue;
     };
     this.setStyle = function(style, include) {
-        dom.setCssClass(this.container, style, include != false);
+        dom.setCssClass(this.container, style, include !== false);
     };
     this.unsetStyle = function(style) {
         dom.removeCssClass(this.container, style);
@@ -14721,7 +14721,7 @@ var Text = function(parentEl) {
         }
     };
     this.$renderLine = function(stringBuilder, row, onlyContents, foldLine) {
-        if (!foldLine && foldLine != false)
+        if (!foldLine && foldLine !== false)
             foldLine = this.session.getFoldLine(row);
 
         if (foldLine)
