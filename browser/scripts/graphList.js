@@ -1,13 +1,13 @@
 
-function getGraphList(cb) {
-	$.get('/graphs', cb)
+function getGraphList(graphsPath, cb) {
+	$.get(graphsPath, cb)
 }
 
-function renderGraphList() {
+function renderGraphList(graphsPath) {
 	var source   = $("#fileListEntryTemplate").html();
 	var template = Handlebars.compile(source);
 
-	getGraphList(function(list) {
+	getGraphList(graphsPath, function(list) {
 		var elem = $('#graphs-list')
 		elem.html(template({ files: list }))
 		$('.fileListEntry', elem).click(function(e) {
@@ -18,4 +18,4 @@ function renderGraphList() {
 	})
 }
 
-
+exports.renderGraphList = renderGraphList;

@@ -19,7 +19,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-var URL_GRAPHS = '/graphs/'
+var URL_GRAPHS = '/data/graphs/'
+
+var renderGraphList = require('./graphList').renderGraphList;
 
 var PluginManager = require('./pluginManager').PluginManager;
 var Node = require('./node').Node;
@@ -1920,7 +1922,7 @@ function Application() {
 	};
 
 	this.onRefreshClicked = function() {
-		return renderGraphList()
+		return renderGraphList(URL_GRAPHS);
 	};
 
 	this.onSaveClicked = function()

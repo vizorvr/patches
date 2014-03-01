@@ -47,13 +47,9 @@ var app = connect()
 		next()
 	})
 
-	// Engi static files
 	.use(connect['static'](WEBROOT, { maxAge: 60 * 60 * 24 * 1000 }))
-
-	// Project static files
 	.use(connect['static'](PROJECT, { maxAge: 0 }))
 
-	// Textures
 	.get('/data/textures', showFolderListing(/^[^.].*$/))
 
 	// set no-cache headers for the rest
@@ -63,12 +59,10 @@ var app = connect()
 		next()
 	})
 
-	// App bundle (browserify)
 	.get('/_bundle.js', bundle)
 
-	// Graphs
-	.get('/graphs', showFolderListing(/\.json$/))
-	.post(/\/graphs\/.*/, function(req, res, next) {
+	.get('/data/graphs', showFolderListing(/\.json$/))
+	.post(/\/data\/graphs\/.*/, function(req, res, next) {
 		var savePath = decodeURIComponent(req.path)
 			.replace(/graphs\/[^a-zA-Z0-9\ \.\-\_]/, '_')
 

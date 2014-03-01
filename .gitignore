@@ -1,5 +1,4 @@
 .DS_Store
 browser/build
 browser/tools/node_modules
-browser/graphs
 node_modules

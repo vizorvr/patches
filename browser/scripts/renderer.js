@@ -1,12 +1,3 @@
-/*
- * Engi.
- *
- * Authors: Lasse Jul Nielsen.
- * Web: http://www.effekts.dk
- *
- * Not for public dessemination. No license is granted for any use not explicitly authorized.
- *
- */
 
 function Color(r, g, b, a)
 {
