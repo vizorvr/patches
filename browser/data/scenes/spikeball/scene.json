@@ -1,0 +1,24 @@
+{
+	"id": "spikeball1_json",
+	"materials": {
+			"7 - Default": {
+				"ambient_color": [0, 0, 0, 1],
+				"diffuse_color": [1, 1, 1, 1],
+				"double_sided": true,
+				"diffuse_color_map": { "factor": 1, "url": "baked.jpg" }
+			}
+	},
+	"meshes": {
+		"Object01": {
+			"batches": [
+				{
+					"material": "7 - Default",
+					"vertices": "spikeball1_Object01_v0",
+					"normals": "spikeball1_Object01_n0",
+					"uv0": "spikeball1_Object01_t00"
+				}
+			]
+		}
+	},
+	"bounding_box": { "lo": [-1.6791, -1.766, -1.7238], "hi": [1.6751, 1.7265, 1.7199] }
+}

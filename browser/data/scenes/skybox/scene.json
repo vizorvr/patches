@@ -1,0 +1,30 @@
+{
+	"id": "scene_json",
+	"materials": {
+			"Material": {
+				"ambient_color": [0, 0, 0, 1],
+				"diffuse_color": [0.64, 0.64, 0.64, 1],
+				"double_sided": true,
+				"diffuse_color_map": { "factor": 1, "url": "skybox_1.jpg" }
+			}
+	},
+	"meshes": {
+		"Cube": {
+			"batches": [
+				{
+					"material": "Material",
+					"vertices": "scene_Cube_v0",
+					"v_lo": "-1.000000",
+					"v_rng": "2.000000",
+					"normals": "scene_Cube_n0",
+					"n_lo": "-0.577349",
+					"n_rng": "1.154698",
+					"uv0": "scene_Cube_t00",
+					"uv0_lo": "-0.000056",
+					"uv0_rng": "0.999955"
+				}
+			]
+		}
+	},
+	"bounding_box": { "lo": [-1, -1, -1], "hi": [1, 1, 1] }
+}

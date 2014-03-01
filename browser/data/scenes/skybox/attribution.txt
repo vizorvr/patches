@@ -1,0 +1,2 @@
+Textures from http://www.keithlantz.net/2011/10/rendering-a-skybox-using-a-cube-map-with-opengl-and-glsl/, 
+source unknown. If this is your work, please let us know about it so we can give credit where it's due.
