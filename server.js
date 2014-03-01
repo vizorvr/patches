@@ -1,6 +1,5 @@
 "use strict";
 
-var fspath = require('path')
 var connect = require('express')
 var browserify = require('browserify')
 var fs = require('fs')
@@ -36,12 +35,6 @@ function bundle(req, res) {
 	})
 
 	b.bundle().pipe(res);
-
-	// var str = b.bundle()
-	// res.setHeader('Content-Type', 'text/javascript')
-	// res.setHeader('Content-Length', new Buffer(str).length)
-	// res.setHeader('Cache-Control', 'private, no-cache, max-age=1')
-	// res.end(str)
 }
 
 var app = connect()
@@ -95,5 +88,3 @@ var app = connect()
 	.use(connect.errorHandler())
 
 	.listen(8000, '127.0.0.1')
-
-
