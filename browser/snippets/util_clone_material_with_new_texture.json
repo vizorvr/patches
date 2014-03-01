@@ -1,45 +1,46 @@
 {
-    "abs_t": 537.051,
+    "abs_t": 0,
     "active_graph": 0,
-    "graph_uid": 9,
+    "graph_uid": 11,
     "root": {
-        "node_uid": 37,
+        "node_uid": 85,
         "uid": 0,
         "parent_uid": -1,
+        "open": true,
         "nodes": [
             {
                 "plugin": "material_clone_modulator",
-                "x": 90,
-                "y": 47,
-                "uid": 34
+                "x": 325,
+                "y": 428,
+                "uid": 82
             },
             {
                 "plugin": "material_texture_modulator",
-                "x": 195,
-                "y": 47,
-                "uid": 35
+                "x": 430,
+                "y": 428,
+                "uid": 83
             },
             {
                 "plugin": "url_texture_generator",
-                "x": 86,
-                "y": 100,
-                "uid": 36,
+                "x": 321,
+                "y": 481,
+                "uid": 84,
                 "state": {
-                    "url": "data/textures/terrain1.jpg"
+                    "url": "data/textures/"
                 },
                 "title": "Image"
             }
         ],
         "conns": [
             {
-                "src_nuid": 34,
-                "dst_nuid": 35,
+                "src_nuid": 82,
+                "dst_nuid": 83,
                 "src_slot": 0,
                 "dst_slot": 0
             },
             {
-                "src_nuid": 36,
-                "dst_nuid": 35,
+                "src_nuid": 84,
+                "dst_nuid": 83,
                 "src_slot": 0,
                 "dst_slot": 2
             }

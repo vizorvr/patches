@@ -1,30 +1,33 @@
 {
-    "abs_t": 17.371,
+    "abs_t": 27.208,
     "active_graph": 0,
-    "graph_uid": 5,
+    "graph_uid": 32,
     "root": {
-        "node_uid": 3,
+        "node_uid": 96,
         "uid": 0,
         "parent_uid": -1,
         "open": true,
         "nodes": [
             {
                 "plugin": "url_texture_generator",
-                "x": 293,
-                "y": 307,
-                "uid": 0,
+                "x": 299,
+                "y": 512,
+                "uid": 93,
                 "state": {
-                    "url": "data/textures/tile_arabictiling.jpg"
+                    "url": "/data/textures/backdrop_darkgrey.jpg"
                 }
             },
             {
                 "plugin": "graph",
-                "x": 447,
-                "y": 235,
-                "uid": 1,
+                "x": 453,
+                "y": 440,
+                "uid": 94,
                 "dsid": 1,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
                     "input_sids": {
                         "2": 0
                     },
@@ -33,7 +36,7 @@
                 "title": "Double Tunnel",
                 "graph": {
                     "node_uid": 3,
-                    "uid": 1,
+                    "uid": 28,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
@@ -45,6 +48,9 @@
                             "dsid": 1,
                             "state": {
                                 "enabled": true,
+                                "always_update": true,
+                                "rt_width": 512,
+                                "rt_height": 512,
                                 "input_sids": {
                                     "24": 0
                                 },
@@ -53,8 +59,8 @@
                             "title": "Effect shader",
                             "graph": {
                                 "node_uid": 25,
-                                "uid": 2,
-                                "parent_uid": 1,
+                                "uid": 29,
+                                "parent_uid": 28,
                                 "open": true,
                                 "nodes": [
                                     {
@@ -211,6 +217,9 @@
                                         "dsid": 2,
                                         "state": {
                                             "enabled": true,
+                                            "always_update": true,
+                                            "rt_width": 512,
+                                            "rt_height": 512,
                                             "input_sids": {
                                                 "7": 1
                                             },
@@ -221,8 +230,8 @@
                                         "title": "Time",
                                         "graph": {
                                             "node_uid": 8,
-                                            "uid": 3,
-                                            "parent_uid": 2,
+                                            "uid": 30,
+                                            "parent_uid": 29,
                                             "open": true,
                                             "nodes": [
                                                 {
@@ -237,7 +246,7 @@
                                                     "y": 7,
                                                     "uid": 1,
                                                     "state": {
-                                                        "value": 3019.8089999978206
+                                                        "value": 3047.033999997731
                                                     }
                                                 },
                                                 {
@@ -251,7 +260,7 @@
                                                     "x": 283,
                                                     "y": 7,
                                                     "uid": 6,
-                                                    "dsid": 18,
+                                                    "dsid": 19,
                                                     "state": {
                                                         "slot_id": 0
                                                     },
@@ -273,7 +282,7 @@
                                                     "x": 23,
                                                     "y": 66,
                                                     "uid": 7,
-                                                    "dsid": 16,
+                                                    "dsid": 17,
                                                     "state": {
                                                         "slot_id": 0
                                                     },
@@ -360,7 +369,7 @@
                                         "x": 140,
                                         "y": 700,
                                         "uid": 24,
-                                        "dsid": 3,
+                                        "dsid": 4,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -462,6 +471,9 @@
                             "dsid": 3,
                             "state": {
                                 "enabled": true,
+                                "always_update": true,
+                                "rt_width": 512,
+                                "rt_height": 512,
                                 "input_sids": {
                                     "5": 0,
                                     "34": 2
@@ -471,8 +483,8 @@
                             "title": "Quad container",
                             "graph": {
                                 "node_uid": 38,
-                                "uid": 4,
-                                "parent_uid": 1,
+                                "uid": 31,
+                                "parent_uid": 28,
                                 "open": true,
                                 "nodes": [
                                     {
@@ -492,7 +504,7 @@
                                         "x": 624,
                                         "y": 163,
                                         "uid": 5,
-                                        "dsid": 62,
+                                        "dsid": 63,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -520,7 +532,7 @@
                                         "x": 483,
                                         "y": 375,
                                         "uid": 34,
-                                        "dsid": 54,
+                                        "dsid": 55,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -638,7 +650,7 @@
                             "x": 113,
                             "y": 335,
                             "uid": 2,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -688,9 +700,9 @@
             },
             {
                 "plugin": "toggle_button",
-                "x": 324,
-                "y": 193,
-                "uid": 2,
+                "x": 330,
+                "y": 398,
+                "uid": 95,
                 "state": {
                     "enabled": true
                 },
@@ -699,15 +711,15 @@
         ],
         "conns": [
             {
-                "src_nuid": 0,
-                "dst_nuid": 1,
+                "src_nuid": 93,
+                "dst_nuid": 94,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 2,
-                "dst_nuid": 1,
+                "src_nuid": 95,
+                "dst_nuid": 94,
                 "src_slot": 0,
                 "dst_slot": 0
             }

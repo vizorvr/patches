@@ -1,7 +1,7 @@
 {
-    "abs_t": 0,
-    "active_graph": 1,
-    "graph_uid": 4,
+    "abs_t": 29.485,
+    "active_graph": 0,
+    "graph_uid": 3,
     "root": {
         "node_uid": 1,
         "uid": 0,
@@ -10,15 +10,18 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 40,
-                "y": 65,
+                "x": 376,
+                "y": 455,
                 "uid": 0,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
                     "input_sids": {},
                     "output_sids": {}
                 },
-                "title": "Scene controls",
+                "title": "Plain scene loader",
                 "graph": {
                     "node_uid": 39,
                     "uid": 1,
@@ -33,6 +36,9 @@
                             "dsid": 7,
                             "state": {
                                 "enabled": true,
+                                "always_update": true,
+                                "rt_width": 512,
+                                "rt_height": 512,
                                 "input_sids": {
                                     "1": 0,
                                     "2": 1,
@@ -60,7 +66,7 @@
                                         "x": 11,
                                         "y": 308,
                                         "uid": 1,
-                                        "dsid": 12,
+                                        "dsid": 13,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -82,7 +88,7 @@
                                         "x": 759,
                                         "y": 89,
                                         "uid": 2,
-                                        "dsid": 12,
+                                        "dsid": 13,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -122,7 +128,7 @@
                                         "x": 297,
                                         "y": 206,
                                         "uid": 10,
-                                        "dsid": 12,
+                                        "dsid": 13,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -168,7 +174,7 @@
                                         "x": 646,
                                         "y": 277,
                                         "uid": 21,
-                                        "dsid": 11,
+                                        "dsid": 12,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -190,7 +196,7 @@
                                         "x": 674,
                                         "y": 61,
                                         "uid": 23,
-                                        "dsid": 8,
+                                        "dsid": 9,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -383,7 +389,7 @@
                             "y": 53,
                             "uid": 37,
                             "state": {
-                                "url": "data/scenes/statue/scene.json"
+                                "url": "data/scenes/spikeball/scene.json"
                             }
                         },
                         {

@@ -8,8 +8,8 @@
 		"3D: Scene loader with mouse controls": "3d_scene_loader_with_mousecontrol",
 		"3D: Scene with texture out": "3d_scene_with_texture_out",
 		"3D: Quad": "3d_quad_loader_fullscreen",
-		"3D: Cube (no camera)": "3d_cube_loader",
-		"3D: Sphere (no camera)": "3d_sphere_loader", 
+		"3D: Cube (no camera, no material)": "3d_cube_loader",
+		"3D: Sphere (no camera, no material)": "3d_sphere_loader", 
 		"3D: Mesh with camera, material and light": "3d_mesh_with_camera_material_and_light",
 		"3D: Mesh with outputs for camera, transform and light": "3d_mesh_with_camera_transform_and_light_out",
 		"3D: Mesh with material": "mesh_with_material",
@@ -40,17 +40,13 @@
 
 	"AUDIO":
 	{
-		"Audio: Audio player": "audio_audio_player",	
-		"Synch: Add": "synch_add",
-		"Synch: Substract": "synch_substract",
-		"Synch: Synchtrack": "synch_synchtrack"
+		"Audio: Audio player": "audio_audio_player"
 	},
 
 	"TEXT":
 	{
 		"Text: Basic text on screen setup": "text_quad",
-		"Text: Text with texture inside with custom shader": "text_with_texture_inside_custom_shader",
-		"Background: Moving quad": "background_moving_quad"
+		"Text: Text with texture inside with custom shader": "text_with_texture_inside_custom_shader"
 	},	
 	
 	
@@ -86,13 +82,14 @@
 	},
 		"MATRIX TRANSFORMS":
 	{
+		"Transform: Basic matrix transforms setup": "matrix_transforms_setup",
 		"Transform: Rotate": "matrix_rotate_with_knobs",
 		"Transform: Scale": "matrix_scale",
 		"Transform: Translate (move)": "matrix_translate",
 		"Transform: Circular motion to translate matrix": "matrix_circular_motion",
 		"Transform: Circular movement to X + Y": "transform_circular_movement_to_xy",
 		"Transform: Rotator with animation": "matrix_rotate_animated",
-		"Transform: Matrix transform setup": "matrix_transforms_setup",
+
 		"Transform: Shaky translate to X + Y": "matrix_shaky_translate_to_xy"
 	},
 	"UTILS":
@@ -118,7 +115,6 @@
 
 		"Shader: Template for Shadertoy.com pixel shaders": "shader_from_shadertoy",
 		"Shader: Particle spline": "shader_particle_spline",
-		"Shader: Particle spline with big particles": "shader_particle_spline_with_big_particles",
 		"Shader: Cross flare": "shader_cross_flare",
 		"Shader: Horizontal flare": "shader_horizontal_flare",
 		"Shader: Render depth buffer": "shader_render_depth_buffer"

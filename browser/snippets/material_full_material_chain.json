@@ -1,20 +1,24 @@
 {
     "abs_t": 0,
     "active_graph": 0,
-    "graph_uid": 3,
+    "graph_uid": 2,
     "root": {
         "node_uid": 11,
         "uid": 0,
         "parent_uid": -1,
+        "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 511,
-                "y": 60,
+                "x": 621,
+                "y": 391,
                 "uid": 0,
                 "dsid": 20,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
                     "input_sids": {
                         "15": 3,
                         "21": 4,
@@ -39,6 +43,7 @@
                     "node_uid": 53,
                     "uid": 1,
                     "parent_uid": 0,
+                    "open": true,
                     "nodes": [
                         {
                             "plugin": "material_diffuse_color_modulator",
@@ -73,7 +78,7 @@
                             "x": 1396,
                             "y": 73,
                             "uid": 9,
-                            "dsid": 29,
+                            "dsid": 30,
                             "state": {
                                 "slot_id": 0
                             },
@@ -102,7 +107,7 @@
                             "x": 1207,
                             "y": 150,
                             "uid": 15,
-                            "dsid": 29,
+                            "dsid": 30,
                             "state": {
                                 "slot_id": 0
                             },
@@ -124,7 +129,7 @@
                             "x": 866,
                             "y": 279,
                             "uid": 21,
-                            "dsid": 23,
+                            "dsid": 24,
                             "state": {
                                 "slot_id": 0
                             },
@@ -146,7 +151,7 @@
                             "x": 803,
                             "y": 334,
                             "uid": 22,
-                            "dsid": 23,
+                            "dsid": 24,
                             "state": {
                                 "slot_id": 0
                             },
@@ -168,7 +173,7 @@
                             "x": 814,
                             "y": 395,
                             "uid": 23,
-                            "dsid": 23,
+                            "dsid": 24,
                             "state": {
                                 "slot_id": 0
                             },
@@ -190,7 +195,7 @@
                             "x": 856,
                             "y": 457,
                             "uid": 24,
-                            "dsid": 23,
+                            "dsid": 24,
                             "state": {
                                 "slot_id": 0
                             },
@@ -212,7 +217,7 @@
                             "x": 739,
                             "y": 204,
                             "uid": 25,
-                            "dsid": 23,
+                            "dsid": 24,
                             "state": {
                                 "slot_id": 0
                             },
@@ -261,7 +266,7 @@
                             "x": 375,
                             "y": 234,
                             "uid": 34,
-                            "dsid": 17,
+                            "dsid": 18,
                             "state": {
                                 "slot_id": 0
                             },
@@ -305,7 +310,7 @@
                             "x": 83,
                             "y": 181,
                             "uid": 39,
-                            "dsid": 24,
+                            "dsid": 25,
                             "state": {
                                 "slot_id": 0
                             },
@@ -327,7 +332,7 @@
                             "x": 45,
                             "y": 244,
                             "uid": 40,
-                            "dsid": 24,
+                            "dsid": 25,
                             "state": {
                                 "slot_id": 0
                             },
@@ -349,7 +354,7 @@
                             "x": 56,
                             "y": 305,
                             "uid": 41,
-                            "dsid": 24,
+                            "dsid": 25,
                             "state": {
                                 "slot_id": 0
                             },
@@ -377,7 +382,7 @@
                             "x": 17,
                             "y": 38,
                             "uid": 44,
-                            "dsid": 13,
+                            "dsid": 14,
                             "state": {
                                 "slot_id": 0
                             },
@@ -399,7 +404,7 @@
                             "x": 106,
                             "y": 109,
                             "uid": 47,
-                            "dsid": 8,
+                            "dsid": 9,
                             "state": {
                                 "slot_id": 0
                             },
@@ -427,7 +432,7 @@
                             "x": 18,
                             "y": 93,
                             "uid": 49,
-                            "dsid": 5,
+                            "dsid": 6,
                             "state": {
                                 "slot_id": 0
                             },
@@ -797,18 +802,18 @@
             },
             {
                 "plugin": "url_texture_generator",
-                "x": 21,
-                "y": 49,
+                "x": 131,
+                "y": 380,
                 "uid": 1,
                 "state": {
-                    "url": "data/textures/looping_bees.jpg"
+                    "url": "/data/textures/backdrop_darkgrey.jpg"
                 },
                 "title": "Image"
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 140,
-                "y": 49,
+                "x": 250,
+                "y": 380,
                 "uid": 2,
                 "state": {
                     "val": 1
@@ -817,8 +822,8 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 223,
-                "y": 50,
+                "x": 333,
+                "y": 381,
                 "uid": 3,
                 "state": {
                     "val": 1
@@ -827,8 +832,8 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 317,
-                "y": 49,
+                "x": 427,
+                "y": 380,
                 "uid": 4,
                 "state": {
                     "val": 1
@@ -837,8 +842,8 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 405,
-                "y": 49,
+                "x": 515,
+                "y": 380,
                 "uid": 5,
                 "state": {
                     "val": 1
@@ -847,8 +852,8 @@
             },
             {
                 "plugin": "blend_mode_generator",
-                "x": 20,
-                "y": 125,
+                "x": 130,
+                "y": 456,
                 "uid": 6,
                 "state": {
                     "mode": 4
@@ -856,8 +861,8 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 405,
-                "y": 199,
+                "x": 515,
+                "y": 530,
                 "uid": 7,
                 "state": {
                     "val": 0.03
@@ -866,8 +871,8 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 209,
-                "y": 127,
+                "x": 319,
+                "y": 458,
                 "uid": 8,
                 "state": {
                     "val": 1
@@ -876,8 +881,8 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 309,
-                "y": 127,
+                "x": 419,
+                "y": 458,
                 "uid": 9,
                 "state": {
                     "val": 1
@@ -886,8 +891,8 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 405,
-                "y": 126,
+                "x": 515,
+                "y": 457,
                 "uid": 10,
                 "state": {
                     "val": 0

@@ -1,21 +1,24 @@
 {
-    "abs_t": 41.802,
+    "abs_t": 54.303,
     "active_graph": 0,
-    "graph_uid": 7,
+    "graph_uid": 25,
     "root": {
-        "node_uid": 30,
+        "node_uid": 46,
         "uid": 0,
         "parent_uid": -1,
         "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 713,
-                "y": 74,
-                "uid": 7,
+                "x": 691,
+                "y": 475,
+                "uid": 30,
                 "dsid": 3,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
                     "input_sids": {
                         "5": 0,
                         "6": 1,
@@ -26,7 +29,7 @@
                 "title": "Mesh",
                 "graph": {
                     "node_uid": 24,
-                    "uid": 2,
+                    "uid": 21,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
@@ -41,7 +44,7 @@
                             "x": 586,
                             "y": 135,
                             "uid": 5,
-                            "dsid": 15,
+                            "dsid": 16,
                             "state": {
                                 "slot_id": 0
                             },
@@ -63,7 +66,7 @@
                             "x": 600,
                             "y": 195,
                             "uid": 6,
-                            "dsid": 15,
+                            "dsid": 16,
                             "state": {
                                 "slot_id": 0
                             },
@@ -97,7 +100,7 @@
                             "x": 385,
                             "y": 129,
                             "uid": 23,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -190,12 +193,15 @@
             },
             {
                 "plugin": "graph",
-                "x": 472,
-                "y": 74,
-                "uid": 15,
+                "x": 450,
+                "y": 475,
+                "uid": 31,
                 "dsid": 20,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
                     "input_sids": {
                         "15": 3,
                         "21": 4,
@@ -218,7 +224,7 @@
                 "title": "Material chain",
                 "graph": {
                     "node_uid": 50,
-                    "uid": 4,
+                    "uid": 22,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
@@ -255,7 +261,7 @@
                             "x": 1361,
                             "y": 68,
                             "uid": 9,
-                            "dsid": 30,
+                            "dsid": 31,
                             "state": {
                                 "slot_id": 0
                             },
@@ -284,7 +290,7 @@
                             "x": 1173,
                             "y": 143,
                             "uid": 15,
-                            "dsid": 30,
+                            "dsid": 31,
                             "state": {
                                 "slot_id": 0
                             },
@@ -306,7 +312,7 @@
                             "x": 800,
                             "y": 134,
                             "uid": 21,
-                            "dsid": 24,
+                            "dsid": 25,
                             "state": {
                                 "slot_id": 0
                             },
@@ -328,7 +334,7 @@
                             "x": 798,
                             "y": 183,
                             "uid": 22,
-                            "dsid": 24,
+                            "dsid": 25,
                             "state": {
                                 "slot_id": 0
                             },
@@ -350,7 +356,7 @@
                             "x": 800,
                             "y": 231,
                             "uid": 23,
-                            "dsid": 24,
+                            "dsid": 25,
                             "state": {
                                 "slot_id": 0
                             },
@@ -372,7 +378,7 @@
                             "x": 799,
                             "y": 279,
                             "uid": 24,
-                            "dsid": 24,
+                            "dsid": 25,
                             "state": {
                                 "slot_id": 0
                             },
@@ -394,7 +400,7 @@
                             "x": 800,
                             "y": 70,
                             "uid": 25,
-                            "dsid": 24,
+                            "dsid": 25,
                             "state": {
                                 "slot_id": 0
                             },
@@ -446,6 +452,9 @@
                             "dsid": 3,
                             "state": {
                                 "enabled": true,
+                                "always_update": true,
+                                "rt_width": 512,
+                                "rt_height": 512,
                                 "input_sids": {
                                     "9": 0
                                 },
@@ -456,8 +465,8 @@
                             "title": "min max calc",
                             "graph": {
                                 "node_uid": 13,
-                                "uid": 5,
-                                "parent_uid": 4,
+                                "uid": 23,
+                                "parent_uid": 22,
                                 "open": true,
                                 "nodes": [
                                     {
@@ -505,7 +514,7 @@
                                         "x": 248,
                                         "y": 9,
                                         "uid": 9,
-                                        "dsid": 22,
+                                        "dsid": 23,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -537,7 +546,7 @@
                                         "x": 486,
                                         "y": 122,
                                         "uid": 12,
-                                        "dsid": 22,
+                                        "dsid": 23,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -650,7 +659,7 @@
                             "x": 361,
                             "y": 242,
                             "uid": 34,
-                            "dsid": 18,
+                            "dsid": 19,
                             "state": {
                                 "slot_id": 0
                             },
@@ -694,7 +703,7 @@
                             "x": 63,
                             "y": 153,
                             "uid": 39,
-                            "dsid": 25,
+                            "dsid": 26,
                             "state": {
                                 "slot_id": 0
                             },
@@ -716,7 +725,7 @@
                             "x": 60,
                             "y": 202,
                             "uid": 40,
-                            "dsid": 25,
+                            "dsid": 26,
                             "state": {
                                 "slot_id": 0
                             },
@@ -738,7 +747,7 @@
                             "x": 63,
                             "y": 250,
                             "uid": 41,
-                            "dsid": 25,
+                            "dsid": 26,
                             "state": {
                                 "slot_id": 0
                             },
@@ -766,7 +775,7 @@
                             "x": 61,
                             "y": 99,
                             "uid": 44,
-                            "dsid": 14,
+                            "dsid": 15,
                             "state": {
                                 "slot_id": 0
                             },
@@ -788,7 +797,7 @@
                             "x": 40,
                             "y": 52,
                             "uid": 47,
-                            "dsid": 9,
+                            "dsid": 10,
                             "state": {
                                 "slot_id": 0
                             },
@@ -816,7 +825,7 @@
                             "x": 54,
                             "y": 0,
                             "uid": 49,
-                            "dsid": 6,
+                            "dsid": 7,
                             "state": {
                                 "slot_id": 0
                             },
@@ -1151,19 +1160,19 @@
             },
             {
                 "plugin": "url_texture_generator",
-                "x": 83,
-                "y": 148,
-                "uid": 16,
+                "x": 61,
+                "y": 549,
+                "uid": 32,
                 "state": {
-                    "url": "data/textures/tile_arabictiling.jpg"
+                    "url": "/data/textures/backdrop_darkgrey.jpg"
                 },
                 "title": "Image"
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 116,
-                "y": 80,
-                "uid": 17,
+                "x": 94,
+                "y": 481,
+                "uid": 33,
                 "state": {
                     "val": 1
                 },
@@ -1171,9 +1180,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 189,
-                "y": 80,
-                "uid": 18,
+                "x": 167,
+                "y": 481,
+                "uid": 34,
                 "state": {
                     "val": 1
                 },
@@ -1181,9 +1190,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 268,
-                "y": 80,
-                "uid": 19,
+                "x": 246,
+                "y": 481,
+                "uid": 35,
                 "state": {
                     "val": 1
                 },
@@ -1191,9 +1200,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 349,
-                "y": 80,
-                "uid": 20,
+                "x": 327,
+                "y": 481,
+                "uid": 36,
                 "state": {
                     "val": 1
                 },
@@ -1201,18 +1210,18 @@
             },
             {
                 "plugin": "blend_mode_generator",
-                "x": 270,
-                "y": 146,
-                "uid": 21,
+                "x": 248,
+                "y": 547,
+                "uid": 37,
                 "state": {
                     "mode": 4
                 }
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 189,
-                "y": 146,
-                "uid": 22,
+                "x": 167,
+                "y": 547,
+                "uid": 38,
                 "state": {
                     "val": 0.05999999999999999
                 },
@@ -1220,9 +1229,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 148,
-                "y": 218,
-                "uid": 23,
+                "x": 126,
+                "y": 619,
+                "uid": 39,
                 "state": {
                     "val": 1
                 },
@@ -1230,9 +1239,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 240,
-                "y": 218,
-                "uid": 24,
+                "x": 218,
+                "y": 619,
+                "uid": 40,
                 "state": {
                     "val": 1
                 },
@@ -1240,9 +1249,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 328,
-                "y": 218,
-                "uid": 25,
+                "x": 306,
+                "y": 619,
+                "uid": 41,
                 "state": {
                     "val": 0
                 },
@@ -1250,12 +1259,15 @@
             },
             {
                 "plugin": "graph",
-                "x": 377,
-                "y": 402,
-                "uid": 26,
+                "x": 355,
+                "y": 803,
+                "uid": 42,
                 "dsid": 5,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
                     "input_sids": {
                         "0": 0,
                         "1": 1,
@@ -1268,7 +1280,7 @@
                 "title": "Camera",
                 "graph": {
                     "node_uid": 25,
-                    "uid": 6,
+                    "uid": 24,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
@@ -1277,7 +1289,7 @@
                             "x": 74,
                             "y": 173,
                             "uid": 0,
-                            "dsid": 16,
+                            "dsid": 17,
                             "state": {
                                 "slot_id": 0
                             },
@@ -1299,7 +1311,7 @@
                             "x": 129,
                             "y": 89,
                             "uid": 1,
-                            "dsid": 16,
+                            "dsid": 17,
                             "state": {
                                 "slot_id": 0
                             },
@@ -1321,7 +1333,7 @@
                             "x": 52,
                             "y": 48,
                             "uid": 2,
-                            "dsid": 16,
+                            "dsid": 17,
                             "state": {
                                 "slot_id": 0
                             },
@@ -1343,7 +1355,7 @@
                             "x": 558,
                             "y": 35,
                             "uid": 3,
-                            "dsid": 16,
+                            "dsid": 17,
                             "state": {
                                 "slot_id": 0
                             },
@@ -1535,9 +1547,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 158,
-                "y": 359,
-                "uid": 27,
+                "x": 136,
+                "y": 760,
+                "uid": 43,
                 "state": {
                     "val": 0,
                     "min": -180,
@@ -1547,9 +1559,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 158,
-                "y": 442,
-                "uid": 28,
+                "x": 136,
+                "y": 843,
+                "uid": 44,
                 "state": {
                     "val": 2.4,
                     "min": -20,
@@ -1559,9 +1571,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 158,
-                "y": 525,
-                "uid": 29,
+                "x": 136,
+                "y": 926,
+                "uid": 45,
                 "state": {
                     "val": 4.6,
                     "min": 0,
@@ -1572,108 +1584,108 @@
         ],
         "conns": [
             {
-                "src_nuid": 17,
-                "dst_nuid": 15,
+                "src_nuid": 33,
+                "dst_nuid": 31,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 18,
-                "dst_nuid": 15,
+                "src_nuid": 34,
+                "dst_nuid": 31,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 19,
-                "dst_nuid": 15,
+                "src_nuid": 35,
+                "dst_nuid": 31,
                 "src_slot": 0,
                 "dst_slot": 3,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 20,
-                "dst_nuid": 15,
+                "src_nuid": 36,
+                "dst_nuid": 31,
                 "src_slot": 0,
                 "dst_slot": 4,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 21,
-                "dst_nuid": 15,
+                "src_nuid": 37,
+                "dst_nuid": 31,
                 "src_slot": 0,
                 "dst_slot": 5,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 22,
-                "dst_nuid": 15,
+                "src_nuid": 38,
+                "dst_nuid": 31,
                 "src_slot": 0,
                 "dst_slot": 6,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 25,
-                "dst_nuid": 15,
+                "src_nuid": 41,
+                "dst_nuid": 31,
                 "src_slot": 0,
                 "dst_slot": 9,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 24,
-                "dst_nuid": 15,
+                "src_nuid": 40,
+                "dst_nuid": 31,
                 "src_slot": 0,
                 "dst_slot": 8,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 23,
-                "dst_nuid": 15,
+                "src_nuid": 39,
+                "dst_nuid": 31,
                 "src_slot": 0,
                 "dst_slot": 7,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 15,
-                "dst_nuid": 7,
+                "src_nuid": 31,
+                "dst_nuid": 30,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "src_dyn": true,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 27,
-                "dst_nuid": 26,
+                "src_nuid": 43,
+                "dst_nuid": 42,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 28,
-                "dst_nuid": 26,
+                "src_nuid": 44,
+                "dst_nuid": 42,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 29,
-                "dst_nuid": 26,
+                "src_nuid": 45,
+                "dst_nuid": 42,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 26,
-                "dst_nuid": 7,
+                "src_nuid": 42,
+                "dst_nuid": 30,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "src_dyn": true,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 16,
-                "dst_nuid": 15,
+                "src_nuid": 32,
+                "dst_nuid": 31,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true
