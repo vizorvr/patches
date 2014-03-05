@@ -137,11 +137,16 @@ shutil.copytree('images/', build_dir + '/images/')
 print '\tCopying data folder.'
 shutil.copytree('data/', build_dir + '/data/')
 
-print '\tCopying vendor folder.'
-shutil.copytree('vendor/', build_dir + '/vendor/')
-
 print '\tCopying help folder.'
-shutil.copytree('help/', build_dir + '/help/')
+shutil.copytree('help/', build_dir + '/help/', False, shutil.ignore_patterns('*.markdown'))
+
+print '\tBuilding help files...'
+markdown_files = glob.glob('help/*.markdown')
+
+for markdown in markdown_files:
+	print '\t' + markdown
+	os.system('multimarkdown --process-html ' + markdown + ' > build/' + markdown[:-9] + '.html')
+	os.system('cp build/' + markdown[:-9] + '.html help') 
 
 print '\tCopying index.html.'
 os.system('cp index.html player.html player_scene.json ' + build_dir)

@@ -1640,34 +1640,6 @@ function Application() {
 			self.updateCanvas(false);
 	};
 
-	this.selectAll = function()
-	{
-		self.clearSelection();
-		
-		var ag = self.player.core.active_graph;
-		var s_nodes = self.selection_nodes;
-		var s_conns = self.selection_conns;
-		
-		for(var i = 0, len = ag.nodes.length; i < len; i++)
-		{
-			var n = ag.nodes[i];
-			
-			n.ui.dom[0].style.border = '2px solid #09f';
-			n.ui.selected = true;
-			s_nodes.push(n);
-		}
-		
-		for(var i = 0, len = ag.connections.length; i < len; i++)
-		{
-			var c = ag.connections[i];
-			
-			c.ui.selected = true;
-			s_conns.push(c);
-		}
-
-		self.updateCanvas(true);
-	};
-	
 	this.onWindowResize = function()
 	{
 		var win = $(window);
@@ -1763,12 +1735,6 @@ function Application() {
 		}
 		else if(self.ctrl_pressed)
 		{
-			if(e.keyCode === 65) // CTRL+a
-			{
-				self.selectAll();
-				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
-				return;
-			}
 			if(e.keyCode === 66) // CTRL+b
 			{
 				self.condensed_view = !self.condensed_view;
