@@ -6,6 +6,8 @@ describe('Graph', function() {
 	var dummyPlugin = { output_slots: [ 'a' ] }
 
 	beforeEach(function() {
+		global.Registers = function() {}
+
 		var core = {
 			get_graph_uid: function() {
 				return 'uid'
