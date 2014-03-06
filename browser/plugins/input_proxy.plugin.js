@@ -11,9 +11,10 @@ E2.p = E2.plugins["input_proxy"] = function(core, node)
 		slot_id: node.add_slot(E2.slot_type.output, { name: 'input', dt: core.datatypes.ANY, desc: 'Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.' })
 	};
 
-	this.data = null;
+	this.core = core;
 	this.node = node;
-	
+	this.data = null;
+
 	if(!node.title)
 		node.title = 'input_' + node.uid;
 };
@@ -45,5 +46,8 @@ E2.p.prototype.update_output = function(slot)
 E2.p.prototype.state_changed = function(ui)
 {
 	if(ui)
+	{
 		this.node.ui.dom.addClass('proxy');
+		this.data = this.core.get_default_value(this.node.dyn_outputs[0].dt);
+	}
 };
