@@ -2,17 +2,25 @@
 
 var connect = require('express')
 var browserify = require('browserify')
+var argv = require('minimist')(process.argv.slice(2));
 var fs = require('fs')
 
-var WEBROOT = './browser/'
-var PROJECT = process.argv[2] || WEBROOT
+var config = require('./config.json')
 
-console.log('using webroot ', WEBROOT, 'project root', PROJECT)
+var ENGI = config.server.engiPath
+var PROJECT = argv._[0] || ENGI
+var listenHost = argv.i || config.server.host
+var listenPort = argv.p || config.server.port
+
+if (argv.h || argv.help) {
+	return console.log('usage: node server.js -i 127.0.0.1 -p 8000 [/path/to/alt/project]')
+}
+
+console.log('Project path: ', PROJECT)
+console.log('URL: http://'+listenHost+':'+listenPort)
 
 function showFolderListing(reTest) {
 	return function(req, res, next) {
-		console.log('showFolderListing', req.path)
-
 		fs.readdir(PROJECT + req.path, function(err, files) {
 			if (err)
 				return next(err)
@@ -27,7 +35,7 @@ function showFolderListing(reTest) {
 function bundle(req, res) {
 	var b = browserify({ debug: true })
 
-	b.add(WEBROOT + '/scripts/core.js')
+	b.add(ENGI + '/scripts/core.js')
 
 	b.on('syntaxError', function(e) {
 		console.error('SyntaxError: '+e)
@@ -47,7 +55,7 @@ var app = connect()
 		next()
 	})
 
-	.use(connect['static'](WEBROOT, { maxAge: 60 * 60 * 24 * 1000 }))
+	.use(connect['static'](ENGI, { maxAge: 60 * 60 * 24 * 1000 }))
 	.use(connect['static'](PROJECT, { maxAge: 0 }))
 
 	.get('/data/textures', showFolderListing(/^[^.].*$/))
@@ -81,4 +89,4 @@ var app = connect()
 
 	.use(connect.errorHandler())
 
-	.listen(8000, '127.0.0.1')
+	.listen(listenPort, listenHost)

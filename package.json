@@ -5,7 +5,8 @@
   "main": "server.js",
   "dependencies": {
     "express": "~3.4.8",
-    "browserify": "^3.31.2"
+    "browserify": "^3.31.2",
+    "minimist": "0.0.8"
   },
   "devDependencies": {
     "mocha": "^1.17.1",
