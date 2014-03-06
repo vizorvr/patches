@@ -1516,8 +1516,8 @@ function Application() {
 				
 			// Insert the pasted nodes in the center of the current view,
 			// maintaining relative placement of the nodes.
-			node.x = (node.x - d.x1) + bw2;
-			node.y = (node.y - d.y1) + bh2;
+			node.x = Math.floor((node.x - d.x1) + bw2);
+			node.y = Math.floor((node.y - d.y1) + bh2);
 
 			n.deserialise(ag.uid, node);
 			
