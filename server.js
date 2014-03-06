@@ -37,12 +37,14 @@ function bundle(req, res) {
 
 	b.add(ENGI + '/scripts/core.js')
 
-	b.on('syntaxError', function(e) {
-		console.error('SyntaxError: '+e)
-		return res.end(500)
+	b.bundle()
+
+	.on('error', function(err) {
+		console.error('Browserify bundle error: '+err.stack);
+		return res.send(500, err.toString());
 	})
 
-	b.bundle().pipe(res);
+	.pipe(res);
 }
 
 var app = connect()
