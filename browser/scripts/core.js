@@ -21,15 +21,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 var URL_GRAPHS = '/data/graphs/'
 
-var renderGraphList = require('./graphList').renderGraphList;
-
-var PluginManager = require('./pluginManager').PluginManager;
-var Node = require('./node').Node;
-var Connection = require('./connection').Connection;
-var Registers = require('./registers').Registers;
-var Graph = require('./graph').Graph;
-var NodeUI = require('./nodeUi').NodeUI;
-
 var E2 = {};
 window.E2 = E2; // global scope so plugins can access it
 
@@ -2294,6 +2285,7 @@ E2.InitialiseEngi = function()
 	E2.dom.layout = $('#layout');
 	E2.dom.refresh = $('#refresh');
 	E2.dom.save = $('#save');
+	E2.dom.downloadGraphButton = $('#downloadGraphButton');
 	E2.dom.load = $('#load');
 	E2.dom.load_clipboard = $('#load-clipboard');
 	E2.dom.structure = $('#structure');
@@ -2386,6 +2378,13 @@ E2.InitialiseEngi = function()
 	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
 	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
 	E2.dom.load_clipboard.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClipboardClicked);
+	E2.dom.downloadGraphButton.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } })
+		.click(function() {
+			var url = URL_GRAPHS + E2.dom.filenameInput.val();
+			var iframe = $('<iframe>', { src: url })
+				.hide()
+				.appendTo('body');
+		});
 
 	$('#tabs').tabs({ active: 1 });
 	$('#content')[0].style.display = 'block';

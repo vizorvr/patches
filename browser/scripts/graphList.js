@@ -18,4 +18,3 @@ function renderGraphList(graphsPath) {
 	})
 }
 
-exports.renderGraphList = renderGraphList;

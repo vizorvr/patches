@@ -1,7 +1,3 @@
-var Registers = require('./registers').Registers;
-var Connection = require('./connection').Connection;
-var Node = require('./node').Node;
-
 function Graph(core, parent_graph, tree_node) 
 {
 	this.tree_node = tree_node;
@@ -373,4 +369,6 @@ Graph.resolve_graph = function(graphs, guid)
 	return null;
 };
 
-exports.Graph = Graph;
+if (typeof(exports) !== 'undefined')
+	exports.Graph = Graph;
+

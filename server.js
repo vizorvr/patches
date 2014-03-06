@@ -1,7 +1,6 @@
 "use strict";
 
 var connect = require('express')
-var browserify = require('browserify')
 var argv = require('minimist')(process.argv.slice(2));
 var fs = require('fs')
 
@@ -32,21 +31,6 @@ function showFolderListing(reTest) {
 	}
 }
 
-function bundle(req, res) {
-	var b = browserify({ debug: true })
-
-	b.add(ENGI + '/scripts/core.js')
-
-	b.bundle()
-
-	.on('error', function(err) {
-		console.error('Browserify bundle error: '+err.stack);
-		return res.send(500, err.toString());
-	})
-
-	.pipe(res);
-}
-
 var app = connect()
 
 	.use(connect.logger(':remote-addr :method :url :status :res[content-length] - :response-time ms'))
@@ -68,8 +52,6 @@ var app = connect()
 		res.setHeader('Expires', 0)
 		next()
 	})
-
-	.get('/_bundle.js', bundle)
 
 	.get('/data/graphs', showFolderListing(/\.json$/))
 	.post(/\/data\/graphs\/.*/, function(req, res, next) {

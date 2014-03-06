@@ -147,4 +147,3 @@ NodeUI.render_slots = function(parent_node, nid, col, slots, type)
 		NodeUI.create_slot(parent_node, nid, col, slots[i], type);
 };
 
-exports.NodeUI = NodeUI;

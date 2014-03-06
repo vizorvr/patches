@@ -195,4 +195,3 @@ Connection.prototype.patch_up = function(nodes)
 	return true;
 };
 
-exports.Connection = Connection;

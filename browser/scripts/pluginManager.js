@@ -1,4 +1,3 @@
-var PluginGroup = require('./pluginGroup').PluginGroup;
 
 function PluginManager(core, base_url, creation_listener) 
 {
@@ -81,6 +80,4 @@ PluginManager.prototype.create = function(id, node)
 	console.assert(true, 'Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
 	return null;
 };
-
-exports.PluginManager = PluginManager;
 

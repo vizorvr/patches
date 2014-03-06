@@ -1,5 +1,3 @@
-var NodeUI = require('./nodeUi').NodeUI;
-
 function Node(parent_graph, plugin_id, x, y)
 {
 	this.inputs = [];
@@ -470,7 +468,6 @@ Node.prototype.deserialise = function(guid, d)
 	
 	if(this.plugin.e2_is_graph)
 	{
-		var Graph = require('./graph').Graph;
 		this.plugin.graph = new Graph(E2.app.player.core, null, null);
 		this.plugin.graph.plugin = this.plugin;
 		this.plugin.graph.deserialise(d.graph);
@@ -521,7 +518,6 @@ Node.prototype.deserialise = function(guid, d)
 
 Node.prototype.patch_up = function(graphs)
 {
-	var Graph = require('./graph').Graph;
 	this.parent_graph = Graph.resolve_graph(graphs, this.parent_graph);
 
 	if(this.plugin.e2_is_graph)
@@ -536,6 +532,4 @@ Node.prototype.initialise = function()
 	if(this.plugin.e2_is_graph)
 		this.plugin.graph.initialise();
 };
-
-exports.Node = Node;
 
