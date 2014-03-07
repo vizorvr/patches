@@ -1947,12 +1947,12 @@ function Application() {
 	};
 
 	this.onRefreshClicked = function() {
-		return renderGraphList(URL_GRAPHS);
+		return render_graph_list(URL_GRAPHS, E2.dom.filename_input);
 	};
 
 	this.onSaveClicked = function()
 	{
-		var filename = E2.dom.filenameInput.val();
+		var filename = E2.dom.filename_input.val();
 
 		if (!filename)
 			return alert('Please enter a filename')
@@ -1977,15 +1977,14 @@ function Application() {
 		});
 	};
 	
-	
 	this.onLoadClicked = function()
 	{
-		window.location.hash = '#' + URL_GRAPHS + E2.dom.filenameInput.val();
+		window.location.hash = '#' + URL_GRAPHS + E2.dom.filename_input.val();
 	};
 
 	this.onLoadClipboardClicked = function()
 	{
-		var url = URL_GRAPHS + E2.dom.filenameInput.val();
+		var url = URL_GRAPHS + E2.dom.filename_input.val();
 
 		$.get(url, function(d) {
 			self.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
@@ -2285,7 +2284,6 @@ E2.InitialiseEngi = function()
 	E2.dom.layout = $('#layout');
 	E2.dom.refresh = $('#refresh');
 	E2.dom.save = $('#save');
-	E2.dom.downloadGraphButton = $('#downloadGraphButton');
 	E2.dom.load = $('#load');
 	E2.dom.load_clipboard = $('#load-clipboard');
 	E2.dom.structure = $('#structure');
@@ -2295,7 +2293,7 @@ E2.InitialiseEngi = function()
 	E2.dom.snippets_list = $('#snippets-list');
 	E2.dom.breadcrumb = $('#breadcrumb');
 
-	E2.dom.filenameInput = $('#filenameInput');
+	E2.dom.filename_input = $('#filename-input');
 
 	$.ajaxSetup({ cache: false });
 
@@ -2374,54 +2372,36 @@ E2.InitialiseEngi = function()
 	E2.dom.pause.button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(E2.app.onPauseClicked);
 	E2.dom.stop.button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(E2.app.onStopClicked);
 	E2.dom.layout.button({ icons: { primary: 'ui-icon-shuffle' }, disabled: false }).click(E2.app.onLayoutClicked);
-	E2.dom.refresh.button({ icons: { primary: 'ui-icon-arrowrefresh-1-w' } }).click(E2.app.onRefreshClicked);
+	E2.dom.refresh.button({ icons: { primary: 'ui-icon-refresh' } }).click(E2.app.onRefreshClicked);
 	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
 	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
 	E2.dom.load_clipboard.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClipboardClicked);
-	E2.dom.downloadGraphButton.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } })
-		.click(function() {
-			var url = URL_GRAPHS + E2.dom.filenameInput.val();
-			var iframe = $('<iframe>', { src: url })
-				.hide()
-				.appendTo('body');
-		});
 
-	$('#tabs').tabs({ active: 1 });
+	$('#tabs').tabs({ active: 0 });
 	$('#content')[0].style.display = 'block';
 	
 	E2.app.onRefreshClicked();
 
 	E2.app.onWindowResize();
 
-	setupLocationHash();
+	setup_location_hash();
 }
 
-function getLocationHash() {
-	var loc = window.location + ''
-
-	if (window.location.hash)
-		loc = loc.substring(0, loc.indexOf(window.location.hash))
-
-	return loc +
-		'#' + URL_GRAPHS +
-		encodeURIComponent(E2.dom.filenameInput.val())
-}
-
-function loadLocationHash() {
+function load_location_hash() {
 	var graphName = decodeURIComponent(window.location.hash).replace('#'+URL_GRAPHS,'')
 	console.log('loading graph from location hash:', graphName)
-	E2.dom.filenameInput.val(graphName);
+	E2.dom.filename_input.val(graphName);
 	E2.app.onStopClicked();
 	E2.app.player.load_from_url(URL_GRAPHS+graphName);
 	E2.app.updateCanvas(false);
 }
 
-function setupLocationHash() {
-	$(window).on('hashchange', loadLocationHash)
+function setup_location_hash() {
+	$(window).on('hashchange', load_location_hash)
 
 	$(document).ready(function() {
 		if (window.location.hash) {
-			setTimeout(loadLocationHash, 1000)
+			setTimeout(load_location_hash, 1000)
 		}
 	})
 }

@@ -22,26 +22,26 @@
 		<script type="text/javascript" src="scripts/renderer.js"></script>
 		<script type="text/javascript" src="scripts/ui.js"></script>
 
-		<script type="text/javascript" src="scripts/graphList.js"></script>
-		<script type="text/javascript" src="scripts/pluginGroup.js"></script>
-		<script type="text/javascript" src="scripts/pluginManager.js"></script>
+		<script type="text/javascript" src="scripts/graph-list.js"></script>
+		<script type="text/javascript" src="scripts/plugin-group.js"></script>
+		<script type="text/javascript" src="scripts/plugin-manager.js"></script>
 		<script type="text/javascript" src="scripts/connection.js"></script>
 		<script type="text/javascript" src="scripts/graph.js"></script>
 		<script type="text/javascript" src="scripts/node.js"></script>
-		<script type="text/javascript" src="scripts/nodeUi.js"></script>
+		<script type="text/javascript" src="scripts/node-ui.js"></script>
 		<script type="text/javascript" src="scripts/registers.js"></script>
 		<script type="text/javascript" src="scripts/core.js"></script>
 
-		<script id="fileListEntryTemplate" type="text/x-handlebars-template">
+		<script id="file-list-entry-template" type="text/x-handlebars-template">
 			{{#each files}}
-				<li class="fileListEntry">{{this}}</li>
+				<li class="file-list-entry">{{this}}</li>
 			{{/each}}
 		</script>
 
-		<script id="textureImageSelectTemplate" type="text/x-handlebars-template">
+		<script id="texture-image-select-template" type="text/x-handlebars-template">
 			<div>
 				<form style="height: 100%">
-					<select id="textureImageSelect" size="20">
+					<select id="texture-image-select" size="20">
 						{{#each images}}
 							<option 
 								{{#if selected}}
@@ -54,12 +54,12 @@
 					</select>
 				</form>
 
-				<label for="textureImageUrl">URL</label>
+				<label for="texture-image-url">URL</label>
 				<input
-					id="textureImageUrl"
+					id="texture-image-url"
 					size="40"
 					type="text"
-					name="textureImageUrl"
+					name="texture-image-url"
 					value=""
 					placeholder="Enter URL"/>
 			</div>
@@ -95,6 +95,7 @@
 			<div id="info"></div>
 			<pre id="dbg"></pre>
 			<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
+
 			<div id="tabs">
 					<ul>
 						<li><a href="#persist-tab">Load / Save</a></li>
@@ -106,7 +107,7 @@
 							<ul id="graphs-list"></ul>
 							
 							<input
-								id="filenameInput"
+								id="filename-input"
 								size="40"
 								type="text"
 								name="filename"
@@ -118,7 +119,7 @@
 							<button id="refresh">Refresh</button>
 							<button id="save">Save</button>
 							<button id="load">Load</button>
-							<button id="load-clipboard">Load to clipboard</button>
+							<button id="load-clipboard">Copy</button>
 						</div>
 					</div>
 

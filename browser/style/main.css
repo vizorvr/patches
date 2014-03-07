@@ -265,12 +265,12 @@ input[type=text]
 	overflow: scroll;
 }
 
-.fileListEntry:hover {
+.file-list-entry:hover {
 	cursor: pointer;
 	background-color: #eee;
 }
 
-#filenameInput
+#filename-input
 {
 	border: 1px #888 solid;
 	width: 100%;
@@ -308,7 +308,7 @@ optgroup
 	margin-top: 5px;
 }
 
-#textureImageSelect {
+#texture-image-select {
 	border: 0;
 }
 

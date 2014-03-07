@@ -25,23 +25,28 @@ E2.p.prototype.create_ui = function()
 	var self = this
 	var inp = $('<input id="url" type="button" value="Source" title="No texture selected." />');
 	
-	inp.click(function() {
-		var source   = $("#textureImageSelectTemplate").html();
+	inp.click(function()
+	{
+		var source   = $("#texture-image-select-template").html();
 		var template = Handlebars.compile(source);
 		var dlg = $('<div>')
 
-		function setValue(v) {
+		function setValue(v)
+		{
 			self.state.url = v;
 			self.state_changed(null);
 			self.state_changed(inp);
 			self.updated = true;
 		}
 
-		$.get(URL_TEXTURES_ROOT, function(list) {
+		$.get(URL_TEXTURES_ROOT, function(list)
+		{
 			var originalValue = self.state.url
 
-			dlg.html(template({
-				images: list.map(function(item) {
+			dlg.html(template(
+			{
+				images: list.map(function(item)
+				{
 					return {
 						url: item,
 						selected: originalValue === URL_TEXTURES_ROOT + item
@@ -49,22 +54,25 @@ E2.p.prototype.create_ui = function()
 				})
 			}))
 
-			var urlEl = $('#textureImageUrl', dlg)
+			var urlEl = $('#texture-image-url', dlg)
 
 			urlEl.val(self.state.url)
 
-			dlg.dialog({
+			dlg.dialog(
+			{
 				title: 'Select image',
 				width: 445,
 				height: 455,
 				modal: true,
 				resizable: false,
 				buttons: {
-					'OK': function() {
+					'OK': function()
+					{
 						$(this).dialog('destroy')
 						dlg.remove()
 					},
-					'Cancel': function() {
+					'Cancel': function()
+					{
 						$(this).dialog('destroy')
 						setValue(originalValue)
 						dlg.remove()
@@ -72,13 +80,15 @@ E2.p.prototype.create_ui = function()
 				}
 			})
 
-			var selectEl = $('#textureImageSelect', dlg)
-			selectEl.on('change keyup', function(e) {
+			var selectEl = $('#texture-image-select', dlg)
+			selectEl.on('change keyup', function(e)
+			{
 				urlEl.val(URL_TEXTURES_ROOT + selectEl.val())
 				setValue(urlEl.val())
 			})
 
-			urlEl.change(function() {
+			urlEl.change(function()
+			{
 				setValue(urlEl.val())
 			})
 		})
