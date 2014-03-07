@@ -382,22 +382,21 @@ function Core(app) {
 			var pnode = graph.parent_graph !== null ? graph.parent_graph.tree_node : E2.dom.structure.dynatree('getRoot');
 			var tnode = pnode.addChild({
 				title: name,
-				isFolder: true,
 				expand: graph.open
 			});
-			
+
 			graph.tree_node = tnode;
 			tnode.graph = graph;
-			
+
 			for(var i = 0, len = nodes.length; i < len; i++)
 			{
 				var n = nodes[i];
-				
+
 				if(n.plugin.e2_is_graph)
 					build(n.plugin.graph, n.get_disp_name());
 			}
 		};
-		
+
 		build(self.root_graph, 'Root');
 	};
 	
@@ -434,7 +433,7 @@ E2.InitialiseEngi = function()
 	E2.dom.refresh = $('#refresh');
 	E2.dom.save = $('#save');
 	E2.dom.dl_graph = $('#dl-graph');
-	E2.dom.load = $('#load');
+	E2.dom.open = $('#open');
 	E2.dom.load_clipboard = $('#load-clipboard');
 	E2.dom.structure = $('#structure');
 	E2.dom.info = $('#info');
@@ -476,7 +475,7 @@ E2.InitialiseEngi = function()
 	});
 
 	E2.app = new Application();
-	
+
 	E2.dom.structure.dynatree({
 		title: "Structure",
 		fx: { height: 'toggle', duration: 200 },
@@ -510,33 +509,70 @@ E2.InitialiseEngi = function()
 			E2.app.updateCanvas(true);
 		}
 	});
-    
-	var root_node = E2.dom.structure.dynatree('getRoot');
 
-	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, root_node.addChild({
-		title: 'Root',
-		isFolder: true,
-		expand: true
-	}));
+	var tree_root = E2.dom.structure.dynatree('getRoot');
 
-	E2.dom.play.button({ icons: { primary: 'ui-icon-play' } }).click(E2.app.onPlayClicked);
-	E2.dom.pause.button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(E2.app.onPauseClicked);
-	E2.dom.stop.button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(E2.app.onStopClicked);
-	E2.dom.layout.button({ icons: { primary: 'ui-icon-shuffle' }, disabled: false }).click(E2.app.onLayoutClicked);
-	E2.dom.refresh.button({ icons: { primary: 'ui-icon-refresh' } }).click(E2.app.onRefreshClicked);
-	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
-	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
-	E2.dom.load_clipboard.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClipboardClicked);
-	E2.dom.dl_graph.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onDownloadGraphClicked);
+	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, tree_root);
 
-	$('#tabs').tabs({ active: 1 });
-	$('#content')[0].style.display = 'block';
-	
+	E2.dom.save.click(E2.app.onSavelicked);
+	E2.dom.open.click(E2.app.onOpenClicked);
+	E2.dom.layout.click(E2.app.onLayoutClicked);
+
+	E2.dom.play.click(E2.app.onPlayClicked);
+	E2.dom.pause.click(E2.app.onPauseClicked);
+	E2.dom.stop.click(E2.app.onStopClicked);
+
 	E2.app.onRefreshClicked();
 
-	E2.app.onWindowResize();
-
 	setup_location_hash();
+}
+
+function reset_tree() {
+	var tree = E2.dom.structure._tree
+	tree('loadData', { data: [ {} ] })
+	return tree;
+}
+
+function create_tree() {
+	E2.dom.structure._tree = E2.dom.structure.tree.bind(E2.dom.structure);
+	var tree = E2.dom.structure._tree;
+	tree({
+		data: [],
+		slide: false,
+		dragAndDrop: true,
+		onCanMoveTo: function(moved_node, target_node, position) {
+			if (!position || !moved_node.parent.parent)
+				return false;
+
+			var can = ((position === 'inside' && moved_node.parent === target_node)
+				|| (position !== 'inside' && moved_node.parent === target_node.parent))
+			console.log('can move ', moved_node.name, 'to', target_node.name, position, can)
+			return can
+		}
+	})
+
+	var tree_root = tree('getTree')
+
+	function graph_selected(evt) {
+		E2.app.clearEditState();
+		E2.app.clearSelection();
+		E2.app.player.core.onGraphSelected(evt.node.graph);
+		E2.app.updateCanvas(true);
+	}
+
+	E2.dom.structure.bind('tree.select', graph_selected);
+	E2.dom.structure.bind('tree.move', function(event) {
+        var position = event.move_info.position;
+
+        // var target = position === 'inside' ? event.move_info.target_node : event.move_info.target_node.parent;
+        var target = event.move_info.target_node;
+
+        var node = event.move_info.moved_node
+        console.log('moved node', node, 'to', position, target)
+        node.parent.graph.reorder_children(target, node, position);
+	});
+
+	return tree_root;	
 }
 
 function load_location_hash() {

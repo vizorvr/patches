@@ -1,0 +1,104 @@
+.grid-row {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.grid-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.grid-cell {
+  flex: 1;
+}
+
+.border {
+  border: 2px solid #eee;
+}
+
+.logo
+{
+	margin-top: 9px;
+	min-width: 100px;
+	max-width: 160px;
+}
+
+#header-row {
+	height: 4vh;
+	min-height: 4vh;
+	max-height: 4vh;
+	-webkit-flex-align: center;
+	-ms-flex-align: center;
+	-webkit-align-items: center;
+	align-items: center;
+}
+
+#middle-row {
+	min-height: 75vh;
+	max-height: 75vh;
+}
+
+#footer-row {
+	min-height: 20vh;
+	max-height: 20vh;
+}
+
+.left-pane {
+	min-width: 100px;
+	max-width: 160px;
+}
+
+.right-pane {
+	max-width: 482px;
+	min-width: 482px;
+}
+
+#canvas_parent {
+	z-index: 1;
+	overflow: scroll;
+	position: relative;
+	border: none;
+	-moz-box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+	box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+#canvas {
+	position: relative;
+	z-index: 2;
+}
+
+#breadcrumb
+{
+	position: absolute;
+	background-color: #000;
+	color: #fff;
+	opacity: 0.75;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	z-index: 10000;
+}
+
+#snippets select {
+	width: 100%;
+	min-height: 50vh;
+	max-height: 50vh;
+}
+
+#snippets-list
+{
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-right: none;
+	padding: 2px;
+}
+
+#dbg
+{
+	font-size: 8pt;
+}
+

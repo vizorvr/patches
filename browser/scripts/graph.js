@@ -311,7 +311,7 @@ Graph.prototype.emit_event = function(ev)
 	
 Graph.prototype.build_breadcrumb = function(parent, add_handler)
 {
-	var sp = $('<span>' + this.tree_node.data.title + '</span>');
+	var sp = $('<span>' + $('a', this.tree_node.span).text() + '</span>');
 	
 	sp.css('cursor', 'pointer');
 	

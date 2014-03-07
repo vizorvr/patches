@@ -103,8 +103,3 @@ function load_script(url) {
 	document.getElementById('head').appendChild(script);
 }
 
-function make(tag)
-{
-	return $(document.createElement(tag));
-}
-

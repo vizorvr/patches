@@ -8,8 +8,6 @@ ul.dynatree-container
 	white-space: nowrap;
 	padding: 3px;
 	margin: 0; /* issue 201 */
-	background-color: white;
-	border: 1px dotted gray;
 	overflow: auto;
 	height: 100%; /* issue 263 */
 }
@@ -64,13 +62,12 @@ span.dynatree-empty,
 span.dynatree-vline,
 span.dynatree-connector,
 span.dynatree-expander,
-span.dynatree-icon,
 span.dynatree-checkbox,
 span.dynatree-radio,
 span.dynatree-drag-helper-img,
 #dynatree-drop-marker
 {
-	width: 16px;
+	width: 12px;
 	height: 16px;
 /*	display: -moz-inline-box; /* @ FF 1+2 removed for issue 221*/
 /*	-moz-box-align: start; /* issue 221 */
@@ -300,15 +297,13 @@ ul.dynatree-container a
 	/* Set transparent border to prevent jumping when active node gets a border
 	   (we can do this, because this theme doesn't use vertical lines)
 	   */
-	border: 1px solid white; /* Note: 'transparent' would not work in IE6 */
 
 }
 
 ul.dynatree-container a:hover
 {
 /*	text-decoration: underline; */
-	background: #F2F7FD; /* light blue */
-	border-color: #B8D6FB; /* darker light blue */
+	background: white; /* light blue */
 }
 
 span.dynatree-node a
@@ -327,7 +322,6 @@ span.dynatree-folder a
 ul.dynatree-container a:focus,
 span.dynatree-focused a:link  /* @IE */
 {
-	background-color: #EFEBDE; /* gray */
 }
 
 span.dynatree-has-children a
@@ -337,18 +331,20 @@ span.dynatree-has-children a
 
 span.dynatree-expanded a
 {
+	text-decoration: none;
 }
 
 span.dynatree-selected a
 {
+	text-decoration: none;
 /*	color: green; */
 	font-style: italic;
 }
 
 span.dynatree-active a
 {
-	border: 1px solid #99DEFD;
-	background-color: #D8F0FA;
+	background-color: white;
+	text-decoration: none;
 }
 
 /*******************************************************************************

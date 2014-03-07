@@ -32,7 +32,7 @@ function NodeUI(parent_node, x, y) {
 	}}(this));
 	
 	lbl.text(parent_node.get_disp_name());
-	lbl.attr('id', 't');
+	lbl.addClass('t');
 
 	h_cell.attr('colspan', '3');
 	h_cell.append(icon);
@@ -65,10 +65,10 @@ function NodeUI(parent_node, x, y) {
 	var content_col = make('td');
 	var output_col = make('td');
 	
-	input_col.attr('id', 'ic');
+	input_col.addClass('ic');
 	content_col.addClass('pui_col');
-	content_col.attr('id', 'cc');
-	output_col.attr('id', 'oc');
+	content_col.addClass('cc');
+	output_col.addClass('oc');
 	
 	if((parent_node.dyn_inputs ? parent_node.dyn_inputs.length : 0) + parent_node.plugin.input_slots.length)
 		input_col.css('padding-right', '6px');

@@ -2,16 +2,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head id="head">
 		<title>ENGI&#8482;</title>
-		<link href="style/main.css" rel="Stylesheet" type="text/css" />
-		<link href="style/icons/style.css" rel="Stylesheet" type="text/css" />
-		<link href="style/smoothness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" type="text/css"  />
+		<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
+		<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
+
 		<link href="style/skin/ui.dynatree.css" rel="stylesheet" type="text/css">
+		<link href="style/flex.css" rel="Stylesheet" type="text/css" />
+		<link href="style/menu.css" rel="Stylesheet" type="text/css" />
+		<link href="style/core.css" rel="Stylesheet" type="text/css" />
+		<link href="style/icons/style.css" rel="Stylesheet" type="text/css" />
 
 		<script type="text/javascript" src="vendor/jquery-1.7.js"></script>
-		<script type="text/javascript" src="vendor/jquery.event.fastfix.js"></script>
 		<script type="text/javascript" src="vendor/jquery-ui.js"></script>
 		<script type="text/javascript" src="vendor/jquery.dynatree.js"></script>
-		<script type="text/javascript" src="vendor/jquery.mousewheel.js"></script>
+		<script type="text/javascript" src="vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+
+		<script type="text/javascript" src="vendor/handlebars-v1.3.0.js"></script>
+
 		<script type="text/javascript" src="vendor/gl-matrix.js"></script>
 		<script type="text/javascript" src="vendor/webgl-debug.js"></script>
 		<script type="text/javascript" src="vendor/handlebars-v1.3.0.js"></script>
@@ -30,6 +36,7 @@
 		<script type="text/javascript" src="scripts/node.js"></script>
 		<script type="text/javascript" src="scripts/node-ui.js"></script>
 		<script type="text/javascript" src="scripts/registers.js"></script>
+		<script type="text/javascript" src="scripts/player.js"></script>
 		<script type="text/javascript" src="scripts/core.js"></script>
 		<script type="text/javascript" src="scripts/application.js"></script>
 		<script type="text/javascript" src="scripts/player.js"></script>
@@ -74,66 +81,54 @@
 				<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
 			</div>
 		</noscript>
-		<div id="content">
-			<div id="controls" class="centered">
-				<a href="http://www.engijs.org" target="_blank" style="color: #888; text-decoration: none;"><div id="logo">ENGI&#8482;</div></a>
-				<button id="play">Play</button>
-				<button id="pause">Pause</button>
-				<button id="stop">Stop</button>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<button id="layout">Layout</button>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<button id="fullscreen">Full screen</button>
-				<button id="help">Help</button>
-				<div id="load_spinner"></div>
-			</div>
-			<div id="main_layout" class="centered">
-				<div id="structure">
+
+		<div class="grid-column">
+			<div id="header-row" class="grid-row">
+				<div class="grid-cell logo">
+					<a href="http://www.engijs.org" target="_blank">
+						ENGI&#8482;
+					</a>
 				</div>
-				<div id="canvas_parent">
+
+				<div class="grid-cell">
+					<button id="save" class="btn disabled btn-default">Save</button>
+					<button id="open" class="btn btn-default">Open</button>
+					<button id="layout" class="btn btn-default">Layout</button>
+					<button id="help" class="btn btn-default">Help</button>
+				</div>
+
+				<div class="grid-cell right-pane">
+					<button id="play" class="btn btn-primary">Play</button>
+					<button id="pause" class="btn disabled btn-default">Pause</button>
+					<button id="stop" class="btn disabled btn-default">Stop</button>
+					<button id="fullscreen" class="btn btn-default">Full screen</button>
+				</div>
+			</div>
+
+			<div class="grid-row" id="middle-row">
+				<div id="structure" class="grid-cell border left-pane"></div>
+
+				<div id="canvas_parent" class="grid-cell border">
+					<div id="breadcrumb"></div>
 					<canvas id="canvas" width="940" height="620"></canvas>
 				</div>
-				<div id="breadcrumb"><span>Root</span><span> / </span></div>
-			</div>
-			<div id="info"></div>
-			<pre id="dbg"></pre>
-			<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
 
-			<div id="tabs">
-					<ul>
-						<li><a href="#persist-tab">Load / Save</a></li>
-						<li><a href="#snippets-tab">Snippets</a></li>
-					</ul>
+				<div class="grid-cell right-pane">
+					<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
 
-					<div id="persist-tab">
-						<div>
-							<ul id="graphs-list"></ul>
-							
-							<input
-								id="filename-input"
-								size="40"
-								type="text"
-								name="filename"
-								value=""
-								placeholder="Enter file name"/>
-						</div>
-
-						<div>
-							<button id="refresh">Refresh</button>
-							<button id="save">Save</button>
-							<button id="load">Load</button>
-							<button id="load-clipboard">Copy</button>
-							<button id="dl-graph">Get</button>
-						</div>
-					</div>
-
-					<div id="snippets-tab">
-						<form style="height: 100%">
-							<select id="snippets-list" size="4"></select>
+					<div id="snippets">
+						<form>
+							<select id="snippets-list" style="height: 100%" size="20"></select>
 							<br />
-							<button id="load-snippet" type="button" title="Add the snippet to the current graph.">Add</button>
+							<button class="btn btn-default col-sm-12" id="load-snippet" type="button" title="Add the snippet to the current graph.">Add</button>
 						</form>
 					</div>
+				</div>
+			</div>
+
+			<div id="footer-row" class="grid-row">
+				<div id="info" class="grid-cell border left-pane">info</div>
+				<pre id="dbg" class="grid-cell border"></pre>
 			</div>
 		</div>
 

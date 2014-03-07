@@ -87,11 +87,15 @@ function Application() {
 			if(name !== null) // Graph?
 			{
 				node.title = name;
-				node.plugin.graph = new Graph(self.player.core, node.parent_graph, node.parent_graph.tree_node.addChild({
-					title: name,
-					isFolder: true,
-					expand: true
-				}));
+				node.plugin.graph = new Graph(
+					self.player.core,
+					node.parent_graph,
+					node.parent_graph.tree_node.addChild({
+						title: name,
+						isFolder: true,
+						expand: true
+					})
+				);
 				
 				node.plugin.graph.plugin = node.plugin;
 				node.plugin.graph.reg_listener(node.plugin.graph_event(node.plugin));
@@ -1231,66 +1235,6 @@ function Application() {
 		self.updateCanvas(true);
 	};
 	
-	this.onWindowResize = function()
-	{
-		var win = $(window);
-		var win_width = win.width();
-		var win_height = win.height();
-		var cont_h = E2.dom.controls.height();
-		var info_w = E2.dom.info.width();
-		var used_width = (self.condensed_view ? -15 : info_w) + E2.dom.webgl_canvas.width();
-		var used_height = cont_h + (self.condensed_view ? 20 : 250);
-		var c_width = (win_width - used_width) - 35;
-		var c_height = (win_height - used_height);
-		var col1_x = self.condensed_view ? 5 : info_w + 20;
-		var col2_x = col1_x + c_width + 7;
-		var col2_y = cont_h + c_height;
-		var col2_h = (win_height - (c_height + cont_h)) - 32;
-		var tabs_h = (win_height - (cont_h + E2.dom.webgl_canvas.height())) - 32;
-		var s_height = c_height;
-		
-		if(self.condensed_view)
-		{
-			E2.dom.dbg.css('display', 'none');
-		}
-		else
-		{
-			E2.dom.dbg.css({ 'position': 'absolute', 'left': col1_x - 3, 'top': col2_y + 7, 'width': c_width - 4, 'height': col2_h, display: 'inherit' });
-
-			if(self.collapse_log)
-				c_height += 230;
-		}
-		
-		E2.dom.breadcrumb.css({ 'position': 'absolute', 'left': col1_x + 8, 'top': cont_h + 16 });
-		E2.dom.canvas_parent.css({ 'position': 'absolute', 'left': col1_x });
-		E2.dom.webgl_canvas.css({ 'left':  col2_x });
-		E2.dom.tabs.css({ 'left':  col2_x, 'height': tabs_h });
-		E2.dom.graphs_list.css({ 'height': tabs_h - 120 });
-		E2.dom.snippets_list.css({ 'height': tabs_h - 100 });
-		E2.dom.canvas_parent.css({ 'width': c_width, 'height': c_height });
-		E2.dom.canvas.css({ 'width': c_width, 'height': c_height });
-		
-		var disp = self.condensed_view ? 'none' : 'inherit';
-		
-		if(self.condensed_view)
-		{
-			E2.dom.structure.css('display', 'none');
-			E2.dom.info.css('display', 'none');
-		}
-		else
-		{
-			E2.dom.structure.css({ 'height': s_height - 8, display: 'inherit' });
-			E2.dom.info.css({ 'position': 'absolute', 'left': 0, 'top': col2_y, 'height': col2_h, display: 'inherit' });
-		}
-		
-		// More hackery
-		E2.dom.canvas[0].width = E2.dom.canvas.width();
-		E2.dom.canvas[0].height = E2.dom.canvas.height();
-		
-		if(self.player)
-			self.updateCanvas(true);
-	};
-	
 	this.onKeyDown = function(e)
 	{
 				
@@ -1335,14 +1279,12 @@ function Application() {
 			if(e.keyCode === 66) // CTRL+b
 			{
 				self.condensed_view = !self.condensed_view;
-				self.onWindowResize();
 				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 				return;
 			}
 			else if(e.keyCode === 76) // CTRL+l
 			{
 				self.collapse_log = !self.collapse_log;
-				self.onWindowResize();
 				e.preventDefault();
 				return;
 			}
@@ -1379,10 +1321,16 @@ function Application() {
 	{
 		var s = self.player.state;
 		var cs = self.player.current_state;
-		
-		E2.dom.play.button(cs == s.PLAYING ? 'disable' : 'enable');
-		E2.dom.pause.button(cs == s.PAUSED || cs == s.STOPPED ? 'disable' : 'enable');
-		E2.dom.stop.button(cs == s.STOPPED ? 'disable' : 'enable');
+
+		if (cs !== s.PLAYING) {
+			E2.dom.play.removeClass('disabled')
+			E2.dom.pause.addClass('disabled')
+			E2.dom.stop.addClass('disabled')
+		} else {
+			E2.dom.play.addClass('disabled')
+			E2.dom.pause.removeClass('disabled')
+			E2.dom.stop.removeClass('disabled')
+		}
 	}
 	
 	this.onPlayClicked = function()
@@ -1592,7 +1540,7 @@ function Application() {
 		E2.dom.info.html('<b>Info view</b><br /><br />Hover over node instances or their slots to display their documentation here.');
 	};
 	
-    	document.addEventListener('mouseup', this.onMouseReleased);
+   	document.addEventListener('mouseup', this.onMouseReleased);
 	document.addEventListener('mousemove', this.onMouseMoved);
 	window.addEventListener('keydown', this.onKeyDown);
 	window.addEventListener('keyup', this.onKeyUp);
@@ -1620,15 +1568,6 @@ function Application() {
 		self.releaseHoverNode(false);
 	});
 	
-	window.addEventListener('resize', function(self) { return function()
-	{
-		// To avoid UI lag, we don't respond to window resize events directly.
-		// Instead, we set up a timer that gets superceeded for each (spurious) 
-		// resize event within a 100 ms window.
-		clearTimeout(self.resize_timer);
-		self.resize_timer = setTimeout(self.onWindowResize, 100);
-	}}(this));
-	
 	var add_button_events = function(btn)
 	{
 		// We have to forward key events that would otherwise get trapped when
@@ -1641,7 +1580,7 @@ function Application() {
 	add_button_events(E2.dom.pause);
 	add_button_events(E2.dom.stop);
 	add_button_events(E2.dom.save);
-	add_button_events(E2.dom.load);
+	add_button_events(E2.dom.open);
 	
 	// Ask user for confirmation on page unload
 	/*$(window).bind('beforeunload', function()
@@ -1649,15 +1588,16 @@ function Application() {
 		return 'Oh... Please don\'t go.';
 	});*/
 
-	$('#fullscreen').button().click(function()
+	$('button#fullscreen').click(function()
 	{
 		self.player.core.renderer.set_fullscreen(true);
 	});
 	
-	$('#help').button().click(function()
+	$('button#help').click(function()
 	{
 		window.open('help/introduction.html', 'Engi Help');
 	});
 	
 	this.onHideTooltip();
 }
+

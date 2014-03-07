@@ -81,12 +81,7 @@ Node.prototype.destroy = function()
 		graph.destroy_connection(pending[i]);
 	
 	if(this.plugin.e2_is_graph)
-	{
-		// The parent dom element migt already be gone if we've nested in a parent
-		// also being deleted.
-		if(this.plugin.graph.tree_node.parent.ul)
-			this.plugin.graph.tree_node.remove();
-	}
+		this.plugin.graph.tree_node.remove();
 	
 	this.destroy_ui();
 };
