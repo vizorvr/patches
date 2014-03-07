@@ -31,6 +31,10 @@ def compress_css(in_name, out_name):
 	# print cmd
 	os.system(cmd)
 
+# Make sure the output directory exists
+if not os.path.exists(build_dir):
+	os.system('mkdir ' + build_dir)
+	
 # Debugger statements will make uglify barf, Make sure we haven't left any behind by accident.
 print 'Checking for residual debugger statements...'
 
@@ -98,6 +102,10 @@ for ace_file in ace_files:
 	print('\t\t+ ' + ace_file)
 	compress(ace_file, build_dir + '/plugins/ace/' + os.path.basename(ace_file))
 
+print '\t\tToggle button style'
+os.system('mkdir ' + build_dir + '/plugins/toggle-button')
+compress_css(plugins_path + 'toggle-button/style.css', build_dir + '/plugins/toggle-button/style.css')
+
 print 'Compressing stylesheets...'
 css_path = src_dir + '/style/'
 os.mkdir(build_dir + '/style')
@@ -150,7 +158,7 @@ print '\tCopying help folder.'
 shutil.copytree(src_dir + '/help/', build_dir + '/help/')
 
 print '\tCopying index.html.'
-os.system('cp ' + src_dir + '/index.html ' + src_dir + '/player.html ' + src_dir + '/player_scene.json ' + build_dir)
+os.system('cp ' + src_dir + '/*.html ' + src_dir + '/player_scene.json ' + build_dir)
 
 print '\tCopying favicon.'
 os.system('cp ' + src_dir + '/favicon.ico ' + build_dir)
