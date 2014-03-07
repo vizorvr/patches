@@ -220,6 +220,8 @@ function Renderer(canvas_id, core)
 		this.context = null;
 	}
 	
+	if(!this.context)
+		window.location = 'no_webgl.html';
 	/*
 		this.context = WebGLDebugUtils.makeDebugContext(this.context);
 	*/
