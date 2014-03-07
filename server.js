@@ -31,6 +31,20 @@ function showFolderListing(reTest) {
 	}
 }
 
+function downloadHandler(req, res) {
+	var path = PROJECT + req.path.substring(3)
+
+	fs.exists(path, function(exists) {
+		if (!exists)
+			return res.send(404)
+
+		res.header('Content-Type', 'application/octet-stream')
+
+		fs.createReadStream(path)
+			.pipe(res)
+	})
+}
+
 var app = connect()
 
 	.use(connect.logger(':remote-addr :method :url :status :res[content-length] - :response-time ms'))
@@ -54,6 +68,8 @@ var app = connect()
 	})
 
 	.get('/data/graphs', showFolderListing(/\.json$/))
+	.get(/^\/dl\/data\/graphs\/[^\/]*\.json$/, downloadHandler)
+
 	.post(/\/data\/graphs\/.*/, function(req, res, next) {
 		var savePath = decodeURIComponent(req.path)
 			.replace(/graphs\/[^a-zA-Z0-9\ \.\-\_]/, '_')

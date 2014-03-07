@@ -1991,6 +1991,17 @@ function Application() {
 		});
 	};
 
+	this.onDownloadGraphClicked = function()
+	{
+		var url = '/dl' + URL_GRAPHS + E2.dom.filename_input.val();
+		var iframe = $('#dl-frame');
+
+		if (!iframe.length)
+			iframe = $('<iframe id="dl-frame">').hide().appendTo('body');
+
+		iframe.attr('src', url);
+	};
+
 	this.onShowTooltip = function(e)
 	{
 		if(self.in_drag)
@@ -2284,6 +2295,7 @@ E2.InitialiseEngi = function()
 	E2.dom.layout = $('#layout');
 	E2.dom.refresh = $('#refresh');
 	E2.dom.save = $('#save');
+	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.load = $('#load');
 	E2.dom.load_clipboard = $('#load-clipboard');
 	E2.dom.structure = $('#structure');
@@ -2376,8 +2388,9 @@ E2.InitialiseEngi = function()
 	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
 	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
 	E2.dom.load_clipboard.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClipboardClicked);
+	E2.dom.dl_graph.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onDownloadGraphClicked);
 
-	$('#tabs').tabs({ active: 0 });
+	$('#tabs').tabs({ active: 1 });
 	$('#content')[0].style.display = 'block';
 	
 	E2.app.onRefreshClicked();
