@@ -6,12 +6,12 @@ import ImageDraw
 import math
 import glob
 
-folder = 'style/icons'
+folder = 'browser/style/icons'
 
 images = []
 css_rules = {}
 
-with open('style/icons/source.css') as css_file:
+with open(folder + '/source.css') as css_file:
 	css_data = css_file.read()
 
 	for line in css_data.split('\n'):
@@ -124,13 +124,13 @@ def writeAtlas(images, atlasW, atlasH):
 	for i in images:
 		atlasImg.paste(i.img, [int(i.img.destRect.xmin), int(i.img.destRect.ymin), int(i.img.destRect.xmax), int(i.img.destRect.ymax)])
 	
-	atlasImg.save('build/style/icons/icons.png')
+	atlasImg.save('browser/build/style/icons/icons.png')
 	atlasImg = None
 	
-	os.system('tools/imgopt/imgopt build/style/icons/icons.png')
+	os.system('tools/imgopt/imgopt browser/build/style/icons/icons.png')
 
 def writeCSS(images, atlasW, atlasH):
-	css = open('build/style/icons/style.css', 'w')
+	css = open('browser/build/style/icons/style.css', 'w')
 	
 	#    css.write('  padding-left: ' + str(i.offset[0]) + 'px;\n')
 	#    css.write('  padding-top: ' + str(i.offset[1]) + 'px;\n')
@@ -257,16 +257,4 @@ atlasH = int(atlasH+1)
 print('AtlasDimensions: ' + str(atlasW) + 'x' + str(atlasH) + '  :  ' + str(int(100.0 * (atlasW * atlasH)/totalAreaUncropped)) + '% of original')
 
 writeAtlas(images, atlasW, atlasH)
-
-"""for i in images:
-	ofs = [i.offset[0], i.offset[1]]
-	
-	if ofs[0] != 0:
-		ofs[0] -= 1
-	
-	if ofs[1] != 0:
-		ofs[1] -= 1
-	
-	i.offset = (ofs[0], ofs[1])"""
-
 writeCSS(images, atlasW, atlasH)
