@@ -32,7 +32,7 @@ function showFolderListing(reTest) {
 }
 
 function downloadHandler(req, res) {
-	var path = PROJECT + req.path.substring(3)
+	var path = PROJECT + decodeURIComponent(req.path.substring(3))
 
 	fs.exists(path, function(exists) {
 		if (!exists)
