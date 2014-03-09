@@ -213,7 +213,12 @@ function Renderer(canvas_id, core)
 	
 	try
 	{
-		this.context = this.canvas[0].getContext('experimental-webgl', { alpha: false, preserveDrawingBuffer: false, antialias: true });
+		var ctx_opts = { alpha: false, preserveDrawingBuffer: false, antialias: true };
+		
+		this.context = this.canvas[0].getContext('webgl', ctx_opts);
+		
+		if(!this.context)
+			this.context = this.canvas[0].getContext('experimental-webgl', ctx_opts);
 	}
 	catch(e)
 	{
@@ -222,9 +227,8 @@ function Renderer(canvas_id, core)
 	
 	if(!this.context)
 		window.location = 'no_webgl.html';
-	/*
-		this.context = WebGLDebugUtils.makeDebugContext(this.context);
-	*/
+	
+	// this.context = WebGLDebugUtils.makeDebugContext(this.context);
 	
 	this.texture_cache = new TextureCache(this.context, core);
 	this.shader_cache = new ShaderCache(this.context);
