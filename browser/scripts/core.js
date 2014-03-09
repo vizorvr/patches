@@ -2405,6 +2405,7 @@ function load_location_hash() {
 	console.log('loading graph from location hash:', graphName)
 	E2.dom.filename_input.val(graphName);
 	E2.app.onStopClicked();
+	E2.app.player.on_update();
 	E2.app.player.load_from_url(URL_GRAPHS+graphName);
 	E2.app.updateCanvas(false);
 }
