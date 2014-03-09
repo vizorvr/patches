@@ -117,6 +117,10 @@
 .icon-material_z_buffer_modulator { background: url('material-z-buffer-modulator.png'); }
 .icon-matrix_display { background: url('matrix-display.png'); }
 .icon-matrix_clone_modulator { background: url('clone-modulator.png'); }
+.icon-member_to_bool_modulator { background: url('toggle-button.png'); }
+.icon-member_to_float_modulator { background: url('const-float-generator.png'); }
+.icon-member_to_object_modulator { background: url('member-to-object-modulator.png'); }
+.icon-member_to_string_modulator { background: url('text-display.png'); }
 .icon-member_to_typed_array_modulator { background: url('array-generator.png'); }
 .icon-get_matrix_modulator { background: url('array-get-modulator.png'); }
 .icon-set_matrix_modulator { background: url('array-set-modulator.png'); }
