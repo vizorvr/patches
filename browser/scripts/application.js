@@ -1460,35 +1460,68 @@ function Application() {
 		self.updateCanvas(true);
 	};
 
-	this.onRefreshClicked = function() {
-		return render_graph_list(URL_GRAPHS, E2.dom.filename_input);
+	this.onOpenClicked = function()
+	{
+		$.get(URL_GRAPHS, function(files)
+		{
+			return new FileSelectControl()
+				.buttons({
+					'Download': function(file)
+					{
+						var url = '/dl' + URL_GRAPHS + file;
+						var iframe = $('#dl-frame');
+						if (!iframe.length)
+							iframe = $('<iframe id="dl-frame">').hide().appendTo('body');
+						iframe.attr('src', url);
+					},
+					'Upload': function() {},
+					'Cancel': function() {},
+					'Open': function(file)
+					{
+						window.location.hash = '#' + URL_GRAPHS + file;
+					}
+				})
+				.files(files)
+				.modal()
+		})
 	};
 
 	this.onSaveClicked = function()
 	{
-		var filename = E2.dom.filename_input.val();
+		$.get(URL_GRAPHS, function(files)
+		{
+			var wh = window.location.hash
 
-		if (!filename)
-			return alert('Please enter a filename')
+			return new FileSelectControl()
+				.buttons({
+					'Cancel': function() {},
+					'Save': function(filename) {
+						if (!filename)
+							return alert('Please enter a filename')
 
-		if (!/\.json$/.test(filename))
-			filename = filename + '.json'
+						if (!/\.json$/.test(filename))
+							filename = filename + '.json'
 
-		var ser = self.player.core.serialise();
+						var ser = self.player.core.serialise();
 
-		$.ajax({
-			type: 'POST',
-			url: URL_GRAPHS + filename,
-			data: ser,
-			dataType: 'json',
-			success: function() {
-				self.onRefreshClicked();
-				window.location.hash = '#' + URL_GRAPHS + filename;
-			},
-			error: function(_x, _t, err) {
-				alert('error '+err);
-			}
-		});
+						$.ajax({
+							type: 'POST',
+							url: URL_GRAPHS + filename,
+							data: ser,
+							dataType: 'json',
+							success: function() {
+								window.location.hash = '#' + URL_GRAPHS + filename;
+							},
+							error: function(_x, _t, err) {
+								alert('error '+err);
+							}
+						});
+					}
+				})
+				.selected(wh.substring(wh.lastIndexOf('/') + 1))
+				.files(files)
+				.modal()
+		})
 	};
 	
 	this.onLoadClicked = function()
@@ -1503,17 +1536,6 @@ function Application() {
 		$.get(url, function(d) {
 			self.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
 		});
-	};
-
-	this.onDownloadGraphClicked = function()
-	{
-		var url = '/dl' + URL_GRAPHS + E2.dom.filename_input.val();
-		var iframe = $('#dl-frame');
-
-		if (!iframe.length)
-			iframe = $('<iframe id="dl-frame">').hide().appendTo('body');
-
-		iframe.attr('src', url);
 	};
 
 	this.onShowTooltip = function(e)

@@ -514,15 +514,13 @@ E2.InitialiseEngi = function()
 
 	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, tree_root);
 
-	E2.dom.save.click(E2.app.onSavelicked);
+	E2.dom.save.click(E2.app.onSaveClicked);
 	E2.dom.open.click(E2.app.onOpenClicked);
 	E2.dom.layout.click(E2.app.onLayoutClicked);
 
 	E2.dom.play.click(E2.app.onPlayClicked);
 	E2.dom.pause.click(E2.app.onPauseClicked);
 	E2.dom.stop.click(E2.app.onStopClicked);
-
-	E2.app.onRefreshClicked();
 
 	setup_location_hash();
 }
