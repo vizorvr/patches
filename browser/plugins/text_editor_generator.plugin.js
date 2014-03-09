@@ -59,6 +59,7 @@ E2.p.prototype.open_editor = function(self) { return function(e)
 			return false;
 		
 		self.state.text = editor.getValue();
+		self.updated = true;
 		diag.dialog('close');
 	}};
 	
