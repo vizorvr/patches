@@ -510,9 +510,13 @@ E2.InitialiseEngi = function()
 		}
 	});
 
-	var tree_root = E2.dom.structure.dynatree('getRoot');
+	var root_node = E2.dom.structure.dynatree('getRoot');
 
-	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, tree_root);
+	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, root_node.addChild({
+		title: 'Root',
+		isFolder: true,
+		expand: true
+	}));
 
 	E2.dom.save.click(E2.app.onSaveClicked);
 	E2.dom.open.click(E2.app.onOpenClicked);
