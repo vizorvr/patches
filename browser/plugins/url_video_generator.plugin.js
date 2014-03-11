@@ -1,3 +1,5 @@
+var URL_VIDEO_ROOT = 'data/video/';
+
 E2.p = E2.plugins["url_video_generator"] = function(core, node)
 {
 	this.desc = 'Load a Ogg/Theora video from an URL.';
@@ -22,45 +24,24 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.create_ui = function()
 {
-	var inp = $('<input id="url" type="button" value="Source" title="No video selected." />');
-	
-	inp.click(function(self, inp) { return function(e) 
-	{
-		var url = self.state.url;
-		
-		if(url === '')
-			url = 'data/video/';
-		
-		var diag = make('div');
-		var url_inp = $('<input type="input" value="' + url + '" />'); 
-		
-		url_inp.css({
-			'width': '410px',
-			'border': '1px solid #999'
-		});
-		
-		diag.append(url_inp);
-		
-		var done_func = function(self, url_inp, diag, inp) { return function(e)
-		{
-			self.state.url = url_inp.val();
-			self.state.url = self.state.url === 'data/video/' ? '' : self.state.url;
-			self.state_changed(null);
-			self.state_changed(inp);
-			self.updated = true;
+	var inp = $('<input class="url" type="button" value="Source" title="No video selected." />');
+	var self = this;
 
-			if(self.state.url === '')
-				inp.attr('title', 'No video selected.');
-		}}(self, url_inp, diag, inp);
-		
-		var open_func = function(url_inp) { return function()
-		{
-			url_inp.focus().val(url_inp.val());
-		}}(url_inp);
-		
-		self.core.create_dialog(diag, 'Select video URL.', 445, 155, done_func, open_func);
-	}}(this, inp));
-	
+	inp.click(function()
+	{
+		FileSelectControl
+			.createForUrl(URL_VIDEO_ROOT, self.state.url)
+			.onChange(function(v)
+			{
+				if (v.indexOf('://') === -1)
+					v = URL_VIDEO_ROOT + v
+				self.state.url = v;
+				self.state_changed(null);
+				self.state_changed(inp);
+				self.updated = true;
+			})
+	})
+
 	return inp;
 };
 

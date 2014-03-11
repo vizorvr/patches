@@ -24,39 +24,22 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.create_ui = function()
 {
-	var self = this
-
-	var inp = $('<input id="url" type="button" value="Source" title="No texture selected." />');
+	var inp = $('<input class="url" type="button" value="Source" title="No texture selected." />');
+	var self = this;
 	
 	inp.click(function()
 	{
-		$.get(URL_TEXTURES_ROOT, function(files)
-		{
-			files = files.map(function(n) {
-				return {
-					name: URL_TEXTURES_ROOT + n
-				}
+		FileSelectControl
+			.createForUrl(URL_TEXTURES_ROOT, self.state.url)
+			.onChange(function(v)
+			{
+				if (v.indexOf('://') === -1)
+					v = URL_TEXTURES_ROOT + v
+				self.state.url = v;
+				self.state_changed(null);
+				self.state_changed(inp);
+				self.updated = true;
 			})
-
-			new FileSelectControl()
-				.buttons({
-					'Download': function(file) {},
-					'Upload': function() {},
-					'Cancel': function() {
-						this.cancel();
-					},
-					'Open': function() {}
-				})
-				.files(files)
-				.selected(self.state.url)
-				.onChange(function(v) {
-					self.state.url = v;
-					self.state_changed(null);
-					self.state_changed(inp);
-					self.updated = true;
-				})
-				.modal()
-		})
 	})
 
 	return inp;

@@ -1462,28 +1462,11 @@ function Application() {
 
 	this.onOpenClicked = function()
 	{
-		$.get(URL_GRAPHS, function(files)
-		{
-			return new FileSelectControl()
-				.buttons({
-					'Download': function(file)
-					{
-						var url = '/dl' + URL_GRAPHS + file;
-						var iframe = $('#dl-frame');
-						if (!iframe.length)
-							iframe = $('<iframe id="dl-frame">').hide().appendTo('body');
-						iframe.attr('src', url);
-					},
-					'Upload': function() {},
-					'Cancel': function() {},
-					'Open': function(file)
-					{
-						window.location.hash = '#' + URL_GRAPHS + file;
-					}
-				})
-				.files(files)
-				.modal()
-		})
+		FileSelectControl
+			.createForUrl(URL_GRAPHS, null, 'Open', function(file)
+			{
+				window.location.hash = '#' + URL_GRAPHS + file;
+			})
 	};
 
 	this.onSaveClicked = function()

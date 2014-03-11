@@ -100,12 +100,22 @@ FileSelectControl.prototype._render = function() {
 			el.empty().remove()
 		});
 
+	$('.modal', el)
+		.on('shown.bs.modal', function (e) {
+			if (!self._selected)
+				return;
+
+			$('table', el).scrollTop(0)
+				.scrollTop(
+					self._selectedEl.position().top
+					- self._selectedEl.height()
+					* 10)
+		});
+
 	el.bind('keydown', this._onKeyPress.bind(this))
 		.appendTo('body')
 		.attr("tabindex", -1)
 		.focus();
-
-	this._scroll(this._selectedEl.offset() ? this._selectedEl.offset().top : 0);
 
 	return this
 }
@@ -133,7 +143,7 @@ FileSelectControl.prototype._onKeyPress = function(e) {
 
 FileSelectControl.prototype._scroll = function(amt) {
 	var tab = $('table', this._el)
-	tab.scrollTop(tab.scrollTop() + amt * 20)
+	tab.scrollTop(tab.scrollTop() + amt * this._selectedEl.height())
 }
 
 FileSelectControl.prototype._onChange = function() {
@@ -164,4 +174,40 @@ FileSelectControl.prototype.close = function() {
 
 if (typeof(exports) !== 'undefined')
 	exports.FileSelectControl = FileSelectControl;
+
+
+FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
+	var ctl = new FileSelectControl()
+
+	okButton = okButton || 'Ok'
+	okFn = okFn || function() {}
+
+	if (selected && selected.indexOf('://') === -1)
+		selected = selected.substring(selected.lastIndexOf('/') + 1)
+
+	$.get(path, function(files)
+	{
+		var buttons = {
+			'Download': function(file) {
+				var url = '/dl/' + path + file;
+				var iframe = $('#dl-frame');
+				if (!iframe.length)
+					iframe = $('<iframe id="dl-frame">').hide().appendTo('body');
+				iframe.attr('src', url);
+			},
+			'Upload': function() {},
+			'Cancel': function() {}
+		};
+
+		buttons[okButton] = okFn;
+
+		ctl
+		.buttons(buttons)
+		.files(files)
+		.selected(selected)
+		.modal()
+	})
+
+	return ctl
+}
 

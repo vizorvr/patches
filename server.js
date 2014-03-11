@@ -21,8 +21,10 @@ console.log('URL: http://'+listenHost+':'+listenPort)
 function showFolderListing(reTest) {
 	return function(req, res, next) {
 		fs.readdir(PROJECT + req.path, function(err, files) {
-			if (err)
-				return next(err)
+			if (err) {
+				console.warn(err.stack)
+				files = []
+			}
 
 			res.send(files.filter(function(file) {
 				return reTest.test(file)
@@ -58,9 +60,9 @@ var app = express()
 	.use(express['static'](ENGI, { maxAge: 60 * 60 * 24 * 1000 }))
 	.use(express['static'](PROJECT, { maxAge: 0 }))
 
-	.use('/node_modules', express['static'](__dirname+'/node_modules', { maxAge: 60 * 60 * 24 * 1000 }))
-
-	.get('/data/textures', showFolderListing(/^[^.].*$/))
+	.use('/node_modules',
+		express['static'](__dirname+'/node_modules',
+			{ maxAge: 60 * 60 * 24 * 1000 }))
 
 	// set no-cache headers for the rest
 	.use(function(req, res, next) {
@@ -69,10 +71,10 @@ var app = express()
 		next()
 	})
 
-	.get('/data/graphs', showFolderListing(/\.json$/))
-	.get(/^\/dl\/data\/graphs\/[^\/]*\.json$/, downloadHandler)
+	.get(/^\/data\/(graphs|textures|audio|video|jsons)\/$/, showFolderListing(/^[^.].*$/))
+	.get(/^\/dl\/data\/(graphs|textures|audio|video|jsons)\/[^\/]*$/, downloadHandler)
 
-	.post(/\/data\/graphs\/.*/, function(req, res, next) {
+	.post(/^\/data\/graphs\/[^\/]*\.json$/, function(req, res, next) {
 		var savePath = decodeURIComponent(req.path)
 			.replace(/graphs\/[^a-zA-Z0-9\ \.\-\_]/, '_')
 
