@@ -1801,12 +1801,6 @@ function Application() {
 			self.releaseHoverSlot();
 			self.releaseHoverNode(false);
 		}
-		else if(e.keyCode === 27)
-		{
-			var r = self.player.core.renderer;
-			
-			r.set_fullscreen(!r.fullscreen);
-		}
 	};
 
 	this.changeControlState = function()
