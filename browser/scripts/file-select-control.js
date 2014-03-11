@@ -1,19 +1,6 @@
-function isScrolledIntoView(elem, inside)
-{
-    var docViewTop = $(inside).scrollTop();
-    var docViewBottom = docViewTop + $(inside).height();
-
-    var elemTop = $(elem).offset().top;
-    var elemBottom = elemTop + $(elem).height();
-
-    var x = ((elemBottom >= docViewTop) && (elemTop <= docViewBottom)
-      && (elemBottom <= docViewBottom) &&  (elemTop >= docViewTop) );
-    console.log('isScrolledIntoView', x, $(elem).is('visible'))
-    return x
-}
-
-
-function FileSelectControl() {
+function FileSelectControl(handlebars) {
+	this._handlebars = handlebars || window.Handlebars
+	this._files = []
 	this._cb = function() {}
 	this._buttons = {
 		'Cancel': this.cancel.bind(this),
@@ -58,7 +45,7 @@ FileSelectControl.prototype._render = function() {
 	var self = this;
 
 	var	templateSource = $("#file-select-template").html();
-	var template = Handlebars.compile(templateSource);
+	var template = this._handlebars.compile(templateSource);
 
 	var el = $('<div class="file-select-control">')
 	this._el = el
@@ -95,11 +82,13 @@ FileSelectControl.prototype._render = function() {
 	this._inputEl = $('input', this._el)
 	this._selectedEl = $('tr.selected', this._el)
 
-	$('.file-row', el).click(function(e) {
+	function _onClick(e) {
 		self._onSelect($(e.target).closest('tr'))
-	})
+	}
 
+	$('.file-row', el).click(_onClick)
 	$('.file-row', el).dblclick(function(e) {
+		_onClick(e)
 		$('button:last', el).click()
 	})
 
@@ -172,4 +161,7 @@ FileSelectControl.prototype.cancel = function() {
 FileSelectControl.prototype.close = function() {
 	$('.modal', this._el).modal('hide')
 }
+
+if (typeof(exports) !== 'undefined')
+	exports.FileSelectControl = FileSelectControl;
 

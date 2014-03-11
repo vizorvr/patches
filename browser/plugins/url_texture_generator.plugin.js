@@ -42,7 +42,9 @@ E2.p.prototype.create_ui = function()
 				.buttons({
 					'Download': function(file) {},
 					'Upload': function() {},
-					'Cancel': function() {},
+					'Cancel': function() {
+						this.cancel();
+					},
 					'Open': function() {}
 				})
 				.files(files)

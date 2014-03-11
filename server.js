@@ -1,6 +1,6 @@
 "use strict";
 
-var connect = require('express')
+var express = require('express')
 var argv = require('minimist')(process.argv.slice(2));
 var fs = require('fs')
 
@@ -45,9 +45,9 @@ function downloadHandler(req, res) {
 	})
 }
 
-var app = connect()
+var app = express()
 
-	.use(connect.logger(':remote-addr :method :url :status :res[content-length] - :response-time ms'))
+	.use(express.logger(':remote-addr :method :url :status :res[content-length] - :response-time ms'))
 
 	.use(function(req, res, next) {
 		if (req.url.indexOf('?_') > -1)
@@ -55,8 +55,10 @@ var app = connect()
 		next()
 	})
 
-	.use(connect['static'](ENGI, { maxAge: 60 * 60 * 24 * 1000 }))
-	.use(connect['static'](PROJECT, { maxAge: 0 }))
+	.use(express['static'](ENGI, { maxAge: 60 * 60 * 24 * 1000 }))
+	.use(express['static'](PROJECT, { maxAge: 0 }))
+
+	.use('/node_modules', express['static'](__dirname+'/node_modules', { maxAge: 60 * 60 * 24 * 1000 }))
 
 	.get('/data/textures', showFolderListing(/^[^.].*$/))
 
@@ -87,6 +89,6 @@ var app = connect()
 		req.pipe(stream)
 	})
 
-	.use(connect.errorHandler())
+	.use(express.errorHandler())
 
 	.listen(listenPort, listenHost)
