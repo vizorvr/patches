@@ -46,8 +46,5 @@ E2.p.prototype.update_output = function(slot)
 E2.p.prototype.state_changed = function(ui)
 {
 	if(ui)
-	{
 		this.node.ui.dom.addClass('proxy');
-		this.data = this.core.get_default_value(this.node.dyn_outputs[0].dt);
-	}
 };

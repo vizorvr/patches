@@ -188,6 +188,7 @@ function Core(app) {
 		OBJECT: { id: 18, name: 'Object' }
 	};
 	
+	this.asset_tracker = new AssetTracker();
 	this.renderer = new Renderer('#webgl-canvas', this);
 	this.active_graph = this.root_graph = null;
 	this.active_graph_dirty = true;
@@ -197,7 +198,6 @@ function Core(app) {
 	this.graph_uid = 0;
 	this.app = app;
 	this.plugin_mgr = new PluginManager(this, 'plugins', E2.app ? E2.app.onPluginInstantiated : null);
-	this.asset_tracker = new AssetTracker();
 	this.registers = new Registers(this);
 	this.aux_scripts = {};
 	this.aux_styles = {};
