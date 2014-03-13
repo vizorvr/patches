@@ -529,6 +529,9 @@ E2.p.prototype.update_state = function()
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		}
 		
+		if(this.inputs.length === 0 && this.outputs.length === 0)
+			this.graph.reset();
+		
 		if(this.graph.update() && this.graph === E2.app.player.core.active_graph)
 			E2.app.updateCanvas(false);
 
