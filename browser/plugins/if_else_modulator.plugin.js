@@ -4,21 +4,28 @@ E2.p = E2.plugins["if_else_modulator"] = function(core, node)
 	
 	this.input_slots = [ 
 		{ name: 'condition', dt: core.datatypes.BOOL, desc: 'Send true to route <b>true value</b> to the output and false to route <b>false value</b>.', def: 'False' },
-		{ name: 'true value', dt: core.datatypes.FLOAT, desc: 'Value to be send to output if <b>condition</b> is true', def: 0 } ,
-		{ name: 'false value', dt: core.datatypes.FLOAT, desc: 'Value to be send to output if <b>condition</b> is false', def: 0  }
+		{ name: 'true value', dt: core.datatypes.ANY, desc: 'Value to be send to output if <b>condition</b> is true', def: null } ,
+		{ name: 'false value', dt: core.datatypes.ANY, desc: 'Value to be send to output if <b>condition</b> is false', def: null  }
 	];
 	
 	this.output_slots = [
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Emits <b>true value</b> if <b>condition</b> is true and <b>false value</b> otherwise.', def: 'False value' }
+		{ name: 'value', dt: core.datatypes.ANY, desc: 'Emits <b>true value</b> if <b>condition</b> is true and <b>false value</b> otherwise.', def: 'False value' }
 	];
+	
+	this.lsg = new LinkedSlotGroup(core, node, [this.input_slots[1], this.input_slots[2]], [this.output_slots[0]]);
 };
 
 E2.p.prototype.reset = function()
 {
 	this.condition = false;
-	this.yes = 0.0;
-	this.no = 0.0;
+	this.yes = this.no = null;
 	this.upd_state = [false, false, false]
+};
+
+E2.p.prototype.connection_changed = function(on, conn, slot)
+{
+	if(this.lsg.connection_changed(on, conn, slot))
+		this.yes = this.no = this.lsg.core.get_default_value(this.lsg.dt);
 };
 
 E2.p.prototype.update_input = function(slot, data)

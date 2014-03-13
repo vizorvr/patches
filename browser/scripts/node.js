@@ -533,3 +533,45 @@ Node.prototype.initialise = function()
 		this.plugin.graph.initialise();
 };
 
+function LinkedSlotGroup(core, parent_node, inputs, outputs)
+{
+	this.core = core;
+	this.node = parent_node;
+	this.inputs = inputs;
+	this.outputs = outputs;
+	this.n_connected = 0;
+	this.dt = core.datatypes.ALL;
+}
+
+LinkedSlotGroup.prototype.set_dt = function(dt)
+{
+	this.dt = dt;
+	
+	for(var i = 0, len = this.inputs.length; i < len; i++)
+		this.inputs[i].dt = dt;
+
+	for(var i = 0, len = this.outputs.length; i < len; i++)
+		this.outputs[i].dt = dt;
+};
+
+LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot)
+{
+	if(!(slot in this.inputs) && !(slot in this.outputs))
+		return;
+		
+	this.n_connected += on ? 1 : -1;
+	
+	if(on && this.n_connected === 1)
+	{
+		this.set_dt((slot.type === E2.slot_type.input) ? conn.src_slot.dt : conn.dst_slot.dt);
+		return true;
+	}
+	
+	if(!on && this.n_connected === 0)
+	{
+		this.set_dt(this.core.datatypes.ANY);
+		return true;
+	}
+	
+	return false;
+};

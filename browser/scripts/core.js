@@ -108,17 +108,6 @@ SnippetManager.prototype.register_snippet = function(name, url)
 	this.listbox.append('<option value="' + url + '">' + name + '</option>');
 };
 
-function LinkedSlotGroup(node, input_slot_ids, output_slot_ids)
-{
-	this.node = node;
-	this.input_slot_ids = input_slot_ids;
-	this.output_slot_ids = output_slot_ids;
-}
-
-LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot)
-{
-};
-
 function AssetTracker()
 {
 	this.started = 0;
@@ -332,7 +321,7 @@ function Core(app) {
 		else if(dt === dts.OBJECT)
 			return {};
 		
-		// Shaders, textures, scenes, light and delegates legally default to null.
+		// Shaders, textures, scenes, light and delegates and ALL legally defaults to null.
 		return null;
 	};
 	
