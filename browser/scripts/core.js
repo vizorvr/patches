@@ -1911,8 +1911,8 @@ function Application() {
 			var d = n.ui.dom[0];
 			var dt = data[i];
 			
-			n.x = Math.floor(dt.x) - mx;
-			n.y = Math.floor(dt.y) - my;
+			n.x = Math.floor((Math.floor(dt.x) - mx) / 5) * 5;
+			n.y = Math.floor((Math.floor(dt.y) - my) / 5) * 5;
 			
 			d.style.left = '' + n.x + 'px';
 			d.style.top = '' + n.y + 'px';
