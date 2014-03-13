@@ -464,7 +464,15 @@ Node.prototype.deserialise = function(guid, d)
 	
 	this.title = d.title ? d.title : null;
 	
-	this.set_plugin(E2.app.player.core.plugin_mgr.create(d.plugin, this));
+	var plg = E2.app.player.core.plugin_mgr.create(d.plugin, this);
+	
+	if(plg === null)
+	{
+		msg('ERROR: Failed to instance node of type \'' + d.plugin + '\'.');
+		return false;
+	}
+	
+	this.set_plugin(plg);
 	
 	if(this.plugin.e2_is_graph)
 	{
@@ -514,6 +522,8 @@ Node.prototype.deserialise = function(guid, d)
 			patch_slot(this.dyn_outputs, E2.slot_type.output);
 		}
 	}
+	
+	return true;
 };
 
 Node.prototype.patch_up = function(graphs)
