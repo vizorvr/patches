@@ -381,6 +381,7 @@ E2.p.prototype.update_state = function()
 		for(var cnt = this.first; cnt < this.last; cnt += this.step)
 		{
 			this.graph.registers.write('index', cnt);
+			this.graph.reset();
 			
 			if(this.graph.update())
 				updated = true;

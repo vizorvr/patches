@@ -19,7 +19,7 @@ E2.p.prototype.reset = function()
 {
 	this.condition = false;
 	this.yes = this.no = null;
-	this.upd_state = [false, false, false]
+	this.upd_state = [false, false, false];
 };
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
