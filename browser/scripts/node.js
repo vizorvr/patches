@@ -468,7 +468,7 @@ Node.prototype.deserialise = function(guid, d)
 	
 	if(plg === null)
 	{
-		msg('ERROR: Failed to instance node of type \'' + d.plugin + '\'.');
+		msg('ERROR: Failed to instance node of type \'' + d.plugin + '\' with title \'' + this.title + '\' and UID = ' + this.uid + '.');
 		return false;
 	}
 	
