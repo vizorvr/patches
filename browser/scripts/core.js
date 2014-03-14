@@ -1503,7 +1503,8 @@ function Application() {
 			node.x = Math.floor((node.x - d.x1) + bw2);
 			node.y = Math.floor((node.y - d.y1) + bh2);
 
-			n.deserialise(ag.uid, node);
+			if(!n.deserialise(ag.uid, node))
+				continue;
 			
 			n_lut[n.uid] = new_uid;
 			n.uid = new_uid;
