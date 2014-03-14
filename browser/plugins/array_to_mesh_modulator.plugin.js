@@ -42,8 +42,6 @@ E2.p.prototype.update_vertex_buffer = function(v_name, v_type, data)
 	}
 	else
 		vbs[v_name] = null;
-	
-	return data.length / VertexBuffer.type_stride[v_type];
 };
 
 E2.p.prototype.update_input = function(slot, data)
