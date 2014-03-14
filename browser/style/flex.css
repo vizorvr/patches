@@ -49,6 +49,8 @@
 	min-width: 100px;
 	max-width: 160px;
 	height: 100%;
+	overflow: auto;
+	font-size: 12px;
 }
 
 .right-pane {
