@@ -1,145 +1,58 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<head id="head">
-		<title>ENGI&#8482;</title>
-		<link href="style/main.css" rel="Stylesheet" type="text/css" />
-		<link href="style/icons/style.css" rel="Stylesheet" type="text/css" />
-		<link href="style/smoothness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" type="text/css"  />
-		<link href="style/skin/ui.dynatree.css" rel="stylesheet" type="text/css">
+<html>
+<head>
+	<title>Engi</title>
+</head>
+<link href="help/style.css" rel="stylesheet"></link>
+<body>
 
-		<script type="text/javascript" src="vendor/jquery-1.7.js"></script>
-		<script type="text/javascript" src="vendor/jquery.event.fastfix.js"></script>
-		<script type="text/javascript" src="vendor/jquery-ui.js"></script>
-		<script type="text/javascript" src="vendor/jquery.dynatree.js"></script>
-		<script type="text/javascript" src="vendor/jquery.mousewheel.js"></script>
-		<script type="text/javascript" src="vendor/gl-matrix.js"></script>
-		<script type="text/javascript" src="vendor/webgl-debug.js"></script>
-		<script type="text/javascript" src="vendor/handlebars-v1.3.0.js"></script>
+<div id="container" style="width:850px">
+<img src="help/intro/screenshot3.jpg"><br>
+<h1>Engi is a dataflow programming editor using HTML5/WebGL  </h1>
+It currently has approximately 200 plugins that you can use to create logic, 3D graphics, cameras, materials, lights etc. You can play video and audio, write custom shaders, and a do a whole lot more. It's written in javascript with high performance and speed in mind. If you want to know more before jumping in, see below or read more in the <a href="help/introduction.html" target="_blank">introduction</a>. It works in the browser so if you just want to get started, you can use it right here.
+<br><br>
+<a href="editor.html" class="button">Try it now</a>
+<br>
+<br>
+Engi is open source and licensed under the MIT license. The source code is released at <a href="https://github.com/engijs/engi" target="_blank">https://github.com/engijs/engi</a> You can download Engi from github and run it locally on your own computer.<br>
+<br>
+Follow us on twitter <a href="http://twitter.com/engidevops" target="_blank">@EngiDevOps</a> or on GitHub.
+<br><br>
 
-		<script type="text/javascript" src="scripts/util.js"></script>
-		<script type="text/javascript" src="scripts/draggable.js"></script>
-		<script type="text/javascript" src="scripts/context-menu.js"></script>
-		<script type="text/javascript" src="scripts/renderer.js"></script>
-		<script type="text/javascript" src="scripts/ui.js"></script>
+<h3>Example screenshot of a graph:</h3>
+<br>
 
-		<script type="text/javascript" src="scripts/graph-list.js"></script>
-		<script type="text/javascript" src="scripts/plugin-group.js"></script>
-		<script type="text/javascript" src="scripts/plugin-manager.js"></script>
-		<script type="text/javascript" src="scripts/connection.js"></script>
-		<script type="text/javascript" src="scripts/graph.js"></script>
-		<script type="text/javascript" src="scripts/node.js"></script>
-		<script type="text/javascript" src="scripts/node-ui.js"></script>
-		<script type="text/javascript" src="scripts/registers.js"></script>
-		<script type="text/javascript" src="scripts/core.js"></script>
+<img src="help/intro/screenshot2.jpg"><br>
+<br><br>
+<table>
+	<tr>
+		<td width="400">
+<h3>Editing graphs:</h3>
+<br>
+<span class="highlight">Right click</span> on canvas to insert plugins.<br><br>
+Drag connections from inputs and outputs<br><br>
+Press <span class="highlight">Play</span> to run your graph.<br><br>
+Hold <span class="highlight">shift</span> to delete plugins and connections.<br><br>
+<span class="highlight">Double click</span> to add Snippets.<br><br>
+<span class="highlight">Click and drag</span> on the canvas to select plugins.<br><br>
+Collapse plugins by clicking on their icon.
+<br>
+<br>
+		</td>
+		<td width="400" valign="top">
+<h3>Hotkeys:</h3>
+<br>
+<span class="highlight">CTRL-C, CTRL-V, CTRL-X</span> Copy, Paste, Cut<br>
+<br>
+<span class="highlight">CTRL-A</span> Select all<br>
+<br>
+<span class="highlight">CTRL-B</span> Hide/show Graph tree and info view<br>
+<br>
+<span class="highlight">CTRL-L</span> Hide/show console.<br>
+<br>
+<span class="highlight">Space</span> Play/Stop<br>
+<br>
+<br>
+		</td>
 
-		<script id="file-list-entry-template" type="text/x-handlebars-template">
-			{{#each files}}
-				<li class="file-list-entry">{{this}}</li>
-			{{/each}}
-		</script>
-
-		<script id="texture-image-select-template" type="text/x-handlebars-template">
-			<div>
-				<form style="height: 100%">
-					<select id="texture-image-select" size="20">
-						{{#each images}}
-							<option 
-								{{#if selected}}
-									selected
-								{{/if}}
-								value="{{url}}">
-							{{url}}
-							</option>
-						{{/each}}
-					</select>
-				</form>
-
-				<label for="texture-image-url">URL</label>
-				<input
-					id="texture-image-url"
-					size="40"
-					type="text"
-					name="texture-image-url"
-					value=""
-					placeholder="Enter URL"/>
-			</div>
-		</script>
-	</head>
-	<body>
-		<noscript>
-			<div class="centered notification">
-				<div style="float: left; display: table-cell; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
-				<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
-			</div>
-		</noscript>
-		<div id="content">
-			<div id="controls" class="centered">
-				<a href="http://www.engijs.org" target="_blank" style="color: #888; text-decoration: none;"><div id="logo">ENGI&#8482;</div></a>
-				<button id="play">Play</button>
-				<button id="pause">Pause</button>
-				<button id="stop">Stop</button>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<button id="layout">Layout</button>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<button id="fullscreen">Full screen</button>
-				<button id="help">Help</button>
-				<div id="load_spinner"></div>
-			</div>
-			<div id="main_layout" class="centered">
-				<div id="structure">
-				</div>
-				<div id="canvas_parent">
-					<canvas id="canvas" width="940" height="620"></canvas>
-				</div>
-				<div id="breadcrumb"><span>Root</span><span> / </span></div>
-			</div>
-			<div id="info"></div>
-			<pre id="dbg"></pre>
-			<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
-
-			<div id="tabs">
-					<ul>
-						<li><a href="#persist-tab">Load / Save</a></li>
-						<li><a href="#snippets-tab">Snippets</a></li>
-					</ul>
-
-					<div id="persist-tab">
-						<div>
-							<ul id="graphs-list"></ul>
-							
-							<input
-								id="filename-input"
-								size="40"
-								type="text"
-								name="filename"
-								value=""
-								placeholder="Enter file name"/>
-						</div>
-
-						<div>
-							<button id="refresh">Refresh</button>
-							<button id="save">Save</button>
-							<button id="load">Load</button>
-							<button id="load-clipboard">Copy</button>
-							<button id="dl-graph">Get</button>
-						</div>
-					</div>
-
-					<div id="snippets-tab">
-						<form style="height: 100%">
-							<select id="snippets-list" size="4"></select>
-							<br />
-							<button id="load-snippet" type="button" title="Add the snippet to the current graph.">Add</button>
-						</form>
-					</div>
-			</div>
-		</div>
-
-		<script type="text/javascript">
-			$(document).ready(function()
-			{
-				E2.InitialiseEngi();
-			});
-		</script>
-	</body>
+</body>
 </html>
