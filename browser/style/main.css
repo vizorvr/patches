@@ -247,6 +247,17 @@ input[type=text]
 	z-index: 10000;
 }
 
+#load_spinner
+{
+	width: 32px;
+	height: 32px;
+	background: url('../images/load-spinner.gif');
+	float: right;
+	position: relative;
+	top: 4px;
+	display: none;
+}
+
 #tabs
 {
 	position: absolute;

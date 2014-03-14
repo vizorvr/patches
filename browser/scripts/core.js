@@ -108,8 +108,9 @@ SnippetManager.prototype.register_snippet = function(name, url)
 	this.listbox.append('<option value="' + url + '">' + name + '</option>');
 };
 
-function AssetTracker()
+function AssetTracker(core)
 {
+	this.core = core;
 	this.started = 0;
 	this.completed = 0;
 	this.failed = 0;
@@ -148,6 +149,9 @@ AssetTracker.prototype.signal_update = function()
 {
 	var l = this.listeners;
 	
+	if(E2.dom.load_spinner)
+		E2.dom.load_spinner.css('display', this.started === (this.completed + this.failed) ? 'none' : 'inherit');
+	
 	for(var i = 0, len = l.length; i < len; i++)
 		l[i]();
 };
@@ -177,7 +181,7 @@ function Core(app) {
 		OBJECT: { id: 18, name: 'Object' }
 	};
 	
-	this.asset_tracker = new AssetTracker();
+	this.asset_tracker = new AssetTracker(this);
 	this.renderer = new Renderer('#webgl-canvas', this);
 	this.active_graph = this.root_graph = null;
 	this.active_graph_dirty = true;
@@ -2287,6 +2291,7 @@ E2.InitialiseEngi = function()
 	E2.dom.graphs_list = $('#graphs-list');
 	E2.dom.snippets_list = $('#snippets-list');
 	E2.dom.breadcrumb = $('#breadcrumb');
+	E2.dom.load_spinner = $('#load_spinner');
 
 	E2.dom.filename_input = $('#filename-input');
 
