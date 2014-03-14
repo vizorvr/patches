@@ -20,6 +20,9 @@
 .icon-assets_started_generator { background: url('assets-started-generator.png'); }
 .icon-assets_completed_generator { background: url('assets-completed-generator.png'); }
 .icon-assets_failed_generator { background: url('assets-failed-generator.png'); }
+.icon-assets_signal_started_generator { background: url('assets-started-generator.png'); }
+.icon-assets_signal_completed_generator { background: url('assets-completed-generator.png'); }
+.icon-assets_signal_failed_generator { background: url('assets-failed-generator.png'); }
 .icon-audio_get_current_time_modulator { background: url('clock-generator.png'); }
 .icon-audio_get_duration_modulator { background: url('audio-get-duration-modulator.png'); }
 .icon-and_modulator { background: url('and-modulator.png'); }

@@ -30,6 +30,9 @@
 .icon-aspect_ratio_generator { background: url('icons.png') -17px -153px no-repeat; }
 .icon-assets_completed_generator { background: url('icons.png') -102px -102px no-repeat; }
 .icon-assets_failed_generator { background: url('icons.png') -17px -136px no-repeat; }
+.icon-assets_signal_completed_generator { background: url('icons.png') -102px -102px no-repeat; }
+.icon-assets_signal_failed_generator { background: url('icons.png') -17px -136px no-repeat; }
+.icon-assets_signal_started_generator { background: url('icons.png') -136px -17px no-repeat; }
 .icon-assets_started_generator { background: url('icons.png') -136px -17px no-repeat; }
 .icon-audio_get_current_time_modulator { background: url('icons.png') -51px -119px no-repeat; }
 .icon-audio_get_duration_modulator { background: url('icons.png') -204px -85px no-repeat; }
