@@ -10,6 +10,7 @@ li.context-menu-item span
 	position:relative;
 	left: 20px;
 	
+	font-size: 9pt;
 	padding: 0px 4px;
 	background-color: #eee;
 	-moz-box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.5);
@@ -48,7 +49,6 @@ li.context-menu-item span
 
 .menu-lbl-grp
 {
-	font-size: 9pt;
 	position: relative;
 	top: -3px;
 	padding: 2px;
@@ -59,7 +59,6 @@ li.context-menu-item span
 
 .menu-lbl
 {
-	font-size: 9pt;
 	position: relative;
 	top: -4px;
 	padding: 2px;
