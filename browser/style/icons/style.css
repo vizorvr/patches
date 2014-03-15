@@ -186,7 +186,9 @@
 .icon-text_editor_generator { background: url('icons.png') -68px -34px no-repeat; }
 .icon-texture_diffuse_shader { background: url('icons.png') -119px -119px no-repeat; }
 .icon-texture_from_text_generator { background: url('icons.png') -68px -34px no-repeat; }
+.icon-texture_height_modulator { background: url('icons.png') -170px -68px no-repeat; }
 .icon-texture_type_generator { background: url('icons.png') -153px -102px no-repeat; }
+.icon-texture_width_modulator { background: url('icons.png') -170px -51px no-repeat; }
 .icon-toggle_button { background: url('icons.png') 0px -153px no-repeat; }
 .icon-toggle_modulator { background: url('icons.png') -17px -170px no-repeat; }
 .icon-translation_matrix { background: url('icons.png') -85px -170px no-repeat; }

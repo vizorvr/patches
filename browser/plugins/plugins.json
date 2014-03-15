@@ -174,6 +174,8 @@
 	"Modulators/Scene/Get mesh count": "scene_get_mesh_count",
 	"Modulators/String/Concatenate": "string_concatenate_modulator",
 	"Modulators/String/Parse JSON": "parse_json_modulator",
+	"Modulators/Texture/Height": "texture_height_modulator",
+	"Modulators/Texture/Width": "texture_width_modulator",
 	"Modulators/Tweens/In": "tween_in_modulator",
 	"Modulators/Tweens/Out": "tween_out_modulator",
 	"Modulators/Typed arrays/Array to mesh": "array_to_mesh_modulator",

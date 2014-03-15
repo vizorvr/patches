@@ -184,7 +184,9 @@
 .icon-text_display { background: url('text-display.png'); }
 .icon-texture_diffuse_shader { background: url('shader.png'); }
 .icon-texture_from_text_generator { background: url('text-display.png'); }
+.icon-texture_height_modulator { background: url('viewport-height-generator.png'); }
 .icon-texture_type_generator { background: url('texture-type-generator.png'); }
+.icon-texture_width_modulator { background: url('viewport-width-generator.png'); }
 .icon-toggle_button { background: url('toggle-button.png'); }
 .icon-toggle_modulator { background: url('toggle-modulator.png'); }
 .icon-translation_matrix { background: url('translation-matrix.png'); }
