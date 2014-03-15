@@ -22,6 +22,11 @@
 .icon-array_generator { background: url('icons.png') -119px -85px no-repeat; }
 .icon-array_get_as_modulator { background: url('icons.png') -153px 0px no-repeat; }
 .icon-array_get_modulator { background: url('icons.png') -153px 0px no-repeat; }
+.icon-array_item_to_bool_modulator { background: url('icons.png') 0px -153px no-repeat; }
+.icon-array_item_to_float_modulator { background: url('icons.png') -85px -68px no-repeat; }
+.icon-array_item_to_object_modulator { background: url('icons.png') -34px -136px no-repeat; }
+.icon-array_item_to_string_modulator { background: url('icons.png') -68px -34px no-repeat; }
+.icon-array_item_to_typed_array_modulator { background: url('icons.png') -119px -85px no-repeat; }
 .icon-array_length_modulator { background: url('icons.png') -136px -102px no-repeat; }
 .icon-array_set_as_modulator { background: url('icons.png') -34px -119px no-repeat; }
 .icon-array_set_modulator { background: url('icons.png') -34px -119px no-repeat; }
@@ -123,6 +128,7 @@
 .icon-matrix_clone_modulator { background: url('icons.png') -204px -136px no-repeat; }
 .icon-matrix_display { background: url('icons.png') -34px -102px no-repeat; }
 .icon-max_modulator { background: url('icons.png') -68px -153px no-repeat; }
+.icon-member_array_length_modulator { background: url('icons.png') -136px -102px no-repeat; }
 .icon-member_to_bool_modulator { background: url('icons.png') 0px -153px no-repeat; }
 .icon-member_to_float_modulator { background: url('icons.png') -85px -68px no-repeat; }
 .icon-member_to_object_modulator { background: url('icons.png') -34px -136px no-repeat; }

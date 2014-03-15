@@ -32,6 +32,11 @@
 .icon-array_to_texture_modulator { background: url('array-to-texture-modulator.png'); }
 .icon-array_get_modulator { background: url('array-get-modulator.png'); }
 .icon-array_get_as_modulator { background: url('array-get-modulator.png'); }
+.icon-array_item_to_bool_modulator { background: url('toggle-button.png'); }
+.icon-array_item_to_float_modulator { background: url('const-float-generator.png'); }
+.icon-array_item_to_object_modulator { background: url('member-to-object-modulator.png'); }
+.icon-array_item_to_string_modulator { background: url('text-display.png'); }
+.icon-array_item_to_typed_array_modulator { background: url('array-generator.png'); }
 .icon-array_length_modulator { background: url('array-length-modulator.png'); }
 .icon-array_set_modulator { background: url('array-set-modulator.png'); }
 .icon-array_set_as_modulator { background: url('array-set-modulator.png'); }
@@ -120,6 +125,7 @@
 .icon-material_z_buffer_modulator { background: url('material-z-buffer-modulator.png'); }
 .icon-matrix_display { background: url('matrix-display.png'); }
 .icon-matrix_clone_modulator { background: url('clone-modulator.png'); }
+.icon-member_array_length_modulator { background: url('array-length-modulator.png'); }
 .icon-member_to_bool_modulator { background: url('toggle-button.png'); }
 .icon-member_to_float_modulator { background: url('const-float-generator.png'); }
 .icon-member_to_object_modulator { background: url('member-to-object-modulator.png'); }
