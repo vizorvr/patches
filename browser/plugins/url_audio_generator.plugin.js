@@ -1,7 +1,11 @@
 E2.p = E2.plugins["url_audio_generator"] = function(core, node)
 {
 	this.desc = 'Load a sample from an URL. Each sample should be encoded as .wav, .mp3, .mp4 and .ogg, and no extension should be specified. This plugin will load the appropriate filetype for the current execution environment. Hover over the Source button to see the url of the current file.';
-	this.input_slots = [];
+
+	this.input_slots = [
+		{ name: 'url', dt: core.datatypes.TEXT, desc: 'Use this to load from a URL supplied as a string.' }
+	];
+	
 	this.output_slots = [ 
 		{ name: 'audio', dt: core.datatypes.AUDIO, desc: 'An audio stream.' }
 	];
@@ -61,6 +65,12 @@ E2.p.prototype.create_ui = function()
 	return inp;
 };
 
+E2.p.prototype.update_input = function(slot, data)
+{
+	this.state.url = data;
+	this.state_changed(null);
+};
+
 E2.p.prototype.update_output = function(slot)
 {
 	return this.audio;
@@ -101,6 +111,7 @@ E2.p.prototype.state_changed = function(ui)
 				{
 					this.audio.addEventListener('error', function(self, src) { return function(at) {
 						msg('ERROR: Audio: Failed to load \'' + src + '\'.');
+						self.state.url = '';
 						self.audio = null;
 					}}(this, src));
 				

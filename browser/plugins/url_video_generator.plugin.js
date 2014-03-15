@@ -1,7 +1,11 @@
 E2.p = E2.plugins["url_video_generator"] = function(core, node)
 {
 	this.desc = 'Load a Ogg/Theora video from an URL.';
-	this.input_slots = [];
+	
+	this.input_slots = [
+		{ name: 'url', dt: core.datatypes.TEXT, desc: 'Use this to load from a URL supplied as a string.' }
+	];
+	
 	this.output_slots = [ 
 		{ name: 'video', dt: core.datatypes.VIDEO, desc: 'An video stream.' }
 	];
@@ -60,6 +64,12 @@ E2.p.prototype.create_ui = function()
 	return inp;
 };
 
+E2.p.prototype.update_input = function(slot, data)
+{
+	this.state.url = data;
+	this.state_changed(null);
+};
+
 E2.p.prototype.update_output = function(slot)
 {
 	return this.video;
@@ -90,6 +100,7 @@ E2.p.prototype.state_changed = function(ui)
 				this.video.addEventListener('error', function(self) { return function(at) {
 					msg('ERROR: Video: Failed to load \'' + self.state.url + '\'.');
 					self.video = null;
+					self.state.url = '';
 				}}(this));
 			
 				msg('Video: Loading ' + this.state.url + '.');
