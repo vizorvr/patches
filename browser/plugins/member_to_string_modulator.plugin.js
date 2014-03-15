@@ -4,7 +4,7 @@ E2.p = E2.plugins["member_to_string_modulator"] = function(core, node)
 	
 	this.input_slots = [
 		{ name: 'object', dt: core.datatypes.OBJECT, desc: 'Input object.' },
-		{ name: 'member', dt: core.datatypes.TEXT, desc: 'Named of the member to be converted.' }
+		{ name: 'member', dt: core.datatypes.TEXT, desc: 'Name of the member to be converted.' }
 	];
 	
 	this.output_slots = [
