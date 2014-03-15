@@ -19,7 +19,8 @@ function Player(canvas, app, root_node)
 	
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, root_node);
 	this.core.graphs.push(this.core.root_graph);
-
+	this.core.onGraphSelected(this.core.active_graph);
+	
 	this.play = function()
 	{
 		this.core.root_graph.play();
