@@ -57,6 +57,17 @@ table
 	text-decoration: none;
 }
 
+#load_spinner
+{
+	width: 32px;
+	height: 32px;
+	background: url('../images/load-spinner.gif');
+	float: right;
+	position: relative;
+	top: 4px;
+	display: none;
+}
+
 .e_btn
 {
 	font-size:12px;
