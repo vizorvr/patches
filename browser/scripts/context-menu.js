@@ -43,7 +43,6 @@ Menu.prototype.create = function(parent, pos, is_root)
 			li.append(icon.addClass('icon-' + item.icon));
 		}
 		
-		span.addClass('menu-lbl');
 		span.text(item.name);
 		
 		li.append(span);
@@ -52,6 +51,7 @@ Menu.prototype.create = function(parent, pos, is_root)
 		{
 			var grp = make('span');
 			
+			span.addClass('menu-lbl-grp');
 			li.addClass('menu-grp-item');
 			li.append(grp.addClass('menu-grp-img'));
 		
@@ -71,6 +71,7 @@ Menu.prototype.create = function(parent, pos, is_root)
 		}
 		else
 		{
+			span.addClass('menu-lbl');
 			li.addClass('menu-item');
 			
 			li.mouseenter(function(self, li) { return function(e)

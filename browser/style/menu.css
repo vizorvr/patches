@@ -21,8 +21,8 @@ li.context-menu-item span
 
 .menu-item
 {
-	padding: 2px;
-	height: 16px;
+	padding: 4px;
+	height: 20px;
 	margin: 4px 0px;
 	white-space: nowrap;
 }
@@ -31,7 +31,7 @@ li.context-menu-item span
 {
 	padding: 2px;
 	padding-left: 21px;
-	height: 16px;
+	height: 20px;
 	margin: 4px 0px;
 }
 
@@ -43,13 +43,25 @@ li.context-menu-item span
 	padding: 0;
 	margin: 0;
 	margin-right: 2px;
+	margin-top: -2px;
+}
+
+.menu-lbl-grp
+{
+	font-size: 9pt;
+	position: relative;
+	top: -3px;
+	padding: 2px;
+	padding-right: 4px;
+	margin: 0px;
+	white-space: nowrap;
 }
 
 .menu-lbl
 {
 	font-size: 9pt;
 	position: relative;
-	top: -3px;
+	top: -4px;
 	padding: 2px;
 	padding-right: 4px;
 	margin: 0px;
