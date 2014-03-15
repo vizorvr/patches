@@ -26,9 +26,9 @@
 }
 
 #header-row {
-	height: 4vh;
-	min-height: 4vh;
-	max-height: 4vh;
+	height: 40px;
+	min-height: 40px;
+	max-height: 40px;
 	-webkit-flex-align: center;
 	-ms-flex-align: center;
 	-webkit-align-items: center;
