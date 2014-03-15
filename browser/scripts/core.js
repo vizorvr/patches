@@ -526,6 +526,7 @@ E2.InitialiseEngi = function()
 	E2.dom.pause.click(E2.app.onPauseClicked);
 	E2.dom.stop.click(E2.app.onStopClicked);
 
+	E2.app.onWindowResize();
 	setup_location_hash();
 }
 

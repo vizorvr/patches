@@ -1235,6 +1235,19 @@ function Application() {
 		self.updateCanvas(true);
 	};
 	
+	this.onWindowResize = function()
+	{
+		E2.dom.dbg.css('display', self.condensed_view ? 'none' : 'inherit');
+
+		// More hackery
+		E2.dom.canvas[0].width = E2.dom.canvas_parent[0].clientWidth;
+		E2.dom.canvas[0].height = E2.dom.canvas_parent[0].clientHeight;
+
+		if(self.player)
+			self.updateCanvas(true);
+	};
+
+
 	this.onKeyDown = function(e)
 	{
 				
@@ -1279,12 +1292,14 @@ function Application() {
 			if(e.keyCode === 66) // CTRL+b
 			{
 				self.condensed_view = !self.condensed_view;
+				self.onWindowResize();
 				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 				return;
 			}
 			else if(e.keyCode === 76) // CTRL+l
 			{
 				self.collapse_log = !self.collapse_log;
+				self.onWindowResize();
 				e.preventDefault();
 				return;
 			}
@@ -1573,6 +1588,15 @@ function Application() {
 		self.releaseHoverNode(false);
 	});
 	
+	window.addEventListener('resize', function(self) { return function()
+	{
+		// To avoid UI lag, we don't respond to window resize events directly.
+		// Instead, we set up a timer that gets superceeded for each (spurious)
+		// resize event within a 100 ms window.
+		clearTimeout(self.resize_timer);
+		self.resize_timer = setTimeout(self.onWindowResize, 100);
+	}}(this));
+
 	var add_button_events = function(btn)
 	{
 		// We have to forward key events that would otherwise get trapped when
