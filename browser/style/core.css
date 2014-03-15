@@ -156,12 +156,14 @@ table
 {
 	text-align: left;
 	vertical-align: top;
+	border: none !important;
 }
 
 .oc
 {
 	text-align: right;
 	vertical-align: top;
+	border: none !important;
 }
 
 .pl_slot
@@ -174,6 +176,8 @@ table
 	padding: 3px;
 	padding-left: 2px;
 	padding-right: 8px;
+	border: none !important;
+	vertical-align: top; 
 }
 
 .plugin-icon
