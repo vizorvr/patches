@@ -72,21 +72,14 @@ TreeNode.prototype.rebuild_dom = function()
 		if(!this.closed)
 		{
 			var children = this.children;
-			var process_child = function(child, dirs)
-			{
-				if((dirs && child.children.length > 0) || (!dirs && child.children.length < 1))
-				{
-					child.rebuild_dom();
-					dom.append(child.dom);
-				}
-
-			};
 			
 			for(var i = 0, len = children.length; i < len; i++)
-				process_child(children[i], true);
+			{
+				var child = children[i];
 				
-			for(var i = 0, len = children.length; i < len; i++)
-				process_child(children[i], false);
+				child.rebuild_dom();
+				dom.append(child.dom);
+			}
 		}
 	}
 	else
