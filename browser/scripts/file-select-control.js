@@ -123,6 +123,9 @@ FileSelectControl.prototype._render = function() {
 FileSelectControl.prototype._onKeyPress = function(e) {
 	// console.log('e.keyCode', e.keyCode)
 	switch(e.keyCode) {
+		case 27:
+			this.cancel()
+			break;
 		case 13:
 			$('button:last', this._el).click()
 			break;
@@ -172,9 +175,7 @@ FileSelectControl.prototype.close = function() {
 	$('.modal', this._el).modal('hide')
 }
 
-if (typeof(exports) !== 'undefined')
-	exports.FileSelectControl = FileSelectControl;
-
+// ------------------------------------------
 
 FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
 	var ctl = new FileSelectControl()
@@ -211,3 +212,5 @@ FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
 	return ctl
 }
 
+if (typeof(exports) !== 'undefined')
+	exports.FileSelectControl = FileSelectControl;
