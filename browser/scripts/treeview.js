@@ -133,9 +133,6 @@ TreeView.prototype.reset = function()
 
 TreeView.prototype.select = function(t_node)
 {
-	if(t_node === this.selected_node)
-		return;
-	
 	if(this.selected_node)
 	{
 		this.selected_node.label.removeClass('tree-selected');
