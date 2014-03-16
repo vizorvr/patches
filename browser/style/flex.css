@@ -125,7 +125,7 @@ body {
 
 #breadcrumb
 {
-	position: absolute;
+	position: fixed;
 	background-color: #000;
 	color: #fff;
 	opacity: 0.75;
@@ -134,8 +134,7 @@ body {
 	padding-top: 1px;
 	padding-bottom: 1px;
 	z-index: 10000;
-	top: 7px;
-	left: 6px;
+	top: 40px;
 	font-size: 10pt;
 }
 
