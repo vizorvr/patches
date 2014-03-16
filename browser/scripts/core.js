@@ -442,7 +442,7 @@ E2.InitialiseEngi = function()
 	E2.dom.graphs_list = $('#graphs-list');
 	E2.dom.snippets_list = $('#snippets-list');
 	E2.dom.breadcrumb = $('#breadcrumb');
-	E2.dom.load_spinner = $('#load_spinner');
+	E2.dom.load_spinner = $('#load-spinner');
 
 	E2.dom.filename_input = $('#filename-input');
 

@@ -52,6 +52,7 @@ table
 
 .logo {
 	margin-top: 10px;
+	width: 100%
 }
 
 .logo a {
@@ -61,14 +62,12 @@ table
 	text-decoration: none;
 }
 
-#load_spinner
+#load-spinner
 {
-	width: 32px;
+	min-width: 32px;
 	height: 32px;
 	background: url('../images/load-spinner.gif');
-	float: right;
-	position: relative;
-	display: none;
+	margin-top: 2px;
 }
 
 #info
