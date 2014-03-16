@@ -53,7 +53,7 @@ TreeNode.prototype.rebuild_dom = function()
 		dom = make('ul');
 		dom.addClass('tree-sub');
 		
-		var handle = $('<div class="tree-handle ' + (this.closed ? 'tree-closed' : 'tree-open') + '"></div>');
+		var handle = $('<div class="tree-handle glyphicon glyphicon-chevron-' + (this.closed ? 'right' : 'down') + '"></div>');
 		
 		handle.click(function(t_node) { return function()
 		{

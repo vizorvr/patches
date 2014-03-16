@@ -107,26 +107,6 @@ body {
 	color: #fff;
 }
 
-.tree-open
-{
-	background: url('../images/tree-icons.gif') -32px 0px no-repeat;
-}
-
-.tree-open:hover
-{
-	background: url('../images/tree-icons.gif') -48px 0px no-repeat;
-}
-
-.tree-closed
-{
-	background: url('../images/tree-icons.gif') 0px 0px no-repeat;
-}
-
-.tree-closed:hover
-{
-	background: url('../images/tree-icons.gif') -16px 0px no-repeat;
-}
-
 #canvas_parent {
 	z-index: 1;
 	overflow: scroll;
