@@ -1545,15 +1545,16 @@ console.log('new name', node.title)
 		i_txt = i_txt.replace('Type:', '<b>Type:</b>');
 		i_txt = i_txt.replace('Default:', '<b>Default:</b>');
 		i_txt = i_txt.replace('Range:', '<b>Range:</b>');
-		i_txt = i_txt.replace('<break>', '<br/><hr/>');
+		i_txt = i_txt.replace('<break>', '<br/><br/>');
 		
 		E2.dom.info.html(i_txt);
 		E2.dom.info.css('min-height', 'auto');
 
 		var heightNow = E2.dom.info.height();
 		var missing = E2.dom.info[0].scrollHeight - E2.dom.info[0].offsetHeight;
-		if (missing > 0)
-			E2.dom.info.css('min-height', heightNow + missing + 10);
+		
+		if(missing > 0)
+			E2.dom.info.css('min-height', heightNow + missing + 12);
 	};
 	
 	this.onHideTooltip = function()

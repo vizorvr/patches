@@ -49,7 +49,7 @@ function NodeUI(parent_node, x, y) {
 	{
 		var p_name = E2.app.player.core.plugin_mgr.keybyid[parent_node.plugin.id];
 		
-		h_row.attr('alt', '<b>' + p_name + '</b><br/><hr/>' + parent_node.plugin.desc);
+		h_row.attr('alt', '<b>' + p_name + '</b><br/><br/>' + parent_node.plugin.desc);
 		h_row.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
 	}
 
