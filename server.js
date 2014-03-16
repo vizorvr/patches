@@ -71,7 +71,7 @@ var app = express()
 		next()
 	})
 
-	.get(/^\/data\/(graphs|textures|audio|video|jsons)\/$/, showFolderListing(/^[^.].*$/))
+	.get(/^\/data\/(graphs|textures|scenes|audio|video|jsons)\/$/, showFolderListing(/^[^.].*$/))
 	.get(/^\/dl\/data\/(graphs|textures|audio|video|jsons)\/[^\/]*$/, downloadHandler)
 
 	.post(/^\/data\/graphs\/[^\/]*\.json$/, function(req, res, next) {
