@@ -132,7 +132,7 @@ NodeUI.create_slot = function(parent_node, nid, col, s, type)
 	if(s.def !== undefined)
 		dsc += '\nDefault: ' + s.def
 
-	dsc += '<break>';
+	dsc += '\n\n';
 	
 	if(s.desc)
 		dsc += s.desc;
