@@ -1624,6 +1624,19 @@ console.log('new name', node.title)
 		return 'Oh... Please don\'t go.';
 	});*/
 
+	var rx = /INPUT|SELECT|TEXTAREA/i;
+
+	$(document).bind("keydown keypress", function(e)
+	{
+		if(e.keyCode !== 8)
+			return;
+
+		if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly)
+		{
+			e.preventDefault();
+		}
+	});
+
 	$('button#fullscreen').click(function()
 	{
 		self.player.core.renderer.set_fullscreen(true);
