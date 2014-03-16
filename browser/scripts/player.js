@@ -105,7 +105,7 @@ function Player(canvas, app, root_node)
 		c.renderer.shader_cache.clear();
 		c.deserialise(json);
 		self.core.onGraphSelected(self.core.active_graph);
-		E2.app.updateCanvas(false);
+		E2.app.updateCanvas(true);
 	};
 	
 	this.load_from_url = function(url)
