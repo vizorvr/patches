@@ -37,76 +37,49 @@ function Delegate(delegate, dt, count)
 	this.count = count;
 }
 
-function SnippetManager(base_url)
+function PresetManager(base_url)
 {
-	var self = this;
-	
-	this.listbox = $('#snippets-list');
-	this.base_url = base_url;
-	
-	var url = self.base_url + '/snippets.json';
-	
-	$.ajax({
-		url: url,
-		dataType: 'json',
-		async: false,
-		headers: {},
-		success: function(data) 
-		{
-			msg('SnippetsMgr: Loading snippets from: ' + url);
-
-			$.each(data, function(key, snippets)
-			{
-				self.register_group(key);
-				
-				$.each(snippets, function(name, id)
-				{
-					self.register_snippet(name, self.base_url + '/' + id + '.json')
-				});
-			});
-		},
-		error: function()
-		{
-			msg('SnippetsMgr: No snippets found.');
-		}
-	});
-	
-	var load = function()
+	$.get(base_url+'/presets.json')
+	.done(function(data)
 	{
-		var url = self.listbox.val();
-		
-		msg('Loading snippet from: ' + url);
-		
-		$.ajax({
-			url: url,
-			dataType: 'json',
-			async: false,
-			headers: {},
-			success: function(data)
-			{
-	  			E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
-	  			E2.app.onPaste({ target: { id: 'notpersist' }});
-	  		},
-	  		error: function()
-	  		{
-	  			msg('ERROR: Failed to load the selected snippet.', 'Cogent');
-	  		}
+		var presets = Object.keys(data).map(function(cat)
+		{
+			return {
+				title: cat,
+				items: Object.keys(data[cat]).map(function(preset)
+				{
+					return {
+						title: preset,
+						path: data[cat][preset]
+					}
+				})
+			}
 		});
-	};
-	
-	$('#load-snippet').button().click(load);
-	this.listbox.dblclick(load);
+
+		new CollapsibleSelectControl()
+			.data(presets)
+			.render(E2.dom.presets_list)
+			.onOpen(function(path) {
+				var url = base_url + '/' + path + '.json';
+
+				msg('Loading snippet from: ' + url);
+
+				$.get(url)
+				.done(function(data)
+				{
+					E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
+					E2.app.onPaste({ target: { id: 'notpersist' }});
+				})
+				.fail(function(_j, _textStatus, _errorThrown)
+				{
+		  			msg('ERROR: Failed to load the selected preset.');
+				})
+			})
+	})
+	.fail(function() {
+		msg('PresetsMgr: No presets found.');
+	})
 }
-
-SnippetManager.prototype.register_group = function(label)
-{
-	this.listbox.append('<optgroup label="' + label + '" class="snippet-group"></optgroup>');
-};
-
-SnippetManager.prototype.register_snippet = function(name, url)
-{
-	this.listbox.append('<option value="' + url + '">' + name + '</option>');
-};
 
 function AssetTracker(core)
 {
@@ -443,7 +416,7 @@ E2.InitialiseEngi = function()
 	E2.dom.info = $('#info');
 	E2.dom.tabs = $('#tabs');
 	E2.dom.graphs_list = $('#graphs-list');
-	E2.dom.snippets_list = $('#snippets-list');
+	E2.dom.presets_list = $('#presets');
 	E2.dom.breadcrumb = $('#breadcrumb');
 	E2.dom.load_spinner = $('#load-spinner');
 

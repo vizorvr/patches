@@ -139,16 +139,8 @@ body {
 	font-size: 10pt;
 }
 
-#snippets select {
-	width: 100%;
-}
-
-#snippets-list
-{
-	background-color: #fff;
-	border: 1px solid #ccc;
-	border-right: none;
-	padding: 2px;
+#presets {
+	overflow: scroll
 }
 
 #dbg

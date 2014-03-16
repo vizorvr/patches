@@ -9,7 +9,7 @@ function Application() {
 		PAUSED: 2
 	};
 	
-	this.snippet_mgr = new SnippetManager('snippets');
+	this.preset_mgr = new PresetManager('presets');
 	this.player = null;
 	this.canvas = canvas;
 	this.c2d = canvas[0].getContext('2d');

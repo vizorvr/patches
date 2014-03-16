@@ -1,4 +1,4 @@
-.panel {
+.panel-group .panel+.panel {
 	margin-top: 0;
 }
 
