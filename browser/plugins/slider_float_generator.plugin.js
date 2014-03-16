@@ -87,9 +87,9 @@ E2.p.prototype.create_ui = function()
 		return false;
 	}};
 	
-	slider.addClass('ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all');
+	slider.addClass('slider slider-horizontal ui-widget graph-node corner-all');
 	slider.css({ 'width': '60px', 'margin-left': '8px', 'margin-right': '8px' });
-	handle.addClass('ui-slider-handle ui-state-hover ui-corner-all');
+	handle.addClass('slider-handle state-hover corner-all');
 	handle[0].style.left = '0px';
 	handle[0].addEventListener('mousedown', slider_mousedown(this, inp_lo, inp_hi, handle));
 	

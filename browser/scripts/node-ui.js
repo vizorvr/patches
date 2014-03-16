@@ -9,7 +9,7 @@ function NodeUI(parent_node, x, y) {
 	var nid = 'n' + parent_node.uid, dom = this.dom = make('table');
 	
 	dom.addClass('plugin');
-	dom.addClass('ui-widget-content');
+	dom.addClass('graph-node');
 	dom.css('border', '1px solid #444');
 	dom.attr('id', nid);
 	dom.mousemove(E2.app.onMouseMoved); // Make sure we don't stall during slot connection, when the mouse enters a node.
