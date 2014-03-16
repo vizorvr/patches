@@ -1290,7 +1290,7 @@ function Application() {
 			if(e.keyCode === 66) // CTRL+b
 			{
 				self.condensed_view = !self.condensed_view;
-				E2.dom.left_nav.toggle(self.condensed_view);
+				E2.dom.left_nav.toggle(!self.condensed_view);
 				self.onWindowResize();
 				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 				return;
