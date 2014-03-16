@@ -399,6 +399,7 @@ function Core(app) {
 
 		E2.dom.structure.tree.reset();
 		self.root_graph.tree_node = E2.dom.structure.tree.root;
+		E2.dom.structure.tree.root.graph = self.root_graph;
 		build(self.root_graph, 'Root');
 	};
 	
