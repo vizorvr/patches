@@ -621,10 +621,11 @@ function Application() {
 		var done_func = function()
 		{
 			node.title = inp.val();
+console.log('new name', node.title)
 		
 			if(node.ui !== null)
 			{
-				node.ui.dom.find('#t').text(node.title);
+				node.ui.dom.find('.t').text(node.title);
 				
 				if(node.update_connections())
 					E2.app.updateCanvas(true);

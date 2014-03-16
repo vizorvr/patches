@@ -223,42 +223,34 @@ function Core(app) {
 	
 	this.create_dialog = function(diag, title, w, h, done_func, open_func)
 	{
-		diag.dialog(
+		var modal = $('#general-modal').clone()
+
+		function done()
 		{
-			title: title,
-			width: w,
-			height: h,
-			modal: true,
-			resizable: false,
-			buttons:
-			{
-				'OK': function()
-				{
-					done_func();
-					$(this).dialog('destroy');
-					diag.remove();
-				},
-				'Cancel': function()
-				{
-					$(this).dialog('destroy');
-					diag.remove();
-				}
-			},
-			open: function()
-			{
-				if(open_func)
-					open_func();
-				
-				diag.keyup(function(e)
-				{
-					if(e.keyCode === $.ui.keyCode.ENTER && done_func(e) !== false)
-					{
-						$(this).dialog('destroy');
-						diag.remove();
-					}
-				});
-			}
-		});
+			modal.unbind()
+			modal.remove()
+		}
+
+		$('.modal-title', modal).html(title)
+		$('.modal-body', modal).html(diag)
+
+		modal.modal({
+			keyboard: true
+		})
+
+		modal.on('shown.bs.modal', function()
+		{
+			if (open_func)
+				open_func();
+		})
+
+		modal.on('hidden.bs.modal', done)
+
+		$('button:last', modal).click(function()
+		{
+			done_func()
+			modal.modal('hide')
+		})
 	};
 	
 	this.get_default_value = function(dt)
