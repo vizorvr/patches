@@ -41,6 +41,10 @@ table
     border-spacing: 0;
 }
 
+.modal-wide {
+    width: 80%; /* respsonsive width */
+}
+
 /* Logo font */
 @font-face 
 {

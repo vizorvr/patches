@@ -60,7 +60,6 @@ E2.p.prototype.open_editor = function(self) { return function(e)
 		
 		self.state.text = editor.getValue();
 		self.updated = true;
-		diag.dialog('close');
 	}};
 	
 	self.core.create_dialog(diag, 'Editor', 760, 150, store_state(editor, diag));

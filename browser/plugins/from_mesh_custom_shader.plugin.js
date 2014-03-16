@@ -246,9 +246,6 @@ E2.p.prototype.create_ui = function()
 	{
 		self.updated = self.dirty = true;
 		self.node.queued_update = 1;
-				
-		if(diag)
-			diag.dialog('close');
 	}}(this);
 	
 	inp_vs.click(this.open_editor(this, 'vs_src', 'vertex', done_func, function(self) { return function(v)

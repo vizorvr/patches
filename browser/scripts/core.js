@@ -223,7 +223,11 @@ function Core(app) {
 	
 	this.create_dialog = function(diag, title, w, h, done_func, open_func)
 	{
-		var modal = $('#general-modal').clone()
+		var modal = $('.modal-template').clone()
+
+		// increase width of the modal for very wide content
+		if (w > 500)
+			$('.modal-dialog', modal).addClass('modal-wide')
 
 		function done()
 		{
@@ -236,6 +240,12 @@ function Core(app) {
 
 		modal.modal({
 			keyboard: true
+		})
+
+		modal.on('show.bs.modal', function()
+		{
+			console.log('show')
+			$('')
 		})
 
 		modal.on('shown.bs.modal', function()
