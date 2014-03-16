@@ -119,7 +119,7 @@ function Application() {
 		
 			diag.append(inp);
 		
-			self.player.core.create_dialog(diag, 'Name new graph.', 275, 170, function()
+			self.player.core.create_dialog(diag, 'Name new graph.', 240, 170, function()
 			{
 				createPlugin(inp.val());
 			},
@@ -621,7 +621,6 @@ function Application() {
 		var done_func = function()
 		{
 			node.title = inp.val();
-console.log('new name', node.title)
 		
 			if(node.ui !== null)
 			{
@@ -640,7 +639,7 @@ console.log('new name', node.title)
 			node.parent_graph.emit_event({ type: 'node-renamed', node: node });
 		};
 		
-		self.player.core.create_dialog(diag, 'Rename node.', 275, 170, done_func,
+		self.player.core.create_dialog(diag, 'Rename node.', 240, 170, done_func,
 			function()
 			{
 				inp.focus().select();
