@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="head">
+	<title>ENGI&#8482;</title>
+	<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
+	<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
+
+
+	<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+	<script type="text/javascript" src="vendor/jquery-ui.js"></script>
+	<script type="text/javascript" src="vendor/jquery.fastfix.js"></script>
+	<script type="text/javascript" src="vendor/jquery.dynatree.js"></script>
+	<script type="text/javascript" src="vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript" src="node_modules/handlebars/dist/handlebars.min.js"></script>
+
+
+	<link href="style/accordion.css" rel="Stylesheet" type="text/css" />
+
+	<script id="collapsible-select-template" type="text/x-handlebars-template">
+		<div class="panel-group" id="{{controlId}}">
+		{{#each snippets}}
+			<div class="panel panel-default">
+				<div class="panel-heading"
+					data-toggle="collapse"
+					data-parent="#{{../controlId}}"
+					href="#cscat{{@index}}"
+				>
+				<span>
+					<i class="glyphicon glyphicon-chevron-{{#if this.open}}down{{else}}right{{/if}}"></i>
+					{{this.title}}
+				</span>
+			</div>
+			<div id="cscat{{@index}}" class="panel-collapse collapse{{#if this.open}} in{{/if}}">
+				<div class="panel-body">
+					<ul>
+						{{#each items}}
+							<li>{{this.title}}</li>
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+		</div>
+		{{/each}}
+	</div>
+</script>
+</head>
+
+<body>
+	<script type="text/javascript" src="scripts/accordion.js"></script>
+</body>
+</html>
