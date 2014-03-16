@@ -225,10 +225,16 @@ function Core(app) {
 	{
 		var modal = $('.modal-template').clone()
 
-		function done()
+		function close()
 		{
 			modal.unbind()
 			modal.remove()
+		}
+
+		function ok()
+		{
+			done_func()
+			modal.modal('hide')
 		}
 
 		$('.modal-title', modal).html(title)
@@ -245,17 +251,19 @@ function Core(app) {
 				open_func();
 		})
 
-		modal.on('hidden.bs.modal', done)
+		modal.on('hidden.bs.modal', close)
 
 		modal.modal({
 			keyboard: true
 		})
 
-		$('button:last', modal).click(function()
+		modal.on('keypress', function(e)
 		{
-			done_func()
-			modal.modal('hide')
+			if (e.keyCode === 13)
+				ok()
 		})
+
+		$('button:last', modal).click(ok)
 	};
 	
 	this.get_default_value = function(dt)
