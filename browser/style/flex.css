@@ -79,7 +79,6 @@ body {
 
 #snippets select {
 	width: 100%;
-	min-height: 63vh;
 }
 
 #snippets-list

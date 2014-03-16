@@ -76,6 +76,16 @@ table
 	overflow: auto;
 }
 
+#canvas-parent
+{
+	min-height: 270px;
+}
+
+#load-snippet
+{
+	min-height: 40px;
+}
+
 .e_btn
 {
 	font-size:12px;
