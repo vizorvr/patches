@@ -375,16 +375,13 @@ function Core(app) {
 	
 	this.rebuild_structure_tree = function()
 	{
-		E2.dom.structure.dynatree('getRoot').removeChildren();
 		var build = function(graph, name)
 		{
 			var nodes = graph.nodes;
-			var pnode = graph.parent_graph !== null ? graph.parent_graph.tree_node : E2.dom.structure.dynatree('getRoot');
-			var tnode = pnode.addChild({
-				title: name,
-				expand: graph.open
-			});
+			var pnode = graph.parent_graph !== null ? graph.parent_graph.tree_node : E2.dom.structure.tree.root;
+			var tnode = pnode.add_child(name);
 
+			tnode.closed = !graph.open;
 			graph.tree_node = tnode;
 			tnode.graph = graph;
 
@@ -397,6 +394,7 @@ function Core(app) {
 			}
 		};
 
+		E2.dom.structure.tree.reset();
 		build(self.root_graph, 'Root');
 	};
 	
@@ -477,48 +475,20 @@ E2.InitialiseEngi = function()
 
 	E2.app = new Application();
 
-	E2.dom.structure.dynatree({
-		title: "Structure",
-		fx: { height: 'toggle', duration: 200 },
-		clickFolderMode: 1, // Activate, don't expand.
-		selectMode: 1, // Single.
-		debugLevel: 0, // Quiet.
-		dnd: {
-			preventVoidMoves: true,
-			onDragStart: function(node)
-			{
-				return true;
-			},
-			onDragEnter: function(node, src)
-			{
-				if(node.parent !== src.parent)
-					return false;
-
-				return ['before', 'after'];
-			},
-			onDrop: function(node, src, hit_mode, ui, draggable)
-			{
-				src.move(node, hit_mode);
-				node.parent.graph.reorder_children(node, src, hit_mode);
-			}
-		},
-		onActivate: function(node) 
-		{
-			E2.app.clearEditState();
-			E2.app.clearSelection();
-			E2.app.player.core.onGraphSelected(node.graph);
-			E2.app.updateCanvas(true);
-		}
+	E2.dom.structure.tree = new TreeView(E2.dom.structure, function(graph)
+	{ // On item activation
+		E2.app.clearEditState();
+		E2.app.clearSelection();
+		E2.app.player.core.onGraphSelected(graph);
+		E2.app.updateCanvas(true);
+	},
+	function(graph_node)
+	{ // On child dropped
+		graph_node.parent.graph.reorder_children(null, null, null); // TODO:
 	});
 
-	var root_node = E2.dom.structure.dynatree('getRoot');
-
-	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, root_node.addChild({
-		title: 'Root',
-		isFolder: true,
-		expand: true
-	}));
-
+	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, E2.dom.structure.tree.root);
+	
 	E2.dom.save.click(E2.app.onSaveClicked);
 	E2.dom.open.click(E2.app.onOpenClicked);
 	E2.dom.layout.click(E2.app.onLayoutClicked);
@@ -529,54 +499,6 @@ E2.InitialiseEngi = function()
 
 	E2.app.onWindowResize();
 	setup_location_hash();
-}
-
-function reset_tree() {
-	var tree = E2.dom.structure._tree
-	tree('loadData', { data: [ {} ] })
-	return tree;
-}
-
-function create_tree() {
-	E2.dom.structure._tree = E2.dom.structure.tree.bind(E2.dom.structure);
-	var tree = E2.dom.structure._tree;
-	tree({
-		data: [],
-		slide: false,
-		dragAndDrop: true,
-		onCanMoveTo: function(moved_node, target_node, position) {
-			if (!position || !moved_node.parent.parent)
-				return false;
-
-			var can = ((position === 'inside' && moved_node.parent === target_node)
-				|| (position !== 'inside' && moved_node.parent === target_node.parent))
-			console.log('can move ', moved_node.name, 'to', target_node.name, position, can)
-			return can
-		}
-	})
-
-	var tree_root = tree('getTree')
-
-	function graph_selected(evt) {
-		E2.app.clearEditState();
-		E2.app.clearSelection();
-		E2.app.player.core.onGraphSelected(evt.node.graph);
-		E2.app.updateCanvas(true);
-	}
-
-	E2.dom.structure.bind('tree.select', graph_selected);
-	E2.dom.structure.bind('tree.move', function(event) {
-        var position = event.move_info.position;
-
-        // var target = position === 'inside' ? event.move_info.target_node : event.move_info.target_node.parent;
-        var target = event.move_info.target_node;
-
-        var node = event.move_info.moved_node
-        console.log('moved node', node, 'to', position, target)
-        node.parent.graph.reorder_children(target, node, position);
-	});
-
-	return tree_root;	
 }
 
 function load_location_hash() {

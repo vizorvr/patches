@@ -90,11 +90,7 @@ function Application() {
 				node.plugin.graph = new Graph(
 					self.player.core,
 					node.parent_graph,
-					node.parent_graph.tree_node.addChild({
-						title: name,
-						isFolder: true,
-						expand: true
-					})
+					node.parent_graph.tree_node.add_child(name)
 				);
 				
 				node.plugin.graph.plugin = node.plugin;
@@ -635,7 +631,7 @@ function Application() {
 			}
 			
 			if(node.plugin.e2_is_graph)
-				node.plugin.graph.tree_node.setTitle(node.title);
+				node.plugin.graph.tree_node.set_title(node.title);
 		
 			if(node.plugin.renamed)
 				node.plugin.renamed();
@@ -1159,12 +1155,7 @@ function Application() {
 			if(!n.plugin.e2_is_graph)
 				return;
 
-			n.plugin.graph.tree_node = n.parent_graph.tree_node.addChild({
-				title: n.title,
-				isFolder: true,
-				expand: true
-			});
-			
+			n.plugin.graph.tree_node = n.parent_graph.tree_node.add_child(n.title);
 			n.plugin.graph.tree_node.graph = n.plugin.graph;
 			n.plugin.graph.uid = E2.app.player.core.get_graph_uid();
 			n.plugin.graph.parent_graph = pg;

@@ -3,11 +3,11 @@ body {
 	margin: 0;
 	height: 100%;
 	width: 100%;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-content: stretch;
-    align-items: stretch;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-content: stretch;
+	align-items: stretch;
 }
 
 .flex-column {
@@ -42,14 +42,89 @@ body {
 }
 
 #left-nav {
-	min-width: 100px;
-	max-width: 160px;
+	min-width: 200px;
+	max-width: 200px;
 	overflow: auto;
 }
 
 #right-nav {
 	max-width: 482px;
 	min-width: 482px;
+}
+
+#structure
+{
+	padding-left: 14px;
+	overflow: auto;
+}
+
+.tree-sub
+{
+	padding: 0px;
+	padding-left: 25px;
+}
+
+.tree-handle
+{
+	width: 16px;
+	height: 12px;
+	display: block;
+	float: left;
+	position: relative;
+	top: 3px;
+	padding: 0px;
+	margin: 0px;
+	margin-left: -40px;
+	background-clip: content-box;
+	cursor: pointer;
+}
+
+.tree-name
+{
+	float: clear;
+	white-space: nowrap;
+	position: relative;
+	top: 0px;
+	left: -26px;
+	margin: 0px;
+	padding: 2px 6px 2px 4px;
+	cursor: default;
+}
+
+.tree-item
+{
+	float: break;
+	white-space: nowrap;
+	display: table;
+	margin: 0px;
+	padding: 1px 4px 1px 4px;
+	cursor: default;
+}
+
+.tree-selected
+{
+	background-color: #2c82dd;
+	color: #fff;
+}
+
+.tree-open
+{
+	background: url('../images/tree-icons.gif') -32px 0px no-repeat;
+}
+
+.tree-open:hover
+{
+	background: url('../images/tree-icons.gif') -48px 0px no-repeat;
+}
+
+.tree-closed
+{
+	background: url('../images/tree-icons.gif') 0px 0px no-repeat;
+}
+
+.tree-closed:hover
+{
+	background: url('../images/tree-icons.gif') -16px 0px no-repeat;
 }
 
 #canvas_parent {

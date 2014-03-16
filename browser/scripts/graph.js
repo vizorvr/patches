@@ -213,7 +213,7 @@ Graph.prototype.serialise = function()
 	d.node_uid = this.node_uid;
 	d.uid = this.uid;
 	d.parent_uid = this.parent_graph ? this.parent_graph.uid : -1;
-	d.open = this.tree_node.isExpanded();
+	d.open = !this.tree_node.closed;
 	d.nodes = [];
 	d.conns = [];
 	
@@ -311,7 +311,7 @@ Graph.prototype.emit_event = function(ev)
 	
 Graph.prototype.build_breadcrumb = function(parent, add_handler)
 {
-	var sp = $('<span>' + this.tree_node.data.title + '</span>');
+	var sp = $('<span>' + this.tree_node.title + '</span>');
 	
 	sp.css('cursor', 'pointer');
 	
