@@ -236,7 +236,7 @@ function Core(app) {
 
 		modal.on('show.bs.modal', function()
 		{
-			$('.modal-dialog', modal).css('width', w + 50)
+			$('.modal-dialog', modal).css('width', w + 40)
 		})
 
 		modal.on('shown.bs.modal', function()
