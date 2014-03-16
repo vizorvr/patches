@@ -1,3 +1,7 @@
+.panel-group {
+	margin: 0;
+}
+
 .panel-group .panel+.panel {
 	margin: 0;
 }
