@@ -228,6 +228,8 @@ function Core(app) {
 		// increase width of the modal for very wide content
 		if (w > 500)
 			$('.modal-dialog', modal).addClass('modal-wide')
+		else
+			$('.modal-dialog', modal).addClass('modal-sm')
 
 		function done()
 		{
