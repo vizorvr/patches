@@ -90,54 +90,53 @@
 			</div>
 		</noscript>
 
-		<div class="grid-column">
-			<div id="header-row" class="grid-row">
-				<div class="grid-cell logo">
-					<a href="http://www.engijs.org" target="_blank">
-						ENGI&#8482;
-					</a>
-				</div>
+		<div class="flex-column" id="left-nav">
+			<div class="header border">
+				<div id="load_spinner"></div>
 
-				<div class="grid-cell">
-					<button id="save" class="btn btn-default">Save</button>
-					<button id="open" class="btn btn-default">Open</button>
-					<button id="layout" class="btn btn-default">Layout</button>
-					<button id="help" class="btn btn-default">Help</button>
-				</div>
-
-				<div class="grid-cell right-pane">
-					<button id="play" class="btn btn-primary">Play</button>
-					<button id="pause" class="btn disabled btn-default">Pause</button>
-					<button id="stop" class="btn disabled btn-default">Stop</button>
-					<button id="fullscreen" class="btn btn-default">Full screen</button>
-					<div id="load_spinner"></div>
+				<div class="logo">
+					<a href="http://www.engijs.org" target="_blank">ENGI&#8482;</a>
 				</div>
 			</div>
 
-			<div class="grid-row" id="middle-row">
-				<div id="structure" class="grid-cell border left-pane"></div>
+			<div class="cell border" id="structure"></div>
 
-				<div id="canvas_parent" class="grid-cell border">
-					<div id="breadcrumb"></div>
-					<canvas id="canvas" width="940" height="620"></canvas>
-				</div>
+			<div class="footer border" id="info"></div>
+		</div>
 
-				<div class="grid-cell right-pane">
-					<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
-
-					<div id="snippets">
-						<form>
-							<select id="snippets-list" style="height: 100%" size="20"></select>
-							<br />
-							<button class="btn btn-default col-sm-12" id="load-snippet" type="button" title="Add the snippet to the current graph.">Add</button>
-						</form>
-					</div>
-				</div>
+		<div class="flex-column">
+			<div class="header border">
+				<button id="save" class="btn btn-default">Save</button>
+				<button id="open" class="btn btn-default">Open</button>
+				<button id="layout" class="btn btn-default">Layout</button>
+				<button id="help" class="btn btn-default">Help</button>
 			</div>
 
-			<div id="footer-row" class="grid-row">
-				<div id="info" class="grid-cell border left-pane">info</div>
-				<pre id="dbg" class="grid-cell border"></pre>
+			<div class="cell border" id="canvas_parent">
+				<div id="breadcrumb"></div>
+				<canvas id="canvas" width="940" height="620"></canvas>
+			</div>
+
+			<pre class="footer border" id="dbg"></pre>
+		</div>
+
+		<div class="flex-column" id="right-nav">
+			<div class="header border">
+				<button id="play" class="btn btn-primary">Play</button>
+				<button id="pause" class="btn disabled btn-default">Pause</button>
+				<button id="stop" class="btn disabled btn-default">Stop</button>
+				<button id="fullscreen" class="btn btn-default">Full screen</button>
+			</div>
+
+			<div class="" id="canvas-parent">
+				<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
+			</div>
+
+			<div class="" id="snippets">
+				<form>
+					<select id="snippets-list" size="2"></select>
+					<button class="btn btn-default col-sm-12" id="load-snippet" type="button" title="Add the snippet to the current graph.">Add</button>
+				</form>
 			</div>
 		</div>
 

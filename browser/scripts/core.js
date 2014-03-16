@@ -425,6 +425,7 @@ E2.InitialiseEngi = function()
 	E2.dom.canvas = $('#canvas');
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
+	E2.dom.left_nav = $('#left-nav');
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
 	E2.dom.pause = $('#pause');

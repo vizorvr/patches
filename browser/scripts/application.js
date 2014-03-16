@@ -1237,8 +1237,6 @@ function Application() {
 	
 	this.onWindowResize = function()
 	{
-		E2.dom.dbg.css('display', self.condensed_view ? 'none' : 'inherit');
-
 		// More hackery
 		E2.dom.canvas[0].width = E2.dom.canvas_parent[0].clientWidth;
 		E2.dom.canvas[0].height = E2.dom.canvas_parent[0].clientHeight;
@@ -1292,6 +1290,7 @@ function Application() {
 			if(e.keyCode === 66) // CTRL+b
 			{
 				self.condensed_view = !self.condensed_view;
+				E2.dom.left_nav.toggle(self.condensed_view);
 				self.onWindowResize();
 				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 				return;
@@ -1299,6 +1298,7 @@ function Application() {
 			else if(e.keyCode === 76) // CTRL+l
 			{
 				self.collapse_log = !self.collapse_log;
+				E2.dom.dbg.toggle(self.collapse_log);
 				self.onWindowResize();
 				e.preventDefault();
 				return;

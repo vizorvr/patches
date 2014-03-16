@@ -49,11 +49,14 @@ table
 	src: local('greyscale_basic_regular'), local('greyscale_basic_regular'), url('greyscale_basic_regular.ttf') format('truetype');
 }
 
+.logo {
+	margin-top: 10px;
+}
+
 .logo a {
 	font-size: 22pt;
 	font-family: 'greyscale_basic_regular', sans-serif;
 	color: #888;
-	padding-left: 10px;
 	text-decoration: none;
 }
 
@@ -64,7 +67,6 @@ table
 	background: url('../images/load-spinner.gif');
 	float: right;
 	position: relative;
-	top: 4px;
 	display: none;
 }
 

@@ -1,59 +1,47 @@
-.grid-row {
-  display: flex;
-  flex-direction: row;
-  height: 100%;
+body {
+	display: flex;
+	margin: 0;
+	height: 100%;
+	width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
 }
 
-.grid-column {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+.flex-column {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
 }
 
-.grid-cell {
-  flex: 1;
+.cell {
+	flex: 1 1 auto;
+	align-self: stretch;
 }
 
 .border {
   border: 2px solid #eee;
 }
 
-.logo
-{
-	margin-top: 9px;
-	min-width: 100px;
-	max-width: 160px;
-}
-
-#header-row {
-	height: 40px;
+.header {
 	min-height: 40px;
 	max-height: 40px;
-	-webkit-flex-align: center;
-	-ms-flex-align: center;
-	-webkit-align-items: center;
-	align-items: center;
 }
 
-#middle-row {
-	min-height: 75vh;
-	max-height: 75vh;
-}
-
-#footer-row {
+.footer {
 	min-height: 20vh;
 	max-height: 20vh;
 }
 
-.left-pane {
+#left-nav {
 	min-width: 100px;
 	max-width: 160px;
-	height: 100%;
 	overflow: auto;
-	font-size: 12px;
 }
 
-.right-pane {
+#right-nav {
 	max-width: 482px;
 	min-width: 482px;
 }
@@ -91,8 +79,7 @@
 
 #snippets select {
 	width: 100%;
-	min-height: 50vh;
-	max-height: 50vh;
+	min-height: 63vh;
 }
 
 #snippets-list
@@ -106,5 +93,7 @@
 #dbg
 {
 	font-size: 10pt;
+	padding: 0;
+	margin: 0;
 }
 
