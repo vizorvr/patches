@@ -1548,12 +1548,20 @@ console.log('new name', node.title)
 		i_txt = i_txt.replace('<break>', '<br/><hr/>');
 		
 		E2.dom.info.html(i_txt);
+		E2.dom.info.css('min-height', 'auto');
+
+		var heightNow = E2.dom.info.height();
+		var missing = E2.dom.info[0].scrollHeight - E2.dom.info[0].offsetHeight;
+		if (missing > 0)
+			E2.dom.info.css('min-height', heightNow + missing);
 	};
 	
 	this.onHideTooltip = function()
 	{
 		if(self.in_drag)
 			return false;
+
+		E2.dom.info.css('min-height', 'auto');
 
 		E2.dom.info.html('<b>Info view</b><br /><br />Hover over node instances or their slots to display their documentation here.');
 	};
