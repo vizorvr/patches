@@ -1,5 +1,5 @@
 .panel-group .panel+.panel {
-	margin-top: 0;
+	margin: 0;
 }
 
 .panel-heading {
@@ -34,3 +34,4 @@
 	background-color: #a0a0a0;
 	color: white;
 }
+

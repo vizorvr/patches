@@ -139,7 +139,11 @@ body {
 	font-size: 10pt;
 }
 
-#presets {
+#presets .searchbox {
+	flex-shrink: 0;
+}
+
+#presets .panel-group {
 	overflow: auto;
 }
 

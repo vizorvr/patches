@@ -43,32 +43,32 @@
 		<script type="text/javascript" src="scripts/player.js"></script>
 
 		<script id="collapsible-select-template" type="text/x-handlebars-template">
-			<div>
+			<div class="searchbox">
 				<input class="form-control" type="text" placeholder="Search presets"/>
-				<div class="panel-group" id="{{controlId}}">
-				{{#each categories}}
-					<div class="panel panel-default">
-						<div class="panel-heading"
-							data-toggle="collapse"
-							data-parent="#{{../controlId}}"
-							href="#cscat{{@index}}"
-						>
-						<i class="glyphicon glyphicon-chevron-right"></i>
-						{{this.title}}
-					</div>
-					<div id="cscat{{@index}}"
-						class="panel-collapse collapse{{#if this.open}} in{{/if}}">
-						<div class="panel-body">
-							<ul>
-								{{#each items}}
-									<li data-path="{{this.path}}">{{this.title}}</li>
-								{{/each}}
-							</ul>
-						</div>
+			</div>
+			<div class="panel-group" id="{{controlId}}">
+			{{#each categories}}
+				<div class="panel panel-default">
+					<div class="panel-heading"
+						data-toggle="collapse"
+						data-parent="#{{../controlId}}"
+						href="#cscat{{@index}}"
+					>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+					{{this.title}}
+				</div>
+				<div id="cscat{{@index}}"
+					class="panel-collapse collapse{{#if this.open}} in{{/if}}">
+					<div class="panel-body">
+						<ul>
+							{{#each items}}
+								<li data-path="{{this.path}}">{{this.title}}</li>
+							{{/each}}
+						</ul>
 					</div>
 				</div>
-				{{/each}}
 			</div>
+			{{/each}}
 		</script>
 
 		<script id="file-select-template" type="text/x-handlebars-template">
@@ -160,7 +160,7 @@
 				<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
 			</div>
 
-			<div id="presets"></div>
+			<div id="presets" class="flex-column"></div>
 		</div>
 
 		<script type="text/javascript">
