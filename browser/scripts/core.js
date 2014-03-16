@@ -225,12 +225,6 @@ function Core(app) {
 	{
 		var modal = $('.modal-template').clone()
 
-		// increase width of the modal for very wide content
-		if (w > 500)
-			$('.modal-dialog', modal).addClass('modal-wide')
-		else
-			$('.modal-dialog', modal).addClass('modal-sm')
-
 		function done()
 		{
 			modal.unbind()
@@ -240,14 +234,9 @@ function Core(app) {
 		$('.modal-title', modal).html(title)
 		$('.modal-body', modal).html(diag)
 
-		modal.modal({
-			keyboard: true
-		})
-
 		modal.on('show.bs.modal', function()
 		{
-			console.log('show')
-			$('')
+			$('.modal-dialog', modal).css('width', w + 50)
 		})
 
 		modal.on('shown.bs.modal', function()
@@ -257,6 +246,10 @@ function Core(app) {
 		})
 
 		modal.on('hidden.bs.modal', done)
+
+		modal.modal({
+			keyboard: true
+		})
 
 		$('button:last', modal).click(function()
 		{
