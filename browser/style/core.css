@@ -161,11 +161,16 @@ table
 	border-spacing: 0px;
 }
 
+.pl_title
+{
+	padding: 1px;
+}
+
 .pl_header
 {
-/*	background-color: #dde; */
 	background-color: #656974;
 	color: #fff;
+	border: none;
 }
 
 .pl_header .t
@@ -211,8 +216,8 @@ table
 .plugin-icon
 {
 	float: left;
-	width: 16px;
-	height: 16px;
+	width: 18px;
+	height: 18px;
 	padding: 0;
 	margin: 0;
 	margin-right: 2px;

@@ -35,6 +35,7 @@ function NodeUI(parent_node, x, y) {
 	lbl.addClass('t');
 
 	h_cell.attr('colspan', '3');
+	h_cell.addClass('pl_title');
 	h_cell.append(icon);
 	h_cell.append(lbl);
 	h_row.append(h_cell);
