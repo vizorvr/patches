@@ -378,12 +378,15 @@ function Core(app) {
 		var build = function(graph, name)
 		{
 			var nodes = graph.nodes;
-			var pnode = graph.parent_graph !== null ? graph.parent_graph.tree_node : E2.dom.structure.tree.root;
-			var tnode = pnode.add_child(name);
+			
+			if(graph.parent_graph !== null)
+			{
+				var tnode = graph.tree_node.add_child(name);
 
-			tnode.closed = !graph.open;
-			graph.tree_node = tnode;
-			tnode.graph = graph;
+				tnode.closed = !graph.open;
+				graph.tree_node = tnode;
+				tnode.graph = graph;
+			}		
 
 			for(var i = 0, len = nodes.length; i < len; i++)
 			{
@@ -395,6 +398,7 @@ function Core(app) {
 		};
 
 		E2.dom.structure.tree.reset();
+		self.root_graph.tree_node = E2.dom.structure.tree.root;
 		build(self.root_graph, 'Root');
 	};
 	

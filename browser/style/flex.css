@@ -54,14 +54,14 @@ body {
 
 #structure
 {
-	padding-left: 14px;
+	padding-left: 24px;
 	overflow: auto;
 }
 
 .tree-sub
 {
 	padding: 0px;
-	padding-left: 25px;
+	padding-left: 15px;
 }
 
 .tree-handle
@@ -97,6 +97,7 @@ body {
 	white-space: nowrap;
 	display: table;
 	margin: 0px;
+	margin-left: -10px;
 	padding: 1px 4px 1px 4px;
 	cursor: default;
 }

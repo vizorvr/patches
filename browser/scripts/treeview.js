@@ -21,11 +21,13 @@ TreeNode.prototype.add_child = function(title)
 
 TreeNode.prototype.remove = function()
 {
-	if(!this.parent)
+	if(!this.parent_node)
 		return;
 	
-	this.parent_node.dom.remove(this.dom);
-	this.parent.children.slice(this.parent.children.indexOf(this), 1);
+	var pc = this.parent_node.children;
+	
+	this.dom.remove();
+	pc.splice(pc.indexOf(this), 1);
 };
 
 TreeNode.prototype.remove_children = function(title)
@@ -55,7 +57,7 @@ TreeNode.prototype.rebuild_dom = function()
 		
 		var handle = $('<div class="tree-handle glyphicon glyphicon-chevron-' + (this.closed ? 'right' : 'down') + '"></div>');
 		
-		handle.click(function(t_node) { return function()
+		handle[0].addEventListener('mousedown', function(t_node) { return function()
 		{
 			t_node.closed = !t_node.closed;
 			t_node.rebuild_dom();
@@ -69,11 +71,22 @@ TreeNode.prototype.rebuild_dom = function()
 		
 		if(!this.closed)
 		{
-			for(var i = 0, len = this.children.length; i < len; i++)
+			var children = this.children;
+			var process_child = function(child, dirs)
 			{
-				this.children[i].rebuild_dom();
-				dom.append(this.children[i].dom);
-			}
+				if((dirs && child.children.length > 0) || (!dirs && child.children.length < 1))
+				{
+					child.rebuild_dom();
+					dom.append(child.dom);
+				}
+
+			};
+			
+			for(var i = 0, len = children.length; i < len; i++)
+				process_child(children[i], true);
+				
+			for(var i = 0, len = children.length; i < len; i++)
+				process_child(children[i], false);
 		}
 	}
 	else
@@ -84,7 +97,7 @@ TreeNode.prototype.rebuild_dom = function()
 		this.label = dom;
 	}
 	
-	this.label.click(function(t_node) { return function()
+	this.label[0].addEventListener('mousedown', function(t_node) { return function()
 	{
 		t_node.tree.select(t_node);
 	}}(this));
@@ -113,6 +126,8 @@ function TreeView(parent, on_activate, on_rearrange)
 TreeView.prototype.reset = function()
 {
 	this.root.remove_children();
+	this.root.closed = false;
+	this.root.selected = false;
 	this.root.rebuild_dom();
 };
 
