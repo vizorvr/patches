@@ -23,6 +23,10 @@ body {
 	user-select: none;
 }
 
+.btn { /* override bootstrap style */
+	border-radius: 0;
+}
+
 ol, ul
 {
     list-style: none;
