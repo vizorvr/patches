@@ -381,13 +381,13 @@ function Core(app) {
 			
 			if(graph.parent_graph !== null)
 			{
-				var tnode = graph.tree_node.add_child(name);
+				var tnode = graph.parent_graph.tree_node.add_child(name);
 
 				tnode.closed = !graph.open;
 				graph.tree_node = tnode;
 				tnode.graph = graph;
 			}		
-
+			
 			for(var i = 0, len = nodes.length; i < len; i++)
 			{
 				var n = nodes[i];
