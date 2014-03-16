@@ -140,7 +140,7 @@ body {
 }
 
 #presets {
-	overflow: scroll
+	overflow: auto;
 }
 
 #dbg
