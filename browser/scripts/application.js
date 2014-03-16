@@ -39,7 +39,7 @@ function Application() {
 	this.resize_timer = null;
 	this.is_osx = /os x 10/.test(navigator.userAgent.toLowerCase());
 	this.condensed_view = false;
-	this.collapse_log = true;
+	this.collapse_log = false;
 	
 	this.getNIDFromSlot = function(id)
 	{
@@ -1291,6 +1291,12 @@ function Application() {
 			{
 				self.condensed_view = !self.condensed_view;
 				E2.dom.left_nav.toggle(!self.condensed_view);
+				
+				if(self.condensed_view)
+					E2.dom.dbg.toggle(false);
+				else if(!self.collapse_log)
+					E2.dom.dbg.toggle(true);
+				
 				self.onWindowResize();
 				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 				return;
@@ -1298,7 +1304,7 @@ function Application() {
 			else if(e.keyCode === 76) // CTRL+l
 			{
 				self.collapse_log = !self.collapse_log;
-				E2.dom.dbg.toggle(self.collapse_log);
+				E2.dom.dbg.toggle(!self.collapse_log);
 				self.onWindowResize();
 				e.preventDefault();
 				return;
