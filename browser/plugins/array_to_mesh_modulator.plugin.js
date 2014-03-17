@@ -35,10 +35,10 @@ E2.p.prototype.update_vertex_buffer = function(v_name, v_type, data)
 	if(data)
 	{
 		
-		if(!vbs[v_type])
+		if(!vbs[v_name])
 			vbs[v_name] = new VertexBuffer(this.gl, v_type);
 		
-		vbs[v_name].bind_data(data);
+		vbs[v_name].bind_data(data, this.gl.DRAW_DYNAMIC);
 	}
 	else
 		vbs[v_name] = null;
