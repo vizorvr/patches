@@ -1396,10 +1396,13 @@ function Application() {
 				{
 					var con = ind.inputs[c];
 					var dat = con.src_node.data;
-					var right = dat.x + dat.w + 20 + (con.offset * 10);
-					var nx = id.x < right ? right - id.x : 0;
+					var tgt_x = dat.x + dat.w + 20 + (con.offset * 10);
+					var tgt_y = dat.y + 16 + (con.src_slot.index * 16);
+					var nx = id.x < tgt_x ? tgt_x - id.x : -1;
+					var ny = id.y < tgt_y ? 5 : -5;
 				
 					id.x += nx;
+					id.y += ny;
 					intersect = true;
 				}
 			
