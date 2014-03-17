@@ -19,7 +19,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.create_ui = function()
 {
-	var inp = $('<input id="state" type="button" value="Enable" />');
+	var inp = makeButton('Enable');
 	
 	inp.click(function(self) { return function(e) 
 	{

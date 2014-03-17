@@ -24,7 +24,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.create_ui = function()
 {
-	var inp = $('<input class="url" type="button" value="Source" title="No texture selected." />');
+	var inp = makeButton('Source', 'No texture selected.', 'url');
 	var self = this;
 	
 	inp.click(function()

@@ -23,7 +23,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.create_ui = function()
 {
-	var inp = $('<input class="url" type="button" value="Source" title="No JSON selected." />');
+	var inp = makeButton('Source', 'No JSON selected.', 'url');
 	var self = this;
 
 	inp.click(function()

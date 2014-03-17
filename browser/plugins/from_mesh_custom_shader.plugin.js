@@ -34,9 +34,9 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 	var diag = make('span');
 	var src = $('<pre id="editor"></pre>'); 
 	var btn_span = make('span');
-	var comp_btn = $('<input id="comp_btn" type="button" value="Compile" title="Click to rebuild the shader." />');
-	var add_btn = $('<input id="add_btn" type="button" value="+" title="Click to add new shader input slot." />');
-	var rem_btn = $('<input id="rem_btn" type="button" value="-" title="Click to remove the selected slot(s)." />');
+	var comp_btn = makeButton('Compile', 'Click to rebuild the shader.');
+	var add_btn = makeButton('+', 'Click to add new shared input slot.');
+	var rem_btn = makeButton('-', 'Click to remove the selected slot(s).');
 	var slot_list = $('<select size="4" />');
 	var shader_lbl = $('<div>Shader</div>');
 	var slot_lbl = $('<div>Inputs</div>');
@@ -236,8 +236,8 @@ E2.p.prototype.open_editor = function(self, src_id, title, done_func, dest) { re
 E2.p.prototype.create_ui = function()
 {
 	var layout = make('div');
-	var inp_vs = $('<input id="vs_btn" type="button" value="Vertex" title="Click to edit the vertex shader source." />');
-	var inp_ps = $('<input id="ps_btn" type="button" value="Pixel" title="Click to edit the pixel shader source." />');
+	var inp_vs = makeButton('Vertex', 'Click to edit the vertex shader source.');
+	var inp_ps = makeButton('Pixel', 'Click to edit the pixel shader source.');
 	
 	inp_vs.css('width', '55px');
 	inp_ps.css('width', '55px');

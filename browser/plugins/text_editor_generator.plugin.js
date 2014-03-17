@@ -67,7 +67,7 @@ E2.p.prototype.open_editor = function(self) { return function(e)
 
 E2.p.prototype.create_ui = function()
 {
-	var inp = $('<input id="btn" type="button" value="Open" title="Click to edit the contents." />');
+	var inp = makeButton('Open', 'Click to edit the contents.');
 	
 	inp.css('width', '55px');
 	inp.click(this.open_editor(this));

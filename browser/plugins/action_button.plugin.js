@@ -5,7 +5,7 @@ E2.p = E2.plugins["action_button"] = function(core, node)
 	this.input_slots = [];
 	
 	this.output_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'True once each time the button pis clicked.' }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'True once each time the button is clicked.' }
 	];
 	
 	this.node = node;
@@ -19,7 +19,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.create_ui = function()
 {
-	var inp = $('<input id="state" class="e_btn" type="button" value="Click" />');
+	var inp = makeButton('Click', null, e_btn);
 	
 	inp.click(function(self) { return function(e) 
 	{
