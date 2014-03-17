@@ -1385,13 +1385,20 @@ function Application() {
 		
 		do
 		{
-			intersect = false;
-
 			for(var i = 0, len = nodes.length; i < len; i++)
 			{
 				var id = data[i];
 				var ind = nodes[i];
 
+				if(ind.outputs.length === 1 && ind.inputs.length === 0)
+				{
+					var con = ind.outputs[0];
+					var dat = con.dst_node.data;
+					var tgt_x = dat.x + dat.w - 20 - (con.offset * 10);
+
+					id.x += (tgt_x - id.x) / 40;
+				}
+				
 				for(var c = 0, clen = ind.inputs.length; c < clen; c++)
 				{
 					var con = ind.inputs[c];
@@ -1403,7 +1410,6 @@ function Application() {
 				
 					id.x += nx;
 					id.y += ny;
-					intersect = true;
 				}
 			
 				for(var i2 = 0, len2 = nodes.length; i2 < len2; i2++)
@@ -1419,8 +1425,6 @@ function Application() {
 					if(((i2d.x >= id.x - spc && i2d.x <= (id.x + id.w + spc)) || (id.x >= i2d.x - spc && id.x <= (i2d.x + i2d.w + spc))) &&
 					   ((i2d.y >= id.y - spc && i2d.y <= (id.y + id.h + spc)) || (id.y >= i2d.y - spc && id.y <= (i2d.y + i2d.h + spc))))
 					{
-						intersect = true;
-				
 						i2d.x += Math.floor(-n_x * 0.15);
 						i2d.y += Math.floor(-n_y * 0.15);
 					}
@@ -1432,7 +1436,7 @@ function Application() {
 			
 			pass++;
 		}
-		while(intersect && pass < 20);
+		while(pass < 20);
 
 		var mx = 10000000;
 		var my = 10000000;
