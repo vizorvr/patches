@@ -3,12 +3,6 @@ Engi
 
 Engi is a HTML5/WebGL-compliant [dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming) editor.
 
-# Contributors
-
-Lasse Jul Nielsen, Jaakko Manninen and Antti Jädertpolm.
-
-With thanks to: Don Hopkins.
-
 # Introduction
 
 By routing data between nodes in a directed acyclic graph, arbitrary logic can be constructed. This is a 
