@@ -228,8 +228,6 @@ function Renderer(canvas_id, core)
 	if(!this.context)
 		window.location = 'no_webgl.html';
 	
-	// this.context = WebGLDebugUtils.makeDebugContext(this.context);
-	
 	this.texture_cache = new TextureCache(this.context, core);
 	this.shader_cache = new ShaderCache(this.context);
 	this.fullscreen = false;
@@ -471,13 +469,13 @@ VertexBuffer.prototype.enable = function()
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 };
 
-VertexBuffer.prototype.bind_data = function(v_data)
+VertexBuffer.prototype.bind_data = function(v_data, draw_mode)
 {
 	var gl = this.gl;
 
 	this.count = (v_data.toString() === '[object ArrayBuffer]' ? v_data.byteLength / 4 : v_data.length) / VertexBuffer.type_stride[this.type];
 	this.enable();
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v_data), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v_data), typeof draw_mode !== 'undefined' ? draw_mode : gl.STATIC_DRAW);
 };
 
 VertexBuffer.prototype.bind_to_shader = function(shader)
