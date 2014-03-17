@@ -240,7 +240,7 @@ E2.p.prototype.create_ui = function()
 	var inp_ps = makeButton('Pixel', 'Click to edit the pixel shader source.');
 	
 	inp_vs.css('width', '55px');
-	inp_ps.css('width', '55px');
+	inp_ps.css({ 'width': '55px', 'margin-top': '5px' });
 	
 	var done_func = function(self) { return function(diag)
 	{
