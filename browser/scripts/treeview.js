@@ -109,16 +109,17 @@ function TreeView(parent, on_activate, on_rearrange)
 	this.parent = parent;
 	this.on_activate = on_activate;
 	this.on_rearrange = on_rearrange;
-	this.selected_node = null;
 	this.root = new TreeNode(this, null, 'Root', null);
 
-	this.root.rebuild_dom();
+	this.reset();
 	this.parent.append(this.root.dom);
 }
 
 TreeView.prototype.reset = function()
 {
 	this.root.remove_children();
+	this.drag_node = null;
+	this.selected_node = null;
 	this.root.closed = false;
 	this.root.selected = false;
 	this.root.rebuild_dom();
@@ -137,4 +138,16 @@ TreeView.prototype.select = function(t_node)
 	this.selected_node = t_node;
 	t_node.selected = true;
 	t_node.label.addClass('tree-selected');
+	this.drag_node = t_node;
+};
+
+TreeView.prototype.on_mouse_up = function()
+{
+	self.drag_node = null;
+};
+
+TreeView.prototype.on_mouse_move = function()
+{
+	if(!self.drag_node)
+		return;
 };
