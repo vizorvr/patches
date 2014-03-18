@@ -152,6 +152,7 @@ table
 	width: 16px;
 	height: 16px;
 	margin: 2px;
+	margin-left: 5px;
 	border: 1px;
 	background: url('../images/config.png') no-repeat;
 	position: relative;
