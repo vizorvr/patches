@@ -882,7 +882,7 @@ function Application() {
 		}
 		else if(!self.selection_start)
 		{
-			E2.dom.structure.tree.on_mouse_move();
+			E2.dom.structure.tree.on_mouse_move(e);
 			return;
 		}
 		

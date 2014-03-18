@@ -49,6 +49,7 @@ TreeNode.prototype.set_title = function(title)
 TreeNode.prototype.rebuild_dom = function()
 {
 	var dom = null;
+	var lbl = null;
 		
 	if(this.children.length > 0 || this.parent_node === null)
 	{
@@ -65,9 +66,9 @@ TreeNode.prototype.rebuild_dom = function()
 		
 		dom.append(handle);
 		
-		this.label = $('<span class="tree-name">' + this.title + '</span>');
+		lbl = $('<span class="tree-name">' + this.title + '</span>');
 		
-		dom.append(this.label);
+		dom.append(lbl);
 		
 		if(!this.closed)
 		{
@@ -87,21 +88,30 @@ TreeNode.prototype.rebuild_dom = function()
 		dom = make('span');
 		dom.addClass('tree-item');
 		dom.text(this.title);
-		this.label = dom;
+		lbl = dom;
 	}
 	
-	this.label[0].addEventListener('mousedown', function(t_node) { return function()
+	lbl[0].addEventListener('mouseover', function(t_node) { return function()
+	{
+		t_node.tree.on_mouse_over(t_node);
+	}}(this));
+
+	lbl[0].addEventListener('mousedown', function(t_node) { return function()
 	{
 		t_node.tree.select(t_node);
+		
+		if(t_node !== t_node.tree.root && t_node.parent_node.children.length > 1)
+			t_node.tree.drag_node = t_node;
 	}}(this));
 	
 	if(this.selected)
-		this.label.addClass('tree-selected');
+		lbl.addClass('tree-selected');
 	
 	if(this.dom)
 		this.dom.replaceWith(dom);
 	
 	this.dom = dom;
+	this.label = lbl;
 };
 
 function TreeView(parent, on_activate, on_rearrange)
@@ -119,6 +129,8 @@ TreeView.prototype.reset = function()
 {
 	this.root.remove_children();
 	this.drag_node = null;
+	this.drag_dom = null;
+	this.drag_tgt = null;
 	this.selected_node = null;
 	this.root.closed = false;
 	this.root.selected = false;
@@ -129,7 +141,7 @@ TreeView.prototype.select = function(t_node)
 {
 	if(this.selected_node)
 	{
-		this.selected_node.label.removeClass('tree-selected');
+		this.selected_node.label.removeClass('tree-active');
 		this.selected_node.selected = false;
 	}
 		
@@ -137,17 +149,87 @@ TreeView.prototype.select = function(t_node)
 
 	this.selected_node = t_node;
 	t_node.selected = true;
-	t_node.label.addClass('tree-selected');
-	this.drag_node = t_node;
+	t_node.label.addClass('tree-active');
 };
 
 TreeView.prototype.on_mouse_up = function()
 {
-	self.drag_node = null;
+	if(this.drag_dom)
+	{
+		this.drag_dom.remove();
+		this.drag_dom = null;
+	}
+	
+	if(this.drag_tgt)
+	{
+		this.drag_tgt.removeClass('tree-drag-tgt-top tree-drag-tgt-bot');
+		this.drag_tgt = null;
+	}
+
+	this.drag_node = null;
 };
 
-TreeView.prototype.on_mouse_move = function()
+TreeView.prototype.on_mouse_move = function(e)
 {
-	if(!self.drag_node)
+	if(!this.drag_node)
 		return;
+	
+	if(!this.drag_dom)
+	{
+		var t_offs = this.drag_node.dom.offset();
+		var x_dist = e.pageX - t_offs.left;
+		var y_dist = e.pageY - t_offs.top;
+		var d = Math.sqrt(Math.pow(x_dist, 2) + Math.pow(y_dist, 2));
+		
+		this.drag_dom = this.drag_node.dom.clone(false, false);
+		var is_item = this.drag_dom.hasClass('tree-item');
+		
+		if(is_item)
+		{
+			var ul = make('ul');
+			
+			ul.addClass('tree-sub tree-drag tree-drag-item');
+			ul.append(this.drag_dom);
+			
+			this.drag_dom = ul;
+			this.drag_tgt = this.drag_node.dom;
+		}
+		else
+		{
+			this.drag_dom.addClass('tree-drag tree-drag-sub');
+			this.drag_tgt = this.drag_dom;
+		}
+		
+		this.drag_dom.fadeTo('fast', 0.75);
+		$('body').append(this.drag_dom);
+	}
+	
+	this.drag_dom.css({
+		'left': e.pageX + 'px',
+		'top': e.pageY + 'px'
+	});
+	
+	var tgt = this.drag_tgt;
+	
+	if(tgt)
+	{
+		var mid_y = tgt.offset().top + 16;
+		
+		tgt.removeClass('tree-drag-tgt-top tree-drag-tgt-bot');
+		tgt.addClass(e.pageY < mid_y ? 'tree-drag-tgt-top' : 'tree-drag-tgt-bot');
+	}
+};
+
+TreeView.prototype.on_mouse_over = function(t_node)
+{
+	if(!this.drag_node)
+		return;
+		
+	if(this.drag_tgt)
+		this.drag_tgt.removeClass('tree-drag-tgt-top tree-drag-tgt-bot');
+	
+	if(this.drag_node.parent_node.children.indexOf(t_node) < 0)
+		return;
+	
+	this.drag_tgt = t_node.dom;
 };
