@@ -46,7 +46,7 @@ function makeButton(text, alt, className)
 	text = text || '';
 	alt = alt || '';
 	className = className || '';
-	return $('<button class="btn btn-xs '+className+'" title="'+alt+'">'+text+'</button>');
+	return $('<button class="btn btn-xs ' + className + '" title="' + alt +'">' + text + '</button>');
 }
 
 function resolve_graph(graphs, guid)
