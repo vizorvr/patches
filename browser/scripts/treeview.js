@@ -131,8 +131,10 @@ TreeView.prototype.reset = function()
 	this.drag_node = null;
 	this.drag_dom = null;
 	this.drag_tgt = null;
+	this.drag_tgt_node = null;
 	this.drag_indicator = null;
 	this.selected_node = null;
+	this.insert_after = false;
 	this.root.closed = false;
 	this.root.selected = false;
 	this.root.rebuild_dom();
@@ -155,19 +157,51 @@ TreeView.prototype.select = function(t_node)
 
 TreeView.prototype.on_mouse_up = function()
 {
-	if(this.drag_dom)
+	if(this.drag_tgt && this.drag_indicator)
+	{
+		var p = this.drag_node.dom.parent();
+		var ofs = p[0].tagName.toString() === 'UL' ? 2 : 0;
+		var oi = p.children().index(this.drag_node.dom) - ofs;
+		var pcn = this.drag_node.parent_node.children;
+		
+		this.drag_node.dom.remove();
+		this.drag_indicator.replaceWith(this.drag_node.dom);
+
+		var ni = p.children().index(this.drag_node.dom) - ofs;
+		
+		// With the elements placed correctly, update the children array to match. Ie. move 
+		// children[oi] -> children[ni]], maintaing the original order otherwise.
+		if(ni >= pcn.length)
+		{
+			var k = ni - pcn.length;
+			
+			while((k--) + 1)
+				pcn.push(undefined);
+		}
+		
+		pcn.splice(ni, 0, pcn.splice(oi, 1)[0]);
+		
+		if(this.on_rearrange)
+		{
+			var original = this.drag_node.graph.plugin.parent_node;
+			var sibling = this.drag_tgt_node.graph.plugin.parent_node;
+			
+			this.on_rearrange(this.drag_node.parent_node.graph, original, sibling, this.insert_after);
+		}
+	}
+	else if(this.drag_indicator)
+		this.drag_indicator.remove();
+	
+ 	if(this.drag_dom)
 	{
 		this.drag_dom.remove();
 		this.drag_dom = null;
 	}
 	
-	if(this.drag_indicator)
-	{
-		this.drag_indicator.remove();
-		this.drag_indicator = null;
-	}
-
+	this.insert_after = false;
+	this.drag_indicator = null;
 	this.drag_tgt = null;
+	this.drag_tgt_node = null;
 	this.drag_node = null;
 };
 
@@ -194,12 +228,12 @@ TreeView.prototype.on_mouse_move = function(e)
 			ul.append(this.drag_dom);
 			
 			this.drag_dom = ul;
-			this.drag_tgt = this.drag_node.dom;
+			// this.drag_tgt = this.drag_node.dom;
 		}
 		else
 		{
 			this.drag_dom.addClass('tree-drag tree-drag-sub');
-			this.drag_tgt = this.drag_dom;
+			// this.drag_tgt = this.drag_dom;
 		}
 		
 		this.drag_indicator = this.drag_node.dom.clone();
@@ -218,14 +252,13 @@ TreeView.prototype.on_mouse_move = function(e)
 	
 	if(tgt)
 	{
-		var mid_y = tgt.offset().top + 16;
-		
 		this.drag_indicator.remove();
+		this.insert_after = e.pageY >= tgt.offset().top + 16;
 		
-		if(e.pageY < mid_y)
-			this.drag_indicator.insertBefore(tgt);
-		else
+		if(this.insert_after)
 			this.drag_indicator.insertAfter(tgt);
+		else
+			this.drag_indicator.insertBefore(tgt);
 	}
 };
 
@@ -238,4 +271,5 @@ TreeView.prototype.on_mouse_over = function(t_node)
 		return;
 	
 	this.drag_tgt = t_node.dom;
+	this.drag_tgt_node = t_node;
 };

@@ -332,27 +332,22 @@ Graph.prototype.build_breadcrumb = function(parent, add_handler)
 		this.parent_graph.build_breadcrumb(parent, true);
 };
 
-Graph.prototype.reorder_children = function(node, src, hit_mode)
+Graph.prototype.reorder_children = function(original, sibling, insert_after)
 {
-	var nn = node.graph.plugin.parent_node;
-	var sn = src.graph.plugin.parent_node;
-	
 	var reorder = function(arr)
 	{
-		arr.remove(sn);
+		arr.remove(original);
 		
-		var i = arr.indexOf(nn);
+		var i = arr.indexOf(sibling);
 		
-		if(hit_mode === 'after')
+		if(insert_after)
 			i++;
 		
-		arr.splice(i, 0, sn);
+		arr.splice(i, 0, original);
 	};
 	
-	// We have to reorder the .nodes array too, since the .children array is not persisted and
-	// is rebuilt from .nodes during deserialization.
-	reorder(this.children, node, src, hit_mode);
-	reorder(this.nodes, node, src, hit_mode);
+	reorder(this.children);
+	reorder(this.nodes);
 };
 
 Graph.resolve_graph = function(graphs, guid)

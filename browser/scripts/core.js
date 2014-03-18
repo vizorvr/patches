@@ -465,9 +465,9 @@ E2.InitialiseEngi = function()
 		E2.app.player.core.onGraphSelected(graph);
 		E2.app.updateCanvas(true);
 	},
-	function(graph_node)
+	function(graph, original, sibling, insert_after)
 	{ // On child dropped
-		graph_node.parent.graph.reorder_children(null, null, null); // TODO:
+		graph.reorder_children(original, sibling, insert_after);
 	});
 
 	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, E2.dom.structure.tree.root);
