@@ -131,6 +131,7 @@ TreeView.prototype.reset = function()
 	this.drag_node = null;
 	this.drag_dom = null;
 	this.drag_tgt = null;
+	this.drag_indicator = null;
 	this.selected_node = null;
 	this.root.closed = false;
 	this.root.selected = false;
@@ -160,12 +161,13 @@ TreeView.prototype.on_mouse_up = function()
 		this.drag_dom = null;
 	}
 	
-	if(this.drag_tgt)
+	if(this.drag_indicator)
 	{
-		this.drag_tgt.removeClass('tree-drag-tgt-top tree-drag-tgt-bot');
-		this.drag_tgt = null;
+		this.drag_indicator.remove();
+		this.drag_indicator = null;
 	}
 
+	this.drag_tgt = null;
 	this.drag_node = null;
 };
 
@@ -181,7 +183,7 @@ TreeView.prototype.on_mouse_move = function(e)
 		var y_dist = e.pageY - t_offs.top;
 		var d = Math.sqrt(Math.pow(x_dist, 2) + Math.pow(y_dist, 2));
 		
-		this.drag_dom = this.drag_node.dom.clone(false, false);
+		this.drag_dom = this.drag_node.dom.clone();
 		var is_item = this.drag_dom.hasClass('tree-item');
 		
 		if(is_item)
@@ -200,6 +202,9 @@ TreeView.prototype.on_mouse_move = function(e)
 			this.drag_tgt = this.drag_dom;
 		}
 		
+		this.drag_indicator = this.drag_node.dom.clone();
+		this.drag_indicator.find('.tree-active').removeClass('tree-active').addClass('tree-dupe');
+		this.drag_indicator.removeClass('tree-active').addClass('tree-dupe');
 		this.drag_dom.fadeTo('fast', 0.75);
 		$('body').append(this.drag_dom);
 	}
@@ -215,8 +220,12 @@ TreeView.prototype.on_mouse_move = function(e)
 	{
 		var mid_y = tgt.offset().top + 16;
 		
-		tgt.removeClass('tree-drag-tgt-top tree-drag-tgt-bot');
-		tgt.addClass(e.pageY < mid_y ? 'tree-drag-tgt-top' : 'tree-drag-tgt-bot');
+		this.drag_indicator.remove();
+		
+		if(e.pageY < mid_y)
+			this.drag_indicator.insertBefore(tgt);
+		else
+			this.drag_indicator.insertAfter(tgt);
 	}
 };
 
@@ -225,10 +234,7 @@ TreeView.prototype.on_mouse_over = function(t_node)
 	if(!this.drag_node)
 		return;
 		
-	if(this.drag_tgt)
-		this.drag_tgt.removeClass('tree-drag-tgt-top tree-drag-tgt-bot');
-	
-	if(this.drag_node.parent_node.children.indexOf(t_node) < 0)
+	if(this.drag_node === t_node || this.drag_node.parent_node.children.indexOf(t_node) < 0)
 		return;
 	
 	this.drag_tgt = t_node.dom;

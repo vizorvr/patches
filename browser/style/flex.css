@@ -108,6 +108,12 @@ body {
 	color: #fff;
 }
 
+.tree-dupe
+{
+	background-color: #2cdd82;
+	color: #fff;
+}
+
 .tree-drag
 {
 	position: absolute;
@@ -128,16 +134,8 @@ body {
 	padding-left: 0px;
 }
 
-.tree-drag-tgt-top
+.tree-drag-indicator
 {
-	margin-top: 10px;
-	border-top: 2px solid #444;
-}
-
-.tree-drag-tgt-bot
-{
-	margin-bottom: 10px;
-	border-bottom: 2px solid #444;
 }
 
 #canvas_parent {
