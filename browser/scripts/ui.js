@@ -4,7 +4,7 @@ function ExpandableTextfield(node, tf, def_width)
 	{
 		var s = '' + tf.val();
 		
-		tf.css('width', '' + ((Math.max(def_width, s.length) * 7) + 2) + 'px');
+		tf[0].style.width = ((Math.max(def_width, s.length) * 7) + 2) + 'px';
 		node.geometry_updated();
 	}}(node, tf, def_width);
 	

@@ -1249,9 +1249,10 @@ function Application() {
 		else if(e.keyCode === 9) // tab to focus to presets search
 		{
 			if (!is_text_input_in_focus())
+			{
 				$('input', E2.dom.presets_list).focus();
-
-			e.preventDefault();
+				e.preventDefault();
+			}
 		}
 		else if(e.keyCode === (this.is_osx ? 91 : 17))  // CMD on OSX, CTRL on everything else
 		{
