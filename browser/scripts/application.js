@@ -39,7 +39,7 @@ function Application() {
 	this.resize_timer = null;
 	this.is_osx = /os x 10/.test(navigator.userAgent.toLowerCase());
 	this.condensed_view = false;
-	this.collapse_log = false;
+	this.collapse_log = true;
 	
 	this.getNIDFromSlot = function(id)
 	{
