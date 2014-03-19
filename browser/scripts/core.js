@@ -75,6 +75,7 @@ function PresetManager(base_url)
 		  			msg('ERROR: Failed to load the selected preset.');
 				})
 			})
+			.focus()
 	})
 	.fail(function() {
 		msg('PresetsMgr: No presets found.');

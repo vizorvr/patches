@@ -13,6 +13,11 @@ CollapsibleSelectControl.prototype.data = function(d) {
 
 CollapsibleSelectControl.prototype.onOpen = function(cb) {
 	this._cb = cb;
+	return this;
+}
+
+CollapsibleSelectControl.prototype.focus = function() {
+	$('input', this._el).focus();
 }
 
 CollapsibleSelectControl.prototype._reset = function() {
