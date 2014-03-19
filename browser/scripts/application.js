@@ -1237,7 +1237,16 @@ function Application() {
 	this.onKeyDown = function(e)
 	{
 				
-		if(e.keyCode === (this.is_osx ? 91 : 17))  // CMD on OSX, CTRL on everything else
+		var rx = /INPUT|SELECT|TEXTAREA/i;
+
+		if(e.keyCode === 8)
+		{
+			if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly) {
+				e.preventDefault();
+				return;
+			}
+		}
+		else if(e.keyCode === (this.is_osx ? 91 : 17))  // CMD on OSX, CTRL on everything else
 		{
 			self.ctrl_pressed = true;
 		}
@@ -1249,7 +1258,7 @@ function Application() {
 		}
 		else if(e.keyCode === 32)
 		{
-			if(e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT')
+			if(rx.test(e.target.tagName))
 				return;
 			
 			if(self.player.current_state === self.player.state.PLAYING)
@@ -1297,10 +1306,8 @@ function Application() {
 				e.preventDefault();
 				return;
 			}
-			
-			var tgt = e.target.tagName;
-			
-			if(tgt === 'INPUT' || tgt === 'TEXTAREA')
+
+			if(rx.test(e.target.tagName))
 				return;
 				
 			if(e.keyCode === 67) // CTRL+c
@@ -1626,19 +1633,6 @@ function Application() {
 	{
 		return 'Oh... Please don\'t go.';
 	});*/
-
-	var rx = /INPUT|SELECT|TEXTAREA/i;
-
-	$(document).bind("keydown keypress", function(e)
-	{
-		if(e.keyCode !== 8)
-			return;
-
-		if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly)
-		{
-			e.preventDefault();
-		}
-	});
 
 	$('button#fullscreen').click(function()
 	{
