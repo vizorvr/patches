@@ -53,24 +53,12 @@ E2.p.prototype.update_state = function()
 	gl.bindFramebuffer(gl.FRAMEBUFFER, this.texture.framebuffer);
 	gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, img_data);
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-	
-	var s_rep = [];
-	
-	for(var i = 0; i < size; i += 4)
-	{
-		s_rep.push(img_data[i]);
-		s_rep.push(img_data[i+1]);
-		s_rep.push(img_data[i+2]);
-	}
-	
+
 	var data = new FormData();
-	
-	data.append('width', w);
-	data.append('height', h);
-	data.append('img_data', s_rep);
+	data.append('img_data', new Blob([img_data], { type: 'image/png' }));
 
 	$.ajax({
-		url: this.url,
+		url: this.url + '?width='+w+'&'+'height='+h,
 		data: data,
 		async: false,
 		contentType: false,
