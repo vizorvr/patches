@@ -1265,7 +1265,7 @@ function Application() {
 		}
 		else if(e.keyCode === 32)
 		{
-			if(rx.test(e.target.tagName))
+			if(is_text_input_in_focus())
 				return;
 			
 			if(self.player.current_state === self.player.state.PLAYING)
