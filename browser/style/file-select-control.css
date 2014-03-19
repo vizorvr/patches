@@ -29,3 +29,7 @@
 	background-color: black;
 	color: white;
 }
+
+.file-selector tr {
+	cursor: pointer;
+}

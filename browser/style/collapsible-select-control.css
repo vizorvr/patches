@@ -1,5 +1,6 @@
 .panel-group {
 	margin: 0;
+	overflow: auto;
 }
 
 .panel-group .panel+.panel {
@@ -32,6 +33,7 @@
 }
 
 .panel-body li {
+	cursor: pointer;
 }
 
 .panel-body li:hover {
