@@ -56,7 +56,7 @@ function PresetManager(base_url)
 			}
 		});
 
-		new CollapsibleSelectControl()
+		var presets_list = new CollapsibleSelectControl()
 			.data(presets)
 			.render(E2.dom.presets_list)
 			.onOpen(function(path) {
@@ -75,7 +75,9 @@ function PresetManager(base_url)
 		  			msg('ERROR: Failed to load the selected preset.');
 				})
 			})
-			.focus()
+
+		if(!window.location.hash)
+			presets_list.focus()
 	})
 	.fail(function() {
 		msg('PresetsMgr: No presets found.');
