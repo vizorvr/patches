@@ -1236,15 +1236,22 @@ function Application() {
 
 	this.onKeyDown = function(e)
 	{
-				
-		var rx = /INPUT|SELECT|TEXTAREA/i;
+		function is_text_input_in_focus() {
+			var rx = /INPUT|SELECT|TEXTAREA/i;
+			return (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
+		}
 
-		if(e.keyCode === 8)
+		if(e.keyCode === 8) // prevent backspace from going back
 		{
-			if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly) {
+			if(!is_text_input_in_focus())
 				e.preventDefault();
-				return;
-			}
+		}
+		else if(e.keyCode === 9) // tab to focus to presets search
+		{
+			if (!is_text_input_in_focus())
+				$('input', E2.dom.presets).focus();
+
+			e.preventDefault();
 		}
 		else if(e.keyCode === (this.is_osx ? 91 : 17))  // CMD on OSX, CTRL on everything else
 		{
@@ -1307,7 +1314,7 @@ function Application() {
 				return;
 			}
 
-			if(rx.test(e.target.tagName))
+			if(is_text_input_in_focus())
 				return;
 				
 			if(e.keyCode === 67) // CTRL+c
