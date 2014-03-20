@@ -144,7 +144,7 @@ Node.prototype.add_slot = function(slot_type, def)
 	
 	if(this.ui)
 	{
-		var col = this.ui.dom.find(is_inp ? '#ic' : '#oc');
+		var col = this.ui.dom.find(is_inp ? '.ic' : '.oc');
 		
 		NodeUI.create_slot(this, 'n' + this.uid, col, def, slot_type);
 		this.update_connections();
