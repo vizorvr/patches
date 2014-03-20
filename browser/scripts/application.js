@@ -886,6 +886,9 @@ function Application() {
 			return;
 		}
 		
+		if(!self.selection_end)
+			return;
+		
 		self.mouseEventPosToCanvasCoord(e, self.selection_end);
 		
 		var nodes = self.player.core.active_graph.nodes;
