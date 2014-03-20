@@ -39,22 +39,22 @@ var app = express()
 				width: req.query.width,
 				height: req.query.height,
 				filterType: -1
-			})
+			});
 
-			file.on('data', function(d) {
+			file.on('data', function(png) { return function(d) {
 				d.copy(png.data, offset)
 				offset += d.length
-			})
+			}}(png));
 
-			file.on('end', function() {
+			file.on('end', function(png) { return function() {
 				console.log('Frame', framePngName)
 				png.pack()
 					.pipe(fs.createWriteStream(framePngName))
 					.on('close', function() {
 						res.set('Access-Control-Allow-Origin', '*')
 						res.send(200)
-					})
-			})
+					});
+			}}(png));
 		})
 	})
 	.listen(5000)
