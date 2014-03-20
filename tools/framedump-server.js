@@ -17,20 +17,21 @@ function lpad(n, width) {
 var app = express()
 	.use(busboy({ immediate: true }))
 	.get('/reset', function(req, res) {
-		console.log('RESET')
-		frameIndex = 0
+		res.setHeader('Access-Control-Allow-Origin', '*');
+		console.log('RESET');
+		frameIndex = 0;
 		exec('rm -f ' + cachePath + '/*.png', function() {
-			exec('mkdir -p ' + cachePath)
-			res.send(200)
+			exec('mkdir -p ' + cachePath);
+			res.send(200);
 		})
 	})
 	.post('/', function(req, res) {
-		var offset = 0
+		res.setHeader('Access-Control-Allow-Origin', '*');
 
 		req.busboy.on('file', function(_field, file) {
 			if (!req.query.width || !req.query.height) {
-				console.error('The client did not specify a width or height')
-				return res.end(400)
+				console.error('The client did not specify a width or height');
+				return res.end(400);
 			}
 
 			var framePngName = cachePath + '/' +lpad(frameIndex++, 8) + '.png';
@@ -41,13 +42,16 @@ var app = express()
 				filterType: -1
 			});
 
+			png.offset = 0;
+			
 			file.on('data', function(png) { return function(d) {
-				d.copy(png.data, offset)
-				offset += d.length
+				d.copy(png.data, png.offset);
+				png.offset += d.length;
+				console.log('Offset: ' + png.offset);
 			}}(png));
 
 			file.on('end', function(png) { return function() {
-				console.log('Frame', framePngName)
+				console.log('Frame', framePngName);
 				png.pack()
 					.pipe(fs.createWriteStream(framePngName))
 					.on('close', function() {
@@ -55,7 +59,7 @@ var app = express()
 						res.send(200)
 					});
 			}}(png));
-		})
+		});
 	})
 	.listen(5000)
 
