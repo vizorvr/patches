@@ -561,7 +561,7 @@ LinkedSlotGroup.prototype.set_dt = function(dt)
 
 LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot)
 {
-	if(!(slot in this.inputs) && !(slot in this.outputs))
+	if(this.inputs.indexOf(slot) === -1 && this.outputs.indexOf(slot) === -1)
 		return;
 		
 	this.n_connected += on ? 1 : -1;
