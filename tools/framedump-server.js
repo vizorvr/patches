@@ -1,7 +1,7 @@
 "use strict";
 
 var express = require('express')
-var busboy = require('connect-busboy')
+var formidable = require('formidable')
 var PNG = require('node-png').PNG
 var fs = require('fs')
 var exec = require('child_process').exec
@@ -17,7 +17,6 @@ function lpad(n, width)
 }
 
 var app = express()
-	.use(busboy({ immediate: true }))
 	.get('/reset', function(req, res) {
 		res.setHeader('Access-Control-Allow-Origin', '*');
 		console.log('RESET');
@@ -30,36 +29,39 @@ var app = express()
 	.post('/', function(req, res) {
 		res.setHeader('Access-Control-Allow-Origin', '*');
 
-		req.busboy.on('file', function(res, req) { return function(_field, file) {
-			if (!req.query.width || !req.query.height) {
-				console.error('The client did not specify a width or height');
-				return res.end(400);
-			}
+		if (!req.query.width || !req.query.height) {
+			console.error('The client did not specify a width or height');
+			return res.send(400);
+		}
 
-			var png = new PNG({
-				width: req.query.width,
-				height: req.query.height,
-				filterType: -1
-			});
+		var png = new PNG({
+			width: req.query.width,
+			height: req.query.height,
+			filterType: -1
+		});
 
-			png.offset = 0;
-			png.fileName = cachePath + '/'  + lpad(frameIndex++, 8) + '.png';
-			
-			file.on('data', function(png) { return function(d) {
+		png.offset = 0
+		png.fileName = cachePath + '/'  + lpad(frameIndex++, 8) + '.png';
+
+		console.log('Frame: ' + png.fileName);
+		
+		var form = new formidable.IncomingForm();
+		form.onPart = function(png) { return function(part) {
+			part.on('data', function(d) {
 				d.copy(png.data, png.offset);
-				png.offset += d.length;
-				console.log('Offset: ' + png.offset);
-			}}(png));
+				png.offset += d.length
+			})
+		}}(png)
 
-			file.on('end', function(res, png) { return function() {
-				console.log('Frame: ' + png.fileName);
-				png.pack()
-					.pipe(fs.createWriteStream(png.fileName))
-					.on('close', function(res) { return function() {
-						res.send(200)
-					}}(res));
-			}}(res, png));
-		}}(res, req));
+		form.on('end', function(png) { return function() {
+			png.pack()
+				.pipe(fs.createWriteStream(png.fileName))
+				.on('close', function() {
+					res.send(200);
+				});
+		}}(png))
+
+		form.parse(req);
 	})
 	.listen(5000)
 

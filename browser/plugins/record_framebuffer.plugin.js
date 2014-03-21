@@ -55,7 +55,7 @@ E2.p.prototype.update_state = function()
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
 	var data = new FormData();
-	data.append('img_data', new Blob([img_data], { type: 'image/png' }));
+	data.append('img_data', new Blob([img_data]));
 
 	$.ajax({
 		url: this.url + '?width='+w+'&'+'height='+h,
