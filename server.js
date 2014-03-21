@@ -76,7 +76,7 @@ var app = express()
 		var stream = fs.createWriteStream(PROJECT + savePath)
 		stream.on('error', next)
 		stream.on('close', function() {
-			res.send(200);
+			res.send({}); // reply with an empty object
 		});
 		req.pipe(stream);
 	});
