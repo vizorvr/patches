@@ -3,6 +3,7 @@
 var express = require('express')
 var argv = require('minimist')(process.argv.slice(2));
 var fs = require('fs')
+var FrameDumpServer = require('./lib/framedump-server').FrameDumpServer;
 
 var config = require('./config.json')
 
@@ -22,14 +23,14 @@ function showFolderListing(reTest) {
 	return function(req, res, next) {
 		fs.readdir(PROJECT + req.path, function(err, files) {
 			if (err) {
-				console.warn(err.stack)
-				files = []
+				console.warn(err.stack);
+				files = [];
 			}
 
 			res.send(files.filter(function(file) {
-				return reTest.test(file)
-			}))
-		})
+				return reTest.test(file);
+			}));
+		});
 	}
 }
 
@@ -38,42 +39,33 @@ function downloadHandler(req, res) {
 
 	fs.exists(path, function(exists) {
 		if (!exists)
-			return res.send(404)
+			return res.send(404);
 
-		res.header('Content-Type', 'application/octet-stream')
-
-		fs.createReadStream(path)
-			.pipe(res)
-	})
+		res.header('Content-Type', 'application/octet-stream');
+		fs.createReadStream(path).pipe(res);
+	});
 }
 
 var app = express()
-
 	.use(express.logger(':remote-addr :method :url :status :res[content-length] - :response-time ms'))
-
 	.use(function(req, res, next) {
 		if (req.url.indexOf('?_') > -1)
 			req.url = req.url.substring(0, req.url.indexOf('?_'))
 		next()
 	})
-
 	.use(express['static'](ENGI, { maxAge: 60 * 60 * 24 * 1000 }))
 	.use(express['static'](PROJECT, { maxAge: 0 }))
-
 	.use('/node_modules',
 		express['static'](__dirname+'/node_modules',
 			{ maxAge: 60 * 60 * 24 * 1000 }))
-
 	// set no-cache headers for the rest
 	.use(function(req, res, next) {
 		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
 		res.setHeader('Expires', 0)
 		next()
 	})
-
 	.get(/^\/data\/(graphs|textures|scenes|audio|video|jsons)\/$/, showFolderListing(/^[^.].*$/))
 	.get(/^\/dl\/data\/(graphs|textures|audio|video|jsons)\/[^\/]*$/, downloadHandler)
-
 	.post(/^\/data\/graphs\/[^\/]*\.json$/, function(req, res, next) {
 		var savePath = decodeURIComponent(req.path)
 			.replace(/graphs\/[^a-zA-Z0-9\ \.\-\_]/, '_')
@@ -82,15 +74,17 @@ var app = express()
 			savePath = savePath+'.json'
 
 		var stream = fs.createWriteStream(PROJECT + savePath)
-
 		stream.on('error', next)
 		stream.on('close', function() {
-			res.send({})
-		})
+			res.send(200);
+		});
+		req.pipe(stream);
+	});
 
-		req.pipe(stream)
-	})
+if (config.server.enableFrameDumping)
+	new FrameDumpServer().listen(app);
 
-	.use(express.errorHandler())
+app.use(express.errorHandler());
 
-	.listen(listenPort, listenHost)
+app.listen(listenPort, listenHost);
+
