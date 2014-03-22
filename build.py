@@ -127,22 +127,6 @@ os.system('tools/compress-plugin-icons.py')
 shutil.copy(icons_path + '/style.css', src_dir + '/style/icons/style.css')
 shutil.copy(icons_path + '/icons.png', src_dir + '/style/icons/icons.png')
 
-print 'Copying dynatree skin and compressing css...'
-skin_path = css_path + 'skin'
-shutil.copytree(skin_path, build_dir + '/style/skin')
-compress_css(skin_path + '/ui.dynatree.css', build_dir + '/style/skin/ui.dynatree.css')
-
-jq_theme = 'smoothness'
-print 'Copying jQuery theme \'' + jq_theme + '\'...'
-jq_theme_path = css_path + jq_theme
-shutil.copytree(jq_theme_path, build_dir + '/style/' + jq_theme)
-
-jq_cssfilename = 'jquery-ui-1.8.16.custom.css'
-jq_cssfilepath = jq_theme_path + '/' + jq_cssfilename
-
-print '\tCompressing ' + jq_cssfilename
-compress_css(jq_cssfilepath, build_dir + '/style/' + jq_theme + '/' + jq_cssfilename)
-
 print 'Copying remaining required files...'
 
 print '\tCopying images folder.'
