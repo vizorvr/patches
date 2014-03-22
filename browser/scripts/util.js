@@ -100,14 +100,15 @@ function msg(txt) {
 }
 
 function load_script(url) {
-	var script = document.createElement('script');
-	var async = document.createAttribute('async');
-	
-	async.nodeValue = 'false';
+	var xhrObj = new XMLHttpRequest();
 
-	script.src = url;
-	script.attributes.setNamedItem(async);
+	xhrObj.open('GET', url, false);
+	xhrObj.send('');
+
+	var se = document.createElement('script');
 	
-	document.getElementById('head').appendChild(script);
+	se.type = "text/javascript";
+	se.text = xhrObj.responseText;
+	
+	document.getElementsByTagName('head')[0].appendChild(se);
 }
-

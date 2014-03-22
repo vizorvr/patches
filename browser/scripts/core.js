@@ -484,22 +484,17 @@ E2.InitialiseEngi = function()
 	E2.dom.stop.click(E2.app.onStopClicked);
 
 	E2.app.onWindowResize();
-	setup_location_hash();
+	
+	load_location_hash();
 }
 
 function load_location_hash() {
-	var graphName = decodeURIComponent(window.location.hash).replace('#'+URL_GRAPHS,'')
-	console.log('loading graph from location hash:', graphName)
+	var graphName = decodeURIComponent(window.location.hash).replace('#'+URL_GRAPHS,'');
+	
+	if(graphName.length < 1)
+		return;
+	
+	console.log('loading graph from location hash:', graphName);
 	E2.dom.filename_input.val(graphName);
 	E2.app.player.load_from_url(URL_GRAPHS+graphName);
-}
-
-function setup_location_hash() {
-	$(window).on('hashchange', load_location_hash)
-
-	$(document).ready(function() {
-		if (window.location.hash) {
-			setTimeout(load_location_hash, 1000)
-		}
-	})
 }
