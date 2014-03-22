@@ -232,7 +232,7 @@ function Renderer(canvas_id, core)
 	this.shader_cache = new ShaderCache(this.context);
 	this.fullscreen = false;
 	this.default_tex = new Texture(this.context);
-	this.default_tex.load('../images/no_texture.jpg', core);
+	this.default_tex.load('../images/no_texture.png', core);
 
 	document.addEventListener('fullscreenchange', this.on_fullscreen_change(this));
 	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change(this));
