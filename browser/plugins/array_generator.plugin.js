@@ -41,19 +41,7 @@ E2.p.prototype.create_ui = function()
 E2.p.prototype.update_input = function(slot, data)
 {
 	var size = Math.floor(data);
-	
-	if(size !== this.size)
-	{
-		this.size = size;
-		this.update_array();
-	}
-};
-
-E2.p.prototype.update_array = function()
-{
 	var stride = [1, 1, 2, 2, 4, 4, 4][this.state.datatype];
-	
-	msg('Creating new array of size: ' + this.size);
 	
 	this.array = new ArrayBuffer(stride * this.size);
 	this.array.datatype = this.state.datatype;
