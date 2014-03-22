@@ -1500,6 +1500,7 @@ function Application() {
 			.createForUrl(URL_GRAPHS, null, 'Open', function(file)
 			{
 				window.location.hash = '#' + URL_GRAPHS + file;
+				load_location_hash();
 			})
 	};
 
