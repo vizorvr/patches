@@ -93,10 +93,13 @@ function msg(txt)
 	if(d === undefined)
 		return;
 	
-	if(txt.substring(0,  7) !== 'ERROR: ')
-		d.append(txt + '\n');
-	else
-		d.append('<span style="color:#f00">' + txt + '</span>\n');
+	if(txt)
+	{
+		if(txt.substring(0,  7) !== 'ERROR: ')
+			d.append(txt + '\n');
+		else
+			d.append('<span style="color:#f00">' + txt + '</span>\n');
+	}
 	
 	d.scrollTop(d[0].scrollHeight);
 }

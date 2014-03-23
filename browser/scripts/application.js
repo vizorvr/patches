@@ -1313,6 +1313,10 @@ function Application() {
 			{
 				self.collapse_log = !self.collapse_log;
 				E2.dom.dbg.toggle(!self.collapse_log);
+				
+				if(!self.collapse_log)
+					msg(null); // Update scroll position.
+					
 				self.onWindowResize();
 				e.preventDefault();
 				return;
