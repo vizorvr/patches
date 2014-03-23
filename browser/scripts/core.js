@@ -422,6 +422,7 @@ E2.InitialiseEngi = function()
 	E2.dom.load_clipboard = $('#load-clipboard');
 	E2.dom.structure = $('#structure');
 	E2.dom.info = $('#info');
+	E2.dom.info._defaultContent = E2.dom.info.html()
 	E2.dom.tabs = $('#tabs');
 	E2.dom.graphs_list = $('#graphs-list');
 	E2.dom.presets_list = $('#presets');

@@ -1006,12 +1006,19 @@ function Application() {
 		msg('Copy.');
 		// msg(self.clipboard);
 	};
+
+	this.onDelete = function(e)
+	{
+		if(!self.selection_nodes.length)
+			return;
+
+		self.hover_node = self.selection_nodes[0];
+		self.activateHoverNode();
+		self.deleteHoverNodes();
+	};
 	
 	this.onCopy = function(e)
 	{
-		if(e.target.id === 'persist')
-			return true;
-		
 		if(self.selection_nodes.length < 1)
 		{
 			msg('Copy: Nothing selected.');
@@ -1026,25 +1033,28 @@ function Application() {
 	
 	this.onCut = function(e)
 	{
-		if(e.target.id === 'persist')
-			return;
-
 		msg('Cut.');
 		
 		if(self.selection_nodes.length > 0)
 		{
 			self.onCopy(e);
-			self.hover_node = self.selection_nodes[0];
-			self.activateHoverNode();
-			self.deleteHoverNodes();
+			self.onDelete(e);
+		}
+	};
+
+	this.onCut = function(e)
+	{
+		msg('Cut.');
+		
+		if(self.selection_nodes.length > 0)
+		{
+			self.onCopy(e);
+			self.onDelete(e);
 		}
 	};
 
 	this.onPaste = function(e)
 	{
-		if(e.target.id === 'persist')
-			return;
-		
 		if(self.clipboard === null)
 			return;
 		
@@ -1246,10 +1256,13 @@ function Application() {
 			return (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
 		}
 
-		if(e.keyCode === 8) // prevent backspace from going back
+		if(e.keyCode === 8 || e.keyCode === 46) // use backspace and delete for deleting nodes
 		{
 			if(!is_text_input_in_focus())
+			{
+				self.onDelete(e);
 				e.preventDefault();
+			}
 		}
 		else if(e.keyCode === 9) // tab to focus to presets search
 		{
@@ -1592,7 +1605,7 @@ function Application() {
 
 		E2.dom.info.css('min-height', 'auto');
 
-		E2.dom.info.html('<b>Info view</b><br /><br />Hover over node instances or their slots to display their documentation here.');
+		E2.dom.info.html(E2.dom.info._defaultContent);
 	};
 	
    	document.addEventListener('mouseup', this.onMouseReleased);
