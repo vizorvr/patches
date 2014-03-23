@@ -23,8 +23,8 @@ E2.p = E2.plugins["switch_modulator"] = function(core, node)
 E2.p.prototype.create_ui = function()
 {
 	var layout = make('div');
-	var inp_rem = $('<input id="rem_btn" type="button" value="Remove" title="Click to remove the last output." />');
-	var inp_add = $('<input id="add_btn" type="button" value="Add" title="Click to add another output." />');
+	var inp_rem = makeButton('Remove', 'Click to remove the last output.');
+	var inp_add = makeButton('Add', 'Click to add another output.');
 	
 	inp_add.css('width', '65px');
 	inp_rem.css('width', '65px');

@@ -41,6 +41,14 @@ function make(tag)
 	return $(document.createElement(tag));
 }
 
+function makeButton(text, alt, className)
+{
+	text = text || '';
+	alt = alt || '';
+	className = className || '';
+	return $('<button class="btn btn-xs ' + className + '" title="' + alt +'">' + text + '</button>');
+}
+
 function resolve_graph(graphs, guid)
 {
 	for(var i = 0, len = graphs.length; i < len; i++)
@@ -92,19 +100,15 @@ function msg(txt) {
 }
 
 function load_script(url) {
-	var script = document.createElement('script');
-	var async = document.createAttribute('async');
+	var xhrObj = new XMLHttpRequest();
+
+	xhrObj.open('GET', url, false);
+	xhrObj.send('');
+
+	var se = document.createElement('script');
 	
-	async.nodeValue = 'false';
-
-	script.src = url;
-	script.attributes.setNamedItem(async);
+	se.type = "text/javascript";
+	se.text = xhrObj.responseText;
 	
-	document.getElementById('head').appendChild(script);
+	document.getElementsByTagName('head')[0].appendChild(se);
 }
-
-function make(tag)
-{
-	return $(document.createElement(tag));
-}
-

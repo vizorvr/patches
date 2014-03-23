@@ -1,0 +1,104 @@
+body {
+	display: flex;
+	margin: 0;
+	height: 100%;
+	width: 100%;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-content: stretch;
+	align-items: stretch;
+}
+
+.flex-column {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+}
+
+.flex-row {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: row;
+}
+
+.cell {
+	flex: 1 1 auto;
+	align-self: stretch;
+}
+
+.border {
+  border: 2px solid #eee;
+}
+
+.header {
+	min-height: 40px;
+	max-height: 40px;
+}
+
+.info-pane {
+	min-height: 20vh;
+	max-height: 20vh;
+}
+
+#left-nav {
+	min-width: 260px;
+	max-width: 260px;
+	overflow: auto;
+}
+
+#right-nav {
+	max-width: 482px;
+	min-width: 482px;
+}
+
+#presets .searchbox {
+	flex-shrink: 0;
+}
+
+#structure
+{
+	padding-left: 24px;
+	overflow: auto;
+}
+
+#canvas_parent {
+	z-index: 1;
+	overflow: scroll;
+	position: relative;
+	border: none;
+	-moz-box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+	box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+#canvas {
+	position: relative;
+	z-index: 2;
+}
+
+#breadcrumb
+{
+	position: fixed;
+	background-color: #000;
+	color: #fff;
+	opacity: 0.75;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-top: 1px;
+	padding-bottom: 2px;
+	margin-left: 6px;
+	margin-top: 7px;
+	z-index: 10000;
+	top: 40px;
+	font-size: 10pt;
+}
+
+#dbg
+{
+	display: none;
+	font-size: 12px;
+	padding: 0;
+	margin: 0;
+}
+

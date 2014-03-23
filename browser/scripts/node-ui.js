@@ -9,7 +9,7 @@ function NodeUI(parent_node, x, y) {
 	var nid = 'n' + parent_node.uid, dom = this.dom = make('table');
 	
 	dom.addClass('plugin');
-	dom.addClass('ui-widget-content');
+	dom.addClass('graph-node');
 	dom.css('border', '1px solid #444');
 	dom.attr('id', nid);
 	dom.mousemove(E2.app.onMouseMoved); // Make sure we don't stall during slot connection, when the mouse enters a node.
@@ -32,9 +32,10 @@ function NodeUI(parent_node, x, y) {
 	}}(this));
 	
 	lbl.text(parent_node.get_disp_name());
-	lbl.attr('id', 't');
+	lbl.addClass('t');
 
 	h_cell.attr('colspan', '3');
+	h_cell.addClass('pl_title');
 	h_cell.append(icon);
 	h_cell.append(lbl);
 	h_row.append(h_cell);
@@ -48,7 +49,7 @@ function NodeUI(parent_node, x, y) {
 	{
 		var p_name = E2.app.player.core.plugin_mgr.keybyid[parent_node.plugin.id];
 		
-		h_row.attr('alt', '<b>' + p_name + '</b><br/><hr/>' + parent_node.plugin.desc);
+		h_row.attr('alt', '<b>' + p_name + '</b><br/><br/>' + parent_node.plugin.desc);
 		h_row.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
 	}
 
@@ -65,10 +66,10 @@ function NodeUI(parent_node, x, y) {
 	var content_col = make('td');
 	var output_col = make('td');
 	
-	input_col.attr('id', 'ic');
+	input_col.addClass('ic');
 	content_col.addClass('pui_col');
-	content_col.attr('id', 'cc');
-	output_col.attr('id', 'oc');
+	content_col.addClass('cc');
+	output_col.addClass('oc');
 	
 	if((parent_node.dyn_inputs ? parent_node.dyn_inputs.length : 0) + parent_node.plugin.input_slots.length)
 		input_col.css('padding-right', '6px');
@@ -131,7 +132,7 @@ NodeUI.create_slot = function(parent_node, nid, col, s, type)
 	if(s.def !== undefined)
 		dsc += '\nDefault: ' + s.def
 
-	dsc += '<break>';
+	dsc += '\n\n';
 	
 	if(s.desc)
 		dsc += s.desc;

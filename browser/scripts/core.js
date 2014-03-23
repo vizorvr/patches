@@ -37,76 +37,52 @@ function Delegate(delegate, dt, count)
 	this.count = count;
 }
 
-function SnippetManager(base_url)
+function PresetManager(base_url)
 {
-	var self = this;
-	
-	this.listbox = $('#snippets-list');
-	this.base_url = base_url;
-	
-	var url = self.base_url + '/snippets.json';
-	
-	$.ajax({
-		url: url,
-		dataType: 'json',
-		async: false,
-		headers: {},
-		success: function(data) 
-		{
-			msg('SnippetsMgr: Loading snippets from: ' + url);
-
-			$.each(data, function(key, snippets)
-			{
-				self.register_group(key);
-				
-				$.each(snippets, function(name, id)
-				{
-					self.register_snippet(name, self.base_url + '/' + id + '.json')
-				});
-			});
-		},
-		error: function()
-		{
-			msg('SnippetsMgr: No snippets found.');
-		}
-	});
-	
-	var load = function()
+	$.get(base_url+'/presets.json')
+	.done(function(data)
 	{
-		var url = self.listbox.val();
-		
-		msg('Loading snippet from: ' + url);
-		
-		$.ajax({
-			url: url,
-			dataType: 'json',
-			async: false,
-			headers: {},
-			success: function(data)
-			{
-	  			E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
-	  			E2.app.onPaste({ target: { id: 'notpersist' }});
-	  		},
-	  		error: function()
-	  		{
-	  			msg('ERROR: Failed to load the selected snippet.', 'Cogent');
-	  		}
+		var presets = Object.keys(data).map(function(cat)
+		{
+			return {
+				title: cat,
+				items: Object.keys(data[cat]).map(function(preset)
+				{
+					return {
+						title: preset,
+						path: data[cat][preset]
+					}
+				})
+			}
 		});
-	};
-	
-	$('#load-snippet').button().click(load);
-	this.listbox.dblclick(load);
+
+		var presets_list = new CollapsibleSelectControl()
+			.data(presets)
+			.render(E2.dom.presets_list)
+			.onOpen(function(path) {
+				var url = base_url + '/' + path + '.json';
+
+				msg('Loading snippet from: ' + url);
+
+				$.get(url)
+				.done(function(data)
+				{
+					E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
+					E2.app.onPaste({ target: { id: 'notpersist' }});
+				})
+				.fail(function(_j, _textStatus, _errorThrown)
+				{
+		  			msg('ERROR: Failed to load the selected preset.');
+				})
+			})
+
+		if(!window.location.hash)
+			presets_list.focus()
+	})
+	.fail(function() {
+		msg('PresetsMgr: No presets found.');
+	})
 }
-
-SnippetManager.prototype.register_group = function(label)
-{
-	this.listbox.append('<optgroup label="' + label + '" class="snippet-group"></optgroup>');
-};
-
-SnippetManager.prototype.register_snippet = function(name, url)
-{
-	this.listbox.append('<option value="' + url + '">' + name + '</option>');
-};
 
 function AssetTracker(core)
 {
@@ -250,42 +226,47 @@ function Core(app) {
 	
 	this.create_dialog = function(diag, title, w, h, done_func, open_func)
 	{
-		diag.dialog(
+		var modal = $('.modal-template').clone()
+
+		function close()
 		{
-			title: title,
-			width: w,
-			height: h,
-			modal: true,
-			resizable: false,
-			buttons:
-			{
-				'OK': function()
-				{
-					done_func();
-					$(this).dialog('destroy');
-					diag.remove();
-				},
-				'Cancel': function()
-				{
-					$(this).dialog('destroy');
-					diag.remove();
-				}
-			},
-			open: function()
-			{
-				if(open_func)
-					open_func();
-				
-				diag.keyup(function(e)
-				{
-					if(e.keyCode === $.ui.keyCode.ENTER && done_func(e) !== false)
-					{
-						$(this).dialog('destroy');
-						diag.remove();
-					}
-				});
-			}
-		});
+			modal.unbind()
+			modal.remove()
+		}
+
+		function ok()
+		{
+			done_func()
+			modal.modal('hide')
+		}
+
+		$('.modal-title', modal).html(title)
+		$('.modal-body', modal).html(diag)
+
+		modal.on('show.bs.modal', function()
+		{
+			$('.modal-dialog', modal).css('width', w + 40)
+		})
+
+		modal.on('shown.bs.modal', function()
+		{
+			if (open_func)
+				open_func();
+		})
+
+		modal.on('hidden.bs.modal', close)
+
+		modal.modal({
+			keyboard: true
+		})
+
+		modal.on('keypress', function(e)
+		{
+			if (e.keyCode === 13)
+				ok()
+		})
+
+		$('button:last', modal).click(ok)
 	};
 	
 	this.get_default_value = function(dt)
@@ -375,29 +356,31 @@ function Core(app) {
 	
 	this.rebuild_structure_tree = function()
 	{
-		E2.dom.structure.dynatree('getRoot').removeChildren();
 		var build = function(graph, name)
 		{
 			var nodes = graph.nodes;
-			var pnode = graph.parent_graph !== null ? graph.parent_graph.tree_node : E2.dom.structure.dynatree('getRoot');
-			var tnode = pnode.addChild({
-				title: name,
-				isFolder: true,
-				expand: graph.open
-			});
 			
-			graph.tree_node = tnode;
-			tnode.graph = graph;
+			if(graph.parent_graph !== null)
+			{
+				var tnode = graph.parent_graph.tree_node.add_child(name);
+
+				tnode.closed = !graph.open;
+				graph.tree_node = tnode;
+				tnode.graph = graph;
+			}		
 			
 			for(var i = 0, len = nodes.length; i < len; i++)
 			{
 				var n = nodes[i];
-				
+
 				if(n.plugin.e2_is_graph)
 					build(n.plugin.graph, n.get_disp_name());
 			}
 		};
-		
+
+		E2.dom.structure.tree.reset();
+		self.root_graph.tree_node = E2.dom.structure.tree.root;
+		E2.dom.structure.tree.root.graph = self.root_graph;
 		build(self.root_graph, 'Root');
 	};
 	
@@ -426,6 +409,7 @@ E2.InitialiseEngi = function()
 	E2.dom.canvas = $('#canvas');
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
+	E2.dom.left_nav = $('#left-nav');
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
 	E2.dom.pause = $('#pause');
@@ -434,15 +418,15 @@ E2.InitialiseEngi = function()
 	E2.dom.refresh = $('#refresh');
 	E2.dom.save = $('#save');
 	E2.dom.dl_graph = $('#dl-graph');
-	E2.dom.load = $('#load');
+	E2.dom.open = $('#open');
 	E2.dom.load_clipboard = $('#load-clipboard');
 	E2.dom.structure = $('#structure');
 	E2.dom.info = $('#info');
 	E2.dom.tabs = $('#tabs');
 	E2.dom.graphs_list = $('#graphs-list');
-	E2.dom.snippets_list = $('#snippets-list');
+	E2.dom.presets_list = $('#presets');
 	E2.dom.breadcrumb = $('#breadcrumb');
-	E2.dom.load_spinner = $('#load_spinner');
+	E2.dom.load_spinner = $('#load-spinner');
 
 	E2.dom.filename_input = $('#filename-input');
 
@@ -476,85 +460,41 @@ E2.InitialiseEngi = function()
 	});
 
 	E2.app = new Application();
-	
-	E2.dom.structure.dynatree({
-		title: "Structure",
-		fx: { height: 'toggle', duration: 200 },
-		clickFolderMode: 1, // Activate, don't expand.
-		selectMode: 1, // Single.
-		debugLevel: 0, // Quiet.
-		dnd: {
-			preventVoidMoves: true,
-			onDragStart: function(node)
-			{
-				return true;
-			},
-			onDragEnter: function(node, src)
-			{
-				if(node.parent !== src.parent)
-					return false;
 
-				return ['before', 'after'];
-			},
-			onDrop: function(node, src, hit_mode, ui, draggable)
-			{
-				src.move(node, hit_mode);
-				node.parent.graph.reorder_children(node, src, hit_mode);
-			}
-		},
-		onActivate: function(node) 
-		{
-			E2.app.clearEditState();
-			E2.app.clearSelection();
-			E2.app.player.core.onGraphSelected(node.graph);
-			E2.app.updateCanvas(true);
-		}
+	E2.dom.structure.tree = new TreeView(E2.dom.structure, function(graph)
+	{ // On item activation
+		E2.app.clearEditState();
+		E2.app.clearSelection();
+		E2.app.player.core.onGraphSelected(graph);
+		E2.app.updateCanvas(true);
+	},
+	function(graph, original, sibling, insert_after)
+	{ // On child dropped
+		graph.reorder_children(original, sibling, insert_after);
 	});
-    
-	var root_node = E2.dom.structure.dynatree('getRoot');
 
-	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, root_node.addChild({
-		title: 'Root',
-		isFolder: true,
-		expand: true
-	}));
-
-	E2.dom.play.button({ icons: { primary: 'ui-icon-play' } }).click(E2.app.onPlayClicked);
-	E2.dom.pause.button({ icons: { primary: 'ui-icon-pause' }, disabled: true }).click(E2.app.onPauseClicked);
-	E2.dom.stop.button({ icons: { primary: 'ui-icon-stop' }, disabled: true }).click(E2.app.onStopClicked);
-	E2.dom.layout.button({ icons: { primary: 'ui-icon-shuffle' }, disabled: false }).click(E2.app.onLayoutClicked);
-	E2.dom.refresh.button({ icons: { primary: 'ui-icon-refresh' } }).click(E2.app.onRefreshClicked);
-	E2.dom.save.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-s' } }).click(E2.app.onSaveClicked);
-	E2.dom.load.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClicked);
-	E2.dom.load_clipboard.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onLoadClipboardClicked);
-	E2.dom.dl_graph.button({ icons: { primary: 'ui-icon-arrowreturnthick-1-n' } }).click(E2.app.onDownloadGraphClicked);
-
-	$('#tabs').tabs({ active: 1 });
-	$('#content')[0].style.display = 'block';
+	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, E2.dom.structure.tree.root);
 	
-	E2.app.onRefreshClicked();
+	E2.dom.save.click(E2.app.onSaveClicked);
+	E2.dom.open.click(E2.app.onOpenClicked);
+	E2.dom.layout.click(E2.app.onLayoutClicked);
+
+	E2.dom.play.click(E2.app.onPlayClicked);
+	E2.dom.pause.click(E2.app.onPauseClicked);
+	E2.dom.stop.click(E2.app.onStopClicked);
 
 	E2.app.onWindowResize();
-
-	setup_location_hash();
+	
+	load_location_hash();
 }
 
 function load_location_hash() {
-	var graphName = decodeURIComponent(window.location.hash).replace('#'+URL_GRAPHS,'')
-	console.log('loading graph from location hash:', graphName)
+	var graphName = decodeURIComponent(window.location.hash).replace('#'+URL_GRAPHS,'');
+	
+	if(graphName.length < 1)
+		return;
+	
+	console.log('loading graph from location hash:', graphName);
 	E2.dom.filename_input.val(graphName);
-	E2.app.onStopClicked();
-	E2.app.player.on_update();
 	E2.app.player.load_from_url(URL_GRAPHS+graphName);
-	E2.app.updateCanvas(false);
-}
-
-function setup_location_hash() {
-	$(window).on('hashchange', load_location_hash)
-
-	$(document).ready(function() {
-		if (window.location.hash) {
-			setTimeout(load_location_hash, 1000)
-		}
-	})
 }

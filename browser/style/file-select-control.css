@@ -1,0 +1,35 @@
+
+.file-select-control {
+	outline: none;
+}
+
+.file-selector {
+	max-height: 50vh;
+}
+
+.file-selector table {
+	max-height: 40vh;
+	display: block;
+	overflow: auto;
+}
+
+.file-selector .name-header {
+	width: 250px;
+}
+
+.file-selector .date-header {
+	width: 150px;
+}
+
+.file-selector thead td {
+	font-weight: bold;
+}
+
+.file-selector .selected {
+	background-color: black;
+	color: white;
+}
+
+.file-selector tr {
+	cursor: pointer;
+}

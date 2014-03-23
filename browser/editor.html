@@ -1,28 +1,35 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head id="head">
 		<title>ENGI&#8482;</title>
-		<link href="style/main.css" rel="Stylesheet" type="text/css" />
+		<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
+		<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
+
+		<link href="style/flex.css" rel="Stylesheet" type="text/css" />
+		<link href="style/menu.css" rel="Stylesheet" type="text/css" />
+		<link href="style/core.css" rel="Stylesheet" type="text/css" />
+		<link href="style/tree.css" rel="Stylesheet" type="text/css" />
 		<link href="style/icons/style.css" rel="Stylesheet" type="text/css" />
-		<link href="style/smoothness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" type="text/css"  />
-		<link href="style/skin/ui.dynatree.css" rel="stylesheet" type="text/css">
 
-		<script type="text/javascript" src="vendor/jquery-1.7.js"></script>
-		<script type="text/javascript" src="vendor/jquery.event.fastfix.js"></script>
-		<script type="text/javascript" src="vendor/jquery-ui.js"></script>
-		<script type="text/javascript" src="vendor/jquery.dynatree.js"></script>
-		<script type="text/javascript" src="vendor/jquery.mousewheel.js"></script>
+		<link href="style/file-select-control.css" rel="Stylesheet" type="text/css" />
+		<link href="style/collapsible-select-control.css" rel="Stylesheet" type="text/css" />
+
+		<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+		<script type="text/javascript" src="vendor/jquery.fastfix.js"></script>
+		<script type="text/javascript" src="vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+
+		<script type="text/javascript" src="node_modules/handlebars/dist/handlebars.min.js"></script>
+
 		<script type="text/javascript" src="vendor/gl-matrix.js"></script>
-		<script type="text/javascript" src="vendor/webgl-debug.js"></script>
-		<script type="text/javascript" src="vendor/handlebars-v1.3.0.js"></script>
-
 		<script type="text/javascript" src="scripts/util.js"></script>
 		<script type="text/javascript" src="scripts/draggable.js"></script>
+		<script type="text/javascript" src="scripts/treeview.js"></script>
 		<script type="text/javascript" src="scripts/context-menu.js"></script>
 		<script type="text/javascript" src="scripts/renderer.js"></script>
 		<script type="text/javascript" src="scripts/ui.js"></script>
 
-		<script type="text/javascript" src="scripts/graph-list.js"></script>
+		<script type="text/javascript" src="scripts/file-select-control.js"></script>
+		<script type="text/javascript" src="scripts/collapsible-select-control.js"></script>
 		<script type="text/javascript" src="scripts/plugin-group.js"></script>
 		<script type="text/javascript" src="scripts/plugin-manager.js"></script>
 		<script type="text/javascript" src="scripts/connection.js"></script>
@@ -30,40 +37,76 @@
 		<script type="text/javascript" src="scripts/node.js"></script>
 		<script type="text/javascript" src="scripts/node-ui.js"></script>
 		<script type="text/javascript" src="scripts/registers.js"></script>
+		<script type="text/javascript" src="scripts/player.js"></script>
 		<script type="text/javascript" src="scripts/core.js"></script>
 		<script type="text/javascript" src="scripts/application.js"></script>
 		<script type="text/javascript" src="scripts/player.js"></script>
 
-		<script id="file-list-entry-template" type="text/x-handlebars-template">
-			{{#each files}}
-				<li class="file-list-entry">{{this}}</li>
+		<script id="collapsible-select-template" type="text/x-handlebars-template">
+			<div class="searchbox">
+				<input class="form-control" type="text" placeholder="Search presets"/>
+			</div>
+			<div class="panel-group" id="{{controlId}}">
+			{{#each categories}}
+				<div class="panel panel-default">
+					<div class="panel-heading"
+						data-toggle="collapse"
+						data-parent="#{{../controlId}}"
+						href="#cscat{{@index}}"
+					>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+					{{this.title}}
+				</div>
+				<div id="cscat{{@index}}"
+					class="panel-collapse collapse{{#if this.open}} in{{/if}}">
+					<div class="panel-body">
+						<ul>
+							{{#each items}}
+								<li data-path="{{this.path}}">{{this.title}}</li>
+							{{/each}}
+						</ul>
+					</div>
+				</div>
+			</div>
 			{{/each}}
 		</script>
 
-		<script id="texture-image-select-template" type="text/x-handlebars-template">
-			<div>
-				<form style="height: 100%">
-					<select id="texture-image-select" size="20">
-						{{#each images}}
-							<option 
-								{{#if selected}}
-									selected
-								{{/if}}
-								value="{{url}}">
-							{{url}}
-							</option>
-						{{/each}}
-					</select>
-				</form>
-
-				<label for="texture-image-url">URL</label>
-				<input
-					id="texture-image-url"
-					size="40"
-					type="text"
-					name="texture-image-url"
-					value=""
-					placeholder="Enter URL"/>
+		<script id="file-select-template" type="text/x-handlebars-template">
+			<div class="modal fade">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close">&times;</button>
+			        <h4 class="modal-title">Select file</h4>
+			      </div>
+			<div class="modal-body">
+			<div class="file-selector">
+				<table>
+					<thead>
+						<td class="name-header">Name</td>
+					</thead>
+					{{#each files}}
+					<tr class="file-row{{#if selected}} selected{{/if}}"
+						data-name="{{name}}"
+					>
+						<td class="name">{{name}}</td>
+					</tr>
+					{{else}}
+					<tr class="file-row">
+						<td class="name">No files found</td>
+					</tr>
+					{{/each}}
+				</table>
+			</div>
+			</div>
+			  <div class="modal-footer">
+				  <input id="file-url" class="form-control" size="26" type="text" value="{{original}}" placeholder="Enter URL"/>
+				  <br/>
+					<div class="buttons"></div>
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
 			</div>
 		</script>
 	</head>
@@ -74,68 +117,68 @@
 				<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
 			</div>
 		</noscript>
-		<div id="content">
-			<div id="controls" class="centered">
-				<a href="http://www.engijs.org" target="_blank" style="color: #888; text-decoration: none;"><div id="logo">ENGI&#8482;</div></a>
-				<button id="play">Play</button>
-				<button id="pause">Pause</button>
-				<button id="stop">Stop</button>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<button id="layout">Layout</button>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<button id="fullscreen">Full screen</button>
-				<button id="help">Help</button>
-				<div id="load_spinner"></div>
-			</div>
-			<div id="main_layout" class="centered">
-				<div id="structure">
+
+		<div class="flex-column" id="left-nav">
+			<div class="header border flex-row">
+				<div class="logo">
+					<a href="/" target="_blank">ENGI&#8482;</a>
 				</div>
-				<div id="canvas_parent">
-					<canvas id="canvas" width="940" height="620"></canvas>
-				</div>
-				<div id="breadcrumb"><span>Root</span><span> / </span></div>
+				
+				<div id="load-spinner"></div>
 			</div>
-			<div id="info"></div>
-			<pre id="dbg"></pre>
-			<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
 
-			<div id="tabs">
-					<ul>
-						<li><a href="#persist-tab">Load / Save</a></li>
-						<li><a href="#snippets-tab">Snippets</a></li>
-					</ul>
+			<div class="info-pane border" id="info"></div>
 
-					<div id="persist-tab">
-						<div>
-							<ul id="graphs-list"></ul>
-							
-							<input
-								id="filename-input"
-								size="40"
-								type="text"
-								name="filename"
-								value=""
-								placeholder="Enter file name"/>
-						</div>
-
-						<div>
-							<button id="refresh">Refresh</button>
-							<button id="save">Save</button>
-							<button id="load">Load</button>
-							<button id="load-clipboard">Copy</button>
-							<button id="dl-graph">Get</button>
-						</div>
-					</div>
-
-					<div id="snippets-tab">
-						<form style="height: 100%">
-							<select id="snippets-list" size="4"></select>
-							<br />
-							<button id="load-snippet" type="button" title="Add the snippet to the current graph.">Add</button>
-						</form>
-					</div>
-			</div>
+			<div id="presets" class="flex-column"></div>
 		</div>
+
+		<div class="flex-column">
+			<div class="header border">
+				<button id="save" class="btn btn-default">Save</button>
+				<button id="open" class="btn btn-default">Open</button>
+				<button id="layout" class="btn btn-default">Layout</button>
+				<button id="help" class="btn btn-default">Help</button>
+			</div>
+
+			<div class="cell border" id="canvas_parent">
+				<canvas id="canvas" width="940" height="620"></canvas>
+				<div id="breadcrumb"></div>
+			</div>
+
+			<pre class="info-pane border" id="dbg"></pre>
+		</div>
+
+		<div class="flex-column" id="right-nav">
+			<div class="header border">
+				<button id="play" class="btn btn-primary">Play</button>
+				<button id="pause" class="btn disabled btn-default">Pause</button>
+				<button id="stop" class="btn disabled btn-default">Stop</button>
+				<button id="fullscreen" class="btn btn-default">Full screen</button>
+			</div>
+
+			<div id="canvas-parent">
+				<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
+			</div>
+
+			<div class="cell border" id="structure"></div>
+		</div>
+
+		<!-- bootstrap modal -->
+		<div class="modal fade modal-template">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title"></h4>
+					</div>
+					<div class="modal-body"></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<button type="button" class="btn btn-primary">Ok</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
 
 		<script type="text/javascript">
 			$(document).ready(function()

@@ -4,17 +4,16 @@ E2.p = E2.plugins["record_framebuffer"] = function(core, node)
 	
 	this.input_slots = [ 
 		{ name: 'record', dt: core.datatypes.BOOL, desc: 'Switch recording on or off.', def: false },
-		{ name: 'url', dt: core.datatypes.TEXT, desc: 'URL of the recording server.' },
 		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The texture output of a graph.' }
 	];
 	
 	this.output_slots = [];
 	this.gl = core.renderer.context;
+	this.url = 'http://' + window.location.host + '/fd/frame';
 };
 
 E2.p.prototype.reset = function()
 {
-	this.url = null;
 	this.texture = null;
 }
 
@@ -23,8 +22,6 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 	if(!on)
 	{
 		if(slot.index === 1)
-			this.url = null;
-		else if(slot.index === 2)
 			this.texture = null;
 	}
 };
@@ -34,8 +31,6 @@ E2.p.prototype.update_input = function(slot, data)
 	if(slot.index === 0)
 		this.record = data;
 	else if(slot.index === 1)
-		this.url = data;
-	else if(slot.index === 2)
 		this.texture = data;
 };
 
@@ -50,39 +45,14 @@ E2.p.prototype.update_state = function()
 	var size = w * h * 4;
 	var img_data = new Uint8Array(size);
 	
+console.log('frame')
 	gl.bindFramebuffer(gl.FRAMEBUFFER, this.texture.framebuffer);
 	gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, img_data);
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-	
-	var s_rep = [];
-	
-	for(var i = 0; i < size; i += 4)
-	{
-		s_rep.push(img_data[i]);
-		s_rep.push(img_data[i+1]);
-		s_rep.push(img_data[i+2]);
-	}
-	
-	var data = new FormData();
-	
-	data.append('width', w);
-	data.append('height', h);
-	data.append('img_data', s_rep);
 
-	$.ajax({
-		url: this.url,
-		data: data,
-		async: false,
-		contentType: false,
-		processData: false,
-		type: 'POST',
-		success: function(data)
-		{
-			msg('Successfully transmitted frame to ' + this.url);
-		},
-		error: function()
-		{
-			msg('ERROR: Could not transmit frame to ' + this.url);
-		}
-	});
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', this.url + '?width='+w+'&'+'height='+h, false);
+	xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+	xhr.send(img_data);
+
 };

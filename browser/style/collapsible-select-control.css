@@ -1,0 +1,43 @@
+.panel-group {
+	margin: 0;
+	overflow: auto;
+}
+
+.panel-group .panel+.panel {
+	margin: 0;
+}
+
+.panel-heading {
+	padding: 0;
+}
+
+.panel-heading:hover {
+	color: white;
+	background-color: #a0a0a0;
+	background-image: none;
+}
+
+.panel-title .glyphicon {
+	margin-right: 6px;
+	margin-left: 6px;
+}
+
+.panel-body {
+    padding: 0;
+}
+
+.panel-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.panel-body li {
+	cursor: pointer;
+}
+
+.panel-body li:hover {
+	background-color: #a0a0a0;
+	color: white;
+}
+

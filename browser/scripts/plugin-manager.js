@@ -77,7 +77,7 @@ PluginManager.prototype.create = function(id, node)
 		return p;
 	}
 		 
-	console.assert(true, 'Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
+	console.assert(false, 'Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
 	return null;
 };
 

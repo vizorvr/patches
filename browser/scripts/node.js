@@ -81,12 +81,7 @@ Node.prototype.destroy = function()
 		graph.destroy_connection(pending[i]);
 	
 	if(this.plugin.e2_is_graph)
-	{
-		// The parent dom element migt already be gone if we've nested in a parent
-		// also being deleted.
-		if(this.plugin.graph.tree_node.parent.ul)
-			this.plugin.graph.tree_node.remove();
-	}
+		this.plugin.graph.tree_node.remove();
 	
 	this.destroy_ui();
 };
@@ -149,7 +144,7 @@ Node.prototype.add_slot = function(slot_type, def)
 	
 	if(this.ui)
 	{
-		var col = this.ui.dom.find(is_inp ? '#ic' : '#oc');
+		var col = this.ui.dom.find(is_inp ? '.ic' : '.oc');
 		
 		NodeUI.create_slot(this, 'n' + this.uid, col, def, slot_type);
 		this.update_connections();
@@ -566,7 +561,7 @@ LinkedSlotGroup.prototype.set_dt = function(dt)
 
 LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot)
 {
-	if(!(slot in this.inputs) && !(slot in this.outputs))
+	if(this.inputs.indexOf(slot) === -1 && this.outputs.indexOf(slot) === -1)
 		return;
 		
 	this.n_connected += on ? 1 : -1;

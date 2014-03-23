@@ -3,18 +3,17 @@ E2.p = E2.plugins["reset_framebuffer_recorder"] = function(core, node)
 	this.desc = 'Instruct the specified framedump server to clear its cache and start recording at from zero.';
 	
 	this.input_slots = [ 
-		{ name: 'reset', dt: core.datatypes.BOOL, desc: 'Send true to this slot to reset the specified server.', def: false },
-		{ name: 'url', dt: core.datatypes.TEXT, desc: 'URL of the recording server.' }
+		{ name: 'reset', dt: core.datatypes.BOOL, desc: 'Send true to this slot to reset the specified server.', def: false }
 	];
 	
 	this.output_slots = [];
+	this.url = 'http://' + window.location.host + '/fd/reset';
 	this.clear = false;
 };
 
 E2.p.prototype.reset = function()
 {
-	this.url = null;
-}
+};
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
 {
@@ -22,8 +21,6 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 	{
 		if(slot.index === 0)
 			this.clear = false;
-		else if(slot.index === 1)
-			this.url = null;
 	}
 };
 
@@ -31,37 +28,22 @@ E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0 && data)
 		this.clear = true;
-	else if(slot.index === 1)
-		this.url = data;
 };
 
 E2.p.prototype.update_state = function()
 {
-	if(!this.clear || !this.url || this.url.length < 1)
+	if(!this.clear)
 		return;
-	
-	var url = this.url;
-	
-	if(url[url.length-1] != '/')
-		url += '/';
-		
-	url += 'reset';
-	
-	$.ajax({
-		url: url,
-		async: false,
-		contentType: false,
-		processData: false,
-		type: 'GET',
-		success: function(data)
+
+	$.get(this.url)
+		.done(function()
 		{
 			msg('Framdumping reset to frame 0');
-		},
-		error: function()
+		})
+		.fail(function()
 		{
 			msg('ERROR: Failed to reset the speficied framedumping server: ' + this.url);
-		}
-	});
+		});
 	
 	this.clear = false;
 };

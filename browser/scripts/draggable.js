@@ -59,7 +59,7 @@ function draggable_mousemove(data) { return function(e)
 
 function draggable_mousedown(ui, drag, stop) { return function(e)
 {
-	if(e.target.id !== 't')
+	if(!$(e.target).hasClass('t'))
 		return true;
 
 	var data = 

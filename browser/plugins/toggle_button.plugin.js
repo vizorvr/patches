@@ -19,7 +19,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.create_ui = function()
 {
-	var inp = $('<input id="state" type="button" value="Enable" />');
+	var inp = makeButton('Off');
 	
 	inp.click(function(self) { return function(e) 
 	{
@@ -42,7 +42,7 @@ E2.p.prototype.state_changed = function(ui)
 	{
 		this.core.add_aux_style('toggle-button/style.css');
 
-		ui.prop('value', this.state.enabled ? 'On' : 'Off');
+		ui.html(this.state.enabled ? 'On' : 'Off');
 		ui.addClass('toggle_btn');
 		
 		if(!this.state.enabled)

@@ -147,7 +147,7 @@ E2.p.prototype.open_editor = function(self)
 E2.p.prototype.create_ui = function()
 {
 	var ui = make('div');
-	var inp_edit = $('<input id="state" type="button" value="Edit" title="Open this graph for editing." />');
+	var inp_edit = makeButton('Edit', 'Open this graph for editing.');
 	
 	inp_edit.click(function(self) { return function(e) 
 	{
@@ -619,7 +619,7 @@ E2.p.prototype.state_changed = function(ui)
 		// additional class to allow custom styling.
 		node.ui.dom.addClass('graph');
 
-		var inp_config = $('<input id="config" class="config_btn" type="button" title="Edit preferences." />');
+		var inp_config = makeButton(null, 'Edit preferences.', 'config_btn');
 
 		inp_config.click(function(self) { return function(e) 
 		{

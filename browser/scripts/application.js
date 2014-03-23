@@ -9,7 +9,7 @@ function Application() {
 		PAUSED: 2
 	};
 	
-	this.snippet_mgr = new SnippetManager('snippets');
+	this.preset_mgr = new PresetManager('presets');
 	this.player = null;
 	this.canvas = canvas;
 	this.c2d = canvas[0].getContext('2d');
@@ -87,11 +87,11 @@ function Application() {
 			if(name !== null) // Graph?
 			{
 				node.title = name;
-				node.plugin.graph = new Graph(self.player.core, node.parent_graph, node.parent_graph.tree_node.addChild({
-					title: name,
-					isFolder: true,
-					expand: true
-				}));
+				node.plugin.graph = new Graph(
+					self.player.core,
+					node.parent_graph,
+					node.parent_graph.tree_node.add_child(name)
+				);
 				
 				node.plugin.graph.plugin = node.plugin;
 				node.plugin.graph.reg_listener(node.plugin.graph_event(node.plugin));
@@ -119,7 +119,7 @@ function Application() {
 		
 			diag.append(inp);
 		
-			self.player.core.create_dialog(diag, 'Name new graph.', 275, 170, function()
+			self.player.core.create_dialog(diag, 'Name new graph.', 240, 170, function()
 			{
 				createPlugin(inp.val());
 			},
@@ -341,19 +341,6 @@ function Application() {
 					c.lineTo(x2, y1);
 					c.lineTo(x2, y4);
 					c.lineTo(x4, y4);
-					
-					// Noodles!
-					/*var cn = b[i].ui;
-					var x1 = (cn.src_pos[0] - so[0]) + 0.5;
-					var y1 = (cn.src_pos[1] - so[1]) + 0.5;
-					var x4 = (cn.dst_pos[0] - so[0]) + 0.5;
-					var y4 = (cn.dst_pos[1] - so[1]) + 0.5;
-					var diffx = Math.max(16, x4 - x1);
-					var x2 = x1 + diffx * 0.5;
-					var x3 = x4 - diffx * 0.5;
-		
-					c.moveTo(x1, y1);
-					c.bezierCurveTo(x2, y1, x3, y4, x4, y4);*/
 				}
 				
 				c.stroke()
@@ -385,6 +372,8 @@ function Application() {
 	
 	this.onMouseReleased = function(e)
 	{
+		var changed = false;
+		
 		if(self.dst_node && self.dst_slot) // If dest_slot is set, we should create a permanent connection.
 		{
 			var ss = self.src_slot;
@@ -413,6 +402,7 @@ function Application() {
 			self.dst_slot.is_connected = true;
 			self.dst_slot_div = null;
 			self.dst_slot = null;
+			changed = true;
 		}
 
 		if(self.src_slot)
@@ -420,12 +410,17 @@ function Application() {
 			self.src_slot_div[0].style.color = '#000';
 			self.src_slot = null;
 			self.src_slot_div = null;
+			changed = true;
 		}
 		
 		self.dst_node = null;
 		self.src_node = null;
 		self.edit_conn = null;
-		self.updateCanvas(true);
+		
+		if(changed)
+			self.updateCanvas(true);
+		else
+			E2.dom.structure.tree.on_mouse_up();
 	};
 	
 	this.activateHoverNode = function()
@@ -624,14 +619,14 @@ function Application() {
 		
 			if(node.ui !== null)
 			{
-				node.ui.dom.find('#t').text(node.title);
+				node.ui.dom.find('.t').text(node.title);
 				
 				if(node.update_connections())
 					E2.app.updateCanvas(true);
 			}
 			
 			if(node.plugin.e2_is_graph)
-				node.plugin.graph.tree_node.setTitle(node.title);
+				node.plugin.graph.tree_node.set_title(node.title);
 		
 			if(node.plugin.renamed)
 				node.plugin.renamed();
@@ -639,7 +634,7 @@ function Application() {
 			node.parent_graph.emit_event({ type: 'node-renamed', node: node });
 		};
 		
-		self.player.core.create_dialog(diag, 'Rename node.', 275, 170, done_func,
+		self.player.core.create_dialog(diag, 'Rename node.', 240, 170, done_func,
 			function()
 			{
 				inp.focus().select();
@@ -885,10 +880,15 @@ function Application() {
 			self.mouseEventPosToCanvasCoord(e, self.edit_conn.ui.dst_pos);
 			self.updateCanvas(true);
 		}
-
-		if(!self.selection_start)
+		else if(!self.selection_start)
+		{
+			E2.dom.structure.tree.on_mouse_move(e);
 			return;
-
+		}
+		
+		if(!self.selection_end)
+			return;
+		
 		self.mouseEventPosToCanvasCoord(e, self.selection_end);
 		
 		var nodes = self.player.core.active_graph.nodes;
@@ -1155,12 +1155,7 @@ function Application() {
 			if(!n.plugin.e2_is_graph)
 				return;
 
-			n.plugin.graph.tree_node = n.parent_graph.tree_node.addChild({
-				title: n.title,
-				isFolder: true,
-				expand: true
-			});
-			
+			n.plugin.graph.tree_node = n.parent_graph.tree_node.add_child(n.title);
 			n.plugin.graph.tree_node.graph = n.plugin.graph;
 			n.plugin.graph.uid = E2.app.player.core.get_graph_uid();
 			n.plugin.graph.parent_graph = pg;
@@ -1233,68 +1228,36 @@ function Application() {
 	
 	this.onWindowResize = function()
 	{
-		var win = $(window);
-		var win_width = win.width();
-		var win_height = win.height();
-		var cont_h = E2.dom.controls.height();
-		var info_w = E2.dom.info.width();
-		var used_width = (self.condensed_view ? -15 : info_w) + E2.dom.webgl_canvas.width();
-		var used_height = cont_h + (self.condensed_view ? 20 : 250);
-		var c_width = (win_width - used_width) - 35;
-		var c_height = (win_height - used_height);
-		var col1_x = self.condensed_view ? 5 : info_w + 20;
-		var col2_x = col1_x + c_width + 7;
-		var col2_y = cont_h + c_height;
-		var col2_h = (win_height - (c_height + cont_h)) - 32;
-		var tabs_h = (win_height - (cont_h + E2.dom.webgl_canvas.height())) - 32;
-		var s_height = c_height;
-		
-		if(self.condensed_view)
-		{
-			E2.dom.dbg.css('display', 'none');
-		}
-		else
-		{
-			E2.dom.dbg.css({ 'position': 'absolute', 'left': col1_x - 3, 'top': col2_y + 7, 'width': c_width - 4, 'height': col2_h, display: 'inherit' });
-
-			if(self.collapse_log)
-				c_height += 230;
-		}
-		
-		E2.dom.breadcrumb.css({ 'position': 'absolute', 'left': col1_x + 8, 'top': cont_h + 16 });
-		E2.dom.canvas_parent.css({ 'position': 'absolute', 'left': col1_x });
-		E2.dom.webgl_canvas.css({ 'left':  col2_x });
-		E2.dom.tabs.css({ 'left':  col2_x, 'height': tabs_h });
-		E2.dom.graphs_list.css({ 'height': tabs_h - 120 });
-		E2.dom.snippets_list.css({ 'height': tabs_h - 100 });
-		E2.dom.canvas_parent.css({ 'width': c_width, 'height': c_height });
-		E2.dom.canvas.css({ 'width': c_width, 'height': c_height });
-		
-		var disp = self.condensed_view ? 'none' : 'inherit';
-		
-		if(self.condensed_view)
-		{
-			E2.dom.structure.css('display', 'none');
-			E2.dom.info.css('display', 'none');
-		}
-		else
-		{
-			E2.dom.structure.css({ 'height': s_height - 8, display: 'inherit' });
-			E2.dom.info.css({ 'position': 'absolute', 'left': 0, 'top': col2_y, 'height': col2_h, display: 'inherit' });
-		}
-		
 		// More hackery
-		E2.dom.canvas[0].width = E2.dom.canvas.width();
-		E2.dom.canvas[0].height = E2.dom.canvas.height();
-		
+		E2.dom.canvas[0].width = E2.dom.canvas_parent[0].clientWidth;
+		E2.dom.canvas[0].height = E2.dom.canvas_parent[0].clientHeight;
+
 		if(self.player)
 			self.updateCanvas(true);
 	};
-	
+
+
 	this.onKeyDown = function(e)
 	{
-				
-		if(e.keyCode === (this.is_osx ? 91 : 17))  // CMD on OSX, CTRL on everything else
+		function is_text_input_in_focus() {
+			var rx = /INPUT|SELECT|TEXTAREA/i;
+			return (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
+		}
+
+		if(e.keyCode === 8) // prevent backspace from going back
+		{
+			if(!is_text_input_in_focus())
+				e.preventDefault();
+		}
+		else if(e.keyCode === 9) // tab to focus to presets search
+		{
+			if (!is_text_input_in_focus())
+			{
+				$('input', E2.dom.presets_list).focus();
+				e.preventDefault();
+			}
+		}
+		else if(e.keyCode === (this.is_osx ? 91 : 17))  // CMD on OSX, CTRL on everything else
 		{
 			self.ctrl_pressed = true;
 		}
@@ -1306,7 +1269,7 @@ function Application() {
 		}
 		else if(e.keyCode === 32)
 		{
-			if(e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT')
+			if(is_text_input_in_focus())
 				return;
 			
 			if(self.player.current_state === self.player.state.PLAYING)
@@ -1335,6 +1298,13 @@ function Application() {
 			if(e.keyCode === 66) // CTRL+b
 			{
 				self.condensed_view = !self.condensed_view;
+				E2.dom.left_nav.toggle(!self.condensed_view);
+				
+				if(self.condensed_view)
+					E2.dom.dbg.toggle(false);
+				else if(!self.collapse_log)
+					E2.dom.dbg.toggle(true);
+				
 				self.onWindowResize();
 				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 				return;
@@ -1342,14 +1312,13 @@ function Application() {
 			else if(e.keyCode === 76) // CTRL+l
 			{
 				self.collapse_log = !self.collapse_log;
+				E2.dom.dbg.toggle(!self.collapse_log);
 				self.onWindowResize();
 				e.preventDefault();
 				return;
 			}
-			
-			var tgt = e.target.tagName;
-			
-			if(tgt === 'INPUT' || tgt === 'TEXTAREA')
+
+			if(is_text_input_in_focus())
 				return;
 				
 			if(e.keyCode === 67) // CTRL+c
@@ -1379,10 +1348,16 @@ function Application() {
 	{
 		var s = self.player.state;
 		var cs = self.player.current_state;
-		
-		E2.dom.play.button(cs == s.PLAYING ? 'disable' : 'enable');
-		E2.dom.pause.button(cs == s.PAUSED || cs == s.STOPPED ? 'disable' : 'enable');
-		E2.dom.stop.button(cs == s.STOPPED ? 'disable' : 'enable');
+
+		if (cs !== s.PLAYING) {
+			E2.dom.play.removeClass('disabled')
+			E2.dom.pause.addClass('disabled')
+			E2.dom.stop.addClass('disabled')
+		} else {
+			E2.dom.play.addClass('disabled')
+			E2.dom.pause.removeClass('disabled')
+			E2.dom.stop.removeClass('disabled')
+		}
 	}
 	
 	this.onPlayClicked = function()
@@ -1428,22 +1403,31 @@ function Application() {
 		
 		do
 		{
-			intersect = false;
-
 			for(var i = 0, len = nodes.length; i < len; i++)
 			{
 				var id = data[i];
 				var ind = nodes[i];
 
+				if(ind.outputs.length === 1 && ind.inputs.length === 0)
+				{
+					var con = ind.outputs[0];
+					var dat = con.dst_node.data;
+					var tgt_x = dat.x + dat.w - 20 - (con.offset * 10);
+
+					id.x += (tgt_x - id.x) / 40;
+				}
+				
 				for(var c = 0, clen = ind.inputs.length; c < clen; c++)
 				{
 					var con = ind.inputs[c];
 					var dat = con.src_node.data;
-					var right = dat.x + dat.w + 20 + (con.offset * 10);
-					var nx = id.x < right ? right - id.x : 0;
+					var tgt_x = dat.x + dat.w + 20 + (con.offset * 10);
+					var tgt_y = dat.y + 16 + (con.src_slot.index * 16);
+					var nx = id.x < tgt_x ? tgt_x - id.x : -1;
+					var ny = id.y < tgt_y ? 5 : -5;
 				
 					id.x += nx;
-					intersect = true;
+					id.y += ny;
 				}
 			
 				for(var i2 = 0, len2 = nodes.length; i2 < len2; i2++)
@@ -1459,8 +1443,6 @@ function Application() {
 					if(((i2d.x >= id.x - spc && i2d.x <= (id.x + id.w + spc)) || (id.x >= i2d.x - spc && id.x <= (i2d.x + i2d.w + spc))) &&
 					   ((i2d.y >= id.y - spc && i2d.y <= (id.y + id.h + spc)) || (id.y >= i2d.y - spc && id.y <= (i2d.y + i2d.h + spc))))
 					{
-						intersect = true;
-				
 						i2d.x += Math.floor(-n_x * 0.15);
 						i2d.y += Math.floor(-n_y * 0.15);
 					}
@@ -1472,7 +1454,7 @@ function Application() {
 			
 			pass++;
 		}
-		while(intersect && pass < 20);
+		while(pass < 20);
 
 		var mx = 10000000;
 		var my = 10000000;
@@ -1512,35 +1494,52 @@ function Application() {
 		self.updateCanvas(true);
 	};
 
-	this.onRefreshClicked = function() {
-		return render_graph_list(URL_GRAPHS, E2.dom.filename_input);
+	this.onOpenClicked = function()
+	{
+		FileSelectControl
+			.createForUrl(URL_GRAPHS, null, 'Open', function(file)
+			{
+				window.location.hash = '#' + URL_GRAPHS + file;
+				load_location_hash();
+			})
 	};
 
 	this.onSaveClicked = function()
 	{
-		var filename = E2.dom.filename_input.val();
+		$.get(URL_GRAPHS, function(files)
+		{
+			var wh = window.location.hash
 
-		if (!filename)
-			return alert('Please enter a filename')
+			return new FileSelectControl()
+				.buttons({
+					'Cancel': function() {},
+					'Save': function(filename) {
+						if (!filename)
+							return alert('Please enter a filename')
 
-		if (!/\.json$/.test(filename))
-			filename = filename + '.json'
+						if (!/\.json$/.test(filename))
+							filename = filename + '.json'
 
-		var ser = self.player.core.serialise();
+						var ser = self.player.core.serialise();
 
-		$.ajax({
-			type: 'POST',
-			url: URL_GRAPHS + filename,
-			data: ser,
-			dataType: 'json',
-			success: function() {
-				self.onRefreshClicked();
-				window.location.hash = '#' + URL_GRAPHS + filename;
-			},
-			error: function(_x, _t, err) {
-				alert('error '+err);
-			}
-		});
+						$.ajax({
+							type: 'POST',
+							url: URL_GRAPHS + filename,
+							data: ser,
+							dataType: 'json',
+							success: function() {
+								window.location.hash = '#' + URL_GRAPHS + filename;
+							},
+							error: function(_x, _t, err) {
+								alert('error '+err);
+							}
+						});
+					}
+				})
+				.selected(wh.substring(wh.lastIndexOf('/') + 1))
+				.files(files)
+				.modal()
+		})
 	};
 	
 	this.onLoadClicked = function()
@@ -1557,17 +1556,6 @@ function Application() {
 		});
 	};
 
-	this.onDownloadGraphClicked = function()
-	{
-		var url = '/dl' + URL_GRAPHS + E2.dom.filename_input.val();
-		var iframe = $('#dl-frame');
-
-		if (!iframe.length)
-			iframe = $('<iframe id="dl-frame">').hide().appendTo('body');
-
-		iframe.attr('src', url);
-	};
-
 	this.onShowTooltip = function(e)
 	{
 		if(self.in_drag)
@@ -1579,9 +1567,16 @@ function Application() {
 		i_txt = i_txt.replace('Type:', '<b>Type:</b>');
 		i_txt = i_txt.replace('Default:', '<b>Default:</b>');
 		i_txt = i_txt.replace('Range:', '<b>Range:</b>');
-		i_txt = i_txt.replace('<break>', '<br/><hr/>');
+		i_txt = i_txt.replace('<break>', '<br/><br/>');
 		
 		E2.dom.info.html(i_txt);
+		E2.dom.info.css('min-height', 'auto');
+
+		var heightNow = E2.dom.info.height();
+		var missing = E2.dom.info[0].scrollHeight - E2.dom.info[0].offsetHeight;
+		
+		if(missing > 0)
+			E2.dom.info.css('min-height', heightNow + missing + 12);
 	};
 	
 	this.onHideTooltip = function()
@@ -1589,10 +1584,12 @@ function Application() {
 		if(self.in_drag)
 			return false;
 
+		E2.dom.info.css('min-height', 'auto');
+
 		E2.dom.info.html('<b>Info view</b><br /><br />Hover over node instances or their slots to display their documentation here.');
 	};
 	
-    	document.addEventListener('mouseup', this.onMouseReleased);
+   	document.addEventListener('mouseup', this.onMouseReleased);
 	document.addEventListener('mousemove', this.onMouseMoved);
 	window.addEventListener('keydown', this.onKeyDown);
 	window.addEventListener('keyup', this.onKeyUp);
@@ -1623,12 +1620,12 @@ function Application() {
 	window.addEventListener('resize', function(self) { return function()
 	{
 		// To avoid UI lag, we don't respond to window resize events directly.
-		// Instead, we set up a timer that gets superceeded for each (spurious) 
+		// Instead, we set up a timer that gets superceeded for each (spurious)
 		// resize event within a 100 ms window.
 		clearTimeout(self.resize_timer);
 		self.resize_timer = setTimeout(self.onWindowResize, 100);
 	}}(this));
-	
+
 	var add_button_events = function(btn)
 	{
 		// We have to forward key events that would otherwise get trapped when
@@ -1641,7 +1638,7 @@ function Application() {
 	add_button_events(E2.dom.pause);
 	add_button_events(E2.dom.stop);
 	add_button_events(E2.dom.save);
-	add_button_events(E2.dom.load);
+	add_button_events(E2.dom.open);
 	
 	// Ask user for confirmation on page unload
 	/*$(window).bind('beforeunload', function()
@@ -1649,15 +1646,16 @@ function Application() {
 		return 'Oh... Please don\'t go.';
 	});*/
 
-	$('#fullscreen').button().click(function()
+	$('button#fullscreen').click(function()
 	{
 		self.player.core.renderer.set_fullscreen(true);
 	});
 	
-	$('#help').button().click(function()
+	$('button#help').click(function()
 	{
 		window.open('help/introduction.html', 'Engi Help');
 	});
 	
 	this.onHideTooltip();
 }
+

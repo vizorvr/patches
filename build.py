@@ -58,13 +58,13 @@ for script in scripts:
 	print '\t' + script
 	compress(scripts_path + script, build_dir + '/scripts/' + script)
 	
-print 'Compressing snippets...'
-snippets_path = src_dir + '/snippets/'
-os.mkdir(build_dir + '/snippets/')
-snippets = map(lambda x: x[len(snippets_path):], glob.glob(snippets_path + '*.json'))
+print 'Compressing presets...'
+presets_path = src_dir + '/presets/'
+os.mkdir(build_dir + '/presets/')
+presets = map(lambda x: x[len(presets_path):], glob.glob(presets_path + '*.json'))
 
-for snippet in snippets:
-	shutil.copy(snippets_path + snippet, build_dir + '/snippets/' + snippet)
+for preset in presets:
+	shutil.copy(presets_path + preset, build_dir + '/presets/' + preset)
 
 plugins_path = src_dir + '/plugins/'
 os.mkdir(build_dir + '/plugins/')
@@ -118,6 +118,14 @@ for cssfile in cssfiles:
 print 'Copying TrueType fonts.'
 os.system('cp ' + css_path + '*.ttf ' + build_dir + '/style')
 
+# Take care of files included directly from node modules.
+print 'Copying relevant files from node_modules...'
+os.system('mkdir -p ' + build_dir + '/node_modules/jquery/dist')
+os.system('cp node_modules/jquery/dist/jquery.min.js ' + build_dir + '/node_modules/jquery/dist')
+os.system('cp node_modules/jquery/dist/jquery.min.map ' + build_dir + '/node_modules/jquery/dist')
+os.system('mkdir -p ' + build_dir + '/node_modules/handlebars/dist')
+os.system('cp node_modules/handlebars/dist/handlebars.min.js ' + build_dir + '/node_modules/handlebars/dist')
+
 print 'Compressing plugin icons to CSS sprite sheet...'
 icons_path = build_dir + '/style/icons'
 os.system('mkdir ' + icons_path)
@@ -126,22 +134,6 @@ os.system('tools/compress-plugin-icons.py')
 # Copy the result back to the debug version.
 shutil.copy(icons_path + '/style.css', src_dir + '/style/icons/style.css')
 shutil.copy(icons_path + '/icons.png', src_dir + '/style/icons/icons.png')
-
-print 'Copying dynatree skin and compressing css...'
-skin_path = css_path + 'skin'
-shutil.copytree(skin_path, build_dir + '/style/skin')
-compress_css(skin_path + '/ui.dynatree.css', build_dir + '/style/skin/ui.dynatree.css')
-
-jq_theme = 'smoothness'
-print 'Copying jQuery theme \'' + jq_theme + '\'...'
-jq_theme_path = css_path + jq_theme
-shutil.copytree(jq_theme_path, build_dir + '/style/' + jq_theme)
-
-jq_cssfilename = 'jquery-ui-1.8.16.custom.css'
-jq_cssfilepath = jq_theme_path + '/' + jq_cssfilename
-
-print '\tCompressing ' + jq_cssfilename
-compress_css(jq_cssfilepath, build_dir + '/style/' + jq_theme + '/' + jq_cssfilename)
 
 print 'Copying remaining required files...'
 

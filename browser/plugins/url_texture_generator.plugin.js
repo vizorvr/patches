@@ -1,4 +1,4 @@
-var URL_TEXTURES_ROOT = '/data/textures/'
+var URL_TEXTURES_ROOT = 'data/textures/'
 
 E2.p = E2.plugins["url_texture_generator"] = function(core, node)
 {
@@ -24,76 +24,22 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.create_ui = function()
 {
-	var self = this
-	var inp = $('<input id="url" type="button" value="Source" title="No texture selected." />');
+	var inp = makeButton('Source', 'No texture selected.', 'url');
+	var self = this;
 	
 	inp.click(function()
 	{
-		var source   = $("#texture-image-select-template").html();
-		var template = Handlebars.compile(source);
-		var dlg = $('<div>')
-
-		function setValue(v)
-		{
-			self.state.url = v;
-			self.state_changed(null);
-			self.state_changed(inp);
-			self.updated = true;
-		}
-
-		$.get(URL_TEXTURES_ROOT, function(list)
-		{
-			var originalValue = self.state.url
-
-			dlg.html(template(
+		FileSelectControl
+			.createForUrl(URL_TEXTURES_ROOT, self.state.url)
+			.onChange(function(v)
 			{
-				images: list.map(function(item)
-				{
-					return {
-						url: item,
-						selected: originalValue === URL_TEXTURES_ROOT + item
-					}
-				})
-			}))
-
-			var urlEl = $('#texture-image-url', dlg)
-
-			urlEl.val(self.state.url)
-
-			dlg.dialog(
-			{
-				title: 'Select image',
-				width: 445,
-				height: 455,
-				modal: true,
-				resizable: false,
-				buttons: {
-					'OK': function()
-					{
-						$(this).dialog('destroy')
-						dlg.remove()
-					},
-					'Cancel': function()
-					{
-						$(this).dialog('destroy')
-						setValue(originalValue)
-						dlg.remove()
-					}
-				}
+				if (v.indexOf('://') === -1)
+					v = URL_TEXTURES_ROOT + v
+				self.state.url = v;
+				self.state_changed(null);
+				self.state_changed(inp);
+				self.updated = true;
 			})
-
-			var selectEl = $('#texture-image-select', dlg)
-			selectEl.on('change keyup', function(e)
-			{
-				urlEl.val(URL_TEXTURES_ROOT + selectEl.val())
-				setValue(urlEl.val())
-			})
-
-			urlEl.change(function()
-			{
-				setValue(urlEl.val())
-			})
-		})
 	})
 
 	return inp;
