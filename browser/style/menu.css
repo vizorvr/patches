@@ -50,7 +50,6 @@ li.context-menu-item span
 .menu-lbl-grp
 {
 	position: relative;
-	top: -3px;
 	padding: 2px;
 	padding-right: 4px;
 	margin: 0px;
@@ -60,7 +59,7 @@ li.context-menu-item span
 .menu-lbl
 {
 	position: relative;
-	top: -4px;
+	top: -3px;
 	padding: 2px;
 	padding-right: 4px;
 	margin: 0px;
