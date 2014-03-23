@@ -414,7 +414,6 @@ E2.InitialiseEngi = function()
 	E2.dom.play = $('#play');
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
-	E2.dom.layout = $('#layout');
 	E2.dom.refresh = $('#refresh');
 	E2.dom.save = $('#save');
 	E2.dom.dl_graph = $('#dl-graph');
@@ -478,7 +477,6 @@ E2.InitialiseEngi = function()
 	
 	E2.dom.save.click(E2.app.onSaveClicked);
 	E2.dom.open.click(E2.app.onOpenClicked);
-	E2.dom.layout.click(E2.app.onLayoutClicked);
 
 	E2.dom.play.click(E2.app.onPlayClicked);
 	E2.dom.pause.click(E2.app.onPauseClicked);
