@@ -41,10 +41,10 @@
 	color: white;
 }
 
-.collapsing, .collapse {
-  -webkit-transition: height 0.001s;
-  -moz-transition: height 0.001s;
-  -ms-transition: height 0.001s;
-  -o-transition: height 0.001s;
-  transition: height 0.001s;
+.collapsing {
+	-webkit-transition: height 0.001s;
+	-moz-transition: height 0.001s;
+	-ms-transition: height 0.001s;
+	-o-transition: height 0.001s;
+	transition: height 0.001s;
 }

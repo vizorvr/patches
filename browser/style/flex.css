@@ -32,8 +32,8 @@ body {
 }
 
 .header {
-	min-height: 40px;
-	max-height: 40px;
+	min-height: 34px;
+	max-height: 34px;
 }
 
 .info-pane {
@@ -91,7 +91,7 @@ body {
 	margin-left: 6px;
 	margin-top: 7px;
 	z-index: 10000;
-	top: 40px;
+	top: 33px;
 	font-size: 10pt;
 }
 
