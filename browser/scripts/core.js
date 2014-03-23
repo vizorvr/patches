@@ -389,7 +389,7 @@ function Core(app) {
 		if(self.aux_scripts.hasOwnProperty(script_url))
 			return;
 		
-		load_script('plugins/' + script_url);
+		add_script('plugins/' + script_url);
 		self.aux_scripts[script_url] = true;
 	};
 

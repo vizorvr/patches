@@ -74,7 +74,8 @@ function load_style(url)
 	document.getElementById('head').appendChild(link);
 }
 
-function sort_dict(dict) {
+function sort_dict(dict)
+{
 	var s = [], key;
 	
 	for(key in dict)
@@ -85,7 +86,8 @@ function sort_dict(dict) {
 	return s;
 }
 
-function msg(txt) {
+function msg(txt)
+{
 	var d = E2.dom.dbg;
 
 	if(d === undefined)
@@ -99,7 +101,8 @@ function msg(txt) {
 	d.scrollTop(d[0].scrollHeight);
 }
 
-function load_script(url) {
+function load_script(url)
+{
 	var xhrObj = new XMLHttpRequest();
 
 	xhrObj.open('GET', url, false);
@@ -111,4 +114,17 @@ function load_script(url) {
 	se.text = xhrObj.responseText;
 	
 	document.getElementsByTagName('head')[0].appendChild(se);
+}
+
+function add_script(url)
+{
+	var script = document.createElement('script');
+	var async = document.createAttribute('async');
+	
+	async.nodeValue = 'false';
+
+	script.src = url;
+	script.attributes.setNamedItem(async);
+	
+	document.getElementById('head').appendChild(script);
 }
