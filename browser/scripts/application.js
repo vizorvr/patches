@@ -41,6 +41,7 @@ function Application() {
 	this.condensed_view = false;
 	this.collapse_log = true;
 	this.selection_border_style = '2px solid #09f';
+	this.normal_border_style = '1px solid #444';
 	
 	this.getNIDFromSlot = function(id)
 	{
@@ -747,7 +748,7 @@ function Application() {
 			if(nui)
 			{
 				nui.selected = false;
-				nui.dom[0].style.border = '1px solid #444';
+				nui.dom[0].style.border = self.normal_border_style;
 			}
 		}
 			
@@ -940,7 +941,7 @@ function Application() {
 			var n = sn[i];
 			
 			if(!n.ui.selected)
-				n.ui.dom[0].style.border = '1px solid #444';
+				n.ui.dom[0].style.border = self.normal_border_style;
 		}
 		
 		self.selection_nodes = ns;
