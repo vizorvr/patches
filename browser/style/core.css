@@ -55,14 +55,15 @@ table
 }
 
 .logo {
+	padding: 6px;
 	margin-top: 10px;
-	width: 100%
+	width: 100%;
 }
 
 .logo a {
 	font-size: 22pt;
 	font-family: 'greyscale_basic_regular', sans-serif;
-	color: #888;
+	color: #445;
 	text-decoration: none;
 }
 
@@ -86,7 +87,7 @@ table
 
 #canvas
 {
-	background-color: #b5b5b5;
+	background-color: #272822;
 }
 
 #load-snippet
@@ -177,7 +178,7 @@ table
 
 .pl_header
 {
-	background-color: #2f3135;
+	background-color: lightslategrey;
 	color: #fff;
 	border: none;
 }

@@ -23,7 +23,7 @@ CollapsibleSelectControl.prototype.focus = function() {
 CollapsibleSelectControl.prototype._reset = function() {
 	$('.panel', this._el).show()
 	$('.panel li', this._el).show()
-	$('.collapse:visible').not('.in').hide()
+	$('.collapse').collapse('hide')
 }
 
 CollapsibleSelectControl.prototype._search = function(text) {
@@ -43,7 +43,8 @@ CollapsibleSelectControl.prototype._search = function(text) {
 		})
 
 	lis.closest('.panel').show()
-	lis.closest('.panel-collapse').show()
+	// lis.closest('.panel-collapse').show()
+	lis.closest('.collapse').collapse('show')
 
 	lis.show()
 }
