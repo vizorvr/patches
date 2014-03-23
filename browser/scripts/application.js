@@ -40,6 +40,7 @@ function Application() {
 	this.is_osx = /os x 10/.test(navigator.userAgent.toLowerCase());
 	this.condensed_view = false;
 	this.collapse_log = true;
+	this.selection_border_style = '2px solid #09f';
 	
 	this.getNIDFromSlot = function(id)
 	{
@@ -928,7 +929,7 @@ function Application() {
 				
 			if(!n.ui.selected)
 			{
-				n.ui.dom[0].style.border = '2px solid #09f';
+				n.ui.dom[0].style.border = self.selection_border_style;
 				n.ui.selected = true;
 				ns.push(n);
 			}
@@ -1177,7 +1178,7 @@ function Application() {
 
 			n.create_ui();
 
-			n.ui.dom[0].border = '2px solid #09f';
+			n.ui.dom[0].border = self.selection_border_style;
 
 			if(n.plugin.state_changed)
 				n.plugin.state_changed(n.ui.plugin_ui);			
@@ -1210,7 +1211,7 @@ function Application() {
 		{
 			var n = ag.nodes[i];
 			
-			n.ui.dom[0].style.border = '2px solid #09f';
+			n.ui.dom[0].style.border = self.selection_border_style;
 			n.ui.selected = true;
 			s_nodes.push(n);
 		}
