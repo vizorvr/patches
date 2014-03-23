@@ -295,7 +295,7 @@ function Application() {
 				
 		var conns = self.player.core.active_graph.connections;
 		var cb = [[], [], [], []];
-		var styles = ['#888', '#000', '#09f', E2.erase_color];
+		var styles = ['#888', '#fd9720', '#09f', E2.erase_color];
 		
 		for(var i = 0, len = conns.length; i < len; i++)
 		{
