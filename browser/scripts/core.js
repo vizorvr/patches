@@ -494,6 +494,8 @@ function load_location_hash() {
 	if(graphName.length < 1)
 		return;
 	
+	E2.app.onStopClicked();
+	E2.app.player.on_update();
 	console.log('loading graph from location hash:', graphName);
 	E2.dom.filename_input.val(graphName);
 	E2.app.player.load_from_url(URL_GRAPHS+graphName);
