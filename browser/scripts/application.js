@@ -41,7 +41,7 @@ function Application() {
 	this.condensed_view = false;
 	this.collapse_log = true;
 	this.selection_border_style = '2px solid #09f';
-	this.normal_border_style = '1px solid #444';
+	this.normal_border_style = 'none';
 	
 	this.getNIDFromSlot = function(id)
 	{
