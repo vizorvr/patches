@@ -1,8 +1,10 @@
 <html>
 <head>
 	<title>Engi - Plugin development</title>
+    <link href="style.css" rel="stylesheet"></link>
+    <link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
+    <link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
 </head>
-<link href="style.css" rel="stylesheet"></link>
 <body>
 
 <h1 id="spanstylefont-family:greyscale_basic_regularsans-serifengispan"><span style="font-family: 'greyscale_basic_regular', sans-serif;">E N G I</span></h1>
@@ -40,33 +42,43 @@ Annotation plugin, which provides a persistent on-canvas note or comment.</p>
 
 <h3 id="pluginimplementation:">Plugin implementation:</h3>
 
-<p>The beginning of each plugin implemenatation starts with the declaration of a constructor function and its
+<p>The beginning of each plugin implementation starts with the declaration of a constructor function and its
 assignment to a property in the <em>plugins</em> registry contained in the <em>E2</em> namespace. To avoid leaving a dangling
 temporary variable around after load of the last registered plugin, this is typically simultaneously assigned
 to the <em>E2.p</em> variable to aid in subsequent prototypical declaration of plugin methods.</p>
 
 <p>Example:</p>
 
-<p><pre style="font-size: 10px; font-weight:bolder;">
- E2.p = E2.plugins[&#8220;filename_without_extension&#8221;] = function(core, node)
- {
- this.desc = &#8216;Text string describing the plugin and its operation.&#8217;;</p>
+<p><pre style="overflow: auto; white-space: pre">
+E2.p = E2.plugins['filename_without_extension'] = function(core, node)
+{
+    this.desc = 'Text string describing the plugin and its operation.';
 
-<pre><code>    this.input_slots = [ 
-        { name: 'in', dt: core.datatypes.FLOAT, desc: 'Positive or negative input value', def: 0 }
+    this.input_slots = [ 
+        {
+            name: 'in',
+            dt: core.datatypes.FLOAT, // data type
+            desc: 'Positive or negative input value',
+            def: 0 // default
+        }
     ];
 
     this.output_slots = [
-        { name: 'out', dt: core.datatypes.BOOL, desc: 'True if &lt;b&gt;in&lt;/b&gt; &gt; 0', def: true }
+        {
+            name: 'out',
+            dt: core.datatypes.BOOL,
+            desc: 'True if &lt;b&gt;in&lt;/b&gt; &gt; 0',
+            def: true
+        }
     ];
 
     this.state = {} // Optional. Declaration can be ommitted.
 };
-</code></pre>
 </pre>
+</p>
 
 <p>The name of the property of <em>E2.plugins</em> the constructor is assigned to must match the filename of the plugin
-implementation sans extension, and also the identifier used to register it in <em>plugins/plugins.json</em>.</p>
+without extension, as well as the identifier used to register it in <em>plugins/plugins.json</em>.</p>
 
 <p>In- and output slot arrays can be empty, but must be present. Slots declared at plugin creation time are
 termed <em>static</em>, as opposed to slots created arbitrily after plugin instantiation, which are called <em>dynamic</em>.</p>
@@ -81,39 +93,39 @@ following section, all reserved methods will be described:</p>
 
 <h3 id="pluginapi:">Plugin API:</h3>
 
-<h5 id="e2.p.prototype.resetfunction">E2.p.prototype.reset = function()</h5>
+<h4 id="e2.p.prototype.resetfunction">E2.p.prototype.reset = function()</h4>
 
 <p>Called on plugin load, instantiation and when playback is stopped.
 Is scheduled for deprecation in favour of <code>stop()</code>, and should not be used unless strictly necessary.</p>
 
 <hr />
 
-<h5 id="e2.p.prototype.destroyfunction">E2.p.prototype.destroy = function()</h5>
+<h4 id="e2.p.prototype.destroyfunction">E2.p.prototype.destroy = function()</h4>
 
 <p>If declared, this method will be called by the core immediately before its parent Node is destroyed
 along with all associated resources.</p>
 
 <hr />
 
-<h5 id="e2.p.prototype.playfunction">E2.p.prototype.play = function()</h5>
+<h4 id="e2.p.prototype.playfunction">E2.p.prototype.play = function()</h4>
 
 <p>Called immediately before graph playback begins.</p>
 
 <hr />
 
-<h5 id="e2.p.prototype.pausefunction">E2.p.prototype.pause = function()</h5>
+<h4 id="e2.p.prototype.pausefunction">E2.p.prototype.pause = function()</h4>
 
 <p>Called immediately after graph playback is paused.</p>
 
 <hr />
 
-<h5 id="e2.p.prototype.stopfunction">E2.p.prototype.stop = function()</h5>
+<h4 id="e2.p.prototype.stopfunction">E2.p.prototype.stop = function()</h4>
 
 <p>Called immediately after graph playback is stopped.</p>
 
 <hr />
 
-<h5 id="e2.p.prototype.connection_changedfunctiononconnslot">E2.p.prototype.connection_changed = function(on, conn, slot)</h5>
+<h4 id="e2.p.prototype.connection_changedfunctiononconnslot">E2.p.prototype.connection_changed = function(on, conn, slot)</h4>
 
 <p>Called when the state of a given in- or outbound connection to or from this plugin changes.</p>
 
@@ -139,7 +151,7 @@ data.</p>
 
 <hr />
 
-<h5 id="e2.p.prototype.update_inputfunctionslotdata">E2.p.prototype.update_input = function(slot, data)</h5>
+<h4 id="e2.p.prototype.update_inputfunctionslotdata">E2.p.prototype.update_input = function(slot, data)</h4>
 
 <p>Called whenever an input slot has new data to deliver. </p>
 
@@ -173,7 +185,7 @@ between input to dynamic vs. static slots. Remember that <strong>slot.uid</stron
 
 <hr />
 
-<h5 id="e2.p.prototype.update_statefunction">E2.p.prototype.update_state = function()</h5>
+<h4 id="e2.p.prototype.update_statefunction">E2.p.prototype.update_state = function()</h4>
 
 <p>Called one every frame after all calls to <code>update_input()</code> has completed, if:</p>
 
@@ -186,14 +198,14 @@ between input to dynamic vs. static slots. Remember that <strong>slot.uid</stron
 
 <hr />
 
-<h5 id="e2.p.prototype.update_outputfunctionslot">E2.p.prototype.update_output = function(slot)</h5>
+<h4 id="e2.p.prototype.update_outputfunctionslot">E2.p.prototype.update_output = function(slot)</h4>
 
 <p>Called once for every connected output slot if <code>update_state()</code> was previously called this frame.
 Like <code>update_input()</code>, the <strong>slot</strong> parameter is a slot declaration and contains exactly the same members.</p>
 
 <hr />
 
-<h5 id="e2.p.prototype.create_uifunction">E2.p.prototype.create_ui = function()</h5>
+<h4 id="e2.p.prototype.create_uifunction">E2.p.prototype.create_ui = function()</h4>
 
 <p>Called when the canvas on which the plugin resides is being switched to for editing. </p>
 
@@ -207,7 +219,7 @@ whenever visible in the editor.</p>
 
 <hr />
 
-<h5 id="e2.p.prototype.state_changedfunctionui">E2.p.prototype.state_changed = function(ui)</h5>
+<h4 id="e2.p.prototype.state_changedfunctionui">E2.p.prototype.state_changed = function(ui)</h4>
 
 <p>This method is called once after plugin creation or deserialization with <strong>ui</strong> set to <em>null</em>. This call
 can be used to do fundamental plugin instance initialization. If the plugin declares a UI, this method
@@ -226,13 +238,13 @@ will be called seperately with <code>ui</code> equal to the root DOM element ret
 
 <h4 id="node">Node</h4>
 
-<h5 id="node.prototype.get_disp_namefunction">Node.prototype.get_disp_name = function()</h5>
+<h4 id="node.prototype.get_disp_namefunction">Node.prototype.get_disp_name = function()</h4>
 
 <p>Returns the string currently being used for the visible header of the node.</p>
 
 <hr />
 
-<h5 id="node.prototype.add_slotfunctionslot_typedef">Node.prototype.add_slot = function(slot_type, def)</h5>
+<h4 id="node.prototype.add_slotfunctionslot_typedef">Node.prototype.add_slot = function(slot_type, def)</h4>
 
 <p>Adds a new dynamic slot to the current node.</p>
 
@@ -244,7 +256,7 @@ will be called seperately with <code>ui</code> equal to the root DOM element ret
 
 <hr />
 
-<h5 id="node.prototype.remove_slotfunctionslot_typesuid">Node.prototype.remove_slot = function(slot_type, suid)</h5>
+<h4 id="node.prototype.remove_slotfunctionslot_typesuid">Node.prototype.remove_slot = function(slot_type, suid)</h4>
 
 <p>Removes a dynamic slot from this node.</p>
 
@@ -255,7 +267,7 @@ will be called seperately with <code>ui</code> equal to the root DOM element ret
 
 <hr />
 
-<h5 id="node.prototype.find_dynamic_slotfunctionslot_typesuid">Node.prototype.find_dynamic_slot = function(slot_type, suid)</h5>
+<h4 id="node.prototype.find_dynamic_slotfunctionslot_typesuid">Node.prototype.find_dynamic_slot = function(slot_type, suid)</h4>
 
 <p>Returns the slot definition for a given dynamic slot.</p>
 
@@ -267,7 +279,7 @@ will be called seperately with <code>ui</code> equal to the root DOM element ret
 
 <hr />
 
-<h5 id="node.prototype.rename_slotfunctionslot_typesuidname">Node.prototype.rename_slot = function(slot_type, suid, name)</h5>
+<h4 id="node.prototype.rename_slotfunctionslot_typesuidname">Node.prototype.rename_slot = function(slot_type, suid, name)</h4>
 
 <p>Renames the specified slot.</p>
 
@@ -277,7 +289,7 @@ will be called seperately with <code>ui</code> equal to the root DOM element ret
 <li><strong>name</strong>: Desired new name for the specified slot.</li>
 </ul>
 
-<h5 id="node.prototype.change_slot_datatypefunctionslot_typesuiddt">Node.prototype.change_slot_datatype = function(slot_type, suid, dt)</h5>
+<h4 id="node.prototype.change_slot_datatypefunctionslot_typesuiddt">Node.prototype.change_slot_datatype = function(slot_type, suid, dt)</h4>
 
 <p>Changes the data type of the specified slot. Unless the new data type is ANY,
 existing connection to or from the specified slot are destroyed.</p>
@@ -290,7 +302,7 @@ existing connection to or from the specified slot are destroyed.</p>
 
 <h4 id="core">Core</h4>
 
-<h5 id="core.get_default_valuefunctiondt">Core.get_default_value = function(dt)</h5>
+<h4 id="core.get_default_valuefunctiondt">Core.get_default_value = function(dt)</h4>
 
 <p>Returns the default value for the supplied data type.</p>
 

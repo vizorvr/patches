@@ -18,10 +18,17 @@
 	<p class="lead">Engi is an open source HTML5 <b>dataflow programming editor</b> supporting web technologies like WebGL</p>
 
 	<p>
+		Arbitrary logic
+	</p>
+
+	<p>
 		<a href="editor.html" class="btn btn-primary btn-lg active"><span>Try it now!</span></a>
 	</p>
 
-	<h3>Running Engi locally (Mac/Linux)</h3>
+	<h3>Quick start</h3>
+	<p>
+		You can <a href="editor.html">run it right here</a>, but we recommend running Engi locally to use all the features such as recording. You'll need to install <a href="http://git-scm.com/">git</a> and <a href="http://nodejs.org/">Node.js</a> first. On the Mac, you can use <a href="http://brew.sh/">Homebrew</a> to do that.
+	</p>
 
 <pre class="code">
 	$ git clone https://github.com/engijs/engi.git
@@ -29,22 +36,27 @@
 	$ npm install
 	$ node server
 </pre>
+	<p>
+		Then point your browser to http://localhost:8000/.
+		Engi works best in the latest versions of Chrome and Firefox.
+	</p>
 
 	<h3>Introduction</h3>
 
 	<p>
-		Engi has over 200 plugins that you can combine visually to create logic, 3D graphics, cameras, materials, lights etc. You can play video and audio, write custom shaders, and a do a whole lot more. It's written in JavaScript with high performance in mind. If you would like to know more before jumping in, see below or read more in the <a href="help/introduction.html" target="_blank">introduction</a>. It works in the browser so if you just want to get started, you can use it right here!
+		Engi has over 200 plugins that you can combine visually to create logic, 3D graphics, cameras, materials, lights etc. You can play video and audio, write custom shaders, and a do a whole lot more. It's written in JavaScript with high performance in mind. For more information, see below or read more in the <a href="help/introduction.html" target="_blank">introduction</a> and the <a href="//github.com/engijs/engi/tree/master/README.md">README</a>. It works in the browser so if you just want to get started, you can use it <a href="editor.html">right here</a>!
+
 	</p>
 
 	<p>
-		Engi is open source and licensed under the MIT license. The source code is at <a href="https://github.com/engijs/engi" target="_blank">https://github.com/engijs/engi</a>. You can download Engi from GitHub and run it locally on your own computer.
+		Engi is open source and licensed under the MIT license. The source code is at <a href="https://github.com/engijs/engi" target="_blank">https://github.com/engijs/engi</a>.
 	</p>
 
 	<p>
 		Follow us on twitter <a href="http://twitter.com/engidevops" target="_blank">@EngiDevOps</a> or on <a href="http://github.com/engijs/engi">GitHub</a>.
 	</p>
 
-	<h3>Example screenshot of a graph:</h3>
+	<h3>Example screenshot of a graph</h3>
 	
 	<p>
 		<img src="help/intro/screenshot2.jpg">
@@ -53,7 +65,7 @@
 	<table>
 		<tr>
 			<td width="400">
-				<h3>Editing graphs:</h3>
+				<h3>Editing graphs</h3>
 				<br>
 				<span class="highlight">Right click</span> on canvas to insert plugins.<br><br>
 				Drag connections from inputs and outputs<br><br>
@@ -66,7 +78,7 @@
 				<br>
 			</td>
 			<td width="400" valign="top">
-				<h3>Hotkeys:</h3>
+				<h3>Hotkeys</h3>
 				<br>
 				<span class="highlight">CTRL-C, CTRL-V, CTRL-X</span> Copy, Paste, Cut<br>
 				<br>
@@ -79,6 +91,8 @@
 				<span class="highlight">Space</span> Play/Stop<br>
 				<br>
 				<span class="highlight">Tab</span> Search Presets<br>
+				<br>
+				<span class="highlight">Backspace/Delete</span> Delete selected plugins<br>
 				<br>
 			</td>
 		</tr>
