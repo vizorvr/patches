@@ -484,6 +484,14 @@ E2.InitialiseEngi = function()
 
 	E2.app.onWindowResize();
 	
+	if(E2.app.player.core.plugin_mgr.release_mode)
+	{
+		window.onbeforeunload = function(e)
+		{
+		    return 'You might be leaving behind unsaved work!';
+		};
+	}
+
 	load_location_hash();
 }
 
