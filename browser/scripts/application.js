@@ -312,7 +312,7 @@ function Application() {
 		
 		var so = self.scrollOffset;
 		
-		c.lineWidth = 1; // Doesn't work in Chrome with lineWidth > 1 :(
+		c.lineWidth = 2; // Doesn't work in Chrome with lineWidth > 1 :(
 		c.lineCap = 'square';
 		c.lineJoin = 'miter';
 		
