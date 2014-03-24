@@ -1,61 +1,102 @@
 <html>
 <head>
 	<title>Engi</title>
+	<link href="help/style.css" rel="stylesheet"></link>
+	<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
+	<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
 </head>
-<link href="help/style.css" rel="stylesheet"></link>
 <body>
 
-<div id="container" style="width:850px">
-<img src="help/intro/screenshot3.jpg"><br>
-<h1>Engi is a dataflow programming editor using HTML5/WebGL  </h1>
-It currently has approximately 200 plugins that you can use to create logic, 3D graphics, cameras, materials, lights etc. You can play video and audio, write custom shaders, and a do a whole lot more. It's written in javascript with high performance and speed in mind. If you want to know more before jumping in, see below or read more in the <a href="help/introduction.html" target="_blank">introduction</a>. It works in the browser so if you just want to get started, you can use it right here.
-<br><br>
-<a href="editor.html" class="button">Try it now</a>
-<br>
-<br>
-Engi is open source and licensed under the MIT license. The source code is released at <a href="https://github.com/engijs/engi" target="_blank">https://github.com/engijs/engi</a> You can download Engi from github and run it locally on your own computer.<br>
-<br>
-Follow us on twitter <a href="http://twitter.com/engidevops" target="_blank">@EngiDevOps</a> or on GitHub.
-<br><br>
+<!-- Fork me on GitHub -->
+<a href="https://github.com/engijs/engi"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
 
-<h3>Example screenshot of a graph:</h3>
-<br>
+<div class="container" style="width: 850px">
+	<img src="help/intro/screenshot3.jpg"/>
 
-<img src="help/intro/screenshot2.jpg"><br>
-<br><br>
-<table>
-	<tr>
-		<td width="400">
-			<h3>Editing graphs:</h3>
-			<br>
-			<span class="highlight">Right click</span> on canvas to insert plugins.<br><br>
-			Drag connections from inputs and outputs<br><br>
-			Press <span class="highlight">Play</span> to run your graph.<br><br>
-			Hold <span class="highlight">shift</span> to delete plugins and connections.<br><br>
-			<span class="highlight">Double click</span> to add Presets.<br><br>
-			<span class="highlight">Click and drag</span> on the canvas to select plugins.<br><br>
-			Collapse plugins by clicking on their icon.
-			<br>
-			<br>
-		</td>
-		<td width="400" valign="top">
-			<h3>Hotkeys:</h3>
-			<br>
-			<span class="highlight">CTRL-C, CTRL-V, CTRL-X</span> Copy, Paste, Cut<br>
-			<br>
-			<span class="highlight">CTRL-A</span> Select all<br>
-			<br>
-			<span class="highlight">CTRL-B</span> Hide/show Graph tree and info view<br>
-			<br>
-			<span class="highlight">CTRL-L</span> Hide/show console.<br>
-			<br>
-			<span class="highlight">Space</span> Play/Stop<br>
-			<br>
-			<span class="highlight">Tab</span> Search Presets<br>
-			<br>
-		</td>
-	</tr>
-</table>
+	<h1>Engi</h1>
 
+	<p class="lead">Engi is an open source HTML5 <b>dataflow programming editor</b> supporting web technologies like WebGL</p>
+
+	<p>
+		Arbitrary logic
+	</p>
+
+	<p>
+		<a href="editor.html" class="btn btn-primary btn-lg active"><span>Try it now!</span></a>
+	</p>
+
+	<h3>Quick start</h3>
+	<p>
+		You can <a href="editor.html">run it right here</a>, but we recommend running Engi locally to use all the features such as recording. You'll need to install <a href="http://git-scm.com/">git</a> and <a href="http://nodejs.org/">Node.js</a> first. On the Mac, you can use <a href="http://brew.sh/">Homebrew</a> to do that.
+	</p>
+
+<pre class="code">
+	$ git clone https://github.com/engijs/engi.git
+	$ cd engi
+	$ npm install
+	$ node server
+</pre>
+	<p>
+		Then point your browser to http://localhost:8000/.
+		Engi works best in the latest versions of Chrome and Firefox.
+	</p>
+
+	<h3>Introduction</h3>
+
+	<p>
+		Engi has over 200 plugins that you can combine visually to create logic, 3D graphics, cameras, materials, lights etc. You can play video and audio, write custom shaders, and a do a whole lot more. It's written in JavaScript with high performance in mind. For more information, see below or read more in the <a href="help/introduction.html" target="_blank">introduction</a> and the <a href="//github.com/engijs/engi/tree/master/README.md">README</a>. It works in the browser so if you just want to get started, you can use it <a href="editor.html">right here</a>!
+
+	</p>
+
+	<p>
+		Engi is open source and licensed under the MIT license. The source code is at <a href="https://github.com/engijs/engi" target="_blank">https://github.com/engijs/engi</a>.
+	</p>
+
+	<p>
+		Follow us on twitter <a href="http://twitter.com/engidevops" target="_blank">@EngiDevOps</a> or on <a href="http://github.com/engijs/engi">GitHub</a>.
+	</p>
+
+	<h3>Example screenshot of a graph</h3>
+	
+	<p>
+		<img src="help/intro/screenshot2.jpg">
+	</p>
+
+	<table>
+		<tr>
+			<td width="400">
+				<h3>Editing graphs</h3>
+				<br>
+				<span class="highlight">Right click</span> on canvas to insert plugins.<br><br>
+				Drag connections from inputs and outputs<br><br>
+				Press <span class="highlight">Play</span> to run your graph.<br><br>
+				Hold <span class="highlight">shift</span> to delete plugins and connections.<br><br>
+				<span class="highlight">Double click</span> to add Presets.<br><br>
+				<span class="highlight">Click and drag</span> on the canvas to select plugins.<br><br>
+				Collapse plugins by clicking on their icon.
+				<br>
+				<br>
+			</td>
+			<td width="400" valign="top">
+				<h3>Hotkeys</h3>
+				<br>
+				<span class="highlight">CTRL-C, CTRL-V, CTRL-X</span> Copy, Paste, Cut<br>
+				<br>
+				<span class="highlight">CTRL-A</span> Select all<br>
+				<br>
+				<span class="highlight">CTRL-B</span> Hide/show Graph tree and info view<br>
+				<br>
+				<span class="highlight">CTRL-L</span> Hide/show console.<br>
+				<br>
+				<span class="highlight">Space</span> Play/Stop<br>
+				<br>
+				<span class="highlight">Tab</span> Search Presets<br>
+				<br>
+				<span class="highlight">Backspace/Delete</span> Delete selected plugins<br>
+				<br>
+			</td>
+		</tr>
+	</table>
+</div>
 </body>
 </html>

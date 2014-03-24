@@ -41,6 +41,7 @@ function Application() {
 	this.condensed_view = false;
 	this.collapse_log = true;
 	this.selection_border_style = '2px solid #09f';
+	this.normal_border_style = 'none';
 	
 	this.getNIDFromSlot = function(id)
 	{
@@ -294,7 +295,7 @@ function Application() {
 				
 		var conns = self.player.core.active_graph.connections;
 		var cb = [[], [], [], []];
-		var styles = ['#888', '#000', '#09f', E2.erase_color];
+		var styles = ['#888', '#fd9720', '#09f', E2.erase_color];
 		
 		for(var i = 0, len = conns.length; i < len; i++)
 		{
@@ -311,7 +312,7 @@ function Application() {
 		
 		var so = self.scrollOffset;
 		
-		c.lineWidth = 1; // Doesn't work in Chrome with lineWidth > 1 :(
+		c.lineWidth = 2; // Doesn't work in Chrome with lineWidth > 1 :(
 		c.lineCap = 'square';
 		c.lineJoin = 'miter';
 		
@@ -328,10 +329,10 @@ function Application() {
 				{
 					var conn = b[i],
 					    cui = conn.ui,
-					    x1 = (cui.src_pos[0] - so[0]) + 0.5,
-					    y1 = (cui.src_pos[1] - so[1]) + 0.5,
-					    x4 = (cui.dst_pos[0] - so[0]) + 0.5,
-					    y4 = (cui.dst_pos[1] - so[1]) + 0.5,
+					    x1 = cui.src_pos[0] - so[0],
+					    y1 = cui.src_pos[1] - so[1],
+					    x4 = cui.dst_pos[0] - so[0],
+					    y4 = cui.dst_pos[1] - so[1],
 					    mx = (x1 + x4) / 2,
 					    my = (y1 + y4) / 2,
 					    x2 = x1 + 10 + (conn.offset * 5);
@@ -747,7 +748,7 @@ function Application() {
 			if(nui)
 			{
 				nui.selected = false;
-				nui.dom[0].style.border = '1px solid #444';
+				nui.dom[0].style.border = self.normal_border_style;
 			}
 		}
 			
@@ -940,7 +941,7 @@ function Application() {
 			var n = sn[i];
 			
 			if(!n.ui.selected)
-				n.ui.dom[0].style.border = '1px solid #444';
+				n.ui.dom[0].style.border = self.normal_border_style;
 		}
 		
 		self.selection_nodes = ns;
@@ -1005,12 +1006,19 @@ function Application() {
 		msg('Copy.');
 		// msg(self.clipboard);
 	};
+
+	this.onDelete = function(e)
+	{
+		if(!self.selection_nodes.length)
+			return;
+
+		self.hover_node = self.selection_nodes[0];
+		self.activateHoverNode();
+		self.deleteHoverNodes();
+	};
 	
 	this.onCopy = function(e)
 	{
-		if(e.target.id === 'persist')
-			return true;
-		
 		if(self.selection_nodes.length < 1)
 		{
 			msg('Copy: Nothing selected.');
@@ -1025,25 +1033,28 @@ function Application() {
 	
 	this.onCut = function(e)
 	{
-		if(e.target.id === 'persist')
-			return;
-
 		msg('Cut.');
 		
 		if(self.selection_nodes.length > 0)
 		{
 			self.onCopy(e);
-			self.hover_node = self.selection_nodes[0];
-			self.activateHoverNode();
-			self.deleteHoverNodes();
+			self.onDelete(e);
+		}
+	};
+
+	this.onCut = function(e)
+	{
+		msg('Cut.');
+		
+		if(self.selection_nodes.length > 0)
+		{
+			self.onCopy(e);
+			self.onDelete(e);
 		}
 	};
 
 	this.onPaste = function(e)
 	{
-		if(e.target.id === 'persist')
-			return;
-		
 		if(self.clipboard === null)
 			return;
 		
@@ -1245,10 +1256,13 @@ function Application() {
 			return (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
 		}
 
-		if(e.keyCode === 8) // prevent backspace from going back
+		if(e.keyCode === 8 || e.keyCode === 46) // use backspace and delete for deleting nodes
 		{
 			if(!is_text_input_in_focus())
+			{
+				self.onDelete(e);
 				e.preventDefault();
+			}
 		}
 		else if(e.keyCode === 9) // tab to focus to presets search
 		{
@@ -1382,123 +1396,6 @@ function Application() {
 		self.player.schedule_stop(self.changeControlState);
 	};
 
-	this.onLayoutClicked = function()
-	{
-		var spc = 10; // pixels
-		var nodes = self.player.core.active_graph.nodes;
-		var data = [];
-		var intersect = false;
-		var pass = 0;
-		
-		for(var i = 0, len = nodes.length; i < len; i++)
-		{
-			var d = nodes[i].ui.dom[0];
-			var dat = {
-				x: d.offsetLeft,
-				y: d.offsetTop,
-				w: d.clientWidth,
-				h: d.clientHeight,
-				r2: d.clientWidth + d.clientHeight
-			};
-			
-			data.push(dat);
-			nodes[i].data = dat;
-		}
-
-		
-		do
-		{
-			for(var i = 0, len = nodes.length; i < len; i++)
-			{
-				var id = data[i];
-				var ind = nodes[i];
-
-				if(ind.outputs.length === 1 && ind.inputs.length === 0)
-				{
-					var con = ind.outputs[0];
-					var dat = con.dst_node.data;
-					var tgt_x = dat.x + dat.w - 20 - (con.offset * 10);
-
-					id.x += (tgt_x - id.x) / 40;
-				}
-				
-				for(var c = 0, clen = ind.inputs.length; c < clen; c++)
-				{
-					var con = ind.inputs[c];
-					var dat = con.src_node.data;
-					var tgt_x = dat.x + dat.w + 20 + (con.offset * 10);
-					var tgt_y = dat.y + 16 + (con.src_slot.index * 16);
-					var nx = id.x < tgt_x ? tgt_x - id.x : -1;
-					var ny = id.y < tgt_y ? 5 : -5;
-				
-					id.x += nx;
-					id.y += ny;
-				}
-			
-				for(var i2 = 0, len2 = nodes.length; i2 < len2; i2++)
-				{
-					if(i === i2)
-						continue;
-					
-					var i2d = data[i2];
-					var n_x = id.x - i2d.x;
-					var n_y = id.y - i2d.y;
-					var ind2 = nodes[i2];
-
-					if(((i2d.x >= id.x - spc && i2d.x <= (id.x + id.w + spc)) || (id.x >= i2d.x - spc && id.x <= (i2d.x + i2d.w + spc))) &&
-					   ((i2d.y >= id.y - spc && i2d.y <= (id.y + id.h + spc)) || (id.y >= i2d.y - spc && id.y <= (i2d.y + i2d.h + spc))))
-					{
-						i2d.x += Math.floor(-n_x * 0.15);
-						i2d.y += Math.floor(-n_y * 0.15);
-					}
-					
-					i2d.x = i2d.x < 5 ? 5 : i2d.x;
-					i2d.y = i2d.y < 5 ? 5 : i2d.y;
-				}
-			}
-			
-			pass++;
-		}
-		while(pass < 20);
-
-		var mx = 10000000;
-		var my = 10000000;
-		
-		for(var i = 0, len = nodes.length; i < len; i++)
-		{
-			var d = data[i];
-			
-			mx = d.x < mx ? d.x : mx;
-			my = d.y < my ? d.y : my;
-		}
-		
-		mx -= 10;
-		my -= 40;
-		
-		for(var i = 0, len = nodes.length; i < len; i++)
-		{
-			var n = nodes[i];
-			var d = n.ui.dom[0];
-			var dt = data[i];
-			
-			n.x = Math.floor((Math.floor(dt.x) - mx) / 5) * 5;
-			n.y = Math.floor((Math.floor(dt.y) - my) / 5) * 5;
-			
-			d.style.left = '' + n.x + 'px';
-			d.style.top = '' + n.y + 'px';
-			delete n.data;
-		}
-		
-		var conns = self.player.core.active_graph.connections;
-		
-		for(var i = 0, len = conns.length; i < len; i++)
-			conns[i].ui.resolve_slot_divs();
-		
-		canvas_parent.scrollLeft(0);
-		canvas_parent.scrollTop(0);
-		self.updateCanvas(true);
-	};
-
 	this.onOpenClicked = function()
 	{
 		FileSelectControl
@@ -1591,7 +1488,7 @@ function Application() {
 
 		E2.dom.info.css('min-height', 'auto');
 
-		E2.dom.info.html('<b>Info view</b><br /><br />Hover over node instances or their slots to display their documentation here.');
+		E2.dom.info.html(E2.dom.info._defaultContent);
 	};
 	
    	document.addEventListener('mouseup', this.onMouseReleased);

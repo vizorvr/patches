@@ -1,108 +1,121 @@
 <html>
 <head>
 	<title>Engi Help</title>
+	<link href="style.css" rel="stylesheet"></link>
+	<link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
+	<link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
 </head>
-<link href="style.css" rel="stylesheet"></link>
 <body>
 
-<div id="container" style="width:800px">
-<img src="screenshot.png"><br>
-<h1>Engi is a dataflow programming editor using HTML5/WebGL  </h1>
-<br>
+	<div id="container" style="width:800px">
+		<img src="screenshot.png"><br>
+		<h1>Engi is a dataflow programming editor using HTML5/WebGL  </h1>
+		<br>
 
-<h3>Source code:</h3>
-<br>
-Engi is open source and licensed under the MIT license. The source code is released at <a href="https://github.com/engijs/engi">https://github.com/engijs/engi</a><br>
-<br>
-<br>
+		<h3>Source code:</h3>
+		<br>
+		Engi is open source and licensed under the MIT license. The source code is released at <a href="https://github.com/engijs/engi">https://github.com/engijs/engi</a><br>
+		<br>
+		<br>
 
-<h3>Online demo:</h3>
-<br>
-<a href="http://engijs.org">http://engijs.org/</a><br>
-<br>
-<br>
+		<h3>Online demo:</h3>
+		<br>
+		<a href="http://engijs.org">http://engijs.org/</a><br>
+		<br>
+		<br>
 
-<h3>Editing graphs:</h3>
-<br>
-<span class="highlight">Right click</span> on canvas to insert plugins.<br><br>
-Drag connections from inputs and outputs to connect them.<br><br>
-Press <span class="highlight">Play</span> to run your graph.<br><br>
-Hold <span class="highlight">shift</span> to delete plugins and connections.<br><br>
-<span class="highlight">Double click</span> to add Presets to the graph.<br><br>
-<span class="highlight">Click and drag</span> on the canvas to select plugins.<br><br>
-Collapse plugins by clicking on their icon.
-<br>
-<br>
+		<h3>Editing graphs:</h3>
+		<br>
+		<span class="highlight">Right click</span> on canvas to insert plugins.<br><br>
+		Drag connections from inputs and outputs to connect them.<br><br>
+		Press <span class="highlight">Play</span> to run your graph.<br><br>
+		Hold <span class="highlight">shift</span> to delete plugins and connections.<br><br>
+		<span class="highlight">Double click</span> to add Presets to the graph.<br><br>
+		<span class="highlight">Click and drag</span> on the canvas to select plugins.<br><br>
+		Collapse plugins by clicking on their icon.
+		<br>
+		<br>
 
-<h3>Hotkeys:</h3>
-<br>
-<span class="highlight">CTRL-C, CTRL-V, CTRL-X</span> Copy, Paste, Cut<br>
-<br>
-<span class="highlight">CTRL-A</span> Select all<br>
-<br>
-<span class="highlight">CTRL-B</span> Hide/show Graph tree and info view<br>
-<br>
-<span class="highlight">CTRL-L</span> Hide/show console.<br>
-<br>
-<span class="highlight">Space</span> Play/Stop<br>
-<br>
-<span class="highlight">Tab</span> Search Presets<br>
-<br>
+		<h3>Hotkeys:</h3>
+		<br>
+		<span class="highlight">CTRL-C, CTRL-V, CTRL-X</span> Copy, Paste, Cut<br>
+		<br>
+		<span class="highlight">CTRL-A</span> Select all<br>
+		<br>
+		<span class="highlight">CTRL-B</span> Hide/show Graph tree and info view<br>
+		<br>
+		<span class="highlight">CTRL-L</span> Hide/show console.<br>
+		<br>
+		<span class="highlight">Space</span> Play/Stop<br>
+		<br>
+		<span class="highlight">Tab</span> Search Presets<br>
+		<br>
+		<span class="highlight">Backspace/Delete</span> Delete selected plugins<br>
+		<br>
 
-<h3>Tree view:</h3>
-<br>
-This view lists the different subgraphs and loops in your graph. You can click and drag to change their drawing order. 
-<br>
-<br>
+		<h3>Tree view:</h3>
+		<br>
+		This view lists the different subgraphs and loops in your graph. You can click and drag to change their drawing order. 
+		<br>
+		<br>
 
-<h3>Presets:</h3>
-<br>
-If you are using engi on your local computer, you can add your own presets by editing <span class="highlight">/presets/presets.json</span> file.
-<br>
-<br>
+		<h3>Presets:</h3>
+		<br>
+		If you are using engi on your local computer, you can add your own presets by editing <span class="highlight">/presets/presets.json</span> file.
+		<br>
+		<br>
 
-<h3>Save/Load:</h3>
-<br>
-JSON files get saved to <span class="highlight">/data/graphs/</span>.
-<br>
-<br>
+		<h3>Save/Load:</h3>
+		<br>
+		JSON files get saved to <span class="highlight">/data/graphs/</span>.
+		<br>
+		<br>
 
-<h3>Textures:</h3>
-<br>
-Located in <span class="highlight">/data/textures</span>. Have to be .jpg, gif or .png files. Their pixel width and height must be powers of two.
-<br>
-<br>
+		<h3>Textures:</h3>
+		<br>
+		Located in <span class="highlight">/data/textures</span>. Have to be .jpg, gif or .png files. Their pixel width and height must be powers of two.
+		<br>
+		<br>
 
-<h3>Scenes:</h3>
-<br>
-Scenes are converted via <a href="http://www.blender.org/">Blender</a> (minimum required version is 2.69). Download the latest blender version and install our converter plugin by copying or linking <span class="highlight">/tools/blender/io_engi_export.py</span> to your <span class="highlight">[blender]/[version]/scripts/addons</span> path. Remeber to enable the plugin in your user preferences.
-<br>
-<br>
+		<h3>Scenes:</h3>
+		<br>
+		Scenes are converted via <a href="http://www.blender.org/">Blender</a> (minimum required version is 2.69). Download the latest blender version and install our converter plugin by copying or linking <span class="highlight">/tools/blender/io_engi_export.py</span> to your <span class="highlight">[blender]/[version]/scripts/addons</span> path. Remeber to enable the plugin in your user preferences.
+		<br>
+		<br>
 
-<h3>Video:</h3>
-<br>
-Videos are .ogv files. Converting works with <a href="http://www.ffmpeg.org/">ffmpeg</a> using these arguments:<br>
-<br>
-<span class="highlight">ffmpeg -i inputfile.mpg -an -vcodec libtheora -vb 1024k -s 256x256 -aspect 1:1 output.ogv</span>
-<br>
-<br>
+		<h3>Video:</h3>
+		<br>
+		Videos are .ogv files. Converting works with <a href="http://www.ffmpeg.org/">ffmpeg</a> using these arguments:<br>
+		<br>
+		<span class="highlight">ffmpeg -i inputfile.mpg -an -vcodec libtheora -vb 1024k -s 256x256 -aspect 1:1 output.ogv</span>
+		<br>
+		<br>
 
-<h3>Audio:</h3>
-<br>
-Audio player plays standard .ogg files which can be converted via <a href="http://audacity.sourceforge.net/">Audacity</a>.
-<br>
-<br>
+		<h3>Audio:</h3>
+		<br>
+		Audio player plays standard .ogg files which can be converted via <a href="http://audacity.sourceforge.net/">Audacity</a>.
+		<br>
+		<br>
 
-<h3>Custom shaders:</h3>
-<br>
-You can write your own GLSL vertex and pixel shaders using the <span class="highlight">Generators/Shaders/From mesh custom</span> shader plugin in Engi. This gives you a code editor, where you can program GLSL and add inputs and outputs using the <span class="highlight">+</span> and <span class="highlight">-</span> buttons. You can compile the code using the <span class="highlight">Compile</span> button. Read more about custom shaders <a href="custom_shaders.html">here</a>.
-<br>
-<br>
+		<h3>Custom shaders:</h3>
+		<br>
+		You can write your own GLSL vertex and pixel shaders using the <span class="highlight">Generators/Shaders/From mesh custom</span> shader plugin in Engi. This gives you a code editor, where you can program GLSL and add inputs and outputs using the <span class="highlight">+</span> and <span class="highlight">-</span> buttons. You can compile the code using the <span class="highlight">Compile</span> button. Read more about custom shaders <a href="custom_shaders.html">here</a>.
+		<br>
+		<br>
 
-<h3>Plugin API:</h3>
-<br>
-<a href="plugin_api.html">Link to plugin API documentation.</a>
-</div>
+
+		<h3>Recording:</h3>
+		<br>
+		You can record the output of the WebGL renderer to PNG frames using the <span class="highlight">Emitters/3D/Framebuffer/Recorder</span>. 
+		The frames will be recorded into the <i>"engi/output"</i> folder. To clear the contents of the folder, trigger the <span class="highlight">Emitters/3D/Framebuffer/Reset</span> plugin.
+		<br>
+		<br>
+
+
+		<h3>Plugin API:</h3>
+		<br>
+		<a href="plugin_api.html">Link to plugin API documentation.</a>
+	</div>
 
 </body>
 </html>
