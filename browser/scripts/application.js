@@ -329,10 +329,10 @@ function Application() {
 				{
 					var conn = b[i],
 					    cui = conn.ui,
-					    x1 = (cui.src_pos[0] - so[0]) + 0.5,
-					    y1 = (cui.src_pos[1] - so[1]) + 0.5,
-					    x4 = (cui.dst_pos[0] - so[0]) + 0.5,
-					    y4 = (cui.dst_pos[1] - so[1]) + 0.5,
+					    x1 = cui.src_pos[0] - so[0],
+					    y1 = cui.src_pos[1] - so[1],
+					    x4 = cui.dst_pos[0] - so[0],
+					    y4 = cui.dst_pos[1] - so[1],
 					    mx = (x1 + x4) / 2,
 					    my = (y1 + y4) / 2,
 					    x2 = x1 + 10 + (conn.offset * 5);
