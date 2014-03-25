@@ -87,7 +87,7 @@ E2.p.prototype.create_ui = function()
 		return false;
 	}};
 	
-	slider.addClass('slider slider-horizontal ui-widget graph-node corner-all');
+	slider.addClass('slider slider-horizontal ui-widget corner-all');
 	slider.css({ 'width': '60px', 'margin-left': '8px', 'margin-right': '8px' });
 	handle.addClass('slider-handle state-hover corner-all');
 	handle[0].style.left = '0px';
