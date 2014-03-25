@@ -38,14 +38,19 @@ E2.p.prototype.create_ui = function()
 	return inp;
 };
 
-E2.p.prototype.update_input = function(slot, data)
+E2.p.prototype.update_array = function()
 {
-	var size = Math.floor(data);
-	var stride = [1, 1, 2, 2, 4, 4, 4][this.state.datatype];
-	
+	var stride = [1, 1, 2, 2, 4, 4, 4][this.state.datatype]; 
+
 	this.array = new ArrayBuffer(stride * this.size);
 	this.array.datatype = this.state.datatype;
 	this.array.stride = stride;
+};
+
+E2.p.prototype.update_input = function(slot, data)
+{
+	this.size = Math.floor(data);
+	this.update_array();
 };
 
 E2.p.prototype.update_output = function(slot)
