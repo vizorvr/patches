@@ -339,6 +339,10 @@ Node.prototype.update_recursive = function(conns)
 		for(var i = 0, len = inputs.length; i < len; i++)
 		{
 			var inp = inputs[i];
+			
+			if(inp.dst_slot.inactive)
+				continue;
+			
 			var sn = inp.src_node;
 			 
 			dirty = sn.update_recursive(conns) || dirty;

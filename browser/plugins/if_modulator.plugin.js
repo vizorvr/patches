@@ -17,32 +17,31 @@ E2.p = E2.plugins["if_modulator"] = function(core, node)
 E2.p.prototype.reset = function()
 {
 	this.condition = false;
-	this.value = this.out_value = null;
+	this.value = null;
 };
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
 {
 	if(this.lsg.connection_changed(on, conn, slot))
-		this.value = this.out_value = this.lsg.core.get_default_value(this.lsg.dt);
+		this.value = this.lsg.core.get_default_value(this.lsg.dt);
 };
 
 E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
+	{
 		this.condition = data;
+	
+		if(data)
+			delete this.input_slots[1].inactive;
+		else
+			this.input_slots[1].inactive = true;
+	}
 	else
 		this.value = data;
 };	
 
-E2.p.prototype.update_state = function()
-{
-	if(!this.condition)
-		this.updated = false;
-	else
-		this.out_value = this.value;
-};
-
 E2.p.prototype.update_output = function(slot)
 {
-	return this.out_value;
+	return this.value;
 };

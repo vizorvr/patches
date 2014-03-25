@@ -19,7 +19,6 @@ E2.p.prototype.reset = function()
 {
 	this.condition = false;
 	this.yes = this.no = null;
-	this.upd_state = [false, false, false];
 };
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
@@ -31,22 +30,16 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
+	{
 		this.condition = data;
+		delete this.input_slots[data ? 1 : 2].inactive;
+		this.input_slots[data ? 2 : 1].inactive = true;
+	}
 	else if(slot.index === 1)
 		this.yes = data;
 	else
 		this.no = data;
-		
-	this.upd_state[slot.index] = true;
 };	
-
-E2.p.prototype.update_state = function()
-{
-	var us = this.upd_state;
-	
-	this.updated = us[0] || us[this.condition ? 1 : 2];
-	us[0] = us[1] = us[2] = false;
-}
 
 E2.p.prototype.update_output = function(slot)
 {
