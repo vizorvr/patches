@@ -54,6 +54,19 @@ table
 	src: local('greyscale_basic_regular'), local('greyscale_basic_regular'), url('greyscale_basic_regular.ttf') format('truetype');
 }
 
+.nodisplay
+{
+	display: none;
+}
+
+.nojs
+{
+	width: 500px;
+	margin-left: 20px;
+	margin-top: 20px;
+	vertical-align: center;
+}
+
 .logo {
 	padding: 6px;
 	margin-top: 10px;

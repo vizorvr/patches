@@ -43,6 +43,9 @@ function Application() {
 	this.selection_border_style = '2px solid #09f';
 	this.normal_border_style = 'none';
 	
+	// Make the UI visible now that we know that we can execute JS
+	$('.nodisplay').removeClass('nodisplay');
+	
 	this.getNIDFromSlot = function(id)
 	{
 		return parseInt(id.slice(1, id.indexOf('s')));

@@ -112,13 +112,13 @@
 	</head>
 	<body>
 		<noscript>
-			<div class="centered notification">
-				<div style="float: left; display: table-cell; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
-				<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
+			<div class="nojs">
+				<div style="float: left; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
+				<div style="padding-top: 4px;">This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
 			</div>
 		</noscript>
 
-		<div class="flex-column" id="left-nav">
+		<div class="flex-column nodisplay" id="left-nav">
 			<div class="header border flex-row">
 				<div class="logo">
 					<a href="/" target="_blank">ENGI&#8482;</a>
@@ -154,7 +154,7 @@
 			<div id="presets" class="flex-column"></div>
 		</div>
 
-		<div class="flex-column">
+		<div class="flex-column nodisplay">
 			<div class="header border">
 				<button id="save" class="btn btn-default">Save</button>
 				<button id="open" class="btn btn-default">Open</button>
@@ -169,7 +169,7 @@
 			<pre class="info-pane border" id="dbg"></pre>
 		</div>
 
-		<div class="flex-column" id="right-nav">
+		<div class="flex-column nodisplay" id="right-nav">
 			<div class="header border">
 				<button id="play" class="btn btn-primary">Play</button>
 				<button id="pause" class="btn disabled btn-default">Pause</button>
