@@ -252,7 +252,7 @@ table
 .corner-all { -moz-border-radius-bottomleft: 4px; -webkit-border-bottom-left-radius: 4px; -khtml-border-bottom-left-radius: 4px; border-bottom-left-radius: 4px; }
 .corner-all { -moz-border-radius-bottomright: 4px; -webkit-border-bottom-right-radius: 4px; -khtml-border-bottom-right-radius: 4px; border-bottom-right-radius: 4px; }
 
-.slider { position: relative; text-align: left; }
+.slider { position: relative; text-align: left; border: 1px solid #888; }
 .slider .slider-handle { position: absolute; z-index: 2; width: 1.4em; height: 1.4em; cursor: default; background: #bebebe; }
 
 .slider-horizontal { height: .8em; }
