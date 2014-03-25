@@ -1,5 +1,5 @@
 
-function PluginManager(core, base_url, creation_listener) 
+function PluginManager(core, base_url, creation_listener, ready_listener) 
 {
 	var self = this;
 
@@ -9,7 +9,35 @@ function PluginManager(core, base_url, creation_listener)
 	this.release_mode = false;
 	this.lid = 1;
 	this.context_menu = null;
+	this.total = 0;
+	this.loaded = 0;
+	this.failed = 0;
 	
+	this.register_plugin = function(pg_root, key, id)
+	{
+		self.keybyid[id] = pg_root.insert_relative(key, id);
+		msg('\tLoaded ' + id + ' (' + self.lid + ')');
+		self.lid++;
+	};
+	
+	this.update_state = function()
+	{
+		if(this.loaded + this.failed === this.total)
+			ready_listener();
+	};
+
+	var onload = function()
+	{
+		self.loaded++;
+		self.update_state();
+	};
+	
+	var onerror = function()
+	{
+		self.failed++;
+		self.update_state();
+	};
+
 	// First check if we're running a release build by checking for the existence
 	// of 'all.plugins.js'
 	var url = self.base_url + '/all.plugins.js';
@@ -22,20 +50,14 @@ function PluginManager(core, base_url, creation_listener)
 		{
 			msg('PluginMgr: Running in release mode');
 			self.release_mode = true;
-			load_script(url);
+			self.total = 1;
+			load_script(url, onload, onerror);
 		},
 		error: function()
 		{
 			msg('PluginMgr: Running in debug mode');
 		}
 	});
-
-	this.register_plugin = function(pg_root, key, id)
-	{
-		self.keybyid[id] = pg_root.insert_relative(key, id);
-		msg('\tLoaded ' + id + ' (' + self.lid + ')');
-		self.lid++;
-	};
 
 	$.ajax({
 		url: self.base_url + '/plugins.json',
@@ -48,14 +70,16 @@ function PluginManager(core, base_url, creation_listener)
 			
 			$.each(data, function(key, id) 
 			{
+				self.total++;
+			});
+			
+			$.each(data, function(key, id) 
+			{
 				// Load the plugin, constrain filenames.
 				var url = self.base_url + '/' + id + '.plugin.js';
 
    				if(!self.release_mode)
-   				{
-	   				// msg('Loading ' + id);
-					load_script(url);
-   				}
+					load_script(url, onload, onerror);
    				
 				self.register_plugin(pg_root, key, id);
 			});

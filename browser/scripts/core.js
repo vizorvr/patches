@@ -166,7 +166,7 @@ function Core(app) {
 	this.delta_t = 0.0;
 	this.graph_uid = 0;
 	this.app = app;
-	this.plugin_mgr = new PluginManager(this, 'plugins', E2.app ? E2.app.onPluginInstantiated : null);
+	this.plugin_mgr = new PluginManager(this, 'plugins', E2.app ? E2.app.onPluginInstantiated : null, load_location_hash);
 	this.registers = new Registers(this);
 	this.aux_scripts = {};
 	this.aux_styles = {};
@@ -389,7 +389,7 @@ function Core(app) {
 		if(self.aux_scripts.hasOwnProperty(script_url))
 			return;
 		
-		add_script('plugins/' + script_url);
+		load_script('plugins/' + script_url);
 		self.aux_scripts[script_url] = true;
 	};
 
@@ -491,8 +491,6 @@ E2.InitialiseEngi = function()
 		    return 'You might be leaving behind unsaved work!';
 		};
 	}
-
-	load_location_hash();
 }
 
 function load_location_hash() {

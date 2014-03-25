@@ -104,30 +104,17 @@ function msg(txt)
 	d.scrollTop(d[0].scrollHeight);
 }
 
-function load_script(url)
-{
-	var xhrObj = new XMLHttpRequest();
-
-	xhrObj.open('GET', url, false);
-	xhrObj.send('');
-
-	var se = document.createElement('script');
-	
-	se.type = "text/javascript";
-	se.text = xhrObj.responseText;
-	
-	document.getElementsByTagName('head')[0].appendChild(se);
-}
-
-function add_script(url)
+function load_script(url, onload, onerror)
 {
 	var script = document.createElement('script');
-	var async = document.createAttribute('async');
-	
-	async.nodeValue = 'false';
 
 	script.src = url;
-	script.attributes.setNamedItem(async);
 	
-	document.getElementById('head').appendChild(script);
+	if(onload)
+		script.onload = onload;
+	
+	if(onerror)
+		script.onerror = onerror;
+	
+	document.getElementsByTagName('head')[0].appendChild(script);	
 }
