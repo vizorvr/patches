@@ -333,8 +333,8 @@ function Application() {
 					    y1 = cui.src_pos[1] - so[1],
 					    x4 = cui.dst_pos[0] - so[0],
 					    y4 = cui.dst_pos[1] - so[1],
-					    mx = (x1 + x4) / 2,
-					    my = (y1 + y4) / 2,
+					    mx = Math.floor((x1 + x4) / 2),
+					    my = Math.floor((y1 + y4) / 2),
 					    x2 = x1 + 10 + (conn.offset * 5);
 		
 					x2 = x2 < mx ? x2 : mx;
