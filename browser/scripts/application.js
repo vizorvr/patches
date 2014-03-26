@@ -386,7 +386,7 @@ function Application() {
 			var c = new Connection(self.src_node, self.dst_node, ss, ds);
 			
 			self.src_node.outputs.push(c);
-			self.dst_node.inputs.push(c);
+			self.dst_node.add_input(c);
 			
 			// msg('New ' + c);
 

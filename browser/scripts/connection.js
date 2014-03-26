@@ -190,7 +190,7 @@ Connection.prototype.patch_up = function(nodes)
 		this.dst_slot.connected = true;
 
 	this.src_node.outputs.push(this);
-	this.dst_node.inputs.push(this);
+	this.dst_node.add_input(this);
 	
 	return true;
 };

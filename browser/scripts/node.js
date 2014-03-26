@@ -305,6 +305,28 @@ Node.prototype.change_slot_datatype = function(slot_type, suid, dt)
 	return true;
 };
 
+Node.prototype.add_input = function(conn)
+{
+	var inserted = false;
+	
+	// Ensure that the order of inbound connections are stored ordered by the indices
+	// of the slots they're connected to, so that we process them in this order also.
+	for(var i = 0, len = this.inputs.length; i < len; i++)
+	{
+		var c = this.inputs[i];
+		
+		if(c.dst_slot.index > conn.dst_slot.index)
+		{
+			inserted = true;
+			this.inputs.splice(i, 0, conn);
+			break;
+		}
+	}
+	
+	if(!inserted)
+		this.inputs.push(conn);
+};
+
 Node.prototype.update_connections = function()
 {
 	var gsp = E2.app.getSlotPosition;
