@@ -35,7 +35,7 @@ E2.p.prototype.update_state = function()
 {
 	this.output_value = this.value;
 	this.value = false;
-	this.updated = true;
+	this.updated = this.output_value || this.value;
 };
 
 E2.p.prototype.update_output = function(slot)
