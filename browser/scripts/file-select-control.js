@@ -196,7 +196,6 @@ FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
 					iframe = $('<iframe id="dl-frame">').hide().appendTo('body');
 				iframe.attr('src', url);
 			},
-			'Upload': function() {},
 			'Cancel': function() {}
 		};
 
