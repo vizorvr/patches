@@ -51,6 +51,7 @@ Registers.prototype.connection_changed = function(name, added)
 	else
 		r.connections++;
 		
+	return r.connections;
 };
 
 Registers.prototype.set_datatype = function(name, dt)
