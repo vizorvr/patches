@@ -611,6 +611,7 @@ LinkedSlotGroup.prototype.infer_dt = function()
 {
 	var node = this.node;
 	var dt = null;
+	var any_dt = this.core.datatypes.ANY;
 	
 	for(var i = 0, len = node.inputs.length; i < len; i++)
 	{
@@ -618,7 +619,7 @@ LinkedSlotGroup.prototype.infer_dt = function()
 		
 		if(this.inputs.indexOf(c.dst_slot) !== -1)
 		{
-			dt = c.src_slot.dt;
+			dt = c.src_slot.dt !== any_dt ? c.src_slot.dt : dt;
 			this.n_connected++;
 		}
 	}
@@ -629,11 +630,16 @@ LinkedSlotGroup.prototype.infer_dt = function()
 		
 		if(this.outputs.indexOf(c.src_slot) !== -1)
 		{
-			dt = c.dst_slot.dt;
+			dt = c.dst_slot.dt !== any_dt ? c.dst_slot.dt : dt;
 			this.n_connected++;
 		}
 	}
 	
 	if(dt !== null)
+	{
 		this.set_dt(dt);
+		return this.core.get_default_value(dt);
+	}
+	
+	return null;
 };
