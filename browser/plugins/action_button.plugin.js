@@ -9,6 +9,8 @@ E2.p = E2.plugins["action_button"] = function(core, node)
 	];
 	
 	this.node = node;
+	this.value = false;
+	this.output_value = false;
 };
 
 E2.p.prototype.reset = function()
@@ -33,9 +35,9 @@ E2.p.prototype.create_ui = function()
 
 E2.p.prototype.update_state = function()
 {
+	this.updated = this.output_value || this.value;
 	this.output_value = this.value;
 	this.value = false;
-	this.updated = this.output_value || this.value;
 };
 
 E2.p.prototype.update_output = function(slot)
