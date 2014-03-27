@@ -75,6 +75,7 @@
 		"Time: Oscillate 2 values with in tween": "time_oscillate_2_values_in_tween",
 		"Time: Oscillate 2 values with out tween": "time_oscillate_2_values_out_tween",
 		"Time: Accumulating time": "time_accumulating_time",
+		"Time: Stop watch": "time_stop_watch",
 		"Time: Circular motion to XYZ": "time_circular_motion_to_xyz",
 		"Time: Shaky random between 0 & 1": "time_shaky_random",
 		"Util: Float array sequencer": "util_float_array_sequencer",
