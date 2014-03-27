@@ -12,11 +12,11 @@ E2.p = E2.plugins["equals_modulator"] = function(core, node)
 	];
 
 	this.lsg = new LinkedSlotGroup(core, node, [this.input_slots[0], this.input_slots[1]], []);
+	this.value = null;
 };
 
 E2.p.prototype.reset = function()
 {
-	this.value = null;
 	this.ref = null;
 	this.state = false;
 };
@@ -48,5 +48,5 @@ E2.p.prototype.update_output = function(slot)
 E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
-		this.lsg.infer_dt();
+		this.value = this.lsg.infer_dt();
 };

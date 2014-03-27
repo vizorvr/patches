@@ -13,12 +13,12 @@ E2.p = E2.plugins["if_else_modulator"] = function(core, node)
 	];
 	
 	this.lsg = new LinkedSlotGroup(core, node, [this.input_slots[1], this.input_slots[2]], [this.output_slots[0]]);
+	this.yes = this.no = null;
 };
 
 E2.p.prototype.reset = function()
 {
 	this.condition = false;
-	this.yes = this.no = null;
 };
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
@@ -30,16 +30,18 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
-	{
 		this.condition = data;
-		delete this.input_slots[data ? 1 : 2].inactive;
-		this.input_slots[data ? 2 : 1].inactive = true;
-	}
 	else if(slot.index === 1)
 		this.yes = data;
 	else
 		this.no = data;
 };	
+
+E2.p.prototype.update_state = function()
+{
+	delete this.input_slots[data ? 1 : 2].inactive;
+	this.input_slots[data ? 2 : 1].inactive = true;
+};
 
 E2.p.prototype.update_output = function(slot)
 {
@@ -49,5 +51,5 @@ E2.p.prototype.update_output = function(slot)
 E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
-		this.lsg.infer_dt();
+		this.yes = this.no = this.lsg.infer_dt();
 };
