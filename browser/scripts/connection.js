@@ -180,7 +180,18 @@ Connection.prototype.patch_up = function(nodes)
 		msg('ERROR: Source or destination slot invalid - dropping connection.');
 		return false;
 	}
-		
+	
+	var any_dt = E2.app.player.core.datatypes.ANY;
+	
+	if(this.src_slot.dt !== this.dst_slot.dt && 
+	   this.src_slot.dt !== any_dt && 
+	   this.dst_slot.dt !== any_dt ||
+	   (this.src_slot.dt === any_dt && this.dst_slot.dt === any_dt))
+	{
+		msg('ERROR: Connection data type mismatch - dropping connection.');
+		return false;
+	}
+	
 	this.dst_slot.is_connected = true;
 	
 	if(this.src_slot.connected)
