@@ -606,3 +606,34 @@ LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot)
 	
 	return false;
 };
+
+LinkedSlotGroup.prototype.infer_dt = function()
+{
+	var node = this.node;
+	var dt = null;
+	
+	for(var i = 0, len = node.inputs.length; i < len; i++)
+	{
+		var c = node.inputs[i];
+		
+		if(this.inputs.indexOf(c.dst_slot) !== -1)
+		{
+			dt = c.src_slot.dt;
+			this.n_connected++;
+		}
+	}
+
+	for(var i = 0, len = node.outputs.length; i < len; i++)
+	{
+		var c = node.outputs[i];
+		
+		if(this.outputs.indexOf(c.src_slot) !== -1)
+		{
+			dt = c.dst_slot.dt;
+			this.n_connected++;
+		}
+	}
+	
+	if(dt !== null)
+		this.set_dt(dt);
+};

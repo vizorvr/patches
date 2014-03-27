@@ -44,3 +44,9 @@ E2.p.prototype.update_output = function(slot)
 {
 	return this.state;
 };
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
+		this.lsg.infer_dt();
+};
