@@ -101,7 +101,7 @@ choose to implement any subset of these that are relevant for the behaviour of a
 <h4>E2.p.prototype.reset = function()</h4>
 <p>Called on plugin load, instantiation and when playback is stopped. If this method is omitted, it will not
 be scheduled for forced update after playback has been stopped and resumed. For the same reason,
-<code>generators</code> will almost always implement this method. See also: <code>stop()</code>.
+<strong>generator</strong> plugins will almost always implement this method. See also: <code>stop()</code>.
 
 <hr />
 
@@ -155,18 +155,20 @@ plugin initialisation or deserialisation.</p>
 data, but has other uses as well. Plugins that allow connection of any data type to be made to or from them, i.e.
 that declares slots (whether static or dynamic) of type <code>ANY</code>, make use of this functionality to adapt
 the data type of their own slots to that of the slot they're being connected to and to reset the data type of the
-slot back to <code>ANY</code> when a connection to the relevant slot is destroyed. See also: 
-<code>LinkedSlotGroup</code> in the Advanced topics section below.</p>
+slot back to <strong>ANY</strong> when a connection to the relevant slot is destroyed. See also: 
+<code>LinkedSlotGroup</code> in the section below.</p>
 
 <hr />
 
 <h4>E2.p.prototype.update_input = function(slot, data)</h4>
-<p>Called whenever an inbound connection has new data to deliver. </p>
+<p>Called whenever an inbound connection has new data to deliver. The Core guarantees that connected input slots
+are processed in the same order that they are declared by the plugin. No similar guarantee is made for processing
+of output slots.</p>
 <ul>
 	<li><strong>slot</strong>: The slot that received the data</li>
 	<li><strong>data</strong>: The new data value. This is guranteed to be of the correct type and match that of 
 	the slot, although not all datatypes are guaranteed to have a <i>specified</i> value. For all datatypes that are
-	legally allowed to have no value such as Textures, an undefined value will always be <code>null</code>.</li>
+	legally allowed to have no value such as Textures, an undefined value will always be <strong>null</strong>.</li>
 </ul>
 
 <p>The <strong>slot</strong> parameter is an object containing the following members:</p>
@@ -204,30 +206,41 @@ between input to dynamic vs. static slots. Remember that <strong>slot.uid</stron
 <hr />
 
 <h4>E2.p.prototype.update_output = function(slot)</h4>
-
 <p>Called once for every connected output slot if <code>update_state()</code> was previously called this frame.
-Like <code>update_input()</code>, the <strong>slot</strong> parameter is the instance of the slot of this plugin being polled.</p>
+Like <code>update_input()</code>, the <strong>slot</strong> parameter is the instance of the slot of this plugin 
+being polled. See also: <code>E2.p.prototype.query_output()</code></p>
+
+<hr />
+
+<h4>E2.p.prototype.query_output = function(slot)</h4>
+<p>If implemented, the Core will call this before calling <code>update_output()</code> for a given connected
+output slot. If this method return false, data flow will be blocked on that output connection.</p>
 
 <hr />
 
 <h4>E2.p.prototype.create_ui = function()</h4>
-
 <p>Called when the canvas on which the plugin resides is being switched to for editing. </p>
-
-<p>jQuery is guaranteed to be available globally, so <strong>$</strong> can be used, although the used of jQuery,
-especially for event handling is discouraged in production code for performance reasons.</p>
-
+<p>jQuery is guaranteed to be available globally, so <strong>$</strong> can be used, although excessive use of
+jQuery, especially for event handling is discouraged in production code for performance reasons.</p>
 <p>Plugin implementators can create any nested set of DOM objects here, set up their own event
 handling and anything else they might like. When done, <code>create_ui()</code> is expected to return the
 root DOM element created, which will be dynamically shown on the surface of the plugin instance
-whenever visible in the editor.</p>
+whenever visible in the editor. Always use the automatically persisted <strong>state</strong> plugin member
+to store UI state.</p>
 
 <hr />
 
 <h4>E2.p.prototype.state_changed = function(ui)</h4>
-<p>This method is called once after plugin creation or deserialization with <strong>ui</strong> set to <em>null</em>. This call
-can be used to do fundamental plugin instance initialization. If the plugin declares a UI, this method
-will be called seperately with <code>ui</code> equal to the root DOM element returned by <code>create_ui()</code> earlier.</p>
+<p>This method is called once after plugin creation or deserialization with <strong>ui</strong> set to 
+<em>null</em>. This call can be used to do fundamental plugin instance initialization. If the plugin declares
+a UI, this method will be called seperately with <strong>ui</strong> equal to the root DOM element returned
+by <code>create_ui()</code> earlier. When this method is called the following is guaranteed by the core:
+<ul>
+	<li>That the <strong>state</strong> member will be deserialised and available.</li>
+	<li>That the parent node will be fully deserialised with all data structures patched up and
+	ready for use.</li>
+</ul>
+</p>
 
 <h3>Other reserved plugin member names:</h3>
 <ul>
@@ -235,6 +248,9 @@ will be called seperately with <code>ui</code> equal to the root DOM element ret
 	<li><strong>updated</strong> (boolean): Flag indicating whether any input slots have updated this frame and whether
 	<code>update_state()</code> need to be called as a consequence.</li>
 	<li><strong>e2_is_graph</strong> (boolean): A special state-flag used to identity nested graphs.</li>
+	<li><strong>always_update</strong> (boolean): If this plugin is a nested graph, when this flag is set
+	<code>update_state()</code> will be called each frame regardless of whether any input connections have
+	 changed provided this plugin is in itself residing in a graph that has ben updated this frame.</li>
 </ul>
 
 <h3>Core class interfaces:</h3>
@@ -297,33 +313,70 @@ existing connection to or from the specified slot are destroyed.</p>
 <h4>Core.get_default_value = function(dt)</h4>
 <p>Returns the default value for the supplied data type.</p>
 
+<h4>LinkedSlotGroup</h4>
+
+<p>This is a support class that can be sued by plugins that declares multiple slots of type <strong>ANY</strong>
+and wants to link them such that if one of them are connected, all the controlled slots will match the datatype
+of the slot the initial connection is made with. Note that this is currently only supported for <i>static</i>
+slots. It is used in the following way:</p>
+<p><pre style="overflow: auto; white-space: pre">
+E2.p = E2.plugins["plugin_id"] = function(core, node)
+{
+	this.desc = '...';
+	
+	this.input_slots = [ 
+		{ name: 'in_0', dt: ..., desc: '...' },
+		{ name: 'in_1', dt: core.datatypes.ANY, desc: '...' } 
+		{ name: 'in_2', dt: core.datatypes.ANY, desc: '...' } 
+	];
+	
+	this.output_slots = [
+		{ name: 'out_0', dt: core.datatypes.ANY, desc: '...' } 
+	];
+
+	this.lsg = new LinkedSlotGroup(core, node, [this.input_slots[1], this.input_slots[2]], [this.output_slots[0]]);
+	this.value = null;
+};
+
+E2.p.prototype.connection_changed = function(on, conn, slot)
+{
+	if(this.lsg.connection_changed(on, conn, slot))
+		this.value = this.lsg.core.get_default_value(this.lsg.dt);
+};
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
+		this.value = this.lsg.infer_dt(); // Returns the default value for the inferred data type.
+};
+</pre></p>
+
 <h3>Common pitfalls:</h3>
 <ul>
 	<li><strong>Performing computation in <code>update_output()</code></strong>:
 	Since output slots can be connected to more than once receiver concurrently, <code>update_output()</code> will be
 	called once for each outbound connection that&#8217;s attached when the Core detects a successful run of
-	<code>update_state()</code>. Thus calculations should always be performed in <code>update_state()</code> which will at most
-	be run once per frame, and cached later to be returned on request from <code>update_output()</code>.</li>
+	<code>update_state()</code>. Thus calculations should always be performed in <code>update_state()</code>
+	which will at most be run once per frame, and cached to be returned on request from <code>update_output()</code>.</li>
 </ul>
 
 <h3>Advanced topics:</h3>
 <ul>
 	<li><p><strong>WebGL rendering</strong>:
-	The current WebGL graphics context of the active rendering canvas can be obtained via the <code>core</code> parameter
-	supplied to the plugin constructor function as: <strong>core.renderer.context</strong></p></li>
+	The current WebGL graphics context of the active rendering canvas can be obtained via the <strong>core</strong> parameter
+	supplied to the plugin constructor function as: <code>core.renderer.context</code></p></li>
 	<li><p><strong>Computing and caching output values in <code>update_input()</code></strong>:
 	As an exception to the above rule, it is possible is very simple cases to perform a calculation directly
 	in <code>update_input()</code> and cache it for later emission by <code>update_output()</code>, omitting implementation of
-	<code>update_state()</code> which will yield slightly better performance. This can only be done where the calculation
-	depend on the value of a single input only, since the update order of input slots are not guranteed. In
-	cases where the result of a plugin depends on the value of more than one input, the input values must be
-	cached and the calculation be performed in <code>update_state()</code>.</p></li>
+	<code>update_state()</code> which will yield slightly better performance, although this approach should 
+	only be used sparingly.</li>
 </ul>
 
 <p>For example, we can imagine a plugin which adds 1 to an input float value implement its <code>update_input()</code>
 and <code>update_output()</code> as follows:</p>
 
-<pre><code>E2.p.prototype.update_input = function(slot, data)
+<p><pre style="overflow: auto; white-space: pre">
+E2.p.prototype.update_input = function(slot, data)
 {
     // We have only one input, no need to mask on slot.index -- it will always be 0
     // 'data' is guaranteed to be a float.
@@ -336,14 +389,20 @@ E2.p.prototype.update_output = function(slot, data)
 {
     return this.output_value;
 }
-</code></pre>
+</pre></p>
 
 <ul>
-	<li><strong>Blocking plugin data output based on logic in <code>update_state()</code></strong>:
-	Whenever <code>update_state()</code> is called, it&#8217;s implied that the plugin <code>updated</code> property is <strong>true</strong>. It
-	is possible for a plugin implementation to abort data output based on logic in <code>update_state()</code>by setting
-	<code>updated</code> to <strong>false</strong>, in which case no calls to <code>update_output()</code> will occur.</li>
+	<li><strong>Inhibiting normal data flow</code></strong>:
+	The flow of data to any given input slot can be inhibited by decorating the slot declaration with a
+	boolean flag with the name <strong>inactive</strong> set to <strong>true</strong>, i.e.:
+	<code>this.input_slots[index].inactive = true</code>. Similarly, the inhibition can be revoked by
+	removing the flag again, i.e. <code>delete this.input_slots[index].inactive</code>.
+	
+	Whenever <code>update_state()</code> is called, it&#8217;s implied that the plugin <strong>updated</strong>
+	property is <strong>true</strong>. It is possible for a plugin implementation to abort data output based
+	on logic in <code>update_state()</code>by setting <strong>updated</strong> to <strong>false</strong>,
+	in which case no calls to <code>update_output()</code> or <code>update_input()</code> of the destination
+	plugin will be made.</li>
 </ul>
-
 </body>
 </html>
