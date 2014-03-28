@@ -39,8 +39,8 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_state = function()
 {
-	delete this.input_slots[data ? 1 : 2].inactive;
-	this.input_slots[data ? 2 : 1].inactive = true;
+	delete this.input_slots[this.condition ? 1 : 2].inactive;
+	this.input_slots[this.condition ? 2 : 1].inactive = true;
 };
 
 E2.p.prototype.update_output = function(slot)
