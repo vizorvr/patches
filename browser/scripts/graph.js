@@ -363,7 +363,3 @@ Graph.resolve_graph = function(graphs, guid)
 	
 	return null;
 };
-
-if (typeof(exports) !== 'undefined')
-	exports.Graph = Graph;
-
