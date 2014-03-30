@@ -132,7 +132,7 @@ function Player(canvas, app, root_node)
 	
 	this.set_parameter = function(id, value)
 	{
-		this.core.registers.write(id, value);
+		this.core.root_graph.registers.write(id, value);
 	};
 
 	this.add_parameter_listener = function(id, listener)
@@ -142,7 +142,7 @@ function Player(canvas, app, root_node)
 			register_updated: function(h) { return function(value) { h(value); }}(listener)
 		};
 		
-		this.core.registers.lock(l, id);
+		this.core.root_graph.registers.lock(l, id);
 		return l;
 	};
 

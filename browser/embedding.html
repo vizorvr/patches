@@ -2,59 +2,147 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head id="head">
 		<title>ENGI&#8482; Player Demo</title>
-		<link href="style/main.css" rel="Stylesheet" type="text/css" />
+		<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
+		<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
+		<link href="style/flex.css" rel="Stylesheet" type="text/css" />
+		<link href="style/core.css" rel="Stylesheet" type="text/css" />
 		<link href="style/icons/style.css" rel="Stylesheet" type="text/css" />
-		<link href="style/smoothness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" type="text/css"  />
-		<link href="style/skin/ui.dynatree.css" rel="stylesheet" type="text/css">
-		<style type="text/css">
-			.slider { width: 170px; margin-bottom: 30px !important; }
-			.ui-slider-handle { background: #729fcf !important; }
-		</style>
-		<script type="text/javascript" src="scripts/json-serialization.js"></script>
-		<script type="text/javascript" src="scripts/jquery-1.7.js"></script>
-		<script type="text/javascript" src="scripts/jquery.event.fastfix.js"></script>
-		<script type="text/javascript" src="scripts/jquery-ui.js"></script>
-		<script type="text/javascript" src="scripts/jquery.mousewheel.js"></script>
-		<script type="text/javascript" src="scripts/gl-matrix.js"></script>
-		<script type="text/javascript" src="scripts/webgl-debug.js"></script>
+		<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+		<script type="text/javascript" src="vendor/jquery.fastfix.js"></script>
+		<script type="text/javascript" src="vendor/jquery.mousewheel.js"></script>
+		<script type="text/javascript" src="vendor/gl-matrix.js"></script>
+		<script type="text/javascript" src="scripts/util.js"></script>
 		<script type="text/javascript" src="scripts/renderer.js"></script>
+		<script type="text/javascript" src="scripts/plugin-group.js"></script>
+		<script type="text/javascript" src="scripts/plugin-manager.js"></script>
+		<script type="text/javascript" src="scripts/connection.js"></script>
+		<script type="text/javascript" src="scripts/graph.js"></script>
+		<script type="text/javascript" src="scripts/node.js"></script>
+		<script type="text/javascript" src="scripts/node-ui.js"></script>
+		<script type="text/javascript" src="scripts/registers.js"></script>
+		<script type="text/javascript" src="scripts/player.js"></script>
 		<script type="text/javascript" src="scripts/core.js"></script>
+		<script type="text/javascript" src="scripts/application.js"></script>
+		<script type="text/javascript" src="scripts/player.js"></script>
+		<script type="text/javascript">
+			function Slider(parent, on_change, lo, hi, value)
+			{
+				this.on_change = on_change;
+				this.lo = lo;
+				this.hi = hi;
+				this.value = value;
+				this.pos = 0;
+
+				var table = make('table');
+				var row = make('tr');
+				var col = make('td');
+				var slider = make('div');
+				var handle = make('div');
+	
+				var slider_mouseup = function(data) { return function(e)
+				{
+					document.removeEventListener('mouseup', data.mouseup);
+					document.removeEventListener('mousemove', data.mousemove);
+
+					if(e.stopPropagation) e.stopPropagation();
+					if(e.preventDefault) e.preventDefault();
+					return false;
+				}};
+
+				var slider_mousemove = function(self, data) { return function(e)
+				{
+					var x_delta = e.pageX - data.last_x;
+					var rng = self.hi - self.lo;
+		
+					data.last_x = e.pageX;
+		
+					var new_val = self.pos + x_delta;
+					new_val = new_val < 0.0 ? 0.0 : new_val > 180.0 ? 180.0 : new_val;
+		
+					if(self.value !== new_val)
+					{
+						var mix = new_val / 180.0;
+			
+						self.pos = Math.floor(new_val);
+						self.value = ((1.0 - mix) * self.lo) + (mix * self.hi);
+						handle[0].style.left = '' + self.pos + 'px';
+						self.on_change(self.value);
+					}
+
+					if(e.stopPropagation) e.stopPropagation();
+					if(e.preventDefault) e.preventDefault();
+					return false;				
+				}};
+	
+				var slider_mousedown = function(self, handle) { return function(e)
+				{
+					var data = {
+						last_x: e.pageX,
+						handle: handle,
+					};
+		
+					// Defer registration of event listeners until needed.
+					data.mouseup = slider_mouseup(data);
+					data.mousemove = slider_mousemove(self, data);
+					document.addEventListener('mouseup', data.mouseup);
+					document.addEventListener('mousemove', data.mousemove);
+		
+					if(e.stopPropagation) e.stopPropagation();
+					if(e.preventDefault) e.preventDefault();
+					return false;
+				}};
+	
+				slider.addClass('slider slider-horizontal ui-widget corner-all');
+				slider.css({ 'width': '180px', 'margin-left': '8px', 'margin-right': '8px' });
+				handle.addClass('slider-handle state-hover corner-all');
+				this.pos = ((this.value - this.lo) / (this.hi - this.lo)) * 180.0;
+				handle[0].style.left = '' + this.pos + 'px';
+				handle[0].addEventListener('mousedown', slider_mousedown(this, handle));
+	
+				slider.append(handle);
+	
+				table.css('width', '150px');
+				table.addClass('pl_layout');
+	
+				var v_col = make('td');
+	
+				v_col.css('text-align', 'center');
+	
+				table.append(row);
+				col.append(slider);
+				row.append(col);
+	
+				var row2 = make('tr');
+	
+				row2.append(v_col);
+				v_col.append();
+				table.append(row2);
+	
+				this.v_col = v_col;
+				this.on_change(this.value);
+				this.slider = slider;
+				this.handle = handle;
+				
+				parent.append(table);
+			}
+		</script>
 		<script type="text/javascript">
 			var player = null;
 			
 			var init_ui = function(player)
 			{
 				var params = [
-					{ id: 'particle-size', min: 0.0, max: 8.0, def: 4.56 },
-					{ id: 'speed', min: 0.0, max: 1.0, def: 0.16 },
-					{ id: 'spline-scale', min: 0.0, max: 5.0, def: 3.95 },
-					{ id: 'spline-shape-1', min: 0.0, max: 0.1, def: 0.05 },
-					{ id: 'rotation', min: -180.0, max: 180.0, def: -3.6 },
-					{ id: 'x-position', min: -2.0, max: 2.0, def: -1.08 },
-					{ id: 'spline-shape-2', min: 0.0, max: 5.0, def: 1.85 },
-					{ id: 'elevation', min: -20.0, max: 20.0, def: 8.4 },
-					{ id: 'y-position', min: -2.0, max: 2.0, def: -0.32 },
-					{ id: 'spline-shape-3', min: 0.0, max: 5.0, def: 4.0 },
-					{ id: 'dolly', min: 0.0, max: 120.0, def: 13.2 },
-					{ id: 'z-position', min: -2.0, max: 2.0, def: -2.0 }
+					{ id: 'rotation-speed', min: 0.0, max: 180.0, def: 90.0 }
 				];
 				
 				for(var i = 0, len = params.length; i < len; i++)
 				{
 					var param = params[i];
 											
-					$('#' + param.id).slider({
-						slide: function(p, id) { return function(e, ui)
-						{
-							p.set_parameter(id, ui.value);
-						}}(player, param.id),
-						min: param.min,
-						max: param.max,
-						value: param.def,
-						step: (param.max - param.min) / 100.0
-					});
-					
-					player.set_parameter(param.id, param.def);
+					param.slider = new Slider($('#' + param.id), function(p, id) { return function(value)
+					{
+						p.set_parameter(id, value);
+					}}(player, param.id), param.min, param.max, param.def);
 				}
 				
 				player.add_parameter_listener('abs-time', function(dom) { return function(value)
@@ -94,28 +182,8 @@
 			<canvas id="webgl-canvas" class="webgl-canvas-normal" width="640" height="480" oncontextmenu="return false;"></canvas>
 			<table style="position: absolute; top: 500px; left: 10px; width: 640px;">
 				<tr>
-					<td>Particle size: <div id="particle-size" class="slider"></div></td>
-					<td>Speed: <div id="speed" class="slider"></div></td>
-					<td>Spline scale: <div id="spline-scale" class="slider"></div></td>
+					<td>Rotation speed: <div id="rotation-speed"></div></td>
 					<td>Abs. time: <div id="abs-time">0.0</div></td>
-				</tr>
-				<tr>
-					<td>Spline shape 1: <div id="spline-shape-1" class="slider"></div></td>
-					<td>Rotation: <div id="rotation" class="slider"></div></td>
-					<td>X position: <div id="x-position" class="slider"></div></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>Spline shape 2: <div id="spline-shape-2" class="slider"></div></td>
-					<td>Elevation: <div id="elevation" class="slider"></div></td>
-					<td>Y position: <div id="y-position" class="slider"></div></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>Spline shape 3: <div id="spline-shape-3" class="slider"></div></td>
-					<td>Dolly: <div id="dolly" class="dolly"></div></td>
-					<td>Z position: <div id="z-position" class="slider"></div></td>
-					<td></td>
 				</tr>
 			</table>
 		</div>

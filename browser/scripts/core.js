@@ -167,7 +167,6 @@ function Core(app) {
 	this.graph_uid = 0;
 	this.app = app;
 	this.plugin_mgr = new PluginManager(this, 'plugins', E2.app ? E2.app.onPluginInstantiated : null, load_location_hash);
-	this.registers = new Registers(this);
 	this.aux_scripts = {};
 	this.aux_styles = {};
 	
@@ -318,7 +317,6 @@ function Core(app) {
 		d.active_graph = self.active_graph.uid;
 		d.graph_uid = self.graph_uid;
 		d.root = self.root_graph.serialise();
-		this.registers.serialise(d);
 		
 		return JSON.stringify(d, undefined, 4);
 	};
@@ -338,9 +336,6 @@ function Core(app) {
 		self.root_graph = new Graph(this, null, null);
 		self.root_graph.deserialise(d.root);
 		self.graphs.push(self.root_graph);
-		
-		if(d.registers)
-			self.registers.deserialise(d.registers);
 		
 		self.root_graph.patch_up(self.graphs);
 		self.root_graph.initialise(self.graphs);
