@@ -188,6 +188,7 @@ function CreatePlayer(init_callback)
 	{
 		var kl = Object.keys(E2.plugins).length;
 		
+console.log('jee3',kl, E2.app.player.core.plugin_mgr.lid - 1)
 		if(kl === E2.app.player.core.plugin_mgr.lid - 1)
 			init_callback(E2.app.player);
 		else 

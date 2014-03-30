@@ -41,7 +41,7 @@ function PluginManager(core, base_url, creation_listener, ready_listener)
 	// First check if we're running a release build by checking for the existence
 	// of 'all.plugins.js'
 	var url = self.base_url + '/all.plugins.js';
-	
+
 	$.ajax({
 		url: url,
 		type: 'HEAD',
@@ -83,7 +83,7 @@ function PluginManager(core, base_url, creation_listener, ready_listener)
    				
 				self.register_plugin(pg_root, key, id);
 			});
-			
+
 			if(creation_listener)
 				self.context_menu = new ContextMenu(E2.dom.canvas_parent, pg_root.create_items(), creation_listener);
   		}
