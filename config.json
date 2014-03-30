@@ -1,5 +1,7 @@
 {
 	"server": {
+		"enableOSC": true,
+		"oscPort": 8001,
 		"enableFrameDumping": true,
 		"engiPath": "./browser/",
 		"host": "127.0.0.1",

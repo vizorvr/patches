@@ -1,9 +1,11 @@
 "use strict";
 
+var http = require('http')
 var express = require('express')
 var argv = require('minimist')(process.argv.slice(2));
 var fs = require('fs')
 var FrameDumpServer = require('./lib/framedump-server').FrameDumpServer;
+var OscServer = require('./lib/osc-server').OscServer;
 
 var config = require('./config.json')
 
@@ -86,5 +88,9 @@ if (config.server.enableFrameDumping)
 
 app.use(express.errorHandler());
 
-app.listen(listenPort, listenHost);
+var httpServer = http.createServer(app);
+httpServer.listen(listenPort, listenHost);
+
+if (config.server.enableOSC)
+	new OscServer().listen(httpServer);
 

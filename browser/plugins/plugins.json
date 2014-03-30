@@ -19,6 +19,7 @@
 	"Emitters/Debug/Vector": "vector_display",
 	"Emitters/Sequencing/Stop playback": "stop_emitter",
 	"Emitters/Video/Video player": "video_player",
+
 	"Generators/Cameras/View/Aspect ratio": "aspect_ratio_generator",
 	"Generators/Cameras/View/Viewport height": "viewport_height_generator",
 	"Generators/Cameras/View/Viewport width": "viewport_width_generator",
@@ -76,6 +77,10 @@
 	"Generators/Values/Text": "const_text_generator",
 	"Generators/Values/Texture type": "texture_type_generator",
 	"Generators/Values/Toggle": "toggle_button",
+
+	"Generators/OSC/OSC Float": "osc_float",
+	"Generators/OSC/OSC XY Float": "osc_xy_float",
+
 	"Modulators/Audio/Duration": "audio_get_duration_modulator",	
 	"Modulators/Audio/Current time": "audio_get_current_time_modulator",	
 	"Modulators/Color/Add": "color_add_modulator",	
