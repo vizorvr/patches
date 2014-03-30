@@ -1,6 +1,7 @@
 OscProxy = (function() {
 	var _listeners = {};
 	var _state = 'disconnected';
+	var wsPort = 8000;
 
 	var OscProxy = {};
 
@@ -10,7 +11,7 @@ OscProxy = (function() {
 
 		_state = 'connecting';
 
-		var ws = new WebSocket('ws://'+window.location.host+'/__osc-proxy');
+		var ws = new WebSocket('ws://'+window.location.hostname+':'+wsPort+'/__osc-proxy');
 		ws.onopen = function()
 		{
 			console.log('OscProxy connected');
