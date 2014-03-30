@@ -226,47 +226,47 @@ function Core(app) {
 	
 	this.create_dialog = function(diag, title, w, h, done_func, open_func)
 	{
-		var modal = $('.modal-template').clone()
+		var modal = $('.modal-template').clone();
 
 		function close()
 		{
-			modal.unbind()
-			modal.remove()
+			modal.unbind();
+			modal.remove();
 		}
 
 		function ok()
 		{
-			done_func()
-			modal.modal('hide')
+			done_func();
+			modal.modal('hide');
 		}
 
-		$('.modal-title', modal).html(title)
-		$('.modal-body', modal).html(diag)
+		$('.modal-title', modal).html(title);
+		$('.modal-body', modal).html(diag);
 
 		modal.on('show.bs.modal', function()
 		{
-			$('.modal-dialog', modal).css('width', w + 40)
-		})
+			$('.modal-dialog', modal).css('width', w + 40);
+		});
 
 		modal.on('shown.bs.modal', function()
 		{
-			if (open_func)
+			if(open_func)
 				open_func();
-		})
+		});
 
-		modal.on('hidden.bs.modal', close)
-
-		modal.modal({
-			keyboard: true
-		})
+		modal.on('hidden.bs.modal', close);
+		modal.modal({ keyboard: true });
 
 		modal.on('keypress', function(e)
 		{
-			if (e.keyCode === 13)
-				ok()
+			if(e.keyCode === 13)
+			{
+				if(e.target.nodeName !== 'TEXTAREA')
+					ok();
+			}
 		})
 
-		$('button:last', modal).click(ok)
+		$('button:last', modal).click(ok);
 	};
 	
 	this.get_default_value = function(dt)
