@@ -40,7 +40,7 @@ function setup(cb) {
 		{
 			var $ = window.$;
 			$('#webgl-canvas')[0].getContext = function() {
-				return require('gl').createContext();
+				return require('gl').createContext(640, 480);
 			}
 
 			window.Image = function() {
