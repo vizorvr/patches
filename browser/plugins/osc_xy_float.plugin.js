@@ -45,3 +45,6 @@ E2.p.prototype.update_output = function(slot)
 
 	return this.y;
 };
+
+if (typeof(exports) !== 'undefined')
+	exports.osc_xy_float = E2.p;
