@@ -6,9 +6,7 @@ OscProxy = (function() {
 	var _state = 'disconnected';
 	var wsPort = 8000;
 
-	var OscProxy = {};
-
-	OscProxy.connect = function() {
+	function connect() {
 		if (_state === 'connected' || _state === 'connecting')
 			return;
 
@@ -23,6 +21,7 @@ OscProxy = (function() {
 
 		ws.onclose = function()
 		{
+			console.warn('OscProxy disconnected!');
 			_state = 'disconnected';
 		};
 
@@ -31,18 +30,20 @@ OscProxy = (function() {
 			var oscMessage = JSON.parse(evt.data);
 
 			if (_listeners[oscMessage.address])
-				_listeners[oscMessage.address](oscMessage.args)
+				_listeners[oscMessage.address](oscMessage.args);
 
 			if (_listeners['*'])
-				_listeners['*'](oscMessage.address, oscMessage.args)
+				_listeners['*'](oscMessage.address, oscMessage.args);
 		};
 	};
 
-	OscProxy.listen = function(address, fn)
-	{
-		_listeners[address] = fn;
-	};
+	connect();
 
-	return OscProxy;
+	return {
+		listen: function(address, fn)
+		{
+			_listeners[address] = fn;
+		}
+	};
 
 })();
