@@ -571,7 +571,7 @@ function LinkedSlotGroup(core, parent_node, inputs, outputs)
 	this.inputs = inputs;
 	this.outputs = outputs;
 	this.n_connected = 0;
-	this.dt = core.datatypes.ALL;
+	this.dt = core.datatypes.ANY;
 }
 
 LinkedSlotGroup.prototype.set_dt = function(dt)
@@ -583,6 +583,16 @@ LinkedSlotGroup.prototype.set_dt = function(dt)
 
 	for(var i = 0, len = this.outputs.length; i < len; i++)
 		this.outputs[i].dt = dt;
+};
+
+LinkedSlotGroup.prototype.add_dyn_slot = function(slot)
+{
+	(slot.type === E2.slot_type.input ? this.inputs : this.outputs).push(slot);
+};
+
+LinkedSlotGroup.prototype.remove_dyn_slot = function(slot)
+{
+	(slot.type === E2.slot_type.input ? this.inputs : this.outputs).remove(slot);
 };
 
 LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot)

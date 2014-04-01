@@ -3,11 +3,12 @@ E2.p = E2.plugins["switch_modulator"] = function(core, node)
 	this.desc = 'Given an <b>index</b>, emit the supplied <b>true</b> value on the output slot matching the index and the <b>false</b> value on all others. If the index is invalid, the <b>false</b> value is emitted on all outputs.';
 	
 	this.input_slots = [ 
-		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'The selected index.', def: '-1' }
+		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'The selected index.', def: '-1' },
+		{ name: 'true', dt: core.datatypes.ANY, desc: 'The value to emit on the output slot matching the current index.' },
+		{ name: 'false', dt: core.datatypes.ANY, desc: 'The value to emit on any slot not matching the current index' }
 	];
 	
-	this.output_slots = [
-	];
+	this.output_slots = [];
 	
 	this.state = {
 		slot_uids: []
@@ -15,9 +16,9 @@ E2.p = E2.plugins["switch_modulator"] = function(core, node)
 	
 	this.core = core;
 	this.node = node;
-	this.dt = core.datatypes.ANY;
-	this.slot_t_id = null;
-	this.slot_f_id = null;
+	this.lsg = new LinkedSlotGroup(core, node, [this.input_slots[1], this.input_slots[2]], []);
+	this.true_value = null;
+	this.false_value = null;
 };
 
 E2.p.prototype.create_ui = function()
@@ -26,12 +27,15 @@ E2.p.prototype.create_ui = function()
 	var inp_rem = makeButton('Remove', 'Click to remove the last output.');
 	var inp_add = makeButton('Add', 'Click to add another output.');
 	
-	inp_add.css('width', '65px');
 	inp_rem.css('width', '65px');
+	inp_add.css({ 'width': '65px', 'margin-top': '5px' });
 	
 	inp_add.click(function(self) { return function(v)
 	{
-		self.state.slot_uids.push(self.node.add_slot(E2.slot_type.output, { name: '' + self.state.slot_uids.length, dt: self.dt }));
+		var suid = self.node.add_slot(E2.slot_type.output, { name: '' + self.state.slot_uids.length, dt: self.lsg.dt });
+		
+		self.state.slot_uids.push(suid);
+		self.lsg.add_dyn_slot(self.node.find_dynamic_slot(E2.slot_type.output, suid));
 	}}(this));
 	
 	inp_rem.click(function(self) { return function(v)
@@ -39,7 +43,10 @@ E2.p.prototype.create_ui = function()
 		if(self.state.slot_uids.length < 1)
 			return;
 			
-		self.node.remove_slot(E2.slot_type.output, self.state.slot_uids.pop());
+		var suid = self.state.slot_uids.pop();
+		
+		self.lsg.remove_dyn_slot(self.node.find_dynamic_slot(E2.slot_type.output, suid));
+		self.node.remove_slot(E2.slot_type.output, suid);
 	}}(this));
 
 	layout.append(inp_rem);
@@ -56,10 +63,8 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
 {
-	if(slot.uid !== undefined) // Custom slot?
-	{
-		
-	}
+	if(this.lsg.connection_changed(on, conn, slot))
+		this.true_value = this.false_value = this.lsg.core.get_default_value(this.lsg.dt);
 };
 
 E2.p.prototype.update_input = function(slot, data)
@@ -81,12 +86,12 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.index = -1;
+		for(var i = 0, len = this.state.slot_uids.length; i < len; i++)
+		{
+			this.lsg.add_dyn_slot(this.node.find_dynamic_slot(E2.slot_type.output, this.state.slot_uids[i]));
+		}
 		
-		if(this.slot_t_id === null)
-			this.slot_t_id = this.node.add_slot(E2.slot_type.input, { name: 'true', dt: this.core.datatypes.ANY });
-			
-		if(this.slot_f_id === null)
-			this.slot_f_id = this.node.add_slot(E2.slot_type.input, { name: 'false', dt: this.core.datatypes.ANY });
+		this.index = -1;
+		this.true_value = this.false_value = this.lsg.infer_dt();
 	}
 };
