@@ -1,4 +1,7 @@
 OscProxy = (function() {
+	if (typeof(OscProxy) !== 'undefined')
+		return OscProxy;
+
 	var _listeners = {};
 	var _state = 'disconnected';
 	var wsPort = 8000;
@@ -26,9 +29,12 @@ OscProxy = (function() {
 		ws.onmessage = function(evt)
 		{
 			var oscMessage = JSON.parse(evt.data);
-			// console.log('oscMessage', oscMessage);
+
 			if (_listeners[oscMessage.address])
 				_listeners[oscMessage.address](oscMessage.args)
+
+			if (_listeners['*'])
+				_listeners['*'](oscMessage.address, oscMessage.args)
 		};
 	};
 

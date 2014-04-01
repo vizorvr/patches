@@ -1,0 +1,45 @@
+{
+    "abs_t": 0,
+    "active_graph": 0,
+    "graph_uid": 1,
+    "root": {
+        "node_uid": 5,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "text_display",
+                "x": 160,
+                "y": 74,
+                "uid": 1
+            },
+            {
+                "plugin": "object_display",
+                "x": 160,
+                "y": 137,
+                "uid": 3
+            },
+            {
+                "plugin": "osc_receiver",
+                "x": 21,
+                "y": 74,
+                "uid": 4
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 4,
+                "dst_nuid": 1,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 4,
+                "dst_nuid": 3,
+                "src_slot": 1,
+                "dst_slot": 0
+            }
+        ]
+    }
+}
