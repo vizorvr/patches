@@ -28,7 +28,7 @@ E2.p.prototype.create_ui = function()
 		self.updated = true;
 	}}(this));
 	
-	ExpandableTextfield(this.node, inp, 7);
+	this.etf = new ExpandableTextfield(this.node, inp, 7);
 	return inp;
 };
 

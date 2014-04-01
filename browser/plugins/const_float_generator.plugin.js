@@ -41,13 +41,15 @@ E2.p.prototype.create_ui = function()
 		// field is reset to the correct value, even if parseFloat has
 		// no problem with the string.
 		inp.val('' + self.state.val);
+		self.etf.update();
 		
 		// Don't set the updated flag directly from an asynchronous function.
 		// This could lead to aliasing with the core update logic.
 		self.updated = true;
 	}}(this));
 	
-	ExpandableTextfield(this.node, inp, 7);
+	this.etf = new ExpandableTextfield(this.node, inp, 7);
+
 	return inp;
 };
 

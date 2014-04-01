@@ -9,6 +9,8 @@ E2.p = E2.plugins["slider_float_generator"] = function(core, node)
 	];
 	
 	this.state = { val: 0.0, min: 0.0, max: 1.0 };
+	
+	this.node = node;
 	this.v_col = null;
 	this.slider = null;
 	this.handle = null;
@@ -100,8 +102,8 @@ E2.p.prototype.create_ui = function()
 	inp_lo.css('border', '1px solid #999');
 	inp_hi.css('border', '1px solid #999');
 	
-	ExpandableTextfield(this.node, inp_lo, 3);
-	ExpandableTextfield(this.node, inp_hi, 3);
+	inp_lo.etf = new ExpandableTextfield(this.node, inp_lo, 3);
+	inp_hi.etf = new ExpandableTextfield(this.node, inp_hi, 3);
 	
 	var v_col = make('td');
 	
@@ -123,12 +125,35 @@ E2.p.prototype.create_ui = function()
 		{
 			var id = sender.attr('id');
 			var st = self.state;
+			var safe_parse = function(def, str)
+			{
+				try 
+				{ 
+					var v = parseFloat(str);
 			
-			if(id == 'lo')
-				st.min = sender.val();
-			else if(id == 'hi')
-				st.max = sender.val();
+					if(!isNaN(v))
+						return v;
+				}
+				catch(e) 
+				{
+				}
+				
+				return def;
+			};
+								
+			if(id === 'lo')
+			{
+				st.min = safe_parse(st.min, sender.val());
+				sender.val('' + st.min);
+			}
+			else if(id === 'hi')
+			{
+				st.max = safe_parse(st.max, sender.val());
+				sender.val('' + st.max).change();
+			}
 			
+			sender.etf.update();
+
 			var l = Math.min(st.min, st.max), h = Math.max(st.min, st.max);
 			
 			st.val = st.val < l ? l : st.val > h ? h : st.val;
