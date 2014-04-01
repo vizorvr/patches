@@ -152,6 +152,8 @@
 .icon-null_mesh_generator { background: url('icons.png') -119px -170px no-repeat; }
 .icon-or_modulator { background: url('icons.png') -68px -119px no-repeat; }
 .icon-orthographic_camera { background: url('icons.png') -85px -51px no-repeat; }
+.icon-osc_float { background: url('icons.png') -85px -68px no-repeat; }
+.icon-osc_xy_float { background: url('icons.png') -85px -68px no-repeat; }
 .icon-output_proxy { background: url('icons.png') -204px -17px no-repeat; }
 .icon-parse_json_modulator { background: url('icons.png') -102px -68px no-repeat; }
 .icon-perspective_camera { background: url('icons.png') -119px -17px no-repeat; }
