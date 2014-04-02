@@ -15,9 +15,6 @@ E2.p = E2.plugins["osc_float"] = function(core, node)
 
 E2.p.prototype.update_input = function(slot, address)
 {
-	if (!slot)
-		return;
-
 	var self = this
 
 	OscProxy.listen(address, function(args)

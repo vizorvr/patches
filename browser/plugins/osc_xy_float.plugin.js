@@ -17,9 +17,6 @@ E2.p = E2.plugins["osc_xy_float"] = function(core, node)
 
 E2.p.prototype.update_input = function(slot, addres)
 {
-	if (!slot)
-		return;
-
 	var self = this
 
 	OscProxy.listen(addres, function(args)
@@ -48,6 +45,3 @@ E2.p.prototype.state_changed = function(ui)
 	if(!ui)
 		this.core.add_aux_script('osc/osc-proxy.js');
 };
-
-if (typeof(exports) !== 'undefined')
-	exports.osc_xy_float = E2.p;
