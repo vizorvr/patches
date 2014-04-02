@@ -175,6 +175,7 @@
 .icon-sample_and_hold_modulator { background: url('sample-and-hold-modulator.png'); }
 .icon-sawtooth_modulator { background: url('sawtooth-modulator.png'); }
 .icon-scale_matrix { background: url('scale-matrix.png'); }
+.icon-scale_xyz_matrix { background: url('scale-matrix.png'); }
 .icon-scene_get_bounding_box { background: url('scene-get-bounding-box.png'); }
 .icon-scene_get_mesh_by_index { background: url('scene-get-mesh-by-index.png'); }
 .icon-scene_get_mesh_count { background: url('scene-get-mesh-count.png'); }
@@ -201,6 +202,7 @@
 .icon-toggle_button { background: url('toggle-button.png'); }
 .icon-toggle_modulator { background: url('toggle-modulator.png'); }
 .icon-translation_matrix { background: url('translation-matrix.png'); }
+.icon-translation_xyz_matrix { background: url('translation-matrix.png'); }
 .icon-transpose_matrix_modulator { background: url('transpose-matrix-modulator.png'); }
 .icon-triangle_modulator { background: url('triangle-modulator.png'); }
 .icon-tween_in_modulator { background: url('tween-in-modulator.png'); }

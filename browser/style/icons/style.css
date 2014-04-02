@@ -176,6 +176,7 @@
 .icon-sample_and_hold_modulator { background: url('icons.png') -51px 0px no-repeat; }
 .icon-sawtooth_modulator { background: url('icons.png') -170px -136px no-repeat; }
 .icon-scale_matrix { background: url('icons.png') -85px -136px no-repeat; }
+.icon-scale_xyz_matrix { background: url('icons.png') -85px -136px no-repeat; }
 .icon-scene_get_bounding_box { background: url('icons.png') -17px -187px no-repeat; }
 .icon-scene_get_mesh_by_index { background: url('icons.png') -51px -34px no-repeat; }
 .icon-scene_get_mesh_count { background: url('icons.png') -153px -34px no-repeat; }
@@ -203,6 +204,7 @@
 .icon-toggle_button { background: url('icons.png') 0px -153px no-repeat; }
 .icon-toggle_modulator { background: url('icons.png') -17px -170px no-repeat; }
 .icon-translation_matrix { background: url('icons.png') -85px -170px no-repeat; }
+.icon-translation_xyz_matrix { background: url('icons.png') -85px -170px no-repeat; }
 .icon-transpose_matrix_modulator { background: url('icons.png') -136px -51px no-repeat; }
 .icon-triangle_modulator { background: url('icons.png') -51px -170px no-repeat; }
 .icon-tween_in_modulator { background: url('icons.png') -51px -17px no-repeat; }
