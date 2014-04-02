@@ -150,10 +150,12 @@
 .icon-normal_as_color_shader { background: url('shader.png'); }
 .icon-not_modulator { background: url('not-modulator.png'); }
 .icon-null_mesh_generator { background: url('null-mesh-generator.png'); }
+.icon-object_display { background: url('less-than-modulator.png'); }
 .icon-or_modulator { background: url('or-modulator.png'); }
 .icon-orthographic_camera { background: url('orthographic-camera.png'); }
 .icon-osc_float { background: url('const-float-generator.png'); }
 .icon-osc_xy_float { background: url('const-float-generator.png'); }
+.icon-osc_receiver { background: url('url-json-generator.png'); }
 .icon-output_proxy { background: url('output-proxy.png'); }
 .icon-perspective_camera { background: url('perspective-camera.png'); }
 .icon-pi_generator { background: url('pi-generator.png'); }

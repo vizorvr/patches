@@ -11,19 +11,13 @@ E2.p = E2.plugins["osc_float"] = function(core, node)
 	];
 	
 	this.core = core;
-	this.node = node;
 };
 
-E2.p.prototype.update_input = function(slot, data)
+E2.p.prototype.update_input = function(slot, address)
 {
-	if (!slot)
-		return;
-
-	this._address = data;
-
 	var self = this
 
-	OscProxy.listen(this._address, function(args)
+	OscProxy.listen(address, function(args)
 	{
 		self.updated = true;
 		self.value = args[0].value;
@@ -32,11 +26,16 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.reset = function()
 {
-	OscProxy.connect();
 	this.value = 0.0;
 };
 
 E2.p.prototype.update_output = function(slot)
 {
 	return this.value;
+};
+
+E2.p.prototype.state_changed = function(ui)
+{
+	if(!ui)
+		this.core.add_aux_script('osc/osc-proxy.js');
 };

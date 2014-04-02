@@ -94,6 +94,11 @@ print '\tCopying plugin catalogue.'
 os.system('cp ' + plugins_path + 'plugins.json ' + build_dir + '/plugins')
 
 print '\tProcessing plugin dependencies'
+print '\t\tOSC Proxy'
+oscproxy_file='/plugins/osc/osc-proxy.js'
+os.system('mkdir ' + os.path.dirname(build_dir + oscproxy_file))
+compress(src_dir + '/plugins/osc/osc-proxy.js', build_dir + oscproxy_file)
+
 print '\t\tACE Editor + plugins'
 os.system('mkdir ' + build_dir + '/plugins/ace')
 ace_files = glob.glob(src_dir + '/plugins/ace/*.js')
