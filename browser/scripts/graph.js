@@ -105,14 +105,13 @@ Graph.prototype.enum_all = function(n_delegate, c_delegate)
 
 Graph.prototype.reset = function()
 {
-	this.enum_all(function(n)
-	{
-		n.reset();
-	},
-	function(c)
-	{
-		c.reset();
-	});
+	var nodes = this.nodes, conns = this.connections;
+	    
+	for(var i = 0, len = nodes.length; i < len; i++)
+		nodes[i].reset();
+    
+	for(var i = 0, len = conns.length; i < len; i++)
+		conns[i].reset();
 };
 
 Graph.prototype.play = function()
