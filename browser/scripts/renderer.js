@@ -346,8 +346,6 @@ Renderer.prototype.set_fullscreen = function(state)
 					cd.mozRequestFullScreen();
 				
 				c.attr('class', 'webgl-canvas-fs');
-				//c.attr('width', '960px');
-				//c.attr('height', '540px');
 				c.attr('width', '1280px');
 				c.attr('height', '720px');
 				this.update_viewport();

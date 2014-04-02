@@ -255,6 +255,25 @@ table
 	cursor: default;
 }
 
+.webgl-canvas-normal
+{
+	background-color: #000; 
+	position: absolute; 
+	width: 480px;
+	height: 270px;
+}
+
+.webgl-canvas-fs
+{
+	background-color: #000; 
+	position: absolute; 
+	left: 0px; 
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 10000;
+}
+
 .widget { font-family: Verdana,Arial,sans-serif; font-size: 1em;}
 .graph-node { border: none; background: #ffffff; color: #222222; }
 .state-hover, .graph-node { background: #ffffff; font-weight: normal; color: #212121; }
