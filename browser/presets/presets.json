@@ -23,6 +23,7 @@
 
 	"BACKGROUND & OVERLAY GRAPHICS":
 	{
+		"Background: Image": "background_image",
 		"Background: Sky box": "background_skybox",
 		"Background: Plain color": "background_plain_color",
 		"Background: Inside a sphere": "background_inside_sphere",
