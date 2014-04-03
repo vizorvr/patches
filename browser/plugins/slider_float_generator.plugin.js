@@ -47,22 +47,26 @@ E2.p.prototype.create_ui = function()
 		var x_delta = e.pageX - data.last_x;
 		var rng = self.state.max - self.state.min;
 		
-		data.last_x = e.pageX;
-		
-		var new_val = self.pos + x_delta;
-		new_val = new_val < 0.0 ? 0.0 : new_val > 60.0 ? 60.0 : new_val;
-		
-		if(self.state.val !== new_val)
+		if(Math.abs(rng) > 0.0001)
 		{
-			var mix = new_val / 60.0;
+			data.last_x = e.pageX;
+		
+			var new_val = self.pos + x_delta;
+		
+			new_val = new_val < 0.0 ? 0.0 : new_val > 60.0 ? 60.0 : new_val;
+		
+			if(self.state.val !== new_val)
+			{
+				var mix = new_val / 60.0;
 			
-			self.pos = Math.floor(new_val);
-			self.state.val = ((1.0 - mix) * self.state.min) + (mix * self.state.max);
-			handle[0].style.left = '' + self.pos + 'px';
-			self.update_value(self.state.val);
-			self.updated = true;
+				self.pos = Math.floor(new_val);
+				self.state.val = ((1.0 - mix) * self.state.min) + (mix * self.state.max);
+				handle[0].style.left = '' + self.pos + 'px';
+				self.update_value(self.state.val);
+				self.updated = true;
+			}
 		}
-
+		
 		if(e.stopPropagation) e.stopPropagation();
 		if(e.preventDefault) e.preventDefault();
 		return false;				
@@ -155,9 +159,10 @@ E2.p.prototype.create_ui = function()
 			sender.etf.update();
 
 			var l = Math.min(st.min, st.max), h = Math.max(st.min, st.max);
+			var rng = Math.abs(st.max - st.min);
 			
 			st.val = st.val < l ? l : st.val > h ? h : st.val;
-			self.pos = (Math.abs(st.val - st.min) / Math.abs(st.max - st.min)) * 60.0;
+			self.pos = rng < 0.0001 ? 0.0 : ((Math.abs(st.val - st.min) / rng) * 60.0);
 			self.handle[0].style.left = '' + self.pos + 'px';
 			
 			self.update_value(self.state.val);
