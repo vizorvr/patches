@@ -6,7 +6,7 @@ function Graph(core, parent_graph, tree_node)
 	this.connections = [];
 	this.core = core;
 	this.registers = new Registers(core);
-
+	
 	if(tree_node !== null) // Only initialise if we're not deserialising.
 	{
 		this.uid = this.core.get_graph_uid();
@@ -28,6 +28,9 @@ Graph.prototype.register_node = function(n)
 {
 	this.nodes.push(n);
 	
+	if(this.nuid_lut)
+		this.nuid_lut[n.uid] = n;
+	
 	if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
 		this.roots.push(n);
 	else if(n.plugin.e2_is_graph)
@@ -37,6 +40,9 @@ Graph.prototype.register_node = function(n)
 Graph.prototype.unregister_node = function(n)
 {
 	this.nodes.remove(n);
+	
+	if(this.nuid_lut)
+		this.nuid_lut.remove(n);
 	
 	if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
 		this.roots.remove(n);
@@ -178,10 +184,20 @@ Graph.prototype.create_ui = function()
 		c.create_ui();
 		c.ui.resolve_slot_divs();
 	});
+	
+	this.nuid_lut = [];
+	
+	for(var i = 0, len = this.nodes.length; i < len; i++)
+	{
+		var n = this.nodes[i];
+		
+		this.nuid_lut[n.uid] = n;
+	}
 };
 
 Graph.prototype.destroy_ui = function()
 {
+	delete this.nuid_lut;
 	this.enum_all(function(n) { n.destroy_ui(); }, function(c) { c.destroy_ui(); });
 };
 
