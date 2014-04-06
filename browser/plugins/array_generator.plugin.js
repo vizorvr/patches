@@ -12,8 +12,8 @@ E2.p = E2.plugins["array_generator"] = function(core, node)
 
 	this.state = { datatype: 1 }; // Default uint8
 	
-	this.array = new ArrayBuffer(0);
 	this.size = 0;
+	this.update_array();
 };
 
 E2.p.prototype.create_ui = function()
