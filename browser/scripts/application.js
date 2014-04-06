@@ -1487,14 +1487,21 @@ function Application() {
 			else
 				slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
 			
-			txt = '<b>Type</b>: ' + slot.dt.name;
+			txt = '<b>Type:</b> ' + slot.dt.name;
 	
 			if(slot.lo !== undefined || slot.hi !== undefined)
-				txt += '<br /><b>Range</b>: ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
+				txt += '<br /><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
 	
 			if(slot.def !== undefined)
-				txt += '<br /><b>Default</b>: ' + slot.def
-
+			{
+				txt += '<br /><b>Default:</b> ';
+				
+				if(slot.def === null)
+					txt += 'Nothing';
+				else
+					txt += JSON.stringify(slot.def);
+			}
+			
 			txt += '<br /><br />';
 	
 			if(slot.desc)
