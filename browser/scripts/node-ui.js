@@ -46,9 +46,10 @@ function NodeUI(parent_node, x, y) {
 
 	if(parent_node.plugin.desc)
 	{
-		var p_name = E2.app.player.core.plugin_mgr.keybyid[parent_node.plugin.id];
+		// var p_name = E2.app.player.core.plugin_mgr.keybyid[parent_node.plugin.id];
 		
-		h_row.attr('alt', '<b>' + p_name + '</b><br/><br/>' + parent_node.plugin.desc);
+		// h_row.attr('alt', '<b>' + p_name + '</b><br/><br/>' + parent_node.plugin.desc);
+		h_row.attr('alt', '' + parent_node.uid);
 		h_row.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
 	}
 
@@ -123,20 +124,13 @@ NodeUI.create_slot = function(parent_node, nid, col, s, type)
 	div.mouseleave(E2.app.onSlotExited(parent_node, s, div));
 	div.mousedown(E2.app.onSlotClicked(parent_node, s, div, type));
 
-	dsc = 'Type: ' + s.dt.name;
+	var id = '' + parent_node.uid;
 	
-	if(s.lo !== undefined || s.hi !== undefined)
-		dsc += '\nRange: ' + (s.lo !== undefined ? 'min. ' + s.lo : '') + (s.hi !== undefined ? (s.lo !== undefined ? ', ' : '') + 'max. ' + s.hi : '')
+	id += '_' + (s.uid !== undefined ? 'd' : 's');
+	id += type === E2.slot_type.input ? 'i' : 'o';
+	id += '_' + (s.uid !== undefined ? s.uid : s.index);
 	
-	if(s.def !== undefined)
-		dsc += '\nDefault: ' + s.def
-
-	dsc += '\n\n';
-	
-	if(s.desc)
-		dsc += s.desc;
-
-	div.attr('alt', dsc);
+	div.attr('alt', id);
 	div.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
 	col.append(div);
 };

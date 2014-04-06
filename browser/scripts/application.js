@@ -1466,15 +1466,42 @@ function Application() {
 		if(self.in_drag)
 			return false;
 		
-		var i_txt = $(e.currentTarget).attr('alt');
+		var tokens = $(e.currentTarget).attr('alt').split('_');
+		var core = self.player.core;
+		var node = core.active_graph.nuid_lut[parseInt(tokens[0], 10)];
+		var txt = '';
 		
-		i_txt = i_txt.replace(/\n/g, '<br/>');
-		i_txt = i_txt.replace('Type:', '<b>Type:</b>');
-		i_txt = i_txt.replace('Default:', '<b>Default:</b>');
-		i_txt = i_txt.replace('Range:', '<b>Range:</b>');
-		i_txt = i_txt.replace('<break>', '<br/><br/>');
+		if(tokens.length < 2) // Node?
+		{
+			var p_name = core.plugin_mgr.keybyid[node.plugin.id];
+			
+			txt += '<b>' + p_name + '</b><br/><br/>' + node.plugin.desc;
+		}
+		else // Slot
+		{
+			var plugin = node.plugin;
+			var slot = null;
+			
+			if(tokens[1][0] === 'd')
+				slot = node.find_dynamic_slot(tokens[1][1] === 'i' ? E2.slot_type.input : E2.slot_type.output, parseInt(tokens[2], 10));
+			else
+				slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
+			
+			txt = '<b>Type</b>: ' + slot.dt.name;
+	
+			if(slot.lo !== undefined || slot.hi !== undefined)
+				txt += '<br /><b>Range</b>: ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
+	
+			if(slot.def !== undefined)
+				txt += '<br /><b>Default</b>: ' + slot.def
+
+			txt += '<br /><br />';
+	
+			if(slot.desc)
+				txt += slot.desc.replace(/\n/g, '<br/>');
+		}
 		
-		E2.dom.info.html(i_txt);
+		E2.dom.info.html(txt);
 		E2.dom.info.css('min-height', 'auto');
 
 		var heightNow = E2.dom.info.height();
