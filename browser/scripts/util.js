@@ -21,19 +21,27 @@ Array.prototype.remove = function(obj)
 		this.splice(i, 1);
 };
 
+function clone_recursive(from, to)
+{
+    if (from == null || typeof from != "object") return from;
+    if (from.constructor != Object && from.constructor != Array) return from;
+    if (from.constructor == Date || from.constructor == RegExp || from.constructor == Function ||
+        from.constructor == String || from.constructor == Number || from.constructor == Boolean)
+        return new from.constructor(from);
+
+    to = to || new from.constructor();
+
+    for (var name in from)
+    {
+        to[name] = typeof to[name] == "undefined" ? extend(from[name], null) : to[name];
+    }
+
+    return to;
+}
+
 function clone(o)
 {
-	var no = (o instanceof Array) ? [] : {};
-
-	for(var i in o) 
-	{
-		if(o[i] && typeof(o[i]) === 'object') 
-			no[i] = clone(o[i]);
-		else
-			no[i] = o[i];
-	} 
-	
-	return no;
+	return clone_recursive(o, null);
 };
 
 function make(tag)

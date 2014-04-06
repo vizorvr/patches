@@ -109,7 +109,7 @@ Connection.prototype.signal_change = function(on)
 		{
 			if(this.dst_slot.def !== undefined)
 			{
-				n.plugin.update_input(this.dst_slot, this.dst_slot.def);
+				n.plugin.update_input(this.dst_slot, clone(this.dst_slot.def));
 				n.plugin.updated = true;
 			}
 		}
