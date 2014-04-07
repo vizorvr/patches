@@ -58,6 +58,15 @@ E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
 	{
+		if(!data)
+		{
+			if(this.audio)
+			{
+				this.audio.pause();
+				delete this.audio;
+			}
+		}
+		
 		this.audio = data;
 		this.playing = false;
 	}
