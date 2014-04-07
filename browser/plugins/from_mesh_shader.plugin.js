@@ -3,8 +3,8 @@ E2.p = E2.plugins["from_mesh_shader"] = function(core, node)
 	this.desc = 'Auto-generate a shader tailored to correctly and optimally render the supplied mesh.';
 	
 	this.input_slots = [
-		 { name: 'mesh', dt: core.datatypes.MESH, desc: 'Mesh to adapt the shader to.' },
-		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.' }
+		 { name: 'mesh', dt: core.datatypes.MESH, desc: 'Mesh to adapt the shader to.', def: null },
+		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.', def: null }
 	];
 	
 	this.output_slots = [ 
@@ -19,12 +19,7 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 	if(!on && slot.type === E2.slot_type.input)
 	{
 		if(slot.index === 0)
-		{
-			this.mesh = null;
 			this.shader = null;
-		}
-		else if(slot.index === 1)
-			this.material = null;
 	}
 };
 
