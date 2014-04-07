@@ -242,6 +242,7 @@ function Renderer(canvas_id, core)
 	this.camera_screenspace = new Camera(this.context);
 	this.color_white = new Color(1, 1, 1);
 	this.color_black = new Color(0, 0, 0);
+	this.vector_origin = [0, 0, 0];
 	this.matrix_identity = mat4.create();
 	
 	mat4.identity(this.matrix_identity);
