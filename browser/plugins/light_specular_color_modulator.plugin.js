@@ -3,8 +3,8 @@ E2.p = E2.plugins["light_specular_color_modulator"] = function(core, node)
 	this.desc = 'Sets the specular color of the light source.';
 	
 	this.input_slots = [ 
-		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light.' },
-		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The light specular color.', def: 'White' } 
+		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light.', def: core.renderer.light_default },
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The light specular color.', def: core.renderer.color_white } 
 	];
 	
 	this.output_slots = [
@@ -18,12 +18,6 @@ E2.p.prototype.update_input = function(slot, data)
 		this.light = data;
 	else
 		this.color = data;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-		this.light = new Light();
 };
 
 E2.p.prototype.update_state = function()

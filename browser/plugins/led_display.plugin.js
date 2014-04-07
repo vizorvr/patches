@@ -24,12 +24,6 @@ E2.p.prototype.create_ui = function()
 	return this.label;
 };
 
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on)
-		this.update_value(0);
-};
-
 E2.p.prototype.update_input = function(slot, data)
 {
 	this.update_value(data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data);

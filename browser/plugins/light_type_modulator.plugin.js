@@ -3,8 +3,8 @@ E2.p = E2.plugins["light_type_modulator"] = function(core, node)
 	this.desc = 'Sets the type of the light source to either point or directional.';
 	
 	this.input_slots = [ 
-		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light.' },
-		{ name: 'type', dt: core.datatypes.FLOAT, desc: 'Set the light type. See also Generators/Values/Light type.', def: 'False' } 
+		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light.', def: core.renderer.light_default },
+		{ name: 'type', dt: core.datatypes.FLOAT, desc: 'Set the light type. See also Generators/Values/Light type.', def: Light.type.POINT } 
 	];
 	
 	this.output_slots = [
@@ -18,12 +18,6 @@ E2.p.prototype.update_input = function(slot, data)
 		this.light = data;
 	else
 		this.type = data < 0 ? 0 : data % Light.type.COUNT;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-		this.light = new Light();
 };
 
 E2.p.prototype.update_state = function()

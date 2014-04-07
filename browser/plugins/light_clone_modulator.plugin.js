@@ -3,7 +3,7 @@ E2.p = E2.plugins["light_clone_modulator"] = function(core, node)
 	this.desc = 'Makes a physical copy of the input light reference, to allow side-effect free light chain branching.';
 	
 	this.input_slots = [ 
-		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light reference.' }
+		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light reference.', def: core.renderer.light_default }
 	];
 	
 	this.output_slots = [
@@ -25,12 +25,6 @@ E2.p.prototype.update_input = function(slot, data)
 	l.direction[1] = data.direction[1];
 	l.direction[2] = data.direction[2];
 	l.intensity = data.intensity;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input)
-		this.light = new Light();
 };
 
 E2.p.prototype.update_output = function(slot)
