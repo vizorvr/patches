@@ -3,7 +3,7 @@ E2.p = E2.plugins["if_modulator"] = function(core, node)
 	this.desc = 'Allows <b>value</b> though if <b>condition</b> is true and inhibits futher data-flow otherwise.';
 	
 	this.input_slots = [ 
-		{ name: 'condition', dt: core.datatypes.BOOL, desc: 'Condition that, if true, allows <b>value</b> to be emitted.', def: 'False' },
+		{ name: 'condition', dt: core.datatypes.BOOL, desc: 'Condition that, if true, allows <b>value</b> to be emitted.', def: false },
 		{ name: 'value', dt: core.datatypes.ANY, desc: 'Value to be emitted if <b>condition</b> is true.', def: null } 
 	];
 	

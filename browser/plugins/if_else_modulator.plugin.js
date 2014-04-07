@@ -3,7 +3,7 @@ E2.p = E2.plugins["if_else_modulator"] = function(core, node)
 	this.desc = 'Emits <b>true value</b> if <b>condition</b> is true and <b>false value</b> otherwise. The output only updates when the <b>condition</b> or relavant input value does. Any incoming data-flow to the value slot excluded by <b>condition</b> does not result in data emission.';
 	
 	this.input_slots = [ 
-		{ name: 'condition', dt: core.datatypes.BOOL, desc: 'Send true to route <b>true value</b> to the output and false to route <b>false value</b>.', def: 'False' },
+		{ name: 'condition', dt: core.datatypes.BOOL, desc: 'Send true to route <b>true value</b> to the output and false to route <b>false value</b>.', def: false },
 		{ name: 'true value', dt: core.datatypes.ANY, desc: 'Value to be send to output if <b>condition</b> is true', def: null } ,
 		{ name: 'false value', dt: core.datatypes.ANY, desc: 'Value to be send to output if <b>condition</b> is false', def: null  }
 	];
