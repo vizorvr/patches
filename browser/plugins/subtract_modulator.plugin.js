@@ -3,12 +3,12 @@ E2.p = E2.plugins["subtract_modulator"] = function(core, node)
 	this.desc = 'Subtract the second value from the first and emit the result.';
 	
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The first operand.', def: 0 },
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The second operand.', def: 0 } 
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The first operand.', def: 0.0 },
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The second operand.', def: 0.0 } 
 	];
 	
 	this.output_slots = [
-		{ name: 'result', dt: core.datatypes.FLOAT, desc: 'The result of <b>first</b> - <b>second</b>.', def: 0 }
+		{ name: 'result', dt: core.datatypes.FLOAT, desc: 'The result of <b>first</b> - <b>second</b>.', def: 0.0 }
 	];
 };
 

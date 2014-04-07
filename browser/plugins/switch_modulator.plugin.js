@@ -3,9 +3,9 @@ E2.p = E2.plugins["switch_modulator"] = function(core, node)
 	this.desc = 'Given an <b>index</b>, emit the supplied <b>true</b> value on the output slot matching the index and the <b>false</b> value on all others. If the index is invalid, the <b>false</b> value is emitted on all outputs.';
 	
 	this.input_slots = [ 
-		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'The selected index.', def: '-1' },
-		{ name: 'true', dt: core.datatypes.ANY, desc: 'The value to emit on the output slot matching the current index.' },
-		{ name: 'false', dt: core.datatypes.ANY, desc: 'The value to emit on any slot not matching the current index' }
+		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'The selected index.', def: -1 },
+		{ name: 'true', dt: core.datatypes.ANY, desc: 'The value to emit on the output slot matching the current index.', def: null },
+		{ name: 'false', dt: core.datatypes.ANY, desc: 'The value to emit on any slot not matching the current index', def: null }
 	];
 	
 	this.output_slots = [];

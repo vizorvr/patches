@@ -3,8 +3,8 @@ E2.p = E2.plugins["scene_get_mesh_by_index"] = function(core, node)
 	this.desc = 'Extract a single <b>mesh</b> from a <b>scene</b> by <b>index</b> so it can be rendered individually.';
 	
 	this.input_slots = [ 
-		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'The scene to extract a mesh reference from.' },
-		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'The desired mesh index.' }
+		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'The scene to extract a mesh reference from.', def: null },
+		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'The desired mesh index.', def: 0 }
 	];
 	
 	this.output_slots = [
@@ -15,17 +15,6 @@ E2.p = E2.plugins["scene_get_mesh_by_index"] = function(core, node)
 E2.p.prototype.reset = function()
 {
 	this.changed = true;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input)
-	{
-		if(slot.index === 0)
-			this.scene = null;
-		else if(slot.index === 1)
-			this.index = 0;
-	}
 };
 
 E2.p.prototype.update_input = function(slot, data)

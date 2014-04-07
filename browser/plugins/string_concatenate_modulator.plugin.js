@@ -3,8 +3,8 @@ E2.p = E2.plugins["string_concatenate_modulator"] = function(core, node)
 	this.desc = 'Concatenates the two supplied strings.';
 	
 	this.input_slots = [ 
-		{ name: 'text', dt: core.datatypes.TEXT, desc: 'The first string.' },
-		{ name: 'text', dt: core.datatypes.TEXT, desc: 'The second string.' } 
+		{ name: 'text', dt: core.datatypes.TEXT, desc: 'The first string.', def: '' },
+		{ name: 'text', dt: core.datatypes.TEXT, desc: 'The second string.', def: '' } 
 	];
 	
 	this.output_slots = [

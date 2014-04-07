@@ -2,11 +2,11 @@ E2.p = E2.plugins["scene_renderer_emitter"] = function(core, node) {
 	this.desc = 'Render the supplied <b>scene</b>. If no <b>shader</b> is specified, the internal shaders of the scene meshes are used.';
 	
 	this.input_slots = [ 
-		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'The scene to be rendered.', def: 'Render nothing.' },
-		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'If a material is specified, internal shaders are generated to render each scene mesh using this material as an overload.', def: 'Use scene materials and shaders.' },
-		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'The camera to use for rendering.', def: 'Screenspace camera.' },
-		{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'The scene transform to use for rendering.', def: 'Identity' },
-		{ name: 'inv. transform', dt: core.datatypes.BOOL, desc: 'Send true to this slot to apply <b>transform</b> in inverse order when rendering instances.', def: 'False' }
+		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'The scene to be rendered.', def: null },
+		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'If a material is specified, internal shaders are generated to render each scene mesh using this material as an overload.', def: null },
+		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'The camera to use for rendering.', def: null },
+		{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'The scene transform to use for rendering.', def: core.renderer.matrix_identity },
+		{ name: 'inv. transform', dt: core.datatypes.BOOL, desc: 'Send true to this slot to apply <b>transform</b> in inverse order when rendering instances.', def: false }
 	];
 	
 	this.output_slots = [];
@@ -49,7 +49,10 @@ E2.p.prototype.update_input = function(slot, data)
 	else if(slot.index === 2)
 	{
 		this.camera = data;
-		this.ext_camera = true;
+		this.ext_camera = data ? true : false;
+		
+		if(!this.ext_camera && this.scene)
+			this.camera = this.scene.create_autofit_camera();
 	}
 	else if(slot.index === 3)
 		this.transform = data;
@@ -61,21 +64,12 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 	{
 		if(slot.index === 0)
 		{
-			this.scene = null;
 			this.material_dirty = true;
 		}
 		else if(slot.index === 1)
 		{
-			this.material = null;
 			this.material_caps = '';
 			this.overload_shaders = null;
-		}
-		else if(slot.index === 2)
-		{
-			this.ext_camera = false;
-			
-			if(this.scene)
-				this.camera = this.scene.create_autofit_camera();
 		}
 	}
 };

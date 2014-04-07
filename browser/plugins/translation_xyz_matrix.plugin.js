@@ -3,13 +3,13 @@ E2.p = E2.plugins["translation_xyz_matrix"] = function(core, node)
 	this.desc = 'Create a matrix that tranlates along the X, Y and Z axis.';
 	
 	this.input_slots = [ 
-		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'Amount to translate along the X-axis.', def: 0 },
-		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'Amount to translate along the Y-axis.', def: 0 },
-		{ name: 'z', dt: core.datatypes.FLOAT, desc: 'Amount to translate along the Z-axis.', def: 0 }
+		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'Amount to translate along the X-axis.', def: 0.0 },
+		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'Amount to translate along the Y-axis.', def: 0.0 },
+		{ name: 'z', dt: core.datatypes.FLOAT, desc: 'Amount to translate along the Z-axis.', def: 0.0 }
 	];
 	
 	this.output_slots = [
-		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The resulting translation matrix.', def: 'Identity' }
+		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The resulting translation matrix.', def: core.renderer.matrix_identity }
 	];
 };
 

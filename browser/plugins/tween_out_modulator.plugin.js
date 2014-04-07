@@ -1,8 +1,8 @@
 E2.p = E2.plugins["tween_out_modulator"] = function(core, node)
 {
 	this.desc = 'Perform tween out over time.';
-	this.input_slots = [ { name: 'time', dt: core.datatypes.FLOAT, desc: 'Time ranging from zero to one.', def: 0, lo: 0, hi: 1 } ];
-	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT, desc: 'Emits a tween out over <b>time</b>.', def: 0 } ];
+	this.input_slots = [ { name: 'time', dt: core.datatypes.FLOAT, desc: 'Time ranging from zero to one.', def: 0.0, lo: 0, hi: 1 } ];
+	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT, desc: 'Emits a tween out over <b>time</b>.', def: 0.0 } ];
 
 	this.state = { type: 0 };
 };

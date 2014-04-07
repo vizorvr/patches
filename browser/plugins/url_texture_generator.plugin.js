@@ -5,7 +5,7 @@ E2.p = E2.plugins["url_texture_generator"] = function(core, node)
 	this.desc = 'Load a texture from an URL. JPEG and PNG supported. Hover over the Source button to see the url of the current file.';
 	
 	this.input_slots = [
-		{ name: 'url', dt: core.datatypes.TEXT, desc: 'Use this to load from a URL supplied as a string.' }
+		{ name: 'url', dt: core.datatypes.TEXT, desc: 'Use this to load from a URL supplied as a string.', def: URL_TEXTURES_ROOT }
 	];
 	
 	this.output_slots = [

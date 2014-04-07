@@ -3,11 +3,11 @@ E2.p = E2.plugins["toggle_modulator"] = function(core, node)
 	this.desc = 'For every continous sequence of \'true\' values sent to the \'trigger\' input slot the emitted value will switch from true to false and visa versa. The initial value is true.';
 	
 	this.input_slots = [
-		{ name: 'trigger', dt: core.datatypes.BOOL, desc: 'Every time true is sent one or more times in a row, the emitted value will switch between true and false, starting with true.' }
+		{ name: 'trigger', dt: core.datatypes.BOOL, desc: 'Every time true is sent one or more times in a row, the emitted value will switch between true and false, starting with true.', def: false }
 	];
 	
 	this.output_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The current state.', def: 'True' }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The current state.', def: true }
 	];
 	
 	this.state = { value: true };

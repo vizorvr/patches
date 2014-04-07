@@ -3,11 +3,11 @@ E2.p = E2.plugins["transpose_matrix_modulator"] = function(core, node)
 	this.desc = 'Emits the transposed version of the supplied <b>matrix</b>.';
 	
 	this.input_slots = [
-		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The input matrix to be transposed.', def: 'Identity' }
+		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The input matrix to be transposed.', def: core.renderer.matrix_identity }
 	];
 	
 	this.output_slots = [
-		{ name: 'transposed', dt: core.datatypes.MATRIX, desc: 'Emits the transposed input <b>matrix</b>.', def: 'Identity' }
+		{ name: 'transposed', dt: core.datatypes.MATRIX, desc: 'Emits the transposed input <b>matrix</b>.', def: core.renderer.matrix_identity }
 	];
 };
 
