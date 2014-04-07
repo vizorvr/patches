@@ -3,10 +3,10 @@ E2.p = E2.plugins["material_z_buffer_modulator"] = function(core, node)
 	this.desc = 'En- or disables depth buffer test, and write.';
 	
 	this.input_slots = [ 
-		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.' },
-		{ name: 'depth test', dt: core.datatypes.BOOL, desc: 'Set to true to discard behind the one already in the buffer.', def: 'True' },
-		{ name: 'depth write', dt: core.datatypes.BOOL, desc: 'Set to false to stop writing fragment depth to the z-buffer.', def: 'True' },
-		{ name: 'depth func', dt: core.datatypes.FLOAT, desc: 'Set z-buffer test function.', def: 'Less than or equal' }
+		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.', def: core.renderer.material_default },
+		{ name: 'depth test', dt: core.datatypes.BOOL, desc: 'Set to true to discard behind the one already in the buffer.', def: true },
+		{ name: 'depth write', dt: core.datatypes.BOOL, desc: 'Set to false to stop writing fragment depth to the z-buffer.', def: true },
+		{ name: 'depth func', dt: core.datatypes.FLOAT, desc: 'Set z-buffer test function. See Generators/Values/Depth function', def: Material.depth_func.LEQUAL }
 	];
 	
 	this.output_slots = [
@@ -24,12 +24,6 @@ E2.p.prototype.update_input = function(slot, data)
 		this.depth_write = data;
 	else if(slot.index === 3)
 		this.depth_func = data < 0 ? 0 : data % Material.depth_func.COUNT;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-		this.material = new Material();
 };
 
 E2.p.prototype.update_state = function()

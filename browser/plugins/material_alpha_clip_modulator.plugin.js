@@ -3,8 +3,8 @@ E2.p = E2.plugins["material_alpha_clip_modulator"] = function(core, node)
 	this.desc = 'If set to true, fragments with alpha < 0.5 will be discarded.';
 	
 	this.input_slots = [ 
-		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.' },
-		{ name: 'alpha clip', dt: core.datatypes.BOOL, desc: 'Set to true to discard fragments with alpha < 0.5.', def: 'False' } 
+		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.', def: core.renderer.material_default },
+		{ name: 'alpha clip', dt: core.datatypes.BOOL, desc: 'Set to true to discard fragments with alpha < 0.5.', def: false } 
 	];
 	
 	this.output_slots = [
@@ -18,12 +18,6 @@ E2.p.prototype.update_input = function(slot, data)
 		this.material = data;
 	else
 		this.alpha_clip = data;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-		this.material = new Material();
 };
 
 E2.p.prototype.update_state = function()
