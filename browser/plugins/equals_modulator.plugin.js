@@ -8,7 +8,7 @@ E2.p = E2.plugins["equals_modulator"] = function(core, node)
 	];
 	
 	this.output_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'True if <b>value</b> equals <b>reference</b> and false otherwise.', def: 'False' }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'True if <b>value</b> equals <b>reference</b> and false otherwise.', def: false }
 	];
 
 	this.lsg = new LinkedSlotGroup(core, node, [this.input_slots[0], this.input_slots[1]], []);
