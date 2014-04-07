@@ -5,9 +5,9 @@ E2.p = E2.plugins["instance_ifs_modulator"] = function(core, node)
 	this.input_slots = [ 
 		{ name: 'recursion depth', dt: core.datatypes.FLOAT, desc: 'Level to resurse to.', lo: 1, hi: 6, def: 1 },
 		{ name: 'level resolution', dt: core.datatypes.FLOAT, desc: 'Number of instances per recursion level.', lo: 1, hi: 4, def: 1 },
-		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The mesh to instantiate.' },
-		{ name: 'level transform', dt: core.datatypes.MATRIX, desc: 'Transform applied between branches.', def: 'Identity' },
-		{ name: 'branch transform', dt: core.datatypes.MATRIX, desc: 'Transform applied between instances on the same level.', def: 'Identity' }
+		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The mesh to instantiate.', def: null },
+		{ name: 'level transform', dt: core.datatypes.MATRIX, desc: 'Transform applied between branches.', def: core.renderer.matrix_identity },
+		{ name: 'branch transform', dt: core.datatypes.MATRIX, desc: 'Transform applied between instances on the same level.', def: core.renderer.matrix_identity }
 	];
 	
 	this.output_slots = [
@@ -27,8 +27,11 @@ E2.p.prototype.update_input = function(slot, data)
 	{
 		var s = this.scene = new Scene(this.gl, null, null);
 		
-		s.meshes = [data];
-		s.vertex_count = data.vertex_count;
+		if(data)
+		{
+			s.meshes = [data];
+			s.vertex_count = data.vertex_count;
+		}
 	}
 	else if(slot.index === 3)
 		this.l_transform = data;
@@ -39,6 +42,10 @@ E2.p.prototype.update_input = function(slot, data)
 E2.p.prototype.update_state = function()
 {
 	var s = this.scene;
+	
+	if(s.meshes.length < 1)
+		return;
+	
 	var m = s.meshes[0];
 	var r_gen = function(self, inst, t, level)
 	{
