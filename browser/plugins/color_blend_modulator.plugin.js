@@ -3,8 +3,8 @@ E2.p = E2.plugins["color_blend_modulator"] = function(core, node)
 	this.desc = 'Color x-fader. Perform linear blend between two colors.';
 	
 	this.input_slots = [ 
-		{ name: 'color A', dt: core.datatypes.COLOR, desc: 'First color operand.', def: 'Black' },
-		{ name: 'color B', dt: core.datatypes.COLOR, desc: 'Second color operand.', def: 'Black' }, 
+		{ name: 'color A', dt: core.datatypes.COLOR, desc: 'First color operand.', def: core.renderer.color_black },
+		{ name: 'color B', dt: core.datatypes.COLOR, desc: 'Second color operand.', def: core.renderer.color_black }, 
 		{ name: 'mix', dt: core.datatypes.FLOAT, desc: '0: Emit pure color A\n1: Emit pure color B', lo: 0, hi: 1, def: 0.5 } 
 	];
 	

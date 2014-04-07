@@ -3,7 +3,7 @@ E2.p = E2.plugins["color_display"] = function(core, node)
 	this.desc = 'Displays the supplied color in a rectangle on the plugin.';
 	
 	this.input_slots = [ 
-		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Input color to be displayed.', def: new Color(1, 1, 1, 1) }
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Input color to be displayed.', def: core.renderer.color_white }
 	];
 	
 	this.output_slots = [];
