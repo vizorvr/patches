@@ -37,7 +37,7 @@ E2.p.prototype.update_input = function(slot, data)
 	}
 	else if(slot.index === 1)
 		this.index = Math.floor(data);
-	else if(slot.index === 2)
+	else
 		this.value = data;
 };
 
