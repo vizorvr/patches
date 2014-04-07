@@ -3,8 +3,8 @@ E2.p = E2.plugins["more_than_modulator"] = function(core, node)
 	this.desc = 'Emits true if the supplied <b>value</b> is larger than <b>reference</b> and false otherwise.';
 	
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value to be compared.', def: 0 },
-		{ name: 'reference', dt: core.datatypes.FLOAT, desc: 'Reference to compare <b>value</b> to.', def: 0 } 
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value to be compared.', def: 0.0 },
+		{ name: 'reference', dt: core.datatypes.FLOAT, desc: 'Reference to compare <b>value</b> to.', def: 0.0 } 
 	];
 	
 	this.output_slots = [

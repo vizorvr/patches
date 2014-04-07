@@ -3,10 +3,10 @@ E2.p = E2.plugins["mesh_renderer_emitter"] = function(core, node)
 	this.desc = 'Render the supplied <b>mesh</b>. If no <b>shader</b> is specified, the internal shader (if any) of the <b>mesh</b> is used.';
 	
 	this.input_slots = [ 
-		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The input mesh to be rendered.' },
-		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'Connect to this slot to use the supplied shader in favor of the one specified by the mesh (if any).', def: 'Use mesh shader' },
-		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'Camera to use for rendering.', def: 'Screenspace camera.' },
-		{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'Mesh transform.', def: 'Identity' }
+		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The input mesh to be rendered.', def: null },
+		{ name: 'shader', dt: core.datatypes.SHADER, desc: 'Connect to this slot to use the supplied shader in favor of the one specified by the mesh (if any).', def: null },
+		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'Camera to use for rendering.', def: core.renderer.camera_screenspace },
+		{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'Mesh transform.', def: core.renderer.matrix_identity }
 	];
 	
 	this.output_slots = [];
@@ -30,17 +30,6 @@ E2.p.prototype.update_input = function(slot, data)
 		this.camera = data;
 	else if(slot.index === 3)
 		this.transform = data;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on)
-	{
-		if(slot.index === 0)
-			this.mesh = null;
-		else if(slot.index === 1)
-			this.shader = null;
-	}
 };
 
 E2.p.prototype.update_state = function()

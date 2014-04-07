@@ -3,13 +3,13 @@ E2.p = E2.plugins["orthographic_camera"] = function(core, node)
 	this.desc = 'Create a orthographic camera, i.e a 3d-camera with no perspectivation (isometric).';
 	
 	this.input_slots = [
-		{ name: 'left', dt: core.datatypes.FLOAT, desc: 'Left plane x-coordinate.', def: -1 },
-		{ name: 'right', dt: core.datatypes.FLOAT, desc: 'Right plane x-coordinate.', def: 1 },
-		{ name: 'top', dt: core.datatypes.FLOAT, desc: 'Top plane y-coordinate.', def: -1 },
-		{ name: 'bottom', dt: core.datatypes.FLOAT, desc: 'Bottom plane y-coordinate.', def: 1 },
-		{ name: 'near', dt: core.datatypes.FLOAT, desc: 'Near plane z-coordinate.', def: 1 },
-		{ name: 'far', dt: core.datatypes.FLOAT, desc: 'Far plane x-coordinate.', def: 1000 },
-		{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'Camera transform.', def: 'Identity' }
+		{ name: 'left', dt: core.datatypes.FLOAT, desc: 'Left plane x-coordinate.', def: -1.0 },
+		{ name: 'right', dt: core.datatypes.FLOAT, desc: 'Right plane x-coordinate.', def: 1.0 },
+		{ name: 'top', dt: core.datatypes.FLOAT, desc: 'Top plane y-coordinate.', def: -1.0 },
+		{ name: 'bottom', dt: core.datatypes.FLOAT, desc: 'Bottom plane y-coordinate.', def: 1.0 },
+		{ name: 'near', dt: core.datatypes.FLOAT, desc: 'Near plane z-coordinate.', def: 1.0 },
+		{ name: 'far', dt: core.datatypes.FLOAT, desc: 'Far plane x-coordinate.', def: 1000.0 },
+		{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'Camera transform.', def: core.renderer.matrix_identity }
 	];
 	
 	this.output_slots = [
