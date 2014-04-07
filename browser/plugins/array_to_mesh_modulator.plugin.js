@@ -3,14 +3,14 @@ E2.p = E2.plugins["array_to_mesh_modulator"] = function(core, node)
 	this.desc = 'Converts the supplied array to a mesh.';
 	
 	this.input_slots = [ 
-		{ name: 'vertices', dt: core.datatypes.ARRAY, desc: 'The vertex array (x, y, z).' },
-		{ name: 'normals', dt: core.datatypes.ARRAY, desc: 'The normal array (x, y, z).' },
-		{ name: 'colors', dt: core.datatypes.ARRAY, desc: 'The vertex color array (r, g, b, a).' },
-		{ name: 'uv0', dt: core.datatypes.ARRAY, desc: 'The first UV coord array (x, y).' },
-		{ name: 'uv1', dt: core.datatypes.ARRAY, desc: 'The second UV coord array (x, y).' },
-		{ name: 'uv2', dt: core.datatypes.ARRAY, desc: 'The third UV coord array (x, y).' },
-		{ name: 'uv3', dt: core.datatypes.ARRAY, desc: 'The forth UV coord array (x, y).' },
-		{ name: 'index', dt: core.datatypes.ARRAY, desc: 'The index buffer (depends on primitive type).' }
+		{ name: 'vertices', dt: core.datatypes.ARRAY, desc: 'The vertex array (x, y, z).', def: null },
+		{ name: 'normals', dt: core.datatypes.ARRAY, desc: 'The normal array (x, y, z).', def: null },
+		{ name: 'colors', dt: core.datatypes.ARRAY, desc: 'The vertex color array (r, g, b, a).', def: null },
+		{ name: 'uv0', dt: core.datatypes.ARRAY, desc: 'The first UV coord array (x, y).', def: null },
+		{ name: 'uv1', dt: core.datatypes.ARRAY, desc: 'The second UV coord array (x, y).', def: null },
+		{ name: 'uv2', dt: core.datatypes.ARRAY, desc: 'The third UV coord array (x, y).', def: null },
+		{ name: 'uv3', dt: core.datatypes.ARRAY, desc: 'The forth UV coord array (x, y).', def: null },
+		{ name: 'index', dt: core.datatypes.ARRAY, desc: 'The index buffer (depends on primitive type).', def: null }
 	];
 	
 	this.output_slots = [
