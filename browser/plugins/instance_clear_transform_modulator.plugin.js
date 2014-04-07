@@ -3,22 +3,13 @@ E2.p = E2.plugins["instance_clear_transform_modulator"] = function(core, node)
 	this.desc = 'Clear or add user transforms to every instance in the supplied scene. This plugin must be applied before any subsequent transformation of instanced scenes.';
 	
 	this.input_slots = [ 
-		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'The scene to to clear the transform of instances in.' },
+		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'The scene to to clear the transform of instances in.', def: null },
 		{ name: 'driver', dt: core.datatypes.FLOAT, desc: 'Since the instancing plugins do not regenerate the scene every frame, this plugin needs to be driven by another plugin delivering continous output, like a Clock. If the driver slot is not connected to a plugin delivering continous output, subsequent transforms will effectively be accumulative.' }
 	];
 	
 	this.output_slots = [
 		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'The modified scene.' }
 	];
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input)
-	{
-		if(slot.index === 0)
-			this.scene = null;
-	}
 };
 
 E2.p.prototype.update_input = function(slot, data)
@@ -66,7 +57,5 @@ E2.p.prototype.update_output = function(slot)
 E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
-	{
 		this.scene = null;
-	}
 };

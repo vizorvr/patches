@@ -3,7 +3,7 @@ E2.p = E2.plugins["data_info_display"] = function(core, node)
 	this.desc = 'Displays metrics about the input value and its type.';
 	
 	this.input_slots = [ 
-		{ name: 'any', dt: core.datatypes.ANY, desc: 'Input value to be analyzed.' }
+		{ name: 'any', dt: core.datatypes.ANY, desc: 'Input value to be analyzed.', def: null }
 	];
 	
 	this.output_slots = [];
@@ -20,12 +20,6 @@ E2.p.prototype.create_ui = function()
 	this.update_value(null);
 	
 	return this.label;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on)
-		this.update_value(null);
 };
 
 E2.p.prototype.update_input = function(slot, data)
