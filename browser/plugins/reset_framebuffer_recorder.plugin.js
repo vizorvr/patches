@@ -15,19 +15,10 @@ E2.p.prototype.reset = function()
 {
 };
 
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on)
-	{
-		if(slot.index === 0)
-			this.clear = false;
-	}
-};
-
 E2.p.prototype.update_input = function(slot, data)
 {
-	if(slot.index === 0 && data)
-		this.clear = true;
+	if(slot.index === 0)
+		this.clear = data;
 };
 
 E2.p.prototype.update_state = function()

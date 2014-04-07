@@ -3,7 +3,7 @@ E2.p = E2.plugins["parse_json_modulator"] = function(core, node)
 	this.desc = 'Emits an object representation of the supplied JSON string.';
 	
 	this.input_slots = [
-		{ name: 'json', dt: core.datatypes.TEXT, desc: 'Input string to be parsed.' }
+		{ name: 'json', dt: core.datatypes.TEXT, desc: 'Input string to be parsed.', def: null }
 	];
 	
 	this.output_slots = [
@@ -18,6 +18,12 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.update_input = function(slot, data)
 {
+	if(!data)
+	{
+		this.obj = {};
+		return;
+	}
+	
 	try
 	{
 		this.obj = JSON.parse(data);
