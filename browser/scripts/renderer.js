@@ -237,6 +237,14 @@ function Renderer(canvas_id, core)
 	document.addEventListener('fullscreenchange', this.on_fullscreen_change(this));
 	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change(this));
 	document.addEventListener('mozfullscreenchange', this.on_fullscreen_change(this));
+	
+	// Constants, to cut down on wasted objects in slot definitions.
+	this.camera_screenspace = new Camera(this.context);
+	this.color_white = new Color(1, 1, 1);
+	this.color_black = new Color(0, 0, 0);
+	this.matrix_identity = mat4.create();
+	
+	mat4.identity(this.matrix_identity);
 }
 
 Renderer.blend_mode = 
