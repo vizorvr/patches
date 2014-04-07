@@ -3,11 +3,11 @@ E2.p = E2.plugins["video_player"] = function(core, node)
 	this.desc = 'Play a video stream. Playback loops by default.';
 	
 	this.input_slots = [ 
-		{ name: 'video', dt: core.datatypes.VIDEO, desc: 'The video stream to play.' },
+		{ name: 'video', dt: core.datatypes.VIDEO, desc: 'The video stream to play.', def: null },
 		{ name: 'play', dt: core.datatypes.BOOL, desc: 'Send true to start playback and false to stop.', def: false },
 		{ name: 'muted', dt: core.datatypes.BOOL, desc: 'Is audio muted?', def: true },
 		{ name: 'volume', dt: core.datatypes.FLOAT, desc: 'Set playback volume.', lo: 0.0, hi: 0.0, def: 0.5 },
-		{ name: 'time', dt: core.datatypes.FLOAT, desc: 'Set playback time.' }
+		{ name: 'time', dt: core.datatypes.FLOAT, desc: 'Set playback time.', def: 0.0 }
 	];
 	
 	this.output_slots = [

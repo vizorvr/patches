@@ -3,12 +3,12 @@ E2.p = E2.plugins["vector_add"] = function(core, node)
 	this.desc = 'Adds the X, Y and Z components of the supplied vectors and emits the result.';
 	
 	this.input_slots = [ 
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The first operand.', def: '0, 0, 0' }, 
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The second operand.', def: '0, 0, 0' } 
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The first operand.', def: core.renderer.vector_origin }, 
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The second operand.', def: core.renderer.vector_origin } 
 	];
 	
 	this.output_slots = [
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Emits Fx + Sx, Fy + Sy, Fz + Sz.', def: '0, 0, 0' }
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Emits Fx + Sx, Fy + Sy, Fz + Sz.', def: core.renderer.vector_origin }
 	];
 };
 

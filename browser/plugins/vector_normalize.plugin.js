@@ -3,11 +3,11 @@ E2.p = E2.plugins["vector_normalize"] = function(core, node)
 	this.desc = 'Emit a normalized version of the supplied vector with a magnitude of 1.';
 	
 	this.input_slots = [
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The input vector to be normalised.', def: '0, 0, 0' }
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The input vector to be normalised.', def: core.renderer.vector_origin }
 	];
 	
 	this.output_slots = [
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Emits the normalised input vector.', def: '0, 0, 0' }
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Emits the normalised input vector.', def: core.renderer.vector_origin }
 	];
 };
 

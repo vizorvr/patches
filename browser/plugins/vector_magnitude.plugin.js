@@ -3,11 +3,11 @@ E2.p = E2.plugins["vector_magnitude"] = function(core, node)
 	this.desc = 'Emits the magnitude (length) of the supplied vector.';
 	
 	this.input_slots = [
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Input vector to compute the length of.', def: '0, 0, 0' }
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Input vector to compute the length of.', def: core.renderer.vector_origin }
 	];
 	
 	this.output_slots = [
-		{ name: 'mag', dt: core.datatypes.FLOAT, desc: 'Emits the magnitude of the input vector.', def: 0 }
+		{ name: 'mag', dt: core.datatypes.FLOAT, desc: 'Emits the magnitude of the input vector.', def: 0.0 }
 	];
 };
 

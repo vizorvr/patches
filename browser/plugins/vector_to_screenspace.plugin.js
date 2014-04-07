@@ -3,12 +3,12 @@ E2.p = E2.plugins["vector_to_screenspace"] = function(core, node)
 	this.desc = 'Transform a vector from world to screenspace given a specified camera.';
 	
 	this.input_slots = [ 
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Input vector (in worldspace) to transform.', def: '0, 0, 0' },
-		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'Camera to use for transformation.', def: 'Identity' } 
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Input vector (in worldspace) to transform.', def: core.renderer.vector_origin },
+		{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'Camera to use for transformation.', def: core.renderer.camera_screenspace } 
 	];
 	
 	this.output_slots = [
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Emits the transformed input vector.', def: '0, 0, 0' }
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Emits the transformed input vector.', def: core.renderer.vector_origin }
 	];
 };
 
