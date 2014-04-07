@@ -5,7 +5,7 @@ E2.p = E2.plugins["material_texture_modulator"] = function(core, node)
 	this.input_slots = [ 
 		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.', def: core.renderer.material_default },
 		{ name: 'type', dt: core.datatypes.FLOAT, desc: 'The type of texture to use the supplied <b>texture</b> as. See also Generators/Values/Texture type.', def: Material.texture_type.DIFFUSE_COLOR },
-		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'A texture.', def: null }
+		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'A texture.', def: core.renderer.default_tex }
 	];
 	
 	this.output_slots = [
