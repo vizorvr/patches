@@ -1499,7 +1499,19 @@ function Application() {
 				if(slot.def === null)
 					txt += 'Nothing';
 				else
-					txt += JSON.stringify(slot.def);
+				{
+					var cn = slot.def.constructor.name;
+					
+					if(cn === 'Texture')
+					{
+						txt += 'Texture';
+						
+						if(slot.def.image && slot.def.image.src)
+							txt += ' (' + slot.def.image.src + ')';
+					}
+					else
+						txt += JSON.stringify(slot.def);
+				}
 			}
 			
 			txt += '<br /><br />';
