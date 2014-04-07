@@ -13,7 +13,8 @@ E2.p = E2.plugins["osc_receiver"] = function(core, node)
 
 E2.p.prototype.play = function()
 {
-	var self = this
+	var self = this;
+	
 	OscProxy.listen('*', function(address, message)
 	{
 		self.updated = true;
