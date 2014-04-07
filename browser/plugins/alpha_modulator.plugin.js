@@ -3,8 +3,8 @@ E2.p = E2.plugins["alpha_modulator"] = function(core, node)
 	this.desc = 'Changes the alpha component of the supplied <b>color</b> to the supplied <b>alpha</b>.';
 	
 	this.input_slots = [ 
-		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Input color with any alpha value', def: new Color(1, 1, 1) },
-		{ name: 'alpha', dt: core.datatypes.FLOAT, desc: 'Replacement alpha value', lo: 0, hi: 1, def: 1 } 
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Input color with any alpha value', def: core.renderer.color_white },
+		{ name: 'alpha', dt: core.datatypes.FLOAT, desc: 'Replacement alpha value', lo: 0, hi: 1, def: 1.0 } 
 	];
 	
 	this.output_slots = [
