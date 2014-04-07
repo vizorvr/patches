@@ -4,15 +4,16 @@ E2.p = E2.plugins["instance_texture_modulator"] = function(core, node)
 	
 	this.input_slots = [ 
 		{ name: 'count', dt: core.datatypes.FLOAT, desc: 'The number of instances to create.', lo: 0, def: 1 },
-		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The mesh to instantiate.' },
-		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The instantiation parameter texture map.' },
-		{ name: 'scale', dt: core.datatypes.VECTOR, desc: 'The scale of the generated instance map.', def: '1, 1, 1' }
+		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The mesh to instantiate.', def: null },
+		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The instantiation parameter texture map.', def: core.renderer.default_tex },
+		{ name: 'scale', dt: core.datatypes.VECTOR, desc: 'The scale of the generated instance map.', def: core.renderer.vector_unity }
 	];
 	
 	this.output_slots = [
 		{ name: 'scene', dt: core.datatypes.SCENE, desc: 'Scene representing <b>count</b> instances.' }
 	];
 
+	this.core = core;
 	this.gl = core.renderer.context;
 };
 
@@ -24,8 +25,11 @@ E2.p.prototype.update_input = function(slot, data)
 	{
 		var s = this.scene = new Scene(this.gl, null, null);
 		
-		s.meshes = [data];
-		s.vertex_count = data.vertex_count;
+		if(data)
+		{
+			s.meshes = [data];
+			s.vertex_count = data.vertex_count;
+		}
 	}
 	else if(slot.index === 2)
 		this.texture_sampler = data.get_sampler();
@@ -37,7 +41,7 @@ E2.p.prototype.update_state = function()
 {
 	var s = this.scene;
 	
-	if(this.texture_sampler)
+	if(this.texture_sampler && s.meshes.length > 0)
 	{
 		var m = s.meshes[0];
 		var inst = [];
@@ -81,7 +85,7 @@ E2.p.prototype.state_changed = function(ui)
 	{
 		this.scene = new Scene(this.gl, null, null);
 		this.count = 1;
-		this.texture = null;
+		this.texture = this.core.renderer.default_tex;
 		this.scale = [1, 1, 1];
 	}
 };
