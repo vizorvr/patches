@@ -3,14 +3,14 @@ E2.p = E2.plugins["convert_hsla_color_modulator"] = function(core, node)
 	this.desc = 'Create an RGBA color from hue, saturation and luminosity and alpha.';
 	
 	this.input_slots = [
-		 { name: 'hue', dt: core.datatypes.FLOAT, desc: 'The hue of the output color.', lo: 0, hi: 1, def: 1 },
-		 { name: 'saturation', dt: core.datatypes.FLOAT, desc: 'The saturation (color intensity) of the output color.', lo: 0, hi: 1, def: 1 },
-		 { name: 'luminosity', dt: core.datatypes.FLOAT, desc: 'The luminosity (brightness) of the output color.', lo: 0, hi: 1, def: 1 },
-		 { name: 'alpha', dt: core.datatypes.FLOAT, desc: 'The alpha of the output color.', lo: 0, hi: 1, def: 1 }
+		 { name: 'hue', dt: core.datatypes.FLOAT, desc: 'The hue of the output color.', lo: 0, hi: 1, def: 1.0 },
+		 { name: 'saturation', dt: core.datatypes.FLOAT, desc: 'The saturation (color intensity) of the output color.', lo: 0, hi: 1, def: 1.0 },
+		 { name: 'luminosity', dt: core.datatypes.FLOAT, desc: 'The luminosity (brightness) of the output color.', lo: 0, hi: 1, def: 1.0 },
+		 { name: 'alpha', dt: core.datatypes.FLOAT, desc: 'The alpha of the output color.', lo: 0, hi: 1, def: 1.0 }
 	];
 	
 	this.output_slots = [ 
-		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The corresponding RGBA color.', def: 'White' } 
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The corresponding RGBA color.', def: core.renderer.color_white } 
 	];
 };
 

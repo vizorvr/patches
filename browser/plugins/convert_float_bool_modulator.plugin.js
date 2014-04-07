@@ -3,7 +3,7 @@ E2.p = E2.plugins["convert_float_bool_modulator"] = function(core, node)
 	this.desc = 'Convert a float to a boolean. 0 is false, everything else is true.';
 	
 	this.input_slots = [
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input float to be converted.', def: '0' } 
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input float to be converted.', def: 0.0 } 
 	];
 	
 	this.output_slots = [ 
