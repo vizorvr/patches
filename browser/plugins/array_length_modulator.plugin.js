@@ -3,7 +3,7 @@ E2.p = E2.plugins["array_length_modulator"] = function(core, node)
 	this.desc = 'Gets the length of an array (in bytes).';
 	
 	this.input_slots = [
-		{ name: 'array', dt: core.datatypes.ARRAY, desc: 'The array to obtain the length of.' },
+		{ name: 'array', dt: core.datatypes.ARRAY, desc: 'The array to obtain the length of.', def: null },
 	];
 	
 	this.output_slots = [ 
