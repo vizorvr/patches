@@ -243,6 +243,7 @@ function Renderer(canvas_id, core)
 	this.color_white = new Color(1, 1, 1);
 	this.color_black = new Color(0, 0, 0);
 	this.vector_origin = [0, 0, 0];
+	this.vector_unity = [1, 1, 1];
 	this.matrix_identity = mat4.create();
 	
 	mat4.identity(this.matrix_identity);
