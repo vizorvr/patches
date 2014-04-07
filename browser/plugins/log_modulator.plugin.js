@@ -3,11 +3,11 @@ E2.p = E2.plugins["log_modulator"] = function(core, node)
 	this.desc = 'Log(x).';
 	
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value.', def: 0 }
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value.', def: 0.0 }
 	];
 	
 	this.output_slots = [
-		{ name: 'result', dt: core.datatypes.FLOAT, desc: 'log(<b>value</b>).', def: 0 }
+		{ name: 'result', dt: core.datatypes.FLOAT, desc: 'log(<b>value</b>).', def: 0.0 }
 	];
 };
 
