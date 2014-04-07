@@ -33,7 +33,7 @@ function clone_recursive(from, to)
 
     for (var name in from)
     {
-        to[name] = typeof to[name] == "undefined" ? extend(from[name], null) : to[name];
+        to[name] = typeof to[name] == "undefined" ? clone_recursive(from[name], null) : to[name];
     }
 
     return to;
