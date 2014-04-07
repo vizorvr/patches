@@ -50,20 +50,6 @@ E2.p.prototype.create_ui = function()
 	return inp;
 };
 
-E2.p.prototype.update_input = function(slot, data)
-{
-	if(slot.index === 0)
-	{
-		if(this.array !== data)
-		{
-			this.array = data;
-			this.update_view();
-		}
-	}
-	else
-		this.index = Math.floor(data);
-};
-
 E2.p.prototype.update_view = function()
 {
 	if(!this.array)
@@ -82,6 +68,20 @@ E2.p.prototype.update_view = function()
 			 dv.getUint32,
 			 dv.getFloat32][this.state.datatype].bind(dv);
 	this.stride = [1, 1, 2, 2, 4, 4, 4][this.state.datatype];
+};
+
+E2.p.prototype.update_input = function(slot, data)
+{
+	if(slot.index === 0)
+	{
+		if(this.array !== data)
+		{
+			this.array = data;
+			this.update_view();
+		}
+	}
+	else
+		this.index = Math.floor(data);
 };
 
 E2.p.prototype.update_state = function()
