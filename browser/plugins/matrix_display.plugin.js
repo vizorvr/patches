@@ -3,7 +3,7 @@ E2.p = E2.plugins["matrix_display"] = function(core, node)
 	this.desc = 'Displays the supplied matrix as a 4x4 grid of values.';
 	
 	this.input_slots = [ 
-		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The input matrix to be displayed.' }
+		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The input matrix to be displayed.', def: null }
 	];
 	
 	this.output_slots = [];
@@ -43,14 +43,14 @@ E2.p.prototype.create_ui = function()
 	return table;
 };
 
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on)
-		this.reset();
-};
-
 E2.p.prototype.update_input = function(slot, data)
 {
+	if(!data)
+	{
+		this.reset();
+		return;
+	}
+	
 	var ofs = 0;
 	
 	for(var i = 0; i < 16; i++)
