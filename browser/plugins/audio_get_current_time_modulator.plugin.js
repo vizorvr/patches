@@ -3,7 +3,7 @@ E2.p = E2.plugins["audio_get_current_time_modulator"] = function(core, node)
 	this.desc = 'Get the current playback time of the supplied audio sample in seconds.';
 	
 	this.input_slots = [ 
-		{ name: 'audio', dt: core.datatypes.AUDIO, desc: 'Input audio sample.' }
+		{ name: 'audio', dt: core.datatypes.AUDIO, desc: 'Input audio sample.', def: null }
 	];
 	
 	this.output_slots = [
