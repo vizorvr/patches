@@ -38,6 +38,12 @@ E2.p.prototype.update_input = function(slot, data)
 	{
 		this.material = data;
 		
+		if(!data)
+		{
+			this.material_caps = '';
+			return;	
+		}
+		
 		var caps = Material.get_caps_hash(null, data);
 		
 		if(this.material_caps !== caps)
