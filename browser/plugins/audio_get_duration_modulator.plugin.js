@@ -18,7 +18,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	this.duration = data.duration;
+	this.duration = data ? data.duration : 0.0;
 };	
 
 E2.p.prototype.update_output = function(slot)
