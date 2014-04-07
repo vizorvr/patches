@@ -42,7 +42,7 @@ Graph.prototype.unregister_node = function(n)
 	this.nodes.remove(n);
 	
 	if(this.nuid_lut)
-		this.nuid_lut.remove(n);
+		delete this.nuid_lut[n.uid];
 	
 	if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
 		this.roots.remove(n);
@@ -172,6 +172,15 @@ Graph.prototype.destroy_connection = function(c)
 
 Graph.prototype.create_ui = function()
 {
+	this.nuid_lut = [];
+
+	for(var i = 0, len = this.nodes.length; i < len; i++)
+	{
+		var n = this.nodes[i];
+		
+		this.nuid_lut[n.uid] = n;
+	}
+
 	this.enum_all(function(n)
 	{
 		n.create_ui();
@@ -184,21 +193,12 @@ Graph.prototype.create_ui = function()
 		c.create_ui();
 		c.ui.resolve_slot_divs();
 	});
-	
-	this.nuid_lut = [];
-	
-	for(var i = 0, len = this.nodes.length; i < len; i++)
-	{
-		var n = this.nodes[i];
-		
-		this.nuid_lut[n.uid] = n;
-	}
 };
 
 Graph.prototype.destroy_ui = function()
 {
-	delete this.nuid_lut;
 	this.enum_all(function(n) { n.destroy_ui(); }, function(c) { c.destroy_ui(); });
+	delete this.nuid_lut;
 };
 
 Graph.prototype.find_connections_from = function(node, slot)
