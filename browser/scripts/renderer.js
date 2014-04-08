@@ -196,7 +196,6 @@ TextureCache.prototype.count = function()
 	}
 		
 	return c;
-
 };
 
 function Renderer(canvas_id, core)
@@ -237,6 +236,18 @@ function Renderer(canvas_id, core)
 	document.addEventListener('fullscreenchange', this.on_fullscreen_change(this));
 	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change(this));
 	document.addEventListener('mozfullscreenchange', this.on_fullscreen_change(this));
+	
+	// Constants, to cut down on wasted objects in slot definitions.
+	this.camera_screenspace = new Camera(this.context);
+	this.light_default = new Light();
+	this.material_default = new Material();
+	this.color_white = new Color(1.0, 1.0, 1.0);
+	this.color_black = new Color(0.0, 0.0, 0.0);
+	this.vector_origin = [0.0, 0.0, 0.0];
+	this.vector_unity = [1.0, 1.0, 1.0];
+	this.matrix_identity = mat4.create();
+	
+	mat4.identity(this.matrix_identity);
 }
 
 Renderer.blend_mode = 
@@ -527,7 +538,7 @@ function Material(gl, t_cache, data, base_path)
 	this.depth_test = true;
 	this.depth_write = true;
 	this.depth_func = Material.depth_func.LEQUAL;
-	this.alpha_clip = true;
+	this.alpha_clip = false;
 	this.shinyness = 1.0;
 	this.double_sided = false;
 	this.blend_mode = Renderer.blend_mode.NORMAL;

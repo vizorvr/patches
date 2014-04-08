@@ -3,10 +3,10 @@ E2.p = E2.plugins["texture_diffuse_shader"] = function(core, node)
 	this.desc = 'Simple shader for rendering meshes with one texture modulated by a diffuse color.';
 	
 	this.input_slots = [
-		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.' },
-		 { name: 'uv offset', dt: core.datatypes.VECTOR, desc: 'UV translation. Only the x and y components are used with the z axis disregarded.' },
-		 { name: 'uv scale', dt: core.datatypes.VECTOR, desc: 'UV scale. Only the x and y components are used with the z axis factor disregarded.' },
-		 { name: 'uv rotation', dt: core.datatypes.FLOAT, desc: 'UV rotation in degrees.' },
+		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.', def: null },
+		 { name: 'uv offset', dt: core.datatypes.VECTOR, desc: 'UV translation. Only the x and y components are used with the z axis disregarded.', def: [0.0, 0.0] },
+		 { name: 'uv scale', dt: core.datatypes.VECTOR, desc: 'UV scale. Only the x and y components are used with the z axis factor disregarded.', def: [1.0, 1.0] },
+		 { name: 'uv rotation', dt: core.datatypes.FLOAT, desc: 'UV rotation in degrees.', def: 0.0 },
 	];
 	
 	this.output_slots = [ 
@@ -146,12 +146,6 @@ E2.p.prototype.update_input = function(slot, data)
 		this.uv_scale = new Float32Array([data[0], data[1]]);
 	else if(slot.index === 3)
 		this.uv_rotation = ((data % 360.0) / 180.0) * Math.PI;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-		this.material = null;
 };
 
 E2.p.prototype.update_output = function(slot)

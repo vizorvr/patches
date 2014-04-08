@@ -3,7 +3,7 @@ E2.p = E2.plugins["color_display"] = function(core, node)
 	this.desc = 'Displays the supplied color in a rectangle on the plugin.';
 	
 	this.input_slots = [ 
-		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Input color to be displayed.', def: 'White' }
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'Input color to be displayed.', def: core.renderer.color_white }
 	];
 	
 	this.output_slots = [];
@@ -11,32 +11,42 @@ E2.p = E2.plugins["color_display"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.update_value(1.0, 1.0, 1.0);
+	this.color = new Color(1, 1, 1, 1);
+};
+
+E2.p.prototype.css = function()
+{
+	var obj = {}
+	var c = this.color.rgba;
+	
+	obj['background-color'] = 'rgb(' + Math.round(c[0] * 255.0) + ', ' + Math.round(c[1] * 255.0) + ', ' + Math.round(c[2] * 255.0) + ')';
+	obj['opacity'] = '' + c[3];
+	
+	return obj;
 };
 
 E2.p.prototype.create_ui = function()
 {
+	var bg = make('span');
 	this.label = make('span');
 
+	bg.css({ 'background': 'url(\'images/checkerboard.png\')', 'border': '1px #aaa solid' });
 	this.label.html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;') 
-	this.label.css({ 'background-color': '#fff', 'border': '1px #aaa solid' });
+	this.label.css(this.css());
 	
-	return this.label;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on)
-		this.update_value(0);
+	bg.append(this.label);
+	return bg;
 };
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	this.update_value(data.rgba[0], data.rgba[1], data.rgba[2]);
-};
+	var c = this.color.rgba;
+	
+	c[0] = data.rgba[0];
+	c[1] = data.rgba[1];
+	c[2] = data.rgba[2];
+	c[3] = data.rgba[3];
 
-E2.p.prototype.update_value = function(r, g, b)
-{
 	if(this.label)
-		this.label.css('background-color', 'rgb(' + Math.round(r * 255.0) + ', ' + Math.round(g * 255.0) + ', ' + Math.round(b * 255.0) + ')');
+		this.label.css(this.css());
 };

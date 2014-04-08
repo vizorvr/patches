@@ -90,12 +90,8 @@
 .icon-initialise_generator { background: url('initialise-generator.png'); }
 .icon-input_proxy { background: url('input-proxy.png'); }
 .icon-instance_array_modulator { background: url('instance-array-modulator.png'); }
-.icon-instance_clear_transform_modulator { background: url('instance-clear-transform-modulator.png'); }
 .icon-instance_cube_modulator { background: url('instance-cube-modulator.png'); }
 .icon-instance_ifs_modulator { background: url('instance-ifs-modulator.png'); }
-.icon-instance_rotate_modulator { background: url('rotation-matrix.png'); }
-.icon-instance_scale_modulator { background: url('scale-matrix.png'); }
-.icon-instance_translate_modulator { background: url('translation-matrix.png'); }
 .icon-instance_texture_modulator { background: url('instance-texture-modulator.png'); }
 .icon-invert_matrix_modulator { background: url('invert-matrix-modulator.png'); }
 .icon-key_press_generator { background: url('key-press-generator.png'); }

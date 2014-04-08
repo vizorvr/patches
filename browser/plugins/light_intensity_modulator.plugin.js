@@ -3,8 +3,8 @@ E2.p = E2.plugins["light_intensity_modulator"] = function(core, node)
 	this.desc = 'Sets the intensity of the light source to a given factor.';
 	
 	this.input_slots = [ 
-		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light.' },
-		{ name: 'intensity', dt: core.datatypes.FLOAT, desc: 'The light intensity.', def: 1, lo: 0 } 
+		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light.', def: core.renderer.light_default },
+		{ name: 'intensity', dt: core.datatypes.FLOAT, desc: 'The light intensity.', def: 1.0, lo: 0 } 
 	];
 	
 	this.output_slots = [
@@ -18,12 +18,6 @@ E2.p.prototype.update_input = function(slot, data)
 		this.light = data;
 	else
 		this.intensity = data < 0.0 ? 0.0 : data;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-		this.light = new Light();
 };
 
 E2.p.prototype.update_state = function()

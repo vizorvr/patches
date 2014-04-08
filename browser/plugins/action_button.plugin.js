@@ -5,7 +5,7 @@ E2.p = E2.plugins["action_button"] = function(core, node)
 	this.input_slots = [];
 	
 	this.output_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'True once each time the button is clicked.' }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'True once each time the button is clicked.', def: false }
 	];
 	
 	this.node = node;

@@ -3,12 +3,12 @@ E2.p = E2.plugins["vector_cross"] = function(core, node)
 	this.desc = 'Emits the cross products of the two supplied vectors.';
 	
 	this.input_slots = [ 
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The first operand.', def: '0, 0, 0' }, 
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The second operand.', def: '0, 0, 0' } 
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The first operand.', def: core.renderer.vector_origin }, 
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The second operand.', def: core.renderer.vector_origin } 
 	];
 	
 	this.output_slots = [
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Emits F cross S.', def: '0.0, 0.0, 0.0' }
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Emits F cross S.', def: core.renderer.vector_origin }
 	];
 };
 

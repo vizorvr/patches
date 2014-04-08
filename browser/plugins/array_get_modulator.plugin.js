@@ -3,13 +3,13 @@ E2.p = E2.plugins["array_get_modulator"] = function(core, node)
 	this.desc = 'Gets an item value from an array.';
 	
 	this.input_slots = [
-		{ name: 'array', dt: core.datatypes.ARRAY, desc: 'The array to obtain a value from.' },
+		{ name: 'array', dt: core.datatypes.ARRAY, desc: 'The array to obtain a value from.', def: null },
 		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'The index of the item to get.', def: 0 }
 	];
 	
 	this.output_slots = [ 
 		{ name: 'array', dt: core.datatypes.ARRAY, desc: 'The modified array.' },
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The value of the chosen item.' }
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The value of the chosen item.', def: 0 }
 	];
 
 	this.node = node;
@@ -27,10 +27,13 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	if(slot.index === 0 && this.array !== data)
+	if(slot.index === 0)
 	{
-		this.array = data;
-		this.update_view();
+		if(this.array !== data)
+		{
+			this.array = data;
+			this.update_view();
+		}
 	}
 	else
 		this.index = Math.floor(data);
@@ -38,6 +41,12 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_view = function()
 {
+	if(!this.array)
+	{
+		this.dv = null;
+		return;
+	}
+	
 	var dv = this.dv = new DataView(this.array);
 
 	this.accessor = [dv.getInt8,
@@ -52,8 +61,11 @@ E2.p.prototype.update_view = function()
 E2.p.prototype.update_state = function()
 {
 	if(!this.dv)
+	{
+		this.value = 0;
 		return;
-
+	}
+	
 	var off = this.index * this.array.stride;
 	
 	if(off < 0 || off >= this.array.byteLength)

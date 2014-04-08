@@ -5,7 +5,7 @@ E2.p = E2.plugins["url_video_generator"] = function(core, node)
 	this.desc = 'Load a Ogg/Theora video from an URL.';
 	
 	this.input_slots = [
-		{ name: 'url', dt: core.datatypes.TEXT, desc: 'Use this to load from a URL supplied as a string.' }
+		{ name: 'url', dt: core.datatypes.TEXT, desc: 'Use this to load from a URL supplied as a string.', def: URL_VIDEO_ROOT }
 	];
 	
 	this.output_slots = [ 

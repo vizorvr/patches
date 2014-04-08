@@ -3,7 +3,7 @@ E2.p = E2.plugins["text_display"] = function(core, node)
 	this.desc = 'Display the supplied text value on the plugin surface.';
 	
 	this.input_slots = [ 
-		{ name: 'text', dt: core.datatypes.TEXT, desc: 'Input text to be displayed.' }
+		{ name: 'text', dt: core.datatypes.TEXT, desc: 'Input text to be displayed.', def: '' }
 	];
 	
 	this.output_slots = [];

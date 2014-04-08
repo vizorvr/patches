@@ -3,7 +3,7 @@ E2.p = E2.plugins["array_set_as_modulator"] = function(core, node)
 	this.desc = 'Sets an item value in an array.';
 	
 	this.input_slots = [
-		{ name: 'array', dt: core.datatypes.ARRAY, desc: 'The array to set a value in.' },
+		{ name: 'array', dt: core.datatypes.ARRAY, desc: 'The array to set a value in.', def: null },
 		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'The index of the item to set.', def: 0 },
 		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The value to set the item to.', def: 0 }
 	];
@@ -20,7 +20,7 @@ E2.p = E2.plugins["array_set_as_modulator"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.array = new ArrayBuffer(0);
+	this.array = null;
 	this.dv = null;
 	this.accessor = null;
 	this.index = 0;
@@ -53,20 +53,30 @@ E2.p.prototype.create_ui = function()
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	if(slot.index === 0 && this.array !== data)
+	if(slot.index === 0)
 	{
-		this.array = data;
-		this.update_view();
+		if(this.array !== data)
+		{
+			this.array = data;
+			this.update_view();
+		}
 	}
 	else if(slot.index === 1)
 		this.index = Math.floor(data);
-	else if(slot.index === 2)
+	else
 		this.value = this.state.datatype === 6 ? data : Math.floor(data);
 };
 
 E2.p.prototype.update_view = function()
 {
+	if(!this.array)
+	{
+		this.dv = null;
+		return;
+	}
+	
 	var dv = this.dv = new DataView(this.array);
+	this.stride = [1, 1, 2, 2, 4, 4, 4][this.state.datatype];
 
 	this.accessor = [dv.setInt8, 
 			 dv.setUint8,
@@ -75,7 +85,6 @@ E2.p.prototype.update_view = function()
 			 dv.setInt32,
 			 dv.setUint32,
 			 dv.setFloat32][this.state.datatype].bind(dv);
-	this.stride = [1, 1, 2, 2, 4, 4, 4][this.state.datatype];
 };
 
 E2.p.prototype.update_state = function()
@@ -88,7 +97,12 @@ E2.p.prototype.update_state = function()
 	if(off < 0 || off >= this.array.byteLength)
 		return;
 	
-	this.accessor(off, this.value);
+	var dt = this.state.datatype;
+	
+	if(dt < 2)
+		this.accessor(off, Math.floor(this.value));
+	else
+		this.accessor(off, dt === 6 ? this.value : Math.floor(this.value), true);
 };
 
 E2.p.prototype.update_output = function(slot)

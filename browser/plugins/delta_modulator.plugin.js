@@ -4,12 +4,12 @@ E2.p = E2.plugins["delta_modulator"] = function(core, node)
 	
 	this.input_slots = 
 	[ 
-		{ name: 'reset', dt: core.datatypes.BOOL, desc: 'Send true to this slot to clear the internal state.' },
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value.' }
+		{ name: 'reset', dt: core.datatypes.BOOL, desc: 'Send true to this slot to clear the internal state.', def: false },
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value.', def: 0.0 }
 	];
 	
 	this.output_slots = [
-		{ name: 'delta', dt: core.datatypes.FLOAT, desc: 'The delta value from the last frame update.' }
+		{ name: 'delta', dt: core.datatypes.FLOAT, desc: 'The delta value from the last frame update.', def: 0.0 }
 	];
 };
 

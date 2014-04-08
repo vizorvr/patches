@@ -3,11 +3,11 @@ E2.p = E2.plugins["perspective_camera"] = function(core, node)
 	this.desc = 'Create a new perspective (3D) camera.';
 	
 	this.input_slots = [
-		{ name: 'FOV', dt: core.datatypes.FLOAT, desc: 'Field of view in degrees.', def: 45 },
+		{ name: 'FOV', dt: core.datatypes.FLOAT, desc: 'Field of view in degrees.', def: 45.0 },
 		{ name: 'near', dt: core.datatypes.FLOAT, desc: 'Depth of the near clipping plane.', def: 0.01 },
-		{ name: 'far', dt: core.datatypes.FLOAT, desc: 'Depth of the far clipping plane.', def: 1000 },
-		{ name: 'position', dt: core.datatypes.VECTOR, desc: 'Camera position.', def: '0, 0, -2' },
-		{ name: 'target', dt: core.datatypes.VECTOR, desc: 'Camera target.', def: '0, 0, 0' }
+		{ name: 'far', dt: core.datatypes.FLOAT, desc: 'Depth of the far clipping plane.', def: 1000.0 },
+		{ name: 'position', dt: core.datatypes.VECTOR, desc: 'Camera position.', def: [0, 0, -2] },
+		{ name: 'target', dt: core.datatypes.VECTOR, desc: 'Camera target.', def: core.renderer.vector_origin }
 	];
 	
 	this.output_slots = [

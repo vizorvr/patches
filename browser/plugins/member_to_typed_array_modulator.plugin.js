@@ -3,8 +3,8 @@ E2.p = E2.plugins["member_to_typed_array_modulator"] = function(core, node)
 	this.desc = 'Emits an typed array representation of specified member of the supplied object.';
 	
 	this.input_slots = [
-		{ name: 'object', dt: core.datatypes.OBJECT, desc: 'Input object.' },
-		{ name: 'member', dt: core.datatypes.TEXT, desc: 'Name of the member to be converted.' }
+		{ name: 'object', dt: core.datatypes.OBJECT, desc: 'Input object.', def: null },
+		{ name: 'member', dt: core.datatypes.TEXT, desc: 'Name of the member to be converted.', def: null }
 	];
 	
 	this.output_slots = [

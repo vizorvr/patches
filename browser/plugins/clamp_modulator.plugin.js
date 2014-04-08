@@ -3,9 +3,9 @@ E2.p = E2.plugins["clamp_modulator"] = function(core, node)
 	this.desc = 'Emit a float <b>value</b> no less than <b>min</b> and no greater than <b>max</b>.';
 	
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Value to be clipped.', def: 0 },
-		{ name: 'min', dt: core.datatypes.FLOAT, desc: 'Minimum output value.', def: 0 },
-		{ name: 'max', dt: core.datatypes.FLOAT, desc: 'Maximum output value.', def: 1 } 
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Value to be clipped.', def: 0.0 },
+		{ name: 'min', dt: core.datatypes.FLOAT, desc: 'Minimum output value.', def: 0.0 },
+		{ name: 'max', dt: core.datatypes.FLOAT, desc: 'Maximum output value.', def: 1.0 } 
 	];
 	
 	this.output_slots = [

@@ -3,7 +3,7 @@ E2.p = E2.plugins["get_matrix_modulator"] = function(core, node)
 	this.desc = 'Get matrix component.';
 	
 	this.input_slots = [ 
-		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'Matrix to get component of.' },
+		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'Matrix to get component of.', def: core.renderer.matrix_identity },
 		{ name: 'row', dt: core.datatypes.FLOAT, desc: 'Row to get.', def: 0 },
 		{ name: 'column', dt: core.datatypes.FLOAT, desc: 'Column to get.', def: 0 },
 	];
@@ -13,12 +13,6 @@ E2.p = E2.plugins["get_matrix_modulator"] = function(core, node)
 		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The value.', def: 0.0 }
 	];
 };
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-/*	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-		mat4.identity(this.matrix);*/
-};	
 
 E2.p.prototype.update_input = function(slot, data)
 {

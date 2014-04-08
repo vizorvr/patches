@@ -3,12 +3,12 @@ E2.p = E2.plugins["xor_modulator"] = function(core, node)
 	this.desc = 'Emits true when the values of the two inputs are different and false when they\'re identical.';
 	
 	this.input_slots = [ 
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The first operand.', def: 'False' },
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The second operand.', def: 'False' } 
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The first operand.', def: false },
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The second operand.', def: false } 
 	];
 	
 	this.output_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Emits true if <b>first</b> does not equal <b>second</b> and false otherwise.', def: 'False' }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Emits true if <b>first</b> does not equal <b>second</b> and false otherwise.', def: false }
 	];
 };
 

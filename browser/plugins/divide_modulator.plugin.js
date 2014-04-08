@@ -3,12 +3,12 @@ E2.p = E2.plugins["divide_modulator"] = function(core, node)
 	this.desc = 'Divides <b>value</b> by <b>scalar</b> and emits the result.';
 	
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value to be divided.', def: 0 },
-		{ name: 'scalar', dt: core.datatypes.FLOAT, desc: 'Factor to divide <b>value</b> by.', lo: '>0', def: 1 } 
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value to be divided.', def: 0.0 },
+		{ name: 'scalar', dt: core.datatypes.FLOAT, desc: 'Factor to divide <b>value</b> by.', lo: '>0', def: 1.0 } 
 	];
 	
 	this.output_slots = [
-		{ name: 'result', dt: core.datatypes.FLOAT, desc: 'Emits <b>value</b> / <b>scalar</b>.', def: 0 }
+		{ name: 'result', dt: core.datatypes.FLOAT, desc: 'Emits <b>value</b> / <b>scalar</b>.', def: 0.0 }
 	];
 };
 

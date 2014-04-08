@@ -3,7 +3,7 @@ E2.p = E2.plugins["flat_shader"] = function(core, node)
 	this.desc = 'Simple shader for rendering meshes with diffuse color only.';
 	
 	this.input_slots = [
-		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.' }
+		 { name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.', def: null }
 	];
 	
 	this.output_slots = [ 
@@ -64,12 +64,6 @@ E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
 		this.material = data;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input)
-		this.material = null;
 };
 
 E2.p.prototype.update_output = function(slot)

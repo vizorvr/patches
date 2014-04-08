@@ -3,7 +3,7 @@ E2.p = E2.plugins["material_clone_modulator"] = function(core, node)
 	this.desc = 'Makes a physical copy of the input material reference, to allow side-effect free material chain branching.';
 	
 	this.input_slots = [ 
-		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material reference.' }
+		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material reference.', def: core.renderer.material_default }
 	];
 	
 	this.output_slots = [
@@ -27,12 +27,6 @@ E2.p.prototype.update_input = function(slot, data)
 	m.diffuse_color.clone(data.diffuse_color);
 	m.textures = data.textures.slice(0);
 	m.lights = data.lights.slice(0);
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input)
-		this.material = new Material();
 };
 
 E2.p.prototype.update_output = function(slot)

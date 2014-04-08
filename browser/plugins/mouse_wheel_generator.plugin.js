@@ -5,7 +5,7 @@ E2.p = E2.plugins["mouse_wheel_generator"] = function(core, node)
 	this.input_slots = [];
 	
 	this.output_slots = [
-		{ name: 'delta', dt: core.datatypes.FLOAT, desc: 'The delta mouse wheel movement.', def: 0 }
+		{ name: 'delta', dt: core.datatypes.FLOAT, desc: 'The delta mouse wheel movement.', def: 0.0 }
 	];
 };
 

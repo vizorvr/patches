@@ -9,11 +9,11 @@ E2.p = E2.plugins["initialise_generator"] = function(core, node)
 	];
 	
 	this.core = core;
-	this.st = [true, true];
-	this.val = true;
+	this.st = [false, false];
+	this.val = false;
 };
 
-E2.p.prototype.reset = function()
+E2.p.prototype.stop = function()
 {
 	this.st[0] = this.st[1] = true;
 };

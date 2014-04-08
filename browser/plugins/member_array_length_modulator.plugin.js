@@ -3,8 +3,8 @@ E2.p = E2.plugins["member_array_length_modulator"] = function(core, node)
 	this.desc = 'Emits the length of an array member of the supplied object.';
 	
 	this.input_slots = [
-		{ name: 'object', dt: core.datatypes.OBJECT, desc: 'Input object containing an array.' },
-		{ name: 'member', dt: core.datatypes.TEXT, desc: 'Name of the array to emit the length of.' }
+		{ name: 'object', dt: core.datatypes.OBJECT, desc: 'Input object containing an array.', def: null },
+		{ name: 'member', dt: core.datatypes.TEXT, desc: 'Name of the array to emit the length of.', def: null }
 	];
 	
 	this.output_slots = [

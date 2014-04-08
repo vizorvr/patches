@@ -3,8 +3,8 @@ E2.p = E2.plugins["material_blend_mode_modulator"] = function(core, node)
 	this.desc = 'Set the blend mode.';
 	
 	this.input_slots = [ 
-		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.' },
-		{ name: 'blend mode', dt: core.datatypes.FLOAT, desc: 'Set the material blend mode.', def: 'Normal' } 
+		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.', def: core.renderer.material_default },
+		{ name: 'blend mode', dt: core.datatypes.FLOAT, desc: 'Set the material blend mode.', def: Renderer.blend_mode.NORMAL } 
 	];
 	
 	this.output_slots = [
@@ -18,12 +18,6 @@ E2.p.prototype.update_input = function(slot, data)
 		this.material = data;
 	else
 		this.blend_mode = data;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-		this.material = new Material();
 };
 
 E2.p.prototype.update_state = function()

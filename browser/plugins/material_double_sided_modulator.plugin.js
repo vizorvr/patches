@@ -3,8 +3,8 @@ E2.p = E2.plugins["material_double_sided_modulator"] = function(core, node)
 	this.desc = 'If set to true, backface culling is disabled.';
 	
 	this.input_slots = [ 
-		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.' },
-		{ name: 'double sided', dt: core.datatypes.BOOL, desc: 'Set to true to disable backface-culling.', def: 'False' } 
+		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.', def: core.renderer.material_default },
+		{ name: 'double sided', dt: core.datatypes.BOOL, desc: 'Set to true to disable backface-culling.', def: false } 
 	];
 	
 	this.output_slots = [
@@ -18,12 +18,6 @@ E2.p.prototype.update_input = function(slot, data)
 		this.material = data;
 	else
 		this.double_sided = data;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input && slot.index === 0)
-		this.material = new Material();
 };
 
 E2.p.prototype.update_state = function()

@@ -4,9 +4,9 @@ E2.p = E2.plugins["instance_cube_modulator"] = function(core, node)
 	
 	this.input_slots = [ 
 		{ name: 'count', dt: core.datatypes.VECTOR, desc: 'The cube root of the number of instances to create.', lo: 0, def: 1 },
-		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The mesh to instantiate.' },
-		{ name: 'start', dt: core.datatypes.VECTOR, desc: 'The starting position for one cube corner.', def: '0, 0, 0' },
-		{ name: 'offset', dt: core.datatypes.VECTOR, desc: 'The axis-offset for each instance.', def: '0, 0, 0' }
+		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The mesh to instantiate.', def: null },
+		{ name: 'start', dt: core.datatypes.VECTOR, desc: 'The starting position for one cube corner.', def: core.renderer.vector_origin },
+		{ name: 'offset', dt: core.datatypes.VECTOR, desc: 'The axis-offset for each instance.', def: core.renderer.vector_origin }
 	];
 	
 	this.output_slots = [
@@ -24,8 +24,11 @@ E2.p.prototype.update_input = function(slot, data)
 	{
 		var s = this.scene = new Scene(this.gl, null, null);
 		
-		s.meshes = [data];
-		s.vertex_count = data.vertex_count;
+		if(data)
+		{
+			s.meshes = [data];
+			s.vertex_count = data.vertex_count;
+		}
 	}
 	else if(slot.index === 2)
 		this.start = data;
@@ -36,6 +39,9 @@ E2.p.prototype.update_input = function(slot, data)
 E2.p.prototype.update_state = function()
 {
 	var s = this.scene;
+	
+	if(s.meshes.length < 1)
+		return;
 	
 	var m = s.meshes[0];
 	var st = this.start;

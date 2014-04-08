@@ -3,11 +3,11 @@ E2.p = E2.plugins["exp_modulator"] = function(core, node)
 	this.desc = 'Exp(x).';
 	
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value.', def: 0 }
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Input value.', def: 0.0 }
 	];
 	
 	this.output_slots = [
-		{ name: 'result', dt: core.datatypes.FLOAT, desc: 'exp(<b>value</b>).', def: 0 }
+		{ name: 'result', dt: core.datatypes.FLOAT, desc: 'exp(<b>value</b>).', def: 0.0 }
 	];
 };
 

@@ -3,11 +3,11 @@ E2.p = E2.plugins["cosine_modulator"] = function(core, node)
 	this.desc = 'Cosine oscilator. A <b>time</b> value incrementing by one unit per second will yield a 1Hz output signal.';
 	
 	this.input_slots = [
-		{ name: 'time', dt: core.datatypes.FLOAT, desc: 'Time in seconds', def: 0 }
+		{ name: 'time', dt: core.datatypes.FLOAT, desc: 'Time in seconds', def: 0.0 }
 	];
 	
 	this.output_slots = [
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Emits cos(<b>time</b> * 2pi)', def: 0 }
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Emits cos(<b>time</b> * 2pi)', def: 0.0 }
 	];
 };
 

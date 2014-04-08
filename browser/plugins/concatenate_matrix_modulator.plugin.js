@@ -3,20 +3,14 @@ E2.p = E2.plugins["concatenate_matrix_modulator"] = function(core, node)
 	this.desc = 'Combine two matrices. Order is significant.';
 	
 	this.input_slots = [ 
-		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The first matrix operand.' },
-		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The second matrix operand.' }
+		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The first matrix operand.', def: core.renderer.matrix_identity },
+		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The second matrix operand.', def: core.renderer.matrix_identity }
 	];
 	
 	this.output_slots = [
 		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'Emits <b>first</b> * <b>second</b>.' }
 	];
 };
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && slot.type === E2.slot_type.input)
-		mat4.identity(this.matrices[slot.index]);
-};	
 
 E2.p.prototype.update_input = function(slot, data)
 {
@@ -50,4 +44,3 @@ E2.p.prototype.state_changed = function(ui)
 		mat4.identity(this.matrix);
 	}
 };
-

@@ -3,11 +3,11 @@ E2.p = E2.plugins["not_modulator"] = function(core, node)
 	this.desc = 'Emits true if the input is false and vice versa.';
 	
 	this.input_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Input boolean to be inverted.', def: 'False' }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Input boolean to be inverted.', def: false }
 	];
 	
 	this.output_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Truth-inverted input value.', def: 'True' }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Truth-inverted input value.', def: true }
 	];
 };
 

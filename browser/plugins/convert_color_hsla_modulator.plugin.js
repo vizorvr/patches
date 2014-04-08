@@ -3,14 +3,14 @@ E2.p = E2.plugins["convert_color_hsla_modulator"] = function(core, node)
 	this.desc = 'Create an RGBA color from hue, saturation and luminosity and alpha.';
 	
 	this.input_slots = [
-		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The corresponding RGBA color.', def: 'Black' } 
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The corresponding RGBA color.', def: core.renderer.color_black } 
 	];
 	
 	this.output_slots = [ 
-		{ name: 'hue', dt: core.datatypes.FLOAT, desc: 'The hue of the input <b>color</b>.', lo: 0, hi: 1, def: 0 },
-		{ name: 'saturation', dt: core.datatypes.FLOAT, desc: 'The saturation (color intensity) of the input <b>color</b>.', lo: 0, hi: 1, def: 0 },
-		{ name: 'luminosity', dt: core.datatypes.FLOAT, desc: 'The luminosity (brightness) of the input <b>color</b>.', lo: 0, hi: 1, def: 0 },
-		{ name: 'alpha', dt: core.datatypes.FLOAT, desc: 'The alpha of the input <b>color</b>.', lo: 0, hi: 1, def: 0 }
+		{ name: 'hue', dt: core.datatypes.FLOAT, desc: 'The hue of the input <b>color</b>.', lo: 0, hi: 1, def: 0.0 },
+		{ name: 'saturation', dt: core.datatypes.FLOAT, desc: 'The saturation (color intensity) of the input <b>color</b>.', lo: 0, hi: 1, def: 0.0 },
+		{ name: 'luminosity', dt: core.datatypes.FLOAT, desc: 'The luminosity (brightness) of the input <b>color</b>.', lo: 0, hi: 1, def: 0.0 },
+		{ name: 'alpha', dt: core.datatypes.FLOAT, desc: 'The alpha of the input <b>color</b>.', lo: 0, hi: 1, def: 0.0 }
 	];
 };
 

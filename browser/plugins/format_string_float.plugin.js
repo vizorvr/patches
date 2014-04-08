@@ -8,7 +8,7 @@ E2.p = E2.plugins["format_string_float"] = function(core, node)
 	];
 	
 	this.output_slots = [ 
-		 { name: 'text', dt: core.datatypes.TEXT, desc: 'The input float as a string.', def: '"0.0"' }
+		 { name: 'text', dt: core.datatypes.TEXT, desc: 'The input float as a string.', def: '0.0' }
 	];
 };
 

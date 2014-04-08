@@ -3,7 +3,7 @@ E2.p = E2.plugins["assets_signal_started_generator"] = function(core, node)
 	this.desc = 'Signals that load of an asset has been started.';
 	
 	this.input_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Increases the number of assets being loaded.' }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Increases the number of assets being loaded.', def: false }
 	];
 	
 	this.output_slots = [];

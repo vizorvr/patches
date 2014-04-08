@@ -5,9 +5,9 @@ E2.p = E2.plugins["mouse_button_generator"] = function(core, node)
 	this.input_slots = [];
 	
 	this.output_slots = [ 
-		{ name: 'Left', dt: core.datatypes.BOOL, desc: 'True if the left mouse button is pressed and false otherwise.', def: 'False' },
-		{ name: 'Middle', dt: core.datatypes.BOOL, desc: 'True if the middle mouse button is pressed and false otherwise.', def: 'False' },
-		{ name: 'Right', dt: core.datatypes.BOOL, desc: 'True if the right mouse button is pressed and false otherwise.', def: 'False' }
+		{ name: 'Left', dt: core.datatypes.BOOL, desc: 'True if the left mouse button is pressed and false otherwise.', def: false },
+		{ name: 'Middle', dt: core.datatypes.BOOL, desc: 'True if the middle mouse button is pressed and false otherwise.', def: false },
+		{ name: 'Right', dt: core.datatypes.BOOL, desc: 'True if the right mouse button is pressed and false otherwise.', def: false }
 	];	
 };
 

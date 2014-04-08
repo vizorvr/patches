@@ -3,8 +3,8 @@ E2.p = E2.plugins["mesh_primtype_modulator"] = function(core, node)
 	this.desc = 'Sets the rendering primitive type of the supplied mesh.';
 	
 	this.input_slots = [ 
-		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'Input mesh.' },
-		{ name: 'type', dt: core.datatypes.FLOAT, desc: 'The primitive type to use for the rendering of <b>mesh</b>. See also Generators/Values/Mesh primitive type.', def: 'Triangles' }
+		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'Input mesh.', def: null },
+		{ name: 'type', dt: core.datatypes.FLOAT, desc: 'The primitive type to use for the rendering of <b>mesh</b>. See also Generators/Values/Mesh primitive type.', def: core.renderer.context.TRIANGLES }
 	];
 	
 	this.output_slots = [

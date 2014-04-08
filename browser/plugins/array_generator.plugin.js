@@ -12,8 +12,8 @@ E2.p = E2.plugins["array_generator"] = function(core, node)
 
 	this.state = { datatype: 1 }; // Default uint8
 	
-	this.array = new ArrayBuffer(0);
 	this.size = 0;
+	this.update_array();
 };
 
 E2.p.prototype.create_ui = function()
@@ -40,6 +40,12 @@ E2.p.prototype.create_ui = function()
 
 E2.p.prototype.update_array = function()
 {
+	if(this.size === 0)
+	{
+		this.array = null;
+		return;
+	}
+	
 	var stride = [1, 1, 2, 2, 4, 4, 4][this.state.datatype]; 
 
 	this.array = new ArrayBuffer(stride * this.size);

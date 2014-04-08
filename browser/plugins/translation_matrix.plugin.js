@@ -3,18 +3,17 @@ E2.p = E2.plugins["translation_matrix"] = function(core, node)
 	this.desc = 'Create a matrix that represent a translation.';
 	
 	this.input_slots = [
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Translation vector.', def: '0, 0, 0' }
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Translation vector.', def: [0, 0, 0] }
 	];
 	
 	this.output_slots = [
-		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The resulting translation matrix.', def: 'Identity' }
+		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The resulting translation matrix.', def: core.renderer.matrix_identity }
 	];
 };
 
 E2.p.prototype.reset = function()
 {
 	this.matrix = mat4.create();
-
 	mat4.identity(this.matrix);
 };
 

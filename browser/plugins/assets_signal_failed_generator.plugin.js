@@ -3,7 +3,7 @@ E2.p = E2.plugins["assets_signal_failed_generator"] = function(core, node)
 	this.desc = 'Signals that load of an asset has failed.';
 	
 	this.input_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Increases the number of assets that have failed to load.' }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Increases the number of assets that have failed to load.', def: false }
 	];
 	
 	this.output_slots = [];

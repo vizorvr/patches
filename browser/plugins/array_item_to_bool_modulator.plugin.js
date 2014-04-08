@@ -3,13 +3,13 @@ E2.p = E2.plugins["array_item_to_bool_modulator"] = function(core, node)
 	this.desc = 'Emits a boolean representation of the specified item in the named array member of the supplied object.';
 	
 	this.input_slots = [
-		{ name: 'object', dt: core.datatypes.OBJECT, desc: 'Input object.' },
-		{ name: 'member', dt: core.datatypes.TEXT, desc: 'Name of the array to be accessed.' },
-		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'Index of the array item to be converted.' }
+		{ name: 'object', dt: core.datatypes.OBJECT, desc: 'Input object.', def: null },
+		{ name: 'member', dt: core.datatypes.TEXT, desc: 'Name of the array to be accessed.', def: null },
+		{ name: 'index', dt: core.datatypes.FLOAT, desc: 'Index of the array item to be converted.', def: 0 }
 	];
 	
 	this.output_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The boolean representation of the specified array item.', def: 'Empty array' }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The boolean representation of the specified array item.', def: false }
 	];
 };
 

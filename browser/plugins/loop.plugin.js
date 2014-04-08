@@ -3,9 +3,9 @@ E2.p = E2.plugins["loop"] = function(core, node)
 	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and run the enclosed logic once per loop iteration. The loop counter is made available to enclosing logic as a local register with the name <b>index<\/b>.';
 	
 	this.input_slots = [
-		{ name: 'first', dt: core.datatypes.FLOAT, desc: 'The start index.', def: '0' },
-		{ name: 'last', dt: core.datatypes.FLOAT, desc: 'The end index.', def: '0' },
-		{ name: 'step', dt: core.datatypes.FLOAT, desc: 'Loop index increment.', def: '1' }
+		{ name: 'first', dt: core.datatypes.FLOAT, desc: 'The start index.', def: 0 },
+		{ name: 'last', dt: core.datatypes.FLOAT, desc: 'The end index.', def: 0 },
+		{ name: 'step', dt: core.datatypes.FLOAT, desc: 'Loop index increment.', def: 1 }
 	];
 	
 	this.output_slots = [

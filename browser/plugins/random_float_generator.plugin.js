@@ -3,8 +3,8 @@ E2.p = E2.plugins["random_float_generator"] = function(core, node)
 	this.desc = 'Emits a random float constant in a specified range.';
 	
 	this.input_slots = [ 
-		{ name: 'min', dt: core.datatypes.FLOAT, desc: 'Minimum output value.', def: 0 },
-		{ name: 'max', dt: core.datatypes.FLOAT, desc: 'Maximum output value.', def: 1 } 
+		{ name: 'min', dt: core.datatypes.FLOAT, desc: 'Minimum output value.', def: 0.0 },
+		{ name: 'max', dt: core.datatypes.FLOAT, desc: 'Maximum output value.', def: 1.0 } 
 	];
 	
 	this.output_slots = [

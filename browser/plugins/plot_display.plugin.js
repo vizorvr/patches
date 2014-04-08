@@ -3,8 +3,8 @@ E2.p = E2.plugins["plot_display"] = function(core, node)
 	this.desc = 'Displays the supplied coordiate on a XY plot.';
 	
 	this.input_slots = [ 
-		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'The location on the x-axis.', lo: 0, hi: 1, def: 0 },
-		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'The location on the y-axis.', lo: 0, hi: 1, def: 0 }
+		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'The location on the x-axis.', lo: 0, hi: 1, def: 0.0 },
+		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'The location on the y-axis.', lo: 0, hi: 1, def: 0.0 }
 	];
 	
 	this.output_slots = [];
@@ -41,12 +41,6 @@ E2.p.prototype.create_ui = function()
 	plot.append(point);
 	this.reset();
 	return plot;
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on)
-		this.reset();
 };
 
 E2.p.prototype.update_input = function(slot, data)

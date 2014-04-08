@@ -3,7 +3,7 @@ E2.p = E2.plugins["texture_from_text_generator"] = function(core, node)
 	this.desc = 'Create a texture of a (2^n closest to the) given size filled with a rendered version of the supplied text.';
 	
 	this.input_slots = [
-		{ name: 'text', dt: core.datatypes.TEXT, desc: 'The text to be rendered to <b>texture</b>.', def: 'Empty string' },
+		{ name: 'text', dt: core.datatypes.TEXT, desc: 'The text to be rendered to <b>texture</b>.', def: 'Lorem ipsum\nDOLOR SIT AMET' },
 		{ name: 'width', dt: core.datatypes.FLOAT, desc: 'The width of the output <b>texture</b>. Will be rounded to nearest 2^n.', lo: 2, hi: 1024, def: 128 },
 		{ name: 'height', dt: core.datatypes.FLOAT, desc: 'The height of the output <b>texture</b>. Will be rounded to nearest 2^n.', lo: 2, hi: 1024, def: 128 },
 		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'The x position of the text.', def: 10 },
@@ -11,10 +11,10 @@ E2.p = E2.plugins["texture_from_text_generator"] = function(core, node)
 		{ name: 'font style', dt: core.datatypes.TEXT, desc: 'The desired font style (CSS standard).', def: 'bold 16px arial' },
 		{ name: 'fill style', dt: core.datatypes.TEXT, desc: 'The desired fill style (CSS standard).', def: '#fff' },
 		{ name: 'stroke style', dt: core.datatypes.TEXT, desc: 'The desired stroke style (CSS standard).', def: 'none' },
-		{ name: 'stroke width', dt: core.datatypes.FLOAT, desc: 'The desired stroke width in pixels.', def: '0' },
+		{ name: 'stroke width', dt: core.datatypes.FLOAT, desc: 'The desired stroke width in pixels.', def: 0 },
 		{ name: 'align', dt: core.datatypes.TEXT, desc: 'Text alignment.', def: 'center' },
 		{ name: 'baseline', dt: core.datatypes.TEXT, desc: 'Text baseline.', def: 'middle' },
-		{ name: 'line height', dt: core.datatypes.FLOAT, desc: 'Line height scalar.', def: '1.2' }
+		{ name: 'line height', dt: core.datatypes.FLOAT, desc: 'Line height scalar.', def: 1.2 }
 	];
 	
 	this.output_slots = [
@@ -75,9 +75,6 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_state = function()
 {
-	if(this.text === '')
-		return;
-	
 	var lines = this.text.split('\n');
 	var cv = this.canvas2d;
 	var ctx = this.c2d_ctx;

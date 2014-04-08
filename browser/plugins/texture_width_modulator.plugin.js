@@ -3,7 +3,7 @@ E2.p = E2.plugins["texture_width_modulator"] = function(core, node)
 	this.desc = 'Emits the supplied texture width.';
 	
 	this.input_slots = [
-		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The texture to emit the width of.' }
+		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The texture to emit the width of.', def: null }
 	];
 	
 	this.output_slots = [ 

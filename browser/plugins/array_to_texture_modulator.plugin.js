@@ -3,8 +3,8 @@ E2.p = E2.plugins["array_to_texture_modulator"] = function(core, node)
 	this.desc = 'Converts the supplied array to a texture.';
 	
 	this.input_slots = [ 
-		{ name: 'array', dt: core.datatypes.ARRAY, desc: 'The array to convert.' },
-		{ name: 'width', dt: core.datatypes.FLOAT, desc: 'The desired width of the resulting texture.' } 
+		{ name: 'array', dt: core.datatypes.ARRAY, desc: 'The array to convert.', def: null },
+		{ name: 'width', dt: core.datatypes.FLOAT, desc: 'The desired width of the resulting texture.', def: 0 } 
 	];
 	
 	this.output_slots = [

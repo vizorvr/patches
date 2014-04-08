@@ -4,12 +4,12 @@ E2.p = E2.plugins["sample_and_hold_modulator"] = function(core, node)
 	
 	this.input_slots = 
 	[ 
-		{ name: 'sample', dt: core.datatypes.BOOL, desc: 'Sending true to this slot updated the output value to match the input value, false inhibits input sampling.', def: 'True' },
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The input value.', def: 0 }
+		{ name: 'sample', dt: core.datatypes.BOOL, desc: 'Sending true to this slot updated the output value to match the input value, false inhibits input sampling.', def: true },
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The input value.', def: 0.0 }
 	];
 	
 	this.output_slots = [
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The output value.', def: 0 }
+		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The output value.', def: 0.0 }
 	];
 	
 	this.state = { value: 0.0 };

@@ -3,12 +3,12 @@ E2.p = E2.plugins["or_modulator"] = function(core, node)
 	this.desc = 'Emits true if either input value is true and false otherwise.';
 	
 	this.input_slots = [ 
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The first operand.', def: 'False' },
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The second operand.', def: 'False' } 
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The first operand.', def: false },
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The second operand.', def: false } 
 	];
 	
 	this.output_slots = [
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Emits true if <b>first</b> <i>or</i> <b>second</b> are true and false otherwise.', def: 'False' }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'Emits true if <b>first</b> <i>or</i> <b>second</b> are true and false otherwise.', def: false }
 	];
 };
 
