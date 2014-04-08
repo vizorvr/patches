@@ -3,7 +3,7 @@ E2.p = E2.plugins["texture_from_text_generator"] = function(core, node)
 	this.desc = 'Create a texture of a (2^n closest to the) given size filled with a rendered version of the supplied text.';
 	
 	this.input_slots = [
-		{ name: 'text', dt: core.datatypes.TEXT, desc: 'The text to be rendered to <b>texture</b>.', def: '' },
+		{ name: 'text', dt: core.datatypes.TEXT, desc: 'The text to be rendered to <b>texture</b>.', def: 'Lorem ipsum\nDOLOR SIT AMET' },
 		{ name: 'width', dt: core.datatypes.FLOAT, desc: 'The width of the output <b>texture</b>. Will be rounded to nearest 2^n.', lo: 2, hi: 1024, def: 128 },
 		{ name: 'height', dt: core.datatypes.FLOAT, desc: 'The height of the output <b>texture</b>. Will be rounded to nearest 2^n.', lo: 2, hi: 1024, def: 128 },
 		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'The x position of the text.', def: 10 },
@@ -75,9 +75,6 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_state = function()
 {
-	if(this.text === '')
-		return;
-	
 	var lines = this.text.split('\n');
 	var cv = this.canvas2d;
 	var ctx = this.c2d_ctx;
