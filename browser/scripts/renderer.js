@@ -538,7 +538,7 @@ function Material(gl, t_cache, data, base_path)
 	this.depth_test = true;
 	this.depth_write = true;
 	this.depth_func = Material.depth_func.LEQUAL;
-	this.alpha_clip = true;
+	this.alpha_clip = false;
 	this.shinyness = 1.0;
 	this.double_sided = false;
 	this.blend_mode = Renderer.blend_mode.NORMAL;
