@@ -196,7 +196,6 @@ TextureCache.prototype.count = function()
 	}
 		
 	return c;
-
 };
 
 function Renderer(canvas_id, core)

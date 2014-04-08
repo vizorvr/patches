@@ -1498,6 +1498,14 @@ function Application() {
 				
 				if(slot.def === null)
 					txt += 'Nothing';
+				else if(slot.def === self.player.core.renderer.matrix_identity)
+					txt += 'Identity';
+				else if(slot.def === self.player.core.renderer.material_default)
+					txt += 'Default material';
+				else if(slot.def === self.player.core.renderer.light_default)
+					txt += 'Default light';
+				else if(slot.def === self.player.core.renderer.camera_screenspace)
+					txt += 'Screenspace camera';
 				else
 				{
 					var cn = slot.def.constructor.name;
