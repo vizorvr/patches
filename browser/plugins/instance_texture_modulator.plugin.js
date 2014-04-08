@@ -49,7 +49,7 @@ E2.p.prototype.update_state = function()
 		
 		while(cnt < this.count)
 		{
-			var mat = mat4.create();
+			var mat = mat4.create(), its = 0;
 			
 			mat4.identity(mat);
 			
@@ -57,11 +57,12 @@ E2.p.prototype.update_state = function()
 			y = Math.random();
 			s = this.texture_sampler.get_pixel(x, y);
 			
-			while(Math.random() * 255.0 > s[0])
+			while(Math.random() * 255.0 > s[0] && its < 20)
 			{
 				x = Math.random();
 				y = Math.random();
 				s = this.texture_sampler.get_pixel(x, y);
+				its++;
 			}
 			
 			mat4.translate(mat, [(x - 0.5) * this.scale[0], ((s[1] / 255.0) * this.scale[1]), (y - 0.5) * this.scale[2]]);
