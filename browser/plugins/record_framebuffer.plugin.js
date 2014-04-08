@@ -8,6 +8,7 @@ E2.p = E2.plugins["record_framebuffer"] = function(core, node)
 	];
 	
 	this.output_slots = [];
+	
 	this.gl = core.renderer.context;
 	this.url = 'http://' + window.location.host + '/fd/frame';
 };
