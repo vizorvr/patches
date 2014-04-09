@@ -507,8 +507,7 @@ E2.p.prototype.update_input = function(slot, data)
 	}
 	else
 	{
-		if(this.state.enabled)
-			this.input_nodes[slot.uid].plugin.input_updated(data);
+		this.input_nodes[slot.uid].plugin.input_updated(data);
 	}
 };
 
