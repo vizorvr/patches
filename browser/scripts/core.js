@@ -39,8 +39,10 @@ function Delegate(delegate, dt, count)
 
 function PresetManager(base_url)
 {
-	$.get(base_url+'/presets.json')
-	.done(function(data)
+	$.ajax({
+		url: base_url + '/presets.json',
+		cache: true
+	}).done(function(data)
 	{
 		var presets = Object.keys(data).map(function(cat)
 		{

@@ -46,6 +46,7 @@ function PluginManager(core, base_url, creation_listener, ready_listener)
 		url: url,
 		type: 'HEAD',
 		async: false,
+		cache: true,
 		success: function() 
 		{
 			msg('PluginMgr: Running in release mode');
@@ -63,6 +64,7 @@ function PluginManager(core, base_url, creation_listener, ready_listener)
 		url: self.base_url + '/plugins.json',
 		dataType: 'json',
 		async: false,
+		cache: true,
 		headers: {},
 		success: function(data)
 		{

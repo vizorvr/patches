@@ -85,7 +85,7 @@ Texture.prototype.load = function(src, core)
 	}}(src, core);
 	
 	core.asset_tracker.signal_started();
-	img.src = src + '?d=' + Math.random();	
+	img.src = src;	
 };
 
 Texture.prototype.enable = function(stage)

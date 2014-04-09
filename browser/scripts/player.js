@@ -156,7 +156,6 @@ function Player(canvas, app, root_node)
 
 function CreatePlayer(init_callback)
 {
-	$.ajaxSetup({ cache: false });
 	$(document).ajaxError(function(e, jqxhr, settings, ex) 
 	{
 		if(typeof(ex) === 'string')
