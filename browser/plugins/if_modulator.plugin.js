@@ -29,18 +29,17 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
+	{
 		this.condition = data;
+		
+		if(this.condition)
+			delete this.input_slots[1].inactive;
+		else
+			this.input_slots[1].inactive = true;
+	}
 	else
 		this.value = data;
 };	
-
-E2.p.prototype.update_state = function()
-{
-	if(this.condition)
-		delete this.input_slots[1].inactive;
-	else
-		this.input_slots[1].inactive = true;
-};
 
 E2.p.prototype.update_output = function(slot)
 {
