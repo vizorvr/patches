@@ -16,11 +16,6 @@ E2.p = E2.plugins["if_else_modulator"] = function(core, node)
 	this.yes = this.no = null;
 };
 
-E2.p.prototype.reset = function()
-{
-	this.condition = false;
-};
-
 E2.p.prototype.connection_changed = function(on, conn, slot)
 {
 	if(this.lsg.connection_changed(on, conn, slot))
