@@ -202,8 +202,7 @@ Connection.prototype.patch_up = function(nodes)
 	
 	if(this.src_slot.dt !== this.dst_slot.dt && 
 	   this.src_slot.dt !== any_dt && 
-	   this.dst_slot.dt !== any_dt ||
-	   (this.src_slot.dt === any_dt && this.dst_slot.dt === any_dt))
+	   this.dst_slot.dt !== any_dt)
 	{
 		msg('ERROR: Connection data type mismatch - dropping connection.');
 		return false;
