@@ -51,8 +51,6 @@ function PluginManager(core, base_url, creation_listener, ready_listener)
 		{
 			msg('PluginMgr: Running in release mode');
 			self.release_mode = true;
-			self.total = 1;
-			load_script(url, onload, onerror);
 		},
 		error: function()
 		{
@@ -90,6 +88,12 @@ function PluginManager(core, base_url, creation_listener, ready_listener)
 				self.context_menu = new ContextMenu(E2.dom.canvas_parent, pg_root.create_items(), creation_listener);
   		}
 	});
+	
+	if(this.release_mode)
+	{
+		this.total = 1;
+		load_script(url, onload, onerror);
+	}
 }
  
 PluginManager.prototype.create = function(id, node) 
