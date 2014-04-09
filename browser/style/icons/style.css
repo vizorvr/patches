@@ -91,13 +91,9 @@
 .icon-initialise_generator { background: url('icons.png') 0px -17px no-repeat; }
 .icon-input_proxy { background: url('icons.png') -17px -119px no-repeat; }
 .icon-instance_array_modulator { background: url('icons.png') -34px -51px no-repeat; }
-.icon-instance_clear_transform_modulator { background: url('icons.png') -34px -68px no-repeat; }
 .icon-instance_cube_modulator { background: url('icons.png') -153px -17px no-repeat; }
 .icon-instance_ifs_modulator { background: url('icons.png') -17px 0px no-repeat; }
-.icon-instance_rotate_modulator { background: url('icons.png') -170px -102px no-repeat; }
-.icon-instance_scale_modulator { background: url('icons.png') -85px -136px no-repeat; }
 .icon-instance_texture_modulator { background: url('icons.png') -204px -102px no-repeat; }
-.icon-instance_translate_modulator { background: url('icons.png') -85px -170px no-repeat; }
 .icon-invert_matrix_modulator { background: url('icons.png') -119px 0px no-repeat; }
 .icon-key_press_generator { background: url('icons.png') -136px 0px no-repeat; }
 .icon-knob_float_generator { background: url('icons.png') -102px -34px no-repeat; }
