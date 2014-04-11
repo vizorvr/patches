@@ -480,6 +480,8 @@ E2.InitialiseEngi = function()
 	E2.dom.stop.click(E2.app.onStopClicked);
 
 	E2.app.onWindowResize();
+
+	window.open('viewer.html')
 	
 	if(E2.app.player.core.plugin_mgr.release_mode)
 	{
