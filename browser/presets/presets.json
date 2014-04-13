@@ -18,12 +18,12 @@
 		"3D Instancing: Array setup with controls": "instancing_array",
 		"3D Instancing: IFS setup with controls": "instancing_ifs",
 		"3D Instancing: IFS with camera and light out": "instancing_ifs_with_camera_and_light_out",
-		"3D Instancing: Texture instancing setup": "instancing_texture"
+		"3D Instancing: Texture instancing setup": "instancing_texture",
+		"Particles: Basic particle setup": "particle_system"
 	},
 
 	"BACKGROUND & OVERLAY GRAPHICS":
 	{
-		"Background: Image": "background_image",
 		"Background: Sky box": "background_skybox",
 		"Background: Plain color": "background_plain_color",
 		"Background: Inside a sphere": "background_inside_sphere",
@@ -83,8 +83,7 @@
 		"Util: Float array sequencer with oscillator level up": "util_float_array_sequencer_oscillator_out",
 		"Util: Float array sequencer with interpolation": "util_float_array_sequencer_with_interpolation"
 	},
-	
-	"MATRIX TRANSFORMS":
+		"MATRIX TRANSFORMS":
 	{
 		"Transform: Basic matrix transforms setup": "matrix_transforms_setup",
 		"Transform: Rotate": "matrix_rotate_with_knobs",
@@ -96,7 +95,6 @@
 
 		"Transform: Shaky translate to X + Y": "matrix_shaky_translate_to_xy"
 	},
-
 	"UTILS":
 	{
 	 	"Util: Aspect ratio corrector": "util_aspect_ratio",
@@ -115,7 +113,6 @@
 		"UV: Offset": "uv_offset",
 		"UV: Scale": "uv_scale"
 	},
-
 	"CUSTOM SHADERS":
 	{	
 
@@ -125,20 +122,50 @@
 		"Shader: Horizontal flare": "shader_horizontal_flare",
 		"Shader: Render depth buffer": "shader_render_depth_buffer"
 	},
-
 	"2D EFFECT SHADERS":
 	{
 
 	"Effect: Tunnel": "effect_tunnel",
 	"Effect: Doubletunnel": "effect_doubletunnel",
 	"Effect: Attract tickler": "effect_attract_tickler"
+
+	},
+
+		"PHOTOSHOP BLEND MODES":
+	{
+
+	"Blend mode: Add": "photoshop-add",
+	"Blend mode: Substract": "photoshop-substract",
+	"Blend mode: Lighten": "photoshop-lighten",
+	"Blend mode: Darken": "photoshop-darken",
+	"Blend mode: Hard light": "photoshop-hard-light",
+	"Blend mode: Soft light": "photoshop-soft-light",
+	"Blend mode: Screen": "photoshop-screen",
+	"Blend mode: Overlay": "photoshop-overlay",
+	"Blend mode: Exclusion": "photoshop-exclusion",
+	"Blend mode: Linear burn": "photoshop-linear-burn",
+	"Blend mode: Negation": "photoshop-negation",
+	"Blend mode: Difference": "photoshop-difference",
+	"Blend mode: Average": "photoshop-average",
+	"Blend mode: Phoenix": "photoshop-phoenix",
+	"Blend mode: Glow": "photoshop-glow",
+	"Blend mode: Reflect": "photoshop-reflect",
+	"Blend mode: Hard mix": "photoshop-hard-mix",
+	"Blend mode: Pin light": "photoshop-pin-light",
+	"Blend mode: Vivid light": "photoshop-vivid-light",
+	"Blend mode: Linear light": "photoshop-linear-light",
+	"Blend mode: Color dodge": "photoshop-color-dodge",
+	"Blend mode: Color burn": "photoshop-color-burn",
+	"Blend mode: Linear dodge": "photoshop-linear-dodge"
 	},
 
 	"POST PROCESSING":
 	{
+		"Post Process: Levels": "post_process_levels",
 		"Post Process: Analogue monitor": "post_process_analogue_monitor",	
 		"Post Process: Bloom": "post_process_bloom",
 		"Post Process: Gaussian blur": "post_process_gaussian_blur",
+		"Post Process: High grade blur": "post_process_high_grade_blur",
 		"Post Process: Feedback filter": "post_process_feedback_filter",
 		"Post Process: Posterize": "post_process_posterize",	
 		"Post Process: Radial blur": "post_process_radial_blur",	
@@ -159,16 +186,10 @@
 		"Post Process: Chroma key": "postprocess_chromakey"
 	},
 
-	"OSC":
-	{
-		"Display OSC messages": "display_osc"
-	},
-
 	"HI-RES RENDERING":
 	{
 		"Render segmented": "render_segmented"
 	},
-
 
 	"PLUGINS":
 	{
@@ -186,11 +207,9 @@
 		"Emitters/Debug/Data info": "plugin-data-info_display",
 		"Emitters/Debug/Float": "plugin-float-display",
 		"Emitters/Debug/Led": "plugin-led-display",
-		"Emitters/Debug/Log": "plugin-log-display",
 		"Emitters/Debug/Matrix": "plugin-matrix-display",
 		"Emitters/Debug/Plot": "plugin-plot-display",
 		"Emitters/Debug/Text": "plugin-text-display",
-		"Emitters/Debug/Object": "plugin-object-display",
 		"Emitters/Debug/Vector": "plugin-vector-display",
 		"Emitters/Sequencing/Stop playback": "plugin-stop-emitter",
 		"Emitters/Video/Video player": "plugin-video-player",
@@ -219,9 +238,6 @@
 		"Generators/Mesh/Null": "plugin-null-mesh_generator",
 		"Generators/Mesh/Sphere": "plugin-sphere-mesh_generator",
 		"Generators/Mesh/Quad": "plugin-quad-mesh_generator",
-		"Generators/OSC/OSC Receiver": "plugin-osc-receiver",
-		"Generators/OSC/OSC Float": "plugin-osc-float",
-		"Generators/OSC/OSC XY Float": "plugin-osc-xy_float",
 		"Generators/Shaders/Flat": "plugin-flat-shader",
 		"Generators/Shaders/From mesh": "plugin-from-mesh_shader",
 		"Generators/Shaders/From mesh custom": "plugin-from-mesh_custom_shader",
@@ -348,11 +364,11 @@
 		"Modulators/Object/Member to object": "plugin-member-to_object_modulator",
 		"Modulators/Object/Member to string": "plugin-member-to_string_modulator",
 		"Modulators/Object/Member to typed array": "plugin-member-to_typed_array_modulator",
-		"Modulators/Oscillators/Cosine": "plugin-cosine-modulator",
-		"Modulators/Oscillators/Sawtooth": "plugin-sawtooth-modulator",
-		"Modulators/Oscillators/Sine": "plugin-sine-modulator",
-		"Modulators/Oscillators/Square": "plugin-square-modulator",
-		"Modulators/Oscillators/Triangle": "plugin-triangle-modulator",
+		"Modulators/Oscilators/Cosine": "plugin-cosine-modulator",
+		"Modulators/Oscilators/Sawtooth": "plugin-sawtooth-modulator",
+		"Modulators/Oscilators/Sine": "plugin-sine-modulator",
+		"Modulators/Oscilators/Square": "plugin-square-modulator",
+		"Modulators/Oscilators/Triangle": "plugin-triangle-modulator",
 		"Modulators/Scene/Get bounding box": "plugin-scene-get_bounding_box",
 		"Modulators/Scene/Get mesh by index": "plugin-scene-get_mesh_by_index",
 		"Modulators/Scene/Get mesh count": "plugin-scene-get_mesh_count",
@@ -387,7 +403,6 @@
 		"Structure/Output proxy": "plugin-output-proxy",
 		"Annotation": "plugin-annotation"
 	}
-
 
 
 }
