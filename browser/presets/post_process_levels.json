@@ -1,0 +1,378 @@
+{
+    "abs_t": 0,
+    "active_graph": 0,
+    "graph_uid": 3,
+    "root": {
+        "node_uid": 15,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "mesh_renderer_emitter",
+                "x": 816,
+                "y": 52,
+                "uid": 0
+            },
+            {
+                "plugin": "quad_mesh_generator",
+                "x": 506,
+                "y": 27,
+                "uid": 1
+            },
+            {
+                "plugin": "from_mesh_custom_shader",
+                "x": 616,
+                "y": 128,
+                "uid": 2,
+                "dsid": 8,
+                "state": {
+                    "vs_src": "void main(void) {\n    vec4 tp = m_mat * vec4(v_pos, 1.0);\n\n    tp = v_mat * tp;\n    gl_Position = p_mat * tp;\n    f_col = d_col;\n    f_norm = n_mat * v_norm;\n    f_uv0 = v_uv0;\n}",
+                    "ps_src": "void main(void) {\n    vec4 fc = vec4(texture2D(first, f_uv0).rgb, f_col.a);\n    vec3 li = vec3(min_inp);\n    vec3 hi = vec3(max_inp);\n    vec3 lo = vec3(min_oup);\n    vec3 ho = vec3(max_oup);\n    vec3 c = min(max(fc.rgb - vec3(li), vec3(0.0)) / (vec3(hi) - vec3(li)), vec3(1.0));\n    float g = 1.0 / gamma;\n    \n    fc.rgb = mix(lo, ho, vec3(pow(c.r, g), pow(c.g, g), pow(c.b, g)));\n    gl_FragColor = fc;\n}",
+                    "changed": true,
+                    "slot_ids": {
+                        "first": {
+                            "id": 0,
+                            "dt": {
+                                "id": 2,
+                                "name": "Texture"
+                            },
+                            "uniform": {}
+                        },
+                        "min_inp": {
+                            "id": 3,
+                            "dt": {
+                                "id": 0,
+                                "name": "Float"
+                            },
+                            "uniform": {}
+                        },
+                        "gamma": {
+                            "id": 4,
+                            "dt": {
+                                "id": 0,
+                                "name": "Float"
+                            },
+                            "uniform": {}
+                        },
+                        "max_inp": {
+                            "id": 5,
+                            "dt": {
+                                "id": 0,
+                                "name": "Float"
+                            },
+                            "uniform": {}
+                        },
+                        "min_oup": {
+                            "id": 6,
+                            "dt": {
+                                "id": 0,
+                                "name": "Float"
+                            },
+                            "uniform": {}
+                        },
+                        "max_oup": {
+                            "id": 7,
+                            "dt": {
+                                "id": 0,
+                                "name": "Float"
+                            },
+                            "uniform": {}
+                        }
+                    }
+                },
+                "dyn_in": [
+                    {
+                        "name": "first",
+                        "dt": 2,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "min_inp",
+                        "dt": 0,
+                        "uid": 3,
+                        "index": 1,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "gamma",
+                        "dt": 0,
+                        "uid": 4,
+                        "index": 2,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "max_inp",
+                        "dt": 0,
+                        "uid": 5,
+                        "index": 3,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "min_oup",
+                        "dt": 0,
+                        "uid": 6,
+                        "index": 4,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "max_oup",
+                        "dt": 0,
+                        "uid": 7,
+                        "index": 5,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "graph",
+                "x": 266,
+                "y": 128,
+                "uid": 5,
+                "dsid": 2,
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "input_sids": {
+                        "17": 1
+                    },
+                    "output_sids": {}
+                },
+                "title": "Background",
+                "graph": {
+                    "node_uid": 18,
+                    "uid": 2,
+                    "parent_uid": 0,
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 383,
+                            "y": 38,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "quad_mesh_generator",
+                            "x": 178,
+                            "y": 38,
+                            "uid": 10
+                        },
+                        {
+                            "plugin": "from_mesh_shader",
+                            "x": 251,
+                            "y": 89,
+                            "uid": 15
+                        },
+                        {
+                            "plugin": "material_texture_modulator",
+                            "x": 101,
+                            "y": 140,
+                            "uid": 16
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 18,
+                            "y": 184,
+                            "uid": 17,
+                            "dsid": 5,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "texture",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 2,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 15,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 15,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 16,
+                            "dst_nuid": 15,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 17,
+                            "dst_nuid": 16,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "src_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "texture",
+                        "dt": 2,
+                        "uid": 1,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 116,
+                "y": 150,
+                "uid": 6,
+                "state": {
+                    "url": "data/textures/backdrop_sky2.jpg"
+                }
+            },
+            {
+                "plugin": "knob_float_generator",
+                "x": 368,
+                "y": 215,
+                "uid": 10,
+                "state": {
+                    "val": 0
+                }
+            },
+            {
+                "plugin": "knob_float_generator",
+                "x": 378,
+                "y": 284,
+                "uid": 11,
+                "state": {
+                    "val": 0.5699999999999998
+                }
+            },
+            {
+                "plugin": "knob_float_generator",
+                "x": 397,
+                "y": 355,
+                "uid": 12,
+                "state": {
+                    "val": 1
+                }
+            },
+            {
+                "plugin": "knob_float_generator",
+                "x": 420,
+                "y": 427,
+                "uid": 13,
+                "state": {
+                    "val": 0
+                }
+            },
+            {
+                "plugin": "knob_float_generator",
+                "x": 443,
+                "y": 497,
+                "uid": 14,
+                "state": {
+                    "val": 1
+                }
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 1,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 1,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 1
+            },
+            {
+                "src_nuid": 2,
+                "dst_nuid": 0,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 6,
+                "dst_nuid": 5,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 5,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 10,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 11,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 2,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 12,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 3,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 13,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 4,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 14,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 5,
+                "dst_dyn": true
+            }
+        ]
+    }
+}

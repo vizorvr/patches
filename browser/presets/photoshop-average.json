@@ -1,0 +1,489 @@
+{
+    "abs_t": 12.051,
+    "active_graph": 3,
+    "graph_uid": 6,
+    "root": {
+        "node_uid": 8,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "url_texture_generator",
+                "x": 115,
+                "y": 277,
+                "uid": 4,
+                "state": {
+                    "url": "data/textures/backdrop_red.jpg"
+                },
+                "title": "Texture 2"
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 116,
+                "y": 150,
+                "uid": 6,
+                "state": {
+                    "url": "data/textures/backdrop_landscape.jpg"
+                },
+                "title": "Texture 1"
+            },
+            {
+                "plugin": "graph",
+                "x": 310,
+                "y": 184,
+                "uid": 7,
+                "dsid": 2,
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "input_sids": {
+                        "5": 0,
+                        "6": 1
+                    },
+                    "output_sids": {}
+                },
+                "title": "Average blend mode",
+                "graph": {
+                    "node_uid": 7,
+                    "uid": 3,
+                    "parent_uid": 0,
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 792,
+                            "y": 363,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "quad_mesh_generator",
+                            "x": 482,
+                            "y": 338,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "from_mesh_custom_shader",
+                            "x": 592,
+                            "y": 439,
+                            "uid": 2,
+                            "dsid": 3,
+                            "state": {
+                                "vs_src": "void main(void) {\n    vec4 tp = m_mat * vec4(v_pos, 1.0);\n\n    tp = v_mat * tp;\n    gl_Position = p_mat * tp;\n    f_col = d_col;\n    f_norm = n_mat * v_norm;\n    f_uv0 = v_uv0;\n}",
+                                "ps_src": "// From Romain Dura -- http://mouaif.wordpress.com/?p=94\n\n#define Blend(base, blend, funcf) \t\tvec3(funcf(base.r, blend.r), funcf(base.g, blend.g), funcf(base.b, blend.b))\n#define BlendAverage(base, blend) \t\t((base + blend) / 2.0)\n\nvoid main(void) {\n    vec4 fc = vec4(0.0, 0.0, 0.0, f_col.a);\n    \n    fc.rgb = BlendAverage(texture2D(first, f_uv0).rgb, texture2D(second, f_uv0).rgb);\n    gl_FragColor = fc;\n}",
+                                "changed": true,
+                                "slot_ids": {
+                                    "first": {
+                                        "id": 0,
+                                        "dt": {
+                                            "id": 2,
+                                            "name": "Texture"
+                                        },
+                                        "uniform": {}
+                                    },
+                                    "second": {
+                                        "id": 2,
+                                        "dt": {
+                                            "id": 2,
+                                            "name": "Texture"
+                                        },
+                                        "uniform": {}
+                                    }
+                                }
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "first",
+                                    "dt": 2,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "second",
+                                    "dt": 2,
+                                    "uid": 2,
+                                    "index": 1,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 274,
+                            "y": 549,
+                            "uid": 3,
+                            "dsid": 2,
+                            "state": {
+                                "enabled": true,
+                                "always_update": true,
+                                "rt_width": 512,
+                                "rt_height": 512,
+                                "input_sids": {
+                                    "17": 1
+                                },
+                                "output_sids": {}
+                            },
+                            "title": "Background",
+                            "graph": {
+                                "node_uid": 18,
+                                "uid": 4,
+                                "parent_uid": 3,
+                                "open": true,
+                                "nodes": [
+                                    {
+                                        "plugin": "mesh_renderer_emitter",
+                                        "x": 383,
+                                        "y": 38,
+                                        "uid": 0
+                                    },
+                                    {
+                                        "plugin": "quad_mesh_generator",
+                                        "x": 178,
+                                        "y": 38,
+                                        "uid": 10
+                                    },
+                                    {
+                                        "plugin": "from_mesh_shader",
+                                        "x": 251,
+                                        "y": 89,
+                                        "uid": 15
+                                    },
+                                    {
+                                        "plugin": "material_texture_modulator",
+                                        "x": 101,
+                                        "y": 140,
+                                        "uid": 16
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 18,
+                                        "y": 184,
+                                        "uid": 17,
+                                        "dsid": 5,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "texture",
+                                        "dyn_out": [
+                                            {
+                                                "name": "input",
+                                                "dt": 2,
+                                                "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": 10,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 10,
+                                        "dst_nuid": 15,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "offset": 1
+                                    },
+                                    {
+                                        "src_nuid": 15,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 16,
+                                        "dst_nuid": 15,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 17,
+                                        "dst_nuid": 16,
+                                        "src_slot": 0,
+                                        "dst_slot": 2,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    }
+                                ]
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "texture",
+                                    "dt": 2,
+                                    "uid": 1,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true,
+                                    "connected": false
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 242,
+                            "y": 439,
+                            "uid": 4,
+                            "dsid": 2,
+                            "state": {
+                                "enabled": true,
+                                "always_update": true,
+                                "rt_width": 512,
+                                "rt_height": 512,
+                                "input_sids": {
+                                    "17": 1
+                                },
+                                "output_sids": {}
+                            },
+                            "title": "Background",
+                            "graph": {
+                                "node_uid": 18,
+                                "uid": 5,
+                                "parent_uid": 3,
+                                "open": true,
+                                "nodes": [
+                                    {
+                                        "plugin": "mesh_renderer_emitter",
+                                        "x": 383,
+                                        "y": 38,
+                                        "uid": 0
+                                    },
+                                    {
+                                        "plugin": "quad_mesh_generator",
+                                        "x": 178,
+                                        "y": 38,
+                                        "uid": 10
+                                    },
+                                    {
+                                        "plugin": "from_mesh_shader",
+                                        "x": 251,
+                                        "y": 89,
+                                        "uid": 15
+                                    },
+                                    {
+                                        "plugin": "material_texture_modulator",
+                                        "x": 101,
+                                        "y": 140,
+                                        "uid": 16
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 18,
+                                        "y": 184,
+                                        "uid": 17,
+                                        "dsid": 5,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "texture",
+                                        "dyn_out": [
+                                            {
+                                                "name": "input",
+                                                "dt": 2,
+                                                "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": 10,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 10,
+                                        "dst_nuid": 15,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "offset": 1
+                                    },
+                                    {
+                                        "src_nuid": 15,
+                                        "dst_nuid": 0,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 16,
+                                        "dst_nuid": 15,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 17,
+                                        "dst_nuid": 16,
+                                        "src_slot": 0,
+                                        "dst_slot": 2,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    }
+                                ]
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "texture",
+                                    "dt": 2,
+                                    "uid": 1,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true,
+                                    "connected": false
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 77,
+                            "y": 455,
+                            "uid": 5,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "texture1",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 2,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 122,
+                            "y": 578,
+                            "uid": 6,
+                            "dsid": 2,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "texture2",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 2,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "dst_connected": false,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "dst_connected": false,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "texture1",
+                        "dt": 2,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "texture2",
+                        "dt": 2,
+                        "uid": 1,
+                        "index": 1,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ]
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 6,
+                "dst_nuid": 7,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 4,
+                "dst_nuid": 7,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "dst_dyn": true
+            }
+        ]
+    }
+}

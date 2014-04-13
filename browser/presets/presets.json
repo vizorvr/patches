@@ -18,12 +18,12 @@
 		"3D Instancing: Array setup with controls": "instancing_array",
 		"3D Instancing: IFS setup with controls": "instancing_ifs",
 		"3D Instancing: IFS with camera and light out": "instancing_ifs_with_camera_and_light_out",
-		"3D Instancing: Texture instancing setup": "instancing_texture",
 		"Particles: Basic particle setup": "particle_system"
 	},
 
 	"BACKGROUND & OVERLAY GRAPHICS":
 	{
+		"Background: Image": "background_image",
 		"Background: Sky box": "background_skybox",
 		"Background: Plain color": "background_plain_color",
 		"Background: Inside a sphere": "background_inside_sphere",
@@ -186,6 +186,11 @@
 		"Post Process: Chroma key": "postprocess_chromakey"
 	},
 
+		"OSC":
+	{
+		"Display OSC messages": "display_osc"
+	},
+
 	"HI-RES RENDERING":
 	{
 		"Render segmented": "render_segmented"
@@ -207,9 +212,11 @@
 		"Emitters/Debug/Data info": "plugin-data-info_display",
 		"Emitters/Debug/Float": "plugin-float-display",
 		"Emitters/Debug/Led": "plugin-led-display",
+		"Emitters/Debug/Log": "plugin-log-display",
 		"Emitters/Debug/Matrix": "plugin-matrix-display",
 		"Emitters/Debug/Plot": "plugin-plot-display",
 		"Emitters/Debug/Text": "plugin-text-display",
+		"Emitters/Debug/Object": "plugin-object-display",
 		"Emitters/Debug/Vector": "plugin-vector-display",
 		"Emitters/Sequencing/Stop playback": "plugin-stop-emitter",
 		"Emitters/Video/Video player": "plugin-video-player",
@@ -238,6 +245,9 @@
 		"Generators/Mesh/Null": "plugin-null-mesh_generator",
 		"Generators/Mesh/Sphere": "plugin-sphere-mesh_generator",
 		"Generators/Mesh/Quad": "plugin-quad-mesh_generator",
+		"Generators/OSC/OSC Receiver": "plugin-osc-receiver",
+		"Generators/OSC/OSC Float": "plugin-osc-float",
+		"Generators/OSC/OSC XY Float": "plugin-osc-xy_float",
 		"Generators/Shaders/Flat": "plugin-flat-shader",
 		"Generators/Shaders/From mesh": "plugin-from-mesh_shader",
 		"Generators/Shaders/From mesh custom": "plugin-from-mesh_custom_shader",
