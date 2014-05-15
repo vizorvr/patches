@@ -8,6 +8,7 @@
 	"Emitters/3D/Render mesh": "mesh_renderer_emitter",
 	"Emitters/3D/Render scene": "scene_renderer_emitter",
 	"Emitters/Audio/Audio player": "audio_player",
+	"Emitters/Audio/Module player": "module_player",
 	"Emitters/Debug/Bool": "bool_display",
 	"Emitters/Debug/Color": "color_display",
 	"Emitters/Debug/Data info": "data_info_display",

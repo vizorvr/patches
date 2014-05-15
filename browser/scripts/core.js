@@ -381,12 +381,12 @@ function Core(app) {
 		build(self.root_graph, 'Root');
 	};
 	
-	this.add_aux_script = function(script_url)
+	this.add_aux_script = function(script_url, onload)
 	{
 		if(self.aux_scripts.hasOwnProperty(script_url))
 			return;
 		
-		load_script('plugins/' + script_url);
+		load_script('plugins/' + script_url, onload);
 		self.aux_scripts[script_url] = true;
 	};
 
