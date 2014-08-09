@@ -95,9 +95,9 @@ os.system('cp ' + plugins_path + 'plugins.json ' + build_dir + '/plugins')
 
 print '\tProcessing plugin dependencies'
 print '\t\tOSC Proxy'
-oscproxy_file='/plugins/osc/osc-proxy.js'
+oscproxy_file = '/plugins/osc/osc-proxy.js'
 os.system('mkdir ' + os.path.dirname(build_dir + oscproxy_file))
-compress(src_dir + '/plugins/osc/osc-proxy.js', build_dir + oscproxy_file)
+compress(src_dir + oscproxy_file, build_dir + oscproxy_file)
 
 print '\t\tACE Editor + plugins'
 os.system('mkdir ' + build_dir + '/plugins/ace')
@@ -110,6 +110,11 @@ for ace_file in ace_files:
 print '\t\tToggle button style'
 os.system('mkdir ' + build_dir + '/plugins/toggle-button')
 compress_css(plugins_path + 'toggle-button/style.css', build_dir + '/plugins/toggle-button/style.css')
+
+print '\t\tModule player'
+module_player_file = '/plugins/module_player/pt.js'
+os.system('mkdir ' + os.path.dirname(build_dir + module_player_file))
+compress(src_dir + module_player_file, build_dir + module_player_file)
 
 print 'Compressing stylesheets...'
 css_path = src_dir + '/style/'
