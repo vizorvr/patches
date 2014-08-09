@@ -15,6 +15,7 @@ E2.p = E2.plugins["audio_buffer_source_modulator"] = function(core, node)
 	];
 	
 	this.core = core;
+	this.node = node;
 	this.audio_src = null;
 	this.playing = false;
 	this.should_play = false;
@@ -72,7 +73,7 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 {
 	if(slot.index === 0)
 	{
-		if(!on && this.playing)
+		if(!on && this.playing && this.node.outputs.length < 1)
 		{
 			this.stop_playback();
 			this.audio_src = null;
