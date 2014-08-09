@@ -31,7 +31,7 @@ function process_graph(g_name, graph)
 			console.log(plg);
 		}
 			
-		if(plg === 'graph')
+		if(plg === 'graph' || plg === 'loop')
 			process_graph(node.title, node.graph);
 	}
 }
