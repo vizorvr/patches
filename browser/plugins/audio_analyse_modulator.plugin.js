@@ -74,5 +74,6 @@ E2.p.prototype.update_output = function(slot)
 	if(this.analyser_node)
 		this.analyser_node.getFloatFrequencyData(new Float32Array(this.array));
 		
+	this.updated = true;
 	return this.array;
 };
