@@ -40,7 +40,7 @@ E2.p.prototype.create_ui = function()
 E2.p.prototype.connection_changed = function(on, conn, slot)
 {
 	if(!on)
-		self.reset(null);
+		this.reset(null);
 };
 
 E2.p.prototype.update_input = function(slot, data)
