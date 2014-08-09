@@ -38,13 +38,14 @@ E2.p.prototype.create_ui = function()
 			.onChange(function(v)
 			{
 				if (v.indexOf('://') === -1)
-					v = URL_SCENES_ROOT + v
+					v = URL_SCENES_ROOT + v;
+				
 				self.state.url = v + '/scene.json';
 				self.state_changed(null);
 				self.state_changed(inp);
 				self.updated = true;
-			})
-	})
+			});
+	});
 
 	return inp;
 };

@@ -38,8 +38,8 @@ E2.p.prototype.create_ui = function()
 				self.state_changed(null);
 				self.state_changed(inp);
 				self.updated = true;
-			})
-	})
+			});
+	});
 
 	return inp;
 };

@@ -33,15 +33,15 @@ E2.p.prototype.create_ui = function()
 			.onChange(function(v)
 			{
 				if (v.indexOf('://') === -1)
-					v = URL_AUDIO_ROOT
+					v = URL_AUDIO_ROOT + v;
 
 				// remove extension (see below)
-				self.state.url = v.replace(/\.[^\.]*$/, '')
+				self.state.url = v.replace(/\.[^\.]*$/, '');
 				self.state_changed(null);
 				self.state_changed(inp);
 				self.updated = true;
-			})
-	})
+			});
+	});
 
 	return inp;
 };
