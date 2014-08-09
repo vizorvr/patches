@@ -99,7 +99,10 @@ function msg(txt)
 	var d = E2.dom.dbg;
 
 	if(d === undefined)
+	{
+		console.log(txt);
 		return;
+	}
 	
 	if(txt)
 	{

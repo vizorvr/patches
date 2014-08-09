@@ -1,4 +1,3 @@
-
 function Color(r, g, b, a)
 {
 	this.rgba = [r, g, b, a || 1.0];
@@ -54,6 +53,7 @@ function Texture(gl, handle)
 	this.width = 0;
 	this.height = 0;
 	this.image = null;
+	this.complete = true;
 }
 
 Texture.prototype.create = function(width, height)
@@ -84,6 +84,7 @@ Texture.prototype.load = function(src, core)
 		c.asset_tracker.signal_failed();
 	}}(src, core);
 	
+	this.complete = false;
 	core.asset_tracker.signal_started();
 	img.src = src;	
 };
@@ -138,6 +139,8 @@ Texture.prototype.upload = function(img, src)
 	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
 	this.disable();
+	
+	this.complete = true;
 };
 
 Texture.prototype.set_filtering = function(down, up)
@@ -198,15 +201,17 @@ TextureCache.prototype.count = function()
 	return c;
 };
 
-function Renderer(canvas_id, core)
+function Renderer(vr_devices, canvas_id, core)
 {
+	this.vr_hmd = vr_devices[0];
+	this.vr_sensor = vr_devices[1];
 	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
 	this.framebuffer_stack = [];
 	this.def_ambient = new Float32Array([0.0, 0.0, 0.0, 1.0]);
 	this.def_diffuse = new Float32Array([1.0, 1.0, 1.0, 1.0]);
 	this.def_specular = new Float32Array([1.0, 1.0, 1.0, 1.0]);
-		
+	
 	this.org_width = this.canvas.width();
 	this.org_height = this.canvas.height();
 	
@@ -347,7 +352,22 @@ Renderer.prototype.set_fullscreen = function(state)
 	{
 		if(!this.fullscreen)
 		{
-			if(cd.requestFullscreen || cd.webkitRequestFullScreen || cd.mozRequestFullScreen)
+			if(this.vr_hmd)
+			{
+				// NOTE: This breaks keyboard input in FS mode on webkit-based
+				// browsers. On the other hand, the change bypasses a known 
+				// Safari bug, see:
+				// http://stackoverflow.com/questions/8427413/webkitrequestfullscreen-fails-when-passing-element-allow-keyboard-input-in-safar
+				var opt = { vrDisplay: this.vr_hmd };
+
+				if(cd.requestFullscreen)
+					cd.requestFullscreen(opt);
+				if(cd.webkitRequestFullscreen) // Note the lowercase 's'!
+					cd.webkitRequestFullscreen(opt);
+				else if(cd.mozRequestFullScreen)
+					cd.mozRequestFullScreen(opt);
+			}
+			else
 			{
 				if(cd.requestFullscreen)
 					cd.requestFullscreen();
@@ -355,12 +375,12 @@ Renderer.prototype.set_fullscreen = function(state)
 					cd.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
 				else if(cd.mozRequestFullScreen)
 					cd.mozRequestFullScreen();
-				
-				c.attr('class', 'webgl-canvas-fs');
-				c.attr('width', '1280px');
-				c.attr('height', '720px');
-				this.update_viewport();
 			}
+		
+			c.attr('class', 'webgl-canvas-fs');
+			c.attr('width', '1200px');
+			c.attr('height', '800px');
+			this.update_viewport();
 		}
 	}
 	else
@@ -698,6 +718,8 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 	this.t_cache = t_cache;
 	this.material = new Material();
 	this.vertex_count = 0;
+	this.stream_count = 0;
+	this.streams_loaded = 0;
 	
 	for(var v_type in VertexBuffer.vertex_type)
 		this.vertex_buffers[v_type] = null;
@@ -713,7 +735,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 			
 			asset_tracker.signal_started();
 		
-			img.onload = function()
+			img.onload = function(parent) { return function()
 			{
 				var canvas = document.createElement('canvas');
 				var ctx = canvas.getContext('2d');
@@ -744,12 +766,12 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 				
 				stream.bind_data(data);
 			
-				if(parent)
-					parent.vertex_count = count / (4 * 3);
-				
-				msg('Finished loading stream from ' + img.src + ' with ' + (count / 4) + ' elements.');
+				parent.vertex_count = count / (4 * 3);
+				parent.streams_loaded++;
+
+				msg('Finished loading stream from ' + img.src + ' with ' + (count / 4) + ' elements. (' + parent.streams_loaded + ' / ' + parent.stream_count + ')');
 				asset_tracker.signal_completed();
-			};
+			}}(parent);
 		
 			img.onerror = function()
 			{
@@ -765,10 +787,16 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 		};
 		
 		if(data.vertices)
+		{
+			this.stream_count++;
 			load_stream(data.vertices, data.v_lo, data.v_rng, this.vertex_buffers.VERTEX = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX), this);
-
+		}
+		
 		if(data.normals)
-			load_stream(data.normals, data.n_lo, data.n_rng, this.vertex_buffers.NORMAL = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL));
+		{
+			this.stream_count++;
+			load_stream(data.normals, data.n_lo, data.n_rng, this.vertex_buffers.NORMAL = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL), this);
+		}
 		else // Compute normals
 		{
 			var vts = data.vertices,
@@ -855,7 +883,8 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 		
 		if(data.uv0)
 		{
-  			load_stream(data.uv0, data.uv0_lo, data.uv0_rng, this.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0))
+			this.stream_count++;
+  			load_stream(data.uv0, data.uv0_lo, data.uv0_rng, this.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0), this)
 		}
 		
 		if(data.indices)
@@ -878,7 +907,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 	var shader = shader || this.shader;
 	var gl = this.gl;
 	
-	if(!verts || !shader || !shader.linked)
+	if(!verts || !shader || !shader.linked || this.streams_loaded < this.stream_count)
 		return;
 	
 	var unbound = gl.bound_mesh !== this || gl.bound_shader !== shader;

@@ -392,7 +392,7 @@ Node.prototype.update_recursive = function(conns)
 	
 		var pl = this.plugin;
 
-		if(pl.e2_is_graph && pl.state.always_update)
+		if(pl.always_update || (pl.e2_is_graph && pl.state.always_update))
 		{
 			pl.update_state();
 		}			

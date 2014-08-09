@@ -1,4 +1,4 @@
-function Player(canvas, app, root_node)
+function Player(vr_devices, canvas, app, root_node)
 {
 	var self = this;
 	
@@ -9,7 +9,7 @@ function Player(canvas, app, root_node)
 	};
 
 	this.app = app;
-	this.core = new Core(app);
+	this.core = new Core(vr_devices, app);
 	this.interval = null;
 	this.abs_time = 0.0;
 	this.last_time = (new Date()).getTime();
@@ -154,7 +154,7 @@ function Player(canvas, app, root_node)
 	this.select_active_graph();
 }
 
-function CreatePlayer(init_callback)
+function CreatePlayer(vr_devices, init_callback)
 {
 	$(document).ajaxError(function(e, jqxhr, settings, ex) 
 	{
@@ -180,14 +180,14 @@ function CreatePlayer(init_callback)
 	
 	E2.dom.webgl_canvas = $('#webgl-canvas');
 	E2.app = {};
-	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, null);
+	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, E2.app, null);
 	
 	// Block while plugins are loading...
 	var wait_for_plugins = function()
 	{
 		var kl = Object.keys(E2.plugins).length;
 		
-		if(kl === E2.app.player.core.plugin_mgr.lid - 1)
+		if(kl >= E2.app.player.core.plugin_mgr.lid - 1)
 			init_callback(E2.app.player);
 		else 
 			setTimeout(wait_for_plugins, 100);

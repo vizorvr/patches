@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head id="head">
+		<title>ENGI&#8482; Player Demo</title>
+		<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+		<script type="text/javascript" src="vendor/jquery.fastfix.js"></script>
+		<script type="text/javascript" src="vendor/jquery.mousewheel.js"></script>
+		<script type="text/javascript" src="vendor/gl-matrix.js"></script>
+		<script type="text/javascript" src="scripts/util.js"></script>
+		<script type="text/javascript" src="scripts/renderer.js"></script>
+		<script type="text/javascript" src="scripts/plugin-group.js"></script>
+		<script type="text/javascript" src="scripts/plugin-manager.js"></script>
+		<script type="text/javascript" src="scripts/connection.js"></script>
+		<script type="text/javascript" src="scripts/graph.js"></script>
+		<script type="text/javascript" src="scripts/node.js"></script>
+		<script type="text/javascript" src="scripts/registers.js"></script>
+		<script type="text/javascript" src="scripts/core.js"></script>
+		<script type="text/javascript" src="scripts/player.js"></script>
+		<style type="text/css">
+			.webgl-canvas-normal
+			{
+				position: absolute; 
+				top: 10px;
+				left: 10px;
+				width: 600px;
+				height: 400px;
+				background-color: #000; 
+				z-index: -1;
+			}
+
+			.webgl-canvas-fs
+			{
+				background-color: #000; 
+				position: absolute; 
+				left: 0px; 
+				top: 0px;
+				width: 100%;
+				height: 100%;
+				z-index: 10000;
+			}
+			
+			.oculus
+			{
+				width: 33px;
+				height: 20px;
+				position: absolute;
+				left: 575px;
+				top: 388px;
+				z-index: 2;
+			}
+		</style>
+		<script type="text/javascript">
+			function AddEvents(player)
+			{
+				$('#fs').click(function()
+				{
+					player.core.renderer.set_fullscreen(true);
+				});
+			}
+
+			function LoadScene(player)
+			{
+				AddEvents(player);
+				player.load_from_url('player_scene.json');
+				player.play();
+			}
+
+			function EnumerateVRDevices(devices)
+			{
+				var hmd = null, sensor = null;
+				
+				for(var i = 0; i < devices.length; i++)
+				{
+					if(devices[i] instanceof HMDVRDevice)
+					{
+						// Just use the first device we find for now.
+						hmd = devices[i];
+						break;
+					}
+				}
+				
+				if(hmd)
+				{
+					for(var i = 0; i < devices.length; i++)
+					{
+						var d = devices[i];
+					
+						if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId)
+						{
+							sensor = devices[i];
+							break;
+						}
+					}
+				}
+
+				player = CreatePlayer([hmd, sensor], LoadScene);
+			}
+			
+			$(document).ready(function()
+			{
+				if(navigator.getVRDevices)
+				{
+					navigator.getVRDevices().then(EnumerateVRDevices);
+				}
+				else if(navigator.mozGetVRDevices)
+				{
+					navigator.mozGetVRDevices(EnumerateVRDevices);
+				}
+				else
+				{
+					player = CreatePlayer([null, null], LoadScene);
+				}
+			});
+			
+		</script>
+	</head>
+	<body>
+		<noscript>
+			<div class="centered notification">
+				<div style="float: left; display: table-cell; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
+				<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
+			</div>
+		</noscript>
+		<div id="main_layout" class="centered">
+			<canvas id="webgl-canvas" class="webgl-canvas-normal" width="600" height="400" oncontextmenu="return false;">
+			</canvas>
+			<img id="fs" src="images/oculus.png" class="oculus" title="Click to go fullscreen and enable occulus rendering." />
+		</div>
+	</body>
+</html>

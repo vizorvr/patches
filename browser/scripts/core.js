@@ -134,7 +134,7 @@ AssetTracker.prototype.signal_update = function()
 		l[i]();
 };
 
-function Core(app) {
+function Core(vr_devices, app) {
 	var self = this;
 	
 	this.datatypes = {
@@ -160,7 +160,7 @@ function Core(app) {
 	};
 	
 	this.asset_tracker = new AssetTracker(this);
-	this.renderer = new Renderer('#webgl-canvas', this);
+	this.renderer = new Renderer(vr_devices, '#webgl-canvas', this);
 	this.active_graph = this.root_graph = null;
 	this.active_graph_dirty = true;
 	this.graphs = [];
@@ -171,8 +171,8 @@ function Core(app) {
 	this.plugin_mgr = new PluginManager(this, 'plugins', E2.app ? E2.app.onPluginInstantiated : null, load_location_hash);
 	this.aux_scripts = {};
 	this.aux_styles = {};
-	
-	this.resolve_dt = []; // Make a table for easy reverse lookup of dt reference by id.
+	this.resolve_dt = []; // Table for easy reverse lookup of dt reference by id.
+	this.audio_ctx = null;
 	
 	for(var i in this.datatypes)
 	{
@@ -180,6 +180,14 @@ function Core(app) {
 		
 		this.resolve_dt[dt.id] = dt;
 	}
+	
+	// HTML5 audio context initialisation
+	if(window.AudioContext)
+		this.audio_ctx = new AudioContext();
+	else if(window.webkitAudioContext)
+		this.audio_ctx = new webkitAudioContext();
+	else
+		msg('NOTE: This host has no AudioContext support.');
 	
 	this.get_graph_uid = function()
 	{
@@ -400,7 +408,7 @@ function Core(app) {
 	};
 }
 
-E2.InitialiseEngi = function()
+E2.InitialiseEngi = function(vr_devices)
 {
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');
@@ -470,7 +478,7 @@ E2.InitialiseEngi = function()
 		graph.reorder_children(original, sibling, insert_after);
 	});
 
-	E2.app.player = new Player(E2.dom.webgl_canvas, E2.app, E2.dom.structure.tree.root);
+	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, E2.app, E2.dom.structure.tree.root);
 	
 	E2.dom.save.click(E2.app.onSaveClicked);
 	E2.dom.open.click(E2.app.onOpenClicked);

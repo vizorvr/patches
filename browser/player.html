@@ -33,7 +33,7 @@
 					'background-color': '#000'
 				});
 				
-				player = CreatePlayer(function wait_for_init(player)
+				player = CreatePlayer([null, null], function wait_for_init(player)
 				{
 					player.load_from_url('player_scene.json');
 					player.play();
