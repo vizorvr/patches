@@ -77,6 +77,8 @@ CollapsibleSelectControl.prototype.render = function(el) {
 
 	$('li', el).dblclick(function(e) {
 		self._cb($(e.target).data('path'))
+		$('input', el).val('')
+		self._search('')
 	})
 
 	// this._reset();
