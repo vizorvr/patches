@@ -11,6 +11,8 @@ E2.p = E2.plugins["random_float_generator"] = function(core, node)
 		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Random output value between <b>min</b> and <b>max</b>.' }
 	];
 	
+	this.always_update = true;
+	
 	this.lo = 0.0;
 	this.hi = 1.0;
 	this.value = 0.0;
