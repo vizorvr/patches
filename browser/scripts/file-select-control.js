@@ -44,7 +44,7 @@ FileSelectControl.prototype.modal = function() {
 FileSelectControl.prototype._render = function() {
 	var self = this;
 
-	var	templateSource = $("#file-select-template").html();
+	var templateSource = $("#file-select-template").html();
 	var template = this._handlebars.compile(templateSource);
 
 	var el = $('<div class="file-select-control">')
@@ -178,13 +178,13 @@ FileSelectControl.prototype.close = function() {
 // ------------------------------------------
 
 FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
-	var ctl = new FileSelectControl()
+	var ctl = new FileSelectControl();
 
-	okButton = okButton || 'Ok'
-	okFn = okFn || function() {}
+	okButton = okButton || 'Ok';
+	okFn = okFn || function() {};
 
 	if (selected && selected.indexOf('://') === -1)
-		selected = selected.substring(selected.lastIndexOf('/') + 1)
+		selected = selected.substring(selected.lastIndexOf('/') + 1);
 
 	$.get(path, function(files)
 	{
@@ -206,7 +206,7 @@ FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
 		.files(files)
 		.selected(selected)
 		.modal()
-	})
+	});
 
 	return ctl
 }
