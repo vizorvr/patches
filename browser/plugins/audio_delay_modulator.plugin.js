@@ -11,7 +11,7 @@ E2.p = E2.plugins["audio_delay_modulator"] = function(core, node)
 		{ name: 'source', dt: core.datatypes.OBJECT, desc: 'A delayed audio source', def: null }
 	];
 	
-	this.delay_node = core.audio_ctx ? core.audio_ctx.createDelay() : null;
+	this.delay_node = core.audio_ctx ? core.audio_ctx.createDelay(20.0) : null;
 	this.src = null;
 	this.delay = null;
 	this.first = true;
@@ -39,7 +39,7 @@ E2.p.prototype.update_input = function(slot, data)
 	}
 	else
 	{
-		this.delay = data;
+		this.delay = data > 20.0 ? 20.0 : data;
 	}
 };
 
