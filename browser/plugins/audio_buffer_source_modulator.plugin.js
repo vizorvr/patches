@@ -106,9 +106,7 @@ E2.p.prototype.update_input = function(slot, data)
 	else if(slot.index === 1)
 	{
 		this.should_play = data;
-
-		if(!data && this.playing)
-			this.stop_playback();
+		this.changed = true;
 	}
 	else if(slot.index === 2)
 	{
