@@ -92,6 +92,14 @@ E2.p.prototype.update_input = function(slot, data)
 			return;
 		}
 	
+		if(this.playing)
+		{
+			if(this.audio_src)
+				this.stop_playback();
+			
+			this.playing = false;
+		}
+		
 		this.buffer = data;
 		this.changed = true;
 	}
