@@ -42,7 +42,7 @@ E2.p.prototype.update_input = function(slot, data)
 		if(this.audio_src && this.audio_src !== data)
 			this.audio_src.player.stop_playback();
 		
-		if(this.core.audio_ctx && this.audio_src !== data && data)
+		if(this.core.audio_ctx && data)
 		{
 			data.connect(this.core.audio_ctx.destination);
 			
