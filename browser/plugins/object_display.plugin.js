@@ -30,5 +30,14 @@ E2.p.prototype.update_input = function(slot, data)
 E2.p.prototype.update_value = function(value)
 {
 	if (this.label)
-		this.label.html(JSON.stringify(value, null, '  '))
+	{
+		try
+		{
+			this.label.html(JSON.stringify(value, null, '  '));
+		}
+		catch(e)
+		{
+			this.label.html(e);
+		}
+	}
 };
