@@ -21,26 +21,31 @@ the following:
 
 Ways to obtain or create data:
 
-* Cameras: Perspective, orthographic and screen space.
+* Cameras: Perspective, orthographic and screen space. Obtain aspect radio and viewport size.
+* Crypto: Check the current balances of a named CounterWallet.
 * Input: Keyboard, mouse position, button state and scroll wheel.
 * Loading assets: HTML5 audio, images, JSON, 3d scenes and HTML5 video. Select files directly from UI or provide URLs to load as strings from the graph.
 * Matrices: Translation, rotation, scale and planar projection.
 * Meshes: Cube, grid, null (transform visualization), particles, quad, sphere and user defined.
+* Open Sound Control: Receive float / xy float.
 * Shaders: Diffuse only, automatic from mesh, user defined, normal as color and texture with UV-transforms.
 * System state: Initialized, assets started, failed, and successfully loaded. Graphs can emit these signals 
   via plugins to integrate with the global asset load logic when procedurally generating data.
 * Text rendering.
 * Time: Absolute, frame delta.
-* Typed arrays.
+* Typed array generation.
+* Virtual Reality: Camera / MHD / Sensor info. Sensor velocity / acceleration.
 * Various plugins to provide UI for direct manipulation or input of values: Knobs, sliders, input 
-  fields for labels and constant values, toggle and action buttons, color pickers, text editors and 
-  many other similar plugins for providing data directly from the graph view.
+  fields for labels and constant values, toggle and action buttons, color pickers, text editors, 
+  PRNGs and many other similar plugins for providing data directly from the graph view.
 
 Ways to modify data:
 
-* Audio: Get duration and current playback position.
+* Audio: Get duration and current playback position. Analysis (FFT), gain, buffer source.
 * Color: Add, mix, multiply and set alpha.
-* Data type conversions.
+* Data type conversions. Format or parse strings, compose complex types from primitives and convert 
+  between primitive types.
+* Curves: Looping cubic interpolation of keypoints.
 * Filters: First order low pass, sample and hold, toggle.
 * Instanced meshes: Clear transforms, rotate, scale, translate.
 * Light sources (point, directional): Diffuse color, direction, intensity, position, specular color and type.
@@ -59,6 +64,7 @@ Ways to modify data:
 * Tweens: In / out (circular, cubic, exponential, quadratic, quartic, quintic and sinusoidal).
 * Typed arrays: Array to mesh, array to texture, get element, get element as type, length, set element,
   set element as type.
+* Virtual Reality: Create Oculus Rift compatible left / right camera from an input camera.
 * Vector: Add, cross, dot product, magnitude, multiply, normalize, scale and transform.
 * Video: Current time and duration.
 
@@ -66,7 +72,7 @@ Ways to use data:
 
 * 3D: Render scene, render mesh, create instanced meshes (arrays, cubic volumes, using iterated function
   systems or distribution textures) and record the current framebuffer.
-* Audio: Player.
+* Audio: Player / Source player.
 * Debug visualization: On-canvas visualization of booleans, colors, arbitrary data, floats, matrices, function
   plots, text and vectors.
 * Sequencing: Stop playback.
@@ -97,4 +103,7 @@ Run the server:
 Open Engi in the browser:
 
 	http://localhost:8000/
+	
+If you have access to an Oculus Rift DK1 or 2 and want to play with the VR features, you currently
+need one of Toji's special Chromium builds. You can find them here: http://blog.tojicode.com/2014/07/bringing-vr-to-chrome.html
 
