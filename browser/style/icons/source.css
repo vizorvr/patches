@@ -23,8 +23,6 @@
 .icon-assets_signal_started_generator { background: url('assets-started-generator.png'); }
 .icon-assets_signal_completed_generator { background: url('assets-completed-generator.png'); }
 .icon-assets_signal_failed_generator { background: url('assets-failed-generator.png'); }
-.icon-audio_get_current_time_modulator { background: url('clock-generator.png'); }
-.icon-audio_get_duration_modulator { background: url('audio-get-duration-modulator.png'); }
 .icon-and_modulator { background: url('and-modulator.png'); }
 .icon-annotation { background: url('annotation.png'); }
 .icon-array_generator { background: url('array-generator.png'); }
@@ -40,13 +38,20 @@
 .icon-array_length_modulator { background: url('array-length-modulator.png'); }
 .icon-array_set_modulator { background: url('array-set-modulator.png'); }
 .icon-array_set_as_modulator { background: url('array-set-modulator.png'); }
+.icon-audio_analyse_modulator { background: url('audio-analyse-modulator.png'); }
+.icon-audio_buffer_source_modulator { background: url('audio-buffer-source-modulator.png'); }
+.icon-audio_gain_modulator { background: url('audio-gain-modulator.png'); }
+.icon-audio_get_current_time_modulator { background: url('clock-generator.png'); }
+.icon-audio_get_duration_modulator { background: url('audio-get-duration-modulator.png'); }
 .icon-audio_player { background: url('audio-player.png'); }
+.icon-audio_source_player { background: url('audio-player.png'); }
 .icon-blend_mode_generator { background: url('color-blend-modulator.png'); }
 .icon-bool_display { background: url('bool-display.png'); }
 .icon-ceiling_modulator { background: url('ceiling-modulator.png'); }
 .icon-clamp_modulator { background: url('clamp-modulator.png'); }
 .icon-clamped_accumulate_modulator { background: url('clamped-accumulate-modulator.png'); }
 .icon-clock_generator { background: url('clock-generator.png'); }
+.icon-crypto_cw_get_balances { background: url('counterparty.png'); }
 .icon-color_add_modulator { background: url('color-add-modulator.png'); }
 .icon-color_blend_modulator { background: url('color-blend-modulator.png'); }
 .icon-color_display { background: url('color-display.png'); }
@@ -67,9 +72,11 @@
 .icon-convert_rgba_color_modulator { background: url('convert-generic.png'); }
 .icon-convert_float_bool_modulator { background: url('convert-generic.png'); }
 .icon-convert_vector_xyz_modulator { background: url('convert-generic.png'); }
+.icon-convert_string_float_modulator { background: url('float-display.png'); }
 .icon-cosine_modulator { background: url('cosine-modulator.png'); }
 .icon-cos_modulator { background: url('cosine-modulator.png'); }
 .icon-cube_mesh_generator { background: url('cube-mesh-generator.png'); }
+.icon-curve_interpolate_modulator { background: url('cubic-interpolate.png'); }
 .icon-data_info_display { background: url('none.png'); }
 .icon-delta_modulator { background: url('delta-modulator.png'); }
 .icon-delta_t_generator { background: url('delta-t-generator.png'); } 	
@@ -136,6 +143,7 @@
 .icon-mesh_renderer_emitter { background: url('mesh-renderer-emitter.png'); }
 .icon-min_modulator { background: url('min-modulator.png'); }
 .icon-modulate_modulator { background: url('modulate-modulator.png'); }
+.icon-module_player { background: url('module-player.png'); }
 .icon-more_than_modulator { background: url('more-than-modulator.png'); }
 .icon-mouse_button_generator { background: url('mouse-button-generator.png'); }
 .icon-mouse_position_generator { background: url('mouse-position-generator.png'); }
@@ -204,6 +212,7 @@
 .icon-tween_in_modulator { background: url('tween-in-modulator.png'); }
 .icon-tween_out_modulator { background: url('tween-out-modulator.png'); }
 .icon-url_audio_generator { background: url('url-audio-generator.png'); }
+.icon-url_audio_buffer_generator { background: url('url-audio-generator.png'); }
 .icon-url_json_generator { background: url('url-json-generator.png'); }
 .icon-url_scene_generator { background: url('url-scene-generator.png'); }
 .icon-url_texture_generator { background: url('url-texture-generator.png'); }
@@ -224,6 +233,14 @@
 .icon-video_player { background: url('record-framebuffer.png'); }
 .icon-viewport_width_generator { background: url('viewport-width-generator.png'); }
 .icon-viewport_height_generator { background: url('viewport-height-generator.png'); }
+.icon-vr_camera_modulator { background: url('vr.png'); }
+.icon-vr_hmd_info_generator { background: url('vr.png'); }
+.icon-vr_velocity_generator { background: url('vr.png'); }
+.icon-vr_camera_info_generator { background: url('vr.png'); }
+.icon-vr_sensor_info_generator { background: url('vr.png'); }
+.icon-vr_acceleration_generator { background: url('vr.png'); }
+.icon-vr_hmd_available_generator { background: url('vr.png'); }
+.icon-vr_sensor_available_generator { background: url('vr.png'); }
 .icon-xor_modulator { background: url('xor-modulator.png'); }
 
 
