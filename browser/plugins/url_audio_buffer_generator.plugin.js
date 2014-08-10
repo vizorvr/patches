@@ -19,7 +19,7 @@ E2.p = E2.plugins["url_audio_buffer_generator"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.updated = true;
+	this.updated = false;
 };
 
 E2.p.prototype.create_ui = function()

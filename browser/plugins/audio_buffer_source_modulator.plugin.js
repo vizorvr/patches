@@ -126,7 +126,7 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.start_playback = function()
 {
-	if(this.audio_src && this.state === 0)
+	if(this.audio_src && this.audio_src.buffer !== null && this.state === 0)
 	{
 		this.audio_src.start(0);
 		this.state++;
@@ -171,7 +171,6 @@ E2.p.prototype.update_state = function()
 			}
 		
 			this.playing = this.should_play;
-			
 			this.update_source();
 		}
 
