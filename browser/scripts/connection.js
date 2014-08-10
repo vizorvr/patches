@@ -128,10 +128,7 @@ Connection.prototype.signal_change = function(on)
 	
 	if(on)
 	{
-		for(var i = 0, len = n.inputs.length; i < len; i++)
-			n.inputs[i].src_node.queued_update = 1;
-
-		// this.r_update_inbound(n);
+		this.r_update_inbound(n);
 		this.r_update_outbound(n);
 	}
 };
