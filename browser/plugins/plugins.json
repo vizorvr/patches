@@ -98,6 +98,7 @@
 
 	"Modulators/Audio/Analyse": "audio_analyse_modulator",
 	"Modulators/Audio/Buffer source": "audio_buffer_source_modulator",
+	"Modulators/Audio/Delay": "audio_delay_modulator",
 	"Modulators/Audio/Current time": "audio_get_current_time_modulator",
 	"Modulators/Audio/Duration": "audio_get_duration_modulator",
 	"Modulators/Audio/Gain": "audio_gain_modulator",
