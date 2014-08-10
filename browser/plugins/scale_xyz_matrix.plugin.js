@@ -3,9 +3,9 @@ E2.p = E2.plugins["scale_xyz_matrix"] = function(core, node)
 	this.desc = 'Create a matrix that scales the X, Y and Z axis.';
 	
 	this.input_slots = [ 
-		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'Amount to scale the X-axis.', def: 1 },
-		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'Amount to scale the Y-axis.', def: 1 },
-		{ name: 'z', dt: core.datatypes.FLOAT, desc: 'Amount to scale the Z-axis.', def: 1 }
+		{ name: 'x', dt: core.datatypes.FLOAT, desc: 'Amount to scale the X-axis.', def: 1.0 },
+		{ name: 'y', dt: core.datatypes.FLOAT, desc: 'Amount to scale the Y-axis.', def: 1.0 },
+		{ name: 'z', dt: core.datatypes.FLOAT, desc: 'Amount to scale the Z-axis.', def: 1.0 }
 	];
 	
 	this.output_slots = [
@@ -15,7 +15,7 @@ E2.p = E2.plugins["scale_xyz_matrix"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.factors = vec3.create();
+	this.factors = vec3.createFrom(1.0, 1.0, 1.0);
 	this.matrix = mat4.create();
 
 	mat4.identity(this.matrix);
