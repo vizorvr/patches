@@ -720,6 +720,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 	this.vertex_count = 0;
 	this.stream_count = 0;
 	this.streams_loaded = 0;
+	this.max_prims = null;
 	
 	for(var v_type in VertexBuffer.vertex_type)
 		this.vertex_buffers[v_type] = null;
@@ -901,6 +902,11 @@ Mesh.prototype.generate_shader = function()
 	this.shader = ComposeShader(E2.app.player.core.renderer.shader_cache, this, this.material, null, null, null, null);
 }
 
+Mesh.prototype.get_stride = function()
+{
+	return [1, 2, 2, 2, 3, 3, 3][this.prim_type];
+};
+
 Mesh.prototype.render = function(camera, transform, shader, material)
 {
 	var verts = this.vertex_buffers['VERTEX'];
@@ -930,20 +936,31 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 		gl.bound_shader = shader;
 	}
 	
+	var draw_count = this.index_buffer ? this.index_buffer.count : verts.count;
+	
+	if(this.max_prims !== null)
+	{
+		var rd = this.max_prims * this.get_stride();
+		
+		if(rd < draw_count)
+			draw_count = rd;
+	}
+	
+		
 	if(!this.instances)
 	{
 		shader.bind_transform(transform);
 		
 		if(!this.index_buffer)
 		{
-			gl.drawArrays(this.prim_type, 0, verts.count);
+			gl.drawArrays(this.prim_type, 0, draw_count);
 		}
 		else
 		{
 			if(unbound)
 				this.index_buffer.enable();
 			
-			gl.drawElements(this.prim_type, this.index_buffer.count, gl.UNSIGNED_SHORT, 0);
+			gl.drawElements(this.prim_type, draw_count, gl.UNSIGNED_SHORT, 0);
 		}
 	}
 	else
@@ -966,7 +983,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 					mat4.multiply(ft, inst_t[i], ift);
 					
 				shader.bind_transform(ift ? ift : ft);
-				gl.drawArrays(this.prim_type, 0, verts.count);
+				gl.drawArrays(this.prim_type, 0, draw_count);
 			}
 		}
 		else
@@ -984,7 +1001,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 					mat4.multiply(ft, inst_t[i], ift);
 
 				shader.bind_transform(ift ? ift : ft);
-				gl.drawElements(this.prim_type, this.index_buffer.count, gl.UNSIGNED_SHORT, 0);
+				gl.drawElements(this.prim_type, draw_count, gl.UNSIGNED_SHORT, 0);
 			}
 		}
 	}
@@ -1607,6 +1624,7 @@ function Scene(gl, core, data, base_path)
 	this.id = 'n/a';
 	this.vertex_count = 0;
 	this.core = core;
+	this.bounding_box = { "lo": [0.0, 0.0, 0.0], "hi": [0.0, 0.0, 0.0] };
 	
 	if(data)
 		this.load_json(data, base_path);
