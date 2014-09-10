@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 fs = require('fs');
 path = require('path')
 util = require('util');
@@ -45,6 +44,23 @@ var maintain_title = [
 ];
 
 var unique_plugins = [];
+
+function minifyBuffer(code)
+{
+	var ast = uglify.parse(code);
+	
+	ast.figure_out_scope();
+	
+	var compressor = uglify.Compressor({ 'dead_code': false, 'unused': false });
+	var comp_ast = ast.transform(compressor);
+	
+	return comp_ast.print_to_string();
+}
+
+function minify(src, dst)
+{
+	fs.writeFileSync(dst, minifyBuffer(fs.readFileSync(src, { encoding: 'utf8' })));
+}
 
 function mkdirsSync(p)
 {
@@ -252,7 +268,7 @@ function publish(seq, data_dir)
 	
 	fs.writeFileSync(path.join(pub_dir, 'player_scene.json'), JSON.stringify(data));
 	
-	var img_src = path.join('browser', 'build', 'images');
+	var img_src = path.join('browser', 'images');
 	var img_dst = path.join(pub_dir, 'images');
 	
 	fs.mkdirSync(img_dst);
@@ -263,7 +279,7 @@ function publish(seq, data_dir)
 		copy(path.join(img_src, file), path.join(img_dst, file));
 	});
 
-	var scripts_src = path.join('browser', 'build', 'scripts');
+	var scripts_src = path.join('browser', 'scripts');
 	var scripts_dst = path.join(pub_dir, 'scripts');
 	
 	fs.mkdirSync(scripts_dst);
@@ -278,10 +294,10 @@ function publish(seq, data_dir)
 	 'player.js',
 	 'core.js'].forEach(function(file, index)
 	{
-		copy(path.join(scripts_src, file), path.join(scripts_dst, file));
+		minify(path.join(scripts_src, file), path.join(scripts_dst, file));
 	});
 
-	var vendor_src = path.join('browser', 'build', 'vendor');
+	var vendor_src = path.join('browser', 'vendor');
 	var vendor_dst = path.join(pub_dir, 'vendor');
 	
 	fs.mkdirSync(vendor_dst);
@@ -289,14 +305,14 @@ function publish(seq, data_dir)
 	 'jquery.mousewheel.js',
 	 'gl-matrix.js'].forEach(function(file, index)
 	{
-		copy(path.join(vendor_src, file), path.join(vendor_dst, file));
+		minify(path.join(vendor_src, file), path.join(vendor_dst, file));
 	});
 
 	var jq_src = path.join('node_modules', 'jquery', 'dist');
 	var jq_dst = path.join(pub_dir, 'node_modules', 'jquery', 'dist');
 	
 	mkdirsSync(jq_dst);
-	copy(path.join(jq_src, 'jquery.min.js'), path.join(jq_dst, 'jquery.min.js'));
+	minify(path.join(jq_src, 'jquery.min.js'), path.join(jq_dst, 'jquery.min.js'));
 
 	copy(path.join('browser', 'player_vr.html'), path.join(pub_dir, 'index.html'));
 
@@ -314,14 +330,7 @@ function publish(seq, data_dir)
 	fs.mkdirSync(path.join(pub_dir, 'plugins'));
 	fs.writeFileSync(path.join(pub_dir, 'plugins', 'plugins.json'), JSON.stringify(plg_reg));
 	
-	var ast = uglify.parse(plg_src);
-	
-	ast.figure_out_scope();
-	
-	var compressor = uglify.Compressor({ 'dead_code': false, 'unused': false });
-	var comp_ast = ast.transform(compressor);
-	
-	fs.writeFileSync(path.join(pub_dir, 'plugins', 'all.plugins.js'), comp_ast.print_to_string());
+	fs.writeFileSync(path.join(pub_dir, 'plugins', 'all.plugins.js'), minifyBuffer(plg_src));
 }
 
 publish(process.argv[2], process.argv[3]);

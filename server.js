@@ -68,7 +68,7 @@ function publishProject(res, seq, data_path)
 {
 	console.log('Publishing project: ' + seq);
 	
-	exec(path.join('tools', 'publish-seq') + ' ' + seq + ' ' + data_path, function(error, stdout, stderr)
+	exec('node ' + path.join('tools', 'publish-seq') + ' ' + seq + ' ' + data_path, function(error, stdout, stderr)
 	{
 		if(error)
 		{
