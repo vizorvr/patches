@@ -1,0 +1,327 @@
+#!/usr/bin/env node
+fs = require('fs');
+path = require('path')
+util = require('util');
+uglify = require('uglify-js2');
+
+if(process.argv.length < 4)
+{
+	console.log('Usage: publish-seq <JSON> <Asset dir>');
+	return;
+}
+
+// Set of plugins that may contain references to external dependencies.
+var url_plugins = [
+	'url_audio_buffer_generator',
+	'url_audio_generator',
+	'url_json_generator',
+	'url_scene_generator',
+	'url_texture_generator',
+	'url_video_generator'
+];
+
+// Set of plugins that can be removed without compromising graph functionality.
+var filtered_plugins = [
+	'annotation',
+	'bool_display',
+	'color_display',
+	'data_info_display',
+	'float_display',
+	'led_display',
+	'log_display',
+	'matrix_display',
+	'object_display',
+	'plot_display',
+	'text_display',
+	'vector_display'
+];
+
+// Set of plugins the title of which has a functional purpose and must thus be retained.
+var maintain_title = [
+	'register_global_read',
+	'register_global_write',
+	'register_local_read',
+	'register_local_write'
+];
+
+var unique_plugins = [];
+
+function mkdirsSync(p)
+{
+	var dirs = p.split(path.sep);
+	var root = '';
+
+	while(dirs.length > 0)
+	{
+		var dir = dirs.shift();
+		
+		if (dir === '')
+			root = path.sep;
+		
+		var nxt = root + dir;
+		
+		if(!fs.existsSync(nxt))
+			fs.mkdirSync(nxt);
+		
+		root += dir + path.sep;
+	}
+}
+
+function rmdirsSync(p)
+{
+    if(fs.existsSync(p))
+    {
+        fs.readdirSync(p).forEach(function(file, index)
+        {
+		var cp = path.join(p, file);
+
+		if(fs.lstatSync(cp).isDirectory())
+			rmdirsSync(cp);
+		else
+			fs.unlinkSync(cp);
+        });
+        
+        fs.rmdirSync(p);
+    }
+};
+
+function copy(src, dst)
+{
+	fs.createReadStream(src).pipe(fs.createWriteStream(dst));
+}
+
+function minify_json(file)
+{
+	var json = JSON.parse(fs.readFileSync(file, 'utf8'));
+	
+	fs.writeFileSync(file, JSON.stringify(json));
+}
+
+function copy_file(src, data_dir, pub_dir)
+{
+	var a_src = path.join(data_dir, src);
+	var dst_name = path.join(pub_dir, src);
+	var dst_dir = path.dirname(dst_name);
+	
+	mkdirsSync(dst_dir);
+	copy(a_src, dst_name);
+}
+
+function copy_scene(src, data_dir, pub_dir)
+{
+	var a_src = path.join(data_dir, src);
+	var dst_name = path.join(pub_dir, src);
+	var dst_dir = path.dirname(dst_name);
+	
+	mkdirsSync(dst_dir);
+	
+	var sp = path.dirname(a_src);
+	
+        fs.readdirSync(sp).forEach(function(file, index)
+        {
+		var cp = path.join(sp, file);
+
+		if(!fs.lstatSync(cp).isDirectory())
+			copy(cp, path.join(dst_dir, file));
+        });
+	
+}
+
+function process_graph(graph, data_dir, pub_dir)
+{
+	var nodes = graph.nodes;
+	
+	for(var i = 0, len = nodes.length; i < len; i++)
+	{
+		var node = nodes[i];
+		
+		if(node.plugin === 'graph' || node.plugin === 'loop')
+			process_graph(node.graph, data_dir, pub_dir);
+		else if(url_plugins.indexOf(node.plugin) !== -1 && node.state.url !== '')
+		{
+			if(node.plugin === 'url_scene_generator')
+				copy_scene(node.state.url, data_dir, pub_dir);
+			else
+				copy_file(node.state.url, data_dir, pub_dir);
+		}
+	}
+}
+
+function prune_dynamic_slots(d_slots)
+{
+	for(var i = 0, len = d_slots.length; i < len; i++)
+	{
+		var slot = d_slots[i];
+		
+		delete slot.name;
+		delete slot.desc;
+		delete slot.index;
+		delete slot.type;
+	}
+}
+
+function removeItem(coll, item)
+{
+	var idx = coll.indexOf(item);
+	
+	if(idx > -1)
+		coll.removeAt(idx);
+}
+
+function delete_node(graph, node)
+{
+	var conns = graph.conns;
+	var pruned = [];
+	var nuid = node.uid;
+
+	removeItem(graph.nodes, node);
+	
+	for(var i = 0, len = conns.length; i < len; i++)
+	{
+		var c = conns[i];
+		
+		if(c.src_nuid === nuid || c.dst_nuid === nuid)
+			pruned.push(c);
+	}
+	
+	for(var i = 0, len = pruned.length; i < len; i++)
+		removeItem(conns, pruned[i]);
+}
+
+function optimize_graph(graph)
+{
+	var nodes = graph.nodes;
+	var pruned = [];
+	
+	for(var i = 0, len = nodes.length; i < len; i++)
+	{
+		var node = nodes[i];
+		
+		if(node.plugin === 'graph')
+			optimize_graph(node.graph);
+		else if(node.plugin in filtered_plugins)
+			pruned.push(node);
+		
+		delete node.x;
+		delete node.y;
+		
+		if(maintain_title.indexOf(node.plugin) === -1)
+			delete node.title;
+
+		if(node.dyn_in)
+			prune_dynamic_slots(node.dyn_in);
+
+		if(node.dyn_out)
+			prune_dynamic_slots(node.dyn_out);
+	}
+	
+	for(var i = 0, len = pruned.length; i < len; i++)
+		delete_node(graph, pruned[i]);
+}
+
+function find_unique_plugins(graph)
+{
+	var nodes = graph.nodes;
+	
+	for(var i = 0, len = nodes.length; i < len; i++)
+	{
+		var node = nodes[i];
+		
+		if(unique_plugins.indexOf(node.plugin) === -1)
+			unique_plugins.push(node.plugin);
+
+		if(node.plugin === 'graph' || node.plugin === 'loop')
+			find_unique_plugins(node.graph);
+	}
+}
+
+function publish(seq, data_dir)
+{
+	var data = JSON.parse(fs.readFileSync(seq, 'utf8'));
+	var pub_dir = path.join(path.dirname(seq), path.basename(seq, '.json'));
+	
+	if(fs.existsSync(pub_dir))
+	{
+		console.log('Removing existing published project files.');
+		rmdirsSync(pub_dir);
+	}
+	
+	fs.mkdirSync(pub_dir);
+	process_graph(data.root, data_dir, pub_dir);
+	optimize_graph(data.root);
+	
+	fs.writeFileSync(path.join(pub_dir, 'player_scene.json'), JSON.stringify(data));
+	
+	var img_src = path.join('browser', 'build', 'images');
+	var img_dst = path.join(pub_dir, 'images');
+	
+	fs.mkdirSync(img_dst);
+	['oculus.png', 
+	 'warning.png', 
+	 'no_texture.png'].forEach(function(file, index)
+	{
+		copy(path.join(img_src, file), path.join(img_dst, file));
+	});
+
+	var scripts_src = path.join('browser', 'build', 'scripts');
+	var scripts_dst = path.join(pub_dir, 'scripts');
+	
+	fs.mkdirSync(scripts_dst);
+	['util.js',
+	 'renderer.js',
+	 'plugin-group.js',
+	 'plugin-manager.js',
+	 'connection.js',
+	 'graph.js',
+	 'node.js',
+	 'registers.js',
+	 'player.js',
+	 'core.js'].forEach(function(file, index)
+	{
+		copy(path.join(scripts_src, file), path.join(scripts_dst, file));
+	});
+
+	var vendor_src = path.join('browser', 'build', 'vendor');
+	var vendor_dst = path.join(pub_dir, 'vendor');
+	
+	fs.mkdirSync(vendor_dst);
+	['jquery.fastfix.js',
+	 'jquery.mousewheel.js',
+	 'gl-matrix.js'].forEach(function(file, index)
+	{
+		copy(path.join(vendor_src, file), path.join(vendor_dst, file));
+	});
+
+	var jq_src = path.join('node_modules', 'jquery', 'dist');
+	var jq_dst = path.join(pub_dir, 'node_modules', 'jquery', 'dist');
+	
+	mkdirsSync(jq_dst);
+	copy(path.join(jq_src, 'jquery.min.js'), path.join(jq_dst, 'jquery.min.js'));
+
+	copy(path.join('browser', 'player_vr.html'), path.join(pub_dir, 'index.html'));
+
+	find_unique_plugins(data.root);
+	
+	var plg_reg = {};
+	var plg_src = '';
+	
+	unique_plugins.forEach(function(plugin, index)
+	{
+		plg_src += fs.readFileSync(path.join('browser', 'plugins', plugin + '.plugin.js'));
+		plg_reg['' + index] = plugin;
+	});
+	
+	fs.mkdirSync(path.join(pub_dir, 'plugins'));
+	fs.writeFileSync(path.join(pub_dir, 'plugins', 'plugins.json'), JSON.stringify(plg_reg));
+	
+	var ast = uglify.parse(plg_src);
+	
+	ast.figure_out_scope();
+	
+	var compressor = uglify.Compressor({ 'dead_code': false, 'unused': false });
+	var comp_ast = ast.transform(compressor);
+	
+	fs.writeFileSync(path.join(pub_dir, 'plugins', 'all.plugins.js'), comp_ast.print_to_string());
+}
+
+publish(process.argv[2], process.argv[3]);

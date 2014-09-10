@@ -1413,38 +1413,66 @@ function Application() {
 	{
 		$.get(URL_GRAPHS, function(files)
 		{
-			var wh = window.location.hash
+			var wh = window.location.hash;
+			var fcs = new FileSelectControl();
+			
+			fcs.buttons({
+				'Cancel': function() {},
+				'Save': function(filename)
+				{
+					if(!filename)
+						return alert('Please enter a filename');
 
-			return new FileSelectControl()
-				.buttons({
-					'Cancel': function() {},
-					'Save': function(filename) {
-						if (!filename)
-							return alert('Please enter a filename')
+					if(!/\.json$/.test(filename))
+						filename = filename + '.json';
 
-						if (!/\.json$/.test(filename))
-							filename = filename + '.json'
+					var ser = self.player.core.serialise();
 
-						var ser = self.player.core.serialise();
-
-						$.ajax({
-							type: 'POST',
-							url: URL_GRAPHS + filename,
-							data: ser,
-							dataType: 'json',
-							success: function() {
-								window.location.hash = '#' + URL_GRAPHS + filename;
-							},
-							error: function(_x, _t, err) {
-								alert('error '+err);
-							}
-						});
-					}
-				})
-				.selected(wh.substring(wh.lastIndexOf('/') + 1))
-				.files(files)
-				.modal()
+					$.ajax({
+						type: 'POST',
+						url: URL_GRAPHS + filename,
+						data: ser,
+						dataType: 'json',
+						success: function()
+						{
+							window.location.hash = '#' + URL_GRAPHS + filename;
+						},
+						error: function(x, t, err)
+						{
+							alert('Save failed: ' + err);
+						}
+					});
+				}
+			});
+			
+			fcs.files(files);
+			fcs.selected(wh.substring(wh.lastIndexOf('/') + 1));
+			fcs.modal();
+			
+			return fcs;
 		})
+	};
+	
+	this.onPublishClicked = function()
+	{
+		var wh = window.location.hash;
+		
+		if(wh === '')
+			return alert('Please save the graph before attempting to publish it.');
+		
+		var ser = self.player.core.serialise();
+
+		$.ajax({
+			type: 'POST',
+			url: wh.substring(1),
+			data: ser,
+			dataType: 'json',
+			beforeSend: function(xhr) { xhr.setRequestHeader('Engi-Publish', 'true'); },
+			error: function(x, t, err)
+			{
+				alert('Publish failed: ' + x.responseText);
+			}
+		});
 	};
 	
 	this.onLoadClicked = function()
