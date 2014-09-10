@@ -64,11 +64,11 @@ function emitError(res, code, msg)
 	res.end();
 }
 
-function publishProject(res, seq, path)
+function publishProject(res, seq, data_path)
 {
 	console.log('Publishing project: ' + seq);
 	
-	exec('tools/publish-seq ' + seq + ' ' + path, function(error, stdout, stderr)
+	exec(path.join('tools', 'publish-seq') + ' ' + seq + ' ' + data_path, function(error, stdout, stderr)
 	{
 		if(error)
 		{
