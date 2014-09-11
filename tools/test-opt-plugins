@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+var fs = require('fs');
+var path = require('path');
+var exec = require('child_process').exec;
+
+function process(filename)
+{
+	exec('./tools/optimize-plugin ' + filename, function(filename) { return function(error, stdout, stderr)
+	{
+		if(error)
+			console.log(filename + ': ' + error.toString());
+	}}(filename));
+}
+
+fs.readdirSync('./browser/plugins').forEach(function(entry, index)
+{
+	var filename = './browser/plugins/' + entry;
+	
+	if(fs.statSync(filename).isFile() && entry !== 'plugins.json')
+		process(filename);
+});

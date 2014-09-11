@@ -1,87 +1,87 @@
 #!/usr/bin/env node
-var jsp = require('uglify-js').parser;
-var pro = require('uglify-js').uglify;
+var uglify = require('uglify-js2');
 var fs = require('fs');
+var util = require('util');
 
-if(process.argv.length < 4)
+if(process.argv.length < 3)
 {
-	console.log('Usage: optimize-plugin <input.plugin.js> <output.plugin.js>');
+	console.log('Usage: optimize-plugin <input.plugin.js>');
 	return;
 }
 
-var plugin_js = fs.readFileSync(process.argv[2], 'utf8');
-var plugin_ast = jsp.parse(plugin_js);
+var code = fs.readFileSync(process.argv[2], 'utf8');
+var ast = uglify.parse(code);
 
 // Remove methods.
-var toplevel = plugin_ast[1];
+var toplevel = ast.body;
 var pending = [];
 
-for(var i = 0; i < toplevel.length; i++)
+for(var i = 1; i < toplevel.length; i++)
 {
-	var e = toplevel[i];
-	var id = e[1][2][2];
+	var func = toplevel[i];
+	var id = func.body.left.property;
 
 	if(id === 'create_ui' || id === 'open_editor' || id === 'connection_changed')
-		pending.push(e);
+		pending.push(func);
 }
 
 for(var i = 0; i < pending.length; i++)
 	toplevel.splice(toplevel.indexOf(pending[i]), 1)
 
-// Remove inline help strings and slot data.
+var init = toplevel[0].body.right.right.body;
+var desc = null;
+
 function remove_prop(item, id)
 {
-	for(var c = 0; c < item.length; c++)
+	var props = item.properties;
+	
+	for(var c = 0; c < props.length; c++)
 	{
-		if(item[c][0] === id)
+		if(props[c].key === id)
 		{
-			item.splice(c, 1);
+			props.splice(c, 1);
 			return;
 		}
 	}
 }
 
-function prune_slots(slots)
+for(var i = 0; i < init.length; i++)
 {
-	var items = slots[1][3][1];
+	// Deal with local variable declarations in the initialization function scope.
+	if(!init[i].body)
+		continue;
 
-	for(var i = 0; i < items.length; i++)
+	// Deal with empty input / output slot collections.
+	if(!init[i].body.left)
+		continue;
+	
+	var id = init[i].body.left.property;
+	
+	if(id === 'desc')
+		desc = init[i];
+	else if(id === 'input_slots' || id === 'output_slots')
 	{
-		var item = items[i][1];
+		var items = init[i].body.right.elements;
 		
-		remove_prop(item, 'name');
-		remove_prop(item, 'dt');
-		remove_prop(item, 'desc');
-		remove_prop(item, 'def');
-		remove_prop(item, 'lo');
-		remove_prop(item, 'hi');
+		for(var i2 = 0; i2 < items.length; i2++)
+		{
+			var item = items[i2];
+			
+			remove_prop(item, 'name');
+			remove_prop(item, 'desc');
+			remove_prop(item, 'def');
+			remove_prop(item, 'lo');
+			remove_prop(item, 'hi');
+		}
 	}
 }
 
-var head = plugin_ast[1][0][1][3][3][3];
-pending = [];
-var util = require('util');
+if(desc)
+	init.splice(init.indexOf(desc), 1);
 
-for(var i = 0; i < head.length; i++)
-{
-	if(!head[i] || head[i][1].length < 2)
-		continue;
-		
-	var id = head[i][1][2][2];
+ast.figure_out_scope();
 
-	if(id === 'desc')
-		pending.push(head[i])
-	else if(id === 'input_slots')
-		prune_slots(head[i]);
-	else if(id === 'output_slots')
-		prune_slots(head[i]);
-}
+var compressor = uglify.Compressor({ 'dead_code': false, 'unused': false });
+//var comp_ast = ast.transform(compressor);
 
-for(var i = 0; i < pending.length; i++)
-	head.splice(head.indexOf(pending[i]), 1);
-
-plugin_ast = pro.ast_mangle(plugin_ast);
-plugin_ast = pro.ast_squeeze(plugin_ast);
-plugin_js = pro.gen_code(plugin_ast);
-
-fs.writeFileSync(process.argv[3], plugin_js)
+console.log(ast.print_to_string({ beautify: true }));
