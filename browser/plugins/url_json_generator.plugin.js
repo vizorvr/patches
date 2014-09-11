@@ -1,11 +1,9 @@
-var URL_JSON_ROOT = 'data/jsons/';
-
 E2.p = E2.plugins["url_json_generator"] = function(core, node)
 {
 	this.desc = 'Load JSON as an object from an URL. Hover over the Source button to see the url of the current file.';
 	
 	this.input_slots = [
-		{ name: 'url', dt: core.datatypes.TEXT, desc: 'Use this to load from a URL supplied as a string.', def: URL_JSON_ROOT }
+		{ name: 'url', dt: core.datatypes.TEXT, desc: 'Use this to load from a URL supplied as a string.', def: '' }
 	];
 	
 	this.output_slots = [
@@ -14,6 +12,7 @@ E2.p = E2.plugins["url_json_generator"] = function(core, node)
 	
 	this.state = { url: '' };
 	this.core = core;
+	this.URL_JSON_ROOT = 'data/jsons/';
 	this.object = {};
 };
 
@@ -29,11 +28,12 @@ E2.p.prototype.create_ui = function()
 	inp.click(function()
 	{
 		FileSelectControl
-			.createForUrl(URL_JSON_ROOT, self.state.url)
+			.createForUrl(self.URL_JSON_ROOT, self.state.url)
 			.onChange(function(v)
 			{
 				if (v.indexOf('://') === -1)
-					v = URL_JSON_ROOT + v
+					v = self.URL_JSON_ROOT + v;
+					
 				self.state.url = v;
 				self.state_changed(null);
 				self.state_changed(inp);

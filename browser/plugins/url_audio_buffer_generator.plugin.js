@@ -1,11 +1,9 @@
-var URL_AUDIO_ROOT = 'data/audio/';
-
 E2.p = E2.plugins["url_audio_buffer_generator"] = function(core, node)
 {
 	this.desc = 'Load an audio sample from an URL.';
 
 	this.input_slots = [
-		{ name: 'url', dt: core.datatypes.TEXT, desc: 'Use this to load from a URL supplied as a string.', def: URL_AUDIO_ROOT }
+		{ name: 'url', dt: core.datatypes.TEXT, desc: 'Use this to load from a URL supplied as a string.', def: '' }
 	];
 	
 	this.output_slots = [ 
@@ -14,6 +12,7 @@ E2.p = E2.plugins["url_audio_buffer_generator"] = function(core, node)
 	
 	this.state = { url: '' };
 	this.core = core;
+	this.URL_AUDIO_ROOT = 'data/audio/';
 	this.buffer = null;
 };
 
@@ -30,11 +29,11 @@ E2.p.prototype.create_ui = function()
 	inp.click(function()
 	{
 		FileSelectControl
-			.createForUrl(URL_AUDIO_ROOT, self.state.url)
+			.createForUrl(self.URL_AUDIO_ROOT, self.state.url)
 			.onChange(function(v)
 			{
 				if(v.indexOf('://') === -1)
-					v = URL_AUDIO_ROOT + v;
+					v = self.URL_AUDIO_ROOT + v;
 
 				// Remove extension (see below)
 				self.state.url = v;
