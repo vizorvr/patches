@@ -344,8 +344,15 @@ function find_unique_plugins(graph)
 
 function publish(seq, data_dir)
 {
+	// Create the publishing dir, if it doesn't exist.
+	var pub_dir = path.join(data_dir, 'published');
+	
+	if(!fs.existsSync(pub_dir))
+		fs.mkdirSync(pub_dir);
+	
 	var data = JSON.parse(fs.readFileSync(seq, 'utf8'));
-	var pub_dir = path.join(path.dirname(seq), path.basename(seq, '.json'));
+	
+	pub_dir = path.join(pub_dir, path.basename(seq, '.json'));
 	
 	if(fs.existsSync(pub_dir))
 	{
