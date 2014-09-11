@@ -1,7 +1,7 @@
-fs = require('fs');
-path = require('path')
-util = require('util');
-uglify = require('uglify-js2');
+var fs = require('fs');
+var path = require('path')
+var util = require('util');
+var uglify = require('uglify-js2');
 
 if(process.argv.length < 4)
 {
@@ -207,6 +207,83 @@ function delete_node(graph, node)
 		removeItem(conns, pruned[i]);
 }
 
+function optimize_plugin(code)
+{
+	var ast = uglify.parse(code);
+	var toplevel = ast.body;
+	var pending = [];
+
+	for(var i = 1; i < toplevel.length; i++)
+	{
+		var func = toplevel[i];
+		var id = func.body.left.property;
+
+		if(id === 'create_ui' || id === 'open_editor' || id === 'connection_changed')
+			pending.push(func);
+	}
+
+	for(var i = 0; i < pending.length; i++)
+		toplevel.splice(toplevel.indexOf(pending[i]), 1)
+
+	var init = toplevel[0].body.right.right.body;
+	var desc = null;
+
+	function remove_prop(item, id)
+	{
+		var props = item.properties;
+	
+		for(var c = 0; c < props.length; c++)
+		{
+			if(props[c].key === id)
+			{
+				props.splice(c, 1);
+				return;
+			}
+		}
+	}
+
+	for(var i = 0; i < init.length; i++)
+	{
+		// Deal with local variable declarations in the initialization function scope.
+		if(!init[i].body)
+			continue;
+
+		// Deal with empty input / output slot collections.
+		if(!init[i].body.left)
+			continue;
+	
+		var id = init[i].body.left.property;
+	
+		if(id === 'desc')
+			desc = init[i];
+		else if(id === 'input_slots' || id === 'output_slots')
+		{
+			var items = init[i].body.right.elements;
+		
+			for(var i2 = 0; i2 < items.length; i2++)
+			{
+				var item = items[i2];
+			
+				remove_prop(item, 'name');
+				remove_prop(item, 'desc');
+				remove_prop(item, 'def');
+				remove_prop(item, 'lo');
+				remove_prop(item, 'hi');
+			}
+		}
+	}
+
+	if(desc)
+		init.splice(init.indexOf(desc), 1);
+
+	ast.figure_out_scope();
+	
+	var compressor = uglify.Compressor({ 'dead_code': false, 'unused': false });
+	var comp_ast = ast.transform(compressor);
+	
+	return comp_ast.print_to_string();
+}
+
 function optimize_graph(graph)
 {
 	var nodes = graph.nodes;
@@ -337,14 +414,14 @@ function publish(seq, data_dir)
 	
 	unique_plugins.forEach(function(plugin, index)
 	{
-		plg_src += fs.readFileSync(path.join('browser', 'plugins', plugin + '.plugin.js'));
+		plg_src += optimize_plugin(fs.readFileSync(path.join('browser', 'plugins', plugin + '.plugin.js'), { encoding: 'utf8' }));
 		plg_reg['' + index] = plugin;
 	});
 	
 	fs.mkdirSync(path.join(pub_dir, 'plugins'));
 	fs.writeFileSync(path.join(pub_dir, 'plugins', 'plugins.json'), JSON.stringify(plg_reg));
 	
-	fs.writeFileSync(path.join(pub_dir, 'plugins', 'all.plugins.js'), minifyBuffer(plg_src));
+	fs.writeFileSync(path.join(pub_dir, 'plugins', 'all.plugins.js'), plg_src);
 }
 
 publish(process.argv[2], process.argv[3]);
