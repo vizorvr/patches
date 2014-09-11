@@ -40,6 +40,8 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(ui)
 	{
+		this.core.add_aux_style('toggle-button/style.css');
+
 		ui.html(this.state.enabled ? 'On' : 'Off');
 		ui.addClass('toggle_btn');
 		
@@ -50,6 +52,4 @@ E2.p.prototype.state_changed = function(ui)
 			
 		// this.node.update_connections();
 	}
-	else
-		this.core.add_aux_style('toggle-button/style.css');
 };
