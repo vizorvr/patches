@@ -173,6 +173,9 @@ function prune_dynamic_slots(d_slots)
 		delete slot.desc;
 		delete slot.index;
 		delete slot.type;
+		delete slot.connected;
+		delete slot.is_connected;
+		delete slot.def;
 	}
 }
 
@@ -209,11 +212,13 @@ function optimize_graph(graph)
 	var nodes = graph.nodes;
 	var pruned = [];
 	
+	delete graph.open;
+	
 	for(var i = 0, len = nodes.length; i < len; i++)
 	{
 		var node = nodes[i];
 		
-		if(node.plugin === 'graph')
+		if(node.plugin === 'graph' || node.plugin === 'loop')
 			optimize_graph(node.graph);
 		else if(node.plugin in filtered_plugins)
 			pruned.push(node);
@@ -233,6 +238,15 @@ function optimize_graph(graph)
 	
 	for(var i = 0, len = pruned.length; i < len; i++)
 		delete_node(graph, pruned[i]);
+
+	var conns = graph.conns;
+	
+	for(var i = 0, len = conns.length; i < len; i++)
+	{
+		var conn = conns[i];
+		
+		delete conn.offset;
+	}
 }
 
 function find_unique_plugins(graph)
