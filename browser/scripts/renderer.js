@@ -1135,16 +1135,28 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			ps_src.push('varying vec2 f_uv0;');
 			
 			if(d_tex)
+			{
 				ps_src.push('uniform sampler2D d_tex;');
+				vs_src.push('uniform sampler2D d_tex;');
+			}
 			
 			if(s_tex)
+			{
 				ps_src.push('uniform sampler2D s_tex;');
-
+				vs_src.push('uniform sampler2D s_tex;');
+			}
+			
 			if(n_tex)
+			{
 				ps_src.push('uniform sampler2D n_tex;');
-
+				vs_src.push('uniform sampler2D n_tex;');
+			}
+			
 			if(e_tex)
+			{
 				ps_src.push('uniform sampler2D e_tex;');
+				vs_src.push('uniform sampler2D e_tex;');
+			}
 		}
 
 		if(!vs_custom)

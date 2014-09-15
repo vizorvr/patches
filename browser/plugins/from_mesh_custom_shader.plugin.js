@@ -301,9 +301,7 @@ E2.p.prototype.rebuild_shader = function()
 		else if(dtid === dts.VECTOR.id)
 			dt = 'vec3';
 		
-		if(dtid !== dts.TEXTURE.id)
-			u_vs += 'uniform ' + dt + ' ' + ident + ';\n';
-		
+		u_vs += 'uniform ' + dt + ' ' + ident + ';\n';
 		u_ps += 'uniform ' + dt + ' ' + ident + ';\n';
 	}
 		
