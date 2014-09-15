@@ -14,7 +14,15 @@ E2.p = E2.plugins["if_else_modulator"] = function(core, node)
 	
 	this.lsg = new LinkedSlotGroup(core, node, [this.input_slots[1], this.input_slots[2]], [this.output_slots[0]]);
 	this.yes = this.no = null;
+	this.initial_run = true;
 };
+
+E2.p.prototype.reset = function()
+{
+	this.initial_run = true;
+	delete this.input_slots[1].inactive;
+	delete this.input_slots[2].inactive;
+}
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
 {
@@ -27,8 +35,14 @@ E2.p.prototype.update_input = function(slot, data)
 	if(slot.index === 0)
 	{
 		this.condition = data;
-		delete this.input_slots[this.condition ? 1 : 2].inactive;
-		this.input_slots[this.condition ? 2 : 1].inactive = true;
+		
+		if(!this.initial_run)
+		{
+			delete this.input_slots[this.condition ? 1 : 2].inactive;
+			this.input_slots[this.condition ? 2 : 1].inactive = true;
+		}
+		else
+			this.initial_run = false;
 	}
 	else if(slot.index === 1)
 		this.yes = data;
