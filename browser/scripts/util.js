@@ -52,9 +52,10 @@ function make(tag)
 function makeButton(text, alt, className)
 {
 	text = text || '';
-	alt = alt || '';
-	className = className || '';
-	return $('<button class="btn btn-xs ' + className + '" title="' + alt + '">' + text + '</button>');
+	alt = alt ? ' title="' + alt + '"' : '';
+	className = className ? ' ' + className : '';
+	
+	return $('<button class="btn btn-xs' + className + '"' + alt + '>' + text + '</button>');
 }
 
 function resolve_graph(graphs, guid)
