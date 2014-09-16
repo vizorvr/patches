@@ -3,6 +3,8 @@ Engi
 
 Engi is a HTML5/WebGL-compliant [dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming) editor.
 
+Try a live demo at [engijs.org](http://engijs.org).
+
 # Introduction
 
 By routing data between nodes in a directed acyclic graph, arbitrary logic can be constructed. This is a 
@@ -26,15 +28,15 @@ Ways to obtain or create data:
 * Input: Keyboard, mouse position, button state and scroll wheel.
 * Loading assets: HTML5 audio, images, JSON, 3d scenes and HTML5 video. Select files directly from UI or provide URLs to load as strings from the graph.
 * Matrices: Translation, rotation, scale and planar projection.
-* Meshes: Cube, grid, null (transform visualization), particles, quad, sphere and user defined.
+* Meshes: Cube, grid, null (transform visualization), plane, quad, sphere and user defined (Blender exporter is included).
 * Open Sound Control: Receive float / xy float.
-* Shaders: Diffuse only, automatic from mesh, user defined, normal as color and texture with UV-transforms.
+* Shaders: Diffuse only, automatically generated from mesh and material, user defined, normal as color and texture with UV-transforms.
 * System state: Initialized, assets started, failed, and successfully loaded. Graphs can emit these signals 
   via plugins to integrate with the global asset load logic when procedurally generating data.
 * Text rendering.
 * Time: Absolute, frame delta.
 * Typed array generation.
-* Virtual Reality: Camera / MHD / Sensor info. Sensor velocity / acceleration.
+* Virtual Reality: Camera / MHD / Sensor info. Sensor velocity / acceleration. Full Oculus Rift support.
 * Various plugins to provide UI for direct manipulation or input of values: Knobs, sliders, input 
   fields for labels and constant values, toggle and action buttons, color pickers, text editors, 
   PRNGs and many other similar plugins for providing data directly from the graph view.
@@ -43,8 +45,8 @@ Ways to modify data:
 
 * Audio: Get duration and current playback position. Analysis (FFT), gain, buffer source.
 * Color: Add, mix, multiply and set alpha.
-* Data type conversions. Format or parse strings, compose complex types from primitives and convert 
-  between primitive types.
+* Data type conversions. Format or parse strings, compose complex types from primitives, convert 
+  between primitive types and split / merge cameras to / from constituent matrices.
 * Curves: Looping cubic interpolation of keypoints.
 * Filters: First order low pass, sample and hold, toggle.
 * Instanced meshes: Clear transforms, rotate, scale, translate.
@@ -55,7 +57,7 @@ Ways to modify data:
 * Math: Add, clamp, divide, module, multiply, negate, subtract, delta, abs, cos, exp, log, max, min, sin,
   sqrt, tan, ceil, floor and round.
 * Matrix: Concatenate, get component, invert, set component and transpose.
-* Mesh: Primitive type (points, lines, line strip, line loop, triangles, tristrip, trifan).
+* Mesh: Primitive type (points, lines, line strip, line loop, triangles, tristrip, trifan). Obtain or set the maximum primitive count to render.
 * Object: Convert named member to float, bool, string, object or typed array. Access any array item of the
   those same types by index and object member name.
 * Oscillators: Cosine, sawtooth, sine, square, triangle.
@@ -73,8 +75,8 @@ Ways to use data:
 * 3D: Render scene, render mesh, create instanced meshes (arrays, cubic volumes, using iterated function
   systems or distribution textures) and record the current framebuffer.
 * Audio: Player / Source player.
-* Debug visualization: On-canvas visualization of booleans, colors, arbitrary data, floats, matrices, function
-  plots, text and vectors.
+* Debug visualization: On-canvas visualization of booleans, colors, arbitrary data, floats, matrices, objects,
+  function plots, text and vectors.
 * Sequencing: Stop playback.
 * Video: Player.
 
@@ -88,7 +90,8 @@ Created sequences can be im- and exported as human (or machine) readable JSON fi
 embedded into any context the user may desire with the included stand-alone player or simulated in a bare core
 instance, which permits sequences to be leveraged in other javascript projects as a domain specific visual
 scripting language by providing the embedded graph with appropriate values from its host, updating the graph
-and acting on the emitted output values.
+and acting on the emitted output values. Created sequences can be automatically exported to an
+optimized file set, ready to deploy to any webserver.
 
 # Running Engi
 
