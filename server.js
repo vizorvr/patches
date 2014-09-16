@@ -14,6 +14,7 @@ var ENGI = config.server.engiPath;
 var PROJECT = argv._[0] || ENGI;
 var listenHost = argv.i || config.server.host;
 var listenPort = argv.p || config.server.port;
+var publishRunning = []; // The current set of projects being published.
 
 if(argv.h || argv.help)
 {
@@ -59,17 +60,34 @@ function downloadHandler(req, res)
 
 function emitError(res, code, msg)
 {
-	res.writeHead(code, { 'content-type': ' text/html' });
+	res.writeHead(code, { 'content-type': 'text/html' });
 	res.write(msg);
+	res.end();
+}
+
+function emitSuccess(res, msg)
+{
+	res.status(200);
+	res.json({ msg: msg });
 	res.end();
 }
 
 function publishProject(res, seq, data_path)
 {
+	if(publishRunning.indexOf(seq) !== -1)
+	{
+		console.log('Cannot publish "' + seq + '": This project is already being published.');
+		emitSuccess(res, 'This project is already being published.');
+		return;
+	}
+	
+	publishRunning.push(seq);
 	console.log('Publishing project: ' + seq);
 	
-	exec('node ' + path.join('tools', 'publish-seq') + ' ' + seq + ' ' + data_path, function(error, stdout, stderr)
+	exec('node ' + path.join('tools', 'publish-seq') + ' ' + seq + ' ' + data_path, function(seq) { return function(error, stdout, stderr)
 	{
+		publishRunning.splice(publishRunning.indexOf(seq), 1);
+		
 		if(error)
 		{
 			console.log(error.toString());
@@ -77,8 +95,8 @@ function publishProject(res, seq, data_path)
 			return;
 		}
 		
-		res.send({});
-	});
+		emitSuccess(res, 'The project was successfully published.')
+	}}(seq));
 }
 
 var app = express()

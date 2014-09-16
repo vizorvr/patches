@@ -1460,6 +1460,8 @@ function Application() {
 		if(wh === '')
 			return alert('Please save the graph before attempting to publish it.');
 		
+		E2.dom.publish.attr("disabled", true);
+		
 		var ser = self.player.core.serialise();
 
 		$.ajax({
@@ -1468,9 +1470,15 @@ function Application() {
 			data: ser,
 			dataType: 'json',
 			beforeSend: function(xhr) { xhr.setRequestHeader('Engi-Publish', 'true'); },
+			success: function(data)
+			{
+				alert(data.msg);
+				E2.dom.publish.attr("disabled", false);
+			},
 			error: function(x, t, err)
 			{
 				alert('Publish failed: ' + x.responseText);
+				E2.dom.publish.attr("disabled", false);
 			}
 		});
 	};
