@@ -42,6 +42,7 @@ function Application() {
 	this.collapse_log = true;
 	this.selection_border_style = '2px solid #09f';
 	this.normal_border_style = 'none';
+	this.is_panning = false;
 	
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
@@ -771,10 +772,10 @@ function Application() {
 	
 	this.onCanvasMouseDown = function(e)
 	{
-		if($(e.target).attr('id') !== 'canvas')
+		if(e.target.id !== 'canvas')
 			return;
 		
-		if(e.which === 1)
+		if(e.which === 1) 
 		{
 			self.selection_start = [0, 0];
 			self.mouseEventPosToCanvasCoord(e, self.selection_start);
@@ -782,6 +783,10 @@ function Application() {
 			self.selection_last = [e.pageX, e.pageY];
 			self.clearSelection();
 			self.selection_dom = E2.dom.canvas_parent.find(':input').addClass('noselect'); //.attr('disabled', 'disabled');
+		}
+		else if(e.which === 2)
+		{
+			self.is_panning = true;
 		}
 		else
 		{
@@ -808,6 +813,9 @@ function Application() {
 	
 	this.onCanvasMouseUp = function(e)
 	{
+		if(e.which === 2)
+			self.is_panning = false;
+				
 		if(!self.selection_start)
 			return;
 		
@@ -863,7 +871,25 @@ function Application() {
 
 	this.onMouseMoved = function(e)
 	{
-		if(self.src_slot)
+		if(self.is_panning)
+		{
+			var cp = E2.dom.canvas_parent;
+			
+			if(e.movementX)
+			{
+				cp.scrollLeft(self.scrollOffset[0]-e.movementX);
+				self.scrollOffset[0] = cp.scrollLeft();
+			}
+			
+			if(e.movementY)
+			{
+				cp.scrollTop(self.scrollOffset[1]-e.movementY);
+				self.scrollOffset[1] = cp.scrollTop();
+			}
+			
+			return;
+		}
+		else if(self.src_slot)
 		{
 			var cp = E2.dom.canvas_parent;
 			var pos = cp.position();
