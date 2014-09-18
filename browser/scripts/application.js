@@ -883,13 +883,13 @@ function Application() {
 			
 			if(e.movementX)
 			{
-				cp.scrollLeft(self.scrollOffset[0]+e.movementX);
+				cp.scrollLeft(self.scrollOffset[0]-e.movementX);
 				self.scrollOffset[0] = cp.scrollLeft();
 			}
 			
 			if(e.movementY)
 			{
-				cp.scrollTop(self.scrollOffset[1]+e.movementY);
+				cp.scrollTop(self.scrollOffset[1]-e.movementY);
 				self.scrollOffset[1] = cp.scrollTop();
 			}
 			
