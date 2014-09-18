@@ -37,7 +37,7 @@ function Application() {
 	this.clipboard = null;
 	this.in_drag = false;
 	this.resize_timer = null;
-	this.is_osx = /os x 10/.test(navigator.userAgent.toLowerCase());
+	this.is_osx = /mac os x/.test(navigator.userAgent.toLowerCase());
 	this.condensed_view = false;
 	this.collapse_log = true;
 	this.selection_border_style = '2px solid #09f';
