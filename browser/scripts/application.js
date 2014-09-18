@@ -787,6 +787,7 @@ function Application() {
 		else if(e.which === 2)
 		{
 			self.is_panning = true;
+			self.canvas[0].style.cursor = 'move';
 			e.preventDefault();
 			return;
 		}
@@ -818,6 +819,7 @@ function Application() {
 		if(e.which === 2)
 		{
 			self.is_panning = false;
+			self.canvas[0].style.cursor = '';
 			e.preventDefault();
 			return;		
 		}
