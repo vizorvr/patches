@@ -787,6 +787,8 @@ function Application() {
 		else if(e.which === 2)
 		{
 			self.is_panning = true;
+			e.preventDefault();
+			return;
 		}
 		else
 		{
@@ -814,8 +816,12 @@ function Application() {
 	this.onCanvasMouseUp = function(e)
 	{
 		if(e.which === 2)
+		{
 			self.is_panning = false;
-				
+			e.preventDefault();
+			return;		
+		}
+		
 		if(!self.selection_start)
 			return;
 		
@@ -887,6 +893,7 @@ function Application() {
 				self.scrollOffset[1] = cp.scrollTop();
 			}
 			
+			e.preventDefault();
 			return;
 		}
 		else if(self.src_slot)
