@@ -355,8 +355,8 @@ Node.prototype.update_recursive = function(conns)
 	if(this.update_count < 1)
 	{
 		var inputs = this.inputs;
-		var needs_update = this.inputs_changed;
-		var s_plugin = this.plugin;
+		var pl = this.plugin;
+		var needs_update = this.inputs_changed || pl.updated;
 	
 		for(var i = 0, len = inputs.length; i < len; i++)
 		{
@@ -369,12 +369,16 @@ Node.prototype.update_recursive = function(conns)
 			 
 			dirty = sn.update_recursive(conns) || dirty;
 		
+			// TODO: Sampling the output value out here might seem spurious, but isn't:
+			// Some plugin require the ability to set their updated flag in update_output().
+			// Ideally, these should be reqritten to not do so, and this state should
+			// be moved into the clause below to save on function calls.
 			var value = sn.plugin.update_output(inp.src_slot);
-			
+
 			if(sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot)))
 			{
-				s_plugin.update_input(inp.dst_slot, value);
-				s_plugin.updated = true;
+				pl.update_input(inp.dst_slot, value);
+				pl.updated = true;
 				needs_update = true;
 		
 				if(inp.ui && !inp.ui.flow)
@@ -390,8 +394,6 @@ Node.prototype.update_recursive = function(conns)
 			}
 		}
 	
-		var pl = this.plugin;
-
 		if(pl.always_update || (pl.e2_is_graph && pl.state.always_update))
 		{
 			pl.update_state();
