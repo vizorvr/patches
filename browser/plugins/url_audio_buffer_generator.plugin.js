@@ -14,6 +14,7 @@ E2.p = E2.plugins["url_audio_buffer_generator"] = function(core, node)
 	this.core = core;
 	this.URL_AUDIO_ROOT = 'data/audio/';
 	this.buffer = null;
+	this.dirty = false;
 };
 
 E2.p.prototype.reset = function()
@@ -51,6 +52,37 @@ E2.p.prototype.update_input = function(slot, data)
 	this.state_changed(null);
 };
 
+E2.p.prototype.update_state = function()
+{
+	if(!this.dirty)
+		return;
+	
+	if(this.core.audio_ctx)
+	{
+		var req = new XMLHttpRequest();
+		
+		req.open('GET', this.state.url, true);
+		req.responseType = 'arraybuffer';
+		this.core.asset_tracker.signal_started();
+		
+		req.onload = function(self) { return function()
+		{
+			self.core.audio_ctx.decodeAudioData(req.response, function(self) { return function(buffer)
+			{
+				self.buffer = buffer;
+				self.updated = true;
+				self.core.asset_tracker.signal_completed();
+			}}(self), msg);
+		}}(this);
+		
+		req.send();
+	}
+	else
+		msg('ERROR: Cannot create audio buffer. This browser does not support the required API.');
+
+	this.dirty = false;
+};
+
 E2.p.prototype.update_output = function(slot)
 {
 	return this.buffer;
@@ -63,29 +95,6 @@ E2.p.prototype.state_changed = function(ui)
 		if(ui)
 			ui.attr('title', this.state.url);
 		else
-		{
-			if(this.core.audio_ctx)
-			{
-				var req = new XMLHttpRequest();
-				
-				req.open('GET', this.state.url, true);
-				req.responseType = 'arraybuffer';
-				this.core.asset_tracker.signal_started();
-				
-				req.onload = function(self) { return function()
-				{
-					self.core.audio_ctx.decodeAudioData(req.response, function(self) { return function(buffer)
-					{
-						self.buffer = buffer;
-						self.updated = true;
-						self.core.asset_tracker.signal_completed();
-					}}(self), msg);
-				}}(this);
-				
-				req.send();
-			}
-			else
-				msg('ERROR: Cannot create audio buffer. This browser does not support the required API.');
-		}
+			this.dirty = true;
 	}
 };

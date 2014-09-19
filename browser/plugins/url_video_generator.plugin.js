@@ -15,6 +15,7 @@ E2.p = E2.plugins["url_video_generator"] = function(core, node)
 	this.core = core;
 	this.URL_VIDEO_ROOT = 'data/video/';
 	this.video = null;
+	this.dirty = false;
 };
 
 E2.p.prototype.reset = function()
@@ -51,6 +52,43 @@ E2.p.prototype.update_input = function(slot, data)
 	this.state_changed(null);
 };
 
+E2.p.prototype.update_state = function()
+{
+	if(!this.dirty)
+		return;
+	
+	if(this.video !== null)
+	{
+		this.video.pause();
+		delete this.video;
+	}
+
+	this.video = document.createElement('video');
+
+	if(this.video !== 'undefined')
+	{
+		this.video.loop = true;
+		this.video.preload = 'auto';
+		this.video.controls = false;
+	
+		this.video.addEventListener('error', function(self) { return function(at) {
+			msg('ERROR: Video: Failed to load \'' + self.state.url + '\'.');
+			self.video = null;
+			self.state.url = '';
+		}}(this));
+
+		msg('Video: Loading ' + this.state.url + '.');
+		this.video.src = this.state.url;
+	}
+	else
+	{
+		msg('Video: This browser does not support the Video API.');
+		this.video = null;
+	}
+	
+	this.dirty = false;
+};
+
 E2.p.prototype.update_output = function(slot)
 {
 	return this.video;
@@ -63,35 +101,6 @@ E2.p.prototype.state_changed = function(ui)
 		if(ui)
 			ui.attr('title', this.state.url);
 		else
-		{
-			if(this.video !== null)
-			{
-				this.video.pause();
-				delete this.video;
-			}
-			
-			this.video = document.createElement('video');
-
-			if(this.video !== 'undefined')
-			{
-				this.video.loop = true;
-				this.video.preload = 'auto';
-				this.video.controls = false;
-				
-				this.video.addEventListener('error', function(self) { return function(at) {
-					msg('ERROR: Video: Failed to load \'' + self.state.url + '\'.');
-					self.video = null;
-					self.state.url = '';
-				}}(this));
-			
-				msg('Video: Loading ' + this.state.url + '.');
-				this.video.src = this.state.url;
-			}
-			else
-			{
-				msg('Video: This browser does not support the Video API.');
-				this.video = null;
-			}
-		}
+			this.dirty = true;
 	}
 };

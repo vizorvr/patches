@@ -15,6 +15,7 @@ E2.p = E2.plugins["url_texture_generator"] = function(core, node)
 	this.core = core;
 	this.URL_TEXTURES_ROOT = 'data/textures/';
 	this.texture = null;
+	this.dirty = false;
 };
 
 E2.p.prototype.reset = function()
@@ -51,6 +52,15 @@ E2.p.prototype.update_input = function(slot, data)
 	this.state_changed(null);
 };
 
+E2.p.prototype.update_state = function()
+{
+	if(!this.dirty)
+		return;
+		
+	this.texture = this.core.renderer.texture_cache.get(this.state.url);
+	this.dirty = false;
+};
+
 E2.p.prototype.update_output = function(slot)
 {
 	return this.texture;
@@ -63,6 +73,6 @@ E2.p.prototype.state_changed = function(ui)
 		if(ui)
 			ui.attr('title', this.state.url);
 		else
-			this.texture = this.core.renderer.texture_cache.get(this.state.url);
+			this.dirty = true;
 	}
 };

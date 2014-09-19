@@ -14,6 +14,7 @@ E2.p = E2.plugins["url_audio_generator"] = function(core, node)
 	this.core = core;
 	this.URL_AUDIO_ROOT = 'data/audio/';
 	this.audio = null;
+	this.dirty = false;
 };
 
 E2.p.prototype.reset = function()
@@ -51,6 +52,53 @@ E2.p.prototype.update_input = function(slot, data)
 	this.state_changed(null);
 };
 
+E2.p.prototype.update_state = function()
+{
+	if(!this.dirty)
+		return;
+	
+	if(typeof(Audio) === 'undefined')
+	{
+		msg('Audio: This browser does not support the Audio API.');
+		return;
+	}
+	
+	if(this.audio !== null)
+	{
+		this.audio.pause();
+		delete this.audio;
+	}
+
+	var src = null;
+
+	this.audio = new Audio();
+
+	this.audio.loop = true;
+	this.audio.preload = true;
+
+	// Select file type based on cap sniffing.
+	if(this.audio.canPlayType('audio/ogg; codecs="vorbis"'))
+		src = this.state.url + '.ogg';
+	else if(this.audio.canPlayType('audio/mpeg'))
+		src = this.state.url + '.mp3';
+	else
+		msg('Audio: This browser supports neither ogg vorbis or mp3 audio playback.');
+
+	if(src !== null)
+	{
+		this.audio.addEventListener('error', function(self, src) { return function(at) {
+			msg('ERROR: Audio: Failed to load \'' + src + '\'.');
+			self.state.url = '';
+			self.audio = null;
+		}}(this, src));
+	
+		msg('Audio: Loading ' + src + '.');
+		this.audio.src = src;
+	}
+	
+	this.dirty = false;
+};
+
 E2.p.prototype.update_output = function(slot)
 {
 	return this.audio;
@@ -63,44 +111,6 @@ E2.p.prototype.state_changed = function(ui)
 		if(ui)
 			ui.attr('title', this.state.url);
 		else
-		{
-			if(typeof(Audio) !== 'undefined')
-			{
-				if(this.audio !== null)
-				{
-					this.audio.pause();
-					delete this.audio;
-				}
-			
-				var src = null;
-
-				this.audio = new Audio();
-			
-				this.audio.loop = true;
-				this.audio.preload = true;
-			
-				// Select file type based on cap sniffing.
-				if(this.audio.canPlayType('audio/ogg; codecs="vorbis"'))
-					src = this.state.url + '.ogg';
-				else if(this.audio.canPlayType('audio/mpeg'))
-					src = this.state.url + '.mp3';
-				else
-					msg('Audio: This browser supports neither ogg vorbis or mp3 audio playback.');
-
-				if(src !== null)
-				{
-					this.audio.addEventListener('error', function(self, src) { return function(at) {
-						msg('ERROR: Audio: Failed to load \'' + src + '\'.');
-						self.state.url = '';
-						self.audio = null;
-					}}(this, src));
-				
-					msg('Audio: Loading ' + src + '.');
-					this.audio.src = src;
-				}
-			}
-			else
-				msg('Audio: This browser does not support the Audio API.');
-		}
+			this.dirty = true;
 	}
 };

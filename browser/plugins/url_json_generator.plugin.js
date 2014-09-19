@@ -14,6 +14,7 @@ E2.p = E2.plugins["url_json_generator"] = function(core, node)
 	this.core = core;
 	this.URL_JSON_ROOT = 'data/jsons/';
 	this.object = {};
+	this.dirty = false;
 };
 
 E2.p.prototype.reset = function()
@@ -50,6 +51,37 @@ E2.p.prototype.update_input = function(slot, data)
 	this.state_changed(null);
 };
 
+E2.p.prototype.update_state = function()
+{
+	if(!this.dirty)
+		return;
+	
+	var self = this;
+
+	this.object = {};
+	self.core.asset_tracker.signal_started();
+
+	jQuery.ajax({
+		url: self.state.url, 
+		dataType: 'json',
+		success: function(self) { return function(data) 
+		{
+			self.object = data;
+			self.core.asset_tracker.signal_completed();
+		}}(self),
+		error: function(self) { return function(jqXHR, textStatus, errorThrown)
+		{
+			msg('ERROR: Failed to load JSON "' + self.state.url + '": ' + textStatus + ', ' + errorThrown);
+			self.state.url = '';
+			self.object = {}
+			self.core.asset_tracker.signal_failed();
+		}}(self),
+		async: false
+	});
+	
+	this.dirty = false;
+};
+
 E2.p.prototype.update_output = function(slot)
 {
 	return this.object;
@@ -62,28 +94,6 @@ E2.p.prototype.state_changed = function(ui)
 		if(ui)
 			ui.attr('title', this.state.url);
 		else
-		{
-			var self = this;
-			
-			self.core.asset_tracker.signal_started();
-	
-			jQuery.ajax({
-				url: self.state.url, 
-				dataType: 'json',
-				success: function(self) { return function(data) 
-				{
-					self.object = data;
-					self.core.asset_tracker.signal_completed();
-				}}(self),
-				error: function(self) { return function(jqXHR, textStatus, errorThrown)
-				{
-					msg('ERROR: Failed to load JSON "' + self.state.url + '": ' + textStatus + ', ' + errorThrown);
-					self.state.url = '';
-					self.object = {}
-					self.core.asset_tracker.signal_failed();
-				}}(self),
-				async: false
-			});
-		}
+			this.dirty = true;
 	}
 };
