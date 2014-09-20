@@ -2,7 +2,5 @@
 browser/build
 browser/tools/node_modules
 node_modules
-demo.json
-demo
 browser/data/scenes/**
 browser/data/textures/**
