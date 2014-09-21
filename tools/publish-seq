@@ -43,7 +43,15 @@ var maintain_title = [
 	'register_local_write'
 ];
 
+var ext_plugin_dependencies = {
+	'module_player': 'module_player',
+	'osc_float': 'osc',
+	'osc_receiver': 'osc',
+	'osc_xy_float': 'osc'
+};
+
 var unique_plugins = [];
+var ext_depends = [];
 
 function minifyBuffer(code)
 {
@@ -290,6 +298,7 @@ function optimize_graph(graph)
 	var pruned = [];
 	
 	delete graph.open;
+	delete graph.scroll;
 	
 	for(var i = 0, len = nodes.length; i < len; i++)
 	{
@@ -302,7 +311,7 @@ function optimize_graph(graph)
 		
 		delete node.x;
 		delete node.y;
-		
+
 		if(maintain_title.indexOf(node.plugin) === -1)
 			delete node.title;
 
@@ -335,8 +344,18 @@ function find_unique_plugins(graph)
 		var node = nodes[i];
 		
 		if(unique_plugins.indexOf(node.plugin) === -1)
+		{
 			unique_plugins.push(node.plugin);
-
+		
+			if(ext_plugin_dependencies.hasOwnProperty(node.plugin))
+			{
+				var dep = ext_plugin_dependencies[node.plugin];
+				
+				if(ext_depends.indexOf(dep) === -1)
+					ext_depends.push(dep);
+			}
+		}
+		
 		if(node.plugin === 'graph' || node.plugin === 'loop')
 			find_unique_plugins(node.graph);
 	}
@@ -429,6 +448,30 @@ function publish(seq, data_dir)
 	fs.writeFileSync(path.join(pub_dir, 'plugins', 'plugins.json'), JSON.stringify(plg_reg));
 	
 	fs.writeFileSync(path.join(pub_dir, 'plugins', 'all.plugins.js'), plg_src);
+	
+	// Process any external dependcies by directory
+	for(var i = 0; i < ext_depends.length; i++)
+	{
+		var dep = ext_depends[i];
+		var in_path = path.join('browser', 'plugins', dep);
+		var out_path = path.join(pub_dir, 'plugins', dep);
+		var files = fs.readdirSync(in_path);
+		
+		fs.mkdirSync(out_path);
+		
+		for(var f = 0; f < files.length; f++)
+		{
+			var file = files[f];
+			var ext = path.extname(file);
+			var src = path.join(in_path, file);
+			var dst = path.join(out_path, file);
+			
+			if(ext === '.js')
+				minify(src, dst);
+			else
+				copy(src, dst);
+		}
+	}
 }
 
 publish(process.argv[2], process.argv[3]);
