@@ -45,6 +45,14 @@ var maintain_title = [
 
 var ext_plugin_dependencies = {
 	'module_player': 'module_player',
+	'csg_cube_generator': 'csg',
+	'csg_cylinder_generator': 'csg',
+	'csg_sphere_generator': 'csg',
+	'csg_difference_modulator': 'csg',
+	'csg_intersection_modulator': 'csg',
+	'csg_inverse_modulator': 'csg',
+	'csg_to_mesh_modulator': 'csg',
+	'csg_union_modulator': 'csg',
 	'osc_float': 'osc',
 	'osc_receiver': 'osc',
 	'osc_xy_float': 'osc'
