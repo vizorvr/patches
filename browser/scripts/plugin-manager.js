@@ -1,4 +1,3 @@
-
 function PluginManager(core, base_url, creation_listener, ready_listener) 
 {
 	var self = this;
@@ -110,4 +109,3 @@ PluginManager.prototype.create = function(id, node)
 	console.assert(false, 'Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
 	return null;
 };
-

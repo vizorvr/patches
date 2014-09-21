@@ -90,7 +90,15 @@ function sort_dict(dict)
 	for(key in dict)
 		s.push(key);
 		
-	s.sort();
+	// JS has a quaint notion of what "alphabetically" means. Apparently all 
+	// upper caps letters preceeds lower case ones. Let's fix that.
+	s.sort(function(a, b)
+	{
+		var _a = a.toLowerCase();
+		var _b = b.toLowerCase();
+		
+		return _a < _b ? -1 : _a > _b ? 1 : 0;
+	});
 
 	return s;
 }
