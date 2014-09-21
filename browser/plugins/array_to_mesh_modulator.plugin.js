@@ -34,7 +34,6 @@ E2.p.prototype.update_vertex_buffer = function(v_name, v_type, data)
 	
 	if(data)
 	{
-		
 		if(!vbs[v_name])
 			vbs[v_name] = new VertexBuffer(this.gl, v_type);
 		
@@ -86,7 +85,7 @@ E2.p.prototype.update_state = function()
 		count = Math.max(count, vbs['VERTEX'].count);
 	
 	this.mesh.generate_shader();
-	this.vertex_count = count;
+	this.mesh.vertex_count = count;
 };
 
 E2.p.prototype.update_output = function(slot)
