@@ -78,11 +78,18 @@ Texture.prototype.load = function(src, core)
 		c.asset_tracker.signal_completed();
 	}}(this, src, core);
 	
-	img.onerror = function(src, c) { return function()
+	img.onerror = function(self, src, c) { return function()
 	{
+		var dt = c.renderer.default_tex;
+
 		msg('ERROR: Failed to load texture \'' + src + '\'', 'Renderer');
 		c.asset_tracker.signal_failed();
-	}}(src, core);
+
+		self.drop();
+		self.texture = dt.texture;
+		self.width = dt.width;
+		self.height = dt.height;
+	}}(this, src, core);
 	
 	this.complete = false;
 	core.asset_tracker.signal_started();
@@ -122,18 +129,27 @@ Texture.prototype.isPow2 = function(n)
 // Accepts both Image and Canvas instances.
 Texture.prototype.upload = function(img, src)
 {
-	this.width = img.width || img.videoWidth;
-	this.height = img.height || img.videoHeight;
-	this.image = img;
+	var w = img.width || img.videoWidth;
+	var h = img.height || img.videoHeight;
 	
-	if(!this.isPow2(this.width))
-		msg('WARNING: The width (' + this.width + ') of the texture \'' + src + '\' is not a power of two.');
-
-	if(!this.isPow2(this.height))
-		msg('WARNING: The height (' + this.height + ') of the texture \'' + src + '\' is not a power of two.');
+	if(!this.isPow2(w))
+	{
+		msg('WARNING: The width (' + w + ') of the texture \'' + src + '\' is not a power of two.');
+		return;
+	}
+	
+	if(!this.isPow2(h))
+	{
+		msg('WARNING: The height (' + h + ') of the texture \'' + src + '\' is not a power of two.');
+		return;
+	}
 	
 	var gl = this.gl;
 	
+	this.width = w;
+	this.height = h;
+	this.image = img;
+
 	this.enable();
 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
 	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -1629,8 +1645,8 @@ function Camera(gl)
 function Scene(gl, core, data, base_path)
 {
 	this.gl = gl;
-	this.texture_cache = E2.app.player.core.renderer.texture_cache /*new TextureCache(gl)*/;
-	this.shader_cache = E2.app.player.core.renderer.shader_cache /*new ShaderCache(gl)*/;
+	this.texture_cache = E2.app.player.core.renderer.texture_cache;
+	this.shader_cache = E2.app.player.core.renderer.shader_cache;
 	this.meshes = [];
 	this.materials = {};
 	this.id = 'n/a';
