@@ -391,7 +391,7 @@ function publish(seq, data_dir)
 	process_graph(data.root, data_dir, pub_dir);
 	optimize_graph(data.root);
 	
-	fs.writeFileSync(path.join(pub_dir, 'player_scene.json'), JSON.stringify(data));
+	fs.writeFileSync(path.join(pub_dir, 'scene.json'), JSON.stringify(data));
 	
 	var img_src = path.join('browser', 'images');
 	var img_dst = path.join(pub_dir, 'images');
@@ -439,7 +439,7 @@ function publish(seq, data_dir)
 	mkdirsSync(jq_dst);
 	minify(path.join(jq_src, 'jquery.min.js'), path.join(jq_dst, 'jquery.min.js'));
 
-	copy(path.join('browser', 'player_vr.html'), path.join(pub_dir, 'index.html'));
+	copy(path.join('tools', 'player.html'), path.join(pub_dir, 'index.html'));
 
 	find_unique_plugins(data.root);
 	
