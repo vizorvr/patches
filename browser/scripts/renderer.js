@@ -1428,7 +1428,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			{
 				var dt = null, st = null, nt = null, et = null;
 				var mm = mesh.material;
-			
+				
 				if(mat)
 				{
 					dt = mat.textures[tt.DIFFUSE_COLOR] || mm.textures[tt.DIFFUSE_COLOR];
@@ -1443,29 +1443,33 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 					nt = mm.textures[tt.NORMAL];
 					et = mm.textures[tt.EMISSION_COLOR];
 				}
-			
+				
 				gl.enableVertexAttribArray(this.v_uv0);
 
 				if(dt && this.d_tex !== undefined)
 				{
+					dt = dt.complete ? dt : r.default_tex;
 					gl.uniform1i(this.d_tex, 0);
 					dt.enable(gl.TEXTURE0);
 				}
 
 				if(st && this.s_tex !== undefined)
 				{
+					st = st.complete ? st : r.default_tex;
 					gl.uniform1i(this.s_tex, 1);
 					st.enable(gl.TEXTURE1);
 				}
 
 				if(nt && this.n_tex !== undefined)
 				{
+					nt = nt.complete ? nt : r.default_tex;
 					gl.uniform1i(this.n_tex, 2);
 					nt.enable(gl.TEXTURE2);
 				}
 
 				if(et && this.e_tex !== undefined)
 				{
+					et = et.complete ? et : r.default_tex;
 					gl.uniform1i(this.e_tex, 3);
 					et.enable(gl.TEXTURE3);
 				}
