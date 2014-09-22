@@ -8,7 +8,7 @@ E2.p = E2.plugins["osc_receiver"] = function(core, node)
 		{ name: 'message', dt: core.datatypes.OBJECT, desc: 'Actual OSC message' }
 	];
 	
-	this.core = core;
+	core.add_aux_script('osc/osc-proxy.js');
 };
 
 E2.p.prototype.play = function()
@@ -34,10 +34,4 @@ E2.p.prototype.update_output = function(slot)
 		return this._address;
 
 	return this._message;
-};
-
-E2.p.prototype.state_changed = function(ui)
-{
-	if(!ui)
-		this.core.add_aux_script('osc/osc-proxy.js');
 };

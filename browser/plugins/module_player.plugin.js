@@ -10,7 +10,11 @@ E2.p = E2.plugins["module_player"] = function(core, node)
 	this.output_slots = [
 	]
 	
-	this.core = core;
+	core.add_aux_script('module_player/pt.js', function(self) { return function()
+	{
+		self.player = new Protracker();
+	}}(this));
+
 	this.audio = null;
 	this.playing = false;
 	this.should_play = false;
@@ -62,7 +66,7 @@ E2.p.prototype.update_state = function()
 {
 	var player = this.player;
 	
-	if(!this.player.ready)
+	if(!this.player || !this.player.ready)
 		return;
 	
 	if(this.playing !== this.should_play)
@@ -79,15 +83,4 @@ E2.p.prototype.update_state = function()
 		return;
 
 	this.updated = true;
-};
-
-E2.p.prototype.state_changed = function(ui)
-{
-	if(ui)
-	{
-		this.core.add_aux_script('module_player/pt.js', function(self) { return function()
-		{
-			self.player = new Protracker();
-		}}(this));
-	}
 };

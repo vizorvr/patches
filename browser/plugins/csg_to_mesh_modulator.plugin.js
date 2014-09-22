@@ -10,8 +10,9 @@ E2.p = E2.plugins["csg_to_mesh_modulator"] = function(core, node)
 		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The resulting mesh.' }
 	];
 	
+	core.add_aux_script('csg/csg.js');
+
 	this.gl = core.renderer.context;
-	this.core = core;
 	this.mesh = null;
 	this.csg = null;
 };
@@ -88,10 +89,4 @@ E2.p.prototype.update_state = function()
 E2.p.prototype.update_output = function(slot)
 {
 	return this.mesh;
-};
-
-E2.p.prototype.state_changed = function(ui)
-{
-	if(ui)
-		this.core.add_aux_script('csg/csg.js');
 };

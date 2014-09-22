@@ -10,7 +10,7 @@ E2.p = E2.plugins["osc_float"] = function(core, node)
 		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'Float value from OSC message', def: 0.0 }
 	];
 	
-	this.core = core;
+	core.add_aux_script('osc/osc-proxy.js');
 };
 
 E2.p.prototype.update_input = function(slot, data)
@@ -18,7 +18,7 @@ E2.p.prototype.update_input = function(slot, data)
 	if(!data)
 		return; // TODO Should stop any existing listener.
 		
-	var self = this
+	var self = this;
 
 	// TODO: How are existing listeners discarded?
 	OscProxy.listen(data, function(args)
@@ -36,10 +36,4 @@ E2.p.prototype.reset = function()
 E2.p.prototype.update_output = function(slot)
 {
 	return this.value;
-};
-
-E2.p.prototype.state_changed = function(ui)
-{
-	if(!ui)
-		this.core.add_aux_script('osc/osc-proxy.js');
 };
