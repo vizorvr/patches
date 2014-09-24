@@ -493,8 +493,7 @@ VertexBuffer.vertex_type =
 	UV0: 3,
 	UV1: 4,
 	UV2: 5,
-	UV3: 6,
-	COUNT: 7 // Always last
+	UV3: 6
 };
 
 VertexBuffer.type_stride = [
@@ -683,8 +682,8 @@ Material.get_caps_hash = function(mesh, o_mat)
 	var h = '', tt = Material.texture_type;
 	var mat = o_mat ? o_mat : mesh.material;
 	
-	for(var i = 0, len = VertexBuffer.vertex_type.COUNT; i <len; i++)
-		h += mesh && mesh.vertex_buffers[i] ? '1' : '0';
+	for(var v_type in VertexBuffer.vertex_type)
+		h += mesh && mesh.vertex_buffers[v_type] ? '1' : '0';
 	 
 	h += mat.diffuse_color ? '1' : '0';
 	h += mat.emission_color ? '1' : '0';
