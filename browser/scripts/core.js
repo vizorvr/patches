@@ -352,6 +352,12 @@ function Core(vr_devices, app) {
 			
 		self.active_graph = resolve_graph(self.graphs, d.active_graph); 
 		
+		if(!self.active_graph)
+		{
+			msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
+			self.active_graph = self.root_graph;
+		}
+
 		if(E2.dom.structure)
 		{
 			self.rebuild_structure_tree();
