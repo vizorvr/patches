@@ -45,10 +45,10 @@ TextureSampler.prototype.get_pixel = function(x, y)
 	return [d[o], d[o+1], d[o+2], d[o+3]];
 };
 
-function Texture(gl, handle)
+function Texture(gl, handle, filter)
 {
 	this.gl = gl;
-	this.min_filter = this.mag_filter = gl.LINEAR;
+	this.min_filter = this.mag_filter = filter || gl.LINEAR;
 	this.texture = handle || gl.createTexture();
 	this.width = 0;
 	this.height = 0;

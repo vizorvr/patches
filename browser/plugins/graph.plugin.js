@@ -15,6 +15,7 @@ E2.p = E2.plugins["graph"] = function(core, node)
 		always_update: true, 
 		rt_width: 512, 
 		rt_height: 512,
+		rt_filter: core.renderer.context.LINEAR,
 		input_sids: {}, 
 		output_sids: {}
 	};
@@ -64,13 +65,14 @@ E2.p.prototype.open_editor = function(self)
 	var always_upd = $('<input id="always_upd" type="checkbox" title="If false, this graph is updated only when one of its inputs updates." />');
 	var width_inp = $('<select />');
 	var height_inp = $('<select />');
+	var filter_inp = $('<select />');
 	var upd_lbl = $('<div>Always update:</div>');
 	var width_lbl = $('<div>Texture width:</div>');
 	var height_lbl = $('<div>Texture height:</div>');
-	var r1 = make('div');
-	var r2 = make('div');
-	var r3 = make('div');
-
+	var filter_lbl = $('<div>Texture filtering:</div>');
+	var r1 = make('div'), r2 = make('div'), r3 = make('div'), r4 = make('div');
+	var gl = this.gl;
+	
 	var lbl_css = {
 		'font-size': '14px',
 		'float': 'left',
@@ -81,7 +83,7 @@ E2.p.prototype.open_editor = function(self)
 		'float': 'right',
 		'margin': '2px',
 		'padding': '2px',
-		'width': '60px'
+		'width': '70px'
 	};
 
 	diag.css({
@@ -97,15 +99,22 @@ E2.p.prototype.open_editor = function(self)
 		$('<option />', { value: d, text: '' + d }).appendTo(height_inp);
 	}
 	
+	$('<option />', { value: gl.NEAREST, text: 'Nearest' }).appendTo(filter_inp);
+	$('<option />', { value: gl.LINEAR, text: 'Linear' }).appendTo(filter_inp);
+	filter_inp.val(self.state.rt_filter);
+
 	r1.css('clear', 'both');
 	r2.css('clear', 'both');
 	r3.css('clear', 'both');
+	r4.css('clear', 'both');
 	always_upd.css(inp_css);
 	width_inp.css(inp_css);
 	height_inp.css(inp_css);
+	filter_inp.css(inp_css);
 	upd_lbl.css(lbl_css);
 	width_lbl.css(lbl_css);
 	height_lbl.css(lbl_css);
+	filter_lbl.css(lbl_css);
 	always_upd.css({ 'width': '13px', 'margin-top': '8px' });
 	
 	always_upd.attr('checked', self.state.always_update);
@@ -123,16 +132,21 @@ E2.p.prototype.open_editor = function(self)
 	r3.append(height_lbl);
 	r3.append(height_inp);
 	diag.append(r3);
+	diag.append(make('br'));
+	r4.append(filter_lbl);
+	r4.append(filter_inp);
+	diag.append(r4);
 	
-	var store_state = function(self, always_upd, width_inp, height_inp) { return function(e)
+	var store_state = function(self, always_upd, width_inp, height_inp, filter_inp) { return function(e)
 	{
 		self.state.always_update = always_upd.is(":checked");
 		
-		var w = width_inp.val(), h = height_inp.val();
-		var refresh = self.state.rt_width !== w || self.state.rt_height !== h;
+		var w = width_inp.val(), h = height_inp.val(), f = filter_inp.val();
+		var refresh = self.state.rt_width !== w || self.state.rt_height !== h || self.state.rt_filter !== f;
 		
 		self.state.rt_width = w;
 		self.state.rt_height = h;
+		self.state.rt_filter = f;
 		
 		if(self.framebuffer && refresh)
 		{
@@ -141,7 +155,7 @@ E2.p.prototype.open_editor = function(self)
 		}
 	}};
 	
-	self.core.create_dialog(diag, 'Edit Preferences.', 460, 250, store_state(self, always_upd, width_inp, height_inp));
+	self.core.create_dialog(diag, 'Edit Preferences.', 460, 250, store_state(self, always_upd, width_inp, height_inp, filter_inp));
 };
 
 E2.p.prototype.create_ui = function()
@@ -286,8 +300,8 @@ E2.p.prototype.set_render_target_state = function(on)
 		var t = gl.createTexture();
 
 		gl.bindTexture(gl.TEXTURE_2D, t);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.state.rt_filter);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.state.rt_filter);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.framebuffer.width, this.framebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
@@ -304,7 +318,7 @@ E2.p.prototype.set_render_target_state = function(on)
 		gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		
-		this.texture = new Texture(gl, t);
+		this.texture = new Texture(gl, t, this.state.rt_filter);
 		this.texture.width = this.framebuffer.width;
 		this.texture.height = this.framebuffer.height;
 		this.texture.framebuffer = this.framebuffer;
