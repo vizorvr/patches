@@ -1,5 +1,3 @@
-# Part of the Engi-WebGL suite.
-
 from bpy.props import *
 from bpy_extras.io_utils import ExportHelper
 from mathutils import *
@@ -425,16 +423,16 @@ class EngiBatch:
         json += '\t\t\t\t\t"material": "%s"' % self.material.material.name
         
         ident = ',\n\t\t\t\t\t'
-        json += '%s"vertices": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_v%d' % (self.ctx.file_base_name, self.m_name, self.index), self.verts))
+        json += '%s"vertices": "%s"' % (ident, stream_to_image(self.ctx, '%s_v%d' % (self.m_name, self.index), self.verts))
         
         if export_normals:
-            json += '%s"normals": "%s"' % (ident, stream_to_image(self.ctx, '%s_%s_n%d' % (self.ctx.file_base_name, self.m_name, self.index), self.norms))
+            json += '%s"normals": "%s"' % (ident, stream_to_image(self.ctx, '%s_n%d' % (self.m_name, self.index), self.norms))
             
         for idx in range(4):
             uv = self.uvs[idx]
             
             if len(uv) > 0:
-                json += '%s"uv%d": "%s"' % (ident, idx, stream_to_image(self.ctx, '%s_%s_t%d%d' % (self.ctx.file_base_name, self.m_name, idx, self.index), uv))
+                json += '%s"uv%d": "%s"' % (ident, idx, stream_to_image(self.ctx, '%s_t%d' % (self.m_name, self.index * idx), uv))
                 
         json += '\n\t\t\t\t}'
         return json
@@ -538,7 +536,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         ctx = EngiContext(scene, self.directory)
         
         world_amb = Color((0.0, 0.0, 0.0))
-        filename = os.path.splitext(self.filename)[0]
+        filename = 'scene' #os.path.splitext(self.filename)[0]
         ctx.file_base_name = filename
         ctx.base_path = self.directory
         
@@ -665,9 +663,9 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         mjson += '\n\t},'
         
         if bb_lo and bb_hi:
-            mjson += '\n\t"bounding_box": { "lo": [' + cnr(bb_lo[0]) + ', ' + cnr(bb_lo[1]) + ', ' + cnr(bb_lo[2]) + '], "hi": [' + cnr(bb_hi[0]) + ', ' + cnr(bb_hi[1]) + ', ' + cnr(bb_hi[2]) + '] }\n';
+            mjson += '\n\t"bounding_box": { "lo": [' + cnr(bb_lo[0]) + ', ' + cnr(bb_lo[1]) + ', ' + cnr(bb_lo[2]) + '], "hi": [' + cnr(bb_hi[0]) + ', ' + cnr(bb_hi[1]) + ', ' + cnr(bb_hi[2]) + '] }\n'
         else:
-            mjson += '\n\t"bounding_box": { "lo": [-0.5, -0.5, -0.5], "hi": [0.5, 0.5, 0.5] }\n';
+            mjson += '\n\t"bounding_box": { "lo": [-0.5, -0.5, -0.5], "hi": [0.5, 0.5, 0.5] }\n'
             
         # Convert textures
         ctx.process_textures()
@@ -677,7 +675,6 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         
         # Append the meshes
         json += mjson
-        
         json += '}\n'
         
         f = open(self.directory + filename, 'w')
