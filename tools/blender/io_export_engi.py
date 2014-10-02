@@ -13,7 +13,7 @@ bl_info = {
     'blender': (2, 63, 17),
     'location': 'File > Export > Engi (.json)',
     'description': 'Engi Export (.json)',
-    'url': 'http://www.engine.gl',
+    'url': 'http://www.engijs.org',
     'category': 'Import-Export'
 }
 
@@ -38,9 +38,6 @@ def cnr(n):
         s = s[:-1]
 
     return s
-
-def format_stream(ident, id, s):
-    return '%s%s: [%s]' % (ident, id, ','.join(map(str, s)))
 
 def median_factor(n):
     fact = [1,n]
