@@ -129,7 +129,7 @@ E2.p.prototype.start_playback = function()
 		this.audio_src.start(0);
 		this.state++;
 	}
-}
+};
 
 E2.p.prototype.stop_playback = function()
 {
@@ -138,7 +138,7 @@ E2.p.prototype.stop_playback = function()
 		this.audio_src.stop(0);
 		this.state++;
 	}
-}
+};
 
 E2.p.prototype.update_source = function()
 {
