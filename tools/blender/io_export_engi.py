@@ -324,7 +324,7 @@ class EngiMaterial:
             if img.name in ctx.unique_textures:
                 data = ctx.unique_textures[img.name]
                 
-                return ',\n\t\t\t\t"%s_map": { "factor": %s, "url": "%s" }' % (name, cnr(factor), data['outfn'])
+                return ',\n\t\t\t\t"%s_map": { "url": "%s" }' % (name, data['outfn'])
             else:
                 print('Error: Failed to find unique texture by name: [%s]\n\nThe full collection contains:' % img.name)
                 
@@ -415,40 +415,49 @@ class EngiBatch:
                 uv = flatten(map(lambda v: [math.fmod(v.uv[0], 1.0), math.fmod(v.uv[1], 1.0)], uv))
                 self.uvs[idx] = uv
             
+    def write_streams(self, export_normals):
+    	stream_to_image(self.ctx, '%s_v%d' % (self.m_name, self.index), self.verts)
+    	
+    	if export_normals:
+    		stream_to_image(self.ctx, '%s_n%d' % (self.m_name, self.index), self.norms)
+    	
+    	for idx in range(4):
+    		if len(self.uvs[idx]) > 0:
+    			stream_to_image(self.ctx, '%s_t%d' % (self.m_name, self.index * idx), self.uvs[idx])
+    
     def serialise(self, export_normals):
         json = '\t\t\t\t{\n'
         json += '\t\t\t\t\t"material": "%s"' % self.material.material.name
         
         ident = ',\n\t\t\t\t\t'
-        json += '%s"vertices": "%s"' % (ident, stream_to_image(self.ctx, '%s_v%d' % (self.m_name, self.index), self.verts))
+        json += '%s"vertices": "%s"' % (ident, '%s_v%d' % (self.m_name, self.index))
         
         if export_normals:
-            json += '%s"normals": "%s"' % (ident, stream_to_image(self.ctx, '%s_n%d' % (self.m_name, self.index), self.norms))
+            json += '%s"normals": "%s"' % (ident, '%s_n%d' % (self.m_name, self.index))
             
         for idx in range(4):
-            uv = self.uvs[idx]
-            
-            if len(uv) > 0:
-                json += '%s"uv%d": "%s"' % (ident, idx, stream_to_image(self.ctx, '%s_t%d' % (self.m_name, self.index * idx), uv))
+            if len(self.uvs[idx]) > 0:
+                json += '%s"uv%d": "%s"' % (ident, idx, '%s_t%d' % (self.m_name, self.index * idx))
                 
         json += '\n\t\t\t\t}'
         return json
 
 class EngiMesh:
-    def __init__(self, ctx, obj, mesh, export_normals):
+    def __init__(self, ctx, name, mesh, export_normals):
         self.ctx = ctx
-        self.obj = obj
         self.mesh = mesh
         self.batches = []
         self.bb_lo = [9999999.0, 9999999.0, 9999999.0]
         self.bb_hi = [-9999999.0, -9999999.0, -9999999.0]
         self.v_count = 0
         self.export_normals = export_normals
-        self.name = sanitize_name(self.obj.name)
+        self.name = sanitize_name(name)
+        self.instances = []
         
         n_batches = []
         materials = {}
         mats = mesh.materials
+        self.instances.append(Matrix())
         
         if mats.keys(): # Do we have any materials at all?
             """Create a unique set of referenced materials 
@@ -486,6 +495,19 @@ class EngiMesh:
                 self.v_count += len(b.verts)
                 self.batches.append(b)
     
+    def write_streams(self):
+        for batch in self.batches:
+                batch.write_streams(self.export_normals)
+    
+    def format_matrix(self, m):
+    	comps = []
+    	
+    	for r in range(4):
+    		for c in range(4):
+    			comps.append(cnr(m[c][r]))
+    	
+    	return '[' + ','.join(comps) + ']'
+    
     def serialise(self):
         json = '\t\t"%s": {\n' % self.name
         json += '\t\t\t"batches": [\n'
@@ -496,7 +518,20 @@ class EngiMesh:
                 json += '%s%s' % (b_delim, batch.serialise(self.export_normals))
                 b_delim = ',\n'
         
-        json += '\n\t\t\t]\n\t\t}'
+        json += '\n\t\t\t]'
+        
+        if len(self.instances) > 1:
+        	istr = []
+        	
+        	for inst in self.instances:
+        		istr.append(self.format_matrix(inst))
+        	
+	        json += ',\n\t\t\t"instances": [\n'
+	        json += '\t\t\t\t' + (',\n\t\t\t\t'.join(istr))
+	        json += '\n\t\t\t]'
+        	
+        json += '\n\t\t}'
+        
         return json
         
 class JSONExporter(bpy.types.Operator, ExportHelper):
@@ -584,13 +619,19 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                     
                     mjson += '\n\t},\n'
                         
-        mjson += '\t"meshes": {\n'
-        delim = ''
+        meshes = dict()
         
         for obj in bpy.data.objects:
             dbg('Found object ' + obj.name + ' of type ' + obj.type)
             
             if obj.type == 'MESH':
+                # First, check if we have already seen this mesh. If so, just
+                # add the transform of this object to that as an instance.
+                if obj.data.name in meshes:
+                	print('Found duplicate of mesh: ' + obj.data.name)
+                	meshes[obj.data.name].instances.append(obj.matrix_world)
+                	continue
+                
                 # Copy the object temporarily, so we can maniulate the copy prior
                 # to export, without altering the original scene.
                 objc = obj.copy()
@@ -621,7 +662,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 mesh.transform(obj.matrix_world)
                 mesh.update()
                 
-                cmesh = EngiMesh(ctx, obj, mesh, self.export_normals)
+                cmesh = EngiMesh(ctx, obj.data.name, mesh, self.export_normals)
 
                 m_name = mesh.name
                 
@@ -634,6 +675,17 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 if len(cmesh.batches) < 1 or cmesh.v_count < 1:
                     continue
                 
+                cmesh.write_streams()
+                meshes[obj.data.name] = cmesh;
+                bpy.data.meshes.remove(bpy.data.meshes[mesh.name])
+                
+        mjson += '\t"meshes": {\n'
+        delim = ''
+        
+        for cmesh in meshes.values():
+                mjson += '%s%s' % (delim, cmesh.serialise())
+                delim = ',\n'
+
                 # Update bounds
                 bbl = cmesh.bb_lo
                 bbh = cmesh.bb_hi
@@ -649,14 +701,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 else:
                     for i in range(3):
                         bb_hi[i] = bbh[i] if bbh[i] > bb_hi[i] else bb_hi[i]
-
-                print(bb_lo)
-                print(bb_hi)
-                mjson += '%s%s' % (delim, cmesh.serialise())
-                delim = ',\n'
-                
-                bpy.data.meshes.remove(bpy.data.meshes[m_name])
-                
+        
         mjson += '\n\t},'
         
         if bb_lo and bb_hi:

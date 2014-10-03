@@ -724,7 +724,7 @@ Material.get_caps_hash = function(mesh, o_mat)
 	return h;
 };
 
-function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
+function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker, instances)
 {
 	this.gl = gl;
 	this.prim_type = prim_type;
@@ -736,6 +736,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker)
 	this.stream_count = 0;
 	this.streams_loaded = 0;
 	this.max_prims = null;
+	this.instances = instances;
 	
 	for(var v_type in VertexBuffer.vertex_type)
 		this.vertex_buffers[v_type] = null;
@@ -981,23 +982,18 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 	else
 	{
 		var inst = this.instances;
-		var inst_t = this.instance_transforms;
 		var ft = mat4.create();
-		var ift = inst_t ? mat4.create() : null;
 		
 		if(!this.index_buffer)
 		{
 			for(var i = 0, len = inst.length; i < len; i++)
 			{
 				if(!transform.invert)
-					mat4.multiply(inst[i], transform, ft);
-				else
 					mat4.multiply(transform, inst[i], ft);
+				else
+					mat4.multiply(inst[i], transform, ft);
 				
-				if(ift)
-					mat4.multiply(ft, inst_t[i], ift);
-					
-				shader.bind_transform(ift ? ift : ft);
+				shader.bind_transform(ft);
 				gl.drawArrays(this.prim_type, 0, draw_count);
 			}
 		}
@@ -1008,14 +1004,11 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 			for(var i = 0, len = inst.length; i < len; i++)
 			{
 				if(!transform.invert)
-					mat4.multiply(inst[i], transform, ft);
-				else
 					mat4.multiply(transform, inst[i], ft);
+				else
+					mat4.multiply(inst[i], transform, ft);
 			
-				if(ift)
-					mat4.multiply(ft, inst_t[i], ift);
-
-				shader.bind_transform(ift ? ift : ft);
+				shader.bind_transform(ft);
 				gl.drawElements(this.prim_type, draw_count, gl.UNSIGNED_SHORT, 0);
 			}
 		}
@@ -1687,7 +1680,7 @@ Scene.prototype.load_json = function(data, base_path)
 		for(var b = 0, len = m.batches.length; b < len; b++)
 		{
 			var batch = m.batches[b];
-			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, batch, base_path, this.core.asset_tracker);
+			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, batch, base_path, this.core.asset_tracker, m.instances);
 		
 			mesh.id = id + '_b' + b;
 			mesh.material = this.materials[batch.material];

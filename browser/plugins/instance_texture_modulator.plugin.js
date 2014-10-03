@@ -71,7 +71,6 @@ E2.p.prototype.update_state = function()
 		}
 					
 		m.instances = inst;
-		m.instance_transforms = null;
 	}
 };	
 
