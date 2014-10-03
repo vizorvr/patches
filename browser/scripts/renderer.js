@@ -622,7 +622,7 @@ function Material(gl, t_cache, data, base_path)
 		this.depth_test = data.depth_test ? data.depth_test : true;
 		this.depth_write = data.depth_write ? data.depth_write : true;
 		this.alpha_clip = data.alpha_clip ? data.alpha_clip : false;
-		this.shinyness = data.shininess ? data.shininess : 0.0; // TODO: Fix this in the exporter, re-export all relevant assets.
+		this.shinyness = data.shinyness ? data.shinyness : 0.0;
 		this.double_sided = data.double_sided ? true : false;
 	}
 }

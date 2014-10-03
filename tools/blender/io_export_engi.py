@@ -39,6 +39,15 @@ def cnr(n):
 
     return s
 
+def clean_dir(path):
+	mask = ['png', 'jpg', 'json']
+	
+	for filename in os.listdir(path):
+		ffn = os.path.join(path, filename)
+
+		if os.path.isfile(ffn) and os.path.splitext(filename)[1][:1] in mask:
+			os.remove(ffn)
+
 def median_factor(n):
     fact = [1,n]
     check = 2
@@ -315,7 +324,8 @@ class EngiMaterial:
         
         json += '\t\t\t\t"ambient_color": [%s, %s, %s, 1],\n' % (cnr(amb[0]), cnr(amb[1]), cnr(amb[2]))
         json += '\t\t\t\t"diffuse_color": [%s, %s, %s, %s],\n' % (cnr(d.r), cnr(d.g), cnr(d.b), cnr(alpha))
-        json += '\t\t\t\t"double_sided": %s' % (str(self.mesh.show_double_sided).lower())
+        json += '\t\t\t\t"double_sided": %s,\n' % (str(self.mesh.show_double_sided).lower())
+        json += '\t\t\t\t"shinyness": %s' % cnr(m.specular_intensity)
         uvi = 0
         
         def format_map(name, factor, ctx, ts):
@@ -342,7 +352,7 @@ class EngiMaterial:
             # slot per mapping is used.
             if ts.use_map_color_diffuse:
                 if ts.texture.image.name in self.ctx.unique_textures and self.ctx.unique_textures[ts.texture.image.name]['achannel']:
-                    json += ',\n\t\t\t\t"depth_write": false,\n\t\t\t\t"depth_test": false,\n\t\t\t\t"alpha_clip": true'
+                    json += ',\n\t\t\t\t"alpha_clip": true'
                 
                 json += format_map('diffuse_color', ts.diffuse_color_factor, self.ctx, ts)
             elif ts.use_map_emission:
@@ -571,6 +581,11 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
         filename = 'scene' #os.path.splitext(self.filename)[0]
         ctx.file_base_name = filename
         ctx.base_path = self.directory
+        
+        # Remove all png, jpg and json files from the selected output directory
+        # since the mesh names may have changed or we may be trying to export a
+        # new model to an existing directory, which would leave left-over files behind.
+        clean_dir(self.directory)
         
         filename = filename + '.json'
         
