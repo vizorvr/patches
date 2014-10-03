@@ -45,7 +45,7 @@ def clean_dir(path):
 	for filename in os.listdir(path):
 		ffn = os.path.join(path, filename)
 
-		if os.path.isfile(ffn) and os.path.splitext(filename)[1][:1] in mask:
+		if os.path.isfile(ffn) and os.path.splitext(filename)[1][1:] in mask:
 			os.remove(ffn)
 
 def median_factor(n):
@@ -197,7 +197,7 @@ class EngiContext:
             img_alpha = img['is_diffuse'] and img_uses_alpha(img['image'])
             
             # img['image'].depth != 24 or (
-            if (self.merge_alpha and img['alpha'] != None) or img_alpha: # Convert all 24bpp images to JPEG, everything else to PNG
+            if (self.merge_alpha and img['alpha'] != None): # or img_alpha: # Convert all 24bpp images to JPEG, everything else to PNG
                 ext = '.png'
                 rs.image_settings.file_format = 'PNG'
                 rs.image_settings.color_mode = 'RGBA'
