@@ -584,9 +584,7 @@ function Material(gl, t_cache, data, base_path)
 	
 	if(data)
 	{
-		var self = this;
-
-		var parse_color = function(name)
+		var parse_color = function(self, name)
 		{
 			var c = data[name];
 			
@@ -594,7 +592,7 @@ function Material(gl, t_cache, data, base_path)
 				self[name] = new Color(c[0], c[1], c[2], c[3]);
 		};
 		
-		var parse_tex = function(name, tgt, old)
+		var parse_tex = function(self, name, tgt, old)
 		{
 			var t = data[name];
 			
@@ -610,14 +608,14 @@ function Material(gl, t_cache, data, base_path)
 			}
 		};
 		
-		parse_color('diffuse_color');
-		parse_color('ambient_color');
-		parse_tex('diffuse_color_map', Material.texture_type.DIFFUSE_COLOR);
-		parse_tex('specular_intensity_map', Material.texture_type.SPECULAR_COLOR);
-		parse_tex('specular_color_map', Material.texture_type.SPECULAR_COLOR);
-		parse_tex('emission_intensity_map', Material.texture_type.EMISSION_COLOR);
-		parse_tex('emission_color_map', Material.texture_type.EMISSION_COLOR);
-		parse_tex('normal_map', Material.texture_type.NORMAL);
+		parse_color(this, 'diffuse_color');
+		parse_color(this, 'ambient_color');
+		parse_tex(this, 'diffuse_color_map', Material.texture_type.DIFFUSE_COLOR);
+		parse_tex(this, 'specular_intensity_map', Material.texture_type.SPECULAR_COLOR);
+		parse_tex(this, 'specular_color_map', Material.texture_type.SPECULAR_COLOR);
+		parse_tex(this, 'emission_intensity_map', Material.texture_type.EMISSION_COLOR);
+		parse_tex(this, 'emission_color_map', Material.texture_type.EMISSION_COLOR);
+		parse_tex(this, 'normal_map', Material.texture_type.NORMAL);
 		
 		this.depth_test = data.depth_test ? data.depth_test : true;
 		this.depth_write = data.depth_write ? data.depth_write : true;
