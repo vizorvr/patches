@@ -1305,9 +1305,30 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			var idx = gl.getAttribLocation(prog, id);
 			
 			if(idx < 0)
-				msg('ERROR: Failed to obtain shader attribute location for ' + id);
+			{
+				msg('ERROR: Failed to obtain shader attribute location for ' + id + '. Active attributes are:');
+				debugger;
+				
+				for(var i = 0; i < gl.getProgramParameter(prog, gl.ACTIVE_ATTRIBUTES); i++)
+					msg('\t' + gl.getActiveAttrib(prog, i).name);
+			}
 			
 			return idx < 0 ? undefined : idx;
+		};
+		
+		var resolve_unif = function(id)
+		{
+			var loc = gl.getUniformLocation(prog, id);
+			
+			if(!loc)
+			{
+				msg('ERROR: Failed to obtain shader uniform location for ' + id +'. Active uniforms are:');
+				
+				for(var i = 0; i < gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS); i++)
+					msg('\t' + gl.getActiveUniform(prog, i).name);
+			}
+			
+			return loc;
 		};
 		
 		if(compiled)
@@ -1322,17 +1343,17 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(streams[v_types.NORMAL])
 				shader.v_norm = resolve_attr('v_norm');
 		
-			shader.m_mat = gl.getUniformLocation(prog, 'm_mat');
-			shader.v_mat = gl.getUniformLocation(prog, 'v_mat');
-			shader.p_mat = gl.getUniformLocation(prog, 'p_mat');
-			shader.a_col = gl.getUniformLocation(prog, 'a_col');
-			shader.d_col = gl.getUniformLocation(prog, 'd_col');
+			shader.m_mat = resolve_unif('m_mat');
+			shader.v_mat = resolve_unif('v_mat');
+			shader.p_mat = resolve_unif('p_mat');
+			shader.a_col = resolve_unif('a_col');
+			shader.d_col = resolve_unif('d_col');
 
 			if(has_lights)
 			{
-				shader.s_col = gl.getUniformLocation(prog, 's_col');
-				shader.shinyness = gl.getUniformLocation(prog, 'shinyness');
-				shader.n_mat = gl.getUniformLocation(prog, 'n_mat');
+				shader.s_col = resolve_unif('s_col');
+				shader.shinyness = resolve_unif('shinyness');
+				shader.n_mat = resolve_unif('n_mat');
 	
 				for(var i = 0; i < 8; i++)
 				{
@@ -1342,13 +1363,13 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 					{
 						var lid = 'l' + i;
 
-						shader[lid + '_pos'] = gl.getUniformLocation(prog, lid + '_pos');
-						shader[lid + '_d_col'] = gl.getUniformLocation(prog, lid + '_d_col');
-						shader[lid + '_s_col'] = gl.getUniformLocation(prog, lid + '_s_col');
-						shader[lid + '_power'] = gl.getUniformLocation(prog, lid + '_power');
+						shader[lid + '_pos'] = resolve_unif(lid + '_pos');
+						shader[lid + '_d_col'] = resolve_unif(lid + '_d_col');
+						shader[lid + '_s_col'] = resolve_unif(lid + '_s_col');
+						shader[lid + '_power'] = resolve_unif(lid + '_power');
 				
 						if(l.type === Light.type.DIRECTIONAL)
-							shader[lid + '_dir'] = gl.getUniformLocation(prog, lid + '_dir');
+							shader[lid + '_dir'] = resolve_unif(lid + '_dir');
 					}
 				}
 			}
@@ -1368,16 +1389,15 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 					if(!tex)
 						return;
 						
-					shader[type + '_tex'] = gl.getUniformLocation(prog, type + '_tex');
+					shader[type + '_tex'] = resolve_unif(type + '_tex');
 					
 					if(tex[1])
-						shader[type + '_ofs'] = gl.getUniformLocation(prog, type + '_ofs');
+						shader[type + '_ofs'] = resolve_unif(type + '_ofs');
 
 					if(tex[2])
-						shader[type + '_scl'] = gl.getUniformLocation(prog, type + '_scl');
+						shader[type + '_scl'] = resolve_unif(type + '_scl');
 				};
 				
-				debugger;
 				get_tex_uniforms(shader, 'd', d_tex);
 				get_tex_uniforms(shader, 's', s_tex);
 				get_tex_uniforms(shader, 'n', n_tex);
