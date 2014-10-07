@@ -40,6 +40,7 @@ E2.p.prototype.update_input = function(slot, data)
 		
 		if(!data)
 		{
+			this.material = null;
 			this.material_caps = '';
 			return;	
 		}
@@ -74,6 +75,7 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 		}
 		else if(slot.index === 1)
 		{
+			this.material = null;
 			this.material_caps = '';
 			this.overload_shaders = null;
 		}
