@@ -54,6 +54,7 @@
 	
 	"CAMERAS":
 	{
+		"Camera: Orbit camera": "orbit_camera",
 		"Camera: Perspective camera setup": "camera_perspective_camera_setup",
 		"Camera: Perspective with zoom only": "camera_with_zoom_only",
 		"Camera: Mouse controlled camera": "camera_with_mouse_controls"
