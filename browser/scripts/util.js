@@ -129,6 +129,7 @@ function load_script(url, onload, onerror)
 	var script = document.createElement('script');
 
 	script.src = url;
+	script.setAttribute('async', 'false');
 	
 	if(onload)
 		script.onload = onload;
