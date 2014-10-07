@@ -306,6 +306,37 @@ class EngiMaterial:
             self.ctx.unique_textures[alpha.name]['used'] = False
             self.ctx.unique_textures[d_name]['alpha'] =  alpha
     
+    def format_vec(self, name, value, default):
+    	if value.x == default[0] and value.y == default[1]:
+    		return ''
+    	
+    	return ', "%s": [%s, %s]' % (name, cnr(value.x), cnr(value.y))
+
+    def format_map(self, name, ts):
+    	factor = getattr(ts, name + '_factor')
+    	img = ts.texture.image
+    	uv_idx = 0
+    	
+    	if ts.uv_layer != '':
+        	if ts.uv_layer.name in self.mesh.uv_layers.keys():
+        		uv_idx = self.mesh.uv_layers.keys().index(ts.uv_layer)
+        	else:
+        		print('WARNING: The uv layer "' + ts.uv_layer + '" does not exist. Assuming layer index 0.')
+    	else:
+        	print('WARNING: The ' + name + ' layer in the material ' + self.material.name + ' is not using a UV map. That probably will not work.')
+    	
+    	if img.name in self.ctx.unique_textures:
+        	data = self.ctx.unique_textures[img.name]
+        
+        	return ',\n\t\t\t\t"%s_map": { "url": "%s", "uv_idx": %d%s%s }' % (name, data['outfn'], uv_idx, self.format_vec('offset', ts.offset, [0, 0]), self.format_vec('scale', ts.scale, [1, 1]))
+    	else:
+        	print('Error: Failed to find unique texture by name: [%s]\n\nThe full collection contains:' % img.name)
+		        
+        	for name in self.ctx.unique_textures:
+                	print('[%s]' % name)
+    		
+    	return ''
+        
     def serialise(self):
         m = self.material
         json = ''
@@ -328,21 +359,6 @@ class EngiMaterial:
         json += '\t\t\t\t"shinyness": %s' % cnr(m.specular_intensity)
         uvi = 0
         
-        def format_map(name, factor, ctx, ts):
-            img = ts.texture.image
-            
-            if img.name in ctx.unique_textures:
-                data = ctx.unique_textures[img.name]
-                
-                return ',\n\t\t\t\t"%s_map": { "url": "%s" }' % (name, data['outfn'])
-            else:
-                print('Error: Failed to find unique texture by name: [%s]\n\nThe full collection contains:' % img.name)
-                
-                for name in ctx.unique_textures:
-                        print('[%s]' % name)
-            
-            return ''
-	        
         for ts in self.material.texture_slots:
             if ts_invalid(ts):
                 continue
@@ -354,17 +370,13 @@ class EngiMaterial:
                 if ts.texture.image.name in self.ctx.unique_textures and self.ctx.unique_textures[ts.texture.image.name]['achannel']:
                     json += ',\n\t\t\t\t"alpha_clip": true'
                 
-                json += format_map('diffuse_color', ts.diffuse_color_factor, self.ctx, ts)
-            elif ts.use_map_emission:
-                json += format_map('emission_intensity', ts.emission_factor, self.ctx, ts)
-            elif ts.use_map_specular:
-                json += format_map('specular_intensity', ts.specular_factor, self.ctx, ts)
+                json += self.format_map('diffuse_color', ts)
             elif ts.use_map_color_spec:
-                json += format_map('specular_color', ts.specular_color_factor, self.ctx, ts)
+                json += self.format_map('specular_color', ts)
             elif ts.use_map_color_emission:
-                json += format_map('emission_color', ts.emission_color_factor, self.ctx, ts)
+                json += self.format_map('emission_color', ts)
             elif ts.use_map_normal:
-                json += format_map('normal', ts.normal_factor, self.ctx, ts)
+                json += self.format_map('normal', ts)
         
         json += '\n\t\t\t}'
         
