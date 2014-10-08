@@ -1076,6 +1076,16 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 
 		vs_src.push('precision lowp float;');
 		vs_src.push('attribute vec3 v_pos;');
+
+		if(streams[v_types.COLOR])
+			vs_src.push('attribute vec4 v_col;');
+
+		if(streams[v_types.NORMAL])
+			vs_src.push('attribute vec3 v_norm;');
+
+		if(streams[v_types.UV0])
+			vs_src.push('attribute vec2 v_uv0;');
+
 		vs_src.push('uniform vec4 d_col;');
 		vs_src.push('uniform mat4 m_mat;');
 		vs_src.push('uniform mat4 v_mat;');
@@ -1092,13 +1102,9 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		if(uniforms_ps)
 			ps_src.push(uniforms_ps);
 	
-		if(streams[v_types.COLOR])
-			vs_src.push('attribute vec4 v_col;');
-
 		if(streams[v_types.NORMAL])
 		{
 			vs_src.push('uniform mat3 n_mat;');
-			vs_src.push('attribute vec3 v_norm;');
 			vs_src.push('varying vec3 f_norm;');
 		
 			ps_src.push('varying vec3 f_norm;');
@@ -1141,9 +1147,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 	
 		if(streams[v_types.UV0])
 		{
-			vs_src.push('attribute vec2 v_uv0;');
 			vs_src.push('varying vec2 f_uv0;');
-
 			ps_src.push('varying vec2 f_uv0;');
 			
 			var push_tex_decl = function(tp, id)
@@ -1307,7 +1311,6 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(idx < 0)
 			{
 				msg('ERROR: Failed to obtain shader attribute location for ' + id + '. Active attributes are:');
-				debugger;
 				
 				for(var i = 0; i < gl.getProgramParameter(prog, gl.ACTIVE_ATTRIBUTES); i++)
 					msg('\t' + gl.getActiveAttrib(prog, i).name);
@@ -1381,9 +1384,6 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			{
 				shader.v_uv0 = resolve_attr('v_uv0');
 			
-				if(!shader.v_uv0)
-					debugger;
-				
 				var get_tex_uniforms = function(shader, type, tex)
 				{
 					if(!tex)
