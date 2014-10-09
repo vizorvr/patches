@@ -1249,7 +1249,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				
 						ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_v2l);');
 						ps_dp('    float ' + lid + '_dd = max(0.0, dot(n_dir, ' + liddir + '));');
-						ps_dp('    float ' + lid + '_spec_fac = pow(max(0.0, dot(reflect(-' + liddir + ', n_dir), eye_pos)), shinyness + 1.0);');
+						ps_dp('    float ' + lid + '_spec_fac = pow(max(0.0, dot(reflect(' + liddir + ', n_dir), eye_pos)), shinyness + 1.0);');
 						ps_dp('\n    fc.rgb += ' + lid + '_d_col.rgb * ' + lid + '_dd * ' + lid + '_power;');
 						
 						var s = '    fc.rgb += shine * ' + lid + '_power * ';
