@@ -584,9 +584,9 @@ function Material(gl, t_cache, data, base_path)
 	this.blend_mode = Renderer.blend_mode.NORMAL;
 	this.ambient_color = new Color(0, 0, 0, 1);
 	this.diffuse_color = new Color(1, 1, 1, 1);
-	this.textures = [];
-	this.uv_offsets = [];
-	this.uv_scales = [];
+	this.textures = [null, null, null, null];
+	this.uv_offsets = [null, null, null, null];
+	this.uv_scales = [null, null, null, null];
 	this.lights = [null, null, null, null, null, null, null, null];
 	
 	if(data)
@@ -703,26 +703,21 @@ Material.get_caps_hash = function(mesh, o_mat)
 		
 		for(var i in [tt.DIFFUSE_COLOR, tt.EMISSION_COLOR, tt.SPECULAR_COLOR, tt.NORMAL])
 		{
-			h += (om.textures[i] || (mm && mm.textures[i])) ? '1' : '0';
-			h += (om.uv_offsets[i] || (mm && mm.uv_offsets[i])) ? '1' : '0';
-			h += (om.uv_scales[i] || (mm && mm.uv_scales[i])) ? '1' : '0';
+			h += (om.textures[i] || (mm ? mm.textures[i] : undefined)) ? '1' : '0';
+			h += (om.uv_offsets[i] || (mm ? mm.uv_offsets[i] : undefined)) ? '1' : '0';
+			h += (om.uv_scales[i] || (mm ? mm.uv_scales[i] : undefined)) ? '1' : '0';
 		}
 		
 		return th;
 	};
 	
 	if(o_mat)
-	{
-		if(mesh)
-			h += tex_hash(o_mat, mesh.material);
-		else
-			h += tex_hash(o_mat, null);
-	}
+		h += tex_hash(o_mat, mesh ? mesh.material : null);
 	else
 		h += tex_hash(mat, null);
 
-	for(i = 0; i < 8; i++)
-		h += mat.lights[i] ? (mat.lights[i].type === Light.type.POINT ? 'p' : 'd') : '0';
+	for(var i = 0; i < 8; i++)
+		h += mat.lights[i] ? (mat.lights[i].type === Light.type.POINT ? '2' : '1') : '0';
 	
 	return h;
 };
@@ -1189,8 +1184,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			vs_dp('void main(void) {');
 			vs_dp('    vec4 tp = m_mat * vec4(v_pos, 1.0);\n');
 
-			vs_dp('    tp = v_mat * tp;');
-			vs_dp('    gl_Position = p_mat * tp;');
+			vs_dp('    gl_Position = p_mat * v_mat * tp;');
 
 			if(has_lights)
 			{
@@ -1209,7 +1203,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 					}
 				}
 				
-				vs_dp('    eye_pos = -normalize(tp.xyz);');
+				vs_dp('    eye_pos = normalize(tp.xyz);');
 			}
 			
 			if(streams[v_types.COLOR])
@@ -1218,7 +1212,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				vs_dp('    f_col = d_col;');
 			
 			if(streams[v_types.NORMAL])
-				vs_dp('    f_norm = n_mat * v_norm;');
+				vs_dp('    f_norm = normalize(n_mat * v_norm);');
 			
 			if(streams[v_types.UV0])
 				vs_dp('    f_uv0 = v_uv0;');		
@@ -1237,10 +1231,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 
 			if(streams[v_types.NORMAL] && has_lights)
 			{
-				if(streams[v_types.NORMAL] && streams[v_types.UV0] && n_tex)
+				if(streams[v_types.UV0] && n_tex)
 					ps_dp('    vec3 n_dir = normalize(f_norm * -(texture2D(n_tex, ' + get_coords(0, 'n', n_tex) + ').rgb - 0.5 * 2.0));');
 				else
-					ps_dp('    vec3 n_dir = normalize(f_norm);');
+					ps_dp('    vec3 n_dir = f_norm;');
 
 				ps_dp('    float shine = max(1.0, shinyness);');
 				
@@ -1255,8 +1249,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				
 						ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_v2l);');
 						ps_dp('    float ' + lid + '_dd = max(0.0, dot(n_dir, ' + liddir + '));');
-						ps_dp('    float ' + lid + '_spec_fac = pow(max(0.0, dot(reflect(-' + liddir + ', n_dir), eye_pos)), shinyness + 1.0);\n');
-						ps_dp('\n    fc.rgb += ' + lid + '_d_col.rgb * f_col.rgb * ' + lid + '_dd * ' + lid + '_power;\n');
+						ps_dp('    float ' + lid + '_spec_fac = pow(max(0.0, dot(reflect(-' + liddir + ', n_dir), eye_pos)), shinyness + 1.0);');
+						ps_dp('\n    fc.rgb += ' + lid + '_d_col.rgb * ' + lid + '_dd * ' + lid + '_power;');
 						
 						var s = '    fc.rgb += shine * ' + lid + '_power * ';
 				
@@ -1272,6 +1266,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			
 			if(!has_lights)
 				ps_dp('    fc.rgb = f_col.rgb;');
+			else
+				ps_dp('    fc.rgb *= f_col.rgb;');
 			
 			if(streams[v_types.UV0])
 			{
@@ -1279,7 +1275,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 					ps_dp('    fc *= texture2D(d_tex, ' + get_coords(0, 'd', d_tex) + ');');
 				
 				if(e_tex)
-					ps_dp('    fc.rgb += texture2D(e_tex, ' + get_coords(0, 'e', e_tex) + ').rgb;');
+				{
+					ps_dp('    vec4 ec = texture2D(e_tex, ' + get_coords(0, 'e', e_tex) + ');');
+					ps_dp('    fc.rgb += ec.rgb * ec.a;');
+				}
 			}
 
 			ps_dp('    fc.rgb += a_col.rgb;\n');
@@ -1343,7 +1342,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(streams[v_types.VERTEX])
 				shader.v_pos = resolve_attr('v_pos');
 		
-			if(streams[v_types.NORMAL])
+			// NOTE: The drivers will optimize out the attribute if the f_norm varying
+			// isn't used in the pixel shader (and it won't be if there are no
+			// material lights).
+			if(streams[v_types.NORMAL] && has_lights)
 				shader.v_norm = resolve_attr('v_norm');
 		
 			shader.m_mat = resolve_unif('m_mat');
@@ -1470,20 +1472,33 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				    st = this.get_all_params(mat, mm, tt.SPECULAR_COLOR),
 				    nt = this.get_all_params(mat, mm, tt.NORMAL),
 				    et = this.get_all_params(mat, mm, tt.EMISSION_COLOR);
-				
+				var disable_tex = function(stage)
+				{
+					gl.activeTexture(stage);
+					gl.bindTexture(gl.TEXTURE_2D, null);
+				};
+								
 				gl.enableVertexAttribArray(this.v_uv0);
 
 				if(dt && this.d_tex !== undefined)
 					shader.bind_tex(this.d_tex, this.d_ofs, this.d_scl, 0, gl.TEXTURE0, dt, r.default_tex);
-
+				else
+					disable_tex(gl.TEXTURE0);
+					
 				if(st && this.s_tex !== undefined)
 					shader.bind_tex(this.s_tex, this.s_ofs, this.s_scl, 1, gl.TEXTURE1, st, r.default_tex);
+				else
+					disable_tex(gl.TEXTURE1);
 
 				if(nt && this.n_tex !== undefined)
 					shader.bind_tex(this.n_tex, this.n_ofs, this.n_scl, 2, gl.TEXTURE2, nt, r.default_tex);
+				else
+					disable_tex(gl.TEXTURE2);
 
 				if(et && this.e_tex !== undefined)
 					shader.bind_tex(this.e_tex, this.e_ofs, this.e_scl, 3, gl.TEXTURE3, et, r.default_tex);
+				else
+					disable_tex(gl.TEXTURE3);
 			}
 		
 			if(this.apply_uniforms_custom)
@@ -1650,7 +1665,7 @@ ShaderProgram.prototype.bind_transform = function(m_mat)
 	
 ShaderProgram.prototype.get_tex_param = function(mat, mesh_mat, name, type)
 {
-	return (mat ? mat[name][type] : undefined) || (mesh_mat && mesh_mat[name][type]);
+	return (mat ? mat[name][type] : undefined) || (mesh_mat ? mesh_mat[name][type] : undefined);
 };
 
 ShaderProgram.prototype.get_all_params = function(mat, mesh_mat, type)
