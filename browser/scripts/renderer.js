@@ -1227,17 +1227,19 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		if(!ps_custom)
 		{
 			ps_dp('void main(void) {');
-			ps_dp('    vec4 fc = vec4(0.0, 0.0, 0.0, f_col.a);');
+
+			if(!has_lights)
+				ps_dp('    vec4 fc = f_col;');
+			else
+				ps_dp('    vec4 fc = vec4(0.0, 0.0, 0.0, f_col.a);');
 
 			if(streams[v_types.NORMAL] && has_lights)
 			{
 				if(streams[v_types.UV0] && n_tex)
 					ps_dp('    vec3 n_dir = normalize(f_norm * -(texture2D(n_tex, ' + get_coords(0, 'n', n_tex) + ').rgb - 0.5 * 2.0));');
 				else
-					ps_dp('    vec3 n_dir = f_norm;');
+					ps_dp('    vec3 n_dir = normalize(f_norm);');
 
-				ps_dp('    float shine = max(1.0, shinyness);');
-				
 				for(var i = 0; i < 8; i++)
 				{
 					var l = lights[i];
@@ -1249,10 +1251,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				
 						ps_dp('    vec3 ' + liddir + ' = normalize(' + lid + '_v2l);');
 						ps_dp('    float ' + lid + '_dd = max(0.0, dot(n_dir, ' + liddir + '));');
-						ps_dp('    float ' + lid + '_spec_fac = pow(max(0.0, dot(reflect(' + liddir + ', n_dir), eye_pos)), shinyness + 1.0);');
+						ps_dp('    float ' + lid + '_spec_fac = pow(max(0.0, dot(reflect(-' + liddir + ', n_dir), eye_pos)), shinyness + 1.0);');
 						ps_dp('\n    fc.rgb += ' + lid + '_d_col.rgb * ' + lid + '_dd * ' + lid + '_power;');
 						
-						var s = '    fc.rgb += shine * ' + lid + '_power * ';
+						var s = '    fc.rgb += shinyness * ' + lid + '_power * ';
 				
 						s += lid + '_s_col.rgb * s_col.rgb * ' + lid + '_spec_fac';
 						
@@ -1264,9 +1266,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 				}
 			}
 			
-			if(!has_lights)
-				ps_dp('    fc.rgb = f_col.rgb;');
-			else
+			if(has_lights)
 				ps_dp('    fc.rgb *= f_col.rgb;');
 			
 			if(streams[v_types.UV0])
