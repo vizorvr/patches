@@ -299,7 +299,8 @@ Renderer.prototype.begin_frame = function()
 		gl.bound_tex_stage = null;
 		gl.bound_mesh = null;
 		gl.bound_shader = null;
-		
+		gl.bound_material = null;
+
 		// this.update_viewport();
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	}	
@@ -703,9 +704,9 @@ Material.get_caps_hash = function(mesh, o_mat)
 		
 		for(var i in [tt.DIFFUSE_COLOR, tt.EMISSION_COLOR, tt.SPECULAR_COLOR, tt.NORMAL])
 		{
-			h += (om.textures[i] || (mm ? mm.textures[i] : undefined)) ? '1' : '0';
-			h += (om.uv_offsets[i] || (mm ? mm.uv_offsets[i] : undefined)) ? '1' : '0';
-			h += (om.uv_scales[i] || (mm ? mm.uv_scales[i] : undefined)) ? '1' : '0';
+			th += (om.textures[i] || (mm ? mm.textures[i] : undefined)) ? '1' : '0';
+			th += (om.uv_offsets[i] || (mm ? mm.uv_offsets[i] : undefined)) ? '1' : '0';
+			th += (om.uv_scales[i] || (mm ? mm.uv_scales[i] : undefined)) ? '1' : '0';
 		}
 		
 		return th;
@@ -930,9 +931,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 	if(!verts || !shader || !shader.linked || this.streams_loaded < this.stream_count)
 		return;
 	
-	var unbound = gl.bound_mesh !== this || gl.bound_shader !== shader;
-	
-	if(unbound)
+	if(gl.bound_mesh !== this || gl.bound_shader !== this.shader)
 	{
 		shader.enable();
 	
@@ -945,9 +944,15 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 		}
 
 		shader.bind_camera(camera);
-		shader.apply_uniforms(this, material);
+		shader.apply_uniforms(this, this.material);
 		gl.bound_mesh = this;
 		gl.bound_shader = shader;
+	}
+	
+	if(gl.bound_material !== this.material)
+	{
+		this.material.enable();
+		gl.bound_material = this.material;
 	}
 	
 	var draw_count = this.index_buffer ? this.index_buffer.count : verts.count;
@@ -960,7 +965,6 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 			draw_count = rd;
 	}
 	
-		
 	if(!this.instances)
 	{
 		shader.bind_transform(transform);
@@ -1035,6 +1039,9 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 	{
 		var caps = Material.get_caps_hash(mesh, material);
 		
+		if(uniforms_vs || uniforms_ps || vs_custom || ps_custom) // TODO: Stupid. Use a proper hash of the combined text.
+			caps += '_' + Math.floor(Math.random() * 128000);
+
 		cached = [cache.get(caps), caps];
 	}
 
@@ -1781,7 +1788,7 @@ Scene.prototype.render = function(gl, camera, transform, overload_shaders, mater
 		{
 			var m = meshes[i];
 		
-			m.render(camera, transform, m.shader, null);
+			m.render(camera, transform, m.shader, material);
 		}
 	}
 };
