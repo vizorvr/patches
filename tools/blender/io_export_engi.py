@@ -317,13 +317,13 @@ class EngiMaterial:
     	img = ts.texture.image
     	uv_idx = 0
     	
-    	if ts.uv_layer != '':
-        	if ts.uv_layer.name in self.mesh.uv_layers.keys():
-        		uv_idx = self.mesh.uv_layers.keys().index(ts.uv_layer)
-        	else:
-        		print('WARNING: The uv layer "' + ts.uv_layer + '" does not exist. Assuming layer index 0.')
-    	else:
-        	print('WARNING: The ' + name + ' layer in the material ' + self.material.name + ' is not using a UV map. That probably will not work.')
+    	#if ts.uv_layer != '':
+        #	if ts.uv_layer.name in self.mesh.uv_layers.keys():
+        #		uv_idx = self.mesh.uv_layers.keys().index(ts.uv_layer)
+        #	else:
+        #		print('WARNING: The uv layer "' + ts.uv_layer + '" does not exist. Assuming layer index 0.')
+    	#else:
+        #	print('WARNING: The ' + name + ' layer in the material ' + self.material.name + ' is not using a UV map. That probably will not work.')
     	
     	if img.name in self.ctx.unique_textures:
         	data = self.ctx.unique_textures[img.name]
@@ -689,7 +689,7 @@ class JSONExporter(bpy.types.Operator, ExportHelper):
                 mesh.transform(obj.matrix_world)
                 mesh.update()
                 
-                cmesh = EngiMesh(ctx, obj.data.name, mesh, self.export_normals)
+                cmesh = EngiMesh(ctx, obj.name, mesh, self.export_normals)
 
                 m_name = mesh.name
                 
