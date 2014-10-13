@@ -8,6 +8,7 @@ var path = require('path');
 var exec = require('child_process').exec;
 var FrameDumpServer = require('./lib/framedump-server').FrameDumpServer;
 var OscServer = require('./lib/osc-server').OscServer;
+var WsChannelServer = require('./lib/wschannel-server').WsChannelServer;
 var config = require('./config.json');
 
 var ENGI = config.server.engiPath;
@@ -16,7 +17,7 @@ var listenHost = argv.i || config.server.host;
 var listenPort = argv.p || config.server.port;
 var publishRunning = []; // The current set of projects being published.
 
-if(argv.h || argv.help)
+if (argv.h || argv.help)
 {
 	return console.log('Usage: node server.js -i 127.0.0.1 -p 8000 [/path/to/alt/project]')
 }
@@ -158,5 +159,12 @@ var httpServer = http.createServer(app)
 
 httpServer.listen(listenPort, listenHost);
 
-if(config.server.enableOSC)
+if (config.server.enableOSC)
+{
 	new OscServer().listen(httpServer);
+}
+
+if (config.server.enableChannels)
+{
+	new WsChannelServer().listen(httpServer);
+}
