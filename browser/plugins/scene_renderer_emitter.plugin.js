@@ -40,7 +40,6 @@ E2.p.prototype.update_input = function(slot, data)
 		
 		if(!data)
 		{
-			this.material = null;
 			this.material_caps = '';
 			return;	
 		}
