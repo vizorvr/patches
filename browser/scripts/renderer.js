@@ -945,7 +945,6 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 
 		shader.bind_camera(camera);
 		shader.apply_uniforms(this, this.material);
-		gl.bound_mesh = this;
 		gl.bound_shader = shader;
 	}
 	
@@ -975,7 +974,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 		}
 		else
 		{
-			if(unbound)
+			if(gl.bound_mesh !== this)
 				this.index_buffer.enable();
 			
 			gl.drawElements(this.prim_type, draw_count, gl.UNSIGNED_SHORT, 0);
@@ -1015,6 +1014,8 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 			}
 		}
 	}
+
+	gl.bound_mesh = this;
 };
 
 function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custom, ps_custom)
@@ -1317,6 +1318,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(idx < 0)
 			{
 				msg('ERROR: Failed to obtain shader attribute location for ' + id + '. Active attributes are:');
+				debugger;
 				
 				for(var i = 0; i < gl.getProgramParameter(prog, gl.ACTIVE_ATTRIBUTES); i++)
 					msg('\t' + gl.getActiveAttrib(prog, i).name);
@@ -1332,6 +1334,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(!loc)
 			{
 				msg('ERROR: Failed to obtain shader uniform location for ' + id +'. Active uniforms are:');
+				debugger;
 				
 				for(var i = 0; i < gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS); i++)
 					msg('\t' + gl.getActiveUniform(prog, i).name);
