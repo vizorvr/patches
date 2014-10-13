@@ -14,30 +14,32 @@ E2.p = E2.plugins["crypto_cw_get_balances"] = function(core, node)
 E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
+	{
 		this.address = data;
+		
+		if(this.address === '')
+			return;
+		
+		var req = '{"jsonrpc":"2.0","id":0,"method":"proxy_to_counterpartyd","params":{"method":"get_balances", "params":{"filters":{"field":"address","op":"==","value":"' + this.address + '"}}}}';
+	
+		$.ajax({
+			url: 'https://counterwallet.io/_api',
+			type: 'POST',
+			data: req,
+			cache: false,
+			success: function(self) { return function(response)
+			{
+				self.balances = response;
+				self.updated = true;
+			}}(this)	
+		});
+	}
 };
 
 E2.p.prototype.update_state = function()
 {
 	if(this.address === '')
-	{
 		this.balances = {};
-		return;
-	}
-
-	var req = '{"jsonrpc":"2.0","id":0,"method":"proxy_to_counterpartyd","params":{"method":"get_balances", "params":{"filters":{"field":"address","op":"==","value":"' + this.address + '"}}}}';
-	
-	$.ajax({
-		url: 'https://counterwallet.co/_api',
-		type: 'POST',
-		data: req,
-		cache: false,
-		success: function(self) { return function(response)
-		{
-			self.balances = response;
-			self.updated = true;
-		}}(this)	
-	});
 };
 
 E2.p.prototype.update_output = function(slot)
