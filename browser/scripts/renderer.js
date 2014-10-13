@@ -1315,14 +1315,13 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		{
 			var idx = gl.getAttribLocation(prog, id);
 			
-			if(idx < 0)
+			/*if(idx < 0)
 			{
 				msg('ERROR: Failed to obtain shader attribute location for ' + id + '. Active attributes are:');
-				debugger;
 				
 				for(var i = 0; i < gl.getProgramParameter(prog, gl.ACTIVE_ATTRIBUTES); i++)
 					msg('\t' + gl.getActiveAttrib(prog, i).name);
-			}
+			}*/
 			
 			return idx < 0 ? undefined : idx;
 		};
@@ -1331,14 +1330,13 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		{
 			var loc = gl.getUniformLocation(prog, id);
 			
-			if(!loc)
+			/*if(!loc)
 			{
 				msg('ERROR: Failed to obtain shader uniform location for ' + id +'. Active uniforms are:');
-				debugger;
 				
 				for(var i = 0; i < gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS); i++)
 					msg('\t' + gl.getActiveUniform(prog, i).name);
-			}
+			}*/
 			
 			return loc;
 		};
@@ -1394,7 +1392,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 			if(streams[v_types.UV0])
 			{
-				shader.v_uv0 = resolve_attr('v_uv0');
+				if(d_tex)
+					shader.v_uv0 = resolve_attr('v_uv0');
 			
 				var get_tex_uniforms = function(shader, type, tex)
 				{
