@@ -229,6 +229,7 @@ function Renderer(vr_devices, canvas_id, core)
 	this.def_ambient = new Float32Array([0.0, 0.0, 0.0, 1.0]);
 	this.def_diffuse = new Float32Array([1.0, 1.0, 1.0, 1.0]);
 	this.def_specular = new Float32Array([1.0, 1.0, 1.0, 1.0]);
+	this.up_vec = vec3.createFrom(0.0, 0.0, 1.0);
 	
 	this.org_width = this.canvas.width();
 	this.org_height = this.canvas.height();
@@ -958,7 +959,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 		gl.bound_shader = shader;
 	}
 	
-	if(gl.bound_material !== this.material)
+	if(gl.bound_material !== mat)
 	{
 		this.material.enable();
 		gl.bound_material = mat;
