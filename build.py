@@ -160,7 +160,7 @@ print '\tCopying help folder.'
 shutil.copytree(src_dir + '/help/', build_dir + '/help/')
 
 print '\tCopying index.html.'
-os.system('cp ' + src_dir + '/*.html ' + src_dir + '/player_scene.json ' + build_dir)
+os.system('cp ' + src_dir + '/*.html ' + build_dir)
 
 print '\tCopying favicon.'
 os.system('cp ' + src_dir + '/favicon.ico ' + build_dir)
