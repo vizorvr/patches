@@ -702,12 +702,21 @@ Material.get_caps_hash = function(mesh, o_mat)
 	{
 		var th = '';
 		
-		for(var i in [tt.DIFFUSE_COLOR, tt.EMISSION_COLOR, tt.SPECULAR_COLOR, tt.NORMAL])
-		{
-			th += (om.textures[i] || (mm ? mm.textures[i] : undefined)) ? '1' : '0';
-			th += (om.uv_offsets[i] || (mm ? mm.uv_offsets[i] : undefined)) ? '1' : '0';
-			th += (om.uv_scales[i] || (mm ? mm.uv_scales[i] : undefined)) ? '1' : '0';
-		}
+		th += (om.textures[tt.DIFFUSE_COLOR] || (mm ? mm.textures[tt.DIFFUSE_COLOR] : undefined)) ? '1' : '0';
+		th += (om.uv_offsets[tt.DIFFUSE_COLOR] || (mm ? mm.uv_offsets[tt.DIFFUSE_COLOR] : undefined)) ? '1' : '0';
+		th += (om.uv_scales[tt.DIFFUSE_COLOR] || (mm ? mm.uv_scales[tt.DIFFUSE_COLOR] : undefined)) ? '1' : '0';
+
+		th += (om.textures[tt.SPECULAR_COLOR] || (mm ? mm.textures[tt.SPECULAR_COLOR] : undefined)) ? '1' : '0';
+		th += (om.uv_offsets[tt.SPECULAR_COLOR] || (mm ? mm.uv_offsets[tt.SPECULAR_COLOR] : undefined)) ? '1' : '0';
+		th += (om.uv_scales[tt.SPECULAR_COLOR] || (mm ? mm.uv_scales[tt.SPECULAR_COLOR] : undefined)) ? '1' : '0';
+
+		th += (om.textures[tt.EMISSION_COLOR] || (mm ? mm.textures[tt.EMISSION_COLOR] : undefined)) ? '1' : '0';
+		th += (om.uv_offsets[tt.EMISSION_COLOR] || (mm ? mm.uv_offsets[tt.EMISSION_COLOR] : undefined)) ? '1' : '0';
+		th += (om.uv_scales[tt.EMISSION_COLOR] || (mm ? mm.uv_scales[tt.EMISSION_COLOR] : undefined)) ? '1' : '0';
+
+		th += (om.textures[tt.NORMAL_COLOR] || (mm ? mm.textures[tt.NORMAL_COLOR] : undefined)) ? '1' : '0';
+		th += (om.uv_offsets[tt.NORMAL_COLOR] || (mm ? mm.uv_offsets[tt.NORMAL_COLOR] : undefined)) ? '1' : '0';
+		th += (om.uv_scales[tt.NORMAL_COLOR] || (mm ? mm.uv_scales[tt.NORMAL_COLOR] : undefined)) ? '1' : '0';
 		
 		return th;
 	};
@@ -927,6 +936,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 	var verts = this.vertex_buffers['VERTEX'];
 	var shader = shader || this.shader;
 	var gl = this.gl;
+	var mat = material ? material : this.material;
 	
 	if(!verts || !shader || !shader.linked || this.streams_loaded < this.stream_count)
 		return;
@@ -944,14 +954,14 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 		}
 
 		shader.bind_camera(camera);
-		shader.apply_uniforms(this, this.material);
+		shader.apply_uniforms(this, mat);
 		gl.bound_shader = shader;
 	}
 	
 	if(gl.bound_material !== this.material)
 	{
 		this.material.enable();
-		gl.bound_material = this.material;
+		gl.bound_material = mat;
 	}
 	
 	var draw_count = this.index_buffer ? this.index_buffer.count : verts.count;
