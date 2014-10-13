@@ -103,6 +103,11 @@ var app = express()
 	.use(express.logger(':remote-addr :method :url :status :res[content-length] - :response-time ms'))
 	.use(function(req, res, next)
 	{
+		req.url = req.url.replace(/^\/build\/data\//, '/data/');
+		next();
+	})
+	.use(function(req, res, next)
+	{
 		if(req.url.indexOf('?_') > -1)
 			req.url = req.url.substring(0, req.url.indexOf('?_'));
 		
