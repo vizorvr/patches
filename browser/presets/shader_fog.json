@@ -1,0 +1,98 @@
+{
+    "abs_t": 83.893,
+    "active_graph": 0,
+    "graph_uid": 25,
+    "root": {
+        "node_uid": 16,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "from_mesh_custom_shader",
+                "x": 683,
+                "y": 324,
+                "uid": 13,
+                "dsid": 2,
+                "state": {
+                    "vs_src": "void main(void) {\n    vec4 tp = m_mat * vec4(v_pos, 1.0);\n\n    tp = v_mat * tp;\n    gl_Position = p_mat * tp;\n    f_col = d_col;\n    f_norm = n_mat * v_norm;\n    f_uv0 = v_uv0;\n}",
+                    "ps_src": "void main(void) {\n    float d = clamp((gl_FragCoord.z / gl_FragCoord.w) * fd, 0.0, 1.0);\n    vec4 fc = vec4(0.0, 0.0, 0.0, f_col.a);\n    \n    fc.rgb = f_col.rgb;\n    fc *= texture2D(d_tex, f_uv0.st);\n    fc.rgb += a_col.rgb;\n    fc.rbg = mix(fog_color.rbg, fc.rgb, 1.0 - d);\n    \n    gl_FragColor = fc; // vec4(d, d, d, 1.0);\n}",
+                    "changed": true,
+                    "slot_ids": {
+                        "fog_color": {
+                            "id": 0,
+                            "dt": {
+                                "id": 3,
+                                "name": "Color"
+                            },
+                            "uniform": {}
+                        },
+                        "fd": {
+                            "id": 1,
+                            "dt": {
+                                "id": 0,
+                                "name": "Float"
+                            },
+                            "uniform": {}
+                        }
+                    }
+                },
+                "dyn_in": [
+                    {
+                        "name": "fog_color",
+                        "dt": 3,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "fd",
+                        "dt": 0,
+                        "uid": 1,
+                        "index": 1,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "knob_float_generator",
+                "x": 546,
+                "y": 562,
+                "uid": 14,
+                "state": {
+                    "val": 0.94
+                },
+                "title": "Fog dist"
+            },
+            {
+                "plugin": "color_picker",
+                "x": 285,
+                "y": 466,
+                "uid": 15,
+                "state": {
+                    "hue": 0,
+                    "sat": 0.2,
+                    "lum": 0.43999999999999995
+                }
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 15,
+                "dst_nuid": 13,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 14,
+                "dst_nuid": 13,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "dst_dyn": true
+            }
+        ]
+    }
+}

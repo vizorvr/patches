@@ -1,0 +1,602 @@
+{
+    "abs_t": 202.313,
+    "active_graph": 0,
+    "graph_uid": 59,
+    "root": {
+        "node_uid": 22,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 457,
+                "y": 396,
+                "uid": 21,
+                "dsid": 6,
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "input_sids": {
+                        "5": 1,
+                        "10": 2,
+                        "11": 3,
+                        "16": 4,
+                        "17": 5
+                    },
+                    "output_sids": {}
+                },
+                "title": "Scene loader with custom shader",
+                "graph": {
+                    "node_uid": 18,
+                    "uid": 57,
+                    "parent_uid": 0,
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "from_mesh_custom_shader",
+                            "x": 1584,
+                            "y": 85,
+                            "uid": 0,
+                            "state": {
+                                "vs_src": "void main(void) {\n    vec4 tp = m_mat * vec4(v_pos, 1.0);\n\n    tp = v_mat * tp;\n    gl_Position = p_mat * tp;\n    f_col = d_col;\n    f_norm = n_mat * v_norm;\n    f_uv0 = v_uv0;\n}",
+                                "ps_src": "void main(void) {\n    vec4 fc = vec4(0.0, 0.0, 0.0, f_col.a);\n    fc.rgb = f_col.rgb;\n    fc *= texture2D(d_tex, f_uv0.st);\n    fc.rgb += a_col.rgb;\n\n    if(fc.a < 0.5)\n        discard;\n\n    gl_FragColor = fc;\n}",
+                                "changed": false,
+                                "slot_ids": {}
+                            }
+                        },
+                        {
+                            "plugin": "scale_matrix",
+                            "x": 1609,
+                            "y": 232,
+                            "uid": 2
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 1475,
+                            "y": 243,
+                            "uid": 3
+                        },
+                        {
+                            "plugin": "divide_modulator",
+                            "x": 1361,
+                            "y": 262,
+                            "uid": 4
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 1241,
+                            "y": 231,
+                            "uid": 5,
+                            "dsid": 25,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "mesh scale",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "max_modulator",
+                            "x": 1281,
+                            "y": 334,
+                            "uid": 6
+                        },
+                        {
+                            "plugin": "vector_magnitude",
+                            "x": 1181,
+                            "y": 382,
+                            "uid": 7
+                        },
+                        {
+                            "plugin": "vector_magnitude",
+                            "x": 1182,
+                            "y": 315,
+                            "uid": 8
+                        },
+                        {
+                            "plugin": "scene_get_bounding_box",
+                            "x": 1050,
+                            "y": 334,
+                            "uid": 9
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 1331,
+                            "y": 545,
+                            "uid": 10,
+                            "dsid": 24,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "transform",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 4,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 1343,
+                            "y": 453,
+                            "uid": 11,
+                            "dsid": 21,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "material",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 12,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "concatenate_matrix_modulator",
+                            "x": 1724,
+                            "y": 211,
+                            "uid": 12
+                        },
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 1955,
+                            "y": 103,
+                            "uid": 13
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 1287,
+                            "y": 49,
+                            "uid": 14,
+                            "dsid": 2,
+                            "state": {
+                                "enabled": true,
+                                "always_update": true,
+                                "rt_width": 512,
+                                "rt_height": 512,
+                                "input_sids": {
+                                    "8": 1
+                                },
+                                "output_sids": {
+                                    "7": 0
+                                }
+                            },
+                            "title": "Get mesh",
+                            "graph": {
+                                "node_uid": 9,
+                                "uid": 58,
+                                "parent_uid": 57,
+                                "open": true,
+                                "nodes": [
+                                    {
+                                        "plugin": "scene_get_mesh_count",
+                                        "x": 412,
+                                        "y": 170,
+                                        "uid": 1
+                                    },
+                                    {
+                                        "plugin": "subtract_modulator",
+                                        "x": 604,
+                                        "y": 312,
+                                        "uid": 2
+                                    },
+                                    {
+                                        "plugin": "const_float_generator",
+                                        "x": 235,
+                                        "y": 333,
+                                        "uid": 3,
+                                        "state": {
+                                            "val": 1
+                                        }
+                                    },
+                                    {
+                                        "plugin": "scene_get_mesh_by_index",
+                                        "x": 625,
+                                        "y": 137,
+                                        "uid": 4
+                                    },
+                                    {
+                                        "plugin": "multiply_modulator",
+                                        "x": 492,
+                                        "y": 232,
+                                        "uid": 5
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 93,
+                                        "y": 181,
+                                        "uid": 6,
+                                        "state": {
+                                            "val": 1.6666666666666665,
+                                            "min": 0,
+                                            "max": 5
+                                        },
+                                        "title": "Select mesh"
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 872,
+                                        "y": 119,
+                                        "uid": 7,
+                                        "dsid": 10,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "mesh",
+                                        "dyn_in": [
+                                            {
+                                                "name": "input",
+                                                "dt": 9,
+                                                "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 0,
+                                                "connected": true,
+                                                "is_connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 329,
+                                        "y": 98,
+                                        "uid": 8,
+                                        "dsid": 2,
+                                        "state": {
+                                            "slot_id": 0
+                                        },
+                                        "title": "get scene",
+                                        "dyn_out": [
+                                            {
+                                                "name": "input",
+                                                "dt": 11,
+                                                "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                                "uid": 0,
+                                                "index": 0,
+                                                "type": 1,
+                                                "connected": true
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": 1,
+                                        "dst_nuid": 2,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 3,
+                                        "dst_nuid": 2,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 2,
+                                        "dst_nuid": 5,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 5,
+                                        "dst_nuid": 4,
+                                        "src_slot": 0,
+                                        "dst_slot": 1
+                                    },
+                                    {
+                                        "src_nuid": 6,
+                                        "dst_nuid": 5,
+                                        "src_slot": 0,
+                                        "dst_slot": 0
+                                    },
+                                    {
+                                        "src_nuid": 4,
+                                        "dst_nuid": 7,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 8,
+                                        "dst_nuid": 4,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "src_connected": true,
+                                        "src_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": 8,
+                                        "dst_nuid": 1,
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "src_connected": true,
+                                        "src_dyn": true,
+                                        "offset": 1
+                                    }
+                                ]
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "get scene",
+                                    "dt": 11,
+                                    "uid": 1,
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ],
+                            "dyn_out": [
+                                {
+                                    "name": "mesh",
+                                    "dt": 9,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 898,
+                            "y": 120,
+                            "uid": 16,
+                            "dsid": 2,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "get scene",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 11,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 1763,
+                            "y": 408,
+                            "uid": 17,
+                            "dsid": 2,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "camera",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 6,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 2,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 4,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "offset": 2
+                        },
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 4,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 8,
+                            "dst_nuid": 6,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 7,
+                            "dst_nuid": 6,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 9,
+                            "dst_nuid": 7,
+                            "src_slot": 1,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 9,
+                            "dst_nuid": 8,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 12,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 13,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 12,
+                            "dst_nuid": 13,
+                            "src_slot": 0,
+                            "dst_slot": 3
+                        },
+                        {
+                            "src_nuid": 16,
+                            "dst_nuid": 14,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 17,
+                            "dst_nuid": 13,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 16,
+                            "dst_nuid": 9,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "src_dyn": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 11,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 14,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 14,
+                            "dst_nuid": 13,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_dyn": true,
+                            "offset": 1
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "mesh scale",
+                        "dt": 0,
+                        "uid": 1,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": false,
+                        "connected": false
+                    },
+                    {
+                        "name": "transform",
+                        "dt": 4,
+                        "uid": 2,
+                        "index": 1,
+                        "type": 0,
+                        "is_connected": false,
+                        "connected": false
+                    },
+                    {
+                        "name": "material",
+                        "dt": 12,
+                        "uid": 3,
+                        "index": 2,
+                        "type": 0,
+                        "is_connected": false,
+                        "connected": false
+                    },
+                    {
+                        "name": "get scene",
+                        "dt": 11,
+                        "uid": 4,
+                        "index": 3,
+                        "type": 0,
+                        "is_connected": false,
+                        "connected": false
+                    },
+                    {
+                        "name": "camera",
+                        "dt": 6,
+                        "uid": 5,
+                        "index": 4,
+                        "type": 0,
+                        "is_connected": false,
+                        "connected": false
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}
