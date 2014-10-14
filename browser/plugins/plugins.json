@@ -58,6 +58,8 @@
 	"Generators/Mesh/Plane": "plane_mesh_generator",
 	"Generators/Mesh/Sphere": "sphere_mesh_generator",
 	"Generators/Mesh/Quad": "quad_mesh_generator",
+	"Generators/WebSocket/Channel receiver": "wschannel_receive",
+	"Generators/WebSocket/Channel sender": "wschannel_send",
 	"Generators/OSC/OSC Receiver": "osc_receiver",
 	"Generators/OSC/OSC Float": "osc_float",
 	"Generators/OSC/OSC XY Float": "osc_xy_float",
