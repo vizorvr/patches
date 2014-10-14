@@ -1,5 +1,6 @@
 {
 	"server": {
+		"enableChannels": true,
 		"enableOSC": true,
 		"oscPort": 8001,
 		"enableFrameDumping": true,

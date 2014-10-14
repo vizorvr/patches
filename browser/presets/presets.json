@@ -187,9 +187,15 @@
 		"Post Process: Chroma key": "postprocess_chromakey"
 	},
 
-		"OSC":
+	"OSC":
 	{
 		"Display OSC messages": "display_osc"
+	},
+
+	"Web Socket PubSub":
+	{
+		"Channel Receive": "plugin-wschannel-receive",
+		"Channel Send": "plugin-wschannel-send"
 	},
 
 	"HI-RES RENDERING":
