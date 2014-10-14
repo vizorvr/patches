@@ -17,13 +17,13 @@ E2.p.prototype.update_input = function(slot, data)
 {
 	var that = this;
 
-	WsChannel.off(this._channelName);
+	wsChannel.off(this._channelName);
 
 	this._channelName = data;
 
-	WsChannel.join(this._channelName);
+	wsChannel.join(this._channelName);
 
-	WsChannel.on(this._channelName, function(m)
+	wsChannel.on(this._channelName, function(m)
 	{
 		that.updated = true;
 		that._message = m;

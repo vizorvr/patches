@@ -17,12 +17,12 @@ E2.p.prototype.update_input = function(slot, data)
 	switch(slot.index) {
 		case 0:
 			this._channelName = data;
-			WsChannel.join(this._channelName);
+			wsChannel.join(this._channelName);
 			break;
 		case 1:
 			if (this._channelName)
 			{
-				WsChannel.send(this._channelName, data);
+				wsChannel.send(this._channelName, data);
 			}
 			break;
 	}
