@@ -1361,10 +1361,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(streams[v_types.VERTEX])
 				shader.v_pos = resolve_attr('v_pos');
 		
-			// NOTE: The drivers will optimize out the attribute if the f_norm varying
-			// isn't used in the pixel shader (and it won't be if there are no
-			// material lights).
-			if(streams[v_types.NORMAL] && has_lights)
+			if(streams[v_types.NORMAL])
 				shader.v_norm = resolve_attr('v_norm');
 		
 			shader.m_mat = resolve_unif('m_mat');
