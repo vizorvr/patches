@@ -220,9 +220,9 @@ function Core(vr_devices, app) {
 		// introduces a bug in the connection rendering logic for some (copied)
 		// nested subgraphs.
 		
-		/*E2.dom.canvas_parent.scrollTop(0);
+		E2.dom.canvas_parent.scrollTop(0);
 		E2.dom.canvas_parent.scrollLeft(0);
-		self.scrollOffset = [0, 0];*/
+		self.app.scrollOffset[0] = self.app.scrollOffset[1] = 0;
 		
 		// Clear the current breadcrumb elements and rebuild.
 		E2.dom.breadcrumb.children().remove();
