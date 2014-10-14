@@ -300,7 +300,6 @@ Renderer.prototype.begin_frame = function()
 		gl.bound_tex_stage = null;
 		gl.bound_mesh = null;
 		gl.bound_shader = null;
-		gl.bound_material = null;
 
 		// this.update_viewport();
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -957,12 +956,6 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 		shader.bind_camera(camera);
 		shader.apply_uniforms(this, mat);
 		gl.bound_shader = shader;
-	}
-	
-	if(gl.bound_material !== mat)
-	{
-		this.material.enable();
-		gl.bound_material = mat;
 	}
 	
 	var draw_count = this.index_buffer ? this.index_buffer.count : verts.count;
