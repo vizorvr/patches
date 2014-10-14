@@ -1,19 +1,22 @@
 {
-	
+	"TEMPLATES":
+	{
+		"Template: Master camera & master time": "template_master_camera_and_master_time",
+		"Template: 3D scene and background image": "template_3d_scene_and_background_image",
+		"YC demo": "yc_demo"
+
+	},
 
 	"3D GRAPHICS":
 	{
-		"3D: Scene with camera, material & lights": "3d_scene_with_camera_material_lights", 
-		"3D: Scene loader with camera and transforms": "3d_scene_loader_with_camera_and_transforms",
+		"3D: Scene with camera, material & lights": "3d_scene_with_camera_material_lights",
+		"3D: Scene with material, light and transforms": "3d_scene_material_light_transforms", 
 		"3D: Plain scene loader (no camera)": "3d_plain_scene_loader",	
 		"3D: Scene loader with mouse controls": "3d_scene_loader_with_mousecontrol",
-		"3D: Scene with texture out": "3d_scene_with_texture_out",
 		"3D: Quad": "3d_quad_loader_fullscreen",
 		"3D: Cube (no camera, no material)": "3d_cube_loader",
 		"3D: Sphere (no camera, no material)": "3d_sphere_loader", 
-		"3D: Mesh with camera, material and light": "3d_mesh_with_camera_material_and_light",
-		"3D: Mesh with outputs for camera, transform and light": "3d_mesh_with_camera_transform_and_light_out",
-		"3D: Mesh with material": "mesh_with_material",
+		"3D: Mesh with camera, material, light and transforms": "3d_mesh_with_camera_material_light_and_transforms",
 		"3D Instancing: Cube setup with controls": "instancing_cube",
 		"3D Instancing: Array setup with controls": "instancing_array",
 		"3D Instancing: IFS setup with controls": "instancing_ifs",
@@ -21,13 +24,17 @@
 		"Particles: Basic particle setup": "particle_system"
 	},
 
+	"VR":
+	{
+		"VR: Template with skybox, mountains, clouds and floor": "vr_template"
+	},
+
 	"BACKGROUND & OVERLAY GRAPHICS":
 	{
 		"Background: Image": "background_image",
 		"Background: Sky box": "background_skybox",
+		"Background: Sky Sphere": "background_skysphere",
 		"Background: Plain color": "background_plain_color",
-		"Background: Inside a sphere": "background_inside_sphere",
-		"Background: Tunnelsphere": "background_tunnelsphere",
 		"Background: Moving quad": "background_moving_quad",
 		"Overlay: Overlay graphic": "3d_overlay_graphic"
 	},
@@ -42,7 +49,8 @@
 
 	"AUDIO":
 	{
-		"Audio: Audio player": "audio_audio_player"
+		"Audio: Audio player": "audio_audio_player",
+		"Audio: FFT music synching template": "audio_fft_music_synching"
 	},
 
 	"TEXT":
@@ -50,6 +58,12 @@
 		"Text: Basic text on screen setup": "text_quad",
 		"Text: Text with texture inside with custom shader": "text_with_texture_inside_custom_shader"
 	},	
+
+		"INTERACTION":
+	{
+		"Interaction: Button with MouseOver and OnCick colors": "interaction_button_with_mouseover_and_click_color",
+		"Interaction: Toggle button": "interaction_button_toggle"
+	},
 	
 	
 	"CAMERAS":
@@ -76,6 +90,7 @@
 		"Time: Oscillate between 2 values": "time_oscillate_between_2_values",
 		"Time: Oscillate 2 values with in tween": "time_oscillate_2_values_in_tween",
 		"Time: Oscillate 2 values with out tween": "time_oscillate_2_values_out_tween",
+		"Time: Oscillate with a sawtooth": "time_oscillate_with_sawtooth",
 		"Time: Accumulating time": "time_accumulating_time",
 		"Time: Stop watch": "time_stop_watch",
 		"Time: Circular motion to XYZ": "time_circular_motion_to_xyz",
@@ -98,16 +113,22 @@
 	},
 	"UTILS":
 	{
+		"Util: Preloader": "util_preloader",
+		"Util: Preloader with play button": "util_preloader_with_play_button",
 	 	"Util: Aspect ratio corrector": "util_aspect_ratio",
 		"Util: Concatenate x 2": "util_concatenate_x2",
 		"Util: Concatenate x 3": "util_concatenate_x3",
 		"Util: Knob with min and max values": "util_knob_with_min_max",
 		"Util: Get mesh from scene": "util_get_mesh_from_scene",
+		"Util: Scene loader with custom shader": "util_scene_loader_with_custom_shader",
 		"Util: 4 step stepsequencer": "util_4_step_stepsequencer",
 		"Util: 1 step stepsequencer": "util_1_step_stepsequencer",
+		"Util: 9 step stepsequencer": "util_9_step_stepsequencer",
+		"Util: 4 Scene switcher": "util_4_scene_switcher",
 		"Util: 4 frame animation from 512x2048 image": "util_4_frame_animation_offsetter",
 		"Util: Clone material with new texture": "util_clone_material_with_new_texture",
 		"Util: Quad container for a dynamic texture": "util_minimal_quad_container",
+		"Util: 4 textures changing": "util_4_textures_changing",
 		"Util: VU-meter": "util_vu-meter",
 		"Color: Hue / Saturation / Luminosity / Alpha": "color_hsla",
 		"Color: Red / Green / Blue / Alpha": "color_rgba",
@@ -118,10 +139,11 @@
 	{	
 
 		"Shader: Template for Shadertoy.com pixel shaders": "shader_from_shadertoy",
-		"Shader: Particle spline": "shader_particle_spline",
+		"Shader: Particle shader": "shader_particle_shader",
 		"Shader: Cross flare": "shader_cross_flare",
 		"Shader: Horizontal flare": "shader_horizontal_flare",
-		"Shader: Render depth buffer": "shader_render_depth_buffer"
+		"Shader: Render depth buffer": "shader_render_depth_buffer",
+		"Shader: Fog shader": "shader_fog"
 	},
 	"2D EFFECT SHADERS":
 	{
