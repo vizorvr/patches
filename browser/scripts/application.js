@@ -1474,7 +1474,10 @@ function Application() {
 						},
 						error: function(x, t, err)
 						{
-							alert('Save failed: ' + err);
+							if (x.responseText)
+								alert('Save failed: ' + x.responseText);
+							else
+								alert('Save failed: ' + err);
 						}
 					});
 				}
