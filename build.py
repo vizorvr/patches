@@ -107,6 +107,16 @@ for ace_file in ace_files:
 	print('\t\t+ ' + ace_file)
 	compress(ace_file, build_dir + '/plugins/ace/' + os.path.basename(ace_file))
 
+print '\t\tConstructive solid geometry'
+csg_file = '/plugins/csg/csg.js'
+os.system('mkdir ' + os.path.dirname(build_dir + csg_file))
+compress(src_dir + csg_file, build_dir + csg_file)
+
+print '\t\tWebSocket channel'
+wschannel_file = '/plugins/wschannel/wschannel.js'
+os.system('mkdir ' + os.path.dirname(build_dir + wschannel_file))
+compress(src_dir + wschannel_file, build_dir + wschannel_file)
+
 print '\t\tToggle button style'
 os.system('mkdir ' + build_dir + '/plugins/toggle-button')
 compress_css(plugins_path + 'toggle-button/style.css', build_dir + '/plugins/toggle-button/style.css')
