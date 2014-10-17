@@ -55,7 +55,9 @@ var ext_plugin_dependencies = {
 	'csg_union_modulator': 'csg',
 	'osc_float': 'osc',
 	'osc_receiver': 'osc',
-	'osc_xy_float': 'osc'
+	'osc_xy_float': 'osc',
+	'wschannel_send': 'wschannel',
+	'wschannel_receive': 'wschannel'
 };
 
 var unique_plugins = [];
