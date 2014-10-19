@@ -100,14 +100,6 @@ function publishProject(res, seq, data_path)
 	}}(seq));
 }
 
-function canWrite(owner, inGroup, mode)
-{
-	// https://groups.google.com/forum/#!topic/nodejs/qmZtIwDRSYo
-	return owner && (mode & '00200') || // User is owner and owner can write.
-		inGroup && (mode & '00020') || // User is in group and group can write.
-		(mode & '00002'); // Anyone can write.
-}
-
 var app = express()
 	.use(express.logger(':remote-addr :method :url :status :res[content-length] - :response-time ms'))
 	.use(function(req, res, next)
@@ -144,29 +136,32 @@ var app = express()
 		if (!/\.json$/.test(savePath))
 			savePath = savePath+'.json';
 
-		fs.stat(PROJECT + savePath, function(err, stat)
+		var stream = fs.createWriteStream(PROJECT + savePath);
+	
+		stream.on('error', function(err)
 		{
-			if (err && err.code !== 'ENOENT')
-				return next(err);
-
-			if (!err && !canWrite(process.uid === stat.uid, process.gid === stat.gid, stat.mode))
+			if (err && err.code === 'EACCES')
 			{
-				return res.status(403).send('Sorry, '+savePath+' is write protected. Please try saving with a different name.');
+				return res.status(403).send('Sorry, '+savePath+
+					' is write protected. Please try saving with a different name.');
 			}
 
-			var stream = fs.createWriteStream(PROJECT + savePath);
-			
-			stream.on('error', next)
-			stream.on('close', function()
+			next(err);
+		});
+
+		stream.on('close', function()
+		{
+			if(req.get('Engi-Publish') === 'true')
 			{
-				if(req.get('Engi-Publish') === 'true')
-					publishProject(res, PROJECT + savePath, PROJECT);
-				else
-					res.send({}); // reply with an empty object
-			});
-			
-			req.pipe(stream);
-		})
+				publishProject(res, PROJECT + savePath, PROJECT);
+			}
+			else
+			{
+				res.send({}); // reply with an empty object
+			}
+		});
+		
+		req.pipe(stream);
 	});
 
 app.use(express.errorHandler());
