@@ -95,6 +95,7 @@
 	"Generators/Values/Text": "const_text_generator",
 	"Generators/Values/Texture type": "texture_type_generator",
 	"Generators/Values/Toggle": "toggle_button",
+	"Generators/Values/Object composition": "object_add",
 	"Generators/VR/Camera info": "vr_camera_info_generator",
 	"Generators/VR/HMD available": "vr_hmd_available_generator",
 	"Generators/VR/HMD info": "vr_hmd_info_generator",

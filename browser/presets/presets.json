@@ -316,6 +316,7 @@
 		"Generators/Values/Text": "plugin-const-text_generator",
 		"Generators/Values/Texture type": "plugin-texture-type_generator",
 		"Generators/Values/Toggle": "plugin-toggle-button",
+		"Generators/Values/Object composition": "plugin-object-add",
 		"Generators/VR/Camera info": "plugin-vr-camera_info_generator",
 		"Generators/VR/HMD available": "plugin-vr-hmd_available_generator",
 		"Generators/VR/HMD info": "plugin-vr-hmd_info_generator",

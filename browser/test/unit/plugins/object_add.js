@@ -4,6 +4,11 @@ var vm = require('vm');
 
 var browserPath = __dirname+'/../../../';
 
+function slot(index)
+{
+	return { index: index };
+}
+
 describe('object_add', function()
 {
 	var plugin, core
@@ -41,8 +46,8 @@ describe('object_add', function()
 
 	it('composes new objects', function()
 	{
-		plugin.update_input(1, 'foo');
-		plugin.update_input(2, 'bar');
+		plugin.update_input(slot(1), 'foo');
+		plugin.update_input(slot(2), 'bar');
 
 		assert.deepEqual(plugin.update_output(),
 		{
@@ -50,11 +55,11 @@ describe('object_add', function()
 		})
 	});
 
-	it('augments existing objects', function()
+	it('adds to objects', function()
 	{
-		plugin.update_input(0, { bar: 'baz' });
-		plugin.update_input(1, 'foo');
-		plugin.update_input(2, 'bar');
+		plugin.update_input(slot(0), { bar: 'baz' });
+		plugin.update_input(slot(1), 'foo');
+		plugin.update_input(slot(2), 'bar');
 
 		assert.deepEqual(plugin.update_output(),
 		{
@@ -63,14 +68,14 @@ describe('object_add', function()
 		})
 	});
 
-	it('nests existing objects', function()
+	it('nests objects', function()
 	{
-		plugin.update_input(1, 'foo');
-		plugin.update_input(2, 'bar');
+		plugin.update_input(slot(1), 'foo');
+		plugin.update_input(slot(2), 'bar');
 		var out = plugin.update_output();
 		var p2 = new E2.plugins.object_add(core);
-		p2.update_input(1, 'abc');
-		p2.update_input(2, out);
+		p2.update_input(slot(1), 'abc');
+		p2.update_input(slot(2), out);
 
 		assert.deepEqual(p2.update_output(),
 		{
@@ -78,6 +83,23 @@ describe('object_add', function()
 			{
 				foo: 'bar'
 			}
+		})
+	});
+
+	it('extends objects given empty object as first value', function()
+	{
+		plugin.update_input(slot(1), 'foo');
+		plugin.update_input(slot(2), {});
+		var out = plugin.update_output();
+		var p2 = new E2.plugins.object_add(core);
+		p2.update_input(slot(0), out);
+		p2.update_input(slot(1), 'abc');
+		p2.update_input(slot(2), 'bar');
+
+		assert.deepEqual(p2.update_output(),
+		{
+			foo: {},
+			abc: 'bar'
 		})
 	});
 
