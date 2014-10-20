@@ -185,6 +185,7 @@
 	"POST PROCESSING":
 	{
 		"Post Process: Levels": "post_process_levels",
+		"Post Process: Map-based chromatic aberration": "postprocess_map_ca",
 		"Post Process: Analogue monitor": "post_process_analogue_monitor",	
 		"Post Process: Bloom": "post_process_bloom",
 		"Post Process: Gaussian blur": "post_process_gaussian_blur",
