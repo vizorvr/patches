@@ -1458,15 +1458,15 @@ function Application() {
 					if(!filename)
 						return alert('Please enter a filename');
 
-					if(!/\.json$/.test(filename))
-						filename = filename + '.json';
-
 					var ser = self.player.core.serialise();
 
 					$.ajax({
 						type: 'POST',
-						url: URL_GRAPHS + filename,
-						data: ser,
+						url: URL_GRAPHS,// + filename,
+						data: {
+							name: filename,
+							graph: ser
+						},
 						dataType: 'json',
 						success: function()
 						{

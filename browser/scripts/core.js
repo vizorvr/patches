@@ -19,7 +19,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-var URL_GRAPHS = '/data/graphs/'
+var URL_GRAPHS = '/graph/';
 
 var E2 = {};
 window.E2 = E2; // global scope so plugins can access it

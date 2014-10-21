@@ -26,7 +26,7 @@ var hbsHelpers = require('./utils/hbs-helpers');
 var homeController = require('./controllers/home');
 var editorController = require('./controllers/editor');
 var userController = require('./controllers/user');
-var graphsController = require('./controllers/graphs');
+var graphController = require('./controllers/graph');
 
 // API keys + Passport configuration
 var secrets = require('./config/secrets');
@@ -103,14 +103,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-app.use(function(req, res, next)
-{
-	// CSRF protection.
-	if (_.contains(csrfExclude, req.path))
-		return next();
+// app.use(function(req, res, next)
+// {
+// 	// CSRF protection.
+// 	if (_.contains(csrfExclude, req.path))
+// 		return next();
 
-	csrf(req, res, next);
-});
+// 	csrf(req, res, next);
+// });
 
 app.use(function(req, res, next)
 {
@@ -190,6 +190,19 @@ app.use(function(req, res, next)
 	res.setHeader('Expires', 0);
 	next();
 });
+
+// Graph routes
+app.get('/graph',function(req, res, next)
+{
+	res.json([]);
+});
+
+app.post('/graph',
+	passportConf.isAuthenticated,
+	graphController.validate,
+	graphController.postGraph
+);
+
 
 if(config.server.enableFrameDumping)
 {

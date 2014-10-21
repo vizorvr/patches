@@ -1,5 +1,5 @@
 
-var Graph = require('../models/graph').Graph;
+var Graph = require('../models/graph');
 
 /**
  * GET /graphs
@@ -10,39 +10,57 @@ exports.index = function(req, res)
 	{
 		res.render('graphs/list', list);
 	});
-}
+};
 
-/**
- * GET /graphs/show/:id
- */
-exports.show = function(req, res)
+exports.validate = function(req, res, next)
 {
-	res.render('graphs/show');
-}
+	var graph = new Graph(req.body);
 
-/**
- * GET /graphs/edit/:id
- */
-exports.edit = function(req, res)
-{
-	res.render('graphs/edit');
-}
+	graph.validate(function(err)
+	{
+		if (err)
+			return res.status(400).json(err.errors);
 
-/**
- * GET /graphs/delete/:id
- */
-exports.delete = function(req, res)
-{
-	res.redirect('graphs/');
-}
+		next();
+	});
+} 
 
 /**
  * POST /graphs/create
  */
-exports.create = function(req, res)
+exports.postGraph = function(req, res, next)
 {
-	res.redirect('graphs/show', id);
-}
+	Graph
+	.findOne({ name: req.body.name })
+	.exec()
+	.then(function(err, eGraph)
+	{
+		if (err) return next(err);
+
+		if (eGraph && eGraph._creator._id !== req.user._id)
+		{
+			return res.end(403, { msg:
+				'A graph by someone else with that name already exists'
+			});
+		}
+
+		console.log('save', req.body)
+
+		var graph = new Graph(req.body);
+		graph._creator = req.user.id;
+		graph.save(function(err)
+		{
+			console.log('after save', graph);
+			if (err) return next(err);
+
+			console.log('responding')
+			res.json(
+			{
+				slug: graph.slug
+			});
+		});
+	});
+};
 
 
 
