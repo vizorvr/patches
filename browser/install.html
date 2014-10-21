@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Engi - visual programming editor</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+	
+			<link rel="stylesheet" href="style/skel.css" />
+			<link rel="stylesheet" href="style/website.css" />
+			<link rel="stylesheet" href="style/website-wide.css" />
+			<link rel="stylesheet" href="style/website-normal.css" />
+	
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+
+	</head>
+	<body>
+		<br><br>
+		
+	<div id="installpage" class="installpage">
+	<a href="index.html"><img src="images/engilogo.png"></a>
+		<br><br>
+		<span class="subheading">
+			You can <a href="editor.html">use Engi online on our server</a> but running it locally on your own computer has some benefits. That way you can use your own textures, videos, 3D scenes and audio files, and you can publish the html straight to your hard drive. While there isn't an installer file for Engi yet, these instructions should get you up and running in no time.
+		</span>
+		<br><br><br>
+		INSTALL FOR OSX + LINUX<br><br>
+		<span class="subheading">
+		<b>1.</b> Install <a href="http://git-scm.com">Git</a><br>
+		<b>2.</b> Install <a href="http://nodejs.org">Node.js</a> (On the mac you can use <a href="http://brew.sh/">Homebrew</a>)<br>
+		<b>3.</b> Run this in terminal:<br>
+		<div id="codebox" class="codebox">
+			$ git clone https://github.com/engijs/engi.git<br>
+			$ cd engi<br>
+			$ npm install<br>
+			$ node server
+		</div>
+	
+		<b>4.</b> Point your browser to http://localhost:8000/.<br>
+
+
+		</span>
+		<br><br><br>
+		INSTALL FOR WINDOWS<br><br>
+		<span class="subheading">
+		<b>1.</b> Install <a href="http://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx">Express version of Visual C++</a>. This is needed to build native Node module extensions.<br>
+		<b>2.</b> Install <a href="http://git-scm.com">Git</a><br>
+		<b>3.</b> Install <a href="http://nodejs.org">Node.js</a> <br>
+		<b>4.</b> Run this in a command prompt window<br>
+		<div id="codebox" class="codebox">
+			$ git clone https://github.com/engijs/engi.git<br>
+			$ cd engi<br>
+			$ npm install<br>
+			$ node server
+		</div>
+		<b>5.</b> Point your browser to http://localhost:8000/.
+		</span>
+		
+		<br><br><br><br>
+	</div>
+	</body>
+</html>

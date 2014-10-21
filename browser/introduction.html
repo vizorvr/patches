@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Engi - visual programming editor</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+	
+			<link rel="stylesheet" href="style/skel.css" />
+			<link rel="stylesheet" href="style/website.css" />
+			<link rel="stylesheet" href="style/website-wide.css" />
+			<link rel="stylesheet" href="style/website-normal.css" />
+	
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+
+	</head>
+
+	<body>
+		<br><br>
+		
+	<div id="installpage" class="installpage">
+	<a href="index.html"><img src="images/engilogo.png"></a>
+		<br><br>
+		<span class="subheading">
+		We are sorry for the insufficient amount of info we have available here. A more comprehensive tutorial section is coming soon. Meanwhile, you can contact us via <a href="http://twitter.com/fthr">twitter</a> for any questions. We'll be glad to help!
+		</span>
+		<br><br><br>
+
+		USE IT ON YOUR OWN COMPUTER<br><br>
+		<span class="subheading">
+			You can <a href="editor.html">use Engi online on our server</a> but running it locally on your own computer has some benefits. That way you can use your own textures, videos, 3D scenes and audio files, and you can publish the html straight to your hard drive. See our <a href="http://www.engijs.org/install.html"> installation page</a> for more details.
+		</span>
+		<br><br><br>
+		SOURCE CODE<br><br>
+		<span class="subheading">
+		Engi is open source and licensed under the MIT license. The source code is released at <a href="https://github.com/engijs/engi">https://github.com/engijs/engi</a>. You are allowed to use Engi for both commercial and non-commercial projects alike.<br>
+		</span>
+
+		<br><br>
+		PRESETS<br><br>
+		<span class="subheading">
+		If you are using engi on your local computer, you can add your own presets by editing /presets/presets.json file.
+		</span>
+
+		<br><br><br>
+		USING YOUR OWN 3D SCENES<br><br>
+		<span class="subheading">
+		Scenes are converted via Blender (minimum required version is 2.69). Download the <a href="http://www.blender.org/download/">latest blender version</a> and install our converter plugin by copying or linking /tools/blender/io_engi_export.py to your [blender]/[version]/scripts/addons path. Remeber to enable the plugin in your user preferences.
+		</span>
+
+		<br><br><br>
+		CONVERTING VIDEO FILES<br><br>
+		<span class="subheading">
+		Videos are .ogv files. Converting works with <a href="https://www.ffmpeg.org/download.html">ffmpeg</a> using these arguments:<br>
+		<div id="codebox" class="codebox">
+		ffmpeg -i inputfile.mpg -an -vcodec libtheora -vb 1024k -s 256x256 -aspect 1:1 output.ogv 
+		</div>
+		</span>
+
+		<br><br>
+		CREATING YOUR OWN PLUGINS<br><br>
+		<span class="subheading">
+		Here is a link to the <a href="http://engijs.org/help/plugin_api.html">plugin API documentation.</a>
+		</span>
+		
+		<br><br><br><br>
+	</div>
+	</body>
+</html>

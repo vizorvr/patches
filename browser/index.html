@@ -1,98 +1,199 @@
+<!DOCTYPE HTML>
+
 <html>
-<head>
-	<title>Engi</title>
-	<link href="help/style.css" rel="stylesheet"></link>
-	<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
-	<link href="vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
-</head>
-<body>
-
-<!-- Fork me on GitHub -->
-<a href="https://github.com/engijs/engi"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
-
-<div class="container" style="width: 850px">
-	<img src="help/intro/screenshot3.jpg"/>
-
-	<h1>Engi</h1>
-
-	<p class="lead">Engi is an open source HTML5 <b>dataflow programming editor</b> supporting web technologies like WebGL</p>
-
-	<p>
-		<a href="editor.html" class="btn btn-primary btn-lg active"><span>Try it now!</span></a>
-	</p>
-
-	<h3>Quick start</h3>
-	<p>
-		You can <a href="editor.html">run it right here</a>, but we recommend running Engi locally to use all the features such as recording. You'll need to install <a href="http://git-scm.com/">git</a> and <a href="http://nodejs.org/">Node.js</a> first. On the Mac, you can use <a href="http://brew.sh/">Homebrew</a> to do that.
-	</p>
-
-<pre class="code">
-	$ git clone https://github.com/engijs/engi.git
-	$ cd engi
-	$ npm install
-	$ node server
-</pre>
-	<p>
-		Then point your browser to http://localhost:8000/.
-		Engi works best in the latest versions of Chrome and Firefox.
-	</p>
-
-	<h3>Introduction</h3>
-
-	<p>
-		Engi has over 200 plugins that you can combine visually to create logic, 3D graphics, cameras, materials, lights etc. You can play video and audio, write custom shaders, and a do a whole lot more. It's written in JavaScript with high performance in mind. For more information, see below or read more in the <a href="help/introduction.html" target="_blank">introduction</a> and the <a href="//github.com/engijs/engi/tree/master/README.md">README</a>. It works in the browser so if you just want to get started, you can use it <a href="editor.html">right here</a>!
-
-	</p>
-
-	<p>
-		Engi is open source and licensed under the MIT license. The source code is at <a href="https://github.com/engijs/engi" target="_blank">https://github.com/engijs/engi</a>.
-	</p>
-
-	<p>
-		Follow us on twitter <a href="http://twitter.com/engidevops" target="_blank">@EngiDevOps</a> or on <a href="http://github.com/engijs/engi">GitHub</a>.
-	</p>
-
-	<h3>Example screenshot of a graph</h3>
+	<head>
+		<title>Engi - visual programming editor</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
 	
-	<p>
-		<img src="help/intro/screenshot2.jpg">
-	</p>
+			<link rel="stylesheet" href="style/skel.css" />
+			<link rel="stylesheet" href="style/website.css" />
+			<link rel="stylesheet" href="style/website-wide.css" />
+			<link rel="stylesheet" href="style/website-normal.css" />
+		</noscript>
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+		<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+		<script type="text/javascript" src="vendor/jquery.fastfix.js"></script>
+		<script type="text/javascript" src="vendor/jquery.mousewheel.js"></script>
+		<script type="text/javascript" src="vendor/gl-matrix.js"></script>
+		<script type="text/javascript" src="scripts/util.js"></script>
+		<script type="text/javascript" src="scripts/renderer.js"></script>
+		<script type="text/javascript" src="scripts/plugin-group.js"></script>
+		<script type="text/javascript" src="scripts/plugin-manager.js"></script>
+		<script type="text/javascript" src="scripts/connection.js"></script>
+		<script type="text/javascript" src="scripts/graph.js"></script>
+		<script type="text/javascript" src="scripts/node.js"></script>
+		<script type="text/javascript" src="scripts/registers.js"></script>
+		<script type="text/javascript" src="scripts/core.js"></script>
+		<script type="text/javascript" src="scripts/player.js"></script>
+		<style type="text/css">
 
-	<table>
-		<tr>
-			<td width="400">
-				<h3>Editing graphs</h3>
-				<br>
-				<span class="highlight">Right click</span> on canvas to insert plugins.<br><br>
-				Drag connections from inputs and outputs<br><br>
-				Press <span class="highlight">Play</span> to run your graph.<br><br>
-				Hold <span class="highlight">shift</span> to delete plugins and connections.<br><br>
-				<span class="highlight">Double click</span> to add Presets.<br><br>
-				<span class="highlight">Click and drag</span> on the canvas to select plugins.<br><br>
-				Collapse plugins by clicking on their icon.
-				<br>
-				<br>
-			</td>
-			<td width="400" valign="top">
-				<h3>Hotkeys</h3>
-				<br>
-				<span class="highlight">CTRL-C, CTRL-V, CTRL-X</span> Copy, Paste, Cut<br>
-				<br>
-				<span class="highlight">CTRL-A</span> Select all<br>
-				<br>
-				<span class="highlight">CTRL-B</span> Hide/show Graph tree and info view<br>
-				<br>
-				<span class="highlight">CTRL-L</span> Hide/show console.<br>
-				<br>
-				<span class="highlight">Space</span> Play/Stop<br>
-				<br>
-				<span class="highlight">Tab</span> Search Presets<br>
-				<br>
-				<span class="highlight">Backspace/Delete</span> Delete selected plugins<br>
-				<br>
-			</td>
-		</tr>
-	</table>
-</div>
-</body>
+			body {
+				background-color: #fff; 
+			
+			}
+
+			.webgl-canvas-normal
+			{
+				position: absolute; 
+				top: 0px;
+				left: 0px;
+				width: 100%;
+				height: 445px;
+				background-color: #000; 
+				z-index: -1;
+			}
+
+			.webgl-canvas-fs
+			{
+				background-color: #000; 
+				position: absolute; 
+				left: 0px; 
+				top: 0px;
+				width: 100%;
+				height: 100%;
+				z-index: 10000;
+			}
+			
+			.oculus
+			{
+				width: 33px;
+				height: 20px;
+				position: absolute;
+				left: 695px;
+				top: 393px;
+				z-index: 2;
+			}
+		</style>
+		<script type="text/javascript">
+			function AddEvents(player)
+			{
+				$('#fs').click(function()
+				{
+					player.core.renderer.set_fullscreen(true);
+				});
+			}
+
+			function LoadScene(player)
+			{
+				AddEvents(player);
+				player.load_from_url('scene.json');
+				player.play();
+			}
+
+			function EnumerateVRDevices(devices)
+			{
+				var hmd = null, sensor = null;
+				
+				for(var i = 0; i < devices.length; i++)
+				{
+					if(devices[i] instanceof HMDVRDevice)
+					{
+						// Just use the first device we find for now.
+						hmd = devices[i];
+						break;
+					}
+				}
+				
+				if(hmd)
+				{
+					for(var i = 0; i < devices.length; i++)
+					{
+						var d = devices[i];
+					
+						if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId)
+						{
+							sensor = devices[i];
+							break;
+						}
+					}
+				}
+
+				player = CreatePlayer([hmd, sensor], LoadScene);
+			}
+			
+			$(document).ready(function()
+			{
+				if(navigator.getVRDevices)
+				{
+					navigator.getVRDevices().then(EnumerateVRDevices);
+				}
+				else if(navigator.mozGetVRDevices)
+				{
+					navigator.mozGetVRDevices(EnumerateVRDevices);
+				}
+				else
+				{
+					player = CreatePlayer([null, null], LoadScene);
+				}
+			});
+			
+		</script>
+
+	</head>
+
+	<body>
+
+	<div id="engilogo" class="engilogo">
+		<img src="images/engilogo.png">
+	</div>
+
+	<div id="topeffect">
+		<canvas id="webgl-canvas" class="webgl-canvas-normal" width="1000" height="390" oncontextmenu="return false;">
+			</canvas>
+	</div>
+
+	<div id="installbar" class="installbar">
+		<center>
+		<a class="installbutton" href="editor.html">USE IN THE BROWSER</a>
+		<a class="installbutton" href="install.html">INSTALL FOR WINDOWS</a>
+		<a class="installbutton" href="install.html">INSTALL FOR LINUX</a>
+		<a class="installbutton" href="install.html">INSTALL FOR OSX</a><br><br>
+		<span class="subheading_install">Licensed under the MIT license, Engi is open source and free for all use.<br>
+Check out our <a href="https://github.com/engijs/engi">GitHub page</a> for more info.</span>
+	</center>
+	</div>
+
+	<div id="content1" class="content1"
+>		<center>
+		YOU CAN BE A 3D PROGRAMMER<br><br>
+		<span class="subheading">Visual programming in a web browser makes it easy.<br> WebGL, VR and interactivity come together in modular presets.</span><br><br><br>
+		<iframe src="http://www.engijs.org/demos/rotating-cube-3/" width="933" height="528"></iframe><br><br>
+		<a class="installbutton" href="http://engijs.org/editor.html#/data/graphs/engi_cube_introduction.json">EDIT THIS SCENE</a>
+		<br><br><br><br><br><br>
+
+		YOU CAN CREATE VR WORLDS<br><br>
+		<span class="subheading">Templates and presets for Oculus and WebVR.<br> Ideal for playing around and prototyping what VR can become.</span><br><br><br>
+		<iframe src="http://www.engijs.org/demos/vr_demo_for_website2/" width="933" height="528" allowfullscreen="true"></iframe><br><br>
+		<a class="installbutton" href="http://engijs.org/editor.html#/data/graphs/engi_vr_introduction.json">EDIT THIS SCENE</a>
+		<br><br><br><br><br><br>
+
+		MOTION GRAPHICS FOR THE WEB<br><br>
+		<span class="subheading">Create audiovisual content and publish to html.<br> Visual effects and post processing done on the GPU.</span><br><br><br>
+		<iframe src="http://www.engijs.org/demos/demo_motion_graphics2/" width="933" height="528"></iframe><br><br>
+		<a class="installbutton" href="http://engijs.org/editor.html#/data/graphs/engi_motion_graphics_introduction.json">EDIT THIS SCENE</a>
+		<br><br><br>
+		<hr>
+		<span class="subheading2">
+			<br>
+		<br><img src="images/engilogo2.png"><br><br><br><br>
+		<b>Engi is an all purpose web tool for visual programming</b><br><br></span>
+		<span class="subheading"><br>
+		WebAudio support and making DSP with the GPU.<br><br>
+		Video textures and post processing.<br><br>
+		Cryptocurrency integration through <a href="https://counterwallet.io/">Counterwallet</a> and <a href="https://wallet.dogeparty.io">Dogewallet</a>.<br><br>
+		OSC support for creating touch interfaces.<br><br>
+		Registers for creating state machines.<br><br>
+		Editor for writing and using custom vertex and pixel shaders.<br><br>
+		Documented API for creating your own plugins.<br><br>
+		... <a href="https://github.com/engijs/engi">and much more!</a>
+	
+		</span>
+		<hr>
+		<span class="subheading">Contact us via our <a href="https://github.com/engijs/engi">GitHub </a>or <a href="http://twitter.com/fthr">@Fthr</a> on Twitter.</span><br><br><br><br>
+	</center>
+	</div>
+	</body>
 </html>

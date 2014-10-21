@@ -1,0 +1,401 @@
+	@charset 'UTF-8';
+
+/
+
+	body {
+		background: #fff;
+	}
+
+		body.is-loading *
+		{
+			-moz-transition: none !important;
+			-webkit-transition: none !important;
+			-o-transition: none !important;
+			-ms-transition: none !important;
+			transition: none !important;
+			-moz-animation: none !important;
+			-webkit-animation: none !important;
+			-o-animation: none !important;
+			-ms-animation: none !important;
+			animation: none !important;
+		}
+
+	body,input,textarea,select {
+		font-family: 'Source Sans Pro', sans-serif; 
+		/* font-family: 'Doppio One', sans-serif; */
+		font-weight: normal;
+		font-size: 18pt;
+		line-height: 1.75em;
+		color: #39454b;
+		letter-spacing: 0.5px;
+	}
+
+	h1,h2,h3,h4,h5,h6 {
+		font-weight: normal;
+		color: inherit;
+	}
+	
+		h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+			color: inherit;
+			text-decoration: none;
+		}
+		
+	h2 {
+		font-family: 'dejavu' sans-serif;
+		font-size: 2.25em;
+		letter-spacing: -2px;
+		line-height: 1.25em;
+	}
+		
+	strong, b {
+		font-weight: 900;
+		color: inherit;
+	}
+	
+	em, i {
+		font-style: italic;
+	}
+
+	a {
+		color: #88a285;
+
+		-moz-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
+		-webkit-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
+		-o-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
+		-ms-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
+		transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
+	
+		font-weight: bold;
+	}
+
+	sub {
+		position: relative;
+		top: 0.5em;
+		font-size: 0.8em;
+	}
+	
+	sup {
+		position: relative;
+		top: -0.5em;
+		font-size: 0.8em;
+	}
+	
+	hr {
+		border: 0;
+		border-top: solid 1px #ddd;
+	}
+	
+	blockquote {
+		border-left: solid 0.5em #ddd;
+		padding: 1em 0 1em 2em;
+		font-style: italic;
+	}
+	
+	p, ul, ol, dl, table {
+		margin-bottom: 1em;
+	}
+
+	header {
+		margin-bottom: 0em;
+	}
+	
+		header p {
+			display: block;
+			margin: 0em 0 0 0;
+			padding: 0 0 0.5em 0;
+		}
+		
+	footer {
+		margin-top: 2em;
+	}
+
+	br.clear {
+		clear: both;
+	}
+
+	.installbutton {
+  font-family: arial;
+  font-weight: bold;
+  color: #B3B3B3 !important;
+  font-size: 14px;
+  box-shadow: 1px 1px 1px #BEE2F9;
+  padding: 17px 25px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: #63B8EE;
+  background: linear-gradient(top,  #474742,  #000000);
+  background: -ms-linear-gradient(top,  #474742,  #000000);
+  background: -webkit-gradient(linear, left top, left bottom, from(#474742), to(#000000));
+  background: -moz-linear-gradient(top,  #474742,  #000000);
+  text-decoration: none;
+}
+.installbutton:hover {
+  color: #000000 !important;
+  background: #468CCF;
+  background: linear-gradient(top,  #EDC542,  #EE6D18);
+  background: -ms-linear-gradient(top,  #EDC542,  #EE6D18);
+  background: -webkit-gradient(linear, left top, left bottom, from(#EDC542), to(#EE6D18));
+  background: -moz-linear-gradient(top,  #EDC542,  #EE6D18);
+  text-decoration: none;
+}
+
+	.engilogo
+	{
+				margin: 0 auto;
+    			margin-top: 130px;
+				width: 164px;
+				height: 164px;
+				background-color: transparent; 
+				z-index: 99999;
+			}
+
+
+
+	.topeffect
+			{
+				position: absolute; 
+				top: 0px;
+				left: 0px;
+				width: 100%;
+				height: 445px;
+				background-color: #000; 
+				z-index: -1;
+			}
+
+	.installpage
+			{
+
+				margin: 0 auto;
+				font-family: 'dejavu' sans-serif;
+				font-size: 50px;
+				width: 1024px;
+				height: 100%;
+				background-color: #fff; 
+				z-index: -1;
+				text-align: left;
+			}
+
+	.installbar
+			{
+				padding: 50px;
+				position: absolute; 
+				font-family: 'dejavu' sans-serif;
+				top: 445px;
+				left: 0px;
+				width: 100%;
+				height: 180px;
+				background-color: #DDD; 
+				z-index: -1;
+				line-height: 24px;
+			}
+
+	@font-face {
+    font-family: dejavu;
+    src: url('dejavu.ttf');
+    font-weight:normal;
+		}
+
+
+
+	.subheading {
+				font-size: 20px;
+				}
+
+	.subheading2 {
+				font-size: 30px;
+				}
+
+	.subheading_install {
+				font-size: 16px;
+				}
+			
+
+
+	.content1
+			{
+				font-family: 'dejavu' sans-serif;
+				font-size: 50px;
+				position: absolute; 
+				top: 625px;
+				left: 0px;
+				width: 100%;
+				height: 785px;
+				line-height: 16px;
+				padding-top: 50px;
+				background-color: #FFF; 
+				z-index: -1;
+			}
+
+	.codebox {
+			
+				padding: 25px;
+				font-size: 13px;
+				line-height: 1.42857143;
+				word-break: break-all;
+				word-wrap: break-word;
+				color: #333;
+				background-color: #f5f5f5;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+				max-width: 850px;
+				text-align: left;
+			}
+
+
+
+	
+
+	/* Image */
+
+		.image {
+			position: relative;
+			display: inline-block;
+		}
+		
+			.image:before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background: url('images/overlay.png');
+			}
+		
+			.image img {
+				display: block;
+				width: 100%;
+			}
+
+			.image.featured {
+				display: block;
+				width: 100%;
+				margin: 0 0 2em 0;
+			}
+			
+			.image.fit {
+				display: block;
+				width: 100%;
+			}
+			
+			.image.left {
+				float: left;
+				margin: 0 2em 2em 0;
+			}
+			
+			.image.centered {
+				display: block;
+				margin: 0 0 2em 0;
+			}
+
+				.image.centered img {
+					margin: 0 auto;
+					width: auto;
+				}
+
+	
+
+	/* Button */
+		
+		input[type="button"],
+		input[type="submit"],
+		input[type="reset"],
+		.button {
+			background-color: #98c593;
+			border: 0;
+			border-radius: 3.5em;
+			color: #fff;
+			cursor: pointer;
+			display: inline-block;
+			height: 3.5em;
+			line-height: 3.5em;
+			outline: 0;
+			padding: 0 2em 0 2em;
+			position: relative;
+			text-align: center;
+			text-decoration: none;
+
+			-moz-appearance: none;
+			-webkit-appearance: none;
+			-o-appearance: none;
+			-ms-appearance: none;
+			appearance: none;
+
+			-moz-transition: all 0.2s ease-in-out;
+			-webkit-transition: all 0.2s ease-in-out;
+			-o-transition: all 0.2s ease-in-out;
+			-ms-transition: all 0.2s ease-in-out;
+			transition: all 0.2s ease-in-out;
+		}
+
+			.button.down {
+				width: 5em;
+				height: 5em;
+				line-height: 4.5em;
+				padding: 0;
+				background-image: url('images/dark-arrow.svg');
+				background-position: center center;
+				background-repeat: no-repeat;
+				text-indent: -10em;
+				overflow: hidden;
+			}
+			
+				.button.down.anchored {
+					bottom: 0;
+					border-bottom: 0;
+					border-radius: 3em 3em 0 0;
+					height: 4.5em;
+					margin-left: -2.5em;
+				}
+			
+			.button.anchored {
+				position: absolute;
+				left: 50%;
+			}
+			
+			input[type="button"]:hover,
+			input[type="submit"]:hover,
+			input[type="reset"]:hover,
+			.button:hover {
+				background-color: #a8d5a3;
+			}
+			
+			input[type="button"]:active,
+			input[type="submit"]:active,
+			input[type="reset"]:active,
+			.button:active {
+				background-color: #88b583;
+			}
+
+			input[type="button"].style2,
+			input[type="submit"].style2,
+			input[type="reset"].style2,
+			.button.style2 {
+				background-color: transparent;
+				border: solid 2px #e5e6e7;
+				color: inherit;
+			}
+
+				input[type="button"].style2:hover,
+				input[type="submit"].style2:hover,
+				input[type="reset"].style2:hover,
+				.button.style2:hover {
+					background-color: rgba(145,146,147,0.035);
+				}
+				
+				.button.style2.down {
+					background-image: url('images/arrow.svg');
+				}
+
+	
+	
+
+
+	
+	body {
+		padding-top: 0em;
+	}
+
+	
