@@ -128,6 +128,9 @@
 	"Modulators/Convert/Vector to XYZ": "convert_vector_xyz_modulator",
 	"Modulators/Convert/Vector to screenspace": "vector_to_screenspace",
 	"Modulators/Convert/XYZ to Vector": "vector",
+
+	"Modulators/Convert/Object to JSON": "object_stringify",
+
 	"Modulators/CSG/Difference": "csg_difference_modulator",
 	"Modulators/CSG/Intersection": "csg_intersection_modulator",
 	"Modulators/CSG/Inverse": "csg_inverse_modulator",

@@ -348,6 +348,7 @@
 		"Modulators/Convert/Vector to XYZ": "plugin-convert-vector_xyz_modulator",
 		"Modulators/Convert/Vector to screenspace": "plugin-vector-to_screenspace",
 		"Modulators/Convert/XYZ to Vector": "plugin-vector",
+		"Modulators/Convert/Object to JSON": "plugin-object-stringify",
 		"Modulators/Curve/Interpolate cubic": "plugin-curve-interpolate_modulator",
 		"Modulators/Filters/Lowpass": "plugin-lowpass-filter_modulator",
 		"Modulators/Filters/Sample and hold": "plugin-sample-and_hold_modulator",
