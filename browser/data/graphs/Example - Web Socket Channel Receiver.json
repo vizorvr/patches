@@ -1,0 +1,92 @@
+{
+    "abs_t": 222.73,
+    "active_graph": 0,
+    "graph_uid": 1,
+    "root": {
+        "node_uid": 12,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "wschannel_receive",
+                "x": 188,
+                "y": 177,
+                "uid": 2
+            },
+            {
+                "plugin": "object_display",
+                "x": 340,
+                "y": 179,
+                "uid": 3
+            },
+            {
+                "plugin": "const_text_generator",
+                "x": 19,
+                "y": 179,
+                "uid": 5,
+                "state": {
+                    "text": "myChannel",
+                    "width": 116,
+                    "height": 36
+                }
+            },
+            {
+                "plugin": "member_to_float_modulator",
+                "x": 218,
+                "y": 367,
+                "uid": 9
+            },
+            {
+                "plugin": "const_text_generator",
+                "x": 56,
+                "y": 391,
+                "uid": 10,
+                "state": {
+                    "text": "data",
+                    "width": 110,
+                    "height": 30
+                }
+            },
+            {
+                "plugin": "float_display",
+                "x": 350,
+                "y": 406,
+                "uid": 11
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 2,
+                "dst_nuid": 3,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 5,
+                "dst_nuid": 2,
+                "src_slot": 0,
+                "dst_slot": 0
+            },
+            {
+                "src_nuid": 10,
+                "dst_nuid": 9,
+                "src_slot": 0,
+                "dst_slot": 1
+            },
+            {
+                "src_nuid": 2,
+                "dst_nuid": 9,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "offset": 2
+            },
+            {
+                "src_nuid": 9,
+                "dst_nuid": 11,
+                "src_slot": 0,
+                "dst_slot": 0
+            }
+        ]
+    }
+}

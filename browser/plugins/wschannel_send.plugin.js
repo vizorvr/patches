@@ -4,7 +4,7 @@ E2.p = E2.plugins["wschannel_send"] = function(core, node)
 
 	this.input_slots = [
 		{ name: 'channelName', dt: core.datatypes.TEXT, desc: 'Channel name' },
-		{ name: 'message', dt: core.datatypes.TEXT, desc: 'Message to send' },
+		{ name: 'message', dt: core.datatypes.OBJECT, desc: 'Message to send' },
 	];
 
 	this.output_slots = [];

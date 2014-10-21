@@ -60,8 +60,9 @@ WebSocketChannel.prototype.send = function(channel, data)
 	if (typeof(data) !== 'object')
 	{
 		data = { kind: data };
-		data.channel = channel;
 	}
+
+	data.channel = channel;
 
 	this.ws.send(JSON.stringify(data));
 }
