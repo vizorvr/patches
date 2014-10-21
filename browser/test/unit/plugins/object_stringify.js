@@ -1,13 +1,8 @@
 var assert = require('assert');
-var fs = require('fs');
-var vm = require('vm');
 
-var browserPath = __dirname+'/../../../';
-
-function slot(index)
-{
-	return { index: index };
-}
+var slot = require('./helpers').slot;
+var reset = require('./helpers').reset;
+var loadPlugin = require('./helpers').loadPlugin;
 
 describe('object_stringify', function()
 {
@@ -15,20 +10,15 @@ describe('object_stringify', function()
 
 	beforeEach(function()
 	{
-		global.$ = {
-			extend: function(a, b) { return b; }
-		};
-
-		global.E2 = { plugins: {} };
-		
-		core = {
-			datatypes: { OBJECT: 1, TEXT: 2, ANY: 3 }
-		};
-		
-		var js = fs.readFileSync(browserPath+'plugins/object_stringify.plugin.js');
-		vm.runInThisContext(js, 'object_stringify');
-
+		core = reset();
+		loadPlugin('object_stringify');
 		plugin = new E2.plugins.object_stringify(core);
+	});
+
+	it('declares the right slots', function()
+	{
+		assert.ok(plugin.input_slots.length, 1);
+		assert.ok(plugin.output_slots.length, 1);
 	});
 
 	it('serializes objects', function()
@@ -36,8 +26,7 @@ describe('object_stringify', function()
 		var obj =
 		{
 			foo: 'bar',
-			bar:
-			{
+			bar: {
 				baz: 'qox'
 			}
 		};

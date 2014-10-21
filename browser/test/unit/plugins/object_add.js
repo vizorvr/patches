@@ -1,13 +1,8 @@
 var assert = require('assert');
-var fs = require('fs');
-var vm = require('vm');
 
-var browserPath = __dirname+'/../../../';
-
-function slot(index)
-{
-	return { index: index };
-}
+var slot = require('./helpers').slot;
+var reset = require('./helpers').reset;
+var loadPlugin = require('./helpers').loadPlugin;
 
 describe('object_add', function()
 {
@@ -15,33 +10,15 @@ describe('object_add', function()
 
 	beforeEach(function()
 	{
-		global.$ = {
-			extend: function(a, b)
-			{
-				return b;
-			}
-		};
-
-		global.E2 = { plugins: {} };
-		
-		core = {
-			datatypes: { OBJECT: 1, TEXT: 2, ANY: 3 }
-		};
-		
-		var js = fs.readFileSync(browserPath+'plugins/object_add.plugin.js');
-		vm.runInThisContext(js, 'object_add');
-
+		core = reset();
+		loadPlugin('object_add');
 		plugin = new E2.plugins.object_add(core);
 	});
 
-	it('declares plugin', function()
-	{
-		assert.ok(E2.plugins['object_add']);
-	});
-
-	it('declares input slots', function()
+	it('declares the right slots', function()
 	{
 		assert.ok(plugin.input_slots.length, 3);
+		assert.ok(plugin.output_slots.length, 1);
 	});
 
 	it('composes new objects', function()
@@ -52,7 +29,7 @@ describe('object_add', function()
 		assert.deepEqual(plugin.update_output(),
 		{
 			foo: 'bar'
-		})
+		});
 	});
 
 	it('adds to objects', function()
@@ -65,7 +42,7 @@ describe('object_add', function()
 		{
 			foo: 'bar',
 			bar: 'baz'
-		})
+		});
 	});
 
 	it('nests objects', function()
@@ -83,7 +60,7 @@ describe('object_add', function()
 			{
 				foo: 'bar'
 			}
-		})
+		});
 	});
 
 	it('extends objects given empty object as first value', function()
@@ -100,7 +77,7 @@ describe('object_add', function()
 		{
 			foo: {},
 			abc: 'bar'
-		})
+		});
 	});
 
 });
