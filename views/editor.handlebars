@@ -1,0 +1,140 @@
+<noscript>
+	<div class="nojs">
+		<div style="float: left; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
+		<div style="padding-top: 4px;">This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
+	</div>
+</noscript>
+
+<div class="flex-column nodisplay" id="left-nav">
+	<div class="header border flex-row">
+		<div class="logo">
+			<a href="/" target="_blank">ENGI&#8482;</a>
+		</div>
+
+		<div id="load-spinner"></div>
+	</div>
+
+	<div class="info-pane border" id="info">
+		<h4><b>This is a visual programming editor.</b></h4>
+
+		<p>Add presets or plugins from the menu below,
+			or right click on the canvas to browse plugins. </p>
+		<p>Hover over things to show their documentation here. </p>
+		<p>Hold shift to delete plugins and connections. </p>
+		<h4>Hotkeys:</h4>
+		<p>CTRL-C, CTRL-V, CTRL-X: Copy, Paste, Cut </p>
+		<p>CTRL-A: Select all </p>
+		<p>CTRL-B: Hide/show Graph tree and info view </p>
+		<p>CTRL-L: Hide/show console. </p>
+		<p>Space: Play/Stop </p>
+		<p>Tab: Search Presets </p>
+	</div>
+
+	<div id="presets" class="flex-column"></div>
+</div>
+
+<div class="flex-column nodisplay">
+	<div class="header border">
+		<button id="save" class="btn btn-default">Save</button>
+		<button id="open" class="btn btn-default">Open</button>
+		<button id="help" class="btn btn-default">Help</button>
+		<button id="publish" class="btn btn-default">Publish</button>
+	</div>
+
+	<div class="cell border" id="canvas_parent">
+		<canvas id="canvas" width="940" height="620"></canvas>
+		<div id="breadcrumb"></div>
+	</div>
+
+	<pre class="info-pane border" id="dbg"></pre>
+</div>
+
+<div class="flex-column nodisplay" id="right-nav">
+	<div class="header border">
+		<button id="play" class="btn btn-primary">Play</button>
+		<button id="pause" class="btn disabled btn-default">Pause</button>
+		<button id="stop" class="btn disabled btn-default">Stop</button>
+		<button id="fullscreen" class="btn btn-default">Full screen</button>
+		{{> userpulldown}}
+	</div>
+
+	<div id="canvas-parent">
+		<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
+	</div>
+
+	<div class="cell border" id="structure"></div>
+</div>
+
+<!-- bootstrap modal -->
+<div class="modal fade modal-template">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title"></h4>
+			</div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary">Ok</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script type="text/javascript">
+	function EnumerateVRDevices(devices)
+	{
+		var hmd = null, sensor = null;
+		
+		for(var i = 0; i < devices.length; i++)
+		{
+			if(devices[i] instanceof HMDVRDevice)
+			{
+				// Just use the first device we find for now.
+				hmd = devices[i];
+				break;
+			}
+		}
+		
+		if(hmd)
+		{
+			for(var i = 0; i < devices.length; i++)
+			{
+				var d = devices[i];
+			
+				if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId)
+				{
+					sensor = devices[i];
+					break;
+				}
+			}
+		}
+
+		E2.InitialiseEngi([hmd, sensor]);
+	}
+	
+	$(document).ready(function()
+	{
+		var Engi = {
+			user: {
+				email: '{{user.email}}'
+			}
+		};
+
+		console.log('Engi config from server', Engi);
+
+		if(navigator.getVRDevices)
+		{
+			navigator.getVRDevices().then(EnumerateVRDevices);
+		}
+		else if(navigator.mozGetVRDevices)
+		{
+			navigator.mozGetVRDevices(EnumerateVRDevices);
+		}
+		else
+		{
+			E2.InitialiseEngi([null, null]);
+		}
+	});
+</script>

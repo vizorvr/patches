@@ -1,0 +1,22 @@
+<h1 class="form-header">Reset Password</h1>
+
+<!-- Form -->
+<form action="/reset/{{token}}" id="reset-form_id" class="panel" method="POST">
+  <input type="hidden" name="_csrf" value={{_csrf}}>
+
+  <div class="form-group">
+    <input type="password" name="password" id="password_id" class="form-control input-lg" placeholder="New Password" autofocus="true">
+  </div>
+
+  <div class="form-group">
+    <input type="password" name="confirm" id="password_confirm_id" class="form-control input-lg" placeholder="Confirm New Password">
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary btn-reset" type="submit">
+      <i class="fa fa-keyboard-o"></i>
+      &nbsp;Change Password
+    </button>
+  </div> <!-- / .form-actions -->
+</form>
+<!-- / Form -->

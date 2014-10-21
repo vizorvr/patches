@@ -1,0 +1,22 @@
+<ul class="nav navbar-nav navbar-right">
+  {{#if user}}
+  <li class="dropdown {{#eq title 'Account Management'}} active {{/eq}}">
+    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
+      {{#if user.profile.name}} {{user.profile.name}} {{else}} {{user.email}} {{/if}}
+      <i class="caret"></i>
+    </a>
+    <ul class="dropdown-menu">
+      <li>
+        <a href="/account"><span class='ion-person'></span> My Account</a>
+      </li>
+      <li class="divider"></li>
+      <li>
+        <a href="/logout"><span class="ion-log-out"></span> Logout</a>
+      </li>
+    </ul>
+  </li>
+  {{else}}
+  <li {{#eq title 'Login'}} class="active" {{/eq}}><a href="/login">Login</a></li>
+  <li {{#eq title 'Create Account'}} class="active" {{/eq}}><a href="/signup">Create Account</a></li>
+  {{/if}}
+</ul>

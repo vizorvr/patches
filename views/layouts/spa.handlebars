@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head id="head">
+    <title>ENGI&#8482;</title>
+    <link href="vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
+    <link href="vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
+
+    <link href="style/flex.css" rel="Stylesheet" type="text/css" />
+    <link href="style/menu.css" rel="Stylesheet" type="text/css" />
+    <link href="style/core.css" rel="Stylesheet" type="text/css" />
+    <link href="style/tree.css" rel="Stylesheet" type="text/css" />
+    <link href="style/icons/style.css" rel="Stylesheet" type="text/css" />
+
+    <link href="style/file-select-control.css" rel="Stylesheet" type="text/css" />
+    <link href="style/collapsible-select-control.css" rel="Stylesheet" type="text/css" />
+
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/jquery.fastfix.js"></script>
+    <script type="text/javascript" src="vendor/jquery.mousewheel.js"></script>
+    <script type="text/javascript" src="vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="node_modules/handlebars/dist/handlebars.min.js"></script>
+
+    <script type="text/javascript" src="vendor/gl-matrix.js"></script>
+    <script type="text/javascript" src="vendor/webgl-debug.js"></script>
+    <script type="text/javascript" src="scripts/util.js"></script>
+    <script type="text/javascript" src="scripts/draggable.js"></script>
+    <script type="text/javascript" src="scripts/treeview.js"></script>
+    <script type="text/javascript" src="scripts/context-menu.js"></script>
+    <script type="text/javascript" src="scripts/renderer.js"></script>
+    <script type="text/javascript" src="scripts/ui.js"></script>
+
+    <script type="text/javascript" src="scripts/file-select-control.js"></script>
+    <script type="text/javascript" src="scripts/collapsible-select-control.js"></script>
+    <script type="text/javascript" src="scripts/plugin-group.js"></script>
+    <script type="text/javascript" src="scripts/plugin-manager.js"></script>
+    <script type="text/javascript" src="scripts/connection.js"></script>
+    <script type="text/javascript" src="scripts/graph.js"></script>
+    <script type="text/javascript" src="scripts/node.js"></script>
+    <script type="text/javascript" src="scripts/node-ui.js"></script>
+    <script type="text/javascript" src="scripts/registers.js"></script>
+    <script type="text/javascript" src="scripts/player.js"></script>
+    <script type="text/javascript" src="scripts/core.js"></script>
+    <script type="text/javascript" src="scripts/application.js"></script>
+    <script type="text/javascript" src="scripts/player.js"></script>
+
+    <script id="collapsible-select-template" type="text/x-handlebars-template">
+      <div class="searchbox">
+        <input class="form-control" type="text" placeholder="Search presets and plugins"/>
+      </div>
+      <div class="panel-group" id="{{controlId}}">
+      {{#each categories}}
+        <div class="panel panel-default">
+          <div class="panel-heading"
+            data-toggle="collapse"
+            data-parent="#{{../controlId}}"
+            href="#cscat{{@index}}"
+          >
+          <i class="glyphicon glyphicon-chevron-right"></i>
+          {{this.title}}
+        </div>
+        <div id="cscat{{@index}}"
+          class="panel-collapse collapse">
+          <div class="panel-body">
+            <ul>
+              {{#each items}}
+                <li data-path="{{this.path}}">{{this.title}}</li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </script>
+
+    <script id="file-select-template" type="text/x-handlebars-template">
+      <div class="modal fade">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close">&times;</button>
+              <h4 class="modal-title">Select file</h4>
+            </div>
+      <div class="modal-body">
+      <div class="file-selector">
+        <table>
+          <thead>
+            <td class="name-header">Name</td>
+          </thead>
+          {{#each files}}
+          <tr class="file-row{{#if selected}} selected{{/if}}" data-name="{{name}}">
+            <td class="name">{{name}}</td>
+          </tr>
+          {{else}}
+          <tr class="file-row">
+            <td class="name">No files found</td>
+          </tr>
+          {{/each}}
+        </table>
+      </div>
+      </div>
+        <div class="modal-footer">
+          <input id="file-url" class="form-control" size="26" type="text" value="{{original}}" placeholder="Enter URL"/>
+          <br/>
+          <div class="buttons"></div>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+      </div>
+    </script>
+  </head>
+
+<body class="{{extraClasses}}">
+  {{{body}}}
+</body>
+</html>

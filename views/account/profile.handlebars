@@ -1,0 +1,124 @@
+
+  {{!-- <ul class="breadcrumb breadcrumb-page">
+    <div class="breadcrumb-label text-light-gray">You are here: </div>
+    <li><a href="/">Home</a></li>
+    <li class="active"><a href="#">Account</a></li>
+  </ul> --}}
+
+  <div class="page-header">
+    <div class="row">
+      <!-- Page header, center on small screens -->
+      <h1 class="col-xs-12 col-sm-12 text-center text-left-sm"><i class="fa fa-user page-header-icon"></i>&nbsp;&nbsp;Account Management</h1>
+    </div>
+  </div> <!-- / .page-header -->
+
+  <!-- Profile Info Form -->
+  <form action="/account/profile" class="panel form-horizontal" method="POST">
+    <input type="hidden" name="_csrf" value={{_csrf}}>
+    <div class="panel-heading">
+      <span class="panel-title">Profile Information</span>
+    </div>
+    <div class="panel-body">
+      <div class="row form-group">
+        <label class="col-sm-4 control-label" for="name">Name</label>
+        <div class="col-sm-8">
+          <input type="text" name="name" id="name_id" class="form-control" placeholder="Name" autofocus="true" value="{{user.profile.name}}">
+        </div>
+      </div>
+      <div class="row form-group">
+        <label class="col-sm-4 control-label" for="email">Email</label>
+        <div class="col-sm-8">
+          <input type="email" name="email" id="email_id" class="form-control" placeholder="E-mail" value="{{user.email}}">
+          <img class="gravatar-in-form" src="{{user.gravatar}}" />
+        </div>
+      </div>
+    </div>
+    <div class="panel-footer text-right">
+      <button class="btn btn-primary" type="submit">
+        <span class="ion-edit"></span>
+        &nbsp;Update Profile
+      </button>
+    </div>
+  </form>
+  <!-- / Profile Info form -->
+
+  <!-- Change Password Form -->
+  <form action="/account/password" class="panel form-horizontal" method="POST">
+    <input type="hidden" name="_csrf" value={{_csrf}}>
+    <div class="panel-heading">
+      <span class="panel-title">Change Password</span>
+    </div>
+    <div class="panel-body">
+      <div class="row form-group">
+        <label class="col-sm-4 control-label" for="password">New Password</label>
+        <div class="col-sm-8">
+          <input type="password" name="password" id="password_id" class="form-control">
+        </div>
+      </div>
+      <div class="row form-group">
+        <label class="col-sm-4 control-label" for="confirmPassword">Confirm Password</label>
+        <div class="col-sm-8">
+          <input type="password" name="confirmPassword" id="confirm_password_id" class="form-control">
+        </div>
+      </div>
+    </div>
+    <div class="panel-footer text-right">
+      <button class="btn btn-primary" type="submit">
+        <span class="ion-locked"></span>
+        &nbsp;Change Password
+      </button>
+    </div>
+  </form>
+  <!-- / Change Password form -->
+
+  <!-- Delete Account Form -->
+  <form action="/account/delete" class="panel form-horizontal" method="POST">
+    <input type="hidden" name="_csrf" value={{_csrf}}>
+    <div class="panel-heading">
+      <span class="panel-title">Delete Account</span>
+    </div>
+    <div class="panel-body">
+      <p>Please bear in mind that this action is irreversible.</p>
+      <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you wish to delete your account? This is IRREVERSIBLE!');">
+        <span class="ion-trash-b"></span>
+        &nbsp;Delete My Account
+      </button>
+    </div>
+  </form>
+  <!-- / Delete Account form -->
+
+  <!-- Linked Accounts -->
+  <div class="panel">
+    <!-- Default panel contents -->
+    <div class="panel-heading">
+      <span class="panel-title">Linked Accounts</span>
+    </div>
+
+    <!-- List group -->
+    <ul class="list-group">
+      <li class="list-group-item">
+        <span class="badge badge-danger"><i class="fa fa-google-plus"></i></span>
+        {{#if user.google}}
+        <a class="text-danger" href="/account/unlink/google">Unlink your Google account</a>
+        {{else}}
+        <a href="/auth/google">Link your Google account</a>
+        {{/if}}
+      </li> <!-- / .list-group-item -->
+      <li class="list-group-item">
+        <span class="badge badge-info"><i class="fa fa-twitter"></i></span>
+        {{#if user.twitter}}
+        <a class="text-danger" href="/account/unlink/twitter">Unlink your Twitter account</a>
+        {{else}}
+        <a href="/auth/google">Link your Twitter account</a>
+        {{/if}}
+      </li> <!-- / .list-group-item -->
+      <li class="list-group-item">
+        <span class="badge btn-facebook"><i class="fa fa-facebook"></i></span>
+        {{#if user.facebook}}
+        <a class="text-danger" href="/account/unlink/facebook">Unlink your Facebook account</a>
+        {{else}}
+        <a href="/auth/facebook">Link your Facebook account</a>
+        {{/if}}
+      </li> <!-- / .list-group-item -->
+    </ul>
+  </div>

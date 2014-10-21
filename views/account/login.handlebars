@@ -1,0 +1,30 @@
+<h1 class="form-header">Sign in to your Account</h1>
+
+<!-- Form -->
+<form action="/login" id="signin-form_id" class="panel" method="POST">
+  <input type="hidden" name="_csrf" value={{_csrf}}>
+
+  <div class="form-group">
+    <input type="email" name="email" id="email_id" class="form-control input-lg" placeholder="E-mail" autofocus="true">
+  </div> <!-- / Email -->
+
+  <div class="form-group signin-password">
+    <input type="password" name="password" id="password_id" class="form-control input-lg" placeholder="Password">
+    <a href="/forgot" class="forgot">Forgot?</a>
+  </div> <!-- / Password -->
+
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">
+      <span class="ion-android-hand"></span>
+      &nbsp;Login
+    </button>
+  </div> <!-- / .form-actions -->
+</form>
+<!-- / Form -->
+
+<div class="signin-with">
+  <div class="header">or sign in with</div>
+  <a href="/auth/facebook" class="btn btn-lg btn-facebook rounded"><i class="fa fa-facebook"></i></a>&nbsp;&nbsp;
+  <a href="/auth/twitter" class="btn btn-lg btn-info rounded"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
+  <a href="/auth/google" class="btn btn-lg btn-danger rounded"><i class="fa fa-google-plus"></i></a>
+</div>
