@@ -9,7 +9,9 @@ var exec = require('child_process').exec;
 var FrameDumpServer = require('./lib/framedump-server').FrameDumpServer;
 var OscServer = require('./lib/osc-server').OscServer;
 var WsChannelServer = require('./lib/wschannel-server').WsChannelServer;
-var config = require('./config.json');
+var config = require('./config/config.json');
+var logger = require('morgan');
+var errorHandler = require('errorhandler');
 
 var ENGI = config.server.engiPath;
 var PROJECT = argv._[0] || ENGI;
@@ -101,7 +103,7 @@ function publishProject(res, seq, data_path)
 }
 
 var app = express()
-	.use(express.logger(':remote-addr :method :url :status :res[content-length] - :response-time ms'))
+	.use(logger('dev'))
 	.use(function(req, res, next)
 	{
 		req.url = req.url.replace(/^\/build\/data\//, '/data/');
@@ -164,7 +166,7 @@ var app = express()
 		req.pipe(stream);
 	});
 
-app.use(express.errorHandler());
+app.use(errorHandler());
 
 if(config.server.enableFrameDumping)
 	new FrameDumpServer().listen(app);
