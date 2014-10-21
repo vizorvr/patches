@@ -26,6 +26,7 @@ var hbsHelpers = require('./utils/hbs-helpers');
 var homeController = require('./controllers/home');
 var editorController = require('./controllers/editor');
 var userController = require('./controllers/user');
+var graphsController = require('./controllers/graphs');
 
 // API keys + Passport configuration
 var secrets = require('./config/secrets');
@@ -191,7 +192,9 @@ app.use(function(req, res, next)
 });
 
 if(config.server.enableFrameDumping)
+{
 	new FrameDumpServer().listen(app);
+}
 
 var httpServer = http.createServer(app);
 

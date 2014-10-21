@@ -1,5 +1,5 @@
 
-var storage = require('../app-globals').Storage;
+var Graph = require('../models/graph').Graph;
 
 /**
  * GET /graphs
@@ -46,29 +46,4 @@ exports.create = function(req, res)
 
 
 
-
-var storage =
-{
-	graphs:
-	{
-		list: function list(query)
-		{
-			return ['lista fileistä']
-		}
-	}
-}
-
-
-
-
-var storage =
-{
-	graphs:
-	{
-		list: function list(query)
-		{
-			return ['lista riveistä'];
-		}
-	}
-}
 
