@@ -6,17 +6,20 @@ function FileSelectControl(handlebars) {
 		'Cancel': this.cancel.bind(this),
 		'Ok': this.close.bind(this)
 	}
+
 }
 
-FileSelectControl.prototype.files = function(files) {
-	this._files = files.map(function(file) {
+FileSelectControl.prototype.files = function(files)
+{
+	this._files = files.map(function(file)
+	{
 		if (typeof(file) === 'string')
-			return {
-				name: file
-			}
-		return file
-	})
-	return this
+			return { name: file };
+
+		return file;
+	});
+
+	return this;
 }
 
 FileSelectControl.prototype.selected = function(file) {
@@ -44,24 +47,22 @@ FileSelectControl.prototype.modal = function() {
 FileSelectControl.prototype._render = function() {
 	var self = this;
 
+	var el = $('<div class="file-select-control">');
+	this._el = el;
+
 	var templateSource = $("#file-select-template").html();
 	var template = this._handlebars.compile(templateSource);
 
-	var el = $('<div class="file-select-control">')
-	this._el = el
+	var data = {
+		original: 'this._original',
+		files: [ { name: 'file' } ]
+	}
 
-	el.html(template({
-		original: this._original,
-		files: this._files.map(function(file) {
-			return {
-				name: file.name,
-				// date: moment(file.date).fromNow(),
-				date: file.date,
-				size: file.size,
-				selected: file.name === self._selected
-			}
-		})
+	console.log('data', template({
+		files: [ {name: 'a'}, {name: 'b'} ] 
 	}))
+
+	el.html(template(data));
 
 	var btnEl = $('.modal-footer', el)
 

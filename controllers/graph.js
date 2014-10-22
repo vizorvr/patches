@@ -1,16 +1,6 @@
-
 var Graph = require('../models/graph');
-
-/**
- * GET /graphs
- */
-exports.index = function(req, res)
-{
-	Graph.find(function(list)
-	{
-		res.render('graphs/list', list);
-	});
-};
+var User = require('../models/user');
+var async = require('async');
 
 exports.validate = function(req, res, next)
 {
@@ -25,35 +15,58 @@ exports.validate = function(req, res, next)
 	});
 } 
 
-/**
- * POST /graphs/create
- */
-exports.postGraph = function(req, res, next)
+// GET /graph
+exports.index = function(req, res, next)
+{
+	Graph
+	.find()
+	.populate('_creator')
+	.exec(function(err, list)
+	{
+		if (err)
+			return next(err);
+
+		res.json(list.map(function(item)
+		{
+			return {
+				slug: item.slug,
+				name: item.name,
+				updated: item.updated,
+				creator: item._creator.username
+			};
+		}));
+	});
+};
+
+// POST /graph
+exports.save = function(req, res, next)
 {
 	Graph
 	.findOne({ name: req.body.name })
-	.exec()
-	.then(function(err, eGraph)
+	.exec(function(err, graph)
 	{
-		if (err) return next(err);
+		if (err)
+			return next(err);
 
-		if (eGraph && eGraph._creator._id !== req.user._id)
+		if (graph && graph._creator.toString() !== req.user.id.toString())
 		{
-			return res.end(403, { msg:
-				'A graph by someone else with that name already exists'
+			return res.status(403).json(
+			{
+				msg: 'A graph by someone else with that name already exists'
 			});
 		}
 
-		console.log('save', req.body)
+		if (!graph) {
+			graph = new Graph({ name: req.body.name });
+		}
 
-		var graph = new Graph(req.body);
 		graph._creator = req.user.id;
+		graph.graph = req.body.graph;
 		graph.save(function(err)
 		{
-			console.log('after save', graph);
-			if (err) return next(err);
+			if (err)
+				return next(err);
 
-			console.log('responding')
 			res.json(
 			{
 				slug: graph.slug

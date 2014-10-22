@@ -2,7 +2,7 @@
   {{#if user}}
   <li class="dropdown {{#eq title 'Account Management'}} active {{/eq}}">
     <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
-      {{#if user.profile.name}} {{user.profile.name}} {{else}} {{user.email}} {{/if}}
+      {{user.username}}
       <i class="caret"></i>
     </a>
     <ul class="dropdown-menu">

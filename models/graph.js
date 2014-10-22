@@ -1,5 +1,4 @@
 var mongoose = require('mongoose');
-// var when = require('when');
 var Schema = mongoose.Schema;
 
 var graphSchema = new mongoose.Schema(

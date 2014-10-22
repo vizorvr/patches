@@ -73,42 +73,11 @@
       {{/each}}
     </script>
 
-    <script id="file-select-template" type="text/x-handlebars-template">
-      <div class="modal fade">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close">&times;</button>
-              <h4 class="modal-title">Select file</h4>
-            </div>
-      <div class="modal-body">
-      <div class="file-selector">
-        <table>
-          <thead>
-            <td class="name-header">Name</td>
-          </thead>
-          {{#each files}}
-          <tr class="file-row{{#if selected}} selected{{/if}}" data-name="{{name}}">
-            <td class="name">{{name}}</td>
-          </tr>
-          {{else}}
-          <tr class="file-row">
-            <td class="name">No files found</td>
-          </tr>
-          {{/each}}
-        </table>
-      </div>
-      </div>
-        <div class="modal-footer">
-          <input id="file-url" class="form-control" size="26" type="text" value="{{original}}" placeholder="Enter URL"/>
-          <br/>
-          <div class="buttons"></div>
-            </div>
-          </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-      </div><!-- /.modal -->
-      </div>
+    <script id="file-select-template"
+      type="text/x-handlebars-template"
+      src="views/filebrowser/filebrowser.hbs">
     </script>
+
   </head>
 
 <body class="{{extraClasses}}">

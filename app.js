@@ -144,6 +144,7 @@ app.use(function(req, res, next)
 
 app.use(express.static(path.join(__dirname, 'browser'), { maxAge: week }));
 app.use('/node_modules', express['static'](path.join(__dirname, 'node_modules'), { maxAge: day }))
+app.use('/views', express['static'](path.join(__dirname, 'views'), { maxAge: day }))
 
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
@@ -192,15 +193,12 @@ app.use(function(req, res, next)
 });
 
 // Graph routes
-app.get('/graph',function(req, res, next)
-{
-	res.json([]);
-});
+app.get('/graph', graphController.index);
 
 app.post('/graph',
 	passportConf.isAuthenticated,
 	graphController.validate,
-	graphController.postGraph
+	graphController.save
 );
 
 

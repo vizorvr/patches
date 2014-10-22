@@ -12,7 +12,8 @@ var secrets = require('../config/secrets');
  */
 
 exports.getLogin = function(req, res) {
-  if (req.user) return res.redirect('/dash');
+  if (req.user)
+    return res.redirect('/');
   res.render('account/login', {
     title: 'Login'
   });
@@ -45,7 +46,7 @@ exports.postLogin = function(req, res, next) {
     req.logIn(user, function(err) {
       if (err) return next(err);
       req.flash('success', { msg: 'Success! You are logged in.' });
-      res.redirect(req.session.returnTo || '/dash');
+      res.redirect(req.session.returnTo || '/');
     });
   })(req, res, next);
 };
@@ -62,7 +63,7 @@ exports.logout = function(req, res) {
  * GET /signup
  */
 exports.getSignup = function(req, res) {
-  if (req.user) return res.redirect('/dash');
+  if (req.user) return res.redirect('/');
   res.render('account/signup', {
     title: 'Create Account'
   });
@@ -76,6 +77,7 @@ exports.getSignup = function(req, res) {
  */
 
 exports.postSignup = function(req, res, next) {
+  req.assert('username', 'Username is not valid').isAlphanumeric();
   req.assert('email', 'Email is not valid').isEmail();
   req.assert('password', 'Password must be at least 4 characters long').len(4);
   req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
@@ -88,20 +90,27 @@ exports.postSignup = function(req, res, next) {
   }
 
   var user = new User({
+    username: req.body.username,
     email: req.body.email,
     password: req.body.password
   });
 
-  User.findOne({ email: req.body.email }, function(err, existingUser) {
+  User.findOne({ username: req.body.username }, function(err, existingUser) {
     if (existingUser) {
-      req.flash('errors', { msg: 'Account with that email address already exists.' });
+      req.flash('errors', { msg: 'Account with that username already exists.' });
       return res.redirect('/signup');
     }
-    user.save(function(err) {
-      if (err) return next(err);
-      req.logIn(user, function(err) {
+    User.findOne({ email: req.body.email }, function(err, existingUser) {
+      if (existingUser) {
+        req.flash('errors', { msg: 'Account with that email address already exists.' });
+        return res.redirect('/signup');
+      }
+      user.save(function(err) {
         if (err) return next(err);
-        res.redirect('/');
+        req.logIn(user, function(err) {
+          if (err) return next(err);
+          res.redirect('/');
+        });
       });
     });
   });

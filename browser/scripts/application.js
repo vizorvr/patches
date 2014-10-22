@@ -1462,7 +1462,7 @@ function Application() {
 
 					$.ajax({
 						type: 'POST',
-						url: URL_GRAPHS,// + filename,
+						url: URL_GRAPHS,
 						data: {
 							name: filename,
 							graph: ser
