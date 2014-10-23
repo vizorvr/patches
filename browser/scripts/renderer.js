@@ -1598,19 +1598,34 @@ function Scene(gl, core, data, base_path)
 	this.id = 'n/a';
 	this.vertex_count = 0;
 	this.core = core;
-	this.bounding_box = { "lo": [0.0, 0.0, 0.0], "hi": [0.0, 0.0, 0.0] };
+	this.bounding_box = null;
+	
+	this.init_bb();
 	
 	if(data)
 		this.load_json(data, base_path);
 };
+
+Scene.prototype.init_bb = function(data)
+{
+	if(!data || !data.bounding_box)
+	{
+		this.bounding_box = { "lo": vec3.createFrom(0.0, 0.0, 0.0), "hi": vec3.createFrom(0.0, 0.0, 0.0) };
+		return;
+	}
+
+	data.bounding_box.lo = vec3.create(data.bounding_box.lo);
+	data.bounding_box.hi = vec3.create(data.bounding_box.hi);
+	
+	this.bounding_box = data.bounding_box;
+}
 
 Scene.prototype.load_json = function(data, base_path)
 {
 	var gl = this.gl;
 	
 	this.id = data.id;
-	
-	this.bounding_box = data.bounding_box || { "lo": [0.0, 0.0, 0.0], "hi": [0.0, 0.0, 0.0] };
+	this.init_bb(data);
 	 
 	for(var id in data.materials)
 	{
@@ -1715,7 +1730,7 @@ Scene.prototype.create_autofit_camera = function()
 	
 	msg('New autofit camera: ' + pos + ' ... ' + tar[0] + ',' + tar[1] + ',' + tar[2] + ' ... ' + dist);
 	mat4.perspective(45.0, c.width() / c.height(), 1.0, 1.0 + dist, cam.projection);
-	mat4.lookAt(pos, tar, [0.0, 0.0, 1.0], cam.view);
+	mat4.lookAt(pos, tar, vec3.createFrom(0, 0, 1), cam.view);
 	
 	return cam;
 };
