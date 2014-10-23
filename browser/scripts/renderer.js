@@ -199,10 +199,10 @@ function Renderer(vr_devices, canvas_id, core)
 	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
 	this.framebuffer_stack = [];
-	this.def_ambient = new Float32Array([0.0, 0.0, 0.0, 1.0]);
-	this.def_diffuse = new Float32Array([1.0, 1.0, 1.0, 1.0]);
-	this.def_specular = new Float32Array([1.0, 1.0, 1.0, 1.0]);
-	this.up_vec = vec3.createFrom(0.0, 0.0, 1.0);
+	this.def_ambient = vec4.createFrom(0, 0, 0, 1);
+	this.def_diffuse = vec4.createFrom(1, 1, 1, 1);
+	this.def_specular = vec4.createFrom(1, 1, 1, 1);
+	this.up_vec = vec3.createFrom(0, 0, 1);
 	
 	this.org_width = this.canvas.width();
 	this.org_height = this.canvas.height();
@@ -242,10 +242,10 @@ function Renderer(vr_devices, canvas_id, core)
 	this.camera_screenspace = new Camera(this.context);
 	this.light_default = new Light();
 	this.material_default = new Material();
-	this.color_white = vec4.createFrom(1.0, 1.0, 1.0, 1.0);
-	this.color_black = vec4.createFrom(0.0, 0.0, 0.0, 1.0);
-	this.vector_origin = vec3.createFrom(0.0, 0.0, 0.0);
-	this.vector_unity = vec3.createFrom(1.0, 1.0, 1.0);
+	this.color_white = vec4.createFrom(1, 1, 1, 1);
+	this.color_black = vec4.createFrom(0, 0, 0, 1);
+	this.vector_origin = vec3.createFrom(0, 0, 0);
+	this.vector_unity = vec3.createFrom(1, 1, 1);
 	this.matrix_identity = mat4.create();
 	
 	mat4.identity(this.matrix_identity);
