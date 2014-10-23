@@ -45,9 +45,11 @@ TextureSampler.prototype.get_pixel = function(x, y)
 	return [d[o], d[o+1], d[o+2], d[o+3]];
 };
 
-function Texture(gl, handle, filter)
+function Texture(renderer, handle, filter)
 {
-	this.gl = gl;
+	var gl = this.gl = renderer.context;
+
+	this.renderer = renderer;
 	this.min_filter = this.mag_filter = filter || gl.LINEAR;
 	this.texture = handle || gl.createTexture();
 	this.width = 0;
@@ -104,6 +106,7 @@ Texture.prototype.enable = function(stage)
 	{
 		gl.activeTexture(stage || gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
+		this.renderer.extensions.set_anisotropy(4);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.min_filter);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.mag_filter);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
@@ -190,7 +193,7 @@ TextureCache.prototype.get = function(url)
 		return ce.texture;
 	}
 	
-	var t = new Texture(this.gl);
+	var t = new Texture(this.core.renderer);
 	
 	msg('Fetching texture \'' + url + '\'.');
 	
@@ -217,6 +220,28 @@ TextureCache.prototype.count = function()
 	}
 		
 	return c;
+};
+
+function Extensions(gl)
+{
+	this.gl = gl;
+
+	this.max_anisotropy = 0;
+	this.anisotropic = gl.getExtension('EXT_texture_filter_anisotropic') || 
+			   gl.getExtension('MOZ_EXT_texture_filter_anisotropic') || 
+			   gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
+	
+	if(this.anisotropic)
+		this.max_anisotropy = gl.getParameter(this.anisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+}
+
+Extensions.prototype.set_anisotropy = function(level)
+{
+	if(this.anisotropic)
+	{
+		if(this.max_anisotropy > 0)
+			this.gl.texParameterf(this.gl.TEXTURE_2D, this.anisotropic.TEXTURE_MAX_ANISOTROPY_EXT, this.max_anisotropy);
+	}
 };
 
 function Renderer(vr_devices, canvas_id, core)
@@ -254,10 +279,11 @@ function Renderer(vr_devices, canvas_id, core)
 	if(!this.context)
 		window.location = 'no_webgl.html';
 	
+	this.extensions = new Extensions(this.context);
 	this.texture_cache = new TextureCache(this.context, core);
 	this.shader_cache = new ShaderCache(this.context);
 	this.fullscreen = false;
-	this.default_tex = new Texture(this.context);
+	this.default_tex = new Texture(this);
 	this.default_tex.load('../images/no_texture.png', core);
 
 	document.addEventListener('fullscreenchange', this.on_fullscreen_change(this));
@@ -1236,28 +1262,12 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		{
 			var idx = gl.getAttribLocation(prog, id);
 			
-			/*if(idx < 0)
-			{
-				msg('ERROR: Failed to obtain shader attribute location for ' + id + '. Active attributes are:');
-				
-				for(var i = 0; i < gl.getProgramParameter(prog, gl.ACTIVE_ATTRIBUTES); i++)
-					msg('\t' + gl.getActiveAttrib(prog, i).name);
-			}*/
-			
 			return idx < 0 ? undefined : idx;
 		};
 		
 		var resolve_unif = function(id)
 		{
 			var loc = gl.getUniformLocation(prog, id);
-			
-			/*if(!loc)
-			{
-				msg('ERROR: Failed to obtain shader uniform location for ' + id +'. Active uniforms are:');
-				
-				for(var i = 0; i < gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS); i++)
-					msg('\t' + gl.getActiveUniform(prog, i).name);
-			}*/
 			
 			return loc;
 		};

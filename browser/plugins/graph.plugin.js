@@ -318,7 +318,7 @@ E2.p.prototype.set_render_target_state = function(on)
 		gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		
-		this.texture = new Texture(gl, t, this.state.rt_filter);
+		this.texture = new Texture(this.core.renderer, t, this.state.rt_filter);
 		this.texture.width = this.framebuffer.width;
 		this.texture.height = this.framebuffer.height;
 		this.texture.framebuffer = this.framebuffer;

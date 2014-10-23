@@ -11,12 +11,13 @@ E2.p = E2.plugins["array_to_texture_modulator"] = function(core, node)
 		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The resulting texture.' }
 	];
 	
+	this.renderer = core.renderer;
 	this.gl = core.renderer.context;
 };
 
 E2.p.prototype.reset = function()
 {
-	this.texture = new Texture(this.gl);
+	this.texture = new Texture(this.renderer);
 	this.array = null;
 	this.width = 0;
 };

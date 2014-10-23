@@ -21,7 +21,7 @@ E2.p = E2.plugins["video_player"] = function(core, node)
 	this.muted = true;
 	this.volume = 0.5;
 	this.time = null;
-	this.texture = new Texture(core.renderer.context);
+	this.texture = new Texture(core.renderer);
 };
 
 E2.p.prototype.play = function()
