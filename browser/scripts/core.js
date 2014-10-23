@@ -506,6 +506,47 @@ E2.InitialiseEngi = function(vr_devices)
 	}
 }
 
+E2.EnumerateVRDevices = function(devices)
+{
+	var hmd = null, sensor = null;
+	
+	for(var i = 0; i < devices.length; i++)
+	{
+		if(devices[i] instanceof HMDVRDevice)
+		{
+			// Just use the first device we find for now.
+			hmd = devices[i];
+			break;
+		}
+	}
+	
+	if(hmd)
+	{
+		for(var i = 0; i < devices.length; i++)
+		{
+			var d = devices[i];
+		
+			if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId)
+			{
+				sensor = devices[i];
+				break;
+			}
+		}
+	}
+
+	E2.InitialiseEngi([hmd, sensor]);
+};
+			
+E2.InitialiseEngiVR = function()
+{
+	if(navigator.getVRDevices)
+		navigator.getVRDevices().then(E2.EnumerateVRDevices);
+	else if(navigator.mozGetVRDevices)
+		navigator.mozGetVRDevices(E2.EnumerateVRDevices);
+	else
+		E2.InitialiseEngi([null, null]);
+};
+
 function load_location_hash() {
 	var graphName = decodeURIComponent(window.location.hash).replace('#'+URL_GRAPHS,'');
 	
