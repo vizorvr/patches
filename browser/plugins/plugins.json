@@ -4,7 +4,6 @@
 	"Emitters/3D/Instancing/Array": "instance_array_modulator",
 	"Emitters/3D/Instancing/Cube": "instance_cube_modulator",
 	"Emitters/3D/Instancing/IFS": "instance_ifs_modulator",
-	"Emitters/3D/Instancing/Texture": "instance_texture_modulator",
 	"Emitters/3D/Render mesh": "mesh_renderer_emitter",
 	"Emitters/3D/Render scene": "scene_renderer_emitter",
 	"Emitters/Audio/Audio player": "audio_player",
