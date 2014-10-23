@@ -28,7 +28,7 @@ Texture.prototype.load = function(src, core)
 	
 	img.onload = function(self, src, c) { return function()
 	{
-		msg('Finished loading texture \'' + src + '\'.');
+		msg('INFO: Finished loading texture \'' + src + '\'.');
 		self.upload(img, src);
 		c.asset_tracker.signal_completed();
 	}}(this, src, core);
@@ -136,14 +136,14 @@ TextureCache.prototype.get = function(url)
 
 	if(ce !== undefined)
 	{
-		msg('Returning cahed version of texture \'' + url + '\'.');
+		msg('INFO: Returning cahed version of texture \'' + url + '\'.');
 		ce.count++;
 		return ce.texture;
 	}
 	
 	var t = new Texture(this.core.renderer);
 	
-	msg('Fetching texture \'' + url + '\'.');
+	msg('INFO: Fetching texture \'' + url + '\'.');
 	
 	t.load(url, this.core);
 	this.textures[url] = { count:0, texture:t };
@@ -768,7 +768,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker, instances)
 				parent.vertex_count = count / (4 * 3);
 				parent.streams_loaded++;
 
-				msg('Finished loading stream from ' + img.src + ' with ' + (count / 4) + ' elements. (' + parent.streams_loaded + ' / ' + parent.stream_count + ')');
+				msg('INFO: Finished loading stream from ' + img.src + ' with ' + (count / 4) + ' elements. (' + parent.streams_loaded + ' / ' + parent.stream_count + ')');
 				asset_tracker.signal_completed();
 			}}(parent);
 		
@@ -1728,7 +1728,8 @@ Scene.prototype.create_autofit_camera = function()
 	
 	pos[0] = tar[0];
 	
-	msg('New autofit camera: ' + pos + ' ... ' + tar[0] + ',' + tar[1] + ',' + tar[2] + ' ... ' + dist);
+	msg('INFO: New autofit camera: ' + pos + ' ... ' + tar[0] + ',' + tar[1] + ',' + tar[2] + ' ... ' + dist);
+	
 	mat4.perspective(45.0, c.width() / c.height(), 1.0, 1.0 + dist, cam.projection);
 	mat4.lookAt(pos, tar, vec3.createFrom(0, 0, 1), cam.view);
 	
@@ -1751,8 +1752,8 @@ Scene.load = function(gl, url, core)
 			var r = c.renderer;
 			
 			scene.load_json(data, bp);
-			msg('Scene: Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
-			msg('Global cache state: ' + r.texture_cache.count() + ' textures. ' + r.shader_cache.count() + ' shaders.');
+			msg('INFO: Scene - Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
+			msg('INFO: Global cache state: ' + r.texture_cache.count() + ' textures. ' + r.shader_cache.count() + ' shaders.');
 			c.asset_tracker.signal_completed();
 		}}(scene, core),
 		error: function(c) { return function(jqXHR, textStatus, errorThrown)

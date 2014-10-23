@@ -119,6 +119,8 @@ function msg(txt)
 			d.append('<span style="color:#f20">' + txt + '</span>\n');
 		else if(txt.substring(0,  9) === 'WARNING: ')
 			d.append('<span style="color:#fa0">' + txt + '</span>\n');
+		else if(txt.substring(0,  6) === 'INFO: ')
+			d.append('<span style="color:#04f">' + txt + '</span>\n');
 		else
 			d.append(txt + '\n');
 	}
