@@ -1737,7 +1737,7 @@ Scene.prototype.create_autofit_camera = function()
 	
 Scene.load = function(gl, url, core)
 {
-	// Create dummy impostor scene and can be used as a null-proxy until asynchronous load completes.
+	// Create dummy imposter scene and can be used as a null-proxy until asynchronous load completes.
 	var scene = new Scene(gl, core, null, null);
 	
 	core.asset_tracker.signal_started();
@@ -1760,7 +1760,7 @@ Scene.load = function(gl, url, core)
 			msg('ERROR: Failed to load scene "' + url + '": ' + textStatus + ', ' + errorThrown, 'Renderer');
 			c.asset_tracker.signal_failed();
 		}}(core),
-		async: false // TODO: We should definitely change this to be asynchronous!
+		async: true // TODO: We should definitely change this to be asynchronous!
 	});
 	
 	return scene;
