@@ -4,6 +4,7 @@ function Texture(renderer, handle, filter)
 
 	this.renderer = renderer;
 	this.min_filter = this.mag_filter = filter || gl.LINEAR;
+	this.wrap_s = this.wrap_t = gl.REPEAT;
 	this.texture = handle || gl.createTexture();
 	this.width = 0;
 	this.height = 0;
@@ -62,8 +63,8 @@ Texture.prototype.enable = function(stage)
 		this.renderer.extensions.set_anisotropy(4);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.min_filter);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.mag_filter);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.wrap_s);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.wrap_t);
 		gl.bound_tex_stage = stage;
 		gl.bound_tex = this.texture;
 	}
