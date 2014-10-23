@@ -39,8 +39,8 @@ E2.p = E2.plugins["texture_diffuse_shader"] = function(core, node)
 
 	var gl = this.gl = core.renderer.context;
 	
-	this.def_ambient = new Float32Array([0, 0, 0, 1]);
-	this.def_diffuse = new Float32Array([1, 1, 1, 1]);
+	this.def_ambient = vec4.createFrom(0, 0, 0, 1);
+	this.def_diffuse = vec4.createFrom(1, 1, 1, 1);
 	
 	this.s = new ShaderProgram(gl);
 	this.vs = new Shader(gl, gl.VERTEX_SHADER, vs_src);
@@ -93,8 +93,8 @@ E2.p = E2.plugins["texture_diffuse_shader"] = function(core, node)
 	{
 		var mat = self.material ? self.material : mesh.material;
 		
-		gl.uniform4fv(self.s.a_col, mat.ambient_color ? new Float32Array(mat.ambient_color.rgba) : this.def_ambient);
-		gl.uniform4fv(self.s.d_col, mat.diffuse_color ? new Float32Array(mat.diffuse_color.rgba) : this.def_diffuse);
+		gl.uniform4fv(self.s.a_col, mat.ambient_color ? mat.ambient_color : this.def_ambient);
+		gl.uniform4fv(self.s.d_col, mat.diffuse_color ? mat.diffuse_color : this.def_diffuse);
 		gl.enableVertexAttribArray(self.s.v_pos);
 		gl.enableVertexAttribArray(self.s.v_uv0);
 		
@@ -141,9 +141,9 @@ E2.p.prototype.update_input = function(slot, data)
 	if(slot.index === 0)
 		this.material = data;
 	else if(slot.index === 1)
-		this.uv_offset = new Float32Array([data[0], data[1]]);
+		this.uv_offset = vec2.createFrom(data[0], data[1]);
 	else if(slot.index === 2)
-		this.uv_scale = new Float32Array([data[0], data[1]]);
+		this.uv_scale = vec2.createFrom(data[0], data[1]);
 	else if(slot.index === 3)
 		this.uv_rotation = ((data % 360.0) / 180.0) * Math.PI;
 };
@@ -158,8 +158,8 @@ E2.p.prototype.state_changed = function(ui)
 	if(!ui)
 	{
 		this.material = null;
-		this.uv_offset = new Float32Array([0.0, 0.0]);
-		this.uv_scale = new Float32Array([1.0, 1.0]);
+		this.uv_offset = vec2.createFrom(0, 0);
+		this.uv_scale = vec2.createFrom(1, 1);
 		this.uv_rotation = 0.0;
 	}
 };

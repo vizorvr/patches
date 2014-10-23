@@ -16,8 +16,8 @@ E2.p = E2.plugins["convert_hsla_color_modulator"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.hsla = [1.0, 1.0, 1.0, 1.0];
-	this.color = new Color(1.0, 1.0, 1.0, 1.0);
+	this.hsla = vec4.createFrom(1, 1, 1, 1);
+	this.color = vec4.createFrom(1, 1, 1, 1);
 };
 
 E2.p.prototype.update_input = function(slot, data)
@@ -29,7 +29,7 @@ E2.p.prototype.update_state = function()
 {
 	var s = this.hsla[1];
 	var l = this.hsla[2];
-	var sc = this.color.rgba;
+	var sc = this.color;
 	
 	sc[3] = this.hsla[3];
 

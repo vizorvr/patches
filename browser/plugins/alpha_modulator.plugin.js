@@ -14,22 +14,22 @@ E2.p = E2.plugins["alpha_modulator"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.color = new Color(1, 1, 1);
+	this.color = vec4.createFrom(1, 1, 1, 1);
 };
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	var rgba = this.color.rgba;
+	var c = this.color;
 	
 	if(slot.index === 0)
 	{
-		rgba[0] = data.rgba[0];
-		rgba[1] = data.rgba[1];
-		rgba[2] = data.rgba[2];
+		c[0] = data[0];
+		c[1] = data[1];
+		c[2] = data[2];
 	
 	}
 	else
-		rgba[3] = data;
+		c[3] = data;
 };	
 
 E2.p.prototype.update_output = function(slot)

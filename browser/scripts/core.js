@@ -285,7 +285,7 @@ function Core(vr_devices, app) {
 		if(dt === dts.FLOAT)
 			return 0.0;
 		else if(dt === dts.COLOR)
-			return new Color(1, 1, 1);
+			return vec4.createFrom(1, 1, 1, 1);
 		else if(dt === dts.MATRIX)
 		{
 			var m = mat4.create();
@@ -296,7 +296,7 @@ function Core(vr_devices, app) {
 		else if (dt === dts.TEXTURE)
 			return self.renderer.default_tex;
 		else if(dt === dts.VECTOR)
-			return [0.0, 0.0, 0.0];
+			return vec3.createFrom(0.0, 0.0, 0.0);
 		else if(dt === dts.CAMERA)
 			return new Camera(self.renderer.context);
 		else if(dt === dts.BOOL)

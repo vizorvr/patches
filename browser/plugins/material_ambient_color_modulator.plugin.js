@@ -4,7 +4,7 @@ E2.p = E2.plugins["material_ambient_color_modulator"] = function(core, node)
 	
 	this.input_slots = [ 
 		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'Input material.', def: core.renderer.material_default },
-		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The material ambient color.', def: new Color(0.2, 0.2, 0.2) } 
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The material ambient color.', def: core.renderer.color_black } 
 	];
 	
 	this.output_slots = [
@@ -35,6 +35,6 @@ E2.p.prototype.state_changed = function(ui)
 	if(!ui)
 	{
 		this.material = new Material();
-		this.color = new Color(0.2, 0.2, 0.2);
+		this.color = vec4.createFrom(0, 0, 0, 1);
 	}
 };

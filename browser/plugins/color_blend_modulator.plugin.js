@@ -15,7 +15,7 @@ E2.p = E2.plugins["color_blend_modulator"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.output_color = new Color(0, 0, 0);
+	this.output_color = vec4.createFrom(0, 0, 0, 1);
 };
 
 E2.p.prototype.update_input = function(slot, data)
@@ -32,9 +32,9 @@ E2.p.prototype.update_state = function()
 {
 	var mix = this.mix;
 	var inv_mix = 1.0 - mix;
-	var ca = this.color_a.rgba;
-	var cb = this.color_b.rgba;
-	var oc = this.output_color.rgba;
+	var ca = this.color_a;
+	var cb = this.color_b;
+	var oc = this.output_color;
 	
 	for(var i = 0; i < 4; i++)
 		oc[i] = (ca[i] * mix) + (cb[i] * inv_mix);
@@ -49,9 +49,9 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.color_a = new Color(0, 0, 0);
-		this.color_b = new Color(0, 0, 0);
-		this.output_color = new Color(0, 0, 0);
+		this.color_a = vec4.createFrom(0, 0, 0, 1);
+		this.color_b = vec4.createFrom(0, 0, 0, 1);
+		this.output_color = vec4.createFrom(0, 0, 0, 1);
 		this.mix = 0.5;
 	}
 };

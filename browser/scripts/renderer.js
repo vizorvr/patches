@@ -1,18 +1,3 @@
-function Color(r, g, b, a)
-{
-	this.rgba = [r, g, b, a || 1.0];
-}
-
-Color.prototype.clone = function(src)
-{
-	var s = src.rgba, d = this.rgba;
-	
-	d[0] = s[0];
-	d[1] = s[1];
-	d[2] = s[2];
-	d[3] = s[3];
-};
-
 function Texture(renderer, handle, filter)
 {
 	var gl = this.gl = renderer.context;
@@ -257,10 +242,10 @@ function Renderer(vr_devices, canvas_id, core)
 	this.camera_screenspace = new Camera(this.context);
 	this.light_default = new Light();
 	this.material_default = new Material();
-	this.color_white = new Color(1.0, 1.0, 1.0);
-	this.color_black = new Color(0.0, 0.0, 0.0);
-	this.vector_origin = [0.0, 0.0, 0.0];
-	this.vector_unity = [1.0, 1.0, 1.0];
+	this.color_white = vec4.createFrom(1.0, 1.0, 1.0, 1.0);
+	this.color_black = vec4.createFrom(0.0, 0.0, 0.0, 1.0);
+	this.vector_origin = vec3.createFrom(0.0, 0.0, 0.0);
+	this.vector_unity = vec3.createFrom(1.0, 1.0, 1.0);
 	this.matrix_identity = mat4.create();
 	
 	mat4.identity(this.matrix_identity);
@@ -548,10 +533,10 @@ IndexBuffer.prototype.bind_data = function(i_data)
 function Light()
 {
 	this.type = Light.type.POINT;
-	this.diffuse_color = new Color(1, 1, 1, 1);
-	this.specular_color = new Color(1, 1, 1, 1);
-	this.position = [0, 1, 0];
-	this.direction = [0, -1, 0];
+	this.diffuse_color = vec4.createFrom(1, 1, 1, 1);
+	this.specular_color = vec4.createFrom(1, 1, 1, 1);
+	this.position = vec3.createFrom(0, 1, 0);
+	this.direction = vec3.createFrom(0, -1, 0);
 	this.intensity = 1.0;
 }
 
@@ -572,8 +557,8 @@ function Material(gl, t_cache, data, base_path)
 	this.shinyness = 1.0;
 	this.double_sided = false;
 	this.blend_mode = Renderer.blend_mode.NORMAL;
-	this.ambient_color = new Color(0, 0, 0, 1);
-	this.diffuse_color = new Color(1, 1, 1, 1);
+	this.ambient_color = vec4.createFrom(0, 0, 0, 1);
+	this.diffuse_color = vec4.createFrom(1, 1, 1, 1);
 	this.textures = [null, null, null, null];
 	this.uv_offsets = [null, null, null, null];
 	this.uv_scales = [null, null, null, null];
@@ -586,7 +571,7 @@ function Material(gl, t_cache, data, base_path)
 			var c = data[name];
 			
 			if(c)
-				self[name] = new Color(c[0], c[1], c[2], c[3]);
+				self[name] = vec4.createFrom(c[0], c[1], c[2], c[3]);
 		};
 		
 		var parse_tex = function(self, name, tgt, old)
@@ -1335,11 +1320,11 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			var m = mat ? mat : mesh.material;
 
 			gl.enableVertexAttribArray(this.v_pos);
-			gl.uniform4fv(this.a_col, (m.ambient_color) ? new Float32Array(m.ambient_color.rgba) : r.def_ambient);
-			gl.uniform4fv(this.d_col, (m.diffuse_color) ? new Float32Array(m.diffuse_color.rgba) : r.def_diffuse);
+			gl.uniform4fv(this.a_col, (m.ambient_color) ? m.ambient_color : r.def_ambient);
+			gl.uniform4fv(this.d_col, (m.diffuse_color) ? m.diffuse_color : r.def_diffuse);
 		
 			if(this.s_col !== undefined)
-				gl.uniform4fv(this.s_col, (m.specular_color) ? new Float32Array(m.specular_color.rgba) : r.def_specular);
+				gl.uniform4fv(this.s_col, (m.specular_color) ? m.specular_color : r.def_specular);
 		
 			if(this.shinyness !== undefined)
 				gl.uniform1f(this.shinyness, m.shinyness);
@@ -1353,8 +1338,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 					var lid = 'l' + i;
 
 					gl.uniform3fv(this[lid + '_pos'], l.position);
-					gl.uniform4fv(this[lid + '_d_col'], l.diffuse_color.rgba);
-					gl.uniform4fv(this[lid + '_s_col'], l.specular_color.rgba);
+					gl.uniform4fv(this[lid + '_d_col'], l.diffuse_color);
+					gl.uniform4fv(this[lid + '_s_col'], l.specular_color);
 					gl.uniform1f(this[lid + '_power'], l.intensity);
 				
 					if(l.type === Light.type.DIRECTIONAL)
