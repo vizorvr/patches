@@ -92,13 +92,13 @@ Texture.prototype.upload = function(img, src)
 	
 	if(!this.isPow2(w))
 	{
-		msg('WARNING: The width (' + w + ') of the texture \'' + src + '\' is not a power of two.');
+		msg('ERROR: The width (' + w + ') of the texture \'' + src + '\' is not a power of two.');
 		return;
 	}
 	
 	if(!this.isPow2(h))
 	{
-		msg('WARNING: The height (' + h + ') of the texture \'' + src + '\' is not a power of two.');
+		msg('ERROR: The height (' + h + ') of the texture \'' + src + '\' is not a power of two.');
 		return;
 	}
 	

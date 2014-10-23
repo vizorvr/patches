@@ -115,10 +115,12 @@ function msg(txt)
 	
 	if(txt)
 	{
-		if(txt.substring(0,  7) !== 'ERROR: ')
-			d.append(txt + '\n');
+		if(txt.substring(0,  7) === 'ERROR: ')
+			d.append('<span style="color:#f20">' + txt + '</span>\n');
+		else if(txt.substring(0,  9) === 'WARNING: ')
+			d.append('<span style="color:#fa0">' + txt + '</span>\n');
 		else
-			d.append('<span style="color:#f00">' + txt + '</span>\n');
+			d.append(txt + '\n');
 	}
 	
 	d.scrollTop(d[0].scrollHeight);
