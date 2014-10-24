@@ -16,6 +16,8 @@ E2.p = E2.plugins["record_framebuffer"] = function(core, node)
 E2.p.prototype.reset = function()
 {
 	this.texture = null;
+	this.img_data = null;
+	this.xhr = null;
 }
 
 E2.p.prototype.update_input = function(slot, data)
@@ -35,15 +37,18 @@ E2.p.prototype.update_state = function()
 	var w = this.texture.width;
 	var h = this.texture.height;
 	var size = w * h * 4;
-	var img_data = new Uint8Array(size);
+	
+	if(!this.img_data || this.img_data.byteLength !== size)
+	{
+		this.img_data = new Uint8Array(size);
+		this.xhr = new XMLHttpRequest();
+	}
 	
 	gl.bindFramebuffer(gl.FRAMEBUFFER, this.texture.framebuffer);
-	gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, img_data);
+	gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, this.img_data);
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-	var xhr = new XMLHttpRequest();
-	
-	xhr.open('POST', this.url + '?width=' + w + '&height=' + h, false);
-	xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-	xhr.send(img_data);
+	this.xhr.open('POST', this.url + '?width=' + w + '&height=' + h, false);
+	this.xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+	this.xhr.send(this.img_data);
 };
