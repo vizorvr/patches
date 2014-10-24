@@ -100,7 +100,9 @@ table
 
 #canvas
 {
-	background-color: #272822;
+	background-color: #191a16;
+	background: url('../images/vignette2.png') no-repeat;
+	background-size: 100% 100%;
 }
 
 #load-snippet
@@ -141,7 +143,7 @@ table
 .plugin
 {
 	font-size: 8pt;
-	background-color: #ff8;
+	background-color: #eee !important;
 	z-index: 100;
 	padding: 0px;
 	cursor: move;
@@ -151,7 +153,16 @@ table
 	
 .graph
 {
-	background: #ffa !important;
+	border-radius: 5px;
+background: #fcf297; /* Old browsers */
+background: -moz-linear-gradient(top,  #fcf297 0%, #f7c438 100%) !important; /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fcf297), color-stop(100%,#f7c438)) !important; /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #fcf297 0%,#f7c438 100%) !important; /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #fcf297 0%,#f7c438 100%) !important; /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #fcf297 0%,#f7c438 100%) !important; /* IE10+ */
+background: linear-gradient(to bottom,  #fcf297 0%,#f7c438 100%) !important; /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcf297', endColorstr='#f7c438',GradientType=0 ) !important; /* IE6-9 */
+
 }
 
 .proxy
@@ -180,8 +191,8 @@ table
 
 .pl_layout
 {
-	border-collapse: separate;
 	border-spacing: 0px;
+	box-shadow: 5px 5px 80px #111;
 }
 
 .pl_title
@@ -191,9 +202,29 @@ table
 
 .pl_header
 {
-	background-color: lightslategrey;
-	color: #fff;
+	color: #ccc;
+	background: transparent;
 	border: none;
+	background: rgb(28,28,28); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgba(28,28,28,1) 0%, rgba(38,38,38,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(28,28,28,1)), color-stop(100%,rgba(38,38,38,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(28,28,28,1) 0%,rgba(38,38,38,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(28,28,28,1) 0%,rgba(38,38,38,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(28,28,28,1) 0%,rgba(38,38,38,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(28,28,28,1) 0%,rgba(38,38,38,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1c1c1c', endColorstr='#262626',GradientType=0 ); /* IE6-9 */
+}
+
+.pl_delete
+{
+	background: #490809; /* Old browsers */
+	background: -moz-linear-gradient(top,  #490809 1%, #77020e 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,#490809), color-stop(100%,#77020e)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #490809 1%,#77020e 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #490809 1%,#77020e 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #490809 1%,#77020e 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #490809 1%,#77020e 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#490809', endColorstr='#77020e',GradientType=0 ); /* IE6-9 */
 }
 
 .pl_header .t
