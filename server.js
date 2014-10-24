@@ -167,7 +167,7 @@ var app = express()
 app.use(express.errorHandler());
 
 if(config.server.enableFrameDumping)
-	new FrameDumpServer().listen(app);
+	new FrameDumpServer(PROJECT).listen(app);
 
 var httpServer = http.createServer(app)
 
