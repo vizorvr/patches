@@ -9,11 +9,10 @@ debug = True
 bl_info = {
     'name': 'Engi Export (.json)',
     'author': 'Lasse Nielsen',
-    'version': (0, 1),
-    'blender': (2, 63, 17),
+    'version': (0, 2),
+    'blender': (2, 72, 0),
     'location': 'File > Export > Engi (.json)',
     'description': 'Engi Export (.json)',
-    'url': 'http://www.engijs.org',
     'category': 'Import-Export'
 }
 
