@@ -53,11 +53,11 @@ E2.p.prototype.update_state = function()
 	var id = this.img_data;
 	var cd = this.conv_data;
 	
-	for(var i = 0, ofs = 0; i < w * h * 4; i += 4, ofs += 3)
+	for(var i = 0, o = 0; i < w * h * 3; i += 3, o += 4)
 	{
-		cd[ofs+2] = id[i];
-		cd[ofs+1] = id[i+1];
-		cd[ofs] = id[i+2];
+		cd[i+2] = id[o];
+		cd[i+1] = id[o+1];
+		cd[i] = id[o+2];
 	}
 	
 	this.xhr.open('POST', this.url + '?width=' + w + '&height=' + h, false);
