@@ -9,8 +9,7 @@
     "handlebars": "1.3.0",
     "jquery": "2.1.0",
     "osc-min": "^0.1.0",
-    "ws": "^0.4.31",
-    "crypto-balance": "^0.0.4"
+    "ws": "^0.4.31"
   },
   "devDependencies": {
     "mocha": "^1.21.5",
@@ -21,6 +20,10 @@
     "start": "node server.js",
     "test": "mocha browser/test/unit/plugins"
   },
-  "author": "Lasse Nielsen",
-  "license": "MIT"
+  "author": "Lasse Nielsen, Jaakko Manninen",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/engijs/engi.git"
+  }
 }
