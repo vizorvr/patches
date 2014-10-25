@@ -30,7 +30,7 @@ function showFolderListing(reTest)
 {
 	return function(req, res, next)
 	{
-		fs.readdir(PROJECT + req.path, function(err, files)
+		fs.readdir(path.join(PROJECT, req.path), function(err, files)
 		{
 			if(err)
 			{
@@ -48,15 +48,15 @@ function showFolderListing(reTest)
 
 function downloadHandler(req, res)
 {
-	var path = path.join(PROJECT, decodeURIComponent(req.path.substring(3)));
+	var p = path.join(PROJECT, decodeURIComponent(req.path.substring(3)));
 
-	fs.exists(path, function(exists)
+	fs.exists(p, function(exists)
 	{
 		if(!exists)
 			return res.send(404);
 
 		res.header('Content-Type', 'application/octet-stream');
-		fs.createReadStream(path).pipe(res);
+		fs.createReadStream(p).pipe(res);
 	});
 }
 
@@ -108,7 +108,6 @@ var app = express()
 	.use(helmet.xssFilter())
 	.use(helmet.ienoopen())
 	.use(helmet.nosniff())
-	.use(helmet.crossdomain())
 	.use(function(req, res, next)
 	{
 		req.url = req.url.replace(/^\/build\/data\//, '/data/');
@@ -123,11 +122,14 @@ var app = express()
 	})
 	.use(express['static'](ENGI, { maxAge: 60 * 60 * 24 * 1000 }))
 	.use(express['static'](PROJECT, { maxAge: 0 }))
-	.use('/node_modules',
-		express['static'](__dirname+'/node_modules',
-			{ maxAge: 60 * 60 * 24 * 1000 }))
+	.use('/node_modules', express['static'](__dirname+'/node_modules', { maxAge: 60 * 60 * 24 * 1000 }))
 	// set no-cache headers for the rest
-	.use(helmet.nocache({ noEtag: true }))
+	.use(function(req, res, next)
+	{
+		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+		res.setHeader('Expires', 0);
+		next();
+	})
 	.get(/^\/data\/(graphs|textures|scenes|audio|video|jsons)\/$/, showFolderListing(/^[^.].*$/))
 	.get(/^\/dl\/data\/(graphs|textures|audio|video|jsons)\/[^\/]*$/, downloadHandler)
 	.post(/^\/data\/graphs\/[^\/]*\.json$/, function(req, res, next)
