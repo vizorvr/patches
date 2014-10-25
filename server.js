@@ -6,6 +6,7 @@ var argv = require('minimist')(process.argv.slice(2));
 var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
+var helmet = require('helmet');
 var FrameDumpServer = require('./lib/framedump-server').FrameDumpServer;
 var OscServer = require('./lib/osc-server').OscServer;
 var WsChannelServer = require('./lib/wschannel-server').WsChannelServer;
@@ -102,6 +103,12 @@ function publishProject(res, seq, data_path)
 
 var app = express()
 	.use(express.logger(':remote-addr :method :url :status :res[content-length] - :response-time ms'))
+	.use(helmet.hidePoweredBy())
+	.use(helmet.xframe('sameorigin'))
+	.use(helmet.xssFilter())
+	.use(helmet.ienoopen())
+	.use(helmet.nosniff())
+	.use(helmet.crossdomain())
 	.use(function(req, res, next)
 	{
 		req.url = req.url.replace(/^\/build\/data\//, '/data/');
@@ -120,12 +127,7 @@ var app = express()
 		express['static'](__dirname+'/node_modules',
 			{ maxAge: 60 * 60 * 24 * 1000 }))
 	// set no-cache headers for the rest
-	.use(function(req, res, next)
-	{
-		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
-		res.setHeader('Expires', 0);
-		next();
-	})
+	.use(helmet.nocache({ noEtag: true }))
 	.get(/^\/data\/(graphs|textures|scenes|audio|video|jsons)\/$/, showFolderListing(/^[^.].*$/))
 	.get(/^\/dl\/data\/(graphs|textures|audio|video|jsons)\/[^\/]*$/, downloadHandler)
 	.post(/^\/data\/graphs\/[^\/]*\.json$/, function(req, res, next)
