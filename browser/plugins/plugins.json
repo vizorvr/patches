@@ -38,6 +38,7 @@
 	"Generators/Input/Mouse buttons": "mouse_button_generator",
 	"Generators/Input/Mouse position": "mouse_position_generator",
 	"Generators/Input/Mouse wheel": "mouse_wheel_generator",
+	"Generators/Load/Array from URL": "url_array_generator",
 	"Generators/Load/Audio from URL": "url_audio_generator",
 	"Generators/Load/Audio buffer from URL": "url_audio_buffer_generator",
 	"Generators/Load/Image from URL": "url_texture_generator",
