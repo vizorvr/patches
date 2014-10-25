@@ -16,8 +16,8 @@ E2.p.prototype.update_input = function(slot, data)
 	var l = this.light;
 	
 	l.type = data.type;
-	l.diffuse_color.clone(data.diffuse_color);
-	l.specular_color.clone(data.specular_color);
+	l.diffuse_color = vec4.create(data.diffuse_color);
+	l.specular_color = vec4.create(data.specular_color);
 	l.position[0] = data.position[0];
 	l.position[1] = data.position[1];
 	l.position[2] = data.position[2];
