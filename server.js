@@ -47,7 +47,7 @@ function showFolderListing(reTest)
 
 function downloadHandler(req, res)
 {
-	var path = PROJECT + decodeURIComponent(req.path.substring(3));
+	var path = path.join(PROJECT, decodeURIComponent(req.path.substring(3)));
 
 	fs.exists(path, function(exists)
 	{
@@ -136,7 +136,7 @@ var app = express()
 		if (!/\.json$/.test(savePath))
 			savePath = savePath+'.json';
 
-		var stream = fs.createWriteStream(PROJECT + savePath);
+		var stream = fs.createWriteStream(path.join(PROJECT, savePath));
 	
 		stream.on('error', function(err)
 		{
@@ -153,7 +153,7 @@ var app = express()
 		{
 			if(req.get('Engi-Publish') === 'true')
 			{
-				publishProject(res, PROJECT + savePath, PROJECT);
+				publishProject(res, path.join(PROJECT, savePath), PROJECT);
 			}
 			else
 			{
