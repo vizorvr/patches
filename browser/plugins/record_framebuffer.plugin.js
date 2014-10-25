@@ -17,6 +17,7 @@ E2.p.prototype.reset = function()
 {
 	this.texture = null;
 	this.img_data = null;
+	this.conv_data = null;
 	this.xhr = null;
 }
 
@@ -41,6 +42,7 @@ E2.p.prototype.update_state = function()
 	if(!this.img_data || this.img_data.byteLength !== size)
 	{
 		this.img_data = new Uint8Array(size);
+		this.conv_data = new Uint8Array(w * h * 3);
 		this.xhr = new XMLHttpRequest();
 	}
 	
@@ -48,7 +50,17 @@ E2.p.prototype.update_state = function()
 	gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, this.img_data);
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
+	var id = this.img_data;
+	var cd = this.conv_data;
+	
+	for(var i = 0, ofs = 0; i < w * h * 4; i += 4, ofs += 3)
+	{
+		cd[ofs+2] = id[i];
+		cd[ofs+1] = id[i+1];
+		cd[ofs] = id[i+2];
+	}
+	
 	this.xhr.open('POST', this.url + '?width=' + w + '&height=' + h, false);
 	this.xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-	this.xhr.send(this.img_data);
+	this.xhr.send(this.conv_data);
 };
