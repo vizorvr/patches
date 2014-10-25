@@ -18,12 +18,15 @@ var listenHost = argv.i || config.server.host;
 var listenPort = argv.p || config.server.port;
 var publishRunning = []; // The current set of projects being published.
 
+config.debug = config.server.debug;
+
 if (argv.h || argv.help)
 {
 	return console.log('Usage: node server.js -i 127.0.0.1 -p 8000 [/path/to/alt/project]')
 }
 
-console.log('Project path: ', PROJECT);
+console.log('Debug enabled:', config.debug);
+console.log('Project path:', PROJECT);
 console.log('URL: http://' + listenHost + ':' + listenPort);
 
 function showFolderListing(reTest)
@@ -179,11 +182,7 @@ var httpServer = http.createServer(app)
 httpServer.listen(listenPort, listenHost);
 
 if (config.server.enableOSC)
-{
-	new OscServer().listen(httpServer);
-}
+	new OscServer(config).listen(httpServer);
 
 if (config.server.enableChannels)
-{
-	new WsChannelServer().listen(httpServer);
-}
+	new WsChannelServer(config).listen(httpServer);
