@@ -108,6 +108,7 @@ var app = express()
 	.use(helmet.xssFilter())
 	.use(helmet.ienoopen())
 	.use(helmet.nosniff())
+	.use(helmet.crossdomain())
 	.use(function(req, res, next)
 	{
 		req.url = req.url.replace(/^\/build\/data\//, '/data/');
