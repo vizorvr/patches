@@ -32,7 +32,7 @@ GraphController.prototype.index = function(req, res, next)
 				slug: item.slug,
 				name: item.name,
 				updated: item.updated,
-				creator: item._creator.profile.name
+				creator: item._creator.username
 			};
 		}));
 	})

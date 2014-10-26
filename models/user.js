@@ -4,8 +4,8 @@ var crypto = require('crypto');
 
 var userSchema = new mongoose.Schema(
 {
-	username: { type: String, unique: true, lowercase: true },
-	email: { type: String, unique: true, lowercase: true },
+	username: { type: String, required: true, unique: true, lowercase: true },
+	email: { type: String, required: true, unique: true, lowercase: true },
 	password: String,
 
 	facebook: String,
@@ -18,7 +18,6 @@ var userSchema = new mongoose.Schema(
 
 	profile:
 	{
-		name: { type: String, default: '' },
 		gender: { type: String, default: '' },
 		location: { type: String, default: '' },
 		website: { type: String, default: '' },
