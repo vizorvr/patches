@@ -1690,5 +1690,26 @@ function Application() {
 	});
 	
 	this.onHideTooltip();
+
+	// fetch templates
+	Handlebars.getTemplate = function(name) {
+		if (Handlebars.templates && Handlebars.templates[name])
+			return Handlebars.templates[name];
+
+		$.ajax(
+		{
+			url: 'views/' + name + '.handlebars',
+			success: function(data)
+			{
+				if (!Handlebars.templates)
+					Handlebars.templates = {};
+
+				Handlebars.templates[name] = Handlebars.compile(data);
+			},
+			async: false
+		});
+
+		return Handlebars.templates[name];
+	};
 }
 

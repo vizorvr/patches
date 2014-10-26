@@ -110,7 +110,7 @@ function Player(vr_devices, canvas, app, root_node)
 		c.renderer.texture_cache.clear();
 		c.renderer.shader_cache.clear();
 		c.deserialise(json);
-		this.select_active_graph();		
+		this.select_active_graph();
 		
 		if(E2.app.updateCanvas)
 			E2.app.updateCanvas(true);

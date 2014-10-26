@@ -75,6 +75,23 @@ exports.save = function(req, res, next)
 	});
 };
 
+// GET /graph/:slug
+exports.load = function(req, res, next)
+{
+	console.log('load slug', req.params.name)
+
+	Graph
+	.findOne({ name: req.params.name })
+	.exec(function(err, graph)
+	{
+		if (err)
+			return next(err);
+
+console.log('graph', graph)
+		res.json(graph);
+	});
+};
+
 
 
 

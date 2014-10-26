@@ -334,17 +334,21 @@ function Core(vr_devices, app) {
 	this.deserialise = function(str)
 	{
 		var d = JSON.parse(str);
-		
-		self.abs_t = d.abs_t;
+
+		this.graphModel = d;
+
+		d.graph = JSON.parse(d.graph);
+
+		self.abs_t = d.graph.abs_t;
 		self.delta_t = 0.0;
-		self.graph_uid = d.graph_uid;
+		self.graph_uid = d.graph.graph_uid;
 
 		self.active_graph.destroy_ui();
 		
 		var graphs = self.graphs = [];
 		
 		self.root_graph = new Graph(this, null, null);
-		self.root_graph.deserialise(d.root);
+		self.root_graph.deserialise(d.graph.root);
 		self.graphs.push(self.root_graph);
 		
 		self.root_graph.patch_up(self.graphs);

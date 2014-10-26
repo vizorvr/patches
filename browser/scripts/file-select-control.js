@@ -6,7 +6,6 @@ function FileSelectControl(handlebars) {
 		'Cancel': this.cancel.bind(this),
 		'Ok': this.close.bind(this)
 	}
-
 }
 
 FileSelectControl.prototype.files = function(files)
@@ -50,19 +49,18 @@ FileSelectControl.prototype._render = function() {
 	var el = $('<div class="file-select-control">');
 	this._el = el;
 
-	var templateSource = $("#file-select-template").html();
-	var template = this._handlebars.compile(templateSource);
+	this._template = this._handlebars.getTemplate('filebrowser/filebrowser');
 
-	var data = {
-		original: 'this._original',
-		files: [ { name: 'file' } ]
-	}
-
-	console.log('data', template({
-		files: [ {name: 'a'}, {name: 'b'} ] 
-	}))
-
-	el.html(template(data));
+	el.html(this._template({
+		original: this._original,
+		files: this._files.map(function(file)
+		{
+			return {
+				name: file.name,
+				selected: file.name === self._selected
+			};
+		})
+	}));
 
 	var btnEl = $('.modal-footer', el)
 
@@ -78,7 +76,6 @@ FileSelectControl.prototype._render = function() {
 	$('button:last', el)
 		.removeClass('btn-default')
 		.addClass('btn-primary')
-
 
 	this._inputEl = $('input', this._el)
 	this._selectedEl = $('tr.selected', this._el)

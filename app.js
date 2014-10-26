@@ -65,10 +65,11 @@ app.set('port', process.env.PORT || 3000);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.engine('handlebars', exphbs({
+var hbs = exphbs.create({
 	defaultLayout: 'main',
 	helpers: _.extend(hbsHelpers, diyHbsHelpers)
-}));
+})
+app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
 app.use(compress());
@@ -144,6 +145,7 @@ app.use(function(req, res, next)
 
 app.use(express.static(path.join(__dirname, 'browser'), { maxAge: week }));
 app.use('/node_modules', express['static'](path.join(__dirname, 'node_modules'), { maxAge: day }))
+// TODO bundle precompiled templates for client
 app.use('/views', express['static'](path.join(__dirname, 'views'), { maxAge: day }))
 
 app.get('/login', userController.getLogin);
@@ -194,12 +196,12 @@ app.use(function(req, res, next)
 
 // Graph routes
 app.get('/graph', graphController.index);
-
 app.post('/graph',
 	passportConf.isAuthenticated,
 	graphController.validate,
 	graphController.save
 );
+app.get('/graph/:name', graphController.load);
 
 
 if(config.server.enableFrameDumping)
