@@ -47,7 +47,8 @@
     "uglify-js": "^2.4.15",
     "validator": "^3.17.0",
     "ws": "^0.4.31",
-    "yui": "^3.17.2"
+    "yui": "^3.17.2",
+    "when": "^3.5.1"
   },
   "devDependencies": {
     "jsdom": "^0.10.2",

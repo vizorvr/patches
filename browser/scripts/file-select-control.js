@@ -57,6 +57,7 @@ FileSelectControl.prototype._render = function() {
 		{
 			return {
 				name: file.name,
+				creator: file.creator,
 				selected: file.name === self._selected
 			};
 		})

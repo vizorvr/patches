@@ -10,10 +10,12 @@
   <table>
     <thead>
       <td class="name-header">Name</td>
+      <td class="name-header">By</td>
     </thead>
     {{#each files}}
     <tr class="file-row{{#if selected}} selected{{/if}}" data-name="{{name}}">
       <td class="name">{{name}}</td>
+      <td class="">{{creator}}</td>
     </tr>
     {{else}}
     <tr class="file-row">

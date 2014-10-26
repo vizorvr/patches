@@ -13,7 +13,7 @@ var graphSchema = new mongoose.Schema(
 		unique: true,
 		required: true,
 		match: [
-			/[a-zA-Z0-9\ \:\-\_]+/,
+			/[a-zA-Z0-9\/\ \:\-\_]+/,
 			'Sorry, please use another name'
 		]
 	},
