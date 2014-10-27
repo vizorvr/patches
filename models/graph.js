@@ -1,38 +1,15 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var assetHelper = require('./asset-helper');
+var _ = require('lodash')
 
-var graphSchema = new mongoose.Schema(
+var graphSchema = new mongoose.Schema(_.assign(
 {
-	_creator:
-	{
-		type: Schema.Types.ObjectId, ref: 'User'
-	},
-	name:
-	{
-		type: String,
-		unique: true,
-		required: true,
-		match: [
-			/[a-zA-Z0-9\/\ \:\-\_]+/,
-			'Sorry, please use another name'
-		]
-	},
-	slug: { type: String, index: true, unique: true },
-	updated: { type: Date, default: Date.now },
 	graph: { type: Schema.Types.Mixed, required: true }
-});
+}, assetHelper.schema));
 
-graphSchema.pre('save', function(next)
-{
-	var graph = this;
+graphSchema.pre('save', assetHelper.preSaveSlugify);
 
-	graph.slug = graph.name.toLowerCase()
-		.replace(/[^\w-]+/g,'')
-		.replace(/ +/g, '-');
+graphSchema.methods.slugify = assetHelper.slugify.bind(graphSchema);
 
-	graph.updated = Date.now()
-
-	next();
-})
-
-module.exports = mongoose.model('Graphs', graphSchema);
+module.exports = mongoose.model('Graph', graphSchema);

@@ -1,24 +1,38 @@
 var assert = require('assert');
+var GraphController = require('../../controllers/graphController');
+var when = require('when');
 
 describe('GraphController', function()
 {
-	var ctrl;
+	var ctrl, svc;
+	var resolved = function(data)
+	{
+		var dfd = when.defer();
+		dfd.resolve(data || true);
+		return dfd.promise;
+	};
 
 	beforeEach(function()
 	{
-		ctrl = require('../../controllers/graph');
+		svc = { canWrite: resolved };
+		ctrl = new GraphController(svc);
 	});
 
 	it('handles graph post', function(done)
 	{
-		ctrl.postGraph(
+		svc.save = function(data)
+		{
+			assert.equal(data.name, 'foo');
+			return resolved({ slug: 'ok' });
+		}
+		ctrl.save(
 		{
 			body: { name: 'foo', graph: 'graph' }
 		},
 		{
 			json: function(json)
 			{
-				assert.equal(json.slug === 'foo');
+				assert.equal(json.slug, 'ok')
 				done()
 			}
 		});

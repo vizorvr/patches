@@ -68,15 +68,17 @@ GraphService.prototype.save = function(data, user)
 		graph._creator = user.id;
 		graph.graph = data.graph;
 
-		var dfd = when.defer()
+		var dfd = when.defer();
+
 		graph.save(function(err)
 		{
 			if (err)
 				return dfd.reject(err);
 
 			dfd.resolve(graph);
-		})
-		return dfd;
+		});
+
+		return dfd.promise;
 	});
 };
 

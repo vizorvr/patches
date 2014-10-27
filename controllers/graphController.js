@@ -11,6 +11,9 @@ GraphController.prototype.validate = function(req, res, next)
 {
 	var graph = new Graph(req.body);
 
+	if (!graph.slug)
+		graph.slug = graph.slugify(graph.name);
+
 	graph.validate(function(err)
 	{
 		if (err)
@@ -71,7 +74,7 @@ GraphController.prototype.save = function(req, res, next)
 			.then(function(graph)
 			{
 				res.json({ slug: graph.slug });
-			})
+			});
 	})
 	.catch(function(err) { next(err); });
 };

@@ -199,12 +199,40 @@ var GraphService = require('./services/graphService');
 var graphController = new GraphController(
 	new GraphService(require('./models/graph'))
 );
-app.get('/graph', graphController.index.bind(graphController));
-app.get('/graph/:slug', graphController.load.bind(graphController));
-app.post('/graph',
+
+var controllers = {
+	graph: graphController
+	// image: imageController
+}
+
+function getController(req, res, next)
+{
+	req.controller = controllers[req.params.model];
+	if (!req.controller)
+		return res.status(404);
+
+	next();
+}
+
+// Generic CRUD routes
+app.get('/:model', getController, function(req, res, next)
+{
+	req.controller.index(req, res, next);
+});
+app.get('/:model/:id', getController, function(req, res, next)
+{
+	req.controller.load(req, res, next);
+});
+app.post('/:model', getController,
 	passportConf.isAuthenticated,
-	graphController.validate.bind(graphController),
-	graphController.save.bind(graphController)
+	function(req, res, next)
+	{
+		req.controller.validate(req, res, next);
+	},
+	function(req, res, next)
+	{
+		req.controller.save(req, res, next);
+	}
 );
 
 if(config.server.enableFrameDumping)
