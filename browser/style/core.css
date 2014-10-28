@@ -320,3 +320,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcf297', end
 
 .slider-horizontal { height: .8em; }
 .slider-horizontal .slider-handle { top: -.4em; margin-left: -.6em; }
+
+.modal {
+	position: absolute;
+}
