@@ -30,47 +30,40 @@ AssetController.prototype.index = function(req, res, next)
 	{
 		res.json(list.map(function(item)
 		{
-			return item.defaultView();
+			return item.toJSON();
 		}));
 	})
 	.catch(next);
 };
 
-// GET /graph/:slug
-GraphController.prototype.load = function(req, res, next)
+// GET /:model/:slug
+AssetController.prototype.load = function(req, res, next)
 {
-	this._graphService.findBySlug(req.params.slug)
+	this._service.findBySlug(req.params.slug)
 		.then(function(item)
 		{
-			res.json(item);
+			res.json(item.toJSON());
 		})
 		.catch(next);
 };
 
-// POST /graph
-GraphController.prototype.save = function(req, res, next)
+// POST /:model
+AssetController.prototype.save = function(req, res, next)
 {
 	var that = this;
 
-	this._graphService.canWrite(req.user, req.body.name)
+	this._service.canWrite(req.user, req.body.name)
 	.then(function(can)
 	{
 		if (!can)
-		{
-			return res.status(403).json(
-			{
-				msg: 'A graph by someone else with that name already exists'
-			});
-		}
+			return res.status(403).json({msg: 'Sorry, permission denied'});
 
-		return that._graphService
-			.save(req.body, req.user)
-			.then(function(graph)
-			{
-				res.json({ slug: graph.slug });
-			});
+		return that._service.save(req.body, req.user);
 	})
-	.catch(function(err) { next(err); });
+	.then(function(asset)
+	{
+		res.json(asset);
+	});
 };
 
-module.exports = GraphController;
+module.exports = AssetController;

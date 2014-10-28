@@ -48,7 +48,8 @@
     "validator": "^3.17.0",
     "ws": "^0.4.31",
     "yui": "^3.17.2",
-    "when": "^3.5.1"
+    "when": "^3.5.1",
+    "backbone": "^1.1.2"
   },
   "devDependencies": {
     "jsdom": "^0.10.2",

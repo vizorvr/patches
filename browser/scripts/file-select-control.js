@@ -63,7 +63,7 @@ FileSelectControl.prototype._render = function() {
 		})
 	}));
 
-	var btnEl = $('.modal-footer', el)
+	var btnEl = $('.buttons', el)
 
 	Object.keys(this._buttons).map(function(name) {
 		$('<button class="btn btn-default">'+name+'</button>')

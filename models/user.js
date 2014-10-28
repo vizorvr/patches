@@ -51,6 +51,15 @@ userSchema.pre('save', function(next)
 	});
 });
 
+userSchema.methods.toJSON = function()
+{
+	return {
+		_id: this._id,
+		username: this.username,
+		profile: this.profile
+	};
+};
+
 userSchema.methods.comparePassword = function(candidatePassword, cb)
 {
 	bcrypt.compare(candidatePassword, this.password, function(err, isMatch)

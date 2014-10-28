@@ -22,9 +22,11 @@ describe('GraphController', function()
 	{
 		svc.save = function(data)
 		{
+			data.slug = 'ok';
 			assert.equal(data.name, 'foo');
-			return resolved({ slug: 'ok' });
+			return resolved(data);
 		}
+
 		ctrl.save(
 		{
 			body: { name: 'foo', graph: 'graph' }
@@ -32,7 +34,12 @@ describe('GraphController', function()
 		{
 			json: function(json)
 			{
-				assert.equal(json.slug, 'ok')
+				assert.deepEqual(json,
+				{
+					name: 'foo',
+					graph: 'graph', 
+					slug: 'ok'
+				});
 				done()
 			}
 		});

@@ -20,22 +20,6 @@ exports.schema =
 	createdAt: { type: Date, default: Date.now }
 }
 
-exports.defaultView = function() {
-	var json = {
-		name: this.name,
-		slug: this.slug,
-		tags: this.tags,
-		updatedAt: this.updatedAt,
-		createdAt: this.createdAt,
-		creator: this._creator.username
-	};
-
-	if (this.thumbnail)
-		json.thumbnail = this.thumbnail;
-
-	return json;
-}
-
 exports.preSaveSlugify = function(next)
 {
 	this.slug = exports.slugify(this.name);

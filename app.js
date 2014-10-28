@@ -22,11 +22,10 @@ var exphbs  = require('express-handlebars');
 var diyHbsHelpers = require('diy-handlebars-helpers');
 var hbsHelpers = require('./utils/hbs-helpers');
 
-// Controllers
+// Framework controllers (see below for asset controllers)
 var homeController = require('./controllers/home');
 var editorController = require('./controllers/editor');
 var userController = require('./controllers/user');
-var GraphController = require('./controllers/graphController');
 
 // API keys + Passport configuration
 var secrets = require('./config/secrets');
@@ -143,7 +142,7 @@ app.use(function(req, res, next)
 	next();
 });
 
-app.use(express.static(path.join(__dirname, 'browser'), { maxAge: week }));
+app.use(express.static(path.join(__dirname, 'browser'), { maxAge: day }));
 app.use('/node_modules', express['static'](path.join(__dirname, 'node_modules'), { maxAge: day }))
 // TODO bundle precompiled templates for client
 app.use('/views', express['static'](path.join(__dirname, 'views'), { maxAge: day }))
@@ -186,30 +185,38 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedi
 });
 */
 
+// ----- MODEL ROUTES
 // set no-cache headers for the rest
 app.use(function(req, res, next)
 {
+	console.log('PATH', req.path)
 	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
 	res.setHeader('Expires', 0);
 	next();
 });
 
-// Graph routes
+app.use(errorHandler());
+
+// Asset controllers
+var GraphController = require('./controllers/graphController');
+var ImageController = require('./controllers/imageController');
+
 var GraphService = require('./services/graphService');
-var graphController = new GraphController(
-	new GraphService(require('./models/graph'))
-);
+var graphController = new GraphController(new GraphService(require('./models/graph')));
+
+var ImageService = require('./services/imageService');
+var imageController = new ImageController(new ImageService(require('./models/image')));
 
 var controllers = {
-	graph: graphController
-	// image: imageController
+	graph: graphController,
+	image: imageController
 }
 
 function getController(req, res, next)
 {
 	req.controller = controllers[req.params.model];
 	if (!req.controller)
-		return res.status(404);
+		return res.status(404).send();
 
 	next();
 }
@@ -219,10 +226,12 @@ app.get('/:model', getController, function(req, res, next)
 {
 	req.controller.index(req, res, next);
 });
+
 app.get('/:model/:id', getController, function(req, res, next)
 {
 	req.controller.load(req, res, next);
 });
+
 app.post('/:model', getController,
 	passportConf.isAuthenticated,
 	function(req, res, next)

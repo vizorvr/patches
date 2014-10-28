@@ -1,80 +1,30 @@
 var Graph = require('../models/graph');
+var AssetController = require('./assetController');
 
 function GraphController(graphService)
 {
-	this._graphService = graphService;
+	var args = Array.prototype.slice.apply(arguments);
+	args.unshift(Graph);
+	AssetController.apply(this, args);
 };
 
-GraphController.prototype.validate = function(req, res, next)
-{
-	var graph = new Graph(req.body);
+GraphController.prototype = Object.create(AssetController.prototype);
 
-	if (!graph.slug)
-		graph.slug = graph.slugify(graph.name);
-
-	graph.validate(function(err)
-	{
-		if (err)
-			return res.status(400).json(err.errors);
-
-		next();
-	});
-} 
-
-// GET /graph
+// GET /:model
 GraphController.prototype.index = function(req, res, next)
 {
-	this._graphService.list()
+	this._service.list()
 	.then(function(list)
 	{
 		res.json(list.map(function(item)
 		{
-			return {
-				slug: item.slug,
-				name: item.name,
-				updated: item.updated,
-				creator: item._creator.username
-			};
+			var json = item.toJSON();
+			delete json.graph; // don't send graph in list
+			return json;
 		}));
 	})
 	.catch(next);
 };
 
-// GET /graph/:slug
-GraphController.prototype.load = function(req, res, next)
-{
-	this._graphService.findBySlug(req.params.slug)
-		.then(function(item)
-		{
-			res.json(item);
-		})
-		.catch(next);
-};
-
-// POST /graph
-GraphController.prototype.save = function(req, res, next)
-{
-	var that = this;
-
-	this._graphService.canWrite(req.user, req.body.name)
-	.then(function(can)
-	{
-		if (!can)
-		{
-			return res.status(403).json(
-			{
-				msg: 'A graph by someone else with that name already exists'
-			});
-		}
-
-		return that._graphService
-			.save(req.body, req.user)
-			.then(function(graph)
-			{
-				res.json({ slug: graph.slug });
-			});
-	})
-	.catch(function(err) { next(err); });
-};
 
 module.exports = GraphController;

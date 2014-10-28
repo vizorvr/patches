@@ -5,6 +5,7 @@
 				<button type="button" class="close">&times;</button>
 				<h4 class="modal-title">Select file</h4>
 			</div>
+
 			<div class="modal-body">
 				<div class="file-selector">
 					<table>
@@ -25,10 +26,18 @@
 					</table>
 				</div>
 			</div>
+
 			<div class="modal-footer">
-				<input id="file-url" class="form-control" size="26" type="text" value="{{original}}" placeholder="Enter URL"/>
-				<br/>
-				<div class="buttons"></div>
+				<form class="form-inline">
+				<div class="buttons">
+					<input id="file-url"
+						class="form-control pull-left"
+						size="45"
+						type="text"
+						value="{{original}}"
+						placeholder=""/>
+				</div>
+				</form>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->

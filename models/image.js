@@ -19,9 +19,6 @@ var imageSchema = new mongoose.Schema(Object.create(assetHelper.schema,
 
 imageSchema.pre('save', assetHelper.preSaveSlugify);
 
-console.log('methods before', imageSchema.methods);
-
-imageSchema.methods.defaultView = assetHelper.defaultView;
 imageSchema.methods.slugify = assetHelper.slugify;
 
 module.exports = mongoose.model('Image', imageSchema);
