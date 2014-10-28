@@ -5,6 +5,8 @@ var assetHelper = require('./asset-helper');
 var videoSchema = new mongoose.Schema(Object.create(assetHelper.schema,
 {
 	url: { type: String, required: true },
+	thumbnail: { type: String, required: true },
+	size: Number,
 	length: Number,
 	width: Number,
 	height: Number

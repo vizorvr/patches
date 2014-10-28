@@ -2,9 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var assetHelper = require('./asset-helper');
 
-var sceneTextureSchema = {
+var sceneTextureSchema = new mongoose.Schema(
+{
 	url: { type: String, required: true }
-}
+});
 
 var sceneSchema = new mongoose.Schema(Object.create(assetHelper.schema,
 {

@@ -5,6 +5,8 @@ var assetHelper = require('./asset-helper');
 var audioSchema = new mongoose.Schema(Object.create(assetHelper.schema,
 {
 	url: { type: String, required: true },
+	size: Number,
+	mimetype: String,
 	length: Number
 }));
 

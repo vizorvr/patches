@@ -1,18 +1,19 @@
-var Graph = require('../models/graph');
+var image = require('../models/image');
 
-function GraphController(graphService)
+function AssetController(assetClass, service)
 {
-	this._graphService = graphService;
+	this._assetClass = assetClass;
+	this._service = service;
 };
 
-GraphController.prototype.validate = function(req, res, next)
+AssetController.prototype.validate = function(req, res, next)
 {
-	var graph = new Graph(req.body);
+	var asset = new this._assetClass(req.body);
 
-	if (!graph.slug)
-		graph.slug = graph.slugify(graph.name);
+	if (!asset.slug)
+		asset.slug = asset.slugify(asset.name);
 
-	graph.validate(function(err)
+	asset.validate(function(err)
 	{
 		if (err)
 			return res.status(400).json(err.errors);
@@ -21,20 +22,15 @@ GraphController.prototype.validate = function(req, res, next)
 	});
 } 
 
-// GET /graph
-GraphController.prototype.index = function(req, res, next)
+// GET /:model
+AssetController.prototype.index = function(req, res, next)
 {
-	this._graphService.list()
+	this._service.list()
 	.then(function(list)
 	{
 		res.json(list.map(function(item)
 		{
-			return {
-				slug: item.slug,
-				name: item.name,
-				updated: item.updated,
-				creator: item._creator.username
-			};
+			return item.defaultView();
 		}));
 	})
 	.catch(next);
