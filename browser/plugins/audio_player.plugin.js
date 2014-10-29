@@ -106,9 +106,9 @@ E2.p.prototype.update_state = function()
 		audio.muted = this.muted;
 		audio.volume = this.volume;
 		
-		if(this.time !== null)
+		if(this.time !== null && this.audio.readyState > 2)
 		{
-			audio.currentTime = this.time;
+			audio.currentTime = this.time ? this.time : 0.0;
 			this.time = null;
 		}
 	}
