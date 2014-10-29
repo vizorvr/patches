@@ -244,7 +244,7 @@ function Renderer(vr_devices, canvas_id, core)
 	this.shader_cache = new ShaderCache(this.context);
 	this.fullscreen = false;
 	this.default_tex = new Texture(this);
-	this.default_tex.load('../images/no_texture.png', core);
+	this.default_tex.load('images/no_texture.png', core);
 
 	document.addEventListener('fullscreenchange', this.on_fullscreen_change(this));
 	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change(this));
