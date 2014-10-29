@@ -1,7 +1,9 @@
 var ImageProcessor = require('../lib/imageProcessor');
 var when = require('when');
+var nodefn = require('when/node');
 var assert = require('assert');
 var fsPath = require('path');
+var fs = require('fs-extra');
 
 var images = {
 	large: {
@@ -25,10 +27,12 @@ describe('ImageProcessor', function()
 	beforeEach(function()
 	{
 		imp = new ImageProcessor({
-			write: function(path)
+			write: function(path, name)
 			{
 				var dfd = when.defer();
-				dfd.resolve(fsPath.basename(path));
+				// nodefn.call(fs.copy, path, '/tmp/foo/'+name)
+				// .then(function() { return path; });
+				dfd.resolve();
 				return dfd.promise;
 			}
 		});
@@ -50,6 +54,17 @@ describe('ImageProcessor', function()
 		imp.handleUpload(images.small)
 		.then(function(data) {
 			assert.equal(data.scaled.url, data.scaledThumbnail.url);
+			done();
+		})
+		.catch(done)
+	});
+
+	it('maintains aspect ratio for thumbnail', function(done)
+	{
+		imp.handleUpload(images.large)
+		.then(function(data) {
+			assert.equal(data.thumbnail.width, 128);
+			assert.equal(data.thumbnail.height, 72);
 			done();
 		})
 		.catch(done)
