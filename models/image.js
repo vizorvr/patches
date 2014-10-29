@@ -7,14 +7,17 @@ var sizeSchema = new mongoose.Schema(
 	name: { type: String, required: true },
 	width: { type: Number, required: true },
 	height: { type: Number, required: true },
-	bpp: Number,
-	size: Number,
+	bytes: Number,
+	mimetype: String,
 	url: { type: String, required: true }
 });
 
 var imageSchema = new mongoose.Schema(Object.create(assetHelper.schema,
 {
-	sizes: [ sizeSchema ]
+	original: sizeSchema,
+	thumbnail: sizeSchema,
+	scaled: sizeSchema,
+	scaledThumbnail: sizeSchema,
 }));
 
 imageSchema.pre('save', assetHelper.preSaveSlugify);
