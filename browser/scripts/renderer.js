@@ -1348,8 +1348,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 			if(streams[v_types.UV0])
 			{
-				if(d_tex)
-					shader.v_uv0 = resolve_attr('v_uv0');
+				shader.v_uv0 = resolve_attr('v_uv0');
 			
 				var get_tex_uniforms = function(shader, type, tex)
 				{
