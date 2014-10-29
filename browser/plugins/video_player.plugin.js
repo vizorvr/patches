@@ -14,6 +14,7 @@ E2.p = E2.plugins["video_player"] = function(core, node)
 		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The current video frame.' }
 	]
 	
+	this.core = core;
 	this.node = node;
 	this.video = null;
 	this.playing = false;
@@ -21,7 +22,7 @@ E2.p = E2.plugins["video_player"] = function(core, node)
 	this.muted = true;
 	this.volume = 0.5;
 	this.time = null;
-	this.texture = new Texture(core.renderer);
+	this.texture = null;
 };
 
 E2.p.prototype.play = function()
@@ -53,7 +54,8 @@ E2.p.prototype.stop = function()
 			this.video.pause();
 		}
 		
-		this.video.currentTime = 0;
+		if(this.video.readyState >= 2)
+			this.video.currentTime = 0;
 	}
 };
 
@@ -62,6 +64,7 @@ E2.p.prototype.update_input = function(slot, data)
 	if(slot.index === 0)
 	{
 		this.video = data;
+		this.texture = null;
 		this.playing = false;
 	}
 	else if(slot.index === 1)
@@ -78,7 +81,7 @@ E2.p.prototype.update_state = function()
 {
 	var video = this.video;
 	
-	if(video.readyState < 2)
+	if(!video || video.readyState < 2)
 		return;
 	
 	if(this.playing !== this.should_play)
@@ -101,12 +104,17 @@ E2.p.prototype.update_state = function()
 	if(video)
 	{
 		if(video.videoWidth > 0 && video.videoHeight > 0)
+		{
+			if(!this.texture)
+				this.texture = new Texture(this.core.renderer);
+			
 			this.texture.upload(video);
+		}
 		
 		video.muted = this.muted;
 		video.volume = this.volume;
 		
-		if(this.time)
+		if(this.time && video.readyState >= 2)
 		{
 			video.currentTime = this.time;
 			this.time = null;
@@ -119,6 +127,6 @@ E2.p.prototype.update_state = function()
 E2.p.prototype.update_output = function(slot)
 {
 	this.node.queued_update = 1;
-	return this.texture;
+	return this.texture ? this.texture : this.core.renderer.default_tex;
 };
 
