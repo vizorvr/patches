@@ -208,6 +208,17 @@ function Renderer(vr_devices, canvas_id, core)
 	this.org_width = this.canvas.width();
 	this.org_height = this.canvas.height();
 	
+	this.screenshot = 
+	{ 
+		pending: false,
+		width: 512,
+		height: 256,
+		framebuffer: null,
+		renderbuffer: null,
+		texture: null,
+		pixels: null
+	};
+
 	try
 	{
 		var ctx_opts = { alpha: false, preserveDrawingBuffer: false, antialias: true };
@@ -275,6 +286,36 @@ Renderer.prototype.begin_frame = function()
 		gl.bound_tex_stage = null;
 		gl.bound_mesh = null;
 		gl.bound_shader = null;
+		
+		// Do we need to capture the next frame as a screenshot?
+		var ss = this.screenshot;
+		
+		if(ss.pending)
+		{
+			var fb = ss.framebuffer = this.context.glCreateFramebuffer();
+			var t = this.context.glCreateTexture();
+
+			gl.bindTexture(gl.TEXTURE_2D, t);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, ss.width, ss.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+			var rb = this.screenshot.renderbuffer = gl.createRenderbuffer();
+		
+			gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
+			gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, ss.width, ss.height);
+
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
+			gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
+
+			gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+			gl.bindTexture(gl.TEXTURE_2D, null);
+			gl.viewport(0, 0, ss.width, ss.height);
+			
+			ss.texture = new Texture(gl, t, gl.LINEAR);
+		}
 
 		// this.update_viewport();
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -286,7 +327,45 @@ Renderer.prototype.end_frame = function()
 	var gl = this.context;
 	
 	if(gl)
+	{
 		gl.flush();
+	
+		// Did we render this frame as a screenshot? If so, store the results.
+		var ss = this.screenshot;
+		
+		if(ss.pending)
+		{
+			var c = this.canvas[0];
+			
+			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			gl.viewport(0, 0, c.width, c.height);
+			
+			// Grab the framebuffer data and store it store it as RGBA
+			var data = new Uint8Array(ss.width * ss.height * 4);
+			
+			gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, this.img_data);
+			
+			// Drop the frame-, renderbuffer and texture.
+			gl.deleteFramebuffer(ss.framebuffer);
+			gl.deleteRenderbuffer(ss.renderbuffer);
+			ss.texture.drop();
+			
+			ss.framebuffer = null;
+			ss.renderbuffer = null;
+			ss.texture = null;
+			ss.pending = false;
+
+			// Ditch the alpha channel and store
+			var p = ss.pixels = new Uint8Array(ss.width * ss.height * 3);
+	
+			for(var i = 0, o = 0; i < w * h * 3; i += 3, o += 4)
+			{
+				p[i] = data[o];
+				p[i+1] = data[o+1];
+				p[i+2] = data[o+2];
+			}
+		}
+	}
 };
 
 Renderer.prototype.push_framebuffer = function(fb, w, h)
