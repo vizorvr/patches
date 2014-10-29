@@ -78,6 +78,9 @@ E2.p.prototype.update_state = function()
 {
 	var video = this.video;
 	
+	if(video.readyState < 2)
+		return;
+	
 	if(this.playing !== this.should_play)
 	{
 		if(video)
