@@ -27,7 +27,7 @@ describe('ImageProcessor', function()
 	beforeEach(function()
 	{
 		imp = new ImageProcessor({
-			write: function(path, name)
+			copy: function(sourcePath, destination)
 			{
 				var dfd = when.defer();
 				// nodefn.call(fs.copy, path, '/tmp/foo/'+name)
