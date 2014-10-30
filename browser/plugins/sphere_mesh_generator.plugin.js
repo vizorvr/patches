@@ -3,8 +3,8 @@ E2.p = E2.plugins["sphere_mesh_generator"] = function(core, node)
 	this.desc = 'Create a sphere mesh of unit size with normals and one set of UV-cordinates. Vertical and horizontal resolution is customizable.';
 	
 	this.input_slots = [
-		{ name: 'v res', dt: core.datatypes.FLOAT, desc: 'Vertical resolution.', lo: 3, hi: 25, def: 15 },
-		{ name: 'h res', dt: core.datatypes.FLOAT, desc: 'Horizontal resolution.', lo: 3, hi: 25, def: 15 }
+		{ name: 'v res', dt: core.datatypes.FLOAT, desc: 'Vertical resolution.', lo: 3, hi: 250, def: 15 },
+		{ name: 'h res', dt: core.datatypes.FLOAT, desc: 'Horizontal resolution.', lo: 3, hi: 250, def: 15 }
 	];
 	
 	this.output_slots = [
@@ -28,7 +28,7 @@ E2.p.prototype.update_input = function(slot, data)
 	if(v < 3)
 		return;
 	
-	v = v > 25 ? 25 : v;
+	v = v > 250 ? 250 : v;
 	
 	if(slot.index === 0 && this.state.v_res !== v)
 	{
