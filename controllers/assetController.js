@@ -1,5 +1,4 @@
 var image = require('../models/image');
-var formidable = require('formidable');
 
 function AssetController(assetClass, assetService, fs)
 {
@@ -43,11 +42,11 @@ AssetController.prototype.index = function(req, res, next)
 AssetController.prototype.load = function(req, res, next)
 {
 	this._service.findBySlug(req.params.slug)
-		.then(function(item)
-		{
-			res.json(item.toJSON());
-		})
-		.catch(next);
+	.then(function(item)
+	{
+		res.json(item.toJSON());
+	})
+	.catch(next);
 };
 
 // POST /:model
@@ -73,45 +72,36 @@ AssetController.prototype.save = function(req, res, next)
 AssetController.prototype.upload = function(req, res, next)
 {
 	var that = this;
-	var form = new formidable.IncomingForm();
 
-	form.parse(req, function(err, fields, files)
+	var file = req.files.file;
+	var path = '/'+that._modelName+'/'+file.name;
+
+	// if the user can write it
+	return that._service.canWrite(req.user, path)
+	.then(function(can)
 	{
-		if (err)
-			return next(err);
+		if (!can)
+			return res.status(403)
+				.json({msg: 'Sorry, permission denied'});
 
-		// each uploaded file
-		when.map(files, function(file)
+		// move the uploaded file into GridFS / local FS
+		return that._fs.move(file.path, path)
+		.then(function(url)
 		{
-			var path = '/'+that._modelName+'/'+file.name;
-
-			// if the user can write it
-			return that._service.canWrite(req.user, path)
-			.then(function(can)
+console.log('moved', model)
+			// save the model
+			var model = { name: file.name, url: url };
+			return that._service.save(model, req.user)
+			.then(function(asset)
 			{
-				if (!can)
-					return res.status(403)
-						.json({msg: 'Sorry, permission denied'});
-
-				// move the uploaded file into GridFS / local FS
-				return that._fs.move(file.path, path)
-				.then(function(url)
-				{
-					// save the model
-					var model = { name: file.name, url: url };
-					return that._service.save(model, req.user, file)
-					.then(function(asset)
-					{
-						res.json(asset);
-					});
-				});
+				res.json(asset);
 			});
-		})
-		.catch(function(err)
-		{
-			return next(err);
 		});
 	})
+	.catch(function(err)
+	{
+		return next(err);
+	});
 };
 
 module.exports = AssetController;

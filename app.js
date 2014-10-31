@@ -19,6 +19,9 @@ var expressValidator = require('express-validator');
 var connectAssets = require('connect-assets');
 var exphbs  = require('express-handlebars');
 
+var multer = require('multer');
+var temp = require('temp').track();
+
 var diyHbsHelpers = require('diy-handlebars-helpers');
 var hbsHelpers = require('./utils/hbs-helpers');
 
@@ -56,6 +59,14 @@ mongoose.connect(secrets.db);
 mongoose.connection.on('error', function()
 {
 	console.error('✗ MongoDB Connection Error. Please make sure MongoDB is running.');
+});
+
+var tempDir;
+temp.mkdir('uploads', function(err, dirPath)
+{
+	if (err)
+		throw err;
+	tempDir = dirPath;	
 });
 
 var app = express();
@@ -206,15 +217,15 @@ var gfs = new GridFsStorage();
 
 var GraphService = require('./services/graphService');
 var graphController = new GraphController(
-	new GraphService(require('./models/graph'),
+	new GraphService(require('./models/graph')),
 	gfs
-));
+);
 
 var ImageService = require('./services/imageService');
 var imageController = new ImageController(
-	new ImageService(require('./models/image'),
+	new ImageService(require('./models/image')),
 	gfs
-));
+);
 
 var controllers = {
 	graph: graphController,
@@ -230,17 +241,45 @@ function getController(req, res, next)
 	next();
 }
 
-// Generic CRUD routes
+// stream file from fs/gridfs
+app.get(/\/files\/.*/, function(req, res, next)
+{
+	req.path = req.path.replace(/^\/files/, '');
+	return gfs.createReadStream(req.path)
+	.on('error', next)
+	.pipe(res);
+});
+
+// upload
+app.use('/upload/:model', 
+	getController, 
+	passportConf.isAuthenticated,
+	multer(
+	{
+		dest: tempDir,
+		rename: function (fieldname, filename) {
+			return filename.replace(/\W+/g, '-').toLowerCase() + Date.now()
+		}
+	}),
+	function(req, res, next)
+	{
+		req.controller.upload(req, res, next);
+	}
+);
+
+// list
 app.get('/:model', getController, function(req, res, next)
 {
 	req.controller.index(req, res, next);
 });
 
+// get 
 app.get('/:model/:id', getController, function(req, res, next)
 {
 	req.controller.load(req, res, next);
 });
 
+// save
 app.post('/:model', getController,
 	passportConf.isAuthenticated,
 	function(req, res, next)
@@ -250,18 +289,6 @@ app.post('/:model', getController,
 	function(req, res, next)
 	{
 		req.controller.save(req, res, next);
-	}
-);
-
-app.post('/upload/:model', getController,
-	passportConf.isAuthenticated,
-	function(req, res, next)
-	{
-		req.controller.validate(req, res, next);
-	},
-	function(req, res, next)
-	{
-		req.controller.upload(req, res, next);
 	}
 );
 
