@@ -201,11 +201,20 @@ app.use(errorHandler());
 var GraphController = require('./controllers/graphController');
 var ImageController = require('./controllers/imageController');
 
+var GridFsStorage = require('./lib/gridfs-storage');
+var gfs = new GridFsStorage();
+
 var GraphService = require('./services/graphService');
-var graphController = new GraphController(new GraphService(require('./models/graph')));
+var graphController = new GraphController(
+	new GraphService(require('./models/graph'),
+	gfs
+));
 
 var ImageService = require('./services/imageService');
-var imageController = new ImageController(new ImageService(require('./models/image')));
+var imageController = new ImageController(
+	new ImageService(require('./models/image'),
+	gfs
+));
 
 var controllers = {
 	graph: graphController,
@@ -241,6 +250,18 @@ app.post('/:model', getController,
 	function(req, res, next)
 	{
 		req.controller.save(req, res, next);
+	}
+);
+
+app.post('/upload/:model', getController,
+	passportConf.isAuthenticated,
+	function(req, res, next)
+	{
+		req.controller.validate(req, res, next);
+	},
+	function(req, res, next)
+	{
+		req.controller.upload(req, res, next);
 	}
 );
 
