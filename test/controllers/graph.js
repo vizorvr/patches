@@ -15,7 +15,8 @@ describe('GraphController', function()
 	beforeEach(function()
 	{
 		svc = { canWrite: resolved };
-		ctrl = new GraphController(svc);
+		fs = { move: resolved }
+		ctrl = new GraphController(svc, fs);
 	});
 
 	it('handles graph post', function(done)
@@ -44,5 +45,6 @@ describe('GraphController', function()
 			}
 		});
 	});
+
 });
 

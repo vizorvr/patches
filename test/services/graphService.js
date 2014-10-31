@@ -1,5 +1,6 @@
 var assert = require('assert');
 var GraphService = require('../../services/graphService');
+var _ = require('lodash');
 
 function MockGraph()
 {
@@ -108,16 +109,19 @@ describe('GraphService', function()
 
 	it('can save', function(done)
 	{
-		function MockSave() {}
+		function MockSave(data) {
+			_.extend(this, data);
+		}
 		MockSave.exec = function(cb) { cb() }
+		MockSave.populate = function() { return this; }
 		MockSave.findOne = function() { return this; }
 		MockSave.prototype.save = function() {
 			assert.equal(this._creator, 'someguy');
-			assert.equal(this.graph, 'somegraph');
+			assert.equal(this.url, 'somegraph');
 			done()
 		}
 		s = new GraphService(MockSave);
-		s.save({graph: 'somegraph'}, {id: 'someguy'})
+		s.save({url: 'somegraph'}, {id: 'someguy'});
 	});
 });
 

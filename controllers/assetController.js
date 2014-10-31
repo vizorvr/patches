@@ -5,7 +5,7 @@ function AssetController(assetClass, assetService, fs)
 {
 	this._assetClass = assetClass;
 	this._modelName = this._assetClass.modelName.toString().toLowerCase();
-	this._service = service;
+	this._service = assetService;
 	this._fs = fs;
 };
 
@@ -53,14 +53,16 @@ AssetController.prototype.load = function(req, res, next)
 // POST /:model
 AssetController.prototype.save = function(req, res, next)
 {
-	that._service.canWrite(req.user, path)
+	var that = this;
+
+	this._service.canWrite(req.user, req.body.name)
 	.then(function(can)
 	{
 		if (!can)
 			return res.status(403)
 				.json({msg: 'Sorry, permission denied'});
 
-		return that._service.save(req.body, req.user);
+		return that._service.save(req.body, req.user)
 		.then(function(asset)
 		{
 			res.json(asset);
@@ -90,26 +92,26 @@ AssetController.prototype.upload = function(req, res, next)
 				if (!can)
 					return res.status(403)
 						.json({msg: 'Sorry, permission denied'});
-	
+
 				// move the uploaded file into GridFS / local FS
 				return that._fs.move(file.path, path)
 				.then(function(url)
 				{
 					// save the model
 					var model = { name: file.name, url: url };
-					return that._service.save(model, req.user, file);
+					return that._service.save(model, req.user, file)
+					.then(function(asset)
+					{
+						res.json(asset);
+					});
 				});
 			});
 		})
 		.catch(function(err)
 		{
 			return next(err);
-		})
+		});
 	})
-	.then(function(asset)
-	{
-		res.json(asset);
-	});
 };
 
 module.exports = AssetController;
