@@ -60,7 +60,7 @@
     "fs-extra": "~0.12.0",
     "gridfs-stream": "~0.5.1",
     "mongodb": "~1.4.19",
-    "formidable": "^1.0.15"
+    "formidable": "^1.0.15",
     "ws": "^0.4.31",
     "yui": "^3.17.2"
   },
