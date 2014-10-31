@@ -20,6 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 var URL_GRAPHS = '/graph/';
+var URL_GRAPH_FILES = '/files/graph/';
 
 var E2 = {};
 window.E2 = E2; // global scope so plugins can access it
@@ -335,20 +336,16 @@ function Core(vr_devices, app) {
 	{
 		var d = JSON.parse(str);
 
-		this.graphModel = d;
-
-		d.graph = JSON.parse(d.graph);
-
-		self.abs_t = d.graph.abs_t;
+		self.abs_t = d.abs_t;
 		self.delta_t = 0.0;
-		self.graph_uid = d.graph.graph_uid;
+		self.graph_uid = d.graph_uid;
 
 		self.active_graph.destroy_ui();
 		
 		var graphs = self.graphs = [];
 		
 		self.root_graph = new Graph(this, null, null);
-		self.root_graph.deserialise(d.graph.root);
+		self.root_graph.deserialise(d.root);
 		self.graphs.push(self.root_graph);
 		
 		self.root_graph.patch_up(self.graphs);
@@ -520,5 +517,5 @@ function load_location_hash() {
 	E2.app.player.on_update();
 	console.log('loading graph from location hash:', graphName);
 	E2.dom.filename_input.val(graphName);
-	E2.app.player.load_from_url(URL_GRAPHS+graphName);
+	E2.app.player.load_from_url(URL_GRAPH_FILES+graphName);
 }
