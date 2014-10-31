@@ -244,8 +244,9 @@ function getController(req, res, next)
 // stream file from fs/gridfs
 app.get(/\/files\/.*/, function(req, res, next)
 {
-	req.path = req.path.replace(/^\/files/, '');
-	return gfs.createReadStream(req.path)
+	var path = req.path.replace(/^\/files/, '');
+	console.log('path',path)
+	return gfs.createReadStream(path)
 	.on('error', next)
 	.pipe(res);
 });
