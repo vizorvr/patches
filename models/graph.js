@@ -1,11 +1,11 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var assetHelper = require('./asset-helper');
-var _ = require('lodash')
+var _ = require('lodash');
 
 var graphSchema = new mongoose.Schema(_.assign(
 {
-	graph: { type: Schema.Types.Mixed, required: true }
+	url: { type: String, required: true }
 }, assetHelper.schema));
 
 graphSchema.pre('save', assetHelper.preSaveSlugify);

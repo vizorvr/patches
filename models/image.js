@@ -1,8 +1,9 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var assetHelper = require('./asset-helper');
+var _ = require('lodash');
 
-var sizeSchema = new mongoose.Schema(
+var sizeSpec = 
 {
 	name: { type: String, required: true },
 	width: { type: Number, required: true },
@@ -10,15 +11,15 @@ var sizeSchema = new mongoose.Schema(
 	bytes: Number,
 	mimetype: String,
 	url: { type: String, required: true }
-});
+};
 
-var imageSchema = new mongoose.Schema(Object.create(assetHelper.schema,
+var imageSchema = new mongoose.Schema(_.assign(
 {
-	original: sizeSchema,
-	thumbnail: sizeSchema,
-	scaled: sizeSchema,
-	scaledThumbnail: sizeSchema,
-}));
+	original: _.clone(sizeSpec),
+	thumbnail: _.clone(sizeSpec),
+	scaled: _.clone(sizeSpec),
+	scaledThumbnail: _.clone(sizeSpec),
+}, assetHelper.schema));
 
 imageSchema.pre('save', assetHelper.preSaveSlugify);
 

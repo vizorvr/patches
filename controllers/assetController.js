@@ -1,9 +1,12 @@
 var image = require('../models/image');
+var formidable = require('formidable');
 
-function AssetController(assetClass, service)
+function AssetController(assetClass, assetService, fs)
 {
 	this._assetClass = assetClass;
+	this._modelName = this._assetClass.modelName.toString().toLowerCase();
 	this._service = service;
+	this._fs = fs;
 };
 
 AssetController.prototype.validate = function(req, res, next)
@@ -50,15 +53,58 @@ AssetController.prototype.load = function(req, res, next)
 // POST /:model
 AssetController.prototype.save = function(req, res, next)
 {
-	var that = this;
-
-	this._service.canWrite(req.user, req.body.name)
+	that._service.canWrite(req.user, path)
 	.then(function(can)
 	{
 		if (!can)
-			return res.status(403).json({msg: 'Sorry, permission denied'});
+			return res.status(403)
+				.json({msg: 'Sorry, permission denied'});
 
 		return that._service.save(req.body, req.user);
+		.then(function(asset)
+		{
+			res.json(asset);
+		});
+	});
+}
+
+AssetController.prototype.upload = function(req, res, next)
+{
+	var that = this;
+	var form = new formidable.IncomingForm();
+
+	form.parse(req, function(err, fields, files)
+	{
+		if (err)
+			return next(err);
+
+		// each uploaded file
+		when.map(files, function(file)
+		{
+			var path = '/'+that._modelName+'/'+file.name;
+
+			// if the user can write it
+			return that._service.canWrite(req.user, path)
+			.then(function(can)
+			{
+				if (!can)
+					return res.status(403)
+						.json({msg: 'Sorry, permission denied'});
+	
+				// move the uploaded file into GridFS / local FS
+				return that._fs.move(file.path, path)
+				.then(function(url)
+				{
+					// save the model
+					var model = { name: file.name, url: url };
+					return that._service.save(model, req.user, file);
+				});
+			});
+		})
+		.catch(function(err)
+		{
+			return next(err);
+		})
 	})
 	.then(function(asset)
 	{
