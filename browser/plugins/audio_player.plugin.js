@@ -50,7 +50,8 @@ E2.p.prototype.stop = function()
 			this.audio.pause();
 		}
 		
-		this.audio.currentTime = 0;
+		if(this.audio.readyState > 2)
+			this.audio.currentTime = 0;
 	}
 };
 
@@ -108,7 +109,7 @@ E2.p.prototype.update_state = function()
 		
 		if(this.time !== null && this.audio.readyState > 2)
 		{
-			audio.currentTime = this.time ? this.time : 0.0;
+			audio.currentTime = this.time ? this.time : 0;
 			this.time = null;
 		}
 	}
