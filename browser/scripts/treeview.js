@@ -26,7 +26,9 @@ TreeNode.prototype.remove = function()
 	
 	var pc = this.parent_node.children;
 	
-	this.dom.remove();
+	if(this.dom)
+		this.dom.remove();
+	
 	pc.splice(pc.indexOf(this), 1);
 };
 
