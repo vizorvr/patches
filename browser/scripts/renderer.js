@@ -1840,7 +1840,7 @@ Scene.load = function(gl, url, core)
 			msg('ERROR: Failed to load scene "' + url + '": ' + textStatus + ', ' + errorThrown, 'Renderer');
 			c.asset_tracker.signal_failed();
 		}}(core),
-		async: true // TODO: We should definitely change this to be asynchronous!
+		async: false // TODO: We should definitely change this to be asynchronous!
 	});
 	
 	return scene;
