@@ -152,6 +152,24 @@ TreeView.prototype.select = function(t_node)
 		this.selected_node.selected = false;
 	}
 		
+	var parent = t_node;
+	var highest_closed = null;
+	
+	do
+	{
+		if(!parent.graph.open)
+		{
+			parent.graph.open = true;
+			highest_closed = parent;
+		}
+		
+		parent = parent.parent_node;
+	}
+	while(parent);
+		
+	if(highest_closed)
+		highest_closed.rebuild_dom();
+	
 	this.on_activate(t_node.parent_node ? t_node.graph : this.root.graph);
 
 	this.selected_node = t_node;
