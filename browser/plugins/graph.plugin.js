@@ -166,7 +166,17 @@ E2.p.prototype.create_ui = function()
 	inp_edit.click(function(self) { return function(e) 
 	{
 		if(self.graph)
+		{
+			var ptn = self.graph.parent_graph.tree_node;
+			
+			if(!ptn.open)
+			{
+				ptn.graph.open = true;
+				ptn.rebuild_dom();
+			}
+			
 			self.graph.tree_node.activate();
+		}
 	}}(this));
 	
 	ui.css('text-align', 'center');

@@ -361,7 +361,11 @@ function Core(vr_devices, app) {
 		if(E2.dom.structure)
 		{
 			self.rebuild_structure_tree();
-			self.active_graph.tree_node.activate();
+			
+			if(self.active_graph.tree_node)
+				self.active_graph.tree_node.activate();
+			else
+				self.root_graph.tree_node.activate();
 		}
 	};
 	
@@ -371,14 +375,15 @@ function Core(vr_devices, app) {
 		{
 			var nodes = graph.nodes;
 			
-			if(graph.parent_graph !== null)
+			if(graph.parent_graph)
 			{
-				var tnode = graph.parent_graph.tree_node.add_child(name);
-
-				tnode.closed = !graph.open;
+				var ptn = graph.parent_graph.tree_node;
+				var tnode = new TreeNode(ptn.tree, ptn, name, null);
+				
+				ptn.children.push(tnode);
 				graph.tree_node = tnode;
 				tnode.graph = graph;
-			}		
+			}
 			
 			for(var i = 0, len = nodes.length; i < len; i++)
 			{
@@ -388,11 +393,12 @@ function Core(vr_devices, app) {
 					build(n.plugin.graph, n.get_disp_name());
 			}
 		};
-
+		
 		E2.dom.structure.tree.reset();
 		self.root_graph.tree_node = E2.dom.structure.tree.root;
 		E2.dom.structure.tree.root.graph = self.root_graph;
 		build(self.root_graph, 'Root');
+		E2.dom.structure.tree.root.rebuild_dom();
 	};
 	
 	this.add_aux_script = function(script_url, onload)
