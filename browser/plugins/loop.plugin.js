@@ -445,7 +445,7 @@ E2.p.prototype.graph_event = function(self) { return function(ev)
 	}
 	else if(ev.type === 'node-destroyed')
 	{
-		if(pid === 'input_proxy' && ev.node.title !== 'index')
+		if(pid === 'input_proxy')
 			self.destroy_slot(E2.slot_type.input, ev.node.uid);
 		else if(pid === 'output_proxy')
 			self.destroy_slot(E2.slot_type.output, ev.node.uid);
@@ -454,10 +454,7 @@ E2.p.prototype.graph_event = function(self) { return function(ev)
 	{
 		if(pid === 'input_proxy')
 		{
-			if(ev.node.title === 'index')
-				self.destroy_slot(E2.slot_type.input, ev.node.uid);
-			else
-				node.rename_slot(E2.slot_type.input, self.state.input_sids[ev.node.uid], ev.node.title);
+			node.rename_slot(E2.slot_type.input, self.state.input_sids[ev.node.uid], ev.node.title);
 		}
 		else if(pid === 'output_proxy')
 			node.rename_slot(E2.slot_type.output, self.state.output_sids[ev.node.uid], ev.node.title);
