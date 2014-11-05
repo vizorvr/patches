@@ -8,6 +8,12 @@ function FileSelectControl(handlebars) {
 	}
 }
 
+FileSelectControl.prototype.url = function(url)
+{
+	this._url = url;
+	return this;
+}
+
 FileSelectControl.prototype.files = function(files)
 {
 	this._files = files.map(function(file)
@@ -53,6 +59,7 @@ FileSelectControl.prototype._render = function() {
 
 	el.html(this._template({
 		original: this._original,
+		url: this._url,
 		files: this._files.map(function(file)
 		{
 			return {
@@ -78,18 +85,18 @@ FileSelectControl.prototype._render = function() {
 		.removeClass('btn-default')
 		.addClass('btn-primary')
 
-	this._inputEl = $('input', this._el)
+	this._inputEl = $('#file-url', this._el)
 	this._selectedEl = $('tr.selected', this._el)
 
 	function _onClick(e) {
 		self._onSelect($(e.target).closest('tr'))
 	}
 
-	$('.file-row', el).click(_onClick)
+	$('.file-row', el).click(_onClick);
 	$('.file-row', el).dblclick(function(e) {
-		_onClick(e)
-		$('button:last', el).click()
-	})
+		_onClick(e);
+		$('button:last', el).click();
+	});
 
 	$('input', el).on('change', this._onChange.bind(this))
 	$('button.close', el).click(this.close.bind(this))
@@ -201,6 +208,7 @@ FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
 		buttons[okButton] = okFn;
 
 		ctl
+		.url(path)
 		.buttons(buttons)
 		.files(files)
 		.selected(selected)

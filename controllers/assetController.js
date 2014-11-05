@@ -76,7 +76,6 @@ AssetController.prototype.upload = function(req, res, next)
 	var file = req.files.file;
 	var path = '/'+that._modelName+'/'+file.name;
 
-	// if the user can write it
 	return that._service.canWrite(req.user, path)
 	.then(function(can)
 	{
@@ -88,9 +87,8 @@ AssetController.prototype.upload = function(req, res, next)
 		return that._fs.move(file.path, path)
 		.then(function(url)
 		{
-console.log('moved', model)
 			// save the model
-			var model = { name: file.name, url: url };
+			var model = { name: path, url: url };
 			return that._service.save(model, req.user)
 			.then(function(asset)
 			{

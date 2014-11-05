@@ -200,7 +200,6 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedi
 // set no-cache headers for the rest
 app.use(function(req, res, next)
 {
-	console.log('PATH', req.path)
 	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
 	res.setHeader('Expires', 0);
 	next();
@@ -245,10 +244,17 @@ function getController(req, res, next)
 app.get(/\/files\/.*/, function(req, res, next)
 {
 	var path = req.path.replace(/^\/files/, '');
-	console.log('path',path)
-	return gfs.createReadStream(path)
-	.on('error', next)
-	.pipe(res);
+	gfs.stat(path)
+	.then(function(stat)
+	{
+		res.header('Content-Type', stat.contentType);
+		res.header('Content-Length', stat.length);
+
+		return gfs.createReadStream(path)
+		.on('error', next)
+		.pipe(res);
+	})
+	.catch(next)
 });
 
 // upload
@@ -259,7 +265,7 @@ app.use('/upload/:model',
 	{
 		dest: tempDir,
 		rename: function (fieldname, filename) {
-			return filename.replace(/\W+/g, '-').toLowerCase() + Date.now()
+			return filename.replace(/\W+/g, '-');
 		}
 	}),
 	function(req, res, next)

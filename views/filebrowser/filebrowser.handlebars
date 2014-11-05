@@ -24,7 +24,10 @@
 								</thead>
 								{{#each files}}
 								<tr class="file-row{{#if selected}} selected{{/if}}" data-name="{{name}}">
-									<td class="name">{{name}}</td>
+									<td class="name">
+									{{name}}
+									{{thumbnail.url}}
+									</td>
 									<td class="">{{creator}}</td>
 								</tr>
 								{{else}}
@@ -60,7 +63,7 @@
 					<div class="modal-body">
 						<form enctype="multipart/form-data"
 							method="post"
-							action="/upload/graph"
+							action="/upload{{url}}"
 							class="form-inline">
 							<input type="file" name="file"/>
 							<input type="submit" value="Upload"/>
