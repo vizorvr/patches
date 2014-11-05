@@ -244,9 +244,13 @@ function getController(req, res, next)
 app.get(/\/files\/.*/, function(req, res, next)
 {
 	var path = req.path.replace(/^\/files/, '');
+
 	gfs.stat(path)
 	.then(function(stat)
 	{
+		if (!stat)
+			return res.status(404).send();
+
 		res.header('Content-Type', stat.contentType);
 		res.header('Content-Length', stat.length);
 

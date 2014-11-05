@@ -17,7 +17,7 @@ ImageController.prototype.upload = function(req, res, next)
 	var that = this;
 
 	var file = req.files.file;
-	var path = '/'+that._modelName+'/'+file.name;
+	var path = '/'+that._modelName;
 
 	return that._service.canWrite(req.user, path)
 	.then(function(can)
@@ -27,7 +27,7 @@ ImageController.prototype.upload = function(req, res, next)
 				.json({msg: 'Sorry, permission denied'});
 
 		new ImageProcessor(this._fs)
-		.handleUpload(file)
+		.handleUpload(file, path)
 		.then(function(info)
 		{
 			fs.unlink(file.path);

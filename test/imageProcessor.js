@@ -32,7 +32,7 @@ describe('ImageProcessor', function()
 				var dfd = when.defer();
 				// nodefn.call(fs.copy, path, '/tmp/foo/'+name)
 				// .then(function() { return path; });
-				dfd.resolve();
+				dfd.resolve(destination);
 				return dfd.promise;
 			}
 		});
@@ -104,6 +104,19 @@ describe('ImageProcessor', function()
 			assert.equal(data.thumbnail.width, 128);
 			assert.equal(data.scaled.width, 128);
 			assert.equal(data.scaledThumbnail.width, 128);
+			done();
+		})
+		.catch(done)
+	});
+
+	it('puts the files in the right places', function(done)
+	{
+		imp.handleUpload(images.large, '/kuvat')
+		.then(function(data) {
+			assert.equal(data.original.url, '/kuvat/te-2rb.jpg');
+			assert.equal(data.thumbnail.url, '/kuvat/te-2rb-thumb.jpg');
+			assert.equal(data.scaled.url, '/kuvat/te-2rb-scaled.jpg');
+			assert.equal(data.scaledThumbnail.url, '/kuvat/te-2rb-scaled-thumb.jpg');
 			done();
 		})
 		.catch(done)
