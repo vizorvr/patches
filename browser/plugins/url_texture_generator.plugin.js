@@ -29,7 +29,7 @@ E2.p.prototype.create_ui = function()
 	inp.click(function()
 	{
 		FileSelectControl
-			.createImageSelector(self.state.url)
+			.createTextureSelector(self.state.url)
 			.onChange(function(v)
 			{
 				self.state.url = v;

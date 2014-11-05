@@ -1,0 +1,95 @@
+<div class="modal fade">
+	<div class="modal-dialog">
+		<!-- Nav tabs -->
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#download" role="tab" data-toggle="tab">Files</a></li>
+			<li role="presentation"><a href="#upload" role="tab" data-toggle="tab">Upload</a></li>
+			<li role="presentation"><a href="#fetch" role="tab" data-toggle="tab">Fetch</a></li>
+		</ul>
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="download">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close">&times;</button>
+						<h4 class="modal-title">Select file</h4>
+					</div>
+
+					<div class="modal-body">
+						<div class="file-selector">
+							<table>
+								{{#each files}}
+								<tr 
+									class="file-row{{#if selected}} selected{{/if}}" 
+									data-url="{{scaled.url}}">
+									<td>
+										<img src="{{scaledThumbnail.url}}"/>
+									</td>
+									<td>
+										{{scaled.path}}
+									</td>
+									<td>
+										{{scaled.width}}x{{scaled.height}}
+									</td>
+								</tr>
+								{{else}}
+
+								<tr class="file-row">
+									<td class="name">No files found</td>
+								</tr>
+								{{/each}}
+							</table>
+						</div>
+					</div>
+
+					<div class="modal-footer">
+						<form class="form-inline">
+						<div class="buttons">
+							<input id="file-url"
+								class="form-control pull-left"
+								size="45"
+								type="text"
+								value="{{original}}"
+								placeholder=""/>
+						</div>
+						</form>
+					</div>
+				</div><!-- /.modal-content -->
+			</div>
+			<div role="tabpanel" class="tab-pane" id="upload">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close">&times;</button>
+						<h4 class="modal-title">Upload</h4>
+					</div>
+
+					<div class="modal-body">
+						<form enctype="multipart/form-data"
+							method="post"
+							action="/upload{{url}}"
+							class="form-inline">
+							<input type="file" name="file"/>
+							<input type="submit" value="Upload"/>
+						</form>
+				  	</div>
+					<div class="modal-footer">
+					</div>
+				</div>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="fetch">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close">&times;</button>
+						<h4 class="modal-title">Fetch</h4>
+					</div>
+
+					<div class="modal-body">
+			  			<p>Not yet implemented</p>
+			  		</div>
+					<div class="modal-footer">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

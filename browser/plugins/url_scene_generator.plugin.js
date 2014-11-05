@@ -12,7 +12,6 @@ E2.p = E2.plugins["url_scene_generator"] = function(core, node)
 	
 	this.state = { url: '' };
 	this.core = core;
-	this.URL_SCENES_ROOT = 'data/scenes/';
 	this.scene = null;
 	this.dirty = false;
 };
@@ -28,19 +27,10 @@ E2.p.prototype.create_ui = function()
 	
 	inp.click(function()
 	{
-		var selected = self.state.url
-
-		if (/scene.json$/.test(selected))
-			selected = selected.replace(/\/scene.json$/, '')
-
 		FileSelectControl
-			.createForUrl(self.URL_SCENES_ROOT, selected)
+			.createSceneSelector(self.state.url)
 			.onChange(function(v)
 			{
-				if (v.indexOf('://') === -1)
-					v = self.URL_SCENES_ROOT + v;
-				
-				self.state.url = v + '/scene.json';
 				self.state_changed(null);
 				self.state_changed(inp);
 				self.updated = true;

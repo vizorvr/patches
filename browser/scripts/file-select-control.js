@@ -229,12 +229,22 @@ function createSelector(path, selected, okButton, okFn, cb)
 }
 
 
-FileSelectControl.createImageSelector = function(selected, okButton, okFn)
+FileSelectControl.createSceneSelector = function(selected, okButton, okFn)
+{
+	return createSelector('/scene', selected, okButton, okFn, function(ctl)
+	{
+		ctl
+		.template('filebrowser/scene')
+		.modal();
+	});
+};
+
+FileSelectControl.createTextureSelector = function(selected, okButton, okFn)
 {
 	return createSelector('/image', selected, okButton, okFn, function(ctl)
 	{
 		ctl
-		.template('filebrowser/image')
+		.template('filebrowser/texture')
 		.modal();
 	});
 };
