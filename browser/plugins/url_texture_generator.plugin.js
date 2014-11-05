@@ -33,9 +33,6 @@ E2.p.prototype.create_ui = function()
 			.createForUrl(self.URL_TEXTURES_ROOT, self.state.url)
 			.onChange(function(v)
 			{
-				if (v.indexOf('://') === -1)
-					v = self.URL_TEXTURES_ROOT + v;
-				
 				self.state.url = v;
 				self.state_changed(null);
 				self.state_changed(inp);

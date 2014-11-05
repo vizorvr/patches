@@ -1,4 +1,5 @@
 var image = require('../models/image');
+var fsPath = require('path');
 
 function AssetController(assetClass, assetService, fs)
 {
@@ -11,9 +12,6 @@ function AssetController(assetClass, assetService, fs)
 AssetController.prototype.validate = function(req, res, next)
 {
 	var asset = new this._assetClass(req.body);
-
-	if (!asset.slug)
-		asset.slug = asset.slugify(asset.name);
 
 	asset.validate(function(err)
 	{
@@ -41,7 +39,7 @@ AssetController.prototype.index = function(req, res, next)
 // GET /:model/:slug
 AssetController.prototype.load = function(req, res, next)
 {
-	this._service.findBySlug(req.params.slug)
+	this._service.findByPath(req.params.path)
 	.then(function(item)
 	{
 		res.json(item.toJSON());
@@ -54,7 +52,7 @@ AssetController.prototype.save = function(req, res, next)
 {
 	var that = this;
 
-	this._service.canWrite(req.user, req.body.name)
+	this._service.canWrite(req.user, req.body.path)
 	.then(function(can)
 	{
 		if (!can)
@@ -74,7 +72,7 @@ AssetController.prototype.upload = function(req, res, next)
 	var that = this;
 
 	var file = req.files.file;
-	var path = '/'+that._modelName+'/'+file.name;
+	var path = '/'+that._modelName+'/'+fsPath.basename(file.path);
 
 	return that._service.canWrite(req.user, path)
 	.then(function(can)
@@ -85,14 +83,20 @@ AssetController.prototype.upload = function(req, res, next)
 
 		// move the uploaded file into GridFS / local FS
 		return that._fs.move(file.path, path)
-		.then(function(url)
+		.then(function()
 		{
-			// save the model
-			var model = { name: path, url: url };
-			return that._service.save(model, req.user)
-			.then(function(asset)
+			return that._service.findByPath(path)
+			.then(function(model)
 			{
-				res.json(asset);
+				if (!model)
+					model = { path: path };
+
+				// save/update the model
+				return that._service.save(model, req.user)
+				.then(function(asset)
+				{
+					res.json(asset);
+				});
 			});
 		});
 	})

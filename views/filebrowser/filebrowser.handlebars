@@ -23,11 +23,10 @@
 									<td class="name-header">By</td>
 								</thead>
 								{{#each files}}
-								<tr class="file-row{{#if selected}} selected{{/if}}" data-name="{{name}}">
-									<td class="name">
-									{{name}}
-									{{thumbnail.url}}
-									</td>
+								<tr 
+									class="file-row{{#if selected}} selected{{/if}}" 
+									data-url="{{url}}">
+									<td class="name">{{path}}</td>
 									<td class="">{{creator}}</td>
 								</tr>
 								{{else}}

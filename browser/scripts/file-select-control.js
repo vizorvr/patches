@@ -19,7 +19,7 @@ FileSelectControl.prototype.files = function(files)
 	this._files = files.map(function(file)
 	{
 		if (typeof(file) === 'string')
-			return { name: file };
+			return { path: file };
 
 		return file;
 	});
@@ -63,9 +63,10 @@ FileSelectControl.prototype._render = function() {
 		files: this._files.map(function(file)
 		{
 			return {
-				name: file.name,
-				creator: file.creator,
-				selected: file.name === self._selected
+				path: file.path,
+				url: file.url,
+				creator: file._creator ? file._creator.username : '',
+				selected: file.url === self._selected
 			};
 		})
 	}));
@@ -74,11 +75,11 @@ FileSelectControl.prototype._render = function() {
 
 	Object.keys(this._buttons).map(function(name) {
 		$('<button class="btn btn-default">'+name+'</button>')
-			.click(function() {
-				self._buttons[name].call(self, self._inputEl.val());
-				self.close();
-			})
-			.appendTo(btnEl)
+		.click(function() {
+			self._buttons[name].call(self, self._inputEl.val());
+			self.close();
+		})
+		.appendTo(btnEl)
 	})
 
 	$('button:last', el)
@@ -95,33 +96,32 @@ FileSelectControl.prototype._render = function() {
 	$('.file-row', el).click(_onClick);
 	$('.file-row', el).dblclick(function(e) {
 		_onClick(e);
-		$('button:last', el).click();
+		self._onChange();
 	});
 
 	$('input', el).on('change', this._onChange.bind(this))
 	$('button.close', el).click(this.close.bind(this))
 
-	$('.modal', el)
-		.on('hidden.bs.modal', function (e) {
-			el.empty().remove()
-		});
-
-	$('.modal', el)
-		.on('shown.bs.modal', function (e) {
-			if (!self._selected)
-				return;
-
-			$('table', el).scrollTop(0)
-				.scrollTop(
-					self._selectedEl.position().top
-					- self._selectedEl.height()
-					* 10)
-		});
-
 	el.bind('keydown', this._onKeyPress.bind(this))
-		.appendTo('body')
-		.attr("tabindex", -1)
-		.focus();
+
+	$('.modal', el)
+	.on('hidden.bs.modal', function (e) {
+		el.empty().remove()
+	})
+	.on('shown.bs.modal', function (e) {
+		if (!self._selected)
+			return;
+
+		$('table', el).scrollTop(0)
+			.scrollTop(
+				self._selectedEl.position().top
+				- self._selectedEl.height()
+				* 10)
+	});
+
+	el.appendTo('body')
+	.attr("tabindex", -1)
+	.focus();
 
 	return this
 }
@@ -160,14 +160,14 @@ FileSelectControl.prototype._onChange = function() {
 }
 
 FileSelectControl.prototype._onSelect = function(row) {
-	var name = row.data('name');
+	var path = row.data('url');
 
-	this._selectedEl.removeClass('selected')
-	row.addClass('selected')
+	this._selectedEl.removeClass('selected');
+	row.addClass('selected');
 
-	this._selectedEl = row
+	this._selectedEl = row;
 
-	this._inputEl.val(name)
+	this._inputEl.val(path);
 
 	this._onChange()
 }

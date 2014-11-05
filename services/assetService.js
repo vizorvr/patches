@@ -21,10 +21,11 @@ AssetService.prototype.list = function()
 	return dfd.promise;
 };
 
-AssetService.prototype.canWrite = function(user, name)
+AssetService.prototype.canWrite = function(user, path)
 {
-	return this.findByName(name).then(function(asset)
+	return this.findByPath(path).then(function(asset)
 	{
+		console.log('canWrite', user, path, asset);
 		return !asset ||
 			asset._creator.toString() === user.id.toString();
 	});
@@ -47,9 +48,9 @@ AssetService.prototype.findOne = function(q)
 	return dfd.promise;
 };
 
-AssetService.prototype.findByName = function(name)
+AssetService.prototype.findByPath = function(path)
 {
-	return this.findOne({name: name});
+	return this.findOne({path: path});
 };
 
 AssetService.prototype.findBySlug = function(slug)
@@ -61,7 +62,7 @@ AssetService.prototype.save = function(data, user)
 {
 	var that = this;
 
-	return this.findByName(data.name)
+	return this.findByPath(data.path)
 	.then(function(asset)
 	{
 		if (!asset)

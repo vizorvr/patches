@@ -2,18 +2,14 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var assetHelper = require('./asset-helper');
 
-var videoSchema = new mongoose.Schema(Object.create(assetHelper.schema,
+var videoSchema = new mongoose.Schema(_.assign(
 {
-	url: { type: String, required: true },
 	thumbnail: { type: String, required: true },
-	size: Number,
+	bytes: Number,
 	length: Number,
+	fps: Number,
 	width: Number,
 	height: Number
-}));
-
-videoSchema.pre('save', assetHelper.preSaveSlugify);
-
-videoSchema.methods.slugify = assetHelper.slugify.bind(videoSchema);
+}, assetHelper.schema));
 
 module.exports = mongoose.model('Video', videoSchema);

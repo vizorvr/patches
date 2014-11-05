@@ -212,7 +212,7 @@ var GraphController = require('./controllers/graphController');
 var ImageController = require('./controllers/imageController');
 
 var GridFsStorage = require('./lib/gridfs-storage');
-var gfs = new GridFsStorage();
+var gfs = new GridFsStorage('/files');
 
 var GraphService = require('./services/graphService');
 var graphController = new GraphController(
@@ -262,8 +262,8 @@ app.get(/\/files\/.*/, function(req, res, next)
 });
 
 // upload
-app.use('/upload/:model', 
-	getController, 
+app.post('/upload/:model',
+	getController,
 	passportConf.isAuthenticated,
 	multer(
 	{
@@ -274,6 +274,9 @@ app.use('/upload/:model',
 	}),
 	function(req, res, next)
 	{
+		if (!req.files)
+			return res.status(400).send();
+
 		req.controller.upload(req, res, next);
 	}
 );

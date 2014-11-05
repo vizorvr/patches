@@ -32,7 +32,7 @@ describe('ImageProcessor', function()
 				var dfd = when.defer();
 				// nodefn.call(fs.copy, path, '/tmp/foo/'+name)
 				// .then(function() { return path; });
-				dfd.resolve(destination);
+				dfd.resolve('/files'+destination);
 				return dfd.promise;
 			}
 		});
@@ -40,7 +40,7 @@ describe('ImageProcessor', function()
 
 	it('analyzes image correctly', function(done)
 	{
-		imp.handleUpload(images.small)
+		imp.handleUpload(images.small, 'foo')
 		.then(function(data) {
 			assert.equal(data.original.width, 164);
 			assert.equal(data.original.height, 164);
@@ -51,7 +51,7 @@ describe('ImageProcessor', function()
 
 	it('skips thumbnailing if below threshold', function(done)
 	{
-		imp.handleUpload(images.small)
+		imp.handleUpload(images.small, 'foo')
 		.then(function(data) {
 			assert.equal(data.scaled.url, data.scaledThumbnail.url);
 			done();
@@ -61,7 +61,7 @@ describe('ImageProcessor', function()
 
 	it('maintains aspect ratio for thumbnail', function(done)
 	{
-		imp.handleUpload(images.large)
+		imp.handleUpload(images.large, 'foo')
 		.then(function(data) {
 			assert.equal(data.thumbnail.width, 128);
 			assert.equal(data.thumbnail.height, 72);
@@ -72,7 +72,7 @@ describe('ImageProcessor', function()
 
 	it('generates the right versions for large', function(done)
 	{
-		imp.handleUpload(images.large)
+		imp.handleUpload(images.large, 'foo')
 		.then(function(data) {
 			assert.equal(data.original.width, 1920);
 			assert.equal(data.thumbnail.width, 128);
@@ -85,7 +85,7 @@ describe('ImageProcessor', function()
 
 	it('generates the right versions for large texture', function(done)
 	{
-		imp.handleUpload(images.largeTexture)
+		imp.handleUpload(images.largeTexture, 'foo')
 		.then(function(data) {
 			assert.equal(data.original.width, 256);
 			assert.equal(data.thumbnail.width, 128);
@@ -98,7 +98,7 @@ describe('ImageProcessor', function()
 
 	it('generates the right versions for small', function(done)
 	{
-		imp.handleUpload(images.small)
+		imp.handleUpload(images.small, 'foo')
 		.then(function(data) {
 			assert.equal(data.original.width, 164);
 			assert.equal(data.thumbnail.width, 128);
@@ -113,10 +113,14 @@ describe('ImageProcessor', function()
 	{
 		imp.handleUpload(images.large, '/kuvat')
 		.then(function(data) {
-			assert.equal(data.original.url, '/kuvat/te-2rb.jpg');
-			assert.equal(data.thumbnail.url, '/kuvat/te-2rb-thumb.jpg');
-			assert.equal(data.scaled.url, '/kuvat/te-2rb-scaled.jpg');
-			assert.equal(data.scaledThumbnail.url, '/kuvat/te-2rb-scaled-thumb.jpg');
+			assert.equal(data.original.path, '/kuvat/te-2rb.jpg');
+			assert.equal(data.original.url, '/files/kuvat/te-2rb.jpg');
+			assert.equal(data.thumbnail.path, '/kuvat/te-2rb-thumb.jpg');
+			assert.equal(data.thumbnail.url, '/files/kuvat/te-2rb-thumb.jpg');
+			assert.equal(data.scaled.path, '/kuvat/te-2rb-scaled.jpg');
+			assert.equal(data.scaled.url, '/files/kuvat/te-2rb-scaled.jpg');
+			assert.equal(data.scaledThumbnail.path, '/kuvat/te-2rb-scaled-thumb.jpg');
+			assert.equal(data.scaledThumbnail.url, '/files/kuvat/te-2rb-scaled-thumb.jpg');
 			done();
 		})
 		.catch(done)

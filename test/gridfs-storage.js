@@ -37,11 +37,14 @@ describe('GridFsStorage', function()
 
 			grid = Grid(db, mongo);
 
-			gfs = new GridFsStorage(grid);
+			gfs = new GridFsStorage('/foo', grid);
 			gfs.on('ready', function()
 			{
 				gfs.copy(images.small, '/images/engilogo.png')
-				.then(done);
+				.then(function()
+				{
+					done();			
+				});
 			});
 		});
 	});
@@ -83,6 +86,16 @@ describe('GridFsStorage', function()
 		assert.equal(stream.name, '/images/engilogo.png');
 	});
 
-
+	it('returns the right urls', function(done)
+	{
+		gfs.copy(images.texture, '/images/no_texture.png')
+		.then(function(url)
+		{
+			assert.equal('/foo/images/no_texture.png', url);
+			done();
+		})
+		.catch(done);
+	});
 
 });
+

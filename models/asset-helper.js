@@ -4,8 +4,17 @@ var Schema = mongoose.Schema;
 exports.schema = 
 {
 	_creator: { type: Schema.Types.ObjectId, ref: 'User' },
-	name: { type: String, required: true, unique: true },
-	slug: { type: String, index: true, unique: true },
+	path: {
+		type: String,
+		required: true, 
+		match:
+		[
+			/[\w0-9\-\_\/\.]/,
+			'Path must be alphanumeric'
+		],
+		unique: true
+	},
+	url: { type: String, required: true },
 	tags:
 	[{
 		type: String,
@@ -20,15 +29,3 @@ exports.schema =
 	createdAt: { type: Date, default: Date.now }
 }
 
-exports.preSaveSlugify = function(next)
-{
-	this.slug = exports.slugify(this.name);
-	next();
-}
-
-exports.slugify = function(name)
-{
-	return name.toLowerCase()
-		.replace(/[^\w-]+/g,'')
-		.replace(/ +/g, '-');
-}

@@ -1439,7 +1439,7 @@ function Application() {
 		FileSelectControl
 			.createForUrl(URL_GRAPHS, null, 'Open', function(file)
 			{
-				window.location.hash = '#' + URL_GRAPHS + file;
+				window.location.hash = '#' + file;
 				load_location_hash();
 			})
 	};

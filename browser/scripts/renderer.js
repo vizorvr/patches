@@ -252,7 +252,9 @@ function Renderer(vr_devices, canvas_id, core)
 	}
 	
 	if(!this.context)
-		window.location = 'no_webgl.html';
+	{
+		debugger;
+	}
 	
 	this.texture_cache = new TextureCache(this.context, core);
 	this.shader_cache = new ShaderCache(this.context);
