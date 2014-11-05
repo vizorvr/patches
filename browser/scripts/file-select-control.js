@@ -6,6 +6,13 @@ function FileSelectControl(handlebars) {
 		'Cancel': this.cancel.bind(this),
 		'Ok': this.close.bind(this)
 	}
+	this._templateName = 'filebrowser/filebrowser';
+}
+
+FileSelectControl.prototype.template = function(name)
+{
+	this._templateName = name;
+	return this;
 }
 
 FileSelectControl.prototype.url = function(url)
@@ -55,19 +62,20 @@ FileSelectControl.prototype._render = function() {
 	var el = $('<div class="file-select-control">');
 	this._el = el;
 
-	this._template = this._handlebars.getTemplate('filebrowser/filebrowser');
+	var template = this._handlebars.getTemplate(this._templateName);
 
-	el.html(this._template({
+	el.html(template(
+	{
 		original: this._original,
 		url: this._url,
 		files: this._files.map(function(file)
 		{
-			return {
-				path: file.path,
-				url: file.url,
-				creator: file._creator ? file._creator.username : '',
-				selected: file.url === self._selected
-			};
+			if (file._creator)
+				file._creator = file._creator.username;
+
+			file.selected = (file.url === self._selected);
+
+			return file;
 		})
 	}));
 
@@ -183,7 +191,8 @@ FileSelectControl.prototype.close = function() {
 
 // ------------------------------------------
 
-FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
+function createSelector(path, selected, okButton, okFn, cb)
+{
 	var ctl = new FileSelectControl();
 
 	okButton = okButton || 'Ok';
@@ -212,10 +221,30 @@ FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
 		.buttons(buttons)
 		.files(files)
 		.selected(selected)
-		.modal()
+
+		cb(ctl)
 	});
 
-	return ctl
+	return ctl;
+}
+
+
+FileSelectControl.createImageSelector = function(selected, okButton, okFn)
+{
+	return createSelector('/image', selected, okButton, okFn, function(ctl)
+	{
+		ctl
+		.template('filebrowser/image')
+		.modal();
+	});
+};
+
+FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
+	return createSelector(path, selected, okButton, okFn, function(ctl)
+	{
+		ctl
+		.modal();
+	});
 }
 
 if (typeof(exports) !== 'undefined')

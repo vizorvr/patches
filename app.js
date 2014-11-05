@@ -306,11 +306,6 @@ app.post('/:model', getController,
 	}
 );
 
-if(config.server.enableFrameDumping)
-{
-	new FrameDumpServer().listen(app);
-}
-
 var httpServer = http.createServer(app);
 
 httpServer.listen(listenPort, listenHost);
