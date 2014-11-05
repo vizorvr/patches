@@ -47,7 +47,7 @@ describe('GraphService', function()
 		});
 	});
 
-	it('allows write on non-existent name', function(done)
+	it('allows write on non-existent path', function(done)
 	{
 		model.exec = function(cb)
 		{
@@ -89,18 +89,18 @@ describe('GraphService', function()
 		});
 	});
 
-	it('can find by name', function(done)
+	it('can find by path', function(done)
 	{
 		model.findOne = function(search)
 		{
-			assert.equal(search.name, 'somegraph')
+			assert.equal(search.path, 'somegraph')
 			return this;
 		};
 		model.exec = function(cb)
 		{
 			return cb();
 		};
-		s.findByName('somegraph')
+		s.findByPath('somegraph')
 		.then(function()
 		{
 			done();

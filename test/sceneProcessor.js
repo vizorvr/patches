@@ -24,6 +24,15 @@ describe('SceneProcessor', function()
 	beforeEach(function()
 	{
 		sp = new SceneProcessor(gfs);
+		gfs.url = function(u) { return u; };
+		gfs.createWriteStream = function()
+		{
+			var ee = new EventEmitter();
+			ee.write = function() { return true; };
+			ee.end = function() {};
+			return ee;
+		};
+
 	});
 
 	it.skip('rejects an invalid zip', function(done)
@@ -62,6 +71,38 @@ describe('SceneProcessor', function()
 		sp.handleUpload(scenes.valid, 'foo')
 		.then(function() {
 			assert.ok(wrote, 9);
+			done();
+		})
+		.catch(done)
+	});
+
+	it('creates valid paths', function(done)
+	{
+		var wrote = 0;
+		gfs.createWriteStream = function(path)
+		{
+			if (path === '/the/right/stuff/scene.json')
+				done();
+
+			var ee = new EventEmitter();
+			ee.write = function(data) { return true; };
+			ee.end = function() {}
+			return ee;
+		};
+
+		sp.handleUpload(scenes.valid, '/the/right/stuff')
+		.catch(done)
+	});
+
+	it('returns the correct scene url', function(done)
+	{
+		gfs.url = function(path) {
+			return '/root'+path;
+		};
+
+		sp.handleUpload(scenes.valid, '/foo/scenes/blah')
+		.then(function(sceneUrl) {
+			assert.equal('/root/foo/scenes/blah', sceneUrl);
 			done();
 		})
 		.catch(done)

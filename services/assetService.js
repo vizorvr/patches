@@ -25,7 +25,6 @@ AssetService.prototype.canWrite = function(user, path)
 {
 	return this.findByPath(path).then(function(asset)
 	{
-		console.log('canWrite', user, path, asset);
 		return !asset ||
 			asset._creator.toString() === user.id.toString();
 	});
@@ -69,6 +68,7 @@ AssetService.prototype.save = function(data, user)
 			asset = new that._model(data);
 
 		asset._creator = user.id;
+		asset.updatedAt = Date.now();
 
 		var dfd = when.defer();
 

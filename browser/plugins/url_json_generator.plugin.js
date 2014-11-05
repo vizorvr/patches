@@ -12,7 +12,6 @@ E2.p = E2.plugins["url_json_generator"] = function(core, node)
 	
 	this.state = { url: '' };
 	this.core = core;
-	this.URL_JSON_ROOT = 'data/jsons/';
 	this.object = {};
 	this.dirty = false;
 };
@@ -29,12 +28,9 @@ E2.p.prototype.create_ui = function()
 	inp.click(function()
 	{
 		FileSelectControl
-			.createForUrl(self.URL_JSON_ROOT, self.state.url)
+			.createJsonSelector(self.state.url)
 			.onChange(function(v)
 			{
-				if (v.indexOf('://') === -1)
-					v = self.URL_JSON_ROOT + v;
-					
 				self.state.url = v;
 				self.state_changed(null);
 				self.state_changed(inp);

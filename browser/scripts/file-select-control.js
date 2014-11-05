@@ -164,6 +164,7 @@ FileSelectControl.prototype._scroll = function(amt) {
 }
 
 FileSelectControl.prototype._onChange = function() {
+	console.log('FileSelectControl', this._inputEl.val())
 	this._cb(this._inputEl.val());
 }
 
@@ -228,6 +229,26 @@ function createSelector(path, selected, okButton, okFn, cb)
 	return ctl;
 }
 
+
+FileSelectControl.createJsonSelector = function(selected, okButton, okFn)
+{
+	return createSelector('/json', selected, okButton, okFn, function(ctl)
+	{
+		ctl
+		.template('filebrowser/json')
+		.modal();
+	});
+};
+
+FileSelectControl.createAudioSelector = function(selected, okButton, okFn)
+{
+	return createSelector('/audio', selected, okButton, okFn, function(ctl)
+	{
+		ctl
+		.template('filebrowser/audio')
+		.modal();
+	});
+};
 
 FileSelectControl.createSceneSelector = function(selected, okButton, okFn)
 {

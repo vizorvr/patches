@@ -12,7 +12,6 @@ E2.p = E2.plugins["url_audio_generator"] = function(core, node)
 	
 	this.state = { url: '' };
 	this.core = core;
-	this.URL_AUDIO_ROOT = 'data/audio/';
 	this.audio = null;
 	this.dirty = false;
 };
@@ -29,12 +28,9 @@ E2.p.prototype.create_ui = function()
 	inp.click(function()
 	{
 		FileSelectControl
-			.createForUrl(self.URL_AUDIO_ROOT, self.state.url)
+			.createAudioSelector(self.state.url)
 			.onChange(function(v)
 			{
-				if (v.indexOf('://') === -1)
-					v = self.URL_AUDIO_ROOT + v;
-
 				// remove extension (see below)
 				self.state.url = v.replace(/\.[^\.]*$/, '');
 				self.state_changed(null);

@@ -19,16 +19,9 @@ ImageController.prototype.upload = function(req, res, next)
 
 	var file = req.files.file;
 	var folder = '/image'; 
-	var dest = fsPath.join(folder, file.name);
+	var dest = folder + '/'+ file.name;
 
-	return that._service.canWrite(req.user, dest)
-	.then(function(can)
-	{
-		if (!can)
-			return res.status(403)
-				.json({msg: 'Sorry, permission denied'});
-
-		new ImageProcessor(that._fs)
+	new ImageProcessor(this._fs)
 		.handleUpload(file, folder)
 		.then(function(info)
 		{
@@ -42,12 +35,8 @@ ImageController.prototype.upload = function(req, res, next)
 			{
 				res.json(asset);
 			});
-		});
-	})
-	.catch(function(err)
-	{
-		return next(err);
-	});
+		})
+		.catch(next);
 };
 
 module.exports = ImageController;

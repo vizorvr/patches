@@ -208,27 +208,51 @@ app.use(function(req, res, next)
 app.use(errorHandler());
 
 // Asset controllers
+var AssetController = require('./controllers/assetController');
 var GraphController = require('./controllers/graphController');
 var ImageController = require('./controllers/imageController');
+var SceneController = require('./controllers/sceneController');
 
 var GridFsStorage = require('./lib/gridfs-storage');
-var gfs = new GridFsStorage('/files');
+var gfs = new GridFsStorage('/data');
 
-var GraphService = require('./services/graphService');
+var AssetService = require('./services/assetService');
+
 var graphController = new GraphController(
-	new GraphService(require('./models/graph')),
+	new AssetService(require('./models/graph')),
 	gfs
 );
 
-var ImageService = require('./services/imageService');
 var imageController = new ImageController(
-	new ImageService(require('./models/image')),
+	new AssetService(require('./models/image')),
+	gfs
+);
+
+var sceneController = new SceneController(
+	new AssetService(require('./models/scene')),
+	gfs
+);
+
+var AudioModel = require('./models/audio');
+var audioController = new AssetController(
+	AudioModel,
+	new AssetService(AudioModel),
+	gfs
+);
+
+var JsonModel = require('./models/json');
+var jsonController = new AssetController(
+	JsonModel,
+	new AssetService(JsonModel),
 	gfs
 );
 
 var controllers = {
 	graph: graphController,
-	image: imageController
+	image: imageController,
+	scene: sceneController,
+	audio: audioController,
+	json: jsonController
 }
 
 function getController(req, res, next)
@@ -241,9 +265,9 @@ function getController(req, res, next)
 }
 
 // stream file from fs/gridfs
-app.get(/\/files\/.*/, function(req, res, next)
+app.get(/\/data\/.*/, function(req, res, next)
 {
-	var path = req.path.replace(/^\/files/, '');
+	var path = req.path.replace(/^\/data/, '');
 
 	gfs.stat(path)
 	.then(function(stat)
@@ -274,9 +298,10 @@ app.post('/upload/:model',
 	}),
 	function(req, res, next)
 	{
-		if (!req.files)
-			return res.status(400).send();
-
+		req.controller.canWriteUpload(req, res, next);
+	},
+	function(req, res, next)
+	{
 		req.controller.upload(req, res, next);
 	}
 );

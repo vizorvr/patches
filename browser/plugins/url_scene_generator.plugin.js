@@ -31,6 +31,7 @@ E2.p.prototype.create_ui = function()
 			.createSceneSelector(self.state.url)
 			.onChange(function(v)
 			{
+				self.state.url = v;
 				self.state_changed(null);
 				self.state_changed(inp);
 				self.updated = true;

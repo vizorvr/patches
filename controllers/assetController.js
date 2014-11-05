@@ -22,6 +22,28 @@ AssetController.prototype.validate = function(req, res, next)
 	});
 } 
 
+AssetController.prototype.canWriteUpload = function(req, res, next)
+{
+	var that = this;
+
+	if (!req.files)
+		return next(new Error('No files uploaded'));
+
+	var file = req.files.file;
+	var folder = '/'+req.params.model;
+	var dest = folder + '/'+ file.name;
+
+	that._service.canWrite(req.user, dest)
+	.then(function(can)
+	{
+		if (!can)
+			return res.status(403)
+				.json({msg: 'Sorry, permission denied'});
+
+		next();
+	});
+} 
+
 // GET /:model
 AssetController.prototype.index = function(req, res, next)
 {
@@ -83,13 +105,15 @@ AssetController.prototype.upload = function(req, res, next)
 
 		// move the uploaded file into GridFS / local FS
 		return that._fs.move(file.path, path)
-		.then(function()
+		.then(function(url)
 		{
 			return that._service.findByPath(path)
 			.then(function(model)
 			{
 				if (!model)
 					model = { path: path };
+
+				model.url = url;
 
 				// save/update the model
 				return that._service.save(model, req.user)
