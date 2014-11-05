@@ -9,11 +9,10 @@ import os, sys, os.path, bpy, bmesh, math, struct, base64, itertools
 bl_info = {
 	'name': 'Curve Export (.json)',
 	'author': 'Lasse Nielsen',
-	'version': (0, 1),
-	'blender': (2, 63, 17),
+	'version': (0, 2),
+	'blender': (2, 72, 0),
 	'location': 'File > Export > Curve (.json)',
 	'description': 'Curve Export (.json)',
-	'url': 'http://www.engine.gl',
 	'category': 'Import-Export'
 }
 

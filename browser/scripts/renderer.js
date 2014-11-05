@@ -1,54 +1,10 @@
-function Color(r, g, b, a)
+function Texture(renderer, handle, filter)
 {
-	this.rgba = [r, g, b, a || 1.0];
-}
+	var gl = this.gl = renderer.context;
 
-Color.prototype.clone = function(src)
-{
-	var s = src.rgba, d = this.rgba;
-	
-	d[0] = s[0];
-	d[1] = s[1];
-	d[2] = s[2];
-	d[3] = s[3];
-};
-
-function TextureSampler(tex)
-{
-	var canvas = document.createElement('canvas');
-	var image = tex.image;
-	
-	canvas.width = image.width;
-	canvas.height = image.height;
-
-	var context = canvas.getContext('2d');
-
-	context.drawImage(image, 0, 0);
-
-	this.imgdata = context.getImageData(0, 0, image.width, image.height);
-	this.texture = tex;
-}
-
-TextureSampler.prototype.get_pixel = function(x, y)
-{
-	var img = this.texture.image;
-	
-	x = x < 0 ? 0 : x > 1.0 ? 1.0 : x;
-	y = y < 0 ? 0 : y > 1.0 ? 1.0 : y;
-
-	x *= img.width - 1;
-	y *= img.height - 1;
-	
-	var o = (Math.round(x) + (img.width * Math.round(y))) * 4;
-	var d = this.imgdata.data;
-	
-	return [d[o], d[o+1], d[o+2], d[o+3]];
-};
-
-function Texture(gl, handle, filter)
-{
-	this.gl = gl;
+	this.renderer = renderer;
 	this.min_filter = this.mag_filter = filter || gl.LINEAR;
+	this.wrap_s = this.wrap_t = gl.REPEAT;
 	this.texture = handle || gl.createTexture();
 	this.width = 0;
 	this.height = 0;
@@ -73,7 +29,7 @@ Texture.prototype.load = function(src, core)
 	
 	img.onload = function(self, src, c) { return function()
 	{
-		msg('Finished loading texture \'' + src + '\'.');
+		msg('INFO: Finished loading texture \'' + src + '\'.');
 		self.upload(img, src);
 		c.asset_tracker.signal_completed();
 	}}(this, src, core);
@@ -104,10 +60,11 @@ Texture.prototype.enable = function(stage)
 	{
 		gl.activeTexture(stage || gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
+		this.renderer.extensions.set_anisotropy(4);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.min_filter);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.mag_filter);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.wrap_s);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.wrap_t);
 		gl.bound_tex_stage = stage;
 		gl.bound_tex = this.texture;
 	}
@@ -136,13 +93,13 @@ Texture.prototype.upload = function(img, src)
 	
 	if(!this.isPow2(w))
 	{
-		msg('WARNING: The width (' + w + ') of the texture \'' + src + '\' is not a power of two.');
+		msg('ERROR: The width (' + w + ') of the texture \'' + src + '\' is not a power of two.');
 		return;
 	}
 	
 	if(!this.isPow2(h))
 	{
-		msg('WARNING: The height (' + h + ') of the texture \'' + src + '\' is not a power of two.');
+		msg('ERROR: The height (' + h + ') of the texture \'' + src + '\' is not a power of two.');
 		return;
 	}
 	
@@ -167,11 +124,6 @@ Texture.prototype.set_filtering = function(down, up)
 	this.mag_filter = up;
 };
 
-Texture.prototype.get_sampler = function()
-{
-	return new TextureSampler(this);
-};
-
 function TextureCache(gl, core)
 {
 	this.gl = gl;
@@ -185,14 +137,14 @@ TextureCache.prototype.get = function(url)
 
 	if(ce !== undefined)
 	{
-		msg('Returning cahed version of texture \'' + url + '\'.');
+		msg('INFO: Returning cahed version of texture \'' + url + '\'.');
 		ce.count++;
 		return ce.texture;
 	}
 	
-	var t = new Texture(this.gl);
+	var t = new Texture(this.core.renderer);
 	
-	msg('Fetching texture \'' + url + '\'.');
+	msg('INFO: Fetching texture \'' + url + '\'.');
 	
 	t.load(url, this.core);
 	this.textures[url] = { count:0, texture:t };
@@ -219,6 +171,28 @@ TextureCache.prototype.count = function()
 	return c;
 };
 
+function Extensions(gl)
+{
+	this.gl = gl;
+
+	this.max_anisotropy = 0;
+	this.anisotropic = gl.getExtension('EXT_texture_filter_anisotropic') || 
+			   gl.getExtension('MOZ_EXT_texture_filter_anisotropic') || 
+			   gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
+	
+	if(this.anisotropic)
+		this.max_anisotropy = gl.getParameter(this.anisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+}
+
+Extensions.prototype.set_anisotropy = function(level)
+{
+	if(this.anisotropic)
+	{
+		if(this.max_anisotropy > 0)
+			this.gl.texParameterf(this.gl.TEXTURE_2D, this.anisotropic.TEXTURE_MAX_ANISOTROPY_EXT, this.max_anisotropy);
+	}
+};
+
 function Renderer(vr_devices, canvas_id, core)
 {
 	this.vr_hmd = vr_devices[0];
@@ -226,14 +200,25 @@ function Renderer(vr_devices, canvas_id, core)
 	this.canvas_id = canvas_id;
 	this.canvas = $(canvas_id);
 	this.framebuffer_stack = [];
-	this.def_ambient = new Float32Array([0.0, 0.0, 0.0, 1.0]);
-	this.def_diffuse = new Float32Array([1.0, 1.0, 1.0, 1.0]);
-	this.def_specular = new Float32Array([1.0, 1.0, 1.0, 1.0]);
-	this.up_vec = vec3.createFrom(0.0, 0.0, 1.0);
+	this.def_ambient = vec4.createFrom(0, 0, 0, 1);
+	this.def_diffuse = vec4.createFrom(1, 1, 1, 1);
+	this.def_specular = vec4.createFrom(1, 1, 1, 1);
+	this.up_vec = vec3.createFrom(0, 0, 1);
 	
 	this.org_width = this.canvas.width();
 	this.org_height = this.canvas.height();
 	
+	this.screenshot = 
+	{ 
+		pending: false,
+		width: 512,
+		height: 256,
+		framebuffer: null,
+		renderbuffer: null,
+		texture: null,
+		pixels: null
+	};
+
 	try
 	{
 		var ctx_opts = { alpha: false, preserveDrawingBuffer: false, antialias: true };
@@ -256,11 +241,12 @@ function Renderer(vr_devices, canvas_id, core)
 		debugger;
 	}
 	
+	this.extensions = new Extensions(this.context);
 	this.texture_cache = new TextureCache(this.context, core);
 	this.shader_cache = new ShaderCache(this.context);
 	this.fullscreen = false;
-	this.default_tex = new Texture(this.context);
-	this.default_tex.load('../images/no_texture.png', core);
+	this.default_tex = new Texture(this);
+	this.default_tex.load('images/no_texture.png', core);
 
 	document.addEventListener('fullscreenchange', this.on_fullscreen_change(this));
 	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change(this));
@@ -270,10 +256,10 @@ function Renderer(vr_devices, canvas_id, core)
 	this.camera_screenspace = new Camera(this.context);
 	this.light_default = new Light();
 	this.material_default = new Material();
-	this.color_white = new Color(1.0, 1.0, 1.0);
-	this.color_black = new Color(0.0, 0.0, 0.0);
-	this.vector_origin = [0.0, 0.0, 0.0];
-	this.vector_unity = [1.0, 1.0, 1.0];
+	this.color_white = vec4.createFrom(1, 1, 1, 1);
+	this.color_black = vec4.createFrom(0, 0, 0, 1);
+	this.vector_origin = vec3.createFrom(0, 0, 0);
+	this.vector_unity = vec3.createFrom(1, 1, 1);
 	this.matrix_identity = mat4.create();
 	
 	mat4.identity(this.matrix_identity);
@@ -302,6 +288,36 @@ Renderer.prototype.begin_frame = function()
 		gl.bound_tex_stage = null;
 		gl.bound_mesh = null;
 		gl.bound_shader = null;
+		
+		// Do we need to capture the next frame as a screenshot?
+		var ss = this.screenshot;
+		
+		if(ss.pending)
+		{
+			var fb = ss.framebuffer = this.context.glCreateFramebuffer();
+			var t = this.context.glCreateTexture();
+
+			gl.bindTexture(gl.TEXTURE_2D, t);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, ss.width, ss.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+			var rb = this.screenshot.renderbuffer = gl.createRenderbuffer();
+		
+			gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
+			gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, ss.width, ss.height);
+
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
+			gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
+
+			gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+			gl.bindTexture(gl.TEXTURE_2D, null);
+			gl.viewport(0, 0, ss.width, ss.height);
+			
+			ss.texture = new Texture(gl, t, gl.LINEAR);
+		}
 
 		// this.update_viewport();
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -313,7 +329,45 @@ Renderer.prototype.end_frame = function()
 	var gl = this.context;
 	
 	if(gl)
+	{
 		gl.flush();
+	
+		// Did we render this frame as a screenshot? If so, store the results.
+		var ss = this.screenshot;
+		
+		if(ss.pending)
+		{
+			var c = this.canvas[0];
+			
+			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			gl.viewport(0, 0, c.width, c.height);
+			
+			// Grab the framebuffer data and store it store it as RGBA
+			var data = new Uint8Array(ss.width * ss.height * 4);
+			
+			gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, this.img_data);
+			
+			// Drop the frame-, renderbuffer and texture.
+			gl.deleteFramebuffer(ss.framebuffer);
+			gl.deleteRenderbuffer(ss.renderbuffer);
+			ss.texture.drop();
+			
+			ss.framebuffer = null;
+			ss.renderbuffer = null;
+			ss.texture = null;
+			ss.pending = false;
+
+			// Ditch the alpha channel and store
+			var p = ss.pixels = new Uint8Array(ss.width * ss.height * 3);
+	
+			for(var i = 0, o = 0; i < w * h * 3; i += 3, o += 4)
+			{
+				p[i] = data[o];
+				p[i+1] = data[o+1];
+				p[i+2] = data[o+2];
+			}
+		}
+	}
 };
 
 Renderer.prototype.push_framebuffer = function(fb, w, h)
@@ -561,10 +615,10 @@ IndexBuffer.prototype.bind_data = function(i_data)
 function Light()
 {
 	this.type = Light.type.POINT;
-	this.diffuse_color = new Color(1, 1, 1, 1);
-	this.specular_color = new Color(1, 1, 1, 1);
-	this.position = [0, 1, 0];
-	this.direction = [0, -1, 0];
+	this.diffuse_color = vec4.createFrom(1, 1, 1, 1);
+	this.specular_color = vec4.createFrom(1, 1, 1, 1);
+	this.position = vec3.createFrom(0, 1, 0);
+	this.direction = vec3.createFrom(0, -1, 0);
 	this.intensity = 1.0;
 }
 
@@ -585,8 +639,8 @@ function Material(gl, t_cache, data, base_path)
 	this.shinyness = 1.0;
 	this.double_sided = false;
 	this.blend_mode = Renderer.blend_mode.NORMAL;
-	this.ambient_color = new Color(0, 0, 0, 1);
-	this.diffuse_color = new Color(1, 1, 1, 1);
+	this.ambient_color = vec4.createFrom(0, 0, 0, 1);
+	this.diffuse_color = vec4.createFrom(1, 1, 1, 1);
 	this.textures = [null, null, null, null];
 	this.uv_offsets = [null, null, null, null];
 	this.uv_scales = [null, null, null, null];
@@ -599,7 +653,7 @@ function Material(gl, t_cache, data, base_path)
 			var c = data[name];
 			
 			if(c)
-				self[name] = new Color(c[0], c[1], c[2], c[3]);
+				self[name] = vec4.createFrom(c[0], c[1], c[2], c[3]);
 		};
 		
 		var parse_tex = function(self, name, tgt, old)
@@ -796,7 +850,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker, instances)
 				parent.vertex_count = count / (4 * 3);
 				parent.streams_loaded++;
 
-				msg('Finished loading stream from ' + img.src + ' with ' + (count / 4) + ' elements. (' + parent.streams_loaded + ' / ' + parent.stream_count + ')');
+				msg('INFO: Finished loading stream from ' + img.src + ' with ' + (count / 4) + ' elements. (' + parent.streams_loaded + ' / ' + parent.stream_count + ')');
 				asset_tracker.signal_completed();
 			}}(parent);
 		
@@ -823,89 +877,6 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker, instances)
 		{
 			this.stream_count++;
 			load_stream(data.normals, data.n_lo, data.n_rng, this.vertex_buffers.NORMAL = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL), this);
-		}
-		else // Compute normals
-		{
-			var vts = data.vertices,
-                                  p1 = null,
-                                  p2 = null,
-                                  p3 = null;
-			
-			this.face_norms = [];
-			
-			if(data.indices)
-			{
-				var idx = data.indices;
-				
-				for(var i = 0, len = idx.length; i < len; i += 3)
-				{
-					p1 = idx[i]*3;
-					p2 = idx[i+1]*3;
-					p3 = idx[i+2]*3;
-					
-					var v1 = [vts[p1] - vts[p3], vts[p1+1] - vts[p3+1], vts[p1+2] - vts[p3+2]];
-					var v2 = [vts[p1] - vts[p2], vts[p1+1] - vts[p2+1], vts[p1+2] - vts[p2+2]];
-					
-					var n = [v1[1] * v2[2] - v1[2] * v2[1],
-                                                 v1[2] * v2[0] - v1[0] * v2[2],
-                                                 v1[0] * v2[1] - v1[1] * v2[0]];
-					
-					var l = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
-					
-					if(l > 0.000001)
-					{
-						n[0] /= l;
-						n[1] /= l;
-						n[2] /= l;
-					}
-					
-					this.face_norms.push(n[0]);
-					this.face_norms.push(n[1]);
-					this.face_norms.push(n[2]);
-				}
-				
-				// TODO: Use index buffer to calculate proper vertex normals.
-			}
-			else
-			{
-				var ndata = [];
-				
-				for(var i = 0, len = vts.length/3; i < len; i += 3)
-				{
-					p1 = i*3;
-					p2 = (i+1)*3;
-					p3 = (i+2)*3;
-					
-					var v1 = [vts[p1] - vts[p3], vts[p1+1] - vts[p3+1], vts[p1+2] - vts[p3+2]];
-					var v2 = [vts[p1] - vts[p2], vts[p1+1] - vts[p2+1], vts[p1+2] - vts[p2+2]];
-					
-					var n = [v1[1] * v2[2] - v1[2] * v2[1],
-					         v1[2] * v2[0] - v1[0] * v2[2],
-					         v1[0] * v2[1] - v1[1] * v2[0]];
-					         
-					var l = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
-					
-					if(l > 0.000001)
-					{
-						n[0] /= l;
-						n[1] /= l;
-						n[2] /= l;
-					}
-					
-					this.face_norms.push(n[0]);
-					this.face_norms.push(n[1]);
-					this.face_norms.push(n[2]);
-					
-					for(var c = 0; c < 3; c++)
-					{
-						ndata.push(n[0]);
-						ndata.push(n[1]);
-						ndata.push(n[2]);
-					}
-				}
-				
-				(this.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL)).bind_data(ndata);
-			}
 		}
 		
 		if(data.uv0)
@@ -1321,28 +1292,12 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		{
 			var idx = gl.getAttribLocation(prog, id);
 			
-			/*if(idx < 0)
-			{
-				msg('ERROR: Failed to obtain shader attribute location for ' + id + '. Active attributes are:');
-				
-				for(var i = 0; i < gl.getProgramParameter(prog, gl.ACTIVE_ATTRIBUTES); i++)
-					msg('\t' + gl.getActiveAttrib(prog, i).name);
-			}*/
-			
 			return idx < 0 ? undefined : idx;
 		};
 		
 		var resolve_unif = function(id)
 		{
 			var loc = gl.getUniformLocation(prog, id);
-			
-			/*if(!loc)
-			{
-				msg('ERROR: Failed to obtain shader uniform location for ' + id +'. Active uniforms are:');
-				
-				for(var i = 0; i < gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS); i++)
-					msg('\t' + gl.getActiveUniform(prog, i).name);
-			}*/
 			
 			return loc;
 		};
@@ -1395,8 +1350,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 			if(streams[v_types.UV0])
 			{
-				if(d_tex)
-					shader.v_uv0 = resolve_attr('v_uv0');
+				shader.v_uv0 = resolve_attr('v_uv0');
 			
 				var get_tex_uniforms = function(shader, type, tex)
 				{
@@ -1447,11 +1401,11 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			var m = mat ? mat : mesh.material;
 
 			gl.enableVertexAttribArray(this.v_pos);
-			gl.uniform4fv(this.a_col, (m.ambient_color) ? new Float32Array(m.ambient_color.rgba) : r.def_ambient);
-			gl.uniform4fv(this.d_col, (m.diffuse_color) ? new Float32Array(m.diffuse_color.rgba) : r.def_diffuse);
+			gl.uniform4fv(this.a_col, (m.ambient_color) ? m.ambient_color : r.def_ambient);
+			gl.uniform4fv(this.d_col, (m.diffuse_color) ? m.diffuse_color : r.def_diffuse);
 		
 			if(this.s_col !== undefined)
-				gl.uniform4fv(this.s_col, (m.specular_color) ? new Float32Array(m.specular_color.rgba) : r.def_specular);
+				gl.uniform4fv(this.s_col, (m.specular_color) ? m.specular_color : r.def_specular);
 		
 			if(this.shinyness !== undefined)
 				gl.uniform1f(this.shinyness, m.shinyness);
@@ -1465,8 +1419,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 					var lid = 'l' + i;
 
 					gl.uniform3fv(this[lid + '_pos'], l.position);
-					gl.uniform4fv(this[lid + '_d_col'], l.diffuse_color.rgba);
-					gl.uniform4fv(this[lid + '_s_col'], l.specular_color.rgba);
+					gl.uniform4fv(this[lid + '_d_col'], l.diffuse_color);
+					gl.uniform4fv(this[lid + '_s_col'], l.specular_color);
 					gl.uniform1f(this[lid + '_power'], l.intensity);
 				
 					if(l.type === Light.type.DIRECTIONAL)
@@ -1725,19 +1679,34 @@ function Scene(gl, core, data, base_path)
 	this.id = 'n/a';
 	this.vertex_count = 0;
 	this.core = core;
-	this.bounding_box = { "lo": [0.0, 0.0, 0.0], "hi": [0.0, 0.0, 0.0] };
+	this.bounding_box = null;
+	
+	this.init_bb();
 	
 	if(data)
 		this.load_json(data, base_path);
 };
+
+Scene.prototype.init_bb = function(data)
+{
+	if(!data || !data.bounding_box)
+	{
+		this.bounding_box = { "lo": vec3.createFrom(0.0, 0.0, 0.0), "hi": vec3.createFrom(0.0, 0.0, 0.0) };
+		return;
+	}
+
+	data.bounding_box.lo = vec3.create(data.bounding_box.lo);
+	data.bounding_box.hi = vec3.create(data.bounding_box.hi);
+	
+	this.bounding_box = data.bounding_box;
+}
 
 Scene.prototype.load_json = function(data, base_path)
 {
 	var gl = this.gl;
 	
 	this.id = data.id;
-	
-	this.bounding_box = data.bounding_box || { "lo": [0.0, 0.0, 0.0], "hi": [0.0, 0.0, 0.0] };
+	this.init_bb(data);
 	 
 	for(var id in data.materials)
 	{
@@ -1840,16 +1809,17 @@ Scene.prototype.create_autofit_camera = function()
 	
 	pos[0] = tar[0];
 	
-	msg('New autofit camera: ' + pos + ' ... ' + tar[0] + ',' + tar[1] + ',' + tar[2] + ' ... ' + dist);
+	msg('INFO: New autofit camera: ' + pos + ' ... ' + tar[0] + ',' + tar[1] + ',' + tar[2] + ' ... ' + dist);
+	
 	mat4.perspective(45.0, c.width() / c.height(), 1.0, 1.0 + dist, cam.projection);
-	mat4.lookAt(pos, tar, [0.0, 0.0, 1.0], cam.view);
+	mat4.lookAt(pos, tar, vec3.createFrom(0, 0, 1), cam.view);
 	
 	return cam;
 };
 	
 Scene.load = function(gl, url, core)
 {
-	// Create dummy impostor scene and can be used as a null-proxy until asynchronous load completes.
+	// Create dummy imposter scene and can be used as a null-proxy until asynchronous load completes.
 	var scene = new Scene(gl, core, null, null);
 	
 	core.asset_tracker.signal_started();
@@ -1863,8 +1833,8 @@ Scene.load = function(gl, url, core)
 			var r = c.renderer;
 			
 			scene.load_json(data, bp);
-			msg('Scene: Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
-			msg('Global cache state: ' + r.texture_cache.count() + ' textures. ' + r.shader_cache.count() + ' shaders.');
+			msg('INFO: Scene - Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
+			msg('INFO: Global cache state: ' + r.texture_cache.count() + ' textures. ' + r.shader_cache.count() + ' shaders.');
 			c.asset_tracker.signal_completed();
 		}}(scene, core),
 		error: function(c) { return function(jqXHR, textStatus, errorThrown)

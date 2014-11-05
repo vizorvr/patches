@@ -102,7 +102,6 @@ E2.p.prototype.create_ui = function()
 	slider.append(handle);
 	
 	table.css('width', '150px');
-	table.addClass('pl_layout');
 	inp_lo.css('border', '1px solid #999');
 	inp_hi.css('border', '1px solid #999');
 	

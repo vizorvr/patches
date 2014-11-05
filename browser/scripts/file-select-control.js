@@ -196,7 +196,7 @@ FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
 	{
 		var buttons = {
 			'Download': function(file) {
-				var url = '/dl/' + path + file;
+				var url = '/dl' + path + file;
 				var iframe = $('#dl-frame');
 				if (!iframe.length)
 					iframe = $('<iframe id="dl-frame">').hide().appendTo('body');

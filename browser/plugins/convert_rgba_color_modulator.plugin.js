@@ -16,12 +16,12 @@ E2.p = E2.plugins["convert_rgba_color_modulator"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.color = new Color(1.0, 1.0, 1.0, 1.0);
+	this.color = vec4.createFrom(1, 1, 1, 1);
 };
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	this.color.rgba[slot.index] = data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data;
+	this.color[slot.index] = data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data;
 };
 
 E2.p.prototype.update_output = function(slot)

@@ -23,8 +23,8 @@ E2.p.prototype.update_input = function(slot, data)
 	m.shinyness = data.shinyness;
 	m.double_sided = data.double_sided;
 	m.blend_mode = data.blend_mode;
-	m.ambient_color.clone(data.ambient_color);
-	m.diffuse_color.clone(data.diffuse_color);
+	m.ambient_color = vec4.create(data.ambient_color);
+	m.diffuse_color = vec4.create(data.diffuse_color);
 	m.textures = data.textures.slice(0);
 	m.lights = data.lights.slice(0);
 };

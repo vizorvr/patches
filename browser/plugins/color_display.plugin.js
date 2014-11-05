@@ -11,13 +11,13 @@ E2.p = E2.plugins["color_display"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.color = new Color(1, 1, 1, 1);
+	this.color = vec4.createFrom(1, 1, 1, 1);
 };
 
 E2.p.prototype.css = function()
 {
 	var obj = {}
-	var c = this.color.rgba;
+	var c = this.color;
 	
 	obj['background-color'] = 'rgb(' + Math.round(c[0] * 255.0) + ', ' + Math.round(c[1] * 255.0) + ', ' + Math.round(c[2] * 255.0) + ')';
 	obj['opacity'] = '' + c[3];
@@ -40,12 +40,12 @@ E2.p.prototype.create_ui = function()
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	var c = this.color.rgba;
+	var c = this.color;
 	
-	c[0] = data.rgba[0];
-	c[1] = data.rgba[1];
-	c[2] = data.rgba[2];
-	c[3] = data.rgba[3];
+	c[0] = data[0];
+	c[1] = data[1];
+	c[2] = data[2];
+	c[3] = data[3];
 
 	if(this.label)
 		this.label.css(this.css());

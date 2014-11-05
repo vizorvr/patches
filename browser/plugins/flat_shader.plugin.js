@@ -51,7 +51,7 @@ E2.p = E2.plugins["flat_shader"] = function(core, node)
       	{
 		var mat = self.material ? self.material : mesh.material;
 		
-		gl.uniform4fv(self.s.d_col, mat.diffuse_color ? new Float32Array(mat.diffuse_color.rgba) : this.s);
+		gl.uniform4fv(self.s.d_col, mat.diffuse_color ? mat.diffuse_color : this.s);
 		gl.enableVertexAttribArray(self.s.v_pos);
 		
 		mat.enable();

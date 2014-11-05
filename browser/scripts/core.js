@@ -286,7 +286,7 @@ function Core(vr_devices, app) {
 		if(dt === dts.FLOAT)
 			return 0.0;
 		else if(dt === dts.COLOR)
-			return new Color(1, 1, 1);
+			return vec4.createFrom(1, 1, 1, 1);
 		else if(dt === dts.MATRIX)
 		{
 			var m = mat4.create();
@@ -297,7 +297,7 @@ function Core(vr_devices, app) {
 		else if (dt === dts.TEXTURE)
 			return self.renderer.default_tex;
 		else if(dt === dts.VECTOR)
-			return [0.0, 0.0, 0.0];
+			return vec3.createFrom(0.0, 0.0, 0.0);
 		else if(dt === dts.CAMERA)
 			return new Camera(self.renderer.context);
 		else if(dt === dts.BOOL)
@@ -362,7 +362,11 @@ function Core(vr_devices, app) {
 		if(E2.dom.structure)
 		{
 			self.rebuild_structure_tree();
-			self.active_graph.tree_node.activate();
+			
+			if(self.active_graph.tree_node)
+				self.active_graph.tree_node.activate();
+			else
+				self.root_graph.tree_node.activate();
 		}
 	};
 	
@@ -372,14 +376,15 @@ function Core(vr_devices, app) {
 		{
 			var nodes = graph.nodes;
 			
-			if(graph.parent_graph !== null)
+			if(graph.parent_graph)
 			{
-				var tnode = graph.parent_graph.tree_node.add_child(name);
-
-				tnode.closed = !graph.open;
+				var ptn = graph.parent_graph.tree_node;
+				var tnode = new TreeNode(ptn.tree, ptn, name, null);
+				
+				ptn.children.push(tnode);
 				graph.tree_node = tnode;
 				tnode.graph = graph;
-			}		
+			}
 			
 			for(var i = 0, len = nodes.length; i < len; i++)
 			{
@@ -389,11 +394,12 @@ function Core(vr_devices, app) {
 					build(n.plugin.graph, n.get_disp_name());
 			}
 		};
-
+		
 		E2.dom.structure.tree.reset();
 		self.root_graph.tree_node = E2.dom.structure.tree.root;
 		E2.dom.structure.tree.root.graph = self.root_graph;
 		build(self.root_graph, 'Root');
+		E2.dom.structure.tree.root.rebuild_dom();
 	};
 	
 	this.add_aux_script = function(script_url, onload)
@@ -506,6 +512,47 @@ E2.InitialiseEngi = function(vr_devices)
 		};
 	}
 }
+
+E2.EnumerateVRDevices = function(devices)
+{
+	var hmd = null, sensor = null;
+	
+	for(var i = 0; i < devices.length; i++)
+	{
+		if(devices[i] instanceof HMDVRDevice)
+		{
+			// Just use the first device we find for now.
+			hmd = devices[i];
+			break;
+		}
+	}
+	
+	if(hmd)
+	{
+		for(var i = 0; i < devices.length; i++)
+		{
+			var d = devices[i];
+		
+			if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId)
+			{
+				sensor = devices[i];
+				break;
+			}
+		}
+	}
+
+	E2.InitialiseEngi([hmd, sensor]);
+};
+			
+E2.InitialiseEngiVR = function()
+{
+	if(navigator.getVRDevices)
+		navigator.getVRDevices().then(E2.EnumerateVRDevices);
+	else if(navigator.mozGetVRDevices)
+		navigator.mozGetVRDevices(E2.EnumerateVRDevices);
+	else
+		E2.InitialiseEngi([null, null]);
+};
 
 function load_location_hash() {
 	var graphName = decodeURIComponent(window.location.hash).replace('#'+URL_GRAPHS,'');

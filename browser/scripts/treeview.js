@@ -6,7 +6,6 @@ function TreeNode(tree, parent_node, title, graph_node)
 	this.graph_node = graph_node;
 	this.children = [];
 	this.dom = this.label = null;
-	this.closed = false;
 	this.selected = false;
 }
 
@@ -16,6 +15,7 @@ TreeNode.prototype.add_child = function(title)
 	
 	this.children.push(tn);
 	this.rebuild_dom();
+	
 	return tn;
 };
 
@@ -26,7 +26,9 @@ TreeNode.prototype.remove = function()
 	
 	var pc = this.parent_node.children;
 	
-	this.dom.remove();
+	if(this.dom)
+		this.dom.remove();
+	
 	pc.splice(pc.indexOf(this), 1);
 };
 
@@ -51,16 +53,16 @@ TreeNode.prototype.rebuild_dom = function()
 	var dom = null;
 	var lbl = null;
 		
-	if(this.children.length > 0 || this.parent_node === null)
+	if((this.children.length > 0 || this.parent_node === null) && this.graph)
 	{
 		dom = make('ul');
 		dom.addClass('tree-sub');
 		
-		var handle = $('<div class="tree-handle glyphicon glyphicon-chevron-' + (this.closed ? 'right' : 'down') + '"></div>');
+		var handle = $('<div class="tree-handle glyphicon glyphicon-chevron-' + (this.graph.open ? 'down' : 'right') + '"></div>');
 		
 		handle[0].addEventListener('mousedown', function(t_node) { return function()
 		{
-			t_node.closed = !t_node.closed;
+			t_node.graph.open = !t_node.graph.open;
 			t_node.rebuild_dom();
 		}}(this));
 		
@@ -70,7 +72,7 @@ TreeNode.prototype.rebuild_dom = function()
 		
 		dom.append(lbl);
 		
-		if(!this.closed)
+		if(this.graph && this.graph.open)
 		{
 			var children = this.children;
 			
@@ -128,6 +130,7 @@ function TreeView(parent, on_activate, on_rearrange)
 TreeView.prototype.reset = function()
 {
 	this.root.remove_children();
+	
 	this.drag_node = null;
 	this.drag_dom = null;
 	this.drag_tgt = null;
@@ -135,8 +138,9 @@ TreeView.prototype.reset = function()
 	this.drag_indicator = null;
 	this.selected_node = null;
 	this.insert_after = false;
-	this.root.closed = false;
+	this.root.graph = null;
 	this.root.selected = false;
+	
 	this.root.rebuild_dom();
 };
 
@@ -148,6 +152,24 @@ TreeView.prototype.select = function(t_node)
 		this.selected_node.selected = false;
 	}
 		
+	var parent = t_node;
+	var highest_closed = null;
+	
+	do
+	{
+		if(!parent.graph.open)
+		{
+			parent.graph.open = true;
+			highest_closed = parent;
+		}
+		
+		parent = parent.parent_node;
+	}
+	while(parent);
+		
+	if(highest_closed)
+		highest_closed.rebuild_dom();
+	
 	this.on_activate(t_node.parent_node ? t_node.graph : this.root.graph);
 
 	this.selected_node = t_node;

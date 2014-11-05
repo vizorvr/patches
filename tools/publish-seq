@@ -400,12 +400,13 @@ function publish(seq, data_dir)
 	
 	fs.mkdirSync(img_dst);
 	['oculus.png', 
-	 'warning.png', 
-	 'no_texture.png'].forEach(function(file, index)
+	 'warning.png'].forEach(function(file, index)
 	{
 		copy(path.join(img_src, file), path.join(img_dst, file));
 	});
 
+	copy(path.join('tools', 'no_texture.publish.png'), path.join(img_dst, 'no_texture.png'));
+	
 	var scripts_src = path.join('browser', 'scripts');
 	var scripts_dst = path.join(pub_dir, 'scripts');
 	

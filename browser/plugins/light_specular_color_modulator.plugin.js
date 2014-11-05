@@ -4,7 +4,7 @@ E2.p = E2.plugins["light_specular_color_modulator"] = function(core, node)
 	
 	this.input_slots = [ 
 		{ name: 'light', dt: core.datatypes.LIGHT, desc: 'Input light.', def: core.renderer.light_default },
-		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The light specular color.', def: core.renderer.color_white } 
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The light specular color.', def: core.renderer.color_white }
 	];
 	
 	this.output_slots = [
@@ -35,6 +35,6 @@ E2.p.prototype.state_changed = function(ui)
 	if(!ui)
 	{
 		this.light = new Light();
-		this.color = new Color(1, 1, 1, 1);
+		this.color = vec4.createFrom(1, 1, 1, 1);
 	}
 };

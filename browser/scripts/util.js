@@ -115,13 +115,42 @@ function msg(txt)
 	
 	if(txt)
 	{
-		if(txt.substring(0,  7) !== 'ERROR: ')
-			d.append(txt + '\n');
+		if(txt.substring(0,  7) === 'ERROR: ')
+			d.append('<span style="color:#f20">' + txt + '</span>\n');
+		else if(txt.substring(0,  9) === 'WARNING: ')
+			d.append('<span style="color:#fa0">' + txt + '</span>\n');
+		else if(txt.substring(0,  6) === 'INFO: ')
+			d.append('<span style="color:#04f">' + txt + '</span>\n');
 		else
-			d.append('<span style="color:#f00">' + txt + '</span>\n');
+			d.append(txt + '\n');
 	}
 	
 	d.scrollTop(d[0].scrollHeight);
+}
+
+function ExpandableTextfield(node, tf, def_width)
+{
+	var self = this;
+	
+	this.node = node;
+	this.tf = tf;
+	this.def_width = def_width;
+	
+	this.update = function()
+	{
+		var s = '' + self.tf.val();
+		
+		self.tf[0].style.width = ((Math.max(self.def_width, s.length) * 7) + 2) + 'px';
+		self.node.geometry_updated();
+	};
+	
+	var handler = function(self) { return function(e)
+	{
+		self.update();
+	}}(this);
+	
+	tf.change(handler);
+	tf.keyup(handler);
 }
 
 function load_script(url, onload, onerror)

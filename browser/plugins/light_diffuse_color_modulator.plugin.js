@@ -35,6 +35,6 @@ E2.p.prototype.state_changed = function(ui)
 	if(!ui)
 	{
 		this.light = new Light();
-		this.color = new Color(1, 1, 1, 1);
+		this.color = vec4.createFrom(1, 1, 1, 1);
 	}
 };

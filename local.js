@@ -6,6 +6,7 @@ var argv = require('minimist')(process.argv.slice(2));
 var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
+var helmet = require('helmet');
 var FrameDumpServer = require('./lib/framedump-server').FrameDumpServer;
 var OscServer = require('./lib/osc-server').OscServer;
 var WsChannelServer = require('./lib/wschannel-server').WsChannelServer;
@@ -19,19 +20,22 @@ var listenHost = argv.i || config.server.host;
 var listenPort = argv.p || config.server.port;
 var publishRunning = []; // The current set of projects being published.
 
+config.debug = config.server.debug;
+
 if (argv.h || argv.help)
 {
 	return console.log('Usage: node server.js -i 127.0.0.1 -p 8000 [/path/to/alt/project]')
 }
 
-console.log('Project path: ', PROJECT);
+console.log('Debug enabled:', config.debug);
+console.log('Project path:', PROJECT);
 console.log('URL: http://' + listenHost + ':' + listenPort);
 
 function showFolderListing(reTest)
 {
 	return function(req, res, next)
 	{
-		fs.readdir(PROJECT + req.path, function(err, files)
+		fs.readdir(path.join(PROJECT, req.path), function(err, files)
 		{
 			if(err)
 			{
@@ -49,15 +53,15 @@ function showFolderListing(reTest)
 
 function downloadHandler(req, res)
 {
-	var path = PROJECT + decodeURIComponent(req.path.substring(3));
+	var p = path.join(PROJECT, decodeURIComponent(req.path.substring(3)));
 
-	fs.exists(path, function(exists)
+	fs.exists(p, function(exists)
 	{
 		if(!exists)
 			return res.send(404);
 
 		res.header('Content-Type', 'application/octet-stream');
-		fs.createReadStream(path).pipe(res);
+		fs.createReadStream(p).pipe(res);
 	});
 }
 
@@ -104,6 +108,12 @@ function publishProject(res, seq, data_path)
 
 var app = express()
 	.use(logger('dev'))
+	.use(helmet.hidePoweredBy())
+	.use(helmet.xframe('sameorigin'))
+	.use(helmet.xssFilter())
+	.use(helmet.ienoopen())
+	.use(helmet.nosniff())
+	.use(helmet.crossdomain())
 	.use(function(req, res, next)
 	{
 		req.url = req.url.replace(/^\/build\/data\//, '/data/');
@@ -118,9 +128,7 @@ var app = express()
 	})
 	.use(express['static'](ENGI, { maxAge: 60 * 60 * 24 * 1000 }))
 	.use(express['static'](PROJECT, { maxAge: 0 }))
-	.use('/node_modules',
-		express['static'](__dirname+'/node_modules',
-			{ maxAge: 60 * 60 * 24 * 1000 }))
+	.use('/node_modules', express['static'](__dirname+'/node_modules', { maxAge: 60 * 60 * 24 * 1000 }))
 	// set no-cache headers for the rest
 	.use(function(req, res, next)
 	{
@@ -138,8 +146,8 @@ var app = express()
 		if (!/\.json$/.test(savePath))
 			savePath = savePath+'.json';
 
-		var stream = fs.createWriteStream(PROJECT + savePath);
-
+		var stream = fs.createWriteStream(path.join(PROJECT, savePath));
+	
 		stream.on('error', function(err)
 		{
 			if (err && err.code === 'EACCES')
@@ -155,7 +163,7 @@ var app = express()
 		{
 			if(req.get('Engi-Publish') === 'true')
 			{
-				publishProject(res, PROJECT + savePath, PROJECT);
+				publishProject(res, path.join(PROJECT, savePath), PROJECT);
 			}
 			else
 			{
@@ -169,18 +177,14 @@ var app = express()
 app.use(errorHandler());
 
 if(config.server.enableFrameDumping)
-	new FrameDumpServer().listen(app);
+	new FrameDumpServer(PROJECT).listen(app);
 
 var httpServer = http.createServer(app)
 
 httpServer.listen(listenPort, listenHost);
 
 if (config.server.enableOSC)
-{
-	new OscServer().listen(httpServer);
-}
+	new OscServer(config).listen(httpServer);
 
 if (config.server.enableChannels)
-{
-	new WsChannelServer().listen(httpServer);
-}
+	new WsChannelServer(config).listen(httpServer);

@@ -340,11 +340,11 @@ E2.p.prototype.rebuild_shader = function()
 					tex_slot++;
 				}
 				else if(dtid === dts.COLOR.id)
-					gl.uniform4fv(slot.uniform, new Float32Array(sd[slot.id].rgba));	
+					gl.uniform4fv(slot.uniform, sd[slot.id]);	
 				else if(dtid === dts.MATRIX.id)
 					gl.uniformMatrix4fv(slot.uniform, false, sd[slot.id]);
 				else if(dtid === dts.VECTOR.id)
-					gl.uniform3fv(slot.uniform, new Float32Array(sd[slot.id]));	
+					gl.uniform3fv(slot.uniform, sd[slot.id]);	
 			}
 		}}(this);
 	}

@@ -433,7 +433,7 @@ function Application() {
 	{
 		if(self.hover_node !== null)
 		{
-			self.hover_node.ui.header_row[0].style.backgroundColor = E2.erase_color;
+			self.hover_node.ui.header_row[0].className += ' pl_delete';
 		
 			var hcs = self.hover_connections;
 			var conns = self.player.core.active_graph.connections;
@@ -465,7 +465,7 @@ function Application() {
 					if(node === self.hover_node)
 						continue;
 
-					node.ui.header_row[0].style.backgroundColor = E2.erase_color;
+					node.ui.header_row[0].className += ' pl_delete';
 					self.hover_nodes.push(node);
 					
 					iterate_conns(hcs, node.uid);
@@ -488,7 +488,7 @@ function Application() {
 			self.hover_node = null;
 			
 			for(var i = 0, len = self.hover_nodes.length; i < len; i++)
-				hn[i].ui.header_row[0].style.backgroundColor = '#656974'; // TODO: Ugly. This belongs in a style sheet.
+				hn[i].ui.header_row[0].className = hn[i].ui.header_row[0].className.replace(' pl_delete', '')
 			
 			self.hover_nodes = [];
 			

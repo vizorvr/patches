@@ -166,7 +166,17 @@ E2.p.prototype.create_ui = function()
 	inp_edit.click(function(self) { return function(e) 
 	{
 		if(self.graph)
+		{
+			var ptn = self.graph.parent_graph.tree_node;
+			
+			if(!ptn.open)
+			{
+				ptn.graph.open = true;
+				ptn.rebuild_dom();
+			}
+			
 			self.graph.tree_node.activate();
+		}
 	}}(this));
 	
 	ui.css('text-align', 'center');
@@ -318,7 +328,7 @@ E2.p.prototype.set_render_target_state = function(on)
 		gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		
-		this.texture = new Texture(gl, t, this.state.rt_filter);
+		this.texture = new Texture(this.core.renderer, t, this.state.rt_filter);
 		this.texture.width = this.framebuffer.width;
 		this.texture.height = this.framebuffer.height;
 		this.texture.framebuffer = this.framebuffer;

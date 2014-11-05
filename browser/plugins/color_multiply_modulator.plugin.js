@@ -14,8 +14,8 @@ E2.p = E2.plugins["color_multiply_modulator"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.color = new Color(1, 1, 1);
-	this.output_color = new Color(1, 1, 1);
+	this.color = vec4.createFrom(1, 1, 1, 1);
+	this.output_color = vec4.createFrom(1, 1, 1, 1);
 	this.factor = 1.0;
 };
 
@@ -29,18 +29,18 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_state = function()
 {
-	var rgba = this.color.rgba;
-	var o_rgba = this.output_color.rgba;
+	var c = this.color;
+	var oc = this.output_color;
 	var f = this.factor;
 	
 	for(var i = 0; i < 3; i++)
 	{
-		var v = rgba[i] * f;
+		var v = c[i] * f;
 		
-		o_rgba[i] = v < 0.0 ? 0.0 : v > 1.0 ? 1.0 : v;
+		oc[i] = v < 0.0 ? 0.0 : v > 1.0 ? 1.0 : v;
 	}
 	
-	o_rgba[3] = rgba[4];
+	oc[3] = c[4];
 };
 
 E2.p.prototype.update_output = function(slot)

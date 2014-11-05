@@ -228,7 +228,7 @@ Graph.prototype.serialise = function()
 	d.node_uid = this.node_uid;
 	d.uid = this.uid;
 	d.parent_uid = this.parent_graph ? this.parent_graph.uid : -1;
-	d.open = !this.tree_node.closed;
+	d.open = this.open;
 	d.nodes = [];
 	d.conns = [];
 	

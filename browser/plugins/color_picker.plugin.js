@@ -5,7 +5,7 @@ E2.p = E2.plugins["color_picker"] = function(core, node)
 	this.input_slots = [];
 	
 	this.output_slots = [
-		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The selected color.', def: 'White' }
+		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The selected color.', def: core.renderer.color_white }
 	];
 	
 	this.state = { hue: 0.0, sat: 0.0, lum: 1.0 };
@@ -155,7 +155,7 @@ E2.p.prototype.update_value = function(c)
 	var cnv2 = function(cmp) { return Math.floor(nc[cmp] * 255.0); };
 
 	nc = [cnv(0), cnv(1), cnv(2)];
-	var rgb = this.color ? this.color.rgba : null;
+	var rgb = this.color ? this.color : null;
 	
 	if(!rgb || rgb[0] !== nc[0] || rgb[1] !== nc[1] || rgb[2] !== nc[2])
 	{
@@ -274,7 +274,7 @@ E2.p.prototype.state_changed = function(ui)
 		this.color_drag = false;
 		this.hue_clipped = false;
 		this.color_clipped = false;
-		this.color = new Color(1.0, 1.0, 1.0, 1.0);
+		this.color = vec4.createFrom(1, 1, 1, 1);
 		this.update_hue(null, null, null, null);
 	}
 };

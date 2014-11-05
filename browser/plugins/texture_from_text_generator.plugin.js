@@ -21,6 +21,7 @@ E2.p = E2.plugins["texture_from_text_generator"] = function(core, node)
 		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'Output texture containing the rendered text.' }
 	];
 	
+	this.renderer = core.renderer;
 	this.gl = core.renderer.context;
 	this.mesh = null;
 	this.canvas2d = $('<canvas style="display:none" width="128" height="128"></canvas>')[0];
@@ -112,7 +113,7 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.texture = new Texture(this.gl);
+		this.texture = new Texture(this.renderer);
 		this.text = '';
 		this.width = 128;
 		this.height = 128;
