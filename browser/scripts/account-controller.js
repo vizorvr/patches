@@ -2,14 +2,29 @@ function AccountController(handlebars)
 {
 	this._handlebars = handlebars || window.Handlebars
 
-	window.Engi.user.on('change', this.renderLoginView.bind(this));
+	E2.models.user.on('change', this.renderLoginView.bind(this));
+
+	this._init();
 }
 
-AccountController.prototype.renderLoginView = function()
+AccountController.prototype.renderLoginView = function(user)
 {
 	var viewTemplate = Handlebars.getTemplate('partials/userpulldown');
-	var html = viewTemplate({ user: window.Engi.user.toJSON() });
+	var html = viewTemplate({ user: user.toJSON() });
 	$('#user-pulldown').replaceWith(html);
+
+	this._init();
+}
+
+AccountController.prototype._init = function()
+{
+	var that = this;
+
+	$('#loginButton').on('click', function(evt)
+	{
+		evt.preventDefault();
+		that.openLoginModal();
+	});
 }
 
 AccountController.prototype.openLoginModal = function()
@@ -44,7 +59,7 @@ AccountController.prototype.openLoginModal = function()
 			success: function(user)
 			{
 				console.log('Logged in as ' + user.username);
-				window.Engi.user.set(user);
+				E2.models.user.set(user);
 				bb.modal('hide');
 			},
 			dataType: 'json'

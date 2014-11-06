@@ -11,12 +11,12 @@
       </li>
       <li class="divider"></li>
       <li>
-        <a href="/logout"><span class="ion-log-out"></span> Logout</a>
+        <a id="logoutButton" href="/logout"><span class="ion-log-out"></span> Logout</a>
       </li>
     </ul>
   </li>
   {{else}}
-  <li><a href="/login">Login</a></li>
-  <li><a href="/signup">Create Account</a></li>
+  <li><a id="loginButton" href="/login">Login</a></li>
+  <li><a id="signupButton" href="/signup">Create Account</a></li>
   {{/if}}
 </ul>
