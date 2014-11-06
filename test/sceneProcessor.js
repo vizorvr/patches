@@ -37,7 +37,7 @@ describe('SceneProcessor', function()
 
 	});
 
-	it.skip('rejects an invalid zip', function(done)
+	it('rejects an invalid zip', function(done)
 	{
 		sp.validate(scenes.actuallyAnImage, 'foo')
 		.then(function(valid) {
