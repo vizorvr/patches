@@ -25,7 +25,7 @@ describe('Upload', function() {
 
 	describe('Image', function()
 	{
-		it.skip('should upload correctly', function(done) {
+		it('should upload correctly', function(done) {
 			var original = '/image/'+process.pid+'.jpg';
 			var thumb = '/image/'+process.pid+'-thumb.jpg'
 			var scaled = '/image/'+process.pid+'-scaled.jpg'
@@ -51,7 +51,7 @@ describe('Upload', function() {
 
 	describe('Scene', function()
 	{
-		it.skip('should return 200 OK', function(done) {
+		it('should return 200 OK', function(done) {
 			var scene = '/scene/'+process.pid;
 			var original = scene+'.zip';
 			var stream = fs.createReadStream(__dirname+'/fixtures/scene.zip');
