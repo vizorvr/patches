@@ -1,18 +1,18 @@
-function AccountControl(handlebars)
+function AccountController(handlebars)
 {
 	this._handlebars = handlebars || window.Handlebars
 
 	window.Engi.user.on('change', this.renderLoginView.bind(this));
 }
 
-AccountControl.prototype.renderLoginView = function()
+AccountController.prototype.renderLoginView = function()
 {
 	var viewTemplate = Handlebars.getTemplate('partials/userpulldown');
 	var html = viewTemplate({ user: window.Engi.user.toJSON() });
 	$('#user-pulldown').replaceWith(html);
 }
 
-AccountControl.prototype.openLoginModal = function()
+AccountController.prototype.openLoginModal = function()
 {
 	var self = this;
 
@@ -52,7 +52,7 @@ AccountControl.prototype.openLoginModal = function()
 	});
 }
 
-AccountControl.prototype.openSignupModal = function()
+AccountController.prototype.openSignupModal = function()
 {
 	var self = this;
 
@@ -69,4 +69,4 @@ AccountControl.prototype.openSignupModal = function()
 }
 
 if (typeof(exports) !== 'undefined')
-	exports.AccountControl = AccountControl;
+	exports.AccountController = AccountController;
