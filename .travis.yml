@@ -6,5 +6,6 @@ services:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq graphicsmagick
-
+notifications:
+  flowdock: 5eb79fdf198910d3285b728440497b0c
 
