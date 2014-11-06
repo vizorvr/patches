@@ -1,12 +1,17 @@
 function AccountControl(handlebars)
 {
 	this._handlebars = handlebars || window.Handlebars
-	
-	window.Engi.user.on('change', function(model)
-	{
-		// redraw the user pulldown
-		console.log('User changed', model);
-	});
+
+	window.Engi.user.on('change', this.renderLoginView.bind(this));
+}
+
+AccountControl.prototype.renderLoginView = function()
+{
+	var viewTemplate = Handlebars.getTemplate('partials/userpulldown');
+	console.log(window.Engi.user);
+	var html = viewTemplate({ user: window.Engi.user.toJSON() });
+	console.log(html);
+	$('#user-pulldown').replaceWith(html);
 }
 
 AccountControl.prototype.openLoginModal = function()
