@@ -3,5 +3,8 @@ node_js:
   - "0.10"
 services:
   - mongodb
-script: sudo apt-get install graphicsmagick
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq graphicsmagick
+
 
