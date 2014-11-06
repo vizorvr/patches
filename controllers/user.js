@@ -48,7 +48,7 @@ exports.postLogin = function(req, res, next) {
       req.flash('success', { msg: 'Success! You are logged in.' });
       if (req.xhr)
       {
-        res.json(user);
+        res.json(user.toJSON());
       }
       else
       {

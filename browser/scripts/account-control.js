@@ -18,17 +18,26 @@ AccountControl.prototype.openLoginModal = function()
 	var formEl = $('#signin-form_id');
 	formEl.submit(function( event )
 	{
-		console.log( "Handler for .submit() called." );
 		event.preventDefault();
 
-		var data = null;
+		var formData = formEl.serialize();
 
 		$.ajax(
 		{
 			type: "POST",
 			url: formEl.attr('action'),
-			data: data,
-			success: function() { console.log('Success!', arguments); },
+			data: formData,
+			error: function(err)
+			{
+				console.log(err);
+				bootbox.alert('Login failed!');
+			},
+			success: function(user)
+			{
+				console.log('Logged in as ' + user.username);
+				window.Engi.user = user;
+				bb.hide();
+			},
 			dataType: 'json'
 		});
 	});
