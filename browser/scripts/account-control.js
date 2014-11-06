@@ -1,6 +1,12 @@
 function AccountControl(handlebars)
 {
 	this._handlebars = handlebars || window.Handlebars
+	
+	window.Engi.user.on('change', function(model)
+	{
+		// redraw the user pulldown
+		console.log('User changed', model);
+	});
 }
 
 AccountControl.prototype.openLoginModal = function()
@@ -35,7 +41,7 @@ AccountControl.prototype.openLoginModal = function()
 			success: function(user)
 			{
 				console.log('Logged in as ' + user.username);
-				window.Engi.user = user;
+				window.Engi.user.set(user);
 				bb.hide();
 			},
 			dataType: 'json'

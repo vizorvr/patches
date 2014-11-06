@@ -116,10 +116,12 @@
 	
 	$(document).ready(function()
 	{
-		window.Engi = {
-			user: {
+		window.Engi =
+		{
+			user: new User({
+				_id: '{{user._id}}',
 				username: '{{user.username}}'
-			}
+			})
 		};
 
 		console.log('Engi config from server', Engi);
