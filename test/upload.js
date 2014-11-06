@@ -43,7 +43,14 @@ describe('Upload', function() {
 				delete json._id;
 				delete json.createdAt;
 				delete json.updatedAt;
-				assert.deepEqual({__v:0,path:original,url:'/data'+original,tags:[],scaledThumbnail:{bytes:4247,mimetype:'image/jpeg',width:128,height:128,path:scaledThumb,url:'/data'+scaledThumb},scaled:{bytes:90868,mimetype:'image/jpeg',width:1024,height:1024,path:scaled,url:'/data'+scaled},thumbnail:{bytes:3061,mimetype:'image/jpeg',width:128,height:72,path:thumb,url:'/data'+thumb},original:{bytes:95755,mimetype:'image/jpeg',width:1920,height:1080,path:original,url:'/data'+original}}, json);
+				delete json.scaledThumbnail.bytes;
+				delete json.scaled.bytes;
+				delete json.thumbnail.bytes;
+				assert.deepEqual({__v:0,path:original,url:'/data'+original,tags:[],
+					scaledThumbnail:{mimetype:'image/jpeg',width:128,height:128,path:scaledThumb,url:'/data'+scaledThumb},
+					scaled:{mimetype:'image/jpeg',width:1024,height:1024,path:scaled,url:'/data'+scaled},
+					thumbnail:{mimetype:'image/jpeg',width:128,height:72,path:thumb,url:'/data'+thumb},
+					original:{bytes:95755,mimetype:'image/jpeg',width:1920,height:1080,path:original,url:'/data'+original}}, json);
 				done(err);
 			});
 		});
