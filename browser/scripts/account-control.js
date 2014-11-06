@@ -8,9 +8,7 @@ function AccountControl(handlebars)
 AccountControl.prototype.renderLoginView = function()
 {
 	var viewTemplate = Handlebars.getTemplate('partials/userpulldown');
-	console.log(window.Engi.user);
 	var html = viewTemplate({ user: window.Engi.user.toJSON() });
-	console.log(html);
 	$('#user-pulldown').replaceWith(html);
 }
 
@@ -47,7 +45,7 @@ AccountControl.prototype.openLoginModal = function()
 			{
 				console.log('Logged in as ' + user.username);
 				window.Engi.user.set(user);
-				bb.hide();
+				bb.modal('hide');
 			},
 			dataType: 'json'
 		});
