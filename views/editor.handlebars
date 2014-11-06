@@ -116,13 +116,18 @@
 	
 	$(document).ready(function()
 	{
-		window.Engi =
+		E2.models =
 		{
 			user: new User({
 				_id: '{{user._id}}',
 				username: '{{user.username}}'
 			})
 		};
+
+		E2.controllers =
+		{
+			account: new AccountController();
+		}
 
 		console.log('Engi config from server', Engi);
 
