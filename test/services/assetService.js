@@ -1,5 +1,5 @@
 var assert = require('assert');
-var GraphService = require('../../services/graphService');
+var AssetService = require('../../services/assetService');
 var _ = require('lodash');
 
 function MockGraph()
@@ -9,14 +9,14 @@ function MockGraph()
 	this.save = function(cb) { cb() }
 };
 
-describe('GraphService', function()
+describe('AssetService', function()
 {
 	var s, model;
 
 	beforeEach(function()
 	{
 		model = new MockGraph()
-		s = new GraphService(model);
+		s = new AssetService(model);
 	});
 
 	it('handles errors from model', function(done)
@@ -33,7 +33,7 @@ describe('GraphService', function()
 		})
 	});
 
-	it('lists graphs from model', function(done)
+	it('lists items from model', function(done)
 	{
 		model.exec = function(cb)
 		{
@@ -61,7 +61,7 @@ describe('GraphService', function()
 		});
 	});
 
-	it('allows write on existing user-owned graph', function(done)
+	it('allows write on existing user-owned asset', function(done)
 	{
 		model.exec = function(cb)
 		{
@@ -75,7 +75,7 @@ describe('GraphService', function()
 		});
 	});
 
-	it('denies write on existing non-user-owned graph', function(done)
+	it('denies write on existing non-user-owned asset', function(done)
 	{
 		model.exec = function(cb)
 		{
@@ -120,7 +120,7 @@ describe('GraphService', function()
 			assert.equal(this.url, 'somegraph');
 			done()
 		}
-		s = new GraphService(MockSave);
+		s = new AssetService(MockSave);
 		s.save({url: 'somegraph'}, {id: 'someguy'});
 	});
 });

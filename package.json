@@ -65,7 +65,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "mocha browser/test/unit/plugins"
+    "test": "mocha browser/test/unit/plugins test/ test/controllers test/services"
   },
   "author": "Lasse Nielsen, Jaakko Manninen",
   "license": "MIT",

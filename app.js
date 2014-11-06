@@ -292,7 +292,8 @@ app.post('/upload/:model',
 	multer(
 	{
 		dest: tempDir,
-		rename: function (fieldname, filename) {
+		rename: function (fieldname, filename)
+		{
 			return filename.replace(/\W+/g, '-');
 		}
 	}),

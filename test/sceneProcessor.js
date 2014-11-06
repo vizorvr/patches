@@ -27,10 +27,12 @@ describe('SceneProcessor', function()
 		gfs.url = function(u) { return u; };
 		gfs.createWriteStream = function()
 		{
+			var dfd = when.defer();
 			var ee = new EventEmitter();
 			ee.write = function() { return true; };
 			ee.end = function() {};
-			return ee;
+			dfd.resolve(ee);
+			return dfd.promise;
 		};
 
 	});
@@ -60,12 +62,14 @@ describe('SceneProcessor', function()
 		var wrote = 0;
 		gfs.createWriteStream = function()
 		{
+			var dfd = when.defer();
 			var ee = new EventEmitter();
 			ee.write = function(data) { return true; };
 			ee.end = function() {
 				wrote++;
 			}
-			return ee;
+			dfd.resolve(ee);
+			return dfd.promise;
 		};
 
 		sp.handleUpload(scenes.valid, 'foo')
@@ -81,13 +85,15 @@ describe('SceneProcessor', function()
 		var wrote = 0;
 		gfs.createWriteStream = function(path)
 		{
+			var dfd = when.defer();
 			if (path === '/the/right/stuff/scene.json')
 				done();
 
 			var ee = new EventEmitter();
 			ee.write = function(data) { return true; };
 			ee.end = function() {}
-			return ee;
+			dfd.resolve(ee);
+			return dfd.promise;
 		};
 
 		sp.handleUpload(scenes.valid, '/the/right/stuff')
@@ -102,7 +108,7 @@ describe('SceneProcessor', function()
 
 		sp.handleUpload(scenes.valid, '/foo/scenes/blah')
 		.then(function(sceneUrl) {
-			assert.equal('/root/foo/scenes/blah', sceneUrl);
+			assert.equal('/root/foo/scenes/blah/scene.json', sceneUrl.url);
 			done();
 		})
 		.catch(done)
