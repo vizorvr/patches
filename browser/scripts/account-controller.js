@@ -4,7 +4,7 @@ function AccountController(handlebars)
 
 	E2.models.user.on('change', this.renderLoginView.bind(this));
 
-	this._init();
+	this._bindEvents();
 }
 
 AccountController.prototype.renderLoginView = function(user)
@@ -13,20 +13,20 @@ AccountController.prototype.renderLoginView = function(user)
 	var html = viewTemplate({ user: user.toJSON() });
 	$('#user-pulldown').replaceWith(html);
 
-	this._init();
+	this._bindEvents($('#user-pulldown'));
 }
 
-AccountController.prototype._init = function()
+AccountController.prototype._bindEvents = function(el)
 {
 	var that = this;
 
-	$('#loginButton').on('click', function(evt)
+	$('a.login', el).on('click', function(evt)
 	{
 		evt.preventDefault();
 		that.openLoginModal();
 	});
 
-	$('#signupButton').on('click', function(evt)
+	$('a.signup', el).on('click', function(evt)
 	{
 		evt.preventDefault();
 		that.openSignupModal();
@@ -44,6 +44,8 @@ AccountController.prototype.openLoginModal = function()
 		//title: "loginDialog"
 		//onEscape: function() {  }
 	});
+
+	this._bindEvents(bb);
 
 	var formEl = $('#login-form_id');
 	formEl.submit(function( event )
