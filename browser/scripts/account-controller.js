@@ -25,6 +25,12 @@ AccountController.prototype._init = function()
 		evt.preventDefault();
 		that.openLoginModal();
 	});
+
+	$('#signupButton').on('click', function(evt)
+	{
+		evt.preventDefault();
+		that.openSignupModal();
+	});
 }
 
 AccountController.prototype.openLoginModal = function()
@@ -39,7 +45,7 @@ AccountController.prototype.openLoginModal = function()
 		//onEscape: function() {  }
 	});
 
-	var formEl = $('#signin-form_id');
+	var formEl = $('#login-form_id');
 	formEl.submit(function( event )
 	{
 		event.preventDefault();
@@ -79,8 +85,32 @@ AccountController.prototype.openSignupModal = function()
 		//onEscape: function() {  }
 	});
 
-	console.log(bb);
+	var formEl = $('#signup-form_id');
+	formEl.submit(function( event )
+	{
+		event.preventDefault();
 
+		var formData = formEl.serialize();
+
+		$.ajax(
+		{
+			type: "POST",
+			url: formEl.attr('action'),
+			data: formData,
+			error: function(err)
+			{
+				console.log(err);
+				bootbox.alert('Signup failed!');
+			},
+			success: function(user)
+			{
+				console.log('Signed up as ' + user.username);
+				E2.models.user.set(user);
+				bootbox.hideAll();
+			},
+			dataType: 'json'
+		});
+	});
 }
 
 if (typeof(exports) !== 'undefined')
