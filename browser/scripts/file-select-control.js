@@ -59,17 +59,14 @@ FileSelectControl.prototype.modal = function() {
 FileSelectControl.prototype._render = function() {
 	var self = this;
 
-	var el = $('<div class="file-select-control">');
-	this._el = el;
-
 	var template = this._handlebars.getTemplate(this._templateName);
-
-	el.html(template(
+	var html = template(
 	{
 		original: this._original,
 		url: this._url,
 		files: this._files.map(function(file)
 		{
+			console.log(file);
 			if (file._creator)
 				file._creator = file._creator.username;
 
@@ -77,7 +74,14 @@ FileSelectControl.prototype._render = function() {
 
 			return file;
 		})
-	}));
+	});
+
+	var el = bootbox.dialog(
+	{
+		message: html
+	});
+
+	this._el = el;
 
 	var btnEl = $('.buttons', el)
 
@@ -131,7 +135,7 @@ FileSelectControl.prototype._render = function() {
 	.attr("tabindex", -1)
 	.focus();
 
-	return this
+	return this;
 }
 
 FileSelectControl.prototype._onKeyPress = function(e) {
