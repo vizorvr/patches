@@ -93,8 +93,15 @@ app.use(connectAssets(
 }));
 
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json(
+{
+	limit: 1024 * 1024 * 128
+}));
+app.use(bodyParser.urlencoded(
+{
+	extended: true,
+	limit: 1024 * 1024 * 128
+}));
 app.use(expressValidator());
 app.use(methodOverride());
 app.use(cookieParser());
@@ -292,6 +299,9 @@ app.post('/upload/:model',
 	multer(
 	{
 		dest: tempDir,
+		limits: {
+			fileSize: 1024 * 1024 * 128 // 128m
+		},
 		rename: function (fieldname, filename)
 		{
 			return filename.replace(/\W+/g, '-');
@@ -322,10 +332,6 @@ app.get('/:model/:id', getController, function(req, res, next)
 // save
 app.post('/:model', getController,
 	passportConf.isAuthenticated,
-	function(req, res, next)
-	{
-		req.controller.validate(req, res, next);
-	},
 	function(req, res, next)
 	{
 		req.controller.save(req, res, next);

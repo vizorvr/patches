@@ -1,5 +1,5 @@
 var request = require('supertest');
-var app = require('../app.js');
+var app = require('../../app.js');
 var fs = require('fs');
 var fsPath = require('path');
 var assert = require('assert');
@@ -30,7 +30,7 @@ describe('Upload', function() {
 			var thumb = '/image/'+process.pid+'-thumb.jpg'
 			var scaled = '/image/'+process.pid+'-scaled.jpg'
 			var scaledThumb = '/image/'+process.pid+'-scaled-thumb.jpg'
-			var stream = fs.createReadStream(__dirname+'/fixtures/te-2rb.jpg');
+			var stream = fs.createReadStream(__dirname+'/../fixtures/te-2rb.jpg');
 			stream.path = original
 
 			agent
@@ -61,7 +61,7 @@ describe('Upload', function() {
 		it('should return 200 OK', function(done) {
 			var scene = '/scene/'+process.pid;
 			var original = scene+'.zip';
-			var stream = fs.createReadStream(__dirname+'/fixtures/scene.zip');
+			var stream = fs.createReadStream(__dirname+'/../fixtures/scene.zip');
 			stream.path = original
 
 			agent
@@ -97,7 +97,7 @@ describe('Upload', function() {
 	{
 		it('should return 200 OK', function(done) {
 			var audio = '/audio/'+process.pid+'.ogg';
-			var stream = fs.createReadStream(__dirname+'/../browser/data/audio/inedible_candy.ogg');
+			var stream = fs.createReadStream(__dirname+'/../../browser/data/audio/inedible_candy.ogg');
 			stream.path = audio
 
 			agent
@@ -117,12 +117,11 @@ describe('Upload', function() {
 		});
 	});
 
-
 	describe('JSON', function()
 	{
 		it('should return 200 OK', function(done) {
 			var jsonFile = '/json/'+process.pid+'.json';
-			var stream = fs.createReadStream(__dirname+'/../browser/data/graphs/audrey2.json');
+			var stream = fs.createReadStream(__dirname+'/../../browser/data/graphs/audrey2.json');
 			stream.path = jsonFile
 
 			agent

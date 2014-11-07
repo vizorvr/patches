@@ -1446,7 +1446,7 @@ function Application() {
 
 	this.onSaveClicked = function()
 	{
-		if (!E2.models.user.username)
+		if (!E2.models.user.get('username'))
 		{
 			return E2.controllers.account.openLoginModal();
 		}
@@ -1469,7 +1469,7 @@ function Application() {
 						type: 'POST',
 						url: URL_GRAPHS,
 						data: {
-							name: filename,
+							path: filename,
 							graph: ser
 						},
 						dataType: 'json',
