@@ -97,10 +97,10 @@ AccountController.prototype.openSignupModal = function()
 			type: "POST",
 			url: formEl.attr('action'),
 			data: formData,
-			error: function(err)
+			error: function(err, msg)
 			{
 				console.log(err);
-				bootbox.alert('Signup failed!');
+				bootbox.alert('Signup failed: ' + err.responseJSON.msg);
 			},
 			success: function(user)
 			{

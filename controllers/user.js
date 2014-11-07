@@ -91,6 +91,8 @@ exports.postSignup = function(req, res, next) {
 
   var errors = req.validationErrors();
 
+  console.log("ERRORS:", errors);
+
   if (errors) {
     req.flash('errors', errors);
     return res.redirect('/signup');
@@ -102,13 +104,23 @@ exports.postSignup = function(req, res, next) {
     password: req.body.password
   });
 
+  console.log("USER:", user);
+
   User.findOne({ username: req.body.username }, function(err, existingUser) {
     if (existingUser) {
+      if (req.xhr)
+      {
+        return res.status(400).json({ msg: 'Account with that username already exists.' });
+      }
       req.flash('errors', { msg: 'Account with that username already exists.' });
       return res.redirect('/signup');
     }
     User.findOne({ email: req.body.email }, function(err, existingUser) {
       if (existingUser) {
+        if (req.xhr)
+        {
+          return res.status(400).json({ msg: 'Account with that email already exists.' });
+        }
         req.flash('errors', { msg: 'Account with that email address already exists.' });
         return res.redirect('/signup');
       }
@@ -116,7 +128,14 @@ exports.postSignup = function(req, res, next) {
         if (err) return next(err);
         req.logIn(user, function(err) {
           if (err) return next(err);
-          res.redirect('/editor');
+          if (req.xhr)
+          {
+            res.json(user.toJSON());
+          }
+          else
+          {
+            res.redirect(req.session.returnTo || '/');
+          }
         });
       });
     });
