@@ -1446,6 +1446,11 @@ function Application() {
 
 	this.onSaveClicked = function()
 	{
+		if (!E2.models.user.username)
+		{
+			return E2.controllers.account.openLoginModal();
+		}
+
 		$.get(URL_GRAPHS, function(files)
 		{
 			var wh = window.location.hash;
