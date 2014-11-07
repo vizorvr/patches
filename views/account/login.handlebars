@@ -4,6 +4,10 @@
 <form action="/login" id="login-form_id" class="panel" method="POST">
   <input type="hidden" name="_csrf" value={{_csrf}}>
 
+  <div class="form-group signin-password">
+    Not registered? <a href="/signup" class="signup">Sign up now!</a>
+  </div> <!-- / Password -->
+
   <div class="form-group">
     <input type="email" name="email" id="email_id" class="form-control input-lg" placeholder="E-mail" autofocus="true">
   </div> <!-- / Email -->
