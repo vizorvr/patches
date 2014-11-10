@@ -1437,7 +1437,7 @@ function Application() {
 	this.onOpenClicked = function()
 	{
 		FileSelectControl
-			.createForUrl(URL_GRAPHS, null, 'Open', function(file)
+			.createGraphSelector(null, 'Open', function(file)
 			{
 				window.location.hash = '#' + file;
 				load_location_hash();
@@ -1469,13 +1469,13 @@ function Application() {
 						type: 'POST',
 						url: URL_GRAPHS,
 						data: {
-							path: filename,
+							path: '/graph/'+filename,
 							graph: ser
 						},
 						dataType: 'json',
-						success: function()
+						success: function(saved)
 						{
-							window.location.hash = '#' + URL_GRAPHS + filename;
+							window.location.hash = '#' + saved.url;
 						},
 						error: function(x, t, err)
 						{

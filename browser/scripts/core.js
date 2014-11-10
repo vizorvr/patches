@@ -555,14 +555,14 @@ E2.InitialiseEngiVR = function()
 };
 
 function load_location_hash() {
-	var graphName = decodeURIComponent(window.location.hash).replace('#'+URL_GRAPHS,'');
+	var graphPath = decodeURIComponent(window.location.hash).replace('#','');
 	
-	if(graphName.length < 1)
+	if(graphPath.length < 1)
 		return;
 	
 	E2.app.onStopClicked();
 	E2.app.player.on_update();
-	console.log('loading graph from location hash:', graphName);
-	E2.dom.filename_input.val(graphName);
-	E2.app.player.load_from_url(URL_GRAPH_FILES+graphName);
+	console.log('loading graph from location hash:', graphPath);
+	E2.dom.filename_input.val(graphPath);
+	E2.app.player.load_from_url(graphPath);
 }

@@ -25,7 +25,7 @@ describe('Graph', function() {
 		.end(done);
 	});
 
-	it('should save correctly', function(done) {
+	it('should save correctly with full path', function(done) {
 		var path = '/graph/test/path/button-'+process.pid;
 
 		agent
@@ -48,8 +48,31 @@ describe('Graph', function() {
 		});
 	});
 
+	it('should save correctly given only name', function(done) {
+		var path = 'some-'+process.pid;
+
+		agent
+		.post('/graph')
+		.send(
+		{
+			path: path,
+			graph: fs.readFileSync(graphFile)
+		})
+		.expect(200)
+		.end(function(err, res) {
+			var json = res.body;
+			delete json._creator;
+			delete json._id;
+			delete json.createdAt;
+			delete json.updatedAt;
+			assert.deepEqual({"__v":0,"path":'/graph/'+path,
+				"url":'/data/graph/'+path,"tags":[]}, json);
+			done(err);
+		});
+	});
+
 	it('should be retrievable', function(done) {
-		var path = '/graph/test/path/button-'+process.pid;
+		var path = '/graph/test/path/button-rand-'+Math.floor(Math.random() * 1000);
 
 		agent
 		.post('/graph')
@@ -62,8 +85,36 @@ describe('Graph', function() {
 		.end(function(err, res) {
 			request(app)
 			.get(res.body.url)
-			.expect(200);
-			done();
+			.expect(200)
+			.end(function(err, res)
+			{
+				assert.equal(res.body.abs_t, 46.988);
+				done(err);
+			})
+		});
+	});
+
+
+	it('should be retrievable after saving with only name', function(done) {
+		var path = 'some-retr-'+process.pid;
+
+		agent
+		.post('/graph')
+		.send(
+		{
+			path: path,
+			graph: fs.readFileSync(graphFile)
+		})
+		.expect(200)
+		.end(function(err, res) {
+			request(app)
+			.get(res.body.url)
+			.expect(200)
+			.end(function(err, res)
+			{
+				assert.equal(res.body.abs_t, 46.988);
+				done(err);
+			})
 		});
 	});
 

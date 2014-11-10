@@ -91,8 +91,6 @@ exports.postSignup = function(req, res, next) {
 
   var errors = req.validationErrors();
 
-  console.log("ERRORS:", errors);
-
   if (errors) {
     req.flash('errors', errors);
     return res.redirect('/signup');
@@ -103,8 +101,6 @@ exports.postSignup = function(req, res, next) {
     email: req.body.email,
     password: req.body.password
   });
-
-  console.log("USER:", user);
 
   User.findOne({ username: req.body.username }, function(err, existingUser) {
     if (existingUser) {

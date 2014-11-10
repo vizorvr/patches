@@ -1,5 +1,7 @@
 var Graph = require('../models/graph');
 var AssetController = require('./assetController');
+var streamBuffers = require('stream-buffers');
+var fsPath = require('path');
 
 function GraphController(graphService, fs)
 {
@@ -14,8 +16,12 @@ GraphController.prototype = Object.create(AssetController.prototype);
 GraphController.prototype.save = function(req, res, next)
 {
 	var that = this;
+	var path = req.body.path;
+	if (path.indexOf('/graph/') !== 0)
+		path = fsPath.normalize('/graph/' + req.body.path);
 
-	this._service.canWrite(req.user, req.body.path)
+
+	this._service.canWrite(req.user, path)
 	.then(function(can)
 	{
 		if (!can)
@@ -24,25 +30,36 @@ GraphController.prototype.save = function(req, res, next)
 				.json({msg: 'Sorry, permission denied'});
 		}
 
-		return that._fs.createWriteStream(req.body.path)
+		return that._fs.createWriteStream(path, 'application/json')
 		.then(function(stream)
 		{
-			var url = that._fs.url(req.body.path);
-			var graph = new Buffer(req.body.graph);
-			stream.write(graph);
-
-			var model =
-			{
-				path: req.body.path,
-				url: url
-			}
-
-			return that._service.save(model, req.user)
-			.then(function(asset)
-			{
-				res.json(asset);
+			var sbuf = new streamBuffers.ReadableStreamBuffer({
+				frequency: 10,      // in milliseconds.
+				chunkSize: 2048     // in bytes.
 			});
-		});
+
+			sbuf.put(new Buffer(req.body.graph));
+
+			var url = that._fs.url(path);
+
+			stream.on('close', function()
+			{
+				var model =
+				{
+					path: path,
+					url: url
+				}
+
+				return that._service.save(model, req.user)
+				.then(function(asset)
+				{
+					res.json(asset);
+				});
+			});
+
+			sbuf.pipe(stream);
+			sbuf.destroySoon();
+		});	
 	})
 	.catch(next);
 }

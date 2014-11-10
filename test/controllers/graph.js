@@ -21,6 +21,10 @@ describe('GraphController', function()
 		svc = { canWrite: resolved };
 		fs =
 		{
+			url: function(str)
+			{
+				return '/root/'+str;
+			},
 			createWriteStream: function()
 			{
 				var dfd = when.defer()
@@ -53,6 +57,7 @@ describe('GraphController', function()
 				assert.deepEqual(json,
 				{
 					path: 'foo',
+					url: '/root/foo',
 					slug: 'ok'
 				});
 				assert.ok(wrote);

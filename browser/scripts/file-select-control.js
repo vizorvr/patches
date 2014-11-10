@@ -51,9 +51,8 @@ FileSelectControl.prototype.buttons = function(buttons) {
 }
 
 FileSelectControl.prototype.modal = function() {
-	this._render()
-	$('.modal', this._el).modal({ backdrop: false })
-	return this
+	this._render();
+	return this;
 }
 
 FileSelectControl.prototype._render = function() {
@@ -116,12 +115,8 @@ FileSelectControl.prototype._render = function() {
 
 	el.bind('keydown', this._onKeyPress.bind(this))
 
-	$('.modal', el)
-	.on('hidden.bs.modal', function (e) {
-		el.empty().remove()
-	})
-	.on('shown.bs.modal', function (e) {
-		if (!self._selected)
+	$(el).on('shown.bs.modal', function (e) {
+		if (!self._selectedEl.length)
 			return;
 
 		$('table', el).scrollTop(0)
@@ -191,7 +186,7 @@ FileSelectControl.prototype.cancel = function() {
 }
 
 FileSelectControl.prototype.close = function() {
-	$('.modal', this._el).modal('hide')
+	$(this._el).modal('hide')
 }
 
 // ------------------------------------------
@@ -232,6 +227,17 @@ function createSelector(path, selected, okButton, okFn, cb)
 
 	return ctl;
 }
+
+
+FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
+{
+	return createSelector('/graph', selected, okButton, okFn, function(ctl)
+	{
+		ctl
+		.template('filebrowser/graph')
+		.modal();
+	});
+};
 
 
 FileSelectControl.createJsonSelector = function(selected, okButton, okFn)
