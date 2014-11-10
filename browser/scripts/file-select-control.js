@@ -86,9 +86,12 @@ FileSelectControl.prototype._render = function() {
 
 	Object.keys(this._buttons).map(function(name) {
 		$('<button class="btn btn-default">'+name+'</button>')
-		.click(function() {
+		.click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
 			self._buttons[name].call(self, self._inputEl.val());
 			self.close();
+			return false;
 		})
 		.appendTo(btnEl)
 	})

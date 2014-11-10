@@ -15,26 +15,26 @@
 						<td class="name-header">Name</td>
 						<td class="name-header">By</td>
 					</thead>
-								{{#each files}}
-								<tr 
-									class="file-row{{#if selected}} selected{{/if}}" 
-									data-url="{{scaled.url}}">
-									<td>
-										<img src="{{scaledThumbnail.url}}"/>
-									</td>
-									<td>
-										{{scaled.path}}
-									</td>
-									<td>
-										{{scaled.width}}x{{scaled.height}}
-									</td>
-								</tr>
-								{{else}}
+					{{#each files}}
+					<tr 
+						class="file-row{{#if selected}} selected{{/if}}" 
+						data-url="{{scaled.url}}">
+						<td>
+							<img src="{{scaledThumbnail.url}}"/>
+						</td>
+						<td>
+							{{scaled.path}}
+						</td>
+						<td>
+							{{scaled.width}}x{{scaled.height}}
+						</td>
+					</tr>
+					{{else}}
 
-								<tr class="file-row">
-									<td class="name">No files found</td>
-								</tr>
-								{{/each}}
+					<tr class="file-row">
+						<td class="name">No files found</td>
+					</tr>
+					{{/each}}
 				</table>
 			</div>
 			<form class="form-inline">
