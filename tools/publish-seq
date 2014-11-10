@@ -141,6 +141,21 @@ function copy_file(src, data_dir, pub_dir)
 	copy(a_src, dst_name);
 }
 
+function copy_legacy_audio(src, data_dir, pub_dir)
+{
+	var ext = '.ogg';
+	
+	if(!fs.existsSync(path.join(data_dir, src) + ext))
+		ext = '.mp3';
+
+	var a_src = path.join(data_dir, src) + ext;
+	var dst_name = path.join(pub_dir, src) + ext;
+	var dst_dir = path.dirname(dst_name);
+	
+	mkdirsSync(dst_dir);
+	copy(a_src, dst_name);
+}
+
 function copy_scene(src, data_dir, pub_dir)
 {
 	var a_src = path.join(data_dir, src);
@@ -175,6 +190,8 @@ function process_graph(graph, data_dir, pub_dir)
 		{
 			if(node.plugin === 'url_scene_generator')
 				copy_scene(node.state.url, data_dir, pub_dir);
+			else if(node.plugin === 'url_audio_generator')
+				copy_legacy_audio(node.state.url, data_dir, pub_dir);
 			else
 				copy_file(node.state.url, data_dir, pub_dir);
 		}
