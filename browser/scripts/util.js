@@ -75,7 +75,6 @@ function resolve_graph(graphs, guid)
 function load_style(url)
 {
 	var link = document.createElement('link');
-	var rel = document.createAttribute('rel');
 	
 	link.rel = 'stylesheet';
 	link.href = url;
