@@ -1,10 +1,10 @@
 E2.p = E2.plugins["plane_mesh_generator"] = function(core, node)
 {
-	this.desc = 'Create a planar texture mapped triangle mesh in the XY-plane of unit size.';
+	this.desc = 'Create a planar texture mapped triangle mesh in the XY-plane of unit size. The total number of faces cannot exceed 65536.';
 	
 	this.input_slots = [
-		{ name: 'x res', dt: core.datatypes.FLOAT, desc: 'X resolution.', lo: 2, hi: 250, def: 10 },
-		{ name: 'y res', dt: core.datatypes.FLOAT, desc: 'Y resolution.', lo: 2, hi: 250, def: 10 }
+		{ name: 'x res', dt: core.datatypes.FLOAT, desc: 'X resolution.', lo: 1, hi: 65536, def: 10 },
+		{ name: 'y res', dt: core.datatypes.FLOAT, desc: 'Y resolution.', lo: 1, hi: 65536, def: 10 }
 	];
 	
 	this.output_slots = [
@@ -23,9 +23,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	var v = Math.floor(data);
-	
-	v = v < 2 ? 2 : v > 250 ? 250 : v;
+	var v = Math.max(1, Math.min(Math.floor(data), 65536));
 	
 	if(slot.index === 0 && this.state.x_res !== v)
 	{
@@ -53,26 +51,53 @@ E2.p.prototype.update_output = function(slot)
 E2.p.prototype.generate_mesh = function()
 {
 	var gl = this.gl;
-	
 	this.mesh = new Mesh(gl, gl.TRIANGLES, null);
+	var xr = this.state.x_res;
+	var yr = this.state.y_res;
 	
+	// Check for and rectify any constraint violation.
+	var total = xr * yr;
+	var diff = total - 16384;
+
+	if(diff > 0)
+	{
+		if(yr < xr)
+		{
+			yr = Math.floor(yr - (diff / xr));
+		
+			if(yr < 1)
+			{
+				xr = 16384;
+				yr = 1;
+			}
+		}
+		else
+		{
+			xr = Math.floor(xr - (diff / yr));
+		
+			if(xr < 1)
+			{
+				xr = 1;
+				yr = 16384;
+			}
+		}
+	}
+
+	this.state.x_res = xr;
+	this.state.y_res = yr;
+
 	var v_data = [];
 	var n_data = [];
 	var uv_data = [];
+	var i_data = [];
+	var xf = 1.0 / xr;
+	var yf = 1.0 / yr;
+	var o = 0;
 	
-	var yf = 1.0 / this.state.y_res;
-	var xf = 1.0 / this.state.x_res;
-	
-	for(var y = 0, yo = 0; y < this.state.y_res; y++, yo += yf)
+	for(var y = 0, yo = 0.0; y < yr; y++, yo += yf)
 	{
-		for(var x = 0, xo = 0; x < this.state.x_res; x++, xo += xf)
+		for(var x = 0, xo = 0.0; x < xr; x++, xo += xf, o += 4)
 		{
-			v_data.push(xo);
-			v_data.push(yo);
-			v_data.push(0.0);
-			uv_data.push(xo);
-			uv_data.push(yo);
-						
 			v_data.push(xo + xf);
 			v_data.push(yo + yf);
 			v_data.push(0.0);
@@ -86,10 +111,10 @@ E2.p.prototype.generate_mesh = function()
 			uv_data.push(yo + yf);
 
 			v_data.push(xo + xf);
-			v_data.push(yo + yf);
+			v_data.push(yo);
 			v_data.push(0.0);
 			uv_data.push(xo + xf);
-			uv_data.push(yo + yf);
+			uv_data.push(yo);
 
 			v_data.push(xo);
 			v_data.push(yo);
@@ -97,30 +122,38 @@ E2.p.prototype.generate_mesh = function()
 			uv_data.push(xo);
 			uv_data.push(yo);
 
-			v_data.push(xo + xf);
-			v_data.push(yo);
-			v_data.push(0.0);
-			uv_data.push(xo + xf);
-			uv_data.push(yo);
 
-			for(var i = 0; i < 6; i++)
+			for(var i = 0; i < 4; i++)
 			{
 				n_data.push(0.0);
 				n_data.push(0.0);
 				n_data.push(1.0);
 			}
+			
+			i_data.push(o+0);
+			i_data.push(o+1);
+			i_data.push(o+3);
+			i_data.push(o+3);
+			i_data.push(o+2);
+			i_data.push(o+0);
 		}
 	}
 
-	for(var i = 0; i < this.state.y_res * this.state.x_res * 6 * 3; i += 3)
+	for(var i = 0; i < yr * xr * 4 * 3; i += 3)
 	{
 		v_data[i] = (v_data[i] * 2.0) - 1.0;	
 		v_data[i+1] = (v_data[i+1] * 2.0) - 1.0;
 	}
 	
+	this.mesh.vertex_count = yr * xr * 4;
+	this.mesh.stream_count = 3;
+	this.mesh.streams_loaded = 3;
+	
 	(this.mesh.vertex_buffers['VERTEX'] = new VertexBuffer(gl, VertexBuffer.vertex_type.VERTEX)).bind_data(v_data);
 	(this.mesh.vertex_buffers['NORMAL'] = new VertexBuffer(gl, VertexBuffer.vertex_type.NORMAL)).bind_data(n_data);
 	(this.mesh.vertex_buffers['UV0'] = new VertexBuffer(gl, VertexBuffer.vertex_type.UV0)).bind_data(uv_data);
+	(this.mesh.index_buffer = new IndexBuffer(gl)).bind_data(i_data);
+
 	this.mesh.generate_shader();
 	this.dirty = false;
 };
