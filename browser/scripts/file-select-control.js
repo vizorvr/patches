@@ -67,7 +67,7 @@ FileSelectControl.prototype._render = function() {
 	{
 		original: this._original,
 		url: this._url,
-		user: E2.models.user,
+		user: E2.models.user.toJSON(),
 		files: this._files.map(function(file)
 		{
 			console.log(file);
@@ -267,7 +267,6 @@ function createSelector(path, selected, okButton, okFn, cb)
 	return ctl;
 }
 
-
 FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 {
 	return createSelector('/graph', selected, okButton, okFn, function(ctl)
@@ -278,6 +277,15 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 	});
 };
 
+FileSelectControl.createVideoSelector = function(selected, okButton, okFn)
+{
+	return createSelector('/video', selected, okButton, okFn, function(ctl)
+	{
+		ctl
+		.template('filebrowser/video')
+		.modal();
+	});
+};
 
 FileSelectControl.createJsonSelector = function(selected, okButton, okFn)
 {

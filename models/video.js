@@ -1,15 +1,8 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var assetHelper = require('./asset-helper');
+var _ = require('lodash');
 
-var videoSchema = new mongoose.Schema(_.assign(
-{
-	thumbnail: { type: String, required: true },
-	bytes: Number,
-	length: Number,
-	fps: Number,
-	width: Number,
-	height: Number
-}, assetHelper.schema));
+var videoSchema = new mongoose.Schema(_.assign({}, assetHelper.schema));
 
 module.exports = mongoose.model('Video', videoSchema);

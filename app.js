@@ -247,6 +247,13 @@ var audioController = new AssetController(
 	gfs
 );
 
+var VideoModel = require('./models/video');
+var videoController = new AssetController(
+	VideoModel,
+	new AssetService(VideoModel),
+	gfs
+);
+
 var JsonModel = require('./models/json');
 var jsonController = new AssetController(
 	JsonModel,
@@ -259,6 +266,7 @@ var controllers = {
 	image: imageController,
 	scene: sceneController,
 	audio: audioController,
+	video: videoController,
 	json: jsonController
 }
 

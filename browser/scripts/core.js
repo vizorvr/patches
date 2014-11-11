@@ -40,10 +40,12 @@ function Delegate(delegate, dt, count)
 
 function PresetManager(base_url)
 {
-	$.ajax({
+	$.ajax(
+	{
 		url: base_url + '/presets.json',
 		cache: true
-	}).done(function(data)
+	})
+	.done(function(data)
 	{
 		var presets = Object.keys(data).map(function(cat)
 		{
@@ -61,6 +63,7 @@ function PresetManager(base_url)
 
 		var presets_list = new CollapsibleSelectControl()
 			.data(presets)
+			.template('presets/presets')
 			.render(E2.dom.presets_list)
 			.onOpen(function(path) {
 				var url = base_url + '/' + path + '.json';

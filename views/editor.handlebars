@@ -118,11 +118,16 @@
 	{
 		E2.models =
 		{
-			user: new User({
+			user: {}
+		};
+
+		if ('{{user.username}}')
+		{
+			E2.models.user = new User({
 				_id: '{{user._id}}',
 				username: '{{user.username}}'
-			})
-		};
+			});
+		}
 
 		E2.controllers =
 		{

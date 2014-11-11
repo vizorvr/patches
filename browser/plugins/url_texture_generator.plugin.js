@@ -52,7 +52,7 @@ E2.p.prototype.update_state = function()
 {
 	if(!this.dirty)
 		return;
-		
+
 	this.texture = this.core.renderer.texture_cache.get(this.state.url);
 	this.dirty = false;
 };

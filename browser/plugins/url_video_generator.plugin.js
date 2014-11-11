@@ -30,12 +30,9 @@ E2.p.prototype.create_ui = function()
 	inp.click(function()
 	{
 		FileSelectControl
-			.createForUrl(self.URL_VIDEO_ROOT, self.state.url)
+			.createVideoSelector(self.state.url)
 			.onChange(function(v)
 			{
-				if (v.indexOf('://') === -1)
-					v = self.URL_VIDEO_ROOT + v;
-				
 				self.state.url = v;
 				self.state_changed(null);
 				self.state_changed(inp);

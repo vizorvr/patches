@@ -1,7 +1,11 @@
 function CollapsibleSelectControl(handlebars) {
 	this._handlebars = handlebars || Handlebars;
-	this._template = this._handlebars.compile($("#collapsible-select-template").html());
 	this._cb = function() {};
+}
+
+CollapsibleSelectControl.prototype.template = function(templateName) {
+	this._template = this._handlebars.getTemplate(templateName);
+	return this;
 }
 
 CollapsibleSelectControl.prototype.data = function(d) {

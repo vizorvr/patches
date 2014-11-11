@@ -51,35 +51,6 @@
     <script type="text/javascript" src="scripts/account-controller.js"></script>
     <script type="text/javascript" src="scripts/models.js"></script>
 
-    <script id="collapsible-select-template" type="text/x-handlebars-template">
-      <div class="searchbox">
-        <input class="form-control" type="text" placeholder="Search presets and plugins"/>
-      </div>
-      <div class="panel-group" id="{{controlId}}">
-      {{#each categories}}
-        <div class="panel panel-default">
-          <div class="panel-heading"
-            data-toggle="collapse"
-            data-parent="#{{../controlId}}"
-            href="#cscat{{@index}}"
-          >
-          <i class="glyphicon glyphicon-chevron-right"></i>
-          {{this.title}}
-        </div>
-        <div id="cscat{{@index}}"
-          class="panel-collapse collapse">
-          <div class="panel-body">
-            <ul>
-              {{#each items}}
-                <li data-path="{{this.path}}">{{this.title}}</li>
-              {{/each}}
-            </ul>
-          </div>
-        </div>
-      </div>
-      {{/each}}
-    </script>
-
   </head>
 
 <body class="{{extraClasses}}">
