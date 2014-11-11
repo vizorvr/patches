@@ -56,6 +56,7 @@
 	"Generators/Mesh/Grid": "grid_mesh_generator",
 	"Generators/Mesh/Null": "null_mesh_generator",
 	"Generators/Mesh/Plane": "plane_mesh_generator",
+	"Generators/Mesh/Plane (unindexed)": "plane_mesh_unindexed_generator",
 	"Generators/Mesh/Sphere": "sphere_mesh_generator",
 	"Generators/Mesh/Quad": "quad_mesh_generator",
 	"Generators/WebSocket/Channel receiver": "wschannel_receive",
