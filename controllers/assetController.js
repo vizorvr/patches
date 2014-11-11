@@ -50,10 +50,48 @@ AssetController.prototype.index = function(req, res, next)
 	this._service.list()
 	.then(function(list)
 	{
-		res.json(list.map(function(item)
-		{
-			return item.toJSON();
-		}));
+		res.json(list);
+	})
+	.catch(next);
+};
+
+AssetController.prototype._parseTags = function(tags)
+{
+	if (!tags || !tags.length)
+		return [];
+
+	if (!Array.isArray(tags))
+		tags = tags.split(' ');
+
+	return tags.map(function(tag)
+	{
+		if (tag[0] !== '#')
+			return '#' + tag;
+
+		return tag;
+	})
+	.filter(function(tag)
+	{
+		return tag.length > 0;
+	});
+
+}
+
+// GET /:model/tag/tag
+AssetController.prototype.findByTag = function(req, res, next)
+{
+	var tag = req.params.tag;
+	if (!tag)
+		return res.status(400).json({msg: 'No tag'});
+
+	this._service.find(
+	{
+		tags: '#' + tag.replace(/[^a-zA-Z0-9]/g, '')
+	})
+	.then(function(list)
+	{
+		console.log('list');
+		res.json(list);
 	})
 	.catch(next);
 };
@@ -84,6 +122,7 @@ AssetController.prototype.save = function(req, res, next)
 		return that._service.save(req.body, req.user)
 		.then(function(asset)
 		{
+			asset.tags = that._parseTags(req.body.tags);
 			res.json(asset);
 		});
 	});

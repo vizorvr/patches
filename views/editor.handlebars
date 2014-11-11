@@ -118,13 +118,14 @@
 	{
 		E2.models =
 		{
-			user: {}
+			user: new User({})
 		};
 
 		if ('{{user.username}}')
 		{
-			E2.models.user = new User({
-				_id: '{{user._id}}',
+			E2.models.user.set(
+			{
+				id: '{{user._id}}',
 				username: '{{user.username}}'
 			});
 		}

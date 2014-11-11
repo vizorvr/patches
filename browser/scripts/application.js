@@ -1454,14 +1454,14 @@ function Application() {
 		$.get(URL_GRAPHS, function(files)
 		{
 			var wh = window.location.hash;
-			var fcs = new FileSelectControl();
-			
-			fcs.buttons({
+			var fcs = new FileSelectControl()
+			.template('filebrowser/graphSave')
+			.buttons({
 				'Cancel': function() {},
-				'Save': function(filename)
+				'Save': function(path, tags)
 				{
-					if(!filename)
-						return alert('Please enter a filename');
+					if (!path)
+						return bootbox.alert('Please enter a filename');
 
 					var ser = self.player.core.serialise();
 
@@ -1469,7 +1469,8 @@ function Application() {
 						type: 'POST',
 						url: URL_GRAPHS,
 						data: {
-							path: '/graph/'+filename,
+							path: path,
+							tags: tags,
 							graph: ser
 						},
 						dataType: 'json',
@@ -1480,17 +1481,16 @@ function Application() {
 						error: function(x, t, err)
 						{
 							if (x.responseText)
-								alert('Save failed: ' + x.responseText);
+								bootbox.alert('Save failed: ' + x.responseText);
 							else
-								alert('Save failed: ' + err);
+								bootbox.alert('Save failed: ' + err);
 						}
 					});
 				}
-			});
-			
-			fcs.files(files);
-			fcs.selected(wh.substring(wh.lastIndexOf('/') + 1));
-			fcs.modal();
+			})
+			.files(files)
+			.selected(wh.substring(URL_DATA.length))
+			.modal();
 			
 			return fcs;
 		})

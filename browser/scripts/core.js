@@ -19,8 +19,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+var URL_DATA = '/data/';
 var URL_GRAPHS = '/graph/';
-var URL_GRAPH_FILES = '/data/graph/';
+var URL_GRAPH_FILES = URL_DATA+'graph/';
 
 var E2 = {};
 window.E2 = E2; // global scope so plugins can access it

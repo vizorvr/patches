@@ -20,6 +20,7 @@ GraphController.prototype.save = function(req, res, next)
 	if (path.indexOf('/graph/') !== 0)
 		path = fsPath.normalize('/graph/' + req.body.path);
 
+	var tags = that._parseTags(req.body.tags);
 
 	this._service.canWrite(req.user, path)
 	.then(function(can)
@@ -47,6 +48,7 @@ GraphController.prototype.save = function(req, res, next)
 				var model =
 				{
 					path: path,
+					tags: tags,
 					url: url
 				}
 

@@ -6,9 +6,14 @@ function AssetService(assetModel) {
 
 AssetService.prototype.list = function()
 {
+	return this.find();
+};
+
+AssetService.prototype.find = function(q)
+{
 	var dfd = when.defer();
 	this._model
-		.find()
+		.find(q)
 		.populate('_creator')
 		.exec(function(err, list)
 	{
@@ -28,7 +33,7 @@ AssetService.prototype.canWrite = function(user, path)
 		return !asset ||
 			asset._creator.toString() === user.id.toString();
 	});
-}
+};
 
 AssetService.prototype.findOne = function(q)
 {

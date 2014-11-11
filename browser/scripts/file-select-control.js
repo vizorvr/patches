@@ -1,4 +1,31 @@
+function TagControl($input) {
+	function tagify(input) {
+		return input.split(' ').map(function(val)
+		{
+			if (!val.length || val[0] === '#')
+				return val;
+
+			return '#' + val;
+		});
+	}
+
+	$input.on('keypress', function()
+	{
+		setTimeout(function()
+		{
+			$input.val(
+				tagify($input.val())
+				.join(' ')
+			);
+		}, 0);
+
+		return true;
+	});
+}
+
 function FileSelectControl(handlebars) {
+	var that = this;
+
 	this._handlebars = handlebars || window.Handlebars
 	this._files = []
 	this._cb = function() {}
@@ -8,9 +35,13 @@ function FileSelectControl(handlebars) {
 	}
 	this._templateName = 'filebrowser/filebrowser';
 
-	// load upload partial
-	var uploadPartial = this._handlebars.getTemplate('filebrowser/upload');
-	this._handlebars.registerPartial('filebrowser/upload', uploadPartial);
+	// load partials
+	['upload', 'tags']
+	.forEach(function(pname)
+	{
+		var partialName = 'filebrowser/'+pname;
+		that._handlebars.registerPartial(partialName, that._handlebars.getTemplate(partialName));
+	});
 }
 
 FileSelectControl.prototype.template = function(name)
@@ -45,7 +76,7 @@ FileSelectControl.prototype.selected = function(file) {
 }
 
 FileSelectControl.prototype.onChange = function(cb) {
-	this._cb = cb
+	this._cb = cb;
 	return this;
 }
 
@@ -86,7 +117,10 @@ FileSelectControl.prototype._render = function() {
 	});
 
 	this._el = el;
+	this._inputEl = $('#file-url', this._el);
+	this._selectedEl = $('tr.selected', this._el);
 
+	// add buttons
 	var btnEl = $('.buttons', el)
 
 	Object.keys(this._buttons).map(function(name) {
@@ -94,22 +128,20 @@ FileSelectControl.prototype._render = function() {
 		.click(function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-			self._buttons[name].call(self, self._inputEl.val());
+			self._buttons[name].call(self, self._inputEl.val(), self._tagsEl.val());
 			self.close();
 			return false;
 		})
-		.appendTo(btnEl)
-	})
+		.appendTo(btnEl);
+	});
 
 	$('button:last', el)
 		.removeClass('btn-default')
-		.addClass('btn-primary')
+		.addClass('btn-primary');
 
-	this._inputEl = $('#file-url', this._el)
-	this._selectedEl = $('tr.selected', this._el)
-
+	// bind file rows and click handlers
 	function _onClick(e) {
-		self._onSelect($(e.target).closest('tr'))
+		self._onSelect($(e.target).closest('tr'));
 	}
 
 	$('.file-row', el).click(_onClick);
@@ -123,6 +155,7 @@ FileSelectControl.prototype._render = function() {
 
 	el.bind('keydown', this._onKeyPress.bind(this))
 
+	// show selected file when modal is opened
 	$(el).on('shown.bs.modal', function (e) {
 		if (!self._selectedEl.length)
 			return;
@@ -134,21 +167,42 @@ FileSelectControl.prototype._render = function() {
 				* 10)
 	});
 
-	$('form.fileUploadForm').submit(function(e)
-	{
-		var form = $('form.fileUploadForm')[0];
+	// bind upload form
+	this._bindUploadForm();
 
+	// attach TagControl to tags input
+	this._tagsEl = $('#tags', el);
+	new TagControl(this._tagsEl);
+
+	// show
+	el.appendTo('body')
+	.attr("tabindex", -1)
+	.focus();
+
+	return this;
+}
+
+FileSelectControl.prototype._bindUploadForm = function()
+{
+	var that = this;
+	var $form = $('form.fileUploadForm', this._el);
+
+	if (!$form)
+		return;
+
+	$form.on('submit', function(e)
+	{
 		e.preventDefault();
 		e.stopPropagation();
 
-		var formData = new FormData(form);
+		var formData = new FormData($form[0]);
 		$.ajax(
 		{
 			url: form.action,
 			type: 'POST',
 			success: function()
 			{
-				bootbox.alert('Uploaded successfully');
+				bootbox.alert('Uploaded successfully!');
 				self.close();
 			},
 			error: function(err)
@@ -162,18 +216,13 @@ FileSelectControl.prototype._render = function() {
 			dataType: 'json'
 		});
 
+		$form.html('<h4>Please wait...</h4>');
+
 		return false;
 	});
-
-	el.appendTo('body')
-	.attr("tabindex", -1)
-	.focus();
-
-	return this;
 }
 
 FileSelectControl.prototype._onKeyPress = function(e) {
-	// console.log('e.keyCode', e.keyCode)
 	switch(e.keyCode) {
 		case 27:
 			this.cancel()
@@ -220,12 +269,12 @@ FileSelectControl.prototype._onSelect = function(row) {
 }
 
 FileSelectControl.prototype.cancel = function() {
-	this._cb(this._original)
-	this.close()
+	this._cb(this._original);
+	this.close();
 }
 
 FileSelectControl.prototype.close = function() {
-	$(this._el).modal('hide')
+	$(this._el).modal('hide');
 }
 
 // ------------------------------------------

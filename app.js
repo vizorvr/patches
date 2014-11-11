@@ -331,6 +331,12 @@ app.get('/:model', getController, function(req, res, next)
 	req.controller.index(req, res, next);
 });
 
+// list by tag
+app.get('/:model/tag/:tag', getController, function(req, res, next)
+{
+	req.controller.findByTag(req, res, next);
+});
+
 // get 
 app.get('/:model/:id', getController, function(req, res, next)
 {

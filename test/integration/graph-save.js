@@ -94,7 +94,6 @@ describe('Graph', function() {
 		});
 	});
 
-
 	it('should be retrievable after saving with only name', function(done) {
 		var path = 'some-retr-'+process.pid;
 
@@ -113,6 +112,35 @@ describe('Graph', function() {
 			.end(function(err, res)
 			{
 				assert.equal(res.body.abs_t, 46.988);
+				done(err);
+			})
+		});
+	});
+
+	it('can be found by tag after saving', function(done) {
+		var path = 'graph-tag-'+process.pid;
+
+		agent
+		.post('/graph')
+		.send(
+		{
+			path: path,
+			tags: ['tags', '#are', 'cool'],
+			graph: fs.readFileSync(graphFile)
+		})
+		.expect(200)
+		.end(function(err, res) {
+			console.log('saved', res.body)
+			request(app)
+			.get('/graph/tag/are')
+			.expect(200)
+			.end(function(err, res)
+			{
+				console.log('res', res.body)
+				assert.deepEqual(res.body[0].tags,
+				[
+					'#tags', '#are', '#cool'
+				]);
 				done(err);
 			})
 		});
