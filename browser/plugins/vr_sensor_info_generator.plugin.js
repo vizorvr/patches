@@ -27,7 +27,12 @@ E2.p.prototype.update_output = function(slot)
 	{
 		if(sensor)
 		{
-			var p = sensor.getState().position;
+			var s = sensor.getState();
+			
+			if(!s.hasPosition)
+				return [0.0, 0.0, 0.0];
+			
+			var p = s.position;
 			
 			return [p.x, p.y, p.z];
 		}
@@ -40,10 +45,19 @@ E2.p.prototype.update_output = function(slot)
 	
 	if(sensor)
 	{
-		var o = sensor.getState().orientation;
-		var q = quat4.createFrom(o.x, o.y, o.z, o.w);
+		var s = sensor.getState();
 		
-		return quat4.toMat4(q);
+		if(!s.hasOrientation)
+		{
+			var m = mat4.create();
+	
+			mat4.identity(m);
+			return m;
+		}
+				
+		var o = s.orientation;
+		
+		return quat4.toMat4(quat4.createFrom(o.x, o.y, o.z, o.w));
 	}
 	
 	var m = mat4.create();
