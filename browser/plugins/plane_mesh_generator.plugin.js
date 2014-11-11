@@ -3,8 +3,8 @@ E2.p = E2.plugins["plane_mesh_generator"] = function(core, node)
 	this.desc = 'Create a planar texture mapped triangle mesh in the XY-plane of unit size. The total number of faces cannot exceed 65536.';
 	
 	this.input_slots = [
-		{ name: 'x res', dt: core.datatypes.FLOAT, desc: 'X resolution.', lo: 1, hi: 65536, def: 10 },
-		{ name: 'y res', dt: core.datatypes.FLOAT, desc: 'Y resolution.', lo: 1, hi: 65536, def: 10 }
+		{ name: 'x res', dt: core.datatypes.FLOAT, desc: 'X resolution.', lo: 1, hi: 16384, def: 10 },
+		{ name: 'y res', dt: core.datatypes.FLOAT, desc: 'Y resolution.', lo: 1, hi: 16384, def: 10 }
 	];
 	
 	this.output_slots = [
@@ -23,7 +23,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	var v = Math.max(1, Math.min(Math.floor(data), 65536));
+	var v = Math.max(1, Math.min(Math.floor(data), 16384));
 	
 	if(slot.index === 0 && this.state.x_res !== v)
 	{
@@ -82,9 +82,6 @@ E2.p.prototype.generate_mesh = function()
 			}
 		}
 	}
-
-	this.state.x_res = xr;
-	this.state.y_res = yr;
 
 	var v_data = [];
 	var n_data = [];
