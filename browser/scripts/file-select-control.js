@@ -7,6 +7,10 @@ function FileSelectControl(handlebars) {
 		'Ok': this.close.bind(this)
 	}
 	this._templateName = 'filebrowser/filebrowser';
+
+	// load upload partial
+	var uploadPartial = this._handlebars.getTemplate('filebrowser/upload');
+	this._handlebars.registerPartial('filebrowser/upload', uploadPartial);
 }
 
 FileSelectControl.prototype.template = function(name)
@@ -63,6 +67,7 @@ FileSelectControl.prototype._render = function() {
 	{
 		original: this._original,
 		url: this._url,
+		user: E2.models.user,
 		files: this._files.map(function(file)
 		{
 			console.log(file);
@@ -127,6 +132,37 @@ FileSelectControl.prototype._render = function() {
 				self._selectedEl.position().top
 				- self._selectedEl.height()
 				* 10)
+	});
+
+	$('form.fileUploadForm').submit(function(e)
+	{
+		var form = $('form.fileUploadForm')[0];
+
+		e.preventDefault();
+		e.stopPropagation();
+
+		var formData = new FormData(form);
+		$.ajax(
+		{
+			url: form.action,
+			type: 'POST',
+			success: function()
+			{
+				bootbox.alert('Uploaded successfully');
+				self.close();
+			},
+			error: function(err)
+			{
+				bootbox.alert('Upload failed: '+err.msg);
+			},
+			data: formData,
+			cache: false,
+			contentType: false,
+			processData: false,
+			dataType: 'json'
+		});
+
+		return false;
 	});
 
 	el.appendTo('body')

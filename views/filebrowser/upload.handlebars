@@ -1,0 +1,12 @@
+{{#if user}}
+<form enctype="multipart/form-data"
+	method="post"
+	action="/upload{{url}}"
+	class="form-inline fileUploadForm">
+	<input type="file" id="fileUploadFile" name="file"/>
+	<input type="submit" value="Upload"/>
+</form>
+
+{{else}}
+Please login before uploading.
+{{/if}}

@@ -41,13 +41,7 @@
 			</form>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="upload">
-			<form enctype="multipart/form-data"
-				method="post"
-				action="/upload{{url}}"
-				class="form-inline">
-				<input type="file" name="file"/>
-				<input type="submit" value="Upload"/>
-			</form>
+			{{> filebrowser/upload}}
 		</div>
 		<div role="tabpanel" class="tab-pane" id="fetch">
 			<p>Not yet implemented</p>
