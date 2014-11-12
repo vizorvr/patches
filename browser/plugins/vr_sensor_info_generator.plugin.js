@@ -29,7 +29,7 @@ E2.p.prototype.update_output = function(slot)
 		{
 			var s = sensor.getState();
 			
-			if(!s.hasPosition)
+			if(!s.position)
 				return [0.0, 0.0, 0.0];
 			
 			var p = s.position;
@@ -47,7 +47,7 @@ E2.p.prototype.update_output = function(slot)
 	{
 		var s = sensor.getState();
 		
-		if(!s.hasOrientation)
+		if(!s.orientation)
 		{
 			var m = mat4.create();
 	

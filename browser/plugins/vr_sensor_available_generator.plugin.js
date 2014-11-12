@@ -18,12 +18,5 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.update_output = function(slot)
 {
-	var sensor = this.renderer.vr_sensor;
-	
-	if(!sensor)
-		return false;
-	
-	var s = sensor.getState();
-	
-	return s.hasPosition || s.hasOrientation ? true : false;
+	return this.renderer.vr_sensor ? true : false;
 };
