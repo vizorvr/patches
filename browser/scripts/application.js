@@ -1455,7 +1455,7 @@ function Application() {
 		{
 			var wh = window.location.hash;
 			var fcs = new FileSelectControl()
-			.template('filebrowser/graphSave')
+			.frame('filebrowser/save-frame')
 			.buttons({
 				'Cancel': function() {},
 				'Save': function(path, tags)

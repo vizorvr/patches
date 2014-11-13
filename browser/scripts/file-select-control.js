@@ -1,6 +1,13 @@
 function TagControl($input) {
+	var that = this;
+
 	function tagify(input) {
-		return input.split(' ').map(function(val)
+		return input.split(' ')
+		.filter(function(val)
+		{
+			return val !== '#' && val.length > 0;
+		})
+		.map(function(val)
 		{
 			if (!val.length || val[0] === '#')
 				return val;
@@ -9,19 +16,19 @@ function TagControl($input) {
 		});
 	}
 
-	$input.on('keypress', function()
+	$input.on('keyup', function()
 	{
 		setTimeout(function()
 		{
-			$input.val(
-				tagify($input.val())
-				.join(' ')
-			);
+			var tags = tagify($input.val());
+			that.trigger('change', tags);
+			$input.val(tags.join(' '));
 		}, 0);
 
 		return true;
 	});
-}
+};
+_.extend(TagControl.prototype, Backbone.Events);
 
 function FileSelectControl(handlebars) {
 	var that = this;
@@ -33,28 +40,38 @@ function FileSelectControl(handlebars) {
 		'Cancel': this.cancel.bind(this),
 		'Ok': this.close.bind(this)
 	}
-	this._templateName = 'filebrowser/filebrowser';
 
-	// load partials
-	['upload', 'tags']
+	this._templateName = 'filebrowser/generic';
+	this._frameName = 'filebrowser/frame';
+
+	// load templates
+	['texture', 'upload', 'tags']
 	.forEach(function(pname)
 	{
 		var partialName = 'filebrowser/'+pname;
 		that._handlebars.registerPartial(partialName, that._handlebars.getTemplate(partialName));
 	});
+
+	this._frameTemplate = this._handlebars.getTemplate(this._frameName);
 }
 
 FileSelectControl.prototype.template = function(name)
 {
 	this._templateName = name;
 	return this;
-}
+};
+
+FileSelectControl.prototype.frame = function(name)
+{
+	this._frameName = name;
+	return this;
+};
 
 FileSelectControl.prototype.url = function(url)
 {
 	this._url = url;
 	return this;
-}
+};
 
 FileSelectControl.prototype.files = function(files)
 {
@@ -67,53 +84,82 @@ FileSelectControl.prototype.files = function(files)
 	});
 
 	return this;
-}
+};
 
 FileSelectControl.prototype.selected = function(file) {
 	this._original = file
 	this._selected = file
 	return this
-}
+};
 
 FileSelectControl.prototype.onChange = function(cb) {
 	this._cb = cb;
 	return this;
-}
+};
 
 FileSelectControl.prototype.buttons = function(buttons) {
 	this._buttons = buttons;
 	return this;
-}
+};
 
-FileSelectControl.prototype.modal = function() {
+FileSelectControl.prototype.modal = function()
+{
 	this._render();
 	return this;
-}
+};
 
-FileSelectControl.prototype._render = function() {
-	var self = this;
-
+FileSelectControl.prototype._renderFiles = function(tags)
+{
 	var template = this._handlebars.getTemplate(this._templateName);
+	var files = this._files;
+
+	if (tags)
+	{
+		files = files.filter(function(file)
+		{
+			return tags.every(function(tag)
+			{
+				return file.tags.indexOf(tag) > -1;
+			});
+		});
+	}
+
 	var html = template(
 	{
 		original: this._original,
 		url: this._url,
 		user: E2.models.user.toJSON(),
-		files: this._files.map(function(file)
+		files: files
+		.map(function(file)
 		{
-			console.log(file);
 			if (file._creator)
 				file._creator = file._creator.username;
 
 			file.selected = (file.url === self._selected);
-
+			file.name = file.path.substring(file.path.lastIndexOf('/')+1);
 			return file;
 		})
 	});
 
+	return html;
+};
+
+FileSelectControl.prototype._render = function()
+{
+	var self = this;
+
+	var frame = $(this._frameTemplate(
+	{
+		original: this._original,
+		url: this._url,
+		user: E2.models.user.toJSON()
+	}));
+
+	$('.file-selector', frame).html(this._renderFiles());
+
 	var el = bootbox.dialog(
 	{
-		message: html
+		message: frame
 	});
 
 	this._el = el;
@@ -141,7 +187,10 @@ FileSelectControl.prototype._render = function() {
 
 	// bind file rows and click handlers
 	function _onClick(e) {
-		self._onSelect($(e.target).closest('tr'));
+		var tr = $(e.target).closest('tr');
+		$('tr.success', el).removeClass('success');
+		tr.addClass('success');
+		self._onSelect(tr);
 	}
 
 	$('.file-row', el).click(_onClick);
@@ -172,7 +221,11 @@ FileSelectControl.prototype._render = function() {
 
 	// attach TagControl to tags input
 	this._tagsEl = $('#tags', el);
-	new TagControl(this._tagsEl);
+	new TagControl(this._tagsEl)
+	.on('change', function(tags)
+	{
+		$('.file-selector', frame).html(self._renderFiles(tags));
+	});
 
 	// show
 	el.appendTo('body')
@@ -180,7 +233,7 @@ FileSelectControl.prototype._render = function() {
 	.focus();
 
 	return this;
-}
+};
 
 FileSelectControl.prototype._bindUploadForm = function()
 {
@@ -198,7 +251,7 @@ FileSelectControl.prototype._bindUploadForm = function()
 		var formData = new FormData($form[0]);
 		$.ajax(
 		{
-			url: form.action,
+			url: $form[0].action,
 			type: 'POST',
 			success: function()
 			{
@@ -220,7 +273,7 @@ FileSelectControl.prototype._bindUploadForm = function()
 
 		return false;
 	});
-}
+};
 
 FileSelectControl.prototype._onKeyPress = function(e) {
 	switch(e.keyCode) {
@@ -242,18 +295,17 @@ FileSelectControl.prototype._onKeyPress = function(e) {
 				this._onSelect(next)
 			this._scroll(1)
 			break;
-	}
-}
+	};
+};
 
 FileSelectControl.prototype._scroll = function(amt) {
-	var tab = $('table', this._el)
-	tab.scrollTop(tab.scrollTop() + amt * this._selectedEl.height())
-}
+	var tab = $('table', this._el);
+	tab.scrollTop(tab.scrollTop() + amt * this._selectedEl.height());
+};
 
 FileSelectControl.prototype._onChange = function() {
-	console.log('FileSelectControl', this._inputEl.val())
 	this._cb(this._inputEl.val());
-}
+};
 
 FileSelectControl.prototype._onSelect = function(row) {
 	var path = row.data('url');
@@ -262,20 +314,18 @@ FileSelectControl.prototype._onSelect = function(row) {
 	row.addClass('selected');
 
 	this._selectedEl = row;
-
 	this._inputEl.val(path);
-
-	this._onChange()
-}
+	this._onChange();
+};
 
 FileSelectControl.prototype.cancel = function() {
 	this._cb(this._original);
 	this.close();
-}
+};
 
 FileSelectControl.prototype.close = function() {
 	$(this._el).modal('hide');
-}
+};
 
 // ------------------------------------------
 
@@ -314,14 +364,14 @@ function createSelector(path, selected, okButton, okFn, cb)
 	});
 
 	return ctl;
-}
+};
 
 FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 {
 	return createSelector('/graph', selected, okButton, okFn, function(ctl)
 	{
 		ctl
-		.template('filebrowser/graph')
+		.template('filebrowser/generic')
 		.modal();
 	});
 };
@@ -331,7 +381,6 @@ FileSelectControl.createVideoSelector = function(selected, okButton, okFn)
 	return createSelector('/video', selected, okButton, okFn, function(ctl)
 	{
 		ctl
-		.template('filebrowser/video')
 		.modal();
 	});
 };
@@ -341,7 +390,6 @@ FileSelectControl.createJsonSelector = function(selected, okButton, okFn)
 	return createSelector('/json', selected, okButton, okFn, function(ctl)
 	{
 		ctl
-		.template('filebrowser/json')
 		.modal();
 	});
 };
@@ -351,7 +399,6 @@ FileSelectControl.createAudioSelector = function(selected, okButton, okFn)
 	return createSelector('/audio', selected, okButton, okFn, function(ctl)
 	{
 		ctl
-		.template('filebrowser/audio')
 		.modal();
 	});
 };
@@ -361,7 +408,6 @@ FileSelectControl.createSceneSelector = function(selected, okButton, okFn)
 	return createSelector('/scene', selected, okButton, okFn, function(ctl)
 	{
 		ctl
-		.template('filebrowser/scene')
 		.modal();
 	});
 };

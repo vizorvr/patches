@@ -14,6 +14,7 @@ AssetService.prototype.find = function(q)
 	var dfd = when.defer();
 	this._model
 		.find(q)
+		.sort('-updatedAt')
 		.populate('_creator')
 		.exec(function(err, list)
 	{

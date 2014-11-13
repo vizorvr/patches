@@ -1,37 +1,13 @@
 <div class="file-select-control" style="min-height:400px">
-	<!-- Nav tabs -->
 	<ul class="nav nav-tabs" role="tablist">
 		<li class="active"><a href="#download" role="tab" data-toggle="tab">Select file</a></li>
 		<li><a href="#upload" role="tab" data-toggle="tab">Upload</a></li>
 	</ul>
-
-	<!-- Tab panes -->
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane active" id="download">
 			<form class="form-inline">
 				{{> filebrowser/tags}}
-
-				<div class="file-selector">
-					<table>
-						<thead>
-							<td class="name-header">Name</td>
-							<td class="name-header">By</td>
-						</thead>
-						{{#each files}}
-						<tr 
-							class="file-row{{#if selected}} selected{{/if}}" 
-							data-url="{{url}}">
-							<td class="name">{{path}}</td>
-							<td class="">{{creator}}</td>
-						</tr>
-						{{else}}
-						<tr class="file-row">
-							<td class="name">No files found</td>
-						</tr>
-						{{/each}}
-					</table>
-				</div>
-
+				<div class="file-selector"></div>
 				<div class="buttons">
 					<input id="file-url"
 						class="form-control pull-left"

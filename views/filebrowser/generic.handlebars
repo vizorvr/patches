@@ -1,0 +1,25 @@
+<table class="table table-hover table-condensed table-striped">
+	<thead>
+		<td class="name-header">Name</td>
+		<td class="name-header">Date</td>
+		<td class="name-header">By</td>
+		<td class="name-header">Tags</td>
+	</thead>
+	{{#each files}}
+	<tr class="file-row{{#if selected}} success{{/if}}" 
+		data-url="{{url}}">
+		<td class="name">{{name}}</td>
+		<td class="">{{updatedAt}}</td>
+		<td class="">{{_creator}}</td>
+		<td class="">
+			{{#each tags}}
+				{{this}}
+			{{/each}}
+		</td>
+	</tr>
+	{{else}}
+	<tr class="file-row">
+		<td class="name">No files found</td>
+	</tr>
+	{{/each}}
+</table>
