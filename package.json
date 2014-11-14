@@ -67,9 +67,9 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "mocha browser/test/unit/plugins test/ test/controllers test/services test/integration"
+    "test": "mocha --recursive browser/test/unit/plugins test"
   },
-  "author": "Lasse Nielsen, Jaakko Manninen",
+  "author": "Lasse Nielsen, Jaakko Manninen, Mikko Karvonen",
   "license": "MIT",
   "repository": {
     "type": "git",

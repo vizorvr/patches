@@ -45,6 +45,7 @@ GraphController.prototype.save = function(req, res, next)
 
 			stream.on('close', function()
 			{
+				console.log('close')
 				var model =
 				{
 					path: path,
@@ -56,7 +57,17 @@ GraphController.prototype.save = function(req, res, next)
 				.then(function(asset)
 				{
 					res.json(asset);
-				});
+				})
+				.catch(next);
+			})
+			.on('error', function(err)
+			{
+				dfd.reject(err);
+			});
+
+			sbuf.on('error', function(err)
+			{
+				dfd.reject(err);
 			});
 
 			sbuf.pipe(stream);

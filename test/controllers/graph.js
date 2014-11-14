@@ -15,19 +15,22 @@ describe('GraphController', function()
 
 	beforeEach(function()
 	{
+
 		stream = new EventEmitter();
+		stream.writable = true
 		stream.write = function() { return true; };
+		stream.end = function() { this.emit('close') };
 
 		svc = { canWrite: resolved };
 		fs =
 		{
 			url: function(str)
 			{
-				return '/root/'+str;
+				return '/root'+str;
 			},
 			createWriteStream: function()
 			{
-				var dfd = when.defer()
+				var dfd = when.defer();
 				dfd.resolve(stream);
 				return dfd.promise;
 			}
@@ -45,7 +48,7 @@ describe('GraphController', function()
 		svc.save = function(data)
 		{
 			data.slug = 'ok';
-			assert.equal(data.path, 'foo');
+			assert.equal(data.path, '/graph/foo');
 			assert.equal(data.graph, undefined);
 			return resolved(data);
 		}
@@ -56,14 +59,15 @@ describe('GraphController', function()
 			{
 				assert.deepEqual(json,
 				{
-					path: 'foo',
-					url: '/root/foo',
+					path: '/graph/foo',
+					url: '/root/graph/foo',
+					tags: [],
 					slug: 'ok'
 				});
 				assert.ok(wrote);
-				done()
+				done();
 			}
-		});
+		}, done)
 	});
 
 });

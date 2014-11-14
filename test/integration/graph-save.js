@@ -37,6 +37,7 @@ describe('Graph', function() {
 		})
 		.expect(200)
 		.end(function(err, res) {
+			if (err) return done(err);
 			var json = res.body;
 			delete json._creator;
 			delete json._id;
@@ -60,6 +61,7 @@ describe('Graph', function() {
 		})
 		.expect(200)
 		.end(function(err, res) {
+			if (err) return done(err);
 			var json = res.body;
 			delete json._creator;
 			delete json._id;
@@ -88,8 +90,9 @@ describe('Graph', function() {
 			.expect(200)
 			.end(function(err, res)
 			{
+				if (err) return done(err);
 				assert.equal(res.body.abs_t, 46.988);
-				done(err);
+				done();
 			})
 		});
 	});
@@ -111,6 +114,7 @@ describe('Graph', function() {
 			.expect(200)
 			.end(function(err, res)
 			{
+				if (err) return done(err);
 				assert.equal(res.body.abs_t, 46.988);
 				done(err);
 			})
@@ -130,13 +134,11 @@ describe('Graph', function() {
 		})
 		.expect(200)
 		.end(function(err, res) {
-			console.log('saved', res.body)
 			request(app)
 			.get('/graph/tag/are')
 			.expect(200)
 			.end(function(err, res)
 			{
-				console.log('res', res.body)
 				assert.deepEqual(res.body[0].tags,
 				[
 					'#tags', '#are', '#cool'

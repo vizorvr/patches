@@ -6,7 +6,8 @@ function MockGraph()
 {
 	this.find = this.findOne = this.exec = 
 	this.populate = function() { return this; };
-	this.save = function(cb) { cb() }
+	this.sort = function() { return this; };
+	this.save = function(cb) { cb(); };
 };
 
 describe('AssetService', function()

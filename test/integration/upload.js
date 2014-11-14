@@ -6,8 +6,8 @@ var assert = require('assert');
 
 describe('Upload', function() {
 	var deets = {
-		username: 'test'+process.pid,
-		email: 'test'+process.pid+'@test.foo',
+		username: 'test'+Math.floor(Math.random() * 10000),
+		email: 'test'+Math.floor(Math.random() * 10000)+'@test.foo',
 		password: 'abc123',
 		confirmPassword: 'abc123'
 	};
@@ -38,6 +38,7 @@ describe('Upload', function() {
 			.attach('file', stream, original)
 			.expect(200)
 			.end(function(err, res) {
+				if (err) return done(err);
 				var json = res.body;
 				delete json._creator;
 				delete json._id;
@@ -69,6 +70,7 @@ describe('Upload', function() {
 			.attach('file', stream, original)
 			.expect(200)
 			.end(function(err, res) {
+				if (err) return done(err);
 				var json = res.body;
 				delete json._creator;
 				delete json._id;
@@ -105,6 +107,7 @@ describe('Upload', function() {
 			.attach('file', stream, audio)
 			.expect(200)
 			.end(function(err, res) {
+				if (err) return done(err);
 				var json = res.body;
 				delete json._creator;
 				delete json._id;
@@ -129,13 +132,16 @@ describe('Upload', function() {
 			.attach('file', stream, jsonFile)
 			.expect(200)
 			.end(function(err, res) {
+				if (err) return done(err);
 				var json = res.body;
 				delete json._creator;
 				delete json._id;
 				delete json.createdAt;
 				delete json.updatedAt;
 
-				assert.deepEqual({"__v":0,"path":jsonFile,"url":"/data"+jsonFile,"tags":[]}, json);
+				assert.deepEqual({"__v":0,"path":jsonFile,
+					"url":"/data"+jsonFile,"tags":[]}, json);
+
 				done(err);
 			});
 		});
