@@ -292,8 +292,8 @@ Renderer.prototype.begin_frame = function()
 		
 		if(ss.pending)
 		{
-			var fb = ss.framebuffer = this.context.glCreateFramebuffer();
-			var t = this.context.glCreateTexture();
+			var fb = ss.framebuffer = gl.glCreateFramebuffer();
+			var t = gl.glCreateTexture();
 
 			gl.bindTexture(gl.TEXTURE_2D, t);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
