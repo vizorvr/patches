@@ -59,7 +59,7 @@ describe('Upload', function() {
 
 	describe('Scene', function()
 	{
-		it('should return 200 OK', function(done) {
+		it('should upload correctly', function(done) {
 			var scene = '/scene/'+process.pid;
 			var original = scene+'.zip';
 			var stream = fs.createReadStream(__dirname+'/../fixtures/scene.zip');
@@ -97,7 +97,7 @@ describe('Upload', function() {
 
 	describe('Audio', function()
 	{
-		it('should return 200 OK', function(done) {
+		it('should upload correctly', function(done) {
 			var audio = '/audio/'+process.pid+'.ogg';
 			var stream = fs.createReadStream(__dirname+'/../../browser/data/audio/inedible_candy.ogg');
 			stream.path = audio
@@ -122,7 +122,7 @@ describe('Upload', function() {
 
 	describe('JSON', function()
 	{
-		it('should return 200 OK', function(done) {
+		it('should upload correctly', function(done) {
 			var jsonFile = '/json/'+process.pid+'.json';
 			var stream = fs.createReadStream(__dirname+'/../../browser/data/graphs/audrey2.json');
 			stream.path = jsonFile

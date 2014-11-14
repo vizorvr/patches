@@ -67,7 +67,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "mocha --recursive browser/test/unit/plugins test"
+    "test": "mocha --timeout 10000 --recursive browser/test/unit/plugins test"
   },
   "author": "Lasse Nielsen, Jaakko Manninen, Mikko Karvonen",
   "license": "MIT",
