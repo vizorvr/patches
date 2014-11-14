@@ -238,7 +238,8 @@ FileSelectControl.prototype._render = function()
 FileSelectControl.prototype._bindUploadForm = function()
 {
 	var that = this;
-	var $form = $('form.fileUploadForm', this._el);
+	var container = $('#upload', this._el);
+	var $form = $('form.fileUploadForm', container);
 
 	if (!$form)
 		return;
@@ -255,12 +256,11 @@ FileSelectControl.prototype._bindUploadForm = function()
 			type: 'POST',
 			success: function()
 			{
-				bootbox.alert('Uploaded successfully!');
-				self.close();
+				$('#message', container).html('<h4>Uploaded successfully!</h4>');
 			},
 			error: function(err)
 			{
-				bootbox.alert('Upload failed: '+err.msg);
+				$('#message', container).html('<h4>Upload failed: '+err.responseJSON.msg+'</h4>');
 			},
 			data: formData,
 			cache: false,
@@ -269,7 +269,7 @@ FileSelectControl.prototype._bindUploadForm = function()
 			dataType: 'json'
 		});
 
-		$form.html('<h4>Please wait...</h4>');
+		$('#message', container).html('<h4>Please wait...</h4>');
 
 		return false;
 	});
