@@ -1,12 +1,14 @@
-<div class="file-select-control" style="min-height:400px">
+<div class="file-select-control">
 	<ul class="nav nav-tabs" role="tablist">
-		<li class="active"><a href="#download" role="tab" data-toggle="tab">Select file</a></li>
-		<li><a href="#upload" role="tab" data-toggle="tab">Upload</a></li>
+		<li class="active"><a href="#download" role="tab" data-toggle="tab"><h4>Select file</h4></a></li>
+		<li><a href="#upload" role="tab" data-toggle="tab"><h4>Upload</h4></a></li>
 	</ul>
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane active" id="download">
 			<form class="form-inline">
-				{{> filebrowser/tags}}
+				<div class="tags">
+					{{> filebrowser/tags}}
+				</div>
 				<div class="file-selector"></div>
 				<div class="buttons">
 					<input id="file-url"
