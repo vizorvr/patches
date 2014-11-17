@@ -176,7 +176,9 @@ function Core(vr_devices, app) {
 	this.plugin_mgr = new PluginManager(this,
 		'/plugins',
 		E2.app ? E2.app.onPluginInstantiated : null,
-		this.onPluginsLoaded.bind(this));
+		function() {
+			self.onPluginsLoaded();
+		});
 	this.aux_scripts = {};
 	this.aux_styles = {};
 	this.resolve_dt = []; // Table for easy reverse lookup of dt reference by id.

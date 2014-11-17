@@ -32,6 +32,9 @@ GraphController.prototype.graphLanding = function(req, res, next)
 {
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
+		if (!graph)
+			return res.status(404).send();
+
 		res.render('graph/show',
 		{
 			layout: 'player',
