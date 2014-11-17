@@ -246,7 +246,7 @@ var AssetService = require('./services/assetService');
 var GraphService = require('./services/graphService');
 
 var graphController = new GraphController(
-	new GraphService(require('./models/graph')),
+	new GraphService(require('./models/graph'), gfs),
 	gfs
 );
 

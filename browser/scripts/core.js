@@ -428,11 +428,8 @@ function Core(vr_devices, app) {
 	};
 }
 
-_.extend(Core.prototype, Backbone.Events);
-
 Core.prototype.onPluginsLoaded = function()
 {
-	this.trigger('ready');
 };
 
 
@@ -450,7 +447,7 @@ E2.InitialiseEngi = function(vr_devices)
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
 	E2.dom.save = $('#save');
-	E2.dom.publish = $('#publish');
+	E2.dom.preview = $('#preview');
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
 	E2.dom.load_clipboard = $('#load-clipboard');
@@ -512,7 +509,7 @@ E2.InitialiseEngi = function(vr_devices)
 	
 	E2.dom.save.click(E2.app.onSaveClicked);
 	E2.dom.open.click(E2.app.onOpenClicked);
-	E2.dom.publish.click(E2.app.onPublishClicked);
+	E2.dom.preview.click(E2.app.onPreviewClicked);
 
 	E2.dom.play.click(E2.app.onPlayClicked);
 	E2.dom.pause.click(E2.app.onPauseClicked);

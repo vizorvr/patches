@@ -71,6 +71,7 @@ describe('Graph', function() {
 			.expect(200).end(function(err, res)
 			{
 				if (err) return done(err);
+				console.log('body', res.body)
 				assert.equal(res.body.abs_t, 46.988);
 				done();
 			})
@@ -85,6 +86,23 @@ describe('Graph', function() {
 			if (err) return done(err);
 			assert.equal(res.body.path, expectedPath);
 			done();
+		});
+	});
+
+	it('should automatically create an optimized version', function(done) {
+		var path = '/blah/quux/bar/foo.png';
+		var expectedPath = '/'+username+'/foo';
+		var optimPath = '/data/graph/'+username+'/foo-min.json';
+
+		sendGraph(path, function(err, res) {
+			if (err) return done(err);
+			request(app).get(optimPath)
+			.expect(200).end(function(err, res)
+			{
+				if (err) return done(err);
+				assert.equal(res.body.abs_t, 46.988);
+				done();
+			})
 		});
 	});
 

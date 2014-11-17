@@ -1,7 +1,6 @@
 var assert = require('assert');
 var GraphController = require('../../controllers/graphController');
 var when = require('when');
-var EventEmitter = require('events').EventEmitter;
 
 describe('GraphController', function()
 {
@@ -15,12 +14,6 @@ describe('GraphController', function()
 
 	beforeEach(function()
 	{
-
-		stream = new EventEmitter();
-		stream.writable = true
-		stream.write = function() { return true; };
-		stream.end = function() { this.emit('close') };
-
 		svc = { canWrite: resolved };
 		fs =
 		{
@@ -28,12 +21,7 @@ describe('GraphController', function()
 			{
 				return '/root'+str;
 			},
-			createWriteStream: function()
-			{
-				var dfd = when.defer();
-				dfd.resolve(stream);
-				return dfd.promise;
-			}
+			writeString: resolved
 		};
 		ctrl = new GraphController(svc, fs);
 	});
@@ -41,9 +29,9 @@ describe('GraphController', function()
 	it('handles graph post', function(done)
 	{
 		var wrote = false;
-		stream.write = function() {
+		fs.writeString = function() {
 			wrote = true;
-			return true;
+			return resolved();
 		}
 		svc.save = function(data)
 		{

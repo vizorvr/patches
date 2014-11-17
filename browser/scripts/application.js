@@ -1508,36 +1508,11 @@ function Application() {
 			return fcs;
 		})
 	};
-	
-	this.onPublishClicked = function()
-	{
-		var wh = window.location.hash;
-		
-		if(wh === '')
-			return alert('Please save the graph before attempting to publish it.');
-		
-		E2.dom.publish.attr("disabled", true);
-		
-		var ser = self.player.core.serialise();
 
-		$.ajax({
-			type: 'POST',
-			url: wh.substring(1),
-			data: ser,
-			dataType: 'json',
-			beforeSend: function(xhr) { xhr.setRequestHeader('Engi-Publish', 'true'); },
-			success: function(data)
-			{
-				alert(data.msg);
-				E2.dom.publish.attr("disabled", false);
-			},
-			error: function(x, t, err)
-			{
-				alert('Publish failed: ' + x.responseText);
-				E2.dom.publish.attr("disabled", false);
-			}
-		});
-	};
+	this.onPreviewClicked = function()
+	{
+		window.location.href = '/'+window.location.pathname.split('/').slice(1,3).join('/');
+	}
 	
 	this.onLoadClicked = function()
 	{
