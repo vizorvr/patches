@@ -939,6 +939,8 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 			draw_count = rd;
 	}
 	
+	mat.enable();
+	
 	if(!this.instances)
 	{
 		shader.bind_transform(transform);
