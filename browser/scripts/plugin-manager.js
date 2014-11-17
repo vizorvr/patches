@@ -79,7 +79,7 @@ function PluginManager(core, base_url, creation_listener, ready_listener)
 
    				if(!self.release_mode)
 					load_script(url, onload, onerror);
-   				
+
 				self.register_plugin(pg_root, key, id);
 			});
 			

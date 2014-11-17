@@ -6,15 +6,31 @@ var assert = require('assert');
 
 var graphFile = __dirname+'/../../browser/data/graphs/Button.json';
 
+function rand() {
+	return Math.floor(Math.random() * 10000);
+}
+
 describe('Graph', function() {
+	var username = 'user'+rand();
 	var deets = {
-		username: 'test'+process.pid,
-		email: 'test'+process.pid+'@test.foo',
+		username: username,
+		email: username+'@test.foo',
 		password: 'abc123',
 		confirmPassword: 'abc123'
 	};
 
 	var agent = request.agent(app);
+
+	function sendGraph(path, cb)
+	{
+		return agent.post('/graph').send(
+		{
+			path: path,
+			graph: fs.readFileSync(graphFile)
+		})
+		.expect(200)
+		.end(cb);
+	}
 
 	before(function(done)
 	{
@@ -25,70 +41,34 @@ describe('Graph', function() {
 		.end(done);
 	});
 
-	it('should save correctly with full path', function(done) {
-		var path = '/graph/test/path/button-'+process.pid;
+	it('should use the expected name, owner, path, and url', function(done) {
+		var path = 'some-'+rand();
+		var expectedPath = '/'+username+'/'+path;
 
-		agent
-		.post('/graph')
-		.send(
-		{
-			path: path,
-			graph: fs.readFileSync(graphFile)
-		})
-		.expect(200)
-		.end(function(err, res) {
+		sendGraph(path, function(err, res) {
 			if (err) return done(err);
-			var json = res.body;
-			delete json._creator;
-			delete json._id;
-			delete json.createdAt;
-			delete json.updatedAt;
-			assert.deepEqual({"__v":0,"path":path,
-				"url":'/data'+path,"tags":[]}, json);
-			done(err);
+			var json = {
+				name: res.body.name,
+				owner: res.body.owner,
+				url: res.body.url,
+				path: res.body.path
+			};
+  			assert.deepEqual({
+				name: path, owner: username,
+				path: expectedPath,
+				url: '/data/graph'+expectedPath+'.json'
+			}, json);
+			done();
 		});
 	});
 
-	it('should save correctly given only name', function(done) {
-		var path = 'some-'+process.pid;
+	it('should return data by url', function(done) {
+		var path = 'button-'+rand();
 
-		agent
-		.post('/graph')
-		.send(
-		{
-			path: path,
-			graph: fs.readFileSync(graphFile)
-		})
-		.expect(200)
-		.end(function(err, res) {
+		sendGraph(path, function(err, res) {
 			if (err) return done(err);
-			var json = res.body;
-			delete json._creator;
-			delete json._id;
-			delete json.createdAt;
-			delete json.updatedAt;
-			assert.deepEqual({"__v":0,"path":'/graph/'+path,
-				"url":'/data/graph/'+path,"tags":[]}, json);
-			done(err);
-		});
-	});
-
-	it('should be retrievable', function(done) {
-		var path = '/graph/test/path/button-rand-'+Math.floor(Math.random() * 1000);
-
-		agent
-		.post('/graph')
-		.send(
-		{
-			path: path,
-			graph: fs.readFileSync(graphFile)
-		})
-		.expect(200)
-		.end(function(err, res) {
-			request(app)
-			.get(res.body.url)
-			.expect(200)
-			.end(function(err, res)
+			request(app).get(res.body.url)
+			.expect(200).end(function(err, res)
 			{
 				if (err) return done(err);
 				assert.equal(res.body.abs_t, 46.988);
@@ -97,48 +77,65 @@ describe('Graph', function() {
 		});
 	});
 
-	it('should be retrievable after saving with only name', function(done) {
-		var path = 'some-retr-'+process.pid;
+	it('should force the right path', function(done) {
+		var path = '/blah/quux/bar/foo.png';
+		var expectedPath = '/'+username+'/foo';
 
-		agent
-		.post('/graph')
-		.send(
-		{
-			path: path,
-			graph: fs.readFileSync(graphFile)
-		})
-		.expect(200)
-		.end(function(err, res) {
-			request(app)
-			.get(res.body.url)
-			.expect(200)
-			.end(function(err, res)
+		sendGraph(path, function(err, res) {
+			if (err) return done(err);
+			assert.equal(res.body.path, expectedPath);
+			done();
+		});
+	});
+
+	it('should return graph json by path', function(done) {
+		var name = 'button-'+rand();
+		var path = '/'+username+'/'+name+'.json';
+		var expectedPath = '/'+username+'/'+name;
+
+		sendGraph(name, function(err, res) {
+			if (err) return done(err);
+			request(app).get(path)
+			.expect(200).end(function(err, res)
 			{
 				if (err) return done(err);
-				assert.equal(res.body.abs_t, 46.988);
-				done(err);
+				assert.equal(res.body.path, expectedPath);
+				done();
 			})
 		});
 	});
 
+/*	it('should return graph landing by path', function(done) {
+		var path = 'button-'+rand();
+		var expectedPath = '/'+username+'/'+path;
+
+		sendGraph(path, function(err, res) {
+			request(app).get(expectedPath)
+			.expect(200).end(function(err, res)
+			{
+				if (err) return done(err);
+				assert.ok(res.body.indexOf('<body') > 0)
+				done();
+			})
+		});
+	});
+*/
 	it('can be found by tag after saving', function(done) {
 		var path = 'graph-tag-'+process.pid;
 
-		agent
-		.post('/graph')
-		.send(
+		agent.post('/graph').send(
 		{
 			path: path,
-			tags: ['tags', '#are', 'cool'],
+			tags: [ 'tags', '#are', 'cool' ],
 			graph: fs.readFileSync(graphFile)
 		})
 		.expect(200)
 		.end(function(err, res) {
-			request(app)
-			.get('/graph/tag/are')
-			.expect(200)
+			if (err) return done(err);
+			request(app) .get('/graph/tag/are') .expect(200)
 			.end(function(err, res)
 			{
+				if (err) return done(err);
 				assert.deepEqual(res.body[0].tags,
 				[
 					'#tags', '#are', '#cool'

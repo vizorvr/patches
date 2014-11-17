@@ -1,0 +1,30 @@
+<div class="header-background"> </div>
+<div class="fixed-table-container-inner">
+	<table class="table table-hover table-condensed table-striped">
+		<thead>
+			<tr>
+				<th class="name-header"><div class="th-inner">Name</div></th>
+				<th class="date-header"><div class="th-inner">Date</div></th>
+				<th class="tags-header"><div class="th-inner">Tags</div></th>
+			</tr>
+		</thead>
+		<tbody>
+		{{#each files}}
+			<tr class="file-row{{#if selected}} success{{/if}}" 
+				data-url="{{path}}" data-navigate="true">
+				<td class="name">{{owner}}/{{name}}</td>
+				<td class="">{{updatedAt}}</td>
+				<td class="">
+					{{#each tags}}
+						{{this}}
+					{{/each}}
+				</td>
+			</tr>
+		{{else}}
+			<tr class="file-row">
+				<td class="name" colspan="4">No files found</td>
+			</tr>
+		{{/each}}
+		</tbody>
+	</table>
+</div>

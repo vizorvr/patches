@@ -173,7 +173,10 @@ function Core(vr_devices, app) {
 	this.delta_t = 0.0;
 	this.graph_uid = 0;
 	this.app = app;
-	this.plugin_mgr = new PluginManager(this, 'plugins', E2.app ? E2.app.onPluginInstantiated : null, load_location_hash);
+	this.plugin_mgr = new PluginManager(this,
+		'/plugins',
+		E2.app ? E2.app.onPluginInstantiated : null,
+		this.onPluginsLoaded.bind(this));
 	this.aux_scripts = {};
 	this.aux_styles = {};
 	this.resolve_dt = []; // Table for easy reverse lookup of dt reference by id.
@@ -214,7 +217,7 @@ function Core(vr_devices, app) {
 				
 		return dirty; // Did connection state change?
 	};
-	
+
 	this.onGraphSelected = function(graph)
 	{
 		self.active_graph.destroy_ui();
@@ -411,7 +414,7 @@ function Core(vr_devices, app) {
 		if(self.aux_scripts.hasOwnProperty(script_url))
 			return;
 		
-		load_script('plugins/' + script_url, onload);
+		load_script('/plugins/' + script_url, onload);
 		self.aux_scripts[script_url] = true;
 	};
 
@@ -420,10 +423,19 @@ function Core(vr_devices, app) {
 		if(self.aux_styles.hasOwnProperty(style_url))
 			return;
 		
-		load_style('plugins/' + style_url);
+		load_style('/plugins/' + style_url);
 		self.aux_styles[style_url] = true;
 	};
 }
+
+_.extend(Core.prototype, Backbone.Events);
+
+Core.prototype.onPluginsLoaded = function()
+{
+	this.trigger('ready');
+};
+
+
 
 E2.InitialiseEngi = function(vr_devices)
 {
@@ -459,7 +471,7 @@ E2.InitialiseEngi = function(vr_devices)
 	
 	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, ex) 
 	{
-		if(settings.dataType === 'script' && !settings.url.match(/^plugins\/all.plugins\.js/)) 
+		if(settings.dataType === 'script' && !settings.url.match(/^\/plugins\/all.plugins\.js/)) 
 		{
 			if(typeof(ex) === 'string')
 			{
@@ -557,16 +569,3 @@ E2.InitialiseEngiVR = function()
 	else
 		E2.InitialiseEngi([null, null]);
 };
-
-function load_location_hash() {
-	var graphPath = decodeURIComponent(window.location.hash).replace('#','');
-	
-	if(graphPath.length < 1)
-		return;
-	
-	E2.app.onStopClicked();
-	E2.app.player.on_update();
-	console.log('loading graph from location hash:', graphPath);
-	E2.dom.filename_input.val(graphPath);
-	E2.app.player.load_from_url(graphPath);
-}

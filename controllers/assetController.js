@@ -102,7 +102,7 @@ AssetController.prototype.load = function(req, res, next)
 	this._service.findByPath(req.params.path)
 	.then(function(item)
 	{
-		res.json(item.toJSON());
+		res.json(item);
 	})
 	.catch(next);
 };

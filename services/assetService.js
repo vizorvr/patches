@@ -58,11 +58,6 @@ AssetService.prototype.findByPath = function(path)
 	return this.findOne({path: path});
 };
 
-AssetService.prototype.findBySlug = function(slug)
-{
-	return this.findOne({slug: slug});
-};
-
 AssetService.prototype.save = function(data, user)
 {
 	var that = this;

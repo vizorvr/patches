@@ -47,22 +47,23 @@ describe('GraphController', function()
 		}
 		svc.save = function(data)
 		{
-			data.slug = 'ok';
-			assert.equal(data.path, '/graph/foo');
+			assert.equal(data.path, '/memyselfandi/foo');
 			assert.equal(data.graph, undefined);
 			return resolved(data);
 		}
 
-		ctrl.save({ body: { path: 'foo', graph: 'graph' } },
+		ctrl.save({
+			body: { path: 'foo', graph: 'graph' },
+			user: { username: 'memyselfandi'}
+		},
 		{
 			json: function(json)
 			{
 				assert.deepEqual(json,
 				{
-					path: '/graph/foo',
-					url: '/root/graph/foo',
-					tags: [],
-					slug: 'ok'
+					path: '/memyselfandi/foo',
+					url: '/root/graph/memyselfandi/foo.json',
+					tags: []
 				});
 				assert.ok(wrote);
 				done();

@@ -203,6 +203,27 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedi
 });
 */
 
+// stream file from fs/gridfs
+app.get(/\/data\/.*/, function(req, res, next)
+{
+	var path = req.path.replace(/^\/data/, '');
+
+	gfs.stat(path)
+	.then(function(stat)
+	{
+		if (!stat)
+			return res.status(404).send();
+
+		res.header('Content-Type', stat.contentType);
+		res.header('Content-Length', stat.length);
+
+		return gfs.createReadStream(path)
+		.on('error', next)
+		.pipe(res);
+	})
+	.catch(next)
+});
+
 // ----- MODEL ROUTES
 // set no-cache headers for the rest
 app.use(function(req, res, next)
@@ -211,8 +232,6 @@ app.use(function(req, res, next)
 	res.setHeader('Expires', 0);
 	next();
 });
-
-app.use(errorHandler());
 
 // Asset controllers
 var AssetController = require('./controllers/assetController');
@@ -224,9 +243,10 @@ var GridFsStorage = require('./lib/gridfs-storage');
 var gfs = new GridFsStorage('/data');
 
 var AssetService = require('./services/assetService');
+var GraphService = require('./services/graphService');
 
 var graphController = new GraphController(
-	new AssetService(require('./models/graph')),
+	new GraphService(require('./models/graph')),
 	gfs
 );
 
@@ -270,39 +290,17 @@ var controllers = {
 	json: jsonController
 }
 
-function getController(req, res, next)
+function requireController(req, res, next)
 {
 	req.controller = controllers[req.params.model];
 	if (!req.controller)
-		return res.status(404).send();
-
+		return res.status(400).json({msg:'No such controller'});
 	next();
-}
-
-// stream file from fs/gridfs
-app.get(/\/data\/.*/, function(req, res, next)
-{
-	var path = req.path.replace(/^\/data/, '');
-
-	gfs.stat(path)
-	.then(function(stat)
-	{
-		if (!stat)
-			return res.status(404).send();
-
-		res.header('Content-Type', stat.contentType);
-		res.header('Content-Length', stat.length);
-
-		return gfs.createReadStream(path)
-		.on('error', next)
-		.pipe(res);
-	})
-	.catch(next)
-});
+};
 
 // upload
 app.post('/upload/:model',
-	getController,
+	requireController,
 	passportConf.isAuthenticated,
 	multer(
 	{
@@ -325,32 +323,92 @@ app.post('/upload/:model',
 	}
 );
 
+
+// -----
+// Graph routes 
+
+// GET /fthr/dunes-world/edit -- EDITOR
+app.get('/:username/:graph/edit', function(req, res, next)
+{
+	req.params.path = '/'+req.params.username+'/'
+		+req.params.graph;
+	graphController.edit(req, res, next);
+});
+
+// GET /fthr/dunes-world.json
+app.get('/:username/:graph.json', function(req, res, next)
+{
+	req.params.path = '/'+req.params.username+'/'
+		+req.params.graph.replace(/\.json$/g, '');
+	console.log('load', req.params.path)
+	graphController.load(req, res, next);
+});
+
+// GET /fthr/dunes-world
+app.get('/:username/:graph', function(req, res, next)
+{
+	req.params.path = '/'+req.params.username+'/'+req.params.graph;
+	graphController.graphLanding(req, res, next);
+});
+
+// GET /fthr/dunes-world/graph.json
+app.get('/:username/:graph/graph.json', function(req, res, next)
+{
+	req.params.path = '/'+req.params.username+'/'
+		+req.params.graph.replace(/\.json$/g, '');
+
+	graphController.stream(req, res, next);
+});
+
+// -----
+// Generic model routes
+
 // list
-app.get('/:model', getController, function(req, res, next)
+app.get('/:model', requireController, function(req, res, next)
 {
 	req.controller.index(req, res, next);
 });
 
 // list by tag
-app.get('/:model/tag/:tag', getController, function(req, res, next)
+app.get('/:model/tag/:tag', requireController, function(req, res, next)
 {
 	req.controller.findByTag(req, res, next);
 });
 
 // get 
-app.get('/:model/:id', getController, function(req, res, next)
+app.get('/:model/:id', requireController, function(req, res, next)
 {
 	req.controller.load(req, res, next);
 });
 
 // save
-app.post('/:model', getController,
+app.post('/:model', 
+	requireController, 
 	passportConf.isAuthenticated,
 	function(req, res, next)
 	{
 		req.controller.save(req, res, next);
 	}
 );
+
+
+
+
+
+app.use(errorHandler());
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 var httpServer = http.createServer(app);
 

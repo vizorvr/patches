@@ -1,6 +1,6 @@
 <noscript>
 	<div class="nojs">
-		<div style="float: left; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
+		<div style="float: left; margin-right: 8px;"><img src="/images/warning.png" width="64px" height="64px" /></div>
 		<div style="padding-top: 4px;">This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
 	</div>
 </noscript>
@@ -83,6 +83,21 @@
 </div><!-- /.modal -->
 
 <script type="text/javascript">
+	function postInit()
+	{
+		{{#if graph}}
+			var graph = {
+				path: '{{graph.path}}',
+				url: '{{graph.url}}'
+			};
+
+			E2.app.player.core.on('ready', function()
+			{
+				E2.app.loadGraph(graph.url);
+			});
+		{{/if}}
+	}
+
 	function EnumerateVRDevices(devices)
 	{
 		var hmd = null, sensor = null;
@@ -112,6 +127,7 @@
 		}
 
 		E2.InitialiseEngi([hmd, sensor]);
+		postInit();
 	}
 	
 	$(document).ready(function()
@@ -146,6 +162,8 @@
 		else
 		{
 			E2.InitialiseEngi([null, null]);
+			postInit();
 		}
+
 	});
 </script>

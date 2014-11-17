@@ -371,7 +371,7 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 	return createSelector('/graph', selected, okButton, okFn, function(ctl)
 	{
 		ctl
-		.template('filebrowser/generic')
+		.template('filebrowser/graph')
 		.modal();
 	});
 };

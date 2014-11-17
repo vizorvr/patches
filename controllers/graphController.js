@@ -12,13 +12,49 @@ function GraphController(graphService, fs)
 
 GraphController.prototype = Object.create(AssetController.prototype);
 
+// GET /fthr/dunes-world/edit
+GraphController.prototype.edit = function(req, res, next)
+{
+	this._service.findByPath(req.params.path)
+	.then(function(graph) {
+		res.render('editor',
+		{
+			layout: 'spa',
+			graph: graph
+		});
+	})
+	.catch(next);
+}
+
+// GET /fthr/dunes-world
+GraphController.prototype.graphLanding = function(req, res, next)
+{
+	console.log('graphLanding', req.path);
+	res.status(500).end();
+}
+
+// GET /fthr/dunes-world/graph.json
+GraphController.prototype.stream = function(req, res, next)
+{
+	var that = this;
+
+	this._service.findByPath(req.params.path)
+	.then(function(item)
+	{
+		that._fs.createReadStream(item.url)
+		.pipe(res)
+		.on('error', next);
+	})
+	.catch(next);
+};
+
 // POST /graph
 GraphController.prototype.save = function(req, res, next)
 {
 	var that = this;
-	var path = req.body.path;
-	if (path.indexOf('/graph/') !== 0)
-		path = fsPath.normalize('/graph/' + req.body.path);
+	var basename = fsPath.basename(req.body.path, fsPath.extname(req.body.path));
+	var path = '/'+req.user.username+'/'+basename;
+	var gridFsPath = '/graph'+path+'.json';
 
 	var tags = that._parseTags(req.body.tags);
 
@@ -31,7 +67,7 @@ GraphController.prototype.save = function(req, res, next)
 				.json({msg: 'Sorry, permission denied'});
 		}
 
-		return that._fs.createWriteStream(path, 'application/json')
+		return that._fs.createWriteStream(gridFsPath, 'application/json')
 		.then(function(stream)
 		{
 			var sbuf = new streamBuffers.ReadableStreamBuffer({
@@ -41,17 +77,16 @@ GraphController.prototype.save = function(req, res, next)
 
 			sbuf.put(new Buffer(req.body.graph));
 
-			var url = that._fs.url(path);
+			var url = that._fs.url(gridFsPath);
 
 			stream.on('close', function()
 			{
-				console.log('close')
 				var model =
 				{
 					path: path,
 					tags: tags,
 					url: url
-				}
+				};
 
 				return that._service.save(model, req.user)
 				.then(function(asset)

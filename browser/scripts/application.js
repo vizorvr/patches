@@ -9,7 +9,7 @@ function Application() {
 		PAUSED: 2
 	};
 	
-	this.preset_mgr = new PresetManager('presets');
+	this.preset_mgr = new PresetManager('/presets');
 	this.player = null;
 	this.canvas = canvas;
 	this.c2d = canvas[0].getContext('2d');
@@ -1437,11 +1437,24 @@ function Application() {
 	this.onOpenClicked = function()
 	{
 		FileSelectControl
-			.createGraphSelector(null, 'Open', function(file)
+			.createGraphSelector(null, 'Open', function(path)
 			{
-				window.location.hash = '#' + file;
-				load_location_hash();
-			})
+				history.pushState({
+					graph: {
+						path: path
+					}
+				}, '', path + '/edit');
+
+				E2.app.loadGraph('/data/graph'+path+'.json');
+			});
+	};
+
+	this.loadGraph = function(graphPath)
+	{
+		E2.app.onStopClicked();
+		E2.app.player.on_update();
+		E2.dom.filename_input.val(graphPath);
+		E2.app.player.load_from_url(graphPath);
 	};
 
 	this.onSaveClicked = function()
@@ -1476,7 +1489,7 @@ function Application() {
 						dataType: 'json',
 						success: function(saved)
 						{
-							window.location.hash = '#' + saved.url;
+							history.pushState({}, '', saved.path+'/edit');
 						},
 						error: function(x, t, err)
 						{
@@ -1691,7 +1704,7 @@ function Application() {
 	
 	$('button#help').click(function()
 	{
-		window.open('help/introduction.html', 'Engi Help');
+		window.open('/help/introduction.html', 'Engi Help');
 	});
 	
 	this.onHideTooltip();
@@ -1703,7 +1716,7 @@ function Application() {
 
 		$.ajax(
 		{
-			url: 'views/' + name + '.handlebars',
+			url: '/views/' + name + '.handlebars',
 			success: function(data)
 			{
 				if (!Handlebars.templates)
