@@ -204,6 +204,7 @@ function Renderer(vr_devices, canvas_id, core)
 	this.def_diffuse = vec4.createFrom(1, 1, 1, 1);
 	this.def_specular = vec4.createFrom(1, 1, 1, 1);
 	this.up_vec = vec3.createFrom(0, 0, 1);
+	this.fs_listeners = [];
 	
 	this.org_width = this.canvas.width();
 	this.org_height = this.canvas.height();
@@ -400,6 +401,20 @@ Renderer.prototype.pop_framebuffer = function()
 	}
 };
 
+Renderer.prototype.add_fs_listener = function(delegate)
+{
+	if(this.fs_listeners.indexOf(delegate) === -1)
+		this.fs_listeners.push(delegate);
+};
+
+Renderer.prototype.remove_fs_listener = function(delegate)
+{
+	var idx = this.fs_listeners.indexOf(delegate);
+	
+	if(idx !== -1)
+		this.fs_listeners.splice(idx, 1);
+};
+
 Renderer.prototype.on_fullscreen_change = function(self) { return function()
 {
 	var c = E2.dom.webgl_canvas;
@@ -417,6 +432,9 @@ Renderer.prototype.on_fullscreen_change = function(self) { return function()
 		self.fullscreen = true;
 		document.fullscreenElement = document.webkitFullScreenElement = document.mozFullscreenElement = null;
 	}
+	
+	for(var i = 0; i < self.fs_listeners.length; i++)
+		self.fs_listeners[i](self.fullscreen);
 }};
 
 Renderer.prototype.set_fullscreen = function(state)
@@ -938,8 +956,6 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 		if(rd < draw_count)
 			draw_count = rd;
 	}
-	
-	mat.enable();
 	
 	if(!this.instances)
 	{
