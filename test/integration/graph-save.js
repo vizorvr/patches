@@ -71,7 +71,6 @@ describe('Graph', function() {
 			.expect(200).end(function(err, res)
 			{
 				if (err) return done(err);
-				console.log('body', res.body)
 				assert.equal(res.body.abs_t, 46.988);
 				done();
 			})
@@ -90,10 +89,10 @@ describe('Graph', function() {
 	});
 
 	it('should automatically create an optimized version', function(done) {
-		var path = '/blah/quux/bar/foo.png';
+		var name = rand();
+		var path = '/blah/quux/bar/'+name+'.png';
 		var expectedPath = '/'+username+'/foo';
-		var optimPath = '/data/graph/'+username+'/foo-min.json';
-
+		var optimPath = '/data/graph/'+username+'/'+name+'-min.json';
 		sendGraph(path, function(err, res) {
 			if (err) return done(err);
 			request(app).get(optimPath)
