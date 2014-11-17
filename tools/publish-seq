@@ -158,7 +158,6 @@ function copy_scene(src, data_dir, pub_dir)
 		if(!fs.lstatSync(cp).isDirectory())
 			copy(cp, path.join(dst_dir, file));
         });
-	
 }
 
 function process_graph(graph, data_dir, pub_dir)
@@ -200,9 +199,8 @@ function prune_dynamic_slots(d_slots)
 function removeItem(coll, item)
 {
 	var idx = coll.indexOf(item);
-	
 	if(idx > -1)
-		coll.removeAt(idx);
+		coll.splice(idx, 1);
 }
 
 function delete_node(graph, node)
@@ -316,7 +314,7 @@ function optimize_graph(graph)
 		
 		if(node.plugin === 'graph' || node.plugin === 'loop')
 			optimize_graph(node.graph);
-		else if(node.plugin in filtered_plugins)
+		else if(filtered_plugins.indexOf(node.plugin) > -1)
 			pruned.push(node);
 		
 		delete node.x;
