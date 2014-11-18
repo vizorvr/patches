@@ -1464,6 +1464,8 @@ function Application() {
 			return E2.controllers.account.openLoginModal();
 		}
 
+		E2.dom.load_spinner.show();
+
 		$.get(URL_GRAPHS, function(files)
 		{
 			var wh = window.location.hash;
@@ -1489,10 +1491,13 @@ function Application() {
 						dataType: 'json',
 						success: function(saved)
 						{
+							E2.dom.load_spinner.hide();
 							history.pushState({}, '', saved.path+'/edit');
 						},
 						error: function(x, t, err)
 						{
+							E2.dom.load_spinner.hide();
+
 							if (x.responseText)
 								bootbox.alert('Save failed: ' + x.responseText);
 							else
