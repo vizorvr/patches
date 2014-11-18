@@ -30,13 +30,13 @@ E2.p.prototype.create_ui = function()
 		'position': 'relative'
 	});
 
-	h.attr('src', 'images/color_picker/hue.png');
+	h.attr('src', '/images/color_picker/hue.png');
 	h.attr('id', 'hue');
-	s.attr('src', 'images/color_picker/select.gif');
+	s.attr('src', '/images/color_picker/select.gif');
 	s.attr('id', 'sel');
-	hs.attr('src', 'images/color_picker/hue-select.png');
+	hs.attr('src', '/images/color_picker/hue-select.png');
 	hs.attr('id', 'hue-sel');
-	i.attr('src', 'images/color_picker/picker.png');
+	i.attr('src', '/images/color_picker/picker.png');
 	i.attr('id', 'img');
 
 	h.css({
