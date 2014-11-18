@@ -82,14 +82,14 @@ E2.p.prototype.create_ui = function()
 		'width': '32px',
 		'height': '32px',
 		'z-index': '3000',
-		'background': 'url(\'images/knob/shadow.png\')'
+		'background': 'url(\'/images/knob/shadow.png\')'
 	});
 	
 	this.knob.css({
 		'width': '32px',
 		'height': '32px',
 		'z-index': '3001',
-		'background': 'url(\'images/knob/knob.png\')'
+		'background': 'url(\'/images/knob/knob.png\')'
 	});
 
 	shadow.append(this.knob);
