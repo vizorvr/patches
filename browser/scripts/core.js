@@ -64,7 +64,7 @@ function PresetManager(base_url)
 
 		var presets_list = new CollapsibleSelectControl()
 			.data(presets)
-			.template('presets/presets')
+			.template(E2.views.presets.presets)
 			.render(E2.dom.presets_list)
 			.onOpen(function(path) {
 				var url = base_url + '/' + path + '.json';
@@ -519,7 +519,7 @@ E2.InitialiseEngi = function(vr_devices)
 
 	E2.app.onWindowResize();
 	
-	if(E2.app.player.core.plugin_mgr.release_mode)
+	if (E2.app.player.core.plugin_mgr.release_mode)
 	{
 		window.onbeforeunload = function(e)
 		{

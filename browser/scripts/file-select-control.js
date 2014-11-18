@@ -41,29 +41,27 @@ function FileSelectControl(handlebars) {
 		'Ok': this.close.bind(this)
 	}
 
-	this._templateName = 'filebrowser/generic';
-	this._frameName = 'filebrowser/frame';
+	this._template = E2.views.filebrowser.generic;
+	this._frameTemplate = E2.views.filebrowser.frame;
 
-	// load templates
-	['texture', 'upload', 'tags']
+	// setup partials
+	['upload', 'tags']
 	.forEach(function(pname)
 	{
-		var partialName = 'filebrowser/'+pname;
-		that._handlebars.registerPartial(partialName, that._handlebars.getTemplate(partialName));
+		that._handlebars.registerPartial('filebrowser/'+pname, E2.views.filebrowser[pname]);
 	});
 
-	this._frameTemplate = this._handlebars.getTemplate(this._frameName);
 }
 
 FileSelectControl.prototype.template = function(name)
 {
-	this._templateName = name;
+	this._template = E2.views.filebrowser[name];
 	return this;
 };
 
 FileSelectControl.prototype.frame = function(name)
 {
-	this._frameName = name;
+	this._frameTemplate = E2.views.filebrowser[name];
 	return this;
 };
 
@@ -110,7 +108,6 @@ FileSelectControl.prototype.modal = function()
 
 FileSelectControl.prototype._renderFiles = function(tags)
 {
-	var template = this._handlebars.getTemplate(this._templateName);
 	var files = this._files;
 
 	if (tags)
@@ -124,7 +121,7 @@ FileSelectControl.prototype._renderFiles = function(tags)
 		});
 	}
 
-	var html = template(
+	var html = this._template(
 	{
 		original: this._original,
 		url: this._url,
@@ -371,7 +368,7 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 	return createSelector('/graph', selected, okButton, okFn, function(ctl)
 	{
 		ctl
-		.template('filebrowser/graph')
+		.template('graph')
 		.modal();
 	});
 };
@@ -417,7 +414,7 @@ FileSelectControl.createTextureSelector = function(selected, okButton, okFn)
 	return createSelector('/image', selected, okButton, okFn, function(ctl)
 	{
 		ctl
-		.template('filebrowser/texture')
+		.template('texture')
 		.modal();
 	});
 };

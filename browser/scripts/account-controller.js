@@ -9,7 +9,7 @@ function AccountController(handlebars)
 
 AccountController.prototype.renderLoginView = function(user)
 {
-	var viewTemplate = Handlebars.getTemplate('partials/userpulldown');
+	var viewTemplate = E2.views.partials.userpulldown;
 	var html = viewTemplate({ user: user.toJSON() });
 	$('#user-pulldown').replaceWith(html);
 
@@ -37,12 +37,10 @@ AccountController.prototype.openLoginModal = function()
 {
 	var self = this;
 
-	var loginTemplate = Handlebars.getTemplate('account/login');
+	var loginTemplate = E2.views.account.login;
 	var bb = bootbox.dialog(
 	{
-		message: loginTemplate(),
-		//title: "loginDialog"
-		//onEscape: function() {  }
+		message: loginTemplate()
 	});
 
 	this._bindEvents(bb);
@@ -79,7 +77,7 @@ AccountController.prototype.openSignupModal = function()
 {
 	var self = this;
 
-	var signupTemplate = Handlebars.getTemplate('account/signup');
+	var signupTemplate = E2.views.account.signup;
 	var bb = bootbox.dialog(
 	{
 		message: signupTemplate(),

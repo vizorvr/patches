@@ -3,8 +3,8 @@ function CollapsibleSelectControl(handlebars) {
 	this._cb = function() {};
 }
 
-CollapsibleSelectControl.prototype.template = function(templateName) {
-	this._template = this._handlebars.getTemplate(templateName);
+CollapsibleSelectControl.prototype.template = function(template) {
+	this._template = template;
 	return this;
 }
 

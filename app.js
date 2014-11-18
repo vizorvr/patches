@@ -24,6 +24,8 @@ var temp = require('temp').track();
 
 var diyHbsHelpers = require('diy-handlebars-helpers');
 var hbsHelpers = require('./utils/hbs-helpers');
+var TemplateCache = require('./lib/templateCache');
+var templateCache = new TemplateCache().compile();
 
 // Framework controllers (see below for asset controllers)
 var homeController = require('./controllers/home');
@@ -77,7 +79,11 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 var hbs = exphbs.create({
 	defaultLayout: 'main',
-	helpers: _.extend(hbsHelpers, diyHbsHelpers)
+	helpers: _.extend(
+		hbsHelpers,
+		diyHbsHelpers,
+		templateCache.helper()
+	)
 })
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
@@ -162,8 +168,6 @@ app.use(function(req, res, next)
 
 app.use(express.static(path.join(__dirname, 'browser'), { maxAge: day }));
 app.use('/node_modules', express['static'](path.join(__dirname, 'node_modules'), { maxAge: day }))
-// TODO bundle precompiled templates for client
-app.use('/views', express['static'](path.join(__dirname, 'views'), { maxAge: day }))
 
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
