@@ -1468,7 +1468,7 @@ function Application() {
 		{
 			var wh = window.location.hash;
 			var fcs = new FileSelectControl()
-			.frame('filebrowser/save-frame')
+			.frame('save-frame')
 			.buttons({
 				'Cancel': function() {},
 				'Save': function(path, tags)
