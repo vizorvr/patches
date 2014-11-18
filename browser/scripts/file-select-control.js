@@ -336,8 +336,12 @@ function createSelector(path, selected, okButton, okFn, cb)
 	if (selected && selected.indexOf('://') === -1)
 		selected = selected.substring(selected.lastIndexOf('/') + 1);
 
+	E2.dom.load_spinner.show();
+
 	$.get(path, function(files)
 	{
+		E2.dom.load_spinner.hide();
+
 		var buttons = {
 			'Download': function(file) {
 				var url = '/dl' + path + file;
