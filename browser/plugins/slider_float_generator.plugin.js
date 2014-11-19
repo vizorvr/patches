@@ -202,7 +202,14 @@ E2.p.prototype.state_changed = function(ui)
 		this.update_value(this.state.val);
 		ui.find('#lo').val(this.state.min);
 		ui.find('#hi').val(this.state.max);
-		this.pos = ((this.state.val - this.state.min) / Math.abs(this.state.max - this.state.min)) * 60.0;
+		
+		var m = Math.min(this.state.min, this.state.max);
+		var p = (this.state.val - m) / Math.abs(this.state.max - this.state.min);
+		
+		if(this.state.min > this.state.max)
+			p = 1.0 - p;
+		
+		this.pos = p * 60.0;
 		this.handle[0].style.left = '' + this.pos + 'px';
 	}
 };

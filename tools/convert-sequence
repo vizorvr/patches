@@ -1,0 +1,88 @@
+// Converts sequences from the legacy format to the new, more compact format.
+var fs = require('fs');
+
+if(process.argv.length < 4)
+{
+	console.log('Usage: convert-sequence <input> <output>');
+	return;
+}
+
+var input_fn = process.argv[2];
+var output_fn = process.argv[3];
+
+var seq = JSON.parse(fs.readFileSync(input_fn));
+
+function rename(o, s, d)
+{
+	o[d] = o[s];
+	delete o[s];
+}
+
+function reduce_dyn_in(ds)
+{
+	rename(ds, 'name', 'n');
+	rename(ds, 'index', 'i');
+	rename(ds, 'type', 't');
+	rename(ds, 'is_connected', 'ic');
+}
+
+function reduce_dyn_out(ds)
+{
+	rename(ds, 'name', 'n');
+	rename(ds, 'index', 'i');
+	rename(ds, 'type', 't');
+	rename(ds, 'connected', 'c');
+	delete ds.desc;
+}
+
+function reduce_graph(g)
+{
+	rename(g, 'node_uid', 'nuid');
+	rename(g, 'parent_uid', 'puid');
+	
+	var nodes = g.nodes;
+	
+	for(var i = 0; i < nodes.length; i++)
+	{
+		var n = nodes[i];
+		
+		rename(n, 'plugin', 'p');
+		n.l = [n.x, n.y];
+		delete n.x;
+		delete n.y;
+		rename(n, 'state', 's');
+		rename(n, 'title', 't');
+		
+		if(n.p === 'graph' || n.p === 'loop')
+		{
+			rename(n, 'graph', 'g');
+			reduce_graph(n.g);
+		}
+		
+		if(n.dyn_in)
+		{
+			rename(n, 'dyn_in', 'dci');
+			reduce_dyn_in(n.dci);
+		}
+
+		if(n.dyn_out)
+		{
+			rename(n, 'dyn_out', 'dco');
+			reduce_dyn_out(n.dco);
+		}
+	}
+	
+	var conns = g.conns;
+	var nc = [];
+	
+	for(var i = 0; i < conns.length; i++)
+	{
+		var c = conns[i];
+		nc.push([c.src_nuid, c.dst_nuid, c.src_slot, c.dst_slot]);
+	}
+	
+	g.conns = nc;
+}
+
+reduce_graph(seq.root);
+fs.writeFileSync(output_fn, JSON.stringify(seq, '    '));

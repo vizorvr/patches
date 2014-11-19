@@ -24,6 +24,7 @@ E2.p = E2.plugins["graph"] = function(core, node)
 	this.core = core;
 	this.input_nodes = {};
 	this.output_nodes = {};
+	this.ui = null;
 	this.is_reset = true;
 	this.parent_node = node; // For reverse lookup in the core.
 	this.updated_sids = [];
@@ -181,6 +182,8 @@ E2.p.prototype.create_ui = function()
 	
 	ui.css('text-align', 'center');
 	ui.append(inp_edit);
+	
+	this.ui = ui;
 	
 	return ui;
 };
@@ -509,7 +512,7 @@ E2.p.prototype.update_input = function(slot, data)
 				{
 					this.is_reset = true;
 					
-					if(this.graph === E2.app.player.core.active_graph)
+					if(this.graph === E2.app.player.core.active_graph && this.ui)
 					{
 						var core = this.core;
 						var conns = this.graph.connections;
