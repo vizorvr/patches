@@ -3,7 +3,6 @@ var AssetController = require('./assetController');
 var streamBuffers = require('stream-buffers');
 var fsPath = require('path');
 
-
 function GraphController(graphService, fs)
 {
 	var args = Array.prototype.slice.apply(arguments);
@@ -68,8 +67,9 @@ GraphController.prototype.canWriteUpload = function(req, res, next)
 		return next(new Error('No files uploaded'));
 
 	var file = req.files.file;
-	var dest = '/'+req.user.username + '/'
-		+ fsPath.basename(file.name, fsPath.extname(file.name));
+	var fname = fsPath.basename(file.name, fsPath.extname(file.name));
+	fname = this._model.slugify(fname);
+	var dest = '/'+req.user.username + '/' + fname;
 
 	that._service.canWrite(req.user, dest)
 	.then(function(can)
@@ -88,8 +88,9 @@ GraphController.prototype.upload = function(req, res, next)
 	var that = this;
 
 	var file = req.files.file;
-	var path = '/'+req.user.username+'/'
-		+ fsPath.basename(file.name, fsPath.extname(file.name));
+	var fname = fsPath.basename(file.name, fsPath.extname(file.name));
+	fname = this._model.slugify(fname);
+	var path = '/'+req.user.username+'/'+ fname
 	var gridFsPath = '/graph'+path+'.json';
 
 	// move the uploaded file into GridFS / local FS
@@ -122,8 +123,9 @@ GraphController.prototype.upload = function(req, res, next)
 GraphController.prototype.save = function(req, res, next)
 {
 	var that = this;
-	var basename = fsPath.basename(req.body.path, fsPath.extname(req.body.path));
-	var path = '/'+req.user.username+'/'+basename;
+	var fname = fsPath.basename(req.body.path, fsPath.extname(req.body.path));
+	fname = this._model.slugify(fname);
+	var path = '/'+req.user.username+'/'+ fname;
 	var gridFsPath = '/graph'+path+'.json';
 
 	var tags = that._parseTags(req.body.tags);

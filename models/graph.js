@@ -3,10 +3,9 @@ var Schema = mongoose.Schema;
 var assetHelper = require('./asset-helper');
 var _ = require('lodash');
 
-
 var alphanumeric = [
-	/[\w0-9\-\_\/]/,
-	'Path must be alphanumeric'
+	/[a-z0-9\-\_]/,
+	'Must be alphanumeric'
 ];
 
 var graphSchema = new mongoose.Schema(
@@ -18,11 +17,7 @@ var graphSchema = new mongoose.Schema(
 	tags:
 	[{
 		type: String,
-		match:
-		[
-			/[a-z0-9\-\_]/,
-			'Tags must be alphanumeric'
-		],
+		match: alphanumeric,
 		index: true
 	}],
 	updatedAt: { type: Date, default: Date.now },
@@ -43,7 +38,16 @@ graphSchema.virtual('path').set(function(path)
 {
 	var paths = path.split('/');
 	this.owner = paths[1];
-	this.name = paths[2];
+	this.name = assetHelper.slugify(paths[2]);
+});
+
+graphSchema.statics.slugify = assetHelper.slugify;
+
+graphSchema.pre('save', function(next)
+{
+	var graph = this;
+	graph.name = assetHelper.slugify(graph.name);
+	next();
 });
 
 module.exports = mongoose.model('Graph', graphSchema);

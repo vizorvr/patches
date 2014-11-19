@@ -21,7 +21,7 @@ exports.schema =
 		match:
 		[
 			/[a-z0-9\-\_]/,
-			'Tags must be alphanumeric'
+			'Tags must be alphanumeric and lowercase'
 		],
 		index: true
 	}],
@@ -29,3 +29,9 @@ exports.schema =
 	createdAt: { type: Date, default: Date.now }
 }
 
+exports.slugify = function slugify(name)
+{
+	return name.toLowerCase()
+		.replace(/[^\w-]+/g,' ')
+		.replace(/ +/g, '-');
+};
