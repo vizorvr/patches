@@ -1,18 +1,47 @@
 var request = require('supertest');
-var app = require('../../app.js');
 var fs = require('fs');
 var fsPath = require('path');
+var mongo = require('mongodb');
 var assert = require('assert');
 
+function rand()
+{
+	return Math.floor(Math.random() * 100000);
+}
+
+var testId = rand();
+process.env.MONGODB = 'mongodb://localhost:27017/test'+testId;
+
+var app = require('../../app.js');
+
 describe('Upload', function() {
+	var username = 'test'+testId;
 	var deets = {
-		username: 'test'+Math.floor(Math.random() * 10000),
-		email: 'test'+Math.floor(Math.random() * 10000)+'@test.foo',
+		username: username,
+		email: username+'@test.foo',
 		password: 'abc123',
 		confirmPassword: 'abc123'
 	};
 
 	var agent = request.agent(app);
+	var db;
+
+	before(function(done)
+	{
+		var that = this;
+
+		db = new mongo.Db('test'+testId,
+			new mongo.Server('localhost', 27017),
+			{ safe: true }
+		);
+
+		db.open(done);
+	});
+
+	after(function()
+	{
+		db.dropDatabase();
+	});
 
 	before(function(done)
 	{
@@ -23,13 +52,18 @@ describe('Upload', function() {
 		.end(done);
 	});
 
+	after(function()
+	{
+
+	});
+
 	describe('Image', function()
 	{
 		it('should upload correctly', function(done) {
-			var original = '/image/'+process.pid+'.jpg';
-			var thumb = '/image/'+process.pid+'-thumb.jpg'
-			var scaled = '/image/'+process.pid+'-scaled.jpg'
-			var scaledThumb = '/image/'+process.pid+'-scaled-thumb.jpg'
+			var original = '/image/'+testId+'.jpg';
+			var thumb = '/image/'+testId+'-thumb.jpg'
+			var scaled = '/image/'+testId+'-scaled.jpg'
+			var scaledThumb = '/image/'+testId+'-scaled-thumb.jpg'
 			var stream = fs.createReadStream(__dirname+'/../fixtures/te-2rb.jpg');
 			stream.path = original
 
@@ -47,11 +81,8 @@ describe('Upload', function() {
 				delete json.scaledThumbnail.bytes;
 				delete json.scaled.bytes;
 				delete json.thumbnail.bytes;
-				assert.deepEqual({__v:0,path:original,url:'/data'+original,tags:[],
-					scaledThumbnail:{mimetype:'image/jpeg',width:128,height:128,path:scaledThumb,url:'/data'+scaledThumb},
-					scaled:{mimetype:'image/jpeg',width:1024,height:1024,path:scaled,url:'/data'+scaled},
-					thumbnail:{mimetype:'image/jpeg',width:128,height:72,path:thumb,url:'/data'+thumb},
-					original:{bytes:95755,mimetype:'image/jpeg',width:1920,height:1080,path:original,url:'/data'+original}}, json);
+				assert.deepEqual({__v:0,path:original,url:'/data/image/abc83484eec1f6e0e597147c47978488ef39e795.jpg',tags:[],scaledThumbnail:{mimetype:'image/jpeg',width:128,height:128,path:scaledThumb,url:'/data/image/2f16b642ad3dc58cf60329415e4c01d4a8bce223.jpg'},scaled:{mimetype:'image/jpeg',width:1024,height:1024,path:scaled,url:'/data/image/359a0c5ffa9cbbfb424a16835b069986ce01d77b.jpg'},thumbnail:{mimetype:'image/jpeg',width:128,height:72,path:thumb,url:'/data/image/e1b2466dca6af29bbdf9c2a14e3aaef49ddeb21d.jpg'},original:{bytes:95755,mimetype:'image/jpeg',width:1920,height:1080,path:original,     url: '/data/image/abc83484eec1f6e0e597147c47978488ef39e795.jpg' } },
+					json);
 				done(err);
 			});
 		});
@@ -60,7 +91,7 @@ describe('Upload', function() {
 	describe('Scene', function()
 	{
 		it('should upload correctly', function(done) {
-			var scene = '/scene/'+process.pid;
+			var scene = '/scene/'+testId;
 			var original = scene+'.zip';
 			var stream = fs.createReadStream(__dirname+'/../fixtures/scene.zip');
 			stream.path = original
@@ -98,7 +129,7 @@ describe('Upload', function() {
 	describe('Audio', function()
 	{
 		it('should upload correctly', function(done) {
-			var audio = '/audio/'+process.pid+'.ogg';
+			var audio = '/audio/'+testId+'.ogg';
 			var stream = fs.createReadStream(__dirname+'/../../browser/data/audio/inedible_candy.ogg');
 			stream.path = audio
 
@@ -113,8 +144,12 @@ describe('Upload', function() {
 				delete json._id;
 				delete json.createdAt;
 				delete json.updatedAt;
+				console.log(json)
 
-				assert.deepEqual({"__v":0,"path":audio,"url":"/data"+audio,"tags":[]}, json);
+				assert.deepEqual({"__v":0,
+					"path":audio,
+					"url":"/data/audio/84a9746d5ac7d62fae337f2e3d878d8e949d71a3.ogg",
+					"tags":[]}, json);
 				done(err);
 			});
 		});
@@ -123,7 +158,7 @@ describe('Upload', function() {
 	describe('JSON', function()
 	{
 		it('should upload correctly', function(done) {
-			var jsonFile = '/json/'+process.pid+'.json';
+			var jsonFile = '/json/'+testId+'.json';
 			var stream = fs.createReadStream(__dirname+'/../../browser/data/graphs/audrey2.json');
 			stream.path = jsonFile
 
@@ -140,7 +175,7 @@ describe('Upload', function() {
 				delete json.updatedAt;
 
 				assert.deepEqual({"__v":0,"path":jsonFile,
-					"url":"/data"+jsonFile,"tags":[]}, json);
+					"url":"/data/json/e8a89bcb9b6f07049b3103450b9aa0e1ac518ede.json","tags":[]}, json);
 
 				done(err);
 			});

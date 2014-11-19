@@ -29,10 +29,11 @@ AssetService.prototype.find = function(q)
 
 AssetService.prototype.canWrite = function(user, path)
 {
-	return this.findByPath(path).then(function(asset)
+	return this.findByPath(path)
+	.then(function(asset)
 	{
 		return !asset ||
-			asset._creator.toString() === user.id.toString();
+			asset._creator._id.toString() === user.id.toString();
 	});
 };
 

@@ -1507,7 +1507,7 @@ function Application() {
 				}
 			})
 			.files(files)
-			.selected(wh.substring(URL_DATA.length))
+			.selected(window.location.pathname.split('/')[2])
 			.modal();
 			
 			return fcs;

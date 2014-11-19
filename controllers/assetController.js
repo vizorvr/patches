@@ -1,5 +1,7 @@
 var image = require('../models/image');
 var fsPath = require('path');
+var checksum = require('checksum');
+var assetHelper = require('../models/asset-helper');
 
 function AssetController(modelClass, assetService, fs)
 {
@@ -17,28 +19,6 @@ AssetController.prototype.validate = function(req, res, next)
 	{
 		if (err)
 			return res.status(400).json(err.errors);
-
-		next();
-	});
-} 
-
-AssetController.prototype.canWriteUpload = function(req, res, next)
-{
-	var that = this;
-
-	if (!req.files)
-		return next(new Error('No files uploaded'));
-
-	var file = req.files.file;
-	var folder = '/'+req.params.model;
-	var dest = folder + '/'+ file.name;
-
-	that._service.canWrite(req.user, dest)
-	.then(function(can)
-	{
-		if (!can)
-			return res.status(403)
-				.json({msg: 'Sorry, permission denied'});
 
 		next();
 	});
@@ -75,6 +55,13 @@ AssetController.prototype._parseTags = function(tags)
 		return tag.length > 0;
 	});
 
+}
+
+AssetController.prototype._makePath = function(path)
+{
+	return '/' + this._modelName
+		+ '/' + assetHelper.slugify(fsPath.basename(path, fsPath.extname(path)))
+		+ fsPath.extname(path);
 }
 
 // GET /:model/tag/tag
@@ -128,13 +115,47 @@ AssetController.prototype.save = function(req, res, next)
 	});
 }
 
+AssetController.prototype.checksumUpload = function(req, res, next)
+{
+	checksum.file(req.files.file.path, function(err, sum)
+	{
+		if (err)
+			return next(err);
+
+		req.files.file.sha1 = sum;
+
+		next();
+	});
+}
+
+AssetController.prototype.canWriteUpload = function(req, res, next)
+{
+	var that = this;
+
+	if (!req.files)
+		return next(new Error('No files uploaded'));
+
+	var file = req.files.file;
+	var dest = this._makePath(file.path)
+
+	that._service.canWrite(req.user, dest)
+	.then(function(can)
+	{
+		if (!can)
+			return res.status(403)
+				.json({msg: 'Sorry, permission denied'});
+
+		next();
+	});
+} 
+
 AssetController.prototype.upload = function(req, res, next)
 {
 	var that = this;
 
 	var file = req.files.file;
-	var path = '/'+that._modelName+'/'+fsPath.basename(file.path);
-
+	var path = this._makePath(file.path)
+	var gridFsPath = '/'+that._modelName+'/'+file.sha1+fsPath.extname(file.path);
 
 	return that._service.canWrite(req.user, path)
 	.then(function(can)
@@ -144,7 +165,7 @@ AssetController.prototype.upload = function(req, res, next)
 				.json({msg: 'Sorry, permission denied'});
 
 		// move the uploaded file into GridFS / local FS
-		return that._fs.move(file.path, path)
+		return that._fs.move(file.path, gridFsPath)
 		.then(function(url)
 		{
 			return that._service.findByPath(path)

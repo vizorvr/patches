@@ -3,6 +3,7 @@ var AssetController = require('./assetController');
 var streamBuffers = require('stream-buffers');
 var fsPath = require('path');
 var templateCache = new(require('../lib/templateCache'));
+var assetHelper = require('../models/asset-helper');
 
 function GraphController(graphService, fs)
 {
@@ -81,6 +82,12 @@ GraphController.prototype.stream = function(req, res, next)
 	.catch(next);
 };
 
+GraphController.prototype._makePath = function(req, path)
+{
+	return '/' + req.user.username
+		+ '/' + assetHelper.slugify(fsPath.basename(path, fsPath.extname(path)));
+}
+
 GraphController.prototype.canWriteUpload = function(req, res, next)
 {
 	var that = this;
@@ -89,9 +96,7 @@ GraphController.prototype.canWriteUpload = function(req, res, next)
 		return next(new Error('No files uploaded'));
 
 	var file = req.files.file;
-	var fname = fsPath.basename(file.name, fsPath.extname(file.name));
-	fname = this._model.slugify(fname);
-	var dest = '/'+req.user.username + '/' + fname;
+	var dest = this._makePath(req, file.path);
 
 	that._service.canWrite(req.user, dest)
 	.then(function(can)
@@ -110,9 +115,7 @@ GraphController.prototype.upload = function(req, res, next)
 	var that = this;
 
 	var file = req.files.file;
-	var fname = fsPath.basename(file.name, fsPath.extname(file.name));
-	fname = this._model.slugify(fname);
-	var path = '/'+req.user.username+'/'+ fname
+	var path = this._makePath(req, file.path);
 	var gridFsPath = '/graph'+path+'.json';
 
 	// move the uploaded file into GridFS / local FS
@@ -145,9 +148,7 @@ GraphController.prototype.upload = function(req, res, next)
 GraphController.prototype.save = function(req, res, next)
 {
 	var that = this;
-	var fname = fsPath.basename(req.body.path, fsPath.extname(req.body.path));
-	fname = this._model.slugify(fname);
-	var path = '/'+req.user.username+'/'+ fname;
+	var path = this._makePath(req, req.body.path);
 	var gridFsPath = '/graph'+path+'.json';
 
 	var tags = that._parseTags(req.body.tags);

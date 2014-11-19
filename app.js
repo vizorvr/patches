@@ -56,6 +56,7 @@ var csrfExclude = [
 	'/this-url-will-bypass-csrf'
 ];
 
+console.log('connect', secrets.db)
 mongoose.connect(secrets.db);
 mongoose.connection.on('error', function()
 {
@@ -315,6 +316,14 @@ app.post('/upload/:model',
 			return filename.replace(/\W+/g, '-');
 		}
 	}),
+	function(req, res, next)
+	{
+		// imageProcessor will checksum the file
+		if (req.params.model === 'image')
+			return next();
+
+		req.controller.checksumUpload(req, res, next);
+	},
 	function(req, res, next)
 	{
 		req.controller.canWriteUpload(req, res, next);

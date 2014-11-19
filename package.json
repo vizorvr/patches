@@ -61,7 +61,8 @@
     "gulp-handlebars": "^3.0.1",
     "gulp-wrap": "^0.5.0",
     "gulp-declare": "^0.3.0",
-    "through": "^2.3.6"
+    "through": "^2.3.6",
+    "checksum": "^0.1.1"
   },
   "devDependencies": {
     "mocha": "^1.21.5",

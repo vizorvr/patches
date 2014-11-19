@@ -40,10 +40,12 @@ describe('ImageProcessor', function()
 
 	it('analyzes image correctly', function(done)
 	{
-		imp.handleUpload(images.small, 'foo')
+		imp.analyze(images.small.path)
 		.then(function(data) {
-			assert.equal(data.original.width, 164);
-			assert.equal(data.original.height, 164);
+			console.log('data', data)
+			assert.equal(data.width, 164);
+			assert.equal(data.height, 164);
+			assert.equal(data.sha1, 'f09d10f5fa34355c597ad20294f4542ebe3111cc');
 			done();
 		})
 		.catch(done)
@@ -114,13 +116,13 @@ describe('ImageProcessor', function()
 		imp.handleUpload(images.large, '/kuvat')
 		.then(function(data) {
 			assert.equal(data.original.path, '/kuvat/te-2rb.jpg');
-			assert.equal(data.original.url, '/files/kuvat/te-2rb.jpg');
+			assert.equal(data.original.url, '/files/image/abc83484eec1f6e0e597147c47978488ef39e795.jpg');
 			assert.equal(data.thumbnail.path, '/kuvat/te-2rb-thumb.jpg');
-			assert.equal(data.thumbnail.url, '/files/kuvat/te-2rb-thumb.jpg');
+			assert.equal(data.thumbnail.url, '/files/image/e1b2466dca6af29bbdf9c2a14e3aaef49ddeb21d.jpg');
 			assert.equal(data.scaled.path, '/kuvat/te-2rb-scaled.jpg');
-			assert.equal(data.scaled.url, '/files/kuvat/te-2rb-scaled.jpg');
+			assert.equal(data.scaled.url, '/files/image/359a0c5ffa9cbbfb424a16835b069986ce01d77b.jpg');
 			assert.equal(data.scaledThumbnail.path, '/kuvat/te-2rb-scaled-thumb.jpg');
-			assert.equal(data.scaledThumbnail.url, '/files/kuvat/te-2rb-scaled-thumb.jpg');
+			assert.equal(data.scaledThumbnail.url, '/files/image/2f16b642ad3dc58cf60329415e4c01d4a8bce223.jpg');
 			done();
 		})
 		.catch(done)

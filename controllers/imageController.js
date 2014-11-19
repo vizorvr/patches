@@ -18,14 +18,13 @@ ImageController.prototype.upload = function(req, res, next)
 	var that = this;
 
 	var file = req.files.file;
-	var folder = '/image'; 
-	var dest = folder + '/'+ file.name;
+	var folder = '/image';
 
 	new ImageProcessor(this._fs)
 		.handleUpload(file, folder)
 		.then(function(info)
 		{
-			fs.unlink(file.path);
+			fs.unlink(file.path, function() {});
 
 			info.path = info.original.path;
 			info.url = info.original.url;
