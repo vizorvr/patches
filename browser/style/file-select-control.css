@@ -85,11 +85,6 @@
 	text-align: left;
 }
 
-.file-selector .selected {
-	background-color: black;
-	color: white;
-}
-
 .file-selector tbody tr {
 	cursor: pointer;
 	border: none !important;

@@ -1,4 +1,4 @@
-function TagControl($input) {
+function TagControl($input, $fileList) {
 	var that = this;
 
 	function tagify(input) {
@@ -21,7 +21,7 @@ function TagControl($input) {
 		setTimeout(function()
 		{
 			var tags = tagify($input.val());
-			that.trigger('change', tags);
+			$fileList.filterByTags(tags);
 			$input.val(tags.join(' '));
 		}, 0);
 
@@ -34,7 +34,10 @@ function FileSelectControl(handlebars) {
 	var that = this;
 
 	this._handlebars = handlebars || window.Handlebars
-	this._files = []
+	this._frame = null;
+	this._fileList = new FileList();
+	this._fileList.on('change:files', this._onFilesChange, this);
+
 	this._cb = function() {}
 	this._buttons = {
 		'Cancel': this.cancel.bind(this),
@@ -50,8 +53,16 @@ function FileSelectControl(handlebars) {
 	{
 		that._handlebars.registerPartial('filebrowser/'+pname, E2.views.filebrowser[pname]);
 	});
-
 }
+
+FileSelectControl.prototype._onFilesChange = function(model)
+{
+	if (!this._frame)
+		return;
+
+	$('.file-selector', this._frame).html(this._renderFiles());
+	this._bindTable();
+};
 
 FileSelectControl.prototype.template = function(name)
 {
@@ -73,13 +84,15 @@ FileSelectControl.prototype.url = function(url)
 
 FileSelectControl.prototype.files = function(files)
 {
-	this._files = files.map(function(file)
+	var items = files.map(function(file)
 	{
 		if (typeof(file) === 'string')
 			return { path: file };
 
 		return file;
 	});
+
+	this._fileList.setFiles(items);
 
 	return this;
 };
@@ -106,21 +119,10 @@ FileSelectControl.prototype.modal = function()
 	return this;
 };
 
-FileSelectControl.prototype._renderFiles = function(tags)
+FileSelectControl.prototype._renderFiles = function()
 {
-	var files = this._files;
-
-	if (tags)
-	{
-		files = files.filter(function(file)
-		{
-			return tags.every(function(tag)
-			{
-				return file.tags.indexOf(tag) > -1;
-			});
-		});
-	}
-
+	var that = this;
+	var files = this._fileList.get('files');
 	var html = this._template(
 	{
 		original: this._original,
@@ -132,7 +134,7 @@ FileSelectControl.prototype._renderFiles = function(tags)
 			if (file._creator)
 				file._creator = file._creator.username;
 
-			file.selected = (file.url === self._selected);
+			file.selected = (file.path === that._selected);
 			file.name = file.path.substring(file.path.lastIndexOf('/')+1);
 			return file;
 		})
@@ -145,23 +147,23 @@ FileSelectControl.prototype._render = function()
 {
 	var self = this;
 
-	var frame = $(this._frameTemplate(
+	this._frame = $(this._frameTemplate(
 	{
 		original: this._original,
 		url: this._url,
 		user: E2.models.user.toJSON()
 	}));
 
-	$('.file-selector', frame).html(this._renderFiles());
+	$('.file-selector', this._frame).html(this._renderFiles());
 
 	var el = bootbox.dialog(
 	{
-		message: frame
+		message: this._frame
 	});
 
 	this._el = el;
 	this._inputEl = $('#file-url', this._el);
-	this._selectedEl = $('tr.selected', this._el);
+	this._selectedEl = $('tr.success', this._el);
 
 	// add buttons
 	var btnEl = $('.buttons', el)
@@ -183,18 +185,7 @@ FileSelectControl.prototype._render = function()
 		.addClass('btn-primary');
 
 	// bind file rows and click handlers
-	function _onClick(e) {
-		var tr = $(e.target).closest('tr');
-		$('tr.success', el).removeClass('success');
-		tr.addClass('success');
-		self._onSelect(tr);
-	}
-
-	$('.file-row', el).click(_onClick);
-	$('.file-row', el).dblclick(function(e) {
-		_onClick(e);
-		self._onChange();
-	});
+	this._bindTable();
 
 	$('input', el).on('change', this._onChange.bind(this))
 	$('button.close', el).click(this.close.bind(this))
@@ -203,6 +194,8 @@ FileSelectControl.prototype._render = function()
 
 	// show selected file when modal is opened
 	$(el).on('shown.bs.modal', function (e) {
+		$('table', el).attr('tabindex', 1).focus();
+
 		if (!self._selectedEl.length)
 			return;
 
@@ -211,6 +204,8 @@ FileSelectControl.prototype._render = function()
 				self._selectedEl.position().top
 				- self._selectedEl.height()
 				* 10)
+
+
 	});
 
 	// bind upload form
@@ -218,18 +213,31 @@ FileSelectControl.prototype._render = function()
 
 	// attach TagControl to tags input
 	this._tagsEl = $('#tags', el);
-	new TagControl(this._tagsEl)
-	.on('change', function(tags)
-	{
-		$('.file-selector', frame).html(self._renderFiles(tags));
-	});
+	new TagControl(this._tagsEl, this._fileList);
 
 	// show
-	el.appendTo('body')
-	.attr("tabindex", -1)
-	.focus();
+	el.appendTo('body');
 
 	return this;
+};
+
+FileSelectControl.prototype._bindTable = function()
+{
+	var self = this;
+
+	// bind file rows and click handlers
+	function _onClick(e) {
+		var tr = $(e.target).closest('tr');
+		$('tr.success', self._el).removeClass('success');
+		tr.addClass('success');
+		self._onSelect(tr);
+	}
+
+	$('.file-row', self._el).click(_onClick);
+	$('.file-row', self._el).dblclick(function(e) {
+		_onClick(e);
+		self._onChange();
+	});
 };
 
 FileSelectControl.prototype._bindUploadForm = function()
@@ -251,9 +259,18 @@ FileSelectControl.prototype._bindUploadForm = function()
 		{
 			url: $form[0].action,
 			type: 'POST',
-			success: function()
+			success: function(file)
 			{
-				$('#message', container).html('<h4>Uploaded successfully!</h4>');
+				console.log("File uploaded:", file.url);
+				$('#message', container).html('<h4>'+file.name+' uploaded successfully!</h4>');
+				that.selected(file.path);
+				that._fileList.addFile(file);
+
+				setTimeout(function()
+				{
+					that._onSelect($('tr.file-row:first', that._el));
+					$('.nav-tabs a:first', that._el).tab('show');
+				}, 1000);
 			},
 			error: function(err)
 			{
@@ -273,6 +290,8 @@ FileSelectControl.prototype._bindUploadForm = function()
 };
 
 FileSelectControl.prototype._onKeyPress = function(e) {
+	e.stopPropagation();
+
 	switch(e.keyCode) {
 		case 27:
 			this.cancel()
@@ -281,12 +300,14 @@ FileSelectControl.prototype._onKeyPress = function(e) {
 			$('button:last', this._el).click()
 			break;
 		case 38:
+			e.preventDefault();
 			var prev = this._selectedEl.prev('tr')
 			if (prev.length)
 				this._onSelect(prev)
 			this._scroll(-1)
 			break;
 		case 40:
+			e.preventDefault();
 			var next = this._selectedEl.next('tr')
 			if (next.length)
 				this._onSelect(next)
@@ -296,8 +317,12 @@ FileSelectControl.prototype._onKeyPress = function(e) {
 };
 
 FileSelectControl.prototype._scroll = function(amt) {
-	var tab = $('table', this._el);
-	tab.scrollTop(tab.scrollTop() + amt * this._selectedEl.height());
+	if (!this._selectedEl.length)
+		return;
+
+	var container = $('.fixed-table-container-inner');
+	var threshold = 4 * this._selectedEl.height();
+	container.scrollTop(this._selectedEl.offset().top - container.offset().top + container.scrollTop() - threshold);
 };
 
 FileSelectControl.prototype._onChange = function() {
@@ -307,8 +332,8 @@ FileSelectControl.prototype._onChange = function() {
 FileSelectControl.prototype._onSelect = function(row) {
 	var path = row.data('url');
 
-	this._selectedEl.removeClass('selected');
-	row.addClass('selected');
+	this._selectedEl.removeClass('success');
+	row.addClass('success');
 
 	this._selectedEl = row;
 	this._inputEl.val(path);
