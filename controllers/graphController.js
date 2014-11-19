@@ -29,8 +29,7 @@ GraphController.prototype.edit = function(req, res, next)
 
 		if (process.env.NODE_ENV !== 'production')
 		{
-			console.error('recompile templates');
-			templateCache.compile(function()
+			templateCache.recompile(function()
 			{
 				respond();
 			});
