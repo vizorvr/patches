@@ -32,8 +32,16 @@ AssetService.prototype.canWrite = function(user, path)
 	return this.findByPath(path)
 	.then(function(asset)
 	{
+		if (!asset)
+			return true;
+
+		var creator = asset._creator;
+
+		if (creator._id)
+			creator = creator._id;
+
 		return !asset ||
-			asset._creator._id.toString() === user.id.toString();
+			creator.toString() === user.id.toString();
 	});
 };
 
