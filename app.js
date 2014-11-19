@@ -29,7 +29,6 @@ var templateCache = new TemplateCache().compile();
 
 // Framework controllers (see below for asset controllers)
 var homeController = require('./controllers/home');
-var editorController = require('./controllers/editor');
 var userController = require('./controllers/user');
 
 // API keys + Passport configuration
@@ -185,7 +184,6 @@ app.post('/account/delete', passportConf.isAuthenticated, userController.postDel
 app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
 
 app.get('/', homeController.index);
-app.get('/editor', editorController.index);
 
 // OAuth routes for sign-in.
 /*
@@ -330,6 +328,8 @@ app.post('/upload/:model',
 
 // -----
 // Graph routes 
+
+app.get('/editor', graphController.edit);
 
 // GET /fthr/dunes-world/edit -- EDITOR
 app.get('/:username/:graph/edit', function(req, res, next)

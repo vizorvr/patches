@@ -2,6 +2,7 @@ var Graph = require('../models/graph');
 var AssetController = require('./assetController');
 var streamBuffers = require('stream-buffers');
 var fsPath = require('path');
+var templateCache = new(require('../lib/templateCache'));
 
 function GraphController(graphService, fs)
 {
@@ -15,13 +16,35 @@ GraphController.prototype = Object.create(AssetController.prototype);
 // GET /fthr/dunes-world/edit
 GraphController.prototype.edit = function(req, res, next)
 {
+	function renderEditor(graph)
+	{
+		function respond()
+		{
+			res.render('editor',
+			{
+				layout: 'spa',
+				graph: graph
+			});
+		}
+
+		if (process.env.NODE_ENV !== 'production')
+		{
+			console.error('recompile templates');
+			templateCache.compile(function()
+			{
+				respond();
+			});
+		}
+		else
+			respond();
+	}
+
+	if (!req.params.path)
+		return renderEditor();
+
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
-		res.render('editor',
-		{
-			layout: 'spa',
-			graph: graph
-		});
+		renderEditor(graph);
 	})
 	.catch(next);
 }
