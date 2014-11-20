@@ -82,7 +82,20 @@ describe('Upload', function() {
 				delete json.scaled.bytes;
 				delete json.thumbnail.bytes;
 
-				expect({__v:0,path:original,url:'/data/image/abc83484eec1f6e0e597147c47978488ef39e795.jpg',tags:[],scaledThumbnail:{mimetype:'image/jpeg',width:128,height:128,path:scaledThumb,url:'/data/image/2f16b642ad3dc58cf60329415e4c01d4a8bce223.jpg'},scaled:{mimetype:'image/jpeg',width:1024,height:1024,path:scaled,url:'/data/image/359a0c5ffa9cbbfb424a16835b069986ce01d77b.jpg'},thumbnail:{mimetype:'image/jpeg',width:128,height:72,path:thumb,url:'/data/image/e1b2466dca6af29bbdf9c2a14e3aaef49ddeb21d.jpg'},original:{bytes:95755,mimetype:'image/jpeg',width:1920,height:1080,path:original,     url: '/data/image/abc83484eec1f6e0e597147c47978488ef39e795.jpg' } })
+				expect(json.url.length).to.equal(56);
+				expect(json.original.url.length).to.equal(56);
+				expect(json.scaled.url.length).to.equal(56);
+				expect(json.scaledThumbnail.url.length).to.equal(56);
+				expect(json.thumbnail.url.length).to.equal(56);
+
+				delete json.url; delete json.scaled.url; delete json.original.url; delete json.scaledThumbnail.url; delete json.thumbnail.url; 
+
+				expect({__v:0,path:original,
+					tags:[],scaledThumbnail:{mimetype:'image/jpeg',width:128,height:128,path:scaledThumb},
+					scaled:{mimetype:'image/jpeg',width:1024,height:1024,path:scaled},
+					thumbnail:{mimetype:'image/jpeg',width:128,height:72,path:thumb},
+					original:{bytes:95755,mimetype:'image/jpeg',width:1920,height:1080,path:original}
+					})
 					.to.deep.equal(json);
 				done(err);
 			});
