@@ -9,9 +9,10 @@ function Player(vr_devices, canvas, app, root_node, cb)
 	};
 
 	this.app = app;
+
 	this.core = new Core(vr_devices, app);
-	if (!this.core.onPluginsLoaded)
-		this.core.onPluginsLoaded = cb;
+	this.core.on('ready', cb);
+
 	this.interval = null;
 	this.abs_time = 0.0;
 	this.last_time = (new Date()).getTime();
@@ -182,6 +183,6 @@ function CreatePlayer(vr_devices, init_callback)
 	
 	E2.dom.webgl_canvas = $('#webgl-canvas');
 	E2.app = {};
-	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, E2.app, function(){}, init_callback);
+	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, E2.app, null, init_callback);
 	
 }

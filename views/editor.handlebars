@@ -91,11 +91,10 @@
 				url: '{{graph.url}}'
 			};
 
-			// @VizorLaunch FIXME! events instead of overwriting function
-			E2.app.player.core.onPluginsLoaded = function()
+			E2.app.player.core.on('ready', function()
 			{
 				E2.app.loadGraph(graph.url);
-			};
+			});
 		{{/if}}
 	}
 

@@ -163,6 +163,8 @@ function Core(vr_devices, app) {
 		ARRAY: { id: 17, name: 'Array' },
 		OBJECT: { id: 18, name: 'Object' }
 	};
+
+	this._listeners = {};
 	
 	this.asset_tracker = new AssetTracker(this);
 	this.renderer = new Renderer(vr_devices, '#webgl-canvas', this);
@@ -432,6 +434,29 @@ function Core(vr_devices, app) {
 
 Core.prototype.onPluginsLoaded = function()
 {
+	this.emit('ready');
+};
+
+Core.prototype.on = function(kind, cb)
+{
+	if (!cb)
+		return;
+
+	if (!this._listeners[kind])
+		this._listeners[kind] = [];
+
+	this._listeners[kind].push(cb);
+}
+
+Core.prototype.emit = function(kind)
+{
+	if (!this._listeners[kind])
+		return;
+
+	this._listeners[kind].forEach(function(cb)
+	{
+		cb();
+	});
 };
 
 
