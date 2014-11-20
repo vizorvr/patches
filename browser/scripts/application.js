@@ -1459,16 +1459,16 @@ function Application() {
 
 	this.onSaveClicked = function(cb)
 	{
-		if (!E2.models.user.get('username'))
-		{
-			return E2.controllers.account.openLoginModal();
-		}
-
 		this.openSaveDialog();
 	}
 
 	this.openSaveDialog = function(cb)
 	{
+		if (!E2.models.user.get('username'))
+		{
+			return E2.controllers.account.openLoginModal();
+		}
+
 		E2.dom.load_spinner.show();
 
 		$.get(URL_GRAPHS, function(files)
