@@ -22,20 +22,18 @@
 		<script type="text/javascript" src="/scripts/core.js"></script>
 		<script type="text/javascript" src="/scripts/player.js"></script>
 		<script type="text/javascript">
-
-			function AddEvents()
+			function play()
 			{
-				$('#fs').click(function()
+				CreatePlayer([null, null], function()
 				{
-					E2.app.player.core.renderer.set_fullscreen(true);
-				});
-			}
+					$('#fs').click(function()
+					{
+						E2.app.player.core.renderer.set_fullscreen(true);
+					});
 
-			function LoadScene()
-			{
-				AddEvents();
-				E2.app.player.load_from_url('{{graphMinUrl}}');
-				E2.app.player.play();
+					E2.app.player.load_from_url('{{graphMinUrl}}');
+					E2.app.player.play();
+				});
 			}
 
 			function EnumerateVRDevices(devices)
@@ -66,7 +64,7 @@
 					}
 				}
 
-				player = CreatePlayer([hmd, sensor], LoadScene);
+				CreatePlayer([hmd, sensor], play);
 			}
 			
 			$(document).ready(function()
@@ -81,7 +79,7 @@
 				}
 				else
 				{
-					CreatePlayer([null, null], LoadScene);
+					play();
 				}
 			});
 			
@@ -112,7 +110,7 @@
 
 			<div class="row">
 				<div class="col-xs-12 text-center">
-	 	           <a href="{{editUrl}}" class="btn btn-success">Edit this demo</a>
+	 	           <a href="{{editUrl}}" class="btn btn-success">Tweak this graph</a>
 	 	        </div>
 			</div>
         </div>
