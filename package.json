@@ -67,7 +67,7 @@
   "devDependencies": {
     "mocha": "^1.21.5",
     "uglify-js2": "^2.1.11",
-    "chai": "^1.9.1",
+    "chai": "^1.10.0",
     "multiline": "^0.3.4",
     "supertest": "^0.13.0",
     "yui-compressor": "^0.1.3"

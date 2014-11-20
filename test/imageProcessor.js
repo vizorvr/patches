@@ -115,14 +115,15 @@ describe('ImageProcessor', function()
 	{
 		imp.handleUpload(images.large, '/kuvat')
 		.then(function(data) {
+			var fplen = '/files/image/abc83484eec1f6e0e597147c47978488ef39e795.jpg'.length;
 			assert.equal(data.original.path, '/kuvat/te-2rb.jpg');
-			assert.equal(data.original.url, '/files/image/abc83484eec1f6e0e597147c47978488ef39e795.jpg');
+			assert.equal(data.original.url.length, fplen);
 			assert.equal(data.thumbnail.path, '/kuvat/te-2rb-thumb.jpg');
-			assert.equal(data.thumbnail.url, '/files/image/e1b2466dca6af29bbdf9c2a14e3aaef49ddeb21d.jpg');
+			assert.equal(data.thumbnail.url.length, fplen);
 			assert.equal(data.scaled.path, '/kuvat/te-2rb-scaled.jpg');
-			assert.equal(data.scaled.url, '/files/image/359a0c5ffa9cbbfb424a16835b069986ce01d77b.jpg');
+			assert.equal(data.scaled.url.length, fplen);
 			assert.equal(data.scaledThumbnail.path, '/kuvat/te-2rb-scaled-thumb.jpg');
-			assert.equal(data.scaledThumbnail.url, '/files/image/2f16b642ad3dc58cf60329415e4c01d4a8bce223.jpg');
+			assert.equal(data.scaledThumbnail.url.length, fplen);
 			done();
 		})
 		.catch(done)

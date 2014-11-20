@@ -174,12 +174,11 @@ GraphController.prototype.save = function(req, res, next)
 				url: url
 			};
 
-			that._service.save(model, req.user)
+			return that._service.save(model, req.user)
 			.then(function(asset)
 			{
 				res.json(asset);
-			})
-			.catch(next);
+			});
 		});	
 	})
 	.catch(next);

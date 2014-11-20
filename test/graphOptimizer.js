@@ -13,7 +13,6 @@ describe('Graph optimizer', function()
 			.graph(source)
 			.optimize()
 
-		console.log('result', JSON.stringify(output));
 		assert.deepEqual(output, optimized)
 	});
 

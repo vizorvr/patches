@@ -56,7 +56,6 @@ var csrfExclude = [
 	'/this-url-will-bypass-csrf'
 ];
 
-console.log('connect', secrets.db)
 mongoose.connect(secrets.db);
 mongoose.connection.on('error', function()
 {

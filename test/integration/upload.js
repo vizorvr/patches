@@ -2,7 +2,7 @@ var request = require('supertest');
 var fs = require('fs');
 var fsPath = require('path');
 var mongo = require('mongodb');
-var assert = require('assert');
+var expect = require('chai').expect;
 
 function rand()
 {
@@ -81,8 +81,9 @@ describe('Upload', function() {
 				delete json.scaledThumbnail.bytes;
 				delete json.scaled.bytes;
 				delete json.thumbnail.bytes;
-				assert.deepEqual({__v:0,path:original,url:'/data/image/abc83484eec1f6e0e597147c47978488ef39e795.jpg',tags:[],scaledThumbnail:{mimetype:'image/jpeg',width:128,height:128,path:scaledThumb,url:'/data/image/2f16b642ad3dc58cf60329415e4c01d4a8bce223.jpg'},scaled:{mimetype:'image/jpeg',width:1024,height:1024,path:scaled,url:'/data/image/359a0c5ffa9cbbfb424a16835b069986ce01d77b.jpg'},thumbnail:{mimetype:'image/jpeg',width:128,height:72,path:thumb,url:'/data/image/e1b2466dca6af29bbdf9c2a14e3aaef49ddeb21d.jpg'},original:{bytes:95755,mimetype:'image/jpeg',width:1920,height:1080,path:original,     url: '/data/image/abc83484eec1f6e0e597147c47978488ef39e795.jpg' } },
-					json);
+
+				expect({__v:0,path:original,url:'/data/image/abc83484eec1f6e0e597147c47978488ef39e795.jpg',tags:[],scaledThumbnail:{mimetype:'image/jpeg',width:128,height:128,path:scaledThumb,url:'/data/image/2f16b642ad3dc58cf60329415e4c01d4a8bce223.jpg'},scaled:{mimetype:'image/jpeg',width:1024,height:1024,path:scaled,url:'/data/image/359a0c5ffa9cbbfb424a16835b069986ce01d77b.jpg'},thumbnail:{mimetype:'image/jpeg',width:128,height:72,path:thumb,url:'/data/image/e1b2466dca6af29bbdf9c2a14e3aaef49ddeb21d.jpg'},original:{bytes:95755,mimetype:'image/jpeg',width:1920,height:1080,path:original,     url: '/data/image/abc83484eec1f6e0e597147c47978488ef39e795.jpg' } })
+					.to.deep.equal(json);
 				done(err);
 			});
 		});
@@ -118,9 +119,9 @@ describe('Upload', function() {
 					scene+'/skybox_3.jpg',
 					scene+'/skybox_not.jpg' ]
 
-				assert.deepEqual({"__v":0,"path":scene,"url":'/data'+scene+'/scene.json',"tags":[],
+				expect({"__v":0,"path":scene,"url":'/data'+scene+'/scene.json',"tags":[],
 					files: files
-				}, json);
+				}).to.deep.equal(json);
 				done(err);
 			});
 		});
@@ -146,10 +147,10 @@ describe('Upload', function() {
 				delete json.updatedAt;
 				console.log(json)
 
-				assert.deepEqual({"__v":0,
+				expect({"__v":0,
 					"path":audio,
 					"url":"/data/audio/84a9746d5ac7d62fae337f2e3d878d8e949d71a3.ogg",
-					"tags":[]}, json);
+					"tags":[]}).to.deep.equal(json);
 				done(err);
 			});
 		});
@@ -174,8 +175,9 @@ describe('Upload', function() {
 				delete json.createdAt;
 				delete json.updatedAt;
 
-				assert.deepEqual({"__v":0,"path":jsonFile,
-					"url":"/data/json/e8a89bcb9b6f07049b3103450b9aa0e1ac518ede.json","tags":[]}, json);
+				expect({"__v":0,"path":jsonFile,
+					"url":"/data/json/e8a89bcb9b6f07049b3103450b9aa0e1ac518ede.json","tags":[]})
+				.to.deep.equal(json);
 
 				done(err);
 			});

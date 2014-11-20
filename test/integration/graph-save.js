@@ -3,8 +3,10 @@ var app = require('../../app.js');
 var fs = require('fs');
 var fsPath = require('path');
 var assert = require('assert');
+var expect = require('chai').expect;
 
 var graphFile = __dirname+'/../../browser/data/graphs/Button.json';
+var graphData = fs.readFileSync(graphFile);
 
 function rand() {
 	return Math.floor(Math.random() * 10000);
@@ -26,7 +28,7 @@ describe('Graph', function() {
 		return agent.post('/graph').send(
 		{
 			path: path,
-			graph: fs.readFileSync(graphFile)
+			graph: graphData
 		})
 		.expect(200)
 		.end(cb);
@@ -53,11 +55,11 @@ describe('Graph', function() {
 				url: res.body.url,
 				path: res.body.path
 			};
-  			assert.deepEqual({
+  			expect({
 				name: path, owner: username,
 				path: expectedPath,
 				url: '/data/graph'+expectedPath+'.json'
-			}, json);
+			}).to.deep.equal(json);
 			done();
 		});
 	});
@@ -71,7 +73,7 @@ describe('Graph', function() {
 			.expect(200).end(function(err, res)
 			{
 				if (err) return done(err);
-				assert.equal(res.body.abs_t, 46.988);
+				expect(res.body.abs_t).to.equal(46.988);
 				done();
 			})
 		});
@@ -83,7 +85,7 @@ describe('Graph', function() {
 
 		sendGraph(path, function(err, res) {
 			if (err) return done(err);
-			assert.equal(res.body.path, expectedPath);
+			expect(res.body.path).to.equal(expectedPath);
 			done();
 		});
 	});
@@ -99,7 +101,7 @@ describe('Graph', function() {
 			.expect(200).end(function(err, res)
 			{
 				if (err) return done(err);
-				assert.equal(res.body.abs_t, 46.988);
+				expect(res.body.abs_t).to.equal(46.988);
 				done();
 			})
 		});
@@ -116,7 +118,7 @@ describe('Graph', function() {
 			.expect(200).end(function(err, res)
 			{
 				if (err) return done(err);
-				assert.equal(res.body.path, expectedPath);
+				expect(res.body.path).to.equal(expectedPath);
 				done();
 			})
 		});
@@ -153,7 +155,7 @@ describe('Graph', function() {
 			.end(function(err, res)
 			{
 				if (err) return done(err);
-				assert.deepEqual(res.body[0].tags,
+				expect(res.body[0].tags).to.deep.equal(
 				[
 					'#tags', '#are', '#cool'
 				]);
