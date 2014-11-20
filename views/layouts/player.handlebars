@@ -2,9 +2,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head id="head">
-		<title>ENGI&#8482; Player Demo</title>
+		<title>{{graph.name}} by {{graph.owner}}</title>
     	<link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
 	    <link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
+	    <link href="/style/player.css" rel="Stylesheet" type="text/css"  />
 
 		<script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
 		<script type="text/javascript" src="/vendor/jquery.fastfix.js"></script>
@@ -20,46 +21,6 @@
 		<script type="text/javascript" src="/scripts/registers.js"></script>
 		<script type="text/javascript" src="/scripts/core.js"></script>
 		<script type="text/javascript" src="/scripts/player.js"></script>
-		<style type="text/css">
-
-			body {
-				background-color: #111; 
-			
-			}
-
-			.webgl-canvas-normal
-			{
-				
-				width: 860px;
-				height: 477px;
-    			margin: 0 auto;
-    			margin-top: 100px;
-     			background-color: #000; 
-				z-index: -1;
-
-			}
-
-			.webgl-canvas-fs
-			{
-				background-color: #000; 
-				position: absolute; 
-				left: 0px; 
-				top: 0px;
-				width: 100%;
-				height: 100%;
-				z-index: 10000;
-			}
-			
-			.oculus
-			{
-				width: 33px;
-				height: 20px;
-				position: absolute;
-				left: 575px;
-				top: 388px;
-				z-index: 2;
-			}
-		</style>
 		<script type="text/javascript">
 			function AddEvents(player)
 			{
@@ -132,14 +93,27 @@
 				<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
 			</div>
 		</noscript>
-		<div id="main_layout" class="centered">
-			<center>
-			<canvas id="webgl-canvas" class="webgl-canvas-normal" width="860" height="477" oncontextmenu="return false;">
-			</canvas>
-			</center>
-            {{> flash}}
-            {{{body}}}
-            <a href="{{editUrl}}" class="btn btn-default">Edit this demo</a>
-		</div>
+
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12">
+					<canvas id="webgl-canvas" class="webgl-canvas-normal center" width="860" height="477" oncontextmenu="return false;">
+					</canvas>
+				</div>
+	        </div>
+
+			<div class="row">
+				<div class="col-xs-10 col-xs-offset-2">
+					<h1>{{graph.name}}</h1>
+					by {{graph.owner}}
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-xs-12 text-center">
+	 	           <a href="{{editUrl}}" class="btn btn-success">Edit this demo</a>
+	 	        </div>
+			</div>
+        </div>
 	</body>
 </html>
