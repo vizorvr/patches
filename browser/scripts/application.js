@@ -1457,13 +1457,18 @@ function Application() {
 		E2.app.player.load_from_url(graphPath);
 	};
 
-	this.onSaveClicked = function()
+	this.onSaveClicked = function(cb)
 	{
 		if (!E2.models.user.get('username'))
 		{
 			return E2.controllers.account.openLoginModal();
 		}
 
+		this.openSaveDialog();
+	}
+
+	this.openSaveDialog = function(cb)
+	{
 		E2.dom.load_spinner.show();
 
 		$.get(URL_GRAPHS, function(files)
@@ -1493,6 +1498,8 @@ function Application() {
 						{
 							E2.dom.load_spinner.hide();
 							history.pushState({}, '', saved.path+'/edit');
+							if (cb)
+								cb();
 						},
 						error: function(x, t, err)
 						{
@@ -1514,9 +1521,12 @@ function Application() {
 		})
 	};
 
-	this.onPreviewClicked = function()
+	this.onPublishClicked = function()
 	{
-		window.location.href = '/'+window.location.pathname.split('/').slice(1,3).join('/');
+		self.openSaveDialog(function()
+		{
+			window.location.href = '/'+window.location.pathname.split('/').slice(1,3).join('/');
+		});
 	}
 	
 	this.onLoadClicked = function()
