@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var compress = require('compression');
 var session = require('express-session');
 var bodyParser = require('body-parser');
-var logger = require('morgan');
+var morgan = require('morgan');
 var errorHandler = require('errorhandler');
 var csrf = require('lusca').csrf();
 var methodOverride = require('method-override');
@@ -97,7 +97,7 @@ app.use(connectAssets(
 	helperContext: app.locals
 }));
 
-app.use(logger('dev'));
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(bodyParser.json(
 {
 	limit: 1024 * 1024 * 128
