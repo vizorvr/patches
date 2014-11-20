@@ -1,6 +1,5 @@
 var Graph = require('../models/graph');
 var AssetController = require('./assetController');
-var streamBuffers = require('stream-buffers');
 var fsPath = require('path');
 var templateCache = new(require('../lib/templateCache'));
 var assetHelper = require('../models/asset-helper');
