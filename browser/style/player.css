@@ -1,0 +1,52 @@
+
+.center
+{
+  width: 200px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn { /* override bootstrap style */
+	border-radius: 0;
+}
+
+body {
+	background-color: #222; 
+	color: white;
+}
+
+.title {
+	margin-left: 10px;
+}
+
+.webgl-canvas-normal
+{
+	width: 860px;
+	height: 477px;
+	margin-top: 30px;
+	margin-bottom: 0px;
+	background-color: #000; 
+	z-index: -1;
+}
+
+.webgl-canvas-fs
+{
+	background-color: #000; 
+	position: absolute; 
+	left: 0px; 
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 10000;
+}
+
+.oculus
+{
+	width: 33px;
+	height: 20px;
+	position: absolute;
+	left: 575px;
+	top: 388px;
+	z-index: 2;
+}
