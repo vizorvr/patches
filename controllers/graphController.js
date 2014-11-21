@@ -19,6 +19,9 @@ GraphController.prototype.userIndex = function(req, res, next)
 	this._service.userGraphs(req.params.model)
 	.then(function(list)
 	{
+		if (!list || !list.length)
+			return next();
+
 		res.render('graph/index',
 		{
 			layout: 'min',
@@ -87,7 +90,7 @@ GraphController.prototype.graphLanding = function(req, res, next)
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
 		if (!graph)
-			return res.status(404).send();
+			return next();
 
 		res.render('graph/show',
 		{
