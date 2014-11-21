@@ -269,7 +269,7 @@ FileSelectControl.prototype._bindUploadForm = function()
 				{
 					if (evt.lengthComputable)
 					{
-						var pc = (evt.total/evt.loaded) * 100;
+						var pc = Math.floor(evt.loaded/evt.total * 100);
 						$progress.css('width', pc + '%;');
 						$('.sr-only', $progress).html(pc + '% complete');
 					}
