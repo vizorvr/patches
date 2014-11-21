@@ -32,7 +32,7 @@ GraphController.prototype.userIndex = function(req, res, next)
 GraphController.prototype.index = function(req, res, next)
 {
 	if (req.xhr)
-		return AssetController.prototype.list.apply(this, arguments);
+		return AssetController.prototype.index.apply(this, arguments);
 
 	this._service.minimalList()
 	.then(function(list)
