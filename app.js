@@ -341,7 +341,7 @@ app.post('/upload/:model',
 // -----
 // Graph routes 
 
-app.get('/editor', graphController.edit);
+app.get(['/editor', '/edit'], graphController.edit);
 
 // GET /fthr/dunes-world/edit -- EDITOR
 app.get('/:username/:graph/edit', function(req, res, next)
