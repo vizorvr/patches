@@ -1459,7 +1459,7 @@ function Application() {
 
 	this.onSaveClicked = function(cb)
 	{
-		this.openSaveDialog();
+		self.openSaveDialog();
 	}
 
 	this.openSaveDialog = function(cb)
