@@ -7,10 +7,6 @@
 		"enableFrameDumping": true,
 		"engiPath": "./browser/",
 		"host": "127.0.0.1",
-		"port": 8000,
-		"mongo": {
-			"host": "localhost",
-			"port": 27017
-		}
+		"port": 8000
 	}
 }
