@@ -6,14 +6,13 @@ var http = require('http');
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var compress = require('compression');
-var session = require('express-session');
+var sessions = require('client-sessions');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var errorHandler = require('errorhandler');
 var csrf = require('lusca').csrf();
 var methodOverride = require('method-override');
 
-var MongoStore = require('connect-mongo')({ session: session });
 var flash = require('express-flash');
 var path = require('path');
 var mongoose = require('mongoose');
@@ -113,16 +112,12 @@ app.use(bodyParser.urlencoded(
 app.use(expressValidator());
 app.use(methodOverride());
 app.use(cookieParser());
-app.use(session(
+app.use(sessions(
 {
-	resave: true,
-	saveUninitialized: true,
+	cookieName: 'session',
 	secret: secrets.sessionSecret,
-	store: new MongoStore(
-	{
-		url: secrets.db,
-		auto_reconnect: true
-	})
+	duration: 24 * 60 * 60 * 1000,
+	activeDuration: 1000 * 60 * 5
 }));
 
 app.use(passport.initialize());
