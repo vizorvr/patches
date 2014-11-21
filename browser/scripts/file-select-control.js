@@ -268,11 +268,7 @@ FileSelectControl.prototype._bindUploadForm = function()
 				xhr.upload.addEventListener('progress', function(evt)
 				{
 					if (evt.lengthComputable)
-					{
-						var pc = Math.floor(evt.loaded/evt.total * 100);
-						$progress.css('width', pc + '%;');
-						$('.sr-only', $progress).html(pc + '% complete');
-					}
+						$progress.css('width', Math.floor(evt.loaded/evt.total * 100) + '%');
 				}, false);
 
 				return xhr;
