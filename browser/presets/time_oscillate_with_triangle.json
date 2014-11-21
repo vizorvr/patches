@@ -1,18 +1,18 @@
 {
     "abs_t": 222.061,
     "active_graph": 0,
-    "graph_uid": 4,
+    "graph_uid": 9,
     "root": {
-        "node_uid": 8,
+        "node_uid": 20,
         "uid": 0,
         "parent_uid": -1,
         "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 527,
-                "y": 208,
-                "uid": 2,
+                "x": 651,
+                "y": 426,
+                "uid": 16,
                 "dsid": 10,
                 "state": {
                     "enabled": true,
@@ -29,10 +29,10 @@
                         "40": 7
                     }
                 },
-                "title": "Oscillate with In tween",
+                "title": "Oscillate Triangle",
                 "graph": {
-                    "node_uid": 48,
-                    "uid": 2,
+                    "node_uid": 49,
+                    "uid": 7,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
@@ -142,12 +142,6 @@
                             "uid": 34
                         },
                         {
-                            "plugin": "sine_modulator",
-                            "x": 550,
-                            "y": 289,
-                            "uid": 35
-                        },
-                        {
                             "plugin": "subtract_modulator",
                             "x": 664,
                             "y": 404,
@@ -161,20 +155,20 @@
                         },
                         {
                             "plugin": "multiply_modulator",
-                            "x": 967,
-                            "y": 260,
+                            "x": 753,
+                            "y": 289,
                             "uid": 38
                         },
                         {
                             "plugin": "add_modulator",
-                            "x": 1067,
-                            "y": 301,
+                            "x": 836,
+                            "y": 344,
                             "uid": 39
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 1158,
-                            "y": 304,
+                            "x": 919,
+                            "y": 344,
                             "uid": 40,
                             "dsid": 10,
                             "state": {
@@ -238,13 +232,10 @@
                             ]
                         },
                         {
-                            "plugin": "tween_in_modulator",
-                            "x": 774,
-                            "y": 250,
-                            "uid": 47,
-                            "state": {
-                                "type": 0
-                            }
+                            "plugin": "triangle_modulator",
+                            "x": 552,
+                            "y": 291,
+                            "uid": 48
                         }
                     ],
                     "conns": [
@@ -294,12 +285,6 @@
                             "dst_slot": 1
                         },
                         {
-                            "src_nuid": 35,
-                            "dst_nuid": 37,
-                            "src_slot": 0,
-                            "dst_slot": 0
-                        },
-                        {
                             "src_nuid": 42,
                             "dst_nuid": 36,
                             "src_slot": 0,
@@ -321,6 +306,12 @@
                             "dst_nuid": 38,
                             "src_slot": 0,
                             "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 37,
+                            "dst_nuid": 38,
+                            "src_slot": 0,
+                            "dst_slot": 0
                         },
                         {
                             "src_nuid": 38,
@@ -354,21 +345,14 @@
                         },
                         {
                             "src_nuid": 32,
-                            "dst_nuid": 35,
+                            "dst_nuid": 48,
                             "src_slot": 0,
                             "dst_slot": 0,
                             "offset": 1
                         },
                         {
-                            "src_nuid": 37,
-                            "dst_nuid": 47,
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "dst_connected": false
-                        },
-                        {
-                            "src_nuid": 47,
-                            "dst_nuid": 38,
+                            "src_nuid": 48,
+                            "dst_nuid": 37,
                             "src_slot": 0,
                             "dst_slot": 0
                         }
@@ -418,9 +402,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 333,
-                "y": 208,
-                "uid": 3,
+                "x": 457,
+                "y": 426,
+                "uid": 17,
                 "state": {
                     "val": 0.42,
                     "min": 0,
@@ -430,9 +414,9 @@
             },
             {
                 "plugin": "const_float_generator",
-                "x": 332,
-                "y": 272,
-                "uid": 4,
+                "x": 456,
+                "y": 490,
+                "uid": 18,
                 "state": {
                     "val": 0
                 },
@@ -440,9 +424,9 @@
             },
             {
                 "plugin": "const_float_generator",
-                "x": 420,
-                "y": 272,
-                "uid": 5,
+                "x": 544,
+                "y": 490,
+                "uid": 19,
                 "state": {
                     "val": 1
                 },
@@ -451,22 +435,22 @@
         ],
         "conns": [
             {
-                "src_nuid": 3,
-                "dst_nuid": 2,
+                "src_nuid": 17,
+                "dst_nuid": 16,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 5,
-                "dst_nuid": 2,
+                "src_nuid": 19,
+                "dst_nuid": 16,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 4,
-                "dst_nuid": 2,
+                "src_nuid": 18,
+                "dst_nuid": 16,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_dyn": true

@@ -1,24 +1,25 @@
 {
-    "abs_t": 58.269,
+    "abs_t": 88.741,
     "active_graph": 0,
-    "graph_uid": 16,
+    "graph_uid": 1927,
     "root": {
-        "node_uid": 13,
+        "node_uid": 153,
         "uid": 0,
         "parent_uid": -1,
         "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 525,
-                "y": 138,
-                "uid": 7,
+                "x": 668,
+                "y": 387,
+                "uid": 147,
                 "dsid": 7,
                 "state": {
                     "enabled": true,
                     "always_update": true,
                     "rt_width": 512,
                     "rt_height": 512,
+                    "rt_filter": 9729,
                     "input_sids": {
                         "0": 0,
                         "1": 1,
@@ -32,7 +33,7 @@
                 "title": "Button",
                 "graph": {
                     "node_uid": 138,
-                    "uid": 13,
+                    "uid": 1924,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
@@ -41,7 +42,7 @@
                             "x": 50,
                             "y": 167,
                             "uid": 0,
-                            "dsid": 10,
+                            "dsid": 11,
                             "state": {
                                 "slot_id": 0
                             },
@@ -63,7 +64,7 @@
                             "x": 43,
                             "y": 223,
                             "uid": 1,
-                            "dsid": 10,
+                            "dsid": 11,
                             "state": {
                                 "slot_id": 0
                             },
@@ -85,7 +86,7 @@
                             "x": 40,
                             "y": 279,
                             "uid": 2,
-                            "dsid": 10,
+                            "dsid": 11,
                             "state": {
                                 "slot_id": 0
                             },
@@ -107,7 +108,7 @@
                             "x": 40,
                             "y": 334,
                             "uid": 3,
-                            "dsid": 10,
+                            "dsid": 11,
                             "state": {
                                 "slot_id": 0
                             },
@@ -129,7 +130,7 @@
                             "x": 1061,
                             "y": 460,
                             "uid": 4,
-                            "dsid": 10,
+                            "dsid": 11,
                             "state": {
                                 "slot_id": 0
                             },
@@ -205,6 +206,7 @@
                                 "always_update": true,
                                 "rt_width": 512,
                                 "rt_height": 512,
+                                "rt_filter": 9729,
                                 "input_sids": {
                                     "11": 0,
                                     "12": 1
@@ -216,8 +218,8 @@
                             "title": "MouseOver & Click Color",
                             "graph": {
                                 "node_uid": 15,
-                                "uid": 14,
-                                "parent_uid": 13,
+                                "uid": 1925,
+                                "parent_uid": 1924,
                                 "open": true,
                                 "nodes": [
                                     {
@@ -321,7 +323,7 @@
                                         "x": 200,
                                         "y": 265,
                                         "uid": 11,
-                                        "dsid": 5,
+                                        "dsid": 6,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -343,7 +345,7 @@
                                         "x": 226,
                                         "y": 202,
                                         "uid": 12,
-                                        "dsid": 5,
+                                        "dsid": 6,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -365,7 +367,7 @@
                                         "x": 1090,
                                         "y": 167,
                                         "uid": 14,
-                                        "dsid": 5,
+                                        "dsid": 6,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -513,6 +515,7 @@
                                 "always_update": true,
                                 "rt_width": 512,
                                 "rt_height": 512,
+                                "rt_filter": 9729,
                                 "input_sids": {
                                     "3": 3,
                                     "4": 4,
@@ -529,8 +532,8 @@
                             "title": "Translate & Scale button logic",
                             "graph": {
                                 "node_uid": 30,
-                                "uid": 15,
-                                "parent_uid": 13,
+                                "uid": 1926,
+                                "parent_uid": 1924,
                                 "open": true,
                                 "nodes": [
                                     {
@@ -538,7 +541,7 @@
                                         "x": 1056,
                                         "y": 230,
                                         "uid": 2,
-                                        "dsid": 4,
+                                        "dsid": 5,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -562,7 +565,7 @@
                                         "x": 45,
                                         "y": 198,
                                         "uid": 3,
-                                        "dsid": 11,
+                                        "dsid": 12,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -584,7 +587,7 @@
                                         "x": 38,
                                         "y": 254,
                                         "uid": 4,
-                                        "dsid": 11,
+                                        "dsid": 12,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -606,7 +609,7 @@
                                         "x": 151,
                                         "y": 122,
                                         "uid": 5,
-                                        "dsid": 11,
+                                        "dsid": 12,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -628,7 +631,7 @@
                                         "x": 167,
                                         "y": 175,
                                         "uid": 6,
-                                        "dsid": 11,
+                                        "dsid": 12,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -780,7 +783,7 @@
                                         "x": 1121,
                                         "y": 437,
                                         "uid": 27,
-                                        "dsid": 4,
+                                        "dsid": 5,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -804,7 +807,7 @@
                                         "x": 1102,
                                         "y": 540,
                                         "uid": 28,
-                                        "dsid": 4,
+                                        "dsid": 5,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -828,7 +831,7 @@
                                         "x": 785,
                                         "y": 338,
                                         "uid": 29,
-                                        "dsid": 4,
+                                        "dsid": 5,
                                         "state": {
                                             "slot_id": 0
                                         },
@@ -1361,9 +1364,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 314,
-                "y": 246,
-                "uid": 8,
+                "x": 457,
+                "y": 495,
+                "uid": 148,
                 "state": {
                     "val": 0.17999999999999994
                 },
@@ -1371,9 +1374,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 390,
-                "y": 246,
-                "uid": 9,
+                "x": 533,
+                "y": 495,
+                "uid": 149,
                 "state": {
                     "val": 0.22000000000000003
                 },
@@ -1381,9 +1384,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 315,
-                "y": 102,
-                "uid": 10,
+                "x": 458,
+                "y": 351,
+                "uid": 150,
                 "state": {
                     "val": 0,
                     "min": -1,
@@ -1393,45 +1396,72 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 314,
-                "y": 173,
-                "uid": 11,
+                "x": 457,
+                "y": 422,
+                "uid": 151,
                 "state": {
                     "val": 0,
                     "min": -1,
                     "max": 1
                 },
                 "title": "Button Y Position"
+            },
+            {
+                "plugin": "bool_display",
+                "x": 838,
+                "y": 348,
+                "uid": 152
             }
         ],
         "conns": [
             {
-                "src_nuid": 8,
-                "dst_nuid": 7,
+                "src_nuid": 148,
+                "dst_nuid": 147,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 9,
-                "dst_nuid": 7,
+                "src_nuid": 149,
+                "dst_nuid": 147,
                 "src_slot": 0,
                 "dst_slot": 3,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 10,
-                "dst_nuid": 7,
+                "src_nuid": 150,
+                "dst_nuid": 147,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 11,
-                "dst_nuid": 7,
+                "src_nuid": 151,
+                "dst_nuid": 147,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "dst_dyn": true
+            },
+            {
+                "src_nuid": 147,
+                "dst_nuid": 152,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "src_dyn": true
+            }
+        ],
+        "registers": [
+            {
+                "id": "time",
+                "dt": 0
+            },
+            {
+                "id": "init",
+                "dt": 7
+            },
+            {
+                "id": "value",
+                "dt": 8
             }
         ]
     }

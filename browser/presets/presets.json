@@ -3,7 +3,7 @@
 	{
 		"Template: Master camera & master time": "template_master_camera_and_master_time",
 		"Template: 3D scene and background image": "template_3d_scene_and_background_image",
-		"YC demo": "yc_demo"
+		"VR: Clean template": "vr_clean_template"
 
 	},
 
@@ -20,13 +20,12 @@
 		"3D Instancing: Cube setup with controls": "instancing_cube",
 		"3D Instancing: Array setup with controls": "instancing_array",
 		"3D Instancing: IFS setup with controls": "instancing_ifs",
-		"3D Instancing: IFS with camera and light out": "instancing_ifs_with_camera_and_light_out",
-		"Particles: Basic particle setup": "particle_system"
+		"3D Instancing: IFS with camera and light out": "instancing_ifs_with_camera_and_light_out"
 	},
 
 	"VR":
 	{
-		"VR: Template with skybox, mountains, clouds and floor": "vr_template"
+		"VR: Clean template": "vr_clean_template"
 	},
 
 	"BACKGROUND & OVERLAY GRAPHICS":
@@ -50,7 +49,8 @@
 	"AUDIO":
 	{
 		"Audio: Audio player": "audio_audio_player",
-		"Audio: FFT music synching template": "audio_fft_music_synching"
+		"Audio: FFT music synching template": "audio_fft_music_synching",
+		"Audio: Old audio player": "audio_audio_player_old"
 	},
 
 	"TEXT":
@@ -61,8 +61,10 @@
 
 		"INTERACTION":
 	{
-		"Interaction: Button with MouseOver and OnCick colors": "interaction_button_with_mouseover_and_click_color",
-		"Interaction: Toggle button": "interaction_button_toggle"
+		"Interaction: Button with MouseOver and OnClick colors": "interaction_button_with_mouseover_and_click_color",
+		"Interaction: Toggle button": "interaction_button_toggle",
+		"Interaction: Keypress increase/decrease - simple": "interaction_up_and_down_counter_simple",
+		"Interaction: Keypress increase/decrease with init & clamp": "interaction_up_and_down_counter_with_init_and_clamp"
 	},
 	
 	
@@ -91,13 +93,19 @@
 		"Time: Oscillate 2 values with in tween": "time_oscillate_2_values_in_tween",
 		"Time: Oscillate 2 values with out tween": "time_oscillate_2_values_out_tween",
 		"Time: Oscillate with a sawtooth": "time_oscillate_with_sawtooth",
+		"Time: Oscillte with a triangle": "time_oscillate_with_triangle",
 		"Time: Accumulating time": "time_accumulating_time",
 		"Time: Stop watch": "time_stop_watch",
+		"Time: Timer from 0 to 1": "time_timer_from_0_to_1",
+		"Time: Timer from 1 to 0": "time_timer_from_1_to_0",	
 		"Time: Circular motion to XYZ": "time_circular_motion_to_xyz",
 		"Time: Shaky random between 0 & 1": "time_shaky_random",
 		"Util: Float array sequencer": "util_float_array_sequencer",
 		"Util: Float array sequencer with oscillator level up": "util_float_array_sequencer_oscillator_out",
-		"Util: Float array sequencer with interpolation": "util_float_array_sequencer_with_interpolation"
+		"Util: Float array sequencer with interpolation": "util_float_array_sequencer_with_interpolation",
+		"Util: Random with speed": "util_random_with_speed"
+
+
 	},
 		"MATRIX TRANSFORMS":
 	{
@@ -140,6 +148,7 @@
 
 		"Shader: Template for Shadertoy.com pixel shaders": "shader_from_shadertoy",
 		"Shader: Particle shader": "shader_particle_shader",
+		"Shader: Particles on object": "shader_particles_on_object",
 		"Shader: Cross flare": "shader_cross_flare",
 		"Shader: Horizontal flare": "shader_horizontal_flare",
 		"Shader: Render depth buffer": "shader_render_depth_buffer",
@@ -215,7 +224,7 @@
 		"Display OSC messages": "display_osc"
 	},
 
-	"Web Socket PubSub":
+	"WEB SOCKET PUBSUB":
 	{
 		"Channel Receive": "plugin-wschannel-receive",
 		"Channel Send": "plugin-wschannel-send"
