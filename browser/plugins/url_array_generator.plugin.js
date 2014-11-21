@@ -11,7 +11,6 @@ E2.p = E2.plugins["url_array_generator"] = function(core, node)
 	this.state = { url: '' };
 	this.gl = core.renderer.context;
 	this.core = core;
-	this.URL_TEXTURES_ROOT = 'data/textures/';
 	this.array = null;
 	this.dirty = false;
 };
@@ -28,12 +27,9 @@ E2.p.prototype.create_ui = function()
 	inp.click(function()
 	{
 		FileSelectControl
-			.createForUrl(self.URL_TEXTURES_ROOT, self.state.url)
+			.createTextureSelector(self.state.url)
 			.onChange(function(v)
 			{
-				if (v.indexOf('://') === -1)
-					v = self.URL_TEXTURES_ROOT + v;
-				
 				self.state.url = v;
 				self.state_changed(null);
 				self.state_changed(inp);
