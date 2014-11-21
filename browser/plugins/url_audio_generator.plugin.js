@@ -31,8 +31,7 @@ E2.p.prototype.create_ui = function()
 			.createAudioSelector(self.state.url)
 			.onChange(function(v)
 			{
-				// remove extension (see below)
-				self.state.url = v.replace(/\.[^\.]*$/, '');
+				self.state.url = v;
 				self.state_changed(null);
 				self.state_changed(inp);
 				self.updated = true;
@@ -50,46 +49,36 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_state = function()
 {
+	var that = this;
+
 	if(!this.dirty)
 		return;
 	
-	if(typeof(Audio) === 'undefined')
-	{
-		msg('Audio: This browser does not support the Audio API.');
-		return;
-	}
+	if (typeof(Audio) === 'undefined')
+		return msg('Audio: This browser does not support the Audio API.');
 	
-	if(this.audio !== null)
+	if (this.audio)
 	{
 		this.audio.pause();
 		delete this.audio;
 	}
-
-	var src = null;
 
 	this.audio = new Audio();
 
 	this.audio.loop = true;
 	this.audio.preload = true;
 
-	// Select file type based on cap sniffing.
-	if(this.audio.canPlayType('audio/ogg; codecs="vorbis"'))
-		src = this.state.url + '.ogg';
-	else if(this.audio.canPlayType('audio/mpeg'))
-		src = this.state.url + '.mp3';
-	else
-		msg('Audio: This browser supports neither ogg vorbis or mp3 audio playback.');
-
-	if(src !== null)
+	if (this.state.url)
 	{
-		this.audio.addEventListener('error', function(self, src) { return function(at) {
-			msg('ERROR: Audio: Failed to load \'' + src + '\'.');
-			self.state.url = '';
-			self.audio = null;
-		}}(this, src));
+		this.audio.addEventListener('error', function()
+		{
+			msg('ERROR: Audio: Failed to load \'' + that.state.url + '\'.');
+			that.state.url = '';
+			that.audio = null;
+		});
 	
-		msg('Audio: Loading ' + src + '.');
-		this.audio.src = src;
+		msg('Audio: Loading ' + this.state.url + '.');
+		this.audio.src = this.state.url;
 	}
 	
 	this.dirty = false;
@@ -102,7 +91,7 @@ E2.p.prototype.update_output = function(slot)
 
 E2.p.prototype.state_changed = function(ui)
 {
-	if(this.state.url !== '')
+	if (this.state.url)
 	{
 		if(ui)
 			ui.attr('title', this.state.url);
