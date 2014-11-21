@@ -274,7 +274,9 @@ FileSelectControl.prototype._bindUploadForm = function()
 			},
 			error: function(err)
 			{
-				$('#message', container).html('<h4>Upload failed: '+err.responseJSON.msg+'</h4>');
+				$('#message', container).html('<h4>Upload failed: '
+					+ err.responseJSON ? err.responseJSON.msg : err
+					+'</h4>');
 			},
 			data: formData,
 			cache: false,
