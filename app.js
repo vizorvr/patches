@@ -292,6 +292,12 @@ var controllers = {
 	json: jsonController
 }
 
+function getController(req, res, next)
+{
+	req.controller = controllers[req.params.model];
+	next();
+};
+
 function requireController(req, res, next)
 {
 	req.controller = controllers[req.params.model];
@@ -376,9 +382,20 @@ app.get('/:username/:graph/graph.json', function(req, res, next)
 // Generic model routes
 
 // list
-app.get('/:model', requireController, function(req, res, next)
+app.get('/:model', getController, function(req, res, next)
 {
-	req.controller.index(req, res, next);
+	if (!req.controller)
+	{
+		return graphController.userIndex(req, res, next);
+	}
+	else
+		requireController(req, res, function(err)
+		{
+			if (err)
+				return next(err);
+	
+			return req.controller.index(req, res, next);
+		});
 });
 
 // list by tag

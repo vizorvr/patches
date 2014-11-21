@@ -1,0 +1,16 @@
+<div class="container">
+{{#each graphs}}
+	<div class="row">
+		<div class="col-sm-12">
+			<a class="text-muted" href="/{{owner}}/{{name}}">
+			<h1>
+				{{owner}}/{{name}}
+			</h1>
+				</a>
+		</div>
+		<div class="col-sm-12">
+			{{updatedAt}}
+		</div>
+	</div>
+{{/each}}
+</div>

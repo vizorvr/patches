@@ -16,6 +16,42 @@ GraphService.prototype.findByPath = function(path)
 	return this.findOne({ owner: parts[1], name: parts[2] });
 };
 
+GraphService.prototype.minimalList = function()
+{
+	var dfd = when.defer();
+	this._model
+		.find()
+		.select('owner name updatedAt')
+		.sort('-updatedAt')
+		.exec(function(err, list)
+	{
+		if (err)
+			return dfd.reject(err);
+		
+		dfd.resolve(list);
+	});
+
+	return dfd.promise;
+};
+
+GraphService.prototype.userGraphs = function(username)
+{
+	var dfd = when.defer();
+	this._model
+		.find({ owner: username })
+		.select('owner name updatedAt')
+		.sort('-updatedAt')
+		.exec(function(err, list)
+	{
+		if (err)
+			return dfd.reject(err);
+		
+		dfd.resolve(list);
+	});
+
+	return dfd.promise;
+};
+
 GraphService.prototype.save = function(data, user)
 {
 	var that = this;

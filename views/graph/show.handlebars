@@ -1,0 +1,124 @@
+<script type="text/javascript" src="/vendor/gl-matrix.js"></script>
+<script type="text/javascript" src="/scripts/util.js"></script>
+<script type="text/javascript" src="/scripts/renderer.js"></script>
+<script type="text/javascript" src="/scripts/plugin-group.js"></script>
+<script type="text/javascript" src="/scripts/plugin-manager.js"></script>
+<script type="text/javascript" src="/scripts/connection.js"></script>
+<script type="text/javascript" src="/scripts/graph.js"></script>
+<script type="text/javascript" src="/scripts/node.js"></script>
+<script type="text/javascript" src="/scripts/registers.js"></script>
+<script type="text/javascript" src="/scripts/core.js"></script>
+
+<script type="text/javascript" src="/scripts/player.js"></script>
+<script type="text/javascript">
+	function play()
+	{
+		$('#fs').click(function()
+		{
+			E2.app.player.core.renderer.set_fullscreen(true);
+		});
+
+		E2.app.player.core.asset_tracker.add_listener(progress);
+		E2.app.player.load_from_url('{{graphMinUrl}}');
+		E2.app.player.play();
+	}
+
+	function EnumerateVRDevices(devices)
+	{
+		var hmd = null, sensor = null;
+		
+		for(var i = 0; i < devices.length; i++)
+		{
+			if(devices[i] instanceof HMDVRDevice)
+			{
+				// Just use the first device we find for now.
+				hmd = devices[i];
+				break;
+			}
+		}
+		
+		if(hmd)
+		{
+			for(var i = 0; i < devices.length; i++)
+			{
+				var d = devices[i];
+			
+				if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId)
+				{
+					sensor = devices[i];
+					break;
+				}
+			}
+		}
+
+		CreatePlayer([hmd, sensor], play);
+	}
+	
+	$(document).ready(function()
+	{
+		if(navigator.getVRDevices)
+		{
+			navigator.getVRDevices().then(EnumerateVRDevices);
+		}
+		else if(navigator.mozGetVRDevices)
+		{
+			navigator.mozGetVRDevices(EnumerateVRDevices);
+		}
+		else
+		{
+			CreatePlayer([null, null], play);
+		}
+	});
+
+	function progress()
+	{
+		var at = E2.app.player.core.asset_tracker;
+		var $progress = $('.progress-bar');
+		var pct = Math.floor(((at.failed + at.completed) / at.started) * 100);
+		$('.progress').show();
+		if (pct === 100)
+			$('.progress').hide();
+		$progress.css('width', pct + '%');
+	}
+
+</script>
+
+<noscript>
+	<div class="centered notification">
+		<div style="float: left; display: table-cell; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
+		<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
+	</div>
+</noscript>
+
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12">
+		<div style="width:860px" class="center">
+			<canvas id="webgl-canvas" class="webgl-canvas-normal" oncontextmenu="return false;">
+			</canvas>
+
+			<img id="fs" src="/images/oculus.png" class="pull-right" title="Click to go fullscreen and enable Oculus rendering." />
+
+			<div class="progress" style="display:none">
+			  <div class="progress-bar progress-bar-info progress-bar-striped active"
+			  	role="progressbar"
+			  	aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+			  	style="width: 00%;">
+			  </div>
+			</div>
+		</div>
+    </div>
+
+	<div class="row">
+		<div class="col-xs-10 col-xs-offset-2">
+			<h1>{{graph.name}}</h1>
+			by {{graph.owner}}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-12 text-center">
+	           <a href="{{editUrl}}" class="btn btn-success">Tweak this graph</a>
+	        </div>
+	</div>
+</div>

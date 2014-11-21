@@ -13,6 +13,39 @@ function GraphController(graphService, fs)
 
 GraphController.prototype = Object.create(AssetController.prototype);
 
+// GET /fthr
+GraphController.prototype.userIndex = function(req, res, next)
+{
+	this._service.userGraphs(req.params.model)
+	.then(function(list)
+	{
+		res.render('graph/index',
+		{
+			layout: 'min',
+			graphs: list,
+			title: 'Graphs'
+		});
+	});
+}
+
+// GET /graph
+GraphController.prototype.index = function(req, res, next)
+{
+	if (req.xhr)
+		return AssetController.prototype.list.apply(this, arguments);
+
+	this._service.minimalList()
+	.then(function(list)
+	{
+		res.render('graph/index',
+		{
+			layout: 'min',
+			graphs: list,
+			title: 'Graphs'
+		});
+	});
+}
+
 // GET /fthr/dunes-world/edit
 GraphController.prototype.edit = function(req, res, next)
 {
@@ -58,7 +91,8 @@ GraphController.prototype.graphLanding = function(req, res, next)
 
 		res.render('graph/show',
 		{
-			layout: 'player',
+			layout: 'min',
+			title: graph.name +' by' +graph.owner,
 			editUrl: graph.path+'/edit',
 			graphMinUrl: '/data/graph'+graph.path+'-min.json',
 			graph: graph
