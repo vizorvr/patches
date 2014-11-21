@@ -45,7 +45,7 @@ var argv = require('minimist')(process.argv.slice(2));
 var ENGI = config.server.engiPath;
 var PROJECT = argv._[0] || ENGI;
 
-var listenHost = argv.i || config.server.host;
+var listenHost = process.env.ENGI_BIND_IP || argv.i || config.server.host;
 var listenPort = argv.p || config.server.port;
 
 var hour = 3600000;
