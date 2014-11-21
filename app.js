@@ -1,3 +1,6 @@
+if (process.env.NEWRELIC)
+	require('newrelic');
+
 var _ = require('lodash');
 var http = require('http');
 var express = require('express');
@@ -419,23 +422,6 @@ app.post('/:model',
 		req.controller.save(req, res, next);
 	}
 );
-
-
-
-
-
-app.use(errorHandler());
-
-
-
-
-
-
-
-
-
-
-
 
 
 

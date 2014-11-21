@@ -57,7 +57,8 @@
     "gulp-wrap": "^0.5.0",
     "gulp-declare": "^0.3.0",
     "checksum": "^0.1.1",
-    "gulp-uglify": "^1.0.1"
+    "gulp-uglify": "^1.0.1",
+    "newrelic": "^1.13.4"
   },
   "devDependencies": {
     "mocha": "^1.21.5",
