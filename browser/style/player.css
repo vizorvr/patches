@@ -45,8 +45,7 @@ body {
 {
 	width: 33px;
 	height: 20px;
-	position: absolute;
-	left: 575px;
-	top: 388px;
+	position: relative;
+	top: 507px;
 	z-index: 2;
 }
