@@ -264,8 +264,8 @@ FileSelectControl.prototype._bindUploadForm = function()
 			type: 'POST',
 			xhr: function ()
 			{
-				var xhr = new window.XMLHttpRequest();
-				xhr.addEventListener('progress', function(evt)
+				var xhr = $.ajaxSettings.xhr();
+				xhr.upload.addEventListener('progress', function(evt)
 				{
 					if (evt.lengthComputable)
 					{
