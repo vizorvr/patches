@@ -254,13 +254,33 @@ FileSelectControl.prototype._bindUploadForm = function()
 		e.preventDefault();
 		e.stopPropagation();
 
+		$('.progress', container).show();
+		var $progress = $('.progress-bar', container);
+
 		var formData = new FormData($form[0]);
 		$.ajax(
 		{
 			url: $form[0].action,
 			type: 'POST',
+			xhr: function ()
+			{
+				var xhr = new window.XMLHttpRequest();
+				xhr.addEventListener('progress', function(evt)
+				{
+					if (evt.lengthComputable)
+					{
+						var pc = (evt.total/evt.loaded) * 100;
+						$progress.css('width', pc + '%;');
+						$('.sr-only', $progress).html(pc + '% complete');
+					}
+				}, false);
+
+				return xhr;
+			},
 			success: function(file)
 			{
+				$progress.removeClass('active');
+
 				console.log("File uploaded:", file.url);
 				$('#message', container).html('<h4>'+file.name+' uploaded successfully!</h4>');
 				that.selected(file.path);
@@ -274,6 +294,11 @@ FileSelectControl.prototype._bindUploadForm = function()
 			},
 			error: function(err)
 			{
+				$progress
+					.removeClass('active')
+					.removeClass('progress-bar-info')
+					.addClass('progress-bar-danger');
+
 				$('#message', container).html('<h4>Upload failed: '
 					+ err.responseJSON ? err.responseJSON.msg : err
 					+'</h4>');
