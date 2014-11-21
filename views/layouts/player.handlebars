@@ -29,6 +29,7 @@
 					E2.app.player.core.renderer.set_fullscreen(true);
 				});
 
+				E2.app.player.core.asset_tracker.add_listener(progress);
 				E2.app.player.load_from_url('{{graphMinUrl}}');
 				E2.app.player.play();
 			}
@@ -79,7 +80,19 @@
 					CreatePlayer([null, null], play);
 				}
 			});
-			
+
+			function progress()
+			{
+				var at = E2.app.player.core.asset_tracker;
+				var $progress = $('.progress-bar');
+				var pct = Math.floor(((at.failed + at.completed) / at.started) * 100);
+				$('.progress').show();
+				if (pct === 100)
+					$('.progress').hide();
+				$progress.css('width', pct + '%');
+				debugger;
+			}
+
 		</script>
 	</head>
 	<body>
@@ -99,6 +112,13 @@
 
 					<img id="fs" src="/images/oculus.png" class="pull-right" title="Click to go fullscreen and enable Oculus rendering." />
 
+					<div class="progress" style="display:none">
+					  <div class="progress-bar progress-bar-info progress-bar-striped active"
+					  	role="progressbar"
+					  	aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+					  	style="width: 00%;">
+					  </div>
+					</div>
 				</div>
 	        </div>
 
