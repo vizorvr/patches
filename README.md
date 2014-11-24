@@ -7,18 +7,18 @@ Try a live demo at [engijs.org](http://engijs.org).
 
 # Introduction
 
-By routing data between nodes in a directed acyclic graph, arbitrary logic can be constructed. This is a 
-particularly effective approach for rapid prototyping or creative exploration when compared with more 
+By routing data between nodes in a directed acyclic graph, arbitrary logic can be constructed. This is a
+particularly effective approach for rapid prototyping or creative exploration when compared with more
 traditional modes of programming. The editor is fully featured and comes with live preview, data flow
 visualization, structural view, dynamic on-demand documentation, copy/cut/paste, persistence and
 a catalog of snippets that can be used as examples or modular building blocks for more complex logic.
 
 To structure larger projects, logic can be nested in sub-graphs which can receive and emit data via
-named proxy nodes. Logic in nested graphs can be either rendered directly or optionally to a render target, which 
+named proxy nodes. Logic in nested graphs can be either rendered directly or optionally to a render target, which
 can subsequently be used as a normal texture. Loops are modeled as nested graphs that are evaluated once
 per loop iteration.
 
-Engi currently has approximately 210 plugins that provide functionality including but not limited to 
+Engi currently has approximately 210 plugins that provide functionality including but not limited to
 the following:
 
 Ways to obtain or create data:
@@ -31,21 +31,21 @@ Ways to obtain or create data:
 * Meshes: Cube, grid, null (transform visualization), plane, quad, sphere and user defined (Blender exporter is included).
 * Open Sound Control: Receive float / xy float.
 * Shaders: Diffuse only, automatically generated from mesh and material, user defined, normal as color and texture with UV-transforms.
-* System state: Initialized, assets started, failed, and successfully loaded. Graphs can emit these signals 
+* System state: Initialized, assets started, failed, and successfully loaded. Graphs can emit these signals
   via plugins to integrate with the global asset load logic when procedurally generating data.
 * Text rendering.
 * Time: Absolute, frame delta.
 * Typed array generation.
 * Virtual Reality: Camera / MHD / Sensor info. Sensor velocity / acceleration. Full Oculus Rift support.
-* Various plugins to provide UI for direct manipulation or input of values: Knobs, sliders, input 
-  fields for labels and constant values, toggle and action buttons, color pickers, text editors, 
+* Various plugins to provide UI for direct manipulation or input of values: Knobs, sliders, input
+  fields for labels and constant values, toggle and action buttons, color pickers, text editors,
   PRNGs and many other similar plugins for providing data directly from the graph view.
 
 Ways to modify data:
 
 * Audio: Get duration and current playback position. Analysis (FFT), gain, buffer source.
 * Color: Add, mix, multiply and set alpha.
-* Data type conversions. Format or parse strings, compose complex types from primitives, convert 
+* Data type conversions. Format or parse strings, compose complex types from primitives, convert
   between primitive types and split / merge cameras to / from constituent matrices.
 * Curves: Looping cubic interpolation of keypoints.
 * Filters: First order low pass, sample and hold, toggle.
@@ -106,7 +106,7 @@ Run the server:
 Open Engi in the browser:
 
 	http://localhost:8000/
-	
+
 If you have access to an Oculus Rift DK1 or 2 and want to play with the VR features, you currently
 need one of Toji's special Chromium builds. You can find them here: http://blog.tojicode.com/2014/07/bringing-vr-to-chrome.html
 
