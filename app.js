@@ -364,7 +364,7 @@ app.get('/:username/:graph/graph.json', function(req, res, next)
 // Generic model routes
 
 // list
-app.get(['/graph', '/graphs'], function(req,res,next)
+app.get(['/graph', '/graphs', '/graphs.json', '/graph.json'], function(req,res,next)
 {
 	graphController.index(req, res, next);
 });

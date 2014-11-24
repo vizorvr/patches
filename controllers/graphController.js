@@ -34,12 +34,13 @@ GraphController.prototype.userIndex = function(req, res, next)
 // GET /graph
 GraphController.prototype.index = function(req, res, next)
 {
-	if (req.xhr)
-		return AssetController.prototype.index.apply(this, arguments);
 
 	this._service.minimalList()
 	.then(function(list)
 	{
+		if (req.xhr || req.path.slice(-5) === '.json')
+			return res.json(list);
+
 		res.render('graph/index',
 		{
 			layout: 'min',
