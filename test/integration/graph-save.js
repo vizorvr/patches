@@ -94,7 +94,7 @@ describe('Graph', function() {
 		var name = rand();
 		var path = '/blah/quux/bar/'+name+'.png';
 		var expectedPath = '/'+username+'/foo';
-		var optimPath = '/data/graph/'+username+'/'+name+'-min.json';
+		var optimPath = '/data/graph/'+username+'/'+name+'.min.json';
 		sendGraph(path, function(err, res) {
 			if (err) return done(err);
 			request(app).get(optimPath)

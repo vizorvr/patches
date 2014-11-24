@@ -97,7 +97,7 @@ GraphController.prototype.graphLanding = function(req, res, next)
 			layout: 'min',
 			title: graph.name +' by' +graph.owner,
 			editUrl: graph.path+'/edit',
-			graphMinUrl: '/data/graph'+graph.path+'-min.json',
+			graphMinUrl: '/data/graph'+graph.path+'.min.json',
 			graph: graph
 		});
 	}).catch(next);

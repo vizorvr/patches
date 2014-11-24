@@ -56,7 +56,7 @@ GraphService.prototype.save = function(data, user)
 {
 	var that = this;
 	var gridFsPath = '/graph'+data.path+'.json';
-	var optimisedGfsPath = '/graph'+data.path+'-min.json';
+	var optimisedGfsPath = '/graph'+data.path+'.min.json';
 
 	return AssetService.prototype.save.apply(this, arguments)
 	.then(function(asset)
