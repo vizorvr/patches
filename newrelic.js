@@ -5,7 +5,7 @@
  * description of configuration variables and their potential values.
  */
 exports.config = {
-	app_name: ['Engi'],
+	app_name: ['create.vizor.io'],
 	license_key: process.env.NEWRELIC,
 	logging: {
 		level: 'info'
