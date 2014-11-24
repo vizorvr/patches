@@ -48,7 +48,7 @@ var ENGI = config.server.engiPath;
 var PROJECT = argv._[0] || ENGI;
 
 var listenHost = process.env.ENGI_BIND_IP || argv.i || config.server.host;
-var listenPort = argv.p || config.server.port;
+var listenPort = process.env.ENGI_BIND_PORT || argv.p || config.server.port;
 
 var hour = 3600000;
 var day = hour * 24;
@@ -73,8 +73,6 @@ temp.mkdir('uploads', function(err, dirPath)
 });
 
 var app = express();
-
-app.set('port', process.env.PORT || 3000);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -182,26 +180,6 @@ app.post('/account/delete', passportConf.isAuthenticated, userController.postDel
 app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
 
 app.get('/', homeController.index);
-
-// OAuth routes for sign-in.
-/*
-app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
-app.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), function(req, res) {
-  res.redirect(req.session.returnTo || '/');
-});
-app.get('/auth/github', passport.authenticate('github'));
-app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), function(req, res) {
-  res.redirect(req.session.returnTo || '/');
-});
-app.get('/auth/google', passport.authenticate('google', { scope: 'profile email' }));
-app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), function(req, res) {
-  res.redirect(req.session.returnTo || '/');
-});
-app.get('/auth/twitter', passport.authenticate('twitter'));
-app.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login' }), function(req, res) {
-  res.redirect(req.session.returnTo || '/');
-});
-*/
 
 app.use(function(req, res, next)
 {
