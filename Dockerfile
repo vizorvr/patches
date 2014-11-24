@@ -16,5 +16,5 @@ ADD . /usr/src/app
 
 WORKDIR /usr/src/app
 RUN npm install
-RUN ./node_modules/.bin/gulp plugins
+RUN ./node_modules/.bin/gulp
 
