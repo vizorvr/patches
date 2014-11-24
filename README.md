@@ -101,7 +101,7 @@ Install [Node.js](http://nodejs.org/), then the required npm packages:
 
 Run the server:
 
-	$ node server.js [/optional/path/to/existing/project]
+	$ npm start [/optional/path/to/existing/project]
 
 Open Engi in the browser:
 
