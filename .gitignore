@@ -1,8 +1,10 @@
 .DS_Store
 browser/build
-browser/tools/node_modules
-node_modules
 browser/data/scenes/**
 browser/data/textures/**
+browser/plugins/all.plugins.js
+browser/scripts/player.min.js
+browser/tools/node_modules
 engistart.bat
 engistart.bat - Shortcut.lnk
+node_modules
