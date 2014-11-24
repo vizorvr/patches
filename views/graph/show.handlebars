@@ -1,15 +1,3 @@
-<script type="text/javascript" src="/vendor/gl-matrix.js"></script>
-<script type="text/javascript" src="/scripts/util.js"></script>
-<script type="text/javascript" src="/scripts/renderer.js"></script>
-<script type="text/javascript" src="/scripts/plugin-group.js"></script>
-<script type="text/javascript" src="/scripts/plugin-manager.js"></script>
-<script type="text/javascript" src="/scripts/connection.js"></script>
-<script type="text/javascript" src="/scripts/graph.js"></script>
-<script type="text/javascript" src="/scripts/node.js"></script>
-<script type="text/javascript" src="/scripts/registers.js"></script>
-<script type="text/javascript" src="/scripts/core.js"></script>
-
-<script type="text/javascript" src="/scripts/player.js"></script>
 <noscript>
 	<div class="centered notification">
 		<div style="float: left; display: table-cell; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
@@ -21,8 +9,7 @@
 	<div class="row">
 		<div class="col-xs-12">
 		<div style="width:860px" class="center">
-			<canvas id="webgl-canvas" class="webgl-canvas-normal" oncontextmenu="return false;">
-			</canvas>
+			<canvas id="webgl-canvas" class="webgl-canvas-normal" oncontextmenu="return false;" data-graph-url="{{graphMinUrl}}"></canvas>
 
 			<img id="fs" src="/images/oculus.png" class="pull-right" title="Click to go fullscreen and enable Oculus rendering." />
 
@@ -45,7 +32,10 @@
 
 	<div class="row">
 		<div class="col-xs-12 text-center">
-	           <a href="{{editUrl}}" class="btn btn-success">Tweak this graph</a>
-	        </div>
+	    <a href="{{editUrl}}" class="btn btn-success">Tweak this graph</a>
+	  </div>
 	</div>
 </div>
+
+<script type="text/javascript" src="/scripts/player.min.js"></script>
+
