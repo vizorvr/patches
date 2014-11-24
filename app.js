@@ -206,6 +206,7 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedi
 app.use(function(req, res, next)
 {
 	res.header('Access-Control-Allow-Origin', '*');
+	next();
 });
 
 // stream file from fs/gridfs
