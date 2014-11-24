@@ -9,11 +9,15 @@ describe('Graph optimizer', function()
 
 	it('produces the right output', function()
 	{
+		var oldEnv = process.env.NODE_ENV;
+		process.env.NODE_ENV = 'production';
+
 		var output = new GraphOptimizer()
 			.graph(source)
 			.optimize();
 
 		expect(output).to.deep.equal(optimized);
+		process.env.NODE_ENV = oldEnv;
 	});
 
 });
