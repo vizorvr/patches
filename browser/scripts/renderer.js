@@ -49,7 +49,8 @@ Texture.prototype.load = function(src, core)
 	
 	this.complete = false;
 	core.asset_tracker.signal_started();
-	img.src = src;	
+    img.crossOrigin = "Anonymous";
+	img.src = src;
 };
 
 Texture.prototype.enable = function(stage)
@@ -882,6 +883,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker, instances)
 				asset_tracker.signal_failed();
 			};
 
+		    img.crossOrigin = "Anonymous";
 			img.src = base_path + url + '.png';
 		};
 		
