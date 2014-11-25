@@ -1,5 +1,10 @@
 function play()
 {
+	E2.app.player.play();
+}
+
+function load()
+{
 	$('#fs').click(function()
 	{
 		E2.app.player.core.renderer.set_fullscreen(true);
@@ -8,7 +13,6 @@ function play()
 	var url = $('canvas[data-graph-url]').data('graph-url');
 	E2.app.player.core.asset_tracker.add_listener(progress);
 	E2.app.player.load_from_url(url);
-	E2.app.player.play();
 }
 
 function findVrDevices(devices)
@@ -37,7 +41,7 @@ function findVrDevices(devices)
 		});
 	}
 
-	CreatePlayer([hmd, sensor], play);
+	CreatePlayer([hmd, sensor], load);
 }
 
 $(document).ready(function()
@@ -47,7 +51,7 @@ $(document).ready(function()
 	else if(navigator.mozGetVRDevices)
 		navigator.mozGetVRDevices(findVrDevices);
 	else
-		CreatePlayer([null, null], play);
+		CreatePlayer([null, null], load);
 });
 
 function progress()

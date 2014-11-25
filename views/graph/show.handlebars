@@ -11,6 +11,10 @@
 		<div style="width:860px" class="center">
 			<canvas id="webgl-canvas" class="webgl-canvas-normal" oncontextmenu="return false;" data-graph-url="{{graphMinUrl}}"></canvas>
 
+			<div id="playButton">
+				<i class="fa fa-play fa-lg pull-left"></i>
+			</div>
+
 			<img id="fs" src="/images/oculus.png" class="pull-right" title="Click to go fullscreen and enable Oculus rendering." />
 
 			<div class="progress" style="display:none">
@@ -39,3 +43,27 @@
 
 <script type="text/javascript" src="/scripts/player.min.js"></script>
 
+<script>
+	$(document).ready(function() {
+		var playing = false;
+
+		E2.app.player.core.on('ready', function() {
+			var $i = $('#playButton i');
+
+			$('#playButton').on('click', function() {
+				playing = !playing;
+
+				if (playing)
+				{
+					$i.removeClass('fa-play').addClass('fa-pause');
+					play();
+				}
+				else
+				{
+					$i.removeClass('fa-pause').addClass('fa-play');
+					E2.app.player.pause();
+				}
+			});
+		})
+	})
+</script>
