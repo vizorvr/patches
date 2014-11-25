@@ -8,11 +8,12 @@ paths =
 {
 	js:
 	{
-		player: 
+		player:
 		[
 			'./browser/vendor/gl-matrix.js',
 			'./browser/scripts/util.js',
 			'./browser/scripts/renderer.js',
+			'./browser/scripts/plugin-manager-bundled.js',
 			'./browser/scripts/plugin-group.js',
 			'./browser/scripts/connection.js',
 			'./browser/scripts/graph.js',
