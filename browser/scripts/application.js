@@ -46,6 +46,18 @@ function Application() {
 	
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
+
+	$('#left-nav-collapse-btn').click(function(e)
+	{
+		$(this).toggleClass("fa-toggle-left fa-toggle-right");
+	});
+
+	// hackery to fix the canvas size after left-nav collapse/expand
+	E2.dom.left_nav.on('hide.bs.collapse show.bs.collapse', function(e)
+	{
+		clearTimeout(self.resize_timer);
+		self.resize_timer = setTimeout(self.onWindowResize, 1000);
+	});
 	
 	this.getNIDFromSlot = function(id)
 	{
