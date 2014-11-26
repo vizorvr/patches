@@ -10,9 +10,15 @@ function load()
 		E2.app.player.core.renderer.set_fullscreen(true);
 	});
 
-	var url = $('canvas[data-graph-url]').data('graph-url');
+	var $canvas = $('canvas[data-graph-url]');
+	var url = $canvas.data('graph-url');
+	var autoplay = $canvas.data('autoplay');
 	E2.app.player.core.asset_tracker.add_listener(progress);
 	E2.app.player.load_from_url(url);
+	if (autoplay)
+	{
+		play();
+	}
 }
 
 function findVrDevices(devices)
