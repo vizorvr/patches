@@ -17,24 +17,8 @@
 		<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
 		<script type="text/javascript" src="vendor/jquery.fastfix.js"></script>
 		<script type="text/javascript" src="vendor/jquery.mousewheel.js"></script>
-		<script type="text/javascript" src="vendor/gl-matrix.js"></script>
-		<script type="text/javascript" src="scripts/util.js"></script>
-		<script type="text/javascript" src="scripts/renderer.js"></script>
-		<script type="text/javascript" src="scripts/plugin-group.js"></script>
-		<script type="text/javascript" src="scripts/plugin-manager.js"></script>
-		<script type="text/javascript" src="scripts/connection.js"></script>
-		<script type="text/javascript" src="scripts/graph.js"></script>
-		<script type="text/javascript" src="scripts/node.js"></script>
-		<script type="text/javascript" src="scripts/registers.js"></script>
-		<script type="text/javascript" src="scripts/core.js"></script>
-		<script type="text/javascript" src="scripts/player.js"></script>
+		<script type="text/javascript" src="scripts/player.min.js"></script>
 		<style type="text/css">
-
-			body {
-				background-color: #fff; 
-			
-			}
-
 			.webgl-canvas-normal
 			{
 				position: absolute; 
@@ -67,123 +51,48 @@
 				z-index: 2;
 			}
 		</style>
-		<script type="text/javascript">
-			function AddEvents(player)
-			{
-				$('#fs').click(function()
-				{
-					player.core.renderer.set_fullscreen(true);
-				});
-			}
-
-			function LoadScene(player)
-			{
-				AddEvents(player);
-				player.load_from_url('scene.json');
-				player.play();
-			}
-
-			function EnumerateVRDevices(devices)
-			{
-				var hmd = null, sensor = null;
-				
-				for(var i = 0; i < devices.length; i++)
-				{
-					if(devices[i] instanceof HMDVRDevice)
-					{
-						// Just use the first device we find for now.
-						hmd = devices[i];
-						break;
-					}
-				}
-				
-				if(hmd)
-				{
-					for(var i = 0; i < devices.length; i++)
-					{
-						var d = devices[i];
-					
-						if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId)
-						{
-							sensor = devices[i];
-							break;
-						}
-					}
-				}
-
-				player = CreatePlayer([hmd, sensor], LoadScene);
-			}
-			
-			$(document).ready(function()
-			{
-				if(navigator.getVRDevices)
-				{
-					navigator.getVRDevices().then(EnumerateVRDevices);
-				}
-				else if(navigator.mozGetVRDevices)
-				{
-					navigator.mozGetVRDevices(EnumerateVRDevices);
-				}
-				else
-				{
-					player = CreatePlayer([null, null], LoadScene);
-				}
-			});
-			
-		</script>
-
 	</head>
 
 	<body>
+		<div id="vizorlogo" class="engilogo">
+			<img src="images/vizor_logo.png">
+		</div>
 
-	<div id="vizorlogo" class="engilogo">
-		<img src="images/vizor_logo.png">
-	</div>
+		<div id="topeffect">
+			<canvas
+				id="webgl-canvas"
+				class="webgl-canvas-normal"
+				width="1000"
+				height="390"
+				oncontextmenu="return false;"
+				data-autoplay="true"
+				data-graph-url="scene.json"
+				></canvas>
+		</div>
 
-	<div id="topeffect">
-		<canvas id="webgl-canvas" class="webgl-canvas-normal" width="1000" height="390" oncontextmenu="return false;">
-			</canvas>
-	</div>
+		<div id="installbar" class="installbar">
+			<center>
+				<a class="installbutton" href="/editor">OPEN THE EDITOR</a>
+			</center>
+		</div>
 
-	<div id="installbar" class="installbar">
-		<center>
-		<a class="installbutton" href="/editor">USE IN THE BROWSER</a>
-		<a class="installbutton" href="install.html">INSTALL FOR WINDOWS</a>
-		<a class="installbutton" href="install.html">INSTALL FOR LINUX</a>
-		<a class="installbutton" href="install.html">INSTALL FOR OSX</a><br><br>
-		<span class="subheading_install">Licensed under the MIT license, Vizor is open source and free for all use.<br>
-Check out our <a href="https://github.com/engijs/engi">GitHub page</a> for more info.</span>
-	</center>
-	</div>
+		<div id="content1" class="content1">
+			<center>
 
-	<div id="content1" class="content1">
-		<center>
-
-		YOU CAN CREATE VR WORLDS<br><br>
-		<span class="subheading">Templates and presets for Oculus and WebVR.<br> Ideal for playing around and prototyping what VR can become.</span><br><br><br>
-		<iframe src="http://old.engijs.org/demos/vr_demo_for_website2/" width="933" height="528" allowfullscreen="true"></iframe><br><br>
-		<a class="installbutton" href="http://create.vizor.io/fthr/engi_vr_introduction_2">EDIT THIS SCENE</a>
-		<br><br><br><br><br><br>
-
-		<hr>
-		<span class="subheading2">
-			<br>
-		<br><img src="images/engilogo2.png"><br><br><br><br>
-		<b>Vizor Create is an all purpose web tool for visual programming</b><br><br></span>
-		<span class="subheading"><br>
-		WebAudio support and making DSP with the GPU.<br><br>
-		Video textures and post processing.<br><br>
-		Cryptocurrency integration through <a href="https://counterwallet.io/">Counterwallet</a> and <a href="https://wallet.dogeparty.io">Dogewallet</a>.<br><br>
-		OSC support for creating touch interfaces.<br><br>
-		Registers for creating state machines.<br><br>
-		Editor for writing and using custom vertex and pixel shaders.<br><br>
-		Documented API for creating your own plugins.<br><br>
-		... <a href="https://github.com/engijs/engi">and much more!</a>
-	
-		</span>
-		<hr>
-		<span class="subheading">Contact us via our <a href="https://github.com/engijs/engi">GitHub </a>or <a href="http://twitter.com/fthr">@Fthr</a> on Twitter.</span><br><br><br><br>
-	</center>
-	</div>
+				YOU CAN CREATE VR WORLDS<br><br>
+				<span class="subheading">Templates and presets for Oculus and WebVR.<br> Ideal for playing around and prototyping what VR can become.</span><br>
+				<br><br>
+				<iframe src="http://old.engijs.org/demos/vr_demo_for_website2/" width="933" height="528" allowfullscreen="true"></iframe><br><br>
+				<a class="installbutton" href="http://create.vizor.io/fthr/engi_vr_introduction_2">EDIT THIS SCENE</a>
+				<br><br>
+				<br><br>
+				<br><br>
+				<br><br>
+				<br><br>
+				<br><br>
+				<br><br>
+				<br><br>
+			</center>
+		</div>
 	</body>
 </html>

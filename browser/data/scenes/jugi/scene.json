@@ -1,0 +1,27 @@
+{
+	"id": "scene_json",
+	"materials": {
+			"spikecity": {
+				"ambient_color": [0, 0, 0, 1],
+				"diffuse_color": [1, 1, 1, 1],
+				"double_sided": true,
+				"depth_write": false,
+				"depth_test": false,
+				"alpha_clip": true,
+				"diffuse_color_map": { "factor": 1, "url": "baked.png" }
+			}
+	},
+	"meshes": {
+		"GeoSphere0": {
+			"batches": [
+				{
+					"material": "spikecity",
+					"vertices": "scene_GeoSphere0_v0",
+					"normals": "scene_GeoSphere0_n0",
+					"uv0": "scene_GeoSphere0_t00"
+				}
+			]
+		}
+	},
+	"bounding_box": { "lo": [-1.4666, -1.1797, -1.6886], "hi": [1.3445, 1.2441, 1.6925] }
+}
