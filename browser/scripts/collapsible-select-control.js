@@ -25,7 +25,7 @@ CollapsibleSelectControl.prototype.focus = function() {
 CollapsibleSelectControl.prototype._reset = function() {
 	$('.panel', this._el).show();
 	$('.panel li', this._el).show();
-	$('.collapse').collapse('hide');
+	$('.collapse', this._el).collapse('hide');
 }
 
 CollapsibleSelectControl.prototype._search = function(text) {

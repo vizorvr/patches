@@ -1,8 +1,17 @@
 body {
-	display: flex;
 	margin: 0;
 	height: 100%;
 	width: 100%;
+
+	/* Safari 7.0+ */
+	display: -webkit-flex;
+	-webkit-flex-direction: row;
+	-webkit-flex-wrap: nowrap;
+	-webkit-justify-content: flex-start;
+	-webkit-align-content: stretch;
+	-webkit-align-items: stretch;
+
+	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
 	justify-content: flex-start;
@@ -11,24 +20,38 @@ body {
 }
 
 .flex-column {
+	/* Safari 7.0+ */
+	-webkit-flex: 1 1 auto;
+	display: -webkit-flex;
+	-webkit-flex-direction: column;
+
 	flex: 1 1 auto;
 	display: flex;
 	flex-direction: column;
 }
 
 .flex-row {
+	/* Safari 7.0+ */
+	-webkit-flex: 1 1 auto;
+	display: -webkit-flex;
+	-webkit-flex-direction: row;
+
 	flex: 1 1 auto;
 	display: flex;
 	flex-direction: row;
 }
 
 .cell {
+	/* Safari 7.0+ */
+	-webkit-flex: 1 1 auto;
+	-webkit-align-self: stretch;
+
 	flex: 1 1 auto;
 	align-self: stretch;
 }
 
 .border {
-  border: 0px solid #eee;
+	border: 0px solid #eee;
 }
 
 .header {
@@ -53,6 +76,7 @@ body {
 }
 
 #presets .searchbox {
+	-webkit-flex-shrink: 0;	/* Safari 7.0+ */
 	flex-shrink: 0;
 }
 

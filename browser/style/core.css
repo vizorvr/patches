@@ -324,3 +324,34 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcf297', end
 .modal {
 	position: absolute;
 }
+
+#left-nav-collapse-btn
+{
+	display: block;
+	float: left;
+	padding: .2em .25em .15em;
+}
+
+#left-nav.collapse.width
+{
+    min-width: 0;
+    max-width: 0;
+    -webkit-transition:min-width .35s ease;
+    -moz-transition:min-width .35s ease;
+    -o-transition:min-width .35s ease;
+    transition:min-width .35s ease;
+}
+
+#left-nav.collapsing
+{
+    -webkit-transition:min-width .35s ease;
+    -moz-transition:min-width .35s ease;
+    -o-transition:min-width .35s ease;
+    transition:min-width .35s ease;
+}
+
+#left-nav.collapse.width.in
+{
+	min-width: 315px !important;
+	max-width: 315px !important;
+}
