@@ -24,38 +24,6 @@
 	color: white;
 }
 
-hgroup {
-	padding-top: -100px;
-}
-
-.installbutton {
-  font-family: arial;
-  font-weight: bold;
-  color: #B3B3B3 !important;
-  font-size: 14px;
-  box-shadow: 1px 1px 1px #BEE2F9;
-  padding: 17px 25px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-  background: #63B8EE;
-  background: linear-gradient(top,  #474742,  #000000);
-  background: -ms-linear-gradient(top,  #474742,  #000000);
-  background: -webkit-gradient(linear, left top, left bottom, from(#474742), to(#000000));
-  background: -moz-linear-gradient(top,  #474742,  #000000);
-  text-decoration: none;
-}
-
-.installbutton:hover {
-  color: #000000 !important;
-  background: #468CCF;
-  background: linear-gradient(top,  #EDC542,  #EE6D18);
-  background: -ms-linear-gradient(top,  #EDC542,  #EE6D18);
-  background: -webkit-gradient(linear, left top, left bottom, from(#EDC542), to(#EE6D18));
-  background: -moz-linear-gradient(top,  #EDC542,  #EE6D18);
-  text-decoration: none;
-}
-
 .container {
 	font-family: 'dejavu' sans-serif !important;
     font-weight: normal;
