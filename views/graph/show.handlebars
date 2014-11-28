@@ -7,6 +7,12 @@
 
 <div class="container">
 	<div class="row">
+		<div class="col-xs-12 logo">
+			<img src="/images/logo--horizontal.png" width="100">
+		</div>
+	</div>
+
+	<div class="row">
 		<div class="col-xs-12 no-padding player">
 				<canvas id="webgl-canvas"
 					width="860"
@@ -40,10 +46,26 @@
 			by {{graph.owner}}
 		</div>
 
-		<div class="col-xs-2 pull-right edit-button">
-	    	<a href="{{editUrl}}" class="btn btn-success">
+		<div class="col-xs-2 pull-right buttons play">
+	    	<a href="{{editUrl}}" class="btn btn-success player-cta pull-right">
 	    		Open in editor
 	    	</a>
+
+	    	<br/>
+	    	<br/>
+
+	    	<a href="//vizor.io/submit" class="btn btn-default submit-link player-cta pull-right">
+				Submit to Vizor
+	    	</a>
+	  </div>
+	</div>
+
+
+	<div class="row">
+		<div class="col-xs-12">
+			<br/>
+			<p class="small">
+			</p>
 	  </div>
 	</div>
 </div>
