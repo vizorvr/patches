@@ -17,35 +17,28 @@
 	</head>
 
 	<body>
-		<div class="container full-width">
-			<div class="row header-row">
-				<div class="col-xs-12">
-					<div class="logo">
-						<img src="images/logo--vertical.png">
-					</div>
+		<div class="stage--front">
+			<canvas
+				id="webgl-canvas"
+				class="webgl-canvas-normal"
+				width="1400px"
+				height="500px"
+				oncontextmenu="return false;"
+				data-autoplay="true"
+				data-graph-url="scene.json"
+				>
+			</canvas>
 
-					<canvas
-						id="webgl-canvas"
-						class="webgl-canvas-normal"
-						width="1000px"
-						height="445px"
-						oncontextmenu="return false;"
-						data-autoplay="true"
-						data-graph-url="scene.json"
-						></canvas>
-				</div>
-			</div>
+			<hgroup class="text-center">
+				<img src="images/logo--vertical.png" width="100" height="140">
+				<h2 class="thin white">
+				<br/>
+				<a class="btn btn-lg btn-success" href="/editor">Open the Editor</a>
+				</h2>
+			</hgroup>
 		</div>
 
 		<div class="container full-width">
-			<div class="row installbar">
-				<div class="col-xs-12">
-					<center>
-						<a class="btn installbutton" href="/editor">OPEN THE EDITOR</a>
-					</center>
-				</div>
-			</div>
-
 			<div class="row">
 				<div class="col-xs-12">
 					<center>
@@ -62,8 +55,8 @@
 						</div>
 
 						<p>
-							<a class="btn installbutton" href="http://create.vizor.io/fthr/engi_vr_introduction_2">
-								EDIT THIS SCENE
+							<a class="btn btn-lg btn-success" href="http://create.vizor.io/fthr/engi_vr_introduction_2">
+								Edit this scene
 							</a>
 						</p>
 
@@ -76,6 +69,20 @@
 	
 		<div class="clearfix"></div>
 
-		<footer class="footer"><div class="container"><div class="row"><div class="col-xs-12 col-sm-2"><a href="http://vizor.io"><img src="/images/logo--horizontal.png" width="147" height="40"></a></div><div class="col-xs-12 col-sm-8 text-center"><ul class="links footer-links"><li><strong><a href="/">Frontpage</a></strong></li><li class="separator"></li><li><a href="#">Submit an experience</a></li><li class="separator"></li><li><a href="#">Create VR content</a></li><li class="separator"></li><li><a href="#">Crowdsale</a></li><li class="separator"></li><li><a href="#">About us</a></li><li class="separator"></li><li><a href="#">Blog</a></li><li class="separator"></li><li><a href="#">Twitter</a></li></ul></div></div></div></footer>
+		<footer class="footer"><div class="container"><div class="row"><div class="col-xs-12 col-sm-2"><a href="http://vizor.io"><img src="/images/logo--horizontal.png" width="147" height="40"></a></div><div class="col-xs-12 col-sm-8 text-center"><ul class="links footer-links">
+			<li><a href="http://vizor.io/">Home</a></li>
+			<li class="separator"></li>
+			<li><a href="http://vizor.io/crowdsale">Crowdsale</a></li>
+			<li class="separator"></li>
+			<li><strong><a href="http://create.vizor.io/">Create an experience</a></strong></li>
+			<li class="separator"></li>
+			<li><a href="http://vizor.io/submit">Submit an experience</a></li>
+			<li class="separator"></li>
+			<li><a href="http://vizor.io/about">About us</a></li>
+			<li class="separator"></li>
+			<li><a href="#">Blog</a></li>
+			<li class="separator"></li>
+			<li><a href="#">Twitter</a></li>
+			</ul></div></div></div></footer>
 	</body>
 </html>
