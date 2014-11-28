@@ -7,36 +7,43 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col-xs-12">
-		<div style="width:860px" class="center">
-			<canvas id="webgl-canvas" class="webgl-canvas-normal" oncontextmenu="return false;" data-graph-url="{{graphMinUrl}}"></canvas>
+		<div class="col-xs-12 no-padding player">
+				<canvas id="webgl-canvas"
+					width="860"
+					height="477"
+					class="webgl-canvas-normal"
+					oncontextmenu="return false;"
+					data-graph-url="{{graphMinUrl}}">
+				</canvas>
 
-			<div id="playButton">
-				<i class="fa fa-play fa-lg pull-left"></i>
-			</div>
+				<div id="player" class="player-bar status-pause">
+					<button id="play" class="btn btn-default button--play">
+						<i class="fa fa-play"></i>
+					</button>
+					<button id="fs" class="btn btn-default pull-right hidden-xs">
+						<i class="fa fa-arrows-alt"></i>
+					</button>
+				</div>
 
-			<img id="fs" src="/images/oculus.png" class="pull-right" title="Click to go fullscreen and enable Oculus rendering." />
-
-			<div class="progress" style="display:none">
-			  <div class="progress-bar progress-bar-info progress-bar-striped active"
-			  	role="progressbar"
-			  	aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
-			  	style="width: 00%;">
-			  </div>
-			</div>
+				<div class="progress" style="display:none">
+					<div class="progress-bar progress-bar-info progress-bar-striped active"
+					role="progressbar"
+					aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+					style="width: 00%;">
+				</div>
 		</div>
     </div>
 
 	<div class="row">
-		<div class="col-xs-10 col-xs-offset-2">
+		<div class="col-xs-10">
 			<h1>{{graph.name}}</h1>
 			by {{graph.owner}}
 		</div>
-	</div>
 
-	<div class="row">
-		<div class="col-xs-12 text-center">
-	    <a href="{{editUrl}}" class="btn btn-success">Tweak this graph</a>
+		<div class="col-xs-2 pull-right edit-button">
+	    	<a href="{{editUrl}}" class="btn btn-success">
+	    		Open in editor
+	    	</a>
 	  </div>
 	</div>
 </div>
@@ -48,9 +55,9 @@
 		var playing = false;
 
 		E2.app.player.core.on('ready', function() {
-			var $i = $('#playButton i');
+			var $i = $('#play i');
 
-			$('#playButton').on('click', function() {
+			$('#play').on('click', function() {
 				playing = !playing;
 
 				if (playing)
