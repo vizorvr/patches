@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+<!doctype html>
 
 <html>
 	<head>
@@ -6,93 +6,76 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
-		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
-	
-			<link rel="stylesheet" href="style/skel.css" />
-			<link rel="stylesheet" href="style/website.css" />
-			<link rel="stylesheet" href="style/website-wide.css" />
-			<link rel="stylesheet" href="style/website-normal.css" />
-		</noscript>
-		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
-		<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
-		<script type="text/javascript" src="vendor/jquery.fastfix.js"></script>
-		<script type="text/javascript" src="vendor/jquery.mousewheel.js"></script>
-		<script type="text/javascript" src="scripts/player.min.js"></script>
-		<style type="text/css">
-			.webgl-canvas-normal
-			{
-				position: absolute; 
-				top: 0px;
-				left: 0px;
-				width: 100%;
-				height: 445px;
-				background-color: #000; 
-				z-index: -1;
-			}
+	    <link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
+	    <link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
 
-			.webgl-canvas-fs
-			{
-				background-color: #000; 
-				position: absolute; 
-				left: 0px; 
-				top: 0px;
-				width: 100%;
-				height: 100%;
-				z-index: 10000;
-			}
-			
-			.oculus
-			{
-				width: 33px;
-				height: 20px;
-				position: absolute;
-				left: 695px;
-				top: 393px;
-				z-index: 2;
-			}
-		</style>
+		<link rel="stylesheet" href="style/vizor.css" />
+		<link rel="stylesheet" href="style/website.css" />
+
+		<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+		<script type="text/javascript" src="scripts/player.min.js"></script>
 	</head>
 
 	<body>
-		<div id="vizorlogo" class="engilogo">
-			<img src="images/vizor_logo.png">
+		<div class="container full-width">
+			<div class="row header-row">
+				<div class="col-xs-12">
+					<div class="logo">
+						<img src="images/logo--vertical.png">
+					</div>
+
+					<canvas
+						id="webgl-canvas"
+						class="webgl-canvas-normal"
+						width="1000px"
+						height="445px"
+						oncontextmenu="return false;"
+						data-autoplay="true"
+						data-graph-url="scene.json"
+						></canvas>
+				</div>
+			</div>
 		</div>
 
-		<div id="topeffect">
-			<canvas
-				id="webgl-canvas"
-				class="webgl-canvas-normal"
-				width="1000"
-				height="390"
-				oncontextmenu="return false;"
-				data-autoplay="true"
-				data-graph-url="scene.json"
-				></canvas>
-		</div>
+		<div class="container full-width">
+			<div class="row installbar">
+				<div class="col-xs-12">
+					<center>
+						<a class="btn installbutton" href="/editor">OPEN THE EDITOR</a>
+					</center>
+				</div>
+			</div>
 
-		<div id="installbar" class="installbar">
-			<center>
-				<a class="installbutton" href="/editor">OPEN THE EDITOR</a>
-			</center>
-		</div>
+			<div class="row">
+				<div class="col-xs-12">
+					<center>
+						<h1>YOU CAN CREATE VR WORLDS</h1>
+						<p class="lead">
+							Templates and presets for Oculus and WebVR.
+						</p>
+						<p class="lead">
+							Ideal for playing around and prototyping for what VR can become.
+						</p>
 
-		<div id="content1" class="content1">
-			<center>
+						<div>
+							<iframe src="http://old.engijs.org/demos/vr_demo_for_website2/" width="933" height="528" allowfullscreen="true"></iframe>
+						</div>
 
-				YOU CAN CREATE VR WORLDS<br><br>
-				<span class="subheading">Templates and presets for Oculus and WebVR.<br> Ideal for playing around and prototyping what VR can become.</span><br>
-				<br><br>
-				<iframe src="http://old.engijs.org/demos/vr_demo_for_website2/" width="933" height="528" allowfullscreen="true"></iframe><br><br>
-				<a class="installbutton" href="http://create.vizor.io/fthr/engi_vr_introduction_2">EDIT THIS SCENE</a>
-				<br><br>
-				<br><br>
-				<br><br>
-				<br><br>
-				<br><br>
-				<br><br>
-				<br><br>
-				<br><br>
-			</center>
+						<p>
+							<a class="btn installbutton" href="http://create.vizor.io/fthr/engi_vr_introduction_2">
+								EDIT THIS SCENE
+							</a>
+						</p>
+
+						<div class="clearfix"></div>
+
+					</center>
+				</div>
+			</div>
 		</div>
+	
+		<div class="clearfix"></div>
+
+		<footer class="footer"><div class="container"><div class="row"><div class="col-xs-12 col-sm-2"><a href="http://vizor.io"><img src="/images/logo--horizontal.png" width="147" height="40"></a></div><div class="col-xs-12 col-sm-8 text-center"><ul class="links footer-links"><li><strong><a href="/">Frontpage</a></strong></li><li class="separator"></li><li><a href="#">Submit an experience</a></li><li class="separator"></li><li><a href="#">Create VR content</a></li><li class="separator"></li><li><a href="#">Crowdsale</a></li><li class="separator"></li><li><a href="#">About us</a></li><li class="separator"></li><li><a href="#">Blog</a></li><li class="separator"></li><li><a href="#">Twitter</a></li></ul></div></div></div></footer>
 	</body>
 </html>
