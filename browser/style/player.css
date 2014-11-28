@@ -42,6 +42,8 @@ a
 body {
 	background-color: #222; 
 	color: white;
+	min-height: 900px;
+	width: 100%;
 }
 
 .title {
@@ -77,3 +79,7 @@ body {
 	width: 140px;
 }
 
+.full-width {
+	width: 100%;
+	min-width: 860px;
+}
