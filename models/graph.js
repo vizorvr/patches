@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var assetHelper = require('./asset-helper');
 var _ = require('lodash');
+var settings = require('../config/settings');
 
 var alphanumeric = [
 	/[a-z0-9\-\_]/,
@@ -29,6 +30,7 @@ var graphSchema = new mongoose.Schema(
 });
 
 graphSchema.index({ owner: 1, name: 1, unique: true }); // schema level
+
 graphSchema.virtual('path').get(function()
 {
 	return '/'+this.owner+'/'+this.name;

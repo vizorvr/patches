@@ -6,7 +6,6 @@
 		"oscPort": 8001,
 		"enableFrameDumping": true,
 		"engiPath": "./browser/",
-		"fqdn": "create.vizor.io",
 		"host": "127.0.0.1",
 		"port": 8000
 	}

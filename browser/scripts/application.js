@@ -1537,7 +1537,7 @@ function Application() {
 	{
 		self.openSaveDialog(function()
 		{
-			window.location.href = '/'+window.location.pathname.split('/').slice(1,3).join('/');
+			window.location.href = '//vizor.io/'+window.location.pathname.split('/').slice(1,3).join('/');
 		});
 	}
 	
