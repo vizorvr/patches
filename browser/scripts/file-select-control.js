@@ -391,13 +391,6 @@ function createSelector(path, selected, okButton, okFn, cb)
 		E2.dom.load_spinner.hide();
 
 		var buttons = {
-			'Download': function(file) {
-				var url = '/dl' + path + file;
-				var iframe = $('#dl-frame');
-				if (!iframe.length)
-					iframe = $('<iframe id="dl-frame">').hide().appendTo('body');
-				iframe.attr('src', url);
-			},
 			'Cancel': function() {}
 		};
 
@@ -417,12 +410,42 @@ function createSelector(path, selected, okButton, okFn, cb)
 
 FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 {
-	return createSelector('/graph', selected, okButton, okFn, function(ctl)
+	var ctl = new FileSelectControl();
+
+	okButton = okButton || 'Ok';
+	okFn = okFn || function() {};
+
+	if (selected && selected.indexOf('://') === -1)
+		selected = selected.substring(selected.lastIndexOf('/') + 1);
+
+	E2.dom.load_spinner.show();
+
+	$.get('/graph', function(files)
 	{
+		E2.dom.load_spinner.hide();
+
+		var buttons = {
+			'Clipboard': function(file) {
+				$.get('/data/graph'+file+'.json', function(d)
+				{
+					E2.app.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
+				});
+			},
+			'Cancel': function() {}
+		};
+
+		buttons[okButton] = okFn;
+
 		ctl
+		.url('/graph')
 		.template('graph')
-		.modal();
+		.buttons(buttons)
+		.files(files)
+		.selected(selected)
+		.modal()
 	});
+
+	return ctl;
 };
 
 FileSelectControl.createVideoSelector = function(selected, okButton, okFn)

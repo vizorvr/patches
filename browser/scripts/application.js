@@ -1541,11 +1541,6 @@ function Application() {
 		});
 	}
 	
-	this.onLoadClicked = function()
-	{
-		window.location.hash = '#' + URL_GRAPHS + E2.dom.filename_input.val();
-	};
-
 	this.onLoadClipboardClicked = function()
 	{
 		var url = URL_GRAPHS + E2.dom.filename_input.val();
