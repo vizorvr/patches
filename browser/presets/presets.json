@@ -25,7 +25,15 @@
 
 	"VR":
 	{
-		"VR: Clean template": "vr_clean_template"
+		"VR: Clean template": "vr_clean_template",
+		"VR: 3D object loader": "vr_3d_object_loader",
+		"VR: Sphere loader": "vr_sphere_loader",
+		"VR: Cube loader": "vr_cube_loader",
+		"VR: Ground plane": "vr_ground_plane",
+		"VR: Sky sphere": "vr_sky_sphere",
+		"VR: Particles": "vr_particles",
+		"VR: Particles on object": "vr_particles_on_object"
+
 	},
 
 	"BACKGROUND & OVERLAY GRAPHICS":
@@ -75,6 +83,12 @@
 		"Camera: Perspective with zoom only": "camera_with_zoom_only",
 		"Camera: Mouse controlled camera": "camera_with_mouse_controls"
 	},
+
+	"LOOPS":
+	{
+		"Loop: Loop framework": "loop_framework"
+	},
+
 
 	"MATERIALS AND LIGHTS":
 	{

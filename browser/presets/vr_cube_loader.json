@@ -1,0 +1,203 @@
+{
+    "abs_t": 235.91,
+    "active_graph": 0,
+    "graph_uid": 39,
+    "root": {
+        "node_uid": 19,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 474,
+                "y": 408,
+                "uid": 18,
+                "dsid": 3,
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "rt_filter": 9729,
+                    "input_sids": {
+                        "5": 0,
+                        "6": 1,
+                        "23": 2
+                    },
+                    "output_sids": {}
+                },
+                "title": "VR Cube",
+                "graph": {
+                    "node_uid": 24,
+                    "uid": 38,
+                    "parent_uid": 0,
+                    "open": false,
+                    "nodes": [
+                        {
+                            "plugin": "mesh_renderer_emitter",
+                            "x": 744,
+                            "y": 20,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 586,
+                            "y": 135,
+                            "uid": 5,
+                            "dsid": 14,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "camera",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 6,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 600,
+                            "y": 195,
+                            "uid": 6,
+                            "dsid": 14,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "transform",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 4,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "cube_mesh_generator",
+                            "x": 354,
+                            "y": 20,
+                            "uid": 10
+                        },
+                        {
+                            "plugin": "from_mesh_shader",
+                            "x": 588,
+                            "y": 22,
+                            "uid": 11
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 385,
+                            "y": 129,
+                            "uid": 23,
+                            "dsid": 3,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "material",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 12,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 5,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 6,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "src_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 11,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 10,
+                            "dst_nuid": 11,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": 23,
+                            "dst_nuid": 11,
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "src_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "camera",
+                        "dt": 6,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": false
+                    },
+                    {
+                        "name": "transform",
+                        "dt": 4,
+                        "uid": 1,
+                        "index": 1,
+                        "type": 0,
+                        "is_connected": false
+                    },
+                    {
+                        "name": "material",
+                        "dt": 12,
+                        "uid": 2,
+                        "index": 2,
+                        "type": 0
+                    }
+                ]
+            }
+        ],
+        "conns": [],
+        "registers": [
+            {
+                "id": "camera",
+                "dt": 6
+            }
+        ]
+    }
+}
