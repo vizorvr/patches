@@ -1009,7 +1009,7 @@
                             "y": 551,
                             "uid": 43,
                             "state": {
-                                "url": "data/textures/tile_metal.jpg"
+                                "url": "/data/textures/tile_metal.jpg"
                             },
                             "title": "Image"
                         },

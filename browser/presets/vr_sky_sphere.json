@@ -1051,7 +1051,7 @@
                             "y": 187,
                             "uid": 25,
                             "state": {
-                                "url": "data/textures/earth_space.jpg"
+                                "url": "/data/textures/earth_space.jpg"
                             },
                             "title": "Image"
                         },
