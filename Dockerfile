@@ -18,4 +18,4 @@ RUN npm install --silent -g forever
 RUN npm install
 RUN ./node_modules/.bin/gulp
 
-CMD forever start ./app.js
+CMD forever ./app.js
