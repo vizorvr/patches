@@ -71,7 +71,7 @@
 	{
 		"Interaction: Button with MouseOver and OnClick colors": "interaction_button_with_mouseover_and_click_color",
 		"Interaction: Toggle button": "interaction_button_toggle",
-		"Interaction: Keypress increase/decrease - simple": "interaction_up_and_down_counter_simple",
+		"Interaction: Keypress increase/decrease - simple": "interaction_up_down_counter_simple",
 		"Interaction: Keypress increase/decrease with init & clamp": "interaction_up_and_down_counter_with_init_and_clamp"
 	},
 	
