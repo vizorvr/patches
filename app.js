@@ -93,8 +93,7 @@ app.use(connectAssets(
 	paths: [
 		path.join(__dirname, 'browser/style'),
 		path.join(__dirname, 'browser/scripts')
-	],
-	helperContext: app.locals
+	]
 }));
 
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
@@ -133,8 +132,8 @@ app.use(flash());
 
 app.use(function(req, res, next)
 {
-	// Make user object available in templates.
 	res.locals.user = req.user;
+	res.locals.KEY_GA = process.env.KEY_GA;
 	next();
 });
 
