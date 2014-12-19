@@ -93,7 +93,8 @@ app.use(connectAssets(
 	paths: [
 		path.join(__dirname, 'browser/style'),
 		path.join(__dirname, 'browser/scripts')
-	]
+	],
+	helperContext: app.locals
 }));
 
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
