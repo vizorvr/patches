@@ -1,3 +1,3 @@
 module.exports = {
-	fqdn: process.env.FQDN || '//localhost:8000'
+	fqdn: process.env.FQDN || 'localhost:8000'
 }
