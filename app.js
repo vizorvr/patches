@@ -50,7 +50,8 @@ var PROJECT = argv._[0] || ENGI;
 var listenHost = process.env.ENGI_BIND_IP || argv.i || config.server.host;
 var listenPort = process.env.ENGI_BIND_PORT || argv.p || config.server.port;
 
-var hour = 3600000;
+var minute = 60 * 1000;
+var hour = 60 * minute;
 var day = hour * 24;
 var week = day * 7;
 
@@ -114,8 +115,8 @@ app.use(sessions(
 {
 	cookieName: 'session',
 	secret: secrets.sessionSecret,
-	duration: 24 * 60 * 60 * 1000,
-	activeDuration: 1000 * 60 * 5
+	duration: week,
+	activeDuration: day
 }));
 
 app.use(passport.initialize());
@@ -284,7 +285,7 @@ function requireController(req, res, next)
 {
 	req.controller = controllers[req.params.model];
 	if (!req.controller)
-		return res.status(400).json({msg:'No such controller'});
+		return res.status(400).json({ message: 'No such controller'});
 	next();
 };
 
@@ -405,8 +406,6 @@ app.post('/:model',
 	}
 );
 
-
-
 var httpServer = http.createServer(app);
 
 httpServer.listen(listenPort, listenHost);
@@ -420,6 +419,18 @@ if (config.server.enableChannels)
 {
 	new WsChannelServer().listen(httpServer);
 }
+
+app.use(function(err, req, res, next) {
+	res.status(err.status || 500);
+
+	if (req.xhr)
+		return res.send();
+
+	res.render('error', {
+		message: err.message,
+		error: {}
+	});
+});
 
 app.use(errorHandler());
 

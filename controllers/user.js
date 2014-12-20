@@ -40,12 +40,12 @@ exports.postLogin = function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) return next(err);
     if (!user) {
-      req.flash('errors', { msg: info.message });
+      req.flash('errors', { message: info.message });
       return res.redirect('/login');
     }
     req.logIn(user, function(err) {
       if (err) return next(err);
-      req.flash('success', { msg: 'Success! You are logged in.' });
+      req.flash('success', { message: 'Success! You are logged in.' });
       if (req.xhr)
       {
         res.json(user.toJSON());
@@ -106,18 +106,18 @@ exports.postSignup = function(req, res, next) {
     if (existingUser) {
       if (req.xhr)
       {
-        return res.status(400).json({ msg: 'Account with that username already exists.' });
+        return res.status(400).json({ message: 'Account with that username already exists.' });
       }
-      req.flash('errors', { msg: 'Account with that username already exists.' });
+      req.flash('errors', { message: 'Account with that username already exists.' });
       return res.redirect('/signup');
     }
     User.findOne({ email: req.body.email }, function(err, existingUser) {
       if (existingUser) {
         if (req.xhr)
         {
-          return res.status(400).json({ msg: 'Account with that email already exists.' });
+          return res.status(400).json({ message: 'Account with that email already exists.' });
         }
-        req.flash('errors', { msg: 'Account with that email address already exists.' });
+        req.flash('errors', { message: 'Account with that email address already exists.' });
         return res.redirect('/signup');
       }
       user.save(function(err) {
@@ -165,7 +165,7 @@ exports.postUpdateProfile = function(req, res, next) {
 
     user.save(function(err) {
       if (err) return next(err);
-      req.flash('success', { msg: 'Profile information updated.' });
+      req.flash('success', { message: 'Profile information updated.' });
       res.redirect('/account');
     });
   });
@@ -195,7 +195,7 @@ exports.postUpdatePassword = function(req, res, next) {
 
     user.save(function(err) {
       if (err) return next(err);
-      req.flash('success', { msg: 'Password has been changed.' });
+      req.flash('success', { message: 'Password has been changed.' });
       res.redirect('/account');
     });
   });
@@ -210,7 +210,7 @@ exports.postDeleteAccount = function(req, res, next) {
   User.remove({ _id: req.user.id }, function(err) {
     if (err) return next(err);
     req.logout();
-    req.flash('info', { msg: 'Your account has been deleted.' });
+    req.flash('info', { message: 'Your account has been deleted.' });
     res.redirect('/');
   });
 };
@@ -232,7 +232,7 @@ exports.getOauthUnlink = function(req, res, next) {
 
     user.save(function(err) {
       if (err) return next(err);
-      req.flash('info', { msg: provider + ' account has been unlinked.' });
+      req.flash('info', { message: provider + ' account has been unlinked.' });
       res.redirect('/account');
     });
   });
@@ -253,7 +253,7 @@ exports.getReset = function(req, res) {
     .where('resetPasswordExpires').gt(Date.now())
     .exec(function(err, user) {
       if (!user) {
-        req.flash('errors', { msg: 'Password reset token is invalid or has expired.' });
+        req.flash('errors', { message: 'Password reset token is invalid or has expired.' });
         return res.redirect('/forgot');
       }
       res.render('account/reset', {
@@ -285,7 +285,7 @@ exports.postReset = function(req, res, next) {
         .where('resetPasswordExpires').gt(Date.now())
         .exec(function(err, user) {
           if (!user) {
-            req.flash('errors', { msg: 'Password reset token is invalid or has expired.' });
+            req.flash('errors', { message: 'Password reset token is invalid or has expired.' });
             return res.redirect('back');
           }
 
@@ -317,7 +317,7 @@ exports.postReset = function(req, res, next) {
           'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
       };
       transporter.sendMail(mailOptions, function(err) {
-        req.flash('success', { msg: 'Success! Your password has been changed.' });
+        req.flash('success', { message: 'Success! Your password has been changed.' });
         done(err);
       });
     }
@@ -367,7 +367,7 @@ exports.postForgot = function(req, res, next) {
     function(token, done) {
       User.findOne({ email: req.body.email.toLowerCase() }, function(err, user) {
         if (!user) {
-          req.flash('errors', { msg: 'No account with that email address exists.' });
+          req.flash('errors', { message: 'No account with that email address exists.' });
           return res.redirect('/forgot');
         }
 
@@ -397,7 +397,7 @@ exports.postForgot = function(req, res, next) {
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
       transporter.sendMail(mailOptions, function(err) {
-        req.flash('info', { msg: 'An e-mail has been sent to ' + user.email + ' with further instructions.' });
+        req.flash('info', { message: 'An e-mail has been sent to ' + user.email + ' with further instructions.' });
         done(err, 'done');
       });
     }

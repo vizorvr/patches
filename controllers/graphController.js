@@ -140,7 +140,7 @@ GraphController.prototype.canWriteUpload = function(req, res, next)
 	{
 		if (!can)
 			return res.status(403)
-				.json({msg: 'Sorry, permission denied'});
+				.json({message: 'Sorry, permission denied'});
 
 		next();
 	});
@@ -196,7 +196,7 @@ GraphController.prototype.save = function(req, res, next)
 		if (!can)
 		{
 			return res.status(403)
-				.json({msg: 'Sorry, permission denied'});
+				.json({message: 'Sorry, permission denied'});
 		}
 
 		return that._fs.writeString(gridFsPath, req.body.graph)

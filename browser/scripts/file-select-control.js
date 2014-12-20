@@ -296,7 +296,7 @@ FileSelectControl.prototype._bindUploadForm = function()
 					.addClass('progress-bar-danger');
 
 				$('#message', container).html('<h4>Upload failed: '
-					+ err.responseJSON ? err.responseJSON.msg : err
+					+ err.responseJSON ? err.responseJSON.message : err
 					+'</h4>');
 			},
 			data: formData,

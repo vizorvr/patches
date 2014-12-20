@@ -4,6 +4,12 @@ var LocalStrategy = require('passport-local').Strategy;
 var User = require('../models/user');
 var secrets = require('./secrets');
 
+function error401() {
+	var e = new Error('Authorization required');
+	e.status = 401;
+	return e;
+}
+
 passport.serializeUser(function(user, done)
 {
 	done(null, user.id);
@@ -43,6 +49,9 @@ exports.isAuthenticated = function(req, res, next)
 {
 	if (req.isAuthenticated())
 		return next();
+
+	if (req.xhr)
+		return next(error401());
 
 	res.redirect('/login');
 };

@@ -69,7 +69,7 @@ AssetController.prototype.findByTag = function(req, res, next)
 {
 	var tag = req.params.tag;
 	if (!tag)
-		return res.status(400).json({msg: 'No tag'});
+		return res.status(400).json({message: 'No tag'});
 
 	this._service.find(
 	{
@@ -104,7 +104,7 @@ AssetController.prototype.save = function(req, res, next)
 	{
 		if (!can)
 			return res.status(403)
-				.json({msg: 'Sorry, permission denied'});
+				.json({message: 'Sorry, permission denied'});
 
 		return that._service.save(req.body, req.user)
 		.then(function(asset)
@@ -143,7 +143,7 @@ AssetController.prototype.canWriteUpload = function(req, res, next)
 	{
 		if (!can)
 			return res.status(403)
-				.json({msg: 'Sorry, permission denied'});
+				.json({message: 'Sorry, permission denied'});
 
 		next();
 	});
@@ -162,7 +162,7 @@ AssetController.prototype.upload = function(req, res, next)
 	{
 		if (!can)
 			return res.status(403)
-				.json({msg: 'Sorry, permission denied'});
+				.json({message: 'Sorry, permission denied'});
 
 		// move the uploaded file into GridFS / local FS
 		return that._fs.move(file.path, gridFsPath)

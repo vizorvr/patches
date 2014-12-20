@@ -1517,6 +1517,9 @@ function Application() {
 						{
 							E2.dom.load_spinner.hide();
 
+							if (x.status === 401)
+								return E2.controllers.account.openLoginModal();
+
 							if (x.responseText)
 								bootbox.alert('Save failed: ' + x.responseText);
 							else

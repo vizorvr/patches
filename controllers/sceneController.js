@@ -34,7 +34,7 @@ SceneController.prototype.canWriteUpload = function(req, res, next)
 			fs.unlink(file.path);
 
 			return res.status(403)
-				.json({msg: 'Sorry, permission denied'});
+				.json({message: 'Sorry, permission denied'});
 		}
 
 		next();
@@ -52,7 +52,7 @@ SceneController.prototype.upload = function(req, res, next)
 	if (file.name.slice(-4) !== '.zip')
 	{
 		return res.status(400)
-			.json({msg: 'Please pack the Scene as a zip file'});
+			.json({message: 'Please pack the Scene as a zip file'});
 	}
 
 	new SceneProcessor(this._fs)
