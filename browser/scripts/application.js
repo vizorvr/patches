@@ -343,25 +343,21 @@ function Application() {
 			
 				for(var i = 0, len = b.length; i < len; i++)
 				{
-					var conn = b[i],
-					    cui = conn.ui,
-					    x1 = cui.src_pos[0] - so[0],
-					    y1 = cui.src_pos[1] - so[1],
-					    x4 = cui.dst_pos[0] - so[0],
-					    y4 = cui.dst_pos[1] - so[1],
-					    mx = Math.floor((x1 + x4) / 2),
-					    my = Math.floor((y1 + y4) / 2),
-					    x2 = x1 + 10 + (conn.offset * 5);
-		
-					x2 = x2 < mx ? x2 : mx;
-					
-					c.moveTo(x1, y1);
-					c.lineTo(x2, y1);
-					c.lineTo(x2, y4);
-					c.lineTo(x4, y4);
+                    // Noodles!
+                    var cn = b[i].ui;
+                    var x1 = (cn.src_pos[0] - so[0]) + 0.5;
+                    var y1 = (cn.src_pos[1] - so[1]) + 0.5;
+                    var x4 = (cn.dst_pos[0] - so[0]) + 0.5;
+                    var y4 = (cn.dst_pos[1] - so[1]) + 0.5;
+                    var diffx = Math.max(16, x4 - x1);
+                    var x2 = x1 + diffx * 0.5;
+                    var x3 = x4 - diffx * 0.5;
+        
+                    c.moveTo(x1, y1);
+                    c.bezierCurveTo(x2, y1, x3, y4, x4, y4);
 				}
 				
-				c.stroke()
+				c.stroke();
 			}
 		}
 		
