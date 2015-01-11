@@ -421,10 +421,12 @@ if (config.server.enableChannels)
 }
 
 app.use(function(err, req, res, next) {
+	console.error(err.message, err.stack);
+
 	res.status(err.status || 500);
 
 	if (req.xhr)
-		return res.send();
+		return res.json({ message: err.message });
 
 	res.render('error', {
 		message: err.message,
