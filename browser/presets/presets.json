@@ -155,7 +155,8 @@
 		"Color: Hue / Saturation / Luminosity / Alpha": "color_hsla",
 		"Color: Red / Green / Blue / Alpha": "color_rgba",
 		"UV: Offset": "uv_offset",
-		"UV: Scale": "uv_scale"
+		"UV: Scale": "uv_scale",
+		"Util: Display number on screen": "util_display_number_on_screen"
 	},
 	"CUSTOM SHADERS":
 	{	
