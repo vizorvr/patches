@@ -14,7 +14,9 @@ E2.p = E2.plugins["gamepad_generator"] = function(core, node)
 
 	this.desc = 'Buttons and axes from HTML5 standard gamepad (supports only Chrome and XBOX 360 controller atm).';
 
-	this.input_slots = [];
+	this.input_slots = [
+		 { name: 'pad number', dt: core.datatypes.FLOAT, desc: 'Gamepad number', def: 0 }
+	]
 
 	this.output_slots = [
 		createButton('button 0'),
@@ -53,6 +55,11 @@ E2.p.prototype.reset = function()
 {
 	this.updated = true;
 };
+
+E2.p.prototype.update_input = function(slot, data)
+{
+	this._gamepadIndex = data;
+};	
 
 E2.p.prototype.update_output = function(slot)
 {

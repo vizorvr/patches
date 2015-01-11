@@ -18,6 +18,9 @@ describe('gamepad_generator', function()
 			{
 				return [{
 					buttons: buttons,
+					axes: [ 0.50 ]
+				}, {
+					buttons: buttons,
 					axes: [ 0.51 ]
 				}]
 			}
@@ -33,6 +36,16 @@ describe('gamepad_generator', function()
 
 	it('reports the right value for axis', function()
 	{
+		var axis = plugin.update_output({ index: 17 });
+		assert.equal(axis, 0.50);
+	});
+
+	it('supports multiple controllers', function()
+	{
+		plugin.update_input(null, 0);
+		var axis = plugin.update_output({ index: 17 });
+		assert.equal(axis, 0.50);
+		plugin.update_input(null, 1);
 		var axis = plugin.update_output({ index: 17 });
 		assert.equal(axis, 0.51);
 	});
