@@ -19,7 +19,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.create_ui = function()
 {
-	var inp = $('<input type="text" value="1.0" style="width: 50px;" />');
+	var inp = $('<input type="number" step="0.1" value="1.0" style="width: 50px;" />');
 	
 	inp.css('border', '1px solid #999');
 	inp.change(function(self) { return function(e) {

@@ -139,7 +139,7 @@ function ExpandableTextfield(node, tf, def_width)
 	{
 		var s = '' + self.tf.val();
 		
-		self.tf[0].style.width = ((Math.max(self.def_width, s.length) * 7) + 2) + 'px';
+		// self.tf[0].style.width = ((Math.max(self.def_width, s.length) * 7) + 2) + 'px';
 		self.node.geometry_updated();
 	};
 	

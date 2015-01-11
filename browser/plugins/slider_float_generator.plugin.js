@@ -27,8 +27,8 @@ E2.p.prototype.create_ui = function()
 	var row = make('tr');
 	var cols = [make('td'), make('td'), make('td')];
 	
-	var inp_lo = $('<input id="lo" type="text" style="width: 30px;" />');
-	var inp_hi = $('<input id="hi" type="text" style="width: 30px;" />');
+	var inp_lo = $('<input id="lo" type="number" step="0.2" style="width: 50px;" />');
+	var inp_hi = $('<input id="hi" type="number" step="0.2" style="width: 50px;" />');
 	var slider = make('div');
 	var handle = make('div');
 	
