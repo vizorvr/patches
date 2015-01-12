@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>Engi Help</title>
+	<title>Vizor Create</title>
 	<link href="style.css" rel="stylesheet"></link>
 	<link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
 	<link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
@@ -8,20 +8,10 @@
 <body>
 
 	<div id="container" style="width:800px">
-		<img src="screenshot.png"><br>
-		<h1>Engi is a dataflow programming editor using HTML5/WebGL  </h1>
-		<br>
-
-		<h3>Source code:</h3>
-		<br>
-		Engi is open source and licensed under the MIT license. The source code is released at <a href="https://github.com/engijs/engi">https://github.com/engijs/engi</a><br>
-		<br>
-		<br>
-
-		<h3>Online demo:</h3>
-		<br>
-		<a href="http://engijs.org">http://engijs.org/</a><br>
-		<br>
+		<img src="../images/logo--horizontal.png">
+		<br><br>
+		<h3>Vizor Create is a visual programming editor.</h3>
+		<iframe width="560" height="315" src="//www.youtube.com/embed/7t9ux6UyKkA" frameborder="0" allowfullscreen></iframe>
 		<br>
 
 		<h3>Editing graphs:</h3>
@@ -65,15 +55,11 @@
 		<br>
 		<br>
 
-		<h3>Save/Load:</h3>
-		<br>
-		JSON files get saved to <span class="highlight">/data/graphs/</span>.
-		<br>
-		<br>
+	
 
 		<h3>Textures:</h3>
 		<br>
-		Located in <span class="highlight">/data/textures</span>. Have to be .jpg, gif or .png files. Their pixel width and height must be powers of two.
+		You can upload .png, .jpg and .gif files
 		<br>
 		<br>
 
@@ -100,14 +86,6 @@
 		<h3>Custom shaders:</h3>
 		<br>
 		You can write your own GLSL vertex and pixel shaders using the <span class="highlight">Generators/Shaders/From mesh custom</span> shader plugin in Engi. This gives you a code editor, where you can program GLSL and add inputs and outputs using the <span class="highlight">+</span> and <span class="highlight">-</span> buttons. You can compile the code using the <span class="highlight">Compile</span> button. Read more about custom shaders <a href="custom_shaders.html">here</a>.
-		<br>
-		<br>
-
-
-		<h3>Recording:</h3>
-		<br>
-		You can record the output of the WebGL renderer to PNG frames using the <span class="highlight">Emitters/3D/Framebuffer/Recorder</span>. 
-		The frames will be recorded into the <i>"engi/output"</i> folder. To clear the contents of the folder, trigger the <span class="highlight">Emitters/3D/Framebuffer/Reset</span> plugin.
 		<br>
 		<br>
 

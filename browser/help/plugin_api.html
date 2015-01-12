@@ -1,14 +1,13 @@
 <html>
 <head>
-	<title>Engi - Plugin development</title>
+	<title>Vizor  - Plugin development</title>
     <link href="style.css" rel="stylesheet"></link>
     <link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
     <link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
 </head>
 <body>
 
-<h1><span style="font-family: 'greyscale_basic_regular', sans-serif;">E N G I</span></h1>
-
+<img src="../images/logo--horizontal.png">
 <h2>Plugin development and API</h2>
 
 <h3>Introduction:</h3>
@@ -350,7 +349,35 @@ E2.p.prototype.state_changed = function(ui)
 		this.value = this.lsg.infer_dt(); // Returns the default value for the inferred data type.
 };
 </pre></p>
-
+<br>
+<hr>
+<h3>Datatypes:</h3>
+<p><pre style="overflow: auto; white-space: pre">
+	this.datatypes = {
+		FLOAT: { id: 0, name: 'Float' },
+		SHADER: { id: 1, name: 'Shader' },
+		TEXTURE: { id: 2, name: 'Texture' },
+		COLOR: { id: 3, name: 'Color' },
+		MATRIX: { id: 4, name: 'Matrix' },
+		VECTOR: { id: 5, name: 'Vector' },
+		CAMERA: { id: 6, name: 'Camera' },
+		BOOL: { id: 7, name: 'Boolean' },
+		ANY: { id: 8, name: 'Arbitrary' },
+		MESH: { id: 9, name: 'Mesh' },
+		AUDIO: { id: 10, name: 'Audio' },
+		SCENE: { id: 11, name: 'Scene' },
+		MATERIAL: { id: 12, name: 'Material' },
+		LIGHT: { id: 13, name: 'Light' },
+		DELEGATE: { id: 14, name: 'Delegate' },
+		TEXT: { id: 15, name: 'Text' },
+		VIDEO: { id: 16, name: 'Video' },
+		ARRAY: { id: 17, name: 'Array' },
+		OBJECT: { id: 18, name: 'Object' }
+	};
+</pre>
+</p>
+<hr>
+<br>
 <h3>Common pitfalls:</h3>
 <ul>
 	<li><strong>Performing computation in <code>update_output()</code></strong>:
@@ -404,5 +431,7 @@ E2.p.prototype.update_output = function(slot, data)
 	in which case no calls to <code>update_output()</code> or <code>update_input()</code> of the destination
 	plugin will be made.</li>
 </ul>
+
+
 </body>
 </html>

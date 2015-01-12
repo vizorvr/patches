@@ -1,13 +1,16 @@
-body{
+body
+{
     margin: 0 auto;
     font-family: Verdana;
-    color: #444444;
     line-height: 1.2;
     max-width: 960px;
     padding: 30px;
     margin-left: auto;
     margin-right: auto;
-}
+    background-color: #cacaca !important;
+  }  
+
+
 code
 {
 	white-space: pre;
