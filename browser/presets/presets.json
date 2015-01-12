@@ -26,6 +26,7 @@
 	"VR":
 	{
 		"VR: Clean template": "vr_clean_template",
+		"VR: Movement Template": "vr_movement_template",
 		"VR: 3D object loader": "vr_3d_object_loader",
 		"VR: Sphere loader": "vr_sphere_loader",
 		"VR: Cube loader": "vr_cube_loader",
