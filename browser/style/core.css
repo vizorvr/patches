@@ -45,15 +45,6 @@ table
     border-spacing: 0;
 }
 
-/* Logo font */
-@font-face 
-{
-	font-family: 'greyscale_basic_regular';
-	font-style: normal;
-	font-weight: 400;
-	src: local('greyscale_basic_regular'), local('greyscale_basic_regular'), url('greyscale_basic_regular.ttf') format('truetype');
-}
-
 .nodisplay
 {
 	display: none;
@@ -71,13 +62,14 @@ table
 	padding: 6px;
 	margin-top: 10px;
 	width: 100%;
-}
-
-.logo a {
 	font-size: 22pt;
-	font-family: 'greyscale_basic_regular', sans-serif;
+	font-family: 'Roboto', sans-serif;
 	color: #445;
 	text-decoration: none;
+}
+
+.infopanelogo {
+	margin-left: 90px;
 }
 
 #load-spinner
@@ -91,6 +83,8 @@ table
 #info
 {
 	overflow: auto;
+	font-size: 18px;
+	line-height: 22px;
 }
 
 #canvas-parent

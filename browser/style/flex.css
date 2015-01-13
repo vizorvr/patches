@@ -60,8 +60,8 @@ body {
 }
 
 .info-pane {
-	min-height: 30vh;
-	max-height: 30vh;
+	min-height: 20vh;
+	max-height: 20vh;
 }
 
 #left-nav {
