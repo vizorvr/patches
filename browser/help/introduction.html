@@ -10,19 +10,18 @@
 	<div id="container" style="width:800px">
 		<img src="../images/logo--horizontal.png">
 		<br><br>
-		<h3>Vizor Create is a visual programming editor.</h3>
 		<iframe width="560" height="315" src="//www.youtube.com/embed/7t9ux6UyKkA" frameborder="0" allowfullscreen></iframe>
 		<br>
 
 		<h3>Editing graphs:</h3>
 		<br>
-		<span class="highlight">Right click</span> on canvas to insert plugins.<br><br>
+		<span class="highlight">Right click</span> on canvas to insert plugins or use the search box.<br><br>
 		Drag connections from inputs and outputs to connect them.<br><br>
 		Press <span class="highlight">Play</span> to run your graph.<br><br>
 		Hold <span class="highlight">shift</span> to delete plugins and connections.<br><br>
 		<span class="highlight">Double click</span> to add Presets to the graph.<br><br>
 		<span class="highlight">Click and drag</span> on the canvas to select plugins.<br><br>
-		Collapse plugins by clicking on their icon.
+		Collapse plugins by clicking on their header icon.<br>
 		<br>
 		<br>
 
@@ -43,29 +42,22 @@
 		<span class="highlight">Backspace/Delete</span> Delete selected plugins<br>
 		<br>
 
-		<h3>Tree view:</h3>
+
+		<h3>Source code:</h3>
 		<br>
-		This view lists the different subgraphs and loops in your graph. You can click and drag to change their drawing order. 
+		The source code can be found from our <a href="https://github.com/vizorvr/create">GitHub page</a>. Please report any issues to the <a href="https://github.com/vizorvr/create/issues">GitHub issues page</a>.
 		<br>
 		<br>
 
-		<h3>Presets:</h3>
+		<h3>Uploading your own 3D Scenes:</h3>
 		<br>
-		If you are using engi on your local computer, you can add your own presets by editing <span class="highlight">/presets/presets.json</span> file.
+		First download our <a href="vizor_create_blender_exporter.zip">Blender exporter script</a>. Unzip the file. Then download <a href="http://www.blender.org/">Blender</a> (minimum required version is 2.69). Install our converter plugin by copying or linking to your <span class="highlight">[blender]/[version]/scripts/addons</span> path. Remeber to enable the plugin in your user preferences.
 		<br>
+		Next, load your scene into blender. Export it using vizor format to a new folder, and give it the name "scene.json".<br>
 		<br>
-
-	
-
-		<h3>Textures:</h3>
+		Then compress the contents of the folder into a .ZIP file. This zip you can then upload to Vizor Create via the "scene from URL" plugin.<br>
 		<br>
-		You can upload .png, .jpg and .gif files
-		<br>
-		<br>
-
-		<h3>Scenes:</h3>
-		<br>
-		Scenes are converted via <a href="http://www.blender.org/">Blender</a> (minimum required version is 2.69). Download the latest blender version and install our converter plugin by copying or linking <span class="highlight">/tools/blender/io_engi_export.py</span> to your <span class="highlight">[blender]/[version]/scripts/addons</span> path. Remeber to enable the plugin in your user preferences.
+		Direct scene uploading is coming soon.<br>
 		<br>
 		<br>
 
