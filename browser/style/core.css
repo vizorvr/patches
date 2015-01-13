@@ -354,7 +354,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcf297', end
 	background-color: yellow;
 	color: black;
 	white-space: normal;
-    max-width: 350px;
     z-index: 99999999;
 }
 

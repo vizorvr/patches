@@ -22,6 +22,7 @@ function Application() {
 	this.edit_conn = null;
 	this.shift_pressed = false;
 	this.ctrl_pressed = false;
+	this.alt_pressed = false;
 	this.hover_slot = null;
 	this.hover_slot_div = null;
 	this.hover_connections = [];
@@ -887,6 +888,8 @@ function Application() {
 
 	this.onMouseMoved = function(e)
 	{
+		self._mousePosition = [e.pageX, e.pageY];
+
 		if(self.is_panning)
 		{
 			var cp = E2.dom.canvas_parent;
@@ -1088,17 +1091,6 @@ function Application() {
 		}
 	};
 
-	this.onCut = function(e)
-	{
-		msg('Cut.');
-		
-		if(self.selection_nodes.length > 0)
-		{
-			self.onCopy(e);
-			self.onDelete(e);
-		}
-	};
-
 	this.onPaste = function(e)
 	{
 		if(self.clipboard === null)
@@ -1106,7 +1098,7 @@ function Application() {
 		
 		msg('Paste.');
 		self.clearSelection();
-				
+
 		var d = JSON.parse(self.clipboard);
 		var cp = E2.dom.canvas_parent;
 		var ag = self.player.core.active_graph;
@@ -1126,6 +1118,9 @@ function Application() {
 		
 		bw2 = bw2 < 0 ? 0 : bw2;
 		bh2 = bh2 < 0 ? 0 : bh2;
+
+		bw2 = Math.max(self._mousePosition[0] - cp.position().left + sx, 10);
+		bh2 = Math.max(self._mousePosition[1] - cp.position().top + sy, 20);
 		
 		for(var i = 0, len = d.nodes.length; i < len; i++)
 		{
@@ -1318,7 +1313,11 @@ function Application() {
 				e.preventDefault();
 			}
 		}
-		else if(e.keyCode === (this.is_osx ? 91 : 17))  // CMD on OSX, CTRL on everything else
+		else if(e.keyCode === 18)
+		{
+			self.alt_pressed = true;
+		}
+		else if(e.keyCode === (self.is_osx ? 91 : 17)) // CMD on OSX, CTRL on everything else
 		{
 			self.ctrl_pressed = true;
 		}
@@ -1400,6 +1399,10 @@ function Application() {
 		if(e.keyCode === (this.is_osx ? 91 : 17)) // CMD on OSX, CTRL on everything else
 		{
 			self.ctrl_pressed = false;
+		}
+		else if (e.keyCode === 18)
+		{
+			self.alt_pressed = false;
 		}
 		else if(e.keyCode === 16)
 		{
@@ -1621,6 +1624,9 @@ function Application() {
 		clearTimeout(self._tooltipTimer);
 
 		self._tooltipTimer = setTimeout(function() {
+			if (self.in_drag)
+				return;
+
 			$elem.tooltip(
 			{
 				title: txt,
