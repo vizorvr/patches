@@ -62,6 +62,7 @@ body {
 .info-pane {
 	min-height: 20vh;
 	max-height: 20vh;
+	height: 20vh;
 }
 
 #left-nav {

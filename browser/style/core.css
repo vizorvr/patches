@@ -359,6 +359,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcf297', end
 }
 
 .tooltip-arrow {
-	border-top-color: yellow;
+	border-top-color: yellow !important;
 }
 

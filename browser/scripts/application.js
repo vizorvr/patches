@@ -1555,7 +1555,8 @@ function Application() {
 		if(self.in_drag)
 			return false;
 		
-		var tokens = $(e.currentTarget).attr('alt').split('_');
+		var $elem = $(e.currentTarget);
+		var tokens = $elem.attr('alt').split('_');
 		var core = self.player.core;
 		var node = core.active_graph.nuid_lut[parseInt(tokens[0], 10)];
 		var txt = '';
@@ -1617,33 +1618,36 @@ function Application() {
 				txt += slot.desc.replace(/\n/g, '<br/>');
 		}
 		
-		$(e.currentTarget)
-		.tooltip(
-		{
-			title: txt,
-			container: 'body',
-			html: true
-		})
-		.tooltip('show');
-		
-		E2.dom.info.html(txt);
-		E2.dom.info.css('min-height', 'auto');
+		clearTimeout(self._tooltipTimer);
 
-		var heightNow = E2.dom.info.height();
-		var missing = E2.dom.info[0].scrollHeight - E2.dom.info[0].offsetHeight;
+		self._tooltipTimer = setTimeout(function() {
+			$elem.tooltip(
+			{
+				title: txt,
+				container: 'body',
+				animation: false,
+				trigger: 'manual',
+				html: true
+			})
+			.tooltip('show');
+
+			self._tooltipElem = $elem;
+
+		}, 500);
 		
-		if(missing > 0)
-			E2.dom.info.css('min-height', heightNow + missing + 12);
 	};
 	
 	this.onHideTooltip = function()
 	{
+		clearTimeout(self._tooltipTimer);
+		if (self._tooltipElem)
+		{
+			self._tooltipElem.tooltip('hide');
+			self._tooltipElem = null;
+		}
+
 		if(self.in_drag)
 			return false;
-
-		E2.dom.info.css('min-height', 'auto');
-
-		E2.dom.info.html(E2.dom.info._defaultContent);
 	};
 	
    	document.addEventListener('mouseup', this.onMouseReleased);
