@@ -1359,7 +1359,7 @@ function Application() {
 			if(e.keyCode === 66) // CTRL+b
 			{
 				self.condensed_view = !self.condensed_view;
-				E2.dom.left_nav.toggle(!self.condensed_view);
+				E2.dom.left_nav.toggle(self.condensed_view);
 				
 				if(self.condensed_view)
 					E2.dom.dbg.toggle(false);
@@ -1484,6 +1484,7 @@ function Application() {
 			var wh = window.location.hash;
 			var fcs = new FileSelectControl()
 			.frame('save-frame')
+			.template('graph')
 			.buttons({
 				'Cancel': function() {},
 				'Save': function(path, tags)

@@ -1,20 +1,22 @@
 <div class="file-select-control">
-	<div role="tabpanel" class="tab-pane active" id="download">
-		<form class="form-inline">
-			<div class="tags">
-				{{> filebrowser/tags}}
-			</div>
+	<ul class="nav nav-tabs" role="tablist">
+		<li class="active"><a href="#saveas" role="tab" data-toggle="tab"><h4>Save as</h4></a></li>
+	</ul>
 
+	<div class="tab-content">
+	<div role="tabpanel" class="tab-pane active" id="saveas">
+		<form class="form-inline">
 			<div class="file-selector"></div>
 
 			<div class="buttons">
 				<input id="file-url"
 					class="form-control pull-left"
-					size="45"
+					size="60"
 					type="text"
 					value="{{original}}"
 					placeholder=""/>
 			</div>
 		</form>
+	</div>
 	</div>
 </div>

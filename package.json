@@ -59,7 +59,8 @@
     "uglify-js": "^2.4.15",
     "validator": "^3.17.0",
     "when": "^3.5.1",
-    "ws": "^0.4.31"
+    "ws": "^0.4.31",
+    "moment": "^2.9.0"
   },
   "devDependencies": {
     "mocha": "^1.21.5",

@@ -6,7 +6,6 @@
 				<th class="name-header"><div class="th-inner">Name</div></th>
 				<th class="date-header"><div class="th-inner">Date</div></th>
 				<th class="by-header"><div class="th-inner">By</div></th>
-				<th class="tags-header"><div class="th-inner">Tags</div></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -16,11 +15,6 @@
 				<td class="name">{{name}}</td>
 				<td class="">{{updatedAt}}</td>
 				<td class="">{{_creator}}</td>
-				<td class="">
-					{{#each tags}}
-						{{this}}
-					{{/each}}
-				</td>
 			</tr>
 		{{else}}
 			<tr class="file-row">

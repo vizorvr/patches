@@ -4,7 +4,6 @@
 }
 
 .file-selector {
-	height: 30vh;
 	position: relative; /* could be absolute or relative */
 	padding-top: 30px; /* height of header */
 	margin-bottom: 10px;
@@ -20,7 +19,8 @@
 .fixed-table-container-inner {
 	overflow-x: hidden;
 	overflow-y: auto;
-	height: 100%;
+	/*height: 100%;*/
+	height: 40vh;
 }
 
 .header-background {
@@ -110,3 +110,11 @@
 	margin: 0 10px 0 10px;
 }
 
+.file-select-control .links
+{
+	padding-left: 10px;
+}
+
+#fileUploadFile {
+	margin-left: 10px;
+}

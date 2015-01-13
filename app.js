@@ -189,7 +189,7 @@ app.use(function(req, res, next)
 });
 
 // stream file from fs/gridfs
-app.get(/\/data\/.*/, function(req, res, next)
+app.get(/^\/data\/.*/, function(req, res, next)
 {
 	var path = req.path.replace(/^\/data/, '');
 
@@ -207,6 +207,26 @@ app.get(/\/data\/.*/, function(req, res, next)
 		.pipe(res);
 	})
 	.catch(next)
+});
+
+app.get(/^\/dl\/.*/, function(req, res, next)
+{
+	var path = req.path.replace(/^\/dl\/data/, '');
+
+	gfs.stat(path)
+	.then(function(stat)
+	{
+		if (!stat)
+			return res.status(404).send();
+
+		res.header('Content-Type', 'application/octet-stream');
+		res.header('Content-Length', stat.length);
+
+		return gfs.createReadStream(path)
+		.on('error', next)
+		.pipe(res);
+	})
+	.catch(next);
 });
 
 // ----- MODEL ROUTES

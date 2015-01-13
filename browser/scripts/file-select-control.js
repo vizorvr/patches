@@ -134,8 +134,12 @@ FileSelectControl.prototype._renderFiles = function()
 			if (file._creator)
 				file._creator = file._creator.username;
 
+			if (!file.url)
+				file.url = file.path;
+
 			file.selected = (file.path === that._selected);
 			file.name = file.path.substring(file.path.lastIndexOf('/')+1);
+			file.updatedAt = moment(file.updatedAt).fromNow();
 			return file;
 		})
 	});
@@ -166,18 +170,23 @@ FileSelectControl.prototype._render = function()
 	this._selectedEl = $('tr.success', this._el);
 
 	// add buttons
-	var btnEl = $('.buttons', el)
+	var buttonsRow = $('.buttons', el);
 
-	Object.keys(this._buttons).map(function(name) {
-		$('<button class="btn btn-default">'+name+'</button>')
-		.click(function(e) {
+	function clickHandler(buttonCb) {
+		return function (e) {
 			e.preventDefault();
 			e.stopPropagation();
-			self._buttons[name].call(self, self._inputEl.val(), self._tagsEl.val());
+			buttonCb.call(self, self._inputEl.val());
 			self.close();
 			return false;
-		})
-		.appendTo(btnEl);
+		}
+	}
+
+	Object.keys(this._buttons).map(function(name) {
+		var btn = self._buttons[name];
+		$('<button class="btn btn-default">'+name+'</button>')
+		.click(clickHandler(btn))
+		.appendTo(buttonsRow);
 	});
 
 	$('button:last', el)
@@ -203,17 +212,11 @@ FileSelectControl.prototype._render = function()
 			.scrollTop(
 				self._selectedEl.position().top
 				- self._selectedEl.height()
-				* 10)
-
-
+				* 10);
 	});
 
 	// bind upload form
 	this._bindUploadForm();
-
-	// attach TagControl to tags input
-	this._tagsEl = $('#tags', el);
-	new TagControl(this._tagsEl, this._fileList);
 
 	// show
 	el.appendTo('body');
@@ -237,6 +240,7 @@ FileSelectControl.prototype._bindTable = function()
 	$('.file-row', self._el).dblclick(function(e) {
 		_onClick(e);
 		self._onChange();
+		self.ok();
 	});
 };
 
@@ -277,8 +281,7 @@ FileSelectControl.prototype._bindUploadForm = function()
 			{
 				$progress.removeClass('active');
 
-				console.log("File uploaded:", file.url);
-				$('#message', container).html('<h4>'+file.name+' uploaded successfully!</h4>');
+				$('#message', container).html('<h4>Uploaded successfully!</h4>');
 				that.selected(file.path);
 				that._fileList.addFile(file);
 
@@ -317,24 +320,24 @@ FileSelectControl.prototype._onKeyPress = function(e) {
 
 	switch(e.keyCode) {
 		case 27:
-			this.cancel()
+			this.cancel();
 			break;
 		case 13:
-			$('button:last', this._el).click()
+			this.ok();
 			break;
 		case 38:
 			e.preventDefault();
-			var prev = this._selectedEl.prev('tr')
+			var prev = this._selectedEl.prev('tr');
 			if (prev.length)
-				this._onSelect(prev)
-			this._scroll(-1)
+				this._onSelect(prev);
+			this._scroll(-1);
 			break;
 		case 40:
 			e.preventDefault();
 			var next = this._selectedEl.next('tr')
 			if (next.length)
-				this._onSelect(next)
-			this._scroll(1)
+				this._onSelect(next);
+			this._scroll(1);
 			break;
 	};
 };
@@ -361,6 +364,11 @@ FileSelectControl.prototype._onSelect = function(row) {
 	this._selectedEl = row;
 	this._inputEl.val(path);
 	this._onChange();
+};
+
+FileSelectControl.prototype.ok = function()
+{
+	$('button:last', this._el).click();
 };
 
 FileSelectControl.prototype.cancel = function() {
@@ -425,24 +433,52 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 		E2.dom.load_spinner.hide();
 
 		var buttons = {
-			'Clipboard': function(file) {
-				$.get('/data/graph'+file+'.json', function(d)
-				{
-					E2.app.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
-				});
-			},
+			// 'Copy to clipboard': function(file)
+			// {
+			// 	$.get('/data/graph'+file+'.json', function(d)
+			// 	{
+			// 		E2.app.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
+			// 	});
+			// }
 			'Cancel': function() {}
 		};
 
 		buttons[okButton] = okFn;
 
+		var selectedPath;
+
 		ctl
 		.url('/graph')
+		.frame('graph-frame')
 		.template('graph')
 		.buttons(buttons)
 		.files(files)
 		.selected(selected)
-		.modal()
+		.onChange(function(path) {
+			$('.links').show();
+			console.log('change', path);
+			selectedPath = path;
+		})
+		.modal();
+
+		$('.links .download').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			window.open('/dl/data/graph'+selectedPath+'.json');
+		});
+
+		$('.links .clipboard').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			$.get('/data/graph'+selectedPath+'.json', function(d)
+			{
+				E2.app.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
+				ctl.close();
+			});
+			return false;
+		});
+
+		$('.links').hide();
 	});
 
 	return ctl;
