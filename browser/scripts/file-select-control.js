@@ -170,7 +170,7 @@ FileSelectControl.prototype._render = function()
 	this._selectedEl = $('tr.success', this._el);
 
 	// add buttons
-	var buttonsRow = $('.buttons', el);
+	var buttonsRow = $('#buttons-row', el);
 
 	function clickHandler(buttonCb) {
 		return function (e) {
@@ -182,11 +182,13 @@ FileSelectControl.prototype._render = function()
 		}
 	}
 
-	Object.keys(this._buttons).map(function(name) {
+	Object.keys(this._buttons).map(function(name)
+	{
 		var btn = self._buttons[name];
-		$('<button class="btn btn-default">'+name+'</button>')
-		.click(clickHandler(btn))
-		.appendTo(buttonsRow);
+		$('<td>').append(
+			$('<button class="btn btn-default">'+name+'</button>')
+			.click(clickHandler(btn))
+		).appendTo(buttonsRow);
 	});
 
 	$('button:last', el)
@@ -203,8 +205,6 @@ FileSelectControl.prototype._render = function()
 
 	// show selected file when modal is opened
 	$(el).on('shown.bs.modal', function (e) {
-		$('table', el).attr('tabindex', 1).focus();
-
 		if (!self._selectedEl.length)
 			return;
 
