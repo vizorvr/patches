@@ -349,3 +349,16 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcf297', end
 	min-width: 315px !important;
 	max-width: 315px !important;
 }
+
+.tooltip-inner {
+	background-color: yellow;
+	color: black;
+	white-space: normal;
+    max-width: 350px;
+    z-index: 99999999;
+}
+
+.tooltip-arrow {
+	border-top-color: yellow;
+}
+

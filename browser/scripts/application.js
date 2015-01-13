@@ -1570,7 +1570,7 @@ function Application() {
 		{
 			var plugin = node.plugin;
 			var slot = null;
-			
+
 			if(tokens[1][0] === 'd')
 				slot = node.find_dynamic_slot(tokens[1][1] === 'i' ? E2.slot_type.input : E2.slot_type.output, parseInt(tokens[2], 10));
 			else
@@ -1616,6 +1616,15 @@ function Application() {
 			if(slot.desc)
 				txt += slot.desc.replace(/\n/g, '<br/>');
 		}
+		
+		$(e.currentTarget)
+		.tooltip(
+		{
+			title: txt,
+			container: 'body',
+			html: true
+		})
+		.tooltip('show');
 		
 		E2.dom.info.html(txt);
 		E2.dom.info.css('min-height', 'auto');
