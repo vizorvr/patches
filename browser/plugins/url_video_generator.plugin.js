@@ -61,6 +61,7 @@ E2.p.prototype.update_state = function()
 	}
 
 	this.video = document.createElement('video');
+	this.video.crossOrigin = "Anonymous";
 
 	if(this.video !== 'undefined')
 	{
