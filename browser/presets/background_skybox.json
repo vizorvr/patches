@@ -392,7 +392,7 @@
                             "y": 35,
                             "uid": 37,
                             "state": {
-                                "url": "data/scenes/skybox/scene.json"
+                                "url": "/data/scene/skybox/scene.json"
                             }
                         },
                         {

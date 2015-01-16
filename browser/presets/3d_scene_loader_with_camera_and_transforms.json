@@ -388,7 +388,7 @@
                             "y": 105,
                             "uid": 1,
                             "state": {
-                                "url": "data/scenes/spikeball/scene.json"
+                                "url": "/data/scene/ladybug/scene.json"
                             }
                         },
                         {

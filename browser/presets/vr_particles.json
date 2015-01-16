@@ -149,7 +149,7 @@
                             "y": 135,
                             "uid": 7,
                             "state": {
-                                "url": "data/textures/particle1.png"
+                                "url": "/data/image/b6ee56e9cfc4e6db5b38dc4046792fdad41c81d4.png" 
                             },
                             "title": "Particle sprite"
                         },

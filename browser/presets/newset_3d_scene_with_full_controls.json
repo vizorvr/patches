@@ -2712,7 +2712,7 @@
                             "y": 8,
                             "uid": 34,
                             "state": {
-                                "url": "data/scenes/statue/scene.json"
+                                "url": "/data/scene/ladybug/scene.json"
                             }
                         },
                         {
@@ -3514,7 +3514,7 @@
                             "y": 586,
                             "uid": 45,
                             "state": {
-                                "url": "data/textures/cutout_audrey3.png"
+                               "url": "/data/image/f0e870569e5a143a8d3be0722e38e523141e4248.png"
                             },
                             "title": "Texture"
                         },

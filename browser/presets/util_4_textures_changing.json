@@ -2961,7 +2961,7 @@
                             "y": 419,
                             "uid": 10,
                             "state": {
-                                "url": "data/textures/cutout_audrey1.png"
+                                "url": "/data/image/b6ee56e9cfc4e6db5b38dc4046792fdad41c81d4.png"
                             }
                         },
                         {
@@ -4038,7 +4038,7 @@
                             "y": 520,
                             "uid": 12,
                             "state": {
-                                "url": "data/textures/cutout_audrey2.png"
+                                "url": "/data/image/f0e870569e5a143a8d3be0722e38e523141e4248.png"
                             }
                         },
                         {
@@ -5115,7 +5115,7 @@
                             "y": 612,
                             "uid": 14,
                             "state": {
-                                "url": "data/textures/cutout_audrey3.png"
+                                "url": "/data/image/57422df4c11a76d5531ef36299d5d1ac5b6b6739.jpg"
                             }
                         },
                         {
@@ -6192,7 +6192,7 @@
                             "y": 714,
                             "uid": 16,
                             "state": {
-                                "url": "data/textures/cutout_audrey4.png"
+                                "url": "/data/image/f0e870569e5a143a8d3be0722e38e523141e4248.png"
                             }
                         }
                     ],

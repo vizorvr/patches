@@ -852,7 +852,7 @@
                                                     "y": 35,
                                                     "uid": 37,
                                                     "state": {
-                                                        "url": "data/scenes/skybox/scene.json"
+                                                        "url": "/data/scene/ladybug/scene.json"
                                                     }
                                                 },
                                                 {
@@ -1922,7 +1922,7 @@
                                                     "y": 314,
                                                     "uid": 24,
                                                     "state": {
-                                                        "url": "data/textures/earth_space2.jpg"
+                                                        "url": "/data/image/57422df4c11a76d5531ef36299d5d1ac5b6b6739.jpg"
                                                     },
                                                     "title": "Image"
                                                 },
@@ -3110,7 +3110,7 @@
                                                     "y": 234,
                                                     "uid": 53,
                                                     "state": {
-                                                        "url": "data/textures/water-noise.png"
+                                                        "url": "/data/image/b6ee56e9cfc4e6db5b38dc4046792fdad41c81d4.png" 
                                                     }
                                                 },
                                                 {
@@ -3761,7 +3761,7 @@
                                                     "y": 50,
                                                     "uid": 1,
                                                     "state": {
-                                                        "url": "data/scenes/cylinder/scene.json"
+                                                        "url": "/data/scene/ladybug/scene.json"
                                                     }
                                                 },
                                                 {
@@ -5856,7 +5856,7 @@
                                                     "y": 501,
                                                     "uid": 105,
                                                     "state": {
-                                                        "url": "data/textures/mountainrange_7.png"
+                                                        "url": "/data/image/b6ee56e9cfc4e6db5b38dc4046792fdad41c81d4.png" 
                                                     },
                                                     "title": "Image"
                                                 },
@@ -6581,7 +6581,7 @@
                                                     "y": 50,
                                                     "uid": 1,
                                                     "state": {
-                                                        "url": "data/scenes/cylinder/scene.json"
+                                                        "url": "/data/scene/ladybug/scene.json"
                                                     }
                                                 },
                                                 {
@@ -8676,7 +8676,7 @@
                                                     "y": 501,
                                                     "uid": 105,
                                                     "state": {
-                                                        "url": "data/textures/clouds2.png"
+                                                        "url": "/data/image/b6ee56e9cfc4e6db5b38dc4046792fdad41c81d4.png" 
                                                     },
                                                     "title": "Image"
                                                 },
@@ -9634,7 +9634,7 @@
                                                     "y": 50,
                                                     "uid": 1,
                                                     "state": {
-                                                        "url": "data/scenes/cylinder/scene.json"
+                                                        "url": "/data/scene/ladybug/scene.json"
                                                     }
                                                 },
                                                 {
@@ -11729,7 +11729,7 @@
                                                     "y": 501,
                                                     "uid": 105,
                                                     "state": {
-                                                        "url": "data/textures/clouds2.png"
+                                                        "url": "/data/image/b6ee56e9cfc4e6db5b38dc4046792fdad41c81d4.png" 
                                                     },
                                                     "title": "Image"
                                                 },
@@ -13280,7 +13280,7 @@
                                                     "y": 314,
                                                     "uid": 24,
                                                     "state": {
-                                                        "url": "data/textures/earth_space2.jpg"
+                                                        "url": "/data/image/57422df4c11a76d5531ef36299d5d1ac5b6b6739.jpg"
                                                     },
                                                     "title": "Image"
                                                 },
@@ -14420,7 +14420,7 @@
                                                     "y": 234,
                                                     "uid": 53,
                                                     "state": {
-                                                        "url": "data/textures/water-noise.png"
+                                                        "url": "/data/image/b6ee56e9cfc4e6db5b38dc4046792fdad41c81d4.png" 
                                                     }
                                                 },
                                                 {

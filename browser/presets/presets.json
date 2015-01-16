@@ -44,7 +44,8 @@
 		"Background: Sky Sphere": "background_skysphere",
 		"Background: Plain color": "background_plain_color",
 		"Background: Moving quad": "background_moving_quad",
-		"Overlay: Overlay graphic": "3d_overlay_graphic"
+		"Overlay: Overlay graphic": "3d_overlay_graphic",
+		"Image: Show image": "image_show_image"
 	},
 
 

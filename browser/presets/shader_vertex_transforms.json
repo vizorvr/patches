@@ -2048,7 +2048,7 @@
                                         "y": 46,
                                         "uid": 0,
                                         "state": {
-                                            "url": "data/scenes/effekt/blob/scene.json"
+                                            "url": "/data/scene/ladybug/scene.json"
                                         }
                                     },
                                     {
@@ -2190,7 +2190,7 @@
                             "y": 528,
                             "uid": 67,
                             "state": {
-                                "url": "data/textures/looping_fractal.jpg"
+                                "url": "/data/image/57422df4c11a76d5531ef36299d5d1ac5b6b6739.jpg"
                             }
                         },
                         {

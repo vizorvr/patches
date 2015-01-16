@@ -38,7 +38,7 @@
                             "y": 65,
                             "uid": 0,
                             "state": {
-                                "url": "data/scenes/spikeball/scene.json"
+                                "url": "/data/scene/ladybug/scene.json"
                             },
                             "title": "PARTICLE SCENE"
                         },
@@ -182,7 +182,7 @@
                             "y": 135,
                             "uid": 7,
                             "state": {
-                                "url": "data/textures/flare1.png"
+                                "url": "/data/image/b6ee56e9cfc4e6db5b38dc4046792fdad41c81d4.png"
                             },
                             "title": "Particle sprite"
                         },

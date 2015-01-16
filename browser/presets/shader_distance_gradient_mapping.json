@@ -31,7 +31,7 @@
                             "y": 48,
                             "uid": 37,
                             "state": {
-                                "url": "data/scenes/effekt/blob/scene.json"
+                                "url": "/data/scene/ladybug/scene.json"
                             }
                         },
                         {
@@ -114,7 +114,7 @@
                             "y": 286,
                             "uid": 59,
                             "state": {
-                                "url": "data/textures/gradients/green-white.png"
+                                "url": "/data/image/b6ee56e9cfc4e6db5b38dc4046792fdad41c81d4.png" 
                             }
                         },
                         {

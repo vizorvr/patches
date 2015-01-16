@@ -14,7 +14,7 @@
                 "y": 277,
                 "uid": 4,
                 "state": {
-                    "url": "data/textures/backdrop_red.jpg"
+                    "url": "/data/image/57422df4c11a76d5531ef36299d5d1ac5b6b6739.jpg"
                 },
                 "title": "Texture 2"
             },
@@ -24,7 +24,7 @@
                 "y": 150,
                 "uid": 6,
                 "state": {
-                    "url": "data/textures/backdrop_landscape.jpg"
+                    "url": "/data/image/f0e870569e5a143a8d3be0722e38e523141e4248.png"
                 },
                 "title": "Texture 1"
             },

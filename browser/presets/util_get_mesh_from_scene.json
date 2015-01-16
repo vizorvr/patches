@@ -32,7 +32,7 @@
                             "y": 46,
                             "uid": 0,
                             "state": {
-                                "url": "data/scenes/statue/scene.json"
+                               "url": "/data/scene/ladybug/scene.json"
                             }
                         },
                         {
