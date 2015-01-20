@@ -444,6 +444,7 @@ Renderer.prototype.set_fullscreen = function(state)
 {
 	var c = E2.dom.webgl_canvas;
 	var cd = c[0];
+	var that = this;
 
 	if(state)
 	{
@@ -474,25 +475,22 @@ Renderer.prototype.set_fullscreen = function(state)
 					cd.mozRequestFullScreen();
 			}
 		
-			c.attr('class', 'webgl-canvas-fs');
-			c.attr('width', '1200px');
-			c.attr('height', '800px');
-			this.update_viewport();
+			c.removeClass('webgl-canvas-normal');
+			c.addClass('webgl-canvas-fs');
 		}
 	}
 	else
 	{
 		if(this.fullscreen)
 		{
-			var cfs = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen;
-			
-			if(cfs)
-			{
-				c.attr('class', 'webgl-canvas-normal');
-				c.attr('width', '' + this.org_width + 'px');
-				c.attr('height', '' + this.org_height + 'px');
-				this.update_viewport();
-				cfs();
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.msExitFullscreen) {
+				document.msExitFullscreen();
+			} else if (document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if (document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
 			}
 		}
 	}

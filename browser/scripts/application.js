@@ -44,6 +44,7 @@ function Application() {
 	this.selection_border_style = '2px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
+	this.is_fullscreen = false;
 	
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
@@ -59,7 +60,7 @@ function Application() {
 		clearTimeout(self.resize_timer);
 		self.resize_timer = setTimeout(self.onWindowResize, 1000);
 	});
-	
+
 	this.getNIDFromSlot = function(id)
 	{
 		return parseInt(id.slice(1, id.indexOf('s')));
@@ -1286,8 +1287,17 @@ function Application() {
 		var width = canvases.outerWidth(true);
 		var height = canvases.outerHeight(true);
 
+		if (!window.screenTop && !window.screenY)
+		{
+			// fullscreen
+			width = $('body').outerWidth(true);
+			height = $('body').outerHeight(true);
+		}
+
 		if (glc.width !== width || glc.height !== height)
 		{
+			console.log('onWindowResize', width, height)
+
 			glc.width = width;
 			glc.height = height;
 
@@ -1299,13 +1309,12 @@ function Application() {
 			E2.dom.canvas[0].height = height;
 			E2.dom.canvas.css('width', width);
 			E2.dom.canvas.css('height', height);
-			E2.app.player.core.renderer.context.viewport(0, 0, width, height);
+			E2.app.player.core.renderer.update_viewport();
 		}
 
 		if(self.player)
 			self.updateCanvas(true);
 	};
-
 
 	this.onKeyDown = function(e)
 	{
@@ -1314,23 +1323,22 @@ function Application() {
 			return (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
 		}
 
+		if(is_text_input_in_focus())
+			return;
+		
+		console.log('keydown', e.keyCode)
+
 		if(e.keyCode === 8 || e.keyCode === 46) // use backspace and delete for deleting nodes
 		{
-			if(!is_text_input_in_focus())
-			{
-				self.onDelete(e);
-				e.preventDefault();
-			}
+			self.onDelete(e);
+			e.preventDefault();
 		}
-		else if(e.keyCode === 9) // tab to show/hide to presets search
+		else if(e.keyCode === 9) // tab to show/hide noodles
 		{
-			if (!is_text_input_in_focus())
-			{
-				E2.dom.canvas_parent.toggle();
-				e.preventDefault();
-			}
+			E2.dom.canvas_parent.toggle();
+			e.preventDefault();
 		}
-		else if(e.keyCode === 18)
+		else if(e.keyCode === 18) // alt
 		{
 			self.alt_pressed = true;
 		}
@@ -1344,11 +1352,14 @@ function Application() {
 			self.activateHoverSlot();
 			self.activateHoverNode();
 		}
-		else if(e.keyCode === 32)
+		else if(e.keyCode === 70) // f
 		{
-			if(is_text_input_in_focus())
-				return;
-			
+			self.is_fullscreen = !self.is_fullscreen;
+			self.player.core.renderer.set_fullscreen(self.is_fullscreen);
+			e.preventDefault();
+		}
+		else if(e.keyCode === 32) // space
+		{
 			if(self.player.current_state === self.player.state.PLAYING)
 			{
 				if(self.ctrl_pressed)
@@ -1399,9 +1410,6 @@ function Application() {
 				return;
 			}
 
-			if(is_text_input_in_focus())
-				return;
-				
 			if(e.keyCode === 67) // CTRL+c
 				self.onCopy(e);
 			else if(e.keyCode === 88) // CTRL+x
