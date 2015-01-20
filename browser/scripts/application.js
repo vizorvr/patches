@@ -1281,7 +1281,18 @@ function Application() {
 	
 	this.onWindowResize = function()
 	{
-		// More hackery
+		var glc = E2.dom.webgl_canvas[0];
+		var width = glc.clientWidth;
+		var height = glc.clientHeight;
+		
+		if (glc.width !== width || glc.height !== height)
+		{
+			glc.width = width;
+			glc.height = height;
+			E2.dom.canvas_parent.css('width', width);
+			E2.dom.canvas_parent.css('height', height);
+		}
+
 		E2.dom.canvas[0].width = E2.dom.canvas_parent[0].clientWidth;
 		E2.dom.canvas[0].height = E2.dom.canvas_parent[0].clientHeight;
 
@@ -1418,19 +1429,23 @@ function Application() {
 		var cs = self.player.current_state;
 
 		if (cs !== s.PLAYING) {
-			E2.dom.play.removeClass('disabled')
-			E2.dom.pause.addClass('disabled')
+			E2.dom.play_i.removeClass('fa-pause')
+			E2.dom.play_i.addClass('fa-play')
 			E2.dom.stop.addClass('disabled')
 		} else {
-			E2.dom.play.addClass('disabled')
-			E2.dom.pause.removeClass('disabled')
+			E2.dom.play_i.removeClass('fa-play')
+			E2.dom.play_i.addClass('fa-pause')
 			E2.dom.stop.removeClass('disabled')
 		}
 	}
 	
 	this.onPlayClicked = function()
 	{
-		self.player.play();
+		if (self.player.current_state === self.player.state.PLAYING)
+			self.player.pause();
+		else
+			self.player.play();
+
 		self.changeControlState();
 	};
 	
@@ -1702,7 +1717,6 @@ function Application() {
 	};
 	
 	add_button_events(E2.dom.play);
-	add_button_events(E2.dom.pause);
 	add_button_events(E2.dom.stop);
 	add_button_events(E2.dom.save);
 	add_button_events(E2.dom.open);

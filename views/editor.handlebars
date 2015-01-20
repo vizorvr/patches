@@ -7,10 +7,7 @@
 
 <div class="flex-column nodisplay collapse width in" id="left-nav">
 	<div class="header border flex-row">
-
-		<div class="logo">
-		</div>
-
+		<div class="logo"></div>
 		<div id="load-spinner"></div>
 	</div>
 
@@ -18,41 +15,69 @@
 		<span class="infopanelogo"><img src="../../images/logo--horizontal-fullcolor.png"></span>
 	</div>
 
-	<div id="presets" class="flex-column"></div>
+	<div>
+		<ul class="nav nav-tabs" role="tablist">
+			<li class="active"><a href="#presets" role="tab" data-toggle="tab"><h4>Presets</h4></a></li>
+			<li><a href="#graph" role="tab" data-toggle="tab"><h4>Graph</h4></a></li>
+		</ul>
+
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="presets">
+				<div id="presets" class="flex-column"></div>
+			</div>
+
+			<div role="tabpanel" class="tab-pane" id="graph">
+				<div class="cell border" id="structure"></div>
+			</div>
+		</div>
+	</div>
 </div>
 
-<div class="flex-column nodisplay">
+<div class="flex-column nodisplay" id="canvas-column">
 	<div class="header border">
-		<i id="left-nav-collapse-btn" class="fa fa-toggle-left fa-2x" data-toggle="collapse" data-target="#left-nav" aria-expanded="true" aria-controls="left-nav"></i>
-		<a href="/edit" id="new" class="btn btn-default">New</a>
-		<button id="save" class="btn btn-default">Save</button>
-		<button id="open" class="btn btn-default">Open</button>
-		<button id="help" class="btn btn-default">Help</button>
-		<button id="publish" class="btn btn-default">Publish</button>
+		<i id="left-nav-collapse-btn" 
+			class="fa fa-toggle-left fa-2x"
+			data-toggle="collapse"
+			data-target="#left-nav"
+			aria-expanded="true"
+			aria-controls="left-nav">
+		</i>
+		<a href="/edit" id="new" class="btn btn-sm btn-default">New</a>
+		<button id="save" class="btn btn-sm btn-default">Save</button>
+		<button id="open" class="btn btn-sm btn-default">Open</button>
+		<button id="help" class="btn btn-sm btn-default">Help</button>
+		<button id="publish" class="btn btn-sm btn-default">Publish</button>
+
+		<div class="header border pull-right">
+			<button id="play" class="btn btn-primary">
+				<i class="fa fa-play"></i>
+			</button>
+			<button id="stop" class="btn btn-primary">
+				<i class="fa fa-stop"></i>
+			</button>
+			<button id="fullscreen" class="btn btn-primary">
+				<i class="fa fa-expand"></i>
+			</button>
+			{{> userpulldown}}
+		</div>
 	</div>
 
 	<div class="cell border" id="canvas_parent">
-		<canvas id="canvas" width="940" height="620"></canvas>
+		<canvas id="webgl-canvas" 
+			class="webgl-canvas-normal"
+			width="480"
+			height="270"
+			oncontextmenu="return false;">
+		<!-- effect -->
+		</canvas>
+		<canvas id="canvas" width="940" height="620">
+		<!-- editor noodles -->
+		</canvas>
 		<div id="breadcrumb"></div>
 	</div>
 
 	<pre class="info-pane border" id="dbg"></pre>
-</div>
 
-<div class="flex-column nodisplay" id="right-nav">
-	<div class="header border">
-		<button id="play" class="btn btn-primary">Play</button>
-		<button id="pause" class="btn disabled btn-default">Pause</button>
-		<button id="stop" class="btn disabled btn-default">Stop</button>
-		<button id="fullscreen" class="btn btn-default">Full screen</button>
-		{{> userpulldown}}
-	</div>
-
-	<div id="canvas-parent">
-		<canvas id="webgl-canvas" class="webgl-canvas-normal" width="480" height="270" oncontextmenu="return false;"></canvas>
-	</div>
-
-	<div class="cell border" id="structure"></div>
 </div>
 
 <!-- bootstrap modal -->

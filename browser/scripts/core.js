@@ -470,6 +470,7 @@ E2.InitialiseEngi = function(vr_devices)
 	E2.dom.left_nav = $('#left-nav');
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
+	E2.dom.play_i = $('i', E2.dom.play);
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
