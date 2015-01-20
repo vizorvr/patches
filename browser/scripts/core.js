@@ -82,9 +82,6 @@ function PresetManager(base_url)
 		  			msg('ERROR: Failed to load the selected preset.');
 				})
 			})
-
-		if(!window.location.hash)
-			presets_list.focus()
 	})
 	.fail(function() {
 		msg('PresetsMgr: No presets found.');
@@ -543,6 +540,8 @@ E2.InitialiseEngi = function(vr_devices)
 	E2.dom.pause.click(E2.app.onPauseClicked);
 	E2.dom.stop.click(E2.app.onStopClicked);
 
+	// this is ran twice to force the right dimensions at startup
+	E2.app.onWindowResize();
 	E2.app.onWindowResize();
 	
 	if (E2.app.player.core.plugin_mgr.release_mode)

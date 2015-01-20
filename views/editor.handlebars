@@ -6,12 +6,12 @@
 </noscript>
 
 <div class="flex-column nodisplay collapse width in" id="left-nav">
-	<div class="header border flex-row">
+	<div class="header flex-row">
 		<div class="logo"></div>
 		<div id="load-spinner"></div>
 	</div>
 
-	<div class="info-pane border" id="info">
+	<div class="info-pane" id="info">
 		<span class="infopanelogo"><img src="../../images/logo--horizontal-fullcolor.png"></span>
 	</div>
 
@@ -27,14 +27,14 @@
 			</div>
 
 			<div role="tabpanel" class="tab-pane" id="graph">
-				<div class="cell border" id="structure"></div>
+				<div class="cell" id="structure"></div>
 			</div>
 		</div>
 	</div>
 </div>
 
 <div class="flex-column nodisplay" id="canvas-column">
-	<div class="header border">
+	<div class="header">
 		<i id="left-nav-collapse-btn" 
 			class="fa fa-toggle-left fa-2x"
 			data-toggle="collapse"
@@ -42,13 +42,14 @@
 			aria-expanded="true"
 			aria-controls="left-nav">
 		</i>
+
 		<a href="/edit" id="new" class="btn btn-sm btn-default">New</a>
 		<button id="save" class="btn btn-sm btn-default">Save</button>
 		<button id="open" class="btn btn-sm btn-default">Open</button>
 		<button id="help" class="btn btn-sm btn-default">Help</button>
 		<button id="publish" class="btn btn-sm btn-default">Publish</button>
 
-		<div class="header border pull-right">
+		<div class="header pull-right">
 			<button id="play" class="btn btn-primary">
 				<i class="fa fa-play"></i>
 			</button>
@@ -62,22 +63,23 @@
 		</div>
 	</div>
 
+	<div id="canvases">
 		<canvas id="webgl-canvas" 
 			class="webgl-canvas-normal"
-			width="480"
-			height="270"
+			width="940"
+			height="620"
 			oncontextmenu="return false;">
-		<!-- effect -->
 		</canvas>
 
-	<div class="cell border" id="canvas_parent">
-		<canvas id="canvas" width="940" height="620">
-		<!-- editor noodles -->
-		</canvas>
-		<div id="breadcrumb"></div>
+		<div class="cell" id="canvas_parent">
+			<canvas id="canvas" width="940" height="620">
+			<!-- editor noodles -->
+			</canvas>
+			<div id="breadcrumb"></div>
+		</div>
 	</div>
 
-	<pre class="info-pane border" id="dbg"></pre>
+	<pre class="info-pane" id="dbg"></pre>
 
 </div>
 

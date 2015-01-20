@@ -92,11 +92,18 @@ table
 	margin-top: 2px;
 }
 
-#info
+#canvases {
+	flex: 1;
+}
+
+#canvas-parent
 {
-	overflow: auto;
-	font-size: 18px;
-	line-height: 22px;
+	min-height: 270px;
+}
+
+#canvas
+{
+	background-size: 100% 100%;
 }
 
 #load-snippet
@@ -283,9 +290,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcf297', end
 .webgl-canvas-normal
 {
 	background-color: #000; 
-	position: fixed;
+	position: absolute;
 	width: 100%;
 	height: 100%;
+	padding: 0px;
+	margin: 0px;
 }
 
 .webgl-canvas-fs

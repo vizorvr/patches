@@ -1282,19 +1282,25 @@ function Application() {
 	this.onWindowResize = function()
 	{
 		var glc = E2.dom.webgl_canvas[0];
-		var width = glc.clientWidth;
-		var height = glc.clientHeight;
-		
+		var canvases = $('#canvases');
+		var width = canvases.outerWidth(true);
+		var height = canvases.outerHeight(true);
+
 		if (glc.width !== width || glc.height !== height)
 		{
 			glc.width = width;
 			glc.height = height;
+
+			E2.dom.webgl_canvas.css('width', width);
+			E2.dom.webgl_canvas.css('height', height);
 			E2.dom.canvas_parent.css('width', width);
 			E2.dom.canvas_parent.css('height', height);
+			E2.dom.canvas[0].width = width;
+			E2.dom.canvas[0].height = height;
+			E2.dom.canvas.css('width', width);
+			E2.dom.canvas.css('height', height);
+			E2.app.player.core.renderer.context.viewport(0, 0, width, height);
 		}
-
-		E2.dom.canvas[0].width = E2.dom.canvas_parent[0].clientWidth;
-		E2.dom.canvas[0].height = E2.dom.canvas_parent[0].clientHeight;
 
 		if(self.player)
 			self.updateCanvas(true);
