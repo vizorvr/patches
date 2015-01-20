@@ -1316,11 +1316,11 @@ function Application() {
 				e.preventDefault();
 			}
 		}
-		else if(e.keyCode === 9) // tab to focus to presets search
+		else if(e.keyCode === 9) // tab to show/hide to presets search
 		{
 			if (!is_text_input_in_focus())
 			{
-				$('input', E2.dom.presets_list).focus();
+				E2.dom.canvas_parent.toggle();
 				e.preventDefault();
 			}
 		}

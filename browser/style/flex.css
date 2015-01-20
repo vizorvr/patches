@@ -92,7 +92,7 @@ body {
 }
 
 #canvas-column {
-	position: fixed;
+	position: relative;
 	background-size: 100% 100%;
 	margin: 0;
 	padding: 0;
@@ -101,7 +101,7 @@ body {
 #canvas_parent {
 	z-index: 1;
 	overflow: scroll;
-	position: fixed;
+	position: relative;
 	border: none;
 	margin: 0;
 	padding: 0;
@@ -111,7 +111,7 @@ body {
 }
 
 #canvas {
-	position: fixed;
+	position: relative;
 	z-index: 2;
 	background-size: 100% 100%;
 	margin: 0;
