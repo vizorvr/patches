@@ -6446,10 +6446,11 @@ table {
   padding-right: 5px;
 }
 #load-spinner {
-  min-width: 32px;
-  height: 32px;
+  min-width: 26px;
+  height: 26px;
   background: url('/images/load-spinner.gif');
   margin-top: 2px;
+  margin-left: 80px;
 }
 #canvases {
   flex: 1;

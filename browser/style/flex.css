@@ -104,13 +104,13 @@ body {
 #breadcrumb
 {
 	position: fixed;
-	background-color: #000;
+	background-color: #333;
 	opacity: 0.75;
 	padding-left: 4px;
 	padding-right: 4px;
 	padding-top: 1px;
 	padding-bottom: 2px;
-	margin-left: 6px;
+	margin-left: 10px;
 	margin-top: 7px;
 	z-index: 10000;
 	top: 33px;

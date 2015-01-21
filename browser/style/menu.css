@@ -54,6 +54,7 @@ li.context-menu-item span
 	padding-right: 4px;
 	margin: 0px;
 	white-space: nowrap;
+	color: #000;
 }
 
 .menu-lbl
@@ -64,6 +65,7 @@ li.context-menu-item span
 	padding-right: 4px;
 	margin: 0px;
 	white-space: nowrap;
+	color: #000;
 }
 
 .menu-grp-img
