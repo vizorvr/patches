@@ -74,7 +74,7 @@ gulp.task('less', ['clean:less'], function()
 		paths: [ path.join(__dirname, 'less') ]
     }))
 	.pipe(concat('less.css'))
-    .pipe(gulp.dest(path.join(__dirname, 'browser', 'style'));
+    .pipe(gulp.dest(path.join(__dirname, 'browser', 'style')));
 });
 
 gulp.task('watch', ['default'], function() {
