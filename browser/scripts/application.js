@@ -45,7 +45,7 @@ function Application() {
 	this.normal_border_style = 'none';
 	this.is_panning = false;
 	this.is_fullscreen = false;
-	
+
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
 
@@ -973,7 +973,7 @@ function Application() {
 				
 			if(!n.ui.selected)
 			{
-				self.selectNode(n);
+				self.markNodeAsSelected(n, false);
 				ns.push(n);
 			}
 		}
@@ -1208,7 +1208,7 @@ function Application() {
 
 			n.create_ui();
 
-			self.selectNode(n);
+			self.markNodeAsSelected(n, false);
 
 			if(n.plugin.state_changed)
 				n.plugin.state_changed(n.ui.plugin_ui);			
@@ -1229,11 +1229,12 @@ function Application() {
 			self.updateCanvas(false);
 	};
 
-	this.selectNode = function(node, isSelected)
+	this.markNodeAsSelected = function(node, addToSelection)
 	{
 		node.ui.dom[0].style.border = self.selection_border_style;
 		node.ui.selected = true;
-		self.selection_nodes.push(node);
+		if (addToSelection !== false)
+			self.selection_nodes.push(node);
 	}
 
 	this.selectAll = function()
@@ -1242,7 +1243,7 @@ function Application() {
 		
 		var ag = self.player.core.active_graph;
 
-		ag.nodes.map(self.selectNode);
+		ag.nodes.map(self.markNodeAsSelected);
 		
 		ag.connections.map(function(c)
 		{
@@ -1269,8 +1270,6 @@ function Application() {
 
 		if (glc.width !== width || glc.height !== height)
 		{
-			console.log('onWindowResize', width, height)
-
 			glc.width = width;
 			glc.height = height;
 
@@ -1299,8 +1298,6 @@ function Application() {
 		if(is_text_input_in_focus())
 			return;
 		
-		console.log('keydown', e.keyCode)
-
 		if(e.keyCode === 8 || e.keyCode === 46) // use backspace and delete for deleting nodes
 		{
 			self.onDelete(e);
@@ -1375,9 +1372,10 @@ function Application() {
 				return;
 			}
 
-			if(e.keyCode === 67) // CTRL+c
+			/*if(e.keyCode === 67) // CTRL+c
 				self.onCopy(e);
-			else if(e.keyCode === 88) // CTRL+x
+			else*/
+			if(e.keyCode === 88) // CTRL+x
 				self.onCut(e);
 			else if(e.keyCode === 86) // CTRL+v
 				self.onPaste(e);
@@ -1389,8 +1387,6 @@ function Application() {
 		$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
 
 		self.condensed_view = !self.condensed_view;
-
-console.log('cond', self.condensed_view)
 
 		E2.dom.left_nav.toggle(!self.condensed_view);
 		
@@ -1696,6 +1692,20 @@ console.log('cond', self.condensed_view)
 		self.releaseHoverNode(false);
 	});
 	
+	window.addEventListener('paste', function(e)
+	{
+		e.preventDefault();
+		self.clipboard = e.clipboardData.getData('text/plain');
+		self.onPaste();
+	});
+	
+	window.addEventListener('copy', function(e)
+	{
+		self.onCopy(e);
+		e.clipboardData.setData('text/plain', self.clipboard);
+	    e.preventDefault();
+	});
+
 	window.addEventListener('resize', function(self) { return function()
 	{
 		// To avoid UI lag, we don't respond to window resize events directly.
