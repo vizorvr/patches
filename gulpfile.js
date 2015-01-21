@@ -8,7 +8,7 @@ del = require('del'),
 less = require('gulp-less'),
 paths =
 {
-	less: 'less/build.less',
+	less: './less/build.less',
 	js:
 	{
 		player:
@@ -62,7 +62,7 @@ gulp.task('js:player', ['clean:js:player'], function()
 	gulp.src(paths.js.player)
 	.pipe(uglify())
 	.pipe(concat('player.min.js'))
-	.pipe(gulp.dest('./browser/scripts/'))
+	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))
 });
 
 gulp.task('js', ['js:plugins', 'js:player']);
@@ -74,7 +74,12 @@ gulp.task('less', ['clean:less'], function()
 		paths: [ path.join(__dirname, 'less') ]
     }))
 	.pipe(concat('less.css'))
-    .pipe(gulp.dest('./browser/style'));
+    .pipe(gulp.dest(path.join(__dirname, 'browser', 'style'));
+});
+
+gulp.task('watch', ['default'], function() {
+	gulp.watch('less/**/*', ['less']);
+	gulp.watch(paths.js.site, ['scripts']);
 });
 
 gulp.task('default', ['less', 'js']);
