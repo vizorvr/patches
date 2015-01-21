@@ -345,28 +345,11 @@ table
 {
 	display: block;
 	float: left;
+	margin-top: -4px;
 	padding: .2em .25em .15em;
 }
 
-#left-nav.collapse.width
-{
-    min-width: 0;
-    max-width: 0;
-    -webkit-transition:min-width .35s ease;
-    -moz-transition:min-width .35s ease;
-    -o-transition:min-width .35s ease;
-    transition:min-width .35s ease;
-}
-
-#left-nav.collapsing
-{
-    -webkit-transition:min-width .35s ease;
-    -moz-transition:min-width .35s ease;
-    -o-transition:min-width .35s ease;
-    transition:min-width .35s ease;
-}
-
-#left-nav.collapse.width.in
+#left-nav
 {
 	min-width: 250px !important;
 	max-width: 250px !important;
@@ -375,11 +358,12 @@ table
 .nav li a {
 	padding-left: 5px;
 	padding-right: 5px;
-	padding-top: 4px;
-	padding-bottom: 4px;
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
 .nav li a h4 {
+	color: @gray-light;
 	margin-top: 3px;
 	margin-bottom: 3px;
 	font-weight: normal;

@@ -16,11 +16,11 @@
 
 @auxiliary-color-first: yellow;
 
-@brand-primary:         #444;
-@brand-success:         #faf;
-@brand-info:            #faf;
-@brand-warning:         #faf;
-@brand-danger:          #faf;
+@brand-primary:         #4292c4;
+@brand-success:         #555;
+@brand-info:            #667;
+@brand-warning:         lighten(@brand-primary, 3%);
+@brand-danger:          #f88;
 
 // dimensions
 @menu-bar-height: 28px;
@@ -35,9 +35,9 @@
 @text-color:            #aaa;
 
 //** Global textual link color.
-@link-color:            #aaa;
+@link-color:            #ccc;
 //** Link hover color set via `darken()` function.
-@link-hover-color:      #ccc;
+@link-hover-color:      #fff;
 //** Link hover decoration.
 @link-hover-decoration: underline;
 
@@ -133,7 +133,7 @@
 //** Default background color used for all tables.
 @table-bg:                      lighten(@body-bg, 3%);
 //** Background color used for `.table-striped`.
-@table-bg-accent:               lighten(@table-bg, 3%);
+@table-bg-accent:               lighten(@table-bg, 4%);
 //** Background color used for `.table-hover`.
 @table-bg-hover:                lighten(@table-bg, 12%);
 @table-bg-active:               @table-bg-hover;
@@ -152,7 +152,7 @@
 @btn-default-bg:                 @gray-dark;
 @btn-default-border:             @btn-default-bg;
 
-@btn-primary-color:              @btn-default-color;
+@btn-primary-color:              @gray-lighter;
 @btn-primary-bg:                 @brand-primary;
 @btn-primary-border:             @btn-primary-bg;
 

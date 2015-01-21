@@ -51,14 +51,7 @@ function Application() {
 
 	$('#left-nav-collapse-btn').click(function(e)
 	{
-		$(this).toggleClass("fa-toggle-left fa-toggle-right");
-	});
-
-	// hackery to fix the canvas size after left-nav collapse/expand
-	E2.dom.left_nav.on('hide.bs.collapse show.bs.collapse', function(e)
-	{
-		clearTimeout(self.resize_timer);
-		self.resize_timer = setTimeout(self.onWindowResize, 1000);
+		self.toggleLeftPane();
 	});
 
 	this.getNIDFromSlot = function(id)
@@ -1365,15 +1358,7 @@ function Application() {
 			}
 			if(e.keyCode === 66) // CTRL+b
 			{
-				self.condensed_view = !self.condensed_view;
-				E2.dom.left_nav.toggle(self.condensed_view);
-				
-				if(self.condensed_view)
-					E2.dom.dbg.toggle(false);
-				else if(!self.collapse_log)
-					E2.dom.dbg.toggle(true);
-				
-				self.onWindowResize();
+				self.toggleLeftPane();
 				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 				return;
 			}
@@ -1398,6 +1383,24 @@ function Application() {
 				self.onPaste(e);
 		}
 	};
+
+	this.toggleLeftPane = function()
+	{
+		$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
+
+		self.condensed_view = !self.condensed_view;
+
+console.log('cond', self.condensed_view)
+
+		E2.dom.left_nav.toggle(!self.condensed_view);
+		
+		if(self.condensed_view)
+			E2.dom.dbg.toggle(false);
+		else if(!self.collapse_log)
+			E2.dom.dbg.toggle(true);
+		
+		self.onWindowResize();
+	}
 	
 	this.onKeyUp = function(e)
 	{
