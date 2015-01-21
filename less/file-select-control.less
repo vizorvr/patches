@@ -1,0 +1,129 @@
+
+.file-select-control {
+	outline: none;
+}
+
+.file-selector {
+	height: 50vh;
+	position: relative; /* could be absolute or relative */
+	padding-top: 30px; /* height of header */
+	margin-bottom: 10px;
+	padding-bottom: 1px;
+	border-bottom: 1px solid @gray-light;
+}
+
+.file-selector table {
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.fixed-table-container-inner {
+	overflow-x: hidden;
+	overflow-y: auto;
+	height: 100%;
+}
+
+.header-background {
+	background-color: #555;
+	height: 30px; /* height of header */
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+}
+
+.th-inner {
+	position: absolute;
+	top: 0;
+	line-height: 30px; /* height of header */
+	text-align: left;
+	padding-left: 5px;
+	margin-left: -5px;
+}
+
+.hidden-header .th-inner {
+	position: static;
+	overflow-y: hidden;
+	height: 0;
+	white-space: nowrap;
+	padding-right: 5px;
+}
+
+.file-selector .name-header {
+	width: 35%;
+}
+
+.file-selector .date-header {
+	width: 30%;
+}
+
+.file-selector .by-header {
+	width: 10%;
+}
+
+.file-selector .tags-header {
+	width: 25%;
+}
+
+.file-selector .thumbnail-header {
+	width: 35;
+}
+
+.file-selector .size-header {
+	width: 30%;
+}
+
+.file-selector thead th {
+	font-weight: bold;
+	border-bottom: none;
+	border: none !important;
+	padding: 0px 5px 0px 10px !important;
+}
+
+.file-selector td {
+	padding-left: 10px !important;
+	text-align: left;
+}
+
+.file-selector tbody tr {
+	cursor: pointer;
+	border: none !important;
+}
+
+.file-select-control .nav a:link,
+.file-select-control .nav a:active,
+.file-select-control .nav a:visited,
+.file-select-control .nav a:hover {
+	color: #000;
+}
+
+.file-select-control .tab-content {
+	padding: 10px 0 10px 0;
+	border-left: 1px solid @gray-darker;
+	border-right: 1px solid @gray-darker;
+	border-bottom: 1px solid @gray-darker;
+	border-top: 1px solid @gray-darker;
+	min-height: 30vh;
+}
+
+.file-select-control .bottom-row,
+.file-select-control .tags {
+	margin: 0 10px 0 10px;
+}
+
+.file-select-control .links
+{
+	padding-left: 10px;
+}
+
+#fileUploadFile {
+	margin-left: 10px;
+}
+
+#buttons-row {
+	margin-bottom: 0px;
+}
+
+#buttons-row td {
+	padding: 0px;
+}

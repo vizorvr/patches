@@ -4,6 +4,7 @@ fs = require('fs'),
 path = require('path'),
 uglify = require('gulp-uglify'),
 concat = require('gulp-concat'),
+slash = require('gulp-slash'),
 del = require('del'),
 less = require('gulp-less'),
 paths =
@@ -52,6 +53,7 @@ gulp.task('clean', ['clean:js']);
 gulp.task('js:plugins', ['clean:js:plugins'], function()
 {
 	gulp.src('browser/plugins/*.js')
+	.pipe(slash())
 	.pipe(uglify())
 	.pipe(concat('all.plugins.js'))
 	.pipe(gulp.dest('./browser/plugins/'))
@@ -60,6 +62,7 @@ gulp.task('js:plugins', ['clean:js:plugins'], function()
 gulp.task('js:player', ['clean:js:player'], function()
 {
 	gulp.src(paths.js.player)
+	.pipe(slash())
 	.pipe(uglify())
 	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))
@@ -70,6 +73,7 @@ gulp.task('js', ['js:plugins', 'js:player']);
 gulp.task('less', ['clean:less'], function()
 {
 	gulp.src(paths.less)
+	.pipe(slash())
     .pipe(less({
 		paths: [ path.join(__dirname, 'less') ]
     }))
