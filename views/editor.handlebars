@@ -7,18 +7,21 @@
 
 <div class="flex-column nodisplay collapse width in" id="left-nav">
 	<div class="header flex-row">
-		<div class="logo"></div>
+		<div class="info-pane" id="info">
+			<span>
+				<img id="infopanelogo" src="../../images/logo-graphic.png">
+			</span>
+			<span>Vizor Create</span>
+<!-- 		<span class="infopanelogo"><img src="../../images/logo--horizontal-fullcolor.png"></span> -->
+		</div>
 		<div id="load-spinner"></div>
-	</div>
-
-	<div class="info-pane" id="info">
-		<span class="infopanelogo"><img src="../../images/logo--horizontal-fullcolor.png"></span>
 	</div>
 
 	<div>
 		<ul class="nav nav-tabs" role="tablist">
 			<li class="active"><a href="#presets" role="tab" data-toggle="tab"><h4>Presets</h4></a></li>
 			<li><a href="#graph" role="tab" data-toggle="tab"><h4>Graph</h4></a></li>
+			<li><a href="#about" role="tab" data-toggle="tab"><h4>About</h4></a></li>
 		</ul>
 
 		<div class="tab-content">
@@ -28,6 +31,23 @@
 
 			<div role="tabpanel" class="tab-pane" id="graph">
 				<div class="cell" id="structure"></div>
+			</div>
+
+			<div role="tabpanel" class="tab-pane" id="about">
+				<p>
+				Vizor Create is a dataflow programming editor for WebGL and WebvR.
+				</p>
+				<p>
+				<a href="/help/introduction.html">Help</a>
+				|
+				<a href="https://github.com/vizorvr/">GitHub</a>
+				| 
+				<a href="https://twitter.com/vizor_vr">Twitter</a>
+				| 
+				<a href="https://facebook.com/vrvizor">Facebook</a>
+				| 
+				<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ">YouTube</a>
+				</p>
 			</div>
 		</div>
 	</div>
@@ -46,8 +66,8 @@
 		<a href="/edit" id="new" class="btn btn-sm btn-default">New</a>
 		<button id="save" class="btn btn-sm btn-default">Save</button>
 		<button id="open" class="btn btn-sm btn-default">Open</button>
-		<button id="help" class="btn btn-sm btn-default">Help</button>
 		<button id="publish" class="btn btn-sm btn-default">Publish</button>
+		<button id="help" class="btn btn-sm btn-default pull-right">Help</button>
 
 		<div class="header pull-right">
 			<button id="play" class="btn btn-primary">

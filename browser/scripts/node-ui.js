@@ -58,6 +58,7 @@ function NodeUI(parent_node, x, y) {
 	this.header_row = h_row;
 	
 	var row = this.content_row = make('tr');
+	row.addClass('plugin-row');
 	
 	row.css('display', parent_node.open ? 'table-row' : 'none');
 	dom.append(row)

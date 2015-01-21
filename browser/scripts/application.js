@@ -41,7 +41,7 @@ function Application() {
 	this.is_osx = /mac os x/.test(navigator.userAgent.toLowerCase());
 	this.condensed_view = false;
 	this.collapse_log = true;
-	this.selection_border_style = '2px solid #09f';
+	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
 	this.is_fullscreen = false;
@@ -373,7 +373,7 @@ function Application() {
 			var e = [se[0] - so[0], se[1] - so[1]];
 			
 			c.lineWidth = 2;
-			c.strokeStyle = '#000';
+			c.strokeStyle = '#09f';
 			c.strokeRect(s[0], s[1], e[0] - s[0], e[1] - s[1]);
 		}
 	};
@@ -613,7 +613,7 @@ function Application() {
 		{
 			self.deleteHoverNodes();
 		}
-		
+
 		return false;
 	};
 	
@@ -980,8 +980,7 @@ function Application() {
 				
 			if(!n.ui.selected)
 			{
-				n.ui.dom[0].style.border = self.selection_border_style;
-				n.ui.selected = true;
+				self.selectNode(n);
 				ns.push(n);
 			}
 		}
@@ -1106,22 +1105,9 @@ function Application() {
 		var n_lut = {};
 		var sx = self.scrollOffset[0];
 		var sy = self.scrollOffset[1];
-		var w2 = cp.width() / 2.0;
-		var h2 = cp.height() / 2.0;
-		var bw2 = (d.x2 - d.x1) / 2.0;
-		var bh2 = (d.y2 - d.y1) / 2.0;
-		
-		w2 -= bw2;
-		h2 -= bh2;
-		
-		bw2 = sx + w2;
-		bh2 = sy + h2;
-		
-		bw2 = bw2 < 0 ? 0 : bw2;
-		bh2 = bh2 < 0 ? 0 : bh2;
 
-		bw2 = Math.max(self._mousePosition[0] - cp.position().left + sx, 10);
-		bh2 = Math.max(self._mousePosition[1] - cp.position().top + sy, 20);
+		bw2 = Math.max(self._mousePosition[0] - cp.position().left + sx, 30);
+		bh2 = Math.max(self._mousePosition[1] - cp.position().top + sy, 30);
 		
 		for(var i = 0, len = d.nodes.length; i < len; i++)
 		{
@@ -1129,9 +1115,7 @@ function Application() {
 			
 			var n = new Node(null, null, null, null);
 			var new_uid = ag.get_node_uid();
-				
-			// Insert the pasted nodes in the center of the current view,
-			// maintaining relative placement of the nodes.
+
 			node.x = Math.floor((node.x - d.x1) + bw2);
 			node.y = Math.floor((node.y - d.y1) + bh2);
 
@@ -1231,7 +1215,7 @@ function Application() {
 
 			n.create_ui();
 
-			n.ui.dom[0].border = self.selection_border_style;
+			self.selectNode(n);
 
 			if(n.plugin.state_changed)
 				n.plugin.state_changed(n.ui.plugin_ui);			
@@ -1252,30 +1236,26 @@ function Application() {
 			self.updateCanvas(false);
 	};
 
+	this.selectNode = function(node, isSelected)
+	{
+		node.ui.dom[0].style.border = self.selection_border_style;
+		node.ui.selected = true;
+		self.selection_nodes.push(node);
+	}
+
 	this.selectAll = function()
 	{
 		self.clearSelection();
 		
 		var ag = self.player.core.active_graph;
-		var s_nodes = self.selection_nodes;
-		var s_conns = self.selection_conns;
+
+		ag.nodes.map(self.selectNode);
 		
-		for(var i = 0, len = ag.nodes.length; i < len; i++)
+		ag.connections.map(function(c)
 		{
-			var n = ag.nodes[i];
-			
-			n.ui.dom[0].style.border = self.selection_border_style;
-			n.ui.selected = true;
-			s_nodes.push(n);
-		}
-		
-		for(var i = 0, len = ag.connections.length; i < len; i++)
-		{
-			var c = ag.connections[i];
-			
 			c.ui.selected = true;
-			s_conns.push(c);
-		}
+			self.selection_conns.push(c);
+		});
 
 		self.updateCanvas(true);
 	};
@@ -1748,7 +1728,7 @@ function Application() {
 	
 	$('button#help').click(function()
 	{
-		window.open('/help/introduction.html', 'Engi Help');
+		window.open('/help/introduction.html', 'Vizor Create Help');
 	});
 	
 	this.onHideTooltip();

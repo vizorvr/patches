@@ -45,13 +45,13 @@
 
 .tree-active
 {
-	background-color: #2c82dd;
-	color: #fff;
+	background-color: #444;
+	color: #aaa;
 }
 
 .tree-dupe
 {
-	background-color: #2cdd82;
+	background-color: #433;
 	color: #fff;
 }
 

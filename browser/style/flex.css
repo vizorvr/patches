@@ -70,21 +70,8 @@ body {
 	max-height: 28px;
 }
 
-.info-pane {
-	min-height: 12vh;
-	max-height: 12vh;
-	height: 12vh;
-}
-
 #left-nav {
-	min-width: 315px;
-	max-width: 315px;
 	overflow: auto;
-}
-
-#right-nav {
-	max-width: 482px;
-	min-width: 482px;
 }
 
 #presets .searchbox {
@@ -118,7 +105,6 @@ body {
 {
 	position: fixed;
 	background-color: #000;
-	color: #fff;
 	opacity: 0.75;
 	padding-left: 4px;
 	padding-right: 4px;
@@ -139,12 +125,4 @@ body {
 	margin: 0;
 }
 
-#info
-{
-	padding: 7px;
-	font-size: 14px;
-}
 
-#info {
-	font-family: 'greyscale_basic_regular', sans-serif;
-}

@@ -1,11 +1,14 @@
 var
 gulp = require('gulp'),
 fs = require('fs'),
+path = require('path'),
 uglify = require('gulp-uglify'),
 concat = require('gulp-concat'),
 del = require('del'),
+less = require('gulp-less'),
 paths =
 {
+	less: 'less/build.less',
 	js:
 	{
 		player:
@@ -37,6 +40,11 @@ gulp.task('clean:js:player', function(cb)
 	del('./browser/scripts/player.min.js', cb);
 });
 
+gulp.task('clean:less', function(cb)
+{
+	del('./browser/style/less.css', cb);
+});
+
 gulp.task('clean:js', ['clean:js:plugins', 'clean:js:player']);
 
 gulp.task('clean', ['clean:js']);
@@ -59,5 +67,15 @@ gulp.task('js:player', ['clean:js:player'], function()
 
 gulp.task('js', ['js:plugins', 'js:player']);
 
-gulp.task('default', ['js']);
+gulp.task('less', ['clean:less'], function()
+{
+	gulp.src(paths.less)
+    .pipe(less({
+		paths: [ path.join(__dirname, 'less') ]
+    }))
+	.pipe(concat('less.css'))
+    .pipe(gulp.dest('./browser/style'));
+});
+
+gulp.task('default', ['less', 'js']);
 
