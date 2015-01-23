@@ -1465,11 +1465,12 @@ function Application() {
 				return;
 			}
 
-			/*if(e.keyCode === 67) // CTRL+c
+			if(e.keyCode === 67) // CTRL+c
 				self.onCopy(e);
-			else*/
-			if(e.keyCode === 88) // CTRL+x
+			else if(e.keyCode === 88) // CTRL+x
 				self.onCut(e);
+			else if(e.keyCode === 86) // CTRL+v
+				self.onPaste(e);
 		}
 	};
 
@@ -1783,20 +1784,6 @@ function Application() {
 		self.releaseHoverNode(false);
 	});
 	
-	window.addEventListener('paste', function(e)
-	{
-		e.preventDefault();
-		self.clipboard = e.clipboardData.getData('text/plain');
-		self.onPaste(e);
-	});
-	
-	window.addEventListener('copy', function(e)
-	{
-		self.onCopy(e);
-		e.clipboardData.setData('text/plain', self.clipboard);
-	    e.preventDefault();
-	});
-
 	window.addEventListener('resize', function(self) { return function()
 	{
 		// To avoid UI lag, we don't respond to window resize events directly.
