@@ -258,8 +258,7 @@ function Application() {
 				self.onSlotEntered(node, slot, slot_div)(e);
 			}
 		}
-		
-		if(self.shift_pressed)
+		else
 			self.removeHoverConnections();
 				
 		return false;
@@ -348,8 +347,7 @@ function Application() {
 		{
 			if (self.edit_conn.direction === 1)
 			{
-				if(self.src_node === node)
-					self.src_node = null;
+				self.src_node = null;
 			
 				if(self.src_slot === slot)
 				{
@@ -1009,7 +1007,8 @@ function Application() {
 
 			if (!self.dst_slot && self.edit_conn.dst_slot)
 			{
-				self.player.core.active_graph.destroy_connection(self.edit_conn);
+				self.hover_connections = [self.edit_conn];
+				self.removeHoverConnections();
 				self.edit_conn.dst_slot = self.edit_conn.dst_node = self.edit_conn.dst_slot_div = null;
 			}
 
