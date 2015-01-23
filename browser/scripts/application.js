@@ -363,6 +363,7 @@ function Application() {
 				{
 					self.hover_connections = [self.edit_conn];
 					self.removeHoverConnections();
+					self.edit_conn.dst_slot = null;
 				}
 
 				if(self.dst_slot === slot)
