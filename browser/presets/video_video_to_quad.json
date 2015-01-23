@@ -1,23 +1,22 @@
 {
-    "abs_t": 30.615,
+    "abs_t": 396.651,
     "active_graph": 0,
     "graph_uid": 2,
     "root": {
         "node_uid": 7,
         "uid": 0,
         "parent_uid": -1,
-        "open": true,
         "nodes": [
             {
                 "plugin": "video_player",
-                "x": 329,
-                "y": 205,
+                "x": 386,
+                "y": 394,
                 "uid": 0
             },
             {
                 "plugin": "toggle_button",
-                "x": 177,
-                "y": 256,
+                "x": 212,
+                "y": 387,
                 "uid": 1,
                 "state": {
                     "enabled": true
@@ -26,26 +25,27 @@
             },
             {
                 "plugin": "url_video_generator",
-                "x": 177,
-                "y": 197,
+                "x": 216,
+                "y": 336,
                 "uid": 2,
                 "state": {
-                    "url": "data/video/helicopter_la.ogv"
+                    "url": ""
                 }
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 188,
-                "y": 383,
+                "x": 214,
+                "y": 500,
                 "uid": 3,
                 "state": {
-                    "val": 1
-                }
+                    "val": 0
+                },
+                "title": "Volume"
             },
             {
                 "plugin": "toggle_button",
-                "x": 178,
-                "y": 317,
+                "x": 214,
+                "y": 445,
                 "uid": 4,
                 "state": {
                     "enabled": true
@@ -54,18 +54,22 @@
             },
             {
                 "plugin": "graph",
-                "x": 563,
-                "y": 146,
+                "x": 555,
+                "y": 325,
                 "uid": 5,
                 "dsid": 3,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "rt_filter": 9729,
                     "input_sids": {
                         "34": 2
                     },
                     "output_sids": {}
                 },
-                "title": "Plain video",
+                "title": "Display video in quad",
                 "graph": {
                     "node_uid": 40,
                     "uid": 1,
@@ -95,7 +99,7 @@
                             "x": 483,
                             "y": 375,
                             "uid": 34,
-                            "dsid": 56,
+                            "dsid": 57,
                             "state": {
                                 "slot_id": 0
                             },
@@ -222,8 +226,8 @@
             },
             {
                 "plugin": "toggle_button",
-                "x": 466,
-                "y": 116,
+                "x": 410,
+                "y": 287,
                 "uid": 6,
                 "state": {
                     "enabled": true

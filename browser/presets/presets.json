@@ -40,7 +40,8 @@
 		"VR: Ground plane": "vr_ground_plane",
 		"VR: Sky sphere": "vr_sky_sphere",
 		"VR: Particles": "vr_particles",
-		"VR: Particles on object": "vr_particles_on_object"
+		"VR: Particles on object": "vr_particles_on_object",
+		"VR: Video screen": "vr_video_screen"
 
 	},
 
@@ -59,8 +60,7 @@
 
 	"VIDEO":
 	{
-		"Video: Video player": "video_video_player",
-		"Video: Video to quad": "video_video_to_quad",
+		"Video: Video player": "video_video_to_quad",
 		"Video: Chromakeyed video": "video_chromakey"
 	},
 
