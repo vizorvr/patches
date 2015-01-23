@@ -20,6 +20,13 @@
 	cursor: pointer;
 }
 
+.tree-item:hover
+{
+	background-color: #444;
+	color: #aaa;
+	cursor: pointer;
+}
+
 .tree-name
 {
 	float: clear;

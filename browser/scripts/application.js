@@ -1379,6 +1379,22 @@ function Application() {
 			self.updateCanvas(true);
 	};
 
+	this.toggleLeftPane = function()
+	{
+		$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
+
+		self.condensed_view = !self.condensed_view;
+
+		E2.dom.left_nav.toggle(!self.condensed_view);
+		
+		if(self.condensed_view)
+			E2.dom.dbg.toggle(false);
+		else if(!self.collapse_log)
+			E2.dom.dbg.toggle(true);
+		
+		self.onWindowResize();
+	};
+	
 	this.onKeyDown = function(e)
 	{
 		function is_text_input_in_focus() {
@@ -1388,7 +1404,7 @@ function Application() {
 
 		if(is_text_input_in_focus())
 			return;
-		
+
 		if(e.keyCode === 8 || e.keyCode === 46) // use backspace and delete for deleting nodes
 		{
 			self.onDelete(e);
@@ -1403,7 +1419,7 @@ function Application() {
 		{
 			self.alt_pressed = true;
 		}
-		else if(e.keyCode === (self.is_osx ? 91 : 17)) // CMD on OSX, CTRL on everything else
+		else if(e.keyCode === 17) // CMD on OSX, CTRL on everything else
 		{
 			self.ctrl_pressed = true;
 		}
@@ -1423,7 +1439,7 @@ function Application() {
 		{
 			if(self.player.current_state === self.player.state.PLAYING)
 			{
-				if(self.ctrl_pressed)
+				if(self.ctrl_pressed || e.metaKey)
 					self.onPauseClicked();
 				else
 					self.onStopClicked();
@@ -1436,13 +1452,14 @@ function Application() {
 			e.preventDefault();
 			return false;
 		}
-		else if(self.ctrl_pressed)
+		else if(self.ctrl_pressed || e.metaKey)
 		{
 			if(e.keyCode === 65) // CTRL+a
 			{
 				self.selectAll();
 				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
-				return;
+				e.stopPropagation();
+				return false;
 			}
 			if(e.keyCode === 66) // CTRL+b
 			{
@@ -1472,25 +1489,9 @@ function Application() {
 		}
 	};
 
-	this.toggleLeftPane = function()
-	{
-		$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
-
-		self.condensed_view = !self.condensed_view;
-
-		E2.dom.left_nav.toggle(!self.condensed_view);
-		
-		if(self.condensed_view)
-			E2.dom.dbg.toggle(false);
-		else if(!self.collapse_log)
-			E2.dom.dbg.toggle(true);
-		
-		self.onWindowResize();
-	}
-	
 	this.onKeyUp = function(e)
 	{
-		if(e.keyCode === (this.is_osx ? 91 : 17)) // CMD on OSX, CTRL on everything else
+		if(e.keyCode === 17) // CMD on OSX, CTRL on everything else
 		{
 			self.ctrl_pressed = false;
 		}
