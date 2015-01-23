@@ -22,8 +22,9 @@ ConnectionUI.prototype.resolve_slot_divs = function()
 	E2.app.getSlotPosition(pc.dst_node, this.dst_slot_div, E2.slot_type.input, this.dst_pos);
 };
 
-function Connection(src_node, dst_node, src_slot, dst_slot)
+function Connection(src_node, dst_node, src_slot, dst_slot, direction)
 {
+	this.direction = direction || 0;
 	this.src_node = src_node;
 	this.dst_node = dst_node;
 	this.src_slot = src_slot;

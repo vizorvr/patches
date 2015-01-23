@@ -201,17 +201,17 @@ Graph.prototype.destroy_ui = function()
 	delete this.nuid_lut;
 };
 
-Graph.prototype.find_connections_to = function(node, slot)
+Graph.prototype.find_connection_to = function(node, slot)
 {
-	if(slot.type !== E2.slot_type.input)
-		return [];
+	if (slot.type !== E2.slot_type.input)
+		return;
 	
 	var uid = node.uid;
 
 	return this.connections.filter(function(c)
 	{
 		return (c.dst_node.uid === uid && c.dst_slot === slot);
-	});
+	})[0];
 };
 
 Graph.prototype.find_connections_from = function(node, slot)

@@ -119,7 +119,6 @@ NodeUI.create_slot = function(parent_node, nid, col, s, type)
 
 	div.text(s.name);
 	div.addClass('pl_slot');
-	div.definition = s;
 
 	div.mouseenter(E2.app.onSlotEntered(parent_node, s, div));
 	div.mouseleave(E2.app.onSlotExited(parent_node, s, div));

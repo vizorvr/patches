@@ -147,67 +147,6 @@ function Application() {
 			createPlugin(null);
 	};
 	
-	this.onSlotClicked = function(node, slot, slot_div, type) { return function(e)
-	{
-		e.stopPropagation();
-		
-		if(!self.shift_pressed)
-		{
-			var graph = self.player.core.active_graph;
-
-			if (type === E2.slot_type.output)
-			{
-				self.src_node = node;
-				self.src_slot = slot;
-				self.src_slot_div = slot_div;
-
-				self.edit_conn = new Connection(null, null, null, null);
-				self.edit_conn.create_ui();
-				
-				self.getSlotPosition(node, slot_div, E2.slot_type.output, self.edit_conn.ui.src_pos);
-			
-				var offset = 0;
-				
-				var ocs = graph.find_connections_from(node, slot);
-				ocs.sort(function(a, b) {
-					return a.offset < b.offset ? - 1 : a.offset > b.offset ? 1 : 0;
-				});
-				
-				ocs.forEach(function(oc, i)
-				{
-					oc.offset = i;
-
-					if(oc.offset != i)
-					{
-						offset = i;
-						return;
-					}
-					
-					offset = i + 1;
-				});
-				
-				self.edit_conn.offset = offset;
-				slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
-			} else { // drag existing connection
-				var conn = graph.find_connections_to(node, slot)[0];
-				if (!conn)
-					return;
-
-				self.src_node = conn.src_node;
-				self.src_slot = conn.src_slot;
-				self.src_slot_div = conn.ui.src_slot_div;
-				self.edit_conn = conn;
-
-				self.onSlotEntered(node, slot, slot_div)(e);
-			}
-		}
-		
-		if(self.shift_pressed)
-			self.removeHoverConnections();
-				
-		return false;
-	}};
-
 	this.activateHoverSlot = function()
 	{
 		var hs = self.hover_slot;
@@ -243,51 +182,159 @@ function Application() {
 		if(self.hover_slot != null)
 		{
 			self.hover_slot_div[0].style.backgroundColor = 'inherit';
+			self.hover_slot_div[0].style.color = '#000';
 			self.hover_slot_div = null;
 			self.hover_slot = null;
 		}
 		
 		self.releaseHoverConnections();
-		
-		if(self.dst_slot_div != null)
-		{
-			self.dst_slot_div[0].style.color = '#000';
-			self.dst_slot_div = null;
-		}
-
 	};
 	
+	this.onSlotClicked = function(node, slot, slot_div, type) { return function(e)
+	{
+		e.stopPropagation();
+		
+		if(!self.shift_pressed)
+		{
+			var graph = self.player.core.active_graph;
+
+			if (type === E2.slot_type.output)
+			{
+				// drag new connection from output
+				self.src_node = node;
+				self.src_slot = slot;
+				self.src_slot_div = slot_div;
+
+				self.edit_conn = new Connection(null, null, null, null);
+				self.edit_conn.create_ui();
+
+				self.getSlotPosition(node, slot_div, E2.slot_type.output, self.edit_conn.ui.src_pos);
+			
+				var offset = 0;
+				
+				var ocs = graph.find_connections_from(node, slot);
+				ocs.sort(function(a, b) {
+					return a.offset < b.offset ? - 1 : a.offset > b.offset ? 1 : 0;
+				});
+				
+				ocs.forEach(function(oc, i)
+				{
+					oc.offset = i;
+
+					if(oc.offset != i)
+					{
+						offset = i;
+						return;
+					}
+					
+					offset = i + 1;
+				});
+				
+				self.edit_conn.offset = offset;
+				slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
+			} else { // drag connection from input
+				self.dst_node = node;
+				self.dst_slot = slot;
+				self.dst_slot_div = slot_div;
+
+				var conn = graph.find_connection_to(node, slot);
+				if (!conn)
+				{
+					// new connection
+					self.edit_conn = new Connection(null, null, null, null, 1);
+					self.edit_conn.create_ui();
+					self.edit_conn.offset = 0;
+					self.getSlotPosition(node, slot_div, E2.slot_type.input, self.edit_conn.ui.src_pos);
+				}
+				else
+				{
+					// existing connection
+					self.src_node = conn.src_node;
+					self.src_slot = conn.src_slot;
+					self.src_slot_div = conn.ui.src_slot_div;
+					self.edit_conn = conn;
+				}
+
+				self.onSlotEntered(node, slot, slot_div)(e);
+			}
+		}
+		
+		if(self.shift_pressed)
+			self.removeHoverConnections();
+				
+		return false;
+	}};
+
 	this.onSlotEntered = function(node, slot, slot_div) { return function(e)
 	{
-		if(self.src_slot)
+		if (self.edit_conn)
 		{
+			var ss_dt;
+
+			if (self.edit_conn.direction === 1)
+			{
+				ss_dt = self.dst_slot.dt;
+			} else {
+				ss_dt = self.src_slot.dt;
+			}
+
 			var any_dt = self.player.core.datatypes.ANY;
-			self.dst_slot_div = slot_div;
-			
-			var ss_dt = self.src_slot.dt;
 
 			// Only allow connection if datatypes match and slot is unconnected. 
 			// Don't allow self-connections. There no complete check for cyclic 
 			// redundacies, though we should probably institute one.
 			// Additionally, don't allow connections between two ANY slots.
-			if(slot.type === E2.slot_type.input && 
-			    (ss_dt === any_dt || slot.dt === any_dt || ss_dt === slot.dt) && 
-			   !(ss_dt === any_dt && slot.dt === any_dt) &&
-			   (!slot.is_connected || self.edit_conn.dst_slot === slot) &&
-			   self.src_node !== node)
+			var isValid = (ss_dt === any_dt || slot.dt === any_dt || ss_dt === slot.dt) && 
+				!(ss_dt === any_dt && slot.dt === any_dt) &&
+				(!slot.is_connected || // not connected, or
+					// source to destination, and dest is slot and source isn't slot
+					((self.edit_conn.direction === 0 && self.dst_slot === slot && self.src_node !== node) ||
+					// dest to source, and source is slot and dest isn't slot
+				   (self.edit_conn.direction === 1 && self.src_slot === slot && self.dst_node !== node)));
+
+			if (self.edit_conn.direction === 1)
 			{
-				self.dst_node = node;
-				self.dst_slot = slot;
-				slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
+				if (slot.type !== E2.slot_type.output)
+					isValid = false;
+
+				if (!isValid)
+				{
+					self.src_node = null;
+					self.src_slot = null;
+					self.src_slot_div = null;
+				}
+				else
+				{
+					self.src_slot = slot;
+					self.src_node = node;
+					self.src_slot_div = slot_div;
+				}
 			}
 			else
 			{
-				self.dst_node = null;
-				self.dst_slot = null;
-				slot_div[0].style.color = E2.erase_color;
+				if (slot.type !== E2.slot_type.input)
+					isValid = false;
+
+				if (!isValid)
+				{
+					self.dst_node = null;
+					self.dst_slot = null;
+					self.dst_slot_div = null;
+				}
+				else
+				{
+					self.dst_node = node;
+					self.dst_slot = slot;
+					self.dst_slot_div = slot_div;
+				}
 			}
+
+			if (isValid)
+				slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
+			else
+				slot_div[0].style.color = E2.erase_color;
 		}
-		
+
 		self.hover_slot = slot;
 		self.hover_slot_div = slot_div;
 
@@ -297,11 +344,31 @@ function Application() {
 
 	this.onSlotExited = function(node, slot, slot_div) { return function(e)
 	{
-		if(self.dst_node === node)
-			self.dst_node = null;
-		
-		if(self.dst_slot === slot)
-			self.dst_slot = null;
+		if (self.edit_conn)
+		{
+			if (self.edit_conn.direction === 1)
+			{
+				if(self.src_node === node)
+					self.src_node = null;
+			
+				if(self.src_slot === slot)
+				{
+					slot_div[0].style.color = '#000';
+					self.src_slot = null;
+				}
+			}
+			else
+			{
+				if(self.dst_node === node)
+					self.dst_node = null;
+			
+				if(self.dst_slot === slot)
+				{
+					slot_div[0].style.color = '#000';
+					self.dst_slot = null;
+				}
+			}
+		}
 			
 		self.releaseHoverSlot();
 	}};
@@ -333,7 +400,7 @@ function Application() {
 		
 		var so = self.scrollOffset;
 		
-		c.lineWidth = 2; // Doesn't work in Chrome with lineWidth > 1 :(
+		c.lineWidth = 2;
 		c.lineCap = 'square';
 		c.lineJoin = 'miter';
 		
@@ -392,17 +459,29 @@ function Application() {
 	this.onMouseReleased = function(e)
 	{
 		var changed = false;
-		
-		if(self.dst_node && self.dst_slot) // If dst_slot is set, we should create a permanent connection.
+
+		// Creating a connection?
+		if (self.edit_conn)
 		{
 			var ss = self.src_slot;
 			var ds = self.dst_slot;
 
+			if (!ss || !ds)
+			{
+				self.edit_conn = self.src_node = self.dst_node = null;
+				self.updateCanvas(true);
+				self.releaseHoverSlot();
+				return;
+			}
+
 			var c;
-			if (self.edit_conn.dst_slot === self.dst_slot) {
-				// already connected
+			if (self.edit_conn.dst_slot === self.dst_slot && self.edit_conn.src_slot == self.src_slot)
+			{
+				// already fully connected
 				c = self.edit_conn;
-			} else {
+			}
+			else
+			{
 				c = new Connection(self.src_node, self.dst_node, ss, ds);
 				self.src_node.outputs.push(c);
 	
@@ -413,34 +492,28 @@ function Application() {
 				c.ui.src_slot_div = self.src_slot_div;
 				c.ui.dst_slot_div = self.dst_slot_div;
 				c.offset = self.edit_conn.offset;
-				
-				var graph = self.player.core.active_graph; 
-				
-				graph.connections.push(c);
+				self.player.core.active_graph.connections.push(c);
 			}
 
+			self.getSlotPosition(self.src_node, self.src_slot_div, E2.slot_type.output, c.ui.src_pos);
 			self.getSlotPosition(self.dst_node, self.dst_slot_div, E2.slot_type.input, c.ui.dst_pos);
 
 			c.signal_change(true);
 
 			self.dst_slot_div[0].style.color = '#000';
 			self.dst_slot.is_connected = true;
-			self.dst_slot_div = null;
-			self.dst_slot = null;
+			self.dst_slot_div = self.dst_slot = null;
 			changed = true;
 		}
 
 		if(self.src_slot)
 		{
 			self.src_slot_div[0].style.color = '#000';
-			self.src_slot = null;
-			self.src_slot_div = null;
+			self.src_slot = self.src_slot_div = null;
 			changed = true;
 		}
 		
-		self.dst_node = null;
-		self.src_node = null;
-		self.edit_conn = null;
+		self.dst_node = self.src_node = self.edit_conn = null;
 		
 		if(changed)
 			self.updateCanvas(true);
@@ -915,7 +988,7 @@ function Application() {
 			e.preventDefault();
 			return;
 		}
-		else if(self.src_slot)
+		else if(self.edit_conn)
 		{
 			var cp = E2.dom.canvas_parent;
 			var pos = cp.position();
