@@ -1,21 +1,16 @@
 {
-    "abs_t": 188.521,
+    "abs_t": 62.106,
     "active_graph": 0,
-    "graph_uid": 10,
+    "graph_uid": 20,
     "root": {
-        "node_uid": 5,
+        "node_uid": 7,
         "uid": 0,
         "parent_uid": -1,
-        "open": true,
-        "scroll": [
-            0,
-            0
-        ],
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 246,
-                "y": 76,
+                "x": 284,
+                "y": 202,
                 "uid": 1,
                 "dsid": 4,
                 "state": {
@@ -36,20 +31,16 @@
                 "title": "Orbit camera",
                 "graph": {
                     "node_uid": 30,
-                    "uid": 9,
+                    "uid": 7,
                     "parent_uid": 0,
                     "open": true,
-                    "scroll": [
-                        0,
-                        0
-                    ],
                     "nodes": [
                         {
                             "plugin": "input_proxy",
                             "x": 173,
                             "y": 58,
                             "uid": 10,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -71,7 +62,7 @@
                             "x": 32,
                             "y": 122,
                             "uid": 11,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -93,7 +84,7 @@
                             "x": 26,
                             "y": 180,
                             "uid": 12,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -181,7 +172,7 @@
                             "x": 925,
                             "y": 213,
                             "uid": 24,
-                            "dsid": 2,
+                            "dsid": 3,
                             "state": {
                                 "slot_id": 0
                             },
@@ -444,8 +435,8 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 26,
-                "y": 45,
+                "x": 30,
+                "y": 176,
                 "uid": 2,
                 "state": {
                     "val": 0,
@@ -456,8 +447,8 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 27,
-                "y": 128,
+                "x": 30,
+                "y": 238,
                 "uid": 3,
                 "state": {
                     "val": 0.65,
@@ -468,8 +459,8 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 39,
-                "y": 210,
+                "x": 28,
+                "y": 300,
                 "uid": 4,
                 "state": {
                     "val": 3.4,

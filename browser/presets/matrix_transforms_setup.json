@@ -1,22 +1,25 @@
 {
-    "abs_t": 72.964,
+    "abs_t": 180.369,
     "active_graph": 0,
-    "graph_uid": 5,
+    "graph_uid": 10,
     "root": {
-        "node_uid": 15,
+        "node_uid": 21,
         "uid": 0,
         "parent_uid": -1,
-        "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 619,
-                "y": 209,
-                "uid": 0,
+                "x": 670,
+                "y": 154,
+                "uid": 8,
                 "open": false,
                 "dsid": 4,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "rt_filter": 9729,
                     "input_sids": {
                         "8": 1,
                         "9": 2,
@@ -29,7 +32,7 @@
                 "title": "Rotate",
                 "graph": {
                     "node_uid": 21,
-                    "uid": 1,
+                    "uid": 6,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
@@ -44,7 +47,7 @@
                             "x": 485,
                             "y": 174,
                             "uid": 1,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -67,7 +70,7 @@
                             "x": 45,
                             "y": 80,
                             "uid": 8,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -89,7 +92,7 @@
                             "x": 45,
                             "y": 170,
                             "uid": 9,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -111,7 +114,7 @@
                             "x": 46,
                             "y": 257,
                             "uid": 10,
-                            "dsid": 4,
+                            "dsid": 5,
                             "state": {
                                 "slot_id": 0
                             },
@@ -332,9 +335,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 328,
-                "y": 200,
-                "uid": 1,
+                "x": 323,
+                "y": 147,
+                "uid": 9,
                 "state": {
                     "val": 0
                 },
@@ -342,9 +345,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 328,
-                "y": 273,
-                "uid": 2,
+                "x": 323,
+                "y": 220,
+                "uid": 10,
                 "state": {
                     "val": 0
                 },
@@ -352,9 +355,9 @@
             },
             {
                 "plugin": "knob_float_generator",
-                "x": 328,
-                "y": 347,
-                "uid": 3,
+                "x": 323,
+                "y": 294,
+                "uid": 11,
                 "state": {
                     "val": 0
                 },
@@ -362,13 +365,17 @@
             },
             {
                 "plugin": "graph",
-                "x": 617,
-                "y": 272,
-                "uid": 4,
+                "x": 676,
+                "y": 280,
+                "uid": 12,
                 "open": false,
                 "dsid": 8,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "rt_filter": 9729,
                     "input_sids": {
                         "13": 5,
                         "14": 6,
@@ -381,7 +388,7 @@
                 "title": "Scale",
                 "graph": {
                     "node_uid": 16,
-                    "uid": 2,
+                    "uid": 7,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
@@ -396,7 +403,7 @@
                             "x": 278,
                             "y": 49,
                             "uid": 2,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -425,7 +432,7 @@
                             "x": 7,
                             "y": 9,
                             "uid": 13,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -447,7 +454,7 @@
                             "x": 7,
                             "y": 69,
                             "uid": 14,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -469,7 +476,7 @@
                             "x": 7,
                             "y": 132,
                             "uid": 15,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -566,13 +573,17 @@
             },
             {
                 "plugin": "graph",
-                "x": 618,
-                "y": 241,
-                "uid": 6,
+                "x": 672,
+                "y": 215,
+                "uid": 13,
                 "open": false,
                 "dsid": 8,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "rt_filter": 9729,
                     "input_sids": {
                         "13": 5,
                         "14": 6,
@@ -585,7 +596,7 @@
                 "title": "Translate",
                 "graph": {
                     "node_uid": 17,
-                    "uid": 3,
+                    "uid": 8,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
@@ -594,7 +605,7 @@
                             "x": 291,
                             "y": 50,
                             "uid": 2,
-                            "dsid": 5,
+                            "dsid": 6,
                             "state": {
                                 "slot_id": 0
                             },
@@ -623,7 +634,7 @@
                             "x": 8,
                             "y": 10,
                             "uid": 13,
-                            "dsid": 5,
+                            "dsid": 6,
                             "state": {
                                 "slot_id": 0
                             },
@@ -645,7 +656,7 @@
                             "x": 8,
                             "y": 70,
                             "uid": 14,
-                            "dsid": 5,
+                            "dsid": 6,
                             "state": {
                                 "slot_id": 0
                             },
@@ -667,7 +678,7 @@
                             "x": 8,
                             "y": 129,
                             "uid": 15,
-                            "dsid": 5,
+                            "dsid": 6,
                             "state": {
                                 "slot_id": 0
                             },
@@ -770,9 +781,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 415,
-                "y": 204,
-                "uid": 7,
+                "x": 410,
+                "y": 151,
+                "uid": 14,
                 "state": {
                     "val": 0,
                     "min": -2,
@@ -782,9 +793,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 415,
-                "y": 265,
-                "uid": 8,
+                "x": 410,
+                "y": 212,
+                "uid": 15,
                 "state": {
                     "val": 0,
                     "min": -2,
@@ -794,9 +805,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 415,
-                "y": 327,
-                "uid": 9,
+                "x": 410,
+                "y": 274,
+                "uid": 16,
                 "state": {
                     "val": 0,
                     "min": -2,
@@ -806,42 +817,26 @@
             },
             {
                 "plugin": "const_float_generator",
-                "x": 327,
-                "y": 425,
-                "uid": 11,
+                "x": 319,
+                "y": 368,
+                "uid": 17,
                 "state": {
                     "val": 1
                 },
-                "title": "Scale X"
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 326,
-                "y": 484,
-                "uid": 12,
-                "state": {
-                    "val": 1
-                },
-                "title": "Scale Y"
-            },
-            {
-                "plugin": "const_float_generator",
-                "x": 324,
-                "y": 544,
-                "uid": 13,
-                "state": {
-                    "val": 1
-                },
-                "title": "Scale Z"
+                "title": "Scale XYZ"
             },
             {
                 "plugin": "graph",
-                "x": 701,
-                "y": 238,
-                "uid": 14,
+                "x": 833,
+                "y": 153,
+                "uid": 20,
                 "dsid": 4,
                 "state": {
                     "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "rt_filter": 9729,
                     "input_sids": {
                         "3": 1,
                         "4": 2,
@@ -854,7 +849,7 @@
                 "title": "Concatenate x2",
                 "graph": {
                     "node_uid": 6,
-                    "uid": 4,
+                    "uid": 9,
                     "parent_uid": 0,
                     "open": true,
                     "nodes": [
@@ -875,7 +870,7 @@
                             "x": 394,
                             "y": 13,
                             "uid": 2,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -898,7 +893,7 @@
                             "x": 197,
                             "y": 14,
                             "uid": 3,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -920,7 +915,7 @@
                             "x": 9,
                             "y": 13,
                             "uid": 4,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -942,7 +937,7 @@
                             "x": 9,
                             "y": 71,
                             "uid": 5,
-                            "dsid": 3,
+                            "dsid": 4,
                             "state": {
                                 "slot_id": 0
                             },
@@ -1040,91 +1035,93 @@
         ],
         "conns": [
             {
-                "src_nuid": 1,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 2,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 3,
-                "dst_nuid": 0,
-                "src_slot": 0,
-                "dst_slot": 2,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 7,
-                "dst_nuid": 6,
-                "src_slot": 0,
-                "dst_slot": 0,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 8,
-                "dst_nuid": 6,
-                "src_slot": 0,
-                "dst_slot": 1,
-                "dst_dyn": true
-            },
-            {
                 "src_nuid": 9,
-                "dst_nuid": 6,
+                "dst_nuid": 8,
                 "src_slot": 0,
-                "dst_slot": 2,
+                "dst_slot": 0,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 10,
+                "dst_nuid": 8,
+                "src_slot": 0,
+                "dst_slot": 1,
                 "dst_dyn": true
             },
             {
                 "src_nuid": 11,
-                "dst_nuid": 4,
+                "dst_nuid": 8,
+                "src_slot": 0,
+                "dst_slot": 2,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 14,
+                "dst_nuid": 13,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 12,
-                "dst_nuid": 4,
+                "src_nuid": 15,
+                "dst_nuid": 13,
                 "src_slot": 0,
                 "dst_slot": 1,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 16,
+                "dst_nuid": 13,
+                "src_slot": 0,
+                "dst_slot": 2,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": 17,
+                "dst_nuid": 12,
+                "src_slot": 0,
+                "dst_slot": 0,
                 "dst_dyn": true
             },
             {
                 "src_nuid": 13,
-                "dst_nuid": 4,
-                "src_slot": 0,
-                "dst_slot": 2,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": 6,
-                "dst_nuid": 14,
+                "dst_nuid": 20,
                 "src_slot": 0,
                 "dst_slot": 0,
                 "src_dyn": true,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 0,
-                "dst_nuid": 14,
+                "src_nuid": 8,
+                "dst_nuid": 20,
                 "src_slot": 0,
                 "dst_slot": 1,
                 "src_dyn": true,
                 "dst_dyn": true
             },
             {
-                "src_nuid": 4,
-                "dst_nuid": 14,
+                "src_nuid": 12,
+                "dst_nuid": 20,
                 "src_slot": 0,
                 "dst_slot": 2,
                 "src_dyn": true,
                 "dst_dyn": true
+            },
+            {
+                "src_nuid": 17,
+                "dst_nuid": 12,
+                "src_slot": 0,
+                "dst_slot": 1,
+                "dst_dyn": true,
+                "offset": 1
+            },
+            {
+                "src_nuid": 17,
+                "dst_nuid": 12,
+                "src_slot": 0,
+                "dst_slot": 2,
+                "dst_dyn": true,
+                "offset": 2
             }
         ]
     }

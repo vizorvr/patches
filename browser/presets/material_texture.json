@@ -1,0 +1,150 @@
+{
+    "abs_t": 190.925,
+    "active_graph": 0,
+    "graph_uid": 10,
+    "root": {
+        "node_uid": 21,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 333,
+                "y": 239,
+                "uid": 19,
+                "dsid": 2,
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "rt_filter": 9729,
+                    "input_sids": {
+                        "0": 0
+                    },
+                    "output_sids": {
+                        "1": 1
+                    }
+                },
+                "title": "Texture",
+                "graph": {
+                    "node_uid": 4,
+                    "uid": 9,
+                    "parent_uid": 0,
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "input_proxy",
+                            "x": 189,
+                            "y": 225,
+                            "uid": 0,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "texture",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 2,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 520,
+                            "y": 153,
+                            "uid": 1,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "material",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 12,
+                                    "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
+                                    "def": null,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "material_texture_modulator",
+                            "x": 307,
+                            "y": 130,
+                            "uid": 3
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 3,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "src_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "texture",
+                        "dt": 2,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "material",
+                        "dt": 12,
+                        "uid": 1,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 199,
+                "y": 283,
+                "uid": 20,
+                "state": {
+                    "url": "/data/image/57422df4c11a76d5531ef36299d5d1ac5b6b6739.jpg"
+                },
+                "title": "Image"
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 20,
+                "dst_nuid": 19,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            }
+        ]
+    }
+}

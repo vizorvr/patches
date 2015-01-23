@@ -1,9 +1,12 @@
 {
 	"TEMPLATES":
 	{
-		"Template: Master camera & master time": "template_master_camera_and_master_time",
-		"Template: 3D scene and background image": "template_3d_scene_and_background_image",
-		"VR: Clean template": "vr_clean_template"
+		"Template: 3D object and a grid": "template_3d_object_and_grid",
+		"Template: 3D object and background": "template_3d_object_and_background",
+		"Template: Cube and a grid": "template_cube_and_grid",
+		"VR: Clean template": "vr_clean_template",
+		"VR: Movement Template": "vr_movement_template",
+		"VR: Object, ground and sky": "vr_template_object_ground_sky"
 
 	},
 
@@ -14,8 +17,12 @@
 		"3D: Plain scene loader (no camera)": "3d_plain_scene_loader",	
 		"3D: Scene loader with mouse controls": "3d_scene_loader_with_mousecontrol",
 		"3D: Quad": "3d_quad_loader_fullscreen",
-		"3D: Cube (no camera, no material)": "3d_cube_loader",
-		"3D: Sphere (no camera, no material)": "3d_sphere_loader", 
+		"3D: Cube": "3d_cube_loader",
+		"3D: Sphere": "3d_sphere_loader", 
+		"3D: Grid": "3d_grid",
+		"3D: Particles": "3d_particle_shader",
+		"3D: Particles on object": "shader_particles_on_object",
+		"3D: Load object as wireframe": "3d_load_scene_wireframe",
 		"3D: Mesh with camera, material, light and transforms": "3d_mesh_with_camera_material_light_and_transforms",
 		"3D Instancing: Cube setup with controls": "instancing_cube",
 		"3D Instancing: Array setup with controls": "instancing_array",
@@ -43,9 +50,10 @@
 		"Background: Sky box": "background_skybox",
 		"Background: Sky Sphere": "background_skysphere",
 		"Background: Plain color": "background_plain_color",
-		"Background: Moving quad": "background_moving_quad",
+		"Background: Moving background image": "background_moving_quad",
 		"Overlay: Overlay graphic": "3d_overlay_graphic",
-		"Image: Show image": "image_show_image"
+		"Image: Show image": "image_show_image",
+		"Image: Image with UV controls": "image_with_uv_controls"
 	},
 
 
@@ -60,13 +68,14 @@
 	{
 		"Audio: Audio player": "audio_audio_player",
 		"Audio: FFT music synching template": "audio_fft_music_synching",
-		"Audio: Old audio player": "audio_audio_player_old"
+		"Audio: Audio player (old)": "audio_audio_player_old"
 	},
 
 	"TEXT":
 	{
-		"Text: Basic text on screen setup": "text_quad",
-		"Text: Text with texture inside with custom shader": "text_with_texture_inside_custom_shader"
+		"Text: Display text": "text_quad",
+		"Text: Display number": "util_display_number_on_screen"
+
 	},	
 
 		"INTERACTION":
@@ -80,9 +89,7 @@
 	
 	"CAMERAS":
 	{
-		"Camera: Orbit camera": "orbit_camera",
-		"Camera: Perspective camera setup": "camera_perspective_camera_setup",
-		"Camera: Perspective with zoom only": "camera_with_zoom_only",
+		"Camera: Orbit camera": "camera_orbit_camera",
 		"Camera: Mouse controlled camera": "camera_with_mouse_controls"
 	},
 
@@ -100,6 +107,7 @@
 		"Material: Full material and light chain": "material_material_and_light",
 		"Material: Material and light, no texture": "material_material_and_light_no_texture",
 		"Material: Material and point light chain": "material_material_and_point_light_chain",
+		"Material: Basic texture": "material_texture",
 		"Material: All texture types": "material_all_texture_types",
 		"Light: Light indicator helper": "lights_indicator"
 	},
@@ -125,14 +133,13 @@
 	},
 		"MATRIX TRANSFORMS":
 	{
-		"Transform: Basic matrix transforms setup": "matrix_transforms_setup",
+		"Transform: All - Scale, Rotate, Translate": "matrix_transforms_setup",
 		"Transform: Rotate": "matrix_rotate_with_knobs",
 		"Transform: Scale": "matrix_scale",
 		"Transform: Translate (move)": "matrix_translate",
 		"Transform: Circular motion to translate matrix": "matrix_circular_motion",
 		"Transform: Circular movement to X + Y": "transform_circular_movement_to_xy",
 		"Transform: Rotator with animation": "matrix_rotate_animated",
-
 		"Transform: Shaky translate to X + Y": "matrix_shaky_translate_to_xy"
 	},
 	"UTILS":
@@ -164,8 +171,6 @@
 	{	
 
 		"Shader: Template for Shadertoy.com pixel shaders": "shader_from_shadertoy",
-		"Shader: Particle shader": "shader_particle_shader",
-		"Shader: Particles on object": "shader_particles_on_object",
 		"Shader: Cross flare": "shader_cross_flare",
 		"Shader: Horizontal flare": "shader_horizontal_flare",
 		"Shader: Render depth buffer": "shader_render_depth_buffer",

@@ -6751,6 +6751,7 @@ table {
 }
 #about {
   padding: 5px;
+  margin-top: 8px;
 }
 .panel-default {
   border-color: #333333;
