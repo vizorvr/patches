@@ -357,9 +357,14 @@ function Application() {
 			}
 			else
 			{
-				if(self.dst_node === node)
-					self.dst_node = null;
+				self.dst_node = null;
 			
+				if (self.edit_conn.dst_slot && self.edit_conn.dst_slot.is_connected)
+				{
+					self.hover_connections = [self.edit_conn];
+					self.removeHoverConnections();
+				}
+
 				if(self.dst_slot === slot)
 				{
 					slot_div[0].style.color = '#000';
@@ -1004,13 +1009,6 @@ function Application() {
 				cp.scrollTop(self.scrollOffset[1] - 20);
 			else if(e.pageY > y2)
 				cp.scrollTop(self.scrollOffset[1] + 20);
-
-			if (!self.dst_slot && self.edit_conn.dst_slot)
-			{
-				self.hover_connections = [self.edit_conn];
-				self.removeHoverConnections();
-				self.edit_conn.dst_slot = self.edit_conn.dst_node = self.edit_conn.dst_slot_div = null;
-			}
 
 			self.mouseEventPosToCanvasCoord(e, self.edit_conn.ui.dst_pos);
 			self.updateCanvas(true);
