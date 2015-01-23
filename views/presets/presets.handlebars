@@ -10,14 +10,14 @@
 		href="#cscat{{@index}}"
 		>
 		<i class="glyphicon glyphicon-chevron-right"></i>
-		{{this.title}}
+		{{@key}}
 	</div>
 	<div id="cscat{{@index}}"
 	class="panel-collapse collapse">
 	<div class="panel-body">
 		<ul>
-			{{#each items}}
-			<li data-path="{{this.path}}">{{this.title}}</li>
+			{{#each this}}
+			<li data-path="{{this}}">{{@key}}</li>
 			{{/each}}
 		</ul>
 	</div>

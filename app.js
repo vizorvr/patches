@@ -305,7 +305,11 @@ function requireController(req, res, next)
 {
 	req.controller = controllers[req.params.model];
 	if (!req.controller)
-		return res.status(400).json({ message: 'No such controller'});
+	{
+		var e = new Error();
+		e.status = 404;
+		return next(e);
+	}
 	next();
 };
 

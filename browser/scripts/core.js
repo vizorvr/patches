@@ -40,55 +40,6 @@ function Delegate(delegate, dt, count)
 	this.count = count;
 }
 
-function PresetManager(base_url)
-{
-	$.ajax(
-	{
-		url: base_url + '/presets.json',
-		cache: true
-	})
-	.done(function(data)
-	{
-		var presets = Object.keys(data).map(function(cat)
-		{
-			return {
-				title: cat,
-				items: Object.keys(data[cat]).map(function(preset)
-				{
-					return {
-						title: preset,
-						path: data[cat][preset]
-					}
-				})
-			}
-		});
-
-		var presets_list = new CollapsibleSelectControl()
-			.data(presets)
-			.template(E2.views.presets.presets)
-			.render(E2.dom.presets_list)
-			.onOpen(function(path) {
-				var url = base_url + '/' + path + '.json';
-
-				msg('Loading snippet from: ' + url);
-
-				$.get(url)
-				.done(function(data)
-				{
-					E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
-					E2.app.onPaste({ target: { id: 'notpersist' }});
-				})
-				.fail(function(_j, _textStatus, _errorThrown)
-				{
-		  			msg('ERROR: Failed to load the selected preset.');
-				})
-			})
-	})
-	.fail(function() {
-		msg('PresetsMgr: No presets found.');
-	})
-}
-
 function AssetTracker(core)
 {
 	this.core = core;
@@ -175,8 +126,13 @@ function Core(vr_devices, app) {
 	this.app = app;
 	this.plugin_mgr = new PluginManager(this,
 		'/plugins',
+		E2.app ? E2.app.onPluginRegistered : null,
 		E2.app ? E2.app.onPluginInstantiated : null,
 		function() {
+			console.log('loaded')
+			if (E2.app)
+				E2.app.onPluginsLoaded();
+
 			self.onPluginsLoaded();
 		});
 	this.aux_scripts = {};

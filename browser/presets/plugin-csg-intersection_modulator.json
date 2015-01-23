@@ -1,1 +1,0 @@
-{ "abs_t": 0, "active_graph": 0, "graph_uid": 1, "root": { "node_uid": 1, "uid": 0, "parent_uid": -1, "open": true, "nodes": [{ "plugin": "csg_intersection_modulator", "x": 50, "y": 50, "uid": 0}], "conns": [] }}

@@ -55,6 +55,8 @@ CollapsibleSelectControl.prototype._search = function(text) {
 CollapsibleSelectControl.prototype.render = function(el) {
 	var self = this;
 	
+	el.empty();
+
 	el = el || $('<div class="collapsible-select-control">').appendTo('body');
 	this._el = el;
 

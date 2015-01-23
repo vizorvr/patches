@@ -87,6 +87,16 @@ function Application() {
 		result[1] = Math.round(o[1] + (area.height() / 2));
 	};
 	
+	this.onPluginsLoaded = function()
+	{
+		self.preset_mgr.render();
+	}
+
+	this.onPluginRegistered = function(key, id)
+	{
+		self.preset_mgr.add('PLUGINS', key, 'plugin/'+id);
+	}
+
 	this.onPluginInstantiated = function(id, pos)
 	{	
 		var cp = canvas_parent;
