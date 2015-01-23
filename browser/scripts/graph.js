@@ -201,24 +201,30 @@ Graph.prototype.destroy_ui = function()
 	delete this.nuid_lut;
 };
 
+Graph.prototype.find_connections_to = function(node, slot)
+{
+	if(slot.type !== E2.slot_type.input)
+		return [];
+	
+	var uid = node.uid;
+
+	return this.connections.filter(function(c)
+	{
+		return (c.dst_node.uid === uid && c.dst_slot === slot);
+	});
+};
+
 Graph.prototype.find_connections_from = function(node, slot)
 {
 	if(slot.type !== E2.slot_type.output)
 		return [];
 	
-	var conns = this.connections;
 	var uid = node.uid;
-	var result = [];
 	
-	for(var i = 0, len = conns.length; i < len; i++)
+	return this.connections.filter(function(c)
 	{
-		var c = conns[i];
-		
-		if(c.src_node.uid === uid && c.src_slot === slot)
-			result.push(c);			
-	}
-	
-	return result;
+		return(c.src_node.uid === uid && c.src_slot === slot);
+	});
 };
 
 Graph.prototype.serialise = function()

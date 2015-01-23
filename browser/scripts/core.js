@@ -31,6 +31,7 @@ E2.dom = {};
 E2.plugins = {};
 E2.slot_type = { input: 0, output: 1 };
 E2.erase_color = '#ff3b3b';
+E2.COLOR_COMPATIBLE_SLOT = '#080';
 
 function Delegate(delegate, dt, count)
 {

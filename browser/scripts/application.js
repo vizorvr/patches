@@ -151,41 +151,55 @@ function Application() {
 	{
 		e.stopPropagation();
 		
-		if(!self.shift_pressed && type == E2.slot_type.output)
+		if(!self.shift_pressed)
 		{
-			self.src_node = node;
-			self.src_slot = slot;
-			self.src_slot_div = slot_div;
-			self.edit_conn = new Connection(null, null, null, null);
-			self.edit_conn.create_ui();
-			
-			self.getSlotPosition(node, slot_div, E2.slot_type.output, self.edit_conn.ui.src_pos);
-		
 			var graph = self.player.core.active_graph;
-			var ocs = graph.find_connections_from(node, slot);
-			var offset = 0;
-			
-			ocs.sort(function(a, b) {
-				return a.offset < b.offset ? - 1 : a.offset > b.offset ? 1 : 0;
-			});
-			
-			for(var i = 0, len = ocs.length; i < len; i++)
-			{
-				var oc = ocs[i];
-				
-				oc.offset = i;
 
-				if(oc.offset != i)
-				{
-					offset = i;
-					break;
-				}
+			if (type === E2.slot_type.output)
+			{
+				self.src_node = node;
+				self.src_slot = slot;
+				self.src_slot_div = slot_div;
+
+				self.edit_conn = new Connection(null, null, null, null);
+				self.edit_conn.create_ui();
 				
-				offset = i + 1;
-			}
+				self.getSlotPosition(node, slot_div, E2.slot_type.output, self.edit_conn.ui.src_pos);
 			
-			self.edit_conn.offset = offset;
-			slot_div[0].style.color = '#080';
+				var offset = 0;
+				
+				var ocs = graph.find_connections_from(node, slot);
+				ocs.sort(function(a, b) {
+					return a.offset < b.offset ? - 1 : a.offset > b.offset ? 1 : 0;
+				});
+				
+				ocs.forEach(function(oc, i)
+				{
+					oc.offset = i;
+
+					if(oc.offset != i)
+					{
+						offset = i;
+						return;
+					}
+					
+					offset = i + 1;
+				});
+				
+				self.edit_conn.offset = offset;
+				slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
+			} else { // drag existing connection
+				var conn = graph.find_connections_to(node, slot)[0];
+				if (!conn)
+					return;
+
+				self.src_node = conn.src_node;
+				self.src_slot = conn.src_slot;
+				self.src_slot_div = conn.ui.src_slot_div;
+				self.edit_conn = conn;
+
+				self.onSlotEntered(node, slot, slot_div)(e);
+			}
 		}
 		
 		if(self.shift_pressed)
@@ -207,21 +221,19 @@ function Application() {
 		var conns = self.player.core.active_graph.connections;
 		var dirty = false;
 		
-		for(var i = 0, len = conns.length; i < len; i++)
+		conns.some(function(c)
 		{
-			var c = conns[i];
-			
 			if(c.dst_slot === hs || c.src_slot === hs)
 			{
 				c.ui.deleting = true;
 				self.hover_connections.push(c);
 				dirty = true;
-								
+				
 				if(hs.type == E2.slot_type.input)
-					break; // Early out if this is an input slot, but continue searching if it's an output slot. There might be multiple connections.
+					return true; // Early out if this is an input slot, but continue searching if it's an output slot. There might be multiple connections.
 			}
-		}
-		
+		});
+
 		if(dirty)
 			self.updateCanvas(false);
 	};
@@ -252,23 +264,21 @@ function Application() {
 			var any_dt = self.player.core.datatypes.ANY;
 			self.dst_slot_div = slot_div;
 			
-			var ss_dt = self.src_slot_div.definition.dt;
-			
+			var ss_dt = self.src_slot.dt;
+
 			// Only allow connection if datatypes match and slot is unconnected. 
 			// Don't allow self-connections. There no complete check for cyclic 
 			// redundacies, though we should probably institute one.
 			// Additionally, don't allow connections between two ANY slots.
 			if(slot.type === E2.slot_type.input && 
-			    (ss_dt === any_dt || 
-			     slot.dt === any_dt || 
-			     ss_dt === slot.dt) && 
+			    (ss_dt === any_dt || slot.dt === any_dt || ss_dt === slot.dt) && 
 			   !(ss_dt === any_dt && slot.dt === any_dt) &&
-			   !slot.is_connected && 
+			   (!slot.is_connected || self.edit_conn.dst_slot === slot) &&
 			   self.src_node !== node)
 			{
 				self.dst_node = node;
 				self.dst_slot = slot;
-				slot_div[0].style.color = '#080';
+				slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
 			}
 			else
 			{
@@ -383,28 +393,34 @@ function Application() {
 	{
 		var changed = false;
 		
-		if(self.dst_node && self.dst_slot) // If dest_slot is set, we should create a permanent connection.
+		if(self.dst_node && self.dst_slot) // If dst_slot is set, we should create a permanent connection.
 		{
 			var ss = self.src_slot;
 			var ds = self.dst_slot;
-			var c = new Connection(self.src_node, self.dst_node, ss, ds);
-			
-			self.src_node.outputs.push(c);
-			self.dst_node.add_input(c);
-			
-			// msg('New ' + c);
 
-			c.create_ui();
-			c.ui.src_pos = self.edit_conn.ui.src_pos.slice(0);
+			var c;
+			if (self.edit_conn.dst_slot === self.dst_slot) {
+				// already connected
+				c = self.edit_conn;
+			} else {
+				c = new Connection(self.src_node, self.dst_node, ss, ds);
+				self.src_node.outputs.push(c);
+	
+				self.dst_node.add_input(c);
+
+				c.create_ui();
+				c.ui.src_pos = self.edit_conn.ui.src_pos.slice(0);
+				c.ui.src_slot_div = self.src_slot_div;
+				c.ui.dst_slot_div = self.dst_slot_div;
+				c.offset = self.edit_conn.offset;
+				
+				var graph = self.player.core.active_graph; 
+				
+				graph.connections.push(c);
+			}
+
 			self.getSlotPosition(self.dst_node, self.dst_slot_div, E2.slot_type.input, c.ui.dst_pos);
-			c.ui.src_slot_div = self.src_slot_div;
-			c.ui.dst_slot_div = self.dst_slot_div;
-			c.offset = self.edit_conn.offset;
-			
-			var graph = self.player.core.active_graph; 
-			
-			graph.connections.push(c);
-			
+
 			c.signal_change(true);
 
 			self.dst_slot_div[0].style.color = '#000';
@@ -441,18 +457,16 @@ function Application() {
 			var hcs = self.hover_connections;
 			var conns = self.player.core.active_graph.connections;
 			
-			var iterate_conns = function(hcs, uid)
+			function iterate_conns(hcs, uid)
 			{
-				for(var i = 0, len = conns.length; i < len; i++)
+				conns.forEach(function(c)
 				{
-					var c = conns[i];
-				
 					if(c.src_node.uid == uid || c.dst_node.uid == uid)
 					{
 						c.ui.deleting = true;
 						hcs.push(c);
 					}
-				}
+				});
 			};
 			
 			self.hover_nodes.push(self.hover_node);
@@ -461,18 +475,16 @@ function Application() {
 			{
 				var nodes = self.selection_nodes;
 				
-				for(var n = 0, len2 = nodes.length; n < len2; n++)
+				nodes.forEach(function(node)
 				{
-					var node = nodes[n];
-
 					if(node === self.hover_node)
-						continue;
+						return;
 
 					node.ui.header_row[0].className += ' pl_delete';
 					self.hover_nodes.push(node);
 					
 					iterate_conns(hcs, node.uid);
-				}
+				});
 			}
 
 			iterate_conns(hcs, self.hover_node.uid);
@@ -922,8 +934,16 @@ function Application() {
 			else if(e.pageY > y2)
 				cp.scrollTop(self.scrollOffset[1] + 20);
 
+			if (!self.dst_slot && self.edit_conn.dst_slot)
+			{
+				self.player.core.active_graph.destroy_connection(self.edit_conn);
+				self.edit_conn.dst_slot = self.edit_conn.dst_node = self.edit_conn.dst_slot_div = null;
+			}
+
 			self.mouseEventPosToCanvasCoord(e, self.edit_conn.ui.dst_pos);
 			self.updateCanvas(true);
+
+			return;
 		}
 		else if(!self.selection_start)
 		{
@@ -1377,8 +1397,6 @@ function Application() {
 			else*/
 			if(e.keyCode === 88) // CTRL+x
 				self.onCut(e);
-			else if(e.keyCode === 86) // CTRL+v
-				self.onPaste(e);
 		}
 	};
 
@@ -1696,7 +1714,7 @@ function Application() {
 	{
 		e.preventDefault();
 		self.clipboard = e.clipboardData.getData('text/plain');
-		self.onPaste();
+		self.onPaste(e);
 	});
 	
 	window.addEventListener('copy', function(e)
