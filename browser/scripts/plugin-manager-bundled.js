@@ -1,4 +1,4 @@
-function PluginManager(a, b, c, cb)
+function PluginManager(a, b, c, d, cb)
 {
 	this.keybyid = E2.plugins;
 	setTimeout(cb, 0);

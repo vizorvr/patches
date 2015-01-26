@@ -129,8 +129,7 @@ function Core(vr_devices, app) {
 		E2.app ? E2.app.onPluginRegistered : null,
 		E2.app ? E2.app.onPluginInstantiated : null,
 		function() {
-			console.log('loaded')
-			if (E2.app)
+			if (E2.app.onPluginsLoaded)
 				E2.app.onPluginsLoaded();
 
 			self.onPluginsLoaded();
