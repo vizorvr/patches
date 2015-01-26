@@ -19,6 +19,7 @@ paths =
 			'./browser/scripts/renderer.js',
 			'./browser/scripts/plugin-manager-bundled.js',
 			'./browser/scripts/plugin-group.js',
+			'./browser/scripts/preset-manager.js',
 			'./browser/scripts/connection.js',
 			'./browser/scripts/graph.js',
 			'./browser/scripts/node.js',
