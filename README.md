@@ -1,9 +1,9 @@
-Engi
+Vizor Create
 ====
 
-Engi is a HTML5/WebGL-compliant [dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming) editor.
+Vizor Create is a HTML5/WebGL-compliant [dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming) editor.
 
-Try a live demo at [engijs.org](http://engijs.org).
+Try a live demo at [create.vizor.io](http://create.vizor.io).
 
 # Introduction
 
@@ -18,14 +18,13 @@ named proxy nodes. Logic in nested graphs can be either rendered directly or opt
 can subsequently be used as a normal texture. Loops are modeled as nested graphs that are evaluated once
 per loop iteration.
 
-Engi currently has approximately 210 plugins that provide functionality including but not limited to
+Vizor Create currently has approximately 260 plugins that provide functionality including but not limited to
 the following:
 
 Ways to obtain or create data:
 
 * Cameras: Perspective, orthographic and screen space. Obtain aspect radio and viewport size.
-* Crypto: Check the current balances of a named CounterWallet.
-* Input: Keyboard, mouse position, button state and scroll wheel.
+* Input: Gamepad, VR headset, keyboard, mouse position, button state and scroll wheel.
 * Loading assets: HTML5 audio, images, JSON, 3d scenes and HTML5 video. Select files directly from UI or provide URLs to load as strings from the graph.
 * Matrices: Translation, rotation, scale and planar projection.
 * Meshes: Cube, grid, null (transform visualization), plane, quad, sphere and user defined (Blender exporter is included).
@@ -36,6 +35,7 @@ Ways to obtain or create data:
 * Text rendering.
 * Time: Absolute, frame delta.
 * Typed array generation.
+* Crypto: Check the current balances of a named CounterWallet.
 * Virtual Reality: Camera / MHD / Sensor info. Sensor velocity / acceleration. Full Oculus Rift support.
 * Various plugins to provide UI for direct manipulation or input of values: Knobs, sliders, input
   fields for labels and constant values, toggle and action buttons, color pickers, text editors,
@@ -86,27 +86,26 @@ Ways to structure logic or store state:
 * Create named in- and output proxies in a graph to have them automatically reflected as a slot on the parent node of the graph the proxy is in.
 * Create named registers to store values of any supported data type between graph updates as state storage or feedback loops.
 
-Created sequences can be im- and exported as human (or machine) readable JSON files, which can be
-embedded into any context the user may desire with the included stand-alone player or simulated in a bare core
+Created sequences can be im- and exported as JSON files, which can be embedded into any context the user may desire with the included stand-alone player or simulated in a bare core
 instance, which permits sequences to be leveraged in other javascript projects as a domain specific visual
 scripting language by providing the embedded graph with appropriate values from its host, updating the graph
 and acting on the emitted output values. Created sequences can be automatically exported to an
 optimized file set, ready to deploy to any webserver.
 
-# Running Engi
+# Running Vizor Create locally
 
-Install [Node.js](http://nodejs.org/), then the required npm packages:
+Install and run MongoDB and Node.js, then the required npm packages:
 
 	$ npm install
 
 Run the server:
 
-	$ npm start [/optional/path/to/existing/project]
+	$ npm start
 
-Open Engi in the browser:
+Open VC in the browser:
 
 	http://localhost:8000/
 
-If you have access to an Oculus Rift DK1 or 2 and want to play with the VR features, you currently
+If you have access to an Oculus Rift DK1 or DK2 and want to play with the VR features, you currently
 need one of Toji's special Chromium builds. You can find them here: http://blog.tojicode.com/2014/07/bringing-vr-to-chrome.html
 
