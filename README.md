@@ -1,9 +1,11 @@
-Vizor Create
+# Vizor Create
 ====
 
-Vizor Create is a HTML5/WebGL-compliant [dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming) editor.
+Vizor Create is a visual programming tool for WebGL, WebVR and other HTML5 APIs. 
 
-Try a live demo at [create.vizor.io](http://create.vizor.io).
+**Use Vizor Create online at [create.vizor.io](http://create.vizor.io)!**
+
+Be sure to read the [Help documentation](http://create.vizor.io/help/introduction.html), the [Plugin API docs](http://create.vizor.io/help/plugin_api.html) (subject to change).
 
 # Introduction
 
@@ -35,6 +37,7 @@ Ways to obtain or create data:
 * Text rendering.
 * Time: Absolute, frame delta.
 * Typed array generation.
+* Web Sockets.
 * Crypto: Check the current balances of a named CounterWallet.
 * Virtual Reality: Camera / MHD / Sensor info. Sensor velocity / acceleration. Full Oculus Rift support.
 * Various plugins to provide UI for direct manipulation or input of values: Knobs, sliders, input
@@ -92,20 +95,41 @@ scripting language by providing the embedded graph with appropriate values from 
 and acting on the emitted output values. Created sequences can be automatically exported to an
 optimized file set, ready to deploy to any webserver.
 
+Currently using Web Sockets or OSC requires running Vizor Create locally.
+
 # Running Vizor Create locally
 
-Install and run MongoDB and Node.js, then the required npm packages:
+### Installing
 
-	$ npm install
+Install and run [MongoDB](http://mongodb.org) and [Node.js](http://node.js.org), then install the required npm packages:
 
-Run the server:
+```
+    $ npm install
+    $ npm install -g gulp mocha
+```
 
-	$ npm start
+### Building
 
-Open VC in the browser:
+To build the LESS, plugins, etc [continuously]:
 
-	http://localhost:8000/
+```
+    $ gulp [watch]
+```
+
+Running the tests: ```$ npm test```
+
+### To run Vizor Create,
+
+1. Make sure MongoDB is running.
+2. Run the server: ``` $ npm start```
+3. Open in the browser: [http://localhost:8000/edit](http://localhost:8000/edit)
 
 If you have access to an Oculus Rift DK1 or DK2 and want to play with the VR features, you currently
 need one of Toji's special Chromium builds. You can find them here: http://blog.tojicode.com/2014/07/bringing-vr-to-chrome.html
+
+# Contributing
+
+We welcome your contributions! Please create a fork to work in and submit a pull request.
+
+We're starting work to migrate the codebase to a more modern code style. New work should be done in JavaScript ES5 using AirBnb code style (except tabs instead of spaces).
 
