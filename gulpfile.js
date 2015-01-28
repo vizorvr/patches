@@ -84,7 +84,7 @@ gulp.task('less', ['clean:less'], function()
 
 gulp.task('watch', ['default'], function() {
 	gulp.watch('less/**/*', ['less']);
-	gulp.watch(paths.js.site, ['scripts']);
+	gulp.watch(paths.js.player, ['js:player']);
 });
 
 gulp.task('default', ['less', 'js']);

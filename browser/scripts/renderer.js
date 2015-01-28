@@ -250,9 +250,9 @@ function Renderer(vr_devices, canvas_id, core)
 	this.default_tex = new Texture(this);
 	this.default_tex.load('/images/no_texture.png', core);
 
-	document.addEventListener('fullscreenchange', this.on_fullscreen_change(this));
-	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change(this));
-	document.addEventListener('mozfullscreenchange', this.on_fullscreen_change(this));
+	document.addEventListener('fullscreenchange', this.on_fullscreen_change.bind(this));
+	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change.bind(this));
+	document.addEventListener('mozfullscreenchange', this.on_fullscreen_change.bind(this));
 	
 	// Constants, to cut down on wasted objects in slot definitions.
 	this.camera_screenspace = new Camera(this.context);
@@ -418,27 +418,63 @@ Renderer.prototype.remove_fs_listener = function(delegate)
 		this.fs_listeners.splice(idx, 1);
 };
 
-Renderer.prototype.on_fullscreen_change = function(self) { return function()
+Renderer.prototype.onResize = function()
 {
 	var c = E2.dom.webgl_canvas;
-	
-	if(self.fullscreen && !document.fullscreenElement && !document.webkitFullScreenElement && !document.mozFullscreenElement)
+
+	if (this.fullscreen)
 	{
-		c.attr('class', 'webgl-canvas-normal');
-		c.attr('width', '' + self.org_width + 'px');
-		c.attr('height', '' + self.org_height + 'px');
-		self.update_viewport();
-		self.fullscreen = false;
+		var width = window.innerWidth;
+		var height = window.innerHeight;
+
+console.log('fullscreen', width, height, $('body').outerWidth(true), $('body').outerHeight(true))
+
+		c[0].width = width;
+		c[0].height = height;
+
+		E2.dom.webgl_canvas.css('width', width);
+		E2.dom.webgl_canvas.css('height', height);
+
+		E2.app.player.core.renderer.update_viewport();
+
 	}
 	else
 	{
-		self.fullscreen = true;
-		document.fullscreenElement = document.webkitFullScreenElement = document.mozFullscreenElement = null;
+		c.attr('class', 'webgl-canvas-normal');
+		c.css('width', this.org_width + 'px');
+		c.css('height',this.org_height + 'px');
+		c[0].width = this.org_width;
+		c[0].height = this.org_height;
 	}
-	
-	for(var i = 0; i < self.fs_listeners.length; i++)
-		self.fs_listeners[i](self.fullscreen);
-}};
+
+	this.update_viewport();
+
+}
+
+Renderer.prototype.on_fullscreen_change = function()
+{
+	var c = E2.dom.webgl_canvas;
+
+	console.log('on_fullscreen_change', !this.fullscreen)
+
+	if (!this.fullscreen)
+	{
+		this.fullscreen = true;
+	}
+	else 
+	{
+		c.removeClass('webgl-canvas-fs');
+		c.addClass('webgl-canvas-normal');
+		c.css('width', this.org_width + 'px');
+		c.css('height',this.org_height + 'px');
+		c[0].width = this.org_width;
+		c[0].height = this.org_height;
+		this.fullscreen = false;
+	}
+
+	for(var i = 0; i < this.fs_listeners.length; i++)
+		this.fs_listeners[i](this.fullscreen);
+};
 
 Renderer.prototype.set_fullscreen = function(state)
 {
@@ -477,6 +513,13 @@ Renderer.prototype.set_fullscreen = function(state)
 		
 			c.removeClass('webgl-canvas-normal');
 			c.addClass('webgl-canvas-fs');
+
+			console.log('going fullscreen')
+
+			$(window).one('resize', function() {
+				setTimeout(that.onResize.bind(that), 200);
+				setTimeout(that.onResize.bind(that), 500);
+			});
 		}
 	}
 	else

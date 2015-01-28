@@ -1357,17 +1357,13 @@ function Application() {
 	
 	this.onWindowResize = function()
 	{
+		if (E2.app.player.core.renderer.fullscreen)
+			return;
+
 		var glc = E2.dom.webgl_canvas[0];
 		var canvases = $('#canvases');
 		var width = canvases.outerWidth(true);
 		var height = canvases.outerHeight(true);
-
-		if (!window.screenTop && !window.screenY)
-		{
-			// fullscreen
-			width = $('body').outerWidth(true);
-			height = $('body').outerHeight(true);
-		}
 
 		if (glc.width !== width || glc.height !== height)
 		{
@@ -1799,7 +1795,7 @@ function Application() {
 		// Instead, we set up a timer that gets superceeded for each (spurious)
 		// resize event within a 100 ms window.
 		clearTimeout(self.resize_timer);
-		self.resize_timer = setTimeout(self.onWindowResize, 100);
+		self.resize_timer = setTimeout(self.onWindowResize, 200);
 	}}(this));
 
 	var add_button_events = function(btn)
