@@ -427,8 +427,6 @@ Renderer.prototype.onResize = function()
 		var width = window.innerWidth;
 		var height = window.innerHeight;
 
-console.log('fullscreen', width, height, $('body').outerWidth(true), $('body').outerHeight(true))
-
 		c[0].width = width;
 		c[0].height = height;
 
@@ -436,7 +434,6 @@ console.log('fullscreen', width, height, $('body').outerWidth(true), $('body').o
 		E2.dom.webgl_canvas.css('height', height);
 
 		E2.app.player.core.renderer.update_viewport();
-
 	}
 	else
 	{
@@ -454,8 +451,6 @@ console.log('fullscreen', width, height, $('body').outerWidth(true), $('body').o
 Renderer.prototype.on_fullscreen_change = function()
 {
 	var c = E2.dom.webgl_canvas;
-
-	console.log('on_fullscreen_change', !this.fullscreen)
 
 	if (!this.fullscreen)
 	{
@@ -513,8 +508,6 @@ Renderer.prototype.set_fullscreen = function(state)
 		
 			c.removeClass('webgl-canvas-normal');
 			c.addClass('webgl-canvas-fs');
-
-			console.log('going fullscreen')
 
 			$(window).one('resize', function() {
 				setTimeout(that.onResize.bind(that), 200);
