@@ -196,6 +196,8 @@ Extensions.prototype.set_anisotropy = function(level)
 
 function Renderer(vr_devices, canvas_id, core)
 {
+	var that = this;
+
 	this.vr_hmd = vr_devices[0];
 	this.vr_sensor = vr_devices[1];
 	this.canvas_id = canvas_id;
@@ -206,6 +208,7 @@ function Renderer(vr_devices, canvas_id, core)
 	this.def_specular = vec4.createFrom(1, 1, 1, 1);
 	this.up_vec = vec3.createFrom(0, 0, 1);
 	this.fs_listeners = [];
+	this._listeners = {};
 	
 	this.org_width = this.canvas.width();
 	this.org_height = this.canvas.height();
@@ -250,6 +253,12 @@ function Renderer(vr_devices, canvas_id, core)
 	this.default_tex = new Texture(this);
 	this.default_tex.load('/images/no_texture.png', core);
 
+	var resizeTimer;
+	$(window).on('resize', function() {
+		clearTimeout(resizeTimer);
+		resizeTimer = setTimeout(that.onResize.bind(that), 200);
+	});
+
 	document.addEventListener('fullscreenchange', this.on_fullscreen_change.bind(this));
 	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change.bind(this));
 	document.addEventListener('mozfullscreenchange', this.on_fullscreen_change.bind(this));
@@ -266,6 +275,35 @@ function Renderer(vr_devices, canvas_id, core)
 	
 	mat4.identity(this.matrix_identity);
 }
+
+Renderer.prototype.on = function(kind, cb)
+{
+	if (!cb)
+		return;
+
+	if (!this._listeners[kind])
+		this._listeners[kind] = [];
+
+	this._listeners[kind].push(cb);
+	console.log('on', kind, this._listeners)
+}
+
+Renderer.prototype.off = function(kind, cb)
+{
+	this._listeners[kind] = this._listeners.filter(function(c) {
+		return c !== cb;
+	});
+}
+
+Renderer.prototype.emit = function(kind)
+{
+	if (!this._listeners[kind])
+		return;
+
+	this._listeners[kind].forEach(function(cb) {
+		cb();
+	});
+};
 
 Renderer.blend_mode = 
 {
@@ -437,15 +475,20 @@ Renderer.prototype.onResize = function()
 	}
 	else
 	{
-		c.attr('class', 'webgl-canvas-normal');
-		c.css('width', this.org_width + 'px');
-		c.css('height',this.org_height + 'px');
-		c[0].width = this.org_width;
-		c[0].height = this.org_height;
+		// the editor does its own resizing if available
+		if (typeof(E2.app.onWindowResize) !== 'function')
+		{
+			c.attr('class', 'webgl-canvas-normal');
+			c.css('width', this.org_width + 'px');
+			c.css('height',this.org_height + 'px');
+			c[0].width = this.org_width;
+			c[0].height = this.org_height;
+		}
 	}
 
 	this.update_viewport();
 
+	this.emit('resize');
 }
 
 Renderer.prototype.on_fullscreen_change = function()
@@ -467,8 +510,9 @@ Renderer.prototype.on_fullscreen_change = function()
 		this.fullscreen = false;
 	}
 
-	for(var i = 0; i < this.fs_listeners.length; i++)
-		this.fs_listeners[i](this.fullscreen);
+	this.fs_listeners.forEach(function(cb) {
+		cb(this.fullscreen);
+	});
 };
 
 Renderer.prototype.set_fullscreen = function(state)
@@ -508,11 +552,6 @@ Renderer.prototype.set_fullscreen = function(state)
 		
 			c.removeClass('webgl-canvas-normal');
 			c.addClass('webgl-canvas-fs');
-
-			$(window).one('resize', function() {
-				setTimeout(that.onResize.bind(that), 200);
-				setTimeout(that.onResize.bind(that), 500);
-			});
 		}
 	}
 	else

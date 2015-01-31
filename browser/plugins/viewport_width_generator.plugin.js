@@ -4,13 +4,15 @@ E2.p = E2.plugins["viewport_width_generator"] = function(core, node)
 	
 	this.input_slots = [];
 	
-	this.output_slots = [ { name: 'width', dt: core.datatypes.FLOAT, desc: 'The current renderer viewport width.' } ];
+	this.output_slots = [
+		{ name: 'width', dt: core.datatypes.FLOAT, desc: 'The current renderer viewport width.' }
+	];
 	
 	this.core = core;
 	this.canvas = core.renderer.canvas[0];
-	this.delegate = this.on_fs_change.bind(this);
+	this.delegate = this._onResize.bind(this);
 	
-	core.renderer.add_fs_listener(this.delegate);
+	this.core.renderer.on('resize', this.delegate);
 };
 
 E2.p.prototype.reset = function()
@@ -19,7 +21,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.destroy = function(slot)
 {
-	this.core.renderer.remove_fs_listener(this.delegate);
+	this.core.renderer.off('resize', this.delegate);
 };
 
 E2.p.prototype.update_output = function(slot)
@@ -27,7 +29,7 @@ E2.p.prototype.update_output = function(slot)
 	return this.canvas.width;
 };
 
-E2.p.prototype.on_fs_change = function(fullscreen)
+E2.p.prototype._onResize = function()
 {
 	this.updated = true;
 };
