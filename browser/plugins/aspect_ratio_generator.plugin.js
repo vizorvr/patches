@@ -6,16 +6,28 @@ E2.p = E2.plugins["aspect_ratio_generator"] = function(core, node)
 	
 	this.output_slots = [ { name: 'aspect', dt: core.datatypes.FLOAT, desc: 'The current renderer aspect ratio.' } ];
 	
+	this.core = core;
 	this.canvas = core.renderer.canvas[0];
+	this.delegate = this._onResize.bind(this);
+	
+	this.core.renderer.on('resize', this.delegate);
 };
 
 E2.p.prototype.reset = function()
 {
 };
 
+E2.p.prototype.destroy = function(slot)
+{
+	this.core.renderer.off('resize', this.delegate);
+};
+
 E2.p.prototype.update_output = function(slot)
 {
-	var c = this.canvas;
+	return this.canvas.width / this.canvas.height;
+};
 
-	return c.width / c.height;
+E2.p.prototype._onResize = function()
+{
+	this.updated = true;
 };

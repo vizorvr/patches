@@ -285,7 +285,6 @@ Renderer.prototype.on = function(kind, cb)
 		this._listeners[kind] = [];
 
 	this._listeners[kind].push(cb);
-	console.log('on', kind, this._listeners)
 }
 
 Renderer.prototype.off = function(kind, cb)
@@ -503,10 +502,6 @@ Renderer.prototype.on_fullscreen_change = function()
 	{
 		c.removeClass('webgl-canvas-fs');
 		c.addClass('webgl-canvas-normal');
-		c.css('width', this.org_width + 'px');
-		c.css('height',this.org_height + 'px');
-		c[0].width = this.org_width;
-		c[0].height = this.org_height;
 		this.fullscreen = false;
 	}
 
