@@ -12,6 +12,7 @@ paths =
 	less: './less/build.less',
 	js:
 	{
+		plugins: './browser/plugins/*.plugin.js',
 		player:
 		[
 			'./browser/vendor/gl-matrix.js',
@@ -84,6 +85,7 @@ gulp.task('less', ['clean:less'], function()
 
 gulp.task('watch', ['default'], function() {
 	gulp.watch('less/**/*', ['less']);
+	gulp.watch(paths.js.plugins, ['js:plugins']);
 	gulp.watch(paths.js.player, ['js:player']);
 });
 
