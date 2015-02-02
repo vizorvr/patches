@@ -469,20 +469,6 @@ Renderer.prototype.onResize = function()
 
 		E2.dom.webgl_canvas.css('width', width);
 		E2.dom.webgl_canvas.css('height', height);
-
-		E2.app.player.core.renderer.update_viewport();
-	}
-	else
-	{
-		// the editor does its own resizing if available
-		if (typeof(E2.app.onWindowResize) !== 'function')
-		{
-			c.attr('class', 'webgl-canvas-normal');
-			c.css('width', this.org_width + 'px');
-			c.css('height',this.org_height + 'px');
-			c[0].width = this.org_width;
-			c[0].height = this.org_height;
-		}
 	}
 
 	this.update_viewport();
@@ -497,12 +483,18 @@ Renderer.prototype.on_fullscreen_change = function()
 	if (!this.fullscreen)
 	{
 		this.fullscreen = true;
+		c.removeClass('webgl-canvas-normal');
+		c.addClass('webgl-canvas-fs');
 	}
 	else 
 	{
+		this.fullscreen = false;
 		c.removeClass('webgl-canvas-fs');
 		c.addClass('webgl-canvas-normal');
-		this.fullscreen = false;
+		c.css('width', this.org_width + 'px');
+		c.css('height',this.org_height + 'px');
+		c[0].width = this.org_width;
+		c[0].height = this.org_height;
 	}
 
 	this.fs_listeners.forEach(function(cb) {
