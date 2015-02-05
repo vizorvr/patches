@@ -17,6 +17,9 @@ E2.p = E2.plugins["perspective_camera"] = function(core, node)
 	this.gl = core.renderer.context;
 	this.canvas = core.renderer.canvas[0];
 	this.up = [0.0, 0.0, 1.0];
+
+	this.delegate = this._onResize.bind(this);
+	core.renderer.on('resize', this.delegate);
 };
 
 E2.p.prototype.update_input = function(slot, data)
@@ -36,7 +39,7 @@ E2.p.prototype.update_input = function(slot, data)
 E2.p.prototype.update_state = function()
 {
 	var c = this.canvas;
-	
+
 	mat4.perspective(this.fov, c.width / c.height, this.near, this.far, this.camera.projection);
 	mat4.lookAt(this.position, this.target, this.up, this.camera.view);
 };
@@ -57,4 +60,9 @@ E2.p.prototype.state_changed = function(ui)
 		this.position = [0.0, 0.0, -2.0];
 		this.target = [0.0, 0.0, 0.0];
 	}
+};
+
+E2.p.prototype._onResize = function()
+{
+	this.updated = true;
 };
