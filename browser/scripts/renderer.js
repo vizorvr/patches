@@ -1075,7 +1075,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 	gl.bound_mesh = this;
 };
 
-function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custom, ps_custom)
+function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custom, ps_custom, vcb, pcb)
 {
 	var gl = E2.app.player.core.renderer.context;
 	var streams = [];
@@ -1364,8 +1364,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		shader.vs_c_src = vs_c_src.join('\n');
 		shader.ps_c_src = ps_c_src.join('\n');
 		
-		var vs = new Shader(gl, gl.VERTEX_SHADER, shader.vs_src);
-		var ps = new Shader(gl, gl.FRAGMENT_SHADER, shader.ps_src);
+		var vs = new Shader(gl, gl.VERTEX_SHADER, shader.vs_src, vcb);
+		var ps = new Shader(gl, gl.FRAGMENT_SHADER, shader.ps_src, pcb);
 		var compiled = vs.compiled && ps.compiled;
 
 		var resolve_attr = function(id)
@@ -1600,46 +1600,61 @@ ShaderCache.prototype.clear = function()
 	this.shaders = {};
 };
 
-function Shader(gl, type, src)
-{
-	this.shader = gl.createShader(type);
-	this.compiled = false;
-	this.linked = false;
+function Shader(gl, type, src, cb) {
+	this.shader = gl.createShader(type)
+	this.compiled = false
+	this.linked = false
 	this.compile_info = ''
 	this.link_info = ''
-	
-	try
-	{
-		gl.shaderSource(this.shader, src);
+	cb = cb || function(){}
+
+	var numBoilerpLines = 14
+
+	try {
+		gl.shaderSource(this.shader, src)
+	} catch(e) {
+		msg('ERROR: Shader source invalid: ' + e)
+		return cb({
+			row: 1,
+			text: 'Shader source invalid: '+e
+		})
 	}
-	catch(e)
-	{
-		msg('ERROR: Shader source invalid: ' + e);
-		return;
+
+	gl.compileShader(this.shader)
+	var compileStatus = gl.getShaderParameter(this.shader, gl.COMPILE_STATUS)
+
+	if (!compileStatus) {
+		var info = gl.getShaderInfoLog(this.shader)
+		var info_lines = info.split('\n')
+		var src_lines = src.split('\n')
+		
+		this.compile_info = info
+		msg('ERROR: Shader compilation failed:\n')
+		
+		var errors = []
+
+		info_lines.forEach(function(line_str) {
+			if (!line_str)
+				return;
+
+			var split = line_str.split(/ERROR\: \d+\:(\d+): (.*)/)
+
+			var err = {
+				row: parseInt(split[1], 10) - numBoilerpLines,
+				text: line_str,
+				type: 'error'
+			}
+
+			msg(err.row + '\n\t>>> ' + src_lines[err.row])
+			errors.push(err)
+		})
+
+		cb(errors)
+	} else {
+		this.compiled = true
+		cb()
 	}
-	
-	gl.compileShader(this.shader);
-	
-	if(!gl.getShaderParameter(this.shader, gl.COMPILE_STATUS))
-	{
-		var info = gl.getShaderInfoLog(this.shader);
-		var info_lines = info.split('\n');
-		var src_lines = src.split('\n');
-		
-		this.compile_info = info;
-		msg('ERROR: Shader compilation failed:\n');	
-		
-		for(var l = 0, len = info_lines.length; l != len; l++)
-		{
-			var line_str = info_lines[l];
-			var tokens = line_str.split(':');
-			
-			msg(line_str + '\n\t>>> ' + src_lines[parseInt(tokens[2])-1]);
-		}
-		
-	}
-	else
-		this.compiled = true;
+
 }
 
 function ShaderProgram(gl, program)

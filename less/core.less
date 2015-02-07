@@ -58,7 +58,7 @@ table
 }
 
 .info-pane {
-	height: 28px;
+	margin-right: 20px;
 	margin-left: 5px;
 	margin-top: 5px;
 }
@@ -79,8 +79,6 @@ table
 }
 
 #user-pulldown li a {
-	min-height: 28px;
-	max-height: 28px;
 	padding-top: 2px;
 	padding-bottom: 0px;
 	padding-left: 5px;
@@ -334,20 +332,6 @@ table
 	position: absolute;
 }
 
-#left-nav-collapse-btn
-{
-	display: block;
-	float: left;
-	margin-top: -4px;
-	padding: .2em .25em .15em;
-}
-
-#left-nav
-{
-	min-width: 250px !important;
-	max-width: 250px !important;
-}
-
 .nav li a {
 	padding-left: 5px;
 	padding-right: 5px;
@@ -360,12 +344,7 @@ table
 	margin-top: 3px;
 	margin-bottom: 3px;
 	font-weight: normal;
-	font-size: 12px;
-}
-
-.btn {
-	background-image: none;
-	text-shadow: none;
+	font-size: 13px;
 }
 
 .form-control {
@@ -382,3 +361,41 @@ table
 	margin-top: 8px;
 }
 
+.left-cell {
+	flex: 0 0 @left-cell-width;
+	width: @left-cell-width;
+	min-width: @left-cell-width;
+	max-width: @left-cell-width;
+}
+
+#mid-pane
+{
+	flex: 0 0 @mid-cell-width;
+	width: @mid-cell-width;
+	min-width: @mid-cell-width;
+	max-width: @mid-cell-width;
+}
+
+.pane-hidden
+{
+	display: none;
+	visibility: hidden;
+	flex: 0 0 0 !important;
+	width: 0 !important;
+	min-width: 0 !important;
+	max-width: 0 !important;
+}
+
+.resize-handle {
+	background-color: #444;
+	width: 5px;
+}
+
+.mid-pane-handle {
+	background-color: @gray;
+}
+
+.resize-handle:hover {
+	cursor: pointer;
+	background-color: @gray-light;
+}

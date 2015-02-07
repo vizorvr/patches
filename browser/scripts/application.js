@@ -2,7 +2,7 @@ function Application() {
 	var self = this;
 	var canvas_parent = $("#canvas_parent");
 	var canvas = $("#canvas");
-		
+
 	this.state = {
 		STOPPED: 0,
 		PLAYING: 1,
@@ -130,25 +130,9 @@ function Application() {
 			}
 		};
 		
-		if(id === 'graph')
-		{
-			var diag = make('div');
-			var inp = $('<input type="input" value="graph(' + self.player.core.active_graph.node_uid + ')" />'); 
-		
-			inp.css({
-				'width': '240px',
-				'border': '1px solid #999'
-			});
-		
-			diag.append(inp);
-		
-			self.player.core.create_dialog(diag, 'Name new graph.', 240, 170, function()
-			{
-				createPlugin(inp.val());
-			},
-			function()
-			{
-				inp.focus().select();
+		if (id === 'graph') {
+			bootbox.prompt('Name new graph.', function(name) {
+				createPlugin(name);
 			});
 		}
 		else if(id === 'loop')
@@ -711,43 +695,30 @@ function Application() {
 	
 	this.onNodeHeaderDblClicked = function(node) { return function(e)
 	{
-		var diag = make('div');
-		var inp = $('<input type="input" value="' + (node.title === null ? node.id : node.title) + '" />'); 
-	
-		inp.css({
-			'width': '240px',
-			'border': '1px solid #999'
-		});
-		
-		diag.append(inp);
-	
-		var done_func = function()
-		{
-			node.title = inp.val();
-		
-			if(node.ui !== null)
-			{
-				node.ui.dom.find('.t').text(node.title);
-				
-				if(node.update_connections())
-					E2.app.updateCanvas(true);
-			}
+		bootbox.prompt({
+			animate: false,
+			title: 'Rename node',
+			value: node.title, 
+			callback: function(name) {
+				node.title = name;
 			
-			if(node.plugin.e2_is_graph)
-				node.plugin.graph.tree_node.set_title(node.title);
-		
-			if(node.plugin.renamed)
-				node.plugin.renamed();
+				if(node.ui !== null) {
+					node.ui.dom.find('.t').text(node.title);
+					
+					if(node.update_connections())
+						E2.app.updateCanvas(true)
+				}
 				
-			node.parent_graph.emit_event({ type: 'node-renamed', node: node });
-		};
-		
-		self.player.core.create_dialog(diag, 'Rename node.', 240, 170, done_func,
-			function()
-			{
-				inp.focus().select();
-			});
-	}};
+				if(node.plugin.e2_is_graph)
+					node.plugin.graph.tree_node.set_title(node.title)
+			
+				if(node.plugin.renamed)
+					node.plugin.renamed()
+					
+				node.parent_graph.emit_event({ type: 'node-renamed', node: node });
+			}
+		})
+	}}
 	
 	this.isNodeInSelection = function(node)
 	{
@@ -1355,15 +1326,14 @@ function Application() {
 		self.updateCanvas(true);
 	};
 	
-	this.onWindowResize = function()
-	{
+	this.onWindowResize = function() {
 		if (E2.app.player.core.renderer.fullscreen)
 			return;
 
 		var glc = E2.dom.webgl_canvas[0];
 		var canvases = $('#canvases');
-		var width = canvases.outerWidth(true);
-		var height = canvases.outerHeight(true);
+		var width = canvases[0].clientWidth;
+		var height = canvases[0].clientHeight
 
 		if (glc.width !== width || glc.height !== height)
 		{
@@ -1392,6 +1362,8 @@ function Application() {
 		self.condensed_view = !self.condensed_view;
 
 		E2.dom.left_nav.toggle(!self.condensed_view);
+		E2.dom.mid_pane.toggle(!self.condensed_view);
+		$('.resize-handle').toggle(!self.condensed_view);
 		
 		if(self.condensed_view)
 			E2.dom.dbg.toggle(false);
@@ -1400,7 +1372,7 @@ function Application() {
 		
 		self.onWindowResize();
 	};
-	
+
 	this.onKeyDown = function(e)
 	{
 		function is_text_input_in_focus() {
@@ -1811,22 +1783,56 @@ function Application() {
 	add_button_events(E2.dom.save);
 	add_button_events(E2.dom.open);
 	
-	// Ask user for confirmation on page unload
-	/*$(window).bind('beforeunload', function()
-	{
-		return 'Oh... Please don\'t go.';
-	});*/
-
-	$('button#fullscreen').click(function()
-	{
+	$('button#fullscreen').click(function() {
 		self.player.core.renderer.set_fullscreen(true);
 	});
 	
-	$('button#help').click(function()
-	{
+	$('button#help').click(function() {
 		window.open('/help/introduction.html', 'Vizor Create Help');
 	});
-	
+
+	$('.resize-handle').on('mousedown', function(e) {
+		var $handle = $(e.target)
+		var $pane = $($handle.data('target'))
+		var ow = $pane.width()
+		var ox = e.pageX
+		var $doc = $(document)
+		var changed = false
+
+		e.preventDefault()
+
+		function mouseMoveHandler(e) {
+			changed = true
+			var nw = ow + (e.pageX - ox)
+			e.preventDefault()
+			$pane.css('flex', '0 0 '+nw+'px')
+			$pane.css('width', nw+'px')
+			$pane.css('max-width', nw+'px')
+			E2.app.onWindowResize()
+		}
+
+		$doc.on('mousemove', mouseMoveHandler)
+		$doc.one('mouseup', function(e) {
+			if (!changed) {
+				$pane.toggleClass('pane-hidden')
+				E2.app.onWindowResize()
+			}
+			e.preventDefault()
+			$doc.off('mousemove', mouseMoveHandler)
+		})
+	})
+
+	self.midPane = new E2.MidPane();
+
 	this.onHideTooltip();
 }
+
+
+
+
+
+$('.mid-pane').hide();
+setTimeout(function() {
+	$('.mid-pane').show();
+},500)
 

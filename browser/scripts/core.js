@@ -91,7 +91,7 @@ AssetTracker.prototype.signal_update = function()
 function Core(vr_devices, app) {
 	var self = this;
 	
-	this.datatypes = {
+	E2.dt = this.datatypes = {
 		FLOAT: { id: 0, name: 'Float' },
 		SHADER: { id: 1, name: 'Shader' },
 		TEXTURE: { id: 2, name: 'Texture' },
@@ -200,7 +200,11 @@ function Core(vr_devices, app) {
 	
 	this.create_dialog = function(diag, title, w, h, done_func, open_func)
 	{
-		var modal = $('.modal-template').clone();
+		var modal = bootbox.dialog({
+			title: title,
+			message: diag,
+			buttons: {'Ok': function(){}}
+		})
 
 		function close()
 		{
@@ -213,9 +217,6 @@ function Core(vr_devices, app) {
 			done_func();
 			modal.modal('hide');
 		}
-
-		$('.modal-title', modal).html(title);
-		$('.modal-body', modal).html(diag);
 
 		modal.on('show.bs.modal', function()
 		{
@@ -421,6 +422,7 @@ E2.InitialiseEngi = function(vr_devices)
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
 	E2.dom.left_nav = $('#left-nav');
+	E2.dom.mid_pane = $('#mid-pane');
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
 	E2.dom.play_i = $('i', E2.dom.play);

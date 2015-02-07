@@ -54,11 +54,11 @@ gulp.task('clean', ['clean:js']);
 
 gulp.task('js:plugins', ['clean:js:plugins'], function()
 {
-	gulp.src('browser/plugins/*.js')
+	gulp.src(paths.js.plugins)
 	.pipe(slash())
 	.pipe(uglify())
 	.pipe(concat('all.plugins.js'))
-	.pipe(gulp.dest('./browser/plugins/'))
+	.pipe(gulp.dest(path.join(__dirname, 'browser', 'plugins')))
 });
 
 gulp.task('js:player', ['clean:js:player'], function()
@@ -83,10 +83,14 @@ gulp.task('less', ['clean:less'], function()
     .pipe(gulp.dest(path.join(__dirname, 'browser', 'style')));
 });
 
-gulp.task('watch', ['default'], function() {
+gulp.task('watch', function() {
 	gulp.watch('less/**/*', ['less']);
 	gulp.watch(paths.js.plugins, ['js:plugins']);
 	gulp.watch(paths.js.player, ['js:player']);
+});
+
+gulp.task('watch:less', function() {
+	gulp.watch('less/**/*', ['less']);
 });
 
 gulp.task('default', ['less', 'js']);

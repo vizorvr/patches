@@ -50,6 +50,7 @@ body {
 	flex: 1 1 auto;
 	display: flex;
 	flex-direction: row;
+	clear: both;
 }
 
 .cell {
@@ -66,8 +67,9 @@ body {
 }
 
 .header {
-	min-height: 28px;
-	max-height: 28px;
+	min-height: @menu-bar-height;
+	height: @menu-bar-height;
+	max-height: @menu-bar-height;
 }
 
 #left-nav {
@@ -125,4 +127,28 @@ body {
 	margin: 0;
 }
 
+#mid-pane .tab-content,
+#mid-pane .tab-pane,
+#mid-pane .tab-body {
+	display: flex;
+	flex: 1 1 auto;
+}
 
+#mid-pane .tab-pane.active {
+	display: flex;
+	flex: 1 1 auto;
+}
+
+#mid-pane .tab-pane:not(.active) {
+	display: none;
+	visibility: hodd;
+}
+
+#mid-pane .tab-close-button {
+	cursor: pointer;
+	margin-top: 2px;
+}
+
+#mid-pane .tab-close-button:hover {
+	color: #ccc;
+}
