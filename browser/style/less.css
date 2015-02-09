@@ -6743,11 +6743,12 @@ table {
   text-shadow: none;
 }
 .form-control {
-  height: 28px;
   background-color: #333333;
   border-color: #333333;
+  border-radius: 0;
   color: #aaaaaa;
-  border-radius: 0px;
+  height: 28px;
+  padding: 0 8px;
 }
 #about {
   padding: 5px;
