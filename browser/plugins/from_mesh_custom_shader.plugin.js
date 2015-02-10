@@ -33,14 +33,14 @@ FromMeshCustomShader.prototype.create_ui = function() {
 	this._editors = {}
 
 	function removeSlot(slot) {
-		this.node.remove_slot(E2.slot_type.input, slot.id)
-		delete this.state.slot_ids[slot.name]
+		that.node.remove_slot(E2.slot_type.input, slot.id)
+		delete that.state.slot_ids[slot.name]
 	} 
 
 	function addSlot(name, dt) {
-		var slotId = this.node.add_slot(E2.slot_type.input, { name: name, dt: dt })
-		this.state.slot_ids[name] = { id: slotId, dt: dt, uniform: null }
-		this.slot_data[slotId] = this.core.get_default_value(E2.slot_type.input, dt)
+		var slotId = that.node.add_slot(E2.slot_type.input, { name: name, dt: dt })
+		that.state.slot_ids[name] = { id: slotId, dt: dt, uniform: null }
+		that.slot_data[slotId] = that.core.get_default_value(E2.slot_type.input, dt)
 	}
 
 	vertexButton.css('width', '55px')
