@@ -700,6 +700,9 @@ function Application() {
 			title: 'Rename node',
 			value: node.title, 
 			callback: function(name) {
+				if (!name)
+					return;
+
 				node.title = name;
 			
 				if(node.ui !== null) {

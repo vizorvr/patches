@@ -4,7 +4,8 @@ var TEXT_CONFIRM_REMOVE_INPUT = 'Really remove this input?'
 
 function addInputDialog(cb) {
 	return function() {
-		var t = $('<form action="#" class="addInputDialog"><label>Name<input type="text" class="name form-control"/></label>'+
+		var t = $('<form action="#" class="addInputDialog">'+
+			'<label>Name<input type="text" class="name form-control"/><span>(use as variable name in code)</span></label>'+
 			'<br/><label>Datatype<select class="dt form-control"/></label></form>')
 		
 		var $modal, $dtSelect
