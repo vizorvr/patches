@@ -1,12 +1,20 @@
 (function() {
 
+function openPane() {
+	var $pane = $('#mid-pane')
+	if ($pane.hasClass('pane-hidden')) {
+		$pane.removeClass('pane-hidden')
+		E2.app.onWindowResize()
+	}
+}
+
 function MidPane() {
 }
 
 MidPane.prototype.newTab = function newTab(name, closeCb) {
 	// @returns tab body after creating tab header and content divs
 	var $pane = $('#mid-pane')
-	$pane.removeClass('pane-hidden')
+	openPane()
 
 	var id = 'tab-'+Date.now()
 	var $li = $('<li>'+
@@ -42,9 +50,8 @@ MidPane.prototype.newTab = function newTab(name, closeCb) {
 
 	return {
 		show: function() {
-			$pane.removeClass('pane-hidden')
 			$li.find('a:first').click()
-			E2.app.onWindowResize()
+			openPane()
 		},
 		body: $tabBody
 	}
