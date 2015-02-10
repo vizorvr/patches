@@ -83,7 +83,7 @@ gulp.task('less', ['clean:less'], function()
     .pipe(gulp.dest(path.join(__dirname, 'browser', 'style')));
 });
 
-gulp.task('watch', function() {
+gulp.task('watch', ['default'], function() {
 	gulp.watch('less/**/*', ['less']);
 	gulp.watch(paths.js.plugins, ['js:plugins']);
 	gulp.watch(paths.js.player, ['js:player']);
