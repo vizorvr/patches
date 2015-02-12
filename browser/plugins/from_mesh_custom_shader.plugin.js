@@ -35,6 +35,7 @@ FromMeshCustomShader.prototype.create_ui = function() {
 	function removeSlot(slot) {
 		that.node.remove_slot(E2.slot_type.input, slot.id)
 		delete that.state.slot_ids[slot.name]
+		E2.app.updateCanvas()
 	} 
 
 	function addSlot(name, dt) {
@@ -52,7 +53,8 @@ FromMeshCustomShader.prototype.create_ui = function() {
 			return
 		}
 
-		var title = that.node.parent_graph.getTitle() + '/' + which+' shader'
+		var id = ['', that.node.parent_graph.uid, that.node.uid].join('/')
+		var title = [which, 'shader', id].join(' ')
 
 		that._editors[which] = E2.ShaderEditor
 			.open(title, that.state[srcId], that.state.slot_ids)
