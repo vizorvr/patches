@@ -1525,20 +1525,19 @@ function Application() {
 		self.player.schedule_stop(self.changeControlState);
 	};
 
-	this.onOpenClicked = function()
-	{
+	this.onOpenClicked = function() {
 		FileSelectControl
-			.createGraphSelector(null, 'Open', function(path)
-			{
+			.createGraphSelector(null, 'Open', function(path) {
 				history.pushState({
 					graph: {
 						path: path
 					}
-				}, '', path + '/edit');
+				}, '', path + '/edit')
 
-				E2.app.loadGraph('/data/graph'+path+'.json');
-			});
-	};
+				E2.app.midPane.closeAll()
+				E2.app.loadGraph('/data/graph'+path+'.json')
+			})
+	}
 
 	this.loadGraph = function(graphPath)
 	{

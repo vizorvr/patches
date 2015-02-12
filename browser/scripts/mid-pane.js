@@ -1,20 +1,47 @@
 (function() {
 
-function openPane() {
-	var $pane = $('#mid-pane')
-	if ($pane.hasClass('pane-hidden')) {
-		$pane.removeClass('pane-hidden')
+function MidPane() {
+	this._tabs = []
+
+	this._$pane = $('#mid-pane')
+	this._$tabs = $('ul.nav-tabs', this._$pane)
+	this._$tabContent = $('.tab-content', this._$pane)
+}
+
+MidPane.prototype._tabClosed = function(tab) {
+	tab.onClose()
+
+	this._tabs = this._tabs.filter(function(t) {
+		return t.$li !== tab.$li
+	})
+
+	if (!this._tabs.length)
+		this.close()
+}
+
+MidPane.prototype.show = function() {
+	if (this._$pane.hasClass('pane-hidden')) {
+		this._$pane.removeClass('pane-hidden')
 		E2.app.onWindowResize()
 	}
 }
 
-function MidPane() {
+MidPane.prototype.closeAll = function() {
+	this._$tabs.empty()
+	this._$tabContent.empty()
+	this._tabs.forEach(this._tabClosed.bind(this))
 }
 
+MidPane.prototype.close = function() {
+	this._$pane.addClass('pane-hidden')
+	E2.app.onWindowResize()
+}
+
+// @returns tab body after creating tab header and content divs
 MidPane.prototype.newTab = function newTab(name, closeCb) {
-	// @returns tab body after creating tab header and content divs
-	var $pane = $('#mid-pane')
-	openPane()
+	var that = this
+
+	this.show()
 
 	var id = 'tab-'+Date.now()
 	var $li = $('<li>'+
@@ -23,35 +50,40 @@ MidPane.prototype.newTab = function newTab(name, closeCb) {
 		'</a></li>');
 
 	function updateActive() {
-		$('li', $pane).removeClass('active')
-		$('li:last', $pane).addClass('active')
-		$('.tab-pane', $pane).removeClass('active')
-		$('.tab-pane:last', $pane).addClass('active')
+		$('li', that._$pane).removeClass('active')
+		$('li:last', that._$pane).addClass('active')
+		$('.tab-pane', that._$pane).removeClass('active')
+		$('.tab-pane:last', that._$pane).addClass('active')
 	}
 
-	$('ul.nav-tabs', $pane).append($li)
+	this._$tabs.append($li)
+	var tab = {
+		$li: $li,
+		onClose: closeCb
+	}
+	this._tabs.push(tab)
 
 	var $content = $('<div role="tabpanel" class="tab-pane" id="'+id+'">'+
 		'<div class="tab-body"></div>'+
 	'</div>');
 
-	$('.tab-content', $pane).append($content)
+	this._$tabContent.append($content)
 	var $tabBody = $('.tab-body', $content)
 
 	$li.find('.tab-close-button').click(function() {
 		$li.remove()
 		$tabBody.remove()
 		$content.remove()
-		closeCb()
 		updateActive()
+		that._tabClosed(tab)
 	})
 
 	updateActive()
 
 	return {
 		show: function() {
+			that.show()
 			$li.find('a:first').click()
-			openPane()
 		},
 		body: $tabBody
 	}
