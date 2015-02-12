@@ -64,9 +64,9 @@ InputEditor.prototype.render = function($el) {
 	function inputButton(inputName, glslType) {
 		var t = '<button title="Remove input" '+
 			'class="btn btn-xs btn-default input-remove-button input-button">'+
-			'<i class="fa fa-sm fa-close"></i><span>{{title}}</span></button>';
+			'<i class="fa fa-sm fa-close"></i><span>{{glslType}} {{title}}</span></button>';
 
-		return $(t.replace('{{title}}', inputName))
+		return $(t.replace('{{title}}', inputName).replace('{{glslType}}', glslType))
 			.click(function(e) {
 				if (window.confirm(TEXT_CONFIRM_REMOVE_INPUT)) {
 					$(e.target).closest('button').remove()
@@ -77,7 +77,7 @@ InputEditor.prototype.render = function($el) {
 
 	// add buttons for inputs
 	$inputs.prepend(_.map(this._inputs, function(i, key) {
-		return inputButton(key)
+		return inputButton(key, i.dt.name)
 	}))
 
 	// 'add input' dialog
@@ -169,6 +169,15 @@ ShaderEditor.prototype.render = function(title, $dest) {
 		that.emit('changed', that._ace.getValue())
 		that.build()
 	})
+	this._ace.commands.addCommand({
+		name:'build',
+		bindKey: {
+			win: 'Alt-enter',
+			mac: 'Alt-enter|Command-enter'
+		},
+		exec: function() {
+			that.build(true)
+	}})
 
 	this._inputEditor = new InputEditor(this._inputs)
 		.on('removed', function(inputName) {

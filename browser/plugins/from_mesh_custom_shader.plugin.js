@@ -25,9 +25,7 @@ var FromMeshCustomShader = E2.plugins["from_mesh_custom_shader"] = function(core
 }
 
 FromMeshCustomShader.prototype.destroy_ui = function() {
-	console.log('destroy_ui')
 	_.each(this._editors, function(ed) {
-		console.log('closing editor', ed)
 		ed.close()
 	})
 }
