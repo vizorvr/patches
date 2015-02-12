@@ -7,7 +7,7 @@ function NodeUI(parent_node, x, y) {
 	this.plugin_ui = null;
 	
 	var nid = 'n' + parent_node.uid, dom = this.dom = make('table');
-	
+
 	dom.addClass('plugin');
 	dom.addClass('graph-node');
 	dom.attr('id', nid);
@@ -19,7 +19,7 @@ function NodeUI(parent_node, x, y) {
 	var h_cell = make('td');
 	var icon = make('span');
 	var lbl = make('span');
-	
+
 	icon.addClass('plugin-icon');
 	icon.addClass('icon-' + parent_node.plugin.id);
 	icon.click(function(self) { return function()

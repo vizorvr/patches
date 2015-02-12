@@ -51,14 +51,16 @@ Node.prototype.create_ui = function()
 	this.ui = new NodeUI(this, this.x, this.y);
 };
 
-Node.prototype.destroy_ui = function()
-{
-	if(this.ui)
-	{
-		this.ui.dom.remove();
-		this.ui = null;
-	}
-};
+Node.prototype.destroy_ui = function() {
+	if (!this.ui)
+		return;
+
+	this.ui.dom.remove()
+	this.ui = null
+
+	if (this.plugin.destroy_ui)
+		this.plugin.destroy_ui()
+}
 
 Node.prototype.destroy = function()
 {

@@ -129,6 +129,7 @@ ShaderEditor.prototype.getAce = function() {
 
 ShaderEditor.prototype.close = function() {
 	this._ace.destroy()
+	this._$el.empty()
 	this.emit('closed')
 }
 
@@ -138,7 +139,7 @@ ShaderEditor.prototype.build = function(force) {
 }
 
 ShaderEditor.prototype.show = function() {
-	this.emit('show')
+	this.emit('shown')
 }
 
 ShaderEditor.prototype.render = function(title, $dest) {
@@ -206,7 +207,8 @@ ShaderEditor.open = function(name, src, inputs)
 	editor = new ShaderEditor(window.Handlebars, src, inputs)
 		.render(name, tab.body)
 
-	editor.on('show', tab.show)
+	editor.on('shown', tab.show)
+	editor.on('closed', tab.close)
 
 	return editor
 };

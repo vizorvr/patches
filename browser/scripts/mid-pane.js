@@ -9,14 +9,14 @@ function MidPane() {
 }
 
 MidPane.prototype._tabClosed = function(tab) {
-	tab.onClose()
-
 	this._tabs = this._tabs.filter(function(t) {
 		return t.$li !== tab.$li
 	})
 
 	if (!this._tabs.length)
 		this.close()
+
+	tab.onClose()
 }
 
 MidPane.prototype.show = function() {
@@ -56,6 +56,17 @@ MidPane.prototype.newTab = function newTab(name, closeCb) {
 		$('.tab-pane:last', that._$pane).addClass('active')
 	}
 
+	function closeTab() {
+		if (!$li)
+			return
+		$li.remove()
+		$li = null
+		$tabBody.remove()
+		$content.remove()
+		updateActive()
+		that._tabClosed(tab)
+	}
+
 	this._$tabs.append($li)
 	var tab = {
 		$li: $li,
@@ -70,17 +81,12 @@ MidPane.prototype.newTab = function newTab(name, closeCb) {
 	this._$tabContent.append($content)
 	var $tabBody = $('.tab-body', $content)
 
-	$li.find('.tab-close-button').click(function() {
-		$li.remove()
-		$tabBody.remove()
-		$content.remove()
-		updateActive()
-		that._tabClosed(tab)
-	})
+	$li.find('.tab-close-button').click(closeTab)
 
 	updateActive()
 
 	return {
+		close: closeTab,
 		show: function() {
 			that.show()
 			$li.find('a:first').click()
