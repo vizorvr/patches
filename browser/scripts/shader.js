@@ -77,14 +77,15 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		vs_src.push('varying vec4 f_col;');
 		
 		if(uniforms_vs)
-			vs_src.push(uniforms_vs);
+			vs_src = vs_src.concat(uniforms_vs);
 	
 		ps_src.push('precision lowp float;');
 		ps_src.push('uniform vec4 a_col;');
 		ps_src.push('varying vec4 f_col;');
 		
-		if(uniforms_ps)
-			ps_src.push(uniforms_ps);
+
+		if (uniforms_ps)
+			ps_src = ps_src.concat(uniforms_ps);
 	
 		if(streams[v_types.NORMAL])
 		{
@@ -167,7 +168,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 			return c;
 		};
-		
+
 		if(!vs_custom)
 		{
 			vs_dp('void main(void) {');
@@ -288,8 +289,8 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		shader.vs_c_src = vs_c_src.join('\n');
 		shader.ps_c_src = ps_c_src.join('\n');
 		
-		var vs = new Shader(gl, gl.VERTEX_SHADER, shader.vs_src, vcb);
-		var ps = new Shader(gl, gl.FRAGMENT_SHADER, shader.ps_src, pcb);
+		var vs = new Shader(gl, gl.VERTEX_SHADER, shader.vs_src, vs_src.length, vcb);
+		var ps = new Shader(gl, gl.FRAGMENT_SHADER, shader.ps_src, ps_src.length, pcb);
 		var compiled = vs.compiled && ps.compiled;
 
 		var resolve_attr = function(id)
@@ -524,15 +525,13 @@ ShaderCache.prototype.clear = function()
 	this.shaders = {};
 };
 
-function Shader(gl, type, src, cb) {
+function Shader(gl, type, src, lineOffset, cb) {
 	this.shader = gl.createShader(type)
 	this.compiled = false
 	this.linked = false
 	this.compile_info = ''
 	this.link_info = ''
 	cb = cb || function(){}
-
-	var numBoilerpLines = 14
 
 	try {
 		gl.shaderSource(this.shader, src)
@@ -564,7 +563,7 @@ function Shader(gl, type, src, cb) {
 			var split = line_str.split(/ERROR\: \d+\:(\d+): (.*)/)
 
 			var err = {
-				row: parseInt(split[1], 10) - numBoilerpLines,
+				row: parseInt(split[1], 10) - lineOffset,
 				text: line_str,
 				type: 'error'
 			}

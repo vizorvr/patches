@@ -66,7 +66,6 @@ FromMeshCustomShader.prototype.create_ui = function() {
 				that.state.changed = true
 			})
 			.on('inputAdded', function(inputName, dt) {
-				console.log('inputAdded', inputName, dt)
 				addSlot(inputName, dt)
 				that.updated = that.dirty = true
 				that.node.queued_update = 1
@@ -108,8 +107,8 @@ FromMeshCustomShader.prototype.connection_changed = function(on, conn, slot) {
 }
 
 FromMeshCustomShader.prototype.rebuild_shader = function() {
-	var u_vs = '';
-	var u_ps = '';
+	var u_vs = [];
+	var u_ps = [];
 	var st = this.state;
 	var gl = this.gl;
 	var dts = this.core.datatypes;
@@ -131,8 +130,8 @@ FromMeshCustomShader.prototype.rebuild_shader = function() {
 		else if(dtid === dts.VECTOR.id)
 			dt = 'vec3';
 		
-		u_vs += 'uniform ' + dt + ' ' + ident + ';\n';
-		u_ps += 'uniform ' + dt + ' ' + ident + ';\n';
+		u_vs.push('uniform ' + dt + ' ' + ident + ';');
+		u_ps.push('uniform ' + dt + ' ' + ident + ';');
 	}
 
 	function onCompiled(which) {
