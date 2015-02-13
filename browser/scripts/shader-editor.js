@@ -3,6 +3,14 @@
 var TEXT_CONFIRM_REMOVE_INPUT = 'Really remove this input?'
 
 function addInputDialog(cb) {
+	var validDatatypes = {
+		FLOAT: E2.dt.FLOAT,
+		TEXTURE: E2.dt.TEXTURE,
+		COLOR: E2.dt.COLOR,
+		MATRIX: E2.dt.MATRIX,
+		VECTOR: E2.dt.VECTOR,
+	}
+
 	return function() {
 		var t = $('<form action="#" class="addInputDialog">'+
 			'<label>Name<input type="text" class="name form-control"/><span>(use as variable name in code)</span></label>'+
@@ -35,7 +43,7 @@ function addInputDialog(cb) {
 		})
 
 		$dtSelect = $modal.find('select.dt')
-		_.each(E2.dt, function(dt, key) {
+		_.each(validDatatypes, function(dt, key) {
 			$dtSelect.append('<option value="'+key+'">'+dt.name+'</option>')
 		})
 
