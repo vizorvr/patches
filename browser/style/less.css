@@ -7085,3 +7085,6 @@ body {
   display: flex;
   justify-content: flex-end;
 }
+.ace_editor {
+  z-index: 0;
+}
