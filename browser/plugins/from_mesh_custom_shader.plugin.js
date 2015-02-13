@@ -38,9 +38,11 @@ FromMeshCustomShader.prototype.create_ui = function() {
 
 	this._editors = {}
 
-	function removeSlot(slot) {
-		that.node.remove_slot(E2.slot_type.input, slot.id)
-		delete that.state.slot_ids[slot.name]
+	function removeSlot(slotId, name) {
+		that.node.remove_slot(E2.slot_type.input, slotId)
+		that.state.slot_ids[name] = null
+		delete that.state.slot_ids[name]
+		that.node.update_connections()
 		E2.app.updateCanvas()
 	} 
 
@@ -48,6 +50,8 @@ FromMeshCustomShader.prototype.create_ui = function() {
 		var slotId = that.node.add_slot(E2.slot_type.input, { name: name, dt: dt })
 		that.state.slot_ids[name] = { id: slotId, dt: dt, uniform: null }
 		that.slot_data[slotId] = that.core.get_default_value(E2.slot_type.input, dt)
+		that.node.update_connections()
+		E2.app.updateCanvas()
 	}
 
 	vertexButton.css('width', '55px')
@@ -67,8 +71,8 @@ FromMeshCustomShader.prototype.create_ui = function() {
 			.on('closed', function() {
 				that._editors[which] = null
 			})
-			.on('inputRemoved', function(slot) {
-				removeSlot(slot)
+			.on('inputRemoved', function(slotId, name) {
+				removeSlot(slotId, name)
 				that.updated = that.dirty = true
 				that.node.queued_update = 1
 				that.state.changed = true

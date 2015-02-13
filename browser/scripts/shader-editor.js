@@ -70,7 +70,7 @@ InputEditor.prototype.render = function($el) {
 			.click(function(e) {
 				if (window.confirm(TEXT_CONFIRM_REMOVE_INPUT)) {
 					$(e.target).closest('button').remove()
-					that.emit('removed', that._inputs[inputName])
+					that.emit('removed', that._inputs[inputName].id, inputName)
 				}
 			})
 	}
@@ -180,8 +180,8 @@ ShaderEditor.prototype.render = function(title, $dest) {
 	}})
 
 	this._inputEditor = new InputEditor(this._inputs)
-		.on('removed', function(inputName) {
-			that.emit('inputRemoved', inputName)
+		.on('removed', function(slotId, name) {
+			that.emit('inputRemoved', slotId, name)
 			that.build()
 		})
 		.on('added', function(name, dtid) {
