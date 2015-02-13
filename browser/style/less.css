@@ -6744,31 +6744,6 @@ table {
   min-width: 250px;
   max-width: 250px;
 }
-#mid-pane {
-  flex: 0 0 550px;
-  width: 550px;
-  min-width: 550px;
-  max-width: 550px;
-}
-.pane-hidden {
-  display: none;
-  visibility: hidden;
-  flex: 0 0 0 !important;
-  width: 0 !important;
-  min-width: 0 !important;
-  max-width: 0 !important;
-}
-.resize-handle {
-  background-color: #444;
-  width: 5px;
-}
-.mid-pane-handle {
-  background-color: #555555;
-}
-.resize-handle:hover {
-  cursor: pointer;
-  background-color: #aaaaaa;
-}
 html,
 body {
   height: 100%;
@@ -6898,6 +6873,32 @@ body {
 }
 #mid-pane .tab-close-button:hover {
   color: #ccc;
+}
+#mid-pane {
+  display: flex !important;
+  flex: 0 0 550px;
+  width: 550px;
+  min-width: 550px;
+  max-width: 550px;
+}
+.pane-hidden {
+  display: none !important;
+  visibility: hidden !important;
+  flex: 0 0 0 !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+}
+.resize-handle {
+  background-color: #444;
+  width: 5px;
+}
+.mid-pane-handle {
+  background-color: #555555;
+}
+.resize-handle:hover {
+  cursor: pointer;
+  background-color: #aaaaaa;
 }
 .panel-default {
   border-color: #333333;
@@ -7079,4 +7080,8 @@ body {
   color: #333333;
   background-color: #ff8888;
   border-color: #ff8888;
+}
+.shader-ace {
+  display: flex;
+  justify-content: flex-end;
 }

@@ -152,3 +152,35 @@ body {
 #mid-pane .tab-close-button:hover {
 	color: #ccc;
 }
+
+#mid-pane
+{
+	display: flex !important;
+	flex: 0 0 @mid-cell-width;
+	width: @mid-cell-width;
+	min-width: @mid-cell-width;
+	max-width: @mid-cell-width;
+}
+
+.pane-hidden {
+	display: none !important;
+	visibility: hidden !important;
+	flex: 0 0 0 !important;
+	width: 0 !important;
+	min-width: 0 !important;
+	max-width: 0 !important;
+}
+
+.resize-handle {
+	background-color: #444;
+	width: 5px;
+}
+
+.mid-pane-handle {
+	background-color: @gray;
+}
+
+.resize-handle:hover {
+	cursor: pointer;
+	background-color: @gray-light;
+}

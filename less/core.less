@@ -367,35 +367,3 @@ table
 	min-width: @left-cell-width;
 	max-width: @left-cell-width;
 }
-
-#mid-pane
-{
-	flex: 0 0 @mid-cell-width;
-	width: @mid-cell-width;
-	min-width: @mid-cell-width;
-	max-width: @mid-cell-width;
-}
-
-.pane-hidden
-{
-	display: none;
-	visibility: hidden;
-	flex: 0 0 0 !important;
-	width: 0 !important;
-	min-width: 0 !important;
-	max-width: 0 !important;
-}
-
-.resize-handle {
-	background-color: #444;
-	width: 5px;
-}
-
-.mid-pane-handle {
-	background-color: @gray;
-}
-
-.resize-handle:hover {
-	cursor: pointer;
-	background-color: @gray-light;
-}
