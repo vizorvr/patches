@@ -163,6 +163,7 @@
 		"Util: VU-meter": "util_vu-meter",
 		"Color: Hue / Saturation / Luminosity / Alpha": "color_hsla",
 		"Color: Red / Green / Blue / Alpha": "color_rgba",
+		"Color: Color to vector XYZ": "util_color_to_vector",
 		"UV: Offset": "uv_offset",
 		"UV: Scale": "uv_scale",
 		"Util: Display number on screen": "util_display_number_on_screen"
