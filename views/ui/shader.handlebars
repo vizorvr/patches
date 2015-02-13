@@ -1,0 +1,29 @@
+<div class="flex-column shader-editor">
+	<div style="width: 100%">
+		<div class="input-editor">
+			<div class="inputs">
+				<button class="input-add-button input-button btn btn-xs btn-primary">
+					<i class="fa fa-sm fa-plus"></i>
+					<span>Add new input</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="shader-ace">
+		<div class="pull-right">
+			<label>
+				<input type="checkbox" class="auto-build" checked="checked"/>
+				Rebuild automatically
+			</label>
+
+			<button title="Build (Alt-Enter)" class="compile-button btn btn-xs btn-default">
+				<i class="fa fa-sm fa-refresh"></i>
+				<span>Build</span>
+			</button>
+		</div>
+	</div>
+
+	<div class="editor" id="{{id}}"></div>
+</div>
+

@@ -108,6 +108,8 @@ E2.p.prototype.open_editor = function(self)
 	r2.css('clear', 'both');
 	r3.css('clear', 'both');
 	r4.css('clear', 'both');
+	r4.addClass('clearfix');
+
 	always_upd.css(inp_css);
 	width_inp.css(inp_css);
 	height_inp.css(inp_css);

@@ -50,6 +50,7 @@ body {
 	flex: 1 1 auto;
 	display: flex;
 	flex-direction: row;
+	clear: both;
 }
 
 .cell {
@@ -66,8 +67,9 @@ body {
 }
 
 .header {
-	min-height: 28px;
-	max-height: 28px;
+	min-height: @menu-bar-height;
+	height: @menu-bar-height;
+	max-height: @menu-bar-height;
 }
 
 #left-nav {
@@ -125,4 +127,60 @@ body {
 	margin: 0;
 }
 
+#mid-pane .tab-content,
+#mid-pane .tab-pane,
+#mid-pane .tab-body {
+	display: flex;
+	flex: 1 1 auto;
+}
 
+#mid-pane .tab-pane.active {
+	display: flex;
+	flex: 1 1 auto;
+}
+
+#mid-pane .tab-pane:not(.active) {
+	display: none;
+	visibility: hodd;
+}
+
+#mid-pane .tab-close-button {
+	cursor: pointer;
+	margin-top: 2px;
+}
+
+#mid-pane .tab-close-button:hover {
+	color: #ccc;
+}
+
+#mid-pane
+{
+	display: flex !important;
+	flex: 0 0 @mid-cell-width;
+	width: @mid-cell-width;
+	min-width: @mid-cell-width;
+	max-width: @mid-cell-width;
+}
+
+.pane-hidden {
+	display: none !important;
+	visibility: hidden !important;
+	flex: 0 0 0 !important;
+	width: 0 !important;
+	min-width: 0 !important;
+	max-width: 0 !important;
+}
+
+.resize-handle {
+	background-color: #444;
+	width: 5px;
+}
+
+.mid-pane-handle {
+	background-color: @gray;
+}
+
+.resize-handle:hover {
+	cursor: pointer;
+	background-color: @gray-light;
+}

@@ -329,7 +329,11 @@ Graph.prototype.emit_event = function(ev)
 	for(var i = 0; i < len; i++)
 		l[i](ev);
 };
-	
+
+Graph.prototype.getTitle = function() {
+	return this.tree_node.title
+}
+
 Graph.prototype.build_breadcrumb = function(parent, add_handler)
 {
 	var sp = $('<span>' + this.tree_node.title + '</span>');

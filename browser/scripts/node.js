@@ -51,14 +51,16 @@ Node.prototype.create_ui = function()
 	this.ui = new NodeUI(this, this.x, this.y);
 };
 
-Node.prototype.destroy_ui = function()
-{
-	if(this.ui)
-	{
-		this.ui.dom.remove();
-		this.ui = null;
-	}
-};
+Node.prototype.destroy_ui = function() {
+	if (!this.ui)
+		return;
+
+	this.ui.dom.remove()
+	this.ui = null
+
+	if (this.plugin.destroy_ui)
+		this.plugin.destroy_ui()
+}
 
 Node.prototype.destroy = function()
 {
@@ -158,16 +160,17 @@ Node.prototype.remove_slot = function(slot_type, suid)
 	var is_inp = slot_type === E2.slot_type.input;
 	var slots = is_inp ? this.dyn_inputs : this.dyn_outputs;
 	
+
 	if(!slots)
 		return;
 	
 	var slot = null;
 	var idx = -1;
-	
+
 	for(var i = 0, len = slots.length; i < len; i++)
 	{
 		var s = slots[i];
-		
+
 		if(s.uid === suid)
 		{
 			slot = s;
@@ -176,7 +179,7 @@ Node.prototype.remove_slot = function(slot_type, suid)
 			break;
 		}
 	} 
-	
+
 	if(!slot)
 		return;
 	

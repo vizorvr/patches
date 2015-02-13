@@ -17,10 +17,11 @@ paths =
 		[
 			'./browser/vendor/gl-matrix.js',
 			'./browser/scripts/util.js',
+			'./browser/scripts/texture.js',
 			'./browser/scripts/renderer.js',
+			'./browser/scripts/shader.js',
 			'./browser/scripts/plugin-manager-bundled.js',
 			'./browser/scripts/plugin-group.js',
-			'./browser/scripts/preset-manager.js',
 			'./browser/scripts/connection.js',
 			'./browser/scripts/graph.js',
 			'./browser/scripts/node.js',
@@ -54,11 +55,11 @@ gulp.task('clean', ['clean:js']);
 
 gulp.task('js:plugins', ['clean:js:plugins'], function()
 {
-	gulp.src('browser/plugins/*.js')
+	gulp.src(paths.js.plugins)
 	.pipe(slash())
 	.pipe(uglify())
 	.pipe(concat('all.plugins.js'))
-	.pipe(gulp.dest('./browser/plugins/'))
+	.pipe(gulp.dest(path.join(__dirname, 'browser', 'plugins')))
 });
 
 gulp.task('js:player', ['clean:js:player'], function()
@@ -87,6 +88,10 @@ gulp.task('watch', ['default'], function() {
 	gulp.watch('less/**/*', ['less']);
 	gulp.watch(paths.js.plugins, ['js:plugins']);
 	gulp.watch(paths.js.player, ['js:player']);
+});
+
+gulp.task('watch:less', function() {
+	gulp.watch('less/**/*', ['less']);
 });
 
 gulp.task('default', ['less', 'js']);
