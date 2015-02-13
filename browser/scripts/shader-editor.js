@@ -85,7 +85,7 @@ InputEditor.prototype.render = function($el) {
 			if (!name)
 				return
 
-			$inputs.find('.input-add-button').before(inputButton(name))
+			$inputs.find('.input-add-button').before(inputButton(name, dt.name))
 			that.emit('added', name, dt)
 	}))
 }
