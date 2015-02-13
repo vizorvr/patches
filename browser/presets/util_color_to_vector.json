@@ -1,0 +1,176 @@
+{
+    "abs_t": 1728.752,
+    "active_graph": 0,
+    "graph_uid": 5,
+    "root": {
+        "node_uid": 5,
+        "uid": 0,
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "color_picker",
+                "x": 130,
+                "y": 459,
+                "uid": 1,
+                "state": {
+                    "hue": 0.81,
+                    "sat": 0.01,
+                    "lum": 1
+                }
+            },
+            {
+                "plugin": "graph",
+                "x": 339,
+                "y": 429,
+                "uid": 4,
+                "dsid": 2,
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "rt_filter": 9729,
+                    "input_sids": {
+                        "2": 0
+                    },
+                    "output_sids": {
+                        "3": 1
+                    }
+                },
+                "title": "Color to vector",
+                "graph": {
+                    "node_uid": 4,
+                    "uid": 4,
+                    "parent_uid": 0,
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "convert_color_rgba_modulator",
+                            "x": 386,
+                            "y": 405,
+                            "uid": 0
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 387,
+                            "y": 511,
+                            "uid": 1
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 178,
+                            "y": 394,
+                            "uid": 2,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "color",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 3,
+                                    "desc": "Connect this to a slot of any type, to have the parent slot assume its datatype and forward data from the parent graph.",
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 648,
+                            "y": 487,
+                            "uid": 3,
+                            "dsid": 1,
+                            "state": {
+                                "slot_id": 0
+                            },
+                            "title": "vector",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 5,
+                                    "desc": "Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.",
+                                    "def": null,
+                                    "uid": 0,
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 1,
+                            "src_slot": 0,
+                            "dst_slot": 0
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 1,
+                            "src_slot": 1,
+                            "dst_slot": 1
+                        },
+                        {
+                            "src_nuid": 0,
+                            "dst_nuid": 1,
+                            "src_slot": 2,
+                            "dst_slot": 2
+                        },
+                        {
+                            "src_nuid": 2,
+                            "dst_nuid": 0,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "src_connected": true,
+                            "dst_connected": false,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": 1,
+                            "dst_nuid": 3,
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "color",
+                        "dt": 3,
+                        "uid": 0,
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "vector",
+                        "dt": 5,
+                        "uid": 1,
+                        "index": 0,
+                        "type": 1
+                    }
+                ]
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": 1,
+                "dst_nuid": 4,
+                "src_slot": 0,
+                "dst_slot": 0,
+                "dst_dyn": true
+            }
+        ]
+    }
+}
