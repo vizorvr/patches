@@ -66,7 +66,7 @@ AssetController.prototype._makePath = function(req, path)
 
 AssetController.prototype._makeGridFsPath = function(req, path) {
 	var file = req.files.file;
-	return '/'+that._modelName+'/'+file.sha1+fsPath.extname(file.path);
+	return '/'+this._modelName+'/'+file.sha1+fsPath.extname(file.path);
 }
 
 
