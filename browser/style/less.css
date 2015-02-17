@@ -6749,7 +6749,9 @@ table {
   text-decoration: line-through;
 }
 .btn-dropdown {
+  outline: none !important;
   border-left: 1px solid #222222;
+  line-height: 1.66;
 }
 html,
 body {
