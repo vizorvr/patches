@@ -9,7 +9,7 @@ function Application() {
 		PAUSED: 2
 	};
 	
-	this.preset_mgr = new PresetManager('/presets');
+	this.presetManager = new PresetManager('/presets');
 	this.player = null;
 	this.canvas = canvas;
 	this.c2d = canvas[0].getContext('2d');
@@ -1079,11 +1079,13 @@ function Application() {
 		self.updateCanvas(true);
 	};
 
-	this.fillCopyBuffer = function(nodes, conns, sx, sy)
-	{
+	this.selectionToObject = function(nodes, conns, sx, sy) {
 		var d = {};
 		var x1 = 9999999.0, y1 = 9999999.0, x2 = 0, y2 = 0;
-		
+
+		sx = sx || 50
+		sy = sy || 50
+
 		d.nodes = [];
 		d.conns = [];
 		
@@ -1117,9 +1119,12 @@ function Application() {
 			d.conns.push(c.ui ? c.serialise() : c);
 		}
 			
-		self.clipboard = JSON.stringify(d);
-		msg('Copy.');
-		// msg(self.clipboard);
+		return d;
+	}
+
+	this.fillCopyBuffer = function(nodes, conns, sx, sy) {
+		self.clipboard = JSON.stringify(self.selectionToObject(nodes, conns, sx, sy))
+		msg('Copy.')
 	};
 
 	this.onDelete = function(e)
@@ -1549,7 +1554,12 @@ function Application() {
 		self.openPresetSaveDialog()
 	}
 
-	this.openPresetSaveDialog = function(cb) {
+	this.onSaveSelectionAsPresetClicked = function() {
+		var graph = self.selectionToObject(self.selection_nodes, self.selection_conns)
+		self.openPresetSaveDialog(JSON.stringify({ root: graph }))
+	}
+
+	this.openPresetSaveDialog = function(serializedGraph) {
 		var username = E2.models.user.get('username')
 		if (!username) {
 			return E2.controllers.account.openLoginModal()
@@ -1567,25 +1577,21 @@ function Application() {
 				'Cancel': function() {},
 				'Save': function(name) {
 					if (!name)
-						return bootbox.alert('Please enter a name for the preset');
+						return bootbox.alert('Please enter a name for the preset')
 
-					var ser = self.player.core.serialise();
+					serializedGraph = serializedGraph || self.player.core.serialise()
 
 					$.ajax({
 						type: 'POST',
 						url: presetsPath,
 						data: {
 							name: name,
-							graph: ser
+							graph: serializedGraph
 						},
 						dataType: 'json',
 						success: function(saved) {
 							E2.dom.load_spinner.hide()
-
-							self.preset_mgr.refresh()
-
-							if (cb)
-								cb()
+							self.presetManager.refresh()
 						},
 						error: function(x, t, err) {
 							E2.dom.load_spinner.hide();

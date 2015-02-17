@@ -9,6 +9,8 @@ function PresetManager(base_url)
 	this._presets = {}
 
 	this.refresh()
+
+	E2.models.user.on('change', this.refresh.bind(this))
 }
 
 PresetManager.prototype = Object.create(EventEmitter.prototype)
