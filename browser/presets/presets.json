@@ -41,7 +41,8 @@
 		"VR: Sky sphere": "vr_sky_sphere",
 		"VR: Particles": "vr_particles",
 		"VR: Particles on object": "vr_particles_on_object",
-		"VR: Video screen": "vr_video_screen"
+		"VR: Video screen": "vr_video_screen",
+		"VR: Image display": "vr_image_display"
 
 	},
 
