@@ -1853,10 +1853,9 @@ function Application() {
 	add_button_events(E2.dom.open);
 
 	// close bootboxes on click 
-	$(document).on('click', '.bootbox', function() {
-		var cn = event.target.className
-
-		if (cn && !$('.' + cn).parents('.modal-dialog').length)
+	$(document).on('click', '.bootbox.modal.in', function(e) {
+		var $et = $(e.target)
+		if (!$et.parents('.modal-dialog').length)
 			bootbox.hideAll()
 	})
 
