@@ -309,11 +309,10 @@ function getController(req, res, next)
 	next();
 };
 
-function requireController(req, res, next)
-{
+function requireController(req, res, next) {
 	req.controller = controllers[req.params.model];
 	if (!req.controller) {
-		var e = new Error('No controller', req.params.model);
+		var e = new Error('Not found: '+req.path);
 		e.status = 404;
 		return next(e);
 	}
