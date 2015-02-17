@@ -1851,7 +1851,15 @@ function Application() {
 	add_button_events(E2.dom.stop);
 	add_button_events(E2.dom.save);
 	add_button_events(E2.dom.open);
-	
+
+	// close bootboxes on click 
+	$(document).on('click', '.bootbox', function() {
+		var cn = event.target.className
+
+		if (cn && !$('.' + cn).parents('.modal-dialog').length)
+			bootbox.hideAll()
+	})
+
 	$('button#fullscreen').click(function() {
 		self.player.core.renderer.set_fullscreen(true);
 	});
