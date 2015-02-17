@@ -89,12 +89,10 @@ function Application() {
 	
 	this.onPluginsLoaded = function()
 	{
-		self.preset_mgr.render();
 	}
 
 	this.onPluginRegistered = function(key, id)
 	{
-		self.preset_mgr.add('PLUGINS', key, 'plugin/'+id);
 	}
 
 	this.onPluginInstantiated = function(id, pos)
@@ -1545,6 +1543,69 @@ function Application() {
 		E2.app.player.on_update();
 		E2.dom.filename_input.val(graphPath);
 		E2.app.player.load_from_url(graphPath);
+	};
+
+	this.onSaveAsPresetClicked = function() {
+		self.openPresetSaveDialog()
+	}
+
+	this.openPresetSaveDialog = function(cb) {
+		var username = E2.models.user.get('username')
+		if (!username) {
+			return E2.controllers.account.openLoginModal()
+		}
+
+		var presetsPath = '/'+username+'/presets/'
+
+		E2.dom.load_spinner.show()
+
+		$.get(presetsPath, function(files) {
+			var fcs = new FileSelectControl()
+			.frame('save-frame')
+			.template('preset')
+			.buttons({
+				'Cancel': function() {},
+				'Save': function(name) {
+					if (!name)
+						return bootbox.alert('Please enter a name for the preset');
+
+					var ser = self.player.core.serialise();
+
+					$.ajax({
+						type: 'POST',
+						url: presetsPath,
+						data: {
+							name: name,
+							graph: ser
+						},
+						dataType: 'json',
+						success: function(saved) {
+							E2.dom.load_spinner.hide()
+
+							self.preset_mgr.refresh()
+
+							if (cb)
+								cb()
+						},
+						error: function(x, t, err) {
+							E2.dom.load_spinner.hide();
+
+							if (x.status === 401)
+								return E2.controllers.account.openLoginModal();
+
+							if (x.responseText)
+								bootbox.alert('Save failed: ' + x.responseText);
+							else
+								bootbox.alert('Save failed: ' + err);
+						}
+					});
+				}
+			})
+			.files(files)
+			.modal();
+			
+			return fcs;
+		})
 	};
 
 	this.onSaveClicked = function(cb)

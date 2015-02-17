@@ -243,6 +243,7 @@ var AssetController = require('./controllers/assetController');
 var GraphController = require('./controllers/graphController');
 var ImageController = require('./controllers/imageController');
 var SceneController = require('./controllers/sceneController');
+var PresetController = require('./controllers/presetController');
 
 var GridFsStorage = require('./lib/gridfs-storage');
 var gfs = new GridFsStorage('/data');
@@ -279,6 +280,11 @@ var videoController = new AssetController(
 	gfs
 );
 
+var presetController = new PresetController(
+	new AssetService(require('./models/preset')),
+	gfs
+);
+
 var JsonModel = require('./models/json');
 var jsonController = new AssetController(
 	JsonModel,
@@ -292,7 +298,9 @@ var controllers = {
 	scene: sceneController,
 	audio: audioController,
 	video: videoController,
-	json: jsonController
+	json: jsonController,
+
+	preset: presetController
 }
 
 function getController(req, res, next)
@@ -304,9 +312,8 @@ function getController(req, res, next)
 function requireController(req, res, next)
 {
 	req.controller = controllers[req.params.model];
-	if (!req.controller)
-	{
-		var e = new Error();
+	if (!req.controller) {
+		var e = new Error('No controller', req.params.model);
 		e.status = 404;
 		return next(e);
 	}
@@ -346,6 +353,14 @@ app.post('/upload/:model',
 	}
 );
 
+// -----
+// Preset routes
+app.get('/:username/presets', function(req, res, next) {
+	presetController.findByCreatorName(req, res, next);
+})
+app.post('/:username/presets', function(req, res, next) {
+	presetController.save(req, res, next);
+})
 
 // -----
 // Graph routes 

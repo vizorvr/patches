@@ -6809,6 +6809,7 @@ body {
 }
 #left-nav {
   overflow: auto;
+  max-height: 100vh;
 }
 #presets .searchbox {
   -webkit-flex-shrink: 0;
