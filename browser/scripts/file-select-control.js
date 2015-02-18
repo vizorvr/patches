@@ -511,14 +511,12 @@ FileSelectControl.createAudioSelector = function(selected, okButton, okFn)
 	});
 };
 
-FileSelectControl.createPresetSelector = function(selected, okButton, okFn)
-{
-	return createSelector('/preset', selected, okButton, okFn, function(ctl)
-	{
+FileSelectControl.createPresetSelector = function(selected, okButton, okFn) {
+	return createSelector('/preset', selected, okButton, okFn, function(ctl) {
 		ctl
-		.modal();
-	});
-};
+		.modal()
+	})
+}
 
 FileSelectControl.createSceneSelector = function(selected, okButton, okFn)
 {
