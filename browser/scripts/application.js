@@ -9,7 +9,7 @@ function Application() {
 		PAUSED: 2
 	};
 	
-	this.preset_mgr = new PresetManager('/presets');
+	this.presetManager = new PresetManager('/presets');
 	this.player = null;
 	this.canvas = canvas;
 	this.c2d = canvas[0].getContext('2d');
@@ -89,12 +89,10 @@ function Application() {
 	
 	this.onPluginsLoaded = function()
 	{
-		self.preset_mgr.render();
 	}
 
 	this.onPluginRegistered = function(key, id)
 	{
-		self.preset_mgr.add('PLUGINS', key, 'plugin/'+id);
 	}
 
 	this.onPluginInstantiated = function(id, pos)
@@ -1081,11 +1079,13 @@ function Application() {
 		self.updateCanvas(true);
 	};
 
-	this.fillCopyBuffer = function(nodes, conns, sx, sy)
-	{
+	this.selectionToObject = function(nodes, conns, sx, sy) {
 		var d = {};
 		var x1 = 9999999.0, y1 = 9999999.0, x2 = 0, y2 = 0;
-		
+
+		sx = sx || 50
+		sy = sy || 50
+
 		d.nodes = [];
 		d.conns = [];
 		
@@ -1119,9 +1119,12 @@ function Application() {
 			d.conns.push(c.ui ? c.serialise() : c);
 		}
 			
-		self.clipboard = JSON.stringify(d);
-		msg('Copy.');
-		// msg(self.clipboard);
+		return d;
+	}
+
+	this.fillCopyBuffer = function(nodes, conns, sx, sy) {
+		self.clipboard = JSON.stringify(self.selectionToObject(nodes, conns, sx, sy))
+		msg('Copy.')
 	};
 
 	this.onDelete = function(e)
@@ -1547,6 +1550,70 @@ function Application() {
 		E2.app.player.load_from_url(graphPath);
 	};
 
+	this.onSaveAsPresetClicked = function() {
+		self.openPresetSaveDialog()
+	}
+
+	this.onSaveSelectionAsPresetClicked = function() {
+		var graph = self.selectionToObject(self.selection_nodes, self.selection_conns)
+		self.openPresetSaveDialog(JSON.stringify({ root: graph }))
+	}
+
+	this.openPresetSaveDialog = function(serializedGraph) {
+		var username = E2.models.user.get('username')
+		if (!username) {
+			return E2.controllers.account.openLoginModal()
+		}
+
+		var presetsPath = '/'+username+'/presets/'
+
+		E2.dom.load_spinner.show()
+
+		$.get(presetsPath, function(files) {
+			var fcs = new FileSelectControl()
+			.frame('save-frame')
+			.template('preset')
+			.buttons({
+				'Cancel': function() {},
+				'Save': function(name) {
+					if (!name)
+						return bootbox.alert('Please enter a name for the preset')
+
+					serializedGraph = serializedGraph || self.player.core.serialise()
+
+					$.ajax({
+						type: 'POST',
+						url: presetsPath,
+						data: {
+							name: name,
+							graph: serializedGraph
+						},
+						dataType: 'json',
+						success: function(saved) {
+							E2.dom.load_spinner.hide()
+							self.presetManager.refresh()
+						},
+						error: function(x, t, err) {
+							E2.dom.load_spinner.hide();
+
+							if (x.status === 401)
+								return E2.controllers.account.openLoginModal();
+
+							if (x.responseText)
+								bootbox.alert('Save failed: ' + x.responseText);
+							else
+								bootbox.alert('Save failed: ' + err);
+						}
+					});
+				}
+			})
+			.files(files)
+			.modal();
+			
+			return fcs;
+		})
+	};
+
 	this.onSaveClicked = function(cb)
 	{
 		self.openSaveDialog();
@@ -1784,7 +1851,14 @@ function Application() {
 	add_button_events(E2.dom.stop);
 	add_button_events(E2.dom.save);
 	add_button_events(E2.dom.open);
-	
+
+	// close bootboxes on click 
+	$(document).on('click', '.bootbox.modal.in', function(e) {
+		var $et = $(e.target)
+		if (!$et.parents('.modal-dialog').length)
+			bootbox.hideAll()
+	})
+
 	$('button#fullscreen').click(function() {
 		self.player.core.renderer.set_fullscreen(true);
 	});

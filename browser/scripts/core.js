@@ -429,7 +429,9 @@ E2.InitialiseEngi = function(vr_devices)
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
-	E2.dom.save = $('#save');
+	E2.dom.save = $('.save-button');
+	E2.dom.saveAsPreset = $('#save-as-preset');
+	E2.dom.saveSelectionAsPreset = $('#save-selection-as-preset');
 	E2.dom.publish = $('#publish');
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
@@ -491,6 +493,8 @@ E2.InitialiseEngi = function(vr_devices)
 	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, E2.app, E2.dom.structure.tree.root);
 	
 	E2.dom.save.click(E2.app.onSaveClicked);
+	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked);
+	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked);
 	E2.dom.open.click(E2.app.onOpenClicked);
 	E2.dom.publish.click(E2.app.onPublishClicked);
 

@@ -7,8 +7,8 @@
 
 <div class="flex-column">
 <div class="menu-bar"> <!-- menu bar -->
-	<div class="header pull-left">
-		<div class="info-pane" id="info">
+	<div class="header left-cell pull-left">
+		<div class="info-pane pull-left" id="info">
 			<span>
 				<img id="infopanelogo" src="../../images/logo-graphic.png">
 			</span>
@@ -18,7 +18,21 @@
 	</div>
 	<div class="header">
 		<a href="/edit" id="new" class="btn btn-sm btn-default">New</a>
-		<button id="save" class="btn btn-sm btn-default">Save</button>
+
+		<div class="btn-group">
+			<button type="button" class="btn btn-sm btn-default save-button">Save</button>
+			<button type="button" class="btn btn-default btn-dropdown" data-toggle="dropdown">
+				<span class="fa fa-caret-down"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				<li><a class="save-button">Save</a></li>
+				<li><a id="save-as-preset">Save as Preset</a></li>
+				<li><a id="save-selection-as-preset">Save Selection as Preset</a></li>
+				<li class="divider"></li>
+				<li><a class="strikethru">Download as Zip</a></li>
+			</ul>
+		</div>
+
 		<button id="open" class="btn btn-sm btn-default">Open</button>
 		<button id="publish" class="btn btn-sm btn-default">Publish</button>
 		<button id="help" class="btn btn-sm btn-default pull-right">Help</button>

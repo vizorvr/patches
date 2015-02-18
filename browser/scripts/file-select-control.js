@@ -138,7 +138,8 @@ FileSelectControl.prototype._renderFiles = function()
 				file.url = file.path;
 
 			file.selected = (file.path === that._selected);
-			file.name = file.path.substring(file.path.lastIndexOf('/')+1);
+			if (!file.name)
+				file.name = file.path.substring(file.path.lastIndexOf('/')+1);
 			file.updatedAt = moment(file.updatedAt).fromNow();
 			return file;
 		})
@@ -456,7 +457,6 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 		.selected(selected)
 		.onChange(function(path) {
 			$('.links').show();
-			console.log('change', path);
 			selectedPath = path;
 		})
 		.modal();
@@ -510,6 +510,13 @@ FileSelectControl.createAudioSelector = function(selected, okButton, okFn)
 		.modal();
 	});
 };
+
+FileSelectControl.createPresetSelector = function(selected, okButton, okFn) {
+	return createSelector('/preset', selected, okButton, okFn, function(ctl) {
+		ctl
+		.modal()
+	})
+}
 
 FileSelectControl.createSceneSelector = function(selected, okButton, okFn)
 {

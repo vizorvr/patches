@@ -1,3 +1,4 @@
+var User = require('../models/user');
 var when = require('when');
 
 function AssetService(assetModel) {
@@ -26,6 +27,20 @@ AssetService.prototype.find = function(q)
 
 	return dfd.promise;
 };
+
+AssetService.prototype.findByCreatorName = function(username) {
+	var that = this
+	var dfd = when.defer()
+
+	User.findOne({ username: username })
+	.exec(function(err, user) {
+		if (err)
+			return dfd.reject(err)
+
+		dfd.resolve(that.find({ '_creator': user._id }))
+	})
+	return dfd.promise
+}
 
 AssetService.prototype.canWrite = function(user, path)
 {

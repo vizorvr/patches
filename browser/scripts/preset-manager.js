@@ -1,48 +1,103 @@
 
 function PresetManager(base_url)
 {
-	var that = this;
+	var that = this
 
-	this._base_url = base_url;
-	this._presets = {};
+	EventEmitter.call(this)
 
-	$.ajax(
-	{
-		url: base_url + '/presets.json',
-		async: false,
+	this._base_url = base_url
+	this._presets = {}
+
+	this.refresh()
+
+	E2.models.user.on('change', this.refresh.bind(this))
+}
+
+PresetManager.prototype = Object.create(EventEmitter.prototype)
+
+PresetManager.prototype.loadPlugins = function(cb) {
+	var that = this
+
+	$.ajax({
+		url: '/plugins/plugins.json',
 		cache: true
 	})
-	.done(function(data)
-	{
-		Object.keys(data).forEach(function(catName)
-		{
-			Object.keys(data[catName]).forEach(function(title)
-			{
-				that.add(catName, title, data[catName][title]);
-			});
-		});
+	.done(function(data) {
+		Object.keys(data).forEach(function(title) {
+			that.add('PLUGINS', title, 'plugin/'+data[title])
+		})
+		cb()
+	})
+}
+
+PresetManager.prototype.loadPresets = function(cb) {
+	var that = this
+
+	$.ajax({
+		url: this._base_url + '/presets.json',
+		cache: true
+	})
+	.done(function(data) {
+		Object.keys(data).forEach(function(catName) {
+			Object.keys(data[catName]).forEach(function(title) {
+				that.add(catName, title, that._base_url+'/'+data[catName][title]+'.json')
+			})
+		})
+
+		cb()
 	})
 	.fail(function() {
-		msg('PresetsMgr: No presets found.');
+		msg('PresetsMgr: No presets found.')
+	})
+}
+
+PresetManager.prototype.loadUserPresets = function(cb) {
+	var that = this
+	var username = E2.models.user.get('username')
+	if (!username)
+		return cb()
+
+	$.get('/'+username+'/presets', function(presets) {
+		var cat = 'MY PRESETS'
+		that._presets[cat] = {}
+
+		presets.forEach(function(preset) {
+			that.add(cat, preset.name, preset.url)
+		})
+
+		cb()
+	})
+}
+
+PresetManager.prototype.refresh = function() {
+	var that = this
+
+	this.loadUserPresets(function() {
+		that.loadPresets(function() {
+			that.loadPlugins(function() {
+				that.render()
+			})
+		})
 	})
 }
 
 PresetManager.prototype.render = function()
 {
-	var that = this;
+	var that = this
+
+	E2.dom.presets_list.empty()
 
 	new CollapsibleSelectControl()
 	.data(this._presets)
 	.template(E2.views.presets.presets)
 	.render(E2.dom.presets_list)
 	.onOpen(function(path) {
-		console.log('path', path)
-		if (path.indexOf('plugin/') === 0)
-		{
+
+		if (path.indexOf('plugin/') === 0) {
 			return that.openPlugin(path);
 		}
 
-		var url = that._base_url + '/' + path + '.json';
+		var url = path
 
 		msg('Loading preset from: ' + url);
 

@@ -57,11 +57,27 @@ AssetController.prototype._parseTags = function(tags)
 
 }
 
-AssetController.prototype._makePath = function(path)
+AssetController.prototype._makePath = function(req, path)
 {
 	return '/' + this._modelName
 		+ '/' + assetHelper.slugify(fsPath.basename(path, fsPath.extname(path)))
 		+ fsPath.extname(path);
+}
+
+AssetController.prototype._makeGridFsPath = function(req, path) {
+	var file = req.files.file;
+	return '/'+this._modelName+'/'+file.sha1+fsPath.extname(file.path);
+}
+
+
+// eg. GET /:username/presets
+AssetController.prototype.findByCreatorName = function(req, res, next) {
+	this._service
+	.findByCreatorName(req.params.username)
+	.then(function(list) {
+		res.json(list)
+	})
+	.catch(next)
 }
 
 // GET /:model/tag/tag
@@ -136,7 +152,7 @@ AssetController.prototype.canWriteUpload = function(req, res, next)
 		return next(new Error('No files uploaded'));
 
 	var file = req.files.file;
-	var dest = this._makePath(file.path)
+	var dest = this._makePath(req, file.path)
 
 	that._service.canWrite(req.user, dest)
 	.then(function(can)
@@ -154,8 +170,8 @@ AssetController.prototype.upload = function(req, res, next)
 	var that = this;
 
 	var file = req.files.file;
-	var path = this._makePath(file.path)
-	var gridFsPath = '/'+that._modelName+'/'+file.sha1+fsPath.extname(file.path);
+	var path = this._makePath(req, file.path)
+	var gridFsPath = this._makeGridFsPath(req)
 
 	return that._service.canWrite(req.user, path)
 	.then(function(can)
