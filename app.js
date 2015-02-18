@@ -162,9 +162,6 @@ app.use(function(req, res, next)
 	next();
 });
 
-app.use(express.static(path.join(__dirname, 'browser'), { maxAge: day }));
-app.use('/node_modules', express['static'](path.join(__dirname, 'node_modules'), { maxAge: day }))
-
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
 app.get('/logout', userController.logout);
@@ -229,7 +226,6 @@ app.get(/^\/dl\/.*/, function(req, res, next)
 	.catch(next);
 });
 
-// ----- MODEL ROUTES
 // set no-cache headers for the rest
 app.use(function(req, res, next)
 {
@@ -237,6 +233,12 @@ app.use(function(req, res, next)
 	res.setHeader('Expires', 0);
 	next();
 });
+
+// static files
+app.use(express.static(path.join(__dirname, 'browser'), { maxAge: 0 }));
+app.use('/node_modules', express['static'](path.join(__dirname, 'node_modules'), { maxAge: 0 }))
+
+// ----- MODEL ROUTES
 
 // Asset controllers
 var AssetController = require('./controllers/assetController');
