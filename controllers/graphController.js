@@ -64,8 +64,7 @@ GraphController.prototype.edit = function(req, res, next)
 			});
 		}
 
-		if (process.env.NODE_ENV !== 'production')
-		{
+		if (process.env.NODE_ENV !== 'production') {
 			templateCache.recompile(function()
 			{
 				respond();

@@ -364,7 +364,7 @@ app.post('/:username/presets', function(req, res, next) {
 // -----
 // Graph routes 
 
-app.get(['/editor', '/edit'], graphController.edit);
+app.get(['/editor', '/edit'], graphController.edit.bind(graphController));
 
 // GET /fthr/dunes-world/edit -- EDITOR
 app.get('/:username/:graph/edit', function(req, res, next)
