@@ -162,30 +162,16 @@ app.use(function(req, res, next)
 	next();
 });
 
-app.get('/login', userController.getLogin);
-app.post('/login', userController.postLogin);
-app.get('/logout', userController.logout);
-app.get('/forgot', userController.getForgot);
-app.post('/forgot', userController.postForgot);
-app.get('/reset/:token', userController.getReset);
-app.post('/reset/:token', userController.postReset);
-app.get('/signup', userController.getSignup);
-app.post('/signup', userController.postSignup);
-app.get('/account', passportConf.isAuthenticated, userController.getAccount);
-app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
-app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
-app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
-app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
-
-app.get('/', homeController.index);
-
 app.use(function(req, res, next)
 {
 	res.header('Access-Control-Allow-Origin', '*');
 	next();
 });
 
-// stream file from fs/gridfs
+// old static flat files 
+app.use('/data', express.static(path.join(__dirname, 'browser', 'data'), { maxAge: week * 52 }));
+
+// stream files from fs/gridfs
 app.get(/^\/data\/.*/, function(req, res, next)
 {
 	var path = req.path.replace(/^\/data/, '');
@@ -196,8 +182,12 @@ app.get(/^\/data\/.*/, function(req, res, next)
 		if (!stat)
 			return res.status(404).send();
 
+		if (req.header('If-None-Match') === stat.md5)
+			return res.status(304).send();
+
 		res.header('Content-Type', stat.contentType);
 		res.header('Content-Length', stat.length);
+		res.header('ETag', stat.md5);
 
 		return gfs.createReadStream(path)
 		.on('error', next)
@@ -237,6 +227,23 @@ app.use(function(req, res, next)
 // static files
 app.use(express.static(path.join(__dirname, 'browser'), { maxAge: 0 }));
 app.use('/node_modules', express['static'](path.join(__dirname, 'node_modules'), { maxAge: 0 }))
+
+app.get('/login', userController.getLogin);
+app.post('/login', userController.postLogin);
+app.get('/logout', userController.logout);
+app.get('/forgot', userController.getForgot);
+app.post('/forgot', userController.postForgot);
+app.get('/reset/:token', userController.getReset);
+app.post('/reset/:token', userController.postReset);
+app.get('/signup', userController.getSignup);
+app.post('/signup', userController.postSignup);
+app.get('/account', passportConf.isAuthenticated, userController.getAccount);
+app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
+app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
+app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
+app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
+
+app.get('/', homeController.index);
 
 // ----- MODEL ROUTES
 
