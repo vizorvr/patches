@@ -369,8 +369,11 @@ function Core(vr_devices, app) {
 	
 	this.add_aux_script = function(script_url, onload)
 	{
-		if(self.aux_scripts.hasOwnProperty(script_url))
-			return;
+		if(self.aux_scripts.hasOwnProperty(script_url)) {
+			if (onload)
+				onload()
+			return
+		}
 		
 		load_script('/plugins/' + script_url, onload);
 		self.aux_scripts[script_url] = true;
