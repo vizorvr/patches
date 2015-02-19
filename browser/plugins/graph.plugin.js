@@ -34,6 +34,14 @@ E2.p = E2.plugins["graph"] = function(core, node)
 	this.e2_is_graph = true; // Constant. To get rid of string compares from the core.
 };
 
+E2.p.prototype.getWidth = function() {
+	return parseFloat(this.framebuffer.width)
+}
+
+E2.p.prototype.getHeight = function() {
+	return parseFloat(this.framebuffer.height)
+}
+
 E2.p.prototype.reset = function()
 {
 	this.state.enabled = true;
@@ -544,7 +552,7 @@ E2.p.prototype.update_state = function()
 {
 	this.updated = false;
 	this.updated_sids.length = 0;
-	
+
 	if(this.graph && this.state.enabled)
 	{
 		var old_fb = null;

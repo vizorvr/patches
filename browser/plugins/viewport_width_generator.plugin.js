@@ -13,6 +13,8 @@ E2.p = E2.plugins["viewport_width_generator"] = function(core, node)
 	this.delegate = this._onResize.bind(this);
 	
 	this.core.renderer.on('resize', this.delegate);
+
+	this.node = node
 };
 
 E2.p.prototype.reset = function()
@@ -24,9 +26,13 @@ E2.p.prototype.destroy = function(slot)
 	this.core.renderer.off('resize', this.delegate);
 };
 
-E2.p.prototype.update_output = function(slot)
-{
-	return this.canvas.width;
+E2.p.prototype.update_output = function(slot) {
+	if (this.node.parent_graph.plugin
+		&& this.node.parent_graph.plugin.framebuffer) {
+		return this.node.parent_graph.plugin.getWidth()
+	}
+
+	return this.canvas.width
 };
 
 E2.p.prototype._onResize = function()
