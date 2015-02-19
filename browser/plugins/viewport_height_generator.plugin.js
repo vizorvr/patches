@@ -28,8 +28,9 @@ E2.p.prototype.destroy = function(slot)
 
 E2.p.prototype.update_output = function(slot) {
 	if (this.node.parent_graph.plugin
-		&& this.node.parent_graph.plugin.getHeight)
+		&& this.node.parent_graph.plugin.framebuffer) {
 		return this.node.parent_graph.plugin.getHeight()
+	}
 
 	return this.canvas.height
 };

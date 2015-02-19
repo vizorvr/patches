@@ -35,11 +35,11 @@ E2.p = E2.plugins["graph"] = function(core, node)
 };
 
 E2.p.prototype.getWidth = function() {
-	return this.state.rt_width
+	return parseFloat(this.framebuffer.width)
 }
 
 E2.p.prototype.getHeight = function() {
-	return this.state.rt_height
+	return parseFloat(this.framebuffer.height)
 }
 
 E2.p.prototype.reset = function()
@@ -552,7 +552,7 @@ E2.p.prototype.update_state = function()
 {
 	this.updated = false;
 	this.updated_sids.length = 0;
-	
+
 	if(this.graph && this.state.enabled)
 	{
 		var old_fb = null;
