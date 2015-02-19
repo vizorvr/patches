@@ -12,6 +12,8 @@ E2.p = E2.plugins["viewport_height_generator"] = function(core, node)
 	this.canvas = core.renderer.canvas[0];
 	this.delegate = this._onResize.bind(this);
 
+	this.node = node
+
 	this.core.renderer.on('resize', this.delegate);
 };
 
@@ -24,9 +26,12 @@ E2.p.prototype.destroy = function(slot)
 	this.core.renderer.off('resize', this.delegate);
 };
 
-E2.p.prototype.update_output = function(slot)
-{
-	return this.canvas.height;
+E2.p.prototype.update_output = function(slot) {
+	if (this.node.parent_graph.plugin
+		&& this.node.parent_graph.plugin.getHeight)
+		return this.node.parent_graph.plugin.getHeight()
+
+	return this.canvas.height
 };
 
 E2.p.prototype._onResize = function()
