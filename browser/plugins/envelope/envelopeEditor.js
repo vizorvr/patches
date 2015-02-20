@@ -94,7 +94,8 @@ EnvelopeEditor.prototype.render = function($out) {
 	}
 */
 
-	svg.node().focus()
+	if (svg.node().focus)
+		svg.node().focus()
 
 	function redraw() {
 		svg.select('path').attr('d', line)
