@@ -1,3 +1,5 @@
+// E2.ShaderEditor
+
 .shader-editor .input-editor {
 	overflow: auto;
 }
@@ -33,3 +35,29 @@
 .ace_editor {
 	z-index: 0
 }
+
+// E2.EnvelopeEditor
+
+.envelope-editor rect {
+  fill: none;
+  pointer-events: all;
+}
+
+.envelope-editor circle,
+.envelope-editor .line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.envelope-editor circle {
+  fill: #fff;
+  fill-opacity: .2;
+  cursor: move;
+}
+
+.envelope-editor .circle-selected {
+  fill: #ff7f0e;
+  stroke: #ff7f0e;
+}
+
