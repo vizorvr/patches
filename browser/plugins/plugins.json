@@ -141,7 +141,7 @@
 	"Modulators/CSG/To mesh": "csg_to_mesh_modulator",
 	"Modulators/CSG/Union": "csg_union_modulator",
 
-	"Modulators/Envelope/Line Envelope": "envelope_modulator",
+	"Modulators/Chart/Line Envelope": "envelope_modulator",
 
 	"Modulators/Curve/Interpolate cubic": "curve_interpolate_modulator",
 	"Modulators/Filters/Lowpass": "lowpass_filter_modulator",
