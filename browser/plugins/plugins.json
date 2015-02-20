@@ -169,6 +169,7 @@
 	"Modulators/Logic/Or": "or_modulator",
 	"Modulators/Logic/Xor": "xor_modulator",
 	"Modulators/Logic/Switch": "switch_modulator",
+	"Modulators/Logic/Array Revolver Switch": "array_switch_modulator",
 	"Modulators/Material/Alpha clip": "material_alpha_clip_modulator",
 	"Modulators/Material/Ambient color": "material_ambient_color_modulator",
 	"Modulators/Material/Clone": "material_clone_modulator",
