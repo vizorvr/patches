@@ -31,6 +31,7 @@ exports.postLogin = function(req, res, next) {
   req.assert('password', 'Password cannot be blank').notEmpty();
 
   var errors = req.validationErrors();
+  var wantJson = req.xhr || req.path.slice(-5) === '.json'
 
   if (errors) {
     req.flash('errors', errors);
@@ -38,15 +39,18 @@ exports.postLogin = function(req, res, next) {
   }
 
   passport.authenticate('local', function(err, user, info) {
-    if (err) return next(err);
+    if (err)
+      return next(err);
     if (!user) {
+      if (wantJson)
+        return res.status(401).send();
       req.flash('errors', { message: info.message });
       return res.redirect('/login');
     }
     req.logIn(user, function(err) {
       if (err) return next(err);
       req.flash('success', { message: 'Success! You are logged in.' });
-      if (req.xhr)
+      if (wantJson)
       {
         res.json(user.toJSON());
       }
