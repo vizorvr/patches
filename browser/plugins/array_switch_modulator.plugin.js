@@ -96,8 +96,8 @@ ArraySwitch.prototype.update_state = function() {
 }
 
 ArraySwitch.prototype.update_output = function(slot) {
-	if (this.values[this.number] !== undefined)
-		return this.values[this.number]
+	if (this.value !== undefined)
+		return this.value
 	return this.lsg.core.get_default_value(this.lsg.dt)
 }
 
@@ -107,7 +107,7 @@ ArraySwitch.prototype.state_changed = function(ui) {
 			this.lsg.add_dyn_slot(this.node.find_dynamic_slot(E2.slot_type.input, this.state.slot_uids[i]));
 		}
 		
-		this.index = -1;
+		this.number = -1;
 		this.value = this.lsg.infer_dt();
 	}
 };
