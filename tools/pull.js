@@ -30,29 +30,28 @@ if (argv._.length < 1) {
 
 var username = argv['u']
 var deets = {
-	email: username, 				
+	email: username,
 	password: argv['p']
 }
 
-var url = process.argv[2]
 var parsed = urlParse(argv._[0])
 var hn = (parsed.hostname || 'create.vizor.io') 
 	+ ':' + (parsed.port || 80)
 
-var un = parsed.path
+var userAndGraph = parsed.path
 	.split('.')[0] // remove extensions
 	.split('/')
 
-if (un[un.length-1] === 'edit')
-	un.pop()
+if (userAndGraph[userAndGraph.length-1] === 'edit')
+	userAndGraph.pop()
 
-un = un.slice(-2) // last two parts
+userAndGraph = userAndGraph.slice(-2) // last two parts
 
-var localName = argv._[1] || un[1]
+var localName = argv._[1] || userAndGraph[1]
 
-un = un.join('/')
+userAndGraph = userAndGraph.join('/')
 
-url = '/data/graph/' + un +'.json'
+var url = '/data/graph/' + userAndGraph +'.json'
 
 var localHttp = 'http://127.0.0.1:8000'
 var remoteHttp = 'http://'+hn
