@@ -169,7 +169,7 @@ function Core(vr_devices, app) {
 		self.renderer.end_frame();
 				
 		var dirty = self.active_graph_dirty;
-				
+
 		self.active_graph_dirty = false;
 				
 		return dirty; // Did connection state change?

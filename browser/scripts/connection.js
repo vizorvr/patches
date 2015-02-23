@@ -162,8 +162,16 @@ Connection.prototype.deserialise = function(d)
 {
 	this.src_node = d.src_nuid;
 	this.dst_node = d.dst_nuid;
-	this.src_slot = { index: d.src_slot, dynamic: d.src_dyn ? true : false, connected: d.src_connected };
-	this.dst_slot = { index: d.dst_slot, dynamic: d.dst_dyn ? true : false, connected: d.dst_connected };
+	this.src_slot = {
+		index: d.src_slot,
+		dynamic: d.src_dyn ? true : false,
+		connected: d.src_connected
+	};
+	this.dst_slot = {
+		index: d.dst_slot,
+		dynamic: d.dst_dyn ? true : false,
+		connected: d.dst_connected
+	};
 	this.offset = d.offset ? d.offset : 0;
 };
 

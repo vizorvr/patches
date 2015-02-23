@@ -17,7 +17,7 @@ function Node(parent_graph, plugin_id, x, y)
 		this.title = null;
 		this.inputs_changed = false;
 		this.open = true;
-		
+
 		this.set_plugin(E2.app.player.core.plugin_mgr.create(plugin_id, this));
 	};
 }
@@ -143,7 +143,7 @@ Node.prototype.add_slot = function(slot_type, def)
 		def.type = E2.slot_type.output;
 		this.dyn_outputs.push(def);			
 	}
-	
+
 	if(this.ui)
 	{
 		var col = this.ui.dom.find(is_inp ? '.ic' : '.oc');
@@ -527,10 +527,9 @@ Node.prototype.deserialise = function(guid, d)
 		{
 			var rdt = E2.app.player.core.resolve_dt;
 			
-			for(var i = 0, len = slots.length; i < len; i++)
+			for(var i = 0; i < slots.length; i++)
 			{
 				var s = slots[i];
-				 
 				s.dt = rdt[s.dt];
 				s.type = type;
 			}
@@ -541,7 +540,7 @@ Node.prototype.deserialise = function(guid, d)
 			this.dyn_inputs = d.dyn_in;
 			patch_slot(this.dyn_inputs, E2.slot_type.input);
 		}
-		
+
 		if(d.dyn_out)
 		{
 			this.dyn_outputs = d.dyn_out;
