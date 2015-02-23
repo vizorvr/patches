@@ -14,7 +14,7 @@ if (argv._.length < 1) {
 
 		$ pull [-up] owner/graph-name [local-name]
 			-u local username
-			-p password (or asked by cli)
+			-p password 
 
 			pulls the 'owner/graph-name' from the remote to local
 			- remote can be full url to the editor, 'user/graph', ...
