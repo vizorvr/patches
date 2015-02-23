@@ -99,9 +99,11 @@ Currently using Web Sockets or OSC requires running Vizor Create locally.
 
 # Running Vizor Create locally
 
+We recommend using [io.js](https://iojs.org/en/index.html) in place of node.js in development, for its JavaScript ES6 features. 
+
 ### Installing
 
-Install and run [MongoDB](http://mongodb.org) and [Node.js](http://node.js.org), then install the required npm packages:
+Install and run [MongoDB](http://mongodb.org) and [io.js](https://iojs.org/en/index.html), then install the required npm packages:
 
 ```
     $ npm install
