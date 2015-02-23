@@ -38,13 +38,13 @@ var ArraySwitch = E2.plugins['array_switch_modulator'] = function ArraySwitch(co
 ArraySwitch.prototype.create_ui = function() {
 	var that = this
 	var layout = make('div')
-	var inp_rem = makeButton('Remove', 'Click to remove the last input.')
-	var inp_add = makeButton('Add', 'Click to add another input.');
+	var removeButton = makeButton('Remove', 'Click to remove the last input.')
+	var addButton = makeButton('Add', 'Click to add another input.')
 	
-	inp_rem.css('width', '65px');
-	inp_add.css({ 'width': '65px', 'margin-top': '5px' });
+	removeButton.css('width', '65px')
+	addButton.css({ 'width': '65px', 'margin-top': '5px' })
 	
-	inp_add.click(function() {
+	addButton.click(function() {
 		var suid = that.node.add_slot(E2.slot_type.input, {
 			name: '' + (that.state.slot_uids.length),
 			dt: that.lsg.dt
@@ -54,19 +54,19 @@ ArraySwitch.prototype.create_ui = function() {
 		that.lsg.add_dyn_slot(that.node.find_dynamic_slot(E2.slot_type.input, suid))
 	})
 	
-	inp_rem.click(function(v) {
+	removeButton.click(function(v) {
 		if (that.state.slot_uids.length < 1)
-			return;
-			
+			return
+		
 		var suid = that.state.slot_uids.pop()
 		
 		that.lsg.remove_dyn_slot(that.node.find_dynamic_slot(E2.slot_type.input, suid))
-		that.node.remove_slot(E2.slot_type.output, suid)
+		that.node.remove_slot(E2.slot_type.input, suid)
 	})
 
-	layout.append(inp_rem);
-	layout.append(make('br'));
-	layout.append(inp_add);
+	layout.append(removeButton)
+	layout.append(make('br'))
+	layout.append(addButton)
 	
 	this.values = []
 
