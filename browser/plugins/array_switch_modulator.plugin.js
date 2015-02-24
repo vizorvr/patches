@@ -74,7 +74,7 @@ ArraySwitch.prototype.create_ui = function() {
 }
 
 ArraySwitch.prototype.update_input = function(slot, data) {
-	if (!slot.uid) {
+	if (slot.uid === undefined) {
 		if (slot.index === 0) {
 			var n = Math.floor(data)
 			if (this.number !== n) {
