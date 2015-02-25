@@ -4,8 +4,10 @@ function EnvelopeEditor() {
 	EventEmitter.call(this)
 
 	this._data = [ [0, 0.5], [1, 0.5] ]
-	this._width = 400
-	this._height = 200
+	this._width = 300
+	this._height = 150
+
+	this._id = Math.floor(Math.random() * 10000)
 
 	this._dataToPoints()
 }
@@ -65,35 +67,6 @@ EnvelopeEditor.prototype.render = function($out) {
 		.attr('class', 'line')
 		.call(redraw)
 
-	d3.select(window)
-		.on('mousemove', mousemove)
-		.on('mouseup', mouseup)
-/*
-	d3.select("#interpolate")
-	    .on("change", change)
-	  .selectAll("option")
-	    .data([
-	      "linear",
-	      "step-before",
-	      "step-after",
-	      "basis",
-	      "basis-open",
-	      "basis-closed",
-	      "cardinal",
-	      "cardinal-open",
-	      "cardinal-closed",
-	      "monotone"
-	    ])
-	  .enter().append("option")
-	    .attr("value", function(d) { return d; })
-	    .text(function(d) { return d; });
-
-	function change() {
-	  line.interpolate(this.value)
-	  redraw()
-	}
-*/
-
 	if (svg.node().focus)
 		svg.node().focus()
 
@@ -107,11 +80,12 @@ EnvelopeEditor.prototype.render = function($out) {
 
 		circle.enter().append("circle")
 		.attr("r", 1e-6)
-		.on("mousedown", function(d) {
+		.on('mousedown', function(d) {
+			trackMouseMovement()
 			selected = dragged = d
 			redraw()
 		})
-		.on("mouseup", function(d) {
+		.on('mouseup', function(d) {
 			if (selected === d && points.length > 2) {
 				var i = points.indexOf(d)
 				points.splice(i, 1)
@@ -142,7 +116,14 @@ EnvelopeEditor.prototype.render = function($out) {
 		that.onChanged()
 	}
 
+	function trackMouseMovement() {
+		d3.select(window)
+			.on('mousemove.'+this._id, mousemove)
+			.on('mouseup.'+this._id, mouseup)
+	}
+
 	function mousedown() {
+		trackMouseMovement()
 		var x = d3.mouse(svg.node())[0]
 		var prevCircle
 
@@ -198,6 +179,10 @@ EnvelopeEditor.prototype.render = function($out) {
 	}
 
 	function mouseup() {
+		d3.select(window)
+			.on('mousemove.'+this._id, null)
+			.on('mouseup.'+this._id, null)
+
 		if (!dragged)
 			return
 

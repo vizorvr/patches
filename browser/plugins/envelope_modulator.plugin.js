@@ -20,7 +20,6 @@ var EnvelopePlugin = E2.plugins['envelope_modulator'] = function EnvelopePlugin(
 
 EnvelopePlugin.prototype.create_ui = function() {
 	var that = this
-	console.log('create_ui', arguments)
 
 	if (this._$ui)
 		return this._$ui
