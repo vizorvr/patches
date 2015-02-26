@@ -169,7 +169,7 @@ function Core(vr_devices, app) {
 		self.renderer.end_frame();
 				
 		var dirty = self.active_graph_dirty;
-
+				
 		self.active_graph_dirty = false;
 				
 		return dirty; // Did connection state change?
@@ -375,8 +375,11 @@ function Core(vr_devices, app) {
 			return
 		}
 		
-		load_script('/plugins/' + script_url, onload);
-		self.aux_scripts[script_url] = true;
+		load_script('/plugins/' + script_url, function() {
+			self.aux_scripts[script_url] = true;
+			if (onload)
+				onload()
+		});
 	};
 
 	this.add_aux_style = function(style_url)
