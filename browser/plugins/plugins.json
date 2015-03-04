@@ -23,6 +23,8 @@
 	"Emitters/Sequencing/Stop playback": "stop_emitter",
 	"Emitters/Video/Video player": "video_player",
 
+	"Emitters/Player/Load graph": "load_graph",
+
 	"Generators/Cameras/View/Aspect ratio": "aspect_ratio_generator",
 	"Generators/Cameras/View/Viewport height": "viewport_height_generator",
 	"Generators/Cameras/View/Viewport width": "viewport_width_generator",
