@@ -297,10 +297,8 @@ function Core(vr_devices, app) {
 		return JSON.stringify(d, undefined, 4);
 	};
 	
-	this.deserialise = function(str)
+	this.deserialiseObject = function(d)
 	{
-		var d = JSON.parse(str);
-
 		self.abs_t = d.abs_t;
 		self.delta_t = 0.0;
 		self.graph_uid = d.graph_uid;
@@ -333,6 +331,11 @@ function Core(vr_devices, app) {
 			else
 				self.root_graph.tree_node.activate();
 		}
+	}
+
+	this.deserialise = function(str)
+	{
+		return this.deserialiseObject(JSON.parse(str));
 	};
 	
 	this.rebuild_structure_tree = function()
