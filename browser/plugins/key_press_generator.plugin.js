@@ -21,6 +21,7 @@ E2.p.prototype.create_ui = function()
 	var items = [
 		[-1, '[Pick a key]'],
 		[8, 'Backspace'], [9, 'Tab'], [13, 'Enter'],
+		[32, 'Space'],
 		[33, 'Page up'], [34, 'Page down'], [35, 'End'],
 		[36, 'Home'], [37, 'Left arrow'], [38, 'Up arrow'],
 		[39, 'Right arrow'], [40, 'Down arrow'], [45, 'Insert'], [46, 'Delete'],
