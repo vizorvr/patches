@@ -32,7 +32,7 @@ var ArraySwitch = E2.plugins['array_switch_modulator'] = function ArraySwitch(co
 	this.lsg = new LinkedSlotGroup(core, node, [], [this.output_slots[0]])
 
 	this.number = -1
-
+	this.values = []
 }
 
 ArraySwitch.prototype.create_ui = function() {
@@ -68,8 +68,6 @@ ArraySwitch.prototype.create_ui = function() {
 	layout.append(make('br'))
 	layout.append(addButton)
 	
-	this.values = []
-
 	return layout
 }
 
