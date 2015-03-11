@@ -1,10 +1,3 @@
-<noscript>
-	<div class="centered notification">
-		<div style="float: left; display: table-cell; margin-right: 8px;"><img src="images/warning.png" width="64px" height="64px" /></div>
-		<div>This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
-	</div>
-</noscript>
-
 <div class="container">
 	<div class="row">
 		<div class="col-xs-12 logo">
@@ -62,29 +55,25 @@
 	</div>
 </div>
 
-<script type="text/javascript" src="/scripts/player.min.js"></script>
-
 <script>
 	$(document).ready(function() {
 		var playing = false;
 
-		E2.app.player.core.on('ready', function() {
-			var $i = $('#play i');
+		var $i = $('#play i');
 
-			$('#play').on('click', function() {
-				playing = !playing;
+		$('#play').on('click', function() {
+			playing = !playing;
 
-				if (playing)
-				{
-					$i.removeClass('fa-play').addClass('fa-pause');
-					play();
-				}
-				else
-				{
-					$i.removeClass('fa-pause').addClass('fa-play');
-					E2.app.player.pause();
-				}
-			});
+			if (playing)
+			{
+				$i.removeClass('fa-play').addClass('fa-pause');
+				play();
+			}
+			else
+			{
+				$i.removeClass('fa-pause').addClass('fa-play');
+				E2.app.player.pause();
+			}
 		})
 	})
 </script>
