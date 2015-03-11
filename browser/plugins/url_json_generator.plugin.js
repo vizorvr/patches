@@ -85,11 +85,12 @@ E2.p.prototype.update_output = function(slot)
 
 E2.p.prototype.state_changed = function(ui)
 {
-	if(this.state.url !== '')
-	{
+	if(this.state.url !== '') {
 		if(ui)
 			ui.attr('title', this.state.url);
 		else
 			this.dirty = true;
+	} else {
+		this.object = {}
 	}
 };
