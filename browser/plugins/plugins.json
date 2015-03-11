@@ -189,6 +189,7 @@
 	"Modulators/Math/Functions/Sin": "sin_modulator",
 	"Modulators/Math/Functions/Sqrt": "sqrt_modulator",
 	"Modulators/Math/Functions/Tan": "tan_modulator",
+	"Modulators/Math/Functions/Atan": "atan_modulator",
 	"Modulators/Math/Rounding/Ceiling": "ceiling_modulator",
 	"Modulators/Math/Rounding/Floor": "floor_modulator",
 	"Modulators/Math/Rounding/Round": "round_modulator",
