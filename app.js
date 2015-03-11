@@ -230,6 +230,7 @@ app.use('/node_modules', express['static'](path.join(__dirname, 'node_modules'),
 
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
+app.post('/login.json', userController.postLogin);
 app.get('/logout', userController.logout);
 app.get('/forgot', userController.getForgot);
 app.post('/forgot', userController.postForgot);

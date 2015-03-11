@@ -101,18 +101,23 @@ function Player(vr_devices, canvas, app, root_node, cb)
 	
 	this.select_active_graph = function()
 	{
-		// Select the active graph and build its UI, but only if we're not running headless.
+		// Select the active graph and build its UI, but only if there's an editor present
 		if(E2.dom.breadcrumb)
 			self.core.onGraphSelected(self.core.active_graph);
 	};
 	
 	this.load_from_json = function(json)
 	{
+		self.load_from_object(JSON.parse(json));
+	};
+
+	this.load_from_object = function(obj)
+	{
 		var c = self.core;
 		
 		c.renderer.texture_cache.clear();
 		c.renderer.shader_cache.clear();
-		c.deserialise(json);
+		c.deserialiseObject(obj);
 		this.select_active_graph();
 		
 		if(E2.app.updateCanvas)
@@ -132,7 +137,7 @@ function Player(vr_devices, canvas, app, root_node, cb)
 			}
 		});
 	};
-	
+
 	this.set_parameter = function(id, value)
 	{
 		this.core.root_graph.registers.write(id, value);
