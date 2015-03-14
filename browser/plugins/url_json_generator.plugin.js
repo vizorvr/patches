@@ -1,5 +1,6 @@
-E2.p = E2.plugins["url_json_generator"] = function(core, node)
-{
+(function() {
+
+var UrlJson = E2.plugins["url_json_generator"] = function(core, node) {
 	this.desc = 'Load JSON as an object from an URL. Hover over the Source button to see the url of the current file.';
 	
 	this.input_slots = [
@@ -14,23 +15,16 @@ E2.p = E2.plugins["url_json_generator"] = function(core, node)
 	this.core = core;
 	this.object = {};
 	this.dirty = false;
-};
+}
 
-E2.p.prototype.reset = function()
-{
-};
-
-E2.p.prototype.create_ui = function()
-{
+UrlJson.prototype.create_ui = function() {
 	var inp = makeButton('Source', 'No JSON selected.', 'url');
 	var self = this;
 
-	inp.click(function()
-	{
+	inp.click(function() {
 		FileSelectControl
 			.createJsonSelector(self.state.url)
-			.onChange(function(v)
-			{
+			.onChange(function(v) {
 				self.state.url = v;
 				self.state_changed(null);
 				self.state_changed(inp);
@@ -39,16 +33,16 @@ E2.p.prototype.create_ui = function()
 	});
 
 	return inp;
-};
+}
 
-E2.p.prototype.update_input = function(slot, data)
-{
-	this.state.url = data;
-	this.state_changed(null);
-};
+UrlJson.prototype.update_input = function(slot, data) {
+	if (this.state.url === data)
+		return;
+	this.state.url = data
+	this.state_changed()
+}
 
-E2.p.prototype.update_state = function()
-{
+UrlJson.prototype.update_state = function() {
 	if(!this.dirty)
 		return;
 	
@@ -76,15 +70,13 @@ E2.p.prototype.update_state = function()
 	});
 	
 	this.dirty = false;
-};
+}
 
-E2.p.prototype.update_output = function(slot)
-{
+UrlJson.prototype.update_output = function(slot) {
 	return this.object;
-};
+}
 
-E2.p.prototype.state_changed = function(ui)
-{
+UrlJson.prototype.state_changed = function(ui) {
 	if(this.state.url !== '') {
 		if(ui)
 			ui.attr('title', this.state.url);
@@ -93,4 +85,6 @@ E2.p.prototype.state_changed = function(ui)
 	} else {
 		this.object = {}
 	}
-};
+}
+
+})()
