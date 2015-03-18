@@ -75,10 +75,11 @@ UrlTexture.prototype.update_output = function(slot) {
 
 UrlTexture.prototype.state_changed = function() {
 	if (this.state.url !== '') {
+		this.dirty = true
+
 		if (this.thumbnail) {
 			this.thumbnail.css({ 'background-image': 'url(\'' + this.state.url + '\')' })
-		} else
-			this.dirty = true
+		}
 	}
 }
 
