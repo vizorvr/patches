@@ -57,6 +57,8 @@ UrlTexture.prototype.create_ui = function() {
 }
 
 UrlTexture.prototype.update_input = function(slot, data) {
+	if (this.state.url === data)
+		return;
 	this.state.url = data
 	this.state_changed()
 }
