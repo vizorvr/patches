@@ -458,13 +458,11 @@ var httpServer = http.createServer(app);
 
 httpServer.listen(listenPort, listenHost);
 
-if (config.server.enableOSC)
-{
+if (config.server.enableOSC) {
 	new OscServer().listen(httpServer);
 }
 
-if (config.server.enableChannels)
-{
+if (config.server.enableChannels) {
 	new WsChannelServer().listen(httpServer);
 }
 
