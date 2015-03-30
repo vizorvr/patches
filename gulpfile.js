@@ -37,6 +37,11 @@ paths =
 	}
 };
 
+function errorHandler(err) {
+	console.error(err.message, err.lineNumber, err.stack)
+	this.emit('end')
+}
+
 gulp.task('clean:js:plugins', function(cb)
 {
 	del('./browser/plugins/all.plugins.js', cb);
@@ -60,18 +65,20 @@ gulp.task('js:plugins', ['clean:js:plugins'], function()
 {
 	gulp.src(paths.js.plugins)
 	.pipe(slash())
-	.pipe(uglify())
+	.pipe(uglify().on('error', errorHandler))
 	.pipe(concat('all.plugins.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'plugins')))
+	.on('error', errorHandler)
 });
 
 gulp.task('js:player', ['clean:js:player'], function()
 {
 	gulp.src(paths.js.player)
 	.pipe(slash())
-	.pipe(uglify())
+	.pipe(uglify().on('error', errorHandler))
 	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))
+	.on('error', errorHandler)
 });
 
 gulp.task('js', ['js:plugins', 'js:player']);
@@ -82,9 +89,10 @@ gulp.task('less', ['clean:less'], function()
 	.pipe(slash())
     .pipe(less({
 		paths: [ path.join(__dirname, 'less') ]
-    }))
+    }).on('error', errorHandler))
 	.pipe(concat('less.css'))
-    .pipe(gulp.dest(path.join(__dirname, 'browser', 'style')));
+    .pipe(gulp.dest(path.join(__dirname, 'browser', 'style')))
+	.on('error', errorHandler)
 });
 
 gulp.task('watch', ['default'], function() {
