@@ -1,4 +1,4 @@
-E2.p = E2.plugins["output_proxy"] = function(core, node)
+E2.p = E2.plugins.output_proxy = function(core, node)
 {
 	this.desc = 'Create a new type-less slot to route data out of the current graph to its parent. When connected to a slot, it will assume its type until disconnected. Renaming this plugin will rename the corresponding parent slot.';
 	
@@ -39,9 +39,8 @@ E2.p.prototype.update_input = function(slot, data)
 	
 	this.data = data;
 	this.changed = true;
-	
-	if(node.parent_graph.plugin)
-	{
+
+	if(node.parent_graph.plugin) {
 		var p = node.parent_graph.plugin;
 		
 		p.updated_sids.push(p.state.output_sids[node.uid])

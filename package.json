@@ -66,6 +66,7 @@
   },
   "devDependencies": {
     "chai": "^1.10.0",
+    "cheerio": "^0.19.0",
     "minimist": "0.0.8",
     "mocha": "^1.21.5",
     "multiline": "^0.3.4",
@@ -75,7 +76,10 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "mocha --timeout 10000 --recursive browser/test/unit/plugins test"
+    "test:unit": "mocha browser/test/unit/undo.js && mocha browser/test/unit/paste.js",
+    "test:unit:server": "mocha test",
+    "test:plugins": "mocha browser/test/unit/plugins",
+    "test": "npm run test:plugins && npm run test:unit && npm run test:unit:server"
   },
   "author": "Lasse Nielsen, Jaakko Manninen, Mikko Karvonen",
   "license": "MIT",

@@ -1,4 +1,4 @@
-function Player(vr_devices, canvas, app, root_node, cb)
+function Player(vr_devices, canvas, root_node, cb)
 {
 	var self = this;
 	
@@ -8,10 +8,8 @@ function Player(vr_devices, canvas, app, root_node, cb)
 		PAUSED: 2
 	};
 
-	this.app = app;
-
-	this.core = new Core(vr_devices, app);
-	this.core.on('ready', cb);
+	this.app = E2.app;
+	this.core = E2.core;
 
 	this.interval = null;
 	this.abs_time = 0.0;
@@ -68,8 +66,8 @@ function Player(vr_devices, canvas, app, root_node, cb)
 		self.core.renderer.begin_frame(); // Clear the WebGL view.
 		self.core.renderer.end_frame();
 		
-		if(app && app.updateCanvas)
-			app.updateCanvas(false);
+		if (E2.app && E2.app.updateCanvas)
+			E2.app.updateCanvas(false);
 	};
 
 	this.on_anim_frame = function()
@@ -78,10 +76,8 @@ function Player(vr_devices, canvas, app, root_node, cb)
 		self.on_update();
 	};
 
-	this.on_update = function()
-	{
-		if(this.scheduled_stop)
-		{
+	this.on_update = function() {
+		if (this.scheduled_stop) {
 			this.stop();
 			this.scheduled_stop();
 			this.scheduled_stop = null;
@@ -91,20 +87,19 @@ function Player(vr_devices, canvas, app, root_node, cb)
 		var time = (new Date()).getTime();
 		var delta_t = (time - self.last_time) * 0.001;
 		
-		if(self.core.update(self.abs_time, delta_t) && app.updateCanvas)
-			app.updateCanvas(false);
+		if(self.core.update(self.abs_time, delta_t) && E2.app.updateCanvas)
+			E2.app.updateCanvas(false);
 		
 		self.last_time = time;
 		self.abs_time += delta_t;
 		self.frames++;
 	};
 	
-	this.select_active_graph = function()
-	{
+	this.select_active_graph = function() {
 		// Select the active graph and build its UI, but only if there's an editor present
-		if(E2.dom.breadcrumb)
-			self.core.onGraphSelected(self.core.active_graph);
-	};
+		if (E2.app && E2.app.onGraphSelected)
+			E2.app.onGraphSelected(self.core.active_graph)
+	}
 	
 	this.load_from_json = function(json)
 	{
@@ -120,19 +115,16 @@ function Player(vr_devices, canvas, app, root_node, cb)
 		c.deserialiseObject(obj);
 		this.select_active_graph();
 		
-		if(E2.app.updateCanvas)
+		if (E2.app && E2.app.updateCanvas)
 			E2.app.updateCanvas(true);
 	};
 	
-	this.load_from_url = function(url)
-	{
+	this.load_from_url = function(url) {
 		$.ajax({
 			url: url,
 			dataType: 'text',
-			async: false,
 			headers: {},
-			success: function(json) 
-			{
+			success: function(json) {
 				self.load_from_json(json);
 			}
 		});
@@ -159,11 +151,12 @@ function Player(vr_devices, canvas, app, root_node, cb)
 		this.core.registers.unlock(listerner, id);
 	};
 
-	this.select_active_graph();
+	E2.core.on('ready', function() {
+		self.select_active_graph();
+	})
 }
 
-function CreatePlayer(vr_devices, init_callback)
-{
+function CreatePlayer(vr_devices, cb) {
 	$(document).ajaxError(function(e, jqxhr, settings, ex) 
 	{
 		if(typeof(ex) === 'string')
@@ -186,8 +179,12 @@ function CreatePlayer(vr_devices, init_callback)
 		console.log(m);
 	});
 	
-	E2.dom.webgl_canvas = $('#webgl-canvas');
-	E2.app = {};
-	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, E2.app, null, init_callback);
+	var core = new Core(vr_devices)
 	
+	E2.dom.webgl_canvas = $('#webgl-canvas');
+
+	E2.app = {};
+	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, null);
+
+	E2.core.on('ready', cb)
 }

@@ -118,43 +118,35 @@
 </div> <!-- page column -->
 
 <script type="text/javascript">
-	function postInit()
-	{
+	function postInit() {
 		{{#if graph}}
 			var graph = {
 				path: '{{graph.path}}',
 				url: '{{graph.url}}'
 			};
 
-			E2.app.player.core.on('ready', function()
-			{
+			E2.app.player.core.on('ready', function() {
 				E2.app.loadGraph(graph.url);
 			});
 		{{/if}}
 	}
 
-	function EnumerateVRDevices(devices)
-	{
+	function EnumerateVRDevices(devices) {
 		var hmd = null, sensor = null;
 		
-		for(var i = 0; i < devices.length; i++)
-		{
-			if(devices[i] instanceof HMDVRDevice)
-			{
+		for(var i = 0; i < devices.length; i++) {
+			if(devices[i] instanceof HMDVRDevice) {
 				// Just use the first device we find for now.
 				hmd = devices[i];
 				break;
 			}
 		}
 		
-		if(hmd)
-		{
-			for(var i = 0; i < devices.length; i++)
-			{
+		if(hmd) {
+			for(var i = 0; i < devices.length; i++) {
 				var d = devices[i];
 			
-				if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId)
-				{
+				if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId) {
 					sensor = devices[i];
 					break;
 				}
@@ -165,37 +157,27 @@
 		postInit();
 	}
 
-	$(document).ready(function()
-	{
-		E2.models =
-		{
+	$(document).ready(function() {
+		E2.models = {
 			user: new User({})
 		};
 
-		if ('{{user.username}}')
-		{
-			E2.models.user.set(
-			{
+		if ('{{user.username}}') {
+			E2.models.user.set( {
 				id: '{{user._id}}',
 				username: '{{user.username}}'
 			});
 		}
 
-		E2.controllers =
-		{
+		E2.controllers = {
 			account: new AccountController()
 		};
 
-		if(navigator.getVRDevices)
-		{
+		if(navigator.getVRDevices) {
 			navigator.getVRDevices().then(EnumerateVRDevices);
-		}
-		else if(navigator.mozGetVRDevices)
-		{
+		} else if(navigator.mozGetVRDevices) {
 			navigator.mozGetVRDevices(EnumerateVRDevices);
-		}
-		else
-		{
+		} else {
 			E2.InitialiseEngi([null, null]);
 			postInit();
 		}

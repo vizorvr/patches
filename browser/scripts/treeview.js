@@ -116,8 +116,7 @@ TreeNode.prototype.rebuild_dom = function()
 	this.label = lbl;
 };
 
-function TreeView(parent, on_activate, on_rearrange)
-{
+function TreeView(parent, on_activate, on_rearrange) {
 	this.parent = parent;
 	this.on_activate = on_activate;
 	this.on_rearrange = on_rearrange;
@@ -127,10 +126,9 @@ function TreeView(parent, on_activate, on_rearrange)
 	this.parent.append(this.root.dom);
 }
 
-TreeView.prototype.reset = function()
-{
+TreeView.prototype.reset = function() {
 	this.root.remove_children();
-	
+
 	this.drag_node = null;
 	this.drag_dom = null;
 	this.drag_tgt = null;
@@ -144,14 +142,13 @@ TreeView.prototype.reset = function()
 	this.root.rebuild_dom();
 };
 
-TreeView.prototype.select = function(t_node)
-{
+TreeView.prototype.select = function(t_node) {
 	if(this.selected_node)
 	{
 		this.selected_node.label.removeClass('tree-active');
 		this.selected_node.selected = false;
 	}
-		
+	
 	var parent = t_node;
 	var highest_closed = null;
 	

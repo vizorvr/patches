@@ -146,33 +146,35 @@ Scene.prototype.create_autofit_camera = function()
 	return cam;
 };
 	
-Scene.load = function(gl, url, core)
-{
+Scene.load = function(gl, url, core) {
+	var that = this
+
 	// Create dummy imposter scene and can be used as a null-proxy until asynchronous load completes.
 	var scene = new Scene(gl, core, null, null);
 	
 	core.asset_tracker.signal_started();
 	
-	jQuery.ajax({
+	$.ajax({
 		url: url, 
 		dataType: 'json',
-		success: function(scene, c) { return function(data) 
-		{
+		success: function(data)  {
 			var bp = url.substr(0, url.lastIndexOf('/') + 1);
-			var r = c.renderer;
+			var r = core.renderer;
 			
 			scene.load_json(data, bp);
+
 			msg('INFO: Scene - Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
 			msg('INFO: Global cache state: ' + r.texture_cache.count() + ' textures. ' + r.shader_cache.count() + ' shaders.');
-			c.asset_tracker.signal_completed();
-		}}(scene, core),
-		error: function(c) { return function(jqXHR, textStatus, errorThrown)
-		{
+
+			core.asset_tracker.signal_completed();
+
+			that.updated = true
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
 			msg('ERROR: Failed to load scene "' + url + '": ' + textStatus + ', ' + errorThrown, 'Renderer');
-			c.asset_tracker.signal_failed();
-		}}(core),
-		async: false // TODO: We should definitely change this to be asynchronous!
-	});
+			core.asset_tracker.signal_failed();
+		}
+	})
 	
 	return scene;
 };

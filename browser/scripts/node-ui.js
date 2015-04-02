@@ -5,13 +5,13 @@ function NodeUI(parent_node, x, y) {
 	this.sl = E2.app.scrollOffset[0];
 	this.st = E2.app.scrollOffset[1];
 	this.plugin_ui = null;
-	
+
 	var nid = 'n' + parent_node.uid, dom = this.dom = make('table');
 
 	dom.addClass('plugin');
 	dom.addClass('graph-node');
 	dom.attr('id', nid);
-	dom.mousemove(E2.app.onMouseMoved); // Make sure we don't stall during slot connection, when the mouse enters a node.
+	dom.mousemove(E2.app.onMouseMoved.bind(E2.app)); // Make sure we don't stall during slot connection, when the mouse enters a node.
 	
 	dom.addClass('pl_layout');
 	
@@ -39,18 +39,14 @@ function NodeUI(parent_node, x, y) {
 	h_cell.append(lbl);
 	h_row.append(h_cell);
 	h_row.addClass('pl_header');
-	h_row.click(E2.app.onNodeHeaderClicked);
-	h_row.dblclick(E2.app.onNodeHeaderDblClicked(parent_node));
-	h_row.mouseenter(E2.app.onNodeHeaderEntered(parent_node));
-	h_row.mouseleave(E2.app.onNodeHeaderExited);
+	h_row.click(E2.app.onNodeHeaderClicked.bind(E2.app));
+	h_row.dblclick(E2.app.onNodeHeaderDblClicked.bind(E2.app, parent_node));
+	h_row.mouseenter(E2.app.onNodeHeaderEntered.bind(E2.app, parent_node));
+	h_row.mouseleave(E2.app.onNodeHeaderExited.bind(E2.app));
 
-	if(parent_node.plugin.desc)
-	{
-		// var p_name = E2.app.player.core.plugin_mgr.keybyid[parent_node.plugin.id];
-		
-		// h_row.attr('alt', '<b>' + p_name + '</b><br/><br/>' + parent_node.plugin.desc);
+	if (parent_node.plugin.desc) {
 		h_row.attr('alt', '' + parent_node.uid);
-		h_row.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
+		h_row.hover(E2.app.onShowTooltip.bind(E2.app), E2.app.onHideTooltip.bind(E2.app));
 	}
 
 	dom.append(h_row);
@@ -99,7 +95,9 @@ function NodeUI(parent_node, x, y) {
 	else
 		this.plugin_ui = {}; // We must set a dummy object so plugins can tell why they're being called.
 	
-	make_draggable(dom, E2.app.onNodeDragged(parent_node), E2.app.onNodeDragStopped(parent_node));
+	make_draggable(dom, 
+		E2.app.onNodeDragged.bind(E2.app, parent_node),
+		E2.app.onNodeDragStopped.bind(E2.app, parent_node))
     	
 	var s = dom[0].style;
 	
@@ -108,8 +106,7 @@ function NodeUI(parent_node, x, y) {
 	E2.dom.canvas_parent.append(dom);
 }
 
-NodeUI.create_slot = function(parent_node, nid, col, s, type)
-{
+NodeUI.create_slot = function(parent_node, nid, col, s, type) {
 	var div = make('div');
 
 	if(s.uid !== undefined)
@@ -120,9 +117,9 @@ NodeUI.create_slot = function(parent_node, nid, col, s, type)
 	div.text(s.name);
 	div.addClass('pl_slot');
 
-	div.mouseenter(E2.app.onSlotEntered(parent_node, s, div));
-	div.mouseleave(E2.app.onSlotExited(parent_node, s, div));
-	div.mousedown(E2.app.onSlotClicked(parent_node, s, div, type));
+	div.mouseenter(E2.app.onSlotEntered.bind(E2.app, parent_node, s, div))
+	div.mouseleave(E2.app.onSlotExited.bind(E2.app, parent_node, s, div))
+	div.mousedown(E2.app.onSlotClicked.bind(E2.app, parent_node, s, div, type))
 
 	var id = '' + parent_node.uid;
 	
@@ -131,7 +128,7 @@ NodeUI.create_slot = function(parent_node, nid, col, s, type)
 	id += '_' + (s.uid !== undefined ? s.uid : s.index);
 	
 	div.attr('alt', id);
-	div.hover(E2.app.onShowTooltip, E2.app.onHideTooltip);
+	div.hover(E2.app.onShowTooltip.bind(E2.app), E2.app.onHideTooltip.bind(E2.app));
 	col.append(div);
 };
 

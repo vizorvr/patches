@@ -28,12 +28,16 @@ EventEmitter.prototype.emit = function(kind) {
 	if (!this._listeners[kind])
 		return
 
+	var that = this
+
 	var emitArguments = Array.prototype.splice.call(arguments, 1)
 
 	this._listeners[kind].forEach(function(cb) {
-		cb.apply({}, emitArguments);
+		cb.apply({}, emitArguments)
 	})
 
 	return this
 }
 
+if (typeof(module) !== 'undefined')
+	module.exports = EventEmitter

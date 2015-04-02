@@ -88,8 +88,10 @@ AssetTracker.prototype.signal_update = function()
 		l[i]();
 };
 
-function Core(vr_devices, app) {
+function Core(vr_devices) {
 	var self = this;
+
+	E2.core = this
 	
 	E2.dt = this.datatypes = {
 		FLOAT: { id: 0, name: 'Float' },
@@ -117,30 +119,29 @@ function Core(vr_devices, app) {
 	
 	this.asset_tracker = new AssetTracker(this);
 	this.renderer = new Renderer(vr_devices, '#webgl-canvas', this);
-	this.active_graph = this.root_graph = null;
+
 	this.active_graph_dirty = true;
-	this.graphs = [];
+
+	this.active_graph = this.root_graph = null
+	this.graphs = []
+	
 	this.abs_t = 0.0;
 	this.delta_t = 0.0;
 	this.graph_uid = 0;
-	this.app = app;
+
 	this.plugin_mgr = new PluginManager(this,
 		'/plugins',
-		E2.app ? E2.app.onPluginRegistered : null,
-		E2.app ? E2.app.onPluginInstantiated : null,
-		function() {
-			if (E2.app.onPluginsLoaded)
-				E2.app.onPluginsLoaded();
+		E2.app ? E2.app.onPluginRegistered.bind(E2.app) : null, // TODO emit
+		E2.app ? E2.app.onPluginInstantiated.bind(E2.app) : null,
+		this.onPluginsLoaded.bind(this)
+	);
 
-			self.onPluginsLoaded();
-		});
 	this.aux_scripts = {};
 	this.aux_styles = {};
 	this.resolve_dt = []; // Table for easy reverse lookup of dt reference by id.
 	this.audio_ctx = null;
 	
-	for(var i in this.datatypes)
-	{
+	for(var i in this.datatypes) {
 		var dt = this.datatypes[i];
 		
 		this.resolve_dt[dt.id] = dt;
@@ -175,29 +176,7 @@ function Core(vr_devices, app) {
 		return dirty; // Did connection state change?
 	};
 
-	this.onGraphSelected = function(graph)
-	{
-		self.active_graph.destroy_ui();
-		self.active_graph = graph;
-		
-		// TODO: Fix this up later. We need to reset this position to make
-		// copy / paste and switching graphs more humane, but right now this 
-		// introduces a bug in the connection rendering logic for some (copied)
-		// nested subgraphs.
-		
-		E2.dom.canvas_parent.scrollTop(0);
-		E2.dom.canvas_parent.scrollLeft(0);
-		self.app.scrollOffset[0] = self.app.scrollOffset[1] = 0;
-		
-		// Clear the current breadcrumb elements and rebuild.
-		E2.dom.breadcrumb.children().remove();
-		self.active_graph.build_breadcrumb(E2.dom.breadcrumb, false);
-		
-		self.active_graph.create_ui();
-		self.active_graph.reset();
-		self.active_graph_dirty = true;
-	};
-	
+
 	this.create_dialog = function(diag, title, w, h, done_func, open_func)
 	{
 		var modal = bootbox.dialog({
@@ -252,8 +231,7 @@ function Core(vr_devices, app) {
 			return 0.0;
 		else if(dt === dts.COLOR)
 			return vec4.createFrom(1, 1, 1, 1);
-		else if(dt === dts.MATRIX)
-		{
+		else if(dt === dts.MATRIX) {
 			var m = mat4.create();
 	
 			mat4.identity(m);
@@ -297,8 +275,7 @@ function Core(vr_devices, app) {
 		return JSON.stringify(d, undefined, 4);
 	};
 	
-	this.deserialiseObject = function(d)
-	{
+	this.deserialiseObject = function(d) {
 		self.abs_t = d.abs_t;
 		self.delta_t = 0.0;
 		self.graph_uid = d.graph_uid;
@@ -316,15 +293,13 @@ function Core(vr_devices, app) {
 			
 		self.active_graph = resolve_graph(self.graphs, d.active_graph); 
 		
-		if(!self.active_graph)
-		{
+		if(!self.active_graph) {
 			msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
 			self.active_graph = self.root_graph;
 		}
 
-		if(E2.dom.structure)
-		{
-			self.rebuild_structure_tree();
+		if (E2.dom.structure) {
+			self.rebuild_structure_tree()
 			
 			if(self.active_graph.tree_node)
 				self.active_graph.tree_node.activate();
@@ -333,19 +308,15 @@ function Core(vr_devices, app) {
 		}
 	}
 
-	this.deserialise = function(str)
-	{
-		return this.deserialiseObject(JSON.parse(str));
-	};
+	this.deserialise = function(str) {
+		return this.deserialiseObject(JSON.parse(str))
+	}
 	
-	this.rebuild_structure_tree = function()
-	{
-		var build = function(graph, name)
-		{
+	this.rebuild_structure_tree = function() {
+		function build(graph, name) {
 			var nodes = graph.nodes;
 			
-			if(graph.parent_graph)
-			{
+			if (graph.parent_graph) {
 				var ptn = graph.parent_graph.tree_node;
 				var tnode = new TreeNode(ptn.tree, ptn, name, null);
 				
@@ -354,15 +325,14 @@ function Core(vr_devices, app) {
 				tnode.graph = graph;
 			}
 			
-			for(var i = 0, len = nodes.length; i < len; i++)
-			{
+			for(var i = 0, len = nodes.length; i < len; i++) {
 				var n = nodes[i];
 
-				if(n.plugin.e2_is_graph)
+				if(n.plugin.isGraph)
 					build(n.plugin.graph, n.get_disp_name());
 			}
-		};
-		
+		}
+
 		E2.dom.structure.tree.reset();
 		self.root_graph.tree_node = E2.dom.structure.tree.root;
 		E2.dom.structure.tree.root.graph = self.root_graph;
@@ -423,144 +393,6 @@ Core.prototype.emit = function(kind)
 };
 
 
-
-E2.InitialiseEngi = function(vr_devices)
-{
-	E2.dom.canvas_parent = $('#canvas_parent');
-	E2.dom.canvas = $('#canvas');
-	E2.dom.controls = $('#controls');
-	E2.dom.webgl_canvas = $('#webgl-canvas');
-	E2.dom.left_nav = $('#left-nav');
-	E2.dom.mid_pane = $('#mid-pane');
-	E2.dom.dbg = $('#dbg');
-	E2.dom.play = $('#play');
-	E2.dom.play_i = $('i', E2.dom.play);
-	E2.dom.pause = $('#pause');
-	E2.dom.stop = $('#stop');
-	E2.dom.refresh = $('#refresh');
-	E2.dom.save = $('.save-button');
-	E2.dom.saveAsPreset = $('#save-as-preset');
-	E2.dom.saveSelectionAsPreset = $('#save-selection-as-preset');
-	E2.dom.publish = $('#publish');
-	E2.dom.dl_graph = $('#dl-graph');
-	E2.dom.open = $('#open');
-	E2.dom.load_clipboard = $('#load-clipboard');
-	E2.dom.structure = $('#structure');
-	E2.dom.info = $('#info');
-	E2.dom.info._defaultContent = E2.dom.info.html()
-	E2.dom.tabs = $('#tabs');
-	E2.dom.graphs_list = $('#graphs-list');
-	E2.dom.presets_list = $('#presets');
-	E2.dom.breadcrumb = $('#breadcrumb');
-	E2.dom.load_spinner = $('#load-spinner');
-
-	E2.dom.filename_input = $('#filename-input');
-
-	$.ajaxSetup({ cache: false });
-
-	msg('Welcome to WebFx. ' + (new Date()));
-	
-	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, ex) 
-	{
-		if(settings.dataType === 'script' && !settings.url.match(/^\/plugins\/all.plugins\.js/)) 
-		{
-			if(typeof(ex) === 'string')
-			{
-				msg(ex);
-				return;
-			}
-				
-			var m = 'ERROR: Script exception:\n';
-			
-			if(ex.fileName)
-				m += '\tFilename: ' + ex.fileName;
-				
-			if(ex.lineNumber)
-				m += '\tLine number: ' + ex.lineNumber;
-			
-			if(ex.message)
-				m += '\tMessage: ' + ex.message;
-				
-			msg(m);
-		}
-	});
-
-	E2.app = new Application();
-
-	E2.dom.structure.tree = new TreeView(E2.dom.structure, function(graph)
-	{ // On item activation
-		E2.app.clearEditState();
-		E2.app.clearSelection();
-		E2.app.player.core.onGraphSelected(graph);
-		E2.app.updateCanvas(true);
-	},
-	function(graph, original, sibling, insert_after)
-	{ // On child dropped
-		graph.reorder_children(original, sibling, insert_after);
-	});
-
-	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, E2.app, E2.dom.structure.tree.root);
-	
-	E2.dom.save.click(E2.app.onSaveClicked);
-	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked);
-	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked);
-	E2.dom.open.click(E2.app.onOpenClicked);
-	E2.dom.publish.click(E2.app.onPublishClicked);
-
-	E2.dom.play.click(E2.app.onPlayClicked);
-	E2.dom.pause.click(E2.app.onPauseClicked);
-	E2.dom.stop.click(E2.app.onStopClicked);
-
-	// this is ran twice to force the right dimensions at startup
-	E2.app.onWindowResize();
-	E2.app.onWindowResize();
-	
-	if (E2.app.player.core.plugin_mgr.release_mode)
-	{
-		window.onbeforeunload = function(e)
-		{
-		    return 'You might be leaving behind unsaved work!';
-		};
-	}
+if (typeof(module) !== 'undefined') {
+	module.exports = Core
 }
-
-E2.EnumerateVRDevices = function(devices)
-{
-	var hmd = null, sensor = null;
-	
-	for(var i = 0; i < devices.length; i++)
-	{
-		if(devices[i] instanceof HMDVRDevice)
-		{
-			// Just use the first device we find for now.
-			hmd = devices[i];
-			break;
-		}
-	}
-	
-	if(hmd)
-	{
-		for(var i = 0; i < devices.length; i++)
-		{
-			var d = devices[i];
-		
-			if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId)
-			{
-				sensor = devices[i];
-				break;
-			}
-		}
-	}
-
-	E2.InitialiseEngi([hmd, sensor]);
-};
-			
-E2.InitialiseEngiVR = function()
-{
-	if(navigator.getVRDevices)
-		navigator.getVRDevices().then(E2.EnumerateVRDevices);
-	else if(navigator.mozGetVRDevices)
-		navigator.mozGetVRDevices(E2.EnumerateVRDevices);
-	else
-		E2.InitialiseEngi([null, null]);
-};

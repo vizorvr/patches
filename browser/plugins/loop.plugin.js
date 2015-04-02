@@ -19,7 +19,7 @@ E2.p = E2.plugins["loop"] = function(core, node)
 	this.output_nodes = {};
 	this.parent_node = node; // For reverse lookup in the core.
 	this.updated_sids = [];
-	this.e2_is_graph = true; // Constant. To get rid of string compares from the core.
+	this.isGraph = true; // Constant. To get rid of string compares from the core.
 };
 
 E2.p.prototype.reset = function()
@@ -415,51 +415,46 @@ E2.p.prototype.destroy_slot = function(type, nuid)
 	this.parent_node.remove_slot(type, sid);
 };
 
-E2.p.prototype.graph_event = function(self) { return function(ev)
-{
-	var pid = ev.node.plugin.id;
-	var core = self.core;
-	var node = self.parent_node;
+E2.p.prototype.setGraph = function(graph) {
+	var that = this
+	var node = this.parent_node
 	
-	if(pid !== 'input_proxy' && pid !== 'output_proxy')
-		return;
-	
-	self.dbg('Gevent type = ' + ev.type + ', node uid = ' + ev.node.uid);
-	
-	if(ev.type === 'node-created')
-	{
-		if(pid === 'input_proxy')
-		{
-			var sid = node.add_slot(E2.slot_type.input, { name: '' + ev.node.title, dt: core.datatypes.ANY });
-			
-			self.state.input_sids[ev.node.uid] = sid;
-			self.input_nodes[sid] = ev.node;
+	this.graph = graph
+
+	graph
+	.on('nodeAdded', function(addedNode) {
+		var pid = addedNode.plugin.id
+		if (pid === 'input_proxy') {
+			var sid = node.add_slot(E2.slot_type.input, {
+				name: addedNode.title,
+				dt: E2.dt.ANY
+			})
+			that.state.input_sids[addedNode.uid] = sid
+			that.input_nodes[sid] = addedNode
+		} else if (pid === 'output_proxy') {
+			var sid = node.add_slot(E2.slot_type.output, {
+				name: addedNode.title,
+				dt: core.datatypes.ANY
+			})
+			that.state.output_sids[addedNode.uid] = sid
+			that.output_nodes[sid] = addedNode
 		}
-		else if(pid === 'output_proxy')
-		{
-			var sid = node.add_slot(E2.slot_type.output, { name: '' + ev.node.title, dt: core.datatypes.ANY });
-			
-			self.state.output_sids[ev.node.uid] = sid;
-			self.output_nodes[sid] = ev.node;
-		}
-	}
-	else if(ev.type === 'node-destroyed')
-	{
-		if(pid === 'input_proxy')
-			self.destroy_slot(E2.slot_type.input, ev.node.uid);
-		else if(pid === 'output_proxy')
-			self.destroy_slot(E2.slot_type.output, ev.node.uid);
-	}
-	else if(ev.type === 'node-renamed')
-	{
-		if(pid === 'input_proxy')
-		{
-			node.rename_slot(E2.slot_type.input, self.state.input_sids[ev.node.uid], ev.node.title);
-		}
-		else if(pid === 'output_proxy')
-			node.rename_slot(E2.slot_type.output, self.state.output_sids[ev.node.uid], ev.node.title);
-	}
-}};
+	})
+	.on('nodeRemoved', function(removedNode) {
+		var pid = removedNode.plugin.id
+		if (pid === 'input_proxy')
+			that.destroy_slot(E2.slot_type.input, removedNode.uid)
+		else if (pid === 'output_proxy')
+			that.destroy_slot(E2.slot_type.output, removedNode.uid)
+	})
+	.on('nodeRenamed', function(renamedNode) {
+		var pid = renamedNode.plugin.id
+		if (pid === 'input_proxy')
+			node.rename_slot(E2.slot_type.input, that.state.input_sids[renamedNode.uid], renamedNode.title)
+		else if (pid === 'output_proxy')
+			node.rename_slot(E2.slot_type.output, that.state.output_sids[renamedNode.uid], renamedNode.title)
+	})
+}
 
 E2.p.prototype.state_changed = function(ui)
 {

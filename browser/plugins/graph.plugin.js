@@ -1,5 +1,5 @@
-E2.p = E2.plugins["graph"] = function(core, node)
-{
+(function() {
+var GraphPlugin = E2.plugins.graph = function(core, node) {
 	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and the encapsulated logic of which can be optinally rendered to a <b>texture</b> instead of the framebuffer.';
 	
 	this.input_slots = [
@@ -31,44 +31,43 @@ E2.p = E2.plugins["graph"] = function(core, node)
 	this.framebuffer = null;
 	this.texture = null;
 	this.renderbuffer = null;
-	this.e2_is_graph = true; // Constant. To get rid of string compares from the core.
+	this.isGraph = true; // Constant. To get rid of string compares from the core.
 };
 
-E2.p.prototype.getWidth = function() {
+GraphPlugin.prototype.getWidth = function() {
 	return parseFloat(this.framebuffer.width)
 }
 
-E2.p.prototype.getHeight = function() {
+GraphPlugin.prototype.getHeight = function() {
 	return parseFloat(this.framebuffer.height)
 }
 
-E2.p.prototype.reset = function()
-{
-	this.state.enabled = true;
+GraphPlugin.prototype.reset = function(){
+	this.state.enabled = true
 	
-	if(this.graph)
-		this.graph.reset();
-};
+	if (this.graph)
+		this.graph.reset()
+}
 
-E2.p.prototype.play = function()
+GraphPlugin.prototype.play = function()
 {
 	if(this.graph)
 		this.graph.pause();
 };
 
-E2.p.prototype.pause = function()
+GraphPlugin.prototype.pause = function()
 {
 	if(this.graph)
 		this.graph.pause();
 };
 
-E2.p.prototype.stop = function()
+GraphPlugin.prototype.stop = function()
 {
 	if(this.graph)
 		this.graph.stop();
 };
 
-E2.p.prototype.open_editor = function(self)
+GraphPlugin.prototype.open_editor = function(self)
 {
 	var diag = make('div');
 	var always_upd = $('<input id="always_upd" type="checkbox" title="If false, this graph is updated only when one of its inputs updates." />');
@@ -148,7 +147,7 @@ E2.p.prototype.open_editor = function(self)
 	r4.append(filter_inp);
 	diag.append(r4);
 	
-	var store_state = function(self, always_upd, width_inp, height_inp, filter_inp) { return function(e)
+	var store_state = function(self, always_upd, width_inp, height_inp, filter_inp) { return function()
 	{
 		self.state.always_update = always_upd.is(":checked");
 		
@@ -169,12 +168,11 @@ E2.p.prototype.open_editor = function(self)
 	self.core.create_dialog(diag, 'Edit Preferences.', 460, 250, store_state(self, always_upd, width_inp, height_inp, filter_inp));
 };
 
-E2.p.prototype.create_ui = function()
-{
+GraphPlugin.prototype.create_ui = function() {
 	var ui = make('div');
 	var inp_edit = makeButton('Edit', 'Open this graph for editing.');
 	
-	inp_edit.click(function(self) { return function(e) 
+	inp_edit.click(function(self) { return function() 
 	{
 		if(self.graph)
 		{
@@ -196,45 +194,37 @@ E2.p.prototype.create_ui = function()
 	this.ui = ui;
 	
 	return ui;
-};
+}
 
-E2.p.prototype.get_dt_name = function(dt)
-{
+GraphPlugin.prototype.get_dt_name = function(dt) {
 	if(!dt || !dt.name)
 		return 'ERROR';
 		
 	return dt.name;
+}
+
+GraphPlugin.prototype.dbg = function(str)
+{
+	msg('Graph: ' + str);
 };
 
-E2.p.prototype.dbg = function(str)
-{
-	// msg('Graph: ' + str);
-};
-
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(slot.uid !== undefined)
-	{
+GraphPlugin.prototype.connection_changed = function(on, conn, slot) {
+	if (slot.uid !== undefined) {
 		var psl = null;
 		var core = this.core;
 		
-		if(!on)
-		{
-			if(slot.type === E2.slot_type.input)
-			{
+		if(!on) {
+			if (slot.type === E2.slot_type.input) {
 				var inode = this.input_nodes[slot.uid];
 				
 				psl = inode.dyn_outputs[0];
 				inode.plugin.data = core.get_default_value(slot.dt);
 				inode.reset();
-			}
-			else
-			{
+			} else {
 				var node = this.parent_node;
 				var count = 0;
 				
-				for(var i = 0, len = node.outputs.length; i < len; i++)
-				{
+				for(var i = 0, len = node.outputs.length; i < len; i++) {
 					if(node.outputs[i].src_slot === slot)
 						count++;
 				}
@@ -243,31 +233,23 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 					psl = this.output_nodes[slot.uid].dyn_inputs[0];
 			}
 
-			if(psl && !psl.connected)
-			{
+			if(psl && !psl.connected) {
 				psl.dt = slot.dt = core.datatypes.ANY;
 				this.dbg('Resetting PDT/GDT for slot(' + slot.uid + ')');
 			}
-		}
-		else
-		{
+		} else {
 			var tn = null;
 			
-			if(slot.type === E2.slot_type.input)
-			{
-				if(slot.dt === core.datatypes.ANY)
-				{
+			if(slot.type === E2.slot_type.input) {
+				if(slot.dt === core.datatypes.ANY) {
 					slot.dt = conn.src_slot.dt;
 					this.dbg('Setting GDT for slot(' + slot.uid + ') to ' + this.get_dt_name(conn.src_slot.dt));
 				}
 				
 				tn = this.input_nodes[slot.uid];
 				psl = tn.dyn_outputs[0];
-			}
-			else
-			{
-				if(slot.dt === core.datatypes.ANY)
-				{
+			} else {
+				if(slot.dt === core.datatypes.ANY) {
 					slot.dt = conn.dst_slot.dt;
 					this.dbg('Setting GDT for slot(' + slot.uid + ') to ' + this.get_dt_name(conn.dst_slot.dt));
 				}
@@ -276,22 +258,18 @@ E2.p.prototype.connection_changed = function(on, conn, slot)
 				psl = tn.dyn_inputs[0];
 			}
 			
-			if(psl.dt === core.datatypes.ANY)
-			{
+			if (psl.dt === core.datatypes.ANY) {
 				this.dbg('Setting PDT for slot(' + psl.uid + ') to ' + this.get_dt_name(slot.dt));
 				psl.dt = slot.dt;
 				tn.plugin.data = core.get_default_value(slot.dt);
 			}
 		}
-	}
-	else if(slot.type === E2.slot_type.output)
-	{
+	} else if(slot.type === E2.slot_type.output) {
 		this.set_render_target_state(on);
 	}
 };
 
-E2.p.prototype.delete_framebuffer = function(on)
-{
+GraphPlugin.prototype.delete_framebuffer = function() {
 	var gl = this.gl;
 	
 	if(this.framebuffer)
@@ -308,7 +286,7 @@ E2.p.prototype.delete_framebuffer = function(on)
 	this.texture = null;
 };
 
-E2.p.prototype.set_render_target_state = function(on)
+GraphPlugin.prototype.set_render_target_state = function(on)
 {
 	var gl = this.gl;
 	
@@ -369,7 +347,7 @@ E2.p.prototype.set_render_target_state = function(on)
 	}
 };
 	
-E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_slot)
+GraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_slot)
 {
 	var self = this;
 	var core = this.core;
@@ -508,57 +486,43 @@ E2.p.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_s
 	}
 };
 
-E2.p.prototype.update_input = function(slot, data)
-{
-	if(slot.uid === undefined)
-	{
-		if(slot.index === 0)
-		{
+GraphPlugin.prototype.update_input = function(slot, data) {
+	if (slot.uid === undefined) {
+		if (slot.index === 0) {
 			this.state.enabled = data;
 		
-			if(!data)
-			{
-				if(this.graph && !this.is_reset)
-				{
+			if (!data) {
+				if(this.graph && !this.is_reset) {
 					this.is_reset = true;
 					
-					if(this.graph === E2.app.player.core.active_graph && this.ui)
-					{
+					if (this.graph === E2.app.player.core.active_graph && this.ui) {
 						var core = this.core;
 						var conns = this.graph.connections;
 		
-						for(var i = 0, len = conns.length; i < len; i++)
+						for (var i = 0, len = conns.length; i < len; i++)
 							conns[i].ui.flow = false;
 					
 						// If we're the active graph and the editor is active,
 						// update the canvas to reflect potentially changed 
 						// connection state.
-						if(this.graph === core.active_graph && core.app)
+						if (this.graph === core.active_graph && core.app)
 							core.app.updateCanvas(false);
 					}
 				}
-			}
-			else
+			} else
 				this.is_reset = false;
 		}
-	}
-	else
-	{
+	} else {
 		this.input_nodes[slot.uid].plugin.input_updated(data);
 	}
-};
+}
 
-E2.p.prototype.update_state = function()
-{
+GraphPlugin.prototype.update_state = function() {
 	this.updated = false;
 	this.updated_sids.length = 0;
 
-	if(this.graph && this.state.enabled)
-	{
-		var old_fb = null;
-		
-		if(this.framebuffer)
-		{
+	if(this.graph && this.state.enabled) {
+		if(this.framebuffer) {
 			var gl = this.gl;
 			
 			this.core.renderer.push_framebuffer(this.framebuffer, this.framebuffer.width, this.framebuffer.height);
@@ -573,21 +537,20 @@ E2.p.prototype.update_state = function()
 	}
 };
 
-E2.p.prototype.update_output = function(slot)
-{
-	if(slot.uid !== undefined)
-		return this.output_nodes[slot.uid].plugin.data;
+GraphPlugin.prototype.update_output = function(slot) {
+	if (slot.uid !== undefined)
+		return this.output_nodes[slot.uid].plugin.data
 		
-	this.updated = true; // Oooh!
-	return this.texture;
-};
+	this.updated = true // Oooh!
+	return this.texture
+}
 
-E2.p.prototype.query_output = function(slot)
+GraphPlugin.prototype.query_output = function(slot)
 {
 	return (slot.uid === undefined) || this.updated_sids.indexOf(slot.uid) > -1;
 };
 
-E2.p.prototype.destroy_slot = function(type, nuid)
+GraphPlugin.prototype.destroy_slot = function(type, nuid)
 {
 	var slots = (type === E2.slot_type.input) ? this.state.input_sids : this.state.output_sids;
 	var sid = slots[nuid];
@@ -596,52 +559,50 @@ E2.p.prototype.destroy_slot = function(type, nuid)
 	this.parent_node.remove_slot(type, sid);
 };
 
-E2.p.prototype.graph_event = function(self) { return function(ev)
-{
-	var pid = ev.node.plugin.id;
-	var core = self.core;
-	var node = self.parent_node;
+GraphPlugin.prototype.setGraph = function(graph) {
+	var that = this
+	var node = this.parent_node
 	
-	if(pid !== 'input_proxy' && pid !== 'output_proxy')
-		return;
-	
-	self.dbg('Gevent type = ' + ev.type + ', node uid = ' + ev.node.uid);
-	
-	if(ev.type === 'node-created')
-	{
-		if(pid === 'input_proxy')
-		{
-			var sid = node.add_slot(E2.slot_type.input, { name: '' + ev.node.title, dt: core.datatypes.ANY });
-			
-			self.state.input_sids[ev.node.uid] = sid;
-			self.input_nodes[sid] = ev.node;
-		}
-		else if(pid === 'output_proxy')
-		{
-			var sid = node.add_slot(E2.slot_type.output, { name: '' + ev.node.title, dt: core.datatypes.ANY });
-			
-			self.state.output_sids[ev.node.uid] = sid;
-			self.output_nodes[sid] = ev.node;
-		}
-	}
-	else if(ev.type === 'node-destroyed')
-	{
-		if(pid === 'input_proxy')
-			self.destroy_slot(E2.slot_type.input, ev.node.uid);
-		else if(pid === 'output_proxy')
-			self.destroy_slot(E2.slot_type.output, ev.node.uid);
-	}
-	else if(ev.type === 'node-renamed')
-	{
-		if(pid === 'input_proxy')
-			node.rename_slot(E2.slot_type.input, self.state.input_sids[ev.node.uid], ev.node.title);
-		else if(pid === 'output_proxy')
-			node.rename_slot(E2.slot_type.output, self.state.output_sids[ev.node.uid], ev.node.title);
-	}
-}};
+	this.graph = graph
+	this.graph.plugin = this
 
-E2.p.prototype.state_changed = function(ui)
-{
+	this.graph
+	.on('nodeAdded', function(addedNode) {
+		var sid
+		var pid = addedNode.plugin.id
+		if (pid === 'input_proxy') {
+			sid = node.add_slot(E2.slot_type.input, {
+				name: addedNode.title,
+				dt: E2.dt.ANY
+			})
+			that.state.input_sids[addedNode.uid] = sid
+			that.input_nodes[sid] = addedNode
+		} else if (pid === 'output_proxy') {
+			sid = node.add_slot(E2.slot_type.output, {
+				name: addedNode.title,
+				dt: E2.dt.ANY
+			})
+			that.state.output_sids[addedNode.uid] = sid
+			that.output_nodes[sid] = addedNode
+		}
+	})
+	.on('nodeRemoved', function(removedNode) {
+		var pid = removedNode.plugin.id
+		if (pid === 'input_proxy')
+			that.destroy_slot(E2.slot_type.input, removedNode.uid)
+		else if (pid === 'output_proxy')
+			that.destroy_slot(E2.slot_type.output, removedNode.uid)
+	})
+	.on('nodeRenamed', function(renamedNode) {
+		var pid = renamedNode.plugin.id
+		if (pid === 'input_proxy')
+			node.rename_slot(E2.slot_type.input, that.state.input_sids[renamedNode.uid], renamedNode.title)
+		else if (pid === 'output_proxy')
+			node.rename_slot(E2.slot_type.output, that.state.output_sids[renamedNode.uid], renamedNode.title)
+	})
+}
+
+GraphPlugin.prototype.state_changed = function(ui) {
 	var core = this.core;
 	var node = this.parent_node;
 	var self = this;
@@ -649,16 +610,14 @@ E2.p.prototype.state_changed = function(ui)
 	// Only rebuild the node lists during post-load patch up of the graph, 
 	// during which 'ui' will be null. Otherwise the lists would have been rebuilt 
 	// every time we switch to the graph containing this node in the editor.
-	if(ui)
-	{
+	if (ui) {
 		// Decorate the auto generated dom base element with an
 		// additional class to allow custom styling.
 		node.ui.dom.addClass('graph');
 
 		var inp_config = makeButton(null, 'Edit preferences.', 'config_btn');
 
-		inp_config.click(function(self) { return function(e) 
-		{
+		inp_config.click(function(self) { return function() {
 			self.open_editor(self);
 		}}(this));
 		
@@ -703,3 +662,6 @@ E2.p.prototype.state_changed = function(ui)
 		}
 	}
 };
+
+
+})()

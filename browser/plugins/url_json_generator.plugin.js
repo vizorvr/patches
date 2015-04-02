@@ -58,6 +58,7 @@ UrlJson.prototype.update_state = function() {
 		{
 			self.object = data;
 			self.core.asset_tracker.signal_completed();
+			self.updated = true
 		}}(self),
 		error: function(self) { return function(jqXHR, textStatus, errorThrown)
 		{
@@ -65,8 +66,7 @@ UrlJson.prototype.update_state = function() {
 			self.state.url = '';
 			self.object = {}
 			self.core.asset_tracker.signal_failed();
-		}}(self),
-		async: false
+		}}(self)
 	});
 	
 	this.dirty = false;
