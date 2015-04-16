@@ -1,14 +1,16 @@
 (function() {
-var GraphPlugin = E2.plugins.graph = function(core, node) {
+var GraphPlugin = E2.plugins.graph = function(core) {
+	AbstractSubGraphPlugin.apply(this, arguments)
+
 	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and the encapsulated logic of which can be optinally rendered to a <b>texture</b> instead of the framebuffer.';
 	
 	this.input_slots = [
 		{ name: 'enabled', dt: core.datatypes.BOOL, desc: 'En- or disable the processing of the nested graph logic.', def: true }
-	];
+	]
 	
 	this.output_slots = [
 		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'When connected, all enclosed plugins will render to this texture instead of the framebuffer. Also, when connected two dynamic input slots will appear that allows control of the texture resolution.', def: 'Render to framebuffer' }
-	];
+	]
 	
 	this.state = { 
 		enabled: true, 
@@ -20,19 +22,13 @@ var GraphPlugin = E2.plugins.graph = function(core, node) {
 		output_sids: {}
 	};
 		
-	this.gl = core.renderer.context;
-	this.core = core;
-	this.input_nodes = {};
-	this.output_nodes = {};
-	this.ui = null;
 	this.is_reset = true;
-	this.parent_node = node; // For reverse lookup in the core.
-	this.updated_sids = [];
 	this.framebuffer = null;
 	this.texture = null;
-	this.renderbuffer = null;
-	this.isGraph = true; // Constant. To get rid of string compares from the core.
-};
+	this.renderbuffer = null
+}
+
+GraphPlugin.prototype = Object.create(AbstractSubGraphPlugin.prototype)
 
 GraphPlugin.prototype.getWidth = function() {
 	return parseFloat(this.framebuffer.width)
@@ -41,31 +37,6 @@ GraphPlugin.prototype.getWidth = function() {
 GraphPlugin.prototype.getHeight = function() {
 	return parseFloat(this.framebuffer.height)
 }
-
-GraphPlugin.prototype.reset = function(){
-	this.state.enabled = true
-	
-	if (this.graph)
-		this.graph.reset()
-}
-
-GraphPlugin.prototype.play = function()
-{
-	if(this.graph)
-		this.graph.pause();
-};
-
-GraphPlugin.prototype.pause = function()
-{
-	if(this.graph)
-		this.graph.pause();
-};
-
-GraphPlugin.prototype.stop = function()
-{
-	if(this.graph)
-		this.graph.stop();
-};
 
 GraphPlugin.prototype.open_editor = function(self)
 {
@@ -196,79 +167,6 @@ GraphPlugin.prototype.create_ui = function() {
 	return ui;
 }
 
-GraphPlugin.prototype.get_dt_name = function(dt) {
-	if(!dt || !dt.name)
-		return 'ERROR';
-		
-	return dt.name;
-}
-
-GraphPlugin.prototype.dbg = function(str)
-{
-	msg('Graph: ' + str);
-};
-
-GraphPlugin.prototype.connection_changed = function(on, conn, slot) {
-	if (slot.uid !== undefined) {
-		var psl = null;
-		var core = this.core;
-		
-		if(!on) {
-			if (slot.type === E2.slot_type.input) {
-				var inode = this.input_nodes[slot.uid];
-				
-				psl = inode.dyn_outputs[0];
-				inode.plugin.data = core.get_default_value(slot.dt);
-				inode.reset();
-			} else {
-				var node = this.parent_node;
-				var count = 0;
-				
-				for(var i = 0, len = node.outputs.length; i < len; i++) {
-					if(node.outputs[i].src_slot === slot)
-						count++;
-				}
-				
-				if(count === 0)
-					psl = this.output_nodes[slot.uid].dyn_inputs[0];
-			}
-
-			if(psl && !psl.connected) {
-				psl.dt = slot.dt = core.datatypes.ANY;
-				this.dbg('Resetting PDT/GDT for slot(' + slot.uid + ')');
-			}
-		} else {
-			var tn = null;
-			
-			if(slot.type === E2.slot_type.input) {
-				if(slot.dt === core.datatypes.ANY) {
-					slot.dt = conn.src_slot.dt;
-					this.dbg('Setting GDT for slot(' + slot.uid + ') to ' + this.get_dt_name(conn.src_slot.dt));
-				}
-				
-				tn = this.input_nodes[slot.uid];
-				psl = tn.dyn_outputs[0];
-			} else {
-				if(slot.dt === core.datatypes.ANY) {
-					slot.dt = conn.dst_slot.dt;
-					this.dbg('Setting GDT for slot(' + slot.uid + ') to ' + this.get_dt_name(conn.dst_slot.dt));
-				}
-				
-				tn = this.output_nodes[slot.uid];
-				psl = tn.dyn_inputs[0];
-			}
-			
-			if (psl.dt === core.datatypes.ANY) {
-				this.dbg('Setting PDT for slot(' + psl.uid + ') to ' + this.get_dt_name(slot.dt));
-				psl.dt = slot.dt;
-				tn.plugin.data = core.get_default_value(slot.dt);
-			}
-		}
-	} else if(slot.type === E2.slot_type.output) {
-		this.set_render_target_state(on);
-	}
-};
-
 GraphPlugin.prototype.delete_framebuffer = function() {
 	var gl = this.gl;
 	
@@ -346,145 +244,6 @@ GraphPlugin.prototype.set_render_target_state = function(on)
 			this.delete_framebuffer();
 	}
 };
-	
-GraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_slot)
-{
-	var self = this;
-	var core = this.core;
-	var node = this.parent_node;
-	
-	var find_sid = function(nodes, uid)
-	{
-		for(var n in nodes)
-		{		
-			if(nodes[n].uid === uid)
-				return parseInt(n);
-		}
-		
-		msg('ERROR: Failed to resolve node(' + uid + ') in graph(' + self.graph.plugin.parent_node.title + ').');
-		return -1;
-	};
-	
-	var is_gslot_connected = function(gslot)
-	{
-		if(gslot.type === E2.slot_type.input)
-		{
-			for(var i = 0, len = node.inputs.length; i < len; i++)
-			{
-				if(node.inputs[i].dst_slot === gslot)
-					return true;
-			} 
-		}
-		else
-		{
-			for(var i = 0, len = node.outputs.length; i < len; i++)
-			{
-				if(node.outputs[i].src_slot === gslot)
-					return true;
-			} 
-		}
-		
-		return false;
-	};
-	
-	var change_slots = function(last, g_slot, p_slot)
-	{
-		self.dbg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid);
-		
-		p_slot.connected = true;
-		
-		if(on)
-		{
-			if(p_slot.dt === core.datatypes.ANY)
-			{
-				p_slot.dt = t_slot.dt;		
-				self.dbg('    Setting PDT to ' + self.get_dt_name(t_slot.dt) + '.');
-			
-				if(g_slot.dt === core.datatypes.ANY)
-				{
-					p_node.plugin.data = core.get_default_value(t_slot.dt);
-				}
-			}
-
-			if(g_slot.dt === core.datatypes.ANY)
-			{
-				g_slot.dt = t_slot.dt;		
-				self.dbg('    Setting GDT to ' + self.get_dt_name(t_slot.dt) + '.');
-			}
-		}
-		else if(last)
-		{
-			var conns = node.parent_graph.connections;
-			var connected = false;
-			
-			for(var i = 0, len = conns.length; i < len; i++)
-			{
-				var c = conns[i];
-				
-				if(c.dst_slot === g_slot || c.src_slot === g_slot)
-				{
-					connected = true;
-					break;
-				}
-			}
-			
-			p_slot.connected = false;
-
-			if(!connected)
-			{
-				p_slot.dt = g_slot.dt = core.datatypes.ANY;
-				self.dbg('    Reverting to PDT/GDT to ANY.');
-			}
-
-			if(t_node.plugin.id === 'input_proxy')
-			{
-				connected = false;
-				
-				for(var i = 0, len = t_node.outputs.length; i < len; i++)
-				{
-					if(t_node.outputs[i].src_slot === t_slot)
-					{
-						connected = true;
-						break;
-					}
-				}
-				
-				var rgsl = node.find_dynamic_slot(E2.slot_type.input, find_sid(self.input_nodes, t_node.uid));
-				
-				if(!connected && !is_gslot_connected(rgsl))
-				{
-					t_slot.dt = rgsl.dt = core.datatypes.ANY;
-					self.dbg('    Reverting remote proxy slot to PDT/GDT to ANY.');
-				}
-			}
-			else if(t_node.plugin.id === 'output_proxy')
-			{
-				var rgsl = node.find_dynamic_slot(E2.slot_type.output, find_sid(self.output_nodes, t_node.uid));
-				
-				if(!is_gslot_connected(rgsl))
-				{
-					t_slot.dt = rgsl.dt = core.datatypes.ANY;
-					self.dbg('    Reverting remote proxy slot to PDT/GDT to ANY.');
-				}
-			}
-		}
-	};
-	
-	if(p_node.plugin.id === 'input_proxy')
-	{
-		var last = p_node.outputs.length === 0;
-		
-		change_slots(last, node.find_dynamic_slot(E2.slot_type.input, find_sid(this.input_nodes, p_node.uid)), slot);
-		this.dbg('    Output count = ' + p_node.outputs.length);
-	}
-	else
-	{
-		var last = p_node.inputs.length === 0;
-		
-		change_slots(last, node.find_dynamic_slot(E2.slot_type.output, find_sid(this.output_nodes, p_node.uid)), slot);
-		this.dbg('    Input count = ' + p_node.inputs.length);
-	}
-};
 
 GraphPlugin.prototype.update_input = function(slot, data) {
 	if (slot.uid === undefined) {
@@ -536,71 +295,6 @@ GraphPlugin.prototype.update_state = function() {
 			this.core.renderer.pop_framebuffer();
 	}
 };
-
-GraphPlugin.prototype.update_output = function(slot) {
-	if (slot.uid !== undefined)
-		return this.output_nodes[slot.uid].plugin.data
-		
-	this.updated = true // Oooh!
-	return this.texture
-}
-
-GraphPlugin.prototype.query_output = function(slot)
-{
-	return (slot.uid === undefined) || this.updated_sids.indexOf(slot.uid) > -1;
-};
-
-GraphPlugin.prototype.destroy_slot = function(type, nuid)
-{
-	var slots = (type === E2.slot_type.input) ? this.state.input_sids : this.state.output_sids;
-	var sid = slots[nuid];
-	
-	delete slots[nuid];
-	this.parent_node.remove_slot(type, sid);
-};
-
-GraphPlugin.prototype.setGraph = function(graph) {
-	var that = this
-	var node = this.parent_node
-	
-	this.graph = graph
-	this.graph.plugin = this
-
-	this.graph
-	.on('nodeAdded', function(addedNode) {
-		var sid
-		var pid = addedNode.plugin.id
-		if (pid === 'input_proxy') {
-			sid = node.add_slot(E2.slot_type.input, {
-				name: addedNode.title,
-				dt: E2.dt.ANY
-			})
-			that.state.input_sids[addedNode.uid] = sid
-			that.input_nodes[sid] = addedNode
-		} else if (pid === 'output_proxy') {
-			sid = node.add_slot(E2.slot_type.output, {
-				name: addedNode.title,
-				dt: E2.dt.ANY
-			})
-			that.state.output_sids[addedNode.uid] = sid
-			that.output_nodes[sid] = addedNode
-		}
-	})
-	.on('nodeRemoved', function(removedNode) {
-		var pid = removedNode.plugin.id
-		if (pid === 'input_proxy')
-			that.destroy_slot(E2.slot_type.input, removedNode.uid)
-		else if (pid === 'output_proxy')
-			that.destroy_slot(E2.slot_type.output, removedNode.uid)
-	})
-	.on('nodeRenamed', function(renamedNode) {
-		var pid = renamedNode.plugin.id
-		if (pid === 'input_proxy')
-			node.rename_slot(E2.slot_type.input, that.state.input_sids[renamedNode.uid], renamedNode.title)
-		else if (pid === 'output_proxy')
-			node.rename_slot(E2.slot_type.output, that.state.output_sids[renamedNode.uid], renamedNode.title)
-	})
-}
 
 GraphPlugin.prototype.state_changed = function(ui) {
 	var core = this.core;
