@@ -1674,8 +1674,10 @@ function onNodeAdded(node) {
 	console.log('onNodeAdded', node)
 	node.create_ui()
 
-	if (node.plugin.state_changed)
+	if (node.plugin.state_changed) {
+		node.plugin.state_changed(null)
 		node.plugin.state_changed(node.ui.plugin_ui)
+	}
 }
 
 function onNodeRemoved(node) {

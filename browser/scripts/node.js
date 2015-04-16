@@ -116,6 +116,7 @@ Node.prototype.add_slot = function(slot_type, def) {
 
 	var is_inp = slot_type === E2.slot_type.input;
 	def.uid = suid;
+	def.dynamic = true
 	
 	if (is_inp) {
 		if(!this.dyn_inputs)
