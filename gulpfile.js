@@ -24,6 +24,7 @@ paths =
 			'./browser/scripts/renderer.js',
 			'./browser/scripts/shader.js',
 			'./browser/scripts/plugin-manager-bundled.js',
+			'./browser/scripts/subGraphPlugin.js',
 			'./browser/scripts/plugin-group.js',
 			'./browser/scripts/connection.js',
 			'./browser/scripts/graph.js',
