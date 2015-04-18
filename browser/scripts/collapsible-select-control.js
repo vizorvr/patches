@@ -74,7 +74,7 @@ CollapsibleSelectControl.prototype._search = function(text) {
 
 	var data = this._filterData(text)
 		.sort(function(a,b) {
-			return b.score - a.score;
+			return a.score - b.score;
 		})
 
 	var $result = this._resultTpl(data)
