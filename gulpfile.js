@@ -27,6 +27,7 @@ paths =
 			'./browser/scripts/subGraphPlugin.js',
 			'./browser/scripts/plugin-group.js',
 			'./browser/scripts/connection.js',
+			'./browser/scripts/event-emitter.js',
 			'./browser/scripts/graph.js',
 			'./browser/scripts/node.js',
 			'./browser/scripts/registers.js',

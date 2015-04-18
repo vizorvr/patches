@@ -14,7 +14,7 @@ E2.p = E2.plugins["register_local_read"] = function(core, node)
 	this.node = node;
 	this.data = null;
 	
-	if(!node.title)
+	if (!node.title)
 		this.old_title = node.title = 'reg_' + (node.parent_graph.registers.count() + 1);
 	else
 		this.old_title = node.title;

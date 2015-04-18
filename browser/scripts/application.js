@@ -88,8 +88,6 @@ Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 	result[1] = Math.round(o[1] + (area.height() / 2));
 };
 
-Application.prototype.onPluginRegistered = function(key, id) { }
-
 Application.prototype.onPluginInstantiated = function(id, pos) {
 	var that = this
 	var cp = E2.dom.canvas_parent
@@ -1620,7 +1618,7 @@ Application.prototype.onShowTooltip = function(e) {
 	
 	if(tokens.length < 2) // Node?
 	{
-		var p_name = core.plugin_mgr.keybyid[node.plugin.id];
+		var p_name = core.pluginManager.keybyid[node.plugin.id];
 		
 		txt += '<b>' + p_name + '</b><br/><br/>' + node.plugin.desc;
 	}
@@ -1792,6 +1790,8 @@ Application.prototype.onGraphSelected = function(graph) {
 Application.prototype.start = function() {
 	var that = this
 
+	E2.core.pluginManager.on('created', this.onPluginInstantiated.bind(this))
+
    	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
 	window.addEventListener('keydown', this.onKeyDown.bind(this))
@@ -1960,13 +1960,14 @@ E2.InitialiseEngi = function(vr_devices) {
 	E2.app.player = player
 
 	E2.core.on('ready', function() {
+		console.log('CORE READY')
 		E2.app.start()
 
 		E2.app.onWindowResize()
 		E2.app.onWindowResize()
 		
-		if (E2.core.plugin_mgr.release_mode) {
-			window.onbeforeunload = function(e) {
+		if (E2.core.pluginManager.release_mode) {
+			window.onbeforeunload = function() {
 			    return 'You might be leaving behind unsaved work!';
 			}
 		}

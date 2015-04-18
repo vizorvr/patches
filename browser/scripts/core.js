@@ -89,7 +89,7 @@ AssetTracker.prototype.signal_update = function()
 };
 
 function Core(vr_devices) {
-	var self = this;
+	var that = this;
 
 	E2.core = this
 	
@@ -129,12 +129,11 @@ function Core(vr_devices) {
 	this.delta_t = 0.0;
 	this.graph_uid = 0;
 
-	this.plugin_mgr = new PluginManager(this,
-		'/plugins',
-		E2.app ? E2.app.onPluginRegistered.bind(E2.app) : null, // TODO emit
-		E2.app ? E2.app.onPluginInstantiated.bind(E2.app) : null,
-		this.onPluginsLoaded.bind(this)
-	);
+	this.pluginManager = new PluginManager(this, '/plugins');
+
+	this.pluginManager.on('ready', function() {
+		that.onPluginsLoaded()
+	})
 
 	this.aux_scripts = {};
 	this.aux_styles = {};
@@ -157,21 +156,21 @@ function Core(vr_devices) {
 	
 	this.get_graph_uid = function()
 	{
-		return self.graph_uid++;
+		return that.graph_uid++;
 	};
 	
 	this.update = function(abs_t, delta_t)
 	{
-		self.abs_t = abs_t;
-		self.delta_t = delta_t;
+		that.abs_t = abs_t;
+		that.delta_t = delta_t;
 		
-		self.renderer.begin_frame();
-		self.root_graph.update(delta_t);
-		self.renderer.end_frame();
+		that.renderer.begin_frame();
+		that.root_graph.update(delta_t);
+		that.renderer.end_frame();
 				
-		var dirty = self.active_graph_dirty;
+		var dirty = that.active_graph_dirty;
 				
-		self.active_graph_dirty = false;
+		that.active_graph_dirty = false;
 				
 		return dirty; // Did connection state change?
 	};
@@ -225,7 +224,7 @@ function Core(vr_devices) {
 	
 	this.get_default_value = function(dt)
 	{
-		var dts = self.datatypes;
+		var dts = that.datatypes;
 		
 		if(dt === dts.FLOAT)
 			return 0.0;
@@ -238,11 +237,11 @@ function Core(vr_devices) {
 			return m;
 		}
 		else if (dt === dts.TEXTURE)
-			return self.renderer.default_tex;
+			return that.renderer.default_tex;
 		else if(dt === dts.VECTOR)
 			return vec3.createFrom(0.0, 0.0, 0.0);
 		else if(dt === dts.CAMERA)
-			return new Camera(self.renderer.context);
+			return new Camera(that.renderer.context);
 		else if(dt === dts.BOOL)
 			return false;
 		else if(dt === dts.MATERIAL)
@@ -267,44 +266,44 @@ function Core(vr_devices) {
 	{
 		var d = {};
 		
-		d.abs_t = Math.round(self.abs_t * Math.pow(10, 4)) / Math.pow(10, 4);
-		d.active_graph = self.active_graph.uid;
-		d.graph_uid = self.graph_uid;
-		d.root = self.root_graph.serialise();
+		d.abs_t = Math.round(that.abs_t * Math.pow(10, 4)) / Math.pow(10, 4);
+		d.active_graph = that.active_graph.uid;
+		d.graph_uid = that.graph_uid;
+		d.root = that.root_graph.serialise();
 		
 		return JSON.stringify(d, undefined, 4);
 	};
 	
 	this.deserialiseObject = function(d) {
-		self.abs_t = d.abs_t;
-		self.delta_t = 0.0;
-		self.graph_uid = d.graph_uid;
+		that.abs_t = d.abs_t;
+		that.delta_t = 0.0;
+		that.graph_uid = d.graph_uid;
 
-		self.active_graph.destroy_ui();
+		that.active_graph.destroy_ui();
 		
-		var graphs = self.graphs = [];
+		var graphs = that.graphs = [];
 		
-		self.root_graph = new Graph(this, null, null);
-		self.root_graph.deserialise(d.root);
-		self.graphs.push(self.root_graph);
+		that.root_graph = new Graph(this, null, null);
+		that.root_graph.deserialise(d.root);
+		that.graphs.push(that.root_graph);
 		
-		self.root_graph.patch_up(self.graphs);
-		self.root_graph.initialise(self.graphs);
+		that.root_graph.patch_up(that.graphs);
+		that.root_graph.initialise(that.graphs);
 			
-		self.active_graph = resolve_graph(self.graphs, d.active_graph); 
+		that.active_graph = resolve_graph(that.graphs, d.active_graph); 
 		
-		if(!self.active_graph) {
+		if(!that.active_graph) {
 			msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
-			self.active_graph = self.root_graph;
+			that.active_graph = that.root_graph;
 		}
 
 		if (E2.dom.structure) {
-			self.rebuild_structure_tree()
+			that.rebuild_structure_tree()
 			
-			if(self.active_graph.tree_node)
-				self.active_graph.tree_node.activate();
+			if(that.active_graph.tree_node)
+				that.active_graph.tree_node.activate();
 			else
-				self.root_graph.tree_node.activate();
+				that.root_graph.tree_node.activate();
 		}
 	}
 
@@ -334,22 +333,22 @@ function Core(vr_devices) {
 		}
 
 		E2.dom.structure.tree.reset();
-		self.root_graph.tree_node = E2.dom.structure.tree.root;
-		E2.dom.structure.tree.root.graph = self.root_graph;
-		build(self.root_graph, 'Root');
+		that.root_graph.tree_node = E2.dom.structure.tree.root;
+		E2.dom.structure.tree.root.graph = that.root_graph;
+		build(that.root_graph, 'Root');
 		E2.dom.structure.tree.root.rebuild_dom();
 	};
 	
 	this.add_aux_script = function(script_url, onload)
 	{
-		if(self.aux_scripts.hasOwnProperty(script_url)) {
+		if(that.aux_scripts.hasOwnProperty(script_url)) {
 			if (onload)
 				onload()
 			return
 		}
 		
 		load_script('/plugins/' + script_url, function() {
-			self.aux_scripts[script_url] = true;
+			that.aux_scripts[script_url] = true;
 			if (onload)
 				onload()
 		});
@@ -357,16 +356,15 @@ function Core(vr_devices) {
 
 	this.add_aux_style = function(style_url)
 	{
-		if(self.aux_styles.hasOwnProperty(style_url))
+		if(that.aux_styles.hasOwnProperty(style_url))
 			return;
 		
 		load_style('/plugins/' + style_url);
-		self.aux_styles[style_url] = true;
+		that.aux_styles[style_url] = true;
 	};
 }
 
-Core.prototype.onPluginsLoaded = function()
-{
+Core.prototype.onPluginsLoaded = function() {
 	this.emit('ready');
 };
 

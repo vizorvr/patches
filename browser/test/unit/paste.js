@@ -43,7 +43,7 @@ describe('Paste Simple', function() {
 		core = reset()
 		core.active_graph = new Graph(core, null, {})
 		core.graphs = [ core.active_graph ]
-		core.plugin_mgr = {
+		core.pluginManager = {
 			create: function(id, node) {
 				loadPlugin(id)
 				return new E2.plugins[id](core, node);
@@ -101,10 +101,15 @@ describe('Paste Complex', function() {
 
 	var Core = require('../../scripts/core')
 	
-	function PluginManager(_a, _b, _c, _d, done) {
+	function PluginManager(_a, _b, _c, _d) {
+		EventEmitter.call(this)
 		this.keybyid = {}
-		done()
+		var that = this
+		process.nextTick(function() {
+			that.emit('ready')
+		})
 	}
+	PluginManager.prototype = Object.create(EventEmitter.prototype)
 	PluginManager.prototype.create = function(id, node) {
 		if (!E2.plugins[id])
 			loadPlugin(id)

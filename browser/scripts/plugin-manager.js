@@ -1,4 +1,6 @@
-function PluginManager(core, base_url, registration_listener, creation_listener, ready_listener) {
+function PluginManager(core, base_url) {
+	EventEmitter.call(this)
+
 	var that = this;
 
 	this.base_url = base_url
@@ -10,10 +12,8 @@ function PluginManager(core, base_url, registration_listener, creation_listener,
 	this.total = 0
 	this.loaded = 0
 	this.failed = 0
-	this._registration_listener = registration_listener
-	this._ready_listener = ready_listener
 
-	var url = this.base_url + '/all.plugins.js'
+	var allPluginsUrl = this.base_url + '/all.plugins.js'
 
 	function loadPlugins() {
 		$.ajax({
@@ -22,54 +22,60 @@ function PluginManager(core, base_url, registration_listener, creation_listener,
 			success: function(data) {
 				var pg_root = new PluginGroup('root')
 				
-				that.total += Object.keys(data).length
+				if (!that.release_mode)
+					that.total += Object.keys(data).length
 
 				$.each(data, function(key, id)  {
 					var url = that.base_url + '/' + id + '.plugin.js';
-
-					load_script(url, that.onload.bind(that), that.onerror.bind(that));
-
+					if (!that.release_mode)
+						load_script(url, that.onload.bind(that), that.onerror.bind(that));
 					that.register_plugin(pg_root, key, id);
 				})
-				
-				if (creation_listener)
-					that.context_menu = new ContextMenu(E2.dom.canvas_parent, pg_root.create_items(), creation_listener);
+
+				if (E2.app) {
+					that.context_menu = new ContextMenu(E2.dom.canvas_parent, pg_root.create_items())
+					that.context_menu.on('created', function(n) {
+						that.emit('created', n)
+					})
+				}
+
+				if (that.release_mode) {
+					that.total = 1
+					load_script(allPluginsUrl, that.onload.bind(that), that.onerror.bind(that));
+				}
 			}
 		})
 	}
 
 	$.ajax({
-		url: url,
+		url: allPluginsUrl,
 		type: 'GET',
 		cache: true,
 		success: function() {
 			msg('PluginMgr: Running in release mode')
 			that.release_mode = true
-			this.total = 1
-			load_script(url, this.onload.bind(this), this.onerror.bind(this))
+			loadPlugins()
 		},
 		error: function() {
 			msg('PluginMgr: Running in debug mode')
 			loadPlugins()
 		}
 	});
-
 }
 
-PluginManager.prototype.register_plugin = function(pg_root, key, id)
-{
+PluginManager.prototype = Object.create(EventEmitter.prototype)
+
+PluginManager.prototype.register_plugin = function(pg_root, key, id) {
 	this.keybyid[id] = pg_root.insert_relative(key, id);
-
-	if (this._registration_listener)
-		this._registration_listener(key, id);
-
 	msg('\tLoaded ' + id + ' (' + this.lid + ')');
 	this.lid++;
 };
 
 PluginManager.prototype.update_state = function() {
-	if (this.loaded + this.failed === this.total)
-		this._ready_listener()
+	if (this.loaded + this.failed === this.total) {
+		console.log('ready')
+		this.emit('ready')
+	}
 }
 
 PluginManager.prototype.onload = function()

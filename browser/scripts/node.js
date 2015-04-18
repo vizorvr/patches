@@ -9,14 +9,14 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.x = x;
 		this.y = y;
 		this.ui = null;
-		this.id = E2.app.player.core.plugin_mgr.keybyid[plugin_id];
+		this.id = E2.app.player.core.pluginManager.keybyid[plugin_id];
 		this.uid = parent_graph.get_node_uid();
 		this.update_count = 0;
 		this.title = null;
 		this.inputs_changed = false;
 		this.open = true;
 
-		this.set_plugin(E2.app.player.core.plugin_mgr.create(plugin_id, this))
+		this.set_plugin(E2.app.player.core.pluginManager.create(plugin_id, this))
 	}
 }
 
@@ -438,7 +438,7 @@ Node.prototype.deserialise = function(guid, d) {
 	this.parent_graph = guid;
 	this.x = d.x;
 	this.y = d.y;
-	this.id = E2.app.player.core.plugin_mgr.keybyid[d.plugin];
+	this.id = E2.app.player.core.pluginManager.keybyid[d.plugin];
 	this.uid = d.uid;
 	this.open = d.open !== undefined ? d.open : true;
 	
@@ -447,7 +447,7 @@ Node.prototype.deserialise = function(guid, d) {
 	
 	this.title = d.title ? d.title : null;
 	
-	var plg = E2.app.player.core.plugin_mgr.create(d.plugin, this);
+	var plg = E2.app.player.core.pluginManager.create(d.plugin, this);
 	
 	if (!plg) {
 		msg('ERROR: Failed to instance node of type \'' + d.plugin + '\' with title \'' + this.title + '\' and UID = ' + this.uid + '.');
