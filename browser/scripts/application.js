@@ -31,8 +31,8 @@ function Application() {
 	this.selection_start = null;
 	this.selection_end = null;
 	this.selection_last = null;
-	this.selection_nodes = [];
-	this.selection_conns = [];
+	this.selectedNodes = [];
+	this.selectedConnections = [];
 	this.selection_dom = null;
 	this.clipboard = null;
 	this.inDrag = false;
@@ -478,7 +478,7 @@ Application.prototype.activateHoverNode = function() {
 	iterate_conns(this.hover_node.uid)
 
 	if (this.isNodeInSelection(this.hover_node)) {
-		var nodes = this.selection_nodes;
+		var nodes = this.selectedNodes;
 		
 		nodes.forEach(function(node) {
 			if (node === that.hover_node)
@@ -612,7 +612,7 @@ Application.prototype.onNodeHeaderDblClicked = function(node) {
 }
 
 Application.prototype.isNodeInSelection = function(node) {
-	return this.selection_nodes.indexOf(node) > -1
+	return this.selectedNodes.indexOf(node) > -1
 }
 
 Application.prototype.executeNodeDrag = function(nodes, conns, dx, dy) {
@@ -654,7 +654,7 @@ Application.prototype.onNodeDragged = function(node) {
 		var nodes = [ node ]
 
 		if (this.isNodeInSelection(node))
-			nodes = this.selection_nodes
+			nodes = this.selectedNodes
 		
 		this._dragInfo = {
 			original: { x: node.x, y: node.y },
@@ -697,8 +697,8 @@ Application.prototype.onNodeDragStopped = function(node) {
 }
 
 Application.prototype.clearSelection = function() {
-	var sn = this.selection_nodes;
-	var sc = this.selection_conns;
+	var sn = this.selectedNodes;
+	var sc = this.selectedConnections;
 	
 	for(var i = 0, len = sn.length; i < len; i++) {
 		var nui = sn[i].ui;
@@ -716,8 +716,8 @@ Application.prototype.clearSelection = function() {
 			cui.selected = false;
 	}
 
-	this.selection_nodes = [];
-	this.selection_conns = [];
+	this.selectedNodes = [];
+	this.selectedConnections = [];
 	
 	this.onHideTooltip();
 }
@@ -784,11 +784,11 @@ Application.prototype.onCanvasMouseUp = function(e)
 	
 	this.releaseSelection();
 	
-	var nodes = this.selection_nodes;
+	var nodes = this.selectedNodes;
 	
 	if(nodes.length)
 	{
-		var sconns = this.selection_conns;
+		var sconns = this.selectedConnections;
 		
 		var insert_all = function(clist)
 		{
@@ -907,7 +907,7 @@ Application.prototype.onMouseMoved = function(e)
 		}
 	}
 	
-	var sn = this.selection_nodes;
+	var sn = this.selectedNodes;
 	var ns = [];
 	
 	for(var i = 0, len = sn.length; i < len; i++)
@@ -940,7 +940,7 @@ Application.prototype.onMouseMoved = function(e)
 			n.ui.dom[0].style.border = this.normal_border_style;
 	}
 	
-	this.selection_nodes = ns;
+	this.selectedNodes = ns;
 	
 	var co = cp.offset();
 	var w = cp.width();
@@ -1006,28 +1006,28 @@ Application.prototype.fillCopyBuffer = function(nodes, conns, sx, sy) {
 };
 
 Application.prototype.onDelete = function(e) {
-	if (!this.selection_nodes.length)
+	if (!this.selectedNodes.length)
 		return;
 
-	this.hover_node = this.selection_nodes[0];
+	this.hover_node = this.selectedNodes[0];
 	this.activateHoverNode();
 	this.deleteHoverNodes();
 };
 
 Application.prototype.onCopy = function(e) {
-	if (this.selection_nodes.length < 1) {
+	if (this.selectedNodes.length < 1) {
 		msg('Copy: Nothing selected.');
 		e.stopPropagation();
 		return false;
 	}
 	
-	this.fillCopyBuffer(this.selection_nodes, this.selection_conns, this.scrollOffset[0], this.scrollOffset[1]);
+	this.fillCopyBuffer(this.selectedNodes, this.selectedConnections, this.scrollOffset[0], this.scrollOffset[1]);
 	e.stopPropagation();
 	return false;
 };
 
 Application.prototype.onCut = function(e) {
-	if (this.selection_nodes.length > 0) {
+	if (this.selectedNodes.length > 0) {
 		this.undoManager.begin('Cut')
 		this.onCopy(e)
 		this.onDelete(e)
@@ -1135,6 +1135,8 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 	}
 
 	this.undoManager.end()
+
+	return { nodes: createdNodes, connections: createdConnections }
 }
 
 Application.prototype.onPaste = function() {
@@ -1151,7 +1153,11 @@ Application.prototype.onPaste = function() {
 	var ox = Math.max(this._mousePosition[0] - cp.position().left + sx, 100)
 	var oy = Math.max(this._mousePosition[1] - cp.position().top + sy, 50)
 	
-	this.paste(doc, ox, oy)
+	var pasted = this.paste(doc, ox, oy)
+
+	pasted.nodes.map(this.markNodeAsSelected.bind(this))
+	pasted.connections.map(this.markConnectionAsSelected.bind(this))
+
 }
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
@@ -1159,7 +1165,12 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 	node.ui.selected = true
 
 	if (addToSelection !== false)
-		this.selection_nodes.push(node)
+		this.selectedNodes.push(node)
+}
+
+Application.prototype.markConnectionAsSelected = function(conn) {
+	conn.ui.selected = true
+	this.selectedConnections.push(conn)
 }
 
 Application.prototype.selectAll = function() {
@@ -1168,11 +1179,7 @@ Application.prototype.selectAll = function() {
 	var ag = this.player.core.active_graph
 
 	ag.nodes.map(this.markNodeAsSelected.bind(this))
-	
-	ag.connections.map(function(c) {
-		c.ui.selected = true
-		this.selection_conns.push(c)
-	}.bind(this))
+	ag.connections.map(this.markConnectionAsSelected.bind(this))
 
 	this.updateCanvas(true)
 };
@@ -1422,7 +1429,7 @@ Application.prototype.onSaveAsPresetClicked = function() {
 }
 
 Application.prototype.onSaveSelectionAsPresetClicked = function() {
-	var graph = this.selectionToObject(this.selection_nodes, this.selection_conns)
+	var graph = this.selectionToObject(this.selectedNodes, this.selectedConnections)
 	this.openPresetSaveDialog(JSON.stringify({ root: graph }))
 }
 
