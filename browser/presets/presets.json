@@ -46,7 +46,7 @@
 
 	},
 
-	"BACKGROUND & OVERLAY GRAPHICS":
+	"BACKGROUND & OVERLAY":
 	{
 		"Background: Image": "background_image",
 		"Background: Sky box": "background_skybox",

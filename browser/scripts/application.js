@@ -570,7 +570,7 @@ Application.prototype.deleteHoverNodes = function() {
 	var hns = this.hover_nodes.slice(0)
 	var ag = this.player.core.active_graph
 
-	this.undoManager.beginTransaction('Delete nodes')
+	this.undoManager.begin('Delete nodes')
 
 	this.releaseHoverNode(false)
 	this.clearSelection()
@@ -581,7 +581,7 @@ Application.prototype.deleteHoverNodes = function() {
 		that.graphApi.removeNode(ag, n)
 	})
 
-	this.undoManager.endTransaction('Delete nodes')
+	this.undoManager.end('Delete nodes')
 }
 
 Application.prototype.onNodeHeaderClicked = function(e) {
@@ -663,7 +663,7 @@ Application.prototype.onNodeDragged = function(node) {
 			}, [])
 		}
 
-		this.undoManager.beginTransaction('Move')
+		this.undoManager.begin('Move')
 	
 		this._dragInfo.nodes = nodes
 	}
@@ -690,7 +690,7 @@ Application.prototype.onNodeDragStopped = function(node) {
 
 	this.undoManager.push(cmd)
 
-	this.undoManager.endTransaction()
+	this.undoManager.end()
 
 	this._dragInfo = null
 	this.inDrag = false
@@ -1028,15 +1028,15 @@ Application.prototype.onCopy = function(e) {
 
 Application.prototype.onCut = function(e) {
 	if (this.selection_nodes.length > 0) {
-		this.undoManager.beginTransaction('Cut')
+		this.undoManager.begin('Cut')
 		this.onCopy(e)
 		this.onDelete(e)
-		this.undoManager.endTransaction()
+		this.undoManager.end()
 	}
 }
 
 Application.prototype.paste = function(doc, offsetX, offsetY) {
-	this.undoManager.beginTransaction('Paste')
+	this.undoManager.begin('Paste')
 
 	var ag = E2.core.active_graph
 	var uidLookup = {}
@@ -1134,7 +1134,7 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 		initStructure(ag, node)
 	}
 
-	this.undoManager.endTransaction()
+	this.undoManager.end()
 }
 
 Application.prototype.onPaste = function() {

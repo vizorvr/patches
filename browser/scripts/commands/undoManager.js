@@ -19,8 +19,8 @@ UndoManager.prototype.getRedoStack = function() {
 	return this.redoStack
 }
 
-UndoManager.prototype.beginTransaction = function(title) {
-	console.log('UndoManager.beginTransaction', title)
+UndoManager.prototype.begin = function(title) {
+	console.log('UndoManager.begin', title)
 
 	if (this._transaction) // xa already in progress, nop
 		return;
@@ -47,7 +47,7 @@ UndoManager.prototype.beginTransaction = function(title) {
 	this._transaction = xa
 }
 
-UndoManager.prototype.endTransaction = function() {
+UndoManager.prototype.end = function() {
 	var xa = this._transaction
 
 	if (!xa)
@@ -55,7 +55,7 @@ UndoManager.prototype.endTransaction = function() {
 
 	this._transaction = null
 
-	console.log('UndoManager.endTransaction', xa.title)
+	console.log('UndoManager.end', xa.title)
 
 	this.push(xa)
 }
