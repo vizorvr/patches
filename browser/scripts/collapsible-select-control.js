@@ -112,8 +112,6 @@ CollapsibleSelectControl.prototype.render = function(el) {
 		if (filterCodes.indexOf(e.keyCode) < 0 || !res)
 			return;
 
-		console.log('result filter', e.keyCode, res.length, sel)
-
 		if (res) {
 			res.removeClass('active')
 			$sel = $($(res)[that._selectedIndex])
@@ -128,19 +126,15 @@ CollapsibleSelectControl.prototype.render = function(el) {
 				}
 				break;
 			case 38: // up
-				console.log('up', sel, res.length)
 				if (sel > 0)
 					that._selectedIndex--
 				break;
 			case 40: // down
-				console.log('dowm', sel, res.length)
 				that._selectedIndex++
 				sel++
 				break;
 		}
 
-window.sel = that._selectedIndex
-window.res = res
 		$($(res)[that._selectedIndex]).addClass('active')
 	})
 
