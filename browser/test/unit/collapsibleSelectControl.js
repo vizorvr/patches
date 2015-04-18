@@ -7,11 +7,11 @@ describe('scoring',function(){
 	var c = new CollapsibleSelectControl()
 
 	it('debf in `Emitters debug float`', function() {
-		assert.equal(c.scoreResult('debf', 'Emitters/Debug/Float'), 6)
+		assert.equal(c.scoreResult('debf', 'Emitters/Debug/Float'), 16)
 	})
 
 	it('debugf in `Emitters debug float`', function() {
-		assert.equal(c.scoreResult('debugf', 'Emitters/Debug/Float'), 8)
+		assert.equal(c.scoreResult('debugf', 'Emitters/Debug/Float'), 100)
 	})
 
 	it('template in `foo template bar`', function() {
@@ -51,7 +51,7 @@ describe('filtering',function(){
 	it('finds debgf', function() {
 		var f = c._filterData('debgf')
 		assert.deepEqual(f, [{
-			score: 7, title: 'Emitters/Debug/Float', path: 'float-path',
+			score: 21, title: 'Emitters/Debug/Float', path: 'float-path',
 			category: 'Plugins'
 		}])
 	})

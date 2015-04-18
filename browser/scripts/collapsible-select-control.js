@@ -74,7 +74,7 @@ CollapsibleSelectControl.prototype._search = function(text) {
 
 	var data = this._filterData(text)
 		.sort(function(a,b) {
-			return a.score - b.score;
+			return b.score - a.score;
 		})
 
 	var $result = this._resultTpl(data)
@@ -96,7 +96,7 @@ CollapsibleSelectControl.prototype._search = function(text) {
 }
 
 CollapsibleSelectControl.prototype.scoreResult = function(q, resultStr) {
-	var lstr = resultStr.toLowerCase()
+	var lstr = resultStr.toLowerCase().replace(/\//gim, '')
 	var scr = 0
 
 	function countInString(cc, str) {
@@ -113,6 +113,11 @@ CollapsibleSelectControl.prototype.scoreResult = function(q, resultStr) {
 		return 100
 
 	for(var i=0; i < q.length; i++) {
+		var sofar = q.substring(0, i)
+
+		if (lstr.indexOf(sofar) > -1)
+			scr += q.length-i
+
 		var qInStr = countInString(q[i], lstr)
 		if (qInStr < countInString(q[i], q)) {
 			return 0
