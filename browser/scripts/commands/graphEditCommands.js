@@ -25,7 +25,7 @@ function addNode() {
 function AddNode(graph, node) {
 	GraphEditCommand.apply(this, arguments)
 	this.node = node
-	this.title = 'Add node ' + node.plugin.id
+	this.title = 'Add node ' + node.title
 }
 AddNode.prototype = Object.create(GraphEditCommand.prototype)
 AddNode.prototype.undo = removeNode
@@ -46,11 +46,30 @@ function removeNode() {
 function RemoveNode(graph, node) {
 	GraphEditCommand.apply(this, arguments)
 	this.node = node
-	this.title = 'Remove node ' + node.plugin.id
+	this.title = 'Remove node ' + node.title
 }
 RemoveNode.prototype = Object.create(GraphEditCommand.prototype)
 RemoveNode.prototype.undo = addNode
 RemoveNode.prototype.redo = removeNode
+
+// -------------------------------
+
+function RenameNode(graph, node, title) {
+	GraphEditCommand.apply(this, arguments)
+	this.node = node
+	this.origNodeTitle = node.title
+	this.newNodeTitle = title
+	this.title = 'Rename node ' + node.title + ' to ' + title
+}
+RenameNode.prototype = Object.create(GraphEditCommand.prototype)
+RenameNode.prototype.undo = function() {
+	this.graph.renameNode(this.node, this.origNodeTitle)
+}
+
+RenameNode.prototype.redo = function() {
+	this.graph.renameNode(this.node, this.newNodeTitle)
+}
+
 
 // -------------------------------
 
@@ -135,6 +154,7 @@ if (typeof(E2) !== 'undefined') {
 
 	E2.commands.graph.AddNode = AddNode
 	E2.commands.graph.RemoveNode = RemoveNode
+	E2.commands.graph.RenameNode = RenameNode
 	E2.commands.graph.Connect = Connect
 	E2.commands.graph.Disconnect = Disconnect
 	E2.commands.graph.Move = Move

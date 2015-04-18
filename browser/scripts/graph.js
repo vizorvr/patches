@@ -144,7 +144,8 @@ Graph.prototype.removeNode = function(node) {
 	return node
 }
 
-Graph.prototype.onNodeRenamed = function(node) {
+Graph.prototype.renameNode = function(node, title) {
+	node.title = title
 	this.emit('nodeRenamed', node)
 }
 

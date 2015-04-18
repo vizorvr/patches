@@ -594,31 +594,19 @@ Application.prototype.onNodeHeaderClicked = function(e) {
 	return false
 }
 
-Application.prototype.onNodeHeaderDblClicked = function(node) { 
+Application.prototype.onNodeHeaderDblClicked = function(node) {
+	var that = this
+
 	bootbox.prompt({
 		animate: false,
 		title: 'Rename node',
-		value: node.title, 
+		value: node.title,
 		callback: function(name) {
 			if (!name)
 				return;
 
-			node.title = name;
-		
-			if (node.ui) {
-				node.ui.dom.find('.t').text(node.title);
-				
-				if(node.update_connections())
-					E2.app.updateCanvas(true)
-			}
-			
-			if(node.plugin.isGraph)
-				node.plugin.graph.tree_node.set_title(node.title)
-		
-			if(node.plugin.renamed)
-				node.plugin.renamed()
-				
-			node.parent_graph.onNodeRenamed(node)
+			that.graphApi.renameNode(E2.core.active_graph, node, name)
+
 		}
 	})
 }
@@ -1685,6 +1673,17 @@ function onNodeRemoved(node) {
 	node.destroy_ui()
 }
 
+function onNodeRenamed(node) {
+	console.log('onNodeRenamed', node.title)
+	node.ui.dom.find('.t').text(node.title)
+		
+	if (node.plugin.isGraph)
+		node.plugin.graph.tree_node.set_title(node.title)
+
+	if (node.plugin.renamed)
+		node.plugin.renamed()
+}
+
 function onConnected(connection) {
 	console.log('onConnected', connection)
 	if (connection.ui)
@@ -1706,8 +1705,9 @@ Application.prototype.onGraphSelected = function(graph) {
 	E2.core.active_graph.off('changed', onGraphChanged)
 	E2.core.active_graph.off('nodeAdded', onNodeAdded)
 	E2.core.active_graph.off('nodeRemoved', onNodeRemoved)
+	E2.core.active_graph.off('nodeRenamed', onNodeRenamed)
 	E2.core.active_graph.off('connected', onConnected)
-	E2.core.active_graph.off('disconnected', onConnected)
+	E2.core.active_graph.off('disconnected', onDisconnected)
 
 	E2.core.active_graph.destroy_ui()
 
@@ -1716,7 +1716,9 @@ Application.prototype.onGraphSelected = function(graph) {
 	graph.on('changed', onGraphChanged)
 	graph.on('nodeAdded', onNodeAdded)
 	graph.on('nodeRemoved', onNodeRemoved)
+	graph.on('nodeRenamed', onNodeRenamed)
 	graph.on('connected', onConnected)
+	graph.on('disconnected', onDisconnected)
 
 	E2.dom.canvas_parent.scrollTop(0)
 	E2.dom.canvas_parent.scrollLeft(0)
