@@ -6,7 +6,7 @@ function PresetManager(base_url)
 	EventEmitter.call(this)
 
 	this._base_url = base_url
-	this._presets = {}
+	this._presets = []
 
 	this.refresh()
 
@@ -59,7 +59,6 @@ PresetManager.prototype.loadUserPresets = function(cb) {
 
 	$.get('/'+username+'/presets', function(presets) {
 		var cat = 'MY PRESETS'
-		that._presets[cat] = {}
 
 		presets.forEach(function(preset) {
 			that.add(cat, preset.name, preset.url)
@@ -114,12 +113,12 @@ PresetManager.prototype.render = function()
 	})
 }
 
-PresetManager.prototype.add = function(category, title, path)
-{
-	if (!this._presets[category])
-		this._presets[category] = {};
-
-	this._presets[category][title] = path;
+PresetManager.prototype.add = function(category, title, path) {
+	this._presets.push({
+		category: category, 
+		title: title,
+		path: path
+	})
 }
 
 PresetManager.prototype.openPlugin = function(path, cb)

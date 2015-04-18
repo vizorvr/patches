@@ -2,6 +2,8 @@ var fs = require('fs');
 var vm = require('vm');
 var browserPath = __dirname+'/../../../';
 
+global.AbstractSubGraphPlugin = require(browserPath+'scripts/subGraphPlugin.js')
+
 exports.slot = function slot(index) {
 	return { index: index };
 }

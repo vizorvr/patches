@@ -288,4 +288,5 @@ AbstractSubGraphPlugin.prototype.setGraph = function(graph) {
 	})
 }
 
-
+if (typeof(module) !== 'undefined')
+	module.exports = AbstractSubGraphPlugin

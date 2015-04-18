@@ -5,11 +5,14 @@
 		placeholder="Search presets and plugins"/>
 </div>
 
+<div class="preset-result"></div>
+
 <div class="panel-group selectControl" id="{{controlId}}">
 	{{#each categories}}
 	<div class="panel panel-default">
 		<div class="panel-heading"
 			data-toggle="collapse"
+			data-category="{{@key}}"
 			data-parent="#{{../controlId}}"
 			href="#cscat{{@index}}">
 				<i class="glyphicon glyphicon-chevron-right"></i>
@@ -22,12 +25,18 @@
 			<div class="panel-body">
 				<ul>
 					{{#each this}}
-					<li data-path="{{this}}">{{@key}}</li>
+					<li 
+						data-category="{{category}}"
+						data-path="{{path}}"
+					>
+					<div class="score"></div>
+					{{title}}
+					</li>
 					{{/each}}
 				</ul>
 			</div>
-</div>
+		</div>
+	</div>
+	{{/each}}
 
 </div>
-
-{{/each}}

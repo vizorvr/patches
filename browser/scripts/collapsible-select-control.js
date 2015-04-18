@@ -1,15 +1,28 @@
 function CollapsibleSelectControl(handlebars) {
 	this._handlebars = handlebars || Handlebars
 	this._cb = function() {}
+
+	this._resultTpl = this._handlebars
 }
 
 CollapsibleSelectControl.prototype.template = function(template) {
 	this._template = template
+
+	this._resultTpl = E2.views.presets.results;
+
 	return this
 }
 
 CollapsibleSelectControl.prototype.data = function(d) {
-	this._data = d
+	this._data = {}
+	this._items = d
+
+	d.map(function(item) {
+		if (!this._data[item.category])
+			this._data[item.category] = {}
+		this._data[item.category][item.title] = item
+	}.bind(this))
+
 	return this
 }
 
@@ -24,38 +37,90 @@ CollapsibleSelectControl.prototype.focus = function() {
 
 CollapsibleSelectControl.prototype._reset = function() {
 	$('.panel', this._el).show()
-	$('.panel li', this._el).show()
-	$('.panel-collapse', this._el).removeClass('in')
+	$('ul.result', this._el).empty().remove()
+	$('.preset-result', this._el).empty()
+}
+
+CollapsibleSelectControl.prototype._filterData = function(text) {
+	var that = this
+	return this._items.reduce(function(items, item) {
+		var score = that.scoreResult(text, item.title)
+
+		if (score < text.length)
+			return items;
+
+		items.push({
+			score: score,
+			title: item.title,
+			category: item.category,
+			path: item.path
+		})
+
+		return items;
+	}, [])
 }
 
 CollapsibleSelectControl.prototype._search = function(text) {
+	var that = this
+
 	if (!text) {
 		this._reset()
 		return
 	}
 
-	$('.panel li', this._el).hide()
 	$('.panel', this._el).hide()
 
-	var re = new RegExp(text, 'im')
+	var $pr = $('.preset-result', this._el)
 
-	var lis = $('.panel li', this._el)
-		.filter(function() {
-			return re.test(this.innerHTML)
+	var data = this._filterData(text)
+		.sort(function(a,b) {
+			return b.score - a.score;
 		})
 
-	lis.closest('.panel').show()
-	lis.closest('.panel-collapse').addClass('in')
+	var $result = this._resultTpl(data)
+	$pr.empty().html($result)
 
-	lis.show()
+	var $lis = $('li', $pr)
 
-	this._resultEls = $('.panel-body li:visible', this._el)
+	$lis.dblclick(function(e) {
+		that._cb($(e.target).data('path'))
+	})
+
+	this._resultEls = $lis
 
 	if (this._resultEls.length)
 		$(this._resultEls.get(0)).addClass('active')
 
 	this._selectedIndex = 0
 
+}
+
+CollapsibleSelectControl.prototype.scoreResult = function(q, resultStr) {
+	var lstr = resultStr.toLowerCase()
+	var scr = 0
+
+	function countInString(cc, str) {
+		var count = 0
+		var pos = str.indexOf(cc)
+		while (pos !== -1) {
+			count++
+			pos = str.indexOf(cc, pos + 1)
+		}
+		return count
+	}
+
+	if (lstr.indexOf(q) > -1)
+		return 100
+
+	for(var i=0; i < q.length; i++) {
+		var qInStr = countInString(q[i], lstr)
+		if (qInStr < countInString(q[i], q)) {
+			return 0
+		}
+		scr += qInStr
+	}
+
+	return scr
 }
 
 CollapsibleSelectControl.prototype.render = function(el) {
@@ -90,7 +155,11 @@ CollapsibleSelectControl.prototype.render = function(el) {
 		that._cb($(e.target).data('path'))
 	})
 
+	var keyTimer
 	$input.on('keyup', function(e) {
+		if (keyTimer)
+			clearTimeout(keyTimer)
+
 		if (e.keyCode === 27) {
 			e.stopPropagation()
 			return $input.blur()
@@ -99,7 +168,7 @@ CollapsibleSelectControl.prototype.render = function(el) {
 		if (e.keyCode === 38 || e.keyCode === 40)
 			return;
 
-		that._search($input.val())
+		keyTimer = setTimeout(that._search.bind(that, $input.val(), 10))
 	})
 
 	$input.on('keydown', function(e) {
@@ -121,7 +190,6 @@ CollapsibleSelectControl.prototype.render = function(el) {
 			case 13: // ok
 				if ($sel) {
 					$sel.trigger('dblclick')
-					// $input.select()
 					$input.blur()
 				}
 				break;
@@ -135,8 +203,12 @@ CollapsibleSelectControl.prototype.render = function(el) {
 				break;
 		}
 
-		$($(res)[that._selectedIndex]).addClass('active')
+		$sel = $($(res)[that._selectedIndex])
+		$sel.addClass('active')
 	})
 
 	return this;
 }
+
+if (typeof(module) !== 'undefined')
+	module.exports = CollapsibleSelectControl

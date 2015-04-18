@@ -1,3 +1,4 @@
+.result li,
 .panel {
 	margin-top: 1px;
 	margin-bottom: 1px;
@@ -34,7 +35,8 @@
 	padding: 0;
 }
 
-.panel-heading:hover {
+.result li:hover,
+.panel-heading:hover, {
 	color: #aaa;
 	background-color: @gray-dark;
 	background-image: none;
@@ -45,6 +47,7 @@
 	margin-left: 6px;
 }
 
+.result,
 .panel-body {
     padding: 0;
     border-top: 0px;
@@ -62,7 +65,7 @@
 	cursor: pointer;
 }
 
-.selectControl li.active,
+li.active,
 .panel-body li:hover {
 	color: @gray-lighter;
 	background-color: @gray;

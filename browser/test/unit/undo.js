@@ -147,7 +147,7 @@ describe('Undo', function() {
 				undos++
 			}
 
-			undoManager.beginTransaction('Test')
+			undoManager.begin('Test')
 
 			undoManager.execute({ title: 'One', redo: redo, undo: undo })
 			undoManager.execute({ title: 'Two', redo: redo, undo: undo })
@@ -156,7 +156,7 @@ describe('Undo', function() {
 			assert.equal(undoManager.undoStack.length, 0)
 			assert.equal(undoManager._transaction.undoStack.length, 3)
 
-			undoManager.endTransaction()
+			undoManager.end()
 
 			assert.ok(redos, 3)
 			assert.equal(undoManager.undoStack.length, 1)

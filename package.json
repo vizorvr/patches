@@ -76,7 +76,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test:unit": "mocha browser/test/unit/undo.js && mocha browser/test/unit/paste.js",
+    "test:unit": "mocha browser/test/unit/undo.js && mocha browser/test/unit/paste.js && mocha browser/test/unit/collapsibleSelectControl.js",
     "test:unit:server": "mocha test",
     "test:plugins": "mocha browser/test/unit/plugins",
     "test": "npm run test:plugins && npm run test:unit && npm run test:unit:server"
