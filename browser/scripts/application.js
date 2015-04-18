@@ -44,6 +44,7 @@ function Application() {
 	this.normal_border_style = 'none';
 	this.is_panning = false;
 	this.is_fullscreen = false;
+	this._noodlesOn = true
 
 	this._mousePosition = [400,200]
 
@@ -1213,6 +1214,11 @@ Application.prototype.onWindowResize = function() {
 		this.updateCanvas(true);
 };
 
+Application.prototype.toggleNoodles = function() {
+	this._noodlesOn = true
+	E2.dom.canvas_parent.toggle()
+}
+
 Application.prototype.toggleLeftPane = function()
 {
 	$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
@@ -1232,6 +1238,8 @@ Application.prototype.toggleLeftPane = function()
 };
 
 Application.prototype.onKeyDown = function(e) {
+	var that = this
+
 	function is_text_input_in_focus() {
 		var rx = /INPUT|SELECT|TEXTAREA/i;
 		var is= (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
@@ -1241,14 +1249,36 @@ Application.prototype.onKeyDown = function(e) {
 	if (is_text_input_in_focus())
 		return;
 
+	if (!this._noodlesOn && e.keyCode !== 8)
+		return;
+
 /*
+*/
 	console.log(
 		'onKeyDown', e.keyCode,
 		'shift', this.shift_pressed,
 		'ctrl', this.ctrl_pressed,
 		'alt', this.alt_pressed
 	)
-*/
+
+
+	// arrow up || down
+	var arrowKeys = [37,38,39,40]
+	if (arrowKeys.indexOf(e.keyCode) !== -1) {
+		var dx = 0, dy = 0
+
+		if (e.keyCode === 37) dx = -10
+		if (e.keyCode === 39) dx = 10
+		if (e.keyCode === 38) dy = -10
+		if (e.keyCode === 40) dy = 10
+
+		if (this.selectedNodes.length) {
+			that.executeNodeDrag(this.selectedNodes,
+				this.selectedConnections,
+				dx, dy)
+		}
+		e.preventDefault()
+	}
 
 	if (e.keyCode === 8 || e.keyCode === 46) { // use backspace and delete for deleting nodes
 		this.onDelete(e);
@@ -1256,8 +1286,12 @@ Application.prototype.onKeyDown = function(e) {
 	}
 	else if(e.keyCode === 9) // tab to show/hide noodles
 	{
-		E2.dom.canvas_parent.toggle();
+		this.toggleNoodles()
 		e.preventDefault();
+	}
+	else if(e.keyCode === 13) { // enter = deselect (eg. commit move)
+		this.clearEditState()
+		this.clearSelection()
 	}
 	else if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
 	{
