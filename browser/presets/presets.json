@@ -99,7 +99,6 @@
 		"Loop: Loop framework": "loop_framework"
 	},
 
-
 	"MATERIALS AND LIGHTS":
 	{
 		"Material: Full material chain": "material_full_material_chain",
@@ -129,10 +128,9 @@
 		"Util: Float array sequencer with oscillator level up": "util_float_array_sequencer_oscillator_out",
 		"Util: Float array sequencer with interpolation": "util_float_array_sequencer_with_interpolation",
 		"Util: Random with speed": "util_random_with_speed"
-
-
 	},
-		"MATRIX TRANSFORMS":
+
+	"MATRIX TRANSFORMS":
 	{
 		"Transform: All - Scale, Rotate, Translate": "matrix_transforms_setup",
 		"Transform: Rotate": "matrix_rotate_with_knobs",
@@ -187,32 +185,32 @@
 
 	},
 
-		"PHOTOSHOP BLEND MODES":
+	"PHOTOSHOP BLEND MODES":
 	{
 
-	"Blend mode: Add": "photoshop-add",
-	"Blend mode: Substract": "photoshop-substract",
-	"Blend mode: Lighten": "photoshop-lighten",
-	"Blend mode: Darken": "photoshop-darken",
-	"Blend mode: Hard light": "photoshop-hard-light",
-	"Blend mode: Soft light": "photoshop-soft-light",
-	"Blend mode: Screen": "photoshop-screen",
-	"Blend mode: Overlay": "photoshop-overlay",
-	"Blend mode: Exclusion": "photoshop-exclusion",
-	"Blend mode: Linear burn": "photoshop-linear-burn",
-	"Blend mode: Negation": "photoshop-negation",
-	"Blend mode: Difference": "photoshop-difference",
-	"Blend mode: Average": "photoshop-average",
-	"Blend mode: Phoenix": "photoshop-phoenix",
-	"Blend mode: Glow": "photoshop-glow",
-	"Blend mode: Reflect": "photoshop-reflect",
-	"Blend mode: Hard mix": "photoshop-hard-mix",
-	"Blend mode: Pin light": "photoshop-pin-light",
-	"Blend mode: Vivid light": "photoshop-vivid-light",
-	"Blend mode: Linear light": "photoshop-linear-light",
-	"Blend mode: Color dodge": "photoshop-color-dodge",
-	"Blend mode: Color burn": "photoshop-color-burn",
-	"Blend mode: Linear dodge": "photoshop-linear-dodge"
+		"Blend mode: Add": "photoshop-add",
+		"Blend mode: Substract": "photoshop-substract",
+		"Blend mode: Lighten": "photoshop-lighten",
+		"Blend mode: Darken": "photoshop-darken",
+		"Blend mode: Hard light": "photoshop-hard-light",
+		"Blend mode: Soft light": "photoshop-soft-light",
+		"Blend mode: Screen": "photoshop-screen",
+		"Blend mode: Overlay": "photoshop-overlay",
+		"Blend mode: Exclusion": "photoshop-exclusion",
+		"Blend mode: Linear burn": "photoshop-linear-burn",
+		"Blend mode: Negation": "photoshop-negation",
+		"Blend mode: Difference": "photoshop-difference",
+		"Blend mode: Average": "photoshop-average",
+		"Blend mode: Phoenix": "photoshop-phoenix",
+		"Blend mode: Glow": "photoshop-glow",
+		"Blend mode: Reflect": "photoshop-reflect",
+		"Blend mode: Hard mix": "photoshop-hard-mix",
+		"Blend mode: Pin light": "photoshop-pin-light",
+		"Blend mode: Vivid light": "photoshop-vivid-light",
+		"Blend mode: Linear light": "photoshop-linear-light",
+		"Blend mode: Color dodge": "photoshop-color-dodge",
+		"Blend mode: Color burn": "photoshop-color-burn",
+		"Blend mode: Linear dodge": "photoshop-linear-dodge"
 	},
 
 	"POST PROCESSING":

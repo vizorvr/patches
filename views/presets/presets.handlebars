@@ -1,26 +1,33 @@
 <div class="searchbox">
-	<input class="form-control" type="text" placeholder="Search presets and plugins"/>
+	<input id="presetSearch"
+		class="form-control"
+		type="text"
+		placeholder="Search presets and plugins"/>
 </div>
-<div class="panel-group" id="{{controlId}}">
+
+<div class="panel-group selectControl" id="{{controlId}}">
 	{{#each categories}}
 	<div class="panel panel-default">
 		<div class="panel-heading"
-		data-toggle="collapse"
-		data-parent="#{{../controlId}}"
-		href="#cscat{{@index}}"
-		>
-		<i class="glyphicon glyphicon-chevron-right"></i>
-		{{@key}}
-	</div>
-	<div id="cscat{{@index}}"
-	class="panel-collapse collapse">
-	<div class="panel-body">
-		<ul>
-			{{#each this}}
-			<li data-path="{{this}}">{{@key}}</li>
-			{{/each}}
-		</ul>
-	</div>
+			data-toggle="collapse"
+			data-parent="#{{../controlId}}"
+			href="#cscat{{@index}}">
+				<i class="glyphicon glyphicon-chevron-right"></i>
+				{{@key}}
+		</div>
+	
+		<div id="cscat{{@index}}"
+			class="panel-collapse collapse">
+
+			<div class="panel-body">
+				<ul>
+					{{#each this}}
+					<li data-path="{{this}}">{{@key}}</li>
+					{{/each}}
+				</ul>
+			</div>
 </div>
+
 </div>
+
 {{/each}}

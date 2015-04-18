@@ -1227,11 +1227,21 @@ Application.prototype.toggleLeftPane = function()
 Application.prototype.onKeyDown = function(e) {
 	function is_text_input_in_focus() {
 		var rx = /INPUT|SELECT|TEXTAREA/i;
-		return (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
+		var is= (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
+		return is
 	}
 
 	if (is_text_input_in_focus())
 		return;
+
+/*
+	console.log(
+		'onKeyDown', e.keyCode,
+		'shift', this.shift_pressed,
+		'ctrl', this.ctrl_pressed,
+		'alt', this.alt_pressed
+	)
+*/
 
 	if (e.keyCode === 8 || e.keyCode === 46) { // use backspace and delete for deleting nodes
 		this.onDelete(e);
@@ -1242,25 +1252,19 @@ Application.prototype.onKeyDown = function(e) {
 		E2.dom.canvas_parent.toggle();
 		e.preventDefault();
 	}
-	else if(e.keyCode === 18) // alt
-	{
-		this.alt_pressed = true;
-	}
-	else if(e.keyCode === 17) // CMD on OSX, CTRL on everything else
-	{
-		this.ctrl_pressed = true;
-	}
 	else if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
 	{
 		this.shift_pressed = true;
 		this.activateHoverSlot();
 		this.activateHoverNode();
 	}
-	else if(e.keyCode === 70) // f
+	else if(e.keyCode === 17) // CMD on OSX, CTRL on everything else
 	{
-		this.is_fullscreen = !this.is_fullscreen;
-		this.player.core.renderer.set_fullscreen(this.is_fullscreen);
-		e.preventDefault();
+		this.ctrl_pressed = true;
+	}
+	else if(e.keyCode === 18) // alt
+	{
+		this.alt_pressed = true;
 	}
 	else if(e.keyCode === 32) // space
 	{
@@ -1278,7 +1282,18 @@ Application.prototype.onKeyDown = function(e) {
 		
 		e.preventDefault();
 		return false;
+	} else if(e.keyCode === 70) // f
+	{
+		this.is_fullscreen = !this.is_fullscreen;
+		this.player.core.renderer.set_fullscreen(this.is_fullscreen);
+		e.preventDefault();
 	}
+	else if (e.keyCode === 81) { // q to focus preset search
+		$('#presetSearch').focus()
+		$('#presetSearch').select()
+		e.preventDefault();
+		return false;
+	} 
 	else if(this.ctrl_pressed || e.metaKey)
 	{
 		if(e.keyCode === 65) // CTRL+a
@@ -1324,6 +1339,7 @@ Application.prototype.onKeyDown = function(e) {
 				this.undoManager.redo()
 		}
 	}
+
 };
 
 Application.prototype.onKeyUp = function(e)
