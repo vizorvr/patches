@@ -34,8 +34,8 @@ function PluginManager(core, base_url) {
 
 				if (E2.app) {
 					that.context_menu = new ContextMenu(E2.dom.canvas_parent, pg_root.create_items())
-					that.context_menu.on('created', function(n) {
-						that.emit('created', n)
+					that.context_menu.on('created', function(icon, pos) {
+						that.emit('created', icon, pos)
 					})
 				}
 

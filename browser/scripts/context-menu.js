@@ -172,21 +172,16 @@ function ContextMenu(parent, items) {
 
 ContextMenu.prototype = Object.create(EventEmitter.prototype)
 
-ContextMenu.prototype.show = function(pos)
-{
+ContextMenu.prototype.show = function(pos) {
 	this.pos = pos;
 	this.hide();	
 	this.menu = new Menu(this, this.items, this.callback);
 	this.menu.create(null, pos, true);
-};
+}
 
-ContextMenu.prototype.hide = function()
-{
-	if(this.menu)
-	{
+ContextMenu.prototype.hide = function() {
+	if(this.menu) {
 		this.menu.destroy();
 		this.menu = null;
 	}
-};
-
-
+}
