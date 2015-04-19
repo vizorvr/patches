@@ -22,13 +22,35 @@ E2.p.prototype.reset = function()
 E2.p.prototype.update_output = function(slot)
 {
 	var hmd = this.renderer.vr_hmd;
+	var defaultEye = {
+		eyeTranslation: 0.0,
+		recommendedFieldOfView: {
+			leftDegrees: 75,
+			rightDegrees: 75
+		}
+	}
+	var eyeL = defaultEye, eyeR = defaultEye
 	
-	if(slot.index === 0)
-		return hmd ? hmd.getRecommendedEyeFieldOfView('left').leftDegrees : 75.0;
-	else if(slot.index === 1)
-		return hmd ? hmd.getRecommendedEyeFieldOfView('right').rightDegrees : 75.0;
-	else if(slot.index === 2)
-		return hmd ? hmd.getEyeTranslation('left').x : 0.0;
+	if (hmd.getEyeParameters !== undefined) {
+		eyeL = hmd.getEyeParameters('left')
+		eyeR = hmd.getEyeParameters('right')
+	} else {
+		eyeL = {
+			eyeTranslation: hmd.getEyeTranslation('left'),
+			recommendedFieldOfView: hmd.getRecommendedEyeFieldOfView('left')
+		}
+		eyeR = {
+			eyeTranslation: hmd.getEyeTranslation('right'),
+			recommendedFieldOfView: hmd.getRecommendedEyeFieldOfView('right')
+		}
+	}
+
+	if (slot.index === 0)
+		return eyeL.recommendedFieldOfView.leftDegrees
+	else if (slot.index === 1)
+		return eyeR.recommendedFieldOfView.rightDegrees
+	else if (slot.index === 2)
+		return eyeL.eyeTranslation
 		
-	return hmd ? hmd.getEyeTranslation('right').x : 0.0;
+	return eyeR.getEyeTranslation
 };

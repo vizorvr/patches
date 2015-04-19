@@ -21,6 +21,8 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_state = function()
 {
+		var eyeL, eyeR
+
 	this.camera_l.view = mat4.create(this.camera.view);
 	this.camera_r.view = mat4.create(this.camera.view);
 
@@ -68,14 +70,27 @@ E2.p.prototype.update_state = function()
 	};
 	
 	var hmd = this.renderer.vr_hmd;
-	
-	if(hmd)
-	{
-		var et = hmd.getEyeTranslation("left");
+
+	if (hmd) {
+		if (hmd.getEyeParameters !== undefined) {
+			eyeL = hmd.getEyeParameters('left')
+			eyeR = hmd.getEyeParameters('right')
+		} else {
+			eyeL = {
+				eyeTranslation: hmd.getEyeTranslation('left'),
+				recommendedFieldOfView: hmd.getRecommendedEyeFieldOfView('left')
+			}
+			eyeR = {
+				eyeTranslation: hmd.getEyeTranslation('right'),
+				recommendedFieldOfView: hmd.getRecommendedEyeFieldOfView('right')
+			}
+		}
+
+		var et = eyeL.eyeTranslation
 		var ipd = vec3.length(vec3.create([et.x, et.y, et.z]));
 		
-		fov2proj(this.camera_l.projection, hmd.getRecommendedEyeFieldOfView('left'), 0.01, 10000.0);
-		fov2proj(this.camera_r.projection, hmd.getRecommendedEyeFieldOfView('right'), 0.01, 10000.0);
+		fov2proj(this.camera_l.projection, eyeL.recommendedFieldOfView, 0.01, 10000.0);
+		fov2proj(this.camera_r.projection, eyeR.recommendedFieldOfView, 0.01, 10000.0);
 		
 		mat4.translate(this.camera_l.view, vec3.create([-ipd, 0.0, 0.0])); 
 		mat4.translate(this.camera_r.view, vec3.create([ipd, 0.0, 0.0]));
