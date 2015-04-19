@@ -20,7 +20,7 @@ E2.p = E2.plugins["input_proxy"] = function(core, node)
 	this.data = null;
 
 	if(!node.title)
-		node.title = 'input_' + node.uid;
+		node.title = 'input ' + node.uid;
 };
 
 E2.p.prototype.reset = function()

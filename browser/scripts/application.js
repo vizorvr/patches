@@ -88,10 +88,12 @@ Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 	result[1] = Math.round(o[1] + (area.height() / 2));
 };
 
-Application.prototype.onPluginInstantiated = function(id, pos) {
+Application.prototype.instantiatePlugin = function(id, pos) {
 	var that = this
 	var cp = E2.dom.canvas_parent
 	var co = cp.offset()
+
+	pos = pos || this._mousePosition
 
 	function createPlugin(name) {
 		var ag = that.player.core.active_graph
@@ -115,9 +117,9 @@ Application.prototype.onPluginInstantiated = function(id, pos) {
 	}
 	
 	if (id === 'graph')
-		bootbox.prompt('Name new graph.', createPlugin)
+		createPlugin('graph ' + E2.core.active_graph.node_uid)
 	else if (id === 'loop')
-		createPlugin('Loop')
+		createPlugin('loop')
 	else
 		createPlugin(null)
 }
@@ -1326,8 +1328,13 @@ Application.prototype.onKeyDown = function(e) {
 		this.is_fullscreen = !this.is_fullscreen;
 		this.player.core.renderer.set_fullscreen(this.is_fullscreen);
 		e.preventDefault();
-	}
-	else if (e.keyCode === 81) { // q to focus preset search
+	} else if (e.keyCode === 73) { // i
+		this.instantiatePlugin('input_proxy')
+	} else if (e.keyCode === 79) { // o
+		this.instantiatePlugin('output_proxy')
+	} else if (e.keyCode === 71) { // g
+		this.instantiatePlugin('graph')
+	} else if (e.keyCode === 81) { // q to focus preset search
 		$('#presetSearch').focus()
 		$('#presetSearch').select()
 		e.preventDefault();
@@ -1790,7 +1797,7 @@ Application.prototype.onGraphSelected = function(graph) {
 Application.prototype.start = function() {
 	var that = this
 
-	E2.core.pluginManager.on('created', this.onPluginInstantiated.bind(this))
+	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 
    	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))

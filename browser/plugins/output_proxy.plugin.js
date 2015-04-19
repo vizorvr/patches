@@ -17,7 +17,7 @@ E2.p = E2.plugins.output_proxy = function(core, node)
 	this.changed = false;
 	
 	if(!node.title)
-		node.title = 'output_' + node.uid;
+		node.title = 'output ' + node.uid;
 };
 
 E2.p.prototype.reset = function()

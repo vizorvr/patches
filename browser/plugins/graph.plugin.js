@@ -319,10 +319,8 @@ GraphPlugin.prototype.state_changed = function(ui) {
 		return;
 	}
 	
-	var find_node = function(nodes, uid)
-	{
-		for(var i = 0, len = nodes.length; i < len; i++)
-		{
+	function find_node(nodes, uid) {
+		for(var i = 0, len = nodes.length; i < len; i++) {
 			if(nodes[i].uid === uid)
 			{
 				var n = nodes[i];
