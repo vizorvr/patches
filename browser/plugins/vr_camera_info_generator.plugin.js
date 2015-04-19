@@ -1,4 +1,4 @@
-E2.p = E2.plugins["vr_camera_info_generator"] = function(core, node)
+E2.p = E2.plugins.vr_camera_info_generator = function(core, node)
 {
 	this.desc = 'Supplies left / right FOV and translation of the current VR device camera.';
 	
@@ -19,8 +19,7 @@ E2.p.prototype.reset = function()
 	this.updated = true;
 };
 
-E2.p.prototype.update_output = function(slot)
-{
+E2.p.prototype.update_output = function(slot) {
 	var hmd = this.renderer.vr_hmd;
 	var defaultEye = {
 		eyeTranslation: 0.0,
@@ -31,17 +30,19 @@ E2.p.prototype.update_output = function(slot)
 	}
 	var eyeL = defaultEye, eyeR = defaultEye
 	
-	if (hmd.getEyeParameters !== undefined) {
-		eyeL = hmd.getEyeParameters('left')
-		eyeR = hmd.getEyeParameters('right')
-	} else {
-		eyeL = {
-			eyeTranslation: hmd.getEyeTranslation('left'),
-			recommendedFieldOfView: hmd.getRecommendedEyeFieldOfView('left')
-		}
-		eyeR = {
-			eyeTranslation: hmd.getEyeTranslation('right'),
-			recommendedFieldOfView: hmd.getRecommendedEyeFieldOfView('right')
+	if (hmd) {
+		if (hmd.getEyeParameters !== undefined) {
+			eyeL = hmd.getEyeParameters('left')
+			eyeR = hmd.getEyeParameters('right')
+		} else {
+			eyeL = {
+				eyeTranslation: hmd.getEyeTranslation('left'),
+				recommendedFieldOfView: hmd.getRecommendedEyeFieldOfView('left')
+			}
+			eyeR = {
+				eyeTranslation: hmd.getEyeTranslation('right'),
+				recommendedFieldOfView: hmd.getRecommendedEyeFieldOfView('right')
+			}
 		}
 	}
 
