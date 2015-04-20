@@ -42,7 +42,8 @@ EditConnection.prototype.blurSlot = function(slot) {
 		if (slot === this.srcSlot)
 			return;
 		this.dstNode = null
-		this.dstSlot.is_connected = false
+		if (this.dstSlot)
+			this.dstSlot.is_connected = false
 		this.dstSlot = null
 	}
 }
