@@ -1062,8 +1062,7 @@ Application.prototype.onWindowResize = function() {
 	var width = canvases[0].clientWidth;
 	var height = canvases[0].clientHeight
 
-	if (glc.width !== width || glc.height !== height)
-	{
+	if (glc.width !== width || glc.height !== height) {
 		glc.width = width;
 		glc.height = height;
 
@@ -1078,9 +1077,8 @@ Application.prototype.onWindowResize = function() {
 		E2.app.player.core.renderer.update_viewport();
 	}
 
-	if(this.player)
-		this.updateCanvas(true);
-};
+	this.updateCanvas(true)
+}
 
 Application.prototype.toggleNoodles = function() {
 	this._noodlesOn = true
@@ -1699,7 +1697,7 @@ Application.prototype.start = function() {
 		// Instead, we set up a timer that gets superceeded for each (spurious)
 		// resize event within a 100 ms window.
 		clearTimeout(that.resize_timer)
-		that.resize_timer = setTimeout(that.onWindowResize, 100)
+		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 100)
 	})
 
 	// close bootboxes on click 
