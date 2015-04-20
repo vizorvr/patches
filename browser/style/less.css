@@ -6962,6 +6962,7 @@ body {
   color: #aaaaaa;
   background-color: #222222;
 }
+.result tr,
 .panel-body li {
   cursor: pointer;
 }
