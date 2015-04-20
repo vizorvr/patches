@@ -37,7 +37,7 @@ CollapsibleSelectControl.prototype.focus = function() {
 
 CollapsibleSelectControl.prototype._reset = function() {
 	$('.panel', this._el).show()
-	$('ul.result', this._el).empty().remove()
+	$('table.result', this._el).empty().remove()
 	$('.preset-result', this._el).empty()
 }
 
@@ -80,7 +80,7 @@ CollapsibleSelectControl.prototype._search = function(text) {
 	var $result = this._resultTpl(data)
 	$pr.empty().html($result)
 
-	var $lis = $('li', $pr)
+	var $lis = $('td', $pr)
 
 	$lis.dblclick(function(e) {
 		that._cb($(e.target).data('path'))

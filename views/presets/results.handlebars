@@ -1,8 +1,9 @@
-<ul class="result">
+<table class="result table table-hover table-condensed table-striped">
 	{{#each this}}
-		<li data-path="{{path}}">
-			<!-- {{score}}  -->
-			{{category}}: {{title}}
-		</li>
+	<tr>
+		<td data-path="{{path}}">
+			{{title}}
+		</td>
+	</tr>
 	{{/each}}
-</ul>
+</table>
