@@ -147,7 +147,7 @@ Application.prototype.activateHoverSlot = function() {
 }
 
 Application.prototype.releaseHoverSlot = function() {
-	if (this.hover_slot != null) {
+	if (this.hover_slot) {
 		this.hover_slot_div[0].style.backgroundColor = 'inherit';
 		this.hover_slot_div[0].style.color = '#000';
 		this.hover_slot_div = null;
@@ -204,7 +204,9 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 					new Connection(null, node, null, slot), 
 					null,
 					slot_div)
+
 				this.editConn.offset = 0;
+
 				this.getSlotPosition(node, slot_div, E2.slot_type.input, 
 					this.editConn.ui.src_pos);
 			} else {
@@ -213,9 +215,9 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 
 			this.onSlotEntered(node, slot, slot_div);
 		}
-	}
-	else
+	} else {
 		this.removeHoverConnections();
+	}
 			
 	return false;
 }
@@ -1602,7 +1604,7 @@ Application.prototype.onHideTooltip = function() {
 
 function onGraphChanged() {
 	console.log('onGraphChanged')
-	E2.app.clearHoverState()
+	// E2.app.clearHoverState()
 	E2.app.updateCanvas(true)
 }
 
