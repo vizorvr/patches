@@ -6740,10 +6740,10 @@ table {
   margin-top: 8px;
 }
 .left-cell {
-  flex: 0 0 200px;
-  width: 200px;
+  flex: 0 0 220px;
+  width: 220px;
   min-width: 10px;
-  max-width: 200px;
+  max-width: 220px;
 }
 .strikethru {
   text-decoration: line-through;
