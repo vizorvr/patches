@@ -19,8 +19,7 @@ function Application() {
 	this.hover_slot = null;
 	this.hover_slot_div = null;
 	this.hover_connections = [];
-	this.hover_node = null;
-	this.hover_nodes = [];
+	this.hoverNode = null;
 	this.scrollOffset = [0, 0];
 	this.selection_start = null;
 	this.selection_end = null;
@@ -351,69 +350,22 @@ Application.prototype.mouseEventPosToCanvasCoord = function(e, result) {
 };
 
 Application.prototype.activateHoverNode = function() {
-	var that = this
-
-	if (!this.hover_node)
-		return;
-
-	var conns = this.player.core.active_graph.connections;
-	
-	function iterate_conns(uid) {
-		conns.forEach(function(c) {
-			if (c.src_node.uid === uid || c.dst_node.uid === uid) {
-				c.ui.deleting = true;
-				if (that.hover_connections.indexOf(c) === -1)
-					that.hover_connections.push(c);
-			}
-		})
-	}
-	
-	this.hover_node.ui.header_row[0].className += ' pl_delete';
-	this.hover_nodes.push(this.hover_node)
-	iterate_conns(this.hover_node.uid)
-
-	if (this.isNodeInSelection(this.hover_node)) {
-		var nodes = this.selectedNodes;
-		
-		nodes.forEach(function(node) {
-			if (node === that.hover_node)
-				return;
-
-			node.ui.header_row[0].className += ' pl_delete';
-			that.hover_nodes.push(node);
-			
-			iterate_conns(node.uid);
-		});
-	}
-
-	if (this.hover_connections.length)
-		this.updateCanvas(false);
 }
 
-Application.prototype.releaseHoverNode = function(release_conns)
-{
-	if(this.hover_node !== null)
-	{
-		var hn = this.hover_nodes;
+Application.prototype.releaseHoverNode = function(release_conns) {
+	if (this.hoverNode !== null) {
+		this.hoverNode = null
 		
-		this.hover_node = null;
-		
-		for(var i = 0, len = this.hover_nodes.length; i < len; i++)
-			hn[i].ui.header_row[0].className = hn[i].ui.header_row[0].className.replace(' pl_delete', '')
-		
-		this.hover_nodes = [];
-		
-		if(release_conns)
-			this.releaseHoverConnections();
+		if (release_conns)
+			this.releaseHoverConnections()
 	}
-};
+}
 
-Application.prototype.clearHoverState = function()
-{
+Application.prototype.clearHoverState = function() {
 	this.hover_slot = null;
 	this.hover_slot_div = null;
 	this.hover_connections = [];
-	this.hover_node = null;
+	this.hoverNode = null;
 };
 
 Application.prototype.clearEditState = function()
@@ -441,45 +393,63 @@ Application.prototype.removeHoverConnections = function() {
 
 	this.hover_connections = []
 }
+
+Application.prototype.deleteSelectedConnections = function() {
+	this.selectedConnections.map(function(connection) {
+		this.graphApi.disconnect(this.player.core.active_graph, connection)
+	}.bind(this))
+
+	this.hover_connections = []
+}
 	
-Application.prototype.onNodeHeaderEntered = function(node) {
-	this.hover_node = node
-
-	if (this.shift_pressed)
-		this.activateHoverNode()
-}
-
-Application.prototype.onNodeHeaderExited = function(e) {
-	this.releaseHoverNode(true)
-	this.hover_node = null
-}
-
-Application.prototype.deleteHoverNodes = function() {
+Application.prototype.deleteSelectedNodes = function() {
 	var that = this
-	var hns = this.hover_nodes.slice(0)
+	var hns = this.selectedNodes
 	var ag = this.player.core.active_graph
 
 	this.undoManager.begin('Delete nodes')
 
 	this.releaseHoverNode(false)
-	this.clearSelection()
 
-	this.removeHoverConnections()
+	this.deleteSelectedConnections()
 
 	hns.forEach(function(n) {
 		that.graphApi.removeNode(ag, n)
 	})
 
 	this.undoManager.end('Delete nodes')
+
+	this.clearSelection()
+}
+
+Application.prototype.onNodeHeaderEntered = function(node) {
+	this.hoverNode = node
+}
+
+Application.prototype.onNodeHeaderExited = function() {
+	this.releaseHoverNode(true)
+}
+
+Application.prototype.onNodeHeaderMousedown = function() {
+	if (this.hoverNode) {
+		var isIn = this.isNodeInSelection(this.hoverNode)
+
+		if (!this.shift_pressed) {
+			if (!isIn) {
+				this.clearSelection()
+				this.markNodeAsSelected(this.hoverNode)
+			}
+		} else {
+			if (isIn)
+				this.deselectNode(this.hoverNode)
+			else
+				this.markNodeAsSelected(this.hoverNode)
+		} 
+	}
 }
 
 Application.prototype.onNodeHeaderClicked = function(e) {
 	e.stopPropagation()
-	
-	if (this.shift_pressed && this.hover_node) {
-		this.deleteHoverNodes()
-	}
-
 	return false
 }
 
@@ -531,8 +501,8 @@ Application.prototype.executeNodeDrag = function(nodes, conns, dx, dy) {
 
 Application.prototype.onNodeDragged = function(node) {
 	var nd = node.ui.dom[0]
-	var dx = nd.offsetLeft - node.x
-	var dy = nd.offsetTop - node.y
+	var dx = Math.floor(nd.offsetLeft) - Math.floor(node.x)
+	var dy = Math.floor(nd.offsetTop) - Math.floor(node.y)
 
 	if (!dx && !dy)
 		return;
@@ -898,10 +868,9 @@ Application.prototype.onDelete = function(e) {
 	if (!this.selectedNodes.length)
 		return;
 
-	this.hover_node = this.selectedNodes[0];
-	this.activateHoverNode();
-	this.deleteHoverNodes();
-};
+	this.hoverNode = this.selectedNodes[0];
+	this.deleteSelectedNodes();
+}
 
 Application.prototype.onCopy = function(e) {
 	if (this.selectedNodes.length < 1) {
@@ -1055,6 +1024,13 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 
 	if (addToSelection !== false)
 		this.selectedNodes.push(node)
+}
+
+Application.prototype.deselectNode = function(node) {
+	this.selectedNodes.splice(this.selectedNodes.indexOf(node), 1)
+
+	node.ui.dom[0].style.border = this.normal_border_style
+	node.ui.selected = false
 }
 
 Application.prototype.markConnectionAsSelected = function(conn) {
@@ -1620,6 +1596,7 @@ function onNodeAdded(node) {
 
 function onNodeRemoved(node) {
 	console.log('onNodeRemoved', node)
+	E2.app.onHideTooltip()
 	node.destroy_ui()
 }
 

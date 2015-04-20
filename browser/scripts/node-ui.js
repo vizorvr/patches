@@ -39,6 +39,7 @@ function NodeUI(parent_node, x, y) {
 	h_cell.append(lbl);
 	h_row.append(h_cell);
 	h_row.addClass('pl_header');
+	h_row.mousedown(E2.app.onNodeHeaderMousedown.bind(E2.app));
 	h_row.click(E2.app.onNodeHeaderClicked.bind(E2.app));
 	h_row.dblclick(E2.app.onNodeHeaderDblClicked.bind(E2.app, parent_node));
 	h_row.mouseenter(E2.app.onNodeHeaderEntered.bind(E2.app, parent_node));
