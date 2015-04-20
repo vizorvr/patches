@@ -166,6 +166,7 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 		if (type === E2.slot_type.output) {
 			// drag new connection from output
 			this.editConn = new EditConnection(
+				this.graphApi,
 				new Connection(node, null, slot),
 				slot_div,
 				null
@@ -199,15 +200,15 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 			if (!conn) {
 				// new connection from input
 				this.editConn = new EditConnection(
+					this.graphApi,
 					new Connection(null, node, null, slot), 
 					null,
-					slot_div,
-					true)
+					slot_div)
 				this.editConn.offset = 0;
 				this.getSlotPosition(node, slot_div, E2.slot_type.input, 
 					this.editConn.ui.src_pos);
 			} else {
-				this.editConn = new EditConnection(conn, null, slot_div, true)
+				this.editConn = new EditConnection(this.graphApi, conn, null, slot_div)
 			}
 
 			this.onSlotEntered(node, slot, slot_div);
@@ -221,7 +222,7 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 
 Application.prototype.onSlotEntered = function(node, slot, slot_div) {
 	if (this.editConn) {
-		if (this.editConn.canConnectTo(node, slot)) {
+		if (this.editConn.hoverSlot(node, slot)) {
 			slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
 		} else
 			slot_div[0].style.color = E2.erase_color;
@@ -237,64 +238,38 @@ Application.prototype.onSlotEntered = function(node, slot, slot_div) {
 Application.prototype.onSlotExited = function(node, slot, slot_div) {
 	if (this.editConn) {
 		slot_div[0].style.color = '#000';
-
-		if (this.editConn.rightToLeft) {
-			if (this.editConn.dstSlot && this.editConn.dstSlot.is_connected) {
-				this.hover_connections = [this.editConn.connection]
-				this.editConn = null
-				this.removeHoverConnections()
-			}
-		}
+		this.editConn.blurSlot(slot)
 	}
 		
 	this.releaseHoverSlot();
 }
 
-Application.prototype.onMouseReleased = function(e) {
-	var changed = false;
+Application.prototype.onMouseReleased = function() {
+	var changed = false
 
 	// Creating a connection?
 	if (this.editConn) {
-		this.editConn.commit()
-
-		var ss = this.editConn.srcSlot;
-		var ds = this.editConn.dstSlot;
-
-		if (!ss || !ds) {
-			this.editConn = null
-			this.updateCanvas(true);
-			this.releaseHoverSlot();
-			return;
-		}
-
-		var c;
-
-		if (this.editConn.connection.dst_slot === ds &&
-			this.editConn.connection.src_slot === ss) {
-			// already fully connected
-			c = this.editConn.connection;
-		} else {
-			c = this.graphApi.connect(this.player.core.active_graph,
-				this.editConn.srcNode,
-				this.editConn.dstNode, 
-				ss, ds,
-				this.editConn.offset)
-		}
-
-		c.signal_change(true);
-
-		// this.editConn.dstSlotDiv[0].style.color = '#000'
+		var ec = this.editConn
 		this.editConn = null
+		var c = ec.commit()
 
-		changed = true;
+		if (c)
+			c.signal_change(true)
+
+		if (ec.srcSlotDiv)
+			ec.srcSlotDiv[0].style.color = '#000'
+		if (ec.dstSlotDiv)
+			ec.dstSlotDiv[0].style.color = '#000'
+
+		changed = true
 	}
 
-	this.editConn = null;
-	
 	if (changed)
 		this.updateCanvas(true);
 	else
 		E2.dom.structure.tree.on_mouse_up();
+
+	this.releaseHoverSlot()
 }
 
 Application.prototype.updateCanvas = function(clear) {

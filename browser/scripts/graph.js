@@ -174,24 +174,26 @@ Graph.prototype.connect = function(offset, srcNode, destNode, ss, ds) {
 
 Graph.prototype.disconnect = function(c) {
 	var index = this.connections.indexOf(c)
+	var slots
 
 	if (index !== -1)
 		this.connections.splice(index, 1)
 
-	c.dst_slot.is_connected = false
+	if (c.dst_node) {
+		c.dst_slot.is_connected = false
+		slots = c.dst_node.inputs
+		index = slots.indexOf(c)
+		if (index !== -1)
+			slots.splice(index, 1)
+	}
 
-	var slots = c.dst_node.inputs
-	
-	index = slots.indexOf(c)
+	if (c.src_node) {
+		slots = c.src_node.outputs
+		index = slots.indexOf(c)
 
-	if (index !== -1)
-		slots.splice(index, 1)
-
-	slots = c.src_node.outputs
-	index = slots.indexOf(c)
-
-	if (index !== -1)
-		slots.splice(index, 1)
+		if (index !== -1)
+			slots.splice(index, 1)
+	}
 
 	this.emit('disconnected', c)
 	this.emit('changed')

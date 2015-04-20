@@ -28,7 +28,7 @@ describe('EditConnection', function() {
 		var isValid = true
 		var n1 = makeNode()
 		var s1 = makeSlot(0)
-		var c = new EditConnection(new Connection(n1, null, s1))
+		var c = new EditConnection({}, new Connection(n1, null, s1))
 		isValid = c.canConnectTo(n1, s1)
 		assert.ok(!isValid)
 	})
@@ -39,13 +39,13 @@ describe('EditConnection', function() {
 		var s1 = makeSlot(8)
 		var n2 = makeNode()
 		var s2 = makeSlot(8)
-		var c = new EditConnection(new Connection(n1, null, s1))
+		var c = new EditConnection({}, new Connection(n1, null, s1))
 		isValid = c.canConnectTo(n2, s2)
 		assert.ok(!isValid)
 	})
 
 	it('recognizes right to left', function() {
-		var c = new EditConnection(new Connection(null, 1, null, 1))
+		var c = new EditConnection({}, new Connection(null, 1, null, 1))
 		assert.ok(c.rightToLeft)
 	})
 
@@ -55,7 +55,7 @@ describe('EditConnection', function() {
 		var s1 = makeSlot(0)
 		var n2 = makeNode()
 		var s2 = makeSlot(0)
-		var c = new EditConnection(new Connection(n1, null, s1))
+		var c = new EditConnection({}, new Connection(n1, null, s1))
 		isValid = c.canConnectTo(n2, s2)
 		assert.ok(isValid)
 	})
@@ -66,10 +66,11 @@ describe('EditConnection', function() {
 		var s1 = makeSlot(0)
 		var n2 = makeNode()
 		var s2 = makeSlot(0)
-		var c = new EditConnection(new Connection(null, n1, null, s1))
+		var c = new EditConnection({}, new Connection(null, n1, null, s1))
 		isValid = c.canConnectTo(n2, s2)
 		assert.ok(isValid)
 	})
+
 
 
 });
