@@ -173,7 +173,7 @@ CollapsibleSelectControl.prototype.render = function(el) {
 		if (e.keyCode === 38 || e.keyCode === 40)
 			return;
 
-		keyTimer = setTimeout(that._search.bind(that, $input.val(), 10))
+		keyTimer = setTimeout(that._search.bind(that, $input.val(), 50))
 	})
 
 	$input.on('keydown', function(e) {

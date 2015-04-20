@@ -19,8 +19,7 @@ ConnectionUI.prototype.resolve_slot_divs = function() {
 	E2.app.redrawConnection(pc)
 }
 
-function Connection(src_node, dst_node, src_slot, dst_slot, direction) {
-	this.direction = direction || 0;
+function Connection(src_node, dst_node, src_slot, dst_slot) {
 	this.src_node = src_node;
 	this.dst_node = dst_node;
 	this.src_slot = src_slot;
@@ -31,6 +30,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot, direction) {
 
 Connection.prototype.create_ui = function() {
 	this.ui = new ConnectionUI(this)
+	return this.ui
 }
 
 Connection.prototype.destroy_ui = function() {
@@ -202,6 +202,8 @@ Connection.prototype.patch_up = function(nodes) {
 	
 	this.src_node.addOutput(this)
 	this.dst_node.addInput(this)
+
+	this.dst_slot.is_connected = this.src_slot.is_connected = true
 
 	return true;
 };

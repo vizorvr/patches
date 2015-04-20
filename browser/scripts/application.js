@@ -12,13 +12,7 @@ function Application() {
 	this.presetManager = new PresetManager('/presets');
 	this.canvas = E2.dom.canvas;
 	this.c2d = E2.dom.canvas[0].getContext('2d');
-	this.src_node = null;
-	this.dst_node = null;
-	this.src_slot = null;
-	this.src_slot_div = null;
-	this.dst_slot = null;
-	this.dst_slot_div = null;
-	this.edit_conn = null;
+	this.editConn = null;
 	this.shift_pressed = false;
 	this.ctrl_pressed = false;
 	this.alt_pressed = false;
@@ -171,14 +165,14 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 
 		if (type === E2.slot_type.output) {
 			// drag new connection from output
-			this.src_node = node;
-			this.src_slot = slot;
-			this.src_slot_div = slot_div;
+			this.editConn = new EditConnection(
+				new Connection(node, null, slot),
+				slot_div,
+				null
+			)
 
-			this.edit_conn = new Connection(null, null, null, null);
-			this.edit_conn.create_ui();
-
-			this.getSlotPosition(node, slot_div, E2.slot_type.output, this.edit_conn.ui.src_pos);
+			this.getSlotPosition(node, slot_div, E2.slot_type.output, 
+				this.editConn.ui.src_pos);
 		
 			var offset = 0;
 			
@@ -198,26 +192,22 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 				offset = i + 1;
 			});
 			
-			this.edit_conn.offset = offset;
+			this.editConn.offset = offset;
 			slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
 		} else { // drag connection from input
-			this.dst_node = node;
-			this.dst_slot = slot;
-			this.dst_slot_div = slot_div;
-
 			var conn = graph.find_connection_to(node, slot);
 			if (!conn) {
-				// new connection
-				this.edit_conn = new Connection(null, null, null, null, 1);
-				this.edit_conn.create_ui();
-				this.edit_conn.offset = 0;
-				this.getSlotPosition(node, slot_div, E2.slot_type.input, this.edit_conn.ui.src_pos);
+				// new connection from input
+				this.editConn = new EditConnection(
+					new Connection(null, node, null, slot), 
+					null,
+					slot_div,
+					true)
+				this.editConn.offset = 0;
+				this.getSlotPosition(node, slot_div, E2.slot_type.input, 
+					this.editConn.ui.src_pos);
 			} else {
-				// existing connection
-				this.src_node = conn.src_node;
-				this.src_slot = conn.src_slot;
-				this.src_slot_div = conn.ui.src_slot_div;
-				this.edit_conn = conn;
+				this.editConn = new EditConnection(conn, null, slot_div, true)
 			}
 
 			this.onSlotEntered(node, slot, slot_div);
@@ -230,106 +220,81 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 }
 
 Application.prototype.onSlotEntered = function(node, slot, slot_div) {
-	if (this.edit_conn) {
-		var ss_dt;
-
-		if (this.edit_conn.direction === 1)
-		{
-			ss_dt = this.dst_slot.dt;
-		} else {
-			ss_dt = this.src_slot.dt;
-		}
-
-		var any_dt = this.player.core.datatypes.ANY;
-
-		// Only allow connection if datatypes match and slot is unconnected. 
-		// Don't allow self-connections. There no complete check for cyclic 
-		// redundacies, though we should probably institute one.
-		// Additionally, don't allow connections between two ANY slots.
-		var isValid = (ss_dt === any_dt || slot.dt === any_dt || ss_dt === slot.dt) && 
-			!(ss_dt === any_dt && slot.dt === any_dt) &&
-			(!slot.is_connected || // not connected, or
-				// source to destination, and dest is slot and source isn't slot
-				((this.edit_conn.direction === 0 && this.dst_slot === slot && this.src_node !== node) ||
-				// dest to source, and source is slot and dest isn't slot
-			   (this.edit_conn.direction === 1 && this.src_slot === slot && this.dst_node !== node)));
-
-		if (this.edit_conn.direction === 1)
-		{
-			if (slot.type !== E2.slot_type.output)
-				isValid = false;
-
-			if (!isValid)
-			{
-				this.src_node = null;
-				this.src_slot = null;
-				this.src_slot_div = null;
-			}
-			else
-			{
-				this.src_slot = slot;
-				this.src_node = node;
-				this.src_slot_div = slot_div;
-			}
-		}
-		else
-		{
-			if (slot.type !== E2.slot_type.input)
-				isValid = false;
-
-			if (!isValid)
-			{
-				this.dst_node = null;
-				this.dst_slot = null;
-				this.dst_slot_div = null;
-			}
-			else
-			{
-				this.dst_node = node;
-				this.dst_slot = slot;
-				this.dst_slot_div = slot_div;
-			}
-		}
-
-		if (isValid)
+	if (this.editConn) {
+		if (this.editConn.canConnectTo(node, slot)) {
 			slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
-		else
+		} else
 			slot_div[0].style.color = E2.erase_color;
 	}
 
 	this.hover_slot = slot;
 	this.hover_slot_div = slot_div;
 
-	if(this.shift_pressed)
-		this.activateHoverSlot();
+	if (this.shift_pressed)
+		this.activateHoverSlot()
 }
 
 Application.prototype.onSlotExited = function(node, slot, slot_div) {
-	if (this.edit_conn) {
-		if (this.edit_conn.direction === 1) {
-			this.src_node = null;
-		
-			if(this.src_slot === slot) {
-				slot_div[0].style.color = '#000';
-				this.src_slot = null;
-			}
-		} else {
-			this.dst_node = null;
-		
-			if (this.edit_conn.dst_slot && this.edit_conn.dst_slot.is_connected) {
-				this.hover_connections = [this.edit_conn];
-				this.removeHoverConnections();
-				this.edit_conn.dst_slot = null;
-			}
+	if (this.editConn) {
+		slot_div[0].style.color = '#000';
 
-			if(this.dst_slot === slot) {
-				slot_div[0].style.color = '#000';
-				this.dst_slot = null;
+		if (this.editConn.rightToLeft) {
+			if (this.editConn.dstSlot && this.editConn.dstSlot.is_connected) {
+				this.hover_connections = [this.editConn.connection]
+				this.editConn = null
+				this.removeHoverConnections()
 			}
 		}
 	}
 		
 	this.releaseHoverSlot();
+}
+
+Application.prototype.onMouseReleased = function(e) {
+	var changed = false;
+
+	// Creating a connection?
+	if (this.editConn) {
+		this.editConn.commit()
+
+		var ss = this.editConn.srcSlot;
+		var ds = this.editConn.dstSlot;
+
+		if (!ss || !ds) {
+			this.editConn = null
+			this.updateCanvas(true);
+			this.releaseHoverSlot();
+			return;
+		}
+
+		var c;
+
+		if (this.editConn.connection.dst_slot === ds &&
+			this.editConn.connection.src_slot === ss) {
+			// already fully connected
+			c = this.editConn.connection;
+		} else {
+			c = this.graphApi.connect(this.player.core.active_graph,
+				this.editConn.srcNode,
+				this.editConn.dstNode, 
+				ss, ds,
+				this.editConn.offset)
+		}
+
+		c.signal_change(true);
+
+		// this.editConn.dstSlotDiv[0].style.color = '#000'
+		this.editConn = null
+
+		changed = true;
+	}
+
+	this.editConn = null;
+	
+	if (changed)
+		this.updateCanvas(true);
+	else
+		E2.dom.structure.tree.on_mouse_up();
 }
 
 Application.prototype.updateCanvas = function(clear) {
@@ -352,8 +317,8 @@ Application.prototype.updateCanvas = function(clear) {
 		cb[cui.deleting ? 3 : cui.selected ? 2 : cui.flow ? 1 : 0].push(cui.parent_conn)
 	}
 	
-	if (this.edit_conn)
-		cb[0].push(this.edit_conn)
+	if (this.editConn)
+		cb[0].push(this.editConn.connection)
 	
 	var so = this.scrollOffset;
 	
@@ -407,54 +372,6 @@ Application.prototype.mouseEventPosToCanvasCoord = function(e, result) {
 	result[0] = (e.pageX - cp.offsetLeft) + this.scrollOffset[0];
 	result[1] = (e.pageY - cp.offsetTop) + this.scrollOffset[1];
 };
-
-Application.prototype.onMouseReleased = function(e) {
-	var changed = false;
-
-	// Creating a connection?
-	if (this.edit_conn) {
-		var ss = this.src_slot;
-		var ds = this.dst_slot;
-
-		if (!ss || !ds) {
-			this.edit_conn = this.src_node = this.dst_node = null;
-			this.updateCanvas(true);
-			this.releaseHoverSlot();
-			return;
-		}
-
-		var c;
-
-		if (this.edit_conn.dst_slot === this.dst_slot && this.edit_conn.src_slot === this.src_slot) {
-			// already fully connected
-			c = this.edit_conn;
-		} else {
-			c = this.graphApi.connect(this.player.core.active_graph,
-				this.src_node, this.dst_node, ss, ds, this.edit_conn.offset)
-		}
-
-		c.signal_change(true);
-
-		this.dst_slot_div[0].style.color = '#000';
-		this.dst_slot.is_connected = true;
-		this.dst_slot_div = this.dst_slot = null;
-
-		changed = true;
-	}
-
-	if (this.src_slot) {
-		this.src_slot_div[0].style.color = '#000';
-		this.src_slot = this.src_slot_div = null;
-		changed = true;
-	}
-	
-	this.dst_node = this.src_node = this.edit_conn = null;
-	
-	if (changed)
-		this.updateCanvas(true);
-	else
-		E2.dom.structure.tree.on_mouse_up();
-}
 
 Application.prototype.activateHoverNode = function() {
 	var that = this
@@ -524,13 +441,7 @@ Application.prototype.clearHoverState = function()
 
 Application.prototype.clearEditState = function()
 {
-	this.src_node = null;
-	this.dst_node = null;
-	this.src_slot = null;
-	this.src_slot_div = null;
-	this.dst_slot = null;
-	this.dst_slot_div = null;
-	this.edit_conn = null;
+	this.editConn = null;
 	this.shift_pressed = false;
 	this.ctrl_pressed = false;
 	this.clearHoverState()
@@ -856,7 +767,7 @@ Application.prototype.onMouseMoved = function(e)
 		e.preventDefault();
 		return;
 	}
-	else if(this.edit_conn)
+	else if(this.editConn)
 	{
 		var cp = E2.dom.canvas_parent;
 		var pos = cp.position();
@@ -875,7 +786,7 @@ Application.prototype.onMouseMoved = function(e)
 		else if(e.pageY > y2)
 			cp.scrollTop(this.scrollOffset[1] + 20);
 
-		this.mouseEventPosToCanvasCoord(e, this.edit_conn.ui.dst_pos);
+		this.mouseEventPosToCanvasCoord(e, this.editConn.ui.dst_pos);
 		this.updateCanvas(true);
 
 		return;

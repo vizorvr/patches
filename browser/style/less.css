@@ -6955,12 +6955,8 @@ body {
   padding: 0;
   border-top: 0px;
 }
-.panel-body ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  color: #aaaaaa;
-  background-color: #222222;
+.preset-result table tbody tr td {
+  padding: 3px !important;
 }
 .result tr,
 .panel-body li {
