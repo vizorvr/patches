@@ -349,9 +349,6 @@ Application.prototype.mouseEventPosToCanvasCoord = function(e, result) {
 	result[1] = (e.pageY - cp.offsetTop) + this.scrollOffset[1];
 };
 
-Application.prototype.activateHoverNode = function() {
-}
-
 Application.prototype.releaseHoverNode = function(release_conns) {
 	if (this.hoverNode !== null) {
 		this.hoverNode = null
@@ -431,20 +428,28 @@ Application.prototype.onNodeHeaderExited = function() {
 }
 
 Application.prototype.onNodeHeaderMousedown = function() {
-	if (this.hoverNode) {
-		var isIn = this.isNodeInSelection(this.hoverNode)
+	if (!this.hoverNode)
+		return;
 
-		if (!this.shift_pressed) {
-			if (!isIn) {
-				this.clearSelection()
-				this.markNodeAsSelected(this.hoverNode)
-			}
-		} else {
-			if (isIn)
-				this.deselectNode(this.hoverNode)
-			else
-				this.markNodeAsSelected(this.hoverNode)
-		} 
+	var isIn = this.isNodeInSelection(this.hoverNode)
+	var addNode
+
+	if (!this.shift_pressed) {
+		if (!isIn) {
+			this.clearSelection()
+			addNode = this.hoverNode
+		}
+	} else {
+		if (isIn)
+			this.deselectNode(this.hoverNode)
+		else
+			addNode = this.hoverNode
+	} 
+
+	if (addNode) {
+		this.markNodeAsSelected(addNode)
+		addNode.inputs.concat(addNode.outputs)
+			.map(this.markConnectionAsSelected.bind(this))
 	}
 }
 
@@ -1015,7 +1020,6 @@ Application.prototype.onPaste = function() {
 
 	pasted.nodes.map(this.markNodeAsSelected.bind(this))
 	pasted.connections.map(this.markConnectionAsSelected.bind(this))
-
 }
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
@@ -1161,7 +1165,6 @@ Application.prototype.onKeyDown = function(e) {
 	{
 		this.shift_pressed = true;
 		this.activateHoverSlot();
-		this.activateHoverNode();
 	}
 	else if(e.keyCode === 17) // CMD on OSX, CTRL on everything else
 	{
