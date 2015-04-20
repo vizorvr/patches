@@ -1152,7 +1152,7 @@ Application.prototype.onPaste = function() {
 	var sy = this.scrollOffset[1]
 
 	var ox = Math.max(this._mousePosition[0] - cp.position().left + sx, 100)
-	var oy = Math.max(this._mousePosition[1] - cp.position().top + sy, 50)
+	var oy = Math.max(this._mousePosition[1] - cp.position().top + sy, 100)
 	
 	var pasted = this.paste(doc, ox, oy)
 
