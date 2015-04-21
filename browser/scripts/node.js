@@ -4,13 +4,14 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.dyn_slot_uid = 0
 	this.queued_update = -1
 
+	this.uid = parent_graph ? parent_graph.get_node_uid() : Date.now()
+
 	if (plugin_id) { // Don't initialise if we're loading.
 		this.parent_graph = parent_graph;
 		this.x = x;
 		this.y = y;
 		this.ui = null;
 		this.id = E2.app.player.core.pluginManager.keybyid[plugin_id];
-		this.uid = parent_graph.get_node_uid();
 		this.update_count = 0;
 		this.title = null;
 		this.inputs_changed = false;
@@ -112,7 +113,8 @@ Node.prototype.geometry_updated = function()
 };
 
 Node.prototype.add_slot = function(slot_type, def) {
-	var suid = Date.now() + '' + this.dyn_slot_uid++;
+	// var suid = Date.now() + '' + this.dyn_slot_uid++;
+	var suid = parseInt(Date.now() + '' + this.dyn_slot_uid++, 10);
 
 	var is_inp = slot_type === E2.slot_type.input;
 	def.uid = suid;
@@ -386,7 +388,7 @@ Node.prototype.update_recursive = function(conns) {
 	return dirty;
 }
 
-Node.prototype.serialise = function()
+Node.prototype.serialise = function(flat)
 {
 	var d = {};
 	
@@ -404,7 +406,7 @@ Node.prototype.serialise = function()
 	if(this.title)
 		d.title = this.title;
 	
-	if(this.plugin.isGraph)
+	if (!flat && this.plugin.isGraph)
 		d.graph = this.plugin.graph.serialise();
 	
 	if(this.dyn_inputs || this.dyn_outputs)

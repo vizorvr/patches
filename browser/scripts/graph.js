@@ -12,6 +12,7 @@ function Graph(core, parent_graph, tree_node) {
 		this.parent_graph = parent_graph;
 		this.roots = [];
 		this.children = [];
+		this.node_uid = 0;
 			
 		tree_node.graph = this;
 	}
@@ -20,7 +21,7 @@ function Graph(core, parent_graph, tree_node) {
 Graph.prototype = Object.create(EventEmitter.prototype)
 
 Graph.prototype.get_node_uid = function() {
-	return Date.now() //this.node_uid++;
+	return parseInt(Date.now() + '' + this.node_uid++, 10);
 }
 
 Graph.prototype.update = function() {
@@ -165,10 +166,8 @@ Graph.prototype.addConnection = function(connection) {
 	return connection
 }
 
-Graph.prototype.connect = function(offset, srcNode, destNode, ss, ds) {
-	var c = new Connection(srcNode, destNode, ss, ds)
-	c.offset = offset
-	return this.addConnection(c)
+Graph.prototype.connect = function(connection) {
+	return this.addConnection(connection)
 }
 
 Graph.prototype.disconnect = function(c) {

@@ -73,14 +73,10 @@ RenameNode.prototype.redo = function() {
 
 // -------------------------------
 
-function Connect(graph, srcNode, dstNode, srcSlot, dstSlot, offset) {
+function Connect(graph, connection) {
 	GraphEditCommand.apply(this, arguments)
 	this.title = 'Connect'
-	this.srcNode = srcNode
-	this.dstNode = dstNode
-	this.srcSlot = srcSlot
-	this.dstSlot = dstSlot
-	this.offset = offset
+	this.connection = connection
 }
 Connect.prototype = Object.create(GraphEditCommand.prototype)
 
@@ -89,8 +85,7 @@ Connect.prototype.undo = function() {
 }
 
 Connect.prototype.redo = function() {
-	this.connection = this.graph.connect(this.offset,
-		this.srcNode, this.dstNode, this.srcSlot, this.dstSlot)
+	this.connection = this.graph.connect(this.connection)
 
 	return this.connection
 }

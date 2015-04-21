@@ -91,8 +91,8 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 	function createPlugin(name) {
 		var ag = that.player.core.active_graph
 		var node = new Node(ag, id,
-			(pos[0] - co.left) + that.scrollOffset[0], 
-			(pos[1] - co.top) + that.scrollOffset[1]);
+			Math.floor((pos[0] - co.left) + that.scrollOffset[0]), 
+			Math.floor((pos[1] - co.top) + that.scrollOffset[1]));
 
 		that.graphApi.addNode(ag, node)
 
@@ -902,23 +902,18 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 	this.undoManager.begin('Paste')
 
 	var ag = E2.core.active_graph
-	var uidLookup = {}
 	var createdNodes = []
 	var createdConnections = []
 
 	for(var i = 0, len = doc.nodes.length; i < len; i++) {
 		var docNode = doc.nodes[i]
-		var node = new Node()
-		var newUid = ag.get_node_uid()
 
 		docNode.x = Math.floor((docNode.x - doc.x1) + offsetX)
 		docNode.y = Math.floor((docNode.y - doc.y1) + offsetY)
 
+		var node = new Node()
 		if (!node.deserialise(ag.uid, docNode))
 			continue
-		
-		uidLookup[node.uid] = newUid
-		node.uid = newUid
 		
 		this.graphApi.addNode(ag, node)
 
@@ -929,8 +924,8 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 
 	for(var i = 0, len = doc.conns.length; i < len; i++) {
 		var docConnection = doc.conns[i]
-		var srcUid = uidLookup[docConnection.src_nuid]
-		var dstUid = uidLookup[docConnection.dst_nuid]
+/*		var srcUid = docConnection.src_nuid
+		var dstUid = docConnection.dst_nuid
 		
 		if (srcUid === undefined || dstUid === undefined) {
 			// We have to clear the the connected flag from the destination
@@ -956,15 +951,12 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 			
 			continue;
 		}
-		
-		var c = new Connection(null, null, null, null)
+*/
+		var c = new Connection()
 
 		c.deserialise(docConnection)
 		
-		c = this.graphApi.connect(ag,
-			srcUid, dstUid,
-			c.src_slot, c.dst_slot,
-			c.offset)
+		c = this.graphApi.connect(ag, c)
 
 		createdConnections.push(c)
 	}
@@ -1621,6 +1613,12 @@ function onNodeAdded(node) {
 		node.plugin.state_changed(null)
 		node.plugin.state_changed(node.ui.plugin_ui)
 	}
+
+	E2.app.channel.broadcast({
+		evt: 'nodeAdded',
+		gid: node.parent_graph.uid,
+		data: node.serialise(true)
+	})
 }
 
 function onNodeRemoved(node) {
@@ -1642,11 +1640,17 @@ function onNodeRenamed(node) {
 
 function onConnected(connection) {
 	console.log('onConnected', connection)
-	if (connection.ui)
-		return;
 
-	connection.create_ui()
+	if (!connection.ui)
+		connection.create_ui()
+
 	connection.ui.resolve_slot_divs()
+
+	E2.app.channel.broadcast({
+		evt: 'connected',
+		gid: connection.src_node.parent_graph.uid,
+		data: connection.serialise(true)
+	})
 }
 
 function onDisconnected(connection) {
@@ -1785,8 +1789,8 @@ Application.prototype.start = function() {
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
 
 	this.midPane = new E2.MidPane()
+	this.channel = new GraphChannel(this)
 }
-
 
 
 E2.InitialiseEngi = function(vr_devices) {

@@ -33,6 +33,13 @@ E2.slot_type = { input: 0, output: 1 };
 E2.erase_color = '#ff3b3b';
 E2.COLOR_COMPATIBLE_SLOT = '#080';
 
+(function() {
+var i = 0
+E2.uid = function() {
+	return parseInt(Date.now() + '' + i++)
+}
+})()
+
 function Delegate(delegate, dt, count)
 {
 	this.delegate = delegate;

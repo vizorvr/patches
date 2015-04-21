@@ -19,13 +19,14 @@ ConnectionUI.prototype.resolve_slot_divs = function() {
 	E2.app.redrawConnection(pc)
 }
 
-function Connection(src_node, dst_node, src_slot, dst_slot) {
+function Connection(src_node, dst_node, src_slot, dst_slot, offset) {
 	this.src_node = src_node;
 	this.dst_node = dst_node;
 	this.src_slot = src_slot;
 	this.dst_slot = dst_slot;
+	this.uid = E2.uid()
 	this.ui = null;
-	this.offset = 0;
+	this.offset = offset || 0;
 }
 
 Connection.prototype.create_ui = function() {
@@ -120,6 +121,7 @@ Connection.prototype.serialise = function()
 {
 	var d = {};
 	
+	d.uid = this.uid;
 	d.src_nuid = this.src_node.uid;
 	d.dst_nuid = this.dst_node.uid;
 	d.src_slot = this.src_slot.index;
@@ -142,6 +144,7 @@ Connection.prototype.serialise = function()
 
 Connection.prototype.deserialise = function(d)
 {
+	this.uid = d.uid;
 	this.src_node = d.src_nuid;
 	this.dst_node = d.dst_nuid;
 	this.src_slot = {
