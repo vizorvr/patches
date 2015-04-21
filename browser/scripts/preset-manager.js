@@ -91,25 +91,25 @@ PresetManager.prototype.render = function()
 	.template(E2.views.presets.presets)
 	.render(E2.dom.presets_list)
 	.onOpen(function(path) {
-
 		if (path.indexOf('plugin/') === 0) {
 			return that.openPlugin(path);
 		}
 
-		var url = path
+		msg('Loading preset from: ' + path);
 
-		msg('Loading preset from: ' + url);
+		that.openPreset(path)
+	})
+}
 
-		$.get(url)
-		.done(function(data)
-		{
-			E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
-			E2.app.onPaste({ target: { id: 'notpersist' }});
-		})
-		.fail(function(_j, _textStatus, _errorThrown)
-		{
-  			msg('ERROR: Failed to load the selected preset.');
-		})
+PresetManager.prototype.openPreset = function(name) {
+	$.get(name)
+	.done(function(data) {
+		E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0)
+		E2.app.onPaste({ target: { id: 'notpersist' }})
+	})
+	.fail(function(_j, _textStatus, _errorThrown) {
+		msg('ERROR: Failed to load the selected preset.')
+		console.error(_errorThrown)
 	})
 }
 

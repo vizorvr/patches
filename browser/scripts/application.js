@@ -1188,17 +1188,45 @@ Application.prototype.onKeyDown = function(e) {
 		
 		e.preventDefault();
 		return false;
-	} else if(e.keyCode === 70) // f
+	}
+
+
+
+	// number keys
+	else if (e.keyCode > 47 && e.keyCode < 58) { // 0-9
+		var numberHotKeys = [
+			'plugin:output_proxy', // 0
+			'plugin:input_proxy', // 1 
+			'plugin:graph', // 2 
+			'plugin:float_display', // 3 
+			'plugin:const_float_generator', // 4
+			'plugin:slider_float_generator', // 5
+			'plugin:knob_float_generator', // 6
+			'preset:time_oscillate_between_2_values', // 7
+			'preset:image_show_image', // 8
+		]
+
+		var item = numberHotKeys[e.keyCode - 48]
+		var name = item.substring(7)
+		if (item.indexOf('preset:') === 0)
+			that.presetManager.openPreset('/presets/'+name+'.json')
+		else
+			this.instantiatePlugin(name)
+	}
+
+
+
+	else if(e.keyCode === 70) // f
 	{
 		this.is_fullscreen = !this.is_fullscreen;
 		this.player.core.renderer.set_fullscreen(this.is_fullscreen);
 		e.preventDefault();
 	} else if (e.keyCode === 73) { // i
-		this.instantiatePlugin('input_proxy')
+		// this.instantiatePlugin('input_proxy')
 	} else if (e.keyCode === 79) { // o
-		this.instantiatePlugin('output_proxy')
+		// this.instantiatePlugin('output_proxy')
 	} else if (e.keyCode === 71) { // g
-		this.instantiatePlugin('graph')
+		// this.instantiatePlugin('graph')
 	} else if (e.keyCode === 81) { // q to focus preset search
 		$('#presetSearch').focus()
 		$('#presetSearch').select()

@@ -116,7 +116,7 @@ CollapsibleSelectControl.prototype.scoreResult = function(oq, resultStr) {
 		var count = 0
 		var pos = str.indexOf(cc)
 		while (pos !== -1) {
-			count++
+			count ++
 			pos = str.indexOf(cc, pos + 1)
 		}
 		return count
