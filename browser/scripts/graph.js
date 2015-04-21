@@ -12,7 +12,6 @@ function Graph(core, parent_graph, tree_node) {
 		this.parent_graph = parent_graph;
 		this.roots = [];
 		this.children = [];
-		this.node_uid = 0;
 			
 		tree_node.graph = this;
 	}
@@ -21,7 +20,7 @@ function Graph(core, parent_graph, tree_node) {
 Graph.prototype = Object.create(EventEmitter.prototype)
 
 Graph.prototype.get_node_uid = function() {
-	return this.node_uid++;
+	return Date.now() //this.node_uid++;
 }
 
 Graph.prototype.update = function() {
