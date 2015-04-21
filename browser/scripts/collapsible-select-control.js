@@ -41,25 +41,6 @@ CollapsibleSelectControl.prototype._reset = function() {
 	$('.preset-result', this._el).empty()
 }
 
-CollapsibleSelectControl.prototype._filterData = function(text) {
-	var that = this
-	return this._items.reduce(function(items, item) {
-		var score = that.scoreResult(text, item.title)
-
-		if (score < text.length)
-			return items;
-
-		items.push({
-			score: score,
-			title: item.title,
-			category: item.category,
-			path: item.path
-		})
-
-		return items;
-	}, [])
-}
-
 CollapsibleSelectControl.prototype._search = function(text) {
 	var that = this
 
@@ -73,9 +54,6 @@ CollapsibleSelectControl.prototype._search = function(text) {
 	var $pr = $('.preset-result', this._el)
 
 	var data = this._filterData(text)
-		.sort(function(a,b) {
-			return b.score - a.score;
-		})
 
 	var $result = this._resultTpl(data)
 	$pr.empty().html($result)
@@ -95,9 +73,44 @@ CollapsibleSelectControl.prototype._search = function(text) {
 
 }
 
-CollapsibleSelectControl.prototype.scoreResult = function(q, resultStr) {
-	var lstr = resultStr.toLowerCase().replace(/\//gim, '')
+CollapsibleSelectControl.prototype._filterData = function(text) {
+	var that = this
+	return this._items.reduce(function(items, item) {
+		var score = that.scoreResult(text, item.title)
+
+		if (score < text.length)
+			return items;
+
+		items.push({
+			score: score,
+			title: item.title,
+			category: item.category,
+			path: item.path
+		})
+
+		return items;
+	}, [])
+	.sort(function(a,b) {
+		var dif = b.score - a.score;
+		if (dif === 0) {
+			if (a.title < b.title)
+				return -1
+			if (a.title > b.title)
+				return 1
+		}
+		return dif
+	})
+
+}
+
+CollapsibleSelectControl.prototype.scoreResult = function(oq, resultStr) {
+	var lstr = resultStr.toLowerCase()//.replace(/\//gim, '')
 	var scr = 0
+
+	if (lstr.indexOf(oq) > -1)
+		return 500
+
+	var qs = oq.split(' ')
 
 	function countInString(cc, str) {
 		var count = 0
@@ -109,20 +122,22 @@ CollapsibleSelectControl.prototype.scoreResult = function(q, resultStr) {
 		return count
 	}
 
-	if (lstr.indexOf(q) > -1)
-		return 100
+	for(var j=0; j < qs.length; j++) {
+		var q = qs[j]
 
-	for(var i=0; i < q.length; i++) {
-		var sofar = q.substring(0, i)
+		for(var i=0; i < q.length; i++) {
+			var sofar = q.substring(0, q.length-i)
 
-		if (lstr.indexOf(sofar) > -1)
-			scr += q.length-i
+			if (lstr.indexOf(sofar) > -1)
+				scr += 2 * q.length - i
 
-		var qInStr = countInString(q[i], lstr)
-		if (qInStr < countInString(q[i], q)) {
-			return 0
+			var qInStr = countInString(q[i], lstr)
+			if (qInStr < countInString(q[i], q)) {
+				return 0
+			}
+
+			scr += qInStr
 		}
-		scr += qInStr
 	}
 
 	return scr
@@ -173,7 +188,7 @@ CollapsibleSelectControl.prototype.render = function(el) {
 		if (e.keyCode === 38 || e.keyCode === 40)
 			return;
 
-		keyTimer = setTimeout(that._search.bind(that, $input.val(), 50))
+		keyTimer = setTimeout(that._search.bind(that, $input.val(), 100))
 	})
 
 	$input.on('keydown', function(e) {
