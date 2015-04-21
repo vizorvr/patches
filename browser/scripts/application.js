@@ -1201,7 +1201,7 @@ Application.prototype.onKeyDown = function(e) {
 			'plugin:float_display', // 3 
 			'plugin:const_float_generator', // 4
 			'plugin:slider_float_generator', // 5
-			'plugin:knob_float_generator', // 6
+			'plugin:multiply_modulator', // 6
 			'preset:time_oscillate_between_2_values', // 7
 			'preset:image_show_image', // 8
 		]
