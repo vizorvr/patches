@@ -1,6 +1,6 @@
 (function() {
 
-var MouseButtons = E2.plugins["mouse_button_generator"] = function(core, node) {
+var MouseButtons = E2.plugins.mouse_button_generator = function(core) {
 	this.desc = 'Emits the current mouse button state.'
 	
 	this.input_slots = []
@@ -37,4 +37,4 @@ MouseButtons.prototype.state_changed = function(ui) {
 	}
 }
 
-})
+})()
