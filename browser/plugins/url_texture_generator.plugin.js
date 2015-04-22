@@ -17,6 +17,7 @@ var UrlTexture = E2.plugins['url_texture_generator'] = function(core, node) {
 	this.state = { url: '' }
 	this.gl = core.renderer.context
 	this.core = core
+	this.node = node
 	this.texture = null
 	this.dirty = false
 	this.thumbnail = null
@@ -41,13 +42,40 @@ UrlTexture.prototype.create_ui = function() {
 	})
 
 	inp.click(function() {
+		var oldValue = that.state.url
+		var newValue = oldValue
+
+		function setValue(v) {
+			that.state.url = newValue = v
+			that.updated = true
+			that.state_changed()
+		}
+
 		FileSelectControl
-			.createTextureSelector(that.state.url)
-			.onChange(function(v) {
-				that.state.url = v
-				that.state_changed()
-				that.updated = true
+			.createTextureSelector(oldValue)
+			.template('texture')
+			.selected(oldValue)
+			.onChange(setValue.bind(this))
+			.buttons({
+				'Cancel': setValue.bind(this),
+				'Select': setValue.bind(this)
 			})
+			.on('closed', function() {
+				if (newValue === oldValue)
+					return;
+			
+				E2.app.undoManager.execute(
+					new E2.commands.graph.ChangePluginState(
+						that.node.parent_graph,
+						that.node,
+						'url',
+						oldValue,
+						newValue
+					)
+				)
+
+			})
+			.modal()
 	})
 
 	container.append(this.thumbnail)
