@@ -85,7 +85,4 @@ EnvelopePlugin.prototype._loadScripts = function(cb) {
 }
 
 
-
-
-
-}) ()
+}) ();

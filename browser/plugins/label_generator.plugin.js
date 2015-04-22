@@ -1,5 +1,6 @@
-E2.p = E2.plugins["label_generator"] = function(core, node)
-{
+(function() {
+var Label = E2.plugins.label_generator = function(core, node) {
+	AbstractPlugin.apply(this, arguments)
 	this.desc = 'Emits a string specified in an input field.';
 	
 	this.input_slots = [];
@@ -12,33 +13,36 @@ E2.p = E2.plugins["label_generator"] = function(core, node)
 	this.core = core;
 	this.node = node;
 };
+Label.prototype = Object.create(AbstractPlugin.prototype)
 
-E2.p.prototype.reset = function()
+Label.prototype.reset = function()
 {
 }
 
-E2.p.prototype.create_ui = function()
+Label.prototype.create_ui = function()
 {
 	var inp = $('<input type="text" value="1.0" style="width: 50px;" />');
 	
 	inp.css('border', '1px solid #999');
-	inp.change(function(self) { return function(e)
+	inp.change(function(self) { return function()
 	{
-		self.state.text = inp.val();
-		self.updated = true;
+		self.undoableSetState('text', inp.val(), self.state.text)
 	}}(this));
 	
 	this.etf = new ExpandableTextfield(this.node, inp, 7);
 	return inp;
 };
 
-E2.p.prototype.update_output = function(slot)
+Label.prototype.update_output = function(slot)
 {
 	return this.state.text;
 };
 
-E2.p.prototype.state_changed = function(ui)
+Label.prototype.state_changed = function(ui)
 {
 	if(ui)
 		ui.val('' + this.state.text);
 };
+
+})();
+
