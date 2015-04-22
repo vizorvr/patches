@@ -12,7 +12,6 @@ var Slider = E2.plugins.slider_float_generator = function(core, node) {
 	
 	this.state = { val: 0.0, min: 0.0, max: 1.0 };
 	
-	this.node = node;
 	this.v_col = null;
 	this.slider = null;
 	this.handle = null;

@@ -1,5 +1,7 @@
-E2.p = E2.plugins["toggle_button"] = function(core, node)
+(function(){
+Toggle = E2.plugins.toggle_button = function(core, node)
 {
+	AbstractPlugin.apply(this, arguments)
 	this.desc = 'Toggle button that emits true and false as it is clicked.';
 	
 	this.input_slots = [];
@@ -12,31 +14,30 @@ E2.p = E2.plugins["toggle_button"] = function(core, node)
 	this.core = core;
 	this.node = node;
 };
+Toggle.prototype = Object.create(AbstractPlugin.prototype)
 
-E2.p.prototype.reset = function()
+Toggle.prototype.reset = function()
 {
 };
 
-E2.p.prototype.create_ui = function()
+Toggle.prototype.create_ui = function()
 {
+	var that = this
 	var inp = makeButton('Off');
 	
-	inp.click(function(self) { return function(e) 
-	{
-		self.state.enabled = !self.state.enabled;
-		self.state_changed(inp);
-		self.updated = true;
-	}}(this));
+	inp.click(function(e) {
+		that.undoableSetState('enabled', !that.state.enabled, that.state.enabled)
+	})
 	
 	return inp;
 };
 
-E2.p.prototype.update_output = function(slot)
+Toggle.prototype.update_output = function(slot)
 {
 	return this.state.enabled;
 };
 
-E2.p.prototype.state_changed = function(ui)
+Toggle.prototype.state_changed = function(ui)
 {
 	if(ui)
 	{
@@ -53,3 +54,4 @@ E2.p.prototype.state_changed = function(ui)
 		// this.node.update_connections();
 	}
 };
+})()

@@ -1,5 +1,6 @@
-E2.p = E2.plugins["annotation"] = function(core, node)
-{
+(function(){
+Annotation = E2.plugins.annotation = function() {
+	AbstractPlugin.apply(this, arguments)
 	this.desc = 'Add textual hints to the graph.';
 	
 	this.input_slots = [];
@@ -8,9 +9,10 @@ E2.p = E2.plugins["annotation"] = function(core, node)
 	
 	this.state = { text: '', width: 0, height: 0 };
 };
+Annotation.prototype = Object.create(AbstractPlugin.prototype)
 
-E2.p.prototype.create_ui = function()
-{
+Annotation.prototype.create_ui = function() {
+	var that = this
 	var inp = $('<textarea placeholder="Type text here" />');
 	
 	inp.css({
@@ -18,29 +20,27 @@ E2.p.prototype.create_ui = function()
 		'border': '1px solid #999',
 		'margin': '0px',
 		'margin-top': '2px',
-		'padding': '2px'
+		'padding': '2px',
+		'resize': true
 	});
 	
-	inp.bind('blur', function(self) { return function()
-	{
-		self.state.text = $(this).val();
-	}}(this));
+	inp.on('change', function() {
+		that.undoableSetState('text', inp.val(), that.state.text)
+	})
 	
 	// Chrome doesn't handle resize properly for anything but the window object,
 	// so we store the potentially altered size of the textarea on mouseup.
-	inp.mouseup(function(self) { return function()
-	{
+	inp.mouseup(function() {
 		var ta = $(this);
-		
-		self.state.width = ta.width();
-		self.state.height = ta.height();
-	}}(this));
+
+		that.state.width = ta.width();
+		that.state.height = ta.height();
+	})
 	
 	return inp;
-};
+}
 
-E2.p.prototype.state_changed = function(ui)
-{
+Annotation.prototype.state_changed = function(ui) {
 	var s = this.state;
 	
 	if(ui && s.text !== '')
@@ -54,3 +54,4 @@ E2.p.prototype.state_changed = function(ui)
 			ui.css('height', s.height);
 	}
 };
+})()

@@ -11,8 +11,6 @@ var Const = E2.plugins.const_float_generator = function(core, node) {
 	];
 	
 	this.state = { val: 1.0 };
-	this.core = core;
-	this.node = node;
 };
 Const.prototype = Object.create(AbstractPlugin.prototype)
 

@@ -1,5 +1,7 @@
-E2.p = E2.plugins["key_press_generator"] = function(core, node)
+(function(){
+var Keypress = E2.plugins["key_press_generator"] = function(core, node)
 {
+	AbstractPlugin.apply(this, arguments)
 	this.desc = 'Emits true on the next update after the key matching the set filter has been pressed and false once after it has been released.';
 	
 	this.input_slots = [];
@@ -10,14 +12,16 @@ E2.p = E2.plugins["key_press_generator"] = function(core, node)
 	
 	this.state = { key: 0, type: 0 };
 };
+Keypress.prototype = Object.create(AbstractPlugin.prototype)
 
-E2.p.prototype.update_output = function(slot)
+Keypress.prototype.update_output = function(slot)
 {
 	return this.key_state;
 };
 
-E2.p.prototype.create_ui = function()
+Keypress.prototype.create_ui = function()
 {
+	var that = this
 	var items = [
 		[-1, '[Pick a key]'],
 		[8, 'Backspace'], [9, 'Tab'], [13, 'Enter'],
@@ -54,20 +58,13 @@ E2.p.prototype.create_ui = function()
 	$('<option />', { value: 0, text: 'Impulse' }).appendTo(inp_type);
 	$('<option />', { value: 1, text: 'Continuous' }).appendTo(inp_type);
 	
-	inp.change(function(self) { return function() 
-	{
-		self.state.key = parseInt(inp.val());
-		self.reset_keystate();
-		self.updated = true;
-		inp.blur();
-	}}(this));
+	inp.change(function() {
+		that.undoableSetState('key', parseInt(inp.val()), that.state.key)
+	})
 	
-	inp_type.change(function(self) { return function() 
-	{
-		self.state.type = parseInt(inp_type.val());
-		self.updated = true;
-		inp_type.blur();
-	}}(this));
+	inp_type.change(function() {
+		that.undoableSetState('type', parseInt(inp_type.val()), that.state.type)
+	})
 
 	inp.css('width', '100px');
 	inp_type.css('width', '100px');
@@ -79,7 +76,7 @@ E2.p.prototype.create_ui = function()
 	return dom;
 };
 
-E2.p.prototype.key_down = function(self) { return function(e)
+Keypress.prototype.key_down = function(self) { return function(e)
 {
 	if(e.originalEvent.keyCode !== self.state.key)
 		return;
@@ -88,7 +85,7 @@ E2.p.prototype.key_down = function(self) { return function(e)
 	self.updated = true;
 }};
 
-E2.p.prototype.key_up = function(self) { return function(e)
+Keypress.prototype.key_up = function(self) { return function(e)
 {		
 	if(e.originalEvent.keyCode !== self.state.key)
 		return;
@@ -97,12 +94,12 @@ E2.p.prototype.key_up = function(self) { return function(e)
 	self.updated = true;
 }};
 
-E2.p.prototype.reset_keystate = function()
+Keypress.prototype.reset_keystate = function()
 {
 	this.last_state = this.key_state = false;
 };
 
-E2.p.prototype.update_state = function()
+Keypress.prototype.update_state = function()
 {
 	if(this.state.type === 0 && this.key_state === this.last_state)
 		this.updated = false;
@@ -110,7 +107,7 @@ E2.p.prototype.update_state = function()
 	this.last_state = this.key_state;
 };
 
-E2.p.prototype.state_changed = function(ui)
+Keypress.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
@@ -124,3 +121,4 @@ E2.p.prototype.state_changed = function(ui)
 		ui.find('#o_type').val(this.state.type);
 	}
 };
+})()

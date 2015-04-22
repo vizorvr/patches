@@ -67,7 +67,7 @@ PluginManager.prototype = Object.create(EventEmitter.prototype)
 
 PluginManager.prototype.register_plugin = function(pg_root, key, id) {
 	this.keybyid[id] = pg_root.insert_relative(key, id);
-	msg('\tLoaded ' + id + ' (' + this.lid + ')');
+	// msg('\tLoaded ' + id + ' (' + this.lid + ')');
 	this.lid++;
 };
 

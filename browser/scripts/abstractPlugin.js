@@ -1,4 +1,7 @@
-function AbstractPlugin() {}
+function AbstractPlugin(core, node) {
+	this.core = core
+	this.node = node
+}
 
 AbstractPlugin.prototype.undoableSetState = function(key, newValue, oldValue) {
 	E2.app.undoManager.execute(

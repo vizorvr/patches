@@ -49,6 +49,7 @@ EnvelopeEditor.prototype.render = function($out) {
 	var points = this._points
 	var dragged = null,
 		selected = points[0]
+	var valueAtMouseDown
 
 	var line = d3.svg.line()
 
@@ -62,13 +63,19 @@ EnvelopeEditor.prototype.render = function($out) {
 		.attr('height', height)
 		.on('mousedown', mousedown)
 
-	svg.append('path')
-		.datum(points)
-		.attr('class', 'line')
-		.call(redraw)
+	var $path = svg.append('path')
 
-	if (svg.node().focus)
-		svg.node().focus()
+	function drawLine() {
+		$path
+			.datum(points)
+			.attr('class', 'line')
+			.call(redraw)
+
+		if (svg.node().focus)
+			svg.node().focus()
+	}
+
+	drawLine()
 
 	function redraw() {
 		svg.select('path').attr('d', line)
@@ -84,15 +91,6 @@ EnvelopeEditor.prototype.render = function($out) {
 			trackMouseMovement()
 			selected = dragged = d
 			redraw()
-		})
-		.on('mouseup', function(d) {
-			if (selected === d && points.length > 2) {
-				var i = points.indexOf(d)
-				points.splice(i, 1)
-				redraw()
-			}
-
-			selected = dragged = null
 		})
 		.transition()
 		.duration(750)
@@ -117,9 +115,10 @@ EnvelopeEditor.prototype.render = function($out) {
 	}
 
 	function trackMouseMovement() {
+		valueAtMouseDown = points.slice()
 		d3.select(window)
-			.on('mousemove.'+this._id, mousemove)
-			.on('mouseup.'+this._id, mouseup)
+			.on('mousemove.'+that._id, mousemove)
+			.on('mouseup.'+that._id, mouseup)
 	}
 
 	function mousedown() {
@@ -180,15 +179,26 @@ EnvelopeEditor.prototype.render = function($out) {
 
 	function mouseup() {
 		d3.select(window)
-			.on('mousemove.'+this._id, null)
-			.on('mouseup.'+this._id, null)
+			.on('mousemove.'+that._id, null)
+			.on('mouseup.'+that._id, null)
 
 		if (!dragged)
 			return
 
 		mousemove()
 
-		that.onChanged()
+		E2.app.undoManager.execute(
+			new E2.commands.Undoable(
+				valueAtMouseDown,
+				points.slice(),
+				function(v) {
+					that._points = points = v.slice()
+					that.onChanged()
+					drawLine()
+				},
+				'Edit Envelope'
+			)
+		)
 
 		dragged = selected = null
 	}

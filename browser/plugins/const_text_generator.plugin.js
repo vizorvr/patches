@@ -1,5 +1,6 @@
-E2.p = E2.plugins["const_text_generator"] = function(core, node)
-{
+(function(){
+var Text = E2.plugins.const_text_generator = function(core, node) {
+	AbstractPlugin.apply(this, arguments)
 	this.desc = 'Enter a constant text string.';
 	
 	this.input_slots = [];
@@ -9,14 +10,15 @@ E2.p = E2.plugins["const_text_generator"] = function(core, node)
 	
 	this.state = { text: '', width: 0, height: 0 };
 };
+Text.prototype = Object.create(AbstractPlugin.prototype)
 
-E2.p.prototype.reset = function()
+Text.prototype.reset = function()
 {
 	this.updated = true;
 };
 
-E2.p.prototype.create_ui = function()
-{
+Text.prototype.create_ui = function() {
+	var that = this
 	var inp = $('<textarea placeholder="Type text here" />');
 	
 	inp.css({
@@ -27,11 +29,9 @@ E2.p.prototype.create_ui = function()
 		'padding': '2px'
 	});
 	
-	inp.bind('blur', function(self) { return function()
-	{
-		self.state.text = $(this).val();
-		self.updated = true;
-	}}(this));
+	inp.on('change', function() {
+		that.undoableSetState('text', inp.val(), that.state.text)
+	})
 	
 	// Chrome doesn't handle resize properly for anything but the window object,
 	// so we store the potentially altered size of the textarea on mouseup.
@@ -46,12 +46,12 @@ E2.p.prototype.create_ui = function()
 	return inp;
 };
 
-E2.p.prototype.update_output = function(slot)
+Text.prototype.update_output = function(slot)
 {
 	return this.state.text;
 };
 
-E2.p.prototype.state_changed = function(ui)
+Text.prototype.state_changed = function(ui)
 {
 	var s = this.state;
 	
@@ -66,3 +66,4 @@ E2.p.prototype.state_changed = function(ui)
 			ui.css('height', s.height);
 	}
 };
+})()
