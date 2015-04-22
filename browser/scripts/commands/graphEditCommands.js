@@ -141,6 +141,31 @@ Move.prototype.redo = function() {
 
 // -------------------------------
 
+function ChangePluginState(graph, node, key, oldValue, newValue) {
+	GraphEditCommand.apply(this, arguments)
+	this.title = 'Value Change'
+	this.node = node
+	this.key = key
+
+	this.oldValue = oldValue
+	this.newValue = newValue
+}
+ChangePluginState.prototype = Object.create(GraphEditCommand.prototype)
+
+ChangePluginState.prototype.undo = function() {
+	this.node.plugin.state[this.key] = this.oldValue
+	this.node.plugin.updated = true
+	this.node.plugin.state_changed(this.node.ui.plugin_ui)
+}
+
+ChangePluginState.prototype.redo = function() {
+	this.node.plugin.state[this.key] = this.newValue
+	this.node.plugin.updated = true
+	this.node.plugin.state_changed(this.node.ui.plugin_ui)
+}
+
+// -------------------------------
+
 if (typeof(E2) !== 'undefined') {
 	if (!E2.commands)
 		E2.commands = {}
@@ -153,6 +178,8 @@ if (typeof(E2) !== 'undefined') {
 	E2.commands.graph.Connect = Connect
 	E2.commands.graph.Disconnect = Disconnect
 	E2.commands.graph.Move = Move
+
+	E2.commands.graph.ChangePluginState = ChangePluginState
 }
 
 if (typeof(module) !== 'undefined') {
@@ -160,4 +187,3 @@ if (typeof(module) !== 'undefined') {
 }
 
 })()
-
