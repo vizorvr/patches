@@ -41,7 +41,7 @@ UrlTexture.prototype.create_ui = function() {
 		'margin-bottom': '3px'
 	})
 
-	inp.click(function() {
+	function clickHandler() {
 		var oldValue = that.state.url
 		var newValue = oldValue
 
@@ -52,7 +52,8 @@ UrlTexture.prototype.create_ui = function() {
 		}
 
 		FileSelectControl
-			.createTextureSelector(oldValue)
+		.createTextureSelector(oldValue, function(control) {
+			control	
 			.template('texture')
 			.selected(oldValue)
 			.onChange(setValue.bind(this))
@@ -73,11 +74,14 @@ UrlTexture.prototype.create_ui = function() {
 						newValue
 					)
 				)
-
 			})
 			.modal()
-	})
+		})
+	}
 
+	inp.click(clickHandler)
+	this.thumbnail.click(clickHandler)
+	
 	container.append(this.thumbnail)
 	container.append(inp)
 
