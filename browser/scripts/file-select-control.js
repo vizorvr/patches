@@ -531,15 +531,9 @@ FileSelectControl.createSceneSelector = function(selected, okButton, okFn)
 	});
 };
 
-FileSelectControl.createTextureSelector = function(selected, okButton, okFn)
-{
-	return createSelector('/image', selected, okButton, okFn, function(ctl)
-	{
-		ctl
-		.selected(selected)
-		.template('texture')
-	});
-};
+FileSelectControl.createTextureSelector = function(selected, cb){
+	return createSelector('/image', selected, 'Select', function(){}, cb)
+}
 
 FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
 	return createSelector(path, selected, okButton, okFn, function(ctl)

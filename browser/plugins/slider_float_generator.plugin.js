@@ -1,5 +1,5 @@
-E2.p = E2.plugins["slider_float_generator"] = function(core, node)
-{
+(function(){
+var Slider = E2.plugins.slider_float_generator = function(core, node) {
 	this.desc = 'Emits a user controllable float value between two specified values.';
 	
 	this.input_slots = [];
@@ -17,11 +17,11 @@ E2.p = E2.plugins["slider_float_generator"] = function(core, node)
 	this.pos = 0;
 };
 
-E2.p.prototype.reset = function()
+Slider.prototype.reset = function()
 {
 };
 
-E2.p.prototype.create_ui = function()
+Slider.prototype.create_ui = function()
 {
 	var self = this
 	var table = make('table');
@@ -181,12 +181,12 @@ E2.p.prototype.create_ui = function()
 	return table;
 };
 
-E2.p.prototype.update_output = function(slot)
+Slider.prototype.update_output = function(slot)
 {
 	return this.state.val;
 };
 
-E2.p.prototype._setValue = function(new_val) {
+Slider.prototype._setValue = function(new_val) {
 	var self = this
 	var mix = new_val / 60.0;
 
@@ -197,22 +197,30 @@ E2.p.prototype._setValue = function(new_val) {
 	self.updated = true;
 }
 
-E2.p.prototype.update_value = function(value)
+Slider.prototype.update_value = function(value)
 {
-	var st = this.state
-	var l = Math.min(st.min, st.max), h = Math.max(st.min, st.max);
-	
-	st.val = st.val < l ? l : st.val > h ? h : st.val;
+	var self = this
 
 	this.updated = true;
+
+	var st = this.state
+	var l = Math.min(st.min, st.max), h = Math.max(st.min, st.max);
+	var rng = Math.abs(st.max - st.min);
+	
+	st.val = st.val < l ? l : st.val > h ? h : st.val;
 };
 
-E2.p.prototype.state_changed = function(ui)
+Slider.prototype.state_changed = function(ui)
 {
 	if(ui)
 	{
 		this.update_value(this.state.val);
 
+		var st = this.state
+		var l = Math.min(st.min, st.max), h = Math.max(st.min, st.max);
+		var rng = Math.abs(st.max - st.min);
+		
+		st.val = st.val < l ? l : st.val > h ? h : st.val;
 		self.pos = rng < 0.0001 ? 0.0 : ((Math.abs(st.val - st.min) / rng) * 60.0);
 
 		this.handle[0].style.left = '' + this.pos + 'px';
@@ -231,3 +239,5 @@ E2.p.prototype.state_changed = function(ui)
 		this.handle[0].style.left = '' + this.pos + 'px';
 	}
 };
+
+})();
