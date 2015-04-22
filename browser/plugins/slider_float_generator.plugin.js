@@ -229,3 +229,4 @@ Slider.prototype.state_changed = function(ui)
 };
 
 })();
+
