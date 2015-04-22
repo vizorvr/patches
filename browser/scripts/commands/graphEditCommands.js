@@ -141,9 +141,9 @@ Move.prototype.redo = function() {
 
 // -------------------------------
 
-function ChangePluginState(graph, node, key, oldValue, newValue) {
+function ChangePluginState(graph, node, key, oldValue, newValue, title) {
 	GraphEditCommand.apply(this, arguments)
-	this.title = 'Value Change'
+	this.title = title || 'Value Change'
 	this.node = node
 	this.key = key
 
@@ -155,13 +155,32 @@ ChangePluginState.prototype = Object.create(GraphEditCommand.prototype)
 ChangePluginState.prototype.undo = function() {
 	this.node.plugin.state[this.key] = this.oldValue
 	this.node.plugin.updated = true
-	this.node.plugin.state_changed(this.node.ui.plugin_ui)
+	if (this.node.ui)
+		this.node.plugin.state_changed(this.node.ui.plugin_ui)
 }
 
 ChangePluginState.prototype.redo = function() {
 	this.node.plugin.state[this.key] = this.newValue
 	this.node.plugin.updated = true
-	this.node.plugin.state_changed(this.node.ui.plugin_ui)
+	if (this.node.ui)
+		this.node.plugin.state_changed(this.node.ui.plugin_ui)
+}
+
+// -------------------------------
+
+function Undoable(oldValue, newValue, setterFn, title) {
+	this.title = title || 'Value Change'
+	this.oldValue = oldValue
+	this.newValue = newValue
+	this.setterFn = setterFn
+}
+
+Undoable.prototype.undo = function() {
+	this.setterFn(this.oldValue)
+}
+
+Undoable.prototype.redo = function() {
+	this.setterFn(this.newValue)
 }
 
 // -------------------------------
@@ -171,6 +190,8 @@ if (typeof(E2) !== 'undefined') {
 		E2.commands = {}
 	if (!E2.commands.graph)
 		E2.commands.graph = {}
+
+	E2.commands.Undoable = Undoable
 
 	E2.commands.graph.AddNode = AddNode
 	E2.commands.graph.RemoveNode = RemoveNode

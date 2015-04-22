@@ -17,8 +17,6 @@ var UrlTexture = E2.plugins.url_texture_generator = function(core, node) {
 	
 	this.state = { url: '' }
 	this.gl = core.renderer.context
-	this.core = core
-	this.node = node
 	this.texture = null
 	this.dirty = false
 	this.thumbnail = null
