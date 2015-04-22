@@ -1,6 +1,7 @@
 (function() {
 
-var UrlTexture = E2.plugins['url_texture_generator'] = function(core, node) {
+var UrlTexture = E2.plugins.url_texture_generator = function(core, node) {
+	AbstractPlugin.apply(this, arguments)
 	this.desc = 'Load a texture from a URL. JPEG and PNG supported. Hover over the Browse button to select an existing image from the library.'
 	
 	this.input_slots = []
@@ -22,6 +23,7 @@ var UrlTexture = E2.plugins['url_texture_generator'] = function(core, node) {
 	this.dirty = false
 	this.thumbnail = null
 }
+UrlTexture.prototype = Object.create(AbstractPlugin.prototype)
 
 UrlTexture.prototype.create_ui = function() {
 	var container = make('div')
@@ -65,15 +67,7 @@ UrlTexture.prototype.create_ui = function() {
 				if (newValue === oldValue)
 					return;
 			
-				E2.app.undoManager.execute(
-					new E2.commands.graph.ChangePluginState(
-						that.node.parent_graph,
-						that.node,
-						'url',
-						oldValue,
-						newValue
-					)
-				)
+				that.undoableSetState('url', newValue, oldValue)
 			})
 			.modal()
 		})

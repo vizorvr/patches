@@ -1,5 +1,7 @@
 (function(){
 var Slider = E2.plugins.slider_float_generator = function(core, node) {
+	AbstractPlugin.apply(this, arguments)
+
 	this.desc = 'Emits a user controllable float value between two specified values.';
 	
 	this.input_slots = [];
@@ -17,9 +19,9 @@ var Slider = E2.plugins.slider_float_generator = function(core, node) {
 	this.pos = 0;
 };
 
-Slider.prototype.reset = function()
-{
-};
+Slider.prototype = Object.create(AbstractPlugin.prototype)
+
+Slider.prototype.reset = function() {};
 
 Slider.prototype.create_ui = function()
 {
@@ -40,14 +42,7 @@ Slider.prototype.create_ui = function()
 		document.removeEventListener('mouseup', data.mouseup);
 		document.removeEventListener('mousemove', data.mousemove);
 
-		E2.app.undoManager.execute(
-			new E2.commands.graph.ChangePluginState(
-				self.node.parent_graph,
-				self.node,
-				'val',
-				self._mouseDownValue,
-				self.state.val
-		))
+		self.undoableSetState('val', self.state.val, self._mouseDownValue)
 
 		if(e.stopPropagation) e.stopPropagation();
 		if(e.preventDefault) e.preventDefault();
@@ -208,6 +203,10 @@ Slider.prototype.update_value = function(value)
 	var rng = Math.abs(st.max - st.min);
 	
 	st.val = st.val < l ? l : st.val > h ? h : st.val;
+	self.pos = rng < 0.0001 ? 0.0 : ((Math.abs(st.val - st.min) / rng) * 60.0);
+
+	this.handle[0].style.left = '' + this.pos + 'px';
+	this.v_col.text(this.state.val.toFixed(2));
 };
 
 Slider.prototype.state_changed = function(ui)
@@ -215,16 +214,6 @@ Slider.prototype.state_changed = function(ui)
 	if(ui)
 	{
 		this.update_value(this.state.val);
-
-		var st = this.state
-		var l = Math.min(st.min, st.max), h = Math.max(st.min, st.max);
-		var rng = Math.abs(st.max - st.min);
-		
-		st.val = st.val < l ? l : st.val > h ? h : st.val;
-		self.pos = rng < 0.0001 ? 0.0 : ((Math.abs(st.val - st.min) / rng) * 60.0);
-
-		this.handle[0].style.left = '' + this.pos + 'px';
-		this.v_col.text(value.toFixed(2));
 
 		ui.find('#lo').val(this.state.min);
 		ui.find('#hi').val(this.state.max);

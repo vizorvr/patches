@@ -1,4 +1,3 @@
-
 function AbstractSubGraphPlugin(core, node) {
 	this.core = core
 	this.node = node
