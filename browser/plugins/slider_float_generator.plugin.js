@@ -1,6 +1,6 @@
 (function(){
 var Slider = E2.plugins.slider_float_generator = function(core, node) {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 
 	this.desc = 'Emits a user controllable float value between two specified values.';
 	
@@ -18,7 +18,7 @@ var Slider = E2.plugins.slider_float_generator = function(core, node) {
 	this.pos = 0;
 };
 
-Slider.prototype = Object.create(AbstractPlugin.prototype)
+Slider.prototype = Object.create(Plugin.prototype)
 
 Slider.prototype.reset = function() {};
 

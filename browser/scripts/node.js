@@ -1,10 +1,9 @@
 function Node(parent_graph, plugin_id, x, y) {
 	this.inputs = []
 	this.outputs = []
-	this.dyn_slot_uid = 0
 	this.queued_update = -1
 
-	this.uid = parent_graph ? parent_graph.get_node_uid() : Date.now()
+	this.uid = E2.core.get_uid()
 
 	if (plugin_id) { // Don't initialise if we're loading.
 		this.parent_graph = parent_graph;
@@ -113,8 +112,7 @@ Node.prototype.geometry_updated = function()
 };
 
 Node.prototype.add_slot = function(slot_type, def) {
-	// var suid = Date.now() + '' + this.dyn_slot_uid++;
-	var suid = parseInt(Date.now() + '' + this.dyn_slot_uid++, 10);
+	var suid = E2.core.get_uid()
 
 	var is_inp = slot_type === E2.slot_type.input;
 	def.uid = suid;
@@ -491,13 +489,36 @@ Node.prototype.deserialise = function(guid, d) {
 			patch_slot(this.dyn_outputs, E2.slot_type.output);
 		}
 	}
-	
+
 	return true;
 };
 
 Node.prototype.patch_up = function(graphs) {
-	this.parent_graph = Graph.resolve_graph(graphs, this.parent_graph);
+	if (!(this.parent_graph instanceof Graph))
+		this.parent_graph = Graph.resolve_graph(graphs, this.parent_graph);
 
+	function initStructure(pg, n) {
+		n.parent_graph = pg
+
+		if (!n.plugin.isGraph)
+			return;
+
+		n.plugin.graph.tree_node = n.parent_graph.tree_node.add_child(n.title)
+		n.plugin.graph.tree_node.graph = n.plugin.graph
+
+		if (n.plugin.graph.uid === undefined)
+			n.plugin.graph.uid = E2.core.get_uid()
+
+		n.plugin.graph.parent_graph = pg
+
+		var nodes = n.plugin.graph.nodes
+		
+		for(var i = 0, len = nodes.length; i < len; i++)
+			initStructure(n.plugin.graph, nodes[i])
+	}
+
+	initStructure(this.parent_graph, this)
+	
 	if(this.plugin.isGraph)
 		this.plugin.graph.patch_up(graphs);
 };

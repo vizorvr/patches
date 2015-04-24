@@ -1,6 +1,6 @@
 (function(){
 var BlendMode = E2.plugins["blend_mode_generator"] = function(core) {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Select blend mode.';
 	
 	this.input_slots = [];
@@ -11,7 +11,7 @@ var BlendMode = E2.plugins["blend_mode_generator"] = function(core) {
 	
 	this.state = { mode: Renderer.blend_mode.NORMAL };
 };
-BlendMode.prototype = Object.create(AbstractPlugin.prototype)
+BlendMode.prototype = Object.create(Plugin.prototype)
 
 BlendMode.prototype.reset = function()
 {

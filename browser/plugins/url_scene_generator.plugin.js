@@ -1,6 +1,6 @@
 (function(){
 var UrlScene = E2.plugins.url_scene_generator = function(core, node) {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Load a scene from an URL. Hover over the Change button to see the url of the current file.';
 
 	this.input_slots = [
@@ -16,7 +16,7 @@ var UrlScene = E2.plugins.url_scene_generator = function(core, node) {
 	this.scene = null;
 	this.dirty = false;
 };
-UrlScene.prototype = Object.create(AbstractPlugin.prototype)
+UrlScene.prototype = Object.create(Plugin.prototype)
 
 UrlScene.prototype.reset = function()
 {

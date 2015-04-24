@@ -1,7 +1,7 @@
 (function(){
 var Keypress = E2.plugins["key_press_generator"] = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Emits true on the next update after the key matching the set filter has been pressed and false once after it has been released.';
 	
 	this.input_slots = [];
@@ -12,7 +12,7 @@ var Keypress = E2.plugins["key_press_generator"] = function(core, node)
 	
 	this.state = { key: 0, type: 0 };
 };
-Keypress.prototype = Object.create(AbstractPlugin.prototype)
+Keypress.prototype = Object.create(Plugin.prototype)
 
 Keypress.prototype.update_output = function(slot)
 {

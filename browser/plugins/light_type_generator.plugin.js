@@ -1,7 +1,7 @@
 (function(){
 var LightType = E2.plugins["light_type_generator"] = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Select light type.';
 	
 	this.input_slots = [];
@@ -12,7 +12,7 @@ var LightType = E2.plugins["light_type_generator"] = function(core, node)
 	
 	this.state = { type: Light.type.POINT };
 };
-LightType.prototype = Object.create(AbstractPlugin.prototype)
+LightType.prototype = Object.create(Plugin.prototype)
 
 LightType.prototype.reset = function()
 {

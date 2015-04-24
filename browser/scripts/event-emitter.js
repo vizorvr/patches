@@ -1,6 +1,10 @@
 function EventEmitter() {
 	this._listeners = {}
 }
+EventEmitter.prototype.mute = function(muted) {
+	this.mute = muted
+}
+
 EventEmitter.prototype.on = function(kind, cb) {
 	if (!cb)
 		return

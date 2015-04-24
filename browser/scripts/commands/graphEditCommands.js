@@ -12,14 +12,20 @@ GraphEditCommand.prototype.execute = function() {
 
 // -------------------------------
 
+function removeNode() {
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiNodeRemoved',
+		graph: this.graph, 
+		node: this.node
+	})
+}
+
 function addNode() {
-	var node = this.graph.addNode(this.node)
-	node.inputs.concat(node.outputs).map(function(conn) {
-		// as a side-effect of adding a node eg. from an undo
-		// all its existing connections are re-added
-		this.graph.addConnection(conn)
-	}.bind(this))
-	return node
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiNodeAdded',
+		graph: this.graph,
+		node: this.node
+	})
 }
 
 function AddNode(graph, node) {
@@ -32,16 +38,6 @@ AddNode.prototype.undo = removeNode
 AddNode.prototype.redo = addNode
 
 // -------------------------------
-
-function removeNode() {
-	var node = this.node
-	node.inputs.concat(node.outputs).map(function(conn) {
-		// as a side-effect of removing a node, all its connections
-		// get removed
-		this.graph.disconnect(conn)
-	}.bind(this))
-	return this.graph.removeNode(this.node)
-}
 
 function RemoveNode(graph, node) {
 	GraphEditCommand.apply(this, arguments)
@@ -63,6 +59,7 @@ function RenameNode(graph, node, title) {
 }
 RenameNode.prototype = Object.create(GraphEditCommand.prototype)
 RenameNode.prototype.undo = function() {
+
 	this.graph.renameNode(this.node, this.origNodeTitle)
 }
 
@@ -81,13 +78,17 @@ function Connect(graph, connection) {
 Connect.prototype = Object.create(GraphEditCommand.prototype)
 
 Connect.prototype.undo = function() {
-	return this.graph.disconnect(this.connection)
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiDisconnected',
+		connection: this.connection
+	})
 }
 
 Connect.prototype.redo = function() {
-	this.connection = this.graph.connect(this.connection)
-
-	return this.connection
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiConnected',
+		connection: this.connection
+	})
 }
 
 // -------------------------------
@@ -100,6 +101,11 @@ function Disconnect(graph, connection) {
 Disconnect.prototype = Object.create(GraphEditCommand.prototype)
 
 Disconnect.prototype.undo = function() {
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiConnected',
+		connection: this.connection
+	})
+/*
 	this.connection = this.graph.connect(this.offset,
 		this.connection.src_node, 
 		this.connection.dst_node,
@@ -107,10 +113,14 @@ Disconnect.prototype.undo = function() {
 		this.connection.dst_slot)
 
 	return this.connection
+*/
 }
 
 Disconnect.prototype.redo = function() {
-	return this.graph.disconnect(this.connection)
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiDisconnected', 
+		connection: this.connection
+	})
 }
 
 // -------------------------------

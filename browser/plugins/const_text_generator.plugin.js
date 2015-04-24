@@ -1,6 +1,6 @@
 (function(){
 var Text = E2.plugins.const_text_generator = function(core, node) {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Enter a constant text string.';
 	
 	this.input_slots = [];
@@ -10,7 +10,7 @@ var Text = E2.plugins.const_text_generator = function(core, node) {
 	
 	this.state = { text: '', width: 0, height: 0 };
 };
-Text.prototype = Object.create(AbstractPlugin.prototype)
+Text.prototype = Object.create(Plugin.prototype)
 
 Text.prototype.reset = function()
 {

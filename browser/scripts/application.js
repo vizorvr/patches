@@ -3,13 +3,15 @@
 function Application() {
 	var that = this;
 
+	E2.app = this
+
 	this.state = {
 		STOPPED: 0,
 		PLAYING: 1,
 		PAUSED: 2
 	};
 	
-	this.presetManager = new PresetManager('/presets');
+	this.presetManager = new PresetManager('/presets')
 	this.canvas = E2.dom.canvas;
 	this.c2d = E2.dom.canvas[0].getContext('2d');
 	this.editConn = null;
@@ -43,6 +45,10 @@ function Application() {
 
 	this.undoManager = new UndoManager()
 	this.graphApi = new GraphApi(this.undoManager)
+	this.channel = new EditorChannel(this)
+
+	this.dispatcher = new Flux.Dispatcher()
+	this.graphStore = new GraphStore()
 
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
@@ -94,8 +100,6 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 			Math.floor((pos[0] - co.left) + that.scrollOffset[0]), 
 			Math.floor((pos[1] - co.top) + that.scrollOffset[1]));
 
-		that.graphApi.addNode(ag, node)
-
 		node.reset()
 
 		if (name) { // is graph?
@@ -107,6 +111,8 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 			node.plugin.graph.plugin = node.plugin
 			that.player.core.graphs.push(node.plugin.graph)
 		}
+
+		that.graphApi.addNode(ag, node)
 	}
 	
 	if (id === 'graph')
@@ -922,71 +928,21 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 		createdNodes.push(node)
 	}
 
-	for(var i = 0, len = doc.conns.length; i < len; i++) {
+	for(i = 0, len = doc.conns.length; i < len; i++) {
 		var docConnection = doc.conns[i]
-/*		var srcUid = docConnection.src_nuid
-		var dstUid = docConnection.dst_nuid
-		
-		if (srcUid === undefined || dstUid === undefined) {
-			// We have to clear the the connected flag from the destination
-			// slot. Otherwise the user will be unable to connect to it. 
-			if (dstUid !== undefined) {
-				for(var ni = 0, len2 = createdNodes.length; ni < len2; ni++) {
-					var node = createdNodes[ni]
-					
-					if (node.uid === dstUid) {
-						var slots = docConnection.dst_dyn ? node.dyn_inputs : node.plugin.input_slots
-						var slot = slots[docConnection.dst_slot]
-						
-						slot.is_connected = false
-						node.inputs_changed = true
-	
-						// TODO: Does any of the graph internal state need clearing at this point?
-						// Do we need to find a way to correctly call connection_changed() here?
-						
-						break; // Early out
-					}
-				}
-			}
-			
-			continue;
-		}
-*/
 		var c = new Connection()
-
 		c.deserialise(docConnection)
-		
 		c = this.graphApi.connect(ag, c)
-
 		createdConnections.push(c)
 	}
 	
-	function initStructure(pg, n) {
-		n.parent_graph = pg
-
-		if (!n.plugin.isGraph)
-			return;
-
-		n.plugin.graph.tree_node = n.parent_graph.tree_node.add_child(n.title)
-		n.plugin.graph.tree_node.graph = n.plugin.graph
-		n.plugin.graph.uid = E2.app.player.core.get_graph_uid()
-		n.plugin.graph.parent_graph = pg
-
-		var nodes = n.plugin.graph.nodes
-		
-		for(var i = 0, len = nodes.length; i < len; i++)
-			initStructure(n.plugin.graph, nodes[i])
-	}
-	
-	for(var i = 0, len = createdNodes.length; i < len; i++) {
+	for(i = 0, len = createdNodes.length; i < len; i++) {
 		var node = createdNodes[i]
 
 		node.initialise()
 
 		if (node.plugin.reset)
 			node.plugin.reset()
-
-		initStructure(ag, node)
 	}
 
 	this.undoManager.end()
@@ -1119,7 +1075,6 @@ Application.prototype.onKeyDown = function(e) {
 		'alt', this.alt_pressed
 	)
 
-
 	// arrow up || down
 	var arrowKeys = [37,38,39,40]
 	if (arrowKeys.indexOf(e.keyCode) !== -1) {
@@ -1213,12 +1168,6 @@ Application.prototype.onKeyDown = function(e) {
 		this.is_fullscreen = !this.is_fullscreen;
 		this.player.core.renderer.set_fullscreen(this.is_fullscreen);
 		e.preventDefault();
-	} else if (e.keyCode === 73) { // i
-		// this.instantiatePlugin('input_proxy')
-	} else if (e.keyCode === 79) { // o
-		// this.instantiatePlugin('output_proxy')
-	} else if (e.keyCode === 71) { // g
-		// this.instantiatePlugin('graph')
 	} else if (e.keyCode === 81) { // q to focus preset search
 		$('#presetSearch').focus()
 		$('#presetSearch').select()
@@ -1609,16 +1558,8 @@ function onNodeAdded(node) {
 	console.log('onNodeAdded', node)
 	node.create_ui()
 
-	if (node.plugin.state_changed) {
-		node.plugin.state_changed(null)
+	if (node.plugin.state_changed)
 		node.plugin.state_changed(node.ui.plugin_ui)
-	}
-
-	E2.app.channel.broadcast({
-		evt: 'nodeAdded',
-		gid: node.parent_graph.uid,
-		data: node.serialise(true)
-	})
 }
 
 function onNodeRemoved(node) {
@@ -1645,12 +1586,6 @@ function onConnected(connection) {
 		connection.create_ui()
 
 	connection.ui.resolve_slot_divs()
-
-	E2.app.channel.broadcast({
-		evt: 'connected',
-		gid: connection.src_node.parent_graph.uid,
-		data: connection.serialise(true)
-	})
 }
 
 function onDisconnected(connection) {
@@ -1662,24 +1597,26 @@ function onDisconnected(connection) {
 }
 
 Application.prototype.onGraphSelected = function(graph) {
+/*
 	E2.core.active_graph.off('changed', onGraphChanged)
 	E2.core.active_graph.off('nodeAdded', onNodeAdded)
 	E2.core.active_graph.off('nodeRemoved', onNodeRemoved)
 	E2.core.active_graph.off('nodeRenamed', onNodeRenamed)
 	E2.core.active_graph.off('connected', onConnected)
 	E2.core.active_graph.off('disconnected', onDisconnected)
-
+*/
 	E2.core.active_graph.destroy_ui()
 
 	E2.core.active_graph = graph
 
+/*
 	graph.on('changed', onGraphChanged)
 	graph.on('nodeAdded', onNodeAdded)
 	graph.on('nodeRemoved', onNodeRemoved)
 	graph.on('nodeRenamed', onNodeRenamed)
 	graph.on('connected', onConnected)
 	graph.on('disconnected', onDisconnected)
-
+*/
 	E2.dom.canvas_parent.scrollTop(0)
 	E2.dom.canvas_parent.scrollLeft(0)
 	this.scrollOffset[0] = this.scrollOffset[1] = 0
@@ -1694,6 +1631,17 @@ Application.prototype.onGraphSelected = function(graph) {
 
 Application.prototype.start = function() {
 	var that = this
+
+	this.graphStore.on('nodeAdded', function(graph, node) {
+		if (graph !== E2.core.active_graph)
+			return;
+
+		console.log('onNodeAdded', node)
+		node.create_ui()
+
+		if (node.plugin.state_changed)
+			node.plugin.state_changed(node.ui.plugin_ui)
+	}.bind(this))
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 
@@ -1789,7 +1737,6 @@ Application.prototype.start = function() {
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
 
 	this.midPane = new E2.MidPane()
-	this.channel = new GraphChannel(this)
 }
 
 
@@ -1847,8 +1794,8 @@ E2.InitialiseEngi = function(vr_devices) {
 		}
 	})
 
-	E2.app = new Application()
 	E2.core = new Core(vr_devices)
+	E2.app = new Application()
 
 	E2.treeView = E2.dom.structure.tree = new TreeView(E2.dom.structure, function(graph) { // On item activation
 		E2.app.clearEditState()

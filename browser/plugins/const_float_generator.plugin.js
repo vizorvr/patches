@@ -1,6 +1,6 @@
 (function(){
 var Const = E2.plugins.const_float_generator = function(core, node) {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 
 	this.desc = 'Emits a float constant specified in an input field. If an invalid string in entered, the field is reset to the previous value.';
 	
@@ -12,7 +12,7 @@ var Const = E2.plugins.const_float_generator = function(core, node) {
 	
 	this.state = { val: 1.0 };
 };
-Const.prototype = Object.create(AbstractPlugin.prototype)
+Const.prototype = Object.create(Plugin.prototype)
 
 Const.prototype.reset = function() {}
 

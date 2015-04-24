@@ -1,6 +1,6 @@
 (function(){
 var DepthFunction = E2.plugins.depth_func_generator = function(core, node) {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Select z-buffer depth compare function.';
 	
 	this.input_slots = [];
@@ -11,7 +11,7 @@ var DepthFunction = E2.plugins.depth_func_generator = function(core, node) {
 	
 	this.state = { depth_func: Material.depth_func.LEQUAL };
 };
-DepthFunction.prototype = Object.create(AbstractPlugin.prototype)
+DepthFunction.prototype = Object.create(Plugin.prototype)
 
 DepthFunction.prototype.reset = function()
 {

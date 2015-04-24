@@ -1,7 +1,7 @@
 (function(){
 Toggle = E2.plugins.toggle_button = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Toggle button that emits true and false as it is clicked.';
 	
 	this.input_slots = [];
@@ -14,7 +14,7 @@ Toggle = E2.plugins.toggle_button = function(core, node)
 	this.core = core;
 	this.node = node;
 };
-Toggle.prototype = Object.create(AbstractPlugin.prototype)
+Toggle.prototype = Object.create(Plugin.prototype)
 
 Toggle.prototype.reset = function()
 {
