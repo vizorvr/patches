@@ -5,7 +5,7 @@ Vizor Create is a visual programming tool for WebGL, WebVR and other HTML5 APIs.
 
 **Use Vizor Create online at [create.vizor.io](http://create.vizor.io)!**
 
-Be sure to read the [Help documentation](http://create.vizor.io/help/introduction.html), the [Plugin API docs](http://create.vizor.io/help/plugin_api.html) (subject to change).
+Be sure to [watch the tutorials](http://bit.do/vizor) and read the [Help documentation](http://create.vizor.io/help/introduction.html)! The [Plugin API docs](http://create.vizor.io/help/plugin_api.html) are subject to change. We welcome all ideas and pull requests!
 
 # Introduction
 
