@@ -1,5 +1,7 @@
-E2.p = E2.plugins["text_editor_generator"] = function(core, node)
+(function() {
+var TextEditor = E2.plugins["text_editor_generator"] = function(core, node)
 {
+	AbstractPlugin.apply(this, arguments)
 	this.desc = 'Edit a block of text.';
 	
 	this.input_slots = [];
@@ -12,12 +14,14 @@ E2.p = E2.plugins["text_editor_generator"] = function(core, node)
 	this.core = core;
 };
 
-E2.p.prototype.reset = function()
+TextEditor.prototype = Object.create(AbstractPlugin.prototype)
+
+TextEditor.prototype.reset = function()
 {
 	this.updated = true;
 };
 
-E2.p.prototype.open_editor = function(self) { return function(e)
+TextEditor.prototype.open_editor = function(self) { return function(e)
 {
 	var diag = make('span');
 	var src = $('<pre id="editor"></pre>'); 
@@ -58,14 +62,13 @@ E2.p.prototype.open_editor = function(self) { return function(e)
 		if(e && e.target.className === 'ace_text-input')
 			return false;
 		
-		self.state.text = editor.getValue();
-		self.updated = true;
+		self.undoableSetState('text', editor.getValue(), self.state.text)
 	}};
 	
 	self.core.create_dialog(diag, 'Editor', 760, 150, store_state(editor, diag));
 }};
 
-E2.p.prototype.create_ui = function()
+TextEditor.prototype.create_ui = function()
 {
 	var inp = makeButton('Open', 'Click to edit the contents.');
 	
@@ -75,13 +78,15 @@ E2.p.prototype.create_ui = function()
 	return inp;
 };
 
-E2.p.prototype.update_output = function(slot)
+TextEditor.prototype.update_output = function(slot)
 {
 	return this.state.text;
 };
 
-E2.p.prototype.state_changed = function(ui)
+TextEditor.prototype.state_changed = function(ui)
 {
 	if(!ui)
 		this.core.add_aux_script('ace/ace.js');
 };
+
+})();

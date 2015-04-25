@@ -14,3 +14,5 @@ AbstractPlugin.prototype.undoableSetState = function(key, newValue, oldValue) {
 	))
 }
 
+if (typeof(module) !== 'undefined')
+	module.exports = AbstractPlugin
