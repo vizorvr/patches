@@ -497,6 +497,9 @@ Node.prototype.deserialise = function(guid, d) {
 };
 
 Node.prototype.patch_up = function(graphs) {
+	if (this.parent_graph instanceof Graph)
+		return;
+
 	this.parent_graph = Graph.resolve_graph(graphs, this.parent_graph);
 
 	if(this.plugin.isGraph)

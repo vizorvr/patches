@@ -1,17 +1,18 @@
-function TreeNode(tree, parent_node, title, graph_node)
+function TreeNode(tree, parent_node, title, graph)
 {
 	this.tree = tree;
 	this.parent_node = parent_node;
 	this.title = title;
-	this.graph_node = graph_node;
+	this.graph = graph;
+	graph.tree_node = this;
 	this.children = [];
 	this.dom = this.label = null;
 	this.selected = false;
 }
 
-TreeNode.prototype.add_child = function(title)
+TreeNode.prototype.add_child = function(title, graph)
 {
-	var tn = new TreeNode(this.tree, this, title, null);
+	var tn = new TreeNode(this.tree, this, title, graph);
 	
 	this.children.push(tn);
 	this.rebuild_dom();
@@ -116,17 +117,21 @@ TreeNode.prototype.rebuild_dom = function()
 	this.label = lbl;
 };
 
-function TreeView(parent, on_activate, on_rearrange) {
+function TreeView(parent, root_graph, on_activate, on_rearrange) {
+console.log('new TreeView', root_graph)
 	this.parent = parent;
 	this.on_activate = on_activate;
 	this.on_rearrange = on_rearrange;
-	this.root = new TreeNode(this, null, 'Root', null);
-
+	this.root = new TreeNode(this, null, 'Root', root_graph);
+	
+	root_graph.tree_node = this.root
+	
 	this.reset();
 	this.parent.append(this.root.dom);
 }
 
 TreeView.prototype.reset = function() {
+console.trace('tv reset')
 	this.root.remove_children();
 
 	this.drag_node = null;
@@ -136,7 +141,7 @@ TreeView.prototype.reset = function() {
 	this.drag_indicator = null;
 	this.selected_node = null;
 	this.insert_after = false;
-	this.root.graph = null;
+	// this.root.graph = null;
 	this.root.selected = false;
 	
 	this.root.rebuild_dom();

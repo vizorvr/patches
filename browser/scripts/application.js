@@ -94,19 +94,15 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 			(pos[0] - co.left) + that.scrollOffset[0], 
 			(pos[1] - co.top) + that.scrollOffset[1]);
 
+		if (name) { // is graph?
+			node.title = name
+			node.plugin.setGraph(new Graph(that.player.core, node.parent_graph))
+			node.plugin.graph.plugin = node.plugin
+		}
+
 		that.graphApi.addNode(ag, node)
 
 		node.reset()
-
-		if (name) { // is graph?
-			node.title = name
-			node.plugin.setGraph(new Graph(that.player.core,
-				node.parent_graph,
-				node.parent_graph.tree_node.add_child(name)))
-			
-			node.plugin.graph.plugin = node.plugin
-			that.player.core.graphs.push(node.plugin.graph)
-		}
 	}
 	
 	if (id === 'graph')
@@ -922,8 +918,6 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 		
 		this.graphApi.addNode(ag, node)
 
-		node.patch_up(this.player.core.graphs)
-
 		createdNodes.push(node)
 	}
 
@@ -975,7 +969,9 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 		if (!n.plugin.isGraph)
 			return;
 
-		n.plugin.graph.tree_node = n.parent_graph.tree_node.add_child(n.title)
+		if (!n.plugin.graph.tree_node)
+			n.plugin.graph.tree_node = n.parent_graph.tree_node.add_child(n.title, n.plugin.graph)
+
 		n.plugin.graph.tree_node.graph = n.plugin.graph
 		n.plugin.graph.uid = E2.app.player.core.get_graph_uid()
 		n.plugin.graph.parent_graph = pg
@@ -1614,12 +1610,16 @@ function onGraphChanged() {
 }
 
 function onNodeAdded(node) {
-	console.log('onNodeAdded', node)
+	console.log('onNodeAdded', node, node.plugin.isGraph)
 	node.create_ui()
 
 	if (node.plugin.state_changed) {
 		node.plugin.state_changed(null)
 		node.plugin.state_changed(node.ui.plugin_ui)
+	}
+
+	if (node.plugin.isGraph) {
+		var tn = node.parent_graph.tree_node.add_child(node.title, node.plugin.graph)
 	}
 }
 
@@ -1661,6 +1661,8 @@ function onDisconnected(connection) {
 }
 
 Application.prototype.onGraphSelected = function(graph) {
+	var that = this
+console.log('onGraphSelected', graph)
 	E2.core.active_graph.off('changed', onGraphChanged)
 	E2.core.active_graph.off('nodeAdded', onNodeAdded)
 	E2.core.active_graph.off('nodeRemoved', onNodeRemoved)
@@ -1671,7 +1673,7 @@ Application.prototype.onGraphSelected = function(graph) {
 	E2.core.active_graph.destroy_ui()
 
 	E2.core.active_graph = graph
-
+	
 	graph.on('changed', onGraphChanged)
 	graph.on('nodeAdded', onNodeAdded)
 	graph.on('nodeRemoved', onNodeRemoved)
@@ -1684,7 +1686,27 @@ Application.prototype.onGraphSelected = function(graph) {
 	this.scrollOffset[0] = this.scrollOffset[1] = 0
 
 	E2.dom.breadcrumb.children().remove()
-	E2.core.active_graph.build_breadcrumb(E2.dom.breadcrumb, false)
+
+	function buildBreadcrumb(parentEl, graph, add_handler) {
+		var sp = $('<span>' + graph.tree_node.title + '</span>')
+		sp.css('cursor', 'pointer')
+		
+		if (add_handler) {
+			sp.click(function() {
+				graph.tree_node.activate()
+			})
+			
+			sp.css({ 'text-decoration': 'underline' })
+		}
+		
+		parentEl.prepend($('<span> / </span>'))
+		parentEl.prepend(sp)
+		
+		if (graph.parent_graph)
+			buildBreadcrumb(parentEl, graph.parent_graph, true)
+	}
+
+	buildBreadcrumb(E2.dom.breadcrumb, E2.core.active_graph, false)
 	
 	E2.core.active_graph.create_ui()
 	E2.core.active_graph.reset()
@@ -1846,20 +1868,24 @@ E2.InitialiseEngi = function(vr_devices) {
 		}
 	})
 
-	E2.app = new Application()
 	E2.core = new Core(vr_devices)
 
-	E2.treeView = E2.dom.structure.tree = new TreeView(E2.dom.structure, function(graph) { // On item activation
-		E2.app.clearEditState()
-		E2.app.clearSelection()
-		E2.app.onGraphSelected(graph)
-		E2.app.updateCanvas(true)
-	},
-	function(graph, original, sibling, insert_after) { // On child dropped
-		graph.reorder_children(original, sibling, insert_after)
-	})
+	E2.app = new Application()
 
-	var player = new Player(vr_devices, E2.dom.webgl_canvas, E2.treeView.root)
+	var player = new Player(vr_devices, E2.dom.webgl_canvas)
+
+	E2.treeView = E2.dom.structure.tree = new TreeView(
+		E2.dom.structure,
+		E2.core.root_graph,
+		function(graph) { // On item activation
+			E2.app.clearEditState()
+			E2.app.clearSelection()
+			E2.app.onGraphSelected(graph)
+			E2.app.updateCanvas(true)
+		},
+		function(graph, original, sibling, insert_after) { // On child dropped
+			graph.reorder_children(original, sibling, insert_after)
+		})
 
 	E2.app.player = player
 

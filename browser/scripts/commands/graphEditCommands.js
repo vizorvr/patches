@@ -19,6 +19,7 @@ function addNode() {
 		// all its existing connections are re-added
 		this.graph.addConnection(conn)
 	}.bind(this))
+
 	return node
 }
 

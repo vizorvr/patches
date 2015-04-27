@@ -18,7 +18,7 @@ function Player(vr_devices, canvas, root_node, cb)
 	this.frames = 0;
 	this.scheduled_stop = null;
 	
-	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, root_node);
+	this.core.active_graph = this.core.root_graph = new Graph(this.core);
 	this.core.graphs.push(this.core.root_graph);
 	
 	this.play = function()

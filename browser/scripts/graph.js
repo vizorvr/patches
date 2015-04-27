@@ -1,21 +1,16 @@
-function Graph(core, parent_graph, tree_node) {
+function Graph(core, parent_graph) {
 	EventEmitter.call(this)
 
-	this.tree_node = tree_node;
 	this.nodes = [];
 	this.connections = [];
 	this.core = core;
 	this.registers = new Registers(core);
 
-	if (tree_node) { // Only initialise if we're not deserialising.
-		this.uid = this.core.get_graph_uid();
-		this.parent_graph = parent_graph;
-		this.roots = [];
-		this.children = [];
-		this.node_uid = 0;
-			
-		tree_node.graph = this;
-	}
+	this.uid = this.core.get_graph_uid();
+	this.parent_graph = parent_graph;
+	this.roots = [];
+	this.children = [];
+	this.node_uid = 0;
 }
 
 Graph.prototype = Object.create(EventEmitter.prototype)
@@ -117,8 +112,12 @@ Graph.prototype.registerNode = function(n) {
 	
 	if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
 		this.roots.push(n)
-	else if(n.plugin.isGraph)
+	else if(n.plugin.isGraph) {
 		this.children.push(n)
+		E2.core.graphs.push(n.plugin.graph)
+	}
+
+	n.patch_up(E2.core.graphs)
 
 	return n
 }
@@ -302,6 +301,9 @@ Graph.prototype.deserialise = function(d) {
 }
 
 Graph.prototype.patch_up = function(graphs) {
+	if (this.parent_graph instanceof Graph)
+		return;
+
 	this.parent_graph = Graph.resolve_graph(graphs, this.parent_graph);
 
 	var nodes = this.nodes,
@@ -335,27 +337,7 @@ Graph.prototype.initialise = function() {
 }
 
 Graph.prototype.getTitle = function() {
-	return this.tree_node.title
-}
-
-Graph.prototype.build_breadcrumb = function(parent, add_handler) {
-	var that = this
-	var sp = $('<span>' + this.tree_node.title + '</span>')
-	sp.css('cursor', 'pointer')
-	
-	if (add_handler) {
-		sp.click(function() {
-			that.tree_node.activate()
-		})
-		
-		sp.css({ 'text-decoration': 'underline' })
-	}
-	
-	parent.prepend($('<span> / </span>'))
-	parent.prepend(sp)
-	
-	if (this.parent_graph)
-		this.parent_graph.build_breadcrumb(parent, true)
+	return this.title
 }
 
 Graph.prototype.reorder_children = function(original, sibling, insert_after) {
