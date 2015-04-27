@@ -26,18 +26,38 @@ UrlAudio.prototype.reset = function()
 UrlAudio.prototype.create_ui = function()
 {
 	var inp = makeButton('Source', 'No audio selected.', 'url');
-	var self = this;
+	var that = this;
 
-	inp.click(function()
-	{
+	function clickHandler() {
+		var oldValue = that.state.url
+		var newValue = oldValue
+
+		function setValue(v) {
+			that.state.url = newValue = v
+			that.updated = true
+			that.state_changed()
+		}
+
 		FileSelectControl
-			.createAudioSelector(self.state.url)
-			.onChange(function(v)
-			{
-				self.undoableSetState('url', v, self.state.url)
-			});
-	});
+		.createModelSelector('audio', oldValue, function(control) {
+			control	
+			.selected(oldValue)
+			.onChange(setValue.bind(this))
+			.buttons({
+				'Cancel': setValue.bind(this),
+				'Select': setValue.bind(this)
+			})
+			.on('closed', function() {
+				if (newValue === oldValue)
+					return;
+			
+				that.undoableSetState('url', newValue, oldValue)
+			})
+			.modal()
+		})
+	}
 
+	inp.click(clickHandler)
 	return inp;
 };
 
@@ -91,12 +111,11 @@ UrlAudio.prototype.update_output = function(slot)
 
 UrlAudio.prototype.state_changed = function(ui)
 {
-	if (this.state.url)
-	{
+	if (this.state.url) {
 		if(ui)
 			ui.attr('title', this.state.url);
-		else
-			this.dirty = true;
+
+		this.dirty = true;
 	}
 };
 })();

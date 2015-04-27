@@ -27,8 +27,7 @@ UrlArray.prototype.create_ui = function()
 	var inp = makeButton('Source', 'No texture selected.', 'url');
 	var that = this;
 
-	inp.click(function()
-	{
+	function clickHandler() {
 		var oldValue = that.state.url
 		var newValue = oldValue
 
@@ -56,7 +55,9 @@ UrlArray.prototype.create_ui = function()
 			})
 			.modal()
 		})
-	});
+	}
+
+	inp.click(clickHandler)
 
 	return inp;
 };
