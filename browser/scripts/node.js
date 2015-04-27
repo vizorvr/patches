@@ -77,9 +77,6 @@ Node.prototype.destroy = function()
 	for(var i = 0, len = pending.length; i < len; i++)
 		graph.disconnect(pending[i]);
 	
-	if(this.plugin.isGraph)
-		this.plugin.graph.tree_node.remove();
-	
 	this.destroy_ui();
 };
 

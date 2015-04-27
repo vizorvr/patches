@@ -1627,6 +1627,9 @@ function onNodeRemoved(node) {
 	console.log('onNodeRemoved', node)
 	E2.app.onHideTooltip()
 	node.destroy_ui()
+
+	if (node.plugin.isGraph)
+		node.plugin.graph.tree_node.remove()
 }
 
 function onNodeRenamed(node) {
