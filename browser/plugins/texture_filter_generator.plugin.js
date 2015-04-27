@@ -1,7 +1,7 @@
 (function(){
 var TextureFilter = E2.plugins["texture_filter_generator"] = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Emits a texture mini- and magnify filter type.';
 	
 	this.input_slots = [];
@@ -15,7 +15,7 @@ var TextureFilter = E2.plugins["texture_filter_generator"] = function(core, node
 	this.state = { type: this.gl.LINEAR };
 };
 
-TextureFilter.prototype = Object.create(AbstractPlugin.prototype)
+TextureFilter.prototype = Object.create(Plugin.prototype)
 
 TextureFilter.prototype.reset = function()
 {

@@ -1,7 +1,7 @@
 (function(){
 var UrlAudioBuffer = E2.plugins["url_audio_buffer_generator"] = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Load an audio sample from an URL.';
 
 	this.input_slots = [
@@ -17,7 +17,7 @@ var UrlAudioBuffer = E2.plugins["url_audio_buffer_generator"] = function(core, n
 	this.buffer = null;
 	this.dirty = false;
 };
-UrlAudioBuffer.prototype = Object.create(AbstractPlugin.prototype)
+UrlAudioBuffer.prototype = Object.create(Plugin.prototype)
 
 UrlAudioBuffer.prototype.reset = function()
 {

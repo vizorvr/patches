@@ -1,7 +1,7 @@
 (function() {
 var TextEditor = E2.plugins["text_editor_generator"] = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Edit a block of text.';
 	
 	this.input_slots = [];
@@ -14,7 +14,7 @@ var TextEditor = E2.plugins["text_editor_generator"] = function(core, node)
 	this.core = core;
 };
 
-TextEditor.prototype = Object.create(AbstractPlugin.prototype)
+TextEditor.prototype = Object.create(Plugin.prototype)
 
 TextEditor.prototype.reset = function()
 {

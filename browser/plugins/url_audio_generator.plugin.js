@@ -1,7 +1,7 @@
 (function(){
 var UrlAudio = E2.plugins["url_audio_generator"] = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Load a sample from an URL. Each sample should be encoded as .wav, .mp3, .mp4 and .ogg, and no extension should be specified. This plugin will load the appropriate filetype for the current execution environment. Hover over the Source button to see the url of the current file.';
 
 	this.input_slots = [
@@ -17,7 +17,7 @@ var UrlAudio = E2.plugins["url_audio_generator"] = function(core, node)
 	this.audio = null;
 	this.dirty = false;
 };
-UrlAudio.prototype = Object.create(AbstractPlugin.prototype)
+UrlAudio.prototype = Object.create(Plugin.prototype)
 
 UrlAudio.prototype.reset = function()
 {

@@ -1,7 +1,7 @@
 (function(){
 var TextureType = E2.plugins["texture_type_generator"] = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Select texture type.';
 	
 	this.input_slots = [];
@@ -11,7 +11,7 @@ var TextureType = E2.plugins["texture_type_generator"] = function(core, node)
 	this.state = { type: Material.texture_type.DIFFUSE_COLOR };
 };
 
-TextureType.prototype = Object.create(AbstractPlugin.prototype)
+TextureType.prototype = Object.create(Plugin.prototype)
 
 TextureType.prototype.reset = function() {}
 
