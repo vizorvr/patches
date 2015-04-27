@@ -1,5 +1,7 @@
-E2.p = E2.plugins["url_video_generator"] = function(core, node)
-{
+(function() {
+
+var UrlVideo = E2.plugins["url_video_generator"] = function UrlVideo(core, node) {
+	AbstractPlugin.apply(this, arguments)
 	this.desc = 'Load a Ogg/Theora video from an URL.';
 	
 	this.input_slots = [
@@ -16,40 +18,57 @@ E2.p = E2.plugins["url_video_generator"] = function(core, node)
 	this.URL_VIDEO_ROOT = 'data/video/';
 	this.video = null;
 	this.dirty = false;
-};
+}
+UrlVideo.prototype = Object.create(AbstractPlugin.prototype)
 
-E2.p.prototype.reset = function()
-{
-};
+UrlVideo.prototype.reset = function() {}
 
-E2.p.prototype.create_ui = function()
+UrlVideo.prototype.create_ui = function()
 {
 	var inp = makeButton('Source', 'No video selected.', 'url');
-	var self = this;
+	var that = this;
 
-	inp.click(function()
-	{
+	function clickHandler() {
+		var oldValue = that.state.url
+		var newValue = oldValue
+
+		function setValue(v) {
+			that.state.url = newValue = v
+			that.updated = true
+			that.state_changed()
+		}
+
 		FileSelectControl
-			.createVideoSelector(self.state.url)
-			.onChange(function(v)
-			{
-				self.state.url = v;
-				self.state_changed(null);
-				self.state_changed(inp);
-				self.updated = true;
-			});
-	});
+		.createModelSelector('video', oldValue, function(control) {
+			control	
+			.selected(oldValue)
+			.onChange(setValue.bind(this))
+			.buttons({
+				'Cancel': setValue.bind(this),
+				'Select': setValue.bind(this)
+			})
+			.on('closed', function() {
+				if (newValue === oldValue)
+					return;
+			
+				that.undoableSetState('url', newValue, oldValue)
+			})
+			.modal()
+		})
+	}
+
+	inp.click(clickHandler)
 
 	return inp;
 };
 
-E2.p.prototype.update_input = function(slot, data)
+UrlVideo.prototype.update_input = function(slot, data)
 {
 	this.state.url = data;
 	this.state_changed(null);
 };
 
-E2.p.prototype.update_state = function()
+UrlVideo.prototype.update_state = function()
 {
 	if(!this.dirty)
 		return;
@@ -87,18 +106,18 @@ E2.p.prototype.update_state = function()
 	this.dirty = false;
 };
 
-E2.p.prototype.update_output = function(slot)
+UrlVideo.prototype.update_output = function(slot)
 {
 	return this.video;
 };
 
-E2.p.prototype.state_changed = function(ui)
-{
-	if(this.state.url !== '')
-	{
-		if(ui)
-			ui.attr('title', this.state.url);
-		else
-			this.dirty = true;
+UrlVideo.prototype.state_changed = function(ui) {
+	if (this.state.url !== '') {
+		if (ui)
+			ui.attr('title', this.state.url)
+
+		this.dirty = true
 	}
 };
+
+})();

@@ -1,5 +1,7 @@
-E2.p = E2.plugins["url_audio_generator"] = function(core, node)
+(function(){
+var UrlAudio = E2.plugins["url_audio_generator"] = function(core, node)
 {
+	AbstractPlugin.apply(this, arguments)
 	this.desc = 'Load a sample from an URL. Each sample should be encoded as .wav, .mp3, .mp4 and .ogg, and no extension should be specified. This plugin will load the appropriate filetype for the current execution environment. Hover over the Source button to see the url of the current file.';
 
 	this.input_slots = [
@@ -15,39 +17,57 @@ E2.p = E2.plugins["url_audio_generator"] = function(core, node)
 	this.audio = null;
 	this.dirty = false;
 };
+UrlAudio.prototype = Object.create(AbstractPlugin.prototype)
 
-E2.p.prototype.reset = function()
+UrlAudio.prototype.reset = function()
 {
 };
 
-E2.p.prototype.create_ui = function()
+UrlAudio.prototype.create_ui = function()
 {
 	var inp = makeButton('Source', 'No audio selected.', 'url');
-	var self = this;
+	var that = this;
 
-	inp.click(function()
-	{
+	function clickHandler() {
+		var oldValue = that.state.url
+		var newValue = oldValue
+
+		function setValue(v) {
+			that.state.url = newValue = v
+			that.updated = true
+			that.state_changed()
+		}
+
 		FileSelectControl
-			.createAudioSelector(self.state.url)
-			.onChange(function(v)
-			{
-				self.state.url = v;
-				self.state_changed(null);
-				self.state_changed(inp);
-				self.updated = true;
-			});
-	});
+		.createModelSelector('audio', oldValue, function(control) {
+			control	
+			.selected(oldValue)
+			.onChange(setValue.bind(this))
+			.buttons({
+				'Cancel': setValue.bind(this),
+				'Select': setValue.bind(this)
+			})
+			.on('closed', function() {
+				if (newValue === oldValue)
+					return;
+			
+				that.undoableSetState('url', newValue, oldValue)
+			})
+			.modal()
+		})
+	}
 
+	inp.click(clickHandler)
 	return inp;
 };
 
-E2.p.prototype.update_input = function(slot, data)
+UrlAudio.prototype.update_input = function(slot, data)
 {
 	this.state.url = data;
 	this.state_changed(null);
 };
 
-E2.p.prototype.update_state = function()
+UrlAudio.prototype.update_state = function()
 {
 	var that = this;
 
@@ -84,18 +104,18 @@ E2.p.prototype.update_state = function()
 	this.dirty = false;
 };
 
-E2.p.prototype.update_output = function(slot)
+UrlAudio.prototype.update_output = function(slot)
 {
 	return this.audio;
 };
 
-E2.p.prototype.state_changed = function(ui)
+UrlAudio.prototype.state_changed = function(ui)
 {
-	if (this.state.url)
-	{
+	if (this.state.url) {
 		if(ui)
 			ui.attr('title', this.state.url);
-		else
-			this.dirty = true;
+
+		this.dirty = true;
 	}
 };
+})();

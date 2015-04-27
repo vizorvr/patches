@@ -15,6 +15,7 @@ var MemberToTypedArray = E2.plugins["member_to_typed_array_modulator"] = functio
 
 	this.state = { datatype: 6 }; // Default float32
 };
+
 MemberToTypedArray.prototype = Object.create(Plugin.prototype)
 
 MemberToTypedArray.prototype.reset = function()

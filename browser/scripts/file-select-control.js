@@ -535,6 +535,10 @@ FileSelectControl.createTextureSelector = function(selected, cb){
 	return createSelector('/image', selected, 'Select', function(){}, cb)
 }
 
+FileSelectControl.createModelSelector = function(model, selected, cb){
+	return createSelector('/'+model, selected, 'Select', function(){}, cb)
+}
+
 FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
 	return createSelector(path, selected, okButton, okFn, function(ctl)
 	{

@@ -95,7 +95,7 @@ UrlTexture.prototype.update_state = function() {
 	this.dirty = false
 }
 
-UrlTexture.prototype.update_output = function(slot) {
+UrlTexture.prototype.update_output = function() {
 	return this.texture
 }
 

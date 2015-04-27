@@ -1,6 +1,7 @@
 (function() {
 
 var UrlJson = E2.plugins["url_json_generator"] = function(core, node) {
+	AbstractPlugin.apply(this, arguments)
 	this.desc = 'Load JSON as an object from an URL. Hover over the Source button to see the url of the current file.';
 	
 	this.input_slots = [
@@ -16,21 +17,42 @@ var UrlJson = E2.plugins["url_json_generator"] = function(core, node) {
 	this.object = {};
 	this.dirty = false;
 }
+UrlJson.prototype = Object.create(AbstractPlugin.prototype)
 
 UrlJson.prototype.create_ui = function() {
 	var inp = makeButton('Source', 'No JSON selected.', 'url');
-	var self = this;
+	var that = this;
 
-	inp.click(function() {
+	function clickHandler() {
+		var oldValue = that.state.url
+		var newValue = oldValue
+
+		function setValue(v) {
+			that.state.url = newValue = v
+			that.updated = true
+			that.state_changed()
+		}
+
 		FileSelectControl
-			.createJsonSelector(self.state.url)
-			.onChange(function(v) {
-				self.state.url = v;
-				self.state_changed(null);
-				self.state_changed(inp);
-				self.updated = true;
-			});
-	});
+		.createModelSelector('json', oldValue, function(control) {
+			control
+			.selected(oldValue)
+			.onChange(setValue.bind(this))
+			.buttons({
+				'Cancel': setValue.bind(this),
+				'Select': setValue.bind(this)
+			})
+			.on('closed', function() {
+				if (newValue === oldValue)
+					return;
+			
+				that.undoableSetState('url', newValue, oldValue)
+			})
+			.modal()
+		})
+	}
+
+	inp.click(clickHandler)
 
 	return inp;
 }
@@ -49,10 +71,10 @@ UrlJson.prototype.update_state = function() {
 	var self = this;
 
 	this.object = {};
-	self.core.asset_tracker.signal_started();
+	this.core.asset_tracker.signal_started();
 
-	jQuery.ajax({
-		url: self.state.url, 
+	$.ajax({
+		url: this.state.url, 
 		dataType: 'json',
 		success: function(self) { return function(data) 
 		{
@@ -77,11 +99,11 @@ UrlJson.prototype.update_output = function(slot) {
 }
 
 UrlJson.prototype.state_changed = function(ui) {
-	if(this.state.url !== '') {
-		if(ui)
-			ui.attr('title', this.state.url);
-		else
-			this.dirty = true;
+	if (this.state.url !== '') {
+		if (ui)
+			ui.attr('title', this.state.url)
+
+		this.dirty = true
 	} else {
 		this.object = {}
 	}

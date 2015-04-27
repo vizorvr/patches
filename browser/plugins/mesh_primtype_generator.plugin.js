@@ -40,7 +40,7 @@ MeshPrimitiveType.prototype.create_ui = function()
 	return inp;
 };
 
-MeshPrimitiveType.prototype.update_output = function(slot)
+MeshPrimitiveType.prototype.update_output = function()
 {
 	return this.state.type;
 };

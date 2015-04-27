@@ -25,6 +25,36 @@ ColorPicker.prototype.create_ui = function()
 	var s = this.s = make('img');
 	var h = this.h = make('img');
 	var hs = this.hs = make('img');
+	var that = this
+
+	function onMouseDown() {
+		E2.app.undoManager.begin('Pick color')
+		that._mouseDownValue = { hue: that.state.hue, sat: that.state.sat, lum: that.state.lum }
+		console.log('mdv', that._mouseDownValue)
+	}
+
+	function onMouseUp() {
+		console.log('up', that.state)
+		if (that._mouseDownValue.hue !== that.state.hue)
+			that.undoableSetState('hue',
+				that.state.hue,
+				that._mouseDownValue.hue
+			)
+
+		if (that._mouseDownValue.sat !== that.state.sat)
+			that.undoableSetState('sat',
+				that.state.sat,
+				that._mouseDownValue.sat
+			)
+
+		if (that._mouseDownValue.lum !== that.state.lum)
+			that.undoableSetState('lum',
+				that.state.lum,
+				that._mouseDownValue.lum
+			)
+
+		E2.app.undoManager.end()
+	}
 
 	c.css({
 		'width': '130px',
@@ -84,6 +114,7 @@ ColorPicker.prototype.create_ui = function()
 
 	var c_down = function(self, c, i, s) { return function(e) 
 	{ 
+		onMouseDown()
 		self.color_drag = true;
 		self.update_picker_ev(e, c, s, i);
 	}}(this, c, i, s);
@@ -92,6 +123,7 @@ ColorPicker.prototype.create_ui = function()
 	{ 
 		e.preventDefault(); 
 		self.color_drag = false;
+		onMouseUp()
 	}}(this);
 
 	var c_move = function(self, c, i, s) { return function(e)
@@ -110,6 +142,7 @@ ColorPicker.prototype.create_ui = function()
 
 	var h_down = function(self, ui, i, h, hs) { return function(e) 
 	{ 
+		onMouseDown()
 		e.preventDefault(); 
 		self.hue_drag = true;
 		self.update_hue_ev(ui, e, i, h, hs);
@@ -119,6 +152,7 @@ ColorPicker.prototype.create_ui = function()
 	{
 		e.preventDefault();
 		self.hue_drag = false;
+		onMouseUp()
 	}}(this);
 
 	var h_move = function(self, ui, i, h, hs) { return function(e)
@@ -165,6 +199,7 @@ ColorPicker.prototype.update_value = function(c)
 		rgb[0] = nc[0];
 		rgb[1] = nc[1];
 		rgb[2] = nc[2];
+
 		this.updated = true;
 	}
 	
@@ -172,8 +207,7 @@ ColorPicker.prototype.update_value = function(c)
 		c.css('background-color', 'rgb(' + cnv2(0) + ', ' + cnv2(1) + ', ' + cnv2(2) + ')');
 };
 
-ColorPicker.prototype.update_picker_ev = function(e, c, s, i)
-{
+ColorPicker.prototype.update_picker_ev = function(e, c, s, i) {
 	e.preventDefault();
 
 	if(!this.color_drag || this.color_clipped)
@@ -182,18 +216,12 @@ ColorPicker.prototype.update_picker_ev = function(e, c, s, i)
 	var i_o = i.offset();
 	var st = this.state;
 	
-	var sat = (e.pageX - i_o.left) / 100.0;
-	var lum = 1.0 - ((e.pageY - i_o.top) / 100.0);
+	st.sat = (e.pageX - i_o.left) / 100.0;
+	st.lum = 1.0 - ((e.pageY - i_o.top) / 100.0);
 	
-	E2.app.undoManager.begin('Pick color')
-	this.undoableSetState('sat',
-		sat < 0.0 ? 0.0 : sat > 1.0 ? 1.0 : sat,
-		this.state.sat)
-	this.undoableSetState('lum',
-		lum < 0.0 ? 0.0 : lum > 1.0 ? 1.0 : lum,
-		this.state.lum)
-	E2.app.undoManager.end()
-
+	st.sat = st.sat < 0.0 ? 0.0 : st.sat > 1.0 ? 1.0 : st.sat;
+	st.lum = st.lum < 0.0 ? 0.0 : st.lum > 1.0 ? 1.0 : st.lum;
+	
 	this.update_picker(c, s);
 };
 
@@ -212,10 +240,8 @@ ColorPicker.prototype.update_hue_ev = function(ui, e, i, h, hs)
 	if(!this.hue_drag || this.hue_clipped)
 		return;
 
-	this.undoableSetState('hue',
-		(e.pageY - h.offset().top) / 100.0,
-		this.state.hue,
-		'Change hue')
+	this.state.hue = (e.pageY - h.offset().top) / 100.0
+	this.update_hue(ui, i, h, hs);
 };
 
 ColorPicker.prototype.update_hue = function(ui, i, h, hs)

@@ -1,5 +1,7 @@
-E2.p = E2.plugins["texture_wrap_generator"] = function(core, node)
+(function(){
+var TextureWrap = E2.plugins["texture_wrap_generator"] = function(core, node)
 {
+	AbstractPlugin.apply(this, arguments)
 	this.desc = 'Emits a texture UV coordinate wrapping type.';
 	
 	this.input_slots = [];
@@ -12,12 +14,13 @@ E2.p = E2.plugins["texture_wrap_generator"] = function(core, node)
 	
 	this.state = { type: this.gl.REPEAT };
 };
+TextureWrap.prototype = Object.create(AbstractPlugin.prototype)
 
-E2.p.prototype.reset = function()
+TextureWrap.prototype.reset = function()
 {
 };
 
-E2.p.prototype.create_ui = function()
+TextureWrap.prototype.create_ui = function()
 {
 	var inp = $('<select />', { selectedIndex: 1 });
 	
@@ -26,21 +29,20 @@ E2.p.prototype.create_ui = function()
 	 
 	inp.change(function(self) { return function() 
 	{
-		self.state.type = parseInt(inp.val());
-		self.state_changed(inp);
-		self.updated = true;
+		self.undoableSetState('type', inp.val(), self.state.type)
 	}}(this));
 	
 	return inp;
 };
 
-E2.p.prototype.update_output = function(slot)
+TextureWrap.prototype.update_output = function(slot)
 {
 	return this.state.type;
 };
 
-E2.p.prototype.state_changed = function(ui)
+TextureWrap.prototype.state_changed = function(ui)
 {
 	if(ui)
 		ui.val('' + this.state.type);
 };
+})();
