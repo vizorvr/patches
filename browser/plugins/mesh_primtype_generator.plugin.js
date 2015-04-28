@@ -1,7 +1,7 @@
 (function(){
 var MeshPrimitiveType = E2.plugins["mesh_primtype_generator"] = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Select mesh primitive type.';
 	
 	this.input_slots = [];
@@ -14,7 +14,7 @@ var MeshPrimitiveType = E2.plugins["mesh_primtype_generator"] = function(core, n
 	
 	this.state = { type: this.gl.TRIANGLES };
 };
-MeshPrimitiveType.prototype = Object.create(AbstractPlugin.prototype)
+MeshPrimitiveType.prototype = Object.create(Plugin.prototype)
 
 MeshPrimitiveType.prototype.reset = function()
 {
@@ -40,7 +40,7 @@ MeshPrimitiveType.prototype.create_ui = function()
 	return inp;
 };
 
-MeshPrimitiveType.prototype.update_output = function(slot)
+MeshPrimitiveType.prototype.update_output = function()
 {
 	return this.state.type;
 };

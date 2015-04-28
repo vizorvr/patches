@@ -1,6 +1,6 @@
 (function() {
 var Label = E2.plugins.label_generator = function(core, node) {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Emits a string specified in an input field.';
 	
 	this.input_slots = [];
@@ -13,7 +13,7 @@ var Label = E2.plugins.label_generator = function(core, node) {
 	this.core = core;
 	this.node = node;
 };
-Label.prototype = Object.create(AbstractPlugin.prototype)
+Label.prototype = Object.create(Plugin.prototype)
 
 Label.prototype.reset = function()
 {

@@ -1,7 +1,7 @@
 (function() {
 
 var UrlJson = E2.plugins["url_json_generator"] = function(core, node) {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Load JSON as an object from an URL. Hover over the Source button to see the url of the current file.';
 	
 	this.input_slots = [
@@ -17,7 +17,7 @@ var UrlJson = E2.plugins["url_json_generator"] = function(core, node) {
 	this.object = {};
 	this.dirty = false;
 }
-UrlJson.prototype = Object.create(AbstractPlugin.prototype)
+UrlJson.prototype = Object.create(Plugin.prototype)
 
 UrlJson.prototype.create_ui = function() {
 	var inp = makeButton('Source', 'No JSON selected.', 'url');

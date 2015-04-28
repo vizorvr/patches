@@ -1,14 +1,14 @@
 (function(){
 var TweenIn = E2.plugins["tween_in_modulator"] = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Perform tween in over time.';
 	this.input_slots = [ { name: 'time', dt: core.datatypes.FLOAT, desc: 'Time ranging from zero to one.', def: 0.0, lo: 0, hi: 1 } ];
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT, desc: 'Emits a tween in over <b>time</b>.', def: 0.0 } ];
 
 	this.state = { type: 0 };
 };
-TweenIn.prototype = Object.create(AbstractPlugin.prototype)
+TweenIn.prototype = Object.create(Plugin.prototype)
 
 TweenIn.prototype.create_ui = function()
 {

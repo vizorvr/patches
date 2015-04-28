@@ -249,7 +249,6 @@ AbstractSubGraphPlugin.prototype.setGraph = function(graph) {
 	var node = this.parent_node
 	
 	this.graph = graph
-	this.graph.plugin = this
 
 	this.graph
 	.on('nodeAdded', function(addedNode) {

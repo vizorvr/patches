@@ -1,7 +1,7 @@
 (function() {
 var UrlArray = E2.plugins["url_array_generator"] = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Load arbitrary data packed in an PNG from an URL.';
 	
 	this.input_slots = [];
@@ -16,7 +16,7 @@ var UrlArray = E2.plugins["url_array_generator"] = function(core, node)
 	this.array = null;
 	this.dirty = false;
 };
-UrlArray.prototype = Object.create(AbstractPlugin.prototype)
+UrlArray.prototype = Object.create(Plugin.prototype)
 
 UrlArray.prototype.reset = function()
 {

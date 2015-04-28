@@ -108,8 +108,13 @@ EditConnection.prototype.commit = function() {
 	if (!this.isConnectable())
 		return;
 
-	return this.graphApi.connect(E2.core.active_graph, this.srcNode, this.dstNode,
-		this.srcSlot, this.dstSlot, this.offset)
+	this.connection.src_node = this.srcNode
+	this.connection.dst_node = this.dstNode
+	this.connection.src_slot = this.srcSlot
+	this.connection.dst_slot = this.dstSlot
+
+	return this.graphApi.connect(E2.core.active_graph,
+		this.connection)
 }
 
 if (typeof(module) !== 'undefined')

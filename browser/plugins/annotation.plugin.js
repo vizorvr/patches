@@ -1,6 +1,6 @@
 (function(){
 Annotation = E2.plugins.annotation = function() {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Add textual hints to the graph.';
 	
 	this.input_slots = [];
@@ -9,7 +9,7 @@ Annotation = E2.plugins.annotation = function() {
 	
 	this.state = { text: '', width: 0, height: 0 };
 };
-Annotation.prototype = Object.create(AbstractPlugin.prototype)
+Annotation.prototype = Object.create(Plugin.prototype)
 
 Annotation.prototype.create_ui = function() {
 	var that = this

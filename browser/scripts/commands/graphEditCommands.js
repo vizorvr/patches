@@ -12,15 +12,20 @@ GraphEditCommand.prototype.execute = function() {
 
 // -------------------------------
 
-function addNode() {
-	var node = this.graph.addNode(this.node)
-	node.inputs.concat(node.outputs).map(function(conn) {
-		// as a side-effect of adding a node eg. from an undo
-		// all its existing connections are re-added
-		this.graph.addConnection(conn)
-	}.bind(this))
+function removeNode() {
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiNodeRemoved',
+		graph: this.graph, 
+		node: this.node
+	})
+}
 
-	return node
+function addNode() {
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiNodeAdded',
+		graph: this.graph,
+		node: this.node
+	})
 }
 
 function AddNode(graph, node) {
@@ -33,16 +38,6 @@ AddNode.prototype.undo = removeNode
 AddNode.prototype.redo = addNode
 
 // -------------------------------
-
-function removeNode() {
-	var node = this.node
-	node.inputs.concat(node.outputs).map(function(conn) {
-		// as a side-effect of removing a node, all its connections
-		// get removed
-		this.graph.disconnect(conn)
-	}.bind(this))
-	return this.graph.removeNode(this.node)
-}
 
 function RemoveNode(graph, node) {
 	GraphEditCommand.apply(this, arguments)
@@ -64,36 +59,47 @@ function RenameNode(graph, node, title) {
 }
 RenameNode.prototype = Object.create(GraphEditCommand.prototype)
 RenameNode.prototype.undo = function() {
-	this.graph.renameNode(this.node, this.origNodeTitle)
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiNodeRenamed',
+		graph: this.graph,
+		node: this.node,
+		title: this.origNodeTitle
+	})
 }
 
 RenameNode.prototype.redo = function() {
-	this.graph.renameNode(this.node, this.newNodeTitle)
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiNodeRenamed',
+		graph: this.graph,
+		node: this.node,
+		title: this.newNodeTitle
+	})
 }
 
 
 // -------------------------------
 
-function Connect(graph, srcNode, dstNode, srcSlot, dstSlot, offset) {
+function Connect(graph, connection) {
 	GraphEditCommand.apply(this, arguments)
 	this.title = 'Connect'
-	this.srcNode = srcNode
-	this.dstNode = dstNode
-	this.srcSlot = srcSlot
-	this.dstSlot = dstSlot
-	this.offset = offset
+	this.connection = connection
 }
 Connect.prototype = Object.create(GraphEditCommand.prototype)
 
 Connect.prototype.undo = function() {
-	return this.graph.disconnect(this.connection)
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiDisconnected',
+		graph: this.graph,
+		connection: this.connection
+	})
 }
 
 Connect.prototype.redo = function() {
-	this.connection = this.graph.connect(this.offset,
-		this.srcNode, this.dstNode, this.srcSlot, this.dstSlot)
-
-	return this.connection
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiConnected',
+		graph: this.graph,
+		connection: this.connection
+	})
 }
 
 // -------------------------------
@@ -106,6 +112,12 @@ function Disconnect(graph, connection) {
 Disconnect.prototype = Object.create(GraphEditCommand.prototype)
 
 Disconnect.prototype.undo = function() {
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiConnected',
+		graph: this.graph,
+		connection: this.connection
+	})
+/*
 	this.connection = this.graph.connect(this.offset,
 		this.connection.src_node, 
 		this.connection.dst_node,
@@ -113,10 +125,15 @@ Disconnect.prototype.undo = function() {
 		this.connection.dst_slot)
 
 	return this.connection
+*/
 }
 
 Disconnect.prototype.redo = function() {
-	return this.graph.disconnect(this.connection)
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiDisconnected', 
+		graph: this.graph,
+		connection: this.connection
+	})
 }
 
 // -------------------------------

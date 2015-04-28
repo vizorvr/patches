@@ -1,7 +1,7 @@
 (function() {
 
 var UrlVideo = E2.plugins["url_video_generator"] = function UrlVideo(core, node) {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Load a Ogg/Theora video from an URL.';
 	
 	this.input_slots = [
@@ -19,7 +19,7 @@ var UrlVideo = E2.plugins["url_video_generator"] = function UrlVideo(core, node)
 	this.video = null;
 	this.dirty = false;
 }
-UrlVideo.prototype = Object.create(AbstractPlugin.prototype)
+UrlVideo.prototype = Object.create(Plugin.prototype)
 
 UrlVideo.prototype.reset = function() {}
 

@@ -1,6 +1,6 @@
 (function() {
 var ColorPicker = E2.plugins.color_picker = function(core) {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Provides an intuitive way of picking arbitary colors via a hue slider and saturation / luminosity selection area.';
 	
 	this.input_slots = [];
@@ -12,7 +12,7 @@ var ColorPicker = E2.plugins.color_picker = function(core) {
 	this.state = { hue: 0.0, sat: 0.0, lum: 1.0 };
 };
 
-ColorPicker.prototype = Object.create(AbstractPlugin.prototype)
+ColorPicker.prototype = Object.create(Plugin.prototype)
 
 ColorPicker.prototype.reset = function()
 {
@@ -230,7 +230,7 @@ ColorPicker.prototype.update_picker = function(c, s)
 	s.css('left', Math.floor((this.state.sat * 100.0)) - 5);
 	s.css('top', Math.floor((1.0 - this.state.lum) * 100.0) - 5);
 
-	this.update_value(c);
+	// this.update_value(c);
 };
 
 ColorPicker.prototype.update_hue_ev = function(ui, e, i, h, hs)

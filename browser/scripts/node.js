@@ -1,8 +1,9 @@
 function Node(parent_graph, plugin_id, x, y) {
-	this.inputs = [];
-	this.outputs = [];
-	this.dyn_slot_uid = 0;
-	this.queued_update = -1;
+	this.inputs = []
+	this.outputs = []
+	this.queued_update = -1
+
+	this.uid = E2.core.get_uid()
 
 	if (plugin_id) { // Don't initialise if we're loading.
 		this.parent_graph = parent_graph;
@@ -10,7 +11,6 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.y = y;
 		this.ui = null;
 		this.id = E2.app.player.core.pluginManager.keybyid[plugin_id];
-		this.uid = parent_graph.get_node_uid();
 		this.update_count = 0;
 		this.title = null;
 		this.inputs_changed = false;
@@ -109,7 +109,7 @@ Node.prototype.geometry_updated = function()
 };
 
 Node.prototype.add_slot = function(slot_type, def) {
-	var suid = this.dyn_slot_uid++;
+	var suid = E2.core.get_uid()
 
 	var is_inp = slot_type === E2.slot_type.input;
 	def.uid = suid;
@@ -383,7 +383,7 @@ Node.prototype.update_recursive = function(conns) {
 	return dirty;
 }
 
-Node.prototype.serialise = function()
+Node.prototype.serialise = function(flat)
 {
 	var d = {};
 	
@@ -395,16 +395,13 @@ Node.prototype.serialise = function()
 	if(!this.open)
 		d.open = this.open;
 	
-	if(this.dyn_slot_uid)
-		d.dsid = this.dyn_slot_uid;
-	
 	if(this.plugin.state)
 		d.state = this.plugin.state;
 
 	if(this.title)
 		d.title = this.title;
 	
-	if(this.plugin.isGraph)
+	if (!flat && this.plugin.isGraph)
 		d.graph = this.plugin.graph.serialise();
 	
 	if(this.dyn_inputs || this.dyn_outputs)
@@ -438,9 +435,6 @@ Node.prototype.deserialise = function(guid, d) {
 	this.id = E2.app.player.core.pluginManager.keybyid[d.plugin];
 	this.uid = d.uid;
 	this.open = d.open !== undefined ? d.open : true;
-	
-	if (d.dsid)
-		this.dyn_slot_uid = d.dsid;
 	
 	this.title = d.title ? d.title : null;
 	
@@ -492,16 +486,33 @@ Node.prototype.deserialise = function(guid, d) {
 			patch_slot(this.dyn_outputs, E2.slot_type.output);
 		}
 	}
-	
+
 	return true;
 };
 
 Node.prototype.patch_up = function(graphs) {
-	if (this.parent_graph instanceof Graph)
-		return;
+	if (!(this.parent_graph instanceof Graph))
+		this.parent_graph = Graph.resolve_graph(graphs, this.parent_graph);
 
-	this.parent_graph = Graph.resolve_graph(graphs, this.parent_graph);
+	function initStructure(pg, n) {
+		n.parent_graph = pg
 
+		if (!n.plugin.isGraph)
+			return;
+
+		if (n.plugin.graph.uid === undefined)
+			n.plugin.graph.uid = E2.core.get_uid()
+
+		n.plugin.graph.parent_graph = pg
+
+		var nodes = n.plugin.graph.nodes
+		
+		for(var i = 0, len = nodes.length; i < len; i++)
+			initStructure(n.plugin.graph, nodes[i])
+	}
+
+	initStructure(this.parent_graph, this)
+	
 	if(this.plugin.isGraph)
 		this.plugin.graph.patch_up(graphs);
 };

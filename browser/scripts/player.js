@@ -18,7 +18,7 @@ function Player(vr_devices, canvas, root_node, cb)
 	this.frames = 0;
 	this.scheduled_stop = null;
 	
-	this.core.active_graph = this.core.root_graph = new Graph(this.core);
+	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, 0);
 	this.core.graphs.push(this.core.root_graph);
 	
 	this.play = function()
@@ -33,7 +33,7 @@ function Player(vr_devices, canvas, root_node, cb)
 	{
 		self.current_state = self.state.PAUSED;
 		
-		if(self.interval != null)
+		if(self.interval !== null)
 		{
 			cancelAnimFrame(self.interval);
 			self.interval = null;
@@ -49,7 +49,7 @@ function Player(vr_devices, canvas, root_node, cb)
 	
 	this.stop = function()
 	{
-		if(self.interval != null)
+		if(self.interval !== null)
 		{
 			cancelAnimFrame(self.interval);
 			self.interval = null;

@@ -1,9 +1,9 @@
-function AbstractPlugin(core, node) {
+function Plugin(core, node) {
 	this.core = core
 	this.node = node
 }
 
-AbstractPlugin.prototype.undoableSetState = function(key, newValue, oldValue) {
+Plugin.prototype.undoableSetState = function(key, newValue, oldValue) {
 	E2.app.undoManager.execute(
 		new E2.commands.graph.ChangePluginState(
 			this.node.parent_graph,
@@ -14,5 +14,3 @@ AbstractPlugin.prototype.undoableSetState = function(key, newValue, oldValue) {
 	))
 }
 
-if (typeof(module) !== 'undefined')
-	module.exports = AbstractPlugin

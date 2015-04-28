@@ -104,6 +104,7 @@ function NodeUI(parent_node, x, y) {
 	
 	s.left = '' + x + 'px';
 	s.top = '' + y + 'px';
+
 	E2.dom.canvas_parent.append(dom);
 }
 

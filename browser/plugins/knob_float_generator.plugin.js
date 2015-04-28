@@ -1,6 +1,6 @@
 (function() {
 var Knob = E2.plugins.knob_float_generator = function(core, node) {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 
 	this.desc = 'Emits a user controllable float value between 0 and 1.';
 	
@@ -14,7 +14,7 @@ var Knob = E2.plugins.knob_float_generator = function(core, node) {
 	this.knob = null;
 };
 
-Knob.prototype = Object.create(AbstractPlugin.prototype)
+Knob.prototype = Object.create(Plugin.prototype)
 
 Knob.prototype.reset = function()
 {

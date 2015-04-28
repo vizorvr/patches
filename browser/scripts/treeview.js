@@ -4,7 +4,7 @@ function TreeNode(tree, parent_node, title, graph)
 	this.parent_node = parent_node;
 	this.title = title;
 	this.graph = graph;
-	graph.tree_node = this;
+	this.graph.tree_node = this;
 	this.children = [];
 	this.dom = this.label = null;
 	this.selected = false;
@@ -31,6 +31,8 @@ TreeNode.prototype.remove = function()
 		this.dom.remove();
 	
 	pc.splice(pc.indexOf(this), 1);
+
+	this.graph.tree_node = null;
 };
 
 TreeNode.prototype.remove_children = function(title)

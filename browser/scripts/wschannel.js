@@ -31,8 +31,7 @@ WebSocketChannel.prototype.connect = function()
 		that._state = 'disconnected';
 	};
 
-	this.ws.onmessage = function(evt)
-	{
+	this.ws.onmessage = function(evt) {
 		var m = JSON.parse(evt.data);
 		console.log('IN:', m);
 

@@ -20,9 +20,8 @@ GraphApi.prototype.renameNode = function(graph, node, title) {
 	return this.undoManager.execute(cmd)
 }
 
-GraphApi.prototype.connect = function(graph, srcNode, dstNode, srcSlot, dstSlot, offset) {
-	offset = offset || 0
-	var cmd = new E2.commands.graph.Connect(graph, srcNode, dstNode, srcSlot, dstSlot, offset)
+GraphApi.prototype.connect = function(graph, connection) {
+	var cmd = new E2.commands.graph.Connect(graph, connection)
 	return this.undoManager.execute(cmd)
 }
 

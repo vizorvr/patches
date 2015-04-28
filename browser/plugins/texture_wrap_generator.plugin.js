@@ -1,7 +1,7 @@
 (function(){
 var TextureWrap = E2.plugins["texture_wrap_generator"] = function(core, node)
 {
-	AbstractPlugin.apply(this, arguments)
+	Plugin.apply(this, arguments)
 	this.desc = 'Emits a texture UV coordinate wrapping type.';
 	
 	this.input_slots = [];
@@ -14,7 +14,7 @@ var TextureWrap = E2.plugins["texture_wrap_generator"] = function(core, node)
 	
 	this.state = { type: this.gl.REPEAT };
 };
-TextureWrap.prototype = Object.create(AbstractPlugin.prototype)
+TextureWrap.prototype = Object.create(Plugin.prototype)
 
 TextureWrap.prototype.reset = function()
 {

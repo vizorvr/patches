@@ -1,4 +1,4 @@
-function Graph(core, parent_graph) {
+function Graph(core, parent_graph, uid) {
 	EventEmitter.call(this)
 
 	this.nodes = [];
@@ -6,17 +6,18 @@ function Graph(core, parent_graph) {
 	this.core = core;
 	this.registers = new Registers(core);
 
-	this.uid = this.core.get_graph_uid();
 	this.parent_graph = parent_graph;
 	this.roots = [];
 	this.children = [];
 	this.node_uid = 0;
+
+	this.uid = (uid !== undefined) ? uid : this.core.get_uid();
 }
 
 Graph.prototype = Object.create(EventEmitter.prototype)
 
 Graph.prototype.get_node_uid = function() {
-	return this.node_uid++;
+	return E2.core.get_uid()
 }
 
 Graph.prototype.update = function() {
@@ -98,33 +99,34 @@ Graph.prototype.stop = function() {
 Graph.prototype.addNode = function(n) {
 	this.registerNode(n)
 
-	this.emit('changed')
-	this.emit('nodeAdded', n)
+	// this.emit('changed')
+	// this.emit('nodeAdded', n)
 
 	return n
 }
 
 Graph.prototype.registerNode = function(n) {
 	this.nodes.push(n)
-	
+
 	if(this.nuid_lut)
 		this.nuid_lut[n.uid] = n
 	
 	if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
 		this.roots.push(n)
-	else if(n.plugin.isGraph) {
+	
+	if(n.plugin.isGraph) {
 		this.children.push(n)
 		E2.core.graphs.push(n.plugin.graph)
 	}
 
-	n.patch_up(E2.core.graphs)
+	// n.patch_up(E2.core.graphs)
 
 	return n
 }
 
 Graph.prototype.removeNode = function(node) {
 	function nodeFilter(fnode) {
-		return node !== fnode
+		return node.uid !== fnode.uid
 	}
 
 	this.nodes = this.nodes.filter(nodeFilter);
@@ -134,18 +136,21 @@ Graph.prototype.removeNode = function(node) {
 	
 	if (node.plugin.output_slots.length === 0 && !node.dyn_outputs) 
 		this.roots = this.roots.filter(nodeFilter);
-	else if(node.plugin.isGraph)
+	
+	if (node.plugin.isGraph) {
 		this.children = this.children.filter(nodeFilter);
+		E2.core.graphs = E2.core.graphs.filter(nodeFilter)
+	}
 
-	this.emit('changed')
-	this.emit('nodeRemoved', node)
+	// this.emit('changed')
+	// this.emit('nodeRemoved', node)
 
 	return node
 }
 
 Graph.prototype.renameNode = function(node, title) {
 	node.title = title
-	this.emit('nodeRenamed', node)
+	// this.emit('nodeRenamed', node)
 }
 
 Graph.prototype.addConnection = function(connection) {
@@ -159,16 +164,14 @@ Graph.prototype.addConnection = function(connection) {
 	connection.src_slot.is_connected = true
 	connection.dst_slot.is_connected = true
 
-	this.emit('connected', connection)
-	this.emit('changed')
+	// this.emit('connected', connection)
+	// this.emit('changed')
 
 	return connection
 }
 
-Graph.prototype.connect = function(offset, srcNode, destNode, ss, ds) {
-	var c = new Connection(srcNode, destNode, ss, ds)
-	c.offset = offset
-	return this.addConnection(c)
+Graph.prototype.connect = function(connection) {
+	return this.addConnection(connection)
 }
 
 Graph.prototype.disconnect = function(c) {
@@ -194,8 +197,8 @@ Graph.prototype.disconnect = function(c) {
 			slots.splice(index, 1)
 	}
 
-	this.emit('disconnected', c)
-	this.emit('changed')
+	// this.emit('disconnected', c)
+	// this.emit('changed')
 }
 
 Graph.prototype.create_ui = function() {
@@ -234,8 +237,7 @@ Graph.prototype.find_connection_to = function(node, slot) {
 	
 	var uid = node.uid;
 
-	return this.connections.filter(function(c)
-	{
+	return this.connections.filter(function(c) {
 		return (c.dst_node.uid === uid && c.dst_slot === slot);
 	})[0];
 }
@@ -301,10 +303,8 @@ Graph.prototype.deserialise = function(d) {
 }
 
 Graph.prototype.patch_up = function(graphs) {
-	if (this.parent_graph instanceof Graph)
-		return;
-
-	this.parent_graph = Graph.resolve_graph(graphs, this.parent_graph);
+	if (!(this.parent_graph instanceof Graph))
+		this.parent_graph = Graph.resolve_graph(graphs, this.parent_graph);
 
 	var nodes = this.nodes,
 	    conns = this.connections;
@@ -362,8 +362,10 @@ Graph.resolve_graph = function(graphs, guid) {
 			return graphs[i]
 	}
 
-	if (guid !== -1)
+	if (guid !== -1) {
 		msg('ERROR: Failed to resolve graph(' + guid + ')')
+		debugger;
+	}
 	
 	return null;
 }
