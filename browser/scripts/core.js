@@ -36,7 +36,7 @@ E2.COLOR_COMPATIBLE_SLOT = '#080';
 (function() {
 var i = 0
 E2.uid = function() {
-	return parseInt(Date.now() + '' + i++)
+	return parseInt(Date.now() + '' + i++, 10)
 }
 })()
 
@@ -164,7 +164,7 @@ function Core(vr_devices) {
 }
 
 Core.prototype.get_uid = function() {
-	return parseInt(Date.now() + '' + this.uidCounter++, 10)
+	return E2.uid()
 }
 
 Core.prototype.update = function(abs_t, delta_t)
@@ -325,11 +325,9 @@ Core.prototype.rebuild_structure_tree = function() {
 		
 		if (graph.parent_graph) {
 			var ptn = graph.parent_graph.tree_node;
-			var tnode = new TreeNode(ptn.tree, ptn, name, null);
+			var tnode = new TreeNode(ptn.tree, ptn, name, graph);
 			
 			ptn.children.push(tnode);
-			graph.tree_node = tnode;
-			tnode.graph = graph;
 		}
 		
 		for(var i = 0, len = nodes.length; i < len; i++) {

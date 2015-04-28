@@ -126,9 +126,11 @@ console.log('new TreeView', root_graph)
 	this.on_rearrange = on_rearrange;
 	this.root = new TreeNode(this, null, 'Root', root_graph);
 	
-	root_graph.tree_node = this.root
-	
 	this.reset();
+
+	if (root_graph)
+		root_graph.tree_node = this.root
+	
 	this.parent.append(this.root.dom);
 }
 
@@ -143,7 +145,7 @@ console.trace('tv reset')
 	this.drag_indicator = null;
 	this.selected_node = null;
 	this.insert_after = false;
-	// this.root.graph = null;
+	this.root.graph = null;
 	this.root.selected = false;
 	
 	this.root.rebuild_dom();
@@ -211,8 +213,11 @@ TreeView.prototype.on_mouse_up = function()
 		{
 			var original = this.drag_node.graph.plugin.parent_node;
 			var sibling = this.drag_tgt_node.graph.plugin.parent_node;
-			
-			this.on_rearrange(this.drag_node.parent_node.graph, original, sibling, this.insert_after);
+
+			this.on_rearrange(this.drag_node.parent_node.graph,
+				original,
+				sibling,
+				this.insert_after);
 		}
 	}
 	else if(this.drag_indicator)
