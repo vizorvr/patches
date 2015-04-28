@@ -24,19 +24,27 @@ function GraphStore() {
 GraphStore.prototype = Object.create(Store.prototype)
 
 GraphStore.prototype.setupListeners = function() {
+/*
 	E2.app.channel.on('nodeAdded', function nodeAdded(guid, node) {
 		var graph = graphLookup(guid)
 		var inode = new Node()
 		inode.deserialise(guid, node)
-		// debugger;
 		graph.addNode(inode)
 		inode.patch_up(E2.core.graphs)
 		this.emit('nodeAdded', graph, inode)
 	}.bind(this))
-
+*/
 	E2.app.dispatcher.register(function receiveFromDispatcher(payload) {
 		console.log('GraphStore received',payload)
+
 		switch(payload.actionType) {
+			case 'uiGraphTreeReordered':
+				this.uiGraphTreeReordered(
+					payload.graph,
+					payload.original,
+					payload.sibling,
+					payload.insertAfter)
+				break;
 			case 'uiNodeAdded':
 				this.uiNodeAdded(payload.graph, payload.node)
 				break;
@@ -54,6 +62,12 @@ GraphStore.prototype.setupListeners = function() {
 				break;
 		}
 	}.bind(this))
+}
+
+GraphStore.prototype.uiGraphTreeReordered = function(graph, original, sibling, insertAfter) {
+	graph.reorder_children(original, sibling, insertAfter)
+	this.publish('reordered', graph)
+	this.emit('changed')
 }
 
 GraphStore.prototype.uiNodeAdded = function(graph, node) {
@@ -88,7 +102,7 @@ GraphStore.prototype.uiConnected = function(graph, connection) {
 }
 
 GraphStore.prototype.uiDisconnected = function(graph, connection) {
-	graph.connect(connection)
+	graph.disconnect(connection)
 	this.publish('disconnected', graph, connection)
 	this.emit('changed')
 }

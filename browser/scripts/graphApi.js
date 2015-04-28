@@ -35,5 +35,10 @@ GraphApi.prototype.move = function(graph, nodes, dx, dy) {
 	return this.undoManager.execute(cmd)
 }
 
+GraphApi.prototype.reorder = function(graph, original, sibling, insertAfter) {
+	var cmd = new E2.commands.graph.Reorder(graph, original, sibling, insertAfter)
+	return this.undoManager.execute(cmd)
+}
+
 if (typeof(module) !== 'undefined')
 	module.exports = GraphApi

@@ -16,7 +16,8 @@ function removeNode() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiNodeRemoved',
 		graph: this.graph, 
-		node: this.node
+		node: this.node,
+		index: this.graph.nodes.indexOf(this.node)
 	})
 }
 
@@ -164,6 +165,38 @@ Move.prototype.redo = function() {
 
 // -------------------------------
 
+function Reorder(graph, original, sibling, insertAfter) {
+	GraphEditCommand.apply(this, arguments)
+	console.log('Reorder', arguments)
+	this.title = 'Reorder'
+	this.original = original
+	this.sibling = sibling
+	this.insertAfter = insertAfter
+}
+Reorder.prototype = Object.create(GraphEditCommand.prototype)
+
+Reorder.prototype.undo = function() {
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiGraphTreeReordered',
+		graph: this.graph,
+		original: this.sibling,
+		sibling: this.original,
+		insertAfter: this.insertAfter
+	})
+}
+
+Reorder.prototype.redo = function() {
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiGraphTreeReordered',
+		graph: this.graph,
+		original: this.original,
+		sibling: this.sibling,
+		insertAfter: this.insertAfter
+	})
+}
+
+// -------------------------------
+
 function ChangePluginState(graph, node, key, oldValue, newValue, title) {
 	GraphEditCommand.apply(this, arguments)
 	this.title = title || 'Value Change'
@@ -222,6 +255,7 @@ if (typeof(E2) !== 'undefined') {
 	E2.commands.graph.Connect = Connect
 	E2.commands.graph.Disconnect = Disconnect
 	E2.commands.graph.Move = Move
+	E2.commands.graph.Reorder = Reorder
 
 	E2.commands.graph.ChangePluginState = ChangePluginState
 }

@@ -341,6 +341,8 @@ Graph.prototype.getTitle = function() {
 }
 
 Graph.prototype.reorder_children = function(original, sibling, insert_after) {
+	console.log("reorder_children", original, sibling, insert_after)
+
 	function reorder(arr) {
 		arr.remove(original);
 		

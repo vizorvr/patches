@@ -1,10 +1,9 @@
 
-function EditorChannel(app) {
+function EditorChannel() {
 	EventEmitter.call(this)
 
-	var that = this
-	this.api = app.graphApi
 /*
+	var that = this
 	wsChannel
 		.join('__editor__')
 		.on('*', function(m) {

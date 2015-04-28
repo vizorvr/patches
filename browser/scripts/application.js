@@ -1687,6 +1687,9 @@ Application.prototype.start = function() {
 	.on('nodeRenamed', onNodeRenamed.bind(this))
 	.on('connected', onConnected.bind(this))
 	.on('disconnected', onDisconnected.bind(this))
+	.on('reordered', function() {
+		E2.core.rebuild_structure_tree()
+	})
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 
@@ -1842,8 +1845,6 @@ E2.InitialiseEngi = function(vr_devices) {
 	E2.core = new Core(vr_devices)
 	E2.app = new Application()
 
-	E2.app = new Application()
-
 	var player = new Player(vr_devices, E2.dom.webgl_canvas)
 
 	E2.treeView = E2.dom.structure.tree = new TreeView(
@@ -1855,9 +1856,9 @@ E2.InitialiseEngi = function(vr_devices) {
 			E2.app.onGraphSelected(graph)
 			E2.app.updateCanvas(true)
 		},
-		function(graph, original, sibling, insert_after) { // On child dropped
-			graph.reorder_children(original, sibling, insert_after)
-		})
+		// on graph reorder
+		E2.app.graphApi.reorder.bind(E2.app.graphApi)
+	)
 
 	E2.app.player = player
 
