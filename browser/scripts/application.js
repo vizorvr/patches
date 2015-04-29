@@ -599,6 +599,7 @@ Application.prototype.redrawConnection = function(connection) {
 	var cn = connection
 	var cui = cn.ui
 
+console.log('redraw', cui.src_slot_div, cui.dst_slot_div)
 	gsp(cn.src_node, cui.src_slot_div, E2.slot_type.output, cui.src_pos);
 	gsp(cn.dst_node, cui.dst_slot_div, E2.slot_type.input, cui.dst_pos);
 }
@@ -1630,14 +1631,20 @@ function onNodeRenamed(graph, node) {
 function onConnected(graph, connection) {
 	console.log('onConnected', connection, graph === E2.core.active_graph)
 
-	if (!connection.ui)
-		connection.create_ui()
+	if (graph === E2.core.active_graph) {
+		if (!connection.ui)
+			connection.create_ui()
+		connection.ui.resolve_slot_divs()
+	}
 
-	connection.ui.resolve_slot_divs()
+	connection.signal_change(true)
+
 }
 
 function onDisconnected(graph, connection) {
 	console.log('onDisconnected', connection)
+
+	connection.signal_change(false)
 
 	connection.destroy_ui()
 }

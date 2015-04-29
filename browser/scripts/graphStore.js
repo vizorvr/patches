@@ -35,7 +35,6 @@ GraphStore.prototype.setupListeners = function() {
 	}.bind(this))
 */
 	E2.app.dispatcher.register(function receiveFromDispatcher(payload) {
-		// console.log('GraphStore received',payload)
 
 		switch(payload.actionType) {
 			case 'uiGraphTreeReordered':
@@ -46,10 +45,10 @@ GraphStore.prototype.setupListeners = function() {
 					payload.insertAfter)
 				break;
 			case 'uiNodeAdded':
-				this.uiNodeAdded(payload.graph, payload.node, payload.order)
+				this.uiNodeAdded(payload.graph, payload.node, payload.info)
 				break;
 			case 'uiNodeRemoved':
-				this.uiNodeRemoved(payload.graph, payload.node)
+				this.uiNodeRemoved(payload.graph, payload.node, payload.info)
 				break;
 			case 'uiNodeRenamed':
 				this.uiNodeRenamed(payload.graph, payload.node, payload.title)
@@ -70,22 +69,34 @@ GraphStore.prototype.uiGraphTreeReordered = function(graph, original, sibling, i
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiNodeAdded = function(graph, node, order) {
-	graph.addNode(node, order)
+GraphStore.prototype.uiNodeAdded = function(graph, node, info) {
+	graph.addNode(node, info)
+
 	mapConnections(node, function(conn) {
 		graph.connect(conn)
 	})
-	this.publish('nodeAdded', graph, node)
+
+	this.publish('nodeAdded', graph, node, info)
+
+	if (info && info.proxy)
+		this.uiConnected(graph.parent_graph, info.proxy.connection)
+
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiNodeRemoved = function(graph, node) {
+GraphStore.prototype.uiNodeRemoved = function(graph, node, info) {
 	mapConnections(node, function(conn) {
 		// removing a node, all its connections should be removed
 		graph.disconnect(conn)
 	})
+
 	graph.removeNode(node)
+
+	if (info && info.proxy)
+		this.uiDisconnected(graph.parent_graph, info.proxy.connection)
+
 	this.publish('nodeRemoved', graph, node)
+
 	this.emit('changed')
 }
 

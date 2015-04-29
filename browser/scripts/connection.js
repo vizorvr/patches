@@ -8,6 +8,8 @@ function ConnectionUI(parent_conn) {
 	this.deleting = false;
 	this.parent_conn = parent_conn;
 	this.color = '#000';
+
+	// this.resolve_slot_divs()
 }
 
 ConnectionUI.prototype.resolve_slot_divs = function() {

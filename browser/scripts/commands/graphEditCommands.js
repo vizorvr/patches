@@ -16,7 +16,8 @@ function removeNode() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiNodeRemoved',
 		graph: this.graph, 
-		node: this.node
+		node: this.node,
+		info: this.nodeInfo
 	})
 }
 
@@ -25,7 +26,7 @@ function addNode() {
 		actionType: 'uiNodeAdded',
 		graph: this.graph,
 		node: this.node,
-		order: this.order
+		info: this.nodeInfo
 	})
 }
 
@@ -41,15 +42,42 @@ AddNode.prototype.redo = addNode
 // -------------------------------
 
 function RemoveNode(graph, node) {
+	var sid, connection
 	GraphEditCommand.apply(this, arguments)
 	this.node = node
 	this.title = 'Remove node ' + node.title
 
 	if (node.plugin.isGraph) {
-		this.order = [
-			graph.nodes.indexOf(node),
-			graph.children.indexOf(node)
-		]
+		this.nodeInfo = {
+			order: [ // restore in same render order
+				graph.nodes.indexOf(node),
+				graph.children.indexOf(node)
+			]
+		}
+	} else if (node.plugin.id === 'input_proxy') {
+		sid = node.parent_graph.plugin.state.input_sids[node.uid]
+		connection = node.parent_graph.plugin.node.inputs.filter(function(input) {
+			return input.dst_slot.uid === sid
+		})[0]
+
+		this.nodeInfo = {
+			proxy: {
+				sid: sid,
+				connection: connection
+			}
+		}
+	} else if (node.plugin.id === 'output_proxy') {
+		sid = node.parent_graph.plugin.state.output_sids[node.uid]
+		connection = node.parent_graph.plugin.node.outputs.filter(function(output) {
+			return output.src_slot.uid === sid
+		})[0]
+
+		this.nodeInfo = {
+			proxy: {
+				sid: sid,
+				connection: connection
+			}
+		}
 	}
 }
 RemoveNode.prototype = Object.create(GraphEditCommand.prototype)
@@ -174,7 +202,6 @@ Move.prototype.redo = function() {
 
 function Reorder(graph, original, sibling, insertAfter) {
 	GraphEditCommand.apply(this, arguments)
-	console.log('Reorder', arguments)
 	this.title = 'Reorder'
 	this.original = original
 	this.sibling = sibling

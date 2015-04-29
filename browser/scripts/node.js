@@ -109,10 +109,8 @@ Node.prototype.geometry_updated = function()
 };
 
 Node.prototype.add_slot = function(slot_type, def) {
-	var suid = E2.uid()
-
 	var is_inp = slot_type === E2.slot_type.input;
-	def.uid = suid;
+	def.uid = def.uid || E2.uid();
 	def.dynamic = true
 	
 	if (is_inp) {
@@ -138,14 +136,13 @@ Node.prototype.add_slot = function(slot_type, def) {
 		this.update_connections();
 	}
 	
-	return suid;
+	return def.uid;
 };
 
 Node.prototype.remove_slot = function(slot_type, suid)
 {
 	var is_inp = slot_type === E2.slot_type.input;
 	var slots = is_inp ? this.dyn_inputs : this.dyn_outputs;
-	
 
 	if(!slots)
 		return;
@@ -224,7 +221,6 @@ Node.prototype.remove_slot = function(slot_type, suid)
 	}
 	
 	for(var i = 0, len = pending.length; i < len; i++) {
-		pending[i].signal_change(false);
 		this.parent_graph.disconnect(pending[i]);
 	}
 		

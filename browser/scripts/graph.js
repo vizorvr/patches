@@ -96,9 +96,10 @@ Graph.prototype.stop = function() {
 	}, null);
 }
 
-Graph.prototype.addNode = function(n, index) {
-	this.registerNode(n, index)
+Graph.prototype.addNode = function(n, info) {
+	this.registerNode(n, info ? info.order : null)
 
+	this.emit('nodeAdded', n, info)
 
 	return n
 }
@@ -121,10 +122,9 @@ Graph.prototype.registerNode = function(n, order) {
 		else
 			this.children.splice(order[1], 0, n)
 
-		E2.core.graphs.push(n.plugin.graph)
+		if (E2.core.graphs.indexOf(n.plugin.graph) === -1 )
+			E2.core.graphs.push(n.plugin.graph)
 	}
-
-	this.emit('nodeAdded', n)
 
 	return n
 }

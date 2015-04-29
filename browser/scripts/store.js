@@ -2,15 +2,14 @@
 
 function serialize(objects) {
 	return objects.map(function(ob) {
+		if (!ob)
+			return ob;
+
 		if (ob instanceof Graph)
 			return ob.uid
 
-		if (typeof(ob) === 'number')
-			return ob
-
 		if (!ob.serialise) {
-			console.error('Unserializable object passed to publish', ob)
-			return;
+			return ob;
 		}
 
 		return ob.serialise()

@@ -51,7 +51,7 @@ SubGraphPlugin.prototype.connection_changed = function(on, conn, slot) {
 		var psl = null
 		var core = this.core
 		
-		if(!on) {
+		if (!on) {
 			if (slot.type === E2.slot_type.input) {
 				var inode = this.input_nodes[slot.uid]
 				
@@ -67,32 +67,36 @@ SubGraphPlugin.prototype.connection_changed = function(on, conn, slot) {
 						count++
 				}
 				
-				if(count === 0)
+				if (count === 0)
 					psl = this.output_nodes[slot.uid].dyn_inputs[0]
 			}
 
-			if(psl && !psl.connected) {
+			if (psl && !psl.connected) {
 				psl.dt = slot.dt = core.datatypes.ANY
 				this.dbg('Resetting PDT/GDT for slot(' + slot.uid + ')')
 			}
 		} else {
 			var tn = null
 			
-			if(slot.type === E2.slot_type.input) {
-				if(slot.dt === core.datatypes.ANY) {
+			if (slot.type === E2.slot_type.input) {
+				if (slot.dt === core.datatypes.ANY) {
 					slot.dt = conn.src_slot.dt
 					this.dbg('Setting GDT for slot(' + slot.uid + ') to ' + this.get_dt_name(conn.src_slot.dt))
 				}
 				
 				tn = this.input_nodes[slot.uid]
+				if (!tn)
+					return;
 				psl = tn.dyn_outputs[0]
 			} else {
-				if(slot.dt === core.datatypes.ANY) {
+				if (slot.dt === core.datatypes.ANY) {
 					slot.dt = conn.dst_slot.dt
 					this.dbg('Setting GDT for slot(' + slot.uid + ') to ' + this.get_dt_name(conn.dst_slot.dt))
 				}
 				
 				tn = this.output_nodes[slot.uid]
+				if (!tn)
+					return;
 				psl = tn.dyn_inputs[0]
 			}
 			
@@ -140,7 +144,7 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node,
 	}
 	
 	function change_slots(last, g_slot, p_slot) {
-		that.dbg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid)
+		// that.dbg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid)
 		
 		p_slot.connected = true
 		
@@ -251,21 +255,21 @@ SubGraphPlugin.prototype.setGraph = function(graph) {
 	this.graph = graph
 
 	this.graph
-	.on('nodeAdded', function(addedNode) {
+	.on('nodeAdded', function(addedNode, info) {
 		var sid
 		var pid = addedNode.plugin.id
+		var slotInfo = {
+			name: addedNode.title,
+			dt: E2.dt.ANY,
+			uid: info && info.proxy ? info.proxy.sid : null
+		}
+
 		if (pid === 'input_proxy') {
-			sid = node.add_slot(E2.slot_type.input, {
-				name: addedNode.title,
-				dt: E2.dt.ANY
-			})
+			sid = node.add_slot(E2.slot_type.input, slotInfo)
 			that.state.input_sids[addedNode.uid] = sid
 			that.input_nodes[sid] = addedNode
 		} else if (pid === 'output_proxy') {
-			sid = node.add_slot(E2.slot_type.output, {
-				name: addedNode.title,
-				dt: E2.dt.ANY
-			})
+			sid = node.add_slot(E2.slot_type.output, slotInfo)
 			that.state.output_sids[addedNode.uid] = sid
 			that.output_nodes[sid] = addedNode
 		}
@@ -278,7 +282,6 @@ SubGraphPlugin.prototype.setGraph = function(graph) {
 			that.destroy_slot(E2.slot_type.output, removedNode.uid)
 	})
 	.on('nodeRenamed', function(renamedNode) {
-		console.log('SubGraph nodeRenamed', renamedNode.plugin.id, renamedNode.title)
 		var pid = renamedNode.plugin.id
 		if (pid === 'input_proxy')
 			node.rename_slot(E2.slot_type.input, that.state.input_sids[renamedNode.uid], renamedNode.title)
