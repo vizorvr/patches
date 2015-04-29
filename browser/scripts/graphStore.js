@@ -90,7 +90,7 @@ GraphStore.prototype.uiNodeRemoved = function(graph, node) {
 }
 
 GraphStore.prototype.uiNodeRenamed = function(graph, node, title) {
-	node.title = title
+	graph.renameNode(node, title)
 	this.publish('nodeRenamed', graph, node)
 	this.emit('changed')
 }

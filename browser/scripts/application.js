@@ -913,6 +913,7 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 	var createdNodes = []
 	var createdConnections = []
 	var nodeUidLookup = {}
+	var node
 
 	for(var i = 0, len = doc.nodes.length; i < len; i++) {
 		var docNode = doc.nodes[i]
@@ -921,7 +922,7 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 		docNode.x = Math.floor((docNode.x - doc.x1) + offsetX)
 		docNode.y = Math.floor((docNode.y - doc.y1) + offsetY)
 
-		var node = new Node()
+		node = new Node()
 		if (!node.deserialise(ag.uid, docNode))
 			continue
 
@@ -937,6 +938,30 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
 		var docConnection = doc.conns[i]
+		var suid = nodeUidLookup[docConnection.src_nuid]
+		var duid = nodeUidLookup[docConnection.dst_nuid]
+
+		if (suid === undefined || duid === undefined) {
+			// not a valid connection, clear it and skip it
+			if (duid !== undefined) {
+				for(var ni = 0, len2 = createdNodes.length; ni < len2; ni++) {
+					var destNode = createdNodes[ni]
+					if (destNode.uid !== duid)
+						continue;
+					
+					var slots = docConnection.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
+					var slot = slots[docConnection.dst_slot]
+					
+					slot.is_connected = false;
+					slot.connected = false;
+					destNode.inputs_changed = true;
+						
+					break;
+				}
+			}
+
+			continue;
+		}
 		
 		var c = new Connection()
 		c.deserialise(docConnection)
@@ -949,7 +974,7 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 	}
 	
 	for(i = 0, len = createdNodes.length; i < len; i++) {
-		var node = createdNodes[i]
+		node = createdNodes[i]
 
 		node.initialise()
 

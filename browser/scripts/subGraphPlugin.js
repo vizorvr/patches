@@ -278,6 +278,7 @@ SubGraphPlugin.prototype.setGraph = function(graph) {
 			that.destroy_slot(E2.slot_type.output, removedNode.uid)
 	})
 	.on('nodeRenamed', function(renamedNode) {
+		console.log('SubGraph nodeRenamed', renamedNode.plugin.id, renamedNode.title)
 		var pid = renamedNode.plugin.id
 		if (pid === 'input_proxy')
 			node.rename_slot(E2.slot_type.input, that.state.input_sids[renamedNode.uid], renamedNode.title)
