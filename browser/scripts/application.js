@@ -1637,14 +1637,13 @@ function onConnected(graph, connection) {
 		connection.ui.resolve_slot_divs()
 	}
 
-	connection.signal_change(true)
-
+	// connection.signal_change(true)
 }
 
 function onDisconnected(graph, connection) {
 	console.log('onDisconnected', connection)
 
-	connection.signal_change(false)
+	// connection.signal_change(false)
 
 	connection.destroy_ui()
 }
