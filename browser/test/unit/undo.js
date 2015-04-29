@@ -1,6 +1,8 @@
 var assert = require('assert');
 var EventEmitter = require('events').EventEmitter;
 
+global.E2 = {}
+
 global.Registers = function(){}
 global.EventEmitter = EventEmitter // XXX
 global.Graph = require('../../scripts/graph');
@@ -8,23 +10,18 @@ global.Node = function() {
 	this.addInput = function() {}
 	this.addOutput = function() {}
 }
-global.E2 = {
-	commands: { graph: {} },
-	dt: { ANY: 1 }
-}
-global.E2.slot_type = { input: 0, output: 1 };
-global.E2.app = {
-	getSlotPosition: function() {}
-}
-global.msg = function() {
-	console.log.apply(console, arguments)
-}
 
-require('../../scripts/commands/graphEditCommands')
+global.Flux = require('../../vendor/flux')
 
+var helpers = require('./plugins/helpers')
+var Connection = require('../../scripts/connection').Connection
 var Graph = require('../../scripts/graph');
 var GraphApi = require('../../scripts/graphApi');
+global.Store = require('../../scripts/store');
+var GraphStore = require('../../scripts/graphStore');
 var UndoManager = require('../../scripts/commands/undoManager');
+
+var commands = require('../../scripts/commands/graphEditCommands')
 
 describe('Undo', function() {
 	var graph
@@ -53,7 +50,16 @@ describe('Undo', function() {
 	}
 
 	beforeEach(function() {
+		helpers.reset()
+		E2.commands = { graph: commands }
+		
 		undoManager = new UndoManager()
+		
+		E2.app.undoManager = undoManager
+		E2.app.dispatcher = new Flux.Dispatcher()
+		E2.app.graphStore = new GraphStore()
+		E2.app.graphApi = new GraphApi(undoManager)
+
 		graph = new Graph({ get_graph_uid: function() {} }, null, {})
 	})
 
@@ -229,7 +235,8 @@ describe('Undo', function() {
 			graph.nodes.push(n1)
 			graph.nodes.push(n2)
 
-			var cmd = new E2.commands.graph.Connect(graph, n1, n2, ss, ds, 0)
+			var connection = new Connection(n1, n2, ss, ds, 0)
+			var cmd = new E2.commands.graph.Connect(graph, connection)
 			cmd.execute()
 
 			assert.equal(graph.connections.length, 1)
@@ -247,7 +254,8 @@ describe('Undo', function() {
 			graph.nodes.push(n1)
 			graph.nodes.push(n2)
 
-			var cmd = new E2.commands.graph.Connect(graph, n1, n2, ss, ds, 0)
+			var connection = new Connection(n1, n2, ss, ds, 0)
+			var cmd = new E2.commands.graph.Connect(graph, connection)
 			cmd.execute()
 			cmd.undo()
 
@@ -268,7 +276,8 @@ describe('Undo', function() {
 			graph.nodes.push(n1)
 			graph.nodes.push(n2)
 
-			var conn = graph.connect(0, n1, n2, ss, ds)
+			var conn = new Connection(n1, n2, ss, ds, 0)
+			graph.connect(conn)
 
 			assert.equal(graph.connections.length, 1)
 
@@ -289,7 +298,8 @@ describe('Undo', function() {
 			graph.nodes.push(n1)
 			graph.nodes.push(n2)
 
-			var conn = graph.connect(0, n1, n2, ss, ds)
+			var conn = new Connection(n1, n2, ss, ds, 0)
+			graph.connect(conn)
 
 			assert.equal(graph.connections.length, 1)
 
@@ -326,7 +336,8 @@ describe('Undo', function() {
 			var n2 = makeNode()
 			var ss = makeSlot(n1.plugin.output_slots, E2.slot_type.output)
 			var ds = makeSlot(n2.plugin.input_slots, E2.slot_type.input)
-			api.connect(graph, n1, n2, ss, ds, 0)
+			var conn = new Connection(n1, n2, ss, ds, 0)
+			api.connect(graph, conn)
 			assert.equal(graph.connections.length, 1)
 		})
 
@@ -335,8 +346,9 @@ describe('Undo', function() {
 			var n2 = makeNode()
 			var ss = makeSlot(n1.plugin.output_slots, E2.slot_type.output)
 			var ds = makeSlot(n2.plugin.input_slots, E2.slot_type.input)
-			var c = api.connect(graph, n1, n2, ss, ds, 0)
-			api.disconnect(graph, c)
+			var conn = new Connection(n1, n2, ss, ds, 0)
+			api.connect(graph, conn)
+			api.disconnect(graph, conn)
 			assert.equal(graph.connections.length, 0)
 		})
 

@@ -911,7 +911,7 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 	for(var i = 0, len = doc.nodes.length; i < len; i++) {
 		var docNode = doc.nodes[i]
 		var newUid = E2.core.get_uid()
-console.log('paste node', docNode.uid, 'as', newUid)
+
 		docNode.x = Math.floor((docNode.x - doc.x1) + offsetX)
 		docNode.y = Math.floor((docNode.y - doc.y1) + offsetY)
 
@@ -931,13 +931,14 @@ console.log('paste node', docNode.uid, 'as', newUid)
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
 		var docConnection = doc.conns[i]
-		docConnection.src_nuid = nodeUidLookup[docConnection.src_nuid]
-		docConnection.dst_nuid = nodeUidLookup[docConnection.dst_nuid]
 		
 		var c = new Connection()
 		c.deserialise(docConnection)
-		
+		c.src_node = nodeUidLookup[docConnection.src_nuid]
+		c.dst_node = nodeUidLookup[docConnection.dst_nuid]
+
 		this.graphApi.connect(ag, c)
+
 		createdConnections.push(c)
 	}
 	
@@ -1568,19 +1569,8 @@ function onNodeAdded(graph, node) {
 
 	node.patch_up(E2.core.graphs)
 
-	if (node.plugin.isGraph) {
-		function addToTree(n) {
-			if (!n.plugin.isGraph)
-				return;
-
-			n.parent_graph.tree_node
-				.add_child(n.title, n.plugin.graph)
-
-			n.plugin.graph.nodes.map(addToTree)
-		}
-
-		addToTree(node)
-	}
+	if (node.plugin.isGraph)
+		E2.core.rebuild_structure_tree()
 }
 
 function onNodeRemoved(graph, node) {
@@ -1590,17 +1580,8 @@ function onNodeRemoved(graph, node) {
 
 	node.destroy_ui()
 
-	if (node.plugin.isGraph) {
-		function removeFromTree(n) {
-			if (!n.plugin.isGraph)
-				return;
-
-			n.plugin.graph.tree_node.remove()
-			n.plugin.graph.nodes.map(removeFromTree)
-		}
-
-		removeFromTree(node)
-	}
+	if (node.plugin.isGraph)
+		E2.core.rebuild_structure_tree()
 }
 
 function onNodeRenamed(graph, node) {
@@ -1632,19 +1613,11 @@ function onDisconnected(graph, connection) {
 
 Application.prototype.onGraphSelected = function(graph) {
 	var that = this
-console.log('onGraphSelected', graph)
+
 	E2.core.active_graph.destroy_ui()
 
 	E2.core.active_graph = graph
 
-/*
-	graph.on('changed', onGraphChanged)
-	graph.on('nodeAdded', onNodeAdded)
-	graph.on('nodeRemoved', onNodeRemoved)
-	graph.on('nodeRenamed', onNodeRenamed)
-	graph.on('connected', onConnected)
-	graph.on('disconnected', onDisconnected)
-*/
 	E2.dom.canvas_parent.scrollTop(0)
 	E2.dom.canvas_parent.scrollLeft(0)
 	this.scrollOffset[0] = this.scrollOffset[1] = 0
@@ -1863,7 +1836,6 @@ E2.InitialiseEngi = function(vr_devices) {
 	E2.app.player = player
 
 	E2.core.on('ready', function() {
-		console.log('CORE READY')
 		E2.app.start()
 
 		E2.app.onWindowResize()

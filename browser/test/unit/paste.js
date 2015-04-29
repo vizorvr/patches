@@ -3,13 +3,21 @@ var fs = require('fs')
 
 var reset = require('./plugins/helpers').reset;
 var loadPlugin = require('./plugins/helpers').loadPlugin;
+var _ = require('lodash')
+
+global.clone = _.cloneDeep.bind(_)
 
 global.E2 = {}
 var Application = require('../../scripts/application')
 
 global.Node = require('../../scripts/node')
 global.EventEmitter = require('../../scripts/event-emitter')
+global.EditorChannel = function(){}
 global.Graph = require('../../scripts/graph')
+global.Flux = require('../../vendor/flux')
+global.Plugin = require('../../scripts/plugin');
+global.Store = require('../../scripts/store');
+global.GraphStore = require('../../scripts/graphStore');
 
 global.NodeUI = function() {
 	this.dom = [$()]
@@ -18,7 +26,9 @@ global.NodeUI = function() {
 	this.dom.height = this.dom[0].height
 	this.dom[0].style = {}
 }
-global.Registers = function() {}
+global.Registers = function() {
+	this.serialise = function(){}
+}
 global.PresetManager = function() {}
 require('../../scripts/commands/graphEditCommands')
 global.UndoManager = require('../../scripts/commands/undoManager.js')
@@ -55,6 +65,7 @@ describe('Paste Simple', function() {
 		E2.slot_type = { input: 0, output: 1 }
 		app = new Application()
 		app.player = { core: core }
+		app.channel = { broadcast: function(){}}
 		app.updateCanvas = function(){}
 		global.E2.app = app
 	})
@@ -64,7 +75,6 @@ describe('Paste Simple', function() {
 		assert.equal(core.active_graph.nodes.length, 3)
 		assert.equal(core.active_graph.connections.length, 2)
 		assert.equal(core.active_graph.nodes[2].outputs.length, 2)
-		assert.equal(core.active_graph.nodes[2].uid, 2)
 	})
 
 	it('pastes correctly when repeated', function() {
@@ -75,15 +85,17 @@ describe('Paste Simple', function() {
 		assert.equal(core.active_graph.connections.length, 4)
 		assert.equal(core.active_graph.nodes[2].outputs.length, 2)
 		assert.equal(core.active_graph.nodes[5].outputs.length, 2)
-		assert.equal(core.active_graph.nodes[5].uid, 5)
 	})
 
 	it('sends the right events', function() {
-		var ag = core.active_graph
 		var nodeAdded = 0
 		var connected = 0
-		ag.on('nodeAdded', function() { nodeAdded++ })
-		ag.on('connected', function() { connected++ })
+		app.dispatcher.register(function(pl) {
+			if (pl.actionType==='uiNodeAdded')
+				nodeAdded++
+			if (pl.actionType==='uiConnected')
+				connected++
+		})
 		app.paste(source, 0, 0)
 		assert.equal(nodeAdded, 3)
 		assert.equal(connected, 2)
@@ -92,8 +104,7 @@ describe('Paste Simple', function() {
 
 
 describe('Paste Complex', function() {
-	var core, app
-	var source = JSON.parse(fs.readFileSync(__dirname+'/fixtures/paste-complex.json')).root
+	var core, app, source
 	
 	global.window = global
 
@@ -133,12 +144,15 @@ describe('Paste Complex', function() {
 		E2.slot_type = { input: 0, output: 1 }
 
 		app = E2.app = new Application()
+		app.channel = { broadcast: function(){} }
 		core = E2.core = new Core()
 		core.renderer = dummyCore.renderer
 		E2.app.player = { core: core }
 		core.active_graph = new Graph(core, null, new TreeNode())
 		core.root_graph = core.active_graph
 		core.graphs = [ core.active_graph ]
+
+		source = JSON.parse(fs.readFileSync(__dirname+'/fixtures/paste-complex.json')).root
 	})
 
 	it('creates the right number of nodes, connections and outputs', function() {
@@ -146,24 +160,20 @@ describe('Paste Complex', function() {
 		assert.equal(core.active_graph.nodes.length, 8)
 		assert.equal(core.active_graph.connections.length, 7)
 		assert.equal(core.active_graph.nodes[2].outputs.length, 1)
-		assert.equal(core.active_graph.nodes[2].uid, 2)
 	})
 
 	it('sends the right events', function() {
-		var ag = core.active_graph
 		var nodeAdded = 0
 		var connected = 0
-		ag.on('nodeAdded', function() { nodeAdded++ })
-		ag.on('connected', function() { connected++ })
+		app.dispatcher.register(function(pl) {
+			if (pl.actionType==='uiNodeAdded')
+				nodeAdded++
+			if (pl.actionType==='uiConnected')
+				connected++
+		})
 		app.paste(source, 0, 0)
 		assert.equal(nodeAdded, 8)
 		assert.equal(connected, 7)
-	})
-
-	it('creates the right dynamic slot uids', function() {
-		var ag = core.active_graph
-		app.paste(source, 0, 0)
-		assert.equal(ag.nodes[0].dyn_slot_uid, 4)
 	})
 
 	it('creates a subgraph in the right place', function() {

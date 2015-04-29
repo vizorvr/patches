@@ -451,7 +451,9 @@ Node.prototype.deserialise = function(guid, d) {
 		this.plugin.setGraph(new Graph(E2.app.player.core, null, null))
 		this.plugin.graph.plugin = this.plugin;
 		this.plugin.graph.deserialise(d.graph);
-		E2.app.player.core.graphs.push(this.plugin.graph);
+
+		if (E2.core.graphs.indexOf(this.plugin.graph) === -1)
+			E2.core.graphs.push(this.plugin.graph);
 	}
 	
 	if (d.state && this.plugin.state) {

@@ -3,20 +3,40 @@ var vm = require('vm');
 var browserPath = __dirname+'/../../../';
 
 global.AbstractSubGraphPlugin = require(browserPath+'scripts/subGraphPlugin.js')
-global.AbstractPlugin = require(browserPath+'scripts/abstractPlugin.js')
+global.AbstractPlugin = require(browserPath+'scripts/plugin.js')
 
 exports.slot = function slot(index) {
 	return { index: index };
 }
 
 exports.reset = function() {
-	global.E2 = { plugins: {} };
+	if (!global.E2)
+		global.E2 = {}
+
+	E2 = global.E2
+
+	E2.dt = { ANY: 1 }
+	E2.plugins = {}
+
+	if (!global.E2.app)
+		global.E2.app = {}
+
+	global.E2.app.getSlotPosition = function() {}
+	global.E2.app.channel = {
+		broadcast: function(){}
+	}
+
+	global.msg = function() {
+		console.log.apply(console, arguments)
+	}
 
 	function leftTop(){ return { left: 0, top: 0 }}
+
 	global.mat4 = {
 		create: function() {},
 		identity: function(){}
 	}
+
 	global.$ = function() { return {
 		addClass: function(){},
 		removeClass: function(){},
@@ -36,6 +56,7 @@ exports.reset = function() {
 		datatypes: {
 			FLOAT: { id: 0, name: 'Float' },
 		},
+		get_uid: E2.uid,
 		renderer: {
 			context: {},
 			canvas: [$()],
@@ -51,6 +72,11 @@ exports.reset = function() {
 	E2.dt = core.datatypes
 	E2.core.resolve_dt = { 0: E2.dt.FLOAT }
 	E2.commands = {}
+	E2.slot_type = { input: 0, output: 1 };
+
+	E2.uid = function() {
+		return Math.random() * 1000000
+	}
 
 	E2.dom = {
 		breadcrumb: {

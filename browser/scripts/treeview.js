@@ -120,7 +120,6 @@ TreeNode.prototype.rebuild_dom = function()
 };
 
 function TreeView(parent, root_graph, on_activate, on_rearrange) {
-console.log('new TreeView', root_graph)
 	this.parent = parent;
 	this.on_activate = on_activate;
 	this.on_rearrange = on_rearrange;
@@ -137,7 +136,6 @@ console.log('new TreeView', root_graph)
 }
 
 TreeView.prototype.reset = function() {
-console.trace('tv reset')
 	this.root.remove_children();
 
 	this.drag_node = null;

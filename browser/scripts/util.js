@@ -40,8 +40,7 @@ function clone_recursive(from, to)
     return to;
 }
 
-function clone(o)
-{
+function clone(o) {
 	return clone_recursive(o, null);
 };
 

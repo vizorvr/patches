@@ -142,8 +142,7 @@ Connection.prototype.serialise = function()
 	return d;
 };
 
-Connection.prototype.deserialise = function(d)
-{
+Connection.prototype.deserialise = function(d) {
 	this.uid = d.uid;
 	this.src_node = d.src_nuid;
 	this.dst_node = d.dst_nuid;
@@ -158,7 +157,7 @@ Connection.prototype.deserialise = function(d)
 		is_connected: d.dst_connected
 	};
 	this.offset = d.offset ? d.offset : 0;
-};
+}
 
 Connection.prototype.patch_up = function(nodes) {
 	function resolve_node(nuid) {

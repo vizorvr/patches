@@ -16,8 +16,7 @@ function removeNode() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiNodeRemoved',
 		graph: this.graph, 
-		node: this.node,
-		index: this.graph.nodes.indexOf(this.node)
+		node: this.node
 	})
 }
 
@@ -25,7 +24,8 @@ function addNode() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiNodeAdded',
 		graph: this.graph,
-		node: this.node
+		node: this.node,
+		order: this.order
 	})
 }
 
@@ -44,6 +44,13 @@ function RemoveNode(graph, node) {
 	GraphEditCommand.apply(this, arguments)
 	this.node = node
 	this.title = 'Remove node ' + node.title
+
+	if (node.plugin.isGraph) {
+		this.order = [
+			graph.nodes.indexOf(node),
+			graph.children.indexOf(node)
+		]
+	}
 }
 RemoveNode.prototype = Object.create(GraphEditCommand.prototype)
 RemoveNode.prototype.undo = addNode

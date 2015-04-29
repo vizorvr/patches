@@ -5,12 +5,15 @@ function serialize(objects) {
 		if (ob instanceof Graph)
 			return ob.uid
 
+		if (typeof(ob) === 'number')
+			return ob
+
 		if (!ob.serialise) {
 			console.error('Unserializable object passed to publish', ob)
 			return;
 		}
 
-		return ob.serialise()		
+		return ob.serialise()
 	})
 }
 

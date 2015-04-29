@@ -46,7 +46,7 @@ GraphStore.prototype.setupListeners = function() {
 					payload.insertAfter)
 				break;
 			case 'uiNodeAdded':
-				this.uiNodeAdded(payload.graph, payload.node)
+				this.uiNodeAdded(payload.graph, payload.node, payload.order)
 				break;
 			case 'uiNodeRemoved':
 				this.uiNodeRemoved(payload.graph, payload.node)
@@ -70,8 +70,8 @@ GraphStore.prototype.uiGraphTreeReordered = function(graph, original, sibling, i
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiNodeAdded = function(graph, node) {
-	graph.addNode(node)
+GraphStore.prototype.uiNodeAdded = function(graph, node, order) {
+	graph.addNode(node, order)
 	mapConnections(node, function(conn) {
 		graph.connect(conn)
 	})

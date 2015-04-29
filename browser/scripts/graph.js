@@ -96,8 +96,8 @@ Graph.prototype.stop = function() {
 	}, null);
 }
 
-Graph.prototype.addNode = function(n) {
-	this.registerNode(n)
+Graph.prototype.addNode = function(n, index) {
+	this.registerNode(n, index)
 
 	// this.emit('changed')
 	// this.emit('nodeAdded', n)
@@ -105,28 +105,33 @@ Graph.prototype.addNode = function(n) {
 	return n
 }
 
-Graph.prototype.registerNode = function(n) {
-	this.nodes.push(n)
+Graph.prototype.registerNode = function(n, order) {
+	if (!order)
+		this.nodes.push(n)
+	else
+		this.nodes.splice(order[0], 0, n)
 
-	if(this.nuid_lut)
+	if (this.nuid_lut)
 		this.nuid_lut[n.uid] = n
 	
-	if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
+	if (n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
 		this.roots.push(n)
 	
-	if(n.plugin.isGraph) {
-		this.children.push(n)
+	if (n.plugin.isGraph) {
+		if (!order)
+			this.children.push(n)
+		else
+			this.children.splice(order[1], 0, n)
+
 		E2.core.graphs.push(n.plugin.graph)
 	}
-
-	// n.patch_up(E2.core.graphs)
 
 	return n
 }
 
 Graph.prototype.removeNode = function(node) {
 	function nodeFilter(fnode) {
-		return node.uid !== fnode.uid
+		return node !== fnode
 	}
 
 	this.nodes = this.nodes.filter(nodeFilter);
@@ -139,7 +144,7 @@ Graph.prototype.removeNode = function(node) {
 	
 	if (node.plugin.isGraph) {
 		this.children = this.children.filter(nodeFilter);
-		E2.core.graphs = E2.core.graphs.filter(nodeFilter)
+		E2.core.graphs.splice(E2.core.graphs.indexOf(node.plugin.graph), 1)
 	}
 
 	// this.emit('changed')
@@ -341,8 +346,6 @@ Graph.prototype.getTitle = function() {
 }
 
 Graph.prototype.reorder_children = function(original, sibling, insert_after) {
-	console.log("reorder_children", original, sibling, insert_after)
-
 	function reorder(arr) {
 		arr.remove(original);
 		
