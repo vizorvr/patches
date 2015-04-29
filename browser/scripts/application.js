@@ -95,28 +95,34 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 	pos = pos || this._mousePosition
 
 	function createPlugin(name) {
-		var ag = that.player.core.active_graph
+		var ag = E2.core.active_graph
 		var node = new Node(ag, id,
 			Math.floor((pos[0] - co.left) + that.scrollOffset[0]), 
 			Math.floor((pos[1] - co.top) + that.scrollOffset[1]));
 
 		if (name) { // is graph?
 			node.plugin.setGraph(new Graph(that.player.core, node.parent_graph))
-			node.title = name + ' ' + node.plugin.graph.uid
+			node.title = name // + ' ' + node.plugin.graph.uid
 			node.plugin.graph.plugin = node.plugin
 		}
 
 		that.graphApi.addNode(ag, node)
 
 		node.reset()
+
+		return node
 	}
 	
+	var node 
+
 	if (id === 'graph')
-		createPlugin('graph')
+		node = createPlugin('graph')
 	else if (id === 'loop')
-		createPlugin('loop')
+		node = createPlugin('loop')
 	else
-		createPlugin(null)
+		node = createPlugin(null)
+
+	return node
 }
 
 Application.prototype.activateHoverSlot = function() {
@@ -129,7 +135,7 @@ Application.prototype.activateHoverSlot = function() {
 	this.hover_slot_div[0].style.backgroundColor = E2.erase_color;
 	
 	// Mark any attached connection
-	var conns = this.player.core.active_graph.connections;
+	var conns = E2.core.active_graph.connections;
 	var dirty = false;
 	
 	conns.some(function(c) {
@@ -162,7 +168,7 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 	e.stopPropagation()
 	
 	if (!this.shift_pressed) {
-		var graph = this.player.core.active_graph
+		var graph = E2.core.active_graph
 
 		if (type === E2.slot_type.output) {
 			// drag new connection from output
@@ -282,7 +288,7 @@ Application.prototype.updateCanvas = function(clear) {
 	if (clear)
 		c.clearRect(0, 0, canvas.width, canvas.height)
 
-	var conns = this.player.core.active_graph.connections
+	var conns = E2.core.active_graph.connections
 	var cb = [[], [], [], []]
 	var styles = ['#888', '#fd9720', '#09f', E2.erase_color]
 	
@@ -387,7 +393,7 @@ Application.prototype.releaseHoverConnections = function() {
 
 Application.prototype.removeHoverConnections = function() {
 	this.hover_connections.map(function(connection) {
-		this.graphApi.disconnect(this.player.core.active_graph, connection)
+		this.graphApi.disconnect(E2.core.active_graph, connection)
 	}.bind(this))
 
 	this.hover_connections = []
@@ -395,7 +401,7 @@ Application.prototype.removeHoverConnections = function() {
 
 Application.prototype.deleteSelectedConnections = function() {
 	this.selectedConnections.map(function(connection) {
-		this.graphApi.disconnect(this.player.core.active_graph, connection)
+		this.graphApi.disconnect(E2.core.active_graph, connection)
 	}.bind(this))
 
 	this.hover_connections = []
@@ -404,7 +410,7 @@ Application.prototype.deleteSelectedConnections = function() {
 Application.prototype.deleteSelectedNodes = function() {
 	var that = this
 	var hns = this.selectedNodes
-	var ag = this.player.core.active_graph
+	var ag = E2.core.active_graph
 
 	this.undoManager.begin('Delete nodes')
 
@@ -549,7 +555,7 @@ Application.prototype.onNodeDragStopped = function(node) {
 	var dy = nd.offsetTop - di.original.y
 
 	var cmd = new E2.commands.graph.Move(
-		this.player.core.active_graph,
+		E2.core.active_graph,
 		di.nodes,
 		dx, dy
 	)
@@ -756,7 +762,7 @@ Application.prototype.onMouseMoved = function(e)
 	
 	this.mouseEventPosToCanvasCoord(e, this.selection_end);
 	
-	var nodes = this.player.core.active_graph.nodes;
+	var nodes = E2.core.active_graph.nodes;
 	var cp = E2.dom.canvas_parent;
 	
 	var ss = this.selection_start.slice(0);
@@ -999,7 +1005,7 @@ Application.prototype.markConnectionAsSelected = function(conn) {
 Application.prototype.selectAll = function() {
 	this.clearSelection()
 	
-	var ag = this.player.core.active_graph
+	var ag = E2.core.active_graph
 
 	ag.nodes.map(this.markNodeAsSelected.bind(this))
 	ag.connections.map(this.markConnectionAsSelected.bind(this))
@@ -1460,7 +1466,7 @@ Application.prototype.onShowTooltip = function(e) {
 	var $elem = $(e.currentTarget);
 	var tokens = $elem.attr('alt').split('_');
 	var core = this.player.core;
-	var node = core.active_graph.nuid_lut[parseInt(tokens[0], 10)];
+	var node = E2.core.active_graph.nuid_lut[parseInt(tokens[0], 10)];
 	var txt = '';
 	
 	if(tokens.length < 2) // Node?

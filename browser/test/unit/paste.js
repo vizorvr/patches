@@ -3,9 +3,6 @@ var fs = require('fs')
 
 var reset = require('./plugins/helpers').reset;
 var loadPlugin = require('./plugins/helpers').loadPlugin;
-var _ = require('lodash')
-
-global.clone = _.cloneDeep.bind(_)
 
 global.E2 = {}
 var Application = require('../../scripts/application')
@@ -41,10 +38,6 @@ global.ConnectionUI.prototype.resolve_slot_divs = function() {
 }
 global.navigator = { userAgent: 'test' }
 
-global.msg = function() {
-	console.log.apply({}, arguments)
-}
-
 describe('Paste Simple', function() {
 	var core, app
 	var source = JSON.parse(fs.readFileSync(__dirname+'/fixtures/paste.json')).root
@@ -53,16 +46,9 @@ describe('Paste Simple', function() {
 		core = reset()
 		core.active_graph = new Graph(core, null, {})
 		core.graphs = [ core.active_graph ]
-		core.pluginManager = {
-			create: function(id, node) {
-				loadPlugin(id)
-				return new E2.plugins[id](core, node);
-			},
-			keybyid: {}
-		}
 		
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
-		E2.slot_type = { input: 0, output: 1 }
+
 		app = new Application()
 		app.player = { core: core }
 		app.channel = { broadcast: function(){}}
@@ -141,7 +127,6 @@ describe('Paste Complex', function() {
 		var dummyCore = reset()
 		
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
-		E2.slot_type = { input: 0, output: 1 }
 
 		app = E2.app = new Application()
 		app.channel = { broadcast: function(){} }

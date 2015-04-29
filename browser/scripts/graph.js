@@ -11,7 +11,7 @@ function Graph(core, parent_graph, uid) {
 	this.children = [];
 	this.node_uid = 0;
 
-	this.uid = (uid !== undefined) ? uid : this.core.get_uid();
+	this.uid = (uid !== undefined) ? uid : E2.uid();
 }
 
 Graph.prototype = Object.create(EventEmitter.prototype)
@@ -99,8 +99,6 @@ Graph.prototype.stop = function() {
 Graph.prototype.addNode = function(n, index) {
 	this.registerNode(n, index)
 
-	// this.emit('changed')
-	// this.emit('nodeAdded', n)
 
 	return n
 }
@@ -126,6 +124,8 @@ Graph.prototype.registerNode = function(n, order) {
 		E2.core.graphs.push(n.plugin.graph)
 	}
 
+	this.emit('nodeAdded', n)
+
 	return n
 }
 
@@ -147,15 +147,14 @@ Graph.prototype.removeNode = function(node) {
 		E2.core.graphs.splice(E2.core.graphs.indexOf(node.plugin.graph), 1)
 	}
 
-	// this.emit('changed')
-	// this.emit('nodeRemoved', node)
+	this.emit('nodeRemoved', node)
 
 	return node
 }
 
 Graph.prototype.renameNode = function(node, title) {
 	node.title = title
-	// this.emit('nodeRenamed', node)
+	this.emit('nodeRenamed', node)
 }
 
 Graph.prototype.addConnection = function(connection) {
@@ -168,9 +167,6 @@ Graph.prototype.addConnection = function(connection) {
 
 	connection.src_slot.is_connected = true
 	connection.dst_slot.is_connected = true
-
-	// this.emit('connected', connection)
-	// this.emit('changed')
 
 	return connection
 }
@@ -201,9 +197,6 @@ Graph.prototype.disconnect = function(c) {
 		if (index !== -1)
 			slots.splice(index, 1)
 	}
-
-	// this.emit('disconnected', c)
-	// this.emit('changed')
 }
 
 Graph.prototype.create_ui = function() {

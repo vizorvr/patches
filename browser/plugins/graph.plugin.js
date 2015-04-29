@@ -1,6 +1,6 @@
 (function() {
 var GraphPlugin = E2.plugins.graph = function(core) {
-	AbstractSubGraphPlugin.apply(this, arguments)
+	SubGraphPlugin.apply(this, arguments)
 
 	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and the encapsulated logic of which can be optinally rendered to a <b>texture</b> instead of the framebuffer.';
 	
@@ -28,7 +28,7 @@ var GraphPlugin = E2.plugins.graph = function(core) {
 	this.renderbuffer = null
 }
 
-GraphPlugin.prototype = Object.create(AbstractSubGraphPlugin.prototype)
+GraphPlugin.prototype = Object.create(SubGraphPlugin.prototype)
 
 GraphPlugin.prototype.getWidth = function() {
 	return parseFloat(this.framebuffer.width)

@@ -1,4 +1,4 @@
-function AbstractSubGraphPlugin(core, node) {
+function SubGraphPlugin(core, node) {
 	this.core = core
 	this.node = node
 
@@ -15,38 +15,38 @@ function AbstractSubGraphPlugin(core, node) {
 }
 
 
-AbstractSubGraphPlugin.prototype.reset = function() {
+SubGraphPlugin.prototype.reset = function() {
 	if (this.graph)
 		this.graph.reset()
 }
 
-AbstractSubGraphPlugin.prototype.play = function() {
+SubGraphPlugin.prototype.play = function() {
 	if (this.graph)
 		this.graph.pause()
 }
 
-AbstractSubGraphPlugin.prototype.pause = function() {
+SubGraphPlugin.prototype.pause = function() {
 	if (this.graph)
 		this.graph.pause()
 }
 
-AbstractSubGraphPlugin.prototype.stop = function() {
+SubGraphPlugin.prototype.stop = function() {
 	if (this.graph)
 		this.graph.stop()
 }
 
-AbstractSubGraphPlugin.prototype.get_dt_name = function(dt) {
+SubGraphPlugin.prototype.get_dt_name = function(dt) {
 	if (!dt || !dt.name)
 		return 'ERROR'
 
 	return dt.name
 }
 
-AbstractSubGraphPlugin.prototype.dbg = function(str) {
+SubGraphPlugin.prototype.dbg = function(str) {
 	msg('Graph: ' + str)
 }
 
-AbstractSubGraphPlugin.prototype.connection_changed = function(on, conn, slot) {
+SubGraphPlugin.prototype.connection_changed = function(on, conn, slot) {
 	if (slot.uid !== undefined) {
 		var psl = null
 		var core = this.core
@@ -107,7 +107,7 @@ AbstractSubGraphPlugin.prototype.connection_changed = function(on, conn, slot) {
 	}
 }
 
-AbstractSubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_slot) {
+SubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_slot) {
 	var that = this
 	var core = this.core
 	var node = this.parent_node
@@ -223,7 +223,7 @@ AbstractSubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node,
 	}
 }
 
-AbstractSubGraphPlugin.prototype.update_output = function(slot) {
+SubGraphPlugin.prototype.update_output = function(slot) {
 	if (slot.uid !== undefined)
 		return this.output_nodes[slot.uid].plugin.data
 		
@@ -231,11 +231,11 @@ AbstractSubGraphPlugin.prototype.update_output = function(slot) {
 	return this.texture
 }
 
-AbstractSubGraphPlugin.prototype.query_output = function(slot) {
+SubGraphPlugin.prototype.query_output = function(slot) {
 	return (slot.uid === undefined) || this.updated_sids.indexOf(slot.uid) > -1
 }
 
-AbstractSubGraphPlugin.prototype.destroy_slot = function(type, nuid) {
+SubGraphPlugin.prototype.destroy_slot = function(type, nuid) {
 	var slots = (type === E2.slot_type.input) ? this.state.input_sids : this.state.output_sids
 	var sid = slots[nuid]
 	
@@ -244,7 +244,7 @@ AbstractSubGraphPlugin.prototype.destroy_slot = function(type, nuid) {
 	this.parent_node.remove_slot(type, sid)
 }
 
-AbstractSubGraphPlugin.prototype.setGraph = function(graph) {
+SubGraphPlugin.prototype.setGraph = function(graph) {
 	var that = this
 	var node = this.parent_node
 	
@@ -287,4 +287,4 @@ AbstractSubGraphPlugin.prototype.setGraph = function(graph) {
 }
 
 if (typeof(module) !== 'undefined')
-	module.exports = AbstractSubGraphPlugin
+	module.exports = SubGraphPlugin

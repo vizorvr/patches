@@ -3,7 +3,7 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.outputs = []
 	this.queued_update = -1
 
-	this.uid = E2.core.get_uid()
+	this.uid = E2.uid()
 
 	if (plugin_id) { // Don't initialise if we're loading.
 		this.parent_graph = parent_graph;
@@ -109,7 +109,7 @@ Node.prototype.geometry_updated = function()
 };
 
 Node.prototype.add_slot = function(slot_type, def) {
-	var suid = E2.core.get_uid()
+	var suid = E2.uid()
 
 	var is_inp = slot_type === E2.slot_type.input;
 	def.uid = suid;
@@ -383,8 +383,12 @@ Node.prototype.update_recursive = function(conns) {
 	return dirty;
 }
 
-Node.prototype.serialise = function(flat)
-{
+Node.prototype.serialise = function(flat) {
+	function pack_dt(slots) {
+		for(var i = 0, len = slots.length; i < len; i++)
+			slots[i].dt = slots[i].dt.id;
+	}
+
 	var d = {};
 	
 	d.plugin = this.plugin.id;
@@ -404,22 +408,13 @@ Node.prototype.serialise = function(flat)
 	if (!flat && this.plugin.isGraph)
 		d.graph = this.plugin.graph.serialise();
 	
-	if(this.dyn_inputs || this.dyn_outputs)
-	{
-		var pack_dt = function(slots)
-		{
-			for(var i = 0, len = slots.length; i < len; i++)
-				slots[i].dt = slots[i].dt.id;
-		};
-		
-		if(this.dyn_inputs)
-		{
+	if (this.dyn_inputs || this.dyn_outputs) {
+		if(this.dyn_inputs) {
 			d.dyn_in = clone(this.dyn_inputs);
 			pack_dt(d.dyn_in);
 		}
 		
-		if(this.dyn_outputs)
-		{
+		if (this.dyn_outputs) {
 			d.dyn_out = clone(this.dyn_outputs);
 			pack_dt(d.dyn_out);
 		}

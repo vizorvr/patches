@@ -1,6 +1,6 @@
 (function() {
 var LoopPlugin = E2.plugins.loop = function(core) {
-	AbstractSubGraphPlugin.apply(this, arguments)
+	SubGraphPlugin.apply(this, arguments)
 
 	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and run the enclosed logic once per loop iteration. The loop counter is made available to enclosing logic as a local register with the name <b>index<\/b>.';
 	
@@ -16,7 +16,7 @@ var LoopPlugin = E2.plugins.loop = function(core) {
 	this.state = { input_sids: {}, output_sids: {}, always_update: true };
 }
 
-LoopPlugin.prototype = Object.create(AbstractSubGraphPlugin.prototype)
+LoopPlugin.prototype = Object.create(SubGraphPlugin.prototype)
 
 LoopPlugin.prototype.open_editor = function(self)
 {

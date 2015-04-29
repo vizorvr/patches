@@ -6,8 +6,7 @@ E2.p = E2.plugins["input_proxy"] = function(core, node)
 	
 	this.output_slots = [];
 	
-	this.state = 
-	{
+	this.state = {
 		slot_id: node.add_slot(E2.slot_type.output, {
 			name: 'input',
 			dt: core.datatypes.ANY,
@@ -19,8 +18,8 @@ E2.p = E2.plugins["input_proxy"] = function(core, node)
 	this.node = node;
 	this.data = null;
 
-	if(!node.title)
-		node.title = 'input ' + node.uid;
+	if (!node.title)
+		node.title = 'input'
 };
 
 E2.p.prototype.reset = function()

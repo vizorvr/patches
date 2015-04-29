@@ -2,8 +2,12 @@ var fs = require('fs');
 var vm = require('vm');
 var browserPath = __dirname+'/../../../';
 
-global.AbstractSubGraphPlugin = require(browserPath+'scripts/subGraphPlugin.js')
-global.AbstractPlugin = require(browserPath+'scripts/plugin.js')
+var _ = require('lodash')
+
+global.clone = _.cloneDeep.bind(_)
+
+global.SubGraphPlugin = require(browserPath+'scripts/subGraphPlugin.js')
+global.Plugin = require(browserPath+'scripts/plugin.js')
 
 exports.slot = function slot(index) {
 	return { index: index };
@@ -15,7 +19,30 @@ exports.reset = function() {
 
 	E2 = global.E2
 
-	E2.dt = { ANY: 1 }
+	E2.slot_type = { input: 0, output: 1 }
+
+	E2.dt = {
+		FLOAT: { id: 0, name: 'Float' },
+		SHADER: { id: 1, name: 'Shader' },
+		TEXTURE: { id: 2, name: 'Texture' },
+		COLOR: { id: 3, name: 'Color' },
+		MATRIX: { id: 4, name: 'Matrix' },
+		VECTOR: { id: 5, name: 'Vector' },
+		CAMERA: { id: 6, name: 'Camera' },
+		BOOL: { id: 7, name: 'Boolean' },
+		ANY: { id: 8, name: 'Arbitrary' },
+		MESH: { id: 9, name: 'Mesh' },
+		AUDIO: { id: 10, name: 'Audio' },
+		SCENE: { id: 11, name: 'Scene' },
+		MATERIAL: { id: 12, name: 'Material' },
+		LIGHT: { id: 13, name: 'Light' },
+		DELEGATE: { id: 14, name: 'Delegate' },
+		TEXT: { id: 15, name: 'Text' },
+		VIDEO: { id: 16, name: 'Video' },
+		ARRAY: { id: 17, name: 'Array' },
+		OBJECT: { id: 18, name: 'Object' }
+	};
+
 	E2.plugins = {}
 
 	if (!global.E2.app)
@@ -53,9 +80,7 @@ exports.reset = function() {
 
 	var graphCounter = 0
 	core = {
-		datatypes: {
-			FLOAT: { id: 0, name: 'Float' },
-		},
+		datatypes: E2.dt,
 		get_uid: E2.uid,
 		renderer: {
 			context: {},
@@ -67,6 +92,16 @@ exports.reset = function() {
 			return graphCounter++
 		}
 	};
+
+	core.pluginManager = {
+		create: function(id, node) {
+			exports.loadPlugin(id)
+			var p = new E2.plugins[id](core, node);
+			p.id = id
+			return p
+		},
+		keybyid: {}
+	}
 
 	E2.core = core
 	E2.dt = core.datatypes
