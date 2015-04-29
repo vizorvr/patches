@@ -35,7 +35,7 @@ GraphStore.prototype.setupListeners = function() {
 	}.bind(this))
 */
 	E2.app.dispatcher.register(function receiveFromDispatcher(payload) {
-
+		console.log('GraphStore.receiveFromDispatcher', payload.actionType)
 		switch(payload.actionType) {
 			case 'uiGraphTreeReordered':
 				this.uiGraphTreeReordered(

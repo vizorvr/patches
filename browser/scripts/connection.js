@@ -8,8 +8,6 @@ function ConnectionUI(parent_conn) {
 	this.deleting = false;
 	this.parent_conn = parent_conn;
 	this.color = '#000';
-
-	// this.resolve_slot_divs()
 }
 
 ConnectionUI.prototype.resolve_slot_divs = function() {
@@ -196,9 +194,9 @@ Connection.prototype.patch_up = function(nodes) {
 
 	var any_dt = E2.dt.ANY;
 	
-	if(this.src_slot.dt !== this.dst_slot.dt && 
-	   this.src_slot.dt !== any_dt && 
-	   this.dst_slot.dt !== any_dt)
+	if (this.src_slot.dt !== this.dst_slot.dt && 
+		this.src_slot.dt !== any_dt && 
+		this.dst_slot.dt !== any_dt)
 	{
 		msg('ERROR: Connection data type mismatch - dropping connection.');
 		return false;

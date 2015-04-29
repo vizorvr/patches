@@ -338,6 +338,9 @@ Core.prototype.rebuild_structure_tree = function() {
 		}
 	}
 
+	if (!E2.dom.structure)
+		return;
+
 	E2.dom.structure.tree.reset();
 	this.root_graph.tree_node = E2.dom.structure.tree.root;
 	E2.dom.structure.tree.root.graph = this.root_graph;

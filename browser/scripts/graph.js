@@ -165,9 +165,6 @@ Graph.prototype.addConnection = function(connection) {
 
 	this.connections.push(connection)
 
-	connection.src_slot.is_connected = true
-	connection.dst_slot.is_connected = true
-
 	return connection
 }
 

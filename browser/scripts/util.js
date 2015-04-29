@@ -102,18 +102,15 @@ function sort_dict(dict)
 	return s;
 }
 
-function msg(txt)
-{
+function msg(txt) {
 	var d = E2.dom.dbg;
 
-	if(d === undefined)
-	{
+	if (d === undefined) {
 		console.log(txt);
 		return;
 	}
 	
-	if(txt)
-	{
+	if(txt) {
 		if(txt.substring(0,  7) === 'ERROR: ') {
 			console.error(txt)
 			d.append('<span style="color:#f20">' + txt + '</span>\n');

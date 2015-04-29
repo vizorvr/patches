@@ -129,7 +129,7 @@ Node.prototype.add_slot = function(slot_type, def) {
 		this.dyn_outputs.push(def);			
 	}
 
-	if (this.ui) {
+	if (this.ui) { // TODO refactor: remove ui link - emit an event from NodeStore instead
 		var col = this.ui.dom.find(is_inp ? '.ic' : '.oc');
 		
 		NodeUI.create_slot(this, 'n' + this.uid, col, def, slot_type);
@@ -229,21 +229,18 @@ Node.prototype.remove_slot = function(slot_type, suid)
 };
 
 
-Node.prototype.find_dynamic_slot = function(slot_type, suid)
-{
+Node.prototype.find_dynamic_slot = function(slot_type, suid) {
 	var slots = (slot_type === E2.slot_type.input) ? this.dyn_inputs : this.dyn_outputs;
 	
-	if(slots)
-	{
-		for(var i = 0, len = slots.length; i < len; i++)
-		{
+	if (slots) {
+		for(var i = 0, len = slots.length; i < len; i++) {
 			if(slots[i].uid === suid)
 				return slots[i];
 		}
 	}
 
 	return null;
-};
+}
 
 Node.prototype.rename_slot = function(slot_type, suid, name)
 {

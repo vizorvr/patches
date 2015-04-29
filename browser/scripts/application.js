@@ -599,7 +599,6 @@ Application.prototype.redrawConnection = function(connection) {
 	var cn = connection
 	var cui = cn.ui
 
-console.log('redraw', cui.src_slot_div, cui.dst_slot_div)
 	gsp(cn.src_node, cui.src_slot_div, E2.slot_type.output, cui.src_pos);
 	gsp(cn.dst_node, cui.dst_slot_div, E2.slot_type.input, cui.dst_pos);
 }
@@ -1591,7 +1590,7 @@ function onGraphChanged() {
 }
 
 function onNodeAdded(graph, node) {
-	console.log('onNodeAdded', node, node.plugin.isGraph)
+	console.log('onNodeAdded', node.plugin.id, node.plugin.isGraph)
 	
 	if (graph === E2.core.active_graph)
 		node.create_ui()
@@ -1629,7 +1628,7 @@ function onNodeRenamed(graph, node) {
 }
 
 function onConnected(graph, connection) {
-	console.log('onConnected', connection, graph === E2.core.active_graph)
+	console.log('onConnected', connection.src_node.plugin.id, connection.dst_node.plugin.id)
 
 	if (graph === E2.core.active_graph) {
 		if (!connection.ui)
@@ -1637,13 +1636,13 @@ function onConnected(graph, connection) {
 		connection.ui.resolve_slot_divs()
 	}
 
-	// connection.signal_change(true)
+	connection.signal_change(true)
 }
 
 function onDisconnected(graph, connection) {
 	console.log('onDisconnected', connection)
 
-	// connection.signal_change(false)
+	connection.signal_change(false)
 
 	connection.destroy_ui()
 }
@@ -1687,9 +1686,7 @@ Application.prototype.onGraphSelected = function(graph) {
 	E2.core.active_graph_dirty = true
 }
 
-Application.prototype.start = function() {
-	var that = this
-
+Application.prototype.setupStoreListeners = function() {
 	this.graphStore
 	.on('changed', onGraphChanged.bind(this))
 	.on('nodeAdded', onNodeAdded.bind(this))
@@ -1700,6 +1697,12 @@ Application.prototype.start = function() {
 	.on('reordered', function() {
 		E2.core.rebuild_structure_tree()
 	})
+}
+
+Application.prototype.start = function() {
+	var that = this
+
+	this.setupStoreListeners()
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 

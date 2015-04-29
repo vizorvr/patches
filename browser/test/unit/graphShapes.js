@@ -19,8 +19,10 @@ global.NodeUI = function() {
 	this.dom.position = this.dom[0].position
 	this.dom.width = this.dom[0].width
 	this.dom.height = this.dom[0].height
+	this.dom.find = function() {}
 	this.dom[0].style = {}
 }
+global.NodeUI.create_slot = function(){}
 global.Registers = function() {
 	this.serialise = function(){}
 }
@@ -43,6 +45,7 @@ describe('Simple graph shapes', function() {
 		core = reset()
 		core.active_graph = new Graph(core, null, {})
 		core.graphs = [ core.active_graph ]
+		core.rebuild_structure_tree = function(){}
 		
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 		app = new Application()
@@ -64,6 +67,21 @@ describe('Simple graph shapes', function() {
 		assert.equal(graph.nodes.length, 2)
 		assert.equal(graphNode.plugin.parent_node.dyn_inputs.length, 1)
 		assert.equal(graphNode.plugin.parent_node.dyn_outputs.length, 1)
+	})
+
+	it('input_proxy connected to float sets type', function() {
+		app.setupStoreListeners()
+		var graphNode = E2.app.instantiatePlugin('graph', [0,0])
+		var graph = graphNode.plugin.graph
+		E2.core.active_graph = graph
+		var ipx = E2.app.instantiatePlugin('input_proxy', [0,0])
+		var floatDisplay = E2.app.instantiatePlugin('float_display', [0,0])
+		var ss = ipx.dyn_outputs[0]
+		var ds = floatDisplay.plugin.input_slots[0]
+		E2.app.graphApi.connect(graph, new Connection(ipx, floatDisplay, ss, ds, 0))
+		// connection.create_ui()
+		// connection.signal_change(true)
+		assert.equal(ss.dt.name, 'Float')
 	})
 
 })

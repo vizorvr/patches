@@ -90,7 +90,8 @@ exports.reset = function() {
 		graphs: [],
 		get_graph_uid: function() {
 			return graphCounter++
-		}
+		},
+		get_default_value: function(){}
 	};
 
 	core.pluginManager = {
@@ -110,7 +111,7 @@ exports.reset = function() {
 	E2.slot_type = { input: 0, output: 1 };
 
 	E2.uid = function() {
-		return Math.random() * 1000000
+		return Math.floor(Math.random() * 1000000)
 	}
 
 	E2.dom = {
