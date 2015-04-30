@@ -1178,6 +1178,9 @@ Application.prototype.onKeyDown = function(e) {
 
 	// number keys
 	else if (e.keyCode > 47 && e.keyCode < 58) { // 0-9
+		if (this.ctrl_pressed || this.shift_pressed || this.alt_pressed)
+			return;
+
 		var numberHotKeys = [
 			'plugin:output_proxy', // 0
 			'plugin:input_proxy', // 1 
@@ -1211,7 +1214,10 @@ Application.prototype.onKeyDown = function(e) {
 		e.preventDefault();
 		return false;
 	} 
-	else if(this.ctrl_pressed || e.metaKey)
+	else if (e.metaKey) {
+		this.ctrl_pressed = true;
+	}
+	else if(this.ctrl_pressed)
 	{
 		if(e.keyCode === 65) // CTRL+a
 		{
@@ -1255,13 +1261,13 @@ Application.prototype.onKeyDown = function(e) {
 			else
 				this.undoManager.redo()
 		}
-	}
+	}  
 
 };
 
 Application.prototype.onKeyUp = function(e)
 {
-	if(e.keyCode === 17) // CMD on OSX, CTRL on everything else
+	if(e.keyCode === 17 || e.keyCode === 91 || e.metaKey) // CMD on OSX, CTRL on everything else
 	{
 		this.ctrl_pressed = false;
 	}
@@ -1628,7 +1634,7 @@ function onNodeRenamed(graph, node) {
 }
 
 function onConnected(graph, connection) {
-	console.log('onConnected', connection.src_node.plugin.id, connection.dst_node.plugin.id)
+	console.log('onConnected', connection)
 
 	if (graph === E2.core.active_graph) {
 		if (!connection.ui)
