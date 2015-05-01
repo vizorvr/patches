@@ -4,13 +4,17 @@
 		this.desc = 'Multiplies the two supplied values and emits the result.'
 		
 		this.input_slots = [ 
-			{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The first operand.', def: 0.0 },
-			{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The first operand.', def: 1.0 } 
+			{ name: 'value', dt: core.datatypes.FLOAT,
+				desc: 'The first operand.', def: 0.0 },
+			{ name: 'value', dt: core.datatypes.FLOAT,
+				desc: 'The second operand.', def: 1.0 } 
 		]
 		
-		this.output_slots = [
-			{ name: 'result', dt: core.datatypes.FLOAT, desc: 'The product of the two supplied values.', def: 0.0 }
-		]
+		this.output_slots = [{
+			name: 'result', dt: core.datatypes.FLOAT,
+			desc: 'The product of the two supplied values.',
+			def: 0.0
+		}]
 	}
 
 	MultiplyModulator.prototype.reset = function() {
