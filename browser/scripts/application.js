@@ -1646,7 +1646,11 @@ function onConnected(graph, connection) {
 function onDisconnected(graph, connection) {
 	console.log('onDisconnected', connection)
 
-	connection.signal_change(false)
+	try {
+		connection.signal_change(false)
+	} catch(e) {
+		console.error(e.stack)
+	}
 
 	connection.destroy_ui()
 }
