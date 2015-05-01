@@ -16,7 +16,6 @@ function EditorChannel() {
 EditorChannel.prototype = Object.create(EventEmitter.prototype)
 
 EditorChannel.prototype.broadcast = function(m) {
-	console.log('broadcast', m.type)
 	// wsChannel.send('__editor__', m)
 }
 

@@ -79,8 +79,6 @@ describe('Simple graph shapes', function() {
 		var ss = ipx.dyn_outputs[0]
 		var ds = floatDisplay.plugin.input_slots[0]
 		E2.app.graphApi.connect(graph, new Connection(ipx, floatDisplay, ss, ds, 0))
-		// connection.create_ui()
-		// connection.signal_change(true)
 		assert.equal(ss.dt.name, 'Float')
 	})
 

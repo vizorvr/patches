@@ -1,13 +1,13 @@
 function ConnectionUI(parent_conn) {
-	this.src_pos = [0, 0];
-	this.dst_pos = [0, 0];
-	this.src_slot_div = null;
-	this.dst_slot_div = null;
-	this.flow = false;
-	this.selected = false;
-	this.deleting = false;
-	this.parent_conn = parent_conn;
-	this.color = '#000';
+	this.src_pos = [0, 0]
+	this.dst_pos = [0, 0]
+	this.src_slot_div = null
+	this.dst_slot_div = null
+	this.flow = false
+	this.selected = false
+	this.deleting = false
+	this.parent_conn = parent_conn
+	this.color = '#000'
 }
 
 ConnectionUI.prototype.resolve_slot_divs = function() {
@@ -20,13 +20,12 @@ ConnectionUI.prototype.resolve_slot_divs = function() {
 }
 
 function Connection(src_node, dst_node, src_slot, dst_slot, offset) {
-	this.src_node = src_node;
-	this.dst_node = dst_node;
-	this.src_slot = src_slot;
-	this.dst_slot = dst_slot;
-	this.uid = E2.uid()
-	this.ui = null;
-	this.offset = offset || 0;
+	this.src_node = src_node
+	this.dst_node = dst_node
+	this.src_slot = src_slot
+	this.dst_slot = dst_slot
+	this.ui = null
+	this.offset = offset || 0
 }
 
 Connection.prototype.create_ui = function() {
@@ -36,7 +35,7 @@ Connection.prototype.create_ui = function() {
 
 Connection.prototype.destroy_ui = function() {
 	this.ui = null
-};
+}
 
 Connection.prototype.reset = function() {
 	if (this.ui && this.ui.flow) {
@@ -121,7 +120,6 @@ Connection.prototype.serialise = function()
 {
 	var d = {};
 	
-	d.uid = this.uid;
 	d.src_nuid = this.src_node.uid;
 	d.dst_nuid = this.dst_node.uid;
 	d.src_slot = this.src_slot.index;
@@ -143,7 +141,6 @@ Connection.prototype.serialise = function()
 };
 
 Connection.prototype.deserialise = function(d) {
-	this.uid = d.uid;
 	this.src_node = d.src_nuid;
 	this.dst_node = d.dst_nuid;
 	this.src_slot = {
@@ -199,6 +196,7 @@ Connection.prototype.patch_up = function(nodes) {
 		this.dst_slot.dt !== any_dt)
 	{
 		msg('ERROR: Connection data type mismatch - dropping connection.');
+		console.log('Slots that failed', this.src_slot, this.dst_slot)
 		return false;
 	}
 	

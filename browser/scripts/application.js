@@ -1148,7 +1148,7 @@ Application.prototype.onKeyDown = function(e) {
 		this.shift_pressed = true;
 		this.activateHoverSlot();
 	}
-	else if(e.keyCode === 17) // CMD on OSX, CTRL on everything else
+	else if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
 	{
 		this.ctrl_pressed = true;
 	}
@@ -1160,7 +1160,7 @@ Application.prototype.onKeyDown = function(e) {
 	{
 		if(this.player.current_state === this.player.state.PLAYING)
 		{
-			if(this.ctrl_pressed || e.metaKey)
+			if(this.ctrl_pressed)
 				this.onPauseClicked();
 			else
 				this.onStopClicked();
@@ -1214,10 +1214,7 @@ Application.prototype.onKeyDown = function(e) {
 		e.preventDefault();
 		return false;
 	} 
-	else if (e.metaKey) {
-		this.ctrl_pressed = true;
-	}
-	else if(this.ctrl_pressed)
+	else if(this.ctrl_pressed || e.metaKey)
 	{
 		if(e.keyCode === 65) // CTRL+a
 		{
@@ -1267,7 +1264,8 @@ Application.prototype.onKeyDown = function(e) {
 
 Application.prototype.onKeyUp = function(e)
 {
-	if(e.keyCode === 17 || e.keyCode === 91 || e.metaKey) // CMD on OSX, CTRL on everything else
+	console.log('keyup', e.keyCode, e.metaKey)
+	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
 	{
 		this.ctrl_pressed = false;
 	}

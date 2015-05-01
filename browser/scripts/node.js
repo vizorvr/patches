@@ -2,6 +2,8 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.inputs = []
 	this.outputs = []
 	this.queued_update = -1
+	this.dyn_inputs = []
+	this.dyn_outputs = []
 
 	this.uid = E2.uid()
 
@@ -110,111 +112,96 @@ Node.prototype.geometry_updated = function()
 
 Node.prototype.add_slot = function(slot_type, def) {
 	var is_inp = slot_type === E2.slot_type.input;
-	def.uid = def.uid || E2.uid();
+	var slots = is_inp ? this.dyn_inputs : this.dyn_outputs;
+
+	if (def.uid === undefined || def.uid === null)
+		def.uid = E2.uid()
+
 	def.dynamic = true
-	
-	if (is_inp) {
-		if(!this.dyn_inputs)
-			this.dyn_inputs = [];
-		
-		def.index = this.dyn_inputs.length;
-		def.type = E2.slot_type.input;
-		this.dyn_inputs.push(def);			
-	} else {
-		if(!this.dyn_outputs)
-			this.dyn_outputs = [];
-		
-		def.index = this.dyn_outputs.length;
-		def.type = E2.slot_type.output;
-		this.dyn_outputs.push(def);			
+	def.type = slot_type
+
+	if (def.index === undefined)
+		def.index = slots.length
+
+	slots.splice(def.index, 0, def);
+
+	for(var i = 0, len = slots.length; i < len; i++) {
+		slots[i].index = i
 	}
 
-	if (this.ui) { // TODO refactor: remove ui link - emit an event from NodeStore instead
+	if (this.ui) {
+		// TODO refactor: remove ui link - emit an event from NodeStore instead
+		// redraw in/output column with new slots
 		var col = this.ui.dom.find(is_inp ? '.ic' : '.oc');
-		
-		NodeUI.create_slot(this, 'n' + this.uid, col, def, slot_type);
+		if (!col)
+			return def.uid;
+		col.empty()
+		NodeUI.render_slots(this, 'n'+this.uid, col, is_inp ? this.plugin.input_slots : this.plugin.output_slots, slot_type);
+		NodeUI.render_slots(this, 'n'+this.uid, col, slots, slot_type)
+		this.inputs.concat(this.outputs).map(function(c) {
+			c.ui.resolve_slot_divs()
+		})
+		E2.app.updateCanvas(true)
 		this.update_connections();
 	}
 	
 	return def.uid;
 };
 
-Node.prototype.remove_slot = function(slot_type, suid)
-{
+Node.prototype.remove_slot = function(slot_type, suid) {
 	var is_inp = slot_type === E2.slot_type.input;
 	var slots = is_inp ? this.dyn_inputs : this.dyn_outputs;
 
-	if(!slots)
+	if (!slots.length)
 		return;
 	
 	var slot = null;
 	var idx = -1;
 
-	for(var i = 0, len = slots.length; i < len; i++)
-	{
+	for(var i = 0, len = slots.length; i < len; i++) {
 		var s = slots[i];
 
-		if(s.uid === suid)
-		{
+		if (s.uid === suid) {
 			slot = s;
 			idx = i;
+
 			slots.splice(i, 1)
 			break;
 		}
 	} 
 
-	if(!slot)
+	if (!slot)
 		return;
 	
-	if(slots.length < 1) // To prevent these to be serialised or allocated if all slots have been removed.
-	{
-		if(is_inp)
-			this.dyn_inputs = undefined;
-		else
-			this.dyn_outputs = undefined;
-	}
-	else
-	{
+	if (slots.length) {
 		// Patch up cached slot indices.
-		for(var i = 0, len = slots.length; i < len; i++)
-		{
-			var s = slots[i];
-		
-			if(s.index > idx)
-				s.index--;
+		for(var i = 0, len = slots.length; i < len; i++) {
+			slots[i].index = i
 		}
 	}
 	
-	// Although impossible now, conceivably a plugin could create or destroy slots
-	// in response to a clicked button on its control surface or something similar.
-	if(this.ui)
-		this.ui.dom.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid).remove();
+	if (this.ui) {
+		this.ui.dom.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid)
+			.remove();
+	}
 	
 	var att = is_inp ? this.inputs : this.outputs;
 	var pending = [];
 	var canvas_dirty = false;
 	
-	for(var i = 0, len = att.length; i < len; i++)
-	{
+	for(var i = 0, len = att.length; i < len; i++) {
 		var c = att[i];
 		var s = is_inp ? c.dst_slot : c.src_slot;
 	
-		if(s === slot)
-		{
+		if (s === slot) {
 			pending.push(c);
 			
-			if(c.ui)
+			if (c.ui)
 				canvas_dirty = true;
-		}
-		else if(s.uid !== undefined && s.index > idx)
-		{
-			if(c.ui)
-			{
-				if(is_inp)
-					E2.app.getSlotPosition(c.src_node, c.ui.dst_slot_div, E2.slot_type.input, c.ui.dst_pos);
-				else
-					E2.app.getSlotPosition(c.dst_node, c.ui.src_slot_div, E2.slot_type.output, c.ui.src_pos);
-				
+		} else if(s.uid !== undefined && s.index >= idx) {
+			if (c.ui) {
+				c.ui.resolve_slot_divs()
+				E2.app.redrawConnection(c)
 				canvas_dirty = true;
 			}
 		}
@@ -231,10 +218,10 @@ Node.prototype.remove_slot = function(slot_type, suid)
 
 Node.prototype.find_dynamic_slot = function(slot_type, suid) {
 	var slots = (slot_type === E2.slot_type.input) ? this.dyn_inputs : this.dyn_outputs;
-	
-	if (slots) {
+
+	if (slots.length) {
 		for(var i = 0, len = slots.length; i < len; i++) {
-			if(slots[i].uid === suid)
+			if (slots[i].uid === suid)
 				return slots[i];
 		}
 	}
@@ -242,18 +229,16 @@ Node.prototype.find_dynamic_slot = function(slot_type, suid) {
 	return null;
 }
 
-Node.prototype.rename_slot = function(slot_type, suid, name)
-{
+Node.prototype.rename_slot = function(slot_type, suid, name) {
 	var slot = this.find_dynamic_slot(slot_type, suid);
 	
-	if(slot)
-	{
+	if (slot) {
 		slot.name = name;
 
 		if(this.ui)
 			this.ui.dom.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid).text(name);
 	}
-};
+}
 	
 Node.prototype.change_slot_datatype = function(slot_type, suid, dt) {
 	var slot = this.find_dynamic_slot(slot_type, suid);
@@ -401,13 +386,13 @@ Node.prototype.serialise = function(flat) {
 	if (!flat && this.plugin.isGraph)
 		d.graph = this.plugin.graph.serialise();
 	
-	if (this.dyn_inputs || this.dyn_outputs) {
-		if(this.dyn_inputs) {
+	if (this.dyn_inputs.length || this.dyn_outputs.length) {
+		if(this.dyn_inputs.length) {
 			d.dyn_in = clone(this.dyn_inputs);
 			pack_dt(d.dyn_in);
 		}
 		
-		if (this.dyn_outputs) {
+		if (this.dyn_outputs.length) {
 			d.dyn_out = clone(this.dyn_outputs);
 			pack_dt(d.dyn_out);
 		}

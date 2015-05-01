@@ -42,7 +42,7 @@ AddNode.prototype.redo = addNode
 // -------------------------------
 
 function RemoveNode(graph, node) {
-	var sid, connection
+	var sid, connection, slotIndex
 	GraphEditCommand.apply(this, arguments)
 	this.node = node
 	this.title = 'Remove node ' + node.title
@@ -59,11 +59,11 @@ function RemoveNode(graph, node) {
 		connection = node.parent_graph.plugin.node.inputs.filter(function(input) {
 			return input.dst_slot.uid === sid
 		})[0]
-
 		this.nodeInfo = {
 			proxy: {
 				sid: sid,
-				connection: connection
+				index: connection.dst_slot.index,
+				connection: connection.serialise()
 			}
 		}
 	} else if (node.plugin.id === 'output_proxy') {
@@ -75,7 +75,8 @@ function RemoveNode(graph, node) {
 		this.nodeInfo = {
 			proxy: {
 				sid: sid,
-				connection: connection
+				index: connection.src_slot.index,
+				connection: connection.serialise()
 			}
 		}
 	}
@@ -153,15 +154,6 @@ Disconnect.prototype.undo = function() {
 		graph: this.graph,
 		connection: this.connection
 	})
-/*
-	this.connection = this.graph.connect(this.offset,
-		this.connection.src_node, 
-		this.connection.dst_node,
-		this.connection.src_slot,
-		this.connection.dst_slot)
-
-	return this.connection
-*/
 }
 
 Disconnect.prototype.redo = function() {

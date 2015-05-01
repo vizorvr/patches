@@ -113,7 +113,7 @@ Graph.prototype.registerNode = function(n, order) {
 	if (this.nuid_lut)
 		this.nuid_lut[n.uid] = n
 	
-	if (n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
+	if (!n.plugin.output_slots.length && !n.dyn_outputs.length)
 		this.roots.push(n)
 	
 	if (n.plugin.isGraph) {
@@ -122,7 +122,7 @@ Graph.prototype.registerNode = function(n, order) {
 		else
 			this.children.splice(order[1], 0, n)
 
-		if (E2.core.graphs.indexOf(n.plugin.graph) === -1 )
+		if (E2.core.graphs.indexOf(n.plugin.graph) === -1)
 			E2.core.graphs.push(n.plugin.graph)
 	}
 
@@ -139,7 +139,7 @@ Graph.prototype.removeNode = function(node) {
 	if (this.nuid_lut)
 		delete this.nuid_lut[node.uid];
 	
-	if (node.plugin.output_slots.length === 0 && !node.dyn_outputs) 
+	if (!node.plugin.output_slots.length && !node.dyn_outputs.length) 
 		this.roots = this.roots.filter(nodeFilter);
 	
 	if (node.plugin.isGraph) {

@@ -37,6 +37,8 @@ describe('Undo', function() {
 			output_slots: []
 		}
 		n.inputs = n.outputs = []
+		n.dyn_inputs = []
+		n.dyn_outputs = []
 		return n
 	}
 

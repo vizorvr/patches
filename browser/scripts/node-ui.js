@@ -132,11 +132,10 @@ NodeUI.create_slot = function(parent_node, nid, col, s, type) {
 	div.attr('alt', id);
 	div.hover(E2.app.onShowTooltip.bind(E2.app), E2.app.onHideTooltip.bind(E2.app));
 	col.append(div);
-};
+}
 
-NodeUI.render_slots = function(parent_node, nid, col, slots, type)
-{
+NodeUI.render_slots = function(parent_node, nid, col, slots, type) {
 	for(var i = 0, len = slots.length; i < len; i++)
 		NodeUI.create_slot(parent_node, nid, col, slots[i], type);
-};
+}
 

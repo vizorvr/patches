@@ -116,8 +116,9 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node,
 	var core = this.core
 	var node = this.parent_node
 	
-	function find_sid(nodes, uid){
+	function find_sid(nodes, uid) {
 		for (var n in nodes) {
+			console.log('find_sid', n, nodes[n].uid, uid)
 			if(nodes[n].uid === uid)
 				return parseInt(n)
 		}
@@ -216,7 +217,6 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node,
 
 	if (p_node.plugin.id === 'input_proxy') {
 		last = p_node.outputs.length === 0
-		
 		change_slots(last, node.find_dynamic_slot(E2.slot_type.input, find_sid(this.input_nodes, p_node.uid)), slot)
 		this.dbg('    Output count = ' + p_node.outputs.length)
 	} else {
@@ -261,6 +261,7 @@ SubGraphPlugin.prototype.setGraph = function(graph) {
 		var slotInfo = {
 			name: addedNode.title,
 			dt: E2.dt.ANY,
+			index: info && info.proxy ? info.proxy.index : null,
 			uid: info && info.proxy ? info.proxy.sid : null
 		}
 
@@ -292,3 +293,4 @@ SubGraphPlugin.prototype.setGraph = function(graph) {
 
 if (typeof(module) !== 'undefined')
 	module.exports = SubGraphPlugin
+

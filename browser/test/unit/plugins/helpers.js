@@ -110,8 +110,9 @@ exports.reset = function() {
 	E2.commands = {}
 	E2.slot_type = { input: 0, output: 1 };
 
+	var uidCounter = 0
 	E2.uid = function() {
-		return Math.floor(Math.random() * 1000000)
+		return parseInt(Date.now() + '' + uidCounter++, 10)
 	}
 
 	E2.dom = {

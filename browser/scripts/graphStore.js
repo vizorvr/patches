@@ -78,8 +78,12 @@ GraphStore.prototype.uiNodeAdded = function(graph, node, info) {
 
 	this.publish('nodeAdded', graph, node, info)
 
-	if (info && info.proxy)
-		this.uiConnected(graph.parent_graph, info.proxy.connection)
+	if (info && info.proxy) {
+		console.log('re-adding', info.proxy.connection)
+		var connection = new Connection()
+		connection.deserialise(info.proxy.connection)
+		this.uiConnected(graph.parent_graph, connection)
+	}
 
 	this.emit('changed')
 }
@@ -91,9 +95,6 @@ GraphStore.prototype.uiNodeRemoved = function(graph, node, info) {
 	})
 
 	graph.removeNode(node)
-
-	if (info && info.proxy)
-		this.uiDisconnected(graph.parent_graph, info.proxy.connection)
 
 	this.publish('nodeRemoved', graph, node)
 

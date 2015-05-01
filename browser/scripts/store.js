@@ -29,8 +29,6 @@ Store.prototype.publish = function(evt) {
 
 	var objects = Array.prototype.slice.call(arguments, 1)
 
-console.log('publish', evt, objects.length)
-
 	otwMessage.objects = serialize(objects)
 
 	E2.app.channel.broadcast(otwMessage)
