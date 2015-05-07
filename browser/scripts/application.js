@@ -1100,7 +1100,7 @@ Application.prototype.onKeyDown = function(e) {
 	if (is_text_input_in_focus())
 		return;
 
-	if (!this._noodlesOn && e.keyCode !== 8)
+	if (!this._noodlesOn && e.keyCode !== 9)
 		return;
 
 /*
@@ -1599,8 +1599,12 @@ function onNodeAdded(graph, node) {
 	if (graph === E2.core.active_graph)
 		node.create_ui()
 
-	if (node.plugin.state_changed && node.ui)
-		node.plugin.state_changed(node.ui.plugin_ui)
+	if (node.plugin.state_changed) {
+		node.plugin.state_changed()
+
+		if (node.ui)
+			node.plugin.state_changed(node.ui.plugin_ui)
+	}
 
 	node.patch_up(E2.core.graphs)
 
