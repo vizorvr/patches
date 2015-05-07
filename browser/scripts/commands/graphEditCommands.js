@@ -13,6 +13,52 @@ GraphEditCommand.prototype.execute = function() {
 // -------------------------------
 
 function removeNode() {
+	var sid, connection, slotIndex = 0
+	var node = this.node
+	var graph = this.graph
+
+	if (node.plugin.isGraph) {
+		this.nodeInfo = {
+			order: [ // restore in same render order
+				graph.nodes.indexOf(node),
+				graph.children.indexOf(node)
+			]
+		}
+	} else if (node.parent_graph && node.parent_graph.plugin) {
+		if (node.plugin.id === 'input_proxy') {
+			sid = node.parent_graph.plugin.state.input_sids[node.uid]
+
+			if (node.parent_graph.plugin.node.inputs.length) {
+				connection = node.parent_graph.plugin.node.inputs.filter(function(input) {
+					return input.dst_slot.uid === sid
+				})[0]
+
+				slotIndex = connection.dst_slot.index
+			}
+		} else if (node.plugin.id === 'output_proxy') {
+			sid = node.parent_graph.plugin.state.output_sids[node.uid]
+
+			if (node.parent_graph.plugin.node.outputs.length) {
+				connection = node.parent_graph.plugin.node.outputs.filter(function(output) {
+					return output.src_slot.uid === sid
+				})[0]
+
+				slotIndex = connection.src_slot.index
+			}
+		}
+
+		if (sid !== undefined) {
+			console.log('RemoveNode', sid, slotIndex, !!connection)
+			this.nodeInfo = {
+				proxy: {
+					sid: sid,
+					index: slotIndex,
+					connection: connection ? connection.serialise() : null
+				}
+			}
+		}
+	}
+
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiNodeRemoved',
 		graph: this.graph, 
@@ -42,44 +88,9 @@ AddNode.prototype.redo = addNode
 // -------------------------------
 
 function RemoveNode(graph, node) {
-	var sid, connection, slotIndex
 	GraphEditCommand.apply(this, arguments)
 	this.node = node
 	this.title = 'Remove node ' + node.title
-
-	if (node.plugin.isGraph) {
-		this.nodeInfo = {
-			order: [ // restore in same render order
-				graph.nodes.indexOf(node),
-				graph.children.indexOf(node)
-			]
-		}
-	} else if (node.plugin.id === 'input_proxy') {
-		sid = node.parent_graph.plugin.state.input_sids[node.uid]
-		connection = node.parent_graph.plugin.node.inputs.filter(function(input) {
-			return input.dst_slot.uid === sid
-		})[0]
-		this.nodeInfo = {
-			proxy: {
-				sid: sid,
-				index: connection.dst_slot.index,
-				connection: connection.serialise()
-			}
-		}
-	} else if (node.plugin.id === 'output_proxy') {
-		sid = node.parent_graph.plugin.state.output_sids[node.uid]
-		connection = node.parent_graph.plugin.node.outputs.filter(function(output) {
-			return output.src_slot.uid === sid
-		})[0]
-
-		this.nodeInfo = {
-			proxy: {
-				sid: sid,
-				index: connection.src_slot.index,
-				connection: connection.serialise()
-			}
-		}
-	}
 }
 RemoveNode.prototype = Object.create(GraphEditCommand.prototype)
 RemoveNode.prototype.undo = addNode

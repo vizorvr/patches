@@ -219,6 +219,7 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 Node.prototype.find_dynamic_slot = function(slot_type, suid) {
 	var slots = (slot_type === E2.slot_type.input) ? this.dyn_inputs : this.dyn_outputs;
 
+	// console.log('find_dynamic_slot', 'suid', suid, 'slots', slots)
 	if (slots.length) {
 		for(var i = 0, len = slots.length; i < len; i++) {
 			if (slots[i].uid === suid)
@@ -230,13 +231,18 @@ Node.prototype.find_dynamic_slot = function(slot_type, suid) {
 }
 
 Node.prototype.rename_slot = function(slot_type, suid, name) {
+	var is_inp = slot_type === E2.slot_type.input;
 	var slot = this.find_dynamic_slot(slot_type, suid);
 	
 	if (slot) {
 		slot.name = name;
 
-		if(this.ui)
-			this.ui.dom.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid).text(name);
+		if (this.ui) {
+			this.ui.dom.find('#n' + this.uid + 
+				(is_inp ? 'di' : 'do') + 
+				slot.uid)
+			.text(name);
+		}
 	}
 }
 	

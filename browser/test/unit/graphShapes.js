@@ -23,6 +23,8 @@ global.NodeUI = function() {
 	this.dom[0].style = {}
 }
 global.NodeUI.create_slot = function(){}
+global.Node.prototype.create_ui = function(){}
+global.Node.prototype.destroy_ui = function(){}
 global.Registers = function() {
 	this.serialise = function(){}
 }
@@ -80,6 +82,42 @@ describe('Simple graph shapes', function() {
 		var ds = floatDisplay.plugin.input_slots[0]
 		E2.app.graphApi.connect(graph, new Connection(ipx, floatDisplay, ss, ds, 0))
 		assert.equal(ss.dt.name, 'Float')
+	})
+
+	it('connected input_proxy add redo does not throw', function() {
+		app.setupStoreListeners()
+		var pg = E2.core.active_graph
+
+		var graphNode = E2.app.instantiatePlugin('graph', [0,0])
+		var graph = graphNode.plugin.graph
+		E2.core.active_graph = graph
+
+		var ipx = E2.app.instantiatePlugin('input_proxy', [0,0])
+		var floatDisplay = E2.app.instantiatePlugin('float_display', [0,0])
+		var ss = ipx.dyn_outputs[0]
+		var ds = floatDisplay.plugin.input_slots[0]
+
+		var ipxFloatConn = new Connection(ipx, floatDisplay, ss, ds, 0)
+		E2.app.graphApi.connect(graph, ipxFloatConn)
+
+		var constFloat = E2.app.instantiatePlugin('const_float_generator', [0,0])
+		ss = constFloat.plugin.output_slots[0]
+		ds = graphNode.dyn_inputs[0]
+
+		E2.core.active_graph = pg
+		E2.app.graphApi.connect(pg, new Connection(constFloat, graphNode, ss, ds, 0))
+
+		E2.app.undoManager.undo() // undo connection
+		E2.app.undoManager.undo() // undo constFloat
+		E2.app.undoManager.undo() // undo ipx-floatDisplay connection
+		E2.app.undoManager.undo() // undo floatDisplay
+		E2.app.undoManager.undo() // undo ipx
+
+		E2.app.undoManager.redo() // redo ipx
+		E2.app.undoManager.redo() // redo floatDisplay
+		E2.app.undoManager.redo() // redo ipx-floatDisplay connection
+		E2.app.undoManager.redo() // redo constFloat
+		E2.app.undoManager.redo() // redo connection
 	})
 
 })
