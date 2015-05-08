@@ -23,17 +23,19 @@ paths =
 			'./browser/scripts/material.js',
 			'./browser/scripts/renderer.js',
 			'./browser/scripts/shader.js',
-			'./browser/scripts/plugin-manager-bundled.js',
-			'./browser/scripts/abstractPlugin.js',
-			'./browser/scripts/subGraphPlugin.js',
-			'./browser/scripts/plugin-group.js',
 			'./browser/scripts/connection.js',
 			'./browser/scripts/event-emitter.js',
 			'./browser/scripts/graph.js',
 			'./browser/scripts/node.js',
 			'./browser/scripts/registers.js',
 			'./browser/scripts/core.js',
+
+			'./browser/scripts/plugin.js',
+			'./browser/scripts/subGraphPlugin.js',
+			'./browser/scripts/plugin-manager-bundled.js',
+			'./browser/scripts/plugin-group.js',
 			'./browser/plugins/*.plugin.js',
+
 			'./browser/scripts/player.js',
 			'./browser/scripts/player-run.js'
 		]
