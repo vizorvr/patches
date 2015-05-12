@@ -378,6 +378,7 @@ Application.prototype.clearEditState = function()
 	this.editConn = null;
 	this.shift_pressed = false;
 	this.ctrl_pressed = false;
+	this.alt_pressed = false;
 	this.clearHoverState()
 };
 
@@ -1258,7 +1259,7 @@ Application.prototype.onKeyDown = function(e) {
 			else
 				this.undoManager.redo()
 		}
-	}  
+	}
 
 };
 
@@ -1739,10 +1740,7 @@ Application.prototype.start = function() {
 	// Clear hover state on window blur. Typically when the user switches
 	// to another tab.
 	window.addEventListener('blur', function() {
-		that.shift_pressed = false
-		that.ctrl_pressed = false
-		that.releaseHoverSlot()
-		that.releaseHoverNode(false)
+		that.clearEditState()
 	})
 	
 	window.addEventListener('resize', function() {
