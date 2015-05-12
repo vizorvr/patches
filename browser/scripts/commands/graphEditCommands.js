@@ -33,7 +33,8 @@ function removeNode() {
 					return input.dst_slot.uid === sid
 				})[0]
 
-				slotIndex = connection.dst_slot.index
+				if (connection)
+					slotIndex = connection.dst_slot.index
 			}
 		} else if (node.plugin.id === 'output_proxy') {
 			sid = node.parent_graph.plugin.state.output_sids[node.uid]
@@ -43,7 +44,8 @@ function removeNode() {
 					return output.src_slot.uid === sid
 				})[0]
 
-				slotIndex = connection.src_slot.index
+				if (connection)
+					slotIndex = connection.src_slot.index
 			}
 		}
 
