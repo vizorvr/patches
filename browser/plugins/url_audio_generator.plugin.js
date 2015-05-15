@@ -114,8 +114,8 @@ UrlAudio.prototype.state_changed = function(ui)
 	if (this.state.url) {
 		if(ui)
 			ui.attr('title', this.state.url);
-
-		this.dirty = true;
+		else
+			this.dirty = true;
 	}
 };
 })();
