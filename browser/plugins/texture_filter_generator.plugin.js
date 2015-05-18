@@ -1,5 +1,7 @@
-E2.p = E2.plugins["texture_filter_generator"] = function(core, node)
+(function(){
+var TextureFilter = E2.plugins["texture_filter_generator"] = function(core, node)
 {
+	Plugin.apply(this, arguments)
 	this.desc = 'Emits a texture mini- and magnify filter type.';
 	
 	this.input_slots = [];
@@ -13,34 +15,34 @@ E2.p = E2.plugins["texture_filter_generator"] = function(core, node)
 	this.state = { type: this.gl.LINEAR };
 };
 
-E2.p.prototype.reset = function()
+TextureFilter.prototype = Object.create(Plugin.prototype)
+
+TextureFilter.prototype.reset = function()
 {
 };
 
-E2.p.prototype.create_ui = function()
+TextureFilter.prototype.create_ui = function()
 {
 	var inp = $('<select />', { selectedIndex: 1 });
 	
 	$('<option />', { value: this.gl.NEAREST, text: 'Nearest' }).appendTo(inp);
 	$('<option />', { value: this.gl.LINEAR, text: 'Linear' }).appendTo(inp);
 	 
-	inp.change(function(self) { return function() 
-	{
-		self.state.type = parseInt(inp.val());
-		self.state_changed(inp);
-		self.updated = true;
+	inp.change(function(self) { return function()  {
+		self.undoableSetState('type', inp.val(), self.state.type)
 	}}(this));
 	
 	return inp;
 };
 
-E2.p.prototype.update_output = function(slot)
+TextureFilter.prototype.update_output = function(slot)
 {
 	return this.state.type;
 };
 
-E2.p.prototype.state_changed = function(ui)
+TextureFilter.prototype.state_changed = function(ui)
 {
 	if(ui)
 		ui.val('' + this.state.type);
 };
+})();

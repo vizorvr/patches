@@ -1,7 +1,9 @@
+(function() {
+
 function Application() {
-	var self = this;
-	var canvas_parent = $("#canvas_parent");
-	var canvas = $("#canvas");
+	var that = this;
+
+	E2.app = this
 
 	this.state = {
 		STOPPED: 0,
@@ -9,34 +11,26 @@ function Application() {
 		PAUSED: 2
 	};
 	
-	this.presetManager = new PresetManager('/presets');
-	this.player = null;
-	this.canvas = canvas;
-	this.c2d = canvas[0].getContext('2d');
-	this.src_node = null;
-	this.dst_node = null;
-	this.src_slot = null;
-	this.src_slot_div = null;
-	this.dst_slot = null;
-	this.dst_slot_div = null;
-	this.edit_conn = null;
+	this.presetManager = new PresetManager('/presets')
+	this.canvas = E2.dom.canvas;
+	this.c2d = E2.dom.canvas[0].getContext('2d');
+	this.editConn = null;
 	this.shift_pressed = false;
 	this.ctrl_pressed = false;
 	this.alt_pressed = false;
 	this.hover_slot = null;
 	this.hover_slot_div = null;
 	this.hover_connections = [];
-	this.hover_node = null;
-	this.hover_nodes = [];
+	this.hoverNode = null;
 	this.scrollOffset = [0, 0];
 	this.selection_start = null;
 	this.selection_end = null;
 	this.selection_last = null;
-	this.selection_nodes = [];
-	this.selection_conns = [];
+	this.selectedNodes = [];
+	this.selectedConnections = [];
 	this.selection_dom = null;
 	this.clipboard = null;
-	this.in_drag = false;
+	this.inDrag = false;
 	this.resize_timer = null;
 	this.is_osx = /mac os x/.test(navigator.userAgent.toLowerCase());
 	this.condensed_view = false;
@@ -45,1812 +39,1717 @@ function Application() {
 	this.normal_border_style = 'none';
 	this.is_panning = false;
 	this.is_fullscreen = false;
+	this._noodlesOn = true
+
+	this._mousePosition = [400,200]
+
+	this.undoManager = new UndoManager()
+	this.graphApi = new GraphApi(this.undoManager)
+	this.channel = new EditorChannel(this)
+
+	this.dispatcher = new Flux.Dispatcher()
+	this.graphStore = new GraphStore()
 
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
 
-	$('#left-nav-collapse-btn').click(function(e)
-	{
-		self.toggleLeftPane();
-	});
+	$('#left-nav-collapse-btn').click(function(e) {
+		that.toggleLeftPane()
+	})
+}
 
-	this.getNIDFromSlot = function(id)
-	{
-		return parseInt(id.slice(1, id.indexOf('s')));
-	};
+Application.prototype.getNIDFromSlot = function(id) {
+	return parseInt(id.slice(1, id.indexOf('s')));
+}
+
+Application.prototype.getSIDFromSlot = function(id) {
+	return parseInt(id.slice(id.indexOf('s') + 2, id.length));
+};
+
+Application.prototype.offsetToCanvasCoord = function(ofs) {
+	var o = [ofs.left, ofs.top];
+	var co = E2.dom.canvas_parent.offset();
+	var so = this.scrollOffset;
 	
-	this.getSIDFromSlot = function(id)
-	{
-		return parseInt(id.slice(id.indexOf('s') + 2, id.length));
-	};
+	o[0] -= co.left;
+	o[1] -= co.top;
+	o[0] += so[0];
+	o[1] += so[1];
 	
-	this.offsetToCanvasCoord = function(ofs)
-	{
-		var o = [ofs.left, ofs.top];
-		var co = canvas_parent.offset();
-		var so = self.scrollOffset;
-		
-		o[0] -= co.left;
-		o[1] -= co.top;
-		o[0] += so[0];
-		o[1] += so[1];
-		
-		return o;
-	};
-	
-	this.getSlotPosition = function(node, slot_div, type, result)
-	{
-		var area = node.open ? slot_div : node.ui.dom;
-		var o = self.offsetToCanvasCoord(area.offset());
-	
-		result[0] = Math.round(type == E2.slot_type.input ? o[0] : o[0] + area.width() + (node.open ? 0 : 5));
-		result[1] = Math.round(o[1] + (area.height() / 2));
-	};
-	
-	this.onPluginsLoaded = function()
-	{
+	return o;
+};
+
+Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
+	var area = node.open ? slot_div : node.ui.dom;
+	var o = this.offsetToCanvasCoord(area.offset());
+
+	result[0] = Math.round(type == E2.slot_type.input ? o[0] : o[0] + area.width() + (node.open ? 0 : 5));
+	result[1] = Math.round(o[1] + (area.height() / 2));
+};
+
+Application.prototype.instantiatePlugin = function(id, pos) {
+	var that = this
+	var cp = E2.dom.canvas_parent
+	var co = cp.offset()
+
+	pos = pos || this._mousePosition
+
+	function createPlugin(name) {
+		var ag = E2.core.active_graph
+		var node = new Node(ag, id,
+			Math.floor((pos[0] - co.left) + that.scrollOffset[0]), 
+			Math.floor((pos[1] - co.top) + that.scrollOffset[1]));
+
+		if (name) { // is graph?
+			node.plugin.setGraph(new Graph(that.player.core, node.parent_graph))
+			node.title = name // + ' ' + node.plugin.graph.uid
+			node.plugin.graph.plugin = node.plugin
+		}
+
+		that.graphApi.addNode(ag, node)
+
+		node.reset()
+
+		return node
 	}
+	
+	var node 
 
-	this.onPluginRegistered = function(key, id)
-	{
+	if (id === 'graph')
+		node = createPlugin('graph')
+	else if (id === 'loop')
+		node = createPlugin('loop')
+	else
+		node = createPlugin(null)
+
+	return node
+}
+
+Application.prototype.activateHoverSlot = function() {
+	var that = this
+	var hs = this.hover_slot;
+	
+	if(!hs)
+		return;
+	
+	this.hover_slot_div[0].style.backgroundColor = E2.erase_color;
+	
+	// Mark any attached connection
+	var conns = E2.core.active_graph.connections;
+	var dirty = false;
+	
+	conns.some(function(c) {
+		if (c.dst_slot === hs || c.src_slot === hs) {
+			c.ui.deleting = true;
+			that.hover_connections.push(c);
+			dirty = true;
+			
+			if (hs.type == E2.slot_type.input)
+				return true; // Early out if this is an input slot, but continue searching if it's an output slot. There might be multiple connections.
+		}
+	})
+
+	if (dirty)
+		this.updateCanvas(false);
+}
+
+Application.prototype.releaseHoverSlot = function() {
+	if (this.hover_slot) {
+		this.hover_slot_div[0].style.backgroundColor = 'inherit';
+		this.hover_slot_div[0].style.color = '#000';
+		this.hover_slot_div = null;
+		this.hover_slot = null;
 	}
+	
+	this.releaseHoverConnections();
+}
 
-	this.onPluginInstantiated = function(id, pos)
-	{	
-		var cp = canvas_parent;
-		var co = cp.offset();
-		var createPlugin = function(name)
-		{
-			var node = self.player.core.active_graph.create_instance(id, (pos[0] - co.left) + self.scrollOffset[0], (pos[1] - co.top) + self.scrollOffset[1]);
+Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
+	e.stopPropagation()
+	
+	if (!this.shift_pressed) {
+		var graph = E2.core.active_graph
+
+		if (type === E2.slot_type.output) {
+			// drag new connection from output
+			this.editConn = new EditConnection(
+				this.graphApi,
+				new Connection(node, null, slot),
+				slot_div,
+				null
+			)
+
+			this.getSlotPosition(node, slot_div, E2.slot_type.output, 
+				this.editConn.ui.src_pos);
 		
-			node.reset();
+			var offset = 0;
+			
+			var ocs = graph.find_connections_from(node, slot);
+			ocs.sort(function(a, b) {
+				return a.offset < b.offset ? - 1 : a.offset > b.offset ? 1 : 0;
+			})
+			
+			ocs.some(function(oc, i) {
+				oc.offset = i;
 
-			if(name !== null) // Graph?
-			{
-				node.title = name;
-				node.plugin.graph = new Graph(
-					self.player.core,
-					node.parent_graph,
-					node.parent_graph.tree_node.add_child(name)
-				);
+				if (oc.offset != i) {
+					offset = i;
+					return true;
+				}
 				
-				node.plugin.graph.plugin = node.plugin;
-				node.plugin.graph.reg_listener(node.plugin.graph_event(node.plugin));
-				self.player.core.graphs.push(node.plugin.graph);
-			}
-			
-			node.create_ui();
-			
-			if(node.plugin.state_changed)
-			{
-				node.plugin.state_changed(null);			
-				node.plugin.state_changed(node.ui.plugin_ui);			
-			}
-		};
-		
-		if (id === 'graph') {
-			bootbox.prompt('Name new graph.', function(name) {
-				createPlugin(name);
+				offset = i + 1;
 			});
-		}
-		else if(id === 'loop')
-			createPlugin('Loop');
-		else
-			createPlugin(null);
-	};
-	
-	this.activateHoverSlot = function()
-	{
-		var hs = self.hover_slot;
-		
-		if(!hs)
-			return;
-		
-		self.hover_slot_div[0].style.backgroundColor = E2.erase_color;
-		
-		// Mark any attached connection
-		var conns = self.player.core.active_graph.connections;
-		var dirty = false;
-		
-		conns.some(function(c)
-		{
-			if(c.dst_slot === hs || c.src_slot === hs)
-			{
-				c.ui.deleting = true;
-				self.hover_connections.push(c);
-				dirty = true;
-				
-				if(hs.type == E2.slot_type.input)
-					return true; // Early out if this is an input slot, but continue searching if it's an output slot. There might be multiple connections.
-			}
-		});
-
-		if(dirty)
-			self.updateCanvas(false);
-	};
-	
-	this.releaseHoverSlot = function()
-	{
-		if(self.hover_slot != null)
-		{
-			self.hover_slot_div[0].style.backgroundColor = 'inherit';
-			self.hover_slot_div[0].style.color = '#000';
-			self.hover_slot_div = null;
-			self.hover_slot = null;
-		}
-		
-		self.releaseHoverConnections();
-	};
-	
-	this.onSlotClicked = function(node, slot, slot_div, type) { return function(e)
-	{
-		e.stopPropagation();
-		
-		if(!self.shift_pressed)
-		{
-			var graph = self.player.core.active_graph;
-
-			if (type === E2.slot_type.output)
-			{
-				// drag new connection from output
-				self.src_node = node;
-				self.src_slot = slot;
-				self.src_slot_div = slot_div;
-
-				self.edit_conn = new Connection(null, null, null, null);
-				self.edit_conn.create_ui();
-
-				self.getSlotPosition(node, slot_div, E2.slot_type.output, self.edit_conn.ui.src_pos);
 			
-				var offset = 0;
-				
-				var ocs = graph.find_connections_from(node, slot);
-				ocs.sort(function(a, b) {
-					return a.offset < b.offset ? - 1 : a.offset > b.offset ? 1 : 0;
-				});
-				
-				ocs.forEach(function(oc, i)
-				{
-					oc.offset = i;
+			this.editConn.offset = offset;
+			slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
+		} else { // drag connection from input
+			var conn = graph.find_connection_to(node, slot);
+			if (!conn) {
+				// new connection from input
+				this.editConn = new EditConnection(
+					this.graphApi,
+					new Connection(null, node, null, slot), 
+					null,
+					slot_div)
 
-					if(oc.offset != i)
-					{
-						offset = i;
-						return;
-					}
-					
-					offset = i + 1;
-				});
-				
-				self.edit_conn.offset = offset;
-				slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
-			} else { // drag connection from input
-				self.dst_node = node;
-				self.dst_slot = slot;
-				self.dst_slot_div = slot_div;
+				this.editConn.offset = 0;
 
-				var conn = graph.find_connection_to(node, slot);
-				if (!conn)
-				{
-					// new connection
-					self.edit_conn = new Connection(null, null, null, null, 1);
-					self.edit_conn.create_ui();
-					self.edit_conn.offset = 0;
-					self.getSlotPosition(node, slot_div, E2.slot_type.input, self.edit_conn.ui.src_pos);
-				}
-				else
-				{
-					// existing connection
-					self.src_node = conn.src_node;
-					self.src_slot = conn.src_slot;
-					self.src_slot_div = conn.ui.src_slot_div;
-					self.edit_conn = conn;
-				}
-
-				self.onSlotEntered(node, slot, slot_div)(e);
-			}
-		}
-		else
-			self.removeHoverConnections();
-				
-		return false;
-	}};
-
-	this.onSlotEntered = function(node, slot, slot_div) { return function(e)
-	{
-		if (self.edit_conn)
-		{
-			var ss_dt;
-
-			if (self.edit_conn.direction === 1)
-			{
-				ss_dt = self.dst_slot.dt;
+				this.getSlotPosition(node, slot_div, E2.slot_type.input, 
+					this.editConn.ui.src_pos);
 			} else {
-				ss_dt = self.src_slot.dt;
+				this.editConn = new EditConnection(this.graphApi, conn, null, slot_div)
 			}
 
-			var any_dt = self.player.core.datatypes.ANY;
-
-			// Only allow connection if datatypes match and slot is unconnected. 
-			// Don't allow self-connections. There no complete check for cyclic 
-			// redundacies, though we should probably institute one.
-			// Additionally, don't allow connections between two ANY slots.
-			var isValid = (ss_dt === any_dt || slot.dt === any_dt || ss_dt === slot.dt) && 
-				!(ss_dt === any_dt && slot.dt === any_dt) &&
-				(!slot.is_connected || // not connected, or
-					// source to destination, and dest is slot and source isn't slot
-					((self.edit_conn.direction === 0 && self.dst_slot === slot && self.src_node !== node) ||
-					// dest to source, and source is slot and dest isn't slot
-				   (self.edit_conn.direction === 1 && self.src_slot === slot && self.dst_node !== node)));
-
-			if (self.edit_conn.direction === 1)
-			{
-				if (slot.type !== E2.slot_type.output)
-					isValid = false;
-
-				if (!isValid)
-				{
-					self.src_node = null;
-					self.src_slot = null;
-					self.src_slot_div = null;
-				}
-				else
-				{
-					self.src_slot = slot;
-					self.src_node = node;
-					self.src_slot_div = slot_div;
-				}
-			}
-			else
-			{
-				if (slot.type !== E2.slot_type.input)
-					isValid = false;
-
-				if (!isValid)
-				{
-					self.dst_node = null;
-					self.dst_slot = null;
-					self.dst_slot_div = null;
-				}
-				else
-				{
-					self.dst_node = node;
-					self.dst_slot = slot;
-					self.dst_slot_div = slot_div;
-				}
-			}
-
-			if (isValid)
-				slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
-			else
-				slot_div[0].style.color = E2.erase_color;
+			this.onSlotEntered(node, slot, slot_div);
 		}
-
-		self.hover_slot = slot;
-		self.hover_slot_div = slot_div;
-
-		if(self.shift_pressed)
-			self.activateHoverSlot();
-	}};
-
-	this.onSlotExited = function(node, slot, slot_div) { return function(e)
-	{
-		if (self.edit_conn)
-		{
-			if (self.edit_conn.direction === 1)
-			{
-				self.src_node = null;
+	} else {
+		this.removeHoverConnections();
+	}
 			
-				if(self.src_slot === slot)
-				{
-					slot_div[0].style.color = '#000';
-					self.src_slot = null;
-				}
-			}
-			else
-			{
-				self.dst_node = null;
-			
-				if (self.edit_conn.dst_slot && self.edit_conn.dst_slot.is_connected)
-				{
-					self.hover_connections = [self.edit_conn];
-					self.removeHoverConnections();
-					self.edit_conn.dst_slot = null;
-				}
+	return false;
+}
 
-				if(self.dst_slot === slot)
-				{
-					slot_div[0].style.color = '#000';
-					self.dst_slot = null;
-				}
-			}
-		}
-			
-		self.releaseHoverSlot();
-	}};
+Application.prototype.onSlotEntered = function(node, slot, slot_div) {
+	if (this.editConn) {
+		if (this.editConn.hoverSlot(node, slot)) {
+			slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
+		} else
+			slot_div[0].style.color = E2.erase_color;
+	}
+
+	this.hover_slot = slot;
+	this.hover_slot_div = slot_div;
+
+	if (this.shift_pressed)
+		this.activateHoverSlot()
+}
+
+Application.prototype.onSlotExited = function(node, slot, slot_div) {
+	if (this.editConn) {
+		slot_div[0].style.color = '#000';
+		this.editConn.blurSlot(slot)
+	}
+		
+	this.releaseHoverSlot();
+}
+
+Application.prototype.onMouseReleased = function() {
+	var changed = false
+
+	// Creating a connection?
+	if (this.editConn) {
+		var ec = this.editConn
+		this.editConn = null
+		var c = ec.commit()
+
+		if (c)
+			c.signal_change(true)
+
+		if (ec.srcSlotDiv)
+			ec.srcSlotDiv[0].style.color = '#000'
+		if (ec.dstSlotDiv)
+			ec.dstSlotDiv[0].style.color = '#000'
+
+		changed = true
+	}
+
+	if (changed)
+		this.updateCanvas(true);
+	else
+		E2.dom.structure.tree.on_mouse_up();
+
+	this.releaseHoverSlot()
+}
+
+Application.prototype.updateCanvas = function(clear) {
+	var c = this.c2d
+	var canvas = this.canvas[0]
+	 
+	if (clear)
+		c.clearRect(0, 0, canvas.width, canvas.height)
+
+	var conns = E2.core.active_graph.connections
+	var cb = [[], [], [], []]
+	var styles = ['#888', '#fd9720', '#09f', E2.erase_color]
 	
-	this.updateCanvas = function(clear)
-	{
-		var c = self.c2d;
-		var canvas = self.canvas[0];
-		 
-		if(clear)
-			c.clearRect(0, 0, canvas.width, canvas.height);
-				
-		var conns = self.player.core.active_graph.connections;
-		var cb = [[], [], [], []];
-		var styles = ['#888', '#fd9720', '#09f', E2.erase_color];
-		
-		for(var i = 0, len = conns.length; i < len; i++)
-		{
-			var cui = conns[i].ui;
+	var connsLen = conns.length
+	for (var i=0; i < connsLen; i++) {
+		var cui = conns[i].ui
+		// Draw inactive connections first, then connections with data flow,
+		// next selected connections and finally selected connections to 
+		// ensure they get rendered on top.
+		cb[cui.deleting ? 3 : cui.selected ? 2 : cui.flow ? 1 : 0].push(cui.parent_conn)
+	}
+	
+	if (this.editConn)
+		cb[0].push(this.editConn.connection)
+	
+	var so = this.scrollOffset;
+	
+	c.lineWidth = 2;
+	c.lineCap = 'square';
+	c.lineJoin = 'miter';
+	
+	for(var bin = 0; bin < 4; bin++) {
+		var b = cb[bin];
 
-			// Draw inactive connections first, then connections with data flow,
-			// next selected connections and finally selected connections to 
-			// ensure they get rendered on top.
-			cb[cui.deleting ? 3 : cui.selected ? 2 : cui.flow ? 1 : 0].push(cui.parent_conn);
+		if(b.length > 0) {
+			c.strokeStyle = styles[bin];
+			c.beginPath();
+		
+			for(var i = 0, len = b.length; i < len; i++) {
+                // Noodles!
+                var cn = b[i].ui;
+                var x1 = (cn.src_pos[0] - so[0]) + 0.5;
+                var y1 = (cn.src_pos[1] - so[1]) + 0.5;
+                var x4 = (cn.dst_pos[0] - so[0]) + 0.5;
+                var y4 = (cn.dst_pos[1] - so[1]) + 0.5;
+                var diffx = Math.max(16, x4 - x1);
+                var x2 = x1 + diffx * 0.5;
+                var x3 = x4 - diffx * 0.5;
+    
+                c.moveTo(x1, y1);
+                c.bezierCurveTo(x2, y1, x3, y4, x4, y4);
+			}
+			
+			c.stroke();
 		}
-		
-		if(self.edit_conn)
-			cb[0].push(self.edit_conn);
-		
-		var so = self.scrollOffset;
+	}
+	
+	// Draw selection fence (if any)
+	if (this.selection_start) {
+		var ss = this.selection_start;
+		var se = this.selection_end;
+		var so = this.scrollOffset;
+		var s = [ss[0] - so[0], ss[1] - so[1]];
+		var e = [se[0] - so[0], se[1] - so[1]];
 		
 		c.lineWidth = 2;
-		c.lineCap = 'square';
-		c.lineJoin = 'miter';
-		
-		for(var bin = 0; bin < 4; bin++)
-		{
-			var b = cb[bin];
+		c.strokeStyle = '#09f';
+		c.strokeRect(s[0], s[1], e[0] - s[0], e[1] - s[1]);
+	}
+}
 
-			if(b.length > 0)
-			{
-				c.strokeStyle = styles[bin];
-				c.beginPath();
-			
-				for(var i = 0, len = b.length; i < len; i++)
-				{
-                    // Noodles!
-                    var cn = b[i].ui;
-                    var x1 = (cn.src_pos[0] - so[0]) + 0.5;
-                    var y1 = (cn.src_pos[1] - so[1]) + 0.5;
-                    var x4 = (cn.dst_pos[0] - so[0]) + 0.5;
-                    var y4 = (cn.dst_pos[1] - so[1]) + 0.5;
-                    var diffx = Math.max(16, x4 - x1);
-                    var x2 = x1 + diffx * 0.5;
-                    var x3 = x4 - diffx * 0.5;
-        
-                    c.moveTo(x1, y1);
-                    c.bezierCurveTo(x2, y1, x3, y4, x4, y4);
-				}
-				
-				c.stroke();
-			}
-		}
-		
-		// Draw selection fence (if any)
-		if(self.selection_start)
-		{
-			var ss = self.selection_start;
-			var se = self.selection_end;
-			var so = self.scrollOffset;
-			var s = [ss[0] - so[0], ss[1] - so[1]];
-			var e = [se[0] - so[0], se[1] - so[1]];
-			
-			c.lineWidth = 2;
-			c.strokeStyle = '#09f';
-			c.strokeRect(s[0], s[1], e[0] - s[0], e[1] - s[1]);
-		}
-	};
+Application.prototype.mouseEventPosToCanvasCoord = function(e, result) {
+	var cp = E2.dom.canvas_parent[0];
 	
-	this.mouseEventPosToCanvasCoord = function(e, result)
-	{
-		var cp = canvas_parent[0];
+	result[0] = (e.pageX - cp.offsetLeft) + this.scrollOffset[0];
+	result[1] = (e.pageY - cp.offsetTop) + this.scrollOffset[1];
+};
+
+Application.prototype.releaseHoverNode = function(release_conns) {
+	if (this.hoverNode !== null) {
+		this.hoverNode = null
 		
-		result[0] = (e.pageX - cp.offsetLeft) + self.scrollOffset[0];
-		result[1] = (e.pageY - cp.offsetTop) + self.scrollOffset[1];
-	};
+		if (release_conns)
+			this.releaseHoverConnections()
+	}
+}
+
+Application.prototype.clearHoverState = function() {
+	this.hover_slot = null;
+	this.hover_slot_div = null;
+	this.hover_connections = [];
+	this.hoverNode = null;
+};
+
+Application.prototype.clearEditState = function()
+{
+	this.editConn = null;
+	this.shift_pressed = false;
+	this.ctrl_pressed = false;
+	this.alt_pressed = false;
+	this.clearHoverState()
+};
+
+Application.prototype.releaseHoverConnections = function() {
+	this.hover_connections.map(function(hc) {
+		hc.ui.deleting = false
+	})
+
+	this.hover_connections = []
+
+	this.updateCanvas(false)
+}
+
+Application.prototype.removeHoverConnections = function() {
+	this.hover_connections.map(function(connection) {
+		this.graphApi.disconnect(E2.core.active_graph, connection)
+	}.bind(this))
+
+	this.hover_connections = []
+}
+
+Application.prototype.deleteSelectedConnections = function() {
+	this.selectedConnections.map(function(connection) {
+		this.graphApi.disconnect(E2.core.active_graph, connection)
+	}.bind(this))
+
+	this.hover_connections = []
+}
 	
-	this.onMouseReleased = function(e)
-	{
-		var changed = false;
+Application.prototype.deleteSelectedNodes = function() {
+	var that = this
+	var hns = this.selectedNodes
+	var ag = E2.core.active_graph
 
-		// Creating a connection?
-		if (self.edit_conn)
-		{
-			var ss = self.src_slot;
-			var ds = self.dst_slot;
+	this.undoManager.begin('Delete nodes')
 
-			if (!ss || !ds)
-			{
-				self.edit_conn = self.src_node = self.dst_node = null;
-				self.updateCanvas(true);
-				self.releaseHoverSlot();
-				return;
-			}
+	this.releaseHoverNode(false)
 
-			var c;
-			if (self.edit_conn.dst_slot === self.dst_slot && self.edit_conn.src_slot == self.src_slot)
-			{
-				// already fully connected
-				c = self.edit_conn;
-			}
-			else
-			{
-				c = new Connection(self.src_node, self.dst_node, ss, ds);
-				self.src_node.outputs.push(c);
-	
-				self.dst_node.add_input(c);
+	this.deleteSelectedConnections()
 
-				c.create_ui();
-				c.ui.src_pos = self.edit_conn.ui.src_pos.slice(0);
-				c.ui.src_slot_div = self.src_slot_div;
-				c.ui.dst_slot_div = self.dst_slot_div;
-				c.offset = self.edit_conn.offset;
-				self.player.core.active_graph.connections.push(c);
-			}
+	hns.forEach(function(n) {
+		that.graphApi.removeNode(ag, n)
+	})
 
-			self.getSlotPosition(self.src_node, self.src_slot_div, E2.slot_type.output, c.ui.src_pos);
-			self.getSlotPosition(self.dst_node, self.dst_slot_div, E2.slot_type.input, c.ui.dst_pos);
+	this.undoManager.end('Delete nodes')
 
-			c.signal_change(true);
+	this.clearSelection()
+}
 
-			self.dst_slot_div[0].style.color = '#000';
-			self.dst_slot.is_connected = true;
-			self.dst_slot_div = self.dst_slot = null;
-			changed = true;
+Application.prototype.onNodeHeaderEntered = function(node) {
+	this.hoverNode = node
+}
+
+Application.prototype.onNodeHeaderExited = function() {
+	this.releaseHoverNode(true)
+}
+
+Application.prototype.onNodeHeaderMousedown = function() {
+	if (!this.hoverNode)
+		return;
+
+	var isIn = this.isNodeInSelection(this.hoverNode)
+	var addNode
+
+	if (!this.shift_pressed) {
+		if (!isIn) {
+			this.clearSelection()
+			addNode = this.hoverNode
 		}
-
-		if(self.src_slot)
-		{
-			self.src_slot_div[0].style.color = '#000';
-			self.src_slot = self.src_slot_div = null;
-			changed = true;
-		}
-		
-		self.dst_node = self.src_node = self.edit_conn = null;
-		
-		if(changed)
-			self.updateCanvas(true);
+	} else {
+		if (isIn)
+			this.deselectNode(this.hoverNode)
 		else
-			E2.dom.structure.tree.on_mouse_up();
-	};
-	
-	this.activateHoverNode = function()
-	{
-		if(self.hover_node !== null)
-		{
-			self.hover_node.ui.header_row[0].className += ' pl_delete';
+			addNode = this.hoverNode
+	} 
+
+	if (addNode) {
+		this.markNodeAsSelected(addNode)
+		addNode.inputs.concat(addNode.outputs)
+			.map(this.markConnectionAsSelected.bind(this))
+	}
+}
+
+Application.prototype.onNodeHeaderClicked = function(e) {
+	e.stopPropagation()
+	return false
+}
+
+Application.prototype.onNodeHeaderDblClicked = function(node) {
+	var that = this
+
+	bootbox.prompt({
+		animate: false,
+		title: 'Rename node',
+		value: node.title,
+		callback: function(name) {
+			if (!name)
+				return;
+
+			that.graphApi.renameNode(E2.core.active_graph, node, name)
+
+		}
+	})
+}
+
+Application.prototype.isNodeInSelection = function(node) {
+	return this.selectedNodes.indexOf(node) > -1
+}
+
+Application.prototype.executeNodeDrag = function(nodes, conns, dx, dy) {
+	var nl = nodes.length
+
+	for(var i=0; i < nl; i++) {
+		var node = nodes[i]
+		node.x += dx
+		node.y += dy
+
+		if (!node.ui)
+			continue;
+
+		var style = node.ui.dom[0].style
+		style.left = node.x + 'px'
+		style.top = node.y + 'px'
+	}
+
+	var cl = conns.length
+	if (cl && conns[0].ui) {
+		for (var i=0; i < cl; i++)
+			E2.app.redrawConnection(conns[i])
+	}
+
+	this.updateCanvas(true)
+}
+
+Application.prototype.onNodeDragged = function(node) {
+	var nd = node.ui.dom[0]
+	var dx = Math.floor(nd.offsetLeft) - Math.floor(node.x)
+	var dy = Math.floor(nd.offsetTop) - Math.floor(node.y)
+
+	if (!dx && !dy)
+		return;
+
+	if (!this.inDrag) {
+		this.inDrag = true
+
+		var nodes = [ node ]
+
+		if (this.isNodeInSelection(node))
+			nodes = this.selectedNodes
 		
-			var hcs = self.hover_connections;
-			var conns = self.player.core.active_graph.connections;
-			
-			function iterate_conns(hcs, uid)
+		this._dragInfo = {
+			original: { x: node.x, y: node.y },
+			connections: nodes.reduce(function(arr, curr) {
+				return arr.concat(curr.inputs.concat(curr.outputs))
+			}, [])
+		}
+
+		this.undoManager.begin('Move')
+	
+		this._dragInfo.nodes = nodes
+	}
+
+	this.executeNodeDrag(this._dragInfo.nodes, this._dragInfo.connections, dx, dy)
+}
+
+Application.prototype.onNodeDragStopped = function(node) {
+	this.onNodeDragged(node)
+
+	if (!this._dragInfo)
+		return;
+
+	var di = this._dragInfo
+	var nd = node.ui.dom[0]
+	var dx = nd.offsetLeft - di.original.x
+	var dy = nd.offsetTop - di.original.y
+
+	var cmd = new E2.commands.graph.Move(
+		E2.core.active_graph,
+		di.nodes,
+		dx, dy
+	)
+
+	this.undoManager.push(cmd)
+
+	this.undoManager.end()
+
+	this._dragInfo = null
+	this.inDrag = false
+}
+
+Application.prototype.clearSelection = function() {
+	var sn = this.selectedNodes;
+	var sc = this.selectedConnections;
+	
+	for(var i = 0, len = sn.length; i < len; i++) {
+		var nui = sn[i].ui;
+		
+		if(nui) {
+			nui.selected = false;
+			nui.dom[0].style.border = this.normal_border_style;
+		}
+	}
+		
+	for(var i = 0, len = sc.length; i < len; i++) {
+		var cui = sc[i].ui;
+		
+		if(cui) 
+			cui.selected = false;
+	}
+
+	this.selectedNodes = [];
+	this.selectedConnections = [];
+	
+	this.onHideTooltip();
+}
+
+Application.prototype.redrawConnection = function(connection) {
+	var gsp = this.getSlotPosition.bind(this);
+	var cn = connection
+	var cui = cn.ui
+
+	gsp(cn.src_node, cui.src_slot_div, E2.slot_type.output, cui.src_pos);
+	gsp(cn.dst_node, cui.dst_slot_div, E2.slot_type.input, cui.dst_pos);
+}
+
+Application.prototype.onCanvasMouseDown = function(e) {
+	if (e.target.id !== 'canvas')
+		return;
+	
+	if (e.which === 1) {
+		this.selection_start = [0, 0];
+		this.mouseEventPosToCanvasCoord(e, this.selection_start);
+		this.selection_end = this.selection_start.slice(0);
+		this.selection_last = [e.pageX, e.pageY];
+		this.clearSelection();
+		this.selection_dom = E2.dom.canvas_parent.find(':input').addClass('noselect'); //.attr('disabled', 'disabled');
+	} else if (e.which === 2) {
+		this.is_panning = true;
+		this.canvas[0].style.cursor = 'move';
+		e.preventDefault();
+		return;
+	} else {
+		this.releaseSelection()
+		this.clearSelection()
+		E2.app.updateCanvas()
+	}
+	
+	this.inDrag = true
+	this.updateCanvas(false)
+}
+
+Application.prototype.releaseSelection = function()
+{
+	this.selection_start = null;
+	this.selection_end = null;
+	this.selection_last = null;
+	
+	if(this.selection_dom)
+		this.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
+	
+	this.selection_dom = null;
+};
+
+Application.prototype.onCanvasMouseUp = function(e)
+{
+	if(e.which === 2)
+	{
+		this.is_panning = false;
+		this.canvas[0].style.cursor = '';
+		e.preventDefault();
+		return;		
+	}
+	
+	if(!this.selection_start)
+		return;
+	
+	this.releaseSelection();
+	
+	var nodes = this.selectedNodes;
+	
+	if(nodes.length)
+	{
+		var sconns = this.selectedConnections;
+		
+		var insert_all = function(clist)
+		{
+			for(var i = 0, len = clist.length; i < len; i++)
 			{
-				conns.forEach(function(c)
+				var c = clist[i];
+				var found = false;
+									
+				for(var ci = 0, cl = sconns.length; ci < cl; ci++)
 				{
-					if(c.src_node.uid == uid || c.dst_node.uid == uid)
+					if(c === sconns[ci])
 					{
-						c.ui.deleting = true;
-						hcs.push(c);
+						found = true;
+						break;
 					}
-				});
-			};
-			
-			self.hover_nodes.push(self.hover_node);
-
-			if(self.isNodeInSelection(self.hover_node))
-			{
-				var nodes = self.selection_nodes;
-				
-				nodes.forEach(function(node)
-				{
-					if(node === self.hover_node)
-						return;
-
-					node.ui.header_row[0].className += ' pl_delete';
-					self.hover_nodes.push(node);
-					
-					iterate_conns(hcs, node.uid);
-				});
-			}
-
-			iterate_conns(hcs, self.hover_node.uid);
-			
-			if(hcs.length > 0)
-				self.updateCanvas(false);
-		}
-	};
-	
-	this.releaseHoverNode = function(release_conns)
-	{
-		if(self.hover_node !== null)
-		{
-			var hn = self.hover_nodes;
-			
-			self.hover_node = null;
-			
-			for(var i = 0, len = self.hover_nodes.length; i < len; i++)
-				hn[i].ui.header_row[0].className = hn[i].ui.header_row[0].className.replace(' pl_delete', '')
-			
-			self.hover_nodes = [];
-			
-			if(release_conns)
-				self.releaseHoverConnections();
-		}
-	};
-
-	this.clearEditState = function()
-	{
-		self.src_node = null;
-		self.dst_node = null;
-		self.src_slot = null;
-		self.src_slot_div = null;
-		self.dst_slot = null;
-		self.dst_slot_div = null;
-		self.edit_conn = null;
-		self.shift_pressed = false;
-		self.ctrl_pressed = false;
-		self.hover_slot = null;
-		self.hover_slot_div = null;
-		self.hover_connections = [];
-		self.hover_node = null;
-	};
-	
-	this.releaseHoverConnections = function()
-	{
-		var hcs = self.hover_connections;
-		
-		if(hcs.length > 0)
-		{
-			for(var i = 0, len = hcs.length; i < len; i++)
-				hcs[i].ui.deleting = false;
-			
-			self.hover_connections = [];
-			self.updateCanvas(false);
-		}
-		
-	};
-	
-	this.removeHoverConnections = function()
-	{
-		var hcs = self.hover_connections;
-	
-		if(hcs.length > 0)
-		{
-			var graph = self.player.core.active_graph;
-			var conns = graph.connections;
-			
-			// Remove the pending connections from the graph list,
-			// so that plugins that rely on notification of graph
-			// events can scan this list with meaningful results.
-			for(var i = 0, len = hcs.length; i < len; i++)
-			{
-				var c = hcs[i];
-				var idx = conns.indexOf(c);
-				
-				if(idx > -1)
-					conns.splice(idx, 1);
-
-				graph.destroy_connection(c);
-			}
-			
-			for(var i = 0, len = hcs.length; i < len; i++)
-				hcs[i].signal_change(false);
-			
-			self.hover_connections = [];
-			self.updateCanvas(true);
-		}
-	};
-		
-	this.onNodeHeaderEntered = function(node) { return function(e)
-	{
-		self.hover_node = node;
-
-		if(self.shift_pressed)
-			self.activateHoverNode();
-	}};
-	
-	this.onNodeHeaderExited = function(e)
-	{
-		self.releaseHoverNode(true);
-		self.hover_node = null;
-	};
-	
-	this.deleteHoverNodes = function()
-	{
-		var hns = self.hover_nodes.slice(0);
-		var ag = self.player.core.active_graph;
-		
-		self.releaseHoverNode(false);
-		self.clearSelection();
-
-		self.removeHoverConnections();
-
-		for(var i = 0, len = hns.length; i < len; i++)
-		{
-			var n = hns[i];
-			
-			ag.unregister_node(n);
-			n.destroy();
-		}
-		
-		self.updateCanvas(true);
-	};
-	
-	this.onNodeHeaderClicked = function(e)
-	{
-		e.stopPropagation();
-		
-		if(self.shift_pressed && self.hover_node !== null)
-		{
-			self.deleteHoverNodes();
-		}
-
-		return false;
-	};
-	
-	this.onNodeHeaderDblClicked = function(node) { return function(e)
-	{
-		bootbox.prompt({
-			animate: false,
-			title: 'Rename node',
-			value: node.title, 
-			callback: function(name) {
-				if (!name)
-					return;
-
-				node.title = name;
-			
-				if(node.ui !== null) {
-					node.ui.dom.find('.t').text(node.title);
-					
-					if(node.update_connections())
-						E2.app.updateCanvas(true)
 				}
-				
-				if(node.plugin.e2_is_graph)
-					node.plugin.graph.tree_node.set_title(node.title)
-			
-				if(node.plugin.renamed)
-					node.plugin.renamed()
-					
-				node.parent_graph.emit_event({ type: 'node-renamed', node: node });
-			}
-		})
-	}}
-	
-	this.isNodeInSelection = function(node)
-	{
-		var sn = self.selection_nodes;
-		 
-		if(sn.length)
-		{
-			for(var i = 0, len = sn.length; i < len; i++)
-			{
-				if(sn[i] === node)
-					return true;
-			}
-		}
 		
-		return false;
-	};
-	
-	this.onNodeDragged = function(node) { return function(e)
-	{
-		self.in_drag = true;
-
-		var nd = node.ui.dom[0];
-		var dx = nd.offsetLeft - node.x;
-		var dy = nd.offsetTop - node.y;
-		var conns = [];
-		var gconns = function(n, coll)
-		{
-			for(var i = 0, len = n.inputs.length; i < len; i++)
-			{
-				var c = n.inputs[i];
-			
-				if(!(c in coll))
-					coll.push(c);
-			}
-
-			for(var i = 0, len = n.outputs.length; i < len; i++)
-			{
-				var c = n.outputs[i];
-			
-				if(!(c in coll))
-					coll.push(c);
+				if(!found)
+				{
+					c.ui.selected = true;
+					sconns.push(c);
+				}
 			}
 		};
 		
-		node.x += dx;
-		node.y += dy;
-		
-		var dirty = node.update_connections();
-		
-		if(self.isNodeInSelection(node))
-		{
-			var sn = self.selection_nodes;
-			var conns = [];
-			
-			for(var i = 0, len = sn.length; i < len; i++)
-			{
-				var n = sn[i];
-				
-				if(n === node) // Already at the desired location
-					continue;
-				
-				var s = n.ui.dom[0].style;
-				
-				n.x += dx;
-				n.y += dy;
-				s.left = '' + (n.x) + 'px';
-				s.top = '' + (n.y) + 'px';
-				gconns(n, conns);
-			}
-		}
-		
-		if(dirty || conns.length)
-		{
-			var gsp = E2.app.getSlotPosition;
-			
-			for(var i = 0, len = conns.length; i < len; i++)
-			{
-				var cn = conns[i];
-				var c = cn.ui;
-				
-				gsp(cn.src_node, c.src_slot_div, E2.slot_type.output, c.src_pos);
-				gsp(cn.dst_node, c.dst_slot_div, E2.slot_type.input, c.dst_pos);
-			}
-			
-			self.updateCanvas(true);
-		}
-	}};
-	
-	this.onNodeDragStopped = function(node) { return function(e)
-	{
-		self.onNodeDragged(node)(e);
-		self.in_drag = false;
-	}};
-	
-	this.clearSelection = function()
-	{
-		var sn = self.selection_nodes;
-		var sc = self.selection_conns;
-		
-		for(var i = 0, len = sn.length; i < len; i++)
-		{
-			var nui = sn[i].ui;
-			
-			if(nui)
-			{
-				nui.selected = false;
-				nui.dom[0].style.border = self.normal_border_style;
-			}
-		}
-			
-		for(var i = 0, len = sc.length; i < len; i++)
-		{
-			var cui = sc[i].ui;
-			
-			if(cui) 
-				cui.selected = false;
-		}
-
-		self.selection_nodes = [];
-		self.selection_conns = [];
-		
-		this.onHideTooltip();
-	};
-	
-	this.onCanvasMouseDown = function(e)
-	{
-		if(e.target.id !== 'canvas')
-			return;
-		
-		if(e.which === 1) 
-		{
-			self.selection_start = [0, 0];
-			self.mouseEventPosToCanvasCoord(e, self.selection_start);
-			self.selection_end = self.selection_start.slice(0);
-			self.selection_last = [e.pageX, e.pageY];
-			self.clearSelection();
-			self.selection_dom = E2.dom.canvas_parent.find(':input').addClass('noselect'); //.attr('disabled', 'disabled');
-		}
-		else if(e.which === 2)
-		{
-			self.is_panning = true;
-			self.canvas[0].style.cursor = 'move';
-			e.preventDefault();
-			return;
-		}
-		else
-		{
-			self.releaseSelection();
-			self.clearSelection();
-			E2.app.updateCanvas();
-		}
-		
-		self.in_drag = true;
-		self.updateCanvas(false);
-	};
-	
-	this.releaseSelection = function()
-	{
-		self.selection_start = null;
-		self.selection_end = null;
-		self.selection_last = null;
-		
-		if(self.selection_dom)
-			self.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
-		
-		self.selection_dom = null;
-	};
-	
-	this.onCanvasMouseUp = function(e)
-	{
-		if(e.which === 2)
-		{
-			self.is_panning = false;
-			self.canvas[0].style.cursor = '';
-			e.preventDefault();
-			return;		
-		}
-		
-		if(!self.selection_start)
-			return;
-		
-		self.releaseSelection();
-		
-		var nodes = self.selection_nodes;
-		
-		if(nodes.length)
-		{
-			var sconns = self.selection_conns;
-			
-			var insert_all = function(clist)
-			{
-				for(var i = 0, len = clist.length; i < len; i++)
-				{
-					var c = clist[i];
-					var found = false;
-										
-					for(var ci = 0, cl = sconns.length; ci < cl; ci++)
-					{
-						if(c === sconns[ci])
-						{
-							found = true;
-							break;
-						}
-					}
-			
-					if(!found)
-					{
-						c.ui.selected = true;
-						sconns.push(c);
-					}
-				}
-			};
-			
-			// Select all pertinent connections
-			for(var i = 0, len = nodes.length; i < len; i++)
-			{
-				var n = nodes[i];
-			    				
-				insert_all(n.inputs);
-				insert_all(n.outputs);
-			}
-		}
-		
-		self.in_drag = false;
-		self.updateCanvas(true);
-		
-		// Clear focus to prevent problems with the user dragging over text areas (bringing them in focus) during selection.
-		if(document.activeElement)
-    			document.activeElement.blur();
-	};
-
-	this.onMouseMoved = function(e)
-	{
-		self._mousePosition = [e.pageX, e.pageY];
-
-		if(self.is_panning)
-		{
-			var cp = E2.dom.canvas_parent;
-			
-			if(e.movementX)
-			{
-				cp.scrollLeft(self.scrollOffset[0]-e.movementX);
-				self.scrollOffset[0] = cp.scrollLeft();
-			}
-			
-			if(e.movementY)
-			{
-				cp.scrollTop(self.scrollOffset[1]-e.movementY);
-				self.scrollOffset[1] = cp.scrollTop();
-			}
-			
-			e.preventDefault();
-			return;
-		}
-		else if(self.edit_conn)
-		{
-			var cp = E2.dom.canvas_parent;
-			var pos = cp.position();
-			var w = cp.width();
-			var h = cp.height();
-			var x2 = pos.left + w;
-			var y2 = pos.top + h;
-			
-			if(e.pageX < pos.left)
-				cp.scrollLeft(self.scrollOffset[0] - 20);
-			else if(e.pageX > x2)
-				cp.scrollLeft(self.scrollOffset[0] + 20);
-					
-			if(e.pageY < pos.top)
-				cp.scrollTop(self.scrollOffset[1] - 20);
-			else if(e.pageY > y2)
-				cp.scrollTop(self.scrollOffset[1] + 20);
-
-			self.mouseEventPosToCanvasCoord(e, self.edit_conn.ui.dst_pos);
-			self.updateCanvas(true);
-
-			return;
-		}
-		else if(!self.selection_start)
-		{
-			E2.dom.structure.tree.on_mouse_move(e);
-			return;
-		}
-		
-		if(!self.selection_end)
-			return;
-		
-		self.mouseEventPosToCanvasCoord(e, self.selection_end);
-		
-		var nodes = self.player.core.active_graph.nodes;
-		var cp = E2.dom.canvas_parent;
-		
-		var ss = self.selection_start.slice(0);
-		var se = self.selection_end.slice(0);
-		
-		for(var i = 0; i < 2; i++)
-		{
-			if(se[i] < ss[i])
-			{
-				var t = ss[i];
-			
-				ss[i] = se[i];
-				se[i] = t;
-			}
-		}
-		
-		var sn = self.selection_nodes;
-		var ns = [];
-		
-		for(var i = 0, len = sn.length; i < len; i++)
-			sn[i].ui.selected = false;
-
-		for(var i = 0, len = nodes.length; i < len; i++)
-		{
-			var n = nodes[i],
-			    nui = n.ui.dom[0],
-			    p_x = nui.offsetLeft,
-			    p_y = nui.offsetTop,
-			    p_x2 = p_x + nui.clientWidth,
-			    p_y2 = p_y + nui.clientHeight;
-			    
-			if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
-				continue; // No intersection.
-				
-			if(!n.ui.selected)
-			{
-				self.markNodeAsSelected(n, false);
-				ns.push(n);
-			}
-		}
-		
-		for(var i = 0, len = sn.length; i < len; i++)
-		{
-			var n = sn[i];
-			
-			if(!n.ui.selected)
-				n.ui.dom[0].style.border = self.normal_border_style;
-		}
-		
-		self.selection_nodes = ns;
-		
-		var co = cp.offset();
-		var w = cp.width();
-		var h = cp.height();
-		var dx = e.pageX - self.selection_last[0];
-		var dy = e.pageY - self.selection_last[1];
-
-		if((dx < 0 && e.pageX < co.left + (w * 0.15)) || (dx > 0 && e.pageX > co.left + (w * 0.85)))
-			cp.scrollLeft(self.scrollOffset[0] + dx);
-		
-		if((dy < 0 && e.pageY < co.top + (h * 0.15)) || (dy > 0 && e.pageY > co.top + (h * 0.85)))
-			cp.scrollTop(self.scrollOffset[1] + dy);
-		
-		self.selection_last[0] = e.pageX;
-		self.selection_last[1] = e.pageY;
-		
-		self.updateCanvas(true);
-	};
-
-	this.selectionToObject = function(nodes, conns, sx, sy) {
-		var d = {};
-		var x1 = 9999999.0, y1 = 9999999.0, x2 = 0, y2 = 0;
-
-		sx = sx || 50
-		sy = sy || 50
-
-		d.nodes = [];
-		d.conns = [];
-		
+		// Select all pertinent connections
 		for(var i = 0, len = nodes.length; i < len; i++)
 		{
 			var n = nodes[i];
-			var dom = n.ui ? n.ui.dom : null;
-			var p = dom ? dom.position() : { left: n.x, top: n.y };
-			var b = [p.left, p.top, p.left + (dom ? dom.width() : 0), p.top + (dom ? dom.height() : 0)]; 
-			
-			if(dom)
-				n = n.serialise();
-			
-			if(b[0] < x1) x1 = b[0];
-			if(b[1] < y1) y1 = b[1];
-			if(b[2] > x2) x2 = b[2];
-			if(b[3] > y2) y2 = b[3];
-			
-			d.nodes.push(n);
+		    				
+			insert_all(n.inputs);
+			insert_all(n.outputs);
 		}
+	}
+	
+	this.inDrag = false;
+	this.updateCanvas(true);
+	
+	// Clear focus to prevent problems with the user dragging over text areas (bringing them in focus) during selection.
+	if(document.activeElement)
+			document.activeElement.blur();
+};
+
+Application.prototype.onMouseMoved = function(e)
+{
+	this._mousePosition = [e.pageX, e.pageY];
+
+	if(this.is_panning)
+	{
+		var cp = E2.dom.canvas_parent;
 		
-		d.x1 = x1 + sx;
-		d.y1 = y1 + sy;
-		d.x2 = x2 + sx;
-		d.y2 = y2 + sy;
-		
-		for(var i = 0, len = conns.length; i < len; i++)
+		if(e.movementX)
 		{
-			var c = conns[i];
-			
-			d.conns.push(c.ui ? c.serialise() : c);
+			cp.scrollLeft(this.scrollOffset[0]-e.movementX);
+			this.scrollOffset[0] = cp.scrollLeft();
 		}
+		
+		if(e.movementY)
+		{
+			cp.scrollTop(this.scrollOffset[1]-e.movementY);
+			this.scrollOffset[1] = cp.scrollTop();
+		}
+		
+		e.preventDefault();
+		return;
+	}
+	else if(this.editConn)
+	{
+		var cp = E2.dom.canvas_parent;
+		var pos = cp.position();
+		var w = cp.width();
+		var h = cp.height();
+		var x2 = pos.left + w;
+		var y2 = pos.top + h;
+		
+		if(e.pageX < pos.left)
+			cp.scrollLeft(this.scrollOffset[0] - 20);
+		else if(e.pageX > x2)
+			cp.scrollLeft(this.scrollOffset[0] + 20);
+				
+		if(e.pageY < pos.top)
+			cp.scrollTop(this.scrollOffset[1] - 20);
+		else if(e.pageY > y2)
+			cp.scrollTop(this.scrollOffset[1] + 20);
+
+		this.mouseEventPosToCanvasCoord(e, this.editConn.ui.dst_pos);
+		this.updateCanvas(true);
+
+		return;
+	}
+	else if(!this.selection_start)
+	{
+		E2.dom.structure.tree.on_mouse_move(e);
+		return;
+	}
+	
+	if(!this.selection_end)
+		return;
+	
+	this.mouseEventPosToCanvasCoord(e, this.selection_end);
+	
+	var nodes = E2.core.active_graph.nodes;
+	var cp = E2.dom.canvas_parent;
+	
+	var ss = this.selection_start.slice(0);
+	var se = this.selection_end.slice(0);
+	
+	for(var i = 0; i < 2; i++)
+	{
+		if(se[i] < ss[i])
+		{
+			var t = ss[i];
+		
+			ss[i] = se[i];
+			se[i] = t;
+		}
+	}
+	
+	var sn = this.selectedNodes;
+	var ns = [];
+	
+	for(var i = 0, len = sn.length; i < len; i++)
+		sn[i].ui.selected = false;
+
+	for(var i = 0, len = nodes.length; i < len; i++)
+	{
+		var n = nodes[i],
+		    nui = n.ui.dom[0],
+		    p_x = nui.offsetLeft,
+		    p_y = nui.offsetTop,
+		    p_x2 = p_x + nui.clientWidth,
+		    p_y2 = p_y + nui.clientHeight;
+		    
+		if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
+			continue; // No intersection.
 			
-		return d;
+		if(!n.ui.selected)
+		{
+			this.markNodeAsSelected(n, false);
+			ns.push(n);
+		}
+	}
+	
+	for(var i = 0, len = sn.length; i < len; i++)
+	{
+		var n = sn[i];
+		
+		if(!n.ui.selected)
+			n.ui.dom[0].style.border = this.normal_border_style;
+	}
+	
+	this.selectedNodes = ns;
+	
+	var co = cp.offset();
+	var w = cp.width();
+	var h = cp.height();
+	var dx = e.pageX - this.selection_last[0];
+	var dy = e.pageY - this.selection_last[1];
+
+	if((dx < 0 && e.pageX < co.left + (w * 0.15)) || (dx > 0 && e.pageX > co.left + (w * 0.85)))
+		cp.scrollLeft(this.scrollOffset[0] + dx);
+	
+	if((dy < 0 && e.pageY < co.top + (h * 0.15)) || (dy > 0 && e.pageY > co.top + (h * 0.85)))
+		cp.scrollTop(this.scrollOffset[1] + dy);
+	
+	this.selection_last[0] = e.pageX;
+	this.selection_last[1] = e.pageY;
+	
+	this.updateCanvas(true);
+};
+
+Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
+	var d = {};
+	var x1 = 9999999.0, y1 = 9999999.0, x2 = 0, y2 = 0;
+
+	sx = sx || 50
+	sy = sy || 50
+
+	d.nodes = [];
+	d.conns = [];
+
+	for(var i = 0, len = nodes.length; i < len; i++) {
+		var n = nodes[i];
+		var dom = n.ui ? n.ui.dom : null;
+		var p = dom ? dom.position() : { left: n.x, top: n.y };
+		var b = [p.left, p.top, p.left + (dom ? dom.width() : 0), p.top + (dom ? dom.height() : 0)]; 
+		
+		if(dom)
+			n = n.serialise();
+		
+		if(b[0] < x1) x1 = b[0];
+		if(b[1] < y1) y1 = b[1];
+		if(b[2] > x2) x2 = b[2];
+		if(b[3] > y2) y2 = b[3];
+		
+		d.nodes.push(n);
+	}
+	
+	d.x1 = x1 + sx;
+	d.y1 = y1 + sy;
+	d.x2 = x2 + sx;
+	d.y2 = y2 + sy;
+	
+	for(var i = 0, len = conns.length; i < len; i++) {
+		var c = conns[i];
+		d.conns.push(c.ui ? c.serialise() : c);
 	}
 
-	this.fillCopyBuffer = function(nodes, conns, sx, sy) {
-		self.clipboard = JSON.stringify(self.selectionToObject(nodes, conns, sx, sy))
-		msg('Copy.')
-	};
+	return d;
+}
 
-	this.onDelete = function(e)
+Application.prototype.fillCopyBuffer = function(nodes, conns, sx, sy) {
+	this.clipboard = JSON.stringify(this.selectionToObject(nodes, conns, sx, sy))
+	msg('Copy.')
+};
+
+Application.prototype.onDelete = function(e) {
+	if (!this.selectedNodes.length)
+		return;
+
+	this.hoverNode = this.selectedNodes[0];
+	this.deleteSelectedNodes();
+}
+
+Application.prototype.onCopy = function(e) {
+	if (this.selectedNodes.length < 1) {
+		msg('Copy: Nothing selected.');
+		e.stopPropagation();
+		return false;
+	}
+	
+	this.fillCopyBuffer(this.selectedNodes, this.selectedConnections, this.scrollOffset[0], this.scrollOffset[1]);
+	e.stopPropagation();
+	return false;
+};
+
+Application.prototype.onCut = function(e) {
+	if (this.selectedNodes.length > 0) {
+		this.undoManager.begin('Cut')
+		this.onCopy(e)
+		this.onDelete(e)
+		this.undoManager.end()
+	}
+}
+
+Application.prototype.paste = function(doc, offsetX, offsetY) {
+	this.undoManager.begin('Paste')
+
+	var ag = E2.core.active_graph
+	var createdNodes = []
+	var createdConnections = []
+	var nodeUidLookup = {}
+	var node
+
+	for(var i = 0, len = doc.nodes.length; i < len; i++) {
+		var docNode = doc.nodes[i]
+		var newUid = E2.core.get_uid()
+
+		docNode.x = Math.floor((docNode.x - doc.x1) + offsetX)
+		docNode.y = Math.floor((docNode.y - doc.y1) + offsetY)
+
+		node = new Node()
+		if (!node.deserialise(ag.uid, docNode))
+			continue
+
+		nodeUidLookup[docNode.uid] = newUid
+		node.uid = newUid
+
+		this.graphApi.addNode(ag, node)
+
+		node.patch_up(E2.core.graphs)
+
+		createdNodes.push(node)
+	}
+
+	for(i = 0, len = doc.conns.length; i < len; i++) {
+		var docConnection = doc.conns[i]
+		var suid = nodeUidLookup[docConnection.src_nuid]
+		var duid = nodeUidLookup[docConnection.dst_nuid]
+
+		if (suid === undefined || duid === undefined) {
+			// not a valid connection, clear it and skip it
+			if (duid !== undefined) {
+				for(var ni = 0, len2 = createdNodes.length; ni < len2; ni++) {
+					var destNode = createdNodes[ni]
+					if (destNode.uid !== duid)
+						continue;
+					
+					var slots = docConnection.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
+					var slot = slots[docConnection.dst_slot]
+					
+					slot.is_connected = false;
+					slot.connected = false;
+					destNode.inputs_changed = true;
+						
+					break;
+				}
+			}
+
+			continue;
+		}
+		
+		var c = new Connection()
+		c.deserialise(docConnection)
+		c.src_node = nodeUidLookup[docConnection.src_nuid]
+		c.dst_node = nodeUidLookup[docConnection.dst_nuid]
+
+		this.graphApi.connect(ag, c)
+
+		createdConnections.push(c)
+	}
+	
+	for(i = 0, len = createdNodes.length; i < len; i++) {
+		node = createdNodes[i]
+
+		node.initialise()
+
+		if (node.plugin.reset)
+			node.plugin.reset()
+	}
+
+	this.undoManager.end()
+
+	return { nodes: createdNodes, connections: createdConnections }
+}
+
+Application.prototype.onPaste = function() {
+	if (this.clipboard === null)
+		return;
+
+	this.clearSelection()
+
+	var doc = JSON.parse(this.clipboard)
+	var cp = E2.dom.canvas_parent
+	var sx = this.scrollOffset[0]
+	var sy = this.scrollOffset[1]
+
+	var ox = Math.max(this._mousePosition[0] - cp.position().left + sx, 100)
+	var oy = Math.max(this._mousePosition[1] - cp.position().top + sy, 100)
+	
+	var pasted = this.paste(doc, ox, oy)
+
+	pasted.nodes.map(this.markNodeAsSelected.bind(this))
+	pasted.connections.map(this.markConnectionAsSelected.bind(this))
+}
+
+Application.prototype.markNodeAsSelected = function(node, addToSelection) {
+	node.ui.dom[0].style.border = this.selection_border_style
+	node.ui.selected = true
+
+	if (addToSelection !== false)
+		this.selectedNodes.push(node)
+}
+
+Application.prototype.deselectNode = function(node) {
+	this.selectedNodes.splice(this.selectedNodes.indexOf(node), 1)
+
+	node.ui.dom[0].style.border = this.normal_border_style
+	node.ui.selected = false
+}
+
+Application.prototype.markConnectionAsSelected = function(conn) {
+	conn.ui.selected = true
+	this.selectedConnections.push(conn)
+}
+
+Application.prototype.selectAll = function() {
+	this.clearSelection()
+	
+	var ag = E2.core.active_graph
+
+	ag.nodes.map(this.markNodeAsSelected.bind(this))
+	ag.connections.map(this.markConnectionAsSelected.bind(this))
+
+	this.updateCanvas(true)
+};
+
+Application.prototype.onWindowResize = function() {
+	if (E2.app.player.core.renderer.fullscreen)
+		return;
+
+	var glc = E2.dom.webgl_canvas[0];
+	var canvases = $('#canvases');
+	var width = canvases[0].clientWidth;
+	var height = canvases[0].clientHeight
+
+	if (glc.width !== width || glc.height !== height) {
+		glc.width = width;
+		glc.height = height;
+
+		E2.dom.webgl_canvas.css('width', width);
+		E2.dom.webgl_canvas.css('height', height);
+		E2.dom.canvas_parent.css('width', width);
+		E2.dom.canvas_parent.css('height', height);
+		E2.dom.canvas[0].width = width;
+		E2.dom.canvas[0].height = height;
+		E2.dom.canvas.css('width', width);
+		E2.dom.canvas.css('height', height);
+		E2.app.player.core.renderer.update_viewport();
+	}
+
+	this.updateCanvas(true)
+}
+
+Application.prototype.toggleNoodles = function() {
+	this._noodlesOn = true
+	E2.dom.canvas_parent.toggle()
+}
+
+Application.prototype.toggleLeftPane = function()
+{
+	$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
+
+	this.condensed_view = !this.condensed_view;
+
+	E2.dom.left_nav.toggle(!this.condensed_view);
+	E2.dom.mid_pane.toggle(!this.condensed_view);
+	$('.resize-handle').toggle(!this.condensed_view);
+	
+	if(this.condensed_view)
+		E2.dom.dbg.toggle(false);
+	else if(!this.collapse_log)
+		E2.dom.dbg.toggle(true);
+	
+	this.onWindowResize();
+};
+
+Application.prototype.onKeyDown = function(e) {
+	var that = this
+
+	function is_text_input_in_focus() {
+		var rx = /INPUT|SELECT|TEXTAREA/i;
+		var is= (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
+		return is
+	}
+
+	if (is_text_input_in_focus())
+		return;
+
+	if (!this._noodlesOn && e.keyCode !== 9)
+		return;
+
+/*
+*/
+	console.log(
+		'onKeyDown', e.keyCode,
+		'shift', this.shift_pressed,
+		'ctrl', this.ctrl_pressed,
+		'alt', this.alt_pressed
+	)
+
+	// arrow up || down
+	var arrowKeys = [37,38,39,40]
+	if (arrowKeys.indexOf(e.keyCode) !== -1) {
+		var dx = 0, dy = 0
+
+		if (e.keyCode === 37) dx = -10
+		if (e.keyCode === 39) dx = 10
+		if (e.keyCode === 38) dy = -10
+		if (e.keyCode === 40) dy = 10
+
+		if (this.selectedNodes.length) {
+			that.executeNodeDrag(this.selectedNodes,
+				this.selectedConnections,
+				dx, dy)
+		}
+		e.preventDefault()
+	}
+
+	if (e.keyCode === 8 || e.keyCode === 46) { // use backspace and delete for deleting nodes
+		this.onDelete(e);
+		e.preventDefault();
+	}
+	else if(e.keyCode === 9) // tab to show/hide noodles
 	{
-		if(!self.selection_nodes.length)
+		this.toggleNoodles()
+		e.preventDefault();
+	}
+	else if(e.keyCode === 13) { // enter = deselect (eg. commit move)
+		this.clearEditState()
+		this.clearSelection()
+	}
+	else if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
+	{
+		this.shift_pressed = true;
+		this.activateHoverSlot();
+	}
+	else if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
+	{
+		this.ctrl_pressed = true;
+	}
+	else if(e.keyCode === 18) // alt
+	{
+		this.alt_pressed = true;
+	}
+	else if(e.keyCode === 32) // space
+	{
+		if(this.player.current_state === this.player.state.PLAYING)
+		{
+			if(this.ctrl_pressed)
+				this.onPauseClicked();
+			else
+				this.onStopClicked();
+		}
+		else
+		{
+			this.onPlayClicked();
+		}
+		
+		e.preventDefault();
+		return false;
+	}
+
+
+
+	// number keys
+	else if (e.keyCode > 47 && e.keyCode < 58) { // 0-9
+		if (this.ctrl_pressed || this.shift_pressed || this.alt_pressed)
 			return;
 
-		self.hover_node = self.selection_nodes[0];
-		self.activateHoverNode();
-		self.deleteHoverNodes();
-	};
-	
-	this.onCopy = function(e)
+		var numberHotKeys = [
+			'plugin:output_proxy', // 0
+			'plugin:input_proxy', // 1 
+			'plugin:graph', // 2 
+			'plugin:float_display', // 3 
+			'plugin:const_float_generator', // 4
+			'plugin:slider_float_generator', // 5
+			'plugin:multiply_modulator', // 6
+			'preset:time_oscillate_between_2_values', // 7
+			'preset:image_show_image', // 8
+		]
+
+		var item = numberHotKeys[e.keyCode - 48]
+		var name = item.substring(7)
+		if (item.indexOf('preset:') === 0)
+			that.presetManager.openPreset('/presets/'+name+'.json')
+		else
+			this.instantiatePlugin(name)
+	}
+
+
+
+	else if(e.keyCode === 70) // f
 	{
-		if(self.selection_nodes.length < 1)
+		this.is_fullscreen = !this.is_fullscreen;
+		this.player.core.renderer.set_fullscreen(this.is_fullscreen);
+		e.preventDefault();
+	} else if (e.keyCode === 81) { // q to focus preset search
+		$('#presetSearch').focus()
+		$('#presetSearch').select()
+		e.preventDefault();
+		return false;
+	} 
+	else if(this.ctrl_pressed || e.metaKey)
+	{
+		if(e.keyCode === 65) // CTRL+a
 		{
-			msg('Copy: Nothing selected.');
+			this.selectAll();
+			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 			e.stopPropagation();
 			return false;
 		}
+		if(e.keyCode === 66) // CTRL+b
+		{
+			this.toggleLeftPane();
+			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
+			return;
+		}
+		else if(e.keyCode === 76) // CTRL+l
+		{
+			this.collapse_log = !this.collapse_log;
+			E2.dom.dbg.toggle(!this.collapse_log);
+			
+			if(!this.collapse_log)
+				msg(null); // Update scroll position.
+				
+			this.onWindowResize();
+			e.preventDefault();
+			return;
+		}
+
+		if(e.keyCode === 67) // CTRL+c
+			this.onCopy(e);
+		else if(e.keyCode === 88) // CTRL+x
+			this.onCut(e);
+		else if(e.keyCode === 86) // CTRL+v
+			this.onPaste(e);
+
+		if (e.keyCode === 90) { // z
+			e.preventDefault()
+			e.stopPropagation()
+
+			if (!this.shift_pressed)
+				this.undoManager.undo()
+			else
+				this.undoManager.redo()
+		}
+	}
+
+};
+
+Application.prototype.onKeyUp = function(e)
+{
+	console.log('keyup', e.keyCode, e.metaKey)
+	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
+	{
+		this.ctrl_pressed = false;
+	}
+	else if (e.keyCode === 18)
+	{
+		this.alt_pressed = false;
+	}
+	else if(e.keyCode === 16)
+	{
+		this.shift_pressed = false;
+		this.releaseHoverSlot();
+		this.releaseHoverNode(false);
+	}
+};
+
+Application.prototype.changeControlState = function()
+{
+	var s = this.player.state;
+	var cs = this.player.current_state;
+
+	if (cs !== s.PLAYING) {
+		E2.dom.play_i.removeClass('fa-pause')
+		E2.dom.play_i.addClass('fa-play')
+		E2.dom.stop.addClass('disabled')
+	} else {
+		E2.dom.play_i.removeClass('fa-play')
+		E2.dom.play_i.addClass('fa-pause')
+		E2.dom.stop.removeClass('disabled')
+	}
+}
+
+Application.prototype.onPlayClicked = function()
+{
+	if (this.player.current_state === this.player.state.PLAYING)
+		this.player.pause();
+	else
+		this.player.play();
+
+	this.changeControlState();
+};
+
+Application.prototype.onPauseClicked = function() {
+	this.player.pause()
+	this.changeControlState()
+}
+
+Application.prototype.onStopClicked = function() {
+	this.player.schedule_stop(this.changeControlState.bind(this))
+}
+
+Application.prototype.onOpenClicked = function() {
+	FileSelectControl
+		.createGraphSelector(null, 'Open', function(path) {
+			history.pushState({
+				graph: {
+					path: path
+				}
+			}, '', path + '/edit')
+
+			E2.app.midPane.closeAll()
+			E2.app.loadGraph('/data/graph'+path+'.json')
+		})
+}
+
+Application.prototype.loadGraph = function(graphPath)
+{
+	E2.app.onStopClicked();
+	E2.app.player.on_update();
+	E2.dom.filename_input.val(graphPath);
+	E2.app.player.load_from_url(graphPath);
+};
+
+Application.prototype.onSaveAsPresetClicked = function() {
+	this.openPresetSaveDialog()
+}
+
+Application.prototype.onSaveSelectionAsPresetClicked = function() {
+	var graph = this.selectionToObject(this.selectedNodes, this.selectedConnections)
+	this.openPresetSaveDialog(JSON.stringify({ root: graph }))
+}
+
+Application.prototype.openPresetSaveDialog = function(serializedGraph) {
+	var that = this
+	var username = E2.models.user.get('username')
+	if (!username) {
+		return E2.controllers.account.openLoginModal()
+	}
+
+	var presetsPath = '/'+username+'/presets/'
+
+	E2.dom.load_spinner.show()
+
+	$.get(presetsPath, function(files) {
+		var fcs = new FileSelectControl()
+		.frame('save-frame')
+		.template('preset')
+		.buttons({
+			'Cancel': function() {},
+			'Save': function(name) {
+				if (!name)
+					return bootbox.alert('Please enter a name for the preset')
+
+				serializedGraph = serializedGraph || that.player.core.serialise()
+
+				$.ajax({
+					type: 'POST',
+					url: presetsPath,
+					data: {
+						name: name,
+						graph: serializedGraph
+					},
+					dataType: 'json',
+					success: function(saved) {
+						E2.dom.load_spinner.hide()
+						that.presetManager.refresh()
+					},
+					error: function(x, t, err) {
+						E2.dom.load_spinner.hide();
+
+						if (x.status === 401)
+							return E2.controllers.account.openLoginModal();
+
+						if (x.responseText)
+							bootbox.alert('Save failed: ' + x.responseText);
+						else
+							bootbox.alert('Save failed: ' + err);
+					}
+				});
+			}
+		})
+		.files(files)
+		.modal();
 		
-		self.fillCopyBuffer(self.selection_nodes, self.selection_conns, self.scrollOffset[0], self.scrollOffset[1]);
-		e.stopPropagation();
+		return fcs;
+	})
+};
+
+Application.prototype.onSaveClicked = function(cb)
+{
+	this.openSaveDialog();
+}
+
+Application.prototype.openSaveDialog = function(cb)
+{
+	var that = this
+
+	if (!E2.models.user.get('username'))
+	{
+		return E2.controllers.account.openLoginModal();
+	}
+
+	E2.dom.load_spinner.show();
+
+	$.get(URL_GRAPHS, function(files) {
+		var wh = window.location.hash;
+		var fcs = new FileSelectControl()
+		.frame('save-frame')
+		.template('graph')
+		.buttons({
+			'Cancel': function() {},
+			'Save': function(path, tags) {
+				if (!path)
+					return bootbox.alert('Please enter a filename');
+
+				var ser = that.player.core.serialise();
+
+				$.ajax({
+					type: 'POST',
+					url: URL_GRAPHS,
+					data: {
+						path: path,
+						tags: tags,
+						graph: ser
+					},
+					dataType: 'json',
+					success: function(saved)
+					{
+						E2.dom.load_spinner.hide();
+						history.pushState({}, '', saved.path+'/edit');
+						if (cb)
+							cb();
+					},
+					error: function(x, t, err)
+					{
+						E2.dom.load_spinner.hide();
+
+						if (x.status === 401)
+							return E2.controllers.account.openLoginModal();
+
+						if (x.responseText)
+							bootbox.alert('Save failed: ' + x.responseText);
+						else
+							bootbox.alert('Save failed: ' + err);
+					}
+				});
+			}
+		})
+		.files(files)
+		.selected(window.location.pathname.split('/')[2])
+		.modal();
+		
+		return fcs;
+	})
+}
+
+Application.prototype.onPublishClicked = function() {
+	this.openSaveDialog(function() {
+		window.location.href = '//vizor.io/'+window.location.pathname.split('/').slice(1,3).join('/');
+	})
+}
+
+Application.prototype.onLoadClipboardClicked = function() {
+	var that = this
+	var url = URL_GRAPHS + E2.dom.filename_input.val()
+
+	$.get(url, function(d) {
+		that.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0)
+	})
+}
+
+Application.prototype.onShowTooltip = function(e) {
+	var that = this
+
+	if(this.inDrag)
 		return false;
-	};
 	
-	this.onCut = function(e)
+	var $elem = $(e.currentTarget);
+	var tokens = $elem.attr('alt').split('_');
+	var core = this.player.core;
+	var node = E2.core.active_graph.nuid_lut[parseInt(tokens[0], 10)];
+	var txt = '';
+	
+	if(tokens.length < 2) // Node?
 	{
-		msg('Cut.');
+		var p_name = core.pluginManager.keybyid[node.plugin.id];
 		
-		if(self.selection_nodes.length > 0)
-		{
-			self.onCopy(e);
-			self.onDelete(e);
-		}
-	};
-
-	this.onPaste = function(e)
-	{
-		if(self.clipboard === null)
-			return;
-		
-		msg('Paste.');
-		self.clearSelection();
-
-		var d = JSON.parse(self.clipboard);
-		var cp = E2.dom.canvas_parent;
-		var ag = self.player.core.active_graph;
-		var n_lut = {};
-		var sx = self.scrollOffset[0];
-		var sy = self.scrollOffset[1];
-
-		bw2 = Math.max(self._mousePosition[0] - cp.position().left + sx, 30);
-		bh2 = Math.max(self._mousePosition[1] - cp.position().top + sy, 30);
-		
-		for(var i = 0, len = d.nodes.length; i < len; i++)
-		{
-			var node = d.nodes[i];
-			
-			var n = new Node(null, null, null, null);
-			var new_uid = ag.get_node_uid();
-
-			node.x = Math.floor((node.x - d.x1) + bw2);
-			node.y = Math.floor((node.y - d.y1) + bh2);
-
-			if(!n.deserialise(ag.uid, node))
-				continue;
-			
-			n_lut[n.uid] = new_uid;
-			n.uid = new_uid;
-			
-			ag.register_node(n);
-			ag.emit_event({ type: 'node-created', node: n });
-
-			n.patch_up(self.player.core.graphs);
-			self.selection_nodes.push(n);
-		}
-
-		for(var i = 0, len = d.conns.length; i < len; i++)
-		{
-			var cn = d.conns[i];
-			
-			var suid = n_lut[cn.src_nuid];
-			var duid = n_lut[cn.dst_nuid];
-			
-			if(suid === undefined || duid === undefined)
-			{
-				// We have to clear the the is_connected flag from the destination
-				// slot. Otherwise the user will be unable to connect to it. 
-				if(duid !== undefined)
-				{
-					for(var ni = 0, len2 = self.selection_nodes.length; ni < len2; ni++)
-					{
-						var n = self.selection_nodes[ni];
-						
-						if(n.uid === duid)
-						{
-							var slots = cn.dst_dyn ? n.dyn_inputs : n.plugin.input_slots;
-							var slot = slots[cn.dst_slot];
-							
-							slot.is_connected = false;
-							slot.connected = false;
-							n.inputs_changed = true;
-		
-							// TODO: Does any of the graph internal state need clearing at this point?
-							// Do we need to find a way to correctly call connection_changed() here?
-							
-							break; // Early out
-						}
-					}
-				}
-				
-				continue;
-			}
-			
-			var c = new Connection(null, null, null, null);
-
-			c.deserialise(cn);
-			
-			c.src_node = suid;
-			c.dst_node = duid;
-			
-			if(c.patch_up(ag.nodes))
-			{
-				ag.connections.push(c);
-
-				c.create_ui();
-				c.ui.selected = true;
-				self.selection_conns.push(c);
-			}
-		}
-		
-		var r_init_struct = function(pg, n)
-		{
-			n.parent_graph = pg;
-			
-			if(!n.plugin.e2_is_graph)
-				return;
-
-			n.plugin.graph.tree_node = n.parent_graph.tree_node.add_child(n.title);
-			n.plugin.graph.tree_node.graph = n.plugin.graph;
-			n.plugin.graph.uid = E2.app.player.core.get_graph_uid();
-			n.plugin.graph.parent_graph = pg;
-		
-			var nodes = n.plugin.graph.nodes;
-			
-			for(var i = 0, len = nodes.length; i < len; i++)
-				r_init_struct(n.plugin.graph, nodes[i]);
-		};
-		
-		for(var i = 0, len = self.selection_nodes.length; i < len; i++)
-		{
-			var n = self.selection_nodes[i];
-
-			n.initialise();
-
-			if(n.plugin.reset)
-				n.plugin.reset();			
-
-			n.create_ui();
-
-			self.markNodeAsSelected(n, false);
-
-			if(n.plugin.state_changed)
-				n.plugin.state_changed(n.ui.plugin_ui);			
-			
-			r_init_struct(ag, n);
-		}
-		
-		for(var i = 0, len = self.selection_conns.length; i < len; i++)
-		{
-			var cui = self.selection_conns[i].ui;
-			
-			cui.resolve_slot_divs();
-			E2.app.getSlotPosition(cui.parent_conn.src_node, cui.src_slot_div, E2.slot_type.output, cui.src_pos);
-			E2.app.getSlotPosition(cui.parent_conn.dst_node, cui.dst_slot_div, E2.slot_type.input, cui.dst_pos);
-		}
-		
-		if(d.conns.length)
-			self.updateCanvas(false);
-	};
-
-	this.markNodeAsSelected = function(node, addToSelection)
-	{
-		node.ui.dom[0].style.border = self.selection_border_style;
-		node.ui.selected = true;
-		if (addToSelection !== false)
-			self.selection_nodes.push(node);
+		txt += '<b>' + p_name + '</b><br/><br/>' + node.plugin.desc;
 	}
-
-	this.selectAll = function()
+	else // Slot
 	{
-		self.clearSelection();
-		
-		var ag = self.player.core.active_graph;
+		var plugin = node.plugin;
+		var slot = null;
 
-		ag.nodes.map(self.markNodeAsSelected);
-		
-		ag.connections.map(function(c)
-		{
-			c.ui.selected = true;
-			self.selection_conns.push(c);
-		});
-
-		self.updateCanvas(true);
-	};
-	
-	this.onWindowResize = function() {
-		if (E2.app.player.core.renderer.fullscreen)
-			return;
-
-		var glc = E2.dom.webgl_canvas[0];
-		var canvases = $('#canvases');
-		var width = canvases[0].clientWidth;
-		var height = canvases[0].clientHeight
-
-		if (glc.width !== width || glc.height !== height)
-		{
-			glc.width = width;
-			glc.height = height;
-
-			E2.dom.webgl_canvas.css('width', width);
-			E2.dom.webgl_canvas.css('height', height);
-			E2.dom.canvas_parent.css('width', width);
-			E2.dom.canvas_parent.css('height', height);
-			E2.dom.canvas[0].width = width;
-			E2.dom.canvas[0].height = height;
-			E2.dom.canvas.css('width', width);
-			E2.dom.canvas.css('height', height);
-			E2.app.player.core.renderer.update_viewport();
-		}
-
-		if(self.player)
-			self.updateCanvas(true);
-	};
-
-	this.toggleLeftPane = function()
-	{
-		$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
-
-		self.condensed_view = !self.condensed_view;
-
-		E2.dom.left_nav.toggle(!self.condensed_view);
-		E2.dom.mid_pane.toggle(!self.condensed_view);
-		$('.resize-handle').toggle(!self.condensed_view);
-		
-		if(self.condensed_view)
-			E2.dom.dbg.toggle(false);
-		else if(!self.collapse_log)
-			E2.dom.dbg.toggle(true);
-		
-		self.onWindowResize();
-	};
-
-	this.onKeyDown = function(e)
-	{
-		function is_text_input_in_focus() {
-			var rx = /INPUT|SELECT|TEXTAREA/i;
-			return (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
-		}
-
-		if(is_text_input_in_focus())
-			return;
-
-		if(e.keyCode === 8 || e.keyCode === 46) // use backspace and delete for deleting nodes
-		{
-			self.onDelete(e);
-			e.preventDefault();
-		}
-		else if(e.keyCode === 9) // tab to show/hide noodles
-		{
-			E2.dom.canvas_parent.toggle();
-			e.preventDefault();
-		}
-		else if(e.keyCode === 18) // alt
-		{
-			self.alt_pressed = true;
-		}
-		else if(e.keyCode === 17) // CMD on OSX, CTRL on everything else
-		{
-			self.ctrl_pressed = true;
-		}
-		else if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
-		{
-			self.shift_pressed = true;
-			self.activateHoverSlot();
-			self.activateHoverNode();
-		}
-		else if(e.keyCode === 70) // f
-		{
-			self.is_fullscreen = !self.is_fullscreen;
-			self.player.core.renderer.set_fullscreen(self.is_fullscreen);
-			e.preventDefault();
-		}
-		else if(e.keyCode === 32) // space
-		{
-			if(self.player.current_state === self.player.state.PLAYING)
-			{
-				if(self.ctrl_pressed || e.metaKey)
-					self.onPauseClicked();
-				else
-					self.onStopClicked();
-			}
-			else
-			{
-				self.onPlayClicked();
-			}
-			
-			e.preventDefault();
-			return false;
-		}
-		else if(self.ctrl_pressed || e.metaKey)
-		{
-			if(e.keyCode === 65) // CTRL+a
-			{
-				self.selectAll();
-				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
-				e.stopPropagation();
-				return false;
-			}
-			if(e.keyCode === 66) // CTRL+b
-			{
-				self.toggleLeftPane();
-				e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
-				return;
-			}
-			else if(e.keyCode === 76) // CTRL+l
-			{
-				self.collapse_log = !self.collapse_log;
-				E2.dom.dbg.toggle(!self.collapse_log);
-				
-				if(!self.collapse_log)
-					msg(null); // Update scroll position.
-					
-				self.onWindowResize();
-				e.preventDefault();
-				return;
-			}
-
-			if(e.keyCode === 67) // CTRL+c
-				self.onCopy(e);
-			else if(e.keyCode === 88) // CTRL+x
-				self.onCut(e);
-			else if(e.keyCode === 86) // CTRL+v
-				self.onPaste(e);
-		}
-	};
-
-	this.onKeyUp = function(e)
-	{
-		if(e.keyCode === 17) // CMD on OSX, CTRL on everything else
-		{
-			self.ctrl_pressed = false;
-		}
-		else if (e.keyCode === 18)
-		{
-			self.alt_pressed = false;
-		}
-		else if(e.keyCode === 16)
-		{
-			self.shift_pressed = false;
-			self.releaseHoverSlot();
-			self.releaseHoverNode(false);
-		}
-	};
-
-	this.changeControlState = function()
-	{
-		var s = self.player.state;
-		var cs = self.player.current_state;
-
-		if (cs !== s.PLAYING) {
-			E2.dom.play_i.removeClass('fa-pause')
-			E2.dom.play_i.addClass('fa-play')
-			E2.dom.stop.addClass('disabled')
-		} else {
-			E2.dom.play_i.removeClass('fa-play')
-			E2.dom.play_i.addClass('fa-pause')
-			E2.dom.stop.removeClass('disabled')
-		}
-	}
-	
-	this.onPlayClicked = function()
-	{
-		if (self.player.current_state === self.player.state.PLAYING)
-			self.player.pause();
+		if(tokens[1][0] === 'd')
+			slot = node.find_dynamic_slot(tokens[1][1] === 'i' ? E2.slot_type.input : E2.slot_type.output, parseInt(tokens[2], 10));
 		else
-			self.player.play();
-
-		self.changeControlState();
-	};
-	
-	this.onPauseClicked = function()
-	{
-		self.player.pause();
-		self.changeControlState();
-	};
-
-	this.onStopClicked = function()
-	{
-		self.player.schedule_stop(self.changeControlState);
-	};
-
-	this.onOpenClicked = function() {
-		FileSelectControl
-			.createGraphSelector(null, 'Open', function(path) {
-				history.pushState({
-					graph: {
-						path: path
-					}
-				}, '', path + '/edit')
-
-				E2.app.midPane.closeAll()
-				E2.app.loadGraph('/data/graph'+path+'.json')
-			})
-	}
-
-	this.loadGraph = function(graphPath)
-	{
-		E2.app.onStopClicked();
-		E2.app.player.on_update();
-		E2.dom.filename_input.val(graphPath);
-		E2.app.player.load_from_url(graphPath);
-	};
-
-	this.onSaveAsPresetClicked = function() {
-		self.openPresetSaveDialog()
-	}
-
-	this.onSaveSelectionAsPresetClicked = function() {
-		var graph = self.selectionToObject(self.selection_nodes, self.selection_conns)
-		self.openPresetSaveDialog(JSON.stringify({ root: graph }))
-	}
-
-	this.openPresetSaveDialog = function(serializedGraph) {
-		var username = E2.models.user.get('username')
-		if (!username) {
-			return E2.controllers.account.openLoginModal()
-		}
-
-		var presetsPath = '/'+username+'/presets/'
-
-		E2.dom.load_spinner.show()
-
-		$.get(presetsPath, function(files) {
-			var fcs = new FileSelectControl()
-			.frame('save-frame')
-			.template('preset')
-			.buttons({
-				'Cancel': function() {},
-				'Save': function(name) {
-					if (!name)
-						return bootbox.alert('Please enter a name for the preset')
-
-					serializedGraph = serializedGraph || self.player.core.serialise()
-
-					$.ajax({
-						type: 'POST',
-						url: presetsPath,
-						data: {
-							name: name,
-							graph: serializedGraph
-						},
-						dataType: 'json',
-						success: function(saved) {
-							E2.dom.load_spinner.hide()
-							self.presetManager.refresh()
-						},
-						error: function(x, t, err) {
-							E2.dom.load_spinner.hide();
-
-							if (x.status === 401)
-								return E2.controllers.account.openLoginModal();
-
-							if (x.responseText)
-								bootbox.alert('Save failed: ' + x.responseText);
-							else
-								bootbox.alert('Save failed: ' + err);
-						}
-					});
-				}
-			})
-			.files(files)
-			.modal();
-			
-			return fcs;
-		})
-	};
-
-	this.onSaveClicked = function(cb)
-	{
-		self.openSaveDialog();
-	}
-
-	this.openSaveDialog = function(cb)
-	{
-		if (!E2.models.user.get('username'))
-		{
-			return E2.controllers.account.openLoginModal();
-		}
-
-		E2.dom.load_spinner.show();
-
-		$.get(URL_GRAPHS, function(files)
-		{
-			var wh = window.location.hash;
-			var fcs = new FileSelectControl()
-			.frame('save-frame')
-			.template('graph')
-			.buttons({
-				'Cancel': function() {},
-				'Save': function(path, tags)
-				{
-					if (!path)
-						return bootbox.alert('Please enter a filename');
-
-					var ser = self.player.core.serialise();
-
-					$.ajax({
-						type: 'POST',
-						url: URL_GRAPHS,
-						data: {
-							path: path,
-							tags: tags,
-							graph: ser
-						},
-						dataType: 'json',
-						success: function(saved)
-						{
-							E2.dom.load_spinner.hide();
-							history.pushState({}, '', saved.path+'/edit');
-							if (cb)
-								cb();
-						},
-						error: function(x, t, err)
-						{
-							E2.dom.load_spinner.hide();
-
-							if (x.status === 401)
-								return E2.controllers.account.openLoginModal();
-
-							if (x.responseText)
-								bootbox.alert('Save failed: ' + x.responseText);
-							else
-								bootbox.alert('Save failed: ' + err);
-						}
-					});
-				}
-			})
-			.files(files)
-			.selected(window.location.pathname.split('/')[2])
-			.modal();
-			
-			return fcs;
-		})
-	};
-
-	this.onPublishClicked = function()
-	{
-		self.openSaveDialog(function()
-		{
-			window.location.href = '//vizor.io/'+window.location.pathname.split('/').slice(1,3).join('/');
-		});
-	}
-	
-	this.onLoadClipboardClicked = function()
-	{
-		var url = URL_GRAPHS + E2.dom.filename_input.val();
-
-		$.get(url, function(d) {
-			self.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
-		});
-	};
-
-	this.onShowTooltip = function(e)
-	{
-		if(self.in_drag)
-			return false;
+			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
 		
-		var $elem = $(e.currentTarget);
-		var tokens = $elem.attr('alt').split('_');
-		var core = self.player.core;
-		var node = core.active_graph.nuid_lut[parseInt(tokens[0], 10)];
-		var txt = '';
-		
-		if(tokens.length < 2) // Node?
-		{
-			var p_name = core.plugin_mgr.keybyid[node.plugin.id];
-			
-			txt += '<b>' + p_name + '</b><br/><br/>' + node.plugin.desc;
-		}
-		else // Slot
-		{
-			var plugin = node.plugin;
-			var slot = null;
+		txt = '<b>Type:</b> ' + slot.dt.name;
 
-			if(tokens[1][0] === 'd')
-				slot = node.find_dynamic_slot(tokens[1][1] === 'i' ? E2.slot_type.input : E2.slot_type.output, parseInt(tokens[2], 10));
+		if(slot.lo !== undefined || slot.hi !== undefined)
+			txt += '<br /><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
+
+		if(slot.def !== undefined)
+		{
+			txt += '<br /><b>Default:</b> ';
+			
+			if(slot.def === null)
+				txt += 'Nothing';
+			else if(slot.def === this.player.core.renderer.matrix_identity)
+				txt += 'Identity';
+			else if(slot.def === this.player.core.renderer.material_default)
+				txt += 'Default material';
+			else if(slot.def === this.player.core.renderer.light_default)
+				txt += 'Default light';
+			else if(slot.def === this.player.core.renderer.camera_screenspace)
+				txt += 'Screenspace camera';
 			else
-				slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
-			
-			txt = '<b>Type:</b> ' + slot.dt.name;
-	
-			if(slot.lo !== undefined || slot.hi !== undefined)
-				txt += '<br /><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
-	
-			if(slot.def !== undefined)
 			{
-				txt += '<br /><b>Default:</b> ';
+				var cn = slot.def.constructor.name;
 				
-				if(slot.def === null)
-					txt += 'Nothing';
-				else if(slot.def === self.player.core.renderer.matrix_identity)
-					txt += 'Identity';
-				else if(slot.def === self.player.core.renderer.material_default)
-					txt += 'Default material';
-				else if(slot.def === self.player.core.renderer.light_default)
-					txt += 'Default light';
-				else if(slot.def === self.player.core.renderer.camera_screenspace)
-					txt += 'Screenspace camera';
-				else
+				if(cn === 'Texture')
 				{
-					var cn = slot.def.constructor.name;
+					txt += 'Texture';
 					
-					if(cn === 'Texture')
-					{
-						txt += 'Texture';
-						
-						if(slot.def.image && slot.def.image.src)
-							txt += ' (' + slot.def.image.src + ')';
-					}
-					else
-						txt += JSON.stringify(slot.def);
+					if(slot.def.image && slot.def.image.src)
+						txt += ' (' + slot.def.image.src + ')';
 				}
+				else
+					txt += JSON.stringify(slot.def);
 			}
-			
-			txt += '<br /><br />';
-	
-			if(slot.desc)
-				txt += slot.desc.replace(/\n/g, '<br/>');
 		}
 		
-		clearTimeout(self._tooltipTimer);
+		txt += '<br /><br />';
 
-		self._tooltipTimer = setTimeout(function() {
-			if (self.in_drag)
-				return;
+		if(slot.desc)
+			txt += slot.desc.replace(/\n/g, '<br/>');
+	}
+	
+	clearTimeout(this._tooltipTimer);
 
-			$elem.tooltip(
-			{
-				title: txt,
-				container: 'body',
-				animation: false,
-				trigger: 'manual',
-				html: true
+	this._tooltipTimer = setTimeout(function() {
+		if (that.inDrag)
+			return;
+
+		$elem.tooltip({
+			title: txt,
+			container: 'body',
+			animation: false,
+			trigger: 'manual',
+			html: true
+		})
+		.tooltip('show');
+
+		that._tooltipElem = $elem;
+
+	}, 500);
+	
+};
+
+Application.prototype.onHideTooltip = function() {
+	clearTimeout(this._tooltipTimer)
+
+	if (this._tooltipElem) {
+		this._tooltipElem.tooltip('hide')
+		this._tooltipElem = null
+	}
+
+	if (this.inDrag)
+		return false
+}
+
+
+function onGraphChanged() {
+	E2.app.updateCanvas(true)
+}
+
+function onNodeAdded(graph, node) {
+	console.log('onNodeAdded', node.plugin.id, node.plugin.isGraph)
+	
+	if (graph === E2.core.active_graph)
+		node.create_ui()
+
+	if (node.plugin.state_changed) {
+		node.plugin.state_changed()
+
+		if (node.ui)
+			node.plugin.state_changed(node.ui.plugin_ui)
+	}
+
+	node.patch_up(E2.core.graphs)
+
+	if (node.plugin.isGraph)
+		E2.core.rebuild_structure_tree()
+}
+
+function onNodeRemoved(graph, node) {
+	console.log('onNodeRemoved', node)
+
+	E2.app.onHideTooltip()
+
+	node.destroy_ui()
+
+	if (node.plugin.isGraph)
+		E2.core.rebuild_structure_tree()
+}
+
+function onNodeRenamed(graph, node) {
+	console.log('onNodeRenamed', node.title)
+	if (node.ui)
+		node.ui.dom.find('.t').text(node.title)
+	
+	if (node.plugin.isGraph)
+		node.plugin.graph.tree_node.set_title(node.title)
+
+	if (node.plugin.renamed)
+		node.plugin.renamed()
+}
+
+function onConnected(graph, connection) {
+	console.log('onConnected', connection)
+
+	if (graph === E2.core.active_graph) {
+		if (!connection.ui)
+			connection.create_ui()
+		connection.ui.resolve_slot_divs()
+	}
+
+	connection.signal_change(true)
+}
+
+function onDisconnected(graph, connection) {
+	console.log('onDisconnected', connection)
+
+	try {
+		connection.signal_change(false)
+	} catch(e) {
+		console.error(e.stack)
+	}
+
+	connection.destroy_ui()
+}
+
+Application.prototype.onGraphSelected = function(graph) {
+	var that = this
+
+	E2.core.active_graph.destroy_ui()
+
+	E2.core.active_graph = graph
+
+	E2.dom.canvas_parent.scrollTop(0)
+	E2.dom.canvas_parent.scrollLeft(0)
+	this.scrollOffset[0] = this.scrollOffset[1] = 0
+
+	E2.dom.breadcrumb.children().remove()
+
+	function buildBreadcrumb(parentEl, graph, add_handler) {
+		var sp = $('<span>' + graph.tree_node.title + '</span>')
+		sp.css('cursor', 'pointer')
+		
+		if (add_handler) {
+			sp.click(function() {
+				graph.tree_node.activate()
 			})
-			.tooltip('show');
-
-			self._tooltipElem = $elem;
-
-		}, 500);
-		
-	};
-	
-	this.onHideTooltip = function()
-	{
-		clearTimeout(self._tooltipTimer);
-		if (self._tooltipElem)
-		{
-			self._tooltipElem.tooltip('hide');
-			self._tooltipElem = null;
+			
+			sp.css({ 'text-decoration': 'underline' })
 		}
-
-		if(self.in_drag)
-			return false;
-	};
-	
-   	document.addEventListener('mouseup', this.onMouseReleased);
-	document.addEventListener('mousemove', this.onMouseMoved);
-	window.addEventListener('keydown', this.onKeyDown);
-	window.addEventListener('keyup', this.onKeyUp);
-	
-	canvas_parent[0].addEventListener('scroll', function()
-	{
-		self.scrollOffset = [ canvas_parent.scrollLeft(), canvas_parent.scrollTop() ];
-		var s = canvas[0].style;
 		
-		s.left = '' + self.scrollOffset[0] + 'px';
-		s.top = '' + self.scrollOffset[1] + 'px';
-		self.updateCanvas(true);
-	});
+		parentEl.prepend($('<span> / </span>'))
+		parentEl.prepend(sp)
+		
+		if (graph.parent_graph)
+			buildBreadcrumb(parentEl, graph.parent_graph, true)
+	}
+
+	buildBreadcrumb(E2.dom.breadcrumb, E2.core.active_graph, false)
 	
-	canvas_parent[0].addEventListener('mousedown', this.onCanvasMouseDown);
-	document.addEventListener('mouseup', this.onCanvasMouseUp);
+	E2.core.active_graph.create_ui()
+	E2.core.active_graph.reset()
+	E2.core.active_graph_dirty = true
+}
+
+Application.prototype.setupStoreListeners = function() {
+	this.graphStore
+	.on('changed', onGraphChanged.bind(this))
+	.on('nodeAdded', onNodeAdded.bind(this))
+	.on('nodeRemoved', onNodeRemoved.bind(this))
+	.on('nodeRenamed', onNodeRenamed.bind(this))
+	.on('connected', onConnected.bind(this))
+	.on('disconnected', onDisconnected.bind(this))
+	.on('reordered', function() {
+		E2.core.rebuild_structure_tree()
+	})
+}
+
+Application.prototype.start = function() {
+	var that = this
+
+	this.setupStoreListeners()
+
+	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
+
+   	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
+	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
+	window.addEventListener('keydown', this.onKeyDown.bind(this))
+	window.addEventListener('keyup', this.onKeyUp.bind(this))
+	
+	E2.dom.canvas_parent[0].addEventListener('scroll', function() {
+		that.scrollOffset = [ E2.dom.canvas_parent.scrollLeft(), E2.dom.canvas_parent.scrollTop() ]
+		var s = E2.dom.canvas[0].style
+		
+		s.left = that.scrollOffset[0] + 'px'
+		s.top = that.scrollOffset[1] + 'px'
+
+		that.updateCanvas(true)
+	})
+	
+	E2.dom.canvas_parent[0].addEventListener('mousedown', this.onCanvasMouseDown.bind(this))
+	document.addEventListener('mouseup', this.onCanvasMouseUp.bind(this))
 	
 	// Clear hover state on window blur. Typically when the user switches
 	// to another tab.
-	window.addEventListener('blur', function()
-	{
-		self.shift_pressed = false;
-		self.ctrl_pressed = false;
-		self.releaseHoverSlot();
-		self.releaseHoverNode(false);
-	});
+	window.addEventListener('blur', function() {
+		that.clearEditState()
+	})
 	
-	window.addEventListener('resize', function(self) { return function()
-	{
+	window.addEventListener('resize', function() {
 		// To avoid UI lag, we don't respond to window resize events directly.
 		// Instead, we set up a timer that gets superceeded for each (spurious)
 		// resize event within a 100 ms window.
-		clearTimeout(self.resize_timer);
-		self.resize_timer = setTimeout(self.onWindowResize, 200);
-	}}(this));
-
-	var add_button_events = function(btn)
-	{
-		// We have to forward key events that would otherwise get trapped when
-		// the user hovers over the playback control buttons.
-		btn[0].addEventListener('keydown', this.onKeyDown);
-		btn[0].addEventListener('keyup', this.onKeyUp);
-	};
-	
-	add_button_events(E2.dom.play);
-	add_button_events(E2.dom.stop);
-	add_button_events(E2.dom.save);
-	add_button_events(E2.dom.open);
+		clearTimeout(that.resize_timer)
+		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 100)
+	})
 
 	// close bootboxes on click 
 	$(document).on('click', '.bootbox.modal.in', function(e) {
@@ -1860,7 +1759,7 @@ function Application() {
 	})
 
 	$('button#fullscreen').click(function() {
-		self.player.core.renderer.set_fullscreen(true);
+		E2.core.renderer.set_fullscreen(true);
 	});
 	
 	$('button#help').click(function() {
@@ -1898,17 +1797,111 @@ function Application() {
 		})
 	})
 
-	self.midPane = new E2.MidPane();
+	E2.dom.save.click(E2.app.onSaveClicked.bind(E2.app))
+	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
+	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked.bind(E2.app))
+	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
+	E2.dom.publish.click(E2.app.onPublishClicked.bind(E2.app))
 
-	this.onHideTooltip();
+	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
+	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
+	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
+
+	this.midPane = new E2.MidPane()
 }
 
 
+E2.InitialiseEngi = function(vr_devices) {
+	E2.dom.canvas_parent = $('#canvas_parent');
+	E2.dom.canvas = $('#canvas');
+	E2.dom.controls = $('#controls');
+	E2.dom.webgl_canvas = $('#webgl-canvas');
+	E2.dom.left_nav = $('#left-nav');
+	E2.dom.mid_pane = $('#mid-pane');
+	E2.dom.dbg = $('#dbg');
+	E2.dom.play = $('#play');
+	E2.dom.play_i = $('i', E2.dom.play);
+	E2.dom.pause = $('#pause');
+	E2.dom.stop = $('#stop');
+	E2.dom.refresh = $('#refresh');
+	E2.dom.save = $('.save-button');
+	E2.dom.saveAsPreset = $('#save-as-preset');
+	E2.dom.saveSelectionAsPreset = $('#save-selection-as-preset');
+	E2.dom.publish = $('#publish');
+	E2.dom.dl_graph = $('#dl-graph');
+	E2.dom.open = $('#open');
+	E2.dom.load_clipboard = $('#load-clipboard');
+	E2.dom.structure = $('#structure');
+	E2.dom.info = $('#info');
+	E2.dom.info._defaultContent = E2.dom.info.html()
+	E2.dom.tabs = $('#tabs');
+	E2.dom.graphs_list = $('#graphs-list');
+	E2.dom.presets_list = $('#presets');
+	E2.dom.breadcrumb = $('#breadcrumb');
+	E2.dom.load_spinner = $('#load-spinner');
+	E2.dom.filename_input = $('#filename-input');
 
+	$.ajaxSetup({ cache: false });
 
+	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, ex) {
+		if(settings.dataType === 'script' && !settings.url.match(/^\/plugins\/all.plugins\.js/)) {
+			if(typeof(ex) === 'string') {
+				msg(ex);
+				return;
+			}
+				
+			var m = 'ERROR: Script exception:\n';
+			
+			if(ex.fileName)
+				m += '\tFilename: ' + ex.fileName;
+				
+			if(ex.lineNumber)
+				m += '\tLine number: ' + ex.lineNumber;
+			
+			if(ex.message)
+				m += '\tMessage: ' + ex.message;
+				
+			msg(m)
+		}
+	})
 
-$('.mid-pane').hide();
-setTimeout(function() {
-	$('.mid-pane').show();
-},500)
+	E2.core = new Core(vr_devices)
+	E2.app = new Application()
+
+	var player = new Player(vr_devices, E2.dom.webgl_canvas)
+
+	E2.treeView = E2.dom.structure.tree = new TreeView(
+		E2.dom.structure,
+		E2.core.root_graph,
+		function(graph) { // On item activation
+			E2.app.clearEditState()
+			E2.app.clearSelection()
+			E2.app.onGraphSelected(graph)
+			E2.app.updateCanvas(true)
+		},
+		// on graph reorder
+		E2.app.graphApi.reorder.bind(E2.app.graphApi)
+	)
+
+	E2.app.player = player
+
+	E2.core.on('ready', function() {
+		E2.app.start()
+
+		E2.app.onWindowResize()
+		E2.app.onWindowResize()
+		
+		if (E2.core.pluginManager.release_mode) {
+			window.onbeforeunload = function() {
+			    return 'You might be leaving behind unsaved work!';
+			}
+		}
+	})
+
+}
+
+if (typeof(module) !== 'undefined')
+	module.exports = Application
+
+})()
 

@@ -81,4 +81,5 @@ E2.p.prototype.update_state = function()
 E2.p.prototype.update_output = function(slot)
 {
 	return this.array;
-}
+};
+

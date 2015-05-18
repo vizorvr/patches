@@ -1,5 +1,7 @@
-E2.p = E2.plugins["knob_float_generator"] = function(core, node)
-{
+(function() {
+var Knob = E2.plugins.knob_float_generator = function(core, node) {
+	Plugin.apply(this, arguments)
+
 	this.desc = 'Emits a user controllable float value between 0 and 1.';
 	
 	this.input_slots = [];
@@ -12,11 +14,13 @@ E2.p = E2.plugins["knob_float_generator"] = function(core, node)
 	this.knob = null;
 };
 
-E2.p.prototype.reset = function()
+Knob.prototype = Object.create(Plugin.prototype)
+
+Knob.prototype.reset = function()
 {
 };
 
-E2.p.prototype.set_rotation = function()
+Knob.prototype.set_rotation = function()
 {
 	var rot = 'rotate(' + Math.floor(this.state.val * 270.0) + 'deg)';
 	
@@ -27,8 +31,9 @@ E2.p.prototype.set_rotation = function()
 	});
 };
 
-E2.p.prototype.create_ui = function()
+Knob.prototype.create_ui = function()
 {
+	var that = this
 	var shadow = make('div');
 	
 	this.knob = make('div');
@@ -37,6 +42,8 @@ E2.p.prototype.create_ui = function()
 	{
 		document.removeEventListener('mouseup', data.mouseup);
 		document.removeEventListener('mousemove', data.mousemove);
+
+		that.undoableSetState('val', that.state.val, that._mouseDownValue)
 
 		if(e.stopPropagation) e.stopPropagation();
 		if(e.preventDefault) e.preventDefault();
@@ -65,6 +72,7 @@ E2.p.prototype.create_ui = function()
 	
 	var knob_mousedown = function(self) { return function(e)
 	{
+		self._mouseDownValue = self.state.val
 		var data = { last_y: e.pageY };
 		
 		// Defer registration of event listeners until needed.
@@ -98,13 +106,14 @@ E2.p.prototype.create_ui = function()
 	return shadow;
 };
 
-E2.p.prototype.update_output = function(slot)
+Knob.prototype.update_output = function(slot)
 {
 	return this.state.val;
 };
 
-E2.p.prototype.state_changed = function(ui)
+Knob.prototype.state_changed = function(ui)
 {
 	if(ui)
 		this.set_rotation();
 };
+})()

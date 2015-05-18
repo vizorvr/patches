@@ -1,5 +1,7 @@
-E2.p = E2.plugins["slider_float_generator"] = function(core, node)
-{
+(function(){
+var Slider = E2.plugins.slider_float_generator = function(core, node) {
+	Plugin.apply(this, arguments)
+
 	this.desc = 'Emits a user controllable float value between two specified values.';
 	
 	this.input_slots = [];
@@ -10,19 +12,19 @@ E2.p = E2.plugins["slider_float_generator"] = function(core, node)
 	
 	this.state = { val: 0.0, min: 0.0, max: 1.0 };
 	
-	this.node = node;
 	this.v_col = null;
 	this.slider = null;
 	this.handle = null;
 	this.pos = 0;
 };
 
-E2.p.prototype.reset = function()
-{
-};
+Slider.prototype = Object.create(Plugin.prototype)
 
-E2.p.prototype.create_ui = function()
+Slider.prototype.reset = function() {};
+
+Slider.prototype.create_ui = function()
 {
+	var self = this
 	var table = make('table');
 	var row = make('tr');
 	var cols = [make('td'), make('td'), make('td')];
@@ -30,54 +32,50 @@ E2.p.prototype.create_ui = function()
 	var inp_lo = $('<input id="lo" type="number" step="0.2" style="width: 50px;" />');
 	var inp_hi = $('<input id="hi" type="number" step="0.2" style="width: 50px;" />');
 	var slider = make('div');
-	var handle = make('div');
+	var handle = this.handle = make('div');
 	
 	var slider_mouseup = function(data) { return function(e)
 	{
+		E2.app.undoManager.end()
+
 		document.removeEventListener('mouseup', data.mouseup);
 		document.removeEventListener('mousemove', data.mousemove);
+
+		self.undoableSetState('val', self.state.val, self._mouseDownValue)
 
 		if(e.stopPropagation) e.stopPropagation();
 		if(e.preventDefault) e.preventDefault();
 		return false;
 	}};
 
-	var slider_mousemove = function(self, data) { return function(e)
-	{
+	var slider_mousemove = function(self, data) { return function(e) {
 		var x_delta = e.pageX - data.last_x;
 		var rng = self.state.max - self.state.min;
 		
-		if(Math.abs(rng) > 0.0001)
-		{
+		if (Math.abs(rng) > 0.0001) {
 			data.last_x = e.pageX;
 		
 			var new_val = self.pos + x_delta;
 		
 			new_val = new_val < 0.0 ? 0.0 : new_val > 60.0 ? 60.0 : new_val;
 		
-			if(self.state.val !== new_val)
-			{
-				var mix = new_val / 60.0;
-			
-				self.pos = Math.floor(new_val);
-				self.state.val = ((1.0 - mix) * self.state.min) + (mix * self.state.max);
-				handle[0].style.left = '' + self.pos + 'px';
-				self.update_value(self.state.val);
-				self.updated = true;
-			}
+			if (self.state.val !== new_val)
+				self._setValue(new_val)
 		}
 		
-		if(e.stopPropagation) e.stopPropagation();
-		if(e.preventDefault) e.preventDefault();
+		if (e.stopPropagation) e.stopPropagation();
+		if (e.preventDefault) e.preventDefault();
+
 		return false;				
 	}};
 	
-	var slider_mousedown = function(self, il, ih, handle) { return function(e)
-	{
+	var slider_mousedown = function(self, il, ih, handle) { return function(e) {
 		var data = {
 			last_x: e.pageX,
 			handle: handle,
 		};
+
+		self._mouseDownValue = self.state.val || 0
 		
 		// Defer registration of event listeners until needed.
 		data.mouseup = slider_mouseup(data);
@@ -152,17 +150,10 @@ E2.p.prototype.create_ui = function()
 			else if(id === 'hi')
 			{
 				st.max = safe_parse(st.max, sender.val());
-				sender.val('' + st.max).change();
+				sender.val('' + st.max);
 			}
 			
 			sender.etf.update();
-
-			var l = Math.min(st.min, st.max), h = Math.max(st.min, st.max);
-			var rng = Math.abs(st.max - st.min);
-			
-			st.val = st.val < l ? l : st.val > h ? h : st.val;
-			self.pos = rng < 0.0001 ? 0.0 : ((Math.abs(st.val - st.min) / rng) * 60.0);
-			self.handle[0].style.left = '' + self.pos + 'px';
 			
 			self.update_value(self.state.val);
 		}
@@ -184,22 +175,45 @@ E2.p.prototype.create_ui = function()
 	return table;
 };
 
-E2.p.prototype.update_output = function(slot)
+Slider.prototype.update_output = function(slot)
 {
 	return this.state.val;
 };
 
-E2.p.prototype.update_value = function(value)
+Slider.prototype._setValue = function(new_val) {
+	var self = this
+	var mix = new_val / 60.0;
+
+	// self.pos = Math.floor(new_val);
+	self.state.val = ((1.0 - mix) * self.state.min) + (mix * self.state.max);
+	// this.handle[0].style.left = '' + self.pos + 'px';
+	self.update_value(self.state.val);
+	self.updated = true;
+}
+
+Slider.prototype.update_value = function(value)
 {
+	var self = this
+
 	this.updated = true;
-	this.v_col.text(value.toFixed(2));
+
+	var st = this.state
+	var l = Math.min(st.min, st.max), h = Math.max(st.min, st.max);
+	var rng = Math.abs(st.max - st.min);
+	
+	st.val = st.val < l ? l : st.val > h ? h : st.val;
+	self.pos = rng < 0.0001 ? 0.0 : ((Math.abs(st.val - st.min) / rng) * 60.0);
+
+	this.handle[0].style.left = '' + this.pos + 'px';
+	this.v_col.text(this.state.val.toFixed(2));
 };
 
-E2.p.prototype.state_changed = function(ui)
+Slider.prototype.state_changed = function(ui)
 {
 	if(ui)
 	{
 		this.update_value(this.state.val);
+
 		ui.find('#lo').val(this.state.min);
 		ui.find('#hi').val(this.state.max);
 		
@@ -213,3 +227,6 @@ E2.p.prototype.state_changed = function(ui)
 		this.handle[0].style.left = '' + this.pos + 'px';
 	}
 };
+
+})();
+

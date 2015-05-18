@@ -6494,7 +6494,6 @@ table {
   background-color: #eee !important;
   z-index: 100;
   padding: 0px;
-  cursor: move;
   position: absolute;
   white-space: nowrap;
 }
@@ -6545,6 +6544,7 @@ table {
   padding: 0px;
 }
 .pl_header {
+  cursor: move;
   color: #ccc;
   background: transparent;
   border: none;
@@ -6740,10 +6740,10 @@ table {
   margin-top: 8px;
 }
 .left-cell {
-  flex: 0 0 250px;
-  width: 250px;
-  min-width: 250px;
-  max-width: 250px;
+  flex: 0 0 220px;
+  width: 220px;
+  min-width: 10px;
+  max-width: 220px;
 }
 .strikethru {
   text-decoration: line-through;
@@ -6910,6 +6910,11 @@ body {
   cursor: pointer;
   background-color: #aaaaaa;
 }
+.result li,
+.panel {
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
 .panel-default {
   border-color: #333333;
 }
@@ -6935,32 +6940,34 @@ body {
   border-radius: 0px;
   padding: 0;
 }
+.result li:hover,
 .panel-heading:hover {
   color: #aaa;
-  background-color: #333;
+  background-color: #333333;
   background-image: none;
 }
 .panel-title .glyphicon {
   margin-right: 6px;
   margin-left: 6px;
 }
-.panel-body {
-  padding: 0;
-  border-top: 0px;
-}
+.result,
+.panel-body,
 .panel-body ul {
-  list-style: none;
   padding: 0;
   margin: 0;
-  color: #aaa;
-  background-color: #222;
+  border-top: 0px;
 }
+.preset-result table tbody tr td {
+  padding: 3px !important;
+}
+.result tr,
 .panel-body li {
   cursor: pointer;
 }
+li.active,
 .panel-body li:hover {
-  color: #aaa;
-  background-color: #333;
+  color: #eeeeee;
+  background-color: #555555;
 }
 .file-select-control {
   outline: none;

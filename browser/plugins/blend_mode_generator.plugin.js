@@ -1,5 +1,6 @@
-E2.p = E2.plugins["blend_mode_generator"] = function(core, node)
-{
+(function(){
+var BlendMode = E2.plugins["blend_mode_generator"] = function(core) {
+	Plugin.apply(this, arguments)
 	this.desc = 'Select blend mode.';
 	
 	this.input_slots = [];
@@ -10,13 +11,14 @@ E2.p = E2.plugins["blend_mode_generator"] = function(core, node)
 	
 	this.state = { mode: Renderer.blend_mode.NORMAL };
 };
+BlendMode.prototype = Object.create(Plugin.prototype)
 
-E2.p.prototype.reset = function()
+BlendMode.prototype.reset = function()
 {
 }
 
-E2.p.prototype.create_ui = function()
-{
+BlendMode.prototype.create_ui = function() {
+	var that = this
 	var bm = Renderer.blend_mode;
 	var inp = $('<select />', { selectedIndex: 4 });
 	
@@ -26,23 +28,22 @@ E2.p.prototype.create_ui = function()
 	$('<option />', { value: bm.MULTIPLY, text: 'Mul' }).appendTo(inp);
 	$('<option />', { value: bm.NORMAL, text: 'Normal' }).appendTo(inp);
 	 
-	inp.change(function(self) { return function() 
-	{
-		self.state.mode = parseInt(inp.val());
-		// self.state_changed(inp);
-		self.updated = true;
-	}}(this));
+	inp.change(function() {
+		that.undoableSetState('mode', parseInt(inp.val()), that.state.mode)
+	})
 	
 	return inp;
-};
+}
 
-E2.p.prototype.update_output = function(slot)
-{
+BlendMode.prototype.update_output = function() {
 	return this.state.mode;
 };
 
-E2.p.prototype.state_changed = function(ui)
+BlendMode.prototype.state_changed = function(ui)
 {
 	if(ui)
 		ui.val('' + this.state.mode);
-};
+}
+
+})();
+

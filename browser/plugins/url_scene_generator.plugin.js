@@ -1,5 +1,6 @@
-E2.p = E2.plugins["url_scene_generator"] = function(core, node)
-{
+(function(){
+var UrlScene = E2.plugins.url_scene_generator = function(core, node) {
+	Plugin.apply(this, arguments)
 	this.desc = 'Load a scene from an URL. Hover over the Change button to see the url of the current file.';
 
 	this.input_slots = [
@@ -15,39 +16,48 @@ E2.p = E2.plugins["url_scene_generator"] = function(core, node)
 	this.scene = null;
 	this.dirty = false;
 };
+UrlScene.prototype = Object.create(Plugin.prototype)
 
-E2.p.prototype.reset = function()
+UrlScene.prototype.reset = function()
 {
 };
 
-E2.p.prototype.create_ui = function()
+UrlScene.prototype.create_ui = function()
 {
 	var inp = makeButton('Change', 'No scene selected.', 'url');
-	var self = this;
+	var that = this;
 	
-	inp.click(function()
-	{
+	inp.click(function() {
+		var oldValue = that.state.url
+		var newValue
+
 		FileSelectControl
-			.createSceneSelector(self.state.url)
+			.createSceneSelector(that.state.url)
 			.onChange(function(v)
 			{
-				self.state.url = v;
-				self.state_changed(null);
-				self.state_changed(inp);
-				self.updated = true;
-			});
+				newValue = that.state.url = v;
+				that.state_changed(null);
+				that.state_changed(inp);
+				that.updated = true;
+			})
+			.on('closed', function() {
+				if (newValue === oldValue)
+					return;
+			
+				that.undoableSetState('url', newValue, oldValue)
+			})
 	});
 
 	return inp;
 };
 
-E2.p.prototype.update_input = function(slot, data)
+UrlScene.prototype.update_input = function(slot, data)
 {
 	this.state.url = data;
 	this.state_changed(null);
 };
 
-E2.p.prototype.update_state = function()
+UrlScene.prototype.update_state = function()
 {
 	if(!this.dirty)
 		return;
@@ -59,18 +69,18 @@ E2.p.prototype.update_state = function()
 	this.dirty = false;
 };
 
-E2.p.prototype.update_output = function(slot)
+UrlScene.prototype.update_output = function(slot)
 {
 	return this.scene;
 };
 
-E2.p.prototype.state_changed = function(ui)
+UrlScene.prototype.state_changed = function(ui)
 {
-	if(this.state.url !== '')
-	{
-		if(ui)
+	if (this.state.url !== '') {
+		if (ui)
 			ui.attr('title', this.state.url);
 		else
 			this.dirty = true;
 	}
 };
+})()

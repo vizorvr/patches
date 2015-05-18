@@ -1,5 +1,4 @@
-E2.p = E2.plugins["array_set_as_modulator"] = function(core, node)
-{
+E2.p = E2.plugins["array_set_as_modulator"] = function(core, node) {
 	this.desc = 'Sets an item value in an array.';
 	
 	this.input_slots = [

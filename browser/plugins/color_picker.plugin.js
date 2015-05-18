@@ -1,5 +1,6 @@
-E2.p = E2.plugins["color_picker"] = function(core, node)
-{
+(function() {
+var ColorPicker = E2.plugins.color_picker = function(core) {
+	Plugin.apply(this, arguments)
 	this.desc = 'Provides an intuitive way of picking arbitary colors via a hue slider and saturation / luminosity selection area.';
 	
 	this.input_slots = [];
@@ -11,17 +12,49 @@ E2.p = E2.plugins["color_picker"] = function(core, node)
 	this.state = { hue: 0.0, sat: 0.0, lum: 1.0 };
 };
 
-E2.p.prototype.reset = function()
+ColorPicker.prototype = Object.create(Plugin.prototype)
+
+ColorPicker.prototype.reset = function()
 {
 };
 
-E2.p.prototype.create_ui = function()
+ColorPicker.prototype.create_ui = function()
 {
 	var c = this.c = make('div');
 	var i = this.i = make('img');
 	var s = this.s = make('img');
 	var h = this.h = make('img');
 	var hs = this.hs = make('img');
+	var that = this
+
+	function onMouseDown() {
+		E2.app.undoManager.begin('Pick color')
+		that._mouseDownValue = { hue: that.state.hue, sat: that.state.sat, lum: that.state.lum }
+		console.log('mdv', that._mouseDownValue)
+	}
+
+	function onMouseUp() {
+		console.log('up', that.state)
+		if (that._mouseDownValue.hue !== that.state.hue)
+			that.undoableSetState('hue',
+				that.state.hue,
+				that._mouseDownValue.hue
+			)
+
+		if (that._mouseDownValue.sat !== that.state.sat)
+			that.undoableSetState('sat',
+				that.state.sat,
+				that._mouseDownValue.sat
+			)
+
+		if (that._mouseDownValue.lum !== that.state.lum)
+			that.undoableSetState('lum',
+				that.state.lum,
+				that._mouseDownValue.lum
+			)
+
+		E2.app.undoManager.end()
+	}
 
 	c.css({
 		'width': '130px',
@@ -81,6 +114,7 @@ E2.p.prototype.create_ui = function()
 
 	var c_down = function(self, c, i, s) { return function(e) 
 	{ 
+		onMouseDown()
 		self.color_drag = true;
 		self.update_picker_ev(e, c, s, i);
 	}}(this, c, i, s);
@@ -89,6 +123,7 @@ E2.p.prototype.create_ui = function()
 	{ 
 		e.preventDefault(); 
 		self.color_drag = false;
+		onMouseUp()
 	}}(this);
 
 	var c_move = function(self, c, i, s) { return function(e)
@@ -107,6 +142,7 @@ E2.p.prototype.create_ui = function()
 
 	var h_down = function(self, ui, i, h, hs) { return function(e) 
 	{ 
+		onMouseDown()
 		e.preventDefault(); 
 		self.hue_drag = true;
 		self.update_hue_ev(ui, e, i, h, hs);
@@ -116,6 +152,7 @@ E2.p.prototype.create_ui = function()
 	{
 		e.preventDefault();
 		self.hue_drag = false;
+		onMouseUp()
 	}}(this);
 
 	var h_move = function(self, ui, i, h, hs) { return function(e)
@@ -135,17 +172,17 @@ E2.p.prototype.create_ui = function()
 	return c;
 };
 
-E2.p.prototype.update_state = function()
+ColorPicker.prototype.update_state = function()
 {
 	this.update_value(this.c);
 };
 
-E2.p.prototype.update_output = function(slot)
+ColorPicker.prototype.update_output = function(slot)
 {
 	return this.color;
 };
 
-E2.p.prototype.update_value = function(c)
+ColorPicker.prototype.update_value = function(c)
 {
 	var sat = this.state.sat;
 	var lum = this.state.lum;
@@ -162,6 +199,7 @@ E2.p.prototype.update_value = function(c)
 		rgb[0] = nc[0];
 		rgb[1] = nc[1];
 		rgb[2] = nc[2];
+
 		this.updated = true;
 	}
 	
@@ -169,8 +207,7 @@ E2.p.prototype.update_value = function(c)
 		c.css('background-color', 'rgb(' + cnv2(0) + ', ' + cnv2(1) + ', ' + cnv2(2) + ')');
 };
 
-E2.p.prototype.update_picker_ev = function(e, c, s, i)
-{
+ColorPicker.prototype.update_picker_ev = function(e, c, s, i) {
 	e.preventDefault();
 
 	if(!this.color_drag || this.color_clipped)
@@ -184,30 +221,30 @@ E2.p.prototype.update_picker_ev = function(e, c, s, i)
 	
 	st.sat = st.sat < 0.0 ? 0.0 : st.sat > 1.0 ? 1.0 : st.sat;
 	st.lum = st.lum < 0.0 ? 0.0 : st.lum > 1.0 ? 1.0 : st.lum;
-
+	
 	this.update_picker(c, s);
 };
 
-E2.p.prototype.update_picker = function(c, s)
+ColorPicker.prototype.update_picker = function(c, s)
 {
 	s.css('left', Math.floor((this.state.sat * 100.0)) - 5);
 	s.css('top', Math.floor((1.0 - this.state.lum) * 100.0) - 5);
 
-	this.update_value(c);
+	// this.update_value(c);
 };
 
-E2.p.prototype.update_hue_ev = function(ui, e, i, h, hs)
+ColorPicker.prototype.update_hue_ev = function(ui, e, i, h, hs)
 {
 	e.preventDefault();
 
 	if(!this.hue_drag || this.hue_clipped)
 		return;
 
-	this.state.hue = (e.pageY - h.offset().top) / 100.0;
+	this.state.hue = (e.pageY - h.offset().top) / 100.0
 	this.update_hue(ui, i, h, hs);
 };
 
-E2.p.prototype.update_hue = function(ui, i, h, hs)
+ColorPicker.prototype.update_hue = function(ui, i, h, hs)
 {
 	var hue = 1.0 - this.state.hue;
 
@@ -253,14 +290,14 @@ E2.p.prototype.update_hue = function(ui, i, h, hs)
 	this.update_value(ui);
 };
 
-E2.p.prototype.clip = function(ev, e)
+ColorPicker.prototype.clip = function(ev, e)
 {
 	var o = e.offset();
 
 	return ev.pageX < o.left || ev.pageX > o.left + e.width() || ev.pageY < o.top || ev.pageY > o.top + e.height();
 };
 
-E2.p.prototype.state_changed = function(ui)
+ColorPicker.prototype.state_changed = function(ui)
 {
 	if(ui)
 	{
@@ -278,3 +315,5 @@ E2.p.prototype.state_changed = function(ui)
 		this.update_hue(null, null, null, null);
 	}
 };
+
+})();

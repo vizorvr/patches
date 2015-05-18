@@ -1,221 +1,243 @@
-function Graph(core, parent_graph, tree_node) 
-{
-	this.tree_node = tree_node;
-	this.listeners = [];
+function Graph(core, parent_graph, uid) {
+	EventEmitter.call(this)
+
 	this.nodes = [];
 	this.connections = [];
 	this.core = core;
 	this.registers = new Registers(core);
-	
-	if(tree_node !== null) // Only initialise if we're not deserialising.
-	{
-		this.uid = this.core.get_graph_uid();
-		this.parent_graph = parent_graph;
-		this.roots = [];
-		this.children = [];
-		this.node_uid = 0;
-			
-		tree_node.graph = this;
-	}
+
+	this.parent_graph = parent_graph;
+	this.roots = [];
+	this.children = [];
+	this.node_uid = 0;
+
+	this.uid = (uid !== undefined) ? uid : E2.uid();
 }
 
-Graph.prototype.get_node_uid = function()
-{
-	return this.node_uid++;
-};
+Graph.prototype = Object.create(EventEmitter.prototype)
 
-Graph.prototype.register_node = function(n)
-{
-	this.nodes.push(n);
-	
-	if(this.nuid_lut)
-		this.nuid_lut[n.uid] = n;
-	
-	if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
-		this.roots.push(n);
-	else if(n.plugin.e2_is_graph)
-		this.children.push(n);
-};
+Graph.prototype.get_node_uid = function() {
+	return E2.core.get_uid()
+}
 
-Graph.prototype.unregister_node = function(n)
-{
-	this.nodes.remove(n);
-	
-	if(this.nuid_lut)
-		delete this.nuid_lut[n.uid];
-	
-	if(n.plugin.output_slots.length === 0 && !n.dyn_outputs) 
-		this.roots.remove(n);
-	else if(n.plugin.e2_is_graph)
-		this.children.remove(n);
-};
-
-Graph.prototype.create_instance = function(plugin_id, x, y)
-{
-	n = new Node(this, plugin_id, x, y);
-	
-	this.register_node(n);
-	this.emit_event({ type: 'node-created', node: n });
-
-	return n;
-};
-
-Graph.prototype.update = function(delta_t)
-{
-	var nodes = this.nodes;
-	var roots = this.roots;
-	var children = this.children;
-	var dirty = false;
+Graph.prototype.update = function() {
+	var nodes = this.nodes
+	var roots = this.roots
+	var children = this.children
+	var dirty = false
 	
 	for(var i = 0, len = nodes.length; i < len; i++)
-		nodes[i].update_count = 0;
+		nodes[i].update_count = 0
 	
 	for(var i = 0, len = roots.length; i < len; i++)
-		dirty = roots[i].update_recursive(this.connections) || dirty;
+		dirty = roots[i].update_recursive(this.connections) || dirty
 	
-	for(var i = 0, len = children.length; i < len; i++)
-	{
-		var c = children[i];
+	for(var i = 0, len = children.length; i < len; i++) {
+		var c = children[i]
 		
-		if(!c.plugin.texture) // TODO: Huh? Comment this.
-			dirty = c.update_recursive(this.connections) || dirty;
+		if (!c.plugin.texture) // TODO: Huh? Comment this.
+			dirty = c.update_recursive(this.connections) || dirty
 	}
 
 	if(dirty && this === E2.app.player.core.active_graph)
-		E2.app.player.core.active_graph_dirty = dirty;
+		E2.app.player.core.active_graph_dirty = dirty
 	
 	for(var i = 0, len = nodes.length; i < len; i++)
-		nodes[i].plugin.updated = false;
+		nodes[i].plugin.updated = false
 
 	return dirty;
-};
+}
 
-Graph.prototype.enum_all = function(n_delegate, c_delegate)
-{
-	if(n_delegate)
-	{
+Graph.prototype.enum_all = function(nodeCb, connCb) {
+	if (nodeCb) {
 		var nodes = this.nodes;
 		    
 		for(var i = 0, len = nodes.length; i < len; i++)
-			n_delegate(nodes[i]);
+			nodeCb(nodes[i]);
 	}
 
-	if(c_delegate)
-	{
+	if (connCb) {
 		var conns = this.connections;
 	    
 		for(var i = 0, len = conns.length; i < len; i++)
-			c_delegate(conns[i]);
+			connCb(conns[i]);
 	}
-};
+}
 
-Graph.prototype.reset = function()
-{
+Graph.prototype.reset = function() {
 	var nodes = this.nodes, conns = this.connections;
-	    
-	for(var i = 0, len = nodes.length; i < len; i++)
+	var i, len
+
+	for(i = 0, len = nodes.length; i < len; i++)
 		nodes[i].reset();
     
-	for(var i = 0, len = conns.length; i < len; i++)
+	for(i = 0, len = conns.length; i < len; i++)
 		conns[i].reset();
-};
+}
 
-Graph.prototype.play = function()
-{
-	this.enum_all(function(n)
-	{
+Graph.prototype.play = function() {
+	this.enum_all(function(n) {
 		if(n.plugin.play)
 			n.plugin.play();
 	}, null);
-};
+}
 
-Graph.prototype.pause = function()
-{
-	this.enum_all(function(n)
-	{
+Graph.prototype.pause = function() {
+	this.enum_all(function(n) {
 		if(n.plugin.pause)
 			n.plugin.pause();
 	}, null);
-};
+}
 
-Graph.prototype.stop = function()
-{
-	this.enum_all(function(n)
-	{
+Graph.prototype.stop = function() {
+	this.enum_all(function(n) {
 		if(n.plugin.stop)
 			n.plugin.stop();
 	}, null);
-};
+}
 
-Graph.prototype.destroy_connection = function(c)
-{
-	var index = this.connections.indexOf(c);
+Graph.prototype.addNode = function(n, info) {
+	this.registerNode(n, info ? info.order : null)
+
+	this.emit('nodeAdded', n, info)
+
+	return n
+}
+
+Graph.prototype.registerNode = function(n, order) {
+	if (!order)
+		this.nodes.push(n)
+	else
+		this.nodes.splice(order[0], 0, n)
+
+	if (this.nuid_lut)
+		this.nuid_lut[n.uid] = n
 	
-	if(index !== -1)
-		this.connections.splice(index, 1);
+	if (!n.plugin.output_slots.length && !n.dyn_outputs.length)
+		this.roots.push(n)
 	
-	c.dst_slot.is_connected = false;
+	if (n.plugin.isGraph) {
+		if (!order)
+			this.children.push(n)
+		else
+			this.children.splice(order[1], 0, n)
+
+		if (E2.core.graphs.indexOf(n.plugin.graph) === -1)
+			E2.core.graphs.push(n.plugin.graph)
+	}
+
+	return n
+}
+
+Graph.prototype.removeNode = function(node) {
+	function nodeFilter(fnode) {
+		return node !== fnode
+	}
+
+	this.nodes = this.nodes.filter(nodeFilter);
 	
-	var slots = c.dst_node.inputs;
+	if (this.nuid_lut)
+		delete this.nuid_lut[node.uid];
 	
-	index = slots.indexOf(c);
+	if (!node.plugin.output_slots.length && !node.dyn_outputs.length) 
+		this.roots = this.roots.filter(nodeFilter);
+	
+	if (node.plugin.isGraph) {
+		this.children = this.children.filter(nodeFilter);
+		E2.core.graphs.splice(E2.core.graphs.indexOf(node.plugin.graph), 1)
+	}
 
-	if(index !== -1)
-		slots.splice(index, 1);
+	this.emit('nodeRemoved', node)
 
-	slots = c.src_node.outputs;
-	index = slots.indexOf(c);
+	return node
+}
 
-	if(index !== -1)
-		slots.splice(index, 1);
-};
+Graph.prototype.renameNode = function(node, title) {
+	node.title = title
+	this.emit('nodeRenamed', node)
+}
 
-Graph.prototype.create_ui = function()
-{
+Graph.prototype.addConnection = function(connection) {
+	if (!connection.patch_up(this.nodes)) {
+		console.warn('Failed to connect', connection)
+		return false
+	}
+
+	this.connections.push(connection)
+
+	return connection
+}
+
+Graph.prototype.connect = function(connection) {
+	return this.addConnection(connection)
+}
+
+Graph.prototype.disconnect = function(c) {
+	var index = this.connections.indexOf(c)
+	var slots
+
+	if (index !== -1)
+		this.connections.splice(index, 1)
+
+	if (c.dst_node) {
+		c.dst_slot.is_connected = false
+		slots = c.dst_node.inputs
+		index = slots.indexOf(c)
+		if (index !== -1)
+			slots.splice(index, 1)
+	}
+
+	if (c.src_node) {
+		slots = c.src_node.outputs
+		index = slots.indexOf(c)
+
+		if (index !== -1)
+			slots.splice(index, 1)
+	}
+}
+
+Graph.prototype.create_ui = function() {
 	this.nuid_lut = [];
 
-	for(var i = 0, len = this.nodes.length; i < len; i++)
-	{
+	for(var i = 0, len = this.nodes.length; i < len; i++) {
 		var n = this.nodes[i];
-		
 		this.nuid_lut[n.uid] = n;
 	}
 
-	this.enum_all(function(n)
-	{
-		n.create_ui();
+	this.enum_all(function(n) {
+		n.create_ui()
 
-		if(n.ui && n.plugin.state_changed)
-			n.plugin.state_changed(n.ui.plugin_ui);
+		if (n.plugin.state_changed)
+			n.plugin.state_changed(n.ui.plugin_ui)
 	},
-	function(c)
-	{
-		c.create_ui();
-		c.ui.resolve_slot_divs();
+	function(c) {
+		c.create_ui()
+		c.ui.resolve_slot_divs()
+	})
+}
+
+Graph.prototype.destroy_ui = function() {
+	this.enum_all(function(n) {
+		n.destroy_ui();
+	}, function(c) {
+		c.destroy_ui();
 	});
-};
 
-Graph.prototype.destroy_ui = function()
-{
-	this.enum_all(function(n) { n.destroy_ui(); }, function(c) { c.destroy_ui(); });
 	delete this.nuid_lut;
-};
+}
 
-Graph.prototype.find_connection_to = function(node, slot)
-{
+Graph.prototype.find_connection_to = function(node, slot) {
 	if (slot.type !== E2.slot_type.input)
 		return;
 	
 	var uid = node.uid;
 
-	return this.connections.filter(function(c)
-	{
+	return this.connections.filter(function(c) {
 		return (c.dst_node.uid === uid && c.dst_slot === slot);
 	})[0];
-};
+}
 
-Graph.prototype.find_connections_from = function(node, slot)
-{
+Graph.prototype.find_connections_from = function(node, slot) {
 	if(slot.type !== E2.slot_type.output)
 		return [];
 	
@@ -225,10 +247,9 @@ Graph.prototype.find_connections_from = function(node, slot)
 	{
 		return(c.src_node.uid === uid && c.src_slot === slot);
 	});
-};
+}
 
-Graph.prototype.serialise = function()
-{
+Graph.prototype.serialise = function() {
 	var d = {};
 	
 	d.node_uid = this.node_uid;
@@ -242,10 +263,9 @@ Graph.prototype.serialise = function()
 	this.registers.serialise(d);
 	
 	return d;
-};
+}
 
-Graph.prototype.deserialise = function(d)
-{
+Graph.prototype.deserialise = function(d) {
 	this.node_uid = d.node_uid;
 	this.uid = d.uid;
 	this.parent_graph = d.parent_uid;
@@ -255,112 +275,68 @@ Graph.prototype.deserialise = function(d)
 	this.children = [];
 	this.open = d.open || false;
 	
-	for(var i = 0, len = d.nodes.length; i < len; i++)
-	{
+	var i, len
+
+	for(i = 0, len = d.nodes.length; i < len; i++) {
 		var n = new Node(null, null, null, null);
 		
-		if(n.deserialise(this.uid, d.nodes[i]))
-			this.register_node(n);
+		if (n.deserialise(this.uid, d.nodes[i]))
+			this.registerNode(n)
 	}
 
 	this.connections = [];
 
-	for(var i = 0, len = d.conns.length; i < len; i++)
-	{
+	for(i = 0, len = d.conns.length; i < len; i++) {
 		var c = new Connection(null, null, null, null);
 		
 		c.deserialise(d.conns[i]);
 		this.connections.push(c);
 	}
 	
-	if(d.registers)
-		this.registers.deserialise(d.registers);
-};
+	if (d.registers)
+		this.registers.deserialise(d.registers)
+}
 
-Graph.prototype.patch_up = function(graphs)
-{
-	this.parent_graph = Graph.resolve_graph(graphs, this.parent_graph);
+Graph.prototype.patch_up = function(graphs) {
+	if (!(this.parent_graph instanceof Graph))
+		this.parent_graph = Graph.resolve_graph(graphs, this.parent_graph);
 
-	// Cannot use enum_all for this!
 	var nodes = this.nodes,
 	    conns = this.connections;
-	    
-	for(var i = 0, len = nodes.length; i < len; i++)
+	
+	var i, len
+
+	for(i = 0, len = nodes.length; i < len; i++)
 		nodes[i].patch_up(graphs);
 
 	prune = [];
 	
-	for(var i = 0, len = conns.length; i < len; i++)
-	{
+	for(i = 0, len = conns.length; i < len; i++) {
 		var c = conns[i];
 		
 		if(!c.patch_up(this.nodes))
 			prune.push(c);
 	}
 	
-	for(var i = 0, len = prune.length; i < len; i++)
+	for(i = 0, len = prune.length; i < len; i++)
 		conns.remove(prune[i]);
-};
+}
 
-Graph.prototype.initialise = function()
-{
+Graph.prototype.initialise = function() {
 	var nodes = this.nodes;
 	
 	for(var i = 0, len = nodes.length; i < len; i++)
 		nodes[i].initialise();
 
 	this.reset();
-};
-
-Graph.prototype.reg_listener = function(delegate)
-{
-	if(!this.listeners.indexOf(delegate) !== -1)
-		this.listeners.push(delegate);
-};
-
-Graph.prototype.emit_event = function(ev)
-{
-	var l = this.listeners,
-	    len = l.length;
-	
-	if(len === 0)
-		return;
-	
-	for(var i = 0; i < len; i++)
-		l[i](ev);
-};
-
-Graph.prototype.getTitle = function() {
-	return this.tree_node.title
 }
 
-Graph.prototype.build_breadcrumb = function(parent, add_handler)
-{
-	var sp = $('<span>' + this.tree_node.title + '</span>');
-	
-	sp.css('cursor', 'pointer');
-	
-	if(add_handler)
-	{
-		sp.click(function(self) { return function()
-		{
-			self.tree_node.activate();
-		}}(this));
-		
-		sp.css({ 'text-decoration': 'underline' });
-	}
-	
-	parent.prepend($('<span> / </span>'));
-	parent.prepend(sp);
-	
-	if(this.parent_graph)
-		this.parent_graph.build_breadcrumb(parent, true);
-};
+Graph.prototype.getTitle = function() {
+	return this.title
+}
 
-Graph.prototype.reorder_children = function(original, sibling, insert_after)
-{
-	var reorder = function(arr)
-	{
+Graph.prototype.reorder_children = function(original, sibling, insert_after) {
+	function reorder(arr) {
 		arr.remove(original);
 		
 		var i = arr.indexOf(sibling);
@@ -369,22 +345,28 @@ Graph.prototype.reorder_children = function(original, sibling, insert_after)
 			i++;
 		
 		arr.splice(i, 0, original);
-	};
-	
+	}
+
 	reorder(this.children);
 	reorder(this.nodes);
 };
 
-Graph.resolve_graph = function(graphs, guid)
-{
-	for(var i = 0, len = graphs.length; i < len; i++)
-	{
-		if(graphs[i].uid === guid)
-			return graphs[i]; 
+Graph.resolve_graph = function(graphs, guid) {
+	for(var i = 0, len = graphs.length; i < len; i++) {
+		if (graphs[i].uid === guid)
+			return graphs[i]
 	}
 
-	if(guid !== -1)
-		msg('ERROR: Failed to resolve graph(' + guid + ')');
+	if (guid !== -1) {
+		msg('ERROR: Failed to resolve graph(' + guid + ')')
+		debugger;
+	}
 	
 	return null;
-};
+}
+
+if (typeof(module) !== 'undefined') {
+	module.exports = Graph
+	var Connection = require('./connection').Connection
+}
+

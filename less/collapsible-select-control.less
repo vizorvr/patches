@@ -1,3 +1,9 @@
+.result li,
+.panel {
+	margin-top: 1px;
+	margin-bottom: 1px;
+}
+
 .panel-default {
 	border-color: @gray-dark;
 }
@@ -29,9 +35,10 @@
 	padding: 0;
 }
 
-.panel-heading:hover {
+.result li:hover,
+.panel-heading:hover, {
 	color: #aaa;
-	background-color: #333;
+	background-color: @gray-dark;
 	background-image: none;
 }
 
@@ -40,24 +47,25 @@
 	margin-left: 6px;
 }
 
-.panel-body {
+.result,
+.panel-body,
+.panel-body ul {
     padding: 0;
+    margin: 0;
     border-top: 0px;
 }
 
-.panel-body ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-	color: #aaa;
-	background-color: #222;
+.preset-result table tbody tr td {
+	padding: 3px !important;
 }
 
+.result tr,
 .panel-body li {
 	cursor: pointer;
 }
 
+li.active,
 .panel-body li:hover {
-	color: #aaa;
-	background-color: #333;
+	color: @gray-lighter;
+	background-color: @gray;
 }

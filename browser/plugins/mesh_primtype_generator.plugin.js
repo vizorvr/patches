@@ -1,5 +1,7 @@
-E2.p = E2.plugins["mesh_primtype_generator"] = function(core, node)
+(function(){
+var MeshPrimitiveType = E2.plugins["mesh_primtype_generator"] = function(core, node)
 {
+	Plugin.apply(this, arguments)
 	this.desc = 'Select mesh primitive type.';
 	
 	this.input_slots = [];
@@ -12,12 +14,13 @@ E2.p = E2.plugins["mesh_primtype_generator"] = function(core, node)
 	
 	this.state = { type: this.gl.TRIANGLES };
 };
+MeshPrimitiveType.prototype = Object.create(Plugin.prototype)
 
-E2.p.prototype.reset = function()
+MeshPrimitiveType.prototype.reset = function()
 {
 };
 
-E2.p.prototype.create_ui = function()
+MeshPrimitiveType.prototype.create_ui = function()
 {
 	var inp = $('<select />', { selectedIndex: 4 });
 	
@@ -31,21 +34,20 @@ E2.p.prototype.create_ui = function()
 	 
 	inp.change(function(self) { return function() 
 	{
-		self.state.type = parseInt(inp.val());
-		self.state_changed(inp);
-		self.updated = true;
+		self.undoableSetState('type', parseInt(inp.val()), self.state.type)
 	}}(this));
 	
 	return inp;
 };
 
-E2.p.prototype.update_output = function(slot)
+MeshPrimitiveType.prototype.update_output = function()
 {
 	return this.state.type;
 };
 
-E2.p.prototype.state_changed = function(ui)
+MeshPrimitiveType.prototype.state_changed = function(ui)
 {
 	if(ui)
 		ui.val('' + this.state.type);
 };
+})();

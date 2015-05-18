@@ -31,6 +31,8 @@ function TagControl($input, $fileList) {
 _.extend(TagControl.prototype, Backbone.Events);
 
 function FileSelectControl(handlebars) {
+	EventEmitter.call(this)
+
 	var that = this;
 
 	this._handlebars = handlebars || window.Handlebars
@@ -54,6 +56,7 @@ function FileSelectControl(handlebars) {
 		that._handlebars.registerPartial('filebrowser/'+pname, E2.views.filebrowser[pname]);
 	});
 }
+FileSelectControl.prototype = Object.create(EventEmitter.prototype)
 
 FileSelectControl.prototype._onFilesChange = function(model)
 {
@@ -379,6 +382,7 @@ FileSelectControl.prototype.cancel = function() {
 
 FileSelectControl.prototype.close = function() {
 	$(this._el).modal('hide');
+	this.emit('closed')
 };
 
 // ------------------------------------------
@@ -527,15 +531,13 @@ FileSelectControl.createSceneSelector = function(selected, okButton, okFn)
 	});
 };
 
-FileSelectControl.createTextureSelector = function(selected, okButton, okFn)
-{
-	return createSelector('/image', selected, okButton, okFn, function(ctl)
-	{
-		ctl
-		.template('texture')
-		.modal();
-	});
-};
+FileSelectControl.createTextureSelector = function(selected, cb){
+	return createSelector('/image', selected, 'Select', function(){}, cb)
+}
+
+FileSelectControl.createModelSelector = function(model, selected, cb){
+	return createSelector('/'+model, selected, 'Select', function(){}, cb)
+}
 
 FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
 	return createSelector(path, selected, okButton, okFn, function(ctl)

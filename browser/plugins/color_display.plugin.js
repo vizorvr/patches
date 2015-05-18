@@ -7,6 +7,7 @@ E2.p = E2.plugins["color_display"] = function(core, node)
 	];
 	
 	this.output_slots = [];
+	this.color = vec4.createFrom(1, 1, 1, 1);
 };
 
 E2.p.prototype.reset = function()
@@ -41,7 +42,7 @@ E2.p.prototype.create_ui = function()
 E2.p.prototype.update_input = function(slot, data)
 {
 	var c = this.color;
-	
+
 	c[0] = data[0];
 	c[1] = data[1];
 	c[2] = data[2];

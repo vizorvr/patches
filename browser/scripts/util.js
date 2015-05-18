@@ -40,8 +40,7 @@ function clone_recursive(from, to)
     return to;
 }
 
-function clone(o)
-{
+function clone(o) {
 	return clone_recursive(o, null);
 };
 
@@ -103,26 +102,31 @@ function sort_dict(dict)
 	return s;
 }
 
-function msg(txt)
-{
+function msg(txt) {
 	var d = E2.dom.dbg;
 
-	if(d === undefined)
-	{
+	if (d === undefined) {
 		console.log(txt);
 		return;
 	}
 	
-	if(txt)
-	{
-		if(txt.substring(0,  7) === 'ERROR: ')
+	if(txt) {
+		if(txt.substring(0,  7) === 'ERROR: ') {
+			console.error(txt)
 			d.append('<span style="color:#f20">' + txt + '</span>\n');
-		else if(txt.substring(0,  9) === 'WARNING: ')
+		}
+		else if(txt.substring(0,  9) === 'WARNING: ') {
+			console.warn(txt)
 			d.append('<span style="color:#fa0">' + txt + '</span>\n');
-		else if(txt.substring(0,  6) === 'INFO: ')
+		}
+		else if(txt.substring(0,  6) === 'INFO: ') {
+			console.log(txt)
 			d.append('<span style="color:#04f">' + txt + '</span>\n');
-		else
+		}
+		else {
+			console.log(txt)
 			d.append(txt + '\n');
+		}
 	}
 	
 	d.scrollTop(d[0].scrollHeight);
@@ -153,18 +157,16 @@ function ExpandableTextfield(node, tf, def_width)
 	tf.keyup(handler);
 }
 
-function load_script(url, onload, onerror)
-{
+function load_script(url, onload, onerror) {
 	var script = document.createElement('script');
 
 	script.src = url;
-	script.setAttribute('async', 'false');
 	
-	if(onload)
-		script.onload = onload;
-	
-	if(onerror)
-		script.onerror = onerror;
+	if (!onload)
+		throw new Error('load_script without listener')
+
+	script.onload = onload;
+	script.onerror = onerror;
 	
 	document.getElementsByTagName('head')[0].appendChild(script);	
 }

@@ -150,7 +150,6 @@ table
 	background-color: #eee !important;
 	z-index: 100;
 	padding: 0px;
-	cursor: move;
 	position: absolute;
 	white-space: nowrap;
 }
@@ -208,6 +207,7 @@ table
 
 .pl_header
 {
+	cursor: move;
 	color: #ccc;
 	background: transparent;
 	border: none;
@@ -365,7 +365,7 @@ table
 .left-cell {
 	flex: 0 0 @left-cell-width;
 	width: @left-cell-width;
-	min-width: @left-cell-width;
+	min-width: 10px;
 	max-width: @left-cell-width;
 }
 

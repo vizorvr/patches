@@ -1,5 +1,7 @@
-E2.p = E2.plugins["url_audio_buffer_generator"] = function(core, node)
+(function(){
+var UrlAudioBuffer = E2.plugins["url_audio_buffer_generator"] = function(core, node)
 {
+	Plugin.apply(this, arguments)
 	this.desc = 'Load an audio sample from an URL.';
 
 	this.input_slots = [
@@ -15,13 +17,14 @@ E2.p = E2.plugins["url_audio_buffer_generator"] = function(core, node)
 	this.buffer = null;
 	this.dirty = false;
 };
+UrlAudioBuffer.prototype = Object.create(Plugin.prototype)
 
-E2.p.prototype.reset = function()
+UrlAudioBuffer.prototype.reset = function()
 {
 	this.updated = false;
 };
 
-E2.p.prototype.create_ui = function()
+UrlAudioBuffer.prototype.create_ui = function()
 {
 	var inp = makeButton('Source', 'No audio selected.', 'url');
 	var self = this;
@@ -32,22 +35,20 @@ E2.p.prototype.create_ui = function()
 			.createAudioSelector(self.state.url)
 			.onChange(function(v)
 			{
-				self.state.url = v;
-				self.state_changed(null);
-				self.state_changed(inp);
+				self.undoableSetState('url', v, self.state.url)
 			});
 	});
 
 	return inp;
 };
 
-E2.p.prototype.update_input = function(slot, data)
+UrlAudioBuffer.prototype.update_input = function(slot, data)
 {
 	this.state.url = data;
 	this.state_changed(null);
 };
 
-E2.p.prototype.update_state = function()
+UrlAudioBuffer.prototype.update_state = function()
 {
 	if(!this.dirty)
 		return;
@@ -78,12 +79,12 @@ E2.p.prototype.update_state = function()
 	this.dirty = false;
 };
 
-E2.p.prototype.update_output = function(slot)
+UrlAudioBuffer.prototype.update_output = function(slot)
 {
 	return this.buffer;
 };
 
-E2.p.prototype.state_changed = function(ui)
+UrlAudioBuffer.prototype.state_changed = function(ui)
 {
 	if(this.state.url !== '')
 	{
@@ -93,3 +94,5 @@ E2.p.prototype.state_changed = function(ui)
 			this.dirty = true;
 	}
 };
+
+})();
