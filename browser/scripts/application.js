@@ -1186,12 +1186,13 @@ Application.prototype.onKeyDown = function(e) {
 			'plugin:output_proxy', // 0
 			'plugin:input_proxy', // 1 
 			'plugin:graph', // 2 
-			'plugin:float_display', // 3 
+			'plugin:slider_float_generator', // 3
 			'plugin:const_float_generator', // 4
-			'plugin:slider_float_generator', // 5
+			'plugin:float_display', // 5
 			'plugin:multiply_modulator', // 6
 			'preset:time_oscillate_between_2_values', // 7
 			'preset:image_show_image', // 8
+			'plugin:knob_float_generator', // 9
 		]
 
 		var item = numberHotKeys[e.keyCode - 48]
@@ -1209,7 +1210,7 @@ Application.prototype.onKeyDown = function(e) {
 		this.is_fullscreen = !this.is_fullscreen;
 		this.player.core.renderer.set_fullscreen(this.is_fullscreen);
 		e.preventDefault();
-	} else if (e.keyCode === 81) { // q to focus preset search
+	} else if (e.keyCode === 81 || e.keyCode === 191) { // q or / to focus preset search
 		$('#presetSearch').focus()
 		$('#presetSearch').select()
 		e.preventDefault();
