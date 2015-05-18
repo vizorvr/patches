@@ -77,10 +77,10 @@ UrlScene.prototype.update_output = function(slot)
 UrlScene.prototype.state_changed = function(ui)
 {
 	if (this.state.url !== '') {
+		this.dirty = true;
+
 		if (ui)
 			ui.attr('title', this.state.url);
-		else
-			this.dirty = true;
 	}
 };
 })()
