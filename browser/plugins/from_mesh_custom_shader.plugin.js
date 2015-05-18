@@ -1,3 +1,5 @@
+(function() {
+
 var FromMeshCustomShader = E2.plugins["from_mesh_custom_shader"] = function(core, node) {
 	this.desc = 'Auto-generate a shader embedding user-defined main bodies tailored to correctly and optimally render the supplied mesh.'
 	
@@ -26,7 +28,8 @@ var FromMeshCustomShader = E2.plugins["from_mesh_custom_shader"] = function(core
 
 FromMeshCustomShader.prototype.destroy_ui = function() {
 	_.each(this._editors, function(ed) {
-		ed.close()
+		if (ed.close)
+			ed.close()
 	})
 }
 
@@ -282,3 +285,6 @@ FromMeshCustomShader.prototype.state_changed = function(ui)
 		this.core.add_aux_script('ace/src-noconflict/ace.js');
 	}
 };
+
+})();
+
