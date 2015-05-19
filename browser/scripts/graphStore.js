@@ -44,6 +44,9 @@ GraphStore.prototype.setupListeners = function() {
 					payload.sibling,
 					payload.insertAfter)
 				break;
+			case 'networkNodeAdded':
+				this.networkNodeAdded(payload.graph, payload.node, payload.info)
+				break;
 			case 'uiNodeAdded':
 				this.uiNodeAdded(payload.graph, payload.node, payload.info)
 				break;
@@ -56,6 +59,9 @@ GraphStore.prototype.setupListeners = function() {
 			case 'uiConnected':
 				this.uiConnected(payload.graph, payload.connection)
 				break;
+			case 'networkConnected':
+				this.networkConnected(payload.graph, payload.connection)
+				break;
 			case 'uiDisconnected':
 				this.uiDisconnected(payload.graph, payload.connection)
 				break;
@@ -66,6 +72,31 @@ GraphStore.prototype.setupListeners = function() {
 GraphStore.prototype.uiGraphTreeReordered = function(graph, original, sibling, insertAfter) {
 	graph.reorder_children(original, sibling, insertAfter)
 	this.publish('reordered', graph)
+	this.emit('changed')
+}
+
+GraphStore.prototype.networkNodeAdded = function(graphId, nodeSpec, info) {
+	var graph = Graph.lookup(graphId)
+	var node = new Node(graph, nodeSpec.plugin, nodeSpec.x, nodeSpec.y)
+	console.log('graph', graph === E2.core.active_graph)
+	node.uid = nodeSpec.uid
+	node.reset()
+
+	graph.addNode(node, info)
+
+	mapConnections(node, function(conn) {
+		graph.connect(conn)
+	})
+
+	this.emit('nodeAdded', graph, node, info)
+
+	if (info && info.proxy && info.proxy.connection) {
+		console.log('re-adding', info.proxy.connection)
+		var connection = new Connection()
+		connection.deserialise(info.proxy.connection)
+		this.uiConnected(graph.parent_graph, connection)
+	}
+
 	this.emit('changed')
 }
 
@@ -110,6 +141,18 @@ GraphStore.prototype.uiNodeRenamed = function(graph, node, title) {
 GraphStore.prototype.uiConnected = function(graph, connection) {
 	graph.connect(connection)
 	this.publish('connected', graph, connection)
+	this.emit('changed')
+}
+
+GraphStore.prototype.networkConnected = function(graphId, serCon) {
+	var graph = Graph.lookup(graphId)
+	var connection = new Connection()
+	connection.deserialise(serCon)
+
+	graph.connect(connection)
+	
+	this.emit('connected', graph, connection)
+
 	this.emit('changed')
 }
 

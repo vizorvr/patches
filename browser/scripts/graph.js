@@ -351,6 +351,10 @@ Graph.prototype.reorder_children = function(original, sibling, insert_after) {
 	reorder(this.nodes);
 };
 
+Graph.lookup = function(guid) {
+	return Graph.resolve_graph(E2.core.graphs, guid)
+}
+
 Graph.resolve_graph = function(graphs, guid) {
 	for(var i = 0, len = graphs.length; i < len; i++) {
 		if (graphs[i].uid === guid)
