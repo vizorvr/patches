@@ -4,17 +4,6 @@ function mapConnections(node, fn) {
 	node.inputs.concat(node.outputs).map(fn)
 }
 
-function graphLookup(uid) {
-	var graph 
-	E2.core.graphs.some(function(g) {
-		if (g.uid === uid) {
-			graph = g
-			return true
-		}
-	})
-	return graph
-}
-
 function GraphStore() {
 	Store.apply(this, arguments)
 	this.setupListeners()
@@ -24,16 +13,6 @@ function GraphStore() {
 GraphStore.prototype = Object.create(Store.prototype)
 
 GraphStore.prototype.setupListeners = function() {
-/*
-	E2.app.channel.on('nodeAdded', function nodeAdded(guid, node) {
-		var graph = graphLookup(guid)
-		var inode = new Node()
-		inode.deserialise(guid, node)
-		graph.addNode(inode)
-		inode.patch_up(E2.core.graphs)
-		this.emit('nodeAdded', graph, inode)
-	}.bind(this))
-*/
 	E2.app.dispatcher.register(function receiveFromDispatcher(payload) {
 		console.log('GraphStore.receiveFromDispatcher', payload.actionType)
 		switch(payload.actionType) {
@@ -52,6 +31,9 @@ GraphStore.prototype.setupListeners = function() {
 				break;
 			case 'uiNodeRemoved':
 				this.uiNodeRemoved(payload.graph, payload.node, payload.info)
+				break;
+			case 'networkNodeRemoved':
+				this.networkNodeRemoved(payload.graph, payload.node, payload.info)
 				break;
 			case 'uiNodeRenamed':
 				this.uiNodeRenamed(payload.graph, payload.node, payload.title)
@@ -75,13 +57,7 @@ GraphStore.prototype.uiGraphTreeReordered = function(graph, original, sibling, i
 	this.emit('changed')
 }
 
-GraphStore.prototype.networkNodeAdded = function(graphId, nodeSpec, info) {
-	var graph = Graph.lookup(graphId)
-	var node = new Node(graph, nodeSpec.plugin, nodeSpec.x, nodeSpec.y)
-	console.log('graph', graph === E2.core.active_graph)
-	node.uid = nodeSpec.uid
-	node.reset()
-
+GraphStore.prototype._nodeAdded = function(graph, node, info) {
 	graph.addNode(node, info)
 
 	mapConnections(node, function(conn) {
@@ -100,21 +76,29 @@ GraphStore.prototype.networkNodeAdded = function(graphId, nodeSpec, info) {
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiNodeAdded = function(graph, node, info) {
-	graph.addNode(node, info)
+GraphStore.prototype.networkNodeAdded = function(graphId, nodeSpec, info) {
+	var graph = Graph.lookup(graphId)
+	var node = new Node(graph, nodeSpec.plugin, nodeSpec.x, nodeSpec.y)
+	node.uid = nodeSpec.uid
+	node.reset()
 
+	this._nodeAdded(graph, node, info)
+}
+
+GraphStore.prototype.uiNodeAdded = function(graph, node, info) {
+	this._nodeAdded(graph, node, info)
+	this.broadcast('nodeAdded', graph, node, info)
+}
+
+GraphStore.prototype.networkNodeRemoved = function(graph, node, info) {
 	mapConnections(node, function(conn) {
-		graph.connect(conn)
+		// removing a node, all its connections should be removed
+		graph.disconnect(conn)
 	})
 
-	this.publish('nodeAdded', graph, node, info)
+	graph.removeNode(node)
 
-	if (info && info.proxy && info.proxy.connection) {
-		console.log('re-adding', info.proxy.connection)
-		var connection = new Connection()
-		connection.deserialise(info.proxy.connection)
-		this.uiConnected(graph.parent_graph, connection)
-	}
+	this.broadcast('nodeRemoved', graph, node)
 
 	this.emit('changed')
 }

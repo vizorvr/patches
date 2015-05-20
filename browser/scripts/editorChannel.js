@@ -1,3 +1,4 @@
+(function() {
 
 function EditorChannel() {
 	EventEmitter.call(this)
@@ -13,6 +14,14 @@ function EditorChannel() {
 				case 'nodeAdded':
 					E2.app.dispatcher.dispatch({
 						actionType: 'networkNodeAdded',
+						graph: m.objects[0],
+						node: m.objects[1],
+						info: m.objects[2]
+					})
+					break;
+				case 'nodeRemoved':
+					E2.app.dispatcher.dispatch({
+						actionType: 'networkNodeRemoved',
 						graph: m.objects[0],
 						node: m.objects[1],
 						info: m.objects[2]
@@ -37,3 +46,5 @@ EditorChannel.prototype.broadcast = function(m) {
 
 if (typeof(module) !== 'undefined')
 	module.exports = EditorChannel
+
+})();

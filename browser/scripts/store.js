@@ -16,13 +16,7 @@ function serialize(objects) {
 	})
 }
 
-function Store() {
-	EventEmitter.call(this)
-}
-
-Store.prototype = Object.create(EventEmitter.prototype)
-
-Store.prototype.publish = function(evt) {
+function serializeEvent(evt) {
 	var otwMessage = {
 		type: evt
 	}
@@ -31,13 +25,29 @@ Store.prototype.publish = function(evt) {
 
 	otwMessage.objects = serialize(objects)
 
-	E2.app.channel.broadcast(otwMessage)
+	return otwMessage
+}
 
+function Store() {
+	EventEmitter.call(this)
+}
+
+Store.prototype = Object.create(EventEmitter.prototype)
+
+Store.prototype.publish = function(evt) {
+	var objects = Array.prototype.slice.call(arguments, 1)
 	this.emit.apply(this, [ evt ].concat(objects))
+	this.broadcast(evt)
+}
+
+Store.prototype.broadcast = function(evt) {
+	var om = serializeEvent(evt)
+	E2.app.channel.broadcast(om)
 }
 
 if (typeof(module) !== 'undefined')
 	module.exports = Store
 else
 	window.Store = Store
-})()
+
+})();
