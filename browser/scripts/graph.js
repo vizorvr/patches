@@ -351,6 +351,28 @@ Graph.prototype.reorder_children = function(original, sibling, insert_after) {
 	reorder(this.nodes);
 };
 
+Graph.prototype.findConnection = function(cuid) {
+	var connection
+	this.connections.some(function(c) {
+		if (c.uid === cuid) {
+			connection = c
+			return true
+		}
+	})
+	return connection
+}
+
+Graph.prototype.findNodeByUid = function(nuid) {
+	var node
+	this.nodes.some(function(n) {
+		if (n.uid === nuid) {
+			node = n
+			return true
+		}
+	})
+	return node
+}
+
 Graph.lookup = function(guid) {
 	return Graph.resolve_graph(E2.core.graphs, guid)
 }

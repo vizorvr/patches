@@ -248,7 +248,14 @@ function ChangePluginState(graph, node, key, oldValue, newValue, title) {
 ChangePluginState.prototype = Object.create(GraphEditCommand.prototype)
 
 ChangePluginState.prototype.undo = function() {
+	// TODO wrap this in a PluginStateStore
 	this.node.plugin.state[this.key] = this.oldValue
+	E2.app.channel.broadcast('pluginStateChanged', [
+		this.graph.uid,
+		this.node.uid,
+		this.key,
+		this.oldValue
+	])
 	this.node.plugin.updated = true
 	if (this.node.ui)
 		this.node.plugin.state_changed(this.node.ui.plugin_ui)
@@ -257,6 +264,14 @@ ChangePluginState.prototype.undo = function() {
 ChangePluginState.prototype.redo = function() {
 	this.node.plugin.state[this.key] = this.newValue
 	this.node.plugin.updated = true
+
+	E2.app.channel.broadcast('pluginStateChanged', 
+		this.graph,
+		this.node,
+		this.key,
+		this.newValue
+	)
+
 	if (this.node.ui)
 		this.node.plugin.state_changed(this.node.ui.plugin_ui)
 }

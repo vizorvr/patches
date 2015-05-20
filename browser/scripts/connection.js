@@ -25,6 +25,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot, offset) {
 	this.src_slot = src_slot
 	this.dst_slot = dst_slot
 	this.ui = null
+	this.uid = E2.uid()
 	this.offset = offset || 0
 }
 
@@ -120,10 +121,11 @@ Connection.prototype.serialise = function()
 {
 	var d = {};
 	
-	d.src_nuid = this.src_node.uid;
-	d.dst_nuid = this.dst_node.uid;
-	d.src_slot = this.src_slot.index;
-	d.dst_slot = this.dst_slot.index;
+	d.src_nuid = this.src_node.uid
+	d.dst_nuid = this.dst_node.uid
+	d.src_slot = this.src_slot.index
+	d.dst_slot = this.dst_slot.index
+	d.uid = this.uid
 	
 	d.src_connected = this.src_slot.is_connected;
 	d.dst_connected = this.dst_slot.is_connected;
@@ -141,8 +143,11 @@ Connection.prototype.serialise = function()
 };
 
 Connection.prototype.deserialise = function(d) {
-	this.src_node = d.src_nuid;
-	this.dst_node = d.dst_nuid;
+	this.src_node = d.src_nuid
+	this.dst_node = d.dst_nuid
+
+	this.uid = d.uid || E2.uid()
+
 	this.src_slot = {
 		index: d.src_slot,
 		dynamic: d.src_dyn ? true : false,
