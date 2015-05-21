@@ -79,8 +79,12 @@ function EditorChannel() {
 					node.plugin.state[key] = newValue
 					node.plugin.updated = true
 
-					if (node.ui)
-						node.plugin.state_changed(node.ui.plugin_ui)
+					if (node.plugin.state_changed) {
+						if (node.ui)
+							node.plugin.state_changed(node.ui.plugin_ui)
+
+						node.plugin.state_changed()
+					}
 
 					break;
 			}
