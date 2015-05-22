@@ -57,15 +57,19 @@ UrlScene.prototype.update_input = function(slot, data)
 	this.state_changed(null);
 };
 
-UrlScene.prototype.update_state = function()
-{
+UrlScene.prototype.update_state = function() {
 	if(!this.dirty)
 		return;
 		
 	if(this.scene)
 		delete this.scene;
+
+	var that = this
 		
-	this.scene = Scene.load(this.core.renderer.context, this.state.url, this.core);
+	this.scene = Scene.load(this.core.renderer.context, this.state.url, this.core, function() {
+		that.updated = true
+	});
+
 	this.dirty = false;
 };
 

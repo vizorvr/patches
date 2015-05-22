@@ -30,32 +30,30 @@ Scene.prototype.init_bb = function(data)
 	this.bounding_box = data.bounding_box;
 }
 
-Scene.prototype.load_json = function(data, base_path)
+Scene.prototype.load_json = function(data, base_path, cb)
 {
 	var gl = this.gl;
+	var id
 	
 	this.id = data.id;
 	this.init_bb(data);
 	 
-	for(var id in data.materials)
-	{
+	for(id in data.materials) {
 		if(!data.materials.hasOwnProperty(id))
 			continue;
 		
 		this.materials[id] = new Material(gl, this.texture_cache, data.materials[id], base_path);
 	}
 	
-	for(var id in data.meshes)
-	{
+	for(id in data.meshes) {
 		if(!data.meshes.hasOwnProperty(id))
 			continue;
 			
 		var m = data.meshes[id];
-		
-		for(var b = 0, len = m.batches.length; b < len; b++)
-		{
+
+		for(var b = 0, len = m.batches.length; b < len; b++) {
 			var batch = m.batches[b];
-			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, batch, base_path, this.core.asset_tracker, m.instances);
+			var mesh = new Mesh(gl, gl.TRIANGLES, this.texture_cache, batch, base_path, this.core.asset_tracker, m.instances, cb);
 		
 			mesh.id = id + '_b' + b;
 			mesh.material = this.materials[batch.material];
@@ -146,9 +144,7 @@ Scene.prototype.create_autofit_camera = function()
 	return cam;
 };
 	
-Scene.load = function(gl, url, core) {
-	var that = this
-
+Scene.load = function(gl, url, core, cb) {
 	// Create dummy imposter scene and can be used as a null-proxy until asynchronous load completes.
 	var scene = new Scene(gl, core, null, null);
 	
@@ -161,14 +157,12 @@ Scene.load = function(gl, url, core) {
 			var bp = url.substr(0, url.lastIndexOf('/') + 1);
 			var r = core.renderer;
 			
-			scene.load_json(data, bp);
+			scene.load_json(data, bp, cb);
 
 			msg('INFO: Scene - Finished loading assets from "' + bp + '". Meshes: ' + scene.meshes.length + ', Shaders: ' + scene.shader_cache.count() + ', Textures: ' + scene.texture_cache.count() + ', Vertices: ' + scene.vertex_count);
 			msg('INFO: Global cache state: ' + r.texture_cache.count() + ' textures. ' + r.shader_cache.count() + ' shaders.');
 
 			core.asset_tracker.signal_completed();
-
-			that.updated = true
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			msg('ERROR: Failed to load scene "' + url + '": ' + textStatus + ', ' + errorThrown, 'Renderer');
