@@ -30,9 +30,9 @@ E2.p.prototype.update_input = function(slot, data)
 		
 			if(!this.ext_camera)
 				this.camera = this.scene.create_autofit_camera();
-			
-			this.material_dirty = true;
 		}
+
+		this.material_dirty = true;
 	}
 	else if(slot.index === 1)
 	{

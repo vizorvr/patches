@@ -110,5 +110,10 @@ gulp.task('watch:less', function() {
 	gulp.watch('less/**/*', ['less']);
 });
 
+gulp.task('watch:player', function() {
+	gulp.watch(paths.js.plugins, ['js:plugins']);
+	gulp.watch(paths.js.player, ['js:player']);
+});
+
 gulp.task('default', ['less', 'js']);
 
