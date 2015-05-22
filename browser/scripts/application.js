@@ -541,7 +541,8 @@ Application.prototype.onNodeDragged = function(node) {
 		this._dragInfo.nodes = nodes
 	}
 
-	this.executeNodeDrag(this._dragInfo.nodes, this._dragInfo.connections, dx, dy)
+	if (this._dragInfo)
+		this.executeNodeDrag(this._dragInfo.nodes, this._dragInfo.connections, dx, dy)
 }
 
 Application.prototype.onNodeDragStopped = function(node) {
