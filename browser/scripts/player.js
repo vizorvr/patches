@@ -23,7 +23,6 @@ function Player(vr_devices, canvas, root_node, cb)
 	
 	this.play = function()
 	{
-console.log('play')
 		this.core.root_graph.play();
 		self.current_state = self.state.PLAYING;
 		self.last_time = (new Date()).getTime();
