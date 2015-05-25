@@ -32,63 +32,69 @@ function EditorChannel() {
 	EventEmitter.call(this)
 
 	var that = this
-	wsChannel
-		.join('__editor__')
-		.on('*', function(m) {
-			console.log('EditorChannel IN: ', m.type)
-			this.emit.apply(this, [m.type].concat(m.objects))
 
-			switch(m.type) {
-				case 'nodeAdded':
-					E2.app.dispatcher.dispatch({
-						actionType: 'networkNodeAdded',
-						graph: m.objects[0],
-						node: m.objects[1],
-						info: m.objects[2]
-					})
-					break;
-				case 'nodeRemoved':
-					E2.app.dispatcher.dispatch({
-						actionType: 'networkNodeRemoved',
-						graph: m.objects[0],
-						node: m.objects[1],
-						info: m.objects[2]
-					})
-					break;
-				case 'connected':
-					E2.app.dispatcher.dispatch({
-						actionType: 'networkConnected',
-						graph: m.objects[0],
-						connection: m.objects[1]
-					})
-					break;
-				case 'disconnected':
-					E2.app.dispatcher.dispatch({
-						actionType: 'networkDisconnected',
-						graph: m.objects[0],
-						connection: m.objects[1]
-					})
-					break;
+	new WebSocketChannel()
+		.connect()
+		.on('connected', function() {
 
-				case 'pluginStateChanged':
-					var graph = Graph.lookup(m.objects[0])
-					var node = graph.findNodeByUid(m.objects[1].uid)
-					var key = m.objects[2]
-					var newValue = m.objects[3]
+			wsChannel.join('__editor__')
+			.on('*', function(m) {
+				console.log('EditorChannel IN: ', m.type)
+				that.emit.apply(that, [m.type].concat(m.objects))
 
-					node.plugin.state[key] = newValue
-					node.plugin.updated = true
+				switch(m.type) {
+					case 'nodeAdded':
+						E2.app.dispatcher.dispatch({
+							actionType: 'networkNodeAdded',
+							graph: m.objects[0],
+							node: m.objects[1],
+							info: m.objects[2]
+						})
+						break;
+					case 'nodeRemoved':
+						E2.app.dispatcher.dispatch({
+							actionType: 'networkNodeRemoved',
+							graph: m.objects[0],
+							node: m.objects[1],
+							info: m.objects[2]
+						})
+						break;
+					case 'connected':
+						E2.app.dispatcher.dispatch({
+							actionType: 'networkConnected',
+							graph: m.objects[0],
+							connection: m.objects[1]
+						})
+						break;
+					case 'disconnected':
+						E2.app.dispatcher.dispatch({
+							actionType: 'networkDisconnected',
+							graph: m.objects[0],
+							connection: m.objects[1]
+						})
+						break;
 
-					if (node.plugin.state_changed) {
-						if (node.ui)
-							node.plugin.state_changed(node.ui.plugin_ui)
+					case 'pluginStateChanged':
+						var graph = Graph.lookup(m.objects[0])
+						var node = graph.findNodeByUid(m.objects[1].uid)
+						var key = m.objects[2]
+						var newValue = m.objects[3]
 
-						node.plugin.state_changed()
-					}
+						node.plugin.state[key] = newValue
+						node.plugin.updated = true
 
-					break;
-			}
-		}.bind(this))
+						if (node.plugin.state_changed) {
+							if (node.ui)
+								node.plugin.state_changed(node.ui.plugin_ui)
+
+							node.plugin.state_changed()
+						}
+
+						break;
+				}
+			})
+		})
+
 }
 
 EditorChannel.prototype = Object.create(EventEmitter.prototype)

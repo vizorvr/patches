@@ -1,16 +1,19 @@
 
 function WebSocketChannel() {
+	EventEmitter.call(this)
 	this._listeners = {};
 	this._state = 'disconnected';
 	this.ws;
 }
 
-WebSocketChannel.prototype.connect = function()
-{
+WebSocketChannel.prototype = Object.create(EventEmitter.prototype)
+
+WebSocketChannel.prototype.connect = function() {
 	var that = this;
 
-	if (this._state === 'connected' || this._state === 'connecting')
+	if (this._state === 'connected' || this._state === 'connecting') {
 		return;
+	}
 
 	this._state = 'connecting';
 
@@ -19,10 +22,10 @@ WebSocketChannel.prototype.connect = function()
 		(window.location.port || 80)+
 		'/__wschannel');
 
-	this.ws.onopen = function()
-	{
+	this.ws.onopen = function() {
 		console.log('WsChannel connected');
 		that._state = 'connected';
+		that.emit('connected')
 	};
 
 	this.ws.onclose = function()
@@ -35,19 +38,19 @@ WebSocketChannel.prototype.connect = function()
 		var m = JSON.parse(evt.data);
 		console.log('IN:', m);
 
-		if (that._listeners['*'])
-			that._listeners['*'](m);
-
-		if (!that._listeners[m.channel])
-			return;
-
-		if (that._listeners[m.channel])
-			that._listeners[m.channel](m);
+		that.emit('*', m)
+		that.emit(m.channel, m)
 	};
+
+	return this
 }
 
 WebSocketChannel.prototype.join = function(channel)
 {
+	if (this._state !== 'connected')
+		return;
+
+	console.log('WsChannel.join',channel)
 	this.ws.send(JSON.stringify({ kind: 'join', channel: channel }))
 	return this
 }
@@ -65,16 +68,6 @@ WebSocketChannel.prototype.send = function(channel, data)
 	data.channel = channel;
 
 	this.ws.send(JSON.stringify(data));
-}
-
-WebSocketChannel.prototype.on = function(channel, fn)
-{
-	this._listeners[channel] = fn;
-}
-
-WebSocketChannel.prototype.off = function(channel)
-{
-	delete this._listeners[channel];
 }
 
 // connect automatically
