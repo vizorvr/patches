@@ -75,7 +75,7 @@ function addNode() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiNodeAdded',
 		graphUid: this.graph.uid,
-		node: this.node.serialise(),
+		node: this.node,
 		info: this.nodeInfo
 	})
 }

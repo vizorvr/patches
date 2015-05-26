@@ -112,7 +112,7 @@ Graph.prototype.registerNode = function(n, order) {
 	if (this.nuid_lut)
 		this.nuid_lut[n.uid] = n
 	
-	if (!n.plugin.output_slots.length && !n.dyn_outputs.length)
+	if (!n.plugin.output_slots.length&& !n.dyn_outputs.length)
 		this.roots.push(n)
 	
 	if (n.plugin.isGraph) {

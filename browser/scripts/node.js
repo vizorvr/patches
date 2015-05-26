@@ -508,7 +508,7 @@ Node.prototype.initialise = function()
 };
 
 Node.hydrate = function(guid, json) {
-	var node = new Node(Graph.lookup(guid), json.id, json.x, json.y)
+	var node = new Node()
 	node.deserialise(guid, json)
 	node.patch_up(E2.core.graphs)
 	node.initialise()

@@ -28,15 +28,14 @@ function serializeEvent(evt) {
 	return otwMessage
 }
 
-function hydrate(m) {
-	m.graph = Graph.lookup(m.graphUid)
-
+function hydrate(pl) {
+	var m = _.clone(pl)
 	switch(m.actionType) {
 		case 'uiNodeAdded':
+			m.node = Node.hydrate(m.graphUid, m.node)
+			break;
 		case 'uiNodeRemoved':
 		case 'uiNodeRenamed':
-			m.node = Node.hydrate(m.guid, m.node)
-			break;
 		case 'uiNodesMoved':
 			break;
 		case 'uiConnected':
@@ -48,7 +47,32 @@ function hydrate(m) {
 			
 	}
 
+	console.log('hydrated',m)
 	return m;
+}
+
+function dehydrate(m) {
+	var pl = _.clone(m)
+
+	switch(m.actionType) {
+		case 'uiNodeAdded':
+			pl.node = m.node.serialise()
+			break;
+		case 'uiNodeRemoved':
+		case 'uiNodeRenamed':
+		case 'uiNodesMoved':
+			break;
+		case 'uiConnected':
+			break;
+		case 'uiDisconnected':
+			break;
+		case 'uiGraphTreeReordered':
+		case 'uiPluginStateChanged':
+			
+	}
+	console.log('dehydrated',pl)
+
+	return pl;
 }
 
 function isAcceptedDispatch(m) {
@@ -87,7 +111,7 @@ function EditorChannel() {
 				console.log('EditorChannel IN: ', payload.actionType, payload)
 
 				if (isAcceptedDispatch(payload))
-					E2.app.dispatcher.dispatch(payload)
+					E2.app.dispatcher.dispatch(hydrate(payload))
 
 			})
 		})
@@ -99,7 +123,7 @@ function EditorChannel() {
 		console.log('EditorChannel.channelGotDispatch', payload)
 
 		if (isAcceptedDispatch(payload))
-			that.broadcast(payload)
+			that.broadcast(dehydrate(payload))
 	})
 
 }

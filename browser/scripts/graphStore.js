@@ -66,9 +66,7 @@ GraphStore.prototype._uiGraphTreeReordered = function(graph, original, sibling, 
 	this.emit('changed')
 }
 
-GraphStore.prototype._uiNodeAdded = function(graph, nodeSpec, info) {
-	var node = Node.hydrate(graph.uid, nodeSpec)
-
+GraphStore.prototype._uiNodeAdded = function(graph, node, info) {
 	graph.addNode(node, info)
 
 	mapConnections(node, function(conn) {
@@ -109,6 +107,7 @@ GraphStore.prototype._uiConnected = function(graph, serialisedConnection) {
 	var connection = new Connection()
 	connection.deserialise(serialisedConnection)
 	graph.connect(connection)
+	console.log('connect', connection)
 	this.emit('connected', graph, connection)
 	this.emit('changed')
 }

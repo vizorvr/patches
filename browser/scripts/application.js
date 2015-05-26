@@ -111,7 +111,7 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 
 		that.graphApi.addNode(ag, node)
 
-		return ag.findNodeByUid(node.uid)
+		return node
 	}
 	
 	var node 
