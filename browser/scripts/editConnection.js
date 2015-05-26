@@ -102,7 +102,7 @@ EditConnection.prototype.commit = function() {
 	// connection changed or removed?
 	if (this.connection.src_slot && this.connection.dst_slot &&
 		(this.srcSlot !== this.connection.src_slot || this.dstSlot !== this.connection.dst_slot)) {
-		this.graphApi.disconnect(E2.core.active_graph, this.connection)
+		this.graphApi.disconnect(E2.core.active_graph, this.connection.uid)
 	}
 
 	if (!this.isConnectable())
@@ -114,7 +114,7 @@ EditConnection.prototype.commit = function() {
 	this.connection.dst_slot = this.dstSlot
 
 	return this.graphApi.connect(E2.core.active_graph,
-		this.connection)
+		this.connection.serialise())
 }
 
 if (typeof(module) !== 'undefined')

@@ -28,81 +28,86 @@ function serializeEvent(evt) {
 	return otwMessage
 }
 
+function hydrate(m) {
+	m.graph = Graph.lookup(m.graphUid)
+
+	switch(m.actionType) {
+		case 'uiNodeAdded':
+		case 'uiNodeRemoved':
+		case 'uiNodeRenamed':
+			m.node = Node.hydrate(m.guid, m.node)
+			break;
+		case 'uiNodesMoved':
+			break;
+		case 'uiConnected':
+			break;
+		case 'uiDisconnected':
+			break;
+		case 'uiGraphTreeReordered':
+		case 'uiPluginStateChanged':
+			
+	}
+
+	return m;
+}
+
+function isAcceptedDispatch(m) {
+	switch(m.actionType) {
+		case 'uiNodeAdded':
+		case 'uiNodeRemoved':
+		case 'uiNodeRenamed':
+		case 'uiNodesMoved':
+		case 'uiConnected':
+		case 'uiDisconnected':
+		case 'uiGraphTreeReordered':
+		case 'uiPluginStateChanged':
+			return true;
+	}
+
+	console.log('NOT ACCEPTED:', m)
+
+	return false;
+}
+
 function EditorChannel() {
 	EventEmitter.call(this)
 
 	var that = this
 
-	new WebSocketChannel()
+	this.channel = new WebSocketChannel()
+
+	this.channel
 		.connect()
 		.on('connected', function() {
+			that.channel.join('__editor__')
+			.on('*', function(payload) {
+				if (!payload.actionType || !payload.from)
+					return;
 
-			wsChannel.join('__editor__')
-			.on('*', function(m) {
-				console.log('EditorChannel IN: ', m.type)
-				that.emit.apply(that, [m.type].concat(m.objects))
+				console.log('EditorChannel IN: ', payload.actionType, payload)
 
-				switch(m.type) {
-					case 'nodeAdded':
-						E2.app.dispatcher.dispatch({
-							actionType: 'networkNodeAdded',
-							graph: m.objects[0],
-							node: m.objects[1],
-							info: m.objects[2]
-						})
-						break;
-					case 'nodeRemoved':
-						E2.app.dispatcher.dispatch({
-							actionType: 'networkNodeRemoved',
-							graph: m.objects[0],
-							node: m.objects[1],
-							info: m.objects[2]
-						})
-						break;
-					case 'connected':
-						E2.app.dispatcher.dispatch({
-							actionType: 'networkConnected',
-							graph: m.objects[0],
-							connection: m.objects[1]
-						})
-						break;
-					case 'disconnected':
-						E2.app.dispatcher.dispatch({
-							actionType: 'networkDisconnected',
-							graph: m.objects[0],
-							connection: m.objects[1]
-						})
-						break;
+				if (isAcceptedDispatch(payload))
+					E2.app.dispatcher.dispatch(payload)
 
-					case 'pluginStateChanged':
-						var graph = Graph.lookup(m.objects[0])
-						var node = graph.findNodeByUid(m.objects[1].uid)
-						var key = m.objects[2]
-						var newValue = m.objects[3]
-
-						node.plugin.state[key] = newValue
-						node.plugin.updated = true
-
-						if (node.plugin.state_changed) {
-							if (node.ui)
-								node.plugin.state_changed(node.ui.plugin_ui)
-
-							node.plugin.state_changed()
-						}
-
-						break;
-				}
 			})
 		})
+
+	E2.app.dispatcher.register(function channelGotDispatch(payload) {
+		if (payload.from)
+			return;
+
+		console.log('EditorChannel.channelGotDispatch', payload)
+
+		if (isAcceptedDispatch(payload))
+			that.broadcast(payload)
+	})
 
 }
 
 EditorChannel.prototype = Object.create(EventEmitter.prototype)
 
-EditorChannel.prototype.broadcast = function() {
-	var om = serializeEvent.apply(this, arguments)
-	console.log('BROADCAST:', om, arguments)
-	wsChannel.send('__editor__', om)
+EditorChannel.prototype.broadcast = function(payload) {
+	this.channel.send('__editor__', payload)
 }
 
 if (typeof(module) !== 'undefined')

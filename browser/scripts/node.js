@@ -507,6 +507,16 @@ Node.prototype.initialise = function()
 		this.plugin.graph.initialise();
 };
 
+Node.hydrate = function(guid, json) {
+	var node = new Node(Graph.lookup(guid), json.id, json.x, json.y)
+	node.deserialise(guid, json)
+	node.patch_up(E2.core.graphs)
+	node.initialise()
+	node.reset()
+	return node
+}
+
+
 function LinkedSlotGroup(core, parent_node, inputs, outputs)
 {
 	this.core = core;
@@ -597,6 +607,8 @@ LinkedSlotGroup.prototype.infer_dt = function()
 	return null;
 };
 
+
 if (typeof(module) !== 'undefined')
 	module.exports = Node
+
 

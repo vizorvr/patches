@@ -43,11 +43,12 @@ function Application() {
 
 	this._mousePosition = [400,200]
 
+	this.dispatcher = new Flux.Dispatcher()
+
 	this.undoManager = new UndoManager()
 	this.graphApi = new GraphApi(this.undoManager)
 	this.channel = new EditorChannel(this)
 
-	this.dispatcher = new Flux.Dispatcher()
 	this.graphStore = new GraphStore()
 
 	// Make the UI visible now that we know that we can execute JS
@@ -96,21 +97,21 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 
 	function createPlugin(name) {
 		var ag = E2.core.active_graph
-		var node = new Node(ag, id,
-			Math.floor((pos[0] - co.left) + that.scrollOffset[0]), 
-			Math.floor((pos[1] - co.top) + that.scrollOffset[1]));
+
+		var node = new Node(ag, id, 
+			Math.floor((pos[0] - co.left) + that.scrollOffset[0]),
+			Math.floor((pos[1] - co.top) + that.scrollOffset[1])
+		)
 
 		if (name) { // is graph?
-			node.plugin.setGraph(new Graph(that.player.core, node.parent_graph))
-			node.title = name // + ' ' + node.plugin.graph.uid
+			node.plugin.setGraph(new Graph(E2.core, ag))
+			node.title = name
 			node.plugin.graph.plugin = node.plugin
 		}
 
 		that.graphApi.addNode(ag, node)
 
-		node.reset()
-
-		return node
+		return ag.findNodeByUid(node.uid)
 	}
 	
 	var node 
@@ -394,7 +395,7 @@ Application.prototype.releaseHoverConnections = function() {
 
 Application.prototype.removeHoverConnections = function() {
 	this.hover_connections.map(function(connection) {
-		this.graphApi.disconnect(E2.core.active_graph, connection)
+		this.graphApi.disconnect(E2.core.active_graph, connection.uid)
 	}.bind(this))
 
 	this.hover_connections = []
@@ -402,7 +403,7 @@ Application.prototype.removeHoverConnections = function() {
 
 Application.prototype.deleteSelectedConnections = function() {
 	this.selectedConnections.map(function(connection) {
-		this.graphApi.disconnect(E2.core.active_graph, connection)
+		this.graphApi.disconnect(E2.core.active_graph, connection.uid)
 	}.bind(this))
 
 	this.hover_connections = []
@@ -563,8 +564,14 @@ Application.prototype.onNodeDragStopped = function(node) {
 	)
 
 	this.undoManager.push(cmd)
-
 	this.undoManager.end()
+
+	E2.app.channel.broadcast({
+		actionType: 'uiNodesMoved',
+		graph: E2.core.active_graph.uid,
+		nodeUids: di.nodes.map(function(n) { return n.uid }),
+		delta: { x: dx, y: dy }
+	})
 
 	this._dragInfo = null
 	this.inDrag = false
@@ -924,18 +931,13 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 		docNode.x = Math.floor((docNode.x - doc.x1) + offsetX)
 		docNode.y = Math.floor((docNode.y - doc.y1) + offsetY)
 
-		node = new Node()
-		if (!node.deserialise(ag.uid, docNode))
-			continue
-
 		nodeUidLookup[docNode.uid] = newUid
-		node.uid = newUid
 
-		this.graphApi.addNode(ag, node)
+		docNode.uid = newUid
 
-		node.patch_up(E2.core.graphs)
+		this.graphApi.addNode(ag, Node.hydrate(ag.uid, docNode))
 
-		createdNodes.push(node)
+		createdNodes.push(ag.findNodeByUid(newUid))
 	}
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
@@ -946,42 +948,26 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 		if (suid === undefined || duid === undefined) {
 			// not a valid connection, clear it and skip it
 			if (duid !== undefined) {
-				for(var ni = 0, len2 = createdNodes.length; ni < len2; ni++) {
-					var destNode = createdNodes[ni]
-					if (destNode.uid !== duid)
-						continue;
+				var destNode = ag.findNodeByUid(duid)
+
+				var slots = docConnection.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
+				var slot = slots[docConnection.dst_slot]
 					
-					var slots = docConnection.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
-					var slot = slots[docConnection.dst_slot]
-					
-					slot.is_connected = false;
-					slot.connected = false;
-					destNode.inputs_changed = true;
-						
-					break;
-				}
+				slot.is_connected = false;
+				slot.connected = false;
+				destNode.inputs_changed = true;
 			}
 
 			continue;
 		}
 		
-		var c = new Connection()
-		c.deserialise(docConnection)
-		c.src_node = nodeUidLookup[docConnection.src_nuid]
-		c.dst_node = nodeUidLookup[docConnection.dst_nuid]
+		docConnection.src_nuid = suid
+		docConnection.dst_nuid = duid
+		docConnection.uid = E2.core.get_uid()
 
-		this.graphApi.connect(ag, c)
+		this.graphApi.connect(ag, docConnection)
 
-		createdConnections.push(c)
-	}
-	
-	for(i = 0, len = createdNodes.length; i < len; i++) {
-		node = createdNodes[i]
-
-		node.initialise()
-
-		if (node.plugin.reset)
-			node.plugin.reset()
+		createdConnections.push(ag.findConnectionByUid(docConnection.uid))
 	}
 
 	this.undoManager.end()
@@ -1015,6 +1001,8 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 
 	if (addToSelection !== false)
 		this.selectedNodes.push(node)
+
+	node.inputs.map(this.markConnectionAsSelected.bind(this))
 }
 
 Application.prototype.deselectNode = function(node) {
@@ -1599,15 +1587,10 @@ function onGraphChanged() {
 function onNodeAdded(graph, node) {
 	console.log('onNodeAdded', node.plugin.id, node.plugin.isGraph)
 	
-	if (graph === E2.core.active_graph)
+	if (graph === E2.core.active_graph) {
 		node.create_ui()
 
-	node.patch_up(E2.core.graphs)
-
-	if (node.plugin.state_changed) {
-		node.plugin.state_changed()
-
-		if (node.ui)
+		if (node.plugin.state_changed)
 			node.plugin.state_changed(node.ui.plugin_ui)
 	}
 

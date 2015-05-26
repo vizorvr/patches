@@ -9,7 +9,6 @@ function Graph(core, parent_graph, uid) {
 	this.parent_graph = parent_graph;
 	this.roots = [];
 	this.children = [];
-	this.node_uid = 0;
 
 	this.uid = (uid !== undefined) ? uid : E2.uid();
 }
@@ -252,7 +251,6 @@ Graph.prototype.find_connections_from = function(node, slot) {
 Graph.prototype.serialise = function() {
 	var d = {};
 	
-	d.node_uid = this.node_uid;
 	d.uid = this.uid;
 	d.parent_uid = this.parent_graph ? this.parent_graph.uid : -1;
 	d.open = this.open;
@@ -266,7 +264,6 @@ Graph.prototype.serialise = function() {
 }
 
 Graph.prototype.deserialise = function(d) {
-	this.node_uid = d.node_uid;
 	this.uid = d.uid;
 	this.parent_graph = d.parent_uid;
 			
@@ -351,7 +348,7 @@ Graph.prototype.reorder_children = function(original, sibling, insert_after) {
 	reorder(this.nodes);
 };
 
-Graph.prototype.findConnection = function(cuid) {
+Graph.prototype.findConnectionByUid = function(cuid) {
 	var connection
 	this.connections.some(function(c) {
 		if (c.uid === cuid) {

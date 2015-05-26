@@ -63,17 +63,19 @@ function removeNode() {
 
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiNodeRemoved',
-		graph: this.graph, 
-		node: this.node,
+		graphUid: this.graph.uid,
+		nodeUid: this.node.uid,
 		info: this.nodeInfo
 	})
 }
 
+// -------------------------------------
+
 function addNode() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiNodeAdded',
-		graph: this.graph,
-		node: this.node,
+		graphUid: this.graph.uid,
+		node: this.node.serialise(),
 		info: this.nodeInfo
 	})
 }
@@ -92,7 +94,7 @@ AddNode.prototype.redo = addNode
 function RemoveNode(graph, node) {
 	GraphEditCommand.apply(this, arguments)
 	this.node = node
-	this.title = 'Remove node ' + node.title
+	this.title = 'Remove node ' + this.node.title
 }
 RemoveNode.prototype = Object.create(GraphEditCommand.prototype)
 RemoveNode.prototype.undo = addNode
@@ -111,8 +113,8 @@ RenameNode.prototype = Object.create(GraphEditCommand.prototype)
 RenameNode.prototype.undo = function() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiNodeRenamed',
-		graph: this.graph,
-		node: this.node,
+		graphUid: this.graph.uid,
+		nodeUid: this.node.uid,
 		title: this.origNodeTitle
 	})
 }
@@ -120,8 +122,8 @@ RenameNode.prototype.undo = function() {
 RenameNode.prototype.redo = function() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiNodeRenamed',
-		graph: this.graph,
-		node: this.node,
+		graphUid: this.graph.uid,
+		nodeUid: this.node.uid,
 		title: this.newNodeTitle
 	})
 }
@@ -139,32 +141,33 @@ Connect.prototype = Object.create(GraphEditCommand.prototype)
 Connect.prototype.undo = function() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiDisconnected',
-		graph: this.graph,
-		connection: this.connection
+		graphUid: this.graph.uid,
+		connectionUid: this.connection.uid
 	})
 }
 
 Connect.prototype.redo = function() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiConnected',
-		graph: this.graph,
+		graphUid: this.graph.uid,
 		connection: this.connection
 	})
 }
 
 // -------------------------------
 
-function Disconnect(graph, connection) {
+function Disconnect(graph, connectionUid) {
 	GraphEditCommand.apply(this, arguments)
 	this.title = 'Disconnect'
-	this.connection = connection
+	this.connectionUid = connectionUid
+	this.connection = graph.findConnectionByUid(connectionUid).serialise()
 }
 Disconnect.prototype = Object.create(GraphEditCommand.prototype)
 
 Disconnect.prototype.undo = function() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiConnected',
-		graph: this.graph,
+		graphUid: this.graph.uid,
 		connection: this.connection
 	})
 }
@@ -172,18 +175,12 @@ Disconnect.prototype.undo = function() {
 Disconnect.prototype.redo = function() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiDisconnected', 
-		graph: this.graph,
-		connection: this.connection
+		graphUid: this.graph.uid,
+		connectionUid: this.connectionUid
 	})
 }
 
 // -------------------------------
-
-function _gatherConnections(nodes) {
-	return nodes.reduce(function(arr, node) {
-		return arr.concat(node.inputs.concat(node.outputs))
-	}, [])
-}
 
 function Move(graph, nodes, dx, dy) {
 	GraphEditCommand.apply(this, arguments)
@@ -194,13 +191,28 @@ function Move(graph, nodes, dx, dy) {
 Move.prototype = Object.create(GraphEditCommand.prototype)
 
 Move.prototype.undo = function() {
-	var connections = _gatherConnections(this.nodes)
-	E2.app.executeNodeDrag(this.nodes, connections, this.delta.x * -1, this.delta.y * -1)
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiNodesMoved',
+		graphUid: this.graph.uid,
+		nodeUids: this.nodes.map(function(n) {
+			return n.uid
+		}),
+		delta: {
+			x: this.delta.x * -1,
+			y: this.delta.y * -1
+		}
+	})
 }
 
 Move.prototype.redo = function() {
-	var connections = _gatherConnections(this.nodes)
-	E2.app.executeNodeDrag(this.nodes, connections, this.delta.x, this.delta.y)
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiNodesMoved',
+		graphUid: this.graph.uid,
+		nodeUids: this.nodes.map(function(n) {
+			return n.uid
+		}),
+		delta: this.delta
+	})
 }
 
 // -------------------------------
@@ -248,48 +260,58 @@ function ChangePluginState(graph, node, key, oldValue, newValue, title) {
 ChangePluginState.prototype = Object.create(GraphEditCommand.prototype)
 
 ChangePluginState.prototype.undo = function() {
-	// TODO wrap this in a PluginStateStore
-	this.node.plugin.state[this.key] = this.oldValue
-	E2.app.channel.broadcast('pluginStateChanged', [
-		this.graph.uid,
-		this.node.uid,
-		this.key,
-		this.oldValue
-	])
-	this.node.plugin.updated = true
-	if (this.node.ui)
-		this.node.plugin.state_changed(this.node.ui.plugin_ui)
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiPluginStateChanged',
+		graphUid: this.graph.uid,
+		nodeUid: this.node.uid,
+		key: this.key,
+		value: this.oldValue
+	})
 }
 
 ChangePluginState.prototype.redo = function() {
-	this.node.plugin.state[this.key] = this.newValue
-	this.node.plugin.updated = true
-
-	E2.app.channel.broadcast('pluginStateChanged', 
-		this.graph,
-		this.node,
-		this.key,
-		this.newValue
-	)
-
-	if (this.node.ui)
-		this.node.plugin.state_changed(this.node.ui.plugin_ui)
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiPluginStateChanged',
+		graphUid: this.graph.uid,
+		nodeUid: this.node.uid,
+		key: this.key,
+		value: this.newValue
+	})
 }
 
 // -------------------------------
 
-function Undoable(oldValue, newValue, setterFn, title) {
+function Undoable(graph, node, key, oldValue, newValue, title) {
+	GraphEditCommand.apply(this, arguments)
+	this.node = node
+	this.key = key
 	this.title = title || 'Value Change'
 	this.oldValue = oldValue
 	this.newValue = newValue
 	this.setterFn = setterFn
 }
 
+Undoable.prototype = Object.create(GraphEditCommand.prototype)
+
 Undoable.prototype.undo = function() {
+	E2.app.dispatcher.dispatch('pluginStateChanged', 
+		this.graph,
+		this.node,
+		this.key,
+		this.oldValue
+	)
+
 	this.setterFn(this.oldValue)
 }
 
 Undoable.prototype.redo = function() {
+	E2.app.dispatcher.dispatch('pluginStateChanged', 
+		this.graph,
+		this.node,
+		this.key,
+		this.newValue
+	)
+
 	this.setterFn(this.newValue)
 }
 

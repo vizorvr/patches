@@ -3,7 +3,6 @@ function WebSocketChannel() {
 	EventEmitter.call(this)
 	this._listeners = {};
 	this._state = 'disconnected';
-	this.ws;
 }
 
 WebSocketChannel.prototype = Object.create(EventEmitter.prototype)
@@ -28,15 +27,19 @@ WebSocketChannel.prototype.connect = function() {
 		that.emit('connected')
 	};
 
-	this.ws.onclose = function()
-	{
+	this.ws.onclose = function() {
 		console.warn('WsChannel disconnected!');
 		that._state = 'disconnected';
 	};
 
 	this.ws.onmessage = function(evt) {
 		var m = JSON.parse(evt.data);
-		console.log('IN:', m);
+		var dk = Object.keys(m)[0]
+
+		console.log('IN:', m[dk], evt.data.length+'b', 'from', m.from, m);
+
+		if (m.kind === 'READY')
+			that.uid = m.data
 
 		that.emit('*', m)
 		that.emit(m.channel, m)
@@ -51,28 +54,24 @@ WebSocketChannel.prototype.join = function(channel)
 		return;
 
 	console.log('WsChannel.join',channel)
+
 	this.ws.send(JSON.stringify({ kind: 'join', channel: channel }))
 	return this
 }
 
-WebSocketChannel.prototype.send = function(channel, data)
-{
+WebSocketChannel.prototype.send = function(channel, data) {
 	if (this._state !== 'connected')
 		return;
 
-	if (typeof(data) !== 'object')
-	{
+	if (typeof(data) !== 'object') {
 		data = { kind: data };
 	}
 
 	data.channel = channel;
 
+	console.log('OUT:', channel, data)
 	this.ws.send(JSON.stringify(data));
+
+	return this
 }
 
-// connect automatically
-
-console.log('Connecting WebSocketChannel');
-
-window.wsChannel = new WebSocketChannel();
-window.wsChannel.connect();

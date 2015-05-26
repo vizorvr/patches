@@ -43,6 +43,10 @@ EnvelopeEditor.prototype.onChanged = function() {
 	this.emit('changed', this._data)
 }
 
+EnvelopeEditor.prototype.destroy = function() {
+	this._$el.empty().remove()
+}
+
 EnvelopeEditor.prototype.render = function($out) {
 	var that = this
 	var width = this._width, height = this._height
@@ -50,6 +54,8 @@ EnvelopeEditor.prototype.render = function($out) {
 	var dragged = null,
 		selected = points[0]
 	var valueAtMouseDown
+
+	this._$el = $out
 
 	var line = d3.svg.line()
 
@@ -189,13 +195,11 @@ EnvelopeEditor.prototype.render = function($out) {
 
 		E2.app.undoManager.execute(
 			new E2.commands.Undoable(
+				that.node.parent_graph,
+				that.node,
+				'points',
 				valueAtMouseDown,
 				points.slice(),
-				function(v) {
-					that._points = points = v.slice()
-					that.onChanged()
-					drawLine()
-				},
 				'Edit Envelope'
 			)
 		)
