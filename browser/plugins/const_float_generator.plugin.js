@@ -1,5 +1,7 @@
-E2.p = E2.plugins["const_float_generator"] = function(core, node)
-{
+(function(){
+var Const = E2.plugins.const_float_generator = function(core, node) {
+	Plugin.apply(this, arguments)
+
 	this.desc = 'Emits a float constant specified in an input field. If an invalid string in entered, the field is reset to the previous value.';
 	
 	this.input_slots = [];
@@ -9,57 +11,45 @@ E2.p = E2.plugins["const_float_generator"] = function(core, node)
 	];
 	
 	this.state = { val: 1.0 };
-	this.core = core;
-	this.node = node;
 };
+Const.prototype = Object.create(Plugin.prototype)
 
-E2.p.prototype.reset = function()
-{
-}
+Const.prototype.reset = function() {}
 
-E2.p.prototype.create_ui = function()
-{
-	var inp = $('<input type="number" step="0.1" value="1.0" style="width: 50px;" />');
+Const.prototype.create_ui = function() {
+	var that = this
+	var inp = this.$input = 
+		$('<input type="number" step="0.1" value="1.0" style="width: 50px;" />')
 	
-	inp.css('border', '1px solid #999');
-	inp.change(function(self) { return function(e) {
-		try 
-		{ 
-			var v = parseFloat(inp.val());
-			
-			if(!isNaN(v))
-				self.state.val = v;
+	inp.css('border', '1px solid #999')
+	inp.on('change', function() {
+		var oldValue = that.state.val
+		var newValue = that.state.val
+
+		try { 
+			var v = parseFloat(inp.val())
+			if (!isNaN(v))
+				newValue = v
+		} catch(e) {
+			return;
 		}
-		catch(e) 
-		{
-		}
-		
-		// parseFloat has no qualms parsing any string that merely begins
-		// with one or more digits, and nothing beyond those will cause a
-		// parse exception (e.g., '99A)BOLLCKS' = 99...
-		// Here we set the field value to the internal state, so the text
-		// field is reset to the correct value, even if parseFloat has
-		// no problem with the string.
-		inp.val('' + self.state.val);
-		self.etf.update();
-		
-		// Don't set the updated flag directly from an asynchronous function.
-		// This could lead to aliasing with the core update logic.
-		self.updated = true;
-	}}(this));
-	
-	this.etf = new ExpandableTextfield(this.node, inp, 7);
+
+		that.undoableSetState('val', newValue, oldValue)
+	})
+
+	this.etf = new ExpandableTextfield(this.node, inp, 7)
 
 	return inp;
-};
+}
 
-E2.p.prototype.update_output = function(slot)
-{
-	return this.state.val;
-};
+Const.prototype.update_output = function(slot) {
+	return this.state.val
+}
 
-E2.p.prototype.state_changed = function(ui)
-{
-	if(ui)
-		ui.val('' + this.state.val);
-};
+Const.prototype.state_changed = function(ui) {
+	if (ui) {
+		ui.val('' + this.state.val)
+	}
+}
+
+})()

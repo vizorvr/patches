@@ -1,5 +1,7 @@
-E2.p = E2.plugins["light_type_generator"] = function(core, node)
+(function(){
+var LightType = E2.plugins["light_type_generator"] = function(core, node)
 {
+	Plugin.apply(this, arguments)
 	this.desc = 'Select light type.';
 	
 	this.input_slots = [];
@@ -10,12 +12,13 @@ E2.p = E2.plugins["light_type_generator"] = function(core, node)
 	
 	this.state = { type: Light.type.POINT };
 };
+LightType.prototype = Object.create(Plugin.prototype)
 
-E2.p.prototype.reset = function()
+LightType.prototype.reset = function()
 {
 };
 
-E2.p.prototype.create_ui = function()
+LightType.prototype.create_ui = function()
 {
 	var lt = Light.type;
 	var inp = $('<select />', { selectedIndex: 1 });
@@ -25,21 +28,20 @@ E2.p.prototype.create_ui = function()
 	 
 	inp.change(function(self) { return function() 
 	{
-		self.state.type = parseInt(inp.val());
-		self.state_changed(inp);
-		self.updated = true;
+		self.undoableSetState('type', parseInt(inp.val()), self.state.type)
 	}}(this));
 	
 	return inp;
 };
 
-E2.p.prototype.update_output = function(slot)
+LightType.prototype.update_output = function(slot)
 {
 	return this.state.type;
 };
 
-E2.p.prototype.state_changed = function(ui)
+LightType.prototype.state_changed = function(ui)
 {
 	if(ui)
 		ui.val('' + this.state.type);
 };
+})();

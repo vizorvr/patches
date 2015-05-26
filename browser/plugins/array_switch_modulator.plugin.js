@@ -12,7 +12,7 @@ https://github.com/vizorvr/vizor-create/issues/31
 
 (function() {
 
-var ArraySwitch = E2.plugins['array_switch_modulator'] = function ArraySwitch(core, node) {
+var ArraySwitch = E2.plugins.array_switch_modulator = function ArraySwitch(core, node) {
 	this.desc = 'Revolver style array switch. Set up n inputs, then choose which one to output.';
 	
 	this.input_slots = [ 
@@ -54,7 +54,7 @@ ArraySwitch.prototype.create_ui = function() {
 		that.lsg.add_dyn_slot(that.node.find_dynamic_slot(E2.slot_type.input, suid))
 	})
 	
-	removeButton.click(function(v) {
+	removeButton.click(function() {
 		if (that.state.slot_uids.length < 1)
 			return
 		
@@ -87,13 +87,13 @@ ArraySwitch.prototype.update_input = function(slot, data) {
 }
 
 ArraySwitch.prototype.update_state = function() {
-	if (this.value != this.values[this.number]) {
+	if (this.value !== this.values[this.number]) {
 		this.value = this.values[this.number]
 		this.updated = true
 	}
 }
 
-ArraySwitch.prototype.update_output = function(slot) {
+ArraySwitch.prototype.update_output = function() {
 	if (this.value !== undefined)
 		return this.value
 	return this.lsg.core.get_default_value(this.lsg.dt)
@@ -111,4 +111,5 @@ ArraySwitch.prototype.state_changed = function(ui) {
 };
 
 
-})()
+})();
+

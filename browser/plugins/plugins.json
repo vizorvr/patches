@@ -67,6 +67,7 @@
 	"Generators/OSC/OSC Receiver": "osc_receiver",
 	"Generators/OSC/OSC Float": "osc_float",
 	"Generators/OSC/OSC XY Float": "osc_xy_float",
+	"Generators/OSC/OSC XYZ Float": "osc_xyz_float",
 	"Generators/Shaders/Fog": "fog_shader",
 	"Generators/Shaders/Flat": "flat_shader",
 	"Generators/Shaders/From mesh": "from_mesh_shader",

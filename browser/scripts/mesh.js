@@ -1,4 +1,4 @@
-function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker, instances)
+function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker, instances, onLoadCb)
 {
 	this.gl = gl;
 	this.prim_type = prim_type;
@@ -62,6 +62,7 @@ function Mesh(gl, prim_type, t_cache, data, base_path, asset_tracker, instances)
 
 				msg('INFO: Finished loading stream from ' + img.src + ' with ' + (count / 4) + ' elements. (' + parent.streams_loaded + ' / ' + parent.stream_count + ')');
 				asset_tracker.signal_completed();
+				onLoadCb();
 			}}(parent);
 		
 			img.onerror = function()

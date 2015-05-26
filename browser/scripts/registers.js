@@ -59,8 +59,6 @@ Registers.prototype.set_datatype = function(name, dt)
 	var r = this.registers[name];
 	var u = r.users;
 	
-	console.assert(r.dt === E2.app.player.core.datatypes.ANY);
-	
 	for(var i = 0, len = u.length; i < len; i++)
 		u[i].register_dt_changed(dt);
 	

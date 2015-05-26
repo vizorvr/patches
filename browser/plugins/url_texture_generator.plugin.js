@@ -1,6 +1,7 @@
 (function() {
 
-var UrlTexture = E2.plugins['url_texture_generator'] = function(core, node) {
+var UrlTexture = E2.plugins.url_texture_generator = function(core, node) {
+	Plugin.apply(this, arguments)
 	this.desc = 'Load a texture from a URL. JPEG and PNG supported. Hover over the Browse button to select an existing image from the library.'
 	
 	this.input_slots = []
@@ -16,11 +17,11 @@ var UrlTexture = E2.plugins['url_texture_generator'] = function(core, node) {
 	
 	this.state = { url: '' }
 	this.gl = core.renderer.context
-	this.core = core
 	this.texture = null
 	this.dirty = false
 	this.thumbnail = null
 }
+UrlTexture.prototype = Object.create(Plugin.prototype)
 
 UrlTexture.prototype.create_ui = function() {
 	var container = make('div')
@@ -40,16 +41,39 @@ UrlTexture.prototype.create_ui = function() {
 		'margin-bottom': '3px'
 	})
 
-	inp.click(function() {
-		FileSelectControl
-			.createTextureSelector(that.state.url)
-			.onChange(function(v) {
-				that.state.url = v
-				that.state_changed()
-				that.updated = true
-			})
-	})
+	function clickHandler() {
+		var oldValue = that.state.url
+		var newValue = oldValue
 
+		function setValue(v) {
+			that.state.url = newValue = v
+			that.updated = true
+			that.state_changed()
+		}
+
+		FileSelectControl
+		.createTextureSelector(oldValue, function(control) {
+			control	
+			.template('texture')
+			.selected(oldValue)
+			.onChange(setValue.bind(this))
+			.buttons({
+				'Cancel': setValue.bind(this),
+				'Select': setValue.bind(this)
+			})
+			.on('closed', function() {
+				if (newValue === oldValue)
+					return;
+			
+				that.undoableSetState('url', newValue, oldValue)
+			})
+			.modal()
+		})
+	}
+
+	inp.click(clickHandler)
+	this.thumbnail.click(clickHandler)
+	
 	container.append(this.thumbnail)
 	container.append(inp)
 
@@ -71,7 +95,7 @@ UrlTexture.prototype.update_state = function() {
 	this.dirty = false
 }
 
-UrlTexture.prototype.update_output = function(slot) {
+UrlTexture.prototype.update_output = function() {
 	return this.texture
 }
 

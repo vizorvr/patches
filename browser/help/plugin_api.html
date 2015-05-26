@@ -246,7 +246,7 @@ by <code>create_ui()</code> earlier. When this method is called the following is
 	<li><strong>id</strong> (string): The plugin type name as declared in <em>plugins/plugins.json</em>.</li>
 	<li><strong>updated</strong> (boolean): Flag indicating whether any input slots have updated this frame and whether
 	<code>update_state()</code> need to be called as a consequence.</li>
-	<li><strong>e2_is_graph</strong> (boolean): A special state-flag used to identity nested graphs.</li>
+	<li><strong>isGraph</strong> (boolean): A special state-flag used to identity nested graphs.</li>
 	<li><strong>always_update</strong> (boolean): If this plugin is a nested graph, when this flag is set
 	<code>update_state()</code> will be called each frame regardless of whether any input connections have
 	 changed provided this plugin is in itself residing in a graph that has ben updated this frame.</li>

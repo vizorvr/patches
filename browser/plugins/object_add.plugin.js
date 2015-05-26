@@ -23,13 +23,11 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.update_input = function(slot, data)
 {
-	switch(slot.index)
-	{
+	switch(slot.index) {
 		case 0:
 			var previousValue = this._object[this._key];
-			this._object = $.extend({}, data);
-			if (previousValue && this._key)
-			{
+			this._object = data || {};
+			if (previousValue && this._key) {
 				this._object[this._key] = previousValue;
 			}
 			break;

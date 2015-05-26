@@ -1,5 +1,4 @@
-var Menu = function(cm, items, callback)
-{
+var Menu = function(cm, items, callback) {
 	this.cm = cm;
 	this.items = items;
 	this.callback = callback;
@@ -147,45 +146,42 @@ Menu.prototype.destroy = function()
 	}
 };
 
-var ContextMenu = function(parent, items, callback)
-{
-	var self = this;
+function ContextMenu(parent, items) {
+	EventEmitter.call(this)
+	var that = this;
 	
 	this.items = items;
-	this.callback = callback;
+	this.callback = function(icon, pos) {
+		that.emit('created', icon, pos)
+	};
 	this.pos = [0, 0];
 	
-	$(document).bind('contextmenu', function(pid) { return function(e)
-	{
+	$(document).bind('contextmenu', function(e) {
 		if(e.target.id !== 'canvas')
 			return true;
 		
-		self.show([e.pageX, e.pageY]);
+		that.show([e.pageX, e.pageY]);
 		return false;
-	}}(parent[0].id));
+	})
 
-	parent.mousedown(function(e)
-	{
-		self.hide();
+	parent.mousedown(function() {
+		that.hide();
 		return true;
 	});
-};
+}
 
-ContextMenu.prototype.show = function(pos)
-{
+ContextMenu.prototype = Object.create(EventEmitter.prototype)
+
+ContextMenu.prototype.show = function(pos) {
 	this.pos = pos;
 	this.hide();	
 	this.menu = new Menu(this, this.items, this.callback);
 	this.menu.create(null, pos, true);
-};
+}
 
-ContextMenu.prototype.hide = function()
-{
-	if(this.menu)
-	{
+ContextMenu.prototype.hide = function() {
+	if(this.menu) {
 		this.menu.destroy();
 		this.menu = null;
 	}
-};
-
-
+}

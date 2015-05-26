@@ -50,6 +50,7 @@ WebSocketChannel.prototype.connect = function()
 WebSocketChannel.prototype.join = function(channel)
 {
 	this.ws.send(JSON.stringify({ kind: 'join', channel: channel }))
+	return this
 }
 
 WebSocketChannel.prototype.send = function(channel, data)

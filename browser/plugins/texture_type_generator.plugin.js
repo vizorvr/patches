@@ -1,5 +1,7 @@
-E2.p = E2.plugins["texture_type_generator"] = function(core, node)
+(function(){
+var TextureType = E2.plugins["texture_type_generator"] = function(core, node)
 {
+	Plugin.apply(this, arguments)
 	this.desc = 'Select texture type.';
 	
 	this.input_slots = [];
@@ -9,11 +11,11 @@ E2.p = E2.plugins["texture_type_generator"] = function(core, node)
 	this.state = { type: Material.texture_type.DIFFUSE_COLOR };
 };
 
-E2.p.prototype.reset = function()
-{
-};
+TextureType.prototype = Object.create(Plugin.prototype)
 
-E2.p.prototype.create_ui = function()
+TextureType.prototype.reset = function() {}
+
+TextureType.prototype.create_ui = function()
 {
 	var tt = Material.texture_type;
 	var inp = $('<select />', { selectedIndex: 0 });
@@ -25,21 +27,20 @@ E2.p.prototype.create_ui = function()
 	 
 	inp.change(function(self) { return function() 
 	{
-		self.state.type = parseInt(inp.val());
-		self.state_changed(inp);
-		self.updated = true;
+		self.undoableSetState('type', inp.val(), self.state.type)
 	}}(this));
 	
 	return inp;
 };
 
-E2.p.prototype.update_output = function(slot)
+TextureType.prototype.update_output = function(slot)
 {
 	return this.state.type;
 };
 
-E2.p.prototype.state_changed = function(ui)
+TextureType.prototype.state_changed = function(ui)
 {
 	if(ui)
 		ui.val('' + this.state.type);
 };
+})();

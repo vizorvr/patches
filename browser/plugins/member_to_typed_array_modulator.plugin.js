@@ -1,5 +1,7 @@
-E2.p = E2.plugins["member_to_typed_array_modulator"] = function(core, node)
+(function(){
+var MemberToTypedArray = E2.plugins["member_to_typed_array_modulator"] = function(core, node)
 {
+	Plugin.apply(this, arguments)
 	this.desc = 'Emits an typed array representation of specified member of the supplied object.';
 	
 	this.input_slots = [
@@ -14,14 +16,16 @@ E2.p = E2.plugins["member_to_typed_array_modulator"] = function(core, node)
 	this.state = { datatype: 6 }; // Default float32
 };
 
-E2.p.prototype.reset = function()
+MemberToTypedArray.prototype = Object.create(Plugin.prototype)
+
+MemberToTypedArray.prototype.reset = function()
 {
 	this.array = new ArrayBuffer(0);
 	this.object = null;
 	this.member = null;
 };
 
-E2.p.prototype.create_ui = function()
+MemberToTypedArray.prototype.create_ui = function()
 {
 	var inp = $('<select />', { selectedIndex: 1 });
 	
@@ -35,14 +39,13 @@ E2.p.prototype.create_ui = function()
 	
 	inp.change(function(self) { return function() 
 	{
-		self.state.datatype = parseInt(inp.val());
-		self.updated = true;
+		self.undoableSetState('datatype', parseInt(inp.val()), self.state.datatype)
 	}}(this));
 	
 	return inp;
 };
 
-E2.p.prototype.update_input = function(slot, data)
+MemberToTypedArray.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
 		this.object = data;
@@ -50,7 +53,7 @@ E2.p.prototype.update_input = function(slot, data)
 		this.member = data;
 };	
 
-E2.p.prototype.update_state = function()
+MemberToTypedArray.prototype.update_state = function()
 {
 	if(this.object === null || this.member === null)
 		return;
@@ -85,13 +88,14 @@ E2.p.prototype.update_state = function()
 	this.array.stride = [1, 1, 2, 2, 4, 4, 4][this.state.datatype];
 };
 
-E2.p.prototype.update_output = function(slot)
+MemberToTypedArray.prototype.update_output = function(slot)
 {
 	return this.array;
 };
 
-E2.p.prototype.state_changed = function(ui)
+MemberToTypedArray.prototype.state_changed = function(ui)
 {
 	if(ui)
 		ui.val('' + this.state.datatype);
 };
+})();

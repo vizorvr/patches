@@ -1,13 +1,16 @@
-E2.p = E2.plugins["tween_in_modulator"] = function(core, node)
+(function(){
+var TweenIn = E2.plugins["tween_in_modulator"] = function(core, node)
 {
+	Plugin.apply(this, arguments)
 	this.desc = 'Perform tween in over time.';
 	this.input_slots = [ { name: 'time', dt: core.datatypes.FLOAT, desc: 'Time ranging from zero to one.', def: 0.0, lo: 0, hi: 1 } ];
 	this.output_slots = [ { name: 'result', dt: core.datatypes.FLOAT, desc: 'Emits a tween in over <b>time</b>.', def: 0.0 } ];
 
 	this.state = { type: 0 };
 };
+TweenIn.prototype = Object.create(Plugin.prototype)
 
-E2.p.prototype.create_ui = function()
+TweenIn.prototype.create_ui = function()
 {
 	var inp = $('<select />', { selectedIndex: 0 });
 	var create = function(val, txt) { $('<option />', { value: val, text: txt }).appendTo(inp) };
@@ -22,24 +25,24 @@ E2.p.prototype.create_ui = function()
 
 	inp.change(function(self) { return function() 
 	{
-		self.state.type = parseInt(inp.val());
+		self.undoableSetState('type', inp.val(), self.state.type)
 	}}(this));
 	
 	return inp;
 };
 
-E2.p.prototype.reset = function()
+TweenIn.prototype.reset = function()
 {
 	this.result = 0.0;
 	this.time = 0.0;
 };
 
-E2.p.prototype.update_input = function(slot, data)
+TweenIn.prototype.update_input = function(slot, data)
 {
 	this.time = data < 0.0 ? 0.0 : data > 1.0 ? 1.0 : data;
 };	
 
-E2.p.prototype.update_state = function()
+TweenIn.prototype.update_state = function()
 {
 	var r = 0, d = this.time;
 	
@@ -79,14 +82,17 @@ E2.p.prototype.update_state = function()
 	this.result = r;
 };
 
-E2.p.prototype.update_output = function(slot)
+TweenIn.prototype.update_output = function(slot)
 {
 	return this.result;
 };
 
-E2.p.prototype.state_changed = function(ui)
+TweenIn.prototype.state_changed = function(ui)
 {
 	if(ui)
 		ui.val('' + this.state.type);
 };
+
+
+})();
 

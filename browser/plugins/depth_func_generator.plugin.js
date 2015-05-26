@@ -1,5 +1,6 @@
-E2.p = E2.plugins["depth_func_generator"] = function(core, node)
-{
+(function(){
+var DepthFunction = E2.plugins.depth_func_generator = function(core, node) {
+	Plugin.apply(this, arguments)
 	this.desc = 'Select z-buffer depth compare function.';
 	
 	this.input_slots = [];
@@ -10,12 +11,13 @@ E2.p = E2.plugins["depth_func_generator"] = function(core, node)
 	
 	this.state = { depth_func: Material.depth_func.LEQUAL };
 };
-	
-E2.p.prototype.reset = function()
+DepthFunction.prototype = Object.create(Plugin.prototype)
+
+DepthFunction.prototype.reset = function()
 {
 };
 
-E2.p.prototype.create_ui = function()
+DepthFunction.prototype.create_ui = function()
 {
 	var df = Material.depth_func;
 	var inp = $('<select />', { selectedIndex: 4 });
@@ -31,21 +33,20 @@ E2.p.prototype.create_ui = function()
 	 
 	inp.change(function(self) { return function() 
 	{
-		self.state.depth_func = parseInt(inp.val());
-		self.state_changed(inp);
-		self.updated = true;
+		self.undoableSetState('depth_func', parseInt(inp.val()), self.state.depth_func)
 	}}(this));
 	
 	return inp;
 };
 
-E2.p.prototype.update_output = function(slot)
+DepthFunction.prototype.update_output = function(slot)
 {
 	return this.state.depth_func;
 };
 
-E2.p.prototype.state_changed = function(ui)
+DepthFunction.prototype.state_changed = function(ui)
 {
 	if(ui)
 		ui.val('' + this.state.depth_func);
 };
+})()

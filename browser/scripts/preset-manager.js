@@ -6,7 +6,7 @@ function PresetManager(base_url)
 	EventEmitter.call(this)
 
 	this._base_url = base_url
-	this._presets = {}
+	this._presets = []
 
 	this.refresh()
 
@@ -59,7 +59,6 @@ PresetManager.prototype.loadUserPresets = function(cb) {
 
 	$.get('/'+username+'/presets', function(presets) {
 		var cat = 'MY PRESETS'
-		that._presets[cat] = {}
 
 		presets.forEach(function(preset) {
 			that.add(cat, preset.name, preset.url)
@@ -92,34 +91,34 @@ PresetManager.prototype.render = function()
 	.template(E2.views.presets.presets)
 	.render(E2.dom.presets_list)
 	.onOpen(function(path) {
-
 		if (path.indexOf('plugin/') === 0) {
 			return that.openPlugin(path);
 		}
 
-		var url = path
+		msg('Loading preset from: ' + path);
 
-		msg('Loading preset from: ' + url);
-
-		$.get(url)
-		.done(function(data)
-		{
-			E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
-			E2.app.onPaste({ target: { id: 'notpersist' }});
-		})
-		.fail(function(_j, _textStatus, _errorThrown)
-		{
-  			msg('ERROR: Failed to load the selected preset.');
-		})
+		that.openPreset(path)
 	})
 }
 
-PresetManager.prototype.add = function(category, title, path)
-{
-	if (!this._presets[category])
-		this._presets[category] = {};
+PresetManager.prototype.openPreset = function(name) {
+	$.get(name)
+	.done(function(data) {
+		E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0)
+		E2.app.onPaste({ target: { id: 'notpersist' }})
+	})
+	.fail(function(_j, _textStatus, _errorThrown) {
+		msg('ERROR: Failed to load the selected preset.')
+		console.error(_errorThrown)
+	})
+}
 
-	this._presets[category][title] = path;
+PresetManager.prototype.add = function(category, title, path) {
+	this._presets.push({
+		category: category, 
+		title: title,
+		path: path
+	})
 }
 
 PresetManager.prototype.openPlugin = function(path, cb)
