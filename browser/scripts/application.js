@@ -1602,14 +1602,14 @@ function onNodeAdded(graph, node) {
 	if (graph === E2.core.active_graph)
 		node.create_ui()
 
+	node.patch_up(E2.core.graphs)
+
 	if (node.plugin.state_changed) {
 		node.plugin.state_changed()
 
 		if (node.ui)
 			node.plugin.state_changed(node.ui.plugin_ui)
 	}
-
-	node.patch_up(E2.core.graphs)
 
 	if (node.plugin.isGraph)
 		E2.core.rebuild_structure_tree()
