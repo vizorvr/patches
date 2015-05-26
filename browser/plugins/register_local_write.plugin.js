@@ -58,7 +58,7 @@ E2.p.prototype.target_reg = function(id)
 	var dslot = this.node.find_dynamic_slot(E2.slot_type.input, this.state.slot_id);
 	
 	this.regs.lock(this, id);
-	
+
 	var rdt = this.regs.registers[id].dt;
 	
 	if(rdt !== this.core.datatypes.ANY)
@@ -73,7 +73,7 @@ E2.p.prototype.state_changed = function(ui)
 
 		if(this.state.slot_id === null)
 			this.state.slot_id = n.add_slot(E2.slot_type.input, { name: 'value', dt: this.core.datatypes.ANY, desc: '' });
-		
+
 		this.regs = n.parent_graph.registers;
 		this.target_reg(n.title);
 	}
