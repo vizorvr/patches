@@ -356,6 +356,7 @@ Graph.prototype.findConnectionByUid = function(cuid) {
 			return true
 		}
 	})
+
 	return connection
 }
 

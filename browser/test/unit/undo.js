@@ -6,10 +6,8 @@ global.E2 = {}
 global.Registers = function(){}
 global.EventEmitter = EventEmitter // XXX
 global.Graph = require('../../scripts/graph');
-global.Node = function() {
-	this.addInput = function() {}
-	this.addOutput = function() {}
-}
+global.Connection = require('../../scripts/connection').Connection;
+global.Node = require('../../scripts/node')
 
 global.Flux = require('../../vendor/flux')
 
@@ -28,18 +26,10 @@ describe('Undo', function() {
 	var undoManager
 
 	function makeNode() {
-		var n = new Node()
-		n.create_ui = function(){}
-		n.destroy_ui = function(){}
-		n.ui = { dom: { find: function() {} } }
-		n.plugin = {
-			input_slots: [],
-			output_slots: []
-		}
-		n.inputs = n.outputs = []
-		n.dyn_inputs = []
-		n.dyn_outputs = []
-		return n
+		return Node.hydrate(graph.uid, {
+			uid: E2.uid(),
+			plugin: 'const_float_generator'
+		})
 	}
 
 	function makeSlot(slots, type) {
@@ -62,7 +52,9 @@ describe('Undo', function() {
 		E2.app.graphStore = new GraphStore()
 		E2.app.graphApi = new GraphApi(undoManager)
 
-		graph = new Graph({ get_graph_uid: function() {} }, null, {})
+		graph = new Graph()
+		E2.core.root_graph = E2.core.active_graph = graph
+		E2.core.graphs = [graph]
 	})
 
 	describe('Manager', function() {
@@ -238,7 +230,7 @@ describe('Undo', function() {
 			graph.nodes.push(n2)
 
 			var connection = new Connection(n1, n2, ss, ds, 0)
-			var cmd = new E2.commands.graph.Connect(graph, connection)
+			var cmd = new E2.commands.graph.Connect(graph, connection.serialise())
 			cmd.execute()
 
 			assert.equal(graph.connections.length, 1)
@@ -257,7 +249,7 @@ describe('Undo', function() {
 			graph.nodes.push(n2)
 
 			var connection = new Connection(n1, n2, ss, ds, 0)
-			var cmd = new E2.commands.graph.Connect(graph, connection)
+			var cmd = new E2.commands.graph.Connect(graph, connection.serialise())
 			cmd.execute()
 			cmd.undo()
 
@@ -283,7 +275,7 @@ describe('Undo', function() {
 
 			assert.equal(graph.connections.length, 1)
 
-			var cmd = new E2.commands.graph.Disconnect(graph, conn)
+			var cmd = new E2.commands.graph.Disconnect(graph, conn.serialise())
 			cmd.execute()
 
 			assert.equal(graph.connections.length, 0)
@@ -305,7 +297,7 @@ describe('Undo', function() {
 
 			assert.equal(graph.connections.length, 1)
 
-			var cmd = new E2.commands.graph.Disconnect(graph, conn)
+			var cmd = new E2.commands.graph.Disconnect(graph, conn.serialise())
 			cmd.execute()
 			cmd.undo()
 
@@ -314,42 +306,41 @@ describe('Undo', function() {
 	});
 
 	describe('GraphApi', function() {
+		var n1, n2, ss, ds
 		beforeEach(function() {
+			n1 = makeNode()
+			n2 = makeNode()
+			ss = makeSlot(n1.plugin.output_slots, E2.slot_type.output)
+			ds = makeSlot(n2.plugin.input_slots, E2.slot_type.input)
 			api = new GraphApi(undoManager)
+			graph.registerNode(n1)
+			graph.registerNode(n2)
 		})
 
 		it('can add nodes', function() {
-			assert.equal(graph.nodes.length, 0)
+			assert.equal(graph.nodes.length, 2)
 			api.addNode(graph, makeNode())
-			assert.equal(graph.nodes.length, 1)
+			assert.equal(graph.nodes.length, 3)
 		})
 
 		it('can remove nodes', function() {
 			var n = makeNode()
 			api.addNode(graph, n)
-			assert.equal(graph.nodes.length, 1)
+			assert.equal(graph.nodes.length, 3)
 			api.removeNode(graph, n)
-			assert.equal(graph.nodes.length, 0)
+			assert.equal(graph.nodes.length, 2)
 		})
 
 		it('can connect nodes', function() {
 			assert.equal(graph.connections.length, 0)
-			var n1 = makeNode()
-			var n2 = makeNode()
-			var ss = makeSlot(n1.plugin.output_slots, E2.slot_type.output)
-			var ds = makeSlot(n2.plugin.input_slots, E2.slot_type.input)
 			var conn = new Connection(n1, n2, ss, ds, 0)
-			api.connect(graph, conn)
+			api.connect(graph, conn.serialise())
 			assert.equal(graph.connections.length, 1)
 		})
 
 		it('can disconnect nodes', function() {
-			var n1 = makeNode()
-			var n2 = makeNode()
-			var ss = makeSlot(n1.plugin.output_slots, E2.slot_type.output)
-			var ds = makeSlot(n2.plugin.input_slots, E2.slot_type.input)
 			var conn = new Connection(n1, n2, ss, ds, 0)
-			api.connect(graph, conn)
+			api.connect(graph, conn.serialise())
 			api.disconnect(graph, conn)
 			assert.equal(graph.connections.length, 0)
 		})

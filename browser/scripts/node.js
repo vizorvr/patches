@@ -12,13 +12,13 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.x = x;
 		this.y = y;
 		this.ui = null;
-		this.id = E2.app.player.core.pluginManager.keybyid[plugin_id];
+		this.id = E2.core.pluginManager.keybyid[plugin_id];
 		this.update_count = 0;
 		this.title = null;
 		this.inputs_changed = false;
 		this.open = true;
 
-		this.set_plugin(E2.app.player.core.pluginManager.create(plugin_id, this))
+		this.set_plugin(E2.core.pluginManager.create(plugin_id, this))
 	}
 }
 
@@ -411,13 +411,13 @@ Node.prototype.deserialise = function(guid, d) {
 	this.parent_graph = guid;
 	this.x = d.x;
 	this.y = d.y;
-	this.id = E2.app.player.core.pluginManager.keybyid[d.plugin];
+	this.id = E2.core.pluginManager.keybyid[d.plugin];
 	this.uid = d.uid;
 	this.open = d.open !== undefined ? d.open : true;
 	
 	this.title = d.title ? d.title : null;
 	
-	var plg = E2.app.player.core.pluginManager.create(d.plugin, this);
+	var plg = E2.core.pluginManager.create(d.plugin, this);
 	
 	if (!plg) {
 		msg('ERROR: Failed to instance node of type \'' + d.plugin + '\' with title \'' + this.title + '\' and UID = ' + this.uid + '.');
@@ -427,7 +427,7 @@ Node.prototype.deserialise = function(guid, d) {
 	this.set_plugin(plg);
 	
 	if (this.plugin.isGraph) {
-		this.plugin.setGraph(new Graph(E2.app.player.core, null, null))
+		this.plugin.setGraph(new Graph(E2.core, null, null))
 		this.plugin.graph.plugin = this.plugin;
 		this.plugin.graph.deserialise(d.graph);
 
@@ -447,7 +447,7 @@ Node.prototype.deserialise = function(guid, d) {
 	
 	if (d.dyn_in || d.dyn_out) {
 		function patch_slot(slots, type) {
-			var rdt = E2.app.player.core.resolve_dt;
+			var rdt = E2.core.resolve_dt;
 			
 			for(var i = 0; i < slots.length; i++) {
 				var s = slots[i];

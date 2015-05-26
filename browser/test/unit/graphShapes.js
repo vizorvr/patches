@@ -23,8 +23,12 @@ global.NodeUI = function() {
 	this.dom[0].style = {}
 }
 global.NodeUI.create_slot = function(){}
-global.Node.prototype.create_ui = function(){}
+global.Node.prototype.create_ui = function(){
+	this.ui = new global.NodeUI()
+
+}
 global.Node.prototype.destroy_ui = function(){}
+
 global.Registers = function() {
 	this.serialise = function(){}
 }
@@ -33,6 +37,7 @@ require('../../scripts/commands/graphEditCommands')
 global.UndoManager = require('../../scripts/commands/undoManager.js')
 global.GraphApi = require('../../scripts/graphApi.js')
 global.Connection = require('../../scripts/connection.js').Connection
+global.Connection.prototype.signal_change = function(){}
 global.ConnectionUI = require('../../scripts/connection.js').ConnectionUI
 global.ConnectionUI.prototype.resolve_slot_divs = function() {
 	this.src_slot_div = $()
@@ -76,11 +81,20 @@ describe('Simple graph shapes', function() {
 		var graphNode = E2.app.instantiatePlugin('graph', [0,0])
 		var graph = graphNode.plugin.graph
 		E2.core.active_graph = graph
+
 		var ipx = E2.app.instantiatePlugin('input_proxy', [0,0])
+
 		var floatDisplay = E2.app.instantiatePlugin('float_display', [0,0])
+
 		var ss = ipx.dyn_outputs[0]
 		var ds = floatDisplay.plugin.input_slots[0]
-		E2.app.graphApi.connect(graph, new Connection(ipx, floatDisplay, ss, ds, 0))
+
+console.log('ssds',graphNode.uid,ipx.uid,floatDisplay.uid,ss,ds)
+
+		E2.app.graphApi.connect(graph, new Connection(ipx, floatDisplay, ss, ds, 0).serialise())
+
+		ipx = graph.findNodeByUid(graphNode.uid)
+		ss = ipx.dyn_outputs[0]
 		assert.equal(ss.dt.name, 'Float')
 	})
 

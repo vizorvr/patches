@@ -395,7 +395,7 @@ Application.prototype.releaseHoverConnections = function() {
 
 Application.prototype.removeHoverConnections = function() {
 	this.hover_connections.map(function(connection) {
-		this.graphApi.disconnect(E2.core.active_graph, connection.uid)
+		this.graphApi.disconnect(E2.core.active_graph, connection)
 	}.bind(this))
 
 	this.hover_connections = []
@@ -403,7 +403,7 @@ Application.prototype.removeHoverConnections = function() {
 
 Application.prototype.deleteSelectedConnections = function() {
 	this.selectedConnections.map(function(connection) {
-		this.graphApi.disconnect(E2.core.active_graph, connection.uid)
+		this.graphApi.disconnect(E2.core.active_graph, connection)
 	}.bind(this))
 
 	this.hover_connections = []
@@ -568,7 +568,7 @@ Application.prototype.onNodeDragStopped = function(node) {
 
 	E2.app.channel.broadcast({
 		actionType: 'uiNodesMoved',
-		graph: E2.core.active_graph.uid,
+		graphUid: E2.core.active_graph.uid,
 		nodeUids: di.nodes.map(function(n) { return n.uid }),
 		delta: { x: dx, y: dy }
 	})
@@ -1579,70 +1579,82 @@ Application.prototype.onHideTooltip = function() {
 		return false
 }
 
-
-function onGraphChanged() {
-	E2.app.updateCanvas(true)
-}
-
-function onNodeAdded(graph, node) {
-	console.log('onNodeAdded', node.plugin.id, node.plugin.isGraph)
-	
-	if (graph === E2.core.active_graph) {
-		node.create_ui()
-
-		if (node.plugin.state_changed)
-			node.plugin.state_changed(node.ui.plugin_ui)
+Application.prototype.setupStoreListeners = function() {
+	function onGraphChanged() {
+		E2.app.updateCanvas(true)
 	}
 
-	if (node.plugin.isGraph)
+	function onNodeAdded(graph, node) {
+		console.log('onNodeAdded', node.plugin.id, node.plugin.isGraph)
+		
+		if (graph === E2.core.active_graph) {
+			node.create_ui()
+
+			if (node.plugin.state_changed)
+				node.plugin.state_changed(node.ui.plugin_ui)
+		}
+
+		if (node.plugin.isGraph)
+			E2.core.rebuild_structure_tree()
+	}
+
+	function onNodeRemoved(graph, node) {
+		console.log('onNodeRemoved', node)
+
+		E2.app.onHideTooltip()
+
+		node.destroy_ui()
+
+		if (node.plugin.isGraph)
+			E2.core.rebuild_structure_tree()
+	}
+
+	function onNodeRenamed(graph, node) {
+		console.log('onNodeRenamed', node.title)
+		if (node.ui)
+			node.ui.dom.find('.t').text(node.title)
+		
+		if (node.plugin.isGraph)
+			node.plugin.graph.tree_node.set_title(node.title)
+
+		if (node.plugin.renamed)
+			node.plugin.renamed()
+	}
+
+	function onConnected(graph, connection) {
+		console.log('onConnected', graph, connection)
+
+		if (graph === E2.core.active_graph) {
+			if (!connection.ui)
+				connection.create_ui()
+			connection.ui.resolve_slot_divs()
+		}
+
+		connection.signal_change(true)
+	}
+
+	function onDisconnected(graph, connection) {
+		console.log('onDisconnected', connection)
+
+		try {
+			connection.signal_change(false)
+		} catch(e) {
+			console.error(e.stack)
+		}
+
+		connection.destroy_ui()
+	}
+
+	this.graphStore
+	.on('changed', onGraphChanged.bind(this))
+	.on('nodeAdded', onNodeAdded.bind(this))
+	.on('nodeRemoved', onNodeRemoved.bind(this))
+	.on('nodeRenamed', onNodeRenamed.bind(this))
+	.on('connected', onConnected.bind(this))
+	.on('disconnected', onDisconnected.bind(this))
+	.on('reordered', function() {
 		E2.core.rebuild_structure_tree()
-}
-
-function onNodeRemoved(graph, node) {
-	console.log('onNodeRemoved', node)
-
-	E2.app.onHideTooltip()
-
-	node.destroy_ui()
-
-	if (node.plugin.isGraph)
-		E2.core.rebuild_structure_tree()
-}
-
-function onNodeRenamed(graph, node) {
-	console.log('onNodeRenamed', node.title)
-	if (node.ui)
-		node.ui.dom.find('.t').text(node.title)
-	
-	if (node.plugin.isGraph)
-		node.plugin.graph.tree_node.set_title(node.title)
-
-	if (node.plugin.renamed)
-		node.plugin.renamed()
-}
-
-function onConnected(graph, connection) {
-	console.log('onConnected', connection)
-
-	if (graph === E2.core.active_graph) {
-		if (!connection.ui)
-			connection.create_ui()
-		connection.ui.resolve_slot_divs()
-	}
-
-	connection.signal_change(true)
-}
-
-function onDisconnected(graph, connection) {
-	console.log('onDisconnected', connection)
-
-	try {
-		connection.signal_change(false)
-	} catch(e) {
-		console.error(e.stack)
-	}
-
-	connection.destroy_ui()
+	})
 }
 
 Application.prototype.onGraphSelected = function(graph) {
@@ -1682,19 +1694,6 @@ Application.prototype.onGraphSelected = function(graph) {
 	E2.core.active_graph.create_ui()
 	E2.core.active_graph.reset()
 	E2.core.active_graph_dirty = true
-}
-
-Application.prototype.setupStoreListeners = function() {
-	this.graphStore
-	.on('changed', onGraphChanged.bind(this))
-	.on('nodeAdded', onNodeAdded.bind(this))
-	.on('nodeRemoved', onNodeRemoved.bind(this))
-	.on('nodeRenamed', onNodeRenamed.bind(this))
-	.on('connected', onConnected.bind(this))
-	.on('disconnected', onDisconnected.bind(this))
-	.on('reordered', function() {
-		E2.core.rebuild_structure_tree()
-	})
 }
 
 Application.prototype.start = function() {

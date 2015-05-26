@@ -156,11 +156,10 @@ Connect.prototype.redo = function() {
 
 // -------------------------------
 
-function Disconnect(graph, connectionUid) {
+function Disconnect(graph, connection) {
 	GraphEditCommand.apply(this, arguments)
 	this.title = 'Disconnect'
-	this.connectionUid = connectionUid
-	this.connection = graph.findConnectionByUid(connectionUid).serialise()
+	this.connection = connection
 }
 Disconnect.prototype = Object.create(GraphEditCommand.prototype)
 
@@ -176,7 +175,7 @@ Disconnect.prototype.redo = function() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiDisconnected', 
 		graphUid: this.graph.uid,
-		connectionUid: this.connectionUid
+		connectionUid: this.connection.uid
 	})
 }
 

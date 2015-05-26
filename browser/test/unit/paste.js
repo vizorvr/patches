@@ -23,6 +23,7 @@ global.NodeUI = function() {
 	this.dom.height = this.dom[0].height
 	this.dom[0].style = {}
 }
+global.Camera = global.Material = function() {}
 global.Registers = function() {
 	this.serialise = function(){}
 }

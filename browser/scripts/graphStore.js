@@ -20,7 +20,9 @@ GraphStore.prototype._setupListeners = function() {
 		console.log('GraphStore.receiveFromDispatcher', payload.actionType, payload)
 		
 		var graph = Graph.lookup(payload.graphUid)
-		
+		if (!graph)
+			return console.error('No graph found for payload guid ', payload.graphUid)
+
 		switch(payload.actionType) {
 			case 'uiGraphTreeReordered':
 				this._uiGraphTreeReordered(
