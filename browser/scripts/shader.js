@@ -1,5 +1,5 @@
 
-function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custom, ps_custom, vcb, pcb)
+function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custom, ps_custom, vcb, pcb, environment)
 {
 	var gl = E2.app.player.core.renderer.context;
 	var streams = [];
@@ -7,7 +7,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 	var has_lights = false;
 	var lights = material ? material.lights : mesh.material.lights;
 	var tt = Material.texture_type;
-	
+    var has_fog = environment ? environment.fog.enabled : false; // fog.color, fog.distance, fog.steepness
+
+    console.log("has fog: " + has_fog + " " + environment);
+
 	for(var v_type in v_types)
 	{
 		var index = v_types[v_type];
@@ -83,6 +86,11 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		ps_src.push('uniform vec4 a_col;');
 		ps_src.push('varying vec4 f_col;');
 		
+		if(has_fog)
+		{
+			ps_src.push('uniform vec4 fog_col;'); 
+			ps_src.push('uniform vec3 fog_attr;');
+		}
 
 		if (uniforms_ps)
 			ps_src = ps_src.concat(uniforms_ps);
@@ -275,6 +283,15 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			
 			if(mat.alpha_clip)
 				ps_dp('    if(fc.a < 0.5)\n        discard;\n');
+	
+
+			if(has_fog)
+			{
+				ps_dp('    float d = pow(clamp((gl_FragCoord.z / gl_FragCoord.w) / fog_attr.x, 0.0, 1.0), fog_attr.y);\n');
+				ps_dp('    fc.rgb = mix(fc.rgb, fog_col.rgb, d);\n');
+				//ps_dp('    fc.g = 1.0;\n');
+				//ps_dp('    fc.a = 1.0;\n');
+			}
 			
 			ps_dp('    gl_FragColor = fc;');
 			ps_dp('}');
@@ -288,7 +305,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		shader.ps_src = ps_src.join('\n');
 		shader.vs_c_src = vs_c_src.join('\n');
 		shader.ps_c_src = ps_c_src.join('\n');
-		
+	   
 		var vs = new Shader(gl, gl.VERTEX_SHADER, shader.vs_src, vs_src.length, vcb);
 		var ps = new Shader(gl, gl.FRAGMENT_SHADER, shader.ps_src, ps_src.length, pcb);
 		var compiled = vs.compiled && ps.compiled;
@@ -348,6 +365,13 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 							shader[lid + '_dir'] = resolve_unif(lid + '_dir');
 					}
 				}
+			}
+
+			if(has_fog)
+			{
+				shader.fog_col = resolve_unif('fog_col');
+				shader.fog_attr = resolve_unif('fog_attr');
+				shader.fog = environment.fog;
 			}
 
 			if(streams[v_types.COLOR])
@@ -414,7 +438,18 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 			if(this.shinyness !== undefined)
 				gl.uniform1f(this.shinyness, m.shinyness);
-		
+	
+			if(has_fog && this.fog_col !== undefined)
+			{
+				gl.uniform4fv(this.fog_col, this.fog.color);
+			}
+
+			if(has_fog && this.fog_attr !== undefined)
+			{
+				gl.uniform3f(this.fog_attr, this.fog.distance, this.fog.steepness, 0.0);
+			}
+
+
 			for(var i = 0; i < 8; i++)
 			{
 				var l = lights[i];

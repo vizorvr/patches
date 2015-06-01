@@ -7,11 +7,7 @@ var FromMeshShader = E2.plugins["from_mesh_shader"] = function(core, node)
 	this.input_slots = [
 		{ name: 'mesh', dt: core.datatypes.MESH, desc: 'Mesh to adapt the shader to.', def: null },
 		{ name: 'material', dt: core.datatypes.MATERIAL, desc: 'The surface material.', def: null },
-		
-		// kk todo: replace with a more general fog input
-		{ name: 'fog color', dt: core.datatypes.COLOR, desc: 'Fog color.', def: null },
-		{ name: 'fog distance', dt: core.datatypes.FLOAT, desc: 'Fog distance.', def: 10.0 },
-		{ name: 'fog steepness', dt: core.datatypes.FLOAT, desc: 'Fog steepness.', def: 1.0 }
+		{ name: 'environment', dt: core.datatypes.ENVIRONMENT, desc: 'Environment', def: null }
 	];
 	
 	this.output_slots = [ 
@@ -20,21 +16,22 @@ var FromMeshShader = E2.plugins["from_mesh_shader"] = function(core, node)
 	
 	this.shader = null;
 
-	this.fog = {
-		color: null,
-		steepness: 1.0,
-		distance: 10.0
-	};
+	this.environment = null;
 };
 
 FromMeshShader.prototype.connection_changed = function(on, conn, slot)
 {
-	console.log("FromMeshShader connection_changed " + on + " " + slot.type + " " + slot.index);
+	//console.log("FromMeshShader connection_changed " + on + " " + slot.type + " " + slot.index);
 
 	if(!on && slot.type === E2.slot_type.input)
 	{
-		if(slot.index === 0)
+		if(slot.index === 0) {
 			this.shader = null;
+		}
+
+		if(slot.index === 0) {
+			this.environment = null;
+		}
 	}
 };
 
@@ -55,27 +52,23 @@ FromMeshShader.prototype.update_input = function(slot, data)
 	}
 	else if(slot.index === 2)
 	{
-		if(data !== null)
-		{
-			this.fog.color = vec4.createFrom(data[0], data[1], data[2], data[3]);
+		//console.log('set environment ' + data + ' ' + data.fog + ' ' + data.fog.enabled);
+		if (data) {
+			this.environment = data;
+			this.environment.fog.enabled = true;
+
+			console.log('fog color: ' + vec4.str(data.fog.color))
 		}
-		else
-		{
-			this.fog.color = null;
+		else {
+			this.environment = null;
 		}
-	}
-	else if(slot.index === 3)
-	{
-		this.fog.distance = data;
-	}
-	else if(slot.index === 4)
-	{
-		this.fog.steepness = data;
-	}
+		//this.dirty = true;
+	}	
 };
 
 FromMeshShader.prototype.update_state = function()
 {
+	//console.log('FromMeshShader update_state()');
 	if(!this.mesh)
 		return;
 	
@@ -90,7 +83,7 @@ FromMeshShader.prototype.update_state = function()
 	if(this.dirty || this.caps_hash !== caps)
 	{
 		msg('Recomposing shader with caps: ' + caps);
-		this.shader = ComposeShader(null, this.mesh, this.material, null, null, null, null, null, null, this.fog.color === null ? undefined : this.fog);
+		this.shader = ComposeShader(null, this.mesh, this.material, null, null, null, null, null, null, this.environment);
 	}
 
 	this.caps_hash = caps;
@@ -105,6 +98,7 @@ FromMeshShader.prototype.update_output = function(slot)
 
 FromMeshShader.prototype.state_changed = function(ui)
 {
+	//console.log('FromMeshShader state_changed()');
 	if(!ui)
 	{
 		this.mesh = null;

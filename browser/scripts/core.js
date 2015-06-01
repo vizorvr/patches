@@ -119,7 +119,8 @@ function Core(vr_devices) {
 		TEXT: { id: 15, name: 'Text' },
 		VIDEO: { id: 16, name: 'Video' },
 		ARRAY: { id: 17, name: 'Array' },
-		OBJECT: { id: 18, name: 'Object' }
+		OBJECT: { id: 18, name: 'Object' },
+		ENVIRONMENT: { id: 19, name: 'Environment'}
 	};
 
 	this._listeners = {};
@@ -265,6 +266,8 @@ Core.prototype.get_default_value = function(dt)
 	}
 	else if(dt === dts.OBJECT)
 		return {};
+	else if(dt === dts.ENVIRONMENT)
+		return new EnvironmentSettings();
 	
 	// Shaders, textures, scenes, light and delegates and ALL legally defaults to null.
 	return null;

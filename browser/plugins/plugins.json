@@ -68,7 +68,7 @@
 	"Generators/OSC/OSC Float": "osc_float",
 	"Generators/OSC/OSC XY Float": "osc_xy_float",
 	"Generators/OSC/OSC XYZ Float": "osc_xyz_float",
-	"Generators/Shaders/Fog": "fog_shader",
+	"Generators/Scene/Environment Settings": "environment_settings_generator",
 	"Generators/Shaders/Flat": "flat_shader",
 	"Generators/Shaders/From mesh": "from_mesh_shader",
 	"Generators/Shaders/From mesh custom": "from_mesh_custom_shader",

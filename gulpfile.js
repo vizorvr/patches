@@ -21,6 +21,7 @@ paths =
 			'./browser/scripts/mesh.js',
 			'./browser/scripts/scene.js',
 			'./browser/scripts/material.js',
+			'./browser/scripts/environmentSettings.js',
 			'./browser/scripts/renderer.js',
 			'./browser/scripts/shader.js',
 			'./browser/scripts/connection.js',
