@@ -9,7 +9,7 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 	var tt = Material.texture_type;
     var has_fog = environment ? environment.fog.enabled : false; // fog.color, fog.distance, fog.steepness
 
-    console.log("has fog: " + has_fog + " " + environment);
+    //console.log("has fog: " + has_fog + " " + environment);
 
 	for(var v_type in v_types)
 	{

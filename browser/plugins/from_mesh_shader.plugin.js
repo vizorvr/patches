@@ -29,9 +29,13 @@ FromMeshShader.prototype.connection_changed = function(on, conn, slot)
 			this.shader = null;
 		}
 
-		if(slot.index === 0) {
-			this.environment = null;
+		if(slot.index === 2) {
+			//this.shader = null;
 		}
+	}
+
+	if(slot.index === 2) {
+		this.dirty = true;
 	}
 };
 
@@ -57,7 +61,7 @@ FromMeshShader.prototype.update_input = function(slot, data)
 			this.environment = data;
 			this.environment.fog.enabled = true;
 
-			console.log('fog color: ' + vec4.str(data.fog.color))
+			//console.log('fog color: ' + vec4.str(data.fog.color))
 		}
 		else {
 			this.environment = null;
