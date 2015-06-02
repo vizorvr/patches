@@ -113,8 +113,7 @@ EditConnection.prototype.commit = function() {
 	this.connection.src_slot = this.srcSlot
 	this.connection.dst_slot = this.dstSlot
 
-	return this.graphApi.connect(E2.core.active_graph,
-		this.connection.serialise())
+	return this.graphApi.connect(E2.core.active_graph, this.connection)
 }
 
 if (typeof(module) !== 'undefined')

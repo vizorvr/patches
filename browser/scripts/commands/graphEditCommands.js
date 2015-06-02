@@ -131,14 +131,7 @@ RenameNode.prototype.redo = function() {
 
 // -------------------------------
 
-function Connect(graph, connection) {
-	GraphEditCommand.apply(this, arguments)
-	this.title = 'Connect'
-	this.connection = connection
-}
-Connect.prototype = Object.create(GraphEditCommand.prototype)
-
-Connect.prototype.undo = function() {
+function uiDisconnected() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiDisconnected',
 		graphUid: this.graph.uid,
@@ -146,13 +139,22 @@ Connect.prototype.undo = function() {
 	})
 }
 
-Connect.prototype.redo = function() {
+function uiConnected() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiConnected',
 		graphUid: this.graph.uid,
 		connection: this.connection
 	})
 }
+
+function Connect(graph, connection) {
+	GraphEditCommand.apply(this, arguments)
+	this.title = 'Connect'
+	this.connection = connection
+}
+Connect.prototype = Object.create(GraphEditCommand.prototype)
+Connect.prototype.undo = uiDisconnected
+Connect.prototype.redo = uiConnected
 
 // -------------------------------
 
@@ -162,22 +164,8 @@ function Disconnect(graph, connection) {
 	this.connection = connection
 }
 Disconnect.prototype = Object.create(GraphEditCommand.prototype)
-
-Disconnect.prototype.undo = function() {
-	E2.app.dispatcher.dispatch({
-		actionType: 'uiConnected',
-		graphUid: this.graph.uid,
-		connection: this.connection
-	})
-}
-
-Disconnect.prototype.redo = function() {
-	E2.app.dispatcher.dispatch({
-		actionType: 'uiDisconnected', 
-		graphUid: this.graph.uid,
-		connectionUid: this.connection.uid
-	})
-}
+Disconnect.prototype.undo = uiConnected
+Disconnect.prototype.redo = uiDisconnected
 
 // -------------------------------
 

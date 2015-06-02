@@ -230,7 +230,7 @@ describe('Undo', function() {
 			graph.nodes.push(n2)
 
 			var connection = new Connection(n1, n2, ss, ds, 0)
-			var cmd = new E2.commands.graph.Connect(graph, connection.serialise())
+			var cmd = new E2.commands.graph.Connect(graph, connection)
 			cmd.execute()
 
 			assert.equal(graph.connections.length, 1)
@@ -249,7 +249,7 @@ describe('Undo', function() {
 			graph.nodes.push(n2)
 
 			var connection = new Connection(n1, n2, ss, ds, 0)
-			var cmd = new E2.commands.graph.Connect(graph, connection.serialise())
+			var cmd = new E2.commands.graph.Connect(graph, connection)
 			cmd.execute()
 			cmd.undo()
 
@@ -275,7 +275,7 @@ describe('Undo', function() {
 
 			assert.equal(graph.connections.length, 1)
 
-			var cmd = new E2.commands.graph.Disconnect(graph, conn.serialise())
+			var cmd = new E2.commands.graph.Disconnect(graph, conn)
 			cmd.execute()
 
 			assert.equal(graph.connections.length, 0)
@@ -297,7 +297,7 @@ describe('Undo', function() {
 
 			assert.equal(graph.connections.length, 1)
 
-			var cmd = new E2.commands.graph.Disconnect(graph, conn.serialise())
+			var cmd = new E2.commands.graph.Disconnect(graph, conn)
 			cmd.execute()
 			cmd.undo()
 
@@ -334,13 +334,13 @@ describe('Undo', function() {
 		it('can connect nodes', function() {
 			assert.equal(graph.connections.length, 0)
 			var conn = new Connection(n1, n2, ss, ds, 0)
-			api.connect(graph, conn.serialise())
+			api.connect(graph, conn)
 			assert.equal(graph.connections.length, 1)
 		})
 
 		it('can disconnect nodes', function() {
 			var conn = new Connection(n1, n2, ss, ds, 0)
-			api.connect(graph, conn.serialise())
+			api.connect(graph, conn)
 			api.disconnect(graph, conn)
 			assert.equal(graph.connections.length, 0)
 		})

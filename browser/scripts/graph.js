@@ -112,7 +112,7 @@ Graph.prototype.registerNode = function(n, order) {
 	if (this.nuid_lut)
 		this.nuid_lut[n.uid] = n
 	
-	if (!n.plugin.output_slots.length&& !n.dyn_outputs.length)
+	if (!n.plugin.output_slots.length && !n.dyn_outputs.length)
 		this.roots.push(n)
 	
 	if (n.plugin.isGraph) {
@@ -157,18 +157,12 @@ Graph.prototype.renameNode = function(node, title) {
 }
 
 Graph.prototype.addConnection = function(connection) {
-	if (!connection.patch_up(this.nodes)) {
-		console.warn('Failed to connect', connection)
-		return false
-	}
-
 	this.connections.push(connection)
 
 	return connection
 }
 
 Graph.prototype.connect = function(connection) {
-	console.log('connect', connection)
 	return this.addConnection(connection)
 }
 

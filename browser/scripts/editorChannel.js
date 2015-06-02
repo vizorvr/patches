@@ -32,13 +32,14 @@ function hydrate(pl) {
 	var m = _.clone(pl)
 	switch(m.actionType) {
 		case 'uiNodeAdded':
-			m.node = Node.hydrate(m.graphUid, m.node)
+			m.node = Node.hydrate(pl.graphUid, pl.node)
 			break;
 		case 'uiNodeRemoved':
 		case 'uiNodeRenamed':
 		case 'uiNodesMoved':
 			break;
 		case 'uiConnected':
+			m.connection = Connection.hydrate(Graph.lookup(pl.graphUid), pl.connection)
 			break;
 		case 'uiDisconnected':
 			break;
@@ -63,6 +64,7 @@ function dehydrate(m) {
 		case 'uiNodesMoved':
 			break;
 		case 'uiConnected':
+			pl.connection = m.connection.serialise()
 			break;
 		case 'uiDisconnected':
 			break;

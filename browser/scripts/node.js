@@ -185,7 +185,8 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 	}
 	
 	if (this.ui) {
-		this.ui.dom.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid)
+		this.ui.dom
+			.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid)
 			.remove();
 	}
 	

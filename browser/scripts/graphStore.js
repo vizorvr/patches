@@ -17,7 +17,7 @@ GraphStore.prototype._setupListeners = function() {
 		if (payload.graphUid === undefined)
 			return;
 
-		console.log('GraphStore.receiveFromDispatcher', payload.actionType, payload)
+		console.log('GraphStore.receiveFromDispatcher', payload.actionType, payload.graphUid)
 		
 		var graph = Graph.lookup(payload.graphUid)
 		if (!graph)
@@ -101,11 +101,8 @@ GraphStore.prototype._uiNodeRenamed = function(graph, nodeUid, title) {
 	this.emit('changed')
 }
 
-GraphStore.prototype._uiConnected = function(graph, serialisedConnection) {
-	var connection = new Connection()
-	connection.deserialise(serialisedConnection)
+GraphStore.prototype._uiConnected = function(graph, connection) {
 	graph.connect(connection)
-	console.log('connect', connection)
 	this.emit('connected', graph, connection)
 	this.emit('changed')
 }

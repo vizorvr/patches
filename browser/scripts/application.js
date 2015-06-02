@@ -956,7 +956,8 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 		graph.conns.map(function(conn) {
 			conn.src_nuid = uidMap[conn.src_nuid]
 			conn.dst_nuid = uidMap[conn.dst_nuid]
-			conn.uid = E2.uid()
+			if (!conn.uid)
+				conn.uid = E2.uid()
 		})
 
 		return graph
@@ -993,7 +994,7 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 			continue;
 		}
 
-		this.graphApi.connect(ag, dc)
+		this.graphApi.connect(ag, Connection.hydrate(E2.core.active_graph, dc))
 
 		createdConnections.push(ag.findConnectionByUid(dc.uid))
 	}
@@ -1618,7 +1619,7 @@ Application.prototype.setupStoreListeners = function() {
 		if (graph === E2.core.active_graph) {
 			node.create_ui()
 
-			if (node.plugin.state_changed)
+			if (node.ui && node.plugin.state_changed)
 				node.plugin.state_changed(node.ui.plugin_ui)
 		}
 

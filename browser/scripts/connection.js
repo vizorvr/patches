@@ -120,7 +120,7 @@ Connection.prototype.signal_change = function(on) {
 Connection.prototype.serialise = function()
 {
 	var d = {};
-	
+
 	d.src_nuid = this.src_node.uid
 	d.dst_nuid = this.dst_node.uid
 	d.src_slot = this.src_slot.index
@@ -212,6 +212,15 @@ Connection.prototype.patch_up = function(nodes) {
 
 	return true;
 };
+
+Connection.hydrate = function(graph, serialisedConnection) {
+	console.log('hydrating connection', serialisedConnection)
+	var connection = new Connection()
+	connection.deserialise(serialisedConnection)
+	console.log('hydrated connection', connection)
+	connection.patch_up(graph.nodes)
+	return connection
+}
 
 
 if (typeof(module) !== 'undefined') {

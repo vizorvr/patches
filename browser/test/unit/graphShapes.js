@@ -19,12 +19,13 @@ global.NodeUI = function() {
 	this.dom.position = this.dom[0].position
 	this.dom.width = this.dom[0].width
 	this.dom.height = this.dom[0].height
-	this.dom.find = function() {}
+	this.dom.find = function() { return { remove: function(){} } }
 	this.dom[0].style = {}
 }
 global.NodeUI.create_slot = function(){}
 global.Node.prototype.create_ui = function(){
-	this.ui = new global.NodeUI()
+	// this.ui = new global.NodeUI()
+	return null
 }
 global.Node.prototype.destroy_ui = function(){}
 
@@ -83,7 +84,7 @@ describe('Simple graph shapes', function() {
 		var floatDisplay = E2.app.instantiatePlugin('float_display', [0,0])
 		var ss = ipx.dyn_outputs[0]
 		var ds = floatDisplay.plugin.input_slots[0]
-		E2.app.graphApi.connect(graph, new Connection(ipx, floatDisplay, ss, ds, 0).serialise())
+		E2.app.graphApi.connect(graph, new Connection(ipx, floatDisplay, ss, ds, 0))
 		assert.equal(ss.dt.name, 'Float')
 	})
 
@@ -101,14 +102,14 @@ describe('Simple graph shapes', function() {
 		var ds = floatDisplay.plugin.input_slots[0]
 
 		var ipxFloatConn = new Connection(ipx, floatDisplay, ss, ds, 0)
-		E2.app.graphApi.connect(graph, ipxFloatConn.serialise())
+		E2.app.graphApi.connect(graph, ipxFloatConn)
 
 		var constFloat = E2.app.instantiatePlugin('const_float_generator', [0,0])
 		ss = constFloat.plugin.output_slots[0]
 		ds = graphNode.dyn_inputs[0]
 
 		E2.core.active_graph = pg
-		E2.app.graphApi.connect(pg, new Connection(constFloat, graphNode, ss, ds, 0).serialise())
+		E2.app.graphApi.connect(pg, new Connection(constFloat, graphNode, ss, ds, 0))
 
 		E2.app.undoManager.undo() // undo connection
 		E2.app.undoManager.undo() // undo constFloat
