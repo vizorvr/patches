@@ -168,6 +168,7 @@ Graph.prototype.addConnection = function(connection) {
 }
 
 Graph.prototype.connect = function(connection) {
+	console.log('connect', connection)
 	return this.addConnection(connection)
 }
 

@@ -22,6 +22,10 @@ function Node(parent_graph, plugin_id, x, y) {
 	}
 }
 
+Node.prototype.getConnections = function() {
+	return this.inputs.concat(this.outputs)
+}
+
 Node.prototype.set_plugin = function(plugin) {
 	this.plugin = plugin;
 	this.plugin.updated = true;

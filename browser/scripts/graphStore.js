@@ -80,9 +80,7 @@ GraphStore.prototype._uiNodeAdded = function(graph, node, info) {
 
 	if (info && info.proxy && info.proxy.connection) {
 		console.log('re-adding', info.proxy.connection)
-		var connection = new Connection()
-		connection.deserialise(info.proxy.connection)
-		this._uiConnected(graph.parent_graph, connection)
+		this._uiConnected(graph.parent_graph, info.proxy.connection)
 	}
 
 	this.emit('changed')

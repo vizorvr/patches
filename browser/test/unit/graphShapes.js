@@ -83,7 +83,7 @@ describe('Simple graph shapes', function() {
 		var floatDisplay = E2.app.instantiatePlugin('float_display', [0,0])
 		var ss = ipx.dyn_outputs[0]
 		var ds = floatDisplay.plugin.input_slots[0]
-		E2.app.graphApi.connect(graph, new Connection(ipx, floatDisplay, ss, ds, 0))
+		E2.app.graphApi.connect(graph, new Connection(ipx, floatDisplay, ss, ds, 0).serialise())
 		assert.equal(ss.dt.name, 'Float')
 	})
 

@@ -458,8 +458,7 @@ Application.prototype.onNodeHeaderMousedown = function() {
 
 	if (addNode) {
 		this.markNodeAsSelected(addNode)
-		addNode.inputs.concat(addNode.outputs)
-			.map(this.markConnectionAsSelected.bind(this))
+		addNode.getConnections().map(this.markConnectionAsSelected.bind(this))
 	}
 }
 
@@ -533,7 +532,7 @@ Application.prototype.onNodeDragged = function(node) {
 		this._dragInfo = {
 			original: { x: node.x, y: node.y },
 			connections: nodes.reduce(function(arr, curr) {
-				return arr.concat(curr.inputs.concat(curr.outputs))
+				return arr.concat(curr.getConnections())
 			}, [])
 		}
 
@@ -921,53 +920,82 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 	var ag = E2.core.active_graph
 	var createdNodes = []
 	var createdConnections = []
-	var nodeUidLookup = {}
-	var node
+
+	function mapSlotIds(sids, uidMap) {
+		var nsids = {}
+		Object.keys(sids).map(function(oldUid) {
+			nsids[uidMap[oldUid]] = sids[oldUid]
+		})
+		return nsids
+	}
+
+	function remapGraph(graph, graphNode) {
+		var uidMap = {}
+
+		graph.uid = E2.uid()
+
+		graph.nodes.map(function(node) {
+			var newUid = E2.core.get_uid()
+			uidMap[node.uid] = newUid
+			node.uid = newUid
+
+			if (node.plugin === 'graph')
+				node.graph = remapGraph(node.graph, node)
+		})
+
+		if (graphNode) {
+			var s = graphNode.state
+
+			if (s.input_sids)
+				s.input_sids = mapSlotIds(s.input_sids, uidMap)
+
+			if (s.output_sids)
+				s.output_sids = mapSlotIds(s.output_sids, uidMap)
+		}
+
+		graph.conns.map(function(conn) {
+			conn.src_nuid = uidMap[conn.src_nuid]
+			conn.dst_nuid = uidMap[conn.dst_nuid]
+			conn.uid = E2.uid()
+		})
+
+		return graph
+	}
+
+	// remap all UID's inside the pasted doc so they are unique in the graph tree.
+	doc = remapGraph(doc)
 
 	for(var i = 0, len = doc.nodes.length; i < len; i++) {
 		var docNode = doc.nodes[i]
-		var newUid = E2.core.get_uid()
-
 		docNode.x = Math.floor((docNode.x - doc.x1) + offsetX)
 		docNode.y = Math.floor((docNode.y - doc.y1) + offsetY)
 
-		nodeUidLookup[docNode.uid] = newUid
-
-		docNode.uid = newUid
-
 		this.graphApi.addNode(ag, Node.hydrate(ag.uid, docNode))
 
-		createdNodes.push(ag.findNodeByUid(newUid))
+		createdNodes.push(ag.findNodeByUid(docNode.uid))
 	}
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
-		var docConnection = doc.conns[i]
-		var suid = nodeUidLookup[docConnection.src_nuid]
-		var duid = nodeUidLookup[docConnection.dst_nuid]
-
-		if (suid === undefined || duid === undefined) {
+		var dc = doc.conns[i]
+		if (dc.src_nuid === undefined || dc.dst_nuid === undefined) {
 			// not a valid connection, clear it and skip it
-			if (duid !== undefined) {
-				var destNode = ag.findNodeByUid(duid)
+			if (dc.dst_nuid !== undefined) {
+				var destNode = ag.findNodeByUid(dc.dst_nuid)
 
-				var slots = docConnection.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
-				var slot = slots[docConnection.dst_slot]
-					
-				slot.is_connected = false;
-				slot.connected = false;
-				destNode.inputs_changed = true;
+				var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
+				var slot = slots[dc.dst_slot]
+				
+				slot.is_connected = false
+				slot.connected = false
+				destNode.inputs_changed = true
 			}
 
 			continue;
 		}
-		
-		docConnection.src_nuid = suid
-		docConnection.dst_nuid = duid
-		docConnection.uid = E2.core.get_uid()
 
-		this.graphApi.connect(ag, docConnection)
+		this.graphApi.connect(ag, dc)
 
-		createdConnections.push(ag.findConnectionByUid(docConnection.uid))
+		createdConnections.push(ag.findConnectionByUid(dc.uid))
 	}
 
 	this.undoManager.end()

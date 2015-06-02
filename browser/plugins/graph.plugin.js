@@ -311,9 +311,9 @@ GraphPlugin.prototype.state_changed = function(ui) {
 
 		var inp_config = makeButton(null, 'Edit preferences.', 'config_btn');
 
-		inp_config.click(function(self) { return function() {
+		inp_config.click(function() {
 			self.open_editor(self);
-		}}(this));
+		})
 		
 		$(node.ui.dom[0].children[0].children[0].children[0]).append(inp_config);
 		return;
@@ -321,19 +321,24 @@ GraphPlugin.prototype.state_changed = function(ui) {
 	
 	function find_node(nodes, uid) {
 		for(var i = 0, len = nodes.length; i < len; i++) {
-			if(nodes[i].uid === uid)
-			{
-				var n = nodes[i];
-				var p = n.plugin;
-				
-				p.data = core.get_default_value((p.id === 'input_proxy' ? n.dyn_outputs : n.dyn_inputs)[0].dt);
-				return n;
-			}
+
+			if (nodes[i].uid !== uid)
+				continue;
+
+			var n = nodes[i]
+			var p = n.plugin
+			
+			p.data = core.get_default_value((p.id === 'input_proxy' ?
+				n.dyn_outputs
+				: n.dyn_inputs)[0]
+			.dt)
+
+			return n
 		}
 
 		msg('ERROR: Failed to find registered proxy node(' + uid + ') in graph(' + self.graph.plugin.parent_node.title + ').'); 
 		return null;
-	};
+	}
 
 	for(var uid in this.state.input_sids)
 		this.input_nodes[this.state.input_sids[uid]] = find_node(this.graph.nodes, parseInt(uid));
