@@ -15,6 +15,7 @@ global.Flux = require('../../vendor/flux')
 global.Plugin = require('../../scripts/plugin');
 global.Store = require('../../scripts/store');
 global.GraphStore = require('../../scripts/graphStore');
+global.Camera = global.Material = function(){}
 
 global.NodeUI = function() {
 	this.dom = [$()]
@@ -137,6 +138,7 @@ describe('Paste', function() {
 			E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 
 			app = E2.app = new Application()
+			app.updateCanvas = function() {}
 			app.channel = { broadcast: function(){} }
 			core = E2.core = new Core()
 			core.renderer = dummyCore.renderer
@@ -182,6 +184,14 @@ describe('Paste', function() {
 					.plugin.node.parent_graph, // input proxy's parent
 				core.graphs[1].uid
 			)
+		})
+
+		it('registers the right number of inputs and outputs', function() {
+			app.setupStoreListeners()
+			app.paste(source, 0, 0)
+			var node = core.graphs[0].nodes[0]
+			assert.equal(node.inputs.length, 3)
+			assert.equal(node.outputs.length, 2)
 		})
 
 		// this doesn't really belong here, but it's a good case to have
