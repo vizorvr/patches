@@ -168,26 +168,15 @@ Graph.prototype.connect = function(connection) {
 
 Graph.prototype.disconnect = function(c) {
 	var index = this.connections.indexOf(c)
-	var slots
 
 	if (index !== -1)
 		this.connections.splice(index, 1)
 
-	if (c.dst_node) {
-		c.dst_slot.is_connected = false
-		slots = c.dst_node.inputs
-		index = slots.indexOf(c)
-		if (index !== -1)
-			slots.splice(index, 1)
-	}
+	if (c.dst_node)
+		c.dst_node.removeInput(c)
 
-	if (c.src_node) {
-		slots = c.src_node.outputs
-		index = slots.indexOf(c)
-
-		if (index !== -1)
-			slots.splice(index, 1)
-	}
+	if (c.src_node)
+		c.src_node.removeOutput(c)
 }
 
 Graph.prototype.create_ui = function() {
@@ -280,7 +269,6 @@ Graph.prototype.deserialise = function(d) {
 
 	for(i = 0, len = d.conns.length; i < len; i++) {
 		var c = new Connection(null, null, null, null);
-		
 		c.deserialise(d.conns[i]);
 		this.connections.push(c);
 	}

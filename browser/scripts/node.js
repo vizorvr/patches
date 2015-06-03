@@ -297,6 +297,16 @@ Node.prototype.addOutput = function(conn) {
 	this.outputs.push(conn)
 }
 
+Node.prototype.removeOutput = function(conn) {
+	conn.dst_slot.is_connected = false
+	this.outputs.splice(this.outputs.indexOf(conn), 1)
+}
+
+Node.prototype.removeInput = function(conn) {
+	conn.dst_slot.is_connected = false
+	this.inputs.splice(this.inputs.indexOf(conn), 1)
+}
+
 Node.prototype.update_connections = function() {
 	this.outputs.forEach(function(c) {
 		E2.app.getSlotPosition(c.src_node, c.ui.src_slot_div, E2.slot_type.output, c.ui.src_pos)
