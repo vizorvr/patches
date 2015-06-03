@@ -922,8 +922,6 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 	var createdNodes = []
 	var createdConnections = []
 
-console.log('paste', srcDoc)
-
 	function mapSlotIds(sids, uidMap) {
 		var nsids = {}
 		Object.keys(sids).map(function(oldUid) {
@@ -958,13 +956,8 @@ console.log('paste', srcDoc)
 		}
 
 		graph.conns.map(function(conn) {
-			console.log('remap conn', conn)
 			conn.src_nuid = uidMap[conn.src_nuid]
 			conn.dst_nuid = uidMap[conn.dst_nuid]
-
-if (conn.src_nuid === conn.dst_nuid)
-	debugger;
-
 			if (!conn.uid)
 				conn.uid = E2.uid()
 		})
@@ -1537,11 +1530,12 @@ Application.prototype.onShowTooltip = function(e) {
 	{
 		var plugin = node.plugin;
 		var slot = null;
+		var slotIndex = parseInt(tokens[2], 10)
 
 		if(tokens[1][0] === 'd')
-			slot = node.find_dynamic_slot(tokens[1][1] === 'i' ? E2.slot_type.input : E2.slot_type.output, tokens[2]);
+			slot = node.find_dynamic_slot(tokens[1][1] === 'i' ? E2.slot_type.input : E2.slot_type.output, slotIndex);
 		else
-			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[tokens[2]];
+			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[slotIndex];
 		
 		txt = '<b>Type:</b> ' + slot.dt.name;
 
