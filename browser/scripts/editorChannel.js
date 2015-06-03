@@ -48,7 +48,7 @@ function hydrate(pl) {
 			
 	}
 
-	console.log('hydrated',m)
+	// console.log('hydrated',m)
 	return m;
 }
 
@@ -72,7 +72,7 @@ function dehydrate(m) {
 		case 'uiPluginStateChanged':
 			
 	}
-	console.log('dehydrated',pl)
+	// console.log('dehydrated',pl)
 
 	return pl;
 }
@@ -103,26 +103,16 @@ function EditorChannel() {
 	this.channel = new WebSocketChannel()
 
 	this.channel
-		.connect()
-		.on('connected', function() {
-			that.channel.join('__editor__')
-			.on('*', function(payload) {
-				if (!payload.actionType || !payload.from)
-					return;
-
-				console.log('EditorChannel IN: ', payload.actionType, payload)
-
-				if (isAcceptedDispatch(payload))
-					E2.app.dispatcher.dispatch(hydrate(payload))
-
-			})
+		.connect('/__editorChannel')
+		.on('ready', function() {
+			that.emit('ready')
 		})
 
 	E2.app.dispatcher.register(function channelGotDispatch(payload) {
 		if (payload.from)
 			return;
 
-		console.log('EditorChannel.channelGotDispatch', payload)
+		// console.log('EditorChannel.channelGotDispatch', payload)
 
 		if (isAcceptedDispatch(payload))
 			that.broadcast(dehydrate(payload))
@@ -132,8 +122,22 @@ function EditorChannel() {
 
 EditorChannel.prototype = Object.create(EventEmitter.prototype)
 
+EditorChannel.prototype.join = function(channelName) {
+	this.channelName = channelName
+	this.channel.join(channelName)
+	.on('*', function(payload) {
+		if (!payload.actionType || !payload.from)
+			return;
+
+		// console.log('EditorChannel IN: ', payload.actionType, payload)
+
+		if (isAcceptedDispatch(payload))
+			E2.app.dispatcher.dispatch(hydrate(payload))
+	})
+}
+
 EditorChannel.prototype.broadcast = function(payload) {
-	this.channel.send('__editor__', payload)
+	this.channel.send(this.channelName, payload)
 }
 
 if (typeof(module) !== 'undefined')

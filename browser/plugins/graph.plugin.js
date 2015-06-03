@@ -341,10 +341,10 @@ GraphPlugin.prototype.state_changed = function(ui) {
 	}
 
 	for(var uid in this.state.input_sids)
-		this.input_nodes[this.state.input_sids[uid]] = find_node(this.graph.nodes, parseInt(uid));
+		this.input_nodes[this.state.input_sids[uid]] = find_node(this.graph.nodes, uid);
 
 	for(var uid in this.state.output_sids)
-		this.output_nodes[this.state.output_sids[uid]] = find_node(this.graph.nodes, parseInt(uid));
+		this.output_nodes[this.state.output_sids[uid]] = find_node(this.graph.nodes, uid);
 		
 	var conns = node.outputs;
 	

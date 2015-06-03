@@ -53,6 +53,8 @@ describe('Simple graph shapes', function() {
 		core.graphs = [ core.active_graph ]
 		core.rebuild_structure_tree = function(){}
 		
+		global.window = { location: { pathname: 'test/test' } }
+
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 		app = new Application()
 		app.player = { core: core }

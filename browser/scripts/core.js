@@ -19,9 +19,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-var URL_DATA = '/data/';
-var URL_GRAPHS = '/graph/';
-var URL_GRAPH_FILES = URL_DATA+'graph/';
+var URL_DATA = '/data/'
+var URL_GRAPHS = '/graph/'
+var URL_GRAPH_FILES = URL_DATA+'graph/'
 
 var E2 = {};
 window.E2 = E2; // global scope so plugins can access it
@@ -34,10 +34,13 @@ E2.erase_color = '#ff3b3b';
 E2.COLOR_COMPATIBLE_SLOT = '#080';
 
 (function() {
-var i = 0
-E2.uid = function() {
-	return parseInt(Date.now() + '' + i++, 10)
-}
+	var i = 0
+	var myId = Math.random()
+	E2.uid = function() {
+		var uidStr = myId + '.' + Date.now() + '' +  Math.random() + '' +  i++
+		var uid = CryptoJS.SHA256(uidStr).toString()
+		return uid
+	}
 })()
 
 function Delegate(delegate, dt, count)

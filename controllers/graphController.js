@@ -4,8 +4,17 @@ var fsPath = require('path');
 var templateCache = new(require('../lib/templateCache'));
 var assetHelper = require('../models/asset-helper');
 
-function GraphController(graphService, fs)
-{
+function makeRandomPath() {
+	// var keys = 'AaBbCcDdEeFfGgHhIiJjKkLMmNnPpQqRrSsTtUuVvWwXxYyZz23456789'
+	var keys = 'abcdefghijkmnpqrstuvwxyz23456789'
+	var path = keys[Math.floor(Math.random() * keys.length)] +
+		keys[Math.floor(Math.random() * keys.length)] +
+		keys[Math.floor(Math.random() * keys.length)] + 
+		keys[Math.floor(Math.random() * keys.length)] 
+	return path
+}
+
+function GraphController(graphService, fs) {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
 	AssetController.apply(this, args);
@@ -51,42 +60,38 @@ GraphController.prototype.index = function(req, res, next)
 }
 
 // GET /fthr/dunes-world/edit
-GraphController.prototype.edit = function(req, res, next)
-{
-	function renderEditor(graph)
-	{
-		function respond()
-		{
-			res.render('editor',
-			{
+GraphController.prototype.edit = function(req, res, next) {
+	function renderEditor(graph) {
+		function respond() {
+			res.render('editor', {
 				layout: 'spa',
 				graph: graph
 			});
 		}
 
 		if (process.env.NODE_ENV !== 'production') {
-			templateCache.recompile(function()
-			{
-				respond();
-			});
+			templateCache.recompile(function() {
+				respond()
+			})
 		}
 		else
-			respond();
+			respond()
 	}
 
-	if (!req.params.path)
-		return renderEditor();
+	if (!req.params.path) {
+		// return renderEditor()
+		return res.redirect('/' + makeRandomPath())
+	}
 
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
-		renderEditor(graph);
+		renderEditor(graph)
 	})
-	.catch(next);
+	.catch(next)
 }
 
 // GET /fthr/dunes-world
-GraphController.prototype.graphLanding = function(req, res, next)
-{
+GraphController.prototype.graphLanding = function(req, res, next) {
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
 		if (!graph)

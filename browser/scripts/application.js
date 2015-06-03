@@ -43,11 +43,12 @@ function Application() {
 
 	this._mousePosition = [400,200]
 
+	this.path = window.location.pathname.split('/')[1]
+
 	this.dispatcher = new Flux.Dispatcher()
 
 	this.undoManager = new UndoManager()
 	this.graphApi = new GraphApi(this.undoManager)
-	this.channel = new EditorChannel(this)
 
 	this.graphStore = new GraphStore()
 
@@ -60,12 +61,12 @@ function Application() {
 }
 
 Application.prototype.getNIDFromSlot = function(id) {
-	return parseInt(id.slice(1, id.indexOf('s')));
+	return id.slice(1, id.indexOf('s'));
 }
 
 Application.prototype.getSIDFromSlot = function(id) {
-	return parseInt(id.slice(id.indexOf('s') + 2, id.length));
-};
+	return id.slice(id.indexOf('s') + 2, id.length);
+}
 
 Application.prototype.offsetToCanvasCoord = function(ofs) {
 	var o = [ofs.left, ofs.top];
@@ -914,12 +915,14 @@ Application.prototype.onCut = function(e) {
 	}
 }
 
-Application.prototype.paste = function(doc, offsetX, offsetY) {
+Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 	this.undoManager.begin('Paste')
 
 	var ag = E2.core.active_graph
 	var createdNodes = []
 	var createdConnections = []
+
+console.log('paste', srcDoc)
 
 	function mapSlotIds(sids, uidMap) {
 		var nsids = {}
@@ -929,8 +932,9 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 		return nsids
 	}
 
-	function remapGraph(graph, graphNode) {
+	function remapGraph(g, graphNode) {
 		var uidMap = {}
+		var graph = _.clone(g)
 
 		graph.uid = E2.uid()
 
@@ -954,8 +958,13 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 		}
 
 		graph.conns.map(function(conn) {
+			console.log('remap conn', conn)
 			conn.src_nuid = uidMap[conn.src_nuid]
 			conn.dst_nuid = uidMap[conn.dst_nuid]
+
+if (conn.src_nuid === conn.dst_nuid)
+	debugger;
+
 			if (!conn.uid)
 				conn.uid = E2.uid()
 		})
@@ -964,7 +973,7 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 	}
 
 	// remap all UID's inside the pasted doc so they are unique in the graph tree.
-	doc = remapGraph(doc)
+	var doc = remapGraph(srcDoc)
 
 	for(var i = 0, len = doc.nodes.length; i < len; i++) {
 		var docNode = doc.nodes[i]
@@ -1515,7 +1524,7 @@ Application.prototype.onShowTooltip = function(e) {
 	var $elem = $(e.currentTarget);
 	var tokens = $elem.attr('alt').split('_');
 	var core = this.player.core;
-	var node = E2.core.active_graph.nuid_lut[parseInt(tokens[0], 10)];
+	var node = E2.core.active_graph.nuid_lut[tokens[0]];
 	var txt = '';
 	
 	if(tokens.length < 2) // Node?
@@ -1530,9 +1539,9 @@ Application.prototype.onShowTooltip = function(e) {
 		var slot = null;
 
 		if(tokens[1][0] === 'd')
-			slot = node.find_dynamic_slot(tokens[1][1] === 'i' ? E2.slot_type.input : E2.slot_type.output, parseInt(tokens[2], 10));
+			slot = node.find_dynamic_slot(tokens[1][1] === 'i' ? E2.slot_type.input : E2.slot_type.output, tokens[2]);
 		else
-			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
+			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[tokens[2]];
 		
 		txt = '<b>Type:</b> ' + slot.dt.name;
 
@@ -1821,6 +1830,10 @@ Application.prototype.start = function() {
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
 
 	this.midPane = new E2.MidPane()
+	this.channel = new EditorChannel(this)
+	this.channel.on('ready', function() {
+		that.channel.join(that.path)
+	})
 }
 
 

@@ -49,6 +49,8 @@ describe('Paste', function() {
 		
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 
+		global.window = { location: { pathname: 'test/test' } }
+
 		app = E2.app = new Application()
 		app.player = { core: core }
 		app.channel = { broadcast: function(){}}

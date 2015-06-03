@@ -40,6 +40,7 @@ var passportConf = require('./config/passport');
 var FrameDumpServer = require('./lib/framedump-server').FrameDumpServer;
 var OscServer = require('./lib/osc-server').OscServer;
 var WsChannelServer = require('./lib/wschannel-server').WsChannelServer;
+var EditorChannelServer = require('./lib/editorChannelServer').EditorChannelServer;
 var config = require('./config/config.json');
 
 var argv = require('minimist')(process.argv.slice(2));
@@ -454,6 +455,16 @@ app.post('/:model',
 	}
 );
 
+// last resort Graph URLs
+
+// GET /ju63
+app.get('/:path', function(req, res, next) {
+	req.params.path = '/'+req.params.path;
+	graphController.edit(req, res, next);
+});
+
+// --------------------------------------------------
+
 var httpServer = http.createServer(app);
 
 httpServer.listen(listenPort, listenHost);
@@ -463,7 +474,8 @@ if (config.server.enableOSC) {
 }
 
 if (config.server.enableChannels) {
-	new WsChannelServer().listen(httpServer);
+	new WsChannelServer().listen(httpServer)
+	new EditorChannelServer().listen(httpServer)
 }
 
 app.use(function(err, req, res, next) {

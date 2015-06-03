@@ -7,8 +7,10 @@ function WebSocketChannel() {
 
 WebSocketChannel.prototype = Object.create(EventEmitter.prototype)
 
-WebSocketChannel.prototype.connect = function() {
+WebSocketChannel.prototype.connect = function(path) {
 	var that = this;
+
+	path = path || '/__wschannel'
 
 	if (this._state === 'connected' || this._state === 'connecting') {
 		return;
@@ -19,16 +21,16 @@ WebSocketChannel.prototype.connect = function() {
 	this.ws = new WebSocket('ws://'+
 		window.location.hostname+':'+
 		(window.location.port || 80)+
-		'/__wschannel');
+		path);
 
 	this.ws.onopen = function() {
-		console.log('WsChannel connected');
+		console.log('WsChannel connected', path);
 		that._state = 'connected';
 		that.emit('connected')
 	};
 
 	this.ws.onclose = function() {
-		console.warn('WsChannel disconnected!');
+		console.warn('WsChannel disconnected', path);
 		that._state = 'disconnected';
 	};
 
@@ -38,8 +40,10 @@ WebSocketChannel.prototype.connect = function() {
 
 		console.log('IN:', m[dk], evt.data.length+'b', 'from', m.from, m);
 
-		if (m.kind === 'READY')
+		if (m.kind === 'READY') {
 			that.uid = m.data
+			that.emit('ready', that.uid)
+		}
 
 		that.emit('*', m)
 		that.emit(m.channel, m)
