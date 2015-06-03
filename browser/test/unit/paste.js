@@ -176,10 +176,11 @@ describe('Paste', function() {
 
 		it('sets up the right parent relationships', function() {
 			app.paste(source, 0, 0)
+			console.log('graph', core.graphs[1])
 			assert.equal(
 				core.graphs[1].nodes[0]
 					.plugin.node.parent_graph, // input proxy's parent
-				core.graphs[1]
+				core.graphs[1].uid
 			)
 		})
 
