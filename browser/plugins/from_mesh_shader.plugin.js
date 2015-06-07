@@ -21,27 +21,21 @@ var FromMeshShader = E2.plugins["from_mesh_shader"] = function(core, node)
 
 FromMeshShader.prototype.connection_changed = function(on, conn, slot)
 {
-	//console.log("FromMeshShader connection_changed " + on + " " + slot.type + " " + slot.index);
-
 	if(!on && slot.type === E2.slot_type.input)
 	{
 		if(slot.index === 0) {
 			this.shader = null;
 		}
-
-		if(slot.index === 2) {
-			//this.shader = null;
-		}
 	}
 
 	if(slot.index === 2) {
+		// environment settings changed - force shader regeneration
 		this.dirty = true;
 	}
 };
 
 FromMeshShader.prototype.update_input = function(slot, data)
 {
-	//console.log("FromMeshShader update_input " + slot.index + " " + data);
 	if(slot.index === 0)
 	{
 		if(this.mesh !== data)
@@ -56,23 +50,18 @@ FromMeshShader.prototype.update_input = function(slot, data)
 	}
 	else if(slot.index === 2)
 	{
-		//console.log('set environment ' + data + ' ' + data.fog + ' ' + data.fog.enabled);
 		if (data) {
 			this.environment = data;
 			this.environment.fog.enabled = true;
-
-			//console.log('fog color: ' + vec4.str(data.fog.color))
 		}
 		else {
 			this.environment = null;
 		}
-		//this.dirty = true;
 	}	
 };
 
 FromMeshShader.prototype.update_state = function()
 {
-	//console.log('FromMeshShader update_state()');
 	if(!this.mesh)
 		return;
 	
@@ -102,7 +91,6 @@ FromMeshShader.prototype.update_output = function(slot)
 
 FromMeshShader.prototype.state_changed = function(ui)
 {
-	//console.log('FromMeshShader state_changed()');
 	if(!ui)
 	{
 		this.mesh = null;
