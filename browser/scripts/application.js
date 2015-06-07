@@ -933,8 +933,6 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 
 		this.graphApi.addNode(ag, node)
 
-		node.patch_up(E2.core.graphs)
-
 		createdNodes.push(node)
 	}
 

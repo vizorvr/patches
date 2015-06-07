@@ -20,7 +20,8 @@ var ArraySwitch = E2.plugins.array_switch_modulator = function ArraySwitch(core,
 	];
 	
 	this.output_slots = [
-		{ name: 'out', dt: E2.dt.ANY, desc: 'Emits the selected input.' }
+		{ name: 'value', dt: E2.dt.ANY, desc: 'Emits the selected input.' },
+		{ name: 'length', dt: E2.dt.FLOAT, desc: 'Emits the number of inputs = the length of the array.' }
 	];
 
 	this.state = {
@@ -52,6 +53,7 @@ ArraySwitch.prototype.create_ui = function() {
 
 		that.state.slot_uids.push(suid)
 		that.lsg.add_dyn_slot(that.node.find_dynamic_slot(E2.slot_type.input, suid))
+		that.updated = true
 	})
 	
 	removeButton.click(function() {
@@ -62,6 +64,7 @@ ArraySwitch.prototype.create_ui = function() {
 		
 		that.lsg.remove_dyn_slot(that.node.find_dynamic_slot(E2.slot_type.input, suid))
 		that.node.remove_slot(E2.slot_type.input, suid)
+		that.updated = true
 	})
 
 	layout.append(removeButton)
@@ -93,10 +96,15 @@ ArraySwitch.prototype.update_state = function() {
 	}
 }
 
-ArraySwitch.prototype.update_output = function() {
+ArraySwitch.prototype.update_output = function(slot) {
+	if (slot.index === 1) {
+		return this.state.slot_uids.length
+	}
+
 	if (this.value !== undefined)
 		return this.value
-	return this.lsg.core.get_default_value(this.lsg.dt)
+
+	return this.core.get_default_value(this.lsg.dt)
 }
 
 ArraySwitch.prototype.state_changed = function(ui) {
