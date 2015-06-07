@@ -75,8 +75,13 @@ FromMeshShader.prototype.update_state = function()
 	
 	if(this.dirty || this.caps_hash !== caps)
 	{
+		var errorCallback = function(errors) {
+			for(x in errors) {
+				console.log('Shader error ' + x);
+			}
+		}
 		msg('Recomposing shader with caps: ' + caps);
-		this.shader = ComposeShader(null, this.mesh, this.material, null, null, null, null, null, null, this.environment);
+		this.shader = ComposeShader(null, this.mesh, this.material, null, null, null, null, errorCallback, errorCallback, this.environment);
 	}
 
 	this.caps_hash = caps;

@@ -7,7 +7,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 	var has_lights = false;
 	var lights = material ? material.lights : mesh.material.lights;
 	var tt = Material.texture_type;
-    var has_fog = environment ? environment.fog.enabled : false; // fog.color, fog.distance, fog.steepness
+   
+	// fog.enabled, fog.bottom_color, fog.bottom_height, fog.top_color, fog.top_height, fog.horiz_distance, fog.horiz_steepness, fog.vert_steepness
+    var has_fog = environment ? environment.fog.enabled : false; 
+
 
 	for(var v_type in v_types)
 	{
@@ -86,8 +89,14 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		
 		if(has_fog)
 		{
-			ps_src.push('uniform vec4 fog_col;'); 
-			ps_src.push('uniform vec3 fog_attr;');
+			vs_src.push('varying vec4 world_pos;');
+			ps_src.push('varying vec4 world_pos;');
+
+			ps_src.push('uniform vec4 fog_bottom_col;'); 
+			ps_src.push('uniform vec4 fog_top_col;'); 
+			
+			ps_src.push('uniform vec4 fog_attr1;'); // horiz_distance, horiz_steepness, 0, 0
+			ps_src.push('uniform vec4 fog_attr2;'); // bottom_height, top_height, vert_steepness, 0
 		}
 
 		if (uniforms_ps)
@@ -180,7 +189,12 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			vs_dp('void main(void) {');
 			vs_dp('    vec4 tp = m_mat * vec4(v_pos, 1.0);\n');
 
-			vs_dp('    gl_Position = p_mat * v_mat * tp;');
+			vs_dp('    gl_Position = p_mat * v_mat * tp;\n');
+
+			if(has_fog)
+			{
+				vs_dp('		world_pos = tp;\n');
+			}
 
 			if(has_lights)
 			{
@@ -285,8 +299,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 
 			if(has_fog)
 			{
-				ps_dp('    float d = pow(clamp((gl_FragCoord.z / gl_FragCoord.w) / fog_attr.x, 0.0, 1.0), fog_attr.y);\n');
-				ps_dp('    fc.rgb = mix(fc.rgb, fog_col.rgb, d);\n');
+				ps_dp('    float d = pow(clamp((gl_FragCoord.z / gl_FragCoord.w) / fog_attr1.x, 0.0, 1.0), fog_attr1.y);\n');
+				ps_dp('	   float h = pow(min(max(0.0, (world_pos.z - fog_attr2.x)) / (fog_attr2.y - fog_attr2.x), 1.0), fog_attr2.z);')
+				ps_dp('    vec3 fog_color = mix(fog_bottom_col.rgb, fog_top_col.rgb, h);')
+				ps_dp('    fc.rgb = mix(fc.rgb, fog_color.rgb, d);\n');
 				//ps_dp('    fc.g = 1.0;\n');
 				//ps_dp('    fc.a = 1.0;\n');
 			}
@@ -303,7 +319,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 		shader.ps_src = ps_src.join('\n');
 		shader.vs_c_src = vs_c_src.join('\n');
 		shader.ps_c_src = ps_c_src.join('\n');
-	   
+	  
+ 		console.log('VS: ' + vs_src);
+ 		console.log('PS: ' + ps_src);
+
 		var vs = new Shader(gl, gl.VERTEX_SHADER, shader.vs_src, vs_src.length, vcb);
 		var ps = new Shader(gl, gl.FRAGMENT_SHADER, shader.ps_src, ps_src.length, pcb);
 		var compiled = vs.compiled && ps.compiled;
@@ -367,8 +386,10 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 
 			if(has_fog)
 			{
-				shader.fog_col = resolve_unif('fog_col');
-				shader.fog_attr = resolve_unif('fog_attr');
+				shader.fog_bottom_col = resolve_unif('fog_bottom_col');
+				shader.fog_top_col = resolve_unif('fog_top_col');
+				shader.fog_attr1 = resolve_unif('fog_attr1');
+				shader.fog_attr2 = resolve_unif('fog_attr2');
 				shader.fog = environment.fog;
 			}
 
@@ -437,15 +458,27 @@ function ComposeShader(cache, mesh, material, uniforms_vs, uniforms_ps, vs_custo
 			if(this.shinyness !== undefined)
 				gl.uniform1f(this.shinyness, m.shinyness);
 	
-			if(has_fog && this.fog_col !== undefined)
+			if(has_fog && this.fog_bottom_col !== undefined)
 			{
-				gl.uniform4fv(this.fog_col, this.fog.color);
+				gl.uniform4fv(this.fog_bottom_col, this.fog.bottom_color);
 			}
 
-			if(has_fog && this.fog_attr !== undefined)
+			if(has_fog && this.fog_top_col !== undefined)
 			{
-				gl.uniform3f(this.fog_attr, this.fog.distance, this.fog.steepness, 0.0);
+				gl.uniform4fv(this.fog_top_col, this.fog.top_color);
 			}
+
+
+			if(has_fog && this.fog_attr1 !== undefined)
+			{
+				gl.uniform4f(this.fog_attr1, this.fog.horiz_distance, this.fog.horiz_steepness, 0.0, 0.0);
+			}
+
+			if(has_fog && this.fog_attr2 !== undefined)
+			{
+				gl.uniform4f(this.fog_attr2, this.fog.bottom_height, this.fog.top_height, this.fog.vert_steepness, 0.0);
+			}
+
 
 
 			for(var i = 0; i < 8; i++)
