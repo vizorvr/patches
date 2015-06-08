@@ -1,6 +1,7 @@
 (function() {
 
-var FromMeshCustomShader = E2.plugins["from_mesh_custom_shader"] = function(core, node) {
+var FromMeshCustomShader = E2.plugins.from_mesh_custom_shader = function(core, node) {
+	var that = this
 	this.desc = 'Auto-generate a shader embedding user-defined main bodies tailored to correctly and optimally render the supplied mesh.'
 	
 	this.input_slots = [
@@ -24,6 +25,33 @@ var FromMeshCustomShader = E2.plugins["from_mesh_custom_shader"] = function(core
 	this.gl = core.renderer.context
 	this.shader = null
 	this.slot_data = []
+
+	this.node.on('slotAdded', function(slot) {
+		that.state.slot_ids[slot.name] = {
+			id: slot.uid,
+			dt: slot.dt,
+			uniform: null
+		}
+		that.slot_data[slot.uid] = that.core.get_default_value(E2.slot_type.input, slot.dt)
+		that.updated = that.dirty = true
+		that._refreshEditor()
+	})
+
+	this.node.on('slotRemoved', function(slot) {
+		that.state.slot_ids[slot.name] = null
+		delete that.state.slot_ids[slot.name]
+		that.updated = that.dirty = true
+		that._refreshEditor()
+	})
+}
+
+FromMeshCustomShader.prototype._refreshEditor = function() {
+	var that = this
+	if (this._editors) {
+		_.each(this._editors, function(ed) {
+			ed.setInputs(that.state.slot_ids)
+		})
+	}
 }
 
 FromMeshCustomShader.prototype.destroy_ui = function() {
@@ -41,20 +69,16 @@ FromMeshCustomShader.prototype.create_ui = function() {
 
 	this._editors = {}
 
-	function removeSlot(slotId, name) {
-		that.node.remove_slot(E2.slot_type.input, slotId)
-		that.state.slot_ids[name] = null
-		delete that.state.slot_ids[name]
-		that.node.update_connections()
-		E2.app.updateCanvas()
+	function removeSlot(slotId) {
+		E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, slotId)
 	} 
 
 	function addSlot(name, dt) {
-		var slotId = that.node.add_slot(E2.slot_type.input, { name: name, dt: dt })
-		that.state.slot_ids[name] = { id: slotId, dt: dt, uniform: null }
-		that.slot_data[slotId] = that.core.get_default_value(E2.slot_type.input, dt)
-		that.node.update_connections()
-		E2.app.updateCanvas()
+		E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
+			type: E2.slot_type.input,
+			name: name,
+			dt: dt
+		})
 	}
 
 	vertexButton.css('width', '55px')
@@ -76,24 +100,16 @@ FromMeshCustomShader.prototype.create_ui = function() {
 			})
 			.on('inputRemoved', function(slotId, name) {
 				removeSlot(slotId, name)
-				that.updated = that.dirty = true
-				that.node.queued_update = 1
-				that.state.changed = true
 			})
 			.on('inputAdded', function(inputName, dt) {
 				addSlot(inputName, dt)
-				that.updated = that.dirty = true
-				that.node.queued_update = 1
-				that.state.changed = true
 			})
 			.on('build', function() {
 				that.updated = that.dirty = true
 			})
 			.on('changed', function(v) {
 				that.updated = true
-				that.node.queued_update = 1
 				that.state[srcId] = v
-				that.state.changed = true
 			})
 
 		that._editors[which]._ace 

@@ -67,6 +67,13 @@ InputEditor.prototype = Object.create(EventEmitter.prototype)
 InputEditor.prototype.render = function($el) {
 	var that = this
 
+	$el.html('<div class="inputs">'+
+			'<button class="input-add-button input-button btn btn-xs btn-primary">'+
+			'		<i class="fa fa-sm fa-plus"></i>' +
+			'		<span>Add new input</span>' +
+			'	</button>' +
+			'</div>')
+
 	var $inputs = $('.inputs', $el)
 
 	function inputButton(inputName, glslType) {
@@ -74,7 +81,8 @@ InputEditor.prototype.render = function($el) {
 			'class="btn btn-xs btn-default input-remove-button input-button">'+
 			'<i class="fa fa-sm fa-close"></i><span>{{glslType}} {{title}}</span></button>';
 
-		return $(t.replace('{{title}}', inputName).replace('{{glslType}}', glslType))
+		return $(t.replace('{{title}}', inputName)
+			.replace('{{glslType}}', glslType))
 			.click(function(e) {
 				if (window.confirm(TEXT_CONFIRM_REMOVE_INPUT)) {
 					$(e.target).closest('button').remove()
@@ -161,7 +169,8 @@ ShaderEditor.prototype.render = function(title, $dest) {
 		id: id
 	}))
 
-	var $inputEditor = $('.input-editor', $html)
+	this._$inputEditor = $('.input-editor', $html)
+
 	var $aceParent = $('.shader-ace', $html).parent()
 
 	$('.auto-build', $html).change(function() {
@@ -187,19 +196,10 @@ ShaderEditor.prototype.render = function(title, $dest) {
 			that.build(true)
 	}})
 
-	this._inputEditor = new InputEditor(this._inputs)
-		.on('removed', function(slotId, name) {
-			that.emit('inputRemoved', slotId, name)
-			that.build()
-		})
-		.on('added', function(name, dtid) {
-			that.emit('inputAdded', name, dtid)
-			that.build()
-		})
-		.render($inputEditor)
+	this.drawInputs()
 
 	function _onResize() {
-		var height = $aceParent.height() - $inputEditor.height() - 20;
+		var height = $aceParent.height() - that._$inputEditor.height() - 20;
 		that._ace.setOption('minLines', Math.floor(height / 16));
 		that._ace.setOption('maxLines', Math.floor(height / 16));
 	}
@@ -209,6 +209,31 @@ ShaderEditor.prototype.render = function(title, $dest) {
     _onResize()
 
 	return this
+}
+
+ShaderEditor.prototype.setInputs = function(inputs) {
+	this._inputs = inputs
+	this.drawInputs()
+}
+
+ShaderEditor.prototype.drawInputs = function() {
+	if (!this._$inputEditor)
+		return;
+
+	var that = this
+
+	this._$inputEditor.empty()
+
+	this._inputEditor = new InputEditor(this._inputs)
+		.on('removed', function(slotId, name) {
+			that.emit('inputRemoved', slotId, name)
+			that.build()
+		})
+		.on('added', function(name, dtid) {
+			that.emit('inputAdded', name, dtid)
+			that.build()
+		})
+		.render(this._$inputEditor)
 }
 
 // ---- static methods

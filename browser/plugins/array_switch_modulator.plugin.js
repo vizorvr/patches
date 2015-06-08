@@ -1,10 +1,11 @@
 /*
 
-"Make an Array plugin with dynamic number of ANY datatype inputs, and an index input that changes the current output value of the plugin.
+"Make an Array plugin with dynamic number of ANY datatype inputs, 
+ and an index input that changes the current output value of the plugin.
 
-inputs: index, 0, 1, 2, 3, ... 
-outputs: output
-Eg. feed in 8 images, and alternate between the images with index"
+inputs: number, 0, 1, 2, 3, ... 
+outputs: output, length
+Eg. feed in 8 images, and alternate between the images with number"
 
 https://github.com/vizorvr/vizor-create/issues/31
 
@@ -13,16 +14,18 @@ https://github.com/vizorvr/vizor-create/issues/31
 (function() {
 
 var ArraySwitch = E2.plugins.array_switch_modulator = function ArraySwitch(core, node) {
+	var that = this
+
 	this.desc = 'Revolver style array switch. Set up n inputs, then choose which one to output.';
 	
 	this.input_slots = [ 
 		{ name: 'number', dt: E2.dt.FLOAT, desc: 'Input number to select for output.', def: 0 }
-	];
+	]
 	
 	this.output_slots = [
 		{ name: 'value', dt: E2.dt.ANY, desc: 'Emits the selected input.' },
 		{ name: 'length', dt: E2.dt.FLOAT, desc: 'Emits the number of inputs = the length of the array.' }
-	];
+	]
 
 	this.state = {
 		slot_uids: []
@@ -34,6 +37,20 @@ var ArraySwitch = E2.plugins.array_switch_modulator = function ArraySwitch(core,
 
 	this.number = -1
 	this.values = []
+
+	this.node.on('slotAdded', function(slot) {
+		that.state.slot_uids.push(slot.uid)
+		that.updated = true
+	})
+
+	this.node.on('slotRemoved', function(slot) {
+		that.state.slot_uids = that.state.slot_uids
+			.filter(function(uid) {
+				return (slot.uid !== uid)
+			})
+
+		that.updated = true
+	})
 }
 
 ArraySwitch.prototype.create_ui = function() {
@@ -46,25 +63,19 @@ ArraySwitch.prototype.create_ui = function() {
 	addButton.css({ 'width': '65px', 'margin-top': '5px' })
 	
 	addButton.click(function() {
-		var suid = that.node.add_slot(E2.slot_type.input, {
-			name: '' + (that.state.slot_uids.length),
+		E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
+			type: E2.slot_type.input,
+			name: that.state.slot_uids.length + '',
 			dt: that.lsg.dt
 		})
-
-		that.state.slot_uids.push(suid)
-		that.lsg.add_dyn_slot(that.node.find_dynamic_slot(E2.slot_type.input, suid))
-		that.updated = true
 	})
-	
+
 	removeButton.click(function() {
 		if (that.state.slot_uids.length < 1)
 			return
-		
-		var suid = that.state.slot_uids.pop()
-		
-		that.lsg.remove_dyn_slot(that.node.find_dynamic_slot(E2.slot_type.input, suid))
-		that.node.remove_slot(E2.slot_type.input, suid)
-		that.updated = true
+
+		var suid = that.state.slot_uids[that.state.slot_uids.length-1]
+		E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
 	})
 
 	layout.append(removeButton)
