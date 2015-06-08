@@ -117,6 +117,7 @@ function uiSlotAdded() {
 	})
 }
 function AddSlot(graph, node, slot) {
+	GraphEditCommand.apply(this, arguments)
 	this.node = node
 	this.slot = slot
 }
@@ -125,6 +126,7 @@ AddSlot.prototype.undo = uiSlotRemoved
 AddSlot.prototype.redo = uiSlotAdded
 
 function RemoveSlot(graph, node, slotUid) {
+	GraphEditCommand.apply(this, arguments)
 	this.node = node
 	this.slot = node.findSlotByUid(slotUid)
 }
