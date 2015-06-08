@@ -15,6 +15,14 @@ GraphApi.prototype.removeNode = function(graph, node) {
 	return this.undoManager.execute(cmd)
 }
 
+GraphApi.prototype.addSlot = function(graph, node, slot) {
+	return this.undoManager.execute(new E2.commands.graph.AddSlot(graph, node, slot))
+}
+
+GraphApi.prototype.removeSlot = function(graph, node, slotUid) {
+	return this.undoManager.execute(new E2.commands.graph.RemoveSlot(graph, node, slotUid))
+}
+
 GraphApi.prototype.renameNode = function(graph, node, title) {
 	var cmd = new E2.commands.graph.RenameNode(graph, node, title)
 	return this.undoManager.execute(cmd)
