@@ -7,8 +7,8 @@ var loadPlugin = require('./plugins/helpers').loadPlugin;
 global.E2 = {}
 var Application = require('../../scripts/application')
 
-global.Node = require('../../scripts/node')
 global.EventEmitter = require('../../scripts/event-emitter')
+global.Node = require('../../scripts/node')
 global.EditorChannel = function(){}
 global.Graph = require('../../scripts/graph')
 global.Flux = require('../../vendor/flux')
