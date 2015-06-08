@@ -189,8 +189,6 @@ Slider.prototype.update_value = function() {
 }
 
 Slider.prototype.state_changed = function(ui) {
-	console.log('state_changed', ui)
-
 	if(ui) {
 		this.update_value(this.state.val)
 
