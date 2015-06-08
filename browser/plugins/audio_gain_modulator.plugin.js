@@ -1,5 +1,8 @@
-E2.p = E2.plugins["audio_gain_modulator"] = function(core, node)
-{
+(function(){
+
+var AudioGainModulator = E2.plugins.audio_gain_modulator = function(core, node) {
+	var that = this
+
 	this.desc = '(De)amplify or mix audio data.';
 	
 	this.input_slots = [ 
@@ -21,48 +24,60 @@ E2.p = E2.plugins["audio_gain_modulator"] = function(core, node)
 	this.srcs = [];
 	this.gain = null;
 	this.first = true;
-};
 
-E2.p.prototype.reset = function()
-{
+	this.node.on('slotAdded', function(slot) {
+		that.state.slot_uids.push(slot.uid)
+		that.updated = true
+	})
+
+	this.node.on('slotRemoved', function(slot) {
+		that.state.slot_uids = that.state.slot_uids
+			.filter(function(uid) {
+				return (slot.uid !== uid)
+			})
+
+		that.updated = true
+	})
+
+}
+
+AudioGainModulator.prototype.reset = function() {
 	this.first = true;
-};
+}
 
-E2.p.prototype.create_ui = function()
-{
-	var layout = make('div');
-	var inp_add = makeButton('+', 'Click to add another input.');
-	var inp_rem = makeButton('-', 'Click to remove the last input.');
+AudioGainModulator.prototype.create_ui = function() {
+	var that = this
+
+	var layout = make('div')
+	var inp_add = makeButton('+', 'Click to add another input.')
+	var inp_rem = makeButton('-', 'Click to remove the last input.')
 	
-	inp_add.css({'width': '20px', 'float': 'left'});
-	inp_rem.css({'width': '20px', 'float': 'right', 'margin-left': '5px'});
+	inp_add.css({'width': '20px', 'float': 'left'})
+	inp_rem.css({'width': '20px', 'float': 'right', 'margin-left': '5px'})
 	
-	inp_add.click(function(self) { return function(v)
-	{
-		var suid = self.node.add_slot(E2.slot_type.input, { name: '' + self.state.slot_uids.length, dt: self.core.datatypes.OBJECT });
-		
-		self.state.slot_uids.push(suid);
-		self.lsg.add_dyn_slot(self.node.find_dynamic_slot(E2.slot_type.input, suid));
-	}}(this));
+	inp_add.click(function() {
+		E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
+			type: E2.slot_type.input,
+			name: that.state.slot_uids.length + '',
+			dt: that.core.datatypes.OBJECT
+		})
+	})
 	
-	inp_rem.click(function(self) { return function(v)
-	{
-		if(self.state.slot_uids.length < 1)
+	inp_rem.click(function() {
+		if (that.state.slot_uids.length < 1)
 			return;
 			
-		var suid = self.state.slot_uids.pop();
-		
-		self.lsg.remove_dyn_slot(self.node.find_dynamic_slot(E2.slot_type.input, suid));
-		self.node.remove_slot(E2.slot_type.input, suid);
-	}}(this));
+		var suid = that.state.slot_uids[that.state.slot_uids.length-1]
+		E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
+	})
 
-	layout.append(inp_add);
-	layout.append(inp_rem);
+	layout.append(inp_add)
+	layout.append(inp_rem)
 	
 	return layout;
-};
+}
 
-E2.p.prototype.update_input = function(slot, data)
+AudioGainModulator.prototype.update_input = function(slot, data)
 {
 	if(slot.uid !== undefined)
 	{
@@ -83,7 +98,7 @@ E2.p.prototype.update_input = function(slot, data)
 	}
 };
 
-E2.p.prototype.update_state = function()
+AudioGainModulator.prototype.update_state = function()
 {
 	if((this.gain_node.gain.value !== this.gain) || this.first)
 	{
@@ -92,12 +107,12 @@ E2.p.prototype.update_state = function()
 	}
 };
 
-E2.p.prototype.update_output = function(slot)
+AudioGainModulator.prototype.update_output = function(slot)
 {
 	return this.gain_node;
 };
 
-E2.p.prototype.state_changed = function(ui)
+AudioGainModulator.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
@@ -105,3 +120,7 @@ E2.p.prototype.state_changed = function(ui)
 			this.lsg.add_dyn_slot(this.node.find_dynamic_slot(E2.slot_type.input, this.state.slot_uids[i]));
 	}
 };
+
+
+})();
+
