@@ -1530,12 +1530,11 @@ Application.prototype.onShowTooltip = function(e) {
 	{
 		var plugin = node.plugin;
 		var slot = null;
-		var slotIndex = parseInt(tokens[2], 10)
 
 		if(tokens[1][0] === 'd')
-			slot = node.find_dynamic_slot(tokens[1][1] === 'i' ? E2.slot_type.input : E2.slot_type.output, slotIndex);
+			slot = node.findSlotByUid(tokens[2])
 		else
-			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[slotIndex];
+			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
 		
 		txt = '<b>Type:</b> ' + slot.dt.name;
 
