@@ -105,20 +105,21 @@ RemoveNode.prototype.redo = removeNode
 function uiSlotRemoved() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiSlotRemoved',
-		graph: this.graph,
-		node: this.node,
+		graphUid: this.graph.uid,
+		nodeUid: this.node.uid,
 		slotUid: this.slot.uid
 	})
 }
 function uiSlotAdded() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiSlotAdded',
-		graph: this.graph,
-		node: this.node,
+		graphUid: this.graph.uid,
+		nodeUid: this.node.uid,
 		slot: this.slot
 	})
 }
 function AddSlot(graph, node, slot) {
+	GraphEditCommand.apply(this, arguments)
 	this.node = node
 	this.slot = slot
 }
@@ -127,6 +128,7 @@ AddSlot.prototype.undo = uiSlotRemoved
 AddSlot.prototype.redo = uiSlotAdded
 
 function RemoveSlot(graph, node, slotUid) {
+	GraphEditCommand.apply(this, arguments)
 	this.node = node
 	this.slot = node.findSlotByUid(slotUid)
 }

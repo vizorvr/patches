@@ -42,10 +42,10 @@ GraphStore.prototype._setupListeners = function() {
 				this._uiNodeRemoved(graph, payload.nodeUid)
 				break;
 			case 'uiSlotAdded':
-				this._uiSlotAdded(payload.graph, payload.node, payload.slot)
+				this._uiSlotAdded(graph, payload.nodeUid, payload.slot)
 				break;
 			case 'uiSlotRemoved':
-				this._uiSlotRemoved(payload.graph, payload.node, payload.slotUid)
+				this._uiSlotRemoved(graph, payload.nodeUid, payload.slotUid)
 				break;
 			case 'uiNodeRenamed':
 				this._uiNodeRenamed(graph, payload.nodeUid, payload.title)
@@ -111,7 +111,8 @@ GraphStore.prototype._uiNodeRenamed = function(graph, nodeUid, title) {
 	this.emit('changed')
 }
 
-GraphStore.prototype._uiSlotAdded = function(graph, node, slot) {
+GraphStore.prototype._uiSlotAdded = function(graph, nodeUid, slot) {
+	var node = graph.findNodeByUid(nodeUid)
 	node.add_slot(slot.type, slot)
 
 	if (node.plugin.lsg)
@@ -121,7 +122,8 @@ GraphStore.prototype._uiSlotAdded = function(graph, node, slot) {
 	this.emit('changed')
 }
 
-GraphStore.prototype._uiSlotRemoved = function(graph, node, slotUid) {
+GraphStore.prototype._uiSlotRemoved = function(graph, nodeUid, slotUid) {
+	var node = graph.findNodeByUid(nodeUid)
 	var slot = node.findSlotByUid(slotUid)
 
 	node.remove_slot(slot.type, slot.uid)
