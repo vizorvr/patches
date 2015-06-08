@@ -1,4 +1,6 @@
 function Node(parent_graph, plugin_id, x, y) {
+	EventEmitter.call(this)
+
 	this.inputs = []
 	this.outputs = []
 	this.queued_update = -1
@@ -21,6 +23,8 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.set_plugin(E2.app.player.core.pluginManager.create(plugin_id, this))
 	}
 }
+
+Node.prototype = Object.create(EventEmitter.prototype)
 
 Node.prototype.set_plugin = function(plugin) {
 	this.plugin = plugin;
@@ -144,6 +148,8 @@ Node.prototype.add_slot = function(slot_type, def) {
 		E2.app.updateCanvas(true)
 		this.update_connections();
 	}
+
+	this.emit('slotAdded', def)
 	
 	return def.uid;
 };
@@ -211,10 +217,25 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 		this.parent_graph.disconnect(pending[i]);
 	}
 		
+	this.emit('slotRemoved', slot)
+
 	if(canvas_dirty)
 		E2.app.updateCanvas(true);
 };
 
+Node.prototype.findSlotByUid = function(suid) {
+	var slot
+	
+	this.dyn_inputs.concat(this.dyn_outputs)
+	.some(function(s) {
+		if (s.uid === suid) {
+			slot = s
+			return true
+		}
+	})
+
+	return slot
+}
 
 Node.prototype.find_dynamic_slot = function(slot_type, suid) {
 	var slots = (slot_type === E2.slot_type.input) ? this.dyn_inputs : this.dyn_outputs;

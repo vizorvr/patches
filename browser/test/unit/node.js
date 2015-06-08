@@ -8,6 +8,7 @@ global.E2 = {
 	}
 }
 
+global.EventEmitter = require('../../scripts/event-emitter')
 global.Node = require('../../scripts/node')
 
 describe('Node', function() {
@@ -45,6 +46,13 @@ describe('Node', function() {
 		var suid = node.add_slot(0, { a: 'a' })
 
 		assert.equal(node.find_dynamic_slot(0, suid).uid, suid)
+	})
+	
+	it('finds slots by uid', function() {
+		var node = new Node()
+		var suid = node.add_slot(0, { a: 'a' })
+
+		assert.equal(node.findSlotByUid(suid).uid, suid)
 	})
 	
 

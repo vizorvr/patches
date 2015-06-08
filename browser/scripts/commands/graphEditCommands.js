@@ -100,6 +100,40 @@ RemoveNode.prototype.redo = removeNode
 
 // -------------------------------
 
+function uiSlotRemoved() {
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiSlotRemoved',
+		graph: this.graph,
+		node: this.node,
+		slotUid: this.slot.uid
+	})
+}
+function uiSlotAdded() {
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiSlotAdded',
+		graph: this.graph,
+		node: this.node,
+		slot: this.slot
+	})
+}
+function AddSlot(graph, node, slot) {
+	this.node = node
+	this.slot = slot
+}
+AddSlot.prototype = Object.create(GraphEditCommand.prototype)
+AddSlot.prototype.undo = uiSlotRemoved
+AddSlot.prototype.redo = uiSlotAdded
+
+function RemoveSlot(graph, node, slotUid) {
+	this.node = node
+	this.slot = node.findSlotByUid(slotUid)
+}
+RemoveSlot.prototype = Object.create(GraphEditCommand.prototype)
+RemoveSlot.prototype.undo = uiSlotAdded
+RemoveSlot.prototype.redo = uiSlotRemoved
+
+// -------------------------------
+
 function RenameNode(graph, node, title) {
 	GraphEditCommand.apply(this, arguments)
 	this.node = node
@@ -290,6 +324,8 @@ if (typeof(E2) !== 'undefined') {
 
 	E2.commands.graph.AddNode = AddNode
 	E2.commands.graph.RemoveNode = RemoveNode
+	E2.commands.graph.AddSlot = AddSlot
+	E2.commands.graph.RemoveSlot = RemoveSlot
 	E2.commands.graph.RenameNode = RenameNode
 	E2.commands.graph.Connect = Connect
 	E2.commands.graph.Disconnect = Disconnect

@@ -24,18 +24,9 @@ function GraphStore() {
 GraphStore.prototype = Object.create(Store.prototype)
 
 GraphStore.prototype.setupListeners = function() {
-/*
-	E2.app.channel.on('nodeAdded', function nodeAdded(guid, node) {
-		var graph = graphLookup(guid)
-		var inode = new Node()
-		inode.deserialise(guid, node)
-		graph.addNode(inode)
-		inode.patch_up(E2.core.graphs)
-		this.emit('nodeAdded', graph, inode)
-	}.bind(this))
-*/
 	E2.app.dispatcher.register(function receiveFromDispatcher(payload) {
 		console.log('GraphStore.receiveFromDispatcher', payload.actionType)
+
 		switch(payload.actionType) {
 			case 'uiGraphTreeReordered':
 				this.uiGraphTreeReordered(
@@ -49,6 +40,12 @@ GraphStore.prototype.setupListeners = function() {
 				break;
 			case 'uiNodeRemoved':
 				this.uiNodeRemoved(payload.graph, payload.node, payload.info)
+				break;
+			case 'uiSlotAdded':
+				this.uiSlotAdded(payload.graph, payload.node, payload.slot)
+				break;
+			case 'uiSlotRemoved':
+				this.uiSlotRemoved(payload.graph, payload.node, payload.slotUid)
 				break;
 			case 'uiNodeRenamed':
 				this.uiNodeRenamed(payload.graph, payload.node, payload.title)
@@ -88,7 +85,7 @@ GraphStore.prototype.uiNodeAdded = function(graph, node, info) {
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiNodeRemoved = function(graph, node, info) {
+GraphStore.prototype.uiNodeRemoved = function(graph, node) {
 	mapConnections(node, function(conn) {
 		// removing a node, all its connections should be removed
 		graph.disconnect(conn)
@@ -98,6 +95,28 @@ GraphStore.prototype.uiNodeRemoved = function(graph, node, info) {
 
 	this.publish('nodeRemoved', graph, node)
 
+	this.emit('changed')
+}
+
+GraphStore.prototype.uiSlotAdded = function(graph, node, slot) {
+	node.add_slot(slot.type, slot)
+
+	if (node.plugin.lsg)
+		node.plugin.lsg.add_dyn_slot(node.findSlotByUid(slot.uid))
+
+	this.emit('slotAdded', graph, node, slot)
+	this.emit('changed')
+}
+
+GraphStore.prototype.uiSlotRemoved = function(graph, node, slotUid) {
+	var slot = node.findSlotByUid(slotUid)
+
+	node.remove_slot(slot.type, slot.uid)
+
+	if (node.plugin.lsg)
+		node.plugin.lsg.remove_dyn_slot(slot)
+
+	this.emit('slotAdded', graph, node, slot)
 	this.emit('changed')
 }
 
