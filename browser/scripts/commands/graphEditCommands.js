@@ -272,7 +272,7 @@ Reorder.prototype.redo = function() {
 
 function ChangePluginState(graph, node, key, oldValue, newValue, title) {
 	GraphEditCommand.apply(this, arguments)
-	this.title = title || 'Value Change'
+	this.title = title || 'Value Change to '+newValue+' from '+oldValue
 	this.node = node
 	this.key = key
 
@@ -284,15 +284,25 @@ ChangePluginState.prototype = Object.create(GraphEditCommand.prototype)
 ChangePluginState.prototype.undo = function() {
 	this.node.plugin.state[this.key] = this.oldValue
 	this.node.plugin.updated = true
-	if (this.node.ui)
-		this.node.plugin.state_changed(this.node.ui.plugin_ui)
+
+	if (this.node.plugin.state_changed) {
+		if (this.node.ui)
+			this.node.plugin.state_changed(this.node.ui.plugin_ui)
+
+		this.node.plugin.state_changed()
+	}
 }
 
 ChangePluginState.prototype.redo = function() {
 	this.node.plugin.state[this.key] = this.newValue
 	this.node.plugin.updated = true
-	if (this.node.ui)
-		this.node.plugin.state_changed(this.node.ui.plugin_ui)
+
+	if (this.node.plugin.state_changed) {
+		if (this.node.ui)
+			this.node.plugin.state_changed(this.node.ui.plugin_ui)
+
+		this.node.plugin.state_changed()
+	}
 }
 
 // -------------------------------

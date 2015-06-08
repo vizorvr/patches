@@ -81,11 +81,9 @@ Slider.prototype.create_ui = function() {
 		document.addEventListener('mouseup', data.mouseup)
 		document.addEventListener('mousemove', data.mousemove)
 		
-		il.blur()
-		ih.blur()
-		
-		if(e.stopPropagation) e.stopPropagation()
-		if(e.preventDefault) e.preventDefault()
+		if (e.stopPropagation) e.stopPropagation()
+		if (e.preventDefault) e.preventDefault()
+
 		return false
 	}}
 	
