@@ -38,10 +38,10 @@ GraphStore.prototype._setupListeners = function() {
 				this._uiNodeRemoved(graph, payload.nodeUid)
 				break;
 			case 'uiSlotAdded':
-				this.uiSlotAdded(payload.graph, payload.node, payload.slot)
+				this._uiSlotAdded(payload.graph, payload.node, payload.slot)
 				break;
 			case 'uiSlotRemoved':
-				this.uiSlotRemoved(payload.graph, payload.node, payload.slotUid)
+				this._uiSlotRemoved(payload.graph, payload.node, payload.slotUid)
 				break;
 			case 'uiNodeRenamed':
 				this._uiNodeRenamed(graph, payload.nodeUid, payload.title)
@@ -92,28 +92,22 @@ GraphStore.prototype._uiNodeAdded = function(graph, node, info) {
 	this.emit('changed')
 }
 
-<<<<<<< HEAD
 GraphStore.prototype._uiNodeRemoved = function(graph, nodeUid) {
 	var node = graph.findNodeByUid(nodeUid)
 	mapConnections(node, graph.disconnect.bind(graph))
-=======
-GraphStore.prototype.uiNodeRemoved = function(graph, node) {
-	mapConnections(node, function(conn) {
-		// removing a node, all its connections should be removed
-		graph.disconnect(conn)
-	})
-
->>>>>>> origin/master
 	graph.removeNode(node)
 	this.emit('nodeRemoved', graph, node)
 	this.emit('changed')
 }
 
-<<<<<<< HEAD
 GraphStore.prototype._uiNodeRenamed = function(graph, nodeUid, title) {
 	var node = graph.findNodeByUid(nodeUid)
-=======
-GraphStore.prototype.uiSlotAdded = function(graph, node, slot) {
+	graph.renameNode(node, title)
+	this.emit('nodeRenamed', graph, node)
+	this.emit('changed')
+}
+
+GraphStore.prototype._uiSlotAdded = function(graph, node, slot) {
 	node.add_slot(slot.type, slot)
 
 	if (node.plugin.lsg)
@@ -123,7 +117,7 @@ GraphStore.prototype.uiSlotAdded = function(graph, node, slot) {
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiSlotRemoved = function(graph, node, slotUid) {
+GraphStore.prototype._uiSlotRemoved = function(graph, node, slotUid) {
 	var slot = node.findSlotByUid(slotUid)
 
 	node.remove_slot(slot.type, slot.uid)
@@ -132,13 +126,6 @@ GraphStore.prototype.uiSlotRemoved = function(graph, node, slotUid) {
 		node.plugin.lsg.remove_dyn_slot(slot)
 
 	this.emit('slotAdded', graph, node, slot)
-	this.emit('changed')
-}
-
-GraphStore.prototype.uiNodeRenamed = function(graph, node, title) {
->>>>>>> origin/master
-	graph.renameNode(node, title)
-	this.emit('nodeRenamed', graph, node)
 	this.emit('changed')
 }
 

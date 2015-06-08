@@ -76,8 +76,6 @@ Node.prototype.destroy = function()
 	if(this.plugin.destroy)
 		this.plugin.destroy();
 	
-	graph.emit_event({ type: 'node-destroyed', node: this });
-	
 	if(index != -1)
 		graph.nodes.splice(index, 1);
 	

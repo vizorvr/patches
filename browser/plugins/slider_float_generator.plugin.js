@@ -12,6 +12,7 @@ var Slider = E2.plugins.slider_float_generator = function(core, node) {
 	
 	this.state = { val: 0.0, min: 0.0, max: 1.0 }
 	
+	this.node = node
 	this.v_col = null
 	this.slider = null
 	this.handle = null
@@ -81,11 +82,9 @@ Slider.prototype.create_ui = function() {
 		document.addEventListener('mouseup', data.mouseup)
 		document.addEventListener('mousemove', data.mousemove)
 		
-		il.blur()
-		ih.blur()
-		
-		if(e.stopPropagation) e.stopPropagation()
-		if(e.preventDefault) e.preventDefault()
+		if (e.stopPropagation) e.stopPropagation()
+		if (e.preventDefault) e.preventDefault()
+
 		return false
 	}}
 	

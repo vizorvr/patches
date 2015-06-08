@@ -271,7 +271,7 @@ Reorder.prototype.redo = function() {
 
 function ChangePluginState(graph, node, key, oldValue, newValue, title) {
 	GraphEditCommand.apply(this, arguments)
-	this.title = title || 'Value Change'
+	this.title = title || 'Value Change to '+newValue+' from '+oldValue
 	this.node = node
 	this.key = key
 
