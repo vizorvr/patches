@@ -7,6 +7,7 @@ var loadPlugin = require('./plugins/helpers').loadPlugin;
 global.E2 = {}
 var Application = require('../../scripts/application')
 
+global._ = require('lodash')
 global.EventEmitter = require('../../scripts/event-emitter')
 global.Node = require('../../scripts/node')
 global.EditorChannel = function(){}
