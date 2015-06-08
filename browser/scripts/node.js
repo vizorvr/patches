@@ -139,7 +139,9 @@ Node.prototype.add_slot = function(slot_type, def) {
 		var col = this.ui.dom.find(is_inp ? '.ic' : '.oc');
 		if (!col)
 			return def.uid;
+
 		col.empty()
+
 		NodeUI.render_slots(this, 'n'+this.uid, col, is_inp ? this.plugin.input_slots : this.plugin.output_slots, slot_type);
 		NodeUI.render_slots(this, 'n'+this.uid, col, slots, slot_type)
 		this.inputs.concat(this.outputs).map(function(c) {
