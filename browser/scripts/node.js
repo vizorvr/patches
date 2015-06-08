@@ -51,6 +51,11 @@ Node.prototype.set_plugin = function(plugin) {
 	for(var i = 0, len = plugin.output_slots.length; i < len; i++)
 		init_slot(plugin.output_slots[i], i, E2.slot_type.output);
 };
+
+Node.prototype.setOpenState = function(isOpen) {
+	this.open = isOpen
+	this.emit('openStateChanged', isOpen)
+}
 	
 Node.prototype.create_ui = function() {
 	this.ui = new NodeUI(this, this.x, this.y)
@@ -73,10 +78,10 @@ Node.prototype.destroy = function()
 	var index = graph.nodes.indexOf(this);
 	var pending = [];
 	
-	if(this.plugin.destroy)
+	if (this.plugin.destroy)
 		this.plugin.destroy();
 	
-	if(index != -1)
+	if (index !== -1)
 		graph.nodes.splice(index, 1);
 	
 	pending.push.apply(pending, this.inputs);

@@ -34,18 +34,9 @@ function hydrate(pl) {
 		case 'uiNodeAdded':
 			m.node = Node.hydrate(pl.graphUid, pl.node)
 			break;
-		case 'uiNodeRemoved':
-		case 'uiNodeRenamed':
-		case 'uiNodesMoved':
-			break;
 		case 'uiConnected':
 			m.connection = Connection.hydrate(Graph.lookup(pl.graphUid), pl.connection)
 			break;
-		case 'uiDisconnected':
-			break;
-		case 'uiGraphTreeReordered':
-		case 'uiPluginStateChanged':
-			
 	}
 
 	// console.log('hydrated',m)
@@ -59,20 +50,10 @@ function dehydrate(m) {
 		case 'uiNodeAdded':
 			pl.node = m.node.serialise()
 			break;
-		case 'uiNodeRemoved':
-		case 'uiNodeRenamed':
-		case 'uiNodesMoved':
-			break;
 		case 'uiConnected':
 			pl.connection = m.connection.serialise()
 			break;
-		case 'uiDisconnected':
-			break;
-		case 'uiGraphTreeReordered':
-		case 'uiPluginStateChanged':
-			
 	}
-	// console.log('dehydrated',pl)
 
 	return pl;
 }
@@ -82,6 +63,9 @@ function isAcceptedDispatch(m) {
 		case 'uiNodeAdded':
 		case 'uiNodeRemoved':
 		case 'uiNodeRenamed':
+		case 'uiSlotAdded':
+		case 'uiSlotRemoved':
+		case 'uiNodeOpenStateChanged':
 		case 'uiNodesMoved':
 		case 'uiConnected':
 		case 'uiDisconnected':

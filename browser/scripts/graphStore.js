@@ -31,6 +31,10 @@ GraphStore.prototype._setupListeners = function() {
 					payload.sibling,
 					payload.insertAfter)
 				break;
+			case 'uiNodeOpenStateChanged':
+				var node = graph.findNodeByUid(payload.nodeUid)
+				node.setOpenState(payload.isOpen)
+				break;
 			case 'uiNodeAdded':
 				this._uiNodeAdded(graph, payload.node, payload.info)
 				break;
