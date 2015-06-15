@@ -321,7 +321,7 @@ Graph.prototype.reorder_children = function(original, sibling, insert_after) {
 		
 		var i = arr.indexOf(sibling);
 		
-		if(insert_after)
+		if (insert_after)
 			i++;
 		
 		arr.splice(i, 0, original);

@@ -1,3 +1,6 @@
+if (typeof(module) !== 'undefined') {
+	EventEmitter = require('events').EventEmitter
+}
 
 function WebSocketChannel() {
 	EventEmitter.call(this)
@@ -38,7 +41,7 @@ WebSocketChannel.prototype.connect = function(path) {
 		var m = JSON.parse(evt.data);
 		var dk = Object.keys(m)[0]
 
-		console.log('IN:', m[dk], evt.data.length+'b', 'from', m.from, m);
+		// console.log('IN:', m[dk], evt.data.length+'b', 'from', m.from, m);
 
 		if (m.kind === 'READY') {
 			that.uid = m.data
@@ -52,14 +55,28 @@ WebSocketChannel.prototype.connect = function(path) {
 	return this
 }
 
-WebSocketChannel.prototype.join = function(channel)
-{
+WebSocketChannel.prototype.close = function() {
+	this.ws.close()
+}
+
+WebSocketChannel.prototype.join = function(channel) {
 	if (this._state !== 'connected')
 		return;
 
 	console.log('WsChannel.join',channel)
 
 	this.ws.send(JSON.stringify({ kind: 'join', channel: channel }))
+	return this
+}
+
+WebSocketChannel.prototype.leave = function(channel)
+{
+	if (this._state !== 'connected')
+		return;
+
+	console.log('WsChannel.leave',channel)
+
+	this.ws.send(JSON.stringify({ kind: 'leave', channel: channel }))
 	return this
 }
 
@@ -78,4 +95,7 @@ WebSocketChannel.prototype.send = function(channel, data) {
 
 	return this
 }
+
+if (typeof(module) !== 'undefined')
+	module.exports = WebSocketChannel
 
