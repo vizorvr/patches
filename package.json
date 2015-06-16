@@ -77,10 +77,11 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test:unit": "mocha browser/test/unit/undo.js && mocha browser/test/unit/paste.js && mocha browser/test/unit/collapsibleSelectControl.js && mocha browser/test/unit/editConnection.js && mocha browser/test/unit/graphShapes.js && mocha browser/test/unit/node.js",
-    "test:unit:server": "mocha test",
-    "test:plugins": "mocha browser/test/unit/plugins",
-    "test": "npm run test:plugins && npm run test:unit && npm run test:unit:server"
+    "test:browser:unit": "mocha browser/test/unit/undo.js && mocha browser/test/unit/paste.js && mocha browser/test/unit/collapsibleSelectControl.js && mocha browser/test/unit/editConnection.js && mocha browser/test/unit/graphShapes.js && mocha browser/test/unit/node.js",
+    "test:browser:plugins": "mocha browser/test/unit/plugins",
+    "test:browser": "npm run test:browser:unit && npm run test:browser:plugins",
+    "test:server": "mocha test --recursive",
+    "test": "npm run test:browser && npm run test:server"
   },
   "author": "Lasse Nielsen, Jaakko Manninen, Mikko Karvonen",
   "license": "MIT",
