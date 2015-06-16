@@ -51,6 +51,7 @@
     "morgan": "^1.2.2",
     "multer": "^0.1.6",
     "newrelic": "^1.13.4",
+    "node-mandrill": "^1.0.1",
     "node-png": "^0.4.2",
     "node-unzip-2": "^0.2.1",
     "nodemailer": "^1.1.1",
