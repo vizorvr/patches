@@ -90,16 +90,21 @@ describe('Multiuser', function() {
 	})
 
 	it('sends existing edit log on join', function(done) {
-		var channel = 'test2'
+		var channel = 'test2'+Math.random()
 		var edits = []
+		
 		s1 = createClient(channel)
 
-		s1.on('READY', function() {
+		s1.once('READY', function() {
 			s1.send(channel, { actionType: 'foo' })
 			s1.send(channel, { actionType: 'bar' })
 			s1.send(channel, { actionType: 'baz' })
+			s1.close()
+		})
 
+		s1.on('disconnected', function() {
 			s2 = createClient(channel)
+
 			s2.on(channel, function(m) {
 				if (m.kind === 'join')
 					return;
@@ -107,8 +112,8 @@ describe('Multiuser', function() {
 				edits.push(m)
 
 				if (edits.length === 3) {
-					assert.deepEqual(edits.map(function(e) { return e.actionType }), [
-						'foo', 'bar', 'baz'])
+					assert.deepEqual(edits.map(function(e) { return e.actionType }), 
+						[ 'foo', 'bar', 'baz' ])
 
 					done()
 				}
@@ -116,10 +121,10 @@ describe('Multiuser', function() {
 		})
 	})
 
+	// it('can make snapshots of the edit log', function(done) {
+		// s1 = createClient('test1')
+	// })
 
 
 })
-
-
-
 
