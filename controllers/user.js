@@ -6,6 +6,14 @@ var User = require('../models/user');
 var secrets = require('../config/secrets');
 var mailer = require('../lib/mailer');
 
+function parseErrors(errors) {
+  var parsedErrors = [];
+  for( var i=0; i < errors.length; i++ ) {
+    parsedErrors.push({ message: errors[i].msg });
+  }
+  return parsedErrors;
+}
+
 /**
  * GET /login
  * Login page.
@@ -34,7 +42,7 @@ var mailer = require('../lib/mailer');
  	var wantJson = req.xhr || req.path.slice(-5) === '.json'
 
  	if (errors) {
- 		req.flash('errors', errors);
+    req.flash('errors', parseErrors(errors));
  		return res.redirect('/login');
  	}
 
@@ -56,7 +64,7 @@ var mailer = require('../lib/mailer');
  			}
  			else
  			{
- 				res.redirect(req.session.returnTo || '/');
+ 				res.redirect(req.session.returnTo || '/account');
  			}
  		});
  	})(req, res, next);
@@ -67,7 +75,7 @@ var mailer = require('../lib/mailer');
  */
  exports.logout = function(req, res) {
  	req.logout();
- 	res.redirect('/');
+ 	res.redirect('/login');
  };
 
 /**
@@ -96,7 +104,7 @@ var mailer = require('../lib/mailer');
  	var errors = req.validationErrors();
 
  	if (errors) {
- 		req.flash('errors', errors);
+ 		req.flash('errors', parseErrors(errors));
  		return res.redirect('/signup');
  	}
 
@@ -134,7 +142,7 @@ var mailer = require('../lib/mailer');
  					}
  					else
  					{
- 						res.redirect(req.session.returnTo || '/');
+ 						res.redirect(req.session.returnTo || '/account');
  					}
  				});
  			});
@@ -182,13 +190,15 @@ var mailer = require('../lib/mailer');
  */
 
  exports.postUpdatePassword = function(req, res, next) {
+
  	req.assert('password', 'Password must be at least 4 characters long').len(4);
  	req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
 
  	var errors = req.validationErrors();
 
  	if (errors) {
- 		req.flash('errors', errors);
+    req.flash('errors', parseErrors(errors));
+    console.log(parsedErrors);
  		return res.redirect('/account');
  	}
 
@@ -279,7 +289,7 @@ var mailer = require('../lib/mailer');
  	var errors = req.validationErrors();
 
  	if (errors) {
- 		req.flash('errors', errors);
+    req.flash('errors', parseErrors(errors));
  		return res.redirect('back');
  	}
 
@@ -335,7 +345,7 @@ var mailer = require('../lib/mailer');
 
  exports.getForgot = function(req, res) {
  	if (req.isAuthenticated()) {
- 		return res.redirect('/');
+ 		return res.redirect('/account');
  	}
  	res.render('account/forgot', {
  		title: 'Forgot Password'
@@ -354,7 +364,7 @@ var mailer = require('../lib/mailer');
  	var errors = req.validationErrors();
 
  	if (errors) {
- 		req.flash('errors', errors);
+    req.flash('errors', parseErrors(errors));
  		return res.redirect('/forgot');
  	}
 
