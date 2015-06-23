@@ -23,12 +23,14 @@ AccountController.prototype._bindEvents = function(el)
 	$('a.login', el).on('click', function(evt)
 	{
 		evt.preventDefault();
+		bootbox.hideAll();
 		that.openLoginModal();
 	});
 
 	$('a.signup', el).on('click', function(evt)
 	{
 		evt.preventDefault();
+		bootbox.hideAll();
 		that.openSignupModal();
 	});
 }
@@ -60,7 +62,7 @@ AccountController.prototype.openLoginModal = function()
 			error: function(err)
 			{
 				console.log(err);
-				bootbox.alert('Login failed!');
+				bootbox.alert("Sorry, your login failed. Please double check your e-mail and password.");
 			},
 			success: function(user)
 			{
@@ -85,6 +87,8 @@ AccountController.prototype.openSignupModal = function()
 		//onEscape: function() {  }
 	});
 
+	this._bindEvents(bb);
+
 	var formEl = $('#signup-form_id');
 	formEl.submit(function( event )
 	{
@@ -100,7 +104,7 @@ AccountController.prototype.openSignupModal = function()
 			error: function(err, msg)
 			{
 				console.log(err);
-				bootbox.alert('Signup failed: ' + err.responseJSON.msg);
+				bootbox.alert("Sorry, creating your account failed. Please make sure to fill in all the fields correctly.");
 			},
 			success: function(user)
 			{

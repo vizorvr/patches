@@ -1,19 +1,22 @@
-<h1 class="form-header">Forgotten your password?</h1>
+<h1 class="form-header text-center"><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;Forgot your password?</h1>
+
+<p style="text-align: center; padding: 12px 0 8px 0;">Enter your email address below and we will send you password reset instructions.</p>
 
 <!-- Form -->
-<form action="/forgot" id="forgot-form_id" class="panel" method="POST">
+<form action="/forgot" id="forgot-form_id" method="POST">
   <input type="hidden" name="_csrf" value={{_csrf}}>
 
-  <div class="form-group">
-    <p>Enter your email address below and we will send you password reset instructions.</p>
-    <input type="text" name="email" id="email_id" class="form-control input-lg" placeholder="E-mail" autofocus="true">
-  </div> <!-- / Email -->
+  <div class="panel-body">
+    <div class="form-group">
+      <input type="text" style="text-align: center; padding: 10px; height: auto;" name="email" id="email_id" class="form-control input-lg" placeholder="Your e-mail address" autofocus="true">
+    </div> <!-- / Email -->
 
-  <div class="form-actions">
-    <button class="btn btn-primary" type="submit">
-      <i class="fa fa-key"></i>
-      &nbsp;Reset Password
-    </button>
-  </div> <!-- / .form-actions -->
+    <div class="text-center" style="margin-top: 24px;">
+      <button class="btn btn-primary" type="submit">
+        <i class="fa fa-key"></i>
+        &nbsp;Reset Password
+      </button>
+    </div> <!-- / .form-actions -->
+  </div> <!-- / .panel-body -->
 </form>
 <!-- / Form -->

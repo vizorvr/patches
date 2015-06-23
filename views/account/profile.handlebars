@@ -8,7 +8,7 @@
   <div class="page-header">
     <div class="row">
       <!-- Page header, center on small screens -->
-      <h1 class="col-xs-12 col-sm-12 text-center text-left-sm"><i class="fa fa-user page-header-icon"></i>&nbsp;&nbsp;Account Management</h1>
+      <h1 class="text-center form-header"><i class="fa fa-user page-header-icon"></i>&nbsp;&nbsp;Account</h1>
     </div>
   </div> <!-- / .page-header -->
 
@@ -29,6 +29,11 @@
         <label class="col-sm-4 control-label" for="email">Email</label>
         <div class="col-sm-8">
           <input type="email" name="email" id="email_id" class="form-control" placeholder="E-mail" value="{{user.email}}">
+        </div>
+      </div>
+      <div class="row form-group">
+        <label class="col-sm-4 control-label" for="email">Gravatar</label>
+        <div class="col-sm-8">
           <img class="gravatar-in-form" src="{{user.gravatar}}" />
         </div>
       </div>
@@ -71,30 +76,12 @@
   </form>
   <!-- / Change Password form -->
 
-  <!-- Delete Account Form -->
-  <form action="/account/delete" class="panel form-horizontal" method="POST">
-    <input type="hidden" name="_csrf" value={{_csrf}}>
-    <div class="panel-heading">
-      <span class="panel-title">Delete Account</span>
-    </div>
-    <div class="panel-body">
-      <p>Please bear in mind that this action is irreversible.</p>
-      <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you wish to delete your account? This is IRREVERSIBLE!');">
-        <span class="ion-trash-b"></span>
-        &nbsp;Delete My Account
-      </button>
-    </div>
-  </form>
-  <!-- / Delete Account form -->
-
-  <!-- Linked Accounts -->
+  <!--
   <div class="panel">
-    <!-- Default panel contents -->
     <div class="panel-heading">
       <span class="panel-title">Linked Accounts</span>
     </div>
 
-    <!-- List group -->
     <ul class="list-group">
       <li class="list-group-item">
         <span class="badge badge-danger"><i class="fa fa-google-plus"></i></span>
@@ -103,7 +90,7 @@
         {{else}}
         <a href="/auth/google">Link your Google account</a>
         {{/if}}
-      </li> <!-- / .list-group-item -->
+      </li>
       <li class="list-group-item">
         <span class="badge badge-info"><i class="fa fa-twitter"></i></span>
         {{#if user.twitter}}
@@ -111,7 +98,7 @@
         {{else}}
         <a href="/auth/google">Link your Twitter account</a>
         {{/if}}
-      </li> <!-- / .list-group-item -->
+      </li>
       <li class="list-group-item">
         <span class="badge btn-facebook"><i class="fa fa-facebook"></i></span>
         {{#if user.facebook}}
@@ -119,6 +106,23 @@
         {{else}}
         <a href="/auth/facebook">Link your Facebook account</a>
         {{/if}}
-      </li> <!-- / .list-group-item -->
+      </li>
     </ul>
   </div>
+  -->
+
+  <!-- Delete Account Form -->
+  <form action="/account/delete" class="panel form-horizontal" method="POST">
+    <input type="hidden" name="_csrf" value={{_csrf}}>
+    <div class="panel-heading">
+      <span class="panel-title">Delete Account</span>
+    </div>
+    <div class="panel-body" style="padding: 12px;">
+      <p>Please bear in mind that this action is irreversible.</p>
+      <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you wish to delete your account? This is IRREVERSIBLE!');">
+        <span class="ion-trash-b"></span>
+        &nbsp;Delete My Account
+      </button>
+    </div>
+  </form>
+  <!-- / Delete Account form -->
