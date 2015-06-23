@@ -7,6 +7,7 @@ concat = require('gulp-concat'),
 slash = require('gulp-slash'),
 del = require('del'),
 less = require('gulp-less'),
+preprocess = require('gulp-preprocess'),
 paths =
 {
 	less: './less/build.less',
@@ -47,6 +48,8 @@ function errorHandler(err) {
 	this.emit('end')
 }
 
+console.log(process.env.FQDN);
+
 gulp.task('clean:js:plugins', function(cb)
 {
 	del('./browser/plugins/all.plugins.js', cb);
@@ -80,6 +83,7 @@ gulp.task('js:player', ['clean:js:player'], function()
 {
 	gulp.src(paths.js.player)
 	.pipe(slash())
+	.pipe(preprocess({context: { FQDN: process.env.FQDN } }))
 	.pipe(uglify().on('error', errorHandler))
 	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))
