@@ -473,7 +473,7 @@ Application.prototype.onNodeHeaderDblClicked = function(node) {
 
 	console.log(node);
 
-	var input = $('<input class="node-title-input" />')
+	var input = $('<input class="node-title-input" placeholder="Type a title" />')
 
 	input
 		.appendTo(node.ui.dom.context)
@@ -482,7 +482,7 @@ Application.prototype.onNodeHeaderDblClicked = function(node) {
 
 			var code = e.keyCode || e.which
 			if(code == 13) {
-				var name = $(e.target).val()
+				var name = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
 				if(name || name !== "") {
 					that.graphApi.renameNode(E2.core.active_graph, node, name)
 				}
@@ -494,6 +494,9 @@ Application.prototype.onNodeHeaderDblClicked = function(node) {
 
 		})
 		.select()
+		.bind('blur', function() {
+			$(this).remove();
+		})
 		.focus()
 
 }
@@ -1939,7 +1942,7 @@ E2.InitialiseEngi = function(vr_devices) {
 		E2.app.onWindowResize()
 		E2.app.onWindowResize()
 
-		E2.app.updateGraphTitle('New Graph Title That Is Incredibly Long Oh My God');
+		E2.app.updateGraphTitle();
 
 		if (E2.core.pluginManager.release_mode) {
 			window.onbeforeunload = function() {
