@@ -6435,21 +6435,96 @@ table {
   margin-right: 5px;
 }
 #user-pulldown {
-  margin: 5px;
+  margin: 0 0px;
 }
-#user-pulldown li a {
-  padding-top: 2px;
+.top-header-col {
+  float: left;
+}
+#top-header-center {
+  width: 1px;
+  overflow: hidden;
+  height: 28px;
+  float: left;
+}
+#top-header-logo.collapsed {
+  width: 37px;
+}
+#top-header-logo span {
+  line-height: 19px;
+}
+#top-header-logo.collapsed span {
+  position: relative;
+  top: 3px;
+}
+#top-header-logo.collapsed .logo-text {
+  display: none;
+}
+#top-header-right {
+  float: right;
+}
+#graph-title {
+  color: #666;
+  height: 28px;
+  text-align: center;
+  padding: 7px 10px 0px 7px;
+  overflow: hidden;
+  white-space: nowrap;
+  display: none;
+  border-right: 10px solid #222;
+}
+.dropdown-menu {
+  padding: 0 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  border-top: 1px solid #222 !important;
+  border-left: 1px solid #222 !important;
+  border-right: 1px solid #222 !important;
+  border-bottom: none !important;
+}
+.dropdown-menu > li > a {
+  padding: 10px !important;
+  cursor: pointer;
+  border-bottom: 1px solid #222 !important;
+}
+#user-pulldown > li > a {
+  height: 28px;
+  padding-top: 7px;
   padding-bottom: 0px;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.nav > li > a:hover,
+.nav > li > a:focus {
+  background: #1a1a1a;
 }
 #load-spinner {
-  display: flex;
-  max-width: 26px;
-  min-width: 26px;
-  height: 26px;
+  position: absolute;
+  left: 10px;
+  top: 3px;
+  opacity: 0.65;
+  max-width: 18px;
+  min-width: 18px;
+  height: 19px;
   background: url('/images/load-spinner.gif');
+  background-size: 100% 100%;
+  -moz-background-size: 100% 100%;
+  -webkit-background-size: 100% 100%;
   margin-top: 2px;
+}
+#play,
+#stop,
+#fullscreen {
+  height: 28px;
+  padding-top: 7px;
+}
+.header .btn {
+  height: 28px;
+  display: block;
+  float: left;
+  margin-right: 2px;
+}
+.header .btn.save-button {
+  margin-right: 0;
 }
 #canvases {
   flex: 1;
@@ -6753,6 +6828,12 @@ table {
   border-left: 1px solid #222222;
   line-height: 1.66;
 }
+.node-title-input {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  border: 1px solid #222;
+}
 html,
 body {
   height: 100%;
@@ -6967,7 +7048,6 @@ body {
 li.active,
 .panel-body li:hover {
   color: #eeeeee;
-  background-color: #555555;
 }
 .file-select-control {
   outline: none;
