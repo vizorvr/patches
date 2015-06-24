@@ -48,8 +48,6 @@ function errorHandler(err) {
 	this.emit('end')
 }
 
-console.log(process.env.FQDN);
-
 gulp.task('clean:js:plugins', function(cb)
 {
 	del('./browser/plugins/all.plugins.js', cb);
@@ -83,7 +81,7 @@ gulp.task('js:player', ['clean:js:player'], function()
 {
 	gulp.src(paths.js.player)
 	.pipe(slash())
-	.pipe(preprocess({context: { FQDN: process.env.FQDN } }))
+	.pipe(preprocess({context: { FQDN: process.env.FQDN || 'create.vizor.io' } }))
 	.pipe(uglify().on('error', errorHandler))
 	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))

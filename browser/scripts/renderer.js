@@ -78,8 +78,10 @@ function Renderer(vr_devices, canvas_id, core)
 	this.fullscreen = false;
 	this.default_tex = new Texture(this);
 
-	var fqdn = '/* @echo FQDN */'; // fill in FQDN from gulpfile
-	if(fqdn === 'undefined') fqdn = 'create.vizor.io'; // returns a string 'undefined' instead of a real one
+	var fqdn = '/* @echo FQDN */'; // Fill in FQDN (fully qualified domain name) from gulpfile for the player.
+	// gulp-preprocess replaces above with the string 'undefined' if gulpfile didn't provide the FQDN for some reason.
+	// Inside the editor, the string replace is not evaluated so we need to check against the preprocessing string as well.
+	if(fqdn === 'undefined' || fqdn === '/* @echo FQDN */') fqdn = 'create.vizor.io'; // defaulting to create.vizor.io
 	this.default_tex.load('//'+fqdn+'/images/no_texture.png', core);
 
 	var resizeTimer;
