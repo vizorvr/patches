@@ -1327,15 +1327,18 @@ Application.prototype.onPlayClicked = function()
 		this.player.play();
 
 	this.changeControlState();
+	E2.app.updateGraphTitle();
 };
 
 Application.prototype.onPauseClicked = function() {
 	this.player.pause()
 	this.changeControlState()
+	E2.app.updateGraphTitle();
 }
 
 Application.prototype.onStopClicked = function() {
 	this.player.schedule_stop(this.changeControlState.bind(this))
+	E2.app.updateGraphTitle();
 }
 
 Application.prototype.onOpenClicked = function() {
@@ -1849,6 +1852,8 @@ Application.prototype.start = function() {
  */
 Application.prototype.updateGraphTitle = function(title) {
 
+	// Commented out for now
+	/*
 	// Calculate width for the title
 	var titleWidth = $(window).width() - $('#top-header-logo').width() - $('#top-header-left').width() - $('#top-header-right').width() - 1;
 
@@ -1858,6 +1863,7 @@ Application.prototype.updateGraphTitle = function(title) {
 	}
 
 	E2.dom.graph_title.css({ width: titleWidth+"px" }).fadeIn('fast');
+	*/
 
 }
 

@@ -37,12 +37,17 @@ AccountController.prototype._bindEvents = function(el)
 
 AccountController.prototype.openLoginModal = function()
 {
-	var self = this;
 
+	var self = this;
 	var loginTemplate = E2.views.account.login;
+
 	var bb = bootbox.dialog(
 	{
+		animate: false,
+		show: true,
 		message: loginTemplate()
+	}).init(function() {
+		$('#email_id').focus();
 	});
 
 	this._bindEvents(bb);
@@ -68,7 +73,8 @@ AccountController.prototype.openLoginModal = function()
 			{
 				console.log('Logged in as ' + user.username);
 				E2.models.user.set(user);
-				bb.modal('hide');
+				E2.app.updateGraphTitle();
+				bootbox.hideAll();
 			},
 			dataType: 'json'
 		});
@@ -77,14 +83,19 @@ AccountController.prototype.openLoginModal = function()
 
 AccountController.prototype.openSignupModal = function()
 {
-	var self = this;
 
+	var self = this;
 	var signupTemplate = E2.views.account.signup;
+
 	var bb = bootbox.dialog(
 	{
+		show: true,
+		animate: false,
 		message: signupTemplate(),
 		//title: "loginDialog"
 		//onEscape: function() {  }
+	}).init(function() {
+		$('#username_id').focus();
 	});
 
 	this._bindEvents(bb);
