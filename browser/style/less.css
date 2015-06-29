@@ -6854,6 +6854,50 @@ table {
   border: none;
   height: 20px;
 }
+.panel-default > .panel-heading {
+  cursor: pointer;
+}
+.plugin-drag-preview {
+  position: fixed;
+  opacity: 1.0;
+  border: 1px dashed #999;
+  background: #222;
+  box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.25);
+  padding: 10px 20px;
+  pointer-events: none;
+  font-weight: bold;
+  z-index: 10000;
+  text-align: center;
+  font-size: 16px;
+  white-space: nowrap;
+}
+.plugin-drag-preview span {
+  display: block;
+  font-weight: normal;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+.dragging-allowed,
+.dragging-allowed * {
+  cursor: copy !important;
+}
+.dragging-allowed {
+  border: 3px dashed #999;
+  position: absolute;
+  z-index: 1000;
+  background: transparent;
+  box-shadow: inset 0px 0px 0px 25px rgba(255, 255, 255, 0.15);
+  -webkit-box-shadow: inset 0px 0px 0px 25px rgba(255, 255, 255, 0.15);
+  -moz-box-shadow: inset 0px 0px 0px 25px rgba(255, 255, 255, 0.15);
+}
+.dragging-allowed.dragging-on-top {
+  background: rgba(200, 200, 255, 0.15);
+  border-color: white;
+}
+.dragging-not-allowed,
+.dragging-not-allowed * {
+  cursor: no-drop !important;
+}
 html,
 body {
   height: 100%;
