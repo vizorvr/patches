@@ -475,7 +475,8 @@ if (config.server.enableOSC) {
 
 if (config.server.enableChannels) {
 	new WsChannelServer().listen(httpServer)
-	new EditorChannelServer().listen(httpServer)
+	app._editorChannel = new EditorChannelServer()
+	app._editorChannel.listen(httpServer)
 }
 
 app.use(function(err, req, res, next) {
