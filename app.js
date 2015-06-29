@@ -71,7 +71,7 @@ temp.mkdir('uploads', function(err, dirPath)
 {
 	if (err)
 		throw err;
-	tempDir = dirPath;	
+	tempDir = dirPath;
 });
 
 var app = express();
@@ -159,7 +159,7 @@ app.use(function(req, res, next)
 {
 	if(req.url.indexOf('?_') > -1)
 		req.url = req.url.substring(0, req.url.indexOf('?_'));
-	
+
 	next();
 });
 
@@ -169,7 +169,7 @@ app.use(function(req, res, next)
 	next();
 });
 
-// old static flat files 
+// old static flat files
 app.use('/data', express.static(path.join(__dirname, 'browser', 'data'), { maxAge: week * 52 }));
 
 // stream files from fs/gridfs
@@ -373,7 +373,7 @@ app.post('/:username/presets', function(req, res, next) {
 })
 
 // -----
-// Graph routes 
+// Graph routes
 
 app.get(['/editor', '/edit'], graphController.edit.bind(graphController));
 
@@ -439,15 +439,15 @@ app.get('/:model/tag/:tag', requireController, function(req, res, next)
 	req.controller.findByTag(req, res, next);
 });
 
-// get 
+// get
 app.get('/:model/:id', requireController, function(req, res, next)
 {
 	req.controller.load(req, res, next);
 });
 
 // save
-app.post('/:model', 
-	requireController, 
+app.post('/:model',
+	requireController,
 	passportConf.isAuthenticated,
 	function(req, res, next)
 	{

@@ -1,37 +1,51 @@
-<h1 class="form-header">Create your Account</h1>
+<h1 class="text-center form-header"><i class="fa fa-user page-header-icon"></i>&nbsp;&nbsp;Sign up</h1>
+
+<p style="text-align: center; padding: 12px 0 8px 0;">Already have an account? <a href="/login" class="login">Login</a></p>
 
 <!-- Form -->
-<form action="/signup" id="signup-form_id" class="panel" method="POST">
+<form action="/signup" id="signup-form_id" method="POST">
   <input type="hidden" name="_csrf" value={{_csrf}}>
 
-  <div class="form-group">
-    <input type="username" name="username" id="username_id" class="form-control input-lg" placeholder="Username" autofocus="true">
-  </div>
+  <div class="panel-body">
 
-  <div class="form-group">
-    <input type="email" name="email" id="email_id" class="form-control input-lg" placeholder="E-mail">
-  </div>
+    <div class="row form-group">
+      <div class="col-sm-12 text-center">
+        <input type="username" name="username" style="text-align: center; padding: 10px; height: auto;" id="username_id" class="form-control input-lg" placeholder="Username" autofocus="true">
+      </div>
+    </div>
 
-  <div class="form-group">
-    <input type="password" name="password" id="password_id" class="form-control input-lg" placeholder="Password">
-  </div>
+    <div class="row form-group">
+      <div class="col-sm-12 text-center">
+        <input type="email" name="email" style="text-align: center; padding: 10px; height: auto;" id="email_id" class="form-control input-lg" placeholder="E-mail">
+      </div>
+    </div>
 
-  <div class="form-group">
-    <input type="password" name="confirmPassword" id="password_confirm_id" class="form-control input-lg" placeholder="Confirm Password">
-  </div>
-<!--
-  <div class="form-group" style="margin-top: 20px;margin-bottom: 20px;">
-    <label class="checkbox-inline">
-      <input type="checkbox" name="signup_confirm" class="px" id="confirm_id">
-      <span class="lbl">I agree with the <a href="#" target="_blank">Terms and Conditions</a></span>
-    </label>
-  </div>
--->
-  <div class="form-actions">
-    <button class="btn btn-primary" type="submit">
-      <span class="ion-person-add"></span>
-      &nbsp;Create my account
-    </button>
+    <div class="row form-group">
+      <div class="col-sm-12 text-center">
+        <input type="password" name="password" style="text-align: center; padding: 10px; height: auto;" id="password_id" class="form-control input-lg" placeholder="Password">
+      </div>
+    </div>
+
+    <div class="row form-group">
+      <div class="col-sm-12 text-center">
+        <input type="password" name="confirmPassword" style="text-align: center; padding: 10px; height: auto;" id="password_confirm_id" class="form-control input-lg" placeholder="Confirm Password">
+      </div>
+    </div>
+  <!--
+    <div class="form-group" style="margin-top: 20px;margin-bottom: 20px;">
+      <label class="checkbox-inline">
+        <input type="checkbox" name="signup_confirm" class="px" id="confirm_id">
+        <span class="lbl">I agree with the <a href="#" target="_blank">Terms and Conditions</a></span>
+      </label>
+    </div>
+  -->
+    <div class="text-center" style="margin-top: 24px;">
+      <button class="btn btn-primary" style="font-size: 16px; padding: 10px 20px;" type="submit">
+        <i class="fa fa-user"></i>
+        &nbsp;Create account
+      </button>
+    </div>
+
   </div>
 </form>
 <!-- / Form -->

@@ -60,10 +60,10 @@ describe('Upload', function() {
 	describe('Image', function()
 	{
 		it('should upload correctly', function(done) {
-			var original = '/image/'+testId+'.jpg';
-			var thumb = '/image/'+testId+'-thumb.jpg'
-			var scaled = '/image/'+testId+'-scaled.jpg'
-			var scaledThumb = '/image/'+testId+'-scaled-thumb.jpg'
+			var original = '/image/'+testId+'.png';
+			var thumb = '/image/'+testId+'-thumb.png'
+			var scaled = '/image/'+testId+'-scaled.png'
+			var scaledThumb = '/image/'+testId+'-scaled-thumb.png'
 			var stream = fs.createReadStream(__dirname+'/../fixtures/te-2rb.jpg');
 			stream.path = original
 
@@ -78,6 +78,7 @@ describe('Upload', function() {
 				delete json._id;
 				delete json.createdAt;
 				delete json.updatedAt;
+				delete json.original.bytes;
 				delete json.scaledThumbnail.bytes;
 				delete json.scaled.bytes;
 				delete json.thumbnail.bytes;
@@ -91,10 +92,11 @@ describe('Upload', function() {
 				delete json.url; delete json.scaled.url; delete json.original.url; delete json.scaledThumbnail.url; delete json.thumbnail.url; 
 
 				expect({__v:0,path:original,
-					tags:[],scaledThumbnail:{mimetype:'image/jpeg',width:128,height:128,path:scaledThumb},
-					scaled:{mimetype:'image/jpeg',width:1024,height:1024,path:scaled},
-					thumbnail:{mimetype:'image/jpeg',width:128,height:72,path:thumb},
-					original:{bytes:95755,mimetype:'image/jpeg',width:1920,height:1080,path:original}
+					tags:[],
+					scaledThumbnail:{mimetype:'image/png',width:128,height:128,path:scaledThumb},
+					scaled:{mimetype:'image/png',width:1024,height:1024,path:scaled},
+					thumbnail:{mimetype:'image/png',width:128,height:72,path:thumb},
+					original:{mimetype:'image/png',width:1920,height:1080,path:original}
 					})
 					.to.deep.equal(json);
 				done(err);
@@ -121,6 +123,7 @@ describe('Upload', function() {
 				delete json._id;
 				delete json.createdAt;
 				delete json.updatedAt;
+				json.files = json.files.sort()
 
 				files = [ scene+'/attribution.txt',
 					scene+'/scene.json',
@@ -130,7 +133,8 @@ describe('Upload', function() {
 					scene+'/skybox_1.jpg',
 					scene+'/skybox_2.jpg',
 					scene+'/skybox_3.jpg',
-					scene+'/skybox_not.jpg' ]
+					scene+'/skybox_not.jpg'
+					].sort()
 
 				expect({"__v":0,"path":scene,"url":'/data'+scene+'/scene.json',"tags":[],
 					files: files

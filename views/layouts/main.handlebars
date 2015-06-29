@@ -11,10 +11,10 @@
     <title>Vizor Create</title>
 
       <link href="/style/less.css" rel="Stylesheet" type="text/css"  />
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
-      <link href="/style/player.css" rel="Stylesheet" type="text/css"  />
-      <link href="/style/vizor.css" rel="Stylesheet" type="text/css"  />
+      <link href="/style/player.css" rel="Stylesheet" type="text/css" />
+      <link href="/style/website.css" rel="Stylesheet" type="text/css" />
 
     <!-- Open Sans font from Google CDN -->
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin" rel="stylesheet" type="text/css">
@@ -40,20 +40,17 @@
         {{> navbar}}
 
         <div id="content-wrapper"> <!-- formerly content-wrapper -->
-          {{#if user}}{{else}}
-            <div class="container padding-top">
-          {{/if}}
-            {{> flash}}
+            <div class="container">
+              {{> flash}}
 
-            {{{body}}}
-          {{#if user}}{{else}}
+              {{{body}}}
             </div>
-          {{/if}}
         </div>
 
     </div> <!-- / #main-wrapper -->
 
     <!-- Javascripts -->
+    {{{js 'core'}}}
     {{{js 'application'}}}
 
 </body>

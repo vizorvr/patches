@@ -7,6 +7,7 @@ concat = require('gulp-concat'),
 slash = require('gulp-slash'),
 del = require('del'),
 less = require('gulp-less'),
+preprocess = require('gulp-preprocess'),
 paths =
 {
 	less: './less/build.less',
@@ -80,6 +81,7 @@ gulp.task('js:player', ['clean:js:player'], function()
 {
 	gulp.src(paths.js.player)
 	.pipe(slash())
+	.pipe(preprocess({context: { FQDN: process.env.FQDN || 'create.vizor.io' } }))
 	.pipe(uglify().on('error', errorHandler))
 	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))

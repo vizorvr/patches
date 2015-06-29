@@ -3,10 +3,10 @@ function Extensions(gl)
 	this.gl = gl;
 
 	this.max_anisotropy = 0;
-	this.anisotropic = gl.getExtension('EXT_texture_filter_anisotropic') || 
-			   gl.getExtension('MOZ_EXT_texture_filter_anisotropic') || 
+	this.anisotropic = gl.getExtension('EXT_texture_filter_anisotropic') ||
+			   gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
 			   gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
-	
+
 	if(this.anisotropic)
 		this.max_anisotropy = gl.getParameter(this.anisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
 }
@@ -35,12 +35,12 @@ function Renderer(vr_devices, canvas_id, core)
 	this.up_vec = vec3.createFrom(0, 0, 1);
 	this.fs_listeners = [];
 	this._listeners = {};
-	
+
 	this.org_width = this.canvas.width();
 	this.org_height = this.canvas.height();
-	
-	this.screenshot = 
-	{ 
+
+	this.screenshot =
+	{
 		pending: false,
 		width: 512,
 		height: 256,
@@ -53,12 +53,12 @@ function Renderer(vr_devices, canvas_id, core)
 	try
 	{
 		var ctx_opts = { alpha: false, preserveDrawingBuffer: false, antialias: true };
-		
+
 		this.context = this.canvas[0].getContext('webgl', ctx_opts);
-		
+
 		if(!this.context)
 			this.context = this.canvas[0].getContext('experimental-webgl', ctx_opts);
-			
+
 		// Debugging.
 		// this.context = WebGLDebugUtils.makeDebugContext(this.context);
 	}
@@ -66,18 +66,23 @@ function Renderer(vr_devices, canvas_id, core)
 	{
 		this.context = null;
 	}
-	
+
 	if(!this.context)
 	{
 		debugger;
 	}
-	
+
 	this.extensions = new Extensions(this.context);
 	this.texture_cache = new TextureCache(this.context, core);
 	this.shader_cache = new ShaderCache(this.context);
 	this.fullscreen = false;
 	this.default_tex = new Texture(this);
-	this.default_tex.load('/images/no_texture.png', core);
+
+	var fqdn = '/* @echo FQDN */'; // Fill in FQDN (fully qualified domain name) from gulpfile for the player.
+	// gulp-preprocess replaces above with the string 'undefined' if gulpfile didn't provide the FQDN for some reason.
+	// Inside the editor, the string replace is not evaluated so we need to check against the preprocessing string as well.
+	if(fqdn === 'undefined' || fqdn === '/* @echo FQDN */') fqdn = 'create.vizor.io'; // defaulting to create.vizor.io
+	this.default_tex.load('//'+fqdn+'/images/no_texture.png', core);
 
 	var resizeTimer;
 	$(window).on('resize', function() {
@@ -88,7 +93,7 @@ function Renderer(vr_devices, canvas_id, core)
 	document.addEventListener('fullscreenchange', this.on_fullscreen_change.bind(this));
 	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change.bind(this));
 	document.addEventListener('mozfullscreenchange', this.on_fullscreen_change.bind(this));
-	
+
 	// Constants, to cut down on wasted objects in slot definitions.
 	this.camera_screenspace = new Camera(this.context);
 	this.light_default = new Light();
@@ -98,7 +103,7 @@ function Renderer(vr_devices, canvas_id, core)
 	this.vector_origin = vec3.createFrom(0, 0, 0);
 	this.vector_unity = vec3.createFrom(1, 1, 1);
 	this.matrix_identity = mat4.create();
-	
+
 	mat4.identity(this.matrix_identity);
 }
 
@@ -130,7 +135,7 @@ Renderer.prototype.emit = function(kind)
 	});
 };
 
-Renderer.blend_mode = 
+Renderer.blend_mode =
 {
 	NONE: 0,
 	ADDITIVE: 1,
@@ -153,10 +158,10 @@ Renderer.prototype.begin_frame = function()
 		gl.bound_tex_stage = null;
 		gl.bound_mesh = null;
 		gl.bound_shader = null;
-		
+
 		// Do we need to capture the next frame as a screenshot?
 		var ss = this.screenshot;
-		
+
 		if(ss.pending)
 		{
 			var fb = ss.framebuffer = gl.glCreateFramebuffer();
@@ -170,7 +175,7 @@ Renderer.prototype.begin_frame = function()
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, ss.width, ss.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
 			var rb = this.screenshot.renderbuffer = gl.createRenderbuffer();
-		
+
 			gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
 			gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, ss.width, ss.height);
 
@@ -180,43 +185,43 @@ Renderer.prototype.begin_frame = function()
 			gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 			gl.bindTexture(gl.TEXTURE_2D, null);
 			gl.viewport(0, 0, ss.width, ss.height);
-			
+
 			ss.texture = new Texture(gl, t, gl.LINEAR);
 		}
 
 		// this.update_viewport();
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	}	
+	}
 };
 
 Renderer.prototype.end_frame = function()
 {
 	var gl = this.context;
-	
+
 	if(gl)
 	{
 		gl.flush();
-	
+
 		// Did we render this frame as a screenshot? If so, store the results.
 		var ss = this.screenshot;
-		
+
 		if(ss.pending)
 		{
 			var c = this.canvas[0];
-			
+
 			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 			gl.viewport(0, 0, c.width, c.height);
-			
+
 			// Grab the framebuffer data and store it store it as RGBA
 			var data = new Uint8Array(ss.width * ss.height * 4);
-			
+
 			gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, this.img_data);
-			
+
 			// Drop the frame-, renderbuffer and texture.
 			gl.deleteFramebuffer(ss.framebuffer);
 			gl.deleteRenderbuffer(ss.renderbuffer);
 			ss.texture.drop();
-			
+
 			ss.framebuffer = null;
 			ss.renderbuffer = null;
 			ss.texture = null;
@@ -224,7 +229,7 @@ Renderer.prototype.end_frame = function()
 
 			// Ditch the alpha channel and store
 			var p = ss.pixels = new Uint8Array(ss.width * ss.height * 3);
-	
+
 			for(var i = 0, o = 0; i < w * h * 3; i += 3, o += 4)
 			{
 				p[i] = data[o];
@@ -238,7 +243,7 @@ Renderer.prototype.end_frame = function()
 Renderer.prototype.push_framebuffer = function(fb, w, h)
 {
 	var gl = this.context;
-	
+
 	gl.viewport(0, 0, w, h);
 	gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
 	this.framebuffer_stack.push([fb, w, h]);
@@ -248,20 +253,20 @@ Renderer.prototype.pop_framebuffer = function()
 {
 	var fbs = this.framebuffer_stack;
 	var gl = this.context;
-	
+
 	fbs.pop();
-	
+
 	if(fbs.length > 0)
 	{
 		var fb = fbs[fbs.length-1];
-		
+
 		gl.bindFramebuffer(gl.FRAMEBUFFER, fb[0]);
 		gl.viewport(0, 0, fb[1], fb[2]);
 	}
 	else
 	{
 		var c = this.canvas[0];
-		
+
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		gl.viewport(0, 0, c.width, c.height);
 	}
@@ -276,7 +281,7 @@ Renderer.prototype.add_fs_listener = function(delegate)
 Renderer.prototype.remove_fs_listener = function(delegate)
 {
 	var idx = this.fs_listeners.indexOf(delegate);
-	
+
 	if(idx !== -1)
 		this.fs_listeners.splice(idx, 1);
 };
@@ -312,7 +317,7 @@ Renderer.prototype.on_fullscreen_change = function()
 		c.removeClass('webgl-canvas-normal');
 		c.addClass('webgl-canvas-fs');
 	}
-	else 
+	else
 	{
 		this.fullscreen = false;
 		c.removeClass('webgl-canvas-fs');
@@ -341,7 +346,7 @@ Renderer.prototype.set_fullscreen = function(state)
 			if(this.vr_hmd)
 			{
 				// NOTE: This breaks keyboard input in FS mode on webkit-based
-				// browsers. On the other hand, the change bypasses a known 
+				// browsers. On the other hand, the change bypasses a known
 				// Safari bug, see:
 				// http://stackoverflow.com/questions/8427413/webkitrequestfullscreen-fails-when-passing-element-allow-keyboard-input-in-safar
 				var opt = { vrDisplay: this.vr_hmd };
@@ -362,7 +367,7 @@ Renderer.prototype.set_fullscreen = function(state)
 				else if(cd.mozRequestFullScreen)
 					cd.mozRequestFullScreen();
 			}
-		
+
 			c.removeClass('webgl-canvas-normal');
 			c.addClass('webgl-canvas-fs');
 		}
@@ -387,7 +392,7 @@ Renderer.prototype.set_fullscreen = function(state)
 Renderer.prototype.update_viewport = function()
 {
 	var c = this.canvas[0];
-	
+
 	this.context.viewport(0, 0, c.width, c.height);
 };
 
@@ -411,13 +416,13 @@ Renderer.prototype.set_blend_mode = function(mode)
 {
 	var gl = this.context;
 	var bm = Renderer.blend_mode;
-	
+
 	switch(mode)
 	{
 		case bm.NONE:
 			gl.disable(gl.BLEND);
 			break;
-			
+
 		case bm.ADDITIVE:
 			gl.enable(gl.BLEND);
 			gl.blendEquation(gl.FUNC_ADD);
@@ -452,7 +457,7 @@ function VertexBuffer(gl, v_type)
 	this.count = 0;
 }
 
-VertexBuffer.vertex_type = 
+VertexBuffer.vertex_type =
 {
 	VERTEX: 0,
 	NORMAL: 1,
@@ -476,7 +481,7 @@ VertexBuffer.type_stride = [
 VertexBuffer.prototype.enable = function()
 {
 	var gl = this.gl;
-	
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 };
 
@@ -504,14 +509,14 @@ function IndexBuffer(gl)
 IndexBuffer.prototype.enable = function()
 {
 	var gl = this.gl;
-	
+
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffer);
 };
 
 IndexBuffer.prototype.bind_data = function(i_data)
 {
 	var gl = this.gl;
-	
+
 	this.count = i_data.length;
 	this.enable();
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(i_data), gl.STATIC_DRAW);
@@ -527,7 +532,7 @@ function Light()
 	this.intensity = 1.0;
 }
 
-Light.type = 
+Light.type =
 {
 	POINT: 0,
 	DIRECTIONAL: 1,
@@ -538,8 +543,8 @@ function Camera(gl)
 {
 	this.projection = mat4.create();
 	this.view = mat4.create();
-	
+
 	mat4.identity(this.projection);
 	mat4.identity(this.view);
 }
-	
+
