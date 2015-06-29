@@ -468,20 +468,37 @@ Application.prototype.onNodeHeaderClicked = function(e) {
 }
 
 Application.prototype.onNodeHeaderDblClicked = function(node) {
+
 	var that = this
 
-	bootbox.prompt({
-		animate: false,
-		title: 'Rename node',
-		value: node.title,
-		callback: function(name) {
-			if (!name)
-				return;
+	console.log(node);
 
-			that.graphApi.renameNode(E2.core.active_graph, node, name)
+	var input = $('<input class="node-title-input" placeholder="Type a title" />')
 
-		}
-	})
+	input
+		.appendTo(node.ui.dom.context)
+		.val(node.title || node.id)
+		.keyup(function(e) {
+
+			var code = e.keyCode || e.which
+			if(code == 13) {
+				var name = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
+				if(name || name !== "") {
+					that.graphApi.renameNode(E2.core.active_graph, node, name)
+				}
+   			input.remove();
+   		}
+   		else if(code === 27) {
+   			input.remove();
+   		}
+
+		})
+		.select()
+		.bind('blur', function() {
+			$(this).remove();
+		})
+		.focus()
+
 }
 
 Application.prototype.isNodeInSelection = function(node) {
@@ -1063,6 +1080,9 @@ Application.prototype.onWindowResize = function() {
 	}
 
 	this.updateCanvas(true)
+
+	E2.app.updateGraphTitle();
+
 }
 
 Application.prototype.toggleNoodles = function() {
@@ -1072,6 +1092,7 @@ Application.prototype.toggleNoodles = function() {
 
 Application.prototype.toggleLeftPane = function()
 {
+
 	$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
 
 	this.condensed_view = !this.condensed_view;
@@ -1306,15 +1327,18 @@ Application.prototype.onPlayClicked = function()
 		this.player.play();
 
 	this.changeControlState();
+	E2.app.updateGraphTitle();
 };
 
 Application.prototype.onPauseClicked = function() {
 	this.player.pause()
 	this.changeControlState()
+	E2.app.updateGraphTitle();
 }
 
 Application.prototype.onStopClicked = function() {
 	this.player.schedule_stop(this.changeControlState.bind(this))
+	E2.app.updateGraphTitle();
 }
 
 Application.prototype.onOpenClicked = function() {
@@ -1749,6 +1773,10 @@ Application.prototype.start = function() {
 		// resize event within a 100 ms window.
 		clearTimeout(that.resize_timer)
 		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 100)
+
+		// The graph title will push out the header bar, so hide it while resizing.
+		E2.dom.graph_title.hide();
+
 	})
 
 	// close bootboxes on click
@@ -1789,12 +1817,20 @@ Application.prototype.start = function() {
 		$doc.on('mousemove', mouseMoveHandler)
 		$doc.one('mouseup', function(e) {
 			if (!changed) {
+
 				$pane.toggleClass('pane-hidden')
+
+				// Collapse top header logo to make the header look nicer
+				if($handle.hasClass('left-pane-handle')) {
+					$('#top-header-logo').toggleClass('collapsed');
+				}
+
 				E2.app.onWindowResize()
 			}
 			e.preventDefault()
 			$doc.off('mousemove', mouseMoveHandler)
 		})
+
 	})
 
 	E2.dom.save.click(E2.app.onSaveClicked.bind(E2.app))
@@ -1810,6 +1846,26 @@ Application.prototype.start = function() {
 	this.midPane = new E2.MidPane()
 }
 
+/**
+ * Update the graph title in the header bar. Make sure the title fits within the space between file selection and play/login buttons.
+ * @param  {String} title  Title to use
+ */
+Application.prototype.updateGraphTitle = function(title) {
+
+	// Commented out for now
+	/*
+	// Calculate width for the title
+	var titleWidth = $(window).width() - $('#top-header-logo').width() - $('#top-header-left').width() - $('#top-header-right').width() - 1;
+
+	// Only update the title if it's passed
+	if(title && title !== "") {
+		E2.dom.graph_title.html(title);
+	}
+
+	E2.dom.graph_title.css({ width: titleWidth+"px" }).fadeIn('fast');
+	*/
+
+}
 
 E2.InitialiseEngi = function(vr_devices) {
 	E2.dom.canvas_parent = $('#canvas_parent');
@@ -1839,6 +1895,7 @@ E2.InitialiseEngi = function(vr_devices) {
 	E2.dom.presets_list = $('#presets');
 	E2.dom.breadcrumb = $('#breadcrumb');
 	E2.dom.load_spinner = $('#load-spinner');
+	E2.dom.graph_title = $('#graph-title');
 	E2.dom.filename_input = $('#filename-input');
 
 	$.ajaxSetup({ cache: false });
@@ -1891,9 +1948,11 @@ E2.InitialiseEngi = function(vr_devices) {
 		E2.app.onWindowResize()
 		E2.app.onWindowResize()
 
+		E2.app.updateGraphTitle();
+
 		if (E2.core.pluginManager.release_mode) {
 			window.onbeforeunload = function() {
-			    return 'You might be leaving behind unsaved work!';
+			    return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
 			}
 		}
 	})

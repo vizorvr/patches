@@ -6,7 +6,7 @@
 
 .body {
 	width: 100%;
-	font-family: 'dejavu' sans-serif !important;
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .full-width {
@@ -25,13 +25,13 @@
 }
 
 .container {
-	font-family: 'dejavu' sans-serif !important;
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: normal;
 }
 
 h1 {
 	font-size: 50px;
-	font-family: 'dejavu' sans-serif !important;
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: normal;
 }
 
@@ -133,10 +133,6 @@ iframe {
   border-bottom: 1px solid #222;
 }
 
-#user-pulldown .dropdown .dropdown-menu li.divider {
-  display: none;
-}
-
 #user-pulldown .dropdown-menu {
   padding: 0;
   border-bottom: none;
@@ -171,13 +167,13 @@ iframe {
 #open-the-editor {
   width: 150px;
   text-align: center;
-  font-size: 12px;
+  font-size: 16px;
   height: 40px;
   position: absolute;
   left: 50%;
   margin-left: -75px;
   top: 5px;
-  padding: 12px 0 0 0;
+  padding: 8px 0 0 0;
   color: white;
   font-weight: bold;
 }

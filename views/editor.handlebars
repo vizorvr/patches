@@ -7,46 +7,61 @@
 
 <div class="flex-column">
 <div class="menu-bar"> <!-- menu bar -->
-	<div class="header left-cell pull-left">
+	<div class="header left-cell pull-left" id="top-header-logo">
 		<div class="info-pane pull-left" id="info">
 			<span>
 				<img id="infopanelogo" src="../../images/logo-graphic.png">
 			</span>
-			<span>Vizor Create</span>
+			<span class="logo-text">Vizor Create</span>
 		</div>
 		<div id="load-spinner"></div>
 	</div>
 	<div class="header">
-		<a href="/edit" id="new" class="btn btn-sm btn-default">New</a>
 
-		<div class="btn-group">
-			<button type="button" class="btn btn-sm btn-default save-button">Save</button>
-			<button type="button" class="btn btn-default btn-dropdown" data-toggle="dropdown">
-				<span class="fa fa-caret-down"></span>
-			</button>
-			<ul class="dropdown-menu" role="menu">
-				<li><a class="save-button">Save</a></li>
-				<li><a id="save-as-preset">Save as Preset</a></li>
-				<li><a id="save-selection-as-preset">Save Selection as Preset</a></li>
-			</ul>
+		<div id="top-header">
+			<div class="top-header-col" id="top-header-left">
+				<a href="/edit" id="new" class="btn btn-sm btn-default">New</a>
+
+				<div class="btn-group pull-left">
+					<button type="button" class="btn btn-sm btn-default save-button">Save</button>
+					<button type="button" class="btn btn-default btn-dropdown" data-toggle="dropdown">
+						<span class="fa fa-caret-down"></span>
+					</button>
+					<ul class="dropdown-menu" role="menu">
+						<li><a class="save-button">Save</a></li>
+						<li><a id="save-as-preset">Save as Preset</a></li>
+						<li><a id="save-selection-as-preset">Save Selection as Preset</a></li>
+					</ul>
+				</div>
+
+				<button id="open" class="btn btn-sm btn-default">Open</button>
+				<button id="publish" class="btn btn-sm btn-default">Publish</button>
+
+			</div>
+
+			<!--<div id="graph-title" class="top-header-col"></div>-->
+
+			<div class="top-header-col" id="top-header-right">
+
+				<button id="help" class="btn btn-sm btn-default pull-right">Help</button>
+
+				<div class="header pull-right">
+					<button id="play" class="btn btn-primary">
+						<i class="fa fa-play"></i>
+					</button>
+					<button id="stop" class="btn btn-primary">
+						<i class="fa fa-stop"></i>
+					</button>
+					<button id="fullscreen" class="btn btn-primary">
+						<i class="fa fa-expand"></i>
+					</button>
+					{{> userpulldown}}
+				</div>
+
+			</div>
+
 		</div>
 
-		<button id="open" class="btn btn-sm btn-default">Open</button>
-		<button id="publish" class="btn btn-sm btn-default">Publish</button>
-		<button id="help" class="btn btn-sm btn-default pull-right">Help</button>
-
-		<div class="header pull-right">
-			<button id="play" class="btn btn-primary">
-				<i class="fa fa-play"></i>
-			</button>
-			<button id="stop" class="btn btn-primary">
-				<i class="fa fa-stop"></i>
-			</button>
-			<button id="fullscreen" class="btn btn-primary">
-				<i class="fa fa-expand"></i>
-			</button>
-			{{> userpulldown}}
-		</div>
 	</div>
 </div> <!-- menu bar -->
 
@@ -76,11 +91,11 @@
 					<a href="/help/introduction.html">Help</a>
 					|
 					<a href="https://github.com/vizorvr/">GitHub</a>
-					| 
+					|
 					<a href="https://twitter.com/vizor_vr">Twitter</a>
-					| 
+					|
 					<a href="https://facebook.com/vrvizor">Facebook</a>
-					| 
+					|
 					<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ">YouTube</a>
 					</p>
 				</div>
@@ -88,7 +103,7 @@
 		</div>
 	</div>
 	<div class="resize-handle left-pane-handle" data-target="#left-nav"></div>
-	
+
 	<div class="flex-column mid-pane pane-hidden" id="mid-pane">
 		<div class="header">
 			<ul class="nav nav-tabs" role="tablist"></ul>
@@ -98,7 +113,7 @@
 	<div class="resize-handle mid-pane-handle" data-target="#mid-pane"></div>
 
 	<div class="flex-column" id="canvases">
-		<canvas id="webgl-canvas" 
+		<canvas id="webgl-canvas"
 			class="webgl-canvas-normal"
 			width="940"
 			height="620"
@@ -133,7 +148,7 @@
 
 	function EnumerateVRDevices(devices) {
 		var hmd = null, sensor = null;
-		
+
 		for(var i = 0; i < devices.length; i++) {
 			if(devices[i] instanceof HMDVRDevice) {
 				// Just use the first device we find for now.
@@ -141,11 +156,11 @@
 				break;
 			}
 		}
-		
+
 		if(hmd) {
 			for(var i = 0; i < devices.length; i++) {
 				var d = devices[i];
-			
+
 				if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId) {
 					sensor = devices[i];
 					break;
