@@ -10,7 +10,7 @@ function Application() {
 		PLAYING: 1,
 		PAUSED: 2
 	};
-	
+
 	this.presetManager = new PresetManager('/presets')
 	this.canvas = E2.dom.canvas;
 	this.c2d = E2.dom.canvas[0].getContext('2d');
@@ -70,12 +70,12 @@ Application.prototype.offsetToCanvasCoord = function(ofs) {
 	var o = [ofs.left, ofs.top];
 	var co = E2.dom.canvas_parent.offset();
 	var so = this.scrollOffset;
-	
+
 	o[0] -= co.left;
 	o[1] -= co.top;
 	o[0] += so[0];
 	o[1] += so[1];
-	
+
 	return o;
 };
 
@@ -97,7 +97,7 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 	function createPlugin(name) {
 		var ag = E2.core.active_graph
 		var node = new Node(ag, id,
-			Math.floor((pos[0] - co.left) + that.scrollOffset[0]), 
+			Math.floor((pos[0] - co.left) + that.scrollOffset[0]),
 			Math.floor((pos[1] - co.top) + that.scrollOffset[1]));
 
 		if (name) { // is graph?
@@ -112,8 +112,8 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 
 		return node
 	}
-	
-	var node 
+
+	var node
 
 	if (id === 'graph')
 		node = createPlugin('graph')
@@ -128,22 +128,22 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 Application.prototype.activateHoverSlot = function() {
 	var that = this
 	var hs = this.hover_slot;
-	
+
 	if(!hs)
 		return;
-	
+
 	this.hover_slot_div[0].style.backgroundColor = E2.erase_color;
-	
+
 	// Mark any attached connection
 	var conns = E2.core.active_graph.connections;
 	var dirty = false;
-	
+
 	conns.some(function(c) {
 		if (c.dst_slot === hs || c.src_slot === hs) {
 			c.ui.deleting = true;
 			that.hover_connections.push(c);
 			dirty = true;
-			
+
 			if (hs.type == E2.slot_type.input)
 				return true; // Early out if this is an input slot, but continue searching if it's an output slot. There might be multiple connections.
 		}
@@ -160,13 +160,13 @@ Application.prototype.releaseHoverSlot = function() {
 		this.hover_slot_div = null;
 		this.hover_slot = null;
 	}
-	
+
 	this.releaseHoverConnections();
 }
 
 Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 	e.stopPropagation()
-	
+
 	if (!this.shift_pressed) {
 		var graph = E2.core.active_graph
 
@@ -179,16 +179,16 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 				null
 			)
 
-			this.getSlotPosition(node, slot_div, E2.slot_type.output, 
+			this.getSlotPosition(node, slot_div, E2.slot_type.output,
 				this.editConn.ui.src_pos);
-		
+
 			var offset = 0;
-			
+
 			var ocs = graph.find_connections_from(node, slot);
 			ocs.sort(function(a, b) {
 				return a.offset < b.offset ? - 1 : a.offset > b.offset ? 1 : 0;
 			})
-			
+
 			ocs.some(function(oc, i) {
 				oc.offset = i;
 
@@ -196,10 +196,10 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 					offset = i;
 					return true;
 				}
-				
+
 				offset = i + 1;
 			});
-			
+
 			this.editConn.offset = offset;
 			slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
 		} else { // drag connection from input
@@ -208,13 +208,13 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 				// new connection from input
 				this.editConn = new EditConnection(
 					this.graphApi,
-					new Connection(null, node, null, slot), 
+					new Connection(null, node, null, slot),
 					null,
 					slot_div)
 
 				this.editConn.offset = 0;
 
-				this.getSlotPosition(node, slot_div, E2.slot_type.input, 
+				this.getSlotPosition(node, slot_div, E2.slot_type.input,
 					this.editConn.ui.src_pos);
 			} else {
 				this.editConn = new EditConnection(this.graphApi, conn, null, slot_div)
@@ -225,7 +225,7 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 	} else {
 		this.removeHoverConnections();
 	}
-			
+
 	return false;
 }
 
@@ -249,7 +249,7 @@ Application.prototype.onSlotExited = function(node, slot, slot_div) {
 		slot_div[0].style.color = '#000';
 		this.editConn.blurSlot(slot)
 	}
-		
+
 	this.releaseHoverSlot();
 }
 
@@ -284,39 +284,39 @@ Application.prototype.onMouseReleased = function() {
 Application.prototype.updateCanvas = function(clear) {
 	var c = this.c2d
 	var canvas = this.canvas[0]
-	 
+
 	if (clear)
 		c.clearRect(0, 0, canvas.width, canvas.height)
 
 	var conns = E2.core.active_graph.connections
 	var cb = [[], [], [], []]
 	var styles = ['#888', '#fd9720', '#09f', E2.erase_color]
-	
+
 	var connsLen = conns.length
 	for (var i=0; i < connsLen; i++) {
 		var cui = conns[i].ui
 		// Draw inactive connections first, then connections with data flow,
-		// next selected connections and finally selected connections to 
+		// next selected connections and finally selected connections to
 		// ensure they get rendered on top.
 		cb[cui.deleting ? 3 : cui.selected ? 2 : cui.flow ? 1 : 0].push(cui.parent_conn)
 	}
-	
+
 	if (this.editConn)
 		cb[0].push(this.editConn.connection)
-	
+
 	var so = this.scrollOffset;
-	
+
 	c.lineWidth = 2;
 	c.lineCap = 'square';
 	c.lineJoin = 'miter';
-	
+
 	for(var bin = 0; bin < 4; bin++) {
 		var b = cb[bin];
 
 		if(b.length > 0) {
 			c.strokeStyle = styles[bin];
 			c.beginPath();
-		
+
 			for(var i = 0, len = b.length; i < len; i++) {
                 // Noodles!
                 var cn = b[i].ui;
@@ -327,15 +327,15 @@ Application.prototype.updateCanvas = function(clear) {
                 var diffx = Math.max(16, x4 - x1);
                 var x2 = x1 + diffx * 0.5;
                 var x3 = x4 - diffx * 0.5;
-    
+
                 c.moveTo(x1, y1);
                 c.bezierCurveTo(x2, y1, x3, y4, x4, y4);
 			}
-			
+
 			c.stroke();
 		}
 	}
-	
+
 	// Draw selection fence (if any)
 	if (this.selection_start) {
 		var ss = this.selection_start;
@@ -343,7 +343,7 @@ Application.prototype.updateCanvas = function(clear) {
 		var so = this.scrollOffset;
 		var s = [ss[0] - so[0], ss[1] - so[1]];
 		var e = [se[0] - so[0], se[1] - so[1]];
-		
+
 		c.lineWidth = 2;
 		c.strokeStyle = '#09f';
 		c.strokeRect(s[0], s[1], e[0] - s[0], e[1] - s[1]);
@@ -352,7 +352,7 @@ Application.prototype.updateCanvas = function(clear) {
 
 Application.prototype.mouseEventPosToCanvasCoord = function(e, result) {
 	var cp = E2.dom.canvas_parent[0];
-	
+
 	result[0] = (e.pageX - cp.offsetLeft) + this.scrollOffset[0];
 	result[1] = (e.pageY - cp.offsetTop) + this.scrollOffset[1];
 };
@@ -360,7 +360,7 @@ Application.prototype.mouseEventPosToCanvasCoord = function(e, result) {
 Application.prototype.releaseHoverNode = function(release_conns) {
 	if (this.hoverNode !== null) {
 		this.hoverNode = null
-		
+
 		if (release_conns)
 			this.releaseHoverConnections()
 	}
@@ -407,7 +407,7 @@ Application.prototype.deleteSelectedConnections = function() {
 
 	this.hover_connections = []
 }
-	
+
 Application.prototype.deleteSelectedNodes = function() {
 	var that = this
 	var hns = this.selectedNodes
@@ -453,7 +453,7 @@ Application.prototype.onNodeHeaderMousedown = function() {
 			this.deselectNode(this.hoverNode)
 		else
 			addNode = this.hoverNode
-	} 
+	}
 
 	if (addNode) {
 		this.markNodeAsSelected(addNode)
@@ -528,7 +528,7 @@ Application.prototype.onNodeDragged = function(node) {
 
 		if (this.isNodeInSelection(node))
 			nodes = this.selectedNodes
-		
+
 		this._dragInfo = {
 			original: { x: node.x, y: node.y },
 			connections: nodes.reduce(function(arr, curr) {
@@ -537,7 +537,7 @@ Application.prototype.onNodeDragged = function(node) {
 		}
 
 		this.undoManager.begin('Move')
-	
+
 		this._dragInfo.nodes = nodes
 	}
 
@@ -573,26 +573,26 @@ Application.prototype.onNodeDragStopped = function(node) {
 Application.prototype.clearSelection = function() {
 	var sn = this.selectedNodes;
 	var sc = this.selectedConnections;
-	
+
 	for(var i = 0, len = sn.length; i < len; i++) {
 		var nui = sn[i].ui;
-		
+
 		if(nui) {
 			nui.selected = false;
 			nui.dom[0].style.border = this.normal_border_style;
 		}
 	}
-		
+
 	for(var i = 0, len = sc.length; i < len; i++) {
 		var cui = sc[i].ui;
-		
-		if(cui) 
+
+		if(cui)
 			cui.selected = false;
 	}
 
 	this.selectedNodes = [];
 	this.selectedConnections = [];
-	
+
 	this.onHideTooltip();
 }
 
@@ -608,7 +608,7 @@ Application.prototype.redrawConnection = function(connection) {
 Application.prototype.onCanvasMouseDown = function(e) {
 	if (e.target.id !== 'canvas')
 		return;
-	
+
 	if (e.which === 1) {
 		this.selection_start = [0, 0];
 		this.mouseEventPosToCanvasCoord(e, this.selection_start);
@@ -626,7 +626,7 @@ Application.prototype.onCanvasMouseDown = function(e) {
 		this.clearSelection()
 		E2.app.updateCanvas()
 	}
-	
+
 	this.inDrag = true
 	this.updateCanvas(false)
 }
@@ -636,10 +636,10 @@ Application.prototype.releaseSelection = function()
 	this.selection_start = null;
 	this.selection_end = null;
 	this.selection_last = null;
-	
+
 	if(this.selection_dom)
 		this.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
-	
+
 	this.selection_dom = null;
 };
 
@@ -650,27 +650,27 @@ Application.prototype.onCanvasMouseUp = function(e)
 		this.is_panning = false;
 		this.canvas[0].style.cursor = '';
 		e.preventDefault();
-		return;		
+		return;
 	}
-	
+
 	if(!this.selection_start)
 		return;
-	
+
 	this.releaseSelection();
-	
+
 	var nodes = this.selectedNodes;
-	
+
 	if(nodes.length)
 	{
 		var sconns = this.selectedConnections;
-		
+
 		var insert_all = function(clist)
 		{
 			for(var i = 0, len = clist.length; i < len; i++)
 			{
 				var c = clist[i];
 				var found = false;
-									
+
 				for(var ci = 0, cl = sconns.length; ci < cl; ci++)
 				{
 					if(c === sconns[ci])
@@ -679,7 +679,7 @@ Application.prototype.onCanvasMouseUp = function(e)
 						break;
 					}
 				}
-		
+
 				if(!found)
 				{
 					c.ui.selected = true;
@@ -687,20 +687,20 @@ Application.prototype.onCanvasMouseUp = function(e)
 				}
 			}
 		};
-		
+
 		// Select all pertinent connections
 		for(var i = 0, len = nodes.length; i < len; i++)
 		{
 			var n = nodes[i];
-		    				
+
 			insert_all(n.inputs);
 			insert_all(n.outputs);
 		}
 	}
-	
+
 	this.inDrag = false;
 	this.updateCanvas(true);
-	
+
 	// Clear focus to prevent problems with the user dragging over text areas (bringing them in focus) during selection.
 	if(document.activeElement)
 			document.activeElement.blur();
@@ -713,19 +713,19 @@ Application.prototype.onMouseMoved = function(e)
 	if(this.is_panning)
 	{
 		var cp = E2.dom.canvas_parent;
-		
+
 		if(e.movementX)
 		{
 			cp.scrollLeft(this.scrollOffset[0]-e.movementX);
 			this.scrollOffset[0] = cp.scrollLeft();
 		}
-		
+
 		if(e.movementY)
 		{
 			cp.scrollTop(this.scrollOffset[1]-e.movementY);
 			this.scrollOffset[1] = cp.scrollTop();
 		}
-		
+
 		e.preventDefault();
 		return;
 	}
@@ -737,12 +737,12 @@ Application.prototype.onMouseMoved = function(e)
 		var h = cp.height();
 		var x2 = pos.left + w;
 		var y2 = pos.top + h;
-		
+
 		if(e.pageX < pos.left)
 			cp.scrollLeft(this.scrollOffset[0] - 20);
 		else if(e.pageX > x2)
 			cp.scrollLeft(this.scrollOffset[0] + 20);
-				
+
 		if(e.pageY < pos.top)
 			cp.scrollTop(this.scrollOffset[1] - 20);
 		else if(e.pageY > y2)
@@ -758,32 +758,32 @@ Application.prototype.onMouseMoved = function(e)
 		E2.dom.structure.tree.on_mouse_move(e);
 		return;
 	}
-	
+
 	if(!this.selection_end)
 		return;
-	
+
 	this.mouseEventPosToCanvasCoord(e, this.selection_end);
-	
+
 	var nodes = E2.core.active_graph.nodes;
 	var cp = E2.dom.canvas_parent;
-	
+
 	var ss = this.selection_start.slice(0);
 	var se = this.selection_end.slice(0);
-	
+
 	for(var i = 0; i < 2; i++)
 	{
 		if(se[i] < ss[i])
 		{
 			var t = ss[i];
-		
+
 			ss[i] = se[i];
 			se[i] = t;
 		}
 	}
-	
+
 	var sn = this.selectedNodes;
 	var ns = [];
-	
+
 	for(var i = 0, len = sn.length; i < len; i++)
 		sn[i].ui.selected = false;
 
@@ -795,27 +795,27 @@ Application.prototype.onMouseMoved = function(e)
 		    p_y = nui.offsetTop,
 		    p_x2 = p_x + nui.clientWidth,
 		    p_y2 = p_y + nui.clientHeight;
-		    
+
 		if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
 			continue; // No intersection.
-			
+
 		if(!n.ui.selected)
 		{
 			this.markNodeAsSelected(n, false);
 			ns.push(n);
 		}
 	}
-	
+
 	for(var i = 0, len = sn.length; i < len; i++)
 	{
 		var n = sn[i];
-		
+
 		if(!n.ui.selected)
 			n.ui.dom[0].style.border = this.normal_border_style;
 	}
-	
+
 	this.selectedNodes = ns;
-	
+
 	var co = cp.offset();
 	var w = cp.width();
 	var h = cp.height();
@@ -824,13 +824,13 @@ Application.prototype.onMouseMoved = function(e)
 
 	if((dx < 0 && e.pageX < co.left + (w * 0.15)) || (dx > 0 && e.pageX > co.left + (w * 0.85)))
 		cp.scrollLeft(this.scrollOffset[0] + dx);
-	
+
 	if((dy < 0 && e.pageY < co.top + (h * 0.15)) || (dy > 0 && e.pageY > co.top + (h * 0.85)))
 		cp.scrollTop(this.scrollOffset[1] + dy);
-	
+
 	this.selection_last[0] = e.pageX;
 	this.selection_last[1] = e.pageY;
-	
+
 	this.updateCanvas(true);
 };
 
@@ -848,24 +848,24 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 		var n = nodes[i];
 		var dom = n.ui ? n.ui.dom : null;
 		var p = dom ? dom.position() : { left: n.x, top: n.y };
-		var b = [p.left, p.top, p.left + (dom ? dom.width() : 0), p.top + (dom ? dom.height() : 0)]; 
-		
+		var b = [p.left, p.top, p.left + (dom ? dom.width() : 0), p.top + (dom ? dom.height() : 0)];
+
 		if(dom)
 			n = n.serialise();
-		
+
 		if(b[0] < x1) x1 = b[0];
 		if(b[1] < y1) y1 = b[1];
 		if(b[2] > x2) x2 = b[2];
 		if(b[3] > y2) y2 = b[3];
-		
+
 		d.nodes.push(n);
 	}
-	
+
 	d.x1 = x1 + sx;
 	d.y1 = y1 + sy;
 	d.x2 = x2 + sx;
 	d.y2 = y2 + sy;
-	
+
 	for(var i = 0, len = conns.length; i < len; i++) {
 		var c = conns[i];
 		d.conns.push(c.ui ? c.serialise() : c);
@@ -893,7 +893,7 @@ Application.prototype.onCopy = function(e) {
 		e.stopPropagation();
 		return false;
 	}
-	
+
 	this.fillCopyBuffer(this.selectedNodes, this.selectedConnections, this.scrollOffset[0], this.scrollOffset[1]);
 	e.stopPropagation();
 	return false;
@@ -948,21 +948,21 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 					var destNode = createdNodes[ni]
 					if (destNode.uid !== duid)
 						continue;
-					
+
 					var slots = docConnection.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
 					var slot = slots[docConnection.dst_slot]
-					
+
 					slot.is_connected = false;
 					slot.connected = false;
 					destNode.inputs_changed = true;
-						
+
 					break;
 				}
 			}
 
 			continue;
 		}
-		
+
 		var c = new Connection()
 		c.deserialise(docConnection)
 		c.src_node = nodeUidLookup[docConnection.src_nuid]
@@ -972,7 +972,7 @@ Application.prototype.paste = function(doc, offsetX, offsetY) {
 
 		createdConnections.push(c)
 	}
-	
+
 	for(i = 0, len = createdNodes.length; i < len; i++) {
 		node = createdNodes[i]
 
@@ -1000,7 +1000,7 @@ Application.prototype.onPaste = function() {
 
 	var ox = Math.max(this._mousePosition[0] - cp.position().left + sx, 100)
 	var oy = Math.max(this._mousePosition[1] - cp.position().top + sy, 100)
-	
+
 	var pasted = this.paste(doc, ox, oy)
 
 	pasted.nodes.map(this.markNodeAsSelected.bind(this))
@@ -1029,7 +1029,7 @@ Application.prototype.markConnectionAsSelected = function(conn) {
 
 Application.prototype.selectAll = function() {
 	this.clearSelection()
-	
+
 	var ag = E2.core.active_graph
 
 	ag.nodes.map(this.markNodeAsSelected.bind(this))
@@ -1079,12 +1079,12 @@ Application.prototype.toggleLeftPane = function()
 	E2.dom.left_nav.toggle(!this.condensed_view);
 	E2.dom.mid_pane.toggle(!this.condensed_view);
 	$('.resize-handle').toggle(!this.condensed_view);
-	
+
 	if(this.condensed_view)
 		E2.dom.dbg.toggle(false);
 	else if(!this.collapse_log)
 		E2.dom.dbg.toggle(true);
-	
+
 	this.onWindowResize();
 };
 
@@ -1104,13 +1104,13 @@ Application.prototype.onKeyDown = function(e) {
 		return;
 
 /*
-*/
 	console.log(
 		'onKeyDown', e.keyCode,
 		'shift', this.shift_pressed,
 		'ctrl', this.ctrl_pressed,
 		'alt', this.alt_pressed
 	)
+*/
 
 	// arrow up || down
 	var arrowKeys = [37,38,39,40]
@@ -1169,7 +1169,7 @@ Application.prototype.onKeyDown = function(e) {
 		{
 			this.onPlayClicked();
 		}
-		
+
 		e.preventDefault();
 		return false;
 	}
@@ -1183,8 +1183,8 @@ Application.prototype.onKeyDown = function(e) {
 
 		var numberHotKeys = [
 			'plugin:output_proxy', // 0
-			'plugin:input_proxy', // 1 
-			'plugin:graph', // 2 
+			'plugin:input_proxy', // 1
+			'plugin:graph', // 2
 			'plugin:slider_float_generator', // 3
 			'plugin:const_float_generator', // 4
 			'plugin:float_display', // 5
@@ -1214,7 +1214,7 @@ Application.prototype.onKeyDown = function(e) {
 		$('#presetSearch').select()
 		e.preventDefault();
 		return false;
-	} 
+	}
 	else if(this.ctrl_pressed || e.metaKey)
 	{
 		if(e.keyCode === 65) // CTRL+a
@@ -1234,10 +1234,10 @@ Application.prototype.onKeyDown = function(e) {
 		{
 			this.collapse_log = !this.collapse_log;
 			E2.dom.dbg.toggle(!this.collapse_log);
-			
+
 			if(!this.collapse_log)
 				msg(null); // Update scroll position.
-				
+
 			this.onWindowResize();
 			e.preventDefault();
 			return;
@@ -1265,7 +1265,7 @@ Application.prototype.onKeyDown = function(e) {
 
 Application.prototype.onKeyUp = function(e)
 {
-	console.log('keyup', e.keyCode, e.metaKey)
+	//console.log('keyup', e.keyCode, e.metaKey)
 	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
 	{
 		this.ctrl_pressed = false;
@@ -1399,7 +1399,7 @@ Application.prototype.openPresetSaveDialog = function(serializedGraph) {
 		})
 		.files(files)
 		.modal();
-		
+
 		return fcs;
 	})
 };
@@ -1467,7 +1467,7 @@ Application.prototype.openSaveDialog = function(cb)
 		.files(files)
 		.selected(window.location.pathname.split('/')[2])
 		.modal();
-		
+
 		return fcs;
 	})
 }
@@ -1492,17 +1492,17 @@ Application.prototype.onShowTooltip = function(e) {
 
 	if(this.inDrag)
 		return false;
-	
+
 	var $elem = $(e.currentTarget);
 	var tokens = $elem.attr('alt').split('_');
 	var core = this.player.core;
 	var node = E2.core.active_graph.nuid_lut[parseInt(tokens[0], 10)];
 	var txt = '';
-	
+
 	if(tokens.length < 2) // Node?
 	{
 		var p_name = core.pluginManager.keybyid[node.plugin.id];
-		
+
 		txt += '<b>' + p_name + '</b><br/><br/>' + node.plugin.desc;
 	}
 	else // Slot
@@ -1514,7 +1514,7 @@ Application.prototype.onShowTooltip = function(e) {
 			slot = node.find_dynamic_slot(tokens[1][1] === 'i' ? E2.slot_type.input : E2.slot_type.output, parseInt(tokens[2], 10));
 		else
 			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
-		
+
 		txt = '<b>Type:</b> ' + slot.dt.name;
 
 		if(slot.lo !== undefined || slot.hi !== undefined)
@@ -1523,7 +1523,7 @@ Application.prototype.onShowTooltip = function(e) {
 		if(slot.def !== undefined)
 		{
 			txt += '<br /><b>Default:</b> ';
-			
+
 			if(slot.def === null)
 				txt += 'Nothing';
 			else if(slot.def === this.player.core.renderer.matrix_identity)
@@ -1537,11 +1537,11 @@ Application.prototype.onShowTooltip = function(e) {
 			else
 			{
 				var cn = slot.def.constructor.name;
-				
+
 				if(cn === 'Texture')
 				{
 					txt += 'Texture';
-					
+
 					if(slot.def.image && slot.def.image.src)
 						txt += ' (' + slot.def.image.src + ')';
 				}
@@ -1549,13 +1549,13 @@ Application.prototype.onShowTooltip = function(e) {
 					txt += JSON.stringify(slot.def);
 			}
 		}
-		
+
 		txt += '<br /><br />';
 
 		if(slot.desc)
 			txt += slot.desc.replace(/\n/g, '<br/>');
 	}
-	
+
 	clearTimeout(this._tooltipTimer);
 
 	this._tooltipTimer = setTimeout(function() {
@@ -1574,7 +1574,7 @@ Application.prototype.onShowTooltip = function(e) {
 		that._tooltipElem = $elem;
 
 	}, 500);
-	
+
 };
 
 Application.prototype.onHideTooltip = function() {
@@ -1596,7 +1596,7 @@ function onGraphChanged() {
 
 function onNodeAdded(graph, node) {
 	console.log('onNodeAdded', node.plugin.id, node.plugin.isGraph)
-	
+
 	if (graph === E2.core.active_graph)
 		node.create_ui()
 
@@ -1628,7 +1628,7 @@ function onNodeRenamed(graph, node) {
 	console.log('onNodeRenamed', node.title)
 	if (node.ui)
 		node.ui.dom.find('.t').text(node.title)
-	
+
 	if (node.plugin.isGraph)
 		node.plugin.graph.tree_node.set_title(node.title)
 
@@ -1676,24 +1676,24 @@ Application.prototype.onGraphSelected = function(graph) {
 	function buildBreadcrumb(parentEl, graph, add_handler) {
 		var sp = $('<span>' + graph.tree_node.title + '</span>')
 		sp.css('cursor', 'pointer')
-		
+
 		if (add_handler) {
 			sp.click(function() {
 				graph.tree_node.activate()
 			})
-			
+
 			sp.css({ 'text-decoration': 'underline' })
 		}
-		
+
 		parentEl.prepend($('<span> / </span>'))
 		parentEl.prepend(sp)
-		
+
 		if (graph.parent_graph)
 			buildBreadcrumb(parentEl, graph.parent_graph, true)
 	}
 
 	buildBreadcrumb(E2.dom.breadcrumb, E2.core.active_graph, false)
-	
+
 	E2.core.active_graph.create_ui()
 	E2.core.active_graph.reset()
 	E2.core.active_graph_dirty = true
@@ -1723,26 +1723,26 @@ Application.prototype.start = function() {
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
 	window.addEventListener('keydown', this.onKeyDown.bind(this))
 	window.addEventListener('keyup', this.onKeyUp.bind(this))
-	
+
 	E2.dom.canvas_parent[0].addEventListener('scroll', function() {
 		that.scrollOffset = [ E2.dom.canvas_parent.scrollLeft(), E2.dom.canvas_parent.scrollTop() ]
 		var s = E2.dom.canvas[0].style
-		
+
 		s.left = that.scrollOffset[0] + 'px'
 		s.top = that.scrollOffset[1] + 'px'
 
 		that.updateCanvas(true)
 	})
-	
+
 	E2.dom.canvas_parent[0].addEventListener('mousedown', this.onCanvasMouseDown.bind(this))
 	document.addEventListener('mouseup', this.onCanvasMouseUp.bind(this))
-	
+
 	// Clear hover state on window blur. Typically when the user switches
 	// to another tab.
 	window.addEventListener('blur', function() {
 		that.clearEditState()
 	})
-	
+
 	window.addEventListener('resize', function() {
 		// To avoid UI lag, we don't respond to window resize events directly.
 		// Instead, we set up a timer that gets superceeded for each (spurious)
@@ -1751,7 +1751,7 @@ Application.prototype.start = function() {
 		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 100)
 	})
 
-	// close bootboxes on click 
+	// close bootboxes on click
 	$(document).on('click', '.bootbox.modal.in', function(e) {
 		var $et = $(e.target)
 		if (!$et.parents('.modal-dialog').length)
@@ -1761,7 +1761,7 @@ Application.prototype.start = function() {
 	$('button#fullscreen').click(function() {
 		E2.core.renderer.set_fullscreen(true);
 	});
-	
+
 	$('button#help').click(function() {
 		window.open('/help/introduction.html', 'Vizor Create Help');
 	});
@@ -1849,18 +1849,18 @@ E2.InitialiseEngi = function(vr_devices) {
 				msg(ex);
 				return;
 			}
-				
+
 			var m = 'ERROR: Script exception:\n';
-			
+
 			if(ex.fileName)
 				m += '\tFilename: ' + ex.fileName;
-				
+
 			if(ex.lineNumber)
 				m += '\tLine number: ' + ex.lineNumber;
-			
+
 			if(ex.message)
 				m += '\tMessage: ' + ex.message;
-				
+
 			msg(m)
 		}
 	})
@@ -1890,7 +1890,7 @@ E2.InitialiseEngi = function(vr_devices) {
 
 		E2.app.onWindowResize()
 		E2.app.onWindowResize()
-		
+
 		if (E2.core.pluginManager.release_mode) {
 			window.onbeforeunload = function() {
 			    return 'You might be leaving behind unsaved work!';
