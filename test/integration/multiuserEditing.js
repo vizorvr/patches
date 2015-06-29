@@ -122,7 +122,6 @@ describe('Multiuser', function() {
 		s1 = createClient(channel)
 
 		s1.once('join', function() {
-			console.log('sending edits')
 			s1.send(channel, { actionType: 'one' })
 			s1.send(channel, { actionType: 'two' })
 			s1.send(channel, { actionType: 'three' })
@@ -130,11 +129,9 @@ describe('Multiuser', function() {
 		})
 
 		s1.on('disconnected', function() {
-			console.log('creating 2')
 			s2 = createClient(channel)
 
 			s2.on(channel, function(m) {
-			console.log('got', m)
 				if (m.kind === 'join')
 					return;
 

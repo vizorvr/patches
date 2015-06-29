@@ -146,8 +146,8 @@ Connection.prototype.deserialise = function(d) {
 	this.src_node = d.src_nuid
 	this.dst_node = d.dst_nuid
 
-if (this.src_node === this.dst_node)
-	debugger;
+	if (this.src_node === this.dst_node)
+		debugger;
 
 	this.uid = d.uid || E2.uid()
 

@@ -506,8 +506,9 @@ Application.prototype.executeNodeDrag = function(nodes, conns, dx, dy) {
 
 	var cl = conns.length
 	if (cl && conns[0].ui) {
-		for (var i=0; i < cl; i++)
+		for (var i=0; i < cl; i++) {
 			E2.app.redrawConnection(conns[i])
+		}
 	}
 
 	this.updateCanvas(true)
