@@ -28,11 +28,11 @@ editLogSchema.statics.slugify = assetHelper.slugify
 editLogSchema.methods.promiseSave = function() {
 	var that = this
 	var dfd = when.defer()
-	this.save(function(err) {
+	this.save(function(err, d) {
 		if (err)
 			return dfd.reject(err)
 
-		dfd.resolve(that.log)
+		dfd.resolve(that)
 	})
 
 	return dfd.promise

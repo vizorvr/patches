@@ -41,15 +41,13 @@ describe('Multiuser', function() {
 	var s1, s2 
 
 	before(function(done) {
-		db = new mongo.Db('test'+testId,
+		db = new mongo.Db('test'+testId, 
 			new mongo.Server('localhost', 27017),
-			{ safe: true }
-		)
+			{ safe: true })
 
 		db.open(function() {
 			done()
 		})
-
 	})
 
 	after(function() {
@@ -95,10 +93,10 @@ describe('Multiuser', function() {
 		
 		s1 = createClient(channel)
 
-		s1.once('READY', function() {
-			s1.send(channel, { actionType: 'foo' })
-			s1.send(channel, { actionType: 'bar' })
-			s1.send(channel, { actionType: 'baz' })
+		s1.once('join', function() {
+			s1.send(channel, { actionType: 'one' })
+			s1.send(channel, { actionType: 'two' })
+			s1.send(channel, { actionType: 'three' })
 			s1.close()
 		})
 
@@ -113,7 +111,7 @@ describe('Multiuser', function() {
 
 				if (edits.length === 3) {
 					assert.deepEqual(edits.map(function(e) { return e.actionType }), 
-						[ 'foo', 'bar', 'baz' ])
+						[ 'one', 'two', 'three' ])
 
 					done()
 				}
