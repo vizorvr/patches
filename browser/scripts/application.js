@@ -471,8 +471,6 @@ Application.prototype.onNodeHeaderDblClicked = function(node) {
 
 	var that = this
 
-	console.log(node);
-
 	var input = $('<input class="node-title-input" placeholder="Type a title" />')
 
 	input
@@ -481,12 +479,17 @@ Application.prototype.onNodeHeaderDblClicked = function(node) {
 		.keyup(function(e) {
 
 			var code = e.keyCode || e.which
+
 			if(code == 13) {
+
 				var name = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
-				if(name || name !== "") {
+
+				if(name) {
 					that.graphApi.renameNode(E2.core.active_graph, node, name)
 				}
+
    			input.remove();
+
    		}
    		else if(code === 27) {
    			input.remove();
@@ -1122,15 +1125,6 @@ Application.prototype.onKeyDown = function(e) {
 	if (!this._noodlesOn && e.keyCode !== 9)
 		return;
 
-/*
-	console.log(
-		'onKeyDown', e.keyCode,
-		'shift', this.shift_pressed,
-		'ctrl', this.ctrl_pressed,
-		'alt', this.alt_pressed
-	)
-*/
-
 	// arrow up || down
 	var arrowKeys = [37,38,39,40]
 	if (arrowKeys.indexOf(e.keyCode) !== -1) {
@@ -1284,7 +1278,6 @@ Application.prototype.onKeyDown = function(e) {
 
 Application.prototype.onKeyUp = function(e)
 {
-	//console.log('keyup', e.keyCode, e.metaKey)
 	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
 	{
 		this.ctrl_pressed = false;
