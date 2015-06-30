@@ -125,7 +125,16 @@ describe('Multiuser', function() {
 			s1.send(channel, { actionType: 'one' })
 			s1.send(channel, { actionType: 'two' })
 			s1.send(channel, { actionType: 'three' })
-			s1.close()
+			s1.send(channel, { actionType: 'four' })
+			s1.send(channel, { actionType: 'five' })
+			s1.send(channel, { actionType: 'six' })
+			s1.send(channel, { actionType: 'seven' })
+			s1.send(channel, { actionType: 'eight' })
+			s1.send(channel, { actionType: 'nine' })
+			s1.send(channel, { actionType: 'ten' })
+			setTimeout(function() {
+				s1.close()
+			}, 500)
 		})
 
 		s1.on('disconnected', function() {
@@ -137,13 +146,53 @@ describe('Multiuser', function() {
 
 				edits.push(m)
 
-				if (edits.length === 3) {
+				console.log('edits', edits.length)
+
+				if (edits.length === 10) {
 					assert.deepEqual(edits.map(function(e) { return e.actionType }), 
-						[ 'one', 'two', 'three' ])
+						[ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten' ])
 
 					done()
 				}
 			})
+		})
+	})
+
+
+	it('keeps order of sent log', function(done) {
+		var channel = 'test2'+Math.random()
+		var edits = []
+		
+		s1 = createClient(channel)
+		s2 = createClient(channel)
+
+		s1.once('join', function() {
+			s1.send(channel, { actionType: 'one' })
+			s1.send(channel, { actionType: 'two' })
+			s1.send(channel, { actionType: 'three' })
+			s1.send(channel, { actionType: 'four' })
+			s1.send(channel, { actionType: 'five' })
+			s1.send(channel, { actionType: 'six' })
+			s1.send(channel, { actionType: 'seven' })
+			s1.send(channel, { actionType: 'eight' })
+			s1.send(channel, { actionType: 'nine' })
+			s1.send(channel, { actionType: 'ten' })
+		})
+
+		s2.on(channel, function(m) {
+			if (m.kind === 'join')
+				return;
+
+			edits.push(m)
+
+			console.log('edits', edits.length)
+
+			if (edits.length === 10) {
+				assert.deepEqual(edits.map(function(e) { return e.actionType }), 
+					[ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten' ])
+
+				done()
+			}
 		})
 	})
 
