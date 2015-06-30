@@ -59,10 +59,7 @@ describe('Multiuser', function() {
 	before(function(done) {
 		app._editorChannel.on('ready', function() {
 			setupDatabase(function(err) {
-				if (err)
-					return done(err)
-
-				db = new mongo.Db('test'+testId, 
+				db = new mongo.Db('mutest'+testId, 
 					new mongo.Server('localhost', 27017),
 					{ safe: true })
 
@@ -106,11 +103,17 @@ describe('Multiuser', function() {
 		s2 = createClient('test1')
 		var usersSeen = []
 		s1.on('join', function(other) {
+			if (other.data === s1.uid)
+				return
 			usersSeen.push(other.data)
 		})
 		s2.on('join', function(other) {
+			if (other.data === s2.uid)
+				return
 			usersSeen.push(other.data)
-			assert.deepEqual(usersSeen, [ s2.uid, s1.uid ])
+			assert.ok(usersSeen.length, 2)
+			assert.ok(usersSeen.indexOf(s1.uid) > -1)
+			assert.ok(usersSeen.indexOf(s2.uid) > -1)
 			done()
 		})
 	})
@@ -146,8 +149,6 @@ describe('Multiuser', function() {
 
 				edits.push(m)
 
-				console.log('edits', edits.length)
-
 				if (edits.length === 10) {
 					assert.deepEqual(edits.map(function(e) { return e.actionType }), 
 						[ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten' ])
@@ -159,14 +160,13 @@ describe('Multiuser', function() {
 	})
 
 
-	it('keeps order of sent log', function(done) {
-		var channel = 'test2'+Math.random()
+	it('keeps order of live entries', function(done) {
+		var channel = 'test3'+Math.random()
 		var edits = []
 		
 		s1 = createClient(channel)
-		s2 = createClient(channel)
 
-		s1.once('join', function() {
+		function burst() {
 			s1.send(channel, { actionType: 'one' })
 			s1.send(channel, { actionType: 'two' })
 			s1.send(channel, { actionType: 'three' })
@@ -177,23 +177,28 @@ describe('Multiuser', function() {
 			s1.send(channel, { actionType: 'eight' })
 			s1.send(channel, { actionType: 'nine' })
 			s1.send(channel, { actionType: 'ten' })
+		}
+
+		s1.once('join', function() {
+			s2 = createClient(channel)
+
+			s2.once('join', burst)
+
+			s2.on(channel, function(m) {
+				if (m.kind === 'join')
+					return;
+
+				edits.push(m)
+
+				if (edits.length === 10) {
+					assert.deepEqual(edits.map(function(e) { return e.actionType }), 
+						[ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten' ])
+
+					done()
+				}
+			})
 		})
 
-		s2.on(channel, function(m) {
-			if (m.kind === 'join')
-				return;
-
-			edits.push(m)
-
-			console.log('edits', edits.length)
-
-			if (edits.length === 10) {
-				assert.deepEqual(edits.map(function(e) { return e.actionType }), 
-					[ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten' ])
-
-				done()
-			}
-		})
 	})
 
 	// it('can make snapshots of the edit log', function(done) {
