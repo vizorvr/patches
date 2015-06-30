@@ -249,7 +249,7 @@ CollapsibleSelectControl.prototype.render = function(el) {
 
 					scrollInterval = setInterval(function() {
 						scrollHandler()
-					}, 1);
+					}, 10);
 
 				}
 
