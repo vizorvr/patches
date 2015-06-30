@@ -101,19 +101,21 @@ describe('Multiuser', function() {
 	it('should notify two users of each others joins', function(done) {
 		s1 = createClient('test1')
 		s2 = createClient('test1')
+
 		var usersSeen = []
 		s1.on('join', function(other) {
-			if (other.data === s1.uid)
-				return
 			usersSeen.push(other.data)
 		})
+
 		s2.on('join', function(other) {
-			if (other.data === s2.uid)
-				return
 			usersSeen.push(other.data)
-			assert.ok(usersSeen.length, 2)
+
+			if (usersSeen.length < 4)
+				return;
+
 			assert.ok(usersSeen.indexOf(s1.uid) > -1)
 			assert.ok(usersSeen.indexOf(s2.uid) > -1)
+
 			done()
 		})
 	})
@@ -123,21 +125,14 @@ describe('Multiuser', function() {
 		var edits = []
 		
 		s1 = createClient(channel)
+		var numbers = [ 'one', 'two', 'three', 'four', 'five',
+			'six', 'seven', 'eight', 'nine', 'ten' ]
 
 		s1.once('join', function() {
-			s1.send(channel, { actionType: 'one' })
-			s1.send(channel, { actionType: 'two' })
-			s1.send(channel, { actionType: 'three' })
-			s1.send(channel, { actionType: 'four' })
-			s1.send(channel, { actionType: 'five' })
-			s1.send(channel, { actionType: 'six' })
-			s1.send(channel, { actionType: 'seven' })
-			s1.send(channel, { actionType: 'eight' })
-			s1.send(channel, { actionType: 'nine' })
-			s1.send(channel, { actionType: 'ten' })
-			setTimeout(function() {
-				s1.close()
-			}, 500)
+			numbers.map(function(n) {
+				s1.send(channel, { actionType: n })
+			})
+			s1.close()
 		})
 
 		s1.on('disconnected', function() {
@@ -165,18 +160,13 @@ describe('Multiuser', function() {
 		var edits = []
 		
 		s1 = createClient(channel)
+		var numbers = [ 'one', 'two', 'three', 'four', 'five',
+			'six', 'seven', 'eight', 'nine', 'ten' ]
 
 		function burst() {
-			s1.send(channel, { actionType: 'one' })
-			s1.send(channel, { actionType: 'two' })
-			s1.send(channel, { actionType: 'three' })
-			s1.send(channel, { actionType: 'four' })
-			s1.send(channel, { actionType: 'five' })
-			s1.send(channel, { actionType: 'six' })
-			s1.send(channel, { actionType: 'seven' })
-			s1.send(channel, { actionType: 'eight' })
-			s1.send(channel, { actionType: 'nine' })
-			s1.send(channel, { actionType: 'ten' })
+			numbers.map(function(n) {
+				s1.send(channel, { actionType: n })
+			})
 		}
 
 		s1.once('join', function() {
@@ -192,7 +182,7 @@ describe('Multiuser', function() {
 
 				if (edits.length === 10) {
 					assert.deepEqual(edits.map(function(e) { return e.actionType }), 
-						[ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten' ])
+						numbers)
 
 					done()
 				}

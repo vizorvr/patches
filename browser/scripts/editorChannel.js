@@ -113,7 +113,7 @@ EditorChannel.prototype.join = function(channelName) {
 		if (!payload.actionType || !payload.from)
 			return;
 
-		// console.log('EditorChannel IN: ', payload.actionType, payload)
+		console.log('EditorChannel IN: ', payload.actionType, payload)
 
 		if (isAcceptedDispatch(payload))
 			E2.app.dispatcher.dispatch(hydrate(payload))
