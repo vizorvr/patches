@@ -118,9 +118,8 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node,
 	
 	function find_sid(nodes, uid) {
 		for (var n in nodes) {
-			console.log('find_sid', n, nodes[n].uid, uid)
 			if(nodes[n].uid === uid)
-				return parseInt(n)
+				return n
 		}
 		
 		msg('ERROR: Failed to resolve node(' + uid + ') in graph(' + that.graph.plugin.parent_node.title + ').')
