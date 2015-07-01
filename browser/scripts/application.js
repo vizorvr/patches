@@ -83,7 +83,7 @@ Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 	var area = node.open ? slot_div : node.ui.dom;
 	var o = this.offsetToCanvasCoord(area.offset());
 
-	result[0] = Math.round(type == E2.slot_type.input ? o[0] : o[0] + area.width() + (node.open ? 0 : 5));
+	result[0] = Math.round(type === E2.slot_type.input ? o[0] : o[0] + area.width() + (node.open ? 0 : 5));
 	result[1] = Math.round(o[1] + (area.height() / 2));
 };
 
@@ -144,7 +144,7 @@ Application.prototype.activateHoverSlot = function() {
 			that.hover_connections.push(c);
 			dirty = true;
 
-			if (hs.type == E2.slot_type.input)
+			if (hs.type === E2.slot_type.input)
 				return true; // Early out if this is an input slot, but continue searching if it's an output slot. There might be multiple connections.
 		}
 	})
@@ -480,7 +480,7 @@ Application.prototype.onNodeHeaderDblClicked = function(node) {
 
 			var code = e.keyCode || e.which
 
-			if(code == 13) {
+			if(code === 13) {
 
 				var name = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
 
