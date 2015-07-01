@@ -73,7 +73,6 @@ AccountController.prototype.openLoginModal = function()
 			{
 				console.log('Logged in as ' + user.username);
 				E2.models.user.set(user);
-				E2.app.updateGraphTitle();
 				bootbox.hideAll();
 			},
 			dataType: 'json'
