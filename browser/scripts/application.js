@@ -85,7 +85,7 @@ Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 	var area = node.open ? slot_div : node.ui.dom;
 	var o = this.offsetToCanvasCoord(area.offset());
 
-	result[0] = Math.round(type == E2.slot_type.input ? o[0] : o[0] + area.width() + (node.open ? 0 : 5));
+	result[0] = Math.round(type === E2.slot_type.input ? o[0] : o[0] + area.width() + (node.open ? 0 : 5));
 	result[1] = Math.round(o[1] + (area.height() / 2));
 };
 
@@ -145,7 +145,7 @@ Application.prototype.activateHoverSlot = function() {
 			that.hover_connections.push(c);
 			dirty = true;
 
-			if (hs.type == E2.slot_type.input)
+			if (hs.type === E2.slot_type.input)
 				return true; // Early out if this is an input slot, but continue searching if it's an output slot. There might be multiple connections.
 		}
 	})
@@ -319,18 +319,18 @@ Application.prototype.updateCanvas = function(clear) {
 			c.beginPath();
 
 			for(var i = 0, len = b.length; i < len; i++) {
-                // Noodles!
-                var cn = b[i].ui;
-                var x1 = (cn.src_pos[0] - so[0]) + 0.5;
-                var y1 = (cn.src_pos[1] - so[1]) + 0.5;
-                var x4 = (cn.dst_pos[0] - so[0]) + 0.5;
-                var y4 = (cn.dst_pos[1] - so[1]) + 0.5;
-                var diffx = Math.max(16, x4 - x1);
-                var x2 = x1 + diffx * 0.5;
-                var x3 = x4 - diffx * 0.5;
+				// Noodles!
+				var cn = b[i].ui;
+				var x1 = (cn.src_pos[0] - so[0]) + 0.5;
+				var y1 = (cn.src_pos[1] - so[1]) + 0.5;
+				var x4 = (cn.dst_pos[0] - so[0]) + 0.5;
+				var y4 = (cn.dst_pos[1] - so[1]) + 0.5;
+				var diffx = Math.max(16, x4 - x1);
+				var x2 = x1 + diffx * 0.5;
+				var x3 = x4 - diffx * 0.5;
 
-                c.moveTo(x1, y1);
-                c.bezierCurveTo(x2, y1, x3, y4, x4, y4);
+				c.moveTo(x1, y1);
+				c.bezierCurveTo(x2, y1, x3, y4, x4, y4);
 			}
 
 			c.stroke();
@@ -468,20 +468,40 @@ Application.prototype.onNodeHeaderClicked = function(e) {
 }
 
 Application.prototype.onNodeHeaderDblClicked = function(node) {
+
 	var that = this
 
-	bootbox.prompt({
-		animate: false,
-		title: 'Rename node',
-		value: node.title,
-		callback: function(name) {
-			if (!name)
-				return;
+	var input = $('<input class="node-title-input" placeholder="Type a title" />')
 
-			that.graphApi.renameNode(E2.core.active_graph, node, name)
+	input
+		.appendTo(node.ui.dom.context)
+		.val(node.title || node.id)
+		.keyup(function(e) {
 
-		}
-	})
+			var code = e.keyCode || e.which
+
+			if(code === 13) {
+
+				var name = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
+
+				if(name) {
+					that.graphApi.renameNode(E2.core.active_graph, node, name)
+				}
+
+				input.remove();
+
+			}
+			else if(code === 27) {
+				input.remove();
+			}
+
+		})
+		.select()
+		.bind('blur', function() {
+			$(this).remove();
+		})
+		.focus()
+
 }
 
 Application.prototype.isNodeInSelection = function(node) {
@@ -796,12 +816,12 @@ Application.prototype.onMouseMoved = function(e)
 
 	for(var i = 0, len = nodes.length; i < len; i++)
 	{
-		var n = nodes[i],
-		    nui = n.ui.dom[0],
-		    p_x = nui.offsetLeft,
-		    p_y = nui.offsetTop,
-		    p_x2 = p_x + nui.clientWidth,
-		    p_y2 = p_y + nui.clientHeight;
+		var n = nodes[i];
+		var nui = n.ui.dom[0];
+		var p_x = nui.offsetLeft;
+		var p_y = nui.offsetTop;
+		var p_x2 = p_x + nui.clientWidth;
+		var p_y2 = p_y + nui.clientHeight;
 
 		if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
 			continue; // No intersection.
@@ -1084,6 +1104,7 @@ Application.prototype.onWindowResize = function() {
 	}
 
 	this.updateCanvas(true)
+
 }
 
 Application.prototype.toggleNoodles = function() {
@@ -1093,6 +1114,7 @@ Application.prototype.toggleNoodles = function() {
 
 Application.prototype.toggleLeftPane = function()
 {
+
 	$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
 
 	this.condensed_view = !this.condensed_view;
@@ -1123,15 +1145,6 @@ Application.prototype.onKeyDown = function(e) {
 
 	if (!this._noodlesOn && e.keyCode !== 9)
 		return;
-
-/*
-	console.log(
-		'onKeyDown', e.keyCode,
-		'shift', this.shift_pressed,
-		'ctrl', this.ctrl_pressed,
-		'alt', this.alt_pressed
-	)
-*/
 
 	// arrow up || down
 	var arrowKeys = [37,38,39,40]
@@ -1286,7 +1299,6 @@ Application.prototype.onKeyDown = function(e) {
 
 Application.prototype.onKeyUp = function(e)
 {
-	//console.log('keyup', e.keyCode, e.metaKey)
 	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
 	{
 		this.ctrl_pressed = false;
@@ -1729,7 +1741,7 @@ Application.prototype.start = function() {
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 
-   	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
+	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
 	window.addEventListener('keydown', this.onKeyDown.bind(this))
 	window.addEventListener('keyup', this.onKeyUp.bind(this))
@@ -1759,6 +1771,7 @@ Application.prototype.start = function() {
 		// resize event within a 100 ms window.
 		clearTimeout(that.resize_timer)
 		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 100)
+
 	})
 
 	// close bootboxes on click
@@ -1799,12 +1812,20 @@ Application.prototype.start = function() {
 		$doc.on('mousemove', mouseMoveHandler)
 		$doc.one('mouseup', function(e) {
 			if (!changed) {
+
 				$pane.toggleClass('pane-hidden')
+
+				// Collapse top header logo to make the header look nicer
+				if($handle.hasClass('left-pane-handle')) {
+					$('#top-header-logo').toggleClass('collapsed');
+				}
+
 				E2.app.onWindowResize()
 			}
 			e.preventDefault()
 			$doc.off('mousemove', mouseMoveHandler)
 		})
+
 	})
 
 	E2.dom.saveACopy.click(E2.app.onSaveACopyClicked.bind(E2.app))
@@ -1823,7 +1844,6 @@ Application.prototype.start = function() {
 		that.channel.join(that.path)
 	})
 }
-
 
 E2.InitialiseEngi = function(vr_devices) {
 	E2.dom.canvas_parent = $('#canvas_parent');
@@ -1907,7 +1927,7 @@ E2.InitialiseEngi = function(vr_devices) {
 
 		if (E2.core.pluginManager.release_mode) {
 			window.onbeforeunload = function() {
-			    return 'You might be leaving behind unsaved work!';
+				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
 			}
 		}
 	})
