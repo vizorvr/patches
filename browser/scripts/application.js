@@ -318,18 +318,18 @@ Application.prototype.updateCanvas = function(clear) {
 			c.beginPath();
 
 			for(var i = 0, len = b.length; i < len; i++) {
-                // Noodles!
-                var cn = b[i].ui;
-                var x1 = (cn.src_pos[0] - so[0]) + 0.5;
-                var y1 = (cn.src_pos[1] - so[1]) + 0.5;
-                var x4 = (cn.dst_pos[0] - so[0]) + 0.5;
-                var y4 = (cn.dst_pos[1] - so[1]) + 0.5;
-                var diffx = Math.max(16, x4 - x1);
-                var x2 = x1 + diffx * 0.5;
-                var x3 = x4 - diffx * 0.5;
+								// Noodles!
+								var cn = b[i].ui;
+								var x1 = (cn.src_pos[0] - so[0]) + 0.5;
+								var y1 = (cn.src_pos[1] - so[1]) + 0.5;
+								var x4 = (cn.dst_pos[0] - so[0]) + 0.5;
+								var y4 = (cn.dst_pos[1] - so[1]) + 0.5;
+								var diffx = Math.max(16, x4 - x1);
+								var x2 = x1 + diffx * 0.5;
+								var x3 = x4 - diffx * 0.5;
 
-                c.moveTo(x1, y1);
-                c.bezierCurveTo(x2, y1, x3, y4, x4, y4);
+								c.moveTo(x1, y1);
+								c.bezierCurveTo(x2, y1, x3, y4, x4, y4);
 			}
 
 			c.stroke();
@@ -488,12 +488,12 @@ Application.prototype.onNodeHeaderDblClicked = function(node) {
 					that.graphApi.renameNode(E2.core.active_graph, node, name)
 				}
 
-   			input.remove();
+				input.remove();
 
-   		}
-   		else if(code === 27) {
-   			input.remove();
-   		}
+			}
+			else if(code === 27) {
+				input.remove();
+			}
 
 		})
 		.select()
@@ -810,11 +810,11 @@ Application.prototype.onMouseMoved = function(e)
 	for(var i = 0, len = nodes.length; i < len; i++)
 	{
 		var n = nodes[i],
-		    nui = n.ui.dom[0],
-		    p_x = nui.offsetLeft,
-		    p_y = nui.offsetTop,
-		    p_x2 = p_x + nui.clientWidth,
-		    p_y2 = p_y + nui.clientHeight;
+				nui = n.ui.dom[0],
+				p_x = nui.offsetLeft,
+				p_y = nui.offsetTop,
+				p_x2 = p_x + nui.clientWidth,
+				p_y2 = p_y + nui.clientHeight;
 
 		if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
 			continue; // No intersection.
@@ -1731,7 +1731,7 @@ Application.prototype.start = function() {
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 
-   	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
+		document.addEventListener('mouseup', this.onMouseReleased.bind(this))
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
 	window.addEventListener('keydown', this.onKeyDown.bind(this))
 	window.addEventListener('keyup', this.onKeyUp.bind(this))
@@ -1913,7 +1913,7 @@ E2.InitialiseEngi = function(vr_devices) {
 
 		if (E2.core.pluginManager.release_mode) {
 			window.onbeforeunload = function() {
-			    return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
+					return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
 			}
 		}
 	})
