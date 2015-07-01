@@ -1731,7 +1731,7 @@ Application.prototype.start = function() {
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 
-		document.addEventListener('mouseup', this.onMouseReleased.bind(this))
+	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
 	window.addEventListener('keydown', this.onKeyDown.bind(this))
 	window.addEventListener('keyup', this.onKeyUp.bind(this))
@@ -1913,7 +1913,7 @@ E2.InitialiseEngi = function(vr_devices) {
 
 		if (E2.core.pluginManager.release_mode) {
 			window.onbeforeunload = function() {
-					return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
+				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
 			}
 		}
 	})
