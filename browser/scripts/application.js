@@ -318,18 +318,18 @@ Application.prototype.updateCanvas = function(clear) {
 			c.beginPath();
 
 			for(var i = 0, len = b.length; i < len; i++) {
-								// Noodles!
-								var cn = b[i].ui;
-								var x1 = (cn.src_pos[0] - so[0]) + 0.5;
-								var y1 = (cn.src_pos[1] - so[1]) + 0.5;
-								var x4 = (cn.dst_pos[0] - so[0]) + 0.5;
-								var y4 = (cn.dst_pos[1] - so[1]) + 0.5;
-								var diffx = Math.max(16, x4 - x1);
-								var x2 = x1 + diffx * 0.5;
-								var x3 = x4 - diffx * 0.5;
+				// Noodles!
+				var cn = b[i].ui;
+				var x1 = (cn.src_pos[0] - so[0]) + 0.5;
+				var y1 = (cn.src_pos[1] - so[1]) + 0.5;
+				var x4 = (cn.dst_pos[0] - so[0]) + 0.5;
+				var y4 = (cn.dst_pos[1] - so[1]) + 0.5;
+				var diffx = Math.max(16, x4 - x1);
+				var x2 = x1 + diffx * 0.5;
+				var x3 = x4 - diffx * 0.5;
 
-								c.moveTo(x1, y1);
-								c.bezierCurveTo(x2, y1, x3, y4, x4, y4);
+				c.moveTo(x1, y1);
+				c.bezierCurveTo(x2, y1, x3, y4, x4, y4);
 			}
 
 			c.stroke();
@@ -809,12 +809,12 @@ Application.prototype.onMouseMoved = function(e)
 
 	for(var i = 0, len = nodes.length; i < len; i++)
 	{
-		var n = nodes[i],
-				nui = n.ui.dom[0],
-				p_x = nui.offsetLeft,
-				p_y = nui.offsetTop,
-				p_x2 = p_x + nui.clientWidth,
-				p_y2 = p_y + nui.clientHeight;
+		var n = nodes[i];
+		var nui = n.ui.dom[0];
+		var p_x = nui.offsetLeft;
+		var p_y = nui.offsetTop;
+		var p_x2 = p_x + nui.clientWidth;
+		var p_y2 = p_y + nui.clientHeight;
 
 		if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
 			continue; // No intersection.
