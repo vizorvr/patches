@@ -1425,12 +1425,12 @@ Application.prototype.openPresetSaveDialog = function(serializedGraph) {
 	})
 };
 
-Application.prototype.onSaveClicked = function(cb)
+Application.prototype.onSaveACopyClicked = function(cb)
 {
-	this.openSaveDialog();
+	this.openSaveACopyDialog();
 }
 
-Application.prototype.openSaveDialog = function(cb)
+Application.prototype.openSaveACopyDialog = function(cb)
 {
 	var that = this
 
@@ -1442,7 +1442,6 @@ Application.prototype.openSaveDialog = function(cb)
 	E2.dom.load_spinner.show();
 
 	$.get(URL_GRAPHS, function(files) {
-		var wh = window.location.hash;
 		var fcs = new FileSelectControl()
 		.frame('save-frame')
 		.template('graph')
@@ -1463,19 +1462,16 @@ Application.prototype.openSaveDialog = function(cb)
 						graph: ser
 					},
 					dataType: 'json',
-					success: function(saved)
-					{
+					success: function(saved) {
 						E2.dom.load_spinner.hide();
-						history.pushState({}, '', saved.path+'/edit');
 						if (cb)
 							cb();
 					},
-					error: function(x, t, err)
-					{
-						E2.dom.load_spinner.hide();
+					error: function(x, t, err) {
+						E2.dom.load_spinner.hide()
 
 						if (x.status === 401)
-							return E2.controllers.account.openLoginModal();
+							return E2.controllers.account.openLoginModal()
 
 						if (x.responseText)
 							bootbox.alert('Save failed: ' + x.responseText);
@@ -1486,7 +1482,6 @@ Application.prototype.openSaveDialog = function(cb)
 			}
 		})
 		.files(files)
-		.selected(window.location.pathname.split('/')[2])
 		.modal();
 
 		return fcs;
@@ -1494,7 +1489,7 @@ Application.prototype.openSaveDialog = function(cb)
 }
 
 Application.prototype.onPublishClicked = function() {
-	this.openSaveDialog(function() {
+	this.openSaveACopyDialog(function() {
 		window.location.href = '//vizor.io/'+window.location.pathname.split('/').slice(1,3).join('/');
 	})
 }
@@ -1812,7 +1807,7 @@ Application.prototype.start = function() {
 		})
 	})
 
-	E2.dom.save.click(E2.app.onSaveClicked.bind(E2.app))
+	E2.dom.saveACopy.click(E2.app.onSaveACopyClicked.bind(E2.app))
 	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
 	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
@@ -1843,7 +1838,7 @@ E2.InitialiseEngi = function(vr_devices) {
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
-	E2.dom.save = $('.save-button');
+	E2.dom.saveACopy = $('.save-copy-button');
 	E2.dom.saveAsPreset = $('#save-as-preset');
 	E2.dom.saveSelectionAsPreset = $('#save-selection-as-preset');
 	E2.dom.publish = $('#publish');
