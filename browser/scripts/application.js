@@ -961,7 +961,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			uidMap[node.uid] = newUid
 			node.uid = newUid
 
-			if (node.plugin === 'graph')
+			if (node.plugin === 'graph' || node.plugin === 'loop')
 				node.graph = remapGraph(node.graph, node)
 		})
 
