@@ -246,7 +246,7 @@ Node.prototype.findSlotByUid = function(suid) {
 
 	this.dyn_inputs.concat(this.dyn_outputs)
 	.some(function(s) {
-		if (s.uid === suid || s.uid === '' + suid) {
+		if ('' + s.uid === '' + suid) {
 			slot = s
 			return true
 		}
@@ -261,9 +261,8 @@ Node.prototype.findSlotByUid = function(suid) {
 Node.prototype.find_dynamic_slot = function(slot_type, suid) {
 	var slots = (slot_type === E2.slot_type.input) ? this.dyn_inputs : this.dyn_outputs;
 
-	// console.log('find_dynamic_slot', 'suid', suid, 'slots', slots)
 	for(var i = 0, len = slots.length; i < len; i++) {
-		if (slots[i].uid === suid || slots[i].uid === '' + suid)
+		if ('' + slots[i].uid === '' + suid)
 			return slots[i];
 	}
 
