@@ -49,7 +49,7 @@ SwitchModulator.prototype.create_ui = function() {
 	
 	inp_add.click(function() {
 		E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
-			type: E2.slot_type.input,
+			type: E2.slot_type.output,
 			name: that.state.slot_uids.length + '',
 			dt: that.core.datatypes.OBJECT
 		})
