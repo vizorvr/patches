@@ -15,7 +15,7 @@ https://github.com/vizorvr/vizor-create/issues/31
 
 var ArraySwitch = E2.plugins.array_switch_modulator = function ArraySwitch(core, node) {
 	var that = this
-
+	
 	this.desc = 'Revolver style array switch. Set up n inputs, then choose which one to output.';
 	
 	this.input_slots = [ 
@@ -27,10 +27,6 @@ var ArraySwitch = E2.plugins.array_switch_modulator = function ArraySwitch(core,
 		{ name: 'length', dt: E2.dt.FLOAT, desc: 'Emits the number of inputs = the length of the array.' }
 	]
 
-	this.state = {
-		slot_uids: []
-	}
-
 	this.core = core
 	this.node = node
 	this.lsg = new LinkedSlotGroup(core, node, [], [this.output_slots[0]])
@@ -38,17 +34,11 @@ var ArraySwitch = E2.plugins.array_switch_modulator = function ArraySwitch(core,
 	this.number = -1
 	this.values = []
 
-	this.node.on('slotAdded', function(slot) {
-		that.state.slot_uids.push(slot.uid)
+	this.node.on('slotAdded', function() {
 		that.updated = true
 	})
 
-	this.node.on('slotRemoved', function(slot) {
-		that.state.slot_uids = that.state.slot_uids
-			.filter(function(uid) {
-				return (slot.uid !== uid)
-			})
-
+	this.node.on('slotRemoved', function() {
 		that.updated = true
 	})
 }
@@ -65,16 +55,17 @@ ArraySwitch.prototype.create_ui = function() {
 	addButton.click(function() {
 		E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
 			type: E2.slot_type.input,
-			name: that.state.slot_uids.length + '',
+			name: that.dynInputs.length + '',
 			dt: that.lsg.dt
 		})
 	})
 
 	removeButton.click(function() {
-		if (that.state.slot_uids.length < 1)
+		var inputs = that.dynInputs
+		if (!inputs)
 			return
 
-		var suid = that.state.slot_uids[that.state.slot_uids.length-1]
+		var suid = inputs[inputs.length - 1].uid
 		E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
 	})
 
@@ -108,9 +99,8 @@ ArraySwitch.prototype.update_state = function() {
 }
 
 ArraySwitch.prototype.update_output = function(slot) {
-	if (slot.index === 1) {
-		return this.state.slot_uids.length
-	}
+	if (slot.index === 1)
+		return this.dynInputs.length // XXX avoid function call
 
 	if (this.value !== undefined)
 		return this.value
@@ -120,12 +110,18 @@ ArraySwitch.prototype.update_output = function(slot) {
 
 ArraySwitch.prototype.state_changed = function(ui) {
 	if (!ui) {
-		for(var i = 0, len = this.state.slot_uids.length; i < len; i++) {
-			this.lsg.add_dyn_slot(this.node.find_dynamic_slot(E2.slot_type.input, this.state.slot_uids[i]));
+		var slots = this.dynInputs = this.node.getDynamicInputSlots()
+
+		for(var i = 0, len = slots.length; i < len; i++) {
+			this.lsg.add_dyn_slot(
+				this.node.find_dynamic_slot(
+					E2.slot_type.input, slots[i].uid
+				)
+			)
 		}
 		
-		this.number = -1;
-		this.value = this.lsg.infer_dt();
+		this.number = -1
+		this.value = this.lsg.infer_dt()
 	}
 };
 

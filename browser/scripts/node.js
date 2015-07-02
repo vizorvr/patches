@@ -30,6 +30,14 @@ Node.prototype.getConnections = function() {
 	return this.inputs.concat(this.outputs)
 }
 
+Node.prototype.getDynamicInputSlots = function() {
+	return this.dyn_inputs;
+}
+
+Node.prototype.getDynamicOutputSlots = function() {
+	return this.dyn_outputs;
+}
+
 Node.prototype.set_plugin = function(plugin) {
 	this.plugin = plugin;
 	this.plugin.updated = true;
