@@ -79,7 +79,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test:browser:unit": "mocha browser/test/unit/undo.js && mocha browser/test/unit/paste.js && mocha browser/test/unit/collapsibleSelectControl.js && mocha browser/test/unit/editConnection.js && mocha browser/test/unit/graphShapes.js && mocha browser/test/unit/node.js",
+    "test:browser:unit": "mocha browser/test/unit/undo.js && mocha browser/test/unit/paste.js && mocha browser/test/unit/collapsibleSelectControl.js && mocha browser/test/unit/editConnection.js && mocha browser/test/unit/graphShapes.js && mocha browser/test/unit/node.js && mocha browser/test/unit/peopleStore.js",
     "test:browser:plugins": "mocha browser/test/unit/plugins",
     "test:browser": "npm run test:browser:unit && npm run test:browser:plugins",
     "test:server": "mocha test --recursive",

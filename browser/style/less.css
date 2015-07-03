@@ -6898,6 +6898,18 @@ table {
 .dragging-not-allowed * {
   cursor: no-drop !important;
 }
+.remote-mouse-pointer {
+  position: absolute;
+  background-color: #fff;
+  border-radius: 6px;
+  z-index: 99;
+  width: 10px;
+  height: 10px;
+  transition: all 0.1s ease-in-out;
+}
+.remote-mouse-pointer.clicked {
+  transform: scale(3);
+}
 html,
 body {
   height: 100%;
