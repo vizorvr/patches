@@ -98,6 +98,10 @@ GraphStore.prototype._uiNodeAdded = function(graph, node, info) {
 
 GraphStore.prototype._uiNodeRemoved = function(graph, nodeUid) {
 	var node = graph.findNodeByUid(nodeUid)
+	if (!node) {
+		console.warn('_uiNodeRemoved: node not found in graph', graph.uid)
+		return;
+	}
 	mapConnections(node, graph.disconnect.bind(graph))
 	graph.removeNode(node)
 	this.emit('nodeRemoved', graph, node)
