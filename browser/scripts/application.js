@@ -1053,8 +1053,6 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 
 	if (addToSelection !== false)
 		this.selectedNodes.push(node)
-
-	node.inputs.map(this.markConnectionAsSelected.bind(this))
 }
 
 Application.prototype.deselectNode = function(node) {
