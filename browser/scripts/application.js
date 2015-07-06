@@ -1661,6 +1661,8 @@ Application.prototype.setupStoreListeners = function() {
 	function onConnected(graph, connection) {
 		console.log('onConnected', graph, connection)
 
+		connection.patch_up()
+
 		if (graph === E2.core.active_graph) {
 			if (!connection.ui)
 				connection.create_ui()

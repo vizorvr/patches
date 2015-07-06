@@ -165,10 +165,17 @@ Connection.prototype.deserialise = function(d) {
 }
 
 Connection.prototype.patch_up = function(nodes) {
+	if (this.src_node instanceof Node &&
+		this.dst_slot.is_connected &&
+		this.src_slot.is_connected) {
+		return // already patched up (this may happen eg. on Disconnect undo)
+	}
+
 	function resolve_node(nuid) {
 		if (nuid instanceof Node)
 			return nuid
 
+console.log('patch_up',nodes,nuid)
 		for(var i = 0, len = nodes.length; i < len; i++) {
 			if(nodes[i].uid === nuid)
 				return nodes[i]
