@@ -175,7 +175,6 @@ Connection.prototype.patch_up = function(nodes) {
 		if (nuid instanceof Node)
 			return nuid
 
-console.log('patch_up',nodes,nuid)
 		for(var i = 0, len = nodes.length; i < len; i++) {
 			if(nodes[i].uid === nuid)
 				return nodes[i]
