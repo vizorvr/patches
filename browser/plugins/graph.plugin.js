@@ -319,33 +319,8 @@ GraphPlugin.prototype.state_changed = function(ui) {
 		return;
 	}
 	
-	function find_node(nodes, uid) {
-		for(var i = 0, len = nodes.length; i < len; i++) {
+	this.setupProxies()
 
-			if (nodes[i].uid !== uid)
-				continue;
-
-			var n = nodes[i]
-			var p = n.plugin
-			
-			p.data = core.get_default_value((p.id === 'input_proxy' ?
-				n.dyn_outputs
-				: n.dyn_inputs)[0]
-			.dt)
-
-			return n
-		}
-
-		msg('ERROR: Failed to find registered proxy node(' + uid + ') in graph(' + self.graph.plugin.parent_node.title + ').'); 
-		return null;
-	}
-
-	for(var uid in this.state.input_sids)
-		this.input_nodes[this.state.input_sids[uid]] = find_node(this.graph.nodes, uid);
-
-	for(var uid in this.state.output_sids)
-		this.output_nodes[this.state.output_sids[uid]] = find_node(this.graph.nodes, uid);
-		
 	var conns = node.outputs;
 	
 	for(var i = 0, len = conns.length; i < len; i++)

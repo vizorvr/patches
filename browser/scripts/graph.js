@@ -248,7 +248,7 @@ Graph.prototype.serialise = function() {
 }
 
 Graph.prototype.deserialise = function(d) {
-	this.uid = d.uid;
+	this.uid = '' + d.uid;
 	this.parent_graph = d.parent_uid;
 			
 	this.nodes = [];
