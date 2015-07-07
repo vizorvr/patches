@@ -5,11 +5,6 @@ E2.p = E2.plugins["register_local_read"] = function(core, node)
 	this.input_slots = [];
 	this.output_slots = [];
 	
-	this.state = 
-	{
-		slot_id: null
-	};
-	
 	this.core = core;
 	this.node = node;
 	this.data = null;
@@ -39,7 +34,7 @@ E2.p.prototype.renamed = function()
 E2.p.prototype.register_dt_changed = function(dt)
 {
 	this.dt = dt;
-	this.node.change_slot_datatype(E2.slot_type.output, this.state.slot_id, dt);
+	this.node.change_slot_datatype(E2.slot_type.output, this.slotId, dt);
 };
 
 E2.p.prototype.register_updated = function(value)
@@ -77,19 +72,25 @@ E2.p.prototype.target_reg = function(id)
 	}
 };
 
-E2.p.prototype.state_changed = function(ui)
-{
-	if(!ui)
-	{
-		var n = this.node;
+E2.p.prototype.state_changed = function(ui) {
+	if (!ui) {
+		var n = this.node
+		var outputs = this.node.getDynamicOutputSlots()
 
-		if(this.state.slot_id === null)
-			this.state.slot_id = n.add_slot(E2.slot_type.output, { name: 'value', dt: this.core.datatypes.ANY, desc: '' });
-		
-		this.regs = n.parent_graph.registers;
-		this.target_reg(n.title);
-	}
-	else
-		this.node.ui.dom.addClass('register');
-};
+		if (!outputs.length)
+			this.node.add_slot(E2.slot_type.output, {
+				name: 'value',
+				dt: this.core.datatypes.ANY,
+				desc: ''
+			})
+
+		outputs = this.node.getDynamicOutputSlots()
+		this.slotId = outputs[0].uid
+		console.log('register read slotId', this.slotId)
+
+		this.regs = n.parent_graph.registers
+		this.target_reg(n.title)
+	} else
+		this.node.ui.dom.addClass('register')
+}
 
