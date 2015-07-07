@@ -1843,6 +1843,9 @@ Application.prototype.start = function() {
 	this.channel = new EditorChannel(this)
 	this.channel.on('ready', function() {
 		that.channel.join(that.path)
+
+		E2.app.player.play() // autoplay
+		E2.app.changeControlState()
 	})
 }
 

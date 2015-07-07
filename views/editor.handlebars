@@ -139,6 +139,8 @@
 
 			E2.app.player.core.on('ready', function() {
 				E2.app.loadGraph(graph.url);
+				E2.app.player.play()
+				E2.app.changeControlState()
 			});
 		{{/if}}
 	}
