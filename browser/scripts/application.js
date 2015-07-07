@@ -1,5 +1,14 @@
 (function() {
 
+function getChannelFromPath(pathname) {
+	var p = pathname.split('/')
+
+	if (p.length > 2)
+		return p[1] + '/' + p[2]
+
+	return p[1]
+}
+
 function Application() {
 	var that = this;
 
@@ -43,7 +52,7 @@ function Application() {
 
 	this._mousePosition = [400,200]
 
-	this.path = window.location.pathname.split('/')[1]
+	this.path = getChannelFromPath(window.location.pathname)
 
 	this.dispatcher = new Flux.Dispatcher()
 
@@ -1501,7 +1510,9 @@ Application.prototype.openSaveACopyDialog = function(cb)
 
 Application.prototype.onPublishClicked = function() {
 	this.openSaveACopyDialog(function() {
-		window.location.href = '//vizor.io/'+window.location.pathname.split('/').slice(1,3).join('/');
+		window.location.href = '//vizor.io/' + 
+			window.location.pathname.split('/')
+				.slice(1,3).join('/');
 	})
 }
 
