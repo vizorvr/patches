@@ -74,7 +74,6 @@ E2.p.prototype.state_changed = function(ui) {
 
 		inputs = this.node.getDynamicInputSlots()
 		this.slotId = inputs[0].uid
-		console.log('register write slotId', this.slotId)
 
 		this.regs = n.parent_graph.registers
 		this.target_reg(n.title)

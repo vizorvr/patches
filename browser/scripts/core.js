@@ -288,7 +288,7 @@ Core.prototype.serialise = function()
 Core.prototype.deserialiseObject = function(d) {
 	this.abs_t = d.abs_t;
 	this.delta_t = 0.0;
-	this.graph_uid = d.graph_uid;
+	this.graph_uid = '' + d.graph_uid;
 
 	this.active_graph.destroy_ui();
 	
@@ -300,8 +300,8 @@ Core.prototype.deserialiseObject = function(d) {
 	
 	this.root_graph.patch_up(this.graphs);
 	this.root_graph.initialise(this.graphs);
-		
-	this.active_graph = resolve_graph(this.graphs, d.active_graph); 
+	
+	this.active_graph = resolve_graph(this.graphs, ''+d.active_graph); 
 	
 	if(!this.active_graph) {
 		msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
