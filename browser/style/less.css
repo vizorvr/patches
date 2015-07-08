@@ -6897,6 +6897,7 @@ table {
 .dragging-not-allowed,
 .dragging-not-allowed * {
   cursor: no-drop !important;
+  pointer-events: none;
 }
 html,
 body {
@@ -6945,6 +6946,7 @@ body {
   display: flex;
   flex-direction: row;
   clear: both;
+  overflow: hidden;
 }
 .cell {
   /* Safari 7.0+ */
