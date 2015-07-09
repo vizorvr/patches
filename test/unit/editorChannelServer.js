@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 var EventEmitter = require('events').EventEmitter
 var assert = require('assert')
-var EditorChannelServer = require('../lib/editorChannelServer').EditorChannelServer
+var EditorChannelServer = require('../../lib/editorChannelServer').EditorChannelServer
 
 describe('EditorChannelServer', function() {
 	after(function() {

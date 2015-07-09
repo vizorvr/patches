@@ -1,4 +1,4 @@
-var SceneProcessor = require('../lib/sceneProcessor');
+var SceneProcessor = require('../../lib/sceneProcessor');
 var when = require('when');
 var nodefn = require('when/node');
 var assert = require('assert');
@@ -9,11 +9,11 @@ var EventEmitter = require('events').EventEmitter;
 var scenes = {
 	actuallyAnImage: {
 			name: 'te-2rb.jpg',
-			path: __dirname+'/fixtures/te-2rb.jpg'
+			path: __dirname+'/../fixtures/te-2rb.jpg'
 	},
 	valid: {
 			name: 'scene.zip',
-			path: __dirname+'/fixtures/scene.zip'
+			path: __dirname+'/../fixtures/scene.zip'
 	}
 };
 
