@@ -118,9 +118,14 @@ function EditorChannel() {
 
 EditorChannel.prototype = Object.create(EventEmitter.prototype)
 
+EditorChannel.prototype.leave = function(channelName) {
+	this.channel.leave(channelName)
+	this.emit('leave', { id: this.uid })
+}
+
 EditorChannel.prototype.join = function(channelName) {
 	if (this.channelName && this.channelName !== channelName) {
-		this.channel.leave(this.channelName)
+		this.leave(this.channelName)
 	}
 
 	this.channelName = channelName

@@ -73,6 +73,7 @@ WebSocketChannel.prototype.leave = function(channel) {
 	console.log('WsChannel.leave',channel,this.uid)
 
 	this.ws.send(JSON.stringify({ kind: 'leave', channel: channel }))
+
 	return this
 }
 

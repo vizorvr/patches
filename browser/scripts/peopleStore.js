@@ -58,10 +58,12 @@ PeopleStore.prototype.initialize = function() {
 
 	E2.app.channel
 	.on('leave', function(m) {
-		if (m.id === E2.app.channel.uid)
+		if (m.id === E2.app.channel.uid) {
 			that.empty()
-		else
+		} else {
 			delete that.people[m.id]
+			that.emit('removed', m.id)
+		}
 	})
 	.on('join', function(m) {
 		if (that.people[m.id])
@@ -104,7 +106,7 @@ PeopleStore.prototype._mouseMoveHandler = function(e) {
 PeopleStore.prototype.empty = function empty() {
 	var that = this
 	this.list().map(function(person) {
-		that.emit('removed', person.id)
+		that.emit('removed', person.uid)
 	})
 	this.people = {}
 }

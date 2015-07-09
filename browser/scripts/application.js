@@ -1760,6 +1760,9 @@ Application.prototype.setupMouseMirroring = function() {
 	var cursors = this.mouseCursors = {}
 
 	this.peopleStore.on('removed', function(uid) {
+		if (uid === that.channel.uid)
+			return;
+
 		var $cursor = cursors[uid]
 		$cursor.remove()
 		delete cursors[uid]
