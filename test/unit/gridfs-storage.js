@@ -1,4 +1,4 @@
-var GridFsStorage = require('../lib/gridfs-storage');
+var GridFsStorage = require('../../lib/gridfs-storage');
 var when = require('when');
 var nodefn = require('when/node');
 var assert = require('assert');
@@ -9,8 +9,8 @@ var mongo = require('mongodb');
 var Grid = require('gridfs-stream');
 
 var images = {
-	small: __dirname+'/../browser/images/engilogo.png',
-	texture: __dirname+'/../browser/images/no_texture.png'
+	small: __dirname+'/../../browser/images/engilogo.png',
+	texture: __dirname+'/../../browser/images/no_texture.png'
 };
 
 describe('GridFsStorage', function()

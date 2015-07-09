@@ -1,4 +1,4 @@
-var ImageProcessor = require('../lib/imageProcessor');
+var ImageProcessor = require('../../lib/imageProcessor');
 var when = require('when');
 var nodefn = require('when/node');
 var assert = require('assert');
@@ -8,15 +8,15 @@ var fs = require('fs-extra');
 var images = {
 	large: {
 			name: 'te-2rb.jpg',
-			path: __dirname+'/fixtures/te-2rb.jpg'
+			path: __dirname+'/../fixtures/te-2rb.jpg'
 	},
 	largeTexture: {
 			name: 'no_texture.png',
-			path: __dirname+'/../browser/images/no_texture.png'
+			path: __dirname+'/../../browser/images/no_texture.png'
 	},
 	small: {
 			name: 'engilogo.png',
-			path: __dirname+'/../browser/images/engilogo.png'
+			path: __dirname+'/../../browser/images/engilogo.png'
 	}
 };
 

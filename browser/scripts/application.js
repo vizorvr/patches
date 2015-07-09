@@ -60,6 +60,7 @@ function Application() {
 	this.graphApi = new GraphApi(this.undoManager)
 
 	this.graphStore = new GraphStore()
+	this.peopleStore = new PeopleStore()
 
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
@@ -471,9 +472,7 @@ Application.prototype.onNodeHeaderMousedown = function() {
 	}
 }
 
-Application.prototype.onNodeHeaderClicked = function(e) {
-	e.stopPropagation()
-	return false
+Application.prototype.onNodeHeaderClicked = function() {
 }
 
 Application.prototype.onNodeHeaderDblClicked = function(node) {
@@ -742,115 +741,103 @@ Application.prototype.onCanvasMouseUp = function(e)
 			document.activeElement.blur();
 };
 
-Application.prototype.onMouseMoved = function(e)
-{
-	this._mousePosition = [e.pageX, e.pageY];
+Application.prototype.onMouseMoved = function(e) {
+	this._mousePosition = [e.pageX, e.pageY]
 
-	if(this.is_panning)
-	{
-		var cp = E2.dom.canvas_parent;
+	if(this.is_panning) {
+		var cp = E2.dom.canvas_parent
 
-		if(e.movementX)
-		{
-			cp.scrollLeft(this.scrollOffset[0]-e.movementX);
-			this.scrollOffset[0] = cp.scrollLeft();
+		if(e.movementX) {
+			cp.scrollLeft(this.scrollOffset[0]-e.movementX)
+			this.scrollOffset[0] = cp.scrollLeft()
 		}
 
-		if(e.movementY)
-		{
-			cp.scrollTop(this.scrollOffset[1]-e.movementY);
-			this.scrollOffset[1] = cp.scrollTop();
+		if(e.movementY) {
+			cp.scrollTop(this.scrollOffset[1]-e.movementY)
+			this.scrollOffset[1] = cp.scrollTop()
 		}
 
-		e.preventDefault();
-		return;
-	}
-	else if(this.editConn)
-	{
-		var cp = E2.dom.canvas_parent;
-		var pos = cp.position();
-		var w = cp.width();
-		var h = cp.height();
-		var x2 = pos.left + w;
-		var y2 = pos.top + h;
+		e.preventDefault()
+		return
+	} else if(this.editConn) {
+		var cp = E2.dom.canvas_parent
+		var pos = cp.position()
+		var w = cp.width()
+		var h = cp.height()
+		var x2 = pos.left + w
+		var y2 = pos.top + h
 
 		if(e.pageX < pos.left)
-			cp.scrollLeft(this.scrollOffset[0] - 20);
+			cp.scrollLeft(this.scrollOffset[0] - 20)
 		else if(e.pageX > x2)
-			cp.scrollLeft(this.scrollOffset[0] + 20);
+			cp.scrollLeft(this.scrollOffset[0] + 20)
 
 		if(e.pageY < pos.top)
-			cp.scrollTop(this.scrollOffset[1] - 20);
+			cp.scrollTop(this.scrollOffset[1] - 20)
 		else if(e.pageY > y2)
-			cp.scrollTop(this.scrollOffset[1] + 20);
+			cp.scrollTop(this.scrollOffset[1] + 20)
 
-		this.mouseEventPosToCanvasCoord(e, this.editConn.ui.dst_pos);
-		this.updateCanvas(true);
+		this.mouseEventPosToCanvasCoord(e, this.editConn.ui.dst_pos)
+		this.updateCanvas(true)
 
-		return;
-	}
-	else if(!this.selection_start)
-	{
-		E2.dom.structure.tree.on_mouse_move(e);
-		return;
+		return
+	} else if(!this.selection_start) {
+		E2.dom.structure.tree.on_mouse_move(e)
+		return
 	}
 
-	if(!this.selection_end)
-		return;
+	if (this.selection_end)
+		return this._performSelection(e)
+}
 
-	this.mouseEventPosToCanvasCoord(e, this.selection_end);
+Application.prototype._performSelection = function(e) {
+	this.mouseEventPosToCanvasCoord(e, this.selection_end)
 
-	var nodes = E2.core.active_graph.nodes;
-	var cp = E2.dom.canvas_parent;
+	var nodes = E2.core.active_graph.nodes
+	var cp = E2.dom.canvas_parent
 
-	var ss = this.selection_start.slice(0);
-	var se = this.selection_end.slice(0);
+	var ss = this.selection_start.slice(0)
+	var se = this.selection_end.slice(0)
 
-	for(var i = 0; i < 2; i++)
-	{
-		if(se[i] < ss[i])
-		{
-			var t = ss[i];
-
-			ss[i] = se[i];
-			se[i] = t;
+	for(var i = 0; i < 2; i++) {
+		if (se[i] < ss[i]) {
+			var t = ss[i]
+			ss[i] = se[i]
+			se[i] = t
 		}
 	}
 
-	var sn = this.selectedNodes;
-	var ns = [];
+	var sn = this.selectedNodes
+	var ns = []
 
 	for(var i = 0, len = sn.length; i < len; i++)
-		sn[i].ui.selected = false;
+		sn[i].ui.selected = false
 
-	for(var i = 0, len = nodes.length; i < len; i++)
-	{
-		var n = nodes[i];
-		var nui = n.ui.dom[0];
-		var p_x = nui.offsetLeft;
-		var p_y = nui.offsetTop;
-		var p_x2 = p_x + nui.clientWidth;
-		var p_y2 = p_y + nui.clientHeight;
+	for(var i = 0, len = nodes.length; i < len; i++) {
+		var n = nodes[i]
+		var nui = n.ui.dom[0]
+		var p_x = nui.offsetLeft
+		var p_y = nui.offsetTop
+		var p_x2 = p_x + nui.clientWidth
+		var p_y2 = p_y + nui.clientHeight
 
-		if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
+		if (se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
 			continue; // No intersection.
 
-		if(!n.ui.selected)
-		{
-			this.markNodeAsSelected(n, false);
-			ns.push(n);
+		if (!n.ui.selected) 	{
+			this.markNodeAsSelected(n, false)
+			ns.push(n)
 		}
 	}
 
-	for(var i = 0, len = sn.length; i < len; i++)
-	{
-		var n = sn[i];
+	for(var i = 0, len = sn.length; i < len; i++) {
+		var n = sn[i]
 
-		if(!n.ui.selected)
-			n.ui.dom[0].style.border = this.normal_border_style;
+		if (!n.ui.selected)
+			n.ui.dom[0].style.border = this.normal_border_style
 	}
 
-	this.selectedNodes = ns;
+	this.selectedNodes = ns
 
 	var co = cp.offset();
 	var w = cp.width();
@@ -868,7 +855,7 @@ Application.prototype.onMouseMoved = function(e)
 	this.selection_last[1] = e.pageY;
 
 	this.updateCanvas(true);
-};
+}
 
 Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 	var d = {};
@@ -1718,8 +1705,12 @@ Application.prototype.onGraphSelected = function(graph) {
 	var that = this
 
 	E2.core.active_graph.destroy_ui()
-
 	E2.core.active_graph = graph
+
+	this.dispatcher.dispatch({
+		actionType: 'uiActiveGraphChanged',
+		activeGraphUid: graph.uid
+	})
 
 	E2.dom.canvas_parent.scrollTop(0)
 	E2.dom.canvas_parent.scrollLeft(0)
@@ -1749,14 +1740,76 @@ Application.prototype.onGraphSelected = function(graph) {
 	buildBreadcrumb(E2.dom.breadcrumb, E2.core.active_graph, false)
 
 	E2.core.active_graph.create_ui()
+
+	this.peopleStore.list().map(function(person) {
+		if (person.uid === that.channel.uid)
+			return
+
+		if (person.activeGraphUid !== E2.core.active_graph.uid)
+			that.mouseCursors[person.uid].hide()
+		else
+			that.mouseCursors[person.uid].show()
+	})
+
 	E2.core.active_graph.reset()
 	E2.core.active_graph_dirty = true
 }
 
+Application.prototype.setupMouseMirroring = function() {
+	var that = this
+	var cursors = this.mouseCursors = {}
+
+	this.peopleStore.on('removed', function(uid) {
+		var $cursor = cursors[uid]
+		$cursor.remove()
+		delete cursors[uid]
+	})
+
+	this.peopleStore.on('added', function(person) {
+		if (person.uid === that.channel.uid)
+			return;
+
+		if (cursors[person.uid])
+			return;
+
+		var $cursor = $('<div>')
+		cursors[person.uid] = $cursor
+
+		$cursor.addClass('remote-mouse-pointer')
+		$cursor.addClass('user-'+person.uid)
+		$cursor.css('background-color', person.color)
+		$cursor.appendTo('body')
+
+		if (person.activeGraphUid !== E2.core.active_graph.uid)
+			$cursor.hide()
+	})
+
+	this.peopleStore.on('mouseMoved', function(person) {
+		var $cursor = cursors[person.uid]
+		$cursor.css('left', person.x)
+		$cursor.css('top', person.y)
+	})
+
+	this.peopleStore.on('mouseClicked', function(uid) {
+		var $cursor = cursors[uid]
+		$cursor.addClass('clicked')
+
+		setTimeout(function() {
+			$cursor.removeClass('clicked')
+		}, 100)
+	})
+
+	this.peopleStore.on('activeGraphChanged', function(person) {
+		var $cursor = cursors[person.uid]
+		if (person.activeGraphUid === E2.core.active_graph.uid)
+			$cursor.show()
+		else
+			$cursor.hide()
+	})
+}
+
 Application.prototype.start = function() {
 	var that = this
-
-	this.setupStoreListeners()
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 
@@ -1860,6 +1913,10 @@ Application.prototype.start = function() {
 	this.midPane = new E2.MidPane()
 
 	this.connectEditorChannel(function() {
+		that.peopleStore.initialize()
+		that.setupMouseMirroring()
+		that.setupStoreListeners()
+
 		E2.app.player.play() // autoplay
 		E2.app.changeControlState()
 	})
@@ -1872,6 +1929,7 @@ Application.prototype.connectEditorChannel = function(cb) {
 	var that = this
 
 	function joinChannel() {
+		that.peopleStore.reset()
 		that.channel.join(that.path)
 		if (cb)
 			cb()

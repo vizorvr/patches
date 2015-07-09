@@ -71,6 +71,10 @@ function isAcceptedDispatch(m) {
 		case 'uiDisconnected':
 		case 'uiGraphTreeReordered':
 		case 'uiPluginStateChanged':
+
+		case 'uiMouseMoved':
+		case 'uiMouseClicked':
+		case 'uiActiveGraphChanged':
 			return true;
 	}
 
@@ -84,12 +88,18 @@ function EditorChannel() {
 
 	var that = this
 
+	this.colors = {}
+
 	this.channel = new WebSocketChannel()
 
 	this.channel
 		.connect('/__editorChannel')
-		.on('ready', function() {
-			that.emit('ready')
+		.on('*', function(m) {
+			that.emit(m.kind, m)
+		})
+		.on('ready', function(uid) {
+			that.uid = uid
+			that.emit('ready', uid)
 		})
 
 	E2.app.dispatcher.register(function channelGotDispatch(payload) {
@@ -112,16 +122,17 @@ EditorChannel.prototype.join = function(channelName) {
 	}
 
 	this.channelName = channelName
-	this.channel.join(channelName)
-	.on('*', function(payload) {
-		if (!payload.actionType || !payload.from)
-			return;
+	this.channel
+		.join(channelName)
+		.on('*', function(payload) {
+			if (!payload.actionType || !payload.from)
+				return;
 
-		console.log('EditorChannel IN: ', payload.actionType, payload)
+			console.log('EditorChannel IN: ', payload.actionType, payload)
 
-		if (isAcceptedDispatch(payload))
-			E2.app.dispatcher.dispatch(hydrate(payload))
-	})
+			if (isAcceptedDispatch(payload))
+				E2.app.dispatcher.dispatch(hydrate(payload))
+		})
 }
 
 EditorChannel.prototype.broadcast = function(payload) {
