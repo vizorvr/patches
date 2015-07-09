@@ -1359,25 +1359,32 @@ Application.prototype.onStopClicked = function() {
 }
 
 Application.prototype.onOpenClicked = function() {
+	var that = this
+
 	FileSelectControl
 		.createGraphSelector(null, 'Open', function(path) {
 			history.pushState({
-				graph: {
-					path: path
-				}
+				graph: { path: path }
 			}, '', path + '/edit')
 
+			that.path = getChannelFromPath(window.location.pathname)
+
 			E2.app.midPane.closeAll()
-			E2.app.loadGraph('/data/graph'+path+'.json')
+
+			E2.app.loadGraph('/data/graph'+path+'.json', function(err) {
+				if (err)
+					return bootbox.alert('Error loading graph: '+err)
+
+				that.connectEditorChannel()
+			})
 		})
 }
 
-Application.prototype.loadGraph = function(graphPath)
+Application.prototype.loadGraph = function(graphPath, cb)
 {
 	E2.app.onStopClicked();
 	E2.app.player.on_update();
-	E2.dom.filename_input.val(graphPath);
-	E2.app.player.load_from_url(graphPath);
+	E2.app.player.load_from_url(graphPath, cb);
 };
 
 Application.prototype.onSaveAsPresetClicked = function() {
@@ -1852,13 +1859,29 @@ Application.prototype.start = function() {
 
 	this.midPane = new E2.MidPane()
 
-	this.channel = new EditorChannel(this)
-	this.channel.on('ready', function() {
-		that.channel.join(that.path)
-
+	this.connectEditorChannel(function() {
 		E2.app.player.play() // autoplay
 		E2.app.changeControlState()
 	})
+}
+
+/**
+ * Connect to the EditorChannel for this document
+ */
+Application.prototype.connectEditorChannel = function(cb) {
+	var that = this
+
+	function joinChannel() {
+		that.channel.join(that.path)
+		if (cb)
+			cb()
+	}
+
+	if (!this.channel) {
+		this.channel = new EditorChannel()
+		this.channel.on('ready', joinChannel)
+	} else
+		joinChannel()
 }
 
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
@@ -1950,7 +1973,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		}
 
 		if (loadGraphUrl)
-			player.load_from_url(loadGraphUrl, start)
+			E2.app.loadGraph(loadGraphUrl, start)
 		else
 			start()
 	})

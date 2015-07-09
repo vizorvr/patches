@@ -107,6 +107,10 @@ function EditorChannel() {
 EditorChannel.prototype = Object.create(EventEmitter.prototype)
 
 EditorChannel.prototype.join = function(channelName) {
+	if (this.channelName && this.channelName !== channelName) {
+		this.channel.leave(this.channelName)
+	}
+
 	this.channelName = channelName
 	this.channel.join(channelName)
 	.on('*', function(payload) {
