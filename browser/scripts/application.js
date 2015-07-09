@@ -1358,21 +1358,21 @@ Application.prototype.onOpenClicked = function() {
 
 			E2.app.midPane.closeAll()
 
-			E2.app.loadGraph('/data/graph'+path+'.json', function(err) {
-				if (err)
-					return bootbox.alert('Error loading graph: '+err)
-
-				that.connectEditorChannel()
-			})
+			E2.app.loadGraph('/data/graph'+path+'.json')
 		})
 }
 
-Application.prototype.loadGraph = function(graphPath, cb)
-{
-	E2.app.onStopClicked();
-	E2.app.player.on_update();
-	E2.app.player.load_from_url(graphPath, cb);
-};
+Application.prototype.loadGraph = function(graphPath, cb) {
+	var that = this
+	E2.app.onStopClicked()
+	E2.app.player.on_update()
+	E2.app.player.load_from_url(graphPath, function() {
+		that.connectEditorChannel()
+
+		if (cb)
+			cb()
+	})
+}
 
 Application.prototype.onSaveAsPresetClicked = function() {
 	this.openPresetSaveDialog()
@@ -1915,14 +1915,12 @@ Application.prototype.start = function() {
 
 	this.midPane = new E2.MidPane()
 
-	this.connectEditorChannel(function() {
-		that.peopleStore.initialize()
-		that.setupMouseMirroring()
-		that.setupStoreListeners()
+	that.peopleStore.initialize()
+	that.setupMouseMirroring()
+	that.setupStoreListeners()
 
-		E2.app.player.play() // autoplay
-		E2.app.changeControlState()
-	})
+	E2.app.player.play() // autoplay
+	E2.app.changeControlState()
 }
 
 /**
@@ -2034,8 +2032,9 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 
 		if (loadGraphUrl)
 			E2.app.loadGraph(loadGraphUrl, start)
-		else
-			start()
+		else {
+			E2.app.connectEditorChannel(start)
+		}
 	})
 
 }
