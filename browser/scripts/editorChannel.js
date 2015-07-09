@@ -94,12 +94,14 @@ function EditorChannel() {
 
 	this.channel
 		.connect('/__editorChannel')
-		.on('*', function(m) {
-			that.emit(m.kind, m)
-		})
 		.on('ready', function(uid) {
 			that.uid = uid
+
 			that.emit('ready', uid)
+
+			that.channel.on('*', function(m) {
+				that.emit(m.kind, m)
+			})
 		})
 
 	E2.app.dispatcher.register(function channelGotDispatch(payload) {

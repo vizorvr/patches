@@ -1929,7 +1929,6 @@ Application.prototype.connectEditorChannel = function(cb) {
 	var that = this
 
 	function joinChannel() {
-		that.peopleStore.reset()
 		that.channel.join(that.path)
 		if (cb)
 			cb()

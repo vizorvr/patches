@@ -25,6 +25,7 @@ describe('PeopleStore', function() {
 	var ps
 
 	beforeEach(function() {
+		E2.app.channel.uid = undefined
 		ps = new PeopleStore()
 		ps.initialize()
 	})
@@ -44,6 +45,29 @@ describe('PeopleStore', function() {
 		assert.equal(ps.list().length, 1)
 		E2.app.channel.emit('leave', { id: 'jeh' })
 		assert.equal(ps.list().length, 0)
+	})
+
+	it('leave by self should empty people', function() {
+		E2.app.channel.uid = 'foo'
+		E2.app.channel.emit('join', { id: 'foo'})
+		E2.app.channel.emit('join', { id: 'bar'})
+		assert.equal(ps.list().length, 2)
+
+		E2.app.channel.emit('leave', { id: 'foo' })
+		assert.equal(ps.list().length, 0)
+	})
+
+	it('emptying should emit removes for all people', function(done) {
+		var i = 0
+		E2.app.channel.uid = 'foo'
+		E2.app.channel.emit('join', { id: 'foo'})
+		E2.app.channel.emit('join', { id: 'bar'})
+		E2.app.channel.emit('join', { id: 'baz'})
+		ps.on('removed', function() {
+			if (++i===3)
+				done()
+		})
+		E2.app.channel.emit('leave', { id: 'foo' })
 	})
 
 	it('can list people', function() {

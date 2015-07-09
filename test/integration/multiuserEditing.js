@@ -102,14 +102,7 @@ describe('Multiuser', function() {
 		s1 = createClient('test1')
 		s2 = createClient('test1')
 
-		var usersSeen = []
-		s1.on('join', function(other) {
-			usersSeen.push(other.data)
-		})
-
-		s2.on('join', function(other) {
-			usersSeen.push(other.data)
-
+		function checkCondition() {
 			if (usersSeen.length < 4)
 				return;
 
@@ -117,6 +110,18 @@ describe('Multiuser', function() {
 			assert.ok(usersSeen.indexOf(s2.uid) > -1)
 
 			done()
+		}
+
+		var usersSeen = []
+		s1.on('join', function(other) {
+			usersSeen.push(other.id)
+			checkCondition()
+		})
+
+		s2.on('join', function(other) {
+			console.log('s2 join', other.id)
+			usersSeen.push(other.id)
+			checkCondition()
 		})
 	})
 
