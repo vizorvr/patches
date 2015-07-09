@@ -6,10 +6,12 @@ E2.p = E2.plugins.output_proxy = function(core, node)
 	
 	this.output_slots = [];
 	
-	this.state = 
-	{
-		slot_id: node.add_slot(E2.slot_type.input, { name: 'output', dt: core.datatypes.ANY, desc: 'Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.', def: null })
-	};
+	node.add_slot(E2.slot_type.input, {
+		name: 'output',
+		dt: core.datatypes.ANY,
+		desc: 'Connect a slot of any type to this plugin, to have the parent slot assume its datatype and forward data from this plugin.',
+		def: null
+	})
 	
 	this.core = core;
 	this.node = node;
@@ -25,13 +27,16 @@ E2.p.prototype.reset = function()
 	this.updated = true;
 };
 
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	var plg = this.node.parent_graph.plugin;
+E2.p.prototype.connection_changed = function(on, conn, slot) {
+	var plg = this.node.parent_graph.plugin
 	
-	if(plg)
-		plg.proxy_connection_changed(on, this.node, conn.src_node, slot, conn.src_slot);
-};
+	if (plg)
+		plg.proxy_connection_changed(on,
+			this.node,
+			conn.src_node,
+			slot,
+			conn.src_slot)
+}
 
 E2.p.prototype.update_input = function(slot, data)
 {

@@ -42,7 +42,7 @@ Node.prototype.set_plugin = function(plugin) {
 	this.plugin = plugin;
 	this.plugin.updated = true;
 	
-	var init_slot = function(slot, index, type) {
+	function init_slot(slot, index, type) {
 		slot.index = index;
 		slot.type = type;
 		
@@ -243,11 +243,10 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 
 Node.prototype.findSlotByUid = function(suid) {
 	var slot
-	suid = '' + suid
 
 	this.dyn_inputs.concat(this.dyn_outputs)
 	.some(function(s) {
-		if ('' + s.uid === suid) {
+		if (s.uid === suid) {
 			slot = s
 			return true
 		}
@@ -261,10 +260,9 @@ Node.prototype.findSlotByUid = function(suid) {
 
 Node.prototype.find_dynamic_slot = function(slot_type, suid) {
 	var slots = (slot_type === E2.slot_type.input) ? this.dyn_inputs : this.dyn_outputs;
-	suid = '' + suid
 
 	for(var i = 0, len = slots.length; i < len; i++) {
-		if ('' + slots[i].uid === suid)
+		if (slots[i].uid === suid)
 			return slots[i];
 	}
 
@@ -274,7 +272,7 @@ Node.prototype.find_dynamic_slot = function(slot_type, suid) {
 Node.prototype.rename_slot = function(slot_type, suid, name) {
 	var is_inp = slot_type === E2.slot_type.input;
 	var slot = this.find_dynamic_slot(slot_type, suid);
-	
+
 	if (slot) {
 		slot.name = name;
 
@@ -458,12 +456,27 @@ Node.prototype.serialise = function(flat) {
 	return d;
 };
 
+// force all uid's and sids into strings. issue #135
+Node.prototype.fixStateSidsIssue135 = function(state) {
+	function stringifySids(sids) {
+		Object.keys(sids).map(function(uid) {
+			sids[''+uid] = ''+sids[uid]
+		})
+	}
+
+	if (state.input_sids)
+		stringifySids(state.input_sids)
+
+	if (state.output_sids)
+		stringifySids(state.output_sids)
+}
+
 Node.prototype.deserialise = function(guid, d) {
 	this.parent_graph = guid;
 	this.x = d.x;
 	this.y = d.y;
 	this.id = E2.core.pluginManager.keybyid[d.plugin];
-	this.uid = d.uid;
+	this.uid = '' + d.uid;
 	this.open = d.open !== undefined ? d.open : true;
 	
 	this.title = d.title ? d.title : null;
@@ -487,6 +500,8 @@ Node.prototype.deserialise = function(guid, d) {
 	}
 	
 	if (d.state && this.plugin.state) {
+		this.fixStateSidsIssue135(d.state)
+
 		for(var key in d.state) {
 			if(!d.state.hasOwnProperty(key))
 				continue;
@@ -502,6 +517,7 @@ Node.prototype.deserialise = function(guid, d) {
 			
 			for(var i = 0; i < slots.length; i++) {
 				var s = slots[i];
+				s.uid = '' + s.uid;
 				s.dynamic = true;
 				s.dt = rdt[s.dt];
 				s.type = type;

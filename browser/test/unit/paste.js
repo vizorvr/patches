@@ -102,6 +102,7 @@ describe('Paste', function() {
 			assert.equal(nodeAdded, 3)
 			assert.equal(connected, 2)
 		})
+
 	})
 
 	describe('Complex', function() {
@@ -205,6 +206,15 @@ describe('Paste', function() {
 			assert.equal(ag.connections.length, 7)
 			app.graphApi.removeNode(ag, ag.nodes[3])
 			assert.equal(ag.connections.length, 6)
+		})
+
+		it('adds the nodes and connections to the selection', function() {
+			app.setupStoreListeners()
+			var ag = core.active_graph
+			app.clipboard = JSON.stringify(source)
+			app.onPaste()
+			assert.equal(app.selectedConnections.length, 7)
+			assert.equal(app.selectedNodes.length, 8)
 		})
 
 	})

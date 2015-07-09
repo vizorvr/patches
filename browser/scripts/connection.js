@@ -143,8 +143,8 @@ Connection.prototype.serialise = function()
 };
 
 Connection.prototype.deserialise = function(d) {
-	this.src_node = d.src_nuid
-	this.dst_node = d.dst_nuid
+	this.src_node = '' + d.src_nuid
+	this.dst_node = '' + d.dst_nuid
 
 	if (this.src_node === this.dst_node)
 		debugger;
@@ -165,6 +165,12 @@ Connection.prototype.deserialise = function(d) {
 }
 
 Connection.prototype.patch_up = function(nodes) {
+	if (this.src_node instanceof Node &&
+		this.dst_slot.is_connected &&
+		this.src_slot.is_connected) {
+		return // already patched up (this may happen eg. on Disconnect undo)
+	}
+
 	function resolve_node(nuid) {
 		if (nuid instanceof Node)
 			return nuid

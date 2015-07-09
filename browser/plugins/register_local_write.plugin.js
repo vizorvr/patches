@@ -5,11 +5,6 @@ E2.p = E2.plugins["register_local_write"] = function(core, node)
 	this.input_slots = [];
 	this.output_slots = [];
 	
-	this.state = 
-	{
-		slot_id: null
-	};
-	
 	this.core = core;
 	this.node = node;
 	
@@ -31,7 +26,7 @@ E2.p.prototype.destroy = function()
 
 E2.p.prototype.register_dt_changed = function(dt)
 {
-	this.node.change_slot_datatype(E2.slot_type.input, this.state.slot_id, dt);
+	this.node.change_slot_datatype(E2.slot_type.input, this.slotId, dt);
 };
 
 E2.p.prototype.renamed = function()
@@ -55,7 +50,7 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.target_reg = function(id)
 {
-	var dslot = this.node.find_dynamic_slot(E2.slot_type.input, this.state.slot_id);
+	var dslot = this.node.find_dynamic_slot(E2.slot_type.input, this.slotId);
 	
 	this.regs.lock(this, id);
 
@@ -65,19 +60,24 @@ E2.p.prototype.target_reg = function(id)
 		this.register_dt_changed(dslot.dt);
 };
 
-E2.p.prototype.state_changed = function(ui)
-{
-	if(!ui)
-	{
+E2.p.prototype.state_changed = function(ui) {
+	if (!ui) {
 		var n = this.node;
+		var inputs = this.node.getDynamicInputSlots()
 
-		if(this.state.slot_id === null)
-			this.state.slot_id = n.add_slot(E2.slot_type.input, { name: 'value', dt: this.core.datatypes.ANY, desc: '' });
+		if (!inputs.length)
+			this.node.add_slot(E2.slot_type.input, {
+				name: 'value',
+				dt: this.core.datatypes.ANY,
+				desc: ''
+			})
 
-		this.regs = n.parent_graph.registers;
-		this.target_reg(n.title);
-	}
-	else
-		this.node.ui.dom.addClass('register');
-};
+		inputs = this.node.getDynamicInputSlots()
+		this.slotId = inputs[0].uid
+
+		this.regs = n.parent_graph.registers
+		this.target_reg(n.title)
+	} else
+		this.node.ui.dom.addClass('register')
+}
 

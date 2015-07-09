@@ -1,5 +1,14 @@
 (function() {
 
+function getChannelFromPath(pathname) {
+	var p = pathname.split('/')
+
+	if (p.length > 2)
+		return p[1] + '/' + p[2]
+
+	return p[1]
+}
+
 function Application() {
 	var that = this;
 
@@ -43,7 +52,7 @@ function Application() {
 
 	this._mousePosition = [400,200]
 
-	this.path = window.location.pathname.split('/')[1]
+	this.path = getChannelFromPath(window.location.pathname)
 
 	this.dispatcher = new Flux.Dispatcher()
 
@@ -1040,8 +1049,6 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 
 	if (addToSelection !== false)
 		this.selectedNodes.push(node)
-
-	node.inputs.map(this.markConnectionAsSelected.bind(this))
 }
 
 Application.prototype.deselectNode = function(node) {
@@ -1490,7 +1497,9 @@ Application.prototype.openSaveACopyDialog = function(cb)
 
 Application.prototype.onPublishClicked = function() {
 	this.openSaveACopyDialog(function() {
-		window.location.href = '//vizor.io/'+window.location.pathname.split('/').slice(1,3).join('/');
+		window.location.href = '//vizor.io/' + 
+			window.location.pathname.split('/')
+				.slice(1,3).join('/');
 	})
 }
 
@@ -1649,6 +1658,8 @@ Application.prototype.setupStoreListeners = function() {
 
 	function onConnected(graph, connection) {
 		console.log('onConnected', graph, connection)
+
+		connection.patch_up()
 
 		if (graph === E2.core.active_graph) {
 			if (!connection.ui)
@@ -1900,6 +1911,8 @@ Application.prototype.start = function() {
 		that.peopleStore.initialize()
 		that.setupMouseMirroring()
 		that.setupStoreListeners()
+		E2.app.player.play() // autoplay
+		E2.app.changeControlState()
 	})
 }
 
