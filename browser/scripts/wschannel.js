@@ -41,7 +41,7 @@ WebSocketChannel.prototype.connect = function(path) {
 		var m = JSON.parse(evt.data)
 
 		if (m.kind === 'READY') {
-			that.uid = m.data
+			that.uid = m.id
 			that.emit('ready', that.uid)
 		}
 
