@@ -1851,6 +1851,7 @@ Application.prototype.start = function() {
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
 
 	this.midPane = new E2.MidPane()
+
 	this.channel = new EditorChannel(this)
 	this.channel.on('ready', function() {
 		that.channel.join(that.path)
@@ -1860,7 +1861,7 @@ Application.prototype.start = function() {
 	})
 }
 
-E2.InitialiseEngi = function(vr_devices) {
+E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');
 	E2.dom.controls = $('#controls');
@@ -1935,16 +1936,23 @@ E2.InitialiseEngi = function(vr_devices) {
 	E2.app.player = player
 
 	E2.core.on('ready', function() {
-		E2.app.start()
+		function start() {
+			E2.app.start()
 
-		E2.app.onWindowResize()
-		E2.app.onWindowResize()
+			E2.app.onWindowResize()
+			E2.app.onWindowResize()
 
-		if (E2.core.pluginManager.release_mode) {
-			window.onbeforeunload = function() {
-				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
+			if (E2.core.pluginManager.release_mode) {
+				window.onbeforeunload = function() {
+					return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
+				}
 			}
 		}
+
+		if (loadGraphUrl)
+			player.load_from_url(loadGraphUrl, start)
+		else
+			start()
 	})
 
 }
