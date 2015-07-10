@@ -1082,6 +1082,13 @@ Application.prototype.onWindowResize = function() {
 		E2.app.player.core.renderer.update_viewport();
 	}
 
+	// Update preset list height so it scrolls correctly
+	$('.preset-list-container').height(
+		$('#left-nav').height() -
+		$('#left-nav .nav-tabs').outerHeight(true) -
+		$('#left-nav .tab-content .searchbox').outerHeight(true)
+	);
+
 	this.updateCanvas(true)
 
 }
