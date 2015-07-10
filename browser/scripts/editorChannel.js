@@ -94,12 +94,14 @@ function EditorChannel() {
 
 	this.channel
 		.connect('/__editorChannel')
-		.on('*', function(m) {
-			that.emit(m.kind, m)
-		})
 		.on('ready', function(uid) {
 			that.uid = uid
+
 			that.emit('ready', uid)
+
+			that.channel.on('*', function(m) {
+				that.emit(m.kind, m)
+			})
 		})
 
 	E2.app.dispatcher.register(function channelGotDispatch(payload) {
@@ -116,7 +118,16 @@ function EditorChannel() {
 
 EditorChannel.prototype = Object.create(EventEmitter.prototype)
 
+EditorChannel.prototype.leave = function(channelName) {
+	this.channel.leave(channelName)
+	this.emit('leave', { id: this.uid })
+}
+
 EditorChannel.prototype.join = function(channelName) {
+	if (this.channelName && this.channelName !== channelName) {
+		this.leave(this.channelName)
+	}
+
 	this.channelName = channelName
 	this.channel
 		.join(channelName)

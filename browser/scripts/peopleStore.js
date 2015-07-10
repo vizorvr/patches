@@ -6,6 +6,17 @@ if (typeof(module) !== 'undefined') {
 	Store = require('./store')
 }
 
+/**
+ * PeopleStore keeps track of people editing the current document.
+ * It knows about their active graph, pointer color, position,
+ * and when they click.
+ *
+ * @fires PeopleStore#activeGraphChanged
+ * @fires PeopleStore#mouseClicked
+ * @fires PeopleStore#mouseMoved
+ * @fires PeopleStore#added
+ * @fires PeopleStore#removed
+ */
 function PeopleStore() {
 	Store.apply(this, arguments)
 
@@ -47,8 +58,12 @@ PeopleStore.prototype.initialize = function() {
 
 	E2.app.channel
 	.on('leave', function(m) {
-		delete that.people[m.id]
-		that.emit('removed', m.id)
+		if (m.id === E2.app.channel.uid) {
+			that.empty()
+		} else {
+			delete that.people[m.id]
+			that.emit('removed', m.id)
+		}
 	})
 	.on('join', function(m) {
 		if (that.people[m.id])
@@ -82,6 +97,18 @@ PeopleStore.prototype._mouseMoveHandler = function(e) {
 
 		mousePositionLastSentAt = Date.now()
 	}
+}
+
+/**
+ * Empties the Store
+ * @fires PeopleStore#removed
+ */
+PeopleStore.prototype.empty = function empty() {
+	var that = this
+	this.list().map(function(person) {
+		that.emit('removed', person.uid)
+	})
+	this.people = {}
 }
 
 PeopleStore.prototype.findByUid = function findByUid(uid) {

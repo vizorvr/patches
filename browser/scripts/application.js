@@ -1346,26 +1346,33 @@ Application.prototype.onStopClicked = function() {
 }
 
 Application.prototype.onOpenClicked = function() {
+	var that = this
+
 	FileSelectControl
 		.createGraphSelector(null, 'Open', function(path) {
 			history.pushState({
-				graph: {
-					path: path
-				}
+				graph: { path: path }
 			}, '', path + '/edit')
 
+			that.path = getChannelFromPath(window.location.pathname)
+
 			E2.app.midPane.closeAll()
+
 			E2.app.loadGraph('/data/graph'+path+'.json')
 		})
 }
 
-Application.prototype.loadGraph = function(graphPath)
-{
-	E2.app.onStopClicked();
-	E2.app.player.on_update();
-	E2.dom.filename_input.val(graphPath);
-	E2.app.player.load_from_url(graphPath);
-};
+Application.prototype.loadGraph = function(graphPath, cb) {
+	var that = this
+	E2.app.onStopClicked()
+	E2.app.player.on_update()
+	E2.app.player.load_from_url(graphPath, function() {
+		that.connectEditorChannel()
+
+		if (cb)
+			cb()
+	})
+}
 
 Application.prototype.onSaveAsPresetClicked = function() {
 	this.openPresetSaveDialog()
@@ -1753,6 +1760,9 @@ Application.prototype.setupMouseMirroring = function() {
 	var cursors = this.mouseCursors = {}
 
 	this.peopleStore.on('removed', function(uid) {
+		if (uid === that.channel.uid)
+			return;
+
 		var $cursor = cursors[uid]
 		$cursor.remove()
 		delete cursors[uid]
@@ -1905,18 +1915,34 @@ Application.prototype.start = function() {
 
 	this.midPane = new E2.MidPane()
 
-	this.channel = new EditorChannel(this)
-	this.channel.on('ready', function() {
-		that.channel.join(that.path)
-		that.peopleStore.initialize()
-		that.setupMouseMirroring()
-		that.setupStoreListeners()
-		E2.app.player.play() // autoplay
-		E2.app.changeControlState()
-	})
+	that.peopleStore.initialize()
+	that.setupMouseMirroring()
+	that.setupStoreListeners()
+
+	E2.app.player.play() // autoplay
+	E2.app.changeControlState()
 }
 
-E2.InitialiseEngi = function(vr_devices) {
+/**
+ * Connect to the EditorChannel for this document
+ */
+Application.prototype.connectEditorChannel = function(cb) {
+	var that = this
+
+	function joinChannel() {
+		that.channel.join(that.path)
+		if (cb)
+			cb()
+	}
+
+	if (!this.channel) {
+		this.channel = new EditorChannel()
+		this.channel.on('ready', joinChannel)
+	} else
+		joinChannel()
+}
+
+E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');
 	E2.dom.controls = $('#controls');
@@ -1991,15 +2017,23 @@ E2.InitialiseEngi = function(vr_devices) {
 	E2.app.player = player
 
 	E2.core.on('ready', function() {
-		E2.app.start()
+		function start() {
+			E2.app.start()
 
-		E2.app.onWindowResize()
-		E2.app.onWindowResize()
+			E2.app.onWindowResize()
+			E2.app.onWindowResize()
 
-		if (E2.core.pluginManager.release_mode) {
-			window.onbeforeunload = function() {
-				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
+			if (E2.core.pluginManager.release_mode) {
+				window.onbeforeunload = function() {
+					return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
+				}
 			}
+		}
+
+		if (loadGraphUrl)
+			E2.app.loadGraph(loadGraphUrl, start)
+		else {
+			E2.app.connectEditorChannel(start)
 		}
 	})
 

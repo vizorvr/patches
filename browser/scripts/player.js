@@ -101,12 +101,12 @@ function Player(vr_devices, canvas, root_node, cb)
 			E2.app.onGraphSelected(self.core.active_graph)
 	}
 	
-	this.load_from_json = function(json)
+	this.load_from_json = function(json, cb)
 	{
-		self.load_from_object(JSON.parse(json));
+		self.load_from_object(JSON.parse(json), cb);
 	};
 
-	this.load_from_object = function(obj)
+	this.load_from_object = function(obj, cb)
 	{
 		var c = self.core;
 		
@@ -117,15 +117,18 @@ function Player(vr_devices, canvas, root_node, cb)
 		
 		if (E2.app && E2.app.updateCanvas)
 			E2.app.updateCanvas(true);
+
+		if (cb)
+			cb()
 	};
 	
-	this.load_from_url = function(url) {
+	this.load_from_url = function(url, cb) {
 		$.ajax({
 			url: url,
 			dataType: 'text',
 			headers: {},
 			success: function(json) {
-				self.load_from_json(json);
+				self.load_from_json(json, cb);
 			}
 		});
 	};
