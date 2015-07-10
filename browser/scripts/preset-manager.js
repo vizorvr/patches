@@ -125,8 +125,8 @@ PresetManager.prototype.openPlugin = function(path, cb)
 {
 	var id = path.substring('plugin/'.length);
 	var canvasX = E2.dom.canvas_parent.position().left;
-	var mouseX = E2.app._mousePosition[0];
+	var mouseX = E2.app.mousePosition[0];
 	if(canvasX > mouseX) mouseX += canvasX; // Add the canvas X position to the mouse X position when double clicking from the preset list to avoid spawning plugins under the list
-	E2.app.instantiatePlugin(id, [mouseX, E2.app._mousePosition[1]]);
+	E2.app.instantiatePlugin(id, [mouseX, E2.app.mousePosition[1]]);
 }
 
