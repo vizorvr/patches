@@ -27,7 +27,7 @@ E2.p.prototype.create_ui = function()
 	{
 		var c = this.columns[i];
 		
-		c.text(this.vec[i]);
+		c.text('-');
 		c.css(css);
 		row.append(c);
 	}
