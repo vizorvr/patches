@@ -6972,6 +6972,16 @@ body {
   /* Safari 7.0+ */
   flex-shrink: 0;
 }
+.preset-list-container {
+  overflow: hidden;
+  width: 100%;
+}
+.preset-list-container .preset-list-content {
+  width: inherit;
+  height: inherit;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
 #structure {
   padding-left: 24px;
   margin: 8px;
