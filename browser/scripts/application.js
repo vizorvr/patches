@@ -1083,7 +1083,11 @@ Application.prototype.onWindowResize = function() {
 	}
 
 	// Update preset list height so it scrolls correctly
-	$('.preset-list-container').height($('#left-nav').height() - $('#left-nav .nav-tabs').outerHeight(true) - $('#left-nav .tab-content .searchbox').outerHeight(true));
+	$('.preset-list-container').height(
+		$('#left-nav').height() -
+		$('#left-nav .nav-tabs').outerHeight(true) -
+		$('#left-nav .tab-content .searchbox').outerHeight(true)
+	);
 
 	this.updateCanvas(true)
 
