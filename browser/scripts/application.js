@@ -50,7 +50,7 @@ function Application() {
 	this.is_fullscreen = false;
 	this._noodlesOn = true
 
-	this._mousePosition = [400,200]
+	this.mousePosition = [400,200]
 
 	this.path = getChannelFromPath(window.location.pathname)
 
@@ -104,7 +104,7 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 	var cp = E2.dom.canvas_parent
 	var co = cp.offset()
 
-	pos = pos || this._mousePosition
+	pos = pos || this.mousePosition
 
 	function createPlugin(name) {
 		var ag = E2.core.active_graph
@@ -742,7 +742,7 @@ Application.prototype.onCanvasMouseUp = function(e)
 };
 
 Application.prototype.onMouseMoved = function(e) {
-	this._mousePosition = [e.pageX, e.pageY]
+	this.mousePosition = [e.pageX, e.pageY];
 
 	if(this.is_panning) {
 		var cp = E2.dom.canvas_parent
@@ -1034,8 +1034,8 @@ Application.prototype.onPaste = function() {
 	var sx = this.scrollOffset[0]
 	var sy = this.scrollOffset[1]
 
-	var ox = Math.max(this._mousePosition[0] - cp.position().left + sx, 100)
-	var oy = Math.max(this._mousePosition[1] - cp.position().top + sy, 100)
+	var ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
+	var oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
 
 	var pasted = this.paste(doc, ox, oy)
 
@@ -1097,6 +1097,13 @@ Application.prototype.onWindowResize = function() {
 		E2.dom.canvas.css('height', height);
 		E2.app.player.core.renderer.update_viewport();
 	}
+
+	// Update preset list height so it scrolls correctly
+	$('.preset-list-container').height(
+		$('#left-nav').height() -
+		$('#left-nav .nav-tabs').outerHeight(true) -
+		$('#left-nav .tab-content .searchbox').outerHeight(true)
+	);
 
 	this.updateCanvas(true)
 

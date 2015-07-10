@@ -6897,6 +6897,7 @@ table {
 .dragging-not-allowed,
 .dragging-not-allowed * {
   cursor: no-drop !important;
+  pointer-events: none;
 }
 .remote-mouse-pointer {
   position: absolute;
@@ -6957,6 +6958,7 @@ body {
   display: flex;
   flex-direction: row;
   clear: both;
+  overflow: hidden;
 }
 .cell {
   /* Safari 7.0+ */
@@ -6981,6 +6983,16 @@ body {
   -webkit-flex-shrink: 0;
   /* Safari 7.0+ */
   flex-shrink: 0;
+}
+.preset-list-container {
+  overflow: hidden;
+  width: 100%;
+}
+.preset-list-container .preset-list-content {
+  width: inherit;
+  height: inherit;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 #structure {
   padding-left: 24px;

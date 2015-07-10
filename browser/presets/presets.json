@@ -102,7 +102,7 @@
 		"Time: Oscillate 2 values with in tween": "time_oscillate_2_values_in_tween",
 		"Time: Oscillate 2 values with out tween": "time_oscillate_2_values_out_tween",
 		"Time: Oscillate with a sawtooth": "time_oscillate_with_sawtooth",
-		"Time: Oscillte with a triangle": "time_oscillate_with_triangle",
+		"Time: Oscillate with a triangle": "time_oscillate_with_triangle",
 		"Time: Accumulating time": "time_accumulating_time",
 		"Time: Stop watch": "time_stop_watch",
 		"Time: Timer from 0 to 1": "time_timer_from_0_to_1",

@@ -51,6 +51,7 @@ body {
 	display: flex;
 	flex-direction: row;
 	clear: both;
+	overflow: hidden;
 }
 
 .cell {
@@ -80,6 +81,20 @@ body {
 #presets .searchbox {
 	-webkit-flex-shrink: 0;	/* Safari 7.0+ */
 	flex-shrink: 0;
+}
+
+.preset-list-container {
+
+	overflow: hidden;
+	width: 100%;
+
+	.preset-list-content {
+		width: inherit;
+		height: inherit;
+		overflow-y: scroll;
+		overflow-x: hidden;
+	}
+
 }
 
 #structure
