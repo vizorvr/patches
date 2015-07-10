@@ -1,4 +1,3 @@
-
 function EditConnection(graphApi, connection, sdiv, ddiv) {
 	this.offset = 0
 	this.graphApi = graphApi
@@ -54,28 +53,37 @@ EditConnection.prototype.destroy_ui = function() {
 
 EditConnection.prototype.canConnectTo = function(node, slot) {
 	var adt = slot.dt, bdt
+	var otherSlot
 	var rtl = this.rightToLeft
 
 	if (rtl) {
 		bdt = this.dstSlot.dt
+		otherSlot = this.dstSlot
 	} else {
 		bdt = this.srcSlot.dt
+		otherSlot = this.srcSlot
 	}
 
 	// Only allow connection if datatypes match and slot is unconnected. 
-	// Don't allow self-connections. There no complete check for cyclic 
+	// Don't allow self-connections. There is no complete check for cyclic 
 	// redundacies, though we should probably institute one.
-	// Additionally, don't allow connections between two ANY slots.
 	var a = (adt === bdt || adt === E2.dt.ANY || bdt === E2.dt.ANY)
+
+	// don't allow connections between two ANY slots.
 	var b = !(adt === E2.dt.ANY && bdt === E2.dt.ANY)
-	var c = //true
-			// dest to source, and source is slot and dest isn't slot
-			(rtl && (!this.srcSlot || this.srcSlot === slot) && this.dstNode !== node) ||
-			(!rtl && !slot.is_connected && (!this.dstSlot || this.dstSlot === slot) && this.srcNode !== node)
+	
+	// dest to source, and source is slot and dest isn't slot
+	var c = (rtl &&
+				(!this.srcSlot || this.srcSlot === slot) &&
+				this.dstNode !== node) ||
+			(!rtl && !slot.is_connected &&
+				(!this.dstSlot || this.dstSlot === slot) &&
+				this.srcNode !== node)
 
-	var can = a && b && c
+	// don't allow connections from output to output
+	var d = slot.type !== otherSlot.type
 
-	console.log('can',can, a,b,c, this.dstSlot)
+	var can = a && b && c && d
 
 	if (can) {
 		this._lastMatch = [node, slot]

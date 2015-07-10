@@ -17,9 +17,10 @@ describe('EditConnection', function() {
 		return {}
 	}
 
-	function makeSlot(dt) {
+	function makeSlot(dt, slotType) {
 		return {
 			dt: dt,
+			type: slotType,
 			index: 0
 		}
 	}	
@@ -27,7 +28,7 @@ describe('EditConnection', function() {
 	it('does not allow connecting to self', function() {
 		var isValid = true
 		var n1 = makeNode()
-		var s1 = makeSlot(0)
+		var s1 = makeSlot(0, 0)
 		var c = new EditConnection({}, new Connection(n1, null, s1))
 		isValid = c.canConnectTo(n1, s1)
 		assert.ok(!isValid)
@@ -36,10 +37,22 @@ describe('EditConnection', function() {
 	it('does not allow connecting any to any', function() {
 		var isValid = true
 		var n1 = makeNode()
-		var s1 = makeSlot(8)
+		var s1 = makeSlot(8, 1)
 		var n2 = makeNode()
-		var s2 = makeSlot(8)
+		var s2 = makeSlot(8, 0)
 		var c = new EditConnection({}, new Connection(n1, null, s1))
+		isValid = c.canConnectTo(n2, s2)
+		assert.ok(!isValid)
+	})
+
+	it('does not allow connecting output to output', function() {
+		var isValid = true
+		var n1 = makeNode()
+		var s1 = makeSlot(8, 1)
+		var n2 = makeNode()
+		var s2 = makeSlot(2, 1)
+		var c = new EditConnection({},
+			new Connection(n1, null, s1))
 		isValid = c.canConnectTo(n2, s2)
 		assert.ok(!isValid)
 	})
@@ -52,9 +65,9 @@ describe('EditConnection', function() {
 	it('does allow connecting left to right', function() {
 		var isValid = true
 		var n1 = makeNode()
-		var s1 = makeSlot(0)
+		var s1 = makeSlot(0, 1)
 		var n2 = makeNode()
-		var s2 = makeSlot(0)
+		var s2 = makeSlot(0, 0)
 		var c = new EditConnection({}, new Connection(n1, null, s1))
 		isValid = c.canConnectTo(n2, s2)
 		assert.ok(isValid)
@@ -63,9 +76,9 @@ describe('EditConnection', function() {
 	it('does allow connecting right to left', function() {
 		var isValid = true
 		var n1 = makeNode()
-		var s1 = makeSlot(0)
+		var s1 = makeSlot(0, 1)
 		var n2 = makeNode()
-		var s2 = makeSlot(0)
+		var s2 = makeSlot(0, 0)
 		var c = new EditConnection({}, new Connection(null, n1, null, s1))
 		isValid = c.canConnectTo(n2, s2)
 		assert.ok(isValid)
