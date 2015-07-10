@@ -124,12 +124,6 @@ PresetManager.prototype.add = function(category, title, path) {
 PresetManager.prototype.openPlugin = function(path, cb)
 {
 	var id = path.substring('plugin/'.length);
-
-	var data = { abs_t: 0, active_graph: 0, graph_uid: 1, root:
-		{ node_uid: 1, uid: 0, parent_uid: -1, open: true, nodes:
-			[{ plugin: id, x: 50, y: 50, uid: 0}], conns: [] }};
-
-	E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0);
-	E2.app.onPaste();
+	E2.app.instantiatePlugin(id);
 }
 
