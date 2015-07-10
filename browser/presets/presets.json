@@ -223,11 +223,6 @@
 		"Display OSC messages": "display_osc"
 	},
 
-	"WEB SOCKET PUBSUB": {
-		"Channel Receive": "plugin-wschannel-receive",
-		"Channel Send": "plugin-wschannel-send"
-	},
-
 	"HI-RES RENDERING": {
 		"Render segmented": "render_segmented"
 	}
