@@ -17,8 +17,6 @@ GraphStore.prototype._setupListeners = function() {
 		if (payload.graphUid === undefined)
 			return;
 
-		console.log('GraphStore.receiveFromDispatcher', payload.actionType, payload.graphUid)
-		
 		var graph = Graph.lookup(payload.graphUid)
 		if (!graph)
 			return console.error('No graph found for payload guid ', payload.graphUid)
@@ -89,7 +87,6 @@ GraphStore.prototype._uiNodeAdded = function(graph, node, info) {
 	this.emit('nodeAdded', graph, node, info)
 
 	if (info && info.proxy && info.proxy.connection) {
-		console.log('re-adding', info.proxy.connection)
 		this._uiConnected(graph.parent_graph, info.proxy.connection)
 	}
 

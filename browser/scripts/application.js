@@ -1634,8 +1634,6 @@ Application.prototype.setupStoreListeners = function() {
 	}
 
 	function onNodeAdded(graph, node) {
-		console.log('onNodeAdded', node.plugin.id, node.plugin.isGraph)
-		
 		if (graph === E2.core.active_graph) {
 			node.create_ui()
 
@@ -1648,8 +1646,6 @@ Application.prototype.setupStoreListeners = function() {
 	}
 
 	function onNodeRemoved(graph, node) {
-		console.log('onNodeRemoved', node)
-
 		E2.app.onHideTooltip()
 
 		node.destroy_ui()
@@ -1659,7 +1655,6 @@ Application.prototype.setupStoreListeners = function() {
 	}
 
 	function onNodeRenamed(graph, node) {
-		console.log('onNodeRenamed', node.title)
 		if (node.ui)
 			node.ui.dom.find('.t').text(node.title)
 		
@@ -1671,8 +1666,6 @@ Application.prototype.setupStoreListeners = function() {
 	}
 
 	function onConnected(graph, connection) {
-		console.log('onConnected', graph, connection)
-
 		connection.patch_up()
 
 		if (graph === E2.core.active_graph) {
@@ -1685,8 +1678,6 @@ Application.prototype.setupStoreListeners = function() {
 	}
 
 	function onDisconnected(graph, connection) {
-		console.log('onDisconnected', connection)
-
 		try {
 			connection.signal_change(false)
 		} catch(e) {

@@ -230,10 +230,8 @@ Connection.prototype.patch_up = function(nodes) {
 }
 
 Connection.hydrate = function(graph, serialisedConnection) {
-	console.log('hydrating connection', serialisedConnection)
 	var connection = new Connection()
 	connection.deserialise(serialisedConnection)
-	console.log('hydrated connection', connection)
 	connection.patch_up(graph.nodes)
 	return connection
 }

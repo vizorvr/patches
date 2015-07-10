@@ -26,7 +26,6 @@ WebSocketChannel.prototype.connect = function(path) {
 		path)
 
 	this.ws.onopen = function() {
-		console.log('WsChannel connected', path)
 		that._state = 'connected'
 		that.emit('connected')
 	}
@@ -60,8 +59,6 @@ WebSocketChannel.prototype.join = function(channel) {
 	if (this._state !== 'connected')
 		return;
 
-	console.log('WsChannel.join',channel, this.uid)
-
 	this.ws.send(JSON.stringify({ kind: 'join', channel: channel }))
 	return this
 }
@@ -69,8 +66,6 @@ WebSocketChannel.prototype.join = function(channel) {
 WebSocketChannel.prototype.leave = function(channel) {
 	if (this._state !== 'connected')
 		return;
-
-	console.log('WsChannel.leave',channel,this.uid)
 
 	this.ws.send(JSON.stringify({ kind: 'leave', channel: channel }))
 
@@ -86,7 +81,6 @@ WebSocketChannel.prototype.send = function(channel, data) {
 
 	data.channel = channel
 
-	console.log('OUT:', channel, data)
 	this.ws.send(JSON.stringify(data))
 
 	return this

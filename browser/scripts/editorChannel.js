@@ -39,7 +39,6 @@ function hydrate(pl) {
 			break;
 	}
 
-	// console.log('hydrated',m)
 	return m;
 }
 
@@ -78,7 +77,7 @@ function isAcceptedDispatch(m) {
 			return true;
 	}
 
-	console.log('NOT ACCEPTED:', m)
+	// console.warn('NOT ACCEPTED:', m)
 
 	return false;
 }
@@ -108,8 +107,6 @@ function EditorChannel() {
 		if (payload.from)
 			return;
 
-		// console.log('EditorChannel.channelGotDispatch', payload)
-
 		if (isAcceptedDispatch(payload))
 			that.broadcast(dehydrate(payload))
 	})
@@ -134,8 +131,6 @@ EditorChannel.prototype.join = function(channelName) {
 		.on('*', function(payload) {
 			if (!payload.actionType || !payload.from)
 				return;
-
-			console.log('EditorChannel IN: ', payload.actionType, payload)
 
 			if (isAcceptedDispatch(payload))
 				E2.app.dispatcher.dispatch(hydrate(payload))
