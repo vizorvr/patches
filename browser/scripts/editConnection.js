@@ -75,8 +75,6 @@ EditConnection.prototype.canConnectTo = function(node, slot) {
 
 	var can = a && b && c
 
-	console.log('can',can, a,b,c, this.dstSlot)
-
 	if (can) {
 		this._lastMatch = [node, slot]
 	} else {

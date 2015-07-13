@@ -12,6 +12,7 @@ var morgan = require('morgan');
 var errorHandler = require('errorhandler');
 var csrf = require('lusca').csrf();
 var methodOverride = require('method-override');
+var crypto = require('crypto')
 
 var flash = require('express-flash');
 var path = require('path');
@@ -135,6 +136,11 @@ app.use(flash());
 
 app.use(function(req, res, next)
 {
+	if (!req.user)
+		req.session.userId = crypto.randomBytes(12).toString('hex')
+	else
+		req.session.userId = req.user._id
+
 	res.locals.user = req.user;
 	res.locals.KEY_GA = process.env.KEY_GA;
 	next();

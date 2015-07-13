@@ -25,7 +25,7 @@ describe('PeopleStore', function() {
 	var ps
 
 	beforeEach(function() {
-		E2.app.channel.uid = undefined
+		E2.app.channel.uid = 'me'
 		ps = new PeopleStore()
 		ps.initialize()
 	})
@@ -33,25 +33,26 @@ describe('PeopleStore', function() {
 	it('handles join', function() {
 		E2.app.channel.emit('join', {
 			id: 'jep',
-			color: 'color'
+			color: 'color',
+			activeGraphUid: 'woo'
 		})
 
 		assert.equal(ps.people.jep.color, 'color')
-		assert.equal(ps.people.jep.activeGraphUid, 'root_graph')
+		assert.equal(ps.people.jep.activeGraphUid, 'woo')
 	})
 
 	it('handles leave', function() {
 		E2.app.channel.emit('join', { id: 'jeh' })
-		assert.equal(ps.list().length, 1)
+		assert.equal(ps.list().length, 2)
 		E2.app.channel.emit('leave', { id: 'jeh' })
-		assert.equal(ps.list().length, 0)
+		assert.equal(ps.list().length, 1)
 	})
 
-	it('leave by self should empty people', function() {
+	it('leave by the user should empty people on the channel', function() {
 		E2.app.channel.uid = 'foo'
-		E2.app.channel.emit('join', { id: 'foo'})
 		E2.app.channel.emit('join', { id: 'bar'})
-		assert.equal(ps.list().length, 2)
+		E2.app.channel.emit('join', { id: 'baz'})
+		assert.equal(ps.list().length, 3)
 
 		E2.app.channel.emit('leave', { id: 'foo' })
 		assert.equal(ps.list().length, 0)
@@ -73,8 +74,8 @@ describe('PeopleStore', function() {
 	it('can list people', function() {
 		E2.app.channel.emit('join', { id: 'foo'})
 		E2.app.channel.emit('join', { id: 'bar'})
-		assert.equal(ps.list()[0].uid, 'foo')
-		assert.equal(ps.list()[1].uid, 'bar')
+		assert.equal(ps.list()[1].uid, 'foo')
+		assert.equal(ps.list()[2].uid, 'bar')
 	})
 
 	it('can find people', function() {
@@ -103,6 +104,66 @@ describe('PeopleStore', function() {
 		})
 
 		assert.equal(ps.people.foo.activeGraphUid, 'abc')
+	})
+
+	it('changes follower`s active graph on uiActiveGraphChanged', function() {
+		E2.app.channel.emit('join', { id: 'foo' })
+		ps.me.followUid = 'foo'
+
+		dispatchListener({
+			from: 'foo',
+			actionType: 'uiActiveGraphChanged',
+			activeGraphUid: 'abc'
+		})
+
+		assert.equal(ps.people.foo.activeGraphUid, 'abc')
+		assert.equal(ps.me.activeGraphUid, 'abc')
+	})
+
+	it('changes my active graph from a follow', function(done) {
+		E2.app.channel.emit('join', { id: 'foo'})
+		ps.me.activeGraphUid = 'nope'
+		ps.me.followUid = 'foo'
+
+		ps.on('activeGraphChanged', function(p) {
+			if (p.uid !== 'me')
+				return;
+
+			if (p.activeGraphUid === 'abc')
+				done()
+		})
+
+		dispatchListener({
+			from: 'foo',
+			actionType: 'uiActiveGraphChanged',
+			activeGraphUid: 'abc'
+		})
+
+	})
+
+	it('marks followee as followed', function() {
+		E2.app.channel.emit('join', { id: 'foo', activeGraphUid: 'g' })
+
+		dispatchListener({
+			from: 'me',
+			actionType: 'uiUserIdFollowed',
+			followUid: 'foo'
+		})
+
+		assert.equal(ps.me.activeGraphUid, 'g')
+		assert.equal(ps.me.followUid, 'foo')
+		assert.equal(ps.findByUid('foo').followers, 1)
+	})
+
+
+	it('clears followee on follower leave', function() {
+		E2.app.channel.emit('join', { id: 'foo' })
+		ps.people.foo.followUid = 'me'
+		ps.me.followers = 5
+
+		E2.app.channel.emit('leave', { id: 'foo' })
+
+		assert.equal(ps.me.followers, 4)
 	})
 
 
