@@ -578,8 +578,6 @@ Node.hydrate = function(guid, json) {
 	var node = new Node()
 	node.deserialise(guid, json)
 	node.patch_up(E2.core.graphs)
-	node.initialise()
-	node.reset()
 	return node
 }
 
