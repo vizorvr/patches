@@ -77,12 +77,12 @@ GraphStore.prototype._uiGraphTreeReordered = function(graph, original, sibling, 
 GraphStore.prototype._uiNodeAdded = function(graph, node, info) {
 	graph.addNode(node, info)
 
+	node.reset()
+	node.initialise()
+
 	mapConnections(node, function(conn) {
 		graph.connect(conn)
 	})
-
-	if (node.plugin.state_changed)
-		node.plugin.state_changed()
 
 	this.emit('nodeAdded', graph, node, info)
 
