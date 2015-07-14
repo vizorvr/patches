@@ -86,13 +86,17 @@ PeopleStore.prototype._mouseClickHandler = function() {
 }
 
 PeopleStore.prototype._mouseMoveHandler = function(e) {
-	var x = e.pageX, y = e.pageY
 
-	if (Date.now() - mousePositionLastSentAt > 60) {
+	var x = e.pageX
+	var y = e.pageY
+	var cp = E2.dom.canvas_parent[0]
+
+	// Limit the broadcasted mouse movement area to the canvas
+	if (Date.now() - mousePositionLastSentAt > 60 && x > cp.offsetLeft && y > cp.offsetTop) {
 		E2.app.dispatcher.dispatch({
 			actionType: 'uiMouseMoved',
-			x: x,
-			y: y
+			x: x + E2.app.scrollOffset[0], // Make sure to add the scroll offset so we're
+			y: y + E2.app.scrollOffset[1] // showing the correct place when scrolled.
 		})
 
 		mousePositionLastSentAt = Date.now()

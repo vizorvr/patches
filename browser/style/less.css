@@ -6906,6 +6906,7 @@ table {
   z-index: 99;
   width: 10px;
   height: 10px;
+  pointer-events: none;
   transition: all 0.1s ease-in-out;
 }
 .remote-mouse-pointer.clicked {
