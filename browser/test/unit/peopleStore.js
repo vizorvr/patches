@@ -119,7 +119,7 @@ describe('PeopleStore', function() {
 	it('updates lastSeen when joined', function() {
 
 		E2.app.channel.emit('join', { id: 'foo'})
-		assert.ok(ps.findByUid('foo').lastSeen > 1000, true)
+		assert.ok(ps.findByUid('foo').lastSeen > 1000)
 
 	})
 
