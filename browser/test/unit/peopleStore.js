@@ -28,8 +28,6 @@ global.E2 = {
 
 E2.app.channel.setMaxListeners(16)
 
-var testTimeout = 2000
-
 var assert = require('assert')
 var PeopleStore = require('../../scripts/peopleStore')
 
@@ -110,7 +108,7 @@ describe('PeopleStore', function() {
 
 		global.E2.app.dispatcher.dispatch = function(pl) {
 			if (pl.actionType === 'uiMouseMoved')
-				done(new Error('nope'))			
+				done(new Error('uiMouseMoved received'))			
 		}
 
 		ps._mouseMoveHandler.call(ps, { pageX: 16, pageY: 16 })
@@ -121,7 +119,7 @@ describe('PeopleStore', function() {
 	it('updates lastSeen when joined', function() {
 
 		E2.app.channel.emit('join', { id: 'foo'})
-		assert.notEqual(ps.findByUid('foo').lastSeen, false)
+		assert.ok(ps.findByUid('foo').lastSeen > 1000, true)
 
 	})
 

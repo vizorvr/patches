@@ -128,6 +128,7 @@ PeopleStore.prototype.initialize = function() {
 		that.people[m.id].color = m.color
 		that.people[m.id].activeGraphUid = m.activeGraphUid
 		that.people[m.id].followers = m.followers || 0
+		that.people[m.id].lastSeen = Date.now()
 
 		if (m.id === myUid)
 			that.me = that.people[m.id]
