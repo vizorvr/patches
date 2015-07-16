@@ -31,27 +31,25 @@ PeopleStore.prototype.initialize = function() {
 	document.addEventListener('click', this._mouseClickHandler.bind(this))
 
 	E2.app.dispatcher.register(function(payload) {
-		if (!payload.from || payload.from === E2.app.channel.uid)
+		if (!payload.from || payload.from === E2.app.channel.uid) 
 			return
 
 		var uid = payload.from
+		that.people[uid].lastSeen = Date.now()
 
 		switch(payload.actionType) {
 			case 'uiActiveGraphChanged':
 				that.people[uid].activeGraphUid = payload.activeGraphUid
 				that.emit('activeGraphChanged', that.people[uid])
-				that.people[uid].lastSeen = Date.now()
 				break;
 
 			case 'uiMouseClicked':
 				that.emit('mouseClicked', uid)
-				that.people[uid].lastSeen = Date.now()
 				break;
 
 			case 'uiMouseMoved':
 				that.people[uid].x = payload.x
 				that.people[uid].y = payload.y
-				that.people[uid].lastSeen = Date.now()
 
 				that.emit('mouseMoved', that.people[uid])
 				break;
@@ -70,6 +68,8 @@ PeopleStore.prototype.initialize = function() {
 	.on('join', function(m) {
 		if (that.people[m.id])
 			return;
+
+		var now = new Date()
 
 		that.people[m.id] = {
 			uid: m.id,

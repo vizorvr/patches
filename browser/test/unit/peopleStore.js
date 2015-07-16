@@ -1,4 +1,5 @@
 global.EventEmitter = require('events').EventEmitter
+global.sinon = require('sinon')
 global.document = { addEventListener: function() {} }
 
 var dispatchListener
@@ -24,6 +25,8 @@ global.E2 = {
 		}]
 	}
 }
+
+E2.app.channel.setMaxListeners(20)
 
 var testTimeout = 2000
 
@@ -91,7 +94,7 @@ describe('PeopleStore', function() {
 		assert.equal(ps.findByUid('foo').uid, 'foo')
 	})
 
-	it('dispatches on mousemove', function(done) {
+	it('dispatches on mousemove when over the canvas', function(done) {
 		global.E2.app.dispatcher.dispatch = function(pl) {
 			assert.equal(pl.actionType, 'uiMouseMoved')
 			assert.equal(pl.x, 32)
@@ -104,15 +107,69 @@ describe('PeopleStore', function() {
 
 	it('does not dispatch on mousemove when not over the canvas', function(done) {
 
-		this.timeout(testTimeout + 500)
-		var timeout = setTimeout(done, testTimeout)
-
 		global.E2.app.dispatcher.dispatch = function(pl) {
-			assert.notEqual(pl.actionType, 'uiMouseMoved')
-			done()
+			if (pl.actionType === 'uiMouseMoved')
+				done(new Error('nope'))			
 		}
 
 		ps._mouseMoveHandler.call(ps, { pageX: 16, pageY: 16 })
+		done()
+
+	})
+
+	it('updates lastSeen when joined', function(done) {
+
+		E2.app.channel.emit('join', { id: 'foo'})
+		assert.notEqual(ps.findByUid('foo').lastSeen, false)
+		done()
+
+	})
+
+	it('updates lastSeen when user moves their mouse', function(done) {
+
+		var lastSeenWhenJoined
+		var lastSeenAfterMousemove
+
+		E2.app.channel.emit('join', { id: 'antero'})
+		lastSeenWhenJoined = ps.findByUid('antero').lastSeen
+
+		var clock = sinon.useFakeTimers(lastSeenWhenJoined + 100);
+
+		dispatchListener({
+			from: 'antero',
+			actionType: 'uiMouseMoved',
+			x: 64,
+			y: 64
+		})
+
+		lastSeenAfterMousemove = ps.findByUid('antero').lastSeen
+		assert.notEqual(lastSeenWhenJoined, lastSeenAfterMousemove)
+
+		clock.restore()
+		done();
+
+	})
+
+	it('updates lastSeen when user clicks', function(done) {
+
+		var lastSeenWhenJoined
+		var lastSeenAfterClick
+
+		E2.app.channel.emit('join', { id: 'antero'})
+		lastSeenWhenJoined = ps.findByUid('antero').lastSeen
+
+		var clock = sinon.useFakeTimers(lastSeenWhenJoined + 100);
+
+		dispatchListener({
+			from: 'antero',
+			actionType: 'uiMouseClicked'
+		})
+
+		lastSeenAfterClick = ps.findByUid('antero').lastSeen
+		assert.notEqual(lastSeenWhenJoined, lastSeenAfterClick)
+
+		clock.restore()
+		done();
 
 	})
 
@@ -127,6 +184,5 @@ describe('PeopleStore', function() {
 
 		assert.equal(ps.people.foo.activeGraphUid, 'abc')
 	})
-
 
 })
