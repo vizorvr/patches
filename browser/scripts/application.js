@@ -1776,7 +1776,7 @@ Application.prototype.onGraphSelected = function(graph) {
 Application.prototype.setupPeopleEvents = function() {
 	var that = this
 	var cursors = this.mouseCursors = {}
-	var lastMovementTimeouts = this.lastMovementTimeouts = []
+	var lastMovementTimeouts = this.lastMovementTimeouts = {}
 
 	this.peopleStore.on('removed', function(uid) {
 		if (uid === that.channel.uid)
@@ -1878,8 +1878,8 @@ Application.prototype.setupPeopleEvents = function() {
 		}, 100)
 
 
-		clearTimeout(lastMovementTimeouts[uid].timeout)
-		lastMovementTimeouts[uid].timeout = setTimeout(function() {
+		clearTimeout(lastMovementTimeouts[uid])
+		lastMovementTimeouts[uid] = setTimeout(function() {
 			$cursor.addClass('inactive')
 		}, 2000);
 
