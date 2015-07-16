@@ -175,6 +175,11 @@ TreeView.prototype.select = function(t_node) {
 		
 	if(highest_closed)
 		highest_closed.rebuild_dom();
+
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiActiveGraphChanged',
+		activeGraphUid: t_node.graph.uid
+	})
 	
 	this.on_activate(t_node.parent_node ? t_node.graph : this.root.graph);
 

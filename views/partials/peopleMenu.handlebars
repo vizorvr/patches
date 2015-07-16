@@ -1,0 +1,28 @@
+<h4>People currently editing</h4>
+
+<p>
+Click on a user to follow them as they move in and edit the graph.
+</p>
+
+<div class="peopleList">
+	<ul class="list-unstyled">
+	{{#each people}}
+	<li data-uid="{{uid}}">
+		<button
+			title="Click to {{#if followed}}unfollow{{else}}follow{{/if}} {{username}}"
+			class="btn btn-default {{#if followed}}followed{{/if}}"
+		>
+
+			{{username}} {{#if itsMe}}(you){{/if}}
+
+			{{#if followers}}
+				<span class="followers badge">
+				{{followers}}
+				</span>
+			{{/if}}
+		</button>
+	</li>
+	{{/each}}
+</ul>
+</div>
+

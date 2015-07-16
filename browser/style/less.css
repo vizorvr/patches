@@ -6899,19 +6899,6 @@ table {
   cursor: no-drop !important;
   pointer-events: none;
 }
-.remote-mouse-pointer {
-  position: absolute;
-  background-color: #fff;
-  border-radius: 6px;
-  z-index: 99;
-  width: 10px;
-  height: 10px;
-  pointer-events: none;
-  transition: all 0.1s ease-in-out;
-}
-.remote-mouse-pointer.clicked {
-  transform: scale(3);
-}
 html,
 body {
   height: 100%;
@@ -7292,4 +7279,41 @@ li.active,
 .envelope-editor .circle-selected {
   fill: #ff7f0e;
   stroke: #ff7f0e;
+}
+.remote-mouse-pointer {
+  position: absolute;
+  background-color: #fff;
+  border-radius: 6px;
+  z-index: 99;
+  width: 10px;
+  height: 10px;
+  transition: all 0.1s ease-in-out;
+}
+.remote-mouse-pointer.clicked {
+  transform: scale(3);
+}
+.peopleList li button {
+  width: 100%;
+  display: table;
+}
+.peopleList li button.followed {
+  background-color: #557755;
+}
+.peopleList span.small {
+  font-size: 1em;
+}
+.peopleList div.peopleRow {
+  display: table-row;
+}
+.peopleList h4.username {
+  width: 300px;
+}
+.peopleList div.followers {
+  background-color: orange;
+  border-radius: 7px;
+  width: 16px;
+  height: 16px;
+  color: blue;
+  font-size: 0.8em;
+  font-weight: bold;
 }
