@@ -1756,6 +1756,7 @@ Application.prototype.onGraphSelected = function(graph) {
 Application.prototype.setupMouseMirroring = function() {
 	var that = this
 	var cursors = this.mouseCursors = {}
+	var lastMovementTimes = this.mouseMovementLastSeen = {}
 
 	this.peopleStore.on('removed', function(uid) {
 		if (uid === that.channel.uid)
@@ -1775,8 +1776,10 @@ Application.prototype.setupMouseMirroring = function() {
 
 		var $cursor = $('<div>')
 		cursors[person.uid] = $cursor
+		lastMovementTimes[person.uid] = { last_seen: new Date().getTime(), timeout: undefined }
 
 		$cursor.addClass('remote-mouse-pointer')
+		$cursor.addClass('inactive')
 		$cursor.addClass('user-'+person.uid)
 		$cursor.css('background-color', person.color)
 		$cursor.appendTo('body')
@@ -1787,8 +1790,63 @@ Application.prototype.setupMouseMirroring = function() {
 
 	this.peopleStore.on('mouseMoved', function(person) {
 		var $cursor = cursors[person.uid]
-		$cursor.css('left', person.x)
-		$cursor.css('top', person.y)
+		var cp = E2.dom.canvas_parent[0];
+		$cursor.removeClass('inactive outside')
+
+		// Update the time the user was seen last and their cursor fade-out timeout
+		lastMovementTimes[person.uid].last_seen = new Date().getTime()
+		clearTimeout(lastMovementTimes[person.uid].timeout)
+		lastMovementTimes[person.uid].timeout = setTimeout(function() {
+			$cursor.addClass('inactive')
+		}, 2000);
+
+		// Received x/y are coordinates atop the canvas. Adjust accordingly
+		// to this user's canvas position.
+		var adjustedX = person.x;
+		var adjustedY = person.y;
+		var cursorIsOutsideViewportX = false;
+		var cursorIsOutsideViewportY = false;
+
+		var viewPortLeftX = E2.app.scrollOffset[0];
+		var viewPortRightX = E2.app.scrollOffset[0] + E2.app.canvas.width();
+		var viewPortTopY = E2.app.scrollOffset[1];
+		var viewPortBottomY = E2.app.scrollOffset[1] + E2.app.canvas.height();
+
+		if(adjustedX < viewPortLeftX) {
+			adjustedX = cp.offsetLeft;
+			cursorIsOutsideViewportX = true;
+		}
+		else if(adjustedX > viewPortRightX) {
+			adjustedX = $(window).width();
+			cursorIsOutsideViewportX = true;
+		}
+
+		if(adjustedY < viewPortTopY) {
+			adjustedY = cp.offsetTop;
+			cursorIsOutsideViewportY = true;
+		}
+		else if(adjustedY > viewPortBottomY) {
+			adjustedY = $(window).height();
+			cursorIsOutsideViewportY = true;
+		}
+
+		if(cursorIsOutsideViewportX) {
+			$cursor.addClass('outside')
+		}
+		else {
+			adjustedX += cp.offsetLeft - E2.app.scrollOffset[0];
+		}
+
+		if(cursorIsOutsideViewportY) {
+			$cursor.addClass('outside')
+		}
+		else {
+			adjustedY += cp.offsetTop - E2.app.scrollOffset[1];
+		}
+
+		$cursor.css('left', adjustedX)
+		$cursor.css('top', adjustedY)
+
 	})
 
 	this.peopleStore.on('mouseClicked', function(uid) {
@@ -1798,6 +1856,14 @@ Application.prototype.setupMouseMirroring = function() {
 		setTimeout(function() {
 			$cursor.removeClass('clicked')
 		}, 100)
+
+
+		lastMovementTimes[uid].last_seen = new Date().getTime()
+		clearTimeout(lastMovementTimes[uid].timeout)
+		lastMovementTimes[uid].timeout = setTimeout(function() {
+			$cursor.addClass('inactive')
+		}, 2000);
+
 	})
 
 	this.peopleStore.on('activeGraphChanged', function(person) {

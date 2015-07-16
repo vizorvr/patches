@@ -14,9 +14,18 @@ global.E2 = {
 			register: function(cb) {
 				dispatchListener = cb
 			}
-		}
+		},
+		scrollOffset: [0, 0]
+	},
+	dom: {
+		canvas_parent: [{
+			offsetLeft: 32,
+			offsetTop: 32
+		}]
 	}
 }
+
+var testTimeout = 2000
 
 var assert = require('assert')
 var PeopleStore = require('../../scripts/peopleStore')
@@ -86,11 +95,25 @@ describe('PeopleStore', function() {
 		global.E2.app.dispatcher.dispatch = function(pl) {
 			assert.equal(pl.actionType, 'uiMouseMoved')
 			assert.equal(pl.x, 32)
-			assert.equal(pl.y, 64)
+			assert.equal(pl.y, 32)
 			done()
 		}
 
-		ps._mouseMoveHandler.call(ps, { pageX: 32, pageY: 64 })
+		ps._mouseMoveHandler.call(ps, { pageX: 64, pageY: 64 })
+	})
+
+	it('does not dispatch on mousemove when not over the canvas', function(done) {
+
+		this.timeout(testTimeout + 500)
+		var timeout = setTimeout(done, testTimeout)
+
+		global.E2.app.dispatcher.dispatch = function(pl) {
+			assert.notEqual(pl.actionType, 'uiMouseMoved')
+			done()
+		}
+
+		ps._mouseMoveHandler.call(ps, { pageX: 16, pageY: 16 })
+
 	})
 
 	it('changes active graph on uiActiveGraphChanged', function() {

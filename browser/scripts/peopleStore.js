@@ -1,7 +1,5 @@
 (function() {
 
-var mousePositionLastSentAt = 0
-
 if (typeof(module) !== 'undefined') {
 	Store = require('./store')
 }
@@ -21,6 +19,7 @@ function PeopleStore() {
 	Store.apply(this, arguments)
 
 	this.people = {}
+	this.mousePositionLastSentAt = 0
 }
 
 PeopleStore.prototype = Object.create(Store.prototype)
@@ -91,16 +90,20 @@ PeopleStore.prototype._mouseMoveHandler = function(e) {
 	var y = e.pageY
 	var cp = E2.dom.canvas_parent[0]
 
+	var adjustedX = x - cp.offsetLeft
+	var adjustedY = y - cp.offsetTop
+
 	// Limit the broadcasted mouse movement area to the canvas
-	if (Date.now() - mousePositionLastSentAt > 60 && x > cp.offsetLeft && y > cp.offsetTop) {
+	if (Date.now() - this.mousePositionLastSentAt > 60 && adjustedX > -1 && adjustedY > -1) {
 		E2.app.dispatcher.dispatch({
 			actionType: 'uiMouseMoved',
-			x: x + E2.app.scrollOffset[0], // Make sure to add the scroll offset so we're
-			y: y + E2.app.scrollOffset[1] // showing the correct place when scrolled.
+			x: adjustedX + E2.app.scrollOffset[0],
+			y: adjustedY + E2.app.scrollOffset[1]
 		})
 
-		mousePositionLastSentAt = Date.now()
+		this.mousePositionLastSentAt = Date.now()
 	}
+
 }
 
 /**
