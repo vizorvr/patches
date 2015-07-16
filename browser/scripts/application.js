@@ -1756,7 +1756,7 @@ Application.prototype.onGraphSelected = function(graph) {
 Application.prototype.setupMouseMirroring = function() {
 	var that = this
 	var cursors = this.mouseCursors = {}
-	var lastMovementTimes = this.mouseMovementLastSeen = {}
+	var lastMovementTimeouts = this.lastMovementTimeouts = []
 
 	this.peopleStore.on('removed', function(uid) {
 		if (uid === that.channel.uid)
@@ -1776,7 +1776,7 @@ Application.prototype.setupMouseMirroring = function() {
 
 		var $cursor = $('<div>')
 		cursors[person.uid] = $cursor
-		lastMovementTimes[person.uid] = { timeout: undefined }
+		lastMovementTimeouts[person.uid] = undefined
 
 		$cursor.addClass('remote-mouse-pointer')
 		$cursor.addClass('inactive')
@@ -1794,52 +1794,53 @@ Application.prototype.setupMouseMirroring = function() {
 		$cursor.removeClass('inactive outside')
 
 		// Update the user's cursor fade-out timeout
-		clearTimeout(lastMovementTimes[person.uid].timeout)
-		lastMovementTimes[person.uid].timeout = setTimeout(function() {
+		clearTimeout(lastMovementTimeouts[person.uid])
+		lastMovementTimeouts[person.uid] = setTimeout(function() {
 			$cursor.addClass('inactive')
 		}, 2000);
 
-		// Received x/y are coordinates atop the canvas. Adjust accordingly
-		// to this user's canvas position.
+		// Received x/y are coordinates atop the canvas.
 		var adjustedX = person.x;
 		var adjustedY = person.y;
 		var cursorIsOutsideViewportX = false;
 		var cursorIsOutsideViewportY = false;
 
+		// Calculate viewport top left and bottom right X/Y 
 		var viewPortLeftX = E2.app.scrollOffset[0];
-		var viewPortRightX = E2.app.scrollOffset[0] + E2.app.canvas.width();
 		var viewPortTopY = E2.app.scrollOffset[1];
-		var viewPortBottomY = E2.app.scrollOffset[1] + E2.app.canvas.height();
 
-		if(adjustedX < viewPortLeftX) {
+		var viewPortBottomY = E2.app.scrollOffset[1] + E2.app.canvas.height();
+		var viewPortRightX = E2.app.scrollOffset[0] + E2.app.canvas.width();
+
+		if(adjustedX < viewPortLeftX) { // On left of the viewport
 			adjustedX = cp.offsetLeft;
 			cursorIsOutsideViewportX = true;
 		}
-		else if(adjustedX > viewPortRightX) {
+		else if(adjustedX > viewPortRightX) { // On right side of the viewport
 			adjustedX = $(window).width();
 			cursorIsOutsideViewportX = true;
 		}
 
-		if(adjustedY < viewPortTopY) {
+		if(adjustedY < viewPortTopY) { // Above viewport
 			adjustedY = cp.offsetTop;
 			cursorIsOutsideViewportY = true;
 		}
-		else if(adjustedY > viewPortBottomY) {
+		else if(adjustedY > viewPortBottomY) { // Below viewport
 			adjustedY = $(window).height();
 			cursorIsOutsideViewportY = true;
 		}
 
-		if(cursorIsOutsideViewportX) {
+		if(cursorIsOutsideViewportX) { // If cursor is outside viewport boundaries, blur the cursor
 			$cursor.addClass('outside')
 		}
-		else {
+		else { // Otherwise, just adjust the received X position for current viewport scrolling so we can get a position relative to the canvas
 			adjustedX += cp.offsetLeft - E2.app.scrollOffset[0];
 		}
 
-		if(cursorIsOutsideViewportY) {
+		if(cursorIsOutsideViewportY) { 
 			$cursor.addClass('outside')
 		}
-		else {
+		else { 
 			adjustedY += cp.offsetTop - E2.app.scrollOffset[1];
 		}
 
