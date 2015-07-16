@@ -1,4 +1,5 @@
 global.EventEmitter = require('events').EventEmitter
+global.sinon = require('sinon')
 global.document = { addEventListener: function() {} }
 
 var dispatchListener
@@ -14,9 +15,18 @@ global.E2 = {
 			register: function(cb) {
 				dispatchListener = cb
 			}
-		}
+		},
+		scrollOffset: [0, 0]
+	},
+	dom: {
+		canvas_parent: [{
+			offsetLeft: 32,
+			offsetTop: 32
+		}]
 	}
 }
+
+E2.app.channel.setMaxListeners(16)
 
 var assert = require('assert')
 var PeopleStore = require('../../scripts/peopleStore')
@@ -83,15 +93,80 @@ describe('PeopleStore', function() {
 		assert.equal(ps.findByUid('foo').uid, 'foo')
 	})
 
-	it('dispatches on mousemove', function(done) {
+	it('dispatches on mousemove when over the canvas', function(done) {
 		global.E2.app.dispatcher.dispatch = function(pl) {
 			assert.equal(pl.actionType, 'uiMouseMoved')
 			assert.equal(pl.x, 32)
-			assert.equal(pl.y, 64)
+			assert.equal(pl.y, 32)
 			done()
 		}
 
-		ps._mouseMoveHandler.call(ps, { pageX: 32, pageY: 64 })
+		ps._mouseMoveHandler.call(ps, { pageX: 64, pageY: 64 })
+	})
+
+	it('does not dispatch on mousemove when not over the canvas', function(done) {
+
+		global.E2.app.dispatcher.dispatch = function(pl) {
+			if (pl.actionType === 'uiMouseMoved')
+				done(new Error('uiMouseMoved received'))			
+		}
+
+		ps._mouseMoveHandler.call(ps, { pageX: 16, pageY: 16 })
+		done()
+
+	})
+
+	it('updates lastSeen when joined', function() {
+
+		E2.app.channel.emit('join', { id: 'foo'})
+		assert.ok(ps.findByUid('foo').lastSeen > 1000)
+
+	})
+
+	it('updates lastSeen when user moves their mouse', function() {
+
+		var lastSeenWhenJoined
+		var lastSeenAfterMousemove
+
+		E2.app.channel.emit('join', { id: 'antero'})
+		lastSeenWhenJoined = ps.findByUid('antero').lastSeen
+
+		var clock = sinon.useFakeTimers(lastSeenWhenJoined + 100);
+
+		dispatchListener({
+			from: 'antero',
+			actionType: 'uiMouseMoved',
+			x: 64,
+			y: 64
+		})
+
+		lastSeenAfterMousemove = ps.findByUid('antero').lastSeen
+		assert.notEqual(lastSeenWhenJoined, lastSeenAfterMousemove)
+
+		clock.restore()
+
+	})
+
+	it('updates lastSeen when user clicks', function() {
+
+		var lastSeenWhenJoined
+		var lastSeenAfterClick
+
+		E2.app.channel.emit('join', { id: 'antero'})
+		lastSeenWhenJoined = ps.findByUid('antero').lastSeen
+
+		var clock = sinon.useFakeTimers(lastSeenWhenJoined + 100);
+
+		dispatchListener({
+			from: 'antero',
+			actionType: 'uiMouseClicked'
+		})
+
+		lastSeenAfterClick = ps.findByUid('antero').lastSeen
+		assert.notEqual(lastSeenWhenJoined, lastSeenAfterClick)
+
+		clock.restore()
+
 	})
 
 	it('changes active graph on uiActiveGraphChanged', function() {
@@ -165,6 +240,5 @@ describe('PeopleStore', function() {
 
 		assert.equal(ps.me.followers, 4)
 	})
-
 
 })

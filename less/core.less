@@ -552,3 +552,39 @@ table
 	pointer-events: none;
 }
 
+.remote-mouse-pointer {
+	position: absolute;
+	background-color: #fff;
+	border-radius: 7px;
+	z-index: 99;
+	width: 14px;
+	height: 14px;
+	margin: -7px 0 0 -7px;
+	pointer-events: none;
+	transition: all .05s ease-out;
+	opacity: 0.75;
+}
+
+.remote-mouse-pointer.inactive {
+	opacity: 0.25;
+	transition: all 1s ease-in-out;
+}
+
+.remote-mouse-pointer.outside {
+	opacity: 0.5 !important;
+	width: 24px;
+	height: 24px;
+	margin-left: -12px;
+	margin-top: -12px;
+	border-radius: 16px;
+	-webkit-filter: blur(6px);
+	-moz-filter: blur(6px);
+	-o-filter: blur(6px);
+	-ms-filter: blur(6px);
+	filter: blur(6px);
+}
+
+.remote-mouse-pointer.clicked {
+	transform: scale(2.0);
+	opacity: 1.0;
+}

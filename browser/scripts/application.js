@@ -1776,6 +1776,7 @@ Application.prototype.onGraphSelected = function(graph) {
 Application.prototype.setupPeopleEvents = function() {
 	var that = this
 	var cursors = this.mouseCursors = {}
+	var lastMovementTimeouts = this.lastMovementTimeouts = []
 
 	this.peopleStore.on('removed', function(uid) {
 		if (uid === that.channel.uid)
@@ -1795,8 +1796,10 @@ Application.prototype.setupPeopleEvents = function() {
 
 		var $cursor = $('<div>')
 		cursors[person.uid] = $cursor
+		lastMovementTimeouts[person.uid] = undefined
 
 		$cursor.addClass('remote-mouse-pointer')
+		$cursor.addClass('inactive')
 		$cursor.addClass('user-'+person.uid)
 		$cursor.css('background-color', person.color)
 		$cursor.appendTo('body')
@@ -1807,8 +1810,63 @@ Application.prototype.setupPeopleEvents = function() {
 
 	this.peopleStore.on('mouseMoved', function(person) {
 		var $cursor = cursors[person.uid]
-		$cursor.css('left', person.x)
-		$cursor.css('top', person.y)
+		var cp = E2.dom.canvas_parent[0];
+		$cursor.removeClass('inactive outside')
+
+		// Update the user's cursor fade-out timeout
+		clearTimeout(lastMovementTimeouts[person.uid])
+		lastMovementTimeouts[person.uid] = setTimeout(function() {
+			$cursor.addClass('inactive')
+		}, 2000);
+
+		// Received x/y are coordinates atop the canvas.
+		var adjustedX = person.x;
+		var adjustedY = person.y;
+		var cursorIsOutsideViewportX = false;
+		var cursorIsOutsideViewportY = false;
+
+		// Calculate viewport top left and bottom right X/Y 
+		var viewPortLeftX = E2.app.scrollOffset[0];
+		var viewPortTopY = E2.app.scrollOffset[1];
+
+		var viewPortBottomY = E2.app.scrollOffset[1] + E2.app.canvas.height();
+		var viewPortRightX = E2.app.scrollOffset[0] + E2.app.canvas.width();
+
+		if(adjustedX < viewPortLeftX) { // On left of the viewport
+			adjustedX = cp.offsetLeft;
+			cursorIsOutsideViewportX = true;
+		}
+		else if(adjustedX > viewPortRightX) { // On right side of the viewport
+			adjustedX = $(window).width();
+			cursorIsOutsideViewportX = true;
+		}
+
+		if(adjustedY < viewPortTopY) { // Above viewport
+			adjustedY = cp.offsetTop;
+			cursorIsOutsideViewportY = true;
+		}
+		else if(adjustedY > viewPortBottomY) { // Below viewport
+			adjustedY = $(window).height();
+			cursorIsOutsideViewportY = true;
+		}
+
+		if(cursorIsOutsideViewportX) { // If cursor is outside viewport boundaries, blur the cursor
+			$cursor.addClass('outside')
+		}
+		else { // Otherwise, just adjust the received X position for current viewport scrolling so we can get a position relative to the canvas
+			adjustedX += cp.offsetLeft - E2.app.scrollOffset[0];
+		}
+
+		if(cursorIsOutsideViewportY) { 
+			$cursor.addClass('outside')
+		}
+		else { 
+			adjustedY += cp.offsetTop - E2.app.scrollOffset[1];
+		}
+
+		$cursor.css('left', adjustedX)
+		$cursor.css('top', adjustedY)
+
 	})
 
 	this.peopleStore.on('mouseClicked', function(uid) {
@@ -1818,6 +1876,13 @@ Application.prototype.setupPeopleEvents = function() {
 		setTimeout(function() {
 			$cursor.removeClass('clicked')
 		}, 100)
+
+
+		clearTimeout(lastMovementTimes[uid].timeout)
+		lastMovementTimes[uid].timeout = setTimeout(function() {
+			$cursor.addClass('inactive')
+		}, 2000);
+
 	})
 
 	this.peopleStore.on('activeGraphChanged', function(person) {
