@@ -46,8 +46,9 @@ PeopleStore.prototype.initialize = function() {
 	E2.app.dispatcher.register(function(payload) {
 		var uid = payload.from = payload.from || myUid
 		var isOwn = payload.from === myUid
-	
-		that.people[uid].lastSeen = Date.now()
+
+		if(that.people[uid])
+			that.people[uid].lastSeen = Date.now()
 
 		switch(payload.actionType) {
 			case 'uiUserIdUnfollowed':
