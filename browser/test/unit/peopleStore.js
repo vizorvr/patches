@@ -118,15 +118,14 @@ describe('PeopleStore', function() {
 
 	})
 
-	it('updates lastSeen when joined', function(done) {
+	it('updates lastSeen when joined', function() {
 
 		E2.app.channel.emit('join', { id: 'foo'})
 		assert.notEqual(ps.findByUid('foo').lastSeen, false)
-		done()
 
 	})
 
-	it('updates lastSeen when user moves their mouse', function(done) {
+	it('updates lastSeen when user moves their mouse', function() {
 
 		var lastSeenWhenJoined
 		var lastSeenAfterMousemove
@@ -147,11 +146,10 @@ describe('PeopleStore', function() {
 		assert.notEqual(lastSeenWhenJoined, lastSeenAfterMousemove)
 
 		clock.restore()
-		done();
 
 	})
 
-	it('updates lastSeen when user clicks', function(done) {
+	it('updates lastSeen when user clicks', function() {
 
 		var lastSeenWhenJoined
 		var lastSeenAfterClick
@@ -170,7 +168,6 @@ describe('PeopleStore', function() {
 		assert.notEqual(lastSeenWhenJoined, lastSeenAfterClick)
 
 		clock.restore()
-		done();
 
 	})
 
