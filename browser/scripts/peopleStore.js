@@ -69,8 +69,6 @@ PeopleStore.prototype.initialize = function() {
 		if (that.people[m.id])
 			return;
 
-		var now = new Date()
-
 		that.people[m.id] = {
 			uid: m.id,
 			color: m.color,
