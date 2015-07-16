@@ -73,6 +73,8 @@ function isAcceptedDispatch(m) {
 
 		case 'uiMouseMoved':
 		case 'uiMouseClicked':
+		case 'uiUserIdFollowed':
+		case 'uiUserIdUnfollowed':
 		case 'uiActiveGraphChanged':
 			return true;
 	}
@@ -87,12 +89,13 @@ function EditorChannel() {
 
 	var that = this
 
-	this.colors = {}
-
 	this.channel = new WebSocketChannel()
 
 	this.channel
 		.connect('/__editorChannel')
+		.on('disconnected', function() {
+			E2.app.growl('Disconnected from server')
+		})
 		.on('ready', function(uid) {
 			that.uid = uid
 
@@ -126,8 +129,14 @@ EditorChannel.prototype.join = function(channelName) {
 	}
 
 	this.channelName = channelName
+
+	this.channel.ws.send(JSON.stringify({
+		kind: 'join',
+		channel: channelName,
+		activeGraphUid: E2.core.active_graph.uid
+	}))
+
 	this.channel
-		.join(channelName)
 		.on('*', function(payload) {
 			if (!payload.actionType || !payload.from)
 				return;

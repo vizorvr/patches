@@ -62,6 +62,8 @@ function Application() {
 	this.graphStore = new GraphStore()
 	this.peopleStore = new PeopleStore()
 
+	this.peopleManager = new PeopleManager(this.peopleStore, $('#peopleTab'))
+
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
 
@@ -1268,14 +1270,6 @@ Application.prototype.onKeyDown = function(e) {
 		}
 		else if(e.keyCode === 76) // CTRL+l
 		{
-			this.collapse_log = !this.collapse_log;
-			E2.dom.dbg.toggle(!this.collapse_log);
-
-			if(!this.collapse_log)
-				msg(null); // Update scroll position.
-
-			this.onWindowResize();
-			e.preventDefault();
 			return;
 		}
 
@@ -1526,6 +1520,34 @@ Application.prototype.onLoadClipboardClicked = function() {
 	})
 }
 
+var growlOpen
+Application.prototype.growl = function(title) {
+	var tt = $('#breadcrumb')
+
+	function close() {
+		tt.tooltip('hide')
+		tt.tooltip('destroy')
+		growlOpen = false
+	}
+
+	if (growlOpen)
+		close()
+
+	tt.tooltip({
+		title: title,
+		container: 'body',
+		animation: false,
+		trigger: 'manual',
+		placement: 'bottom'
+	})
+
+	growlOpen = true
+
+	tt.tooltip('show')
+
+	setTimeout(close, 3000)
+}
+
 Application.prototype.onShowTooltip = function(e) {
 	var that = this
 
@@ -1606,6 +1628,7 @@ Application.prototype.onShowTooltip = function(e) {
 			container: 'body',
 			animation: false,
 			trigger: 'manual',
+			placement: 'bottom',
 			html: true
 		})
 		.tooltip('show');
@@ -1705,11 +1728,6 @@ Application.prototype.onGraphSelected = function(graph) {
 	E2.core.active_graph.destroy_ui()
 	E2.core.active_graph = graph
 
-	this.dispatcher.dispatch({
-		actionType: 'uiActiveGraphChanged',
-		activeGraphUid: graph.uid
-	})
-
 	E2.dom.canvas_parent.scrollTop(0)
 	E2.dom.canvas_parent.scrollLeft(0)
 	this.scrollOffset[0] = this.scrollOffset[1] = 0
@@ -1751,9 +1769,11 @@ Application.prototype.onGraphSelected = function(graph) {
 
 	E2.core.active_graph.reset()
 	E2.core.active_graph_dirty = true
+
+	E2.app.updateCanvas(true)
 }
 
-Application.prototype.setupMouseMirroring = function() {
+Application.prototype.setupPeopleEvents = function() {
 	var that = this
 	var cursors = this.mouseCursors = {}
 	var lastMovementTimeouts = this.lastMovementTimeouts = []
@@ -1866,8 +1886,11 @@ Application.prototype.setupMouseMirroring = function() {
 	})
 
 	this.peopleStore.on('activeGraphChanged', function(person) {
+		if (E2.app.channel.uid === person.uid) // it's for me
+			return E2.app.onGraphSelected(Graph.lookup(person.activeGraphUid))
+
 		var $cursor = cursors[person.uid]
-		if (person.activeGraphUid === E2.core.active_graph.uid)
+		if (person.activeGraphUid === E2.core.active_graph.uid) 
 			$cursor.show()
 		else
 			$cursor.hide()
@@ -1979,7 +2002,7 @@ Application.prototype.start = function() {
 	this.midPane = new E2.MidPane()
 
 	that.peopleStore.initialize()
-	that.setupMouseMirroring()
+	that.setupPeopleEvents()
 	that.setupStoreListeners()
 
 	E2.app.player.play() // autoplay
@@ -2070,8 +2093,6 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		function(graph) { // On item activation
 			E2.app.clearEditState()
 			E2.app.clearSelection()
-			E2.app.onGraphSelected(graph)
-			E2.app.updateCanvas(true)
 		},
 		// on graph reorder
 		E2.app.graphApi.reorder.bind(E2.app.graphApi)
