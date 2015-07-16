@@ -1776,7 +1776,7 @@ Application.prototype.setupMouseMirroring = function() {
 
 		var $cursor = $('<div>')
 		cursors[person.uid] = $cursor
-		lastMovementTimes[person.uid] = { last_seen: new Date().getTime(), timeout: undefined }
+		lastMovementTimes[person.uid] = { timeout: undefined }
 
 		$cursor.addClass('remote-mouse-pointer')
 		$cursor.addClass('inactive')
@@ -1793,8 +1793,7 @@ Application.prototype.setupMouseMirroring = function() {
 		var cp = E2.dom.canvas_parent[0];
 		$cursor.removeClass('inactive outside')
 
-		// Update the time the user was seen last and their cursor fade-out timeout
-		lastMovementTimes[person.uid].last_seen = new Date().getTime()
+		// Update the user's cursor fade-out timeout
 		clearTimeout(lastMovementTimes[person.uid].timeout)
 		lastMovementTimes[person.uid].timeout = setTimeout(function() {
 			$cursor.addClass('inactive')
@@ -1858,7 +1857,6 @@ Application.prototype.setupMouseMirroring = function() {
 		}, 100)
 
 
-		lastMovementTimes[uid].last_seen = new Date().getTime()
 		clearTimeout(lastMovementTimes[uid].timeout)
 		lastMovementTimes[uid].timeout = setTimeout(function() {
 			$cursor.addClass('inactive')

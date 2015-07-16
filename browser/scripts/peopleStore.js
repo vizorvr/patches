@@ -40,15 +40,18 @@ PeopleStore.prototype.initialize = function() {
 			case 'uiActiveGraphChanged':
 				that.people[uid].activeGraphUid = payload.activeGraphUid
 				that.emit('activeGraphChanged', that.people[uid])
+				that.people[uid].lastSeen = Date.now()
 				break;
 
 			case 'uiMouseClicked':
 				that.emit('mouseClicked', uid)
+				that.people[uid].lastSeen = Date.now()
 				break;
 
 			case 'uiMouseMoved':
 				that.people[uid].x = payload.x
 				that.people[uid].y = payload.y
+				that.people[uid].lastSeen = Date.now()
 
 				that.emit('mouseMoved', that.people[uid])
 				break;
@@ -71,7 +74,8 @@ PeopleStore.prototype.initialize = function() {
 		that.people[m.id] = {
 			uid: m.id,
 			color: m.color,
-			activeGraphUid: E2.core.root_graph.uid
+			activeGraphUid: E2.core.root_graph.uid,
+			lastSeen: Date.now()
 		}
 
 		that.emit('added', that.people[m.id])
