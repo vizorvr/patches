@@ -1878,8 +1878,8 @@ Application.prototype.setupPeopleEvents = function() {
 		}, 100)
 
 
-		clearTimeout(lastMovementTimes[uid].timeout)
-		lastMovementTimes[uid].timeout = setTimeout(function() {
+		clearTimeout(lastMovementTimeouts[uid].timeout)
+		lastMovementTimeouts[uid].timeout = setTimeout(function() {
 			$cursor.addClass('inactive')
 		}, 2000);
 
