@@ -49,6 +49,7 @@ describe('PeopleStore', function() {
 
 		assert.equal(ps.people.jep.color, 'color')
 		assert.equal(ps.people.jep.activeGraphUid, 'woo')
+		assert.equal(ps.list().length, 2)
 	})
 
 	it('handles leave', function() {
@@ -62,8 +63,6 @@ describe('PeopleStore', function() {
 		E2.app.channel.uid = 'foo'
 		E2.app.channel.emit('join', { id: 'bar'})
 		E2.app.channel.emit('join', { id: 'baz'})
-		assert.equal(ps.list().length, 3)
-
 		E2.app.channel.emit('leave', { id: 'foo' })
 		assert.equal(ps.list().length, 0)
 	})
@@ -79,6 +78,13 @@ describe('PeopleStore', function() {
 				done()
 		})
 		E2.app.channel.emit('leave', { id: 'foo' })
+	})
+
+	it('empties on disconnect', function() {
+		E2.app.channel.emit('join', { id: 'foo'})
+		E2.app.channel.emit('join', { id: 'bar'})
+		E2.app.channel.emit('disconnected')
+		assert.equal(ps.list().length, 0)
 	})
 
 	it('can list people', function() {

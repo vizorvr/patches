@@ -1,5 +1,7 @@
 (function() {
 
+var RECONNECT_INTERVAL = 5000
+
 function serialize(objects) {
 	return objects.map(function(ob) {
 		if (!ob)
@@ -88,23 +90,40 @@ function EditorChannel() {
 	EventEmitter.call(this)
 
 	var that = this
+	var reconnecting = false
 
-	this.channel = new WebSocketChannel()
+	function connect() {
+		that.channel = new WebSocketChannel()
 
-	this.channel
-		.connect('/__editorChannel')
-		.on('disconnected', function() {
-			E2.app.growl('Disconnected from server')
-		})
-		.on('ready', function(uid) {
-			that.uid = uid
+		that.channel
+			.connect('/__editorChannel')
+			.on('disconnected', function() {
+				if (!reconnecting)
+					E2.app.growl('Disconnected from server. Reconnecting.')
 
-			that.emit('ready', uid)
+				reconnecting = true
+				setTimeout(connect, RECONNECT_INTERVAL)
 
-			that.channel.on('*', function(m) {
-				that.emit(m.kind, m)
+				that.emit('disconnected')
 			})
-		})
+			.on('ready', function(uid) {
+				that.uid = uid
+
+				that.emit('ready', uid)
+
+				if (reconnecting) {
+					reconnecting = false
+					E2.app.growl('Connected to server!')
+					that.emit('reconnected')
+				}
+
+				that.channel.on('*', function(m) {
+					that.emit(m.kind, m)
+				})
+			})
+	}
+
+	connect()
 
 	E2.app.dispatcher.register(function channelGotDispatch(payload) {
 		if (payload.from)

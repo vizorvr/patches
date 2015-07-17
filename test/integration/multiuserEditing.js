@@ -5,6 +5,8 @@ var mongo = require('mongodb')
 var assert = require('assert')
 var WebSocketChannel = require('../../browser/scripts/wschannel')
 var r = require('rethinkdb')
+var session = require('client-sessions')
+var secrets = require('../../config/secrets');
 
 global.window = {
 	location: { hostname: 'localhost', port: 8000 }
@@ -24,7 +26,18 @@ var agent = request.agent(app)
 function createClient(channelName) {
 	var ws = new WebSocketChannel(agent)
 
-	ws.connect('/__editorChannel')
+	ws.connect('/__editorChannel', {
+		headers: {
+			'Cookie': 'session='+session.util.encode({
+				cookieName: 'session',
+				secret: secrets.sessionSecret,
+				duration: 4100421,
+				activeDuration: 190248
+			}, {
+				userId: 'test1234test'
+			})
+		}
+	})
 		.on('ready', function() {
 			if (channelName)
 				ws.join(channelName)
@@ -42,7 +55,8 @@ function setupDatabase(cb) {
 
 	r.connect({
 		host: 'localhost',
-		port: 28015
+		port: 28015,
+		db: dbName
 	}, function(err, conn) {
 		if (err)
 			throw err;
@@ -135,7 +149,10 @@ describe('Multiuser', function() {
 
 		s1.once('join', function() {
 			numbers.map(function(n) {
-				s1.send(channel, { actionType: n })
+				s1.send(channel, {
+					actionType: 'uiPluginStateChanged',
+					number: n
+				})
 			})
 			s1.close()
 		})
@@ -150,8 +167,8 @@ describe('Multiuser', function() {
 				edits.push(m)
 
 				if (edits.length === 10) {
-					assert.deepEqual(edits.map(function(e) { return e.actionType }), 
-						[ 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten' ])
+					assert.deepEqual(edits.map(function(e) { return e.number }), 
+						numbers)
 
 					done()
 				}
@@ -170,7 +187,10 @@ describe('Multiuser', function() {
 
 		function burst() {
 			numbers.map(function(n) {
-				s1.send(channel, { actionType: n })
+				s1.send(channel, {
+					actionType: 'uiPluginStateChanged',
+					number: n
+				})
 			})
 		}
 
@@ -186,7 +206,7 @@ describe('Multiuser', function() {
 				edits.push(m)
 
 				if (edits.length === 10) {
-					assert.deepEqual(edits.map(function(e) { return e.actionType }), 
+					assert.deepEqual(edits.map(function(e) { return e.number }), 
 						numbers)
 
 					done()

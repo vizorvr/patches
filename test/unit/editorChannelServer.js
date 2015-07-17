@@ -3,6 +3,17 @@ var EventEmitter = require('events').EventEmitter
 var assert = require('assert')
 var EditorChannelServer = require('../../lib/editorChannelServer').EditorChannelServer
 
+function makeClient(id) {
+	return {
+		id: id,
+		socket: new EventEmitter(),
+		channels: [],
+		toJson: function() {
+			return {}
+		}
+	}
+}
+
 describe('EditorChannelServer', function() {
 	after(function() {
 		mongoose.models = {}
@@ -11,25 +22,21 @@ describe('EditorChannelServer', function() {
 	})
 
 	it('removes correctly on leave', function() {
-		var client = { id: 'a', channels: [] }
+		var client = makeClient('a1')
 		var ecs = new EditorChannelServer()
-		var client = ecs.handleConnection(new EventEmitter())
-		ecs.joinChannel('asdf', client)
-		assert.equal(ecs.channels['asdf'].length, 1)
-
+		ecs.joinChannel('asdf', client, { activeGraphUid: 'a' })
+		assert.equal(ecs.channels.asdf.length, 1)
 		ecs.leaveChannel('asdf', client)
-		assert.equal(ecs.channels['asdf'].length, 0)
+		assert.equal(ecs.channels.asdf.length, 0)
 	})
 
 	it('removes correctly on socket close', function() {
-		var client = { id: 'a', channels: [] }
+		var client = makeClient('a2')
 		var ecs = new EditorChannelServer()
-		var socket = new EventEmitter()
-		var client = ecs.handleConnection(socket)
-		ecs.joinChannel('asdf', client)
-		assert.equal(ecs.channels['asdf'].length, 1)
-		socket.emit('close')
-		assert.equal(ecs.channels['asdf'].length, 0)
+		ecs.joinChannel('asdf', client, { activeGraphUid: 'a' })
+		assert.equal(ecs.channels.asdf.length, 1)
+		ecs.onSocketClosed(client)
+		assert.equal(ecs.channels.asdf.length, 0)
 	})
 
 

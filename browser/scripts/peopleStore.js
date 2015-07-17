@@ -31,10 +31,8 @@ PeopleStore.prototype.initialize = function() {
 	document.addEventListener('mousemove', this._mouseMoveHandler.bind(this))
 	document.addEventListener('click', this._mouseClickHandler.bind(this))
 
-	var myUid = E2.app.channel.uid
-
-	this.me = this.people[myUid] = {
-		uid: myUid,
+	this.me = this.people[E2.app.channel.uid] = {
+		uid: E2.app.channel.uid,
 		activeGraphUid: E2.core.active_graph.uid
 	}
 
@@ -44,8 +42,8 @@ PeopleStore.prototype.initialize = function() {
 	}
 
 	E2.app.dispatcher.register(function(payload) {
-		var uid = payload.from = payload.from || myUid
-		var isOwn = payload.from === myUid
+		var uid = payload.from = payload.from || E2.app.channel.uid
+		var isOwn = payload.from === E2.app.channel.uid
 
 		if(that.people[uid])
 			that.people[uid].lastSeen = Date.now()
@@ -108,6 +106,9 @@ PeopleStore.prototype.initialize = function() {
 	})
 
 	E2.app.channel
+	.on('disconnected', function() {
+		that.empty()
+	})
 	.on('leave', function(m) {
 		var person = that.people[m.id]
 		if (m.id === E2.app.channel.uid) {
@@ -131,7 +132,7 @@ PeopleStore.prototype.initialize = function() {
 		that.people[m.id].followers = m.followers || 0
 		that.people[m.id].lastSeen = Date.now()
 
-		if (m.id === myUid)
+		if (m.id === E2.app.channel.uid)
 			that.me = that.people[m.id]
 
 		that.emit('added', that.people[m.id])
@@ -176,6 +177,7 @@ PeopleStore.prototype.empty = function empty() {
 		that.emit('removed', person.uid)
 	})
 	this.people = {}
+	this.me = null
 }
 
 PeopleStore.prototype.findByUid = function findByUid(uid) {
