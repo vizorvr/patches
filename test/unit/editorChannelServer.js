@@ -25,6 +25,11 @@ describe('EditorChannelServer', function() {
 		var client = { id: 'a', channels: [] }
 		var ecs = new EditorChannelServer()
 		var socket = new EventEmitter()
+		socket.send = function(){}
+		socket.close = function(){}
+		socket.upgradeReq = {
+			headers: { cookie: 'session=abc' }
+		}
 		var client = ecs.handleConnection(socket)
 		ecs.joinChannel('asdf', client)
 		assert.equal(ecs.channels['asdf'].length, 1)

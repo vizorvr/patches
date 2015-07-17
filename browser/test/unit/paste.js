@@ -16,6 +16,7 @@ global.Flux = require('../../vendor/flux')
 global.Plugin = require('../../scripts/plugin');
 global.Store = require('../../scripts/store');
 global.GraphStore = require('../../scripts/graphStore');
+global.PeopleManager = function() {}
 global.PeopleStore = function(){}
 global.Camera = global.Material = function(){}
 
