@@ -35,10 +35,12 @@ var ArraySwitch = E2.plugins.array_switch_modulator = function ArraySwitch(core,
 	this.values = []
 
 	this.node.on('slotAdded', function() {
+		that.dynInputs = node.getDynamicInputSlots()
 		that.updated = true
 	})
 
 	this.node.on('slotRemoved', function() {
+		that.dynInputs = node.getDynamicInputSlots()
 		that.updated = true
 	})
 }
@@ -113,11 +115,7 @@ ArraySwitch.prototype.state_changed = function(ui) {
 		var slots = this.dynInputs = this.node.getDynamicInputSlots()
 
 		for(var i = 0, len = slots.length; i < len; i++) {
-			this.lsg.add_dyn_slot(
-				this.node.find_dynamic_slot(
-					E2.slot_type.input, slots[i].uid
-				)
-			)
+			this.lsg.add_dyn_slot(E2.slot_type.input, slots[i].uid)
 		}
 		
 		this.number = -1
