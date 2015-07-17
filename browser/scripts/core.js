@@ -292,7 +292,7 @@ Core.prototype.deserialiseObject = function(d) {
 
 	this.active_graph.destroy_ui();
 	
-	var graphs = this.graphs = [];
+	this.graphs = [];
 	
 	this.root_graph = new Graph(this, null, null);
 	this.root_graph.deserialise(d.root);
@@ -306,15 +306,6 @@ Core.prototype.deserialiseObject = function(d) {
 	if(!this.active_graph) {
 		msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
 		this.active_graph = this.root_graph;
-	}
-
-	if (E2.dom.structure) {
-		this.rebuild_structure_tree()
-		
-		if(this.active_graph.tree_node)
-			this.active_graph.tree_node.activate();
-		else
-			this.root_graph.tree_node.activate();
 	}
 }
 

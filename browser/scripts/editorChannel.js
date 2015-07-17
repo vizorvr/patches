@@ -137,12 +137,23 @@ function EditorChannel() {
 
 EditorChannel.prototype = Object.create(EventEmitter.prototype)
 
-EditorChannel.prototype.leave = function(channelName) {
-	this.channel.leave(channelName)
+EditorChannel.prototype.leave = function() {
+	this.channel.leave(this.channelName)
+	this.channel.off('*', this._messageHandler.bind(this))
 	this.emit('leave', { id: this.uid })
 }
 
-EditorChannel.prototype.join = function(channelName) {
+EditorChannel.prototype._messageHandler = function(payload) {
+	if (!payload.actionType || !payload.from)
+		return;
+
+	if (isAcceptedDispatch(payload))
+		E2.app.dispatcher.dispatch(hydrate(payload))
+}
+
+EditorChannel.prototype.join = function(channelName, cb) {
+	var that = this
+
 	if (this.channelName && this.channelName !== channelName) {
 		this.leave(this.channelName)
 	}
@@ -155,14 +166,15 @@ EditorChannel.prototype.join = function(channelName) {
 		activeGraphUid: E2.core.active_graph.uid
 	}))
 
-	this.channel
-		.on('*', function(payload) {
-			if (!payload.actionType || !payload.from)
-				return;
+	function waitForOwnJoin(pl) {
+		if (pl.kind === 'youJoined' && pl.channel === channelName) {
+			that.channel.off('*', waitForOwnJoin)
+			cb()
+		}
+	}
 
-			if (isAcceptedDispatch(payload))
-				E2.app.dispatcher.dispatch(hydrate(payload))
-		})
+	this.channel.on('*', waitForOwnJoin)
+	this.channel.on('*', this._messageHandler.bind(this))
 }
 
 EditorChannel.prototype.broadcast = function(payload) {

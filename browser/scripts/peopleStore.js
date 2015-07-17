@@ -108,6 +108,7 @@ PeopleStore.prototype.initialize = function() {
 	E2.app.channel
 	.on('disconnected', function() {
 		that.empty()
+		that.me = null
 	})
 	.on('leave', function(m) {
 		var person = that.people[m.id]
@@ -177,7 +178,6 @@ PeopleStore.prototype.empty = function empty() {
 		that.emit('removed', person.uid)
 	})
 	this.people = {}
-	this.me = null
 }
 
 PeopleStore.prototype.findByUid = function findByUid(uid) {
