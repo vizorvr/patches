@@ -1368,10 +1368,7 @@ Application.prototype.loadGraph = function(graphPath, cb) {
 	E2.app.onStopClicked()
 	E2.app.player.on_update()
 	E2.app.player.load_from_url(graphPath, function() {
-		that.connectEditorChannel()
-
-		if (cb)
-			cb()
+		that.connectEditorChannel(cb)
 	})
 }
 
