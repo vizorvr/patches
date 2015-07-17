@@ -175,15 +175,7 @@ GraphStore.prototype._uiNodesMoved = function(graph, nodeUids, delta) {
 GraphStore.prototype._uiPluginStateChanged = function(graph, nodeUid, key, value) {
 	var node = graph.findNodeByUid(nodeUid)
 
-	node.plugin.state[key] = value
-	node.plugin.updated = true
-
-	if (node.plugin.state_changed) {
-		node.plugin.state_changed()
-
-		if (node.ui)
-			node.plugin.state_changed(node.ui.plugin_ui)
-	}
+	node.setPluginState(key, value)
 }
 
 if (typeof(module) !== 'undefined')

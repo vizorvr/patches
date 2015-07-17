@@ -212,12 +212,12 @@ Connection.prototype.patch_up = function(nodes) {
 
 	var any_dt = E2.dt.ANY
 	
-	if (this.src_slot.dt !== this.dst_slot.dt && 
-		this.src_slot.dt !== any_dt && 
-		this.dst_slot.dt !== any_dt)
+	if (this.src_slot.dt.id !== this.dst_slot.dt.id && 
+		this.src_slot.dt.id !== any_dt.id && 
+		this.dst_slot.dt.id !== any_dt.id)
 	{
 		msg('ERROR: Connection data type mismatch - dropping connection.')
-		console.log('Connection that failed', this)
+		console.log('Connection that failed', this.src_slot.dt, this.dst_slot.dt)
 		return false
 	}
 	

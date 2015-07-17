@@ -76,33 +76,31 @@ InputEditor.prototype.render = function($el) {
 
 	var $inputs = $('.inputs', $el)
 
-	function inputButton(inputName, glslType) {
+	function inputButton(slot) {
 		var t = '<button title="Remove input" '+
 			'class="btn btn-xs btn-default input-remove-button input-button">'+
 			'<i class="fa fa-sm fa-close"></i><span>{{glslType}} {{title}}</span></button>';
 
-		return $(t.replace('{{title}}', inputName)
-			.replace('{{glslType}}', glslType))
+		return $(t.replace('{{title}}', slot.name)
+			.replace('{{glslType}}', slot.dt.name))
 			.click(function(e) {
 				if (window.confirm(TEXT_CONFIRM_REMOVE_INPUT)) {
-					$(e.target).closest('button').remove()
-					that.emit('removed', that._inputs[inputName].id, inputName)
+					that.emit('removed', slot.uid, slot.name)
 				}
 			})
 	}
 
 	// add buttons for inputs
-	$inputs.prepend(_.map(this._inputs, function(i, key) {
-		return inputButton(key, i.dt.name)
+	$inputs.prepend(this._inputs.map(function(slot, i) {
+		return inputButton(slot)
 	}))
 
 	// 'add input' dialog
 	$('.input-add-button', $el).click(addInputDialog(function(name, dt) {
-			if (!name)
-				return
+		if (!name)
+			return
 
-			$inputs.find('.input-add-button').before(inputButton(name, dt.name))
-			that.emit('added', name, dt)
+		that.emit('added', name, dt)
 	}))
 }
 
@@ -214,6 +212,10 @@ ShaderEditor.prototype.render = function(title, $dest) {
 ShaderEditor.prototype.setInputs = function(inputs) {
 	this._inputs = inputs
 	this.drawInputs()
+}
+
+ShaderEditor.prototype.setValue = function(text) {
+	this._ace.setValue(text)
 }
 
 ShaderEditor.prototype.drawInputs = function() {

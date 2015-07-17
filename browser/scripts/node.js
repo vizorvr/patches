@@ -136,6 +136,12 @@ Node.prototype.add_slot = function(slot_type, def) {
 	if (def.uid === undefined || def.uid === null)
 		def.uid = E2.uid()
 
+	if (!def.dt) {
+		msg('ERROR: No datatype given for slot')
+		console.trace('No datatype given for slot')
+		return false
+	}
+
 	def.dynamic = true
 	def.type = slot_type
 
@@ -414,6 +420,15 @@ Node.prototype.update_recursive = function(conns) {
 	this.update_count++;
 
 	return dirty;
+}
+
+Node.prototype.setPluginState = function(key, value) {
+	this.plugin.state[key] = value
+
+	this.plugin.updated = true
+	this.plugin.dirty = true
+
+	this.emit('pluginStateChanged', key, value)
 }
 
 Node.prototype.serialise = function(flat) {
