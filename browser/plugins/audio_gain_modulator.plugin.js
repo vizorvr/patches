@@ -13,9 +13,7 @@ var AudioGainModulator = E2.plugins.audio_gain_modulator = function(core, node) 
 		{ name: 'source', dt: core.datatypes.OBJECT, desc: 'A (de)amplified audio source', def: null }
 	];
 	
-	this.state = {
-		slot_uids: []
-	};
+	this.state = {}
 	
 	this.core = core;
 	this.node = node;
@@ -25,17 +23,13 @@ var AudioGainModulator = E2.plugins.audio_gain_modulator = function(core, node) 
 	this.gain = null;
 	this.first = true;
 
-	this.node.on('slotAdded', function(slot) {
-		that.state.slot_uids.push(slot.uid)
+	this.node.on('slotAdded', function() {
+		that.dynInputs = node.getDynamicInputSlots()
 		that.updated = true
 	})
 
-	this.node.on('slotRemoved', function(slot) {
-		that.state.slot_uids = that.state.slot_uids
-			.filter(function(uid) {
-				return (slot.uid !== uid)
-			})
-
+	this.node.on('slotRemoved', function() {
+		that.dynInputs = node.getDynamicInputSlots()
 		that.updated = true
 	})
 
@@ -58,16 +52,17 @@ AudioGainModulator.prototype.create_ui = function() {
 	inp_add.click(function() {
 		E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
 			type: E2.slot_type.input,
-			name: that.state.slot_uids.length + '',
+			name: that.dynInputs.length + '',
 			dt: that.core.datatypes.OBJECT
 		})
 	})
 	
 	inp_rem.click(function() {
-		if (that.state.slot_uids.length < 1)
-			return;
-			
-		var suid = that.state.slot_uids[that.state.slot_uids.length-1]
+		var inputs = that.dynInputs
+		if (!inputs)
+			return
+
+		var suid = inputs[inputs.length - 1].uid
 		E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
 	})
 
@@ -81,16 +76,17 @@ AudioGainModulator.prototype.update_input = function(slot, data)
 {
 	if(slot.uid !== undefined)
 	{
-		if(this.srcs[slot.index])
+		if (this.srcs[slot.index] === data)
+			return;
+
+		if (this.srcs[slot.index])
 			this.srcs[slot.index].disconnect(0);
 		
-		this.srcs[slot.index] = data;
-		
-		if(data)
-		{
-			data.connect(this.gain_node);
-			this.gain_node.player = data.player;
-		}		
+		if (data && data.connect) {
+			this.srcs[slot.index] = data
+			data.connect(this.gain_node)
+			this.gain_node.player = data.player
+		}
 	}
 	else if(slot.index === 0)
 	{
@@ -114,10 +110,11 @@ AudioGainModulator.prototype.update_output = function(slot)
 
 AudioGainModulator.prototype.state_changed = function(ui)
 {
-	if(!ui)
-	{
-		for(var i = 0, len = this.state.slot_uids.length; i < len; i++)
-			this.lsg.add_dyn_slot(this.node.find_dynamic_slot(E2.slot_type.input, this.state.slot_uids[i]));
+	if(!ui) {
+		this.dynInputs = this.node.getDynamicInputSlots()
+		for(var i = 0, len = this.dynInputs.length; i < len; i++) {
+			this.lsg.add_dyn_slot(this.dynInputs[i])
+		}
 	}
 };
 

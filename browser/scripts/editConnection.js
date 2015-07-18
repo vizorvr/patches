@@ -52,25 +52,26 @@ EditConnection.prototype.destroy_ui = function() {
 }
 
 EditConnection.prototype.canConnectTo = function(node, slot) {
-	var adt = slot.dt, bdt
+	var adt = slot.dt.id, bdt
 	var otherSlot
 	var rtl = this.rightToLeft
+	var anyDt = E2.dt.ANY.id
 
 	if (rtl) {
-		bdt = this.dstSlot.dt
+		bdt = this.dstSlot.dt.id
 		otherSlot = this.dstSlot
 	} else {
-		bdt = this.srcSlot.dt
+		bdt = this.srcSlot.dt.id
 		otherSlot = this.srcSlot
 	}
 
 	// Only allow connection if datatypes match and slot is unconnected. 
 	// Don't allow self-connections. There is no complete check for cyclic 
 	// redundacies, though we should probably institute one.
-	var a = (adt === bdt || adt === E2.dt.ANY || bdt === E2.dt.ANY)
+	var a = (adt === bdt || adt === anyDt || bdt === anyDt)
 
 	// don't allow connections between two ANY slots.
-	var b = !(adt === E2.dt.ANY && bdt === E2.dt.ANY)
+	var b = !(adt === anyDt && bdt === anyDt)
 	
 	// dest to source, and source is slot and dest isn't slot
 	var c = (rtl &&

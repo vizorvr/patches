@@ -3,7 +3,7 @@ var assert = require('assert');
 var EditConnection = require('../../scripts/editConnection')
 
 describe('EditConnection', function() {
-	global.E2 = { dt: { ANY: 8 }}
+	global.E2 = { dt: { ANY: { id: 8 } }}
 
 	function Connection(a,b,c,d) {
 		this.src_node = a
@@ -19,7 +19,7 @@ describe('EditConnection', function() {
 
 	function makeSlot(dt, slotType) {
 		return {
-			dt: dt,
+			dt: { id: dt },
 			type: slotType,
 			index: 0
 		}
