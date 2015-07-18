@@ -120,7 +120,7 @@ ArraySwitch.prototype.state_changed = function(ui) {
 		var slots = this.dynInputs = this.node.getDynamicInputSlots()
 
 		for(var i = 0, len = slots.length; i < len; i++) {
-			this.lsg.add_dyn_slot(slots[i].uid)
+			this.lsg.add_dyn_slot(slots[i])
 		}
 		
 		this.number = -1
