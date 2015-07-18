@@ -1365,10 +1365,21 @@ Application.prototype.onOpenClicked = function() {
 
 Application.prototype.loadGraph = function(graphPath, cb) {
 	var that = this
+
 	E2.app.onStopClicked()
 	E2.app.player.on_update()
+
 	E2.app.player.load_from_url(graphPath, function() {
-		that.connectEditorChannel(cb)
+		that.connectEditorChannel(function() {
+			E2.core.rebuild_structure_tree()
+			E2.app.onGraphSelected(E2.core.active_graph)
+
+			E2.app.player.play() // autoplay
+			E2.app.changeControlState()
+
+			if (cb)
+				cb()
+		})
 	})
 }
 
@@ -2013,9 +2024,7 @@ Application.prototype.connectEditorChannel = function(cb) {
 	var that = this
 
 	function joinChannel() {
-		that.channel.join(that.path)
-		if (cb)
-			cb()
+		that.channel.join(that.path, cb)
 	}
 
 	if (!this.channel) {

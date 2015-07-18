@@ -26,7 +26,7 @@ global.E2 = {
 	}
 }
 
-E2.app.channel.setMaxListeners(16)
+E2.app.channel.setMaxListeners(0)
 
 var assert = require('assert')
 var PeopleStore = require('../../scripts/peopleStore')

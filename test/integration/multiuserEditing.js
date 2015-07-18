@@ -161,7 +161,7 @@ describe('Multiuser', function() {
 			s2 = createClient(channel)
 
 			s2.on(channel, function(m) {
-				if (m.kind === 'join')
+				if (!m.actionType)
 					return;
 
 				edits.push(m)
@@ -200,7 +200,7 @@ describe('Multiuser', function() {
 			s2.once('join', burst)
 
 			s2.on(channel, function(m) {
-				if (m.kind === 'join')
+				if (!m.actionType)
 					return;
 
 				edits.push(m)
