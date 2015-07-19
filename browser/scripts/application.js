@@ -2009,12 +2009,39 @@ Application.prototype.start = function() {
 
 	this.midPane = new E2.MidPane()
 
-	that.peopleStore.initialize()
+	E2.app.player.play() // autoplay
+	E2.app.changeControlState()
+}
+
+/**
+ * Called when Core has been initialized
+ * Initializes the Editor Stores and model layer events
+ * Then starts the UI layer
+ */
+Application.prototype.onCoreReady = function(loadGraphUrl) {
+	var that = this
+
 	that.setupPeopleEvents()
 	that.setupStoreListeners()
 
-	E2.app.player.play() // autoplay
-	E2.app.changeControlState()
+	function start() {
+		E2.app.start()
+
+		E2.app.onWindowResize()
+		E2.app.onWindowResize()
+
+		if (E2.core.pluginManager.release_mode) {
+			window.onbeforeunload = function() {
+				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
+			}
+		}
+	}
+
+	if (loadGraphUrl)
+		E2.app.loadGraph(loadGraphUrl, start)
+	else {
+		E2.app.connectEditorChannel(start)
+	}
 }
 
 /**
@@ -2029,7 +2056,10 @@ Application.prototype.connectEditorChannel = function(cb) {
 
 	if (!this.channel) {
 		this.channel = new EditorChannel()
-		this.channel.on('ready', joinChannel)
+		this.channel.on('ready', function() { 
+			that.peopleStore.initialize()
+			joinChannel()
+		})
 	} else
 		joinChannel()
 }
@@ -2106,27 +2136,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 
 	E2.app.player = player
 
-	E2.core.on('ready', function() {
-		function start() {
-			E2.app.start()
-
-			E2.app.onWindowResize()
-			E2.app.onWindowResize()
-
-			if (E2.core.pluginManager.release_mode) {
-				window.onbeforeunload = function() {
-					return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
-				}
-			}
-		}
-
-		if (loadGraphUrl)
-			E2.app.loadGraph(loadGraphUrl, start)
-		else {
-			E2.app.connectEditorChannel(start)
-		}
-	})
-
+	E2.core.on('ready', E2.app.onCoreReady.bind(E2.app, loadGraphUrl))
 }
 
 if (typeof(module) !== 'undefined')
