@@ -87,7 +87,7 @@ GraphStore.prototype._uiNodeAdded = function(graph, node, info) {
 	this.emit('nodeAdded', graph, node, info)
 
 	if (info && info.proxy && info.proxy.connection) {
-		this._uiConnected(graph.parent_graph, info.proxy.connection)
+		this._uiConnected(graph.parent_graph, Connection.hydrate(graph.parent_graph, info.proxy.connection))
 	}
 
 	this.emit('changed')
