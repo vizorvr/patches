@@ -3,7 +3,8 @@ var assert = require('assert');
 global.E2 = {
 	uid: function() {},
 	dt: {
-		ANY: 0
+		ANY: { id: 8, name: 'Arbitrary' },
+		FLOAT: { id: 0, name: 'Float' }
 	},
 	slot_type: {
 		input: 0,
@@ -26,8 +27,8 @@ describe('Connection', function() {
 		var nb = new Node()
 		nb.uid = 'nb'
 		
-		na.add_slot(1, {  })
-		nb.add_slot(0, {  })
+		na.add_slot(1, { dt: E2.dt.FLOAT })
+		nb.add_slot(0, { dt: E2.dt.FLOAT })
 
 		na.addOutput = function() { done() }
 
@@ -47,8 +48,8 @@ describe('Connection', function() {
 		var nb = new Node()
 		nb.uid = 'nb'
 		
-		na.add_slot(1, {  })
-		nb.add_slot(0, {  })
+		na.add_slot(1, { dt: E2.dt.FLOAT })
+		nb.add_slot(0, { dt: E2.dt.FLOAT })
 
 		nb.addInput = function() { done() }
 
@@ -69,8 +70,8 @@ describe('Connection', function() {
 		var nb = new Node()
 		nb.uid = 'nb'
 		
-		na.add_slot(1, {  })
-		nb.add_slot(0, {  })
+		na.add_slot(1, {dt: E2.dt.FLOAT})
+		nb.add_slot(0, {dt: E2.dt.FLOAT})
 
 		na.addOutput = function() { done() }
 
