@@ -596,7 +596,7 @@ Application.prototype.onNodeDragStopped = function(node) {
 	this.undoManager.push(cmd)
 	this.undoManager.end()
 
-	E2.app.channel.broadcast({
+	E2.app.channel.send({
 		actionType: 'uiNodesMoved',
 		graphUid: E2.core.active_graph.uid,
 		nodeUids: di.nodes.map(function(n) { return n.uid }),
