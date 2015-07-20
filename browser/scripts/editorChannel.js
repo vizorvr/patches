@@ -86,52 +86,23 @@ function isAcceptedDispatch(m) {
 	return false;
 }
 
-function EditorChannel() {
+function EditorChannel(dispatcher) {
 	EventEmitter.call(this)
 
 	var that = this
-	var reconnecting = false
 
-	function connect() {
-		that.channel = new WebSocketChannel()
+	this._dispatcher = dispatcher || E2.app.dispatcher
 
-		that.channel
-			.connect('/__editorChannel')
-			.on('disconnected', function() {
-				if (!reconnecting)
-					E2.app.growl('Disconnected from server. Reconnecting.')
+	this._messageHandlerBound = this._messageHandler.bind(this)
 
-				reconnecting = true
-				setTimeout(connect, RECONNECT_INTERVAL)
-
-				that.emit('disconnected')
-			})
-			.on('ready', function(uid) {
-				that.uid = uid
-
-				that.emit('ready', uid)
-
-				if (reconnecting) {
-					reconnecting = false
-					E2.app.growl('Connected to server!')
-					that.emit('reconnected')
-				}
-
-				that.channel.on('*', function(m) {
-					that.emit(m.kind, m)
-				})
-			})
-	}
-
-	connect()
-
-	E2.app.dispatcher.register(function channelGotDispatch(payload) {
+	this._dispatcher.register(function channelGotDispatch(payload) {
 		if (payload.from)
 			return;
 
 		if (isAcceptedDispatch(payload)) {
-			console.log('EditorChannel created', payload)
-			that.broadcast(dehydrate(payload))
+			if (payload.actionType !== 'uiMouseMoved')
+				console.log('EditorChannel created', payload)
+			that.send(dehydrate(payload))
 		}
 	})
 
@@ -139,19 +110,58 @@ function EditorChannel() {
 
 EditorChannel.prototype = Object.create(EventEmitter.prototype)
 
+EditorChannel.prototype.close = function() {
+	this.channel.close()
+}
+
+EditorChannel.prototype.connect = function(options) {
+	var that = this
+	var reconnecting = false
+
+	this.channel = new WebSocketChannel()
+	this.channel
+		.connect('/__editorChannel', options)
+		.on('disconnected', function() {
+			if (!reconnecting)
+				E2.app.growl('Disconnected from server. Reconnecting.')
+
+			reconnecting = true
+			setTimeout(that.connect.bind(that), RECONNECT_INTERVAL)
+
+			that.emit('disconnected')
+		})
+		.on('ready', function(uid) {
+			that.uid = uid
+
+			that.emit('ready', uid)
+
+			if (reconnecting) {
+				reconnecting = false
+				E2.app.growl('Connected to server!')
+				that.emit('reconnected')
+			}
+
+			that.channel.on('*', function(m) {
+				that.emit(m.kind, m)
+			})
+		})
+
+	return this
+}
+
 EditorChannel.prototype.leave = function() {
+	this.channel.removeListener(this.channelName, this._messageHandlerBound)
 	this.channel.leave(this.channelName)
-	this.channel.off('*', this._messageHandler.bind(this))
 	this.emit('leave', { id: this.uid })
 }
 
-EditorChannel.prototype._messageHandler = function(payload) {
+EditorChannel.prototype._messageHandler = function _messageHandler(payload) {
 	if (!payload.actionType || !payload.from)
 		return;
 
 	if (isAcceptedDispatch(payload)) {
 		console.log('EditorChannel hydrating', payload)
-		E2.app.dispatcher.dispatch(hydrate(payload))
+		this._dispatcher.dispatch(hydrate(payload))
 	}
 }
 
@@ -159,7 +169,7 @@ EditorChannel.prototype.join = function(channelName, cb) {
 	var that = this
 
 	if (this.channelName && this.channelName !== channelName) {
-		this.leave(this.channelName)
+		this.leave()
 	}
 
 	this.channelName = channelName
@@ -172,16 +182,17 @@ EditorChannel.prototype.join = function(channelName, cb) {
 
 	function waitForOwnJoin(pl) {
 		if (pl.kind === 'youJoined' && pl.channel === channelName) {
-			that.channel.off('*', waitForOwnJoin)
-			cb()
+			that.channel.removeListener(channelName, waitForOwnJoin)
+			if (cb)
+				cb()
 		}
 	}
 
-	this.channel.on('*', waitForOwnJoin)
-	this.channel.on('*', this._messageHandler.bind(this))
+	this.channel.on(channelName, waitForOwnJoin)
+	this.channel.on(channelName, this._messageHandlerBound)
 }
 
-EditorChannel.prototype.broadcast = function(payload) {
+EditorChannel.prototype.send = function(payload) {
 	this.channel.send(this.channelName, payload)
 }
 
