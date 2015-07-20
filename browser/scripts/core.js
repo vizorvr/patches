@@ -34,11 +34,12 @@ E2.erase_color = '#ff3b3b';
 E2.COLOR_COMPATIBLE_SLOT = '#080';
 
 (function() {
-	var i = 0
-	var myId = Math.random()
 	E2.uid = function() {
-		var uidStr = myId + '.' + Date.now() + '' +  Math.random() + '' +  i++
-		var uid = CryptoJS.SHA256(uidStr).toString()
+		var keys = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+		var uid = ''
+		for (var i=0; i < 12; i++) {
+			uid += keys[Math.floor(Math.random() * keys.length)]
+		}
 		return uid
 	}
 })()
