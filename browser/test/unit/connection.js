@@ -13,7 +13,7 @@ global.E2 = {
 }
 
 global.EventEmitter = require('../../scripts/event-emitter')
-global.Node = require('../../scripts/node')
+global.Node = require('../../scripts/node').Node
 global.Connection = require('../../scripts/connection').Connection
 global.msg = console.log
 

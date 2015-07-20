@@ -4,7 +4,7 @@ global.EventEmitter = require('events').EventEmitter
 global.Store = require('../../scripts/store')
 
 var GraphStore = require('../../scripts/graphStore')
-var Node = require('../../scripts/node')
+var Node = require('../../scripts/node').Node
 
 describe('GraphStore', function() {
 	var graph, node
@@ -39,6 +39,5 @@ describe('GraphStore', function() {
 			gs._uiNodeAdded(graph, node)
 		})
 	})
-
 
 })

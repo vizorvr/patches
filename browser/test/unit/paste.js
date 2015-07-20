@@ -9,7 +9,7 @@ var Application = require('../../scripts/application')
 
 global._ = require('lodash')
 global.EventEmitter = require('../../scripts/event-emitter')
-global.Node = require('../../scripts/node')
+global.Node = require('../../scripts/node').Node
 global.EditorChannel = function(){}
 global.Graph = require('../../scripts/graph')
 global.Flux = require('../../vendor/flux')
@@ -64,7 +64,7 @@ describe('Paste', function() {
 
 	describe('Simple', function() {
 
-		var source = JSON.parse(fs.readFileSync(__dirname+'/fixtures/paste.json')).root
+		var source = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/paste.json')).root
 
 		it('pastes correctly', function() {
 			app.paste(source, 0, 0)
@@ -154,7 +154,7 @@ describe('Paste', function() {
 			core.root_graph = core.active_graph
 			core.graphs = [ core.active_graph ]
 
-			source = JSON.parse(fs.readFileSync(__dirname+'/fixtures/paste-complex.json')).root
+			source = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/paste-complex.json')).root
 		})
 
 		it('creates the right number of nodes, connections and outputs', function() {

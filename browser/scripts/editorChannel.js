@@ -100,8 +100,6 @@ function EditorChannel(dispatcher) {
 			return;
 
 		if (isAcceptedDispatch(payload)) {
-			if (payload.actionType !== 'uiMouseMoved')
-				console.log('EditorChannel created', payload)
 			that.send(dehydrate(payload))
 		}
 	})
@@ -159,10 +157,8 @@ EditorChannel.prototype._messageHandler = function _messageHandler(payload) {
 	if (!payload.actionType || !payload.from)
 		return;
 
-	if (isAcceptedDispatch(payload)) {
-		console.log('EditorChannel hydrating', payload)
+	if (isAcceptedDispatch(payload))
 		this._dispatcher.dispatch(hydrate(payload))
-	}
 }
 
 EditorChannel.prototype.join = function(channelName, cb) {

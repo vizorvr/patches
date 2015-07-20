@@ -1046,8 +1046,10 @@ Application.prototype.onPaste = function() {
 }
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
-	node.ui.dom[0].style.border = this.selection_border_style
-	node.ui.selected = true
+	if (node.ui) {
+		node.ui.dom[0].style.border = this.selection_border_style
+		node.ui.selected = true
+	}
 
 	if (addToSelection !== false)
 		this.selectedNodes.push(node)
@@ -1061,7 +1063,8 @@ Application.prototype.deselectNode = function(node) {
 }
 
 Application.prototype.markConnectionAsSelected = function(conn) {
-	conn.ui.selected = true
+	if (conn.ui)
+		conn.ui.selected = true
 	this.selectedConnections.push(conn)
 }
 

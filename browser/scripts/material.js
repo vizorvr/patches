@@ -157,3 +157,5 @@ Material.get_caps_hash = function(mesh, o_mat)
 	return h;
 };
 
+if (typeof(module) !== 'undefined')
+	module.exports = Material

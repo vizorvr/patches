@@ -688,7 +688,9 @@ LinkedSlotGroup.prototype.infer_dt = function()
 };
 
 
-if (typeof(module) !== 'undefined')
-	module.exports = Node
+if (typeof(module) !== 'undefined') {
+	module.exports.Node = Node
+	module.exports.LinkedSlotGroup = LinkedSlotGroup
+}
 
 

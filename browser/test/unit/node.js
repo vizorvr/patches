@@ -15,7 +15,7 @@ global.E2 = {
 global.msg = console.error
 
 global.EventEmitter = require('../../scripts/event-emitter')
-global.Node = require('../../scripts/node')
+global.Node = require('../../scripts/node').Node
 
 describe('Node', function() {
 	var core, app
