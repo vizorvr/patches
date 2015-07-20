@@ -51,9 +51,12 @@ FromMeshCustomShader.prototype._refreshEditor = function() {
 }
 
 FromMeshCustomShader.prototype.destroy_ui = function() {
-	_.each(this._editors, function(ed) {
-		if (ed.close)
+	var that = this
+	_.each(this._editors, function(ed, key) {
+		if (ed.close) {
 			ed.close()
+			delete that._editors[key]
+		}
 	})
 }
 
@@ -91,7 +94,7 @@ FromMeshCustomShader.prototype.create_ui = function() {
 		that._editors[which] = E2.ShaderEditor
 			.open(title, that.state[stateKey], that.node.getDynamicInputSlots())
 			.on('closed', function() {
-				that._editors[which] = null
+				delete that._editors[which]
 			})
 			.on('inputRemoved', function(slotUid, name) {
 				removeSlot(slotUid, name)
