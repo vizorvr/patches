@@ -130,7 +130,7 @@ function EditorChannel() {
 			return;
 
 		if (isAcceptedDispatch(payload)) {
-			console.log('EditorChannel dispatching', payload)
+			console.log('EditorChannel created', payload)
 			that.broadcast(dehydrate(payload))
 		}
 	})
@@ -149,8 +149,10 @@ EditorChannel.prototype._messageHandler = function(payload) {
 	if (!payload.actionType || !payload.from)
 		return;
 
-	if (isAcceptedDispatch(payload))
+	if (isAcceptedDispatch(payload)) {
+		console.log('EditorChannel hydrating', payload)
 		E2.app.dispatcher.dispatch(hydrate(payload))
+	}
 }
 
 EditorChannel.prototype.join = function(channelName, cb) {
