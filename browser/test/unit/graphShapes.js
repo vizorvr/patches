@@ -6,7 +6,7 @@ global.E2 = {}
 var Application = require('../../scripts/application')
 
 global.EventEmitter = require('../../scripts/event-emitter')
-global.Node = require('../../scripts/node')
+global.Node = require('../../scripts/node').Node
 global.EditorChannel = function(){}
 global.Graph = require('../../scripts/graph')
 global.Flux = require('../../vendor/flux')

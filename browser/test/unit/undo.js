@@ -7,7 +7,7 @@ global.Registers = function(){}
 global.EventEmitter = EventEmitter // XXX
 global.Graph = require('../../scripts/graph');
 global.Connection = require('../../scripts/connection').Connection;
-global.Node = require('../../scripts/node')
+global.Node = require('../../scripts/node').Node
 
 global.Flux = require('../../vendor/flux')
 

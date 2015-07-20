@@ -87,7 +87,9 @@ GraphStore.prototype._uiNodeAdded = function(graph, node, info) {
 	this.emit('nodeAdded', graph, node, info)
 
 	if (info && info.proxy && info.proxy.connection) {
-		this._uiConnected(graph.parent_graph, Connection.hydrate(graph.parent_graph, info.proxy.connection))
+		this._uiConnected(graph.parent_graph,
+			Connection.hydrate(graph.parent_graph, info.proxy.connection)
+		)
 	}
 
 	this.emit('changed')
@@ -137,6 +139,27 @@ GraphStore.prototype._uiSlotRemoved = function(graph, nodeUid, slotUid) {
 }
 
 GraphStore.prototype._uiConnected = function(graph, connection) {
+	var c = connection
+
+	/*
+		for dynamic slots, the index could have changed in eg.
+		a redo situation. recalculate the current index in the node
+		by looking up the slot with its uid; issue 195
+	 */
+	if (c.dst_slot.dynamic) {
+		c.dst_slot.index = c.dst_node.find_dynamic_slot(
+			E2.slot_type.input,
+			c.dst_slot.uid
+		).index
+	}
+
+	if (c.src_slot.dynamic) {
+		c.src_slot.index = c.src_node.find_dynamic_slot(
+			E2.slot_type.output,
+			c.src_slot.uid
+		).index
+	}
+
 	graph.connect(connection)
 	this.emit('connected', graph, connection)
 	this.emit('changed')

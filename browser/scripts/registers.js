@@ -126,3 +126,8 @@ Registers.prototype.deserialise = function(regs)
 	}
 };
 
+
+if (typeof(module) !== 'undefined') {
+	module.exports = Registers
+}
+

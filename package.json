@@ -80,9 +80,10 @@
   },
   "scripts": {
     "start": "node app.js",
+    "test:browser:integration": "mocha browser/test/integration/issue195.js",
     "test:browser:unit": "mocha browser/test/unit/undo.js && mocha browser/test/unit/connection.js && mocha browser/test/unit/paste.js && mocha browser/test/unit/collapsibleSelectControl.js && mocha browser/test/unit/editConnection.js && mocha browser/test/unit/graphShapes.js && mocha browser/test/unit/node.js && mocha browser/test/unit/graphStore.js",
     "test:browser:plugins": "mocha browser/test/unit/plugins",
-    "test:browser": "npm run test:browser:unit && npm run test:browser:plugins",
+    "test:browser": "npm run test:browser:unit && npm run test:browser:plugins && npm run test:browser:integration",
     "test:server:unit": "mocha test/unit test/controllers test/services",
     "test:server:integration": "mocha test/integration/graph-save && mocha test/integration/multiuserEditing && mocha test/integration/preset-save && mocha test/integration/upload",
     "test:server": "npm run test:server:unit && npm run test:server:integration",

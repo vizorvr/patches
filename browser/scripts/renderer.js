@@ -548,3 +548,7 @@ function Camera(gl)
 	mat4.identity(this.view);
 }
 
+if (typeof(module) !== 'undefined') {
+	module.exports.VertexBuffer = VertexBuffer
+	module.exports.IndexBuffer = IndexBuffer
+}
