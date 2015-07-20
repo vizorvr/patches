@@ -47,9 +47,6 @@ function createClient(channelName) {
 		if (channelName)
 			chan.join(channelName)
 	})
-	// .on('*', function(m) {
-	// 	chan.emit(m.kind, m)
-	// })
 
 	chan.dispatcher = dispatcher
 
