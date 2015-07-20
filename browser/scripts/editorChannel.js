@@ -129,8 +129,10 @@ function EditorChannel() {
 		if (payload.from)
 			return;
 
-		if (isAcceptedDispatch(payload))
+		if (isAcceptedDispatch(payload)) {
+			console.log('EditorChannel dispatching', payload)
 			that.broadcast(dehydrate(payload))
+		}
 	})
 
 }
