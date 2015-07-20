@@ -1,12 +1,16 @@
 global.WebSocket = require('ws')
+global.EventEmitter = require('events').EventEmitter
+global._ = require('lodash')
 var request = require('supertest')
 var mongoose = require('mongoose')
 var mongo = require('mongodb')
 var assert = require('assert')
-var WebSocketChannel = require('../../browser/scripts/wschannel')
+global.WebSocketChannel = require('../../browser/scripts/wschannel')
+var EditorChannel = require('../../browser/scripts/editorChannel')
 var r = require('rethinkdb')
 var session = require('client-sessions')
 var secrets = require('../../config/secrets');
+global.Flux = require('../../browser/vendor/flux')
 
 global.window = {
 	location: { hostname: 'localhost', port: 8000 }
@@ -24,9 +28,10 @@ var app = require('../../app.js')
 var agent = request.agent(app)
 
 function createClient(channelName) {
-	var ws = new WebSocketChannel(agent)
+	var dispatcher = new Flux.Dispatcher()
+	var chan = new EditorChannel(dispatcher)
 
-	ws.connect('/__editorChannel', {
+	chan.connect({
 		headers: {
 			'Cookie': 'session='+session.util.encode({
 				cookieName: 'session',
@@ -38,15 +43,17 @@ function createClient(channelName) {
 			})
 		}
 	})
-		.on('ready', function() {
-			if (channelName)
-				ws.join(channelName)
-		})
-		.on('*', function(m) {
-			ws.emit(m.kind, m)
-		})
+	.on('ready', function() {
+		if (channelName)
+			chan.join(channelName)
+	})
+	// .on('*', function(m) {
+	// 	chan.emit(m.kind, m)
+	// })
 
-	return ws
+	chan.dispatcher = dispatcher
+
+	return chan
 }
 
 var rethinkConnection
@@ -71,6 +78,15 @@ describe('Multiuser', function() {
 	var s1, s2
 
 	before(function(done) {
+		global.E2 = {
+			app: {
+				growl: function() {}
+			},
+			core: {
+				active_graph: { uid: 'root' }
+			}
+		}
+
 		app._editorChannel.on('ready', function() {
 			setupDatabase(function(err) {
 				db = new mongo.Db('mutest'+testId, 
@@ -101,7 +117,10 @@ describe('Multiuser', function() {
 	beforeEach(function() {})
 	afterEach(function() {
 		[s1, s2].map(function(s) {
-			if (s) s.close()
+			if (s) {
+				s.close()
+				s = null
+			}
 		})
 	})
 
@@ -117,6 +136,7 @@ describe('Multiuser', function() {
 		s2 = createClient('test1')
 
 		function checkCondition() {
+			console.log('checkCondition', usersSeen.length)
 			if (usersSeen.length < 4)
 				return;
 
@@ -133,7 +153,6 @@ describe('Multiuser', function() {
 		})
 
 		s2.on('join', function(other) {
-			console.log('s2 join', other.id)
 			usersSeen.push(other.id)
 			checkCondition()
 		})
@@ -149,7 +168,7 @@ describe('Multiuser', function() {
 
 		s1.once('join', function() {
 			numbers.map(function(n) {
-				s1.send(channel, {
+				s1.send({
 					actionType: 'uiPluginStateChanged',
 					number: n
 				})
@@ -160,7 +179,8 @@ describe('Multiuser', function() {
 		s1.on('disconnected', function() {
 			s2 = createClient(channel)
 
-			s2.on(channel, function(m) {
+			s2.dispatcher.register(function(m) {
+				console.log('JOO',m)
 				if (!m.actionType)
 					return;
 
@@ -181,25 +201,25 @@ describe('Multiuser', function() {
 		var channel = 'test3'+Math.random()
 		var edits = []
 		
-		s1 = createClient(channel)
 		var numbers = [ 'one', 'two', 'three', 'four', 'five',
 			'six', 'seven', 'eight', 'nine', 'ten' ]
 
 		function burst() {
 			numbers.map(function(n) {
-				s1.send(channel, {
+				s1.send({
 					actionType: 'uiPluginStateChanged',
 					number: n
 				})
 			})
 		}
 
+		s1 = createClient(channel)
 		s1.once('join', function() {
 			s2 = createClient(channel)
 
 			s2.once('join', burst)
 
-			s2.on(channel, function(m) {
+			s2.dispatcher.register(function(m) {
 				if (!m.actionType)
 					return;
 
@@ -216,9 +236,40 @@ describe('Multiuser', function() {
 
 	})
 
-	// it('can make snapshots of the edit log', function(done) {
-		// s1 = createClient('test1')
-	// })
+
+	it('sends log on join, leave, join back', function(done) {
+		var channel = 'testJLJ'+Math.random()
+		var ogChannel = channel
+		
+		var s3 = createClient(channel)
+		var s1 = createClient(channel)
+
+		s1.once('join', function() {
+			s1.send({
+				actionType: 'uiPluginStateChanged',
+				number: 1
+			})
+		})
+
+		s3.once('join', function() {
+			// join some other channel
+			channel = 'testJLJ'+Math.random()
+			s3.join(channel, function() {
+				// join original channel again
+				s3.join(ogChannel, function() {
+					s3.dispatcher.register(function(m) {
+						assert.ok(m.number === 1)
+						s3.close()
+						done()
+					})
+				})
+			})
+		})
+
+	})
+
+
+
 
 
 })

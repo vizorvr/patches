@@ -2056,6 +2056,7 @@ Application.prototype.connectEditorChannel = function(cb) {
 
 	if (!this.channel) {
 		this.channel = new EditorChannel()
+		this.channel.connect()
 		this.channel.on('ready', function() { 
 			that.peopleStore.initialize()
 			joinChannel()

@@ -46,7 +46,9 @@ WebSocketChannel.prototype.connect = function(path, options) {
 		}
 
 		that.emit('*', m)
-		that.emit(m.channel, m)
+		
+		if (m.channel)
+			that.emit(m.channel, m)
 	}
 
 	return this
