@@ -1101,8 +1101,8 @@ Application.prototype.onWindowResize = function() {
 
 		// Adjust for high-dpi
 		var devicePixelRatio = window.devicePixelRatio || 1;
-		E2.dom.canvas.css('width', desiredWidthInCSSPixels * width);
-		E2.dom.canvas.css('height', desiredWidthInCSSPixels * height);
+		E2.dom.canvas.css('width', devicePixelRatio * width);
+		E2.dom.canvas.css('height', devicePixelRatio * height);
 
 		E2.app.player.core.renderer.update_viewport();
 	}
