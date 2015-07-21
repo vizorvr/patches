@@ -386,9 +386,8 @@ app.get(['/editor', '/edit'], graphController.edit.bind(graphController));
 // GET /fthr/dunes-world/edit -- EDITOR
 app.get('/:username/:graph/edit', function(req, res, next)
 {
-	req.params.path = '/'+req.params.username+'/'
-		+req.params.graph;
-	graphController.edit(req, res, next);
+	res.redirect('/'+req.params.username+'/'
+		+req.params.graph)
 });
 
 // GET /fthr/dunes-world.json

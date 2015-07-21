@@ -50,7 +50,6 @@ function removeNode() {
 		}
 
 		if (sid !== undefined) {
-			console.log('RemoveNode', sid, slotIndex, !!connection)
 			this.nodeInfo = {
 				proxy: {
 					sid: sid,

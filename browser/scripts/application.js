@@ -9,6 +9,10 @@ function getChannelFromPath(pathname) {
 	return p[1]
 }
 
+function isUserOwnedGraph(path) {
+	return path.split('/').length > 1
+}
+
 function Application() {
 	var that = this;
 
@@ -1377,7 +1381,7 @@ Application.prototype.loadGraph = function(graphPath, cb) {
 	E2.app.player.on_update()
 
 	E2.app.player.load_from_url(graphPath, function() {
-		that.connectEditorChannel(function() {
+		that.setupEditorChannel().then(function() {
 			E2.core.rebuild_structure_tree()
 			E2.app.onGraphSelected(E2.core.active_graph)
 
@@ -1527,7 +1531,7 @@ Application.prototype.onPublishClicked = function() {
 }
 
 var growlOpen
-Application.prototype.growl = function(title) {
+Application.prototype.growl = function(title, duration) {
 	var tt = $('#breadcrumb')
 
 	function close() {
@@ -1551,7 +1555,7 @@ Application.prototype.growl = function(title) {
 
 	tt.tooltip('show')
 
-	setTimeout(close, 3000)
+	setTimeout(close, duration || 3000)
 }
 
 Application.prototype.onShowTooltip = function(e) {
@@ -1717,6 +1721,10 @@ Application.prototype.setupStoreListeners = function() {
 	}
 
 	this.graphStore
+	.on('snapshotted', function() {
+		E2.core.rebuild_structure_tree()
+		E2.app.onGraphSelected(E2.core.active_graph)
+	})
 	.on('changed', onGraphChanged.bind(this))
 	.on('nodeAdded', onNodeAdded.bind(this))
 	.on('nodeRemoved', onNodeRemoved.bind(this))
@@ -2046,18 +2054,24 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	if (loadGraphUrl)
 		E2.app.loadGraph(loadGraphUrl, start)
 	else {
-		E2.app.connectEditorChannel(start)
+		E2.app.setupEditorChannel().then(start)
 	}
 }
 
 /**
  * Connect to the EditorChannel for this document
  */
-Application.prototype.connectEditorChannel = function(cb) {
+Application.prototype.setupEditorChannel = function() {
+	var dfd = when.defer()
 	var that = this
 
 	function joinChannel() {
-		that.channel.join(that.path, cb)
+		if (isUserOwnedGraph(that.path))
+			return dfd.resolve()
+
+		that.channel.join(that.path, function() {
+			dfd.resolve()
+		})
 	}
 
 	if (!this.channel) {
@@ -2069,6 +2083,8 @@ Application.prototype.connectEditorChannel = function(cb) {
 		})
 	} else
 		joinChannel()
+
+	return dfd.promise
 }
 
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
@@ -2133,7 +2149,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.treeView = E2.dom.structure.tree = new TreeView(
 		E2.dom.structure,
 		E2.core.root_graph,
-		function(graph) { // On item activation
+		function() { // On item activation
 			E2.app.clearEditState()
 			E2.app.clearSelection()
 		},
