@@ -433,8 +433,10 @@ Node.prototype.setPluginState = function(key, value) {
 
 Node.prototype.serialise = function(flat) {
 	function pack_dt(slots) {
-		for(var i = 0, len = slots.length; i < len; i++)
+		for(var i = 0, len = slots.length; i < len; i++) {
+			delete slots[i].desc;
 			slots[i].dt = slots[i].dt.id;
+		}
 	}
 
 	var d = {};

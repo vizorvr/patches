@@ -1522,15 +1522,6 @@ Application.prototype.onPublishClicked = function() {
 	})
 }
 
-Application.prototype.onLoadClipboardClicked = function() {
-	var that = this
-	var url = URL_GRAPHS + E2.dom.filename_input.val()
-
-	$.get(url, function(d) {
-		that.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0)
-	})
-}
-
 var growlOpen
 Application.prototype.growl = function(title) {
 	var tt = $('#breadcrumb')
@@ -2000,6 +1991,14 @@ Application.prototype.start = function() {
 
 	})
 
+	E2.dom.viewSourceButton.click(function() {
+		bootbox.dialog({
+			message: '<textarea class="form-control" cols=80 rows=40>'+
+				E2.core.serialise()+'</textarea>', 
+			buttons: { 'OK': function() {} }
+		})
+	})
+
 	E2.dom.saveACopy.click(E2.app.onSaveACopyClicked.bind(E2.app))
 	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
 	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked.bind(E2.app))
@@ -2081,13 +2080,13 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
+	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
 	E2.dom.saveAsPreset = $('#save-as-preset');
 	E2.dom.saveSelectionAsPreset = $('#save-selection-as-preset');
 	E2.dom.publish = $('#publish');
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
-	E2.dom.load_clipboard = $('#load-clipboard');
 	E2.dom.structure = $('#structure');
 	E2.dom.info = $('#info');
 	E2.dom.info._defaultContent = E2.dom.info.html()
