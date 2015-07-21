@@ -1098,8 +1098,12 @@ Application.prototype.onWindowResize = function() {
 		E2.dom.canvas_parent.css('height', height);
 		E2.dom.canvas[0].width = width;
 		E2.dom.canvas[0].height = height;
-		E2.dom.canvas.css('width', width);
-		E2.dom.canvas.css('height', height);
+
+		// Adjust for high-dpi
+		var devicePixelRatio = window.devicePixelRatio || 1;
+		E2.dom.canvas.css('width', desiredWidthInCSSPixels * width);
+		E2.dom.canvas.css('height', desiredWidthInCSSPixels * height);
+
 		E2.app.player.core.renderer.update_viewport();
 	}
 
