@@ -2022,6 +2022,35 @@ Application.prototype.start = function() {
 
 	E2.app.player.play() // autoplay
 	E2.app.changeControlState()
+
+	E2.app.showFirstTimeDialog()
+}
+
+Application.prototype.showFirstTimeDialog = function() {
+	if (!!Cookies.get('vizor'))
+		return;
+
+	Cookies.set('vizor', { seen: 1 })
+
+	var diag = bootbox.dialog({
+		title: '<h3>First time here?</h3>',
+		message: '<h4>Check out our '+
+			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ">Youtube tutorials</a> '+
+			'or<br>'+
+			'drop by <a href="http://slack.com/">our public Slack</a> and say hello. </h4>',
+		onEscape: true,
+		html: true,
+		buttons: { Ok: function() {}}
+	})
+
+	diag.find('.modal-dialog').addClass('modal-sm')
+	diag.css({
+		top: '50%',
+		'margin-top': function () {
+			return -(diag.height() / 2);
+		}
+	});
+
 }
 
 /**
