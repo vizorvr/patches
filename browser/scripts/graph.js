@@ -351,6 +351,12 @@ Graph.prototype.findNodeByUid = function(nuid) {
 			return true
 		}
 	})
+
+	if (!node) {
+		msg('ERROR: Failed to resolve node('+nuid+') in graph(' + this.uid + ')')
+		console.log('Graph nodes', this.nodes)
+	}
+
 	return node
 }
 
@@ -366,7 +372,7 @@ Graph.resolve_graph = function(graphs, guid) {
 
 	if (guid !== -1) {
 		msg('ERROR: Failed to resolve graph(' + guid + ')')
-		debugger;
+		console.log('Graphs', graphs)
 	}
 	
 	return null;
