@@ -392,7 +392,6 @@ Renderer.prototype.set_fullscreen = function(state)
 Renderer.prototype.update_viewport = function()
 {
 	var c = this.canvas[0];
-
 	this.context.viewport(0, 0, c.width, c.height);
 };
 
