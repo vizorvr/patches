@@ -1522,14 +1522,6 @@ Application.prototype.openSaveACopyDialog = function(cb)
 	})
 }
 
-Application.prototype.onPublishClicked = function() {
-	this.openSaveACopyDialog(function() {
-		window.location.href = '//vizor.io/' + 
-			window.location.pathname.split('/')
-				.slice(1,3).join('/');
-	})
-}
-
 var growlOpen
 Application.prototype.growl = function(title, duration) {
 	var tt = $('#breadcrumb')
@@ -1911,6 +1903,11 @@ Application.prototype.setupPeopleEvents = function() {
 	})
 }
 
+Application.prototype.onForkClicked = function() {
+	console.log('fork')
+	this.channel.fork()
+}
+
 Application.prototype.start = function() {
 	var that = this
 
@@ -2015,7 +2012,7 @@ Application.prototype.start = function() {
 	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
 	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
-	E2.dom.publish.click(E2.app.onPublishClicked.bind(E2.app))
+	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
 
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
@@ -2100,11 +2097,11 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
+	E2.dom.forkButton = $('#fork-button');
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
 	E2.dom.saveAsPreset = $('#save-as-preset');
 	E2.dom.saveSelectionAsPreset = $('#save-selection-as-preset');
-	E2.dom.publish = $('#publish');
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
 	E2.dom.structure = $('#structure');

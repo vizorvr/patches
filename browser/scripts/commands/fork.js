@@ -32,11 +32,12 @@ ForkCommand.prototype.fork = function(editAction) {
 				data: graphSer
 			})
 
+			if (!editAction)
+				return;
+
 			// shove the original edit on top
-			if (editAction) {
-				editAction.graphUid = E2.core.active_graph.uid
-				E2.app.channel.send(editAction)
-			}
+			editAction.graphUid = E2.core.active_graph.uid
+			E2.app.channel.send(editAction)
 		})
 }
 

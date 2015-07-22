@@ -179,7 +179,7 @@ EditorChannel.prototype.fork = function(payload) {
 	fc.fork(payload)
 		.then(function() {
 			E2.dom.load_spinner.hide()
-			E2.app.growl("We've automatically made a copy of this for you to edit.",
+			E2.app.growl("We've made a copy of this for you to edit.",
 				5000)
 		})
 		.catch(function(err) {
@@ -189,6 +189,9 @@ EditorChannel.prototype.fork = function(payload) {
 }
 
 EditorChannel.prototype.leave = function() {
+	if (!this.isOnChannel)
+		return;
+
 	this.isOnChannel = false
 	this.channel.removeListener(this.channelName, this._messageHandlerBound)
 	this.channel.leave(this.channelName)
