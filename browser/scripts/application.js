@@ -9,6 +9,10 @@ function getChannelFromPath(pathname) {
 	return p[1]
 }
 
+function isUserOwnedGraph(path) {
+	return path.split('/').length > 1
+}
+
 function Application() {
 	var that = this;
 
@@ -1377,7 +1381,7 @@ Application.prototype.loadGraph = function(graphPath, cb) {
 	E2.app.player.on_update()
 
 	E2.app.player.load_from_url(graphPath, function() {
-		that.connectEditorChannel(function() {
+		that.setupEditorChannel().then(function() {
 			E2.core.rebuild_structure_tree()
 			E2.app.onGraphSelected(E2.core.active_graph)
 
@@ -1518,16 +1522,8 @@ Application.prototype.openSaveACopyDialog = function(cb)
 	})
 }
 
-Application.prototype.onPublishClicked = function() {
-	this.openSaveACopyDialog(function() {
-		window.location.href = '//vizor.io/' + 
-			window.location.pathname.split('/')
-				.slice(1,3).join('/');
-	})
-}
-
 var growlOpen
-Application.prototype.growl = function(title) {
+Application.prototype.growl = function(title, duration) {
 	var tt = $('#breadcrumb')
 
 	function close() {
@@ -1551,7 +1547,7 @@ Application.prototype.growl = function(title) {
 
 	tt.tooltip('show')
 
-	setTimeout(close, 3000)
+	setTimeout(close, duration || 3000)
 }
 
 Application.prototype.onShowTooltip = function(e) {
@@ -1717,6 +1713,10 @@ Application.prototype.setupStoreListeners = function() {
 	}
 
 	this.graphStore
+	.on('snapshotted', function() {
+		E2.core.rebuild_structure_tree()
+		E2.app.onGraphSelected(E2.core.active_graph)
+	})
 	.on('changed', onGraphChanged.bind(this))
 	.on('nodeAdded', onNodeAdded.bind(this))
 	.on('nodeRemoved', onNodeRemoved.bind(this))
@@ -1903,6 +1903,11 @@ Application.prototype.setupPeopleEvents = function() {
 	})
 }
 
+Application.prototype.onForkClicked = function() {
+	console.log('fork')
+	this.channel.fork()
+}
+
 Application.prototype.start = function() {
 	var that = this
 
@@ -2007,7 +2012,7 @@ Application.prototype.start = function() {
 	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
 	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
-	E2.dom.publish.click(E2.app.onPublishClicked.bind(E2.app))
+	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
 
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
@@ -2046,18 +2051,24 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	if (loadGraphUrl)
 		E2.app.loadGraph(loadGraphUrl, start)
 	else {
-		E2.app.connectEditorChannel(start)
+		E2.app.setupEditorChannel().then(start)
 	}
 }
 
 /**
  * Connect to the EditorChannel for this document
  */
-Application.prototype.connectEditorChannel = function(cb) {
+Application.prototype.setupEditorChannel = function() {
+	var dfd = when.defer()
 	var that = this
 
 	function joinChannel() {
-		that.channel.join(that.path, cb)
+		if (isUserOwnedGraph(that.path))
+			return dfd.resolve()
+
+		that.channel.join(that.path, function() {
+			dfd.resolve()
+		})
 	}
 
 	if (!this.channel) {
@@ -2069,6 +2080,8 @@ Application.prototype.connectEditorChannel = function(cb) {
 		})
 	} else
 		joinChannel()
+
+	return dfd.promise
 }
 
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
@@ -2084,11 +2097,11 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
+	E2.dom.forkButton = $('#fork-button');
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
 	E2.dom.saveAsPreset = $('#save-as-preset');
 	E2.dom.saveSelectionAsPreset = $('#save-selection-as-preset');
-	E2.dom.publish = $('#publish');
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
 	E2.dom.structure = $('#structure');
@@ -2133,7 +2146,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.treeView = E2.dom.structure.tree = new TreeView(
 		E2.dom.structure,
 		E2.core.root_graph,
-		function(graph) { // On item activation
+		function() { // On item activation
 			E2.app.clearEditState()
 			E2.app.clearSelection()
 		},

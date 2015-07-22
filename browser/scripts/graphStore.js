@@ -14,6 +14,9 @@ GraphStore.prototype = Object.create(Store.prototype)
 
 GraphStore.prototype._setupListeners = function() {
 	E2.app.dispatcher.register(function receiveFromDispatcher(payload) {
+		if (payload.actionType === 'graphSnapshotted')
+			return this._graphSnapshotted(payload.data)
+
 		if (payload.graphUid === undefined)
 			return;
 
@@ -66,6 +69,12 @@ GraphStore.prototype._setupListeners = function() {
 				break;
 		}
 	}.bind(this))
+}
+
+GraphStore.prototype._graphSnapshotted = function(data) {
+	E2.app.player.load_from_json(data)
+	this.emit('snapshotted')
+	this.emit('changed')
 }
 
 GraphStore.prototype._uiGraphTreeReordered = function(graph, original, sibling, insertAfter) {

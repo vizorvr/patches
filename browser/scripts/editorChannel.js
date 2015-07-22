@@ -59,8 +59,9 @@ function dehydrate(m) {
 	return pl;
 }
 
-function isAcceptedDispatch(m) {
+function isEditAction(m) {
 	switch(m.actionType) {
+		case 'graphSnapshotted':
 		case 'uiNodeAdded':
 		case 'uiNodeRemoved':
 		case 'uiNodeRenamed':
@@ -72,7 +73,17 @@ function isAcceptedDispatch(m) {
 		case 'uiDisconnected':
 		case 'uiGraphTreeReordered':
 		case 'uiPluginStateChanged':
+			return true;
+	}
 
+	return false;
+}
+
+function isAcceptedDispatch(m) {
+	if (isEditAction(m))
+		return true;
+
+	switch(m.actionType) {
 		case 'uiMouseMoved':
 		case 'uiMouseClicked':
 		case 'uiUserIdFollowed':
@@ -89,21 +100,14 @@ function isAcceptedDispatch(m) {
 function EditorChannel(dispatcher) {
 	EventEmitter.call(this)
 
-	var that = this
+	this.isOnChannel = false
 
 	this._dispatcher = dispatcher || E2.app.dispatcher
 
 	this._messageHandlerBound = this._messageHandler.bind(this)
 
-	this._dispatcher.register(function channelGotDispatch(payload) {
-		if (payload.from)
-			return;
-
-		if (isAcceptedDispatch(payload)) {
-			that.send(dehydrate(payload))
-		}
-	})
-
+	// send local dispatches to network
+	this._dispatcher.register(this._localDispatchHandler.bind(this))
 }
 
 EditorChannel.prototype = Object.create(EventEmitter.prototype)
@@ -116,6 +120,7 @@ EditorChannel.prototype.connect = function(options) {
 	var that = this
 	var reconnecting = false
 
+	// listen to messages from network
 	this.channel = new WebSocketChannel()
 	this.channel
 		.connect('/__editorChannel', options)
@@ -126,6 +131,7 @@ EditorChannel.prototype.connect = function(options) {
 			reconnecting = true
 			setTimeout(that.connect.bind(that), RECONNECT_INTERVAL)
 
+			that.isOnChannel = false
 			that.emit('disconnected')
 		})
 		.on('ready', function(uid) {
@@ -147,7 +153,46 @@ EditorChannel.prototype.connect = function(options) {
 	return this
 }
 
+/**
+ * send local dispatches to network
+ * FORK if an important edit (create a new channel with copy)
+ */
+EditorChannel.prototype._localDispatchHandler = function _localDispatchHandler(payload) {
+	if (payload.from)
+		return;
+
+	if (this.isOnChannel)
+		return this.send(payload)
+
+	// not on channel -- fork if important
+	if (!isEditAction(payload)) // eg. mouseMove
+		return;
+
+	this.fork(payload)
+}
+
+EditorChannel.prototype.fork = function(payload) {
+	E2.dom.load_spinner.show()
+
+	// FORK
+	var fc = new ForkCommand()
+	fc.fork(payload)
+		.then(function() {
+			E2.dom.load_spinner.hide()
+			E2.app.growl("We've made a copy of this for you to edit.",
+				5000)
+		})
+		.catch(function(err) {
+			E2.app.growl('Error while forking: ' + err)
+			throw err
+		})
+}
+
 EditorChannel.prototype.leave = function() {
+	if (!this.isOnChannel)
+		return;
+
+	this.isOnChannel = false
 	this.channel.removeListener(this.channelName, this._messageHandlerBound)
 	this.channel.leave(this.channelName)
 	this.emit('leave', { id: this.uid })
@@ -179,6 +224,9 @@ EditorChannel.prototype.join = function(channelName, cb) {
 	function waitForOwnJoin(pl) {
 		if (pl.kind === 'youJoined' && pl.channel === channelName) {
 			that.channel.removeListener(channelName, waitForOwnJoin)
+			
+			that.isOnChannel = true
+			
 			if (cb)
 				cb()
 		}
@@ -189,7 +237,10 @@ EditorChannel.prototype.join = function(channelName, cb) {
 }
 
 EditorChannel.prototype.send = function(payload) {
-	this.channel.send(this.channelName, payload)
+	if (!isAcceptedDispatch(payload))
+		return;
+
+	this.channel.send(this.channelName, dehydrate(payload))
 }
 
 if (typeof(module) !== 'undefined')
