@@ -105,9 +105,13 @@ Texture.prototype.upload = function(img, src)
 	}
 	
 	var gl = this.gl;
+
+	var devicePixelRatio = window.devicePixelRatio || 1;
+	var pixelRatioAdjustedWidth = devicePixelRatio * w;
+	var pixelRatioAdjustedHeight = devicePixelRatio * h;
 	
-	this.width = w;
-	this.height = h;
+	this.width = pixelRatioAdjustedWidth;
+	this.height = pixelRatioAdjustedHeight;
 	this.image = img;
 
 	this.enable();

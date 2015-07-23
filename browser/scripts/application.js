@@ -1090,26 +1090,30 @@ Application.prototype.onWindowResize = function() {
 	var glc = E2.dom.webgl_canvas[0];
 	var canvases = $('#canvases');
 	var width = canvases[0].clientWidth;
-	var height = canvases[0].clientHeight
+	var height = canvases[0].clientHeight;
 
-	if (glc.width !== width || glc.height !== height) {
-		glc.width = width;
-		glc.height = height;
+	console.log(width, height)
 
-		E2.dom.webgl_canvas.css('width', width);
-		E2.dom.webgl_canvas.css('height', height);
-		E2.dom.canvas_parent.css('width', width);
-		E2.dom.canvas_parent.css('height', height);
-		E2.dom.canvas[0].width = width;
-		E2.dom.canvas[0].height = height;
+	var devicePixelRatio = window.devicePixelRatio || 1;
+	var pixelRatioAdjustedWidth = devicePixelRatio * width;
+	var pixelRatioAdjustedHeight = devicePixelRatio * height;
 
-		// Adjust for high-dpi
-		var devicePixelRatio = window.devicePixelRatio || 1;
-		E2.dom.canvas.css('width', devicePixelRatio * width);
-		E2.dom.canvas.css('height', devicePixelRatio * height);
+	glc.width = pixelRatioAdjustedWidth;
+	glc.height = pixelRatioAdjustedHeight;
 
-		E2.app.player.core.renderer.update_viewport();
-	}
+	console.log("DEVICE PIXEL RATIO:", devicePixelRatio, width, height, pixelRatioAdjustedWidth, pixelRatioAdjustedHeight);
+
+	E2.dom.webgl_canvas.css('width', width);
+	E2.dom.webgl_canvas.css('height', height);
+	E2.dom.canvas_parent.css('width', width);
+	E2.dom.canvas_parent.css('height', height);
+	E2.dom.canvas[0].width = width;
+	E2.dom.canvas[0].height = height;
+
+	E2.dom.canvas.css('width', width);
+	E2.dom.canvas.css('height', height);
+
+	E2.app.player.core.renderer.update_viewport();
 
 	// Update preset list height so it scrolls correctly
 	$('.preset-list-container').height(
