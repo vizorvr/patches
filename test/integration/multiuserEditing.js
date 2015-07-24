@@ -27,7 +27,7 @@ process.env.RETHINKDB_NAME = 'test' + testId
 var app = require('../../app.js')
 var agent = request.agent(app)
 
-function createClient(channelName) {
+function createClient(channelName, lastIdReceived) {
 	var dispatcher = new Flux.Dispatcher()
 	var chan = new EditorChannel(dispatcher)
 
@@ -44,6 +44,8 @@ function createClient(channelName) {
 		}
 	})
 	.on('ready', function() {
+		chan.lastIdReceived = lastIdReceived
+
 		if (channelName)
 			chan.join(channelName)
 	})
@@ -263,6 +265,52 @@ describe('Multiuser', function() {
 			})
 		})
 
+	})
+
+
+
+
+	it('sends log from where left off', function(done) {
+		var channel = 'test'+Math.random()
+		
+		var s2 = createClient(channel)
+		var s1 = createClient(channel)
+
+		var firstId, lastId
+
+		s2.dispatcher.register(function(m) {
+			if (!firstId)
+				firstId = m.id
+
+			lastId = m.id
+			
+			// wait until last message
+			if (m.number !== 2)
+				return;
+
+			// use another client to join with a lastIdReceived set
+			var s3 = createClient(channel, firstId)
+			s3.once('join', function() {
+				// assert that we only get number 2
+				s3.dispatcher.register(function(m) {
+					assert.notEqual(m.number, 1)
+					assert.equal(m.id, lastId)
+					s3.close()
+					done()
+				})
+			})
+
+		})
+
+		// send 1 and 2
+		s1.once('join', function() {
+			[1,2].forEach(function(n) {
+				s1.send({
+					actionType: 'uiPluginStateChanged',
+					number: n
+				})
+			})
+		})
 	})
 
 
