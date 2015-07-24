@@ -163,9 +163,10 @@ FromMeshCustomShader.prototype.rebuild_shader = function() {
 			dt = 'mat4'
 		else if(dtid === dts.VECTOR.id)
 			dt = 'vec3'
-		
-		u_vs.push('uniform ' + dt + ' ' + slot.name + ';')
-		u_ps.push('uniform ' + dt + ' ' + slot.name + ';')
+
+		var uniform = 'uniform ' + dt + ' ' + slot.name + ';'
+		u_vs.push(uniform)
+		u_ps.push(uniform)
 	}
 
 	function onCompiled(which) {
@@ -185,7 +186,8 @@ FromMeshCustomShader.prototype.rebuild_shader = function() {
 		}
 	}
 
-	this.shader = ComposeShader(null, this.mesh, this.material,
+	this.shader = ComposeShader(null, 
+		this.mesh, this.material,
 		u_vs, u_ps,
 		st.vs_src,
 		st.ps_src,

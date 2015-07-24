@@ -142,6 +142,12 @@ Node.prototype.add_slot = function(slot_type, def) {
 		return false
 	}
 
+	if (!def.name) {
+		msg('ERROR: No name given for slot')
+		console.trace('No name given for slot')
+		return false
+	}
+
 	def.dynamic = true
 	def.type = slot_type
 

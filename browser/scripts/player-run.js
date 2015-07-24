@@ -19,6 +19,8 @@ function load()
 	{
 		play();
 	}
+	$(window).trigger('vizorLoaded')
+	
 }
 
 function findVrDevices(devices)
