@@ -268,8 +268,6 @@ describe('Multiuser', function() {
 	})
 
 
-
-
 	it('sends log from where left off', function(done) {
 		var channel = 'test'+Math.random()
 		
@@ -312,8 +310,6 @@ describe('Multiuser', function() {
 			})
 		})
 	})
-
-
 
 
 
