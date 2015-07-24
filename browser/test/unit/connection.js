@@ -27,8 +27,8 @@ describe('Connection', function() {
 		var nb = new Node()
 		nb.uid = 'nb'
 		
-		na.add_slot(1, { dt: E2.dt.FLOAT })
-		nb.add_slot(0, { dt: E2.dt.FLOAT })
+		na.add_slot(1, { dt: E2.dt.FLOAT, name: 'x' })
+		nb.add_slot(0, { dt: E2.dt.FLOAT, name: 'x' })
 
 		na.addOutput = function() { done() }
 
@@ -48,8 +48,8 @@ describe('Connection', function() {
 		var nb = new Node()
 		nb.uid = 'nb'
 		
-		na.add_slot(1, { dt: E2.dt.FLOAT })
-		nb.add_slot(0, { dt: E2.dt.FLOAT })
+		na.add_slot(1, { dt: E2.dt.FLOAT, name: 'x' })
+		nb.add_slot(0, { dt: E2.dt.FLOAT, name: 'x' })
 
 		nb.addInput = function() { done() }
 
@@ -70,8 +70,8 @@ describe('Connection', function() {
 		var nb = new Node()
 		nb.uid = 'nb'
 		
-		na.add_slot(1, {dt: E2.dt.FLOAT})
-		nb.add_slot(0, {dt: E2.dt.FLOAT})
+		na.add_slot(1, {dt: E2.dt.FLOAT, name: 'x'})
+		nb.add_slot(0, {dt: E2.dt.FLOAT, name: 'x'})
 
 		na.addOutput = function() { done() }
 
