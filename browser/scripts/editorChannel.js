@@ -101,6 +101,7 @@ function EditorChannel(dispatcher) {
 	EventEmitter.call(this)
 
 	this.isOnChannel = false
+	this.lastEditSeen = null
 
 	this._dispatcher = dispatcher || E2.app.dispatcher
 
@@ -116,9 +117,9 @@ EditorChannel.prototype.close = function() {
 	this.channel.close()
 }
 
+var reconnecting = false
 EditorChannel.prototype.connect = function(options) {
 	var that = this
-	var reconnecting = false
 
 	// listen to messages from network
 	this.channel = new WebSocketChannel()
@@ -141,7 +142,7 @@ EditorChannel.prototype.connect = function(options) {
 
 			if (reconnecting) {
 				reconnecting = false
-				E2.app.growl('Connected to server!')
+				E2.app.growl('Reconnected to server!')
 				that.emit('reconnected')
 			}
 
@@ -189,21 +190,25 @@ EditorChannel.prototype.fork = function(payload) {
 }
 
 EditorChannel.prototype.leave = function() {
-	if (!this.isOnChannel)
-		return;
-
-	this.isOnChannel = false
-	this.channel.removeListener(this.channelName, this._messageHandlerBound)
 	this.channel.leave(this.channelName)
+
+	this.channel.removeListener(this.channelName, this._messageHandlerBound)
+	this.isOnChannel = false
+	this.lastEditSeen = null
+	this.channelName = null
 	this.emit('leave', { id: this.uid })
 }
 
 EditorChannel.prototype._messageHandler = function _messageHandler(payload) {
-	if (!payload.actionType || !payload.from)
+	if (!isAcceptedDispatch(payload))
 		return;
 
-	if (isAcceptedDispatch(payload))
-		this._dispatcher.dispatch(hydrate(payload))
+	this.lastEditSeen = payload.id
+
+	if (payload.from === this.uid)
+		return;
+
+	this._dispatcher.dispatch(hydrate(payload))
 }
 
 EditorChannel.prototype.join = function(channelName, cb) {
@@ -215,11 +220,14 @@ EditorChannel.prototype.join = function(channelName, cb) {
 
 	this.channelName = channelName
 
-	this.channel.ws.send(JSON.stringify({
+	var joinMessage = {
 		kind: 'join',
 		channel: channelName,
-		activeGraphUid: E2.core.active_graph.uid
-	}))
+		activeGraphUid: E2.core.active_graph.uid,
+		lastEditSeen: this.lastEditSeen
+	}
+
+	this.channel.ws.send(JSON.stringify(joinMessage))
 
 	function waitForOwnJoin(pl) {
 		if (pl.kind === 'youJoined' && pl.channel === channelName) {

@@ -27,7 +27,7 @@ process.env.RETHINKDB_NAME = 'test' + testId
 var app = require('../../app.js')
 var agent = request.agent(app)
 
-function createClient(channelName, lastIdReceived) {
+function createClient(channelName, lastEditSeen) {
 	var dispatcher = new Flux.Dispatcher()
 	var chan = new EditorChannel(dispatcher)
 
@@ -39,12 +39,12 @@ function createClient(channelName, lastIdReceived) {
 				duration: 4100421,
 				activeDuration: 190248
 			}, {
-				userId: 'test1234test'
+				userId: 'test1234' + Date.now() % 10000
 			})
 		}
 	})
 	.on('ready', function() {
-		chan.lastIdReceived = lastIdReceived
+		chan.lastEditSeen = lastEditSeen
 
 		if (channelName)
 			chan.join(channelName)
@@ -179,7 +179,6 @@ describe('Multiuser', function() {
 			s2 = createClient(channel)
 
 			s2.dispatcher.register(function(m) {
-				console.log('JOO',m)
 				if (!m.actionType)
 					return;
 
@@ -237,29 +236,30 @@ describe('Multiuser', function() {
 
 
 	it('sends log on join, leave, join back', function(done) {
-		var channel = 'testJLJ'+Math.random()
+		var channel = 'one-'+Math.random()
 		var ogChannel = channel
 		
-		var s3 = createClient(channel)
-		var s1 = createClient(channel)
+		s1 = createClient(channel)
 
 		s1.once('join', function() {
+			console.log('s1 id', s1.uid)
 			s1.send({
 				actionType: 'uiPluginStateChanged',
 				number: 1
 			})
-		})
 
-		s3.once('join', function() {
-			// join some other channel
-			channel = 'testJLJ'+Math.random()
-			s3.join(channel, function() {
-				// join original channel again
-				s3.join(ogChannel, function() {
-					s3.dispatcher.register(function(m) {
-						assert.ok(m.number === 1)
-						s3.close()
-						done()
+			var s3 = createClient(channel)
+			s3.once('join', function() {
+				// join some other channel
+				channel = 'part-two-'+Math.random()
+				s3.join(channel, function() {
+					// join original channel again
+					s3.join(ogChannel, function() {
+						s3.dispatcher.register(function(m) {
+							assert.ok(m.number === 1)
+							s3.close()
+							done()
+						})
 					})
 				})
 			})
@@ -273,8 +273,8 @@ describe('Multiuser', function() {
 	it('sends log from where left off', function(done) {
 		var channel = 'test'+Math.random()
 		
-		var s2 = createClient(channel)
-		var s1 = createClient(channel)
+		s2 = createClient(channel)
+		s1 = createClient(channel)
 
 		var firstId, lastId
 
@@ -288,7 +288,7 @@ describe('Multiuser', function() {
 			if (m.number !== 2)
 				return;
 
-			// use another client to join with a lastIdReceived set
+			// use another client to join with a lastEditSeen set
 			var s3 = createClient(channel, firstId)
 			s3.once('join', function() {
 				// assert that we only get number 2
