@@ -77,6 +77,8 @@ UrlTexture.prototype.create_ui = function() {
 	container.append(this.thumbnail)
 	container.append(inp)
 
+	this.node.on('pluginStateChanged', this.updateUi.bind(this))
+
 	return container
 }
 
@@ -100,13 +102,15 @@ UrlTexture.prototype.update_output = function() {
 }
 
 UrlTexture.prototype.state_changed = function() {
-	if (this.state.url !== '') {
-		this.dirty = true
+	if (!this.state.url)
+		return
 
-		if (this.thumbnail) {
-			this.thumbnail.css({ 'background-image': 'url(\'' + this.state.url + '\')' })
-		}
-	}
+	this.dirty = true
+}
+
+UrlTexture.prototype.updateUi = function() {
+	if (this.thumbnail)
+		this.thumbnail.css({ 'background-image': 'url(\'' + this.state.url + '\')' })
 }
 
 })()
