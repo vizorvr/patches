@@ -206,8 +206,8 @@ app.use(function(req, res, next)
 	
   if (disallowedPaths.indexOf(path) > -1)
 	{
-    var err = new Error('Not found: '+path);
-    err.status = 404;
+		var err = new Error('Not found: '+path);
+		err.status = 404;
 
 		return next(err);
 	}
