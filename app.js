@@ -161,6 +161,57 @@ app.use(function(req, res, next)
 	next();
 });
 
+// Return 404 instead of opening a new editor instance
+// for old (pre-asm 2015) vizor experiences
+// These are explicitly disabled so that links to old vizor experiences
+// don't display a new editor page.
+app.use(function(req, res, next)
+{
+  // list of old vizor exprience ids (http://vizor.io/id)
+	var disallowedPaths = [
+		"m1Z1rgbbrfoj",
+		"7QoQGaYKgfkv",
+		"p7x4d4dnKf1G",
+		"m1xg7KpelHAp",
+		"QyvZxVz9nUkz",
+		"WxAGbablMTZz",
+		"yrx7nGxLQcge",
+		"NqkY4O6vauLg",
+		"JYW906AZbt9Z",
+		"6ZgdNYeDZi2K",
+		"h0p4lonG912",
+		"hTgRn7Hj9LkG",
+		"iK4tHiUb7K1k",
+		"vrplanetchase",
+		"vihartmonkeys",
+		"hASd9e904vjr",
+		"i3YxLp4XgQ7",
+		"o1FxLjP5tW3Z",
+		"2EuZis012ikL",
+		"6ov3r4ND4D3z",
+		"83jed8JAne93",
+		"k3hf8ek4jfue",
+		"oculusrex123",
+		"riftsketch12",
+		"streetview12",
+		"he3jei29fjE7",
+		"ue8JeioSleJa",
+		"Ai4y2hI4jY06",
+		"u49fE6zHXiEj",
+		"j48xnto7psj2",
+		"389cjto69djw",
+		"hr84jshtwu39"];
+
+  var path = req.url.split('/')[1];
+	
+  if (disallowedPaths.indexOf(path) > -1)
+	{
+		return res.status(404).send();
+	}
+
+	next();
+});
+
 app.use(function(req, res, next)
 {
 	if(req.url.indexOf('?_') > -1)
