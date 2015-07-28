@@ -1920,7 +1920,6 @@ Application.prototype.setupPeopleEvents = function() {
 }
 
 Application.prototype.onForkClicked = function() {
-	console.log('fork')
 	this.channel.fork()
 }
 

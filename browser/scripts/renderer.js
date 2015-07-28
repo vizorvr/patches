@@ -377,8 +377,6 @@ Renderer.prototype.update_viewport = function()
 		height = screen.height;
 	}
 
-	console.log(that.fullscreen, width, height);
-
 	var devicePixelRatio = window.devicePixelRatio || 1;
 	var pixelRatioAdjustedWidth = devicePixelRatio * width;
 	var pixelRatioAdjustedHeight = devicePixelRatio * height;
