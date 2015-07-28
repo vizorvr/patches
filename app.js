@@ -206,7 +206,10 @@ app.use(function(req, res, next)
 	
   if (disallowedPaths.indexOf(path) > -1)
 	{
-		return res.status(404).send();
+    var err = new Error('Not found: '+path);
+    err.status = 404;
+
+		return next(err);
 	}
 
 	next();
@@ -544,6 +547,7 @@ app.use(function(err, req, res, next) {
 		return res.json({ message: err.message });
 
 	res.render('error', {
+		layout: 'min',
 		message: err.message,
 		error: {}
 	});
