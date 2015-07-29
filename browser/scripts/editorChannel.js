@@ -136,6 +136,7 @@ EditorChannel.prototype.connect = function(options) {
 			that.emit('disconnected')
 		})
 		.on('ready', function(uid) {
+			console.log('EditorChannel ready', uid)
 			that.uid = uid
 
 			that.emit('ready', uid)
