@@ -1,4 +1,4 @@
-FROM node
+FROM iojs:onbuild
 
 ENV HOME /root
 ENV NODE_ENV production
