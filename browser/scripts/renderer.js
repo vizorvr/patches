@@ -367,8 +367,18 @@ Renderer.prototype.update_viewport = function()
 
 	var c = this.canvas[0];
 	var that = this;
+	var canvasArea;
 
-	var canvasArea = E2.app.calculateCanvasArea();
+	if(E2.app && typeof E2.app.calculateCanvasArea === "function") {
+		canvasArea = E2.app.calculateCanvasArea();
+	}
+	else {
+		canvasArea = {
+			width: this.org_width,
+			height: this.org_height
+		}
+	}
+
 	var width = canvasArea.width;
 	var height = canvasArea.height;
 

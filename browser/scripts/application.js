@@ -1955,7 +1955,7 @@ Application.prototype.start = function() {
 	window.addEventListener('resize', function() {
 		// To avoid UI lag, we don't respond to window resize events directly.
 		// Instead, we set up a timer that gets superceeded for each (spurious)
-		// resize event within a 100 ms window.
+		// resize event within a 200 ms window.
 		clearTimeout(that.resize_timer)
 		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 200)
 
@@ -2083,7 +2083,6 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 		E2.app.start()
 
 		E2.app.onWindowResize()
-		//E2.app.onWindowResize()
 
 		if (E2.core.pluginManager.release_mode) {
 			window.onbeforeunload = function() {
