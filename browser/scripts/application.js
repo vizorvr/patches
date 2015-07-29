@@ -1083,37 +1083,46 @@ Application.prototype.selectAll = function() {
 	this.updateCanvas(true)
 };
 
+/**
+ * Calculate real area left for canvas
+ * @return {Object} Canvas area
+ */
+Application.prototype.calculateCanvasArea = function() {
+	// 
+	var width = $(window).width() -
+		$('#left-nav').outerWidth(true) - 
+		$('#mid-pane').outerWidth(true) - 
+		$('.mid-pane-handle').outerWidth(true) - 
+		$('.left-pane-handle').outerWidth(true);
+
+	var height = $(window).height() -
+		$('.menu-bar').outerHeight(true);
+
+	return {
+		width: width,
+		height: height
+	};
+}
+
 Application.prototype.onWindowResize = function() {
-	if (E2.app.player.core.renderer.fullscreen)
+
+	if (E2.app.player.core.renderer.fullscreen) {
 		return;
+	}
 
-	var glc = E2.dom.webgl_canvas[0];
-	var canvases = $('#canvases');
-	var width = canvases[0].clientWidth;
-	var height = canvases[0].clientHeight;
+	var canvasArea = this.calculateCanvasArea();
+	var width = canvasArea.width;
+	var height = canvasArea.height;
 
-	console.log(width, height)
-
-	var devicePixelRatio = window.devicePixelRatio || 1;
-	var pixelRatioAdjustedWidth = devicePixelRatio * width;
-	var pixelRatioAdjustedHeight = devicePixelRatio * height;
-
-	glc.width = pixelRatioAdjustedWidth;
-	glc.height = pixelRatioAdjustedHeight;
-
-	console.log("DEVICE PIXEL RATIO:", devicePixelRatio, width, height, pixelRatioAdjustedWidth, pixelRatioAdjustedHeight);
-
-	E2.dom.webgl_canvas.css('width', width);
-	E2.dom.webgl_canvas.css('height', height);
+	// Set noodles and DOM element container size
 	E2.dom.canvas_parent.css('width', width);
 	E2.dom.canvas_parent.css('height', height);
+
+	// Set noodles canvas size
 	E2.dom.canvas[0].width = width;
 	E2.dom.canvas[0].height = height;
-
 	E2.dom.canvas.css('width', width);
 	E2.dom.canvas.css('height', height);
-
-	E2.app.player.core.renderer.update_viewport();
 
 	// Update preset list height so it scrolls correctly
 	$('.preset-list-container').height(
@@ -1121,6 +1130,9 @@ Application.prototype.onWindowResize = function() {
 		$('#left-nav .nav-tabs').outerHeight(true) -
 		$('#left-nav .tab-content .searchbox').outerHeight(true)
 	);
+
+	// Set WebGL viewport size
+	E2.app.player.core.renderer.update_viewport();
 
 	this.updateCanvas(true)
 
@@ -1908,7 +1920,6 @@ Application.prototype.setupPeopleEvents = function() {
 }
 
 Application.prototype.onForkClicked = function() {
-	console.log('fork')
 	this.channel.fork()
 }
 
@@ -1944,9 +1955,9 @@ Application.prototype.start = function() {
 	window.addEventListener('resize', function() {
 		// To avoid UI lag, we don't respond to window resize events directly.
 		// Instead, we set up a timer that gets superceeded for each (spurious)
-		// resize event within a 100 ms window.
+		// resize event within a 200 ms window.
 		clearTimeout(that.resize_timer)
-		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 100)
+		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 200)
 
 	})
 
@@ -2071,7 +2082,6 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	function start() {
 		E2.app.start()
 
-		E2.app.onWindowResize()
 		E2.app.onWindowResize()
 
 		if (E2.core.pluginManager.release_mode) {
