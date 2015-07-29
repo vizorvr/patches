@@ -30,7 +30,6 @@ ColorPicker.prototype.create_ui = function()
 	function onMouseDown() {
 		E2.app.undoManager.begin('Pick color')
 		that._mouseDownValue = { hue: that.state.hue, sat: that.state.sat, lum: that.state.lum }
-		console.log('mdv', that._mouseDownValue)
 	}
 
 	function onMouseUp() {

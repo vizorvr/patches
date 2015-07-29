@@ -39,17 +39,28 @@ Const.prototype.create_ui = function() {
 
 	this.etf = new ExpandableTextfield(this.node, inp, 7)
 
-	return inp;
+	this.ui = inp
+
+	this.node.on('pluginStateChanged', this.updateUi.bind(this))
+
+	return this.ui
 }
 
-Const.prototype.update_output = function(slot) {
+Const.prototype.update_output = function() {
 	return this.state.val
 }
 
 Const.prototype.state_changed = function(ui) {
-	if (ui) {
-		ui.val('' + this.state.val)
-	}
+	if (ui)
+		this.updateUi()
 }
+
+Const.prototype.updateUi = function() {
+	if (!this.ui)
+		return;
+
+	this.ui.val('' + this.state.val)
+}
+
 
 })()
