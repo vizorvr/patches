@@ -215,6 +215,14 @@ app.use(function(req, res, next)
 	next();
 });
 
+app.use(function(req, res, next) {
+	// redirect all create urls to vizor.io 
+	if (req.hostname === 'create.vizor.io')
+		return res.redirect(301, '//vizor.io'+req.url)
+
+	next()
+})
+
 app.use(function(req, res, next)
 {
 	if(req.url.indexOf('?_') > -1)
