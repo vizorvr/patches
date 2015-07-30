@@ -105,6 +105,8 @@ UrlTexture.prototype.state_changed = function() {
 	if (!this.state.url)
 		return
 
+	this.updateUi()
+
 	this.dirty = true
 }
 
