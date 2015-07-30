@@ -16,6 +16,8 @@ var EnvelopePlugin = E2.plugins['envelope_modulator'] = function EnvelopePlugin(
 	this.state = { points: [ [0, 0], [1, 1] ]  } // default line bottom left to top right
 
 	this._core = core
+
+	this.loaded = false
 }
 
 EnvelopePlugin.prototype.create_ui = function() {
@@ -27,13 +29,8 @@ EnvelopePlugin.prototype.create_ui = function() {
 	var $ui = this._$ui = $('<div class="envelope-editor">')
 
 	this._loadScripts(function() {
-		new E2.EnvelopeEditor()
-			.data(that.state.points)
-			.render($ui)
-			.on('changed', function(d) {
-				that.state.points = d
-				that.dirty = that.updated = true
-			})
+		that._loaded = true
+		that._redrawEditor()
 	})
 
 	return $ui
@@ -75,7 +72,33 @@ EnvelopePlugin.prototype.update_output = function(slot) {
 	return this.value
 }
 
+EnvelopePlugin.prototype.state_changed = function(ui) {
+	if (ui) {
+		if (!this._loaded)
+			return;
 
+		console.log('EnvelopePlugin.state_changed, redrawing editor')
+		this._redrawEditor()
+	}
+}
+
+EnvelopePlugin.prototype._redrawEditor = function() {
+	var that = this
+
+	if (this._editor)
+		this._editor.destroy()
+
+	this._editor = new E2.EnvelopeEditor()
+
+	this.editor
+		.data(that.state.points)
+		.render($ui)
+		.on('changed', function(d) {
+			that.state.points = d
+			that.dirty = that.updated = true
+		})
+
+}
 
 EnvelopePlugin.prototype._loadScripts = function(cb) {
 	var that = this

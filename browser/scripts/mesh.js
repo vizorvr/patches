@@ -206,3 +206,7 @@ Mesh.prototype.render = function(camera, transform, shader, material)
 
 	gl.bound_mesh = this;
 };
+
+if (typeof(module) !== 'undefined')
+	module.exports = Mesh
+

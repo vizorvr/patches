@@ -73,7 +73,6 @@ PluginManager.prototype.register_plugin = function(pg_root, key, id) {
 
 PluginManager.prototype.update_state = function() {
 	if (this.loaded + this.failed === this.total) {
-		console.log('ready')
 		this.emit('ready')
 	}
 }

@@ -4,8 +4,16 @@ var fsPath = require('path');
 var templateCache = new(require('../lib/templateCache'));
 var assetHelper = require('../models/asset-helper');
 
-function GraphController(graphService, fs)
-{
+function makeRandomPath() {
+	var keys = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+	var uid = ''
+	for (var i=0; i < 12; i++) {
+		uid += keys[Math.floor(Math.random() * keys.length)]
+	}
+	return uid
+}
+
+function GraphController(graphService, fs) {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
 	AssetController.apply(this, args);
@@ -50,56 +58,45 @@ GraphController.prototype.index = function(req, res, next)
 	});
 }
 
-// GET /fthr/dunes-world/edit
-GraphController.prototype.edit = function(req, res, next)
-{
-	function renderEditor(graph)
-	{
-		function respond()
-		{
-			res.render('editor',
-			{
-				layout: 'spa',
-				graph: graph
-			});
-		}
 
-		if (process.env.NODE_ENV !== 'production') {
-			templateCache.recompile(function()
-			{
-				respond();
-			});
-		}
-		else
-			respond();
+function renderEditor(res, graph) {
+	function respond() {
+		res.render('editor', {
+			layout: 'spa',
+			graph: graph
+		});
 	}
 
-	if (!req.params.path)
-		return renderEditor();
+	if (process.env.NODE_ENV !== 'production') {
+		templateCache.recompile(function() {
+			respond()
+		})
+	}
+	else
+		respond()
+}
+
+// GET /fthr/dunes-world/edit
+GraphController.prototype.edit = function(req, res, next) {
+	if (!req.params.path) {
+		return res.redirect('/' + makeRandomPath())
+	}
 
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
-		renderEditor(graph);
+		renderEditor(res, graph)
 	})
-	.catch(next);
+	.catch(next)
 }
 
 // GET /fthr/dunes-world
-GraphController.prototype.graphLanding = function(req, res, next)
-{
+GraphController.prototype.graphLanding = function(req, res, next) {
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
 		if (!graph)
 			return next();
 
-		res.render('graph/show',
-		{
-			layout: 'min',
-			title: graph.name +' by' +graph.owner,
-			editUrl: graph.path+'/edit',
-			graphMinUrl: '/data/graph'+graph.path+'.min.json',
-			graph: graph
-		});
+		renderEditor(res, graph)
 	}).catch(next);
 }
 

@@ -19,9 +19,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-var URL_DATA = '/data/';
-var URL_GRAPHS = '/graph/';
-var URL_GRAPH_FILES = URL_DATA+'graph/';
+var URL_DATA = '/data/'
+var URL_GRAPHS = '/graph/'
+var URL_GRAPH_FILES = URL_DATA+'graph/'
 
 var E2 = {};
 window.E2 = E2; // global scope so plugins can access it
@@ -34,10 +34,14 @@ E2.erase_color = '#ff3b3b';
 E2.COLOR_COMPATIBLE_SLOT = '#080';
 
 (function() {
-var i = 0
-E2.uid = function() {
-	return parseInt(Date.now() + '' + i++, 10)
-}
+	E2.uid = function() {
+		var keys = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+		var uid = ''
+		for (var i=0; i < 12; i++) {
+			uid += keys[Math.floor(Math.random() * keys.length)]
+		}
+		return uid
+	}
 })()
 
 function Delegate(delegate, dt, count)
@@ -285,11 +289,11 @@ Core.prototype.serialise = function()
 Core.prototype.deserialiseObject = function(d) {
 	this.abs_t = d.abs_t;
 	this.delta_t = 0.0;
-	this.graph_uid = d.graph_uid;
+	this.graph_uid = '' + d.graph_uid;
 
 	this.active_graph.destroy_ui();
 	
-	var graphs = this.graphs = [];
+	this.graphs = [];
 	
 	this.root_graph = new Graph(this, null, null);
 	this.root_graph.deserialise(d.root);
@@ -297,21 +301,12 @@ Core.prototype.deserialiseObject = function(d) {
 	
 	this.root_graph.patch_up(this.graphs);
 	this.root_graph.initialise(this.graphs);
-		
-	this.active_graph = resolve_graph(this.graphs, d.active_graph); 
+	
+	this.active_graph = resolve_graph(this.graphs, ''+d.active_graph); 
 	
 	if(!this.active_graph) {
 		msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
 		this.active_graph = this.root_graph;
-	}
-
-	if (E2.dom.structure) {
-		this.rebuild_structure_tree()
-		
-		if(this.active_graph.tree_node)
-			this.active_graph.tree_node.activate();
-		else
-			this.root_graph.tree_node.activate();
 	}
 }
 

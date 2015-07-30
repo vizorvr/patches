@@ -1,180 +1,77 @@
-@font-face {
-    font-family: dejavu;
-    src: url('dejavu.ttf');
-    font-weight: normal;
+* {
+  margin: 0;
+}
+
+html {
+  color: white;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 23px;
 }
 
 .body {
 	width: 100%;
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.full-width {
-	width: 100%;
-	padding: 0px;
-	margin-left: 0px;
-	margin-right: 0px;
-}
-
-.header-row {
-	min-height: 445px;
-}
-
-.white {
-	color: white;
-}
-
-.container {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-weight: normal;
-}
-
-h1 {
-	font-size: 50px;
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-weight: normal;
-}
-
-iframe {
-	border: 0px;
-}
-
-/**
- * Main layout
- */
-
-#main-wrapper {
-  margin: 0 auto;
-}
-
-#content-wrapper {
-  clear: both;
-  margin: 0 auto;
-  padding: 80px 0 40px 0;
-}
-
-#content-wrapper .page-header {
-  margin-top: 0;
-}
-
-#content-wrapper .page-header h1 {
-  margin-top: 0;
-}
-
-#content-wrapper .alert {
-  margin-bottom: 24px;
-  font-weight: bold;
-  text-align: center;
-  font-size: 16px;
-}
-
-.alert-success,
-.alert-danger {
-  color: white;
-}
-
-.navbar {
-  margin-bottom: 0;
-  border: none;
-  min-width: 960px;
-}
-
-.navbar .container {
-  height: 50px;
-}
-
-#vizor-logo {
-  margin-top: 15px;
-}
-
-#info span {
-  font-size: 16px;
-}
-
-#info a,
-#info a:hover {
-  text-decoration: none;
-}
-
-#infopanelogo {
-  margin-left: 0;
-}
-
-#user-pulldown {
-  height: 50px;
-  display: block;
-  margin: 0;
-}
-
-#user-pulldown .dropdown {
-  height: 50px;
+.stage--front {
   position: relative;
+  width: 100%;
 }
 
-#user-pulldown .dropdown-toggle {
-  padding: 20px 24px 0 24px;
-  height: 50px;
-  font-weight: bold;
-}
-
-#user-pulldown .dropdown:hover .dropdown-menu {
-  display: block;
+.stage--front canvas {
   position: absolute;
-  top: 50px;
-  right: 0px;
+  top: 0; left: 0;
+  width: 100%;
 }
 
-#user-pulldown .dropdown:hover .dropdown-toggle {
-  background: #222;
+.stage--front hgroup {
+  position: relative;
+  margin: 0 auto;
+  max-width: 100%;
+  padding: 100px 0 0;
+  position: relative;
+  width: 700px;
 }
 
-#user-pulldown .dropdown .dropdown-menu li a {
-  padding: 12px;
-  border-bottom: 1px solid #222;
+h2 {
+  font-weight: 400;
 }
 
-#user-pulldown .dropdown-menu {
-  padding: 0;
-  border-bottom: none;
-  border-radius: 0px;
-}
-
-#user-pulldown a.login,
-#user-pulldown a.signup {
-  padding: 18px 12px;
-  display: inline-block;
-  height: 50px;
-}
-
-.page-header {
-  border-bottom: none;
-}
-
-.btn-danger {
-  color: #222;
-}
-
-.panel-heading {
-  padding: 12px;
-  background: #333;
-  border-bottom: 1px solid #222;
-}
-
-.panel-body {
-  padding-top: 12px;
-}
-
-#open-the-editor {
-  width: 150px;
+.text-center {
   text-align: center;
-  font-size: 16px;
-  height: 40px;
-  position: absolute;
-  left: 50%;
-  margin-left: -75px;
-  top: 5px;
-  padding: 8px 0 0 0;
-  color: white;
-  font-weight: bold;
 }
 
+.lead {
+  font-size: 38px;
+  padding: 30px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+h2 a {
+  font-size: 23px;
+  padding: 9px 50px; 
+  border-radius: 15px;
+  text-decoration: none;
+  background-color: #571E9E;
+  color: white;
+  box-shadow: 0 1px 0 0 black;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0px;
+  background-color: rgba(0,0,10,0.5);
+  z-index: 11111 !important;
+  width: 100%;
+  height: 76px;
+  text-align: center;
+}
+
+.footer-text {
+  padding-top: 22px;
+}
+
+.footer a {
+  text-decoration: none;
+  color: white;
+}

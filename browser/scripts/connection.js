@@ -25,6 +25,7 @@ function Connection(src_node, dst_node, src_slot, dst_slot, offset) {
 	this.src_slot = src_slot
 	this.dst_slot = dst_slot
 	this.ui = null
+	this.uid = E2.uid()
 	this.offset = offset || 0
 }
 
@@ -119,11 +120,12 @@ Connection.prototype.signal_change = function(on) {
 Connection.prototype.serialise = function()
 {
 	var d = {};
-	
-	d.src_nuid = this.src_node.uid;
-	d.dst_nuid = this.dst_node.uid;
-	d.src_slot = this.src_slot.index;
-	d.dst_slot = this.dst_slot.index;
+
+	d.src_nuid = this.src_node.uid
+	d.dst_nuid = this.dst_node.uid
+	d.src_slot = this.src_slot.index
+	d.dst_slot = this.dst_slot.index
+	d.uid = this.uid
 	
 	d.src_connected = this.src_slot.is_connected;
 	d.dst_connected = this.dst_slot.is_connected;
@@ -141,8 +143,14 @@ Connection.prototype.serialise = function()
 };
 
 Connection.prototype.deserialise = function(d) {
-	this.src_node = d.src_nuid;
-	this.dst_node = d.dst_nuid;
+	this.src_node = '' + d.src_nuid
+	this.dst_node = '' + d.dst_nuid
+
+	if (this.src_node === this.dst_node)
+		debugger;
+
+	this.uid = d.uid || E2.uid()
+
 	this.src_slot = {
 		index: d.src_slot,
 		dynamic: d.src_dyn ? true : false,
@@ -157,47 +165,60 @@ Connection.prototype.deserialise = function(d) {
 }
 
 Connection.prototype.patch_up = function(nodes) {
+	if (this.src_node instanceof Node &&
+		this.dst_slot.is_connected &&
+		this.src_slot.is_connected) {
+		return // already patched up (this may happen eg. on Disconnect undo)
+	}
+
 	function resolve_node(nuid) {
 		if (nuid instanceof Node)
-			return nuid;
+			return nuid
 
 		for(var i = 0, len = nodes.length; i < len; i++) {
 			if(nodes[i].uid === nuid)
-				return nodes[i];
+				return nodes[i]
 		}
 		
-		msg('ERROR: Failed to resolve node with uid = ' + nuid);
-		return null;
+		msg('ERROR: Failed to resolve node with uid = ' + nuid)
+		return null
 	}
 	
 	this.src_node = resolve_node(this.src_node)
 	this.dst_node = resolve_node(this.dst_node)
 	
 	if (!this.src_node || !this.dst_node) {
-		msg('ERROR: Source or destination node invalid - dropping connection.');
-		return false;
+		msg('ERROR: Source or destination node invalid - dropping connection.')
+		console.log('Connection that failed', this)
+		return false
 	}
 
-	this.src_slot = (this.src_slot.dynamic ? 
-		this.src_node.dyn_outputs : this.src_node.plugin.output_slots)[this.src_slot.index];
+	var ss = (this.src_slot.dynamic ? 
+		this.src_node.dyn_outputs :
+		this.src_node.plugin.output_slots)[this.src_slot.index]
 
-	this.dst_slot = (this.dst_slot.dynamic ? 
-		this.dst_node.dyn_inputs : this.dst_node.plugin.input_slots)[this.dst_slot.index];
+	var ds = (this.dst_slot.dynamic ? 
+		this.dst_node.dyn_inputs :
+		this.dst_node.plugin.input_slots)[this.dst_slot.index]
 	
-	if (!this.src_slot || !this.dst_slot) {
-		msg('ERROR: Source or destination slot invalid - dropping connection.');
-		return false;
+	if (!ss || !ds) {
+		msg('ERROR: Source or destination slot invalid - dropping connection.')
+		console.log('Connection that failed', this)
+		return false
 	}
 
-	var any_dt = E2.dt.ANY;
+	this.src_slot = ss
+	this.dst_slot = ds
+
+	var any_dt = E2.dt.ANY
 	
-	if (this.src_slot.dt !== this.dst_slot.dt && 
-		this.src_slot.dt !== any_dt && 
-		this.dst_slot.dt !== any_dt)
+	if (this.src_slot.dt.id !== this.dst_slot.dt.id && 
+		this.src_slot.dt.id !== any_dt.id && 
+		this.dst_slot.dt.id !== any_dt.id)
 	{
-		msg('ERROR: Connection data type mismatch - dropping connection.');
-		console.log('Slots that failed', this.src_slot, this.dst_slot)
-		return false;
+		msg('ERROR: Connection data type mismatch - dropping connection.')
+		console.log('Connection that failed', this.src_slot.dt, this.dst_slot.dt)
+		return false
 	}
 	
 	this.src_node.addOutput(this)
@@ -205,8 +226,15 @@ Connection.prototype.patch_up = function(nodes) {
 
 	this.dst_slot.is_connected = this.src_slot.is_connected = true
 
-	return true;
-};
+	return true
+}
+
+Connection.hydrate = function(graph, serialisedConnection) {
+	var connection = new Connection()
+	connection.deserialise(serialisedConnection)
+	connection.patch_up(graph.nodes)
+	return connection
+}
 
 
 if (typeof(module) !== 'undefined') {

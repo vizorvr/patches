@@ -84,12 +84,6 @@ function Renderer(vr_devices, canvas_id, core)
 	if(fqdn === 'undefined' || fqdn === '/* @echo FQDN */') fqdn = 'create.vizor.io'; // defaulting to create.vizor.io
 	this.default_tex.load('//'+fqdn+'/images/no_texture.png', core);
 
-	var resizeTimer;
-	$(window).on('resize', function() {
-		clearTimeout(resizeTimer);
-		resizeTimer = setTimeout(that.onResize.bind(that), 200);
-	});
-
 	document.addEventListener('fullscreenchange', this.on_fullscreen_change.bind(this));
 	document.addEventListener('webkitfullscreenchange', this.on_fullscreen_change.bind(this));
 	document.addEventListener('mozfullscreenchange', this.on_fullscreen_change.bind(this));
@@ -189,7 +183,6 @@ Renderer.prototype.begin_frame = function()
 			ss.texture = new Texture(gl, t, gl.LINEAR);
 		}
 
-		// this.update_viewport();
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	}
 };
@@ -286,29 +279,10 @@ Renderer.prototype.remove_fs_listener = function(delegate)
 		this.fs_listeners.splice(idx, 1);
 };
 
-Renderer.prototype.onResize = function()
-{
-	var c = E2.dom.webgl_canvas;
-
-	if (this.fullscreen)
-	{
-		var width = window.innerWidth;
-		var height = window.innerHeight;
-
-		c[0].width = width;
-		c[0].height = height;
-
-		E2.dom.webgl_canvas.css('width', width);
-		E2.dom.webgl_canvas.css('height', height);
-	}
-
-	this.update_viewport();
-
-	this.emit('resize');
-}
 
 Renderer.prototype.on_fullscreen_change = function()
 {
+
 	var c = E2.dom.webgl_canvas;
 
 	if (!this.fullscreen)
@@ -322,15 +296,14 @@ Renderer.prototype.on_fullscreen_change = function()
 		this.fullscreen = false;
 		c.removeClass('webgl-canvas-fs');
 		c.addClass('webgl-canvas-normal');
-		c.css('width', this.org_width + 'px');
-		c.css('height',this.org_height + 'px');
-		c[0].width = this.org_width;
-		c[0].height = this.org_height;
 	}
+
+	this.update_viewport();
 
 	this.fs_listeners.forEach(function(cb) {
 		cb(this.fullscreen);
 	});
+
 };
 
 Renderer.prototype.set_fullscreen = function(state)
@@ -391,9 +364,45 @@ Renderer.prototype.set_fullscreen = function(state)
 
 Renderer.prototype.update_viewport = function()
 {
-	var c = this.canvas[0];
 
-	this.context.viewport(0, 0, c.width, c.height);
+	var c = this.canvas[0];
+	var that = this;
+	var canvasArea;
+
+	if(E2.app && typeof E2.app.calculateCanvasArea === "function") {
+		canvasArea = E2.app.calculateCanvasArea();
+	}
+	else {
+		canvasArea = {
+			width: this.org_width,
+			height: this.org_height
+		}
+	}
+
+	var width = canvasArea.width;
+	var height = canvasArea.height;
+
+	if(that.fullscreen) {
+		width = screen.width;
+		height = screen.height;
+	}
+
+	var devicePixelRatio = window.devicePixelRatio || 1;
+	var pixelRatioAdjustedWidth = devicePixelRatio * width;
+	var pixelRatioAdjustedHeight = devicePixelRatio * height;
+
+	c.width = width;
+	c.height = height;
+	
+	that.canvas.css('width', width);
+	that.canvas.css('height', height);
+
+	that.org_width = width;
+	that.org_height = height;
+
+	that.context.viewport(0, 0, width, height);
+	that.emit('resize');
+
 };
 
 Renderer.prototype.set_depth_enable = function(on)
@@ -548,3 +557,7 @@ function Camera(gl)
 	mat4.identity(this.view);
 }
 
+if (typeof(module) !== 'undefined') {
+	module.exports.VertexBuffer = VertexBuffer
+	module.exports.IndexBuffer = IndexBuffer
+}

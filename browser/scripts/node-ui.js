@@ -1,4 +1,5 @@
 function NodeUI(parent_node, x, y) {
+	var that = this
 	this.parent_node = parent_node;
 	this.x = x;
 	this.y = y;
@@ -22,13 +23,22 @@ function NodeUI(parent_node, x, y) {
 
 	icon.addClass('plugin-icon');
 	icon.addClass('icon-' + parent_node.plugin.id);
-	icon.click(function(self) { return function()
-	{
-		self.parent_node.open = !self.parent_node.open;
-		self.content_row.css('display', self.parent_node.open ? 'table-row' : 'none');
-		self.parent_node.update_connections();
-		E2.app.updateCanvas(true);
-	}}(this));
+	icon.click(function() {
+		var isOpen = !that.parent_node.open
+
+		E2.app.dispatcher.dispatch({
+			actionType: 'uiNodeOpenStateChanged',
+			graphUid: that.parent_node.parent_graph.uid,
+			nodeUid: that.parent_node.uid,
+			isOpen: isOpen
+		})
+	})
+
+	this.parent_node.on('openStateChanged', function(isOpen) {
+		that.content_row.css('display', isOpen ? 'table-row' : 'none');
+		that.parent_node.update_connections()
+		E2.app.updateCanvas(true)
+	})
 	
 	lbl.text(parent_node.get_disp_name());
 	lbl.addClass('t');

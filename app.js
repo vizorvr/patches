@@ -12,6 +12,7 @@ var morgan = require('morgan');
 var errorHandler = require('errorhandler');
 var csrf = require('lusca').csrf();
 var methodOverride = require('method-override');
+var crypto = require('crypto')
 
 var flash = require('express-flash');
 var path = require('path');
@@ -40,6 +41,7 @@ var passportConf = require('./config/passport');
 var FrameDumpServer = require('./lib/framedump-server').FrameDumpServer;
 var OscServer = require('./lib/osc-server').OscServer;
 var WsChannelServer = require('./lib/wschannel-server').WsChannelServer;
+var EditorChannelServer = require('./lib/editorChannelServer').EditorChannelServer;
 var config = require('./config/config.json');
 
 var argv = require('minimist')(process.argv.slice(2));
@@ -134,6 +136,11 @@ app.use(flash());
 
 app.use(function(req, res, next)
 {
+	if (!req.user)
+		req.session.userId = crypto.randomBytes(12).toString('hex')
+	else
+		req.session.userId = req.user._id
+
 	res.locals.user = req.user;
 	res.locals.KEY_GA = process.env.KEY_GA;
 	next();
@@ -153,6 +160,68 @@ app.use(function(req, res, next)
 
 	next();
 });
+
+// Return 404 instead of opening a new editor instance
+// for old (pre-asm 2015) vizor experiences
+// These are explicitly disabled so that links to old vizor experiences
+// don't display a new editor page.
+app.use(function(req, res, next)
+{
+  // list of old vizor exprience ids (http://vizor.io/id)
+	var disallowedPaths = [
+		"m1Z1rgbbrfoj",
+		"7QoQGaYKgfkv",
+		"p7x4d4dnKf1G",
+		"m1xg7KpelHAp",
+		"QyvZxVz9nUkz",
+		"WxAGbablMTZz",
+		"yrx7nGxLQcge",
+		"NqkY4O6vauLg",
+		"JYW906AZbt9Z",
+		"6ZgdNYeDZi2K",
+		"h0p4lonG912",
+		"hTgRn7Hj9LkG",
+		"iK4tHiUb7K1k",
+		"vrplanetchase",
+		"vihartmonkeys",
+		"hASd9e904vjr",
+		"i3YxLp4XgQ7",
+		"o1FxLjP5tW3Z",
+		"2EuZis012ikL",
+		"6ov3r4ND4D3z",
+		"83jed8JAne93",
+		"k3hf8ek4jfue",
+		"oculusrex123",
+		"riftsketch12",
+		"streetview12",
+		"he3jei29fjE7",
+		"ue8JeioSleJa",
+		"Ai4y2hI4jY06",
+		"u49fE6zHXiEj",
+		"j48xnto7psj2",
+		"389cjto69djw",
+		"hr84jshtwu39"];
+
+  var path = req.url.split('/')[1];
+	
+  if (disallowedPaths.indexOf(path) > -1)
+	{
+		var err = new Error('Not found: '+path);
+		err.status = 404;
+
+		return next(err);
+	}
+
+	next();
+});
+
+app.use(function(req, res, next) {
+	// redirect all create urls to vizor.io 
+	if (req.hostname === 'create.vizor.io')
+		return res.redirect(301, '//vizor.io'+req.url)
+
+	next()
+})
 
 app.use(function(req, res, next)
 {
@@ -379,9 +448,8 @@ app.get(['/editor', '/edit'], graphController.edit.bind(graphController));
 // GET /fthr/dunes-world/edit -- EDITOR
 app.get('/:username/:graph/edit', function(req, res, next)
 {
-	req.params.path = '/'+req.params.username+'/'
-		+req.params.graph;
-	graphController.edit(req, res, next);
+	res.redirect('/'+req.params.username+'/'
+		+req.params.graph)
 });
 
 // GET /fthr/dunes-world.json
@@ -454,6 +522,16 @@ app.post('/:model',
 	}
 );
 
+// last resort Graph URLs
+
+// GET /ju63
+app.get('/:path', function(req, res, next) {
+	req.params.path = '/'+req.params.path;
+	graphController.edit(req, res, next);
+});
+
+// --------------------------------------------------
+
 var httpServer = http.createServer(app);
 
 httpServer.listen(listenPort, listenHost);
@@ -463,7 +541,9 @@ if (config.server.enableOSC) {
 }
 
 if (config.server.enableChannels) {
-	new WsChannelServer().listen(httpServer);
+	new WsChannelServer().listen(httpServer)
+	app._editorChannel = new EditorChannelServer()
+	app._editorChannel.listen(httpServer)
 }
 
 app.use(function(err, req, res, next) {
@@ -475,6 +555,7 @@ app.use(function(err, req, res, next) {
 		return res.json({ message: err.message });
 
 	res.render('error', {
+		layout: 'min',
 		message: err.message,
 		error: {}
 	});

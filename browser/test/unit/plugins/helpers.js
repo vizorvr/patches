@@ -88,9 +88,6 @@ exports.reset = function() {
 			on: function(){}
 		},
 		graphs: [],
-		get_graph_uid: function() {
-			return graphCounter++
-		},
 		get_default_value: function(){}
 	};
 
@@ -111,8 +108,8 @@ exports.reset = function() {
 	E2.slot_type = { input: 0, output: 1 };
 
 	var uidCounter = 0
-	E2.uid = function() {
-		return parseInt(Date.now() + '' + uidCounter++, 10)
+	E2.core.get_uid = E2.uid = function() {
+		return Date.now() + '-' + uidCounter++
 	}
 
 	E2.dom = {

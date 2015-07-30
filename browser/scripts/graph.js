@@ -9,7 +9,6 @@ function Graph(core, parent_graph, uid) {
 	this.parent_graph = parent_graph;
 	this.roots = [];
 	this.children = [];
-	this.node_uid = 0;
 
 	this.uid = (uid !== undefined) ? uid : E2.uid();
 }
@@ -158,11 +157,6 @@ Graph.prototype.renameNode = function(node, title) {
 }
 
 Graph.prototype.addConnection = function(connection) {
-	if (!connection.patch_up(this.nodes)) {
-		console.warn('Failed to connect', connection)
-		return false
-	}
-
 	this.connections.push(connection)
 
 	return connection
@@ -241,7 +235,6 @@ Graph.prototype.find_connections_from = function(node, slot) {
 Graph.prototype.serialise = function() {
 	var d = {};
 	
-	d.node_uid = this.node_uid;
 	d.uid = this.uid;
 	d.parent_uid = this.parent_graph ? this.parent_graph.uid : -1;
 	d.open = this.open;
@@ -255,8 +248,7 @@ Graph.prototype.serialise = function() {
 }
 
 Graph.prototype.deserialise = function(d) {
-	this.node_uid = d.node_uid;
-	this.uid = d.uid;
+	this.uid = '' + d.uid;
 	this.parent_graph = d.parent_uid;
 			
 	this.nodes = [];
@@ -329,7 +321,7 @@ Graph.prototype.reorder_children = function(original, sibling, insert_after) {
 		
 		var i = arr.indexOf(sibling);
 		
-		if(insert_after)
+		if (insert_after)
 			i++;
 		
 		arr.splice(i, 0, original);
@@ -339,6 +331,39 @@ Graph.prototype.reorder_children = function(original, sibling, insert_after) {
 	reorder(this.nodes);
 };
 
+Graph.prototype.findConnectionByUid = function(cuid) {
+	var connection
+	this.connections.some(function(c) {
+		if (c.uid === cuid) {
+			connection = c
+			return true
+		}
+	})
+
+	return connection
+}
+
+Graph.prototype.findNodeByUid = function(nuid) {
+	var node
+	this.nodes.some(function(n) {
+		if (n.uid === nuid) {
+			node = n
+			return true
+		}
+	})
+
+	if (!node) {
+		msg('ERROR: Failed to resolve node('+nuid+') in graph(' + this.uid + ')')
+		console.log('Graph nodes', this.nodes)
+	}
+
+	return node
+}
+
+Graph.lookup = function(guid) {
+	return Graph.resolve_graph(E2.core.graphs, guid)
+}
+
 Graph.resolve_graph = function(graphs, guid) {
 	for(var i = 0, len = graphs.length; i < len; i++) {
 		if (graphs[i].uid === guid)
@@ -347,7 +372,7 @@ Graph.resolve_graph = function(graphs, guid) {
 
 	if (guid !== -1) {
 		msg('ERROR: Failed to resolve graph(' + guid + ')')
-		debugger;
+		console.log('Graphs', graphs)
 	}
 	
 	return null;

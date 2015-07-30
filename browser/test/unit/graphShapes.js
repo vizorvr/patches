@@ -6,25 +6,31 @@ global.E2 = {}
 var Application = require('../../scripts/application')
 
 global.EventEmitter = require('../../scripts/event-emitter')
-global.Node = require('../../scripts/node')
+global.Node = require('../../scripts/node').Node
 global.EditorChannel = function(){}
 global.Graph = require('../../scripts/graph')
 global.Flux = require('../../vendor/flux')
 global.Plugin = require('../../scripts/plugin');
 global.Store = require('../../scripts/store');
 global.GraphStore = require('../../scripts/graphStore');
+global.PeopleManager = function() {}
+global.PeopleStore = function(){}
 
 global.NodeUI = function() {
 	this.dom = [$()]
 	this.dom.position = this.dom[0].position
 	this.dom.width = this.dom[0].width
 	this.dom.height = this.dom[0].height
-	this.dom.find = function() {}
+	this.dom.find = function() { return { remove: function(){} } }
 	this.dom[0].style = {}
 }
 global.NodeUI.create_slot = function(){}
-global.Node.prototype.create_ui = function(){}
+global.Node.prototype.create_ui = function(){
+	// this.ui = new global.NodeUI()
+	return null
+}
 global.Node.prototype.destroy_ui = function(){}
+
 global.Registers = function() {
 	this.serialise = function(){}
 }
@@ -49,6 +55,8 @@ describe('Simple graph shapes', function() {
 		core.graphs = [ core.active_graph ]
 		core.rebuild_structure_tree = function(){}
 		
+		global.window = { location: { pathname: 'test/test' } }
+
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 		app = new Application()
 		app.player = { core: core }

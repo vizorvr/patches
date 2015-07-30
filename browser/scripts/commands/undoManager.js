@@ -20,8 +20,6 @@ UndoManager.prototype.getRedoStack = function() {
 }
 
 UndoManager.prototype.begin = function(title) {
-	console.log('UndoManager.begin', title)
-
 	if (this._transaction) // xa already in progress, nop
 		return;
 
@@ -32,14 +30,12 @@ UndoManager.prototype.begin = function(title) {
 
 	xa.redo = function() {
 		xa.undoStack.reverse().map(function(xi) {
-			console.log('xi.redo', xi.title)
 			xi.redo()
 		})
 	}
 
 	xa.undo = function() {
 		xa.undoStack.reverse().map(function(xi) {
-			console.log('xi.undo', xi.title)
 			xi.undo()
 		})
 	}
@@ -55,13 +51,10 @@ UndoManager.prototype.end = function() {
 
 	this._transaction = null
 
-	console.log('UndoManager.end', xa.title)
-
 	this.push(xa)
 }
 
 UndoManager.prototype.execute = function(item) {
-	console.log('UndoManager.execute', item.title)
 	this.push(item)
 	return item.redo()
 }
@@ -71,8 +64,6 @@ UndoManager.prototype.undo = function() {
 
 	if (!item)
 		return;
-
-	console.log('UndoManager.undo', item.title)
 
 	this.redoStack.push(item)
 
@@ -84,8 +75,6 @@ UndoManager.prototype.redo = function() {
 
 	if (!item)
 		return;
-
-	console.log('UndoManager.redo', item.title)
 
 	this.undoStack.push(item)
 

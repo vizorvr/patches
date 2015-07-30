@@ -4,101 +4,127 @@ function mapConnections(node, fn) {
 	node.inputs.concat(node.outputs).map(fn)
 }
 
-function graphLookup(uid) {
-	var graph 
-	E2.core.graphs.some(function(g) {
-		if (g.uid === uid) {
-			graph = g
-			return true
-		}
-	})
-	return graph
-}
-
 function GraphStore() {
 	Store.apply(this, arguments)
-	this.setupListeners()
+	this._setupListeners()
 	this.storeName = 'graph'
 }
 
 GraphStore.prototype = Object.create(Store.prototype)
 
-GraphStore.prototype.setupListeners = function() {
+GraphStore.prototype._setupListeners = function() {
 	E2.app.dispatcher.register(function receiveFromDispatcher(payload) {
-		console.log('GraphStore.receiveFromDispatcher', payload.actionType)
+		if (payload.actionType === 'graphSnapshotted')
+			return this._graphSnapshotted(payload.data)
+
+		if (payload.graphUid === undefined)
+			return;
+
+		var graph = Graph.lookup(payload.graphUid)
+		if (!graph)
+			return console.error('No graph found for payload guid ', payload.graphUid)
 
 		switch(payload.actionType) {
 			case 'uiGraphTreeReordered':
-				this.uiGraphTreeReordered(
-					payload.graph,
+				this._uiGraphTreeReordered(
+					graph,
 					payload.original,
 					payload.sibling,
 					payload.insertAfter)
 				break;
+			case 'uiNodeOpenStateChanged':
+				var node = graph.findNodeByUid(payload.nodeUid)
+				node.setOpenState(payload.isOpen)
+				break;
 			case 'uiNodeAdded':
-				this.uiNodeAdded(payload.graph, payload.node, payload.info)
+				this._uiNodeAdded(graph, payload.node, payload.info)
 				break;
 			case 'uiNodeRemoved':
-				this.uiNodeRemoved(payload.graph, payload.node, payload.info)
+				this._uiNodeRemoved(graph, payload.nodeUid)
 				break;
 			case 'uiSlotAdded':
-				this.uiSlotAdded(payload.graph, payload.node, payload.slot)
+				this._uiSlotAdded(graph, payload.nodeUid, payload.slot)
 				break;
 			case 'uiSlotRemoved':
-				this.uiSlotRemoved(payload.graph, payload.node, payload.slotUid)
+				this._uiSlotRemoved(graph, payload.nodeUid, payload.slotUid)
 				break;
 			case 'uiNodeRenamed':
-				this.uiNodeRenamed(payload.graph, payload.node, payload.title)
+				this._uiNodeRenamed(graph, payload.nodeUid, payload.title)
 				break;
 			case 'uiConnected':
-				this.uiConnected(payload.graph, payload.connection)
+				this._uiConnected(graph, payload.connection)
 				break;
 			case 'uiDisconnected':
-				this.uiDisconnected(payload.graph, payload.connection)
+				this._uiDisconnected(graph, payload.connectionUid)
+				break;
+			case 'uiNodesMoved':
+				this._uiNodesMoved(graph, payload.nodeUids, payload.delta)
+				break;
+			case 'uiPluginStateChanged':
+				this._uiPluginStateChanged(
+					graph,
+					payload.nodeUid,
+					payload.key,
+					payload.value)
 				break;
 		}
 	}.bind(this))
 }
 
-GraphStore.prototype.uiGraphTreeReordered = function(graph, original, sibling, insertAfter) {
-	graph.reorder_children(original, sibling, insertAfter)
-	this.publish('reordered', graph)
+GraphStore.prototype._graphSnapshotted = function(data) {
+	E2.app.player.load_from_json(data)
+	this.emit('snapshotted')
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiNodeAdded = function(graph, node, info) {
+GraphStore.prototype._uiGraphTreeReordered = function(graph, original, sibling, insertAfter) {
+	graph.reorder_children(original, sibling, insertAfter)
+	this.emit('reordered', graph)
+	this.emit('changed')
+}
+
+GraphStore.prototype._uiNodeAdded = function(graph, node, info) {
 	graph.addNode(node, info)
+
+	node.reset()
+	node.initialise()
 
 	mapConnections(node, function(conn) {
 		graph.connect(conn)
 	})
 
-	this.publish('nodeAdded', graph, node, info)
+	this.emit('nodeAdded', graph, node, info)
 
 	if (info && info.proxy && info.proxy.connection) {
-		console.log('re-adding', info.proxy.connection)
-		var connection = new Connection()
-		connection.deserialise(info.proxy.connection)
-		this.uiConnected(graph.parent_graph, connection)
+		this._uiConnected(graph.parent_graph,
+			Connection.hydrate(graph.parent_graph, info.proxy.connection)
+		)
 	}
 
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiNodeRemoved = function(graph, node) {
-	mapConnections(node, function(conn) {
-		// removing a node, all its connections should be removed
-		graph.disconnect(conn)
-	})
-
+GraphStore.prototype._uiNodeRemoved = function(graph, nodeUid) {
+	var node = graph.findNodeByUid(nodeUid)
+	if (!node) {
+		console.warn('_uiNodeRemoved: node not found in graph', graph.uid)
+		return;
+	}
+	mapConnections(node, graph.disconnect.bind(graph))
 	graph.removeNode(node)
-
-	this.publish('nodeRemoved', graph, node)
-
+	this.emit('nodeRemoved', graph, node)
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiSlotAdded = function(graph, node, slot) {
+GraphStore.prototype._uiNodeRenamed = function(graph, nodeUid, title) {
+	var node = graph.findNodeByUid(nodeUid)
+	graph.renameNode(node, title)
+	this.emit('nodeRenamed', graph, node)
+	this.emit('changed')
+}
+
+GraphStore.prototype._uiSlotAdded = function(graph, nodeUid, slot) {
+	var node = graph.findNodeByUid(nodeUid)
 	node.add_slot(slot.type, slot)
 
 	if (node.plugin.lsg)
@@ -108,7 +134,8 @@ GraphStore.prototype.uiSlotAdded = function(graph, node, slot) {
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiSlotRemoved = function(graph, node, slotUid) {
+GraphStore.prototype._uiSlotRemoved = function(graph, nodeUid, slotUid) {
+	var node = graph.findNodeByUid(nodeUid)
 	var slot = node.findSlotByUid(slotUid)
 
 	node.remove_slot(slot.type, slot.uid)
@@ -120,22 +147,67 @@ GraphStore.prototype.uiSlotRemoved = function(graph, node, slotUid) {
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiNodeRenamed = function(graph, node, title) {
-	graph.renameNode(node, title)
-	this.publish('nodeRenamed', graph, node)
-	this.emit('changed')
-}
+GraphStore.prototype._uiConnected = function(graph, connection) {
+	var c = connection
 
-GraphStore.prototype.uiConnected = function(graph, connection) {
+	/*
+		for dynamic slots, the index could have changed in eg.
+		a redo situation. recalculate the current index in the node
+		by looking up the slot with its uid; issue 195
+	 */
+	if (c.dst_slot.dynamic) {
+		c.dst_slot.index = c.dst_node.find_dynamic_slot(
+			E2.slot_type.input,
+			c.dst_slot.uid
+		).index
+	}
+
+	if (c.src_slot.dynamic) {
+		c.src_slot.index = c.src_node.find_dynamic_slot(
+			E2.slot_type.output,
+			c.src_slot.uid
+		).index
+	}
+
 	graph.connect(connection)
-	this.publish('connected', graph, connection)
+	this.emit('connected', graph, connection)
 	this.emit('changed')
 }
 
-GraphStore.prototype.uiDisconnected = function(graph, connection) {
+GraphStore.prototype._uiDisconnected = function(graph, connectionUid) {
+	var connection = graph.findConnectionByUid(connectionUid)
+	if (!connection) {
+		msg('WARN: GraphStore._uiDisconnected: could not find connectionUid '+connectionUid)
+		return;
+	}
+
 	graph.disconnect(connection)
-	this.publish('disconnected', graph, connection)
+
+	this.emit('disconnected', graph, connection)
 	this.emit('changed')
+}
+
+function _gatherConnections(nodes) {
+	return nodes.reduce(function(arr, node) {
+		return arr.concat(node.inputs.concat(node.outputs))
+	}, [])
+}
+
+GraphStore.prototype._uiNodesMoved = function(graph, nodeUids, delta) {
+	var nodes = nodeUids.map(function(nid) {
+		return graph.findNodeByUid(nid)
+	})
+	var connections = _gatherConnections(nodes)
+	E2.app.executeNodeDrag(nodes,
+		connections,
+		delta.x,
+		delta.y)
+}
+
+GraphStore.prototype._uiPluginStateChanged = function(graph, nodeUid, key, value) {
+	var node = graph.findNodeByUid(nodeUid)
+
+	node.setPluginState(key, value)
 }
 
 if (typeof(module) !== 'undefined')

@@ -54,7 +54,7 @@ SubGraphPlugin.prototype.connection_changed = function(on, conn, slot) {
 		if (!on) {
 			if (slot.type === E2.slot_type.input) {
 				var inode = this.input_nodes[slot.uid]
-				
+
 				psl = inode.dyn_outputs[0]
 				inode.plugin.data = core.get_default_value(slot.dt)
 				inode.reset()
@@ -83,7 +83,7 @@ SubGraphPlugin.prototype.connection_changed = function(on, conn, slot) {
 					slot.dt = conn.src_slot.dt
 					this.dbg('Setting GDT for slot(' + slot.uid + ') to ' + this.get_dt_name(conn.src_slot.dt))
 				}
-				
+
 				tn = this.input_nodes[slot.uid]
 				if (!tn)
 					return;
@@ -115,12 +115,11 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node,
 	var that = this
 	var core = this.core
 	var node = this.parent_node
-	
+
 	function find_sid(nodes, uid) {
 		for (var n in nodes) {
-			console.log('find_sid', n, nodes[n].uid, uid)
 			if(nodes[n].uid === uid)
-				return parseInt(n)
+				return n
 		}
 		
 		msg('ERROR: Failed to resolve node(' + uid + ') in graph(' + that.graph.plugin.parent_node.title + ').')
@@ -217,12 +216,25 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node,
 
 	if (p_node.plugin.id === 'input_proxy') {
 		last = p_node.outputs.length === 0
-		change_slots(last, node.find_dynamic_slot(E2.slot_type.input, find_sid(this.input_nodes, p_node.uid)), slot)
+		
+		change_slots(last,
+			node.find_dynamic_slot(
+				E2.slot_type.input,
+				find_sid(this.input_nodes, p_node.uid)
+			),
+		slot)
+
 		this.dbg('    Output count = ' + p_node.outputs.length)
 	} else {
 		last = p_node.inputs.length === 0
 		
-		change_slots(last, node.find_dynamic_slot(E2.slot_type.output, find_sid(this.output_nodes, p_node.uid)), slot)
+		change_slots(last,
+			node.find_dynamic_slot(
+				E2.slot_type.output,
+				find_sid(this.output_nodes, p_node.uid)
+			),
+		slot)
+
 		this.dbg('    Input count = ' + p_node.inputs.length)
 	}
 }
@@ -246,6 +258,32 @@ SubGraphPlugin.prototype.destroy_slot = function(type, nuid) {
 	delete slots[nuid]
 
 	this.parent_node.remove_slot(type, sid)
+}
+
+SubGraphPlugin.prototype.setupProxies = function() {
+	var that = this
+
+	function find_node(uid) {
+		var n = that.graph.findNodeByUid(uid)
+		if (!n)
+			return msg('ERROR: Failed to find registered proxy node(' + uid +
+				') in graph(' + self.graph.plugin.parent_node.title + ').'); 
+
+		var p = n.plugin
+		
+		p.data = E2.core.get_default_value((p.id === 'input_proxy' ?
+			n.dyn_outputs : n.dyn_inputs)[0]
+		.dt)
+
+		return n
+	}
+
+	for(var uid in this.state.input_sids) {
+		this.input_nodes[this.state.input_sids[uid]] = find_node(uid)
+	}
+
+	for(var uid in this.state.output_sids)
+		this.output_nodes[this.state.output_sids[uid]] = find_node(uid)
 }
 
 SubGraphPlugin.prototype.setGraph = function(graph) {

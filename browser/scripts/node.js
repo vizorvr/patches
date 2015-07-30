@@ -14,23 +14,35 @@ function Node(parent_graph, plugin_id, x, y) {
 		this.x = x;
 		this.y = y;
 		this.ui = null;
-		this.id = E2.app.player.core.pluginManager.keybyid[plugin_id];
+		this.id = E2.core.pluginManager.keybyid[plugin_id];
 		this.update_count = 0;
 		this.title = null;
 		this.inputs_changed = false;
 		this.open = true;
 
-		this.set_plugin(E2.app.player.core.pluginManager.create(plugin_id, this))
+		this.set_plugin(E2.core.pluginManager.create(plugin_id, this))
 	}
 }
 
 Node.prototype = Object.create(EventEmitter.prototype)
 
+Node.prototype.getConnections = function() {
+	return this.inputs.concat(this.outputs)
+}
+
+Node.prototype.getDynamicInputSlots = function() {
+	return this.dyn_inputs;
+}
+
+Node.prototype.getDynamicOutputSlots = function() {
+	return this.dyn_outputs;
+}
+
 Node.prototype.set_plugin = function(plugin) {
 	this.plugin = plugin;
 	this.plugin.updated = true;
 	
-	var init_slot = function(slot, index, type) {
+	function init_slot(slot, index, type) {
 		slot.index = index;
 		slot.type = type;
 		
@@ -47,6 +59,11 @@ Node.prototype.set_plugin = function(plugin) {
 	for(var i = 0, len = plugin.output_slots.length; i < len; i++)
 		init_slot(plugin.output_slots[i], i, E2.slot_type.output);
 };
+
+Node.prototype.setOpenState = function(isOpen) {
+	this.open = isOpen
+	this.emit('openStateChanged', isOpen)
+}
 	
 Node.prototype.create_ui = function() {
 	this.ui = new NodeUI(this, this.x, this.y)
@@ -69,12 +86,10 @@ Node.prototype.destroy = function()
 	var index = graph.nodes.indexOf(this);
 	var pending = [];
 	
-	if(this.plugin.destroy)
+	if (this.plugin.destroy)
 		this.plugin.destroy();
 	
-	graph.emit_event({ type: 'node-destroyed', node: this });
-	
-	if(index != -1)
+	if (index !== -1)
 		graph.nodes.splice(index, 1);
 	
 	pending.push.apply(pending, this.inputs);
@@ -120,6 +135,18 @@ Node.prototype.add_slot = function(slot_type, def) {
 
 	if (def.uid === undefined || def.uid === null)
 		def.uid = E2.uid()
+
+	if (!def.dt) {
+		msg('ERROR: No datatype given for slot')
+		console.trace('No datatype given for slot')
+		return false
+	}
+
+	if (!def.name) {
+		msg('ERROR: No name given for slot')
+		console.trace('No name given for slot')
+		return false
+	}
 
 	def.dynamic = true
 	def.type = slot_type
@@ -189,7 +216,8 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 	}
 	
 	if (this.ui) {
-		this.ui.dom.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid)
+		this.ui.dom
+			.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid)
 			.remove();
 	}
 	
@@ -227,7 +255,7 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 
 Node.prototype.findSlotByUid = function(suid) {
 	var slot
-	
+
 	this.dyn_inputs.concat(this.dyn_outputs)
 	.some(function(s) {
 		if (s.uid === suid) {
@@ -236,27 +264,27 @@ Node.prototype.findSlotByUid = function(suid) {
 		}
 	})
 
+	if (!slot)
+		console.error('Slot not found', slot_type, suid)
+
 	return slot
 }
 
 Node.prototype.find_dynamic_slot = function(slot_type, suid) {
 	var slots = (slot_type === E2.slot_type.input) ? this.dyn_inputs : this.dyn_outputs;
 
-	// console.log('find_dynamic_slot', 'suid', suid, 'slots', slots)
-	if (slots.length) {
-		for(var i = 0, len = slots.length; i < len; i++) {
-			if (slots[i].uid === suid)
-				return slots[i];
-		}
+	for(var i = 0, len = slots.length; i < len; i++) {
+		if (slots[i].uid === suid)
+			return slots[i];
 	}
 
-	return null;
+	console.error('Slot not found', slot_type, suid)
 }
 
 Node.prototype.rename_slot = function(slot_type, suid, name) {
 	var is_inp = slot_type === E2.slot_type.input;
 	var slot = this.find_dynamic_slot(slot_type, suid);
-	
+
 	if (slot) {
 		slot.name = name;
 
@@ -400,10 +428,21 @@ Node.prototype.update_recursive = function(conns) {
 	return dirty;
 }
 
+Node.prototype.setPluginState = function(key, value) {
+	this.plugin.state[key] = value
+
+	this.plugin.updated = true
+	this.plugin.dirty = true
+
+	this.emit('pluginStateChanged', key, value)
+}
+
 Node.prototype.serialise = function(flat) {
 	function pack_dt(slots) {
-		for(var i = 0, len = slots.length; i < len; i++)
+		for(var i = 0, len = slots.length; i < len; i++) {
+			delete slots[i].desc;
 			slots[i].dt = slots[i].dt.id;
+		}
 	}
 
 	var d = {};
@@ -440,17 +479,32 @@ Node.prototype.serialise = function(flat) {
 	return d;
 };
 
+// force all uid's and sids into strings. issue #135
+Node.prototype.fixStateSidsIssue135 = function(state) {
+	function stringifySids(sids) {
+		Object.keys(sids).map(function(uid) {
+			sids[''+uid] = ''+sids[uid]
+		})
+	}
+
+	if (state.input_sids)
+		stringifySids(state.input_sids)
+
+	if (state.output_sids)
+		stringifySids(state.output_sids)
+}
+
 Node.prototype.deserialise = function(guid, d) {
 	this.parent_graph = guid;
 	this.x = d.x;
 	this.y = d.y;
-	this.id = E2.app.player.core.pluginManager.keybyid[d.plugin];
-	this.uid = d.uid;
+	this.id = E2.core.pluginManager.keybyid[d.plugin];
+	this.uid = '' + d.uid;
 	this.open = d.open !== undefined ? d.open : true;
 	
 	this.title = d.title ? d.title : null;
 	
-	var plg = E2.app.player.core.pluginManager.create(d.plugin, this);
+	var plg = E2.core.pluginManager.create(d.plugin, this);
 	
 	if (!plg) {
 		msg('ERROR: Failed to instance node of type \'' + d.plugin + '\' with title \'' + this.title + '\' and UID = ' + this.uid + '.');
@@ -460,7 +514,7 @@ Node.prototype.deserialise = function(guid, d) {
 	this.set_plugin(plg);
 	
 	if (this.plugin.isGraph) {
-		this.plugin.setGraph(new Graph(E2.app.player.core, null, null))
+		this.plugin.setGraph(new Graph(E2.core, null, null))
 		this.plugin.graph.plugin = this.plugin;
 		this.plugin.graph.deserialise(d.graph);
 
@@ -469,6 +523,8 @@ Node.prototype.deserialise = function(guid, d) {
 	}
 	
 	if (d.state && this.plugin.state) {
+		this.fixStateSidsIssue135(d.state)
+
 		for(var key in d.state) {
 			if(!d.state.hasOwnProperty(key))
 				continue;
@@ -480,10 +536,11 @@ Node.prototype.deserialise = function(guid, d) {
 	
 	if (d.dyn_in || d.dyn_out) {
 		function patch_slot(slots, type) {
-			var rdt = E2.app.player.core.resolve_dt;
+			var rdt = E2.core.resolve_dt;
 			
 			for(var i = 0; i < slots.length; i++) {
 				var s = slots[i];
+				s.uid = '' + s.uid;
 				s.dynamic = true;
 				s.dt = rdt[s.dt];
 				s.type = type;
@@ -539,6 +596,14 @@ Node.prototype.initialise = function()
 	if(this.plugin.isGraph)
 		this.plugin.graph.initialise();
 };
+
+Node.hydrate = function(guid, json) {
+	var node = new Node()
+	node.deserialise(guid, json)
+	node.patch_up(E2.core.graphs)
+	return node
+}
+
 
 function LinkedSlotGroup(core, parent_node, inputs, outputs)
 {
@@ -630,6 +695,10 @@ LinkedSlotGroup.prototype.infer_dt = function()
 	return null;
 };
 
-if (typeof(module) !== 'undefined')
-	module.exports = Node
+
+if (typeof(module) !== 'undefined') {
+	module.exports.Node = Node
+	module.exports.LinkedSlotGroup = LinkedSlotGroup
+}
+
 

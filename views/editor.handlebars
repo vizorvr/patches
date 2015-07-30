@@ -17,25 +17,27 @@
 		<div id="load-spinner"></div>
 	</div>
 	<div class="header">
-
 		<div id="top-header">
 			<div class="top-header-col" id="top-header-left">
 				<a href="/edit" id="new" class="btn btn-sm btn-default">New</a>
 
+				<button id="fork-button" class="btn btn-sm btn-default">Edit a Copy</button>
+
 				<div class="btn-group pull-left">
-					<button type="button" class="btn btn-sm btn-default save-button">Save</button>
+					<button type="button" class="btn btn-sm btn-default save-copy-button">Save a Copy</button>
 					<button type="button" class="btn btn-default btn-dropdown" data-toggle="dropdown">
 						<span class="fa fa-caret-down"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
-						<li><a class="save-button">Save</a></li>
+						<li><a class="save-copy-button">Save a Copy</a></li>
 						<li><a id="save-as-preset">Save as Preset</a></li>
 						<li><a id="save-selection-as-preset">Save Selection as Preset</a></li>
+						<li><hr></li>
+						<li><a id="view-source">View Source</a></li>
 					</ul>
 				</div>
 
 				<button id="open" class="btn btn-sm btn-default">Open</button>
-				<button id="publish" class="btn btn-sm btn-default">Publish</button>
 
 			</div>
 
@@ -69,7 +71,7 @@
 			<ul class="nav nav-tabs" role="tablist">
 				<li class="active"><a href="#presets" role="tab" data-toggle="tab"><h4>Presets</h4></a></li>
 				<li><a href="#graph" role="tab" data-toggle="tab"><h4>Graph Tree</h4></a></li>
-				<li><a href="#about" role="tab" data-toggle="tab"><h4>About</h4></a></li>
+				<li><a href="#peopleTab" role="tab" data-toggle="tab"><h4>People</h4></a></li>
 			</ul>
 
 			<div class="tab-content">
@@ -81,21 +83,7 @@
 					<div class="cell" id="structure"></div>
 				</div>
 
-				<div role="tabpanel" class="tab-pane" id="about">
-					<p>
-					Vizor Create is a dataflow programming editor for WebGL and WebvR.
-					</p>
-					<p>
-					<a href="/help/introduction.html">Help</a>
-					|
-					<a href="https://github.com/vizorvr/">GitHub</a>
-					|
-					<a href="https://twitter.com/vizor_vr">Twitter</a>
-					|
-					<a href="https://facebook.com/vrvizor">Facebook</a>
-					|
-					<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ">YouTube</a>
-					</p>
+				<div role="tabpanel" class="tab-pane " id="peopleTab">
 				</div>
 			</div>
 		</div>
@@ -131,17 +119,19 @@
 </div> <!-- page column -->
 
 <script type="text/javascript">
-	function postInit() {
-		{{#if graph}}
-			var graph = {
-				path: '{{graph.path}}',
-				url: '{{graph.url}}'
-			};
+	var graph, graphUrl
 
-			E2.app.player.core.on('ready', function() {
-				E2.app.loadGraph(graph.url);
-			});
-		{{/if}}
+	{{#if graph}}
+		graph = {
+			path: '{{graph.path}}',
+			url: '{{graph.url}}'
+		}
+
+		graphUrl = graph.url
+	{{/if}}
+
+	function startEditor(vr_devices) {
+		E2.InitialiseEngi(vr_devices, graphUrl)
 	}
 
 	function EnumerateVRDevices(devices) {
@@ -166,33 +156,31 @@
 			}
 		}
 
-		E2.InitialiseEngi([hmd, sensor]);
-		postInit();
+		startEditor([hmd, sensor]);
 	}
 
 	$(document).ready(function() {
 		E2.models = {
 			user: new User({})
-		};
+		}
 
 		if ('{{user.username}}') {
 			E2.models.user.set( {
 				id: '{{user._id}}',
 				username: '{{user.username}}'
-			});
+			})
 		}
 
 		E2.controllers = {
 			account: new AccountController()
-		};
+		}
 
 		if(navigator.getVRDevices) {
-			navigator.getVRDevices().then(EnumerateVRDevices);
+			navigator.getVRDevices().then(EnumerateVRDevices)
 		} else if(navigator.mozGetVRDevices) {
-			navigator.mozGetVRDevices(EnumerateVRDevices);
+			navigator.mozGetVRDevices(EnumerateVRDevices)
 		} else {
-			E2.InitialiseEngi([null, null]);
-			postInit();
+			startEditor([null, null])
 		}
 
 	});

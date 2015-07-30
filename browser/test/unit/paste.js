@@ -7,14 +7,17 @@ var loadPlugin = require('./plugins/helpers').loadPlugin;
 global.E2 = {}
 var Application = require('../../scripts/application')
 
+global._ = require('lodash')
 global.EventEmitter = require('../../scripts/event-emitter')
-global.Node = require('../../scripts/node')
+global.Node = require('../../scripts/node').Node
 global.EditorChannel = function(){}
 global.Graph = require('../../scripts/graph')
 global.Flux = require('../../vendor/flux')
 global.Plugin = require('../../scripts/plugin');
 global.Store = require('../../scripts/store');
 global.GraphStore = require('../../scripts/graphStore');
+global.PeopleManager = function() {}
+global.PeopleStore = function(){}
 global.Camera = global.Material = function(){}
 
 global.NodeUI = function() {
@@ -24,6 +27,7 @@ global.NodeUI = function() {
 	this.dom.height = this.dom[0].height
 	this.dom[0].style = {}
 }
+global.Camera = global.Material = function() {}
 global.Registers = function() {
 	this.serialise = function(){}
 }
@@ -49,6 +53,8 @@ describe('Paste', function() {
 		
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 
+		global.window = { location: { pathname: 'test/test' } }
+
 		app = E2.app = new Application()
 		app.player = { core: core }
 		app.channel = { broadcast: function(){}}
@@ -58,7 +64,7 @@ describe('Paste', function() {
 
 	describe('Simple', function() {
 
-		var source = JSON.parse(fs.readFileSync(__dirname+'/fixtures/paste.json')).root
+		var source = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/paste.json')).root
 
 		it('pastes correctly', function() {
 			app.paste(source, 0, 0)
@@ -97,6 +103,7 @@ describe('Paste', function() {
 			assert.equal(nodeAdded, 3)
 			assert.equal(connected, 2)
 		})
+
 	})
 
 	describe('Complex', function() {
@@ -147,7 +154,7 @@ describe('Paste', function() {
 			core.root_graph = core.active_graph
 			core.graphs = [ core.active_graph ]
 
-			source = JSON.parse(fs.readFileSync(__dirname+'/fixtures/paste-complex.json')).root
+			source = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/paste-complex.json')).root
 		})
 
 		it('creates the right number of nodes, connections and outputs', function() {
@@ -178,11 +185,10 @@ describe('Paste', function() {
 
 		it('sets up the right parent relationships', function() {
 			app.paste(source, 0, 0)
-			console.log('graph', core.graphs[1])
 			assert.equal(
 				core.graphs[1].nodes[0]
 					.plugin.node.parent_graph, // input proxy's parent
-				core.graphs[1].uid
+				core.graphs[1]
 			)
 		})
 
@@ -201,6 +207,15 @@ describe('Paste', function() {
 			assert.equal(ag.connections.length, 7)
 			app.graphApi.removeNode(ag, ag.nodes[3])
 			assert.equal(ag.connections.length, 6)
+		})
+
+		it('adds the nodes and connections to the selection', function() {
+			app.setupStoreListeners()
+			var ag = core.active_graph
+			app.clipboard = JSON.stringify(source)
+			app.onPaste()
+			assert.equal(app.selectedConnections.length, 7)
+			assert.equal(app.selectedNodes.length, 8)
 		})
 
 	})

@@ -1,5 +1,18 @@
 (function() {
 
+function getChannelFromPath(pathname) {
+	var p = pathname.split('/')
+
+	if (p.length > 2)
+		return p[1] + '/' + p[2]
+
+	return p[1]
+}
+
+function isUserOwnedGraph(path) {
+	return path.split('/').length > 1
+}
+
 function Application() {
 	var that = this;
 
@@ -43,12 +56,17 @@ function Application() {
 
 	this.mousePosition = [400,200]
 
-	this.undoManager = new UndoManager()
-	this.graphApi = new GraphApi(this.undoManager)
-	this.channel = new EditorChannel(this)
+	this.path = getChannelFromPath(window.location.pathname)
 
 	this.dispatcher = new Flux.Dispatcher()
+
+	this.undoManager = new UndoManager()
+	this.graphApi = new GraphApi(this.undoManager)
+
 	this.graphStore = new GraphStore()
+	this.peopleStore = new PeopleStore()
+
+	this.peopleManager = new PeopleManager(this.peopleStore, $('#peopleTab'))
 
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
@@ -59,12 +77,12 @@ function Application() {
 }
 
 Application.prototype.getNIDFromSlot = function(id) {
-	return parseInt(id.slice(1, id.indexOf('s')));
+	return id.slice(1, id.indexOf('s'));
 }
 
 Application.prototype.getSIDFromSlot = function(id) {
-	return parseInt(id.slice(id.indexOf('s') + 2, id.length));
-};
+	return id.slice(id.indexOf('s') + 2, id.length);
+}
 
 Application.prototype.offsetToCanvasCoord = function(ofs) {
 	var o = [ofs.left, ofs.top];
@@ -96,19 +114,18 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 
 	function createPlugin(name) {
 		var ag = E2.core.active_graph
+
 		var node = new Node(ag, id,
 			Math.floor((pos[0] - co.left) + that.scrollOffset[0]),
 			Math.floor((pos[1] - co.top) + that.scrollOffset[1]));
 
 		if (name) { // is graph?
-			node.plugin.setGraph(new Graph(that.player.core, node.parent_graph))
-			node.title = name // + ' ' + node.plugin.graph.uid
+			node.plugin.setGraph(new Graph(E2.core, ag))
+			node.title = name
 			node.plugin.graph.plugin = node.plugin
 		}
 
 		that.graphApi.addNode(ag, node)
-
-		node.reset()
 
 		return node
 	}
@@ -457,14 +474,11 @@ Application.prototype.onNodeHeaderMousedown = function() {
 
 	if (addNode) {
 		this.markNodeAsSelected(addNode)
-		addNode.inputs.concat(addNode.outputs)
-			.map(this.markConnectionAsSelected.bind(this))
+		addNode.getConnections().map(this.markConnectionAsSelected.bind(this))
 	}
 }
 
-Application.prototype.onNodeHeaderClicked = function(e) {
-	e.stopPropagation()
-	return false
+Application.prototype.onNodeHeaderClicked = function() {
 }
 
 Application.prototype.onNodeHeaderDblClicked = function(node) {
@@ -526,8 +540,9 @@ Application.prototype.executeNodeDrag = function(nodes, conns, dx, dy) {
 
 	var cl = conns.length
 	if (cl && conns[0].ui) {
-		for (var i=0; i < cl; i++)
+		for (var i=0; i < cl; i++) {
 			E2.app.redrawConnection(conns[i])
+		}
 	}
 
 	this.updateCanvas(true)
@@ -552,7 +567,7 @@ Application.prototype.onNodeDragged = function(node) {
 		this._dragInfo = {
 			original: { x: node.x, y: node.y },
 			connections: nodes.reduce(function(arr, curr) {
-				return arr.concat(curr.inputs.concat(curr.outputs))
+				return arr.concat(curr.getConnections())
 			}, [])
 		}
 
@@ -583,8 +598,14 @@ Application.prototype.onNodeDragStopped = function(node) {
 	)
 
 	this.undoManager.push(cmd)
-
 	this.undoManager.end()
+
+	E2.app.channel.send({
+		actionType: 'uiNodesMoved',
+		graphUid: E2.core.active_graph.uid,
+		nodeUids: di.nodes.map(function(n) { return n.uid }),
+		delta: { x: dx, y: dy }
+	})
 
 	this._dragInfo = null
 	this.inDrag = false
@@ -726,115 +747,103 @@ Application.prototype.onCanvasMouseUp = function(e)
 			document.activeElement.blur();
 };
 
-Application.prototype.onMouseMoved = function(e)
-{
+Application.prototype.onMouseMoved = function(e) {
 	this.mousePosition = [e.pageX, e.pageY];
 
-	if(this.is_panning)
-	{
-		var cp = E2.dom.canvas_parent;
+	if(this.is_panning) {
+		var cp = E2.dom.canvas_parent
 
-		if(e.movementX)
-		{
-			cp.scrollLeft(this.scrollOffset[0]-e.movementX);
-			this.scrollOffset[0] = cp.scrollLeft();
+		if(e.movementX) {
+			cp.scrollLeft(this.scrollOffset[0]-e.movementX)
+			this.scrollOffset[0] = cp.scrollLeft()
 		}
 
-		if(e.movementY)
-		{
-			cp.scrollTop(this.scrollOffset[1]-e.movementY);
-			this.scrollOffset[1] = cp.scrollTop();
+		if(e.movementY) {
+			cp.scrollTop(this.scrollOffset[1]-e.movementY)
+			this.scrollOffset[1] = cp.scrollTop()
 		}
 
-		e.preventDefault();
-		return;
-	}
-	else if(this.editConn)
-	{
-		var cp = E2.dom.canvas_parent;
-		var pos = cp.position();
-		var w = cp.width();
-		var h = cp.height();
-		var x2 = pos.left + w;
-		var y2 = pos.top + h;
+		e.preventDefault()
+		return
+	} else if(this.editConn) {
+		var cp = E2.dom.canvas_parent
+		var pos = cp.position()
+		var w = cp.width()
+		var h = cp.height()
+		var x2 = pos.left + w
+		var y2 = pos.top + h
 
 		if(e.pageX < pos.left)
-			cp.scrollLeft(this.scrollOffset[0] - 20);
+			cp.scrollLeft(this.scrollOffset[0] - 20)
 		else if(e.pageX > x2)
-			cp.scrollLeft(this.scrollOffset[0] + 20);
+			cp.scrollLeft(this.scrollOffset[0] + 20)
 
 		if(e.pageY < pos.top)
-			cp.scrollTop(this.scrollOffset[1] - 20);
+			cp.scrollTop(this.scrollOffset[1] - 20)
 		else if(e.pageY > y2)
-			cp.scrollTop(this.scrollOffset[1] + 20);
+			cp.scrollTop(this.scrollOffset[1] + 20)
 
-		this.mouseEventPosToCanvasCoord(e, this.editConn.ui.dst_pos);
-		this.updateCanvas(true);
+		this.mouseEventPosToCanvasCoord(e, this.editConn.ui.dst_pos)
+		this.updateCanvas(true)
 
-		return;
-	}
-	else if(!this.selection_start)
-	{
-		E2.dom.structure.tree.on_mouse_move(e);
-		return;
+		return
+	} else if(!this.selection_start) {
+		E2.dom.structure.tree.on_mouse_move(e)
+		return
 	}
 
-	if(!this.selection_end)
-		return;
+	if (this.selection_end)
+		return this._performSelection(e)
+}
 
-	this.mouseEventPosToCanvasCoord(e, this.selection_end);
+Application.prototype._performSelection = function(e) {
+	this.mouseEventPosToCanvasCoord(e, this.selection_end)
 
-	var nodes = E2.core.active_graph.nodes;
-	var cp = E2.dom.canvas_parent;
+	var nodes = E2.core.active_graph.nodes
+	var cp = E2.dom.canvas_parent
 
-	var ss = this.selection_start.slice(0);
-	var se = this.selection_end.slice(0);
+	var ss = this.selection_start.slice(0)
+	var se = this.selection_end.slice(0)
 
-	for(var i = 0; i < 2; i++)
-	{
-		if(se[i] < ss[i])
-		{
-			var t = ss[i];
-
-			ss[i] = se[i];
-			se[i] = t;
+	for(var i = 0; i < 2; i++) {
+		if (se[i] < ss[i]) {
+			var t = ss[i]
+			ss[i] = se[i]
+			se[i] = t
 		}
 	}
 
-	var sn = this.selectedNodes;
-	var ns = [];
+	var sn = this.selectedNodes
+	var ns = []
 
 	for(var i = 0, len = sn.length; i < len; i++)
-		sn[i].ui.selected = false;
+		sn[i].ui.selected = false
 
-	for(var i = 0, len = nodes.length; i < len; i++)
-	{
-		var n = nodes[i];
-		var nui = n.ui.dom[0];
-		var p_x = nui.offsetLeft;
-		var p_y = nui.offsetTop;
-		var p_x2 = p_x + nui.clientWidth;
-		var p_y2 = p_y + nui.clientHeight;
+	for(var i = 0, len = nodes.length; i < len; i++) {
+		var n = nodes[i]
+		var nui = n.ui.dom[0]
+		var p_x = nui.offsetLeft
+		var p_y = nui.offsetTop
+		var p_x2 = p_x + nui.clientWidth
+		var p_y2 = p_y + nui.clientHeight
 
-		if(se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
+		if (se[0] < p_x || se[1] < p_y || ss[0] > p_x2 || ss[1] > p_y2)
 			continue; // No intersection.
 
-		if(!n.ui.selected)
-		{
-			this.markNodeAsSelected(n, false);
-			ns.push(n);
+		if (!n.ui.selected) 	{
+			this.markNodeAsSelected(n, false)
+			ns.push(n)
 		}
 	}
 
-	for(var i = 0, len = sn.length; i < len; i++)
-	{
-		var n = sn[i];
+	for(var i = 0, len = sn.length; i < len; i++) {
+		var n = sn[i]
 
-		if(!n.ui.selected)
-			n.ui.dom[0].style.border = this.normal_border_style;
+		if (!n.ui.selected)
+			n.ui.dom[0].style.border = this.normal_border_style
 	}
 
-	this.selectedNodes = ns;
+	this.selectedNodes = ns
 
 	var co = cp.offset();
 	var w = cp.width();
@@ -852,7 +861,7 @@ Application.prototype.onMouseMoved = function(e)
 	this.selection_last[1] = e.pageY;
 
 	this.updateCanvas(true);
-};
+}
 
 Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 	var d = {};
@@ -928,78 +937,91 @@ Application.prototype.onCut = function(e) {
 	}
 }
 
-Application.prototype.paste = function(doc, offsetX, offsetY) {
+Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 	this.undoManager.begin('Paste')
 
 	var ag = E2.core.active_graph
 	var createdNodes = []
 	var createdConnections = []
-	var nodeUidLookup = {}
-	var node
+
+	function mapSlotIds(sids, uidMap) {
+		var nsids = {}
+		Object.keys(sids).map(function(oldUid) {
+			nsids[uidMap[oldUid]] = sids[oldUid]
+		})
+		return nsids
+	}
+
+	function remapGraph(g, graphNode) {
+		var uidMap = {}
+		var graph = _.clone(g)
+
+		graph.uid = E2.uid()
+
+		graph.nodes.map(function(node) {
+			var newUid = E2.core.get_uid()
+			uidMap[node.uid] = newUid
+			node.uid = newUid
+
+			if (node.plugin === 'graph' || node.plugin === 'loop')
+				node.graph = remapGraph(node.graph, node)
+		})
+
+		if (graphNode) {
+			var s = graphNode.state
+
+			if (s.input_sids)
+				s.input_sids = mapSlotIds(s.input_sids, uidMap)
+
+			if (s.output_sids)
+				s.output_sids = mapSlotIds(s.output_sids, uidMap)
+		}
+
+		graph.conns.map(function(conn) {
+			conn.src_nuid = uidMap[conn.src_nuid]
+			conn.dst_nuid = uidMap[conn.dst_nuid]
+
+			if (!conn.uid)
+				conn.uid = E2.uid()
+		})
+
+		return graph
+	}
+
+	// remap all UID's inside the pasted doc so they are unique in the graph tree.
+	var doc = remapGraph(srcDoc)
 
 	for(var i = 0, len = doc.nodes.length; i < len; i++) {
 		var docNode = doc.nodes[i]
-		var newUid = E2.core.get_uid()
-
 		docNode.x = Math.floor((docNode.x - doc.x1) + offsetX)
 		docNode.y = Math.floor((docNode.y - doc.y1) + offsetY)
 
-		node = new Node()
-		if (!node.deserialise(ag.uid, docNode))
-			continue
+		this.graphApi.addNode(ag, Node.hydrate(ag.uid, docNode))
 
-		nodeUidLookup[docNode.uid] = newUid
-		node.uid = newUid
-
-		this.graphApi.addNode(ag, node)
-
-		createdNodes.push(node)
+		createdNodes.push(ag.findNodeByUid(docNode.uid))
 	}
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
-		var docConnection = doc.conns[i]
-		var suid = nodeUidLookup[docConnection.src_nuid]
-		var duid = nodeUidLookup[docConnection.dst_nuid]
-
-		if (suid === undefined || duid === undefined) {
+		var dc = doc.conns[i]
+		if (dc.src_nuid === undefined || dc.dst_nuid === undefined) {
 			// not a valid connection, clear it and skip it
-			if (duid !== undefined) {
-				for(var ni = 0, len2 = createdNodes.length; ni < len2; ni++) {
-					var destNode = createdNodes[ni]
-					if (destNode.uid !== duid)
-						continue;
+			if (dc.dst_nuid !== undefined) {
+				var destNode = ag.findNodeByUid(dc.dst_nuid)
 
-					var slots = docConnection.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
-					var slot = slots[docConnection.dst_slot]
-
-					slot.is_connected = false;
-					slot.connected = false;
-					destNode.inputs_changed = true;
-
-					break;
-				}
+				var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
+				var slot = slots[dc.dst_slot]
+				
+				slot.is_connected = false
+				slot.connected = false
+				destNode.inputs_changed = true
 			}
 
 			continue;
 		}
 
-		var c = new Connection()
-		c.deserialise(docConnection)
-		c.src_node = nodeUidLookup[docConnection.src_nuid]
-		c.dst_node = nodeUidLookup[docConnection.dst_nuid]
+		this.graphApi.connect(ag, Connection.hydrate(E2.core.active_graph, dc))
 
-		this.graphApi.connect(ag, c)
-
-		createdConnections.push(c)
-	}
-
-	for(i = 0, len = createdNodes.length; i < len; i++) {
-		node = createdNodes[i]
-
-		node.initialise()
-
-		if (node.plugin.reset)
-			node.plugin.reset()
+		createdConnections.push(ag.findConnectionByUid(dc.uid))
 	}
 
 	this.undoManager.end()
@@ -1028,8 +1050,10 @@ Application.prototype.onPaste = function() {
 }
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
-	node.ui.dom[0].style.border = this.selection_border_style
-	node.ui.selected = true
+	if (node.ui) {
+		node.ui.dom[0].style.border = this.selection_border_style
+		node.ui.selected = true
+	}
 
 	if (addToSelection !== false)
 		this.selectedNodes.push(node)
@@ -1043,7 +1067,8 @@ Application.prototype.deselectNode = function(node) {
 }
 
 Application.prototype.markConnectionAsSelected = function(conn) {
-	conn.ui.selected = true
+	if (conn.ui)
+		conn.ui.selected = true
 	this.selectedConnections.push(conn)
 }
 
@@ -1058,29 +1083,46 @@ Application.prototype.selectAll = function() {
 	this.updateCanvas(true)
 };
 
+/**
+ * Calculate real area left for canvas
+ * @return {Object} Canvas area
+ */
+Application.prototype.calculateCanvasArea = function() {
+	// 
+	var width = $(window).width() -
+		$('#left-nav').outerWidth(true) - 
+		$('#mid-pane').outerWidth(true) - 
+		$('.mid-pane-handle').outerWidth(true) - 
+		$('.left-pane-handle').outerWidth(true);
+
+	var height = $(window).height() -
+		$('.menu-bar').outerHeight(true);
+
+	return {
+		width: width,
+		height: height
+	};
+}
+
 Application.prototype.onWindowResize = function() {
-	if (E2.app.player.core.renderer.fullscreen)
+
+	if (E2.app.player.core.renderer.fullscreen) {
 		return;
-
-	var glc = E2.dom.webgl_canvas[0];
-	var canvases = $('#canvases');
-	var width = canvases[0].clientWidth;
-	var height = canvases[0].clientHeight
-
-	if (glc.width !== width || glc.height !== height) {
-		glc.width = width;
-		glc.height = height;
-
-		E2.dom.webgl_canvas.css('width', width);
-		E2.dom.webgl_canvas.css('height', height);
-		E2.dom.canvas_parent.css('width', width);
-		E2.dom.canvas_parent.css('height', height);
-		E2.dom.canvas[0].width = width;
-		E2.dom.canvas[0].height = height;
-		E2.dom.canvas.css('width', width);
-		E2.dom.canvas.css('height', height);
-		E2.app.player.core.renderer.update_viewport();
 	}
+
+	var canvasArea = this.calculateCanvasArea();
+	var width = canvasArea.width;
+	var height = canvasArea.height;
+
+	// Set noodles and DOM element container size
+	E2.dom.canvas_parent.css('width', width);
+	E2.dom.canvas_parent.css('height', height);
+
+	// Set noodles canvas size
+	E2.dom.canvas[0].width = width;
+	E2.dom.canvas[0].height = height;
+	E2.dom.canvas.css('width', width);
+	E2.dom.canvas.css('height', height);
 
 	// Update preset list height so it scrolls correctly
 	$('.preset-list-container').height(
@@ -1088,6 +1130,9 @@ Application.prototype.onWindowResize = function() {
 		$('#left-nav .nav-tabs').outerHeight(true) -
 		$('#left-nav .tab-content .searchbox').outerHeight(true)
 	);
+
+	// Set WebGL viewport size
+	E2.app.player.core.renderer.update_viewport();
 
 	this.updateCanvas(true)
 
@@ -1252,14 +1297,6 @@ Application.prototype.onKeyDown = function(e) {
 		}
 		else if(e.keyCode === 76) // CTRL+l
 		{
-			this.collapse_log = !this.collapse_log;
-			E2.dom.dbg.toggle(!this.collapse_log);
-
-			if(!this.collapse_log)
-				msg(null); // Update scroll position.
-
-			this.onWindowResize();
-			e.preventDefault();
 			return;
 		}
 
@@ -1337,26 +1374,41 @@ Application.prototype.onStopClicked = function() {
 }
 
 Application.prototype.onOpenClicked = function() {
+	var that = this
+
 	FileSelectControl
 		.createGraphSelector(null, 'Open', function(path) {
 			history.pushState({
-				graph: {
-					path: path
-				}
+				graph: { path: path }
 			}, '', path + '/edit')
 
+			that.path = getChannelFromPath(window.location.pathname)
+
 			E2.app.midPane.closeAll()
+
 			E2.app.loadGraph('/data/graph'+path+'.json')
 		})
 }
 
-Application.prototype.loadGraph = function(graphPath)
-{
-	E2.app.onStopClicked();
-	E2.app.player.on_update();
-	E2.dom.filename_input.val(graphPath);
-	E2.app.player.load_from_url(graphPath);
-};
+Application.prototype.loadGraph = function(graphPath, cb) {
+	var that = this
+
+	E2.app.onStopClicked()
+	E2.app.player.on_update()
+
+	E2.app.player.load_from_url(graphPath, function() {
+		that.setupEditorChannel().then(function() {
+			E2.core.rebuild_structure_tree()
+			E2.app.onGraphSelected(E2.core.active_graph)
+
+			E2.app.player.play() // autoplay
+			E2.app.changeControlState()
+
+			if (cb)
+				cb()
+		})
+	})
+}
 
 Application.prototype.onSaveAsPresetClicked = function() {
 	this.openPresetSaveDialog()
@@ -1423,12 +1475,12 @@ Application.prototype.openPresetSaveDialog = function(serializedGraph) {
 	})
 };
 
-Application.prototype.onSaveClicked = function(cb)
+Application.prototype.onSaveACopyClicked = function(cb)
 {
-	this.openSaveDialog();
+	this.openSaveACopyDialog();
 }
 
-Application.prototype.openSaveDialog = function(cb)
+Application.prototype.openSaveACopyDialog = function(cb)
 {
 	var that = this
 
@@ -1440,7 +1492,6 @@ Application.prototype.openSaveDialog = function(cb)
 	E2.dom.load_spinner.show();
 
 	$.get(URL_GRAPHS, function(files) {
-		var wh = window.location.hash;
 		var fcs = new FileSelectControl()
 		.frame('save-frame')
 		.template('graph')
@@ -1461,19 +1512,16 @@ Application.prototype.openSaveDialog = function(cb)
 						graph: ser
 					},
 					dataType: 'json',
-					success: function(saved)
-					{
+					success: function(saved) {
 						E2.dom.load_spinner.hide();
-						history.pushState({}, '', saved.path+'/edit');
 						if (cb)
 							cb();
 					},
-					error: function(x, t, err)
-					{
-						E2.dom.load_spinner.hide();
+					error: function(x, t, err) {
+						E2.dom.load_spinner.hide()
 
 						if (x.status === 401)
-							return E2.controllers.account.openLoginModal();
+							return E2.controllers.account.openLoginModal()
 
 						if (x.responseText)
 							bootbox.alert('Save failed: ' + x.responseText);
@@ -1484,26 +1532,38 @@ Application.prototype.openSaveDialog = function(cb)
 			}
 		})
 		.files(files)
-		.selected(window.location.pathname.split('/')[2])
 		.modal();
 
 		return fcs;
 	})
 }
 
-Application.prototype.onPublishClicked = function() {
-	this.openSaveDialog(function() {
-		window.location.href = '//vizor.io/'+window.location.pathname.split('/').slice(1,3).join('/');
-	})
-}
+var growlOpen
+Application.prototype.growl = function(title, duration) {
+	var tt = $('#breadcrumb')
 
-Application.prototype.onLoadClipboardClicked = function() {
-	var that = this
-	var url = URL_GRAPHS + E2.dom.filename_input.val()
+	function close() {
+		tt.tooltip('hide')
+		tt.tooltip('destroy')
+		growlOpen = false
+	}
 
-	$.get(url, function(d) {
-		that.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0)
+	if (growlOpen)
+		close()
+
+	tt.tooltip({
+		title: title,
+		container: 'body',
+		animation: false,
+		trigger: 'manual',
+		placement: 'bottom'
 	})
+
+	growlOpen = true
+
+	tt.tooltip('show')
+
+	setTimeout(close, duration || 3000)
 }
 
 Application.prototype.onShowTooltip = function(e) {
@@ -1515,7 +1575,7 @@ Application.prototype.onShowTooltip = function(e) {
 	var $elem = $(e.currentTarget);
 	var tokens = $elem.attr('alt').split('_');
 	var core = this.player.core;
-	var node = E2.core.active_graph.nuid_lut[parseInt(tokens[0], 10)];
+	var node = E2.core.active_graph.nuid_lut[tokens[0]];
 	var txt = '';
 
 	if(tokens.length < 2) // Node?
@@ -1530,7 +1590,7 @@ Application.prototype.onShowTooltip = function(e) {
 		var slot = null;
 
 		if(tokens[1][0] === 'd')
-			slot = node.find_dynamic_slot(tokens[1][1] === 'i' ? E2.slot_type.input : E2.slot_type.output, parseInt(tokens[2], 10));
+			slot = node.findSlotByUid(tokens[2])
 		else
 			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
 
@@ -1586,6 +1646,7 @@ Application.prototype.onShowTooltip = function(e) {
 			container: 'body',
 			animation: false,
 			trigger: 'manual',
+			placement: 'bottom',
 			html: true
 		})
 		.tooltip('show');
@@ -1608,82 +1669,85 @@ Application.prototype.onHideTooltip = function() {
 		return false
 }
 
+Application.prototype.setupStoreListeners = function() {
+	function onGraphChanged() {
+		E2.app.updateCanvas(true)
+	}
 
-function onGraphChanged() {
-	E2.app.updateCanvas(true)
-}
+	function onNodeAdded(graph, node) {
+		if (graph === E2.core.active_graph) {
+			node.create_ui()
 
-function onNodeAdded(graph, node) {
-	console.log('onNodeAdded', node.plugin.id, node.plugin.isGraph)
+			if (node.ui && node.plugin.state_changed)
+				node.plugin.state_changed(node.ui.plugin_ui)
+		}
 
-	if (graph === E2.core.active_graph)
-		node.create_ui()
+		if (node.plugin.isGraph)
+			E2.core.rebuild_structure_tree()
+	}
 
-	node.patch_up(E2.core.graphs)
+	function onNodeRemoved(graph, node) {
+		E2.app.onHideTooltip()
 
-	if (node.plugin.state_changed) {
-		node.plugin.state_changed()
+		node.destroy_ui()
 
+		if (node.plugin.isGraph)
+			E2.core.rebuild_structure_tree()
+	}
+
+	function onNodeRenamed(graph, node) {
 		if (node.ui)
-			node.plugin.state_changed(node.ui.plugin_ui)
+			node.ui.dom.find('.t').text(node.title)
+		
+		if (node.plugin.isGraph)
+			node.plugin.graph.tree_node.set_title(node.title)
+
+		if (node.plugin.renamed)
+			node.plugin.renamed()
 	}
 
-	if (node.plugin.isGraph)
+	function onConnected(graph, connection) {
+		connection.patch_up()
+
+		if (graph === E2.core.active_graph) {
+			if (!connection.ui)
+				connection.create_ui()
+			connection.ui.resolve_slot_divs()
+		}
+
+		connection.signal_change(true)
+	}
+
+	function onDisconnected(graph, connection) {
+		try {
+			connection.signal_change(false)
+		} catch(e) {
+			console.error(e.stack)
+		}
+
+		connection.destroy_ui()
+	}
+
+	this.graphStore
+	.on('snapshotted', function() {
 		E2.core.rebuild_structure_tree()
-}
-
-function onNodeRemoved(graph, node) {
-	console.log('onNodeRemoved', node)
-
-	E2.app.onHideTooltip()
-
-	node.destroy_ui()
-
-	if (node.plugin.isGraph)
+		E2.app.onGraphSelected(E2.core.active_graph)
+	})
+	.on('changed', onGraphChanged.bind(this))
+	.on('nodeAdded', onNodeAdded.bind(this))
+	.on('nodeRemoved', onNodeRemoved.bind(this))
+	.on('nodeRenamed', onNodeRenamed.bind(this))
+	.on('connected', onConnected.bind(this))
+	.on('disconnected', onDisconnected.bind(this))
+	.on('reordered', function() {
 		E2.core.rebuild_structure_tree()
-}
-
-function onNodeRenamed(graph, node) {
-	console.log('onNodeRenamed', node.title)
-	if (node.ui)
-		node.ui.dom.find('.t').text(node.title)
-
-	if (node.plugin.isGraph)
-		node.plugin.graph.tree_node.set_title(node.title)
-
-	if (node.plugin.renamed)
-		node.plugin.renamed()
-}
-
-function onConnected(graph, connection) {
-	console.log('onConnected', connection)
-
-	if (graph === E2.core.active_graph) {
-		if (!connection.ui)
-			connection.create_ui()
-		connection.ui.resolve_slot_divs()
-	}
-
-	connection.signal_change(true)
-}
-
-function onDisconnected(graph, connection) {
-	console.log('onDisconnected', connection)
-
-	try {
-		connection.signal_change(false)
-	} catch(e) {
-		console.error(e.stack)
-	}
-
-	connection.destroy_ui()
+	})
 }
 
 Application.prototype.onGraphSelected = function(graph) {
 	var that = this
 
 	E2.core.active_graph.destroy_ui()
-
 	E2.core.active_graph = graph
 
 	E2.dom.canvas_parent.scrollTop(0)
@@ -1714,27 +1778,153 @@ Application.prototype.onGraphSelected = function(graph) {
 	buildBreadcrumb(E2.dom.breadcrumb, E2.core.active_graph, false)
 
 	E2.core.active_graph.create_ui()
+
+	this.peopleStore.list().map(function(person) {
+		if (person.uid === that.channel.uid)
+			return
+
+		if (person.activeGraphUid !== E2.core.active_graph.uid)
+			that.mouseCursors[person.uid].hide()
+		else
+			that.mouseCursors[person.uid].show()
+	})
+
 	E2.core.active_graph.reset()
 	E2.core.active_graph_dirty = true
+
+	E2.app.updateCanvas(true)
 }
 
-Application.prototype.setupStoreListeners = function() {
-	this.graphStore
-	.on('changed', onGraphChanged.bind(this))
-	.on('nodeAdded', onNodeAdded.bind(this))
-	.on('nodeRemoved', onNodeRemoved.bind(this))
-	.on('nodeRenamed', onNodeRenamed.bind(this))
-	.on('connected', onConnected.bind(this))
-	.on('disconnected', onDisconnected.bind(this))
-	.on('reordered', function() {
-		E2.core.rebuild_structure_tree()
+Application.prototype.setupPeopleEvents = function() {
+	var that = this
+	var cursors = this.mouseCursors = {}
+	var lastMovementTimeouts = this.lastMovementTimeouts = {}
+
+	this.peopleStore.on('removed', function(uid) {
+		if (uid === that.channel.uid)
+			return;
+
+		var $cursor = cursors[uid]
+		$cursor.remove()
+		delete cursors[uid]
 	})
+
+	this.peopleStore.on('added', function(person) {
+		if (person.uid === that.channel.uid)
+			return;
+
+		if (cursors[person.uid])
+			return;
+
+		var $cursor = $('<div>')
+		cursors[person.uid] = $cursor
+		lastMovementTimeouts[person.uid] = undefined
+
+		$cursor.addClass('remote-mouse-pointer')
+		$cursor.addClass('inactive')
+		$cursor.addClass('user-'+person.uid)
+		$cursor.css('background-color', person.color)
+		$cursor.appendTo('body')
+
+		if (person.activeGraphUid !== E2.core.active_graph.uid)
+			$cursor.hide()
+	})
+
+	this.peopleStore.on('mouseMoved', function(person) {
+		var $cursor = cursors[person.uid]
+		var cp = E2.dom.canvas_parent[0];
+		$cursor.removeClass('inactive outside')
+
+		// Update the user's cursor fade-out timeout
+		clearTimeout(lastMovementTimeouts[person.uid])
+		lastMovementTimeouts[person.uid] = setTimeout(function() {
+			$cursor.addClass('inactive')
+		}, 2000);
+
+		// Received x/y are coordinates atop the canvas.
+		var adjustedX = person.x;
+		var adjustedY = person.y;
+		var cursorIsOutsideViewportX = false;
+		var cursorIsOutsideViewportY = false;
+
+		// Calculate viewport top left and bottom right X/Y 
+		var viewPortLeftX = E2.app.scrollOffset[0];
+		var viewPortTopY = E2.app.scrollOffset[1];
+
+		var viewPortBottomY = E2.app.scrollOffset[1] + E2.app.canvas.height();
+		var viewPortRightX = E2.app.scrollOffset[0] + E2.app.canvas.width();
+
+		if(adjustedX < viewPortLeftX) { // On left of the viewport
+			adjustedX = cp.offsetLeft;
+			cursorIsOutsideViewportX = true;
+		}
+		else if(adjustedX > viewPortRightX) { // On right side of the viewport
+			adjustedX = $(window).width();
+			cursorIsOutsideViewportX = true;
+		}
+
+		if(adjustedY < viewPortTopY) { // Above viewport
+			adjustedY = cp.offsetTop;
+			cursorIsOutsideViewportY = true;
+		}
+		else if(adjustedY > viewPortBottomY) { // Below viewport
+			adjustedY = $(window).height();
+			cursorIsOutsideViewportY = true;
+		}
+
+		if(cursorIsOutsideViewportX) { // If cursor is outside viewport boundaries, blur the cursor
+			$cursor.addClass('outside')
+		}
+		else { // Otherwise, just adjust the received X position for current viewport scrolling so we can get a position relative to the canvas
+			adjustedX += cp.offsetLeft - E2.app.scrollOffset[0];
+		}
+
+		if(cursorIsOutsideViewportY) { 
+			$cursor.addClass('outside')
+		}
+		else { 
+			adjustedY += cp.offsetTop - E2.app.scrollOffset[1];
+		}
+
+		$cursor.css('left', adjustedX)
+		$cursor.css('top', adjustedY)
+
+	})
+
+	this.peopleStore.on('mouseClicked', function(uid) {
+		var $cursor = cursors[uid]
+		$cursor.addClass('clicked')
+
+		setTimeout(function() {
+			$cursor.removeClass('clicked')
+		}, 100)
+
+
+		clearTimeout(lastMovementTimeouts[uid])
+		lastMovementTimeouts[uid] = setTimeout(function() {
+			$cursor.addClass('inactive')
+		}, 2000);
+
+	})
+
+	this.peopleStore.on('activeGraphChanged', function(person) {
+		if (E2.app.channel.uid === person.uid) // it's for me
+			return E2.app.onGraphSelected(Graph.lookup(person.activeGraphUid))
+
+		var $cursor = cursors[person.uid]
+		if (person.activeGraphUid === E2.core.active_graph.uid) 
+			$cursor.show()
+		else
+			$cursor.hide()
+	})
+}
+
+Application.prototype.onForkClicked = function() {
+	this.channel.fork()
 }
 
 Application.prototype.start = function() {
 	var that = this
-
-	this.setupStoreListeners()
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 
@@ -1765,9 +1955,9 @@ Application.prototype.start = function() {
 	window.addEventListener('resize', function() {
 		// To avoid UI lag, we don't respond to window resize events directly.
 		// Instead, we set up a timer that gets superceeded for each (spurious)
-		// resize event within a 100 ms window.
+		// resize event within a 200 ms window.
 		clearTimeout(that.resize_timer)
-		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 100)
+		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 200)
 
 	})
 
@@ -1825,20 +2015,119 @@ Application.prototype.start = function() {
 
 	})
 
-	E2.dom.save.click(E2.app.onSaveClicked.bind(E2.app))
+	E2.dom.viewSourceButton.click(function() {
+		bootbox.dialog({
+			message: '<textarea class="form-control" cols=80 rows=40>'+
+				E2.core.serialise()+'</textarea>', 
+			buttons: { 'OK': function() {} }
+		})
+	})
+
+	E2.dom.saveACopy.click(E2.app.onSaveACopyClicked.bind(E2.app))
 	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
 	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
-	E2.dom.publish.click(E2.app.onPublishClicked.bind(E2.app))
+	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
 
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
 
 	this.midPane = new E2.MidPane()
+
+	E2.app.player.play() // autoplay
+	E2.app.changeControlState()
+
+	E2.app.showFirstTimeDialog()
 }
 
-E2.InitialiseEngi = function(vr_devices) {
+Application.prototype.showFirstTimeDialog = function() {
+	if (!!Cookies.get('vizor'))
+		return;
+
+	Cookies.set('vizor', { seen: 1 })
+
+	var diag = bootbox.dialog({
+		title: '<h3>First time here?</h3>',
+		message: '<h4>Check out our '+
+			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ">Youtube tutorials</a> '+
+			'or<br>'+
+			'drop by <a href="http://slack.com/">our public Slack</a> and say hello. </h4>',
+		onEscape: true,
+		html: true,
+		buttons: { Ok: function() {}}
+	})
+
+	diag.find('.modal-dialog').addClass('modal-sm')
+	diag.css({
+		top: '50%',
+		'margin-top': function () {
+			return -(diag.height() / 2);
+		}
+	});
+
+}
+
+/**
+ * Called when Core has been initialized
+ * Initializes the Editor Stores and model layer events
+ * Then starts the UI layer
+ */
+Application.prototype.onCoreReady = function(loadGraphUrl) {
+	var that = this
+
+	that.setupPeopleEvents()
+	that.setupStoreListeners()
+
+	function start() {
+		E2.app.start()
+
+		E2.app.onWindowResize()
+
+		if (E2.core.pluginManager.release_mode) {
+			window.onbeforeunload = function() {
+				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
+			}
+		}
+	}
+
+	if (loadGraphUrl)
+		E2.app.loadGraph(loadGraphUrl, start)
+	else {
+		E2.app.setupEditorChannel().then(start)
+	}
+}
+
+/**
+ * Connect to the EditorChannel for this document
+ */
+Application.prototype.setupEditorChannel = function() {
+	var dfd = when.defer()
+	var that = this
+
+	function joinChannel() {
+		if (isUserOwnedGraph(that.path))
+			return dfd.resolve()
+
+		that.channel.join(that.path, function() {
+			dfd.resolve()
+		})
+	}
+
+	if (!this.channel) {
+		this.channel = new EditorChannel()
+		this.channel.connect()
+		this.channel.on('ready', function() { 
+			that.peopleStore.initialize()
+			joinChannel()
+		})
+	} else
+		joinChannel()
+
+	return dfd.promise
+}
+
+E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');
 	E2.dom.controls = $('#controls');
@@ -1851,13 +2140,13 @@ E2.InitialiseEngi = function(vr_devices) {
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
-	E2.dom.save = $('.save-button');
+	E2.dom.forkButton = $('#fork-button');
+	E2.dom.viewSourceButton = $('#view-source');
+	E2.dom.saveACopy = $('.save-copy-button');
 	E2.dom.saveAsPreset = $('#save-as-preset');
 	E2.dom.saveSelectionAsPreset = $('#save-selection-as-preset');
-	E2.dom.publish = $('#publish');
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
-	E2.dom.load_clipboard = $('#load-clipboard');
 	E2.dom.structure = $('#structure');
 	E2.dom.info = $('#info');
 	E2.dom.info._defaultContent = E2.dom.info.html()
@@ -1900,11 +2189,9 @@ E2.InitialiseEngi = function(vr_devices) {
 	E2.treeView = E2.dom.structure.tree = new TreeView(
 		E2.dom.structure,
 		E2.core.root_graph,
-		function(graph) { // On item activation
+		function() { // On item activation
 			E2.app.clearEditState()
 			E2.app.clearSelection()
-			E2.app.onGraphSelected(graph)
-			E2.app.updateCanvas(true)
 		},
 		// on graph reorder
 		E2.app.graphApi.reorder.bind(E2.app.graphApi)
@@ -1912,19 +2199,7 @@ E2.InitialiseEngi = function(vr_devices) {
 
 	E2.app.player = player
 
-	E2.core.on('ready', function() {
-		E2.app.start()
-
-		E2.app.onWindowResize()
-		E2.app.onWindowResize()
-
-		if (E2.core.pluginManager.release_mode) {
-			window.onbeforeunload = function() {
-				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
-			}
-		}
-	})
-
+	E2.core.on('ready', E2.app.onCoreReady.bind(E2.app, loadGraphUrl))
 }
 
 if (typeof(module) !== 'undefined')

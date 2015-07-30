@@ -12,6 +12,7 @@ var Slider = E2.plugins.slider_float_generator = function(core, node) {
 	
 	this.state = { val: 0.0, min: 0.0, max: 1.0 }
 	
+	this.node = node
 	this.v_col = null
 	this.slider = null
 	this.handle = null
@@ -155,7 +156,11 @@ Slider.prototype.create_ui = function() {
 	this.slider = slider
 	this.handle = handle
 
-	return table
+	this.node.on('pluginStateChanged', this.updateUi.bind(this))
+
+	this.ui = table
+
+	return this.ui
 }
 
 Slider.prototype.update_output = function() {
@@ -188,23 +193,29 @@ Slider.prototype.update_value = function() {
 }
 
 Slider.prototype.state_changed = function(ui) {
-	console.log('state_changed', ui)
+	if(ui)
+		this.updateUi()
+}
 
-	if(ui) {
-		this.update_value(this.state.val)
+Slider.prototype.updateUi = function() {
+	if (!this.ui)
+		return
 
-		ui.find('.lo').val(this.state.min)
-		ui.find('.hi').val(this.state.max)
-		
-		var m = Math.min(this.state.min, this.state.max)
-		var p = (this.state.val - m) / Math.abs(this.state.max - this.state.min)
-		
-		if(this.state.min > this.state.max)
-			p = 1.0 - p
-		
-		this.pos = p * 60.0
-		this.handle[0].style.left = '' + this.pos + 'px'
-	}
+	var ui = this.ui
+
+	this.update_value(this.state.val)
+
+	ui.find('.lo').val(this.state.min)
+	ui.find('.hi').val(this.state.max)
+	
+	var m = Math.min(this.state.min, this.state.max)
+	var p = (this.state.val - m) / Math.abs(this.state.max - this.state.min)
+	
+	if(this.state.min > this.state.max)
+		p = 1.0 - p
+	
+	this.pos = p * 60.0
+	this.handle[0].style.left = '' + this.pos + 'px'
 }
 
 })();

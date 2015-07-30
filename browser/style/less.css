@@ -6529,12 +6529,15 @@ table {
 }
 #canvases {
   flex: 1;
+  overflow: hidden;
 }
 #canvas-parent {
   min-height: 270px;
+  overflow: hidden;
 }
 #canvas {
   background-size: 100% 100%;
+  overflow: hidden;
 }
 #load-snippet {
   min-height: 40px;
@@ -6899,6 +6902,9 @@ table {
   cursor: no-drop !important;
   pointer-events: none;
 }
+.bootbox-body h4 {
+  line-height: 2;
+}
 html,
 body {
   height: 100%;
@@ -6972,6 +6978,9 @@ body {
   /* Safari 7.0+ */
   flex-shrink: 0;
 }
+.preset-list-contained-box {
+  overflow: hidden !important;
+}
 .preset-list-container {
   overflow: hidden;
   width: 100%;
@@ -6979,7 +6988,7 @@ body {
 .preset-list-container .preset-list-content {
   width: inherit;
   height: inherit;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 #structure {
@@ -7279,4 +7288,62 @@ li.active,
 .envelope-editor .circle-selected {
   fill: #ff7f0e;
   stroke: #ff7f0e;
+}
+.remote-mouse-pointer {
+  position: absolute;
+  background-color: #fff;
+  border-radius: 7px;
+  z-index: 99;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  pointer-events: none;
+  transition: all 0.05s ease-out;
+  opacity: 0.75;
+}
+.remote-mouse-pointer.inactive {
+  opacity: 0.25;
+  transition: all 1s ease-in-out;
+}
+.remote-mouse-pointer.outside {
+  opacity: 0.5 !important;
+  width: 24px;
+  height: 24px;
+  margin-left: -12px;
+  margin-top: -12px;
+  border-radius: 16px;
+  -webkit-filter: blur(6px);
+  -moz-filter: blur(6px);
+  -o-filter: blur(6px);
+  -ms-filter: blur(6px);
+  filter: blur(6px);
+}
+.remote-mouse-pointer.clicked {
+  transform: scale(2);
+  opacity: 1.0;
+}
+.peopleList li button {
+  width: 100%;
+  display: table;
+}
+.peopleList li button.followed {
+  background-color: #557755;
+}
+.peopleList span.small {
+  font-size: 1em;
+}
+.peopleList div.peopleRow {
+  display: table-row;
+}
+.peopleList h4.username {
+  width: 300px;
+}
+.peopleList div.followers {
+  background-color: orange;
+  border-radius: 7px;
+  width: 16px;
+  height: 16px;
+  color: blue;
+  font-size: 0.8em;
+  font-weight: bold;
 }
