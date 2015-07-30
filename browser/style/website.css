@@ -40,6 +40,13 @@ h2 {
   text-align: center;
 }
 
+.frontpage-text-center {
+  text-align: center;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .lead {
   font-size: 38px;
   padding: 30px;
