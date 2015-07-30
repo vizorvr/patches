@@ -215,6 +215,13 @@ app.use(function(req, res, next)
 	next();
 });
 
+
+app.use(function(req, res, next)
+{
+	res.header('Access-Control-Allow-Origin', '*');
+	next();
+});
+
 app.use(function(req, res, next) {
 	// redirect all create urls to vizor.io 
 	if (req.hostname === 'create.vizor.io')
@@ -228,12 +235,6 @@ app.use(function(req, res, next)
 	if(req.url.indexOf('?_') > -1)
 		req.url = req.url.substring(0, req.url.indexOf('?_'));
 
-	next();
-});
-
-app.use(function(req, res, next)
-{
-	res.header('Access-Control-Allow-Origin', '*');
 	next();
 });
 
