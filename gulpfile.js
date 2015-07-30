@@ -81,7 +81,7 @@ gulp.task('js:player', ['clean:js:player'], function()
 {
 	gulp.src(paths.js.player)
 	.pipe(slash())
-	.pipe(preprocess({context: { FQDN: process.env.FQDN || 'create.vizor.io' } }))
+	.pipe(preprocess({context: { FQDN: process.env.FQDN || 'vizor.io' } }))
 	.pipe(uglify().on('error', errorHandler))
 	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))

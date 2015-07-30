@@ -1,22 +1,22 @@
-# Vizor Create
+# Vizor
 ====
 
-Vizor Create is a visual programming environment for WebGL, WebVR and other HTML5 APIs. It features live preview, data flow visualization, network communication, publishing, unlimited undo, and a catalog of presets that can be used as modular building blocks. Complex logic can be nested in subgraphs and they can be rendered directly to a specific render target, or simply used as a texture. Loops are modeled as nested graphs that are evaluated once per loop iteration.
+Vizor is a visual programming environment for WebGL, WebVR and other HTML5 APIs. It features live preview, data flow visualization, network communication, publishing, unlimited undo, and a catalog of presets that can be used as modular building blocks. Complex logic can be nested in subgraphs and they can be rendered directly to a specific render target, or simply used as a texture. Loops are modeled as nested graphs that are evaluated once per loop iteration.
 
-**Try the cloud version of Vizor Create now at [create.vizor.io](http://create.vizor.io).**
+**Try the cloud version of Vizor now at [vizor.io](http://vizor.io).**
 
-Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentation](http://create.vizor.io/help/introduction.html). [Plugin API documentation](http://create.vizor.io/help/plugin_api.html) is available, but unstable.
+Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentation](http://vizor.io/help/introduction.html). [Plugin API documentation](http://vizor.io/help/plugin_api.html) is available, but unstable.
 
 ### Installing
 
-Installing a local instance of Vizor Create requires [MongoDB](http://mongodb.org) and either [node.js](https://nodejs.org) or [io.js](https://iojs.org/). To install the required packages, issue the following commands:
+Installing a local instance of Vizor requires [MongoDB](http://mongodb.org) and either [node.js](https://nodejs.org) or [io.js](https://iojs.org/). To install the required packages, issue the following commands:
 
 ```
     $ npm install && npm install -g gulp mocha
 ```
 
 NOTE1: We strongly recommend [io.js](https://iojs.org/en/index.html) for its JavaScript ES6 features. 
-NOTE2: Currently using Web Sockets or OSC requires running Vizor Create locally.
+NOTE2: Currently using Web Sockets or OSC requires running Vizor locally.
 
 ### Building
 
@@ -46,7 +46,7 @@ We welcome your contributions. Please create and work in a fork, submitting a pu
 
 # A note on plugins
 
-Vizor Create features hundreds of plugins, including ways to obtain or create data:
+Vizor features hundreds of plugins, including ways to obtain or create data:
 
 * Cameras: Perspective, orthographic and screen space. Obtain aspect radio and viewport size.
 * Input: Gamepad, VR headset, keyboard, mouse position, button state and scroll wheel.
@@ -116,7 +116,7 @@ Created sequences can be imported and exported as JSON, embeddable into any cont
 
 # License
 
-Vizor Create is released under the [MIT License](http://opensource.org/licenses/MIT)
+Vizor is released under the [MIT License](http://opensource.org/licenses/MIT)
 
 # Contact Us
 

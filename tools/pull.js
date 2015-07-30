@@ -18,11 +18,11 @@ if (argv._.length < 1) {
 
 			pulls the 'owner/graph-name' from the remote to local
 			- remote can be full url to the editor, 'user/graph', ...
-			- remote defaults to create.vizor.io
+			- remote defaults to vizor.io
 
 			$ pull fthr/tunnel
 
-			pulls fthr/tunnel from create.vizor.io to local username/tunnel
+			pulls fthr/tunnel from vizor.io to local username/tunnel
 	`)
 
 	process.exit(1)
@@ -35,7 +35,7 @@ var deets = {
 }
 
 var parsed = urlParse(argv._[0])
-var hn = (parsed.hostname || 'create.vizor.io') 
+var hn = (parsed.hostname || 'vizor.io') 
 	+ ':' + (parsed.port || 80)
 
 var userAndGraph = parsed.path
