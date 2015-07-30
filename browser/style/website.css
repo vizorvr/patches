@@ -60,7 +60,7 @@ h2 {
   font-size: 38px;
   padding: 30px;
   padding-top: 50px;
-  padding-bottom: 60px;
+  padding-bottom: 74px;
 }
 
 h2 a {
@@ -69,9 +69,14 @@ h2 a {
   border-radius: 15px;
   font-weight: bold;
   text-decoration: none;
-  background-color: #571E9E;
+  background-color: transparent;
+  border: 1px solid white;
   color: white;
-  box-shadow: 0 1px 0 0 black;
+}
+
+h2 a:hover {
+  background-color: white;
+  color: #444;  
 }
 
 .footer {
