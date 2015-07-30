@@ -32,17 +32,19 @@
 				>
 			</canvas>
 
-			<hgroup class="frontpage-text-center">
-				<img src="images/vizor-logo-med.png">
-				
-				<h2 class="lead">
-					Build compelling VR experiences right in your browser.
-				</h2>
-				
-				<h2 class="thin white">
-					<a class="" href="/edit">Get Started</a>
-				</h2>
-			</hgroup>
+			<div class="frontpage-text-center">
+				<div class="content">
+					<img src="images/vizor-logo-med.png">
+					
+					<h2 class="lead">
+						Build compelling VR experiences right in your browser.
+					</h2>
+					
+					<h2 class="thin white">
+						<a class="" href="/edit">Get Started</a>
+					</h2>
+				</div>
+			</div>
 		</div>
 
 		<footer class="footer">
@@ -63,17 +65,20 @@
 				E2.core.renderer.fullscreen = true
 	
 				setTimeout(function() {
-					var width = $window.outerHeight(true)
-					var height = $window.outerHeight(true) - footerHeight
+
+					var width = $window.width()
+					var height = $window.height() - footerHeight
 					var devicePixelRatio = window.devicePixelRatio || 1;
 					var pixelRatioAdjustedWidth = devicePixelRatio * width;
 					var pixelRatioAdjustedHeight = devicePixelRatio * height;
 
-					$stage.height(height)
-					$stage.css('height', height + 'px')
 					$canvas[0].width = pixelRatioAdjustedWidth
 					$canvas[0].height = pixelRatioAdjustedHeight
-					E2.core.renderer.onResize()
+					$stage.css('width', width + 'px')
+					$stage.css('height', height + 'px')
+
+					E2.core.renderer.update_viewport()
+
 				}, 20)
 			}
 

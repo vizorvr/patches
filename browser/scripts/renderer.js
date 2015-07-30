@@ -383,8 +383,15 @@ Renderer.prototype.update_viewport = function()
 	var height = canvasArea.height;
 
 	if(that.fullscreen) {
-		width = screen.width;
-		height = screen.height;
+		//console.log($(window).width)
+		if(E2.app && typeof E2.app.calculateCanvasArea === "function") {
+			width = screen.width;
+			height = screen.height;
+		}
+		else {
+			width = $(window).width();
+			height = $(window).height();
+		}
 	}
 
 	var devicePixelRatio = window.devicePixelRatio || 1;
