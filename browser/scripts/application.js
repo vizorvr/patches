@@ -2052,7 +2052,7 @@ Application.prototype.showFirstTimeDialog = function() {
 		message: '<h4>Check out our '+
 			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ">Youtube tutorials</a> '+
 			'or<br>'+
-			'drop by <a href="http://slack.com/">our public Slack</a> and say hello. </h4>',
+			'drop by <a href="http://twitter.com/Vizor_VR">our Twitter</a> and say hello. </h4>',
 		onEscape: true,
 		html: true,
 		buttons: { Ok: function() {}}
