@@ -216,10 +216,10 @@ app.use(function(req, res, next)
 });
 
 
-app.use(function(req, res, next)
-{
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Headers', 'options, content-type, cache-control, accept');
+app.use(function(req, res, next) {
+	res.header('Access-Control-Allow-Origin', '*')
+	if (req.headers['access-control-request-headers'])
+		res.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers'])
 	next();
 });
 
