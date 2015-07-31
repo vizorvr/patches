@@ -2050,9 +2050,9 @@ Application.prototype.showFirstTimeDialog = function() {
 	var diag = bootbox.dialog({
 		title: '<h3>First time here?</h3>',
 		message: '<h4>Check out our '+
-			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ">Youtube tutorials</a> '+
+			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank">Youtube tutorials</a> '+
 			'or<br>'+
-			'drop by <a href="http://twitter.com/Vizor_VR">our Twitter</a> and say hello. </h4>',
+			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>',
 		onEscape: true,
 		html: true,
 		buttons: { Ok: function() {}}
