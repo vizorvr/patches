@@ -1165,13 +1165,7 @@ Application.prototype.toggleLeftPane = function()
 Application.prototype.onKeyDown = function(e) {
 	var that = this
 
-	function is_text_input_in_focus() {
-		var rx = /INPUT|SELECT|TEXTAREA/i;
-		var is= (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
-		return is
-	}
-
-	if (is_text_input_in_focus())
+	if (E2.util.isTextInputInFocus(e))
 		return;
 
 	if (!this._noodlesOn && e.keyCode !== 9)
