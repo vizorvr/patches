@@ -31,7 +31,7 @@ body {
   position: relative;
   margin: 0 auto;
   max-width: 100%;
-  padding: 100px 0 0;
+  padding: 100px 0 100px 0;
   position: relative;
   width: 700px;
 }
@@ -64,7 +64,7 @@ h2 {
   font-size: 38px;
   padding: 30px;
   padding-top: 50px;
-  padding-bottom: 74px;
+  padding-bottom: 114px;
   max-width: 640px;
   margin: 0 auto;
   font-weight: normal;
@@ -211,5 +211,26 @@ h2 a:hover {
     h2 a { font-size: 32px; }
     .footer { font-size: 26px; }
     .footer-text { padding-top: 20px; }
+
+}
+
+/* Desktop */
+@media (max-width: 1366px) {
+
+    #logo { width: 90px; }
+    .lead { max-width: 500px; font-size: 30px; padding: 25px 0 70px 0; }
+    h2 a { font-size: 24px; padding: 8px 50px 12px 50px; }
+    .footer { height: 76px; font-size: 24px; }
+    .footer-text { padding-top: 22px; }
+
+}
+
+@media (max-width: 640px) {
+
+    #logo { width: 90px; }
+    .lead { max-width: 500px; font-size: 20px; padding: 25px 40px 30px 40px; }
+    h2 a { font-size: 20px; padding: 8px 50px 12px 50px; }
+    .footer { height: 76px; font-size: 18px; }
+    .footer-text { padding: 16px; }
 
 }
