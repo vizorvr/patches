@@ -36,15 +36,27 @@ Texture.prototype.load = function(src, core)
 	
 	img.onerror = function(self, src, c) { return function()
 	{
-		var dt = c.renderer.default_tex;
 
-		msg('ERROR: Failed to load texture \'' + src + '\'', 'Renderer');
-		c.asset_tracker.signal_failed();
+		var fqdn = '/* @echo FQDN */'; // Fill in FQDN (fully qualified domain name) from gulpfile for the player.
+		// gulp-preprocess replaces above with the string 'undefined' if gulpfile didn't provide the FQDN for some reason.
+		// Inside the editor, the string replace is not evaluated so we need to check against the preprocessing string as well.
+		if(fqdn === 'undefined' || fqdn === '/* @echo FQDN */') fqdn = 'vizor.io'; // defaulting to vizor.io
 
-		self.drop();
-		self.texture = dt.texture;
-		self.width = dt.width;
-		self.height = dt.height;
+		// Try loading with FQDN once, if it fails the texture doesn't exist
+		if(src.indexOf(fqdn) === -1) {
+			msg('WARNING: Failed to load texture "' + src + '", trying "' + fqdn+src + '"', 'Renderer');
+			self.load('//'+fqdn+src, core);
+		}
+		else {
+			var dt = c.renderer.default_tex;
+			msg('ERROR: Failed to load texture "' + src + '" and "' + fqdn+src + '", tried both.', 'Renderer');
+			c.asset_tracker.signal_failed();
+			self.drop();
+			self.texture = dt.texture;
+			self.width = dt.width;
+			self.height = dt.height;
+		}
+
 	}}(this, src, core);
 	
 	this.complete = false;
@@ -148,7 +160,7 @@ TextureCache.prototype.get = function(url)
 	}
 	
 	var t = new Texture(this.core.renderer);
-	
+
 	msg('INFO: Fetching texture \'' + url + '\'.');
 	
 	t.load(url, this.core);
