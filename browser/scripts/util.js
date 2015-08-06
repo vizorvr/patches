@@ -148,7 +148,7 @@ function ExpandableTextfield(node, tf, def_width)
 		self.node.geometry_updated();
 	};
 	
-	var handler = function(self) { return function(e)
+	var handler = function(self) { return function()
 	{
 		self.update();
 	}}(this);
@@ -169,4 +169,12 @@ function load_script(url, onload, onerror) {
 	script.onerror = onerror;
 	
 	document.getElementsByTagName('head')[0].appendChild(script);	
+}
+
+E2.util = {
+	isTextInputInFocus: function isTextInputInFocus(e) {
+		var rx = /INPUT|SELECT|TEXTAREA/i;
+		var is= (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
+		return is
+	}
 }
