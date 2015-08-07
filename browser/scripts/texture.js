@@ -38,9 +38,7 @@ Texture.prototype.load = function(src, core)
 	{
 
 		var fqdn = '/* @echo FQDN */'; // Fill in FQDN (fully qualified domain name) from gulpfile for the player.
-		// gulp-preprocess replaces above with the string 'undefined' if gulpfile didn't provide the FQDN for some reason.
-		// Inside the editor, the string replace is not evaluated so we need to check against the preprocessing string as well.
-		if(fqdn === 'undefined' || fqdn === '/* @echo FQDN */') fqdn = 'vizor.io'; // defaulting to vizor.io
+		if(fqdn === 'undefined' || fqdn.indexOf('@echo') > -1) fqdn = 'vizor.io'; // default to vizor.io
 
 		// Try loading with FQDN once, if it fails the texture doesn't exist
 		if(src.indexOf(fqdn) === -1) {
@@ -61,7 +59,7 @@ Texture.prototype.load = function(src, core)
 	
 	this.complete = false;
 	core.asset_tracker.signal_started();
-    img.crossOrigin = "Anonymous";
+	img.crossOrigin = "Anonymous";
 	img.src = src;
 };
 
