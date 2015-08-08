@@ -1106,7 +1106,7 @@ Application.prototype.calculateCanvasArea = function() {
 
 Application.prototype.onWindowResize = function() {
 
-	if (E2.app.player.core.renderer.fullscreen) {
+	if (this.is_fullscreen) {
 		return;
 	}
 
@@ -1130,9 +1130,6 @@ Application.prototype.onWindowResize = function() {
 		$('#left-nav .nav-tabs').outerHeight(true) -
 		$('#left-nav .tab-content .searchbox').outerHeight(true)
 	);
-
-	// Set WebGL viewport size
-	E2.app.player.core.renderer.update_viewport();
 
 	this.updateCanvas(true)
 
@@ -1272,7 +1269,6 @@ Application.prototype.onKeyDown = function(e) {
 	else if(e.keyCode === 70) // f
 	{
 		this.is_fullscreen = !this.is_fullscreen;
-		this.player.core.renderer.set_fullscreen(this.is_fullscreen);
 		e.preventDefault();
 	} else if (e.keyCode === 81 || e.keyCode === 191) { // q or / to focus preset search
 		$('#presetSearch').focus()
@@ -1605,28 +1601,8 @@ Application.prototype.onShowTooltip = function(e) {
 
 			if(slot.def === null)
 				txt += 'Nothing';
-			else if(slot.def === this.player.core.renderer.matrix_identity)
-				txt += 'Identity';
-			else if(slot.def === this.player.core.renderer.material_default)
-				txt += 'Default material';
-			else if(slot.def === this.player.core.renderer.light_default)
-				txt += 'Default light';
-			else if(slot.def === this.player.core.renderer.camera_screenspace)
-				txt += 'Screenspace camera';
 			else
-			{
 				var cn = slot.def.constructor.name;
-
-				if(cn === 'Texture')
-				{
-					txt += 'Texture';
-
-					if(slot.def.image && slot.def.image.src)
-						txt += ' (' + slot.def.image.src + ')';
-				}
-				else
-					txt += JSON.stringify(slot.def);
-			}
 		}
 
 		txt += '<br /><br />';
@@ -1969,7 +1945,8 @@ Application.prototype.start = function() {
 	})
 
 	$('button#fullscreen').click(function() {
-		E2.core.renderer.set_fullscreen(true);
+		E2.app.dispatcher.dispatch({ actionType: 'uiFullscreened' })
+		E2.app.is_fullscreen = true
 	});
 
 	$('button#help').click(function() {

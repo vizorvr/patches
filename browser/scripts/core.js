@@ -129,7 +129,6 @@ function Core(vr_devices) {
 	this._listeners = {};
 	
 	this.asset_tracker = new AssetTracker(this);
-	this.renderer = new Renderer(vr_devices, '#webgl-canvas', this);
 
 	this.active_graph_dirty = true;
 
@@ -176,9 +175,7 @@ Core.prototype.update = function(abs_t, delta_t)
 	this.abs_t = abs_t;
 	this.delta_t = delta_t;
 	
-	this.renderer.begin_frame();
 	this.root_graph.update(delta_t);
-	this.renderer.end_frame();
 			
 	var dirty = this.active_graph_dirty;
 			
