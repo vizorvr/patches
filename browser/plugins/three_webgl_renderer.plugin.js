@@ -70,6 +70,7 @@
 			this.renderer = new THREE.WebGLRenderer({
 				canvas: this.domElement
 			})
+			this.renderer.setPixelRatio(window.devicePixelRatio)
 		}
 	}
 
