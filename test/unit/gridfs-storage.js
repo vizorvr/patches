@@ -107,7 +107,7 @@ describe('GridFsStorage', function()
 		stream.on("data", function (chunk) {
 			buffers.push(chunk);
 		})
-		stream.on("end", function (end) {
+		stream.on("end", function () {
 			var buffer = Buffer.concat(buffers);
 			var bufferLength = buffer.length;
 			assert.equal(bufferLength, 1001);

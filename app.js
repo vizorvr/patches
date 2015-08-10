@@ -247,9 +247,9 @@ app.get(/^\/data\/.*/, function(req, res, next)
 			return res.status(304).send();
 
 
-		if (req.headers['range']) {
+		if (req.headers.range) {
 			// stream partial file range
-			var parts = req.headers['range'].replace(/bytes=/, "").split("-");
+			var parts = req.headers.range.replace(/bytes=/, "").split("-");
 			var partialstart = parts[0];
 			var partialend = parts[1];
 
@@ -315,7 +315,7 @@ app.use(function(req, res, next)
 
 // static files
 app.use(express.static(path.join(__dirname, 'browser'), { maxAge: 0 }));
-app.use('/node_modules', express['static'](path.join(__dirname, 'node_modules'), { maxAge: 0 }))
+app.use('/node_modules', express.static(path.join(__dirname, 'node_modules'), { maxAge: 0 }))
 
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
@@ -406,7 +406,7 @@ function getController(req, res, next)
 {
 	req.controller = controllers[req.params.model];
 	next();
-};
+}
 
 function requireController(req, res, next) {
 	req.controller = controllers[req.params.model];
@@ -416,7 +416,7 @@ function requireController(req, res, next) {
 		return next(e);
 	}
 	next();
-};
+}
 
 // upload
 app.post('/upload/:model',
@@ -468,15 +468,13 @@ app.get(['/editor', '/edit'], graphController.edit.bind(graphController));
 // GET /fthr/dunes-world/edit -- EDITOR
 app.get('/:username/:graph/edit', function(req, res, next)
 {
-	res.redirect('/'+req.params.username+'/'
-		+req.params.graph)
+	res.redirect('/'+req.params.username+'/'+req.params.graph)
 });
 
 // GET /fthr/dunes-world.json
 app.get('/:username/:graph.json', function(req, res, next)
 {
-	req.params.path = '/'+req.params.username+'/'
-		+req.params.graph.replace(/\.json$/g, '');
+	req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
 	console.log('load', req.params.path)
 	graphController.load(req, res, next);
 });
@@ -491,8 +489,7 @@ app.get('/:username/:graph', function(req, res, next)
 // GET /fthr/dunes-world/graph.json
 app.get('/:username/:graph/graph.json', function(req, res, next)
 {
-	req.params.path = '/'+req.params.username+'/'
-		+req.params.graph.replace(/\.json$/g, '');
+	req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
 
 	graphController.stream(req, res, next);
 });
