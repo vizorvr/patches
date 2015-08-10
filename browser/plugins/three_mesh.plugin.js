@@ -21,6 +21,9 @@
 		this.geometry = new THREE.BoxGeometry(1, 1, 1)
 		this.material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
 		this.mesh = new THREE.Mesh(this.geometry, this.material)
+
+		// back reference for object picking
+		this.mesh.backReference = this
 	}
 
 	ThreeMeshPlugin.prototype.update_input = function(slot, data) {
