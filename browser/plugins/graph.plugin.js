@@ -17,7 +17,7 @@ var GraphPlugin = E2.plugins.graph = function(core) {
 		always_update: true, 
 		rt_width: 512, 
 		rt_height: 512,
-		rt_filter: core.renderer.context.LINEAR,
+		// rt_filter: core.renderer.context.LINEAR,
 		input_sids: {}, 
 		output_sids: {}
 	};

@@ -123,7 +123,8 @@ function Core(vr_devices) {
 		TEXT: { id: 15, name: 'Text' },
 		VIDEO: { id: 16, name: 'Video' },
 		ARRAY: { id: 17, name: 'Array' },
-		OBJECT: { id: 18, name: 'Object' }
+		OBJECT: { id: 18, name: 'Object' },
+		GEOMETRY: { id: 19, name: 'Geometry' }
 	};
 
 	this._listeners = {};

@@ -25,6 +25,8 @@
 
 	"Emitters/Player/Load graph": "load_graph",
 
+	"Emitters/THREE/WebGLRenderer": "three_webgl_renderer",
+
 	"Generators/Cameras/View/Aspect ratio": "aspect_ratio_generator",
 	"Generators/Cameras/View/Viewport height": "viewport_height_generator",
 	"Generators/Cameras/View/Viewport width": "viewport_width_generator",
@@ -262,6 +264,11 @@
 	"Modulators/Video/Current time": "video_get_current_time_modulator",
 	"Modulators/VR/Camera": "vr_camera_modulator",
 	
+	"Modulators/THREE/Scene": "three_scene",
+	"Modulators/THREE/Mesh": "three_mesh",
+	"Modulators/THREE/BasicMaterial": "three_material",
+	"Modulators/THREE/PerspectiveCamera": "three_perspective_camera",
+
 	"State/Register read": "register_local_read",
 	"State/Register write": "register_local_write",
 	
