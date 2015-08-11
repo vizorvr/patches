@@ -99,9 +99,7 @@ AssetTracker.prototype.signal_update = function()
 		l[i]();
 };
 
-function Core(vr_devices) {
-	var that = this;
-
+function Core() {
 	E2.core = this
 	
 	E2.dt = this.datatypes = {
@@ -124,7 +122,12 @@ function Core(vr_devices) {
 		VIDEO: { id: 16, name: 'Video' },
 		ARRAY: { id: 17, name: 'Array' },
 		OBJECT: { id: 18, name: 'Object' },
-		GEOMETRY: { id: 19, name: 'Geometry' }
+
+		GEOMETRY: { id: 19, name: 'Geometry' },
+		QUATERNION: { id: 20, name: 'Quaternion' },
+		OBJECT3D: { id: 21, name: 'Object3D' },
+		
+		VECTOR4: { id: 22, name: 'Vector 4' },
 	};
 
 	this._listeners = {};
@@ -243,31 +246,24 @@ Core.prototype.get_default_value = function(dt)
 	else if(dt === dts.COLOR)
 		return vec4.createFrom(1, 1, 1, 1);
 	else if(dt === dts.MATRIX) {
-		var m = mat4.create();
-
-		mat4.identity(m);
-		return m;
-	}
-	else if (dt === dts.TEXTURE)
-		return this.renderer.default_tex;
+		return new THREE.Matrix4()
+	} else if (dt === dts.TEXTURE)
+		return new THREE.Texture()
 	else if(dt === dts.VECTOR)
-		return vec3.createFrom(0.0, 0.0, 0.0);
+		return new THREE.Vector3(0, 0, 0) // vec3.createFrom(0.0, 0.0, 0.0);
 	else if(dt === dts.CAMERA)
-		return new Camera(this.renderer.context);
+		return new THREE.PerspectiveCamera()
 	else if(dt === dts.BOOL)
 		return false;
 	else if(dt === dts.MATERIAL)
-		return new Material();
+		return new THREE.Material()
 	else if(dt === dts.TEXT)
 		return '';
-	else if(dt === dts.ARRAY)
-	{
+	else if(dt === dts.ARRAY) {
 		var a = new ArrayBuffer(0);
-		
 		a.stride = a.datatype = 1; // Uint8
 		return a;
-	}
-	else if(dt === dts.OBJECT)
+	} else if(dt === dts.OBJECT)
 		return {};
 	
 	// Shaders, textures, scenes, light and delegates and ALL legally defaults to null.

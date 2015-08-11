@@ -264,6 +264,8 @@
 	"Modulators/Video/Current time": "video_get_current_time_modulator",
 	"Modulators/VR/Camera": "vr_camera_modulator",
 	
+	"Generators/THREE/OBJ Loader": "three_loader_obj",
+
 	"Modulators/THREE/Scene": "three_scene",
 	"Modulators/THREE/Mesh": "three_mesh",
 	"Modulators/THREE/BasicMaterial": "three_material",

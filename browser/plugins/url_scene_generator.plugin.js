@@ -18,12 +18,9 @@ var UrlScene = E2.plugins.url_scene_generator = function(core, node) {
 };
 UrlScene.prototype = Object.create(Plugin.prototype)
 
-UrlScene.prototype.reset = function()
-{
-};
+UrlScene.prototype.reset = function() {}
 
-UrlScene.prototype.create_ui = function()
-{
+UrlScene.prototype.create_ui = function() {
 	var inp = makeButton('Change', 'No scene selected.', 'url');
 	var that = this;
 	

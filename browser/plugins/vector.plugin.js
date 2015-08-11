@@ -13,22 +13,28 @@
 				name: 'vector',
 				dt: core.datatypes.VECTOR,
 				desc: 'The resulting vector.',
-				def: [0.0, 0.0, 0.0]
+				def: new THREE.Vector3(0,0,0)
 			}
 		]
 	}
 
+	VectorPlugin.prototype.reset = function() {
+		this.xyz = new THREE.Vector3(0,0,0)
+	}
+
 	VectorPlugin.prototype.update_input = function(slot, data) {
-		this.xyz[slot.index] = data
-	}	
+		if (slot.index === 0)
+			this.xyz.setX(data)
+		else if (slot.index === 1)
+			this.xyz.setY(data)
+		else
+			this.xyz.setZ(data)
+	}
 
 	VectorPlugin.prototype.update_output = function() {
 		return this.xyz
 	}
 
-	VectorPlugin.prototype.state_changed = function(ui) {
-		if (!ui)
-			this.xyz = [0.0, 0.0, 0.0]
-	}
+	VectorPlugin.prototype.state_changed = function() {}
 
 })()

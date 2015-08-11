@@ -25,7 +25,7 @@
 				this.material.map = data
 				break;
 			case 1: // color
-				this.material.color = { r: data[0], g: data[1], b: data[2] }
+				this.material.color = data 
 				break;
 			case 2: // wireframe
 				this.material.wireframe = data

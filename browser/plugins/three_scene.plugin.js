@@ -12,7 +12,9 @@
 		this.node = node
 
 		this.lsg = new LinkedSlotGroup(core, node, [], [])
-		this.lsg.set_dt(core.datatypes.MESH)
+		this.lsg.set_dt(core.datatypes.OBJECT3D)
+
+		var that = this
 
 		this.node.on('slotAdded', function() {
 			that.dynInputs = node.getDynamicInputSlots()
@@ -61,10 +63,15 @@
 	ThreeScenePlugin.prototype.reset = function() {
 		console.log('reset scene')
 		this.scene = new THREE.Scene()
+		window._scene = this.scene
 	}
 
 	ThreeScenePlugin.prototype.update_input = function(slot, data) {
-		this.scene.add(data)
+		if (!data)
+			return;
+
+		if (this.scene.children.indexOf(data) === -1)
+			this.scene.add(data)
 	}
 
 	ThreeScenePlugin.prototype.update_output = function() {
