@@ -9,8 +9,8 @@
 			{ name: 'radiusSegments', dt: core.datatypes.FLOAT, def: 8 },
 			{ name: 'heightSegments', dt: core.datatypes.FLOAT, def: 1 },
 			{ name: 'openEnded', dt: core.datatypes.BOOL, def: false },
-			{ name: 'thetaStart', dt: core.datatypes.FLOAT, def: 0 },
-			{ name: 'thetaLength', dt: core.datatypes.FLOAT, def: 2 * Math.PI },
+			{ name: 'thetaStart', dt: core.datatypes.FLOAT, def: 0, desc: 'Vertical starting angle' },
+			{ name: 'thetaLength', dt: core.datatypes.FLOAT, def: 2 * Math.PI, desc: 'Vertical sweep angle size' },
 		]
 
 		this.output_slots = [{

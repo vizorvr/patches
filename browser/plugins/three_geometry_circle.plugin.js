@@ -5,8 +5,8 @@
 		this.input_slots = [
 			{ name: 'radius', dt: core.datatypes.FLOAT, def: 5 },
 			{ name: 'segments', dt: core.datatypes.FLOAT, def: 8 },
-			{ name: 'thetaStart', dt: core.datatypes.FLOAT, def: 0 },
-			{ name: 'thetaLength', dt: core.datatypes.FLOAT, def: 2 * Math.PI },
+			{ name: 'thetaStart', dt: core.datatypes.FLOAT, def: 0, desc: 'Vertical starting angle' },
+			{ name: 'thetaLength', dt: core.datatypes.FLOAT, def: 2 * Math.PI, desc: 'Vertical sweep angle size' },
 		]
 
 		this.output_slots = [{

@@ -275,6 +275,9 @@
 	"Modulators/THREE/Circle Geometry": "three_geometry_circle",
 	"Modulators/THREE/Cylinder Geometry": "three_geometry_cylinder",
 
+	"Modulators/THREE/Dodecahedron Geometry": "three_geometry_dodecahedron",
+	"Modulators/THREE/Sphere Geometry": "three_geometry_sphere",
+
 	"Modulators/THREE/Basic Material": "three_material",
 	"Modulators/THREE/Shader Material": "three_material_shader",
 	"Modulators/THREE/Perspective Camera": "three_perspective_camera",

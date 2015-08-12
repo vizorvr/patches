@@ -15,7 +15,6 @@
 	}
 
 	ThreeMaterialPlugin.prototype.reset = function() {
-		console.log('reset material')
 		this.material = new THREE.MeshBasicMaterial()
 	}
 
@@ -36,8 +35,6 @@
 	ThreeMaterialPlugin.prototype.update_output = function() {
 		return this.material
 	}
-
-	ThreeMaterialPlugin.prototype.state_changed = function() {}
 
 })()
 
