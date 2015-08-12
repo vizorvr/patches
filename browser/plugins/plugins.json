@@ -272,6 +272,7 @@
 	"Modulators/THREE/Mesh": "three_mesh",
 
 	"Modulators/THREE/Box Geometry": "three_geometry_box",
+	"Modulators/THREE/Circle Geometry": "three_geometry_circle",
 	"Modulators/THREE/Cylinder Geometry": "three_geometry_cylinder",
 
 	"Modulators/THREE/Basic Material": "three_material",
