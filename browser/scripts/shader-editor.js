@@ -202,7 +202,7 @@ ShaderEditor.prototype.render = function(title, $dest) {
 		that._ace.setOption('maxLines', Math.floor(height / 16));
 	}
 
-    E2.app.player.core.renderer.on('resize', _onResize)
+    // E2.app.player.core.renderer.on('resize', _onResize)
 
     _onResize()
 

@@ -175,6 +175,7 @@
 	"Modulators/Logic/Xor": "xor_modulator",
 	"Modulators/Logic/Switch": "switch_modulator",
 	"Modulators/Logic/Array Revolver Switch": "array_switch_modulator",
+
 	"Modulators/Material/Alpha clip": "material_alpha_clip_modulator",
 	"Modulators/Material/Ambient color": "material_ambient_color_modulator",
 	"Modulators/Material/Clone": "material_clone_modulator",
@@ -185,6 +186,7 @@
 	"Modulators/Material/Shinyness": "material_shinyness_modulator",
 	"Modulators/Material/Texture": "material_texture_modulator",
 	"Modulators/Material/Z-buffer": "material_z_buffer_modulator",
+	
 	"Modulators/Math/Functions/Absolute": "absolute_modulator",
 	"Modulators/Math/Functions/Cos": "cos_modulator",
 	"Modulators/Math/Functions/Exp": "exp_modulator",
@@ -264,12 +266,17 @@
 	"Modulators/Video/Current time": "video_get_current_time_modulator",
 	"Modulators/VR/Camera": "vr_camera_modulator",
 	
-	"Generators/THREE/OBJ Loader": "three_loader_obj",
+	"Generators/THREE/OBJ loader": "three_loader_obj",
 
 	"Modulators/THREE/Scene": "three_scene",
 	"Modulators/THREE/Mesh": "three_mesh",
-	"Modulators/THREE/BasicMaterial": "three_material",
-	"Modulators/THREE/PerspectiveCamera": "three_perspective_camera",
+
+	"Modulators/THREE/Box Geometry": "three_geometry_box",
+	"Modulators/THREE/Cylinder Geometry": "three_geometry_cylinder",
+
+	"Modulators/THREE/Basic Material": "three_material",
+	"Modulators/THREE/Shader Material": "three_material_shader",
+	"Modulators/THREE/Perspective Camera": "three_perspective_camera",
 
 	"State/Register read": "register_local_read",
 	"State/Register write": "register_local_write",
