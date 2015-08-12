@@ -3,14 +3,14 @@
 		this.desc = 'THREE.js Cylinder Geometry'
 		
 		this.input_slots = [
-			{ name: 'radiusTop', dt: core.datatypes.FLOAT },
-			{ name: 'radiusBottom', dt: core.datatypes.FLOAT },
-			{ name: 'height', dt: core.datatypes.FLOAT },
-			{ name: 'radiusSegments', dt: core.datatypes.FLOAT },
-			{ name: 'heightSegments', dt: core.datatypes.FLOAT },
-			{ name: 'openEnded', dt: core.datatypes.BOOL },
-			{ name: 'thetaStart', dt: core.datatypes.FLOAT },
-			{ name: 'thetaLength', dt: core.datatypes.FLOAT },
+			{ name: 'radiusTop', dt: core.datatypes.FLOAT, def: 20 },
+			{ name: 'radiusBottom', dt: core.datatypes.FLOAT, def: 20 },
+			{ name: 'height', dt: core.datatypes.FLOAT, def: 100 },
+			{ name: 'radiusSegments', dt: core.datatypes.FLOAT, def: 8 },
+			{ name: 'heightSegments', dt: core.datatypes.FLOAT, def: 1 },
+			{ name: 'openEnded', dt: core.datatypes.BOOL, def: false },
+			{ name: 'thetaStart', dt: core.datatypes.FLOAT, def: 0 },
+			{ name: 'thetaLength', dt: core.datatypes.FLOAT, def: 2 * Math.PI },
 		]
 
 		this.output_slots = [{
@@ -20,42 +20,25 @@
 	}
 
 	ThreeCylinderGeometryPlugin.prototype.reset = function() {
-		this.radiusTop = 20
-		this.radiusBottom = 20
-		this.height = 100
-		this.radiusSegments = 8
-		this.heightSegments = 1
-		this.openEnded = false
-		this.thetaStart = 0
-		this.thetaLength = 2 * Math.PI
+		Plugin.prototype.reset.call(this)
 		this.geometry = this.createGeometry()
 	}
 
 	ThreeCylinderGeometryPlugin.prototype.createGeometry = function() {
 		return new THREE.CylinderGeometry(
-			this.radiusTop,
-			this.radiusBottom,
-			this.height,
-			Math.floor(this.radiusSegments),
-			Math.floor(this.heightSegments),
-			this.openEnded,
-			this.thetaStart,
-			this.thetaLength
+			this.inputValues.radiusTop,
+			this.inputValues.radiusBottom,
+			this.inputValues.height,
+			Math.floor(this.inputValues.radiusSegments),
+			Math.floor(this.inputValues.heightSegments),
+			this.inputValues.openEnded,
+			this.inputValues.thetaStart,
+			this.inputValues.thetaLength
 		)
 	}
 
-	ThreeCylinderGeometryPlugin.prototype.update_input = function(slot, data) {
-		switch(slot.index) {
-			case 0: this.radiusTop = data; break;
-			case 1: this.radiusBottom = data; break;
-			case 2: this.height = data; break;
-			case 3: this.radiusSegments = data; break;
-			case 4: this.heightSegments = data; break;
-			case 5: this.openEnded = data; break;
-			case 6: this.thetaStart = data; break;
-			case 7: this.thetaLength = data; break;
-		}
-
+	ThreeCylinderGeometryPlugin.prototype.update_input = function() {
+		Plugin.prototype.update_input.apply(this, arguments)
 		this.geometry = this.createGeometry()
 	}
 

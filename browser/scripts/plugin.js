@@ -20,5 +20,20 @@ Plugin.prototype.undoableSetState = function(key, newValue, oldValue) {
 	))
 }
 
+Plugin.prototype.reset = function() {
+	var that = this
+	this.inputValues = {}
+	this.input_slots.map(function(slot) {
+		var def = slot.def !== undefined ? slot.def : this.core.get_default_value(slot.dt)
+		console.log('Plugin.reset', slot.name, 'to', def)
+		that.inputValues[slot.name] = def
+	})
+}
+
+Plugin.prototype.update_input = function(slot, data) {
+	this.inputValues[slot.name] = data
+}
+
+
 if (typeof(module) !== 'undefined')
 	module.exports = Plugin
