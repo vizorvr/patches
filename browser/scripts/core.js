@@ -143,6 +143,8 @@ function Core(vr_devices) {
 
 	this.pluginManager = new PluginManager(this, '/plugins');
 
+	this.textureCache = new TextureCache()
+
 	this.pluginManager.on('ready', function() {
 		this.onPluginsLoaded()
 	}.bind(this))

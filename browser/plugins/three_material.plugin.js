@@ -3,8 +3,9 @@
 		this.desc = 'THREE.js Material'
 		
 		this.input_slots = [
+			{ name: 'texture', dt: core.datatypes.TEXTURE },
 			{ name: 'color', dt: core.datatypes.COLOR },
-			{ name: 'wireframe', dt: core.datatypes.BOOL }
+			{ name: 'wireframe', dt: core.datatypes.BOOL },
 		]
 
 		this.output_slots = [{
@@ -15,15 +16,18 @@
 
 	ThreeMaterialPlugin.prototype.reset = function() {
 		console.log('reset material')
-		this.material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+		this.material = new THREE.MeshBasicMaterial()
 	}
 
 	ThreeMaterialPlugin.prototype.update_input = function(slot, data) {
 		switch(slot.index) {
-			case 0: // color
+			case 0: // texture
+				this.material.map = data
+				break;
+			case 1: // color
 				this.material.color = { r: data[0], g: data[1], b: data[2] }
 				break;
-			case 1: // wireframe
+			case 2: // wireframe
 				this.material.wireframe = data
 				break;
 		}
