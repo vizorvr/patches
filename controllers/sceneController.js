@@ -41,16 +41,14 @@ SceneController.prototype.canWriteUpload = function(req, res, next)
 	});
 } 
 
-SceneController.prototype.upload = function(req, res, next)
-{
+SceneController.prototype.upload = function(req, res, next) {
 	var that = this;
 
 	var file = req.files.file;
 	var folder = '/scene'; 
 	var dest = folder + '/'+ fsPath.basename(file.name, fsPath.extname(file.name));
 
-	if (file.name.slice(-4) !== '.zip')
-	{
+	if (file.name.slice(-4) !== '.zip') {
 		return res.status(400)
 			.json({message: 'Please pack the Scene as a zip file'});
 	}

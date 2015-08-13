@@ -19,13 +19,7 @@
 				dt: core.datatypes.FLOAT,
 				desc: 'Background color',
 				def: null
-			},
-	/*
-			{ name: 'mesh', dt: core.datatypes.MESH, desc: 'The input mesh to be rendered.', def: null },
-			{ name: 'shader', dt: core.datatypes.SHADER, desc: 'Connect to this slot to use the supplied shader in favor of the one specified by the mesh (if any).', def: null },
-			{ name: 'camera', dt: core.datatypes.CAMERA, desc: 'Camera to use for rendering.', def: core.renderer.camera_screenspace },
-			{ name: 'transform', dt: core.datatypes.MATRIX, desc: 'Mesh transform.', def: core.renderer.matrix_identity }
-	*/
+			}
 		]
 
 		this.output_slots = []
@@ -36,8 +30,11 @@
 
 	ThreeWebGLRendererPlugin.prototype.reset = function() {
 		this.domElement = E2.dom.webgl_canvas[0]
+
 		console.log('reset', this.$el, this.domElement.clientWidth / this.domElement.clientHeight)
+
 		this.scene = new THREE.Scene()
+
 		this.camera = new THREE.PerspectiveCamera(
 			75,
 			this.domElement.clientWidth / this.domElement.clientHeight,
@@ -96,7 +93,8 @@
 			console.log('state_changed')
 			this.domElement = E2.dom.webgl_canvas[0]
 			this.renderer = new THREE.WebGLRenderer({
-				canvas: this.domElement
+				canvas: this.domElement,
+				antialias: true
 			})
 			this.renderer.setPixelRatio(window.devicePixelRatio)
 			this.setup_object_picking()

@@ -15,7 +15,6 @@
 	}
 
 	ThreeMaterialPlugin.prototype.reset = function() {
-		console.log('reset material')
 		this.material = new THREE.MeshBasicMaterial()
 	}
 
@@ -25,7 +24,7 @@
 				this.material.map = data
 				break;
 			case 1: // color
-				this.material.color = { r: data[0], g: data[1], b: data[2] }
+				this.material.color = data 
 				break;
 			case 2: // wireframe
 				this.material.wireframe = data
@@ -36,8 +35,6 @@
 	ThreeMaterialPlugin.prototype.update_output = function() {
 		return this.material
 	}
-
-	ThreeMaterialPlugin.prototype.state_changed = function() {}
 
 })()
 

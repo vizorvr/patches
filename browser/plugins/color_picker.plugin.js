@@ -10,7 +10,7 @@ var ColorPicker = E2.plugins.color_picker = function(core) {
 			name: 'color',
 			dt: core.datatypes.COLOR,
 			desc: 'The selected color.',
-			def: vec4.createFrom(1,1,1,1)
+			def: new THREE.Color(1,1,1)
 		}
 	];
 	
@@ -180,7 +180,7 @@ ColorPicker.prototype.update_state = function() {
 	this.update_value(this.c);
 };
 
-ColorPicker.prototype.update_output = function(slot) {
+ColorPicker.prototype.update_output = function() {
 	return this.color;
 };
 
@@ -196,9 +196,7 @@ ColorPicker.prototype.update_value = function(c) {
 	var rgb = this.color ? this.color : null;
 	
 	if(!rgb || rgb[0] !== nc[0] || rgb[1] !== nc[1] || rgb[2] !== nc[2]) {
-		rgb[0] = nc[0]
-		rgb[1] = nc[1]
-		rgb[2] = nc[2]
+		rgb.setRGB(nc[0], nc[1], nc[2])
 
 		this.updated = true;
 	}
@@ -311,7 +309,7 @@ ColorPicker.prototype.state_changed = function(ui)
 		this.color_drag = false;
 		this.hue_clipped = false;
 		this.color_clipped = false;
-		this.color = vec4.createFrom(1, 1, 1, 1);
+		this.color = new THREE.Color(1,1,1);
 		this.update_hue(null, null, null, null);
 	}
 };

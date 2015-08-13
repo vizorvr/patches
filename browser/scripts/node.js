@@ -407,7 +407,7 @@ Node.prototype.update_recursive = function(conns) {
 			}
 		}
 	
-		if(pl.always_update || (pl.isGraph && pl.state.always_update)) {
+		if (pl.always_update || (pl.isGraph && pl.state.always_update)) {
 			pl.update_state();
 		} else if(this.queued_update > -1) {
 			if(pl.update_state)
