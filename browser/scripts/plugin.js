@@ -24,7 +24,7 @@ Plugin.prototype.reset = function() {
 	var that = this
 	this.inputValues = {}
 	this.input_slots.map(function(slot) {
-		var def = slot.def !== undefined ? slot.def : this.core.get_default_value(slot.dt)
+		var def = slot.def !== undefined ? slot.def : that.core.get_default_value(slot.dt)
 		console.log('Plugin.reset', slot.name, 'to', def)
 		that.inputValues[slot.name] = def
 	})

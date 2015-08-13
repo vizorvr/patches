@@ -25,8 +25,6 @@
 
 	"Emitters/Player/Load graph": "load_graph",
 
-	"Emitters/THREE/WebGLRenderer": "three_webgl_renderer",
-
 	"Generators/Cameras/View/Aspect ratio": "aspect_ratio_generator",
 	"Generators/Cameras/View/Viewport height": "viewport_height_generator",
 	"Generators/Cameras/View/Viewport width": "viewport_width_generator",
@@ -266,22 +264,27 @@
 	"Modulators/Video/Current time": "video_get_current_time_modulator",
 	"Modulators/VR/Camera": "vr_camera_modulator",
 	
-	"Generators/THREE/OBJ loader": "three_loader_obj",
+	"THREE/WebGL Renderer": "three_webgl_renderer",
 
-	"Modulators/THREE/Scene": "three_scene",
-	"Modulators/THREE/Mesh": "three_mesh",
+	"THREE/Scene": "three_scene",
+	"THREE/Mesh": "three_mesh",
+	"THREE/Perspective Camera": "three_perspective_camera",
 
-	"Modulators/THREE/Box Geometry": "three_geometry_box",
-	"Modulators/THREE/Circle Geometry": "three_geometry_circle",
-	"Modulators/THREE/Cylinder Geometry": "three_geometry_cylinder",
+	"THREE/Loaders/OBJ loader": "three_loader_obj",
 
-	"Modulators/THREE/Dodecahedron Geometry": "three_geometry_dodecahedron",
-	"Modulators/THREE/Sphere Geometry": "three_geometry_sphere",
-	"Modulators/THREE/Plane Geometry": "three_geometry_plane",
+	"THREE/Geometry/Box": "three_geometry_box",
+	"THREE/Geometry/Circle": "three_geometry_circle",
+	"THREE/Geometry/Cylinder": "three_geometry_cylinder",
 
-	"Modulators/THREE/Basic Material": "three_material",
-	"Modulators/THREE/Shader Material": "three_material_shader",
-	"Modulators/THREE/Perspective Camera": "three_perspective_camera",
+	"THREE/Geometry/Dodecahedron": "three_geometry_dodecahedron",
+	"THREE/Geometry/Sphere": "three_geometry_sphere",
+	"THREE/Geometry/Plane": "three_geometry_plane",
+
+	"THREE/Geometry/Text": "three_geometry_text",
+
+	"THREE/Material/Basic": "three_material",
+	"THREE/Material/Shader": "three_material_shader",
+	"THREE/Material/Lambert": "three_material_lambert",
 
 	"State/Register read": "register_local_read",
 	"State/Register write": "register_local_write",
