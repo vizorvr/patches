@@ -60,6 +60,34 @@
 		this.renderer.render(this.scene, this.camera)
 	}
 
+	ThreeWebGLRendererPlugin.prototype.pick_object = function(e) {
+		var mouseVector = new THREE.Vector3()
+
+		var wgl_c = E2.dom.webgl_canvas[0]
+		var w = wgl_c.clientWidth
+		var h = wgl_c.clientHeight
+
+		mouseVector.x = (((e.pageX - wgl_c.offsetLeft) / w) * 2.0) - 1.0
+		mouseVector.y = ((1.0 - ((e.pageY - wgl_c.offsetTop) / h)) * 2.0) - 1.0
+		mouseVector.z = 0
+		
+		this.raycaster.setFromCamera(mouseVector, this.camera)
+		var intersects = this.raycaster.intersectObjects(this.scene.children)
+
+		for (var i = 0; i < intersects.length; i++) {
+			console.log(intersects[i])
+			if (intersects[i].object.backReference !== undefined) {
+				E2.app.clearSelection()
+				E2.app.markNodeAsSelected(intersects[i].object.backReference.parentNode)
+			}
+		}
+	}
+
+	ThreeWebGLRendererPlugin.prototype.setup_object_picking = function() {
+		$(document).click(this.pick_object.bind(this))
+		this.raycaster = new THREE.Raycaster()
+	}
+
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
 		if (!ui) {
 			console.log('state_changed')
@@ -69,6 +97,7 @@
 				antialias: true
 			})
 			this.renderer.setPixelRatio(window.devicePixelRatio)
+			this.setup_object_picking()
 		}
 	}
 

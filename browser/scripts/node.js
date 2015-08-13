@@ -58,6 +58,9 @@ Node.prototype.set_plugin = function(plugin) {
 	
 	for(var i = 0, len = plugin.output_slots.length; i < len; i++)
 		init_slot(plugin.output_slots[i], i, E2.slot_type.output);
+
+	// back reference for object picking
+	this.plugin.parentNode = this
 };
 
 Node.prototype.setOpenState = function(isOpen) {
