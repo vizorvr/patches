@@ -76,8 +76,9 @@ Graph.prototype.reset = function() {
 
 Graph.prototype.play = function() {
 	this.enum_all(function(n) {
-		if(n.plugin.play)
+		if (n.plugin.play) {
 			n.plugin.play();
+		}
 	}, null);
 }
 

@@ -100,6 +100,8 @@ AssetTracker.prototype.signal_update = function()
 };
 
 function Core() {
+	EventEmitter.apply(this, arguments)
+
 	E2.core = this
 	
 	E2.dt = this.datatypes = {
@@ -171,6 +173,8 @@ function Core() {
 	else
 		msg('NOTE: This host has no AudioContext support.');
 }
+
+Core.prototype = Object.create(EventEmitter.prototype)
 
 Core.prototype.get_uid = function() {
 	return E2.uid()
@@ -299,7 +303,11 @@ Core.prototype.deserialiseObject = function(d) {
 	this.root_graph.initialise(this.graphs);
 	
 	this.active_graph = resolve_graph(this.graphs, ''+d.active_graph); 
-	
+
+	if (E2.app.player.current_state === E2.app.player.state.PLAYING) {
+		this.active_graph.play()	
+	}
+
 	if(!this.active_graph) {
 		msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
 		this.active_graph = this.root_graph;
