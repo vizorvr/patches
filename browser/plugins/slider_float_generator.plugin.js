@@ -75,7 +75,6 @@ Slider.prototype.updateUi = function() {
 }
 
 Slider.prototype.update_output = function() {
-	console.log('slider', this.state.val, typeof(this.state.val))
 	return this.state.val
 }
 
