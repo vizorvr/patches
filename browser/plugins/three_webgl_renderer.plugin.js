@@ -31,7 +31,10 @@
 	ThreeWebGLRendererPlugin.prototype.reset = function() {
 		this.domElement = E2.dom.webgl_canvas[0]
 
-		console.log('reset', this.$el, this.domElement.clientWidth / this.domElement.clientHeight)
+		console.log('reset',
+			this.domElement.clientWidth,
+			this.domElement.clientHeight,
+			this.domElement.clientWidth / this.domElement.clientHeight)
 
 		this.scene = new THREE.Scene()
 
@@ -88,6 +91,27 @@
 		this.raycaster = new THREE.Raycaster()
 	}
 
+	ThreeWebGLRendererPlugin.prototype.play = function() {
+		this.resize()
+	}
+
+	ThreeWebGLRendererPlugin.prototype.resize = function() {
+		console.log('ThreeWebGLRendererPlugin.resize')
+
+		var wh = {
+			width: this.domElement.clientWidth,
+			height: this.domElement.clientHeight
+		}
+
+		if (typeof(E2.app.calculateCanvasArea) !== 'undefined') {
+			wh = E2.app.calculateCanvasArea()
+		}
+
+		this.renderer.setSize(wh.width, wh.height)
+		this.camera.aspect = wh.width / wh.height
+		this.camera.updateProjectionMatrix()
+	}
+
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
 		if (!ui) {
 			console.log('state_changed')
@@ -96,7 +120,11 @@
 				canvas: this.domElement,
 				antialias: true
 			})
+
 			this.renderer.setPixelRatio(window.devicePixelRatio)
+
+			E2.core.on('resize', this.resize.bind(this))
+
 			this.setup_object_picking()
 		}
 	}

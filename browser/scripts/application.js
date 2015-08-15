@@ -51,7 +51,6 @@ function Application() {
 	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
-	this.is_fullscreen = false;
 	this._noodlesOn = true
 
 	this.mousePosition = [400,200]
@@ -1088,15 +1087,21 @@ Application.prototype.selectAll = function() {
  * @return {Object} Canvas area
  */
 Application.prototype.calculateCanvasArea = function() {
-	// 
-	var width = $(window).width() -
-		$('#left-nav').outerWidth(true) - 
-		$('#mid-pane').outerWidth(true) - 
-		$('.mid-pane-handle').outerWidth(true) - 
-		$('.left-pane-handle').outerWidth(true);
+	var width, height
 
-	var height = $(window).height() -
-		$('.menu-bar').outerHeight(true);
+	if (!THREEx.FullScreen.activated()) {
+		width = $(window).width() -
+			$('#left-nav').outerWidth(true) - 
+			$('#mid-pane').outerWidth(true) - 
+			$('.mid-pane-handle').outerWidth(true) - 
+			$('.left-pane-handle').outerWidth(true);
+
+		height = $(window).height() -
+			$('.menu-bar').outerHeight(true);
+	} else {
+		width = window.innerWidth
+		height = window.innerHeight
+	}
 
 	return {
 		width: width,
@@ -1105,8 +1110,9 @@ Application.prototype.calculateCanvasArea = function() {
 }
 
 Application.prototype.onWindowResize = function() {
-
-	if (this.is_fullscreen) {
+	console.log('onWindowResize', THREEx.FullScreen.activated())
+	if (THREEx.FullScreen.activated()) {
+		E2.core.emit('resize')
 		return;
 	}
 
@@ -1131,8 +1137,9 @@ Application.prototype.onWindowResize = function() {
 		$('#left-nav .tab-content .searchbox').outerHeight(true)
 	);
 
-	this.updateCanvas(true)
+	E2.core.emit('resize')
 
+	this.updateCanvas(true)
 }
 
 Application.prototype.toggleNoodles = function() {
@@ -1158,6 +1165,27 @@ Application.prototype.toggleLeftPane = function()
 
 	this.onWindowResize();
 };
+
+Application.prototype.toggleFullscreen = function() {
+	if (!THREEx.FullScreen.activated())
+		THREEx.FullScreen.request(E2.dom.webgl_canvas[0])
+	else
+		THREEx.FullScreen.cancel()
+}
+
+Application.prototype.onFullScreenChanged = function() {
+	var $canvas = E2.dom.webgl_canvas
+
+	if (THREEx.FullScreen.activated()) {
+		$canvas.removeClass('webgl-canvas-normal')
+		$canvas.addClass('webgl-canvas-fs')
+	} else {
+		$canvas.removeClass('webgl-canvas-fs')
+		$canvas.addClass('webgl-canvas-normal')
+	}
+
+	E2.app.onWindowResize()
+}
 
 Application.prototype.onKeyDown = function(e) {
 	var that = this
@@ -1268,7 +1296,7 @@ Application.prototype.onKeyDown = function(e) {
 
 	else if(e.keyCode === 70) // f
 	{
-		this.is_fullscreen = !this.is_fullscreen;
+		this.toggleFullscreen()
 		e.preventDefault();
 	} else if (e.keyCode === 81 || e.keyCode === 191) { // q or / to focus preset search
 		$('#presetSearch').focus()
@@ -1928,13 +1956,16 @@ Application.prototype.start = function() {
 		that.clearEditState()
 	})
 
+	document.addEventListener('fullscreenchange', this.onFullScreenChanged.bind(this))
+	document.addEventListener('webkitfullscreenchange', this.onFullScreenChanged.bind(this))
+	document.addEventListener('mozfullscreenchange', this.onFullScreenChanged.bind(this))
+
 	window.addEventListener('resize', function() {
 		// To avoid UI lag, we don't respond to window resize events directly.
 		// Instead, we set up a timer that gets superceeded for each (spurious)
 		// resize event within a 200 ms window.
 		clearTimeout(that.resize_timer)
 		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 200)
-
 	})
 
 	// close bootboxes on click
@@ -1945,8 +1976,7 @@ Application.prototype.start = function() {
 	})
 
 	$('button#fullscreen').click(function() {
-		E2.app.dispatcher.dispatch({ actionType: 'uiFullscreened' })
-		E2.app.is_fullscreen = true
+		E2.app.toggleFullscreen()
 	});
 
 	$('button#help').click(function() {
