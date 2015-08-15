@@ -6788,25 +6788,8 @@ table {
   -khtml-border-bottom-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }
-.slider {
-  position: relative;
-  text-align: left;
-  border: 1px solid #888;
-}
-.slider .slider-handle {
-  position: absolute;
-  z-index: 2;
-  width: 1.4em;
-  height: 1.4em;
-  cursor: default;
-  background: #bebebe;
-}
-.slider-horizontal {
-  height: .8em;
-}
-.slider-horizontal .slider-handle {
-  top: -0.4em;
-  margin-left: -0.6em;
+.slider-value {
+  text-align: center;
 }
 .modal {
   position: absolute;

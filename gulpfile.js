@@ -18,12 +18,6 @@ paths =
 		[
 			'./browser/vendor/gl-matrix.js',
 			'./browser/scripts/util.js',
-			'./browser/scripts/texture.js',
-			'./browser/scripts/mesh.js',
-			'./browser/scripts/scene.js',
-			'./browser/scripts/material.js',
-			'./browser/scripts/renderer.js',
-			'./browser/scripts/shader.js',
 			'./browser/scripts/connection.js',
 			'./browser/scripts/event-emitter.js',
 			'./browser/scripts/graph.js',
@@ -33,6 +27,10 @@ paths =
 
 			'./browser/scripts/plugin.js',
 			'./browser/scripts/subGraphPlugin.js',
+			'./browser/scripts/threeObject3dPlugin.js',
+
+			'./browser/scripts/textureCache.js',
+
 			'./browser/scripts/plugin-manager-bundled.js',
 			'./browser/scripts/plugin-group.js',
 			'./browser/plugins/*.plugin.js',
