@@ -124,7 +124,7 @@ Player.prototype.load_from_url = function(url, cb) {
 	})
 }
 
-Player.prototype.set_parameter = function(id, value) {
+Player.prototype.setRegisterValue = function(id, value) {
 	this.core.root_graph.registers.write(id, value)
 }
 
