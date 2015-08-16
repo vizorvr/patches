@@ -37,7 +37,7 @@
 	ThreeProceduralGroundPlugin.prototype.generate_mesh = function() {
 		console.log('generate procedural mesh')
 
-		this.noise = new E2.Noise(2048, 0)
+		this.noise = new E2.Noise(2048, this.rngSeed)
 
 		var parent = this
 
