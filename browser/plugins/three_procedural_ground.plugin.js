@@ -37,7 +37,7 @@
 	ThreeProceduralGroundPlugin.prototype.generate_mesh = function() {
 		console.log('generate procedural mesh')
 
-		this.rng = new Random(Random.engines.mt19937().seed(this.rngSeed))
+		this.noise = new E2.Noise(2048, 0)
 
 		var parent = this
 
@@ -51,38 +51,42 @@
 			var i, j
 
 			var xSegments = xSize
-			var ySegments = ySize
+			var zSegments = zSize
 
-			for (j = 0; j < ySegments + 1; j++) {
+			for (j = 0; j < zSegments + 1; j++) {
 				for (i = 0 ; i < xSegments + 1; i++) {
 					var vector = new THREE.Vector3()
 
 					// plane coordinates on [-1, 1]-[1, -1]
 					var xf = (-0.5 + i * 1.0 / xSegments) * 2.0
-					var zf = (0.5 - j * 1.0 / ySegments) * 2.0
+					var zf = (0.5 - j * 1.0 / zSegments) * 2.0
 
 					// twist a square plane into a circle
 					var f = Math.abs(xf) < Math.abs(zf) ? (1 / Math.abs(zf)) : (1 / Math.abs(xf))
-					var mul = Math.sqrt(xf * f * xf * f + zf * f * zf *f)
+
+					var twistFactor = Math.min(Math.max(0, 2 - f), 1)
+					var mul = 1 + (Math.sqrt(xf * f * xf * f + zf * f * zf *f) - 1) * twistFactor
 					xf /= mul
 					zf /= mul
 
 					// y displacement
-					var m = Math.max(0, (Math.abs(xf)))
-					var n = Math.max((Math.abs(zf)))
-					var nm = m * m * n * n
+					var m = Math.abs(xf)
+					var n = Math.abs(zf)
+					var nm = Math.sqrt(m * m + n * n)
 
-					var yf = nm + (parent.rng.real(0, 1)) * parent.noiseFactor * m * n
+					nm *= nm
+
+					var yf = parent.noise.noise2D(i, j, 5, xSegments) * parent.noiseFactor * nm
 
 					// x, z displacement
-					var pushOutFactor= 1.0 + (parent.rng.real(0, 1)) * parent.noiseFactor * m * n
+					var pushOutFactor= 1.0 // + (parent.rng.real(0, 1)) * parent.noiseFactor * m * n
 					xf *= pushOutFactor
 					yf *= pushOutFactor
 					zf *= pushOutFactor
 
 					/*
 					// push outmost vertices down for an 'edge' effect
-					if (j === 0 || j === ySegments || i === 0 || i === xSegments) {
+					if (j === 0 || j === zSegments || i === 0 || i === xSegments) {
 						yf -= 0.25
 					}*/
 
@@ -96,14 +100,14 @@
 
 			var materialIndex = 0
 
-			for (j = 0; j < ySegments; j++) {
+			for (j = 0; j < zSegments; j++) {
 				for (i = 0; i < xSegments; i++) {
 					var vtxidx = j * (xSegments + 1) + i
 
-					var uva = new THREE.Vector2( i / xSegments, 1 - j / ySegments )
-					var uvb = new THREE.Vector2( i / xSegments, 1 - ( j + 1 ) / ySegments )
-					var uvc = new THREE.Vector2( ( i + 1 ) / xSegments, 1 - ( j + 1 ) / ySegments )
-					var uvd = new THREE.Vector2( ( i + 1 ) / xSegments, 1 - j / ySegments )
+					var uva = new THREE.Vector2( i / xSegments, 1 - j / zSegments )
+					var uvb = new THREE.Vector2( i / xSegments, 1 - ( j + 1 ) / zSegments )
+					var uvc = new THREE.Vector2( ( i + 1 ) / xSegments, 1 - ( j + 1 ) / zSegments )
+					var uvd = new THREE.Vector2( ( i + 1 ) / xSegments, 1 - j / zSegments )
 
 					var face = new THREE.Face3(vtxidx, vtxidx + 1, vtxidx + (xSegments + 1))
 
