@@ -5,11 +5,11 @@
 		this.desc = 'THREE.js Procedural Ground'
 
 		this.input_slots = [
-			{ name: 'x size', dt: core.datatypes.FLOAT },
-			{ name: 'y size', dt: core.datatypes.FLOAT },
-			{ name: 'z size', dt: core.datatypes.FLOAT },
-			{ name: 'seed', dt: core.datatypes.FLOAT},
-			{ name: 'noise factor', dt: core.datatypes.FLOAT}
+			{ name: 'x size', dt: core.datatypes.FLOAT, def: 40 },
+			{ name: 'y size', dt: core.datatypes.FLOAT, def: 10 },
+			{ name: 'z size', dt: core.datatypes.FLOAT, def: 40 },
+			{ name: 'seed', dt: core.datatypes.FLOAT, def: 0},
+			{ name: 'noise factor', dt: core.datatypes.FLOAT, def: 0.25}
 		].concat(this.input_slots)
 
 		this.output_slots = [{
