@@ -60,12 +60,17 @@ Slider.prototype.create_ui = function() {
 		that.undoableSetState('max', parseFloat($max.val()), that.state.max)
 	})
 
+	this.$ui = $el
+
 	this.updateUi()
 
 	return $el
 }
 
 Slider.prototype.updateUi = function() {
+	if (!this.$ui)
+		return;
+
 	this.$slider.val(this.state.val)
 	this.$display.html(this.state.val)
 	this.$min.val(this.state.min)

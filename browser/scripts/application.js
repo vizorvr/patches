@@ -1110,7 +1110,6 @@ Application.prototype.calculateCanvasArea = function() {
 }
 
 Application.prototype.onWindowResize = function() {
-	console.log('onWindowResize', THREEx.FullScreen.activated())
 	if (THREEx.FullScreen.activated()) {
 		E2.core.emit('resize')
 		return;
@@ -1167,10 +1166,14 @@ Application.prototype.toggleLeftPane = function()
 };
 
 Application.prototype.toggleFullscreen = function() {
-	if (!THREEx.FullScreen.activated())
+	console.log('E2.app.toggleFullscreen')
+	if (!THREEx.FullScreen.activated()) {
 		THREEx.FullScreen.request(E2.dom.webgl_canvas[0])
-	else
+		E2.core.emit('fullScreenChanged')
+	} else {
 		THREEx.FullScreen.cancel()
+		E2.core.emit('fullScreenChanged')
+	}
 }
 
 Application.prototype.onFullScreenChanged = function() {
