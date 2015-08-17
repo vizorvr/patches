@@ -68,7 +68,7 @@
 	}, false );
 
 	this.setFullScreen = function ( boolean ) {
-		if ( vrHMD === undefined ) return;
+		// if ( vrHMD === undefined ) return;
 		if ( isFullscreen === boolean ) return;
 
 		if ( canvas.mozRequestFullScreen ) {

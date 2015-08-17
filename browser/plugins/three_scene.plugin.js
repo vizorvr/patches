@@ -71,6 +71,7 @@
 
 		console.log('update_meshes')
 
+		this.reset()
 
 		for (mesh in this.meshes) {
 			// {id: 0, mesh: mesh}
@@ -137,4 +138,3 @@
 	}
 
 })()
-

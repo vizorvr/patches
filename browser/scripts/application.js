@@ -51,7 +51,7 @@ function Application() {
 	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
-	this._noodlesOn = true
+	this.noodlesVisible = true
 
 	this.mousePosition = [400,200]
 
@@ -1091,8 +1091,9 @@ Application.prototype.selectAll = function() {
  */
 Application.prototype.calculateCanvasArea = function() {
 	var width, height
+	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
-	if (!THREEx.FullScreen.activated()) {
+	if (!isFullscreen) {
 		width = $(window).width() -
 			$('#left-nav').outerWidth(true) - 
 			$('#mid-pane').outerWidth(true) - 
@@ -1113,7 +1114,9 @@ Application.prototype.calculateCanvasArea = function() {
 }
 
 Application.prototype.onWindowResize = function() {
-	if (THREEx.FullScreen.activated()) {
+	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+
+	if (isFullscreen) {
 		E2.core.emit('resize')
 		return;
 	}
@@ -1145,7 +1148,7 @@ Application.prototype.onWindowResize = function() {
 }
 
 Application.prototype.toggleNoodles = function() {
-	this._noodlesOn = true
+	this.noodlesVisible = !this.noodlesVisible
 	E2.dom.canvas_parent.toggle()
 }
 
@@ -1169,17 +1172,14 @@ Application.prototype.toggleLeftPane = function()
 };
 
 Application.prototype.toggleFullscreen = function() {
-	if (!THREEx.FullScreen.activated()) {
-		THREEx.FullScreen.request(E2.dom.webgl_canvas[0])
-	} else {
-		THREEx.FullScreen.cancel()
-	}
+	E2.core.emit('fullScreenChangeRequested')
 }
 
 Application.prototype.onFullScreenChanged = function() {
 	var $canvas = E2.dom.webgl_canvas
-
-	if (THREEx.FullScreen.activated()) {
+	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+	
+	if (isFullscreen) {
 		$canvas.removeClass('webgl-canvas-normal')
 		$canvas.addClass('webgl-canvas-fs')
 	} else {
@@ -1188,6 +1188,8 @@ Application.prototype.onFullScreenChanged = function() {
 	}
 
 	E2.app.onWindowResize()
+
+	E2.core.emit('fullScreenChanged')
 }
 
 Application.prototype.onKeyDown = function(e) {
@@ -1202,7 +1204,7 @@ Application.prototype.onKeyDown = function(e) {
 	if (is_text_input_in_focus())
 		return;
 
-	if (!this._noodlesOn && e.keyCode !== 9)
+	if (!this.noodlesVisible && e.keyCode !== 9)
 		return;
 
 	// arrow up || down
@@ -2090,6 +2092,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	that.setupStoreListeners()
 
 	function start() {
+		E2.dom.canvas_parent.toggle()
+		
 		E2.app.start()
 
 		E2.app.onWindowResize()

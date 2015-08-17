@@ -687,6 +687,8 @@ function WebVRManager(renderer, effect, params) {
   this.effect = effect;
   this.distorter = new CardboardDistorter(renderer);
 
+  this.activationMode = 'immersive'
+
   this.button = new WebVRButton();
   if (hideButton) {
     this.button.setVisibility(false);
@@ -696,16 +698,18 @@ function WebVRManager(renderer, effect, params) {
   this.getDeviceByType_(HMDVRDevice).then(function(hmd) {
     // Activate either VR or Immersive mode.
     if (window.WEBVR_FORCE_DISTORTION) {
-      this.activateVR_();
+      this.activationMode = 'VR';
+      this.activate();
       this.distorter.setActive(true);
     } else if (hmd) {
-      this.activateVR_();
+      this.activationMode = 'VR'
+      this.activate();
       // Only enable distortion if we are dealing using the polyfill and this is iOS.
-      if (hmd.deviceName.indexOf('webvr-polyfill') == 0 && Util.isIOS()) {
+      if (hmd.deviceName.indexOf('webvr-polyfill') === 0 && Util.isIOS()) {
         this.distorter.setActive(true);
       }
     } else {
-      this.activateImmersive_();
+      this.activate();
     }
     // Set the right mode.
     this.defaultMode = hmd ? Modes.COMPATIBLE : Modes.INCOMPATIBLE;
@@ -761,6 +765,25 @@ WebVRManager.prototype.render = function(scene, camera, timestamp) {
   }
 };
 
+WebVRManager.prototype.activate = function() {
+  if (this.activationMode === 'VR') {
+    this.activateVR_()
+  } else {
+    this.activateImmersive_()
+  }
+}
+
+WebVRManager.prototype.toggleFullScreen = function() {
+  if (this.activationMode === 'VR')
+    this.toggleVRMode()
+  else
+    this.toggleImmersive()
+}
+
+WebVRManager.prototype.toggleImmersive = function() {
+  this.enterImmersive()
+}
+
 /**
  * Makes it possible to go into VR mode.
  */
@@ -773,7 +796,6 @@ WebVRManager.prototype.activateVR_ = function() {
       this.onFullscreenChange_.bind(this));
   document.addEventListener('mozfullscreenchange',
       this.onFullscreenChange_.bind(this));
-
 
   // Create the necessary elements for wake lock to work.
   this.wakelock = new Wakelock();

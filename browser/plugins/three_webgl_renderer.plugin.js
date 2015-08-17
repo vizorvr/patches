@@ -64,13 +64,15 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.update_state = function() {
-		// this.renderer.render(this.scene, this.camera)
 		this.controls.update()
 		// Render the scene through the manager.
 		this.manager.render(this.scene, this.camera)
 	}
 
 	ThreeWebGLRendererPlugin.prototype.pick_object = function(e) {
+		if (E2.app.noodlesVisible === true)
+			return;
+
 		var mouseVector = new THREE.Vector3()
 
 		var wgl_c = E2.dom.webgl_canvas[0]
@@ -105,16 +107,15 @@
 	ThreeWebGLRendererPlugin.prototype.resize = function() {
 		console.log('ThreeWebGLRendererPlugin.resize')
 
-		var isFullScreen = THREEx.FullScreen.activated()
+		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement);
 		var wh = { width: window.innerWidth, height: window.innerHeight }
 
-		if (!isFullScreen) {
+		if (!isFullscreen) {
 			wh.width = this.domElement.clientWidth
 			wh.height = this.domElement.clientHeight
 
-			if (typeof(E2.app.calculateCanvasArea) !== 'undefined') {
+			if (typeof(E2.app.calculateCanvasArea) !== 'undefined')
 				wh = E2.app.calculateCanvasArea()
-			}
 		}
 
 		this.effect.setSize(wh.width, wh.height)
@@ -123,14 +124,20 @@
 		this.camera.updateProjectionMatrix()
 	}
 
-	ThreeWebGLRendererPlugin.prototype.toggleFullScreen = function() {
-		var isFullScreen = !THREEx.FullScreen.activated()
-		console.log('ThreeWebGLRendererPlugin.toggleFullScreen', isFullScreen)
+	ThreeWebGLRendererPlugin.prototype.onFullScreenChanged = function() {
+		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+		console.log('ThreeWebGLRendererPlugin.onFullScreenChanged', isFullscreen)
 
-  		if (isFullScreen)
-  			this.manager.enterVR()
-  		else
-  			this.manager.exitVR()
+		if (!isFullscreen)
+			this.manager.enterVR()
+		else
+			this.manager.exitVR()
+	}
+
+	ThreeWebGLRendererPlugin.prototype.toggleFullScreen = function() {
+		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+		console.log('ThreeWebGLRendererPlugin.toggleFullScreen', !isFullscreen)
+		this.manager.toggleFullScreen()
 	}
 
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
@@ -145,10 +152,11 @@
 			this.renderer.setPixelRatio(window.devicePixelRatio)
 
 			this.effect = new THREE.VREffect(this.renderer)
-			this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: true })
+			this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: false })
 
 			E2.core.on('resize', this.resize.bind(this))
-			E2.core.on('fullScreenChanged', this.toggleFullScreen.bind(this))
+			// E2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this))
+			E2.core.on('fullScreenChangeRequested', this.toggleFullScreen.bind(this))
 
 			this.setup_object_picking()
 		}
