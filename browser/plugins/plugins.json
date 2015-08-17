@@ -289,6 +289,10 @@
 	"THREE/Material/Shader": "three_material_shader",
 	"THREE/Material/Lambert": "three_material_lambert",
 
+	"THREE/Light/Ambient Light": "three_ambient_light",
+	"THREE/Light/Directional Light": "three_directional_light",
+	"THREE/Light/Point Light": "three_point_light",
+
 	"State/Register read": "register_local_read",
 	"State/Register write": "register_local_write",
 	

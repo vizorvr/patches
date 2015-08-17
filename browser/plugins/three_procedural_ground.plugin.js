@@ -112,6 +112,7 @@
 					var face = new THREE.Face3(vtxidx, vtxidx + 1, vtxidx + (xSegments + 1))
 
 					var getNormal = function(vertices, i, j, aorb) {
+						// calculate a normal from one of two triangles (aorb) in a grid
 						var idxa = j * (xSegments + 1) + i
 						var idxb = j * (xSegments + 1) + i + 1
 						var idxc = (j + 1) * (xSegments + 1) + i
@@ -128,6 +129,9 @@
 							a.subVectors(vertices[idxb], vertices[idxc])
 							b.subVectors(vertices[idxd], vertices[idxc])
 						}
+
+						a.normalize()
+						b.normalize()
 
 						var normal = new THREE.Vector3()
 						normal.crossVectors(a, b)
@@ -166,8 +170,8 @@
 
 
 		this.geometry = new GeometryGenerator(this.xSize, this.ySize, this.zSize)
-		this.material = new THREE.MeshBasicMaterial({ color: 0xccccdd })
-		this.material.wireframe = true
+		this.material = new THREE.MeshLambertMaterial({ color: 0xccccdd })
+		//this.material.wireframe = true
 		this.object3d = new THREE.Mesh(this.geometry, this.material)
 
 		// back reference for object picking
@@ -210,7 +214,6 @@
 
 	ThreeProceduralGroundPlugin.prototype.update_state = function()
 	{
-		console.log("ThreeProceduralGroundPlugin.update_state " + this.dirty)
 		if (this.dirty)
 			this.generate_mesh()
 	};

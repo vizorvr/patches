@@ -69,13 +69,26 @@
 			return
 		}
 
+		console.log('update_meshes')
+
 		this.reset()
 
 		for (mesh in this.meshes) {
 			// {id: 0, mesh: mesh}
 
-			this.scene.add(this.meshes[mesh])
+			if (this.meshes[mesh]) {
+				//console.log('add mesh to slot ', JSON.stringify(mesh))
+				this.scene.add(this.meshes[mesh])
+			}
+			else {
+				//console.log('no mesh for ', JSON.stringify(mesh))
+			}
 		}
+
+		//var light = new THREE.DirectionalLight( 0xFFFFFF ); // soft white light
+		//this.scene.add( light );
+
+		console.log("scene has " + this.scene.children.length + " objects")
 
 		this.meshes_dirty = false
 	}
@@ -84,17 +97,19 @@
 		console.log('reset scene')
 		this.scene = new THREE.Scene()
 		window._scene = this.scene
+
+		this.meshes_dirty = true
 	}
 
 	ThreeScenePlugin.prototype.update_input = function (slot, data) {
-		if (!data)
-			return;
+		//if (!data)
+		//	return;
 
-		this.meshes[slot] = data
-
-		this.meshes_dirty = true
-		//if (this.scene.children.indexOf(data) === -1)
-		//	this.scene.add(data)
+		if (this.meshes[slot.index] != data) {
+			console.log("add mesh to scene " + JSON.stringify(slot))
+			this.meshes[slot.index] = data
+			this.meshes_dirty = true
+		}
 	}
 
 	ThreeScenePlugin.prototype.update_output = function () {
@@ -111,7 +126,9 @@
 			this.lsg.add_dyn_slot(slots[i])
 		}
 
-		this.update_meshes()
+		if (this.meshes_dirty) {
+			this.update_meshes()
+		}
 	}
 
 	ThreeScenePlugin.prototype.update_state = function () {
