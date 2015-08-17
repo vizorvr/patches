@@ -649,6 +649,9 @@ Application.prototype.onCanvasMouseDown = function(e) {
 	if (e.target.id !== 'canvas')
 		return;
 
+	e.stopPropagation()
+	e.preventDefault()
+
 	if (e.which === 1) {
 		this.selection_start = [0, 0];
 		this.mouseEventPosToCanvasCoord(e, this.selection_start);
@@ -1166,13 +1169,10 @@ Application.prototype.toggleLeftPane = function()
 };
 
 Application.prototype.toggleFullscreen = function() {
-	console.log('E2.app.toggleFullscreen')
 	if (!THREEx.FullScreen.activated()) {
 		THREEx.FullScreen.request(E2.dom.webgl_canvas[0])
-		E2.core.emit('fullScreenChanged')
 	} else {
 		THREEx.FullScreen.cancel()
-		E2.core.emit('fullScreenChanged')
 	}
 }
 
