@@ -13,7 +13,7 @@
 			{ name: 'noise octaves', dt: core.datatypes.FLOAT, def: 3},
 			{ name: 'noise scale', dt: core.datatypes.FLOAT, def: 1.0},
 			{ name: 'ground height', dt: core.datatypes.FLOAT, def: 0.0},
-			{ name: 'rock height', dt: core.datatypes.FLOAT, def: 3.0},
+			{ name: 'rock height', dt: core.datatypes.FLOAT, def: 3.0}
 		].concat(this.input_slots)
 
 		this.output_slots = [{
@@ -71,11 +71,12 @@
 
 					// twist a square plane into a circle
 					var f = Math.abs(xf) < Math.abs(zf) ? (1 / Math.abs(zf)) : (1 / Math.abs(xf))
+					f = (isNaN(f) || f > 10) ? 10 : f
 
-					//var twistFactor = Math.min(Math.max(0, 2 - f), 1)
-					//var mul = 1 + (Math.sqrt(xf * f * xf * f + zf * f * zf *f) - 1) * twistFactor
-					//xf /= mul
-					//zf /= mul
+					var twistFactor = Math.min(Math.max(0, 1 - f / 10), 1)
+					var mul = 1 + (Math.sqrt(xf * f * xf * f + zf * f * zf * f) - 1) * twistFactor
+					xf /= mul
+					zf /= mul
 
 					// y displacement
 					var m = Math.abs(xf)
@@ -179,7 +180,7 @@
 
 					normal = getNormal(this.vertices, i, j, 1.0)
 					ypos = getYPos(this.vertices, i, j, 1.0)
-					materialIndex = ypos < parent.groundHeight ? 2 : (ypos > parent.rockHeight ? 0 : 1)
+					//materialIndex = ypos < parent.groundHeight ? 2 : (ypos > parent.rockHeight ? 0 : 1)
 
 					face.normal.copy(normal)
 					face.vertexNormals.push(normal.clone(), normal.clone(), normal.clone())
