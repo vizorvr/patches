@@ -9,7 +9,11 @@
 			{ name: 'y size', dt: core.datatypes.FLOAT, def: 10 },
 			{ name: 'z size', dt: core.datatypes.FLOAT, def: 40 },
 			{ name: 'seed', dt: core.datatypes.FLOAT, def: 0},
-			{ name: 'noise factor', dt: core.datatypes.FLOAT, def: 0.25}
+			{ name: 'noise factor', dt: core.datatypes.FLOAT, def: 0.25},
+			{ name: 'noise octaves', dt: core.datatypes.FLOAT, def: 3},
+			{ name: 'noise scale', dt: core.datatypes.FLOAT, def: 1.0},
+			{ name: 'ground height', dt: core.datatypes.FLOAT, def: 0.0},
+			{ name: 'rock height', dt: core.datatypes.FLOAT, def: 3.0},
 		].concat(this.input_slots)
 
 		this.output_slots = [{
@@ -23,6 +27,10 @@
 
 		this.rngSeed = 10
 		this.noiseFactor = 0.25
+		this.noiseOctaves = 1.0
+		this.noiseScale = 1.0
+		this.groundHeight = 0.0
+		this.rockHeight = 3.0
 
 		this.dirty = true
 	}
@@ -64,10 +72,10 @@
 					// twist a square plane into a circle
 					var f = Math.abs(xf) < Math.abs(zf) ? (1 / Math.abs(zf)) : (1 / Math.abs(xf))
 
-					var twistFactor = Math.min(Math.max(0, 2 - f), 1)
-					var mul = 1 + (Math.sqrt(xf * f * xf * f + zf * f * zf *f) - 1) * twistFactor
-					xf /= mul
-					zf /= mul
+					//var twistFactor = Math.min(Math.max(0, 2 - f), 1)
+					//var mul = 1 + (Math.sqrt(xf * f * xf * f + zf * f * zf *f) - 1) * twistFactor
+					//xf /= mul
+					//zf /= mul
 
 					// y displacement
 					var m = Math.abs(xf)
@@ -76,7 +84,7 @@
 
 					nm *= nm
 
-					var yf = parent.noise.noise2D(i, j, 5, xSegments) * parent.noiseFactor * nm
+					var yf = parent.noise.noise2D(i * parent.noiseScale, j * parent.noiseScale, Math.floor(parent.noiseOctaves), xSegments) * parent.noiseFactor * nm
 
 					// x, z displacement
 					var pushOutFactor= 1.0 // + (parent.rng.real(0, 1)) * parent.noiseFactor * m * n
@@ -97,8 +105,6 @@
 					this.vertices.push(vector)
 				}
 			}
-
-			var materialIndex = 0
 
 			for (j = 0; j < zSegments; j++) {
 				for (i = 0; i < xSegments; i++) {
@@ -139,7 +145,28 @@
 						return normal
 					}
 
+					var getYPos = function(vertices, i, j, aorb) {
+						// calculate a normal from one of two triangles (aorb) in a grid
+						var idxa = j * (xSegments + 1) + i
+						var idxb = j * (xSegments + 1) + i + 1
+						var idxc = (j + 1) * (xSegments + 1) + i
+						var idxd = (j + 1) * (xSegments + 1) + i + 1
+
+						var res = 0
+
+						if (aorb == 0) {
+							res = vertices[idxa]['y'] + vertices[idxb]['y'] + vertices[idxc]['y']
+						}
+						else {
+							res = vertices[idxb]['y'] + vertices[idxc]['y'] + vertices[idxd]['y']
+						}
+
+						return res
+					}
+
 					var normal = getNormal(this.vertices, i, j, 0.0)
+					var ypos = getYPos(this.vertices, i, j, 0.0)
+					var materialIndex = ypos < parent.groundHeight ? 2 : (ypos > parent.rockHeight ? 0 : 1)
 
 					face.normal.copy(normal)
 					face.vertexNormals.push(normal.clone(), normal.clone(), normal.clone())
@@ -151,6 +178,9 @@
 					face = new THREE.Face3(vtxidx + (xSegments + 1), vtxidx + 1, vtxidx + (xSegments + 2))
 
 					normal = getNormal(this.vertices, i, j, 1.0)
+					ypos = getYPos(this.vertices, i, j, 1.0)
+					materialIndex = ypos < parent.groundHeight ? 2 : (ypos > parent.rockHeight ? 0 : 1)
+
 					face.normal.copy(normal)
 					face.vertexNormals.push(normal.clone(), normal.clone(), normal.clone())
 					face.materialIndex = materialIndex
@@ -170,7 +200,7 @@
 
 
 		this.geometry = new GeometryGenerator(this.xSize, this.ySize, this.zSize)
-		this.material = new THREE.MeshLambertMaterial({ color: 0xccccdd })
+		this.material = new THREE.MeshFaceMaterial([new THREE.MeshLambertMaterial({ color: 0xccccdd }), new THREE.MeshLambertMaterial({ color: 0x22dd21 }), new THREE.MeshLambertMaterial({ color: 0x2241dd })])
 		//this.material.wireframe = true
 		this.object3d = new THREE.Mesh(this.geometry, this.material)
 
@@ -198,6 +228,22 @@
 			break;
 		case 4: // noise factor
 			this.noiseFactor = data
+			this.dirty = true
+			break;
+		case 5: // noise octaves
+			this.noiseOctaves = data
+			this.dirty = true
+			break;
+		case 6: // noise scale
+			this.noiseScale = data
+			this.dirty = true
+			break;
+		case 7: // ground height
+			this.groundHeight = data
+			this.dirty = true
+			break;
+		case 8: // ground height
+			this.rockHeight = data
 			this.dirty = true
 			break;
 		default:
