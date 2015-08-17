@@ -200,7 +200,7 @@
 
 
 		this.geometry = new GeometryGenerator(this.xSize, this.ySize, this.zSize)
-		this.material = new THREE.MeshFaceMaterial([new THREE.MeshLambertMaterial({ color: 0xccccdd }), new THREE.MeshLambertMaterial({ color: 0x22dd21 }), new THREE.MeshLambertMaterial({ color: 0x2241dd })])
+		this.material = new THREE.MeshFaceMaterial([new THREE.MeshLambertMaterial({ color: 0xB29E8C }), new THREE.MeshLambertMaterial({ color: 0xCC6D14 }), new THREE.MeshLambertMaterial({ color: 0x6DB273 })])
 		//this.material.wireframe = true
 		this.object3d = new THREE.Mesh(this.geometry, this.material)
 
@@ -242,7 +242,7 @@
 			this.groundHeight = data
 			this.dirty = true
 			break;
-		case 8: // ground height
+		case 8: // rock height
 			this.rockHeight = data
 			this.dirty = true
 			break;
