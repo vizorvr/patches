@@ -1,7 +1,7 @@
 (function() {
 	var ThreeWebGLRendererPlugin = E2.plugins.three_webgl_renderer = function(core) {
 		this.desc = 'THREE.js WebGL renderer'
-		
+
 		this.input_slots = [
 			{
 				name: 'camera',
@@ -38,21 +38,17 @@
 
 		this.scene = new THREE.Scene()
 
-		this.camera = new THREE.PerspectiveCamera(
+		this.perspectiveCamera = new THREE.PerspectiveCamera(
 			90,
 			this.domElement.clientWidth / this.domElement.clientHeight,
 			0.1,
 			1000)
-	
-		this.controls = new THREE.VRControls(this.camera)
 	}
 
 	ThreeWebGLRendererPlugin.prototype.update_input = function(slot, data) {
 		switch(slot.index) {
 			case 0:
-				console.log('this camera')
-				this.camera = data
-				this.controls = new THREE.VRControls(this.camera)
+				this.perspectiveCamera = data
 				break;
 			case 1:
 				this.scene = data
@@ -64,9 +60,8 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.update_state = function() {
-		this.controls.update()
 		// Render the scene through the manager.
-		this.manager.render(this.scene, this.camera)
+		this.manager.render(this.scene, this.perspectiveCamera)
 	}
 
 	ThreeWebGLRendererPlugin.prototype.pick_object = function(e) {
@@ -83,7 +78,7 @@
 		mouseVector.y = ((1.0 - ((e.pageY - wgl_c.offsetTop) / h)) * 2.0) - 1.0
 		mouseVector.z = 0
 		
-		this.raycaster.setFromCamera(mouseVector, this.camera)
+		this.raycaster.setFromCamera(mouseVector, this.perspectiveCamera)
 		var intersects = this.raycaster.intersectObjects(this.scene.children)
 
 		for (var i = 0; i < intersects.length; i++) {
@@ -119,9 +114,6 @@
 		}
 
 		this.effect.setSize(wh.width, wh.height)
-
-		this.camera.aspect = wh.width / wh.height
-		this.camera.updateProjectionMatrix()
 	}
 
 	ThreeWebGLRendererPlugin.prototype.onFullScreenChanged = function() {

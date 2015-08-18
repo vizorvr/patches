@@ -273,6 +273,8 @@
 
 	"THREE/Perspective Camera": "three_perspective_camera",
 
+	"THREE/VR Camera": "three_vr_camera",
+
 	"THREE/Loaders/OBJ loader": "three_loader_obj",
 
 	"THREE/Geometry/Box": "three_geometry_box",
