@@ -70,7 +70,7 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.pick_object = function(e) {
-		if (E2.app.noodlesVisible)
+		if (E2.app.noodlesVisible === true)
 			return;
 
 		var mouseVector = new THREE.Vector3()

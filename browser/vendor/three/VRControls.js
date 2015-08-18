@@ -50,6 +50,7 @@ THREE.VRControls = function ( object, onError ) {
 
 			if ( state.orientation !== null ) {
 				object.quaternion.copy( state.orientation );
+				
 			}
 
 			if ( state.position !== null ) {
