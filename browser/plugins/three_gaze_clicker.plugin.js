@@ -165,7 +165,7 @@
 		if (this.lastObj) {
 			this.clickFactor = Math.min(this.core.abs_t - this.objTimer, 1.0)
 			if (this.clickFactor == 1.0) {
-				console.log('OnClick', this.lastObj.onClick.text)
+				this.lastObj.onClick()
 				this.lastObj = undefined
 				this.objTimer = undefined
 			}

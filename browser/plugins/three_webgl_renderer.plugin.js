@@ -60,6 +60,10 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.update_state = function() {
+		if (!this.scene) {
+			return
+		}
+
 		// Render the scene through the manager.
 		this.manager.render(this.scene, this.perspectiveCamera)
 	}
@@ -77,16 +81,18 @@
 		mouseVector.x = (((e.pageX - wgl_c.offsetLeft) / w) * 2.0) - 1.0
 		mouseVector.y = ((1.0 - ((e.pageY - wgl_c.offsetTop) / h)) * 2.0) - 1.0
 		mouseVector.z = 0
-		
-		this.raycaster.setFromCamera(mouseVector, this.perspectiveCamera)
 
-		// only intersect scene.children[0] - children [1] is the overlays
-		var intersects = this.raycaster.intersectObjects(this.scene.children[0].children)
+		if (this.scene.children && this.scene.children.length > 0) {
+			this.raycaster.setFromCamera(mouseVector, this.perspectiveCamera)
 
-		for (var i = 0; i < intersects.length; i++) {
-			if (intersects[i].object.backReference !== undefined) {
-				E2.app.clearSelection()
-				E2.app.markNodeAsSelected(intersects[i].object.backReference.parentNode)
+			// only intersect scene.children[0] - children [1] is the overlays
+			var intersects = this.raycaster.intersectObjects(this.scene.children[0].children)
+
+			for (var i = 0; i < intersects.length; i++) {
+				if (intersects[i].object.backReference !== undefined) {
+					E2.app.clearSelection()
+					E2.app.markNodeAsSelected(intersects[i].object.backReference.parentNode)
+				}
 			}
 		}
 	}
@@ -146,6 +152,7 @@
 
 			this.effect = new THREE.VREffect(this.renderer)
 			this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: false })
+
 
 			E2.core.on('resize', this.resize.bind(this))
 			// E2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this))

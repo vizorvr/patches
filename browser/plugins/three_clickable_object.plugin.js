@@ -5,16 +5,16 @@
 
 		this.input_slots = [
 			{name: 'object3d', dt: core.datatypes.OBJECT3D},
-			{name: 'text', dt: core.datatypes.TEXT}
 		]
 
 		this.output_slots = [
-			{name: 'object3d', dt: core.datatypes.OBJECT3D}
+			{name: 'object3d', dt: core.datatypes.OBJECT3D},
+			{name: 'clicked', dt: core.datatypes.BOOL}
 		]
 	}
 
 	ThreeClickableObject.prototype.reset = function() {
-
+		this.clicked = false
 	}
 
 	ThreeClickableObject.prototype.update_input = function(slot, data) {
@@ -22,22 +22,31 @@
 		case 0: // object3d
 			this.object3d = data
 			break
-		case 1: // text
-			this.text = data
-			break
 		default:
 			break
 		}
 	}
 
-	ThreeClickableObject.prototype.update_output = function() {
-		return this.object3d
+	ThreeClickableObject.prototype.update_output = function(slot) {
+		switch(slot.index) {
+		case 0:
+			return this.object3d
+		case 1:
+			return this.clicked
+		default:
+			break
+		}
+	}
+
+	ThreeClickableObject.prototype.on_click = function() {
+		this.clicked = true
 	}
 
 	ThreeClickableObject.prototype.update_state = function() {
-
 		if (this.object3d) {
-			this.object3d.onClick = {text: this.text}
+			this.object3d.onClick = this.on_click.bind(this)
 		}
+
+		this.clicked = false
 	}
 })()
