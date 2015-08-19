@@ -109,5 +109,11 @@
 		return this.perspectiveCamera
 	}
 
+	ThreeVRCameraPlugin.prototype.state_changed = function(ui) {
+		if (!ui) {
+			E2.core.on('resize', this.resize.bind(this))
+		}
+	}
+
 })()
 
