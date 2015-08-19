@@ -145,8 +145,8 @@
 		var hadObj = false
 
 		if (intersects.length > 0) {
-			if (intersects[0].object.backReference !== undefined) {
-				var curObj = intersects[0].object.backReference.parentNode
+			if (intersects[0].object.onClick) {
+				var curObj = intersects[0].object
 
 				if (curObj != this.lastObj) {
 					this.objTimer = this.core.abs_t
@@ -164,6 +164,11 @@
 
 		if (this.lastObj) {
 			this.clickFactor = Math.min(this.core.abs_t - this.objTimer, 1.0)
+			if (this.clickFactor == 1.0) {
+				console.log('OnClick', this.lastObj.onClick.text)
+				this.lastObj = undefined
+				this.objTimer = undefined
+			}
 		}
 		else {
 			this.clickFactor = 0

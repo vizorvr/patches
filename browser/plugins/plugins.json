@@ -296,6 +296,7 @@
 	"THREE/Light/Point Light": "three_point_light",
 
 	"THREE/Gaze Clicker": "three_gaze_clicker",
+	"THREE/Clickable Object": "three_clickable_object",
 
 	"State/Register read": "register_local_read",
 	"State/Register write": "register_local_write",
