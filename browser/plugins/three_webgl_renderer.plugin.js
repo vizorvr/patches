@@ -79,10 +79,11 @@
 		mouseVector.z = 0
 		
 		this.raycaster.setFromCamera(mouseVector, this.perspectiveCamera)
-		var intersects = this.raycaster.intersectObjects(this.scene.children)
+
+		// only intersect scene.children[0] - children [1] is the overlays
+		var intersects = this.raycaster.intersectObjects(this.scene.children[0].children)
 
 		for (var i = 0; i < intersects.length; i++) {
-			console.log(intersects[i])
 			if (intersects[i].object.backReference !== undefined) {
 				E2.app.clearSelection()
 				E2.app.markNodeAsSelected(intersects[i].object.backReference.parentNode)

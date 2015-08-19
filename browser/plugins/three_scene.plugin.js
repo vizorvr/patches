@@ -76,7 +76,7 @@
 
 			if (this.meshes[mesh]) {
 				//console.log('add mesh to slot ', JSON.stringify(mesh))
-				this.scene.add(this.meshes[mesh])
+				this.scene.children[0].add(this.meshes[mesh])
 			}
 			else {
 				//console.log('no mesh for ', JSON.stringify(mesh))
@@ -88,6 +88,14 @@
 
 	ThreeScenePlugin.prototype.reset = function () {
 		this.scene = new THREE.Scene()
+
+		// add two children:
+		// [0] is the main scene
+		this.scene.add(new THREE.Object3D())
+
+		// [1] is the overlay scene
+		this.scene.add(new THREE.Object3D())
+
 		window._scene = this.scene
 
 		this.meshes_dirty = true

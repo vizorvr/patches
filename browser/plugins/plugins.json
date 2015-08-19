@@ -295,6 +295,8 @@
 	"THREE/Light/Directional Light": "three_directional_light",
 	"THREE/Light/Point Light": "three_point_light",
 
+	"THREE/Gaze Clicker": "three_gaze_clicker",
+
 	"State/Register read": "register_local_read",
 	"State/Register write": "register_local_write",
 	

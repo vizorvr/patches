@@ -5,6 +5,7 @@
 		console.log("VR Camera inputs: ", this.input_slots ? this.input_slots.length : "undefined")
 
 		this.input_slots = [
+			{ name: 'position', dt: core.datatypes.VECTOR },
 			{ name: 'fov', dt: core.datatypes.FLOAT, def: 45.0 },
 			{ name: 'aspectRatio', dt: core.datatypes.FLOAT, def: 1.0},
 			{ name: 'near', dt: core.datatypes.FLOAT, def: 1.0 },
@@ -66,6 +67,10 @@
 
 		this.controls.update()
 
+		//if (this.position) {
+		//	this.perspectiveCamera.position.add(this.position)
+		//}
+
 		this.updated = true
 	}
 
@@ -75,24 +80,28 @@
 		}
 
 		switch(slot.index) {
-		case 0:
+		case 0: // position
+			this.perspectiveCamera.position.set(data.x, data.y, data.z)
+			this.dirty = true
+			break
+		case 1: // fov
 			this.perspectiveCamera.fov = data
 			this.dirty = true
-			break;
-		case 1:
+			break
+		case 2: // aspect ratio
 			this.perspectiveCamera.aspectRatio = data
 			this.dirty = true
-			break;
-		case 2:
+			break
+		case 3: // near
 			this.perspectiveCamera.near = data
 			this.dirty = true
-			break;
-		case 3:
+			break
+		case 4: // far
 			this.perspectiveCamera.far = data
 			this.dirty = true
-			break;
+			break
 		default:
-			break;
+			break
 		}
 	}
 
