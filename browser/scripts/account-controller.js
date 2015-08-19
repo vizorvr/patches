@@ -16,7 +16,7 @@ AccountController.prototype.renderLoginView = function(user)
 	this._bindEvents($('#user-pulldown'));
 }
 
-AccountController.prototype._bindEvents = function(el)
+AccountController.prototype._bindEvents = function(el, dfd)
 {
 	var that = this;
 
@@ -24,25 +24,24 @@ AccountController.prototype._bindEvents = function(el)
 	{
 		evt.preventDefault();
 		bootbox.hideAll();
-		that.openLoginModal();
+		that.openLoginModal(dfd);
 	});
 
 	$('a.signup', el).on('click', function(evt)
 	{
 		evt.preventDefault();
 		bootbox.hideAll();
-		that.openSignupModal();
+		that.openSignupModal(dfd);
 	});
 }
 
-AccountController.prototype.openLoginModal = function()
-{
-
-	var self = this;
+AccountController.prototype.openLoginModal = function(dfd) {
+	var dfd = dfd || when.defer()
 	var loginTemplate = E2.views.account.login;
 
-	var bb = bootbox.dialog(
-	{
+	ga('send', 'event', 'account', 'open', 'loginModal')
+
+	var bb = bootbox.dialog({
 		animate: false,
 		show: true,
 		message: loginTemplate()
@@ -50,7 +49,7 @@ AccountController.prototype.openLoginModal = function()
 		$('#email_id').focus();
 	});
 
-	this._bindEvents(bb);
+	this._bindEvents(bb, dfd);
 
 	var formEl = $('#login-form_id');
 	formEl.submit(function( event )
@@ -72,19 +71,23 @@ AccountController.prototype.openLoginModal = function()
 			success: function(user)
 			{
 				console.log('Logged in as ' + user.username);
+				ga('send', 'event', 'account', 'loggedIn', user.username)
 				E2.models.user.set(user);
 				bootbox.hideAll();
+				dfd.resolve()
 			},
 			dataType: 'json'
 		});
 	});
+
+	return dfd.promise
 }
 
-AccountController.prototype.openSignupModal = function()
-{
-
-	var self = this;
+AccountController.prototype.openSignupModal = function(dfd) {
+	var dfd = dfd || when.defer()
 	var signupTemplate = E2.views.account.signup;
+
+	ga('send', 'event', 'account', 'open', 'signupModal')
 
 	var bb = bootbox.dialog(
 	{
@@ -97,7 +100,7 @@ AccountController.prototype.openSignupModal = function()
 		$('#username_id').focus();
 	});
 
-	this._bindEvents(bb);
+	this._bindEvents(bb, dfd);
 
 	var formEl = $('#signup-form_id');
 	formEl.submit(function( event )
@@ -119,12 +122,16 @@ AccountController.prototype.openSignupModal = function()
 			success: function(user)
 			{
 				console.log('Signed up as ' + user.username);
+				ga('send', 'event', 'account', 'signedUp', user.username)
 				E2.models.user.set(user);
 				bootbox.hideAll();
+				dfd.resolve()
 			},
 			dataType: 'json'
 		});
 	});
+
+	return dfd.promise
 }
 
 if (typeof(exports) !== 'undefined')
