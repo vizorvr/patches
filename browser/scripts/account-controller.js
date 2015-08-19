@@ -16,7 +16,7 @@ AccountController.prototype.renderLoginView = function(user)
 	this._bindEvents($('#user-pulldown'));
 }
 
-AccountController.prototype._bindEvents = function(el)
+AccountController.prototype._bindEvents = function(el, dfd)
 {
 	var that = this;
 
@@ -24,19 +24,19 @@ AccountController.prototype._bindEvents = function(el)
 	{
 		evt.preventDefault();
 		bootbox.hideAll();
-		that.openLoginModal();
+		that.openLoginModal(dfd);
 	});
 
 	$('a.signup', el).on('click', function(evt)
 	{
 		evt.preventDefault();
 		bootbox.hideAll();
-		that.openSignupModal();
+		that.openSignupModal(dfd);
 	});
 }
 
-AccountController.prototype.openLoginModal = function() {
-	var dfd = when.defer()
+AccountController.prototype.openLoginModal = function(dfd) {
+	var dfd = dfd || when.defer()
 	var loginTemplate = E2.views.account.login;
 
 	ga('send', 'event', 'account', 'open', 'loginModal')
@@ -49,7 +49,7 @@ AccountController.prototype.openLoginModal = function() {
 		$('#email_id').focus();
 	});
 
-	this._bindEvents(bb);
+	this._bindEvents(bb, dfd);
 
 	var formEl = $('#login-form_id');
 	formEl.submit(function( event )
@@ -83,10 +83,8 @@ AccountController.prototype.openLoginModal = function() {
 	return dfd.promise
 }
 
-AccountController.prototype.openSignupModal = function()
-{
-
-	var self = this;
+AccountController.prototype.openSignupModal = function(dfd) {
+	var dfd = dfd || when.defer()
 	var signupTemplate = E2.views.account.signup;
 
 	ga('send', 'event', 'account', 'open', 'signupModal')
@@ -102,7 +100,7 @@ AccountController.prototype.openSignupModal = function()
 		$('#username_id').focus();
 	});
 
-	this._bindEvents(bb);
+	this._bindEvents(bb, dfd);
 
 	var formEl = $('#signup-form_id');
 	formEl.submit(function( event )
@@ -127,10 +125,13 @@ AccountController.prototype.openSignupModal = function()
 				ga('send', 'event', 'account', 'signedUp', user.username)
 				E2.models.user.set(user);
 				bootbox.hideAll();
+				dfd.resolve()
 			},
 			dataType: 'json'
 		});
 	});
+
+	return dfd.promise
 }
 
 if (typeof(exports) !== 'undefined')
