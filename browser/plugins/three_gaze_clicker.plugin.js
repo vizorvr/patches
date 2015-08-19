@@ -20,7 +20,9 @@
 	ThreeGazeClicker.prototype = Object.create(Plugin.prototype)
 
 	ThreeGazeClicker.prototype.reset = function() {
-		this.clickFactor = 0
+		this.clickFactor = 0.0
+		this.clickDelay = 1.0
+		this.clickTime = 0.0
 	}
 
 	ThreeGazeClicker.prototype.update_input = function(slot, data) {
@@ -52,7 +54,7 @@
 	ThreeGazeClicker.prototype.GeometryGenerator = function() {
 		this.type = 'Gaze Aim'
 
-		this.segments = 12
+		this.segments = 16
 		this.radialMarkers = [0, 0.3, 0.8, 1.0]
 
 		that = this
@@ -90,16 +92,25 @@
 
 		this.initialise()
 
-		this.update = function(maxangle) {
+		this.update = function(fillfactor, fadeoutfactor) {
 			var idx = 0
 
+			var radialMarkers = this.radialMarkers.slice(0)
+
+			if (fadeoutfactor >= 1) {
+				radialMarkers[2] = this.radialMarkers[2] + (this.radialMarkers[1] - this.radialMarkers[2]) * fillfactor
+			}
+			else {
+				radialMarkers[2] = this.radialMarkers[1] + (this.radialMarkers[3] - this.radialMarkers[1]) * (1 - fadeoutfactor)
+			}
+
 			for (j = 0; j < that.segments + 1; j++) {
-				for (i = 0; i < that.radialMarkers.length; i++) {
+				for (i = 0; i < radialMarkers.length; i++) {
 					var angle = j / that.segments
 
 					// clamp outer ring
 					if (i > 1) {
-						angle = Math.min(angle, maxangle)
+						angle = Math.min(angle, fillfactor)
 					}
 
 					angle *= 3.14159 * 2
@@ -107,7 +118,11 @@
 					var x = Math.sin(angle)
 					var y = Math.cos(angle)
 
-					var f = that.radialMarkers[i]
+					var f = radialMarkers[i]
+
+					//if (i > 1) {
+					//	f *= fadeoutfactor
+					//}
 
 					that.vertices[idx].set(x * f, y * f, -1.0)
 
@@ -163,15 +178,19 @@
 		}
 
 		if (this.lastObj) {
-			this.clickFactor = Math.min(this.core.abs_t - this.objTimer, 1.0)
-			if (this.clickFactor == 1.0) {
+			this.clickTime = this.core.abs_t - this.objTimer
+			var clickFactor = Math.min(this.clickTime, this.clickDelay)
+
+			if (this.clickFactor < this.clickDelay && clickFactor >= this.clickDelay) {
+				// only click once when the timer passes this.clickDelay (default 1 second)
 				this.lastObj.onClick()
-				this.lastObj = undefined
-				this.objTimer = undefined
 			}
+
+			this.clickFactor = clickFactor
 		}
 		else {
 			this.clickFactor = 0
+			this.clickTime = 0
 		}
 	}
 
@@ -188,7 +207,7 @@
 		mesh.quaternion.copy(this.camera.quaternion)
 		mesh.scale.copy(new THREE.Vector3(0.05, 0.05, 1.0))
 
-		this.geometry.update(this.clickFactor)
+		this.geometry.update(this.clickFactor, Math.max(1.0 - Math.max(0.0, this.clickTime - 1.0) * 10.0, 0.0))
 
 		if (this.scene.children[1].children.indexOf(mesh) < 0) {
 			this.scene.children[1].add(mesh)
