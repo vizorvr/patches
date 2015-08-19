@@ -42,32 +42,104 @@
 			this.generate_mesh()
 	}
 
-	ThreeProceduralGroundPlugin.prototype.generate_mesh = function() {
-		console.log('generate procedural mesh')
+	// geometry ---
 
-		this.noise = new E2.Noise(2048, this.rngSeed)
+	ThreeProceduralGroundPlugin.prototype.GeometryGenerator = function(parent) {
+		//THREE.Geometry.call(this)
+		this.type = 'VizorProceduralGround'
 
-		var parent = this
+		var i, j
 
-		var GeometryGenerator = function(xSize, ySize, zSize) {
-			THREE.Geometry.call(this)
-			this.type = 'VizorProceduralGround'
+		that = this
 
-			this.faces = []
-			this.vertices = []
+		this.initialise = function(xSize, ySize, zSize) {
+			THREE.Geometry.call(that)
 
-			var i, j
+			that.dynamic = true
 
-			var xSegments = xSize
-			var zSegments = zSize
+			that.xSegments = xSize
+			that.zSegments = zSize
 
-			for (j = 0; j < zSegments + 1; j++) {
-				for (i = 0 ; i < xSegments + 1; i++) {
-					var vector = new THREE.Vector3()
+			that.xSize = xSize
+			that.ySize = ySize
+			that.zSize = zSize
 
+			for (j = 0; j < that.zSegments + 1; j++) {
+				for (i = 0; i < that.xSegments + 1; i++) {
+					that.vertices.push(new THREE.Vector3())
+				}
+			}
+
+			for (j = 0; j < that.zSegments; j++) {
+				for (i = 0; i < that.xSegments; i++) {
+					that.faces.push(new THREE.Face3())
+					that.faceVertexUvs[0].push([0,0,0])
+
+					that.faces.push(new THREE.Face3())
+					that.faceVertexUvs[0].push([0,0,0])
+				}
+			}
+		}
+
+		this.getNormal = function(vertices, xSegments, i, j, aorb) {
+			// calculate a normal from one of two triangles (aorb) in a grid
+			var idxa = j * (xSegments + 1) + i
+			var idxb = j * (xSegments + 1) + i + 1
+			var idxc = (j + 1) * (xSegments + 1) + i
+			var idxd = (j + 1) * (xSegments + 1) + i + 1
+
+			var a = new THREE.Vector3()
+			var b = new THREE.Vector3()
+
+			if (aorb == 0) {
+				a.subVectors(vertices[idxb], vertices[idxa])
+				b.subVectors(vertices[idxc], vertices[idxa])
+			}
+			else {
+				a.subVectors(vertices[idxb], vertices[idxc])
+				b.subVectors(vertices[idxd], vertices[idxc])
+			}
+
+			a.normalize()
+			b.normalize()
+
+			var normal = new THREE.Vector3()
+			normal.crossVectors(a, b)
+
+			return normal
+		}
+
+		this.getYPos = function(vertices, xSegments, i, j, aorb) {
+			// calculate a normal from one of two triangles (aorb) in a grid
+			var idxa = j * (xSegments + 1) + i
+			var idxb = j * (xSegments + 1) + i + 1
+			var idxc = (j + 1) * (xSegments + 1) + i
+			var idxd = (j + 1) * (xSegments + 1) + i + 1
+
+			var res = 0
+
+			if (aorb == 0) {
+				res = vertices[idxa]['y'] + vertices[idxb]['y'] + vertices[idxc]['y']
+			}
+			else {
+				res = vertices[idxb]['y'] + vertices[idxc]['y'] + vertices[idxd]['y']
+			}
+
+			return res
+		}
+
+		this.needsReinitialising = function(xSize, ySize, zSize) {
+			return !(xSize == that.xSize && ySize == that.ySize && zSize == that.zSize)
+		}
+
+		this.update = function() {
+			var vtxidx = 0
+
+			for (j = 0; j < that.zSegments + 1; j++) {
+				for (i = 0 ; i < that.xSegments + 1; i++) {
 					// plane coordinates on [-1, 1]-[1, -1]
-					var xf = (-0.5 + i * 1.0 / xSegments) * 2.0
-					var zf = (0.5 - j * 1.0 / zSegments) * 2.0
+					var xf = (-0.5 + i * 1.0 / that.xSegments) * 2.0
+					var zf = (0.5 - j * 1.0 / that.zSegments) * 2.0
 
 					// twist a square plane into a circle
 					var f = Math.abs(xf) < Math.abs(zf) ? (1 / Math.abs(zf)) : (1 / Math.abs(xf))
@@ -85,7 +157,7 @@
 
 					nm *= nm
 
-					var yf = parent.noise.noise2D(i * parent.noiseScale, j * parent.noiseScale, Math.floor(parent.noiseOctaves), xSegments) * parent.noiseFactor * nm
+					var yf = parent.noise.noise2D(i * parent.noiseScale, j * parent.noiseScale, Math.floor(parent.noiseOctaves), that.xSegments) * parent.noiseFactor * nm
 
 					// x, z displacement
 					var pushOutFactor= 1.0 // + (parent.rng.real(0, 1)) * parent.noiseFactor * m * n
@@ -94,116 +166,102 @@
 					zf *= pushOutFactor
 
 					/*
-					// push outmost vertices down for an 'edge' effect
-					if (j === 0 || j === zSegments || i === 0 || i === xSegments) {
-						yf -= 0.25
-					}*/
+					 // push outmost vertices down for an 'edge' effect
+					 if (j === 0 || j === zSegments || i === 0 || i === xSegments) {
+					 yf -= 0.25
+					 }*/
 
-					vector['x'] = xf * xSize * 0.5
-					vector['y'] = yf * ySize * 0.5
-					vector['z'] = zf * zSize * 0.5
+					that.vertices[vtxidx]['x'] = xf * that.xSize * 0.5
+					that.vertices[vtxidx]['y'] = yf * that.ySize * 0.5
+					that.vertices[vtxidx]['z'] = zf * that.zSize * 0.5
 
-					this.vertices.push(vector)
+					vtxidx++
 				}
 			}
 
-			for (j = 0; j < zSegments; j++) {
-				for (i = 0; i < xSegments; i++) {
-					var vtxidx = j * (xSegments + 1) + i
+			var defaultColor = new THREE.Color()
 
-					var uva = new THREE.Vector2( i / xSegments, 1 - j / zSegments )
-					var uvb = new THREE.Vector2( i / xSegments, 1 - ( j + 1 ) / zSegments )
-					var uvc = new THREE.Vector2( ( i + 1 ) / xSegments, 1 - ( j + 1 ) / zSegments )
-					var uvd = new THREE.Vector2( ( i + 1 ) / xSegments, 1 - j / zSegments )
+			vtxidx = 0
+			var faceidx = 0
+			for (j = 0; j < that.zSegments; j++) {
+				for (i = 0; i < that.xSegments; i++) {
+					var uva = new THREE.Vector2( i / that.xSegments, 1 - j / that.zSegments )
+					var uvb = new THREE.Vector2( i / that.xSegments, 1 - ( j + 1 ) / that.zSegments )
+					var uvc = new THREE.Vector2( ( i + 1 ) / that.xSegments, 1 - ( j + 1 ) / that.zSegments )
+					var uvd = new THREE.Vector2( ( i + 1 ) / that.xSegments, 1 - j / that.zSegments )
 
-					var face = new THREE.Face3(vtxidx, vtxidx + 1, vtxidx + (xSegments + 1))
 
-					var getNormal = function(vertices, i, j, aorb) {
-						// calculate a normal from one of two triangles (aorb) in a grid
-						var idxa = j * (xSegments + 1) + i
-						var idxb = j * (xSegments + 1) + i + 1
-						var idxc = (j + 1) * (xSegments + 1) + i
-						var idxd = (j + 1) * (xSegments + 1) + i + 1
-
-						var a = new THREE.Vector3()
-						var b = new THREE.Vector3()
-
-						if (aorb == 0) {
-							a.subVectors(vertices[idxb], vertices[idxa])
-							b.subVectors(vertices[idxc], vertices[idxa])
-						}
-						else {
-							a.subVectors(vertices[idxb], vertices[idxc])
-							b.subVectors(vertices[idxd], vertices[idxc])
-						}
-
-						a.normalize()
-						b.normalize()
-
-						var normal = new THREE.Vector3()
-						normal.crossVectors(a, b)
-
-						return normal
-					}
-
-					var getYPos = function(vertices, i, j, aorb) {
-						// calculate a normal from one of two triangles (aorb) in a grid
-						var idxa = j * (xSegments + 1) + i
-						var idxb = j * (xSegments + 1) + i + 1
-						var idxc = (j + 1) * (xSegments + 1) + i
-						var idxd = (j + 1) * (xSegments + 1) + i + 1
-
-						var res = 0
-
-						if (aorb == 0) {
-							res = vertices[idxa]['y'] + vertices[idxb]['y'] + vertices[idxc]['y']
-						}
-						else {
-							res = vertices[idxb]['y'] + vertices[idxc]['y'] + vertices[idxd]['y']
-						}
-
-						return res
-					}
-
-					var normal = getNormal(this.vertices, i, j, 0.0)
-					var ypos = getYPos(this.vertices, i, j, 0.0)
+					var normal = that.getNormal(that.vertices, that.xSegments, i, j, 0.0)
+					var ypos = that.getYPos(that.vertices, that.xSegments, i, j, 0.0)
 					var materialIndex = ypos < parent.groundHeight ? 2 : (ypos > parent.rockHeight ? 0 : 1)
 
-					face.normal.copy(normal)
-					face.vertexNormals.push(normal.clone(), normal.clone(), normal.clone())
-					face.materialIndex = materialIndex
+					that.faces[faceidx].a = vtxidx
+					that.faces[faceidx].b = vtxidx + 1
+					that.faces[faceidx].c = vtxidx + (that.xSegments + 1)
+					that.faces[faceidx].normal = normal
+					that.faces[faceidx].color = defaultColor
+					that.faces[faceidx].vertexNormals = [normal.clone(), normal.clone(), normal.clone()]
+					that.faces[faceidx].materialIndex = materialIndex
 
-					this.faces.push(face)
-					this.faceVertexUvs[0].push([uva, uvb, uvc])
+					that.faceVertexUvs[0][faceidx][0] = uva
+					that.faceVertexUvs[0][faceidx][1] = uvb
+					that.faceVertexUvs[0][faceidx][2] = uvc
 
-					face = new THREE.Face3(vtxidx + (xSegments + 1), vtxidx + 1, vtxidx + (xSegments + 2))
+					faceidx++
 
-					normal = getNormal(this.vertices, i, j, 1.0)
-					ypos = getYPos(this.vertices, i, j, 1.0)
+					normal = that.getNormal(that.vertices, that.xSegments, i, j, 1.0)
+					//ypos = _getYPos(this.vertices, i, j, 1.0)
 					//materialIndex = ypos < parent.groundHeight ? 2 : (ypos > parent.rockHeight ? 0 : 1)
 
-					face.normal.copy(normal)
-					face.vertexNormals.push(normal.clone(), normal.clone(), normal.clone())
-					face.materialIndex = materialIndex
+					that.faces[faceidx].a = vtxidx + (that.xSegments + 1)
+					that.faces[faceidx].b = vtxidx + 1
+					that.faces[faceidx].c = vtxidx + (that.xSegments + 2)
+					that.faces[faceidx].normal = normal
+					that.faces[faceidx].color = defaultColor
+					that.faces[faceidx].vertexNormals = [normal.clone(), normal.clone(), normal.clone()]
+					that.faces[faceidx].materialIndex = materialIndex
 
-					this.faces.push(face)
-					this.faceVertexUvs[0].push([uvc, uvb, uvd])
+					that.faceVertexUvs[0][faceidx][0] = uvc
+					that.faceVertexUvs[0][faceidx][1] = uvb
+					that.faceVertexUvs[0][faceidx][2] = uvd
+
+					vtxidx++
+					faceidx++
 				}
+				vtxidx++
 			}
 
-			this.mergeVertices()
+			that.verticesNeedUpdate = true
+			that.normalsNeedUpdate = true
+			that.colorsNeedUpdate = true
 
 			parent.dirty = false
 		}
+	}
 
-		GeometryGenerator.prototype = Object.create( THREE.Geometry.prototype )
-		GeometryGenerator.prototype.constructor = GeometryGenerator
+	ThreeProceduralGroundPlugin.prototype.GeometryGenerator.prototype = Object.create( THREE.Geometry.prototype )
+	ThreeProceduralGroundPlugin.prototype.GeometryGenerator.prototype.constructor = ThreeProceduralGroundPlugin.prototype.GeometryGenerator
 
+	// -- geometry
 
-		this.geometry = new GeometryGenerator(this.xSize, this.ySize, this.zSize)
-		this.material = new THREE.MeshFaceMaterial([new THREE.MeshLambertMaterial({ color: 0xB29E8C }), new THREE.MeshLambertMaterial({ color: 0xCC6D14 }), new THREE.MeshLambertMaterial({ color: 0x6DB273 })])
-		//this.material.wireframe = true
-		this.object3d = new THREE.Mesh(this.geometry, this.material)
+	ThreeProceduralGroundPlugin.prototype.generate_mesh = function() {
+		if (!(this.noise && this.noise.rngSeed == this.rngSeed)) {
+			this.noise = new E2.Noise(2048, this.rngSeed)
+		}
+
+		var needsReinitialising = !this.geometry || this.geometry.needsReinitialising(this.xSize, this.ySize, this.zSize)
+
+		if (needsReinitialising) {
+			// only generate arrays if need to
+			this.geometry = new this.GeometryGenerator(this)
+			this.geometry.initialise(this.xSize, this.ySize, this.zSize)
+			this.material = new THREE.MeshFaceMaterial([new THREE.MeshLambertMaterial({ color: 0xB29E8C }), new THREE.MeshLambertMaterial({ color: 0xCC6D14 }), new THREE.MeshLambertMaterial({ color: 0x6DB273 })])
+			//this.material.wireframe = true
+			this.object3d = new THREE.Mesh(this.geometry, this.material)
+		}
+
+		// update the actual vertex data
+		this.geometry.update()
 
 		// back reference for object picking
 		this.object3d.backReference = this
