@@ -1475,21 +1475,21 @@ Application.prototype.openPresetSaveDialog = function(serializedGraph) {
 	})
 };
 
-Application.prototype.onSaveACopyClicked = function(cb)
-{
+Application.prototype.onSaveACopyClicked = function(cb) {
 	this.openSaveACopyDialog();
 }
 
-Application.prototype.openSaveACopyDialog = function(cb)
-{
+Application.prototype.openSaveACopyDialog = function(cb) {
 	var that = this
 
-	if (!E2.models.user.get('username'))
-	{
-		return E2.controllers.account.openLoginModal();
+	if (!E2.models.user.get('username')) {
+		return E2.controllers.account.openLoginModal()
+			.then(this.openSaveACopyDialog.bind(this))
 	}
 
 	E2.dom.load_spinner.show();
+
+	ga('send', 'event', 'Save a Copy', 'clicked')
 
 	$.get(URL_GRAPHS, function(files) {
 		var fcs = new FileSelectControl()
@@ -1514,6 +1514,9 @@ Application.prototype.openSaveACopyDialog = function(cb)
 					dataType: 'json',
 					success: function(saved) {
 						E2.dom.load_spinner.hide();
+
+						ga('send', 'event', 'graph', 'saved')
+						
 						if (cb)
 							cb();
 					},

@@ -35,14 +35,13 @@ AccountController.prototype._bindEvents = function(el)
 	});
 }
 
-AccountController.prototype.openLoginModal = function()
-{
-
-	var self = this;
+AccountController.prototype.openLoginModal = function() {
+	var dfd = when.defer()
 	var loginTemplate = E2.views.account.login;
 
-	var bb = bootbox.dialog(
-	{
+	ga('send', 'event', 'account', 'open', 'loginModal')
+
+	var bb = bootbox.dialog({
 		animate: false,
 		show: true,
 		message: loginTemplate()
@@ -72,12 +71,16 @@ AccountController.prototype.openLoginModal = function()
 			success: function(user)
 			{
 				console.log('Logged in as ' + user.username);
+				ga('send', 'event', 'account', 'loggedIn', user.username)
 				E2.models.user.set(user);
 				bootbox.hideAll();
+				dfd.resolve()
 			},
 			dataType: 'json'
 		});
 	});
+
+	return dfd.promise
 }
 
 AccountController.prototype.openSignupModal = function()
@@ -85,6 +88,8 @@ AccountController.prototype.openSignupModal = function()
 
 	var self = this;
 	var signupTemplate = E2.views.account.signup;
+
+	ga('send', 'event', 'account', 'open', 'signupModal')
 
 	var bb = bootbox.dialog(
 	{
@@ -119,6 +124,7 @@ AccountController.prototype.openSignupModal = function()
 			success: function(user)
 			{
 				console.log('Signed up as ' + user.username);
+				ga('send', 'event', 'account', 'signedUp', user.username)
 				E2.models.user.set(user);
 				bootbox.hideAll();
 			},

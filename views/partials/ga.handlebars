@@ -5,5 +5,10 @@
 		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
 		  ga('create', '{{{KEY_GA}}}', 'auto');
-		  ga('send', 'pageview');
+{{else}}
+	ga = function() {
+		console.log('ga:', arguments)
+	}
 {{/if}}
+
+ga('send', 'pageview');
