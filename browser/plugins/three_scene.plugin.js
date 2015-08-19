@@ -69,8 +69,6 @@
 			return
 		}
 
-		console.log('update_meshes')
-
 		this.reset()
 
 		for (mesh in this.meshes) {
@@ -85,16 +83,10 @@
 			}
 		}
 
-		//var light = new THREE.DirectionalLight( 0xFFFFFF ); // soft white light
-		//this.scene.add( light );
-
-		console.log("scene has " + this.scene.children.length + " objects")
-
 		this.meshes_dirty = false
 	}
 
 	ThreeScenePlugin.prototype.reset = function () {
-		console.log('reset scene')
 		this.scene = new THREE.Scene()
 		window._scene = this.scene
 
@@ -106,7 +98,7 @@
 		//	return;
 
 		if (this.meshes[slot.index] != data) {
-			console.log("add mesh to scene " + JSON.stringify(slot))
+			//console.log("add mesh to scene " + JSON.stringify(slot))
 			this.meshes[slot.index] = data
 			this.meshes_dirty = true
 		}
