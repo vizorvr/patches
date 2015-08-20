@@ -195,9 +195,8 @@ ColorPicker.prototype.update_value = function(c) {
 	nc = [cnv(0), cnv(1), cnv(2)];
 	var rgb = this.color ? this.color : null;
 	
-	if(!rgb || rgb[0] !== nc[0] || rgb[1] !== nc[1] || rgb[2] !== nc[2]) {
+	if(!rgb || rgb.r !== nc[0] || rgb.g !== nc[1] || rgb.b !== nc[2]) {
 		rgb.setRGB(nc[0], nc[1], nc[2])
-
 		this.updated = true;
 	}
 	
