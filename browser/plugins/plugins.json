@@ -285,10 +285,7 @@
 	"THREE/Geometry/Sphere": "three_geometry_sphere",
 	"THREE/Geometry/Plane": "three_geometry_plane",
 
-	"THREE/Geometry/Text": "three_geometry_text",
-
 	"THREE/Material/Basic": "three_material",
-	"THREE/Material/Shader": "three_material_shader",
 	"THREE/Material/Lambert": "three_material_lambert",
 
 	"THREE/Light/Ambient Light": "three_ambient_light",
