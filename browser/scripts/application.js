@@ -1149,7 +1149,7 @@ Application.prototype.onWindowResize = function() {
 
 Application.prototype.toggleNoodles = function() {
 	this.noodlesVisible = !this.noodlesVisible
-	E2.dom.canvas_parent.toggle()
+	E2.dom.canvas_parent.toggle(this.noodlesVisible)
 }
 
 Application.prototype.toggleLeftPane = function()
@@ -2060,7 +2060,7 @@ Application.prototype.showFirstTimeDialog = function() {
 	if (!!Cookies.get('vizor'))
 		return;
 
-	Cookies.set('vizor', { seen: 1 })
+	Cookies.set('vizor', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
 	var diag = bootbox.dialog({
 		title: '<h3>First time here?</h3>',
