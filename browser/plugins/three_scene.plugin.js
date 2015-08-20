@@ -112,6 +112,13 @@
 		}
 	}
 
+	ThreeScenePlugin.prototype.connection_changed = function(on, conn, slot) {
+		if (!on) {
+			this.meshes[slot.index] = undefined
+		}
+		this.meshes_dirty = true
+	}
+
 	ThreeScenePlugin.prototype.update_output = function () {
 		// console.log('update scene output')
 		return this.scene
