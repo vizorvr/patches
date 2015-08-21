@@ -153,12 +153,14 @@
 			this.effect = new THREE.VREffect(this.renderer)
 			this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: false })
 
-
 			E2.core.on('resize', this.resize.bind(this))
 			// E2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this))
 			E2.core.on('fullScreenChangeRequested', this.toggleFullScreen.bind(this))
 
 			this.setup_object_picking()
+
+			// resize to initial size
+			this.resize()
 		}
 	}
 
