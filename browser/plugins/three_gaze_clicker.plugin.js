@@ -7,7 +7,8 @@
 
 		this.input_slots = [
 			{name: 'camera', dt: core.datatypes.CAMERA},
-			{name: 'scene', dt: core.datatypes.SCENE}
+			{name: 'scene', dt: core.datatypes.SCENE},
+			{name: 'delay', dt: core.datatypes.FLOAT, def: 1.0}
 		]
 
 		this.output_slots = [
@@ -15,13 +16,14 @@
 		]
 
 		this.always_update = true
+
+		this.clickDelay = 1.0
 	}
 
 	ThreeGazeClicker.prototype = Object.create(Plugin.prototype)
 
 	ThreeGazeClicker.prototype.reset = function() {
 		this.clickFactor = 0.0
-		this.clickDelay = 1.0
 		this.clickTime = 0.0
 	}
 
@@ -34,6 +36,9 @@
 			break
 		case 1: // scene
 			this.scene = data
+			break
+		case 2: // delay
+			this.clickDelay = data
 			break
 		default:
 			break
@@ -59,8 +64,6 @@
 
 		that = this
 
-		var i, j
-
 		this.initialise = function() {
 			THREE.Geometry.call(that)
 
@@ -74,8 +77,8 @@
 
 			var normal = new THREE.Vector3(0,0,1)
 
-			for (j = 0; j < that.segments; j++) {
-				for (i = 0; i < that.radialMarkers.length; i+=2) {
+			for (var j = 0; j < that.segments; j++) {
+				for (var i = 0; i < that.radialMarkers.length; i+=2) {
 					var faceidxa = (j) * that.radialMarkers.length + i
 					var faceidxb = (j) * that.radialMarkers.length + i + 1
 					var faceidxc = (j + 1) * that.radialMarkers.length + i
@@ -104,8 +107,8 @@
 				radialMarkers[2] = this.radialMarkers[1] + (this.radialMarkers[3] - this.radialMarkers[1]) * (1 - fadeoutfactor)
 			}
 
-			for (j = 0; j < that.segments + 1; j++) {
-				for (i = 0; i < radialMarkers.length; i++) {
+			for (var j = 0; j < that.segments + 1; j++) {
+				for (var i = 0; i < radialMarkers.length; i++) {
 					var angle = j / that.segments
 
 					// clamp outer ring
@@ -179,9 +182,9 @@
 
 		if (this.lastObj) {
 			this.clickTime = this.core.abs_t - this.objTimer
-			var clickFactor = Math.min(this.clickTime, this.clickDelay)
+			var clickFactor = Math.min(this.clickTime, this.clickDelay) / this.clickDelay // 0..1
 
-			if (this.clickFactor < this.clickDelay && clickFactor >= this.clickDelay) {
+			if (this.clickFactor < 1 && clickFactor >= 1) {
 				// only click once when the timer passes this.clickDelay (default 1 second)
 				this.lastObj.onClick()
 			}
@@ -207,7 +210,7 @@
 		mesh.quaternion.copy(this.camera.quaternion)
 		mesh.scale.copy(new THREE.Vector3(0.05, 0.05, 1.0))
 
-		this.geometry.update(this.clickFactor, Math.max(1.0 - Math.max(0.0, this.clickTime - 1.0) * 10.0, 0.0))
+		this.geometry.update(this.clickFactor, Math.max(1.0 - Math.max(0.0, this.clickTime - this.clickDelay) * 10.0, 0.0))
 
 		if (this.scene.children[1].children.indexOf(mesh) < 0) {
 			this.scene.children[1].add(mesh)
