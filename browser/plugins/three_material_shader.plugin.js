@@ -141,9 +141,10 @@
 		}
 		else
 		{
-			this.slot_data[slot.uid] = data;
+			this.slot_data[slot.uid] = data
+			this.dirty = true
 		}
-	};
+	}
 
 	ThreeShaderMaterialPlugin.prototype.update_state = function()
 	{
@@ -151,41 +152,62 @@
 			return
 		}
 
+		var dts = this.core.datatypes
+
 		var slots, slot
 
 		slots = this.node.getDynamicInputSlots()
 
 		var uniforms = {}
 
+		var vs_src = this.state.vs_src.slice(0)
+		var ps_src = this.state.ps_src.slice(0)
+
 		for(var i=0; i < slots.length; i++) {
-			var dt = ''
+			var three_dt = ''
+			var shader_dt = ''
+
 			slot = slots[i]
 			var dtid = slot.dt.id
 
-			if(dtid === dts.FLOAT.id)
-				dt = 'f'
-			else if(dtid === dts.TEXTURE.id)
-				dt = 't'
-			else if(dtid === dts.COLOR.id)
-				dt = 'v4'
-			else if(dtid === dts.MATRIX.id)
-				dt = 'm4'
-			else if(dtid === dts.VECTOR.id)
-				dt = 'v3'
+			if(dtid === dts.FLOAT.id) {
+				three_dt = 'f'
+				shader_dt = 'float'
+			}
+			else if(dtid === dts.TEXTURE.id) {
+				three_dt = 't'
+				shader_dt = 'sampler2D'
+			}
+			else if(dtid === dts.COLOR.id) {
+				three_dt = 'v4'
+				shader_dt = 'vec4'
+			}
+			else if(dtid === dts.MATRIX.id) {
+				three_dt = 'm4'
+				shader_dt = 'mat4'
+			}
+			else if(dtid === dts.VECTOR.id) {
+				three_dt = 'v3'
+				shader_dt = 'vec3'
+			}
 
-			uniforms[slot.name] = {type: dt, value: slot.uniform}
+			uniforms[slot.name] = {type: three_dt, value: this.slot_data[slot.uid]}
+
+			// add to shader source
+			vs_src = 'uniform ' + shader_dt + ' ' + slot.name + ';\n' + vs_src
+			ps_src = 'uniform ' + shader_dt + ' ' + slot.name + ';\n' + ps_src
 		}
 
 		// rebuild the whole shader, could just update what's changed
 		this.material = new THREE.ShaderMaterial( {
 			uniforms: uniforms,
 			attributes: {},
-			vertexShader: this.state.vs_src,
-			fragmentShader: this.state.ps_src
-		} );
+			vertexShader: vs_src,
+			fragmentShader: ps_src
+		} )
 
 		this.dirty = false
-	};
+	}
 
 	ThreeShaderMaterialPlugin.prototype.reset = function() {
 		this.material = new THREE.ShaderMaterial()
@@ -206,5 +228,5 @@
 		}
 	}
 
-})();
+})()
 
