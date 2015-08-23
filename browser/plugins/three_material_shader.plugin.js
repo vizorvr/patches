@@ -169,6 +169,7 @@
 
 			slot = slots[i]
 			var dtid = slot.dt.id
+			var data = this.slot_data[slot.uid]
 
 			if(dtid === dts.FLOAT.id) {
 				three_dt = 'f'
@@ -181,17 +182,22 @@
 			else if(dtid === dts.COLOR.id) {
 				three_dt = 'v4'
 				shader_dt = 'vec4'
+				data = new THREE.Color(data.x, data.y, data.z, data.w)
 			}
 			else if(dtid === dts.MATRIX.id) {
 				three_dt = 'm4'
 				shader_dt = 'mat4'
+				data = new THREE.Matrix4(
+					data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7],
+					data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15])
 			}
 			else if(dtid === dts.VECTOR.id) {
 				three_dt = 'v3'
 				shader_dt = 'vec3'
+				data = new THREE.Vector3(data.x, data.y, data.z)
 			}
 
-			uniforms[slot.name] = {type: three_dt, value: this.slot_data[slot.uid]}
+			uniforms[slot.name] = {type: three_dt, value: data}
 
 			// add to shader source
 			vs_src = 'uniform ' + shader_dt + ' ' + slot.name + ';\n' + vs_src
