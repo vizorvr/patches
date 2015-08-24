@@ -10,8 +10,7 @@
 		]
 
 		this.output_slots = [{
-			name: 'material',
-			dt: core.datatypes.MATERIAL
+			name: 'material', dt: core.datatypes.MATERIAL
 		}]
 	}
 
