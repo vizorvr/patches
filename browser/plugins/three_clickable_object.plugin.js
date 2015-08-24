@@ -14,6 +14,7 @@
 	}
 
 	ThreeClickableObject.prototype.reset = function() {
+		this.setClickedOnNextUpdate = false
 		this.clicked = false
 	}
 
@@ -39,7 +40,7 @@
 	}
 
 	ThreeClickableObject.prototype.on_click = function() {
-		this.clicked = true
+		this.setClickedOnNextUpdate = true
 	}
 
 	ThreeClickableObject.prototype.update_state = function() {
@@ -47,6 +48,7 @@
 			this.object3d.onClick = this.on_click.bind(this)
 		}
 
-		this.clicked = false
+		this.clicked = this.setClickedOnNextUpdate
+		this.setClickedOnNextUpdate = false
 	}
 })()

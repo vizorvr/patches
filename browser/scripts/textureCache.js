@@ -16,7 +16,7 @@ TextureCache.prototype.get = function(url) {
 	var texture = THREE.ImageUtils.loadTexture(url)
 	texture.wrapS = THREE.RepeatWrapping
 	texture.wrapT = THREE.RepeatWrapping
-	texture.repeat.set(4, 4)
+	texture.repeat.set(1, 1)
 	
 	msg('INFO: Fetching texture \'' + url + '\'.')
 	
