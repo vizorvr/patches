@@ -288,6 +288,7 @@
 
 	"THREE/Material/Basic": "three_material",
 	"THREE/Material/Lambert": "three_material_lambert",
+	"THREE/Material/Shader": "three_material_shader",
 
 	"THREE/Light/Ambient Light": "three_ambient_light",
 	"THREE/Light/Directional Light": "three_directional_light",
