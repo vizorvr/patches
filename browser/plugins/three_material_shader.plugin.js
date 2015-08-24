@@ -32,6 +32,9 @@
 			that.updated = that.dirty = true
 			that._refreshEditor()
 		})
+
+		this.shader_dirty = true
+		this.uniforms_dirty = true
 	}
 
 	ThreeShaderMaterialPlugin.prototype = Object.create(Plugin.prototype)
@@ -98,7 +101,7 @@
 				addSlot(inputName, dt)
 			})
 			.on('build', function() {
-				that.updated = that.dirty = true
+				that.updated = that.shader_dirty = true
 			})
 			.on('changed', function(v) {
 				if (v === that.state[stateKey])
@@ -129,7 +132,7 @@
 	ThreeShaderMaterialPlugin.prototype.connection_changed = function(on, conn, slot) {
 		if (!on && slot.type === E2.slot_type.input) {
 			//if(slot.index === 0)
-			//	this.shader = null
+			this.uniforms_dirty = true
 		}
 	}
 
@@ -142,15 +145,17 @@
 		else
 		{
 			this.slot_data[slot.uid] = data
-			this.dirty = true
+			this.uniforms_dirty = true
 		}
 	}
 
 	ThreeShaderMaterialPlugin.prototype.update_state = function()
 	{
-		if (!this.dirty) {
+		if (!this.uniforms_dirty && !this.shader_dirty) {
 			return
 		}
+
+		this.uniforms_dirty = this.uniforms_dirty || this.shader_dirty
 
 		var dts = this.core.datatypes
 
@@ -158,61 +163,85 @@
 
 		slots = this.node.getDynamicInputSlots()
 
-		var uniforms = {}
+		if (this.shader_dirty || !this.material) {
+			var vs_src = this.state.vs_src.slice(0)
+			var ps_src = this.state.ps_src.slice(0)
 
-		var vs_src = this.state.vs_src.slice(0)
-		var ps_src = this.state.ps_src.slice(0)
+			this.uniforms = {}
 
-		for(var i=0; i < slots.length; i++) {
-			var three_dt = ''
-			var shader_dt = ''
+			for(var i=0; i < slots.length; i++) {
+				var three_dt = ''
+				var shader_dt = ''
 
-			slot = slots[i]
-			var dtid = slot.dt.id
-			var data = this.slot_data[slot.uid]
+				slot = slots[i]
+				var dtid = slot.dt.id
 
-			if(dtid === dts.FLOAT.id) {
-				three_dt = 'f'
-				shader_dt = 'float'
+				if(dtid === dts.FLOAT.id) {
+					three_dt = 'f'
+					shader_dt = 'float'
+				}
+				else if(dtid === dts.TEXTURE.id) {
+					three_dt = 't'
+					shader_dt = 'sampler2D'
+				}
+				else if(dtid === dts.COLOR.id) {
+					three_dt = 'v4'
+					shader_dt = 'vec4'
+				}
+				else if(dtid === dts.MATRIX.id) {
+					three_dt = 'm4'
+					shader_dt = 'mat4'
+				}
+				else if(dtid === dts.VECTOR.id) {
+					three_dt = 'v3'
+					shader_dt = 'vec3'
+				}
+
+				this.uniforms[slot.name] = {type: three_dt/*, value: data*/}
+
+				// add to shader source
+				vs_src = 'uniform ' + shader_dt + ' ' + slot.name + ';\n' + vs_src
+				ps_src = 'uniform ' + shader_dt + ' ' + slot.name + ';\n' + ps_src
 			}
-			else if(dtid === dts.TEXTURE.id) {
-				three_dt = 't'
-				shader_dt = 'sampler2D'
-			}
-			else if(dtid === dts.COLOR.id) {
-				three_dt = 'v4'
-				shader_dt = 'vec4'
-				data = new THREE.Color(data.x, data.y, data.z, data.w)
-			}
-			else if(dtid === dts.MATRIX.id) {
-				three_dt = 'm4'
-				shader_dt = 'mat4'
-				data = new THREE.Matrix4(
-					data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7],
-					data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15])
-			}
-			else if(dtid === dts.VECTOR.id) {
-				three_dt = 'v3'
-				shader_dt = 'vec3'
-				data = new THREE.Vector3(data.x, data.y, data.z)
-			}
 
-			uniforms[slot.name] = {type: three_dt, value: data}
-
-			// add to shader source
-			vs_src = 'uniform ' + shader_dt + ' ' + slot.name + ';\n' + vs_src
-			ps_src = 'uniform ' + shader_dt + ' ' + slot.name + ';\n' + ps_src
+			this.material = new THREE.ShaderMaterial( {
+				uniforms: this.uniforms,
+				attributes: {},
+				vertexShader: vs_src,
+				fragmentShader: ps_src
+			} )
 		}
 
-		// rebuild the whole shader, could just update what's changed
-		this.material = new THREE.ShaderMaterial( {
-			uniforms: uniforms,
-			attributes: {},
-			vertexShader: vs_src,
-			fragmentShader: ps_src
-		} )
+		if (this.uniforms_dirty) {
+			for(var i=0; i < slots.length; i++) {
+				slot = slots[i]
+				var dtid = slot.dt.id
+				var data = this.slot_data[slot.uid]
 
-		this.dirty = false
+				/*if(dtid === dts.FLOAT.id) {
+					// data as is
+				}
+				else if(dtid === dts.TEXTURE.id) {
+					// data as is
+				}
+				else*/ if(dtid === dts.COLOR.id) {
+					data = data ? new THREE.Color(data.x, data.y, data.z, data.w) : new THREE.Color()
+				}
+				else if(dtid === dts.MATRIX.id) {
+					data = data ? new THREE.Matrix4(
+						data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7],
+						data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15]) : new THREE.Matrix4()
+				}
+				else if(dtid === dts.VECTOR.id) {
+					data = data ? new THREE.Vector3(data.x, data.y, data.z) : new THREE.Vector3()
+				}
+
+				this.uniforms[slot.name]['value'] = data
+			}
+		}
+
+		this.shader_dirty = false
+		this.uniforms_dirty = false
 	}
 
 	ThreeShaderMaterialPlugin.prototype.reset = function() {
@@ -220,6 +249,8 @@
 
 		this.state.vs_src = this.material.vertexShader
 		this.state.ps_src = this.material.fragmentShader
+
+		this.uniforms_dirty = this.shader_dirty = true
 	}
 
 	ThreeShaderMaterialPlugin.prototype.update_output = function() {
@@ -228,7 +259,7 @@
 
 	ThreeShaderMaterialPlugin.prototype.state_changed = function(ui) {
 		if(!ui) {
-			this.dirty = false
+			//this.shader_dirty = true
 		} else {
 			this.core.add_aux_script('ace/src-noconflict/ace.js')
 		}
