@@ -62,7 +62,7 @@
 		this.segments = 16
 		this.radialMarkers = [0, 0.3, 0.8, 1.0]
 
-		that = this
+		var that = this
 
 		this.initialise = function() {
 			THREE.Geometry.call(that)
