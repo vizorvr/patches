@@ -38,7 +38,9 @@ ColorPicker.prototype.create_ui = function()
 	}
 
 	function onMouseUp() {
-		console.log('up', that.state)
+		if (!that._mouseDownValue)
+			return;
+
 		if (that._mouseDownValue.hue !== that.state.hue)
 			that.undoableSetState('hue',
 				that.state.hue,

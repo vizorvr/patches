@@ -8,7 +8,7 @@ function ThreeObject3DPlugin(core) {
 		{ name: 'rotation', dt: core.datatypes.VECTOR },
 		{ name: 'scale', dt: core.datatypes.VECTOR },
 
-		{ name: 'visible', dt: core.datatypes.BOOL },
+		{ name: 'visible', dt: core.datatypes.BOOL, def: true },
 		{ name: 'castShadow', dt: core.datatypes.BOOL },
 		{ name: 'receiveShadow', dt: core.datatypes.BOOL },
 	]
@@ -23,7 +23,6 @@ function ThreeObject3DPlugin(core) {
 ThreeObject3DPlugin.prototype = Object.create(Plugin.prototype)
 
 ThreeObject3DPlugin.prototype.reset = function() {
-	console.log('RESET')
 	Plugin.prototype.reset.apply(this, arguments)
 	this.object3d = new THREE.Object3D()
 }

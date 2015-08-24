@@ -51,7 +51,7 @@ function Application() {
 	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
-	this.noodlesVisible = false
+	this.noodlesVisible = !E2.util.isMobile()
 
 	this.mousePosition = [400,200]
 
@@ -2095,7 +2095,7 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	that.setupStoreListeners()
 
 	function start() {
-		E2.dom.canvas_parent.toggle()
+		E2.dom.canvas_parent.toggle(that.noodlesVisible)
 		
 		E2.app.start()
 
@@ -2110,9 +2110,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 
 	if (loadGraphUrl)
 		E2.app.loadGraph(loadGraphUrl, start)
-	else {
+	else
 		E2.app.setupEditorChannel().then(start)
-	}
 }
 
 /**

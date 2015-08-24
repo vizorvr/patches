@@ -38,6 +38,7 @@
 	ThreeProceduralGroundPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
 
 	ThreeProceduralGroundPlugin.prototype.reset = function() {
+		ThreeObject3DPlugin.prototype.reset.apply(this, arguments)
 		if (this.dirty)
 			this.generate_mesh()
 	}

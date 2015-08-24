@@ -20,13 +20,6 @@ global.PeopleManager = function() {}
 global.PeopleStore = function() {
 	this.list = function(){ return [] }
 }
-global.Material = require('../../scripts/material');
-global.Mesh = require('../../scripts/mesh');
-global.ComposeShader = function(){}
-global.Camera = function(){}
-
-global.vec3 = { createFrom: function() {} }
-global.vec4 = { createFrom: function() {} }
 
 global.NodeUI = function() {
 	this.dom = [$()]
@@ -37,12 +30,22 @@ global.NodeUI = function() {
 	this.dom[0].style = {}
 }
 
-global.VertexBuffer = require('../../scripts/renderer').VertexBuffer;
-global.IndexBuffer = require('../../scripts/renderer').IndexBuffer;
 global.Registers = require('../../scripts/registers');
 global.PresetManager = function() {}
 
 require('../../scripts/commands/graphEditCommands')
+
+global.TextureCache = function(){}
+
+global.THREE = {
+	Vector3: function(){},
+	Matrix4: function(){},
+	Color: function(){},
+	Camera: function(){},
+	Material: function(){},
+	PerspectiveCamera: function(){}
+}
+
 
 global.UndoManager = require('../../scripts/commands/undoManager.js')
 global.GraphApi = require('../../scripts/graphApi.js')

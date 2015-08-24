@@ -5,14 +5,14 @@
 		this.desc = 'THREE.js OBJ loader'
 		
 		// add slots above the ones from ThreeObject3DPlugin
-		this.input_slots.unshift({ name: 'material', dt: core.datatypes.MATERIAL })
 		this.input_slots.unshift({ name: 'url', dt: core.datatypes.TEXT })
 	
 		this.dirty = true
 
-		this.state = {
-			materialCount: 0
-		}
+		this.state = { url: '' }
+
+		this.childrenByMaterialName = {}
+		this.materials = {}
 	}
 
 	ThreeLoaderObjPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
@@ -36,7 +36,7 @@
 				.on('closed', function() {
 					if (newValue === oldValue)
 						return
-				
+					console.log('closed', newValue, that.state.url)
 					that.undoableSetState('url', newValue, oldValue)
 				})
 		})
@@ -45,18 +45,24 @@
 	}
 
 	ThreeLoaderObjPlugin.prototype.update_input = function(slot, data) {
-		switch(slot.name) {
-			case 'url': // url
+		if (slot.uid) {
+			this.materials[slot.name] = data
+
+			if (!this.childrenByMaterialName[slot.name])
+				return;
+
+			for (var i=0; i < this.childrenByMaterialName[slot.name].length; i++)
+				this.childrenByMaterialName[slot.name][i].material = data
+
+			return;
+		}
+
+		switch(slot.index) {
+			case 0: // url
 				if (this.state.url === data)
 					return
-				console.log('url changed in obj loader')
 				this.state.url = data
 				this.state_changed()
-				break;
-			case 'material': // material
-				this.material = data
-				if (this.object3d)
-					this.object3d.material = this.material
 				break;
 			default:
 				return ThreeObject3DPlugin.prototype.update_input
@@ -64,66 +70,96 @@
 		}
 	}
 
-	ThreeLoaderObjPlugin.prototype.adjustMaterialSlots = function(materialCount) {
+	ThreeLoaderObjPlugin.prototype.adjustMaterialSlots = function() {
+		var that = this
 		var materialSlots = this.node.getDynamicInputSlots()
+		var materialNames = Object.keys(this.childrenByMaterialName)
 
-		console.log('adjustMaterialSlots', materialSlots.length, materialCount)
+		// filter out any old material slots that don't belong to this obj
+		materialSlots.slice().map(function(mSlot) {
+			if (materialNames.indexOf(mSlot.name) === -1) {
+				that.node.remove_slot(E2.slot_type.input, mSlot.uid)
+			}
+		})
 
-		while (materialSlots.length > materialCount)
-			this.node.remove_slot(materialSlots[materialSlots.length - 1])
-
-		while (materialSlots.length < materialCount) {
-			this.node.add_slot(E2.slot_type.input, {
-				dt: E2.dt.MATERIAL,
-				uid: this.node.uid + 'material' + (materialSlots.length + 1),
-				name: 'material' + (materialSlots.length + 1)
+		// then check that all the material slots of this obj are there
+		materialNames.map(function(matName) {
+			var found = materialSlots.some(function(mSlot) {
+				return (mSlot.name === matName)
 			})
-		}
 
-		console.log('adjustMaterialSlots after', materialSlots.length)
+			if (found)
+				return;
+
+			var slotUid = that.node.uid + matName
+
+			that.node.add_slot(E2.slot_type.input, {
+				dt: E2.dt.MATERIAL,
+				uid: slotUid,
+				name: matName
+			})
+		})
+	}
+	
+	ThreeLoaderObjPlugin.prototype.onObjLoaded = function(obj) {
+		var that = this
+
+		this.object3d = obj
+
+		msg('Finished loading '+ this.state.url)
+
+		this.childrenByMaterialName = {}
+
+		obj.traverse(function(child) {
+			if (child instanceof THREE.Mesh && child.material.name) {
+				var matName = 'mat-'+child.material.name
+					.toLowerCase()
+					.replace(/[^a-z0-9]+/g,' ')
+					.replace(/ +/g, '-')
+
+				if (!that.childrenByMaterialName[matName])
+					that.childrenByMaterialName[matName] = []
+
+				that.childrenByMaterialName[matName].push(child)
+			}
+		})
+
+		this.adjustMaterialSlots()
+
+		this.updated = true
 	}
 
 	ThreeLoaderObjPlugin.prototype.update_state = function() {
 		if (!this.dirty)
 			return
 
-		var that = this
+		if (!this.state.url)
+			return;
 
 		if (this.object3d)
 			this.object3d = null
 
-		var loader = new THREE.OBJLoader()
-		loader.load(this.state.url, function(obj) {
-			that.object3d = obj
-			that.object3d.material = that.material
+		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 
-			msg('Finished loading '+ that.state.url)
+		console.log('ThreeLoaderObjPlugin loading', this.state.url)
 
-			var objMaterialCount = 0
-
-			obj.traverse(function(child) {
-				if (child instanceof THREE.Mesh) {
-					console.log('child', child)
-					var inputMaterial = that.inputValues['material' + objMaterialCount]
-					child.material = inputMaterial || that.material
-					objMaterialCount++
-				}
-			})
-
-			console.log('Found', objMaterialCount, 'materials')
-			that.adjustMaterialSlots(objMaterialCount)
-
-			that.updated = true
-		}, function() {
-			console.log('Loading progress', that.state.url, arguments)
-		}, function(err) {
-			msg('ERROR: '+err.toString())
-		})
+		this.loadObj()
 
 		this.dirty = false
 	}
 
+	ThreeLoaderObjPlugin.prototype.loadObj = function() {
+		var that = this
+		var loader = new THREE.OBJLoader()
+		loader.load(this.state.url, this.onObjLoaded.bind(this), function() {
+			console.log('Loading progress', that.state.url, arguments)
+		}, function(err) {
+			msg('ERROR: '+err.toString())
+		})
+	}
+
 	ThreeLoaderObjPlugin.prototype.state_changed = function(ui) {
+		console.log('state_changed', this.state)
 		if (!this.state.url)
 			return
 

@@ -18,6 +18,7 @@
 	ThreeMeshPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
 
 	ThreeMeshPlugin.prototype.reset = function() {
+		ThreeObject3DPlugin.prototype.reset.apply(this)
 		console.log('reset mesh')
 		this.geometry = new THREE.BoxGeometry(1, 1, 1)
 		this.material = new THREE.MeshBasicMaterial({ color: 0xff0000 })

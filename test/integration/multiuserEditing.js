@@ -16,6 +16,8 @@ global.window = {
 	location: { hostname: 'localhost', port: 8000 }
 }
 
+global.ga = function(){}
+
 function rand() {
 	return Math.floor(Math.random() * 100000)
 }

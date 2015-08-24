@@ -16,7 +16,7 @@ E2.p = E2.plugins["convert_camera_matrices"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.camera = new Camera(this.gl);
+	this.camera = new THREE.Camera();
 };
 
 E2.p.prototype.update_input = function(slot, data)
@@ -27,7 +27,7 @@ E2.p.prototype.update_input = function(slot, data)
 E2.p.prototype.update_output = function(slot)
 {
 	if(slot.index === 0)
-		return this.camera.projection;
+		return this.camera.projectionMatrix;
 	else
-		return this.camera.view;
+		return this.camera.viewMatrix; 
 };
