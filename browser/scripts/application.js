@@ -51,7 +51,7 @@ function Application() {
 	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
-	this.noodlesVisible = false
+	this.noodlesVisible = !E2.util.isMobile()
 
 	this.mousePosition = [400,200]
 
@@ -1149,7 +1149,7 @@ Application.prototype.onWindowResize = function() {
 
 Application.prototype.toggleNoodles = function() {
 	this.noodlesVisible = !this.noodlesVisible
-	E2.dom.canvas_parent.toggle()
+	E2.dom.canvas_parent.toggle(this.noodlesVisible)
 }
 
 Application.prototype.toggleLeftPane = function()
@@ -2060,7 +2060,7 @@ Application.prototype.showFirstTimeDialog = function() {
 	if (!!Cookies.get('vizor'))
 		return;
 
-	Cookies.set('vizor', { seen: 1 })
+	Cookies.set('vizor', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
 	var diag = bootbox.dialog({
 		title: '<h3>First time here?</h3>',
@@ -2095,7 +2095,7 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	that.setupStoreListeners()
 
 	function start() {
-		E2.dom.canvas_parent.toggle()
+		E2.dom.canvas_parent.toggle(that.noodlesVisible)
 		
 		E2.app.start()
 
@@ -2110,9 +2110,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 
 	if (loadGraphUrl)
 		E2.app.loadGraph(loadGraphUrl, start)
-	else {
+	else
 		E2.app.setupEditorChannel().then(start)
-	}
 }
 
 /**

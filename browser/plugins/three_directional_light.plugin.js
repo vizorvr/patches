@@ -20,6 +20,8 @@
 	ThreeDirectionalLightPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
 
 	ThreeDirectionalLightPlugin.prototype.reset = function() {
+		ThreeObject3DPlugin.prototype.reset.apply(this, arguments)
+
 		this.object3d = new THREE.DirectionalLight( 0xFFFFFF, this.params.intensity ); // soft white light
 
 		// back reference for object picking

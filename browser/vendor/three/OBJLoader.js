@@ -245,7 +245,6 @@ THREE.OBJLoader.prototype = {
 			} else if ( ( result = uv_pattern.exec( line ) ) !== null ) {
 
 				// ["vt 0.1 0.2", "0.1", "0.2"]
-
 				uvs.push(
 					parseFloat( result[ 1 ] ),
 					parseFloat( result[ 2 ] )

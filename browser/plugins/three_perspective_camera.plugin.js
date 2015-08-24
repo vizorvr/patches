@@ -23,7 +23,8 @@
 	ThreePerspectiveCameraPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
 
 	ThreePerspectiveCameraPlugin.prototype.reset = function() {
-		console.log('reset camera')
+		ThreeObject3DPlugin.prototype.reset.apply(this, arguments)
+
 		this.object3d = new THREE.PerspectiveCamera(
 			45,
 			window.innerWidth/window.innerHeight,

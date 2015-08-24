@@ -18,7 +18,14 @@ global.Store = require('../../scripts/store');
 global.GraphStore = require('../../scripts/graphStore');
 global.PeopleManager = function() {}
 global.PeopleStore = function(){}
-global.Camera = global.Material = function(){}
+
+global.THREE = {
+	Vector3: function(){},
+	Matrix4: function(){},
+	Color: function(){},
+	Material: function(){},
+	PerspectiveCamera: function(){}
+}
 
 global.NodeUI = function() {
 	this.dom = [$()]
@@ -27,7 +34,7 @@ global.NodeUI = function() {
 	this.dom.height = this.dom[0].height
 	this.dom[0].style = {}
 }
-global.Camera = global.Material = function() {}
+global.TextureCache = function() {}
 global.Registers = function() {
 	this.serialise = function(){}
 }
