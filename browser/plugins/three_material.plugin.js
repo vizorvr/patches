@@ -6,6 +6,12 @@
 			{ name: 'texture', dt: core.datatypes.TEXTURE },
 			{ name: 'color', dt: core.datatypes.COLOR },
 			{ name: 'wireframe', dt: core.datatypes.BOOL },
+
+			{
+				name: 'side', dt: core.datatypes.FLOAT,
+				desc: 'Defines which of the face sides will be rendered - front, back or both. ' +
+					'0 = Front, 1 = Back, 2 = Double Sided'
+			},
 		]
 
 		this.output_slots = [{
@@ -28,6 +34,9 @@
 				break;
 			case 2: // wireframe
 				this.material.wireframe = data
+				break;
+			case 3: // side
+				this.material.side = data
 				break;
 		}
 	}
