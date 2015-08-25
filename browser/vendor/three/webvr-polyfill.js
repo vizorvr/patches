@@ -294,9 +294,9 @@ function MouseKeyboardPositionSensorVRDevice() {
 
   // Attach to mouse and keyboard events.
   window.addEventListener('keydown', this.onKeyDown_.bind(this));
-  // window.addEventListener('mousemove', this.onMouseMove_.bind(this));
-  // window.addEventListener('mousedown', this.onMouseDown_.bind(this));
-  // window.addEventListener('mouseup', this.onMouseUp_.bind(this));
+  window.addEventListener('mousemove', this.onMouseMove_.bind(this));
+  window.addEventListener('mousedown', this.onMouseDown_.bind(this));
+  window.addEventListener('mouseup', this.onMouseUp_.bind(this));
 
   this.phi = 0;
   this.theta = 0;
@@ -332,6 +332,9 @@ MouseKeyboardPositionSensorVRDevice.prototype.getState = function() {
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.onKeyDown_ = function(e) {
+  if (E2.app.noodlesVisible)
+    return;
+
   // Track WASD and arrow keys.
   if (e.keyCode == 38 || e.keyCode == 87) { // W or Up key.
     this.animatePhi_(this.phi + KEY_SPEED);
@@ -380,6 +383,8 @@ MouseKeyboardPositionSensorVRDevice.prototype.animateKeyTransitions_ = function(
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.onMouseDown_ = function(e) {
+  if (E2.app.noodlesVisible)
+    return;
   this.rotateStart.set(e.clientX, e.clientY);
   this.isDragging = true;
 };

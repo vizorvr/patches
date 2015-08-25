@@ -1,11 +1,9 @@
 (function() {
-	var ThreeLoaderObjPlugin = E2.plugins.three_loader_obj
-
 	var ThreeLoaderObjMtlPlugin = E2.plugins.three_loader_objmtl = function() {
-		ThreeLoaderObjPlugin.apply(this, arguments)
+		AbstractThreeLoaderObjPlugin.apply(this, arguments)
 	}
 
-	ThreeLoaderObjMtlPlugin.prototype = Object.create(ThreeLoaderObjPlugin.prototype)
+	ThreeLoaderObjMtlPlugin.prototype = Object.create(AbstractThreeLoaderObjPlugin.prototype)
 
 	ThreeLoaderObjMtlPlugin.prototype.loadObj = function() {
 		var that = this

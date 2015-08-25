@@ -248,7 +248,7 @@ Core.prototype.get_default_value = function(dt)
 	if(dt === dts.FLOAT)
 		return 0.0;
 	else if(dt === dts.COLOR)
-		return vec4.createFrom(1, 1, 1, 1);
+		return new THREE.Color(1, 1, 1, 1)
 	else if(dt === dts.MATRIX) {
 		return new THREE.Matrix4()
 	} else if (dt === dts.TEXTURE)
