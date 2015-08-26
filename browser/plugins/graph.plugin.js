@@ -31,9 +31,6 @@ GraphPlugin.prototype.open_editor = function(self)
 {
 	var diag = make('div')
 	var always_upd = $('<input id="always_upd" type="checkbox" title="If false, this graph is updated only when one of its inputs updates." />')
-	var width_inp = $('<select />')
-	var height_inp = $('<select />')
-	var filter_inp = $('<select />')
 	var upd_lbl = $('<div>Always update:</div>')
 	var r1 = make('div')
 	
@@ -69,11 +66,9 @@ GraphPlugin.prototype.open_editor = function(self)
 	diag.append(r1)
 
 	
-	var store_state = function(self, always_upd, width_inp, height_inp, filter_inp) { return function()
+	var store_state = function(self, always_upd) { return function()
 	{
 		self.state.always_update = always_upd.is(":checked")
-		
-		var refresh = self.state.rt_width !== w || self.state.rt_height !== h || self.state.rt_filter !== f
 	}}
 	
 	self.core.create_dialog(diag, 'Edit Preferences', 460, 250, store_state(self, always_upd))
