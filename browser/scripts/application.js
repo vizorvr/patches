@@ -982,9 +982,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 		graph.conns.map(function(conn) {
 			conn.src_nuid = uidMap[conn.src_nuid]
 			conn.dst_nuid = uidMap[conn.dst_nuid]
-
-			if (!conn.uid)
-				conn.uid = E2.uid()
+			conn.uid = E2.uid()
 		})
 
 		return graph
