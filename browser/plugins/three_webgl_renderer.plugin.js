@@ -16,7 +16,7 @@
 			},
 			{
 				name: 'bgcolor',
-				dt: core.datatypes.FLOAT,
+				dt: core.datatypes.COLOR,
 				desc: 'Background color',
 				def: null
 			}
@@ -54,7 +54,7 @@
 				this.scene = data
 				break;
 			case 2:
-				this.renderer.setClearColor(data)
+				this.renderer.setClearColor(new THREE.Color(data.r, data.g, data.b))
 				break;
 		}
 	}

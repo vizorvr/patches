@@ -271,8 +271,6 @@
 
 	"THREE/Procedural Ground": "three_procedural_ground",
 
-	"THREE/Perspective Camera": "three_perspective_camera",
-
 	"THREE/VR Camera": "three_vr_camera",
 
 	"THREE/Loaders/OBJ loader": "three_loader_obj",
@@ -286,8 +284,9 @@
 	"THREE/Geometry/Sphere": "three_geometry_sphere",
 	"THREE/Geometry/Plane": "three_geometry_plane",
 
-	"THREE/Material/Basic": "three_material",
-	"THREE/Material/Lambert": "three_material_lambert",
+	"THREE/Material/Basic Material": "three_material",
+	"THREE/Material/Depth Material": "three_material_depth",
+	"THREE/Material/Lambert Material": "three_material_lambert",
 	"THREE/Material/Shader": "three_material_shader",
 
 	"THREE/Light/Ambient Light": "three_ambient_light",

@@ -1,5 +1,7 @@
 (function() {
 	var ThreeLambertMaterialPlugin = E2.plugins.three_material_lambert = function(core) {
+		AbstractThreeMaterialPlugin.apply(this, arguments)
+		
 		this.desc = 'THREE.js Lambert Material'
 		
 		this.input_slots = [
@@ -7,7 +9,7 @@
 			{ name: 'color', dt: core.datatypes.COLOR },
 			{ name: 'lightMap', dt: core.datatypes.TEXTURE },
 			{ name: 'wireframe', dt: core.datatypes.BOOL },
-		]
+		].concat(this.input_slots)
 
 		this.output_slots = [{
 			name: 'material', dt: core.datatypes.MATERIAL
@@ -16,23 +18,6 @@
 
 	ThreeLambertMaterialPlugin.prototype.reset = function() {
 		this.material = new THREE.MeshLambertMaterial()
-	}
-
-	ThreeLambertMaterialPlugin.prototype.update_input = function(slot, data) {
-		switch(slot.name) {
-			case 'texture':
-				this.material.map = data
-				break;
-			case 'color':
-				this.material.color = data
-				break;
-			case 'lightMap':
-				this.material.lightMap = data
-				break;
-			case 'wireframe':
-				this.material.wireframe = data
-				break;
-		}
 	}
 
 	ThreeLambertMaterialPlugin.prototype.update_output = function() {
