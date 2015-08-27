@@ -147,6 +147,9 @@ Graph.prototype.removeNode = function(node) {
 		E2.core.graphs.splice(E2.core.graphs.indexOf(node.plugin.graph), 1)
 	}
 
+	if (node.plugin.stop)
+		node.plugin.stop()
+
 	this.emit('nodeRemoved', node)
 
 	return node
