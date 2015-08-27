@@ -31,8 +31,6 @@ AbstractThreeMaterialPlugin.prototype.update_output = function() {
 }
 
 AbstractThreeMaterialPlugin.prototype.update_input = function(slot, data) {
-	console.log('AbstractThreeMaterialPlugin.update_input', slot.name, data)
-
 	if (slot.name === 'texture')
 		this.material.map = data
 	else

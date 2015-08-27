@@ -23,7 +23,9 @@ ThreeObject3DPlugin.prototype = Object.create(Plugin.prototype)
 
 ThreeObject3DPlugin.prototype.reset = function() {
 	Plugin.prototype.reset.apply(this, arguments)
-	this.object3d = new THREE.Object3D()
+
+	if (!this.object3d)
+		this.object3d = new THREE.Object3D()
 }
 
 ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
