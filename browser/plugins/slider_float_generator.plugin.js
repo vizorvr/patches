@@ -31,7 +31,7 @@ Slider.prototype.create_ui = function() {
 	var html = '<table class="slider-table">'+
 		'<tr>'+
 			'<td><input class="min" type="number" step="0.2" style="width: 50px;"/></td>'+
-			'<td><input class="slider" type="range" step="0.1"></td>'+
+			'<td><input class="slider" type="range" step="0.00000001"></td>'+
 			'<td><input class="max" type="number" step="0.2" style="width: 50px;"/></td>'+
 		'</tr>'+
 		'<tr>'+
