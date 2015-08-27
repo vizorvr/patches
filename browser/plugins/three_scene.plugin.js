@@ -35,7 +35,7 @@
 		var that = this
 		var layout = make('div')
 		var removeButton = makeButton('Remove', 'Click to remove the last mesh input.')
-		var addButton = makeButton('Add Mesh', 'Click to add another mesh input.')
+		var addButton = makeButton('Add Slot', 'Click to add another Object3D input.')
 
 		removeButton.css('width', '65px')
 		addButton.css({'width': '65px', 'margin-top': '5px'})
