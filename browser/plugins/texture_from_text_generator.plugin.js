@@ -21,11 +21,9 @@ E2.p = E2.plugins["texture_from_text_generator"] = function(core, node)
 		{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'Output texture containing the rendered text.' }
 	];
 	
-	this.renderer = core.renderer;
-	this.gl = core.renderer.context;
 	this.mesh = null;
 	this.canvas2d = $('<canvas style="display:none" width="128" height="128"></canvas>')[0];
-	this.c2d_ctx  = this.canvas2d.getContext('2d');
+	this.context  = this.canvas2d.getContext('2d');
 };
 
 E2.p.prototype.reset = function()
@@ -78,7 +76,7 @@ E2.p.prototype.update_state = function()
 {
 	var lines = this.text.split('\n');
 	var cv = this.canvas2d;
-	var ctx = this.c2d_ctx;
+	var ctx = this.context;
 	
 	cv.width = this.width;
 	cv.height = this.height;
@@ -100,20 +98,21 @@ E2.p.prototype.update_state = function()
 		ctx.strokeText(line, this.x, y);
 		ctx.fillText(line, this.x, y);
 	}
-	
-	this.texture.upload(cv, 'Rendered text');
-};
+		
+    this.texture.needsUpdate = true;
 
-E2.p.prototype.update_output = function(slot)
-{
-	return this.texture;
-};
+	// this.texture.upload(cv, 'Rendered text')
+}
+
+E2.p.prototype.update_output = function(slot) {
+	return this.texture
+}
 
 E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.texture = new Texture(this.renderer);
+		this.texture = new THREE.Texture(this.canvas2d);
 		this.text = '';
 		this.width = 128;
 		this.height = 128;
