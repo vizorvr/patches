@@ -10,7 +10,7 @@ E2.p = E2.plugins["aspect_ratio_generator"] = function(core, node)
 	this.canvas = core.renderer.canvas[0];
 	this.delegate = this._onResize.bind(this);
 	
-	this.core.renderer.on('resize', this.delegate);
+	this.core.on('resize', this.delegate);
 };
 
 E2.p.prototype.reset = function()
@@ -19,7 +19,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.destroy = function(slot)
 {
-	this.core.renderer.off('resize', this.delegate);
+	this.core.off('resize', this.delegate);
 };
 
 E2.p.prototype.update_output = function(slot)
