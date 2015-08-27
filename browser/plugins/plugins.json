@@ -287,6 +287,7 @@
 	"THREE/Material/Basic Material": "three_material",
 	"THREE/Material/Depth Material": "three_material_depth",
 	"THREE/Material/Lambert Material": "three_material_lambert",
+	"THREE/Material/Phong Material": "three_material_phong",
 	"THREE/Material/Shader": "three_material_shader",
 
 	"THREE/Light/Ambient Light": "three_ambient_light",
