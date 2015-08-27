@@ -1627,16 +1627,15 @@ Application.prototype.onShowTooltip = function(e) {
 		txt = '<b>Type:</b> ' + slot.dt.name;
 
 		if(slot.lo !== undefined || slot.hi !== undefined)
-			txt += '<br /><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
+			txt += '<br><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
 
-		if(slot.def !== undefined)
-		{
-			txt += '<br /><b>Default:</b> ';
+		if (slot.def !== undefined) {
+			txt += '<br><b>Default:</b> '
 
-			if(slot.def === null)
-				txt += 'Nothing';
+			if (slot.def === null)
+				txt += 'Nothing'
 			else
-				var cn = slot.def.constructor.name;
+				txt += slot.def
 		}
 
 		txt += '<br /><br />';
