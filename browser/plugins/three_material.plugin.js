@@ -11,10 +11,9 @@
 			{	name: 'fog', dt: core.datatypes.BOOL, def: true,
 				desc: 'Define whether the material color is affected by global fog settings.'
 			},
-			{	name: 'shading', dt: core.datatypes.FLOAT,
-				desc: 'Defines which of the face sides will be rendered - front, back or both. ' +
-					'0 = Front, 1 = Back, 2 = Double Sided',
-				def: 0
+			{	name: 'shading', dt: core.datatypes.FLOAT, def: 2,
+				desc: 'Define shading type. 0 = No Shading, '+
+					'1 = Flat Shading, 2 = Smooth Shading.'
 			},
 		].concat(this.input_slots)
 
@@ -30,7 +29,6 @@
 		AbstractThreeMaterialPlugin.prototype.reset.call(this)
 		this.material = new THREE.MeshBasicMaterial()
 	}
-
 
 })()
 
