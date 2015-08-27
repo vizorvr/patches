@@ -28,6 +28,10 @@
 		this.state = { always_update: true }
 	}
 
+	ThreeWebGLRendererPlugin.prototype.stop = function() {
+		this.renderer.clear()
+	}
+
 	ThreeWebGLRendererPlugin.prototype.reset = function() {
 		this.domElement = E2.dom.webgl_canvas[0]
 
