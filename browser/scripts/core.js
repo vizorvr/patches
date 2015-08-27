@@ -135,6 +135,8 @@ function Core() {
 	this.renderer = { // compat for old plugins
 		vector_origin: new THREE.Vector3(),
 		material_default: new THREE.MeshBasicMaterial(),
+		color_white: new THREE.Color('0xffffff'),
+		color_black: new THREE.Color('0x000000'),
 		blend_mode: {
 			NORMAL: 1
 		}

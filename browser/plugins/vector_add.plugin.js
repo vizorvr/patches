@@ -23,13 +23,10 @@ E2.p.prototype.update_input = function(slot, data)
 E2.p.prototype.update_state = function()
 {
 	var r = this.result, va = this.vector_a, vb = this.vector_b;
-	
-	r[0] = va[0] + vb[0];
-	r[1] = va[1] + vb[1];
-	r[2] = va[2] + vb[2];
+	r.set(va.x + vb.x, va.y + vb.y, va.z + vb.z)
 };
 
-E2.p.prototype.update_output = function(slot)
+E2.p.prototype.update_output = function()
 {
 	return this.result;
 };	
@@ -38,8 +35,8 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.vector_a = [0, 0, 0];
-		this.vector_b = [0, 0, 0];
-		this.result = [0, 0, 0];
+		this.vector_a = new THREE.Vector3(0, 0, 0)
+		this.vector_b = new THREE.Vector3(0, 0, 0)
+		this.result = new THREE.Vector3(0, 0, 0)
 	}
 };
