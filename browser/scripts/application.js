@@ -1699,6 +1699,9 @@ Application.prototype.setupStoreListeners = function() {
 	function onNodeRemoved(graph, node) {
 		E2.app.onHideTooltip()
 
+		if (node.plugin)
+			node.plugin.stop()
+
 		node.destroy_ui()
 
 		if (node.plugin.isGraph)

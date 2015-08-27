@@ -56,17 +56,15 @@ E2.p.prototype.pause = function()
 
 E2.p.prototype.stop = function()
 {
-	if(this.audio_src)
+	console.log('stop audio')
+	if(this.playing)
 	{
-		if(this.playing)
-		{
-			this.playing = this.should_play = false;
-			this.stop_playback();
-			this.audio_src = null;
-		}
-		
-		this.time = 0.0;
+		this.playing = this.should_play = false;
+		this.stop_playback();
+		this.audio_src = null;
 	}
+	
+	this.time = 0.0;
 };
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
@@ -136,7 +134,7 @@ E2.p.prototype.stop_playback = function()
 	if(this.audio_src && this.state === 1)
 	{
 		this.audio_src.stop(0);
-		this.state++;
+		this.state--;
 	}
 };
 
