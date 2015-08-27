@@ -10,11 +10,6 @@
 			{ name: 'intensity', dt: core.datatypes.FLOAT, def: this.params.intensity },
 			//{ name: 'color', dt: core.datatypes.COLOR, def: this.params.color },
 		].concat(this.input_slots)
-
-		this.output_slots = [{
-			name: 'object3d',
-			dt: core.datatypes.OBJECT3D
-		}]
 	}
 
 	ThreeDirectionalLightPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
@@ -27,17 +22,5 @@
 		// back reference for object picking
 		this.object3d.backReference = this
 	}
-
-	ThreeDirectionalLightPlugin.prototype.update_input = function(slot, data) {
-		switch(slot.index) {
-		case 0: // intensity
-			this.object3d.intensity = data
-			break;
-		default:
-			return ThreeObject3DPlugin.prototype.update_input
-			.apply(this, arguments)
-		}
-	}
-
 })()
 

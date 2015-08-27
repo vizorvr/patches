@@ -16,11 +16,6 @@
 			{ name: 'rock height', dt: core.datatypes.FLOAT, def: 3.0}
 		].concat(this.input_slots)
 
-		this.output_slots = [{
-			name: 'object3d',
-			dt: core.datatypes.OBJECT3D
-		}]
-
 		this.xSize = 20
 		this.ySize = 20
 		this.zSize = 20

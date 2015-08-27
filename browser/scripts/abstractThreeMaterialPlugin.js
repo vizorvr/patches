@@ -13,9 +13,14 @@ function AbstractThreeMaterialPlugin(core) {
 				'0 = No, 1 = Normal, 2 = Additive, 3 = Subtractive, 4 = Multiply, 5 = Custom'
 		},
 		{	name: 'side', dt: core.datatypes.FLOAT,
+			def: 0,
 			desc: 'Defines which of the face sides will be rendered - front, back or both. ' +
 				'0 = Front, 1 = Back, 2 = Double Sided'
 		},
+	]
+
+	this.output_slots = [
+		{ name:'material', dt: core.datatypes.MATERIAL }
 	]
 }
 

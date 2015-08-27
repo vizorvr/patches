@@ -1,8 +1,8 @@
 function ThreeObject3DPlugin(core) {
+	Plugin.apply(this, arguments)
+
 	this.desc = 'THREE.js Object3D'
 
-	Plugin.apply(this, arguments)
-	
 	this.input_slots = [
 		{ name: 'position', dt: core.datatypes.VECTOR },
 		{ name: 'rotation', dt: core.datatypes.VECTOR },
@@ -17,7 +17,6 @@ function ThreeObject3DPlugin(core) {
 		name: 'object3d',
 		dt: core.datatypes.OBJECT3D
 	}]
-
 }
 
 ThreeObject3DPlugin.prototype = Object.create(Plugin.prototype)
@@ -49,6 +48,8 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 
 	if (handlers[adjSlotIndex])
 		handlers[adjSlotIndex]()
+	else
+		this.object3d[slot.name] = data
 }
 
 ThreeObject3DPlugin.prototype.update_output = function() {

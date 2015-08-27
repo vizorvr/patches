@@ -8,9 +8,8 @@
 			{	name: 'texture', dt: core.datatypes.TEXTURE },
 			{	name: 'color', dt: core.datatypes.COLOR },
 			{	name: 'wireframe', dt: core.datatypes.BOOL, def: false },
-			{	name: 'fog', dt: core.datatypes.BOOL,
-				desc: 'Define whether the material color is affected by global fog settings.',
-				def: false
+			{	name: 'fog', dt: core.datatypes.BOOL, def: true,
+				desc: 'Define whether the material color is affected by global fog settings.'
 			},
 			{	name: 'shading', dt: core.datatypes.FLOAT,
 				desc: 'Defines which of the face sides will be rendered - front, back or both. ' +

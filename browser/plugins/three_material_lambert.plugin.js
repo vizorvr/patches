@@ -10,19 +10,15 @@
 			{ name: 'lightMap', dt: core.datatypes.TEXTURE },
 			{ name: 'wireframe', dt: core.datatypes.BOOL },
 		].concat(this.input_slots)
-
-		this.output_slots = [{
-			name: 'material', dt: core.datatypes.MATERIAL
-		}]
 	}
 
+	ThreeLambertMaterialPlugin.prototype = Object.create(AbstractThreeMaterialPlugin.prototype)
+
 	ThreeLambertMaterialPlugin.prototype.reset = function() {
+		AbstractThreeMaterialPlugin.prototype.reset.call(this)
 		this.material = new THREE.MeshLambertMaterial()
 	}
 
-	ThreeLambertMaterialPlugin.prototype.update_output = function() {
-		return this.material
-	}
 
 })()
 
