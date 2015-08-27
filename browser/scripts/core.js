@@ -130,7 +130,15 @@ function Core() {
 		OBJECT3D: { id: 21, name: 'Object3D' },
 		
 		VECTOR4: { id: 22, name: 'Vector 4' },
-	};
+	}
+
+	this.renderer = { // compat for old plugins
+		vector_origin: new THREE.Vector3(),
+		material_default: new THREE.MeshBasicMaterial(),
+		blend_mode: {
+			NORMAL: 1
+		}
+	}
 
 	this._listeners = {};
 	

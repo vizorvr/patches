@@ -1799,7 +1799,6 @@ Application.prototype.onGraphSelected = function(graph) {
 			that.mouseCursors[person.uid].show()
 	})
 
-	E2.core.active_graph.reset()
 	E2.core.active_graph_dirty = true
 
 	E2.app.updateCanvas(true)
