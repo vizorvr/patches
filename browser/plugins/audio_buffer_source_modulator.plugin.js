@@ -49,8 +49,8 @@ E2.p.prototype.pause = function()
 		this.playing = false;
 		this.should_play = true;
 		this.stop_playback();
+		this.time = this.audio_src.currentTime;
 		this.audio_src = null;
-		this.time = this.audio.currentTime;
 	}
 };
 
