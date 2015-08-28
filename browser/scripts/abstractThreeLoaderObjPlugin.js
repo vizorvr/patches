@@ -3,12 +3,7 @@ function AbstractThreeLoaderObjPlugin(core) {
 
 	this.desc = 'THREE.js OBJ loader'
 	
-	// add slots above the ones from ThreeObject3DPlugin
-	this.input_slots.unshift({ name: 'url', dt: core.datatypes.TEXT })
-
 	this.dirty = true
-
-	this.state = { url: '' }
 
 	this.childrenByMaterialName = {}
 	this.materials = {}
@@ -56,17 +51,7 @@ AbstractThreeLoaderObjPlugin.prototype.update_input = function(slot, data) {
 		return;
 	}
 
-	switch(slot.index) {
-		case 0: // url
-			if (this.state.url === data)
-				return
-			this.state.url = data
-			this.state_changed()
-			break;
-		default:
-			return ThreeObject3DPlugin.prototype.update_input
-				.apply(this, arguments)
-	}
+	return ThreeObject3DPlugin.prototype.update_input.apply(this, arguments)
 }
 
 AbstractThreeLoaderObjPlugin.prototype.adjustMaterialSlots = function() {
