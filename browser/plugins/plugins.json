@@ -263,8 +263,9 @@
 	"Modulators/Video/Duration": "video_get_duration_modulator",	
 	"Modulators/Video/Current time": "video_get_current_time_modulator",
 	"Modulators/VR/Camera": "vr_camera_modulator",
-	
-	"THREE/WebGL Renderer": "three_webgl_renderer",
+
+	"THREE/Render To Texture": "three_webgl_texture_renderer",
+	"THREE/Render To Screen": "three_webgl_renderer",
 
 	"THREE/Scene": "three_scene",
 	"THREE/Mesh": "three_mesh",

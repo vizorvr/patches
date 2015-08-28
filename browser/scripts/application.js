@@ -2211,6 +2211,19 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 
 	E2.app.player = player
 
+	// Shared gl context for three
+	var gl_attributes = {
+		alpha: false,
+		depth: true,
+		stencil: true,
+		antialias: false,
+		premultipliedAlpha: true,
+		preserveDrawingBuffer: false
+	}
+
+	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
+	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})
+
 	E2.core.on('ready', E2.app.onCoreReady.bind(E2.app, loadGraphUrl))
 }
 

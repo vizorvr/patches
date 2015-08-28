@@ -69,6 +69,10 @@
 			return
 		}
 
+		// workaround for having to share the renderer between render to texture & render to screen
+		// tbd: remove once https://github.com/mrdoob/three.js/pull/6723 is merged into a three release
+		this.renderer.setPixelRatio(window.devicePixelRatio)
+
 		// Render the scene through the manager.
 		this.manager.render(this.scene, this.perspectiveCamera)
 	}
@@ -148,10 +152,7 @@
 		if (!ui) {
 			console.log('state_changed')
 			this.domElement = E2.dom.webgl_canvas[0]
-			this.renderer = new THREE.WebGLRenderer({
-				canvas: this.domElement,
-				// antialias: true
-			})
+			this.renderer = E2.core.renderer
 
 			this.renderer.setPixelRatio(window.devicePixelRatio)
 
