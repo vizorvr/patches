@@ -1,14 +1,34 @@
 {
-	"AUDIO": {
-		"Audio: Audio player": "audio_audio_player",
-		"Audio: Audio player (old)": "audio_audio_player_old"
+
+	"THREE": {
+		"Base: Scene & WebGL renderer": "three_base",
+		"Geometry: Obj loader": "three_obj_loader",
+		"Geometry: Box": "three_box",
+		"Geometry: Circle": "three_circle",
+		"Geometry: Plane (basic material)":"three_plane_basic",
+		"Geometry: Plane (lambert material)": "three_plane_lambert",
+		"Geometry: Sphere": "three_sphere",
+		"Geometry: Cylinder": "three_cylinder",
+		"Geometry: Dodecahedron": "three_dodecahedron",
+		"Light: Directional light": "three_directional_light",
+		"Light: Ambient light": "three_ambient_light",
+		"Light: Point light": "three_point_light",
+		"Util: Position, Rotation, Scale": "three_position_rotation_scale",
+		"Util: VR camera": "three_vr_camera"
+
 	},
+
 
 	"INTERACTION": {
 		"Interaction: Button with MouseOver and OnClick colors": "interaction_button_with_mouseover_and_click_color",
 		"Interaction: Toggle button": "interaction_button_toggle",
 		"Interaction: Keypress increase/decrease - simple": "interaction_up_down_counter_simple",
 		"Interaction: Keypress increase/decrease with init & clamp": "interaction_up_and_down_counter_with_init_and_clamp"
+	},
+
+		"AUDIO": {
+		"Audio: Audio player": "audio_audio_player",
+		"Audio: Audio player (old)": "audio_audio_player_old"
 	},
 	
 	"LOOPS": {
@@ -33,48 +53,19 @@
 		"Util: Random with speed": "util_random_with_speed"
 	},
 
-	"MATRIX TRANSFORMS": {
-		"Transform: All - Scale, Rotate, Translate": "matrix_transforms_setup",
-		"Transform: Rotate": "matrix_rotate_with_knobs",
-		"Transform: Scale": "matrix_scale",
-		"Transform: Translate (move)": "matrix_translate",
-		"Transform: Circular motion to translate matrix": "matrix_circular_motion",
-		"Transform: Circular movement to X + Y": "transform_circular_movement_to_xy",
-		"Transform: Rotator with animation": "matrix_rotate_animated",
-		"Transform: Shaky translate to X + Y": "matrix_shaky_translate_to_xy"
-	},
 
 	"UTILS": {
 		"Util: Preloader": "util_preloader",
 		"Util: Preloader with play button": "util_preloader_with_play_button",
-	 	"Util: Aspect ratio corrector": "util_aspect_ratio",
-		"Util: Concatenate x 2": "util_concatenate_x2",
-		"Util: Concatenate x 3": "util_concatenate_x3",
 		"Util: Knob with min and max values": "util_knob_with_min_max",
-		"Util: Get mesh from scene": "util_get_mesh_from_scene",
-		"Util: Scene loader with custom shader": "util_scene_loader_with_custom_shader",
 		"Util: 4 step stepsequencer": "util_4_step_stepsequencer",
 		"Util: 1 step stepsequencer": "util_1_step_stepsequencer",
 		"Util: 9 step stepsequencer": "util_9_step_stepsequencer",
 		"Util: 4 Scene switcher": "util_4_scene_switcher",
-		"Util: 4 frame animation from 512x2048 image": "util_4_frame_animation_offsetter",
-		"Util: Clone material with new texture": "util_clone_material_with_new_texture",
-		"Util: Quad container for a dynamic texture": "util_minimal_quad_container",
-		"Util: 4 textures changing": "util_4_textures_changing",
 		"Util: VU-meter": "util_vu-meter",
 		"Color: Hue / Saturation / Luminosity / Alpha": "color_hsla",
 		"Color: Red / Green / Blue / Alpha": "color_rgba",
 		"Color: Color to vector XYZ": "util_color_to_vector",
-		"UV: Offset": "uv_offset",
-		"UV: Scale": "uv_scale",
 		"Util: Display number on screen": "util_display_number_on_screen"
-	},
-
-	"OSC": {
-		"Display OSC messages": "display_osc"
-	},
-
-	"HI-RES RENDERING": {
-		"Render segmented": "render_segmented"
 	}
 }

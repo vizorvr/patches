@@ -1,0 +1,458 @@
+{
+    "abs_t": 14.223,
+    "active_graph": "root",
+    "graph_uid": "MUi1NRN53bUh",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 80,
+                "y": 187,
+                "uid": "nv3XeKFMHdTv",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "tSKzgW8szxnl": "1TMlCKkGrwfO"
+                    }
+                },
+                "title": "OBJ loader",
+                "graph": {
+                    "uid": "tPJpWHVbluXb",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "three_loader_objmtl",
+                            "x": 1810,
+                            "y": 208,
+                            "uid": "C9sT6VIJPoCG",
+                            "state": {
+                                "url": "https://beta.vrsites.com/files/Murugo/bowser_peace.obj"
+                            },
+                            "dyn_in": [
+                                {
+                                    "dt": 12,
+                                    "uid": "aVQsCHhodVrcmat-bowser-body-m-eye",
+                                    "name": "mat-bowser-body-m-eye",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true
+                                },
+                                {
+                                    "dt": 12,
+                                    "uid": "aVQsCHhodVrcmat-bowser-body-m-body",
+                                    "name": "mat-bowser-body-m-body",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 1,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "const_text_generator",
+                            "x": 933,
+                            "y": 114,
+                            "uid": "o8s9dECeWzq9",
+                            "state": {
+                                "text": "https://beta.vrsites.com/files/Murugo/bowser_peace.obj",
+                                "width": 255,
+                                "height": 229
+                            }
+                        },
+                        {
+                            "plugin": "three_material_phong",
+                            "x": 1422,
+                            "y": 501,
+                            "uid": "qtqXSojM1zrv"
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 1121,
+                            "y": 489,
+                            "uid": "O0173cSkHemR",
+                            "state": {
+                                "url": "/data/image/3620b475c9d54750238259412ea2f5550e82690a.png"
+                            }
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 566,
+                            "y": 447,
+                            "uid": "lP7vAKX8V8mv",
+                            "state": {
+                                "val": -0.26271186,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 563,
+                            "y": 514,
+                            "uid": "o8uhI9Tb6W7K",
+                            "state": {
+                                "val": -0.3220339,
+                                "min": -2,
+                                "max": 2
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 561,
+                            "y": 580,
+                            "uid": "10KDYLAY8m30",
+                            "state": {
+                                "val": 0,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "Z"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 907,
+                            "y": 496,
+                            "uid": "jwwcz9bgAc5l",
+                            "title": "Position"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 969,
+                            "y": 792,
+                            "uid": "2IvEXe5HeKoR",
+                            "title": "Scale"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 702,
+                            "y": 700,
+                            "uid": "cHEuXyDh5tBu",
+                            "title": "Rotation"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 809,
+                            "y": 824,
+                            "uid": "E2Lamzl0UZZ5",
+                            "state": {
+                                "val": 0.05
+                            },
+                            "title": "XYZ"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 564,
+                            "y": 685,
+                            "uid": "gSreAYoGr6XJ",
+                            "state": {
+                                "val": 0.27000000000000013
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 561,
+                            "y": 748,
+                            "uid": "hARBa2VXKsBy",
+                            "state": {
+                                "val": 1
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 559,
+                            "y": 804,
+                            "uid": "dLuqRd7iJ6sO",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Z"
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 1061,
+                            "y": 884,
+                            "uid": "1PGm2HnrOC5u",
+                            "state": {
+                                "hue": 0.71,
+                                "sat": 0.1,
+                                "lum": 0.76
+                            }
+                        },
+                        {
+                            "plugin": "three_material_phong",
+                            "x": 1424,
+                            "y": 818,
+                            "uid": "2y9cqp5MSUNP"
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 1019,
+                            "y": 1055,
+                            "uid": "69EnTBdB2Ef2",
+                            "state": {
+                                "url": "/data/image/e067e0db2aa5ea6d68e52c1ffaa76573506915f2.png"
+                            }
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 1243,
+                            "y": 1124,
+                            "uid": "Fj7sEsr6V5xk",
+                            "state": {
+                                "hue": 0.71,
+                                "sat": 0,
+                                "lum": 0.91
+                            }
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 2282,
+                            "y": 184,
+                            "uid": "tSKzgW8szxnl",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "pdxePMgTTTRg",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 1610,
+                            "y": 298,
+                            "uid": "hk7bdvpvdhKs",
+                            "state": {
+                                "enabled": true
+                            },
+                            "title": "Visible"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "o8s9dECeWzq9",
+                            "dst_nuid": "C9sT6VIJPoCG",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "DMn1LF8qXoJK",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "2y9cqp5MSUNP",
+                            "dst_nuid": "C9sT6VIJPoCG",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "Yfq8hVb8JsYs",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "jwwcz9bgAc5l",
+                            "dst_nuid": "C9sT6VIJPoCG",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "jKYwADE3O0Vb",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "qtqXSojM1zrv",
+                            "dst_nuid": "C9sT6VIJPoCG",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "SJskaU7FDotB",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "cHEuXyDh5tBu",
+                            "dst_nuid": "C9sT6VIJPoCG",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "Bqo30ENERkmv",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "2IvEXe5HeKoR",
+                            "dst_nuid": "C9sT6VIJPoCG",
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "uid": "oP27gxtYqlvA",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "O0173cSkHemR",
+                            "dst_nuid": "qtqXSojM1zrv",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "71lHKWGKSdXf",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "1PGm2HnrOC5u",
+                            "dst_nuid": "qtqXSojM1zrv",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "LDk7Tkeqq0Om",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "lP7vAKX8V8mv",
+                            "dst_nuid": "jwwcz9bgAc5l",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "D8Y5utiigWu8",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "o8uhI9Tb6W7K",
+                            "dst_nuid": "jwwcz9bgAc5l",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "KVx7nIn9Gk4I",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "10KDYLAY8m30",
+                            "dst_nuid": "jwwcz9bgAc5l",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "wLEvPUHZIcoO",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "E2Lamzl0UZZ5",
+                            "dst_nuid": "2IvEXe5HeKoR",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "vb0DxxO6VVJX",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "E2Lamzl0UZZ5",
+                            "dst_nuid": "2IvEXe5HeKoR",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "BlhriHs2VUwh",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": "E2Lamzl0UZZ5",
+                            "dst_nuid": "2IvEXe5HeKoR",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "66XOcidce7hW",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "gSreAYoGr6XJ",
+                            "dst_nuid": "cHEuXyDh5tBu",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "aG1i3FdxbWlp",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "dLuqRd7iJ6sO",
+                            "dst_nuid": "cHEuXyDh5tBu",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "OF8pSkYUhNYD",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "69EnTBdB2Ef2",
+                            "dst_nuid": "2y9cqp5MSUNP",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "DgtCDjjBWFHU",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "Fj7sEsr6V5xk",
+                            "dst_nuid": "2y9cqp5MSUNP",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "zNbkeDpp4K26",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "C9sT6VIJPoCG",
+                            "dst_nuid": "tSKzgW8szxnl",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "x4LV116lxfRP",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "hk7bdvpvdhKs",
+                            "dst_nuid": "C9sT6VIJPoCG",
+                            "src_slot": 0,
+                            "dst_slot": 5,
+                            "uid": "FEfUCoS7iVXB",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "hARBa2VXKsBy",
+                            "dst_nuid": "cHEuXyDh5tBu",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "r3dWxFBYnnIz",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "1TMlCKkGrwfO",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

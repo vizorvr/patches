@@ -1,0 +1,363 @@
+{
+    "abs_t": 277.623,
+    "active_graph": "root",
+    "graph_uid": "TI6whDg9VfHH",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 208,
+                "y": 324,
+                "uid": "OgEjxS1jpWWB",
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "input_sids": {},
+                    "output_sids": {
+                        "Gw4uKJGQjgWn": "mh0rTKkFm0nD"
+                    }
+                },
+                "title": "Box",
+                "graph": {
+                    "uid": "NLZOLnNvJZiS",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "three_geometry_box",
+                            "x": 554,
+                            "y": 338,
+                            "uid": "YKKM9Y3iFjRm"
+                        },
+                        {
+                            "plugin": "three_mesh",
+                            "x": 1057,
+                            "y": 390,
+                            "uid": "4I5bwgLJeeVV"
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1269,
+                            "y": 390,
+                            "uid": "Gw4uKJGQjgWn",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "bEdPpC9C6Rh1",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 100,
+                            "y": 418,
+                            "uid": "1hQvgkrYzbad",
+                            "state": {
+                                "val": 0,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 97,
+                            "y": 485,
+                            "uid": "yyDTw1fBl9DT",
+                            "state": {
+                                "val": 0,
+                                "min": -2,
+                                "max": 2
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 95,
+                            "y": 551,
+                            "uid": "GQl4ayL5fXLb",
+                            "state": {
+                                "val": 0,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "Z"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 441,
+                            "y": 467,
+                            "uid": "zu8v9YoyjUX8",
+                            "open": false,
+                            "title": "Position"
+                        },
+                        {
+                            "plugin": "three_material",
+                            "x": 575,
+                            "y": 61,
+                            "uid": "kTrue5YTevjE"
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 194,
+                            "y": 64,
+                            "uid": "PsMokHxycgXh",
+                            "state": {
+                                "url": "/data/image/86b4f99c40c9b047957cc6c5c3364a070cb3c101.png"
+                            },
+                            "title": "Box texture"
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 943,
+                            "y": 320,
+                            "uid": "Z3JMMdr9M8pM",
+                            "state": {
+                                "enabled": true
+                            },
+                            "title": "Visible"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 503,
+                            "y": 763,
+                            "uid": "KOZeDEIu4knT",
+                            "open": false,
+                            "title": "Scale"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 236,
+                            "y": 671,
+                            "uid": "t1TFvhCAXw1a",
+                            "open": false,
+                            "title": "Rotation"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 343,
+                            "y": 795,
+                            "uid": "6g0qpOmHxG0y",
+                            "state": {
+                                "val": 0.6
+                            },
+                            "title": "XYZ"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 98,
+                            "y": 656,
+                            "uid": "l6VmoftKGl83",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 95,
+                            "y": 719,
+                            "uid": "Bx15C6yOAYwf",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 93,
+                            "y": 775,
+                            "uid": "PBrpSnD5LqtH",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Z"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "YKKM9Y3iFjRm",
+                            "dst_nuid": "4I5bwgLJeeVV",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "8wg8q02esLtU",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "4I5bwgLJeeVV",
+                            "dst_nuid": "Gw4uKJGQjgWn",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "zRsWgnCa23py",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "zu8v9YoyjUX8",
+                            "dst_nuid": "4I5bwgLJeeVV",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "MbBT90ihyYHM",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "kTrue5YTevjE",
+                            "dst_nuid": "4I5bwgLJeeVV",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "KrguMemLb6DB",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "PsMokHxycgXh",
+                            "dst_nuid": "kTrue5YTevjE",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "dRTv7NFd67AJ",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "Z3JMMdr9M8pM",
+                            "dst_nuid": "4I5bwgLJeeVV",
+                            "src_slot": 0,
+                            "dst_slot": 5,
+                            "uid": "UiT1XfddE4s9",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "6g0qpOmHxG0y",
+                            "dst_nuid": "KOZeDEIu4knT",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "Zx6Zyo53OZjG",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "6g0qpOmHxG0y",
+                            "dst_nuid": "KOZeDEIu4knT",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "OS0Iedx68c3G",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": "6g0qpOmHxG0y",
+                            "dst_nuid": "KOZeDEIu4knT",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "p73G40IW8coz",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "KOZeDEIu4knT",
+                            "dst_nuid": "4I5bwgLJeeVV",
+                            "src_slot": 0,
+                            "dst_slot": 4,
+                            "uid": "3DlUOn8efiMt",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "t1TFvhCAXw1a",
+                            "dst_nuid": "4I5bwgLJeeVV",
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "uid": "XWlxV8bcX3pC",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "l6VmoftKGl83",
+                            "dst_nuid": "t1TFvhCAXw1a",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "oMxwXmq6E9Yv",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "Bx15C6yOAYwf",
+                            "dst_nuid": "t1TFvhCAXw1a",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "JAofaGhIpjUJ",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "PBrpSnD5LqtH",
+                            "dst_nuid": "t1TFvhCAXw1a",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "y7CcQODl7SSy",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "1hQvgkrYzbad",
+                            "dst_nuid": "zu8v9YoyjUX8",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "LuuisWChGil7",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "yyDTw1fBl9DT",
+                            "dst_nuid": "zu8v9YoyjUX8",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "vETJj5adtnNY",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "GQl4ayL5fXLb",
+                            "dst_nuid": "zu8v9YoyjUX8",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "nmjilnAAqqAS",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "mh0rTKkFm0nD",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}
