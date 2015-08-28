@@ -38,6 +38,8 @@
 		this.output_slots = [{name: 'texture', dt: core.datatypes.TEXTURE, desc: 'render target texture'}]
 
 		this.state = { texture_dirty: true, width: 256, height: 256}
+
+		this.clearColor = new THREE.Color(0, 0, 0)
 	}
 
 	ThreeWebGLTextureRendererPlugin.prototype.reset = function() {
@@ -66,7 +68,7 @@
 			this.scene = data
 			break
 		case 2: // clear color
-			this.renderer.setClearColor(new THREE.Color(data.r, data.g, data.b))
+			this.clearColor = new THREE.Color(data.r, data.g, data.b)
 			break
 		case 3: // width
 			this.state.width = data
@@ -89,6 +91,10 @@
 	}
 
 	ThreeWebGLTextureRendererPlugin.prototype.update_state = function() {
+		// have to reset as the main renderer will override these
+		this.renderer.setPixelRatio(1)
+		this.renderer.setClearColor(this.clearColor)
+
 		if (!this.scene || !this.perspectiveCamera) {
 			this.renderer.clear()
 
@@ -98,9 +104,6 @@
 		if (this.state.texture_dirty) {
 			this.create_texture()
 		}
-
-		// have to reset as the main renderer will override these
-		this.renderer.setPixelRatio(1)
 
 		// Render the scene through the manager.
 		this.renderer.render(this.scene, this.perspectiveCamera, this.texture)

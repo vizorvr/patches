@@ -27,6 +27,7 @@
 		this.always_update = true
 		this.state = { always_update: true }
 
+		this.clearColor = new THREE.Color(0,0,0)
 	}
 
 	ThreeWebGLRendererPlugin.prototype.stop = function() {
@@ -59,7 +60,7 @@
 				this.scene = data
 				break;
 			case 2:
-				this.renderer.setClearColor(new THREE.Color(data.r, data.g, data.b))
+				this.clearColor = new THREE.Color(data.r, data.g, data.b)
 				break;
 		}
 	}
@@ -72,6 +73,7 @@
 		// workaround for having to share the renderer between render to texture & render to screen
 		// tbd: remove once https://github.com/mrdoob/three.js/pull/6723 is merged into a three release
 		this.renderer.setPixelRatio(window.devicePixelRatio)
+		this.renderer.setClearColor(this.clearColor)
 
 		// Render the scene through the manager.
 		this.manager.render(this.scene, this.perspectiveCamera)
