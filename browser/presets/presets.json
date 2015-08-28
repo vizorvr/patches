@@ -1,73 +1,8 @@
 {
-	"TEMPLATES": {
-		"Template: 3D object and a grid": "template_3d_object_and_grid",
-		"Template: 3D object and background": "template_3d_object_and_background",
-		"Template: Cube and a grid": "template_cube_and_grid",
-		"VR: Clean template": "vr_clean_template",
-		"VR: Movement Template": "vr_movement_template",
-		"VR: Object, ground and sky": "vr_template_object_ground_sky"
-	},
-
-	"3D GRAPHICS": {
-		"3D: Scene with camera, material & lights": "3d_scene_with_camera_material_lights",
-		"3D: Scene with material, light and transforms": "3d_scene_material_light_transforms", 
-		"3D: Plain scene loader (no camera)": "3d_plain_scene_loader",	
-		"3D: Scene loader with mouse controls": "3d_scene_loader_with_mousecontrol",
-		"3D: Quad": "3d_quad_loader_fullscreen",
-		"3D: Cube": "3d_cube_loader",
-		"3D: Sphere": "3d_sphere_loader", 
-		"3D: Grid": "3d_grid",
-		"3D: Particles": "3d_particle_shader",
-		"3D: Particles on object": "shader_particles_on_object",
-		"3D: Load object as wireframe": "3d_load_scene_wireframe",
-		"3D: Mesh with camera, material, light and transforms": "3d_mesh_with_camera_material_light_and_transforms",
-		"3D Instancing: Cube setup with controls": "instancing_cube",
-		"3D Instancing: Array setup with controls": "instancing_array",
-		"3D Instancing: IFS setup with controls": "instancing_ifs",
-		"3D Instancing: IFS with camera and light out": "instancing_ifs_with_camera_and_light_out"
-	},
-
-	"VR": {
-		"VR: Clean template": "vr_clean_template",
-		"VR: Movement Template": "vr_movement_template",
-		"VR: 3D object loader": "vr_3d_object_loader",
-		"VR: Sphere loader": "vr_sphere_loader",
-		"VR: Cube loader": "vr_cube_loader",
-		"VR: Ground plane": "vr_ground_plane",
-		"VR: Sky sphere": "vr_sky_sphere",
-		"VR: Particles": "vr_particles",
-		"VR: Particles on object": "vr_particles_on_object",
-		"VR: Video screen": "vr_video_screen",
-		"VR: Image display": "vr_image_display"
-	},
-
-	"BACKGROUND & OVERLAY": {
-		"Background: Image": "background_image",
-		"Background: Sky box": "background_skybox",
-		"Background: Sky Sphere": "background_skysphere",
-		"Background: Plain color": "background_plain_color",
-		"Background: Moving background image": "background_moving_quad",
-		"Overlay: Overlay graphic": "3d_overlay_graphic",
-		"Image: Show image": "image_show_image",
-		"Image: Image with UV controls": "image_with_uv_controls"
-	},
-
-
-	"VIDEO": {
-		"Video: Video player": "video_video_to_quad",
-		"Video: Chromakeyed video": "video_chromakey"
-	},
-
 	"AUDIO": {
 		"Audio: Audio player": "audio_audio_player",
-		"Audio: FFT music synching template": "audio_fft_music_synching",
 		"Audio: Audio player (old)": "audio_audio_player_old"
 	},
-
-	"TEXT": {
-		"Text: Display text": "text_quad",
-		"Text: Display number": "util_display_number_on_screen"
-	},	
 
 	"INTERACTION": {
 		"Interaction: Button with MouseOver and OnClick colors": "interaction_button_with_mouseover_and_click_color",
@@ -76,25 +11,8 @@
 		"Interaction: Keypress increase/decrease with init & clamp": "interaction_up_and_down_counter_with_init_and_clamp"
 	},
 	
-	"CAMERAS": {
-		"Camera: Orbit camera": "camera_orbit_camera",
-		"Camera: Mouse controlled camera": "camera_with_mouse_controls"
-	},
-
 	"LOOPS": {
 		"Loop: Loop framework": "loop_framework"
-	},
-
-	"MATERIALS AND LIGHTS": {
-		"Material: Full material chain": "material_full_material_chain",
-		"Material: Point light chain": "material_point_light_chain",
-		"Material: Full light chain": "material_light_chain",
-		"Material: Full material and light chain": "material_material_and_light",
-		"Material: Material and light, no texture": "material_material_and_light_no_texture",
-		"Material: Material and point light chain": "material_material_and_point_light_chain",
-		"Material: Basic texture": "material_texture",
-		"Material: All texture types": "material_all_texture_types",
-		"Light: Light indicator helper": "lights_indicator"
 	},
 
 	"TIME & ANIMATION ": {
@@ -150,73 +68,6 @@
 		"UV: Offset": "uv_offset",
 		"UV: Scale": "uv_scale",
 		"Util: Display number on screen": "util_display_number_on_screen"
-	},
-
-	"CUSTOM SHADERS": {
-		"Shader: Template for Shadertoy.com pixel shaders": "shader_from_shadertoy",
-		"Shader: Cross flare": "shader_cross_flare",
-		"Shader: Horizontal flare": "shader_horizontal_flare",
-		"Shader: Render depth buffer": "shader_render_depth_buffer",
-		"Shader: Fog shader": "shader_fog"
-	},
-
-	"2D EFFECT SHADERS": {
-		"Effect: Tunnel": "effect_tunnel",
-		"Effect: Doubletunnel": "effect_doubletunnel",
-		"Effect: Attract tickler": "effect_attract_tickler"
-	},
-
-	"PHOTOSHOP BLEND MODES": {
-		"Blend mode: Add": "photoshop-add",
-		"Blend mode: Substract": "photoshop-substract",
-		"Blend mode: Lighten": "photoshop-lighten",
-		"Blend mode: Darken": "photoshop-darken",
-		"Blend mode: Hard light": "photoshop-hard-light",
-		"Blend mode: Soft light": "photoshop-soft-light",
-		"Blend mode: Screen": "photoshop-screen",
-		"Blend mode: Overlay": "photoshop-overlay",
-		"Blend mode: Exclusion": "photoshop-exclusion",
-		"Blend mode: Linear burn": "photoshop-linear-burn",
-		"Blend mode: Negation": "photoshop-negation",
-		"Blend mode: Difference": "photoshop-difference",
-		"Blend mode: Average": "photoshop-average",
-		"Blend mode: Phoenix": "photoshop-phoenix",
-		"Blend mode: Glow": "photoshop-glow",
-		"Blend mode: Reflect": "photoshop-reflect",
-		"Blend mode: Hard mix": "photoshop-hard-mix",
-		"Blend mode: Pin light": "photoshop-pin-light",
-		"Blend mode: Vivid light": "photoshop-vivid-light",
-		"Blend mode: Linear light": "photoshop-linear-light",
-		"Blend mode: Color dodge": "photoshop-color-dodge",
-		"Blend mode: Color burn": "photoshop-color-burn",
-		"Blend mode: Linear dodge": "photoshop-linear-dodge"
-	},
-
-	"POST PROCESSING": {
-		"Post Process: Levels": "post_process_levels",
-		"Post Process: Map-based chromatic aberration": "postprocess_map_ca",
-		"Post Process: Analogue monitor": "post_process_analogue_monitor",	
-		"Post Process: Bloom": "post_process_bloom",
-		"Post Process: Gaussian blur": "post_process_gaussian_blur",
-		"Post Process: High grade blur": "post_process_high_grade_blur",
-		"Post Process: Feedback filter": "post_process_feedback_filter",
-		"Post Process: Posterize": "post_process_posterize",	
-		"Post Process: Radial blur": "post_process_radial_blur",	
-		"Post Process: Bloom": "post_process_bloom",
-		"Post Process: Barrel blur": "post_process_barrel_blur",
-		"Post Process: Edge detection": "post_process_edge_detection",
-		"Post Process: Water paint": "postprocess_waterpaint",
-		"Post Process: RGB display": "postprocess_rgb_display",
-		"Post Process: Psychedelic plasma": "postprocess_psychedelic_plasma",
-		"Post Process: Wobbly": "postprocess_wobbly",
-		"Post Process: Convolve": "postprocess_convolve",
-		"Post Process: Emboss": "postprocess_emboss",
-		"Post Process: Cheap bokeh": "postprocess_cheap_bokeh",
-		"Post Process: Pixelate": "postprocess_pixelate",
-		"Post Process: Chrome": "postprocess_chrome",
-		"Post Process: Ice": "postprocess_ice",
-		"Post Process: Graffiti grunge": "postprocess_graffiti_grunge",
-		"Post Process: Chroma key": "postprocess_chromakey"
 	},
 
 	"OSC": {
