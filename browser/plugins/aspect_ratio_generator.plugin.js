@@ -7,7 +7,7 @@ E2.p = E2.plugins["aspect_ratio_generator"] = function(core, node)
 	this.output_slots = [ { name: 'aspect', dt: core.datatypes.FLOAT, desc: 'The current renderer aspect ratio.' } ];
 	
 	this.core = core;
-	this.canvas = core.renderer.canvas[0];
+	this.canvas = E2.dom.webgl_canvas[0];
 	this.delegate = this._onResize.bind(this);
 	
 	this.core.on('resize', this.delegate);

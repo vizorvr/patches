@@ -133,6 +133,7 @@ function Core() {
 	}
 
 	this.renderer = { // compat for old plugins
+		matrix_identity: new THREE.Matrix4().identity(),
 		vector_origin: new THREE.Vector3(),
 		material_default: new THREE.MeshBasicMaterial(),
 		color_white: new THREE.Color('0xffffff'),

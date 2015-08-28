@@ -27,8 +27,6 @@
 		this.always_update = true
 		this.state = { always_update: true }
 
-		core.renderer.canvas = E2.dom.webgl_canvas
-
 	}
 
 	ThreeWebGLRendererPlugin.prototype.stop = function() {

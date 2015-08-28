@@ -100,8 +100,6 @@ E2.p.prototype.update_state = function()
 	}
 		
     this.texture.needsUpdate = true;
-
-	// this.texture.upload(cv, 'Rendered text')
 }
 
 E2.p.prototype.update_output = function(slot) {
