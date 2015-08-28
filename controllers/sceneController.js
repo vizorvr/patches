@@ -43,7 +43,7 @@ SceneController.prototype.upload = function(req, res, next) {
 	var folder = '/scene' 
 	var dest = folder + '/'+ fsPath.basename(file.name, fsPath.extname(file.name))
 
-	var allowedExtensions = ['.zip', '.obj', '.json']
+	var allowedExtensions = ['.zip', '.obj', '.js', '.json']
 	var ext = fsPath.extname(file.name)
 
 	if (allowedExtensions.indexOf(ext) === -1) {

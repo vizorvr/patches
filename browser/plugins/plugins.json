@@ -273,8 +273,8 @@
 
 	"THREE/VR Camera": "three_vr_camera",
 
-	"THREE/Loaders/OBJ loader": "three_loader_obj",
-	"THREE/Loaders/OBJ+MTL loader": "three_loader_objmtl",
+	"THREE/3D model loader": "three_loader_model",
+	"THREE/Morph Anim Mesh": "three_morphanimmesh",
 
 	"THREE/Geometry/Box": "three_geometry_box",
 	"THREE/Geometry/Circle": "three_geometry_circle",
