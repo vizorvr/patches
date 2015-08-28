@@ -96,8 +96,6 @@
 		// [1] is the overlay scene
 		this.scene.add(new THREE.Object3D())
 
-		window._scene = this.scene
-
 		this.meshes_dirty = true
 	}
 
