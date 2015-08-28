@@ -236,7 +236,7 @@
 					data = data ? new THREE.Vector3(data.x, data.y, data.z) : new THREE.Vector3()
 				}
 
-				this.uniforms[slot.name]['value'] = data
+				this.uniforms[slot.name].value = data
 			}
 		}
 

@@ -1,4 +1,4 @@
-function AbstractThreeLoaderObjPlugin(core) {
+function AbstractThreeLoaderObjPlugin() {
 	ThreeObject3DPlugin.apply(this, arguments)
 
 	this.desc = 'THREE.js OBJ loader'
@@ -6,6 +6,7 @@ function AbstractThreeLoaderObjPlugin(core) {
 	this.dirty = true
 
 	this.childrenByMaterialName = {}
+	this.state = { url: '' }
 	this.materials = {}
 }
 

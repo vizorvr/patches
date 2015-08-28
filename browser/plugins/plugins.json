@@ -46,7 +46,6 @@
 	"Generators/Load/Audio buffer from URL": "url_audio_buffer_generator",
 	"Generators/Load/Image from URL": "url_texture_generator",
 	"Generators/Load/JSON from URL": "url_json_generator",
-	"Generators/Load/Scene from URL": "url_scene_generator",
 	"Generators/Load/Video from URL": "url_video_generator",
 	"Generators/Matrix/Translation": "translation_matrix",
 	"Generators/Matrix/Translation XYZ": "translation_xyz_matrix",
