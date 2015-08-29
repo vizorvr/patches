@@ -16,6 +16,7 @@
 				desc: 'Define shading type. 0 = No Shading, '+
 					'1 = Flat Shading, 2 = Smooth Shading.'
 			},
+			{	name: 'morphTargets', dt: core.datatypes.BOOL },
 		].concat(this.input_slots)
 	}
 

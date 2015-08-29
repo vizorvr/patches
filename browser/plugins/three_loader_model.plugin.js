@@ -7,8 +7,16 @@
 		msg('ERROR: '+err.toString())
 	}
 
-	var ThreeLoaderModelPlugin = E2.plugins.three_loader_model = function() {
+	var ThreeLoaderModelPlugin = E2.plugins.three_loader_model = function(core) {
 		AbstractThreeLoaderObjPlugin.apply(this, arguments)
+		
+		this.input_slots = [
+			{
+				name: 'delta', 
+				dt: core.datatypes.FLOAT,
+				desc: 'Delta time for animation'
+			}
+		].concat(this.input_slots)
 	}
 
 	ThreeLoaderModelPlugin.prototype = Object.create(AbstractThreeLoaderObjPlugin.prototype)
@@ -57,8 +65,26 @@
 
 	ThreeLoaderModelPlugin.prototype.onJsonModelLoaded = function(geometry, materials) {
 		// this.childrenByMaterialName = {}
+		
+		console.log('onJsonModelLoaded', geometry, materials)
+		
+		// var material = new THREE.MeshLambertMaterial( { color: 0xffaa55, morphTargets: true, vertexColors: THREE.FaceColors } );
+		var material = materials[0]
 
-		this.object3d = new THREE.Mesh(geometry, materials[0])
+		var meshAnim = this.object3d = new THREE.MorphAnimMesh(geometry, material)
+
+		meshAnim.speed = 250;
+		meshAnim.duration = 500;
+		meshAnim.time = 600 * Math.random();
+
+		meshAnim.position.set(0, 0, 0);
+		meshAnim.rotation.y = Math.PI/2;
+
+		meshAnim.castShadow = true;
+		meshAnim.receiveShadow = false;
+
+		this.meshAnim = meshAnim
+
 		this.onObjLoaded(this.object3d)
 	}
 
@@ -71,6 +97,13 @@
 				progress.bind(this),
 				errorHandler
 			)
+	}
+
+	ThreeLoaderModelPlugin.prototype.update_input = function(slot, data) {
+		if (slot.name === 'delta' && this.meshAnim)
+			this.meshAnim.updateAnimation(data * 1000)
+		else
+			AbstractThreeLoaderObjPlugin.prototype.update_input.apply(this, arguments)
 	}
 
 	ThreeLoaderModelPlugin.prototype.update_state = function() {

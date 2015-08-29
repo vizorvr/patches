@@ -56,17 +56,7 @@ AbstractThreeLoaderObjPlugin.prototype.update_input = function(slot, data) {
 		return;
 	}
 
-	switch(slot.index) {
-		case 0: // url
-			if (this.state.url === data)
-				return
-			this.state.url = data
-			this.state_changed()
-			break;
-		default:
-			return ThreeObject3DPlugin.prototype.update_input
-				.apply(this, arguments)
-	}
+	return ThreeObject3DPlugin.prototype.update_input.apply(this, arguments)
 }
 
 AbstractThreeLoaderObjPlugin.prototype.adjustMaterialSlots = function() {
