@@ -48,10 +48,16 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 	var slotOffset = this.node.plugin.input_slots.length - handlers.length
 	var adjSlotIndex = slot.index - slotOffset
 
-	if (handlers[adjSlotIndex])
+	if (handlers[adjSlotIndex]) {
 		handlers[adjSlotIndex]()
-	else
-		this.object3d[slot.name] = data
+	}
+	else {
+		// this needs further research.. data.clone() can be potentially heavy,
+		// however if we don't clone, e.g. switching between sphere and cube
+		// geometry inputs will leave the mesh in a corrupt state (displaying
+		// the wrong geometry)
+		this.object3d[slot.name] = data.clone ? data.clone() : data
+	}
 }
 
 ThreeObject3DPlugin.prototype.update_output = function() {

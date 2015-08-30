@@ -6,7 +6,8 @@
 			{
 				name: 'camera',
 				dt: core.datatypes.CAMERA,
-				desc: 'Camera to use for rendering.'
+				desc: 'Camera to use for rendering.',
+				def: null
 			},
 			{
 				name: 'scene',
@@ -66,14 +67,16 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.update_state = function() {
-		if (!this.scene) {
-			return
-		}
-
 		// workaround for having to share the renderer between render to texture & render to screen
 		// tbd: remove once https://github.com/mrdoob/three.js/pull/6723 is merged into a three release
 		this.renderer.setPixelRatio(window.devicePixelRatio)
 		this.renderer.setClearColor(this.clearColor)
+
+		if (!this.scene || !this.perspectiveCamera) {
+			this.renderer.clear()
+
+			return
+		}
 
 		// Render the scene through the manager.
 		this.manager.render(this.scene, this.perspectiveCamera)

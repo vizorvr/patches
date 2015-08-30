@@ -103,7 +103,7 @@
 		//if (!data)
 		//	return;
 
-		if (this.meshes[slot.index] != data) {
+		if (this.meshes[slot.index] !== data) {
 			//console.log("add mesh to scene " + JSON.stringify(slot))
 			this.meshes[slot.index] = data
 			this.meshes_dirty = true
@@ -111,7 +111,7 @@
 	}
 
 	ThreeScenePlugin.prototype.connection_changed = function(on, conn, slot) {
-		if (!on) {
+		if (!on && slot.type === E2.slot_type.input) {
 			this.meshes[slot.index] = undefined
 		}
 		this.meshes_dirty = true

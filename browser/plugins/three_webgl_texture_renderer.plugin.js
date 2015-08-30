@@ -96,6 +96,7 @@
 		this.renderer.setClearColor(this.clearColor)
 
 		if (!this.scene || !this.perspectiveCamera) {
+			this.renderer.setRenderTarget(this.texture)
 			this.renderer.clear()
 
 			return
