@@ -6,20 +6,17 @@
 			{
 				name: 'camera',
 				dt: core.datatypes.CAMERA,
-				desc: 'Camera to use for rendering.',
-				def: null
+				desc: 'Camera to use for rendering.'
 			},
 			{
 				name: 'scene',
 				dt: core.datatypes.SCENE,
-				desc: 'Scene to render',
-				def: null
+				desc: 'Scene to render'
 			},
 			{
 				name: 'bgcolor',
 				dt: core.datatypes.COLOR,
-				desc: 'Background color',
-				def: null
+				desc: 'Background color'
 			}
 		]
 
