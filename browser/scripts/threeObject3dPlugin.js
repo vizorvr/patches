@@ -52,11 +52,7 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 		handlers[adjSlotIndex]()
 	}
 	else {
-		// this needs further research.. data.clone() can be potentially heavy,
-		// however if we don't clone, e.g. switching between sphere and cube
-		// geometry inputs will leave the mesh in a corrupt state (displaying
-		// the wrong geometry)
-		this.object3d[slot.name] = data.clone ? data.clone() : data
+		this.object3d[slot.name] = data
 	}
 }
 
