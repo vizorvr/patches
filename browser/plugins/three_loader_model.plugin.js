@@ -64,25 +64,9 @@
 	}
 
 	ThreeLoaderModelPlugin.prototype.onJsonModelLoaded = function(geometry, materials) {
-		// this.childrenByMaterialName = {}
-		
 		console.log('onJsonModelLoaded', geometry, materials)
 		
-		// var material = new THREE.MeshLambertMaterial( { color: 0xffaa55, morphTargets: true, vertexColors: THREE.FaceColors } );
-		var material = materials[0]
-
-		var meshAnim = this.object3d = new THREE.MorphAnimMesh(geometry, material)
-
-		meshAnim.speed = 250;
-		meshAnim.duration = 500;
-		meshAnim.time = 600 * Math.random();
-
-		meshAnim.position.set(0, 0, 0);
-		meshAnim.rotation.y = Math.PI/2;
-
-		meshAnim.castShadow = true;
-		meshAnim.receiveShadow = false;
-
+		var meshAnim = this.object3d = new THREE.MorphAnimMesh(geometry, materials[0])
 		this.meshAnim = meshAnim
 
 		this.onObjLoaded(this.object3d)
