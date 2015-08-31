@@ -11,14 +11,12 @@
 			{
 				name: 'scene',
 				dt: core.datatypes.SCENE,
-				desc: 'Scene to render',
-				def: null
+				desc: 'Scene to render'
 			},
 			{
 				name: 'bgcolor',
 				dt: core.datatypes.COLOR,
-				desc: 'Background color',
-				def: null
+				desc: 'Background color'
 			}
 		]
 
@@ -27,6 +25,7 @@
 		this.always_update = true
 		this.state = { always_update: true }
 
+		this.clearColor = new THREE.Color(0,0,0)
 	}
 
 	ThreeWebGLRendererPlugin.prototype.stop = function() {
@@ -59,13 +58,20 @@
 				this.scene = data
 				break;
 			case 2:
-				this.renderer.setClearColor(new THREE.Color(data.r, data.g, data.b))
+				this.clearColor = new THREE.Color(data.r, data.g, data.b)
 				break;
 		}
 	}
 
 	ThreeWebGLRendererPlugin.prototype.update_state = function() {
-		if (!this.scene) {
+		// workaround for having to share the renderer between render to texture & render to screen
+		// tbd: remove once https://github.com/mrdoob/three.js/pull/6723 is merged into a three release
+		this.renderer.setPixelRatio(window.devicePixelRatio)
+		this.renderer.setClearColor(this.clearColor)
+
+		if (!this.scene || !this.perspectiveCamera) {
+			this.renderer.clear()
+
 			return
 		}
 
@@ -148,10 +154,7 @@
 		if (!ui) {
 			console.log('state_changed')
 			this.domElement = E2.dom.webgl_canvas[0]
-			this.renderer = new THREE.WebGLRenderer({
-				canvas: this.domElement,
-				// antialias: true
-			})
+			this.renderer = E2.core.renderer
 
 			this.renderer.setPixelRatio(window.devicePixelRatio)
 

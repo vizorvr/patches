@@ -5,8 +5,8 @@
 		this.desc = 'THREE.js Mesh'
 		
 		this.input_slots = [
-			{ name: 'geometry', dt: core.datatypes.GEOMETRY },
-			{ name: 'material', dt: core.datatypes.MATERIAL },
+			{ name: 'geometry', dt: core.datatypes.GEOMETRY, def: new THREE.Geometry() },
+			{ name: 'material', dt: core.datatypes.MATERIAL, def: new THREE.MeshBasicMaterial({color: 0xaaaaaa}) }
 		].concat(this.input_slots)
 	}
 

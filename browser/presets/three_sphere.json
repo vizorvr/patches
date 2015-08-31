@@ -1,0 +1,410 @@
+{
+    "abs_t": 262.355,
+    "active_graph": "root",
+    "graph_uid": "TI6whDg9VfHH",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 221,
+                "y": 240,
+                "uid": "J9dnwdsWM971",
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "input_sids": {},
+                    "output_sids": {
+                        "OzjF6BlVhopv": "mh0rTKkFm0nD"
+                    }
+                },
+                "title": "Sphere",
+                "graph": {
+                    "uid": "kUKodUvwNp7a",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "three_mesh",
+                            "x": 1057,
+                            "y": 390,
+                            "uid": "kra7lxXtBXtw"
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1269,
+                            "y": 390,
+                            "uid": "OzjF6BlVhopv",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "bEdPpC9C6Rh1",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 100,
+                            "y": 418,
+                            "uid": "FbwG33UiJpA1",
+                            "state": {
+                                "val": 0,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 97,
+                            "y": 485,
+                            "uid": "sJGTQpgFCmF6",
+                            "state": {
+                                "val": 0,
+                                "min": -2,
+                                "max": 2
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 95,
+                            "y": 551,
+                            "uid": "9jrYteJx4mxd",
+                            "state": {
+                                "val": 0,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "Z"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 441,
+                            "y": 467,
+                            "uid": "eFC8yqEjtGk8",
+                            "open": false,
+                            "title": "Position"
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 194,
+                            "y": 64,
+                            "uid": "Ad9MoQf1UEN0",
+                            "state": {
+                                "url": "/data/image/a0ef7a98fe6f899443d2f5bf97b606bc2a94176a.png"
+                            },
+                            "title": "Box texture"
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 943,
+                            "y": 320,
+                            "uid": "yeur4Vur7Tho",
+                            "state": {
+                                "enabled": true
+                            },
+                            "title": "Visible"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 503,
+                            "y": 763,
+                            "uid": "VTatipYNLPr1",
+                            "open": false,
+                            "title": "Scale"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 236,
+                            "y": 671,
+                            "uid": "TrMsY1yRN43z",
+                            "open": false,
+                            "title": "Rotation"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 343,
+                            "y": 795,
+                            "uid": "uHYY3yhwnnne",
+                            "state": {
+                                "val": 0.4
+                            },
+                            "title": "XYZ"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 98,
+                            "y": 656,
+                            "uid": "O1lj2ZmCz727",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 95,
+                            "y": 719,
+                            "uid": "RePm8TVYCJD6",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 93,
+                            "y": 775,
+                            "uid": "MvO7hSR1ou9I",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Z"
+                        },
+                        {
+                            "plugin": "three_geometry_sphere",
+                            "x": 595,
+                            "y": 249,
+                            "uid": "UY8sf48e7Vxm"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 433,
+                            "y": 248,
+                            "uid": "H49l6ai7iMFA",
+                            "state": {
+                                "val": 1
+                            },
+                            "title": "Radius"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 435,
+                            "y": 301,
+                            "uid": "XIUGcado485K",
+                            "state": {
+                                "val": 64
+                            },
+                            "title": "Segments"
+                        },
+                        {
+                            "plugin": "three_material_lambert",
+                            "x": 613,
+                            "y": 128,
+                            "uid": "bur5StFrSRuU"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "kra7lxXtBXtw",
+                            "dst_nuid": "OzjF6BlVhopv",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "zRsWgnCa23py",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "eFC8yqEjtGk8",
+                            "dst_nuid": "kra7lxXtBXtw",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "MbBT90ihyYHM",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "yeur4Vur7Tho",
+                            "dst_nuid": "kra7lxXtBXtw",
+                            "src_slot": 0,
+                            "dst_slot": 5,
+                            "uid": "UiT1XfddE4s9",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "uHYY3yhwnnne",
+                            "dst_nuid": "VTatipYNLPr1",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "Zx6Zyo53OZjG",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "uHYY3yhwnnne",
+                            "dst_nuid": "VTatipYNLPr1",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "OS0Iedx68c3G",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": "uHYY3yhwnnne",
+                            "dst_nuid": "VTatipYNLPr1",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "p73G40IW8coz",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "VTatipYNLPr1",
+                            "dst_nuid": "kra7lxXtBXtw",
+                            "src_slot": 0,
+                            "dst_slot": 4,
+                            "uid": "3DlUOn8efiMt",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "TrMsY1yRN43z",
+                            "dst_nuid": "kra7lxXtBXtw",
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "uid": "XWlxV8bcX3pC",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "O1lj2ZmCz727",
+                            "dst_nuid": "TrMsY1yRN43z",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "oMxwXmq6E9Yv",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "RePm8TVYCJD6",
+                            "dst_nuid": "TrMsY1yRN43z",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "JAofaGhIpjUJ",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "MvO7hSR1ou9I",
+                            "dst_nuid": "TrMsY1yRN43z",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "y7CcQODl7SSy",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "FbwG33UiJpA1",
+                            "dst_nuid": "eFC8yqEjtGk8",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "LuuisWChGil7",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "sJGTQpgFCmF6",
+                            "dst_nuid": "eFC8yqEjtGk8",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "vETJj5adtnNY",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "9jrYteJx4mxd",
+                            "dst_nuid": "eFC8yqEjtGk8",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "nmjilnAAqqAS",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "UY8sf48e7Vxm",
+                            "dst_nuid": "kra7lxXtBXtw",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "qJUj6fALecOx",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "H49l6ai7iMFA",
+                            "dst_nuid": "UY8sf48e7Vxm",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "LjGAtZyqK41r",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "XIUGcado485K",
+                            "dst_nuid": "UY8sf48e7Vxm",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "x6iVe9DW3eCj",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "XIUGcado485K",
+                            "dst_nuid": "UY8sf48e7Vxm",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "QDlkhdaQEHL3",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "bur5StFrSRuU",
+                            "dst_nuid": "kra7lxXtBXtw",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "x5owHyYcbb91",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "Ad9MoQf1UEN0",
+                            "dst_nuid": "bur5StFrSRuU",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "B9EMXM19mTOs",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "mh0rTKkFm0nD",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

@@ -1,16 +1,12 @@
-function AbstractThreeLoaderObjPlugin(core) {
+function AbstractThreeLoaderObjPlugin() {
 	ThreeObject3DPlugin.apply(this, arguments)
 
 	this.desc = 'THREE.js OBJ loader'
 	
-	// add slots above the ones from ThreeObject3DPlugin
-	this.input_slots.unshift({ name: 'url', dt: core.datatypes.TEXT })
-
 	this.dirty = true
 
-	this.state = { url: '' }
-
 	this.childrenByMaterialName = {}
+	this.state = { url: '' }
 	this.materials = {}
 }
 

@@ -46,7 +46,6 @@
 	"Generators/Load/Audio buffer from URL": "url_audio_buffer_generator",
 	"Generators/Load/Image from URL": "url_texture_generator",
 	"Generators/Load/JSON from URL": "url_json_generator",
-	"Generators/Load/Scene from URL": "url_scene_generator",
 	"Generators/Load/Video from URL": "url_video_generator",
 	"Generators/Matrix/Translation": "translation_matrix",
 	"Generators/Matrix/Translation XYZ": "translation_xyz_matrix",
@@ -263,8 +262,9 @@
 	"Modulators/Video/Duration": "video_get_duration_modulator",	
 	"Modulators/Video/Current time": "video_get_current_time_modulator",
 	"Modulators/VR/Camera": "vr_camera_modulator",
-	
-	"THREE/WebGL Renderer": "three_webgl_renderer",
+
+	"THREE/Render To Texture": "three_webgl_texture_renderer",
+	"THREE/Render To Screen": "three_webgl_renderer",
 
 	"THREE/Scene": "three_scene",
 	"THREE/Mesh": "three_mesh",

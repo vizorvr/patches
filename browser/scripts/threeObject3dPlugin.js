@@ -48,10 +48,12 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 	var slotOffset = this.node.plugin.input_slots.length - handlers.length
 	var adjSlotIndex = slot.index - slotOffset
 
-	if (handlers[adjSlotIndex])
+	if (handlers[adjSlotIndex]) {
 		handlers[adjSlotIndex]()
-	else
+	}
+	else {
 		this.object3d[slot.name] = data
+	}
 }
 
 ThreeObject3DPlugin.prototype.update_output = function() {

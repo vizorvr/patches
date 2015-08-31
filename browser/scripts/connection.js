@@ -95,11 +95,9 @@ Connection.prototype.signal_change = function(on) {
 	n.inputs_changed = true
 	
 	if (!on && n.plugin.update_input) {
-		if (this.dst_slot.uid === undefined) {
-			if(this.dst_slot.def !== undefined) {
+		if (this.dst_slot.def !== undefined) {
 				n.plugin.update_input(this.dst_slot, clone(this.dst_slot.def))
 				n.plugin.updated = true
-			}
 		} else {
 			n.plugin.update_input(this.dst_slot, E2.app.player.core.get_default_value(this.dst_slot.dt))
 			n.plugin.updated = true

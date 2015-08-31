@@ -1,0 +1,332 @@
+{
+    "abs_t": 255.337,
+    "active_graph": "root",
+    "graph_uid": "TI6whDg9VfHH",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 110,
+                "y": 210,
+                "uid": "rzCuIVwQdNMn",
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "input_sids": {},
+                    "output_sids": {
+                        "CpCjYdqPrFLH": "547odbJKrTzG"
+                    }
+                },
+                "title": "Directional light",
+                "graph": {
+                    "uid": "BZANvKRLi0rS",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1110,
+                            "y": 223,
+                            "uid": "CpCjYdqPrFLH",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "vSy6Gj4JSPYs",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "three_directional_light",
+                            "x": 831,
+                            "y": 306,
+                            "uid": "60mXmQJMMT3b"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 619,
+                            "y": 270,
+                            "uid": "UqxYRwZ2kmpH",
+                            "state": {
+                                "val": 1
+                            },
+                            "title": "Intensity"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 306,
+                            "y": 399,
+                            "uid": "h3bavAJO540Y",
+                            "state": {
+                                "val": 0,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 303,
+                            "y": 466,
+                            "uid": "XE312yfqrSJt",
+                            "state": {
+                                "val": 0,
+                                "min": -2,
+                                "max": 2
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 301,
+                            "y": 532,
+                            "uid": "2EszqectGMSA",
+                            "state": {
+                                "val": 2,
+                                "min": -1,
+                                "max": 2
+                            },
+                            "title": "Z"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 639,
+                            "y": 472,
+                            "uid": "wJ0qjuVpfpm3",
+                            "open": false,
+                            "title": "Position"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 639,
+                            "y": 560,
+                            "uid": "5Db94QrW1GMj",
+                            "open": false,
+                            "title": "Scale"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 642,
+                            "y": 524,
+                            "uid": "4ns9TIYjIdiR",
+                            "open": false,
+                            "title": "Rotation"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 476,
+                            "y": 708,
+                            "uid": "58WAzSCQRNuu",
+                            "state": {
+                                "val": 1
+                            },
+                            "title": "XYZ"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 304,
+                            "y": 637,
+                            "uid": "LzNjycd9TaMh",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 301,
+                            "y": 700,
+                            "uid": "yibBQBDNQ2AT",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 299,
+                            "y": 756,
+                            "uid": "F1Npc5NYLq6u",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Z"
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 728,
+                            "y": 366,
+                            "uid": "9sSEBj3n516K",
+                            "state": {
+                                "enabled": true
+                            }
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "UqxYRwZ2kmpH",
+                            "dst_nuid": "60mXmQJMMT3b",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "ynZ4PkSK1BGl",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "h3bavAJO540Y",
+                            "dst_nuid": "wJ0qjuVpfpm3",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "LuuisWChGil7",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "XE312yfqrSJt",
+                            "dst_nuid": "wJ0qjuVpfpm3",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "vETJj5adtnNY",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "2EszqectGMSA",
+                            "dst_nuid": "wJ0qjuVpfpm3",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "nmjilnAAqqAS",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "58WAzSCQRNuu",
+                            "dst_nuid": "5Db94QrW1GMj",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "Zx6Zyo53OZjG",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "58WAzSCQRNuu",
+                            "dst_nuid": "5Db94QrW1GMj",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "OS0Iedx68c3G",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": "58WAzSCQRNuu",
+                            "dst_nuid": "5Db94QrW1GMj",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "p73G40IW8coz",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "LzNjycd9TaMh",
+                            "dst_nuid": "4ns9TIYjIdiR",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "oMxwXmq6E9Yv",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "yibBQBDNQ2AT",
+                            "dst_nuid": "4ns9TIYjIdiR",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "JAofaGhIpjUJ",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "F1Npc5NYLq6u",
+                            "dst_nuid": "4ns9TIYjIdiR",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "y7CcQODl7SSy",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "wJ0qjuVpfpm3",
+                            "dst_nuid": "60mXmQJMMT3b",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "2x3eRyU5SDWl",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "4ns9TIYjIdiR",
+                            "dst_nuid": "60mXmQJMMT3b",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "94PZMYu2YD0S",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "5Db94QrW1GMj",
+                            "dst_nuid": "60mXmQJMMT3b",
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "uid": "7R8EspyYchdw",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "9sSEBj3n516K",
+                            "dst_nuid": "60mXmQJMMT3b",
+                            "src_slot": 0,
+                            "dst_slot": 4,
+                            "uid": "0Ccx9SoUN7nS",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "60mXmQJMMT3b",
+                            "dst_nuid": "CpCjYdqPrFLH",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "GneZHvJz4rZT",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "547odbJKrTzG",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

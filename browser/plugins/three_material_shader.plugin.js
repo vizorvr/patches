@@ -236,7 +236,7 @@
 					data = data ? new THREE.Vector3(data.x, data.y, data.z) : new THREE.Vector3()
 				}
 
-				this.uniforms[slot.name]['value'] = data
+				this.uniforms[slot.name].value = data
 			}
 		}
 
@@ -247,8 +247,15 @@
 	ThreeShaderMaterialPlugin.prototype.reset = function() {
 		this.material = new THREE.ShaderMaterial()
 
-		this.state.vs_src = this.material.vertexShader
-		this.state.ps_src = this.material.fragmentShader
+		if (!this.state.vs_src)
+			this.state.vs_src = this.material.vertexShader
+		else
+			this.material.vertexShader = this.state.vs_src
+
+		if (!this.state.ps_src)
+			this.state.ps_src = this.material.fragmentShader
+		else
+			this.material.fragmentShader = this.state.ps_src
 
 		this.uniforms_dirty = this.shader_dirty = true
 	}
