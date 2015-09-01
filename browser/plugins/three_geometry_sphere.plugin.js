@@ -9,7 +9,7 @@
 			{ name: 'phiStart', dt: core.datatypes.FLOAT, def: 0, desc: 'Horizontal starting angle' },
 			{ name: 'phiLength', dt: core.datatypes.FLOAT, def: 2 * Math.PI, desc: 'Horizontal sweep angle size' },
 			{ name: 'thetaStart', dt: core.datatypes.FLOAT, def: 0, desc: 'Vertical starting angle' },
-			{ name: 'thetaLength', dt: core.datatypes.FLOAT, def: 2 * Math.PI, desc: 'Vertical sweep angle size' },
+			{ name: 'thetaLength', dt: core.datatypes.FLOAT, def: Math.PI, desc: 'Vertical sweep angle size' },
 		]
 
 		this.output_slots = [{
