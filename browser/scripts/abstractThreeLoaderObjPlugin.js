@@ -43,8 +43,16 @@ AbstractThreeLoaderObjPlugin.prototype.update_input = function(slot, data) {
 	if (slot.uid) {
 		this.materials[slot.name] = data
 
-		if (!this.childrenByMaterialName[slot.name])
+		if (!this.childrenByMaterialName[slot.name]) {
+			if (!this.object3d) {
+				// object hasn't finished loading yet - add to pending list
+				this.pendingMaterialInput = this.pendingMaterialInput || {}
+
+				this.pendingMaterialInput[slot.name] = data
+			}
+
 			return;
+		}
 
 		for (var i=0; i < this.childrenByMaterialName[slot.name].length; i++)
 			this.childrenByMaterialName[slot.name][i].material = data
@@ -108,6 +116,16 @@ AbstractThreeLoaderObjPlugin.prototype.onObjLoaded = function(obj) {
 			that.childrenByMaterialName[matName].push(child)
 		}
 	})
+
+	if (this.pendingMaterialInput) {
+		for (input in Object.keys(this.pendingMaterialInput)) {
+			for (var i=0; i < this.childrenByMaterialName[input].length; i++)
+				this.childrenByMaterialName[input][i].material = this.pendingMaterialInput[input]
+		}
+		
+		this.pendingMaterialInput = undefined
+	}
+	
 
 	this.adjustMaterialSlots()
 
