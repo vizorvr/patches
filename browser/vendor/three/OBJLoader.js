@@ -19,14 +19,14 @@ THREE.OBJLoader.prototype = {
 		var loader = new THREE.XHRLoader( scope.manager );
 		loader.setCrossOrigin( this.crossOrigin );
 		loader.load( url, function ( text ) {
+			var geoms_and_mats = scope.parse( text );
 
-			onLoad( scope.parse( text ) );
-
+			onLoad(geoms_and_mats.geometries, geoms_and_mats.materials);
 		}, onProgress, onError );
 
 	},
 
-	parse: function ( text ) {
+	parse: function ( text, onLoad ) {
 
 		console.time( 'OBJLoader' );
 
@@ -34,7 +34,7 @@ THREE.OBJLoader.prototype = {
 		var geometry, material;
 
 		function parseVertexIndex( value ) {
-
+			scope.parse( text )
 			var index = parseInt( value );
 
 			return ( index >= 0 ? index - 1 : index + vertices.length / 3 ) * 3;
@@ -333,7 +333,7 @@ THREE.OBJLoader.prototype = {
 
 		}
 
-		var container = new THREE.Object3D();
+		var geoms_and_mats = {geometries: [], materials: []}
 
 		for ( var i = 0, l = objects.length; i < l; i ++ ) {
 
@@ -355,17 +355,13 @@ THREE.OBJLoader.prototype = {
 			material = new THREE.MeshLambertMaterial();
 			material.name = object.material.name;
 
-			var mesh = new THREE.Mesh( buffergeometry, material );
-			mesh.name = object.name;
-
-			container.add( mesh );
-
+			geoms_and_mats.geometries.push(buffergeometry)
+			geoms_and_mats.materials.push(material)
 		}
 
 		console.timeEnd( 'OBJLoader' );
 
-		return container;
-
+		return geoms_and_mats
 	}
 
 };

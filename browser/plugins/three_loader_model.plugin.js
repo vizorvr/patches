@@ -9,14 +9,6 @@
 
 	var ThreeLoaderModelPlugin = E2.plugins.three_loader_model = function(core) {
 		AbstractThreeLoaderObjPlugin.apply(this, arguments)
-		
-		this.input_slots = [
-			{
-				name: 'delta', 
-				dt: core.datatypes.FLOAT,
-				desc: 'Delta time for animation'
-			}
-		].concat(this.input_slots)
 	}
 
 	ThreeLoaderModelPlugin.prototype = Object.create(AbstractThreeLoaderObjPlugin.prototype)
@@ -63,13 +55,8 @@
 				.load(this.state.url, this.onObjLoaded.bind(this), progress.bind(this), errorHandler)
 	}
 
-	ThreeLoaderModelPlugin.prototype.onJsonModelLoaded = function(geometry, materials) {
-		console.log('onJsonModelLoaded', geometry, materials)
-		
-		var meshAnim = this.object3d = new THREE.MorphAnimMesh(geometry, materials[0])
-		this.meshAnim = meshAnim
-
-		this.onObjLoaded(this.object3d)
+	ThreeLoaderModelPlugin.prototype.onJsonLoaded = function(geoms, mats) {
+		this.onObjLoaded([geoms], mats)
 	}
 
 	ThreeLoaderModelPlugin.prototype.loadJson = function() {
@@ -77,18 +64,12 @@
 
 		new THREE.JSONLoader()
 			.load(this.state.url,
-				this.onJsonModelLoaded.bind(this),
+				this.onJsonLoaded.bind(this),
 				progress.bind(this),
 				errorHandler
 			)
 	}
 
-	ThreeLoaderModelPlugin.prototype.update_input = function(slot, data) {
-		if (slot.name === 'delta' && this.meshAnim)
-			this.meshAnim.updateAnimation(data * 1000)
-		else
-			AbstractThreeLoaderObjPlugin.prototype.update_input.apply(this, arguments)
-	}
 
 	ThreeLoaderModelPlugin.prototype.update_state = function() {
 		if (!this.dirty)
@@ -97,8 +78,11 @@
 		if (!this.state.url)
 			return;
 
-		if (this.object3d)
-			this.object3d = null
+		if (this.geometries)
+			this.geometries = null
+
+		if (this.materials)
+			this.materials = null
 
 		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 
@@ -123,6 +107,14 @@
 		this.dirty = false
 	}
 
+	ThreeLoaderModelPlugin.prototype.update_output = function(slot) {
+		if (slot.index === 0) {
+			return this.geometries
+		}
+		if (slot.index === 1) {
+			return this.materials
+		}
+	}
 
 })()
 

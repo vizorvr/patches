@@ -1,6 +1,5 @@
-function AbstractThreeLoaderObjPlugin() {
-	ThreeObject3DPlugin.apply(this, arguments)
-
+function AbstractThreeLoaderObjPlugin(core) {
+	Plugin.apply(this, arguments)
 	this.desc = 'THREE.js OBJ loader'
 	
 	this.dirty = true
@@ -8,9 +7,25 @@ function AbstractThreeLoaderObjPlugin() {
 	this.childrenByMaterialName = {}
 	this.state = { url: '' }
 	this.materials = {}
+
+	this.input_slots = []
+
+	this.output_slots = [{
+		name: 'geometry',
+		dt: core.datatypes.GEOMETRY,
+		array: true
+	},
+	{
+		name: 'materials',
+		dt: core.datatypes.MATERIAL,
+		array: true
+	}]
+
+	this.geometries = [new THREE.Geometry()]
+	this.materials = [new THREE.MeshBasicMaterial(0xff0000)]
 }
 
-AbstractThreeLoaderObjPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
+AbstractThreeLoaderObjPlugin.prototype = Object.create(Plugin.prototype)
 
 AbstractThreeLoaderObjPlugin.prototype.create_ui = function() {
 	var inp = makeButton('Change', 'No scene selected.', 'url')
@@ -40,11 +55,11 @@ AbstractThreeLoaderObjPlugin.prototype.create_ui = function() {
 }
 
 AbstractThreeLoaderObjPlugin.prototype.update_input = function(slot, data) {
-	if (slot.uid) {
+	/*if (slot.uid) {
 		this.materials[slot.name] = data
 
 		if (!this.childrenByMaterialName[slot.name]) {
-			if (!this.object3d) {
+			if (!this.geometries) {
 				// object hasn't finished loading yet - add to pending list
 				this.pendingMaterialInput = this.pendingMaterialInput || {}
 
@@ -61,8 +76,9 @@ AbstractThreeLoaderObjPlugin.prototype.update_input = function(slot, data) {
 	}
 
 	return ThreeObject3DPlugin.prototype.update_input.apply(this, arguments)
+	*/
 }
-
+/*
 AbstractThreeLoaderObjPlugin.prototype.adjustMaterialSlots = function() {
 	var that = this
 	var materialSlots = this.node.getDynamicInputSlots()
@@ -93,41 +109,42 @@ AbstractThreeLoaderObjPlugin.prototype.adjustMaterialSlots = function() {
 		})
 	})
 }
+*/
 
-AbstractThreeLoaderObjPlugin.prototype.onObjLoaded = function(obj) {
-	var that = this
-
-	this.object3d = obj
+AbstractThreeLoaderObjPlugin.prototype.onObjLoaded = function(geoms, mats) {
+	this.geometries = geoms
+	this.materials = mats
 
 	msg('Finished loading '+ this.state.url)
 
 	this.childrenByMaterialName = {}
+/*
+	for (var i = 0; i < this.geometries.length; i++) {
+		var geom = this.geometries[i]
 
-	obj.traverse(function(child) {
-		if (child instanceof THREE.Mesh && child.material.name) {
-			var matName = 'mat-'+child.material.name
+		if (geom.material.name) {
+			var matName = 'mat-'+geom.material.name
 				.toLowerCase()
 				.replace(/[^a-z0-9]+/g,' ')
 				.replace(/ +/g, '-')
 
-			if (!that.childrenByMaterialName[matName])
-				that.childrenByMaterialName[matName] = []
+			if (!this.childrenByMaterialName[matName])
+				this.childrenByMaterialName[matName] = []
 
-			that.childrenByMaterialName[matName].push(child)
+			this.childrenByMaterialName[matName].push(geom)
 		}
-	})
+	}
 
 	if (this.pendingMaterialInput) {
 		for (input in Object.keys(this.pendingMaterialInput)) {
 			for (var i=0; i < this.childrenByMaterialName[input].length; i++)
 				this.childrenByMaterialName[input][i].material = this.pendingMaterialInput[input]
-		}
-		
-		this.pendingMaterialInput = undefined
-	}
-	
 
-	this.adjustMaterialSlots()
+			this.pendingMaterialInput.remove(input)
+		}
+	}
+*/
+	//this.adjustMaterialSlots()
 
 	this.updated = true
 }
@@ -139,8 +156,8 @@ AbstractThreeLoaderObjPlugin.prototype.update_state = function() {
 	if (!this.state.url)
 		return;
 
-	if (this.object3d)
-		this.object3d = null
+	if (this.geometries)
+		this.geometries = null
 
 	THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 
