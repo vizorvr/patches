@@ -393,7 +393,7 @@ Node.prototype.update_recursive = function(conns) {
 			var value = sn.plugin.update_output(inp.src_slot);
 
 			if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
-				pl.update_input(inp.dst_slot, value);
+				pl.update_input(inp.dst_slot, inp.dst_slot.validate ? inp.dst_slot.validate(value) : value);
 				pl.updated = true;
 				needs_update = true;
 		
