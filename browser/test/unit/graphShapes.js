@@ -57,6 +57,8 @@ describe('Simple graph shapes', function() {
 		
 		global.window = { location: { pathname: 'test/test' } }
 
+		require('../../scripts/util')
+
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 		app = new Application()
 		app.player = { core: core }
