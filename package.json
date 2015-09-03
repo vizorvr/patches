@@ -86,7 +86,7 @@
     "test:browser:plugins": "mocha browser/test/unit/plugins",
     "test:browser": "npm run test:browser:unit && npm run test:browser:plugins && npm run test:browser:integration",
     "test:server:unit": "mocha test/unit test/controllers test/services",
-    "test:server:integration": "mocha test/integration/graph-save && mocha test/integration/multiuserEditing && mocha test/integration/preset-save && mocha test/integration/upload",
+    "test:server:integration": "mocha test/integration/graph-save && mocha test/integration/multiuserEditing && mocha test/integration/preset-save && mocha --timeout 8000 test/integration/upload",
     "test:server": "npm run test:server:unit && npm run test:server:integration",
     "test": "npm run test:browser && npm run test:server"
   },

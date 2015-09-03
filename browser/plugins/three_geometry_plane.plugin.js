@@ -5,8 +5,10 @@
 		this.input_slots = [
 			{ name: 'width', dt: core.datatypes.FLOAT, def: 5 },
 			{ name: 'height', dt: core.datatypes.FLOAT, def: 5 },
-			{ name: 'widthSegments', dt: core.datatypes.FLOAT, def: 1, desc: 'Number of horizontal segments' },
-			{ name: 'heightSegments', dt: core.datatypes.FLOAT, def: 1, desc: 'Number of vertical segments' },
+			{ name: 'widthSegments', dt: core.datatypes.FLOAT, def: 1, desc: 'Number of horizontal segments',
+				validate: function(v) {return Math.max(0, Math.min(v, 50))}  },
+			{ name: 'heightSegments', dt: core.datatypes.FLOAT, def: 1, desc: 'Number of vertical segments',
+				validate: function(v) {return Math.max(0, Math.min(v, 50))}  },
 		]
 
 		this.output_slots = [{

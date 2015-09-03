@@ -400,7 +400,7 @@ Node.prototype.update_recursive = function(conns) {
 					value = value[0]
 				}
 
-				pl.update_input(inp.dst_slot, value);
+				pl.update_input(inp.dst_slot, inp.dst_slot.validate ? inp.dst_slot.validate(value) : value);
 				pl.updated = true;
 				needs_update = true;
 		
