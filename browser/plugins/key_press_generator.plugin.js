@@ -76,8 +76,10 @@ Keypress.prototype.create_ui = function()
 	return dom;
 };
 
-Keypress.prototype.key_down = function(self) { return function(e)
-{
+Keypress.prototype.key_down = function(self) { return function(e) {
+	if (E2.util.isTextInputInFocus(e))
+		return;
+
 	if(e.originalEvent.keyCode !== self.state.key)
 		return;
 	
@@ -85,8 +87,10 @@ Keypress.prototype.key_down = function(self) { return function(e)
 	self.updated = true;
 }};
 
-Keypress.prototype.key_up = function(self) { return function(e)
-{		
+Keypress.prototype.key_up = function(self) { return function(e) {
+	if (E2.util.isTextInputInFocus(e))
+		return;
+
 	if(e.originalEvent.keyCode !== self.state.key)
 		return;
 	

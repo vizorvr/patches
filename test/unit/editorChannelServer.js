@@ -38,6 +38,4 @@ describe('EditorChannelServer', function() {
 		ecs.onSocketClosed(client)
 		assert.equal(ecs.channels.asdf.length, 0)
 	})
-
-
 })
