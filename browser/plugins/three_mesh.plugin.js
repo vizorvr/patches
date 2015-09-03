@@ -17,10 +17,10 @@
 
 		this.object3d = new THREE.Object3D()
 
-		var geometry = new THREE.BoxGeometry(1, 1, 1)
-		var material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+		this.geoms = [new THREE.Geometry()]
+		this.mats = [new THREE.MeshBasicMaterial({color: 0x00ff00})]
 
-		var mesh = new THREE.Mesh(geometry, material)
+		var mesh = new THREE.Mesh(this.geoms[0], this.mats[0])
 		this.object3d.add(mesh)
 
 		// back reference for object picking
@@ -56,7 +56,7 @@
 			this.geoms_dirty = this.mats_dirty = false
 		}
 
-		if (this.mats_dirty && this.mats) {
+		if (this.mats_dirty && this.mats && this.mats.length > 0) {
 			for (i = 0; i < this.object3d.children.length; ++i) {
 				if (this.object3d.children[i] instanceof THREE.MorphAnimMesh) {
 					this.object3d.children[i].material = this.mats[i % this.mats.length].clone()
