@@ -1,7 +1,6 @@
 (function() {
 
 var GLOBAL_CHANNEL_NAME = 'Global'
-var peopleColors = {}
 
 if (typeof(moment) !== 'undefined' && moment.fn) {
 	moment.fn.formatTimeToday = function () {
@@ -80,7 +79,6 @@ function Chat($el, handlebars) {
 		this._renderMessage.bind(this))
 
 	E2.app.chatStore.on('joined', function(message) {
-		peopleColors[message.id] = message.color
 		message.meta = true
 		message.message = 'joined the chat'
 		that._renderMessage(message)
@@ -108,6 +106,7 @@ Chat.prototype.setupInput = function() {
 			E2.app.dispatcher.dispatch({
 				actionType: 'uiChatMessageAdded',
 				date: Date.now(),
+				color: E2.app.peopleStore.me.color,
 				message: $i.val()
 			})
 
@@ -121,11 +120,9 @@ Chat.prototype._renderMessage = function(message) {
 	var wasScrolledDown = $last.length ? 
 		E2.util.isScrolledIntoView($last) : true
 
-	var uid = message.from || E2.app.channel.uid
-
 	var messageTemplate = message.meta ? E2.views.chat.meta : E2.views.chat.message
 	var renderable = {
-		color: peopleColors[uid] || '#555',
+		color: message.color,
 		from: message.from ? message.username : (
 			E2.models.user.get('username') || 
 			E2.app.peopleStore.me.username
