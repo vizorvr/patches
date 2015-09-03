@@ -129,7 +129,7 @@ Chat.prototype._renderMessage = function(message) {
 		),
 		date: moment(message.date).formatTimeToday(),
 		message: $('<span/>').text(message.message).html() // escape 
-			.replace(/[htps:\/]+vizor\.io\/(\S*)/,
+			.replace(/[htps:\/]?vizor\.io[\/]?(\S*)/,
 				'<a target="_blank" href="//vizor.io/$1">vizor.io/$1</a>')
 	}
 
