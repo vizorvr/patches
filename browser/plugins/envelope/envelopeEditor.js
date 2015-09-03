@@ -50,10 +50,8 @@ EnvelopeEditor.prototype.destroy = function() {
 EnvelopeEditor.prototype.render = function($out) {
 	var that = this
 	var width = this._width, height = this._height
-	var points = this._points
-	var dragged = null,
-		selected = points[0]
-	var valueAtMouseDown
+	var dragged = null
+	var deleting = false
 
 	this._$el = $out
 
@@ -67,97 +65,87 @@ EnvelopeEditor.prototype.render = function($out) {
 	svg.append('rect')
 		.attr('width', width)
 		.attr('height', height)
-		.on('mousedown', mousedown)
+		.on('mousedown', svgMouseDown)
 
 	var $path = svg.append('path')
 
-	function drawLine() {
+	function redraw() {
 		$path
-			.datum(points)
+			.datum(that._points)
 			.attr('class', 'line')
-			.call(redraw)
 
 		if (svg.node().focus)
 			svg.node().focus()
-	}
 
-	drawLine()
-
-	function redraw() {
 		svg.select('path').attr('d', line)
 
-		var circle = svg.selectAll("circle")
-		.data(points, function(d, i) {
-			return d;
-		});
+		var circle = svg.selectAll('circle')
+		.data(that._points, function(d) {
+			return d
+		})
 
-		circle.enter().append("circle")
-		.attr("r", 1e-6)
+		circle.enter().append('circle')
+		.attr('r', 1e-6)
 		.on('mousedown', function(d) {
 			trackMouseMovement()
-			selected = dragged = d
+			dragged = d
+			deleting = true
 			redraw()
 		})
 		.transition()
 		.duration(750)
-		.ease("elastic")
-		.attr("r", 6.5);
+		.ease('elastic')
+		.attr('r', 6.5)
 
 		circle
-		.classed("selected", function(d) {
-			return d === selected;
-		})
-		.attr("cx", function(d) { return d[0]; })
-		.attr("cy", function(d) { return d[1]; });
+		.attr('cx', function(d) { return d[0] })
+		.attr('cy', function(d) { return d[1] })
 
-		circle.exit().remove();
+		circle.exit().remove()
 
 		if (d3.event) {
-			d3.event.preventDefault();
-			d3.event.stopPropagation();
+			d3.event.preventDefault()
+			d3.event.stopPropagation()
 		}
-
-		that.onChanged()
 	}
 
 	function trackMouseMovement() {
-		valueAtMouseDown = points.slice()
 		d3.select(window)
 			.on('mousemove.'+that._id, mousemove)
 			.on('mouseup.'+that._id, mouseup)
 	}
 
-	function mousedown() {
+	function svgMouseDown() {
 		trackMouseMovement()
 		var x = d3.mouse(svg.node())[0]
 		var prevCircle
 
-		points.forEach(function(cxy, i) {
+		that._points.forEach(function(cxy, i) {
 			if (cxy[0] < x)
 				prevCircle = i
 		})
 
-		points.splice(prevCircle+1, 0, dragged = d3.mouse(svg.node()))
+		that._points.splice(prevCircle+1, 0, dragged = d3.mouse(svg.node()))
 
 		redraw()
 	}
 
 	function allowed(direction) {
 		var x = dragged[0]
-		var ci = points.indexOf(dragged)
+		var ci = that._points.indexOf(dragged)
 		var limit = 0
 
-		if (ci === 0 || ci === (points.length- 1 ))
+		if (ci === 0 || ci === (that._points.length- 1 ))
 			return false
 
 		if (direction > 0)
 			limit = width
 
-		if (points[ci + direction])
-			limit = points[ci + direction][0]
+		if (that._points[ci + direction])
+			limit = that._points[ci + direction][0]
 
-		return (direction === 1 && x < limit)
-			|| (direction === -1 && x > limit)
+		return (direction === 1 && x < limit) ||
+			(direction === -1 && x > limit)
 	}
 
 	function sign(i) {
@@ -168,9 +156,9 @@ EnvelopeEditor.prototype.render = function($out) {
 		if (!dragged)
 			return
 
-		selected = null
-
 		var m = d3.mouse(svg.node())
+
+		deleting = false
 
 		var direction = sign(m[0] - dragged[0])
 
@@ -191,25 +179,30 @@ EnvelopeEditor.prototype.render = function($out) {
 		if (!dragged)
 			return
 
-		mousemove()
+		if (deleting) {
+			that._points = that._points.filter(function(pt) {
+				return pt[0] !== dragged[0] &&
+					pt[1] !== dragged[1]
+			})
 
-		E2.app.undoManager.execute(
-			new E2.commands.Undoable(
-				that.node.parent_graph,
-				that.node,
-				'points',
-				valueAtMouseDown,
-				points.slice(),
-				'Edit Envelope'
-			)
-		)
+			deleting = false
+		}
 
-		dragged = selected = null
+		that.onChanged()
+
+		dragged = null
 	}
+
+	this.redraw = redraw
+
+	redraw()
 
 	return this
 }
 
 E2.EnvelopeEditor = EnvelopeEditor
+
+if (typeof(module) !== 'undefined')
+	module.exports = EnvelopeEditor
 
 })()

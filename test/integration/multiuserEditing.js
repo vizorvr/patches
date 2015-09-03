@@ -41,7 +41,7 @@ function createClient(channelName, lastEditSeen) {
 				duration: 4100421,
 				activeDuration: 190248
 			}, {
-				userId: 'test1234' + Date.now() % 10000
+				userId: 'test1234' + (''+Date.now()).substring(8,12)
 			})
 		}
 	})
@@ -127,7 +127,7 @@ describe('Multiuser', function() {
 
 	it('should connect', function(done) {
 		s1 = createClient()
-		.on('READY', function() {
+		s1.on('ready', function() {
 			done()
 		})
 	})
