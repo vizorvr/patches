@@ -1,0 +1,80 @@
+.chat {
+	-moz-user-select: text;
+	-webkit-user-select: text;
+	-ms-user-select: text;
+	height: inherit;
+	overflow-x: hidden;
+}
+
+.chat .messages {
+	overflow-y: auto;
+	overflow-x: hidden;
+	margin-top: 10px;
+	height: calc(~'100vh - '@menu-bar-height * 3);
+}
+
+.chat .message .date {
+	margin-left: 5px;
+}
+
+.chat .message {
+	margin-bottom: 10px;
+}
+
+.chat .message .text-cell {
+	padding-top: 5px;
+}
+
+.chat .message .icon-column {
+	vertical-align: top;
+}
+
+.chat .message .meta {
+	margin: 0px 8px 8px 8px;
+}
+
+.chat .message .icon {
+	background-image: url('/images/alpha_chat_icon.png');
+	margin: 0px 8px 8px 8px;
+	width: 32px;
+	height: 32px;
+	background-color: gray;
+	border-radius: 3px;
+}
+
+.chat .message .username {
+	color: white;
+	font-weight: bold;
+}
+
+.chat .composer {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	width: 100%;
+    background-color: @gray-soft;
+}
+
+.chat .composer input[type="text"]:focus {
+	border: solid 1px @gray;
+    outline-width: 0;
+}
+.chat .composer input[type="text"] {
+	flex: 1;
+	padding: 5px;
+	margin: 7px;
+	border-radius: 4px;
+	box-shadow: none;
+	background-color: @gray-soft;
+	border: solid 1px @gray-light;
+	transition: border 0.3s;
+}
+
+.chat .message .table-row {
+	display: table-row;
+}
+
+.chat .message .table-cell {
+	display: table-cell;
+}
+

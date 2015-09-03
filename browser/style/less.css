@@ -6912,6 +6912,7 @@ body {
   margin: 0px;
   border: 0px;
   padding: 0px;
+  overflow: hidden;
 }
 body {
   margin: 0;
@@ -7028,6 +7029,10 @@ body {
   font-size: 12px;
   padding: 0;
   margin: 0;
+}
+#right-pane {
+  min-width: 268px;
+  max-width: 268px;
 }
 #mid-pane .tab-content,
 #mid-pane .tab-pane,
@@ -7346,4 +7351,71 @@ li.active,
   color: blue;
   font-size: 0.8em;
   font-weight: bold;
+}
+.chat {
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  height: inherit;
+  overflow-x: hidden;
+}
+.chat .messages {
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 10px;
+  height: calc(100vh -  84px);
+}
+.chat .message .date {
+  margin-left: 5px;
+}
+.chat .message {
+  margin-bottom: 10px;
+}
+.chat .message .text-cell {
+  padding-top: 5px;
+}
+.chat .message .icon-column {
+  vertical-align: top;
+}
+.chat .message .meta {
+  margin: 0px 8px 8px 8px;
+}
+.chat .message .icon {
+  background-image: url('/images/alpha_chat_icon.png');
+  margin: 0px 8px 8px 8px;
+  width: 32px;
+  height: 32px;
+  background-color: gray;
+  border-radius: 3px;
+}
+.chat .message .username {
+  color: white;
+  font-weight: bold;
+}
+.chat .composer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: #444444;
+}
+.chat .composer input[type="text"]:focus {
+  border: solid 1px #555555;
+  outline-width: 0;
+}
+.chat .composer input[type="text"] {
+  flex: 1;
+  padding: 5px;
+  margin: 7px;
+  border-radius: 4px;
+  box-shadow: none;
+  background-color: #444444;
+  border: solid 1px #aaaaaa;
+  transition: border 0.3s;
+}
+.chat .message .table-row {
+  display: table-row;
+}
+.chat .message .table-cell {
+  display: table-cell;
 }

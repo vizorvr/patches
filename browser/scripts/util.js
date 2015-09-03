@@ -172,6 +172,14 @@ function load_script(url, onload, onerror) {
 }
 
 E2.util = {
+	isScrolledIntoView: function isScrolledIntoView(elem) {
+		var docViewTop = $(window).scrollTop();
+		var docViewBottom = docViewTop + $(window).height();
+		var elemTop = $(elem).offset().top;
+		return ((elemTop <= docViewBottom) && 
+			(elemTop >= docViewTop));
+	},
+
 	isTextInputInFocus: function isTextInputInFocus(e) {
 		var rx = /INPUT|SELECT|TEXTAREA/i;
 		var is= (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);

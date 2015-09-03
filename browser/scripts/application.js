@@ -1093,7 +1093,9 @@ Application.prototype.calculateCanvasArea = function() {
 		$('#left-nav').outerWidth(true) - 
 		$('#mid-pane').outerWidth(true) - 
 		$('.mid-pane-handle').outerWidth(true) - 
-		$('.left-pane-handle').outerWidth(true);
+		$('.left-pane-handle').outerWidth(true) -
+		$('#right-pane').outerWidth(true) - 
+		$('.right-pane-handle').outerWidth(true) 
 
 	var height = $(window).height() -
 		$('.menu-bar').outerHeight(true);
@@ -1977,12 +1979,15 @@ Application.prototype.start = function() {
 		var ox = e.pageX
 		var $doc = $(document)
 		var changed = false
+		var rightToLeft = $handle.hasClass('right-pane-handle')
 
 		e.preventDefault()
 
 		function mouseMoveHandler(e) {
 			changed = true
 			var nw = ow + (e.pageX - ox)
+			if (rightToLeft)
+				nw = ow + (ox - e.pageX)
 			e.preventDefault()
 			$pane.css('flex', '0 0 '+nw+'px')
 			$pane.css('width', nw+'px')
@@ -2092,6 +2097,14 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	}
 }
 
+Application.prototype.setupChat = function() {
+	if (this.chat)
+		return
+
+	this.chatStore = new E2.ChatStore()
+	this.chat = new E2.Chat($('#chat'))
+}
+
 /**
  * Connect to the EditorChannel for this document
  */
@@ -2104,6 +2117,7 @@ Application.prototype.setupEditorChannel = function() {
 			return dfd.resolve()
 
 		that.channel.join(that.path, function() {
+			that.setupChat()
 			dfd.resolve()
 		})
 	}
@@ -2115,7 +2129,7 @@ Application.prototype.setupEditorChannel = function() {
 			that.peopleStore.initialize()
 			joinChannel()
 		})
-	} else
+	} else 
 		joinChannel()
 
 	return dfd.promise

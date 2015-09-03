@@ -125,7 +125,7 @@ describe('Multiuser', function() {
 
 	it('should connect', function(done) {
 		s1 = createClient()
-		.on('READY', function() {
+		s1.on('ready', function() {
 			done()
 		})
 	})
