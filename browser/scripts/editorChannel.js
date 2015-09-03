@@ -267,9 +267,6 @@ EditorChannel.prototype.send = function(payload) {
 	if (!isAcceptedDispatch(payload))
 		return;
 
-	// if (payload.actionType !== 'uiMouseMoved')
-	// 	console.log('send', payload.channel, payload.actionType)
-
 	this.wsChannel.send(
 		payload.channel === 'Global' ? payload.channel : this.channelName,
 		dehydrate(payload))
