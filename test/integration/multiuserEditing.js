@@ -74,9 +74,31 @@ function setupDatabase(cb) {
 	})
 } 
 
+var s1, s2
+
+var numbers = [ 'one', 'two', 'three', 'four', 'five',
+	'six', 'seven', 'eight', 'nine', 'ten' ]
+
+function burst() {
+	var bn = numbers.slice()
+	var interval = setInterval(function() {
+		var n = bn.shift()
+		console.log('send', n)
+		if (n) {
+			s1.send({
+				actionType: 'uiPluginStateChanged',
+				number: n
+			})
+		}else {
+			clearInterval(interval)
+			s1.close()
+		}
+	}, 1)
+}
+
+
 describe('Multiuser', function() {
 	var db
-	var s1, s2
 
 	before(function(done) {
 		global.E2 = {
@@ -200,18 +222,6 @@ describe('Multiuser', function() {
 	it('keeps order of live entries', function(done) {
 		var channel = 'test3'+Math.random()
 		var edits = []
-		
-		var numbers = [ 'one', 'two', 'three', 'four', 'five',
-			'six', 'seven', 'eight', 'nine', 'ten' ]
-
-		function burst() {
-			numbers.map(function(n) {
-				s1.send({
-					actionType: 'uiPluginStateChanged',
-					number: n
-				})
-			})
-		}
 
 		s1 = createClient(channel)
 		s1.once('join', function() {
@@ -220,6 +230,36 @@ describe('Multiuser', function() {
 			s2.once('join', burst)
 
 			s2.dispatcher.register(function(m) {
+				if (!m.actionType)
+					return;
+
+				edits.push(m)
+
+				if (edits.length === 10) {
+					assert.deepEqual(edits.map(function(e) { return e.number }), 
+						numbers)
+
+					done()
+				}
+			})
+		})
+
+	})
+
+
+	it('keeps order of replayed entries', function(done) {
+		var channel = 'test3'+Math.random()
+		var edits = []
+		
+		s1 = createClient(channel)
+		s1.once('join', function() {
+			burst()
+		})
+
+		s1.once('disconnected', function() {
+			s2 = createClient(channel)
+			s2.dispatcher.register(function(m) {
+				console.log('s2', m)
 				if (!m.actionType)
 					return;
 
@@ -249,12 +289,14 @@ describe('Multiuser', function() {
 				actionType: 'uiPluginStateChanged',
 				number: 1
 			})
+			s1.close()
 
 			var s3 = createClient(channel)
-			s3.once('join', function() {
+			s3.once('youJoined', function() {
 				// join some other channel
 				channel = 'part-two-'+Math.random()
-				s3.join(channel, function() {
+
+				s3.once('youJoined', function() {
 					// join original channel again
 					s3.join(ogChannel, function() {
 						s3.dispatcher.register(function(m) {
@@ -264,6 +306,8 @@ describe('Multiuser', function() {
 						})
 					})
 				})
+
+				s3.join(channel, function() {})
 			})
 		})
 
