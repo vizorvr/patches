@@ -76,7 +76,6 @@ describe('Node inputs', function() {
 	ValidateTestPlugin.prototype = Object.create(Plugin.prototype)
 
 	ValidateTestPlugin.prototype.update_input = function(slot, data) {
-		console.log('update_input ' + data)
 		assert(data >= this.min)
 		assert(data <= this.max)
 
