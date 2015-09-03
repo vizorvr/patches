@@ -58,6 +58,9 @@ Node.prototype.set_plugin = function(plugin) {
 	
 	for(var i = 0, len = plugin.output_slots.length; i < len; i++)
 		init_slot(plugin.output_slots[i], i, E2.slot_type.output);
+
+	// back reference for object picking
+	this.plugin.parentNode = this
 };
 
 Node.prototype.setOpenState = function(isOpen) {
@@ -390,7 +393,7 @@ Node.prototype.update_recursive = function(conns) {
 			var value = sn.plugin.update_output(inp.src_slot);
 
 			if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
-				pl.update_input(inp.dst_slot, value);
+				pl.update_input(inp.dst_slot, inp.dst_slot.validate ? inp.dst_slot.validate(value) : value);
 				pl.updated = true;
 				needs_update = true;
 		
@@ -404,7 +407,7 @@ Node.prototype.update_recursive = function(conns) {
 			}
 		}
 	
-		if(pl.always_update || (pl.isGraph && pl.state.always_update)) {
+		if (pl.always_update || (pl.isGraph && pl.state.always_update)) {
 			pl.update_state();
 		} else if(this.queued_update > -1) {
 			if(pl.update_state)

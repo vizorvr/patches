@@ -5,6 +5,7 @@ var reset = require('./plugins/helpers').reset;
 var loadPlugin = require('./plugins/helpers').loadPlugin;
 
 global.E2 = {}
+global.window = {}
 var Application = require('../../scripts/application')
 
 global._ = require('lodash')
@@ -18,7 +19,16 @@ global.Store = require('../../scripts/store');
 global.GraphStore = require('../../scripts/graphStore');
 global.PeopleManager = function() {}
 global.PeopleStore = function(){}
-global.Camera = global.Material = function(){}
+
+global.THREE = {
+	Vector3: function(){},
+	Matrix4: function(){},
+	Color: function(){},
+	Material: function(){},
+	MeshBasicMaterial: function(){},
+	PerspectiveCamera: function(){}
+}
+global.THREE.Matrix4.prototype.identity = function() {}
 
 global.NodeUI = function() {
 	this.dom = [$()]
@@ -27,7 +37,7 @@ global.NodeUI = function() {
 	this.dom.height = this.dom[0].height
 	this.dom[0].style = {}
 }
-global.Camera = global.Material = function() {}
+global.TextureCache = function() {}
 global.Registers = function() {
 	this.serialise = function(){}
 }
@@ -52,6 +62,7 @@ describe('Paste', function() {
 		core.graphs = [ core.active_graph ]
 		
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
+		require('../../scripts/util')
 
 		global.window = { location: { pathname: 'test/test' } }
 
@@ -143,6 +154,11 @@ describe('Paste', function() {
 		beforeEach(function() {
 			var dummyCore = reset()
 			E2.commands.graph = require('../../scripts/commands/graphEditCommands')
+	
+			E2.plugins.url_scene_generator = function(){
+				this.input_slots = []
+				this.output_slots = [ { name: 'x', dt: core.datatypes.BOOL } ]
+			}
 
 			app = E2.app = new Application()
 			app.updateCanvas = function() {}

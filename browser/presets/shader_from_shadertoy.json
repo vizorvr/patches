@@ -369,7 +369,7 @@
                                         "y": 681,
                                         "uid": 27,
                                         "state": {
-                                            "text": "This template is for easily copy/pasting shaders from Shadertoy.com. \n\nClick the \"Pixel\"  button on the \"From mesh custom\" shader to open the shader editor and paste in your shader.\n\nThe default inputs in this template match those of Shadertoy. You can add and remove inputs in our shader editor.\n\n-------------------------------------\n\nTUTORIALS ON OUR YOUTUBE CHANNEL: https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ\n\nMORE INFORMATION ABOUT SHADERS IN VIZOR:  http://create.vizor.io/help/custom_shaders.html\n\n",
+                                            "text": "This template is for easily copy/pasting shaders from Shadertoy.com. \n\nClick the \"Pixel\"  button on the \"From mesh custom\" shader to open the shader editor and paste in your shader.\n\nThe default inputs in this template match those of Shadertoy. You can add and remove inputs in our shader editor.\n\n-------------------------------------\n\nTUTORIALS ON OUR YOUTUBE CHANNEL: https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ\n\nMORE INFORMATION ABOUT SHADERS IN VIZOR:  http://vizor.io/help/custom_shaders.html\n\n",
                                             "width": 648,
                                             "height": 170
                                         },

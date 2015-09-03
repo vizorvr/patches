@@ -1,0 +1,183 @@
+{
+    "abs_t": 269.255,
+    "active_graph": "root",
+    "graph_uid": "TI6whDg9VfHH",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 261,
+                "y": 265,
+                "uid": "J0OKNbEI1crw",
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "input_sids": {},
+                    "output_sids": {
+                        "xC7Qj8U2KDwf": "8GpdZjiiiEQa"
+                    }
+                },
+                "title": "VR camera",
+                "graph": {
+                    "uid": "GXxlOVFrRAQA",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "three_vr_camera",
+                            "x": 899,
+                            "y": 233,
+                            "uid": "hx7CYbhI78f1"
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1077,
+                            "y": 294,
+                            "uid": "xC7Qj8U2KDwf",
+                            "title": "camera",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 6,
+                                    "def": null,
+                                    "uid": "uyyGR7LQwSEh",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 443,
+                            "y": 217,
+                            "uid": "c6270oRHynAB",
+                            "state": {
+                                "val": 0,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 440,
+                            "y": 284,
+                            "uid": "E3XYUASCT7VY",
+                            "state": {
+                                "val": 0,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 438,
+                            "y": 350,
+                            "uid": "kTSZO6Hm038T",
+                            "state": {
+                                "val": 2,
+                                "min": -2,
+                                "max": 2
+                            },
+                            "title": "Z"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 736,
+                            "y": 244,
+                            "uid": "y6TtFMcMXmUn"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 772,
+                            "y": 183,
+                            "uid": "eguTXsRqSaX5",
+                            "state": {
+                                "val": 45
+                            },
+                            "title": "FOV"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "hx7CYbhI78f1",
+                            "dst_nuid": "xC7Qj8U2KDwf",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "JsoCbqqXFrqv",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "c6270oRHynAB",
+                            "dst_nuid": "y6TtFMcMXmUn",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "SLv1XBnHMxMi",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "E3XYUASCT7VY",
+                            "dst_nuid": "y6TtFMcMXmUn",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "I9a5nju0SzbI",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "kTSZO6Hm038T",
+                            "dst_nuid": "y6TtFMcMXmUn",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "ND97vtAXhssC",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "y6TtFMcMXmUn",
+                            "dst_nuid": "hx7CYbhI78f1",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "Dz79JT5WRnA5",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "eguTXsRqSaX5",
+                            "dst_nuid": "hx7CYbhI78f1",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "eZFW97ARUAgE",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "camera",
+                        "dt": 6,
+                        "index": 0,
+                        "uid": "8GpdZjiiiEQa",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

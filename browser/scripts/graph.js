@@ -76,8 +76,9 @@ Graph.prototype.reset = function() {
 
 Graph.prototype.play = function() {
 	this.enum_all(function(n) {
-		if(n.plugin.play)
+		if (n.plugin.play) {
 			n.plugin.play();
+		}
 	}, null);
 }
 
@@ -145,6 +146,9 @@ Graph.prototype.removeNode = function(node) {
 		this.children = this.children.filter(nodeFilter);
 		E2.core.graphs.splice(E2.core.graphs.indexOf(node.plugin.graph), 1)
 	}
+
+	if (node.plugin.stop)
+		node.plugin.stop()
 
 	this.emit('nodeRemoved', node)
 

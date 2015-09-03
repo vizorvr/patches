@@ -99,8 +99,8 @@ AssetTracker.prototype.signal_update = function()
 		l[i]();
 };
 
-function Core(vr_devices) {
-	var that = this;
+function Core() {
+	EventEmitter.apply(this, arguments)
 
 	E2.core = this
 	
@@ -123,13 +123,29 @@ function Core(vr_devices) {
 		TEXT: { id: 15, name: 'Text' },
 		VIDEO: { id: 16, name: 'Video' },
 		ARRAY: { id: 17, name: 'Array' },
-		OBJECT: { id: 18, name: 'Object' }
-	};
+		OBJECT: { id: 18, name: 'Object' },
+
+		GEOMETRY: { id: 19, name: 'Geometry' },
+		QUATERNION: { id: 20, name: 'Quaternion' },
+		OBJECT3D: { id: 21, name: 'Object3D' },
+		
+		VECTOR4: { id: 22, name: 'Vector 4' },
+	}
+
+	this.renderer = { // compat for old plugins
+		matrix_identity: new THREE.Matrix4().identity(),
+		vector_origin: new THREE.Vector3(),
+		material_default: new THREE.MeshBasicMaterial(),
+		color_white: new THREE.Color('0xffffff'),
+		color_black: new THREE.Color('0x000000'),
+		blend_mode: {
+			NORMAL: 1
+		}
+	}
 
 	this._listeners = {};
 	
 	this.asset_tracker = new AssetTracker(this);
-	this.renderer = new Renderer(vr_devices, '#webgl-canvas', this);
 
 	this.active_graph_dirty = true;
 
@@ -142,6 +158,8 @@ function Core(vr_devices) {
 	this.uidCounter = 0
 
 	this.pluginManager = new PluginManager(this, '/plugins');
+
+	this.textureCache = new TextureCache()
 
 	this.pluginManager.on('ready', function() {
 		this.onPluginsLoaded()
@@ -167,6 +185,8 @@ function Core(vr_devices) {
 		msg('NOTE: This host has no AudioContext support.');
 }
 
+Core.prototype = Object.create(EventEmitter.prototype)
+
 Core.prototype.get_uid = function() {
 	return E2.uid()
 }
@@ -176,9 +196,7 @@ Core.prototype.update = function(abs_t, delta_t)
 	this.abs_t = abs_t;
 	this.delta_t = delta_t;
 	
-	this.renderer.begin_frame();
 	this.root_graph.update(delta_t);
-	this.renderer.end_frame();
 			
 	var dirty = this.active_graph_dirty;
 			
@@ -241,33 +259,26 @@ Core.prototype.get_default_value = function(dt)
 	if(dt === dts.FLOAT)
 		return 0.0;
 	else if(dt === dts.COLOR)
-		return vec4.createFrom(1, 1, 1, 1);
+		return new THREE.Color(1, 1, 1, 1)
 	else if(dt === dts.MATRIX) {
-		var m = mat4.create();
-
-		mat4.identity(m);
-		return m;
-	}
-	else if (dt === dts.TEXTURE)
-		return this.renderer.default_tex;
+		return new THREE.Matrix4()
+	} else if (dt === dts.TEXTURE)
+		return new THREE.Texture()
 	else if(dt === dts.VECTOR)
-		return vec3.createFrom(0.0, 0.0, 0.0);
+		return new THREE.Vector3(0, 0, 0) // vec3.createFrom(0.0, 0.0, 0.0);
 	else if(dt === dts.CAMERA)
-		return new Camera(this.renderer.context);
+		return new THREE.PerspectiveCamera()
 	else if(dt === dts.BOOL)
 		return false;
 	else if(dt === dts.MATERIAL)
-		return new Material();
+		return new THREE.Material()
 	else if(dt === dts.TEXT)
 		return '';
-	else if(dt === dts.ARRAY)
-	{
+	else if(dt === dts.ARRAY) {
 		var a = new ArrayBuffer(0);
-		
 		a.stride = a.datatype = 1; // Uint8
 		return a;
-	}
-	else if(dt === dts.OBJECT)
+	} else if(dt === dts.OBJECT)
 		return {};
 	
 	// Shaders, textures, scenes, light and delegates and ALL legally defaults to null.
@@ -303,7 +314,11 @@ Core.prototype.deserialiseObject = function(d) {
 	this.root_graph.initialise(this.graphs);
 	
 	this.active_graph = resolve_graph(this.graphs, ''+d.active_graph); 
-	
+
+	if (E2.app.player.current_state === E2.app.player.state.PLAYING) {
+		this.active_graph.play()	
+	}
+
 	if(!this.active_graph) {
 		msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
 		this.active_graph = this.root_graph;

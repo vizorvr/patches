@@ -148,6 +148,10 @@ GraphController.prototype.upload = function(req, res, next)
 	var that = this;
 
 	var file = req.files.file;
+
+	if (fsPath.extname(file.path) !== '.json')
+		return next(new Error('The upload is not a graph JSON! Are you sure you are trying to upload a graph?'))
+
 	var path = this._makePath(req, file.path);
 	var gridFsPath = '/graph'+path+'.json';
 

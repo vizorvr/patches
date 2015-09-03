@@ -51,8 +51,7 @@ function Application() {
 	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
-	this.is_fullscreen = false;
-	this._noodlesOn = true
+	this.noodlesVisible = !E2.util.isMobile()
 
 	this.mousePosition = [400,200]
 
@@ -650,6 +649,9 @@ Application.prototype.onCanvasMouseDown = function(e) {
 	if (e.target.id !== 'canvas')
 		return;
 
+	e.stopPropagation()
+	e.preventDefault()
+
 	if (e.which === 1) {
 		this.selection_start = [0, 0];
 		this.mouseEventPosToCanvasCoord(e, this.selection_start);
@@ -980,9 +982,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 		graph.conns.map(function(conn) {
 			conn.src_nuid = uidMap[conn.src_nuid]
 			conn.dst_nuid = uidMap[conn.dst_nuid]
-
-			if (!conn.uid)
-				conn.uid = E2.uid()
+			conn.uid = E2.uid()
 		})
 
 		return graph
@@ -1088,17 +1088,24 @@ Application.prototype.selectAll = function() {
  * @return {Object} Canvas area
  */
 Application.prototype.calculateCanvasArea = function() {
-	// 
-	var width = $(window).width() -
-		$('#left-nav').outerWidth(true) - 
-		$('#mid-pane').outerWidth(true) - 
-		$('.mid-pane-handle').outerWidth(true) - 
-		$('.left-pane-handle').outerWidth(true) -
-		$('#right-pane').outerWidth(true) - 
-		$('.right-pane-handle').outerWidth(true) 
+	var width, height
+	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
-	var height = $(window).height() -
-		$('.menu-bar').outerHeight(true);
+	if (!isFullscreen) {
+		width = $(window).width() -
+			$('#left-nav').outerWidth(true) - 
+			$('#mid-pane').outerWidth(true) - 
+			$('.mid-pane-handle').outerWidth(true) - 
+			$('.left-pane-handle').outerWidth(true) -
+			$('#right-pane').outerWidth(true) - 
+			$('.right-pane-handle').outerWidth(true)
+
+		height = $(window).height() -
+			$('.menu-bar').outerHeight(true);
+	} else {
+		width = window.innerWidth
+		height = window.innerHeight
+	}
 
 	return {
 		width: width,
@@ -1107,8 +1114,10 @@ Application.prototype.calculateCanvasArea = function() {
 }
 
 Application.prototype.onWindowResize = function() {
+	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
-	if (E2.app.player.core.renderer.fullscreen) {
+	if (isFullscreen) {
+		E2.core.emit('resize')
 		return;
 	}
 
@@ -1126,6 +1135,12 @@ Application.prototype.onWindowResize = function() {
 	E2.dom.canvas.css('width', width);
 	E2.dom.canvas.css('height', height);
 
+	// set webgl canvas size
+	E2.dom.webgl_canvas[0].width = width;
+	E2.dom.webgl_canvas[0].height = height;
+	E2.dom.webgl_canvas.css('width', width);
+	E2.dom.webgl_canvas.css('height', height);
+
 	// Update preset list height so it scrolls correctly
 	$('.preset-list-container').height(
 		$('#left-nav').height() -
@@ -1133,16 +1148,14 @@ Application.prototype.onWindowResize = function() {
 		$('#left-nav .tab-content .searchbox').outerHeight(true)
 	);
 
-	// Set WebGL viewport size
-	E2.app.player.core.renderer.update_viewport();
+	E2.core.emit('resize')
 
 	this.updateCanvas(true)
-
 }
 
 Application.prototype.toggleNoodles = function() {
-	this._noodlesOn = true
-	E2.dom.canvas_parent.toggle()
+	this.noodlesVisible = !this.noodlesVisible
+	E2.dom.canvas_parent.toggle(this.noodlesVisible)
 }
 
 Application.prototype.toggleLeftPane = function()
@@ -1164,13 +1177,34 @@ Application.prototype.toggleLeftPane = function()
 	this.onWindowResize();
 };
 
+Application.prototype.toggleFullscreen = function() {
+	E2.core.emit('fullScreenChangeRequested')
+}
+
+Application.prototype.onFullScreenChanged = function() {
+	var $canvas = E2.dom.webgl_canvas
+	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+	
+	if (isFullscreen) {
+		$canvas.removeClass('webgl-canvas-normal')
+		$canvas.addClass('webgl-canvas-fs')
+	} else {
+		$canvas.removeClass('webgl-canvas-fs')
+		$canvas.addClass('webgl-canvas-normal')
+	}
+
+	E2.app.onWindowResize()
+
+	E2.core.emit('fullScreenChanged')
+}
+
 Application.prototype.onKeyDown = function(e) {
 	var that = this
 
 	if (E2.util.isTextInputInFocus(e))
 		return;
 
-	if (!this._noodlesOn && e.keyCode !== 9)
+	if (!this.noodlesVisible && e.keyCode !== 9)
 		return;
 
 	// arrow up || down
@@ -1267,8 +1301,7 @@ Application.prototype.onKeyDown = function(e) {
 
 	else if(e.keyCode === 70) // f
 	{
-		this.is_fullscreen = !this.is_fullscreen;
-		this.player.core.renderer.set_fullscreen(this.is_fullscreen);
+		this.toggleFullscreen()
 		e.preventDefault();
 	} else if (e.keyCode === 81 || e.keyCode === 191) { // q or / to focus preset search
 		$('#presetSearch').focus()
@@ -1471,21 +1504,21 @@ Application.prototype.openPresetSaveDialog = function(serializedGraph) {
 	})
 };
 
-Application.prototype.onSaveACopyClicked = function(cb)
-{
+Application.prototype.onSaveACopyClicked = function(cb) {
 	this.openSaveACopyDialog();
 }
 
-Application.prototype.openSaveACopyDialog = function(cb)
-{
+Application.prototype.openSaveACopyDialog = function(cb) {
 	var that = this
 
-	if (!E2.models.user.get('username'))
-	{
-		return E2.controllers.account.openLoginModal();
+	if (!E2.models.user.get('username')) {
+		return E2.controllers.account.openLoginModal()
+			.then(this.openSaveACopyDialog.bind(this))
 	}
 
 	E2.dom.load_spinner.show();
+
+	ga('send', 'event', 'Save a Copy', 'clicked')
 
 	$.get(URL_GRAPHS, function(files) {
 		var fcs = new FileSelectControl()
@@ -1510,6 +1543,9 @@ Application.prototype.openSaveACopyDialog = function(cb)
 					dataType: 'json',
 					success: function(saved) {
 						E2.dom.load_spinner.hide();
+
+						ga('send', 'event', 'graph', 'saved')
+						
 						if (cb)
 							cb();
 					},
@@ -1593,36 +1629,15 @@ Application.prototype.onShowTooltip = function(e) {
 		txt = '<b>Type:</b> ' + slot.dt.name;
 
 		if(slot.lo !== undefined || slot.hi !== undefined)
-			txt += '<br /><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
+			txt += '<br><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
 
-		if(slot.def !== undefined)
-		{
-			txt += '<br /><b>Default:</b> ';
+		if (slot.def !== undefined) {
+			txt += '<br><b>Default:</b> '
 
-			if(slot.def === null)
-				txt += 'Nothing';
-			else if(slot.def === this.player.core.renderer.matrix_identity)
-				txt += 'Identity';
-			else if(slot.def === this.player.core.renderer.material_default)
-				txt += 'Default material';
-			else if(slot.def === this.player.core.renderer.light_default)
-				txt += 'Default light';
-			else if(slot.def === this.player.core.renderer.camera_screenspace)
-				txt += 'Screenspace camera';
+			if (slot.def === null)
+				txt += 'Nothing'
 			else
-			{
-				var cn = slot.def.constructor.name;
-
-				if(cn === 'Texture')
-				{
-					txt += 'Texture';
-
-					if(slot.def.image && slot.def.image.src)
-						txt += ' (' + slot.def.image.src + ')';
-				}
-				else
-					txt += JSON.stringify(slot.def);
-			}
+				txt += slot.def
 		}
 
 		txt += '<br /><br />';
@@ -1785,7 +1800,6 @@ Application.prototype.onGraphSelected = function(graph) {
 			that.mouseCursors[person.uid].show()
 	})
 
-	E2.core.active_graph.reset()
 	E2.core.active_graph_dirty = true
 
 	E2.app.updateCanvas(true)
@@ -1948,13 +1962,16 @@ Application.prototype.start = function() {
 		that.clearEditState()
 	})
 
+	document.addEventListener('fullscreenchange', this.onFullScreenChanged.bind(this))
+	document.addEventListener('webkitfullscreenchange', this.onFullScreenChanged.bind(this))
+	document.addEventListener('mozfullscreenchange', this.onFullScreenChanged.bind(this))
+
 	window.addEventListener('resize', function() {
 		// To avoid UI lag, we don't respond to window resize events directly.
 		// Instead, we set up a timer that gets superceeded for each (spurious)
 		// resize event within a 200 ms window.
 		clearTimeout(that.resize_timer)
 		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 200)
-
 	})
 
 	// close bootboxes on click
@@ -1965,7 +1982,7 @@ Application.prototype.start = function() {
 	})
 
 	$('button#fullscreen').click(function() {
-		E2.core.renderer.set_fullscreen(true);
+		E2.app.toggleFullscreen()
 	});
 
 	$('button#help').click(function() {
@@ -2044,7 +2061,7 @@ Application.prototype.showFirstTimeDialog = function() {
 	if (!!Cookies.get('vizor'))
 		return;
 
-	Cookies.set('vizor', { seen: 1 })
+	Cookies.set('vizor', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
 	var diag = bootbox.dialog({
 		title: '<h3>First time here?</h3>',
@@ -2079,6 +2096,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	that.setupStoreListeners()
 
 	function start() {
+		E2.dom.canvas_parent.toggle(that.noodlesVisible)
+		
 		E2.app.start()
 
 		E2.app.onWindowResize()
@@ -2092,9 +2111,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 
 	if (loadGraphUrl)
 		E2.app.loadGraph(loadGraphUrl, start)
-	else {
+	else
 		E2.app.setupEditorChannel().then(start)
-	}
 }
 
 Application.prototype.setupChat = function() {
@@ -2117,7 +2135,6 @@ Application.prototype.setupEditorChannel = function() {
 			return dfd.resolve()
 
 		that.channel.join(that.path, function() {
-			that.setupChat()
 			dfd.resolve()
 		})
 	}
@@ -2126,6 +2143,7 @@ Application.prototype.setupEditorChannel = function() {
 		this.channel = new EditorChannel()
 		this.channel.connect()
 		this.channel.on('ready', function() { 
+			that.setupChat()
 			that.peopleStore.initialize()
 			joinChannel()
 		})
@@ -2206,6 +2224,19 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	)
 
 	E2.app.player = player
+
+	// Shared gl context for three
+	var gl_attributes = {
+		alpha: false,
+		depth: true,
+		stencil: true,
+		antialias: false,
+		premultipliedAlpha: true,
+		preserveDrawingBuffer: false
+	}
+
+	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
+	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})
 
 	E2.core.on('ready', E2.app.onCoreReady.bind(E2.app, loadGraphUrl))
 }

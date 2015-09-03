@@ -81,7 +81,7 @@ function error(err) {
 function Step1() {
 	local.post('/login.json').send(deets).expect(200)
 	.end(function(err, res) {
-		console.log('Login:', res.status)
+		console.log('Login:', res ? res.status : res)
 		if (err) return error(err)
 		Step2()
 	})

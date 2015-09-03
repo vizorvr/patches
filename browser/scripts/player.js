@@ -63,8 +63,6 @@ Player.prototype.stop = function() {
 	this.core.abs_t = 0.0
 
 	this.core.root_graph.reset()
-	this.core.renderer.begin_frame() // Clear the WebGL view.
-	this.core.renderer.end_frame()
 	
 	if (E2.app && E2.app.updateCanvas)
 		E2.app.updateCanvas(false)
@@ -107,8 +105,6 @@ Player.prototype.load_from_json = function(json, cb) {
 Player.prototype.load_from_object = function(obj, cb) {
 	var c = this.core
 	
-	c.renderer.texture_cache.clear()
-	c.renderer.shader_cache.clear()
 	c.deserialiseObject(obj)
 
 	if (cb)
@@ -128,7 +124,7 @@ Player.prototype.load_from_url = function(url, cb) {
 	})
 }
 
-Player.prototype.set_parameter = function(id, value) {
+Player.prototype.setRegisterValue = function(id, value) {
 	this.core.root_graph.registers.write(id, value)
 }
 
