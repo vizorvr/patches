@@ -16,6 +16,7 @@
 		</div>
 		<div id="load-spinner"></div>
 	</div>
+
 	<div class="header">
 		<div id="top-header">
 			<div class="top-header-col" id="top-header-left">
@@ -114,9 +115,19 @@
 		</div>
 	</div>
 
+	<div class="resize-handle right-pane-handle" data-target="#right-pane"></div>
+	<div class="flex-column right-pane" id="right-pane">
+		<div class="tab-content chat flex-column" id="chat">
+			<div class="messages"></div>
+			<div class="composer">
+				<input type="text" name="message" id="new-message-input">
+			</div>
+		</div>
+	</div>
+
 	<pre class="info-pane" id="dbg"></pre>
 </div> <!-- main row -->
-</div> <!-- page column -->
+</div> <!-- page column -->	
 
 <script type="text/javascript">
 	var graph, graphUrl
