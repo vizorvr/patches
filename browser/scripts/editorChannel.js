@@ -125,11 +125,16 @@ var reconnecting = false
 EditorChannel.prototype.connect = function(options) {
 	var that = this
 
+	this.kicked = false
+
 	// listen to messages from network
 	this.wsChannel = new WebSocketChannel()
 	this.wsChannel
 		.connect('/__editorChannel', options)
 		.on('disconnected', function() {
+			if (that.kicked)
+				return;
+
 			if (!reconnecting)
 				E2.app.growl('Disconnected from server. Reconnecting.')
 
@@ -152,8 +157,15 @@ EditorChannel.prototype.connect = function(options) {
 			}
 
 			that.wsChannel.on('*', function(m) {
+				if (m.kind === 'kicked') {
+					E2.app.growl('You have been disconnected by the server: '+ m.reason, 30000)
+					that.kicked = true
+					return;
+				}
+
 				if (m.channel !== that.channelName)
 					return;
+
 				that.emit(m.kind, m)
 			})
 		})
