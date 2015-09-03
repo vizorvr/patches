@@ -1135,6 +1135,12 @@ Application.prototype.onWindowResize = function() {
 	E2.dom.canvas.css('width', width);
 	E2.dom.canvas.css('height', height);
 
+	// set webgl canvas size
+	E2.dom.webgl_canvas[0].width = width;
+	E2.dom.webgl_canvas[0].height = height;
+	E2.dom.webgl_canvas.css('width', width);
+	E2.dom.webgl_canvas.css('height', height);
+
 	// Update preset list height so it scrolls correctly
 	$('.preset-list-container').height(
 		$('#left-nav').height() -
@@ -2129,7 +2135,6 @@ Application.prototype.setupEditorChannel = function() {
 			return dfd.resolve()
 
 		that.channel.join(that.path, function() {
-			that.setupChat()
 			dfd.resolve()
 		})
 	}
@@ -2138,6 +2143,7 @@ Application.prototype.setupEditorChannel = function() {
 		this.channel = new EditorChannel()
 		this.channel.connect()
 		this.channel.on('ready', function() { 
+			that.setupChat()
 			that.peopleStore.initialize()
 			joinChannel()
 		})
