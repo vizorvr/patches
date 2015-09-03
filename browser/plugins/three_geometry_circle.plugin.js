@@ -4,7 +4,8 @@
 		
 		this.input_slots = [
 			{ name: 'radius', dt: core.datatypes.FLOAT, def: 5 },
-			{ name: 'segments', dt: core.datatypes.FLOAT, def: 8 },
+			{ name: 'segments', dt: core.datatypes.FLOAT, def: 8,
+				validate: function(v) {return Math.max(0, Math.min(v, 100))} },
 			{ name: 'thetaStart', dt: core.datatypes.FLOAT, def: 0, desc: 'Vertical starting angle' },
 			{ name: 'thetaLength', dt: core.datatypes.FLOAT, def: 2 * Math.PI, desc: 'Vertical sweep angle size' },
 		]
