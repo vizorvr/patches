@@ -1,15 +1,48 @@
 (function() {
 	var ThreeSphereGeometryPlugin = E2.plugins.three_geometry_sphere = function(core) {
 		this.desc = 'THREE.js Sphere Geometry'
-		
+
 		this.input_slots = [
-			{ name: 'radius', dt: core.datatypes.FLOAT, def: 50 },
-			{ name: 'widthSegments', dt: core.datatypes.FLOAT, def: 8, desc: 'Number of horizontal segments' },
-			{ name: 'heightSegments', dt: core.datatypes.FLOAT, def: 6, desc: 'Number of vertical segments' },
-			{ name: 'phiStart', dt: core.datatypes.FLOAT, def: 0, desc: 'Horizontal starting angle' },
-			{ name: 'phiLength', dt: core.datatypes.FLOAT, def: 2 * Math.PI, desc: 'Horizontal sweep angle size' },
-			{ name: 'thetaStart', dt: core.datatypes.FLOAT, def: 0, desc: 'Vertical starting angle' },
-			{ name: 'thetaLength', dt: core.datatypes.FLOAT, def: Math.PI, desc: 'Vertical sweep angle size' },
+			{
+				name: 'radius',
+				dt: core.datatypes.FLOAT,
+				def: 50
+			},
+			{
+				name: 'widthSegments',
+				dt: core.datatypes.FLOAT,
+				def: 8,
+				desc: 'Number of horizontal segments',
+				validate: function(v) {return Math.max(0, Math.min(v, 50))}
+			},
+			{
+				name: 'heightSegments',
+				dt: core.datatypes.FLOAT,
+				def: 6,
+				desc: 'Number of vertical segments',
+				validate: function(v) {return Math.max(0, Math.min(v, 50))}
+			},
+			{
+				name: 'phiStart',
+				dt: core.datatypes.FLOAT,
+				def: 0, desc: 'Horizontal starting angle'
+			},
+			{
+				name: 'phiLength',
+				dt: core.datatypes.FLOAT,
+				def: 2 * Math.PI, desc: 'Horizontal sweep angle size'
+			},
+			{
+				name: 'thetaStart',
+				dt: core.datatypes.FLOAT,
+				def: 0, desc: 'Vertical starting angle'
+			},
+			{
+				name: 'thetaLength',
+				dt: core.datatypes.FLOAT,
+				def: Math.PI,
+				desc: 'Vertical sweep angle size'
+			}
 		]
 
 		this.output_slots = [{
