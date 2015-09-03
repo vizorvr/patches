@@ -54,20 +54,20 @@ describe('Node inputs', function() {
 	var core, app
 
 	var ValidateTestPlugin = function(core) {
-		console.log('ctor')
 		Plugin.apply(this, arguments)
 
-		this.desc = 'THREE.js Dodecahedron Geometry'
+		this.desc = 'Plugin for testing input slot validation'
 
 		this.min = 5
 		this.max = 10
 
+		that = this
 		this.input_slots = [
 		{
 			name: 'clamped input',
 			dt: core.datatypes.FLOAT,
 			def: 0,
-			validate: function(v) {return Math.max(this.min, Math.min(v, this.max))}
+			validate: function(v) {return Math.max(that.min, Math.min(v, that.max))}
 		}]
 
 		this.output_slots = []
@@ -76,12 +76,39 @@ describe('Node inputs', function() {
 	ValidateTestPlugin.prototype = Object.create(Plugin.prototype)
 
 	ValidateTestPlugin.prototype.update_input = function(slot, data) {
-		console.log('update_input')
+		console.log('update_input ' + data)
 		assert(data >= this.min)
 		assert(data <= this.max)
 
 		Plugin.prototype.update_input.apply(this, arguments)
 	}
+
+	var FloatEmitterPlugin = function(core) {
+		Plugin.apply(this, arguments)
+
+		this.desc = 'Plugin for testing input slot validation'
+
+		this.input_slots = []
+
+		this.output_slots = [
+			{
+				name: 'output',
+				dt: core.datatypes.FLOAT
+			}
+		]
+	}
+
+	FloatEmitterPlugin.prototype = Object.create(Plugin.prototype)
+
+	FloatEmitterPlugin.prototype.set_value = function(v) {
+		this.value = v
+		this.updated = 1
+	}
+
+	FloatEmitterPlugin.prototype.update_output = function(slot, data) {
+		return this.value
+	}
+
 
 	beforeEach(function() {
 		core = reset()
@@ -90,6 +117,8 @@ describe('Node inputs', function() {
 		core.rebuild_structure_tree = function(){}
 
 		global.window = { location: { pathname: 'test/test' } }
+
+		require('../../scripts/util')
 
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 		app = new Application()
@@ -104,63 +133,37 @@ describe('Node inputs', function() {
 		var ag = E2.core.active_graph
 
 		var validateNode = new Node(ag, undefined, 0, 0)
-		validateNode.set_plugin(new ValidateTestPlugin(E2.core, validateNode))
-		var constFloat = E2.app.instantiatePlugin('const_float_generator', [0,0])
+		var validatePlugin = new ValidateTestPlugin(E2.core, validateNode)
+		validateNode.set_plugin(validatePlugin)
+		validatePlugin.reset()
+
+		var constFloat = new Node(ag, undefined, 0, 0)
+		var constFloatPlugin = new FloatEmitterPlugin(E2.core, constFloat)
+		constFloat.set_plugin(constFloatPlugin)
+		constFloatPlugin.reset()
 
 		var ss = constFloat.plugin.output_slots[0]
 		var ds = validateNode.plugin.input_slots[0]
 
-		E2.app.graphApi.connect(ag, new Connection(constFloat, validateNode, ss, ds, 0))
-		validateNode.update_recursive()
+		ag.addNode(validateNode)
+		ag.addNode(constFloat)
+
+		var conn = new Connection(constFloat, validateNode, ss, ds, 0)
+		ag.connect(conn)
+		conn.patch_up()
+
+		constFloatPlugin.set_value(0)
+		ag.update()
+
+		constFloatPlugin.set_value(5)
+		ag.update()
+
+		constFloatPlugin.set_value(10)
+		ag.update()
+
+		constFloatPlugin.set_value(15)
+		ag.update()
 	})
-/*
-	it('input_proxy connected to float sets type', function() {
-		app.setupStoreListeners()
-		var graphNode = E2.app.instantiatePlugin('graph', [0,0])
-		var graph = graphNode.plugin.graph
-		E2.core.active_graph = graph
-		var ipx = E2.app.instantiatePlugin('input_proxy', [0,0])
-		var floatDisplay = E2.app.instantiatePlugin('float_display', [0,0])
-		var ss = ipx.dyn_outputs[0]
-		var ds = floatDisplay.plugin.input_slots[0]
-		E2.app.graphApi.connect(graph, new Connection(ipx, floatDisplay, ss, ds, 0))
-		assert.equal(ss.dt.name, 'Float')
-	})
 
-	it('connected input_proxy add redo does not throw', function() {
-		app.setupStoreListeners()
-		var pg = E2.core.active_graph
-
-		var graphNode = E2.app.instantiatePlugin('graph', [0,0])
-		var graph = graphNode.plugin.graph
-		E2.core.active_graph = graph
-
-		var ipx = E2.app.instantiatePlugin('input_proxy', [0,0])
-		var floatDisplay = E2.app.instantiatePlugin('float_display', [0,0])
-		var ss = ipx.dyn_outputs[0]
-		var ds = floatDisplay.plugin.input_slots[0]
-
-		var ipxFloatConn = new Connection(ipx, floatDisplay, ss, ds, 0)
-		E2.app.graphApi.connect(graph, ipxFloatConn)
-
-		var constFloat = E2.app.instantiatePlugin('const_float_generator', [0,0])
-		ss = constFloat.plugin.output_slots[0]
-		ds = graphNode.dyn_inputs[0]
-
-
-
-		E2.app.undoManager.undo() // undo connection
-		E2.app.undoManager.undo() // undo constFloat
-		E2.app.undoManager.undo() // undo ipx-floatDisplay connection
-		E2.app.undoManager.undo() // undo floatDisplay
-		E2.app.undoManager.undo() // undo ipx
-
-		E2.app.undoManager.redo() // redo ipx
-		E2.app.undoManager.redo() // redo floatDisplay
-		E2.app.undoManager.redo() // redo ipx-floatDisplay connection
-		E2.app.undoManager.redo() // redo constFloat
-		E2.app.undoManager.redo() // redo connection
-	})
-*/
 })
 
