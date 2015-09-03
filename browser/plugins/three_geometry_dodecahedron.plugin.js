@@ -3,8 +3,9 @@
 		this.desc = 'THREE.js Dodecahedron Geometry'
 		
 		this.input_slots = [
-			{ name: 'radius', dt: core.datatypes.FLOAT, def: 5 },
-			{ name: 'detail', dt: core.datatypes.FLOAT, def: 0 },
+			{   name: 'radius', dt: core.datatypes.FLOAT, def: 5 },
+			{   name: 'detail', dt: core.datatypes.FLOAT, def: 0,
+				validate: function(v) {return Math.max(0, Math.min(v, 4))} },
 		]
 
 		this.output_slots = [{
