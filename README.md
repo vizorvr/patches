@@ -3,19 +3,20 @@
 
 Vizor is a visual programming environment for WebGL, WebVR and other HTML5 APIs. It features live preview, data flow visualization, network communication, publishing, unlimited undo, and a catalog of presets that can be used as modular building blocks. Complex logic can be nested in subgraphs and they can be rendered directly to a specific render target, or simply used as a texture. Loops are modeled as nested graphs that are evaluated once per loop iteration.
 
-**Try the cloud version of Vizor now at [vizor.io](http://vizor.io).**
+**Try the cloud version of Vizor now at [vizor.io].**
 
 Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentation](http://vizor.io/help/introduction.html). [Plugin API documentation](http://vizor.io/help/plugin_api.html) is available, but unstable.
 
 ### Installing
 
-Installing a local instance of Vizor requires [MongoDB](http://mongodb.org) and either [node.js](https://nodejs.org) or [io.js](https://iojs.org/). To install the required packages, issue the following commands:
+Installing a local instance of Vizor requires [MongoDB], [RethinkDB], [GraphicsMagick] and either [node.js] or [io.js].
+To install the required packages, issue the following commands:
 
 ```
     $ npm install && npm install -g gulp mocha
 ```
 
-NOTE1: We strongly recommend [io.js](https://iojs.org/en/index.html) for its JavaScript ES6 features. 
+NOTE1: We strongly recommend [io.js] for its JavaScript ES6 features.
 NOTE2: Currently using Web Sockets or OSC requires running Vizor locally.
 
 ### Building
@@ -116,10 +117,19 @@ Created sequences can be imported and exported as JSON, embeddable into any cont
 
 # License
 
-Vizor is released under the [MIT License](http://opensource.org/licenses/MIT)
+Vizor is released under the [MIT License].
 
 # Contact Us
 
 [Twitter](https://twitter.com/vizor_vr)
 
 [E-Mail](mailto:info@vizor.io)
+
+
+[vizor.io]: http://vizor.io
+[node.js]: https://nodejs.org
+[io.js]: https://iojs.org
+[RethinkDB]: http://rethinkdb.com
+[MongoDB]: http://mongodb.org
+[GraphicsMagick]: http://www.graphicsmagick.org
+[MIT License]: http://opensource.org/licenses/MIT
