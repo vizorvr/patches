@@ -316,16 +316,29 @@ app.get(/^\/dl\/.*/, function(req, res, next)
 });
 
 // set no-cache headers for the rest
-app.use(function(req, res, next)
-{
+app.use(function(req, res, next) {
 	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
 	res.setHeader('Expires', 0);
 	next();
 });
 
+// allow caching editor.js
+app.get('/scripts/editor.min.js', function(req, res, next) {
+	res.setHeader('Cache-Control', 'must-revalidate, max-age=0');
+	console.log('set now', res.getHeader('cache-control'))
+	next();
+});
+
+// allow caching node modules
+app.use('/node_modules', function(req, res, next) {
+		res.setHeader('Cache-Control', 'must-revalidate, max-age=0');
+		next();
+	},
+	express.static(path.join(__dirname, 'node_modules'))
+);
+
 // static files
 app.use(express.static(path.join(__dirname, 'browser'), { maxAge: 0 }));
-app.use('/node_modules', express.static(path.join(__dirname, 'node_modules'), { maxAge: 0 }))
 
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
