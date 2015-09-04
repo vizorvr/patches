@@ -5,8 +5,18 @@
 		this.desc = 'THREE.js Mesh'
 		
 		this.input_slots = [
-			{ name: 'geometry', dt: core.datatypes.GEOMETRY, array: true, def: [new THREE.Geometry()] },
-			{ name: 'material', dt: core.datatypes.MATERIAL, array: true, def: [new THREE.MeshBasicMaterial({color: 0x00FF00})] }
+			{
+				name: 'geometry',
+				dt: core.datatypes.GEOMETRY,
+				array: true,
+				def: [new THREE.Geometry()]
+			},
+			{
+				name: 'material',
+				dt: core.datatypes.MATERIAL,
+				array: true,
+				def: [new THREE.MeshBasicMaterial({color: 0x00FF00})]
+			}
 		].concat(this.input_slots)
 	}
 
@@ -41,7 +51,8 @@
 			for (i = 0; i < this.geoms.length; ++i) {
 				if (this.geoms[i].morphTargets.length > 0) {
 					// clone the material, because we don't want to edit properties on some random material
-					mesh = new THREE.MorphAnimMesh(this.geoms[i], this.mats[i % this.mats.length].clone())
+					var mat = this.mats && this.mats.length > 0 ? this.mats[i % this.mats.length].clone() : undefined
+					mesh = new THREE.MorphAnimMesh(this.geoms[i], mat)
 					mesh.material.morphTargets = true
 					this.always_update = true
 				}

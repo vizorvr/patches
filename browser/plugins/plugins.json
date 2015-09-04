@@ -290,6 +290,8 @@
 	"THREE/Material/Phong Material": "three_material_phong",
 	"THREE/Material/Shader": "three_material_shader",
 
+	"THREE/Material/Material Modifier": "three_material_modifier",
+
 	"THREE/Light/Ambient Light": "three_ambient_light",
 	"THREE/Light/Directional Light": "three_directional_light",
 	"THREE/Light/Point Light": "three_point_light",

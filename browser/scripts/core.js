@@ -270,8 +270,6 @@ Core.prototype.get_default_value = function(dt)
 		return new THREE.PerspectiveCamera()
 	else if(dt === dts.BOOL)
 		return false;
-	else if(dt === dts.MATERIAL)
-		return new THREE.Material()
 	else if(dt === dts.TEXT)
 		return '';
 	else if(dt === dts.ARRAY) {
@@ -281,7 +279,7 @@ Core.prototype.get_default_value = function(dt)
 	} else if(dt === dts.OBJECT)
 		return {};
 	
-	// Shaders, textures, scenes, light and delegates and ALL legally defaults to null.
+	// Shaders, textures, materials, scenes, light and delegates and ALL legally defaults to null.
 	return null;
 };
 
