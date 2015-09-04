@@ -377,7 +377,7 @@ Node.prototype._cascadeFlowOff = function(conn) {
 	if (conn.src_node.inputs.length) {
 		for (var i=0; i < conn.src_node.inputs.length; i++) {
 			if (conn.src_node.inputs[i].ui.flow)
-				cascadeFlowOff(conn.src_node.inputs[i])
+				this._cascadeFlowOff(conn.src_node.inputs[i])
 		}
 	}
 }
@@ -399,7 +399,7 @@ Node.prototype.update_recursive = function(conns) {
 		
 		if (inp.dst_slot.inactive) {
 			if(inp.ui && inp.ui.flow) {
-				cascadeFlowOff(inp)
+				this._cascadeFlowOff(inp)
 				dirty = true;
 			}
 			continue;
