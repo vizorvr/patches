@@ -51,7 +51,7 @@
 			for (i = 0; i < this.geoms.length; ++i) {
 				if (this.geoms[i].morphTargets.length > 0) {
 					// clone the material, because we don't want to edit properties on some random material
-					var mat = this.mats && this.mats.length > 0 ? this.mats[i % this.mats.length].clone() : undefined
+					var mat = (this.mats && this.mats.length > 0) ? this.mats[i % this.mats.length].clone() : undefined
 					mesh = new THREE.MorphAnimMesh(this.geoms[i], mat)
 					mesh.material.morphTargets = true
 					this.always_update = true
@@ -92,7 +92,7 @@
 			this.mats_dirty = true
 		}
 		else {
-			ThreeObject3DPlugin.prototype.update_input(slot, data)
+			ThreeObject3DPlugin.prototype.update_input.apply(this, arguments)
 		}
 	}
 
