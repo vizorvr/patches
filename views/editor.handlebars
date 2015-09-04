@@ -120,14 +120,15 @@
 		<div class="tab-content chat flex-column" id="chat">
 			<div class="messages"></div>
 			<div class="composer">
-				<input type="text" name="message" id="new-message-input">
+				<label for="new-message-input">@{{user.username}}:</label>
+				<input type="text" name="message" id="new-message-input" placeholder="say something.." />
 			</div>
 		</div>
 	</div>
 
 	<pre class="info-pane" id="dbg"></pre>
 </div> <!-- main row -->
-</div> <!-- page column -->	
+</div> <!-- page column -->
 
 <script type="text/javascript">
 	var graph, graphUrl
@@ -194,5 +195,15 @@
 			startEditor([null, null])
 		}
 
+		// take the placeholder out _before_ user starts typing
+		var $nmi = jQuery('#new-message-input');
+		$nmi.data('placeholder', $nmi.attr('placeholder'))
+			.on('focus', function(e) {
+				if ($nmi.val() == '') $nmi.attr('placeholder','');
+				return true;
+			})
+			.on('blur', function(e) {
+				if ($nmi.val() == '') $nmi.attr('placeholder',$nmi.data('placeholder'));
+			});
 	});
 </script>
