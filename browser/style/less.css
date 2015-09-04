@@ -6956,6 +6956,7 @@ body {
 #left-nav {
   overflow: auto;
   max-height: 100vh;
+  -webkit-flex: 0 0 220px;
 }
 #presets .searchbox {
   -webkit-flex-shrink: 0;
@@ -7058,6 +7059,7 @@ body {
 .resize-handle {
   background-color: #444;
   width: 5px;
+  -webkit-flex: 0 0 5px;
 }
 .mid-pane-handle {
   background-color: #555555;
@@ -7065,6 +7067,12 @@ body {
 .resize-handle:hover {
   cursor: pointer;
   background-color: #aaaaaa;
+}
+::-webkit-scrollbar {
+  background: rgba(32, 32, 32, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(96, 96, 96, 0.3);
 }
 .result li,
 .panel {
