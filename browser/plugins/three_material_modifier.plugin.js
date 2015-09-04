@@ -27,7 +27,8 @@
 		this.out_material_array = []
 		this.material_override = {}
 
-		this.dirty = false
+		this.material_slots_dirty = false
+		this.materials_dirty = false
 	}
 
 	ThreeMaterialModifier.prototype.update_input = function(slot, data) {
@@ -50,10 +51,8 @@
 				this.out_material_array = []
 				this.material_override = {}
 
-				this.dirty = true
+				this.material_slots_dirty = true
 			}
-
-			this.adjustMaterialSlots()
 		}
 		else { // dynamic slot
 			if (!data) {
@@ -65,27 +64,29 @@
 				this.material_override[slot.name] = data
 			}
 
-			this.dirty = true
+			this.materials_dirty = true
 		}
 	}
 
 	ThreeMaterialModifier.prototype.update_state = function() {
-		if (!this.dirty) {
-			return
+		if (this.material_slots_dirty) {
+			this.adjustMaterialSlots()
+			this.material_slots_dirty = false
 		}
 
-		this.out_material_array = []
-		for(var i = 0; i < this.in_material_array.length; i++) {
-			var n = this.in_material_array[i].name
-			if (n in this.material_override) {
-				this.out_material_array.push(this.material_override[n])
+		if (this.materials_dirty) {
+			this.out_material_array = []
+			for(var i = 0; i < this.in_material_array.length; i++) {
+				var n = this.in_material_array[i].name
+				if (n in this.material_override) {
+					this.out_material_array.push(this.material_override[n])
+				}
+				else {
+					this.out_material_array.push(this.in_material_array[i])
+				}
 			}
-			else {
-				this.out_material_array.push(this.in_material_array[i])
-			}
+			this.materials_dirty = false
 		}
-
-		this.dirty = false
 	}
 
 	ThreeMaterialModifier.prototype.update_output = function() {
@@ -117,7 +118,7 @@
 			if (found)
 				return
 
-			var slotUid = that.node.uid + matName
+			var slotUid = (that.node.uid + matName).replace(' ', '')
 
 			that.node.add_slot(E2.slot_type.input, {
 				dt: E2.dt.MATERIAL,
