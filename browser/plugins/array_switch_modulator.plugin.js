@@ -86,6 +86,10 @@ ArraySwitch.prototype.update_input = function(slot, data) {
 				this.number = n
 				this.updated = true
 			}
+
+			for (var i=0; i < this.node.dyn_inputs.length; i++)
+				this.node.dyn_inputs[i].inactive = i !== n
+
 			return 
 		}
 	} else { // dynamic slot
