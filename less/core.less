@@ -1,3 +1,7 @@
+.flex(@v) {
+  flex: @v;
+  -webkit-flex: @v;		// Safari
+}
 
 body {
 	font-family: @font-family-sans-serif;
@@ -185,8 +189,9 @@ table
 }
 
 #canvases {
-	flex: 1;
+  	.flex(1);
 	overflow: hidden;
+  	position: relative;	// enable absolute positioning inside
 }
 
 #canvas-parent
@@ -476,7 +481,7 @@ table
 }
 
 .left-cell {
-	flex: 0 0 @left-cell-width;
+	.flex(0 0 @left-cell-width);
 	width: @left-cell-width;
 	min-width: 10px;
 	max-width: @left-cell-width;
@@ -556,3 +561,15 @@ table
 .bootbox-body h4 {
 	line-height: 2;
 }
+
+
+::-webkit-scrollbar {
+  background: rgba(32,32,32,0.5);
+}
+::-webkit-scrollbar-thumb {
+	background: rgba(96,96,96,0.3);
+}
+::-webkit-scrollbar-corner {
+	background: rgba(32,32,32,0.5);
+}
+// gm: no custom scrollbars for firefox as of sept 2015 - https://bugzilla.mozilla.org/show_bug.cgi?id=77790

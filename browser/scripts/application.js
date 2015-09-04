@@ -1091,21 +1091,20 @@ Application.prototype.calculateCanvasArea = function() {
 	var width, height
 	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
-	var ww, lnw, mpw, mphw, lphw, rpw, rphw;
+	var windowWidth, leftPaneWidth, midPaneWidth, rightPaneWidth, midPaneHandleWidth, leftPaneHandleWidth, rightPaneHandleWidth;
 
 	if (!isFullscreen) {
-		ww = $(window).width();
-		lnw = $('#left-nav').outerWidth(true);
-		mpw = $('#mid-pane').outerWidth(true);
-		mphw = $('.mid-pane-handle').outerWidth(true);
-		lphw = $('.left-pane-handle').outerWidth(true);
-		rpw = $('#right-pane').outerWidth(true);
-		rphw = $('.right-pane-handle').outerWidth(true);
-		width = ww - lnw - mpw - mphw - lphw - rpw - rphw;
+		windowWidth = $(window).width();
+		leftPaneWidth = $('#left-nav').outerWidth(true);
+		midPaneWidth = $('#mid-pane').outerWidth(true);
+		midPaneHandleWidth = $('.mid-pane-handle').outerWidth(true);
+		leftPaneHandleWidth = $('.left-pane-handle').outerWidth(true);
+		rightPaneWidth = $('#right-pane').outerWidth(true);
+		rightPaneHandleWidth = $('.right-pane-handle').outerWidth(true);
 
-	//  diagnose css/flexbox issues /gm
-	//	console.log('window:'+ww+', left:'+lnw+', lh:'+lphw +', mh:'+mphw+', mid:'+mpw+', rph:'+rphw+', right:'+rpw);
+		width = windowWidth - leftPaneWidth - leftPaneHandleWidth - midPaneWidth - midPaneHandleWidth  - rightPaneWidth - rightPaneHandleWidth;
 
+		// gm: note flex in Safari may return inconsistent values for flex-based widths (e.g. flex:1 in css)
 
 		height = $(window).height() -
 			$('.menu-bar').outerHeight(true);
@@ -1128,7 +1127,6 @@ Application.prototype.onWindowResize = function() {
 		return;
 	}
 
-	var fx = function() {
 	var canvasArea = this.calculateCanvasArea();
 	var width = canvasArea.width;
 	var height = canvasArea.height;
@@ -1155,10 +1153,6 @@ Application.prototype.onWindowResize = function() {
 		$('#left-nav .nav-tabs').outerHeight(true) -
 		$('#left-nav .tab-content .searchbox').outerHeight(true)
 	);
-
-	}.bind(this);
-
-	fx();	// setTimeout(fx,100); // debug	(gm)
 
 	E2.core.emit('resize');
 	this.updateCanvas(true);

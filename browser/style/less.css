@@ -6529,7 +6529,9 @@ table {
 }
 #canvases {
   flex: 1;
+  -webkit-flex: 1;
   overflow: hidden;
+  position: relative;
 }
 #canvas-parent {
   min-height: 270px;
@@ -6821,6 +6823,7 @@ table {
 }
 .left-cell {
   flex: 0 0 220px;
+  -webkit-flex: 0 0 220px;
   width: 220px;
   min-width: 10px;
   max-width: 220px;
@@ -6887,6 +6890,15 @@ table {
 }
 .bootbox-body h4 {
   line-height: 2;
+}
+::-webkit-scrollbar {
+  background: rgba(32, 32, 32, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(96, 96, 96, 0.3);
+}
+::-webkit-scrollbar-corner {
+  background: rgba(32, 32, 32, 0.5);
 }
 html,
 body {
@@ -7067,12 +7079,6 @@ body {
 .resize-handle:hover {
   cursor: pointer;
   background-color: #aaaaaa;
-}
-::-webkit-scrollbar {
-  background: rgba(32, 32, 32, 0.5);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(96, 96, 96, 0.3);
 }
 .result li,
 .panel {
