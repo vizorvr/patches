@@ -34,7 +34,7 @@ THREE.OBJLoader.prototype = {
 		var geometry, material;
 
 		function parseVertexIndex( value ) {
-			scope.parse( text )
+
 			var index = parseInt( value );
 
 			return ( index >= 0 ? index - 1 : index + vertices.length / 3 ) * 3;
