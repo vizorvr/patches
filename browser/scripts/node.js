@@ -268,7 +268,7 @@ Node.prototype.findSlotByUid = function(suid) {
 	})
 
 	if (!slot)
-		console.error('Slot not found', slot_type, suid)
+		console.error('Slot not found', suid)
 
 	return slot
 }
