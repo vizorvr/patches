@@ -371,11 +371,15 @@ Node.prototype.update_connections = function() {
 /**
  * set connection UI flow state to off recursively
  */
-function cascadeFlowOff(conn) {
+Node.prototype._cascadeFlowOff = function(conn) {
 	conn.ui.flow = false
-	if (conn.src_node.inputs.length)
-		for (var i=0; i < conn.src_node.inputs.length; i++)
-			cascadeFlowOff(conn.src_node.inputs[i])
+
+	if (conn.src_node.inputs.length) {
+		for (var i=0; i < conn.src_node.inputs.length; i++) {
+			if (conn.src_node.inputs[i].ui.flow)
+				cascadeFlowOff(conn.src_node.inputs[i])
+		}
+	}
 }
 
 Node.prototype.update_recursive = function(conns) {
