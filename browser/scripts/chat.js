@@ -106,7 +106,7 @@ Chat.prototype.setupInput = function() {
 			E2.app.dispatcher.dispatch({
 				actionType: 'uiChatMessageAdded',
 				date: Date.now(),
-				color: E2.app.peopleStore.me.color,
+				color: E2.app.peopleStore.me ? E2.app.peopleStore.me.color : '#555',
 				message: $i.val()
 			})
 
@@ -129,7 +129,7 @@ Chat.prototype._renderMessage = function(message) {
 		),
 		date: moment(message.date).formatTimeToday(),
 		message: $('<span/>').text(message.message).html() // escape 
-			.replace(/[htps:\/]+vizor\.io\/(\S*)/,
+			.replace(/[htps:\/]?vizor\.io[\/]?(\S*)/,
 				'<a target="_blank" href="//vizor.io/$1">vizor.io/$1</a>')
 	}
 

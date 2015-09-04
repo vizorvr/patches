@@ -1464,7 +1464,9 @@ Application.prototype.openPresetSaveDialog = function(serializedGraph) {
 		.frame('save-frame')
 		.template('preset')
 		.buttons({
-			'Cancel': function() {},
+			'Cancel': function() {
+				E2.dom.load_spinner.hide()
+			},
 			'Save': function(name) {
 				if (!name)
 					return bootbox.alert('Please enter a name for the preset')
@@ -1525,7 +1527,9 @@ Application.prototype.openSaveACopyDialog = function(cb) {
 		.frame('save-frame')
 		.template('graph')
 		.buttons({
-			'Cancel': function() {},
+			'Cancel': function() {
+				E2.dom.load_spinner.hide();
+			},
 			'Save': function(path, tags) {
 				if (!path)
 					return bootbox.alert('Please enter a filename');
@@ -2050,6 +2054,8 @@ Application.prototype.start = function() {
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
 
 	this.midPane = new E2.MidPane()
+
+	E2.dom.load_spinner.hide()
 
 	E2.app.player.play() // autoplay
 	E2.app.changeControlState()

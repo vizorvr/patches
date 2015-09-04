@@ -1,3 +1,7 @@
+var testId = rand()
+process.env.MONGODB = 'mongodb://localhost:27017/mutest'+testId
+process.env.RETHINKDB_NAME = 'test' + testId
+
 global.WebSocket = require('ws')
 global.EventEmitter = require('events').EventEmitter
 global._ = require('lodash')
@@ -12,6 +16,8 @@ var session = require('client-sessions')
 var secrets = require('../../config/secrets');
 global.Flux = require('../../browser/vendor/flux')
 
+var setupRethinkDatabase = require('../../tools/postinstall').setupRethinkDatabase
+
 global.window = {
 	location: { hostname: 'localhost', port: 8000 }
 }
@@ -22,9 +28,6 @@ function rand() {
 	return Math.floor(Math.random() * 100000)
 }
 
-var testId = rand()
-process.env.MONGODB = 'mongodb://localhost:27017/mutest'+testId
-process.env.RETHINKDB_NAME = 'test' + testId
 
 var app = require('../../app.js')
 var agent = request.agent(app)
@@ -58,19 +61,21 @@ function createClient(channelName, lastEditSeen) {
 }
 
 var rethinkConnection
-function setupDatabase(cb) {
+function setupDatabase() {
 	var dbName = process.env.RETHINKDB_NAME
 
-	r.connect({
+	return r.connect({
 		host: 'localhost',
 		port: 28015,
 		db: dbName
-	}, function(err, conn) {
-		if (err)
-			throw err;
-
+	})
+	.then(function(conn) {
+		console.log('1 conn')
 		rethinkConnection = conn
-		cb()
+		return setupRethinkDatabase()
+	})
+	.error(function(err) {
+		throw err
 	})
 } 
 
@@ -96,7 +101,6 @@ function burst() {
 	}, 1)
 }
 
-
 describe('Multiuser', function() {
 	var db
 
@@ -111,7 +115,9 @@ describe('Multiuser', function() {
 		}
 
 		app._editorChannel.on('ready', function() {
-			setupDatabase(function(err) {
+			setupDatabase()
+			.then(function() {
+				console.log('2')
 				db = new mongo.Db('mutest'+testId, 
 					new mongo.Server('localhost', 27017),
 					{ safe: true })

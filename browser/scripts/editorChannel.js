@@ -132,7 +132,7 @@ EditorChannel.prototype.connect = function(options) {
 	this.wsChannel
 		.connect('/__editorChannel', options)
 		.on('disconnected', function() {
-			if (that.kicked)
+			if (that.kicked === true)
 				return;
 
 			if (!reconnecting)
