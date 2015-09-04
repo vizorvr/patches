@@ -9,10 +9,11 @@ Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentatio
 
 ### Installing
 
-Installing a local instance of Vizor requires [MongoDB](http://mongodb.org) and either [node.js](https://nodejs.org) or [io.js](https://iojs.org/). To install the required packages, issue the following commands:
+Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [RethinkDB](http://rethinkdb.com) and either [node.js](https://nodejs.org) or [io.js](https://iojs.org/). To install the required packages, issue the following commands (on Mac using Homebrew):
 
 ```
     $ npm install && npm install -g gulp mocha
+    $ brew install graphicsmagick
 ```
 
 NOTE1: We strongly recommend [io.js](https://iojs.org/en/index.html) for its JavaScript ES6 features. 
@@ -34,7 +35,7 @@ Running the tests:
 
 ### Running
 
-1. Make sure MongoDB is running.
+1. Make sure MongoDB and RethinkDB are running.
 2. Run the server: ``` $ npm start```
 3. Open in the browser: [http://localhost:8000/edit](http://localhost:8000/edit)
 
@@ -42,7 +43,7 @@ If you have access to an Oculus Rift DK1 or DK2 and want to play with the VR fea
 
 # Contributing
 
-We welcome your contributions. Please create and work in a fork, submitting a pull request when (and if) you're ready for a review. Contributors may note some inconsistencies in style. We're in the process of migrating; new work should be done in JavaScript ES5 using Airbnb code style (exception: tabs instead of spaces).
+We welcome your contributions! Please create and work in a fork, submitting a pull request when (and if) you're ready for a review. Contributors may note some inconsistencies in style. We're in the process of migrating; new work should be done in JavaScript ES5 using Airbnb code style (exception: tabs instead of spaces).
 
 # A note on plugins
 
