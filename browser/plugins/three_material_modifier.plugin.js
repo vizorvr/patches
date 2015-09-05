@@ -32,16 +32,16 @@
 	}
 
 	ThreeMaterialModifier.prototype.update_input = function(slot, data) {
-		if (!slot.uid && slot.index == 0) {
+		if (!slot.uid && slot.index === 0) {
 			if (data) {
-				if (this.in_material_array.length == data.length) {
+				if (this.in_material_array.length === data.length) {
 					for (var i = 0; i < this.in_material_array.length; ++i) {
 						if (this.in_material_array[i] != data[i]) {
 							break
 						}
 					}
 
-					if (i == this.in_material_array.length) {
+					if (i === this.in_material_array.length) {
 						// nothing's changed
 						return
 					}
