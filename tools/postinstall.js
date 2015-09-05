@@ -38,6 +38,10 @@ function setupRethinkDatabase() {
 
 exports.setupRethinkDatabase = setupRethinkDatabase
 
-if (require.main === module)
+if (require.main === module) {
+	var bundleEditorScripts = require('./editorBundler').bundleEditorScripts
+
 	setupRethinkDatabase()
+	.then(bundleEditorScripts)
+}
 

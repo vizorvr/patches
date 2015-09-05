@@ -1,3 +1,4 @@
+;
 (function() {
 
 var RECONNECT_INTERVAL = 5000
@@ -281,6 +282,7 @@ EditorChannel.prototype.send = function(payload) {
 if (typeof(module) !== 'undefined')
 	module.exports = EditorChannel
 else
-	window.EditorChannel = EditorChannel
+	E2.EditorChannel = EditorChannel
 
 })();
+

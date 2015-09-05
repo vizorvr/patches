@@ -60,9 +60,10 @@ GraphController.prototype.index = function(req, res, next)
 
 
 function renderEditor(res, graph) {
+	var layout = process.env.NODE_ENV === 'production' ? 'editor-prod' : 'editor'
 	function respond() {
 		res.render('editor', {
-			layout: 'spa',
+			layout: layout,
 			graph: graph
 		});
 	}
