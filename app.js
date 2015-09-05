@@ -325,7 +325,11 @@ app.use(function(req, res, next) {
 });
 
 // allow caching editor-*.min.js
-app.get('/scripts/editor-*.min.js', function(req, res, next) {
+app.get([
+	'/scripts/editor-*.min.js',
+	'/vendor/*',
+	'/fonts/*',
+	], function(req, res, next) {
 	res.setHeader('Cache-Control', 'public, max-age=604800');
 	next();
 });
@@ -335,7 +339,7 @@ app.use([
 	'/node_modules',
 	'/images/*',
 	'/style/*',
-	'/vendor/*',
+	'/plugins/plugins.json',
 	'/plugins/all.plugins.js'
 	],
 	function(req, res, next) {
