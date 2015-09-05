@@ -97,5 +97,5 @@ MidPane.prototype.newTab = function newTab(name, closeCb) {
 
 E2.MidPane = MidPane;
 
-})()
+})();
 

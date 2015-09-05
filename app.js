@@ -256,7 +256,6 @@ app.get(/^\/data\/.*/, function(req, res, next)
 		if (req.header('If-None-Match') === stat.md5)
 			return res.status(304).send();
 
-
 		if (req.headers.range) {
 			// stream partial file range
 			var parts = req.headers.range.replace(/bytes=/, "").split("-");
@@ -272,6 +271,7 @@ app.get(/^\/data\/.*/, function(req, res, next)
 			res.writeHeader(206, {
 				'Content-Range': 'bytes ' + start + '-' + end + '/' + stat.length,
 				'Accept-Ranges': 'bytes',
+				'Cache-Control': 'public, must-revalidate, max-age=60',
 				'Content-Length': chunksize,
 				'Content-Type': stat.contentType
 			});
@@ -285,7 +285,9 @@ app.get(/^\/data\/.*/, function(req, res, next)
 			// stream whole file in a single request
 			res.header('Content-Type', stat.contentType);
 			res.header('Accept-Ranges', 'bytes');
+			res.header('ETag', stat.md5);
 			res.header('Content-Length', stat.length)
+			res.header('Cache-Control', 'public must-revalidate, max-age=60');
 
 			gfs.createReadStream(path)
 			.on('error', next)
@@ -315,17 +317,40 @@ app.get(/^\/dl\/.*/, function(req, res, next)
 	.catch(next);
 });
 
-// set no-cache headers for the rest
-app.use(function(req, res, next)
-{
+// set no-cache headers by default
+app.use(function(req, res, next) {
 	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
 	res.setHeader('Expires', 0);
 	next();
 });
 
+// allow caching editor-*.min.js
+app.get([
+	'/scripts/editor-*.min.js',
+	'/vendor/*',
+	'/fonts/*',
+	], function(req, res, next) {
+	res.setHeader('Cache-Control', 'public, max-age=604800');
+	next();
+});
+
+// allow some caching for node modules, app images and styles
+app.use([
+	'/node_modules',
+	'/images/*',
+	'/style/*',
+	'/plugins/plugins.json',
+	'/plugins/all.plugins.js'
+	],
+	function(req, res, next) {
+	res.setHeader('Cache-Control', 'must-revalidate, max-age=300');
+	next();
+});
+
+app.use(['/node_modules'], express.static(path.join(__dirname, 'node_modules')));
+
 // static files
 app.use(express.static(path.join(__dirname, 'browser'), { maxAge: 0 }));
-app.use('/node_modules', express.static(path.join(__dirname, 'node_modules'), { maxAge: 0 }))
 
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
