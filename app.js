@@ -339,7 +339,7 @@ app.use([
 	'/plugins/all.plugins.js'
 	],
 	function(req, res, next) {
-	res.setHeader('Cache-Control', 'must-revalidate, max-age=0');
+	res.setHeader('Cache-Control', 'must-revalidate, max-age=300');
 	next();
 });
 
