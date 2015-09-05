@@ -16,7 +16,7 @@ var session = require('client-sessions')
 var secrets = require('../../config/secrets');
 global.Flux = require('../../browser/vendor/flux')
 
-var setupRethinkDatabase = require('../../tools/postinstall').setupRethinkDatabase
+var setupRethinkDatabase = require('../../tools/setup').setupRethinkDatabase
 
 global.window = {
 	location: { hostname: 'localhost', port: 8000 }
