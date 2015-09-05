@@ -273,8 +273,7 @@
 
 	"THREE/VR Camera": "three_vr_camera",
 
-	"THREE/Loaders/OBJ loader": "three_loader_obj",
-	"THREE/Loaders/OBJ+MTL loader": "three_loader_objmtl",
+	"THREE/3D model loader": "three_loader_model",
 
 	"THREE/Geometry/Box": "three_geometry_box",
 	"THREE/Geometry/Circle": "three_geometry_circle",
@@ -289,6 +288,8 @@
 	"THREE/Material/Lambert Material": "three_material_lambert",
 	"THREE/Material/Phong Material": "three_material_phong",
 	"THREE/Material/Shader": "three_material_shader",
+
+	"THREE/Material/Material Modifier": "three_material_modifier",
 
 	"THREE/Light/Ambient Light": "three_ambient_light",
 	"THREE/Light/Directional Light": "three_directional_light",

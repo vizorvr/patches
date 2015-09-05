@@ -1,6 +1,5 @@
-function AbstractThreeLoaderObjPlugin() {
-	ThreeObject3DPlugin.apply(this, arguments)
-
+function AbstractThreeLoaderObjPlugin(core) {
+	Plugin.apply(this, arguments)
 	this.desc = 'THREE.js OBJ loader'
 	
 	this.dirty = true
@@ -8,9 +7,25 @@ function AbstractThreeLoaderObjPlugin() {
 	this.childrenByMaterialName = {}
 	this.state = { url: '' }
 	this.materials = {}
+
+	this.input_slots = []
+
+	this.output_slots = [{
+		name: 'geometry',
+		dt: core.datatypes.GEOMETRY,
+		array: true
+	},
+	{
+		name: 'materials',
+		dt: core.datatypes.MATERIAL,
+		array: true
+	}]
+
+	this.geometries = [new THREE.Geometry()]
+	this.materials = [new THREE.MeshBasicMaterial(0xff0000)]
 }
 
-AbstractThreeLoaderObjPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
+AbstractThreeLoaderObjPlugin.prototype = Object.create(Plugin.prototype)
 
 AbstractThreeLoaderObjPlugin.prototype.create_ui = function() {
 	var inp = makeButton('Change', 'No scene selected.', 'url')
@@ -40,76 +55,16 @@ AbstractThreeLoaderObjPlugin.prototype.create_ui = function() {
 }
 
 AbstractThreeLoaderObjPlugin.prototype.update_input = function(slot, data) {
-	if (slot.uid) {
-		this.materials[slot.name] = data
-
-		if (!this.childrenByMaterialName[slot.name])
-			return;
-
-		for (var i=0; i < this.childrenByMaterialName[slot.name].length; i++)
-			this.childrenByMaterialName[slot.name][i].material = data
-
-		return;
-	}
-
-	return ThreeObject3DPlugin.prototype.update_input.apply(this, arguments)
+	return Plugin.prototype.update_input.apply(this, arguments)
 }
 
-AbstractThreeLoaderObjPlugin.prototype.adjustMaterialSlots = function() {
-	var that = this
-	var materialSlots = this.node.getDynamicInputSlots()
-	var materialNames = Object.keys(this.childrenByMaterialName)
-
-	// filter out any old material slots that don't belong to this obj
-	materialSlots.slice().map(function(mSlot) {
-		if (materialNames.indexOf(mSlot.name) === -1) {
-			that.node.remove_slot(E2.slot_type.input, mSlot.uid)
-		}
-	})
-
-	// then check that all the material slots of this obj are there
-	materialNames.map(function(matName) {
-		var found = materialSlots.some(function(mSlot) {
-			return (mSlot.name === matName)
-		})
-
-		if (found)
-			return;
-
-		var slotUid = that.node.uid + matName
-
-		that.node.add_slot(E2.slot_type.input, {
-			dt: E2.dt.MATERIAL,
-			uid: slotUid,
-			name: matName
-		})
-	})
-}
-
-AbstractThreeLoaderObjPlugin.prototype.onObjLoaded = function(obj) {
-	var that = this
-
-	this.object3d = obj
+AbstractThreeLoaderObjPlugin.prototype.onObjLoaded = function(geoms, mats) {
+	this.geometries = geoms
+	this.materials = mats
 
 	msg('Finished loading '+ this.state.url)
 
 	this.childrenByMaterialName = {}
-
-	obj.traverse(function(child) {
-		if (child instanceof THREE.Mesh && child.material.name) {
-			var matName = 'mat-'+child.material.name
-				.toLowerCase()
-				.replace(/[^a-z0-9]+/g,' ')
-				.replace(/ +/g, '-')
-
-			if (!that.childrenByMaterialName[matName])
-				that.childrenByMaterialName[matName] = []
-
-			that.childrenByMaterialName[matName].push(child)
-		}
-	})
-
-	this.adjustMaterialSlots()
 
 	this.updated = true
 }
@@ -121,8 +76,8 @@ AbstractThreeLoaderObjPlugin.prototype.update_state = function() {
 	if (!this.state.url)
 		return;
 
-	if (this.object3d)
-		this.object3d = null
+	if (this.geometries)
+		this.geometries = null
 
 	THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 

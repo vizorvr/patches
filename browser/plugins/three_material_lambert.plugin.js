@@ -15,7 +15,7 @@
 			{	name: 'shading', dt: core.datatypes.FLOAT, def: 2,
 				desc: 'Define shading type. 0 = No Shading, '+
 					'1 = Flat Shading, 2 = Smooth Shading.'
-			},
+			}
 		].concat(this.input_slots)
 	}
 

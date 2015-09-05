@@ -268,7 +268,7 @@ Node.prototype.findSlotByUid = function(suid) {
 	})
 
 	if (!slot)
-		console.error('Slot not found', slot_type, suid)
+		console.error('Slot not found', suid)
 
 	return slot
 }
@@ -416,6 +416,12 @@ Node.prototype.update_recursive = function(conns) {
 		var value = sn.plugin.update_output(inp.src_slot);
 
 		if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
+			if (inp.dst_slot.array && !inp.src_slot.array) {
+				value = [value]
+			}
+			else if (inp.src_slot.array && !inp.dst_slot.array) {
+				value = value[0]
+			}
 			pl.update_input(inp.dst_slot, inp.dst_slot.validate ? inp.dst_slot.validate(value) : value);
 			pl.updated = true;
 			needs_update = true;
