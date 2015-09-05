@@ -46,7 +46,9 @@
 		// but update the ones we can just update
 		if (this.geoms_dirty && this.geoms) {
 			this.always_update = false
-			this.object3d = new THREE.Object3D()
+
+			// non-recursive clone of the root, preserve transform
+			this.object3d = this.object3d.clone(/*recursive = */false)
 
 			for (i = 0; i < this.geoms.length; ++i) {
 				if (this.geoms[i].morphTargets && this.geoms[i].morphTargets.length > 0) {
