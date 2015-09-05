@@ -2146,7 +2146,7 @@ Application.prototype.setupEditorChannel = function() {
 	}
 
 	if (!this.channel) {
-		this.channel = new EditorChannel()
+		this.channel = new E2.EditorChannel()
 		this.channel.connect()
 		this.channel.on('ready', function() { 
 			that.setupChat()

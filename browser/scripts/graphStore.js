@@ -215,5 +215,5 @@ if (typeof(module) !== 'undefined')
 else
 	window.GraphStore = GraphStore
 
-})()
+})();
 

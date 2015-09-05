@@ -154,4 +154,4 @@ if (typeof(exports) !== 'undefined') {
 	E2.ChatStore = ChatStore
 }
 
-})()
+})();
