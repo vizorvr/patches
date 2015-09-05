@@ -331,7 +331,14 @@ app.get('/scripts/editor-*.min.js', function(req, res, next) {
 });
 
 // allow some caching for node modules, app images and styles
-app.use(['/node_modules', '/images/*', '/style/*'], function(req, res, next) {
+app.use([
+	'/node_modules',
+	'/images/*',
+	'/style/*',
+	'/vendor/*',
+	'/plugins/all.plugins.js'
+	],
+	function(req, res, next) {
 	res.setHeader('Cache-Control', 'must-revalidate, max-age=0');
 	next();
 });
