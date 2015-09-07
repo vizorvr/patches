@@ -101,7 +101,6 @@
 	"Modulators/Color/Add": "color_add_modulator",
 	"Modulators/Color/Blend": "color_blend_modulator",
 	"Modulators/Color/Multiply": "color_multiply_modulator",
-	"Modulators/Color/Set alpha": "alpha_modulator",
 
 	"Modulators/Convert/Camera/Camera matrices": "convert_camera_matrices",
 	"Modulators/Convert/Camera/Matrices to Camera": "convert_matrices_camera",
@@ -158,17 +157,6 @@
 	"Modulators/Logic/Switch": "switch_modulator",
 	"Modulators/Logic/Array Revolver Switch": "array_switch_modulator",
 
-	"Modulators/Material/Alpha clip": "material_alpha_clip_modulator",
-	"Modulators/Material/Ambient color": "material_ambient_color_modulator",
-	"Modulators/Material/Clone": "material_clone_modulator",
-	"Modulators/Material/Blend mode": "material_blend_mode_modulator",
-	"Modulators/Material/Diffuse color": "material_diffuse_color_modulator",
-	"Modulators/Material/Double-sided": "material_double_sided_modulator",
-	"Modulators/Material/Light": "material_light_modulator",
-	"Modulators/Material/Shinyness": "material_shinyness_modulator",
-	"Modulators/Material/Texture": "material_texture_modulator",
-	"Modulators/Material/Z-buffer": "material_z_buffer_modulator",
-	
 	"Modulators/Math/Functions/Absolute": "absolute_modulator",
 	"Modulators/Math/Functions/Cos": "cos_modulator",
 	"Modulators/Math/Functions/Exp": "exp_modulator",

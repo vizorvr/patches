@@ -12,10 +12,9 @@ E2.p = E2.plugins["color_multiply_modulator"] = function(core, node)
 	];
 };
 
-E2.p.prototype.reset = function()
-{
-	this.color = vec4.createFrom(1, 1, 1, 1);
-	this.output_color = vec4.createFrom(1, 1, 1, 1);
+E2.p.prototype.reset = function() {
+	this.color = new THREE.Color(1, 1, 1)
+	this.output_color = new THREE.Color(1, 1, 1)
 	this.factor = 1.0;
 };
 
@@ -33,14 +32,13 @@ E2.p.prototype.update_state = function()
 	var oc = this.output_color;
 	var f = this.factor;
 	
-	for(var i = 0; i < 3; i++)
-	{
-		var v = c[i] * f;
-		
-		oc[i] = v < 0.0 ? 0.0 : v > 1.0 ? 1.0 : v;
-	}
-	
-	oc[3] = c[4];
+	var r = c.r * f;
+	var g = c.g * f;
+	var b = c.b * f;
+
+	oc.r = r < 0.0 ? 0.0 : r > 1.0 ? 1.0 : r;
+	oc.g = g < 0.0 ? 0.0 : g > 1.0 ? 1.0 : g;
+	oc.b = b < 0.0 ? 0.0 : b > 1.0 ? 1.0 : b;
 };
 
 E2.p.prototype.update_output = function(slot)
