@@ -49,9 +49,9 @@
 
 				this.in_material_array = data
 				this.out_material_array = []
-				this.material_override = {}
 
 				this.material_slots_dirty = true
+				this.materials_dirty = true
 			}
 		}
 		else { // dynamic slot
@@ -77,7 +77,7 @@
 		if (this.materials_dirty) {
 			this.out_material_array = []
 			for(var i = 0; i < this.in_material_array.length; i++) {
-				var n = this.in_material_array[i].name
+				var n = this.in_material_array[i].name || "default material"
 				if (n in this.material_override) {
 					this.out_material_array.push(this.material_override[n])
 				}
@@ -106,6 +106,10 @@
 		materialSlots.slice().map(function(mSlot) {
 			if (materialNames.indexOf(mSlot.name) === -1) {
 				that.node.remove_slot(E2.slot_type.input, mSlot.uid)
+
+				// also remove from the overrides table
+				if (mSlot.name in that.material_override)
+					delete that.material_override[mSlot.name]
 			}
 		})
 
@@ -115,16 +119,15 @@
 				return (mSlot.name === matName)
 			})
 
-			if (found)
-				return
+			if (!found) {
+				var slotUid = (that.node.uid + matName).replace(/[\W_]/g, '')
 
-			var slotUid = (that.node.uid + matName).replace(' ', '')
-
-			that.node.add_slot(E2.slot_type.input, {
-				dt: E2.dt.MATERIAL,
-				uid: slotUid,
-				name: matName
-			})
+				that.node.add_slot(E2.slot_type.input, {
+					dt: E2.dt.MATERIAL,
+					uid: slotUid,
+					name: matName
+				})
+			}
 		})
 	}
 
