@@ -1,11 +1,11 @@
 var Graph = require('../models/graph');
 var AssetController = require('./assetController');
 var fsPath = require('path');
-var templateCache = new(require('../lib/templateCache'));
 var assetHelper = require('../models/asset-helper');
+var templateCache = new(require('../lib/templateCache'));
 
 function makeRandomPath() {
-	var keys = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+	var keys = 'abcdefghijklmnopqrstuvwxyz0123456789'
 	var uid = ''
 	for (var i=0; i < 12; i++) {
 		uid += keys[Math.floor(Math.random() * keys.length)]
@@ -13,11 +13,11 @@ function makeRandomPath() {
 	return uid
 }
 
-function GraphController(graphService, fs) {
+function GraphController() {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
 	AssetController.apply(this, args);
-};
+}
 
 GraphController.prototype = Object.create(AssetController.prototype);
 
