@@ -1091,7 +1091,7 @@ Application.prototype.calculateCanvasArea = function() {
 	var width, height
 	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
-	if (!isFullscreen) {
+	if (!isFullscreen && !this.condensed_view) {
 		width = $(window).width() -
 			$('#left-nav').outerWidth(true) - 
 			$('#mid-pane').outerWidth(true) - 
@@ -1158,16 +1158,13 @@ Application.prototype.toggleNoodles = function() {
 	E2.dom.canvas_parent.toggle(this.noodlesVisible)
 }
 
-Application.prototype.toggleLeftPane = function()
-{
-
-	$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
-
+Application.prototype.toggleLeftPane = function() {
 	this.condensed_view = !this.condensed_view;
 
 	E2.dom.left_nav.toggle(!this.condensed_view);
 	E2.dom.mid_pane.toggle(!this.condensed_view);
 	$('.resize-handle').toggle(!this.condensed_view);
+	E2.dom.right_pane.toggle(!this.condensed_view);
 
 	if(this.condensed_view)
 		E2.dom.dbg.toggle(false);
@@ -2166,6 +2163,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.webgl_canvas = $('#webgl-canvas');
 	E2.dom.left_nav = $('#left-nav');
 	E2.dom.mid_pane = $('#mid-pane');
+	E2.dom.right_pane = $('#right-pane');
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
 	E2.dom.play_i = $('i', E2.dom.play);
