@@ -2,7 +2,7 @@
 var LoopPlugin = E2.plugins.loop = function(core) {
 	SubGraphPlugin.apply(this, arguments)
 
-	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and run the enclosed logic once per loop iteration. The loop counter is made available to enclosing logic as a local register with the name <b>index<\/b>.';
+	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and run the enclosed logic once per loop iteration. The loop counter is made available to enclosing logic as a local variable with the name <b>index<\/b>.';
 
 	this.input_slots = [
 		{ name: 'first', dt: core.datatypes.FLOAT, desc: 'The start index.', def: 0 },
@@ -79,7 +79,7 @@ LoopPlugin.prototype.create_ui = function()
 	return ui;
 };
 
-LoopPlugin.prototype.register_dt_changed = function(dt)
+LoopPlugin.prototype.variable_dt_changed = function(dt)
 {
 };
 
@@ -122,7 +122,7 @@ LoopPlugin.prototype.update_state = function()
 
 		for(var cnt = this.first; cnt < this.last; cnt += this.step)
 		{
-			this.graph.registers.write('index', cnt);
+			this.graph.variables.write('index', cnt);
 			this.graph.reset();
 
 			if(this.graph.update())
@@ -166,11 +166,11 @@ LoopPlugin.prototype.state_changed = function(ui)
 	this.last = 0;
 	this.step = 1;
 
-	this.graph.registers.lock(this, 'index');
-	var rdt = this.graph.registers.registers['index'].dt;
+	this.graph.variables.lock(this, 'index');
+	var rdt = this.graph.variables.variables['index'].dt;
 
 	if(rdt === this.core.datatypes.ANY)
-		this.graph.registers.set_datatype('index', core.datatypes.FLOAT);
+		this.graph.variables.set_datatype('index', core.datatypes.FLOAT);
 };
 
 })()

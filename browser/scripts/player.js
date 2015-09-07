@@ -124,22 +124,22 @@ Player.prototype.load_from_url = function(url, cb) {
 	})
 }
 
-Player.prototype.setRegisterValue = function(id, value) {
-	this.core.root_graph.registers.write(id, value)
+Player.prototype.setVariableValue = function(id, value) {
+	this.core.root_graph.variables.write(id, value)
 }
 
 Player.prototype.add_parameter_listener = function(id, listener) {
 	var l = {
-		register_dt_changed: function() {},
-		register_updated: function(h) { return function(value) { h(value) }}(listener)
+		variable_dt_changed: function() {},
+		variable_updated: function(h) { return function(value) { h(value) }}(listener)
 	}
 	
-	this.core.root_graph.registers.lock(l, id)
+	this.core.root_graph.variables.lock(l, id)
 	return l
 }
 
 Player.prototype.remove_parameter_listener = function(id, listener) {
-	this.core.registers.unlock(listener, id)
+	this.core.variables.unlock(listener, id)
 }
 
 function CreatePlayer(vr_devices, cb) {

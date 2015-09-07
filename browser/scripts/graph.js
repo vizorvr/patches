@@ -4,7 +4,7 @@ function Graph(core, parent_graph, uid) {
 	this.nodes = [];
 	this.connections = [];
 	this.core = core;
-	this.registers = new Registers(core);
+	this.variables = new Variables(core);
 
 	this.parent_graph = parent_graph;
 	this.roots = [];
@@ -246,7 +246,7 @@ Graph.prototype.serialise = function() {
 	d.conns = [];
 	
 	this.enum_all(function(n) { d.nodes.push(n.serialise()); }, function(c) { d.conns.push(c.serialise()); });
-	this.registers.serialise(d);
+	this.variables.serialise(d);
 	
 	return d;
 }
@@ -278,7 +278,10 @@ Graph.prototype.deserialise = function(d) {
 	}
 	
 	if (d.registers)
-		this.registers.deserialise(d.registers)
+		d.variables = d.registers // backwards compat
+
+	if (d.variables)
+		this.variables.deserialise(d.variables)
 }
 
 Graph.prototype.patch_up = function(graphs) {

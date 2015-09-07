@@ -1,6 +1,6 @@
-E2.p = E2.plugins["register_local_read"] = function(core, node)
+E2.p = E2.plugins["variable_local_read"] = function(core, node)
 {
-	this.desc = 'Read from a local register using the name of the node.';
+	this.desc = 'Read from a local variable using the name of the node.';
 	
 	this.input_slots = [];
 	this.output_slots = [];
@@ -10,7 +10,7 @@ E2.p = E2.plugins["register_local_read"] = function(core, node)
 	this.data = null;
 	
 	if (!node.title)
-		this.old_title = node.title = 'reg_' + (node.parent_graph.registers.count() + 1);
+		this.old_title = node.title = 'reg_' + (node.parent_graph.variables.count() + 1);
 	else
 		this.old_title = node.title;
 };
@@ -31,13 +31,13 @@ E2.p.prototype.renamed = function()
 	this.target_reg(this.node.title);
 };
 
-E2.p.prototype.register_dt_changed = function(dt)
+E2.p.prototype.variable_dt_changed = function(dt)
 {
 	this.dt = dt;
 	this.node.change_slot_datatype(E2.slot_type.output, this.slotId, dt);
 };
 
-E2.p.prototype.register_updated = function(value)
+E2.p.prototype.variable_updated = function(value)
 {
 	this.updated = true;
 	this.node.queued_update = 1; // Update next frame too...
@@ -61,14 +61,14 @@ E2.p.prototype.target_reg = function(id)
 {
 	this.regs.lock(this, id);
 	
-	var rdt = this.regs.registers[id].dt;
+	var rdt = this.regs.variables[id].dt;
 	
 	this.dt = rdt;
 
 	if(rdt !== this.core.datatypes.ANY)
 	{
-		this.register_dt_changed(rdt);
-		this.data = this.regs.registers[id].value;
+		this.variable_dt_changed(rdt);
+		this.data = this.regs.variables[id].value;
 	}
 };
 
@@ -87,9 +87,9 @@ E2.p.prototype.state_changed = function(ui) {
 		outputs = this.node.getDynamicOutputSlots()
 		this.slotId = outputs[0].uid
 
-		this.regs = n.parent_graph.registers
+		this.regs = n.parent_graph.variables
 		this.target_reg(n.title)
 	} else
-		this.node.ui.dom.addClass('register')
+		this.node.ui.dom.addClass('variable')
 }
 
