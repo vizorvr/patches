@@ -66,6 +66,8 @@ Slider.prototype.create_ui = function() {
 }
 
 Slider.prototype.updateUi = function() {
+	if (!this.$slider)
+		return;
 	this.$slider.val(this.state.val)
 	this.$display.html(this.state.val)
 	this.$min.val(this.state.min)
