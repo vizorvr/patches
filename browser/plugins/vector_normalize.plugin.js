@@ -19,28 +19,28 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_state = function()
 {
-	var x = this.vector[0], y = this.vector[1], z = this.vector[2], sn = this.normalized;
+	var x = this.vector.x, y = this.vector.y, z = this.vectory, sn = this.normalized;
 	var len = Math.sqrt(x*x + y*y + z*z);
 
 	if(!len) 
 	{
-		sn[0] = 0;
-		sn[1] = 0;
-		sn[2] = 0;
+		sn.x = 0;
+		sn.y = 0;
+		sn.z = 0;
 	} 
 	else if(len === 1) 
 	{
-		sn[0] = x;
-		sn[1] = y;
-		sn[2] = z;
+		sn.x = x;
+		sn.y = y;
+		sn.z = z;
 	}
 	else
 	{
 		len = 1.0 / len;
 	
-		sn[0] = x * len;
-		sn[1] = y * len;
-		sn[2] = z * len;
+		sn.x = x * len;
+		sn.y = y * len;
+		sn.z = z * len;
 	}
 };
 
@@ -53,7 +53,7 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.vector = [0, 0, 0];
-		this.normalized = [0, 0, 0];
+		this.vector = new THREE.Vector3(0, 0, 0)
+		this.normalized = new THREE.Vector3(0, 0, 0)
 	}
 };

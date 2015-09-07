@@ -79,15 +79,11 @@
 	"Generators/Values/Float": "const_float_generator",
 	"Generators/Values/Knob": "knob_float_generator",
 	"Generators/Values/Label": "label_generator",
-	"Generators/Values/Light type": "light_type_generator",
 	"Generators/Values/Mesh primitive type": "mesh_primtype_generator",
 	"Generators/Values/Pi": "pi_generator",
 	"Generators/Values/Random": "random_float_generator",
 	"Generators/Values/Slider": "slider_float_generator",
 	"Generators/Values/Text": "const_text_generator",
-	"Generators/Values/Texture type": "texture_type_generator",
-	"Generators/Values/Texture filter": "texture_filter_generator",
-	"Generators/Values/Texture wrap": "texture_wrap_generator",
 	"Generators/Values/Toggle": "toggle_button",
 	"Generators/Values/Object composition": "object_add",
 
@@ -133,13 +129,6 @@
 	"Modulators/Filters/Lowpass": "lowpass_filter_modulator",
 	"Modulators/Filters/Sample and hold": "sample_and_hold_modulator",
 	"Modulators/Filters/Toggle": "toggle_modulator",
-	"Modulators/Light/Clone": "light_clone_modulator",
-	"Modulators/Light/Diffuse color": "light_diffuse_color_modulator",
-	"Modulators/Light/Direction": "light_direction_modulator",
-	"Modulators/Light/Intensity": "light_intensity_modulator",
-	"Modulators/Light/Position": "light_position_modulator",
-	"Modulators/Light/Specular color": "light_specular_color_modulator",
-	"Modulators/Light/Type": "light_type_modulator",
 	"Modulators/Logic/If": "if_modulator",
 	"Modulators/Logic/If ... Else": "if_else_modulator",
 	"Modulators/Logic/Equals": "equals_modulator",
@@ -216,7 +205,6 @@
 
 	"Modulators/Texture/Height": "texture_height_modulator",
 	"Modulators/Texture/Width": "texture_width_modulator",
-	"Modulators/Texture/Filter": "texture_filter_modulator",
 	"Modulators/Texture/Wrap": "texture_wrap_modulator",
 
 	"Modulators/Tweens/In": "tween_in_modulator",
@@ -228,6 +216,7 @@
 	"Modulators/Typed arrays/Length": "array_length_modulator",
 	"Modulators/Typed arrays/Set": "array_set_modulator",
 	"Modulators/Typed arrays/Set as": "array_set_as_modulator",
+
 	"Modulators/Vector/Add": "vector_add",
 	"Modulators/Vector/Cross": "vector_cross",
 	"Modulators/Vector/Dot": "vector_dot",
@@ -236,9 +225,9 @@
 	"Modulators/Vector/Normalize": "vector_normalize",
 	"Modulators/Vector/Scale": "vector_scale",
 	"Modulators/Vector/Transform": "vector_transform",
+
 	"Modulators/Video/Duration": "video_get_duration_modulator",	
 	"Modulators/Video/Current time": "video_get_current_time_modulator",
-	"Modulators/VR/Camera": "vr_camera_modulator",
 
 	"THREE/Render To Texture": "three_webgl_texture_renderer",
 	"THREE/Render To Screen": "three_webgl_renderer",
