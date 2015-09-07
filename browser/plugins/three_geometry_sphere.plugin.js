@@ -6,7 +6,7 @@
 			{
 				name: 'radius',
 				dt: core.datatypes.FLOAT,
-				def: 50
+				def: 1
 			},
 			{
 				name: 'widthSegments',
