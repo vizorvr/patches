@@ -62,13 +62,13 @@
 .icon-const_text_generator { background: url('icons.png') -136px -34px no-repeat; }
 .icon-convert_bool_float_modulator { background: url('icons.png') -170px -34px no-repeat; }
 .icon-convert_camera_matrices { background: url('icons.png') -170px -34px no-repeat; }
-.icon-convert_color_hsla_modulator { background: url('icons.png') -170px -34px no-repeat; }
-.icon-convert_color_rgba_modulator { background: url('icons.png') -170px -34px no-repeat; }
+.icon-convert_color_hsl_modulator { background: url('icons.png') -170px -34px no-repeat; }
+.icon-convert_color_rgb_modulator { background: url('icons.png') -170px -34px no-repeat; }
 .icon-convert_float_bool_modulator { background: url('icons.png') -170px -34px no-repeat; }
-.icon-convert_hsla_color_modulator { background: url('icons.png') -170px -34px no-repeat; }
+.icon-convert_hsl_color_modulator { background: url('icons.png') -170px -34px no-repeat; }
 .icon-convert_matrices_camera { background: url('icons.png') -170px -34px no-repeat; }
 .icon-convert_oscilator_unit_modulator { background: url('icons.png') -170px -34px no-repeat; }
-.icon-convert_rgba_color_modulator { background: url('icons.png') -170px -34px no-repeat; }
+.icon-convert_rgb_color_modulator { background: url('icons.png') -170px -34px no-repeat; }
 .icon-convert_string_float_modulator { background: url('icons.png') -51px -51px no-repeat; }
 .icon-convert_vector_xyz_modulator { background: url('icons.png') -170px -34px no-repeat; }
 .icon-cos_modulator { background: url('icons.png') -68px 0px no-repeat; }

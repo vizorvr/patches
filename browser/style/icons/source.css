@@ -65,12 +65,12 @@
 .icon-text_editor_generator { background: url('text-display.png'); }
 .icon-convert_bool_float_modulator { background: url('convert-generic.png'); }
 .icon-convert_camera_matrices { background: url('convert-generic.png'); }
-.icon-convert_color_rgba_modulator { background: url('convert-generic.png'); }
-.icon-convert_hsla_color_modulator { background: url('convert-generic.png'); }
-.icon-convert_color_hsla_modulator { background: url('convert-generic.png'); }
+.icon-convert_color_rgb_modulator { background: url('convert-generic.png'); }
+.icon-convert_hsl_color_modulator { background: url('convert-generic.png'); }
+.icon-convert_color_hsl_modulator { background: url('convert-generic.png'); }
 .icon-convert_matrices_camera { background: url('convert-generic.png'); }
 .icon-convert_oscilator_unit_modulator { background: url('convert-generic.png'); }
-.icon-convert_rgba_color_modulator { background: url('convert-generic.png'); }
+.icon-convert_rgb_color_modulator { background: url('convert-generic.png'); }
 .icon-convert_float_bool_modulator { background: url('convert-generic.png'); }
 .icon-convert_vector_xyz_modulator { background: url('convert-generic.png'); }
 .icon-convert_string_float_modulator { background: url('float-display.png'); }
