@@ -1419,13 +1419,6 @@ Application.prototype.onOpenClicked = function() {
 		})
 }
 
-Application.prototype.onSignInClicked = function() {
-	var username = E2.models.user.get('username')
-	if (!username) {
-		return E2.controllers.account.openLoginModal()
-	}
-}
-
 Application.prototype.loadGraph = function(graphPath, cb) {
 	var that = this
 
@@ -1790,7 +1783,7 @@ Application.prototype.onGraphSelected = function(graph) {
 			sp.css({ 'text-decoration': 'underline' })
 		}
 
-		parentEl.prepend($('<svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg>'))
+		parentEl.prepend($('<span> / </span>'))
 		parentEl.prepend(sp)
 
 		if (graph.parent_graph)
@@ -1940,9 +1933,6 @@ Application.prototype.setupPeopleEvents = function() {
 	})
 }
 
-Application.prototype.onNewClicked = function() {
-	window.location.href = '/new';
-}
 Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
@@ -2057,11 +2047,8 @@ Application.prototype.start = function() {
 	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
 	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
-	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
-	
-	E2.dom.btnSignIn.click(E2.app.onSignInClicked.bind(E2.app))
-	
+
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
@@ -2185,9 +2172,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
-	E2.dom.btnNew = $('#btn-new');
 	E2.dom.forkButton = $('#fork-button');
-	E2.dom.btnSignIn = $('#btn-sign-in');
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
 	E2.dom.saveAsPreset = $('#save-as-preset');
