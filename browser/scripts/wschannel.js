@@ -90,5 +90,5 @@ WebSocketChannel.prototype.send = function(channel, data) {
 }
 
 if (typeof(module) !== 'undefined')
-	module.exports = WebSocketChannel
+	module.exports = WebSocketChannel;
 

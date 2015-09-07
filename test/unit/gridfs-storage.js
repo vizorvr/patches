@@ -97,5 +97,27 @@ describe('GridFsStorage', function()
 		.catch(done);
 	});
 
+	it('can read partial file from filesystem', function(done) {
+		var stream = gfs.createReadStream('/images/engilogo.png', {startPos: 1000, endPos: 2000});
+		assert.equal(stream.name, '/images/engilogo.png');
+		assert.equal(stream.range.startPos, 1000);
+		assert.equal(stream.range.endPos, 2000);
+
+		var buffers = [];
+		stream.on("data", function (chunk) {
+			buffers.push(chunk);
+		})
+		stream.on("end", function () {
+			var buffer = Buffer.concat(buffers);
+			var bufferLength = buffer.length;
+			assert.equal(bufferLength, 1001);
+			done();
+		})
+		stream.on("error", function (err) {
+			throw err;
+		})
+
+	});
+
 });
 

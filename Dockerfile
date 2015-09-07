@@ -16,7 +16,7 @@ ADD . /usr/src/app
 WORKDIR /usr/src/app
 
 RUN npm install --silent -g forever
-RUN npm install
+RUN npm install --unsafe-perm
 RUN ./node_modules/.bin/gulp
 
 CMD forever ./app.js

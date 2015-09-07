@@ -57,6 +57,170 @@ table
 	margin-top: 20px;
 	vertical-align: center;
 }
+.editor-header {
+    height: 84px;
+    width: 100%;
+    position: relative;
+    transition: height 0.5s ease;
+    overflow: visible;
+}
+
+.menu-bar {
+    font-family: @font-family-sans-serif2;
+    height: @menu-bar-height;
+    background-color: @bg-light;
+    position: absolute;
+    width: 100%;
+    height: 84px;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+    
+#top-header-logo {
+    width: 156px;
+    height: @menu-bar-height;
+    float: left;
+}
+
+#top-header-logo svg {
+   fill: #fff;
+}
+
+ul.iconic-nav {
+    margin: 0 2%;
+}
+    
+ul.iconic-nav, ul.iconic-nav>li {
+    height: @menu-bar-height;
+    display: block;
+    float: left;
+    padding: 0 8px;
+}
+ul.iconic-nav>li {
+    min-width: 36px;
+    float: left;
+    position: relative;
+    line-height: 100%;
+}
+ul.iconic-nav button {
+    outline: none;    
+}
+ul.iconic-nav>li>button {
+    background: none;  
+    padding: 0;
+    height: @menu-bar-height;
+    vertical-align: top;
+    outline: none!important;
+}
+ul.iconic-nav>li>button#btn-zoom {
+    width: 52px;    
+}
+ul.iconic-nav>li>button#btn-zoom-in, ul.iconic-nav>li>button#btn-zoom-out {
+    height: 34px;
+    width: 16px; 
+    position: absolute;
+    top: 50%;
+    margin-top: -24px;
+    z-index: 11;
+}
+ul.iconic-nav>li>button#btn-zoom-in svg, ul.iconic-nav>li>button#btn-zoom-out svg {
+    height: 34px;
+    width: 16px;
+}
+ul.iconic-nav>li>button#btn-zoom-in {
+    right: 8px;
+}
+ul.iconic-nav>li>button#btn-zoom-out {  
+    left: 8px;
+} 
+ul.iconic-nav>li>button svg {
+    width: 36px;
+    height: 34px;
+    display: block;
+    margin: 0 auto;
+    stroke: @editor-text-default;
+    overflow: visible;
+}
+ul.iconic-nav>li>button svg.icon-zoom {
+    width: 52px;    
+}
+ul.iconic-nav>li>button span {
+    font-weight: 600;
+    font-size: 12px;
+    text-align: center;
+    margin: 0 auto;
+    color: @editor-text-default;
+}
+
+ul.iconic-nav>li>button:hover span {
+    color: @editor-text-hover;
+}
+
+ul.iconic-nav>li>button:hover svg {
+    stroke: @editor-text-hover;    
+}
+ul.iconic-nav>li>.btn {
+    outline: none!important;
+    box-shadow:  0 0 0 rgba(0,0,0,0)!important;
+}
+ul.iconic-nav>li>button:active span {
+    color: @editor-text-active;
+}
+
+ul.iconic-nav>li>button:active svg {
+    stroke: @editor-text-active;   
+}
+ul.iconic-nav>li.open>button .icon-file-menu {
+    transform: rotate(180deg);
+    stroke: @editor-text-active;
+}
+ul.iconic-nav>li.open>button span {
+    color:  @editor-text-active;  
+}
+
+#breadcrumb {
+    height: 40px;
+    width: 100%;
+    position: absolute!important;
+    background: @bg-dark!important;
+    color: #909fb9;
+    font-size: 14px!important;
+    margin: 0!important;
+    padding: 0!important;
+    opacity: 1!important;
+    top: @menu-bar-height - 40!important;
+    z-index: 9!important;
+    text-align: center;
+    transition: top 0.5s ease;
+}
+
+.editor-header:hover #breadcrumb {
+    top: @menu-bar-height!important;    
+}
+
+#breadcrumb span {
+    line-height: 1.5;
+    margin: 10px auto;
+    display: inline-block;
+}
+
+#breadcrumb svg {
+    display: inline-block;
+    width: 19px;
+    height: 10px;
+    stroke: #909fb9;
+}
+
+#top-header-logo svg {
+    width: 66px;
+    height: 24px;
+    overflow: visible;
+    position: absolute;
+    left: 45px;
+    top: 50%;
+    margin-top: -12px; 
+}
 
 .info-pane {
 	margin-right: 20px;
@@ -127,18 +291,17 @@ table
 
 .dropdown-menu {
 	padding: 0 !important;
-	border-radius: 0 !important;
+	border-radius: 0 0 5px 5px !important;
 	margin: 0 !important;
-	border-top: 1px solid #222 !important;
-	border-left: 1px solid #222 !important;
-	border-right: 1px solid #222 !important;
-	border-bottom: none !important;
+	border: 0 none !important;
+	background: @bg-light;
 }
 
 .dropdown-menu > li > a {
-	padding: 10px !important;
+	padding: 12px 20px !important;
 	cursor: pointer;
-	border-bottom: 1px solid #222 !important;
+	border-top: 1px solid #313644 !important;
+	color: #909fb9;
 }
 
 #user-pulldown > li > a {
@@ -148,15 +311,19 @@ table
 	padding-left: 10px;
 	padding-right: 10px;
 }
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > a:active {
+    background: @bg-bright;
+    color: #fff;
+    }
 
 .nav > li > a:hover, .nav > li > a:focus {
-	background: #1a1a1a;
+	background: #3c3c3c;
 }
 
 #load-spinner {
 	position: absolute;
-	left: 10px;
-	top: 3px;
+	left: 20px;
+	top: 50%;
 	opacity: 0.65;
 	max-width: 18px;
 	min-width: 18px;
@@ -165,7 +332,7 @@ table
 	background-size: 100% 100%;
 	-moz-background-size: 100% 100%;
 	-webkit-background-size: 100% 100%;
-	margin-top: 2px;
+	margin-top: -9px;
 }
 
 #play, #stop, #fullscreen {
@@ -438,11 +605,9 @@ table
 .corner-all { -moz-border-radius-bottomleft: 4px; -webkit-border-bottom-left-radius: 4px; -khtml-border-bottom-left-radius: 4px; border-bottom-left-radius: 4px; }
 .corner-all { -moz-border-radius-bottomright: 4px; -webkit-border-bottom-right-radius: 4px; -khtml-border-bottom-right-radius: 4px; border-bottom-right-radius: 4px; }
 
-.slider { position: relative; text-align: left; border: 1px solid #888; }
-.slider .slider-handle { position: absolute; z-index: 2; width: 1.4em; height: 1.4em; cursor: default; background: #bebebe; }
-
-.slider-horizontal { height: .8em; }
-.slider-horizontal .slider-handle { top: -.4em; margin-left: -.6em; }
+.slider-value {
+	text-align: center
+}
 
 .modal {
 	position: absolute;
@@ -468,7 +633,7 @@ table
 	border-color: @gray-dark;
 	border-radius: 0;
 	color: @gray-light;
-	height: @menu-bar-height;
+	height: 28px;
 	padding: 0 8px;
 }
 

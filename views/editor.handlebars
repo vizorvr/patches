@@ -6,64 +6,265 @@
 </noscript>
 
 <div class="flex-column">
-<div class="menu-bar"> <!-- menu bar -->
-	<div class="header left-cell pull-left" id="top-header-logo">
-		<div class="info-pane pull-left" id="info">
-			<span>
-				<img id="infopanelogo" src="../../images/logo-graphic.png">
-			</span>
-			<span class="logo-text">Vizor Create</span>
+<div class="editor-header">
+	<div class="menu-bar">
+		<svg style="display:none;">
+				<symbol id="vizor-top-logo" viewBox="0 0 66 24">
+					<polyline points="1,1 5.199,1 10.156,16.305 15.113,1 19.312,1 12.197,22.568 8.115,22.568 1,1 "/>
+					<rect x="20.154" y="7.795" width="3.994" height="14.773"/>
+					<polyline points="25.458,18.965 33.128,11.372 25.576,11.372 25.576,7.795 38.493,7.795 38.493,11.43 30.825,18.994 
+					38.641,18.994 38.641,22.568 25.458,22.568 25.458,18.965 "/>
+					<path d="M50.152,15.182c0-2.098-1.633-3.84-3.674-3.84c-2.069,0-3.646,1.742-3.646,3.84
+					c0,2.102,1.574,3.842,3.646,3.842C48.521,19.023,50.152,17.281,50.152,15.182z M38.927,15.182c0-4.253,3.354-7.682,7.554-7.682
+					s7.553,3.428,7.553,7.682c0,4.256-3.354,7.686-7.553,7.686S38.927,19.438,38.927,15.182z"/>
+					<path d="M55.05,7.795h3.966v2.424c0.729-1.537,2.041-2.424,4.024-2.424h1.604v3.93h-2.537
+					c-2.129,0-3.063,1.123-3.063,3.871v6.973H55.05V7.795"/>
+					<path d="M20.14,3.037C20.14,1.912,21.04,1,22.151,1c1.111,0,2.012,0.912,2.012,2.037
+					c0,1.127-0.901,2.039-2.012,2.039C21.04,5.076,20.14,4.164,20.14,3.037"/>
+				</symbol>
+				<symbol id="icon-file-menu" viewBox="0 -2 36 34">
+					<circle fill="none" stroke-width="0.8696" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="18" cy="15" r="10.043"/>
+					<polygon fill="none" stroke-miterlimit="10" points="22.8,17.525 13.2,17.525 18,9.525 "/>
+				</symbol>
+				<symbol id="icon-new-graph" viewbox="0 -2 36 34">
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="18.75" cy="15.025" r="10.043"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="18.25" y1="9.547" x2="18.25" y2="20.503"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="24.229" y1="14.5" x2="13.271" y2="14.5"/>
+				</symbol>
+				<symbol id="icon-scale" viewbox="0 -2 36 34">
+					<rect x="13.667" y="9.917" fill="none" stroke-width="0.8333" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="9.167" height="9.167"/>
+					<line fill="none" stroke-width="0.8333" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="24.5" y1="8.25" x2="27.833" y2="4.917"/>
+					<line fill="none" stroke-width="0.8333" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="8.667" y1="24.083" x2="12" y2="20.75"/>
+					<polyline fill="none" stroke-width="0.8333" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+					12.833,24.083 8.667,24.083 8.667,19.917 "/>
+					<polyline fill="none" stroke-width="0.8333" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+					27.833,9.083 27.833,4.917 23.667,4.917 "/>
+					<line fill="none" stroke-width="0.8333" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="24.5" y1="20.748" x2="27.833" y2="24.083"/>
+					<line fill="none" stroke-width="0.8333" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="8.667" y1="4.917" x2="12" y2="8.25"/>
+					<polyline fill="none" stroke-width="0.8333" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+					8.667,9.083 8.667,4.917 12.833,4.917 "/>
+					<polyline fill="none" stroke-width="0.8333" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+					23.667,24.083 27.833,24.083 27.833,19.917 "/>
+				</symbol>
+				<symbol id="icon-rotate" viewbox="0 -2 36 34">
+					<polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+					6.802,12.698 9.589,16.85 12.794,13.012 "/>
+					<polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="29.375,17 
+					26.589,12.849 23.383,16.686 "/>
+					<path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M26.552,12.887
+					c0.835,4.408-2.272,8.728-6.509,9.728c-2.954,0.699-5.916-0.239-7.931-2.225"/>
+					<path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M9.594,16.824
+					c-1.313-4.883,1.97-9.674,6.538-10.753c3.156-0.747,6.316,0.372,8.324,2.641"/>
+				</symbol>
+				<symbol id="icon-add-object" viewbox="0 -2 36 34">
+					<circle fill="none" stroke-linejoin="round" stroke-miterlimit="10" cx="27.75" cy="24" r="5"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="27.75" y1="21.5" x2="27.75" y2="26.5"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="30.25" y1="24" x2="25.25" y2="24"/>
+					<path fill="none" stroke-width="1.49" stroke-linecap="round" stroke-miterlimit="10" d="M20.471,23.684
+					c-0.718,0.151-1.462,0.232-2.224,0.232c-5.899,0-10.68-4.782-10.68-10.68c0-5.899,4.781-10.681,10.68-10.681
+					c5.897,0,10.68,4.782,10.68,10.681c0,1.117-0.172,2.195-0.489,3.208"/>
+					<path fill="none" stroke-width="1.49" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+					M28.863,13.631c-0.893,1.486-5.312,2.616-10.625,2.616c-5.099,0-9.372-1.04-10.499-2.437"/>
+					<path fill="none" stroke-width="1.49" stroke-linecap="round" stroke-miterlimit="10" stroke-dasharray="0,3.725" d="
+					M7.67,12.437c1.006-1.445,5.356-2.532,10.57-2.532c5.958,0,10.789,1.42,10.789,3.171"/>
+				</symbol>
+				<symbol id="icon-inspector" viewbox="0 -2 36 34">
+					<path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M27.75,23.417
+					c0,0.46-0.372,0.833-0.833,0.833h-17.5c-0.461,0-0.833-0.373-0.833-0.833V6.75c0-0.46,0.373-0.833,0.833-0.833h17.5
+					c0.461,0,0.833,0.374,0.833,0.833V23.417z"/>
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="18.167" cy="10.083" r="1.667"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="19.832" y1="10.083" x2="25.268" y2="10.083"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="11.1" y1="10.083" x2="16.497" y2="10.083"/>
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="14.833" cy="15.083" r="1.667"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="16.497" y1="15.083" x2="25.266" y2="15.083"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="11.1" y1="15.083" x2="13.164" y2="15.083"/>
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="16.5" cy="20.083" r="1.667"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="18.164" y1="20.083" x2="25.268" y2="20.083"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="11.1" y1="20.083" x2="14.833" y2="20.083"/>
+				</symbol>
+				<symbol id="icon-add-patch" viewbox="0 -2 36 34">
+					<path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M21.667,23.993h-13
+					c-1.105,0-2-0.896-2-2v-14c0-1.104,0.895-2,2-2h19c1.104,0,2,0.896,2,2V16.5"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="13.667" y1="6" x2="13.667" y2="22.993"/>
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="10.167" cy="8.493" r="0.5"/>
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="10.167" cy="16.493" r="0.5"/>
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="10.167" cy="20.493" r="0.5"/>
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="10.167" cy="12.493" r="0.5"/>
+					<circle fill="none" stroke-linejoin="round" stroke-miterlimit="10" cx="29.667" cy="24" r="5"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="29.667" y1="21.5" x2="29.667" y2="26.5"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="32.167" y1="24" x2="27.167" y2="24"/>
+				</symbol>
+				<symbol id="icon-save-patch" viewbox="0 -2 36 34">
+					<path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M21.667,23.993h-13
+					c-1.105,0-2-0.896-2-2v-14c0-1.104,0.895-2,2-2h19c1.104,0,2,0.896,2,2V16.5"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="13.667" y1="6" x2="13.667" y2="22.993"/>
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="10.167" cy="8.493" r="0.5"/>
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="10.167" cy="16.493" r="0.5"/>
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="10.167" cy="20.493" r="0.5"/>
+					<circle fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="10.167" cy="12.493" r="0.5"/>
+					<polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+					31.499,24.693 29.68,26.512 27.861,24.693 "/>
+					<circle fill="none" stroke-linejoin="round" stroke-miterlimit="10" cx="29.667" cy="24" r="5"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="29.667" y1="21.727" x2="29.667" y2="26.512"/>
+				</symbol>
+				<symbol id="icon-cam-view" viewbox="0 -2 36 34">
+					<polygon fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+					19.979,17.563 12.854,17.563 12.854,10.438 19.979,10.438 19.979,13.208 23.146,11.229 23.146,16.771 19.979,14.792 "/>
+					<circle fill="none" stroke-linejoin="round" stroke-miterlimit="10" cx="18" cy="14" r="9.104"/>
+				</symbol>
+				<symbol id="icon-editor" viewbox="0 -2 36 34">
+					<path fill="none" stroke-linejoin="round" stroke-miterlimit="10" d="M9.75,10h17H9.75z M18.25,7.5v17V7.5z
+					M21.125,7L27,24.688L21.125,7z M15,7L9.125,24.688L15,7z M10.75,7H25l8.5,18H2.75L10.75,7z"/>
+					<line fill="none" stroke-miterlimit="10" x1="7.75" y1="14" x2="28.75" y2="14"/>
+					<line fill="none" stroke-linejoin="round" stroke-miterlimit="10" x1="5.75" y1="19" x2="30.75" y2="19"/>
+				</symbol>
+				<symbol id="icon-zoom" viewbox="0 -2 52 34">
+					<circle fill="none" stroke-linejoin="round" stroke-miterlimit="10" cx="25.5" cy="14" r="8"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="31.156" y1="19.656" x2="40.5" y2="29"/>
+				</symbol>
+				<symbol id="icon-zoom-in" viewbox="10 0 16 34">
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="18" y1="13.969" x2="25" y2="13.969"/>
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="21.5" y1="10.469" x2="21.5" y2="17.469"/>
+				</symbol>
+				<symbol id="icon-zoom-out" viewbox="0 0 16 34">
+					<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="1" y1="14" x2="8" y2="14"/>
+				</symbol>
+				<symbol id="icon-chat" viewbox="0 -2 36 34">
+					<path fill="none" stroke-linejoin="round" stroke-miterlimit="10" d="M21,6.517H10.31
+					c-2.361,0-4.275,1.915-4.275,4.276v4.276c0,2.363,1.914,4.277,4.275,4.277h1.604v4.275l4.276-4.275H21
+					c2.359,0,4.273-1.914,4.273-4.277v-4.276C25.275,8.432,23.361,6.517,21,6.517z"/>
+					<path fill="none" stroke-linejoin="round" stroke-miterlimit="10" d="M17.793,23.086
+					c0,1.477,1.195,2.672,2.672,2.672h2.674l3.207,3.207v-3.207h1.604c1.475,0,2.672-1.195,2.672-2.672v-2.138
+					c0-1.476-1.197-2.673-2.672-2.673"/>
+				</symbol>
+				<symbol id="icon-sign-in" viewbox="0 -2 36 34">
+					<path fill="none" stroke-linejoin="round" stroke-miterlimit="10" d="M16.417,18.625c0,0-1.313-0.438-1.313-2.625
+					c-0.723,0-0.723-1.75,0-1.75c0-0.293-1.313-3.5,0.875-3.063c0.438-1.75,5.25-1.75,5.688,0c0.305,1.214-0.438,2.847-0.438,3.063
+					c0.723,0,0.723,1.75,0,1.75c0,2.188-1.313,2.625-1.313,2.625v2.188c2.168,0.813,4.313,1.485,5.412,2.254
+					c1.793-1.816,2.899-4.312,2.899-7.065c0-5.558-4.504-10.063-10.063-10.063C12.609,5.938,8.104,10.442,8.104,16
+					c0,2.759,1.111,5.258,2.91,7.076c1.163-0.805,3.458-1.528,5.402-2.264L16.417,18.625L16.417,18.625z"/>
+					<path fill="none" stroke-linejoin="round" stroke-miterlimit="10" d="M11.014,23.076
+					c1.825,1.843,4.355,2.986,7.153,2.986c2.803,0,5.337-1.146,7.162-2.998"/>
+				</symbol>
+				<symbol id="breadcrumb-separator" viewbox="0 0 19 10">
+					<polyline fill="none" stroke-width="1.494" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="8,2 11.404,5.404 8,8.809 "/>
+				</symbol>
+		</svg>
+		<div id="top-header-logo">
+			<svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg>
+			<div id="load-spinner"></div>
 		</div>
-		<div id="load-spinner"></div>
+		<ul class="iconic-nav">
+			<li>
+				<button class="btn" data-toggle="dropdown" type="button">
+					<svg class="icon-file-menu"><use xlink:href="#icon-file-menu"></use></svg>
+					<span>File Menu</span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<li>
+						<a id="open">Open</a>
+					</li>
+					<li>
+						<a id="fork-button">Edit a Copy</a>
+					</li>
+					<li>
+						<a class="save-copy-button">Save a Copy</a>
+					</li>
+					<li>
+						<a id="save-as-preset">Save as Preset</a>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<button class="btn" id="btn-new">
+					<svg class="icon-new-graph"><use xlink:href="#icon-new-graph"></use></svg>
+					<span>New Graph</span>
+				</button>
+			</li>
+		</ul>
+		<ul class="iconic-nav">
+			<li>
+				<button class="btn" id="btn-scale">
+					<svg class="icon-scale"><use xlink:href="#icon-scale"></use></svg>
+					<span>Scale</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-rotate">
+					<svg class="icon-rotate"><use xlink:href="#icon-rotate"></use></svg>
+					<span>Rotate</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-add-object">
+					<svg class="icon-add-object"><use xlink:href="#icon-add-object"></use></svg>
+					<span>Add Object</span>
+				</button>
+			</li>
+		</ul>
+		<ul class="iconic-nav">
+			<li>
+				<button class="btn" id="btn-inspector">
+					<svg class="icon-inspector"><use xlink:href="#icon-inspector"></use></svg>
+					<span>Inspector</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-add-patch">
+					<svg class="icon-add-patch"><use xlink:href="#icon-add-patch"></use></svg>
+					<span>Add Patch</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-save-patch">
+					<svg class="icon-save-patch"><use xlink:href="#icon-save-patch"></use></svg>
+					<span>Save Patch</span>
+				</button>
+			</li>
+		</ul>
+		<ul class="iconic-nav">
+			<li>
+				<button class="btn" id="btn-cam-view">
+					<svg class="icon-cam-view"><use xlink:href="#icon-cam-view"></use></svg>
+					<span>Cam View</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-edit">
+					<svg class="icon-editor"><use xlink:href="#icon-editor"></use></svg>
+					<span>Editor</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-zoom">
+					<svg class="icon-zoom"><use xlink:href="#icon-zoom"></use></svg>
+					<span id="current-zoom">100%</span>
+				</button>
+				<button class="btn" id="btn-zoom-out">
+					<svg class="icon-zoom-out"><use xlink:href="#icon-zoom-out"></use></svg>
+				</button>
+				<button class="btn" id="btn-zoom-in">
+					<svg class="icon-zoom-in"><use xlink:href="#icon-zoom-in"></use></svg>
+				</button>
+			</li>
+		</ul>
+		<ul class="iconic-nav pull-right">
+			<li>
+				<button class="btn">
+					<svg class="icon-chat"><use xlink:href="#icon-chat"></use></svg>
+					<span>Chat</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-sign-in">
+					<svg class="icon-sign-in"><use xlink:href="#icon-sign-in"></use></svg>
+					<span>Sign in</span>
+				</button>
+			</li>
+		</ul>
 	</div>
-	<div class="header">
-		<div id="top-header">
-			<div class="top-header-col" id="top-header-left">
-				<a href="/edit" id="new" class="btn btn-sm btn-default">New</a>
-
-				<button id="fork-button" class="btn btn-sm btn-default">Edit a Copy</button>
-
-				<div class="btn-group pull-left">
-					<button type="button" class="btn btn-sm btn-default save-copy-button">Save a Copy</button>
-					<button type="button" class="btn btn-default btn-dropdown" data-toggle="dropdown">
-						<span class="fa fa-caret-down"></span>
-					</button>
-					<ul class="dropdown-menu" role="menu">
-						<li><a class="save-copy-button">Save a Copy</a></li>
-						<li><a id="save-as-preset">Save as Preset</a></li>
-						<li><a id="save-selection-as-preset">Save Selection as Preset</a></li>
-						<li><hr></li>
-						<li><a id="view-source">View Source</a></li>
-					</ul>
-				</div>
-
-				<button id="open" class="btn btn-sm btn-default">Open</button>
-
-			</div>
-
-			<div class="top-header-col" id="top-header-right">
-
-				<button id="help" class="btn btn-sm btn-default pull-right">Help</button>
-
-				<div class="header pull-right">
-					<button id="play" class="btn btn-primary">
-						<i class="fa fa-play"></i>
-					</button>
-					<button id="stop" class="btn btn-primary">
-						<i class="fa fa-stop"></i>
-					</button>
-					<button id="fullscreen" class="btn btn-primary">
-						<i class="fa fa-expand"></i>
-					</button>
-					{{> userpulldown}}
-				</div>
-
-			</div>
-
-		</div>
-
-	</div>
-</div> <!-- menu bar -->
+	<div id="breadcrumb"></div>
+</div>
 
 <div class="flex-row"> <!-- main row -->
 	<div class="flex-column left-cell" id="left-nav">
@@ -107,16 +308,25 @@
 		</canvas>
 
 		<div id="canvas_parent">
-			<div id="breadcrumb"></div>
 			<canvas id="canvas" width="940" height="620">
 			<!-- editor noodles -->
 			</canvas>
 		</div>
 	</div>
 
+	<div class="resize-handle right-pane-handle" data-target="#right-pane"></div>
+	<div class="flex-column right-pane" id="right-pane">
+		<div class="tab-content chat flex-column" id="chat">
+			<div class="messages"></div>
+			<div class="composer">
+				<input type="text" name="message" id="new-message-input">
+			</div>
+		</div>
+	</div>
+
 	<pre class="info-pane" id="dbg"></pre>
 </div> <!-- main row -->
-</div> <!-- page column -->
+</div> <!-- page column -->	
 
 <script type="text/javascript">
 	var graph, graphUrl

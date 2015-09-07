@@ -6,7 +6,12 @@ var ColorPicker = E2.plugins.color_picker = function(core) {
 	this.input_slots = [];
 	
 	this.output_slots = [
-		{ name: 'color', dt: core.datatypes.COLOR, desc: 'The selected color.', def: core.renderer.color_white }
+		{
+			name: 'color',
+			dt: core.datatypes.COLOR,
+			desc: 'The selected color.',
+			def: new THREE.Color(1,1,1)
+		}
 	];
 	
 	this.state = { hue: 0.0, sat: 0.0, lum: 1.0 };
@@ -33,7 +38,9 @@ ColorPicker.prototype.create_ui = function()
 	}
 
 	function onMouseUp() {
-		console.log('up', that.state)
+		if (!that._mouseDownValue)
+			return;
+
 		if (that._mouseDownValue.hue !== that.state.hue)
 			that.undoableSetState('hue',
 				that.state.hue,
@@ -171,18 +178,15 @@ ColorPicker.prototype.create_ui = function()
 	return c;
 };
 
-ColorPicker.prototype.update_state = function()
-{
+ColorPicker.prototype.update_state = function() {
 	this.update_value(this.c);
 };
 
-ColorPicker.prototype.update_output = function(slot)
-{
+ColorPicker.prototype.update_output = function() {
 	return this.color;
 };
 
-ColorPicker.prototype.update_value = function(c)
-{
+ColorPicker.prototype.update_value = function(c) {
 	var sat = this.state.sat;
 	var lum = this.state.lum;
 	var nc = [this.hue_rgb[0] / 255.0, this.hue_rgb[1] / 255.0, this.hue_rgb[2] / 255.0];
@@ -193,12 +197,8 @@ ColorPicker.prototype.update_value = function(c)
 	nc = [cnv(0), cnv(1), cnv(2)];
 	var rgb = this.color ? this.color : null;
 	
-	if(!rgb || rgb[0] !== nc[0] || rgb[1] !== nc[1] || rgb[2] !== nc[2])
-	{
-		rgb[0] = nc[0];
-		rgb[1] = nc[1];
-		rgb[2] = nc[2];
-
+	if(!rgb || rgb.r !== nc[0] || rgb.g !== nc[1] || rgb.b !== nc[2]) {
+		rgb.setRGB(nc[0], nc[1], nc[2])
 		this.updated = true;
 	}
 	
@@ -310,7 +310,7 @@ ColorPicker.prototype.state_changed = function(ui)
 		this.color_drag = false;
 		this.hue_clipped = false;
 		this.color_clipped = false;
-		this.color = vec4.createFrom(1, 1, 1, 1);
+		this.color = new THREE.Color(1,1,1);
 		this.update_hue(null, null, null, null);
 	}
 };

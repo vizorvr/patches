@@ -46,7 +46,6 @@
 	"Generators/Load/Audio buffer from URL": "url_audio_buffer_generator",
 	"Generators/Load/Image from URL": "url_texture_generator",
 	"Generators/Load/JSON from URL": "url_json_generator",
-	"Generators/Load/Scene from URL": "url_scene_generator",
 	"Generators/Load/Video from URL": "url_video_generator",
 	"Generators/Matrix/Translation": "translation_matrix",
 	"Generators/Matrix/Translation XYZ": "translation_xyz_matrix",
@@ -123,10 +122,10 @@
 	"Modulators/Color/Set alpha": "alpha_modulator",
 	"Modulators/Convert/Camera/Camera matrices": "convert_camera_matrices",
 	"Modulators/Convert/Camera/Matrices to Camera": "convert_matrices_camera",
-	"Modulators/Convert/Color/Color to HSLA": "convert_color_hsla_modulator",
-	"Modulators/Convert/Color/Color to RGBA": "convert_color_rgba_modulator",
-	"Modulators/Convert/Color/HSLA to Color": "convert_hsla_color_modulator",
-	"Modulators/Convert/Color/RGBA to Color": "convert_rgba_color_modulator",
+	"Modulators/Convert/Color/Color to HSL": "convert_color_hsl_modulator",
+	"Modulators/Convert/Color/Color to RGB": "convert_color_rgb_modulator",
+	"Modulators/Convert/Color/HSL to Color": "convert_hsl_color_modulator",
+	"Modulators/Convert/Color/RGB to Color": "convert_rgb_color_modulator",
 	"Modulators/Convert/Format/Float as string": "format_string_float",
 	"Modulators/Convert/Bool to Float": "convert_bool_float_modulator",
 	"Modulators/Convert/Float to Bool": "convert_float_bool_modulator",
@@ -173,6 +172,7 @@
 	"Modulators/Logic/Xor": "xor_modulator",
 	"Modulators/Logic/Switch": "switch_modulator",
 	"Modulators/Logic/Array Revolver Switch": "array_switch_modulator",
+
 	"Modulators/Material/Alpha clip": "material_alpha_clip_modulator",
 	"Modulators/Material/Ambient color": "material_ambient_color_modulator",
 	"Modulators/Material/Clone": "material_clone_modulator",
@@ -183,6 +183,7 @@
 	"Modulators/Material/Shinyness": "material_shinyness_modulator",
 	"Modulators/Material/Texture": "material_texture_modulator",
 	"Modulators/Material/Z-buffer": "material_z_buffer_modulator",
+	
 	"Modulators/Math/Functions/Absolute": "absolute_modulator",
 	"Modulators/Math/Functions/Cos": "cos_modulator",
 	"Modulators/Math/Functions/Exp": "exp_modulator",
@@ -261,7 +262,42 @@
 	"Modulators/Video/Duration": "video_get_duration_modulator",	
 	"Modulators/Video/Current time": "video_get_current_time_modulator",
 	"Modulators/VR/Camera": "vr_camera_modulator",
-	
+
+	"THREE/Render To Texture": "three_webgl_texture_renderer",
+	"THREE/Render To Screen": "three_webgl_renderer",
+
+	"THREE/Scene": "three_scene",
+	"THREE/Mesh": "three_mesh",
+
+	"THREE/Procedural Ground": "three_procedural_ground",
+
+	"THREE/VR Camera": "three_vr_camera",
+
+	"THREE/3D model loader": "three_loader_model",
+
+	"THREE/Geometry/Box": "three_geometry_box",
+	"THREE/Geometry/Circle": "three_geometry_circle",
+	"THREE/Geometry/Cylinder": "three_geometry_cylinder",
+
+	"THREE/Geometry/Dodecahedron": "three_geometry_dodecahedron",
+	"THREE/Geometry/Sphere": "three_geometry_sphere",
+	"THREE/Geometry/Plane": "three_geometry_plane",
+
+	"THREE/Material/Basic Material": "three_material",
+	"THREE/Material/Depth Material": "three_material_depth",
+	"THREE/Material/Lambert Material": "three_material_lambert",
+	"THREE/Material/Phong Material": "three_material_phong",
+	"THREE/Material/Shader": "three_material_shader",
+
+	"THREE/Material/Material Modifier": "three_material_modifier",
+
+	"THREE/Light/Ambient Light": "three_ambient_light",
+	"THREE/Light/Directional Light": "three_directional_light",
+	"THREE/Light/Point Light": "three_point_light",
+
+	"THREE/Gaze Clicker": "three_gaze_clicker",
+	"THREE/Clickable Object": "three_clickable_object",
+
 	"State/Register read": "register_local_read",
 	"State/Register write": "register_local_write",
 	

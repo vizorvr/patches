@@ -256,13 +256,43 @@ app.get(/^\/data\/.*/, function(req, res, next)
 		if (req.header('If-None-Match') === stat.md5)
 			return res.status(304).send();
 
-		res.header('Content-Type', stat.contentType);
-		res.header('Content-Length', stat.length);
-		res.header('ETag', stat.md5);
+		if (req.headers.range) {
+			// stream partial file range
+			var parts = req.headers.range.replace(/bytes=/, "").split("-");
+			var partialstart = parts[0];
+			var partialend = parts[1];
 
-		return gfs.createReadStream(path)
-		.on('error', next)
-		.pipe(res);
+			// start&end offset are inclusive, end is optional
+			var start = parseInt(partialstart, 10);
+			var end = partialend ? parseInt(partialend, 10) : (stat.length - 1);
+
+			var chunksize = (end - start) + 1;
+			
+			res.writeHeader(206, {
+				'Content-Range': 'bytes ' + start + '-' + end + '/' + stat.length,
+				'Accept-Ranges': 'bytes',
+				'Cache-Control': 'public, must-revalidate, max-age=60',
+				'Content-Length': chunksize,
+				'Content-Type': stat.contentType
+			});
+
+			var range = {startPos: start, endPos: end};
+			gfs.createReadStream(path, range)
+			.on('error', next)
+			.pipe(res);
+		}
+		else {
+			// stream whole file in a single request
+			res.header('Content-Type', stat.contentType);
+			res.header('Accept-Ranges', 'bytes');
+			res.header('ETag', stat.md5);
+			res.header('Content-Length', stat.length)
+			res.header('Cache-Control', 'public must-revalidate, max-age=60');
+
+			gfs.createReadStream(path)
+			.on('error', next)
+			.pipe(res);
+		}
 	})
 	.catch(next)
 });
@@ -287,17 +317,40 @@ app.get(/^\/dl\/.*/, function(req, res, next)
 	.catch(next);
 });
 
-// set no-cache headers for the rest
-app.use(function(req, res, next)
-{
+// set no-cache headers by default
+app.use(function(req, res, next) {
 	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
 	res.setHeader('Expires', 0);
 	next();
 });
 
+// allow caching editor-*.min.js
+app.get([
+	'/scripts/editor-*.min.js',
+	'/vendor/*',
+	'/fonts/*',
+	], function(req, res, next) {
+	res.setHeader('Cache-Control', 'public, max-age=604800');
+	next();
+});
+
+// allow some caching for node modules, app images and styles
+app.use([
+	'/node_modules',
+	'/images/*',
+	'/style/*',
+	'/plugins/plugins.json',
+	'/plugins/all.plugins.js'
+	],
+	function(req, res, next) {
+	res.setHeader('Cache-Control', 'must-revalidate, max-age=300');
+	next();
+});
+
+app.use(['/node_modules'], express.static(path.join(__dirname, 'node_modules')));
+
 // static files
 app.use(express.static(path.join(__dirname, 'browser'), { maxAge: 0 }));
-app.use('/node_modules', express['static'](path.join(__dirname, 'node_modules'), { maxAge: 0 }))
 
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
@@ -388,7 +441,7 @@ function getController(req, res, next)
 {
 	req.controller = controllers[req.params.model];
 	next();
-};
+}
 
 function requireController(req, res, next) {
 	req.controller = controllers[req.params.model];
@@ -398,7 +451,7 @@ function requireController(req, res, next) {
 		return next(e);
 	}
 	next();
-};
+}
 
 // upload
 app.post('/upload/:model',
@@ -450,15 +503,13 @@ app.get(['/editor', '/edit'], graphController.edit.bind(graphController));
 // GET /fthr/dunes-world/edit -- EDITOR
 app.get('/:username/:graph/edit', function(req, res, next)
 {
-	res.redirect('/'+req.params.username+'/'
-		+req.params.graph)
+	res.redirect('/'+req.params.username+'/'+req.params.graph)
 });
 
 // GET /fthr/dunes-world.json
 app.get('/:username/:graph.json', function(req, res, next)
 {
-	req.params.path = '/'+req.params.username+'/'
-		+req.params.graph.replace(/\.json$/g, '');
+	req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
 	console.log('load', req.params.path)
 	graphController.load(req, res, next);
 });
@@ -473,8 +524,7 @@ app.get('/:username/:graph', function(req, res, next)
 // GET /fthr/dunes-world/graph.json
 app.get('/:username/:graph/graph.json', function(req, res, next)
 {
-	req.params.path = '/'+req.params.username+'/'
-		+req.params.graph.replace(/\.json$/g, '');
+	req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
 
 	graphController.stream(req, res, next);
 });

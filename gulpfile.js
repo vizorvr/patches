@@ -8,22 +8,14 @@ slash = require('gulp-slash'),
 del = require('del'),
 less = require('gulp-less'),
 preprocess = require('gulp-preprocess'),
-paths =
-{
+paths = {
 	less: './less/build.less',
-	js:
-	{
+	js: {
 		plugins: './browser/plugins/*.plugin.js',
 		player:
 		[
 			'./browser/vendor/gl-matrix.js',
 			'./browser/scripts/util.js',
-			'./browser/scripts/texture.js',
-			'./browser/scripts/mesh.js',
-			'./browser/scripts/scene.js',
-			'./browser/scripts/material.js',
-			'./browser/scripts/renderer.js',
-			'./browser/scripts/shader.js',
 			'./browser/scripts/connection.js',
 			'./browser/scripts/event-emitter.js',
 			'./browser/scripts/graph.js',
@@ -33,6 +25,10 @@ paths =
 
 			'./browser/scripts/plugin.js',
 			'./browser/scripts/subGraphPlugin.js',
+			'./browser/scripts/threeObject3dPlugin.js',
+
+			'./browser/scripts/textureCache.js',
+
 			'./browser/scripts/plugin-manager-bundled.js',
 			'./browser/scripts/plugin-group.js',
 			'./browser/plugins/*.plugin.js',
@@ -67,6 +63,7 @@ gulp.task('clean:js', ['clean:js:plugins', 'clean:js:player']);
 
 gulp.task('clean', ['clean:js']);
 
+
 gulp.task('js:plugins', ['clean:js:plugins'], function()
 {
 	gulp.src(paths.js.plugins)
@@ -75,6 +72,7 @@ gulp.task('js:plugins', ['clean:js:plugins'], function()
 	.pipe(concat('all.plugins.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'plugins')))
 	.on('error', errorHandler)
+
 });
 
 gulp.task('js:player', ['clean:js:player'], function()
@@ -90,8 +88,7 @@ gulp.task('js:player', ['clean:js:player'], function()
 
 gulp.task('js', ['js:plugins', 'js:player']);
 
-gulp.task('less', ['clean:less'], function()
-{
+gulp.task('less', ['clean:less'], function() {
 	gulp.src(paths.less)
 	.pipe(slash())
     .pipe(less({

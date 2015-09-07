@@ -8,8 +8,6 @@ function SubGraphPlugin(core, node) {
 	this.input_nodes = {}
 	this.output_nodes = {}
 
-	this.gl = core.renderer.context
-
 	this.ui = null
 	this.isGraph = true
 }

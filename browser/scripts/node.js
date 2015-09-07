@@ -58,6 +58,9 @@ Node.prototype.set_plugin = function(plugin) {
 	
 	for(var i = 0, len = plugin.output_slots.length; i < len; i++)
 		init_slot(plugin.output_slots[i], i, E2.slot_type.output);
+
+	// back reference for object picking
+	this.plugin.parentNode = this
 };
 
 Node.prototype.setOpenState = function(isOpen) {
@@ -265,7 +268,7 @@ Node.prototype.findSlotByUid = function(suid) {
 	})
 
 	if (!slot)
-		console.error('Slot not found', slot_type, suid)
+		console.error('Slot not found', suid)
 
 	return slot
 }
@@ -365,66 +368,92 @@ Node.prototype.update_connections = function() {
 	return this.inputs.length + this.outputs.length
 }
 
+/**
+ * set connection UI flow state to off recursively
+ */
+Node.prototype._cascadeFlowOff = function(conn) {
+	conn.ui.flow = false
+
+	if (conn.src_node.inputs.length) {
+		for (var i=0; i < conn.src_node.inputs.length; i++) {
+			if (conn.src_node.inputs[i].ui.flow)
+				this._cascadeFlowOff(conn.src_node.inputs[i])
+		}
+	}
+}
+
 Node.prototype.update_recursive = function(conns) {
 	var dirty = false;
 
-	if (this.update_count < 1) {
-		var inputs = this.inputs;
-		var pl = this.plugin;
-		var needs_update = this.inputs_changed || pl.updated;
-	
-		for(var i = 0, len = inputs.length; i < len; i++) {
-			var inp = inputs[i];
-			
-			if (inp.dst_slot.inactive)
-				continue;
-			
-			var sn = inp.src_node;
-			 
-			dirty = sn.update_recursive(conns) || dirty;
-		
-			// TODO: Sampling the output value out here might seem spurious, but isn't:
-			// Some plugin require the ability to set their updated flag in update_output().
-			// Ideally, these should be rewritten to not do so, and this state should
-			// be moved into the clause below to save on function calls.
-			var value = sn.plugin.update_output(inp.src_slot);
+	if (this.update_count > 0)
+		return dirty;
 
-			if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
-				pl.update_input(inp.dst_slot, value);
-				pl.updated = true;
-				needs_update = true;
-		
-				if (inp.ui && !inp.ui.flow) {
-					dirty = true;
-					inp.ui.flow = true;
-				}
-			} else if(inp.ui && inp.ui.flow) {
-				inp.ui.flow = false;
-				dirty = true;
-			}
-		}
-	
-		if(pl.always_update || (pl.isGraph && pl.state.always_update)) {
-			pl.update_state();
-		} else if(this.queued_update > -1) {
-			if(pl.update_state)
-				pl.update_state();
-
-			pl.updated = true;
-			this.queued_update--;
-		} else if(needs_update || (pl.output_slots.length === 0 && (!this.outputs || this.outputs.length === 0))) {
-			if(pl.update_state)
-				pl.update_state();
-		
-			this.inputs_changed = false;
-		} else if(pl.input_slots.length === 0 && (!this.inputs || this.inputs.length === 0)) {
-			if(pl.update_state)
-				pl.update_state();
-		}
-	}
-	
 	this.update_count++;
 
+	var inputs = this.inputs;
+	var pl = this.plugin;
+	var needs_update = this.inputs_changed || pl.updated;
+
+	for(var i = 0, len = inputs.length; i < len; i++) {
+		var inp = inputs[i];
+		
+		if (inp.dst_slot.inactive) {
+			if(inp.ui && inp.ui.flow) {
+				this._cascadeFlowOff(inp)
+				dirty = true;
+			}
+			continue;
+		}
+		
+		var sn = inp.src_node;
+		 
+		dirty = sn.update_recursive(conns) || dirty;
+	
+		// TODO: Sampling the output value out here might seem spurious, but isn't:
+		// Some plugin require the ability to set their updated flag in update_output().
+		// Ideally, these should be rewritten to not do so, and this state should
+		// be moved into the clause below to save on function calls.
+		var value = sn.plugin.update_output(inp.src_slot);
+
+		if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
+			if (inp.dst_slot.array && !inp.src_slot.array) {
+				value = [value]
+			}
+			else if (inp.src_slot.array && !inp.dst_slot.array) {
+				value = value[0]
+			}
+			pl.update_input(inp.dst_slot, inp.dst_slot.validate ? inp.dst_slot.validate(value) : value);
+			pl.updated = true;
+			needs_update = true;
+	
+			if (inp.ui && !inp.ui.flow) {
+				dirty = true;
+				inp.ui.flow = true;
+			}
+		} else if(inp.ui && inp.ui.flow) {
+			inp.ui.flow = false;
+			dirty = true;
+		}
+	}
+
+	if (pl.always_update || (pl.isGraph && pl.state.always_update)) {
+		pl.update_state();
+	} else if(this.queued_update > -1) {
+		if(pl.update_state)
+			pl.update_state();
+
+		pl.updated = true;
+		this.queued_update--;
+	} else if(needs_update || (pl.output_slots.length === 0 && (!this.outputs || this.outputs.length === 0))) {
+		if(pl.update_state)
+			pl.update_state();
+	
+		this.inputs_changed = false;
+	} else if(pl.input_slots.length === 0 && (!this.inputs || this.inputs.length === 0)) {
+		if(pl.update_state)
+			pl.update_state();
+	}
+	
 	return dirty;
 }
 

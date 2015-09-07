@@ -125,7 +125,7 @@ describe('Upload', function() {
 				delete json.updatedAt;
 				json.files = json.files.sort()
 
-				files = [ scene+'/attribution.txt',
+				files = [
 					scene+'/scene.json',
 					scene+'/scene_Cube_n0.png',
 					scene+'/scene_Cube_t00.png',

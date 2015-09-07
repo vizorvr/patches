@@ -1,11 +1,11 @@
 var Graph = require('../models/graph');
 var AssetController = require('./assetController');
 var fsPath = require('path');
-var templateCache = new(require('../lib/templateCache'));
 var assetHelper = require('../models/asset-helper');
+var templateCache = new(require('../lib/templateCache'));
 
 function makeRandomPath() {
-	var keys = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+	var keys = 'abcdefghijklmnopqrstuvwxyz0123456789'
 	var uid = ''
 	for (var i=0; i < 12; i++) {
 		uid += keys[Math.floor(Math.random() * keys.length)]
@@ -13,11 +13,11 @@ function makeRandomPath() {
 	return uid
 }
 
-function GraphController(graphService, fs) {
+function GraphController() {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
 	AssetController.apply(this, args);
-};
+}
 
 GraphController.prototype = Object.create(AssetController.prototype);
 
@@ -60,9 +60,10 @@ GraphController.prototype.index = function(req, res, next)
 
 
 function renderEditor(res, graph) {
+	var layout = process.env.NODE_ENV === 'production' ? 'editor-prod' : 'editor'
 	function respond() {
 		res.render('editor', {
-			layout: 'spa',
+			layout: layout,
 			graph: graph
 		});
 	}
@@ -148,6 +149,10 @@ GraphController.prototype.upload = function(req, res, next)
 	var that = this;
 
 	var file = req.files.file;
+
+	if (fsPath.extname(file.path) !== '.json')
+		return next(new Error('The upload is not a graph JSON! Are you sure you are trying to upload a graph?'))
+
 	var path = this._makePath(req, file.path);
 	var gridFsPath = '/graph'+path+'.json';
 
