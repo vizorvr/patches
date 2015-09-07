@@ -5625,7 +5625,7 @@ button.close {
   color: #000000;
   text-align: center;
   text-decoration: none;
-  background-color: yellow;
+  background-color: #ffff00;
   border-radius: 4px;
 }
 .tooltip-arrow {
@@ -5640,56 +5640,56 @@ button.close {
   left: 50%;
   margin-left: -5px;
   border-width: 5px 5px 0;
-  border-top-color: yellow;
+  border-top-color: #ffff00;
 }
 .tooltip.top-left .tooltip-arrow {
   bottom: 0;
   right: 5px;
   margin-bottom: -5px;
   border-width: 5px 5px 0;
-  border-top-color: yellow;
+  border-top-color: #ffff00;
 }
 .tooltip.top-right .tooltip-arrow {
   bottom: 0;
   left: 5px;
   margin-bottom: -5px;
   border-width: 5px 5px 0;
-  border-top-color: yellow;
+  border-top-color: #ffff00;
 }
 .tooltip.right .tooltip-arrow {
   top: 50%;
   left: 0;
   margin-top: -5px;
   border-width: 5px 5px 5px 0;
-  border-right-color: yellow;
+  border-right-color: #ffff00;
 }
 .tooltip.left .tooltip-arrow {
   top: 50%;
   right: 0;
   margin-top: -5px;
   border-width: 5px 0 5px 5px;
-  border-left-color: yellow;
+  border-left-color: #ffff00;
 }
 .tooltip.bottom .tooltip-arrow {
   top: 0;
   left: 50%;
   margin-left: -5px;
   border-width: 0 5px 5px;
-  border-bottom-color: yellow;
+  border-bottom-color: #ffff00;
 }
 .tooltip.bottom-left .tooltip-arrow {
   top: 0;
   right: 5px;
   margin-top: -5px;
   border-width: 0 5px 5px;
-  border-bottom-color: yellow;
+  border-bottom-color: #ffff00;
 }
 .tooltip.bottom-right .tooltip-arrow {
   top: 0;
   left: 5px;
   margin-top: -5px;
   border-width: 0 5px 5px;
-  border-bottom-color: yellow;
+  border-bottom-color: #ffff00;
 }
 .popover {
   position: absolute;
@@ -6421,6 +6421,159 @@ table {
   margin-top: 20px;
   vertical-align: center;
 }
+.editor-header {
+  height: 84px;
+  width: 100%;
+  position: relative;
+  transition: height 0.5s ease;
+  overflow: visible;
+}
+.menu-bar {
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #343c4f;
+  position: absolute;
+  width: 100%;
+  height: 84px;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+#top-header-logo {
+  width: 156px;
+  height: 84px;
+  float: left;
+}
+#top-header-logo svg {
+  fill: #fff;
+}
+ul.iconic-nav {
+  margin: 0 2%;
+}
+ul.iconic-nav,
+ul.iconic-nav > li {
+  height: 84px;
+  display: block;
+  float: left;
+  padding: 0 8px;
+}
+ul.iconic-nav > li {
+  min-width: 36px;
+  float: left;
+  position: relative;
+  line-height: 100%;
+}
+ul.iconic-nav button {
+  outline: none;
+}
+ul.iconic-nav > li > button {
+  background: none;
+  padding: 0;
+  height: 84px;
+  vertical-align: top;
+  outline: none!important;
+}
+ul.iconic-nav > li > button#btn-zoom {
+  width: 52px;
+}
+ul.iconic-nav > li > button#btn-zoom-in,
+ul.iconic-nav > li > button#btn-zoom-out {
+  height: 34px;
+  width: 16px;
+  position: absolute;
+  top: 50%;
+  margin-top: -24px;
+  z-index: 11;
+}
+ul.iconic-nav > li > button#btn-zoom-in svg,
+ul.iconic-nav > li > button#btn-zoom-out svg {
+  height: 34px;
+  width: 16px;
+}
+ul.iconic-nav > li > button#btn-zoom-in {
+  right: 8px;
+}
+ul.iconic-nav > li > button#btn-zoom-out {
+  left: 8px;
+}
+ul.iconic-nav > li > button svg {
+  width: 36px;
+  height: 34px;
+  display: block;
+  margin: 0 auto;
+  stroke: #7e8dab;
+  overflow: visible;
+}
+ul.iconic-nav > li > button svg.icon-zoom {
+  width: 52px;
+}
+ul.iconic-nav > li > button span {
+  font-weight: 600;
+  font-size: 12px;
+  text-align: center;
+  margin: 0 auto;
+  color: #7e8dab;
+}
+ul.iconic-nav > li > button:hover span {
+  color: #afbfdf;
+}
+ul.iconic-nav > li > button:hover svg {
+  stroke: #afbfdf;
+}
+ul.iconic-nav > li > .btn {
+  outline: none!important;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0) !important;
+}
+ul.iconic-nav > li > button:active span {
+  color: #ffffff;
+}
+ul.iconic-nav > li > button:active svg {
+  stroke: #ffffff;
+}
+ul.iconic-nav > li.open > button .icon-file-menu {
+  transform: rotate(180deg);
+  stroke: #ffffff;
+}
+ul.iconic-nav > li.open > button span {
+  color: #ffffff;
+}
+#breadcrumb {
+  height: 40px;
+  width: 100%;
+  position: absolute!important;
+  background: #313643 !important;
+  color: #909fb9;
+  font-size: 14px!important;
+  margin: 0!important;
+  padding: 0!important;
+  opacity: 1!important;
+  top: 44px !important;
+  z-index: 9!important;
+  text-align: center;
+  transition: top 0.5s ease;
+}
+.editor-header:hover #breadcrumb {
+  top: 84px !important;
+}
+#breadcrumb span {
+  line-height: 1.5;
+  margin: 10px auto;
+  display: inline-block;
+}
+#breadcrumb svg {
+  display: inline-block;
+  width: 19px;
+  height: 10px;
+  stroke: #909fb9;
+}
+#top-header-logo svg {
+  width: 66px;
+  height: 24px;
+  overflow: visible;
+  position: absolute;
+  left: 45px;
+  top: 50%;
+  margin-top: -12px;
+}
 .info-pane {
   margin-right: 20px;
   margin-left: 5px;
@@ -6475,17 +6628,17 @@ table {
 }
 .dropdown-menu {
   padding: 0 !important;
-  border-radius: 0 !important;
+  border-radius: 0 0 5px 5px !important;
   margin: 0 !important;
-  border-top: 1px solid #222 !important;
-  border-left: 1px solid #222 !important;
-  border-right: 1px solid #222 !important;
-  border-bottom: none !important;
+  border: 0 none !important;
+  background: #343c4f;
+  overflow: hidden;
 }
 .dropdown-menu > li > a {
-  padding: 10px !important;
+  padding: 12px 20px !important;
   cursor: pointer;
-  border-bottom: 1px solid #222 !important;
+  border-top: 1px solid #313644 !important;
+  color: #909fb9;
 }
 #user-pulldown > li > a {
   height: 28px;
@@ -6494,14 +6647,20 @@ table {
   padding-left: 10px;
   padding-right: 10px;
 }
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus,
+.dropdown-menu > li > a:active {
+  background: #0597cd;
+  color: #fff;
+}
 .nav > li > a:hover,
 .nav > li > a:focus {
-  background: #1a1a1a;
+  background: #3c3c3c;
 }
 #load-spinner {
   position: absolute;
-  left: 10px;
-  top: 3px;
+  left: 20px;
+  top: 50%;
   opacity: 0.65;
   max-width: 18px;
   min-width: 18px;
@@ -6510,7 +6669,7 @@ table {
   background-size: 100% 100%;
   -moz-background-size: 100% 100%;
   -webkit-background-size: 100% 100%;
-  margin-top: 2px;
+  margin-top: -9px;
 }
 #play,
 #stop,
@@ -6949,9 +7108,9 @@ body {
   border: 0px solid #eee;
 }
 .header {
-  min-height: 28px;
-  height: 28px;
-  max-height: 28px;
+  min-height: 84px;
+  height: 84px;
+  max-height: 84px;
 }
 #left-nav {
   overflow: auto;
@@ -7346,7 +7505,7 @@ li.active,
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 10px;
-  height: calc(100vh -  84px);
+  height: calc(100vh -  252px);
 }
 .chat .message .date {
   margin-left: 5px;
