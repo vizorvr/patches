@@ -1010,7 +1010,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 				var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
 				var slot = slots[dc.dst_slot]
-				
+
 				slot.is_connected = false
 				slot.connected = false
 				destNode.inputs_changed = true
@@ -1091,14 +1091,20 @@ Application.prototype.calculateCanvasArea = function() {
 	var width, height
 	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
+	var windowWidth, leftPaneWidth, midPaneWidth, rightPaneWidth, midPaneHandleWidth, leftPaneHandleWidth, rightPaneHandleWidth;
+
 	if (!isFullscreen) {
-		width = $(window).width() -
-			$('#left-nav').outerWidth(true) - 
-			$('#mid-pane').outerWidth(true) - 
-			$('.mid-pane-handle').outerWidth(true) - 
-			$('.left-pane-handle').outerWidth(true) -
-			$('#right-pane').outerWidth(true) - 
-			$('.right-pane-handle').outerWidth(true)
+		windowWidth = $(window).width();
+		leftPaneWidth = $('#left-nav').outerWidth(true);
+		midPaneWidth = $('#mid-pane').outerWidth(true);
+		midPaneHandleWidth = $('.mid-pane-handle').outerWidth(true);
+		leftPaneHandleWidth = $('.left-pane-handle').outerWidth(true);
+		rightPaneWidth = $('#right-pane').outerWidth(true);
+		rightPaneHandleWidth = $('.right-pane-handle').outerWidth(true);
+
+		width = windowWidth - leftPaneWidth - leftPaneHandleWidth - midPaneWidth - midPaneHandleWidth  - rightPaneWidth - rightPaneHandleWidth;
+
+		// gm: note flex in Safari may return inconsistent values for flex-based widths (e.g. flex:1 in css)
 
 		height = $(window).height() -
 			$('.menu-bar').outerHeight(true);
@@ -1148,9 +1154,9 @@ Application.prototype.onWindowResize = function() {
 		$('#left-nav .tab-content .searchbox').outerHeight(true)
 	);
 
-	E2.core.emit('resize')
+	E2.core.emit('resize');
+	this.updateCanvas(true);
 
-	this.updateCanvas(true)
 }
 
 Application.prototype.toggleNoodles = function() {
@@ -1184,7 +1190,7 @@ Application.prototype.toggleFullscreen = function() {
 Application.prototype.onFullScreenChanged = function() {
 	var $canvas = E2.dom.webgl_canvas
 	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
-	
+
 	if (isFullscreen) {
 		$canvas.removeClass('webgl-canvas-normal')
 		$canvas.addClass('webgl-canvas-fs')
@@ -1549,7 +1555,7 @@ Application.prototype.openSaveACopyDialog = function(cb) {
 						E2.dom.load_spinner.hide();
 
 						ga('send', 'event', 'graph', 'saved')
-						
+
 						if (cb)
 							cb();
 					},
@@ -1713,7 +1719,7 @@ Application.prototype.setupStoreListeners = function() {
 	function onNodeRenamed(graph, node) {
 		if (node.ui)
 			node.ui.dom.find('.t').text(node.title)
-		
+
 		if (node.plugin.isGraph)
 			node.plugin.graph.tree_node.set_title(node.title)
 
@@ -1861,7 +1867,7 @@ Application.prototype.setupPeopleEvents = function() {
 		var cursorIsOutsideViewportX = false;
 		var cursorIsOutsideViewportY = false;
 
-		// Calculate viewport top left and bottom right X/Y 
+		// Calculate viewport top left and bottom right X/Y
 		var viewPortLeftX = E2.app.scrollOffset[0];
 		var viewPortTopY = E2.app.scrollOffset[1];
 
@@ -1893,10 +1899,10 @@ Application.prototype.setupPeopleEvents = function() {
 			adjustedX += cp.offsetLeft - E2.app.scrollOffset[0];
 		}
 
-		if(cursorIsOutsideViewportY) { 
+		if(cursorIsOutsideViewportY) {
 			$cursor.addClass('outside')
 		}
-		else { 
+		else {
 			adjustedY += cp.offsetTop - E2.app.scrollOffset[1];
 		}
 
@@ -1926,7 +1932,7 @@ Application.prototype.setupPeopleEvents = function() {
 			return E2.app.onGraphSelected(Graph.lookup(person.activeGraphUid))
 
 		var $cursor = cursors[person.uid]
-		if (person.activeGraphUid === E2.core.active_graph.uid) 
+		if (person.activeGraphUid === E2.core.active_graph.uid)
 			$cursor.show()
 		else
 			$cursor.hide()
@@ -2038,7 +2044,7 @@ Application.prototype.start = function() {
 	E2.dom.viewSourceButton.click(function() {
 		bootbox.dialog({
 			message: '<textarea class="form-control" cols=80 rows=40>'+
-				E2.core.serialise()+'</textarea>', 
+				E2.core.serialise()+'</textarea>',
 			buttons: { 'OK': function() {} }
 		})
 	})
@@ -2103,7 +2109,7 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 
 	function start() {
 		E2.dom.canvas_parent.toggle(that.noodlesVisible)
-		
+
 		E2.app.start()
 
 		E2.app.onWindowResize()
@@ -2148,12 +2154,12 @@ Application.prototype.setupEditorChannel = function() {
 	if (!this.channel) {
 		this.channel = new E2.EditorChannel()
 		this.channel.connect()
-		this.channel.on('ready', function() { 
+		this.channel.on('ready', function() {
 			that.setupChat()
 			that.peopleStore.initialize()
 			joinChannel()
 		})
-	} else 
+	} else
 		joinChannel()
 
 	return dfd.promise

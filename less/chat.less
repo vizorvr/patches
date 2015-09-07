@@ -4,13 +4,14 @@
 	-ms-user-select: text;
 	height: inherit;
 	overflow-x: hidden;
+  	background: @gray-base ;
 }
 
 .chat .messages {
 	overflow-y: auto;
 	overflow-x: hidden;
 	margin-top: 10px;
-	height: calc(~'100vh - '@menu-bar-height * 3);
+	height: calc(~'100vh - '@menu-bar-height * 4);
 }
 
 .chat .message .date {
@@ -49,25 +50,44 @@
 
 .chat .composer {
 	flex: 1;
-	display: flex;
+  	-webkit-flex: 1;
 	align-items: center;
 	width: 100%;
     background-color: @gray-soft;
 }
 
+.chat .composer label {
+  padding: 5px  0 0 5px;
+}
+
 .chat .composer input[type="text"]:focus {
 	border: solid 1px @gray;
+  	color: @gray-lighter;
     outline-width: 0;
 }
+
+
 .chat .composer input[type="text"] {
 	flex: 1;
+  	-webkit-flex: 1;
+    width:94%;
+    max-width: 97%;
 	padding: 5px;
-	margin: 7px;
+	margin: 2px 7px 7px 7px;
 	border-radius: 4px;
 	box-shadow: none;
 	background-color: @gray-soft;
 	border: solid 1px @gray-light;
 	transition: border 0.3s;
+
+}
+
+.chat .composer ::-webkit-input-placeholder {
+  color: @gray-light;
+}
+
+.chat .composer ::-moz-placeholder {
+  color: @gray-light;
 }
 
 .chat .message .table-row {

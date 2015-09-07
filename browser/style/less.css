@@ -6529,7 +6529,9 @@ table {
 }
 #canvases {
   flex: 1;
+  -webkit-flex: 1;
   overflow: hidden;
+  position: relative;
 }
 #canvas-parent {
   min-height: 270px;
@@ -6821,6 +6823,7 @@ table {
 }
 .left-cell {
   flex: 0 0 220px;
+  -webkit-flex: 0 0 220px;
   width: 220px;
   min-width: 10px;
   max-width: 220px;
@@ -6887,6 +6890,15 @@ table {
 }
 .bootbox-body h4 {
   line-height: 2;
+}
+::-webkit-scrollbar {
+  background: rgba(32, 32, 32, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(96, 96, 96, 0.3);
+}
+::-webkit-scrollbar-corner {
+  background: rgba(32, 32, 32, 0.5);
 }
 html,
 body {
@@ -6956,6 +6968,7 @@ body {
 #left-nav {
   overflow: auto;
   max-height: 100vh;
+  -webkit-flex: 0 0 220px;
 }
 #presets .searchbox {
   -webkit-flex-shrink: 0;
@@ -7016,6 +7029,8 @@ body {
 #right-pane {
   min-width: 268px;
   max-width: 268px;
+  z-index: 1;
+  margin-left: 10px;
 }
 #mid-pane .tab-content,
 #mid-pane .tab-pane,
@@ -7056,6 +7071,7 @@ body {
 .resize-handle {
   background-color: #444;
   width: 5px;
+  -webkit-flex: 0 0 5px;
 }
 .mid-pane-handle {
   background-color: #555555;
@@ -7341,12 +7357,13 @@ li.active,
   -ms-user-select: text;
   height: inherit;
   overflow-x: hidden;
+  background: #222222;
 }
 .chat .messages {
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 10px;
-  height: calc(100vh -  84px);
+  height: calc(100vh -  112px);
 }
 .chat .message .date {
   margin-left: 5px;
@@ -7377,24 +7394,37 @@ li.active,
 }
 .chat .composer {
   flex: 1;
-  display: flex;
+  -webkit-flex: 1;
   align-items: center;
   width: 100%;
   background-color: #444444;
 }
+.chat .composer label {
+  padding: 5px  0 0 5px;
+}
 .chat .composer input[type="text"]:focus {
   border: solid 1px #555555;
+  color: #eeeeee;
   outline-width: 0;
 }
 .chat .composer input[type="text"] {
   flex: 1;
+  -webkit-flex: 1;
+  width: 94%;
+  max-width: 97%;
   padding: 5px;
-  margin: 7px;
+  margin: 2px 7px 7px 7px;
   border-radius: 4px;
   box-shadow: none;
   background-color: #444444;
   border: solid 1px #aaaaaa;
   transition: border 0.3s;
+}
+.chat .composer ::-webkit-input-placeholder {
+  color: #aaaaaa;
+}
+.chat .composer ::-moz-placeholder {
+  color: #aaaaaa;
 }
 .chat .message .table-row {
   display: table-row;

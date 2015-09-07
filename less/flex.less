@@ -36,7 +36,6 @@ body {
 	-webkit-flex: 1 1 auto;
 	display: -webkit-flex;
 	-webkit-flex-direction: column;
-
 	flex: 1 1 auto;
 	display: flex;
 	flex-direction: column;
@@ -77,6 +76,7 @@ body {
 #left-nav {
 	overflow: auto;
 	max-height: 100vh;
+  	-webkit-flex: 0 0 220px;
 }
 
 #presets .searchbox {
@@ -153,6 +153,8 @@ body {
 {
 	min-width: @right-cell-width;
 	max-width: @right-cell-width;
+  	z-index: 1;
+  	margin-left: 10px;
 }
 
 #mid-pane .tab-content,
@@ -202,6 +204,7 @@ body {
 .resize-handle {
 	background-color: #444;
 	width: 5px;
+  -webkit-flex: 0 0 5px;
 }
 
 .mid-pane-handle {
@@ -212,3 +215,4 @@ body {
 	cursor: pointer;
 	background-color: @gray-light;
 }
+
