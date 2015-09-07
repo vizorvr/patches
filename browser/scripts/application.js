@@ -1958,18 +1958,19 @@ Application.prototype.start = function() {
 	document.addEventListener('mouseup', this.onCanvasMouseUp.bind(this))
 
 	var wasPlayingOnBlur = true
-	window.addEventListener('focus', function() {
-		that.windowBlurred = false
-	
-		if (wasPlayingOnBlur)
+	document.addEventListener('visibilitychange', function() {
+		if (!document.hidden && wasPlayingOnBlur) {
 			that.player.play()
+		} else {
+			wasPlayingOnBlur = that.player.state.PLAYING === that.player.current_state
+			that.player.pause()
+		}
+
+		E2.app.changeControlState()
 	})
 
 	window.addEventListener('blur', function() {
-		that.windowBlurred = true
-		wasPlayingOnBlur = that.player.state.PLAYING === that.player.current_state
 		that.clearEditState()
-		that.player.pause()
 	})
 
 	document.addEventListener('fullscreenchange', this.onFullScreenChanged.bind(this))
