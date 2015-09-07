@@ -1,11 +1,8 @@
 {
-	"Emitters/3D/Framebuffer/Recorder": "record_framebuffer",
-	"Emitters/3D/Framebuffer/Reset": "reset_framebuffer_recorder",
 	"Emitters/3D/Instancing/Array": "instance_array_modulator",
 	"Emitters/3D/Instancing/Cube": "instance_cube_modulator",
 	"Emitters/3D/Instancing/IFS": "instance_ifs_modulator",
-	"Emitters/3D/Render mesh": "mesh_renderer_emitter",
-	"Emitters/3D/Render scene": "scene_renderer_emitter",
+
 	"Emitters/Audio/Audio player": "audio_player",
 	"Emitters/Audio/Audio source player": "audio_source_player",
 	"Emitters/Audio/Module player": "module_player",
@@ -28,9 +25,7 @@
 	"Generators/Cameras/View/Aspect ratio": "aspect_ratio_generator",
 	"Generators/Cameras/View/Viewport height": "viewport_height_generator",
 	"Generators/Cameras/View/Viewport width": "viewport_width_generator",
-	"Generators/Cameras/Orthographic": "orthographic_camera",
-	"Generators/Cameras/Perspective": "perspective_camera",
-	"Generators/Cameras/Screenspace": "screenspace_camera",
+
 	"Generators/Crypto/CounterWallet - Get balances": "crypto_cw_get_balances",
 	"Generators/Crypto/DogeWallet - Get balances": "crypto_dw_get_balances",
 	"Generators/CSG/Cube": "csg_cube_generator",
@@ -47,6 +42,7 @@
 	"Generators/Load/Image from URL": "url_texture_generator",
 	"Generators/Load/JSON from URL": "url_json_generator",
 	"Generators/Load/Video from URL": "url_video_generator",
+
 	"Generators/Matrix/Translation": "translation_matrix",
 	"Generators/Matrix/Translation XYZ": "translation_xyz_matrix",
 	"Generators/Matrix/Planar projection": "planar_projection_matrix",
@@ -54,24 +50,15 @@
 	"Generators/Matrix/Rotation XYZ": "rotation_xyz_matrix",
 	"Generators/Matrix/Scale": "scale_matrix",
 	"Generators/Matrix/Scale XYZ": "scale_xyz_matrix",
-	"Generators/Mesh/Cube": "cube_mesh_generator",
-	"Generators/Mesh/Grid": "grid_mesh_generator",
-	"Generators/Mesh/Null": "null_mesh_generator",
-	"Generators/Mesh/Plane": "plane_mesh_generator",
-	"Generators/Mesh/Plane (unindexed)": "plane_mesh_unindexed_generator",
-	"Generators/Mesh/Sphere": "sphere_mesh_generator",
-	"Generators/Mesh/Quad": "quad_mesh_generator",
+
 	"Generators/WebSocket/Channel receiver": "wschannel_receive",
 	"Generators/WebSocket/Channel sender": "wschannel_send",
+
 	"Generators/OSC/OSC Receiver": "osc_receiver",
 	"Generators/OSC/OSC Float": "osc_float",
 	"Generators/OSC/OSC XY Float": "osc_xy_float",
 	"Generators/OSC/OSC XYZ Float": "osc_xyz_float",
-	"Generators/Shaders/Flat": "flat_shader",
-	"Generators/Shaders/From mesh": "from_mesh_shader",
-	"Generators/Shaders/From mesh custom": "from_mesh_custom_shader",
-	"Generators/Shaders/Normal as color": "normal_as_color_shader",
-	"Generators/Shaders/Texture": "texture_diffuse_shader",
+
 	"Generators/State/Initialise": "initialise_generator",
 	"Generators/State/System/Completed": "assets_completed_generator",
 	"Generators/State/System/Completed emitter": "assets_signal_completed_generator",
@@ -79,6 +66,7 @@
 	"Generators/State/System/Failed emitter": "assets_signal_failed_generator",
 	"Generators/State/System/Started": "assets_started_generator",
 	"Generators/State/System/Started emitter": "assets_signal_started_generator",
+
 	"Generators/Texture/From text": "texture_from_text_generator",
 	"Generators/Time/Clock": "clock_generator",
 	"Generators/Time/Delta time": "delta_t_generator",
@@ -102,13 +90,6 @@
 	"Generators/Values/Texture wrap": "texture_wrap_generator",
 	"Generators/Values/Toggle": "toggle_button",
 	"Generators/Values/Object composition": "object_add",
-	"Generators/VR/Camera info": "vr_camera_info_generator",
-	"Generators/VR/HMD available": "vr_hmd_available_generator",
-	"Generators/VR/HMD info": "vr_hmd_info_generator",
-	"Generators/VR/Sensor acceleration": "vr_acceleration_generator",
-	"Generators/VR/Sensor available": "vr_sensor_available_generator",
-	"Generators/VR/Sensor info": "vr_sensor_info_generator",
-	"Generators/VR/Sensor velocity": "vr_velocity_generator",
 
 	"Modulators/Audio/Analyse": "audio_analyse_modulator",
 	"Modulators/Audio/Buffer source": "audio_buffer_source_modulator",
@@ -116,16 +97,20 @@
 	"Modulators/Audio/Current time": "audio_get_current_time_modulator",
 	"Modulators/Audio/Duration": "audio_get_duration_modulator",
 	"Modulators/Audio/Gain (mix)": "audio_gain_modulator",
+
 	"Modulators/Color/Add": "color_add_modulator",
 	"Modulators/Color/Blend": "color_blend_modulator",
 	"Modulators/Color/Multiply": "color_multiply_modulator",
 	"Modulators/Color/Set alpha": "alpha_modulator",
+
 	"Modulators/Convert/Camera/Camera matrices": "convert_camera_matrices",
 	"Modulators/Convert/Camera/Matrices to Camera": "convert_matrices_camera",
+
 	"Modulators/Convert/Color/Color to HSL": "convert_color_hsl_modulator",
 	"Modulators/Convert/Color/Color to RGB": "convert_color_rgb_modulator",
 	"Modulators/Convert/Color/HSL to Color": "convert_hsl_color_modulator",
 	"Modulators/Convert/Color/RGB to Color": "convert_rgb_color_modulator",
+
 	"Modulators/Convert/Format/Float as string": "format_string_float",
 	"Modulators/Convert/Bool to Float": "convert_bool_float_modulator",
 	"Modulators/Convert/Float to Bool": "convert_float_bool_modulator",
@@ -211,12 +196,14 @@
 	"Modulators/Mesh/Get primitive count": "mesh_get_primitive_count",
 	"Modulators/Mesh/Primitive type": "mesh_primtype_modulator",
 	"Modulators/Mesh/Set max primitive count": "mesh_set_max_primitive_count",
+
 	"Modulators/Matrix/Clone": "matrix_clone_modulator",
 	"Modulators/Matrix/Concatenate": "concatenate_matrix_modulator",
 	"Modulators/Matrix/Get": "get_matrix_modulator",
 	"Modulators/Matrix/Invert": "invert_matrix_modulator",
 	"Modulators/Matrix/Set": "set_matrix_modulator",
 	"Modulators/Matrix/Transpose": "transpose_matrix_modulator",
+
 	"Modulators/Object/Array item to bool": "array_item_to_bool_modulator",
 	"Modulators/Object/Array item to float": "array_item_to_float_modulator",
 	"Modulators/Object/Array item to object": "array_item_to_object_modulator",
@@ -238,10 +225,12 @@
 	"Modulators/Scene/Get mesh count": "scene_get_mesh_count",
 	"Modulators/String/Concatenate": "string_concatenate_modulator",
 	"Modulators/String/Parse JSON": "parse_json_modulator",
+
 	"Modulators/Texture/Height": "texture_height_modulator",
 	"Modulators/Texture/Width": "texture_width_modulator",
 	"Modulators/Texture/Filter": "texture_filter_modulator",
 	"Modulators/Texture/Wrap": "texture_wrap_modulator",
+
 	"Modulators/Tweens/In": "tween_in_modulator",
 	"Modulators/Tweens/Out": "tween_out_modulator",
 	"Modulators/Typed arrays/Array to mesh": "array_to_mesh_modulator",
@@ -272,6 +261,7 @@
 	"THREE/Procedural Ground": "three_procedural_ground",
 
 	"THREE/VR Camera": "three_vr_camera",
+	"THREE/Perspective Camera": "three_perspective_camera",
 
 	"THREE/3D model loader": "three_loader_model",
 

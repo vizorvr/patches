@@ -265,7 +265,7 @@ Core.prototype.get_default_value = function(dt)
 	} else if (dt === dts.TEXTURE)
 		return new THREE.Texture()
 	else if(dt === dts.VECTOR)
-		return new THREE.Vector3(0, 0, 0) // vec3.createFrom(0.0, 0.0, 0.0);
+		return new THREE.Vector3(0, 0, 0)
 	else if(dt === dts.CAMERA)
 		return new THREE.PerspectiveCamera()
 	else if(dt === dts.BOOL)
