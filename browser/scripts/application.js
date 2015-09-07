@@ -1957,10 +1957,19 @@ Application.prototype.start = function() {
 	E2.dom.canvas_parent[0].addEventListener('mousedown', this.onCanvasMouseDown.bind(this))
 	document.addEventListener('mouseup', this.onCanvasMouseUp.bind(this))
 
-	// Clear hover state on window blur. Typically when the user switches
-	// to another tab.
+	var wasPlayingOnBlur = true
+	window.addEventListener('focus', function() {
+		that.windowBlurred = false
+	
+		if (wasPlayingOnBlur)
+			that.player.play()
+	})
+
 	window.addEventListener('blur', function() {
+		that.windowBlurred = true
+		wasPlayingOnBlur = that.player.state.PLAYING === that.player.current_state
 		that.clearEditState()
+		that.player.pause()
 	})
 
 	document.addEventListener('fullscreenchange', this.onFullScreenChanged.bind(this))
