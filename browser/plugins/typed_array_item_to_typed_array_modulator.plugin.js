@@ -1,4 +1,4 @@
-E2.p = E2.plugins["array_item_to_typed_array_modulator"] = function(core, node)
+E2.p = E2.plugins["typed_array_item_to_typed_array_modulator"] = function(core, node)
 {
 	this.desc = 'Emits an typed array representation of the specified item in the named array member of the supplied object.';
 	

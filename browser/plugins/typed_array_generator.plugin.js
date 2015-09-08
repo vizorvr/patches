@@ -1,4 +1,4 @@
-E2.p = E2.plugins["array_generator"] = function(core, node)
+E2.p = E2.plugins["typed_array_generator"] = function(core, node)
 {
 	this.desc = 'Create a zeroed out array of a given size (in bytes).';
 	

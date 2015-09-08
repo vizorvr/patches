@@ -22,19 +22,19 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.destroy = function()
 {
-	this.regs.unlock(this, this.node.title);
+	this.variables.unlock(this, this.node.title);
 };
 
 E2.p.prototype.renamed = function()
 {
-	this.regs.unlock(this, this.old_title);
+	this.variables.unlock(this, this.old_title);
 	this.target_reg(this.node.title);
 };
 
-E2.p.prototype.variable_dt_changed = function(dt)
+E2.p.prototype.variable_dt_changed = function(dt, arrayness)
 {
 	this.dt = dt;
-	this.node.change_slot_datatype(E2.slot_type.output, this.slotId, dt);
+	this.node.change_slot_datatype(E2.slot_type.output, this.slotId, dt, arrayness);
 };
 
 E2.p.prototype.variable_updated = function(value)
@@ -46,10 +46,10 @@ E2.p.prototype.variable_updated = function(value)
 
 E2.p.prototype.connection_changed = function(on, conn, slot)
 {
-	var reg_conn_count = this.regs.connection_changed(this.node.title, on);
+	var reg_conn_count = this.variables.connection_changed(this.node.title, on);
 	
-	if(on && reg_conn_count === 1 && this.dt === this.core.datatypes.ANY)
-		this.regs.set_datatype(this.node.title, conn.dst_slot.dt);
+	if(on && reg_conn_count === 1 && this.dt.id === E2.dt.ANY.id)
+		this.variables.set_datatype(this.node.title, conn.dst_slot.dt, conn.dst_slot.array);
 };
 
 E2.p.prototype.update_output = function(slot)
@@ -59,16 +59,16 @@ E2.p.prototype.update_output = function(slot)
 
 E2.p.prototype.target_reg = function(id)
 {
-	this.regs.lock(this, id);
+	this.variables.lock(this, id);
 	
-	var rdt = this.regs.variables[id].dt;
-	
-	this.dt = rdt;
+	var r = this.variables.variables[id];
 
-	if(rdt !== this.core.datatypes.ANY)
+	this.dt = r.dt;
+
+	if(r.dt.id !== this.core.datatypes.ANY.id)
 	{
-		this.variable_dt_changed(rdt);
-		this.data = this.regs.variables[id].value;
+		this.variable_dt_changed(r.dt, r.array);
+		this.data = this.variables.variables[id].value;
 	}
 };
 
@@ -87,7 +87,7 @@ E2.p.prototype.state_changed = function(ui) {
 		outputs = this.node.getDynamicOutputSlots()
 		this.slotId = outputs[0].uid
 
-		this.regs = n.parent_graph.variables
+		this.variables = n.parent_graph.variables
 		this.target_reg(n.title)
 	} else
 		this.node.ui.dom.addClass('variable')

@@ -171,6 +171,11 @@ describe('Paste', function() {
 			core.graphs = [ core.active_graph ]
 
 			source = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/paste-complex.json')).root
+
+			E2.plugins.material_diffuse_color_modulator = function() {
+				this.inputs_slots = []
+				this.outputs_slots = []
+			}
 		})
 
 		it('creates the right number of nodes, connections and outputs', function() {

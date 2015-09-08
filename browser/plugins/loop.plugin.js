@@ -79,10 +79,6 @@ LoopPlugin.prototype.create_ui = function()
 	return ui;
 };
 
-LoopPlugin.prototype.variable_dt_changed = function(dt)
-{
-};
-
 LoopPlugin.prototype.update_input = function(slot, data)
 {
 	if(slot.uid === undefined)
@@ -124,7 +120,7 @@ LoopPlugin.prototype.update_state = function()
 		{
 			this.graph.variables.write('index', cnt);
 			this.graph.reset();
-
+console.log('------ loop', cnt)
 			if(this.graph.update())
 				updated = true;
 		}

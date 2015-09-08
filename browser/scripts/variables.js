@@ -10,7 +10,13 @@ Variables.prototype.lock = function(plugin, name)
 	if(name in this.variables)
 		this.variables[name].ref_count++;
 	else
-		this.variables[name] = { dt: E2.app.player.core.datatypes.ANY, value: null, users: [], ref_count: 1, connections: 0 };
+		this.variables[name] = {
+			dt: E2.dt.ANY,
+			value: null,
+			users: [],
+			ref_count: 1,
+			connections: 0
+		};
 	
 	var u = this.variables[name].users;
 	
@@ -42,7 +48,7 @@ Variables.prototype.connection_changed = function(name, added)
 		if(r.connections === 0)
 		{
 			var u = r.users;
-			var any = E2.app.player.core.datatypes.ANY;
+			var any = E2.core.datatypes.ANY;
 			
 			for(var i = 0, len = u.length; i < len; i++)
 				u[i].variable_dt_changed(any);
@@ -54,15 +60,17 @@ Variables.prototype.connection_changed = function(name, added)
 	return r.connections;
 };
 
-Variables.prototype.set_datatype = function(name, dt)
+Variables.prototype.set_datatype = function(name, dt, arrayness)
 {
 	var r = this.variables[name];
 	var u = r.users;
 	
 	for(var i = 0, len = u.length; i < len; i++)
-		u[i].variable_dt_changed(dt);
+		u[i].variable_dt_changed(dt, arrayness)
 	
-	r.dt = dt;
+	r.dt = dt
+	r.array = arrayness
+
 	this.write(name, this.core.get_default_value(dt))
 };
 
@@ -105,9 +113,13 @@ Variables.prototype.serialise = function(d)
 		if(!regs.hasOwnProperty(id))
 			continue;
 	
-		dregs.push({ id: id, dt: regs[id].dt.id });
+		dregs.push({
+			id: id,
+			dt: regs[id].dt.id,
+			array: regs[id].array
+		});
 	}
-	
+
 	if(dregs.length > 0)
 		d.variables = dregs;
 };
@@ -121,7 +133,15 @@ Variables.prototype.deserialise = function(regs)
 		var r = regs[i];
 		var r_dt = rdt[r.dt];
 	
-		this.variables[r.id] = { dt: r_dt, value: null, users: [], ref_count: 1, connections: 0 };
+		this.variables[r.id] = {
+			dt: r_dt,
+			array: r.array,
+			value: null,
+			users: [],
+			ref_count: 1,
+			connections: 0
+		};
+
 		this.write(r.id, this.core.get_default_value(r_dt));
 	}
 };

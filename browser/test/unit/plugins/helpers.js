@@ -9,8 +9,12 @@ global.clone = _.cloneDeep.bind(_)
 global.SubGraphPlugin = require(browserPath+'scripts/subGraphPlugin.js')
 global.Plugin = require(browserPath+'scripts/plugin.js')
 
-exports.slot = function slot(index) {
-	return { index: index };
+exports.slot = function slot(index, type, dt) {
+	return {
+		index: index,
+		type: type,
+		dt: dt
+	};
 }
 
 exports.reset = function() {
@@ -88,7 +92,9 @@ exports.reset = function() {
 			on: function(){}
 		},
 		graphs: [],
-		get_default_value: function(){}
+		get_default_value: function(dt) {
+			return dt
+		}
 	};
 
 	core.pluginManager = {

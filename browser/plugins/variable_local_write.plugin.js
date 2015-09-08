@@ -24,9 +24,9 @@ E2.p.prototype.destroy = function()
 	this.regs.unlock(this, this.node.title);
 };
 
-E2.p.prototype.variable_dt_changed = function(dt)
+E2.p.prototype.variable_dt_changed = function(dt, arrayness)
 {
-	this.node.change_slot_datatype(E2.slot_type.input, this.slotId, dt);
+	this.node.change_slot_datatype(E2.slot_type.input, this.slotId, dt, arrayness);
 };
 
 E2.p.prototype.renamed = function()
@@ -38,9 +38,9 @@ E2.p.prototype.renamed = function()
 E2.p.prototype.connection_changed = function(on, conn, slot)
 {
 	var reg_conn_count = this.regs.connection_changed(this.node.title, on);
-	
+
 	if(on && reg_conn_count === 1)
-		this.regs.set_datatype(this.node.title, conn.src_slot.dt);
+		this.regs.set_datatype(this.node.title, conn.src_slot.dt, conn.src_slot.array);
 };
 
 E2.p.prototype.update_input = function(slot, data)
@@ -54,10 +54,10 @@ E2.p.prototype.target_reg = function(id)
 	
 	this.regs.lock(this, id);
 
-	var rdt = this.regs.variables[id].dt;
+	var r = this.regs.variables[id];
 	
-	if(rdt !== this.core.datatypes.ANY)
-		this.variable_dt_changed(dslot.dt);
+	if(r.dt.id !== this.core.datatypes.ANY.id)
+		this.variable_dt_changed(dslot.dt, r.array);
 };
 
 E2.p.prototype.state_changed = function(ui) {

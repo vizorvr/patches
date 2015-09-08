@@ -1,4 +1,4 @@
-E2.p = E2.plugins["array_to_mesh_modulator"] = function(core, node)
+E2.p = E2.plugins["typed_array_to_mesh_modulator"] = function(core, node)
 {
 	this.desc = 'Converts the supplied array to a mesh.';
 	

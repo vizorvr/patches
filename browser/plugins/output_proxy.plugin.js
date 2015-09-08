@@ -5,7 +5,7 @@ E2.p = E2.plugins.output_proxy = function(core, node)
 	this.input_slots = [];
 	
 	this.output_slots = [];
-	
+
 	node.add_slot(E2.slot_type.input, {
 		name: 'output',
 		dt: core.datatypes.ANY,

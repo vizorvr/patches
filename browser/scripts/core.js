@@ -122,7 +122,7 @@ function Core() {
 		DELEGATE: { id: 14, name: 'Delegate' },
 		TEXT: { id: 15, name: 'Text' },
 		VIDEO: { id: 16, name: 'Video' },
-		ARRAY: { id: 17, name: 'Array' },
+		ARRAY: { id: 17, name: 'Typed Array' },
 		OBJECT: { id: 18, name: 'Object' },
 
 		GEOMETRY: { id: 19, name: 'Geometry' },

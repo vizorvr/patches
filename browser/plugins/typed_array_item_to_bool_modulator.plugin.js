@@ -1,6 +1,6 @@
-E2.p = E2.plugins["array_item_to_float_modulator"] = function(core, node)
+E2.p = E2.plugins["typed_array_item_to_bool_modulator"] = function(core, node)
 {
-	this.desc = 'Emits a float representation of the specified item in the named array member of the supplied object.';
+	this.desc = 'Emits a boolean representation of the specified item in the named array member of the supplied object.';
 	
 	this.input_slots = [
 		{ name: 'object', dt: core.datatypes.OBJECT, desc: 'Input object.', def: null },
@@ -9,13 +9,13 @@ E2.p = E2.plugins["array_item_to_float_modulator"] = function(core, node)
 	];
 	
 	this.output_slots = [
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The float representation of the specified array item.', def: 0 }
+		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The boolean representation of the specified array item.', def: false }
 	];
 };
 
 E2.p.prototype.reset = function()
 {
-	this.value = 0;
+	this.value = false;
 	this.object = null;
 	this.member = null;
 	this.index = 0;
@@ -41,7 +41,7 @@ E2.p.prototype.update_state = function()
 	
 	if(!this.object.hasOwnProperty(this.member))
 	{
-		msg('ERROR: Cannot convert unknown member "' + this.member + '".');
+		msg('ERROR: Cannot index unknown array "' + this.member + '".');
 		return;
 	}
 	
@@ -53,22 +53,7 @@ E2.p.prototype.update_state = function()
 		return;
 	}
 	
-	if(a.length < 1)
-	{
-		this.value = 0;
-		return;
-	}
-	
-	var idx = this.index % a.length;
-	var d = a[idx];
-	
-	if(isNaN(d))
-	{
-		msg('ERROR: The item at index ' + idx + ' of "' + this.member + '" is not a float.');
-		return;
-	}
-	
-	this.value = d;
+	this.value = a.length > 0 ? (a[this.index % a.length] ? true: false) : false;
 };
 
 E2.p.prototype.update_output = function(slot)
