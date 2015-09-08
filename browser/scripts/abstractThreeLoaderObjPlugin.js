@@ -4,9 +4,7 @@ function AbstractThreeLoaderObjPlugin(core) {
 	
 	this.dirty = true
 
-	this.childrenByMaterialName = {}
 	this.state = { url: '' }
-	this.materials = {}
 
 	this.input_slots = []
 
@@ -60,13 +58,14 @@ AbstractThreeLoaderObjPlugin.prototype.update_input = function(slot, data) {
 
 AbstractThreeLoaderObjPlugin.prototype.onObjLoaded = function(geoms, mats) {
 	this.geometries = geoms
+
+
 	this.materials = mats
 
 	msg('Finished loading '+ this.state.url)
 
-	this.childrenByMaterialName = {}
-
 	this.updated = true
+	this.isLoading = false
 }
 
 AbstractThreeLoaderObjPlugin.prototype.update_state = function() {
@@ -91,6 +90,9 @@ AbstractThreeLoaderObjPlugin.prototype.update_state = function() {
 AbstractThreeLoaderObjPlugin.prototype.loadObj = function() {
 	var that = this
 	var loader = new THREE.OBJLoader()
+
+	this.isLoading = true
+
 	loader.load(this.state.url, this.onObjLoaded.bind(this), function() {
 		console.log('Loading progress', that.state.url, arguments)
 	}, function(err) {

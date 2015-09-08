@@ -5,6 +5,7 @@
 
 	function errorHandler(err) {
 		msg('ERROR: '+err.toString())
+		this.isLoading = false
 	}
 
 	var ThreeLoaderModelPlugin = E2.plugins.three_loader_model = function(core) {
@@ -12,6 +13,14 @@
 	}
 
 	ThreeLoaderModelPlugin.prototype = Object.create(AbstractThreeLoaderObjPlugin.prototype)
+
+	ThreeLoaderModelPlugin.prototype.getDefaultMaterials = function() {
+		return [new THREE.MeshBasicMaterial()]
+	}
+
+	ThreeLoaderModelPlugin.prototype.getDefaultGeometries = function() {
+		return [new THREE.Geometry()]
+	}
 
 	ThreeLoaderModelPlugin.prototype.create_ui = function() {
 		var inp = makeButton('Change', 'No model selected.', 'url')
@@ -47,6 +56,7 @@
 
 		var mtlUrl = this.state.url.replace('.obj', '.mtl')
 
+		this.isLoading = true
 		if (loadMaterial)
 			new THREE.OBJMTLLoader()
 				.load(this.state.url, mtlUrl, this.onObjLoaded.bind(this), progress.bind(this), errorHandler)
@@ -62,6 +72,8 @@
 	ThreeLoaderModelPlugin.prototype.loadJson = function() {
 		console.log('ThreeLoaderModelPlugin loading JSON', this.state.url)
 
+		this.isLoading = true
+
 		new THREE.JSONLoader()
 			.load(this.state.url,
 				this.onJsonLoaded.bind(this),
@@ -69,7 +81,6 @@
 				errorHandler
 			)
 	}
-
 
 	ThreeLoaderModelPlugin.prototype.update_state = function() {
 		if (!this.dirty)
@@ -79,10 +90,10 @@
 			return;
 
 		if (this.geometries)
-			this.geometries = null
+			this.geometries = this.getDefaultGeometries()
 
 		if (this.materials)
-			this.materials = null
+			this.materials = this.getDefaultMaterials()
 
 		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 
@@ -108,6 +119,10 @@
 	}
 
 	ThreeLoaderModelPlugin.prototype.update_output = function(slot) {
+		//if (this.isLoading) {
+		//	return []
+		//}
+
 		if (slot.index === 0) {
 			return this.geometries
 		}

@@ -5,6 +5,7 @@ var reset = require('./helpers').reset
 var loadPlugin = require('./helpers').loadPlugin
 global.EventEmitter = require('../../../scripts/event-emitter')
 global.Node = require('../../../scripts/node').Node
+global.LinkedSlotGroup = require('../../../scripts/node').LinkedSlotGroup
 
 global.self = {}
 
@@ -47,7 +48,7 @@ describe('material_modifier', function()
 		m2[0].name = 'override material'
 
 		plugin.update_input({index: 0, name: 'material array'}, m1)
-		plugin.update_input({index: 1, name: 'default material'}, m2[0])
+		plugin.update_input({index: 0, uid: 0x1234, name: 'default material'}, m2[0])
 
 		plugin.update_state()
 
@@ -74,7 +75,7 @@ describe('material_modifier', function()
 		m2[0].name = 'override material'
 
 		plugin.update_input({index: 0, name: 'material array'}, m1)
-		plugin.update_input({index: 3, name: 'mat3'}, m2[0])
+		plugin.update_input({index: 3, uid: 0x1234, name: 'mat3'}, m2[0])
 
 		plugin.update_state()
 
