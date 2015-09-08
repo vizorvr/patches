@@ -5,7 +5,6 @@
 
 	function errorHandler(err) {
 		msg('ERROR: '+err.toString())
-		this.isLoading = false
 	}
 
 	var ThreeLoaderModelPlugin = E2.plugins.three_loader_model = function(core) {
@@ -56,7 +55,6 @@
 
 		var mtlUrl = this.state.url.replace('.obj', '.mtl')
 
-		this.isLoading = true
 		if (loadMaterial)
 			new THREE.OBJMTLLoader()
 				.load(this.state.url, mtlUrl, this.onObjLoaded.bind(this), progress.bind(this), errorHandler)
@@ -71,8 +69,6 @@
 
 	ThreeLoaderModelPlugin.prototype.loadJson = function() {
 		console.log('ThreeLoaderModelPlugin loading JSON', this.state.url)
-
-		this.isLoading = true
 
 		new THREE.JSONLoader()
 			.load(this.state.url,
@@ -119,10 +115,6 @@
 	}
 
 	ThreeLoaderModelPlugin.prototype.update_output = function(slot) {
-		//if (this.isLoading) {
-		//	return []
-		//}
-
 		if (slot.index === 0) {
 			return this.geometries
 		}
