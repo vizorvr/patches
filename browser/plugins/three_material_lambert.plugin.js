@@ -8,7 +8,7 @@
 			{	name: 'texture', dt: core.datatypes.TEXTURE },
 			{	name: 'color', dt: core.datatypes.COLOR },
 			{	name: 'lightMap', dt: core.datatypes.TEXTURE },
-			{	name: 'wireframe', dt: core.datatypes.BOOL },
+			{	name: 'wireframe', dt: core.datatypes.BOOL, def: false },
 			{	name: 'fog', dt: core.datatypes.BOOL, def: true,
 				desc: 'Define whether the material color is affected by global fog settings.'
 			},
