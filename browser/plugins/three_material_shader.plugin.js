@@ -206,7 +206,6 @@
 
 			this.material = new THREE.ShaderMaterial( {
 				uniforms: this.uniforms,
-				attributes: {},
 				vertexShader: vs_src,
 				fragmentShader: ps_src
 			} )
