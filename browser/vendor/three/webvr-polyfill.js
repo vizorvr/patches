@@ -332,7 +332,7 @@ MouseKeyboardPositionSensorVRDevice.prototype.getState = function() {
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.onKeyDown_ = function(e) {
-  if (E2.app.noodlesVisible)
+  if (E2.app.noodlesVisible || E2.util.isTextInputInFocus(e))
     return;
 
   // Track WASD and arrow keys.

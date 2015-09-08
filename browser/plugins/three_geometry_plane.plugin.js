@@ -23,12 +23,14 @@
 	}
 
 	ThreePlaneGeometryPlugin.prototype.createGeometry = function() {
-		return new THREE.PlaneGeometry(
+		var geom = new THREE.PlaneGeometry(
 			this.inputValues.width,
 			this.inputValues.height,
 			Math.floor(this.inputValues.widthSegments),
 			Math.floor(this.inputValues.heightSegments)
 		)
+
+		return new THREE.BufferGeometry().fromGeometry(geom)
 	}
 
 	ThreePlaneGeometryPlugin.prototype.update_input = function() {

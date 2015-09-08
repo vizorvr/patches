@@ -22,7 +22,7 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_state = function()
 {
-	mat4.multiplyVec3(this.matrix, this.vector, this.transformed);
+	this.vector.transformDirection(this.matrix)
 };
 
 E2.p.prototype.update_output = function(slot)
@@ -34,10 +34,9 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.vector = [0, 0, 0];
-		this.transformed = [0, 0, 0];
-		this.matrix = mat4.create();
-		
-		mat4.identity(this.matrix);
+		this.vector = new THREE.Vector3(0, 0, 0)
+		this.transformed = new THREE.Vector3(0, 0, 0)
+		this.matrix = new THREE.Matrix4(0, 0, 0)
+		this.matrix.identity()
 	}
 };

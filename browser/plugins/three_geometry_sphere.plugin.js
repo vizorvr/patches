@@ -57,7 +57,7 @@
 	}
 
 	ThreeSphereGeometryPlugin.prototype.createGeometry = function() {
-		return new THREE.SphereGeometry(
+		return new THREE.SphereBufferGeometry(
 			this.inputValues.radius,
 			Math.floor(this.inputValues.widthSegments),
 			Math.floor(this.inputValues.heightSegments),
