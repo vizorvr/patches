@@ -238,8 +238,9 @@
 
 	"THREE/Procedural Ground": "three_procedural_ground",
 
-	"THREE/VR Camera": "three_vr_camera",
-	"THREE/Perspective Camera": "three_perspective_camera",
+	"THREE/Camera/VR Camera": "three_vr_camera",
+	"THREE/Camera/Perspective Camera": "three_perspective_camera",
+	"THREE/Camera/Screen Space Transform Extractor": "three_screen_space_transform_extractor",
 
 	"THREE/3D model loader": "three_loader_model",
 
