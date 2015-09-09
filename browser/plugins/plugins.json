@@ -260,6 +260,7 @@
 	"THREE/Material/Point Cloud Material": "three_point_cloud_material",
 
 	"THREE/Material/Material Modifier": "three_material_modifier",
+	"THREE/Material/UV Modifier": "three_uv_modifier",
 
 	"THREE/Light/Ambient Light": "three_ambient_light",
 	"THREE/Light/Directional Light": "three_directional_light",
