@@ -76,6 +76,13 @@
 		}
 
 		// Render the scene through the manager.
+
+		if (this.manager.isVRMode()) {
+			// vr mode doesn't necessarily update the world matrix
+			// could be a bug in new version of three.js
+			this.perspectiveCamera.updateMatrixWorld()
+		}
+
 		this.manager.render(this.scene, this.perspectiveCamera)
 	}
 
