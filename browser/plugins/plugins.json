@@ -234,6 +234,7 @@
 
 	"THREE/Scene": "three_scene",
 	"THREE/Mesh": "three_mesh",
+	"THREE/Point Cloud Mesh": "three_point_cloud_mesh",
 
 	"THREE/Procedural Ground": "three_procedural_ground",
 
@@ -255,6 +256,8 @@
 	"THREE/Material/Lambert Material": "three_material_lambert",
 	"THREE/Material/Phong Material": "three_material_phong",
 	"THREE/Material/Shader": "three_material_shader",
+
+	"THREE/Material/Point Cloud Material": "three_point_cloud_material",
 
 	"THREE/Material/Material Modifier": "three_material_modifier",
 
