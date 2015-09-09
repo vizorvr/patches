@@ -1,6 +1,6 @@
-E2.p = E2.plugins["register_local_write"] = function(core, node)
+E2.p = E2.plugins["variable_local_write"] = function(core, node)
 {
-	this.desc = 'Write to a local register using name of the node, the value of which can subsequently be read.';
+	this.desc = 'Write to a local variable using name of the node, the value of which can subsequently be read.';
 	
 	this.input_slots = [];
 	this.output_slots = [];
@@ -9,7 +9,7 @@ E2.p = E2.plugins["register_local_write"] = function(core, node)
 	this.node = node;
 	
 	if(!node.title)
-		this.old_title = node.title = 'reg_' + (node.parent_graph.registers.count() + 1);
+		this.old_title = node.title = 'reg_' + (node.parent_graph.variables.count() + 1);
 	else
 		this.old_title = node.title;
 };
@@ -24,7 +24,7 @@ E2.p.prototype.destroy = function()
 	this.regs.unlock(this, this.node.title);
 };
 
-E2.p.prototype.register_dt_changed = function(dt)
+E2.p.prototype.variable_dt_changed = function(dt)
 {
 	this.node.change_slot_datatype(E2.slot_type.input, this.slotId, dt);
 };
@@ -54,10 +54,10 @@ E2.p.prototype.target_reg = function(id)
 	
 	this.regs.lock(this, id);
 
-	var rdt = this.regs.registers[id].dt;
+	var rdt = this.regs.variables[id].dt;
 	
 	if(rdt !== this.core.datatypes.ANY)
-		this.register_dt_changed(dslot.dt);
+		this.variable_dt_changed(dslot.dt);
 };
 
 E2.p.prototype.state_changed = function(ui) {
@@ -75,9 +75,9 @@ E2.p.prototype.state_changed = function(ui) {
 		inputs = this.node.getDynamicInputSlots()
 		this.slotId = inputs[0].uid
 
-		this.regs = n.parent_graph.registers
+		this.regs = n.parent_graph.variables
 		this.target_reg(n.title)
 	} else
-		this.node.ui.dom.addClass('register')
+		this.node.ui.dom.addClass('variable')
 }
 
