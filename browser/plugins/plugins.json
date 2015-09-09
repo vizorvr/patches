@@ -263,6 +263,8 @@
 	"THREE/Material/Material Modifier": "three_material_modifier",
 	"THREE/Material/UV Modifier": "three_uv_modifier",
 
+	"THREE/Particles/Particle Emitter": "three_particle_emitter",
+
 	"THREE/Light/Ambient Light": "three_ambient_light",
 	"THREE/Light/Directional Light": "three_directional_light",
 	"THREE/Light/Point Light": "three_point_light",
