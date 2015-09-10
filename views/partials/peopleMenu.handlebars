@@ -1,28 +1,34 @@
-<h4>People currently editing</h4>
-
-<p>
-Click on a user to follow them as they move in and edit the graph.
-</p>
-
-<div class="peopleList">
-	<ul class="list-unstyled">
-	{{#each people}}
-	<li data-uid="{{uid}}">
-		<button
-			title="Click to {{#if followed}}unfollow{{else}}follow{{/if}} {{username}}"
-			class="btn btn-default {{#if followed}}followed{{/if}}"
-		>
-
-			{{username}} {{#if itsMe}}(you){{/if}}
-
-			{{#if followers}}
-				<span class="followers badge">
-				{{followers}}
-				</span>
+<div class="people-scroll">
+	<div class="peopleList">
+		<div class="meta"> 
+			<span class="text">Users Currently viewing your graph</span>
+		</div>
+		<ul class="graph-users">
+		{{#each people}}
+		<li data-uid="{{uid}}">
+			<div class="icon" style="background-color: {{color}}"></div>
+			<div class="user-info">
+				<span class="name">{{username}}</span>
+				<span class="info">{{#if itsMe}}This is you :){{/if}}</span>
+			</div>
+			{{#if itsMe}} {{else}}
+			<button	class="btn follow-state {{#if followed}}unfollow{{else}}follow{{/if}}" >
+				{{#if followed}}
+				<svg class="icon-unfollow"><use xlink:href="#icon-unfollow"></use></svg>
+				<span>Unfollow</span>
+				{{else}}
+				<svg class="icon-follow"><use xlink:href="#icon-follow"></use></svg>
+				<span>Follow</span>
+				{{/if}}
+			</button>
+			<button class="btn kick-user" id="kick_user">
+				<svg class="icon-kick"><use xlink:href="#icon-kick"></use></svg>
+				<span>Kick</span>
+			</button>
 			{{/if}}
-		</button>
-	</li>
-	{{/each}}
-</ul>
+		</li>
+		{{/each}}
+	</ul>
+	</div>
 </div>
 
