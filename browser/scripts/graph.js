@@ -4,7 +4,7 @@ function Graph(core, parent_graph, uid) {
 	this.nodes = [];
 	this.connections = [];
 	this.core = core;
-	this.variables = new Variables(core);
+	this.variables = new E2.Variables(core);
 
 	this.parent_graph = parent_graph;
 	this.roots = [];
