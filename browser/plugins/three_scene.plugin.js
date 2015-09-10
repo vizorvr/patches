@@ -78,9 +78,7 @@
 			if (this.meshes[mesh]) {
 				//console.log('add mesh to slot ', JSON.stringify(mesh))
 				if (this.meshes[mesh].length !== undefined) {
-					console.log('meshes', this.meshes[mesh])
 					for (var i=0; i < this.meshes[mesh].length; i++) {
-						console.log('adding to scene', this.meshes[mesh][i])
 						this.scene.children[0].add(this.meshes[mesh][i])
 					}
 				}

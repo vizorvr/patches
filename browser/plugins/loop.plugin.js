@@ -120,7 +120,7 @@ LoopPlugin.prototype.update_state = function()
 		{
 			this.graph.variables.write('index', cnt);
 			this.graph.reset();
-console.log('------ loop', cnt)
+
 			if(this.graph.update())
 				updated = true;
 		}
