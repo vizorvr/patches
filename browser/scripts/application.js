@@ -51,7 +51,8 @@ function Application() {
 	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
-	this.noodlesVisible = !E2.util.isMobile()
+	this.noodlesVisible = !E2.util.isMobile();
+	this.viewMode = 'editor'
 
 	this.mousePosition = [400,200]
 
@@ -69,6 +70,12 @@ function Application() {
 
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
+	
+	if (this.viewMode==='editor') {
+		E2.dom.btnEditor.parent().toggle();
+	} else {
+		E2.dom.btnCamView.parent().toggle();
+	}
 
 	$('#left-nav-collapse-btn').click(function(e) {
 		that.toggleLeftPane()
@@ -1093,15 +1100,14 @@ Application.prototype.calculateCanvasArea = function() {
 
 	if (!isFullscreen) {
 		width = $(window).width() -
-			$('#left-nav').outerWidth(true) - 
 			$('#mid-pane').outerWidth(true) - 
+			$('#left-nav').outerWidth(true) - 
 			$('.mid-pane-handle').outerWidth(true) - 
-			$('.left-pane-handle').outerWidth(true) -
-			$('#right-pane').outerWidth(true) - 
-			$('.right-pane-handle').outerWidth(true)
+			$('#left-pane').outerWidth(true) - 
+			$('.left-pane-handle').outerWidth(true)
 
 		height = $(window).height() -
-			$('.menu-bar').outerHeight(true);
+			$('.editor-header').outerHeight(true) - $('#breadcrumb').outerHeight(true);
 	} else {
 		width = window.innerWidth
 		height = window.innerHeight
@@ -1156,6 +1162,10 @@ Application.prototype.onWindowResize = function() {
 Application.prototype.toggleNoodles = function() {
 	this.noodlesVisible = !this.noodlesVisible
 	E2.dom.canvas_parent.toggle(this.noodlesVisible)
+}
+Application.prototype.toggleViewButtons = function() {
+	E2.dom.btnEditor.parent().toggle();
+	E2.dom.btnCamView.parent().toggle();
 }
 
 Application.prototype.toggleLeftPane = function()
@@ -1417,6 +1427,11 @@ Application.prototype.onOpenClicked = function() {
 
 			E2.app.loadGraph('/data/graph'+path+'.json')
 		})
+}
+
+
+Application.prototype.onChatDisplayClicked = function() {
+	$('.chat-users').toggle();
 }
 
 Application.prototype.onSignInClicked = function() {
@@ -1946,6 +1961,25 @@ Application.prototype.onNewClicked = function() {
 Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
+Application.prototype.onEditorClicked = function() {
+	this.toggleViewButtons();
+}
+Application.prototype.onCamViewClicked = function() {
+	this.toggleViewButtons();
+}
+
+Application.prototype.onChatToggleClicked = function() {
+	if ($('.chat-users').hasClass('collapsed')) {
+		$('.chat-users').removeClass('collapsed')
+	} else {
+		$('.chat-users').addClass('collapsed');
+	}
+	console.log('ha');
+}
+
+Application.prototype.onChatCloseClicked = function() {
+	$('.chat-users').hide();
+}
 
 Application.prototype.start = function() {
 	var that = this
@@ -2060,11 +2094,18 @@ Application.prototype.start = function() {
 	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
 	
+	E2.dom.btnEditor.click(E2.app.onEditorClicked.bind(E2.app))
+	E2.dom.btnCamView.click(E2.app.onCamViewClicked.bind(E2.app))
 	E2.dom.btnSignIn.click(E2.app.onSignInClicked.bind(E2.app))
+	
+	E2.dom.btnChatDisplay.click(E2.app.onChatDisplayClicked.bind(E2.app))
 	
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
+	
+	E2.dom.chatToggleButton.click(E2.app.onChatToggleClicked.bind(E2.app))
+	E2.dom.chatClose.click(E2.app.onChatCloseClicked.bind(E2.app))
 
 	this.midPane = new E2.MidPane()
 
@@ -2187,7 +2228,10 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.refresh = $('#refresh');
 	E2.dom.btnNew = $('#btn-new');
 	E2.dom.forkButton = $('#fork-button');
+	E2.dom.btnEditor = $('#btn-editor');
+	E2.dom.btnCamView = $('#btn-cam-view');
 	E2.dom.btnSignIn = $('#btn-sign-in');
+	E2.dom.btnChatDisplay = $('#btn-chat-display');
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
 	E2.dom.saveAsPreset = $('#save-as-preset');
@@ -2203,6 +2247,10 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.breadcrumb = $('#breadcrumb');
 	E2.dom.load_spinner = $('#load-spinner');
 	E2.dom.filename_input = $('#filename-input');
+	E2.dom.chatToggleButton = $('#chat-toggle');
+	E2.dom.chatClose = $('#chat-close');
+	
+
 
 	$.ajaxSetup({ cache: false });
 

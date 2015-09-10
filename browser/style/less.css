@@ -1,3 +1,4 @@
+/* CSS crunched with Crunch - http://crunchapp.net/ */
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 html {
   font-family: sans-serif;
@@ -6422,39 +6423,50 @@ table {
   vertical-align: center;
 }
 .editor-header {
-  height: 84px;
+  height: 70px;
   width: 100%;
   position: relative;
-  transition: height 0.5s ease;
-  overflow: visible;
 }
 .menu-bar {
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background-color: #343c4f;
-  position: absolute;
+  height: 70px;
+  background-color: #272c3d;
+  position: relative;
   width: 100%;
-  height: 84px;
-  top: 0;
-  left: 0;
-  z-index: 10;
+  min-width: 992px;
 }
 #top-header-logo {
   width: 156px;
-  height: 84px;
+  height: 70px;
   float: left;
 }
 #top-header-logo svg {
-  fill: #fff;
+  fill: #7e8dab;
 }
 ul.iconic-nav {
-  margin: 0 2%;
+  margin: 0 2% 0 1%;
+}
+@media only screen and (min-width: 1366px) {
+  ul.iconic-nav {
+    margin: 0 2%;
+  }
+}
+@media only screen and (min-width: 1150px) and (max-width: 1365px) {
+  ul.iconic-nav {
+    margin: 0 1% 0 0;
+  }
+}
+@media only screen and (min-width: 720px) and (max-width: 1150px) {
+  ul.iconic-nav {
+    margin: 0;
+  }
 }
 ul.iconic-nav,
 ul.iconic-nav > li {
-  height: 84px;
+  height: 70px;
   display: block;
   float: left;
-  padding: 0 8px;
+  padding: 0 7px;
 }
 ul.iconic-nav > li {
   min-width: 36px;
@@ -6468,7 +6480,7 @@ ul.iconic-nav button {
 ul.iconic-nav > li > button {
   background: none;
   padding: 0;
-  height: 84px;
+  height: 70px;
   vertical-align: top;
   outline: none!important;
 }
@@ -6496,15 +6508,15 @@ ul.iconic-nav > li > button#btn-zoom-out {
   left: 8px;
 }
 ul.iconic-nav > li > button svg {
-  width: 36px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   display: block;
   margin: 0 auto;
   stroke: #7e8dab;
   overflow: visible;
 }
 ul.iconic-nav > li > button svg.icon-zoom {
-  width: 52px;
+  width: 44px;
 }
 ul.iconic-nav > li > button span {
   font-weight: 600;
@@ -6537,26 +6549,22 @@ ul.iconic-nav > li.open > button span {
   color: #ffffff;
 }
 #breadcrumb {
-  height: 40px;
+  height: 28px;
   width: 100%;
-  position: absolute!important;
-  background: #313643 !important;
-  color: #909fb9;
+  position: relative!important;
+  background: #1f2331 !important;
+  color: #7e8dab;
   font-size: 14px!important;
   margin: 0!important;
   padding: 0!important;
   opacity: 1!important;
-  top: 44px !important;
-  z-index: 9!important;
   text-align: center;
-  transition: top 0.5s ease;
-}
-.editor-header:hover #breadcrumb {
-  top: 84px !important;
+  top: auto!important;
+  z-index: 10!important;
 }
 #breadcrumb span {
   line-height: 1.5;
-  margin: 10px auto;
+  margin: 5px auto;
   display: inline-block;
 }
 #breadcrumb svg {
@@ -6631,8 +6639,9 @@ ul.iconic-nav > li.open > button span {
   border-radius: 0 0 5px 5px !important;
   margin: 0 !important;
   border: 0 none !important;
-  background: #343c4f;
+  background: #272c3d;
   overflow: hidden;
+  z-index: 11;
 }
 .dropdown-menu > li > a {
   padding: 12px 20px !important;
@@ -6652,6 +6661,33 @@ ul.iconic-nav > li.open > button span {
 .dropdown-menu > li > a:active {
   background: #0597cd;
   color: #fff;
+}
+.nav-tabs > li {
+  text-align: center;
+}
+.nav-tabs > li > a {
+  border-radius: 0;
+  border: 0;
+  margin: 0;
+}
+.nav-tabs > li:active {
+  background: #1e2331;
+  color: #637088;
+}
+.toggle-button svg {
+  width: 16px;
+  height: 16px;
+  fill: #e8e8e8;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -8px 0 0 -8px;
+}
+.toggle-button:hover svg {
+  fill: #ffffff;
+}
+.collapsed .toggle-button {
+  transform: rotate(180deg);
 }
 .nav > li > a:hover,
 .nav > li > a:focus {
@@ -7108,9 +7144,9 @@ body {
   border: 0px solid #eee;
 }
 .header {
-  min-height: 84px;
-  height: 84px;
-  max-height: 84px;
+  min-height: 70px;
+  height: 70px;
+  max-height: 70px;
 }
 #left-nav {
   overflow: auto;
@@ -7436,6 +7472,115 @@ li.active,
   fill: #ff7f0e;
   stroke: #ff7f0e;
 }
+.people-scroll {
+  width: 252px;
+  height: 331px;
+  overflow: hidden;
+}
+#peopleTab .meta {
+  background: #272c3d;
+  width: 252px;
+  color: #bccbe5;
+  margin: 10px 0;
+}
+#peopleTab .meta span {
+  margin: 0 20px;
+}
+.peopleList {
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 270px;
+  height: 331px;
+}
+.graph-users {
+  padding: 0;
+  margin: 0;
+}
+.graph-users li {
+  height: 60px;
+  border-top: 1px solid #1e2331;
+  padding: 12px 20px;
+  position: relative;
+}
+.graph-users li .icon {
+  background-image: url('/images/alpha_chat_icon.png');
+  margin: 0 14px 9px 0;
+  width: 34px;
+  height: 34px;
+  background-color: gray;
+  border-radius: 3px;
+  float: left;
+}
+.graph-users li .user-info {
+  float: left;
+  height: 32px;
+  position: relative;
+  width: 164px;
+  line-height: 1;
+}
+.graph-users li .user-info .name {
+  font-weight: 700;
+  font-size: 14px;
+  color: #ffffff;
+  display: block;
+  width: 100%;
+}
+.graph-users li .user-info .info {
+  font-weight: 300;
+  font-size: 12px;
+  color: #afbfdf;
+  display: block;
+  width: 100%;
+}
+.graph-users li button {
+  background: none;
+  border: 0;
+  position: relative;
+  text-align: center;
+  color: #7e8dab;
+  width: 42px;
+  height: 36px;
+  position: absolute;
+  top: 8px;
+  background: #272c3d;
+  padding: 0;
+  display: none;
+}
+.graph-users li:hover button {
+  display: block;
+}
+.graph-users li button.follow-state {
+  right: 52px;
+}
+.graph-users li button.kick-user {
+  right: 10px;
+}
+.graph-users li button svg {
+  height: 26px;
+  width: 26px;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin: 0 0 0 -13px;
+  stroke: #7e8dab;
+}
+.graph-users li button span {
+  display: block;
+  width: 100%;
+  height: 12px;
+  font-size: 12px;
+  margin-top: 26px;
+}
+.graph-users li button:hover svg {
+  stroke: #ffffff;
+}
+.graph-users li button:hover span {
+  color: #ffffff;
+}
+.graph-users li .user-info .info {
+  line-height: 2;
+}
 .remote-mouse-pointer {
   position: absolute;
   background-color: #fff;
@@ -7469,10 +7614,6 @@ li.active,
   transform: scale(2);
   opacity: 1.0;
 }
-.peopleList li button {
-  width: 100%;
-  display: table;
-}
 .peopleList li button.followed {
   background-color: #557755;
 }
@@ -7482,49 +7623,119 @@ li.active,
 .peopleList div.peopleRow {
   display: table-row;
 }
-.peopleList h4.username {
-  width: 300px;
+.chat-users {
+  width: 252px;
+  height: 370px;
+  position: absolute;
+  right: 30px;
+  bottom: 20px;
+  background: #272c3d;
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 5;
 }
-.peopleList div.followers {
-  background-color: orange;
-  border-radius: 7px;
+.chat-users.collapsed {
+  height: 39px;
+}
+.chat-tabs {
+  width: 252px;
+  height: 39px;
+  position: relative;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  border-bottom: 1px solid #1e2331;
+}
+.chat-tabs > ul {
+  width: 174px;
+  height: 39px;
+  position: relative;
+  float: left;
+  border: 0;
+}
+.chat-tabs > ul > li {
+  width: 50%;
+}
+.chat-tabs > ul > li > a {
+  padding-top: 9px;
+  height: 39px;
+  outline: none;
+}
+.chat-tabs > ul > li > a:hover {
+  background: #0597cd;
+}
+.chat-tabs > ul > li.active > a,
+.chat-tabs > ul > li.active > a:hover,
+.chat-tabs > ul > li.active > a:active,
+.chat-tabs > ul > li.active > a:focus {
+  background: #1e2331;
+  color: #637088;
+  border: 0;
+}
+.chat-tabs button {
+  width: 39px;
+  background: none;
+  border: 0 none;
+  border-radius: 0;
+  height: 39px;
+  float: left;
+  position: relative;
+}
+.chat-tabs button:hover {
+  background: #0597cd;
+}
+.chat-close svg {
   width: 16px;
   height: 16px;
-  color: blue;
-  font-size: 0.8em;
-  font-weight: bold;
+  fill: #7e8dab;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -8px 0 0 -8px;
+}
+.chat-close:hover svg {
+  fill: #ffffff;
 }
 .chat {
   -moz-user-select: text;
   -webkit-user-select: text;
   -ms-user-select: text;
-  height: inherit;
-  overflow-x: hidden;
+  width: 252px;
+  height: 331px;
+  overflow: hidden;
 }
 .chat .messages {
   overflow-y: auto;
   overflow-x: hidden;
-  margin-top: 10px;
-  height: calc(100vh -  252px);
+  width: 270px;
+  height: 277px;
 }
 .chat .message .date {
-  margin-left: 5px;
+  margin-left: 8px;
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #909fb9;
 }
 .chat .message {
   margin-bottom: 10px;
-}
-.chat .message .text-cell {
-  padding-top: 5px;
+  width: 252px;
 }
 .chat .message .icon-column {
   vertical-align: top;
 }
 .chat .message .meta {
-  margin: 0px 8px 8px 8px;
+  margin: 12px 20px;
+}
+.chat .message .meta .text {
+  font-weight: 400;
+  font-size: 12px;
+  color: #bccbe5;
+  line-height: 1;
 }
 .chat .message .icon {
   background-image: url('/images/alpha_chat_icon.png');
-  margin: 0px 8px 8px 8px;
+  margin: 0px 14px 9px 18px;
   width: 32px;
   height: 32px;
   background-color: gray;
@@ -7532,32 +7743,34 @@ li.active,
 }
 .chat .message .username {
   color: white;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 14px;
+  color: #bccbe5;
+  line-height: 1;
 }
-.chat .composer {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  background-color: #444444;
-}
-.chat .composer input[type="text"]:focus {
-  border: solid 1px #555555;
-  outline-width: 0;
-}
-.chat .composer input[type="text"] {
-  flex: 1;
-  padding: 5px;
-  margin: 7px;
-  border-radius: 4px;
-  box-shadow: none;
-  background-color: #444444;
-  border: solid 1px #aaaaaa;
-  transition: border 0.3s;
+.chat .message .text {
+  font-size: 14px;
+  color: #bccbe5;
+  font-weight: 400;
 }
 .chat .message .table-row {
   display: table-row;
 }
 .chat .message .table-cell {
   display: table-cell;
+}
+.chat .composer {
+  width: 252px;
+  height: 54px;
+  background: #1e2331;
+}
+.chat .composer input {
+  height: 18px;
+  margin-top: 18px;
+  font-size: 12px;
+  color: #afbfdf;
+  background: none;
+  border: 0;
+  width: 212px;
+  margin-left: 20px;
 }
