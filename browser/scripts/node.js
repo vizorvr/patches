@@ -524,6 +524,14 @@ Node.prototype.fixStateSidsIssue135 = function(state) {
 }
 
 Node.prototype.deserialise = function(guid, d) {
+	var idMap = {
+		'register_local_read': 'variable_local_read',
+		'register_local_write': 'variable_local_write',
+	}
+
+	if (idMap[d.plugin])
+		d.plugin = idMap[d.plugin]
+
 	this.parent_graph = guid;
 	this.x = d.x;
 	this.y = d.y;
