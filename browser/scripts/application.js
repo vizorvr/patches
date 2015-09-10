@@ -1661,6 +1661,8 @@ Application.prototype.onShowTooltip = function(e) {
 		if (that.inDrag)
 			return;
 
+		$elem.tooltip('destroy')
+
 		$elem.tooltip({
 			title: txt,
 			container: 'body',
