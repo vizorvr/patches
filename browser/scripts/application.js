@@ -1974,7 +1974,6 @@ Application.prototype.onChatToggleClicked = function() {
 	} else {
 		$('.chat-users').addClass('collapsed');
 	}
-	console.log('ha');
 }
 
 Application.prototype.onChatCloseClicked = function() {
