@@ -1,4 +1,4 @@
-E2.p = E2.plugins["array_length_modulator"] = function(core, node)
+E2.p = E2.plugins["typed_array_length_modulator"] = function(core, node)
 {
 	this.desc = 'Gets the length of an array (in bytes).';
 	

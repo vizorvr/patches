@@ -79,10 +79,6 @@ LoopPlugin.prototype.create_ui = function()
 	return ui;
 };
 
-LoopPlugin.prototype.variable_dt_changed = function(dt)
-{
-};
-
 LoopPlugin.prototype.update_input = function(slot, data)
 {
 	if(slot.uid === undefined)

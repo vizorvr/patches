@@ -1,6 +1,6 @@
-E2.p = E2.plugins["array_item_to_string_modulator"] = function(core, node)
+E2.p = E2.plugins["typed_array_item_to_object_modulator"] = function(core, node)
 {
-	this.desc = 'Emits an string representation of the specified item in the named array member of the supplied object.';
+	this.desc = 'Emits an object representation of the specified item in the named array member of the supplied object.';
 	
 	this.input_slots = [
 		{ name: 'object', dt: core.datatypes.OBJECT, desc: 'Input object.', def: null },
@@ -9,13 +9,13 @@ E2.p = E2.plugins["array_item_to_string_modulator"] = function(core, node)
 	];
 	
 	this.output_slots = [
-		{ name: 'text', dt: core.datatypes.TEXT, desc: 'The string representation of the specified array item.' }
+		{ name: 'object', dt: core.datatypes.OBJECT, desc: 'The object representation of the specified array item.' }
 	];
 };
 
 E2.p.prototype.reset = function()
 {
-	this.value = '';
+	this.value = {};
 	this.object = null;
 	this.member = null;
 	this.index = 0;
@@ -53,7 +53,15 @@ E2.p.prototype.update_state = function()
 		return;
 	}
 	
-	this.value = a.length > 0 ? a[this.index % a.length].toString() : '';
+	var d = a.length > 0 ? a[this.index % a.length] : null;
+	
+	if(d === null || typeof(d) !== 'object')
+	{
+		msg('ERROR: The member "' + this.member + '" is not an object.');
+		return;
+	}
+	
+	this.value = d;
 };
 
 E2.p.prototype.update_output = function(slot)

@@ -1,4 +1,4 @@
-E2.p = E2.plugins["array_get_modulator"] = function(core, node)
+E2.p = E2.plugins["typed_array_get_modulator"] = function(core, node)
 {
 	this.desc = 'Gets an item value from an array.';
 	

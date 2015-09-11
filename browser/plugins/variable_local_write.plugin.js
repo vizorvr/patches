@@ -1,6 +1,6 @@
-E2.p = E2.plugins["variable_local_write"] = function(core, node)
-{
-	this.desc = 'Write to a local variable using name of the node, the value of which can subsequently be read.';
+(function(){
+var VariableLocalWrite = E2.plugins.variable_local_write = function(core, node) {
+	this.desc = 'Write to a local variable using name of the node.';
 	
 	this.input_slots = [];
 	this.output_slots = [];
@@ -14,53 +14,53 @@ E2.p = E2.plugins["variable_local_write"] = function(core, node)
 		this.old_title = node.title;
 };
 
-E2.p.prototype.reset = function()
+VariableLocalWrite.prototype.reset = function()
 {
 	this.updated = true;
 };
 
-E2.p.prototype.destroy = function()
+VariableLocalWrite.prototype.destroy = function()
 {
 	this.regs.unlock(this, this.node.title);
 };
 
-E2.p.prototype.variable_dt_changed = function(dt)
+VariableLocalWrite.prototype.variable_dt_changed = function(dt, arrayness)
 {
-	this.node.change_slot_datatype(E2.slot_type.input, this.slotId, dt);
+	this.node.change_slot_datatype(E2.slot_type.input, this.slotId, dt, arrayness);
 };
 
-E2.p.prototype.renamed = function()
+VariableLocalWrite.prototype.renamed = function()
 {
 	this.regs.unlock(this, this.old_title);
 	this.regs.lock(this, this.node.title);
 };
 
-E2.p.prototype.connection_changed = function(on, conn, slot)
+VariableLocalWrite.prototype.connection_changed = function(on, conn, slot)
 {
 	var reg_conn_count = this.regs.connection_changed(this.node.title, on);
-	
+
 	if(on && reg_conn_count === 1)
-		this.regs.set_datatype(this.node.title, conn.src_slot.dt);
+		this.regs.set_datatype(this.node.title, conn.src_slot.dt, conn.src_slot.array);
 };
 
-E2.p.prototype.update_input = function(slot, data)
+VariableLocalWrite.prototype.update_input = function(slot, data)
 {
 	this.regs.write(this.node.title, data);
 };
 
-E2.p.prototype.target_reg = function(id)
+VariableLocalWrite.prototype.target_reg = function(id)
 {
 	var dslot = this.node.find_dynamic_slot(E2.slot_type.input, this.slotId);
 	
 	this.regs.lock(this, id);
 
-	var rdt = this.regs.variables[id].dt;
+	var r = this.regs.variables[id];
 	
-	if(rdt !== this.core.datatypes.ANY)
-		this.variable_dt_changed(dslot.dt);
+	if(r.dt.id !== this.core.datatypes.ANY.id)
+		this.variable_dt_changed(dslot.dt, r.array);
 };
 
-E2.p.prototype.state_changed = function(ui) {
+VariableLocalWrite.prototype.state_changed = function(ui) {
 	if (!ui) {
 		var n = this.node;
 		var inputs = this.node.getDynamicInputSlots()
@@ -80,4 +80,7 @@ E2.p.prototype.state_changed = function(ui) {
 	} else
 		this.node.ui.dom.addClass('variable')
 }
+
+
+})()
 

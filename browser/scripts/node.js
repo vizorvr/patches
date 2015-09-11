@@ -48,7 +48,7 @@ Node.prototype.set_plugin = function(plugin) {
 		
 		if(!slot.dt)
 			msg('ERROR: The slot \'' + slot.name + '\' does not declare a datatype.');
-	};
+	}
 	
 	// Decorate the slots with their index to make this immediately resolvable
 	// from a slot reference, allowing for faster code elsewhere.
@@ -300,14 +300,16 @@ Node.prototype.rename_slot = function(slot_type, suid, name) {
 	}
 }
 	
-Node.prototype.change_slot_datatype = function(slot_type, suid, dt) {
+Node.prototype.change_slot_datatype = function(slot_type, suid, dt, arrayness) {
 	var slot = this.find_dynamic_slot(slot_type, suid);
 	var pg = this.parent_graph;
+
+	slot.array = arrayness
 	
-	if (slot.dt === dt) // Anything to do?
+	if (slot.dt.id === dt.id) // Anything to do?
 		return false;
 	
-	if (slot.dt !== pg.core.datatypes.ANY) {
+	if (slot.dt.id !== pg.core.datatypes.ANY.id) {
 		// Destroy all attached connections.
 		var conns = slot_type === E2.slot_type.input ? this.inputs : this.outputs;
 		var pending = [];
@@ -418,11 +420,12 @@ Node.prototype.update_recursive = function(conns) {
 		if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
 			if (inp.dst_slot.array && !inp.src_slot.array) {
 				value = [value]
-			}
-			else if (inp.src_slot.array && !inp.dst_slot.array) {
+			} else if (inp.src_slot.array && !inp.dst_slot.array) {
 				value = value[0]
 			}
+
 			pl.update_input(inp.dst_slot, inp.dst_slot.validate ? inp.dst_slot.validate(value) : value);
+
 			pl.updated = true;
 			needs_update = true;
 	
@@ -642,8 +645,7 @@ Node.hydrate = function(guid, json) {
 }
 
 
-function LinkedSlotGroup(core, parent_node, inputs, outputs)
-{
+function LinkedSlotGroup(core, parent_node, inputs, outputs) {
 	this.core = core;
 	this.node = parent_node;
 	this.inputs = inputs;
@@ -652,79 +654,88 @@ function LinkedSlotGroup(core, parent_node, inputs, outputs)
 	this.dt = core.datatypes.ANY;
 }
 
-LinkedSlotGroup.prototype.set_dt = function(dt)
-{
+LinkedSlotGroup.prototype.setArrayness = function(arrayness) {
+	for(var i = 0, len = this.inputs.length; i < len; i++) {
+		this.inputs[i].array = arrayness
+	}
+
+	for(var i = 0, len = this.outputs.length; i < len; i++) {
+		this.outputs[i].array = arrayness
+	}
+}
+
+LinkedSlotGroup.prototype.set_dt = function(dt) {
 	this.dt = dt;
 	
 	for(var i = 0, len = this.inputs.length; i < len; i++)
-		this.inputs[i].dt = dt;
+		this.inputs[i].dt = dt
 
 	for(var i = 0, len = this.outputs.length; i < len; i++)
-		this.outputs[i].dt = dt;
-};
+		this.outputs[i].dt = dt
+}
 
-LinkedSlotGroup.prototype.add_dyn_slot = function(slot)
-{
+LinkedSlotGroup.prototype.add_dyn_slot = function(slot) {
 	(slot.type === E2.slot_type.input ? this.inputs : this.outputs).push(slot);
-};
+}
 
-LinkedSlotGroup.prototype.remove_dyn_slot = function(slot)
-{
+LinkedSlotGroup.prototype.remove_dyn_slot = function(slot) {
 	(slot.type === E2.slot_type.input ? this.inputs : this.outputs).remove(slot);
-};
+}
 
-LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot)
-{
-	if(this.inputs.indexOf(slot) === -1 && this.outputs.indexOf(slot) === -1)
+LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot) {
+	if (this.inputs.indexOf(slot) === -1 && this.outputs.indexOf(slot) === -1)
 		return;
-		
-	this.n_connected += on ? 1 : -1;
 	
-	if(on && this.n_connected === 1)
-	{
-		this.set_dt((slot.type === E2.slot_type.input) ? conn.src_slot.dt : conn.dst_slot.dt);
+	this.n_connected += on ? 1 : -1;
+
+	if (on && this.n_connected === 1) {
+		var otherSlot = (slot.type === E2.slot_type.input) ? conn.src_slot : conn.dst_slot
+		this.set_dt(otherSlot.dt)
+
+		if (otherSlot.array)
+			this.setArrayness(true)
+
 		return true;
 	}
 	
-	if(!on && this.n_connected === 0)
-	{
+	if(!on && this.n_connected === 0) {
 		this.set_dt(this.core.datatypes.ANY);
 		return true;
 	}
 	
 	return false;
-};
+}
 
-LinkedSlotGroup.prototype.infer_dt = function()
-{
+LinkedSlotGroup.prototype.infer_dt = function() {
 	var node = this.node;
 	var dt = null;
-	var any_dt = this.core.datatypes.ANY;
+	var any_dt = this.core.datatypes.ANY.id;
 	
-	for(var i = 0, len = node.inputs.length; i < len; i++)
-	{
+	for(var i = 0, len = node.inputs.length; i < len; i++) {
 		var c = node.inputs[i];
 		
-		if(this.inputs.indexOf(c.dst_slot) !== -1)
-		{
-			dt = c.src_slot.dt !== any_dt ? c.src_slot.dt : dt;
+		if(this.inputs.indexOf(c.dst_slot) !== -1) {
+			dt = c.src_slot.dt.id !== any_dt ? c.src_slot.dt : dt;
+
+			if (c.src_slot.array)
+				this.setArrayness(true)
+
 			this.n_connected++;
 		}
 	}
 
-	for(var i = 0, len = node.outputs.length; i < len; i++)
-	{
+	for(var i = 0, len = node.outputs.length; i < len; i++) {
 		var c = node.outputs[i];
 		
-		if(this.outputs.indexOf(c.src_slot) !== -1)
-		{
-			dt = c.dst_slot.dt !== any_dt ? c.dst_slot.dt : dt;
+		if(this.outputs.indexOf(c.src_slot) !== -1) {
+			dt = c.dst_slot.dt.id !== any_dt ? c.dst_slot.dt : dt;
+			if (c.dst_slot.array)
+				this.setArrayness(true)
 			this.n_connected++;
 		}
 	}
 	
-	if(dt !== null)
-	{
+	if (dt) {
 		this.set_dt(dt);
 		return this.core.get_default_value(dt);
 	}

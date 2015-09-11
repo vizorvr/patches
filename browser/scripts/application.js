@@ -582,8 +582,10 @@ Application.prototype.onNodeDragged = function(node) {
 Application.prototype.onNodeDragStopped = function(node) {
 	this.onNodeDragged(node)
 
-	if (!this._dragInfo)
+	if (!this._dragInfo) {
+		this.inDrag = false
 		return;
+	}
 
 	var di = this._dragInfo
 	var nd = node.ui.dom[0]
@@ -599,15 +601,15 @@ Application.prototype.onNodeDragStopped = function(node) {
 	this.undoManager.push(cmd)
 	this.undoManager.end()
 
+	this._dragInfo = null
+	this.inDrag = false
+
 	E2.app.channel.send({
 		actionType: 'uiNodesMoved',
 		graphUid: E2.core.active_graph.uid,
 		nodeUids: di.nodes.map(function(n) { return n.uid }),
 		delta: { x: dx, y: dy }
 	})
-
-	this._dragInfo = null
-	this.inDrag = false
 }
 
 Application.prototype.clearSelection = function() {
@@ -1629,6 +1631,12 @@ Application.prototype.onShowTooltip = function(e) {
 
 		txt = '<b>Type:</b> ' + slot.dt.name;
 
+		if (slot.array)
+			txt += '<br><b>Array:</b> yes';
+
+		if (slot.inactive)
+			txt += '<br><b>Inactive:</b> yes';
+
 		if(slot.lo !== undefined || slot.hi !== undefined)
 			txt += '<br><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
 
@@ -1652,6 +1660,8 @@ Application.prototype.onShowTooltip = function(e) {
 	this._tooltipTimer = setTimeout(function() {
 		if (that.inDrag)
 			return;
+
+		$elem.tooltip('destroy')
 
 		$elem.tooltip({
 			title: txt,
