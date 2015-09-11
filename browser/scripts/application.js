@@ -1597,31 +1597,29 @@ Application.prototype.openSaveACopyDialog = function(cb) {
 }
 
 var growlOpen
-Application.prototype.growl = function(title, duration) {
-	var tt = $('#breadcrumb')
+Application.prototype.growl = function(title, type, imageurl, duration) {
+	var image = '<div style="background-image: url('+imageurl+');" class="image-crop"></div>' || '';
+	type= type || 'info';
+	var glyph = '<div class="glyph">'+image+'<svg class="icon-'+type+'"><use xlink:href="#icon-'+type+'"></use></svg></div>';
 
+	if (!$('.notifications-area').length)
+		$('body').append('<div class="notifications-area"></div>');
+	
 	function close() {
-		tt.tooltip('hide')
-		tt.tooltip('destroy')
-		growlOpen = false
+		$('.notifications-area .notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
+	}
+	
+	function remove() {
+		$('.notification-hide:first-child').remove();
+		$('.notifications-area .notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
+		if (!$('.notifications-area div').length)
+			$('.notifications-area').remove();
 	}
 
-	if (growlOpen)
-		close()
-
-	tt.tooltip({
-		title: title,
-		container: 'body',
-		animation: false,
-		trigger: 'manual',
-		placement: 'bottom'
-	})
-
-	growlOpen = true
-
-	tt.tooltip('show')
-
+	$('.notifications-area').append('<div class="notification notification-show"><div class="nt-content">'+glyph+'<div class="text"><span>'+title+'</span></div></div></div>');
+	
 	setTimeout(close, duration || 3000)
+	setTimeout(remove, duration+2000 || 5000)
 }
 
 Application.prototype.onShowTooltip = function(e) {

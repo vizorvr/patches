@@ -7774,3 +7774,109 @@ li.active,
   width: 212px;
   margin-left: 20px;
 }
+.notifications-area {
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 350px;
+  overflow: hidden;
+  padding-top: 138px;
+  z-index: 99;
+}
+.notifications-area .notification {
+  width: 320px;
+  min-height: 70px;
+  background: #2d4f77;
+  border-radius: 4px;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 10px;
+  animation: notification-appear 0.65s 1 ease-out;
+  opacity: 1;
+  right: 0;
+  margin-top: 0;
+}
+@keyframes notification-appear {
+  0% {
+    opacity: 0;
+    right: -350px;
+  }
+  100% {
+    opacity: 1;
+    right: 0;
+  }
+}
+.notifications-area .notification-hide {
+  animation: notification-disappear 0.65s ease-in;
+  opacity: 0;
+  margin-top: -70px;
+}
+@keyframes notification-disappear {
+  0% {
+    opacity: 1;
+    margin-top: 0;
+  }
+  100% {
+    opacity: 0;
+    margin-top: -80px;
+  }
+}
+.nt-content {
+  width: 320px;
+  min-height: 70px;
+  height: 70px;
+  display: table;
+  background: none;
+  padding: 0;
+  max-width: 320px;
+}
+.nt-content .text {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: left;
+}
+.nt-content .text span {
+  display: block;
+  margin: 14px 16px;
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 400;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  text-align: left;
+}
+.nt-content .glyph {
+  display: table-cell;
+  position: relative;
+  vertical-align: middle;
+  text-align: left;
+  width: 70px;
+  min-height: 70px;
+  height: 100%;
+  background: #385a8a;
+}
+.nt-content .glyph svg {
+  width: 70px;
+  height: 70px;
+  position: absolute;
+  display: block;
+  left: 50%;
+  top: 50%;
+  margin-top: -35px;
+  margin-left: -35px;
+}
+.nt-content .glyph .image-crop {
+  background-size: cover;
+  background-position: center center;
+  width: 30px;
+  height: 30px;
+  border-radius: 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -15px;
+  margin-left: -15px;
+}
