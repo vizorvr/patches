@@ -104,4 +104,6 @@ AbstractThreeMeshPlugin.prototype.update_input = function(slot, data) {
 
 AbstractThreeMeshPlugin.prototype.update_state = function() {
 	this.update_mesh()
+
+	ThreeObject3DPlugin.prototype.update_state.apply(this)
 }

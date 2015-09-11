@@ -4,9 +4,9 @@ function ThreeObject3DPlugin(core) {
 	this.desc = 'THREE.js Object3D'
 
 	this.input_slots = [
-		{ name: 'position', dt: core.datatypes.VECTOR },
-		{ name: 'rotation', dt: core.datatypes.VECTOR },
-		{ name: 'scale', dt: core.datatypes.VECTOR },
+		{ name: 'position', dt: core.datatypes.VECTOR, def: undefined },
+		{ name: 'rotation', dt: core.datatypes.VECTOR, def: undefined },
+		{ name: 'scale', dt: core.datatypes.VECTOR, def: undefined },
 
 		{ name: 'visible', dt: core.datatypes.BOOL, def: true },
 		{ name: 'castShadow', dt: core.datatypes.BOOL },
@@ -17,7 +17,6 @@ function ThreeObject3DPlugin(core) {
 		name: 'object3d',
 		dt: core.datatypes.OBJECT3D
 	}]
-
 
 	this.state = {
 		position: new THREE.Vector3(0, 0, 0),
@@ -49,16 +48,19 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 
 	var handlers = [
 		function() {
-			that.object3d.position.set(data.x, data.y, data.z)
-			that.state.position.set(data.x, data.y, data.z)
+			that.state.position.x = data.x
+			that.state.position.y = data.y
+			that.state.position.z = data.z
 		},
 		function() {
-			that.object3d.rotation.set(data.x, data.y, data.z)
-			that.state.rotation.set(data.x, data.y, data.z)
+			that.state.rotation.x = data.x
+			that.state.rotation.y = data.y
+			that.state.rotation.z = data.z
 		},
 		function() {
-			that.object3d.scale.set(data.x, data.y, data.z)
-			that.state.scale.set(data.x, data.y, data.z)
+			that.state.scale.x = data.x
+			that.state.scale.y = data.y
+			that.state.scale.z = data.z
 		},
 		function() { that.object3d.visible = data },
 		function() { that.object3d.castShadow = data },
@@ -69,7 +71,9 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 	var adjSlotIndex = slot.index - slotOffset
 
 	if (handlers[adjSlotIndex]) {
-		handlers[adjSlotIndex]()
+		if (data !== undefined) {
+			handlers[adjSlotIndex]()
+		}
 	}
 	else {
 		this.object3d[slot.name] = data
@@ -80,7 +84,14 @@ ThreeObject3DPlugin.prototype.update_output = function() {
 	return this.object3d
 }
 
-ThreeObject3DPlugin.prototype.state_changed = function() {
-
+ThreeObject3DPlugin.prototype.state_changed = function(ui) {
+	if (ui) {
+		return
+	}
 }
 
+ThreeObject3DPlugin.prototype.update_state = function() {
+	this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
+	this.object3d.rotation.set(this.state.rotation.x, this.state.rotation.y, this.state.rotation.z)
+	this.object3d.scale.set(this.state.scale.x, this.state.scale.y, this.state.scale.z)
+}

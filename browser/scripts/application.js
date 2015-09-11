@@ -1215,7 +1215,10 @@ Application.prototype.onKeyDown = function(e) {
 	if (E2.util.isTextInputInFocus(e))
 		return;
 
-	if (!this.noodlesVisible && e.keyCode !== 9)
+	var toggleNoodlesKey = 9
+	var toggleWorldEditorKey = 86
+
+	if (this.isVRCameraActive() && e.keyCode !== toggleNoodlesKey && e.keyCode !== toggleWorldEditorKey)
 		return;
 
 	// arrow up || down
@@ -1240,7 +1243,7 @@ Application.prototype.onKeyDown = function(e) {
 		this.onDelete(e);
 		e.preventDefault();
 	}
-	else if(e.keyCode === 9) // tab to show/hide noodles
+	else if(e.keyCode === toggleNoodlesKey) // tab to show/hide noodles
 	{
 		this.toggleNoodles()
 		e.preventDefault();
@@ -1357,6 +1360,15 @@ Application.prototype.onKeyDown = function(e) {
 				this.undoManager.redo()
 		}
 	}
+	else if (e.keyCode === toggleWorldEditorKey) { // v
+		if (E2.core.worldEditor.isActive()) {
+			E2.core.worldEditor.deactivate()
+		}
+		else {
+			E2.core.worldEditor.activate()
+		}
+	}
+
 
 };
 

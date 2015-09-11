@@ -724,6 +724,7 @@
 		this.attach = function ( object ) {
 
 			this.object = object;
+			this.plugin = object.backReference
 			this.visible = true;
 			this.update();
 
@@ -732,6 +733,7 @@
 		this.detach = function () {
 
 			this.object = undefined;
+			this.plugin = undefined
 			this.visible = false;
 			this.axis = null;
 
@@ -861,7 +863,7 @@
 
 					if ( planeIntersect ) {
 
-						oldPosition.copy( scope.object.position );
+						oldPosition.set( scope.plugin.state.position.x, scope.plugin.state.position.y, scope.plugin.state.position.z );
 						oldScale.copy( scope.object.scale );
 
 						oldRotationMatrix.extractRotation( scope.object.matrix );
@@ -902,6 +904,8 @@
 				point.sub( offset );
 				point.multiply( parentScale );
 
+				var newValue = scope.object.position.clone()
+
 				if ( scope.space === "local" ) {
 
 					point.applyMatrix4( tempMatrix.getInverse( worldRotationMatrix ) );
@@ -912,8 +916,8 @@
 
 					point.applyMatrix4( oldRotationMatrix );
 
-					scope.object.position.copy( oldPosition );
-					scope.object.position.add( point );
+					newValue = oldPosition.clone()
+					newValue.add(point)
 
 				}
 
@@ -925,18 +929,20 @@
 
 					point.applyMatrix4( tempMatrix.getInverse( parentRotationMatrix ) );
 
-					scope.object.position.copy( oldPosition );
-					scope.object.position.add( point );
+					newValue = oldPosition.clone()
+					newValue.add(point)
 
 				}
 
 				if ( scope.snap !== null ) {
 
-					if ( scope.axis.search( "X" ) !== - 1 ) scope.object.position.x = Math.round( scope.object.position.x / scope.snap ) * scope.snap;
-					if ( scope.axis.search( "Y" ) !== - 1 ) scope.object.position.y = Math.round( scope.object.position.y / scope.snap ) * scope.snap;
-					if ( scope.axis.search( "Z" ) !== - 1 ) scope.object.position.z = Math.round( scope.object.position.z / scope.snap ) * scope.snap;
+					if ( scope.axis.search( "X" ) !== - 1 ) newValue.x = Math.round( newValue.x / scope.snap ) * scope.snap;
+					if ( scope.axis.search( "Y" ) !== - 1 ) newValue.y = Math.round( newValue.y / scope.snap ) * scope.snap;
+					if ( scope.axis.search( "Z" ) !== - 1 ) newValue.z = Math.round( newValue.z / scope.snap ) * scope.snap;
 
 				}
+
+				scope.plugin.undoableSetState('position', newValue, oldPosition)
 
 			} else if ( _mode === "scale" ) {
 
@@ -949,17 +955,21 @@
 
 						scale = 1 + ( ( point.y ) / 50 );
 
-						scope.object.scale.x = oldScale.x * scale;
-						scope.object.scale.y = oldScale.y * scale;
-						scope.object.scale.z = oldScale.z * scale;
+						var newValue = oldScale.clone()
+						newValue.multiplyScalar(scale)
+
+						scope.plugin.undoableSetState('scale', newValue, oldScale)
 
 					} else {
 
 						point.applyMatrix4( tempMatrix.getInverse( worldRotationMatrix ) );
 
-						if ( scope.axis === "X" ) scope.object.scale.x = oldScale.x * ( 1 + point.x / 50 );
-						if ( scope.axis === "Y" ) scope.object.scale.y = oldScale.y * ( 1 + point.y / 50 );
-						if ( scope.axis === "Z" ) scope.object.scale.z = oldScale.z * ( 1 + point.z / 50 );
+						var newValue = scope.object.scale.clone()
+						if ( scope.axis === "X" ) newValue.x = oldScale.x * ( 1 + point.x / 50 );
+						if ( scope.axis === "Y" ) newValue.y = oldScale.y * ( 1 + point.y / 50 );
+						if ( scope.axis === "Z" ) newValue.z = oldScale.z * ( 1 + point.z / 50 );
+
+						scope.plugin.undoableSetState('scale', newValue, scope.object.scale.clone())
 
 					}
 
