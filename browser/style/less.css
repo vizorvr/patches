@@ -887,7 +887,7 @@ html {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 body {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
   line-height: 1.33;
   color: #aaaaaa;
@@ -987,7 +987,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 500;
   line-height: 1.1;
   color: inherit;
@@ -5593,7 +5593,7 @@ button.close {
   z-index: 1070;
   display: block;
   visibility: visible;
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 11px;
   font-weight: normal;
   line-height: 1.4;
@@ -5700,7 +5700,7 @@ button.close {
   display: none;
   max-width: 276px;
   padding: 1px;
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-weight: normal;
   line-height: 1.33;
@@ -6376,7 +6376,7 @@ button.close {
   }
 }
 body {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-shadow: none;
   line-height: 1.33;
   font-size: 12px;
@@ -6677,7 +6677,7 @@ ul.iconic-nav > li.open > button span {
 .toggle-button svg {
   width: 16px;
   height: 16px;
-  fill: #e8e8e8;
+  fill: #7e8dab;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -7627,15 +7627,18 @@ li.active,
   width: 252px;
   height: 370px;
   position: absolute;
+  top: 138px;
   right: 30px;
-  bottom: 20px;
   background: #272c3d;
   border-radius: 6px;
   overflow: hidden;
-  z-index: 5;
+  z-index: 11;
 }
 .chat-users.collapsed {
   height: 39px;
+}
+.chat-tabs .nav-tabs {
+  cursor: grab;
 }
 .chat-tabs {
   width: 252px;
@@ -7656,21 +7659,23 @@ li.active,
 .chat-tabs > ul > li {
   width: 50%;
 }
-.chat-tabs > ul > li > a {
+.chat-tabs > ul > li > a,
+.chat-tabs > ul > li > a:active {
   padding-top: 9px;
+  background: #1e2331;
   height: 39px;
   outline: none;
-}
-.chat-tabs > ul > li > a:hover {
-  background: #0597cd;
-}
-.chat-tabs > ul > li.active > a,
-.chat-tabs > ul > li.active > a:hover,
-.chat-tabs > ul > li.active > a:active,
-.chat-tabs > ul > li.active > a:focus {
-  background: #1e2331;
   color: #637088;
-  border: 0;
+}
+.chat-tabs > ul > li > a:hover,
+.chat-tabs > ul > li > a:focus {
+  color: #ffffff;
+  background: #1e2331;
+}
+.chat-tabs > ul > li.active > a {
+  background: none!important;
+  color: #637088 !important;
+  border: 0!important;
 }
 .chat-tabs button {
   width: 39px;
@@ -7681,8 +7686,9 @@ li.active,
   float: left;
   position: relative;
 }
-.chat-tabs button:hover {
-  background: #0597cd;
+.chat-tabs button:hover,
+.chat-tabs button:active {
+  background: none;
 }
 .chat-close svg {
   width: 16px;
@@ -7773,6 +7779,9 @@ li.active,
   border: 0;
   width: 212px;
   margin-left: 20px;
+}
+.chat .composer input:focus {
+  outline: 0;
 }
 .notifications-area {
   display: block;
@@ -7879,4 +7888,12 @@ li.active,
   top: 50%;
   margin-top: -15px;
   margin-left: -15px;
+  text-align: center;
+}
+.nt-content .glyph .image-crop span {
+  display: block;
+  color: #fff;
+  font-weight: 400;
+  font-size: 20px;
+  margin: 0 auto;
 }

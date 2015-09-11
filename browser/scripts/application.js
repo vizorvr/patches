@@ -1431,7 +1431,12 @@ Application.prototype.onOpenClicked = function() {
 
 
 Application.prototype.onChatDisplayClicked = function() {
-	$('.chat-users').toggle();
+	if (!$('.chat-users').hasClass('collapsed')) {
+		$('.chat-users').toggle();
+	}
+	else {
+		$('.chat-users').removeClass('collapsed').height($('.chat-tabs').height+$('.chat').height)
+	}
 }
 
 Application.prototype.onSignInClicked = function() {
@@ -1596,14 +1601,29 @@ Application.prototype.openSaveACopyDialog = function(cb) {
 	})
 }
 
-var growlOpen
-Application.prototype.growl = function(title, type, imageurl, duration) {
-	var image = '<div style="background-image: url('+imageurl+');" class="image-crop"></div>' || '';
+Application.prototype.growl = function(title, type, person, duration) {
+	var letter=title.charAt(0);
 	type= type || 'info';
+	if (!$('symbol#icon-'+type).length) {
+		type='info'
+	}
+	if (person) {
+		var image='<div style="background-color: '+person.color+';" class="image-crop"><span>'+letter+'</span></div>';
+	} else {
+		var image=''
+	}
+	
+	/** TODO: when users will have pics - use this:
+	if (person.userpic) {
+		image = '<div style="background-image: url('+person.userpic+');" class="image-crop"></div>';
+	}
+	*/
+	
 	var glyph = '<div class="glyph">'+image+'<svg class="icon-'+type+'"><use xlink:href="#icon-'+type+'"></use></svg></div>';
-
-	if (!$('.notifications-area').length)
+	
+	if (!$('.notifications-area').length) {
 		$('body').append('<div class="notifications-area"></div>');
+	}
 	
 	function close() {
 		$('.notifications-area .notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
@@ -1968,9 +1988,9 @@ Application.prototype.onCamViewClicked = function() {
 
 Application.prototype.onChatToggleClicked = function() {
 	if ($('.chat-users').hasClass('collapsed')) {
-		$('.chat-users').removeClass('collapsed')
+		$('.chat-users').removeClass('collapsed').height($('.chat-tabs').height);
 	} else {
-		$('.chat-users').addClass('collapsed');
+		$('.chat-users').addClass('collapsed').height($('.chat-tabs').height+$('.chat').height);
 	}
 }
 
@@ -2178,6 +2198,16 @@ Application.prototype.setupChat = function() {
 
 	this.chatStore = new E2.ChatStore()
 	this.chat = new E2.Chat($('#chat'))
+	$('.chat-users').draggable({
+		containment: $('#canvas'),
+		cancel: false,
+		handle: $('.chat-tabs .nav-tabs')
+	});
+	var chatTop=$(window).height()-$('.chat-users').height()-40;
+	if (chatTop<($('.editor-header').height()+$('#breadcrumb').height())) {
+		chatTop= $('.editor-header').height() + $('#breadcrumb').height() + 40;
+	}
+	$('.chat-users').css({'top': chatTop});
 }
 
 /**

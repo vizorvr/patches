@@ -2,18 +2,20 @@
     width: @chat-width;
     height: @chat-height;
     position: absolute;
+    top: @menu-bar-height + @breadcrumb-height + 40;
     right: 30px;
-    bottom: 20px;
     background: @bg-light;
     border-radius: 6px;
     overflow: hidden;
-    z-index: 5;
+    z-index: 11;
 }
 
 .chat-users.collapsed {
     height: @blocks-header-height;
 }
-
+.chat-tabs .nav-tabs {
+    cursor: grab;    
+}
 .chat-tabs {
     width: @chat-width;
     height: @blocks-header-height;
@@ -34,18 +36,21 @@
 .chat-tabs>ul>li {
     width: 50%;  
 }
-.chat-tabs>ul>li>a {
-    padding-top:  (@blocks-header-height / 2) - (@tabs-font-size * 0.75);  
+.chat-tabs>ul>li>a, .chat-tabs>ul>li>a:active {
+    padding-top:  (@blocks-header-height / 2) - (@tabs-font-size * 0.75); 
+    background: @bg-darker;
     height: @blocks-header-height;
     outline: none;
-}
-.chat-tabs>ul>li>a:hover {
-    background: @bg-bright;
-}
-.chat-tabs>ul>li.active>a, .chat-tabs>ul>li.active>a:hover, .chat-tabs>ul>li.active>a:active, .chat-tabs>ul>li.active>a:focus {
-    background: @bg-darker;
     color: @editor-text-current;
-    border: 0;
+}
+.chat-tabs>ul>li>a:hover, .chat-tabs>ul>li>a:focus {
+    color: @editor-text-active;
+    background: @bg-darker;
+}
+.chat-tabs>ul>li.active>a {
+    background: none!important;
+    color: @editor-text-current!important;
+    border: 0!important;
 }
 
 .chat-tabs button {
@@ -57,8 +62,8 @@
     float: left;
     position: relative;
 }
-.chat-tabs button:hover {
-    background: @bg-bright;
+.chat-tabs button:hover, .chat-tabs button:active {
+    background: none;
 } 
 
 .chat-close svg {
@@ -165,4 +170,7 @@
     border: 0;
     width: @chat-width - 40;
     margin-left: 20px;
+}
+.chat .composer input:focus {
+    outline: 0;    
 }
