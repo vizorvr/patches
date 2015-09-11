@@ -864,7 +864,7 @@
 					if ( planeIntersect ) {
 
 						oldPosition.set( scope.plugin.state.position.x, scope.plugin.state.position.y, scope.plugin.state.position.z );
-						oldScale.copy( scope.object.scale );
+						oldScale.set( scope.plugin.state.scale.x, scope.plugin.state.scale.y, scope.plugin.state.scale.z );
 
 						oldRotationMatrix.extractRotation( scope.object.matrix );
 						worldRotationMatrix.extractRotation( scope.object.matrixWorld );
@@ -949,13 +949,15 @@
 				point.sub( offset );
 				point.multiply( parentScale );
 
+				var scaleMultiplier = 1
+
 				if ( scope.space === "local" ) {
 
+					var newValue = oldScale.clone()
 					if ( scope.axis === "XYZ" ) {
 
-						scale = 1 + ( ( point.y ) / 50 );
+						scale = 1 + ( ( point.y ) * scaleMultiplier );
 
-						var newValue = oldScale.clone()
 						newValue.multiplyScalar(scale)
 
 						scope.plugin.undoableSetState('scale', newValue, oldScale)
@@ -964,12 +966,11 @@
 
 						point.applyMatrix4( tempMatrix.getInverse( worldRotationMatrix ) );
 
-						var newValue = scope.object.scale.clone()
-						if ( scope.axis === "X" ) newValue.x = oldScale.x * ( 1 + point.x / 50 );
-						if ( scope.axis === "Y" ) newValue.y = oldScale.y * ( 1 + point.y / 50 );
-						if ( scope.axis === "Z" ) newValue.z = oldScale.z * ( 1 + point.z / 50 );
+						if ( scope.axis === "X" ) newValue.x = oldScale.x * ( 1 + point.x * scaleMultiplier );
+						if ( scope.axis === "Y" ) newValue.y = oldScale.y * ( 1 + point.y * scaleMultiplier );
+						if ( scope.axis === "Z" ) newValue.z = oldScale.z * ( 1 + point.z * scaleMultiplier );
 
-						scope.plugin.undoableSetState('scale', newValue, scope.object.scale.clone())
+						scope.plugin.undoableSetState('scale', newValue, oldScale)
 
 					}
 
