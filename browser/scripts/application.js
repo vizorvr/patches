@@ -672,7 +672,6 @@ Application.prototype.onCanvasMouseDown = function(e) {
 		E2.app.updateCanvas()
 	}
 
-	this.inDrag = true
 	this.updateCanvas(false)
 }
 
