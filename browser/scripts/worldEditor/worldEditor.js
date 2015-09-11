@@ -47,6 +47,19 @@ WorldEditor.prototype.update = function() {
 	var v = f(len, 0.01)
 
 	this.grid.scale(v)
+
+	// modes: 'translate'/'rotate'/'scale'
+	if (!E2.app.shift_pressed && E2.app.ctrl_pressed) {
+		this.transformControls.setMode('rotate')
+	}
+
+	if (E2.app.shift_pressed && E2.app.ctrl_pressed) {
+		this.transformControls.setMode('scale')
+	}
+
+	if (!E2.app.shift_pressed && !E2.app.ctrl_pressed) {
+		this.transformControls.setMode('translate')
+	}
 }
 
 WorldEditor.prototype.getCamera = function() {
@@ -71,10 +84,6 @@ WorldEditor.prototype.setSelection = function(selected) {
 	var numToSelect = selected.length ? 1 : 0
 
 	for (var i = 0; i < numToSelect; ++i) {
-		//var bbox = new THREE.BoxHelper(selected[i].object)
-		//bbox.material.linewidth = 2
-		//this.selectionTree.add(bbox)
-
 		this.transformControls.attach(selected[i].object)
 		this.selectionTree.add(this.transformControls)
 	}
