@@ -130,6 +130,8 @@ LoopPlugin.prototype.update_state = function()
 	}
 };
 
+LoopPlugin.prototype.variable_dt_changed = function() {}
+
 LoopPlugin.prototype.state_changed = function(ui)
 {
 	var core = this.core;
@@ -165,7 +167,7 @@ LoopPlugin.prototype.state_changed = function(ui)
 	this.graph.variables.lock(this, 'index');
 	var rdt = this.graph.variables.variables['index'].dt;
 
-	if(rdt === this.core.datatypes.ANY)
+	if (rdt.id === this.core.datatypes.ANY.id)
 		this.graph.variables.set_datatype('index', core.datatypes.FLOAT);
 };
 
