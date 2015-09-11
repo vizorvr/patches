@@ -25,7 +25,6 @@ describe('array_set', function() {
 	it('composes new arrays', function() {
 		plugin.update_input(slot(1), 0)
 		plugin.update_input(slot(2), 'bar')
-
 		assert.deepEqual(plugin.update_output(), [ 'bar' ])
 	})
 
@@ -33,25 +32,25 @@ describe('array_set', function() {
 		plugin.lsg.connection_changed = function() {
 			done()
 		}
-		plugin.connection_changed()
+		plugin.connection_changed(true, {}, {})
 	})
 
 	it('adds to existing array', function() {
-		plugin.update_input(slot(0), [ 'foo' ])
-		plugin.update_input(slot(1), 1)
-		plugin.update_input(slot(2), 'bar')
+		plugin.update_input({ name: 'array' }, [ 'foo' ])
+		plugin.update_input({ name: 'index' }, 1)
+		plugin.update_input({ name: 'item' }, 'bar')
 
 		assert.deepEqual(plugin.update_output(), ['foo','bar'])
 	})
 
 	it('adds to existing array 2', function() {
-		plugin.update_input(slot(0), [ 'foo' ])
-		plugin.update_input(slot(1), 1)
-		plugin.update_input(slot(2), 'bar')
+		plugin.update_input({ name: 'array' }, [ 'foo' ])
+		plugin.update_input({ name: 'index' }, 1)
+		plugin.update_input({ name: 'item' }, 'bar')
 
-		plugin.update_input(slot(0), plugin.update_output().slice())
-		plugin.update_input(slot(1), 2)
-		plugin.update_input(slot(2), 'baz')
+		plugin.update_input({ name: 'array' }, plugin.update_output().slice())
+		plugin.update_input({ name: 'index' }, 2)
+		plugin.update_input({ name: 'item' }, 'baz')
 
 		assert.deepEqual(plugin.update_output(), ['foo','bar','baz'])
 	})

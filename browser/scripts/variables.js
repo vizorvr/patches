@@ -126,10 +126,10 @@ Variables.prototype.deserialise = function(regs) {
 	}
 }
 
+E2.Variables = Variables
+
 if (typeof(module) !== 'undefined') {
 	module.exports.Variables = Variables
-} else {
-	E2.Variables = Variables
 }
 
 })()

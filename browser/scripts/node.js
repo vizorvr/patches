@@ -42,6 +42,9 @@ Node.prototype.set_plugin = function(plugin) {
 	this.plugin = plugin;
 	this.plugin.updated = true;
 	
+	if (!plugin.input_slots)
+		debugger;
+
 	function init_slot(slot, index, type) {
 		slot.index = index;
 		slot.type = type;

@@ -63,7 +63,7 @@ ArraySetPlugin.prototype.update_input = function(slot, data) {
 		this.index = data
 	} else {
 		console.log('ArraySetPlugin.update_input', this.index, data.length ? data[0] : data, this.array)
-		this.array[this.index] = data.length ? data[0] : data
+		this.array[this.index] = data.constructor === Array ? data[0] : data
 	}
 }
 

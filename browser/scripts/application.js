@@ -1004,14 +1004,20 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
 		var dc = doc.conns[i]
+
+		var destNode = ag.findNodeByUid(dc.dst_nuid)
+		if (!destNode)
+			continue;
+
+		var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
+		var slot = slots[dc.dst_slot]
+
+		if (!slot)
+			continue;
+	
 		if (dc.src_nuid === undefined || dc.dst_nuid === undefined) {
 			// not a valid connection, clear it and skip it
 			if (dc.dst_nuid !== undefined) {
-				var destNode = ag.findNodeByUid(dc.dst_nuid)
-
-				var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
-				var slot = slots[dc.dst_slot]
-				
 				slot.is_connected = false
 				slot.connected = false
 				destNode.inputs_changed = true

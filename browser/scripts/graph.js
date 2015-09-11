@@ -263,18 +263,18 @@ Graph.prototype.deserialise = function(d) {
 	var i, len
 
 	for(i = 0, len = d.nodes.length; i < len; i++) {
-		var n = new Node(null, null, null, null);
+		var n = new Node()
 		
 		if (n.deserialise(this.uid, d.nodes[i]))
 			this.registerNode(n)
 	}
 
-	this.connections = [];
+	this.connections = []
 
 	for(i = 0, len = d.conns.length; i < len; i++) {
-		var c = new Connection(null, null, null, null);
-		c.deserialise(d.conns[i]);
-		this.connections.push(c);
+		var c = new Connection()
+		c.deserialise(d.conns[i])
+		this.connections.push(c)
 	}
 	
 	if (d.registers)
