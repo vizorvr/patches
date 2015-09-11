@@ -14,13 +14,17 @@ var ArrayLengthPlugin = E2.plugins.array_length = function ArrayLengthPlugin(cor
 		}
 	]
 
-	this.array = []
+	this.length = 0
+}
+
+ArrayLengthPlugin.prototype.reset = function() {
+	this.length = 0
 }
 
 ArrayLengthPlugin.prototype.update_input = function(slot, data) {
-	this.array = data
+	this.length = data ? data.length : 0
 }
 
 ArrayLengthPlugin.prototype.update_output = function() {
-	return this.array.length
+	return this.length
 }

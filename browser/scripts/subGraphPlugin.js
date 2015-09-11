@@ -170,11 +170,17 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, proxyNode, othe
 		if (on) {
 			// something connected to the proxy
 			// assume the dt and arrayness of the other end 
-			proxySlot.dt = otherSlot.dt
-			proxySlot.array = otherSlot.array
-			proxyNode.plugin.data = core.get_default_value(otherSlot.dt)
-			externalSlot.dt = otherSlot.dt
-			externalSlot.array = otherSlot.dt
+			if (proxySlot.dt.id === core.datatypes.ANY.id) {
+				proxySlot.dt = otherSlot.dt
+	
+				if (otherSlot.array)
+					proxySlot.array = otherSlot.array
+	
+				proxyNode.plugin.data = core.get_default_value(otherSlot.dt)
+				externalSlot.dt = otherSlot.dt
+				externalSlot.array = otherSlot.dt
+			}
+
 		} else if (lastRemoved) {
 			// last connection was removed from proxy
 			var parentGraphConnections = node.parent_graph.connections

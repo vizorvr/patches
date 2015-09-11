@@ -98,7 +98,8 @@ Variables.prototype.serialise = function(d) {
 		dregs.push({
 			id: id,
 			dt: regs[id].dt.id,
-			array: regs[id].array
+			array: regs[id].array,
+			connections: regs[id].connections
 		})
 	}
 
@@ -118,8 +119,8 @@ Variables.prototype.deserialise = function(regs) {
 			array: r.array,
 			value: null,
 			users: [],
-			ref_count: 1,
-			connections: 0
+			connections: regs[i].connections || 0,
+			ref_count: 0
 		}
 
 		this.write(r.id, this.core.get_default_value(r_dt))
