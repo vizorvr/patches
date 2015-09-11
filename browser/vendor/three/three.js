@@ -8319,38 +8319,6 @@ THREE.Object3D.prototype = {
 
 	},
 
-	updateMatrixWorld: function ( force ) {
-
-		if ( this.matrixAutoUpdate === true ) this.updateMatrix();
-
-		if ( this.matrixWorldNeedsUpdate === true || force === true ) {
-
-			if ( this.parent === null ) {
-
-				this.matrixWorld.copy( this.matrix );
-
-			} else {
-
-				this.matrixWorld.multiplyMatrices( this.parent.matrixWorld, this.matrix );
-
-			}
-
-			this.matrixWorldNeedsUpdate = false;
-
-			force = true;
-
-		}
-
-		// update children
-
-		for ( var i = 0, l = this.children.length; i < l; i ++ ) {
-
-			this.children[ i ].updateMatrixWorld( force );
-
-		}
-
-	},
-
 	toJSON: function ( meta ) {
 
 		var isRootObject = ( meta === undefined );
@@ -8435,6 +8403,38 @@ THREE.Object3D.prototype = {
 
 			}
 			return values;
+
+		}
+
+	},
+
+	updateMatrixWorld: function ( force ) {
+
+		if ( this.matrixAutoUpdate === true ) this.updateMatrix();
+
+		if ( this.matrixWorldNeedsUpdate === true || force === true ) {
+
+			if ( this.parent === null ) {
+
+				this.matrixWorld.copy( this.matrix );
+
+			} else {
+
+				this.matrixWorld.multiplyMatrices( this.parent.matrixWorld, this.matrix );
+
+			}
+
+			this.matrixWorldNeedsUpdate = false;
+
+			force = true;
+
+		}
+
+		// update children
+
+		for ( var i = 0, l = this.children.length; i < l; i ++ ) {
+
+			this.children[ i ].updateMatrixWorld( force );
 
 		}
 

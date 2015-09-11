@@ -17,6 +17,13 @@ function ThreeObject3DPlugin(core) {
 		name: 'object3d',
 		dt: core.datatypes.OBJECT3D
 	}]
+
+
+	this.state = {
+		position: new THREE.Vector3(0, 0, 0),
+		rotation: new THREE.Vector3(0, 0, 0),
+		scale: new THREE.Vector3(1, 1, 1)
+	}
 }
 
 ThreeObject3DPlugin.prototype = Object.create(Plugin.prototype)
@@ -26,6 +33,10 @@ ThreeObject3DPlugin.prototype.reset = function() {
 
 	if (!this.object3d)
 		this.object3d = new THREE.Object3D()
+
+	this.object3d.position.copy(this.state.position)
+	this.object3d.rotation.copy(this.state.rotation)
+	this.object3d.scale.copy(this.state.scale)
 }
 
 ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
@@ -37,9 +48,18 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 	var that = this
 
 	var handlers = [
-		function() { that.object3d.position.set(data.x, data.y, data.z)},
-		function() { that.object3d.rotation.set(data.x, data.y, data.z) },
-		function() { that.object3d.scale.set(data.x, data.y, data.z) },
+		function() {
+			that.object3d.position.set(data.x, data.y, data.z)
+			that.state.position.set(data.x, data.y, data.z)
+		},
+		function() {
+			that.object3d.rotation.set(data.x, data.y, data.z)
+			that.state.rotation.set(data.x, data.y, data.z)
+		},
+		function() {
+			that.object3d.scale.set(data.x, data.y, data.z)
+			that.state.scale.set(data.x, data.y, data.z)
+		},
 		function() { that.object3d.visible = data },
 		function() { that.object3d.castShadow = data },
 		function() { that.object3d.receiveShadow = data }
@@ -60,5 +80,7 @@ ThreeObject3DPlugin.prototype.update_output = function() {
 	return this.object3d
 }
 
-ThreeObject3DPlugin.prototype.state_changed = function() {}
+ThreeObject3DPlugin.prototype.state_changed = function() {
+
+}
 
