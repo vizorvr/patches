@@ -44,8 +44,15 @@
 	}
 
 	ThreeUVModifierPlugin.prototype.update_input = function(slot, data) {
-		if (slot.index === 0) { // texture
-			this.texture = data.clone()
+		if (slot.index === 0 && data) { // texture
+			if (!data.map) {
+				// store a reference - if the map is not there, the texture
+				// hasn't loaded
+				this.pendingTexture = data
+			}
+			else {
+				this.texture = data.clone()
+			}
 		}
 		else if (slot.index === 1) { // u offset
 			this.uOffset = data
@@ -72,10 +79,18 @@
 	}
 
 	ThreeUVModifierPlugin.prototype.update_state = function() {
-		if (this.dirty) {
+		if (this.pendingTexture && this.pendingTexture.image) {
+			this.texture = this.pendingTexture.clone()
+			this.pendingTexture = undefined
+			this.dirty = true
+		}
+
+		if (this.dirty && this.texture) {
 			this.texture.offset.set(this.uOffset, this.vOffset)
 			this.texture.repeat.set(this.uRepeat, this.vRepeat)
 			this.texture.needsUpdate = true
+
+			this.dirty = false
 		}
 	}
 
