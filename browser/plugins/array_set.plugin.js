@@ -27,7 +27,7 @@ var ArraySetPlugin = E2.plugins.array_set = function ArraySetPlugin(core, node) 
 	]
 
 	this.lsg = new LinkedSlotGroup(core, node, 
-		[this.input_slots[2]],
+		[this.input_slots[0]],
 		[this.output_slots[0]])
 
 	this.array = []
