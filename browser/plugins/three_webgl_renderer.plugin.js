@@ -138,9 +138,7 @@
 
 			// only intersect scene.children[0] - children [1] is the overlays
 			var intersects = this.raycaster.intersectObjects(this.scene.children[0].children, /*recursive = */ true)
-
-			console.log('intersects ', intersects.length)
-
+			
 			for (var i = 0; i < Math.min(intersects.length, 1); i++) {
 				if (intersects[i].object.backReference !== undefined) {
 					E2.app.clearSelection()
