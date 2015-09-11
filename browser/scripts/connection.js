@@ -86,9 +86,6 @@ Connection.prototype.signal_change = function(on) {
 	
 	if (srcNode.plugin.connection_changed) {
 		srcNode.plugin.connection_changed(on, this, this.src_slot)
-		
-		// if (srcNode.plugin.reset)
-		// 	srcNode.plugin.reset()
 	}
 	
 	var dstNode = this.dst_node
