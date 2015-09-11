@@ -6,6 +6,10 @@
 @mid-cell-width: 550px;
 @right-cell-width: 268px;
 
+@tablet:      ~"only screen and (min-width: 720px) and (max-width: 1150px)";
+@desktop:     ~"only screen and (min-width: 1150px) and (max-width: 1365px)";
+@desktop-xl:  ~"only screen and (min-width: 1366px)";
+
 //== Colors
 //
 //## Gray and brand colors for use across Bootstrap.
@@ -27,16 +31,27 @@
 @brand-danger:          #f88;
 
 @bg-bright:             #0597cd;
-@bg-light:              #343c4f;
-@bg-dark:               #313643;
-@bg-darker:             #262d3d;
+@bg-light:              #272c3d;
+@bg-dark:               #1f2331;
+@bg-darker:             #1e2331;
 
 @editor-text-default:   #7e8dab;
 @editor-text-hover:     #afbfdf;
 @editor-text-active:    #ffffff;
+@editor-text-current:   #637088;
+
+@chat-text-color:       #BCCBE5;
 
 // dimensions
-@menu-bar-height: 84px;
+@menu-bar-height: 70px;
+@breadcrumb-height: 28px;
+
+@chat-width: 252px;
+@chat-height: 370px;
+@blocks-header-height: 39px;
+@chat-composer-height: 54px;
+
+@tabs-font-size: 14px;
 
 //== Scaffolding
 //
@@ -538,6 +553,12 @@
 //** Tooltip arrow color
 @tooltip-arrow-color:         @tooltip-bg;
 
+@tooltip-width: 320px;
+@tooltip-min-height: 70px;
+@tooltip-text-bg: #2d4f77;
+@tooltip-glyph-bg: #385a8a;
+@tooltip-text-color: #fff;
+@tooltip-warning-color: #ef4835;
 
 //== Popovers
 //

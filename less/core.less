@@ -57,24 +57,20 @@ table
 	margin-top: 20px;
 	vertical-align: center;
 }
+
 .editor-header {
-    height: 84px;
+    height: @menu-bar-height;
     width: 100%;
     position: relative;
-    transition: height 0.5s ease;
-    overflow: visible;
 }
 
 .menu-bar {
     font-family: @font-family-sans-serif2;
     height: @menu-bar-height;
     background-color: @bg-light;
-    position: absolute;
+    position: relative;
     width: 100%;
-    height: 84px;
-    top: 0;
-    left: 0;
-    z-index: 10;
+    min-width: 992px;
 }
     
 #top-header-logo {
@@ -84,18 +80,27 @@ table
 }
 
 #top-header-logo svg {
-   fill: #fff;
+   fill: @editor-text-default;
 }
 
 ul.iconic-nav {
-    margin: 0 2%;
+    margin: 0 2% 0 1%;
+    @media @desktop-xl {
+        margin: 0 2%;
+    };
+    @media @desktop {
+        margin: 0 1% 0 0;
+    };
+    @media @tablet {
+        margin: 0;
+    };
 }
     
 ul.iconic-nav, ul.iconic-nav>li {
     height: @menu-bar-height;
     display: block;
     float: left;
-    padding: 0 8px;
+    padding: 0 7px;
 }
 ul.iconic-nav>li {
     min-width: 36px;
@@ -135,15 +140,15 @@ ul.iconic-nav>li>button#btn-zoom-out {
     left: 8px;
 } 
 ul.iconic-nav>li>button svg {
-    width: 36px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     display: block;
     margin: 0 auto;
     stroke: @editor-text-default;
     overflow: visible;
 }
 ul.iconic-nav>li>button svg.icon-zoom {
-    width: 52px;    
+    width: 44px;    
 }
 ul.iconic-nav>li>button span {
     font-weight: 600;
@@ -180,28 +185,23 @@ ul.iconic-nav>li.open>button span {
 }
 
 #breadcrumb {
-    height: 40px;
+    height: @breadcrumb-height;
     width: 100%;
-    position: absolute!important;
+    position: relative!important;
     background: @bg-dark!important;
-    color: #909fb9;
+    color: @editor-text-default;
     font-size: 14px!important;
     margin: 0!important;
     padding: 0!important;
     opacity: 1!important;
-    top: @menu-bar-height - 40!important;
-    z-index: 9!important;
     text-align: center;
-    transition: top 0.5s ease;
-}
-
-.editor-header:hover #breadcrumb {
-    top: @menu-bar-height!important;    
+    top: auto!important;
+    z-index: 10!important;
 }
 
 #breadcrumb span {
     line-height: 1.5;
-    margin: 10px auto;
+    margin: 5px auto;
     display: inline-block;
 }
 
@@ -296,6 +296,7 @@ ul.iconic-nav>li.open>button span {
 	border: 0 none !important;
 	background: @bg-light;
 	overflow: hidden;
+	z-index: 11;
 }
 
 .dropdown-menu > li > a {
@@ -312,10 +313,41 @@ ul.iconic-nav>li.open>button span {
 	padding-left: 10px;
 	padding-right: 10px;
 }
+
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > a:active {
     background: @bg-bright;
     color: #fff;
-    }
+}
+
+.nav-tabs > li {
+    text-align: center;    
+}
+
+.nav-tabs > li > a {
+   border-radius: 0; 
+   border: 0;
+   margin: 0;
+}
+.nav-tabs > li:active {
+    background: @bg-darker;
+    color: @editor-text-current;
+}
+
+.toggle-button svg {
+    width: 16px;
+    height: 16px;
+    fill: #e8e8e8;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -8px 0 0 -8px;
+}
+.toggle-button:hover svg {
+    fill: #ffffff;    
+}
+.collapsed .toggle-button {
+    transform: rotate(180deg); 
+}
 
 .nav > li > a:hover, .nav > li > a:focus {
 	background: #3c3c3c;
