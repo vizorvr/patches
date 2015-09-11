@@ -9,7 +9,7 @@ var VariableLocalWrite = E2.plugins.variable_local_write = function(core, node) 
 	this.node = node;
 	
 	if(!node.title)
-		this.old_title = node.title = 'reg_' + (node.parent_graph.variables.count() + 1);
+		this.old_title = node.title = 'Variable ' + (node.parent_graph.variables.count() + 1);
 	else
 		this.old_title = node.title;
 };

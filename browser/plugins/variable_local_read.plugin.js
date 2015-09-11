@@ -10,7 +10,7 @@ var VariableLocalRead = E2.plugins.variable_local_read = function(core, node) {
 	this.data = null
 	
 	if (!node.title)
-		this.old_title = node.title = 'reg_' + (node.parent_graph.variables.count() + 1)
+		this.old_title = node.title = 'Variable ' + (node.parent_graph.variables.count() + 1)
 	else
 		this.old_title = node.title
 }
