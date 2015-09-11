@@ -5,7 +5,7 @@ function Variables(core) {
 	this.variables = {}
 }
 
-Variables.prototype.lock = function(plugin, name) {
+Variables.prototype.lock = function(plugin, name, connections) {
 	if (name in this.variables)
 		this.variables[name].ref_count++
 	else
@@ -14,7 +14,7 @@ Variables.prototype.lock = function(plugin, name) {
 			value: null,
 			users: [],
 			ref_count: 1,
-			connections: 0
+			connections: this.connections + (connections ? connections : 0)
 		}
 	
 	var u = this.variables[name].users
@@ -98,8 +98,7 @@ Variables.prototype.serialise = function(d) {
 		dregs.push({
 			id: id,
 			dt: regs[id].dt.id,
-			array: regs[id].array,
-			connections: regs[id].connections
+			array: regs[id].array
 		})
 	}
 
@@ -119,7 +118,7 @@ Variables.prototype.deserialise = function(regs) {
 			array: r.array,
 			value: null,
 			users: [],
-			connections: regs[i].connections || 0,
+			connections: 0,
 			ref_count: 0
 		}
 

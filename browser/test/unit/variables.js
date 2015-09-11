@@ -50,7 +50,7 @@ describe('Variables', function() {
 
 	it('clears dt and arrayness on d/c', function() {
 		vars.lock(plugin, 'var1')
-		vars.set_datatype('var1', 'dt', true)
+		vars.set_datatype('var1', E2.dt.ANY, true)
 		vars.connection_changed('var1', true)
 		vars.connection_changed('var1', false)
 		assert.equal(vars.variables.var1.dt, E2.dt.ANY)

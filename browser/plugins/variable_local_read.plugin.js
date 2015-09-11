@@ -39,19 +39,19 @@ VariableLocalRead.prototype.variable_updated = function(value) {
 	this.data = value
 }
 
-VariableLocalRead.prototype.connection_changed = function(on, conn, slot) {
+VariableLocalRead.prototype.connection_changed = function(on, conn) {
 	var reg_conn_count = this.variables.connection_changed(this.node.title, on)
 	
 	if(on && reg_conn_count === 1 && this.dt.id === E2.dt.ANY.id)
 		this.variables.set_datatype(this.node.title, conn.dst_slot.dt, conn.dst_slot.array)
 }
 
-VariableLocalRead.prototype.update_output = function(slot) {
+VariableLocalRead.prototype.update_output = function() {
 	return this.data
 }
 
 VariableLocalRead.prototype.target_reg = function(id) {
-	this.variables.lock(this, id)
+	this.variables.lock(this, id, this.node.getConnections().length)
 	
 	var r = this.variables.variables[id]
 
