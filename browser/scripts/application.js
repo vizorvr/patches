@@ -1183,6 +1183,11 @@ Application.prototype.toggleLeftPane = function() {
 	this.onWindowResize();
 };
 
+Application.prototype.isVRCameraActive = function() {
+	//console.log('noodles:', this.noodlesVisible, 'we: ', E2.core.worldEditor)
+	return !(this.noodlesVisible || E2.core.worldEditor.isActive())
+}
+
 Application.prototype.toggleFullscreen = function() {
 	E2.core.emit('fullScreenChangeRequested')
 }
@@ -2282,6 +2287,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		premultipliedAlpha: true,
 		preserveDrawingBuffer: false
 	}
+
+	E2.core.worldEditor = new WorldEditor()
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
 	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})

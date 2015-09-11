@@ -86,7 +86,9 @@ Player.prototype.on_update = function() {
 	
 	if(this.core.update(this.abs_time, delta_t) && E2.app.updateCanvas)
 		E2.app.updateCanvas(false)
-	
+
+	E2.core.worldEditor.update()
+
 	this.last_time = time
 	this.abs_time += delta_t
 	this.frames++
