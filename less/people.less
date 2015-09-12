@@ -6,7 +6,7 @@
 #peopleTab .meta {
     background: @bg-light;
     width: @chat-width; 
-    color: @chat-text-color;
+    color: @editor-text-hover;
     margin: 10px 0;
 }
 #peopleTab .meta span {
@@ -27,6 +27,7 @@
     border-top: 1px solid @bg-darker;
     padding: 12px 20px;
     position: relative;
+    width: @floating-box-width;
 }
 .graph-users li .icon {
 	background-image: url('/images/alpha_chat_icon.png');
@@ -47,7 +48,7 @@
 .graph-users li .user-info .name {
     font-weight: 700;  
     font-size: 14px;
-    color: #ffffff;
+    color: @editor-text-hover;
     display: block;
     width: 100%;
 }

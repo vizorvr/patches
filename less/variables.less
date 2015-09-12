@@ -31,7 +31,7 @@
 @brand-danger:          #f88;
 
 @bg-bright:             #0597cd;
-@bg-light:              #272c3d;
+@bg-light:              #262c3d;
 @bg-dark:               #1f2331;
 @bg-darker:             #1e2331;
 
@@ -39,19 +39,22 @@
 @editor-text-hover:     #afbfdf;
 @editor-text-active:    #ffffff;
 @editor-text-current:   #637088;
+@editor-tect-inactive:  #515c75;
 
 @chat-text-color:       #BCCBE5;
 
 // dimensions
-@menu-bar-height: 70px;
-@breadcrumb-height: 28px;
+@menu-bar-height:       70px;
+@breadcrumb-height:     28px;
 
-@chat-width: 252px;
-@chat-height: 370px;
-@blocks-header-height: 39px;
-@chat-composer-height: 54px;
+@floating-box-width:    252px;
 
-@tabs-font-size: 14px;
+@chat-width:            252px;
+@chat-height:           370px;
+@blocks-header-height:  39px;
+@chat-composer-height:  54px;
+
+@tabs-font-size:        14px;
 
 //== Scaffolding
 //
@@ -730,7 +733,7 @@
 //
 //##
 
-@panel-bg:                    lighten(@body-bg, 3%);
+@panel-bg:                    @bg-light;
 @panel-body-padding:          15px;
 @panel-heading-padding:       10px 15px;
 @panel-footer-padding:        @panel-heading-padding;
@@ -738,15 +741,15 @@
 
 //** Border color for elements within panels
 @panel-inner-border:          rgba(0, 0, 0, 0.6);
-@panel-footer-bg:             lighten(@body-bg, 10%);
+@panel-footer-bg:             @bg-dark;
 
-@panel-default-text:          @text-color;
+@panel-default-text:          @editor-text-default;
 @panel-default-border:        rgba(0, 0, 0, 0.6);
-@panel-default-heading-bg:    @panel-footer-bg;
+@panel-default-heading-bg:    @bg-light;
 
 @panel-primary-text:          #fff;
-@panel-primary-border:        @panel-default-border;
-@panel-primary-heading-bg:    @brand-primary;
+@panel-primary-border:        @bg-darker;
+@panel-primary-heading-bg:    @bg-light;
 
 @panel-success-text:          @state-success-text;
 @panel-success-border:        @panel-default-border;
@@ -755,7 +758,7 @@
 @panel-info-text:             @state-info-text;
 @panel-info-border:           @panel-default-border;
 @panel-info-heading-bg:       @state-info-bg;
-@panel-heading-bg-color: 			  #554457;
+@panel-heading-bg-color:      @bg-light;
 
 @panel-warning-text:          @state-warning-text;
 @panel-warning-border:        @panel-default-border;

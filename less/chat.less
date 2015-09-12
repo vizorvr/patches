@@ -1,82 +1,14 @@
 .chat-users {
-    width: @chat-width;
     height: @chat-height;
-    position: absolute;
-    top: @menu-bar-height + @breadcrumb-height + 40;
     right: 30px;
-    background: @bg-light;
-    border-radius: 6px;
-    overflow: hidden;
     z-index: 11;
 }
 
 .chat-users.collapsed {
     height: @blocks-header-height;
 }
-.chat-tabs .nav-tabs {
-    cursor: grab;    
-}
 .chat-tabs {
     width: @chat-width;
-    height: @blocks-header-height;
-    position: relative;
-    font-size: @tabs-font-size;
-    font-weight: 600;
-    color: #ffffff;
-    border-bottom: 1px solid @bg-darker;
-}
-.chat-tabs>ul {
-    width: @chat-width - (@blocks-header-height * 2);
-    height: @blocks-header-height;
-    position: relative;
-    float: left;
-    border: 0;
-}
-
-.chat-tabs>ul>li {
-    width: 50%;  
-}
-.chat-tabs>ul>li>a, .chat-tabs>ul>li>a:active {
-    padding-top:  (@blocks-header-height / 2) - (@tabs-font-size * 0.75); 
-    background: @bg-darker;
-    height: @blocks-header-height;
-    outline: none;
-    color: @editor-text-current;
-}
-.chat-tabs>ul>li>a:hover, .chat-tabs>ul>li>a:focus {
-    color: @editor-text-active;
-    background: @bg-darker;
-}
-.chat-tabs>ul>li.active>a {
-    background: none!important;
-    color: @editor-text-current!important;
-    border: 0!important;
-}
-
-.chat-tabs button {
-    width: @blocks-header-height;  
-    background: none;
-    border: 0 none;
-    border-radius: 0;
-    height: @blocks-header-height;
-    float: left;
-    position: relative;
-}
-.chat-tabs button:hover, .chat-tabs button:active {
-    background: none;
-} 
-
-.chat-close svg {
-    width: 16px;
-    height: 16px;
-    fill: @editor-text-default;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    margin: -8px 0 0 -8px;
-}
-.chat-close:hover svg {
-    fill: #ffffff;  
 }
 
 .chat {
@@ -99,8 +31,7 @@
 	margin-left: 8px;
 	font-size: 10px;
 	font-weight: 400;
-	text-transform: uppercase;
-	color: #909fb9;
+	color: @editor-text-default;
 }
 
 .chat .message {
@@ -136,13 +67,13 @@
 	color: white;
 	font-weight: 600;
 	font-size: 14px;
-	color: #bccbe5;
+	color: @editor-text-hover;
 	line-height: 1;
 }
 
 .chat .message .text {
     font-size: 14px;
-    color: #bccbe5;
+    color: @editor-text-hover;
     font-weight: 400;
 }
 

@@ -176,9 +176,11 @@ ul.iconic-nav>li>button:active span {
 ul.iconic-nav>li>button:active svg {
     stroke: @editor-text-active;   
 }
+ul.iconic-nav>li.open>button svg {
+    stroke: @editor-text-active;
+}
 ul.iconic-nav>li.open>button .icon-file-menu {
     transform: rotate(180deg);
-    stroke: @editor-text-active;
 }
 ul.iconic-nav>li.open>button span {
     color:  @editor-text-active;  
@@ -189,7 +191,7 @@ ul.iconic-nav>li.open>button span {
     width: 100%;
     position: relative!important;
     background: @bg-dark!important;
-    color: @editor-text-default;
+    color: @editor-tect-inactive;
     font-size: 14px!important;
     margin: 0!important;
     padding: 0!important;
@@ -201,7 +203,7 @@ ul.iconic-nav>li.open>button span {
 
 #breadcrumb span {
     line-height: 1.5;
-    margin: 5px auto;
+    margin: 4px auto;
     display: inline-block;
 }
 
@@ -209,7 +211,8 @@ ul.iconic-nav>li.open>button span {
     display: inline-block;
     width: 19px;
     height: 10px;
-    stroke: #909fb9;
+    margin-bottom: -1px;
+    stroke: @editor-tect-inactive;
 }
 
 #top-header-logo svg {
@@ -220,6 +223,7 @@ ul.iconic-nav>li.open>button span {
     left: 45px;
     top: 50%;
     margin-top: -12px; 
+    
 }
 
 .info-pane {
@@ -302,7 +306,7 @@ ul.iconic-nav>li.open>button span {
 .dropdown-menu > li > a {
 	padding: 12px 20px !important;
 	cursor: pointer;
-	border-top: 1px solid #313644 !important;
+	border-top: 1px solid @bg-darker !important;
 	color: #909fb9;
 }
 
@@ -319,21 +323,73 @@ ul.iconic-nav>li.open>button span {
     color: #fff;
 }
 
+.draggable, #dragHelper {
+    cursor: grab;    
+}
+.block-header {
+    width: @chat-width;
+    height: @blocks-header-height;
+    position: relative;
+    font-size: @tabs-font-size;
+    font-weight: 600;
+    color: #ffffff;
+    border-bottom: 1px solid @bg-darker;    
+}
+
+.nav-tabs {
+    height: @blocks-header-height;
+    position: relative;
+    display: table;
+    float: left;
+    border: 0;    
+    width: @floating-box-width - (@blocks-header-height * 2);
+}
+
 .nav-tabs > li {
-    text-align: center;    
+    text-align: center;  
+    display: table-cell;
+    float: none;
 }
 
 .nav-tabs > li > a {
    border-radius: 0; 
    border: 0;
    margin: 0;
-}
-.nav-tabs > li:active {
-    background: @bg-darker;
-    color: @editor-text-current;
+   padding: 16px;
 }
 
-.toggle-button svg {
+.nav-tabs>li>a, .nav-tabs>li>a:active {
+    padding-top:  (@blocks-header-height / 2) - (@tabs-font-size * 0.75) !important; 
+    background: @bg-darker !important;
+    height: @blocks-header-height;
+    outline: none;
+    color: @editor-tect-inactive;
+}
+.nav-tabs>li>a:hover, .nav-tabs>li>a:focus {
+    color: @editor-text-active;
+    background: @bg-darker;
+}
+.nav-tabs>li.active>a {
+    background: none!important;
+    color: @editor-text-default!important;
+    border: 0!important;
+}
+
+
+.block-header>button {
+    width: @blocks-header-height;  
+    background: none;
+    border: 0 none;
+    border-radius: 0;
+    height: @blocks-header-height;
+    float: left;
+    position: relative;
+}
+.block-header>button:hover, .block-header>button:active {
+    background: none;
+}
+
+.block-header>button svg {
     width: 16px;
     height: 16px;
     fill: @editor-text-default;
@@ -342,15 +398,26 @@ ul.iconic-nav>li.open>button span {
     top: 50%;
     margin: -8px 0 0 -8px;
 }
-.toggle-button:hover svg {
+.block-header>button:hover svg {
     fill: #ffffff;    
 }
 .collapsed .toggle-button {
     transform: rotate(180deg); 
 }
 
-.nav > li > a:hover, .nav > li > a:focus {
-	background: #3c3c3c;
+.floating-box {
+    position: absolute;
+    top: @menu-bar-height + @breadcrumb-height + 40;
+    border-radius: 6px;
+    background: @bg-light;
+    width: @floating-box-width;
+    overflow: hidden;
+}
+
+.library-block {
+    left: 30px;
+    height: 370px;
+    z-index: 11;
 }
 
 #load-spinner {
@@ -646,13 +713,6 @@ ul.iconic-nav>li.open>button span {
 	position: absolute;
 }
 
-.nav li a {
-	padding-left: 5px;
-	padding-right: 5px;
-	padding-top: 5px;
-	padding-bottom: 5px;
-}
-
 .nav li a h4 {
 	color: @gray-light;
 	margin-top: 3px;
@@ -755,4 +815,65 @@ ul.iconic-nav>li.open>button span {
 
 .bootbox-body h4 {
 	line-height: 2;
+}
+
+.searchbox {
+    background: @bg-darker;  
+    height: 40px;
+    width: 100%;
+    position: relative;
+}
+
+.searchbox svg {
+    position: relative;
+    margin-left: 14px;
+    width: 40px;
+    height: 40px;
+    float: left;
+    stroke: @editor-text-default;
+}
+
+#presetSearch {
+    background: @bg-darker;  
+    border: 0;
+    outline: 0;
+    width: @floating-box-width - 80;
+    float: left;
+    color: @editor-text-hover;
+    font-size: 12px;
+    font-weight: 700;
+    height: 18px;
+    margin-left: 10px;
+    margin-top: 11px;
+    padding: 0;
+    -moz-appearance:    textfield;
+    -webkit-appearance: textfield;
+    appearance: textfield;
+    box-shadow: 0;
+}
+
+#presetSearch::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: @editor-text-hover;
+}
+#presetSearch:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color: @editor-text-hover;
+   opacity:  1;
+}
+#presetSearch::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color: @editor-text-hover;
+   opacity:  1;
+}
+#presetSearch:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color: @editor-text-hover;
+}
+
+.panel-heading {
+    background: @bg-light!important;    
+}
+
+.panel {
+    border-bottom: 1px solid @bg-darker!important;
+    border-top: 0!important;
+    border-left: 0!important;
+    border-right: 0!important;
 }

@@ -542,6 +542,7 @@ Application.prototype.executeNodeDrag = function(nodes, conns, dx, dy) {
 		var style = node.ui.dom[0].style
 		style.left = node.x + 'px'
 		style.top = node.y + 'px'
+		
 	}
 
 	var cl = conns.length
@@ -1101,10 +1102,7 @@ Application.prototype.calculateCanvasArea = function() {
 	if (!isFullscreen) {
 		width = $(window).width() -
 			$('#mid-pane').outerWidth(true) - 
-			$('#left-nav').outerWidth(true) - 
-			$('.mid-pane-handle').outerWidth(true) - 
-			$('#left-pane').outerWidth(true) - 
-			$('.left-pane-handle').outerWidth(true)
+			$('.mid-pane-handle').outerWidth(true)
 
 		height = $(window).height() -
 			$('.editor-header').outerHeight(true) - $('#breadcrumb').outerHeight(true);
@@ -1153,7 +1151,11 @@ Application.prototype.onWindowResize = function() {
 		$('#left-nav .nav-tabs').outerHeight(true) -
 		$('#left-nav .tab-content .searchbox').outerHeight(true)
 	);
-
+	
+	$('#left-nav').movable({
+		handle: $('#left-nav .block-header')
+	});
+	
 	E2.core.emit('resize')
 
 	this.updateCanvas(true)
@@ -1433,9 +1435,17 @@ Application.prototype.onOpenClicked = function() {
 Application.prototype.onChatDisplayClicked = function() {
 	if (!$('.chat-users').hasClass('collapsed')) {
 		$('.chat-users').toggle();
+		if ($('#peopleTab').hasClass('active') && $('.chat-users').is(':visible')) {
+			E2.app.onPeopleListChanged();
+		};
 	}
 	else {
-		$('.chat-users').removeClass('collapsed').height($('.chat-tabs').height+$('.chat').height)
+		if ($('#peopleTab').hasClass('active')) {
+			$('.chat-users').removeClass('collapsed').show();
+			E2.app.onPeopleListChanged();
+		} else {
+			$('.chat-users').removeClass('collapsed').show().height($('.chat-tabs').height+$('.chat').height)
+		};
 	}
 }
 
@@ -1855,6 +1865,7 @@ Application.prototype.setupPeopleEvents = function() {
 	var lastMovementTimeouts = this.lastMovementTimeouts = {}
 
 	this.peopleStore.on('removed', function(uid) {
+		E2.app.onPeopleListChanged('removed')
 		if (uid === that.channel.uid)
 			return;
 
@@ -1864,6 +1875,7 @@ Application.prototype.setupPeopleEvents = function() {
 	})
 
 	this.peopleStore.on('added', function(person) {
+		E2.app.onPeopleListChanged('added')
 		if (person.uid === that.channel.uid)
 			return;
 
@@ -1882,6 +1894,8 @@ Application.prototype.setupPeopleEvents = function() {
 
 		if (person.activeGraphUid !== E2.core.active_graph.uid)
 			$cursor.hide()
+			
+		
 	})
 
 	this.peopleStore.on('mouseMoved', function(person) {
@@ -1988,7 +2002,12 @@ Application.prototype.onCamViewClicked = function() {
 
 Application.prototype.onChatToggleClicked = function() {
 	if ($('.chat-users').hasClass('collapsed')) {
-		$('.chat-users').removeClass('collapsed').height($('.chat-tabs').height);
+		if ($('#peopleTab').hasClass('active')) {
+			$('.chat-users').removeClass('collapsed');
+			E2.app.onPeopleListChanged();
+		} else {
+			$('.chat-users').removeClass('collapsed').height($('.chat-tabs').height);
+		}
 	} else {
 		$('.chat-users').addClass('collapsed').height($('.chat-tabs').height+$('.chat').height);
 	}
@@ -1996,6 +2015,49 @@ Application.prototype.onChatToggleClicked = function() {
 
 Application.prototype.onChatCloseClicked = function() {
 	$('.chat-users').hide();
+}
+Application.prototype.onChatTabClicked = function() {
+	if (!$(this).parent().hasClass('active')) {
+		$('.chat-users').height($('.chat-tabs').height() + $('#chat').height());
+	}
+	if ($('.chat-users').hasClass('collapsed')) {
+		$('.chat-users').removeClass('collapsed')
+	};
+	return true;
+}
+
+Application.prototype.onPeopleListChanged = function(storeAction) { 
+	console.log('fired');
+	if ($('.chat-users').is(':visible') && !$('.chat-users').hasClass('collapsed') && $('#peopleTab').is(':visible')) {
+		var itemHeight = $('.graph-users>li:first-child').outerHeight(true);
+		var visibleItems = 3;
+		var listChange = 0;  
+		if (storeAction==='added') {
+			listChange = 1;
+		} else if (storeAction==='removed') {
+			listChange = -1;
+		}
+		if ($('.graph-users>li').length + listChange <=visibleItems) {
+			$('.chat-users').height($('.chat-tabs').height() + $('.peopleList .meta').outerHeight(true) + itemHeight * ($('.graph-users>li').length + listChange));
+			$('.people-scroll').height($('.chat-users').height() - $('.chat-tabs').height());
+			$('.peopleList').height($('.people-scroll').height());
+		} else {
+			$('.chat-users').height($('.chat-tabs').height() + $('.peopleList .meta').outerHeight(true) + itemHeight * visibleItems);
+			$('.people-scroll').height($('.chat-users').height() - $('.chat-tabs').height());
+			$('.peopleList').height($('.people-scroll').height());
+		};
+	};
+}
+Application.prototype.onPeopleTabClicked = function() {
+	if (!$(this).parent().hasClass('active')) {
+		$('#peopleTab').show();
+		E2.app.onPeopleListChanged();
+	};
+	if ($('.chat-users').hasClass('collapsed')) {
+		$('.chat-users').removeClass('collapsed');
+		E2.app.onPeopleListChanged();
+	};
+	return true;
 }
 
 Application.prototype.start = function() {
@@ -2123,6 +2185,9 @@ Application.prototype.start = function() {
 	
 	E2.dom.chatToggleButton.click(E2.app.onChatToggleClicked.bind(E2.app))
 	E2.dom.chatClose.click(E2.app.onChatCloseClicked.bind(E2.app))
+	E2.dom.chatTabBtn.click(E2.app.onChatTabClicked.bind(E2.app))
+	E2.dom.peopleTabBtn.click(E2.app.onPeopleTabClicked.bind(E2.app))
+
 
 	this.midPane = new E2.MidPane()
 
@@ -2198,16 +2263,24 @@ Application.prototype.setupChat = function() {
 
 	this.chatStore = new E2.ChatStore()
 	this.chat = new E2.Chat($('#chat'))
+	
+	/**
 	$('.chat-users').draggable({
 		containment: $('#canvas'),
 		cancel: false,
 		handle: $('.chat-tabs .nav-tabs')
 	});
+	*/
+	
+	
 	var chatTop=$(window).height()-$('.chat-users').height()-40;
 	if (chatTop<($('.editor-header').height()+$('#breadcrumb').height())) {
 		chatTop= $('.editor-header').height() + $('#breadcrumb').height() + 40;
 	}
 	$('.chat-users').css({'top': chatTop});
+	$('.chat-users').movable({
+		handle: $('.chat-tabs')
+	});
 }
 
 /**
@@ -2276,6 +2349,9 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.filename_input = $('#filename-input');
 	E2.dom.chatToggleButton = $('#chat-toggle');
 	E2.dom.chatClose = $('#chat-close');
+	E2.dom.chatTabBtn = $('#chatTabBtn');
+	E2.dom.peopleTabBtn = $('#peopleTabBtn');
+	
 	
 
 
