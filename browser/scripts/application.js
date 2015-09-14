@@ -132,9 +132,11 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 	var node
 
 	if (id === 'graph')
-		node = createPlugin('graph')
+		node = createPlugin('Graph')
 	else if (id === 'loop')
-		node = createPlugin('loop')
+		node = createPlugin('Loop')
+	else if (id === 'array_function')
+		node = createPlugin('Array function')
 	else
 		node = createPlugin(null)
 
@@ -966,7 +968,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			uidMap[node.uid] = newUid
 			node.uid = newUid
 
-			if (node.plugin === 'graph' || node.plugin === 'loop')
+			if (['graph', 'loop', 'array_function'].indexOf(node.plugin) > -1)
 				node.graph = remapGraph(node.graph, node)
 		})
 

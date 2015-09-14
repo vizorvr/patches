@@ -278,6 +278,7 @@
 	"Structure/Input proxy": "input_proxy",
 	"Structure/Graph": "graph",
 	"Structure/Loop": "loop",
+	"Structure/Array Function": "array_function",
 	"Structure/Output proxy": "output_proxy",
 
 	"Modulators/Array/Set": "array_set",

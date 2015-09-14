@@ -14,6 +14,16 @@
 	var ThreeMeshPlugin = E2.plugins.three_mesh = function(core) {
 		AbstractThreeMeshPlugin.apply(this, arguments)
 
+		this.input_slots = [
+			{
+				name: 'object3d',
+				dt: core.datatypes.OBJECT3D,
+				desc: 'Optional existing mesh to modify',
+				array: true,
+				def: null
+			}
+		].concat(this.input_slots)
+
 		this.desc = 'THREE.js Mesh'
 
 		this.createMeshRoot = createThreeMeshRoot
@@ -22,6 +32,16 @@
 	}
 
 	ThreeMeshPlugin.prototype = Object.create(AbstractThreeMeshPlugin.prototype)
+
+	ThreeMeshPlugin.prototype.update_input = function (slot, data) {
+		AbstractThreeMeshPlugin.prototype.update_input.apply(this, arguments)
+
+		if (slot.name === 'object3d' && data) {
+			this.object3d = data
+			this.geoms = []
+			this.mats = []
+		}
+	}
 
 	ThreeMeshPlugin.prototype.update_state = function () {
 		AbstractThreeMeshPlugin.prototype.update_state.apply(this)

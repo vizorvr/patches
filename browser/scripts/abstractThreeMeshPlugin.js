@@ -89,11 +89,11 @@ AbstractThreeMeshPlugin.prototype.update_mesh = function()
 }
 
 AbstractThreeMeshPlugin.prototype.update_input = function(slot, data) {
-	if (slot.index === 0) { // geometry
+	if (slot.name === 'geometry') { // geometry
 		this.geoms = data
 		this.geoms_dirty = true
 	}
-	else if (slot.index === 1) { // material
+	else if (slot.name === 'material') { // material
 		this.mats = data
 		this.mats_dirty = true
 	}
