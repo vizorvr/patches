@@ -6,15 +6,18 @@ function Variables(core) {
 }
 
 Variables.prototype.lock = function(plugin, name, connections) {
-	if (name in this.variables)
+	if (name in this.variables) {
 		this.variables[name].ref_count++
+		if (connections > 0)
+			this.variables[name].connections += connections
+	}
 	else
 		this.variables[name] = {
 			dt: E2.dt.ANY,
 			value: null,
 			users: [],
 			ref_count: 1,
-			connections: this.connections + (connections ? connections : 0)
+			connections: 0
 		}
 	
 	var u = this.variables[name].users
@@ -40,8 +43,10 @@ Variables.prototype.connection_changed = function(name, added) {
 	if (!added) {
 		r.connections--
 		
-		if (r.connections === 0)
+		if (r.connections <= 0) {
+			r.connections = 0
 			this.set_datatype(name, E2.dt.ANY, false)
+		}
 	}
 	else
 		r.connections++
@@ -60,6 +65,10 @@ Variables.prototype.set_datatype = function(name, dt, arrayness) {
 	r.array = arrayness
 
 	this.write(name, this.core.get_default_value(dt))
+}
+
+Variables.prototype.read = function(name) {
+	return this.variables[name].value
 }
 
 Variables.prototype.write = function(name, value) {
