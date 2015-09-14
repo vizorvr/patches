@@ -115,6 +115,11 @@ describe('Node inputs', function() {
 
 	beforeEach(function() {
 		core = reset()
+
+		global.E2.Variables = function() {
+			this.serialise = function(){}
+		}
+
 		core.active_graph = new Graph(core, null, {})
 		core.graphs = [ core.active_graph ]
 		core.rebuild_structure_tree = function(){}

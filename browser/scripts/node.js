@@ -421,9 +421,9 @@ Node.prototype.update_recursive = function(conns) {
 		var value = sn.plugin.update_output(inp.src_slot);
 
 		if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
-			if (inp.dst_slot.array && !inp.src_slot.array) {
+			if (inp.dst_slot.array && value !== undefined && !value.length) {
 				value = [value]
-			} else if (inp.src_slot.array && !inp.dst_slot.array) {
+			} else if (!inp.dst_slot.array && value !== undefined && value.length) {
 				value = value[0]
 			}
 
