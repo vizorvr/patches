@@ -165,7 +165,7 @@ ul.iconic-nav>li>button:hover span {
 ul.iconic-nav>li>button:hover svg {
     stroke: @editor-text-hover;    
 }
-ul.iconic-nav>li>.btn {
+button {
     outline: none!important;
     box-shadow:  0 0 0 rgba(0,0,0,0)!important;
 }
@@ -323,9 +323,6 @@ ul.iconic-nav>li.open>button span {
     color: #fff;
 }
 
-.draggable, #dragHelper {
-    cursor: grab;    
-}
 .block-header {
     width: @chat-width;
     height: @blocks-header-height;
@@ -414,12 +411,6 @@ ul.iconic-nav>li.open>button span {
     overflow: hidden;
 }
 
-.library-block {
-    left: 30px;
-    height: 370px;
-    z-index: 11;
-}
-
 #load-spinner {
 	position: absolute;
 	left: 20px;
@@ -433,11 +424,6 @@ ul.iconic-nav>li.open>button span {
 	-moz-background-size: 100% 100%;
 	-webkit-background-size: 100% 100%;
 	margin-top: -9px;
-}
-
-#play, #stop, #fullscreen {
-	height: 28px;
-	padding-top: 7px;
 }
 
 .header .btn {
@@ -819,7 +805,7 @@ ul.iconic-nav>li.open>button span {
 
 .searchbox {
     background: @bg-darker;  
-    height: 40px;
+    height: @searchbox-height;
     width: 100%;
     position: relative;
 }
@@ -833,7 +819,7 @@ ul.iconic-nav>li.open>button span {
     stroke: @editor-text-default;
 }
 
-#presetSearch {
+.searchbox input {
     background: @bg-darker;  
     border: 0;
     outline: 0;
@@ -852,18 +838,14 @@ ul.iconic-nav>li.open>button span {
     box-shadow: 0 0 0 rgba(0, 0, 0, 0)!important;
 }
 
-#presetSearch::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+.searchbox input::-webkit-input-placeholder { 
     color: @editor-text-hover;
 }
-#presetSearch:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+.searchbox input::-moz-placeholder { 
    color: @editor-text-hover;
    opacity:  1;
 }
-#presetSearch::-moz-placeholder { /* Mozilla Firefox 19+ */
-   color: @editor-text-hover;
-   opacity:  1;
-}
-#presetSearch:-ms-input-placeholder { /* Internet Explorer 10-11 */
+.searchbox input:-ms-input-placeholder { 
    color: @editor-text-hover;
 }
 
@@ -877,3 +859,165 @@ ul.iconic-nav>li.open>button span {
     border-left: 0!important;
     border-right: 0!important;
 }
+
+.drag-handle {
+    cursor: grab;
+    position: relative; 
+    height: @drag-helper-height;
+    width: 100%;
+    background: #292f3f;
+    border-bottom: 1px solid @bg-darker;
+    box-sizing: border-box;
+}
+
+.bottom-panel {
+    height: @bottom-panel-height;
+    width: 100%;
+    text-align: center;
+    background: @bg-light;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 15;
+    >ul {
+        height: @bottom-panel-height;
+        display: block;
+        padding: 0;
+        >li {
+            height: @bottom-panel-height;  
+            display: block;
+            float: left;
+            position: relative;
+            >button {
+                height: @bottom-panel-height;
+                position: relative;
+                background: none;
+                outline: none!important;
+                svg {
+                    position: absolute;
+                    height: 26px;
+                    width: 26px;
+                    overflow: visible;
+                    margin: -13px 0 0 -13px;
+                    top: 50%;
+                    stroke: @editor-text-default;
+                    }
+                }
+        }
+        :hover button svg {
+                    stroke: @editor-text-active;
+            }
+        button {
+            cursor: pointer;
+            }
+    }
+}
+.playback-controls {
+    margin: 0 auto;
+    width: 180px;
+    position: relative;
+    >li {
+        width: 60px;
+        background: @bg-darker;
+        >button {
+            width: 60px;
+            outline: none!important;
+        }
+        .disabled {
+            opacity: 1;
+            svg {
+                stroke: @editor-text-current!important;
+            }
+        }
+    }
+    .active:before {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 3px;
+        top: 0;
+        left: 0;
+        position: absolute;
+        background: @bg-bright;
+        }
+}
+
+button.show-timeline {
+   display: block;
+   height: @bottom-panel-height;
+   position: absolute;
+   left: 44px;
+   top: 0;
+   background: none;
+   outline: none!important;
+   padding: 0;
+   svg {
+       position: absolute;
+       height: 26px;
+       width: 26px;
+       overflow: visible;
+       margin: -13px 0 0 -13px;
+       top: 50%;
+       stroke: @editor-text-default;
+       left: @bottom-panel-height / 2;
+    }
+    span {
+        display: block;
+        padding: 2px 6px;
+        background: @bg-darker;
+        color: @editor-text-default;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-align: center;
+        position: relative;
+        margin-left: @bottom-panel-height;
+        border-radius: 4px;
+        }
+}
+
+button.show-timeline:hover span {
+    color: @editor-text-active;
+}
+
+button.show-timeline:hover svg {
+    stroke: @editor-text-active;
+}
+
+.view-modes {
+    position: absolute;
+    right: 100px;
+    top: 0;
+    border-width: 0 1px;
+    border-color: @bg-darker;
+    border-style: solid;
+    li {
+        width: 36px;
+        button {
+            width: 36px;
+            svg {
+                left: 50%; 
+                }
+            }
+        }
+}
+.popover {
+    border: 0 !important;
+    border-radius: 0!important;
+    background: none!important;
+    color: @editor-text-default!important;
+    padding: 0!important;
+}
+.popover-title {
+    border-radius: 5px 5px 0 0;
+    background-color: @bg-light!important;
+    border-bottom: 1px solid @bg-darker !important;
+    padding: 20px!important;
+    }
+.popover-content {
+    border-radius: 0 0 5px 5px;
+    background-color: @bg-light!important;
+}
+.popover.bottom > .arrow::after {
+    border-bottom-color: @bg-light!important;
+}
+

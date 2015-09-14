@@ -222,6 +222,8 @@ CollapsibleSelectControl.prototype._search = function(text) {
 		$(this._resultEls.get(0)).addClass('active')
 
 	this._selectedIndex = 0
+	
+	E2.app.onSearchResultsChange();
 
 }
 

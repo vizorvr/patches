@@ -8,23 +8,50 @@
     height: @blocks-header-height;
 }
 .chat-tabs {
-    width: @chat-width;
+    width: @floating-box-width;
 }
 
 .chat {
 	-moz-user-select: text;
 	-webkit-user-select: text;
 	-ms-user-select: text;
-	width: @chat-width;
+	width: @floating-box-width;
 	height: @chat-height - @blocks-header-height;
 	overflow: hidden;
 }
 
+.chat .chat-nav {
+    background: @bg-light;
+    width: @chat-width; 
+    height: @chat-nav-height;
+    color: @editor-text-hover;
+    margin: 0;
+    border-bottom: 1px solid @bg-darker;
+}
+.chat .chat-nav .chat-tree {
+    padding: 10px 20px;
+}
+
+.chat .chat-nav .chat-tree span {
+    color: @editor-text-current;
+}
+
+.chat .chat-nav .chat-tree a {
+    color: @chat-text-color;
+}
+.chat .chat-nav .chat-tree svg {
+    display: inline-block;
+    width: 19px;
+    height: 10px;
+    margin-bottom: -1px;
+    stroke: @editor-tect-inactive;    
+} 
+
 .chat .messages {
 	overflow-y: auto;
 	overflow-x: hidden;
-	width: @chat-width+18px;
-	height: @chat-height - @blocks-header-height - @chat-composer-height;
+	width: @floating-box-width + @scrollbar;
+	height: @chat-height - @blocks-header-height - @chat-composer-height - @chat-nav-height;
 }
 
 .chat .message .date {

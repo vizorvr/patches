@@ -1,7 +1,37 @@
+.preset-list-contained-box {
+	overflow: hidden !important;
+}
+
+.preset-list-container {
+
+	overflow: hidden;
+	width: @floating-box-width + @scrollbar;
+
+	.preset-list-content {
+		width: @floating-box-width + @scrollbar;
+		height: inherit;
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+
+}
+
+.result.table {
+    width: @floating-box-width;
+}
 .result li,
 .panel {
 	margin-top: 1px;
 	margin-bottom: 1px;
+}
+
+.result-item  {
+    color: @editor-text-default;
+    padding: 8px 16px 8px 24px !important;
+}
+.result-item:hover {
+    color: @editor-text-active;
+    background: @bg-light;
 }
 
 .panel-default {
@@ -53,10 +83,6 @@
     padding: 0;
     margin: 0;
     border-top: 0px;
-}
-
-.preset-result table tbody tr td {
-	padding: 3px !important;
 }
 
 .result tr,

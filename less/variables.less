@@ -46,13 +46,20 @@
 // dimensions
 @menu-bar-height:       70px;
 @breadcrumb-height:     28px;
+@bottom-panel-height:   44px;
 
 @floating-box-width:    252px;
+@scrollbar:             18px;
 
 @chat-width:            252px;
-@chat-height:           370px;
-@blocks-header-height:  39px;
-@chat-composer-height:  54px;
+@chat-height:           387px;
+@chat-composer-height:  40px;
+@chat-nav-height:       36px;
+
+@drag-helper-height:    18px;
+@blocks-header-height:  37px;
+
+@searchbox-height:      40px;
 
 @tabs-font-size:        14px;
 
@@ -163,15 +170,15 @@
 @table-condensed-cell-padding:  5px;
 
 //** Default background color used for all tables.
-@table-bg:                      lighten(@body-bg, 3%);
+@table-bg:                      @bg-light;
 //** Background color used for `.table-striped`.
-@table-bg-accent:               lighten(@table-bg, 4%);
+@table-bg-accent:               @bg-light;
 //** Background color used for `.table-hover`.
-@table-bg-hover:                lighten(@table-bg, 12%);
-@table-bg-active:               @table-bg-hover;
+@table-bg-hover:                @bg-light;
+@table-bg-active:               @bg-light;
 
 //** Border color for table and cell borders.
-@table-border-color:            darken(@gray-darker, 5%);
+@table-border-color:            @bg-darker;
 
 
 //== Buttons
@@ -555,12 +562,14 @@
 //** Tooltip arrow color
 @tooltip-arrow-color:         @tooltip-bg;
 
-@tooltip-width: 320px;
-@tooltip-min-height: 70px;
-@tooltip-text-bg: #2d4f77;
-@tooltip-glyph-bg: #385a8a;
-@tooltip-text-color: #fff;
-@tooltip-warning-color: #ef4835;
+//== Notifications
+
+@msg-width: 320px;
+@msg-min-height: 70px;
+@msg-text-bg: #2d4f77;
+@msg-glyph-bg: #385a8a;
+@msg-text-color: #fff;
+@msg-warning-color: #ef4835;
 
 //== Popovers
 //

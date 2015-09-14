@@ -5,7 +5,6 @@
 	</div>
 </noscript>
 
-<div class="flex-column">
 <div class="editor-header">
 	<div class="menu-bar">
 		{{> svgSprite}}
@@ -14,26 +13,6 @@
 			<div id="load-spinner"></div>
 		</div>
 		<ul class="iconic-nav">
-			<li>
-				<button class="btn" data-toggle="dropdown" type="button">
-					<svg class="icon-file-menu"><use xlink:href="#icon-file-menu"></use></svg>
-					<span>File Menu</span>
-				</button>
-				<ul class="dropdown-menu" role="menu">
-					<li>
-						<a id="open">Open</a>
-					</li>
-					<li>
-						<a id="fork-button">Edit a Copy</a>
-					</li>
-					<li>
-						<a class="save-copy-button">Save a Copy</a>
-					</li>
-					<li>
-						<a id="save-as-preset">Save as Preset</a>
-					</li>
-				</ul>
-			</li>
 			<li>
 				<button class="btn" id="btn-new">
 					<svg class="icon-new-graph"><use xlink:href="#icon-new-graph"></use></svg>
@@ -83,15 +62,9 @@
 		</ul>
 		<ul class="iconic-nav">
 			<li>
-				<button class="btn" id="btn-cam-view">
-					<svg class="icon-cam-view"><use xlink:href="#icon-cam-view"></use></svg>
+				<button class="btn" id="btn-code">
+					<svg class="icon-code"><use xlink:href="#icon-code"></use></svg>
 					<span>Cam View</span>
-				</button>
-			</li>
-			<li>
-				<button class="btn" id="btn-editor">
-					<svg class="icon-editor"><use xlink:href="#icon-editor"></use></svg>
-					<span>Editor</span>
 				</button>
 			</li>
 			<li>
@@ -106,14 +79,14 @@
 					<svg class="icon-zoom-in"><use xlink:href="#icon-zoom-in"></use></svg>
 				</button>
 			</li>
-		</ul>
-		<ul class="iconic-nav pull-right">
 			<li>
 				<button class="btn" id="btn-chat-display">
 					<svg class="icon-chat"><use xlink:href="#icon-chat"></use></svg>
 					<span>Chat</span>
 				</button>
 			</li>
+		</ul>
+		<ul class="iconic-nav pull-right">
 			<li>
 				<button class="btn" id="btn-sign-in">
 					<svg class="icon-sign-in"><use xlink:href="#icon-sign-in"></use></svg>
@@ -125,89 +98,132 @@
 </div>
 <div id="breadcrumb"></div>
 
-<div class="flex-row"> <!-- main row -->
-	<div class="library-block floating-box" id="left-nav">
-		<div>
-			<div class="block-header">
-				<button class="toggle-button" id="assets-toggle" type="button">
-					<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
-				</button>
-				<ul class="nav nav-tabs" role="tablist">
-					<li class="active"><a href="#presets" role="tab" data-toggle="tab">Presets</a></li>
-					<li style="display: none;"><a href="#graph" role="tab" data-toggle="tab">Tree</a></li>
-				</ul>
-				<button class="close-button" id="assets-close" type="button">
-					<svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
-				</button>
+<div class="library-block floating-box" id="left-nav">
+	<div>
+		<div class="block-header">
+			<button class="toggle-button" id="assets-toggle" type="button">
+				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
+			</button>
+			<ul class="nav nav-tabs" role="tablist">
+				<li class="active"><a href="#presets" role="tab" data-toggle="tab">Presets</a></li>
+				<li style="display: none;"><a href="#graph" role="tab" data-toggle="tab">Tree</a></li>
+			</ul>
+			<button class="close-button" id="assets-close" type="button">
+				<svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
+			</button>
+		</div>
+
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="presets">
+				<div id="presets" class="flex-column"></div>
 			</div>
 
-			<div class="tab-content">
-				<div role="tabpanel" class="tab-pane active" id="presets">
-					<div id="presets" class="flex-column"></div>
-				</div>
-
-				<div role="tabpanel" class="tab-pane" id="graph">
-					<div class="cell" id="structure"></div>
-				</div>
+			<div role="tabpanel" class="tab-pane" id="graph">
+				<div class="cell" id="structure"></div>
 			</div>
 		</div>
 	</div>
+</div>
 
-	<div class="flex-column mid-pane pane-hidden" id="mid-pane">
-		<div class="header">
-			<ul class="nav nav-tabs" role="tablist"></ul>
-		</div>
-		<div class="tab-content"></div>
-	</div>
-	<div class="resize-handle mid-pane-handle" data-target="#mid-pane"></div>
+<div id="canvases">
+	<canvas id="webgl-canvas"
+		class="webgl-canvas-normal"
+		width="940"
+		height="620"
+		oncontextmenu="return false;">
+	</canvas>
 
-	<div class="flex-column" id="canvases">
-		<canvas id="webgl-canvas"
-			class="webgl-canvas-normal"
-			width="940"
-			height="620"
-			oncontextmenu="return false;">
+	<div id="canvas_parent">
+		<canvas id="canvas" width="940" height="620">
+		<!-- editor noodles -->
 		</canvas>
-
-		<div id="canvas_parent">
-			<canvas id="canvas" width="940" height="620">
-			<!-- editor noodles -->
-			</canvas>
-		</div>
 	</div>
+</div>
 
-	<div class="chat-users floating-box">
-			<div class="chat-tabs block-header">
-				<button class="toggle-button" id="chat-toggle" type="button">
-					<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
-				</button>
-				<ul class="nav nav-tabs" role="tablist">
-					<li class="active">
-						<a data-toggle="tab" role="tab" href="#chatTab" id="chatTabBtn">Chat</a>
-					</li>
-					<li>
-						<a data-toggle="tab" role="tab" href="#peopleTab" id="peopleTabBtn">Users</a>
-					</li>
-				</ul>
-				<button class="close-burron" id="chat-close" type="button">
-					<svg class="icon-chat-close"><use xlink:href="#icon-close"></use></svg>
-				</button>
-			</div>
-			<div class="tab-content">
-				<div role="tabpanel" class="tab-pane active" id="chatTab">
-					<div id="chat" class="chat">
-						<div class="messages"></div>
-						<div class="composer">
-							<input type="text" name="message" id="new-message-input">
+<div class="chat-users floating-box">
+		<div class="chat-tabs block-header">
+			<button class="toggle-button" id="chat-toggle" type="button">
+				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
+			</button>
+			<ul class="nav nav-tabs" role="tablist">
+				<li class="active">
+					<a data-toggle="tab" role="tab" href="#chatTab" id="chatTabBtn">Chat</a>
+				</li>
+				<li>
+					<a data-toggle="tab" role="tab" href="#peopleTab" id="peopleTabBtn">Users</a>
+				</li>
+			</ul>
+			<button class="close-burron" id="chat-close" type="button">
+				<svg class="icon-chat-close"><use xlink:href="#icon-close"></use></svg>
+			</button>
+		</div>
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="chatTab">
+				<div id="chat" class="chat">
+					<div class="chat-nav">
+						<div class="chat-tree">
+							<a href="#globalchat">Global</a><svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg><span>Graph</span>
 						</div>
 					</div>
-				</div>
-				<div role="tabpanel" class="tab-pane" id="peopleTab">
+					<div class="messages"></div>
+					<div class="composer">
+						<input type="text" name="message" id="new-message-input">
+					</div>
 				</div>
 			</div>
-	</div>
+			<div role="tabpanel" class="tab-pane" id="peopleTab">
+			</div>
+		</div>
+</div>
 
-	<pre class="info-pane" id="dbg"></pre>
+<div class="bottom-panel">
+	<button class="btn show-timeline" id="btn-timeline">
+		<svg class="icon-timeline"><use xlink:href="#icon-timeline"></use></svg>
+		<span>Show</span>
+	</button>
+	<ul class="playback-controls">
+		<li class="play-pause active">
+			<button class="btn" id="play">
+				<svg class="icon-pause"><use xlink:href="#icon-play"></use></svg>
+			</button>
+		</li>
+		<li class="stop">
+			<button class="btn" id="stop">
+				<svg class="icon-pause"><use xlink:href="#icon-stop"></use></svg>
+			</button>
+		</li>
+		<li class="fscreen">
+			<button class="btn" id="fullscreen">
+				<svg class="icon-vr"><use xlink:href="#icon-vr"></use></svg>
+			</button>
+		</li>
+	</ul>
+	<ul class="view-modes">
+		<li class="active">
+			<button class="btn" id="btn-cam">
+				<svg class="icon-vr"><use xlink:href="#icon-view-cam"></use></svg>
+			</button>
+		</li>
+		<li>
+			<button class="btn" id="btn-cam">
+				<svg class="icon-vr"><use xlink:href="#icon-view-vr"></use></svg>
+			</button>
+		</li>
+		<li>
+			<button class="btn" id="btn-cam">
+				<svg class="icon-vr"><use xlink:href="#icon-view-3"></use></svg>
+			</button>
+		</li>
+		<li>
+			<button class="btn" id="btn-cam">
+				<svg class="icon-vr"><use xlink:href="#icon-view-4"></use></svg>
+			</button>
+		</li>
+		
+	</ul>
+</div>
+
+<pre class="info-pane" id="dbg"></pre>
 </div> <!-- main row -->
 </div> <!-- page column -->	
 

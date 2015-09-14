@@ -3,21 +3,21 @@
     position: absolute;
     right: 0;
     top: 0;
-    width: @tooltip-width + 30;
+    width: @msg-width + 30;
     overflow: hidden;
-    padding-top: @menu-bar-height + @breadcrumb-height + 40;
+    padding-top: 30px;
     z-index: 99;
 }
 .notifications-area .notification {
-    width: @tooltip-width;
-    min-height: @tooltip-min-height;
-    background: @tooltip-text-bg;
+    width: @msg-width;
+    min-height: @msg-min-height;
+    background: @msg-text-bg;
     border-radius: 4px;
     box-shadow: 0 2px 2px rgba(0,0,0,0.22);
     overflow: hidden;
     position: relative;
     margin-bottom: 10px;
-    animation: notification-appear 0.65s 1 ease-out; 
+    animation: notification-appear 0.35s ease-out; 
     opacity: 1;
     right: 0;
     margin-top: 0;
@@ -25,7 +25,7 @@
 @keyframes notification-appear {
     0% {
         opacity: 0;
-        right: 0 - @tooltip-width - 30;
+        right: 0 - @msg-width - 30;
         }
     100% {
         opacity: 1;
@@ -35,7 +35,7 @@
 .notifications-area .notification-hide {
     animation: notification-disappear 0.65s ease-in;  
     opacity: 0;
-    margin-top: 0 - @tooltip-min-height;
+    margin-top: 0 - @msg-min-height;
 }
 @keyframes notification-disappear {
     0% {
@@ -44,18 +44,18 @@
         }
     100% {
         opacity: 0;
-        margin-top: 0 - @tooltip-min-height - 10;
+        margin-top: 0 - @msg-min-height - 10;
         }
 }
 
 .nt-content {
-    width: @tooltip-width;
-    min-height: @tooltip-min-height;
-    height: @tooltip-min-height;
+    width: @msg-width;
+    min-height: @msg-min-height;
+    height: @msg-min-height;
     display: table;
     background: none;
     padding: 0;
-    max-width: @tooltip-width; 
+    max-width: @msg-width; 
 }
 
 .nt-content .text {
@@ -67,7 +67,7 @@
     display: block;
     margin: 14px 16px;
     font-size: 16px;
-    color: @tooltip-text-color;
+    color: @msg-text-color;
     font-weight: 400;
     background: none;
     padding: 0;
@@ -80,15 +80,15 @@
     position: relative;
     vertical-align: middle;
     text-align: left;
-    width: @tooltip-min-height;
-    min-height: @tooltip-min-height;
+    width: @msg-min-height;
+    min-height: @msg-min-height;
     height: 100%;
-    background: @tooltip-glyph-bg;
+    background: @msg-glyph-bg;
 }
 
 .nt-content .glyph svg {
-    width: @tooltip-min-height;
-    height: @tooltip-min-height;
+    width: @msg-min-height;
+    height: @msg-min-height;
     position: absolute; 
     display: block;
     left: 50%;
