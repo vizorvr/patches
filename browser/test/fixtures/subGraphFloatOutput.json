@@ -1,0 +1,177 @@
+{
+    "abs_t": 39.871,
+    "active_graph": "root",
+    "graph_uid": "oDQjqfv8xGYy",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 252,
+                "y": 261,
+                "uid": "UXsR1q9C8xyl",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "zvPBNQOAkHxx": "6DyKso8L414i"
+                    }
+                },
+                "title": "one",
+                "graph": {
+                    "uid": "KuvLrQFubbvA",
+                    "parent_uid": "root",
+                    "open": false,
+                    "nodes": [
+                        {
+                            "plugin": "output_proxy",
+                            "x": 434,
+                            "y": 337,
+                            "uid": "zvPBNQOAkHxx",
+                            "title": "output",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "def": null,
+                                    "uid": "Zovk4y26Hgd9",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 210,
+                            "y": 336,
+                            "uid": "iXukd4ndtr4p",
+                            "state": {
+                                "val": 1
+                            }
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "iXukd4ndtr4p",
+                            "dst_nuid": "zvPBNQOAkHxx",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "pOYWDG8pBcu2",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "output",
+                        "dt": 0,
+                        "index": 0,
+                        "uid": "6DyKso8L414i",
+                        "dynamic": true,
+                        "type": 1,
+                        "array": {
+                            "id": 0,
+                            "name": "Float"
+                        },
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "graph",
+                "x": 249,
+                "y": 336,
+                "uid": "2Y1rBn5jgxlV",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "e59AlPpvU427": "iQPaI5dyBxZX"
+                    }
+                },
+                "title": "two",
+                "graph": {
+                    "uid": "zjhsfyreGaeq",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "output_proxy",
+                            "x": 384,
+                            "y": 334,
+                            "uid": "e59AlPpvU427",
+                            "title": "output",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "def": null,
+                                    "uid": "Zovk4y26Hgd9",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 210,
+                            "y": 336,
+                            "uid": "MtKINoNyLaJ6",
+                            "state": {
+                                "val": 2
+                            }
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "MtKINoNyLaJ6",
+                            "dst_nuid": "e59AlPpvU427",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "6rUHbAFklj2j",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "output",
+                        "dt": 0,
+                        "index": 0,
+                        "uid": "iQPaI5dyBxZX",
+                        "dynamic": true,
+                        "type": 1,
+                        "array": {
+                            "id": 0,
+                            "name": "Float"
+                        },
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 250,
+                "y": 417,
+                "uid": "1RAkvLTsrTjq",
+                "state": {
+                    "val": 3
+                },
+                "title": "three"
+            }
+        ],
+        "conns": []
+    }
+}

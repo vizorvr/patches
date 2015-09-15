@@ -124,6 +124,15 @@ SubGraphPlugin.prototype.connection_changed = function(on, conn, externalSlot) {
 			internalSlot.array = externalSlot.array
 		}
 
+		// force the subgraph to output a valid value the next time it's pulled
+		if (this.graph) {
+			this.graph.enum_all(function(node) {
+				node.plugin.updated = true
+			})
+		}
+
+		this.updated = true
+
 		proxyNode.plugin.data = core.get_default_value(externalSlot.dt)
 	}
 }
