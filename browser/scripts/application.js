@@ -1410,7 +1410,6 @@ Application.prototype.onOpenClicked = function() {
 		})
 }
 
-<<<<<<< HEAD
 
 Application.prototype.onChatDisplayClicked = function() {
 	if (!E2.dom.chatWindow.hasClass('collapsed')) {
@@ -1436,8 +1435,6 @@ Application.prototype.onSignInClicked = function() {
 	}
 }
 
-=======
->>>>>>> develop
 Application.prototype.loadGraph = function(graphPath, cb) {
 	var that = this
 
@@ -1701,13 +1698,7 @@ Application.prototype.onShowTooltip = function(e) {
 		if (that.inDrag)
 			return;
 
-<<<<<<< HEAD
 		$elem.popover({
-=======
-		$elem.tooltip('destroy')
-
-		$elem.tooltip({
->>>>>>> develop
 			title: txt,
 			content: readmore,
 			container: 'body',
@@ -2155,12 +2146,8 @@ Application.prototype.start = function() {
 	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
-<<<<<<< HEAD
 	E2.dom.btnSignIn.click(E2.app.onSignInClicked.bind(E2.app))
 	E2.dom.btnChatDisplay.click(E2.app.onChatDisplayClicked.bind(E2.app))
-=======
-
->>>>>>> develop
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
@@ -2290,17 +2277,14 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.canvas = $('#canvas');
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
-<<<<<<< HEAD
 	E2.dom.chatWindow = $('#chat-window');
 	E2.dom.chatTabs = $('#chat-window>.chat-tabs');
 	E2.dom.chatTab = $('#chatTab');
 	E2.dom.chat = $('#chat');
 	E2.dom.peopleTab = $('#peopleTab');
-=======
 	E2.dom.left_nav = $('#left-nav');
 	E2.dom.mid_pane = $('#mid-pane');
 	E2.dom.right_pane = $('#right-pane');
->>>>>>> develop
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
 	E2.dom.playPauseIcon = $('.play-pause use');
@@ -2308,11 +2292,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
 	E2.dom.forkButton = $('#fork-button');
-<<<<<<< HEAD
 	E2.dom.btnSignIn = $('#btn-sign-in');
 	E2.dom.btnChatDisplay = $('#btn-chat-display');
-=======
->>>>>>> develop
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
 	E2.dom.saveAsPreset = $('#save-as-preset');
