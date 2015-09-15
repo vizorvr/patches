@@ -30,7 +30,6 @@ global.NodeUI = function() {
 	this.dom[0].style = {}
 }
 
-global.Registers = require('../../scripts/registers');
 global.PresetManager = function() {}
 
 require('../../scripts/commands/graphEditCommands')
@@ -99,6 +98,7 @@ describe('Redo complex connection', function() {
 		var dummyCore = reset()
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 
+		require('../../scripts/variables')
 		require('../../scripts/util')
 
 		E2.plugins.convert_camera_matrices = function(core) {

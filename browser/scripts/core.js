@@ -122,7 +122,7 @@ function Core() {
 		DELEGATE: { id: 14, name: 'Delegate' },
 		TEXT: { id: 15, name: 'Text' },
 		VIDEO: { id: 16, name: 'Video' },
-		ARRAY: { id: 17, name: 'Array' },
+		ARRAY: { id: 17, name: 'Typed Array' },
 		OBJECT: { id: 18, name: 'Object' },
 
 		GEOMETRY: { id: 19, name: 'Geometry' },
@@ -262,10 +262,9 @@ Core.prototype.get_default_value = function(dt)
 		return new THREE.Color(1, 1, 1, 1)
 	else if(dt === dts.MATRIX) {
 		return new THREE.Matrix4()
-	} else if (dt === dts.TEXTURE)
-		return new THREE.Texture()
-	else if(dt === dts.VECTOR)
-		return new THREE.Vector3(0, 0, 0) // vec3.createFrom(0.0, 0.0, 0.0);
+	} else if(dt === dts.VECTOR)
+
+		return new THREE.Vector3(0, 0, 0)
 	else if(dt === dts.CAMERA)
 		return new THREE.PerspectiveCamera()
 	else if(dt === dts.BOOL)

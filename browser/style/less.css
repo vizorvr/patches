@@ -6453,6 +6453,7 @@ table {
   margin-top: 20px;
   vertical-align: center;
 }
+<<<<<<< HEAD
 .editor-header {
   height: 70px;
   width: 100%;
@@ -6616,6 +6617,8 @@ ul.iconic-nav > li.open > button span {
   top: 50%;
   margin-top: -12px;
 }
+=======
+>>>>>>> develop
 .info-pane {
   margin-right: 20px;
   margin-left: 5px;
@@ -6670,18 +6673,29 @@ ul.iconic-nav > li.open > button span {
 }
 .dropdown-menu {
   padding: 0 !important;
-  border-radius: 0 0 5px 5px !important;
+  border-radius: 0 !important;
   margin: 0 !important;
+<<<<<<< HEAD
   border: 0 none !important;
   background: #262c3d;
   overflow: hidden;
   z-index: 11;
+=======
+  border-top: 1px solid #222 !important;
+  border-left: 1px solid #222 !important;
+  border-right: 1px solid #222 !important;
+  border-bottom: none !important;
+>>>>>>> develop
 }
 .dropdown-menu > li > a {
-  padding: 12px 20px !important;
+  padding: 10px !important;
   cursor: pointer;
+<<<<<<< HEAD
   border-top: 1px solid #1e2331 !important;
   color: #909fb9;
+=======
+  border-bottom: 1px solid #222 !important;
+>>>>>>> develop
 }
 #user-pulldown > li > a {
   height: 28px;
@@ -6690,6 +6704,7 @@ ul.iconic-nav > li.open > button span {
   padding-left: 10px;
   padding-right: 10px;
 }
+<<<<<<< HEAD
 .dropdown-menu > li > a:hover,
 .dropdown-menu > li > a:focus,
 .dropdown-menu > li > a:active {
@@ -6777,11 +6792,16 @@ ul.iconic-nav > li.open > button span {
   background: #262c3d;
   width: 252px;
   overflow: hidden;
+=======
+.nav > li > a:hover,
+.nav > li > a:focus {
+  background: #1a1a1a;
+>>>>>>> develop
 }
 #load-spinner {
   position: absolute;
-  left: 20px;
-  top: 50%;
+  left: 10px;
+  top: 3px;
   opacity: 0.65;
   max-width: 18px;
   min-width: 18px;
@@ -6790,7 +6810,7 @@ ul.iconic-nav > li.open > button span {
   background-size: 100% 100%;
   -moz-background-size: 100% 100%;
   -webkit-background-size: 100% 100%;
-  margin-top: -9px;
+  margin-top: 2px;
 }
 .header .btn {
   height: 28px;
@@ -6854,12 +6874,16 @@ ul.iconic-nav > li.open > button span {
 .proxy .plugin-row td {
   background: #badaff !important;
 }
-.register {
+.variable {
   background: #c6ffc8 !important;
 }
 .loop,
 .loop .plugin-row td {
   background: #ffc6ee !important;
+}
+.arrayfunction,
+.arrayfunction .plugin-row td {
+  background: #33c6fe !important;
 }
 .config_btn {
   background-image: url('/images/config.png') !important;
@@ -7184,9 +7208,16 @@ ul.iconic-nav > li.open > button span {
 .searchbox input::-webkit-input-placeholder {
   color: #afbfdf;
 }
+<<<<<<< HEAD
 .searchbox input::-moz-placeholder {
   color: #afbfdf;
   opacity: 1;
+=======
+.header {
+  min-height: 28px;
+  height: 28px;
+  max-height: 28px;
+>>>>>>> develop
 }
 .searchbox input:-ms-input-placeholder {
   color: #afbfdf;
@@ -7798,8 +7829,13 @@ li.active,
 .chat .messages {
   overflow-y: auto;
   overflow-x: hidden;
+<<<<<<< HEAD
   width: 270px;
   height: 274px;
+=======
+  margin-top: 10px;
+  height: calc(100vh -  84px);
+>>>>>>> develop
 }
 .chat .message .date {
   margin-left: 8px;

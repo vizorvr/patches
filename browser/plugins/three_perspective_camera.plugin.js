@@ -32,7 +32,7 @@
 			1000
 		);
 
-		this.object3d.position.z = -5
+		this.object3d.position.z = 5
 	}
 
 	ThreePerspectiveCameraPlugin.prototype.update_input = function(slot, data) {

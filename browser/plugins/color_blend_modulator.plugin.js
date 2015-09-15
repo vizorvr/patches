@@ -13,20 +13,18 @@ E2.p = E2.plugins["color_blend_modulator"] = function(core, node)
 	];
 };
 
-E2.p.prototype.reset = function()
-{
-	this.output_color = vec4.createFrom(0, 0, 0, 1);
-};
+E2.p.prototype.reset = function() {
+	this.output_color = new THREE.Color(1, 1, 1)
+}
 
-E2.p.prototype.update_input = function(slot, data)
-{
+E2.p.prototype.update_input = function(slot, data) {
 	if(slot.index === 0)
-		this.color_a = data;
+		this.color_a = data
 	else if(slot.index === 1)
-		this.color_b = data;
+		this.color_b = data
 	else
-		this.mix = data;
-};	
+		this.mix = data
+}
 
 E2.p.prototype.update_state = function()
 {
@@ -36,22 +34,20 @@ E2.p.prototype.update_state = function()
 	var cb = this.color_b;
 	var oc = this.output_color;
 	
-	for(var i = 0; i < 4; i++)
-		oc[i] = (ca[i] * mix) + (cb[i] * inv_mix);
+	oc.r = (ca.r * mix) + (cb.r * inv_mix)
+	oc.g = (ca.g * mix) + (cb.g * inv_mix)
+	oc.b = (ca.b * mix) + (cb.b * inv_mix)
 };
 
-E2.p.prototype.update_output = function(slot)
-{
+E2.p.prototype.update_output = function() {
 	return this.output_color;
-};
+}
 
-E2.p.prototype.state_changed = function(ui)
-{
-	if(!ui)
-	{
-		this.color_a = vec4.createFrom(0, 0, 0, 1);
-		this.color_b = vec4.createFrom(0, 0, 0, 1);
-		this.output_color = vec4.createFrom(0, 0, 0, 1);
+E2.p.prototype.state_changed = function(ui) {
+	if(!ui) {
+		this.color_a = new THREE.Color(0, 0, 0)
+		this.color_b = new THREE.Color(0, 0, 0)
+		this.output_color = new THREE.Color(0, 0, 0)
 		this.mix = 0.5;
 	}
 };

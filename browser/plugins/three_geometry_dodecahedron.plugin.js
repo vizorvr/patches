@@ -20,10 +20,12 @@
 	}
 
 	ThreeDodecahedronGeometryPlugin.prototype.createGeometry = function() {
-		return new THREE.DodecahedronGeometry(
+		var geom = new THREE.DodecahedronGeometry(
 			this.inputValues.radius,
 			Math.floor(this.inputValues.detail)
 		)
+	
+		return new THREE.BufferGeometry().fromGeometry(geom)
 	}
 
 	ThreeDodecahedronGeometryPlugin.prototype.update_input = function() {

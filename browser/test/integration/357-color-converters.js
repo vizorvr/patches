@@ -30,7 +30,6 @@ global.NodeUI = function() {
 	this.dom[0].style = {}
 }
 
-global.Registers = require('../../scripts/registers');
 global.PresetManager = function() {}
 
 require('../../scripts/commands/graphEditCommands')
@@ -102,6 +101,10 @@ describe('Color converters', function() {
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 
 		require('../../scripts/util')
+
+		E2.Variables = function() {
+			this.serialise = function(){}
+		}
 
 		app = E2.app = new Application()
 		app.updateCanvas = function() {}

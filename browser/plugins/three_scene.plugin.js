@@ -44,7 +44,8 @@
 			E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
 				type: E2.slot_type.input,
 				name: that.dynInputs.length + '',
-				dt: that.lsg.dt
+				dt: that.lsg.dt,
+				array: true
 			})
 		})
 
@@ -76,7 +77,13 @@
 
 			if (this.meshes[mesh]) {
 				//console.log('add mesh to slot ', JSON.stringify(mesh))
-				this.scene.children[0].add(this.meshes[mesh])
+				if (this.meshes[mesh].length !== undefined) {
+					for (var i=0; i < this.meshes[mesh].length; i++) {
+						this.scene.children[0].add(this.meshes[mesh][i])
+					}
+				}
+				else
+					this.scene.children[0].add(this.meshes[mesh])
 			}
 			else {
 				//console.log('no mesh for ', JSON.stringify(mesh))

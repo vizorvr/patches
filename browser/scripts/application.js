@@ -129,9 +129,11 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 	var node
 
 	if (id === 'graph')
-		node = createPlugin('graph')
+		node = createPlugin('Graph')
 	else if (id === 'loop')
-		node = createPlugin('loop')
+		node = createPlugin('Loop')
+	else if (id === 'array_function')
+		node = createPlugin('Array function')
 	else
 		node = createPlugin(null)
 
@@ -580,8 +582,10 @@ Application.prototype.onNodeDragged = function(node) {
 Application.prototype.onNodeDragStopped = function(node) {
 	this.onNodeDragged(node)
 
-	if (!this._dragInfo)
+	if (!this._dragInfo) {
+		this.inDrag = false
 		return;
+	}
 
 	var di = this._dragInfo
 	var nd = node.ui.dom[0]
@@ -597,15 +601,15 @@ Application.prototype.onNodeDragStopped = function(node) {
 	this.undoManager.push(cmd)
 	this.undoManager.end()
 
+	this._dragInfo = null
+	this.inDrag = false
+
 	E2.app.channel.send({
 		actionType: 'uiNodesMoved',
 		graphUid: E2.core.active_graph.uid,
 		nodeUids: di.nodes.map(function(n) { return n.uid }),
 		delta: { x: dx, y: dy }
 	})
-
-	this._dragInfo = null
-	this.inDrag = false
 }
 
 Application.prototype.clearSelection = function() {
@@ -668,7 +672,6 @@ Application.prototype.onCanvasMouseDown = function(e) {
 		E2.app.updateCanvas()
 	}
 
-	this.inDrag = true
 	this.updateCanvas(false)
 }
 
@@ -963,7 +966,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			uidMap[node.uid] = newUid
 			node.uid = newUid
 
-			if (node.plugin === 'graph' || node.plugin === 'loop')
+			if (['graph', 'loop', 'array_function'].indexOf(node.plugin) > -1)
 				node.graph = remapGraph(node.graph, node)
 		})
 
@@ -1001,14 +1004,20 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
 		var dc = doc.conns[i]
+
+		var destNode = ag.findNodeByUid(dc.dst_nuid)
+		if (!destNode)
+			continue;
+
+		var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
+		var slot = slots[dc.dst_slot]
+
+		if (!slot)
+			continue;
+	
 		if (dc.src_nuid === undefined || dc.dst_nuid === undefined) {
 			// not a valid connection, clear it and skip it
 			if (dc.dst_nuid !== undefined) {
-				var destNode = ag.findNodeByUid(dc.dst_nuid)
-
-				var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
-				var slot = slots[dc.dst_slot]
-				
 				slot.is_connected = false
 				slot.connected = false
 				destNode.inputs_changed = true
@@ -1089,7 +1098,7 @@ Application.prototype.calculateCanvasArea = function() {
 	var width, height
 	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
-	if (!isFullscreen) {
+	if (!isFullscreen && !this.condensed_view) {
 		width = $(window).width() -
 			$('#mid-pane').outerWidth(true) - 
 			$('.mid-pane-handle').outerWidth(true)
@@ -1145,16 +1154,13 @@ Application.prototype.toggleNoodles = function() {
 	E2.dom.canvas_parent.toggle(this.noodlesVisible)
 }
 
-Application.prototype.toggleLeftPane = function()
-{
-
-	$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
-
+Application.prototype.toggleLeftPane = function() {
 	this.condensed_view = !this.condensed_view;
 
 	E2.dom.left_nav.toggle(!this.condensed_view);
 	E2.dom.mid_pane.toggle(!this.condensed_view);
 	$('.resize-handle').toggle(!this.condensed_view);
+	E2.dom.right_pane.toggle(!this.condensed_view);
 
 	if(this.condensed_view)
 		E2.dom.dbg.toggle(false);
@@ -1404,6 +1410,7 @@ Application.prototype.onOpenClicked = function() {
 		})
 }
 
+<<<<<<< HEAD
 
 Application.prototype.onChatDisplayClicked = function() {
 	if (!E2.dom.chatWindow.hasClass('collapsed')) {
@@ -1429,6 +1436,8 @@ Application.prototype.onSignInClicked = function() {
 	}
 }
 
+=======
+>>>>>>> develop
 Application.prototype.loadGraph = function(graphPath, cb) {
 	var that = this
 
@@ -1658,6 +1667,12 @@ Application.prototype.onShowTooltip = function(e) {
 
 		txt = '<b>Type:</b> ' + slot.dt.name;
 
+		if (slot.array)
+			txt += '<br><b>Array:</b> yes';
+
+		if (slot.inactive)
+			txt += '<br><b>Inactive:</b> yes';
+
 		if(slot.lo !== undefined || slot.hi !== undefined)
 			txt += '<br><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
 
@@ -1686,7 +1701,13 @@ Application.prototype.onShowTooltip = function(e) {
 		if (that.inDrag)
 			return;
 
+<<<<<<< HEAD
 		$elem.popover({
+=======
+		$elem.tooltip('destroy')
+
+		$elem.tooltip({
+>>>>>>> develop
 			title: txt,
 			content: readmore,
 			container: 'body',
@@ -1815,7 +1836,7 @@ Application.prototype.onGraphSelected = function(graph) {
 			sp.css({ 'text-decoration': 'underline' })
 		}
 
-		parentEl.prepend($('<svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg>'))
+		parentEl.prepend($('<span> / </span>'))
 		parentEl.prepend(sp)
 
 		if (graph.parent_graph)
@@ -1969,9 +1990,6 @@ Application.prototype.setupPeopleEvents = function() {
 	})
 }
 
-Application.prototype.onNewClicked = function() {
-	window.location.href = '/new';
-}
 Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
@@ -2081,8 +2099,18 @@ Application.prototype.start = function() {
 	E2.dom.canvas_parent[0].addEventListener('mousedown', this.onCanvasMouseDown.bind(this))
 	document.addEventListener('mouseup', this.onCanvasMouseUp.bind(this))
 
-	// Clear hover state on window blur. Typically when the user switches
-	// to another tab.
+	var wasPlayingOnBlur = true
+	document.addEventListener('visibilitychange', function() {
+		if (!document.hidden && wasPlayingOnBlur) {
+			that.player.play()
+		} else {
+			wasPlayingOnBlur = that.player.state.PLAYING === that.player.current_state
+			that.player.pause()
+		}
+
+		E2.app.changeControlState()
+	})
+
 	window.addEventListener('blur', function() {
 		that.clearEditState()
 	})
@@ -2126,10 +2154,13 @@ Application.prototype.start = function() {
 	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
 	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
-	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
+<<<<<<< HEAD
 	E2.dom.btnSignIn.click(E2.app.onSignInClicked.bind(E2.app))
 	E2.dom.btnChatDisplay.click(E2.app.onChatDisplayClicked.bind(E2.app))
+=======
+
+>>>>>>> develop
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
@@ -2259,21 +2290,29 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.canvas = $('#canvas');
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
+<<<<<<< HEAD
 	E2.dom.chatWindow = $('#chat-window');
 	E2.dom.chatTabs = $('#chat-window>.chat-tabs');
 	E2.dom.chatTab = $('#chatTab');
 	E2.dom.chat = $('#chat');
 	E2.dom.peopleTab = $('#peopleTab');
+=======
+	E2.dom.left_nav = $('#left-nav');
+	E2.dom.mid_pane = $('#mid-pane');
+	E2.dom.right_pane = $('#right-pane');
+>>>>>>> develop
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
 	E2.dom.playPauseIcon = $('.play-pause use');
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
-	E2.dom.btnNew = $('#btn-new');
 	E2.dom.forkButton = $('#fork-button');
+<<<<<<< HEAD
 	E2.dom.btnSignIn = $('#btn-sign-in');
 	E2.dom.btnChatDisplay = $('#btn-chat-display');
+=======
+>>>>>>> develop
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
 	E2.dom.saveAsPreset = $('#save-as-preset');

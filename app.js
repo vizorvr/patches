@@ -271,7 +271,7 @@ app.get(/^\/data\/.*/, function(req, res, next)
 			res.writeHeader(206, {
 				'Content-Range': 'bytes ' + start + '-' + end + '/' + stat.length,
 				'Accept-Ranges': 'bytes',
-				'Cache-Control': 'public, must-revalidate, max-age=60',
+				'Cache-Control': 'public, must-revalidate, max-age=86400',
 				'Content-Length': chunksize,
 				'Content-Type': stat.contentType
 			});
@@ -287,7 +287,7 @@ app.get(/^\/data\/.*/, function(req, res, next)
 			res.header('Accept-Ranges', 'bytes');
 			res.header('ETag', stat.md5);
 			res.header('Content-Length', stat.length)
-			res.header('Cache-Control', 'public must-revalidate, max-age=60');
+			res.header('Cache-Control', 'public, must-revalidate, max-age=86400');
 
 			gfs.createReadStream(path)
 			.on('error', next)

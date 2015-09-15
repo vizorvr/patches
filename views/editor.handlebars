@@ -5,6 +5,7 @@
 	</div>
 </noscript>
 
+<<<<<<< HEAD
 <div class="editor-header">
 	<div class="menu-bar">
 		{{> svgSprite}}
@@ -97,6 +98,68 @@
 	</div>
 </div>
 <div id="breadcrumb"></div>
+=======
+<div class="flex-column">
+<div class="menu-bar"> <!-- menu bar -->
+	<div class="header left-cell pull-left" id="top-header-logo">
+		<div class="info-pane pull-left" id="info">
+			<span>
+				<img id="infopanelogo" src="../../images/logo-graphic.png">
+			</span>
+			<span class="logo-text">Vizor</span>
+		</div>
+		<div id="load-spinner"></div>
+	</div>
+
+	<div class="header">
+		<div id="top-header">
+			<div class="top-header-col" id="top-header-left">
+				<a href="/edit" id="new" class="btn btn-sm btn-default">New</a>
+
+				<button id="fork-button" class="btn btn-sm btn-default">Edit a Copy</button>
+
+				<div class="btn-group pull-left">
+					<button type="button" class="btn btn-sm btn-default save-copy-button">Save a Copy</button>
+					<button type="button" class="btn btn-default btn-dropdown" data-toggle="dropdown">
+						<span class="fa fa-caret-down"></span>
+					</button>
+					<ul class="dropdown-menu" role="menu">
+						<li><a class="save-copy-button">Save a Copy</a></li>
+						<li><a id="save-as-preset">Save as Preset</a></li>
+						<li><a id="save-selection-as-preset">Save Selection as Preset</a></li>
+						<li><hr></li>
+						<li><a id="view-source">View Source</a></li>
+					</ul>
+				</div>
+
+				<button id="open" class="btn btn-sm btn-default">Open</button>
+
+			</div>
+
+			<div class="top-header-col" id="top-header-right">
+
+				<button id="help" class="btn btn-sm btn-default pull-right">Help</button>
+
+				<div class="header pull-right">
+					<button id="play" class="btn btn-primary">
+						<i class="fa fa-play"></i>
+					</button>
+					<button id="stop" class="btn btn-primary">
+						<i class="fa fa-stop"></i>
+					</button>
+					<button id="fullscreen" class="btn btn-primary">
+						<i class="fa fa-expand"></i>
+					</button>
+					{{> userpulldown}}
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+</div> <!-- menu bar -->
+>>>>>>> develop
 
 <div class="library-block floating-box" id="left-nav">
 		<div class="block-header">
@@ -135,6 +198,16 @@
 		<canvas id="canvas" width="940" height="620">
 		<!-- editor noodles -->
 		</canvas>
+<<<<<<< HEAD
+=======
+
+		<div id="canvas_parent">
+			<div id="breadcrumb"></div>
+			<canvas id="canvas" width="940" height="620">
+			<!-- editor noodles -->
+			</canvas>
+		</div>
+>>>>>>> develop
 	</div>
 </div>
 

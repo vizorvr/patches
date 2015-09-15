@@ -6,7 +6,7 @@
 			{
 				name: 'radius',
 				dt: core.datatypes.FLOAT,
-				def: 50
+				def: 1
 			},
 			{
 				name: 'widthSegments',
@@ -57,7 +57,7 @@
 	}
 
 	ThreeSphereGeometryPlugin.prototype.createGeometry = function() {
-		return new THREE.SphereGeometry(
+		return new THREE.SphereBufferGeometry(
 			this.inputValues.radius,
 			Math.floor(this.inputValues.widthSegments),
 			Math.floor(this.inputValues.heightSegments),
