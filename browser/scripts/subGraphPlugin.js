@@ -185,7 +185,7 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, proxyNode, othe
 	
 				proxyNode.plugin.data = core.get_default_value(otherSlot.dt)
 				externalSlot.dt = otherSlot.dt
-				externalSlot.array = otherSlot.dt
+				externalSlot.array = otherSlot.array
 			}
 
 		} else if (lastRemoved) {

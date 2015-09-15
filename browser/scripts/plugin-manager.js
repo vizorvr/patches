@@ -8,7 +8,6 @@ function PluginManager(core, base_url) {
 	this.keybyid = {}
 	this.release_mode = false
 	this.lid = 1
-	this.context_menu = null
 	this.total = 0
 	this.loaded = 0
 	this.failed = 0
@@ -31,13 +30,6 @@ function PluginManager(core, base_url) {
 						load_script(url, that.onload.bind(that), that.onerror.bind(that));
 					that.register_plugin(pg_root, key, id);
 				})
-
-				if (E2.app) {
-					that.context_menu = new ContextMenu(E2.dom.canvas_parent, pg_root.create_items())
-					that.context_menu.on('created', function(icon, pos) {
-						that.emit('created', icon, pos)
-					})
-				}
 
 				if (that.release_mode) {
 					that.total = 1

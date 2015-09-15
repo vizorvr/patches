@@ -1,3 +1,7 @@
+var testId = rand()
+process.env.MONGODB = 'mongodb://localhost:27017/preset'+testId
+process.env.RETHINKDB_NAME = 'preset' + testId
+
 var Preset = require('../../models/preset')
 var request = require('supertest')
 var app = require('../../app.js')
