@@ -59,7 +59,7 @@
     "osc-min": "^0.1.0",
     "passport": "^0.2.0",
     "passport-local": "^1.0.0",
-    "random-js": "^1.0.4",
+    "random-js": "1.0.4",
     "request": "^2.40.0",
     "rethinkdb": "2.1.0",
     "temp": "~0.8.1",
