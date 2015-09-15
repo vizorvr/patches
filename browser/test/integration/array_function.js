@@ -63,8 +63,7 @@ global.ConnectionUI.prototype.resolve_slot_divs = function() {
 }
 global.navigator = { userAgent: 'test' }
 
-describe('Color converters', function() {
-	var source
+describe('Array function', function() {
 	
 	global.window = global
 
