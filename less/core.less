@@ -1,3 +1,11 @@
+html, body {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	border: 0;
+	padding: 0;
+	overflow: hidden;
+}
 
 body {
 	font-family: @font-family-sans-serif;
@@ -22,7 +30,37 @@ body {
 	user-select: none;
 }
 
-.btn { /* override bootstrap style */
+#dbg
+{
+	display: none;
+	font-size: 12px;
+	padding: 0;
+	margin: 0;
+}
+
+#canvas_parent {
+	z-index: 1;
+	overflow: auto;
+	position: relative;
+	border: none;
+	-moz-box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+	box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+#canvas {
+	position: relative;
+	z-index: 2;
+}
+
+#structure
+{
+	padding-left: 24px;
+	margin: 8px;
+	overflow: auto;
+}
+
+.btn { 
 	border-radius: 0;
 }
 
@@ -189,16 +227,16 @@ ul.iconic-nav>li.open>button span {
 #breadcrumb {
     height: @breadcrumb-height;
     width: 100%;
-    position: relative!important;
-    background: @bg-dark!important;
+    position: relative;
+    background: @bg-dark;
     color: @editor-tect-inactive;
-    font-size: 14px!important;
-    margin: 0!important;
-    padding: 0!important;
-    opacity: 1!important;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    opacity: 1;
     text-align: center;
-    top: auto!important;
-    z-index: 10!important;
+    top: auto;
+    z-index: 10;
 }
 
 #breadcrumb span {
@@ -504,19 +542,6 @@ ul.iconic-nav>li.open>button span {
 	//background: #eee;
 }
 
-.graph,
-.graph .plugin-row td
-{
-	background: #fcf297; /* Old browsers */
-	background: -moz-linear-gradient(top,  #fcf297 0%, #f7c438 100%) !important; /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fcf297), color-stop(100%,#f7c438)) 	!important; /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top,  #fcf297 0%,#f7c438 100%) !important; /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top,  #fcf297 0%,#f7c438 100%) !important; /* Opera 11.10+ */
-	background: -ms-linear-gradient(top,  #fcf297 0%,#f7c438 100%) !important; /* IE10+ */
-	background: linear-gradient(to bottom,  #fcf297 0%,#f7c438 100%) !important; /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcf297', endColorstr='#f7c438',GradientType=0 ) !important; /* IE6-9 */
-}
-
 .proxy, .proxy .plugin-row td
 {
 	background: #badaff !important;
@@ -533,20 +558,11 @@ ul.iconic-nav>li.open>button span {
 
 .config_btn
 {
-	width: 16px;
-	height: 16px;
-	margin-left: 0px;
-	border: 0px !important;
-	background-color: transparent !important;
 	background-image: url('/images/config.png') !important;
 	background-repeat: no-repeat !important;
-	background-size: cover;
-	-moz-background-size: contain;
-	-webkit-background-size: contain;
+	background-size: 16px 16px!important;
+	background-position: center center!important;
 	position: relative;
-	left: -37px;
-	top: -1px;
-	opacity: 0.75;
 	outline: none;
 	padding: none !important;
 }
@@ -565,8 +581,20 @@ ul.iconic-nav>li.open>button span {
 
 .pl_layout
 {
-	border-spacing: 0px;
-	box-shadow: 5px 5px 80px #111;
+    border: 0;
+	border-spacing: 0;
+	border-radius: 5px;
+	background: @device-def-bg;
+	color: @device-def-color;
+	overflow: hidden;
+}
+
+.pl_layout .btn-xs {
+    color: @bg-darker;    
+}
+
+.pl_layout .plugin-row {
+    padding: 16px;    
 }
 
 .pl_title
@@ -574,20 +602,54 @@ ul.iconic-nav>li.open>button span {
 	padding: 0px;
 }
 
-.pl_header
-{
+.pl_header {
 	cursor: move;
-	color: #ccc;
-	background: transparent;
 	border: none;
-	background: rgb(28,28,28); /* Old browsers */
-	background: -moz-linear-gradient(top,  rgba(58,58,58,1) 0%, rgba(78,78,78,1) 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(58,58,58,1)), color-stop(100%,rgba(78,78,78,1))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top,  rgba(58,58,58,1) 0%,rgba(78,78,78,1) 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top,  rgba(58,58,58,1) 0%,rgba(78,78,78,1) 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top,  rgba(58,58,58,1) 0%,rgba(78,78,78,1) 100%); /* IE10+ */
-	background: linear-gradient(to bottom,  rgba(58,58,58,1) 0%,rgba(78,78,78,1) 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1c1c1c', endColorstr='#363636',GradientType=0 ); /* IE6-9 */
+	position: relative;
+	height: @device-header-height;
+	>.pl_title {
+	        height: @device-header-height;
+	        display: table;
+	        width: 100%;
+	        >div {
+	            display: table-row;
+    	        >button {
+                   	    height: @device-header-height;
+                   	    width: @device-header-height;
+                   	    position: relative;
+                   	    padding: 0;
+                   	    margin: 0;
+                   	    display: table-cell;
+                   	    float: left;
+                   	    background-color: @dev-head-button-bg;
+                   	    border: 0;
+            	    svg {
+            	        fill: @device-def-color;
+        	            width: 16px;
+            	        height: 16px;
+	                    position: absolute;
+	                    display: block;
+        	            left: 50%;
+        	            top: 50%;
+        	            margin: -8px 0 0 -8px;
+    	             }
+        	    }
+                >span {
+        	        margin: 0px;
+        	        padding: 0 20px 0 10px;
+        	        display: table-cell;
+        	        vertical-align: middle;
+        	        letter-spacing: 0px;
+        	        line-height: 14px;
+        	        font-size: 14px;
+        	        float: none;
+        	        background: @device-header-def-bg;
+        	        color: @device-def-color;
+        	        width: 100%;
+        	        height: @device-header-height;
+                }
+	        }
+	}
 }
 
 .pl_delete
@@ -600,18 +662,6 @@ ul.iconic-nav>li.open>button span {
 	background: -ms-linear-gradient(top,  #ff3b3b 1%,#df1b1b 100%); /* IE10+ */
 	background: linear-gradient(to bottom,  #ff3b3b 1%,#df1b1b 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3b3b', endColorstr='#df1b1b',GradientType=0 ); /* IE6-9 */
-}
-
-.pl_header .t
-{
-	margin: 0px;
-	padding: 5px 7px 0px 3px;
-	display: inline-block;
-	width: 100%;
-	height: 16px;
-	letter-spacing: 0px;
-	line-height: 11px;
-	font-size: 11px;
 }
 
 .ic
@@ -682,8 +732,7 @@ ul.iconic-nav>li.open>button span {
 }
 
 .widget { font-family: Verdana,Arial,sans-serif; font-size: 1em;}
-.graph-node { border: none; background: #ffffff; color: #222222; }
-.state-hover, .graph-node { background: #ffffff; font-weight: normal; color: #212121; }
+.state-hover { background: #ffffff; font-weight: normal; color: #212121; }
 .state-hover a, .state-hover a:hover { color: #212121; text-decoration: none; }
 
 .corner-all { -moz-border-radius-topleft: 4px; -webkit-border-top-left-radius: 4px; -khtml-border-top-left-radius: 4px; border-top-left-radius: 4px; }
@@ -922,6 +971,9 @@ ul.iconic-nav>li.open>button span {
         >button {
             width: 60px;
             outline: none!important;
+            svg {
+                left: 50%;
+                }
         }
         .disabled {
             opacity: 1;
@@ -1002,22 +1054,30 @@ button.show-timeline:hover svg {
 }
 .popover {
     border: 0 !important;
-    border-radius: 0!important;
-    background: none!important;
-    color: @editor-text-default!important;
-    padding: 0!important;
+    border-radius: 5px!important;
+    background-color: @bg-light!important;
+    color: @chat-text-color!important;
+    font-size: 14px;
+    padding: 16px 20px!important;
 }
 .popover-title {
-    border-radius: 5px 5px 0 0;
-    background-color: @bg-light!important;
-    border-bottom: 1px solid @bg-darker !important;
-    padding: 20px!important;
+    padding: 0!important;
+    background: none!important;
+    border: 0!important;
+    font-size: 14px;
     }
 .popover-content {
-    border-radius: 0 0 5px 5px;
-    background-color: @bg-light!important;
+    background: none!important;
+    padding: 0!important;
+}
+.popover-content .readmore {
+    padding: 12px 0 0!important;
+    border-top: 1px solid @bg-darker !important;
 }
 .popover.bottom > .arrow::after {
     border-bottom-color: @bg-light!important;
+}
+.popover.top > .arrow::after {
+    border-top-color: @bg-light!important;    
 }
 

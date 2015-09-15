@@ -64,7 +64,7 @@
 			<li>
 				<button class="btn" id="btn-code">
 					<svg class="icon-code"><use xlink:href="#icon-code"></use></svg>
-					<span>Cam View</span>
+					<span>Code</span>
 				</button>
 			</li>
 			<li>
@@ -99,7 +99,6 @@
 <div id="breadcrumb"></div>
 
 <div class="library-block floating-box" id="left-nav">
-	<div>
 		<div class="block-header">
 			<button class="toggle-button" id="assets-toggle" type="button">
 				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
@@ -122,7 +121,6 @@
 				<div class="cell" id="structure"></div>
 			</div>
 		</div>
-	</div>
 </div>
 
 <div id="canvases">
@@ -140,7 +138,7 @@
 	</div>
 </div>
 
-<div class="chat-users floating-box">
+<div class="chat-users floating-box" id="chat-window">
 		<div class="chat-tabs block-header">
 			<button class="toggle-button" id="chat-toggle" type="button">
 				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
@@ -177,45 +175,45 @@
 </div>
 
 <div class="bottom-panel">
-	<button class="btn show-timeline" id="btn-timeline">
+	<button class="btn show-timeline" id="btn-timeline" data-toggle="popover" data-placement="top" title="Toggle timeline">
 		<svg class="icon-timeline"><use xlink:href="#icon-timeline"></use></svg>
 		<span>Show</span>
 	</button>
 	<ul class="playback-controls">
 		<li class="play-pause active">
-			<button class="btn" id="play">
+			<button class="btn" id="play" data-toggle="popover" data-placement="top" title="Play/Pause">
 				<svg class="icon-pause"><use xlink:href="#icon-play"></use></svg>
 			</button>
 		</li>
 		<li class="stop">
-			<button class="btn" id="stop">
+			<button class="btn" id="stop" data-toggle="popover" data-placement="top" title="Stop">
 				<svg class="icon-pause"><use xlink:href="#icon-stop"></use></svg>
 			</button>
 		</li>
 		<li class="fscreen">
-			<button class="btn" id="fullscreen">
+			<button class="btn" id="fullscreen" data-toggle="popover" data-placement="top" title="Fullscreen">
 				<svg class="icon-vr"><use xlink:href="#icon-vr"></use></svg>
 			</button>
 		</li>
 	</ul>
 	<ul class="view-modes">
 		<li class="active">
-			<button class="btn" id="btn-cam">
+			<button class="btn" id="btn-cam" data-toggle="popover" data-placement="top" title="Camera">
 				<svg class="icon-vr"><use xlink:href="#icon-view-cam"></use></svg>
 			</button>
 		</li>
 		<li>
-			<button class="btn" id="btn-cam">
+			<button class="btn" id="btn-vr" data-toggle="popover" data-placement="top" title="VR Camera">
 				<svg class="icon-vr"><use xlink:href="#icon-view-vr"></use></svg>
 			</button>
 		</li>
 		<li>
-			<button class="btn" id="btn-cam">
+			<button class="btn" id="btn-v3" data-toggle="popover" data-placement="top" title="View 3">
 				<svg class="icon-vr"><use xlink:href="#icon-view-3"></use></svg>
 			</button>
 		</li>
 		<li>
-			<button class="btn" id="btn-cam">
+			<button class="btn" id="btn-v4" data-toggle="popover" data-placement="top" title="View 4">
 				<svg class="icon-vr"><use xlink:href="#icon-view-4"></use></svg>
 			</button>
 		</li>
@@ -264,11 +262,12 @@
 				}
 			}
 		}
-
+		
 		startEditor([hmd, sensor]);
 	}
 
 	$(document).ready(function() {
+		checkBrowser();
 		E2.models = {
 			user: new User({})
 		}

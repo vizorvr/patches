@@ -180,9 +180,10 @@ CollapsibleSelectControl.prototype.focus = function() {
 }
 
 CollapsibleSelectControl.prototype._reset = function() {
-	$('.panel', this._el).show()
-	$('table.result', this._el).empty().remove()
-	$('.preset-result', this._el).empty()
+	$('.panel', this._el).show();
+	$('table.result', this._el).empty().remove();
+	$('.preset-result', this._el).empty();
+	E2.app.onSearchResultsChange();
 }
 
 CollapsibleSelectControl.prototype._search = function(text) {
@@ -196,9 +197,9 @@ CollapsibleSelectControl.prototype._search = function(text) {
 	$('.panel', this._el).hide()
 
 	var $pr = $('.preset-result', this._el)
-
+	
 	var data = this._filterData(text)
-
+	
 	var $result = this._resultTpl(data)
 	$pr.empty().html($result)
 
@@ -260,7 +261,8 @@ CollapsibleSelectControl.prototype._filterData = function(text) {
 CollapsibleSelectControl.prototype.scoreResult = function(oq, resultStr) {
 	var lstr = resultStr.toLowerCase()//.replace(/\//gim, '')
 	var scr = 0
-
+	oq = oq.toLowerCase()
+	
 	if (lstr.indexOf(oq) > -1)
 		return 500
 

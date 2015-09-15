@@ -52,36 +52,24 @@ function Application() {
 	this.normal_border_style = 'none';
 	this.is_panning = false;
 	this.noodlesVisible = !E2.util.isMobile();
-	this.viewMode = 'editor'
-
 	this.mousePosition = [400,200]
-
 	this.path = getChannelFromPath(window.location.pathname)
-
 	this.dispatcher = new Flux.Dispatcher()
-
 	this.undoManager = new UndoManager()
 	this.graphApi = new GraphApi(this.undoManager)
-
 	this.graphStore = new GraphStore()
 	this.peopleStore = new PeopleStore()
-
 	this.peopleManager = new PeopleManager(this.peopleStore, $('#peopleTab'))
 
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
 	
-	if (this.viewMode==='editor') {
-		E2.dom.btnEditor.parent().toggle();
-	} else {
-		E2.dom.btnCamView.parent().toggle();
-	}
-
-	$('#left-nav-collapse-btn').click(function(e) {
-		that.toggleLeftPane()
-	})
-	
 	$('#left-nav').movable();
+	$('[data-toggle="popover"]').popover({
+			container: 'body',
+			trigger: 'hover',
+			animation: false
+	});
 }
 
 Application.prototype.getNIDFromSlot = function(id) {
@@ -1156,10 +1144,6 @@ Application.prototype.toggleNoodles = function() {
 	this.noodlesVisible = !this.noodlesVisible
 	E2.dom.canvas_parent.toggle(this.noodlesVisible)
 }
-Application.prototype.toggleViewButtons = function() {
-	E2.dom.btnEditor.parent().toggle();
-	E2.dom.btnCamView.parent().toggle();
-}
 
 Application.prototype.toggleLeftPane = function()
 {
@@ -1422,18 +1406,18 @@ Application.prototype.onOpenClicked = function() {
 
 
 Application.prototype.onChatDisplayClicked = function() {
-	if (!$('.chat-users').hasClass('collapsed')) {
-		$('.chat-users').toggle();
-		if ($('#peopleTab').hasClass('active') && $('.chat-users').is(':visible')) {
+	if (!E2.dom.chatWindow.hasClass('collapsed')) {
+		E2.dom.chatWindow.toggle();
+		if (E2.dom.peopleTab.hasClass('active') && E2.dom.chatWindow.hasClass('active')) {
 			E2.app.onPeopleListChanged();
 		};
 	}
 	else {
-		if ($('#peopleTab').hasClass('active')) {
-			$('.chat-users').removeClass('collapsed').show();
+		if (E2.dom.peopleTab.hasClass('active')) {
+			E2.dom.chatWindow.removeClass('collapsed').show();
 			E2.app.onPeopleListChanged();
 		} else {
-			$('.chat-users').removeClass('collapsed').show().height($('.chat-tabs').height + $('.chat').height)
+			E2.dom.chatWindow.removeClass('collapsed').show().height(E2.dom.chatTabs.height + E2.dom.chat.height)
 		};
 	}
 }
@@ -1602,15 +1586,14 @@ Application.prototype.openSaveACopyDialog = function(cb) {
 
 Application.prototype.growl = function(title, type, person, duration) {
 	var letter=title.charAt(0);
+	var image=''
 	type= type || 'info';
 	if (!$('symbol#icon-'+type).length) {
 		type='info'
 	}
 	if (person) {
 		var image='<div style="background-color: '+person.color+';" class="image-crop"><span>'+letter+'</span></div>';
-	} else {
-		var image=''
-	}
+	} 
 	
 	/** TODO: when users will have pics - use this:
 	if (person.userpic) {
@@ -1620,22 +1603,24 @@ Application.prototype.growl = function(title, type, person, duration) {
 	
 	var glyph = '<div class="glyph">'+image+'<svg class="icon-'+type+'"><use xlink:href="#icon-'+type+'"></use></svg></div>';
 	
-	if (!$('.notifications-area').length) {
-		$('body').append('<div class="notifications-area"></div>');
+	if (!E2.dom.notificationsArea.length) {
+		$('body').append('<div id="notifications-area"></div>');
 	}
 	
 	function close() {
-		$('.notifications-area .notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
+		$('.notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
 	}
 	
 	function remove() {
 		$('.notification-hide:first-child').remove();
-		$('.notifications-area .notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
-		if (!$('.notifications-area div').length)
-			$('.notifications-area').remove();
+		$('.notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
+		if (!$('.notifications-area>div').length) {
+			E2.dom.notificationsArea.remove();
+		}
 	}
 
-	$('.notifications-area').append('<div class="notification notification-show"><div class="nt-content">'+glyph+'<div class="text"><span>'+title+'</span></div></div></div>');
+	E2.dom.notificationsArea.append('<div class="notification notification-show"><div class="nt-content">'+glyph+'<div class="text"><span>'+title+'</span></div></div></div>');
+	
 	duration = duration || 2000;
 	
 	setTimeout(close, duration * $('.notifications-area .notification').length)
@@ -1653,6 +1638,7 @@ Application.prototype.onShowTooltip = function(e) {
 	var core = this.player.core;
 	var node = E2.core.active_graph.nuid_lut[tokens[0]];
 	var txt = '';
+	var readmore= '';
 
 	if(tokens.length < 2) // Node?
 	{
@@ -1685,6 +1671,10 @@ Application.prototype.onShowTooltip = function(e) {
 		}
 
 		txt += '<br /><br />';
+		
+		if (readmore) {
+			readmore = '<div class="readmore">' + readmore + '</div>'
+		};
 
 		if(slot.desc)
 			txt += slot.desc.replace(/\n/g, '<br/>');
@@ -1698,6 +1688,7 @@ Application.prototype.onShowTooltip = function(e) {
 
 		$elem.popover({
 			title: txt,
+			content: readmore,
 			container: 'body',
 			animation: false,
 			trigger: 'manual',
@@ -1984,41 +1975,49 @@ Application.prototype.onNewClicked = function() {
 Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
-Application.prototype.onEditorClicked = function() {
-	this.toggleViewButtons();
-}
-Application.prototype.onCamViewClicked = function() {
-	this.toggleViewButtons();
-}
 
 Application.prototype.onChatToggleClicked = function() {
-	if ($('.chat-users').hasClass('collapsed')) {
-		if ($('#peopleTab').hasClass('active')) {
-			$('.chat-users').removeClass('collapsed');
+	if (E2.dom.chatWindow.hasClass('collapsed')) {
+		if (E2.dom.peopleTab.hasClass('active')) {
+			E2.dom.chatWindow.removeClass('collapsed');
 			E2.app.onPeopleListChanged();
 		} else {
-			$('.chat-users').removeClass('collapsed').height($('.chat-users .drag-handle').height() + $('.chat-tabs').height() + $('.chat').height());
+			E2.dom.chatWindow.removeClass('collapsed').height(E2.dom.chatWindow.find('.drag-handle').height() + E2.dom.chatTabs.height() + E2.dom.chat.height());
 		}
 	} else {
-		$('.chat-users').addClass('collapsed').height($('.chat-users .drag-handle').height() + $('.chat-tabs').height());
+		E2.dom.chatWindow.addClass('collapsed').height(E2.dom.chatWindow.find('.drag-handle').height() + E2.dom.chatTabs.height());
+	}
+}
+
+Application.prototype.onAssetsToggleClicked = function() {
+	if (E2.dom.assetsLib.hasClass('collapsed')) {
+		E2.dom.assetsLib.removeClass('collapsed');
+		E2.app.onSearchResultsChange();
+	} else {
+		E2.dom.assetsLib.addClass('collapsed').height(55);
 	}
 }
 
 Application.prototype.onChatCloseClicked = function() {
-	$('.chat-users').hide();
+	E2.dom.chatWindow.hide();
 }
+
+Application.prototype.onAssetsCloseClicked = function() {
+	E2.dom.assetsWindow.hide();
+}
+
 Application.prototype.onChatTabClicked = function() {
 	if (!$(this).parent().hasClass('active')) {
-		$('.chat-users').height($('.chat-users .drag-handle').height() + $('.chat-tabs').height() + $('.chat').height());
+		E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() + E2.dom.chatTabs.height() + E2.dom.chat.height());
 	}
-	if ($('.chat-users').hasClass('collapsed')) {
-		$('.chat-users').removeClass('collapsed')
+	if (E2.dom.chatWindow.hasClass('collapsed')) {
+		E2.dom.chatWindow.removeClass('collapsed')
 	};
 	return true;
 }
 
 Application.prototype.onPeopleListChanged = function(storeAction) { 
-	if ($('.chat-users').is(':visible') && !$('.chat-users').hasClass('collapsed') && $('#peopleTab').is(':visible')) {
+	if (E2.dom.chatWindow.is(':visible') && !E2.dom.chatWindow.hasClass('collapsed') && E2.dom.peopleTab.is(':visible')) {
 		var itemHeight = $('.graph-users>li:first-child').outerHeight(true);
 		var visibleItems = 3;
 		var listChange = 0;  
@@ -2028,11 +2027,11 @@ Application.prototype.onPeopleListChanged = function(storeAction) {
 			listChange = -1;
 		}
 		if ($('.graph-users>li').length + listChange <=visibleItems) {
-			$('.chat-users').height($('.chat-users .drag-handle').height() + $('.chat-tabs').height() + $('.peopleList .meta').outerHeight(true) + itemHeight * ($('.graph-users>li').length + listChange));
+			E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() +  E2.dom.chatTabs.height() + $('.peopleList .meta').outerHeight(true) + itemHeight * ($('.graph-users>li').length + listChange));
 			$('.people-scroll').height($('.chat-users').height() - $('.chat-tabs').height());
 			$('.peopleList').height($('.people-scroll').height());
 		} else {
-			$('.chat-users').height($('.chat-users .drag-handle').height() + $('.chat-tabs').height() + $('.peopleList .meta').outerHeight(true) + itemHeight * visibleItems);
+			E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() + E2.dom.chatTabs.height() + $('.peopleList .meta').outerHeight(true) + itemHeight * visibleItems);
 			$('.people-scroll').height($('.chat-users').height() - $('.chat-tabs').height());
 			$('.peopleList').height($('.people-scroll').height());
 		};
@@ -2040,11 +2039,11 @@ Application.prototype.onPeopleListChanged = function(storeAction) {
 }
 Application.prototype.onPeopleTabClicked = function() {
 	if (!$(this).parent().hasClass('active')) {
-		$('#peopleTab').show();
+		E2.dom.peopleTab.show();
 		E2.app.onPeopleListChanged();
 	};
-	if ($('.chat-users').hasClass('collapsed')) {
-		$('.chat-users').removeClass('collapsed');
+	if (E2.dom.chatWindow.hasClass('collapsed')) {
+		E2.dom.chatWindow.removeClass('collapsed');
 		E2.app.onPeopleListChanged();
 	};
 	return true;
@@ -2053,13 +2052,11 @@ Application.prototype.onPeopleTabClicked = function() {
 Application.prototype.onSearchResultsChange = function() { 
 	var resultsHeight = $('.result.table').outerHeight(true);
 	var maxHeight = 310;
-	var controlsHeight = $('.library-block .drag-handle').height() + $('.library-block .block-header').height() + $('.library-block .searchbox').height();
 	var newHeight = resultsHeight;
 	newHeight = ((newHeight)>=maxHeight) ? (maxHeight) : (newHeight);
 	$('.preset-list-container').height(newHeight);
-	newHeight += controlsHeight;
-	$('.library-block').height(newHeight);
-	
+	newHeight += 95;
+	E2.dom.assetsLib.height(newHeight);
 }
 Application.prototype.start = function() {
 	var that = this
@@ -2117,48 +2114,6 @@ Application.prototype.start = function() {
 		window.open('/help/introduction.html', 'Vizor Create Help');
 	});
 
-	$('.resize-handle').on('mousedown', function(e) {
-		var $handle = $(e.target)
-		var $pane = $($handle.data('target'))
-		var ow = $pane.width()
-		var ox = e.pageX
-		var $doc = $(document)
-		var changed = false
-		var rightToLeft = $handle.hasClass('right-pane-handle')
-
-		e.preventDefault()
-
-		function mouseMoveHandler(e) {
-			changed = true
-			var nw = ow + (e.pageX - ox)
-			if (rightToLeft)
-				nw = ow + (ox - e.pageX)
-			e.preventDefault()
-			$pane.css('flex', '0 0 '+nw+'px')
-			$pane.css('width', nw+'px')
-			$pane.css('max-width', nw+'px')
-			E2.app.onWindowResize()
-		}
-
-		$doc.on('mousemove', mouseMoveHandler)
-		$doc.one('mouseup', function(e) {
-			if (!changed) {
-
-				$pane.toggleClass('pane-hidden')
-
-				// Collapse top header logo to make the header look nicer
-				if($handle.hasClass('left-pane-handle')) {
-					$('#top-header-logo').toggleClass('collapsed');
-				}
-
-				E2.app.onWindowResize()
-			}
-			e.preventDefault()
-			$doc.off('mousemove', mouseMoveHandler)
-		})
-
-	})
-
 	E2.dom.viewSourceButton.click(function() {
 		bootbox.dialog({
 			message: '<textarea class="form-control" cols=80 rows=40>'+
@@ -2173,18 +2128,13 @@ Application.prototype.start = function() {
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
 	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
-	
-	E2.dom.btnEditor.click(E2.app.onEditorClicked.bind(E2.app))
-	E2.dom.btnCamView.click(E2.app.onCamViewClicked.bind(E2.app))
 	E2.dom.btnSignIn.click(E2.app.onSignInClicked.bind(E2.app))
-	
 	E2.dom.btnChatDisplay.click(E2.app.onChatDisplayClicked.bind(E2.app))
-	
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
-	
 	E2.dom.chatToggleButton.click(E2.app.onChatToggleClicked.bind(E2.app))
+	E2.dom.assetsToggle.click(E2.app.onAssetsToggleClicked.bind(E2.app))
 	E2.dom.chatClose.click(E2.app.onChatCloseClicked.bind(E2.app))
 	E2.dom.chatTabBtn.click(E2.app.onChatTabClicked.bind(E2.app))
 	E2.dom.peopleTabBtn.click(E2.app.onPeopleTabClicked.bind(E2.app))
@@ -2256,6 +2206,7 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 		E2.app.loadGraph(loadGraphUrl, start)
 	else
 		E2.app.setupEditorChannel().then(start)
+	
 }
 
 Application.prototype.setupChat = function() {
@@ -2308,8 +2259,11 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.canvas = $('#canvas');
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
-	E2.dom.left_nav = $('#left-nav');
-	E2.dom.mid_pane = $('#mid-pane');
+	E2.dom.chatWindow = $('#chat-window');
+	E2.dom.chatTabs = $('#chat-window>.chat-tabs');
+	E2.dom.chatTab = $('#chatTab');
+	E2.dom.chat = $('#chat');
+	E2.dom.peopleTab = $('#peopleTab');
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
 	E2.dom.playPauseIcon = $('.play-pause use');
@@ -2318,8 +2272,6 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.refresh = $('#refresh');
 	E2.dom.btnNew = $('#btn-new');
 	E2.dom.forkButton = $('#fork-button');
-	E2.dom.btnEditor = $('#btn-editor');
-	E2.dom.btnCamView = $('#btn-cam-view');
 	E2.dom.btnSignIn = $('#btn-sign-in');
 	E2.dom.btnChatDisplay = $('#btn-chat-display');
 	E2.dom.viewSourceButton = $('#view-source');
@@ -2341,9 +2293,9 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.chatClose = $('#chat-close');
 	E2.dom.chatTabBtn = $('#chatTabBtn');
 	E2.dom.peopleTabBtn = $('#peopleTabBtn');
-	
-	
-
+	E2.dom.assetsToggle = $('#assets-toggle');
+	E2.dom.assetsLib = $('#left-nav');
+	E2.dom.notificationsArea=$('#notifications-area');
 
 	$.ajaxSetup({ cache: false });
 
