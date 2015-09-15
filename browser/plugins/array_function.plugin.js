@@ -55,27 +55,28 @@ ArrayFunctionPlugin.prototype.update_state = function() {
 	this.updated = false
 	this.updated_sids.length = 0
 
-	if (this.graph) {
-		var updated = false
-		this.array = []
+	if (!this.graph)
+		return;
 
-		for(var cnt = 0; cnt < this.length; cnt ++) {
-			this.graph.variables.write('index', cnt)
-			this.graph.reset()
+	var updated = false
+	this.array = []
 
-			if (this.graph.update()) {
-				updated = true
-			}
+	for(var cnt = 0; cnt < this.length; cnt ++) {
+		this.graph.variables.write('index', cnt)
+		this.graph.reset()
 
-			var item = this.graph.variables.read('item')
-			this.array[cnt] = item
+		if (this.graph.update()) {
+			updated = true
 		}
 
-		this.updated = true
-
-		if (updated && this === E2.app.player.core.active_graph)
-			E2.app.updateCanvas(false)
+		var item = this.graph.variables.read('item')
+		this.array[cnt] = item
 	}
+
+	this.updated = true
+
+	if (updated && this === E2.app.player.core.active_graph)
+		E2.app.updateCanvas(false)
 }
 
 ArrayFunctionPlugin.prototype.variable_dt_changed = function(dt) {
