@@ -30,7 +30,9 @@ describe('SceneProcessor', function()
 			var dfd = when.defer();
 			var ee = new EventEmitter();
 			ee.write = function() { return true; };
-			ee.end = function() {};
+			ee.end = function() {
+				ee.emit('close')
+			};
 			dfd.resolve(ee);
 			return dfd.promise;
 		};
@@ -67,6 +69,7 @@ describe('SceneProcessor', function()
 			ee.write = function(data) { return true; };
 			ee.end = function() {
 				wrote++;
+				ee.emit('close')
 			}
 			dfd.resolve(ee);
 			return dfd.promise;
