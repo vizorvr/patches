@@ -150,6 +150,9 @@ Graph.prototype.removeNode = function(node) {
 	if (node.plugin.stop)
 		node.plugin.stop()
 
+	if (node.plugin.destroy)
+		node.plugin.destroy()
+
 	this.emit('nodeRemoved', node)
 
 	return node

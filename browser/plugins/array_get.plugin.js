@@ -36,8 +36,6 @@ ArrayGetPlugin.prototype.reset = function() {
 }
 
 ArrayGetPlugin.prototype.connection_changed = function(on, conn, slot) {
-	console.log('ArrayGetPlugin.connection_changed')
-	
 	if (this.lsg.connection_changed(on, conn, slot))
 		this.array = this.lsg.core.get_default_value(this.lsg.dt)
 
@@ -45,7 +43,6 @@ ArrayGetPlugin.prototype.connection_changed = function(on, conn, slot) {
 }
 
 ArrayGetPlugin.prototype.update_input = function(slot, data) {
-	console.log('ArrayGetPlugin.update_input', slot.index, data)
 	if (slot.index === 0) {
 		if (data && data.length)
 			this.array = data

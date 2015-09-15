@@ -82,6 +82,7 @@ SubGraphPlugin.prototype.onProxySlotDisconnected = function(conn, slot) {
 
 }
 
+// outside the graph
 SubGraphPlugin.prototype.connection_changed = function(on, conn, externalSlot) {
 	var internalSlot = null
 	var core = this.core
@@ -137,10 +138,7 @@ SubGraphPlugin.prototype.connection_changed = function(on, conn, externalSlot) {
 	}
 }
 
-// p_node = proxy
-// t_node = connection source node
-// slot = proxy slot
-// t_slot = connection source slot
+// inside the graph
 SubGraphPlugin.prototype.proxy_connection_changed = function(on, proxyNode, otherNode, proxySlot, otherSlot) {
 	var that = this
 	var core = this.core
@@ -266,9 +264,9 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, proxyNode, othe
 }
 
 SubGraphPlugin.prototype.update_output = function(slot) {
-	if (slot.uid !== undefined)
+	if (slot.dynamic)
 		return this.output_nodes[slot.uid].plugin.data
-		
+	
 	this.updated = true
 	return this.texture
 }

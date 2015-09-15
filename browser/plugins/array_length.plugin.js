@@ -17,6 +17,13 @@ var ArrayLengthPlugin = E2.plugins.array_length = function ArrayLengthPlugin(cor
 	this.length = 0
 }
 
+ArrayLengthPlugin.prototype.connection_changed = function(on, conn, slot) {
+	if (on)
+		this.input_slots[0].dt = conn.src_slot.dt
+	else
+		this.input_slots[0].dt = E2.dt.ANY
+}
+
 ArrayLengthPlugin.prototype.reset = function() {
 	this.length = 0
 }

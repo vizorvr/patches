@@ -28,7 +28,7 @@ VariableLocalWrite.prototype.variable_dt_changed = function(dt, arrayness) {
 
 VariableLocalWrite.prototype.renamed = function() {
 	this.regs.unlock(this, this.old_title)
-	this.regs.target_reg(this.node.title)
+	this.target_reg(this.node.title)
 }
 
 VariableLocalWrite.prototype.connection_changed = function(on, conn) {

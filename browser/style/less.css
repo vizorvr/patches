@@ -6606,6 +6606,10 @@ table {
 .loop .plugin-row td {
   background: #ffc6ee !important;
 }
+.arrayfunction,
+.arrayfunction .plugin-row td {
+  background: #33c6fe !important;
+}
 .config_btn {
   width: 16px;
   height: 16px;
