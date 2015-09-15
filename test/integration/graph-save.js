@@ -1,3 +1,7 @@
+var testId = rand()
+process.env.MONGODB = 'mongodb://localhost:27017/graphsave'+testId
+process.env.RETHINKDB_NAME = 'graphsave' + testId
+
 var request = require('supertest');
 var app = require('../../app.js');
 var fs = require('fs');

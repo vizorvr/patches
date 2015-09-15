@@ -1,3 +1,7 @@
+var testId = rand()
+process.env.MONGODB = 'mongodb://localhost:27017/upload'+testId
+process.env.RETHINKDB_NAME = 'upload' + testId
+
 var request = require('supertest');
 var fs = require('fs');
 var fsPath = require('path');
@@ -8,9 +12,6 @@ function rand()
 {
 	return Math.floor(Math.random() * 100000);
 }
-
-var testId = rand();
-process.env.MONGODB = 'mongodb://localhost:27017/test'+testId;
 
 var app = require('../../app.js');
 
@@ -30,7 +31,7 @@ describe('Upload', function() {
 	{
 		var that = this;
 
-		db = new mongo.Db('test'+testId,
+		db = new mongo.Db('upload'+testId,
 			new mongo.Server('localhost', 27017),
 			{ safe: true }
 		);

@@ -28,7 +28,6 @@ function rand() {
 	return Math.floor(Math.random() * 100000)
 }
 
-
 var app = require('../../app.js')
 var agent = request.agent(app)
 
@@ -70,7 +69,6 @@ function setupDatabase() {
 		db: dbName
 	})
 	.then(function(conn) {
-		console.log('1 conn')
 		rethinkConnection = conn
 		return setupRethinkDatabase()
 	})
@@ -88,7 +86,6 @@ function burst() {
 	var bn = numbers.slice()
 	var interval = setInterval(function() {
 		var n = bn.shift()
-		console.log('send', n)
 		if (n) {
 			s1.send({
 				actionType: 'uiPluginStateChanged',
@@ -117,7 +114,6 @@ describe('Multiuser', function() {
 		app._editorChannel.on('ready', function() {
 			setupDatabase()
 			.then(function() {
-				console.log('2')
 				db = new mongo.Db('mutest'+testId, 
 					new mongo.Server('localhost', 27017),
 					{ safe: true })
@@ -165,7 +161,6 @@ describe('Multiuser', function() {
 		s2 = createClient('test1')
 
 		function checkCondition() {
-			console.log('checkCondition', usersSeen.length)
 			if (usersSeen.length < 4)
 				return;
 
@@ -265,7 +260,6 @@ describe('Multiuser', function() {
 		s1.once('disconnected', function() {
 			s2 = createClient(channel)
 			s2.dispatcher.register(function(m) {
-				console.log('s2', m)
 				if (!m.actionType)
 					return;
 
@@ -290,7 +284,6 @@ describe('Multiuser', function() {
 		s1 = createClient(channel)
 
 		s1.once('join', function() {
-			console.log('s1 id', s1.uid)
 			s1.send({
 				actionType: 'uiPluginStateChanged',
 				number: 1
@@ -346,7 +339,7 @@ describe('Multiuser', function() {
 					assert.notEqual(m.number, 1)
 					assert.equal(m.id, lastId)
 					s3.close()
-					done()
+					s3.on('disconnected', done)
 				})
 			})
 
