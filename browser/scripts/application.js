@@ -2091,7 +2091,7 @@ Application.prototype.start = function() {
 }
 
 Application.prototype.showFirstTimeDialog = function() {
-	if (!!Cookies.get('vizor'))
+	if (!E2.util.isFirstTime())
 		return;
 
 	Cookies.set('vizor', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
@@ -2141,6 +2141,9 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 			}
 		}
 	}
+
+	if (!loadGraphUrl)
+		loadGraphUrl = '/data/graphs/default.json'
 
 	if (loadGraphUrl)
 		E2.app.loadGraph(loadGraphUrl, start)
