@@ -62,9 +62,15 @@
 		</ul>
 		<ul class="iconic-nav">
 			<li>
-				<button class="btn" id="btn-code">
-					<svg class="icon-code"><use xlink:href="#icon-code"></use></svg>
-					<span>Code</span>
+				<button class="btn" id="btn-patches">
+					<svg class="icon-patches"><use xlink:href="#icon-patches"></use></svg>
+					<span>Patches</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-editor">
+					<svg class="icon-editor"><use xlink:href="#icon-editor"></use></svg>
+					<span>Editor</span>
 				</button>
 			</li>
 			<li>
@@ -98,9 +104,9 @@
 </div>
 <div id="breadcrumb"></div>
 
-<div class="library-block floating-box" id="left-nav">
+<div class="presets-block floating-box" id="left-nav">
 		<div class="block-header">
-			<button class="toggle-button" id="assets-toggle" type="button">
+			<button class="toggle-button" id="presets-toggle" type="button">
 				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
 			</button>
 			<ul class="nav nav-tabs" role="tablist">
@@ -119,6 +125,348 @@
 
 			<div role="tabpanel" class="tab-pane" id="graph">
 				<div class="cell" id="structure"></div>
+			</div>
+		</div>
+</div>
+
+<div class="assets-block floating-box" id="assets-lib">
+		<div class="block-header">
+			<button class="toggle-button" id="assets-toggle" type="button">
+				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
+			</button>
+			<h4>Assets Library</h4>
+			<button class="close-button" id="assets-close" type="button">
+				<svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
+			</button>
+		</div>
+		<div id="assets">
+			<div class="searchbox">
+				<svg class="icon-search"><use xlink:href="#icon-search"/></svg>
+				<input type="text" onblur="this.placeholder = 'Search'" onfocus="this.placeholder = ''" placeholder="Search" class="form-control" id="assetSearch">
+			</div>
+			<ul class="lib-tabs" role="tablist" id="assets-tabs">
+				<li class="active">
+					<a data-toggle="tab" role="tab" href="#objectsTab" id="objectsTabBtn">Objects</a>
+				</li>
+				<li>
+					<a data-toggle="tab" role="tab" href="#imagesTab" id="imagesTabBtn">Images</a>
+				</li>
+				<li>
+					<a data-toggle="tab" role="tab" href="#audioTab" id="audioTabBtn">Audio</a>
+				</li>
+				<li>
+					<a data-toggle="tab" role="tab" href="#videoTab" id="videoTabBtn">Video</a>
+				</li>
+			</ul>
+			<div class="tab-content active" id="objectsTab">
+				<div class="assets-frame">
+					<div class="assets-scroll">
+						<div class="assets-group">
+							<span class="group-title">Primitives</span>
+							<ul class="assets-list">
+								<li class="active">
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+							</ul>
+						</div>
+						<div class="assets-group">
+							<span class="group-title">Primitives</span>
+							<ul class="assets-list">
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-content" id="imagesTab">
+				<div class="assets-frame">
+					<div class="assets-scroll">
+						<div class="assets-group">
+							<span class="group-title">Images Group</span>
+							<ul class="assets-list">
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Image object</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+							</ul>
+						</div>
+						<div class="assets-group">
+							<span class="group-title">Primitives</span>
+							<ul class="assets-list">
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-content" id="audioTab">
+				<div class="assets-frame">
+					<div class="assets-scroll">
+						<div class="assets-group">
+							<span class="group-title">Audio Group</span>
+							<ul class="assets-list">
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Audio object</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+							</ul>
+						</div>
+						<div class="assets-group">
+							<span class="group-title">Primitives</span>
+							<ul class="assets-list">
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-content" id="videoTab">
+				<div class="assets-frame">
+					<div class="assets-scroll">
+						<div class="assets-group">
+							<span class="group-title">Video Group</span>
+							<ul class="assets-list">
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Video object</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+							</ul>
+						</div>
+						<div class="assets-group">
+							<span class="group-title">Primitives</span>
+							<ul class="assets-list">
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+								<li>
+									<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+									<span>Sphere</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="load-buttons">
+				<button id="#uploadAsset">
+					<svg class="icon-load"><use xlink:href="#icon-upload"></use></svg>
+					<span>Upload</span>
+				</button>
+				<button id="#uploadAsset">
+					<svg class="icon-load"><use xlink:href="#icon-download"></use></svg>
+					<span>Download</span>
+				</button>
+			</div>
+			<div id="asset-info">
+				<div>
+					<div class="asset-image">
+						<img src="images/logo-graphic.png" />
+					</div>
+					<div class="asset-details">
+						<span id="asset-type">JSON file</span><br />
+						<span id="asset-demensions">6 polygons</span><br />
+						<span id="asset-size">26 KB</span>
+					</div>
+				</div>
 			</div>
 		</div>
 </div>
@@ -267,7 +615,8 @@
 	}
 
 	$(document).ready(function() {
-		checkBrowser();
+		if (!Cookies.get('vizor'))
+			E2.util.checkBrowser();
 		E2.models = {
 			user: new User({})
 		}

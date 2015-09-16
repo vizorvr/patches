@@ -1,12 +1,8 @@
 .chat-users {
-    height: @chat-height;
     right: 30px;
     z-index: 11;
 }
 
-.chat-users.collapsed {
-    height: @blocks-header-height;
-}
 .chat-tabs {
     width: @floating-box-width;
 }
@@ -44,7 +40,7 @@
     width: 19px;
     height: 10px;
     margin-bottom: -1px;
-    stroke: @editor-tect-inactive;    
+    stroke: @editor-text-inactive;    
 } 
 
 .chat .messages {
@@ -64,6 +60,7 @@
 .chat .message {
 	margin-bottom: 10px;
 	width: @chat-width;
+	line-height: 1;
 }
 
 .chat .message .icon-column {
@@ -93,15 +90,20 @@
 .chat .message .username {
 	color: white;
 	font-weight: 600;
-	font-size: 14px;
+	font-size: 12px;
 	color: @editor-text-hover;
 	line-height: 1;
 }
 
+.chat .message .text-cell {
+    padding: 3px 0 0;
+}
+
 .chat .message .text {
-    font-size: 14px;
+    font-size: 12px;
     color: @editor-text-hover;
     font-weight: 400;
+    line-height: 1.33;
 }
 
 

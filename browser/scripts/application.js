@@ -60,16 +60,11 @@ function Application() {
 	this.graphStore = new GraphStore()
 	this.peopleStore = new PeopleStore()
 	this.peopleManager = new PeopleManager(this.peopleStore, $('#peopleTab'))
+	this.viewMode = 'editor'
 
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
-	
-	$('#left-nav').movable();
-	$('[data-toggle="popover"]').popover({
-			container: 'body',
-			trigger: 'hover',
-			animation: false
-	});
+
 }
 
 Application.prototype.getNIDFromSlot = function(id) {
@@ -1090,10 +1085,7 @@ Application.prototype.calculateCanvasArea = function() {
 	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
 	if (!isFullscreen) {
-		width = $(window).width() -
-			$('#mid-pane').outerWidth(true) - 
-			$('.mid-pane-handle').outerWidth(true)
-
+		width = $(window).width();
 		height = $(window).height() -
 			$('.editor-header').outerHeight(true) - $('#breadcrumb').outerHeight(true) - $('.bottom-panel').outerHeight(true);
 	} else {
@@ -1143,6 +1135,11 @@ Application.prototype.onWindowResize = function() {
 Application.prototype.toggleNoodles = function() {
 	this.noodlesVisible = !this.noodlesVisible
 	E2.dom.canvas_parent.toggle(this.noodlesVisible)
+}
+
+Application.prototype.toggleViewButtons = function() {
+	E2.dom.btnEditor.parent().toggle();
+	E2.dom.btnPatches.parent().toggle();
 }
 
 Application.prototype.toggleLeftPane = function()
@@ -1603,28 +1600,28 @@ Application.prototype.growl = function(title, type, person, duration) {
 	
 	var glyph = '<div class="glyph">'+image+'<svg class="icon-'+type+'"><use xlink:href="#icon-'+type+'"></use></svg></div>';
 	
-	if (!E2.dom.notificationsArea.length) {
+	if (!$('#notifications-area').length) {
 		$('body').append('<div id="notifications-area"></div>');
 	}
 	
 	function close() {
-		$('.notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
+		$('#notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
 	}
 	
 	function remove() {
 		$('.notification-hide:first-child').remove();
-		$('.notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
-		if (!$('.notifications-area>div').length) {
-			E2.dom.notificationsArea.remove();
+		$('#notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
+		if (!$('#notifications-area>div').length) {
+			$('#notifications-area').remove();
 		}
 	}
 
-	E2.dom.notificationsArea.append('<div class="notification notification-show"><div class="nt-content">'+glyph+'<div class="text"><span>'+title+'</span></div></div></div>');
+	$('#notifications-area').append('<div class="notification notification-show"><div class="nt-content">'+glyph+'<div class="text"><span>'+title+'</span></div></div></div>');
 	
 	duration = duration || 2000;
 	
-	setTimeout(close, duration * $('.notifications-area .notification').length)
-	setTimeout(remove, duration * $('.notifications-area .notification').length + 1000)
+	setTimeout(close, duration * $('#notifications-area .notification').length)
+	setTimeout(remove, duration * $('#notifications-area .notification').length + 1000)
 }
 
 Application.prototype.onShowTooltip = function(e) {
@@ -1972,8 +1969,19 @@ Application.prototype.setupPeopleEvents = function() {
 Application.prototype.onNewClicked = function() {
 	window.location.href = '/new';
 }
+
 Application.prototype.onForkClicked = function() {
 	this.channel.fork()
+}
+
+Application.prototype.onEditorClicked = function() {
+	this.toggleViewButtons();
+	this.viewMode = 'editor';
+}
+
+Application.prototype.onPatchesClicked = function() {
+	this.toggleViewButtons();
+	this.viewMode = 'patches';
 }
 
 Application.prototype.onChatToggleClicked = function() {
@@ -1982,19 +1990,41 @@ Application.prototype.onChatToggleClicked = function() {
 			E2.dom.chatWindow.removeClass('collapsed');
 			E2.app.onPeopleListChanged();
 		} else {
-			E2.dom.chatWindow.removeClass('collapsed').height(E2.dom.chatWindow.find('.drag-handle').height() + E2.dom.chatTabs.height() + E2.dom.chat.height());
+			E2.dom.chatWindow.removeClass('collapsed').height(E2.dom.chatWindow.find('.drag-handle').height()
+															+ E2.dom.chatTabs.height() 
+															+ E2.dom.chat.height());
 		}
 	} else {
-		E2.dom.chatWindow.addClass('collapsed').height(E2.dom.chatWindow.find('.drag-handle').height() + E2.dom.chatTabs.height());
+		E2.dom.chatWindow.addClass('collapsed').height(E2.dom.chatWindow.find('.drag-handle').height() 
+													 + E2.dom.chatTabs.height());
 	}
 }
 
 Application.prototype.onAssetsToggleClicked = function() {
+	var controlsHeight = E2.dom.assetsLib.find('.drag-handle').outerHeight(true) 
+					   + E2.dom.assetsLib.find('.block-header').outerHeight(true) 
+					   + E2.dom.assetsLib.find('.searchbox').outerHeight(true); 
 	if (E2.dom.assetsLib.hasClass('collapsed')) {
-		E2.dom.assetsLib.removeClass('collapsed');
+		var newHeight = controlsHeight
+					   + E2.dom.assetsLib.find('#assets-tabs').outerHeight(true)
+					   + E2.dom.assetsLib.find('#assets-frame').outerHeight(true)
+					   + E2.dom.assetsLib.find('.load-buttons').outerHeight(true)
+					   + E2.dom.assetsLib.find('#asset-info').outerHeight(true)
+		E2.dom.assetsLib.removeClass('collapsed').height(newHeight);
+	} else {
+		E2.dom.assetsLib.addClass('collapsed').height(controlsHeight);
+	}
+}
+
+Application.prototype.onPresetsToggleClicked = function() {
+	var controlsHeight = E2.dom.presetsLib.find('.drag-handle').outerHeight(true) 
+					   + E2.dom.presetsLib.find('.block-header').outerHeight(true) 
+					   + E2.dom.presetsLib.find('.searchbox').outerHeight(true); 
+	if (E2.dom.presetsLib.hasClass('collapsed')) {
+		E2.dom.presetsLib.removeClass('collapsed');
 		E2.app.onSearchResultsChange();
 	} else {
-		E2.dom.assetsLib.addClass('collapsed').height(55);
+		E2.dom.presetsLib.addClass('collapsed').height(controlsHeight);
 	}
 }
 
@@ -2037,6 +2067,7 @@ Application.prototype.onPeopleListChanged = function(storeAction) {
 		};
 	};
 }
+
 Application.prototype.onPeopleTabClicked = function() {
 	if (!$(this).parent().hasClass('active')) {
 		E2.dom.peopleTab.show();
@@ -2050,14 +2081,20 @@ Application.prototype.onPeopleTabClicked = function() {
 }
 
 Application.prototype.onSearchResultsChange = function() { 
-	var resultsHeight = $('.result.table').outerHeight(true);
-	var maxHeight = 310;
-	var newHeight = resultsHeight;
-	newHeight = ((newHeight)>=maxHeight) ? (maxHeight) : (newHeight);
-	$('.preset-list-container').height(newHeight);
-	newHeight += 95;
-	E2.dom.assetsLib.height(newHeight);
+	var resultsCount = $('.result.table tbody').children().length;
+	if (resultsCount>0) {
+		$('.preset-list-container').show();
+		var resultsHeight = $('.result.table').outerHeight(true);
+		var maxHeight = 310;
+		var newHeight = resultsHeight;
+		newHeight = ( newHeight >= maxHeight ) ? (maxHeight) : (newHeight);
+		$('.preset-list-container').height(newHeight)
+	}
+	 else {
+		$('.preset-list-container').hide();
+	}
 }
+
 Application.prototype.start = function() {
 	var that = this
 
@@ -2128,6 +2165,8 @@ Application.prototype.start = function() {
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
 	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
+	E2.dom.btnEditor.click(E2.app.onEditorClicked.bind(E2.app))
+	E2.dom.btnPatches.click(E2.app.onPatchesClicked.bind(E2.app))
 	E2.dom.btnSignIn.click(E2.app.onSignInClicked.bind(E2.app))
 	E2.dom.btnChatDisplay.click(E2.app.onChatDisplayClicked.bind(E2.app))
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
@@ -2135,10 +2174,10 @@ Application.prototype.start = function() {
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
 	E2.dom.chatToggleButton.click(E2.app.onChatToggleClicked.bind(E2.app))
 	E2.dom.assetsToggle.click(E2.app.onAssetsToggleClicked.bind(E2.app))
+	E2.dom.presetsToggle.click(E2.app.onPresetsToggleClicked.bind(E2.app))
 	E2.dom.chatClose.click(E2.app.onChatCloseClicked.bind(E2.app))
 	E2.dom.chatTabBtn.click(E2.app.onChatTabClicked.bind(E2.app))
 	E2.dom.peopleTabBtn.click(E2.app.onPeopleTabClicked.bind(E2.app))
-
 
 	this.midPane = new E2.MidPane()
 
@@ -2146,8 +2185,23 @@ Application.prototype.start = function() {
 
 	E2.app.player.play() // autoplay
 	E2.app.changeControlState()
+	
+	if (E2.app.viewMode==='editor') {
+		E2.dom.btnEditor.parent().toggle();
+	} else {
+		E2.dom.btnPatches.parent().toggle();
+	}
+	
+	E2.dom.presetsLib.movable();
+	E2.dom.assetsLib.movable();
 
 	E2.app.showFirstTimeDialog()
+	
+	$('[data-toggle="popover"]').popover({
+			container: 'body',
+			trigger: 'hover',
+			animation: false
+	});
 }
 
 Application.prototype.showFirstTimeDialog = function() {
@@ -2220,8 +2274,8 @@ Application.prototype.setupChat = function() {
 	if (chatTop<($('.editor-header').height()+$('#breadcrumb').height())) {
 		chatTop= $('.editor-header').height() + $('#breadcrumb').height() + 40;
 	}
-	$('.chat-users').css({'top': chatTop});
-	$('.chat-users').movable();
+	E2.dom.chatWindow.css({'top': chatTop});
+	E2.dom.chatWindow.movable();
 }
 
 /**
@@ -2266,7 +2320,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.peopleTab = $('#peopleTab');
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
-	E2.dom.playPauseIcon = $('.play-pause use');
+	E2.dom.playPauseIcon = $('#play use');
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
@@ -2289,13 +2343,16 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.breadcrumb = $('#breadcrumb');
 	E2.dom.load_spinner = $('#load-spinner');
 	E2.dom.filename_input = $('#filename-input');
+	E2.dom.btnEditor = $('#btn-editor');
+	E2.dom.btnPatches = $('#btn-patches');
 	E2.dom.chatToggleButton = $('#chat-toggle');
 	E2.dom.chatClose = $('#chat-close');
 	E2.dom.chatTabBtn = $('#chatTabBtn');
 	E2.dom.peopleTabBtn = $('#peopleTabBtn');
+	E2.dom.presetsToggle = $('#presets-toggle');
 	E2.dom.assetsToggle = $('#assets-toggle');
-	E2.dom.assetsLib = $('#left-nav');
-	E2.dom.notificationsArea=$('#notifications-area');
+	E2.dom.presetsLib = $('#left-nav');
+	E2.dom.assetsLib = $('#assets-lib');
 
 	$.ajaxSetup({ cache: false });
 
