@@ -16,6 +16,7 @@
 		this.depthWrite = false;
 		this.side = THREE.FrontSide;
 		this.transparent = true;
+		this.fog = false
 
 		this.setValues( parameters );
 
@@ -57,6 +58,8 @@
 
 		this.oldColor = this.color.clone();
 		this.oldOpacity = this.opacity;
+
+		this.fog = false
 
 		this.highlight = function( highlighted ) {
 
