@@ -89,13 +89,17 @@ function burst() {
 		if (n) {
 			s1.send({
 				actionType: 'uiPluginStateChanged',
-				number: n
+				number: n,
+				ack: 'ack-' + n
 			})
-		}else {
+		} else {
 			clearInterval(interval)
-			s1.close()
 		}
 	}, 1)
+
+	s1.on('ack-ten', function() {
+		s1.close()
+	})
 }
 
 describe('Multiuser', function() {
@@ -156,6 +160,19 @@ describe('Multiuser', function() {
 		})
 	})
 
+	it('sends acks', function(done) {
+		s1 = createClient('testack')
+		s1.once('youJoined', function() {
+			s1.on('ackAbc', function() {
+				done()
+			})
+			s1.send({
+				actionType: 'uiPluginStateChanged',
+				ack: 'ackAbc'
+			})
+		})
+	})
+
 	it('should notify two users of each others joins', function(done) {
 		s1 = createClient('test1')
 		s2 = createClient('test1')
@@ -187,22 +204,9 @@ describe('Multiuser', function() {
 		var edits = []
 		
 		s1 = createClient(channel)
-		var numbers = [ 'one', 'two', 'three', 'four', 'five',
-			'six', 'seven', 'eight', 'nine', 'ten' ]
-
-		s1.once('join', function() {
-			numbers.map(function(n) {
-				s1.send({
-					actionType: 'uiPluginStateChanged',
-					number: n
-				})
-			})
-			s1.close();
-		})
-
+		s1.once('join', burst)
 		s1.on('disconnected', function() {
 			s2 = createClient(channel)
-
 			s2.dispatcher.register(function(m) {
 				if (!m.actionType)
 					return;
@@ -227,9 +231,7 @@ describe('Multiuser', function() {
 		s1 = createClient(channel)
 		s1.once('join', function() {
 			s2 = createClient(channel)
-
 			s2.once('join', burst)
-
 			s2.dispatcher.register(function(m) {
 				if (!m.actionType)
 					return;
@@ -253,10 +255,7 @@ describe('Multiuser', function() {
 		var edits = []
 		
 		s1 = createClient(channel)
-		s1.once('join', function() {
-			burst()
-		})
-
+		s1.once('join', burst)
 		s1.once('disconnected', function() {
 			s2 = createClient(channel)
 			s2.dispatcher.register(function(m) {
@@ -282,13 +281,15 @@ describe('Multiuser', function() {
 		var ogChannel = channel
 		
 		s1 = createClient(channel)
-
 		s1.once('join', function() {
 			s1.send({
 				actionType: 'uiPluginStateChanged',
-				number: 1
+				number: 1,
+				ack: 'ack-one'
 			})
-			s1.close()
+			s1.on('ack-one', function() {
+				s1.close()
+			})
 
 			var s3 = createClient(channel)
 			s3.once('youJoined', function() {

@@ -164,6 +164,9 @@ EditorChannel.prototype.connect = function(options) {
 					return;
 				}
 
+				if (m.kind === 'ack') // acknowledgement by id
+					that.emit(m.ack, m)
+
 				if (m.channel !== that.channelName)
 					return;
 

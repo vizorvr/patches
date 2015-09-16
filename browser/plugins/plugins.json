@@ -272,6 +272,8 @@
 	"THREE/Gaze Clicker": "three_gaze_clicker",
 	"THREE/Clickable Object": "three_clickable_object",
 
+	"THREE/Environment Settings": "three_environment_settings",
+
 	"State/Read Variable": "variable_local_read",
 	"State/Write Variable": "variable_local_write",
 	
