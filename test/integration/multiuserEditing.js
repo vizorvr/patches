@@ -197,7 +197,7 @@ describe('Multiuser', function() {
 					number: n
 				})
 			})
-			s1.close()
+			s1.close();
 		})
 
 		s1.on('disconnected', function() {
