@@ -2,8 +2,7 @@
 	"TEMPLATES": {
 		"Basic VR scene": "_template-basic-vr-scene",
 		"Minimal VR scene": "_template-minimal-vr-scene"
-
-},
+	},
 
 	"ADD GEOMETRY": {
 		"3D model": "_add-3d-model",
