@@ -1,18 +1,18 @@
 {
 	"TEMPLATES": {
 		"Basic VR scene": "_template-basic-vr-scene",
-		"Minimal VR scene": "_minimal_vr_scene"
+		"Minimal VR scene": "_template-minimal-vr-scene"
 
 },
 
 	"ADD GEOMETRY": {
-		"3D object": "_add-3d-object",
+		"3D model": "_add-3d-model",
 		"Box": "_add-box",
 		"Sphere": "_add-sphere",
 		"Dodecahedron": "_add-dodecahedron",
 		"Plane": "_add-plane-no-shading",
 		"Cylinder": "_add-cylinder",
-		"Skysphere": "_add-skysphere",
+		"Sky sphere": "_add-sky-sphere",
 		"Floor": "_add-floor",
 		"Text": "_add-text"
 	},
@@ -70,6 +70,6 @@
 	},
 
 	"EXAMPLES": {
-		"Rotating cube": "_example-rotating-cube",
+		"Rotating cube": "_example-rotating-cube"
 	}
 }
