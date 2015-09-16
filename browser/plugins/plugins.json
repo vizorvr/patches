@@ -1,295 +1,362 @@
 {
-	"Emitters/3D/Instancing/Array": "instance_array_modulator",
-	"Emitters/3D/Instancing/Cube": "instance_cube_modulator",
-	"Emitters/3D/Instancing/IFS": "instance_ifs_modulator",
-
-	"Emitters/Audio/Audio player": "audio_player",
-	"Emitters/Audio/Audio source player": "audio_source_player",
-	"Emitters/Audio/Module player": "module_player",
-	"Emitters/Debug/Bool": "bool_display",
-	"Emitters/Debug/Color": "color_display",
-	"Emitters/Debug/Data info": "data_info_display",
-	"Emitters/Debug/Float": "float_display",
-	"Emitters/Debug/Led": "led_display",
-	"Emitters/Debug/Log": "log_display",
-	"Emitters/Debug/Matrix": "matrix_display",
-	"Emitters/Debug/Plot": "plot_display",
-	"Emitters/Debug/Text": "text_display",
-	"Emitters/Debug/Object": "object_display",
-	"Emitters/Debug/Vector": "vector_display",
-	"Emitters/Sequencing/Stop playback": "stop_emitter",
-	"Emitters/Video/Video player": "video_player",
-
-	"Emitters/Player/Load graph": "load_graph",
-
-	"Generators/Cameras/View/Aspect ratio": "aspect_ratio_generator",
-	"Generators/Cameras/View/Viewport height": "viewport_height_generator",
-	"Generators/Cameras/View/Viewport width": "viewport_width_generator",
-
-	"Generators/Crypto/CounterWallet - Get balances": "crypto_cw_get_balances",
-	"Generators/Crypto/DogeWallet - Get balances": "crypto_dw_get_balances",
-	"Generators/CSG/Cube": "csg_cube_generator",
-	"Generators/CSG/Cylinder": "csg_cylinder_generator",
-	"Generators/CSG/Sphere": "csg_sphere_generator",
-	"Generators/Input/Key press": "key_press_generator",
-	"Generators/Input/Mouse buttons": "mouse_button_generator",
-	"Generators/Input/Mouse position": "mouse_position_generator",
-	"Generators/Input/Mouse wheel": "mouse_wheel_generator",
-	"Generators/Input/Game pad": "gamepad_generator",
-	"Generators/Load/Array from URL": "url_array_generator",
-	"Generators/Load/Audio from URL": "url_audio_generator",
-	"Generators/Load/Audio buffer from URL": "url_audio_buffer_generator",
-	"Generators/Load/Image from URL": "url_texture_generator",
-	"Generators/Load/JSON from URL": "url_json_generator",
-	"Generators/Load/Video from URL": "url_video_generator",
-
-	"Generators/Matrix/Translation": "translation_matrix",
-	"Generators/Matrix/Translation XYZ": "translation_xyz_matrix",
-	"Generators/Matrix/Planar projection": "planar_projection_matrix",
-	"Generators/Matrix/Rotation": "rotation_matrix",
-	"Generators/Matrix/Rotation XYZ": "rotation_xyz_matrix",
-	"Generators/Matrix/Scale": "scale_matrix",
-	"Generators/Matrix/Scale XYZ": "scale_xyz_matrix",
-
-	"Generators/WebSocket/Channel receiver": "wschannel_receive",
-	"Generators/WebSocket/Channel sender": "wschannel_send",
-
-	"Generators/OSC/OSC Receiver": "osc_receiver",
-	"Generators/OSC/OSC Float": "osc_float",
-	"Generators/OSC/OSC XY Float": "osc_xy_float",
-	"Generators/OSC/OSC XYZ Float": "osc_xyz_float",
-
-	"Generators/State/Initialise": "initialise_generator",
-	"Generators/State/System/Completed": "assets_completed_generator",
-	"Generators/State/System/Completed emitter": "assets_signal_completed_generator",
-	"Generators/State/System/Failed": "assets_failed_generator",
-	"Generators/State/System/Failed emitter": "assets_signal_failed_generator",
-	"Generators/State/System/Started": "assets_started_generator",
-	"Generators/State/System/Started emitter": "assets_signal_started_generator",
-
-	"Generators/Texture/From text": "texture_from_text_generator",
-	"Generators/Time/Clock": "clock_generator",
-	"Generators/Time/Delta time": "delta_t_generator",
-	"Generators/Typed arrays/Array": "typed_array_generator",
-	"Generators/Values/Action": "action_button",
-	"Generators/Values/Blend mode": "blend_mode_generator",
-	"Generators/Values/Color picker": "color_picker",
-	"Generators/Values/Depth function": "depth_func_generator",
-	"Generators/Values/Editor": "text_editor_generator",
-	"Generators/Values/Float": "const_float_generator",
-	"Generators/Values/Knob": "knob_float_generator",
-	"Generators/Values/Label": "label_generator",
-	"Generators/Values/Mesh primitive type": "mesh_primtype_generator",
-	"Generators/Values/Pi": "pi_generator",
-	"Generators/Values/Random": "random_float_generator",
-	"Generators/Values/Slider": "slider_float_generator",
-	"Generators/Values/Text": "const_text_generator",
-	"Generators/Values/Toggle": "toggle_button",
-	"Generators/Values/Object composition": "object_add",
-
-	"Modulators/Audio/Analyse": "audio_analyse_modulator",
-	"Modulators/Audio/Buffer source": "audio_buffer_source_modulator",
-	"Modulators/Audio/Delay": "audio_delay_modulator",
-	"Modulators/Audio/Current time": "audio_get_current_time_modulator",
-	"Modulators/Audio/Duration": "audio_get_duration_modulator",
-	"Modulators/Audio/Gain (mix)": "audio_gain_modulator",
-
-	"Modulators/Color/Add": "color_add_modulator",
-	"Modulators/Color/Blend": "color_blend_modulator",
-	"Modulators/Color/Multiply": "color_multiply_modulator",
-
-	"Modulators/Convert/Camera/Camera matrices": "convert_camera_matrices",
-	"Modulators/Convert/Camera/Matrices to Camera": "convert_matrices_camera",
-
-	"Modulators/Convert/Color/Color to HSL": "convert_color_hsl_modulator",
-	"Modulators/Convert/Color/Color to RGB": "convert_color_rgb_modulator",
-	"Modulators/Convert/Color/HSL to Color": "convert_hsl_color_modulator",
-	"Modulators/Convert/Color/RGB to Color": "convert_rgb_color_modulator",
-
-	"Modulators/Convert/Format/Float as string": "format_string_float",
-	"Modulators/Convert/Bool to Float": "convert_bool_float_modulator",
-	"Modulators/Convert/Float to Bool": "convert_float_bool_modulator",
-	"Modulators/Convert/Oscilator to unit": "convert_oscilator_unit_modulator",
-	"Modulators/Convert/String to float": "convert_string_float_modulator",
-	"Modulators/Convert/Vector to XYZ": "convert_vector_xyz_modulator",
-	"Modulators/Convert/Vector to screenspace": "vector_to_screenspace",
-	"Modulators/Convert/XYZ to Vector": "vector",
-
-	"Modulators/Convert/Object to JSON": "object_stringify",
-
-	"Modulators/CSG/Difference": "csg_difference_modulator",
-	"Modulators/CSG/Intersection": "csg_intersection_modulator",
-	"Modulators/CSG/Inverse": "csg_inverse_modulator",
-	"Modulators/CSG/To mesh": "csg_to_mesh_modulator",
-	"Modulators/CSG/Union": "csg_union_modulator",
-
-	"Modulators/Chart/Line Envelope": "envelope_modulator",
-
-	"Modulators/Curve/Interpolate cubic": "curve_interpolate_modulator",
-	"Modulators/Filters/Lowpass": "lowpass_filter_modulator",
-	"Modulators/Filters/Sample and hold": "sample_and_hold_modulator",
-	"Modulators/Filters/Toggle": "toggle_modulator",
-	"Modulators/Logic/If": "if_modulator",
-	"Modulators/Logic/If ... Else": "if_else_modulator",
-	"Modulators/Logic/Equals": "equals_modulator",
-	"Modulators/Logic/Not equal": "ne_modulator",
-	"Modulators/Logic/Less than": "less_than_modulator",
-	"Modulators/Logic/Less than or equal": "lte_modulator",
-	"Modulators/Logic/More than": "more_than_modulator",
-	"Modulators/Logic/More than or equal": "gte_modulator",
-	"Modulators/Logic/Nearly equal": "near_eq_modulator",
-	"Modulators/Logic/And": "and_modulator",
-	"Modulators/Logic/Nand": "nand_modulator",
-	"Modulators/Logic/Not": "not_modulator",
-	"Modulators/Logic/Or": "or_modulator",
-	"Modulators/Logic/Xor": "xor_modulator",
-	"Modulators/Logic/Switch": "switch_modulator",
-	"Modulators/Logic/Array Revolver Switch": "array_switch_modulator",
-
-	"Modulators/Math/Functions/Absolute": "absolute_modulator",
-	"Modulators/Math/Functions/Cos": "cos_modulator",
-	"Modulators/Math/Functions/Exp": "exp_modulator",
-	"Modulators/Math/Functions/Log": "log_modulator",
-	"Modulators/Math/Functions/Max": "max_modulator",
-	"Modulators/Math/Functions/Min": "min_modulator",
-	"Modulators/Math/Functions/Sin": "sin_modulator",
-	"Modulators/Math/Functions/Sqrt": "sqrt_modulator",
-	"Modulators/Math/Functions/Tan": "tan_modulator",
-	"Modulators/Math/Functions/Atan": "atan_modulator",
-	"Modulators/Math/Functions/Atan2": "atan2_modulator",
-	"Modulators/Math/Rounding/Ceiling": "ceiling_modulator",
-	"Modulators/Math/Rounding/Floor": "floor_modulator",
-	"Modulators/Math/Rounding/Round": "round_modulator",
-	"Modulators/Math/Compute/Accumulate": "accumulate_modulator",
-	"Modulators/Math/Compute/Clamped accumulate": "clamped_accumulate_modulator",
-	"Modulators/Math/Compute/Delta": "delta_modulator",
-	"Modulators/Math/Add": "add_modulator",
-	"Modulators/Math/Clamp": "clamp_modulator",
-	"Modulators/Math/Divide": "divide_modulator",
-	"Modulators/Math/Mod": "modulate_modulator",
-	"Modulators/Math/Multiply": "multiply_modulator",
-	"Modulators/Math/Negate": "negate_modulator",
-	"Modulators/Math/Subtract": "subtract_modulator",
-	"Modulators/Mesh/Get primitive count": "mesh_get_primitive_count",
-	"Modulators/Mesh/Primitive type": "mesh_primtype_modulator",
-	"Modulators/Mesh/Set max primitive count": "mesh_set_max_primitive_count",
-
-	"Modulators/Matrix/Clone": "matrix_clone_modulator",
-	"Modulators/Matrix/Concatenate": "concatenate_matrix_modulator",
-	"Modulators/Matrix/Get": "get_matrix_modulator",
-	"Modulators/Matrix/Invert": "invert_matrix_modulator",
-	"Modulators/Matrix/Set": "set_matrix_modulator",
-	"Modulators/Matrix/Transpose": "transpose_matrix_modulator",
-
-	"Modulators/Object/Array item to bool": "typed_array_item_to_bool_modulator",
-	"Modulators/Object/Array item to float": "typed_array_item_to_float_modulator",
-	"Modulators/Object/Array item to object": "typed_array_item_to_object_modulator",
-	"Modulators/Object/Array item to string": "typed_array_item_to_string_modulator",
-	"Modulators/Object/Array item to typed array": "typed_array_item_to_typed_array_modulator",
-	"Modulators/Object/Array length": "member_array_length_modulator",
-	"Modulators/Object/Member to bool": "member_to_bool_modulator",
-	"Modulators/Object/Member to float": "member_to_float_modulator",
-	"Modulators/Object/Member to object": "member_to_object_modulator",
-	"Modulators/Object/Member to string": "member_to_string_modulator",
-	"Modulators/Object/Member to typed array": "member_to_typed_array_modulator",
-	"Modulators/Oscillators/Cosine": "cosine_modulator",
-	"Modulators/Oscillators/Sawtooth": "sawtooth_modulator",
-	"Modulators/Oscillators/Sine": "sine_modulator",
-	"Modulators/Oscillators/Square": "square_modulator",
-	"Modulators/Oscillators/Triangle": "triangle_modulator",
-	"Modulators/Scene/Get bounding box": "scene_get_bounding_box",
-	"Modulators/Scene/Get mesh by index": "scene_get_mesh_by_index",
-	"Modulators/Scene/Get mesh count": "scene_get_mesh_count",
-	"Modulators/String/Concatenate": "string_concatenate_modulator",
-	"Modulators/String/Parse JSON": "parse_json_modulator",
-
-	"Modulators/Texture/Height": "texture_height_modulator",
-	"Modulators/Texture/Width": "texture_width_modulator",
-	"Modulators/Texture/Wrap": "texture_wrap_modulator",
-
-	"Modulators/Tweens/In": "tween_in_modulator",
-	"Modulators/Tweens/Out": "tween_out_modulator",
-	"Modulators/Typed arrays/Array to mesh": "typed_array_to_mesh_modulator",
-	"Modulators/Typed arrays/Array to texture": "typed_array_to_texture_modulator",
-	"Modulators/Typed arrays/Get": "typed_array_get_modulator",
-	"Modulators/Typed arrays/Get as": "typed_array_get_as_modulator",
-	"Modulators/Typed arrays/Length": "typed_array_length_modulator",
-	"Modulators/Typed arrays/Set": "typed_array_set_modulator",
-	"Modulators/Typed arrays/Set as": "typed_array_set_as_modulator",
-
-	"Modulators/Vector/Add": "vector_add",
-	"Modulators/Vector/Cross": "vector_cross",
-	"Modulators/Vector/Dot": "vector_dot",
-	"Modulators/Vector/Magnitude": "vector_magnitude",
-	"Modulators/Vector/Multiply": "vector_multiply",
-	"Modulators/Vector/Normalize": "vector_normalize",
-	"Modulators/Vector/Scale": "vector_scale",
-	"Modulators/Vector/Transform": "vector_transform",
-
-	"Modulators/Video/Duration": "video_get_duration_modulator",	
-	"Modulators/Video/Current time": "video_get_current_time_modulator",
-
-	"THREE/Render To Texture": "three_webgl_texture_renderer",
-	"THREE/Render To Screen": "three_webgl_renderer",
-
-	"THREE/Scene": "three_scene",
-	"THREE/Mesh": "three_mesh",
-	"THREE/Point Cloud Mesh": "three_point_cloud_mesh",
-
-	"THREE/Procedural Ground": "three_procedural_ground",
-
-	"THREE/Camera/VR Camera": "three_vr_camera",
-	"THREE/Camera/Perspective Camera": "three_perspective_camera",
-	"THREE/Camera/Screen Space Transform Extractor": "three_screen_space_transform_extractor",
-
-	"THREE/3D model loader": "three_loader_model",
-
-	"THREE/Geometry/Box": "three_geometry_box",
-	"THREE/Geometry/Circle": "three_geometry_circle",
-	"THREE/Geometry/Cylinder": "three_geometry_cylinder",
-
-	"THREE/Geometry/Dodecahedron": "three_geometry_dodecahedron",
-	"THREE/Geometry/Sphere": "three_geometry_sphere",
-	"THREE/Geometry/Plane": "three_geometry_plane",
-
-	"THREE/Material/Basic Material": "three_material",
-	"THREE/Material/Depth Material": "three_material_depth",
-	"THREE/Material/Lambert Material": "three_material_lambert",
-	"THREE/Material/Phong Material": "three_material_phong",
-	"THREE/Material/Shader": "three_material_shader",
-
-	"THREE/Material/Point Cloud Material": "three_point_cloud_material",
-
-	"THREE/Material/Material Modifier": "three_material_modifier",
-	"THREE/Material/UV Modifier": "three_uv_modifier",
-
-	"THREE/Particles/Particle Emitter": "three_particle_emitter",
-
-	"THREE/Light/Ambient Light": "three_ambient_light",
-	"THREE/Light/Directional Light": "three_directional_light",
-	"THREE/Light/Point Light": "three_point_light",
-
-	"THREE/Gaze Clicker": "three_gaze_clicker",
-	"THREE/Clickable Object": "three_clickable_object",
-
-	"THREE/Environment Settings": "three_environment_settings",
-
-	"State/Read Variable": "variable_local_read",
-	"State/Write Variable": "variable_local_write",
-	
-	"Structure/Input proxy": "input_proxy",
-	"Structure/Graph": "graph",
-	"Structure/Loop": "loop",
-	"Structure/Array Function": "array_function",
-	"Structure/Output proxy": "output_proxy",
-
-	"Modulators/Array/Set": "array_set",
-	"Modulators/Array/Get": "array_get",
-	"Modulators/Array/Remove": "array_remove",
-	"Modulators/Array/Clear": "array_clear",
-	"Modulators/Array/Length": "array_length",
-	
-	"Modulators/Trigger/On Change": "change_trigger",
-
-	"Annotation": "annotation"
+  "Emitters/3D": {
+    "Array": "instance_array_modulator",
+    "Cube": "instance_cube_modulator",
+    "IFS": "instance_ifs_modulator"
+  },
+  "Emitters/Audio": {
+    "Audio player": "audio_player",
+    "Audio source player": "audio_source_player",
+    "Module player": "module_player"
+  },
+  "Emitters/Debug": {
+    "Bool": "bool_display",
+    "Color": "color_display",
+    "Data info": "data_info_display",
+    "Float": "float_display",
+    "Led": "led_display",
+    "Log": "log_display",
+    "Matrix": "matrix_display",
+    "Plot": "plot_display",
+    "Text": "text_display",
+    "Object": "object_display",
+    "Vector": "vector_display"
+  },
+  "Emitters/Sequencing": {
+    "Stop playback": "stop_emitter"
+  },
+  "Emitters/Video": {
+    "Video player": "video_player"
+  },
+  "Emitters/Player": {
+    "Load graph": "load_graph"
+  },
+  "Generators/Cameras": {
+    "Aspect ratio": "aspect_ratio_generator",
+    "Viewport height": "viewport_height_generator",
+    "Viewport width": "viewport_width_generator"
+  },
+  "Generators/Crypto": {
+    "CounterWallet - Get balances": "crypto_cw_get_balances",
+    "DogeWallet - Get balances": "crypto_dw_get_balances"
+  },
+  "Generators/CSG": {
+    "Cube": "csg_cube_generator",
+    "Cylinder": "csg_cylinder_generator",
+    "Sphere": "csg_sphere_generator"
+  },
+  "Generators/Input": {
+    "Key press": "key_press_generator",
+    "Mouse buttons": "mouse_button_generator",
+    "Mouse position": "mouse_position_generator",
+    "Mouse wheel": "mouse_wheel_generator",
+    "Game pad": "gamepad_generator"
+  },
+  "Generators/Load": {
+    "Array from URL": "url_array_generator",
+    "Audio from URL": "url_audio_generator",
+    "Audio buffer from URL": "url_audio_buffer_generator",
+    "Image from URL": "url_texture_generator",
+    "JSON from URL": "url_json_generator",
+    "Video from URL": "url_video_generator"
+  },
+  "Generators/WebSocket": {
+    "Channel receiver": "wschannel_receive",
+    "Channel sender": "wschannel_send"
+  },
+  "Generators/OSC": {
+    "OSC Receiver": "osc_receiver",
+    "OSC Float": "osc_float",
+    "OSC XY Float": "osc_xy_float",
+    "OSC XYZ Float": "osc_xyz_float"
+  },
+  "Generators/State": {
+    "Initialise": "initialise_generator",
+    "Completed": "assets_completed_generator",
+    "Completed emitter": "assets_signal_completed_generator",
+    "Failed": "assets_failed_generator",
+    "Failed emitter": "assets_signal_failed_generator",
+    "Started": "assets_started_generator",
+    "Started emitter": "assets_signal_started_generator"
+  },
+  "Generators/Texture": {
+    "From text": "texture_from_text_generator"
+  },
+  "Generators/Time": {
+    "Clock": "clock_generator",
+    "Delta time": "delta_t_generator"
+  },
+  "Generators/Typed arrays": {
+    "Array": "typed_array_generator"
+  },
+  "Generators/Values": {
+    "Action": "action_button",
+    "Blend mode": "blend_mode_generator",
+    "Color picker": "color_picker",
+    "Depth function": "depth_func_generator",
+    "Editor": "text_editor_generator",
+    "Float": "const_float_generator",
+    "Knob": "knob_float_generator",
+    "Label": "label_generator",
+    "Mesh primitive type": "mesh_primtype_generator",
+    "Pi": "pi_generator",
+    "Random": "random_float_generator",
+    "Slider": "slider_float_generator",
+    "Text": "const_text_generator",
+    "Toggle": "toggle_button",
+    "Object composition": "object_add"
+  },
+  "Modulators/Audio": {
+    "Analyse": "audio_analyse_modulator",
+    "Buffer source": "audio_buffer_source_modulator",
+    "Delay": "audio_delay_modulator",
+    "Current time": "audio_get_current_time_modulator",
+    "Duration": "audio_get_duration_modulator",
+    "Gain (mix)": "audio_gain_modulator"
+  },
+  "Modulators/Color": {
+    "Add": "color_add_modulator",
+    "Blend": "color_blend_modulator",
+    "Multiply": "color_multiply_modulator"
+  },
+  "Modulators/Convert": {
+    "Camera matrices": "convert_camera_matrices",
+    "Matrices to Camera": "convert_matrices_camera",
+    "Color to HSL": "convert_color_hsl_modulator",
+    "Color to RGB": "convert_color_rgb_modulator",
+    "HSL to Color": "convert_hsl_color_modulator",
+    "RGB to Color": "convert_rgb_color_modulator",
+    "Float as string": "format_string_float",
+    "Bool to Float": "convert_bool_float_modulator",
+    "Float to Bool": "convert_float_bool_modulator",
+    "Oscilator to unit": "convert_oscilator_unit_modulator",
+    "String to float": "convert_string_float_modulator",
+    "Vector to XYZ": "convert_vector_xyz_modulator",
+    "Vector to screenspace": "vector_to_screenspace",
+    "XYZ to Vector": "vector",
+    "Object to JSON": "object_stringify"
+  },
+  "Modulators/CSG": {
+    "Difference": "csg_difference_modulator",
+    "Intersection": "csg_intersection_modulator",
+    "Inverse": "csg_inverse_modulator",
+    "To mesh": "csg_to_mesh_modulator",
+    "Union": "csg_union_modulator"
+  },
+  "Modulators/Chart": {
+    "Line Envelope": "envelope_modulator"
+  },
+  "Modulators/Curve": {
+    "Interpolate cubic": "curve_interpolate_modulator"
+  },
+  "Modulators/Filters": {
+    "Lowpass": "lowpass_filter_modulator",
+    "Sample and hold": "sample_and_hold_modulator",
+    "Toggle": "toggle_modulator"
+  },
+  "Modulators/Logic": {
+    "If": "if_modulator",
+    "If ... Else": "if_else_modulator",
+    "Equals": "equals_modulator",
+    "Not equal": "ne_modulator",
+    "Less than": "less_than_modulator",
+    "Less than or equal": "lte_modulator",
+    "More than": "more_than_modulator",
+    "More than or equal": "gte_modulator",
+    "Nearly equal": "near_eq_modulator",
+    "And": "and_modulator",
+    "Nand": "nand_modulator",
+    "Not": "not_modulator",
+    "Or": "or_modulator",
+    "Xor": "xor_modulator",
+    "Switch": "switch_modulator",
+    "Array Revolver Switch": "array_switch_modulator"
+  },
+  "Modulators/Math": {
+    "Absolute": "absolute_modulator",
+    "Cos": "cos_modulator",
+    "Exp": "exp_modulator",
+    "Log": "log_modulator",
+    "Max": "max_modulator",
+    "Min": "min_modulator",
+    "Sin": "sin_modulator",
+    "Sqrt": "sqrt_modulator",
+    "Tan": "tan_modulator",
+    "Atan": "atan_modulator",
+    "Atan2": "atan2_modulator",
+    "Ceiling": "ceiling_modulator",
+    "Floor": "floor_modulator",
+    "Round": "round_modulator",
+    "Accumulate": "accumulate_modulator",
+    "Clamped accumulate": "clamped_accumulate_modulator",
+    "Delta": "delta_modulator",
+    "Add": "add_modulator",
+    "Clamp": "clamp_modulator",
+    "Divide": "divide_modulator",
+    "Mod": "modulate_modulator",
+    "Multiply": "multiply_modulator",
+    "Negate": "negate_modulator",
+    "Subtract": "subtract_modulator"
+  },
+  "Modulators/Mesh": {
+    "Get primitive count": "mesh_get_primitive_count",
+    "Primitive type": "mesh_primtype_modulator",
+    "Set max primitive count": "mesh_set_max_primitive_count"
+  },
+  "Modulators/Object": {
+    "Array item to bool": "typed_array_item_to_bool_modulator",
+    "Array item to float": "typed_array_item_to_float_modulator",
+    "Array item to object": "typed_array_item_to_object_modulator",
+    "Array item to string": "typed_array_item_to_string_modulator",
+    "Array item to typed array": "typed_array_item_to_typed_array_modulator",
+    "Array length": "member_array_length_modulator",
+    "Member to bool": "member_to_bool_modulator",
+    "Member to float": "member_to_float_modulator",
+    "Member to object": "member_to_object_modulator",
+    "Member to string": "member_to_string_modulator",
+    "Member to typed array": "member_to_typed_array_modulator"
+  },
+  "Modulators/Oscillators": {
+    "Cosine": "cosine_modulator",
+    "Sawtooth": "sawtooth_modulator",
+    "Sine": "sine_modulator",
+    "Square": "square_modulator",
+    "Triangle": "triangle_modulator"
+  },
+  "Modulators/Scene": {
+    "Get bounding box": "scene_get_bounding_box",
+    "Get mesh by index": "scene_get_mesh_by_index",
+    "Get mesh count": "scene_get_mesh_count"
+  },
+  "Modulators/String": {
+    "Concatenate": "string_concatenate_modulator",
+    "Parse JSON": "parse_json_modulator"
+  },
+  "Modulators/Texture": {
+    "Height": "texture_height_modulator",
+    "Width": "texture_width_modulator",
+    "Wrap": "texture_wrap_modulator"
+  },
+  "Modulators/Tweens": {
+    "In": "tween_in_modulator",
+    "Out": "tween_out_modulator"
+  },
+  "Modulators/Typed arrays": {
+    "Array to mesh": "typed_array_to_mesh_modulator",
+    "Array to texture": "typed_array_to_texture_modulator",
+    "Get": "typed_array_get_modulator",
+    "Get as": "typed_array_get_as_modulator",
+    "Length": "typed_array_length_modulator",
+    "Set": "typed_array_set_modulator",
+    "Set as": "typed_array_set_as_modulator"
+  },
+  "Modulators/Vector": {
+    "Add": "vector_add",
+    "Cross": "vector_cross",
+    "Dot": "vector_dot",
+    "Magnitude": "vector_magnitude",
+    "Multiply": "vector_multiply",
+    "Normalize": "vector_normalize",
+    "Scale": "vector_scale",
+    "Transform": "vector_transform"
+  },
+  "Modulators/Video": {
+    "Duration": "video_get_duration_modulator",
+    "Current time": "video_get_current_time_modulator"
+  },
+  "THREE/Render To Texture": {
+    "Render To Texture": "three_webgl_texture_renderer"
+  },
+  "THREE/Render To Screen": {
+    "Render To Screen": "three_webgl_renderer"
+  },
+  "THREE/Scene": {
+    "Scene": "three_scene"
+  },
+  "THREE/Mesh": {
+    "Mesh": "three_mesh"
+  },
+  "THREE/Point Cloud Mesh": {
+    "Point Cloud Mesh": "three_point_cloud_mesh"
+  },
+  "THREE/Procedural Ground": {
+    "Procedural Ground": "three_procedural_ground"
+  },
+  "THREE/Camera": {
+    "VR Camera": "three_vr_camera",
+    "Perspective Camera": "three_perspective_camera",
+    "Screen Space Transform Extractor": "three_screen_space_transform_extractor"
+  },
+  "THREE/3D model loader": {
+    "3D model loader": "three_loader_model"
+  },
+  "THREE/Geometry": {
+    "Box": "three_geometry_box",
+    "Circle": "three_geometry_circle",
+    "Cylinder": "three_geometry_cylinder",
+    "Dodecahedron": "three_geometry_dodecahedron",
+    "Sphere": "three_geometry_sphere",
+    "Plane": "three_geometry_plane"
+  },
+  "THREE/Material": {
+    "Basic Material": "three_material",
+    "Depth Material": "three_material_depth",
+    "Lambert Material": "three_material_lambert",
+    "Phong Material": "three_material_phong",
+    "Shader": "three_material_shader",
+    "Point Cloud Material": "three_point_cloud_material",
+    "Material Modifier": "three_material_modifier",
+    "UV Modifier": "three_uv_modifier"
+  },
+  "THREE/Particles": {
+    "Particle Emitter": "three_particle_emitter"
+  },
+  "THREE/Light": {
+    "Ambient Light": "three_ambient_light",
+    "Directional Light": "three_directional_light",
+    "Point Light": "three_point_light"
+  },
+  "THREE/Gaze Clicker": {
+    "Gaze Clicker": "three_gaze_clicker"
+  },
+  "THREE/Clickable Object": {
+    "Clickable Object": "three_clickable_object"
+  },
+  "THREE/Environment Settings": {
+    "Environment Settings": "three_environment_settings"
+  },
+  "State/Read Variable": {
+    "Read Variable": "variable_local_read"
+  },
+  "State/Write Variable": {
+    "Write Variable": "variable_local_write"
+  },
+  "Structure/Input proxy": {
+    "Input proxy": "input_proxy"
+  },
+  "Structure/Graph": {
+    "Graph": "graph"
+  },
+  "Structure/Loop": {
+    "Loop": "loop"
+  },
+  "Structure/Array Function": {
+    "Array Function": "array_function"
+  },
+  "Structure/Output proxy": {
+    "Output proxy": "output_proxy"
+  },
+  "Modulators/Array": {
+    "Set": "array_set",
+    "Get": "array_get",
+    "Remove": "array_remove",
+    "Clear": "array_clear",
+    "Length": "array_length"
+  },
+  "Modulators/Trigger": {
+    "On Change": "change_trigger"
+  },
+  "Annotation": {
+    "Annotation": "annotation"
+  }
 }

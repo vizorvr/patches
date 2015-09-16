@@ -24,11 +24,14 @@ function PluginManager(core, base_url) {
 				if (!that.release_mode)
 					that.total += Object.keys(data).length
 
-				$.each(data, function(key, id)  {
-					var url = that.base_url + '/' + id + '.plugin.js';
-					if (!that.release_mode)
-						load_script(url, that.onload.bind(that), that.onerror.bind(that));
-					that.register_plugin(pg_root, key, id);
+				$.each(data, function(category)  {
+					$.each(data[category], function(title, id)  {
+						console.log('plugin', title, id)
+						var url = that.base_url + '/' + id + '.plugin.js';
+						if (!that.release_mode)
+							load_script(url, that.onload.bind(that), that.onerror.bind(that));
+						that.register_plugin(pg_root, category+'/'+title, id);
+					})
 				})
 
 				if (that.release_mode) {

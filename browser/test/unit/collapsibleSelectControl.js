@@ -10,12 +10,22 @@ var presets = Object.keys(presetsJson).reduce(function(arr, catName) {
 	})
 	return arr
 }, [])
-var plugins = Object.keys(JSON.parse(fs.readFileSync(__dirname+'/../../plugins/plugins.json')))
-	.reduce(function(arr, title) {
-		arr.push({ category: 'PLUGINS', title: title, path: title})
+
+var pluginsJson = JSON.parse(fs.readFileSync(__dirname+'/../../plugins/plugins.json'))
+var plugins = Object.keys(pluginsJson)
+	.reduce(function(arr, catName) {
+		Object.keys(pluginsJson[catName]).map(function(title) {
+			arr.push({
+				category: catName,
+				title: catName + '/' 	+ title,
+				path: pluginsJson[catName][title]
+			})
+		})
 		return arr
 	}, [])
+
 presets = presets.concat(plugins)
+
 console.log('presets', presets.length)
 
 describe('scoring',function(){
