@@ -158,11 +158,14 @@ EditorChannel.prototype.connect = function(options) {
 			}
 
 			that.wsChannel.on('*', function(m) {
-				if (m.kind === 'kicked') {
+				if (m.kind === 'kicked') { // kicked by server
 					E2.app.growl('You have been disconnected by the server: '+ m.reason, 30000)
 					that.kicked = true
 					return;
 				}
+
+				if (m.kind === 'ack') // acknowledgement by id
+					that.emit(m.ack, m)
 
 				if (m.channel !== that.channelName)
 					return;
