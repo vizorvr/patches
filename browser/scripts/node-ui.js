@@ -7,7 +7,7 @@ function NodeUI(parent_node, x, y) {
 	this.st = E2.app.scrollOffset[1];
 	this.plugin_ui = null;
 
-	var nid = 'n' + parent_node.uid, dom = this.dom = make('table');
+	var nid = 'n' + parent_node.uid, dom = this.dom = make('div');
 
 	dom.addClass('plugin');
 	dom.addClass('graph-node');
@@ -16,14 +16,15 @@ function NodeUI(parent_node, x, y) {
 	
 	dom.addClass('pl_layout');
 	
-	var h_row = make('tr');
-	var h_cell = make('td');
-	var icon = make('span');
+	var h_row = make('div');
+	var h_cell = make('div');
+	var toggle = make('button');
 	var lbl = make('span');
+	var wrap = make('div');
 
-	icon.addClass('plugin-icon');
-	icon.addClass('icon-' + parent_node.plugin.id);
-	icon.click(function() {
+	toggle.addClass('plugin-toggle');
+	toggle.append('<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"/></svg>');
+	toggle.click(function() {
 		var isOpen = !that.parent_node.open
 
 		E2.app.dispatcher.dispatch({
@@ -35,18 +36,17 @@ function NodeUI(parent_node, x, y) {
 	})
 
 	this.parent_node.on('openStateChanged', function(isOpen) {
-		that.content_row.css('display', isOpen ? 'table-row' : 'none');
+		that.content_row.css('display', isOpen ? 'block' : 'none');
 		that.parent_node.update_connections()
 		E2.app.updateCanvas(true)
 	})
 	
 	lbl.text(parent_node.get_disp_name());
 	lbl.addClass('t');
-
-	h_cell.attr('colspan', '3');
+	wrap.append(toggle);
+	wrap.append(lbl);
+	h_cell.append(wrap);
 	h_cell.addClass('pl_title');
-	h_cell.append(icon);
-	h_cell.append(lbl);
 	h_row.append(h_cell);
 	h_row.addClass('pl_header');
 	h_row.mousedown(E2.app.onNodeHeaderMousedown.bind(E2.app));
@@ -64,15 +64,15 @@ function NodeUI(parent_node, x, y) {
 	
 	this.header_row = h_row;
 	
-	var row = this.content_row = make('tr');
+	var row = this.content_row = make('div');
 	row.addClass('plugin-row');
 	
-	row.css('display', parent_node.open ? 'table-row' : 'none');
+	row.css('display', parent_node.open ? 'block' : 'none');
 	dom.append(row)
 	
-	var input_col = make('td');
-	var content_col = make('td');
-	var output_col = make('td');
+	var input_col = make('div');
+	var content_col = make('div');
+	var output_col = make('div');
 	
 	input_col.addClass('ic');
 	content_col.addClass('pui_col');

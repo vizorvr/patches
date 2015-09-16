@@ -7,7 +7,6 @@
 	} else {
 		$dragEl.prepend('<div class="drag-handle"></div>');
 		$dragEl = $dragEl.find('.drag-handle');
-		$(this).height($(this).height()+parseInt($('.drag-handle').css('height')));
 	};
 	
 	var $dragged = $(this);
