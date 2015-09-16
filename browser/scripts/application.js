@@ -2142,8 +2142,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 		}
 	}
 
-	if (!loadGraphUrl)
-		loadGraphUrl = '/data/graphs/default.json'
+	// if (!loadGraphUrl && !initialEditorGraph)
+	// 	loadGraphUrl = '/data/graphs/default.json'
 
 	if (loadGraphUrl)
 		E2.app.loadGraph(loadGraphUrl, start)
