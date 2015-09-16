@@ -178,7 +178,7 @@ describe('Upload', function() {
 	{
 		it('should upload correctly', function(done) {
 			var jsonFile = '/json/'+testId+'.json';
-			var stream = fs.createReadStream(__dirname+'/../../browser/data/graphs/audrey2.json');
+			var stream = fs.createReadStream(__dirname+'/../../browser/data/graphs/default.json');
 			stream.path = jsonFile
 
 			agent
@@ -194,7 +194,7 @@ describe('Upload', function() {
 				delete json.updatedAt;
 
 				expect({"__v":0,"path":jsonFile,
-					"url":"/data/json/e8a89bcb9b6f07049b3103450b9aa0e1ac518ede.json","tags":[]})
+					"url":"/data/json/f53421ea0e5c9c231c407e1b4f12a5748d6be5ab.json","tags":[]})
 				.to.deep.equal(json);
 
 				done(err);
