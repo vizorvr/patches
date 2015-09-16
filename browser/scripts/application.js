@@ -2142,9 +2142,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 		}
 	}
 
-	if (E2.util.isFirstTime()) {
+	if (!loadGraphUrl)
 		loadGraphUrl = '/data/graphs/default.json'
-	}
 
 	if (loadGraphUrl)
 		E2.app.loadGraph(loadGraphUrl, start)
