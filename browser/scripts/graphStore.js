@@ -208,6 +208,8 @@ GraphStore.prototype._uiPluginStateChanged = function(graph, nodeUid, key, value
 	var node = graph.findNodeByUid(nodeUid)
 
 	node.setPluginState(key, value)
+	
+	this.emit('changed')
 }
 
 if (typeof(module) !== 'undefined')

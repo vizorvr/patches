@@ -1700,6 +1700,9 @@ Application.prototype.onHideTooltip = function() {
 
 Application.prototype.setupStoreListeners = function() {
 	function onGraphChanged() {
+		if (E2.core.active_graph.plugin)
+			E2.core.active_graph.plugin.updated = true
+
 		E2.app.updateCanvas(true)
 	}
 
