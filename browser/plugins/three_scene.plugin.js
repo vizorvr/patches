@@ -2,7 +2,11 @@
 	var ThreeScenePlugin = E2.plugins.three_scene = function (core, node) {
 		this.desc = 'THREE.js Scene'
 
-		this.input_slots = []
+		this.input_slots = [{
+			name: 'environment',
+			dt: core.datatypes.ENVIRONMENTSETTINGS,
+			def: new E2.EnvironmentSettings()
+		}]
 
 		this.output_slots = [{
 			name: 'scene',
@@ -72,6 +76,10 @@
 
 		this.reset()
 
+		if (this.envSettings) {
+			this.scene.fog = this.envSettings.fog
+		}
+
 		for (mesh in this.meshes) {
 			// {id: 0, mesh: mesh}
 
@@ -107,18 +115,21 @@
 	}
 
 	ThreeScenePlugin.prototype.update_input = function (slot, data) {
-		//if (!data)
-		//	return;
-
-		if (this.meshes[slot.index] !== data) {
-			//console.log("add mesh to scene " + JSON.stringify(slot))
-			this.meshes[slot.index] = data
+		if (slot.dynamic) {
+			if (this.meshes[slot.index] !== data) {
+				this.meshes[slot.index] = data
+				this.meshes_dirty = true
+			}
+		}
+		else {
+			// the only static input slot is environment settings
+			this.envSettings = data
 			this.meshes_dirty = true
 		}
 	}
 
 	ThreeScenePlugin.prototype.connection_changed = function(on, conn, slot) {
-		if (!on && slot.type === E2.slot_type.input) {
+		if (!on && slot.type === E2.slot_type.input && slot.dynamic) {
 			this.meshes[slot.index] = undefined
 		}
 		this.meshes_dirty = true
