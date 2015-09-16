@@ -1,0 +1,920 @@
+{
+    "abs_t": 12.231,
+    "active_graph": "root",
+    "graph_uid": "TXDgBc0JJtS3",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 87,
+                "y": 249,
+                "uid": "F7vsqCsT1H7I",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "KUVIt8IoP1bg": "Ys30r7aVEks1"
+                    }
+                },
+                "title": "Box",
+                "graph": {
+                    "uid": "iMMxodF60c4k",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "three_mesh",
+                            "x": 424,
+                            "y": 254,
+                            "uid": "AXRPZGJb3Dac"
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 615,
+                            "y": 314,
+                            "uid": "KUVIt8IoP1bg",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "UW8xhKSPhTFp",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 70,
+                            "y": 322,
+                            "uid": "EZrQsMmgCLgP",
+                            "state": {
+                                "always_update": true,
+                                "input_sids": {},
+                                "output_sids": {
+                                    "lTinRx5wDILm": "kNCVqRth7P7e",
+                                    "1e6j9qkTVakL": "j9HWaNkV9Ebv",
+                                    "aZHH160gAHE8": "8DsLGwXcfbYF"
+                                }
+                            },
+                            "title": "Position, Rotation, Scale",
+                            "graph": {
+                                "uid": "V6C3LBABzED4",
+                                "parent_uid": "iMMxodF60c4k",
+                                "open": true,
+                                "nodes": [
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 21,
+                                        "y": 91,
+                                        "uid": "tdQ2GsmY0zR0",
+                                        "state": {
+                                            "val": 0,
+                                            "min": -1,
+                                            "max": 1
+                                        },
+                                        "title": "Position X"
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 22,
+                                        "y": 158,
+                                        "uid": "6wADRKsLAzsD",
+                                        "state": {
+                                            "val": 0,
+                                            "min": -1,
+                                            "max": 1
+                                        },
+                                        "title": "Position Y"
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 20,
+                                        "y": 224,
+                                        "uid": "lGP8KUmTlZ2S",
+                                        "state": {
+                                            "val": 0,
+                                            "min": -1,
+                                            "max": 1
+                                        },
+                                        "title": "Position Z"
+                                    },
+                                    {
+                                        "plugin": "vector",
+                                        "x": 370,
+                                        "y": 142,
+                                        "uid": "sapcnAWDjY7h",
+                                        "title": "Position"
+                                    },
+                                    {
+                                        "plugin": "vector",
+                                        "x": 348,
+                                        "y": 588,
+                                        "uid": "8Aj5XS1Dp1w8",
+                                        "title": "Scale"
+                                    },
+                                    {
+                                        "plugin": "vector",
+                                        "x": 350,
+                                        "y": 415,
+                                        "uid": "J3zDF3RfWjMz",
+                                        "title": "Rotation"
+                                    },
+                                    {
+                                        "plugin": "const_float_generator",
+                                        "x": 73,
+                                        "y": 593,
+                                        "uid": "5JjqmZ3a4J9w",
+                                        "state": {
+                                            "val": 0.3
+                                        },
+                                        "title": "Scale XYZ"
+                                    },
+                                    {
+                                        "plugin": "clock_generator",
+                                        "x": 99,
+                                        "y": 425,
+                                        "uid": "qyG0yq4y4nJC"
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 608,
+                                        "y": 581,
+                                        "uid": "lTinRx5wDILm",
+                                        "title": "scale",
+                                        "dyn_in": [
+                                            {
+                                                "name": "output",
+                                                "dt": 5,
+                                                "def": null,
+                                                "uid": "BSJXoHyMPIgk",
+                                                "dynamic": true,
+                                                "type": 0,
+                                                "index": 0,
+                                                "is_connected": true,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 594,
+                                        "y": 426,
+                                        "uid": "1e6j9qkTVakL",
+                                        "title": "rotation",
+                                        "dyn_in": [
+                                            {
+                                                "name": "output",
+                                                "dt": 5,
+                                                "def": null,
+                                                "uid": "eDSw6r1hKhFA",
+                                                "dynamic": true,
+                                                "type": 0,
+                                                "index": 0,
+                                                "is_connected": true,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 595,
+                                        "y": 149,
+                                        "uid": "aZHH160gAHE8",
+                                        "title": "position",
+                                        "dyn_in": [
+                                            {
+                                                "name": "output",
+                                                "dt": 5,
+                                                "def": null,
+                                                "uid": "2HHqrD2d9yeE",
+                                                "dynamic": true,
+                                                "type": 0,
+                                                "index": 0,
+                                                "is_connected": true,
+                                                "connected": true
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": "tdQ2GsmY0zR0",
+                                        "dst_nuid": "sapcnAWDjY7h",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "KYNVImUGOKt3",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "6wADRKsLAzsD",
+                                        "dst_nuid": "sapcnAWDjY7h",
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "uid": "iq0i08iWCjkU",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "lGP8KUmTlZ2S",
+                                        "dst_nuid": "sapcnAWDjY7h",
+                                        "src_slot": 0,
+                                        "dst_slot": 2,
+                                        "uid": "r49ESRulYkyJ",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "5JjqmZ3a4J9w",
+                                        "dst_nuid": "8Aj5XS1Dp1w8",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "TrQ40pIy8NzX",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "5JjqmZ3a4J9w",
+                                        "dst_nuid": "8Aj5XS1Dp1w8",
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "uid": "aecMTqQ3ui2u",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "offset": 1
+                                    },
+                                    {
+                                        "src_nuid": "5JjqmZ3a4J9w",
+                                        "dst_nuid": "8Aj5XS1Dp1w8",
+                                        "src_slot": 0,
+                                        "dst_slot": 2,
+                                        "uid": "s2YiyVJq74lC",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "qyG0yq4y4nJC",
+                                        "dst_nuid": "J3zDF3RfWjMz",
+                                        "src_slot": 0,
+                                        "dst_slot": 2,
+                                        "uid": "hM3Oqh1MYme3",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "qyG0yq4y4nJC",
+                                        "dst_nuid": "J3zDF3RfWjMz",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "n0UZe8sta8BN",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "qyG0yq4y4nJC",
+                                        "dst_nuid": "J3zDF3RfWjMz",
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "uid": "XhCMCBRNVMIS",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "sapcnAWDjY7h",
+                                        "dst_nuid": "aZHH160gAHE8",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "T8IwFMaCXEin",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": "J3zDF3RfWjMz",
+                                        "dst_nuid": "1e6j9qkTVakL",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "zXBrxfLLfA9O",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": "8Aj5XS1Dp1w8",
+                                        "dst_nuid": "lTinRx5wDILm",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "rdCBCLIxl1vP",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    }
+                                ]
+                            },
+                            "dyn_out": [
+                                {
+                                    "name": "position",
+                                    "dt": 5,
+                                    "index": 0,
+                                    "uid": "8DsLGwXcfbYF",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "rotation",
+                                    "dt": 5,
+                                    "index": 1,
+                                    "uid": "j9HWaNkV9Ebv",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "scale",
+                                    "dt": 5,
+                                    "index": 2,
+                                    "uid": "kNCVqRth7P7e",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "three_material_phong",
+                            "x": 227,
+                            "y": 450,
+                            "uid": "aJOHmMab6QLI"
+                        },
+                        {
+                            "plugin": "three_geometry_box",
+                            "x": 175,
+                            "y": 271,
+                            "uid": "ZKmkyt2SCP5g"
+                        },
+                        {
+                            "plugin": "annotation",
+                            "x": 65,
+                            "y": 70,
+                            "uid": "kfpuoWgPZjy7",
+                            "state": {
+                                "text": "This is the nested patch for the Box.\nConnect the Phong material to the Mesh!",
+                                "width": 210,
+                                "height": 47
+                            }
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 9,
+                            "y": 497,
+                            "uid": "DX352VkQwWK2",
+                            "state": {
+                                "hue": 0.49,
+                                "sat": 0.75,
+                                "lum": 0.64
+                            }
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "AXRPZGJb3Dac",
+                            "dst_nuid": "KUVIt8IoP1bg",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "9QJuavsy4oBZ",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "ZKmkyt2SCP5g",
+                            "dst_nuid": "AXRPZGJb3Dac",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "dJh6kWrWhXVu",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "DX352VkQwWK2",
+                            "dst_nuid": "aJOHmMab6QLI",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "bsDTWOSjbHts",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "EZrQsMmgCLgP",
+                            "dst_nuid": "AXRPZGJb3Dac",
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "uid": "YR9zbU3ElbTk",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "EZrQsMmgCLgP",
+                            "dst_nuid": "AXRPZGJb3Dac",
+                            "src_slot": 1,
+                            "dst_slot": 4,
+                            "uid": "iF10j4ZDm1lQ",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "EZrQsMmgCLgP",
+                            "dst_nuid": "AXRPZGJb3Dac",
+                            "src_slot": 2,
+                            "dst_slot": 5,
+                            "uid": "Nau6vdv2fX9a",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "Ys30r7aVEks1",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "three_webgl_renderer",
+                "x": 569,
+                "y": 161,
+                "uid": "DeVeX4NPB0qj",
+                "state": {
+                    "always_update": true
+                }
+            },
+            {
+                "plugin": "graph",
+                "x": 393,
+                "y": 161,
+                "uid": "45rjEcLj62c2",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "wghbdJEVX7Jt": "8GpdZjiiiEQa"
+                    }
+                },
+                "title": "VR camera",
+                "graph": {
+                    "uid": "Luq1jlSlDICE",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "three_vr_camera",
+                            "x": 503,
+                            "y": 249,
+                            "uid": "gPxJDJT2iaab"
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 681,
+                            "y": 310,
+                            "uid": "wghbdJEVX7Jt",
+                            "title": "camera",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 6,
+                                    "def": null,
+                                    "uid": "uyyGR7LQwSEh",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 17,
+                            "y": 237,
+                            "uid": "W8qFo71CQtqm",
+                            "state": {
+                                "val": 0,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "Position X"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 17,
+                            "y": 302,
+                            "uid": "rpLRlJOP1NiD",
+                            "state": {
+                                "val": 0,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "Position Y"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 17,
+                            "y": 368,
+                            "uid": "Dib2OnJ7sKCi",
+                            "state": {
+                                "val": 2,
+                                "min": -2,
+                                "max": 2
+                            },
+                            "title": "Position Z"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 340,
+                            "y": 299,
+                            "uid": "dGHzjMjXnauT",
+                            "title": "Camera position"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 376,
+                            "y": 199,
+                            "uid": "6M2TxkvEqYtc",
+                            "state": {
+                                "val": 45
+                            },
+                            "title": "FOV"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "gPxJDJT2iaab",
+                            "dst_nuid": "wghbdJEVX7Jt",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "rxo2qcYvkhHR",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "W8qFo71CQtqm",
+                            "dst_nuid": "dGHzjMjXnauT",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "Vu0N2nLeZ7ak",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "rpLRlJOP1NiD",
+                            "dst_nuid": "dGHzjMjXnauT",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "swtzIoT2ywjc",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "Dib2OnJ7sKCi",
+                            "dst_nuid": "dGHzjMjXnauT",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "jfPRyWs9ixY8",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "dGHzjMjXnauT",
+                            "dst_nuid": "gPxJDJT2iaab",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "TDSamUc9rKa8",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "6M2TxkvEqYtc",
+                            "dst_nuid": "gPxJDJT2iaab",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "ErePKq1fyFw3",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "camera",
+                        "dt": 6,
+                        "index": 0,
+                        "uid": "8GpdZjiiiEQa",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "three_scene",
+                "x": 315,
+                "y": 240,
+                "uid": "qflZidzjtnQX",
+                "dyn_in": [
+                    {
+                        "type": 0,
+                        "name": "0",
+                        "dt": 21,
+                        "array": true,
+                        "uid": "DDzcOXqI6iRM",
+                        "dynamic": true,
+                        "index": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "type": 0,
+                        "name": "1",
+                        "dt": 21,
+                        "array": true,
+                        "uid": "gH5pmBKZK4lm",
+                        "dynamic": true,
+                        "index": 1,
+                        "is_connected": true
+                    },
+                    {
+                        "type": 0,
+                        "name": "2",
+                        "dt": 21,
+                        "array": true,
+                        "uid": "ExPIjji5rvFO",
+                        "dynamic": true,
+                        "index": 2,
+                        "is_connected": false
+                    },
+                    {
+                        "type": 0,
+                        "name": "3",
+                        "dt": 21,
+                        "array": true,
+                        "uid": "hddJID3FkB4R",
+                        "dynamic": true,
+                        "index": 3,
+                        "is_connected": false
+                    },
+                    {
+                        "type": 0,
+                        "name": "4",
+                        "dt": 21,
+                        "array": true,
+                        "uid": "fb1ifySJ5kUl",
+                        "dynamic": true,
+                        "index": 4,
+                        "is_connected": false
+                    }
+                ]
+            },
+            {
+                "plugin": "graph",
+                "x": 78,
+                "y": 336,
+                "uid": "JE8hv2zEirLU",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "txM3nltzQ772": "547odbJKrTzG"
+                    }
+                },
+                "title": "Point light",
+                "graph": {
+                    "uid": "q4YsaAW0T3za",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "output_proxy",
+                            "x": 648,
+                            "y": 309,
+                            "uid": "txM3nltzQ772",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "vSy6Gj4JSPYs",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 39,
+                            "y": 375,
+                            "uid": "3H7bmcJUHEo2",
+                            "state": {
+                                "val": 1,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 39,
+                            "y": 441,
+                            "uid": "JAXBip6CPJDB",
+                            "state": {
+                                "val": 0.06,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 34,
+                            "y": 508,
+                            "uid": "rq9lr909zBzO",
+                            "state": {
+                                "val": 2,
+                                "min": -1,
+                                "max": 2
+                            },
+                            "title": "Z"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 342,
+                            "y": 398,
+                            "uid": "0AqY4opiMqBM",
+                            "title": "Position"
+                        },
+                        {
+                            "plugin": "three_point_light",
+                            "x": 459,
+                            "y": 307,
+                            "uid": "5JQaApeBZxea"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 225,
+                            "y": 307,
+                            "uid": "7BISUoBCNXqu",
+                            "state": {
+                                "val": 1.7
+                            },
+                            "title": "Intensity"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "3H7bmcJUHEo2",
+                            "dst_nuid": "0AqY4opiMqBM",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "vujwdunJsKjQ",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "JAXBip6CPJDB",
+                            "dst_nuid": "0AqY4opiMqBM",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "9cY2wUOFuLn7",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "rq9lr909zBzO",
+                            "dst_nuid": "0AqY4opiMqBM",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "dfBjQszH6e0h",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "5JQaApeBZxea",
+                            "dst_nuid": "txM3nltzQ772",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "aYkCHTvIbMFA",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "0AqY4opiMqBM",
+                            "dst_nuid": "5JQaApeBZxea",
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "uid": "BmH2PYB8m4e3",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "7BISUoBCNXqu",
+                            "dst_nuid": "5JQaApeBZxea",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "Yaqz1gE2iNG4",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "547odbJKrTzG",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "annotation",
+                "x": 54,
+                "y": 130,
+                "uid": "eRL3axT3Ff1I",
+                "state": {
+                    "text": "Welcome to Vizor!\nClick the Edit button on the Box patch!",
+                    "width": 204,
+                    "height": 41
+                }
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": "45rjEcLj62c2",
+                "dst_nuid": "DeVeX4NPB0qj",
+                "src_slot": 0,
+                "dst_slot": 0,
+                "uid": "qBJpycgZWBNG",
+                "src_connected": true,
+                "dst_connected": true,
+                "src_dyn": true
+            },
+            {
+                "src_nuid": "qflZidzjtnQX",
+                "dst_nuid": "DeVeX4NPB0qj",
+                "src_slot": 0,
+                "dst_slot": 1,
+                "uid": "cw5ZGfM1bhjb",
+                "src_connected": true,
+                "dst_connected": true
+            },
+            {
+                "src_nuid": "F7vsqCsT1H7I",
+                "dst_nuid": "qflZidzjtnQX",
+                "src_slot": 0,
+                "dst_slot": 0,
+                "uid": "Qxi1bX8IB9z9",
+                "src_connected": true,
+                "dst_connected": true,
+                "src_dyn": true,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": "JE8hv2zEirLU",
+                "dst_nuid": "qflZidzjtnQX",
+                "src_slot": 0,
+                "dst_slot": 1,
+                "uid": "2SKMZOtI0vAm",
+                "src_connected": true,
+                "dst_connected": true,
+                "src_dyn": true,
+                "dst_dyn": true
+            }
+        ]
+    }
+}

@@ -2091,7 +2091,7 @@ Application.prototype.start = function() {
 }
 
 Application.prototype.showFirstTimeDialog = function() {
-	if (!!Cookies.get('vizor'))
+	if (!E2.util.isFirstTime())
 		return;
 
 	Cookies.set('vizor', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
@@ -2140,6 +2140,10 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
 			}
 		}
+	}
+
+	if (E2.util.isFirstTime()) {
+		loadGraphUrl = '/data/graphs/default.json'
 	}
 
 	if (loadGraphUrl)
