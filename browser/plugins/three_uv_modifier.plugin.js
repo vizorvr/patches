@@ -45,10 +45,11 @@
 
 	ThreeUVModifierPlugin.prototype.update_input = function(slot, data) {
 		if (slot.index === 0 && data) { // texture
-			if (!data.map) {
+			if (data.image === THREE.Texture.DEFAULT_IMAGE) {
 				// store a reference - if the map is not there, the texture
-				// hasn't loaded
+				// hasn't loaded - force the node to update until one is loaded
 				this.pendingTexture = data
+				this.always_update = true
 			}
 			else {
 				this.texture = data.clone()
@@ -79,8 +80,9 @@
 	}
 
 	ThreeUVModifierPlugin.prototype.update_state = function() {
-		if (this.pendingTexture && this.pendingTexture.image) {
+		if (this.pendingTexture && this.pendingTexture.image !== THREE.Texture.DEFAULT_IMAGE) {
 			this.texture = this.pendingTexture.clone()
+			this.always_update = false
 			this.pendingTexture = undefined
 			this.dirty = true
 		}
