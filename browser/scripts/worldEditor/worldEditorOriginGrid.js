@@ -8,7 +8,7 @@ function WorldEditorOriginGrid() {
 		var geometry = new THREE.Geometry()
 		var material =
 			new THREE.LineBasicMaterial(
-				{ vertexColors: THREE.VertexColors, linewidth: 1 } )
+				{ vertexColors: THREE.VertexColors, linewidth: 1, fog: false } )
 
 		this.color1 = new THREE.Color( 0xFFFFFF )
 		this.color2 = new THREE.Color( 0xBBBBBB )

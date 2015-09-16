@@ -77,7 +77,7 @@ WorldEditor.prototype.getEditorSceneTree = function() {
 WorldEditor.prototype.setSelection = function(selected) {
 	this.selectionTree.children = []
 
-	this.editorControls.enabled = selected.length == 0
+	this.editorControls.enabled = selected.length === 0
 
 	this.transformControls.detach()
 
