@@ -1,71 +1,75 @@
 {
+	"TEMPLATES": {
+		"Basic VR scene": "_template-basic-vr-scene",
+		"Minimal VR scene": "_minimal_vr_scene"
 
-	"THREE": {
-		"Base: Scene & WebGL renderer": "three_base",
-		"Geometry: Obj loader": "three_obj_loader",
-		"Geometry: Box": "three_box",
-		"Geometry: Circle": "three_circle",
-		"Geometry: Plane (basic material)":"three_plane_basic",
-		"Geometry: Plane (lambert material)": "three_plane_lambert",
-		"Geometry: Sphere": "three_sphere",
-		"Geometry: Cylinder": "three_cylinder",
-		"Geometry: Dodecahedron": "three_dodecahedron",
-		"Light: Directional light": "three_directional_light",
-		"Light: Ambient light": "three_ambient_light",
-		"Light: Point light": "three_point_light",
-		"Util: Position, Rotation, Scale": "three_position_rotation_scale",
-		"Util: VR camera": "three_vr_camera"
+},
+
+	"ADD GEOMETRY": {
+		"3D object": "_add-3d-object",
+		"Box": "_add-box",
+		"Sphere": "_add-sphere",
+		"Dodecahedron": "_add-dodecahedron",
+		"Plane": "_add-plane-no-shading",
+		"Cylinder": "_add-cylinder",
+		"Skysphere": "_add-skysphere",
+		"Floor": "_add-floor",
+		"Text": "_add-text"
+	},
+
+	"ADD LIGHTS": {
+		"Point light": "_add-point-light",
+		"Directional light": "_add-directional-light",
+		"Ambient light": "_add-ambient-light"
 
 	},
 
+		"ADD PARTICLES": {
+		"Particle emitter": "_add-particle-emitter",
+		"Geometry as particles": "_add-particle-geometry"
+
+	},
 
 	"INTERACTION": {
-		"Interaction: Button with MouseOver and OnClick colors": "interaction_button_with_mouseover_and_click_color",
-		"Interaction: Toggle button": "interaction_button_toggle",
-		"Interaction: Keypress increase/decrease - simple": "interaction_up_down_counter_simple",
-		"Interaction: Keypress increase/decrease with init & clamp": "interaction_up_and_down_counter_with_init_and_clamp"
+		"Keypress increase/decrease": "interaction_up_and_down_counter_with_init_and_clamp"
 	},
 
-		"AUDIO": {
-		"Audio: Audio player": "audio_audio_player",
-		"Audio: Audio player (old)": "audio_audio_player_old"
+
+	"AUDIO": {
+		"Audio: Audio player": "audio_audio_player_old"
 	},
-	
-	"LOOPS": {
-		"Loop: Loop framework": "loop_framework"
-	},
+
 
 	"TIME & ANIMATION ": {
-		"Time: Oscillate between 2 values": "time_oscillate_between_2_values",
-		"Time: Oscillate 2 values with in tween": "time_oscillate_2_values_in_tween",
-		"Time: Oscillate 2 values with out tween": "time_oscillate_2_values_out_tween",
-		"Time: Oscillate with a sawtooth": "time_oscillate_with_sawtooth",
-		"Time: Oscillate with a triangle": "time_oscillate_with_triangle",
-		"Time: Accumulating time": "time_accumulating_time",
-		"Time: Stop watch": "time_stop_watch",
-		"Time: Timer from 0 to 1": "time_timer_from_0_to_1",
-		"Time: Timer from 1 to 0": "time_timer_from_1_to_0",	
-		"Time: Circular motion to XYZ": "time_circular_motion_to_xyz",
-		"Time: Shaky random between 0 & 1": "time_shaky_random",
-		"Util: Float array sequencer": "util_float_array_sequencer",
-		"Util: Float array sequencer with oscillator level up": "util_float_array_sequencer_oscillator_out",
-		"Util: Float array sequencer with interpolation": "util_float_array_sequencer_with_interpolation",
-		"Util: Random with speed": "util_random_with_speed"
+		"Basic clock": "_basic-clock",
+		"Oscillate between 2 values": "_oscillate-between-2-values",
+		"Oscillate 2 values with in tween": "_oscillate-with-in-tween",
+		"Oscillate 2 values with out tween": "_oscillate-with-out-tween",
+		"Oscillate with a sawtooth": "_oscillate-sawtooth",
+		"Oscillate with a triangle": "time_oscillate_with_triangle",
+		"Stop watch": "time_stop_watch",
+		"Timer from 0 to 1": "time_timer_from_0_to_1",
+		"Timer from 1 to 0": "time_timer_from_1_to_0",	
+		"Circular motion to XYZ": "time_circular_motion_to_xyz",
+		"Shaky random between 0 & 1": "time_shaky_random",
+		"Random with speed": "util_random_with_speed"
 	},
 
+	"COLOR ": {
+		"Hue / Saturation / Luminosity / Alpha": "color_hsla",
+		"Red / Green / Blue / Alpha": "color_rgba",
+		"Color to vector XYZ": "util_color_to_vector"
+
+	},
 
 	"UTILS": {
-		"Util: Preloader": "util_preloader",
-		"Util: Preloader with play button": "util_preloader_with_play_button",
-		"Util: Knob with min and max values": "util_knob_with_min_max",
-		"Util: 4 step stepsequencer": "util_4_step_stepsequencer",
-		"Util: 1 step stepsequencer": "util_1_step_stepsequencer",
-		"Util: 9 step stepsequencer": "util_9_step_stepsequencer",
-		"Util: 4 Scene switcher": "util_4_scene_switcher",
-		"Util: VU-meter": "util_vu-meter",
-		"Color: Hue / Saturation / Luminosity / Alpha": "color_hsla",
-		"Color: Red / Green / Blue / Alpha": "color_rgba",
-		"Color: Color to vector XYZ": "util_color_to_vector",
-		"Util: Display number on screen": "util_display_number_on_screen"
+		"4 step stepsequencer": "util_4_step_stepsequencer",
+		"1 step stepsequencer": "util_1_step_stepsequencer",
+		"9 step stepsequencer": "util_9_step_stepsequencer",
+		"Display number": "_util-display-number"
+	},
+
+	"EXAMPLES": {
+		"Rotating cube": "_example-rotating-cube",
 	}
 }

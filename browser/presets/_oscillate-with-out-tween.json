@@ -1,0 +1,510 @@
+{
+    "abs_t": 644.064,
+    "active_graph": "root",
+    "graph_uid": "F2SOwIkvCgXj",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 450,
+                "y": 202,
+                "uid": "oW4pZr1uXRho",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {
+                        "tQbRXUKe2Gp0": "6",
+                        "I7Qw5ok7Buh0": "8",
+                        "3utWJDAWj15O": "9"
+                    },
+                    "output_sids": {
+                        "v2kPDMLI19Pl": "7"
+                    }
+                },
+                "title": "Oscillate with Out tween",
+                "graph": {
+                    "uid": "UQTZhDSKurR1",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "delta_t_generator",
+                            "x": 62,
+                            "y": 232,
+                            "uid": "h9t9kCc7n9cW"
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 187,
+                            "y": 222,
+                            "uid": "DAzAaH5pZBjU"
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 78,
+                            "y": 291,
+                            "uid": "tQbRXUKe2Gp0",
+                            "title": "Speed",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "uid": "0",
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true,
+                                    "dynamic": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "variable_local_read",
+                            "x": 204,
+                            "y": 339,
+                            "uid": "OHtQEmD9lMLe",
+                            "title": "float",
+                            "dyn_out": [
+                                {
+                                    "name": "value",
+                                    "dt": 0,
+                                    "uid": "0",
+                                    "index": 0,
+                                    "type": 1,
+                                    "dynamic": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "variable_local_write",
+                            "x": 589,
+                            "y": 178,
+                            "uid": "RrdVC7pUuUHI",
+                            "title": "float",
+                            "dyn_in": [
+                                {
+                                    "name": "value",
+                                    "dt": 0,
+                                    "uid": "0",
+                                    "index": 0,
+                                    "type": 0,
+                                    "is_connected": true,
+                                    "dynamic": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "add_modulator",
+                            "x": 312,
+                            "y": 252,
+                            "uid": "GUuGLNCbF5E7"
+                        },
+                        {
+                            "plugin": "if_else_modulator",
+                            "x": 432,
+                            "y": 278,
+                            "uid": "WQ3M3KvOFYQf"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 316,
+                            "y": 380,
+                            "uid": "num5v9hn6Kx1",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Reset"
+                        },
+                        {
+                            "plugin": "initialise_generator",
+                            "x": 348,
+                            "y": 189,
+                            "uid": "F1rQAvjXsFJr"
+                        },
+                        {
+                            "plugin": "sine_modulator",
+                            "x": 550,
+                            "y": 289,
+                            "uid": "aPSv3Zq2PfYs"
+                        },
+                        {
+                            "plugin": "subtract_modulator",
+                            "x": 664,
+                            "y": 404,
+                            "uid": "heVAnRB3XolV"
+                        },
+                        {
+                            "plugin": "convert_oscilator_unit_modulator",
+                            "x": 629,
+                            "y": 289,
+                            "uid": "THoPZ15mKHJR"
+                        },
+                        {
+                            "plugin": "multiply_modulator",
+                            "x": 967,
+                            "y": 260,
+                            "uid": "ssWnHQ5VwCFG"
+                        },
+                        {
+                            "plugin": "add_modulator",
+                            "x": 1067,
+                            "y": 301,
+                            "uid": "pXKYcc4mhxyU"
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1158,
+                            "y": 304,
+                            "uid": "v2kPDMLI19Pl",
+                            "title": "float",
+                            "dyn_in": [
+                                {
+                                    "name": "input",
+                                    "dt": 0,
+                                    "uid": "0",
+                                    "index": 0,
+                                    "type": 0,
+                                    "connected": true,
+                                    "is_connected": true,
+                                    "dynamic": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 538,
+                            "y": 399,
+                            "uid": "I7Qw5ok7Buh0",
+                            "title": "Min",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "uid": "0",
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true,
+                                    "dynamic": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 604,
+                            "y": 404,
+                            "uid": "3utWJDAWj15O",
+                            "title": "Max",
+                            "dyn_out": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "uid": "0",
+                                    "index": 0,
+                                    "type": 1,
+                                    "connected": true,
+                                    "dynamic": true,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "tween_out_modulator",
+                            "x": 776,
+                            "y": 277,
+                            "uid": "MqR0aSiZgwNo",
+                            "state": {
+                                "type": 0
+                            }
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "h9t9kCc7n9cW",
+                            "dst_nuid": "DAzAaH5pZBjU",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "ZsCW9Co864j3",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "tQbRXUKe2Gp0",
+                            "dst_nuid": "DAzAaH5pZBjU",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "i6XGIBLi4mVN",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "DAzAaH5pZBjU",
+                            "dst_nuid": "GUuGLNCbF5E7",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "uXuktDiE9qOR",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "OHtQEmD9lMLe",
+                            "dst_nuid": "GUuGLNCbF5E7",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "jKB9fO3lPCjw",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "GUuGLNCbF5E7",
+                            "dst_nuid": "WQ3M3KvOFYQf",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "fVRZcLVScNPB",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "F1rQAvjXsFJr",
+                            "dst_nuid": "WQ3M3KvOFYQf",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "0oINrFlVnlTa",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "num5v9hn6Kx1",
+                            "dst_nuid": "WQ3M3KvOFYQf",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "fFksEYnlZwWc",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "aPSv3Zq2PfYs",
+                            "dst_nuid": "THoPZ15mKHJR",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "efZrwF1mKkJb",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "3utWJDAWj15O",
+                            "dst_nuid": "heVAnRB3XolV",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "EQqYfh7H0P9y",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "I7Qw5ok7Buh0",
+                            "dst_nuid": "heVAnRB3XolV",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "ffJkKWtiYQzK",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": "heVAnRB3XolV",
+                            "dst_nuid": "ssWnHQ5VwCFG",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "Jqu2yOFd7rDj",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "ssWnHQ5VwCFG",
+                            "dst_nuid": "pXKYcc4mhxyU",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "HNaqgpkbVRpX",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "I7Qw5ok7Buh0",
+                            "dst_nuid": "pXKYcc4mhxyU",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "cUn7Rl0Hcrb6",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "pXKYcc4mhxyU",
+                            "dst_nuid": "v2kPDMLI19Pl",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "tExWPZY4XN6S",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": "WQ3M3KvOFYQf",
+                            "dst_nuid": "RrdVC7pUuUHI",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "yPOWFTo6y32D",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "WQ3M3KvOFYQf",
+                            "dst_nuid": "aPSv3Zq2PfYs",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "x7MPgJQ33eJo",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": "THoPZ15mKHJR",
+                            "dst_nuid": "MqR0aSiZgwNo",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "PExYvMeQ7yWJ",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "MqR0aSiZgwNo",
+                            "dst_nuid": "ssWnHQ5VwCFG",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "aWFRUTsI1o4x",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ],
+                    "variables": [
+                        {
+                            "id": "float",
+                            "dt": 8
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "Speed",
+                        "dt": 0,
+                        "uid": "6",
+                        "index": 0,
+                        "type": 0,
+                        "is_connected": true,
+                        "dynamic": true
+                    },
+                    {
+                        "name": "Min",
+                        "dt": 0,
+                        "uid": "8",
+                        "index": 1,
+                        "type": 0,
+                        "is_connected": true,
+                        "dynamic": true
+                    },
+                    {
+                        "name": "Max",
+                        "dt": 0,
+                        "uid": "9",
+                        "index": 2,
+                        "type": 0,
+                        "is_connected": true,
+                        "dynamic": true
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "float",
+                        "dt": 0,
+                        "uid": "7",
+                        "index": 0,
+                        "type": 1,
+                        "dynamic": true
+                    }
+                ]
+            },
+            {
+                "plugin": "slider_float_generator",
+                "x": 174,
+                "y": 203,
+                "uid": "jaYxdScv3Ygd",
+                "state": {
+                    "val": 0.42,
+                    "min": 0,
+                    "max": 1
+                },
+                "title": "speed"
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 173,
+                "y": 267,
+                "uid": "67ltgtWGEyVk",
+                "state": {
+                    "val": 0
+                },
+                "title": "Min"
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 261,
+                "y": 267,
+                "uid": "gdfjV5IqopSg",
+                "state": {
+                    "val": 1
+                },
+                "title": "Max"
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": "jaYxdScv3Ygd",
+                "dst_nuid": "oW4pZr1uXRho",
+                "src_slot": 0,
+                "dst_slot": 0,
+                "uid": "vlFnm1jEmPQv",
+                "src_connected": true,
+                "dst_connected": true,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": "67ltgtWGEyVk",
+                "dst_nuid": "oW4pZr1uXRho",
+                "src_slot": 0,
+                "dst_slot": 1,
+                "uid": "lRdQS64drRow",
+                "src_connected": true,
+                "dst_connected": true,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": "gdfjV5IqopSg",
+                "dst_nuid": "oW4pZr1uXRho",
+                "src_slot": 0,
+                "dst_slot": 2,
+                "uid": "N8707bu62Zrv",
+                "src_connected": true,
+                "dst_connected": true,
+                "dst_dyn": true
+            }
+        ]
+    }
+}
