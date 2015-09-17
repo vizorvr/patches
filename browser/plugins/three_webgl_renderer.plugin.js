@@ -100,7 +100,7 @@
 		mouseVector.y = ((1.0 - ((e.pageY - wgl_c.offsetTop) / h)) * 2.0) - 1.0
 		mouseVector.z = 0
 
-		if (this.scene.children && this.scene.children.length > 0) {
+		if (this.scene && this.scene.children && this.scene.children.length > 0) {
 			this.raycaster.setFromCamera(mouseVector, this.perspectiveCamera)
 
 			// only intersect scene.children[0] - children [1] is the overlays
