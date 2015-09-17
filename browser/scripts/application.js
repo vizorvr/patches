@@ -2169,8 +2169,10 @@ Application.prototype.setupEditorChannel = function() {
 	var that = this
 
 	function joinChannel() {
-		if (isUserOwnedGraph(that.path))
+		if (isUserOwnedGraph(that.path)) {
+			that.channel.leave()
 			return dfd.resolve()
+		}
 
 		that.channel.join(that.path, function() {
 			dfd.resolve()
