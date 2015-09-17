@@ -130,19 +130,20 @@
 </div> <!-- page column -->	
 
 <script type="text/javascript">
-	var graph, graphUrl
+	var boot = {}
+	boot.hasEdits = {{hasEdits}}
 
 	{{#if graph}}
-		graph = {
+		boot.graph = {
 			path: '{{graph.path}}',
 			url: '{{graph.url}}'
 		}
 
-		graphUrl = graph.url
+		boot.graphUrl = boot.graph.url
 	{{/if}}
 
 	function startEditor(vr_devices) {
-		E2.InitialiseEngi(vr_devices, graphUrl)
+		E2.InitialiseEngi(vr_devices, boot.graphUrl)
 	}
 
 	function EnumerateVRDevices(devices) {

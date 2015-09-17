@@ -1,5 +1,5 @@
 {
-    "abs_t": 510.481,
+    "abs_t": 6.449,
     "active_graph": "root",
     "graph_uid": "TXDgBc0JJtS3",
     "root": {
@@ -443,15 +443,6 @@
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
-                        },
-                        {
-                            "src_nuid": "aJOHmMab6QLI",
-                            "dst_nuid": "AXRPZGJb3Dac",
-                            "src_slot": 0,
-                            "dst_slot": 2,
-                            "uid": "b2o64XsSST1M",
-                            "src_connected": true,
-                            "dst_connected": true
                         }
                     ]
                 },
@@ -679,7 +670,7 @@
                             "y": 375,
                             "uid": "3H7bmcJUHEo2",
                             "state": {
-                                "val": 1,
+                                "val": -0.008,
                                 "min": -1,
                                 "max": 1
                             },
@@ -691,7 +682,7 @@
                             "y": 441,
                             "uid": "JAXBip6CPJDB",
                             "state": {
-                                "val": 0.06,
+                                "val": 0.606,
                                 "min": -1,
                                 "max": 1
                             },
@@ -893,7 +884,7 @@
                         "wvHE9PeQUI2b": "mh0rTKkFm0nD"
                     }
                 },
-                "title": "Plane (not shaded)",
+                "title": "Ground Plane",
                 "graph": {
                     "uid": "EggfP3QptNML",
                     "parent_uid": "root",

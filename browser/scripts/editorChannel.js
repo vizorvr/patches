@@ -177,6 +177,17 @@ EditorChannel.prototype.connect = function(options) {
 	return this
 }
 
+EditorChannel.prototype.snapshot = function() {
+	var graphSer = E2.core.serialise()
+
+	this.send({
+		actionType: 'graphSnapshotted',
+		data: graphSer
+	})
+
+	E2.app.snapshotPending = false
+}
+
 /**
  * send local dispatches to network
  * FORK if an important edit (create a new channel with copy)
@@ -184,6 +195,9 @@ EditorChannel.prototype.connect = function(options) {
 EditorChannel.prototype._localDispatchHandler = function _localDispatchHandler(payload) {
 	if (payload.from)
 		return;
+
+	if (E2.app.snapshotPending && isEditAction(payload))
+		this.snapshot()
 
 	if (this.isOnChannel)
 		return this.send(payload)
