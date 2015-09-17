@@ -5625,7 +5625,7 @@ button.close {
   color: #000000;
   text-align: center;
   text-decoration: none;
-  background-color: yellow;
+  background-color: #ffff00;
   border-radius: 4px;
 }
 .tooltip-arrow {
@@ -5640,56 +5640,56 @@ button.close {
   left: 50%;
   margin-left: -5px;
   border-width: 5px 5px 0;
-  border-top-color: yellow;
+  border-top-color: #ffff00;
 }
 .tooltip.top-left .tooltip-arrow {
   bottom: 0;
   right: 5px;
   margin-bottom: -5px;
   border-width: 5px 5px 0;
-  border-top-color: yellow;
+  border-top-color: #ffff00;
 }
 .tooltip.top-right .tooltip-arrow {
   bottom: 0;
   left: 5px;
   margin-bottom: -5px;
   border-width: 5px 5px 0;
-  border-top-color: yellow;
+  border-top-color: #ffff00;
 }
 .tooltip.right .tooltip-arrow {
   top: 50%;
   left: 0;
   margin-top: -5px;
   border-width: 5px 5px 5px 0;
-  border-right-color: yellow;
+  border-right-color: #ffff00;
 }
 .tooltip.left .tooltip-arrow {
   top: 50%;
   right: 0;
   margin-top: -5px;
   border-width: 5px 0 5px 5px;
-  border-left-color: yellow;
+  border-left-color: #ffff00;
 }
 .tooltip.bottom .tooltip-arrow {
   top: 0;
   left: 50%;
   margin-left: -5px;
   border-width: 0 5px 5px;
-  border-bottom-color: yellow;
+  border-bottom-color: #ffff00;
 }
 .tooltip.bottom-left .tooltip-arrow {
   top: 0;
   right: 5px;
   margin-top: -5px;
   border-width: 0 5px 5px;
-  border-bottom-color: yellow;
+  border-bottom-color: #ffff00;
 }
 .tooltip.bottom-right .tooltip-arrow {
   top: 0;
   left: 5px;
   margin-top: -5px;
   border-width: 0 5px 5px;
-  border-bottom-color: yellow;
+  border-bottom-color: #ffff00;
 }
 .popover {
   position: absolute;
@@ -7362,15 +7362,25 @@ button.show-timeline:hover svg {
 .popover.top > .arrow::after {
   border-top-color: #262c3d !important;
 }
+.resize-handle {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  cursor: n-resize;
+  z-index: 42;
+}
 .preset-list-contained-box {
   overflow: hidden !important;
 }
 .preset-list-container {
   overflow: hidden;
-  width: 270px;
+  width: 100%;
 }
 .preset-list-container .preset-list-content {
-  width: 270px;
+  width: 100%;
   height: inherit;
   overflow-y: auto;
   overflow-x: hidden;
@@ -7613,7 +7623,7 @@ li.active,
 .peopleList {
   overflow-y: auto;
   overflow-x: hidden;
-  width: 270px;
+  width: 100%;
   height: 350px;
 }
 .graph-users {
@@ -7629,6 +7639,7 @@ li.active,
 }
 .graph-users li .icon {
   background-image: url('/images/alpha_chat_icon.png');
+  background-position: center center;
   margin: 0 14px 9px 0;
   width: 34px;
   height: 34px;
@@ -7790,11 +7801,11 @@ li.active,
 .chat .messages {
   overflow-y: auto;
   overflow-x: hidden;
-  width: 270px;
+  width: 100%;
   height: 274px;
 }
 .chat .message .date {
-  margin-left: 8px;
+  margin: 0 18px 0 8px;
   font-size: 10px;
   font-weight: 400;
   color: #7e8dab;
@@ -7818,6 +7829,7 @@ li.active,
 }
 .chat .message .icon {
   background-image: url('/images/alpha_chat_icon.png');
+  background-position: center center;
   margin: 0px 14px 9px 18px;
   width: 32px;
   height: 32px;
@@ -7832,7 +7844,7 @@ li.active,
   line-height: 1;
 }
 .chat .message .text-cell {
-  padding: 3px 0 0;
+  padding: 3px 30px 0 0;
 }
 .chat .message .text {
   font-size: 12px;
@@ -7937,17 +7949,12 @@ ul.lib-tabs > li:hover a {
 .assets-frame {
   height: 152px;
   width: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: #262c3d;
   position: relative;
   float: left;
   border-bottom: 1px solid #1e2331;
-}
-.assets-frame .assets-scroll {
-  overflow-x: hidden;
-  overflow-y: auto;
-  width: 270px;
-  height: 152px;
 }
 .assets-group {
   width: 100%;
@@ -8020,7 +8027,7 @@ ul.assets-list > li:hover span {
   display: block;
   position: relative;
   height: 37px;
-  width: 100%;
+  width: 252px;
   float: left;
 }
 .load-buttons button {
@@ -8209,4 +8216,26 @@ ul.assets-list > li:hover span {
   font-weight: 400;
   font-size: 20px;
   margin: 0 auto;
+}
+.scrollbar::-webkit-scrollbar {
+  width: 12px;
+}
+.scrollbar::-webkit-scrollbar-button {
+  display: none!important;
+}
+.scrollbar::-webkit-scrollbar-track {
+  background-color: #262c3d;
+  border-radius: 6px;
+}
+.scrollbar::-webkit-scrollbar-track-piece {
+  background-color: #262c3d;
+}
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: #7e8dab;
+  border-radius: 6px;
+  border: 4px solid #262c3d;
+  background-clip: content-box;
+}
+.scrollbar::-webkit-scrollbar-corner {
+  display: none!important;
 }

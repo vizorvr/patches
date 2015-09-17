@@ -79,18 +79,12 @@ ul.lib-tabs {
 .assets-frame {
     height: 152px;
     width: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     background: @bg-light;
     position: relative;
     float: left;
     border-bottom: 1px solid @bg-darker;
-}
-
-.assets-frame .assets-scroll {
-    overflow-x: hidden;
-    overflow-y: auto;
-    width: @floating-box-width + @scrollbar;
-    height: 152px;
 }
 
 .assets-group {
@@ -169,7 +163,7 @@ ul.assets-list {
     display: block;
     position: relative;
     height: 37px;
-    width: 100%;
+    width: @floating-box-width;
     float: left;
     button {
         width: 50%;
