@@ -1168,9 +1168,15 @@ Application.prototype.onKeyDown = function(e) {
 
 	if (E2.util.isTextInputInFocus(e))
 		return;
-
-	if (!this.noodlesVisible && e.keyCode !== 9)
+	
+	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
+	{
+		this.ctrl_pressed = true;
+	}
+	
+	if ((!this.noodlesVisible && e.keyCode !== 9) && (e.keyCode !== 66 && this.ctrl_pressed == false)) 
 		return;
+		
 
 	// arrow up || down
 	var arrowKeys = [37,38,39,40]
@@ -1285,7 +1291,7 @@ Application.prototype.onKeyDown = function(e) {
 		}
 		if(e.keyCode === 66) // CTRL+b
 		{
-			this.onBtnPresetsClicked();
+			E2.dom.uiLayer.toggle();
 			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 			return;
 		}
@@ -2387,6 +2393,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.btnSignIn = $('#btn-sign-in');
 	
 	E2.dom.breadcrumb = $('#breadcrumb');
+	
+	E2.dom.uiLayer = $('#ui-layer');
 	
 	E2.dom.assetsLib = $('#assets-lib');
 	E2.dom.assetsToggle = $('#assets-toggle');
