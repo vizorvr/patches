@@ -212,10 +212,10 @@
 			if (data instanceof THREE.BufferGeometry) {
 				var tempGeom = new THREE.Geometry()
 				tempGeom.fromBufferGeometry(data)
-				this.vertices = tempGeom.vertices
+				this.vertices = tempGeom.vertices.length > 0 ? tempGeom.vertices : undefined
 			}
 			else if (data instanceof THREE.Geometry) {
-				this.vertices = data.vertices
+				this.vertices = data.vertices.length > 0 ? data.vertices : undefined
 			}
 			else // !data
 			{
