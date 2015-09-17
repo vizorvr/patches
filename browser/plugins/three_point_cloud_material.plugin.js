@@ -7,8 +7,8 @@
 		this.input_slots = [
 			{	name: 'texture', dt: core.datatypes.TEXTURE },
 			{	name: 'color', dt: core.datatypes.COLOR },
-			{   name: 'size', dt: core.datatypes.FLOAT },
-			{   name: 'sizeAttenuation', dt: core.datatypes.FLOAT },
+			{   name: 'size', dt: core.datatypes.FLOAT, def: 1.0 },
+			{   name: 'sizeAttenuation', dt: core.datatypes.FLOAT, def: 1.0 },
 			{	name: 'fog', dt: core.datatypes.BOOL, def: true,
 				desc: 'Define whether the material color is affected by global fog settings.'
 			},

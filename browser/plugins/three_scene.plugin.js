@@ -98,6 +98,19 @@
 			}
 		}
 
+		// If lights have changed, we have to set affected materials as needing
+		// to be updated. This would be better done in an analytical manner
+		// and only update the ones that actually need updating; however we'll
+		// just force update everything
+
+		if (this.scene) {
+			this.scene.traverse(function(node) {
+				if (node.material !== undefined) {
+					node.material.needsUpdate = true
+				}
+			})
+		}
+
 		this.meshes_dirty = false
 	}
 

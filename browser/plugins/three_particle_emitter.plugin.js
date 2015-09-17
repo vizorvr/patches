@@ -14,7 +14,7 @@
 			name: 'spawn rate',
 			desc: 'the amount of particles to spawn per second',
 			dt: core.datatypes.FLOAT,
-			def: 1,
+			def: 0.1,
 			validate: function(v) {return v < 0 ? 0 : (v > 1 ? 1 : v)}
 		}, {
 			name: 'random seed',
@@ -24,7 +24,7 @@
 		}, {
 			name: 'direction',
 			dt: core.datatypes.VECTOR,
-			def: new THREE.Vector3(0, 0, 0)
+			def: new THREE.Vector3(0, 1, 0)
 		}, {
 			name: 'speed',
 			desc: 'speed along direction',
@@ -49,6 +49,11 @@
 			name: 'noise',
 			desc: 'amount of noise to apply to movement',
 			dt: core.datatypes.FLOAT,
+			def: 0.5
+		}, {
+			name: 'geometry',
+			desc: 'emit from this geometry',
+			dt: core.datatypes.GEOMETRY,
 			def: 0
 		}]
 
@@ -63,8 +68,8 @@
 	ThreeParticleEmitter.prototype = Object.create(Plugin.prototype)
 
 	ThreeParticleEmitter.prototype.reset = function() {
-		this.buffersDirty = false
-		this.positionsDirty = false
+		this.buffersDirty = true
+		this.positionsDirty = true
 		this.particleCount = 100
 		this.spawnRate = 0.1
 
@@ -132,7 +137,14 @@
 				}
 			}
 			else if (particlesToSpawn >= 0) {
-				p.position.set(0, 0, 0)
+				if (this.vertices) {
+					var ranIdx = this.random.uint32() % this.vertices.length
+					var vtx = this.vertices[ranIdx]
+					p.position.copy(vtx)
+				}
+				else {
+					p.position.set(0, 0, 0)
+				}
 				p.velocity.set(
 					this.random.real(-1,1) * this.spread,
 					this.random.real(-1,1) * this.spread,
@@ -147,7 +159,10 @@
 				particlesToSpawn--
 			}
 			else {
-				p.position.set(0, 0, 0)
+				// temporarily move out of the way
+				// not ideal as this will expand the bbox,
+				// however looks better than a blob in world origin
+				p.position.set(10000, 10000, 10000)
 			}
 
 			this.geometry.vertices[i].copy(p.position)
@@ -192,6 +207,20 @@
 		}
 		else if (slot.index === 8) { // noise
 			this.noise = data
+		}
+		else if (slot.index === 9) { // geometry
+			if (data instanceof THREE.BufferGeometry) {
+				var tempGeom = new THREE.Geometry()
+				tempGeom.fromBufferGeometry(data)
+				this.vertices = tempGeom.vertices
+			}
+			else if (data instanceof THREE.Geometry) {
+				this.vertices = data.vertices
+			}
+			else // !data
+			{
+				this.vertices = undefined
+			}
 		}
 	}
 
