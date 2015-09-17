@@ -259,9 +259,24 @@ r.connect({
 		throw err
 	});
 
+
+	// stat() files in gridfs
+	app.get(/^\/stat\/data\/.*/, function(req, res) {
+		var path = req.path.replace(/^\/stat\/data/, '');
+
+		gfs.stat(path)
+		.then(function(stat) {
+			if (!stat)
+				return res.json({ error: 404 })
+
+			delete stat._id
+
+			return res.json(stat)
+		})
+	})
+
 	// stream files from fs/gridfs
-	app.get(/^\/data\/.*/, function(req, res, next)
-	{
+	app.get(/^\/data\/.*/, function(req, res, next) {
 		var path = req.path.replace(/^\/data/, '');
 
 		gfs.stat(path)
