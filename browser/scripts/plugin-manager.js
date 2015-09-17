@@ -21,12 +21,11 @@ function PluginManager(core, base_url) {
 			success: function(data) {
 				var pg_root = new PluginGroup('root')
 				
-				if (!that.release_mode)
-					that.total += Object.keys(data).length
-
 				$.each(data, function(category)  {
+					if (!that.release_mode)
+						that.total += Object.keys(data[category]).length
+
 					$.each(data[category], function(title, id)  {
-						console.log('plugin', title, id)
 						var url = that.base_url + '/' + id + '.plugin.js';
 						if (!that.release_mode)
 							load_script(url, that.onload.bind(that), that.onerror.bind(that));
@@ -86,8 +85,7 @@ PluginManager.prototype.onerror = function()
 
 PluginManager.prototype.create = function(id, node) 
 {
-	if (E2.plugins.hasOwnProperty(id))
-	{
+	if (E2.plugins.hasOwnProperty(id)) {
 		var p = new E2.plugins[id](this.core, node);
 		p.id = id;
 		return p;

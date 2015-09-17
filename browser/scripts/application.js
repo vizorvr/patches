@@ -2142,8 +2142,10 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 		}
 	}
 
-	// if (!loadGraphUrl && !initialEditorGraph)
-	// 	loadGraphUrl = '/data/graphs/default.json'
+	if (!loadGraphUrl && !boot.hasEdits) {
+		loadGraphUrl = '/data/graphs/default.json'
+		E2.app.snapshotPending = true
+	}
 
 	if (loadGraphUrl)
 		E2.app.loadGraph(loadGraphUrl, start)

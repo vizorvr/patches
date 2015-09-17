@@ -1,8 +1,10 @@
-var Graph = require('../models/graph');
-var AssetController = require('./assetController');
-var fsPath = require('path');
-var assetHelper = require('../models/asset-helper');
-var templateCache = new(require('../lib/templateCache'));
+var Graph = require('../models/graph')
+var AssetController = require('./assetController')
+var fsPath = require('path')
+var assetHelper = require('../models/asset-helper')
+var templateCache = new(require('../lib/templateCache'))
+
+var EditLog = require('../models/editLog')
 
 function makeRandomPath() {
 	var keys = 'abcdefghijklmnopqrstuvwxyz0123456789'
@@ -13,17 +15,17 @@ function makeRandomPath() {
 	return uid
 }
 
-function GraphController() {
+function GraphController(s, gfs, rethinkConnection) {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
 	AssetController.apply(this, args);
+	this.rethinkConnection = rethinkConnection
 }
 
 GraphController.prototype = Object.create(AssetController.prototype);
 
 // GET /fthr
-GraphController.prototype.userIndex = function(req, res, next)
-{
+GraphController.prototype.userIndex = function(req, res, next) {
 	this._service.userGraphs(req.params.model)
 	.then(function(list)
 	{
@@ -40,9 +42,7 @@ GraphController.prototype.userIndex = function(req, res, next)
 }
 
 // GET /graph
-GraphController.prototype.index = function(req, res, next)
-{
-
+GraphController.prototype.index = function(req, res) {
 	this._service.minimalList()
 	.then(function(list)
 	{
@@ -58,13 +58,14 @@ GraphController.prototype.index = function(req, res, next)
 	});
 }
 
-
-function renderEditor(res, graph) {
+function renderEditor(res, graph, hasEdits) {
 	var layout = process.env.NODE_ENV === 'production' ? 'editor-prod' : 'editor'
+	
 	function respond() {
 		res.render('editor', {
 			layout: layout,
-			graph: graph
+			graph: graph,
+			hasEdits: hasEdits
 		});
 	}
 
@@ -79,13 +80,18 @@ function renderEditor(res, graph) {
 
 // GET /fthr/dunes-world/edit
 GraphController.prototype.edit = function(req, res, next) {
+	var that = this
+
 	if (!req.params.path) {
 		return res.redirect('/' + makeRandomPath())
 	}
 
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
-		renderEditor(res, graph)
+		EditLog.hasEditsByName(that.rethinkConnection, req.params.path.substring(1))
+		.then(function(hasEdits) {
+			renderEditor(res, graph, hasEdits)
+		})
 	})
 	.catch(next)
 }
