@@ -59,12 +59,12 @@ describe('PeopleStore', function() {
 		assert.equal(ps.list().length, 1)
 	})
 
-	it('leave by the user should empty people on the channel', function() {
+	it('leave by the user should empty people on the channel, except self', function() {
 		E2.app.channel.uid = 'foo'
 		E2.app.channel.emit('join', { id: 'bar'})
 		E2.app.channel.emit('join', { id: 'baz'})
 		E2.app.channel.emit('leave', { id: 'foo' })
-		assert.equal(ps.list().length, 0)
+		assert.equal(ps.list().length, 1)
 	})
 
 	it('emptying should emit removes for all people', function(done) {
@@ -80,11 +80,11 @@ describe('PeopleStore', function() {
 		E2.app.channel.emit('leave', { id: 'foo' })
 	})
 
-	it('empties on disconnect', function() {
+	it('empties on disconnect, except self', function() {
 		E2.app.channel.emit('join', { id: 'foo'})
 		E2.app.channel.emit('join', { id: 'bar'})
 		E2.app.channel.emit('disconnected')
-		assert.equal(ps.list().length, 0)
+		assert.equal(ps.list().length, 1)
 	})
 
 	it('can list people', function() {

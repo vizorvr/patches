@@ -1836,6 +1836,12 @@ Application.prototype.setupPeopleEvents = function() {
 			return;
 
 		var $cursor = cursors[uid]
+
+		// this can happen when reconnected and own uid changes
+		// and the previous uid gets a `removed` message.
+		if (!$cursor) 
+			return;
+
 		$cursor.remove()
 		delete cursors[uid]
 	})

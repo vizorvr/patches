@@ -127,12 +127,15 @@ EditorChannel.prototype.connect = function(options) {
 	var that = this
 
 	this.kicked = false
+	this.connected = false
 
 	// listen to messages from network
 	this.wsChannel = new WebSocketChannel()
 	this.wsChannel
 		.connect('/__editorChannel', options)
 		.on('disconnected', function() {
+			that.connected = false
+
 			if (that.kicked === true)
 				return;
 
@@ -148,6 +151,8 @@ EditorChannel.prototype.connect = function(options) {
 		.on('ready', function(uid) {
 			console.log('EditorChannel ready', uid)
 			that.uid = uid
+
+			that.connected = true
 
 			that.emit('ready', uid)
 
