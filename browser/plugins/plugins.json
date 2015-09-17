@@ -67,12 +67,13 @@
     },
 
     "LOAD CONTENT": {
-        "Array from URL": "url_array_generator",
-        "Audio from URL": "url_audio_generator",
-        "Audio buffer from URL": "url_audio_buffer_generator",
-        "Image from URL": "url_texture_generator",
-        "JSON from URL": "url_json_generator",
-        "Video from URL": "url_video_generator"
+        "Texture": "url_texture_generator",
+        "3D model": "three_loader_model",
+        "Array": "url_array_generator",
+        "Audio": "url_audio_generator",
+        "Audio bufferL": "url_audio_buffer_generator",
+        "JSON": "url_json_generator",
+        "Video": "url_video_generator"
     },
 
     "RENDERING BASICS": {
@@ -141,6 +142,17 @@
         "Audio source player": "audio_source_player",
         "Module player": "module_player",
         "Video player": "video_player"
+    },
+
+       "AUDIO": {
+        "Audio player": "audio_player",
+        "Audio source player": "audio_source_player",
+        "Analyse": "audio_analyse_modulator",
+        "Buffer source": "audio_buffer_source_modulator",
+        "Delay": "audio_delay_modulator",
+        "Current time": "audio_get_current_time_modulator",
+        "Duration": "audio_get_duration_modulator",
+        "Gain (mix)": "audio_gain_modulator"
     },
 
     "DEBUG TOOLS": {
