@@ -82,38 +82,33 @@ Connection.prototype.r_update_outbound = function(node)
 }
 
 Connection.prototype.signal_change = function(on) {
-	var n = this.src_node
+	var srcNode = this.src_node
 	
-	if (n.plugin.connection_changed) {
-		n.plugin.connection_changed(on, this, this.src_slot)
-		
-		if (n.plugin.reset)
-			n.plugin.reset()
+	if (srcNode.plugin.connection_changed) {
+		srcNode.plugin.connection_changed(on, this, this.src_slot)
 	}
 	
-	n = this.dst_node
-	n.inputs_changed = true
-	
-	if (!on && n.plugin.update_input) {
-		if (this.dst_slot.uid === undefined) {
-			if(this.dst_slot.def !== undefined) {
-				n.plugin.update_input(this.dst_slot, clone(this.dst_slot.def))
-				n.plugin.updated = true
-			}
+	var dstNode = this.dst_node
+	dstNode.inputs_changed = true
+
+	if (!on && dstNode.plugin.update_input) {
+		if (this.dst_slot.def !== undefined) {
+				dstNode.plugin.update_input(this.dst_slot, clone(this.dst_slot.def))
+				dstNode.plugin.updated = true
 		} else {
-			n.plugin.update_input(this.dst_slot, E2.app.player.core.get_default_value(this.dst_slot.dt))
-			n.plugin.updated = true
+			dstNode.plugin.update_input(this.dst_slot, E2.app.player.core.get_default_value(this.dst_slot.dt))
+			dstNode.plugin.updated = true
 		}
 	}
 	
-	if (n.plugin.connection_changed) {
-		n.plugin.connection_changed(on, this, this.dst_slot)
-		n.plugin.updated = true
+	if (dstNode.plugin.connection_changed) {
+		dstNode.plugin.connection_changed(on, this, this.dst_slot)
+		dstNode.plugin.updated = true
 	}
 	
 	if (on) {
-		this.r_update_inbound(n)
-		this.r_update_outbound(n)
+		this.r_update_inbound(dstNode)
+		this.r_update_outbound(dstNode)
 	}
 };
 

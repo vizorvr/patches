@@ -24,9 +24,9 @@ E2.p.prototype.update_state = function()
 {
 	var s = this.scale, sc = this.scaled, v = this.vector;
 	
-	sc[0] = v[0] * s;
-	sc[1] = v[1] * s;
-	sc[2] = v[2] * s;
+	sc.x = v.x * s;
+	sc.y = v.y * s;
+	sc.z = v.z * s;
 };
 
 E2.p.prototype.update_output = function(slot)
@@ -38,8 +38,8 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.vector = [0, 0, 0];
-		this.scaled = [0, 0, 0];
+		this.vector = new THREE.Vector3(0, 0, 0)
+		this.scaled = new THREE.Vector3(0, 0, 0)
 		this.scale = 1.0;
 	}
 };

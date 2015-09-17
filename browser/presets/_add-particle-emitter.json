@@ -1,0 +1,923 @@
+{
+    "abs_t": 6.66,
+    "active_graph": "root",
+    "graph_uid": "jG8ul210Feym",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 306,
+                "y": 320,
+                "uid": "emJnnBK8cBj7",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "IuQsvpeoZjR4": "deUvDlZx96Z4"
+                    }
+                },
+                "title": "Particle emitter",
+                "graph": {
+                    "uid": "yfKo21ws7AOW",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "three_particle_emitter",
+                            "x": 754,
+                            "y": 147,
+                            "uid": "k7UAYaLaroB1",
+                            "open": false
+                        },
+                        {
+                            "plugin": "three_point_cloud_mesh",
+                            "x": 1136,
+                            "y": 369,
+                            "uid": "GSlRktP5euNw"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 293,
+                            "y": 24,
+                            "uid": "kxypIhOSBmFe",
+                            "state": {
+                                "val": 100
+                            },
+                            "title": "Particle count"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 491,
+                            "y": 30,
+                            "uid": "DrbufEYcWqW6",
+                            "state": {
+                                "val": 10
+                            },
+                            "title": "Lifetime"
+                        },
+                        {
+                            "plugin": "three_point_cloud_material",
+                            "x": 590,
+                            "y": 501,
+                            "uid": "zVkA0ysNrXAC",
+                            "open": false
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 187,
+                            "y": 21,
+                            "uid": "f495NPE3tZF5",
+                            "state": {
+                                "val": 0.1
+                            },
+                            "title": "Size"
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 114,
+                            "y": 100,
+                            "uid": "4mfnVDaZUh9q",
+                            "state": {
+                                "url": "/data/image/798fae270e55606e5d22e148004034c130482c57.png"
+                            }
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 421,
+                            "y": 632,
+                            "uid": "PVlEI1DWDBpn",
+                            "state": {
+                                "enabled": true
+                            },
+                            "title": "Transparent"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 420,
+                            "y": 752,
+                            "uid": "MYkQ347MkF7i",
+                            "state": {
+                                "val": 2
+                            },
+                            "title": "Blending"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 291,
+                            "y": 153,
+                            "uid": "CUnUH7cn57Rk",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Direction X"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 290,
+                            "y": 200,
+                            "uid": "Y6938puQwe1J",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Direction Y"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 289,
+                            "y": 246,
+                            "uid": "R1uf9F02Hvky",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Direction Z"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 428,
+                            "y": 215,
+                            "uid": "JpW0V7xkJvrB",
+                            "open": false,
+                            "title": "Direction"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 399,
+                            "y": 26,
+                            "uid": "aBk8VRTXZiUK",
+                            "state": {
+                                "val": 0.002
+                            },
+                            "title": "Speed"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 397,
+                            "y": 74,
+                            "uid": "bIAXfUAFxDji",
+                            "state": {
+                                "val": 100
+                            },
+                            "title": "Spread"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 294,
+                            "y": 75,
+                            "uid": "JeCsCKFLIA4G",
+                            "state": {
+                                "val": 10
+                            },
+                            "title": "Spawn rate"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 418,
+                            "y": 269,
+                            "uid": "jaJgnuCgY0ij",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Gravity X"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 417,
+                            "y": 316,
+                            "uid": "DnLPUVGkqDPx",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Gravity Y"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 416,
+                            "y": 362,
+                            "uid": "sSVcc48VKhwc",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Gravity Z"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 542,
+                            "y": 332,
+                            "uid": "tHIvViVZsvxg",
+                            "open": false,
+                            "title": "Gravity"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 492,
+                            "y": 79,
+                            "uid": "fFtIT8fhJfap",
+                            "state": {
+                                "val": 0.1
+                            },
+                            "title": "Noise"
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 421,
+                            "y": 690,
+                            "uid": "itNxJLfLBmBC",
+                            "state": {
+                                "enabled": false
+                            },
+                            "title": "DepthTest"
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1311,
+                            "y": 259,
+                            "uid": "IuQsvpeoZjR4",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "cDIv1wXVwWo7",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "convert_hsl_color_modulator",
+                            "x": 404,
+                            "y": 433,
+                            "uid": "1hp3zwriAQGx",
+                            "open": false
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 106,
+                            "y": 424,
+                            "uid": "b8if3XcFQZ41",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Hue"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 183,
+                            "y": 423,
+                            "uid": "RgSILy0j23Ld",
+                            "state": {
+                                "val": 0.7700000000000002
+                            },
+                            "title": "Saturation"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 269,
+                            "y": 423,
+                            "uid": "MIEhXTnQ9ZQg",
+                            "state": {
+                                "val": 1
+                            },
+                            "title": "Luminosity"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 106,
+                            "y": 360,
+                            "uid": "haVwKIkxFJ7f",
+                            "state": {
+                                "val": 1
+                            },
+                            "title": "Opacity"
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 602,
+                            "y": 710,
+                            "uid": "eLSZyofCHEBW",
+                            "state": {
+                                "always_update": true,
+                                "input_sids": {},
+                                "output_sids": {
+                                    "to6FTPR5M9jB": "xnmIRUOwsegz",
+                                    "dZGvFK10Y1JT": "ejxO7eIJpw4m",
+                                    "sTEBTYgoRCb2": "H3AwGhvcvewD"
+                                }
+                            },
+                            "title": "Position, Rotation, Scale",
+                            "graph": {
+                                "uid": "YEFFe3PETkHz",
+                                "parent_uid": "yfKo21ws7AOW",
+                                "open": true,
+                                "nodes": [
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 82,
+                                        "y": 105,
+                                        "uid": "qzK6z7hf9tmx",
+                                        "state": {
+                                            "val": 0,
+                                            "min": -1,
+                                            "max": 1
+                                        },
+                                        "title": "Position X"
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 83,
+                                        "y": 172,
+                                        "uid": "ZjjD6HTWl0Gs",
+                                        "state": {
+                                            "val": 0,
+                                            "min": -1,
+                                            "max": 1
+                                        },
+                                        "title": "Position Y"
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 81,
+                                        "y": 238,
+                                        "uid": "m5F30mVRdkl4",
+                                        "state": {
+                                            "val": 0,
+                                            "min": -1,
+                                            "max": 1
+                                        },
+                                        "title": "Position Z"
+                                    },
+                                    {
+                                        "plugin": "vector",
+                                        "x": 585,
+                                        "y": 200,
+                                        "uid": "QTydu1ZgvN3X",
+                                        "open": false,
+                                        "title": "Position"
+                                    },
+                                    {
+                                        "plugin": "vector",
+                                        "x": 290,
+                                        "y": 610,
+                                        "uid": "E8ZcnOBWNIhx",
+                                        "title": "Scale"
+                                    },
+                                    {
+                                        "plugin": "vector",
+                                        "x": 581,
+                                        "y": 413,
+                                        "uid": "lS8KEmaJTLia",
+                                        "open": false,
+                                        "title": "Rotation"
+                                    },
+                                    {
+                                        "plugin": "const_float_generator",
+                                        "x": 113,
+                                        "y": 636,
+                                        "uid": "ST0nS2BRyShP",
+                                        "state": {
+                                            "val": 0.1
+                                        },
+                                        "title": "Scale XYZ"
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 803,
+                                        "y": 252,
+                                        "uid": "to6FTPR5M9jB",
+                                        "title": "position",
+                                        "dyn_in": [
+                                            {
+                                                "name": "output",
+                                                "dt": 5,
+                                                "def": null,
+                                                "uid": "S0aurqIbmI1x",
+                                                "dynamic": true,
+                                                "type": 0,
+                                                "index": 0,
+                                                "is_connected": true,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 818,
+                                        "y": 400,
+                                        "uid": "dZGvFK10Y1JT",
+                                        "title": "rotation",
+                                        "dyn_in": [
+                                            {
+                                                "name": "output",
+                                                "dt": 5,
+                                                "def": null,
+                                                "uid": "ueZzDAy1hfyc",
+                                                "dynamic": true,
+                                                "type": 0,
+                                                "index": 0,
+                                                "is_connected": true,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 825,
+                                        "y": 549,
+                                        "uid": "sTEBTYgoRCb2",
+                                        "title": "scale",
+                                        "dyn_in": [
+                                            {
+                                                "name": "output",
+                                                "dt": 5,
+                                                "def": null,
+                                                "uid": "TTvvZvj40kZI",
+                                                "dynamic": true,
+                                                "type": 0,
+                                                "index": 0,
+                                                "is_connected": true,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 85,
+                                        "y": 369,
+                                        "uid": "MTF04vnfKm2d",
+                                        "state": {
+                                            "val": 0,
+                                            "min": 0,
+                                            "max": 5
+                                        },
+                                        "title": "Rotate X"
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 82,
+                                        "y": 436,
+                                        "uid": "CfkYa6m5Uo6Q",
+                                        "state": {
+                                            "val": 0,
+                                            "min": 0,
+                                            "max": 5
+                                        },
+                                        "title": "Rotate Y"
+                                    },
+                                    {
+                                        "plugin": "slider_float_generator",
+                                        "x": 80,
+                                        "y": 502,
+                                        "uid": "L7mtQDSCdQZR",
+                                        "state": {
+                                            "val": 0,
+                                            "min": 0,
+                                            "max": 5
+                                        },
+                                        "title": "Rotate Z"
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": "qzK6z7hf9tmx",
+                                        "dst_nuid": "QTydu1ZgvN3X",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "nkaVXO2xwZt7",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "ZjjD6HTWl0Gs",
+                                        "dst_nuid": "QTydu1ZgvN3X",
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "uid": "4KiIOucvzBGG",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "m5F30mVRdkl4",
+                                        "dst_nuid": "QTydu1ZgvN3X",
+                                        "src_slot": 0,
+                                        "dst_slot": 2,
+                                        "uid": "inUxDRMq3KE8",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "ST0nS2BRyShP",
+                                        "dst_nuid": "E8ZcnOBWNIhx",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "wY02zW7jBl4P",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "ST0nS2BRyShP",
+                                        "dst_nuid": "E8ZcnOBWNIhx",
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "uid": "gaUBoK7P9Dfc",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "offset": 1
+                                    },
+                                    {
+                                        "src_nuid": "ST0nS2BRyShP",
+                                        "dst_nuid": "E8ZcnOBWNIhx",
+                                        "src_slot": 0,
+                                        "dst_slot": 2,
+                                        "uid": "nwSaNS4hKURD",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "QTydu1ZgvN3X",
+                                        "dst_nuid": "to6FTPR5M9jB",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "QEUm944BN7NN",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": "lS8KEmaJTLia",
+                                        "dst_nuid": "dZGvFK10Y1JT",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "s4YNnxMdDqzn",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": "E8ZcnOBWNIhx",
+                                        "dst_nuid": "sTEBTYgoRCb2",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "klNqK3i9sTMI",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": "MTF04vnfKm2d",
+                                        "dst_nuid": "lS8KEmaJTLia",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "ZdIfqSD5V2Th",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "CfkYa6m5Uo6Q",
+                                        "dst_nuid": "lS8KEmaJTLia",
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "uid": "nug93gPABg8o",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "L7mtQDSCdQZR",
+                                        "dst_nuid": "lS8KEmaJTLia",
+                                        "src_slot": 0,
+                                        "dst_slot": 2,
+                                        "uid": "AoySbTJnNJH6",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    }
+                                ]
+                            },
+                            "dyn_out": [
+                                {
+                                    "name": "scale",
+                                    "dt": 5,
+                                    "index": 0,
+                                    "uid": "H3AwGhvcvewD",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "rotation",
+                                    "dt": 5,
+                                    "index": 1,
+                                    "uid": "ejxO7eIJpw4m",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "is_connected": true
+                                },
+                                {
+                                    "name": "position",
+                                    "dt": 5,
+                                    "index": 2,
+                                    "uid": "xnmIRUOwsegz",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "is_connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "kxypIhOSBmFe",
+                            "dst_nuid": "k7UAYaLaroB1",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "hJBK0msV6LEg",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "JeCsCKFLIA4G",
+                            "dst_nuid": "k7UAYaLaroB1",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "yKWPUvHwhREq",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "JpW0V7xkJvrB",
+                            "dst_nuid": "k7UAYaLaroB1",
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "uid": "r7zYENYL7fKM",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "aBk8VRTXZiUK",
+                            "dst_nuid": "k7UAYaLaroB1",
+                            "src_slot": 0,
+                            "dst_slot": 4,
+                            "uid": "f6xkyExA62qq",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "bIAXfUAFxDji",
+                            "dst_nuid": "k7UAYaLaroB1",
+                            "src_slot": 0,
+                            "dst_slot": 5,
+                            "uid": "LX6Ly0TMp4pR",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "DrbufEYcWqW6",
+                            "dst_nuid": "k7UAYaLaroB1",
+                            "src_slot": 0,
+                            "dst_slot": 6,
+                            "uid": "BfJ1cpP3ZLRW",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "tHIvViVZsvxg",
+                            "dst_nuid": "k7UAYaLaroB1",
+                            "src_slot": 0,
+                            "dst_slot": 7,
+                            "uid": "ogVUTna44n5I",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "fFtIT8fhJfap",
+                            "dst_nuid": "k7UAYaLaroB1",
+                            "src_slot": 0,
+                            "dst_slot": 8,
+                            "uid": "CEhnCga2BfHC",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "k7UAYaLaroB1",
+                            "dst_nuid": "GSlRktP5euNw",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "z2qoyfrg1jkS",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "zVkA0ysNrXAC",
+                            "dst_nuid": "GSlRktP5euNw",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "lZIwoaz62A8A",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "4mfnVDaZUh9q",
+                            "dst_nuid": "zVkA0ysNrXAC",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "lUfzENSzHBxU",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "f495NPE3tZF5",
+                            "dst_nuid": "zVkA0ysNrXAC",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "q642vhDL5LQA",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "itNxJLfLBmBC",
+                            "dst_nuid": "zVkA0ysNrXAC",
+                            "src_slot": 0,
+                            "dst_slot": 5,
+                            "uid": "IFuTOrBgtIrk",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "PVlEI1DWDBpn",
+                            "dst_nuid": "zVkA0ysNrXAC",
+                            "src_slot": 0,
+                            "dst_slot": 7,
+                            "uid": "8z4xJUuZDAT6",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "MYkQ347MkF7i",
+                            "dst_nuid": "zVkA0ysNrXAC",
+                            "src_slot": 0,
+                            "dst_slot": 8,
+                            "uid": "osQ8PmKubOcu",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "CUnUH7cn57Rk",
+                            "dst_nuid": "JpW0V7xkJvrB",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "im5kAnMFJmsF",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "Y6938puQwe1J",
+                            "dst_nuid": "JpW0V7xkJvrB",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "v5KzRVWzwKAY",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "R1uf9F02Hvky",
+                            "dst_nuid": "JpW0V7xkJvrB",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "OFSwZOYp5skh",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "jaJgnuCgY0ij",
+                            "dst_nuid": "tHIvViVZsvxg",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "kVOyleek4PY4",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "DnLPUVGkqDPx",
+                            "dst_nuid": "tHIvViVZsvxg",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "C07JK5eKFt0l",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "sSVcc48VKhwc",
+                            "dst_nuid": "tHIvViVZsvxg",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "7COFbtbvvjGs",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "GSlRktP5euNw",
+                            "dst_nuid": "IuQsvpeoZjR4",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "EahrLdkfzwWl",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "1hp3zwriAQGx",
+                            "dst_nuid": "zVkA0ysNrXAC",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "Xh9yh4xeaPbf",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "b8if3XcFQZ41",
+                            "dst_nuid": "1hp3zwriAQGx",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "rkJ2p9YxALJM",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "RgSILy0j23Ld",
+                            "dst_nuid": "1hp3zwriAQGx",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "BOdOHxGiJmB1",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "MIEhXTnQ9ZQg",
+                            "dst_nuid": "1hp3zwriAQGx",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "KUzhaWrcMsYg",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "haVwKIkxFJ7f",
+                            "dst_nuid": "zVkA0ysNrXAC",
+                            "src_slot": 0,
+                            "dst_slot": 6,
+                            "uid": "RkKVFFeaDqCG",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "eLSZyofCHEBW",
+                            "dst_nuid": "GSlRktP5euNw",
+                            "src_slot": 0,
+                            "dst_slot": 4,
+                            "uid": "vOl4LbK0wmnu",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "eLSZyofCHEBW",
+                            "dst_nuid": "GSlRktP5euNw",
+                            "src_slot": 1,
+                            "dst_slot": 3,
+                            "uid": "wFCCDiZYTSnw",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "eLSZyofCHEBW",
+                            "dst_nuid": "GSlRktP5euNw",
+                            "src_slot": 2,
+                            "dst_slot": 2,
+                            "uid": "DLC3mW8ncA0U",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "deUvDlZx96Z4",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

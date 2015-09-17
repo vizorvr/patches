@@ -5,6 +5,7 @@ var reset = require('./plugins/helpers').reset;
 var loadPlugin = require('./plugins/helpers').loadPlugin;
 
 global.E2 = {}
+global.window = {}
 var Application = require('../../scripts/application')
 
 global._ = require('lodash')
@@ -18,7 +19,16 @@ global.Store = require('../../scripts/store');
 global.GraphStore = require('../../scripts/graphStore');
 global.PeopleManager = function() {}
 global.PeopleStore = function(){}
-global.Camera = global.Material = function(){}
+
+global.THREE = {
+	Vector3: function(){},
+	Matrix4: function(){},
+	Color: function(){},
+	Material: function(){},
+	MeshBasicMaterial: function(){},
+	PerspectiveCamera: function(){}
+}
+global.THREE.Matrix4.prototype.identity = function() {}
 
 global.NodeUI = function() {
 	this.dom = [$()]
@@ -27,10 +37,7 @@ global.NodeUI = function() {
 	this.dom.height = this.dom[0].height
 	this.dom[0].style = {}
 }
-global.Camera = global.Material = function() {}
-global.Registers = function() {
-	this.serialise = function(){}
-}
+global.TextureCache = function() {}
 global.PresetManager = function() {}
 require('../../scripts/commands/graphEditCommands')
 global.UndoManager = require('../../scripts/commands/undoManager.js')
@@ -48,10 +55,14 @@ describe('Paste', function() {
 
 	beforeEach(function() {
 		core = reset()
+		global.E2.Variables = function() {
+			this.serialise = function(){}
+		}
 		core.active_graph = new Graph(core, null, {})
 		core.graphs = [ core.active_graph ]
 		
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
+		require('../../scripts/util')
 
 		global.window = { location: { pathname: 'test/test' } }
 
@@ -143,6 +154,11 @@ describe('Paste', function() {
 		beforeEach(function() {
 			var dummyCore = reset()
 			E2.commands.graph = require('../../scripts/commands/graphEditCommands')
+	
+			E2.plugins.url_scene_generator = function(){
+				this.input_slots = []
+				this.output_slots = [ { name: 'x', dt: core.datatypes.BOOL } ]
+			}
 
 			app = E2.app = new Application()
 			app.updateCanvas = function() {}
@@ -155,12 +171,17 @@ describe('Paste', function() {
 			core.graphs = [ core.active_graph ]
 
 			source = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/paste-complex.json')).root
+
+			E2.plugins.material_diffuse_color_modulator = function() {
+				this.input_slots = []
+				this.output_slots = []
+			}
 		})
 
 		it('creates the right number of nodes, connections and outputs', function() {
 			app.paste(source, 0, 0)
 			assert.equal(core.active_graph.nodes.length, 8)
-			assert.equal(core.active_graph.connections.length, 7)
+			assert.equal(core.active_graph.connections.length, 6)
 			assert.equal(core.active_graph.nodes[2].outputs.length, 1)
 		})
 
@@ -175,7 +196,7 @@ describe('Paste', function() {
 			})
 			app.paste(source, 0, 0)
 			assert.equal(nodeAdded, 8)
-			assert.equal(connected, 7)
+			assert.equal(connected, 6)
 		})
 
 		it('creates a subgraph in the right place', function() {
@@ -204,9 +225,9 @@ describe('Paste', function() {
 		it('has the correct number of connections after removing a node', function() {
 			var ag = core.active_graph
 			app.paste(source, 0, 0)
-			assert.equal(ag.connections.length, 7)
-			app.graphApi.removeNode(ag, ag.nodes[3])
 			assert.equal(ag.connections.length, 6)
+			app.graphApi.removeNode(ag, ag.nodes[3])
+			assert.equal(ag.connections.length, 5)
 		})
 
 		it('adds the nodes and connections to the selection', function() {
@@ -214,7 +235,7 @@ describe('Paste', function() {
 			var ag = core.active_graph
 			app.clipboard = JSON.stringify(source)
 			app.onPaste()
-			assert.equal(app.selectedConnections.length, 7)
+			assert.equal(app.selectedConnections.length, 6)
 			assert.equal(app.selectedNodes.length, 8)
 		})
 

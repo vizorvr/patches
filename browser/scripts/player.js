@@ -63,8 +63,6 @@ Player.prototype.stop = function() {
 	this.core.abs_t = 0.0
 
 	this.core.root_graph.reset()
-	this.core.renderer.begin_frame() // Clear the WebGL view.
-	this.core.renderer.end_frame()
 	
 	if (E2.app && E2.app.updateCanvas)
 		E2.app.updateCanvas(false)
@@ -107,8 +105,6 @@ Player.prototype.load_from_json = function(json, cb) {
 Player.prototype.load_from_object = function(obj, cb) {
 	var c = this.core
 	
-	c.renderer.texture_cache.clear()
-	c.renderer.shader_cache.clear()
 	c.deserialiseObject(obj)
 
 	if (cb)
@@ -128,22 +124,22 @@ Player.prototype.load_from_url = function(url, cb) {
 	})
 }
 
-Player.prototype.set_parameter = function(id, value) {
-	this.core.root_graph.registers.write(id, value)
+Player.prototype.setVariableValue = function(id, value) {
+	this.core.root_graph.variables.write(id, value)
 }
 
 Player.prototype.add_parameter_listener = function(id, listener) {
 	var l = {
-		register_dt_changed: function() {},
-		register_updated: function(h) { return function(value) { h(value) }}(listener)
+		variable_dt_changed: function() {},
+		variable_updated: function(h) { return function(value) { h(value) }}(listener)
 	}
 	
-	this.core.root_graph.registers.lock(l, id)
+	this.core.root_graph.variables.lock(l, id)
 	return l
 }
 
 Player.prototype.remove_parameter_listener = function(id, listener) {
-	this.core.registers.unlock(listener, id)
+	this.core.variables.unlock(listener, id)
 }
 
 function CreatePlayer(vr_devices, cb) {
@@ -167,12 +163,25 @@ function CreatePlayer(vr_devices, cb) {
 		console.log(m)
 	})
 	
-	new Core(vr_devices)
+	E2.core = new Core(vr_devices)
 	
 	E2.dom.webgl_canvas = $('#webgl-canvas')
 
 	E2.app = {}
 	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, null)
+
+	// Shared gl context for three
+	var gl_attributes = {
+		alpha: false,
+		depth: true,
+		stencil: true,
+		antialias: false,
+		premultipliedAlpha: true,
+		preserveDrawingBuffer: false
+	}
+
+	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
+	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})
 
 	E2.core.on('ready', cb)
 }

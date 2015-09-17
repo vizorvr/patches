@@ -1,3 +1,4 @@
+;
 (function() {
 
 var RECONNECT_INTERVAL = 5000
@@ -114,18 +115,30 @@ function EditorChannel(dispatcher) {
 EditorChannel.prototype = Object.create(EventEmitter.prototype)
 
 EditorChannel.prototype.close = function() {
-	this.channel.close()
+	this.wsChannel.close()
+}
+
+EditorChannel.prototype.getWsChannel = function() {
+	return this.wsChannel
 }
 
 var reconnecting = false
 EditorChannel.prototype.connect = function(options) {
 	var that = this
 
+	this.kicked = false
+	this.connected = false
+
 	// listen to messages from network
-	this.channel = new WebSocketChannel()
-	this.channel
+	this.wsChannel = new WebSocketChannel()
+	this.wsChannel
 		.connect('/__editorChannel', options)
 		.on('disconnected', function() {
+			that.connected = false
+
+			if (that.kicked === true)
+				return;
+
 			if (!reconnecting)
 				E2.app.growl('Disconnected from server. Reconnecting.')
 
@@ -139,6 +152,8 @@ EditorChannel.prototype.connect = function(options) {
 			console.log('EditorChannel ready', uid)
 			that.uid = uid
 
+			that.connected = true
+
 			that.emit('ready', uid)
 
 			if (reconnecting) {
@@ -147,12 +162,35 @@ EditorChannel.prototype.connect = function(options) {
 				that.emit('reconnected')
 			}
 
-			that.channel.on('*', function(m) {
+			that.wsChannel.on('*', function(m) {
+				if (m.kind === 'kicked') { // kicked by server
+					E2.app.growl('You have been disconnected by the server: '+ m.reason, 30000)
+					that.kicked = true
+					return;
+				}
+
+				if (m.kind === 'ack') // acknowledgement by id
+					that.emit(m.ack, m)
+
+				if (m.channel !== that.channelName)
+					return;
+
 				that.emit(m.kind, m)
 			})
 		})
 
 	return this
+}
+
+EditorChannel.prototype.snapshot = function() {
+	var graphSer = E2.core.serialise()
+	
+	this.send({
+		actionType: 'graphSnapshotted',
+		data: graphSer
+	})
+
+	E2.app.snapshotPending = false
 }
 
 /**
@@ -162,6 +200,9 @@ EditorChannel.prototype.connect = function(options) {
 EditorChannel.prototype._localDispatchHandler = function _localDispatchHandler(payload) {
 	if (payload.from)
 		return;
+
+	if (E2.app.snapshotPending && isEditAction(payload))
+		this.snapshot()
 
 	if (this.isOnChannel)
 		return this.send(payload)
@@ -191,11 +232,11 @@ EditorChannel.prototype.fork = function(payload) {
 }
 
 EditorChannel.prototype.leave = function() {
-	this.channel.leave(this.channelName)
-
-	this.channel.removeListener(this.channelName, this._messageHandlerBound)
+	this.wsChannel.leave(this.channelName)
 
 	ga('send', 'event', 'editorChannel', 'left', this.channelName)
+
+	this.wsChannel.removeListener(this.channelName, this._messageHandlerBound)
 
 	this.isOnChannel = false
 	this.lastEditSeen = null
@@ -232,11 +273,11 @@ EditorChannel.prototype.join = function(channelName, cb) {
 		lastEditSeen: this.lastEditSeen
 	}
 
-	this.channel.ws.send(JSON.stringify(joinMessage))
+	this.wsChannel.ws.send(JSON.stringify(joinMessage))
 
 	function waitForOwnJoin(pl) {
 		if (pl.kind === 'youJoined' && pl.channel === channelName) {
-			that.channel.removeListener(channelName, waitForOwnJoin)
+			that.wsChannel.removeListener(channelName, waitForOwnJoin)
 			
 			ga('send', 'event', 'editorChannel', 'joined', channelName)
 
@@ -247,20 +288,23 @@ EditorChannel.prototype.join = function(channelName, cb) {
 		}
 	}
 
-	this.channel.on(channelName, waitForOwnJoin)
-	this.channel.on(channelName, this._messageHandlerBound)
+	this.wsChannel.on(channelName, waitForOwnJoin)
+	this.wsChannel.on(channelName, this._messageHandlerBound)
 }
 
 EditorChannel.prototype.send = function(payload) {
 	if (!isAcceptedDispatch(payload))
 		return;
 
-	this.channel.send(this.channelName, dehydrate(payload))
+	this.wsChannel.send(
+		payload.channel === 'Global' ? payload.channel : this.channelName,
+		dehydrate(payload))
 }
 
 if (typeof(module) !== 'undefined')
 	module.exports = EditorChannel
 else
-	window.EditorChannel = EditorChannel
+	E2.EditorChannel = EditorChannel
 
 })();
+

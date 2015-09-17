@@ -51,8 +51,7 @@ function Application() {
 	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
-	this.is_fullscreen = false;
-	this._noodlesOn = true
+	this.noodlesVisible = !E2.util.isMobile()
 
 	this.mousePosition = [400,200]
 
@@ -133,9 +132,11 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 	var node
 
 	if (id === 'graph')
-		node = createPlugin('graph')
+		node = createPlugin('Graph')
 	else if (id === 'loop')
-		node = createPlugin('loop')
+		node = createPlugin('Loop')
+	else if (id === 'array_function')
+		node = createPlugin('Array function')
 	else
 		node = createPlugin(null)
 
@@ -583,8 +584,10 @@ Application.prototype.onNodeDragged = function(node) {
 Application.prototype.onNodeDragStopped = function(node) {
 	this.onNodeDragged(node)
 
-	if (!this._dragInfo)
+	if (!this._dragInfo) {
+		this.inDrag = false
 		return;
+	}
 
 	var di = this._dragInfo
 	var nd = node.ui.dom[0]
@@ -600,15 +603,15 @@ Application.prototype.onNodeDragStopped = function(node) {
 	this.undoManager.push(cmd)
 	this.undoManager.end()
 
+	this._dragInfo = null
+	this.inDrag = false
+
 	E2.app.channel.send({
 		actionType: 'uiNodesMoved',
 		graphUid: E2.core.active_graph.uid,
 		nodeUids: di.nodes.map(function(n) { return n.uid }),
 		delta: { x: dx, y: dy }
 	})
-
-	this._dragInfo = null
-	this.inDrag = false
 }
 
 Application.prototype.clearSelection = function() {
@@ -650,6 +653,9 @@ Application.prototype.onCanvasMouseDown = function(e) {
 	if (e.target.id !== 'canvas')
 		return;
 
+	e.stopPropagation()
+	e.preventDefault()
+
 	if (e.which === 1) {
 		this.selection_start = [0, 0];
 		this.mouseEventPosToCanvasCoord(e, this.selection_start);
@@ -668,7 +674,6 @@ Application.prototype.onCanvasMouseDown = function(e) {
 		E2.app.updateCanvas()
 	}
 
-	this.inDrag = true
 	this.updateCanvas(false)
 }
 
@@ -963,7 +968,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			uidMap[node.uid] = newUid
 			node.uid = newUid
 
-			if (node.plugin === 'graph' || node.plugin === 'loop')
+			if (['graph', 'loop', 'array_function'].indexOf(node.plugin) > -1)
 				node.graph = remapGraph(node.graph, node)
 		})
 
@@ -980,9 +985,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 		graph.conns.map(function(conn) {
 			conn.src_nuid = uidMap[conn.src_nuid]
 			conn.dst_nuid = uidMap[conn.dst_nuid]
-
-			if (!conn.uid)
-				conn.uid = E2.uid()
+			conn.uid = E2.uid()
 		})
 
 		return graph
@@ -1003,14 +1006,20 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
 		var dc = doc.conns[i]
+
+		var destNode = ag.findNodeByUid(dc.dst_nuid)
+		if (!destNode)
+			continue;
+
+		var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
+		var slot = slots[dc.dst_slot]
+
+		if (!slot)
+			continue;
+	
 		if (dc.src_nuid === undefined || dc.dst_nuid === undefined) {
 			// not a valid connection, clear it and skip it
 			if (dc.dst_nuid !== undefined) {
-				var destNode = ag.findNodeByUid(dc.dst_nuid)
-
-				var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
-				var slot = slots[dc.dst_slot]
-				
 				slot.is_connected = false
 				slot.connected = false
 				destNode.inputs_changed = true
@@ -1088,15 +1097,24 @@ Application.prototype.selectAll = function() {
  * @return {Object} Canvas area
  */
 Application.prototype.calculateCanvasArea = function() {
-	// 
-	var width = $(window).width() -
-		$('#left-nav').outerWidth(true) - 
-		$('#mid-pane').outerWidth(true) - 
-		$('.mid-pane-handle').outerWidth(true) - 
-		$('.left-pane-handle').outerWidth(true);
+	var width, height
+	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
-	var height = $(window).height() -
-		$('.menu-bar').outerHeight(true);
+	if (!isFullscreen && !this.condensed_view) {
+		width = $(window).width() -
+			$('#left-nav').outerWidth(true) - 
+			$('#mid-pane').outerWidth(true) - 
+			$('.mid-pane-handle').outerWidth(true) - 
+			$('.left-pane-handle').outerWidth(true) -
+			$('#right-pane').outerWidth(true) - 
+			$('.right-pane-handle').outerWidth(true)
+
+		height = $(window).height() -
+			$('.menu-bar').outerHeight(true);
+	} else {
+		width = window.innerWidth
+		height = window.innerHeight
+	}
 
 	return {
 		width: width,
@@ -1105,8 +1123,10 @@ Application.prototype.calculateCanvasArea = function() {
 }
 
 Application.prototype.onWindowResize = function() {
+	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
-	if (E2.app.player.core.renderer.fullscreen) {
+	if (isFullscreen) {
+		E2.core.emit('resize')
 		return;
 	}
 
@@ -1124,6 +1144,12 @@ Application.prototype.onWindowResize = function() {
 	E2.dom.canvas.css('width', width);
 	E2.dom.canvas.css('height', height);
 
+	// set webgl canvas size
+	E2.dom.webgl_canvas[0].width = width;
+	E2.dom.webgl_canvas[0].height = height;
+	E2.dom.webgl_canvas.css('width', width);
+	E2.dom.webgl_canvas.css('height', height);
+
 	// Update preset list height so it scrolls correctly
 	$('.preset-list-container').height(
 		$('#left-nav').height() -
@@ -1131,28 +1157,23 @@ Application.prototype.onWindowResize = function() {
 		$('#left-nav .tab-content .searchbox').outerHeight(true)
 	);
 
-	// Set WebGL viewport size
-	E2.app.player.core.renderer.update_viewport();
+	E2.core.emit('resize')
 
 	this.updateCanvas(true)
-
 }
 
 Application.prototype.toggleNoodles = function() {
-	this._noodlesOn = true
-	E2.dom.canvas_parent.toggle()
+	this.noodlesVisible = !this.noodlesVisible
+	E2.dom.canvas_parent.toggle(this.noodlesVisible)
 }
 
-Application.prototype.toggleLeftPane = function()
-{
-
-	$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
-
+Application.prototype.toggleLeftPane = function() {
 	this.condensed_view = !this.condensed_view;
 
 	E2.dom.left_nav.toggle(!this.condensed_view);
 	E2.dom.mid_pane.toggle(!this.condensed_view);
 	$('.resize-handle').toggle(!this.condensed_view);
+	E2.dom.right_pane.toggle(!this.condensed_view);
 
 	if(this.condensed_view)
 		E2.dom.dbg.toggle(false);
@@ -1162,19 +1183,34 @@ Application.prototype.toggleLeftPane = function()
 	this.onWindowResize();
 };
 
+Application.prototype.toggleFullscreen = function() {
+	E2.core.emit('fullScreenChangeRequested')
+}
+
+Application.prototype.onFullScreenChanged = function() {
+	var $canvas = E2.dom.webgl_canvas
+	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+	
+	if (isFullscreen) {
+		$canvas.removeClass('webgl-canvas-normal')
+		$canvas.addClass('webgl-canvas-fs')
+	} else {
+		$canvas.removeClass('webgl-canvas-fs')
+		$canvas.addClass('webgl-canvas-normal')
+	}
+
+	E2.app.onWindowResize()
+
+	E2.core.emit('fullScreenChanged')
+}
+
 Application.prototype.onKeyDown = function(e) {
 	var that = this
 
-	function is_text_input_in_focus() {
-		var rx = /INPUT|SELECT|TEXTAREA/i;
-		var is= (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
-		return is
-	}
-
-	if (is_text_input_in_focus())
+	if (E2.util.isTextInputInFocus(e))
 		return;
 
-	if (!this._noodlesOn && e.keyCode !== 9)
+	if (!this.noodlesVisible && e.keyCode !== 9)
 		return;
 
 	// arrow up || down
@@ -1271,8 +1307,7 @@ Application.prototype.onKeyDown = function(e) {
 
 	else if(e.keyCode === 70) // f
 	{
-		this.is_fullscreen = !this.is_fullscreen;
-		this.player.core.renderer.set_fullscreen(this.is_fullscreen);
+		this.toggleFullscreen()
 		e.preventDefault();
 	} else if (e.keyCode === 81 || e.keyCode === 191) { // q or / to focus preset search
 		$('#presetSearch').focus()
@@ -1435,7 +1470,9 @@ Application.prototype.openPresetSaveDialog = function(serializedGraph) {
 		.frame('save-frame')
 		.template('preset')
 		.buttons({
-			'Cancel': function() {},
+			'Cancel': function() {
+				E2.dom.load_spinner.hide()
+			},
 			'Save': function(name) {
 				if (!name)
 					return bootbox.alert('Please enter a name for the preset')
@@ -1496,7 +1533,9 @@ Application.prototype.openSaveACopyDialog = function(cb) {
 		.frame('save-frame')
 		.template('graph')
 		.buttons({
-			'Cancel': function() {},
+			'Cancel': function() {
+				E2.dom.load_spinner.hide();
+			},
 			'Save': function(path, tags) {
 				if (!path)
 					return bootbox.alert('Please enter a filename');
@@ -1599,37 +1638,22 @@ Application.prototype.onShowTooltip = function(e) {
 
 		txt = '<b>Type:</b> ' + slot.dt.name;
 
+		if (slot.array)
+			txt += '<br><b>Array:</b> yes';
+
+		if (slot.inactive)
+			txt += '<br><b>Inactive:</b> yes';
+
 		if(slot.lo !== undefined || slot.hi !== undefined)
-			txt += '<br /><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
+			txt += '<br><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
 
-		if(slot.def !== undefined)
-		{
-			txt += '<br /><b>Default:</b> ';
+		if (slot.def !== undefined) {
+			txt += '<br><b>Default:</b> '
 
-			if(slot.def === null)
-				txt += 'Nothing';
-			else if(slot.def === this.player.core.renderer.matrix_identity)
-				txt += 'Identity';
-			else if(slot.def === this.player.core.renderer.material_default)
-				txt += 'Default material';
-			else if(slot.def === this.player.core.renderer.light_default)
-				txt += 'Default light';
-			else if(slot.def === this.player.core.renderer.camera_screenspace)
-				txt += 'Screenspace camera';
+			if (slot.def === null)
+				txt += 'Nothing'
 			else
-			{
-				var cn = slot.def.constructor.name;
-
-				if(cn === 'Texture')
-				{
-					txt += 'Texture';
-
-					if(slot.def.image && slot.def.image.src)
-						txt += ' (' + slot.def.image.src + ')';
-				}
-				else
-					txt += JSON.stringify(slot.def);
-			}
+				txt += slot.def
 		}
 
 		txt += '<br /><br />';
@@ -1643,6 +1667,8 @@ Application.prototype.onShowTooltip = function(e) {
 	this._tooltipTimer = setTimeout(function() {
 		if (that.inDrag)
 			return;
+
+		$elem.tooltip('destroy')
 
 		$elem.tooltip({
 			title: txt,
@@ -1674,6 +1700,9 @@ Application.prototype.onHideTooltip = function() {
 
 Application.prototype.setupStoreListeners = function() {
 	function onGraphChanged() {
+		if (E2.core.active_graph.plugin)
+			E2.core.active_graph.plugin.updated = true
+
 		E2.app.updateCanvas(true)
 	}
 
@@ -1792,7 +1821,6 @@ Application.prototype.onGraphSelected = function(graph) {
 			that.mouseCursors[person.uid].show()
 	})
 
-	E2.core.active_graph.reset()
 	E2.core.active_graph_dirty = true
 
 	E2.app.updateCanvas(true)
@@ -1808,6 +1836,12 @@ Application.prototype.setupPeopleEvents = function() {
 			return;
 
 		var $cursor = cursors[uid]
+
+		// this can happen when reconnected and own uid changes
+		// and the previous uid gets a `removed` message.
+		if (!$cursor) 
+			return;
+
 		$cursor.remove()
 		delete cursors[uid]
 	})
@@ -1949,11 +1983,25 @@ Application.prototype.start = function() {
 	E2.dom.canvas_parent[0].addEventListener('mousedown', this.onCanvasMouseDown.bind(this))
 	document.addEventListener('mouseup', this.onCanvasMouseUp.bind(this))
 
-	// Clear hover state on window blur. Typically when the user switches
-	// to another tab.
+	var wasPlayingOnBlur = true
+	document.addEventListener('visibilitychange', function() {
+		if (!document.hidden && wasPlayingOnBlur) {
+			that.player.play()
+		} else {
+			wasPlayingOnBlur = that.player.state.PLAYING === that.player.current_state
+			that.player.pause()
+		}
+
+		E2.app.changeControlState()
+	})
+
 	window.addEventListener('blur', function() {
 		that.clearEditState()
 	})
+
+	document.addEventListener('fullscreenchange', this.onFullScreenChanged.bind(this))
+	document.addEventListener('webkitfullscreenchange', this.onFullScreenChanged.bind(this))
+	document.addEventListener('mozfullscreenchange', this.onFullScreenChanged.bind(this))
 
 	window.addEventListener('resize', function() {
 		// To avoid UI lag, we don't respond to window resize events directly.
@@ -1961,7 +2009,6 @@ Application.prototype.start = function() {
 		// resize event within a 200 ms window.
 		clearTimeout(that.resize_timer)
 		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 200)
-
 	})
 
 	// close bootboxes on click
@@ -1972,7 +2019,7 @@ Application.prototype.start = function() {
 	})
 
 	$('button#fullscreen').click(function() {
-		E2.core.renderer.set_fullscreen(true);
+		E2.app.toggleFullscreen()
 	});
 
 	$('button#help').click(function() {
@@ -1986,12 +2033,15 @@ Application.prototype.start = function() {
 		var ox = e.pageX
 		var $doc = $(document)
 		var changed = false
+		var rightToLeft = $handle.hasClass('right-pane-handle')
 
 		e.preventDefault()
 
 		function mouseMoveHandler(e) {
 			changed = true
 			var nw = ow + (e.pageX - ox)
+			if (rightToLeft)
+				nw = ow + (ox - e.pageX)
 			e.preventDefault()
 			$pane.css('flex', '0 0 '+nw+'px')
 			$pane.css('width', nw+'px')
@@ -2038,6 +2088,8 @@ Application.prototype.start = function() {
 
 	this.midPane = new E2.MidPane()
 
+	E2.dom.load_spinner.hide()
+
 	E2.app.player.play() // autoplay
 	E2.app.changeControlState()
 
@@ -2045,10 +2097,10 @@ Application.prototype.start = function() {
 }
 
 Application.prototype.showFirstTimeDialog = function() {
-	if (!!Cookies.get('vizor'))
+	if (!E2.util.isFirstTime())
 		return;
 
-	Cookies.set('vizor', { seen: 1 })
+	Cookies.set('vizor', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
 	var diag = bootbox.dialog({
 		title: '<h3>First time here?</h3>',
@@ -2083,6 +2135,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	that.setupStoreListeners()
 
 	function start() {
+		E2.dom.canvas_parent.toggle(that.noodlesVisible)
+		
 		E2.app.start()
 
 		E2.app.onWindowResize()
@@ -2094,11 +2148,23 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 		}
 	}
 
+	if (!loadGraphUrl && !boot.hasEdits) {
+		loadGraphUrl = '/data/graphs/default.json'
+		E2.app.snapshotPending = true
+	}
+
 	if (loadGraphUrl)
 		E2.app.loadGraph(loadGraphUrl, start)
-	else {
+	else
 		E2.app.setupEditorChannel().then(start)
-	}
+}
+
+Application.prototype.setupChat = function() {
+	if (this.chat)
+		return
+
+	this.chatStore = new E2.ChatStore()
+	this.chat = new E2.Chat($('#chat'))
 }
 
 /**
@@ -2109,8 +2175,10 @@ Application.prototype.setupEditorChannel = function() {
 	var that = this
 
 	function joinChannel() {
-		if (isUserOwnedGraph(that.path))
+		if (isUserOwnedGraph(that.path)) {
+			that.channel.leave()
 			return dfd.resolve()
+		}
 
 		that.channel.join(that.path, function() {
 			dfd.resolve()
@@ -2118,13 +2186,14 @@ Application.prototype.setupEditorChannel = function() {
 	}
 
 	if (!this.channel) {
-		this.channel = new EditorChannel()
+		this.channel = new E2.EditorChannel()
 		this.channel.connect()
 		this.channel.on('ready', function() { 
+			that.setupChat()
 			that.peopleStore.initialize()
 			joinChannel()
 		})
-	} else
+	} else 
 		joinChannel()
 
 	return dfd.promise
@@ -2137,6 +2206,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.webgl_canvas = $('#webgl-canvas');
 	E2.dom.left_nav = $('#left-nav');
 	E2.dom.mid_pane = $('#mid-pane');
+	E2.dom.right_pane = $('#right-pane');
 	E2.dom.dbg = $('#dbg');
 	E2.dom.play = $('#play');
 	E2.dom.play_i = $('i', E2.dom.play);
@@ -2201,6 +2271,19 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	)
 
 	E2.app.player = player
+
+	// Shared gl context for three
+	var gl_attributes = {
+		alpha: false,
+		depth: true,
+		stencil: true,
+		antialias: false,
+		premultipliedAlpha: true,
+		preserveDrawingBuffer: false
+	}
+
+	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
+	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})
 
 	E2.core.on('ready', E2.app.onCoreReady.bind(E2.app, loadGraphUrl))
 }

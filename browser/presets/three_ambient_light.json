@@ -1,0 +1,303 @@
+{
+    "abs_t": 280.089,
+    "active_graph": "root",
+    "graph_uid": "TI6whDg9VfHH",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 334,
+                "y": 390,
+                "uid": "ETIhnzRa27tx",
+                "state": {
+                    "enabled": true,
+                    "always_update": true,
+                    "rt_width": 512,
+                    "rt_height": 512,
+                    "input_sids": {},
+                    "output_sids": {
+                        "2TBEHlKpKdeZ": "547odbJKrTzG"
+                    }
+                },
+                "title": "Ambient light",
+                "graph": {
+                    "uid": "9aW6RLPBpvQF",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1110,
+                            "y": 223,
+                            "uid": "2TBEHlKpKdeZ",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "vSy6Gj4JSPYs",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 306,
+                            "y": 399,
+                            "uid": "kwCMxOSQcv8Z",
+                            "state": {
+                                "val": -0.1,
+                                "min": -1,
+                                "max": 1
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 303,
+                            "y": 466,
+                            "uid": "di2viokfSGiQ",
+                            "state": {
+                                "val": 0,
+                                "min": -2,
+                                "max": 2
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "slider_float_generator",
+                            "x": 301,
+                            "y": 532,
+                            "uid": "zZZzs4Fc3j0o",
+                            "state": {
+                                "val": 2,
+                                "min": -1,
+                                "max": 2
+                            },
+                            "title": "Z"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 645,
+                            "y": 384,
+                            "uid": "BaEgQmBUtKu4",
+                            "title": "Position"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 639,
+                            "y": 560,
+                            "uid": "mL3vPhPmtWkQ",
+                            "title": "Scale"
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 634,
+                            "y": 458,
+                            "uid": "2wcPGgtDHKG1",
+                            "title": "Rotation"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 476,
+                            "y": 708,
+                            "uid": "jDHmWr3I6hvJ",
+                            "state": {
+                                "val": 1
+                            },
+                            "title": "XYZ"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 304,
+                            "y": 637,
+                            "uid": "uiguJdrTgGpU",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "X"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 301,
+                            "y": 700,
+                            "uid": "m74Pb6oQAhbZ",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Y"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 299,
+                            "y": 756,
+                            "uid": "kC2dWfRFYFZ3",
+                            "state": {
+                                "val": 0
+                            },
+                            "title": "Z"
+                        },
+                        {
+                            "plugin": "three_ambient_light",
+                            "x": 877,
+                            "y": 293,
+                            "uid": "8mTl4shEDODm"
+                        },
+                        {
+                            "plugin": "annotation",
+                            "x": 282,
+                            "y": 100,
+                            "uid": "Dxg4WIHRiSQJ",
+                            "state": {
+                                "text": "How is this supposed to work?\n\nAmbient light should have a light color + intensity settings right?\n\n",
+                                "width": 202,
+                                "height": 98
+                            }
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "kwCMxOSQcv8Z",
+                            "dst_nuid": "BaEgQmBUtKu4",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "LuuisWChGil7",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "di2viokfSGiQ",
+                            "dst_nuid": "BaEgQmBUtKu4",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "vETJj5adtnNY",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "zZZzs4Fc3j0o",
+                            "dst_nuid": "BaEgQmBUtKu4",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "nmjilnAAqqAS",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "jDHmWr3I6hvJ",
+                            "dst_nuid": "mL3vPhPmtWkQ",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "Zx6Zyo53OZjG",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "jDHmWr3I6hvJ",
+                            "dst_nuid": "mL3vPhPmtWkQ",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "OS0Iedx68c3G",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "offset": 1
+                        },
+                        {
+                            "src_nuid": "jDHmWr3I6hvJ",
+                            "dst_nuid": "mL3vPhPmtWkQ",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "p73G40IW8coz",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "uiguJdrTgGpU",
+                            "dst_nuid": "2wcPGgtDHKG1",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "oMxwXmq6E9Yv",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "m74Pb6oQAhbZ",
+                            "dst_nuid": "2wcPGgtDHKG1",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "JAofaGhIpjUJ",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "kC2dWfRFYFZ3",
+                            "dst_nuid": "2wcPGgtDHKG1",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "y7CcQODl7SSy",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "8mTl4shEDODm",
+                            "dst_nuid": "2TBEHlKpKdeZ",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "J55ZnaX4GoAt",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "mL3vPhPmtWkQ",
+                            "dst_nuid": "8mTl4shEDODm",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "EtAyGxpvHFbL",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "2wcPGgtDHKG1",
+                            "dst_nuid": "8mTl4shEDODm",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "RweZ2X8TzwNM",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "BaEgQmBUtKu4",
+                            "dst_nuid": "8mTl4shEDODm",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "dMbktjRvPIcn",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "547odbJKrTzG",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

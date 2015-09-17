@@ -20,10 +20,14 @@ WebSocketChannel.prototype.connect = function(path, options) {
 
 	this._state = 'connecting'
 
-	this.ws = new WebSocket('ws://'+
-			window.location.hostname+':'+
+	var wsUrl = 'ws://'+
+			window.location.hostname + ':'+
 			(window.location.port || 80)+
-		path,
+		path
+
+	console.log('Connecting WebSocket', wsUrl)
+
+	this.ws = new WebSocket(wsUrl,
 		options)
 
 	this.ws.onopen = function() {
@@ -32,7 +36,7 @@ WebSocketChannel.prototype.connect = function(path, options) {
 	}
 
 	this.ws.onclose = function() {
-		console.warn('WsChannel disconnected', path)
+		console.warn('WsChannel disconnected', path, arguments)
 		that._state = 'disconnected'
 		that.emit('disconnected')
 	}
@@ -90,5 +94,5 @@ WebSocketChannel.prototype.send = function(channel, data) {
 }
 
 if (typeof(module) !== 'undefined')
-	module.exports = WebSocketChannel
+	module.exports = WebSocketChannel;
 

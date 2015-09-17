@@ -30,7 +30,9 @@ describe('ForkCommand', function() {
 	beforeEach(function() {
 		global.history = { pushState: function() {} }
 		global.E2 = {
-			core: { root_graph: {
+			core: {
+				root_graph: {
+					uid: 'root',
 					nodes: [ 'a' ],
 					connections: [ 'b' ]
 				},
@@ -41,6 +43,9 @@ describe('ForkCommand', function() {
 			uid: function() { return dateNow },
 			app: new MockApp('owner/test')
 		}
+
+		global.E2.core.active_graph = E2.core.root_graph
+
 	})
 
 	it('returns', function(done) {

@@ -31,7 +31,7 @@ global.Node.prototype.create_ui = function(){
 }
 global.Node.prototype.destroy_ui = function(){}
 
-global.Registers = function() {
+E2.Variables = function() {
 	this.serialise = function(){}
 }
 global.PresetManager = function() {}
@@ -56,6 +56,8 @@ describe('Simple graph shapes', function() {
 		core.rebuild_structure_tree = function(){}
 		
 		global.window = { location: { pathname: 'test/test' } }
+
+		require('../../scripts/util')
 
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 		app = new Application()

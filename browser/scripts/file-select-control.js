@@ -56,10 +56,10 @@ function FileSelectControl(handlebars) {
 		that._handlebars.registerPartial('filebrowser/'+pname, E2.views.filebrowser[pname]);
 	});
 }
+
 FileSelectControl.prototype = Object.create(EventEmitter.prototype)
 
-FileSelectControl.prototype._onFilesChange = function(model)
-{
+FileSelectControl.prototype._onFilesChange = function(model) {
 	if (!this._frame)
 		return;
 

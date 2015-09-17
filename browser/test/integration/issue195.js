@@ -20,13 +20,6 @@ global.PeopleManager = function() {}
 global.PeopleStore = function() {
 	this.list = function(){ return [] }
 }
-global.Material = require('../../scripts/material');
-global.Mesh = require('../../scripts/mesh');
-global.ComposeShader = function(){}
-global.Camera = function(){}
-
-global.vec3 = { createFrom: function() {} }
-global.vec4 = { createFrom: function() {} }
 
 global.NodeUI = function() {
 	this.dom = [$()]
@@ -37,12 +30,21 @@ global.NodeUI = function() {
 	this.dom[0].style = {}
 }
 
-global.VertexBuffer = require('../../scripts/renderer').VertexBuffer;
-global.IndexBuffer = require('../../scripts/renderer').IndexBuffer;
-global.Registers = require('../../scripts/registers');
 global.PresetManager = function() {}
 
 require('../../scripts/commands/graphEditCommands')
+
+global.TextureCache = function(){}
+
+global.THREE = {
+	Vector3: function(){},
+	Matrix4: function(){},
+	Color: function(){},
+	Material: function(){},
+	MeshBasicMaterial: function(){},
+	PerspectiveCamera: function(){}
+}
+global.THREE.Matrix4.prototype.identity = function() {}
 
 global.UndoManager = require('../../scripts/commands/undoManager.js')
 global.GraphApi = require('../../scripts/graphApi.js')
@@ -96,6 +98,30 @@ describe('Redo complex connection', function() {
 		var dummyCore = reset()
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 
+		require('../../scripts/variables')
+		require('../../scripts/util')
+
+		E2.plugins.convert_camera_matrices = function(core) {
+				this.input_slots = [
+					{ name: 'camera', dt: core.datatypes.CAMERA },
+				]
+				this.output_slots = [
+					{ name: 'projection', dt: core.datatypes.MATRIX},
+					{ name: 'view', dt: core.datatypes.MATRIX }
+				]
+		}
+		E2.plugins.material_texture_modulator = function(core, node) {
+			this.input_slots = [ 
+				{ name: 'material', dt: core.datatypes.MATERIAL},
+				{ name: 'type', dt: core.datatypes.FLOAT},
+				{ name: 'texture', dt: core.datatypes.TEXTURE }
+			];
+			
+			this.output_slots = [
+				{ name: 'material', dt: core.datatypes.MATERIAL }
+			];
+		};
+
 		app = E2.app = new Application()
 		app.updateCanvas = function() {}
 		core = E2.core = new Core()
@@ -116,12 +142,11 @@ describe('Redo complex connection', function() {
 				throw new Error(txt)
 		}
 
-		source = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/vr_clean_template.json')).root
+		source = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/issue195.json')).root
 	})
 
 	it('can redo connection after destructive edits in subgraph, issue #195', function() {
 		app.setupStoreListeners()
-		var ag = core.active_graph
 		app.clipboard = JSON.stringify(source)
 
 		// add VR clean template
@@ -132,7 +157,7 @@ describe('Redo complex connection', function() {
 		rootGraph.tree_node = {}
 		
 		// open the VR render loop
-		var vrLoopGraph = rootGraph.children[1].plugin.graph
+		var vrLoopGraph = rootGraph.children[0].plugin.graph
 		vrLoopGraph.create_ui = function(){}
 		vrLoopGraph.tree_node = {}
 		
@@ -144,7 +169,7 @@ describe('Redo complex connection', function() {
 			app.markNodeAsSelected(node)
 		})
 
-		assert.equal(app.selectedNodes.length, 27)
+		assert.equal(app.selectedNodes.length, 2)
 
 		app.onDelete()
 

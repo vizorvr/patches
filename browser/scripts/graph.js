@@ -4,7 +4,7 @@ function Graph(core, parent_graph, uid) {
 	this.nodes = [];
 	this.connections = [];
 	this.core = core;
-	this.registers = new Registers(core);
+	this.variables = new E2.Variables(core);
 
 	this.parent_graph = parent_graph;
 	this.roots = [];
@@ -76,8 +76,9 @@ Graph.prototype.reset = function() {
 
 Graph.prototype.play = function() {
 	this.enum_all(function(n) {
-		if(n.plugin.play)
+		if (n.plugin.play) {
 			n.plugin.play();
+		}
 	}, null);
 }
 
@@ -145,6 +146,12 @@ Graph.prototype.removeNode = function(node) {
 		this.children = this.children.filter(nodeFilter);
 		E2.core.graphs.splice(E2.core.graphs.indexOf(node.plugin.graph), 1)
 	}
+
+	if (node.plugin.stop)
+		node.plugin.stop()
+
+	if (node.plugin.destroy)
+		node.plugin.destroy()
 
 	this.emit('nodeRemoved', node)
 
@@ -242,7 +249,7 @@ Graph.prototype.serialise = function() {
 	d.conns = [];
 	
 	this.enum_all(function(n) { d.nodes.push(n.serialise()); }, function(c) { d.conns.push(c.serialise()); });
-	this.registers.serialise(d);
+	this.variables.serialise(d);
 	
 	return d;
 }
@@ -259,22 +266,25 @@ Graph.prototype.deserialise = function(d) {
 	var i, len
 
 	for(i = 0, len = d.nodes.length; i < len; i++) {
-		var n = new Node(null, null, null, null);
+		var n = new Node()
 		
 		if (n.deserialise(this.uid, d.nodes[i]))
 			this.registerNode(n)
 	}
 
-	this.connections = [];
+	this.connections = []
 
 	for(i = 0, len = d.conns.length; i < len; i++) {
-		var c = new Connection(null, null, null, null);
-		c.deserialise(d.conns[i]);
-		this.connections.push(c);
+		var c = new Connection()
+		c.deserialise(d.conns[i])
+		this.connections.push(c)
 	}
 	
 	if (d.registers)
-		this.registers.deserialise(d.registers)
+		d.variables = d.registers // backwards compat
+
+	if (d.variables)
+		this.variables.deserialise(d.variables)
 }
 
 Graph.prototype.patch_up = function(graphs) {

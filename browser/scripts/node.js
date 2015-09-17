@@ -42,13 +42,16 @@ Node.prototype.set_plugin = function(plugin) {
 	this.plugin = plugin;
 	this.plugin.updated = true;
 	
+	if (!plugin.input_slots)
+		debugger;
+
 	function init_slot(slot, index, type) {
 		slot.index = index;
 		slot.type = type;
 		
 		if(!slot.dt)
 			msg('ERROR: The slot \'' + slot.name + '\' does not declare a datatype.');
-	};
+	}
 	
 	// Decorate the slots with their index to make this immediately resolvable
 	// from a slot reference, allowing for faster code elsewhere.
@@ -58,6 +61,9 @@ Node.prototype.set_plugin = function(plugin) {
 	
 	for(var i = 0, len = plugin.output_slots.length; i < len; i++)
 		init_slot(plugin.output_slots[i], i, E2.slot_type.output);
+
+	// back reference for object picking
+	this.plugin.parentNode = this
 };
 
 Node.prototype.setOpenState = function(isOpen) {
@@ -265,7 +271,7 @@ Node.prototype.findSlotByUid = function(suid) {
 	})
 
 	if (!slot)
-		console.error('Slot not found', slot_type, suid)
+		console.error('Slot not found', suid)
 
 	return slot
 }
@@ -297,14 +303,16 @@ Node.prototype.rename_slot = function(slot_type, suid, name) {
 	}
 }
 	
-Node.prototype.change_slot_datatype = function(slot_type, suid, dt) {
+Node.prototype.change_slot_datatype = function(slot_type, suid, dt, arrayness) {
 	var slot = this.find_dynamic_slot(slot_type, suid);
 	var pg = this.parent_graph;
+
+	slot.array = arrayness
 	
-	if (slot.dt === dt) // Anything to do?
+	if (slot.dt.id === dt.id) // Anything to do?
 		return false;
 	
-	if (slot.dt !== pg.core.datatypes.ANY) {
+	if (slot.dt.id !== pg.core.datatypes.ANY.id) {
 		// Destroy all attached connections.
 		var conns = slot_type === E2.slot_type.input ? this.inputs : this.outputs;
 		var pending = [];
@@ -365,66 +373,93 @@ Node.prototype.update_connections = function() {
 	return this.inputs.length + this.outputs.length
 }
 
+/**
+ * set connection UI flow state to off recursively
+ */
+Node.prototype._cascadeFlowOff = function(conn) {
+	conn.ui.flow = false
+
+	if (conn.src_node.inputs.length) {
+		for (var i=0; i < conn.src_node.inputs.length; i++) {
+			if (conn.src_node.inputs[i].ui.flow)
+				this._cascadeFlowOff(conn.src_node.inputs[i])
+		}
+	}
+}
+
 Node.prototype.update_recursive = function(conns) {
 	var dirty = false;
 
-	if (this.update_count < 1) {
-		var inputs = this.inputs;
-		var pl = this.plugin;
-		var needs_update = this.inputs_changed || pl.updated;
-	
-		for(var i = 0, len = inputs.length; i < len; i++) {
-			var inp = inputs[i];
-			
-			if (inp.dst_slot.inactive)
-				continue;
-			
-			var sn = inp.src_node;
-			 
-			dirty = sn.update_recursive(conns) || dirty;
-		
-			// TODO: Sampling the output value out here might seem spurious, but isn't:
-			// Some plugin require the ability to set their updated flag in update_output().
-			// Ideally, these should be rewritten to not do so, and this state should
-			// be moved into the clause below to save on function calls.
-			var value = sn.plugin.update_output(inp.src_slot);
+	if (this.update_count > 0)
+		return dirty;
 
-			if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
-				pl.update_input(inp.dst_slot, value);
-				pl.updated = true;
-				needs_update = true;
-		
-				if (inp.ui && !inp.ui.flow) {
-					dirty = true;
-					inp.ui.flow = true;
-				}
-			} else if(inp.ui && inp.ui.flow) {
-				inp.ui.flow = false;
-				dirty = true;
-			}
-		}
-	
-		if(pl.always_update || (pl.isGraph && pl.state.always_update)) {
-			pl.update_state();
-		} else if(this.queued_update > -1) {
-			if(pl.update_state)
-				pl.update_state();
-
-			pl.updated = true;
-			this.queued_update--;
-		} else if(needs_update || (pl.output_slots.length === 0 && (!this.outputs || this.outputs.length === 0))) {
-			if(pl.update_state)
-				pl.update_state();
-		
-			this.inputs_changed = false;
-		} else if(pl.input_slots.length === 0 && (!this.inputs || this.inputs.length === 0)) {
-			if(pl.update_state)
-				pl.update_state();
-		}
-	}
-	
 	this.update_count++;
 
+	var inputs = this.inputs;
+	var pl = this.plugin;
+	var needs_update = this.inputs_changed || pl.updated;
+
+	for(var i = 0, len = inputs.length; i < len; i++) {
+		var inp = inputs[i];
+		
+		if (inp.dst_slot.inactive) {
+			if(inp.ui && inp.ui.flow) {
+				this._cascadeFlowOff(inp)
+				dirty = true;
+			}
+			continue;
+		}
+		
+		var sn = inp.src_node;
+		 
+		dirty = sn.update_recursive(conns) || dirty;
+	
+		// TODO: Sampling the output value out here might seem spurious, but isn't:
+		// Some plugin require the ability to set their updated flag in update_output().
+		// Ideally, these should be rewritten to not do so, and this state should
+		// be moved into the clause below to save on function calls.
+		var value = sn.plugin.update_output(inp.src_slot);
+
+		if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
+			if (inp.dst_slot.array && !inp.src_slot.array) {
+				value = [value]
+			} else if (!inp.dst_slot.array && inp.src_slot.array) {
+				value = value[0]
+			}
+
+			pl.update_input(inp.dst_slot, inp.dst_slot.validate ? inp.dst_slot.validate(value) : value);
+
+			pl.updated = true;
+			needs_update = true;
+	
+			if (inp.ui && !inp.ui.flow) {
+				dirty = true;
+				inp.ui.flow = true;
+			}
+		} else if(inp.ui && inp.ui.flow) {
+			inp.ui.flow = false;
+			dirty = true;
+		}
+	}
+
+	if (pl.always_update || (pl.isGraph && pl.state.always_update)) {
+		pl.update_state();
+	} else if(this.queued_update > -1) {
+		if(pl.update_state)
+			pl.update_state();
+
+		pl.updated = true;
+		this.queued_update--;
+	} else if(needs_update || (pl.output_slots.length === 0 && (!this.outputs || this.outputs.length === 0))) {
+		if(pl.update_state)
+			pl.update_state();
+	
+		this.inputs_changed = false;
+	} else if(pl.input_slots.length === 0 && (!this.inputs || this.inputs.length === 0)) {
+		if(pl.update_state)
+			pl.update_state();
+	}
+	
 	return dirty;
 }
 
@@ -495,6 +530,14 @@ Node.prototype.fixStateSidsIssue135 = function(state) {
 }
 
 Node.prototype.deserialise = function(guid, d) {
+	var idMap = {
+		'register_local_read': 'variable_local_read',
+		'register_local_write': 'variable_local_write',
+	}
+
+	if (idMap[d.plugin])
+		d.plugin = idMap[d.plugin]
+
 	this.parent_graph = guid;
 	this.x = d.x;
 	this.y = d.y;
@@ -605,8 +648,7 @@ Node.hydrate = function(guid, json) {
 }
 
 
-function LinkedSlotGroup(core, parent_node, inputs, outputs)
-{
+function LinkedSlotGroup(core, parent_node, inputs, outputs) {
 	this.core = core;
 	this.node = parent_node;
 	this.inputs = inputs;
@@ -615,79 +657,88 @@ function LinkedSlotGroup(core, parent_node, inputs, outputs)
 	this.dt = core.datatypes.ANY;
 }
 
-LinkedSlotGroup.prototype.set_dt = function(dt)
-{
+LinkedSlotGroup.prototype.setArrayness = function(arrayness) {
+	for(var i = 0, len = this.inputs.length; i < len; i++) {
+		this.inputs[i].array = arrayness
+	}
+
+	for(var i = 0, len = this.outputs.length; i < len; i++) {
+		this.outputs[i].array = arrayness
+	}
+}
+
+LinkedSlotGroup.prototype.set_dt = function(dt) {
 	this.dt = dt;
 	
 	for(var i = 0, len = this.inputs.length; i < len; i++)
-		this.inputs[i].dt = dt;
+		this.inputs[i].dt = dt
 
 	for(var i = 0, len = this.outputs.length; i < len; i++)
-		this.outputs[i].dt = dt;
-};
+		this.outputs[i].dt = dt
+}
 
-LinkedSlotGroup.prototype.add_dyn_slot = function(slot)
-{
+LinkedSlotGroup.prototype.add_dyn_slot = function(slot) {
 	(slot.type === E2.slot_type.input ? this.inputs : this.outputs).push(slot);
-};
+}
 
-LinkedSlotGroup.prototype.remove_dyn_slot = function(slot)
-{
+LinkedSlotGroup.prototype.remove_dyn_slot = function(slot) {
 	(slot.type === E2.slot_type.input ? this.inputs : this.outputs).remove(slot);
-};
+}
 
-LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot)
-{
-	if(this.inputs.indexOf(slot) === -1 && this.outputs.indexOf(slot) === -1)
+LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot) {
+	if (this.inputs.indexOf(slot) === -1 && this.outputs.indexOf(slot) === -1)
 		return;
-		
-	this.n_connected += on ? 1 : -1;
 	
-	if(on && this.n_connected === 1)
-	{
-		this.set_dt((slot.type === E2.slot_type.input) ? conn.src_slot.dt : conn.dst_slot.dt);
+	this.n_connected += on ? 1 : -1;
+
+	if (on && this.n_connected === 1) {
+		var otherSlot = (slot.type === E2.slot_type.input) ? conn.src_slot : conn.dst_slot
+		this.set_dt(otherSlot.dt)
+
+		if (otherSlot.array)
+			this.setArrayness(true)
+
 		return true;
 	}
 	
-	if(!on && this.n_connected === 0)
-	{
+	if(!on && this.n_connected === 0) {
 		this.set_dt(this.core.datatypes.ANY);
 		return true;
 	}
 	
 	return false;
-};
+}
 
-LinkedSlotGroup.prototype.infer_dt = function()
-{
+LinkedSlotGroup.prototype.infer_dt = function() {
 	var node = this.node;
 	var dt = null;
-	var any_dt = this.core.datatypes.ANY;
+	var any_dt = this.core.datatypes.ANY.id;
 	
-	for(var i = 0, len = node.inputs.length; i < len; i++)
-	{
+	for(var i = 0, len = node.inputs.length; i < len; i++) {
 		var c = node.inputs[i];
 		
-		if(this.inputs.indexOf(c.dst_slot) !== -1)
-		{
-			dt = c.src_slot.dt !== any_dt ? c.src_slot.dt : dt;
+		if(this.inputs.indexOf(c.dst_slot) !== -1) {
+			dt = c.src_slot.dt.id !== any_dt ? c.src_slot.dt : dt;
+
+			if (c.src_slot.array)
+				this.setArrayness(true)
+
 			this.n_connected++;
 		}
 	}
 
-	for(var i = 0, len = node.outputs.length; i < len; i++)
-	{
+	for(var i = 0, len = node.outputs.length; i < len; i++) {
 		var c = node.outputs[i];
 		
-		if(this.outputs.indexOf(c.src_slot) !== -1)
-		{
-			dt = c.dst_slot.dt !== any_dt ? c.dst_slot.dt : dt;
+		if(this.outputs.indexOf(c.src_slot) !== -1) {
+			dt = c.dst_slot.dt.id !== any_dt ? c.dst_slot.dt : dt;
+			if (c.dst_slot.array)
+				this.setArrayness(true)
 			this.n_connected++;
 		}
 	}
 	
-	if(dt !== null)
-	{
+	if (dt) {
 		this.set_dt(dt);
 		return this.core.get_default_value(dt);
 	}

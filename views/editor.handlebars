@@ -12,10 +12,11 @@
 			<span>
 				<img id="infopanelogo" src="../../images/logo-graphic.png">
 			</span>
-			<span class="logo-text">Vizor Create</span>
+			<span class="logo-text">Vizor</span>
 		</div>
 		<div id="load-spinner"></div>
 	</div>
+
 	<div class="header">
 		<div id="top-header">
 			<div class="top-header-col" id="top-header-left">
@@ -114,24 +115,36 @@
 		</div>
 	</div>
 
+	<div class="resize-handle right-pane-handle" data-target="#right-pane"></div>
+	<div class="flex-column right-pane" id="right-pane">
+		<div class="tab-content chat flex-column" id="chat">
+			<div class="messages"></div>
+			<div class="composer">
+				<input type="text" name="message" id="new-message-input">
+			</div>
+		</div>
+	</div>
+
 	<pre class="info-pane" id="dbg"></pre>
 </div> <!-- main row -->
-</div> <!-- page column -->
+</div> <!-- page column -->	
 
 <script type="text/javascript">
-	var graph, graphUrl
+	var Vizor = {}
+	var boot = {}
+	boot.hasEdits = {{hasEdits}}
 
 	{{#if graph}}
-		graph = {
+		boot.graph = {
 			path: '{{graph.path}}',
 			url: '{{graph.url}}'
 		}
 
-		graphUrl = graph.url
+		boot.graphUrl = boot.graph.url
 	{{/if}}
 
 	function startEditor(vr_devices) {
-		E2.InitialiseEngi(vr_devices, graphUrl)
+		E2.InitialiseEngi(vr_devices, boot.graphUrl)
 	}
 
 	function EnumerateVRDevices(devices) {

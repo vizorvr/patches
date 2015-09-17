@@ -886,7 +886,7 @@ html {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 body {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
   line-height: 1.33;
   color: #aaaaaa;
@@ -986,7 +986,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 500;
   line-height: 1.1;
   color: inherit;
@@ -5592,7 +5592,7 @@ button.close {
   z-index: 1070;
   display: block;
   visibility: visible;
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 11px;
   font-weight: normal;
   line-height: 1.4;
@@ -5699,7 +5699,7 @@ button.close {
   display: none;
   max-width: 276px;
   padding: 1px;
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-weight: normal;
   line-height: 1.33;
@@ -6375,7 +6375,7 @@ button.close {
   }
 }
 body {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-shadow: none;
   line-height: 1.33;
   font-size: 12px;
@@ -6599,12 +6599,16 @@ table {
 .proxy .plugin-row td {
   background: #badaff !important;
 }
-.register {
+.variable {
   background: #c6ffc8 !important;
 }
 .loop,
 .loop .plugin-row td {
   background: #ffc6ee !important;
+}
+.arrayfunction,
+.arrayfunction .plugin-row td {
+  background: #33c6fe !important;
 }
 .config_btn {
   width: 16px;
@@ -6788,25 +6792,8 @@ table {
   -khtml-border-bottom-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }
-.slider {
-  position: relative;
-  text-align: left;
-  border: 1px solid #888;
-}
-.slider .slider-handle {
-  position: absolute;
-  z-index: 2;
-  width: 1.4em;
-  height: 1.4em;
-  cursor: default;
-  background: #bebebe;
-}
-.slider-horizontal {
-  height: .8em;
-}
-.slider-horizontal .slider-handle {
-  top: -0.4em;
-  margin-left: -0.6em;
+.slider-value {
+  text-align: center;
 }
 .modal {
   position: absolute;
@@ -6912,6 +6899,7 @@ body {
   margin: 0px;
   border: 0px;
   padding: 0px;
+  overflow: hidden;
 }
 body {
   margin: 0;
@@ -7028,6 +7016,10 @@ body {
   font-size: 12px;
   padding: 0;
   margin: 0;
+}
+#right-pane {
+  min-width: 268px;
+  max-width: 268px;
 }
 #mid-pane .tab-content,
 #mid-pane .tab-pane,
@@ -7346,4 +7338,71 @@ li.active,
   color: blue;
   font-size: 0.8em;
   font-weight: bold;
+}
+.chat {
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  height: inherit;
+  overflow-x: hidden;
+}
+.chat .messages {
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 10px;
+  height: calc(100vh -  84px);
+}
+.chat .message .date {
+  margin-left: 5px;
+}
+.chat .message {
+  margin-bottom: 10px;
+}
+.chat .message .text-cell {
+  padding-top: 5px;
+}
+.chat .message .icon-column {
+  vertical-align: top;
+}
+.chat .message .meta {
+  margin: 0px 8px 8px 8px;
+}
+.chat .message .icon {
+  background-image: url('/images/alpha_chat_icon.png');
+  margin: 0px 8px 8px 8px;
+  width: 32px;
+  height: 32px;
+  background-color: gray;
+  border-radius: 3px;
+}
+.chat .message .username {
+  color: white;
+  font-weight: bold;
+}
+.chat .composer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: #444444;
+}
+.chat .composer input[type="text"]:focus {
+  border: solid 1px #555555;
+  outline-width: 0;
+}
+.chat .composer input[type="text"] {
+  flex: 1;
+  padding: 5px;
+  margin: 7px;
+  border-radius: 4px;
+  box-shadow: none;
+  background-color: #444444;
+  border: solid 1px #aaaaaa;
+  transition: border 0.3s;
+}
+.chat .message .table-row {
+  display: table-row;
+}
+.chat .message .table-cell {
+  display: table-cell;
 }

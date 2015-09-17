@@ -23,8 +23,10 @@ PresetManager.prototype.loadPlugins = function(cb) {
 		cache: true
 	})
 	.done(function(data) {
-		Object.keys(data).forEach(function(title) {
-			that.add('PLUGINS', title, 'plugin/'+data[title])
+		Object.keys(data).forEach(function(catName) {
+			Object.keys(data[catName]).forEach(function(title) {
+				that.add(catName, title, 'plugin/'+data[catName][title])
+			})
 		})
 		cb()
 	})

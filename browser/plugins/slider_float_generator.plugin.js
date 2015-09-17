@@ -17,6 +17,8 @@ var Slider = E2.plugins.slider_float_generator = function(core, node) {
 	this.slider = null
 	this.handle = null
 	this.pos = 0
+
+	this.node.on('pluginStateChanged', this.updateUi.bind(this))
 }
 
 Slider.prototype = Object.create(Plugin.prototype)
@@ -25,199 +27,68 @@ Slider.prototype.reset = function() {}
 
 Slider.prototype.create_ui = function() {
 	var that = this
-	var table = make('table')
-	var row = make('tr')
-	var cols = [make('td'), make('td'), make('td')]
-	
-	var inp_lo = $('<input class="lo" type="number" step="0.2" style="width: 50px;" />')
-	var inp_hi = $('<input class="hi" type="number" step="0.2" style="width: 50px;" />')
-	var slider = make('div')
-	var handle = this.handle = make('div')
-	
-	var slider_mouseup = function(data) { return function(e) {
-		E2.app.undoManager.end()
 
-		document.removeEventListener('mouseup', data.mouseup)
-		document.removeEventListener('mousemove', data.mousemove)
+	var html = '<table class="slider-table">'+
+		'<tr>'+
+			'<td><input class="min" type="number" step="0.2" style="width: 50px;"/></td>'+
+			'<td><input class="slider" type="range" step="0.001"></td>'+
+			'<td><input class="max" type="number" step="0.2" style="width: 50px;"/></td>'+
+		'</tr>'+
+		'<tr>'+
+			'<td></td>'+
+			'<td class="slider-value">0.0</td>'+
+			'<td></td>'+
+		'</tr>'+
+		'</table>'
 
-		that.undoableSetState('val', that.state.val, that._mouseDownValue)
+	var $el = $(html)
 
-		if(e.stopPropagation) e.stopPropagation()
-		if(e.preventDefault) e.preventDefault()
-		return false
-	}}
+	var $min = this.$min = $el.find('input.min')
+	var $max = this.$max = $el.find('input.max')
+	var $slider = this.$slider = $el.find('input.slider')
+	this.$display = $el.find('td.slider-value')
 
-	var slider_mousemove = function(data) { return function(e) {
-		var x_delta = e.pageX - data.last_x
-		var rng = that.state.max - that.state.min
-		
-		if (Math.abs(rng) > 0.0001) {
-			data.last_x = e.pageX
-		
-			var new_val = that.pos + x_delta
-		
-			new_val = new_val < 0.0 ? 0.0 : new_val > 60.0 ? 60.0 : new_val
-		
-			if (that.state.val !== new_val)
-				that._setValue(new_val)
-		}
-		
-		if (e.stopPropagation) e.stopPropagation()
-		if (e.preventDefault) e.preventDefault()
+	$slider.on('input', function() {
+		that.undoableSetState('val', parseFloat($slider.val()), that.state.val)
+	})
 
-		return false				
-	}}
-	
-	var slider_mousedown = function(il, ih, handle) { return function(e) {
-		var data = {
-			last_x: e.pageX,
-			handle: handle,
-		}
+	$min.on('change', function() {
+		that.undoableSetState('min', parseFloat($min.val()), that.state.min)
+	})
 
-		that._mouseDownValue = that.state.val || 0
-		
-		// Defer registration of event listeners until needed.
-		data.mouseup = slider_mouseup(data)
-		data.mousemove = slider_mousemove(data)
-		document.addEventListener('mouseup', data.mouseup)
-		document.addEventListener('mousemove', data.mousemove)
-		
-		if (e.stopPropagation) e.stopPropagation()
-		if (e.preventDefault) e.preventDefault()
+	$max.on('change', function() {
+		that.undoableSetState('max', parseFloat($max.val()), that.state.max)
+	})
 
-		return false
-	}}
-	
-	slider.addClass('slider slider-horizontal ui-widget corner-all')
-	slider.css({ 'width': '60px', 'margin-left': '8px', 'margin-right': '8px' })
+	this.updateUi()
 
-	handle.addClass('slider-handle state-hover corner-all')
-	handle[0].style.left = '0px'
-	handle[0].addEventListener('mousedown', slider_mousedown(inp_lo, inp_hi, handle))
-	
-	slider.append(handle)
-	
-	table.css('width', '150px')
-	inp_lo.css('border', '1px solid #999')
-	inp_hi.css('border', '1px solid #999')
-	
-	inp_lo.etf = new ExpandableTextfield(this.node, inp_lo, 3)
-	inp_hi.etf = new ExpandableTextfield(this.node, inp_hi, 3)
-	
-	var v_col = make('td')
-	
-	v_col.attr('colspan', '3')
-	v_col.css('text-align', 'center')
-	
-	table.append(row)
-	row.append(cols[0])
-	row.append(cols[1])
-	row.append(cols[2])
+	return $el
+}
 
-	cols[0].append(inp_lo)
-	cols[1].append(slider)
-	cols[2].append(inp_hi)
-	
-	var blur_handler = function(sender)  { 
-		return function() {
-			var st = that.state
+Slider.prototype.updateUi = function() {
+	if (!this.$slider)
+		return;
+	this.$slider.val(this.state.val)
+	this.$display.html(this.state.val)
+	this.$min.val(this.state.min)
+	this.$max.val(this.state.max)
 
-			function safe_parse(def, str) {
-				try  { 
-					var v = parseFloat(str)
-					if(!isNaN(v))
-						return v
-				} catch(e) {}
-				return def
-			}
-			
-			if (sender === inp_lo)
-				that.undoableSetState('min', safe_parse(st.min, sender.val()), that.state.min)
-			else
-				that.undoableSetState('max', safe_parse(st.max, sender.val()), that.state.max)
-			
-			sender.etf.update()
-			
-			that.update_value(that.state.val)
-		}
+	if (this.state.max < this.state.min) {
+		var m = this.state.max
+		this.state.max = this.state.min
+		this.state.min = m
+		this.$max.val(this.state.max)
+		this.$min.val(this.state.min)
 	}
-	
-	inp_lo.blur(blur_handler(inp_lo))
-	inp_hi.blur(blur_handler(inp_hi))
-	
-	var row2 = make('tr')
-	
-	row2.append(v_col)
-	v_col.append()
-	table.append(row2)
-	
-	this.v_col = v_col
-	this.update_value(0.0)
-	this.slider = slider
-	this.handle = handle
 
-	this.node.on('pluginStateChanged', this.updateUi.bind(this))
-
-	this.ui = table
-
-	return this.ui
+	this.$slider.prop('step', (this.state.max - this.state.min) / 1000)
+	this.$slider.prop('max', this.state.max)
+	this.$slider.prop('min', this.state.min)
 }
 
 Slider.prototype.update_output = function() {
 	return this.state.val
 }
-
-Slider.prototype._setValue = function(new_val) {
-	var self = this
-	var mix = new_val / 60.0
-
-	// self.pos = Math.floor(new_val)
-	self.state.val = ((1.0 - mix) * self.state.min) + (mix * self.state.max)
-	// this.handle[0].style.left = '' + self.pos + 'px'
-	self.update_value(self.state.val)
-	self.updated = true
-}
-
-Slider.prototype.update_value = function() {
-	this.updated = true
-
-	var st = this.state
-	var l = Math.min(st.min, st.max), h = Math.max(st.min, st.max)
-	var rng = Math.abs(st.max - st.min)
-	
-	st.val = st.val < l ? l : st.val > h ? h : st.val
-	this.pos = rng < 0.0001 ? 0.0 : ((Math.abs(st.val - st.min) / rng) * 60.0)
-
-	this.handle[0].style.left = '' + this.pos + 'px'
-	this.v_col.text(this.state.val.toFixed(2))
-}
-
-Slider.prototype.state_changed = function(ui) {
-	if(ui)
-		this.updateUi()
-}
-
-Slider.prototype.updateUi = function() {
-	if (!this.ui)
-		return
-
-	var ui = this.ui
-
-	this.update_value(this.state.val)
-
-	ui.find('.lo').val(this.state.min)
-	ui.find('.hi').val(this.state.max)
-	
-	var m = Math.min(this.state.min, this.state.max)
-	var p = (this.state.val - m) / Math.abs(this.state.max - this.state.min)
-	
-	if(this.state.min > this.state.max)
-		p = 1.0 - p
-	
-	this.pos = p * 60.0
-	this.handle[0].style.left = '' + this.pos + 'px'
-}
-
 })();
 
 

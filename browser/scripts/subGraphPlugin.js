@@ -1,3 +1,9 @@
+/*
+	- "input node" refers to input proxy
+	- input_nodes is a map of graph node slot uid -> input proxy node
+		inside the graph
+
+ */
 function SubGraphPlugin(core, node) {
 	this.core = core
 	this.node = node
@@ -7,8 +13,6 @@ function SubGraphPlugin(core, node) {
 
 	this.input_nodes = {}
 	this.output_nodes = {}
-
-	this.gl = core.renderer.context
 
 	this.ui = null
 	this.isGraph = true
@@ -22,7 +26,7 @@ SubGraphPlugin.prototype.reset = function() {
 
 SubGraphPlugin.prototype.play = function() {
 	if (this.graph)
-		this.graph.pause()
+		this.graph.play()
 }
 
 SubGraphPlugin.prototype.pause = function() {
@@ -46,72 +50,96 @@ SubGraphPlugin.prototype.dbg = function(str) {
 	msg('Graph: ' + str)
 }
 
-SubGraphPlugin.prototype.connection_changed = function(on, conn, slot) {
-	if (slot.uid !== undefined) {
-		var psl = null
-		var core = this.core
-		
-		if (!on) {
-			if (slot.type === E2.slot_type.input) {
-				var inode = this.input_nodes[slot.uid]
+// when an external proxy slot is disconnected, clear the datatype of the proxy
+SubGraphPlugin.prototype.onProxySlotDisconnected = function(conn, slot) {
+	var internalSlot
 
-				psl = inode.dyn_outputs[0]
-				inode.plugin.data = core.get_default_value(slot.dt)
-				inode.reset()
-			} else {
-				var node = this.parent_node
-				var count = 0
-				
-				for(var i = 0, len = node.outputs.length; i < len; i++) {
-					if(node.outputs[i].src_slot === slot)
-						count++
-				}
-				
-				if (count === 0)
-					psl = this.output_nodes[slot.uid].dyn_inputs[0]
-			}
-
-			if (psl && !psl.connected) {
-				psl.dt = slot.dt = core.datatypes.ANY
-				this.dbg('Resetting PDT/GDT for slot(' + slot.uid + ')')
-			}
-		} else {
-			var tn = null
-			
-			if (slot.type === E2.slot_type.input) {
-				if (slot.dt === core.datatypes.ANY) {
-					slot.dt = conn.src_slot.dt
-					this.dbg('Setting GDT for slot(' + slot.uid + ') to ' + this.get_dt_name(conn.src_slot.dt))
-				}
-
-				tn = this.input_nodes[slot.uid]
-				if (!tn)
-					return;
-				psl = tn.dyn_outputs[0]
-			} else {
-				if (slot.dt === core.datatypes.ANY) {
-					slot.dt = conn.dst_slot.dt
-					this.dbg('Setting GDT for slot(' + slot.uid + ') to ' + this.get_dt_name(conn.dst_slot.dt))
-				}
-				
-				tn = this.output_nodes[slot.uid]
-				if (!tn)
-					return;
-				psl = tn.dyn_inputs[0]
-			}
-			
-			if (psl.dt === core.datatypes.ANY) {
-				this.dbg('Setting PDT for slot(' + psl.uid + ') to ' + this.get_dt_name(slot.dt))
-				psl.dt = slot.dt
-				tn.plugin.data = core.get_default_value(slot.dt)
-			}
+	if (slot.type === E2.slot_type.input) {
+		// inbound connection to external slot for input_proxy was disconnected
+		var inputProxyNode = this.input_nodes[slot.uid] 
+		if (!inputProxyNode)
+			return;
+		internalSlot = inputProxyNode.dyn_outputs[0] // output slot of input proxy
+		inputProxyNode.plugin.data = this.core.get_default_value(slot.dt)
+		inputProxyNode.reset()
+	} else {
+		// outbound connection from external slot of output_proxy was disconnected
+		var node = this.parent_node
+		var count = 0 // connection count from external output slot
+		for(var i = 0, len = node.outputs.length; i < len; i++) {
+			if (node.outputs[i].src_slot === slot)
+				count++
 		}
-	} else if(slot.type === E2.slot_type.output) {
-		this.set_render_target_state(on)
+		
+		if (count === 0) 
+			internalSlot = this.output_nodes[slot.uid].dyn_inputs[0] // input slot of output proxy
+	}
+
+	if (internalSlot && !internalSlot.connected) {
+		// reset the external slot to ANY because it was disconnected
+		internalSlot.dt = slot.dt = this.core.datatypes.ANY
+	}
+
+}
+
+// outside the graph
+SubGraphPlugin.prototype.connection_changed = function(on, conn, externalSlot) {
+	var internalSlot = null
+	var core = this.core
+
+	if (!on) {
+		// something was disconnected from an external slot
+		this.onProxySlotDisconnected(conn, externalSlot)
+	} else {
+		// something was connected to an external slot
+		var proxyNode = null
+		
+		if (externalSlot.type === E2.slot_type.input) {
+			// external input slot was connected
+			// assume the datatype and arrayness if not already set
+			if (externalSlot.dt.id === E2.dt.ANY.id) {
+				externalSlot.dt = conn.src_slot.dt
+				externalSlot.array = conn.src_slot.array
+			}
+
+			proxyNode = this.input_nodes[externalSlot.uid]
+			if (!proxyNode)
+				return;
+			internalSlot = proxyNode.dyn_outputs[0]
+		} else {
+			// external output slot was connected
+			// assume the datatype and arrayness if not already set
+			if (externalSlot.dt.id === E2.dt.ANY.id) {
+				externalSlot.dt = conn.dst_slot.dt
+				externalSlot.array = conn.dst_slot.array
+			}
+
+			proxyNode = this.output_nodes[externalSlot.uid]
+			if (!proxyNode)
+				return;
+			internalSlot = proxyNode.dyn_inputs[0]
+		}
+		
+		if (internalSlot.dt.id === E2.dt.ANY.id) {
+			internalSlot.dt = externalSlot.dt
+			internalSlot.array = externalSlot.array
+		}
+
+		// force the subgraph to output a valid value the next time it's pulled
+		if (this.graph) {
+			this.graph.enum_all(function(node) {
+				node.plugin.updated = true
+			})
+		}
+
+		this.updated = true
+
+		proxyNode.plugin.data = core.get_default_value(externalSlot.dt)
 	}
 }
 
-SubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node, slot, t_slot) {
+// inside the graph
+SubGraphPlugin.prototype.proxy_connection_changed = function(on, proxyNode, otherNode, proxySlot, otherSlot) {
 	var that = this
 	var core = this.core
 	var node = this.parent_node
@@ -126,13 +154,13 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node,
 		return -1;
 	}
 	
-	function is_gslot_connected(gslot) {
+	function isExternalSlotConnected(gslot) {
 		var i, len
 		if (gslot.type === E2.slot_type.input) {
 			for(i = 0, len = node.inputs.length; i < len; i++) {
 				if(node.inputs[i].dst_slot === gslot)
 					return true;
-			} 
+			}
 		} else {
 			for(i = 0, len = node.outputs.length; i < len; i++) {
 				if(node.outputs[i].src_slot === gslot)
@@ -143,106 +171,102 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, p_node, t_node,
 		return false
 	}
 	
-	function change_slots(last, g_slot, p_slot) {
-		// that.dbg('Proxy slot change ' + on + ', last = ' + last + ', g_slot = ' + g_slot.uid + ', p_slot = ' + p_slot.uid)
-		
-		p_slot.connected = true
+	function changeSlots(lastRemoved, externalSlot) {
+		proxySlot.connected = true
 		
 		if (on) {
-			if (p_slot.dt === core.datatypes.ANY) {
-				p_slot.dt = t_slot.dt		
-				that.dbg('    Setting PDT to ' + that.get_dt_name(t_slot.dt) + '.')
-			
-				if (g_slot.dt === core.datatypes.ANY) {
-					p_node.plugin.data = core.get_default_value(t_slot.dt)
-				}
+			// something connected to the proxy
+			// assume the dt and arrayness of the other end 
+			if (proxySlot.dt.id === core.datatypes.ANY.id) {
+				proxySlot.dt = otherSlot.dt
+	
+				if (otherSlot.array)
+					proxySlot.array = otherSlot.array
+	
+				proxyNode.plugin.data = core.get_default_value(otherSlot.dt)
+				externalSlot.dt = otherSlot.dt
+				externalSlot.array = otherSlot.array
 			}
 
-			if (g_slot.dt === core.datatypes.ANY) {
-				g_slot.dt = t_slot.dt		
-				that.dbg('    Setting GDT to ' + that.get_dt_name(t_slot.dt) + '.')
-			}
-		} else if (last) {
-			var conns = node.parent_graph.connections
+		} else if (lastRemoved) {
+			// last connection was removed from proxy
+			var parentGraphConnections = node.parent_graph.connections
 			var connected = false
 			var i, len
-			var rgsl
+			var remoteProxySlot
 
-			for(i = 0, len = conns.length; i < len; i++) {
-				var c = conns[i]
+			// is the external slot connected?
+			for(i = 0, len = parentGraphConnections.length; i < len; i++) {
+				var c = parentGraphConnections[i]
 				
-				if(c.dst_slot === g_slot || c.src_slot === g_slot) {
+				if (c.dst_slot === externalSlot || c.src_slot === externalSlot) {
 					connected = true
 					break;
 				}
 			}
 			
-			p_slot.connected = false
+			proxySlot.connected = false
 
 			if (!connected) {
-				p_slot.dt = g_slot.dt = core.datatypes.ANY
-				that.dbg('    Reverting to PDT/GDT to ANY.')
+				proxySlot.dt = externalSlot.dt = core.datatypes.ANY
 			}
 
-
-			if (t_node.plugin.id === 'input_proxy') {
+			if (otherNode.plugin.id === 'input_proxy') {
 				connected = false
 
-				for(i = 0, len = t_node.outputs.length; i < len; i++) {
-					if(t_node.outputs[i].src_slot === t_slot) {
+				for(i = 0, len = otherNode.outputs.length; i < len; i++) {
+					if (otherNode.outputs[i].src_slot === otherSlot) {
 						connected = true
 						break;
 					}
 				}
 				
-				rgsl = node.find_dynamic_slot(E2.slot_type.input, find_sid(that.input_nodes, t_node.uid))
+				remoteProxySlot = node.find_dynamic_slot(E2.slot_type.input, 
+					find_sid(that.input_nodes, otherNode.uid))
 				
-				if (!connected && !is_gslot_connected(rgsl)) {
-					t_slot.dt = rgsl.dt = core.datatypes.ANY
-					that.dbg('    Reverting remote proxy slot to PDT/GDT to ANY.')
+				if (!connected && !isExternalSlotConnected(remoteProxySlot)) {
+					otherSlot.dt = remoteProxySlot.dt = core.datatypes.ANY
 				}
-			} else if(t_node.plugin.id === 'output_proxy') {
-				rgsl = node.find_dynamic_slot(E2.slot_type.output, find_sid(that.output_nodes, t_node.uid))
+			} else if (otherNode.plugin.id === 'output_proxy') {
+				remoteProxySlot = node.find_dynamic_slot(E2.slot_type.output, 
+					find_sid(that.output_nodes, otherNode.uid))
 				
-				if(!is_gslot_connected(rgsl)) {
-					t_slot.dt = rgsl.dt = core.datatypes.ANY
-					that.dbg('    Reverting remote proxy slot to PDT/GDT to ANY.')
+				if(!isExternalSlotConnected(rgsl)) {
+					otherSlot.dt = remoteProxySlot.dt = core.datatypes.ANY
 				}
 			}
 		}
 	}
 	
-	var last
+	var lastRemoved
 
-	if (p_node.plugin.id === 'input_proxy') {
-		last = p_node.outputs.length === 0
+	if (proxyNode.plugin.id === 'input_proxy') {
+		lastRemoved = proxyNode.outputs.length === 0
 		
-		change_slots(last,
+		changeSlots(lastRemoved,
 			node.find_dynamic_slot(
 				E2.slot_type.input,
-				find_sid(this.input_nodes, p_node.uid)
-			),
-		slot)
+				find_sid(this.input_nodes, proxyNode.uid)
+		))
 
-		this.dbg('    Output count = ' + p_node.outputs.length)
-	} else {
-		last = p_node.inputs.length === 0
+		this.dbg('    Output count = ' + proxyNode.outputs.length)
+	} else { // output proxy
+		lastRemoved = proxyNode.inputs.length === 0
 		
-		change_slots(last,
+		changeSlots(lastRemoved,
 			node.find_dynamic_slot(
 				E2.slot_type.output,
-				find_sid(this.output_nodes, p_node.uid)
-			),
-		slot)
+				find_sid(this.output_nodes, proxyNode.uid)
+		))
 
-		this.dbg('    Input count = ' + p_node.inputs.length)
+		this.dbg('    Input count = ' + proxyNode.inputs.length)
 	}
 }
 
 SubGraphPlugin.prototype.update_output = function(slot) {
-	if (slot.uid !== undefined)
+	if (slot.dynamic)
 		return this.output_nodes[slot.uid].plugin.data
-		
+	
 	this.updated = true
 	return this.texture
 }

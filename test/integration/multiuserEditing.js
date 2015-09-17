@@ -1,3 +1,7 @@
+var testId = rand()
+process.env.MONGODB = 'mongodb://localhost:27017/mutest'+testId
+process.env.RETHINKDB_NAME = 'test' + testId
+
 global.WebSocket = require('ws')
 global.EventEmitter = require('events').EventEmitter
 global._ = require('lodash')
@@ -12,17 +16,17 @@ var session = require('client-sessions')
 var secrets = require('../../config/secrets');
 global.Flux = require('../../browser/vendor/flux')
 
+var setupRethinkDatabase = require('../../tools/setup').setupRethinkDatabase
+
 global.window = {
 	location: { hostname: 'localhost', port: 8000 }
 }
 
+global.ga = function(){}
+
 function rand() {
 	return Math.floor(Math.random() * 100000)
 }
-
-var testId = rand()
-process.env.MONGODB = 'mongodb://localhost:27017/mutest'+testId
-process.env.RETHINKDB_NAME = 'test' + testId
 
 var app = require('../../app.js')
 var agent = request.agent(app)
@@ -39,7 +43,7 @@ function createClient(channelName, lastEditSeen) {
 				duration: 4100421,
 				activeDuration: 190248
 			}, {
-				userId: 'test1234' + Date.now() % 10000
+				userId: 'test1234' + (''+Date.now()).substring(8,12)
 			})
 		}
 	})
@@ -56,25 +60,50 @@ function createClient(channelName, lastEditSeen) {
 }
 
 var rethinkConnection
-function setupDatabase(cb) {
+function setupDatabase() {
 	var dbName = process.env.RETHINKDB_NAME
 
-	r.connect({
+	return r.connect({
 		host: 'localhost',
 		port: 28015,
 		db: dbName
-	}, function(err, conn) {
-		if (err)
-			throw err;
-
+	})
+	.then(function(conn) {
 		rethinkConnection = conn
-		cb()
+		return setupRethinkDatabase()
+	})
+	.error(function(err) {
+		throw err
 	})
 } 
 
+var s1, s2
+
+var numbers = [ 'one', 'two', 'three', 'four', 'five',
+	'six', 'seven', 'eight', 'nine', 'ten' ]
+
+function burst() {
+	var bn = numbers.slice()
+	var interval = setInterval(function() {
+		var n = bn.shift()
+		if (n) {
+			s1.send({
+				actionType: 'uiPluginStateChanged',
+				number: n,
+				ack: 'ack-' + n
+			})
+		} else {
+			clearInterval(interval)
+		}
+	}, 1)
+
+	s1.on('ack-ten', function() {
+		s1.close()
+	})
+}
+
 describe('Multiuser', function() {
 	var db
-	var s1, s2
 
 	before(function(done) {
 		global.E2 = {
@@ -86,8 +115,9 @@ describe('Multiuser', function() {
 			}
 		}
 
-		app._editorChannel.on('ready', function() {
-			setupDatabase(function(err) {
+		app.events.on('ready', function() {
+			setupDatabase()
+			.then(function() {
 				db = new mongo.Db('mutest'+testId, 
 					new mongo.Server('localhost', 27017),
 					{ safe: true })
@@ -125,8 +155,21 @@ describe('Multiuser', function() {
 
 	it('should connect', function(done) {
 		s1 = createClient()
-		.on('READY', function() {
+		s1.on('ready', function() {
 			done()
+		})
+	})
+
+	it('sends acks', function(done) {
+		s1 = createClient('testack')
+		s1.once('youJoined', function() {
+			s1.on('ackAbc', function() {
+				done()
+			})
+			s1.send({
+				actionType: 'uiPluginStateChanged',
+				ack: 'ackAbc'
+			})
 		})
 	})
 
@@ -135,7 +178,6 @@ describe('Multiuser', function() {
 		s2 = createClient('test1')
 
 		function checkCondition() {
-			console.log('checkCondition', usersSeen.length)
 			if (usersSeen.length < 4)
 				return;
 
@@ -162,22 +204,9 @@ describe('Multiuser', function() {
 		var edits = []
 		
 		s1 = createClient(channel)
-		var numbers = [ 'one', 'two', 'three', 'four', 'five',
-			'six', 'seven', 'eight', 'nine', 'ten' ]
-
-		s1.once('join', function() {
-			numbers.map(function(n) {
-				s1.send({
-					actionType: 'uiPluginStateChanged',
-					number: n
-				})
-			})
-			s1.close()
-		})
-
+		s1.once('join', burst)
 		s1.on('disconnected', function() {
 			s2 = createClient(channel)
-
 			s2.dispatcher.register(function(m) {
 				if (!m.actionType)
 					return;
@@ -198,25 +227,37 @@ describe('Multiuser', function() {
 	it('keeps order of live entries', function(done) {
 		var channel = 'test3'+Math.random()
 		var edits = []
-		
-		var numbers = [ 'one', 'two', 'three', 'four', 'five',
-			'six', 'seven', 'eight', 'nine', 'ten' ]
-
-		function burst() {
-			numbers.map(function(n) {
-				s1.send({
-					actionType: 'uiPluginStateChanged',
-					number: n
-				})
-			})
-		}
 
 		s1 = createClient(channel)
 		s1.once('join', function() {
 			s2 = createClient(channel)
-
 			s2.once('join', burst)
+			s2.dispatcher.register(function(m) {
+				if (!m.actionType)
+					return;
 
+				edits.push(m)
+
+				if (edits.length === 10) {
+					assert.deepEqual(edits.map(function(e) { return e.number }), 
+						numbers)
+
+					done()
+				}
+			})
+		})
+
+	})
+
+
+	it('keeps order of replayed entries', function(done) {
+		var channel = 'test3'+Math.random()
+		var edits = []
+		
+		s1 = createClient(channel)
+		s1.once('join', burst)
+		s1.once('disconnected', function() {
+			s2 = createClient(channel)
 			s2.dispatcher.register(function(m) {
 				if (!m.actionType)
 					return;
@@ -240,28 +281,33 @@ describe('Multiuser', function() {
 		var ogChannel = channel
 		
 		s1 = createClient(channel)
-
 		s1.once('join', function() {
-			console.log('s1 id', s1.uid)
 			s1.send({
 				actionType: 'uiPluginStateChanged',
-				number: 1
+				number: 1,
+				ack: 'ack-one'
+			})
+			s1.on('ack-one', function() {
+				s1.close()
 			})
 
 			var s3 = createClient(channel)
-			s3.once('join', function() {
+			s3.once('youJoined', function() {
 				// join some other channel
 				channel = 'part-two-'+Math.random()
-				s3.join(channel, function() {
+
+				s3.once('youJoined', function() {
 					// join original channel again
 					s3.join(ogChannel, function() {
 						s3.dispatcher.register(function(m) {
 							assert.ok(m.number === 1)
 							s3.close()
-							done()
+							s3.on('disconnected', done)
 						})
 					})
 				})
+
+				s3.join(channel, function() {})
 			})
 		})
 
@@ -294,7 +340,7 @@ describe('Multiuser', function() {
 					assert.notEqual(m.number, 1)
 					assert.equal(m.id, lastId)
 					s3.close()
-					done()
+					s3.on('disconnected', done)
 				})
 			})
 

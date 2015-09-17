@@ -8,7 +8,6 @@ function PluginManager(core, base_url) {
 	this.keybyid = {}
 	this.release_mode = false
 	this.lid = 1
-	this.context_menu = null
 	this.total = 0
 	this.loaded = 0
 	this.failed = 0
@@ -22,14 +21,16 @@ function PluginManager(core, base_url) {
 			success: function(data) {
 				var pg_root = new PluginGroup('root')
 				
-				if (!that.release_mode)
-					that.total += Object.keys(data).length
-
-				$.each(data, function(key, id)  {
-					var url = that.base_url + '/' + id + '.plugin.js';
+				$.each(data, function(category)  {
 					if (!that.release_mode)
-						load_script(url, that.onload.bind(that), that.onerror.bind(that));
-					that.register_plugin(pg_root, key, id);
+						that.total += Object.keys(data[category]).length
+
+					$.each(data[category], function(title, id)  {
+						var url = that.base_url + '/' + id + '.plugin.js';
+						if (!that.release_mode)
+							load_script(url, that.onload.bind(that), that.onerror.bind(that));
+						that.register_plugin(pg_root, category+'/'+title, id);
+					})
 				})
 
 				if (E2.app) {
@@ -91,8 +92,7 @@ PluginManager.prototype.onerror = function()
 
 PluginManager.prototype.create = function(id, node) 
 {
-	if (E2.plugins.hasOwnProperty(id))
-	{
+	if (E2.plugins.hasOwnProperty(id)) {
 		var p = new E2.plugins[id](this.core, node);
 		p.id = id;
 		return p;
