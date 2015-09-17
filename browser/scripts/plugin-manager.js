@@ -33,6 +33,13 @@ function PluginManager(core, base_url) {
 					})
 				})
 
+				if (E2.app) {
+					that.context_menu = new ContextMenu(E2.dom.canvas_parent, pg_root.create_items())
+					that.context_menu.on('created', function(icon, pos) {
+						that.emit('created', icon, pos)
+					})
+				}
+
 				if (that.release_mode) {
 					that.total = 1
 					load_script(allPluginsUrl, that.onload.bind(that), that.onerror.bind(that));
