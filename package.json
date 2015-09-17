@@ -30,6 +30,7 @@
     "gridfs-stream": "~0.5.1",
     "gulp": "~3.8.10",
     "gulp-concat": "~2.4.1",
+    "gulp-concat-util": "^0.5.2",
     "gulp-declare": "~0.3.0",
     "gulp-handlebars": "~3.0.1",
     "gulp-less": "2.0.1",

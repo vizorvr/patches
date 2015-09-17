@@ -3,7 +3,7 @@ gulp = require('gulp'),
 fs = require('fs'),
 path = require('path'),
 uglify = require('gulp-uglify'),
-concat = require('gulp-concat'),
+concat = require('gulp-concat-util'),
 slash = require('gulp-slash'),
 del = require('del'),
 less = require('gulp-less'),
@@ -14,23 +14,40 @@ paths = {
 		plugins: './browser/plugins/*.plugin.js',
 		player:
 		[
-			'./browser/vendor/gl-matrix.js',
-			'./browser/scripts/util.js',
-			'./browser/scripts/connection.js',
 			'./browser/scripts/event-emitter.js',
+			'./browser/scripts/core.js',
+			'./browser/scripts/util.js',
+
+			'./browser/scripts/connection.js',
+			'./browser/scripts/variables.js',
 			'./browser/scripts/graph.js',
 			'./browser/scripts/node.js',
-			'./browser/scripts/registers.js',
-			'./browser/scripts/core.js',
 
 			'./browser/scripts/plugin.js',
 			'./browser/scripts/subGraphPlugin.js',
 			'./browser/scripts/threeObject3dPlugin.js',
+			'./browser/scripts/abstractThreeLoaderObjPlugin.js',
+			'./browser/scripts/abstractThreeMaterialPlugin.js',
+			'./browser/scripts/abstractThreeMeshPlugin.js',
+			
+			'./browser/vendor/three/three.js',
+			'./browser/vendor/three/OBJLoader.js',
+			'./browser/vendor/three/OBJMTLLoader.js',
+			'./browser/vendor/three/MTLLoader.js',
+			'./browser/vendor/three/DDSLoader.js',
+			'./browser/vendor/three/VREffect.js',
+			'./browser/vendor/three/VRControls.js',
+			'./browser/vendor/three/webvr-polyfill.js',
+			'./browser/vendor/three/webvr-manager.js',
+
+			'./browser/scripts/noise.js',
+			'./browser/vendor/random.min.js',
+
+			'./browser/scripts/datatypes/environmentSettings.js',
 
 			'./browser/scripts/textureCache.js',
 
 			'./browser/scripts/plugin-manager-bundled.js',
-			'./browser/scripts/plugin-group.js',
 			'./browser/plugins/*.plugin.js',
 
 			'./browser/scripts/player.js',
@@ -69,6 +86,7 @@ gulp.task('js:plugins', ['clean:js:plugins'], function()
 	gulp.src(paths.js.plugins)
 	.pipe(slash())
 	.pipe(uglify().on('error', errorHandler))
+    .pipe(concat.header(';\n'))
 	.pipe(concat('all.plugins.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'plugins')))
 	.on('error', errorHandler)
@@ -80,7 +98,8 @@ gulp.task('js:player', ['clean:js:player'], function()
 	gulp.src(paths.js.player)
 	.pipe(slash())
 	.pipe(preprocess({context: { FQDN: process.env.FQDN || 'vizor.io' } }))
-	.pipe(uglify().on('error', errorHandler))
+	// .pipe(uglify().on('error', errorHandler))
+    .pipe(concat.header(';\n'))
 	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))
 	.on('error', errorHandler)

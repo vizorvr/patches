@@ -163,12 +163,25 @@ function CreatePlayer(vr_devices, cb) {
 		console.log(m)
 	})
 	
-	new Core(vr_devices)
+	E2.core = new Core(vr_devices)
 	
 	E2.dom.webgl_canvas = $('#webgl-canvas')
 
 	E2.app = {}
 	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, null)
+
+	// Shared gl context for three
+	var gl_attributes = {
+		alpha: false,
+		depth: true,
+		stencil: true,
+		antialias: false,
+		premultipliedAlpha: true,
+		preserveDrawingBuffer: false
+	}
+
+	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
+	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})
 
 	E2.core.on('ready', cb)
 }

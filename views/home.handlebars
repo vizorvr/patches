@@ -6,7 +6,7 @@
 		height="700px"
 		oncontextmenu="return false;"
 		data-autoplay="true"
-		data-graph-url="http://vizor.io/data/graph/kschzt/landing-mountains.min.json"
+		data-graph-url="/data/graph/kschzt/pt13.min.json"
 		>
 	</canvas>
 
@@ -39,11 +39,12 @@
 	var $stage = $('.stage--front')
 	var footerHeight = 76
 
+	window.Vizor = {
+		hideWebVRButton: true
+	}
+
 	function onResize() {
-		E2.core.renderer.fullscreen = true
-
 		setTimeout(function() {
-
 			var width = $window.width()
 			var height = $window.height() - footerHeight
 			var devicePixelRatio = window.devicePixelRatio || 1;
@@ -55,11 +56,19 @@
 			$stage.css('width', width + 'px')
 			$stage.css('height', height + 'px')
 
-			E2.core.renderer.update_viewport()
-
+			E2.core.emit('resize')
 		}, 20)
 	}
 
 	$(window).on('resize', onResize)
-	$(window).on('vizorLoaded', onResize)
+	$(window).on('vizorLoaded', function() {
+		E2.app.calculateCanvasArea = function() {
+			return {
+				width: $window.width(),
+				height: $window.height()
+			}
+		}
+
+		onResize()
+	})
 </script>

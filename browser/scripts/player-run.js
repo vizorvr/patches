@@ -5,22 +5,19 @@ function play()
 
 function load()
 {
-	$('#fs').click(function()
-	{
-		E2.app.player.core.renderer.set_fullscreen(true);
-	});
-
 	var $canvas = $('canvas[data-graph-url]');
 	var url = $canvas.data('graph-url');
 	var autoplay = $canvas.data('autoplay');
 	E2.app.player.core.asset_tracker.add_listener(progress);
-	E2.app.player.load_from_url(url);
-	if (autoplay)
-	{
-		play();
-	}
-	$(window).trigger('vizorLoaded')
-	
+	E2.app.player.stop()
+	E2.app.player.on_update()
+	E2.app.player.load_from_url(url, function() {
+		if (autoplay) {
+			play()
+		}
+
+		$(window).trigger('vizorLoaded')
+	});
 }
 
 function findVrDevices(devices)
