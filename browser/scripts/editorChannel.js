@@ -127,12 +127,15 @@ EditorChannel.prototype.connect = function(options) {
 	var that = this
 
 	this.kicked = false
+	this.connected = false
 
 	// listen to messages from network
 	this.wsChannel = new WebSocketChannel()
 	this.wsChannel
 		.connect('/__editorChannel', options)
 		.on('disconnected', function() {
+			that.connected = false
+
 			if (that.kicked === true)
 				return;
 
@@ -149,6 +152,8 @@ EditorChannel.prototype.connect = function(options) {
 			console.log('EditorChannel ready', uid)
 			that.uid = uid
 
+			that.connected = true
+
 			that.emit('ready', uid)
 
 			if (reconnecting) {
@@ -158,11 +163,14 @@ EditorChannel.prototype.connect = function(options) {
 			}
 
 			that.wsChannel.on('*', function(m) {
-				if (m.kind === 'kicked') {
+				if (m.kind === 'kicked') { // kicked by server
 					E2.app.growl('You have been disconnected by the server: '+ m.reason,'disconnected', '', 30000)
 					that.kicked = true
 					return;
 				}
+
+				if (m.kind === 'ack') // acknowledgement by id
+					that.emit(m.ack, m)
 
 				if (m.channel !== that.channelName)
 					return;
@@ -174,6 +182,17 @@ EditorChannel.prototype.connect = function(options) {
 	return this
 }
 
+EditorChannel.prototype.snapshot = function() {
+	var graphSer = E2.core.serialise()
+	
+	this.send({
+		actionType: 'graphSnapshotted',
+		data: graphSer
+	})
+
+	E2.app.snapshotPending = false
+}
+
 /**
  * send local dispatches to network
  * FORK if an important edit (create a new channel with copy)
@@ -181,6 +200,9 @@ EditorChannel.prototype.connect = function(options) {
 EditorChannel.prototype._localDispatchHandler = function _localDispatchHandler(payload) {
 	if (payload.from)
 		return;
+
+	if (E2.app.snapshotPending && isEditAction(payload))
+		this.snapshot()
 
 	if (this.isOnChannel)
 		return this.send(payload)

@@ -26,6 +26,7 @@
 	ThreeVRCameraPlugin.prototype.reset = function() {
 		console.log('ThreeVRCameraPlugin reset camera')
 		this.domElement = E2.dom.webgl_canvas[0]
+		this.positionFromGraph = new THREE.Vector3(0,0,0)
 
 		this.perspectiveCamera = new THREE.PerspectiveCamera(
 			90,
@@ -59,17 +60,10 @@
 	}
 
 	ThreeVRCameraPlugin.prototype.update_state = function() {
-		//console.log("ThreeVRCameraPlugin.prototype.update_state")
-
-		if (this.dirty) {
+		if (this.dirty)
 			this.perspectiveCamera.updateProjectionMatrix()
-		}
 
-		this.controls.update()
-
-		//if (this.position) {
-		//	this.perspectiveCamera.position.add(this.position)
-		//}
+		this.controls.update(this.positionFromGraph)
 
 		this.updated = true
 	}
@@ -81,6 +75,7 @@
 
 		switch(slot.index) {
 		case 0: // position
+			this.positionFromGraph = data
 			this.perspectiveCamera.position.set(data.x, data.y, data.z)
 			this.dirty = true
 			break

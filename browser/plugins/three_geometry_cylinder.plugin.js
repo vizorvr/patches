@@ -27,7 +27,7 @@
 	}
 
 	ThreeCylinderGeometryPlugin.prototype.createGeometry = function() {
-		return new THREE.CylinderGeometry(
+		var geom = new THREE.CylinderGeometry(
 			this.inputValues.radiusTop,
 			this.inputValues.radiusBottom,
 			this.inputValues.height,
@@ -37,6 +37,8 @@
 			this.inputValues.thetaStart,
 			this.inputValues.thetaLength
 		)
+
+		return new THREE.BufferGeometry().fromGeometry(geom)
 	}
 
 	ThreeCylinderGeometryPlugin.prototype.update_input = function() {

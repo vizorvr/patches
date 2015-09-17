@@ -11,7 +11,7 @@
 	}
 
 	ThreeBoxGeometryPlugin.prototype.reset = function() {
-		this.geometry = new THREE.BoxGeometry(1,1,1)
+		this.geometry = new THREE.BufferGeometry().fromGeometry(new THREE.BoxGeometry(1,1,1))
 	}
 
 	ThreeBoxGeometryPlugin.prototype.update_output = function() {

@@ -22,12 +22,13 @@
 	}
 
 	ThreeCircleGeometryPlugin.prototype.createGeometry = function() {
-		return new THREE.CircleGeometry(
+		var geom = new THREE.CircleGeometry(
 			this.inputValues.radius,
 			this.inputValues.segments,
 			this.inputValues.thetaStart,
 			this.inputValues.thetaLength
 		)
+		return new THREE.BufferGeometry().fromGeometry(geom)
 	}
 
 	ThreeCircleGeometryPlugin.prototype.update_input = function() {

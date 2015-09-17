@@ -16,7 +16,12 @@ var crypto = require('crypto')
 
 var flash = require('express-flash');
 var path = require('path');
+
+var EventEmitter = require('events').EventEmitter;
+
 var mongoose = require('mongoose');
+var r = require('rethinkdb')
+
 var passport = require('passport');
 var expressValidator = require('express-validator');
 var connectAssets = require('connect-assets');
@@ -38,7 +43,6 @@ var userController = require('./controllers/user');
 var secrets = require('./config/secrets');
 var passportConf = require('./config/passport');
 
-var FrameDumpServer = require('./lib/framedump-server').FrameDumpServer;
 var OscServer = require('./lib/osc-server').OscServer;
 var WsChannelServer = require('./lib/wschannel-server').WsChannelServer;
 var EditorChannelServer = require('./lib/editorChannelServer').EditorChannelServer;
@@ -47,7 +51,6 @@ var config = require('./config/config.json');
 var argv = require('minimist')(process.argv.slice(2));
 
 var ENGI = config.server.engiPath;
-var PROJECT = argv._[0] || ENGI;
 
 var listenHost = process.env.ENGI_BIND_IP || argv.i || config.server.host;
 var listenPort = process.env.ENGI_BIND_PORT || argv.p || config.server.port;
@@ -61,12 +64,6 @@ var csrfExclude = [
 	'/this-url-will-bypass-csrf'
 ];
 
-mongoose.connect(secrets.db);
-mongoose.connection.on('error', function()
-{
-	console.error('✗ MongoDB Connection Error. Please make sure MongoDB is running.');
-});
-
 var tempDir;
 temp.mkdir('uploads', function(err, dirPath)
 {
@@ -76,6 +73,8 @@ temp.mkdir('uploads', function(err, dirPath)
 });
 
 var app = express();
+
+app.events = new EventEmitter()
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -215,7 +214,6 @@ app.use(function(req, res, next)
 	next();
 });
 
-
 app.use(function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*')
 	if (req.headers['access-control-request-headers'])
@@ -242,377 +240,401 @@ app.use(function(req, res, next)
 // old static flat files
 app.use('/data', express.static(path.join(__dirname, 'browser', 'data'), { maxAge: week * 52 }));
 
-// stream files from fs/gridfs
-app.get(/^\/data\/.*/, function(req, res, next)
-{
-	var path = req.path.replace(/^\/data/, '');
+var rethinkConnection
+var rethinkDbName = process.env.RETHINKDB_NAME || 'vizor'
+r.connect({
+	host: process.env.RETHINKDB_HOST || 'localhost',
+	port: 28015,
+	db: rethinkDbName
+}, function(err, conn) {
+	if (err)
+		throw err
 
-	gfs.stat(path)
-	.then(function(stat)
+	console.log('RethinkDB connected')
+
+	rethinkConnection = conn
+
+	mongoose.connect(secrets.db);
+	mongoose.connection.on('error', function(err) {
+		throw err
+	});
+
+	// stream files from fs/gridfs
+	app.get(/^\/data\/.*/, function(req, res, next)
 	{
-		if (!stat)
-			return res.status(404).send();
+		var path = req.path.replace(/^\/data/, '');
 
-		if (req.header('If-None-Match') === stat.md5)
-			return res.status(304).send();
-
-		if (req.headers.range) {
-			// stream partial file range
-			var parts = req.headers.range.replace(/bytes=/, "").split("-");
-			var partialstart = parts[0];
-			var partialend = parts[1];
-
-			// start&end offset are inclusive, end is optional
-			var start = parseInt(partialstart, 10);
-			var end = partialend ? parseInt(partialend, 10) : (stat.length - 1);
-
-			var chunksize = (end - start) + 1;
-			
-			res.writeHeader(206, {
-				'Content-Range': 'bytes ' + start + '-' + end + '/' + stat.length,
-				'Accept-Ranges': 'bytes',
-				'Cache-Control': 'public, must-revalidate, max-age=60',
-				'Content-Length': chunksize,
-				'Content-Type': stat.contentType
-			});
-
-			var range = {startPos: start, endPos: end};
-			gfs.createReadStream(path, range)
-			.on('error', next)
-			.pipe(res);
-		}
-		else {
-			// stream whole file in a single request
-			res.header('Content-Type', stat.contentType);
-			res.header('Accept-Ranges', 'bytes');
-			res.header('ETag', stat.md5);
-			res.header('Content-Length', stat.length)
-			res.header('Cache-Control', 'public must-revalidate, max-age=60');
-
-			gfs.createReadStream(path)
-			.on('error', next)
-			.pipe(res);
-		}
-	})
-	.catch(next)
-});
-
-app.get(/^\/dl\/.*/, function(req, res, next)
-{
-	var path = req.path.replace(/^\/dl\/data/, '');
-
-	gfs.stat(path)
-	.then(function(stat)
-	{
-		if (!stat)
-			return res.status(404).send();
-
-		res.header('Content-Type', 'application/octet-stream');
-		res.header('Content-Length', stat.length);
-
-		return gfs.createReadStream(path)
-		.on('error', next)
-		.pipe(res);
-	})
-	.catch(next);
-});
-
-// set no-cache headers by default
-app.use(function(req, res, next) {
-	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
-	res.setHeader('Expires', 0);
-	next();
-});
-
-// allow caching editor-*.min.js
-app.get([
-	'/scripts/editor-*.min.js',
-	'/vendor/*',
-	'/fonts/*',
-	], function(req, res, next) {
-	res.setHeader('Cache-Control', 'public, max-age=604800');
-	next();
-});
-
-// allow some caching for node modules, app images and styles
-app.use([
-	'/node_modules',
-	'/images/*',
-	'/style/*',
-	'/plugins/plugins.json',
-	'/plugins/all.plugins.js'
-	],
-	function(req, res, next) {
-	res.setHeader('Cache-Control', 'must-revalidate, max-age=300');
-	next();
-});
-
-app.use(['/node_modules'], express.static(path.join(__dirname, 'node_modules')));
-
-// static files
-app.use(express.static(path.join(__dirname, 'browser'), { maxAge: 0 }));
-
-app.get('/login', userController.getLogin);
-app.post('/login', userController.postLogin);
-app.post('/login.json', userController.postLogin);
-app.get('/logout', userController.logout);
-app.get('/forgot', userController.getForgot);
-app.post('/forgot', userController.postForgot);
-app.get('/reset/:token', userController.getReset);
-app.post('/reset/:token', userController.postReset);
-app.get('/signup', userController.getSignup);
-app.post('/signup', userController.postSignup);
-app.get('/account', passportConf.isAuthenticated, userController.getAccount);
-app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
-app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
-app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
-app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
-
-app.get('/', homeController.index);
-
-// ----- MODEL ROUTES
-
-// Asset controllers
-var AssetController = require('./controllers/assetController');
-var GraphController = require('./controllers/graphController');
-var ImageController = require('./controllers/imageController');
-var SceneController = require('./controllers/sceneController');
-var PresetController = require('./controllers/presetController');
-
-var GridFsStorage = require('./lib/gridfs-storage');
-var gfs = new GridFsStorage('/data');
-
-var AssetService = require('./services/assetService');
-var GraphService = require('./services/graphService');
-
-var graphController = new GraphController(
-	new GraphService(require('./models/graph'), gfs),
-	gfs
-);
-
-var imageController = new ImageController(
-	new AssetService(require('./models/image')),
-	gfs
-);
-
-var sceneController = new SceneController(
-	new AssetService(require('./models/scene')),
-	gfs
-);
-
-var AudioModel = require('./models/audio');
-var audioController = new AssetController(
-	AudioModel,
-	new AssetService(AudioModel),
-	gfs
-);
-
-var VideoModel = require('./models/video');
-var videoController = new AssetController(
-	VideoModel,
-	new AssetService(VideoModel),
-	gfs
-);
-
-var presetController = new PresetController(
-	new AssetService(require('./models/preset')),
-	gfs
-);
-
-var JsonModel = require('./models/json');
-var jsonController = new AssetController(
-	JsonModel,
-	new AssetService(JsonModel),
-	gfs
-);
-
-var controllers = {
-	graph: graphController,
-	image: imageController,
-	scene: sceneController,
-	audio: audioController,
-	video: videoController,
-	json: jsonController,
-
-	preset: presetController
-}
-
-function getController(req, res, next)
-{
-	req.controller = controllers[req.params.model];
-	next();
-}
-
-function requireController(req, res, next) {
-	req.controller = controllers[req.params.model];
-	if (!req.controller) {
-		var e = new Error('Not found: '+req.path);
-		e.status = 404;
-		return next(e);
-	}
-	next();
-}
-
-// upload
-app.post('/upload/:model',
-	requireController,
-	passportConf.isAuthenticated,
-	multer(
-	{
-		dest: tempDir,
-		limits: {
-			fileSize: 1024 * 1024 * 128 // 128m
-		},
-		rename: function (fieldname, filename)
+		gfs.stat(path)
+		.then(function(stat)
 		{
-			return filename.replace(/\W+/g, '-');
+			if (!stat)
+				return res.status(404).send();
+
+			if (req.header('If-None-Match') === stat.md5)
+				return res.status(304).send();
+
+			if (req.headers.range) {
+				// stream partial file range
+				var parts = req.headers.range.replace(/bytes=/, "").split("-");
+				var partialstart = parts[0];
+				var partialend = parts[1];
+
+				// start&end offset are inclusive, end is optional
+				var start = parseInt(partialstart, 10);
+				var end = partialend ? parseInt(partialend, 10) : (stat.length - 1);
+
+				var chunksize = (end - start) + 1;
+				
+				res.writeHeader(206, {
+					'Content-Range': 'bytes ' + start + '-' + end + '/' + stat.length,
+					'Accept-Ranges': 'bytes',
+					'Cache-Control': 'public, must-revalidate, max-age=86400',
+					'Content-Length': chunksize,
+					'Content-Type': stat.contentType
+				});
+
+				var range = {startPos: start, endPos: end};
+				gfs.createReadStream(path, range)
+				.on('error', next)
+				.pipe(res);
+			}
+			else {
+				// stream whole file in a single request
+				res.header('Content-Type', stat.contentType);
+				res.header('Accept-Ranges', 'bytes');
+				res.header('ETag', stat.md5);
+				res.header('Content-Length', stat.length)
+				res.header('Cache-Control', 'public, must-revalidate, max-age=86400');
+
+				gfs.createReadStream(path)
+				.on('error', next)
+				.pipe(res);
+			}
+		})
+		.catch(next)
+	});
+
+	app.get(/^\/dl\/.*/, function(req, res, next)
+	{
+		var path = req.path.replace(/^\/dl\/data/, '');
+
+		gfs.stat(path)
+		.then(function(stat)
+		{
+			if (!stat)
+				return res.status(404).send();
+
+			res.header('Content-Type', 'application/octet-stream');
+			res.header('Content-Length', stat.length);
+
+			return gfs.createReadStream(path)
+			.on('error', next)
+			.pipe(res);
+		})
+		.catch(next);
+	});
+
+	// set no-cache headers by default
+	app.use(function(req, res, next) {
+		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+		res.setHeader('Expires', 0);
+		next();
+	});
+
+	// allow caching editor-*.min.js
+	app.get([
+		'/scripts/editor-*.min.js',
+		'/vendor/*',
+		'/fonts/*',
+		], function(req, res, next) {
+		res.setHeader('Cache-Control', 'public, max-age=604800');
+		next();
+	});
+
+	// allow some caching for node modules, app images and styles
+	app.use([
+		'/node_modules',
+		'/images/*',
+		'/style/*',
+		'/plugins/plugins.json',
+		'/plugins/all.plugins.js'
+		],
+		function(req, res, next) {
+		res.setHeader('Cache-Control', 'must-revalidate, max-age=300');
+		next();
+	});
+
+	app.use(['/node_modules'], express.static(path.join(__dirname, 'node_modules')));
+
+	// static files
+	app.use(express.static(path.join(__dirname, 'browser'), { maxAge: 0 }));
+
+	app.get('/login', userController.getLogin);
+	app.post('/login', userController.postLogin);
+	app.post('/login.json', userController.postLogin);
+	app.get('/logout', userController.logout);
+	app.get('/forgot', userController.getForgot);
+	app.post('/forgot', userController.postForgot);
+	app.get('/reset/:token', userController.getReset);
+	app.post('/reset/:token', userController.postReset);
+	app.get('/signup', userController.getSignup);
+	app.post('/signup', userController.postSignup);
+	app.get('/account', passportConf.isAuthenticated, userController.getAccount);
+	app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
+	app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
+	app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
+	app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
+
+	app.get('/', homeController.index);
+
+
+	// ----- MODEL ROUTES
+
+	// Asset controllers
+	var AssetController = require('./controllers/assetController');
+	var GraphController = require('./controllers/graphController');
+	var ImageController = require('./controllers/imageController');
+	var SceneController = require('./controllers/sceneController');
+	var PresetController = require('./controllers/presetController');
+
+	var GridFsStorage = require('./lib/gridfs-storage');
+	var gfs = new GridFsStorage('/data');
+
+	var AssetService = require('./services/assetService');
+	var GraphService = require('./services/graphService');
+
+	var graphController = new GraphController(
+		new GraphService(require('./models/graph'), gfs),
+		gfs,
+		rethinkConnection
+	);
+
+	var imageController = new ImageController(
+		new AssetService(require('./models/image')),
+		gfs
+	);
+
+	var sceneController = new SceneController(
+		new AssetService(require('./models/scene')),
+		gfs
+	);
+
+	var AudioModel = require('./models/audio');
+	var audioController = new AssetController(
+		AudioModel,
+		new AssetService(AudioModel),
+		gfs
+	);
+
+	var VideoModel = require('./models/video');
+	var videoController = new AssetController(
+		VideoModel,
+		new AssetService(VideoModel),
+		gfs
+	);
+
+	var presetController = new PresetController(
+		new AssetService(require('./models/preset')),
+		gfs
+	);
+
+	var JsonModel = require('./models/json');
+	var jsonController = new AssetController(
+		JsonModel,
+		new AssetService(JsonModel),
+		gfs
+	);
+
+	var controllers = {
+		graph: graphController,
+		image: imageController,
+		scene: sceneController,
+		audio: audioController,
+		video: videoController,
+		json: jsonController,
+
+		preset: presetController
+	}
+
+	function getController(req, res, next)
+	{
+		req.controller = controllers[req.params.model];
+		next();
+	}
+
+	function requireController(req, res, next) {
+		req.controller = controllers[req.params.model];
+		if (!req.controller) {
+			var e = new Error('Not found: '+req.path);
+			e.status = 404;
+			return next(e);
 		}
-	}),
-	function(req, res, next)
-	{
-		// imageProcessor will checksum the file
-		if (req.params.model === 'image')
-			return next();
-
-		req.controller.checksumUpload(req, res, next);
-	},
-	function(req, res, next)
-	{
-		req.controller.canWriteUpload(req, res, next);
-	},
-	function(req, res, next)
-	{
-		req.controller.upload(req, res, next);
+		next();
 	}
-);
 
-// -----
-// Preset routes
-app.get('/:username/presets', function(req, res, next) {
-	presetController.findByCreatorName(req, res, next);
-})
-app.post('/:username/presets', function(req, res, next) {
-	presetController.save(req, res, next);
-})
+	// upload
+	app.post('/upload/:model',
+		requireController,
+		passportConf.isAuthenticated,
+		multer(
+		{
+			dest: tempDir,
+			limits: {
+				fileSize: 1024 * 1024 * 128 // 128m
+			},
+			rename: function (fieldname, filename)
+			{
+				return filename.replace(/\W+/g, '-');
+			}
+		}),
+		function(req, res, next)
+		{
+			// imageProcessor will checksum the file
+			if (req.params.model === 'image')
+				return next();
 
-// -----
-// Graph routes
+			req.controller.checksumUpload(req, res, next);
+		},
+		function(req, res, next)
+		{
+			req.controller.canWriteUpload(req, res, next);
+		},
+		function(req, res, next)
+		{
+			req.controller.upload(req, res, next);
+		}
+	);
 
-app.get(['/editor', '/edit'], graphController.edit.bind(graphController));
+	// -----
+	// Preset routes
+	app.get('/:username/presets', function(req, res, next) {
+		presetController.findByCreatorName(req, res, next);
+	})
+	app.post('/:username/presets', function(req, res, next) {
+		presetController.save(req, res, next);
+	})
 
-// GET /fthr/dunes-world/edit -- EDITOR
-app.get('/:username/:graph/edit', function(req, res, next)
-{
-	res.redirect('/'+req.params.username+'/'+req.params.graph)
-});
+	// -----
+	// Graph routes
 
-// GET /fthr/dunes-world.json
-app.get('/:username/:graph.json', function(req, res, next)
-{
-	req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
-	console.log('load', req.params.path)
-	graphController.load(req, res, next);
-});
+	app.get(['/editor', '/edit'], graphController.edit.bind(graphController));
 
-// GET /fthr/dunes-world
-app.get('/:username/:graph', function(req, res, next)
-{
-	req.params.path = '/'+req.params.username+'/'+req.params.graph;
-	graphController.graphLanding(req, res, next);
-});
-
-// GET /fthr/dunes-world/graph.json
-app.get('/:username/:graph/graph.json', function(req, res, next)
-{
-	req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
-
-	graphController.stream(req, res, next);
-});
-
-// -----
-// Generic model routes
-
-// list
-app.get(['/graph', '/graphs', '/graphs.json', '/graph.json'], function(req,res,next)
-{
-	graphController.index(req, res, next);
-});
-
-app.get('/:model', getController, function(req, res, next)
-{
-	if (!req.controller)
-		return graphController.userIndex(req, res, next);
-
-	requireController(req, res, function(err)
+	// GET /fthr/dunes-world/edit -- EDITOR
+	app.get('/:username/:graph/edit', function(req, res, next)
 	{
-		if (err)
-			return next(err);
-
-		return req.controller.index(req, res, next);
+		res.redirect('/'+req.params.username+'/'+req.params.graph)
 	});
-});
 
-// list by tag
-app.get('/:model/tag/:tag', requireController, function(req, res, next)
-{
-	req.controller.findByTag(req, res, next);
-});
-
-// get
-app.get('/:model/:id', requireController, function(req, res, next)
-{
-	req.controller.load(req, res, next);
-});
-
-// save
-app.post('/:model',
-	requireController,
-	passportConf.isAuthenticated,
-	function(req, res, next)
+	// GET /fthr/dunes-world.json
+	app.get('/:username/:graph.json', function(req, res, next)
 	{
-		req.controller.save(req, res, next);
+		req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
+		console.log('load', req.params.path)
+		graphController.load(req, res, next);
+	});
+
+	// GET /fthr/dunes-world
+	app.get('/:username/:graph', function(req, res, next)
+	{
+		req.params.path = '/'+req.params.username+'/'+req.params.graph;
+		graphController.graphLanding(req, res, next);
+	});
+
+	// GET /fthr/dunes-world/graph.json
+	app.get('/:username/:graph/graph.json', function(req, res, next)
+	{
+		req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
+
+		graphController.stream(req, res, next);
+	});
+
+	// -----
+	// Generic model routes
+
+	// list
+	app.get(['/graph', '/graphs', '/graphs.json', '/graph.json'], function(req,res,next)
+	{
+		graphController.index(req, res, next);
+	});
+
+	app.get('/:model', getController, function(req, res, next)
+	{
+		if (!req.controller)
+			return graphController.userIndex(req, res, next);
+
+		requireController(req, res, function(err)
+		{
+			if (err)
+				return next(err);
+
+			return req.controller.index(req, res, next);
+		});
+	});
+
+	// list by tag
+	app.get('/:model/tag/:tag', requireController, function(req, res, next)
+	{
+		req.controller.findByTag(req, res, next);
+	});
+
+	// get
+	app.get('/:model/:id', requireController, function(req, res, next)
+	{
+		req.controller.load(req, res, next);
+	});
+
+	// save
+	app.post('/:model',
+		requireController,
+		passportConf.isAuthenticated,
+		function(req, res, next)
+		{
+			req.controller.save(req, res, next);
+		}
+	);
+
+	// last resort Graph URLs
+
+	// GET /ju63
+	app.get('/:path', function(req, res, next) {
+		req.params.path = '/'+req.params.path;
+		graphController.edit(req, res, next);
+	});
+
+	// --------------------------------------------------
+
+
+	var httpServer = http.createServer(app);
+	httpServer.listen(listenPort, listenHost);
+
+	if (config.server.enableOSC) {
+		new OscServer().listen(httpServer);
 	}
-);
 
-// last resort Graph URLs
+	if (config.server.enableChannels) {
+		new WsChannelServer().listen(httpServer)
+		var ecs = new EditorChannelServer(rethinkConnection)
+		ecs.listen(httpServer)
+	}
 
-// GET /ju63
-app.get('/:path', function(req, res, next) {
-	req.params.path = '/'+req.params.path;
-	graphController.edit(req, res, next);
-});
+	app.use(function(err, req, res) {
+		console.error(err.message, err.stack);
 
-// --------------------------------------------------
+		res.status(err.status || 500);
 
-var httpServer = http.createServer(app);
+		if (req.xhr)
+			return res.json({ message: err.message });
 
-httpServer.listen(listenPort, listenHost);
-
-if (config.server.enableOSC) {
-	new OscServer().listen(httpServer);
-}
-
-if (config.server.enableChannels) {
-	new WsChannelServer().listen(httpServer)
-	app._editorChannel = new EditorChannelServer()
-	app._editorChannel.listen(httpServer)
-}
-
-app.use(function(err, req, res, next) {
-	console.error(err.message, err.stack);
-
-	res.status(err.status || 500);
-
-	if (req.xhr)
-		return res.json({ message: err.message });
-
-	res.render('error', {
-		layout: 'min',
-		message: err.message,
-		error: {}
+		res.render('error', {
+			layout: 'min',
+			message: err.message,
+			error: {}
+		});
 	});
-});
 
-app.use(errorHandler());
+	app.use(errorHandler());
+
+	app.events.emit('ready')
+})
 
 module.exports = app;

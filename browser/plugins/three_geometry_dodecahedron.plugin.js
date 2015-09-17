@@ -4,7 +4,7 @@
 		
 		this.input_slots = [
 			{   name: 'radius', dt: core.datatypes.FLOAT, def: 5 },
-			{   name: 'detail', dt: core.datatypes.FLOAT, def: 0,
+			{   name: 'detail', dt: core.datatypes.FLOAT, def: 2,
 				validate: function(v) {return Math.max(0, Math.min(v, 4))} },
 		]
 
@@ -20,10 +20,12 @@
 	}
 
 	ThreeDodecahedronGeometryPlugin.prototype.createGeometry = function() {
-		return new THREE.DodecahedronGeometry(
+		var geom = new THREE.DodecahedronGeometry(
 			this.inputValues.radius,
 			Math.floor(this.inputValues.detail)
 		)
+	
+		return new THREE.BufferGeometry().fromGeometry(geom)
 	}
 
 	ThreeDodecahedronGeometryPlugin.prototype.update_input = function() {

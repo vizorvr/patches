@@ -5625,7 +5625,7 @@ button.close {
   color: #000000;
   text-align: center;
   text-decoration: none;
-  background-color: #ffff00;
+  background-color: yellow;
   border-radius: 4px;
 }
 .tooltip-arrow {
@@ -5640,56 +5640,56 @@ button.close {
   left: 50%;
   margin-left: -5px;
   border-width: 5px 5px 0;
-  border-top-color: #ffff00;
+  border-top-color: yellow;
 }
 .tooltip.top-left .tooltip-arrow {
   bottom: 0;
   right: 5px;
   margin-bottom: -5px;
   border-width: 5px 5px 0;
-  border-top-color: #ffff00;
+  border-top-color: yellow;
 }
 .tooltip.top-right .tooltip-arrow {
   bottom: 0;
   left: 5px;
   margin-bottom: -5px;
   border-width: 5px 5px 0;
-  border-top-color: #ffff00;
+  border-top-color: yellow;
 }
 .tooltip.right .tooltip-arrow {
   top: 50%;
   left: 0;
   margin-top: -5px;
   border-width: 5px 5px 5px 0;
-  border-right-color: #ffff00;
+  border-right-color: yellow;
 }
 .tooltip.left .tooltip-arrow {
   top: 50%;
   right: 0;
   margin-top: -5px;
   border-width: 5px 0 5px 5px;
-  border-left-color: #ffff00;
+  border-left-color: yellow;
 }
 .tooltip.bottom .tooltip-arrow {
   top: 0;
   left: 50%;
   margin-left: -5px;
   border-width: 0 5px 5px;
-  border-bottom-color: #ffff00;
+  border-bottom-color: yellow;
 }
 .tooltip.bottom-left .tooltip-arrow {
   top: 0;
   right: 5px;
   margin-top: -5px;
   border-width: 0 5px 5px;
-  border-bottom-color: #ffff00;
+  border-bottom-color: yellow;
 }
 .tooltip.bottom-right .tooltip-arrow {
   top: 0;
   left: 5px;
   margin-top: -5px;
   border-width: 0 5px 5px;
-  border-bottom-color: #ffff00;
+  border-bottom-color: yellow;
 }
 .popover {
   position: absolute;
@@ -6602,7 +6602,6 @@ ul.iconic-nav > li.open > button span {
   margin: 0;
   padding: 0;
   opacity: 1;
-  text-align: center;
   top: auto;
   z-index: 10;
 }
@@ -6658,9 +6657,11 @@ ul.iconic-nav > li.open > button span {
   padding: 0 !important;
   border-radius: 0 0 5px 5px !important;
   margin: 0 !important;
-  border: 0 none !important;
-  background: #262c3d;
-  overflow: hidden;
+  border-top: 1px solid #222 !important;
+  border-left: 1px solid #222 !important;
+  border-right: 1px solid #222 !important;
+  border-bottom: none !important;
+  background: #343c4f;
   z-index: 11;
 }
 .dropdown-menu > li > a {
@@ -6776,8 +6777,8 @@ ul.iconic-nav > li.open > button span {
 }
 #load-spinner {
   position: absolute;
-  left: 20px;
-  top: 50%;
+  left: 10px;
+  top: 3px;
   opacity: 0.65;
   max-width: 18px;
   min-width: 18px;
@@ -6850,12 +6851,16 @@ ul.iconic-nav > li.open > button span {
 .proxy .plugin-row td {
   background: #badaff !important;
 }
-.register {
+.variable {
   background: #c6ffc8 !important;
 }
 .loop,
 .loop .plugin-row td {
   background: #ffc6ee !important;
+}
+.arrayfunction,
+.arrayfunction .plugin-row td {
+  background: #33c6fe !important;
 }
 .config_btn {
   background-image: url('/images/config.png') !important;

@@ -19,16 +19,7 @@ var GraphPlugin = E2.plugins.graph = function(core) {
 
 GraphPlugin.prototype = Object.create(SubGraphPlugin.prototype)
 
-GraphPlugin.prototype.getWidth = function() {
-	return parseFloat(this.framebuffer.width)
-}
-
-GraphPlugin.prototype.getHeight = function() {
-	return parseFloat(this.framebuffer.height)
-}
-
-GraphPlugin.prototype.open_editor = function(self)
-{
+GraphPlugin.prototype.open_editor = function(self) {
 	var diag = make('div')
 	var always_upd = $('<input id="always_upd" type="checkbox" title="If false, this graph is updated only when one of its inputs updates." />')
 	var upd_lbl = $('<div>Always update:</div>')

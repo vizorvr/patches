@@ -13,6 +13,14 @@
 
 	ThreeLoaderModelPlugin.prototype = Object.create(AbstractThreeLoaderObjPlugin.prototype)
 
+	ThreeLoaderModelPlugin.prototype.getDefaultMaterials = function() {
+		return [new THREE.MeshBasicMaterial()]
+	}
+
+	ThreeLoaderModelPlugin.prototype.getDefaultGeometries = function() {
+		return [new THREE.Geometry()]
+	}
+
 	ThreeLoaderModelPlugin.prototype.create_ui = function() {
 		var inp = makeButton('Change', 'No model selected.', 'url')
 		var that = this
@@ -70,7 +78,6 @@
 			)
 	}
 
-
 	ThreeLoaderModelPlugin.prototype.update_state = function() {
 		if (!this.dirty)
 			return
@@ -79,10 +86,10 @@
 			return;
 
 		if (this.geometries)
-			this.geometries = null
+			this.geometries = this.getDefaultGeometries()
 
 		if (this.materials)
-			this.materials = null
+			this.materials = this.getDefaultMaterials()
 
 		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 

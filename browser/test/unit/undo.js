@@ -3,7 +3,7 @@ var EventEmitter = require('events').EventEmitter;
 
 global.E2 = {}
 
-global.Registers = function(){}
+E2.Variables = function(){}
 global.EventEmitter = EventEmitter // XXX
 global.Graph = require('../../scripts/graph');
 global.Connection = require('../../scripts/connection').Connection;

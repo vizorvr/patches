@@ -43,18 +43,20 @@ THREE.VRControls = function ( object, onError ) {
 
 	this.scale = 1;
 
-	this.update = function () {
+	this.update = function (positionOffset) {
 		for ( var i = 0; i < vrInputs.length; i ++ ) {
 			var vrInput = vrInputs[ i ];
 			var state = vrInput.getState();
 
-			if ( state.orientation !== null ) {
+			if (state.orientation !== null) {
 				object.quaternion.copy( state.orientation );
-				
 			}
 
-			if ( state.position !== null ) {
-				object.position.copy( state.position ).multiplyScalar( scope.scale );
+			if (state.position !== null) {
+				object.position
+					.copy( positionOffset )
+					.add( state.position )
+					.multiplyScalar( scope.scale );
 			}
 		}
 	};

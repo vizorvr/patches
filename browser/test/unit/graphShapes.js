@@ -31,7 +31,7 @@ global.Node.prototype.create_ui = function(){
 }
 global.Node.prototype.destroy_ui = function(){}
 
-global.Registers = function() {
+E2.Variables = function() {
 	this.serialise = function(){}
 }
 global.PresetManager = function() {}

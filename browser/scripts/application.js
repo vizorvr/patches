@@ -124,9 +124,11 @@ Application.prototype.instantiatePlugin = function(id, pos) {
 	var node
 
 	if (id === 'graph')
-		node = createPlugin('graph')
+		node = createPlugin('Graph')
 	else if (id === 'loop')
-		node = createPlugin('loop')
+		node = createPlugin('Loop')
+	else if (id === 'array_function')
+		node = createPlugin('Array function')
 	else
 		node = createPlugin(null)
 
@@ -575,8 +577,10 @@ Application.prototype.onNodeDragged = function(node) {
 Application.prototype.onNodeDragStopped = function(node) {
 	this.onNodeDragged(node)
 
-	if (!this._dragInfo)
+	if (!this._dragInfo) {
+		this.inDrag = false
 		return;
+	}
 
 	var di = this._dragInfo
 	var nd = node.ui.dom[0]
@@ -592,15 +596,15 @@ Application.prototype.onNodeDragStopped = function(node) {
 	this.undoManager.push(cmd)
 	this.undoManager.end()
 
+	this._dragInfo = null
+	this.inDrag = false
+
 	E2.app.channel.send({
 		actionType: 'uiNodesMoved',
 		graphUid: E2.core.active_graph.uid,
 		nodeUids: di.nodes.map(function(n) { return n.uid }),
 		delta: { x: dx, y: dy }
 	})
-
-	this._dragInfo = null
-	this.inDrag = false
 }
 
 Application.prototype.clearSelection = function() {
@@ -663,7 +667,6 @@ Application.prototype.onCanvasMouseDown = function(e) {
 		E2.app.updateCanvas()
 	}
 
-	this.inDrag = true
 	this.updateCanvas(false)
 }
 
@@ -958,7 +961,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			uidMap[node.uid] = newUid
 			node.uid = newUid
 
-			if (node.plugin === 'graph' || node.plugin === 'loop')
+			if (['graph', 'loop', 'array_function'].indexOf(node.plugin) > -1)
 				node.graph = remapGraph(node.graph, node)
 		})
 
@@ -996,14 +999,20 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
 		var dc = doc.conns[i]
+
+		var destNode = ag.findNodeByUid(dc.dst_nuid)
+		if (!destNode)
+			continue;
+
+		var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
+		var slot = slots[dc.dst_slot]
+
+		if (!slot)
+			continue;
+	
 		if (dc.src_nuid === undefined || dc.dst_nuid === undefined) {
 			// not a valid connection, clear it and skip it
 			if (dc.dst_nuid !== undefined) {
-				var destNode = ag.findNodeByUid(dc.dst_nuid)
-
-				var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
-				var slot = slots[dc.dst_slot]
-				
 				slot.is_connected = false
 				slot.connected = false
 				destNode.inputs_changed = true
@@ -1084,7 +1093,7 @@ Application.prototype.calculateCanvasArea = function() {
 	var width, height
 	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
-	if (!isFullscreen) {
+	if (!isFullscreen && !this.condensed_view) {
 		width = $(window).width();
 		height = $(window).height() -
 			$('.editor-header').outerHeight(true) - $('#breadcrumb').outerHeight(true) - $('.bottom-panel').outerHeight(true);
@@ -1408,13 +1417,6 @@ Application.prototype.onChatDisplayClicked = function() {
 	}
 }
 
-Application.prototype.onSignInClicked = function() {
-	var username = E2.models.user.get('username')
-	if (!username) {
-		return E2.controllers.account.openLoginModal()
-	}
-}
-
 Application.prototype.loadGraph = function(graphPath, cb) {
 	var that = this
 
@@ -1644,6 +1646,12 @@ Application.prototype.onShowTooltip = function(e) {
 
 		txt = '<b>Type:</b> ' + slot.dt.name;
 
+		if (slot.array)
+			txt += '<br><b>Array:</b> yes';
+
+		if (slot.inactive)
+			txt += '<br><b>Inactive:</b> yes';
+
 		if(slot.lo !== undefined || slot.hi !== undefined)
 			txt += '<br><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
 
@@ -1671,6 +1679,8 @@ Application.prototype.onShowTooltip = function(e) {
 	this._tooltipTimer = setTimeout(function() {
 		if (that.inDrag)
 			return;
+
+		$elem.tooltip('destroy')
 
 		$elem.popover({
 			title: txt,
@@ -1704,6 +1714,9 @@ Application.prototype.onHideTooltip = function() {
 
 Application.prototype.setupStoreListeners = function() {
 	function onGraphChanged() {
+		if (E2.core.active_graph.plugin)
+			E2.core.active_graph.plugin.updated = true
+
 		E2.app.updateCanvas(true)
 	}
 
@@ -1801,7 +1814,7 @@ Application.prototype.onGraphSelected = function(graph) {
 			sp.css({ 'text-decoration': 'underline' })
 		}
 
-		parentEl.prepend($('<svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg>'))
+		parentEl.prepend($('<span> / </span>'))
 		parentEl.prepend(sp)
 
 		if (graph.parent_graph)
@@ -1838,6 +1851,12 @@ Application.prototype.setupPeopleEvents = function() {
 			return;
 
 		var $cursor = cursors[uid]
+
+		// this can happen when reconnected and own uid changes
+		// and the previous uid gets a `removed` message.
+		if (!$cursor) 
+			return;
+
 		$cursor.remove()
 		delete cursors[uid]
 	})
@@ -2148,8 +2167,18 @@ Application.prototype.start = function() {
 	E2.dom.canvas_parent[0].addEventListener('mousedown', this.onCanvasMouseDown.bind(this))
 	document.addEventListener('mouseup', this.onCanvasMouseUp.bind(this))
 
-	// Clear hover state on window blur. Typically when the user switches
-	// to another tab.
+	var wasPlayingOnBlur = true
+	document.addEventListener('visibilitychange', function() {
+		if (!document.hidden && wasPlayingOnBlur) {
+			that.player.play()
+		} else {
+			wasPlayingOnBlur = that.player.state.PLAYING === that.player.current_state
+			that.player.pause()
+		}
+
+		E2.app.changeControlState()
+	})
+
 	window.addEventListener('blur', function() {
 		that.clearEditState()
 	})
@@ -2266,7 +2295,7 @@ Application.prototype.start = function() {
 }
 
 Application.prototype.showFirstTimeDialog = function() {
-	if (!!Cookies.get('vizor'))
+	if (!E2.util.isFirstTime())
 		return;
 
 	Cookies.set('vizor', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
@@ -2317,6 +2346,11 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 		}
 	}
 
+	if (!loadGraphUrl && !boot.hasEdits) {
+		loadGraphUrl = '/data/graphs/default.json'
+		E2.app.snapshotPending = true
+	}
+
 	if (loadGraphUrl)
 		E2.app.loadGraph(loadGraphUrl, start)
 	else
@@ -2347,8 +2381,10 @@ Application.prototype.setupEditorChannel = function() {
 	var that = this
 
 	function joinChannel() {
-		if (isUserOwnedGraph(that.path))
+		if (isUserOwnedGraph(that.path)) {
+			that.channel.leave()
 			return dfd.resolve()
+		}
 
 		that.channel.join(that.path, function() {
 			dfd.resolve()

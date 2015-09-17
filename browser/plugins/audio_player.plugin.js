@@ -4,7 +4,7 @@ E2.p = E2.plugins["audio_player"] = function(core, node)
 	
 	this.input_slots = [ 
 		{ name: 'audio', dt: core.datatypes.AUDIO, desc: 'The audio stream to play.', def: null },
-		{ name: 'play', dt: core.datatypes.BOOL, desc: 'Send true to start playback and false to stop.', def: false },
+		{ name: 'play', dt: core.datatypes.BOOL, desc: 'Send true to start playback and false to stop.', def: true },
 		{ name: 'mute', dt: core.datatypes.BOOL, desc: 'Send true to mute playback and false to reenable audio.', def: false },
 		{ name: 'volume', dt: core.datatypes.FLOAT, desc: 'Set playback volume.', lo: 0.0, hi: 0.0, def: 0.5 },
 		{ name: 'time', dt: core.datatypes.FLOAT, desc: 'Set playback time.', def: null }

@@ -19,7 +19,9 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_state = function()
 {
-	var x = this.vector[0], y = this.vector[1], z = this.vector[2];
+	var x = this.vector.x,
+		y = this.vector.y,
+		z = this.vectorz;
 
 	this.mag = Math.sqrt(x*x + y*y + z*z); 
 };
@@ -33,7 +35,7 @@ E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
-		this.vector = [0, 0, 0];
+		this.vector = new THREE.Vector3(0, 0, 0)
 		this.mag = 0.0;
 	}
 };

@@ -20,6 +20,7 @@ describe('Chat system', function() {
 				dispatcher: new Flux.Dispatcher(),
 				chatStore: new EventEmitter(),
 				channel: {
+					on: function(){},
 					getWsChannel: function() {
 						wsChannel = new EventEmitter()
 						wsChannel.ws = {
@@ -38,12 +39,12 @@ describe('Chat system', function() {
 	describe('ChatStore', function() {
 		it('emits join', function(done) {
 			cs.on('joined', done.bind({}, null))
-			wsChannel.emit('Global', { kind: 'join' })
+			wsChannel.emit('Global', { kind: 'join', from: 'foo' })
 		})
 
 		it('emits left', function(done) {
 			cs.on('left', done.bind({}, null))
-			wsChannel.emit('Global', { kind: 'leave' })
+			wsChannel.emit('Global', { kind: 'leave', from: 'foo' })
 		})
 
 		it('dispatches chats from network', function(done) {
@@ -52,7 +53,7 @@ describe('Chat system', function() {
 				assert.equal(pl.message, 'foo')
 				done()
 			})
-			wsChannel.emit('Global', { actionType: 'uiChatMessageAdded', message: 'foo' })
+			wsChannel.emit('Global', { actionType: 'uiChatMessageAdded', message: 'foo', from: 'bar' })
 		})
 
 		it('emits added on dispatch', function(done) {

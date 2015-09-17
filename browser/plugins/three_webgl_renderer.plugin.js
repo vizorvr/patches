@@ -76,6 +76,13 @@
 		}
 
 		// Render the scene through the manager.
+
+		if (this.manager.isVRMode()) {
+			// vr mode doesn't necessarily update the world matrix
+			// could be a bug in new version of three.js
+			this.perspectiveCamera.updateMatrixWorld()
+		}
+
 		this.manager.render(this.scene, this.perspectiveCamera)
 	}
 
@@ -93,7 +100,7 @@
 		mouseVector.y = ((1.0 - ((e.pageY - wgl_c.offsetTop) / h)) * 2.0) - 1.0
 		mouseVector.z = 0
 
-		if (this.scene.children && this.scene.children.length > 0) {
+		if (this.scene && this.scene.children && this.scene.children.length > 0) {
 			this.raycaster.setFromCamera(mouseVector, this.perspectiveCamera)
 
 			// only intersect scene.children[0] - children [1] is the overlays

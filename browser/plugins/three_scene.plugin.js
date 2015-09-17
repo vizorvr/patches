@@ -2,7 +2,11 @@
 	var ThreeScenePlugin = E2.plugins.three_scene = function (core, node) {
 		this.desc = 'THREE.js Scene'
 
-		this.input_slots = []
+		this.input_slots = [{
+			name: 'environment',
+			dt: core.datatypes.ENVIRONMENTSETTINGS,
+			def: new E2.EnvironmentSettings()
+		}]
 
 		this.output_slots = [{
 			name: 'scene',
@@ -44,7 +48,8 @@
 			E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
 				type: E2.slot_type.input,
 				name: that.dynInputs.length + '',
-				dt: that.lsg.dt
+				dt: that.lsg.dt,
+				array: true
 			})
 		})
 
@@ -71,16 +76,39 @@
 
 		this.reset()
 
+		if (this.envSettings) {
+			this.scene.fog = this.envSettings.fog
+		}
+
 		for (mesh in this.meshes) {
 			// {id: 0, mesh: mesh}
 
 			if (this.meshes[mesh]) {
 				//console.log('add mesh to slot ', JSON.stringify(mesh))
-				this.scene.children[0].add(this.meshes[mesh])
+				if (this.meshes[mesh].length !== undefined) {
+					for (var i=0; i < this.meshes[mesh].length; i++) {
+						this.scene.children[0].add(this.meshes[mesh][i])
+					}
+				}
+				else
+					this.scene.children[0].add(this.meshes[mesh])
 			}
 			else {
 				//console.log('no mesh for ', JSON.stringify(mesh))
 			}
+		}
+
+		// If lights have changed, we have to set affected materials as needing
+		// to be updated. This would be better done in an analytical manner
+		// and only update the ones that actually need updating; however we'll
+		// just force update everything
+
+		if (this.scene) {
+			this.scene.traverse(function(node) {
+				if (node.material !== undefined) {
+					node.material.needsUpdate = true
+				}
+			})
 		}
 
 		this.meshes_dirty = false
@@ -100,18 +128,21 @@
 	}
 
 	ThreeScenePlugin.prototype.update_input = function (slot, data) {
-		//if (!data)
-		//	return;
-
-		if (this.meshes[slot.index] !== data) {
-			//console.log("add mesh to scene " + JSON.stringify(slot))
-			this.meshes[slot.index] = data
+		if (slot.dynamic) {
+			if (this.meshes[slot.index] !== data) {
+				this.meshes[slot.index] = data
+				this.meshes_dirty = true
+			}
+		}
+		else {
+			// the only static input slot is environment settings
+			this.envSettings = data
 			this.meshes_dirty = true
 		}
 	}
 
 	ThreeScenePlugin.prototype.connection_changed = function(on, conn, slot) {
-		if (!on && slot.type === E2.slot_type.input) {
+		if (!on && slot.type === E2.slot_type.input && slot.dynamic) {
 			this.meshes[slot.index] = undefined
 		}
 		this.meshes_dirty = true

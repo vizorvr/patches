@@ -31,7 +31,7 @@ Slider.prototype.create_ui = function() {
 	var html = '<table class="slider-table">'+
 		'<tr>'+
 			'<td><input class="min" type="number" step="0.2" style="width: 50px;"/></td>'+
-			'<td><input class="slider" type="range" step="0.00000001"></td>'+
+			'<td><input class="slider" type="range" step="0.001"></td>'+
 			'<td><input class="max" type="number" step="0.2" style="width: 50px;"/></td>'+
 		'</tr>'+
 		'<tr>'+
@@ -72,6 +72,16 @@ Slider.prototype.updateUi = function() {
 	this.$display.html(this.state.val)
 	this.$min.val(this.state.min)
 	this.$max.val(this.state.max)
+
+	if (this.state.max < this.state.min) {
+		var m = this.state.max
+		this.state.max = this.state.min
+		this.state.min = m
+		this.$max.val(this.state.max)
+		this.$min.val(this.state.min)
+	}
+
+	this.$slider.prop('step', (this.state.max - this.state.min) / 1000)
 	this.$slider.prop('max', this.state.max)
 	this.$slider.prop('min', this.state.min)
 }

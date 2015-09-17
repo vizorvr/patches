@@ -45,7 +45,7 @@ PeopleStore.prototype.initialize = function() {
 		var uid = payload.from || E2.app.channel.uid
 		var isOwn = uid === E2.app.channel.uid
 
-		if(that.people[uid])
+		if (that.people[uid])
 			that.people[uid].lastSeen = Date.now()
 
 		switch(payload.actionType) {
@@ -178,6 +178,7 @@ PeopleStore.prototype.empty = function empty() {
 		that.emit('removed', person.uid)
 	})
 	this.people = {}
+	this.people[E2.app.channel.uid] = this.me
 }
 
 PeopleStore.prototype.findByUid = function findByUid(uid) {

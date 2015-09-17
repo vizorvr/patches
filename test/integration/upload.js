@@ -1,3 +1,7 @@
+var testId = rand()
+process.env.MONGODB = 'mongodb://localhost:27017/upload'+testId
+process.env.RETHINKDB_NAME = 'upload' + testId
+
 var request = require('supertest');
 var fs = require('fs');
 var fsPath = require('path');
@@ -8,9 +12,6 @@ function rand()
 {
 	return Math.floor(Math.random() * 100000);
 }
-
-var testId = rand();
-process.env.MONGODB = 'mongodb://localhost:27017/test'+testId;
 
 var app = require('../../app.js');
 
@@ -30,7 +31,7 @@ describe('Upload', function() {
 	{
 		var that = this;
 
-		db = new mongo.Db('test'+testId,
+		db = new mongo.Db('upload'+testId,
 			new mongo.Server('localhost', 27017),
 			{ safe: true }
 		);
@@ -177,7 +178,7 @@ describe('Upload', function() {
 	{
 		it('should upload correctly', function(done) {
 			var jsonFile = '/json/'+testId+'.json';
-			var stream = fs.createReadStream(__dirname+'/../../browser/data/graphs/audrey2.json');
+			var stream = fs.createReadStream(__dirname+'/../fixtures/graph.json');
 			stream.path = jsonFile
 
 			agent
@@ -193,7 +194,7 @@ describe('Upload', function() {
 				delete json.updatedAt;
 
 				expect({"__v":0,"path":jsonFile,
-					"url":"/data/json/e8a89bcb9b6f07049b3103450b9aa0e1ac518ede.json","tags":[]})
+					"url":"/data/json/7389a96cf704f2914453a54b34c9f16fa3b89a69.json","tags":[]})
 				.to.deep.equal(json);
 
 				done(err);
