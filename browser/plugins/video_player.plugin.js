@@ -105,10 +105,29 @@ E2.p.prototype.update_state = function()
 	{
 		if(video.videoWidth > 0 && video.videoHeight > 0)
 		{
-			if(!this.texture)
-				this.texture = new Texture(this.core.renderer);
+			if (!this.videoImage || (this.videoImage.width != video.videoWidth || this.videoImage.height != video.videoHeight)) {
+				// set up texture
+
+				this.videoImage = document.createElement( 'canvas' );
+				this.videoImage.width = video.videoWidth;
+				this.videoImage.height = video.videoHeight;
+
+				this.videoImageContext = this.videoImage.getContext( '2d' );
+				// background color if no video present
+				this.videoImageContext.fillStyle = '#000000';
+				this.videoImageContext.fillRect( 0, 0, this.videoImage.width, this.videoImage.height );
+
+				this.texture = new THREE.Texture(this.videoImage);
+
+				this.texture.minFilter = THREE.LinearFilter;
+				this.texture.magFilter = THREE.LinearFilter;
+			}
 			
-			this.texture.upload(video);
+			if ( video.readyState === video.HAVE_ENOUGH_DATA && this.texture) {
+				// update 
+				this.videoImageContext.drawImage( video, 0, 0 );
+				this.texture.needsUpdate = true;
+			}
 		}
 		
 		video.muted = this.muted;
@@ -127,6 +146,6 @@ E2.p.prototype.update_state = function()
 E2.p.prototype.update_output = function(slot)
 {
 	this.node.queued_update = 1;
-	return this.texture ? this.texture : this.core.renderer.default_tex;
+	return this.texture ? this.texture : new THREE.Texture();
 };
 
