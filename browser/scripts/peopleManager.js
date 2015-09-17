@@ -25,6 +25,9 @@ function PeopleManager(peopleStore, $el) {
 PeopleManager.prototype.render = function() {
 	var that = this
 
+	if (!E2.app.channel.connected)
+		return;
+
 	var people = this.peopleStore.list().map(function(p) {
 		p.followed = (p.uid === that.peopleStore.me.followUid)
 

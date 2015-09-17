@@ -4,7 +4,7 @@
 		
 		this.input_slots = [
 			{   name: 'radius', dt: core.datatypes.FLOAT, def: 5 },
-			{   name: 'detail', dt: core.datatypes.FLOAT, def: 0,
+			{   name: 'detail', dt: core.datatypes.FLOAT, def: 2,
 				validate: function(v) {return Math.max(0, Math.min(v, 4))} },
 		]
 

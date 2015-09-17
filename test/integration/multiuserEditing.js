@@ -115,7 +115,7 @@ describe('Multiuser', function() {
 			}
 		}
 
-		app._editorChannel.on('ready', function() {
+		app.events.on('ready', function() {
 			setupDatabase()
 			.then(function() {
 				db = new mongo.Db('mutest'+testId, 

@@ -9,7 +9,7 @@ var fsPath = require('path');
 var assert = require('assert');
 var expect = require('chai').expect;
 
-var graphFile = __dirname+'/../../browser/data/graphs/Button.json';
+var graphFile = __dirname+'/../../browser/data/graphs/default.json';
 var graphData = fs.readFileSync(graphFile);
 
 function rand() {
@@ -77,7 +77,7 @@ describe('Graph', function() {
 			.expect(200).end(function(err, res)
 			{
 				if (err) return done(err);
-				expect(res.body.abs_t).to.equal(46.988);
+				expect(res.body.abs_t).to.equal(510.481);
 				done();
 			})
 		});
@@ -105,7 +105,7 @@ describe('Graph', function() {
 			.expect(200).end(function(err, res)
 			{
 				if (err) return done(err);
-				expect(res.body.abs_t).to.equal(46.988);
+				expect(res.body.abs_t).to.equal(510.481);
 				done();
 			})
 		});
