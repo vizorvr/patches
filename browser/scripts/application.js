@@ -147,7 +147,7 @@ Application.prototype.activateHoverSlot = function() {
 	if(!hs)
 		return;
 
-	this.hover_slot_div[0].style.backgroundColor = E2.erase_color;
+//	this.hover_slot_div[0].style.backgroundColor = E2.erase_color;
 
 	// Mark any attached connection
 	var conns = E2.core.active_graph.connections;
@@ -170,13 +170,22 @@ Application.prototype.activateHoverSlot = function() {
 
 Application.prototype.releaseHoverSlot = function() {
 	if (this.hover_slot) {
-		this.hover_slot_div[0].style.backgroundColor = 'inherit';
-		this.hover_slot_div[0].style.color = '#000';
+		this.setSlotCssClasses(this.hover_slot, this.hover_slot_div);
 		this.hover_slot_div = null;
 		this.hover_slot = null;
 	}
 
 	this.releaseHoverConnections();
+}
+
+Application.prototype.setSlotCssClasses = function(slot, slot_div) {	/* @var slot_div jQuery */
+	if (typeof slot_div == 'undefined') return false;
+	if (!slot_div) return false;
+	if (!(slot_div === this.hover_slot_div)) slot_div.removeClass('p_connecting')
+	slot_div.removeClass('p_compatible')
+		.removeClass('p_incompatible');
+	(slot && slot.is_connected) ? slot_div.addClass('p_connected') : slot_div.removeClass('p_connected');
+	return true;
 }
 
 Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
@@ -194,6 +203,7 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 				null
 			)
 
+			slot_div.addClass('p_connecting');
 			this.getSlotPosition(node, slot_div, E2.slot_type.output,
 				this.editConn.ui.src_pos);
 
@@ -216,7 +226,7 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 			});
 
 			this.editConn.offset = offset;
-			slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
+
 		} else { // drag connection from input
 			var conn = graph.find_connection_to(node, slot);
 			if (!conn) {
@@ -228,6 +238,8 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 					slot_div)
 
 				this.editConn.offset = 0;
+
+				slot_div.addClass('p_connecting');
 
 				this.getSlotPosition(node, slot_div, E2.slot_type.input,
 					this.editConn.ui.src_pos);
@@ -246,10 +258,11 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 
 Application.prototype.onSlotEntered = function(node, slot, slot_div) {
 	if (this.editConn) {
-		if (this.editConn.hoverSlot(node, slot)) {
-			slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
-		} else
-			slot_div[0].style.color = E2.erase_color;
+		if (this.editConn.hoverSlot(node, slot)) {	// returns canConnectTo()
+			slot_div.removeClass('p_incompatible').addClass('p_compatible');
+		} else {
+			slot_div.removeClass('p_compatible').addClass('p_incompatible');
+		}
 	}
 
 	this.hover_slot = slot;
@@ -261,10 +274,9 @@ Application.prototype.onSlotEntered = function(node, slot, slot_div) {
 
 Application.prototype.onSlotExited = function(node, slot, slot_div) {
 	if (this.editConn) {
-		slot_div[0].style.color = '#000';
 		this.editConn.blurSlot(slot)
 	}
-
+	this.setSlotCssClasses(slot, slot_div);
 	this.releaseHoverSlot();
 }
 
@@ -274,16 +286,27 @@ Application.prototype.onMouseReleased = function() {
 	// Creating a connection?
 	if (this.editConn) {
 		var ec = this.editConn
+		var old_connection_uid = ec.connection.uid;
+		var success = false;
+
 		this.editConn = null
 		var c = ec.commit()
 
+		success = (ec.connection && (old_connection_uid != ec.connection.uid));
 		if (c)
 			c.signal_change(true)
 
 		if (ec.srcSlotDiv)
-			ec.srcSlotDiv[0].style.color = '#000'
+			this.setSlotCssClasses(ec.srcSlot, ec.srcSlotDiv);
 		if (ec.dstSlotDiv)
-			ec.dstSlotDiv[0].style.color = '#000'
+			this.setSlotCssClasses(ec.dstSlot, ec.dstSlotDiv);
+
+		if (success) {
+		// ec has changed so set the new slots
+			console.log('success');
+		} else {
+			console.log('no go');
+		}
 
 		changed = true
 	}
@@ -481,39 +504,6 @@ Application.prototype.onNodeHeaderClicked = function() {
 
 Application.prototype.onNodeHeaderDblClicked = function(node) {
 
-	var that = this
-
-	var input = $('<input class="node-title-input" placeholder="Type a title" />')
-
-	input
-		.appendTo(node.ui.dom.context)
-		.val(node.title || node.id)
-		.keyup(function(e) {
-
-			var code = e.keyCode || e.which
-
-			if(code === 13) {
-
-				var name = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
-
-				if(name) {
-					that.graphApi.renameNode(E2.core.active_graph, node, name)
-				}
-
-				input.remove();
-
-			}
-			else if(code === 27) {
-				input.remove();
-			}
-
-		})
-		.select()
-		.bind('blur', function() {
-			$(this).remove();
-		})
-		.focus()
-
 }
 
 Application.prototype.isNodeInSelection = function(node) {
@@ -530,11 +520,7 @@ Application.prototype.executeNodeDrag = function(nodes, conns, dx, dy) {
 
 		if (!node.ui)
 			continue;
-
-		var style = node.ui.dom[0].style
-		style.left = node.x + 'px'
-		style.top = node.y + 'px'
-		
+		node.ui.setPosition(node.x,node.y);
 	}
 
 	var cl = conns.length
@@ -620,8 +606,7 @@ Application.prototype.clearSelection = function() {
 		var nui = sn[i].ui;
 
 		if(nui) {
-			nui.selected = false;
-			nui.dom[0].style.border = this.normal_border_style;
+			nui.setSelected(false);
 		}
 	}
 
@@ -820,7 +805,7 @@ Application.prototype._performSelection = function(e) {
 	var ns = []
 
 	for(var i = 0, len = sn.length; i < len; i++)
-		sn[i].ui.selected = false
+		sn[i].ui.setSelected(false);
 
 	for(var i = 0, len = nodes.length; i < len; i++) {
 		var n = nodes[i]
@@ -842,8 +827,7 @@ Application.prototype._performSelection = function(e) {
 	for(var i = 0, len = sn.length; i < len; i++) {
 		var n = sn[i]
 
-		if (!n.ui.selected)
-			n.ui.dom[0].style.border = this.normal_border_style
+		if (!n.ui.selected) n.ui.setSelected(false);
 	}
 
 	this.selectedNodes = ns
@@ -1058,8 +1042,7 @@ Application.prototype.onPaste = function() {
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 	if (node.ui) {
-		node.ui.dom[0].style.border = this.selection_border_style
-		node.ui.selected = true
+		node.ui.setSelected(true);
 	}
 
 	if (addToSelection !== false)
@@ -1068,9 +1051,7 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 
 Application.prototype.deselectNode = function(node) {
 	this.selectedNodes.splice(this.selectedNodes.indexOf(node), 1)
-
-	node.ui.dom[0].style.border = this.normal_border_style
-	node.ui.selected = false
+	node.ui.setSelected(false);
 }
 
 Application.prototype.markConnectionAsSelected = function(conn) {

@@ -18,11 +18,6 @@ Annotation.prototype.create_ui = function() {
 	var inp = $('<textarea placeholder="Type text here" />')
 	
 	inp.css({
-		'font-size': '8pt',
-		'border': '1px solid #999',
-		'margin': '0px',
-		'margin-top': '2px',
-		'padding': '2px',
 		'resize': true
 	})
 	

@@ -15,6 +15,7 @@ var GraphPlugin = E2.plugins.graph = function(core) {
 	}
 		
 	this.is_reset = true
+
 }
 
 GraphPlugin.prototype = Object.create(SubGraphPlugin.prototype)
@@ -40,7 +41,7 @@ GraphPlugin.prototype.open_editor = function(self) {
 
 	diag.css({
 		'margin': '0px',
-		'padding': '2px',
+		'padding': '2px'
 	})
 
 	r1.css('clear', 'both')
@@ -64,6 +65,8 @@ GraphPlugin.prototype.open_editor = function(self) {
 	
 	self.core.create_dialog(diag, 'Edit Preferences', 460, 250, store_state(self, always_upd))
 }
+
+GraphPlugin.prototype.open_preferences = GraphPlugin.prototype.open_editor;
 
 GraphPlugin.prototype.create_ui = function() {
 	var ui = make('div')
@@ -123,14 +126,6 @@ GraphPlugin.prototype.state_changed = function(ui) {
 		// Decorate the auto generated dom base element with an
 		// additional class to allow custom styling.
 		node.ui.dom.addClass('graph')
-
-		var inp_config = makeButton(null, 'Edit preferences', 'config_btn')
-
-		inp_config.click(function() {
-			self.open_editor(self)
-		})
-		
-		$(node.ui.dom[0].children[0].children[0].children[0]).append(inp_config)
 		return
 	}
 	

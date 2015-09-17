@@ -6453,7 +6453,6 @@ table {
   margin-top: 20px;
   vertical-align: center;
 }
-
 .editor-header {
   height: 70px;
   width: 100%;
@@ -6617,7 +6616,6 @@ ul.iconic-nav > li.open > button span {
   top: 50%;
   margin-top: -12px;
 }
-
 .info-pane {
   margin-right: 20px;
   margin-left: 5px;
@@ -6886,111 +6884,6 @@ ul.iconic-nav > li.open > button span {
   -moz-box-shadow: none !important;
   outline-offset: 0 !important;
 }
-.pl_layout {
-  border: 0;
-  border-spacing: 0;
-  border-radius: 5px;
-  background: #263e63;
-  color: #ffffff;
-  overflow: hidden;
-}
-.pl_layout .btn-xs {
-  color: #1e2331;
-}
-.pl_layout .plugin-row {
-  padding: 16px;
-}
-.pl_title {
-  padding: 0px;
-}
-.pl_header {
-  cursor: move;
-  border: none;
-  position: relative;
-  height: 32px;
-}
-.pl_header > .pl_title {
-  height: 32px;
-  display: table;
-  width: 100%;
-}
-.pl_header > .pl_title > div {
-  display: table-row;
-}
-.pl_header > .pl_title > div > button {
-  height: 32px;
-  width: 32px;
-  position: relative;
-  padding: 0;
-  margin: 0;
-  display: table-cell;
-  float: left;
-  background-color: #385a8a;
-  border: 0;
-}
-.pl_header > .pl_title > div > button svg {
-  fill: #ffffff;
-  width: 16px;
-  height: 16px;
-  position: absolute;
-  display: block;
-  left: 50%;
-  top: 50%;
-  margin: -8px 0 0 -8px;
-}
-.pl_header > .pl_title > div > span {
-  margin: 0px;
-  padding: 0 20px 0 10px;
-  display: table-cell;
-  vertical-align: middle;
-  letter-spacing: 0px;
-  line-height: 14px;
-  font-size: 14px;
-  float: none;
-  background: #4d7dc2;
-  color: #ffffff;
-  width: 100%;
-  height: 32px;
-}
-.pl_delete {
-  background: #ff3b3b;
-  /* Old browsers */
-  background: -moz-linear-gradient(top, #ff3b3b 1%, #df1b1b 100%);
-  /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(1%, #ff3b3b), color-stop(100%, #df1b1b));
-  /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top, #ff3b3b 1%, #df1b1b 100%);
-  /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top, #ff3b3b 1%, #df1b1b 100%);
-  /* Opera 11.10+ */
-  background: -ms-linear-gradient(top, #ff3b3b 1%, #df1b1b 100%);
-  /* IE10+ */
-  background: linear-gradient(to bottom, #ff3b3b 1%, #df1b1b 100%);
-  /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff3b3b', endColorstr='#df1b1b', GradientType=0);
-  /* IE6-9 */
-}
-.ic {
-  text-align: left;
-  vertical-align: top;
-  border: none !important;
-}
-.oc {
-  text-align: right;
-  vertical-align: top;
-  border: none !important;
-}
-.pl_slot {
-  cursor: pointer;
-  padding: 2px;
-}
-.pui_col {
-  padding: 3px;
-  padding-left: 2px;
-  padding-right: 8px;
-  border: none !important;
-  vertical-align: top;
-}
 .plugin-icon {
   float: left;
   width: 18px;
@@ -7079,7 +6972,7 @@ ul.iconic-nav > li.open > button span {
   border-color: #333333;
   border-radius: 0;
   color: #aaaaaa;
-  height: 28px;
+  height: 70px;
   padding: 0 8px;
 }
 #about {
@@ -7991,4 +7884,227 @@ li.active,
   font-weight: 400;
   font-size: 20px;
   margin: 0 auto;
+}
+/* only things to do with patch editor / visual programming layer */
+/* authors ivan mukho, georgi marinov */
+div.graph-node {
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  display: table;
+  border: 0;
+  border-spacing: 0;
+  border-radius: 5px;
+  background: rgba(38, 62, 99, 0.9);
+  color: #ffffff;
+  overflow: hidden;
+}
+div.graph-node > .p_header {
+  background: #4d7dc2;
+  position: relative;
+}
+div.graph-node > .p_header > div {
+  display: table;
+  width: 100%;
+  position: relative;
+  height: 32px;
+}
+div.graph-node > .p_header > div span.p_title {
+  cursor: move;
+  width: 100%;
+}
+div.graph-node > .p_header > div span,
+div.graph-node > .p_header > div button {
+  display: table-cell;
+  height: 32px;
+  min-width: 32px;
+  vertical-align: middle;
+}
+div.graph-node > .p_header > div button {
+  height: 32px;
+  width: 32px ! important;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  position: relative;
+}
+div.graph-node > .p_header > div button svg {
+  fill: #ffffff;
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  display: block;
+  left: 50%;
+  top: 50%;
+  margin: -8px 0 0 -8px;
+}
+div.graph-node > .p_header > div button.config_btn {
+  background: none;
+}
+div.graph-node > .p_header > div button.plugin-toggle {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+div.graph-node > .p_header > div span {
+  margin: 0px;
+  padding: 0 20px 0 10px;
+  line-height: 10pt;
+  font-size: 10pt;
+  color: #ffffff;
+  height: 32px;
+}
+div.graph-node > .p_content {
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+div.graph-node > .p_content .p_plugin,
+div.graph-node > .p_content .p_ins,
+div.graph-node > .p_content .p_outs {
+  display: table-cell;
+  position: relative;
+  height: 100%;
+}
+div.graph-node > .p_content > .p_outs {
+  text-align: right;
+}
+div.graph-node > .p_content > .p_plugin {
+  width: 100%;
+}
+div.graph-node > .p_content > .p_plugin input,
+div.graph-node > .p_content > .p_plugin select,
+div.graph-node > .p_content > .p_plugin textarea {
+  color: #fff;
+  font-size: 10pt;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  -webkit-appearance: none;
+  margin: 1px ;
+}
+div.graph-node > .p_content > .p_plugin input:focus,
+div.graph-node > .p_content > .p_plugin select:focus,
+div.graph-node > .p_content > .p_plugin textarea:focus {
+  outline: 0;
+}
+div.graph-node > .p_content .p_in,
+div.graph-node > .p_content .p_out {
+  color: white;
+}
+div.graph-node > .p_content .p_slot:only-of-type {
+  height: 100%;
+}
+div.graph-node > .p_content .p_slot {
+  position: relative;
+  display: table;
+  padding: 0;
+  margin: 0;
+  min-width: 80px;
+  height: 20px;
+}
+div.graph-node > .p_content .p_slot label {
+  padding: 5px;
+  vertical-align: middle;
+  display: table-cell;
+  width: 100%;
+}
+div.graph-node > .p_content .p_slot span.status {
+  background: rgba(0, 0, 0, 0.15);
+  display: table-cell;
+  padding: 0;
+  width: 32px;
+  min-width: 32px;
+  vertical-align: middle;
+  position: relative;
+}
+div.graph-node > .p_content .p_slot span.status > svg {
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -4px 0 0 -4px;
+}
+div.graph-node > .p_content .p_slot span.status > svg.p_on {
+  visibility: hidden;
+}
+div.graph-node > .p_content .p_slot.p_connected {
+  color: white;
+}
+div.graph-node > .p_content .p_slot.p_connected span.status > svg.p_on {
+  visibility: visible;
+}
+div.graph-node > .p_content .p_slot.p_connected span.status > svg.p_off {
+  visibility: hidden;
+}
+div.graph-node > .p_content .p_slot.p_connecting {
+  color: yellow;
+}
+div.graph-node > .p_content .p_slot.p_connecting span.status > svg.p_on {
+  visibility: visible;
+}
+div.graph-node > .p_content .p_slot.p_connecting span.status > svg.p_off {
+  visibility: hidden;
+}
+div.graph-node > .p_content .p_slot.p_compatible {
+  color: green;
+}
+div.graph-node > .p_content .p_slot.p_incompatible {
+  color: red;
+}
+div.graph-node input.node-title-input {
+  color: #000 !important;
+  font-size: 10pt;
+}
+div.graph-node.has_ins .p_ins,
+div.graph-node.has_outs .p_outs {
+  min-width: 80px;
+}
+div.graph-node.p_selected {
+  box-shadow: 0 0 5px 1px rgba(255, 255, 255, 0.5);
+}
+div.graph-node.p_collapse .p_content {
+  display: none;
+}
+.graph-node .btn-xs {
+  color: #1e2331;
+}
+.graph-node.p_collapse button.plugin-toggle svg {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+}
+.pl_delete {
+  background: #ff3b3b;
+  /* Old browsers */
+  background: -moz-linear-gradient(top, #ff3b3b 1%, #df1b1b 100%);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(1%, #ff3b3b), color-stop(100%, #df1b1b));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #ff3b3b 1%, #df1b1b 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #ff3b3b 1%, #df1b1b 100%);
+  /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #ff3b3b 1%, #df1b1b 100%);
+  /* IE10+ */
+  background: linear-gradient(to bottom, #ff3b3b 1%, #df1b1b 100%);
+  /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff3b3b', endColorstr='#df1b1b', GradientType=0);
+  /* IE6-9 */
+}
+.ic {
+  text-align: left;
+  vertical-align: top;
+}
+.oc {
+  text-align: right;
+  vertical-align: top;
+}
+.pl_slot {
+  cursor: pointer;
+  padding: 2px;
+}
+.pui_col {
+  padding: 3px;
+  padding-left: 2px;
+  padding-right: 8px;
+  border: none !important;
+  vertical-align: top;
 }

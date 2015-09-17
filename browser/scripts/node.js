@@ -1,3 +1,8 @@
+/**
+ * a Node in a patching graph
+ * @emits openStateChanged, pluginStateChanged, slotAdded, slotRemoved
+ * @constructor
+ */
 function Node(parent_graph, plugin_id, x, y) {
 	EventEmitter.call(this)
 

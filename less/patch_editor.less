@@ -1,0 +1,225 @@
+/* only things to do with patch editor / visual programming layer */
+/* authors ivan mukho, georgi marinov */
+
+// graph node inner classes usually start with p_
+
+@vp-node-bg:         	fade(@device-def-bg, 90%);
+@vp-node-header-bg:		lighten(@device-def-bg, 10%);
+@vp-node-color: 	 	@device-def-color;
+@vp-node-text-size:		10pt;
+
+div.graph-node {
+  	box-shadow: 0 0 4px rgba(0,0,0,0.3);
+  	display: table;
+    border: 0;
+	border-spacing: 0;
+	border-radius: 5px;
+	background: @vp-node-bg;
+	color: @vp-node-color;
+	overflow: hidden;
+  	>.p_header {
+	  background: @device-header-def-bg;
+	  position:relative;
+	  >div {
+		  display:table;
+		  width:100%;
+		  position:relative;
+		  height: @device-header-height;
+		  span.p_title {
+			  cursor: move;
+			  width:100%;	// force buttons to their specified width
+		  }
+		  span, button {
+			  display: table-cell;
+			  height: @device-header-height;
+			  min-width: @device-header-height;
+			  vertical-align: middle;
+		  }
+		  button {
+			  height: @device-header-height;
+			  width: @device-header-height ! important;
+			  padding: 0;
+			  margin: 0;
+			  border: 0;
+			  position:relative;
+			  svg {
+				  fill: @device-def-color;
+				  width: 16px;
+				  height: 16px;
+				  position: absolute;
+				  display: block;
+				  left: 50%;
+				  top: 50%;
+				  margin: -8px 0 0 -8px;
+			  }
+		  }
+		  button.config_btn {
+			background: none;
+		  }
+		  button.plugin-toggle {
+			  background-color: rgba(0,0,0,0.3);
+		  }
+		  span {
+			  margin: 0px;
+			  padding: 0 20px 0 10px;
+			  line-height: @vp-node-text-size;
+			  font-size: @vp-node-text-size;
+			  color: @device-def-color;
+			  height: @device-header-height;
+		  }
+	  }
+	}
+  	>.p_content {
+	  	display: table;
+	  	width:100%;
+	  	height:100%;	// required for ins and outs to achieve 100% height
+	  	.p_plugin, .p_ins, .p_outs {display:table-cell; position: relative; height:100%;}
+	  	>.p_ins {
+		  >.p_in {
+		  }
+		}
+	  	>.p_outs {
+		  text-align: right;
+		  >.p_out {
+		  }
+		}
+	  	>.p_plugin {
+		  width:100%;
+		  input, select, textarea {
+			color: #fff;
+			font-size: @vp-node-text-size;
+			background: rgba(0,0,0,0.3);
+			border: 1px solid rgba(255,255,255,0.3);
+			border-radius: 2px;
+			-webkit-appearance: none;
+			margin: 1px ;
+		  }
+		  input:focus, select:focus, textarea:focus {
+			outline:0;
+		  }
+		}
+	  	.p_in, .p_out {
+		  color: white;
+		}
+		.p_slot:only-of-type {
+		  height:100%;
+		}
+	  	.p_slot {
+			position:relative;
+		  	display:table;
+		  	padding:0; margin:0;
+		  	min-width: 80px;
+		  	height: 20px;
+		  	label {
+			  padding: 5px;
+			  vertical-align: middle;
+			  display:table-cell;
+			  width:100%;
+			}
+			span.status {
+				background: rgba(0,0,0,0.15);
+			  	display:table-cell;
+			  	padding:0;
+			  	width:32px;
+			  	min-width:32px;
+			  	vertical-align: middle;
+			  	position:relative;
+				>svg {
+				  width: 8px; height: 8px;
+				  position:absolute;
+				  top: 50%;
+				  left: 50%;
+				  margin: -4px 0 0 -4px;
+				}
+			  	>svg.p_on {visibility: hidden;}
+			}
+
+		}
+	  	.p_slot.p_connected {
+		  color:white;
+		  span.status>svg.p_on {visibility: visible;}
+		  span.status>svg.p_off {visibility: hidden;}
+		}
+	  	.p_slot.p_connecting {
+		  color:yellow;
+		  span.status>svg.p_on {visibility: visible;}
+		  span.status>svg.p_off {visibility: hidden;}
+		}
+	  	.p_slot.p_compatible {
+		  color: green;
+		}
+	  	.p_slot.p_incompatible {
+		  color: red;
+		}
+
+	}
+  	input.node-title-input {	// TODO: move Application.prototype.onNodeHeaderDblClicked event handler to UI
+	  	color: #000 !important;
+  		font-size: @vp-node-text-size;
+	}
+}
+
+div.graph-node.has_ins .p_ins, div.graph-node.has_outs .p_outs {min-width: 80px;}
+div.graph-node.p_selected {
+  box-shadow: 0 0 5px 1px rgba(255,255,255,0.5);
+}
+div.graph-node.p_collapse .p_content {
+  display:none;
+}
+
+// edit button
+.graph-node .btn-xs {
+    color: @bg-darker;
+}
+
+
+.graph-node.p_collapse {
+  	button.plugin-toggle svg {
+		-webkit-transform: rotate(-90deg);
+		-moz-transform: rotate(-90deg);
+		transform: rotate(-90deg);
+	}
+}
+.pl_delete
+{
+	background: #ff3b3b; /* Old browsers */
+	background: -moz-linear-gradient(top,  #ff3b3b 1%, #df1b1b 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,#ff3b3b), color-stop(100%,#df1b1b)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #ff3b3b 1%,#df1b1b 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #ff3b3b 1%,#df1b1b 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #ff3b3b 1%,#df1b1b 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #ff3b3b 1%,#df1b1b 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3b3b', endColorstr='#df1b1b',GradientType=0 ); /* IE6-9 */
+}
+
+
+
+.ic {
+	text-align: left;
+	vertical-align: top;
+}
+
+.oc {
+	text-align: right;
+	vertical-align: top;
+}
+
+.pl_slot {
+	cursor: pointer;
+	padding: 2px;
+}
+
+.pl_slot.connected {}
+.pl_slot.input {}
+.pl_slot.output {}
+.pl_slot.dynamic {}
+
+
+.pui_col
+{
+	padding: 3px;
+	padding-left: 2px;
+	padding-right: 8px;
+	border: none !important;
+	vertical-align: top;
+}
