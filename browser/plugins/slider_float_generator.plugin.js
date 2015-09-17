@@ -72,6 +72,15 @@ Slider.prototype.updateUi = function() {
 	this.$display.html(this.state.val)
 	this.$min.val(this.state.min)
 	this.$max.val(this.state.max)
+
+	if (this.state.max < this.state.min) {
+		var m = this.state.max
+		this.state.max = this.state.min
+		this.state.min = m
+		this.$max.val(this.state.max)
+		this.$min.val(this.state.min)
+	}
+
 	this.$slider.prop('step', (this.state.max - this.state.min) / 1000)
 	this.$slider.prop('max', this.state.max)
 	this.$slider.prop('min', this.state.min)
