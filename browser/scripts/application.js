@@ -1142,25 +1142,6 @@ Application.prototype.toggleViewButtons = function() {
 	E2.dom.btnPatches.parent().toggle();
 }
 
-Application.prototype.toggleLeftPane = function()
-{
-
-	$('#left-nav-collapse-btn').toggleClass('fa-angle-left fa-angle-right');
-
-	this.condensed_view = !this.condensed_view;
-
-	E2.dom.left_nav.toggle(!this.condensed_view);
-	E2.dom.mid_pane.toggle(!this.condensed_view);
-	$('.resize-handle').toggle(!this.condensed_view);
-
-	if(this.condensed_view)
-		E2.dom.dbg.toggle(false);
-	else if(!this.collapse_log)
-		E2.dom.dbg.toggle(true);
-
-	this.onWindowResize();
-};
-
 Application.prototype.toggleFullscreen = function() {
 	E2.core.emit('fullScreenChangeRequested')
 }
@@ -1187,9 +1168,15 @@ Application.prototype.onKeyDown = function(e) {
 
 	if (E2.util.isTextInputInFocus(e))
 		return;
-
-	if (!this.noodlesVisible && e.keyCode !== 9)
+	
+	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
+	{
+		this.ctrl_pressed = true;
+	}
+	
+	if ((!this.noodlesVisible && e.keyCode !== 9) && (e.keyCode !== 66 && this.ctrl_pressed == false)) 
 		return;
+		
 
 	// arrow up || down
 	var arrowKeys = [37,38,39,40]
@@ -1304,7 +1291,7 @@ Application.prototype.onKeyDown = function(e) {
 		}
 		if(e.keyCode === 66) // CTRL+b
 		{
-			this.toggleLeftPane();
+			E2.dom.uiLayer.toggle();
 			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 			return;
 		}
@@ -1414,7 +1401,9 @@ Application.prototype.onChatDisplayClicked = function() {
 			E2.dom.chatWindow.removeClass('collapsed').show();
 			E2.app.onPeopleListChanged();
 		} else {
-			E2.dom.chatWindow.removeClass('collapsed').show().height(E2.dom.chatTabs.height + E2.dom.chat.height)
+			E2.dom.chatWindow.removeClass('collapsed').show()
+							 .height(E2.dom.chatTabs.height 
+								   + E2.dom.chat.height)
 		};
 	}
 }
@@ -1990,14 +1979,24 @@ Application.prototype.onChatToggleClicked = function() {
 			E2.dom.chatWindow.removeClass('collapsed');
 			E2.app.onPeopleListChanged();
 		} else {
-			E2.dom.chatWindow.removeClass('collapsed').height(E2.dom.chatWindow.find('.drag-handle').height()
-															+ E2.dom.chatTabs.height() 
-															+ E2.dom.chat.height());
+			E2.dom.chatWindow.removeClass('collapsed')
+							 .height(E2.dom.chatWindow.find('.drag-handle').height()
+								   + E2.dom.chatTabs.height() 
+								   + E2.dom.chat.height());
 		}
 	} else {
-		E2.dom.chatWindow.addClass('collapsed').height(E2.dom.chatWindow.find('.drag-handle').height() 
-													 + E2.dom.chatTabs.height());
+		E2.dom.chatWindow.addClass('collapsed')
+						 .height(E2.dom.chatWindow.find('.drag-handle').height() 
+							   + E2.dom.chatTabs.height());
 	}
+}
+
+Application.prototype.onBtnPresetsClicked = function() {
+	E2.dom.presetsLib.toggle();
+}
+
+Application.prototype.onBtnAssetsClicked = function() {
+	E2.dom.assetsLib.toggle();
 }
 
 Application.prototype.onAssetsToggleClicked = function() {
@@ -2007,7 +2006,7 @@ Application.prototype.onAssetsToggleClicked = function() {
 	if (E2.dom.assetsLib.hasClass('collapsed')) {
 		var newHeight = controlsHeight
 					   + E2.dom.assetsLib.find('#assets-tabs').outerHeight(true)
-					   + E2.dom.assetsLib.find('#assets-frame').outerHeight(true)
+					   + E2.dom.assetsLib.find('.tab-content.active .assets-frame').outerHeight(true)
 					   + E2.dom.assetsLib.find('.load-buttons').outerHeight(true)
 					   + E2.dom.assetsLib.find('#asset-info').outerHeight(true)
 		E2.dom.assetsLib.removeClass('collapsed').height(newHeight);
@@ -2033,17 +2032,34 @@ Application.prototype.onChatCloseClicked = function() {
 }
 
 Application.prototype.onAssetsCloseClicked = function() {
-	E2.dom.assetsWindow.hide();
+	E2.dom.assetsLib.hide();
+}
+
+Application.prototype.onPresetsCloseClicked = function() {
+	E2.dom.presetsLib.hide();
 }
 
 Application.prototype.onChatTabClicked = function() {
 	if (!$(this).parent().hasClass('active')) {
-		E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() + E2.dom.chatTabs.height() + E2.dom.chat.height());
+		E2.dom.peopleTab.hide();
+		E2.dom.chatTab.show();
+		E2.dom.chatWindow.find('.resize-handle').show();
+		E2.dom.chatWindow.height('auto');
+		E2.app.onChatResize();
 	}
 	if (E2.dom.chatWindow.hasClass('collapsed')) {
 		E2.dom.chatWindow.removeClass('collapsed')
 	};
 	return true;
+}
+
+Application.prototype.onChatResize = function() {
+	var restHeight = E2.dom.chatWindow.find('.drag-handle').height()
+				   + E2.dom.chatTabs.height()
+				   + E2.dom.chat.find('.chat-nav').outerHeight(true)
+				   + E2.dom.chat.find('.composer').outerHeight(true);
+	var newHeight = E2.dom.chatWindow.height() - restHeight;
+	E2.dom.chat.height('auto').find('.messages').height(newHeight);
 }
 
 Application.prototype.onPeopleListChanged = function(storeAction) { 
@@ -2056,13 +2072,22 @@ Application.prototype.onPeopleListChanged = function(storeAction) {
 		} else if (storeAction==='removed') {
 			listChange = -1;
 		}
-		if ($('.graph-users>li').length + listChange <=visibleItems) {
-			E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() +  E2.dom.chatTabs.height() + $('.peopleList .meta').outerHeight(true) + itemHeight * ($('.graph-users>li').length + listChange));
-			$('.people-scroll').height($('.chat-users').height() - $('.chat-tabs').height());
+		if ($('.graph-users>li').length + listChange <= visibleItems) {
+			E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() 
+								   + E2.dom.chatTabs.height() 
+								   + $('.peopleList .meta').outerHeight(true) 
+								   + itemHeight * ($('.graph-users>li').length 
+								   + listChange));
+			$('.people-scroll').height($('.chat-users').height() 
+									 - $('.chat-tabs').height());
 			$('.peopleList').height($('.people-scroll').height());
 		} else {
-			E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() + E2.dom.chatTabs.height() + $('.peopleList .meta').outerHeight(true) + itemHeight * visibleItems);
-			$('.people-scroll').height($('.chat-users').height() - $('.chat-tabs').height());
+			E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() 
+								   + E2.dom.chatTabs.height() 
+								   + $('.peopleList .meta').outerHeight(true) 
+								   + itemHeight * visibleItems);
+			$('.people-scroll').height($('.chat-users').height() 
+									 - $('.chat-tabs').height());
 			$('.peopleList').height($('.people-scroll').height());
 		};
 	};
@@ -2070,6 +2095,8 @@ Application.prototype.onPeopleListChanged = function(storeAction) {
 
 Application.prototype.onPeopleTabClicked = function() {
 	if (!$(this).parent().hasClass('active')) {
+		E2.dom.chatTab.hide();
+		E2.dom.chatWindow.find('.resize-handle').hide();
 		E2.dom.peopleTab.show();
 		E2.app.onPeopleListChanged();
 	};
@@ -2083,15 +2110,18 @@ Application.prototype.onPeopleTabClicked = function() {
 Application.prototype.onSearchResultsChange = function() { 
 	var resultsCount = $('.result.table tbody').children().length;
 	if (resultsCount>0) {
-		$('.preset-list-container').show();
+		E2.dom.presetsLib.removeClass('collapsed');
+		E2.dom.presetsLib.find('.preset-list-container').show();
 		var resultsHeight = $('.result.table').outerHeight(true);
 		var maxHeight = 310;
 		var newHeight = resultsHeight;
 		newHeight = ( newHeight >= maxHeight ) ? (maxHeight) : (newHeight);
-		$('.preset-list-container').height(newHeight)
+		E2.dom.presetsLib.height('auto');
+		E2.dom.presetsLib.find('.preset-list-container').height(newHeight);
 	}
 	 else {
-		$('.preset-list-container').hide();
+		E2.dom.presetsLib.addClass('collapsed');
+		E2.dom.presetsLib.find('.preset-list-container').hide();
 	}
 }
 
@@ -2142,6 +2172,33 @@ Application.prototype.start = function() {
 		if (!$et.parents('.modal-dialog').length)
 			bootbox.hideAll()
 	})
+	
+	$('.resize-handle').on('mousedown', function(e) {
+		var $handle = $(this)
+		var $target = $(this).parent()
+		var oh = $target.height()
+		var oy = e.pageY
+		var $doc = $(document)
+		var changed = false
+
+		e.preventDefault()
+
+		function mouseMoveHandler(e) {
+			changed = true
+			var nh = oh + (e.pageY - oy)
+			e.preventDefault()
+			$target.css('height', nh+'px')
+			if ($target.hasClass('chat-users')) {
+				E2.app.onChatResize()
+			}
+		}
+
+		$doc.on('mousemove', mouseMoveHandler)
+		$doc.one('mouseup', function(e) {
+			e.preventDefault()
+			$doc.off('mousemove', mouseMoveHandler)
+		})
+	});
 
 	$('button#fullscreen').click(function() {
 		E2.app.toggleFullscreen()
@@ -2178,7 +2235,11 @@ Application.prototype.start = function() {
 	E2.dom.chatClose.click(E2.app.onChatCloseClicked.bind(E2.app))
 	E2.dom.chatTabBtn.click(E2.app.onChatTabClicked.bind(E2.app))
 	E2.dom.peopleTabBtn.click(E2.app.onPeopleTabClicked.bind(E2.app))
-
+	E2.dom.btnPresets.click(E2.app.onBtnPresetsClicked.bind(E2.app))
+	E2.dom.btnAssets.click(E2.app.onBtnAssetsClicked.bind(E2.app))
+	E2.dom.assetsClose.click(E2.app.onAssetsCloseClicked.bind(E2.app))
+	E2.dom.presetsClose.click(E2.app.onPresetsCloseClicked.bind(E2.app))
+	
 	this.midPane = new E2.MidPane()
 
 	E2.dom.load_spinner.hide()
@@ -2309,25 +2370,61 @@ Application.prototype.setupEditorChannel = function() {
 }
 
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
+	E2.dom.load_spinner = $('#load-spinner');
+	
+	E2.dom.btnNew = $('#btn-new');
+	
+	E2.dom.btnScale = $('#btn-scale');
+	E2.dom.btnRotate = $('#btn-rotate');
+	E2.dom.btnAssets = $('#btn-add-object');
+	
+	E2.dom.btnInspector = $('#btn0inspector');
+	E2.dom.btnPresets = $('#btn-add-patch');
+	E2.dom.btnSavePatch = $('#btn-save-patch');
+	
+	E2.dom.btnPatches = $('#btn-patches');
+	E2.dom.btnEditor = $('#btn-editor');
+	E2.dom.btnZoomOut = $('#btn-zoom-out');
+	E2.dom.btnZoom = $('#btn-zoom');
+	E2.dom.btnZoomIn = $('#btn-zoom-in');
+	E2.dom.zoomDisplay = $('#current-zoom');
+	E2.dom.btnChatDisplay = $('#btn-chat-display');
+	
+	E2.dom.btnSignIn = $('#btn-sign-in');
+	
+	E2.dom.breadcrumb = $('#breadcrumb');
+	
+	E2.dom.uiLayer = $('#ui-layer');
+	
+	E2.dom.assetsLib = $('#assets-lib');
+	E2.dom.assetsToggle = $('#assets-toggle');
+	E2.dom.assetsClose = $('#assets-close');
+	
+	E2.dom.presetsLib = $('#left-nav');
+	E2.dom.presets_list = $('#presets');
+	
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
+	
 	E2.dom.chatWindow = $('#chat-window');
 	E2.dom.chatTabs = $('#chat-window>.chat-tabs');
+	E2.dom.chatToggleButton = $('#chat-toggle');
+	E2.dom.chatClose = $('#chat-close');
+	E2.dom.chatTabBtn = $('#chatTabBtn');
+	E2.dom.peopleTabBtn = $('#peopleTabBtn');
 	E2.dom.chatTab = $('#chatTab');
 	E2.dom.chat = $('#chat');
+	
 	E2.dom.peopleTab = $('#peopleTab');
+	E2.dom.presetsToggle = $('#presets-toggle');
+	E2.dom.presetsClose = $('#presets-close');
+	
 	E2.dom.dbg = $('#dbg');
-	E2.dom.play = $('#play');
-	E2.dom.playPauseIcon = $('#play use');
-	E2.dom.pause = $('#pause');
-	E2.dom.stop = $('#stop');
+	
 	E2.dom.refresh = $('#refresh');
-	E2.dom.btnNew = $('#btn-new');
 	E2.dom.forkButton = $('#fork-button');
-	E2.dom.btnSignIn = $('#btn-sign-in');
-	E2.dom.btnChatDisplay = $('#btn-chat-display');
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
 	E2.dom.saveAsPreset = $('#save-as-preset');
@@ -2339,20 +2436,14 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.info._defaultContent = E2.dom.info.html()
 	E2.dom.tabs = $('#tabs');
 	E2.dom.graphs_list = $('#graphs-list');
-	E2.dom.presets_list = $('#presets');
-	E2.dom.breadcrumb = $('#breadcrumb');
-	E2.dom.load_spinner = $('#load-spinner');
 	E2.dom.filename_input = $('#filename-input');
-	E2.dom.btnEditor = $('#btn-editor');
-	E2.dom.btnPatches = $('#btn-patches');
-	E2.dom.chatToggleButton = $('#chat-toggle');
-	E2.dom.chatClose = $('#chat-close');
-	E2.dom.chatTabBtn = $('#chatTabBtn');
-	E2.dom.peopleTabBtn = $('#peopleTabBtn');
-	E2.dom.presetsToggle = $('#presets-toggle');
-	E2.dom.assetsToggle = $('#assets-toggle');
-	E2.dom.presetsLib = $('#left-nav');
-	E2.dom.assetsLib = $('#assets-lib');
+	
+	E2.dom.btnTimeline = $('#btn-timeline');
+	
+	E2.dom.play = $('#play');
+	E2.dom.playPauseIcon = $('#play use');
+	E2.dom.pause = $('#pause');
+	E2.dom.stop = $('#stop');
 
 	$.ajaxSetup({ cache: false });
 
