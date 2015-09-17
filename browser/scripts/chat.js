@@ -15,32 +15,7 @@ if (typeof(moment) !== 'undefined' && moment.fn) {
 
 function ChatStore() {
 	var that = this
-
-	this.wsChannel = E2.app.channel.getWsChannel()
-
-	var joinMessage = {
-		kind: 'join',
-		channel: GLOBAL_CHANNEL_NAME,
-		limit: 80
-	}
-
-	this.wsChannel.ws.send(JSON.stringify(joinMessage))
-
-	this.wsChannel.on(GLOBAL_CHANNEL_NAME, function(pl) {
-		if (pl.from === E2.app.channel.uid)
-			return;
-
-		if (pl.kind === 'join')
-			that.emit('joined', pl)
-
-		if (pl.kind === 'leave')
-			that.emit('left', pl)
-
-		if (!that.isForMe(pl))
-			return;
-
-		E2.app.dispatcher.dispatch(pl)
-	})
+	var lastEditSeen = 0
 
 	E2.app.dispatcher.register(function(pl) {
 		if (!that.isForMe(pl))
@@ -60,6 +35,43 @@ function ChatStore() {
 
 		that.wsChannel.send(GLOBAL_CHANNEL_NAME, message)
 	})
+
+	function connect() {
+		that.wsChannel = E2.app.channel.getWsChannel()
+
+		var joinMessage = {
+			kind: 'join',
+			lastEditSeen: lastEditSeen,
+			channel: GLOBAL_CHANNEL_NAME,
+			limit: 80
+		}
+
+		that.wsChannel.ws.send(JSON.stringify(joinMessage))
+
+		that.wsChannel.on(GLOBAL_CHANNEL_NAME, function(pl) {
+			lastEditSeen = pl.id
+
+			if (pl.from === E2.app.channel.uid)
+				return;
+
+			if (pl.kind === 'join')
+				that.emit('joined', pl)
+
+			if (pl.kind === 'leave')
+				that.emit('left', pl)
+
+			if (!that.isForMe(pl))
+				return;
+
+			E2.app.dispatcher.dispatch(pl)
+		})
+
+	}
+
+	connect()
+
+	E2.app.channel.on('reconnected', connect)
+
 }
 
 ChatStore.prototype = Object.create(EventEmitter.prototype)
