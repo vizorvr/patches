@@ -179,7 +179,7 @@ EditorChannel.prototype.connect = function(options) {
 
 EditorChannel.prototype.snapshot = function() {
 	var graphSer = E2.core.serialise()
-
+	
 	this.send({
 		actionType: 'graphSnapshotted',
 		data: graphSer
