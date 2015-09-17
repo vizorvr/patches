@@ -17,6 +17,8 @@ var crypto = require('crypto')
 var flash = require('express-flash');
 var path = require('path');
 
+var EventEmitter = require('events').EventEmitter;
+
 var mongoose = require('mongoose');
 var r = require('rethinkdb')
 
@@ -71,6 +73,8 @@ temp.mkdir('uploads', function(err, dirPath)
 });
 
 var app = express();
+
+app.events = new EventEmitter()
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -236,134 +240,6 @@ app.use(function(req, res, next)
 // old static flat files
 app.use('/data', express.static(path.join(__dirname, 'browser', 'data'), { maxAge: week * 52 }));
 
-// stream files from fs/gridfs
-app.get(/^\/data\/.*/, function(req, res, next)
-{
-	var path = req.path.replace(/^\/data/, '');
-
-	gfs.stat(path)
-	.then(function(stat)
-	{
-		if (!stat)
-			return res.status(404).send();
-
-		if (req.header('If-None-Match') === stat.md5)
-			return res.status(304).send();
-
-		if (req.headers.range) {
-			// stream partial file range
-			var parts = req.headers.range.replace(/bytes=/, "").split("-");
-			var partialstart = parts[0];
-			var partialend = parts[1];
-
-			// start&end offset are inclusive, end is optional
-			var start = parseInt(partialstart, 10);
-			var end = partialend ? parseInt(partialend, 10) : (stat.length - 1);
-
-			var chunksize = (end - start) + 1;
-			
-			res.writeHeader(206, {
-				'Content-Range': 'bytes ' + start + '-' + end + '/' + stat.length,
-				'Accept-Ranges': 'bytes',
-				'Cache-Control': 'public, must-revalidate, max-age=86400',
-				'Content-Length': chunksize,
-				'Content-Type': stat.contentType
-			});
-
-			var range = {startPos: start, endPos: end};
-			gfs.createReadStream(path, range)
-			.on('error', next)
-			.pipe(res);
-		}
-		else {
-			// stream whole file in a single request
-			res.header('Content-Type', stat.contentType);
-			res.header('Accept-Ranges', 'bytes');
-			res.header('ETag', stat.md5);
-			res.header('Content-Length', stat.length)
-			res.header('Cache-Control', 'public, must-revalidate, max-age=86400');
-
-			gfs.createReadStream(path)
-			.on('error', next)
-			.pipe(res);
-		}
-	})
-	.catch(next)
-});
-
-app.get(/^\/dl\/.*/, function(req, res, next)
-{
-	var path = req.path.replace(/^\/dl\/data/, '');
-
-	gfs.stat(path)
-	.then(function(stat)
-	{
-		if (!stat)
-			return res.status(404).send();
-
-		res.header('Content-Type', 'application/octet-stream');
-		res.header('Content-Length', stat.length);
-
-		return gfs.createReadStream(path)
-		.on('error', next)
-		.pipe(res);
-	})
-	.catch(next);
-});
-
-// set no-cache headers by default
-app.use(function(req, res, next) {
-	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
-	res.setHeader('Expires', 0);
-	next();
-});
-
-// allow caching editor-*.min.js
-app.get([
-	'/scripts/editor-*.min.js',
-	'/vendor/*',
-	'/fonts/*',
-	], function(req, res, next) {
-	res.setHeader('Cache-Control', 'public, max-age=604800');
-	next();
-});
-
-// allow some caching for node modules, app images and styles
-app.use([
-	'/node_modules',
-	'/images/*',
-	'/style/*',
-	'/plugins/plugins.json',
-	'/plugins/all.plugins.js'
-	],
-	function(req, res, next) {
-	res.setHeader('Cache-Control', 'must-revalidate, max-age=300');
-	next();
-});
-
-app.use(['/node_modules'], express.static(path.join(__dirname, 'node_modules')));
-
-// static files
-app.use(express.static(path.join(__dirname, 'browser'), { maxAge: 0 }));
-
-app.get('/login', userController.getLogin);
-app.post('/login', userController.postLogin);
-app.post('/login.json', userController.postLogin);
-app.get('/logout', userController.logout);
-app.get('/forgot', userController.getForgot);
-app.post('/forgot', userController.postForgot);
-app.get('/reset/:token', userController.getReset);
-app.post('/reset/:token', userController.postReset);
-app.get('/signup', userController.getSignup);
-app.post('/signup', userController.postSignup);
-app.get('/account', passportConf.isAuthenticated, userController.getAccount);
-app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
-app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
-app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
-app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
-
-app.get('/', homeController.index);
-
 var rethinkConnection
 var rethinkDbName = process.env.RETHINKDB_NAME || 'vizor'
 r.connect({
@@ -382,6 +258,135 @@ r.connect({
 	mongoose.connection.on('error', function(err) {
 		throw err
 	});
+
+	// stream files from fs/gridfs
+	app.get(/^\/data\/.*/, function(req, res, next)
+	{
+		var path = req.path.replace(/^\/data/, '');
+
+		gfs.stat(path)
+		.then(function(stat)
+		{
+			if (!stat)
+				return res.status(404).send();
+
+			if (req.header('If-None-Match') === stat.md5)
+				return res.status(304).send();
+
+			if (req.headers.range) {
+				// stream partial file range
+				var parts = req.headers.range.replace(/bytes=/, "").split("-");
+				var partialstart = parts[0];
+				var partialend = parts[1];
+
+				// start&end offset are inclusive, end is optional
+				var start = parseInt(partialstart, 10);
+				var end = partialend ? parseInt(partialend, 10) : (stat.length - 1);
+
+				var chunksize = (end - start) + 1;
+				
+				res.writeHeader(206, {
+					'Content-Range': 'bytes ' + start + '-' + end + '/' + stat.length,
+					'Accept-Ranges': 'bytes',
+					'Cache-Control': 'public, must-revalidate, max-age=86400',
+					'Content-Length': chunksize,
+					'Content-Type': stat.contentType
+				});
+
+				var range = {startPos: start, endPos: end};
+				gfs.createReadStream(path, range)
+				.on('error', next)
+				.pipe(res);
+			}
+			else {
+				// stream whole file in a single request
+				res.header('Content-Type', stat.contentType);
+				res.header('Accept-Ranges', 'bytes');
+				res.header('ETag', stat.md5);
+				res.header('Content-Length', stat.length)
+				res.header('Cache-Control', 'public, must-revalidate, max-age=86400');
+
+				gfs.createReadStream(path)
+				.on('error', next)
+				.pipe(res);
+			}
+		})
+		.catch(next)
+	});
+
+	app.get(/^\/dl\/.*/, function(req, res, next)
+	{
+		var path = req.path.replace(/^\/dl\/data/, '');
+
+		gfs.stat(path)
+		.then(function(stat)
+		{
+			if (!stat)
+				return res.status(404).send();
+
+			res.header('Content-Type', 'application/octet-stream');
+			res.header('Content-Length', stat.length);
+
+			return gfs.createReadStream(path)
+			.on('error', next)
+			.pipe(res);
+		})
+		.catch(next);
+	});
+
+	// set no-cache headers by default
+	app.use(function(req, res, next) {
+		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+		res.setHeader('Expires', 0);
+		next();
+	});
+
+	// allow caching editor-*.min.js
+	app.get([
+		'/scripts/editor-*.min.js',
+		'/vendor/*',
+		'/fonts/*',
+		], function(req, res, next) {
+		res.setHeader('Cache-Control', 'public, max-age=604800');
+		next();
+	});
+
+	// allow some caching for node modules, app images and styles
+	app.use([
+		'/node_modules',
+		'/images/*',
+		'/style/*',
+		'/plugins/plugins.json',
+		'/plugins/all.plugins.js'
+		],
+		function(req, res, next) {
+		res.setHeader('Cache-Control', 'must-revalidate, max-age=300');
+		next();
+	});
+
+	app.use(['/node_modules'], express.static(path.join(__dirname, 'node_modules')));
+
+	// static files
+	app.use(express.static(path.join(__dirname, 'browser'), { maxAge: 0 }));
+
+	app.get('/login', userController.getLogin);
+	app.post('/login', userController.postLogin);
+	app.post('/login.json', userController.postLogin);
+	app.get('/logout', userController.logout);
+	app.get('/forgot', userController.getForgot);
+	app.post('/forgot', userController.postForgot);
+	app.get('/reset/:token', userController.getReset);
+	app.post('/reset/:token', userController.postReset);
+	app.get('/signup', userController.getSignup);
+	app.post('/signup', userController.postSignup);
+	app.get('/account', passportConf.isAuthenticated, userController.getAccount);
+	app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
+	app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
+	app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
+	app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
+
+	app.get('/', homeController.index);
+
 
 	// ----- MODEL ROUTES
 
@@ -608,11 +613,11 @@ r.connect({
 
 	if (config.server.enableChannels) {
 		new WsChannelServer().listen(httpServer)
-		app._editorChannel = new EditorChannelServer(rethinkConnection)
-		app._editorChannel.listen(httpServer)
+		var ecs = new EditorChannelServer(rethinkConnection)
+		ecs.listen(httpServer)
 	}
 
-	app.use(function(err, req, res, next) {
+	app.use(function(err, req, res) {
 		console.error(err.message, err.stack);
 
 		res.status(err.status || 500);
@@ -628,6 +633,8 @@ r.connect({
 	});
 
 	app.use(errorHandler());
+
+	app.events.emit('ready')
 })
 
 module.exports = app;
