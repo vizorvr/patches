@@ -69,6 +69,7 @@
 	},
 
 	"EXAMPLES": {
-		"Rotating cube": "_example-rotating-cube"
+		"Rotating cube": "_example-rotating-cube",
+		"Spawn particles from mesh": "_example-particle-spawn-from-mesh"
 	}
 }
