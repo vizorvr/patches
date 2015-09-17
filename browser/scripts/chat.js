@@ -27,6 +27,9 @@ function ChatStore() {
 	this.wsChannel.ws.send(JSON.stringify(joinMessage))
 
 	this.wsChannel.on(GLOBAL_CHANNEL_NAME, function(pl) {
+		if (pl.from === E2.app.channel.uid)
+			return;
+
 		if (pl.kind === 'join')
 			that.emit('joined', pl)
 
