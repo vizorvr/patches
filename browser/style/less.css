@@ -6602,6 +6602,7 @@ ul.iconic-nav > li.open > button span {
   margin: 0;
   padding: 0;
   opacity: 1;
+  text-align: center;
   top: auto;
   z-index: 10;
 }
@@ -6657,11 +6658,9 @@ ul.iconic-nav > li.open > button span {
   padding: 0 !important;
   border-radius: 0 0 5px 5px !important;
   margin: 0 !important;
-  border-top: 1px solid #222 !important;
-  border-left: 1px solid #222 !important;
-  border-right: 1px solid #222 !important;
-  border-bottom: none !important;
-  background: #343c4f;
+  border: 0 none !important;
+  background: #262c3d;
+  overflow: hidden;
   z-index: 11;
 }
 .dropdown-menu > li > a {
@@ -7080,16 +7079,9 @@ ul.iconic-nav > li.open > button span {
 .searchbox input::-webkit-input-placeholder {
   color: #afbfdf;
 }
-<<<<<<< Temporary merge branch 1
 .searchbox input::-moz-placeholder {
   color: #afbfdf;
   opacity: 1;
-=======
-.header {
-  min-height: 28px;
-  height: 28px;
-  max-height: 28px;
->>>>>>> Temporary merge branch 2
 }
 .searchbox input:-ms-input-placeholder {
   color: #afbfdf;
@@ -7708,13 +7700,8 @@ li.active,
 .chat .messages {
   overflow-y: auto;
   overflow-x: hidden;
-<<<<<<< Temporary merge branch 1
-  width: 270px;
+  width: 100%;
   height: 274px;
-=======
-  margin-top: 10px;
-  height: calc(100vh -  84px);
->>>>>>> Temporary merge branch 2
 }
 .chat .message .date {
   margin: 0 18px 0 8px;
