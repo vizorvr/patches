@@ -20,15 +20,18 @@ WebSocketChannel.prototype.connect = function(path, options) {
 
 	this._state = 'connecting'
 
-	var wsUrl = 'ws://'+
-			window.location.hostname + ':'+
-			(window.location.port || 80)+
+	var wsHost = 'ws.' + window.location.hostname
+
+	if (window.location.hostname === 'localhost')
+		wsHost = 'localhost'
+
+	var wsUrl = 'ws://' + wsHost + ':'+
+		(window.location.port || 80) +
 		path
 
 	console.log('Connecting WebSocket', wsUrl)
 
-	this.ws = new WebSocket(wsUrl,
-		options)
+	this.ws = new WebSocket(wsUrl, options)
 
 	this.ws.onopen = function() {
 		that._state = 'connected'
