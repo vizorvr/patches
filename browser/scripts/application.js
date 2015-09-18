@@ -2100,7 +2100,7 @@ Application.prototype.showFirstTimeDialog = function() {
 	if (!E2.util.isFirstTime())
 		return;
 
-	Cookies.set('vizor', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
+	Cookies.set('vizor050', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
 	var diag = bootbox.dialog({
 		title: '<h3>First time here?</h3>',
