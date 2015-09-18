@@ -1,6 +1,6 @@
 {
-  "name": "Engi",
-  "version": "1.0.0",
+  "name": "Vizor",
+  "version": "0.5.0",
   "description": "",
   "main": "server.js",
   "dependencies": {
