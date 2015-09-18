@@ -19,7 +19,24 @@ AccountController.prototype.renderLoginView = function(user)
 AccountController.prototype._bindEvents = function(el, dfd)
 {
 	var that = this;
-
+	
+	$('.form-input input', el).on('focus', function() {
+		$(this).parent().removeClass('wrong').find('label').addClass('filled-label');
+		if ($('#login-error').hasClass('revealError')) {
+			$('#login-error').addClass('hideError')
+							 .removeClass('revealError');
+			setTimeout(function() {
+				$('#login-error').removeClass('hideError')
+								 .find('span')
+								 .html('');
+			},1000)
+		}
+	});
+	$('.form-input input', el).on('blur', function() {
+		if (!$(this).val())
+			$(this).parent().find('label').removeClass('filled-label');
+	});
+	
 	$('a.login', el).on('click', function(evt)
 	{
 		evt.preventDefault();
@@ -36,17 +53,26 @@ AccountController.prototype._bindEvents = function(el, dfd)
 }
 
 AccountController.prototype.openLoginModal = function(dfd) {
-	var dfd = dfd || when.defer()
+	var that = this;
+	var dfd = dfd || when.defer();
 	var loginTemplate = E2.views.account.login;
+	var customFooter = '<span class="pull-left"><a href="/forgot"'
+					+ 'class="forgot">Forgot password?</a></span>'
+					+ '<span class="pull-right">Don\'t have an account? '
+					+ '<a href="/signup" class="signup">Sign up here</a></span>';
 
-	ga('send', 'event', 'account', 'open', 'loginModal')
+	ga('send', 'event', 'account', 'open', 'loginModal');
+	
+	customFooter = '<div class="modal-footer">' + customFooter + '</div>';
 
 	var bb = bootbox.dialog({
 		animate: false,
 		show: true,
-		message: loginTemplate()
+		title: 'Sign in',
+		message: loginTemplate(),
 	}).init(function() {
-		$('#email_id').focus();
+		E2.app.replaceDefaultCross();
+		$('.modal-content').append(customFooter);
 	});
 
 	this._bindEvents(bb, dfd);
@@ -64,9 +90,11 @@ AccountController.prototype.openLoginModal = function(dfd) {
 			url: formEl.attr('action'),
 			data: formData,
 			error: function(err)
-			{
-				console.log(err);
-				bootbox.alert("Sorry, your login failed. Please double check your e-mail and password.");
+			{	
+				var erText = 'Whoops! This email and password combination isn\'t right.'
+				$('#login-error span').html(erText);
+				$('#login-error').addClass('revealError');
+				$('#login-form_id .form-input').addClass('wrong');
 			},
 			success: function(user)
 			{
@@ -84,7 +112,8 @@ AccountController.prototype.openLoginModal = function(dfd) {
 }
 
 AccountController.prototype.openSignupModal = function(dfd) {
-	var dfd = dfd || when.defer()
+	var that = this;
+	var dfd = dfd || when.defer();
 	var signupTemplate = E2.views.account.signup;
 
 	ga('send', 'event', 'account', 'open', 'signupModal')
@@ -97,7 +126,7 @@ AccountController.prototype.openSignupModal = function(dfd) {
 		//title: "loginDialog"
 		//onEscape: function() {  }
 	}).init(function() {
-		$('#username_id').focus();
+		E2.app.replaceDefaultCross();
 	});
 
 	this._bindEvents(bb, dfd);
