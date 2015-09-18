@@ -2144,6 +2144,22 @@ Application.prototype.onSearchResultsChange = function() {
 	}
 }
 
+Application.prototype.onSignInClicked = function() {
+	var username = E2.models.user.get('username')
+	if (!username) {
+		return E2.controllers.account.openLoginModal()
+	}
+}
+
+Application.prototype.replaceDefaultCross = function() {
+	$('.bootbox-close-button').appendTo('.modal-header')
+							  .html('<svg class="icon-dialog-close">'
+								   +'<use xlink:href="#icon-close">'
+								   +'</use></svg>')
+							  .removeClass('close')
+							  .attr('style','');
+}
+
 Application.prototype.start = function() {
 	var that = this
 
@@ -2301,7 +2317,7 @@ Application.prototype.showFirstTimeDialog = function() {
 	Cookies.set('vizor', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
 	var diag = bootbox.dialog({
-		title: '<h3>First time here?</h3>',
+		title: 'First time here?',
 		message: '<h4>Check out our '+
 			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank">Youtube tutorials</a> '+
 			'or<br>'+
@@ -2309,7 +2325,9 @@ Application.prototype.showFirstTimeDialog = function() {
 		onEscape: true,
 		html: true,
 		buttons: { Ok: function() {}}
-	})
+	}).init(function() {
+		E2.app.replaceDefaultCross();
+	});
 
 	diag.find('.modal-dialog').addClass('modal-sm')
 	diag.css({
