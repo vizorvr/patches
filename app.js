@@ -111,10 +111,13 @@ app.use(bodyParser.urlencoded(
 }));
 app.use(expressValidator());
 app.use(methodOverride());
+
 app.use(cookieParser());
-app.use(sessions(
-{
+app.use(sessions({
 	cookieName: 'session',
+	cookie: {
+		domain: process.env.FQDN,
+	},
 	secret: secrets.sessionSecret,
 	duration: week,
 	activeDuration: day
