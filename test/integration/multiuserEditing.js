@@ -37,8 +37,8 @@ function createClient(channelName, lastEditSeen) {
 
 	chan.connect({
 		headers: {
-			'Cookie': 'session='+session.util.encode({
-				cookieName: 'session',
+			'Cookie': 'vs050='+session.util.encode({
+				cookieName: 'vs050',
 				secret: secrets.sessionSecret,
 				duration: 4100421,
 				activeDuration: 190248

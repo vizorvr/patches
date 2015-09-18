@@ -173,7 +173,7 @@ function load_script(url, onload, onerror) {
 
 E2.util = {
 	isFirstTime: function() {
-		return Cookies.get('vizor') === undefined
+		return Cookies.get('vizor050') === undefined
 	},
 	isMobile: function() {
 		var check = false;
