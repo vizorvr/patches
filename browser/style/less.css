@@ -6776,16 +6776,13 @@ ul.iconic-nav > li.open > button span {
 }
 #load-spinner {
   position: absolute;
-  left: 10px;
-  top: 3px;
+  left: 15px;
+  top: 50%;
   opacity: 0.65;
-  max-width: 18px;
-  min-width: 18px;
-  height: 19px;
+  width: 18px;
+  height: 18px;
   background: url('/images/load-spinner.gif');
   background-size: 100% 100%;
-  -moz-background-size: 100% 100%;
-  -webkit-background-size: 100% 100%;
   margin-top: -9px;
 }
 .header .btn {
@@ -8137,6 +8134,271 @@ ul.assets-list > li:hover span {
 }
 .scrollbar::-webkit-scrollbar-corner {
   display: none!important;
+}
+.bootbox.modal,
+.bootbox.modal:before {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.bootbox.modal:before {
+  background-color: rgba(30, 33, 41, 0.8);
+  mix-blend-mode: multiply;
+  content: '';
+}
+.modal-dialog {
+  width: 400px;
+  border-radius: 0;
+  margin: 128px auto 0 auto;
+}
+.modal-dialog .button {
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0) !important;
+}
+.modal-dialog input {
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0) !important;
+  outline: none!important;
+}
+.modal-dialog .modal-content {
+  border-radius: 4px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.22);
+  background: transparent;
+  overflow: hidden;
+  float: left;
+  position: relative;
+  width: 100%;
+}
+.modal-dialog .modal-content > * {
+  display: block;
+  position: relative;
+  float: left;
+  width: 100%;
+}
+.modal-dialog .modal-content .modal-header {
+  background: #1f2331;
+  height: 60px;
+  border: 0 none;
+  text-align: center;
+  padding: 0;
+}
+.modal-dialog .modal-content .modal-header > h4 {
+  padding: 20px 20px 0 20px;
+  color: #bccbe4;
+  font-size: 22px;
+  font-weight: 300;
+  margin: 0;
+  line-height: 1;
+}
+.modal-dialog .modal-content .modal-header > button {
+  display: block;
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  right: 28px;
+  top: 50%;
+  margin: -18px -25px 0 0;
+  padding: 0;
+  border: 0 none;
+  background: transparent;
+}
+.modal-dialog .modal-content .modal-header > button svg {
+  display: block;
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  left: 50%;
+  top: 50%;
+  fill: #bccbe4;
+}
+.modal-dialog .modal-content .modal-header > button:hover svg {
+  fill: #ffffff;
+}
+.modal-dialog .modal-content .modal-body {
+  background: #262c3d;
+  padding: 22px 40px 18px;
+}
+.modal-dialog .modal-content .modal-body .bootbox-body {
+  padding: 0;
+  text-align: center;
+}
+.modal-dialog .modal-content .modal-body h4 {
+  font-size: 14px;
+  color: #ffffff;
+  padding: 10px 0;
+}
+.modal-dialog .modal-content .modal-body h4 a,
+.modal-dialog .modal-content .modal-body h4 a:active {
+  color: #0597cd;
+  text-decoration: none;
+}
+.modal-dialog .modal-content .modal-body h4 a:hover,
+.modal-dialog .modal-content .modal-body h4 a:active:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+.modal-dialog .modal-content .modal-body div.form-input {
+  height: 50px;
+  width: 100%;
+  background: #1f2331;
+  border-radius: 4px;
+  margin: 0 auto 18px;
+  overflow: hidden;
+  position: relative;
+  float: left;
+  text-align: left;
+}
+.modal-dialog .modal-content .modal-body div.form-input > * {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 50px;
+  width: 100%;
+  margin: 0;
+}
+.modal-dialog .modal-content .modal-body div.form-input.wrong {
+  border: 1px solid #afbfdf;
+}
+.modal-dialog .modal-content .modal-body div.form-input input {
+  border: 0 none;
+  background: transparent;
+  padding: 0 10px 0 36px;
+  font-size: 16px;
+  line-height: 1.33;
+  font-weight: 400;
+  color: #ffffff;
+}
+.modal-dialog .modal-content .modal-body div.form-input label {
+  color: #414857;
+  padding: 15px 20px 0 36px;
+  font-size: 16px;
+  line-height: 1.33;
+  font-weight: 400;
+}
+.modal-dialog .modal-content .modal-body div.form-input label:after {
+  content: '';
+  background: #1b1f2b;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -320px;
+  border-radius: 3px;
+  width: 320px;
+  height: 50px;
+  transition: left 0.3s ease-out;
+}
+.modal-dialog .modal-content .modal-body div.form-input label.filled-label:after {
+  left: 0;
+}
+.modal-dialog .modal-content .modal-body div.modal-error {
+  height: 0;
+  overflow: hidden;
+  display: none;
+  margin: -8px 0 8px 0;
+  position: relative;
+  float: left;
+  width: 100%;
+}
+.modal-dialog .modal-content .modal-body div.modal-error span {
+  color: #ff6868;
+  display: block;
+  width: 100%;
+  height: 16px;
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  font-size: 12px;
+}
+.modal-dialog .modal-content .modal-body div.modal-error.revealError {
+  display: block;
+  height: 16px;
+  animation: revealSigninError 0.35s ease-out;
+}
+.modal-dialog .modal-content .modal-body div.modal-error.hideError {
+  display: block;
+  height: 0;
+  animation: hideSigninError 0.35s ease-in;
+}
+.modal-dialog .modal-content .modal-body button {
+  display: block;
+  position: relative;
+  border-radius: 4px;
+  float: left;
+  background: #0597cd;
+}
+.modal-dialog .modal-content .modal-body button.sign-in-btn {
+  width: 100%;
+  height: 50px;
+  color: #7e8dab;
+  border: 0 none;
+  padding: 0;
+}
+.modal-dialog .modal-content .modal-body button.sign-in-btn span {
+  display: block;
+  position: relative;
+  padding: 15px 20px 0 36px;
+  height: 50px;
+  font-size: 16px;
+  float: left;
+  color: #ffffff;
+}
+.modal-dialog .modal-content .modal-body button.sign-in-btn svg {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  margin: -12px 0 0;
+  stroke: #ffffff;
+}
+.modal-dialog .modal-content .modal-footer {
+  background: #1f2331;
+  border: 0 none;
+  text-align: center;
+  padding: 20px 40px;
+}
+.modal-dialog .modal-content .modal-footer span {
+  padding: 0;
+  margin: 0;
+  display: block;
+  color: #afbfdf;
+  font-size: 12px;
+}
+.modal-dialog .modal-content .modal-footer span a,
+.modal-dialog .modal-content .modal-footer span a:active {
+  color: #2d93c9;
+  text-decoration: none;
+}
+.modal-dialog .modal-content .modal-footer span a:hover,
+.modal-dialog .modal-content .modal-footer span a:active:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+.modal-dialog .modal-content .modal-footer button.btn {
+  border-radius: 4px;
+  background: #0597cd;
+  font-size: 16px;
+  color: #ffffff;
+  padding: 8px 12px;
+}
+@keyframes revealSigninError {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 16px;
+  }
+}
+@keyframes hideSigninError {
+  0% {
+    height: 16px;
+  }
+  100% {
+    height: 0;
+  }
 }
 /* only things to do with patch editor / visual programming layer */
 /* authors ivan mukho, georgi marinov */
