@@ -1,0 +1,266 @@
+.bootbox.modal, .bootbox.modal:before {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.bootbox.modal:before {
+    background-color: rgba(30,33,41,0.8);
+    mix-blend-mode: multiply;
+    content: '';
+}
+
+.modal-dialog {
+    width: 400px;
+    border-radius: 0;
+    margin: (@menu-bar-height + @breadcrumb-height + 30) auto 0 auto;
+    .button {
+        box-shadow: 0 0 0 rgba(0,0,0,0)!important;
+    }
+    input {
+        box-shadow: 0 0 0 rgba(0,0,0,0)!important;
+        outline: none!important;
+    }
+    .modal-content {
+            border-radius: 4px;
+            box-shadow: 0 0 2px rgba(0,0,0,0.22);
+            background: transparent;
+            overflow: hidden;
+            float: left;
+            position: relative;
+            width: 100%;
+            > * {
+                display: block;
+                position: relative;
+                float: left;
+                width: 100%;
+            }
+            .modal-header {
+                background: @bg-dark;
+                height: 60px;
+                border: 0 none;
+                text-align: center;
+                padding: 0;
+                > h4 {
+                    padding: 20px 20px 0 20px;
+                    color: #bccbe4;
+                    font-size: 22px;
+                    font-weight: 300;
+                    margin: 0;
+                    line-height: 1;
+                }
+                > button {
+                    display: block;
+                    position: absolute;
+                    width: 36px;
+                    height: 36px;
+                    right: 28px;
+                    top: 50%;
+                    margin: -18px -25px 0 0;
+                    padding: 0;
+                    border: 0 none;
+                    background: transparent;
+                    svg {
+                        display: block;
+                        position: absolute;
+                        width: 16px;
+                        height: 16px;
+                        margin: -8px 0 0 -8px;
+                        left: 50%;
+                        top: 50%;
+                        fill: #bccbe4;
+                    }
+                    &:hover svg {
+                        fill: #ffffff;
+                    }
+                }
+                    
+            }
+            .modal-body {
+                background: @bg-light;
+                padding: 22px 40px 18px;
+                .bootbox-body {
+                    padding: 0;
+                    text-align: center;
+                }
+                h4 {
+                    font-size: 14px;
+                    color: @editor-text-active;
+                    padding: 10px 0;
+                    a, a:active {
+                        color: @bg-bright;
+                        text-decoration: none;
+                        &:hover {
+                            color: @editor-text-active;
+                            text-decoration: none;
+                        }
+                    }
+                }
+                div.form-input {
+                    height: @modal-control-height;
+                    width: 100%;
+                    background: @bg-dark;
+                    border-radius: 4px;
+                    margin: 0 auto 18px;
+                    overflow: hidden;
+                    position: relative;
+                    float: left;
+                    text-align: left;
+                    > * {
+                        display: block;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        height: @modal-control-height;
+                        width: 100%;
+                        margin: 0;
+                    }
+                    &.wrong {
+                        border: 1px solid @editor-text-hover;
+                    }
+                    input {
+                        border: 0 none;
+                        background: transparent;
+                        padding: 0 10px 0 36px;
+                        font-size: 16px;
+                        line-height: 1.33;
+                        font-weight: 400;
+                        color: @editor-text-active; 
+                    }
+                    label {
+                        color: #414857;
+                        padding: 15px 20px 0 36px;
+                        font-size: 16px;
+                        line-height: 1.33;
+                        font-weight: 400;
+                        &:after {
+                            content: '';
+                            background: darken(@bg-dark, 2%);
+                            display: block;
+                            position: absolute;
+                            top: 0;
+                            left: 0 - @modal-input-width;
+                            border-radius: 3px;
+                            width: @modal-input-width;
+                            height: @modal-control-height;
+                            transition: left 0.3s ease-out;
+                        }
+                        &.filled-label:after {
+                            left: 0;
+                        }
+                    }
+                }
+                div.modal-error {
+                    height: 0;
+                    overflow: hidden;
+                    display: none;
+                    margin: -8px 0 8px 0;
+                    position: relative;
+                    float: left;
+                    width: 100%;
+                    span {
+                        color: #ff6868;
+                        display: block;
+                        width: 100%;
+                        height: 16px;
+                        text-align: center;
+                        position: absolute;
+                        bottom: 0;
+                        font-size: 12px;
+                    }
+                    &.revealError {
+                        display: block;
+                        height: 16px;
+                        animation: revealSigninError 0.35s ease-out;
+                    }
+                    &.hideError {
+                        display: block;
+                        height: 0;
+                        animation: hideSigninError 0.35s ease-in;
+                    }
+                }
+                button {
+                    display: block;
+                    position: relative;
+                    border-radius: 4px;
+                    float: left;
+                    background: @bg-bright;
+                }
+                button.sign-in-btn {
+                    width: 100%;
+                    height: @modal-control-height;
+                    color: @editor-text-default;
+                    border: 0 none;
+                    padding: 0;
+                    span {
+                        display: block;
+                        position: relative;
+                        padding: 15px 20px 0 36px;
+                        height: @modal-control-height;
+                        font-size: 16px;
+                        float: left;
+                        color: @editor-text-active;
+                    }
+                    svg {
+                        width: 24px;
+                        height: 24px;
+                        position: absolute;
+                        right: 24px;
+                        top: 50%;
+                        margin: -12px 0 0;
+                        stroke: @editor-text-active;
+                    }
+                }
+            }
+            .modal-footer {
+                background: @bg-dark;
+                border: 0 none;
+                text-align: center;
+                padding: 20px 40px;
+                span {
+                    padding: 0;
+                    margin: 0;
+                    display: block;
+                    color: @editor-text-hover;
+                    font-size: 12px;
+                    a, a:active {
+                        color: #2d93c9;
+                        text-decoration: none;
+                        &:hover {
+                            color: @editor-text-active;
+                            text-decoration: none;
+                        }
+                    }
+                }
+                button.btn {
+                    border-radius: 4px;
+                    background: @bg-bright;
+                    font-size: 16px;
+                    color: #ffffff;
+                    padding: 8px 12px;
+                }
+            }
+            
+    }
+}
+
+@keyframes revealSigninError {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 16px;
+    }
+}
+
+@keyframes hideSigninError {
+    0% {
+        height: 16px;
+    }
+    100% {
+        height: 0;
+    }
+}

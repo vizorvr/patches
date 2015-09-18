@@ -1,32 +1,22 @@
-<h1 class="text-center form-header"><i class="fa fa-sign-in page-header-icon"></i>&nbsp;&nbsp;Login</h1>
-
-<p style="text-align: center; padding: 12px 0 8px 0;">Not registered? &nbsp;<a href="/signup" class="signup">Sign up</a> &nbsp;&nbsp;—&nbsp;&nbsp; <a href="/forgot" class="forgot">Forgot your password?</a></p>
-
-<!-- Form -->
 <form action="/login" id="login-form_id" method="POST">
   <input type="hidden" name="_csrf" value={{_csrf}}>
 
-  <div class="panel-body">
-
-    <div class="row form-group">
-      <div class="col-sm-12 text-center">
-        <input type="email" name="email" style="text-align: center; padding: 10px; height: auto;" id="email_id" class="form-control input-lg" placeholder="Your e-mail address" autofocus="true">
-      </div>
-    </div> <!-- / Email -->
-
-    <div class="row form-group">
-      <div class="col-sm-12 text-center">
-        <input type="password" name="password" style="text-align: center; padding: 10px; height: auto;" id="password_id" class="form-control input-lg" placeholder="Your password">
-      </div>
-    </div> <!-- / Password -->
-
-    <div class="text-center" style="margin-top: 24px;">
-      <button class="btn btn-primary" style="font-size: 16px; padding: 10px 20px;" type="submit">
-        <i class="fa fa-sign-in"></i>
-        &nbsp;Login
-      </button>
-    </div> <!-- / .form-actions -->
-
-  </div>
+	<div class="form-input">
+		<label for="email">Email</label>
+		<input type="email" name="email" id="email_id" placeholder="" tabindex="-2">
+	</div> 
+	
+	<div class="form-input">
+		<label for="password">Password</label>
+		<input type="password" name="password" id="password_id" placeholder="" tabindex="-1">
+	</div>
+	
+	<div class="modal-error" id="login-error">
+		<span></span>
+	</div>
+	
+	<button id="sign-in-btn" class="sign-in-btn" type="submit">
+		<span>Sign in to Vizor</span>
+		<svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
+	</button>
 </form>
-<!-- / Form -->
