@@ -2107,7 +2107,8 @@ Application.prototype.showFirstTimeDialog = function() {
 		message: '<h4>Check out our '+
 			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank">Youtube tutorials</a> '+
 			'or<br>'+
-			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>',
+			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>' +
+			'<br><br>Looking for your old stuff? You can find it at <a href="http://old.vizor.io/" target="_blank">old.vizor.io</a> until November 2015.',
 		onEscape: true,
 		html: true,
 		buttons: { Ok: function() {}}
