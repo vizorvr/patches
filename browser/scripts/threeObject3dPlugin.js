@@ -19,9 +19,9 @@ function ThreeObject3DPlugin(core) {
 	}]
 
 	this.state = {
-		position: new THREE.Vector3(0, 0, 0),
-		scale: new THREE.Vector3(0, 0, 0),
-		quaternion: new THREE.Quaternion()
+		position: {x: 0, y: 0, z:0},
+		scale: {x: 0, y: 0, z:0},
+		quaternion: {x: 0, y: 0, z:0, w:0}
 	}
 }
 
@@ -33,9 +33,9 @@ ThreeObject3DPlugin.prototype.reset = function() {
 	if (!this.object3d)
 		this.object3d = new THREE.Object3D()
 
-	this.object3d.position.copy(this.state.position)
-	this.object3d.scale.copy(this.state.scale)
-	this.object3d.quaternion.copy(this.state.quaternion)
+	this.object3d.scale.set(this.state.scale.x, this.state.scale.y, this.state.scale.z)
+	this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
+	this.object3d.quaternion.set(this.state.quaternion.x, this.state.quaternion.y, this.state.quaternion.z, this.state.quaternion.w)
 }
 
 ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
