@@ -1365,6 +1365,7 @@ Application.prototype.onKeyDown = function(e) {
 			E2.app.worldEditor.deactivate()
 		}
 		else {
+			E2.app.worldEditor.activate()
 		}
 	}
 
@@ -2316,6 +2317,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		preserveDrawingBuffer: false
 	}
 
+	E2.app.worldEditor = new WorldEditor()
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
 	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})

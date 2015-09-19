@@ -90,7 +90,7 @@ Player.prototype.on_update = function() {
 	if (E2.app.worldEditor) {
 		E2.app.worldEditor.update()
 	}
-	
+
 	this.last_time = time
 	this.abs_time += delta_t
 	this.frames++
