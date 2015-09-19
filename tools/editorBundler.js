@@ -33,6 +33,8 @@ function bundleEditorScripts() {
 			.replace('/vendor/', '/browser/vendor/')
 	})
 
+	scripts.push(path.resolve(__dirname, '..') + '/browser/plugins/all.plugins.js')
+
 	// concat scripts with gulp
 	gulp.src(scripts)
 	.pipe(slash())
@@ -57,3 +59,7 @@ function bundleEditorScripts() {
 }
 
 exports.bundleEditorScripts = bundleEditorScripts
+
+if (require.main === module) {
+	bundleEditorScripts()
+}

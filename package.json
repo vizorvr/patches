@@ -82,7 +82,6 @@
   },
   "scripts": {
     "setup": "node tools/setup.js",
-    "postinstall": "node tools/postinstall.js",
     "start": "node app.js",
     "tester": "node tools/test-runner",
     "test:browser:integration": "npm run tester browser/test/integration",
