@@ -949,7 +949,7 @@
 
 				}
 
-				scope.plugin.undoableSetState('position', newValue, oldPosition)
+				scope.plugin.undoableSetState('position', newValue.clone(), oldPosition.clone())
 
 			} else if ( _mode === "scale" ) {
 
@@ -977,7 +977,7 @@
 						if ( scope.axis === "Y" ) newValue.y = oldScale.y * ( 1 + point.y * scaleMultiplier );
 						if ( scope.axis === "Z" ) newValue.z = oldScale.z * ( 1 + point.z * scaleMultiplier );
 
-						scope.plugin.undoableSetState('scale', newValue, oldScale)
+						scope.plugin.undoableSetState('scale', newValue.clone(), oldScale.clone())
 
 					}
 
