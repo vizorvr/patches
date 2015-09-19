@@ -379,6 +379,13 @@ r.connect({
 		next();
 	});
 
+	if (process.env.NODE_ENV !== 'production') {
+		app.use(function(req, res, next) {
+			res.setHeader('Cache-Control', 'no-cache')
+			next()
+		})
+	}
+
 	app.use(['/node_modules'], express.static(path.join(__dirname, 'node_modules')));
 
 	// static files
