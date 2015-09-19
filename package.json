@@ -94,7 +94,7 @@
     "test:server": "npm run test:server:unit && npm run test:server:integration",
     "test": "npm run test:browser && npm run test:server"
   },
-  "author": "Lasse Nielsen, Jaakko Manninen, Mikko Karvonen",
+  "author": "Pixelface, Ltd <info@vizor.io>",
   "license": "MIT",
   "repository": {
     "type": "git",
