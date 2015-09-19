@@ -24,7 +24,6 @@ function Application() {
 		PAUSED: 2
 	};
 
-	this.presetManager = new PresetManager('/presets')
 	this.canvas = E2.dom.canvas;
 	this.c2d = E2.dom.canvas[0].getContext('2d');
 	this.editConn = null;
@@ -2164,6 +2163,8 @@ Application.prototype.showFirstTimeDialog = function() {
  */
 Application.prototype.onCoreReady = function(loadGraphUrl) {
 	var that = this
+
+	this.presetManager = new PresetManager('/presets')
 
 	that.setupPeopleEvents()
 	that.setupStoreListeners()

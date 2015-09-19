@@ -159,9 +159,9 @@ function Core() {
 	this.graph_uid = this.get_uid()
 	this.uidCounter = 0
 
-	this.pluginManager = new PluginManager(this, '/plugins');
-
 	this.textureCache = new TextureCache()
+
+	this.pluginManager = new PluginManager(this, '/plugins');
 
 	this.pluginManager.on('ready', function() {
 		this.onPluginsLoaded()

@@ -33,6 +33,7 @@ function bundleEditorScripts() {
 			.replace('/vendor/', '/browser/vendor/')
 	})
 
+	// add plugins
 	scripts.push(path.resolve(__dirname, '..') + '/browser/plugins/all.plugins.js')
 
 	// concat scripts with gulp

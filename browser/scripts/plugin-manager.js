@@ -18,6 +18,8 @@ function PluginManager(core, base_url) {
 			cache: true,
 			type: 'GET',
 			success: function(data) {
+				E2.core.pluginsByCategory = data
+
 				var pg_root = new PluginGroup('root')
 				
 				$.each(data, function(category)  {
