@@ -8,8 +8,7 @@
 }
 
 .bootbox.modal:before {
-    background-color: rgba(30,33,41,0.8);
-    mix-blend-mode: multiply;
+    background-color: darken(rgba(61,67,83,0.8), 50%);;
     content: '';
 }
 
@@ -23,6 +22,29 @@
     input {
         box-shadow: 0 0 0 rgba(0,0,0,0)!important;
         outline: none!important;
+    }
+    button.bootbox-close-button {
+        display: block;
+        position: absolute;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: 0 none;
+        background: transparent;
+        opacity: 1;
+        svg {
+            display: block;
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            left: 50%;
+            top: 50%;
+            fill: #bccbe4;
+        }
+        &:hover svg {
+            fill: #ffffff;
+        }
     }
     .modal-content {
             border-radius: 4px;
@@ -51,37 +73,19 @@
                     font-weight: 300;
                     margin: 0;
                     line-height: 1;
-                }
-                > button {
-                    display: block;
-                    position: absolute;
-                    width: 36px;
-                    height: 36px;
+                } 
+                button.bootbox-close-button {
                     right: 28px;
                     top: 50%;
                     margin: -18px -25px 0 0;
-                    padding: 0;
-                    border: 0 none;
-                    background: transparent;
-                    svg {
-                        display: block;
-                        position: absolute;
-                        width: 16px;
-                        height: 16px;
-                        margin: -8px 0 0 -8px;
-                        left: 50%;
-                        top: 50%;
-                        fill: #bccbe4;
-                    }
-                    &:hover svg {
-                        fill: #ffffff;
-                    }
                 }
-                    
             }
             .modal-body {
                 background: @bg-light;
                 padding: 22px 40px 18px;
+                font-size: 14px;
+                color: #fff;
+                font-weight: 300;
                 .bootbox-body {
                     padding: 0;
                     text-align: center;
@@ -182,14 +186,26 @@
                         animation: hideSigninError 0.35s ease-in;
                     }
                 }
+                #email-error, #username-error, #password-error {
+                    text-align: right;
+                }
                 button {
                     display: block;
                     position: relative;
                     border-radius: 4px;
                     float: left;
                     background: @bg-bright;
+                    &.bootbox-close-button {
+                        background: transparent;
+                        opacity: 1;
+                        float: none;
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                        margin: 0;
+                    }
                 }
-                button.sign-in-btn {
+                button.sign-btn {
                     width: 100%;
                     height: @modal-control-height;
                     color: @editor-text-default;
@@ -213,6 +229,9 @@
                         margin: -12px 0 0;
                         stroke: @editor-text-active;
                     }
+                    &.disabled {
+                        background: #515c75;
+                    }
                 }
             }
             .modal-footer {
@@ -220,7 +239,7 @@
                 border: 0 none;
                 text-align: center;
                 padding: 20px 40px;
-                span {
+                span, p {
                     padding: 0;
                     margin: 0;
                     display: block;
@@ -235,6 +254,13 @@
                         }
                     }
                 }
+                p {
+                    padding: 0 40px 8px 40px;
+                    text-align: center;
+                    &:last-child {
+                        padding: 0 40px;
+                    }
+                }
                 button.btn {
                     border-radius: 4px;
                     background: @bg-bright;
@@ -244,6 +270,134 @@
                 }
             }
             
+    }
+}
+
+.modal-dialog.welcome {
+    width: 588px;
+    height: auto;
+    margin-top: -300px;
+    top: 50%;
+    border-radius: 0;
+    .welcome-screen {
+        background: url("/images/welcome-bg.png") no-repeat center center;
+        position: relative;
+        float: left;
+        width: 100%;
+        text-align: center;
+        > button {
+            outline: 0!important;
+            box-shadow: 0 0 0 rgba(0,0,0,0) !important;
+            &.bootbox-close-button {
+                right: 0;
+                top: 0;
+                margin: 0;
+            }
+            &#welcome-new {
+                background: rgba(30,33,31,0.8);
+                width: 261px;
+                height: 60px;
+                position: relative;
+                margin: 22px auto 37px auto;
+                clear: both;
+                padding-left: 45px;
+                color: #ffffff;
+                font-size: 18px;
+                font-weight: 600;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                border: 0 none;
+                border-radius: 4px;
+                svg {
+                    position: absolute;
+                    display: block;
+                    left: 25px;
+                    top: 50%;
+                    margin-top: -8px;
+                    height: 16px;
+                    width: 16px;
+                    fill: #ffffff;
+                }
+                &:hover {
+                    background: rgba(30,33,31,0.9);
+                }
+            }
+            &#welcome-sign-up {
+                margin: 22px auto 10px;
+                display: block;
+                position: relative;
+                border: 1pxc solid #ffffff;
+                border-radius: 4px;
+                background: transparent;
+                color: #ffffff;
+                font-weight: 300;
+                height: 37px;
+                width: 125px;
+                &:hover {
+                    background: rgba(30,33,31,0.5);
+                }
+            }
+        }
+        .welcome-logo {
+            margin: 54px auto 52px auto;
+            position: relative;
+            clear: both;
+            svg {
+                display: block;
+                position: relative;
+                clear: both;
+                height: 36px;
+                width: 36px;
+                fill: #ffffff;
+            }
+            h1 {
+                font-weight: 300;
+                color: #ffffff;
+                margin: 0 auto;
+                clear: both;
+                text-align: center;
+                padding: 0;
+                font-size: 36px;
+                line-height: 1.33;
+            }
+        }
+        > p {
+            padding: 0;
+            color: #ffffff;
+            font-weight: 300;
+            font-size: 14px;
+            text-align: center;
+            a, a:active {
+                text-decoration: none;
+                font-weight: 400;
+                color: #ffffff;
+                &:hover {
+                    text-decoration: underline;
+                    color: #ffffff;
+                }
+            }
+        }  
+    }
+    .welcome-footer {
+        height: 48px;
+        width: 100%;
+        float: left;
+        background: #385a8a;
+        text-align: center;
+        a, a:active {
+            color: #ffffff;
+            font-weight: 300;
+            text-decoration: none; 
+            display: inline-block;
+            height: 48px;
+            padding: 16px 23px 0 23px;
+            text-decoration: none;
+            font-size: 14px;
+            &:hover {
+                background: @bg-bright;
+                text-decoration: none;
+            }
+        }
     }
 }
 

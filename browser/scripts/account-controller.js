@@ -16,25 +16,87 @@ AccountController.prototype.renderLoginView = function(user)
 	this._bindEvents($('#user-pulldown'));
 }
 
+AccountController.prototype.isValidEmail = function(email) {
+    var re = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+    return re.test(email);
+}
+
+AccountController.prototype.showError = function(ertype, ertext) {
+	$('#'+ertype+'-error span').html(ertext);
+	$('#'+ertype+'-error').addClass('revealError');
+	
+	switch (true) {
+		case (ertype === 'signin'): {
+			$('#login-form_id .form-input').addClass('wrong');
+			break;
+		}
+		case (ertype === 'email'): {
+			$('#login-form_id #email_id').addClass('wrong');
+			break;
+		}
+		case (ertype === 'username'): {
+			$('#login-form_id #username_id').addClass('wrong');
+			break;
+		}
+		case (ertype === 'password'): {
+			$('#login-form_id #username_id').addClass('wrong');
+			break;
+		}
+	};
+}
+
+AccountController.prototype.checkSignupFields = function() {
+	var that = this;
+	var result = false;
+	if (($('#username_id').val()) && ($('#email_id').val()) && (that.isValidEmail($('#email_id').val())) && ($('#password_id').val().length>=8)) {
+		result = true;
+	}
+	return result;
+}
+
+AccountController.prototype.hideError = function(ertype) {
+	if ($('#'+ertype+'-error').hasClass('revealError')) {
+		$('#'+ertype+'-error').addClass('hideError')
+							.removeClass('revealError');
+		setTimeout(function() {
+			$('#'+ertype+'-error').removeClass('hideError')
+								.find('span')
+								.html('');
+		},1000)
+	}
+}
+
 AccountController.prototype._bindEvents = function(el, dfd)
 {
 	var that = this;
 	
 	$('.form-input input', el).on('focus', function() {
 		$(this).parent().removeClass('wrong').find('label').addClass('filled-label');
-		if ($('#login-error').hasClass('revealError')) {
-			$('#login-error').addClass('hideError')
-							 .removeClass('revealError');
-			setTimeout(function() {
-				$('#login-error').removeClass('hideError')
-								 .find('span')
-								 .html('');
-			},1000)
-		}
+		var errorTypeToCheck=$(this).attr('name');
+		that.hideError(errorTypeToCheck);
+		that.hideError('general');
 	});
 	$('.form-input input', el).on('blur', function() {
 		if (!$(this).val())
 			$(this).parent().find('label').removeClass('filled-label');
+			
+		if ($(this).attr('name') === 'password' && $(this).val().length < 8) {
+			var errText = 'Please use a password of at least 8 characters' 
+			that.showError('password',errText);
+		}
+		
+		if ($(this).attr('name') === 'email' && !that.isValidEmail($(this).val())) {
+			var errText = 'Whoops! This isn\'t a valid email address.' 
+			that.showError('email',errText);
+		}
+	});
+	
+	$('#signup-form_id .form-input input').on('keyup keypress blur change', function() {
+		if (that.checkSignupFields()) {
+			$('#sign-up-btn').removeClass('disabled');
+		} else {
+			$('#sign-up-btn').addClass('disabled');
+		}
 	});
 	
 	$('a.login', el).on('click', function(evt)
@@ -43,7 +105,7 @@ AccountController.prototype._bindEvents = function(el, dfd)
 		bootbox.hideAll();
 		that.openLoginModal(dfd);
 	});
-
+	
 	$('a.signup', el).on('click', function(evt)
 	{
 		evt.preventDefault();
@@ -56,23 +118,15 @@ AccountController.prototype.openLoginModal = function(dfd) {
 	var that = this;
 	var dfd = dfd || when.defer();
 	var loginTemplate = E2.views.account.login;
-	var customFooter = '<span class="pull-left"><a href="/forgot"'
-					+ 'class="forgot">Forgot password?</a></span>'
-					+ '<span class="pull-right">Don\'t have an account? '
-					+ '<a href="/signup" class="signup">Sign up here</a></span>';
 
 	ga('send', 'event', 'account', 'open', 'loginModal');
 	
-	customFooter = '<div class="modal-footer">' + customFooter + '</div>';
-
 	var bb = bootbox.dialog({
 		animate: false,
 		show: true,
-		title: 'Sign in',
-		message: loginTemplate(),
+		message: 'Rendering',
 	}).init(function() {
-		E2.app.replaceDefaultCross();
-		$('.modal-content').append(customFooter);
+		E2.app.useCustomBootboxTemplate(loginTemplate());
 	});
 
 	this._bindEvents(bb, dfd);
@@ -81,6 +135,12 @@ AccountController.prototype.openLoginModal = function(dfd) {
 	formEl.submit(function( event )
 	{
 		event.preventDefault();
+		
+		if (!that.isValidEmail(formEl.find('#email_id').val())) {
+			var errText = 'Whoops! This isn\'t a valid email address.';
+			that.showError('email',errText);
+			return;
+		}
 
 		var formData = formEl.serialize();
 
@@ -91,10 +151,8 @@ AccountController.prototype.openLoginModal = function(dfd) {
 			data: formData,
 			error: function(err)
 			{	
-				var erText = 'Whoops! This email and password combination isn\'t right.'
-				$('#login-error span').html(erText);
-				$('#login-error').addClass('revealError');
-				$('#login-form_id .form-input').addClass('wrong');
+				var errText = 'Whoops! This email and password combination isn\'t right.'
+				that.showError('general',errText);
 			},
 			success: function(user)
 			{
@@ -115,18 +173,16 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	var that = this;
 	var dfd = dfd || when.defer();
 	var signupTemplate = E2.views.account.signup;
-
-	ga('send', 'event', 'account', 'open', 'signupModal')
+	
+	ga('send', 'event', 'account', 'open', 'signupModal');
 
 	var bb = bootbox.dialog(
 	{
 		show: true,
 		animate: false,
-		message: signupTemplate(),
-		//title: "loginDialog"
-		//onEscape: function() {  }
+		message: 'Rendering',
 	}).init(function() {
-		E2.app.replaceDefaultCross();
+		E2.app.useCustomBootboxTemplate(signupTemplate);
 	});
 
 	this._bindEvents(bb, dfd);
@@ -135,7 +191,14 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	formEl.submit(function( event )
 	{
 		event.preventDefault();
-
+		
+		if (!that.checkSignupFields(formEl)) {
+			var errText = 'Please fill all required fields.'
+			that.showError('general',errText);
+			$('#signup-form_id .required').parent.addClass('wrong');
+			return;
+		}
+			
 		var formData = formEl.serialize();
 
 		$.ajax(
@@ -146,7 +209,9 @@ AccountController.prototype.openSignupModal = function(dfd) {
 			error: function(err, msg)
 			{
 				console.log(err);
-				bootbox.alert("Sorry, creating your account failed. Please make sure to fill in all the fields correctly.");
+				var errText = 'Sign up failed. Please check required fields.'
+				that.showError('general',errText);
+				$('#signup-form_id .required').parent().addClass('wrong');
 			},
 			success: function(user)
 			{

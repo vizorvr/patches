@@ -2151,13 +2151,9 @@ Application.prototype.onSignInClicked = function() {
 	}
 }
 
-Application.prototype.replaceDefaultCross = function() {
-	$('.bootbox-close-button').appendTo('.modal-header')
-							  .html('<svg class="icon-dialog-close">'
-								   +'<use xlink:href="#icon-close">'
-								   +'</use></svg>')
-							  .removeClass('close')
-							  .attr('style','');
+Application.prototype.useCustomBootboxTemplate = function(template) {
+	$('.modal-content').hide().html(template).show();
+	$('.bootbox-close-button').attr('style','');
 }
 
 Application.prototype.start = function() {
@@ -2308,6 +2304,12 @@ Application.prototype.start = function() {
 			trigger: 'hover',
 			animation: false
 	});
+	
+	$(document).on("shown.bs.modal", function() {
+		$('.bootbox-close-button').html('<svg class="icon-dialog-close">'
+									  + '<use xlink:href="#icon-close"></use></svg>')
+								  .attr('style','');
+	});
 }
 
 Application.prototype.showFirstTimeDialog = function() {
@@ -2315,26 +2317,36 @@ Application.prototype.showFirstTimeDialog = function() {
 		return;
 
 	Cookies.set('vizor', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
+	
+	var firstTimeTemplate = E2.views.account.firsttime;
 
 	var diag = bootbox.dialog({
-		title: 'First time here?',
-		message: '<h4>Check out our '+
-			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank">Youtube tutorials</a> '+
-			'or<br>'+
-			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>',
+		message: 'Rendering',
 		onEscape: true,
-		html: true,
-		buttons: { Ok: function() {}}
+		html: true
 	}).init(function() {
-		E2.app.replaceDefaultCross();
+		E2.app.useCustomBootboxTemplate(firstTimeTemplate);
 	});
 
-	diag.find('.modal-dialog').addClass('modal-sm')
-	diag.css({
-		top: '50%',
-		'margin-top': function () {
-			return -(diag.height() / 2);
-		}
+	diag.find('.modal-dialog').addClass('welcome');
+	
+	diag.find('a.login').on('click', function(evt)
+	{
+		evt.preventDefault();
+		bootbox.hideAll();
+		E2.controllers.account.openLoginModal();
+	});
+	
+	diag.find('button.signup').on('click', function(evt)
+	{
+		evt.preventDefault();
+		bootbox.hideAll();
+		E2.controllers.account.openSignupModal();
+	});
+	
+	diag.find('button#welcome-new').on('click', function()
+	{
+		E2.app.onNewClicked();
 	});
 
 }
