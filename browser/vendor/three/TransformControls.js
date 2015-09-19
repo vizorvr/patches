@@ -680,6 +680,7 @@
 		var oldPosition = new THREE.Vector3();
 		var oldScale = new THREE.Vector3();
 		var oldRotationMatrix = new THREE.Matrix4();
+		var oldQuaternion = new THREE.Quaternion();
 
 		var parentRotationMatrix  = new THREE.Matrix4();
 		var parentScale = new THREE.Vector3();
@@ -726,8 +727,8 @@
 
 		this.attach = function ( object ) {
 
-			this.object = object;
 			this.plugin = object.backReference
+			this.object = this.plugin.object3d;
 			this.visible = true;
 			this.update();
 
@@ -868,14 +869,17 @@
 
 						oldPosition.set( scope.plugin.state.position.x, scope.plugin.state.position.y, scope.plugin.state.position.z );
 						oldScale.set( scope.plugin.state.scale.x, scope.plugin.state.scale.y, scope.plugin.state.scale.z );
+						oldQuaternion.set( scope.plugin.state.quaternion.x, scope.plugin.state.quaternion.y, scope.plugin.state.quaternion.z, scope.plugin.state.quaternion.w )
 
-						oldRotationMatrix.extractRotation( scope.object.matrix );
-						worldRotationMatrix.extractRotation( scope.object.matrixWorld );
+						oldRotationMatrix.extractRotation( scope.plugin.object3d.matrix );
+						worldRotationMatrix.extractRotation( scope.plugin.object3d.matrixWorld );
 
-						parentRotationMatrix.extractRotation( scope.object.parent.matrixWorld );
-						parentScale.setFromMatrixScale( tempMatrix.getInverse( scope.object.parent.matrixWorld ) );
+						parentRotationMatrix.extractRotation( scope.plugin.object3d.parent.matrixWorld );
+						parentScale.setFromMatrixScale( tempMatrix.getInverse( scope.plugin.object3d.parent.matrixWorld ) );
 
 						offset.copy( planeIntersect.point );
+
+						E2.app.undoManager.begin('Transform')
 
 					}
 
@@ -1002,7 +1006,8 @@
 					tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionE );
 					tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionXYZ );
 
-					scope.object.quaternion.copy( tempQuaternion );
+					//scope.object.quaternion.copy( tempQuaternion );
+					scope.plugin.undoableSetState('quaternion', tempQuaternion.clone(), oldQuaternion.clone())
 
 				} else if ( scope.axis === "XYZE" ) {
 
@@ -1015,7 +1020,8 @@
 					tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionX );
 					tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionXYZ );
 
-					scope.object.quaternion.copy( tempQuaternion );
+					//scope.object.quaternion.copy( tempQuaternion );
+					scope.plugin.undoableSetState('quaternion', tempQuaternion.clone(), oldQuaternion.clone())
 
 				} else if ( scope.space === "local" ) {
 
@@ -1035,7 +1041,8 @@
 					if ( scope.axis === "Y" ) quaternionXYZ.multiplyQuaternions( quaternionXYZ, quaternionY );
 					if ( scope.axis === "Z" ) quaternionXYZ.multiplyQuaternions( quaternionXYZ, quaternionZ );
 
-					scope.object.quaternion.copy( quaternionXYZ );
+					//scope.object.quaternion.copy( quaternionXYZ );
+					scope.plugin.undoableSetState('quaternion', quaternionXYZ.clone(), oldQuaternion.clone())
 
 				} else if ( scope.space === "world" ) {
 
@@ -1055,7 +1062,8 @@
 
 					tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionXYZ );
 
-					scope.object.quaternion.copy( tempQuaternion );
+					//scope.object.quaternion.copy( tempQuaternion );
+					scope.plugin.undoableSetState('quaternion', tempQuaternion.clone(), oldQuaternion.clone())
 
 				}
 
@@ -1068,6 +1076,7 @@
 		}
 
 		function onPointerUp( event ) {
+			E2.app.undoManager.end()
 
 			if ( event.button !== undefined && event.button !== 0 ) return;
 
