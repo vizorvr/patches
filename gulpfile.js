@@ -29,7 +29,11 @@ paths = {
 			'./browser/scripts/abstractThreeLoaderObjPlugin.js',
 			'./browser/scripts/abstractThreeMaterialPlugin.js',
 			'./browser/scripts/abstractThreeMeshPlugin.js',
-			
+		
+			'./browser/scripts/worldEditor/worldEditor.js',
+			'./browser/scripts/worldEditor/worldEditorCamera.js',
+			'./browser/scripts/worldEditor/worldEditorOriginGrid.js',
+
 			'./browser/vendor/three/three.js',
 			'./browser/vendor/three/OBJLoader.js',
 			'./browser/vendor/three/OBJMTLLoader.js',
