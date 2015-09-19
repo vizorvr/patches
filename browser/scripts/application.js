@@ -1361,16 +1361,22 @@ Application.prototype.onKeyDown = function(e) {
 		}
 	}
 	else if (e.keyCode === toggleWorldEditorKey) { // v
-		if (E2.core.worldEditor.isActive()) {
-			E2.core.worldEditor.deactivate()
-		}
-		else {
-			E2.core.worldEditor.activate()
-		}
+		this.toggleWorldEditor()
 	}
 
 
 };
+
+Application.prototype.toggleWorldEditor = function() {
+	if (E2.core.worldEditor.isActive()) {
+		E2.dom.worldEditorButton.text('Editor View')
+		E2.core.worldEditor.deactivate()
+	}
+	else {
+		E2.dom.worldEditorButton.text('Camera View')
+		E2.core.worldEditor.activate()
+	}
+}
 
 Application.prototype.onKeyUp = function(e)
 {
@@ -2035,6 +2041,10 @@ Application.prototype.start = function() {
 			bootbox.hideAll()
 	})
 
+	E2.dom.worldEditorButton.click(function() {
+		E2.app.toggleWorldEditor()
+	});
+
 	$('button#fullscreen').click(function() {
 		E2.app.toggleFullscreen()
 	});
@@ -2226,6 +2236,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.mid_pane = $('#mid-pane');
 	E2.dom.right_pane = $('#right-pane');
 	E2.dom.dbg = $('#dbg');
+	E2.dom.worldEditorButton = $('#worldEditor');
 	E2.dom.play = $('#play');
 	E2.dom.play_i = $('i', E2.dom.play);
 	E2.dom.pause = $('#pause');
