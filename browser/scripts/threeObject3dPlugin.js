@@ -20,8 +20,8 @@ function ThreeObject3DPlugin(core) {
 
 	this.state = {
 		position: new THREE.Vector3(0, 0, 0),
-		rotation: new THREE.Vector3(0, 0, 0),
-		scale: new THREE.Vector3(1, 1, 1)
+		scale: new THREE.Vector3(0, 0, 0),
+		quaternion: new THREE.Quaternion()
 	}
 }
 
@@ -34,8 +34,8 @@ ThreeObject3DPlugin.prototype.reset = function() {
 		this.object3d = new THREE.Object3D()
 
 	this.object3d.position.copy(this.state.position)
-	this.object3d.rotation.copy(this.state.rotation)
 	this.object3d.scale.copy(this.state.scale)
+	this.object3d.quaternion.copy(this.state.quaternion)
 }
 
 ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
@@ -53,9 +53,11 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 			that.state.position.z = data.z
 		},
 		function() {
-			that.state.rotation.x = data.x
-			that.state.rotation.y = data.y
-			that.state.rotation.z = data.z
+			var temp = new THREE.Quaternion().setFromEuler(new THREE.Euler(data.x, data.y, data.z))
+			that.state.quaternion.x = temp.x
+			that.state.quaternion.y = temp.y
+			that.state.quaternion.z = temp.z
+			that.state.quaternion.w = temp.w
 		},
 		function() {
 			that.state.scale.x = data.x
@@ -91,7 +93,7 @@ ThreeObject3DPlugin.prototype.state_changed = function(ui) {
 }
 
 ThreeObject3DPlugin.prototype.update_state = function() {
-	this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
-	this.object3d.rotation.set(this.state.rotation.x, this.state.rotation.y, this.state.rotation.z)
 	this.object3d.scale.set(this.state.scale.x, this.state.scale.y, this.state.scale.z)
+	this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
+	this.object3d.quaternion.set(this.state.quaternion.x, this.state.quaternion.y, this.state.quaternion.z, this.state.quaternion.w)
 }

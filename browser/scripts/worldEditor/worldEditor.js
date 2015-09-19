@@ -51,14 +51,17 @@ WorldEditor.prototype.update = function() {
 	// modes: 'translate'/'rotate'/'scale'
 	if (!E2.app.shift_pressed && E2.app.ctrl_pressed) {
 		this.transformControls.setMode('rotate')
+		this.transformControls.setSpace('local')
 	}
 
 	if (E2.app.shift_pressed && E2.app.ctrl_pressed) {
 		this.transformControls.setMode('scale')
+		this.transformControls.setSpace('local')
 	}
 
 	if (!E2.app.shift_pressed && !E2.app.ctrl_pressed) {
 		this.transformControls.setMode('translate')
+		this.transformControls.setSpace('local')
 	}
 }
 
