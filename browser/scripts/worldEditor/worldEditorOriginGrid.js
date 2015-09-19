@@ -3,7 +3,7 @@ function WorldEditorOriginGrid() {
 	 * @author mrdoob / http://mrdoob.com/
 	 */
 
-	EditorGridHelper = function ( size, step ) {
+	var EditorGridHelper = function ( size, step ) {
 
 		var geometry = new THREE.Geometry()
 		var material =
