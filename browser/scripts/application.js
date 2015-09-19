@@ -2231,7 +2231,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.load_spinner = $('#load-spinner');
 	E2.dom.filename_input = $('#filename-input');
 
-	$.ajaxSetup({ cache: false });
+	// $.ajaxSetup({ cache: false });
 
 	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, ex) {
 		if(settings.dataType === 'script' && !settings.url.match(/^\/plugins\/all.plugins\.js/)) {

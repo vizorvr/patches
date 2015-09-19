@@ -263,7 +263,6 @@ r.connect({
 		throw err
 	});
 
-
 	// stat() files in gridfs
 	app.get(/^\/stat\/data\/.*/, function(req, res) {
 		var path = req.path.replace(/^\/stat\/data/, '');
@@ -282,10 +281,14 @@ r.connect({
 	// stream files from fs/gridfs
 	app.get(/^\/data\/.*/, function(req, res, next) {
 		var path = req.path.replace(/^\/data/, '');
+		var model = path.split('/')[1]
+		var cacheControl = 'public'
+
+		if (model === 'graph')
+			cacheControl = 'public, must-revalidate'
 
 		gfs.stat(path)
-		.then(function(stat)
-		{
+		.then(function(stat) {
 			if (!stat)
 				return res.status(404).send();
 
@@ -307,7 +310,7 @@ r.connect({
 				res.writeHeader(206, {
 					'Content-Range': 'bytes ' + start + '-' + end + '/' + stat.length,
 					'Accept-Ranges': 'bytes',
-					'Cache-Control': 'public, must-revalidate, max-age=86400',
+					'Cache-Control': cacheControl,
 					'Content-Length': chunksize,
 					'Content-Type': stat.contentType
 				});
@@ -323,7 +326,7 @@ r.connect({
 				res.header('Accept-Ranges', 'bytes');
 				res.header('ETag', stat.md5);
 				res.header('Content-Length', stat.length)
-				res.header('Cache-Control', 'public, must-revalidate, max-age=86400');
+				res.header('Cache-Control', cacheControl)
 
 				gfs.createReadStream(path)
 				.on('error', next)
@@ -353,13 +356,6 @@ r.connect({
 		.catch(next);
 	});
 
-	// set no-cache headers by default
-	app.use(function(req, res, next) {
-		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
-		res.setHeader('Expires', 0);
-		next();
-	});
-
 	// allow caching editor-*.min.js
 	app.get([
 		'/scripts/editor-*.min.js',
@@ -379,7 +375,7 @@ r.connect({
 		'/plugins/all.plugins.js'
 		],
 		function(req, res, next) {
-		res.setHeader('Cache-Control', 'must-revalidate, max-age=300');
+		res.setHeader('Cache-Control', 'must-revalidate, max-age=86400');
 		next();
 	});
 
