@@ -2,6 +2,7 @@ function WorldEditor() {
 	this.domElement = E2.dom.webgl_canvas[0]
 	this.camera = new WorldEditorCamera(this.domElement)
 
+	var that = this
 	var active = true
 
 	this.activate = function() {
@@ -9,6 +10,10 @@ function WorldEditor() {
 	}
 
 	this.deactivate = function() {
+		if (this.activeScene && this.activeScene.children.indexOf(this.editorTree)) {
+			this.activeScene.remove(this.editorTree)
+		}
+
 		active = false
 	}
 
@@ -35,6 +40,14 @@ function WorldEditor() {
 WorldEditor.prototype.update = function() {
 	if (!this.isActive()) {
 		return
+	}
+
+	if (this.activeScene && this.editorTree && this.editorTree.parent !== this.activeScene) {
+		if (this.editorTree.parent) {
+			this.editorRoot.parent.remove(this.editorTree)
+		}
+
+		this.activeScene.add(this.editorTree)
 	}
 
 	// update the reference grid scale based on camera distance from target
@@ -70,7 +83,7 @@ WorldEditor.prototype.getCamera = function() {
 }
 
 WorldEditor.prototype.updateScene = function(scene) {
-
+	this.activeScene = scene
 }
 
 WorldEditor.prototype.getEditorSceneTree = function() {

@@ -98,14 +98,6 @@
 		if (E2.app.worldEditor.isActive()) {
 			// tell the editor about changes in the scene
 			E2.app.worldEditor.updateScene(this.scene)
-
-			// add the editor object tree into the scene
-			var editorRoot = E2.app.worldEditor.getEditorSceneTree()
-
-			var editorIdx = this.scene.children.indexOf(editorRoot)
-			if (editorIdx < 0) {
-				this.scene.add(editorRoot)
-			}
 		}
 	}
 
