@@ -84,9 +84,9 @@
 			this.perspectiveCamera.updateMatrixWorld()
 		}
 
-		if (E2.core.worldEditor.isActive()) {
+		if (E2.app.worldEditor.isActive()) {
 			// Render the scene through the world editor camera
-			this.manager.render(this.scene, E2.core.worldEditor.getCamera())
+			this.manager.render(this.scene, E2.app.worldEditor.getCamera())
 		}
 		else {
 			// Render the scene through the experience camera
@@ -95,12 +95,12 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.patchSceneForWorldEditor = function() {
-		if (E2.core.worldEditor.isActive()) {
+		if (E2.app.worldEditor.isActive()) {
 			// tell the editor about changes in the scene
-			E2.core.worldEditor.updateScene(this.scene)
+			E2.app.worldEditor.updateScene(this.scene)
 
 			// add the editor object tree into the scene
-			var editorRoot = E2.core.worldEditor.getEditorSceneTree()
+			var editorRoot = E2.app.worldEditor.getEditorSceneTree()
 
 			var editorIdx = this.scene.children.indexOf(editorRoot)
 			if (editorIdx < 0) {
@@ -113,11 +113,11 @@
 		if (E2.app.noodlesVisible === true)
 			return;
 
-		var isEditor = E2.core.worldEditor.isActive()
+		var isEditor = E2.app.worldEditor.isActive()
 
 		var activeCamera
 		if (isEditor) {
-			activeCamera = E2.core.worldEditor.getCamera()
+			activeCamera = E2.app.worldEditor.getCamera()
 		}
 		else {
 			activeCamera = this.perspectiveCamera
@@ -147,11 +147,11 @@
 			}
 
 			if (isEditor) {
-				E2.core.worldEditor.setSelection(intersects)
+				E2.app.worldEditor.setSelection(intersects)
 			}
 		}
 		else if (isEditor) {
-			E2.core.worldEditor.setSelection([])
+			E2.app.worldEditor.setSelection([])
 		}
 	}
 
