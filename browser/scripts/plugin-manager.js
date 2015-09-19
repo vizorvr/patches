@@ -17,6 +17,7 @@ function PluginManager(core, base_url) {
 	function loadPlugins() {
 		$.ajax({
 			url: that.base_url + '/plugins.json',
+			cache: true,
 			type: 'GET',
 			success: function(data) {
 				var pg_root = new PluginGroup('root')

@@ -116,6 +116,7 @@ Player.prototype.load_from_url = function(url, cb) {
 
 	$.ajax({
 		url: url,
+		cache: true,
 		dataType: 'text',
 		headers: {},
 		success: function(json) {
