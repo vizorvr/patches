@@ -29,7 +29,9 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.stop = function() {
-		this.renderer.clear()
+		if (this.renderer) {
+			this.renderer.clear()
+		}
 	}
 
 	ThreeWebGLRendererPlugin.prototype.reset = function() {
@@ -56,6 +58,7 @@
 				break;
 			case 1:
 				this.scene = data
+				this.patchSceneForWorldEditor(this.scene)
 				break;
 			case 2:
 				this.clearColor = new THREE.Color(data.r, data.g, data.b)
@@ -75,20 +78,50 @@
 			return
 		}
 
-		// Render the scene through the manager.
-
 		if (this.manager.isVRMode()) {
 			// vr mode doesn't necessarily update the world matrix
 			// could be a bug in new version of three.js
 			this.perspectiveCamera.updateMatrixWorld()
 		}
 
-		this.manager.render(this.scene, this.perspectiveCamera)
+		if (E2.app.worldEditor.isActive()) {
+			// Render the scene through the world editor camera
+			this.manager.render(this.scene, E2.app.worldEditor.getCamera())
+		}
+		else {
+			// Render the scene through the experience camera
+			this.manager.render(this.scene, this.perspectiveCamera)
+		}
+	}
+
+	ThreeWebGLRendererPlugin.prototype.patchSceneForWorldEditor = function() {
+		if (E2.app.worldEditor.isActive()) {
+			// tell the editor about changes in the scene
+			E2.app.worldEditor.updateScene(this.scene)
+
+			// add the editor object tree into the scene
+			var editorRoot = E2.app.worldEditor.getEditorSceneTree()
+
+			var editorIdx = this.scene.children.indexOf(editorRoot)
+			if (editorIdx < 0) {
+				this.scene.add(editorRoot)
+			}
+		}
 	}
 
 	ThreeWebGLRendererPlugin.prototype.pick_object = function(e) {
 		if (E2.app.noodlesVisible === true)
 			return;
+
+		var isEditor = E2.app.worldEditor.isActive()
+
+		var activeCamera
+		if (isEditor) {
+			activeCamera = E2.app.worldEditor.getCamera()
+		}
+		else {
+			activeCamera = this.perspectiveCamera
+		}
 
 		var mouseVector = new THREE.Vector3()
 
@@ -101,22 +134,29 @@
 		mouseVector.z = 0
 
 		if (this.scene && this.scene.children && this.scene.children.length > 0) {
-			this.raycaster.setFromCamera(mouseVector, this.perspectiveCamera)
+			this.raycaster.setFromCamera(mouseVector, activeCamera)
 
 			// only intersect scene.children[0] - children [1] is the overlays
-			var intersects = this.raycaster.intersectObjects(this.scene.children[0].children)
-
-			for (var i = 0; i < intersects.length; i++) {
+			var intersects = this.raycaster.intersectObjects(this.scene.children[0].children, /*recursive = */ true)
+			
+			for (var i = 0; i < Math.min(intersects.length, 1); i++) {
 				if (intersects[i].object.backReference !== undefined) {
 					E2.app.clearSelection()
 					E2.app.markNodeAsSelected(intersects[i].object.backReference.parentNode)
 				}
 			}
+
+			if (isEditor) {
+				E2.app.worldEditor.setSelection(intersects)
+			}
+		}
+		else if (isEditor) {
+			E2.app.worldEditor.setSelection([])
 		}
 	}
 
 	ThreeWebGLRendererPlugin.prototype.setup_object_picking = function() {
-		$(document).click(this.pick_object.bind(this))
+		$(document).mousedown(this.pick_object.bind(this))
 		this.raycaster = new THREE.Raycaster()
 	}
 
