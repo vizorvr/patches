@@ -1184,7 +1184,7 @@ Application.prototype.toggleLeftPane = function() {
 };
 
 Application.prototype.isVRCameraActive = function() {
-	//console.log('noodles:', this.noodlesVisible, 'we: ', E2.core.worldEditor)
+	//console.log('noodles:', this.noodlesVisible, 'we: ', E2.app.worldEditor)
 	return !(this.noodlesVisible || E2.app.worldEditor.isActive())
 }
 
@@ -1374,13 +1374,13 @@ Application.prototype.onKeyDown = function(e) {
 };
 
 Application.prototype.toggleWorldEditor = function() {
-	if (E2.core.worldEditor.isActive()) {
+	if (E2.app.worldEditor.isActive()) {
 		E2.dom.worldEditorButton.text('Editor View')
-		E2.core.worldEditor.deactivate()
+		E2.app.worldEditor.deactivate()
 	}
 	else {
 		E2.dom.worldEditorButton.text('Camera View')
-		E2.core.worldEditor.activate()
+		E2.app.worldEditor.activate()
 	}
 }
 
