@@ -44,7 +44,7 @@ WorldEditor.prototype.update = function() {
 
 	if (this.activeScene && this.editorTree && this.editorTree.parent !== this.activeScene) {
 		if (this.editorTree.parent) {
-			this.editorRoot.parent.remove(this.editorTree)
+			this.editorTree.parent.remove(this.editorTree)
 		}
 
 		this.activeScene.add(this.editorTree)
