@@ -27,6 +27,7 @@ var E2 = {};
 window.E2 = E2; // global scope so plugins can access it
 
 E2.app = null;
+E2.ui = null;	// app sets this to a VizorUI instance
 E2.dom = {};
 E2.plugins = {};
 E2.slot_type = { input: 0, output: 1 };

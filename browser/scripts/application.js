@@ -59,6 +59,7 @@ function Application() {
 	this.graphStore = new GraphStore()
 	this.peopleStore = new PeopleStore()
 	this.peopleManager = new PeopleManager(this.peopleStore, $('#peopleTab'))
+
 	this.viewMode = 'editor'
 
 	// Make the UI visible now that we know that we can execute JS
@@ -1160,8 +1161,10 @@ Application.prototype.onFullScreenChanged = function() {
 Application.prototype.onKeyDown = function(e) {
 	var that = this
 
+	if (E2.ui.isModalOpen()) return true;
+
 	if (E2.util.isTextInputInFocus(e))
-		return;
+		return true;		// Chrome doesn't like undefined returns
 
 	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
 	{
@@ -1172,10 +1175,10 @@ Application.prototype.onKeyDown = function(e) {
 	var toggleWorldEditorKey = 86
 
 	if (this.isVRCameraActive() && e.keyCode !== toggleNoodlesKey && e.keyCode !== toggleWorldEditorKey)
-		return;
+		return true;
 	
 	if ((!this.noodlesVisible && e.keyCode !== 9) && (e.keyCode !== 66 && this.ctrl_pressed == false)) 
-		return;
+		return true;
 		
 
 	// arrow up || down
@@ -1458,63 +1461,7 @@ Application.prototype.onSaveSelectionAsPresetClicked = function() {
 	this.openPresetSaveDialog(JSON.stringify({ root: graph }))
 }
 
-Application.prototype.openPresetSaveDialog = function(serializedGraph) {
-	var that = this
-	var username = E2.models.user.get('username')
-	if (!username) {
-		return E2.controllers.account.openLoginModal()
-	}
-
-	var presetsPath = '/'+username+'/presets/'
-
-	E2.dom.load_spinner.show()
-
-	$.get(presetsPath, function(files) {
-		var fcs = new FileSelectControl()
-		.frame('save-frame')
-		.template('preset')
-		.buttons({
-			'Cancel': function() {
-				E2.dom.load_spinner.hide()
-			},
-			'Save': function(name) {
-				if (!name)
-					return bootbox.alert('Please enter a name for the preset')
-
-				serializedGraph = serializedGraph || that.player.core.serialise()
-
-				$.ajax({
-					type: 'POST',
-					url: presetsPath,
-					data: {
-						name: name,
-						graph: serializedGraph
-					},
-					dataType: 'json',
-					success: function(saved) {
-						E2.dom.load_spinner.hide()
-						that.presetManager.refresh()
-					},
-					error: function(x, t, err) {
-						E2.dom.load_spinner.hide();
-
-						if (x.status === 401)
-							return E2.controllers.account.openLoginModal();
-
-						if (x.responseText)
-							bootbox.alert('Save failed: ' + x.responseText);
-						else
-							bootbox.alert('Save failed: ' + err);
-					}
-				});
-			}
-		})
-		.files(files)
-		.modal();
-
-		return fcs;
-	})
-};
+Application.prototype.openPresetSaveDialog = null;	// ui replaces this
 
 Application.prototype.onSaveACopyClicked = function(cb) {
 	this.openSaveACopyDialog();
@@ -1987,7 +1934,7 @@ Application.prototype.setupPeopleEvents = function() {
 }
 
 Application.prototype.onNewClicked = function() {
-	window.location.href = '/new';
+	window.location.href = '/edit';
 }
 
 Application.prototype.onForkClicked = function() {
@@ -2150,27 +2097,9 @@ Application.prototype.onPeopleTabClicked = function() {
 	return true;
 }
 
-Application.prototype.onSearchResultsChange = function() { 
-	var resultsCount = $('.result.table tbody').children().length;
-	if (resultsCount>0) {
-		E2.dom.presetsLib.removeClass('collapsed');
-		E2.dom.presetsLib.find('.preset-list-container').show();
-		var resultsHeight = $('.result.table').outerHeight(true);
-		var maxHeight = 310;
-		var newHeight = resultsHeight;
-		newHeight = ( newHeight >= maxHeight ) ? (maxHeight) : (newHeight);
-		E2.dom.presetsLib.height('auto');
-		E2.dom.presetsLib.find('.preset-list-container').height(newHeight);
-	}
-	 else {
-		E2.dom.presetsLib.addClass('collapsed');
-		E2.dom.presetsLib.find('.preset-list-container').hide();
-	}
-}
-
-Application.prototype.onSignInClicked = function() {
-	E2.controllers.account.openLoginModal()
-}
+// UI will bind these
+Application.prototype.onSearchResultsChange = null;
+Application.prototype.onSignInClicked = null;
 
 Application.prototype.onAccountMenuClicked = function() {
 	var username = E2.models.user.get('username')
@@ -2327,7 +2256,7 @@ Application.prototype.start = function() {
 	E2.dom.presetsLib.movable();
 	E2.dom.assetsLib.movable();
 
-	E2.app.showFirstTimeDialog()
+	E2.ui.showFirstTimeDialog();
 	
 	$('[data-toggle="popover"]').popover({
 			container: 'body',
@@ -2342,47 +2271,6 @@ Application.prototype.start = function() {
 	});
 }
 
-Application.prototype.showFirstTimeDialog = function() {
-	if (!E2.util.isFirstTime())
-		return;
-
-	Cookies.set('vizor050', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
-
-	var firstTimeTemplate = E2.views.account.firsttime;
-	var diag = bootbox.dialog({
-		title: 'First time here?',
-		message: '<h4>Check out our '+
-			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank">Youtube tutorials</a> '+
-			'or<br>'+
-			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>',
-		onEscape: true,
-		html: true
-	}).init(function() {
-		E2.app.useCustomBootboxTemplate(firstTimeTemplate);
-	});
-
-	diag.find('.modal-dialog').addClass('welcome');
-	
-	diag.find('a.login').on('click', function(evt)
-	{
-		evt.preventDefault();
-		bootbox.hideAll();
-		E2.controllers.account.openLoginModal();
-	});
-	
-	diag.find('button.signup').on('click', function(evt)
-	{
-		evt.preventDefault();
-		bootbox.hideAll();
-		E2.controllers.account.openSignupModal();
-	});
-	
-	diag.find('button#welcome-new').on('click', function()
-	{
-		E2.app.onNewClicked();
-	});
-
-}
 
 /**
  * Called when Core has been initialized
@@ -2392,6 +2280,7 @@ Application.prototype.showFirstTimeDialog = function() {
 Application.prototype.onCoreReady = function(loadGraphUrl) {
 	var that = this
 
+	E2.ui.init(E2);
 	this.presetManager = new PresetManager('/presets')
 
 	that.setupPeopleEvents()
@@ -2574,6 +2463,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 
 	E2.core = new Core(vr_devices)
 	E2.app = new Application()
+	E2.ui = new VizorUI();
 
 	var player = new Player(vr_devices, E2.dom.webgl_canvas)
 
