@@ -12,13 +12,14 @@ function PluginManager(core, base_url) {
 	this.loaded = 0
 	this.failed = 0
 
-	var allPluginsUrl = this.base_url + '/all.plugins.js'
-
 	function loadPlugins() {
 		$.ajax({
 			url: that.base_url + '/plugins.json',
+			cache: true,
 			type: 'GET',
 			success: function(data) {
+				E2.core.pluginsByCategory = data
+
 				var pg_root = new PluginGroup('root')
 				
 				$.each(data, function(category)  {
@@ -42,26 +43,20 @@ function PluginManager(core, base_url) {
 
 				if (that.release_mode) {
 					that.total = 1
-					load_script(allPluginsUrl, that.onload.bind(that), that.onerror.bind(that));
+					that.loaded = 1
+					this.failed = 0
+					that.update_state()
 				}
 			}
 		})
 	}
 
-	$.ajax({
-		url: allPluginsUrl,
-		type: 'GET',
-		cache: true,
-		success: function() {
-			msg('PluginMgr: Running in release mode')
-			that.release_mode = true
-			loadPlugins()
-		},
-		error: function() {
-			msg('PluginMgr: Running in debug mode')
-			loadPlugins()
-		}
-	});
+	// if we already have some plugins, we're in release_mode
+	this.release_mode = Object.keys(E2.plugins).length > 0
+
+	msg('PluginMgr: Running in release mode: '+this.release_mode)
+
+	loadPlugins()
 }
 
 PluginManager.prototype = Object.create(EventEmitter.prototype)

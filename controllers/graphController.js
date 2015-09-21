@@ -61,6 +61,8 @@ GraphController.prototype.index = function(req, res) {
 function renderEditor(res, graph, hasEdits) {
 	var layout = process.env.NODE_ENV === 'production' ? 'editor-prod' : 'editor'
 	
+	res.header('Cache-control', 'no-cache, must-revalidate, max-age=0')
+
 	function respond() {
 		res.render('editor', {
 			layout: layout,

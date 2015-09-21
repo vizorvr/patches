@@ -1,8 +1,6 @@
 
 function PresetManager(base_url)
 {
-	var that = this
-
 	EventEmitter.call(this)
 
 	this._base_url = base_url
@@ -18,28 +16,25 @@ PresetManager.prototype = Object.create(EventEmitter.prototype)
 PresetManager.prototype.loadPlugins = function(cb) {
 	var that = this
 
-	$.ajax({
-		url: '/plugins/plugins.json',
-		cache: true
-	})
-	.done(function(data) {
-		Object.keys(data).forEach(function(catName) {
-			Object.keys(data[catName]).forEach(function(title) {
-				that.add(catName, title, 'plugin/'+data[catName][title])
-			})
+	var data = E2.core.pluginsByCategory
+
+	Object.keys(data).forEach(function(catName) {
+		Object.keys(data[catName]).forEach(function(title) {
+			that.add(catName, title, 'plugin/'+data[catName][title])
 		})
-		cb()
 	})
+	cb()
 }
 
 PresetManager.prototype.loadPresets = function(cb) {
 	var that = this
 
-	$.ajax({
-		url: this._base_url + '/presets.json',
-		cache: true
-	})
-	.done(function(data) {
+	if (E2.core.presetsByCategory)
+		processPresets()
+
+	function processPresets(data) {
+		E2.core.presetsByCategory = data
+
 		Object.keys(data).forEach(function(catName) {
 			Object.keys(data[catName]).forEach(function(title) {
 				that.add(catName, title, that._base_url+'/'+data[catName][title]+'.json')
@@ -47,9 +42,15 @@ PresetManager.prototype.loadPresets = function(cb) {
 		})
 
 		cb()
+	}
+
+	$.ajax({
+		url: this._base_url + '/presets.json',
+		cache: true
 	})
+	.done(processPresets)
 	.fail(function() {
-		msg('PresetsMgr: No presets found.')
+		msg('ERROR: PresetsMgr: No presets found.')
 	})
 }
 

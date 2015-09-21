@@ -24,7 +24,6 @@ function Application() {
 		PAUSED: 2
 	};
 
-	this.presetManager = new PresetManager('/presets')
 	this.canvas = E2.dom.canvas;
 	this.c2d = E2.dom.canvas[0].getContext('2d');
 	this.editConn = null;
@@ -1151,6 +1150,11 @@ Application.prototype.toggleViewButtons = function() {
 	E2.dom.btnPatches.parent().toggle();
 }
 
+Application.prototype.isVRCameraActive = function() {
+	//console.log('noodles:', this.noodlesVisible, 'we: ', E2.app.worldEditor)
+	return !(this.noodlesVisible || E2.app.worldEditor.isActive())
+}
+	
 Application.prototype.toggleFullscreen = function() {
 	E2.core.emit('fullScreenChangeRequested')
 }
@@ -1177,11 +1181,17 @@ Application.prototype.onKeyDown = function(e) {
 
 	if (E2.util.isTextInputInFocus(e))
 		return;
-	
+
 	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
 	{
 		this.ctrl_pressed = true;
 	}
+	
+	var toggleNoodlesKey = 9
+	var toggleWorldEditorKey = 86
+
+	if (this.isVRCameraActive() && e.keyCode !== toggleNoodlesKey && e.keyCode !== toggleWorldEditorKey)
+		return;
 	
 	if ((!this.noodlesVisible && e.keyCode !== 9) && (e.keyCode !== 66 && this.ctrl_pressed == false)) 
 		return;
@@ -1209,7 +1219,7 @@ Application.prototype.onKeyDown = function(e) {
 		this.onDelete(e);
 		e.preventDefault();
 	}
-	else if(e.keyCode === 9) // tab to show/hide noodles
+	else if(e.keyCode === toggleNoodlesKey) // tab to show/hide noodles
 	{
 		this.toggleNoodles()
 		e.preventDefault();
@@ -1326,8 +1336,29 @@ Application.prototype.onKeyDown = function(e) {
 				this.undoManager.redo()
 		}
 	}
+	else if (e.keyCode === toggleWorldEditorKey) { // v
+		if (E2.app.worldEditor.isActive()) {
+			E2.app.worldEditor.deactivate()
+		}
+		else {
+			E2.app.worldEditor.activate()
+		}
+	}
+
+
 
 };
+
+Application.prototype.toggleWorldEditor = function() {
+	if (E2.app.worldEditor.isActive()) {
+		E2.dom.worldEditorButton.text('Editor View')
+		E2.app.worldEditor.deactivate()
+	}
+	else {
+		E2.dom.worldEditorButton.text('Camera View')
+		E2.app.worldEditor.activate()
+	}
+}
 
 Application.prototype.onKeyUp = function(e)
 {
@@ -2217,7 +2248,15 @@ Application.prototype.start = function() {
 		if (!$et.parents('.modal-dialog').length)
 			bootbox.hideAll()
 	})
-	
+
+	$('button#fullscreen').click(function() {
+		E2.app.toggleFullscreen()
+	});
+
+	$('button#help').click(function() {
+		window.open('/help/introduction.html', 'Vizor Create Help');
+	});
+
 	$('.resize-handle').on('mousedown', function(e) {
 		var $handle = $(this)
 		var $target = $(this).parent()
@@ -2314,14 +2353,15 @@ Application.prototype.showFirstTimeDialog = function() {
 	if (!E2.util.isFirstTime())
 		return;
 
-	Cookies.set('vizor', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
+	Cookies.set('vizor050', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
 	var diag = bootbox.dialog({
 		title: 'First time here?',
 		message: '<h4>Check out our '+
 			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank">Youtube tutorials</a> '+
 			'or<br>'+
-			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>',
+			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>' +
+			'<br><br>Looking for your old stuff? You can find it at <a href="http://old.vizor.io/" target="_blank">old.vizor.io</a> until November 2015.',
 		onEscape: true,
 		html: true,
 		buttons: { Ok: function() {}}
@@ -2346,6 +2386,8 @@ Application.prototype.showFirstTimeDialog = function() {
  */
 Application.prototype.onCoreReady = function(loadGraphUrl) {
 	var that = this
+
+	this.presetManager = new PresetManager('/presets')
 
 	that.setupPeopleEvents()
 	that.setupStoreListeners()
@@ -2476,7 +2518,10 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.presetsClose = $('#presets-close');
 	
 	E2.dom.dbg = $('#dbg');
-	
+	E2.dom.play = $('#play');
+	E2.dom.play_i = $('i', E2.dom.play);
+	E2.dom.pause = $('#pause');
+	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
 	E2.dom.forkButton = $('#fork-button');
 	E2.dom.viewSourceButton = $('#view-source');
@@ -2499,7 +2544,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 
-	$.ajaxSetup({ cache: false });
+	// $.ajaxSetup({ cache: false });
 
 	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, ex) {
 		if(settings.dataType === 'script' && !settings.url.match(/^\/plugins\/all.plugins\.js/)) {
@@ -2550,6 +2595,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		premultipliedAlpha: true,
 		preserveDrawingBuffer: false
 	}
+
+	E2.app.worldEditor = new WorldEditor()
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
 	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})

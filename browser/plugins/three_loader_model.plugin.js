@@ -48,19 +48,27 @@
 		return inp
 	}
 
-	ThreeLoaderModelPlugin.prototype.loadObj = function(loadMaterial) {
+	ThreeLoaderModelPlugin.prototype.loadObj = function() {
 		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 
 		console.log('ThreeLoaderModelPlugin loading OBJ', this.state.url)
 
 		var mtlUrl = this.state.url.replace('.obj', '.mtl')
 
-		if (loadMaterial)
-			new THREE.OBJMTLLoader()
-				.load(this.state.url, mtlUrl, this.onObjLoaded.bind(this), progress.bind(this), errorHandler)
-		else
-			new THREE.OBJLoader()
-				.load(this.state.url, this.onObjLoaded.bind(this), progress.bind(this), errorHandler)
+		var that = this
+
+		$.get('/stat' + mtlUrl, function(data) {
+			if (data.error === undefined) {
+				// .mtl exists on server, load .obj and .mtl
+				new THREE.OBJMTLLoader()
+					.load(that.state.url, mtlUrl, that.onObjLoaded.bind(that), progress.bind(that), errorHandler)
+			}
+			else {
+				// no .mtl on server, load .obj only
+				new THREE.OBJLoader()
+					.load(that.state.url, that.onObjLoaded.bind(that), progress.bind(that), errorHandler)
+			}
+		})
 	}
 
 	ThreeLoaderModelPlugin.prototype.onJsonLoaded = function(geoms, mats) {
