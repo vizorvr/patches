@@ -4,9 +4,9 @@ function ThreeObject3DPlugin(core) {
 	this.desc = 'THREE.js Object3D'
 
 	this.input_slots = [
-		{ name: 'position', dt: core.datatypes.VECTOR, def: undefined },
-		{ name: 'rotation', dt: core.datatypes.VECTOR, def: undefined },
-		{ name: 'scale', dt: core.datatypes.VECTOR, def: undefined },
+		{ name: 'position', dt: core.datatypes.VECTOR },
+		{ name: 'rotation', dt: core.datatypes.VECTOR },
+		{ name: 'scale', dt: core.datatypes.VECTOR, def: new THREE.Vector3(1, 1, 1) },
 
 		{ name: 'visible', dt: core.datatypes.BOOL, def: true },
 		{ name: 'castShadow', dt: core.datatypes.BOOL },
@@ -20,7 +20,7 @@ function ThreeObject3DPlugin(core) {
 
 	this.state = {
 		position: {x: 0, y: 0, z:0},
-		scale: {x: 0, y: 0, z:0},
+		scale: {x: 1, y: 1, z:1},
 		quaternion: {x: 0, y: 0, z:0, w:0}
 	}
 }
