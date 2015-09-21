@@ -213,7 +213,7 @@ Core.prototype.create_dialog = function(diag, title, w, h, done_func, open_func)
 	var modal = bootbox.dialog({
 		title: title,
 		message: diag,
-		buttons: {'Ok': function(){}}
+		buttons: {'OK': function(){}}
 	})
 
 	function close()
@@ -230,7 +230,7 @@ Core.prototype.create_dialog = function(diag, title, w, h, done_func, open_func)
 
 	modal.on('show.bs.modal', function()
 	{
-		$('.modal-dialog', modal).css('width', w + 40);
+		$('.modal-dialog', modal).css('width', w + 40).addClass('patch-inspector');
 	});
 
 	modal.on('shown.bs.modal', function()

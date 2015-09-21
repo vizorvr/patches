@@ -234,6 +234,26 @@ ul.iconic-nav>li.open>button span {
     color:  @editor-text-active;  
 }
 
+.top-userpic {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    position: relative;
+    margin: 0 auto 5px;
+    overflow: hidden;
+    img {
+        width: 20px;
+        height: auto;
+        margin: -10px 0  0 -10px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        padding: 0;
+        border: 0 none;
+    }
+}
+
 #breadcrumb {
     height: @breadcrumb-height;
     width: 100%;
@@ -311,9 +331,17 @@ ul.iconic-nav>li.open>button span {
 	border-radius: 0 0 5px 5px !important;
 	margin: 0 !important;
 	border: 0 none !important;
+	min-width: 130px;
 	background: @bg-light;
 	overflow: hidden;
-	z-index: 11;
+	top: @menu-bar-height + @breadcrumb-height;
+	z-index: 42;
+	&#userPullDown {
+	    width: 130px;
+	    float: right;
+	    right: -40px;
+	    left: auto;
+	}
 }
 
 .dropdown-menu > li > a {
@@ -321,14 +349,6 @@ ul.iconic-nav>li.open>button span {
 	cursor: pointer;
 	border-top: 1px solid @bg-darker !important;
 	color: #909fb9;
-}
-
-#user-pulldown > li > a {
-	height: 28px;
-	padding-top: 7px;
-	padding-bottom: 0px;
-	padding-left: 10px;
-	padding-right: 10px;
 }
 
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > a:active {
@@ -432,6 +452,7 @@ ul.iconic-nav>li.open>button span {
     background: @bg-light;
     width: @floating-box-width;
     overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 #load-spinner {
