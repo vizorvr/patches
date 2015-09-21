@@ -84,17 +84,13 @@
 			// {id: 0, mesh: mesh}
 
 			if (this.meshes[mesh]) {
-				//console.log('add mesh to slot ', JSON.stringify(mesh))
 				if (this.meshes[mesh].length !== undefined) {
 					for (var i=0; i < this.meshes[mesh].length; i++) {
-						this.scene.children[0].add(this.meshes[mesh][i])
+						this.sceneRoot.add(this.meshes[mesh][i])
 					}
 				}
 				else
-					this.scene.children[0].add(this.meshes[mesh])
-			}
-			else {
-				//console.log('no mesh for ', JSON.stringify(mesh))
+					this.sceneRoot.add(this.meshes[mesh])
 			}
 		}
 
@@ -119,10 +115,12 @@
 
 		// add two children:
 		// [0] is the main scene
-		this.scene.add(new THREE.Object3D())
+		this.sceneRoot = new THREE.Object3D()
+		this.scene.add(this.sceneRoot)
 
 		// [1] is the overlay scene
-		this.scene.add(new THREE.Object3D())
+		this.overlayRoot = new THREE.Object3D()
+		this.scene.add(this.overlayRoot)
 
 		this.meshes_dirty = true
 	}

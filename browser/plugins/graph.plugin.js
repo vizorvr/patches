@@ -22,8 +22,11 @@ GraphPlugin.prototype = Object.create(SubGraphPlugin.prototype)
 
 GraphPlugin.prototype.open_editor = function(self) {
 	var diag = make('div')
-	var always_upd = $('<input id="always_upd" type="checkbox" title="If false, this graph is updated only when one of its inputs updates." />')
-	var upd_lbl = $('<div>Always update:</div>')
+	var always_upd = $('<input id="always_upd" name="alwaysupdate"'
+					 + ' type="checkbox" title="If false, this graph'
+					 + ' is updated only when one of its inputs updates." />');
+	var upd_lbl = $('<label for="always_upd"><span><svg class="icon-checked">'
+				  + '<use xlink:href="#icon-checked"></use></svg></span>Always update</div>');
 	var r1 = make('div')
 	
 	var lbl_css = {
@@ -52,9 +55,9 @@ GraphPlugin.prototype.open_editor = function(self) {
 	always_upd.css({ 'width': '13px', 'margin-top': '8px' })
 	
 	always_upd.attr('checked', self.state.always_update)
-
-	r1.append(upd_lbl)
+	
 	r1.append(always_upd)
+	r1.append(upd_lbl)
 	diag.append(r1)
 
 	

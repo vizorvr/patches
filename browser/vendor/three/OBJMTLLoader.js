@@ -30,8 +30,11 @@ THREE.OBJMTLLoader.prototype = {
 			loader.setCrossOrigin( scope.crossOrigin );
 			loader.load( url, function ( text ) {
 
+				var geoms = []
+				var mats = []
 				var object = scope.parse( text );
 
+				// gather geom + obj pairs from the object tree
 				object.traverse( function ( object ) {
 
 					if ( object instanceof THREE.Mesh ) {
@@ -40,15 +43,18 @@ THREE.OBJMTLLoader.prototype = {
 
 							var material = materialsCreator.create( object.material.name );
 
-							if ( material ) object.material = material;
+							//if ( material ) object.material = material;
 
+							mats.push(material)
 						}
 
+						geoms.push(object.geometry)
 					}
 
 				} );
 
-				onLoad( object );
+				// discard meshes - return geoms and mats as arrays
+				onLoad( geoms, mats );
 
 			}, onProgress, onError );
 

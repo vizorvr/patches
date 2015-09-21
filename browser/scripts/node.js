@@ -6,6 +6,8 @@
 function Node(parent_graph, plugin_id, x, y) {
 	EventEmitter.call(this)
 
+	this.x = 0;
+	this.y = 0;
 	this.inputs = []
 	this.outputs = []
 	this.queued_update = -1

@@ -63,11 +63,11 @@ describe('filtering',function(){
 
 	it('finds debgf', function() {
 		var f = c._filterData('debgf')
-		assert.deepEqual(f[0].title, 'Emitters/Debug/Data info')
+		assert.deepEqual(f[0].title, 'DEBUG TOOLS/Data info')
 	})
 
 	it('finds floa', function() {
-		var f = c._filterData('floa')
-		assert.deepEqual(f[0].title, 'Emitters/Debug/Float')
+		var f = c._filterData('floadeb')
+		assert.deepEqual(f[0].title, 'DEBUG TOOLS/Float')
 	})
 })

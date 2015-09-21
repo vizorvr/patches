@@ -93,11 +93,8 @@
 			</li>
 		</ul>
 		<ul class="iconic-nav pull-right">
-			<li>
-				<button class="btn" id="btn-sign-in">
-					<svg class="icon-sign-in"><use xlink:href="#icon-sign-in"></use></svg>
-					<span>Sign in</span>
-				</button>
+			<li id="account">
+				{{> userpulldown}}
 			</li>
 		</ul>
 	</div>
@@ -568,6 +565,11 @@
 <script type="text/javascript">
 	var boot = {}
 	boot.hasEdits = {{hasEdits}}
+
+	// THREE webvr-manager reads from here.
+	window.Vizor = {
+		hideWebVRButton: true
+	}
 
 	{{#if graph}}
 		boot.graph = {

@@ -17,6 +17,9 @@ WORKDIR /usr/src/app
 
 RUN npm install --silent -g forever
 RUN npm install --unsafe-perm
+
 RUN ./node_modules/.bin/gulp
+
+RUN node ./tools/editorBundler.js
 
 CMD forever ./app.js

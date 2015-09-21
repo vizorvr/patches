@@ -12,6 +12,7 @@ NodeUI = function(parent_node, x, y, z) {
 	this.position = new UIpoint(x,y,z);
 	this.x = x || 0;
 	this.y = y || 0;
+
 	this.sl = E2.app.scrollOffset[0];
 	this.st = E2.app.scrollOffset[1];
 	this.plugin_ui = null;
@@ -190,8 +191,16 @@ NodeUI.prototype.setPosition = function(x, y, z) {
 NodeUI.prototype.update = function() {
 	if (!this.dom) return;
 	var s = this.dom[0].style;
-	s.left = '' + this.position.x + 'px';
-	s.top = '' + this.position.y + 'px';
+
+	var xx = this.position.x;
+	var yy = this.position.y;
+
+	// temp fix for plugins appearing at -98px top
+	// TODO: fix root cause and remove
+	if (xx < 0) this.position.x = this.x = xx = 10;
+	if (yy < 0) this.position.y = this.y = yy = 10;
+	s.left = '' + xx + 'px';
+	s.top = '' + yy + 'px';
 }
 
 
