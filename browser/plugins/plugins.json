@@ -95,7 +95,8 @@
         "Mesh": "three_mesh",
         "Point Cloud Mesh": "three_point_cloud_mesh",
         "3D model loader": "three_loader_model",
-        "Particle Emitter": "three_particle_emitter"
+        "Particle Emitter": "three_particle_emitter",
+        "3D scene loader": "three_loader_scene"
     },
 
     "MATERIALS AND LIGHTS": {
