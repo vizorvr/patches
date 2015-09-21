@@ -3,7 +3,7 @@
         "Action": "action_button",
         "Blend mode": "blend_mode_generator",
         "Color picker": "color_picker",
-        "Editor": "text_editor_generator",
+        "Code Editor": "text_editor_generator",
         "Number": "const_float_generator",
         "Knob": "knob_float_generator",
         "Label": "label_generator",
@@ -34,11 +34,11 @@
         "Accumulate": "accumulate_modulator",
         "Clamped accumulate": "clamped_accumulate_modulator",
         "Delta": "delta_modulator",
-        "Add": "add_modulator",
+        "Add number": "add_modulator",
         "Clamp": "clamp_modulator",
         "Divide": "divide_modulator",
         "Mod": "modulate_modulator",
-        "Multiply": "multiply_modulator",
+        "Multiply number": "multiply_modulator",
         "Negate": "negate_modulator",
         "Subtract": "subtract_modulator",
         "Lowpass Filter": "lowpass_filter_modulator",
@@ -234,9 +234,9 @@
 
 
     "COLOR MODULATORS": {
-        "Add": "color_add_modulator",
-        "Blend": "color_blend_modulator",
-        "Multiply": "color_multiply_modulator"
+        "Add color": "color_add_modulator",
+        "Blend color": "color_blend_modulator",
+        "Multiply color": "color_multiply_modulator"
     },
 
     "CONVERTERS": {
@@ -258,11 +258,11 @@
     },
 
     "VECTOR MATH": {
-        "Add": "vector_add",
+        "Add Vector": "vector_add",
         "Cross": "vector_cross",
         "Dot": "vector_dot",
         "Magnitude": "vector_magnitude",
-        "Multiply": "vector_multiply",
+        "Multiply vector": "vector_multiply",
         "Normalize": "vector_normalize",
         "Scale": "vector_scale",
         "Transform": "vector_transform"

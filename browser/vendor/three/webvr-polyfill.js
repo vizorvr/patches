@@ -332,7 +332,7 @@ MouseKeyboardPositionSensorVRDevice.prototype.getState = function() {
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.onKeyDown_ = function(e) {
-  if (E2.app.noodlesVisible || E2.util.isTextInputInFocus(e))
+  if (!E2.app.isVRCameraActive() || E2.util.isTextInputInFocus(e))
     return;
 
   // Track WASD and arrow keys.
@@ -383,7 +383,7 @@ MouseKeyboardPositionSensorVRDevice.prototype.animateKeyTransitions_ = function(
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.onMouseDown_ = function(e) {
-  if (E2.app.noodlesVisible)
+  if (!E2.app.isVRCameraActive())
     return;
   this.rotateStart.set(e.clientX, e.clientY);
   this.isDragging = true;

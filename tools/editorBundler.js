@@ -20,7 +20,7 @@ function bundleEditorScripts() {
 		return;
 	}
 
-	console.log('Building editor bundle')
+	console.log('Building editor bundle', scriptName)
 	// read input html
 	var html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
 
@@ -32,6 +32,9 @@ function bundleEditorScripts() {
 			.replace('/scripts/', '/browser/scripts/')
 			.replace('/vendor/', '/browser/vendor/')
 	})
+
+	// add plugins
+	scripts.push(path.resolve(__dirname, '..') + '/browser/plugins/all.plugins.js')
 
 	// concat scripts with gulp
 	gulp.src(scripts)
@@ -57,3 +60,7 @@ function bundleEditorScripts() {
 }
 
 exports.bundleEditorScripts = bundleEditorScripts
+
+if (require.main === module) {
+	bundleEditorScripts()
+}

@@ -356,33 +356,42 @@ r.connect({
 		.catch(next);
 	});
 
-	// allow caching editor-*.min.js
+	// allow strong caching for editor-*.min.js
 	app.get([
 		'/scripts/editor-*.min.js',
 		'/vendor/*',
-		'/fonts/*',
+		'/images/*',
+		'/fonts/*'
 		], function(req, res, next) {
 		res.setHeader('Cache-Control', 'public, max-age=604800');
 		next();
 	});
 
-	// allow some caching for node modules, app images and styles
+	// minimal caching for frequently updating things
 	app.use([
-		'/node_modules',
-		'/images/*',
 		'/style/*',
+		'/scripts/player.min.js',
 		'/plugins/plugins.json',
-		'/plugins/all.plugins.js'
+		'/presets/presets.json'
 		],
 		function(req, res, next) {
-		res.setHeader('Cache-Control', 'must-revalidate, max-age=86400');
+		res.setHeader('Cache-Control', 'public, must-revalidate, max-age=300');
 		next();
 	});
+
+	if (process.env.NODE_ENV !== 'production') {
+		app.use(function(req, res, next) {
+			res.setHeader('Cache-Control', 'no-cache')
+			next()
+		})
+	}
 
 	app.use(['/node_modules'], express.static(path.join(__dirname, 'node_modules')));
 
 	// static files
-	app.use(express.static(path.join(__dirname, 'browser'), { maxAge: 0 }));
+	app.use(express.static(path.join(__dirname, 'browser'), {
+		maxAge: 300
+	}));
 
 	app.get('/login', userController.getLogin);
 	app.post('/login', userController.postLogin);

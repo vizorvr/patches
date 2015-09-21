@@ -24,7 +24,6 @@ function Application() {
 		PAUSED: 2
 	};
 
-	this.presetManager = new PresetManager('/presets')
 	this.canvas = E2.dom.canvas;
 	this.c2d = E2.dom.canvas[0].getContext('2d');
 	this.editConn = null;
@@ -1183,6 +1182,11 @@ Application.prototype.toggleLeftPane = function() {
 	this.onWindowResize();
 };
 
+Application.prototype.isVRCameraActive = function() {
+	//console.log('noodles:', this.noodlesVisible, 'we: ', E2.app.worldEditor)
+	return !(this.noodlesVisible || E2.app.worldEditor.isActive())
+}
+
 Application.prototype.toggleFullscreen = function() {
 	E2.core.emit('fullScreenChangeRequested')
 }
@@ -1210,7 +1214,10 @@ Application.prototype.onKeyDown = function(e) {
 	if (E2.util.isTextInputInFocus(e))
 		return;
 
-	if (!this.noodlesVisible && e.keyCode !== 9)
+	var toggleNoodlesKey = 9
+	var toggleWorldEditorKey = 86
+
+	if (this.isVRCameraActive() && e.keyCode !== toggleNoodlesKey && e.keyCode !== toggleWorldEditorKey)
 		return;
 
 	// arrow up || down
@@ -1235,7 +1242,7 @@ Application.prototype.onKeyDown = function(e) {
 		this.onDelete(e);
 		e.preventDefault();
 	}
-	else if(e.keyCode === 9) // tab to show/hide noodles
+	else if(e.keyCode === toggleNoodlesKey) // tab to show/hide noodles
 	{
 		this.toggleNoodles()
 		e.preventDefault();
@@ -1352,8 +1359,29 @@ Application.prototype.onKeyDown = function(e) {
 				this.undoManager.redo()
 		}
 	}
+	else if (e.keyCode === toggleWorldEditorKey) { // v
+		if (E2.app.worldEditor.isActive()) {
+			E2.app.worldEditor.deactivate()
+		}
+		else {
+			E2.app.worldEditor.activate()
+		}
+	}
+
+
 
 };
+
+Application.prototype.toggleWorldEditor = function() {
+	if (E2.app.worldEditor.isActive()) {
+		E2.dom.worldEditorButton.text('Editor View')
+		E2.app.worldEditor.deactivate()
+	}
+	else {
+		E2.dom.worldEditorButton.text('Camera View')
+		E2.app.worldEditor.activate()
+	}
+}
 
 Application.prototype.onKeyUp = function(e)
 {
@@ -2018,6 +2046,10 @@ Application.prototype.start = function() {
 			bootbox.hideAll()
 	})
 
+	E2.dom.worldEditorButton.click(function() {
+		E2.app.toggleWorldEditor()
+	});
+
 	$('button#fullscreen').click(function() {
 		E2.app.toggleFullscreen()
 	});
@@ -2132,6 +2164,8 @@ Application.prototype.showFirstTimeDialog = function() {
 Application.prototype.onCoreReady = function(loadGraphUrl) {
 	var that = this
 
+	this.presetManager = new PresetManager('/presets')
+
 	that.setupPeopleEvents()
 	that.setupStoreListeners()
 
@@ -2209,6 +2243,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.mid_pane = $('#mid-pane');
 	E2.dom.right_pane = $('#right-pane');
 	E2.dom.dbg = $('#dbg');
+	E2.dom.worldEditorButton = $('#worldEditor');
 	E2.dom.play = $('#play');
 	E2.dom.play_i = $('i', E2.dom.play);
 	E2.dom.pause = $('#pause');
@@ -2282,6 +2317,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		premultipliedAlpha: true,
 		preserveDrawingBuffer: false
 	}
+
+	E2.app.worldEditor = new WorldEditor()
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
 	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})

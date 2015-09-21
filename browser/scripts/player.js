@@ -86,6 +86,8 @@ Player.prototype.on_update = function() {
 	
 	if(this.core.update(this.abs_time, delta_t) && E2.app.updateCanvas)
 		E2.app.updateCanvas(false)
+
+	E2.app.worldEditor.update()
 	
 	this.last_time = time
 	this.abs_time += delta_t
@@ -170,6 +172,12 @@ function CreatePlayer(vr_devices, cb) {
 
 	E2.app = {}
 	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, null)
+	E2.app.worldEditor = {
+		update: function() {},
+		isActive: function() {
+			return false
+		}
+	}
 
 	// Shared gl context for three
 	var gl_attributes = {
