@@ -569,6 +569,11 @@
 	var boot = {}
 	boot.hasEdits = {{hasEdits}}
 
+	// THREE webvr-manager reads from here.
+	window.Vizor = {
+		hideWebVRButton: true
+	}
+
 	{{#if graph}}
 		boot.graph = {
 			path: '{{graph.path}}',

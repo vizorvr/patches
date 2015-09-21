@@ -1276,7 +1276,7 @@ Application.prototype.onKeyDown = function(e) {
 			'plugin:multiply_modulator', // 6
 			'preset:time_oscillate_between_2_values', // 7
 			'preset:image_show_image', // 8
-			'plugin:knob_float_generator', // 9
+			'plugin:knob_float_generator' // 9
 		]
 
 		var item = numberHotKeys[e.keyCode - 48]
@@ -2196,6 +2196,7 @@ Application.prototype.start = function() {
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 
+
 	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
 	window.addEventListener('keydown', this.onKeyDown.bind(this))
@@ -2467,7 +2468,7 @@ Application.prototype.setupEditorChannel = function() {
 
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.load_spinner = $('#load-spinner');
-	
+
 	E2.dom.btnNew = $('#btn-new');
 	
 	E2.dom.btnScale = $('#btn-scale');
@@ -2491,7 +2492,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.breadcrumb = $('#breadcrumb');
 	
 	E2.dom.uiLayer = $('#ui-layer');
-	
+
 	E2.dom.assetsLib = $('#assets-lib');
 	E2.dom.assetsToggle = $('#assets-toggle');
 	E2.dom.assetsClose = $('#assets-close');
@@ -2538,7 +2539,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.filename_input = $('#filename-input');
 	
 	E2.dom.btnTimeline = $('#btn-timeline');
-	
+
 	E2.dom.play = $('#play');
 	E2.dom.playPauseIcon = $('#play use');
 	E2.dom.pause = $('#pause');
@@ -2597,6 +2598,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	}
 
 	E2.app.worldEditor = new WorldEditor()
+
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
 	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})
