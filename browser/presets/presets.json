@@ -1,7 +1,8 @@
 {
 	"TEMPLATES": {
 		"Basic VR scene": "_template-basic-vr-scene",
-		"Minimal VR scene": "_template-minimal-vr-scene"
+		"Minimal VR scene": "_template-minimal-vr-scene",
+		"360 photo template": "_template-360-photo"
 	},
 
 	"ADD OBJECTS": {
