@@ -10,7 +10,3 @@ views/layouts/editor-prod.handlebars
 engistart.bat
 engistart.bat - Shortcut.lnk
 node_modules
-
-npm-debug.log
-
-browser/style/less.css

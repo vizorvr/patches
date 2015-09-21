@@ -140,7 +140,7 @@ EditorChannel.prototype.connect = function(options) {
 				return;
 
 			if (!reconnecting)
-				E2.app.growl('Disconnected from server. Reconnecting.','reconnecting')
+				E2.app.growl('Disconnected from server. Reconnecting.', 'reconnecting')
 
 			reconnecting = true
 			setTimeout(that.connect.bind(that), RECONNECT_INTERVAL)
@@ -164,7 +164,7 @@ EditorChannel.prototype.connect = function(options) {
 
 			that.wsChannel.on('*', function(m) {
 				if (m.kind === 'kicked') { // kicked by server
-					E2.app.growl('You have been disconnected by the server: '+ m.reason,'disconnected', '', 30000)
+					E2.app.growl('You have been disconnected by the server: '+ m.reason, 'disconnected', 30000)
 					that.kicked = true
 					return;
 				}
@@ -222,8 +222,7 @@ EditorChannel.prototype.fork = function(payload) {
 	fc.fork(payload)
 		.then(function() {
 			E2.dom.load_spinner.hide()
-			E2.app.growl("We've made a copy of this for you to edit.",'copy', '',
-				5000)
+			E2.app.growl("We've made a copy of this for you to edit.", 'copy', 5000)
 		})
 		.catch(function(err) {
 			E2.app.growl('Error while forking: ' + err, 'error')

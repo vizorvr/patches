@@ -1603,7 +1603,7 @@ Application.prototype.openSaveACopyDialog = function(cb) {
 	})
 }
 
-Application.prototype.growl = function(title, type, person, duration) {
+Application.prototype.growl = function(title, type, duration, person) {
 	var letter=title.charAt(0);
 	var image=''
 	type= type || 'info';
@@ -2013,6 +2013,18 @@ Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
 
+Application.prototype.onInspectorClicked = function() {
+	if (this.selectedNodes.length===1) {
+		if (this.selectedNodes[0].plugin.open_editor) {
+			this.selectedNodes[0].plugin.open_editor(this.selectedNodes[0].plugin)
+		} else {
+			E2.app.growl('This kind of Patch has no preferences','info',4000);
+		}
+	} else {
+		E2.app.growl('Select 1 particular patch to open inspector.','info',4000);
+	}
+}
+
 Application.prototype.onEditorClicked = function() {
 	this.toggleViewButtons();
 	this.viewMode = 'editor';
@@ -2176,26 +2188,25 @@ Application.prototype.onSearchResultsChange = function() {
 }
 
 Application.prototype.onSignInClicked = function() {
+	E2.controllers.account.openLoginModal()
+}
+
+Application.prototype.onAccountMenuClicked = function() {
 	var username = E2.models.user.get('username')
-	if (!username) {
-		return E2.controllers.account.openLoginModal()
+	if (username) {
+		E2.dom.userPullDown.toggle();
 	}
 }
 
-Application.prototype.replaceDefaultCross = function() {
-	$('.bootbox-close-button').appendTo('.modal-header')
-							  .html('<svg class="icon-dialog-close">'
-								   +'<use xlink:href="#icon-close">'
-								   +'</use></svg>')
-							  .removeClass('close')
-							  .attr('style','');
+Application.prototype.useCustomBootboxTemplate = function(template) {
+	$('.modal-content').hide().html(template).show();
+	$('.bootbox-close-button').attr('style','');
 }
 
 Application.prototype.start = function() {
 	var that = this
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
-
 
 	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
@@ -2249,15 +2260,7 @@ Application.prototype.start = function() {
 		if (!$et.parents('.modal-dialog').length)
 			bootbox.hideAll()
 	})
-
-	$('button#fullscreen').click(function() {
-		E2.app.toggleFullscreen()
-	});
-
-	$('button#help').click(function() {
-		window.open('/help/introduction.html', 'Vizor Create Help');
-	});
-
+	
 	$('.resize-handle').on('mousedown', function(e) {
 		var $handle = $(this)
 		var $target = $(this).parent()
@@ -2307,6 +2310,7 @@ Application.prototype.start = function() {
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
 	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
+	E2.dom.btnInspector.click(E2.app.onInspectorClicked.bind(E2.app))
 	E2.dom.btnEditor.click(E2.app.onEditorClicked.bind(E2.app))
 	E2.dom.btnPatches.click(E2.app.onPatchesClicked.bind(E2.app))
 	E2.dom.btnSignIn.click(E2.app.onSignInClicked.bind(E2.app))
@@ -2324,6 +2328,7 @@ Application.prototype.start = function() {
 	E2.dom.btnAssets.click(E2.app.onBtnAssetsClicked.bind(E2.app))
 	E2.dom.assetsClose.click(E2.app.onAssetsCloseClicked.bind(E2.app))
 	E2.dom.presetsClose.click(E2.app.onPresetsCloseClicked.bind(E2.app))
+	E2.dom.btnAccountMenu.click(E2.app.onAccountMenuClicked.bind(E2.app))
 	
 	this.midPane = new E2.MidPane()
 
@@ -2348,6 +2353,12 @@ Application.prototype.start = function() {
 			trigger: 'hover',
 			animation: false
 	});
+	
+	$(document).on("shown.bs.modal", function() {
+		$('.bootbox-close-button').html('<svg class="icon-dialog-close">'
+									  + '<use xlink:href="#icon-close"></use></svg>')
+								  .attr('style','');
+	});
 }
 
 Application.prototype.showFirstTimeDialog = function() {
@@ -2356,26 +2367,38 @@ Application.prototype.showFirstTimeDialog = function() {
 
 	Cookies.set('vizor050', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
+	var firstTimeTemplate = E2.views.account.firsttime;
 	var diag = bootbox.dialog({
 		title: 'First time here?',
 		message: '<h4>Check out our '+
 			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank">Youtube tutorials</a> '+
 			'or<br>'+
-			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>' +
-			'<br><br>Looking for your old stuff? You can find it at <a href="http://old.vizor.io/" target="_blank">old.vizor.io</a> until November 2015.',
+			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>',
 		onEscape: true,
-		html: true,
-		buttons: { Ok: function() {}}
+		html: true
 	}).init(function() {
-		E2.app.replaceDefaultCross();
+		E2.app.useCustomBootboxTemplate(firstTimeTemplate);
 	});
 
-	diag.find('.modal-dialog').addClass('modal-sm')
-	diag.css({
-		top: '50%',
-		'margin-top': function () {
-			return -(diag.height() / 2);
-		}
+	diag.find('.modal-dialog').addClass('welcome');
+	
+	diag.find('a.login').on('click', function(evt)
+	{
+		evt.preventDefault();
+		bootbox.hideAll();
+		E2.controllers.account.openLoginModal();
+	});
+	
+	diag.find('button.signup').on('click', function(evt)
+	{
+		evt.preventDefault();
+		bootbox.hideAll();
+		E2.controllers.account.openSignupModal();
+	});
+	
+	diag.find('button#welcome-new').on('click', function()
+	{
+		E2.app.onNewClicked();
 	});
 
 }
@@ -2387,8 +2410,6 @@ Application.prototype.showFirstTimeDialog = function() {
  */
 Application.prototype.onCoreReady = function(loadGraphUrl) {
 	var that = this
-
-	this.presetManager = new PresetManager('/presets')
 
 	that.setupPeopleEvents()
 	that.setupStoreListeners()
@@ -2468,14 +2489,14 @@ Application.prototype.setupEditorChannel = function() {
 
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.load_spinner = $('#load-spinner');
-
+	
 	E2.dom.btnNew = $('#btn-new');
 	
 	E2.dom.btnScale = $('#btn-scale');
 	E2.dom.btnRotate = $('#btn-rotate');
 	E2.dom.btnAssets = $('#btn-add-object');
 	
-	E2.dom.btnInspector = $('#btn0inspector');
+	E2.dom.btnInspector = $('#btn-inspector');
 	E2.dom.btnPresets = $('#btn-add-patch');
 	E2.dom.btnSavePatch = $('#btn-save-patch');
 	
@@ -2488,11 +2509,13 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.btnChatDisplay = $('#btn-chat-display');
 	
 	E2.dom.btnSignIn = $('#btn-sign-in');
+	E2.dom.btnAccountMenu = $('#btn-account-top');
+	E2.dom.userPullDown = $('#userPullDown');
 	
 	E2.dom.breadcrumb = $('#breadcrumb');
 	
 	E2.dom.uiLayer = $('#ui-layer');
-
+	
 	E2.dom.assetsLib = $('#assets-lib');
 	E2.dom.assetsToggle = $('#assets-toggle');
 	E2.dom.assetsClose = $('#assets-close');
@@ -2519,10 +2542,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.presetsClose = $('#presets-close');
 	
 	E2.dom.dbg = $('#dbg');
-	E2.dom.play = $('#play');
-	E2.dom.play_i = $('i', E2.dom.play);
-	E2.dom.pause = $('#pause');
-	E2.dom.stop = $('#stop');
+	
 	E2.dom.refresh = $('#refresh');
 	E2.dom.forkButton = $('#fork-button');
 	E2.dom.viewSourceButton = $('#view-source');
@@ -2539,13 +2559,13 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.filename_input = $('#filename-input');
 	
 	E2.dom.btnTimeline = $('#btn-timeline');
-
+	
 	E2.dom.play = $('#play');
 	E2.dom.playPauseIcon = $('#play use');
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 
-	// $.ajaxSetup({ cache: false });
+	$.ajaxSetup({ cache: false });
 
 	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, ex) {
 		if(settings.dataType === 'script' && !settings.url.match(/^\/plugins\/all.plugins\.js/)) {
