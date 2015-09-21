@@ -102,14 +102,12 @@ AccountController.prototype._bindEvents = function(el, dfd)
 					data: formData,
 					error: function(err, msg)
 					{
-						console.log(err);
 						var errText = 'Sorry, this username is already taken'
 						that.showError('username',errText);
 						$('#username_id').addClass('taken').parent().addClass('wrong');
 					},
 					success: function(user)
 					{
-						console.log('Username ' + user.username + ' is ok.');
 						ga('send', 'event', 'account', 'signedUp', user.username)
 						that.hideError('username');
 					},
@@ -195,7 +193,6 @@ AccountController.prototype.openLoginModal = function(dfd) {
 			},
 			success: function(user)
 			{
-				console.log('Logged in as ' + user.username);
 				ga('send', 'event', 'account', 'loggedIn', user.username)
 				E2.models.user.set(user);
 				bootbox.hideAll();
@@ -247,14 +244,12 @@ AccountController.prototype.openSignupModal = function(dfd) {
 			data: formData,
 			error: function(err, msg)
 			{
-				console.log(err);
 				var errText = 'Sign up failed. Please check required fields.'
 				that.showError('general',errText);
 				$('#signup-form_id .required').parent().addClass('wrong');
 			},
 			success: function(user)
 			{
-				console.log('Signed up as ' + user.username);
 				ga('send', 'event', 'account', 'signedUp', user.username)
 				E2.models.user.set(user);
 				bootbox.hideAll();
@@ -310,7 +305,6 @@ AccountController.prototype.openForgotModal = function(dfd) {
 			},
 			success: function(user)
 			{
-				console.log('Password reset for ' + user.username);
 				ga('send', 'event', 'account', 'passwordReset', user.username)
 				bootbox.hideAll();
 				bootbox.alert('Instructions has been sent. Please check your email.');
@@ -366,7 +360,6 @@ AccountController.prototype.openResetModal = function(dfd) {
 			},
 			success: function(user)
 			{
-				console.log('Password changed for ' + user.username);
 				ga('send', 'event', 'account', 'passwordChanged', user.username)
 				bootbox.hideAll();
 				bootbox.alert('Password changed! You can sign in now.');
