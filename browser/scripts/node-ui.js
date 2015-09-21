@@ -10,8 +10,8 @@ NodeUI = function(parent_node, x, y, z) {
 	this.parent_node = parent_node;
 	this.selected = false;
 	this.position = new UIpoint(x,y,z);
-	this.x = x;
-	this.y = y;
+	this.x = x || 0;
+	this.y = y || 0;
 	this.sl = E2.app.scrollOffset[0];
 	this.st = E2.app.scrollOffset[1];
 	this.plugin_ui = null;
@@ -176,6 +176,11 @@ NodeUI.prototype.setPosition = function(x, y, z) {
 	if (typeof x != 'undefined') this.position.x = this.x = x;
 	if (typeof y != 'undefined') this.position.y = this.y = y;
 	if (typeof z != 'undefined') this.position.z = z;
+
+	// until VP allows plugins to display at negative positions.
+	if (this.position.x < 0) this.position.x = this.x = 0;
+	if (this.position.y < 0) this.position.y = this.y = 0;
+
 	this.update();
 }
 
@@ -240,6 +245,7 @@ NodeUI.create_slot = function(parent_node, nid, container, s, type) {
 	var is_input = (type === E2.slot_type.input);
 	var is_dynamic = (typeof s.uid != 'undefined')
 	var is_connected = (typeof s.is_connected != 'undefined') && s.is_connected;
+
 
 	if (is_dynamic)
 		$div.attr('id', nid + (is_input ? 'di' : 'do') + s.uid);
