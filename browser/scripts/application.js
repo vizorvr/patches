@@ -1214,10 +1214,13 @@ Application.prototype.onKeyDown = function(e) {
 	if (E2.util.isTextInputInFocus(e))
 		return;
 
+	var toggleFullScreenKey = 70
 	var toggleNoodlesKey = 9
 	var toggleWorldEditorKey = 86
 
-	if (this.isVRCameraActive() && e.keyCode !== toggleNoodlesKey && e.keyCode !== toggleWorldEditorKey)
+	var exceptionKeys = [ toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey ]
+
+	if (this.isVRCameraActive() && exceptionKeys.indexOf(e.keyCode) === -1)
 		return;
 
 	// arrow up || down
@@ -1312,7 +1315,7 @@ Application.prototype.onKeyDown = function(e) {
 
 
 
-	else if(e.keyCode === 70) // f
+	else if(e.keyCode === toggleFullScreenKey) // f
 	{
 		this.toggleFullscreen()
 		e.preventDefault();
