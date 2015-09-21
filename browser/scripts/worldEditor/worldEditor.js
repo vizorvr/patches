@@ -2,7 +2,7 @@ function WorldEditor() {
 	this.domElement = E2.dom.webgl_canvas[0]
 	this.camera = new WorldEditorCamera(this.domElement)
 
-	var active = true
+	var active = false
 
 	this.activate = function() {
 		active = true
