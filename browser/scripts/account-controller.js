@@ -147,7 +147,7 @@ AccountController.prototype._bindEvents = function(el, dfd)
 	{
 		evt.preventDefault();
 		bootbox.hideAll();
-		that.openForgotModal(dfd);
+		that.openForgotPasswordModal(dfd);
 	});
 }
 
@@ -262,7 +262,7 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	return dfd.promise
 }
 
-AccountController.prototype.openForgotModal = function(dfd) {
+AccountController.prototype.openForgotPasswordModal = function(dfd) {
 	var that = this;
 	var dfd = dfd || when.defer();
 	var forgotTemplate = E2.views.account.forgot;
@@ -317,7 +317,7 @@ AccountController.prototype.openForgotModal = function(dfd) {
 	return dfd.promise
 }
 
-AccountController.prototype.openResetModal = function(dfd) {
+AccountController.prototype.openResetPasswordModal = function(dfd) {
 	var that = this;
 	var dfd = dfd || when.defer();
 	var resetTemplate = E2.views.account.reset;
