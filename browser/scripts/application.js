@@ -1572,7 +1572,7 @@ Application.prototype.openSaveACopyDialog = function(cb) {
 	})
 }
 
-Application.prototype.growl = function(title, type, person, duration) {
+Application.prototype.growl = function(title, type, duration, person) {
 	var letter=title.charAt(0);
 	var image=''
 	type= type || 'info';
@@ -1982,6 +1982,18 @@ Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
 
+Application.prototype.onInspectorClicked = function() {
+	if (this.selectedNodes.length===1) {
+		if (this.selectedNodes[0].plugin.open_editor) {
+			this.selectedNodes[0].plugin.open_editor(this.selectedNodes[0].plugin)
+		} else {
+			E2.app.growl('This kind of Patch has no preferences','info',4000);
+		}
+	} else {
+		E2.app.growl('Select 1 particular patch to open inspector.','info',4000);
+	}
+}
+
 Application.prototype.onEditorClicked = function() {
 	this.toggleViewButtons();
 	this.viewMode = 'editor';
@@ -2145,9 +2157,13 @@ Application.prototype.onSearchResultsChange = function() {
 }
 
 Application.prototype.onSignInClicked = function() {
+	E2.controllers.account.openLoginModal()
+}
+
+Application.prototype.onAccountMenuClicked = function() {
 	var username = E2.models.user.get('username')
-	if (!username) {
-		return E2.controllers.account.openLoginModal()
+	if (username) {
+		E2.dom.userPullDown.toggle();
 	}
 }
 
@@ -2263,6 +2279,7 @@ Application.prototype.start = function() {
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
 	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
+	E2.dom.btnInspector.click(E2.app.onInspectorClicked.bind(E2.app))
 	E2.dom.btnEditor.click(E2.app.onEditorClicked.bind(E2.app))
 	E2.dom.btnPatches.click(E2.app.onPatchesClicked.bind(E2.app))
 	E2.dom.btnSignIn.click(E2.app.onSignInClicked.bind(E2.app))
@@ -2280,6 +2297,7 @@ Application.prototype.start = function() {
 	E2.dom.btnAssets.click(E2.app.onBtnAssetsClicked.bind(E2.app))
 	E2.dom.assetsClose.click(E2.app.onAssetsCloseClicked.bind(E2.app))
 	E2.dom.presetsClose.click(E2.app.onPresetsCloseClicked.bind(E2.app))
+	E2.dom.btnAccountMenu.click(E2.app.onAccountMenuClicked.bind(E2.app))
 	
 	this.midPane = new E2.MidPane()
 
@@ -2444,7 +2462,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.btnRotate = $('#btn-rotate');
 	E2.dom.btnAssets = $('#btn-add-object');
 	
-	E2.dom.btnInspector = $('#btn0inspector');
+	E2.dom.btnInspector = $('#btn-inspector');
 	E2.dom.btnPresets = $('#btn-add-patch');
 	E2.dom.btnSavePatch = $('#btn-save-patch');
 	
@@ -2457,6 +2475,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.btnChatDisplay = $('#btn-chat-display');
 	
 	E2.dom.btnSignIn = $('#btn-sign-in');
+	E2.dom.btnAccountMenu = $('#btn-account-top');
+	E2.dom.userPullDown = $('#userPullDown');
 	
 	E2.dom.breadcrumb = $('#breadcrumb');
 	

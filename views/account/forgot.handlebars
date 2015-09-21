@@ -1,22 +1,36 @@
-<h1 class="form-header text-center"><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;Forgot your password?</h1>
+<div class="modal-header">
+	<h4>Reset Password</h4>
+	<button aria-hidden="true" data-dismiss="modal" class="bootbox-close-button" type="button">
+		<svg class="icon-dialog-close"><use xlink:href="#icon-close"></use></svg>
+	</button>
+</div>
 
-<p style="text-align: center; padding: 12px 0 8px 0;">Enter your email address below and we will send you password reset instructions.</p>
+<div class="modal-body">
+	<p>Enter your email address below and we will send you password reset instructions.</p>
+	<form action="/forgot" id="forgot-form_id" method="POST">
+		<input type="hidden" name="_csrf" value={{_csrf}}>
 
-<!-- Form -->
-<form action="/forgot" id="forgot-form_id" method="POST">
-  <input type="hidden" name="_csrf" value={{_csrf}}>
+		<div class="form-input">
+			<label for="email_id">Email</label>
+			<input type="email" name="email" id="email_id" placeholder="" tabindex="-2">
+		</div> 
+		
+		<div class="modal-error" id="email-error">
+			<span></span>
+		</div>
+		
+		<div class="modal-error" id="general-error">
+			<span></span>
+		</div>
 
-  <div class="panel-body">
-    <div class="form-group">
-      <input type="text" style="text-align: center; padding: 10px; height: auto;" name="email" id="email_id" class="form-control input-lg" placeholder="Your e-mail address" autofocus="true">
-    </div> <!-- / Email -->
+		<button id="sign-in-btn" class="sign-btn" type="submit">
+			<span>Continue</span>
+			<svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
+		</button>
 
-    <div class="text-center" style="margin-top: 24px;">
-      <button class="btn btn-primary" type="submit">
-        <i class="fa fa-key"></i>
-        &nbsp;Reset Password
-      </button>
-    </div> <!-- / .form-actions -->
-  </div> <!-- / .panel-body -->
-</form>
-<!-- / Form -->
+	</form>
+</div>
+<div class="modal-footer">
+	<span class="pull-left"><a href="/signup" class="signup">Create new account</a></span>
+	<span class="pull-right"><a href="/login" class="login" id="signup-link">Sign in</a></span>
+</div>

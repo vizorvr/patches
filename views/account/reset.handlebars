@@ -1,22 +1,40 @@
-<h1 class="form-header">Reset Password</h1>
+<div class="modal-header">
+	<h4>Reset Password</h4>
+	<button aria-hidden="true" data-dismiss="modal" class="bootbox-close-button" type="button">
+		<svg class="icon-dialog-close"><use xlink:href="#icon-close"></use></svg>
+	</button>
+</div>
 
-<!-- Form -->
-<form action="/reset/{{token}}" id="reset-form_id" class="panel" method="POST">
-  <input type="hidden" name="_csrf" value={{_csrf}}>
-
-  <div class="form-group">
-    <input type="password" name="password" id="password_id" class="form-control input-lg" placeholder="New Password" autofocus="true">
-  </div>
-
-  <div class="form-group">
-    <input type="password" name="confirm" id="password_confirm_id" class="form-control input-lg" placeholder="Confirm New Password">
-  </div>
-
-  <div class="form-actions">
-    <button class="btn btn-primary btn-reset" type="submit">
-      <i class="fa fa-keyboard-o"></i>
-      &nbsp;Change Password
-    </button>
-  </div> <!-- / .form-actions -->
-</form>
-<!-- / Form -->
+<div class="modal-body">
+	<form action="/reset/{{token}}" id="reset-form_id" class="panel" method="POST">
+		<input type="hidden" name="_csrf" value={{_csrf}}>
+		
+		<div class="form-input">
+			<label for="password_id">Password</label>
+			<input type="password" name="password" id="password_id" placeholder="" tabindex="-2">
+		</div> 
+		
+		<div class="modal-error" id="password-error">
+			<span></span>
+		</div>
+		
+		<div class="form-input">
+			<label for="password-confirm_id">Confirm password</label>
+			<input type="password" name="confirm" id="password-confirm_id" placeholder="" tabindex="-2">
+		</div> 
+		
+		<div class="modal-error" id="confirm-error">
+			<span></span>
+		</div>
+		
+		<div class="modal-error" id="general-error">
+			<span></span>
+		</div>
+		
+		<button id="rest-btn" class="sign-btn" type="submit">
+			<span>Reset password</span>
+			<svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
+		</button>
+		</div> 
+	</form>
+</div>

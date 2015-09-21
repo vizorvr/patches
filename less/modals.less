@@ -54,7 +54,7 @@
             float: left;
             position: relative;
             width: 100%;
-            > * {
+            > div {
                 display: block;
                 position: relative;
                 float: left;
@@ -170,24 +170,24 @@
                         display: block;
                         width: 100%;
                         height: 16px;
-                        text-align: center;
+                        text-align: right;
                         position: absolute;
                         bottom: 0;
                         font-size: 12px;
                     }
+                    &#general-error span {
+                        text-align: center;
+                    }
                     &.revealError {
                         display: block;
                         height: 16px;
-                        animation: revealSigninError 0.35s ease-out;
+                        animation: revealModalError 0.35s ease-out;
                     }
                     &.hideError {
                         display: block;
                         height: 0;
-                        animation: hideSigninError 0.35s ease-in;
+                        animation: hideModalError 0.35s ease-in;
                     }
-                }
-                #email-error, #username-error, #password-error {
-                    text-align: right;
                 }
                 button {
                     display: block;
@@ -264,12 +264,139 @@
                 button.btn {
                     border-radius: 4px;
                     background: @bg-bright;
+                    border: 0 none;
                     font-size: 16px;
                     color: #ffffff;
                     padding: 8px 12px;
+                    &:hover {
+                        border: 0 none;
+                        color: @editor-text-active;
+                    }
                 }
             }
             
+    }
+    &.patch-inspector {
+        .modal-header {
+            text-align: left;
+            background: @bg-light;
+            border-bottom: 1px solid @bg-darker;
+            min-height: 60px;
+            height: auto;
+            h4 {
+                color: @editor-text-default;
+                font-weight: 600;
+                font-size: 16px;
+                padding: 20px 18px;
+            }
+            button.bootbox-close-button {
+                top: 28px;
+                svg {
+                     fill: @editor-text-default;
+                }
+            }
+            ul {
+                display: table;
+                position: relative;
+                padding: 0;
+                margin: 0 auto;
+                float: left;
+                height: 35px;
+                li {
+                    display: table-cell;
+                    position: relative;
+                    text-align: center;
+                    vertical-align: center;
+                    height: 35px;
+                    border-top: 1px solid @bg-darker;
+                    border-right: 1px solid @bg-darker;
+                    &:last-child {
+                        border-right: 0;
+                    }
+                    a, a:active {
+                        display: block;
+                        font-weight: 600;
+                        height: 35px;
+                        font-size: 14px;
+                        text-transform: uppercase;
+                        text-decoration: none;
+                        color: @editor-text-default;
+                        outline: none;
+                        padding: 8px 0 0;
+                        &:hover {
+                            color: @editor-text-hover;
+                            text-decoration: none;
+                        }
+                    }
+                    &.active {
+                        background: @bg-lighter;
+                        a, a:active, a:hover {
+                            color: @editor-text-default;
+                            text-decoration: none;
+                        }
+                    }
+                }
+            }
+        }
+        .modal-body {
+            padding: 30px 16px;
+            input[type=checkbox] {
+                display: none;
+            }
+            input[type=checkbox] + label {
+                font-size: 14px;
+                font-weight: 400;
+                color: @editor-text-default;
+                cursor: pointer;
+            }
+            input[type=checkbox] + label span {
+                display: inline-block;
+                border: 0 none;
+                border-radius: 2px;
+                background: #394055;
+                height: 14px;
+                width: 14px;
+                margin: 3px 10px 0 0;
+                position: relative;
+                float: left;
+                svg {
+                    display: none;
+                    height: 14px;
+                    width: 14px;
+                    float: left;
+                }
+            }
+            input[type=checkbox]:checked + label span {
+                background: #6b748f;
+                svg {
+                    display: block;
+                }
+            }
+        }
+        .modal-footer {
+            background: @bg-light;
+            border-top: 1px solid @bg-darker;
+            padding: 20px 16px;
+            button.btn {
+                height: 28px;
+                min-width: 100px;
+                background: #1e222c;
+                color: @editor-text-default;
+                padding: 0;
+                font-size: 12px;
+                font-weight: 400;
+                float: left;
+                &:last-child {
+                    float: right;
+                }
+                &:first-child {
+                    float: left;
+                }
+                &.btn-primary {
+                    float: right;
+                }
+            }
+        }
     }
 }
 
@@ -298,7 +425,7 @@
                 width: 261px;
                 height: 60px;
                 position: relative;
-                margin: 22px auto 37px auto;
+                margin: 22px auto 34px;
                 clear: both;
                 padding-left: 45px;
                 color: #ffffff;
@@ -326,11 +453,12 @@
                 margin: 22px auto 10px;
                 display: block;
                 position: relative;
-                border: 1pxc solid #ffffff;
+                border: 1px solid #ffffff;
                 border-radius: 4px;
                 background: transparent;
                 color: #ffffff;
                 font-weight: 300;
+                font-size: 16px;
                 height: 37px;
                 width: 125px;
                 &:hover {
@@ -339,12 +467,13 @@
             }
         }
         .welcome-logo {
-            margin: 54px auto 52px auto;
+            margin: 54px auto 42px auto;
             position: relative;
             clear: both;
             svg {
                 display: block;
                 position: relative;
+                margin: 0 auto 7px;
                 clear: both;
                 height: 36px;
                 width: 36px;
@@ -367,6 +496,7 @@
             font-weight: 300;
             font-size: 14px;
             text-align: center;
+            margin: 0 auto 26px;
             a, a:active {
                 text-decoration: none;
                 font-weight: 400;
@@ -401,7 +531,7 @@
     }
 }
 
-@keyframes revealSigninError {
+@keyframes revealModalError {
     0% {
         height: 0;
     }
@@ -410,7 +540,7 @@
     }
 }
 
-@keyframes hideSigninError {
+@keyframes hideModalError {
     0% {
         height: 16px;
     }

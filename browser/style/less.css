@@ -6592,6 +6592,25 @@ ul.iconic-nav > li.open > button .icon-file-menu {
 ul.iconic-nav > li.open > button span {
   color: #ffffff;
 }
+.top-userpic {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  position: relative;
+  margin: 0 auto 5px;
+  overflow: hidden;
+}
+.top-userpic img {
+  width: 20px;
+  height: auto;
+  margin: -10px 0 0 -10px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  padding: 0;
+  border: 0 none;
+}
 #breadcrumb {
   height: 28px;
   width: 100%;
@@ -6602,6 +6621,7 @@ ul.iconic-nav > li.open > button span {
   margin: 0;
   padding: 0;
   opacity: 1;
+  text-align: center;
   top: auto;
   z-index: 10;
 }
@@ -6657,25 +6677,24 @@ ul.iconic-nav > li.open > button span {
   padding: 0 !important;
   border-radius: 0 0 5px 5px !important;
   margin: 0 !important;
-  border-top: 1px solid #222 !important;
-  border-left: 1px solid #222 !important;
-  border-right: 1px solid #222 !important;
-  border-bottom: none !important;
-  background: #343c4f;
-  z-index: 11;
+  border: 0 none !important;
+  min-width: 130px;
+  background: #262c3d;
+  overflow: hidden;
+  top: 98px;
+  z-index: 42;
+}
+.dropdown-menu#userPullDown {
+  width: 130px;
+  float: right;
+  right: -40px;
+  left: auto;
 }
 .dropdown-menu > li > a {
   padding: 12px 20px !important;
   cursor: pointer;
   border-top: 1px solid #1e2331 !important;
   color: #909fb9;
-}
-#user-pulldown > li > a {
-  height: 28px;
-  padding-top: 7px;
-  padding-bottom: 0px;
-  padding-left: 10px;
-  padding-right: 10px;
 }
 .dropdown-menu > li > a:hover,
 .dropdown-menu > li > a:focus,
@@ -6774,19 +6793,17 @@ ul.iconic-nav > li.open > button span {
   background: #262c3d;
   width: 252px;
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 #load-spinner {
   position: absolute;
-  left: 10px;
-  top: 3px;
+  left: 15px;
+  top: 50%;
   opacity: 0.65;
-  max-width: 18px;
-  min-width: 18px;
-  height: 19px;
+  width: 18px;
+  height: 18px;
   background: url('/images/load-spinner.gif');
   background-size: 100% 100%;
-  -moz-background-size: 100% 100%;
-  -webkit-background-size: 100% 100%;
   margin-top: -9px;
 }
 .header .btn {
@@ -7074,7 +7091,7 @@ ul.iconic-nav > li.open > button span {
   border-color: #333333;
   border-radius: 0;
   color: #aaaaaa;
-  height: 28px;
+  height: 70px;
   padding: 0 8px;
 }
 #about {
@@ -8243,4 +8260,563 @@ ul.assets-list > li:hover span {
 }
 .scrollbar::-webkit-scrollbar-corner {
   display: none!important;
+}
+.bootbox.modal,
+.bootbox.modal:before {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.bootbox.modal:before {
+  background-color: rgba(0, 0, 0, 0.8);
+  content: '';
+}
+.modal-dialog {
+  width: 400px;
+  border-radius: 0;
+  margin: 128px auto 0 auto;
+}
+.modal-dialog .button {
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0) !important;
+}
+.modal-dialog input {
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0) !important;
+  outline: none!important;
+}
+.modal-dialog button.bootbox-close-button {
+  display: block;
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0 none;
+  background: transparent;
+  opacity: 1;
+}
+.modal-dialog button.bootbox-close-button svg {
+  display: block;
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  left: 50%;
+  top: 50%;
+  fill: #bccbe4;
+}
+.modal-dialog button.bootbox-close-button:hover svg {
+  fill: #ffffff;
+}
+.modal-dialog .modal-content {
+  border-radius: 4px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.22);
+  background: transparent;
+  overflow: hidden;
+  float: left;
+  position: relative;
+  width: 100%;
+}
+.modal-dialog .modal-content > div {
+  display: block;
+  position: relative;
+  float: left;
+  width: 100%;
+}
+.modal-dialog .modal-content .modal-header {
+  background: #1f2331;
+  height: 60px;
+  border: 0 none;
+  text-align: center;
+  padding: 0;
+}
+.modal-dialog .modal-content .modal-header > h4 {
+  padding: 20px 20px 0 20px;
+  color: #bccbe4;
+  font-size: 22px;
+  font-weight: 300;
+  margin: 0;
+  line-height: 1;
+}
+.modal-dialog .modal-content .modal-header button.bootbox-close-button {
+  right: 28px;
+  top: 50%;
+  margin: -18px -25px 0 0;
+}
+.modal-dialog .modal-content .modal-body {
+  background: #262c3d;
+  padding: 22px 40px 18px;
+  font-size: 14px;
+  color: #fff;
+  font-weight: 300;
+}
+.modal-dialog .modal-content .modal-body .bootbox-body {
+  padding: 0;
+  text-align: center;
+}
+.modal-dialog .modal-content .modal-body h4 {
+  font-size: 14px;
+  color: #ffffff;
+  padding: 10px 0;
+}
+.modal-dialog .modal-content .modal-body h4 a,
+.modal-dialog .modal-content .modal-body h4 a:active {
+  color: #0597cd;
+  text-decoration: none;
+}
+.modal-dialog .modal-content .modal-body h4 a:hover,
+.modal-dialog .modal-content .modal-body h4 a:active:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+.modal-dialog .modal-content .modal-body div.form-input {
+  height: 50px;
+  width: 100%;
+  background: #1f2331;
+  border-radius: 4px;
+  margin: 0 auto 18px;
+  overflow: hidden;
+  position: relative;
+  float: left;
+  text-align: left;
+}
+.modal-dialog .modal-content .modal-body div.form-input > * {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 50px;
+  width: 100%;
+  margin: 0;
+}
+.modal-dialog .modal-content .modal-body div.form-input.wrong {
+  border: 1px solid #afbfdf;
+}
+.modal-dialog .modal-content .modal-body div.form-input input {
+  border: 0 none;
+  background: transparent;
+  padding: 0 10px 0 36px;
+  font-size: 16px;
+  line-height: 1.33;
+  font-weight: 400;
+  color: #ffffff;
+}
+.modal-dialog .modal-content .modal-body div.form-input label {
+  color: #414857;
+  padding: 15px 20px 0 36px;
+  font-size: 16px;
+  line-height: 1.33;
+  font-weight: 400;
+}
+.modal-dialog .modal-content .modal-body div.form-input label:after {
+  content: '';
+  background: #1b1f2b;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -320px;
+  border-radius: 3px;
+  width: 320px;
+  height: 50px;
+  transition: left 0.3s ease-out;
+}
+.modal-dialog .modal-content .modal-body div.form-input label.filled-label:after {
+  left: 0;
+}
+.modal-dialog .modal-content .modal-body div.modal-error {
+  height: 0;
+  overflow: hidden;
+  display: none;
+  margin: -8px 0 8px 0;
+  position: relative;
+  float: left;
+  width: 100%;
+}
+.modal-dialog .modal-content .modal-body div.modal-error span {
+  color: #ff6868;
+  display: block;
+  width: 100%;
+  height: 16px;
+  text-align: right;
+  position: absolute;
+  bottom: 0;
+  font-size: 12px;
+}
+.modal-dialog .modal-content .modal-body div.modal-error#general-error span {
+  text-align: center;
+}
+.modal-dialog .modal-content .modal-body div.modal-error.revealError {
+  display: block;
+  height: 16px;
+  animation: revealModalError 0.35s ease-out;
+}
+.modal-dialog .modal-content .modal-body div.modal-error.hideError {
+  display: block;
+  height: 0;
+  animation: hideModalError 0.35s ease-in;
+}
+.modal-dialog .modal-content .modal-body button {
+  display: block;
+  position: relative;
+  border-radius: 4px;
+  float: left;
+  background: #0597cd;
+}
+.modal-dialog .modal-content .modal-body button.bootbox-close-button {
+  background: transparent;
+  opacity: 1;
+  float: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 0;
+}
+.modal-dialog .modal-content .modal-body button.sign-btn {
+  width: 100%;
+  height: 50px;
+  color: #7e8dab;
+  border: 0 none;
+  padding: 0;
+}
+.modal-dialog .modal-content .modal-body button.sign-btn span {
+  display: block;
+  position: relative;
+  padding: 15px 20px 0 36px;
+  height: 50px;
+  font-size: 16px;
+  float: left;
+  color: #ffffff;
+}
+.modal-dialog .modal-content .modal-body button.sign-btn svg {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  margin: -12px 0 0;
+  stroke: #ffffff;
+}
+.modal-dialog .modal-content .modal-body button.sign-btn.disabled {
+  background: #515c75;
+}
+.modal-dialog .modal-content .modal-footer {
+  background: #1f2331;
+  border: 0 none;
+  text-align: center;
+  padding: 20px 40px;
+}
+.modal-dialog .modal-content .modal-footer span,
+.modal-dialog .modal-content .modal-footer p {
+  padding: 0;
+  margin: 0;
+  display: block;
+  color: #afbfdf;
+  font-size: 12px;
+}
+.modal-dialog .modal-content .modal-footer span a,
+.modal-dialog .modal-content .modal-footer p a,
+.modal-dialog .modal-content .modal-footer span a:active,
+.modal-dialog .modal-content .modal-footer p a:active {
+  color: #2d93c9;
+  text-decoration: none;
+}
+.modal-dialog .modal-content .modal-footer span a:hover,
+.modal-dialog .modal-content .modal-footer p a:hover,
+.modal-dialog .modal-content .modal-footer span a:active:hover,
+.modal-dialog .modal-content .modal-footer p a:active:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+.modal-dialog .modal-content .modal-footer p {
+  padding: 0 40px 8px 40px;
+  text-align: center;
+}
+.modal-dialog .modal-content .modal-footer p:last-child {
+  padding: 0 40px;
+}
+.modal-dialog .modal-content .modal-footer button.btn {
+  border-radius: 4px;
+  background: #0597cd;
+  border: 0 none;
+  font-size: 16px;
+  color: #ffffff;
+  padding: 8px 12px;
+}
+.modal-dialog .modal-content .modal-footer button.btn:hover {
+  border: 0 none;
+  color: #ffffff;
+}
+.modal-dialog.patch-inspector .modal-header {
+  text-align: left;
+  background: #262c3d;
+  border-bottom: 1px solid #1e2331;
+  min-height: 60px;
+  height: auto;
+}
+.modal-dialog.patch-inspector .modal-header h4 {
+  color: #7e8dab;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 20px 18px;
+}
+.modal-dialog.patch-inspector .modal-header button.bootbox-close-button {
+  top: 28px;
+}
+.modal-dialog.patch-inspector .modal-header button.bootbox-close-button svg {
+  fill: #7e8dab;
+}
+.modal-dialog.patch-inspector .modal-header ul {
+  display: table;
+  position: relative;
+  padding: 0;
+  margin: 0 auto;
+  float: left;
+  height: 35px;
+}
+.modal-dialog.patch-inspector .modal-header ul li {
+  display: table-cell;
+  position: relative;
+  text-align: center;
+  vertical-align: center;
+  height: 35px;
+  border-top: 1px solid #1e2331;
+  border-right: 1px solid #1e2331;
+}
+.modal-dialog.patch-inspector .modal-header ul li:last-child {
+  border-right: 0;
+}
+.modal-dialog.patch-inspector .modal-header ul li a,
+.modal-dialog.patch-inspector .modal-header ul li a:active {
+  display: block;
+  font-weight: 600;
+  height: 35px;
+  font-size: 14px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #7e8dab;
+  outline: none;
+  padding: 8px 0 0;
+}
+.modal-dialog.patch-inspector .modal-header ul li a:hover,
+.modal-dialog.patch-inspector .modal-header ul li a:active:hover {
+  color: #afbfdf;
+  text-decoration: none;
+}
+.modal-dialog.patch-inspector .modal-header ul li.active {
+  background: #2b3142;
+}
+.modal-dialog.patch-inspector .modal-header ul li.active a,
+.modal-dialog.patch-inspector .modal-header ul li.active a:active,
+.modal-dialog.patch-inspector .modal-header ul li.active a:hover {
+  color: #7e8dab;
+  text-decoration: none;
+}
+.modal-dialog.patch-inspector .modal-body {
+  padding: 30px 16px;
+}
+.modal-dialog.patch-inspector .modal-body input[type=checkbox] {
+  display: none;
+}
+.modal-dialog.patch-inspector .modal-body input[type=checkbox] + label {
+  font-size: 14px;
+  font-weight: 400;
+  color: #7e8dab;
+  cursor: pointer;
+}
+.modal-dialog.patch-inspector .modal-body input[type=checkbox] + label span {
+  display: inline-block;
+  border: 0 none;
+  border-radius: 2px;
+  background: #394055;
+  height: 14px;
+  width: 14px;
+  margin: 3px 10px 0 0;
+  position: relative;
+  float: left;
+}
+.modal-dialog.patch-inspector .modal-body input[type=checkbox] + label span svg {
+  display: none;
+  height: 14px;
+  width: 14px;
+  float: left;
+}
+.modal-dialog.patch-inspector .modal-body input[type=checkbox]:checked + label span {
+  background: #6b748f;
+}
+.modal-dialog.patch-inspector .modal-body input[type=checkbox]:checked + label span svg {
+  display: block;
+}
+.modal-dialog.patch-inspector .modal-footer {
+  background: #262c3d;
+  border-top: 1px solid #1e2331;
+  padding: 20px 16px;
+}
+.modal-dialog.patch-inspector .modal-footer button.btn {
+  height: 28px;
+  min-width: 100px;
+  background: #1e222c;
+  color: #7e8dab;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 400;
+  float: left;
+}
+.modal-dialog.patch-inspector .modal-footer button.btn:last-child {
+  float: right;
+}
+.modal-dialog.patch-inspector .modal-footer button.btn:first-child {
+  float: left;
+}
+.modal-dialog.patch-inspector .modal-footer button.btn.btn-primary {
+  float: right;
+}
+.modal-dialog.welcome {
+  width: 588px;
+  height: auto;
+  margin-top: -300px;
+  top: 50%;
+  border-radius: 0;
+}
+.modal-dialog.welcome .welcome-screen {
+  background: url("/images/welcome-bg.png") no-repeat center center;
+  position: relative;
+  float: left;
+  width: 100%;
+  text-align: center;
+}
+.modal-dialog.welcome .welcome-screen > button {
+  outline: 0!important;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0) !important;
+}
+.modal-dialog.welcome .welcome-screen > button.bootbox-close-button {
+  right: 0;
+  top: 0;
+  margin: 0;
+}
+.modal-dialog.welcome .welcome-screen > button#welcome-new {
+  background: rgba(30, 33, 31, 0.8);
+  width: 261px;
+  height: 60px;
+  position: relative;
+  margin: 22px auto 34px;
+  clear: both;
+  padding-left: 45px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 0 none;
+  border-radius: 4px;
+}
+.modal-dialog.welcome .welcome-screen > button#welcome-new svg {
+  position: absolute;
+  display: block;
+  left: 25px;
+  top: 50%;
+  margin-top: -8px;
+  height: 16px;
+  width: 16px;
+  fill: #ffffff;
+}
+.modal-dialog.welcome .welcome-screen > button#welcome-new:hover {
+  background: rgba(30, 33, 31, 0.9);
+}
+.modal-dialog.welcome .welcome-screen > button#welcome-sign-up {
+  margin: 22px auto 10px;
+  display: block;
+  position: relative;
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  background: transparent;
+  color: #ffffff;
+  font-weight: 300;
+  font-size: 16px;
+  height: 37px;
+  width: 125px;
+}
+.modal-dialog.welcome .welcome-screen > button#welcome-sign-up:hover {
+  background: rgba(30, 33, 31, 0.5);
+}
+.modal-dialog.welcome .welcome-screen .welcome-logo {
+  margin: 54px auto 42px auto;
+  position: relative;
+  clear: both;
+}
+.modal-dialog.welcome .welcome-screen .welcome-logo svg {
+  display: block;
+  position: relative;
+  margin: 0 auto 7px;
+  clear: both;
+  height: 36px;
+  width: 36px;
+  fill: #ffffff;
+}
+.modal-dialog.welcome .welcome-screen .welcome-logo h1 {
+  font-weight: 300;
+  color: #ffffff;
+  margin: 0 auto;
+  clear: both;
+  text-align: center;
+  padding: 0;
+  font-size: 36px;
+  line-height: 1.33;
+}
+.modal-dialog.welcome .welcome-screen > p {
+  padding: 0;
+  color: #ffffff;
+  font-weight: 300;
+  font-size: 14px;
+  text-align: center;
+  margin: 0 auto 26px;
+}
+.modal-dialog.welcome .welcome-screen > p a,
+.modal-dialog.welcome .welcome-screen > p a:active {
+  text-decoration: none;
+  font-weight: 400;
+  color: #ffffff;
+}
+.modal-dialog.welcome .welcome-screen > p a:hover,
+.modal-dialog.welcome .welcome-screen > p a:active:hover {
+  text-decoration: underline;
+  color: #ffffff;
+}
+.modal-dialog.welcome .welcome-footer {
+  height: 48px;
+  width: 100%;
+  float: left;
+  background: #385a8a;
+  text-align: center;
+}
+.modal-dialog.welcome .welcome-footer a,
+.modal-dialog.welcome .welcome-footer a:active {
+  color: #ffffff;
+  font-weight: 300;
+  display: inline-block;
+  height: 48px;
+  padding: 16px 23px 0 23px;
+  text-decoration: none;
+  font-size: 14px;
+}
+.modal-dialog.welcome .welcome-footer a:hover,
+.modal-dialog.welcome .welcome-footer a:active:hover {
+  background: #0597cd;
+  text-decoration: none;
+}
+@keyframes revealModalError {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 16px;
+  }
+}
+@keyframes hideModalError {
+  0% {
+    height: 16px;
+  }
+  100% {
+    height: 0;
+  }
 }

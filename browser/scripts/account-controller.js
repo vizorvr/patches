@@ -11,7 +11,7 @@ AccountController.prototype.renderLoginView = function(user)
 {
 	var viewTemplate = E2.views.partials.userpulldown;
 	var html = viewTemplate({ user: user.toJSON() });
-	$('#user-pulldown').replaceWith(html);
+	$('#account').html(html);
 
 	this._bindEvents($('#user-pulldown'));
 }
@@ -31,24 +31,29 @@ AccountController.prototype.showError = function(ertype, ertext) {
 			break;
 		}
 		case (ertype === 'email'): {
-			$('#login-form_id #email_id').addClass('wrong');
+			$('#email_id').addClass('wrong');
 			break;
 		}
 		case (ertype === 'username'): {
-			$('#login-form_id #username_id').addClass('wrong');
+			$('#username_id').addClass('wrong');
 			break;
 		}
 		case (ertype === 'password'): {
-			$('#login-form_id #username_id').addClass('wrong');
+			$('#password_id').addClass('wrong');
 			break;
 		}
+		case (ertype === 'confirm'): {
+			$('#password_confirm_id').addClass('wrong');
+			break;
+		}
+		
 	};
 }
 
 AccountController.prototype.checkSignupFields = function() {
 	var that = this;
 	var result = false;
-	if (($('#username_id').val()) && ($('#email_id').val()) && (that.isValidEmail($('#email_id').val())) && ($('#password_id').val().length>=8)) {
+	if (($('#username_id').val()) && (!$('#username_id').hasClass('taken')) && ($('#email_id').val()) && (that.isValidEmail($('#email_id').val())) && ($('#password_id').val().length>=8)) {
 		result = true;
 	}
 	return result;
@@ -75,18 +80,45 @@ AccountController.prototype._bindEvents = function(el, dfd)
 		var errorTypeToCheck=$(this).attr('name');
 		that.hideError(errorTypeToCheck);
 		that.hideError('general');
+		if ($(this).hasClass('taken'))
+			$(this).val('').removeClass('taken');
 	});
 	$('.form-input input', el).on('blur', function() {
 		if (!$(this).val())
 			$(this).parent().find('label').removeClass('filled-label');
 			
-		if ($(this).attr('name') === 'password' && $(this).val().length < 8) {
+		if ($(this).attr('name') === 'password' && $(this).val().length < 8 && $('#signup-form_id').length) {
 			var errText = 'Please use a password of at least 8 characters' 
 			that.showError('password',errText);
 		}
+			
+		if (($(this).attr('name') === 'username') && $(this).val()) {
+			var formEl = $('#signup-form_id');
+			var formData = formEl.serialize();
+			$.ajax(
+				{
+					type: "POST",
+					url: '/checkusername',
+					data: formData,
+					error: function(err, msg)
+					{
+						console.log(err);
+						var errText = 'Sorry, this username is already taken'
+						that.showError('username',errText);
+						$('#username_id').addClass('taken').parent().addClass('wrong');
+					},
+					success: function(user)
+					{
+						console.log('Username ' + user.username + ' is ok.');
+						ga('send', 'event', 'account', 'signedUp', user.username)
+						that.hideError('username');
+					},
+					dataType: 'json'
+			});
+		}
 		
 		if ($(this).attr('name') === 'email' && !that.isValidEmail($(this).val())) {
-			var errText = 'Whoops! This isn\'t a valid email address.' 
+			var errText = 'Whoops! This isn\'t a valid email address' 
 			that.showError('email',errText);
 		}
 	});
@@ -111,6 +143,13 @@ AccountController.prototype._bindEvents = function(el, dfd)
 		evt.preventDefault();
 		bootbox.hideAll();
 		that.openSignupModal(dfd);
+	});
+	
+	$('a.forgot', el).on('click', function(evt)
+	{
+		evt.preventDefault();
+		bootbox.hideAll();
+		that.openForgotModal(dfd);
 	});
 }
 
@@ -137,7 +176,7 @@ AccountController.prototype.openLoginModal = function(dfd) {
 		event.preventDefault();
 		
 		if (!that.isValidEmail(formEl.find('#email_id').val())) {
-			var errText = 'Whoops! This isn\'t a valid email address.';
+			var errText = 'Whoops! This isn\'t a valid email address';
 			that.showError('email',errText);
 			return;
 		}
@@ -151,7 +190,7 @@ AccountController.prototype.openLoginModal = function(dfd) {
 			data: formData,
 			error: function(err)
 			{	
-				var errText = 'Whoops! This email and password combination isn\'t right.'
+				var errText = 'Whoops! This email and password combination isn\'t right'
 				that.showError('general',errText);
 			},
 			success: function(user)
@@ -220,6 +259,118 @@ AccountController.prototype.openSignupModal = function(dfd) {
 				E2.models.user.set(user);
 				bootbox.hideAll();
 				dfd.resolve()
+			},
+			dataType: 'json'
+		});
+	});
+
+	return dfd.promise
+}
+
+AccountController.prototype.openForgotModal = function(dfd) {
+	var that = this;
+	var dfd = dfd || when.defer();
+	var forgotTemplate = E2.views.account.forgot;
+	
+	ga('send', 'event', 'account', 'open', 'forgotModal');
+	
+	var bb = bootbox.dialog(
+	{
+		show: true,
+		animate: false,
+		message: 'Rendering',
+	}).init(function() {
+		E2.app.useCustomBootboxTemplate(forgotTemplate);
+	});
+
+	this._bindEvents(bb, dfd);
+	
+	var formEl = $('#forgot-form_id');
+	formEl.submit(function( event )
+	{
+		event.preventDefault();
+		
+		if (!that.isValidEmail(formEl.find('#email_id').val())) {
+			var errText = 'Whoops! This isn\'t a valid email address';
+			that.showError('email',errText);
+			return;
+		}
+
+		var formData = formEl.serialize();
+
+		$.ajax(
+		{
+			type: "POST",
+			url: formEl.attr('action'),
+			data: formData,
+			error: function(err)
+			{	
+				var errText = 'Whoops! This email isn\'t registered'
+				that.showError('general',errText);
+			},
+			success: function(user)
+			{
+				console.log('Password reset for ' + user.username);
+				ga('send', 'event', 'account', 'passwordReset', user.username)
+				bootbox.hideAll();
+				bootbox.alert('Instructions has been sent. Please check your email.');
+				dfd.resolve();
+			},
+			dataType: 'json'
+		});
+	});
+
+	return dfd.promise
+}
+
+AccountController.prototype.openResetModal = function(dfd) {
+	var that = this;
+	var dfd = dfd || when.defer();
+	var resetTemplate = E2.views.account.reset;
+	
+	ga('send', 'event', 'account', 'open', 'resetModal');
+	
+	var bb = bootbox.dialog(
+	{
+		show: true,
+		animate: false,
+		message: 'Rendering',
+	}).init(function() {
+		E2.app.useCustomBootboxTemplate(resetTemplate);
+	});
+
+	this._bindEvents(bb, dfd);
+	
+	var formEl = $('#reset-form_id');
+	formEl.submit(function( event )
+	{
+		event.preventDefault();
+		
+		if (formEl.find('#password_id').val() !== formEl.find('#password-confirm_id').val()) {
+			var errText = 'Whoops! Passwords doesn\'t match.';
+			that.showError('confirm',errText);
+			return;
+		}
+
+		var formData = formEl.serialize();
+
+		$.ajax(
+		{
+			type: "POST",
+			url: formEl.attr('action'),
+			data: formData,
+			error: function(err)
+			{	
+				var errText = 'Please try another password.'
+				that.showError('general',errText);
+			},
+			success: function(user)
+			{
+				console.log('Password changed for ' + user.username);
+				ga('send', 'event', 'account', 'passwordChanged', user.username)
+				bootbox.hideAll();
+				bootbox.alert('Password changed! You can sign in now.');
+				dfd.resolve();
 			},
 			dataType: 'json'
 		});
