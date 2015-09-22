@@ -10,7 +10,7 @@ function WebSocketChannel() {
 
 WebSocketChannel.prototype = Object.create(EventEmitter.prototype)
 
-WebSocketChannel.prototype.connect = function(path, options) {
+WebSocketChannel.prototype.connect = function(wsHost, wsPort, path, options) {
 	var that = this
 
 	path = path || '/__wschannel'
@@ -20,14 +20,7 @@ WebSocketChannel.prototype.connect = function(path, options) {
 
 	this._state = 'connecting'
 
-	var wsHost = 'ws.' + window.location.hostname
-
-	if (window.location.hostname === 'localhost')
-		wsHost = 'localhost'
-
-	var wsUrl = 'ws://' + wsHost + ':'+
-		(window.location.port || 80) +
-		path
+	var wsUrl = 'ws://' + wsHost + ':' + wsPort + path
 
 	console.log('Connecting WebSocket', wsUrl)
 
