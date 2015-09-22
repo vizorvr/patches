@@ -2223,9 +2223,22 @@ Application.prototype.setupEditorChannel = function() {
 		})
 	}
 
+	var wsHost
+	
+	if (!E2.core.pluginManager.release_mode) {
+		// dev mode
+		wsHost = window.location.hostname
+	}
+	else {
+		// release mode
+		wsHost = "ws." + window.location.hostname
+	}
+
+	var wsPort = window.location.port || 80
+
 	if (!this.channel) {
 		this.channel = new E2.EditorChannel()
-		this.channel.connect()
+		this.channel.connect(wsHost, wsPort)
 		this.channel.on('ready', function() { 
 			that.setupChat()
 			that.peopleStore.initialize()
