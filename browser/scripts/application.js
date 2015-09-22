@@ -2225,13 +2225,12 @@ Application.prototype.setupEditorChannel = function() {
 
 	var wsHost
 	
-	if (window.location.hostname === 'localhost') {
-		wsHost = "localhost"
-	}
-	else if (!E2.core.pluginManager.release_mode) {
+	if (!E2.core.pluginManager.release_mode) {
+		// dev mode
 		wsHost = window.location.hostname
 	}
-	else { // release mode
+	else {
+		// release mode
 		wsHost = "ws." + window.location.hostname
 	}
 
