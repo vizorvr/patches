@@ -53,6 +53,7 @@
 			}
 			else {
 				this.texture = data.clone()
+				this.dirty = true
 			}
 		}
 		else if (slot.index === 1) { // u offset
