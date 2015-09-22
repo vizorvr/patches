@@ -1294,7 +1294,7 @@ Application.prototype.onKeyDown = function(e) {
 		}
 		if(e.keyCode === 66) // CTRL+b
 		{
-			E2.dom.uiLayer.toggle();
+			E2.ui.toggleUiWindows();
 			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 			return;
 		}
@@ -1415,8 +1415,10 @@ Application.prototype.onOpenClicked = function() {
 
 Application.prototype.onChatDisplayClicked = function() {
 	if (!E2.dom.chatWindow.hasClass('collapsed')) {
-		E2.dom.chatWindow.toggle();
-		if (E2.dom.peopleTab.hasClass('active') && E2.dom.chatWindow.hasClass('active')) {
+		if (isUiVisible)
+			E2.dom.chatWindow.toggle();
+		E2.dom.chatWindow.toggleClass('uiopen');
+		if (E2.dom.peopleTab.hasClass('active') && E2.dom.chatWindow.hasClass('active') && isUiVisible) {
 			E2.app.onPeopleListChanged();
 		};
 	}
@@ -1982,11 +1984,15 @@ Application.prototype.onChatToggleClicked = function() {
 }
 
 Application.prototype.onBtnPresetsClicked = function() {
-	E2.dom.presetsLib.toggle();
+	if (isUiVisible)
+		E2.dom.presetsLib.toggle();
+	E2.dom.presetsLib.toggleClass('uiopen');
 }
 
 Application.prototype.onBtnAssetsClicked = function() {
-	E2.dom.assetsLib.toggle();
+	if (isUiVisible)
+		E2.dom.assetsLib.toggle();
+	E2.dom.assetsLib.toggleClass('uiopen');
 }
 
 Application.prototype.onAssetsToggleClicked = function() {
@@ -2018,15 +2024,15 @@ Application.prototype.onPresetsToggleClicked = function() {
 }
 
 Application.prototype.onChatCloseClicked = function() {
-	E2.dom.chatWindow.hide();
+	E2.dom.chatWindow.removeClass('uiopen').hide();
 }
 
 Application.prototype.onAssetsCloseClicked = function() {
-	E2.dom.assetsLib.hide();
+	E2.dom.assetsLib.removeClass('uiopen').hide();
 }
 
 Application.prototype.onPresetsCloseClicked = function() {
-	E2.dom.presetsLib.hide();
+	E2.dom.presetsLib.removeClass('uiopen').hide();
 }
 
 Application.prototype.onChatTabClicked = function() {
@@ -2360,6 +2366,8 @@ Application.prototype.setupEditorChannel = function() {
 }
 
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
+	E2.dom.editorHeader = $('.editor-header');
+
 	E2.dom.load_spinner = $('#load-spinner');
 	
 	E2.dom.btnNew = $('#btn-new');
@@ -2392,7 +2400,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.assetsToggle = $('#assets-toggle');
 	E2.dom.assetsClose = $('#assets-close');
 	
-	E2.dom.presetsLib = $('#left-nav');
+	E2.dom.presetsLib = $('#presets-lib');
 	E2.dom.presets_list = $('#presets');
 	
 	E2.dom.canvas_parent = $('#canvas_parent');
@@ -2429,6 +2437,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.tabs = $('#tabs');
 	E2.dom.graphs_list = $('#graphs-list');
 	E2.dom.filename_input = $('#filename-input');
+	
+	E2.dom.bottomBar = $('.bottom-panel');
 	
 	E2.dom.btnTimeline = $('#btn-timeline');
 	

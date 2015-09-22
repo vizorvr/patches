@@ -412,6 +412,8 @@ ul.iconic-nav>li.open>button span {
     width: @floating-box-width - (@blocks-header-height * 2);
     text-align: center;
     padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
     margin: 0;
     float: left;
 }
@@ -697,50 +699,77 @@ ul.iconic-nav>li.open>button span {
 .plugin-drag-preview {
 	position: fixed;
 	opacity: 1.0;
-	border: 1px dashed #999;
-	background: #222;
+	border: 2px dashed @bg-bright;
+	border-radius: 4px;
+	background: rgba(30,35,49,0.9);
+	color: @editor-text-default;
 	box-shadow: 0px 0px 25px rgba(0,0,0,0.25);
-	padding: 10px 20px;
+	padding: 25px 40px;
 	pointer-events: none;
-	font-weight: bold;
+	font-weight: 600;
 	z-index: 10000;
 	text-align: center;
-	font-size: 16px;
+	font-size: 14px;
 	white-space: nowrap;
-
+	overflow: visible;
 	span {
 		display: block;
-		font-weight: normal;
-		font-size: 12px;
+		font-weight: 300;
+		font-size: 14px;
 		text-transform: uppercase;
+	}
+	.drag-add-icon {
+	    position: absolute;
+	    width: 21px;
+	    height: 21px;
+	    background: @bg-bright;
+	    border-radius: 100%;
+	    top: -10px;
+	    left: -10px;
+	    box-shadow: 0 2 4 rgba(0,0,0,0.5);
+	    svg {
+	        position: absolute; 
+	        left: 5px;
+	        top: 5px;
+	        width: 11px;
+	        height: 11px;
+	        fill: #ffffff;
+	    }
 	}
 
 }
 
 .dragging-allowed,
 .dragging-allowed * {
-	cursor: copy !important;
+	cursor: grab;
 }
 
 .dragging-allowed {
-	border: 3px dashed #999;
 	position: absolute;
-	z-index: 1000;
-	background: transparent;
-	box-shadow: inset 0px 0px 0px 25px rgba(255,255,255,0.15);
-	-webkit-box-shadow: inset 0px 0px 0px 25px rgba(255,255,255,0.15);
-	-moz-box-shadow: inset 0px 0px 0px 25px rgba(255,255,255,0.15);
+	z-index: 62;
+}
+
+.dragging-not-allowed:hover {
+    cursor: no-drop;
+    * {
+        pointer-events: none;
+    }
+}
+
+.floating-box.dragging-not-allowed {
+    transition: opacity 0.3s;
+}
+
+.floating-box.dragging-not-allowed:hover {
+    cursor: grab;
+    opacity:0;
+    * {
+        pointer-events: none;
+    }
 }
 
 .dragging-allowed.dragging-on-top {
-	background: rgba(200,200,255,0.15);
-	border-color: white;
-}
-
-.dragging-not-allowed,
-.dragging-not-allowed * {
-	cursor: no-drop !important;
-	pointer-events: none;
+	background: rgba(24,27,34,0.8);
 }
 
 .bootbox-body h4 {
@@ -822,7 +851,7 @@ ul.iconic-nav>li.open>button span {
     position: absolute;
     bottom: 0;
     left: 0;
-    z-index: 15;
+    z-index: 66;
     >ul {
         height: @bottom-panel-height;
         display: block;

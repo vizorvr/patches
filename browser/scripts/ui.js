@@ -1,6 +1,7 @@
 VizorUI = function() {	// E2.ui
 	var that = this;
 	var fullscreen = false;
+	var isUiVisible = true;
 };
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
@@ -112,6 +113,18 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 		return fcs;
 	})
 };
+
+VizorUI.prototype.toggleUiWindows = function() {
+	isUiVisible = !isUiVisible;
+	if (E2.dom.assetsLib.hasClass('open'))
+		E2.dom.assetsLib.toggle(isUiVisible)
+	
+	if (E2.dom.presetsLib.hasClass('open'))
+		E2.dom.presetsLib.toggle(isUiVisible)
+	
+	if (E2.dom.chatWindow.hasClass('open'))
+		E2.dom.chatWindow.toggle(isUiVisible)
+}
 
 
 /***** MISC UI MODALS/DIALOGS *****/

@@ -12,7 +12,9 @@ function dragAndDropMouseDownHandler(e) {
 
 	var title = $(e.target).text()
 
-	var dragPreview = $('<div class="plugin-drag-preview"><span style="display: none;">Drop to create:</span>'+title+'</div>')
+	var dragPreview = $('<div class="plugin-drag-preview"><div class="drag-add-icon"><svg class='
+					  + '"icon-drag-add"><use xlink:href="#icon-drag-add"></use></svg></div>'
+					  + '<span style="display: none;">Drop to create:</span>'+title+'</div>')
 	var hoverArea = $('<div class="dragging-allowed"></div>')
 	var dragPreviewInDom = false // only append the preview element when moving the mouse cursor while dragging
 
@@ -79,7 +81,7 @@ function dragAndDropMouseDownHandler(e) {
 			dragPreview.css({ opacity: 0.5 }).find('span').hide()
 		}
 
-		dragPreview.css({ top: mouseY, left: mouseX })
+		dragPreview.css({ top: mouseY - dragPreview.outerHeight(true) + 8, left: mouseX - (dragPreview.outerWidth(true) / 2) })
 
 	}
 
@@ -93,14 +95,17 @@ function dragAndDropMouseDownHandler(e) {
 			dragPreview.appendTo('body')
 			dragPreviewInDom = true
 
-			$('#left-nav').addClass('dragging-not-allowed')
-			$('.menu-bar').addClass('dragging-not-allowed')
-			$('.resize-handle').addClass('dragging-not-allowed')
+			E2.dom.editorHeader.addClass('dragging-not-allowed');
+			E2.dom.breadcrumb.addClass('dragging-not-allowed');
+			E2.dom.assetsLib.addClass('dragging-not-allowed');
+			E2.dom.presetsLib.addClass('dragging-not-allowed');
+			E2.dom.chatWindow.addClass('dragging-not-allowed');
+			E2.dom.bottomBar.addClass('dragging-not-allowed');
 
 			hoverArea
 				.appendTo('body')
-				.width(canvas.width() - 6)
-				.height(canvas.height() - 6)
+				.width(canvas.width())
+				.height(canvas.height())
 				.css({ top: canvas.position().top, left: canvas.position().left })
 
 			mouseMoveBound = true
@@ -119,9 +124,12 @@ function dragAndDropMouseDownHandler(e) {
 		$(document).unbind('mousemove', mouseMoveHandler)
 		$(document).unbind('mouseup', mouseUpHandler)
 		$(document).unbind('mousedown', scrollHandler)
-		$('#left-nav').removeClass('dragging-not-allowed')
-		$('.menu-bar').removeClass('dragging-not-allowed')
-		$('.resize-handle').removeClass('dragging-not-allowed')
+		E2.dom.editorHeader.removeClass('dragging-not-allowed');
+		E2.dom.breadcrumb.removeClass('dragging-not-allowed');
+		E2.dom.assetsLib.removeClass('dragging-not-allowed');
+		E2.dom.presetsLib.removeClass('dragging-not-allowed');
+		E2.dom.chatWindow.removeClass('dragging-not-allowed');
+		E2.dom.bottomBar.removeClass('dragging-not-allowed');
 
 		mouseMoveBound = false
 		scrollBound = false
