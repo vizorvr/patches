@@ -1543,12 +1543,20 @@ Application.prototype.openPresetSaveDialog = function(serializedGraph) {
 	})
 };
 
-Application.prototype.onSaveACopyClicked = function(cb) {
+Application.prototype.onPublishClicked = function() {
+	this.openSaveACopyDialog()
+	.then(function(path) {
+		window.location.href = path
+	})
+}
+
+Application.prototype.onSaveACopyClicked = function() {
 	this.openSaveACopyDialog();
 }
 
-Application.prototype.openSaveACopyDialog = function(cb) {
+Application.prototype.openSaveACopyDialog = function() {
 	var that = this
+	var dfd = when.defer()
 
 	if (!E2.models.user.get('username')) {
 		return E2.controllers.account.openLoginModal()
@@ -1584,31 +1592,36 @@ Application.prototype.openSaveACopyDialog = function(cb) {
 					dataType: 'json',
 					success: function(saved) {
 						E2.dom.load_spinner.hide();
-
 						ga('send', 'event', 'graph', 'saved')
-						
-						if (cb)
-							cb();
+						dfd.resolve(saved.path)
 					},
 					error: function(x, t, err) {
 						E2.dom.load_spinner.hide()
 
-						if (x.status === 401)
-							return E2.controllers.account.openLoginModal()
+						if (x.status === 401) {
+							return dfd.resolve(
+								E2.controllers.account.openLoginModal()
+									.then(that.openSaveACopyDialog.bind(that))
+							)
+						}
 
 						if (x.responseText)
 							bootbox.alert('Save failed: ' + x.responseText);
 						else
 							bootbox.alert('Save failed: ' + err);
+
+						dfd.reject(err)
 					}
-				});
+				})
 			}
 		})
 		.files(files)
-		.modal();
+		.modal()
 
-		return fcs;
+		return fcs
 	})
+
+	return dfd.promise
 }
 
 var growlOpen
@@ -2053,12 +2066,16 @@ Application.prototype.start = function() {
 		E2.app.toggleWorldEditor()
 	});
 
+	E2.dom.publishButton.click(function() {
+		E2.app.onPublishClicked()
+	});
+
 	$('button#fullscreen').click(function() {
 		E2.app.toggleFullscreen()
 	});
 
 	$('button#help').click(function() {
-		window.open('/help/introduction.html', 'Vizor Create Help');
+		window.open('/help/introduction.html', 'Vizor Help');
 	});
 
 	$('.resize-handle').on('mousedown', function(e) {
@@ -2260,6 +2277,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.right_pane = $('#right-pane');
 	E2.dom.dbg = $('#dbg');
 	E2.dom.worldEditorButton = $('#worldEditor');
+	E2.dom.publishButton = $('#publish-button');
 	E2.dom.play = $('#play');
 	E2.dom.play_i = $('i', E2.dom.play);
 	E2.dom.pause = $('#pause');
@@ -2285,8 +2303,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	// $.ajaxSetup({ cache: false });
 
 	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, ex) {
-		if(settings.dataType === 'script' && !settings.url.match(/^\/plugins\/all.plugins\.js/)) {
-			if(typeof(ex) === 'string') {
+		if (settings.dataType === 'script') {
+			if (typeof(ex) === 'string') {
 				msg(ex);
 				return;
 			}
