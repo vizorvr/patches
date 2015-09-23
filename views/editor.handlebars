@@ -19,6 +19,18 @@
 					<span>New Graph</span>
 				</button>
 			</li>
+			<li>
+				<button class="btn" id="fork-button">
+					<svg class="icon"></svg>
+					<span>Edit a copy</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="publish-button">
+					<svg class="icon"></svg>
+					<span>Publish</span>
+				</button>
+			</li>
 		</ul>
 		<ul class="iconic-nav">
 			<li>
@@ -62,9 +74,9 @@
 		</ul>
 		<ul class="iconic-nav">
 			<li>
-				<button class="btn" id="btn-patches">
+				<button class="btn" id="worldEditor" data-new-id="btn-patches" data-old-class="btn btn-sm btn-default">
 					<svg class="icon-patches"><use xlink:href="#icon-patches"></use></svg>
-					<span>Patches</span>
+					<span data-alt="World Editor">Patches</span>
 				</button>
 			</li>
 			<li>
@@ -100,11 +112,6 @@
 	</div>
 </div>
 <div id="breadcrumb"></div>
-<!-- buttons dropped by newui
-<button id="fork-button" class="btn btn-sm btn-default">Edit a Copy</button>
-<button id="publish-button" class="btn btn-sm btn-default">Publish</button>
-<button id="worldEditor" class="btn btn-sm btn-default">Camera View</button>
--->
 <div class="presets-block floating-box collapsed uiopen" id="presets-lib">
 		<div class="block-header">
 			<button class="toggle-button" id="presets-toggle" type="button">
@@ -112,41 +119,22 @@
 			</button>
 			<ul class="nav nav-tabs" role="tablist">
 				<li class="active"><a href="#presets" role="tab" data-toggle="tab">Patch Library</a></li>
-				<li style="display: none;"><a href="#graph" role="tab" data-toggle="tab">Tree</a></li>
+				<li><a href="#graph" role="tab" data-toggle="tab">Tree</a></li>
 			</ul>
 			<button class="close-button" id="presets-close" type="button">
 				<svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
 			</button>
 		</div>
 
-				<button id="fork-button" class="btn btn-sm btn-default">Edit a Copy</button>
-
-				<div class="btn-group pull-left">
-					<button type="button" class="btn btn-sm btn-default save-copy-button">Save a Copy</button>
-					<button type="button" class="btn btn-default btn-dropdown" data-toggle="dropdown">
-						<span class="fa fa-caret-down"></span>
-					</button>
-					<ul class="dropdown-menu" role="menu">
-						<li><a class="save-copy-button">Save a Copy</a></li>
-						<li><a id="save-as-preset">Save as Preset</a></li>
-						<li><a id="save-selection-as-preset">Save Selection as Preset</a></li>
-						<li><hr></li>
-						<li><a id="view-source">View Source</a></li>
-					</ul>
-				</div>
-
-				<button id="open" class="btn btn-sm btn-default">Open</button>
-				
-				<!--
-				<button id="worldEditor" class="btn btn-sm btn-default">Camera View</button>
-				-->
-
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="presets">
+				<div id="presets"></div>
 			</div>
-
 			<div role="tabpanel" class="tab-pane" id="graph">
 				<div class="cell" id="structure"></div>
 			</div>
 		</div>
+
 </div>
 
 <div class="assets-block floating-box uiopen" id="assets-lib">

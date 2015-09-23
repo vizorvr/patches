@@ -1171,17 +1171,8 @@ Application.prototype.onKeyDown = function(e) {
 
 	var exceptionKeys = [ toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey ]
 
-	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
-	{
-		this.ctrl_pressed = true;
-	}
-	
 	if (this.isVRCameraActive() && exceptionKeys.indexOf(e.keyCode) === -1)
 		return;
-	
-	if ((!this.noodlesVisible && e.keyCode !== 9) && (e.keyCode !== 66 && this.ctrl_pressed == false)) 
-		return true;
-		
 
 	// arrow up || down
 	var arrowKeys = [37,38,39,40]
@@ -1296,7 +1287,7 @@ Application.prototype.onKeyDown = function(e) {
 		}
 		if(e.keyCode === 66) // CTRL+b
 		{
-			E2.ui.toggleUiWindows();
+			E2.ui.toggleFloatingPanels();
 			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 			return;
 		}
@@ -1416,23 +1407,24 @@ Application.prototype.onOpenClicked = function() {
 
 
 Application.prototype.onChatDisplayClicked = function() {
+	var isUiVisible = E2.ui.isVisible();
 	if (!E2.dom.chatWindow.hasClass('collapsed')) {
 		if (isUiVisible)
 			E2.dom.chatWindow.toggle();
 		E2.dom.chatWindow.toggleClass('uiopen');
 		if (E2.dom.peopleTab.hasClass('active') && E2.dom.chatWindow.hasClass('active') && isUiVisible) {
-			E2.app.onPeopleListChanged();
-		};
+			E2.app.onPeopleListChanged(null);
+		}
 	}
 	else {
 		if (E2.dom.peopleTab.hasClass('active')) {
 			E2.dom.chatWindow.removeClass('collapsed').show();
-			E2.app.onPeopleListChanged();
+			E2.app.onPeopleListChanged(null);
 		} else {
 			E2.dom.chatWindow.removeClass('collapsed').show()
 							 .height(E2.dom.chatTabs.height 
 								   + E2.dom.chat.height)
-		};
+		}
 	}
 }
 
@@ -2000,13 +1992,13 @@ Application.prototype.onChatToggleClicked = function() {
 }
 
 Application.prototype.onBtnPresetsClicked = function() {
-	if (isUiVisible)
+	if (E2.ui.isVisible())
 		E2.dom.presetsLib.toggle();
 	E2.dom.presetsLib.toggleClass('uiopen');
 }
 
 Application.prototype.onBtnAssetsClicked = function() {
-	if (isUiVisible)
+	if (E2.ui.isVisible())
 		E2.dom.assetsLib.toggle();
 	E2.dom.assetsLib.toggleClass('uiopen');
 }
