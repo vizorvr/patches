@@ -1164,17 +1164,20 @@ Application.prototype.onKeyDown = function(e) {
 
 	if (E2.util.isTextInputInFocus(e))
 		return true;		// Chrome doesn't like undefined returns
+	
+	var toggleFullScreenKey = 70
+	var toggleNoodlesKey = 9
+	var toggleWorldEditorKey = 86
+
+	var exceptionKeys = [ toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey ]
 
 	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
 	{
 		this.ctrl_pressed = true;
 	}
 	
-	var toggleNoodlesKey = 9
-	var toggleWorldEditorKey = 86
-
-	if (this.isVRCameraActive() && e.keyCode !== toggleNoodlesKey && e.keyCode !== toggleWorldEditorKey)
-		return true;
+	if (this.isVRCameraActive() && exceptionKeys.indexOf(e.keyCode) === -1)
+		return;
 	
 	if ((!this.noodlesVisible && e.keyCode !== 9) && (e.keyCode !== 66 && this.ctrl_pressed == false)) 
 		return true;
@@ -1272,7 +1275,7 @@ Application.prototype.onKeyDown = function(e) {
 
 
 
-	else if(e.keyCode === 70) // f
+	else if(e.keyCode === toggleFullScreenKey) // f
 	{
 		this.toggleFullscreen()
 		e.preventDefault();
@@ -1464,12 +1467,21 @@ Application.prototype.onSaveSelectionAsPresetClicked = function() {
 
 Application.prototype.openPresetSaveDialog = null;	// ui replaces this
 
-Application.prototype.onSaveACopyClicked = function(cb) {
+
+Application.prototype.onPublishClicked = function() {
+	this.openSaveACopyDialog()
+	.then(function(path) {
+		window.location.href = path
+	})
+}
+
+Application.prototype.onSaveACopyClicked = function() {
 	this.openSaveACopyDialog();
 }
 
-Application.prototype.openSaveACopyDialog = function(cb) {
+Application.prototype.openSaveACopyDialog = function() {
 	var that = this
+	var dfd = when.defer()
 
 	if (!E2.models.user.get('username')) {
 		return E2.controllers.account.openLoginModal()
@@ -1505,31 +1517,36 @@ Application.prototype.openSaveACopyDialog = function(cb) {
 					dataType: 'json',
 					success: function(saved) {
 						E2.dom.load_spinner.hide();
-
 						ga('send', 'event', 'graph', 'saved')
-						
-						if (cb)
-							cb();
+						dfd.resolve(saved.path)
 					},
 					error: function(x, t, err) {
 						E2.dom.load_spinner.hide()
 
-						if (x.status === 401)
-							return E2.controllers.account.openLoginModal()
+						if (x.status === 401) {
+							return dfd.resolve(
+								E2.controllers.account.openLoginModal()
+									.then(that.openSaveACopyDialog.bind(that))
+							)
+						}
 
 						if (x.responseText)
 							bootbox.alert('Save failed: ' + x.responseText);
 						else
 							bootbox.alert('Save failed: ' + err);
+
+						dfd.reject(err)
 					}
-				});
+				})
 			}
 		})
 		.files(files)
-		.modal();
+		.modal()
 
-		return fcs;
+		return fcs
 	})
+
+	return dfd.promise
 }
 
 Application.prototype.growl = function(title, type, duration, person) {
@@ -2175,7 +2192,23 @@ Application.prototype.start = function() {
 		if (!$et.parents('.modal-dialog').length)
 			bootbox.hideAll()
 	})
-	
+
+	E2.dom.worldEditorButton.click(function() {
+		E2.app.toggleWorldEditor()
+	});
+
+	E2.dom.publishButton.click(function() {
+		E2.app.onPublishClicked()
+	});
+
+	$('button#fullscreen').click(function() {
+		E2.app.toggleFullscreen()
+	});
+
+	$('button#help').click(function() {
+		window.open('/help/introduction.html', 'Vizor Help');
+	});
+
 	$('.resize-handle').on('mousedown', function(e) {
 		var $handle = $(this)
 		var $target = $(this).parent()
@@ -2350,9 +2383,22 @@ Application.prototype.setupEditorChannel = function() {
 		})
 	}
 
+	var wsHost
+	
+	if (!E2.core.pluginManager.release_mode) {
+		// dev mode
+		wsHost = window.location.hostname
+	}
+	else {
+		// release mode
+		wsHost = "ws." + window.location.hostname
+	}
+
+	var wsPort = window.location.port || 80
+
 	if (!this.channel) {
 		this.channel = new E2.EditorChannel()
-		this.channel.connect()
+		this.channel.connect(wsHost, wsPort)
 		this.channel.on('ready', function() { 
 			that.setupChat()
 			that.peopleStore.initialize()
@@ -2421,7 +2467,12 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.presetsClose = $('#presets-close');
 	
 	E2.dom.dbg = $('#dbg');
-	
+	E2.dom.worldEditorButton = $('#worldEditor');
+	E2.dom.publishButton = $('#publish-button');
+	E2.dom.play = $('#play');
+	E2.dom.play_i = $('i', E2.dom.play);
+	E2.dom.pause = $('#pause');
+	E2.dom.stop = $('#stop');
 	E2.dom.refresh = $('#refresh');
 	E2.dom.forkButton = $('#fork-button');
 	E2.dom.viewSourceButton = $('#view-source');
@@ -2449,8 +2500,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	$.ajaxSetup({ cache: false });
 
 	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, ex) {
-		if(settings.dataType === 'script' && !settings.url.match(/^\/plugins\/all.plugins\.js/)) {
-			if(typeof(ex) === 'string') {
+		if (settings.dataType === 'script') {
+			if (typeof(ex) === 'string') {
 				msg(ex);
 				return;
 			}

@@ -212,7 +212,10 @@
 			// E2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this))
 			E2.core.on('fullScreenChangeRequested', this.toggleFullScreen.bind(this))
 
-			this.setup_object_picking()
+			// if selection functions exist, we can object pick
+			if (E2.app.clearSelection && E2.app.setSelection && E2.app.markNodeAsSelected) {
+				this.setup_object_picking()
+			}
 
 			// resize to initial size
 			this.resize()

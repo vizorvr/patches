@@ -123,7 +123,7 @@ EditorChannel.prototype.getWsChannel = function() {
 }
 
 var reconnecting = false
-EditorChannel.prototype.connect = function(options) {
+EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 	var that = this
 
 	this.kicked = false
@@ -132,7 +132,7 @@ EditorChannel.prototype.connect = function(options) {
 	// listen to messages from network
 	this.wsChannel = new WebSocketChannel()
 	this.wsChannel
-		.connect('/__editorChannel', options)
+		.connect(wsHost, wsPort, '/__editorChannel', options)
 		.on('disconnected', function() {
 			that.connected = false
 

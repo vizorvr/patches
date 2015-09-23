@@ -1,79 +1,116 @@
-<div class="container">
-	<div class="row">
-		<div class="col-xs-12 logo">
-			<img src="/images/logo--horizontal.png" width="100">
+<div class="flex-column">
+<div class="menu-bar"> <!-- menu bar -->
+	<div class="header left-cell pull-left" id="top-header-logo">
+		<div class="info-pane pull-left" id="info">
+			<span>
+				<img id="infopanelogo" src="../../images/logo-graphic.png">
+			</span>
+			<span class="logo-text">Vizor</span>
 		</div>
+		<div id="load-spinner"></div>
 	</div>
 
-	<div class="row full-width">
-		<div class="col-xs-12 no-padding player">
-				<canvas id="webgl-canvas"
-					width="860"
-					height="477"
-					class="webgl-canvas-normal"
-					oncontextmenu="return false;"
-					data-graph-url="{{graphMinUrl}}">
-				</canvas>
+	<div class="header">
+		<div id="top-header">
+			<div class="top-header-col" id="top-header-left">
+			<h5>
+				<i><strong>{{graph.name}}</strong></i>
+				by
+				<i><strong>{{graph.owner}}</strong></i>
+			</h5>
+			</div>
 
-				<div id="player" class="player-bar status-pause">
-					<button id="play" class="btn btn-default button--play">
-						<i class="fa fa-play"></i>
+			<div class="top-header-col" id="top-header-right">
+				<div class="header pull-right">
+					<button id="edit" class="btn btn-primary">
+						<i class="fa fa-code"> Edit</i>
 					</button>
-					<button id="fs" class="btn btn-default pull-right hidden-xs">
-						<i class="fa fa-arrows-alt"></i>
+
+					<button id="fullscreen" class="btn btn-primary">
+						<i class="fa fa-expand"></i>
 					</button>
 				</div>
-
-				<div class="progress" style="display:none">
-					<div class="progress-bar progress-bar-info progress-bar-striped active"
-					role="progressbar"
-					aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
-					style="width: 00%;">
-					</div>
-				</div>
+			</div>
 		</div>
-    </div>
+	</div>
+</div> <!-- menu bar -->
 
-	<div class="row full-width">
-		<div class="col-xs-10">
-			<h1>{{graph.name}}</h1>
-			by {{graph.owner}}
-		</div>
+<div class="flex-row"> <!-- main row -->
+<div class="stage--front">
+	<canvas
+		id="webgl-canvas"
+		class="webgl-canvas-normal"
+		width="1400px"
+		height="700px"
+		oncontextmenu="return false;"
+		data-autoplay="true"
+		data-graph-url="{{graphMinUrl}}">
+	>
+	</canvas>
 
-		<div class="col-xs-2 pull-right buttons play">
-	    	<a href="{{editUrl}}" class="btn btn-success player-cta pull-right">
-	    		Edit
-	    	</a>
-
-	    	<br/>
-	    	<br/>
-
-	    	<a href="//vizor.io/submit" class="btn btn-default submit-link player-cta pull-right">
-				Submit to Vizor
-	    	</a>
-		</div>
+	<div class="progress" style="display:none">
+		<div class="progress-bar" style="width: 00%;"></div>
 	</div>
 </div>
+</div> <!-- main row -->
+</div> <!-- page column -->	
 
 <script>
-	$(document).ready(function() {
-		var playing = false;
+	var $canvas = $('#webgl-canvas')
+	var $window = $(window)
+	var $stage = $('.stage--front')
+	var footerHeight = 76
 
-		var $i = $('#play i');
+	window.Vizor = {
+		hideWebVRButton: true
+	}
 
-		$('#play').on('click', function() {
-			playing = !playing;
+	function onResize() {
+		setTimeout(function() {
+			var width = $window.width()
+			var height = $window.height()
+			var devicePixelRatio = window.devicePixelRatio || 1;
+			var pixelRatioAdjustedWidth = devicePixelRatio * width;
+			var pixelRatioAdjustedHeight = devicePixelRatio * height;
 
-			if (playing)
-			{
-				$i.removeClass('fa-play').addClass('fa-pause');
-				play();
+			$canvas[0].width = pixelRatioAdjustedWidth
+			$canvas[0].height = pixelRatioAdjustedHeight
+			$stage.css('width', width + 'px')
+			$stage.css('height', height + 'px')
+		
+			var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+			
+			if (isFullscreen) {
+				$canvas.removeClass('webgl-canvas-normal')
+				$canvas.addClass('webgl-canvas-fs')
+			} else {
+				$canvas.removeClass('webgl-canvas-fs')
+				$canvas.addClass('webgl-canvas-normal')
 			}
-			else
-			{
-				$i.removeClass('fa-pause').addClass('fa-play');
-				E2.app.player.pause();
+
+			E2.core.emit('resize')
+		}, 20)
+	}
+
+	$('#edit').click(function() {
+		window.location = window.location + '/edit'
+	})
+
+	$('#fullscreen').click(function() {
+		E2.core.emit('fullScreenChangeRequested')
+	})
+
+	$(window).on('resize', onResize)
+	$(window).on('vizorLoaded', function() {
+		$('#load-spinner').hide()
+
+		E2.app.calculateCanvasArea = function() {
+			return {
+				width: window.innerWidth,
+				height: window.innerHeight
 			}
-		})
+		}
+
+		onResize()
 	})
 </script>
