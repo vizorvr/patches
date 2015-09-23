@@ -544,31 +544,27 @@ r.connect({
 	app.get(['/editor', '/edit'], graphController.edit.bind(graphController));
 
 	// GET /fthr/dunes-world/edit -- EDITOR
-	app.get('/:username/:graph/edit', function(req, res, next)
-	{
-		res.redirect('/'+req.params.username+'/'+req.params.graph)
+	app.get('/:username/:graph/edit', function(req, res, next) {
+		req.params.path = '/'+req.params.username+'/'+req.params.graph;
+		graphController.edit(req, res, next);
+	});
+
+	// GET /fthr/dunes-world -- PLAYER
+	app.get('/:username/:graph', function(req, res, next) {
+		req.params.path = '/'+req.params.username+'/'+req.params.graph;
+		graphController.graphLanding(req, res, next);
 	});
 
 	// GET /fthr/dunes-world.json
-	app.get('/:username/:graph.json', function(req, res, next)
-	{
+	app.get('/:username/:graph.json', function(req, res, next) {
 		req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
 		console.log('load', req.params.path)
 		graphController.load(req, res, next);
 	});
 
-	// GET /fthr/dunes-world
-	app.get('/:username/:graph', function(req, res, next)
-	{
-		req.params.path = '/'+req.params.username+'/'+req.params.graph;
-		graphController.graphLanding(req, res, next);
-	});
-
 	// GET /fthr/dunes-world/graph.json
-	app.get('/:username/:graph/graph.json', function(req, res, next)
-	{
+	app.get('/:username/:graph/graph.json', function(req, res, next) {
 		req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
-
 		graphController.stream(req, res, next);
 	});
 
