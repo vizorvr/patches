@@ -93,7 +93,7 @@ AssetTracker.prototype.signal_update = function()
 {
 	var l = this.listeners;
 	var prc = (this.completed + this.failed) / (this.started / 100);
-	if(E2.dom.progressbar.is(':visible'))
+	if (E2.dom && E2.dom.progressbar && E2.dom.progressbar.is(':visible'))
 		E2.ui.updateProgressBar(this.started === (this.completed + this.failed) ? 100 : prc);
 	
 	for(var i = 0, len = l.length; i < len; i++)
