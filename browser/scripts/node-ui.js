@@ -1,7 +1,7 @@
 UIpoint = function(x,y,z) {
-	this.x = x;
-	this.y = y;
-	this.z = z;
+	this.x = x || 0;
+	this.y = y || 0;
+	this.z = z || 0;
 }
 
 NodeUI = function(parent_node, x, y, z) {
@@ -9,16 +9,19 @@ NodeUI = function(parent_node, x, y, z) {
 
 	this.parent_node = parent_node;
 	this.selected = false;
-	this.position = new UIpoint(x,y,z);
+
+	// use .setPosition() to modify these
 	this.x = x || 0;
 	this.y = y || 0;
+	this.z = z || 0;
+	this.position = new UIpoint(x,y,z);
 
 	this.sl = E2.app.scrollOffset[0];
 	this.st = E2.app.scrollOffset[1];
 	this.plugin_ui = null;
-	this.dom 		= make('div');		// note plugins (e.g. subgraph) may attempt to add css classes to this
+	this.dom 		= make('div');		// plugins (e.g. subgraph) may attempt to add css classes to this
 	this.header 	= make('div');		// occasionally this may contain a single input or output
-	this.content 	= make('div');		// normally contains ins, outs, and plugin ui
+	this.content 	= make('div');		// normally contains ins, outs, and the plugin ui/content
 	this.input_col 	= make('div');
 	this.content_col = make('div');
 	this.output_col = make('div');
@@ -108,8 +111,6 @@ NodeUI = function(parent_node, x, y, z) {
 		var inp_config = makeButton(null, 'Edit preferences', 'config_btn')
 		inp_config.removeClass('btn');
 		inp_config.click(function() {
-			// TODO: dispatch event back to parent_node
-			// flowdock:dev/messages/153196
 			that.parent_node.plugin.open_preferences(that.parent_node.plugin);
 			return false;
 		})
@@ -176,12 +177,7 @@ NodeUI.prototype.hasPreferences = function() {
 NodeUI.prototype.setPosition = function(x, y, z) {
 	if (typeof x != 'undefined') this.position.x = this.x = x;
 	if (typeof y != 'undefined') this.position.y = this.y = y;
-	if (typeof z != 'undefined') this.position.z = z;
-
-	// until VP allows plugins to display at negative positions.
-	if (this.position.x < 0) this.position.x = this.x = 0;
-	if (this.position.y < 0) this.position.y = this.y = 0;
-
+	if (typeof z != 'undefined') this.position.z = this.z = z;
 	this.update();
 }
 
@@ -195,8 +191,7 @@ NodeUI.prototype.update = function() {
 	var xx = this.position.x;
 	var yy = this.position.y;
 
-	// temp fix for plugins appearing at -98px top
-	// TODO: fix root cause and remove
+	// temporary fix for plugins appearing at -98px top, until VP allows plugins to display at negative positions.
 	if (xx < 0) this.position.x = this.x = xx = 10;
 	if (yy < 0) this.position.y = this.y = yy = 10;
 	s.left = '' + xx + 'px';

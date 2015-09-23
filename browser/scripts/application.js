@@ -142,8 +142,6 @@ Application.prototype.activateHoverSlot = function() {
 	if(!hs)
 		return;
 
-//	this.hover_slot_div[0].style.backgroundColor = E2.erase_color;
-
 	// Mark any attached connection
 	var conns = E2.core.active_graph.connections;
 	var dirty = false;
@@ -174,12 +172,20 @@ Application.prototype.releaseHoverSlot = function() {
 }
 
 Application.prototype.setSlotCssClasses = function(slot, slot_div) {	/* @var slot_div jQuery */
-	if (typeof slot_div == 'undefined') return false;
+	if (typeof slot_div === 'undefined') return false;
 	if (!slot_div) return false;
-	if (!(slot_div === this.hover_slot_div)) slot_div.removeClass('p_connecting')
+
+	if (slot_div !== this.hover_slot_div)
+		slot_div.removeClass('p_connecting')
+
 	slot_div.removeClass('p_compatible')
-		.removeClass('p_incompatible');
-	(slot && slot.is_connected) ? slot_div.addClass('p_connected') : slot_div.removeClass('p_connected');
+			.removeClass('p_incompatible');
+
+	if (slot && slot.is_connected)
+		slot_div.addClass('p_connected')
+	else
+		slot_div.removeClass('p_connected');
+
 	return true;
 }
 
@@ -295,13 +301,6 @@ Application.prototype.onMouseReleased = function() {
 			this.setSlotCssClasses(ec.srcSlot, ec.srcSlotDiv);
 		if (ec.dstSlotDiv)
 			this.setSlotCssClasses(ec.dstSlot, ec.dstSlotDiv);
-
-		if (success) {
-		// ec has changed so set the new slots
-			console.log('success');
-		} else {
-			console.log('no go');
-		}
 
 		changed = true
 	}
