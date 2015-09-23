@@ -4,37 +4,59 @@
  */
 
 THREE.VRControls = function ( object, onError ) {
+
 	var scope = this;
+
 	var vrInputs = [];
 
 	function filterInvalidDevices( devices ) {
+
 		// Exclude Cardboard position sensor if Oculus exists.
+
 		var oculusDevices = devices.filter( function ( device ) {
+
 			return device.deviceName.toLowerCase().indexOf( 'oculus' ) !== - 1;
+
 		} );
 
 		if ( oculusDevices.length >= 1 ) {
+
 			return devices.filter( function ( device ) {
+
 				return device.deviceName.toLowerCase().indexOf( 'cardboard' ) === - 1;
+
 			} );
+
 		} else {
+
 			return devices;
+
 		}
+
 	}
 
 	function gotVRDevices( devices ) {
+
 		devices = filterInvalidDevices( devices );
+
 		for ( var i = 0; i < devices.length; i ++ ) {
+
 			if ( devices[ i ] instanceof PositionSensorVRDevice ) {
+
 				vrInputs.push( devices[ i ] );
+
 			}
+
 		}
 
 		if ( onError ) onError( 'HMD not available' );
+
 	}
 
 	if ( navigator.getVRDevices ) {
+
 		navigator.getVRDevices().then( gotVRDevices );
+
 	}
 
 	// the Rift SDK returns the position in meters
@@ -45,11 +67,15 @@ THREE.VRControls = function ( object, onError ) {
 
 	this.update = function (positionOffset) {
 		for ( var i = 0; i < vrInputs.length; i ++ ) {
+
 			var vrInput = vrInputs[ i ];
+
 			var state = vrInput.getState();
 
-			if (state.orientation !== null) {
+			if ( state.orientation !== null ) {
+
 				object.quaternion.copy( state.orientation );
+
 			}
 
 			if (state.position !== null) {
@@ -58,28 +84,42 @@ THREE.VRControls = function ( object, onError ) {
 					.add( state.position )
 					.multiplyScalar( scope.scale );
 			}
+
 		}
+
 	};
 
 	this.resetSensor = function () {
+
 		for ( var i = 0; i < vrInputs.length; i ++ ) {
+
 			var vrInput = vrInputs[ i ];
 
 			if ( vrInput.resetSensor !== undefined ) {
+
 				vrInput.resetSensor();
+
 			} else if ( vrInput.zeroSensor !== undefined ) {
+
 				vrInput.zeroSensor();
+
 			}
+
 		}
+
 	};
 
 	this.zeroSensor = function () {
+
 		console.warn( 'THREE.VRControls: .zeroSensor() is now .resetSensor().' );
 		this.resetSensor();
+
 	};
 
 	this.dispose = function () {
+
 		vrInputs = [];
+
 	};
 
 };
