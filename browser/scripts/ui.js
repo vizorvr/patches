@@ -1,4 +1,4 @@
-VizorUI = function() {	// E2.ui
+VizorUI = function VizorUI() {	// E2.ui
 	var that = this;
 	this.$modal = jQuery('div.bootbox.modal');
 	this.visible = true;		// overall visibility of the UI
@@ -21,6 +21,7 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	e2.app.onSearchResultsChange = this.onSearchResultsChange;
 	e2.core.on('resize', this.onWindowResize.bind(this));
 	e2.core.on('fullScreenChangeRequested', this.onFullScreenChangeRequested.bind(this));
+	e2.core.on('progress', this.updateProgressBar.bind(this));
 }
 
 
