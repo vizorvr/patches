@@ -92,9 +92,9 @@ AssetTracker.prototype.signal_failed = function()
 AssetTracker.prototype.signal_update = function()
 {
 	var l = this.listeners;
-	
-	if(E2.dom.load_spinner)
-		E2.dom.load_spinner.css('display', this.started === (this.completed + this.failed) ? 'none' : 'inherit');
+	var prc = (this.completed + this.failed) / (this.started / 100);
+	if(E2.dom.progressbar.is(':visible'))
+		E2.ui.updateProgressBar(this.started === (this.completed + this.failed) ? 100 : prc);
 	
 	for(var i = 0, len = l.length; i < len; i++)
 		l[i]();

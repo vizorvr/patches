@@ -215,13 +215,13 @@ EditorChannel.prototype._localDispatchHandler = function _localDispatchHandler(p
 }
 
 EditorChannel.prototype.fork = function(payload) {
-	E2.dom.load_spinner.show()
+	E2.ui.updateProgressBar(65);
 
 	// FORK
 	var fc = new ForkCommand()
 	fc.fork(payload)
 		.then(function() {
-			E2.dom.load_spinner.hide()
+			E2.ui.updateProgressBar(100);
 			E2.app.growl("We've made a copy of this for you to edit.", 'copy', 5000)
 		})
 		.catch(function(err) {

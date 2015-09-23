@@ -397,11 +397,11 @@ function createSelector(path, selected, okButton, okFn, cb)
 	if (selected && selected.indexOf('://') === -1)
 		selected = selected.substring(selected.lastIndexOf('/') + 1);
 
-	E2.dom.load_spinner.show();
+	E2.ui.updateProgressBar(65);
 
 	$.get(path, function(files)
 	{
-		E2.dom.load_spinner.hide();
+		E2.ui.updateProgressBar(100);
 
 		var buttons = {
 			'Cancel': function() {}
@@ -431,11 +431,11 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 	if (selected && selected.indexOf('://') === -1)
 		selected = selected.substring(selected.lastIndexOf('/') + 1);
 
-	E2.dom.load_spinner.show();
+	E2.ui.updateProgressBar(65);
 
 	$.get('/graph', function(files)
 	{
-		E2.dom.load_spinner.hide();
+		E2.ui.updateProgressBar(100);
 
 		var buttons = {
 			// 'Copy to clipboard': function(file)

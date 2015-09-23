@@ -1480,7 +1480,7 @@ Application.prototype.openSaveACopyDialog = function() {
 			.then(this.openSaveACopyDialog.bind(this))
 	}
 
-	E2.dom.load_spinner.show();
+	E2.ui.updateProgressBar(65);
 
 	ga('send', 'event', 'Save a Copy', 'clicked')
 
@@ -1490,7 +1490,7 @@ Application.prototype.openSaveACopyDialog = function() {
 		.template('graph')
 		.buttons({
 			'Cancel': function() {
-				E2.dom.load_spinner.hide();
+				E2.ui.updateProgressBar(100);
 			},
 			'Save': function(path, tags) {
 				if (!path)
@@ -1508,12 +1508,12 @@ Application.prototype.openSaveACopyDialog = function() {
 					},
 					dataType: 'json',
 					success: function(saved) {
-						E2.dom.load_spinner.hide();
+						E2.ui.updateProgressBar(100);
 						ga('send', 'event', 'graph', 'saved')
 						dfd.resolve(saved.path)
 					},
 					error: function(x, t, err) {
-						E2.dom.load_spinner.hide()
+						E2.ui.updateProgressBar(100);
 
 						if (x.status === 401) {
 							return dfd.resolve(
@@ -1783,7 +1783,7 @@ Application.prototype.onGraphSelected = function(graph) {
 			sp.css({ 'text-decoration': 'underline' })
 		}
 
-		parentEl.prepend($('<span> / </span>'))
+		parentEl.prepend($('<svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg>'))
 		parentEl.prepend(sp)
 
 		if (graph.parent_graph)
@@ -2272,7 +2272,7 @@ Application.prototype.start = function() {
 	
 	this.midPane = new E2.MidPane()
 
-	E2.dom.load_spinner.hide()
+	E2.ui.updateProgressBar(100);
 
 	E2.app.player.play() // autoplay
 	E2.app.changeControlState()
@@ -2405,7 +2405,7 @@ Application.prototype.setupEditorChannel = function() {
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.editorHeader = $('.editor-header');
 
-	E2.dom.load_spinner = $('#load-spinner');
+	E2.dom.progressBar = $('#progressbar');
 	
 	E2.dom.btnNew = $('#btn-new');
 	
