@@ -28,6 +28,7 @@ global.NodeUI = function() {
 	this.dom.width = this.dom[0].width
 	this.dom.height = this.dom[0].height
 	this.dom[0].style = {}
+	this.setSelected = function(){}
 }
 
 global.PresetManager = function() {}
