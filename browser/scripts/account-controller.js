@@ -149,6 +149,19 @@ AccountController.prototype._bindEvents = function(el, dfd)
 		bootbox.hideAll();
 		that.openForgotPasswordModal(dfd);
 	});
+	
+	$('a.change-password', el).on('click', function(evt)
+	{
+		evt.preventDefault();
+		bootbox.hideAll();
+		that.openResetPasswordModal(dfd);
+	});
+	$('a.account', el).on('click', function(evt)
+	{
+		evt.preventDefault();
+		bootbox.hideAll();
+		that.openAccountModal(dfd);
+	});
 }
 
 AccountController.prototype.openLoginModal = function(dfd) {
@@ -363,6 +376,55 @@ AccountController.prototype.openResetPasswordModal = function(dfd) {
 				ga('send', 'event', 'account', 'passwordChanged', user.username)
 				bootbox.hideAll();
 				bootbox.alert('Password changed! You can sign in now.');
+				dfd.resolve();
+			},
+			dataType: 'json'
+		});
+	});
+
+	return dfd.promise
+}
+
+AccountController.prototype.openAccountModal = function(dfd) {
+	var that = this;
+	var dfd = dfd || when.defer();
+	var accountTemplate = E2.views.account.account;
+	
+	ga('send', 'event', 'account', 'open', 'resetModal');
+	
+	var bb = bootbox.dialog(
+	{
+		show: true,
+		animate: false,
+		message: 'Rendering',
+	}).init(function() {
+		E2.app.useCustomBootboxTemplate(accountTemplate);
+	});
+
+	this._bindEvents(bb, dfd);
+	
+	var formEl = $('#account-modal-form');
+	formEl.submit(function( event )
+	{
+		event.preventDefault();
+		
+		var formData = formEl.serialize();
+
+		$.ajax(
+		{
+			type: "POST",
+			url: formEl.attr('action'),
+			data: formData,
+			error: function(err)
+			{	
+				var errText = 'Account update failed.'
+				that.showError('general',errText);
+			},
+			success: function(user)
+			{
+				ga('send', 'event', 'account', 'accountUpdated', user.username)
+				bootbox.hideAll();
+				bootbox.alert('Account updated!');
 				dfd.resolve();
 			},
 			dataType: 'json'

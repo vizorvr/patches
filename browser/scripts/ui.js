@@ -84,8 +84,7 @@ VizorUI.prototype.onSearchResultsChange = function() {
 		E2.dom.presetsLib.find('.preset-list-container').height(newHeight);
 	}
 	 else {
-		E2.dom.presetsLib.addClass('collapsed');
-		E2.dom.presetsLib.find('.preset-list-container').hide();
+		E2.dom.presetsLib.height('auto').find('.preset-list-container').height(310);
 	}
 }
 
