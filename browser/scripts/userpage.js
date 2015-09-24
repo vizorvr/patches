@@ -17,8 +17,8 @@ var userpageUI = new function() {
 	};
 
 	this.init = function() {
-		that.dom.filterPullDown.click(userpage.filterPullDownClicked);
-		that.dom.uPullDown.click(userpage.uPullDownClicked);
+		that.dom.filterPullDown.click(that.filterPullDownClicked);
+		that.dom.uPullDown.click(that.uPullDownClicked);
 	}
 };
 
