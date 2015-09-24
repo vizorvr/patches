@@ -1,22 +1,25 @@
-$(function() {
+var userpageUI = new function() {
+	var that = this;
+	this.dom={};
+	this.dom.filterPullDown = $('#filter-pulldown');
+	this.dom.filterDropDown = $('#filter-dropdown');
+	this.dom.uPullDown = $('#user-pulldown');
+	this.dom.uDropDown = $('#user-dropdown');
 
-function filterPullDownClicked() {
-	filterDropDown.toggle();
-	filterPullDown.toggleClass('active');
+	this.filterPullDownClicked = function() {
+		that.dom.filterDropDown.toggle();
+		that.dom.filterPullDown.toggleClass('active');
+	};
+
+	this.uPullDownClicked = function() {
+		that.dom.uDropDown.toggle();
+		that.dom.uPullDown.toggleClass('active');
+	};
+
+	this.init = function() {
+		that.dom.filterPullDown.click(userpage.filterPullDownClicked);
+		that.dom.uPullDown.click(userpage.uPullDownClicked);
+	}
 };
 
-function uPullDownClicked() {
-	uDropDown.toggle();
-	uPullDown.toggleClass('active');
-};
-
-var filterPullDown = $('#filter-pulldown');
-var filterDropDown = $('#filter-dropdown');
-var uPullDown = $('#user-pulldown');
-var uDropDown = $('#user-dropdown');
-	
-filterPullDown.click(filterPullDownClicked);
-uPullDown.click(uPullDownClicked);
-
-});
-
+$.ready(userpageUI.init);
