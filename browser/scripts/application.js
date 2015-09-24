@@ -1956,7 +1956,7 @@ Application.prototype.onInspectorClicked = function() {
 		if (this.selectedNodes[0].plugin.open_editor) {
 			this.selectedNodes[0].plugin.open_editor(this.selectedNodes[0].plugin)
 		} else {
-			E2.app.growl('This kind of Patch has no preferences','info',4000);
+			E2.app.growl('This kind of patch has no preferences','info',4000);
 		}
 	} else {
 		E2.app.growl('Select 1 particular patch to open inspector.','info',4000);

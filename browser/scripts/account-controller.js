@@ -307,7 +307,7 @@ AccountController.prototype.openForgotPasswordModal = function(dfd) {
 			{
 				ga('send', 'event', 'account', 'passwordReset', user.username)
 				bootbox.hideAll();
-				bootbox.alert('Instructions has been sent. Please check your email.');
+				bootbox.alert('Instructions have been sent. Please check your email.');
 				dfd.resolve();
 			},
 			dataType: 'json'
@@ -341,7 +341,7 @@ AccountController.prototype.openResetPasswordModal = function(dfd) {
 		event.preventDefault();
 		
 		if (formEl.find('#password_id').val() !== formEl.find('#password-confirm_id').val()) {
-			var errText = 'Whoops! Passwords doesn\'t match.';
+			var errText = 'Whoops! Passwords don\'t match.';
 			that.showError('confirm',errText);
 			return;
 		}
