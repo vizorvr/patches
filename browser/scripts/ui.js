@@ -77,14 +77,14 @@ VizorUI.prototype.onSearchResultsChange = function() {
 		E2.dom.presetsLib.removeClass('collapsed');
 		E2.dom.presetsLib.find('.preset-list-container').show();
 		var resultsHeight = $('.result.table').outerHeight(true);
-		var maxHeight = 310;
+		var maxHeight = E2.dom.presetsLib.find('.preset-list-container').css('maxHeight')
 		var newHeight = resultsHeight;
 		newHeight = ( newHeight >= maxHeight ) ? (maxHeight) : (newHeight);
-		E2.dom.presetsLib.height('auto');
-		E2.dom.presetsLib.find('.preset-list-container').height(newHeight);
+		E2.dom.presetsLib.height('auto')
+						 .find('.preset-list-container').height(newHeight);
 	}
 	 else {
-		E2.dom.presetsLib.height('auto').find('.preset-list-container').height(310);
+		E2.dom.presetsLib.height('auto');
 	}
 }
 
