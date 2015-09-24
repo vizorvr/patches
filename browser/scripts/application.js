@@ -1172,7 +1172,7 @@ Application.prototype.onKeyDown = function(e) {
 	var exceptionKeys = [ toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey ]
 
 	if (this.isVRCameraActive() && exceptionKeys.indexOf(e.keyCode) === -1)
-		return;
+		return true;
 
 	// arrow up || down
 	var arrowKeys = [37,38,39,40]
@@ -1194,11 +1194,6 @@ Application.prototype.onKeyDown = function(e) {
 
 	if (e.keyCode === 8 || e.keyCode === 46) { // use backspace and delete for deleting nodes
 		this.onDelete(e);
-		e.preventDefault();
-	}
-	else if(e.keyCode === toggleNoodlesKey) // tab to show/hide noodles
-	{
-		this.toggleNoodles()
 		e.preventDefault();
 	}
 	else if(e.keyCode === 13) { // enter = deselect (eg. commit move)
@@ -1237,7 +1232,6 @@ Application.prototype.onKeyDown = function(e) {
 	}
 
 
-
 	// number keys
 	else if (e.keyCode > 47 && e.keyCode < 58) { // 0-9
 		if (this.ctrl_pressed || this.shift_pressed || this.alt_pressed)
@@ -1265,16 +1259,10 @@ Application.prototype.onKeyDown = function(e) {
 	}
 
 
-
 	else if(e.keyCode === toggleFullScreenKey) // f
 	{
 		this.toggleFullscreen()
 		e.preventDefault();
-	} else if (e.keyCode === 81 || e.keyCode === 191) { // q or / to focus preset search
-		$('#presetSearch').focus()
-		$('#presetSearch').select()
-		e.preventDefault();
-		return false;
 	}
 	else if(this.ctrl_pressed || e.metaKey)
 	{
@@ -1284,12 +1272,6 @@ Application.prototype.onKeyDown = function(e) {
 			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 			e.stopPropagation();
 			return false;
-		}
-		if(e.keyCode === 66) // CTRL+b
-		{
-			E2.ui.toggleFloatingPanels();
-			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
-			return;
 		}
 		else if(e.keyCode === 76) // CTRL+l
 		{

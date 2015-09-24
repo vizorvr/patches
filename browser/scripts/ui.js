@@ -1,18 +1,53 @@
+var uiKeys = {
+	enter: 13,
+	shift : 16,
+	ctrl: 17,						// 	ctrl
+	left_window_key : 91,			// 	cmd, = ctrl for us
+	meta : 224,						// 	firefox
+	alt: 18,
+	spacebar: 32,
+
+	togglePatchEditor : 9,			// 	tab,
+	toggleFullScreen : 70,			// 	f,
+	toggleFloatingPanels : 66,		// 	(ctrl+) b
+	focusPresetSearch: 191,			//	/
+	focusPresetSearchAlt: 81,		//  q
+
+	focusChatPanel: 'U+0040',		// @ - this key moves so is checked by value/identifier
+	focusChatPanelAlt: '@',			//
+
+	mod_shift : 1000,
+	mod_ctrl : 10000,
+	mod_alt : 100000
+};
+
+
+
 VizorUI = function VizorUI() {	// E2.ui
 	var that = this;
 	this.$modal = jQuery('div.bootbox.modal');
 	this.visible = true;		// overall visibility of the UI
-	this.visibility = {		// granular flags
+	this.visibility = {			// granular flags
 		floating_panels: true,
-		noodles: true,
+		panel_chat: true,
+		panel_assets: true,
+		panel_presets: true,
+		patch_editor: true,
 		breadcrumb: true,
 		player_controls : true,
 		main_toolbar : true
 	};
 	this.flags = {
 		loading: false,
-		fullscreen: false
+		fullscreen: false,
+		must_return_panels_with_patch_editor : false,	// set if tab did hide panels too
+		key_shift_pressed: false,
+		key_alt_pressed : false,
+		key_ctrl_pressed : false		// ctrl or cmd on osx, ctrl on windows
 	};
+	this.always_track_keys = [			// always update ui.flags with the status of these keys
+		uiKeys.alt, uiKeys.shift, uiKeys.ctrl, uiKeys.left_window_key, uiKeys.meta
+	];
 };
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
@@ -22,6 +57,8 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	e2.core.on('resize', this.onWindowResize.bind(this));
 	e2.core.on('fullScreenChangeRequested', this.onFullScreenChangeRequested.bind(this));
 	e2.core.on('progress', this.updateProgressBar.bind(this));
+	window.addEventListener('keydown', this.onKeyDown.bind(this));
+	window.addEventListener('keyup', this.onKeyUp.bind(this));
 }
 
 
@@ -35,6 +72,9 @@ VizorUI.prototype.isVisible = function() {
 }
 VizorUI.prototype.isLoading = function() {
 	return this.flags.loading;
+}
+VizorUI.prototype.isVRCameraActive = function() {
+	return E2.app.worldEditor.isActive();	// app.isVRCameraActive ORs between this and noodles visible
 }
 
 /***** LOADING *****/
@@ -61,6 +101,93 @@ VizorUI.prototype.openLoginModal = function() {
 }
 
 /**** EVENT HANDLERS ****/
+VizorUI.prototype._trackModifierKeys = function(keyCode, isDown) {	// returns bool if any modifiers changed
+	if ((typeof keyCode === 'undefined') || this.always_track_keys.indexOf(keyCode) === -1) return false;
+	var newvalue = !!(isDown || false);
+	switch (keyCode) {
+		case uiKeys.ctrl:	// fall-through
+		case uiKeys.left_window_key:
+		case uiKeys.meta:
+			this.flags.key_ctrl_pressed = newvalue;
+			break;
+		case uiKeys.alt:
+			this.flags.key_alt_pressed = newvalue;
+			break;
+		case uiKeys.shift:
+			this.flags.key_shift_pressed = newvalue;
+			break;
+	}
+	return true;
+};
+VizorUI.prototype.getModifiedKeyCode = function(keyCode) {	// adds modifier keys value to keyCode if necessary
+	if (typeof keyCode != 'number') return keyCode;
+	if (this.flags.key_shift_pressed) keyCode += uiKeys.mod_shift;
+	if (this.flags.key_alt_pressed) keyCode += uiKeys.mod_alt;
+	if (this.flags.key_ctrl_pressed) keyCode += uiKeys.mod_ctrl;
+	return keyCode;
+};
+VizorUI.prototype.onKeyDown = function(e) {
+	this._trackModifierKeys(e.keyCode, true);
+	if (this.isModalOpen() || E2.util.isTextInputInFocus(e)) return true;
+	var keyCode = this.getModifiedKeyCode(e.keyCode);
+
+	switch (keyCode) {
+		case (uiKeys.toggleFloatingPanels + uiKeys.mod_ctrl):
+			this.toggleFloatingPanels();
+			e.preventDefault();
+			break;
+		case (uiKeys.togglePatchEditor):
+			this.togglePatchEditor();
+			this.syncFloatingPanelsVisibility();
+			if (!this.visibility.patch_editor) {
+				// set us a reminder to return panels next time
+				this.flags.must_return_panels_with_patch_editor = this.visibility.floating_panels;
+				this.toggleFloatingPanels(false);	// force hide panels
+			} else {
+				if (this.flags.must_return_panels_with_patch_editor) {
+					this.flags.must_return_panels_with_patch_editor = false;
+					this.toggleFloatingPanels(true);	// force show panels
+				}
+			}
+			e.preventDefault();
+			break;
+		case (uiKeys.focusPresetSearchAlt):
+		case (uiKeys.focusPresetSearch):
+			$('#presetSearch').focus().select();
+			e.preventDefault();
+			e.stopPropagation();
+			break;
+	}
+
+	var keyIdentifier = (typeof e.keyIdentifier != 'undefined') ? e.keyIdentifier : (e.key || '');
+	switch (keyIdentifier) {
+		case uiKeys.focusChatPanel:
+		case uiKeys.focusChatPanelAlt:
+			E2.dom.chatWindow.show().find('#new-message-input').focus();
+			e.preventDefault();
+			e.stopPropagation();
+			break;
+	}
+
+	if (this.isVRCameraActive()) {
+		return true;
+	}
+
+	// non-vr-events only here
+
+	return true;
+};
+VizorUI.prototype.onKeyUp = function(e) {	// bound for future use
+	this._trackModifierKeys(e.keyCode, false);
+	if (this.isModalOpen() || E2.util.isTextInputInFocus(e)) return true;
+	var keyCode = this.getModifiedKeyCode(e.keyCode);
+
+	if (this.isVRCameraActive()) {
+		return true;
+	}
+
+	return true;
+};
 
 VizorUI.prototype.onFullScreenChangeRequested = function() {	// placeholder
 	this.flags.fullscreen = this.isFullScreen();
@@ -147,18 +274,49 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 	})
 };
 
-VizorUI.prototype.toggleFloatingPanels = function() {
-	var v = this.visibility.floating_panels = !this.visibility.floating_panels;
-	if (E2.dom.assetsLib.hasClass('open'))
-		E2.dom.assetsLib.toggle(v)
-
-	if (E2.dom.presetsLib.hasClass('open'))
-		E2.dom.presetsLib.toggle(v)
-
-	if (E2.dom.chatWindow.hasClass('open'))
-		E2.dom.chatWindow.toggle(v)
+VizorUI.prototype.syncFloatingPanelsVisibility = function() {
+	var $assets = E2.dom.assetsLib, $presets = E2.dom.presetsLib, $chat = E2.dom.chatWindow;
+	this.visibility.panel_assets = $assets.hasClass('uiopen');
+	this.visibility.panel_presets = $presets.hasClass('uiopen');
+	this.visibility.panel_chat = $chat.hasClass('uiopen');
 };
 
+VizorUI.prototype.updateFloatingPanelsVisibility = function() {
+	var $assets = E2.dom.assetsLib, $presets = E2.dom.presetsLib, $chat = E2.dom.chatWindow;
+	if (this.visibility.floating_panels && this.visibility.panel_assets)
+		$assets.show();
+	else
+		$assets.hide();
+
+	if (this.visibility.floating_panels && this.visibility.panel_presets)
+		$presets.show();
+	else
+		$presets.hide();
+
+	if (this.visibility.floating_panels && this.visibility.panel_chat)
+		$chat.show();
+	else
+		$chat.hide();
+};
+
+VizorUI.prototype.toggleFloatingPanels = function(forceVisibility, visibilityFlags) {
+	if (typeof forceVisibility != 'undefined')
+		this.visibility.floating_panels = forceVisibility;
+	else
+		this.visibility.floating_panels = !this.visibility.floating_panels;
+
+	this.updateFloatingPanelsVisibility();
+};
+
+VizorUI.prototype.toggleNoodles = function(forceVisibility) {
+	if (typeof forceVisibility != 'undefined')
+		this.visibility.patch_editor = forceVisibility;
+	else
+		this.visibility.patch_editor = !this.visibility.patch_editor;
+	E2.dom.canvas_parent.toggle(this.visibility.patch_editor);
+	E2.app.noodlesVisible = this.visibility.patch_editor;
+}
+VizorUI.prototype.togglePatchEditor = VizorUI.prototype.toggleNoodles;
 
 /***** MISC UI MODALS/DIALOGS *****/
 
