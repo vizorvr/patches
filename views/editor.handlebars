@@ -73,7 +73,7 @@
 		</ul>
 		<ul class="iconic-nav">
 			<li>
-				<button class="btn" id="worldEditor" data-new-id="btn-patches" data-old-class="btn btn-sm btn-default">
+				<button class="btn" id="btn-patches">
 					<svg class="icon-patches"><use xlink:href="#icon-patches"></use></svg>
 					<span data-alt="World Editor">Patches</span>
 				</button>
@@ -112,7 +112,7 @@
 </div>
 <div id="breadcrumb"></div>
 <div id="progressbar"></div>
-<div class="presets-block floating-box collapsed uiopen" id="presets-lib">
+<div class="presets-block floating-box uiopen" id="presets-lib">
 		<div class="block-header">
 			<button class="toggle-button" id="presets-toggle" type="button">
 				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
@@ -542,6 +542,11 @@
 		</li>
 		<li class="fscreen">
 			<button class="btn" id="fullscreen" data-toggle="popover" data-placement="top" title="Fullscreen">
+				<svg class="icon-fscreen"><use xlink:href="#icon-fullscreen"></use></svg>
+			</button>
+		</li>
+		<li class="vrview" style="display: none;">
+			<button class="btn" id="vrview" data-toggle="popover" data-placement="top" title="View in VR">
 				<svg class="icon-vr"><use xlink:href="#icon-vr"></use></svg>
 			</button>
 		</li>

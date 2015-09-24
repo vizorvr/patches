@@ -204,15 +204,14 @@ VizorUI.prototype.onSearchResultsChange = function() {
 		E2.dom.presetsLib.removeClass('collapsed');
 		E2.dom.presetsLib.find('.preset-list-container').show();
 		var resultsHeight = $('.result.table').outerHeight(true);
-		var maxHeight = 310;
+		var maxHeight = E2.dom.presetsLib.find('.preset-list-container').css('maxHeight')
 		var newHeight = resultsHeight;
 		newHeight = ( newHeight >= maxHeight ) ? (maxHeight) : (newHeight);
-		E2.dom.presetsLib.height('auto');
-		E2.dom.presetsLib.find('.preset-list-container').height(newHeight);
+		E2.dom.presetsLib.height('auto')
+						 .find('.preset-list-container').height(newHeight);
 	}
 	 else {
-		E2.dom.presetsLib.addClass('collapsed');
-		E2.dom.presetsLib.find('.preset-list-container').hide();
+		E2.dom.presetsLib.height('auto');
 	}
 }
 
@@ -299,6 +298,11 @@ VizorUI.prototype.updateFloatingPanelsVisibility = function() {
 		$chat.hide();
 };
 
+VizorUI.prototype.toggleFscreenVrviewButtons = function() {
+	var vr = false; // place E2 VR device check here;
+	E2.dom.fscreen.parent.toggle(!vr);
+	E2.dom.vrview.parent.toggle(vr);
+}
 VizorUI.prototype.toggleFloatingPanels = function(forceVisibility, visibilityFlags) {
 	if (typeof forceVisibility != 'undefined')
 		this.visibility.floating_panels = forceVisibility;
@@ -317,6 +321,7 @@ VizorUI.prototype.toggleNoodles = function(forceVisibility) {
 	E2.app.noodlesVisible = this.visibility.patch_editor;
 }
 VizorUI.prototype.togglePatchEditor = VizorUI.prototype.toggleNoodles;
+
 
 /***** MISC UI MODALS/DIALOGS *****/
 

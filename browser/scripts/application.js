@@ -1127,6 +1127,12 @@ Application.prototype.toggleNoodles = function() {
 }
 
 Application.prototype.toggleViewButtons = function() {
+	if (E2.app.worldEditor.isActive()) {
+		E2.app.worldEditor.deactivate()
+	}
+	else {
+		E2.app.worldEditor.activate()
+	}
 	E2.dom.btnEditor.parent().toggle();
 	E2.dom.btnPatches.parent().toggle();
 }
@@ -1470,6 +1476,7 @@ Application.prototype.openSaveACopyDialog = function() {
 		var fcs = new FileSelectControl()
 		.frame('save-frame')
 		.template('graph')
+		.header('Save as')
 		.buttons({
 			'Cancel': function() {
 				E2.ui.updateProgressBar(100);
@@ -2007,7 +2014,7 @@ Application.prototype.onPresetsToggleClicked = function() {
 					   + E2.dom.presetsLib.find('.searchbox').outerHeight(true); 
 	if (E2.dom.presetsLib.hasClass('collapsed')) {
 		E2.dom.presetsLib.removeClass('collapsed');
-		E2.app.onSearchResultsChange();
+		E2.ui.onSearchResultsChange();
 	} else {
 		E2.dom.presetsLib.addClass('collapsed').height(controlsHeight);
 	}
@@ -2259,11 +2266,8 @@ Application.prototype.start = function() {
 	E2.app.player.play() // autoplay
 	E2.app.changeControlState()
 	
-	if (E2.app.viewMode==='editor') {
-		E2.dom.btnEditor.parent().toggle();
-	} else {
-		E2.dom.btnPatches.parent().toggle();
-	}
+	E2.dom.btnEditor.parent().toggle(!E2.app.worldEditor.isActive());
+	E2.dom.btnPatches.parent().toggle(E2.app.worldEditor.isActive());
 	
 	E2.dom.presetsLib.movable();
 	E2.dom.assetsLib.movable();
@@ -2470,6 +2474,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.playPauseIcon = $('#play use');
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
+	E2.dom.fscreen = $('#fullscreen');
+	E2.dom.vrview = $('#vrview');
 
 	$.ajaxSetup({ cache: false });
 
