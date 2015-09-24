@@ -116,6 +116,11 @@ FileSelectControl.prototype.buttons = function(buttons) {
 	return this;
 };
 
+FileSelectControl.prototype.header = function(header) {
+	this._header = header;
+	return this;
+};
+
 FileSelectControl.prototype.modal = function()
 {
 	this._render();
@@ -166,6 +171,7 @@ FileSelectControl.prototype._render = function()
 
 	var el = bootbox.dialog(
 	{
+		title: this._header,
 		message: this._frame
 	});
 

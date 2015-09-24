@@ -1494,6 +1494,7 @@ Application.prototype.openSaveACopyDialog = function() {
 		var fcs = new FileSelectControl()
 		.frame('save-frame')
 		.template('graph')
+		.header('Save as')
 		.buttons({
 			'Cancel': function() {
 				E2.ui.updateProgressBar(100);
