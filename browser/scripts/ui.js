@@ -158,6 +158,12 @@ VizorUI.prototype.toggleFloatingPanels = function() {
 		E2.dom.chatWindow.toggle(v)
 };
 
+VizorUI.prototype.toggleFscreenVrviewButtons = function() {
+	var vr = false; // place E2 VR device check here;
+	E2.dom.fscreen.parent.toggle(!vr);
+	E2.dom.vrview.parent.toggle(vr);
+}
+
 
 /***** MISC UI MODALS/DIALOGS *****/
 
@@ -223,3 +229,4 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 			$(this).fadeOut('slow');
 	}});
 }
+

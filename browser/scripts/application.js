@@ -2491,6 +2491,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.playPauseIcon = $('#play use');
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
+	E2.dom.fscreen = $('#fullscreen');
+	E2.dom.vrview = $('#vrview');
 
 	$.ajaxSetup({ cache: false });
 
