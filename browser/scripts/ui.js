@@ -1,4 +1,4 @@
-VizorUI = function() {	// E2.ui
+VizorUI = function VizorUI() {	// E2.ui
 	var that = this;
 	this.$modal = jQuery('div.bootbox.modal');
 	this.visible = true;		// overall visibility of the UI
@@ -21,6 +21,7 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	e2.app.onSearchResultsChange = this.onSearchResultsChange;
 	e2.core.on('resize', this.onWindowResize.bind(this));
 	e2.core.on('fullScreenChangeRequested', this.onFullScreenChangeRequested.bind(this));
+	e2.core.on('progress', this.updateProgressBar.bind(this));
 }
 
 
@@ -39,10 +40,10 @@ VizorUI.prototype.isLoading = function() {
 /***** LOADING *****/
 // VizorUI.prototype.setLoadingStatus = function(is_loading) {}
 VizorUI.prototype.hideLoadingIndicator = function() {
-	E2.dom.load_spinner.hide();
+	E2.ui.updateProgressBar(100);
 }
 VizorUI.prototype.showLoadingIndicator = function() {
-	E2.dom.load_spinner.show();
+	E2.ui.updateProgressBar(10);
 }
 
 /***** MODAL DIALOGS/WINDOWS *****/
@@ -97,7 +98,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 
 	var presetsPath = '/'+username+'/presets/'
 
-	E2.dom.load_spinner.show()
+	E2.ui.updateProgressBar(65);
 
 	$.get(presetsPath, function(files) {
 		var fcs = new FileSelectControl()
@@ -105,7 +106,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 		.template('preset')
 		.buttons({
 			'Cancel': function() {
-				E2.dom.load_spinner.hide()
+				E2.ui.updateProgressBar(100);
 			},
 			'Save': function(name) {
 				if (!name)
@@ -122,11 +123,11 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 					},
 					dataType: 'json',
 					success: function(saved) {
-						E2.dom.load_spinner.hide()
+						E2.ui.updateProgressBar(100);
 						that.presetManager.refresh()
 					},
 					error: function(x, t, err) {
-						E2.dom.load_spinner.hide();
+						E2.ui.updateProgressBar(100);
 
 						if (x.status === 401)
 							return E2.controllers.account.openLoginModal();
@@ -201,4 +202,25 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 		E2.app.onNewClicked();
 	});
 
+}
+
+VizorUI.prototype.updateProgressBar = function(percent) {
+	E2.dom.progressBar = $('#progressbar');
+	
+	if (!E2.dom.progressBar.is(':visible'))
+		E2.dom.progressBar.show().width(1);
+	
+	var winWidth = $(window).width();
+	var barWidth = E2.dom.progressBar.width();
+	var newWidth = winWidth / 100 * percent;
+	var barSpace = winWidth - barWidth;
+	var barSpeed = 2000 - percent * 12;
+	
+	percent = (percent === 0) ? (barWidth / newWidth + 5) : (percent);
+	newWidth = (newWidth <= barWidth) ? (barSpace / 100 * percent + barWidth) : (newWidth);
+	
+	E2.dom.progressBar.stop().animate({width: newWidth}, {duration: barSpeed, easing: 'linear', complete: function() {
+		if ($(this).width() === winWidth)
+			$(this).fadeOut('slow');
+	}});
 }
