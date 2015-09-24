@@ -11,3 +11,4 @@ engistart.bat
 engistart.bat - Shortcut.lnk
 node_modules
 browser/style/less.css
+npm-debug.log
