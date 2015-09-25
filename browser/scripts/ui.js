@@ -7,8 +7,8 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2);
 
 	// things that live elsewhere are called elsewhere
-	dom.btnEditor.click(e2.app.toggleWorldEditor.bind(e2.app));
-	dom.btnPatches.click(e2.app.toggleWorldEditor.bind(e2.app));
+	dom.btnViewMode.click(e2.app.toggleWorldEditor.bind(e2.app));
+	dom.btnGraph.click(e2.app.toggleNoodles.bind(e2.app));
 	dom.btnAccountMenu.click(e2.app.onAccountMenuClicked.bind(e2.app));
 
 	// elements under our control call us
@@ -87,7 +87,77 @@ VizorUI.prototype.onSearchResultsChange = function() {
 	}
 };
 
+VizorUI.prototype.openPublishGraphModal = function() {
+	var that = this;
+	var publishTemplate = E2.views.filebrowser.publishModal;
+	var graphname = E2.app.path.split('/')
+   
+   if (graphname.length > 1)
+        graphname=p[1];
+	
+	ga('send', 'event', 'account', 'open', 'forgotModal');
+	
+	var bb = bootbox.dialog(
+	{
+		show: true,
+		animate: false,
+		message: 'Rendering',
+	}).init(function() {
+		E2.app.useCustomBootboxTemplate(publishTemplate);
+		$('#userGraphName_id').val(graphname);
+	});
 
+	this._bindEvents(bb, dfd);
+	
+	var formEl = $('#publish-form_id');
+	formEl.submit(function( event )
+	{
+		event.preventDefault();
+		E2.ui.updateProgressBar(65);
+		
+		var path = $('#userGraphName_id').val();
+
+		
+		if (!path)
+			return bootbox.alert('Please enter a graph name');
+
+		var ser = E2.app.player.core.serialise();
+
+		$.ajax({
+			type: 'POST',
+			url: URL_GRAPHS,
+			data: {
+				path: path,
+				graph: ser
+			},
+			dataType: 'json',
+			success: function(saved) {
+				E2.ui.updateProgressBar(100);
+				ga('send', 'event', 'graph', 'saved')
+				dfd.resolve(saved.path)
+			},
+			error: function(x, t, err) {
+				E2.ui.updateProgressBar(100);
+
+				if (x.status === 401) {
+					return dfd.resolve(
+						E2.controllers.account.openLoginModal()
+							.then(that.openPublishGraphModal.bind(that))
+					)
+				}
+
+				if (x.responseText)
+					bootbox.alert('Publish failed: ' + x.responseText);
+				else
+					bootbox.alert('Publish failed: ' + err);
+
+				dfd.reject(err)
+			}
+		})
+	});
+
+	return dfd.promise
+}
 
 VizorUI.prototype.onBtnPresetsClicked = function() {
 	if (this.isVisible())
@@ -354,8 +424,6 @@ VizorUI.prototype.setWorldEditorMode = function(is_active) {
 		this.viewmode = uiViewMode.world_editor;
 	else
 		this.viewmode = uiViewMode.patch_editor;
-	this.dom.btnEditor.parent().toggle(is_active);
-	this.dom.btnPatches.parent().toggle(!is_active);
 };
 
 

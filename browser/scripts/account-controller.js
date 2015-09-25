@@ -92,7 +92,7 @@ AccountController.prototype._bindEvents = function(el, dfd)
 			that.showError('password',errText);
 		}
 			
-		if (($(this).attr('name') === 'username') && $(this).val()) {
+		if (($(this).attr('name') === 'username') && $(this).val() && $(this).val()!==user.username) {
 			var formEl = $('#signup-form_id');
 			var formData = formEl.serialize();
 			$.ajax(
@@ -161,6 +161,8 @@ AccountController.prototype._bindEvents = function(el, dfd)
 		evt.preventDefault();
 		bootbox.hideAll();
 		that.openAccountModal(dfd);
+		if (E2.dom.userPullDown.is(':visible'))
+			E2.dom.userPullDown.hide();
 	});
 }
 
