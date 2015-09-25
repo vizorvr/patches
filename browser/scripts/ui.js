@@ -1,97 +1,66 @@
-var uiKeys = {
-	enter: 13,
-	shift : 16,
-	ctrl: 17,						// 	ctrl
-	left_window_key : 91,			// 	cmd, = ctrl for us
-	meta : 224,						// 	firefox
-	alt: 18,
-	spacebar: 32,
-
-	togglePatchEditor : 9,			// 	tab,
-	toggleFullScreen : 70,			// 	f,
-	toggleFloatingPanels : 66,		// 	(ctrl+) b
-	focusPresetSearch: 191,			//	/
-	focusPresetSearchAlt: 81,		//  q
-
-	focusChatPanel: 'U+0040',		// @ - this key moves so is checked by value/identifier
-	focusChatPanelAlt: '@',			//
-
-	mod_shift : 1000,
-	mod_ctrl : 10000,
-	mod_alt : 100000
-};
+// require ui-core.js
 
 
+VizorUI.prototype.setupEventHandlers = function(e2, dom) {
+	if (typeof e2 == 'undefined') return false;
+	dom = dom || this.dom;
+	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2);
 
-VizorUI = function VizorUI() {	// E2.ui
-	var that = this;
-	this.$modal = jQuery('div.bootbox.modal');
-	this.visible = true;		// overall visibility of the UI
-	this.visibility = {			// granular flags
-		floating_panels: true,
-		panel_chat: true,
-		panel_assets: true,
-		panel_presets: true,
-		patch_editor: true,
-		breadcrumb: true,
-		player_controls : true,
-		main_toolbar : true
-	};
-	this.flags = {
-		loading: false,
-		fullscreen: false,
-		must_return_panels_with_patch_editor : false,	// set if tab did hide panels too
-		key_shift_pressed: false,
-		key_alt_pressed : false,
-		key_ctrl_pressed : false		// ctrl or cmd on osx, ctrl on windows
-	};
-	this.always_track_keys = [			// always update ui.flags with the status of these keys
-		uiKeys.alt, uiKeys.shift, uiKeys.ctrl, uiKeys.left_window_key, uiKeys.meta
-	];
+	// things that live elsewhere are called elsewhere
+	dom.btnEditor.click(e2.app.toggleWorldEditor.bind(e2.app));
+	dom.btnPatches.click(e2.app.toggleWorldEditor.bind(e2.app));
+	dom.btnAccountMenu.click(e2.app.onAccountMenuClicked.bind(e2.app));
+
+	// elements under our control call us
+	dom.btnSignIn.click(this.openLoginModal.bind(this));
+
+	dom.chatTabBtn.click(this.onChatTabClicked.bind(this));
+	dom.chatToggleButton.click(this.onChatToggleClicked.bind(this));
+	dom.chatClose.click(this.onChatCloseClicked.bind(this));
+	dom.peopleTabBtn.click(this.onChatPeopleTabClicked.bind(this));
+	dom.btnChatDisplay.click(this.onChatDisplayClicked.bind(this));
+
+	dom.btnAssets.click(this.onBtnAssetsClicked.bind(this));
+	dom.assetsClose.click(this.onAssetsCloseClicked.bind(this));
+	dom.assetsToggle.click(this.onAssetsToggleClicked.bind(this));
+
+	dom.btnPresets.click(this.onBtnPresetsClicked.bind(this));
+	dom.presetsClose.click(this.onPresetsCloseClicked.bind(this));
+	dom.presetsToggle.click(this.onPresetsToggleClicked.bind(this));
+	dom.btnInspector.click(this.onInspectorClicked.bind(this));
 };
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
-	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2);
-	e2.app.onSignInClicked = this.openLoginModal;
-	e2.app.onSearchResultsChange = this.onSearchResultsChange;
-	e2.core.on('resize', this.onWindowResize.bind(this));
-	e2.core.on('fullScreenChangeRequested', this.onFullScreenChangeRequested.bind(this));
-	e2.core.on('progress', this.updateProgressBar.bind(this));
-	window.addEventListener('keydown', this.onKeyDown.bind(this));
-	window.addEventListener('keyup', this.onKeyUp.bind(this));
+	this._init(e2);
+	this.setupEventHandlers(e2,this.dom);
+
+	var dom = this.dom;
+	dom.presetsLib.movable();
+	dom.assetsLib.movable();
+
+	var chatTop = $(window).height() - $('.chat-users').height() - $('.bottom-panel').height() - 40;
+	if (chatTop<($('.editor-header').height()+$('#breadcrumb').height())) {
+		chatTop= $('.editor-header').height() + $('#breadcrumb').height() + 40;
+	}
+	dom.chatWindow.css({'top': chatTop});
+	dom.chatWindow.movable();
+
+	e2.app.onWindowResize();
+	this.setWorldEditorMode(e2.app.worldEditor.isActive());
 }
 
 
-/***** IS... *****/
-
-VizorUI.prototype.isFullScreen = function() {
-	return !!(document.mozFullScreenElement || document.webkitFullscreenElement)
-}
-VizorUI.prototype.isVisible = function() {
-	return this.visible;
-}
-VizorUI.prototype.isLoading = function() {
-	return this.flags.loading;
-}
-VizorUI.prototype.isVRCameraActive = function() {
-	return E2.app.worldEditor.isActive();	// app.isVRCameraActive ORs between this and noodles visible
-}
 
 /***** LOADING *****/
-// VizorUI.prototype.setLoadingStatus = function(is_loading) {}
+VizorUI.prototype.setLoadingStatus = function(is_loading) {}
 VizorUI.prototype.hideLoadingIndicator = function() {
-	E2.ui.updateProgressBar(100);
+	this.updateProgressBar(100);
 }
 VizorUI.prototype.showLoadingIndicator = function() {
-	E2.ui.updateProgressBar(10);
+	this.updateProgressBar(10);
 }
 
 /***** MODAL DIALOGS/WINDOWS *****/
-VizorUI.prototype.isModalOpen = function() {
-	// was: return ($("body").data('bs.modal') || {}).isShown;
-	this.visibility.modal = this.$modal.hasClass('in');
-	return this.visibility.modal;
-}
 // stubs
 // VizorUI.prototype.openModal
 // VizorUI.prototype.closeModal
@@ -100,103 +69,6 @@ VizorUI.prototype.openLoginModal = function() {
 	return E2.controllers.account.openLoginModal();
 }
 
-/**** EVENT HANDLERS ****/
-VizorUI.prototype._trackModifierKeys = function(keyCode, isDown) {	// returns bool if any modifiers changed
-	if ((typeof keyCode === 'undefined') || this.always_track_keys.indexOf(keyCode) === -1) return false;
-	var newvalue = !!(isDown || false);
-	switch (keyCode) {
-		case uiKeys.ctrl:	// fall-through
-		case uiKeys.left_window_key:
-		case uiKeys.meta:
-			this.flags.key_ctrl_pressed = newvalue;
-			break;
-		case uiKeys.alt:
-			this.flags.key_alt_pressed = newvalue;
-			break;
-		case uiKeys.shift:
-			this.flags.key_shift_pressed = newvalue;
-			break;
-	}
-	return true;
-};
-VizorUI.prototype.getModifiedKeyCode = function(keyCode) {	// adds modifier keys value to keyCode if necessary
-	if (typeof keyCode != 'number') return keyCode;
-	if (this.flags.key_shift_pressed) keyCode += uiKeys.mod_shift;
-	if (this.flags.key_alt_pressed) keyCode += uiKeys.mod_alt;
-	if (this.flags.key_ctrl_pressed) keyCode += uiKeys.mod_ctrl;
-	return keyCode;
-};
-VizorUI.prototype.onKeyDown = function(e) {
-	this._trackModifierKeys(e.keyCode, true);
-	if (this.isModalOpen() || E2.util.isTextInputInFocus(e)) return true;
-	var keyCode = this.getModifiedKeyCode(e.keyCode);
-
-	switch (keyCode) {
-		case (uiKeys.toggleFloatingPanels + uiKeys.mod_ctrl):
-			this.toggleFloatingPanels();
-			e.preventDefault();
-			break;
-		case (uiKeys.togglePatchEditor):
-			this.togglePatchEditor();
-			this.syncFloatingPanelsVisibility();
-			if (!this.visibility.patch_editor) {
-				// set us a reminder to return panels next time
-				this.flags.must_return_panels_with_patch_editor = this.visibility.floating_panels;
-				this.toggleFloatingPanels(false);	// force hide panels
-			} else {
-				if (this.flags.must_return_panels_with_patch_editor) {
-					this.flags.must_return_panels_with_patch_editor = false;
-					this.toggleFloatingPanels(true);	// force show panels
-				}
-			}
-			e.preventDefault();
-			break;
-		case (uiKeys.focusPresetSearchAlt):
-		case (uiKeys.focusPresetSearch):
-			$('#presetSearch').focus().select();
-			e.preventDefault();
-			e.stopPropagation();
-			break;
-	}
-
-	var keyIdentifier = (typeof e.keyIdentifier != 'undefined') ? e.keyIdentifier : (e.key || '');
-	switch (keyIdentifier) {
-		case uiKeys.focusChatPanel:
-		case uiKeys.focusChatPanelAlt:
-			E2.dom.chatWindow.show().find('#new-message-input').focus();
-			e.preventDefault();
-			e.stopPropagation();
-			break;
-	}
-
-	if (this.isVRCameraActive()) {
-		return true;
-	}
-
-	// non-vr-events only here
-
-	return true;
-};
-VizorUI.prototype.onKeyUp = function(e) {	// bound for future use
-	this._trackModifierKeys(e.keyCode, false);
-	if (this.isModalOpen() || E2.util.isTextInputInFocus(e)) return true;
-	var keyCode = this.getModifiedKeyCode(e.keyCode);
-
-	if (this.isVRCameraActive()) {
-		return true;
-	}
-
-	return true;
-};
-
-VizorUI.prototype.onFullScreenChangeRequested = function() {	// placeholder
-	this.flags.fullscreen = this.isFullScreen();
-	return true;
-};
-
-VizorUI.prototype.onWindowResize = function() {	// placeholder
-	return true;
-};
 
 VizorUI.prototype.onSearchResultsChange = function() {
 	var resultsCount = $('.result.table tbody').children().length;
@@ -213,7 +85,210 @@ VizorUI.prototype.onSearchResultsChange = function() {
 	 else {
 		E2.dom.presetsLib.height('auto');
 	}
+};
+
+
+
+VizorUI.prototype.onBtnPresetsClicked = function() {
+	if (this.isVisible())
+		this.dom.presetsLib.toggle().toggleClass('uiopen');
+	this.syncVisibility();
 }
+
+VizorUI.prototype.onBtnAssetsClicked = function() {
+	if (this.isVisible())
+		this.dom.assetsLib.toggle().toggleClass('uiopen');
+	this.syncVisibility();
+}
+
+
+
+VizorUI.prototype.onChatResize = function() {
+	var dom = this.dom;
+	var restHeight = dom.chatWindow.find('.drag-handle').height()
+				   + dom.chatTabs.height()
+				   + dom.chat.find('.chat-nav').outerHeight(true)
+				   + dom.chat.find('.composer').outerHeight(true);
+	var newHeight = dom.chatWindow.height() - restHeight;
+	dom.chat.height('auto').find('.messages').height(newHeight);
+};
+
+
+VizorUI.prototype.onChatCloseClicked = function() {
+	this.dom.chatWindow.removeClass('uiopen').hide();
+	this.syncVisibility();
+	return false;
+}
+
+VizorUI.prototype.onAssetsCloseClicked = function() {
+	this.dom.assetsLib.removeClass('uiopen').hide();
+	this.syncVisibility();
+	return false;
+}
+
+
+VizorUI.prototype.onPresetsToggleClicked = function() {
+	var dom = this.dom;
+	var controlsHeight = dom.presetsLib.find('.drag-handle').outerHeight(true)
+					   + dom.presetsLib.find('.block-header').outerHeight(true)
+					   + dom.presetsLib.find('.searchbox').outerHeight(true);
+	if (dom.presetsLib.hasClass('collapsed')) {
+		dom.presetsLib.removeClass('collapsed');
+		this.onSearchResultsChange();
+	} else {
+		dom.presetsLib.addClass('collapsed').height(controlsHeight);
+	}
+	return false;
+}
+
+
+VizorUI.prototype.onPresetsCloseClicked = function() {
+	this.dom.presetsLib.removeClass('uiopen').hide();
+	this.syncVisibility();
+	return false;
+}
+
+VizorUI.prototype.onChatTabClicked = function() {
+	var dom = this.dom;
+	if (!$(this).parent().hasClass('active')) {
+		dom.peopleTab.hide();
+		dom.chatTab.show();
+		dom.chatWindow.find('.resize-handle').show();
+		dom.chatWindow.height('auto');
+		this.onChatResize();
+	}
+	if (dom.chatWindow.hasClass('collapsed')) {
+		dom.chatWindow.removeClass('collapsed')
+	}
+	return true;
+};
+
+VizorUI.prototype.onChatPeopleTabClicked = function() {
+	var dom = this.dom;
+	if (!$(this).parent().hasClass('active')) {
+		dom.chatTab.hide();
+		dom.chatWindow.find('.resize-handle').hide();
+		dom.peopleTab.show();
+		this.onPeopleListChanged(null);
+	}
+	if (dom.chatWindow.hasClass('collapsed')) {
+		dom.chatWindow.removeClass('collapsed');
+		this.onPeopleListChanged(null);
+	}
+	return true;
+};
+
+
+VizorUI.prototype.onChatDisplayClicked = function() {
+	var isUiVisible = this.isVisible();
+	var dom = this.dom;
+	if (!dom.chatWindow.hasClass('collapsed')) {
+		if (isUiVisible)
+			dom.chatWindow.toggle();
+		dom.chatWindow.toggleClass('uiopen');
+		if (dom.peopleTab.hasClass('active') && dom.chatWindow.hasClass('active') && isUiVisible) {
+			this.onPeopleListChanged(null);
+		}
+	}
+	else {
+		if (dom.peopleTab.hasClass('active')) {
+			dom.chatWindow.removeClass('collapsed').show();
+			this.onPeopleListChanged(null);
+		} else {
+			dom.chatWindow.removeClass('collapsed').show()
+							 .height(dom.chatTabs.height + dom.chat.height)
+		}
+	}
+	this.syncVisibility();
+}
+
+VizorUI.prototype.onPeopleListChanged = function(storeAction) {
+	var dom = this.dom;
+	if (dom.chatWindow.is(':visible') && !dom.chatWindow.hasClass('collapsed') && dom.peopleTab.is(':visible')) {
+		var itemHeight = $('.graph-users>li:first-child').outerHeight(true);
+		var visibleItems = 3;
+		var listChange = 0;
+		var $peopleScroll = $('.people-scroll');
+		var $peopleList = $('.peopleList');
+		if (storeAction==='added') {
+			listChange = 1;
+		} else if (storeAction==='removed') {
+			listChange = -1;
+		}
+		if ($('.graph-users>li').length + listChange <= visibleItems) {
+			dom.chatWindow.height(dom.chatWindow.find('.drag-handle').height()
+								   + dom.chatTabs.height()
+								   + $peopleList.find('.meta').outerHeight(true)
+								   + itemHeight * ($('.graph-users>li').length
+								   + listChange));
+			$peopleScroll.height($('.chat-users').height()
+									 - $('.chat-tabs').height());
+			$peopleList.height($peopleScroll.height());
+		} else {
+			dom.chatWindow.height(dom.chatWindow.find('.drag-handle').height()
+								   + dom.chatTabs.height()
+								   + $peopleList.find('.meta').outerHeight(true)
+								   + itemHeight * visibleItems);
+			$peopleScroll.height($('.chat-users').height()
+									 - $('.chat-tabs').height());
+			$peopleList.height($peopleScroll.height());
+		}
+	}
+}
+
+
+VizorUI.prototype.onChatToggleClicked = function() {
+	var dom = this.dom;
+	if (dom.chatWindow.hasClass('collapsed')) {
+		if (dom.peopleTab.hasClass('active')) {
+			dom.chatWindow.removeClass('collapsed');
+			this.onPeopleListChanged(null);
+		} else {
+			dom.chatWindow.removeClass('collapsed')
+							 .height(dom.chatWindow.find('.drag-handle').height()
+								   + dom.chatTabs.height()
+								   + dom.chat.height());
+		}
+	} else {
+		dom.chatWindow.addClass('collapsed')
+						 .height(dom.chatWindow.find('.drag-handle').height()
+							   + dom.chatTabs.height());
+	}
+	return false;
+};
+
+VizorUI.prototype.onAssetsToggleClicked = function() {
+	var dom = this.dom;
+	var controlsHeight = dom.assetsLib.find('.drag-handle').outerHeight(true)
+					   + dom.assetsLib.find('.block-header').outerHeight(true)
+					   + dom.assetsLib.find('.searchbox').outerHeight(true);
+	if (E2.dom.assetsLib.hasClass('collapsed')) {
+		var newHeight = controlsHeight
+					   + dom.assetsLib.find('#assets-tabs').outerHeight(true)
+					   + dom.assetsLib.find('.tab-content.active .assets-frame').outerHeight(true)
+					   + dom.assetsLib.find('.load-buttons').outerHeight(true)
+					   + dom.assetsLib.find('#asset-info').outerHeight(true)
+		dom.assetsLib.removeClass('collapsed').height(newHeight);
+	} else {
+		dom.assetsLib.addClass('collapsed').height(controlsHeight);
+	}
+	return false;
+};
+
+
+VizorUI.prototype.onInspectorClicked = function() {
+	var app = E2.app;
+	if (app.selectedNodes.length===1) {
+		if (app.selectedNodes[0].plugin.open_editor) {
+			app.selectedNodes[0].plugin.open_editor(app.selectedNodes[0].plugin)
+		} else {
+			app.growl('This kind of Patch has no preferences','info',4000);
+		}
+	} else {
+		app.growl('Select 1 particular patch to open inspector.','info',4000);
+	}
+}
+
 
 VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 	var that = this
@@ -273,54 +348,22 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 	})
 };
 
-VizorUI.prototype.syncFloatingPanelsVisibility = function() {
-	var $assets = E2.dom.assetsLib, $presets = E2.dom.presetsLib, $chat = E2.dom.chatWindow;
-	this.visibility.panel_assets = $assets.hasClass('uiopen');
-	this.visibility.panel_presets = $presets.hasClass('uiopen');
-	this.visibility.panel_chat = $chat.hasClass('uiopen');
+VizorUI.prototype.setWorldEditorMode = function(is_active) {
+	is_active = !!is_active;	// force bool
+	if (is_active)
+		this.viewmode = uiViewMode.world_editor;
+	else
+		this.viewmode = uiViewMode.patch_editor;
+	this.dom.btnEditor.parent().toggle(is_active);
+	this.dom.btnPatches.parent().toggle(!is_active);
 };
 
-VizorUI.prototype.updateFloatingPanelsVisibility = function() {
-	var $assets = E2.dom.assetsLib, $presets = E2.dom.presetsLib, $chat = E2.dom.chatWindow;
-	if (this.visibility.floating_panels && this.visibility.panel_assets)
-		$assets.show();
-	else
-		$assets.hide();
 
-	if (this.visibility.floating_panels && this.visibility.panel_presets)
-		$presets.show();
-	else
-		$presets.hide();
-
-	if (this.visibility.floating_panels && this.visibility.panel_chat)
-		$chat.show();
-	else
-		$chat.hide();
-};
-
-VizorUI.prototype.toggleFscreenVrviewButtons = function() {
+VizorUI.prototype.toggleFullscreenVRViewButtons = function() {
 	var vr = false; // place E2 VR device check here;
 	E2.dom.fscreen.parent.toggle(!vr);
 	E2.dom.vrview.parent.toggle(vr);
 }
-VizorUI.prototype.toggleFloatingPanels = function(forceVisibility, visibilityFlags) {
-	if (typeof forceVisibility != 'undefined')
-		this.visibility.floating_panels = forceVisibility;
-	else
-		this.visibility.floating_panels = !this.visibility.floating_panels;
-
-	this.updateFloatingPanelsVisibility();
-};
-
-VizorUI.prototype.toggleNoodles = function(forceVisibility) {
-	if (typeof forceVisibility != 'undefined')
-		this.visibility.patch_editor = forceVisibility;
-	else
-		this.visibility.patch_editor = !this.visibility.patch_editor;
-	E2.dom.canvas_parent.toggle(this.visibility.patch_editor);
-	E2.app.noodlesVisible = this.visibility.patch_editor;
-}
-VizorUI.prototype.togglePatchEditor = VizorUI.prototype.toggleNoodles;
 
 
 /***** MISC UI MODALS/DIALOGS *****/
@@ -368,13 +411,17 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 }
 
 VizorUI.prototype.updateProgressBar = function(percent) {
-	E2.dom.progressBar = $('#progressbar');
+	var dom = this.dom;
+	percent = 0.0 + percent;
+	if (percent > 100) percent = 100;
+	if (percent < 0) percent = 0;
+	dom.progressBar = $('#progressbar');
 	
-	if (!E2.dom.progressBar.is(':visible'))
-		E2.dom.progressBar.show().width(1);
+	if (!dom.progressBar.is(':visible'))
+		dom.progressBar.show().width(1);
 	
 	var winWidth = $(window).width();
-	var barWidth = E2.dom.progressBar.width();
+	var barWidth = dom.progressBar.width();
 	var newWidth = winWidth / 100 * percent;
 	var barSpace = winWidth - barWidth;
 	var barSpeed = 2000 - percent * 12;
@@ -382,7 +429,7 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 	percent = (percent === 0) ? (barWidth / newWidth + 5) : (percent);
 	newWidth = (newWidth <= barWidth) ? (barSpace / 100 * percent + barWidth) : (newWidth);
 	
-	E2.dom.progressBar.stop().animate({width: newWidth}, {duration: barSpeed, easing: 'linear', complete: function() {
+	dom.progressBar.stop().animate({width: newWidth}, {duration: barSpeed, easing: 'linear', complete: function() {
 		if ($(this).width() === winWidth)
 			$(this).fadeOut('slow');
 	}});

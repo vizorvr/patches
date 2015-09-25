@@ -599,28 +599,8 @@
 	}
 
 	function EnumerateVRDevices(devices) {
-		var hmd = null, sensor = null;
-
-		for(var i = 0; i < devices.length; i++) {
-			if(devices[i] instanceof HMDVRDevice) {
-				// Just use the first device we find for now.
-				hmd = devices[i];
-				break;
-			}
-		}
-
-		if(hmd) {
-			for(var i = 0; i < devices.length; i++) {
-				var d = devices[i];
-
-				if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId) {
-					sensor = devices[i];
-					break;
-				}
-			}
-		}
-		
-		startEditor([hmd, sensor]);
+		var d = hardware.enumerateVRDevices(devices);
+		startEditor([d.hmd, d.sensor]);
 	}
 
 	$(document).ready(function() {
@@ -641,11 +621,7 @@
 			account: new AccountController()
 		}
 
-		if(navigator.getVRDevices) {
-			navigator.getVRDevices().then(EnumerateVRDevices)
-		} else if(navigator.mozGetVRDevices) {
-			navigator.mozGetVRDevices(EnumerateVRDevices)
-		} else {
+		if (!hardware.ifVR(EnumerateVRDevices)) {
 			startEditor([null, null])
 		}
 
