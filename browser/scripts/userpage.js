@@ -1,4 +1,4 @@
-var userpageUI = new function() {
+var UserpageUI = new function() {
 	var that = this;
 	this.dom={};
 	this.dom.filterPullDown = $('#filter-pulldown');
@@ -19,7 +19,13 @@ var userpageUI = new function() {
 	this.init = function() {
 		that.dom.filterPullDown.click(that.filterPullDownClicked);
 		that.dom.uPullDown.click(that.uPullDownClicked);
+		
+		//temporary code for static version;
+		$('button.ca-open').click(function() {
+			$('ul#user-nav li').hide().first().show().addClass('active');;
+			$('#nav-breadcrumb').show();
+		});
 	};
 };
 
-$.ready(userpageUI.init);
+$.ready(UserpageUI.init());

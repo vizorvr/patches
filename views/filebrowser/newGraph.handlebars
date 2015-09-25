@@ -1,14 +1,13 @@
 <div class="modal-header">
-	<h4>Publish graph</h4>
+	<h4>Create new graph</h4>
 	<button aria-hidden="true" data-dismiss="modal" class="bootbox-close-button" type="button">
 		<svg class="icon-dialog-close"><use xlink:href="#icon-close"></use></svg>
 	</button>
 </div>
 
 <div class="modal-body">
-	<form action="/publish" id="publish-form_id" method="POST">
+	<form action="/" id="#newgraph-form_id" method="POST">
 		<input type="hidden" name="_csrf" value={{_csrf}}>
-
 		<div class="form-input">
 			<label for="userGraphName_id">Graph name</label>
 			<input type="text" name="userGraphName" id="userGraphName_id" placeholder="" tabindex="-1">
@@ -23,7 +22,7 @@
 		</div>
 
 		<button id="publish-graph-btn" class="sign-btn" type="submit">
-			<span>Publish</span>
+			<span>Create graph</span>
 			<svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
 		</button>
 

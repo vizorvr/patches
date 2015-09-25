@@ -1420,11 +1420,6 @@ Application.prototype.onPublishClicked = function() {
 		return E2.controllers.account.openLoginModal()
 			.then(this.onPublishClicked.bind(this))
 	}
-	
-	E2.ui.openPublishGraphModal()
-	.then(function(path) {
-		window.location.href = path
-	})
 }
 
 Application.prototype.onSaveACopyClicked = function() {
