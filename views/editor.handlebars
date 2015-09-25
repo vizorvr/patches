@@ -15,16 +15,16 @@
 			<li>
 				<button class="btn" id="btn-new">
 					<svg class="icon-new-graph"><use xlink:href="#icon-new-graph"></use></svg>
-					<span>New Graph</span>
+					<span>New</span>
 				</button>
 			</li>
 			<li>
 				<button class="btn" id="fork-button">
-					<svg class="icon"></svg>
-					<span>Edit a copy</span>
+					<svg class="icon-new-graph"><use xlink:href="#icon-duplicate"></use></svg>
+					<span>Duplicate</span>
 				</button>
 			</li>
-			<li>
+			<li style="display: none;">
 				<button class="btn" id="publish-button">
 					<svg class="icon"></svg>
 					<span>Publish</span>
@@ -44,44 +44,18 @@
 					<span>Rotate</span>
 				</button>
 			</li>
-			<li>
-				<button class="btn" id="btn-add-object">
-					<svg class="icon-add-object"><use xlink:href="#icon-add-object"></use></svg>
-					<span>Add Object</span>
-				</button>
-			</li>
 		</ul>
 		<ul class="iconic-nav">
 			<li>
-				<button class="btn" id="btn-inspector">
-					<svg class="icon-inspector"><use xlink:href="#icon-inspector"></use></svg>
-					<span>Inspector</span>
-				</button>
-			</li>
-			<li>
-				<button class="btn" id="btn-add-patch">
-					<svg class="icon-add-patch"><use xlink:href="#icon-add-patch"></use></svg>
-					<span>Add Patch</span>
-				</button>
-			</li>
-			<li>
-				<button class="btn" id="btn-save-patch">
+				<button class="btn" id="save-as-preset">
 					<svg class="icon-save-patch"><use xlink:href="#icon-save-patch"></use></svg>
 					<span>Save Patch</span>
 				</button>
 			</li>
-		</ul>
-		<ul class="iconic-nav">
 			<li>
-				<button class="btn" id="btn-patches">
-					<svg class="icon-patches"><use xlink:href="#icon-patches"></use></svg>
-					<span data-alt="World Editor">Patches</span>
-				</button>
-			</li>
-			<li>
-				<button class="btn" id="btn-editor">
-					<svg class="icon-editor"><use xlink:href="#icon-editor"></use></svg>
-					<span>Editor</span>
+				<button class="btn" id="btn-inspector">
+					<svg class="icon-inspector"><use xlink:href="#icon-inspector"></use></svg>
+					<span>Inspector</span>
 				</button>
 			</li>
 			<li>
@@ -96,6 +70,27 @@
 					<svg class="icon-zoom-in"><use xlink:href="#icon-zoom-in"></use></svg>
 				</button>
 			</li>
+		</ul>
+		<ul class="iconic-nav">
+			<li>
+				<button class="btn" id="btn-graph">
+					<svg class="icon-graph-toggle"><use xlink:href="#icon-graph"></use></svg>
+					<span>Graph</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-presets">
+					<svg class="icon-add-patch"><use xlink:href="#icon-presets"></use></svg>
+					<span>Presets</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-assets">
+					<svg class="icon-add-object"><use xlink:href="#icon-assets"></use></svg>
+					<span>Asses</span>
+				</button>
+			</li>
+	
 			<li>
 				<button class="btn" id="btn-chat-display">
 					<svg class="icon-chat"><use xlink:href="#icon-chat"></use></svg>
@@ -237,7 +232,7 @@
 				</div>
 			</div>
 			<div class="tab-content" id="imagesTab">
-				<div class="assets-frame">
+				<div class="assets-frame scrollbar">
 					<div class="assets-group">
 						<span class="group-title">Images Group</span>
 						<ul class="assets-list">
@@ -307,7 +302,7 @@
 				</div>
 			</div>
 			<div class="tab-content" id="audioTab">
-				<div class="assets-frame">
+				<div class="assets-frame scrollbar">
 					<div class="assets-group">
 						<span class="group-title">Audio Group</span>
 						<ul class="assets-list">
@@ -377,7 +372,7 @@
 				</div>
 			</div>
 			<div class="tab-content" id="videoTab">
-				<div class="assets-frame">
+				<div class="assets-frame scrollbar">
 					<div class="assets-group">
 						<span class="group-title">Video Group</span>
 						<ul class="assets-list">
@@ -525,7 +520,7 @@
 </div>
 
 <div class="bottom-panel">
-	<button class="btn show-timeline" id="btn-timeline" data-toggle="popover" data-placement="top" title="Toggle timeline">
+	<button class="btn show-timeline" id="btn-timeline" data-toggle="popover" data-placement="top" title="Toggle timeline" style="display: none;">
 		<svg class="icon-timeline"><use xlink:href="#icon-timeline"></use></svg>
 		<span>Show</span>
 	</button>
@@ -553,21 +548,21 @@
 	</ul>
 	<ul class="view-modes">
 		<li class="active">
-			<button class="btn" id="btn-cam" data-toggle="popover" data-placement="top" title="Camera">
+			<button class="btn" id="btn-cam" data-toggle="popover" data-placement="top" title="Change view mode">
 				<svg class="icon-vr"><use xlink:href="#icon-view-cam"></use></svg>
 			</button>
 		</li>
-		<li>
+		<li style="display: none;">
 			<button class="btn" id="btn-vr" data-toggle="popover" data-placement="top" title="VR Camera">
 				<svg class="icon-vr"><use xlink:href="#icon-view-vr"></use></svg>
 			</button>
 		</li>
-		<li>
+		<li style="display: none;">
 			<button class="btn" id="btn-v3" data-toggle="popover" data-placement="top" title="View 3">
 				<svg class="icon-vr"><use xlink:href="#icon-view-3"></use></svg>
 			</button>
 		</li>
-		<li>
+		<li style="display: none;">
 			<button class="btn" id="btn-v4" data-toggle="popover" data-placement="top" title="View 4">
 				<svg class="icon-vr"><use xlink:href="#icon-view-4"></use></svg>
 			</button>

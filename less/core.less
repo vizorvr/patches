@@ -123,15 +123,15 @@ table
 }
 
 ul.iconic-nav {
-    margin: 0 2% 0 1%;
+    margin: 0 0 0 2%;
     @media @desktop-xl {
-        margin: 0 6%;
+        margin: 0 0 0 8%;
     };
     @media @desktop-l {
-        margin: 0 4% 0 3%;
+        margin: 0 0 0 6%;
     };
     @media @desktop {
-        margin: 0 2%;
+        margin: 0 0 0 3%;
     };
     @media @tablet {
         margin: 0;
@@ -139,10 +139,16 @@ ul.iconic-nav {
 }
 
 ul.iconic-nav:first-of-type {
-    margin: 0;
+    margin: 0 0 0 4%;
+    @media @tablet {
+        margin: 0 0 0 2%;
+    };
 }
 ul.iconic-nav:last-child {
     margin: 0 4% 0 0;
+    @media @tablet {
+        margin: 0 2% 0 0;
+    };
 }
     
 ul.iconic-nav, ul.iconic-nav>li {

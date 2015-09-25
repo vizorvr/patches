@@ -1416,7 +1416,12 @@ Application.prototype.openPresetSaveDialog = null;	// ui replaces this
 
 
 Application.prototype.onPublishClicked = function() {
-	this.openSaveACopyDialog()
+	if (!E2.models.user.get('username')) {
+		return E2.controllers.account.openLoginModal()
+			.then(this.onPublishClicked.bind(this))
+	}
+	
+	E2.ui.openPublishGraphModal()
 	.then(function(path) {
 		window.location.href = path
 	})
@@ -2176,13 +2181,13 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	
 	E2.dom.btnScale = $('#btn-scale');
 	E2.dom.btnRotate = $('#btn-rotate');
-	E2.dom.btnAssets = $('#btn-add-object');
+	E2.dom.btnAssets = $('#btn-assets');
 	
 	E2.dom.btnInspector = $('#btn-inspector');
-	E2.dom.btnPresets = $('#btn-add-patch');
+	E2.dom.btnPresets = $('#btn-presets');
 	E2.dom.btnSavePatch = $('#btn-save-patch');
 	
-	E2.dom.btnPatches = $('#btn-patches');
+	E2.dom.btnGraph = $('#btn-graph');
 	E2.dom.btnEditor = $('#btn-editor');
 	E2.dom.btnZoomOut = $('#btn-zoom-out');
 	E2.dom.btnZoom = $('#btn-zoom');
@@ -2255,6 +2260,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.stop = $('#stop');
 	E2.dom.fscreen = $('#fullscreen');
 	E2.dom.vrview = $('#vrview');
+	
+	E2.dom.btnViewMode = $('#btn-cam');
 
 	$.ajaxSetup({ cache: false });
 
