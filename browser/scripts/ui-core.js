@@ -7,6 +7,7 @@ var uiKeys = {
 	alt: 18,
 	spacebar: 32,
 
+	openInspector	: 73,			//	i
 	toggleUILayer 	: 9,			// 	(shift+) tab,
 	togglePatchEditor : 9,			// 	tab
 	toggleFullScreen : 70,			// 	f,
@@ -121,6 +122,10 @@ VizorUI.prototype.onKeyDown = function(e) {
 	var keyCode = this.getModifiedKeyCode(e.keyCode);
 
 	switch (keyCode) {
+		case (uiKeys.openInspector):
+			this.onInspectorClicked();
+			e.preventDefault();
+			break;
 		case (uiKeys.toggleFloatingPanels + uiKeys.mod_ctrl):
 			if (!this.visible) {
 				// nothing is visible and we just want the panels so reset the UI
@@ -174,7 +179,6 @@ VizorUI.prototype.onKeyDown = function(e) {
 	switch (keyIdentifier) {
 		case uiKeys.focusChatPanel:
 		case uiKeys.focusChatPanelAlt:
-			E2.dom.chatWindow.show().find('#new-message-input').focus();
 			var v = this.visibility;
 			if (!this.visible) { // there's nothing on the screen and we just want the chat
 				this.visible = true
@@ -182,15 +186,15 @@ VizorUI.prototype.onKeyDown = function(e) {
 				v.floating_panels = true;
 				v.panel_assets = false;
 				v.panel_presets = false;
-				v.panel_chat = true;
 			}
 			else if (!v.floating_panels) {
 				v.floating_panels = true;
 				v.panel_assets = false;
 				v.panel_presets = false;
-				v.panel_chat = true;
 			}
-			this.setVisibility();
+			v.panel_chat = true;
+			this.updateVisibility();
+			this.dom.chatWindow.find('#new-message-input').focus();
 			e.preventDefault();
 			e.stopPropagation();
 			break;
