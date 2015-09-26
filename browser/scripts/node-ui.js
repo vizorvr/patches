@@ -4,10 +4,12 @@ UIpoint = function(x,y,z) {
 	this.z = z || 0;
 }
 
+
 NodeUI = function(parent_node, x, y, z) {
 	var that = this
 
-	this.parent_node = parent_node;
+	/** @var Node */
+	this.parent_node = parent_node;		// the node we represent
 	this.selected = false;
 
 	// use .setPosition() to modify these
@@ -30,6 +32,8 @@ NodeUI = function(parent_node, x, y, z) {
 	var $dom = this.dom;
 
 	$dom.addClass('vp graph-node plugin');
+	$dom.addClass('p_cat_' + this.getNodeCategory());
+	$dom.addClass('p_id_' + this.parent_node.plugin.id);
 	$dom.attr('id', nid);
 	$dom.mousemove(E2.app.onMouseMoved.bind(E2.app)); // Make sure we don't stall during slot connection, when the mouse enters a node.
 	
@@ -242,6 +246,17 @@ NodeUI.prototype.showRenameControl = function() {
 		})
 		.focus()
 }
+
+// returns one of uiNodeCategory values for this.parent_node
+NodeUI.prototype.getNodeCategory = function() {
+	return uiNodeCategoryMap.getCategory(this.parent_node.plugin.id);
+};
+
+NodeUI.prototype.getDisplayName = function() {
+	return this.parent_node.get_disp_name();
+};
+
+/**** "static" *****/
 
 NodeUI.create_slot = function(parent_node, nid, container, s, type) {
 	var $div = make('div');

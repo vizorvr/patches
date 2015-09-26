@@ -16,7 +16,6 @@ Annotation.prototype = Object.create(Plugin.prototype)
 Annotation.prototype.create_ui = function() {
 	var that = this
 	var inp = $('<textarea placeholder="Type text here" />')
-	
 	inp.css({
 		'resize': true
 	})

@@ -2,23 +2,46 @@
 /* authors ivan mukho, georgi marinov */
 
 // graph node inner classes usually start with p_
+//
+//@device-def-bg:         #263e63;
+//@device-def-color:      #ffffff;
+//@device-header-def-bg:  #4d7dc2;
+//@dev-head-button-bg:    #385a8a;
 
-@vp-node-bg:         	fade(@device-def-bg, 90%);
-@vp-node-header-bg:		lighten(@device-def-bg, 10%);
-@vp-node-color: 	 	@device-def-color;
-@vp-node-text-size:		10pt;
+
+@vp-node-bg:         			#4D7DC2;
+//@vp-node-bg:         			#59596D;
+// a @vp-node-header-bg-explicit:	@device-header-def-bg;	//lighten(@device-def-bg, 10%);
+// a @vp-node-header-bg:				rgba(255,255,255,0.2);
+@vp-node-content-bg:			rgba(0,0,0,0.3);
+@vp-node-color: 	 			@device-def-color;
+@vp-node-text-size:				10.5pt;
+@vp-node-border-radius: 		@border-radius-base;
+
+@vp-node-slot-text-size:		@vp-node-text-size - 1.5pt;
+@vp-node-slot-text-color-default: 	#ddd;
+@vp-node-slot-text-color-connected: white;
+@vp-node-slot-text-color-connecting: yellow;
+
+@vp-node-button-padding:		2px 5px;
+@vp-node-button-margin:			2px;
+@vp-node-button-text-size:		@vp-node-text-size - 1.5pt;
+@vp-node-button-color:			#fff;	//@btn-primary-color;
+@vp-node-button-background: 	@btn-primary-bg;
+@vp-node-button-border-color: 	@btn-primary-border;
+@vp-node-button-border-radius: 	@border-radius-small;
+
 
 div.graph-node {
-  	box-shadow: 0 0 4px rgba(0,0,0,0.3);
+  	box-shadow: 0 0 2px rgba(0,0,0,0.2);
   	display: table;
     border: 0;
 	border-spacing: 0;
-	border-radius: 5px;
+	border-radius: @vp-node-border-radius;
 	background: @vp-node-bg;
 	color: @vp-node-color;
 	overflow: hidden;
   	>.p_header {
-	  background: @device-header-def-bg;
 	  position:relative;
 	  >div {
 		  display:table;
@@ -26,6 +49,7 @@ div.graph-node {
 		  position:relative;
 		  height: @device-header-height;
 		  span.p_title {
+			  font-weight: 900;
 			  cursor: move;
 			  width:100%;	// force buttons to their specified width
 		  }
@@ -35,7 +59,7 @@ div.graph-node {
 			  min-width: @device-header-height;
 			  vertical-align: middle;
 		  }
-		  button {
+		  button {	// node box button
 			  height: @device-header-height;
 			  width: @device-header-height ! important;
 			  padding: 0;
@@ -70,10 +94,15 @@ div.graph-node {
 	  }
 	}
   	>.p_content {
+	  	background: @vp-node-content-bg;
 	  	display: table;
 	  	width:100%;
 	  	height:100%;	// required for ins and outs to achieve 100% height
-	  	.p_plugin, .p_ins, .p_outs {display:table-cell; position: relative; height:100%;}
+	  	.p_plugin, .p_ins, .p_outs {
+		  position: relative;
+		  display:table-cell;
+		  height: 100%;
+		}
 	  	>.p_ins {
 		  >.p_in {
 		  }
@@ -85,6 +114,21 @@ div.graph-node {
 		}
 	  	>.p_plugin {
 		  width:100%;
+		  vertical-align: middle;
+		  vertical-position: 5%;
+		  button {	// node plugin content button
+			background: @vp-node-button-background;
+			border: none;
+			border-radius: @vp-node-button-border-radius;
+			font-size: @vp-node-button-text-size;
+			font-weight: 600;
+			color: @vp-node-button-color;
+			padding: @vp-node-button-padding;
+			margin: @vp-node-button-margin;
+			&:hover {
+			  text-shadow: 0px 0px 15px rgba(255,255,255,0.9);
+			}
+		  }
 		  input, select, textarea {
 			color: #fff;
 			font-size: @vp-node-text-size;
@@ -113,7 +157,19 @@ div.graph-node {
 		  	padding:0; margin:0;
 		  	min-width: 80px;
 		  	height: 20px;
+		  	color: @vp-node-slot-text-color-default;
+		  	&.p_connected {
+			  color: @vp-node-slot-text-color-connected;
+			  span.status>svg.p_on {visibility: visible;}
+			  span.status>svg.p_off {visibility: hidden;}
+			}
+			&.p_connecting {
+			  color: @vp-node-slot-text-color-connecting;
+			  span.status>svg.p_on {visibility: visible;}
+			  span.status>svg.p_off {visibility: hidden;}
+			}
 		  	label {
+			  font-size: @vp-node-slot-text-size;
 			  padding: 5px;
 			  vertical-align: middle;
 			  display:table-cell;
@@ -138,16 +194,7 @@ div.graph-node {
 			}
 
 		}
-	  	.p_slot.p_connected {
-		  color:white;
-		  span.status>svg.p_on {visibility: visible;}
-		  span.status>svg.p_off {visibility: hidden;}
-		}
-	  	.p_slot.p_connecting {
-		  color:yellow;
-		  span.status>svg.p_on {visibility: visible;}
-		  span.status>svg.p_off {visibility: hidden;}
-		}
+
 	  	.p_slot.p_compatible {
 		  color: green;
 		}
@@ -162,9 +209,13 @@ div.graph-node {
 	}
 }
 
-div.graph-node.has_ins .p_ins, div.graph-node.has_outs .p_outs {min-width: 80px;}
+@io_hidden_width: 1px;
+
+div.graph-node .p_ins  {width:@io_hidden_width; min-width:@io_hidden_width; }
+div.graph-node .p_outs {width:@io_hidden_width; min-width:@io_hidden_width;}	/* noodles need these to be displayed default unless plugins have io */
+div.graph-node.has_ins .p_ins, div.graph-node.has_outs .p_outs {min-width: 80px; width:auto;}
 div.graph-node.p_selected {
-  box-shadow: 0 0 5px 1px rgba(255,255,255,0.5);
+  box-shadow: 0 0 2px rgba(255,255,255,0.9);
 }
 div.graph-node.p_collapse .p_content {
   display:none;
@@ -225,4 +276,124 @@ div.graph-node.p_collapse .p_content {
 	padding-right: 8px;
 	border: none !important;
 	vertical-align: top;
+}
+
+
+.p_content {
+  ::-webkit-scrollbar {
+	  width: 8px;
+  }
+
+  ::-webkit-scrollbar-button {
+	  display: none!important;
+  }
+
+  ::-webkit-scrollbar-track {
+	  background-color: rgba(0,0,0,0.2);
+	  border-radius: 3px;
+	  width: 6px;
+  }
+
+  ::-webkit-scrollbar-track-piece {
+	  background-color: rgba(0,0,0,0.2);
+  }
+
+  ::-webkit-scrollbar-thumb {
+	  background-color: rgba(255,255,255,0.2);
+	  border-radius: 3px;
+	  width: 4px;
+	  border: none;
+	  background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-corner {
+	  display: none!important;
+  }
+}
+
+div.graph-node.p_cat_meta {
+  background: #B6A400;
+}
+
+div.graph-node.p_id_annotation {
+  color: #fff;
+  div.p_content {
+	padding: 0px;
+	textarea {
+	  font-size: 9pt;
+	  font-weight: 600;
+	  min-height: 90px;
+	  min-width: 200px;
+	  padding: 10px 25px;
+	  margin: 3px -5px 3px 5px;
+	  background: none;
+	  border: none;
+	}
+  }
+}
+
+div.graph-node.p_cat_io {
+  background: #EE5400;
+}
+div.graph-node.p_cat_value {
+  background: #4D7DC2;
+}
+
+div.graph-node.p_cat_renderer {
+  background: #59596D;
+}
+
+div.graph-node.p_cat_environment {
+  background: #59596D;
+  .p_content button {
+	background: rgba(255,255,255,0.4);
+	color: #fff;
+  }
+}
+
+div.graph-node.p_cat_material {
+  background: #47658d;
+}
+
+div.graph-node.p_cat_light {
+  background: #b9b88c;
+  color: #222;
+}
+
+div.graph-node.p_cat_compound {
+  background: #520568;
+  .p_content button {
+	background: rgba(255,255,255,0.4);
+  }
+}
+
+div.graph-node.p_id_color_picker {
+  .p_content {
+	table {
+	  width: 100%;
+	  font-size: 110%;
+	  border-collapse: separate;
+	  border-spacing: 3px;
+	  th, td {
+		text-align: center;
+		padding: 1px 3px;
+		margin: 3px ! important;
+		font-weight: 600;
+		border:0;
+		width: 17%;
+	  }
+	  th:first-child, td:first-child {
+		width: 32%;
+	  }
+	  th {
+		color: rgba(255,255,255,0.3);
+	  }
+	  td {
+		background: rgba(0,0,0,0.3);
+		border-radius: 2px;
+		text-transform: uppercase;
+	  }
+	}
+
+  }
 }
