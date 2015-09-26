@@ -19,8 +19,6 @@ function WorldEditor() {
 		return active
 	}
 
-	this.editorControls = new THREE.EditorControls(this.camera.perspectiveCamera, this.camera.domElement)
-
 	this.editorTree = new THREE.Object3D()
 
 	// grid around origin along x, z axises
@@ -31,8 +29,25 @@ function WorldEditor() {
 	this.selectionTree = new THREE.Object3D()
 	this.editorTree.add(this.selectionTree)
 
+	// root for 3d handles
+	this.handleTree = new THREE.Object3D()
+	this.editorTree.add(this.handleTree)
+
+	// editor controls
+	this.editorControls = new THREE.EditorControls(this.camera.perspectiveCamera, this.domElement)
+
 	// transform controls
 	this.transformControls = new THREE.TransformControls(this.camera.perspectiveCamera, this.domElement)
+
+	var that = this
+
+	this.transformControls.addEventListener('mouseDown', function() {
+		that.editorControls.enabled = false
+	})
+
+	this.transformControls.addEventListener('mouseUp', function() {
+		that.editorControls.enabled = true
+	})
 }
 
 WorldEditor.prototype.update = function() {
@@ -72,8 +87,28 @@ WorldEditor.prototype.getCamera = function() {
 	return this.camera.perspectiveCamera
 }
 
-WorldEditor.prototype.updateScene = function(scene) {
+WorldEditor.prototype.updateScene = function(scene, camera) {
+	this.handleTree.children = []
 
+	var that = this
+
+	var nodeHandler = function ( node ) {
+		if (node instanceof THREE.PointLight) {
+			var cameraHelper = new THREE.PointLightHelper(node, 0.5)
+
+			cameraHelper.backReference = node.backReference
+			that.handleTree.add(cameraHelper)
+		}
+		else if (node instanceof THREE.DirectionalLight) {
+			var cameraHelper = new THREE.DirectionalLightHelper(node, 0.5)
+
+			cameraHelper.backReference = node.backReference
+			that.handleTree.add(cameraHelper)
+		}
+	}
+
+	// add handles for anything requiring them in the scene
+	scene.children[0].traverse( nodeHandler )
 }
 
 WorldEditor.prototype.getEditorSceneTree = function() {
@@ -83,14 +118,16 @@ WorldEditor.prototype.getEditorSceneTree = function() {
 WorldEditor.prototype.setSelection = function(selected) {
 	this.selectionTree.children = []
 
-	this.editorControls.enabled = selected.length === 0
-
 	this.transformControls.detach()
 
-	var numToSelect = selected.length ? 1 : 0
+	for (var i = 0; i < selected.length; ++i) {
+		var obj = selected[i].object
+		if (obj.backReference !== undefined) {
+			this.transformControls.attach(obj)
+			this.selectionTree.add(this.transformControls)
 
-	for (var i = 0; i < numToSelect; ++i) {
-		this.transformControls.attach(selected[i].object)
-		this.selectionTree.add(this.transformControls)
+			// only attach to first valid item
+			break
+		}
 	}
 }

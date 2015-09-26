@@ -97,7 +97,7 @@
 	ThreeWebGLRendererPlugin.prototype.patchSceneForWorldEditor = function() {
 		if (E2.app.worldEditor.isActive()) {
 			// tell the editor about changes in the scene
-			E2.app.worldEditor.updateScene(this.scene)
+			E2.app.worldEditor.updateScene(this.scene, this.perspectiveCamera)
 
 			// add the editor object tree into the scene
 			var editorRoot = E2.app.worldEditor.getEditorSceneTree()
@@ -136,10 +136,9 @@
 		if (this.scene && this.scene.children && this.scene.children.length > 0) {
 			this.raycaster.setFromCamera(mouseVector, activeCamera)
 
-			// only intersect scene.children[0] - children [1] is the overlays
-			var intersects = this.raycaster.intersectObjects(this.scene.children[0].children, /*recursive = */ true)
+			var intersects = this.raycaster.intersectObjects(this.scene.children, /*recursive = */ true)
 			
-			for (var i = 0; i < Math.min(intersects.length, 1); i++) {
+			for (var i = 0; i < intersects.length; i++) {
 				if (intersects[i].object.backReference !== undefined) {
 					E2.app.clearSelection()
 					E2.app.markNodeAsSelected(intersects[i].object.backReference.parentNode)
@@ -155,8 +154,20 @@
 		}
 	}
 
+	ThreeWebGLRendererPlugin.prototype.mouseDown = function(e) {
+		this.dragContext = {startX: e.pageX, startY: e.pageY}
+	}
+
+	ThreeWebGLRendererPlugin.prototype.mouseUp = function(e) {
+		if (e.pageX === this.dragContext.startX && e.pageY === this.dragContext.startY) {
+			// only pick an object if there was no drag
+			this.pick_object(e)
+		}
+	}
+
 	ThreeWebGLRendererPlugin.prototype.setup_object_picking = function() {
-		$(document).mousedown(this.pick_object.bind(this))
+		$(document).mousedown(this.mouseDown.bind(this))
+		$(document).mouseup(this.mouseUp.bind(this))
 		this.raycaster = new THREE.Raycaster()
 	}
 
