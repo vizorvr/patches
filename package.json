@@ -55,7 +55,6 @@
     "newrelic": "^1.13.4",
     "node-mandrill": "^1.0.1",
     "node-png": "^0.4.2",
-    "node-unzip-2": "^0.2.1",
     "nodemailer": "^1.1.1",
     "osc-min": "^0.1.0",
     "passport": "^0.2.0",
@@ -67,7 +66,8 @@
     "uglify-js": "^2.4.15",
     "validator": "^3.17.0",
     "when": "^3.5.1",
-    "ws": "^0.4.31"
+    "ws": "^0.4.31",
+    "yauzl": "^2.3.1"
   },
   "devDependencies": {
     "chai": "^1.10.0",
