@@ -248,7 +248,7 @@ ColorPicker.prototype.update_output = function() {
 	return this.color;
 };
 
-ColorPicker.prototype.update_value = function(c) {
+ColorPicker.prototype.update_value = function() {
 	var sat = this.state.sat;
 	var lum = this.state.lum;
 	var nc = [this.hue_rgb[0] / 255.0, this.hue_rgb[1] / 255.0, this.hue_rgb[2] / 255.0];
@@ -298,7 +298,7 @@ ColorPicker.prototype.update_picker = function(c, s)
 	s.css('left', Math.floor((this.state.sat * this.picker_width)) - 6);
 	s.css('top', Math.floor((1.0 - this.state.lum) * this.picker_height) - 6);
 
-	// this.update_value(c);
+	this.update_value();
 };
 
 ColorPicker.prototype.update_hue_ev = function(ui, e, i, h, hs)
@@ -308,7 +308,7 @@ ColorPicker.prototype.update_hue_ev = function(ui, e, i, h, hs)
 	if(!this.hue_drag || this.hue_clipped)
 		return;
 
-//	this.state.hue = (e.pageY - h.offset().top) / 100.0	// vertical
+//	this.state.hue = (e.pageY - h.offset().top) / this.picker_height	// vertical
 	this.state.hue = 1.0 - (e.pageX - h.offset().left) / this.picker_width;
 	this.update_hue(ui, i, h, hs);
 };
@@ -354,13 +354,13 @@ ColorPicker.prototype.update_hue = function(ui, i, h, hs)
 
 		// vertical
 		// hs.css('left', (ofs.left - i.offset().left));
-		// hs.css('top', Math.floor((this.state.hue * 100.0) - 2));
+		// hs.css('top', Math.floor((this.state.hue * this.picker_height) - 2));
 
 		// horizontal
 		hs.css('left', Math.floor(( (1.0-this.state.hue) * this.picker_width) - 2));
 	}
 
-	this.update_value(ui);
+	this.update_value();
 };
 
 ColorPicker.prototype.clip = function(ev, e)

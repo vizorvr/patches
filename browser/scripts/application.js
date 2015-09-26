@@ -801,6 +801,7 @@ Application.prototype._performSelection = function(e) {
 
 	for(var i = 0, len = nodes.length; i < len; i++) {
 		var n = nodes[i]
+		if (n && (typeof n.ui === 'undefined')) continue; // recover, should a node ref ever break..
 		var nui = n.ui.dom[0]
 		var p_x = nui.offsetLeft
 		var p_y = nui.offsetTop

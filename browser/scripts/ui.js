@@ -349,13 +349,13 @@ VizorUI.prototype.onAssetsToggleClicked = function() {
 VizorUI.prototype.onInspectorClicked = function() {
 	var app = E2.app;
 	if (app.selectedNodes.length===1) {
-		if (app.selectedNodes[0].plugin.open_editor) {
-			app.selectedNodes[0].plugin.open_editor(app.selectedNodes[0].plugin)
+		if (app.selectedNodes[0].ui.hasPreferences()) {
+			app.selectedNodes[0].ui.openInspector();
 		} else {
-			app.growl('This kind of Patch has no preferences','info',4000);
+			app.growl('This node has no settings.','info',4000);
 		}
 	} else {
-		app.growl('Select 1 particular patch to open inspector.','info',4000);
+		app.growl('Select one particular patch to see its settings.','info',4000);
 	}
 }
 

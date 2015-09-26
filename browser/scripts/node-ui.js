@@ -2,11 +2,24 @@ UIpoint = function(x,y,z) {
 	this.x = x || 0;
 	this.y = y || 0;
 	this.z = z || 0;
-}
+};
 
 
 NodeUI = function(parent_node, x, y, z) {
 	var that = this
+
+	this.flags = {
+		set				: false,
+		has_subgraph	: false,
+		has_plugin_ui 	: false,
+		has_inputs 		: false,
+		has_outputs 	: false,
+		has_dynamic_slots : false,
+		has_preferences : false,
+		has_edit 		: false,
+		single_in 		: false,
+		single_out 		: false
+	};
 
 	/** @var Node */
 	this.parent_node = parent_node;		// the node we represent
@@ -27,6 +40,8 @@ NodeUI = function(parent_node, x, y, z) {
 	this.input_col 	= make('div');
 	this.content_col = make('div');
 	this.output_col = make('div');
+	this.inline_in = make('div');
+	this.inline_out = make('div');
 	this.nid = 'n' + parent_node.uid;
 	var nid = this.nid;
 	var $dom = this.dom;
@@ -82,14 +97,21 @@ NodeUI = function(parent_node, x, y, z) {
 
 	$dom.append($header);
 
+
 	var row = this.content;
 	var input_col = this.input_col;
 	var content_col = this.content_col
 	var output_col = this.output_col;
+	var inline_in = this.inline_in;
+	var inline_out = this.inline_out;
 
 	row.addClass('p_content');
 	$dom.append(row)
 
+
+	inline_in.addClass('ic p_ins');
+	inline_out.addClass('oc p_outs');
+	header_wrap.append(inline_out);
 
 	input_col.addClass('ic p_ins');
 	content_col.addClass('cc pui_col p_plugin');
@@ -111,14 +133,13 @@ NodeUI = function(parent_node, x, y, z) {
 	else
 		this.plugin_ui = {}; // We must set a dummy object so plugins can tell why they're being called.
 
-	if (this.hasPreferences()) {	// create a preferences button and wire it up
-		var inp_config = makeButton(null, 'Edit preferences', 'config_btn')
-		inp_config.removeClass('btn');
-		inp_config.click(function() {
-			that.parent_node.plugin.open_preferences(that.parent_node.plugin);
-			return false;
-		})
-		header_wrap.append(inp_config);
+	if (this.hasSubgraph()) {	// create a preferences button and wire it up
+		var $edit = NodeUI.makeSpriteSVGButton(
+			NodeUI.makeSpriteSVG('vp-edit-patch-icon', 'cmd_edit_graph'), 'Edit nested patch'
+		);
+		$edit.addClass('fade');
+		$edit.click(this.openSubgraph.bind(this));
+		header_wrap.append($edit);
 	}
 
 	make_draggable($dom,
@@ -132,38 +153,133 @@ NodeUI = function(parent_node, x, y, z) {
 
 }
 
+NodeUI.prototype.openInspector = function() {
+	if (this.hasPreferences())
+		this.parent_node.plugin.open_inspector(this.parent_node.plugin);
+	return false;
+};
+
+NodeUI.prototype.openSubgraph = function() {
+	if (this.hasSubgraph())
+		NodeUI.drilldown(this.parent_node);
+	else console.log('no');
+	return false;
+};
+
 NodeUI.prototype.setSelected = function(is_selected) {
 	this.selected = is_selected;
 	this.setCssClass();
 }
-NodeUI.prototype.isSelected = function() { return !!this.selected; }
+NodeUI.prototype.isSelected = function() { return !!this.selected; };
 
 NodeUI.prototype.setCssClass = function() {
 	var $dom = this.dom;
-	if (this.parent_node.open) {
-		$dom.addClass('p_expand').removeClass('p_collapse');
+
+	if (this.canDisplayInline()) {
+		$dom.removeClass('p_expand').removeClass('p_collapse').addClass('p_inline');
 	} else {
-		$dom.addClass('p_collapse').removeClass('p_expand');
+		$dom.removeClass('p_inline');
+		if (this.parent_node.open) {
+			$dom.addClass('p_expand').removeClass('p_collapse');
+		} else {
+			$dom.addClass('p_collapse').removeClass('p_expand');
+		}
 	}
 
-	(this.hasInputs()) ? $dom.addClass('p_has_ins') : $dom.removeClass('p_has_ins');
-	(this.hasOutputs()) ? $dom.addClass('p_has_outs') : $dom.removeClass('p_has_outs');
-	(this.isSelected()) ? $dom.addClass('p_selected') : $dom.removeClass('p_selected');
+	var classIf = function(condition, className, $j) {
+		if (typeof $j === 'undefined') $j = $dom;
+		if (condition)
+			$j.addClass(className);
+		else
+			$j.removeClass(className);
+		return $j
+	};
+	classIf(this.hasInputs(), 'p_has_ins');
+	classIf(this.hasOutputs(), 'p_has_outs');
+	classIf(this.hasSingleInputOnly(), 'p_1in');
+	classIf(this.hasSingleOutputOnly(), 'p_1out');
+	classIf(this.canDisplayOutputInHeader(), 'p_header_out');
+	classIf(this.canDisplayInputInHeader(), 'p_header_in');
+	classIf(this.isSelected(), 'p_selected');
 
 	return this;
-}
+};
+
+NodeUI.prototype.getPluginUIFlags = function(reset) {
+	if (typeof reset === 'undefined') reset = false;
+	if (reset) this.flags.set = false;
+	if (this.flags.set) return this.flags;
+	this.flags.has_subgraph 	= this.hasSubgraph();
+	this.flags.has_plugin_ui 	= this.hasPluginUI();
+	this.flags.has_inputs 		= this.hasInputs();
+	this.flags.has_outputs 		= this.hasOutputs();
+	this.flags.has_preferences 	= this.hasPreferences();
+	this.flags.has_dynamic_slots = this.hasDynamicSlots();
+	this.flags.has_edit 		= this.hasEditButton();
+	this.flags.single_in 		= this.hasSingleInputOnly();
+	this.flags.single_out 		= this.hasSingleOutputOnly();
+	this.flags.set = true;
+	return this.flags;
+};
+
+NodeUI.prototype.canDisplayInputInHeader = function() {
+	return false;
+};
+
+NodeUI.prototype.canDisplayOutputInHeader = function() {
+	var p = this.getPluginUIFlags();
+	var can = p.single_out && (!p.has_edit) && (!p.has_dynamic_slots);	// check !p.has_inputs if stricter
+	can &= !p.has_subgraph;
+
+	var allowedCategories = [uiNodeCategory.value, uiNodeCategory.material, uiNodeCategory.geometry, uiNodeCategory.light]; // initially
+	var myCategory = this.getNodeCategory();
+	can &= (allowedCategories.indexOf(myCategory) > -1);
+
+	return can;
+};
+
+NodeUI.prototype.canDisplayInline = function() {
+	var p = this.getPluginUIFlags();	// variables used to make a decision.
+
+	var can = !p.has_plugin_ui;
+	can &= !p.has_subgraph;
+	can &= (this.getNodeCategory() === uiNodeCategory.io);
+	can &= (p.single_in && !p.has_outputs) || (p.single_out && !p.has_inputs);
+
+	return can;
+};
 
 NodeUI.prototype.redrawSlots = function() {
+	var can_display_inline = this.canDisplayInline();
+	var plugin_flags = this.getPluginUIFlags();
+
 	// render inputs
 	NodeUI.render_slots(this.parent_node, this.nid, this.input_col, this.parent_node.plugin.input_slots, E2.slot_type.input);
 	if(this.parent_node.dyn_inputs)
 		NodeUI.render_slots(this.parent_node, this.nid, this.input_col, this.parent_node.dyn_inputs, E2.slot_type.input);
+
 	// render outputs
-	NodeUI.render_slots(this.parent_node, this.nid, this.output_col, this.parent_node.plugin.output_slots, E2.slot_type.output);
-	if(this.parent_node.dyn_outputs)
-		NodeUI.render_slots(this.parent_node, this.nid, this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
+
+	if (this.canDisplayOutputInHeader()) {
+		NodeUI.render_slots(this.parent_node, this.nid, this.inline_out, this.parent_node.plugin.output_slots, E2.slot_type.output);
+		// just in case
+		if(this.parent_node.dyn_outputs)
+			NodeUI.render_slots(this.parent_node, this.nid, this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
+	} else {
+		NodeUI.render_slots(this.parent_node, this.nid, this.output_col, this.parent_node.plugin.output_slots, E2.slot_type.output);
+		if(this.parent_node.dyn_outputs)
+			NodeUI.render_slots(this.parent_node, this.nid, this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
+	}
 	return this;
 };
+
+NodeUI.prototype.hasSubgraph = function() {
+	return (typeof this.parent_node.plugin.drilldown === 'function');
+};
+
+NodeUI.prototype.hasDynamicSlots = function() {
+	return this.parent_node.dyn_inputs.length + this.parent_node.dyn_outputs.length > 0;
+}
 
 NodeUI.prototype.hasInputs = function() {
 	return (this.parent_node.plugin.input_slots.length + this.parent_node.dyn_inputs.length) > 0;
@@ -173,9 +289,29 @@ NodeUI.prototype.hasOutputs = function() {
 	return (this.parent_node.plugin.output_slots.length + this.parent_node.dyn_outputs.length) > 0;
 };
 
+
+NodeUI.prototype.hasPluginUI = function() {
+	return (typeof this.parent_node.plugin.create_ui === 'function');
+};
+
 NodeUI.prototype.hasPreferences = function() {
-	return (typeof this.parent_node.plugin.open_preferences == 'function');
-}
+	return (typeof this.parent_node.plugin.open_inspector === 'function');
+};
+
+// aliases
+NodeUI.prototype.hasInspector = NodeUI.prototype.hasPreferences;
+
+NodeUI.prototype.hasSingleInputOnly = function() {
+	return (this.parent_node.plugin.input_slots.length === 1) && (this.parent_node.dyn_inputs.length === 0);
+};
+
+NodeUI.prototype.hasSingleOutputOnly = function() {
+	return (this.parent_node.plugin.output_slots.length === 1) && (this.parent_node.dyn_outputs.length === 0);
+};
+
+NodeUI.prototype.hasEditButton = function() {
+	return false;
+};
 
 
 NodeUI.prototype.setPosition = function(x, y, z) {
@@ -183,7 +319,7 @@ NodeUI.prototype.setPosition = function(x, y, z) {
 	if (typeof y != 'undefined') this.position.y = this.y = y;
 	if (typeof z != 'undefined') this.position.z = this.z = z;
 	this.update();
-}
+};
 
 /**
  *  Stub. For now it just places the UI in position.
@@ -200,7 +336,7 @@ NodeUI.prototype.update = function() {
 	if (yy < 0) this.position.y = this.y = yy = 10;
 	s.left = '' + xx + 'px';
 	s.top = '' + yy + 'px';
-}
+};
 
 
 NodeUI.prototype.showRenameControl = function() {
@@ -245,7 +381,7 @@ NodeUI.prototype.showRenameControl = function() {
 			$(this).remove();	// this = input
 		})
 		.focus()
-}
+};
 
 // returns one of uiNodeCategory values for this.parent_node
 NodeUI.prototype.getNodeCategory = function() {
@@ -277,12 +413,10 @@ NodeUI.create_slot = function(parent_node, nid, container, s, type) {
 	if (is_dynamic) $div.addClass('p_dynamic');
 	if (is_connected) $div.addClass('p_connected');
 
-
-
 	var $status = make('span');	// contains the two svg-s, on and off, loaded from sprite already in the document.
 	$status.addClass('status');
-	$status.append('<svg class="p_conn_status p_on"><use xlink:href="#vp-port-connected"/></svg>');
-	$status.append('<svg class="p_conn_status p_off"><use xlink:href="#vp-port-unconnected"/></svg>');
+	$status.append(NodeUI.makeSpriteSVG('vp-port-connected', 'p_conn_status p_on'));
+	$status.append(NodeUI.makeSpriteSVG('vp-port-unconnected', 'p_conn_status p_off'));
 	if (is_input) {
 		$div.append($status);
 		$div.append('<label>'+ s.name +'</label>');
@@ -305,9 +439,42 @@ NodeUI.create_slot = function(parent_node, nid, container, s, type) {
 	$div.attr('alt', id);
 	$div.hover(E2.app.onShowTooltip.bind(E2.app), E2.app.onHideTooltip.bind(E2.app));
 	container.append($div);
-}
+};
 
-NodeUI.render_slots = function(parent_node, nid, col, slots, type) {
+NodeUI.render_slots = function(parent_node, nid, container, slots, type) {
 	for(var i = 0, len = slots.length; i < len; i++)
-		NodeUI.create_slot(parent_node, nid, col, slots[i], type);
-}
+		NodeUI.create_slot(parent_node, nid, container, slots[i], type);
+};
+
+// open nested graph for editing
+NodeUI.drilldown = function(node) {	// taken from nested graph plugin
+	var p = node.plugin;
+	if(p.graph) {
+		var ptn = p.graph.parent_graph.tree_node
+
+		if(!ptn.open) {
+			ptn.graph.open = true
+			ptn.rebuild_dom()
+		}
+
+		p.graph.tree_node.activate()
+	}
+	return false;
+};
+
+// helpers
+/**
+ * @returns jQuery
+ */
+NodeUI.makeSpriteSVG = function(xlink, className) {
+	return $('<svg class="' + className + '"><use xlink:href="#'+ xlink +'"/></svg>');
+};
+/**
+ * @returns jQuery
+ */
+NodeUI.makeSpriteSVGButton = function($svg, alt_text) {
+	return makeButton(null, alt_text)
+			.removeClass('btn')
+			.addClass('vp svg')
+			.append($svg);
+};

@@ -31,6 +31,44 @@
 @vp-node-button-border-color: 	@btn-primary-border;
 @vp-node-button-border-radius: 	@border-radius-small;
 
+button.vp.svg {	// for (square) buttons with svg icons inside
+	background: none;
+	position: relative;
+	outline: none;
+	padding: none !important;
+  	opacity: 0.8;
+  	&.fade {
+	 	opacity: 0.4;
+	}
+  	&:hover, &.fade:hover {
+	  opacity: 0.85;
+	}
+  	&:active, &.fade:active {
+	  opacity: 1.0;
+	  border: 0px !important;
+	  outline: 0 !important;
+	  box-shadow: none !important;
+	  -moz-box-shadow: none !important;
+	  outline-offset: 0 !important;
+	}
+  	svg {
+	  width: 16px;
+	  height: 16px;
+	  fill: @device-def-color;
+	  position: absolute;
+	  display: block;
+	  left: 50%;
+	  top: 50%;
+	  margin: -8px 0 0 -8px;
+	}
+}
+
+// adjustments for specific buttons
+button.vp.svg {
+  svg.cmd_edit_graph {
+	top: 55%;
+  }
+}
 
 div.graph-node {
   	box-shadow: 0 0 2px rgba(0,0,0,0.2);
@@ -66,10 +104,10 @@ div.graph-node {
 			  margin: 0;
 			  border: 0;
 			  position:relative;
-			  svg {
-				  fill: @device-def-color;
+			  &.plugin-toggle svg {
 				  width: 16px;
 				  height: 16px;
+				  fill: @device-def-color;
 				  position: absolute;
 				  display: block;
 				  left: 50%;
@@ -77,7 +115,7 @@ div.graph-node {
 				  margin: -8px 0 0 -8px;
 			  }
 		  }
-		  button.config_btn {
+		  button {
 			background: none;
 		  }
 		  button.plugin-toggle {
@@ -91,6 +129,38 @@ div.graph-node {
 			  color: @device-def-color;
 			  height: @device-header-height;
 		  }
+	  }
+	  .p_ins, .p_outs {	// in header
+		display:table-cell;
+	  }
+	}
+	.p_slot {			// in header
+	  span.status {
+			display:table-cell;
+			padding:0;
+			width:32px;
+			min-width:32px;
+			height: 28px;
+			vertical-align: middle;
+			position:relative;
+			>svg {
+			  width: 8px; height: 8px;
+			  position:absolute;
+			  top: 50%;
+			  left: 50%;
+			  margin: -4px 0 0 -4px;
+			}
+			>svg.p_on {visibility: hidden;}
+		}
+	  &.p_connected {
+		color: @vp-node-slot-text-color-connected;
+		span.status>svg.p_on {visibility: visible;}
+		span.status>svg.p_off {visibility: hidden;}
+	  }
+	  &.p_connecting {
+		color: @vp-node-slot-text-color-connecting;
+		span.status>svg.p_on {visibility: visible;}
+		span.status>svg.p_off {visibility: hidden;}
 	  }
 	}
   	>.p_content {
@@ -128,6 +198,25 @@ div.graph-node {
 			&:hover {
 			  text-shadow: 0px 0px 15px rgba(255,255,255,0.9);
 			}
+			&.state_on {
+			  background: rgba(255,255,255,0.4);
+			  color: #fff;
+			}
+			&.state_off {
+			  background: rgba(0,0,0,0.4);
+			  color: #ccc;
+			}
+			&.fxtrigger {
+			  -webkit-transition: background 0.4s linear;
+			  -moz-transition: background 0.4s linear;
+			  transition: background 0.4s linear;
+			}
+			&.fxtrigger:active {
+			  -webkit-transition: background 0s linear;
+			  -moz-transition: background 0s linear;
+			  transition: background 0s linear;
+			  background: rgba(255,255,255,0.7);
+			}
 		  }
 		  input, select, textarea {
 			color: #fff;
@@ -158,15 +247,8 @@ div.graph-node {
 		  	min-width: 80px;
 		  	height: 20px;
 		  	color: @vp-node-slot-text-color-default;
-		  	&.p_connected {
-			  color: @vp-node-slot-text-color-connected;
-			  span.status>svg.p_on {visibility: visible;}
-			  span.status>svg.p_off {visibility: hidden;}
-			}
-			&.p_connecting {
-			  color: @vp-node-slot-text-color-connecting;
-			  span.status>svg.p_on {visibility: visible;}
-			  span.status>svg.p_off {visibility: hidden;}
+		  	span.status {
+			  background: rgba(0,0,0,0.15);	// inside content area
 			}
 		  	label {
 			  font-size: @vp-node-slot-text-size;
@@ -175,24 +257,6 @@ div.graph-node {
 			  display:table-cell;
 			  width:100%;
 			}
-			span.status {
-				background: rgba(0,0,0,0.15);
-			  	display:table-cell;
-			  	padding:0;
-			  	width:32px;
-			  	min-width:32px;
-			  	vertical-align: middle;
-			  	position:relative;
-				>svg {
-				  width: 8px; height: 8px;
-				  position:absolute;
-				  top: 50%;
-				  left: 50%;
-				  margin: -4px 0 0 -4px;
-				}
-			  	>svg.p_on {visibility: hidden;}
-			}
-
 		}
 
 	  	.p_slot.p_compatible {
@@ -211,9 +275,28 @@ div.graph-node {
 
 @io_hidden_width: 1px;
 
-div.graph-node .p_ins  {width:@io_hidden_width; min-width:@io_hidden_width; }
-div.graph-node .p_outs {width:@io_hidden_width; min-width:@io_hidden_width;}	/* noodles need these to be displayed default unless plugins have io */
+
+
+// .has.single selectors weigh over .has
+// noodles need these to be displayed always, io or not
+div.graph-node .p_ins, div.graph-node.has_outs.single_in .p_ins  {width:@io_hidden_width; min-width:@io_hidden_width; }
+div.graph-node .p_outs, div.graph-node.has_outs.single_out .p_outs {width:@io_hidden_width; min-width:@io_hidden_width;}
 div.graph-node.has_ins .p_ins, div.graph-node.has_outs .p_outs {min-width: 80px; width:auto;}
+
+// when a node has ins or outs in the header, hide their labels and set their width
+div.graph-node.p_header_in.p_has_ins div.p_header .p_ins,
+div.graph-node.p_header_out.p_has_outs div.p_header .p_outs {
+  min-width: 30px; width:30px;
+  label {
+	display:none;
+  }
+}
+// when a node displays header ins or outs, hide the empty slot columns in the content row
+div.graph-node.has_ins.p_header_in.p_1in div.p_content .p_ins,
+div.graph-node.has_outs.p_header_out.p_1out div.p_content .p_outs {
+  width:@io_hidden_width; min-width:@io_hidden_width;
+}
+
 div.graph-node.p_selected {
   box-shadow: 0 0 2px rgba(255,255,255,0.9);
 }
@@ -312,8 +395,10 @@ div.graph-node.p_collapse .p_content {
 }
 
 div.graph-node.p_cat_meta {
-  background: #B6A400;
+//  background: #B6A400;
+  background: rgba(182, 164, 0, 0.95);
 }
+
 
 div.graph-node.p_id_annotation {
   color: #fff;
@@ -333,14 +418,17 @@ div.graph-node.p_id_annotation {
 }
 
 div.graph-node.p_cat_io {
-  background: #EE5400;
+//  background: #EE5400;
+  background: rgba(238, 84, 0, 0.95);
 }
 div.graph-node.p_cat_value {
-  background: #4D7DC2;
+//  background: #4D7DC2;
+  background: rgba(77, 125, 194, 0.95);
 }
 
 div.graph-node.p_cat_renderer {
-  background: #59596D;
+//  background: #59596D;
+  background: rgba(89, 89, 109, 0.95);
 }
 
 div.graph-node.p_cat_environment {
@@ -352,16 +440,19 @@ div.graph-node.p_cat_environment {
 }
 
 div.graph-node.p_cat_material {
-  background: #47658d;
+//  background: #47658d;
+  background: rgba(71, 101, 141, 0.95);
 }
 
 div.graph-node.p_cat_light {
-  background: #b9b88c;
+//  background: #b9b88c;
+  background: rgba(185, 184, 140, 0.95);
   color: #222;
 }
 
 div.graph-node.p_cat_compound {
-  background: #520568;
+//  background: #520568;
+  background: rgba(82, 5, 104, 0.95);
   .p_content button {
 	background: rgba(255,255,255,0.4);
   }
@@ -395,5 +486,12 @@ div.graph-node.p_id_color_picker {
 	  }
 	}
 
+  }
+}
+
+div.graph-node.p_id_data_info_display {
+  .p_content pre {
+	max-height: 200px;
+	width: 200px;
   }
 }
