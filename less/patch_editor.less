@@ -69,6 +69,7 @@ button.vp.svg {
 	top: 55%;
   }
 }
+div.graph-node.p_renamed > .p_header > div span.p_title {color: #ffc;}
 
 div.graph-node {
   	box-shadow: 0 0 2px rgba(0,0,0,0.2);
@@ -276,12 +277,32 @@ div.graph-node {
 @io_hidden_width: 1px;
 
 
-
 // .has.single selectors weigh over .has
 // noodles need these to be displayed always, io or not
-div.graph-node .p_ins, div.graph-node.has_outs.single_in .p_ins  {width:@io_hidden_width; min-width:@io_hidden_width; }
-div.graph-node .p_outs, div.graph-node.has_outs.single_out .p_outs {width:@io_hidden_width; min-width:@io_hidden_width;}
-div.graph-node.has_ins .p_ins, div.graph-node.has_outs .p_outs {min-width: 80px; width:auto;}
+div.graph-node .p_ins  {width:@io_hidden_width; min-width:@io_hidden_width; }
+div.graph-node .p_outs {width:@io_hidden_width; min-width:@io_hidden_width;}
+
+div.graph-node.p_has_ins>div.p_content>div.p_ins, div.graph-node.p_has_outs>div.p_content>div.p_outs {
+  .p_slot {
+  	width:auto; min-width: 5ex;	// min-width required to solve e.g. color to HSL outputs etc.
+  }
+}
+
+// but make sure ins and outs are never too close to the UI or to each other
+div.graph-node>div.p_content>div.p_ins>.p_slot {margin-right: 5px;}
+div.graph-node>div.p_content>div.p_outs>.p_slot {margin-left: 5px;}
+
+// exceptions for specific plugins
+div.graph-node.p_id_envelope_modulator,
+div.graph-node.p_pi
+{
+  &.p_has_ins>div.p_content>div.p_ins, &.p_has_outs>div.p_content>div.p_outs {
+	.p_slot {
+	  min-width: 5ex;
+	}
+  }
+}
+
 
 // when a node has ins or outs in the header, hide their labels and set their width
 div.graph-node.p_header_in.p_has_ins div.p_header .p_ins,

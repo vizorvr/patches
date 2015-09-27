@@ -142,6 +142,9 @@ NodeUI = function(parent_node, x, y, z) {
 		header_wrap.append($edit);
 	}
 
+	// @todo this fails?
+	this.parent_node.parent_graph.addListener('nodeRenamed', this.onRenamed.bind(this));
+
 	make_draggable($dom,
 		E2.app.onNodeDragged.bind(E2.app, parent_node),
 		E2.app.onNodeDragStopped.bind(E2.app, parent_node))
@@ -151,6 +154,15 @@ NodeUI = function(parent_node, x, y, z) {
 //	this.parent_node.addListener('slotAdded', this.redrawSlots.bind(this));
 //	this.parent_node.addListener('slotRemoved', this.redrawSlots.bind(this));
 
+}
+
+NodeUI.prototype.onRenamed = function(graph, node) {
+	console.log('called', node);
+	if (node === this.parent_node) {
+		console.log('renamed!');
+		this.setCssClass();
+	}
+	return true;
 }
 
 NodeUI.prototype.openInspector = function() {
@@ -201,6 +213,7 @@ NodeUI.prototype.setCssClass = function() {
 	classIf(this.canDisplayOutputInHeader(), 'p_header_out');
 	classIf(this.canDisplayInputInHeader(), 'p_header_in');
 	classIf(this.isSelected(), 'p_selected');
+	classIf(this.isRenamed(), 'p_renamed');
 
 	return this;
 };
@@ -232,8 +245,11 @@ NodeUI.prototype.canDisplayOutputInHeader = function() {
 	can &= !p.has_subgraph;
 
 	var allowedCategories = [uiNodeCategory.value, uiNodeCategory.material, uiNodeCategory.geometry, uiNodeCategory.light]; // initially
+	var exceptPlugins = ['envelope_modulator'];
+
 	var myCategory = this.getNodeCategory();
 	can &= (allowedCategories.indexOf(myCategory) > -1);
+	can &= (exceptPlugins.indexOf(this.parent_node.plugin.id) === -1);
 
 	return can;
 };
@@ -262,10 +278,12 @@ NodeUI.prototype.redrawSlots = function() {
 
 	if (this.canDisplayOutputInHeader()) {
 		NodeUI.render_slots(this.parent_node, this.nid, this.inline_out, this.parent_node.plugin.output_slots, E2.slot_type.output);
+		this.output_col.html();	// clear the output_col
 		// just in case
 		if(this.parent_node.dyn_outputs)
 			NodeUI.render_slots(this.parent_node, this.nid, this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
 	} else {
+		this.inline_out.html();	// clear the inline output
 		NodeUI.render_slots(this.parent_node, this.nid, this.output_col, this.parent_node.plugin.output_slots, E2.slot_type.output);
 		if(this.parent_node.dyn_outputs)
 			NodeUI.render_slots(this.parent_node, this.nid, this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
@@ -288,7 +306,6 @@ NodeUI.prototype.hasInputs = function() {
 NodeUI.prototype.hasOutputs = function() {
 	return (this.parent_node.plugin.output_slots.length + this.parent_node.dyn_outputs.length) > 0;
 };
-
 
 NodeUI.prototype.hasPluginUI = function() {
 	return (typeof this.parent_node.plugin.create_ui === 'function');
@@ -313,6 +330,15 @@ NodeUI.prototype.hasEditButton = function() {
 	return false;
 };
 
+NodeUI.prototype.hasBeenRenamed = function() {
+	var has_title = (this.parent_node.title || false);
+	var has_no_subgraph = !this.hasSubgraph();
+	var node_category = this.getNodeCategory();
+	var not_exempt = [uiNodeCategory.value].indexOf(node_category) === -1;	// renaming some nodes is mandatory
+	return (has_title && not_exempt && has_no_subgraph && (this.parent_node.title !== this.parent_node.id));
+};
+
+NodeUI.prototype.isRenamed = NodeUI.prototype.hasBeenRenamed;
 
 NodeUI.prototype.setPosition = function(x, y, z) {
 	if (typeof x != 'undefined') this.position.x = this.x = x;
@@ -340,7 +366,7 @@ NodeUI.prototype.update = function() {
 
 
 NodeUI.prototype.showRenameControl = function() {
-//	var that = this
+	var that = this
 	var node = this.parent_node;
 	var $dom = this.dom;
 	var input = $('<input class="node-title-input" placeholder="Type a title" />')
@@ -366,6 +392,7 @@ NodeUI.prototype.showRenameControl = function() {
 
 				if (name) {
 					E2.app.graphApi.renameNode(E2.core.active_graph, node, name);
+					that.setCssClass();	// @todo remove call once nodeRenamed handler works
 				}
 
 				input.remove();
