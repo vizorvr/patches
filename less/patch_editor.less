@@ -37,15 +37,15 @@ button.vp.svg {	// for (square) buttons with svg icons inside
 	outline: none;
 	padding: none !important;
   	opacity: 0.8;
-  	&.fade {
+  	&.p_fade {
 	 	opacity: 0.4;
 	}
-  	&:hover, &.fade:hover {
+  	&:hover, &.p_fade:hover {
 	  opacity: 0.85;
 	}
-  	&:active, &.fade:active {
+  	&:active, &.p_fade:active {
 	  opacity: 1.0;
-	  border: 0px !important;
+	  border: 0px;
 	  outline: 0 !important;
 	  box-shadow: none !important;
 	  -moz-box-shadow: none !important;
@@ -169,7 +169,7 @@ div.graph-node {
 	  	display: table;
 	  	width:100%;
 	  	height:100%;	// required for ins and outs to achieve 100% height
-	  	.p_plugin, .p_ins, .p_outs {
+	  	>.p_plugin, >.p_ins, >.p_outs {
 		  position: relative;
 		  display:table-cell;
 		  height: 100%;
@@ -321,7 +321,7 @@ div.graph-node.has_outs.p_header_out.p_1out div.p_content .p_outs {
 div.graph-node.p_selected {
   box-shadow: 0 0 2px rgba(255,255,255,0.9);
 }
-div.graph-node.p_collapse .p_content {
+div.graph-node.p_collapse div.p_content, div.graph-node.p_collapse div.p_plugin {
   display:none;
 }
 
@@ -373,7 +373,7 @@ div.graph-node.p_collapse .p_content {
 .pl_slot.dynamic {}
 
 
-.pui_col
+.p_ui_col
 {
 	padding: 3px;
 	padding-left: 2px;
@@ -514,5 +514,47 @@ div.graph-node.p_id_data_info_display {
   .p_content pre {
 	max-height: 200px;
 	width: 200px;
+  }
+}
+
+
+button.vp.svg.p_round {
+  width:44px;
+  height:44px;
+  background: rgba(30,30,30,0.9);
+  border-radius: 22px;
+  border:0;
+  outline:0;
+  opacity: 1;
+  &:hover {
+	opacity:1;
+	background: rgba(30,30,30,0.9);
+  }
+  &:active {
+	opacity: 1;
+  }
+}
+
+div.graph-node.p_id_url_texture_generator {
+  div.p_plugin {
+	position:relative;
+	background: #000;
+	&.p_ui_col {padding:0;}
+	div.p_thumbnail {
+	  width:200px;
+	  height:120px;
+	  vertical-align: middle;
+	  text-align: center;
+	  opacity: 0.8;
+	  z-index: 1;
+	}
+	button {
+	  z-index: 2;
+	  position:absolute;
+	  left:50%;
+	  top:50%;
+	  margin-top: -22px;
+	  margin-left: -22px;
+	}
   }
 }

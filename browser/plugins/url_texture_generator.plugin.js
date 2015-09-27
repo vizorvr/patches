@@ -25,20 +25,20 @@
 
 	UrlTexture.prototype.create_ui = function() {
 		var container = make('div')
-		var inp = makeButton('Browse', 'No texture selected.', 'url')
+		// var inp = makeButton('Browse', 'No texture selected.', 'url')
+		var inp = NodeUI.makeSpriteSVGButton(
+			NodeUI.makeSpriteSVG('vp-edit-icon', 'cmd_edit_graph'),
+			'No texture selected'
+		);
+		inp.addClass('p_round');
+
 		var that = this
 
-		this.thumbnail = make('div')
+		this.thumbnail = make('div').addClass('p_thumbnail');
 		
 		this.thumbnail.css({
-			'width': '71px',
-			'height': '71px',
-			'z-index': '3003',
-			'border': '2px solid #8e8e8e',
-			'border-radius': '5px',
 			'background-image': 'url(\'images/no_texture.png\')',
-			'background-size': 'cover',
-			'margin-bottom': '3px'
+			'background-size': 'cover'
 		})
 
 		function clickHandler() {

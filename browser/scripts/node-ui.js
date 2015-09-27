@@ -8,6 +8,7 @@ UIpoint = function(x,y,z) {
 NodeUI = function(parent_node, x, y, z) {
 	var that = this
 
+	this.nid = 'n' + parent_node.uid;
 	this.flags = {
 		set				: false,
 		has_subgraph	: false,
@@ -25,6 +26,16 @@ NodeUI = function(parent_node, x, y, z) {
 	this.parent_node = parent_node;		// the node we represent
 	this.selected = false;
 
+	/* jQueries */
+	this.input_col = null;
+	this.output_col = null;
+	this.inline_in = null;
+	this.inline_out = null;
+	this.header = null;
+	this.content = null;
+	this.plugin_container = null;
+	this.plugin_ui = null;
+
 	// use .setPosition() to modify these
 	this.x = x || 0;
 	this.y = y || 0;
@@ -33,34 +44,89 @@ NodeUI = function(parent_node, x, y, z) {
 
 	this.sl = E2.app.scrollOffset[0];
 	this.st = E2.app.scrollOffset[1];
-	this.plugin_ui = null;
-	this.dom 		= make('div');		// plugins (e.g. subgraph) may attempt to add css classes to this
-	this.header 	= make('div');		// occasionally this may contain a single input or output
-	this.content 	= make('div');		// normally contains ins, outs, and the plugin ui/content
-	this.input_col 	= make('div');
-	this.content_col = make('div');
-	this.output_col = make('div');
-	this.inline_in = make('div');
-	this.inline_out = make('div');
-	this.nid = 'n' + parent_node.uid;
-	var nid = this.nid;
-	var $dom = this.dom;
 
-	$dom.addClass('vp graph-node plugin');
-	$dom.addClass('p_cat_' + this.getNodeCategory());
-	$dom.addClass('p_id_' + this.parent_node.plugin.id);
-	$dom.attr('id', nid);
-	$dom.mousemove(E2.app.onMouseMoved.bind(E2.app)); // Make sure we don't stall during slot connection, when the mouse enters a node.
-	
+	this.dom 		= make('div');	// plugins (e.g. subgraph) may attempt to add css classes to this. ideally they shouldn't
 
-	var $header = this.header;
-	var toggle = make('button');
-	var lbl = make('span');
-	var header_wrap = make('div');
+	// INIT TEMPLATE
 
-	toggle.addClass('plugin-toggle');
-	toggle.append('<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"/></svg>');
-	toggle.click(function() {
+	var viewdata = {
+		inline_in: 		null,
+		inline_out: 	null,
+		toggle_control: null,
+		edit_control: 	null,
+		node_title: 	null,
+		plugin_inputs: 	null,
+		plugin_outputs: null,
+		plugin_content : null
+	};
+
+	viewdata.node_title = make('span').text(parent_node.get_disp_name()).html();
+
+	// RENDER THE TEMPLATE
+
+	var $dom 	= this.dom;
+	var $header, $content, $edit, $toggle;
+
+	var handlebar = null;
+	if (typeof E2.views.patch_editor !== 'undefined') {
+		var template_name = 'ui_plugin_' + this.parent_node.plugin.id;
+		if (typeof E2.views.patch_editor[template_name] !== 'undefined')
+			handlebar = E2.views.patch_editor[template_name];
+		else
+			handlebar = E2.views.patch_editor['ui_plugin__default']
+	}
+	if (handlebar) {
+		/* @var $dom jQuery */
+		$dom.html(handlebar(viewdata));
+		$header = this.header = $dom.children('.p_header');
+		$content = this.content = $dom.children('.p_content');	// normally contains ins, outs, and the plugin ui/content
+		$toggle = $header.find('button.toggle');
+		$edit = $header.find('button.edit');
+		this.input_col = $content.find('.p_ins');
+		this.output_col = $content.find('.p_outs');
+		this.plugin_container = $dom.find('.p_plugin');
+		this.inline_in = $header.find('.p_ins');
+		this.inline_out = $header.find('.p_outs');
+	} else {
+		// recover
+		$header = this.header 	= make('div');
+		$content = this.content = make('div');
+		this.input_col 			= make('div');
+		this.plugin_container 	= make('div');
+		this.output_col 		= make('div');
+		this.inline_in 			= make('div');
+		this.inline_out 		= make('div');
+		$toggle = make('button');
+		$edit = make('button');
+		$header.append($toggle, $edit);
+		$dom.append($header.append(this.inline_in, this.inline_out), $content.append(this.input_col, this.plugin_container, this.output_col));
+	}
+
+	// ATTACH HANDLERS ETC
+
+	var plugin = parent_node.plugin;
+	if (plugin.create_ui) {
+		this.plugin_ui = plugin.create_ui();
+		this.plugin_container.append(this.plugin_ui);
+	}
+	else
+		this.plugin_ui = {}; // We must set a dummy object so plugins can tell why they're being called.
+
+	if (this.hasSubgraph()) {	// create a preferences button and wire it up
+		NodeUI.makeSpriteSVGButton(
+			NodeUI.makeSpriteSVG('vp-edit-patch-icon', 'cmd_edit_graph'),
+			'Edit nested patch',
+			$edit
+		);
+		$edit.addClass('p_fade');
+		$edit.click(this.openSubgraph.bind(this));
+	} else {
+		$edit.remove();
+	}
+
+	$toggle.append('<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"/></svg>');
+	$toggle.addClass('plugin-toggle');
+	$toggle.click(function() {
 		var isOpen = !that.parent_node.open
 
 		E2.app.dispatcher.dispatch({
@@ -69,20 +135,15 @@ NodeUI = function(parent_node, x, y, z) {
 			nodeUid: that.parent_node.uid,
 			isOpen: isOpen
 		})
-	})
+	});
 
-	this.parent_node.on('openStateChanged', function(isOpen) {
-		that.setCssClass();
-		that.parent_node.update_connections()
-		E2.app.updateCanvas(true)
-	})
-	
-	lbl.text(parent_node.get_disp_name());
-	lbl.addClass('t p_title');
-	header_wrap.append(toggle);
-	header_wrap.append(lbl);
-	$header.append(header_wrap);
-	$header.addClass('p_header');
+	$dom.addClass('vp graph-node plugin');
+	$dom.addClass('p_cat_' + this.getNodeCategory());
+	$dom.addClass('p_id_' + this.parent_node.plugin.id);
+	$dom.attr('id', this.nid);
+
+	E2.dom.canvas_parent.append($dom);
+	$dom.mousemove(E2.app.onMouseMoved.bind(E2.app)); // Make sure we don't stall during slot connection, when the mouse enters a node.
 
 	$header.mousedown(E2.app.onNodeHeaderMousedown.bind(E2.app));
 	$header.click(E2.app.onNodeHeaderClicked.bind(E2.app));
@@ -95,53 +156,14 @@ NodeUI = function(parent_node, x, y, z) {
 		$header.hover(E2.app.onShowTooltip.bind(E2.app), E2.app.onHideTooltip.bind(E2.app));
 	}
 
-	$dom.append($header);
-
-
-	var row = this.content;
-	var input_col = this.input_col;
-	var content_col = this.content_col
-	var output_col = this.output_col;
-	var inline_in = this.inline_in;
-	var inline_out = this.inline_out;
-
-	row.addClass('p_content');
-	$dom.append(row)
-
-
-	inline_in.addClass('ic p_ins');
-	inline_out.addClass('oc p_outs');
-	header_wrap.append(inline_out);
-
-	input_col.addClass('ic p_ins');
-	content_col.addClass('cc pui_col p_plugin');
-	output_col.addClass('oc p_outs');
-
-	row.append(input_col)
-	row.append(content_col)
-	row.append(output_col)
-
 	this.setCssClass();
 	this.redrawSlots();
 
-	var plugin = parent_node.plugin;
-	
-	if (plugin.create_ui) {
-		this.plugin_ui = plugin.create_ui();
-		content_col.append(this.plugin_ui);
-	}
-	else
-		this.plugin_ui = {}; // We must set a dummy object so plugins can tell why they're being called.
-
-	if (this.hasSubgraph()) {	// create a preferences button and wire it up
-		var $edit = NodeUI.makeSpriteSVGButton(
-			NodeUI.makeSpriteSVG('vp-edit-patch-icon', 'cmd_edit_graph'), 'Edit nested patch'
-		);
-		$edit.addClass('fade');
-		$edit.click(this.openSubgraph.bind(this));
-		header_wrap.append($edit);
-	}
-
+	this.parent_node.on('openStateChanged', function(isOpen) {
+		that.setCssClass();
+		that.parent_node.update_connections()
+		E2.app.updateCanvas(true)
+	})
 	// @todo this fails?
 	this.parent_node.parent_graph.addListener('nodeRenamed', this.onRenamed.bind(this));
 
@@ -149,7 +171,7 @@ NodeUI = function(parent_node, x, y, z) {
 		E2.app.onNodeDragged.bind(E2.app, parent_node),
 		E2.app.onNodeDragStopped.bind(E2.app, parent_node))
     	
-	E2.dom.canvas_parent.append($dom);
+
 	this.update();	// place in position;
 //	this.parent_node.addListener('slotAdded', this.redrawSlots.bind(this));
 //	this.parent_node.addListener('slotRemoved', this.redrawSlots.bind(this));
@@ -157,9 +179,7 @@ NodeUI = function(parent_node, x, y, z) {
 }
 
 NodeUI.prototype.onRenamed = function(graph, node) {
-	console.log('called', node);
 	if (node === this.parent_node) {
-		console.log('renamed!');
 		this.setCssClass();
 	}
 	return true;
@@ -499,9 +519,11 @@ NodeUI.makeSpriteSVG = function(xlink, className) {
 /**
  * @returns jQuery
  */
-NodeUI.makeSpriteSVGButton = function($svg, alt_text) {
-	return makeButton(null, alt_text)
-			.removeClass('btn')
-			.addClass('vp svg')
-			.append($svg);
+NodeUI.makeSpriteSVGButton = function($svg, alt_text, $have_button) {
+	if (typeof $have_button == 'undefined') $have_button = makeButton(null, '');
+	return $have_button
+		.attr('title', (alt_text || ''))
+		.removeClass('btn')
+		.addClass('vp svg')
+		.append($svg);
 };
