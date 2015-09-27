@@ -48,6 +48,8 @@ function WorldEditor() {
 	this.transformControls.addEventListener('mouseUp', function() {
 		that.editorControls.enabled = true
 	})
+
+	this.setup_object_picking()
 }
 
 WorldEditor.prototype.update = function() {
@@ -88,27 +90,37 @@ WorldEditor.prototype.getCamera = function() {
 }
 
 WorldEditor.prototype.updateScene = function(scene, camera) {
+	this.scene = scene
+	this.vrCamera = camera
+
 	this.handleTree.children = []
 
 	var that = this
 
 	var nodeHandler = function ( node ) {
 		if (node instanceof THREE.PointLight) {
-			var cameraHelper = new THREE.PointLightHelper(node, 0.5)
+			var helper = new THREE.PointLightHelper(node, 0.5)
 
-			cameraHelper.backReference = node.backReference
-			that.handleTree.add(cameraHelper)
+			helper.backReference = node.backReference
+			that.handleTree.add(helper)
 		}
 		else if (node instanceof THREE.DirectionalLight) {
-			var cameraHelper = new THREE.DirectionalLightHelper(node, 0.5)
+			var helper = new THREE.DirectionalLightHelper(node, 0.5)
 
-			cameraHelper.backReference = node.backReference
-			that.handleTree.add(cameraHelper)
+			helper.backReference = node.backReference
+			that.handleTree.add(helper)
 		}
 	}
 
 	// add handles for anything requiring them in the scene
 	scene.children[0].traverse( nodeHandler )
+
+	// add the editor tree to the scene if it's not there already
+	var editorIdx = this.scene.children.indexOf(this.editorTree)
+	if (editorIdx < 0) {
+		this.scene.add(this.editorTree)
+	}
+
 }
 
 WorldEditor.prototype.getEditorSceneTree = function() {
@@ -130,4 +142,58 @@ WorldEditor.prototype.setSelection = function(selected) {
 			break
 		}
 	}
+}
+
+
+WorldEditor.prototype.pick_object = function(e) {
+	if (E2.app.noodlesVisible === true)
+		return;
+
+	var isEditor = this.isActive()
+
+	var mouseVector = new THREE.Vector3()
+
+	var w = this.domElement.clientWidth
+	var h = this.domElement.clientHeight
+
+	mouseVector.x = (((e.pageX - this.domElement.offsetLeft) / w) * 2.0) - 1.0
+	mouseVector.y = ((1.0 - ((e.pageY - this.domElement.offsetTop) / h)) * 2.0) - 1.0
+	mouseVector.z = 0
+
+	if (this.scene && this.scene.children && this.scene.children.length > 0) {
+		this.raycaster.setFromCamera(mouseVector, this.getCamera())
+
+		var intersects = this.raycaster.intersectObjects(this.scene.children, /*recursive = */ true)
+
+		for (var i = 0; i < intersects.length; i++) {
+			if (intersects[i].object.backReference !== undefined) {
+				E2.app.clearSelection()
+				E2.app.markNodeAsSelected(intersects[i].object.backReference.parentNode)
+			}
+		}
+
+		if (isEditor) {
+			this.setSelection(intersects)
+		}
+	}
+	else if (isEditor) {
+		this.setSelection([])
+	}
+}
+
+WorldEditor.prototype.mouseDown = function(e) {
+	this.dragContext = {startX: e.pageX, startY: e.pageY}
+}
+
+WorldEditor.prototype.mouseUp = function(e) {
+	if (e.pageX === this.dragContext.startX && e.pageY === this.dragContext.startY) {
+		// only pick an object if there was no drag
+		this.pick_object(e)
+	}
+}
+
+WorldEditor.prototype.setup_object_picking = function() {
+	$(document).mousedown(this.mouseDown.bind(this))
+	$(document).mouseup(this.mouseUp.bind(this))
+	this.raycaster = new THREE.Raycaster()
 }

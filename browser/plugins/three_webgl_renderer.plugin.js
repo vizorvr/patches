@@ -99,76 +99,7 @@
 			// tell the editor about changes in the scene
 			E2.app.worldEditor.updateScene(this.scene, this.perspectiveCamera)
 
-			// add the editor object tree into the scene
-			var editorRoot = E2.app.worldEditor.getEditorSceneTree()
-
-			var editorIdx = this.scene.children.indexOf(editorRoot)
-			if (editorIdx < 0) {
-				this.scene.add(editorRoot)
-			}
 		}
-	}
-
-	ThreeWebGLRendererPlugin.prototype.pick_object = function(e) {
-		if (E2.app.noodlesVisible === true)
-			return;
-
-		var isEditor = E2.app.worldEditor.isActive()
-
-		var activeCamera
-		if (isEditor) {
-			activeCamera = E2.app.worldEditor.getCamera()
-		}
-		else {
-			activeCamera = this.perspectiveCamera
-		}
-
-		var mouseVector = new THREE.Vector3()
-
-		var wgl_c = E2.dom.webgl_canvas[0]
-		var w = wgl_c.clientWidth
-		var h = wgl_c.clientHeight
-
-		mouseVector.x = (((e.pageX - wgl_c.offsetLeft) / w) * 2.0) - 1.0
-		mouseVector.y = ((1.0 - ((e.pageY - wgl_c.offsetTop) / h)) * 2.0) - 1.0
-		mouseVector.z = 0
-
-		if (this.scene && this.scene.children && this.scene.children.length > 0) {
-			this.raycaster.setFromCamera(mouseVector, activeCamera)
-
-			var intersects = this.raycaster.intersectObjects(this.scene.children, /*recursive = */ true)
-			
-			for (var i = 0; i < intersects.length; i++) {
-				if (intersects[i].object.backReference !== undefined) {
-					E2.app.clearSelection()
-					E2.app.markNodeAsSelected(intersects[i].object.backReference.parentNode)
-				}
-			}
-
-			if (isEditor) {
-				E2.app.worldEditor.setSelection(intersects)
-			}
-		}
-		else if (isEditor) {
-			E2.app.worldEditor.setSelection([])
-		}
-	}
-
-	ThreeWebGLRendererPlugin.prototype.mouseDown = function(e) {
-		this.dragContext = {startX: e.pageX, startY: e.pageY}
-	}
-
-	ThreeWebGLRendererPlugin.prototype.mouseUp = function(e) {
-		if (e.pageX === this.dragContext.startX && e.pageY === this.dragContext.startY) {
-			// only pick an object if there was no drag
-			this.pick_object(e)
-		}
-	}
-
-	ThreeWebGLRendererPlugin.prototype.setup_object_picking = function() {
-		$(document).mousedown(this.mouseDown.bind(this))
-		$(document).mouseup(this.mouseUp.bind(this))
-		this.raycaster = new THREE.Raycaster()
 	}
 
 	ThreeWebGLRendererPlugin.prototype.play = function() {
@@ -222,11 +153,6 @@
 			E2.core.on('resize', this.resize.bind(this))
 			// E2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this))
 			E2.core.on('fullScreenChangeRequested', this.toggleFullScreen.bind(this))
-
-			// if selection functions exist, we can object pick
-			if (E2.app.clearSelection && E2.app.setSelection && E2.app.markNodeAsSelected) {
-				this.setup_object_picking()
-			}
 
 			// resize to initial size
 			this.resize()
