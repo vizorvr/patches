@@ -207,15 +207,15 @@ THREE.OBJMTLLoader.prototype = {
 
 		// v float float float
 
-		var vertex_pattern = /v( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)/;
+		var vertex_pattern = /v( +[\d|\.|\+|\-|e|nan]+)( +[\d|\.|\+|\-|e|nan]+)( +[\d|\.|\+|\-|e|nan]+)/;
 
 		// vn float float float
 
-		var normal_pattern = /vn( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)/;
+		var normal_pattern = /vn( +[\d|\.|\+|\-|e|nan]+)( +[\d|\.|\+|\-|e|nan]+)( +[\d|\.|\+|\-|e|nan]+)/;
 
 		// vt float float
 
-		var uv_pattern = /vt( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)/;
+		var uv_pattern = /vt( +[\d|\.|\+|\-|e|nan]+)( +[\d|\.|\+|\-|e|nan]+)/;
 
 		// f vertex vertex vertex ...
 
@@ -237,44 +237,40 @@ THREE.OBJMTLLoader.prototype = {
 
 		var lines = data.split( "\n" );
 
-		for ( var i = 0; i < lines.length; i ++ ) {
+		function parseResult(result) {
+			if (isNaN(result))
+				return 0.0
+			return parseFloat(result)
+		}
 
+		for ( var i = 0; i < lines.length; i ++ ) {
 			var line = lines[ i ];
 			line = line.trim();
 
 			var result;
 
 			if ( line.length === 0 || line.charAt( 0 ) === '#' ) {
-
 				continue;
-
 			} else if ( ( result = vertex_pattern.exec( line ) ) !== null ) {
-
 				// ["v 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
-
 				vertices.push( vector(
-					parseFloat( result[ 1 ] ),
-					parseFloat( result[ 2 ] ),
-					parseFloat( result[ 3 ] )
+					parseResult( result[ 1 ] ),
+					parseResult( result[ 2 ] ),
+					parseResult( result[ 3 ] )
 				) );
-
 			} else if ( ( result = normal_pattern.exec( line ) ) !== null ) {
-
 				// ["vn 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
-
 				normals.push( vector(
-					parseFloat( result[ 1 ] ),
-					parseFloat( result[ 2 ] ),
-					parseFloat( result[ 3 ] )
+					parseResult( result[ 1 ] ),
+					parseResult( result[ 2 ] ),
+					parseResult( result[ 3 ] )
 				) );
 
 			} else if ( ( result = uv_pattern.exec( line ) ) !== null ) {
-
 				// ["vt 0.1 0.2", "0.1", "0.2"]
-
 				uvs.push( uv(
-					parseFloat( result[ 1 ] ),
-					parseFloat( result[ 2 ] )
+					parseResult( result[ 1 ] ),
+					parseResult( result[ 2 ] )
 				) );
 
 			} else if ( ( result = face_pattern1.exec( line ) ) !== null ) {

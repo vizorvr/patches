@@ -35,7 +35,10 @@ function createClient(channelName, lastEditSeen) {
 	var dispatcher = new Flux.Dispatcher()
 	var chan = new EditorChannel(dispatcher)
 
-	chan.connect({
+	var wsHost = window.location.hostname
+	var wsPort = window.location.port || 80
+
+	chan.connect(wsHost, wsPort, {
 		headers: {
 			'Cookie': 'vs050='+session.util.encode({
 				cookieName: 'vs050',
