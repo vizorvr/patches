@@ -1,4 +1,4 @@
-var UserpageUI = new function() {
+var userpageUI = new function() {
 	var that = this;
 	this.dom={};
 	this.dom.filterPullDown = $('#filter-pulldown');
@@ -67,4 +67,4 @@ var UserpageUI = new function() {
 	};
 };
 
-$.ready(UserpageUI.init());
+$.ready(userpageUI.init());
