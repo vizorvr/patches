@@ -197,7 +197,7 @@ WorldEditor.prototype.mouseDown = function(e) {
 }
 
 WorldEditor.prototype.mouseUp = function(e) {
-	if (e.pageX === this.dragContext.startX && e.pageY === this.dragContext.startY) {
+	if (this.dragContext && e.pageX === this.dragContext.startX && e.pageY === this.dragContext.startY) {
 		// only pick an object if there was no drag
 		this.pick_object(e)
 	}
