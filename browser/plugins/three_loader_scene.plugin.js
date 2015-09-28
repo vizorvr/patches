@@ -13,7 +13,7 @@
 
 		this.desc = 'THREE.js Scene loader'
 
-		this.dirty = true
+		this.urlDirty = true
 
 		this.state.url = ''
 
@@ -37,6 +37,7 @@
 				that.state_changed(null)
 				that.state_changed(inp)
 				that.updated = true
+				that.urlDirty = true
 			})
 			.on('closed', function() {
 				if (newValue === oldValue)
@@ -51,7 +52,25 @@
 
 	ThreeLoaderScenePlugin.prototype.onJsonLoaded = function(scene) {
 		console.log('json loaded', this.state.url)
-		this.object3d = scene
+
+		this.object3d = new THREE.Object3D()
+		this.object3d.copy(scene.scene, /*recursive = */false)
+
+		while (scene.scene.children.length > 0) {
+			var obj = scene.scene.children[0]
+			scene.scene.remove(obj)
+			this.object3d.add(obj)
+		}
+
+		var that = this
+		this.object3d.traverse(function(n) {
+			n.backReference = that
+		})
+
+		// apply state to object3d
+		this.update_state()
+
+		this.updated = true
 	}
 
 	ThreeLoaderScenePlugin.prototype.loadJson = function() {
@@ -65,34 +84,27 @@
 	}
 
 	ThreeLoaderScenePlugin.prototype.update_state = function() {
-		if (!this.dirty)
-			return
-
-		if (!this.state.url)
-			return;
-
-		if (this.object3d) {
+		if (this.urlDirty && this.state.url) {
 			this.object3d = new THREE.Object3D()
+
+			THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
+
+			var url = this.state.url
+			var extname = url.substring(url.lastIndexOf('.'))
+			switch(extname) {
+			case '.js':
+			case '.json':
+				this.loadJson()
+				break;
+			default:
+				msg('ERROR: SceneLoader: Don`t know how to load', extname)
+				break;
+			}
+
+			this.urlDirty = false
 		}
 
-		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
-
-		console.log('SceneLoader loading', this.state.url)
-
-		var url = this.state.url
-		var extname = url.substring(url.lastIndexOf('.'))
-		console.log('loading', extname)
-		switch(extname) {
-		case '.js':
-		case '.json':
-			this.loadJson()
-			break;
-		default:
-			msg('ERROR: Don`t know how to load', extname)
-			break;
-		}
-
-		this.dirty = false
+		ThreeObject3DPlugin.prototype.update_state.apply(this)
 	}
 
 	ThreeLoaderScenePlugin.prototype.update_output = function(slot) {

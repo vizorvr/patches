@@ -113,7 +113,9 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 	}
 
 	// add handles for anything requiring them in the scene
-	scene.children[0].traverse( nodeHandler )
+	if (scene) {
+		scene.children[0].traverse( nodeHandler )
+	}
 
 	// add the editor tree to the scene if it's not there already
 	var editorIdx = this.scene.children.indexOf(this.editorTree)
@@ -166,10 +168,19 @@ WorldEditor.prototype.pick_object = function(e) {
 		var intersects = this.raycaster.intersectObjects(this.scene.children, /*recursive = */ true)
 
 		for (var i = 0; i < intersects.length; i++) {
-			if (intersects[i].object.backReference !== undefined) {
-				E2.app.clearSelection()
-				E2.app.markNodeAsSelected(intersects[i].object.backReference.parentNode)
+			var obj = intersects[i].object
+
+			// traverse the tree hierarchy up to find a parent with a node back reference
+			while (obj && obj.backReference === undefined) {
+				obj = obj.parent
 			}
+			if (!obj) {
+				// nothing found
+				continue
+			}
+
+			E2.app.clearSelection()
+			E2.app.markNodeAsSelected(obj.backReference.parentNode)
 		}
 
 		if (isEditor) {
