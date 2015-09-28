@@ -1,18 +1,7 @@
 /* only things to do with patch editor / visual programming layer */
-/* authors ivan mukho, georgi marinov */
-
-// graph node inner classes usually start with p_
-//
-//@device-def-bg:         #263e63;
-//@device-def-color:      #ffffff;
-//@device-header-def-bg:  #4d7dc2;
-//@dev-head-button-bg:    #385a8a;
-
+/* authors georgi marinov, ivan mukho */
 
 @vp-node-bg:         			#4D7DC2;
-//@vp-node-bg:         			#59596D;
-// a @vp-node-header-bg-explicit:	@device-header-def-bg;	//lighten(@device-def-bg, 10%);
-// a @vp-node-header-bg:				rgba(255,255,255,0.2);
 @vp-node-content-bg:			rgba(0,0,0,0.3);
 @vp-node-color: 	 			@device-def-color;
 @vp-node-text-size:				10.5pt;
@@ -69,7 +58,7 @@ button.vp.svg {
 	top: 55%;
   }
 }
-div.graph-node.p_renamed > .p_header > div span.p_title {color: #ffc;}
+div.graph-node.p_renamed .p_header > div span.p_title {color: #ffc;}
 
 
 div.graph-node {
@@ -81,8 +70,10 @@ div.graph-node {
 	background: @vp-node-bg;
 	color: @vp-node-color;
 	overflow: hidden;
-  	>.p_header {
+  	.p_header {
 	  position:relative;
+	  border-top-left-radius: @vp-node-border-radius;
+	  border-top-right-radius: @vp-node-border-radius;
 	  >div {
 		  display:table;
 		  width:100%;
@@ -165,7 +156,7 @@ div.graph-node {
 		span.status>svg.p_off {visibility: hidden;}
 	  }
 	}
-  	>.p_content {
+  	.p_content {
 	  	background: @vp-node-content-bg;
 	  	display: table;
 	  	width:100%;
@@ -287,21 +278,22 @@ div.graph-node.p_inline {
 div.graph-node .p_ins  {width:@io_hidden_width; min-width:@io_hidden_width; }
 div.graph-node .p_outs {width:@io_hidden_width; min-width:@io_hidden_width;}
 
-div.graph-node.p_has_ins>div.p_content>div.p_ins, div.graph-node.p_has_outs>div.p_content>div.p_outs {
+div.graph-node.p_has_ins div.p_content>div.p_ins,
+div.graph-node.p_has_outs div.p_content>div.p_outs {
   .p_slot {
   	width:auto; min-width: 5ex;	// min-width required to solve e.g. color to HSL outputs etc.
   }
 }
 
 // but make sure ins and outs are never too close to the UI or to each other
-div.graph-node>div.p_content>div.p_ins>.p_slot {margin-right: 5px;}
-div.graph-node>div.p_content>div.p_outs>.p_slot {margin-left: 5px;}
+div.graph-node div.p_content>div.p_ins>.p_slot {margin-right: 5px;}
+div.graph-node div.p_content>div.p_outs>.p_slot {margin-left: 5px;}
 
 // exceptions for specific plugins
 div.graph-node.p_id_envelope_modulator,
 div.graph-node.p_pi
 {
-  &.p_has_ins>div.p_content>div.p_ins, &.p_has_outs>div.p_content>div.p_outs {
+  &.p_has_ins div.p_content>div.p_ins, &.p_has_outs>div.p_content>div.p_outs {
 	.p_slot {
 	  min-width: 5ex;
 	}
@@ -323,9 +315,19 @@ div.graph-node.has_outs.p_header_out.p_1out div.p_content .p_outs {
   width:@io_hidden_width; min-width:@io_hidden_width;
 }
 
-div.graph-node.p_selected {
-  box-shadow: 0 0 2px rgba(255,255,255,0.9);
+
+div.graph-node {
+  box-shadow: 0 0 1px 1px rgba(0,0,0,0.3);
 }
+div.graph-node.p_inline {
+  box-shadow: none;
+}
+div.graph-node.p_selected,
+div.graph-node.p_inline.p_selected
+{
+  box-shadow: 0 0 1px 1px rgba(255,255,255,0.8);
+}
+
 div.graph-node.p_collapse div.p_content, div.graph-node.p_collapse div.p_plugin {
   display:none;
 }
@@ -380,9 +382,7 @@ div.graph-node.p_collapse div.p_content, div.graph-node.p_collapse div.p_plugin 
 
 .p_ui_col
 {
-	padding: 3px;
-	padding-left: 2px;
-	padding-right: 8px;
+	padding: 10px;
 	border: none !important;
 	vertical-align: top;
 }
@@ -421,7 +421,6 @@ div.graph-node.p_collapse div.p_content, div.graph-node.p_collapse div.p_plugin 
 }
 
 div.graph-node.p_cat_meta {
-//  background: #B6A400;
   background: rgba(182, 164, 0, 0.95);
 }
 
@@ -445,12 +444,10 @@ div.graph-node.p_id_annotation {
 
 
 div.graph-node.p_cat_value {
-//  background: #4D7DC2;
   background: rgba(77, 125, 194, 0.95);
 }
 
 div.graph-node.p_cat_renderer {
-//  background: #59596D;
   background: rgba(89, 89, 109, 0.95);
 }
 
@@ -462,19 +459,17 @@ div.graph-node.p_cat_environment {
   }
 }
 
-div.graph-node.p_cat_material {
-//  background: #47658d;
+div.graph-node.p_cat_material,
+div.graph-node.p_cat_texture {
   background: rgba(71, 101, 141, 0.95);
 }
 
 div.graph-node.p_cat_light {
-//  background: #b9b88c;
   background: rgba(185, 184, 140, 0.95);
   color: #222;
 }
 
 div.graph-node.p_cat_compound {
-//  background: #520568;
   background: rgba(82, 5, 104, 0.95);
   .p_content button {
 	background: rgba(255,255,255,0.4);
@@ -520,7 +515,7 @@ div.graph-node.p_id_data_info_display {
 }
 
 
-button.vp.svg.p_round {
+div.graph-node .p_content .p_plugin button.vp.svg.p_round {
   width:44px;
   height:44px;
   background: rgba(30,30,30,0.9);
@@ -557,6 +552,10 @@ div.graph-node.p_id_url_texture_generator {
 	  top:50%;
 	  margin-top: -22px;
 	  margin-left: -22px;
+	  svg {
+		fill: #ccc;
+	  }
+	  &:hover svg {fill: #fff;}
 	}
   }
 }
@@ -590,10 +589,13 @@ div.graph-node.p_inline  {
   }
 }
 
+// inline ins or outs
+div.graph-node.p_1in, div.graph-node.p_1out .p_header .p_slot span {width: 26px; min-width: 26px;}
+
 div.graph-node.p_inline {
   background: none ! important;
 }
-div.graph-node.p_inline>.p_header.p_inline {
+div.graph-node.p_inline .p_header.p_inline {
   background: none;
   button,svg {
 	display: inline-block;

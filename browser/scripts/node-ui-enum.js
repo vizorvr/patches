@@ -17,8 +17,9 @@ var uiNodeCategory = {
 	interface:		'interface',	// e.g. keypress, mouse button
 	renderer:		'renderer',		//
 	environment:	'environment',	// scene, environment, camera
-	light:			'light',
-	material:		'material',
+	light:			'light',		//
+	material:		'material',		//
+	texture:		'texture',		// bjõõtifül imaajes
 	geometry:		'geometry',		// mesh, etc.
 	meta:			'meta'			// annotations, anything else that has no effect on the scene itself
 };
@@ -60,6 +61,8 @@ var uiNodeCategoryMap = {};
         'three_ambient_light' : c.light,
         'three_directional_light' : c.light,
         'three_point_light' : c.light,
+
+		'url_texture_generator'	: 	c.texture,
 		
 		'action_button' : 			c.value,
         'blend_mode_generator' : 	c.value,

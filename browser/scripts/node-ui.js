@@ -4,6 +4,14 @@ UIpoint = function(x,y,z) {
 	this.z = z || 0;
 };
 
+var uiNodeCategoriesThatNormallyDisplayInputInHeader = [];
+var uiNodeCategoriesThatNormallyDisplayOutputInHeader = [
+	uiNodeCategory.value,
+	uiNodeCategory.material,
+	uiNodeCategory.geometry,
+	uiNodeCategory.light,
+	uiNodeCategory.texture
+]
 
 NodeUI = function(parent_node, x, y, z) {
 	var that = this
@@ -264,11 +272,10 @@ NodeUI.prototype.canDisplayOutputInHeader = function() {
 	var can = p.single_out && (!p.has_edit) && (!p.has_dynamic_slots);	// check !p.has_inputs if stricter
 	can &= !p.has_subgraph;
 
-	var allowedCategories = [uiNodeCategory.value, uiNodeCategory.material, uiNodeCategory.geometry, uiNodeCategory.light]; // initially
 	var exceptPlugins = ['envelope_modulator'];
 
 	var myCategory = this.getNodeCategory();
-	can &= (allowedCategories.indexOf(myCategory) > -1);
+	can &= (uiNodeCategoriesThatNormallyDisplayOutputInHeader.indexOf(myCategory) > -1);
 	can &= (exceptPlugins.indexOf(this.parent_node.plugin.id) === -1);
 
 	return can;

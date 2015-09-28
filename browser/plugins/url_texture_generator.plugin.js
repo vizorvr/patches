@@ -5,11 +5,13 @@
 		this.desc = 'Load a texture from a URL. JPEG and PNG supported. Hover over the Browse button to select an existing image from the library.'
 		
 		this.input_slots = []
-		this.input_slots = [
+
+		// #542
+		/* this.input_slots = [
 			{ name: 'url', dt: core.datatypes.TEXT,
 				desc: 'URL to fetch image from. The image width and height must be in powers of two, for example 256x512.',
 				def: '' }
-		]
+		] */
 		
 		this.output_slots = [
 			{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The loaded texture.' }

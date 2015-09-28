@@ -35,8 +35,7 @@ ColorPicker.prototype.create_ui = function()
 		'Hex' : null,
 		'R' : null,
 		'G' : null,
-		'B' : null,
-		'A' : null
+		'B' : null
 	};
 
 	function onMouseDown() {
@@ -80,7 +79,6 @@ ColorPicker.prototype.create_ui = function()
 	c.css({
 		'height': '' + ch + 'px',
 		'width': '' + ww + 'px',
-		'margin': '10px',
 		'position': 'relative'
 	});
 
@@ -94,7 +92,7 @@ ColorPicker.prototype.create_ui = function()
 	i.attr('id', 'img');
 
 	h.attr('preserveAspectRatio', 'xMidYMid none');
-	// narrow image (hue)
+	// hue image
 	h.css({
 		'width': ''+ww+'px',
 		'border': '0',
@@ -124,17 +122,14 @@ ColorPicker.prototype.create_ui = function()
 		'position': 'absolute'
 	});
 
-	// wide image
+	// big image
 	i.css({
 		'width': ''+ww+'px',
 		'height': ''+hh+'px',
 		'border': '0',
 		'border-radius': '2px',
-		'border-top-right-radius': '0px',
-		'border-bottom-right-radius': '0px',
 		'cursor': 'crosshair',
-		'z-index': '100',
-		'background-color': '#f00'
+		'z-index': '100'
 	});
 	i.attr({
 		'width': ww,
@@ -234,7 +229,6 @@ ColorPicker.prototype.create_ui_valuesIndicator = function(/* @var jQuery */ c) 
 		this.R.html(Math.round(255 * c.r));
 		this.G.html(Math.round(255 * c.g));
 		this.B.html(Math.round(255 * c.b));
-		this.A.html('255');
 		// this.A.html(Math.round(255 * c.a));	// three.color has no alpha
 	}.bind(i);
 	return $t;
@@ -264,8 +258,6 @@ ColorPicker.prototype.update_value = function() {
 		this.updated = true;
 	}
 
-//	if(c)
-//		c.css('background-color', this.get_as_rgb_string());
 };
 
 ColorPicker.prototype.get_as_rgb_string = function() {
