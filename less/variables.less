@@ -6,6 +6,11 @@
 @mid-cell-width: 550px;
 @right-cell-width: 268px;
 
+@tablet:      ~"only screen and (min-width: 720px) and (max-width: 1150px)";
+@desktop:     ~"only screen and (min-width: 1150px) and (max-width: 1279px)";
+@desktop-l:  ~"only screen and (min-width: 1280px) and (max-width: 1599px)";
+@desktop-xl:  ~"only screen and (min-width: 1600px)";
+
 //== Colors
 //
 //## Gray and brand colors for use across Bootstrap.
@@ -26,8 +31,48 @@
 @brand-warning:         lighten(@brand-primary, 3%);
 @brand-danger:          #f88;
 
+@bg-bright:             #0597cd;
+@bg-lighter:            #2B3142;
+@bg-light:              #262c3d;
+@bg-dark:               #1f2331;
+@bg-darker:             #1e2331;
+
+@editor-text-default:   #7e8dab;
+@editor-text-hover:     #afbfdf;
+@editor-text-active:    #ffffff;
+@editor-text-current:   #637088;
+@editor-text-inactive:  #515c75;
+@tab-text-inactive:     #909fb9;
+@selected-bg:           #05516d;
+
+@chat-text-color:       #BCCBE5;
+
+@device-def-bg:         #263e63;
+@device-def-color:      #ffffff;
+@device-header-def-bg:  #4d7dc2;
+@dev-head-button-bg:    #385a8a;
+
 // dimensions
-@menu-bar-height: 28px;
+@menu-bar-height:       70px;
+@breadcrumb-height:     28px;
+@bottom-panel-height:   44px;
+
+@floating-box-width:    252px;
+@scrollbar:             18px;
+
+@chat-width:            252px;
+@chat-height:           387px;
+@chat-composer-height:  40px;
+@chat-nav-height:       36px;
+
+@drag-helper-height:    18px;
+@blocks-header-height:  37px;
+@device-header-height:  32px;
+
+@searchbox-height:      40px;
+
+@tabs-font-size:        14px;
+
 
 //== Scaffolding
 //
@@ -136,15 +181,15 @@
 @table-condensed-cell-padding:  5px;
 
 //** Default background color used for all tables.
-@table-bg:                      lighten(@body-bg, 3%);
+@table-bg:                      @bg-light;
 //** Background color used for `.table-striped`.
-@table-bg-accent:               lighten(@table-bg, 4%);
+@table-bg-accent:               @bg-light;
 //** Background color used for `.table-hover`.
-@table-bg-hover:                lighten(@table-bg, 12%);
-@table-bg-active:               @table-bg-hover;
+@table-bg-hover:                @bg-light;
+@table-bg-active:               @bg-light;
 
 //** Border color for table and cell borders.
-@table-border-color:            darken(@gray-darker, 5%);
+@table-border-color:            @bg-darker;
 
 
 //== Buttons
@@ -528,6 +573,14 @@
 //** Tooltip arrow color
 @tooltip-arrow-color:         @tooltip-bg;
 
+//== Notifications
+
+@msg-width: 320px;
+@msg-min-height: 70px;
+@msg-text-bg: #2d4f77;
+@msg-glyph-bg: #385a8a;
+@msg-text-color: #fff;
+@msg-warning-color: #ef4835;
 
 //== Popovers
 //
@@ -612,6 +665,11 @@
 @modal-lg:                    900px;
 @modal-md:                    600px;
 @modal-sm:                    300px;
+
+@modal-sign-width:            400px;
+@modal-sign-padding:          40px;
+@modal-input-width:           @modal-sign-width - (@modal-sign-padding * 2);
+@modal-control-height:       50px;
 
 
 //== Alerts
@@ -700,7 +758,7 @@
 //
 //##
 
-@panel-bg:                    lighten(@body-bg, 3%);
+@panel-bg:                    @bg-light;
 @panel-body-padding:          15px;
 @panel-heading-padding:       10px 15px;
 @panel-footer-padding:        @panel-heading-padding;
@@ -708,15 +766,15 @@
 
 //** Border color for elements within panels
 @panel-inner-border:          rgba(0, 0, 0, 0.6);
-@panel-footer-bg:             lighten(@body-bg, 10%);
+@panel-footer-bg:             @bg-dark;
 
-@panel-default-text:          @text-color;
+@panel-default-text:          @editor-text-default;
 @panel-default-border:        rgba(0, 0, 0, 0.6);
-@panel-default-heading-bg:    @panel-footer-bg;
+@panel-default-heading-bg:    @bg-light;
 
 @panel-primary-text:          #fff;
-@panel-primary-border:        @panel-default-border;
-@panel-primary-heading-bg:    @brand-primary;
+@panel-primary-border:        @bg-darker;
+@panel-primary-heading-bg:    @bg-light;
 
 @panel-success-text:          @state-success-text;
 @panel-success-border:        @panel-default-border;
@@ -725,7 +783,7 @@
 @panel-info-text:             @state-info-text;
 @panel-info-border:           @panel-default-border;
 @panel-info-heading-bg:       @state-info-bg;
-@panel-heading-bg-color: 			  #554457;
+@panel-heading-bg-color:      @bg-light;
 
 @panel-warning-text:          @state-warning-text;
 @panel-warning-border:        @panel-default-border;

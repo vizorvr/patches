@@ -81,8 +81,7 @@ VariableLocalRead.prototype.state_changed = function(ui) {
 
 		this.variables = n.parent_graph.variables
 		this.target_reg(n.title)
-	} else
-		this.node.ui.dom.addClass('variable')
+	}
 }
 
 })()

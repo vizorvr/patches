@@ -69,6 +69,7 @@ exports.reset = function() {
 	}
 
 	global.$ = function() { return {
+		length: 1,
 		addClass: function(){},
 		removeClass: function(){},
 		click: function(){},
@@ -79,7 +80,10 @@ exports.reset = function() {
 		width: function(){ return 0 },
 		height: function(){ return 0 },
 		position: function(){ return 0 },
-		remove: function(){ }
+		remove: function(){ },
+		movable: function(){},
+		popover:function(){},
+		removeClass:function(){}
 	}}
 
 	var graphCounter = 0

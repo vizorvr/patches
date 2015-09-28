@@ -55,6 +55,5 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.state_changed = function(ui)
 {
-	if(ui)
-		this.node.ui.dom.addClass('proxy');
+
 };
