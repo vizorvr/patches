@@ -175,15 +175,7 @@ Node.prototype.add_slot = function(slot_type, def) {
 
 	if (this.ui) {
 		// TODO refactor: remove ui link - emit an event from NodeStore instead
-		// redraw in/output column with new slots
-		var col = this.ui.dom.find(is_inp ? '.ic' : '.oc');
-		if (!col)
-			return def.uid;
-
-		col.empty()
-
-		NodeUI.render_slots(this, 'n'+this.uid, col, is_inp ? this.plugin.input_slots : this.plugin.output_slots, slot_type);
-		NodeUI.render_slots(this, 'n'+this.uid, col, slots, slot_type)
+		this.ui.redrawSlots();
 		this.inputs.concat(this.outputs).map(function(c) {
 			c.ui.resolve_slot_divs()
 		})
@@ -229,9 +221,7 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 	}
 	
 	if (this.ui) {
-		this.ui.dom
-			.find('#n' + this.uid + (is_inp ? 'di' : 'do') + slot.uid)
-			.remove();
+		this.ui.redrawSlots();
 	}
 	
 	var att = is_inp ? this.inputs : this.outputs;

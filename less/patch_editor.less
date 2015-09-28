@@ -82,7 +82,7 @@ div.graph-node {
 		  span.p_title {
 			  font-weight: 600;
 			  cursor: move;
-			  width:100%;	// force buttons to their specified width
+			  min-width:50px;	// force buttons to their specified width, was width:100% creating issues with some plugins
 		  }
 		  span, button {
 			  display: table-cell;
@@ -227,8 +227,8 @@ div.graph-node {
 	  	.p_in, .p_out {
 		  color: white;
 		}
-	  	.p_slot:last-of-type {		// for things with e.g. two slots on one side and many on the other
-			height: 70%;
+	  	.p_slot:last-of-type {
+			// @todo fix plugins with unbalanced number of slots
 		}
 		.p_slot:only-of-type {
 		  height:100%;
@@ -339,7 +339,7 @@ div.graph-node.p_collapse div.p_content, div.graph-node.p_collapse div.p_plugin 
 
 
 .graph-node.p_collapse {
-  	button.plugin-toggle svg {
+  	button.plugin-toggle {
 		-webkit-transform: rotate(-90deg);
 		-moz-transform: rotate(-90deg);
 		transform: rotate(-90deg);

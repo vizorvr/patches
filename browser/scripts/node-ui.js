@@ -16,7 +16,7 @@ var uiNodeCategoriesThatNormallyDisplayOutputInHeader = [
 NodeUI = function(parent_node, x, y, z) {
 	var that = this
 
-	this.nid = 'n' + parent_node.uid;
+	this.nid = parent_node.uid;
 	this.flags = {
 		set				: false,
 		has_subgraph	: false,
@@ -86,15 +86,15 @@ NodeUI = function(parent_node, x, y, z) {
 	if (handlebar) {
 		/* @var $dom jQuery */
 		$dom.html(handlebar(viewdata));
-		$header = this.header = $dom.children('.p_header');
-		$content = this.content = $dom.children('.p_content');	// normally contains ins, outs, and the plugin ui/content
-		$toggle = $header.find('button.toggle');
-		$edit = $header.find('button.edit');
-		this.input_col = $content.find('.p_ins');
-		this.output_col = $content.find('.p_outs');
-		this.plugin_container = $dom.find('.p_plugin');
-		this.inline_in = $header.find('.p_ins');
-		this.inline_out = $header.find('.p_outs');
+		$header = this.header = $dom.children('.p_header').first();
+		$content = this.content = $dom.children('.p_content').first();	// normally contains ins, outs, and the plugin ui/content
+		$toggle = $header.find('button.toggle').first();
+		$edit = $header.find('button.edit').first();
+		this.inline_in = $header.find('.p_ins').first();
+		this.inline_out = $header.find('.p_outs').first();
+		this.input_col = $content.find('.p_ins').first();
+		this.output_col = $content.find('.p_outs').first();
+		this.plugin_container = $dom.find('.p_plugin').first();
 	} else {
 		// recover
 		$header = this.header 	= make('div');
@@ -303,18 +303,36 @@ NodeUI.prototype.canDisplayInline = function() {
 	return can;
 };
 
-NodeUI.prototype.redrawSlots = function() {
-	var can_display_inline = this.canDisplayInline();
-	var plugin_flags = this.getPluginUIFlags();
+NodeUI.prototype.getContainerForSlotsOfType = function(is_inp, is_dyn) {
+//	var plugin_flags = this.getPluginUIFlags();
+	var can_inline = this.canDisplayInline();
+	var out_h = this.canDisplayOutputInHeader();
+	var in_h = this.canDisplayInputInHeader();
+	if (can_inline) return (is_inp) ? this.inline_in : this.inline_out;
+	// else
+	if (is_dyn) return (is_inp) ? this.input_col : this.output_col;
+	// else static
+	if (out_h && !is_inp) return this.inline_out;
+	if (in_h && is_inp) return this.inline_in;
+	return null;
+}
 
-	if (this.canDisplayInline()) {
+NodeUI.prototype.redrawSlots = function() {
+	var plugin_flags = this.getPluginUIFlags();
+	var can_display_inline = this.canDisplayInline();
+
+	this.inline_in.empty();
+	this.inline_out.empty();
+	this.input_col.empty();
+	this.output_col.empty();
+
+	if (can_display_inline) {
 		NodeUI.render_slots(this.parent_node, this.nid, this.inline_in, this.parent_node.plugin.input_slots, E2.slot_type.input);
 		NodeUI.render_slots(this.parent_node, this.nid, this.inline_out, this.parent_node.plugin.output_slots, E2.slot_type.output);
 		NodeUI.render_slots(this.parent_node, this.nid, this.inline_in, this.parent_node.dyn_inputs, E2.slot_type.input);
 		NodeUI.render_slots(this.parent_node, this.nid, this.inline_out, this.parent_node.dyn_outputs, E2.slot_type.output);
 		return this;
 	}
-
 	// else...
 
 	// render inputs
@@ -499,12 +517,10 @@ NodeUI.create_slot = function(parent_node, nid, container, s, type) {
 	var is_dynamic = (typeof s.uid != 'undefined')
 	var is_connected = (typeof s.is_connected != 'undefined') && s.is_connected;
 
-
 	if (is_dynamic)
-		$div.attr('id', nid + (is_input ? 'di' : 'do') + s.uid);
+		$div.attr('id', nid + (is_input ? 'di' : 'do') + s.uid);	// note this breaks the UI
 	else
 		$div.attr('id', nid + (is_input ? 'si' : 'so') + s.index);
-
 
 	$div.addClass('pl_slot p_slot');
 	$div.addClass( (is_input) ? 'p_in' : 'p_out' );
@@ -523,28 +539,25 @@ NodeUI.create_slot = function(parent_node, nid, container, s, type) {
 		$div.append($status);
 	}
 
-
+	container.append($div);
 	$div.mouseenter(E2.app.onSlotEntered.bind(E2.app, parent_node, s, $div))
 	$div.mouseleave(E2.app.onSlotExited.bind(E2.app, parent_node, s, $div))
 	$div.mousedown(E2.app.onSlotClicked.bind(E2.app, parent_node, s, $div, type))
-
-	var id = '' + parent_node.uid;
-	
-	id += '_' + (s.uid !== undefined ? 'd' : 's');
-	id += type === E2.slot_type.input ? 'i' : 'o';
-	id += '_' + (s.uid !== undefined ? s.uid : s.index);
-	
-	$div.attr('alt', id);
 	$div.hover(E2.app.onShowTooltip.bind(E2.app), E2.app.onHideTooltip.bind(E2.app));
-	container.append($div);
+
+	return $div;
 };
 
 NodeUI.render_slots = function(parent_node, nid, container, slots, type) {
+	if (!parent_node.ui) {
+		console.log('render_slots but no UI for ', parent_node);
+	}
 	for(var i = 0, len = slots.length; i < len; i++)
 		NodeUI.create_slot(parent_node, nid, container, slots[i], type);
 };
 
 // open nested graph for editing
+// @todo remove this or the other function
 NodeUI.drilldown = function(node) {	// taken from nested graph plugin
 	var p = node.plugin;
 	if(p.graph) {
