@@ -1914,6 +1914,170 @@ Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
 
+Application.prototype.onInspectorClicked = function() {
+	if (this.selectedNodes.length===1) {
+		if (this.selectedNodes[0].plugin.open_editor) {
+			this.selectedNodes[0].plugin.open_editor(this.selectedNodes[0].plugin)
+		} else {
+			E2.app.growl('This kind of patch has no preferences','info',4000);
+		}
+	} else {
+		E2.app.growl('Select 1 particular patch to open inspector.','info',4000);
+	}
+}
+
+Application.prototype.onEditorClicked = function() {
+	this.toggleViewButtons();
+	this.viewMode = 'editor';
+}
+
+Application.prototype.onPatchesClicked = function() {
+	this.toggleViewButtons();
+	this.viewMode = 'patches';
+}
+
+Application.prototype.onChatToggleClicked = function() {
+	if (E2.dom.chatWindow.hasClass('collapsed')) {
+		if (E2.dom.peopleTab.hasClass('active')) {
+			E2.dom.chatWindow.removeClass('collapsed');
+			E2.app.onPeopleListChanged();
+		} else {
+			E2.dom.chatWindow.removeClass('collapsed')
+							 .height(E2.dom.chatWindow.find('.drag-handle').height()
+								   + E2.dom.chatTabs.height() 
+								   + E2.dom.chat.height());
+		}
+	} else {
+		E2.dom.chatWindow.addClass('collapsed')
+						 .height(E2.dom.chatWindow.find('.drag-handle').height() 
+							   + E2.dom.chatTabs.height());
+	}
+}
+
+Application.prototype.onBtnPresetsClicked = function() {
+	if (E2.ui.isVisible())
+		E2.dom.presetsLib.toggle();
+	E2.dom.presetsLib.toggleClass('uiopen');
+}
+
+Application.prototype.onBtnAssetsClicked = function() {
+	if (E2.ui.isVisible())
+		E2.dom.assetsLib.toggle();
+	E2.dom.assetsLib.toggleClass('uiopen');
+}
+
+Application.prototype.onAssetsToggleClicked = function() {
+	var controlsHeight = E2.dom.assetsLib.find('.drag-handle').outerHeight(true) 
+					   + E2.dom.assetsLib.find('.block-header').outerHeight(true) 
+					   + E2.dom.assetsLib.find('.searchbox').outerHeight(true); 
+	if (E2.dom.assetsLib.hasClass('collapsed')) {
+		var newHeight = controlsHeight
+					   + E2.dom.assetsLib.find('#assets-tabs').outerHeight(true)
+					   + E2.dom.assetsLib.find('.tab-content.active .assets-frame').outerHeight(true)
+					   + E2.dom.assetsLib.find('.load-buttons').outerHeight(true)
+					   + E2.dom.assetsLib.find('#asset-info').outerHeight(true)
+		E2.dom.assetsLib.removeClass('collapsed').height(newHeight);
+	} else {
+		E2.dom.assetsLib.addClass('collapsed').height(controlsHeight);
+	}
+}
+
+Application.prototype.onPresetsToggleClicked = function() {
+	var controlsHeight = E2.dom.presetsLib.find('.drag-handle').outerHeight(true) 
+					   + E2.dom.presetsLib.find('.block-header').outerHeight(true) 
+					   + E2.dom.presetsLib.find('.searchbox').outerHeight(true); 
+	if (E2.dom.presetsLib.hasClass('collapsed')) {
+		E2.dom.presetsLib.removeClass('collapsed');
+		E2.app.onSearchResultsChange();
+	} else {
+		E2.dom.presetsLib.addClass('collapsed').height(controlsHeight);
+	}
+}
+
+Application.prototype.onChatCloseClicked = function() {
+	E2.dom.chatWindow.removeClass('uiopen').hide();
+}
+
+Application.prototype.onAssetsCloseClicked = function() {
+	E2.dom.assetsLib.removeClass('uiopen').hide();
+}
+
+Application.prototype.onPresetsCloseClicked = function() {
+	E2.dom.presetsLib.removeClass('uiopen').hide();
+}
+
+Application.prototype.onChatTabClicked = function() {
+	if (!$(this).parent().hasClass('active')) {
+		E2.dom.peopleTab.hide();
+		E2.dom.chatTab.show();
+		E2.dom.chatWindow.find('.resize-handle').show();
+		E2.dom.chatWindow.height('auto');
+		E2.app.onChatResize();
+	}
+	if (E2.dom.chatWindow.hasClass('collapsed')) {
+		E2.dom.chatWindow.removeClass('collapsed')
+	};
+	return true;
+}
+
+Application.prototype.onChatResize = function() {
+	var restHeight = E2.dom.chatWindow.find('.drag-handle').height()
+				   + E2.dom.chatTabs.height()
+				   + E2.dom.chat.find('.chat-nav').outerHeight(true)
+				   + E2.dom.chat.find('.composer').outerHeight(true);
+	var newHeight = E2.dom.chatWindow.height() - restHeight;
+	E2.dom.chat.height('auto').find('.messages').height(newHeight);
+}
+
+Application.prototype.onPeopleListChanged = function(storeAction) { 
+	if (E2.dom.chatWindow.is(':visible') && !E2.dom.chatWindow.hasClass('collapsed') && E2.dom.peopleTab.is(':visible')) {
+		var itemHeight = $('.graph-users>li:first-child').outerHeight(true);
+		var visibleItems = 3;
+		var listChange = 0;  
+		if (storeAction==='added') {
+			listChange = 1;
+		} else if (storeAction==='removed') {
+			listChange = -1;
+		}
+		if ($('.graph-users>li').length + listChange <= visibleItems) {
+			E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() 
+								   + E2.dom.chatTabs.height() 
+								   + $('.peopleList .meta').outerHeight(true) 
+								   + itemHeight * ($('.graph-users>li').length 
+								   + listChange));
+			$('.people-scroll').height($('.chat-users').height() 
+									 - $('.chat-tabs').height());
+			$('.peopleList').height($('.people-scroll').height());
+		} else {
+			E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() 
+								   + E2.dom.chatTabs.height() 
+								   + $('.peopleList .meta').outerHeight(true) 
+								   + itemHeight * visibleItems);
+			$('.people-scroll').height($('.chat-users').height() 
+									 - $('.chat-tabs').height());
+			$('.peopleList').height($('.people-scroll').height());
+		};
+	};
+}
+
+Application.prototype.onPeopleTabClicked = function() {
+	if (!$(this).parent().hasClass('active')) {
+		E2.dom.chatTab.hide();
+		E2.dom.chatWindow.find('.resize-handle').hide();
+		E2.dom.peopleTab.show();
+		E2.app.onPeopleListChanged();
+	};
+	if (E2.dom.chatWindow.hasClass('collapsed')) {
+		E2.dom.chatWindow.removeClass('collapsed');
+		E2.app.onPeopleListChanged();
+	};
+	return true;
+}
+
+// UI will bind these
+Application.prototype.onSearchResultsChange = null;
+Application.prototype.onSignInClicked = null;
+
 Application.prototype.onAccountMenuClicked = function() {
 	var username = E2.models.user.get('username')
 	if (username) {
