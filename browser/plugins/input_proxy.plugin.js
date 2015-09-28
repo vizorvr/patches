@@ -45,8 +45,7 @@ InputProxy.prototype.update_output = function() {
 }
 
 InputProxy.prototype.state_changed = function(ui) {
-	if (ui)
-		this.node.ui.dom.addClass('proxy');
+
 }
 
 })();

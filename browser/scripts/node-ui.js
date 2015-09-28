@@ -277,10 +277,21 @@ NodeUI.prototype.canDisplayOutputInHeader = function() {
 NodeUI.prototype.canDisplayInline = function() {
 	var p = this.getPluginUIFlags();	// variables used to make a decision.
 
+	var category = this.getNodeCategory();
+	var is_io = category === uiNodeCategory.io;
 	var can = !p.has_plugin_ui;
 	can &= !p.has_subgraph;
-	can &= (this.getNodeCategory() === uiNodeCategory.io);
-	can &= (p.single_in && !p.has_outputs) || (p.single_out && !p.has_inputs);
+
+	can &= (is_io);
+	if (is_io) {
+		can &= (p.single_in && !p.has_outputs)
+				|| (p.single_out && !p.has_inputs)
+				|| ((this.parent_node.dyn_inputs.length == 1) && (!p.has_outputs))		// read var
+				|| ((this.parent_node.dyn_outputs.length == 1) && (!p.has_inputs));		// write var
+	} else {
+		can &= (p.single_in && !p.has_outputs) || (p.single_out && !p.has_inputs);
+	}
+
 
 	return can;
 };
@@ -288,6 +299,16 @@ NodeUI.prototype.canDisplayInline = function() {
 NodeUI.prototype.redrawSlots = function() {
 	var can_display_inline = this.canDisplayInline();
 	var plugin_flags = this.getPluginUIFlags();
+
+	if (this.canDisplayInline()) {
+		NodeUI.render_slots(this.parent_node, this.nid, this.inline_in, this.parent_node.plugin.input_slots, E2.slot_type.input);
+		NodeUI.render_slots(this.parent_node, this.nid, this.inline_out, this.parent_node.plugin.output_slots, E2.slot_type.output);
+		NodeUI.render_slots(this.parent_node, this.nid, this.inline_in, this.parent_node.dyn_inputs, E2.slot_type.input);
+		NodeUI.render_slots(this.parent_node, this.nid, this.inline_out, this.parent_node.dyn_outputs, E2.slot_type.output);
+		return this;
+	}
+
+	// else...
 
 	// render inputs
 	NodeUI.render_slots(this.parent_node, this.nid, this.input_col, this.parent_node.plugin.input_slots, E2.slot_type.input);
@@ -439,7 +460,30 @@ NodeUI.prototype.getDisplayName = function() {
 	return this.parent_node.get_disp_name();
 };
 
+
+
+
 /**** "static" *****/
+
+// helpers
+/**
+ * @returns jQuery
+ */
+NodeUI.makeSpriteSVG = function(xlink, className) {
+	return $('<svg class="' + className + '"><use xlink:href="#'+ xlink +'"/></svg>');
+};
+/**
+ * @returns jQuery
+ */
+NodeUI.makeSpriteSVGButton = function($svg, alt_text, $have_button) {
+	if (typeof $have_button == 'undefined') $have_button = makeButton(null, '');
+	return $have_button
+		.attr('title', (alt_text || ''))
+		.removeClass('btn')
+		.addClass('vp svg')
+		.append($svg);
+};
+
 
 NodeUI.create_slot = function(parent_node, nid, container, s, type) {
 	var $div = make('div');
@@ -509,21 +553,3 @@ NodeUI.drilldown = function(node) {	// taken from nested graph plugin
 	return false;
 };
 
-// helpers
-/**
- * @returns jQuery
- */
-NodeUI.makeSpriteSVG = function(xlink, className) {
-	return $('<svg class="' + className + '"><use xlink:href="#'+ xlink +'"/></svg>');
-};
-/**
- * @returns jQuery
- */
-NodeUI.makeSpriteSVGButton = function($svg, alt_text, $have_button) {
-	if (typeof $have_button == 'undefined') $have_button = makeButton(null, '');
-	return $have_button
-		.attr('title', (alt_text || ''))
-		.removeClass('btn')
-		.addClass('vp svg')
-		.append($svg);
-};

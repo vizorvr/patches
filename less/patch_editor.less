@@ -71,6 +71,7 @@ button.vp.svg {
 }
 div.graph-node.p_renamed > .p_header > div span.p_title {color: #ffc;}
 
+
 div.graph-node {
   	box-shadow: 0 0 2px rgba(0,0,0,0.2);
   	display: table;
@@ -88,7 +89,7 @@ div.graph-node {
 		  position:relative;
 		  height: @device-header-height;
 		  span.p_title {
-			  font-weight: 900;
+			  font-weight: 600;
 			  cursor: move;
 			  width:100%;	// force buttons to their specified width
 		  }
@@ -274,6 +275,10 @@ div.graph-node {
 	}
 }
 
+div.graph-node.p_inline {
+  button.toggle {display:none;}
+}
+
 @io_hidden_width: 1px;
 
 
@@ -438,10 +443,7 @@ div.graph-node.p_id_annotation {
   }
 }
 
-div.graph-node.p_cat_io {
-//  background: #EE5400;
-  background: rgba(238, 84, 0, 0.95);
-}
+
 div.graph-node.p_cat_value {
 //  background: #4D7DC2;
   background: rgba(77, 125, 194, 0.95);
@@ -556,5 +558,78 @@ div.graph-node.p_id_url_texture_generator {
 	  margin-top: -22px;
 	  margin-left: -22px;
 	}
+  }
+}
+
+div.graph-node.p_inline  {
+  .p_header {
+	background: none;
+  }
+  .p_content, .p_header .p_slot label {
+	display: none;
+  }
+  .p_ins, .p_outs {
+	div.p_slot {
+	  margin: 7px 0;
+	  height: 18px;
+	  width: 18px;
+	  span.status {
+		width:16px;
+		min-width:16px;
+		height: 14px;
+	  }
+	}
+  }
+  &.p_has_ins .p_slot, &.p_has_ins svg {
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+  }
+  &.p_has_outs .p_slot, &.p_has_outs svg {
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+  }
+}
+
+div.graph-node.p_inline {
+  background: none ! important;
+}
+div.graph-node.p_inline>.p_header.p_inline {
+  background: none;
+  button,svg {
+	display: inline-block;
+  }
+  svg.p_icon {
+	width: 32px;
+	height: 32px;
+  }
+  .p_ins {
+	height: 18px;
+	.p_slot {
+	  height: 18px;
+	}
+  }
+}
+
+
+
+div.graph-node.p_cat_io .p_header
+{
+  .p_ins .p_slot, .p_outs .p_slot, span {
+  	background: #C74C09;
+  }
+  svg {
+	background: #EE5400;
+  }
+}
+
+
+div.graph-node.p_cat_io.p_id_variable_local_read .p_header,
+div.graph-node.p_cat_io.p_id_variable_local_write .p_header
+{
+  .p_ins .p_slot, .p_outs .p_slot, span {
+  	background: #24A219;
+  }
+  svg {
+	background: #17820B;
   }
 }
