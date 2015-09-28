@@ -2,7 +2,6 @@
 var ColorPicker = E2.plugins.color_picker = function(core) {
 	Plugin.apply(this, arguments)
 	this.desc = 'Provides an intuitive way of picking arbitary colors via a hue slider and saturation / luminosity selection area.';
-	
 	this.input_slots = [];
 	
 	this.output_slots = [
@@ -32,6 +31,13 @@ ColorPicker.prototype.create_ui = function()
 	var hs = this.hs = make('img');
 	var that = this
 
+	this.indicator = {
+		'Hex' : null,
+		'R' : null,
+		'G' : null,
+		'B' : null
+	};
+
 	function onMouseDown() {
 		E2.app.undoManager.begin('Pick color')
 		that._mouseDownValue = { hue: that.state.hue, sat: that.state.sat, lum: that.state.lum }
@@ -60,38 +66,50 @@ ColorPicker.prototype.create_ui = function()
 			)
 
 		E2.app.undoManager.end()
+		that._mouseDownValue = null;	// otherwise we keep tracking the mouse
 	}
 
+
+
+	var ww = 178;	// container width
+	var hh = 120;
+	var ch = hh + 24;	// container height = picker + hue
+	this.picker_height = 0.0 + hh;
+	this.picker_width = 0.0 + ww;
 	c.css({
-		'width': '130px',
-		'height': '102px',
-		'margin-right': '10px',
+		'height': '' + ch + 'px',
+		'width': '' + ww + 'px',
 		'position': 'relative'
 	});
 
-	h.attr('src', '/images/color_picker/hue.png');
+	h.attr('src', '/images/color_picker/hue_h.svg');
 	h.attr('id', 'hue');
 	s.attr('src', '/images/color_picker/select.gif');
 	s.attr('id', 'sel');
-	hs.attr('src', '/images/color_picker/hue-select.png');
+	hs.attr('src', '/images/color_picker/hue-select_h.svg');
 	hs.attr('id', 'hue-sel');
 	i.attr('src', '/images/color_picker/picker.png');
 	i.attr('id', 'img');
 
+	h.attr('preserveAspectRatio', 'xMidYMid none');
+	// hue image
 	h.css({
-		'width': '14px',
-		'height': '100px',
-		'border': '1px solid #888',
+		'width': ''+ww+'px',
+		'border': '0',
+		'border-radius': '2px',
 		'cursor': 'crosshair',
-		'z-index': '100'
+		'z-index': '100',
+		'position': 'absolute',
+		'top' : ''+(hh+4)+'px',
+		'left': '0'
 	});
 
 	hs.css({
 		'position': 'absolute',
-		'top': '0px',
-		'left': '114px',
-		'width': '20px',
-		'height': '5px',
+		'left': '0px',
+		'top': ''+(hh+3)+'px',
+		'height': '20px',
+		'width': '5px',
 		'cursor': 'crosshair',
 		'z-index': '101'
 	});
@@ -104,19 +122,25 @@ ColorPicker.prototype.create_ui = function()
 		'position': 'absolute'
 	});
 
+	// big image
 	i.css({
-		'width': '100px',
-		'height': '100px',
-		'border': '1px solid #888',
+		'width': ''+ww+'px',
+		'height': ''+hh+'px',
+		'border': '0',
+		'border-radius': '2px',
 		'cursor': 'crosshair',
-		'z-index': '100',
-		'background-color': '#f00'
+		'z-index': '100'
+	});
+	i.attr({
+		'width': ww,
+		'height': hh
 	});
 
 	c.append(i);
 	c.append(s);
 	c.append(h);
 	c.append(hs);
+
 
 	var c_down = function(self, c, i, s) { return function(e) 
 	{ 
@@ -134,8 +158,12 @@ ColorPicker.prototype.create_ui = function()
 
 	var c_move = function(self, c, i, s) { return function(e)
 	{
+		if (!self._mouseDownValue) return true;	// nothing to do
+
 		self.update_picker_ev(e, c, s, i);
 		self.color_clipped = self.clip(e, i);
+		self.indicator.update(self.color);
+
 	}}(this, c, i, s);
 
 	s.mousedown(c_down);
@@ -163,8 +191,10 @@ ColorPicker.prototype.create_ui = function()
 
 	var h_move = function(self, ui, i, h, hs) { return function(e)
 	{
+		if (!self._mouseDownValue) return true;	// nothing to do
 		self.update_hue_ev(ui, e, i, h, hs);
 		self.hue_clipped = self.clip(e, h);
+		self.indicator.update(self.color);
 	}}(this, c, i, h, hs);
 
 	hs.mousedown(h_down);
@@ -175,8 +205,34 @@ ColorPicker.prototype.create_ui = function()
 	h.mouseup(h_up);
 	h.mousemove(h_move);
 
-	return c;
+	var t = this.create_ui_valuesIndicator(c);
+	return jQuery('<div></div>').append(c,t);
 };
+
+ColorPicker.prototype.create_ui_valuesIndicator = function(/* @var jQuery */ c) {
+	var $t = jQuery('<table></table>');
+	var $row1 = jQuery('<tr></tr>');
+	var row2 = [];
+	var i = this.indicator;
+	Object.keys(i).forEach(function(key){
+		i[key] = jQuery('<td>-</td>');
+		$row1.append(i[key]);
+		row2.push('<th>'+key+'</th>');
+	});
+	var $row2 = jQuery('<tr>'+ row2.join('') + '</tr>');
+	$t.append($row1, $row2);
+	i._oldcolor = new THREE.Color(0,0,0);
+	i.update = function(c){
+		if (this._oldcolor.equals(c)) return true;	// nothing to update
+		this._oldcolor = c.clone();
+		this.Hex.html(c.getHexString());
+		this.R.html(Math.round(255 * c.r));
+		this.G.html(Math.round(255 * c.g));
+		this.B.html(Math.round(255 * c.b));
+		// this.A.html(Math.round(255 * c.a));	// three.color has no alpha
+	}.bind(i);
+	return $t;
+}
 
 ColorPicker.prototype.update_state = function() {
 	this.update_value(this.c);
@@ -186,7 +242,7 @@ ColorPicker.prototype.update_output = function() {
 	return this.color;
 };
 
-ColorPicker.prototype.update_value = function(c) {
+ColorPicker.prototype.update_value = function() {
 	var sat = this.state.sat;
 	var lum = this.state.lum;
 	var nc = [this.hue_rgb[0] / 255.0, this.hue_rgb[1] / 255.0, this.hue_rgb[2] / 255.0];
@@ -201,9 +257,14 @@ ColorPicker.prototype.update_value = function(c) {
 		rgb.setRGB(nc[0], nc[1], nc[2])
 		this.updated = true;
 	}
-	
-	if(c)
-		c.css('background-color', 'rgb(' + cnv2(0) + ', ' + cnv2(1) + ', ' + cnv2(2) + ')');
+
+};
+
+ColorPicker.prototype.get_as_rgb_string = function() {
+	if (!this.color) return false;
+	var c = this.color;
+	var ret = 'rgb(' + [255*c.r, 255*c.g, 255*c.b].join(',') + ')';
+	return ret;
 };
 
 ColorPicker.prototype.update_picker_ev = function(e, c, s, i) {
@@ -215,9 +276,9 @@ ColorPicker.prototype.update_picker_ev = function(e, c, s, i) {
 	var i_o = i.offset();
 	var st = this.state;
 	
-	st.sat = (e.pageX - i_o.left) / 100.0;
-	st.lum = 1.0 - ((e.pageY - i_o.top) / 100.0);
-	
+	st.sat = (e.pageX - i_o.left) / this.picker_width;
+	st.lum = 1.0 - ((e.pageY - i_o.top) / this.picker_height);
+
 	st.sat = st.sat < 0.0 ? 0.0 : st.sat > 1.0 ? 1.0 : st.sat;
 	st.lum = st.lum < 0.0 ? 0.0 : st.lum > 1.0 ? 1.0 : st.lum;
 	
@@ -226,10 +287,10 @@ ColorPicker.prototype.update_picker_ev = function(e, c, s, i) {
 
 ColorPicker.prototype.update_picker = function(c, s)
 {
-	s.css('left', Math.floor((this.state.sat * 100.0)) - 5);
-	s.css('top', Math.floor((1.0 - this.state.lum) * 100.0) - 5);
+	s.css('left', Math.floor((this.state.sat * this.picker_width)) - 6);
+	s.css('top', Math.floor((1.0 - this.state.lum) * this.picker_height) - 6);
 
-	// this.update_value(c);
+	this.update_value();
 };
 
 ColorPicker.prototype.update_hue_ev = function(ui, e, i, h, hs)
@@ -239,7 +300,8 @@ ColorPicker.prototype.update_hue_ev = function(ui, e, i, h, hs)
 	if(!this.hue_drag || this.hue_clipped)
 		return;
 
-	this.state.hue = (e.pageY - h.offset().top) / 100.0
+//	this.state.hue = (e.pageY - h.offset().top) / this.picker_height	// vertical
+	this.state.hue = 1.0 - (e.pageX - h.offset().left) / this.picker_width;
 	this.update_hue(ui, i, h, hs);
 };
 
@@ -281,12 +343,16 @@ ColorPicker.prototype.update_hue = function(ui, i, h, hs)
 	if(h && hs)
 	{
 		var ofs = h.offset();
-	
-		hs.css('left', (ofs.left - i.offset().left));
-		hs.css('top', Math.floor((this.state.hue * 100.0) - 2));
+
+		// vertical
+		// hs.css('left', (ofs.left - i.offset().left));
+		// hs.css('top', Math.floor((this.state.hue * this.picker_height) - 2));
+
+		// horizontal
+		hs.css('left', Math.floor(( (1.0-this.state.hue) * this.picker_width) - 2));
 	}
 
-	this.update_value(ui);
+	this.update_value();
 };
 
 ColorPicker.prototype.clip = function(ev, e)
@@ -302,6 +368,7 @@ ColorPicker.prototype.state_changed = function(ui)
 	{
 		this.update_hue(ui, ui.find('#img'), ui.find('#hue'), ui.find('#hue-sel'));
 		this.update_picker(ui, ui.find('#sel'));
+		if (typeof this.indicator.update != 'undefined') this.indicator.update(this.color);
 	}
 	else
 	{

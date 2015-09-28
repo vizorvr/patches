@@ -56,8 +56,9 @@ body {
 #structure
 {
 	padding-left: 24px;
-	margin: 8px;
+	margin: 16px;
 	overflow: auto;
+	color: @editor-text-default;
 }
 
 .btn { 
@@ -122,15 +123,15 @@ table
 }
 
 ul.iconic-nav {
-    margin: 0 2% 0 1%;
+    margin: 0 0 0 2%;
     @media @desktop-xl {
-        margin: 0 6%;
+        margin: 0 0 0 8%;
     };
     @media @desktop-l {
-        margin: 0 4% 0 3%;
+        margin: 0 0 0 6%;
     };
     @media @desktop {
-        margin: 0 2%;
+        margin: 0 0 0 3%;
     };
     @media @tablet {
         margin: 0;
@@ -138,10 +139,16 @@ ul.iconic-nav {
 }
 
 ul.iconic-nav:first-of-type {
-    margin: 0;
+    margin: 0 0 0 4%;
+    @media @tablet {
+        margin: 0 0 0 2%;
+    };
 }
 ul.iconic-nav:last-child {
     margin: 0 4% 0 0;
+    @media @tablet {
+        margin: 0 2% 0 0;
+    };
 }
     
 ul.iconic-nav, ul.iconic-nav>li {
@@ -654,11 +661,11 @@ ul.iconic-nav>li.open>button span {
 }
 
 .form-control {
-	background-color: @gray-dark;
-	border-color: @gray-dark;
-	border-radius: 0;
-	color: @gray-light;
-	height: @menu-bar-height;
+	background-color: @bg-darker;
+	border-radius: 4px;
+	border: 0 none;
+	color: @editor-text-hover;
+	height: @searchbox-height;
 	padding: 0 8px;
 }
 
@@ -1014,4 +1021,16 @@ button.show-timeline:hover svg {
     height: 4px;
     cursor: n-resize;
     z-index: 42;
+}
+
+#progressbar {
+    display: none;
+    position: absolute;
+    top: @menu-bar-height + @breadcrumb-height;
+    left: 0;
+    margin: 0;
+    width: 1px;
+    height: 3px;
+    background: #385A8A;
+    z-index: 67;
 }

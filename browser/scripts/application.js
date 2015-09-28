@@ -60,8 +60,6 @@ function Application() {
 	this.peopleStore = new PeopleStore()
 	this.peopleManager = new PeopleManager(this.peopleStore, $('#peopleTab'))
 
-	this.viewMode = 'editor'
-
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
 
@@ -803,6 +801,7 @@ Application.prototype._performSelection = function(e) {
 
 	for(var i = 0, len = nodes.length; i < len; i++) {
 		var n = nodes[i]
+		if (n && (typeof n.ui === 'undefined')) continue; // recover, should a node ref ever break..
 		var nui = n.ui.dom[0]
 		var p_x = nui.offsetLeft
 		var p_y = nui.offsetTop
@@ -1126,9 +1125,20 @@ Application.prototype.toggleNoodles = function() {
 	E2.dom.canvas_parent.toggle(this.noodlesVisible)
 }
 
-Application.prototype.toggleViewButtons = function() {
-	E2.dom.btnEditor.parent().toggle();
-	E2.dom.btnPatches.parent().toggle();
+Application.prototype.toggleWorldEditor = function() {
+	var is_active = this.worldEditor.isActive()
+	if (is_active) {
+		this.worldEditor.deactivate()
+	}
+	else {
+		this.worldEditor.activate()
+	}
+	is_active = this.worldEditor.isActive()
+
+	if (E2.ui)
+		E2.ui.setWorldEditorMode(is_active)
+
+	return is_active
 }
 
 Application.prototype.isVRCameraActive = function() {
@@ -1172,7 +1182,7 @@ Application.prototype.onKeyDown = function(e) {
 	var exceptionKeys = [ toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey ]
 
 	if (this.isVRCameraActive() && exceptionKeys.indexOf(e.keyCode) === -1)
-		return;
+		return true;
 
 	// arrow up || down
 	var arrowKeys = [37,38,39,40]
@@ -1194,11 +1204,6 @@ Application.prototype.onKeyDown = function(e) {
 
 	if (e.keyCode === 8 || e.keyCode === 46) { // use backspace and delete for deleting nodes
 		this.onDelete(e);
-		e.preventDefault();
-	}
-	else if(e.keyCode === toggleNoodlesKey) // tab to show/hide noodles
-	{
-		this.toggleNoodles()
 		e.preventDefault();
 	}
 	else if(e.keyCode === 13) { // enter = deselect (eg. commit move)
@@ -1237,7 +1242,6 @@ Application.prototype.onKeyDown = function(e) {
 	}
 
 
-
 	// number keys
 	else if (e.keyCode > 47 && e.keyCode < 58) { // 0-9
 		if (this.ctrl_pressed || this.shift_pressed || this.alt_pressed)
@@ -1265,16 +1269,10 @@ Application.prototype.onKeyDown = function(e) {
 	}
 
 
-
 	else if(e.keyCode === toggleFullScreenKey) // f
 	{
 		this.toggleFullscreen()
 		e.preventDefault();
-	} else if (e.keyCode === 81 || e.keyCode === 191) { // q or / to focus preset search
-		$('#presetSearch').focus()
-		$('#presetSearch').select()
-		e.preventDefault();
-		return false;
 	}
 	else if(this.ctrl_pressed || e.metaKey)
 	{
@@ -1284,12 +1282,6 @@ Application.prototype.onKeyDown = function(e) {
 			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
 			e.stopPropagation();
 			return false;
-		}
-		if(e.keyCode === 66) // CTRL+b
-		{
-			E2.ui.toggleFloatingPanels();
-			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
-			return;
 		}
 		else if(e.keyCode === 76) // CTRL+l
 		{
@@ -1314,28 +1306,13 @@ Application.prototype.onKeyDown = function(e) {
 		}
 	}
 	else if (e.keyCode === toggleWorldEditorKey) { // v
-		if (E2.app.worldEditor.isActive()) {
-			E2.app.worldEditor.deactivate()
-		}
-		else {
-			E2.app.worldEditor.activate()
-		}
+		this.toggleWorldEditor();
 	}
 
 
 
 };
 
-Application.prototype.toggleWorldEditor = function() {
-	if (E2.app.worldEditor.isActive()) {
-		E2.dom.worldEditorButton.text('Editor View')
-		E2.app.worldEditor.deactivate()
-	}
-	else {
-		E2.dom.worldEditorButton.text('Camera View')
-		E2.app.worldEditor.activate()
-	}
-}
 
 Application.prototype.onKeyUp = function(e)
 {
@@ -1406,27 +1383,6 @@ Application.prototype.onOpenClicked = function() {
 }
 
 
-Application.prototype.onChatDisplayClicked = function() {
-	var isUiVisible = E2.ui.isVisible();
-	if (!E2.dom.chatWindow.hasClass('collapsed')) {
-		if (isUiVisible)
-			E2.dom.chatWindow.toggle();
-		E2.dom.chatWindow.toggleClass('uiopen');
-		if (E2.dom.peopleTab.hasClass('active') && E2.dom.chatWindow.hasClass('active') && isUiVisible) {
-			E2.app.onPeopleListChanged(null);
-		}
-	}
-	else {
-		if (E2.dom.peopleTab.hasClass('active')) {
-			E2.dom.chatWindow.removeClass('collapsed').show();
-			E2.app.onPeopleListChanged(null);
-		} else {
-			E2.dom.chatWindow.removeClass('collapsed').show()
-							 .height(E2.dom.chatTabs.height 
-								   + E2.dom.chat.height)
-		}
-	}
-}
 
 Application.prototype.loadGraph = function(graphPath, cb) {
 	var that = this
@@ -1461,7 +1417,12 @@ Application.prototype.openPresetSaveDialog = null;	// ui replaces this
 
 
 Application.prototype.onPublishClicked = function() {
-	this.openSaveACopyDialog()
+	if (!E2.models.user.get('username')) {
+		return E2.controllers.account.openLoginModal()
+			.then(this.onPublishClicked.bind(this))
+	}
+	
+	E2.ui.openPublishGraphModal()
 	.then(function(path) {
 		window.location.href = path
 	})
@@ -1480,7 +1441,7 @@ Application.prototype.openSaveACopyDialog = function() {
 			.then(this.openSaveACopyDialog.bind(this))
 	}
 
-	E2.dom.load_spinner.show();
+	E2.ui.updateProgressBar(65);
 
 	ga('send', 'event', 'Save a Copy', 'clicked')
 
@@ -1488,9 +1449,10 @@ Application.prototype.openSaveACopyDialog = function() {
 		var fcs = new FileSelectControl()
 		.frame('save-frame')
 		.template('graph')
+		.header('Save as')
 		.buttons({
 			'Cancel': function() {
-				E2.dom.load_spinner.hide();
+				E2.ui.updateProgressBar(100);
 			},
 			'Save': function(path, tags) {
 				if (!path)
@@ -1508,12 +1470,12 @@ Application.prototype.openSaveACopyDialog = function() {
 					},
 					dataType: 'json',
 					success: function(saved) {
-						E2.dom.load_spinner.hide();
+						E2.ui.updateProgressBar(100);
 						ga('send', 'event', 'graph', 'saved')
 						dfd.resolve(saved.path)
 					},
 					error: function(x, t, err) {
-						E2.dom.load_spinner.hide()
+						E2.ui.updateProgressBar(100);
 
 						if (x.status === 401) {
 							return dfd.resolve(
@@ -1783,7 +1745,7 @@ Application.prototype.onGraphSelected = function(graph) {
 			sp.css({ 'text-decoration': 'underline' })
 		}
 
-		parentEl.prepend($('<span> / </span>'))
+		parentEl.prepend($('<svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg>'))
 		parentEl.prepend(sp)
 
 		if (graph.parent_graph)
@@ -1815,7 +1777,6 @@ Application.prototype.setupPeopleEvents = function() {
 	var lastMovementTimeouts = this.lastMovementTimeouts = {}
 
 	this.peopleStore.on('removed', function(uid) {
-		E2.app.onPeopleListChanged('removed')
 		if (uid === that.channel.uid)
 			return;
 
@@ -1828,10 +1789,11 @@ Application.prototype.setupPeopleEvents = function() {
 
 		$cursor.remove()
 		delete cursors[uid]
+		if (E2.ui)
+			E2.ui.onPeopleListChanged('removed');
 	})
 
 	this.peopleStore.on('added', function(person) {
-		E2.app.onPeopleListChanged('added')
 		if (person.uid === that.channel.uid)
 			return;
 
@@ -1850,8 +1812,9 @@ Application.prototype.setupPeopleEvents = function() {
 
 		if (person.activeGraphUid !== E2.core.active_graph.uid)
 			$cursor.hide()
-			
-		
+
+		if (E2.ui)
+			E2.ui.onPeopleListChanged('added');
 	})
 
 	this.peopleStore.on('mouseMoved', function(person) {
@@ -1950,170 +1913,6 @@ Application.prototype.onNewClicked = function() {
 Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
-
-Application.prototype.onInspectorClicked = function() {
-	if (this.selectedNodes.length===1) {
-		if (this.selectedNodes[0].plugin.open_editor) {
-			this.selectedNodes[0].plugin.open_editor(this.selectedNodes[0].plugin)
-		} else {
-			E2.app.growl('This kind of patch has no preferences','info',4000);
-		}
-	} else {
-		E2.app.growl('Select 1 particular patch to open inspector.','info',4000);
-	}
-}
-
-Application.prototype.onEditorClicked = function() {
-	this.toggleViewButtons();
-	this.viewMode = 'editor';
-}
-
-Application.prototype.onPatchesClicked = function() {
-	this.toggleViewButtons();
-	this.viewMode = 'patches';
-}
-
-Application.prototype.onChatToggleClicked = function() {
-	if (E2.dom.chatWindow.hasClass('collapsed')) {
-		if (E2.dom.peopleTab.hasClass('active')) {
-			E2.dom.chatWindow.removeClass('collapsed');
-			E2.app.onPeopleListChanged();
-		} else {
-			E2.dom.chatWindow.removeClass('collapsed')
-							 .height(E2.dom.chatWindow.find('.drag-handle').height()
-								   + E2.dom.chatTabs.height() 
-								   + E2.dom.chat.height());
-		}
-	} else {
-		E2.dom.chatWindow.addClass('collapsed')
-						 .height(E2.dom.chatWindow.find('.drag-handle').height() 
-							   + E2.dom.chatTabs.height());
-	}
-}
-
-Application.prototype.onBtnPresetsClicked = function() {
-	if (E2.ui.isVisible())
-		E2.dom.presetsLib.toggle();
-	E2.dom.presetsLib.toggleClass('uiopen');
-}
-
-Application.prototype.onBtnAssetsClicked = function() {
-	if (E2.ui.isVisible())
-		E2.dom.assetsLib.toggle();
-	E2.dom.assetsLib.toggleClass('uiopen');
-}
-
-Application.prototype.onAssetsToggleClicked = function() {
-	var controlsHeight = E2.dom.assetsLib.find('.drag-handle').outerHeight(true) 
-					   + E2.dom.assetsLib.find('.block-header').outerHeight(true) 
-					   + E2.dom.assetsLib.find('.searchbox').outerHeight(true); 
-	if (E2.dom.assetsLib.hasClass('collapsed')) {
-		var newHeight = controlsHeight
-					   + E2.dom.assetsLib.find('#assets-tabs').outerHeight(true)
-					   + E2.dom.assetsLib.find('.tab-content.active .assets-frame').outerHeight(true)
-					   + E2.dom.assetsLib.find('.load-buttons').outerHeight(true)
-					   + E2.dom.assetsLib.find('#asset-info').outerHeight(true)
-		E2.dom.assetsLib.removeClass('collapsed').height(newHeight);
-	} else {
-		E2.dom.assetsLib.addClass('collapsed').height(controlsHeight);
-	}
-}
-
-Application.prototype.onPresetsToggleClicked = function() {
-	var controlsHeight = E2.dom.presetsLib.find('.drag-handle').outerHeight(true) 
-					   + E2.dom.presetsLib.find('.block-header').outerHeight(true) 
-					   + E2.dom.presetsLib.find('.searchbox').outerHeight(true); 
-	if (E2.dom.presetsLib.hasClass('collapsed')) {
-		E2.dom.presetsLib.removeClass('collapsed');
-		E2.app.onSearchResultsChange();
-	} else {
-		E2.dom.presetsLib.addClass('collapsed').height(controlsHeight);
-	}
-}
-
-Application.prototype.onChatCloseClicked = function() {
-	E2.dom.chatWindow.removeClass('uiopen').hide();
-}
-
-Application.prototype.onAssetsCloseClicked = function() {
-	E2.dom.assetsLib.removeClass('uiopen').hide();
-}
-
-Application.prototype.onPresetsCloseClicked = function() {
-	E2.dom.presetsLib.removeClass('uiopen').hide();
-}
-
-Application.prototype.onChatTabClicked = function() {
-	if (!$(this).parent().hasClass('active')) {
-		E2.dom.peopleTab.hide();
-		E2.dom.chatTab.show();
-		E2.dom.chatWindow.find('.resize-handle').show();
-		E2.dom.chatWindow.height('auto');
-		E2.app.onChatResize();
-	}
-	if (E2.dom.chatWindow.hasClass('collapsed')) {
-		E2.dom.chatWindow.removeClass('collapsed')
-	};
-	return true;
-}
-
-Application.prototype.onChatResize = function() {
-	var restHeight = E2.dom.chatWindow.find('.drag-handle').height()
-				   + E2.dom.chatTabs.height()
-				   + E2.dom.chat.find('.chat-nav').outerHeight(true)
-				   + E2.dom.chat.find('.composer').outerHeight(true);
-	var newHeight = E2.dom.chatWindow.height() - restHeight;
-	E2.dom.chat.height('auto').find('.messages').height(newHeight);
-}
-
-Application.prototype.onPeopleListChanged = function(storeAction) { 
-	if (E2.dom.chatWindow.is(':visible') && !E2.dom.chatWindow.hasClass('collapsed') && E2.dom.peopleTab.is(':visible')) {
-		var itemHeight = $('.graph-users>li:first-child').outerHeight(true);
-		var visibleItems = 3;
-		var listChange = 0;  
-		if (storeAction==='added') {
-			listChange = 1;
-		} else if (storeAction==='removed') {
-			listChange = -1;
-		}
-		if ($('.graph-users>li').length + listChange <= visibleItems) {
-			E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() 
-								   + E2.dom.chatTabs.height() 
-								   + $('.peopleList .meta').outerHeight(true) 
-								   + itemHeight * ($('.graph-users>li').length 
-								   + listChange));
-			$('.people-scroll').height($('.chat-users').height() 
-									 - $('.chat-tabs').height());
-			$('.peopleList').height($('.people-scroll').height());
-		} else {
-			E2.dom.chatWindow.height(E2.dom.chatWindow.find('.drag-handle').height() 
-								   + E2.dom.chatTabs.height() 
-								   + $('.peopleList .meta').outerHeight(true) 
-								   + itemHeight * visibleItems);
-			$('.people-scroll').height($('.chat-users').height() 
-									 - $('.chat-tabs').height());
-			$('.peopleList').height($('.people-scroll').height());
-		};
-	};
-}
-
-Application.prototype.onPeopleTabClicked = function() {
-	if (!$(this).parent().hasClass('active')) {
-		E2.dom.chatTab.hide();
-		E2.dom.chatWindow.find('.resize-handle').hide();
-		E2.dom.peopleTab.show();
-		E2.app.onPeopleListChanged();
-	};
-	if (E2.dom.chatWindow.hasClass('collapsed')) {
-		E2.dom.chatWindow.removeClass('collapsed');
-		E2.app.onPeopleListChanged();
-	};
-	return true;
-}
-
-// UI will bind these
-Application.prototype.onSearchResultsChange = null;
-Application.prototype.onSignInClicked = null;
 
 Application.prototype.onAccountMenuClicked = function() {
 	var username = E2.models.user.get('username')
@@ -2217,7 +2016,8 @@ Application.prototype.start = function() {
 			e.preventDefault()
 			$target.css('height', nh+'px')
 			if ($target.hasClass('chat-users')) {
-				E2.app.onChatResize()
+				if (E2.ui)
+					E2.ui.onChatResize();
 			}
 		}
 
@@ -2250,41 +2050,19 @@ Application.prototype.start = function() {
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
 	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
-	E2.dom.btnInspector.click(E2.app.onInspectorClicked.bind(E2.app))
-	E2.dom.btnEditor.click(E2.app.onEditorClicked.bind(E2.app))
-	E2.dom.btnPatches.click(E2.app.onPatchesClicked.bind(E2.app))
-	E2.dom.btnSignIn.click(E2.app.onSignInClicked.bind(E2.app))
-	E2.dom.btnChatDisplay.click(E2.app.onChatDisplayClicked.bind(E2.app))
+
+
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
-	E2.dom.chatToggleButton.click(E2.app.onChatToggleClicked.bind(E2.app))
-	E2.dom.assetsToggle.click(E2.app.onAssetsToggleClicked.bind(E2.app))
-	E2.dom.presetsToggle.click(E2.app.onPresetsToggleClicked.bind(E2.app))
-	E2.dom.chatClose.click(E2.app.onChatCloseClicked.bind(E2.app))
-	E2.dom.chatTabBtn.click(E2.app.onChatTabClicked.bind(E2.app))
-	E2.dom.peopleTabBtn.click(E2.app.onPeopleTabClicked.bind(E2.app))
-	E2.dom.btnPresets.click(E2.app.onBtnPresetsClicked.bind(E2.app))
-	E2.dom.btnAssets.click(E2.app.onBtnAssetsClicked.bind(E2.app))
-	E2.dom.assetsClose.click(E2.app.onAssetsCloseClicked.bind(E2.app))
-	E2.dom.presetsClose.click(E2.app.onPresetsCloseClicked.bind(E2.app))
-	E2.dom.btnAccountMenu.click(E2.app.onAccountMenuClicked.bind(E2.app))
-	
+
 	this.midPane = new E2.MidPane()
 
-	E2.dom.load_spinner.hide()
+	E2.ui.updateProgressBar(100);
 
 	E2.app.player.play() // autoplay
 	E2.app.changeControlState()
-	
-	if (E2.app.viewMode==='editor') {
-		E2.dom.btnEditor.parent().toggle();
-	} else {
-		E2.dom.btnPatches.parent().toggle();
-	}
-	
-	E2.dom.presetsLib.movable();
-	E2.dom.assetsLib.movable();
+
 
 	E2.ui.showFirstTimeDialog();
 	
@@ -2348,13 +2126,6 @@ Application.prototype.setupChat = function() {
 
 	this.chatStore = new E2.ChatStore()
 	this.chat = new E2.Chat($('#chat'))
-	
-	var chatTop = $(window).height() - $('.chat-users').height() - $('.bottom-panel').height() - 40;
-	if (chatTop<($('.editor-header').height()+$('#breadcrumb').height())) {
-		chatTop= $('.editor-header').height() + $('#breadcrumb').height() + 40;
-	}
-	E2.dom.chatWindow.css({'top': chatTop});
-	E2.dom.chatWindow.movable();
 }
 
 /**
@@ -2405,19 +2176,19 @@ Application.prototype.setupEditorChannel = function() {
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.editorHeader = $('.editor-header');
 
-	E2.dom.load_spinner = $('#load-spinner');
+	E2.dom.progressBar = $('#progressbar');
 	
 	E2.dom.btnNew = $('#btn-new');
 	
 	E2.dom.btnScale = $('#btn-scale');
 	E2.dom.btnRotate = $('#btn-rotate');
-	E2.dom.btnAssets = $('#btn-add-object');
+	E2.dom.btnAssets = $('#btn-assets');
 	
 	E2.dom.btnInspector = $('#btn-inspector');
-	E2.dom.btnPresets = $('#btn-add-patch');
+	E2.dom.btnPresets = $('#btn-presets');
 	E2.dom.btnSavePatch = $('#btn-save-patch');
 	
-	E2.dom.btnPatches = $('#btn-patches');
+	E2.dom.btnGraph = $('#btn-graph');
 	E2.dom.btnEditor = $('#btn-editor');
 	E2.dom.btnZoomOut = $('#btn-zoom-out');
 	E2.dom.btnZoom = $('#btn-zoom');
@@ -2488,6 +2259,10 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.playPauseIcon = $('#play use');
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
+	E2.dom.fscreen = $('#fullscreen');
+	E2.dom.vrview = $('#vrview');
+	
+	E2.dom.btnViewMode = $('#btn-cam');
 
 	$.ajaxSetup({ cache: false });
 

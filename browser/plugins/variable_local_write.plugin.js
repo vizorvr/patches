@@ -70,8 +70,7 @@ VariableLocalWrite.prototype.state_changed = function(ui) {
 
 		this.regs = n.parent_graph.variables
 		this.target_reg(n.title)
-	} else
-		this.node.ui.dom.addClass('variable')
+	}
 }
 
 })()

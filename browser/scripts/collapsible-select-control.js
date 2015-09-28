@@ -191,7 +191,8 @@ CollapsibleSelectControl.prototype._reset = function() {
 	$('.panel', this._el).show();
 	$('table.result', this._el).empty().remove();
 	$('.preset-result', this._el).empty();
-	E2.app.onSearchResultsChange();
+	if (E2.ui)
+		E2.ui.onSearchResultsChange();
 }
 
 CollapsibleSelectControl.prototype._search = function(text) {
@@ -232,7 +233,8 @@ CollapsibleSelectControl.prototype._search = function(text) {
 
 	this._selectedIndex = 0
 	
-	E2.app.onSearchResultsChange();
+	if (E2.ui)
+		E2.ui.onSearchResultsChange();
 
 }
 
