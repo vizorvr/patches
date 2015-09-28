@@ -22,7 +22,8 @@ function ThreeObject3DPlugin(core) {
 		position: {x: 0, y: 0, z:0},
 		scale: {x: 1, y: 1, z:1},
 
-		// quaternion underscore prefix compatible with three.js
+		// names with underscores have to match with THREE.Quaternion
+		// member variable names because of to/from json serialisation
 		quaternion: {_x: 0, _y: 0, _z:0, _w:1}
 	}
 }
@@ -37,7 +38,7 @@ ThreeObject3DPlugin.prototype.reset = function() {
 
 	this.object3d.scale.set(this.state.scale.x, this.state.scale.y, this.state.scale.z)
 	this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
-	this.object3d.quaternion.set(this.state.quaternion.x, this.state.quaternion.y, this.state.quaternion.z, this.state.quaternion.w)
+	this.object3d.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
 }
 
 ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
