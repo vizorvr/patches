@@ -48,11 +48,13 @@
 									top: newTop
 								});
 						e.preventDefault();
+						return false;
 					})
 					.one('mouseup touchend touchcancel', function() {
 						$(this).off('mousemove.movable touchmove.movable click.movable');
 					});
 				e.preventDefault();
+				return false;
 			})
 			.one('mouseup touchend touchcancel', function() {
 				$(this).off('mousemove.movable touchmove.movable click.movable');

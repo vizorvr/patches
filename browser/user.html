@@ -44,6 +44,13 @@
 			<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="29.621" y1="38.166" x2="38.713" y2="38.166"/>
 			<line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="34.166" y1="42.713" x2="34.166" y2="33.621"/>
 		</symbol>
+		<symbol id="icon-new-graph" viewbox="0 0 50 50">
+			<circle fill="none" stroke-miterlimit="10" cx="36.317" cy="36.015" r="9.333"/>
+			<path fill="none" stroke-linecap="round" stroke-miterlimit="10" d="M36.318,40.599V31.43 M31.732,36.015h9.17"/>
+			<path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M21.908,36.015H6.35 L6.379,6.681l29.303-0.029v16.752 M27.908,24.903l-3.037-7.599l-4.203,9.247l-4.203-5.045l-4.782,8.174"/>
+			<line fill="none" stroke-linecap="round" stroke-miterlimit="10" x1="6.38" y1="30.015" x2="24.186" y2="30.015"/>
+			<path fill="none" stroke-linejoin="round" stroke-miterlimit="10" d="M16.35,14.681 c0,1.475-1.192,2.668-2.667,2.668c-1.473,0-2.666-1.193-2.666-2.668c0-1.471,1.193-2.666,2.666-2.666 C15.157,12.015,16.35,13.21,16.35,14.681z"/>
+		</symbol>
 		<symbol id="icon-ca-duplicate" viewbox="0 0 24 24">
 			<path fill="none" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M5,4.455h10.138v10.137H5V4.455z M15.138,14.592V8.317H19v10.138H8.862v-3.863H15.138z"/>
 		</symbol>
@@ -126,11 +133,19 @@
 	<div class="page-content projects">
 		<div class="card" id="new-project-card">
 			<div class="card-image noimage">
-				<svg class="vizor-top-search"><use xlink:href="#icon-new-project"></use></svg>
+				<svg class="up-new-project"><use xlink:href="#icon-new-project"></use></svg>
 			</div>
-			<a class="project-link" href="/edit" target="_blank" alt="Launch Vizor">
+			<div class="project-title">
 				<span class="project-title">Create New Project</span>
-			</a>
+			</div>
+		</div>
+		<div class="card" id="new-graph-card" style="display: none;">
+			<div class="card-image noimage">
+				<svg class="up-new-graph"><use xlink:href="#icon-new-graph"></use></svg>
+			</div>
+			<div class="project-title">
+				<span class="project-title">Create New Graph</span>
+			</div>
 		</div>
 		<div class="card" id="qwe13projectid">
 			<div class="card-image" style="background-image: url('images/welcome-bg.png');">
@@ -142,27 +157,27 @@
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Move">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-move"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Share">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-share"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Publish">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-publish"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Download">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-download"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Delete">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-delete"></use></svg>
 							</button>
 						</li>
@@ -172,7 +187,7 @@
 					</button>
 				</div>
 			</div>
-			<div class="project-title">
+			<div class="project-title editable">
 				<span>Hover me</span>
 				<svg class="ca-rename"><use xlink:href="#icon-ca-rename"></use></svg>
 			</div>
@@ -188,27 +203,27 @@
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Move">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-move"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Share">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-share"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Publish">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-publish"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Download">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-download"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Delete">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-delete"></use></svg>
 							</button>
 						</li>
@@ -218,7 +233,7 @@
 					</button>
 				</div>
 			</div>
-			<div class="project-title">
+			<div class="project-title editable">
 				<span>Hover me</span>
 				<svg class="ca-rename"><use xlink:href="#icon-ca-rename"></use></svg>
 			</div>
@@ -234,27 +249,27 @@
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Move">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-move"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Share">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-share"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Publish">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-publish"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Download">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-download"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Delete">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-delete"></use></svg>
 							</button>
 						</li>
@@ -264,7 +279,7 @@
 					</button>
 				</div>
 			</div>
-			<div class="project-title">
+			<div class="project-title editable">
 				<span>Hover me</span>
 				<svg class="ca-rename"><use xlink:href="#icon-ca-rename"></use></svg>
 			</div>
@@ -280,27 +295,27 @@
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Move">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-move"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Share">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-share"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Publish">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-publish"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Download">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-download"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Delete">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-delete"></use></svg>
 							</button>
 						</li>
@@ -310,7 +325,7 @@
 					</button>
 				</div>
 			</div>
-			<div class="project-title">
+			<div class="project-title editable">
 				<span>Hover me</span>
 				<svg class="ca-rename"><use xlink:href="#icon-ca-rename"></use></svg>
 			</div>
@@ -326,27 +341,27 @@
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Move">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-move"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Share">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-share"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Publish">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-publish"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Download">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-download"></use></svg>
 							</button>
 						</li>
 						<li>
-							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Duplicate">
+							<button class="btn ca-duplicate" data-toggle="popover" data-placement="top" title="Delete">
 								<svg class="ca-svg"><use xlink:href="#icon-ca-delete"></use></svg>
 							</button>
 						</li>
@@ -356,7 +371,7 @@
 					</button>
 				</div>
 			</div>
-			<div class="project-title">
+			<div class="project-title editable">
 				<span>Hover me</span>
 				<svg class="ca-rename"><use xlink:href="#icon-ca-rename"></use></svg>
 			</div>
@@ -364,6 +379,95 @@
 		</div>
 		
 	</div>
+	
+	<!--Temporay modals templates stored below-->
+	<!--New Project modal-->
+	<div role="dialog" tabindex="-1" class="bootbox modal in" id="newProjectModal" style="display: none;" aria-hidden="false">
+		<div class="modal-dialog userpage-dialog">
+			<div class="modal-content" style="display: block;">
+				<div class="modal-header">
+					<h4>Create new project</h4>
+					<button type="button" class="bootbox-close-button" data-dismiss="modal" aria-hidden="true" style="">
+						<svg class="icon-dialog-close"><use xlink:href="#icon-close"/></svg>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form method="POST" id="#newgraph-form_id" action="/">
+						<input type="hidden" value="" name="_csrf">
+						<div class="form-input">
+							<label for="userProjectName_id">Project name</label>
+							<input type="text" tabindex="-1" placeholder="" id="userProjectName_id" name="userProjectName">
+						</div> 
+						
+						<div id="projectname-error" class="modal-error">
+							<span></span>
+						</div>
+						
+						<div id="general-error" class="modal-error">
+							<span></span>
+						</div>
+
+						<button type="submit" class="user-btn" id="create-project-btn">
+							Create project
+						</button>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!--New Graph modal-->
+	<div role="dialog" tabindex="-1" class="bootbox modal in" id="newGraphModal" style="display: none;" aria-hidden="false">
+		<div class="modal-dialog userpage-dialog">
+			<div class="modal-content" style="display: block;">
+				<div class="modal-header">
+					<h4>Create new graph</h4>
+					<button type="button" class="bootbox-close-button" data-dismiss="modal" aria-hidden="true" style="">
+						<svg class="icon-dialog-close"><use xlink:href="#icon-close"/></svg>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form method="POST" id="#newgraph-form_id" action="/">
+						<input type="hidden" value="" name="_csrf">
+						<div class="form-input">
+							<label for="userGraphName_id">Graph name</label>
+							<input type="text" tabindex="-1" placeholder="" id="userGraphName_id" name="userGraphName">
+						</div> 
+						
+						<div id="graphname-error" class="modal-error">
+							<span></span>
+						</div>
+						<div class="form-input form-select">
+							<label for="userGraphType_id">Choose Type of Addet</label>
+							<svg class="icon-arrow-down"><use xlink:href="#icon-arrow-vertical"></use></svg>
+							<input type="text" tabindex="-1" placeholder="" disabled id="userGraphType_id" name="userGraphType">
+							<ul id="graphTypesDropdown">
+							  <li id="graphType">Graph</li>
+							  <li id="graphType2">Object</li>
+							  <li id="graphType3">Texture</li>
+							  <li id="graphType4">Audio</li>
+							  <li id="graphType5">Patch</li>
+							</ul> 
+						</div> 
+						
+						<div id="general-error" class="modal-error">
+							<span></span>
+						</div>
+
+						<button type="submit" class="user-btn" id="publish-graph-btn">
+							Create graph
+						</button>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal-backdrop in" style="display: none;"></div>
+	
+	<!--End tmp modals-->
 	<script type="text/javascript" src="scripts/userpage.js"></script>
 </body>
 </html>

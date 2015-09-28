@@ -436,5 +436,48 @@ AccountController.prototype.openAccountModal = function(dfd) {
 	return dfd.promise
 }
 
+AccountController.prototype.queryNewGraphName = function(dfd) {
+	var that = this;
+	var dfd = dfd || when.defer();
+	var newGraphNameTemplate = E2.views.filebrowser.newGraph;
+	
+	ga('send', 'event', 'account', 'open', 'forgotModal');
+	
+	var bb = bootbox.dialog(
+	{
+		show: true,
+		animate: false,
+		message: 'Rendering',
+	}).init(function() {
+		E2.app.useCustomBootboxTemplate(newGraphNameTemplate);
+	});
+	
+	this._bindEvents(bb, dfd);
+
+	var formEl = $('#newgraph-form_id');
+	var submintBtn = $('#publish-graph-btn');
+	
+	submintBtn.click(function( event )
+	{
+		var graphName = $('#userGraphName_id').val();
+		event.preventDefault();
+
+		// Ajax check if graph exists here;
+		
+		var re = /^\w+$/;
+
+		if (!re.test(graphName)) {
+			bootbox.alert('Please use only letters, numbers and underscores.');
+			return false;
+		}
+		
+		window.location.href = '/' + graphName;
+		dfd.resolve();
+		
+		return false;
+	});
+	return dfd.promise;
+}
+
 if (typeof(exports) !== 'undefined')
 	exports.AccountController = AccountController;
