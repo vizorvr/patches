@@ -165,7 +165,6 @@ NodeUI = function(parent_node, x, y, z) {
 	}
 
 	this.setCssClass();
-	this.redrawSlots();
 
 	this.parent_node.on('openStateChanged', function(isOpen) {
 		that.setCssClass();
@@ -179,11 +178,13 @@ NodeUI = function(parent_node, x, y, z) {
 		E2.app.onNodeDragged.bind(E2.app, parent_node),
 		E2.app.onNodeDragStopped.bind(E2.app, parent_node))
     	
-
 	this.update();	// place in position;
 //	this.parent_node.addListener('slotAdded', this.redrawSlots.bind(this));
 //	this.parent_node.addListener('slotRemoved', this.redrawSlots.bind(this));
+}
 
+NodeUI.prototype.render = function() {
+	this.redrawSlots();
 }
 
 NodeUI.prototype.onRenamed = function(graph, node) {
@@ -550,7 +551,7 @@ NodeUI.create_slot = function(parent_node, nid, container, s, type) {
 
 NodeUI.render_slots = function(parent_node, nid, container, slots, type) {
 	if (!parent_node.ui) {
-		console.log('render_slots but no UI for ', parent_node);
+		console.warn('render_slots but no UI for ', parent_node);
 	}
 	for(var i = 0, len = slots.length; i < len; i++)
 		NodeUI.create_slot(parent_node, nid, container, slots[i], type);
