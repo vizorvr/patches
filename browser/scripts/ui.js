@@ -28,8 +28,8 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.presetsToggle.click(this.onPresetsToggleClicked.bind(this));
 	dom.btnInspector.click(this.onInspectorClicked.bind(this));
 	
-	dom.btnCamView.click(this.enterCamView.bind(e2.app));
-	dom.btnVRView.click(this.enterVRView.bind(e2.app));
+	dom.btnCamView.click(this.enterCamView.bind(this));
+	dom.btnVRView.click(this.enterVRView.bind(this));
 };
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
@@ -174,34 +174,32 @@ VizorUI.prototype.onBtnAssetsClicked = function() {
 }
 
 VizorUI.prototype.enterVRView = function() {
-	var is_active = this.worldEditor.isActive()
+	var is_active = E2.app.worldEditor.isActive()
 	if (!is_active) {
-		this.worldEditor.activate()
+		E2.app.worldEditor.activate()
 	}
-	is_active = this.worldEditor.isActive()
+	is_active = E2.app.worldEditor.isActive()
 
-	if (E2.ui)
-		E2.ui.setWorldEditorMode(is_active)
+	this.setWorldEditorMode(is_active)
 	
-	E2.dom.btnCamView.attr('disabled', !is_active).popover('hide');
-	E2.dom.btnVRView.attr('disabled', is_active).popover('hide');
+	this.dom.btnCamView.attr('disabled', !is_active).popover('hide');
+	this.dom.btnVRView.attr('disabled', is_active).popover('hide');
 
-	return is_active
+	return is_active;
 }
 VizorUI.prototype.enterCamView = function() {
-	var is_active = this.worldEditor.isActive()
+	var is_active = E2.app.worldEditor.isActive()
 	if (is_active) {
-		this.worldEditor.deactivate()
+		E2.app.worldEditor.deactivate()
 	}
-	is_active = this.worldEditor.isActive()
+	is_active = E2.app.worldEditor.isActive()
 
-	if (E2.ui)
-		E2.ui.setWorldEditorMode(is_active)
+	this.setWorldEditorMode(is_active)
 	
-	E2.dom.btnCamView.attr('disabled', !is_active).popover('hide');
-	E2.dom.btnVRView.attr('disabled', is_active).popover('hide');
+	this.dom.btnCamView.attr('disabled', !is_active).popover('hide');
+	this.dom.btnVRView.attr('disabled', is_active).popover('hide');
 
-	return is_active
+	return is_active;
 }
 
 VizorUI.prototype.onChatResize = function() {
