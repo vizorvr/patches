@@ -1,4 +1,4 @@
-E2.p = E2.plugins["float_display"] = function(core, node)
+E2.p = E2.plugins.float_display = function(core, node)
 {
 	this.desc = 'Display the supplied float value on the plugin surface.';
 	
@@ -32,4 +32,6 @@ E2.p.prototype.update_value = function(value)
 {
 	if(this.label)
 		this.label[0].innerHTML = value === null ? '-' : value.toFixed(2);
+	else
+		this.value = value
 };

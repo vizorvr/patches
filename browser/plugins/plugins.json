@@ -281,6 +281,12 @@
     },
 
 
+    "EVENT EMITTER": {
+        "Emit": "runtime_event_write",
+        "On": "runtime_event_read",
+    },
+
+
     "VIDEO TOOLS": {
         "Duration": "video_get_duration_modulator",
         "Current time": "video_get_current_time_modulator"
