@@ -18,17 +18,18 @@ var LoopPlugin = E2.plugins.loop = function(core) {
 
 LoopPlugin.prototype = Object.create(SubGraphPlugin.prototype)
 
-LoopPlugin.prototype.open_editor = function(self)
+LoopPlugin.prototype.open_inspector = function(self)
 {
 	var diag = make('div');
 	var always_upd = $('<input id="always_upd" type="checkbox" title="If false, this graph is updated only when one of its inputs updates." />');
-	var upd_lbl = $('<div>Always update:</div>');
+	var upd_lbl = $('<label for="always_upd"><span><svg class="icon-checked">'
+				  + '<use xlink:href="#icon-checked"></use></svg></span>Always update</div>');
 	var r1 = make('div');
 
 	var lbl_css = {
 		'font-size': '14px',
 		'float': 'left',
-		'padding': '8px 0px 2px 2px',
+		'padding': '8px 0px 2px 2px'
 	};
 
 	var inp_css = {
@@ -41,17 +42,20 @@ LoopPlugin.prototype.open_editor = function(self)
 
 	diag.css({
 		'margin': '0px',
-		'padding': '2px',
+		'padding': '2px'
 	});
 
 	r1.css('clear', 'both');
+	r1.addClass('clearfix')
 	always_upd.css(inp_css);
 	upd_lbl.css(lbl_css);
 
+	always_upd.css({ 'width': '13px', 'margin-top': '8px' })
 	always_upd.attr('checked', self.state.always_update);
 
-	r1.append(upd_lbl);
 	r1.append(always_upd);
+	r1.append(upd_lbl);
+
 	diag.append(r1);
 
 	var store_state = function(self, always_upd) { return function(e)
@@ -62,22 +66,24 @@ LoopPlugin.prototype.open_editor = function(self)
 	self.core.create_dialog(diag, 'Edit Preferences.', 460, 250, store_state(self, always_upd));
 };
 
+
+LoopPlugin.prototype.drilldown = function() {
+	return NodeUI.drilldown(this);
+};
+
+/*
 LoopPlugin.prototype.create_ui = function()
 {
 	var ui = make('div');
 	var inp_edit = makeButton('Edit', 'Open this loop for editing.');
 
-	inp_edit.click(function(self) { return function(e)
-	{
-		if(self.graph)
-			self.graph.tree_node.activate();
-	}}(this));
+	inp_edit.click(this.drilldown.bind(this));
 
-	ui.css('text-align', 'center');
 	ui.append(inp_edit);
 
 	return ui;
 };
+*/
 
 LoopPlugin.prototype.update_input = function(slot, data)
 {
@@ -143,19 +149,7 @@ LoopPlugin.prototype.state_changed = function(ui)
 	// every time we switch to the graph containing this node in the editor.
 	if(ui)
 	{
-		// Decorate the auto generated dom base element with an
-		// additional class to allow custom styling.
-		node.ui.dom.addClass('graph loop');
-
-		var inp_config = makeButton(null, 'Edit preferences.', 'config_btn');
-
-		inp_config.click(function(self) { return function(e)
-		{
-			self.open_editor(self);
-		}}(this));
-
-		$(node.ui.dom[0].children[0].children[0].children[0]).append(inp_config);
-		return;
+		return
 	}
 
 	this.setupProxies()

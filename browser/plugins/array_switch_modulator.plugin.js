@@ -84,7 +84,6 @@ ArraySwitch.prototype.update_input = function(slot, data) {
 			var n = Math.floor(data)
 			if (this.number !== n) {
 				this.number = n
-				this.updated = true
 			}
 
 			for (var i=0; i < this.node.dyn_inputs.length; i++)
@@ -101,6 +100,9 @@ ArraySwitch.prototype.update_state = function() {
 	if (this.value !== this.values[this.number]) {
 		this.value = this.values[this.number]
 		this.updated = true
+	}
+	else {
+		this.updated = false
 	}
 }
 

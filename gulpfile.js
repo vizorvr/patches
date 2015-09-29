@@ -60,6 +60,7 @@ paths = {
 	}
 };
 
+
 function errorHandler(err) {
 	console.error(err.message, err.lineNumber, err.stack)
 	this.emit('end')

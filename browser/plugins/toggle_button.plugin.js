@@ -43,12 +43,12 @@ Toggle.prototype.updateUi = function() {
 	var ui = this.ui
 
 	ui.html(this.state.enabled ? 'On' : 'Off')
-	ui.addClass('toggle_btn')
+//	ui.addClass('toggle_btn')
 	
 	if(!this.state.enabled)
-		ui.addClass('toggle_btn_off')
+		ui.addClass('state_off').removeClass('state_on')
 	else
-		ui.removeClass('toggle_btn_off')
+		ui.removeClass('state_off').addClass('state_on')
 }
 
 Toggle.prototype.state_changed = function(ui) {

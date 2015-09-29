@@ -1,0 +1,240 @@
+.presets-block {
+    left: 30 + @floating-box-width + 30;
+    z-index: 65;
+}
+
+.assets-block {
+    left: 30px;
+    z-index: 64;
+}
+
+ul.lib-tabs {
+    display: table;
+    position: relative;
+    float: left;
+    width: @floating-box-width;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid @bg-darker;
+    > li {
+        display: table-cell;
+        position: relative;
+        text-align: center;
+        vertical-align: middle;
+        height: 32px;
+        background: @bg-light;
+        border-right: 1px solid @bg-darker;
+        :last-child {
+            border: 0;    
+        }
+        a {
+            padding-top: 8px; 
+            height: 32px;
+            outline: none;
+            color: @tab-text-inactive;
+            font-size: 12px;
+            font-weight: 600;
+            display: block;
+        }
+        a:active, a:focus {
+            text-decoration: none;
+            }
+    }
+    > li.active {
+            background: @bg-lighter;
+            a {
+                color: @editor-text-active;
+            }
+    }
+    > li.active:hover {
+            a {
+                text-decoration: none; 
+            }
+    }
+    > li:hover {
+            a {
+                text-decoration: none; 
+                color: @editor-text-active;
+            }
+    }
+}
+
+#assets {
+    display: block; 
+    float: left;
+    position: relative;
+    .tab-content {
+            display: none;
+    }
+    .tab-content.active {
+            display: block;
+        }    
+    }
+
+.assets-frame {
+    height: 152px;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: @bg-light;
+    position: relative;
+    float: left;
+    border-bottom: 1px solid @bg-darker;
+}
+
+.assets-group {
+    width: 100%;
+    position: relative;
+    float: left;
+}
+
+.assets-group .group-title {
+    display: block;
+    position: relative;
+    width: 100%; 
+    padding: 16px 20px 12px 20px;
+    color: @tab-text-inactive;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: 600;
+}
+
+ul.assets-list {
+    margin: 0;
+    padding: 0;
+    display: block;
+    position: relative;
+    width: 100%;
+    > li {
+        display: block;
+        position: relative;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 32px;
+        float: left;
+        clear: both;
+        cursor: pointer;
+        svg {
+            display: block;
+            width: 32px;
+            height: 32px;
+            margin-left: 14px;
+            stroke: @tab-text-inactive;
+            float: left;
+            overflow: visible;
+            }
+        span {
+            display: inline-block;
+            padding: 8px 20px 8px 6px;
+            color: @tab-text-inactive;
+            font-size: 12px;
+            font-weight: 600;
+            float: left;
+            }
+    }
+    > li.active {
+        background: @selected-bg;
+        cursor: grab;
+        svg {
+            stroke: @editor-text-active;
+            }
+        span {
+            color: @editor-text-active;
+        }
+    }
+    > li:hover {
+        svg {
+            stroke: @editor-text-active;
+            }
+        span {
+            color: @editor-text-active;
+        }
+    }
+}
+
+.load-buttons {
+    display: block;
+    position: relative;
+    height: 37px;
+    width: @floating-box-width;
+    float: left;
+    button {
+        width: 50%;
+        height: 37px;
+        margin: 0;
+        padding: 0;
+        background: @bg-light;
+        position: relative;
+        float: left; 
+        border-bottom: 1px solid @bg-darker;
+        border-left: 0;
+        border-top: 0;
+        border-right: 0;
+        svg {
+            position: relative;
+            float: left;
+            width: 37px;
+            height: 37px;
+            overflow: visible;
+            margin-left: 9px;
+            stroke: @tab-text-inactive;
+            }
+        span {
+            display: inline-block;
+            padding: 9px 16px 8px 6px;
+            color: @tab-text-inactive;
+            font-size: 12px;
+            font-weight: 600;
+            float: left;
+            }
+        }
+        button:first-child {
+            border-right: 1px solid @bg-darker;
+        }
+        button:hover {
+            svg {
+                stroke: @editor-text-active;
+            }
+            span {
+                color: @editor-text-active;
+            }
+        }
+}
+
+#asset-info {
+    position: relative;
+    float: left;
+    width: 100%;
+    div {
+        padding: 18px 20px;
+        float: left;
+        .asset-image {
+            border-radius: 5px;
+            overflow: hidden;
+            height: 96px;
+            width: 96px;
+            margin: 0;
+            background: #6b748f;
+            display: table-cell;
+            position: relative;
+            vertical-align: middle;
+            text-align: center;
+            float: left;
+            img {
+                width:100%;
+                height: auto;
+                margin: 0 auto;
+                }
+        }
+        .asset-details {
+            display: block;
+            position: relative;
+            float: left;
+            padding: 0 0 0 18px; 
+            color: @chat-text-color;
+        }
+    }
+}
