@@ -1,4 +1,5 @@
 (function() {
+
 function RunTimeEventWritePlugin() {
 	this.input_slots = [{
 		name: 'eventName',
@@ -8,6 +9,8 @@ function RunTimeEventWritePlugin() {
 		name: 'data',
 		dt: E2.dt.ANY
 	}]
+	
+	this.output_slots = []
 }
 
 RunTimeEventWritePlugin.prototype.update_input = function(slot, data) {
@@ -23,7 +26,6 @@ RunTimeEventWritePlugin.prototype.update_input = function(slot, data) {
 		}
 	}
 }
-
 
 E2.plugins.runtime_event_write = RunTimeEventWritePlugin
 
