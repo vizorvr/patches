@@ -71,8 +71,9 @@ VizorUI.prototype.openLoginModal = function() {
 
 
 VizorUI.prototype.onSearchResultsChange = function() {
-	var resultsCount = $('.result.table tbody').children().length;
-	var presetsList = E2.dom.presetsLib.find('.preset-list-container');
+	var presetsLib = E2.dom.presetsLib;
+  var resultsCount = $('.result.table tbody').children().length;  
+	var presetsList = presetsLib.find('.preset-list-container');
 	var maxHeight = presetsList.css('maxHeight');
 	if (resultsCount>0) {
 		E2.dom.presetsLib.removeClass('collapsed');
