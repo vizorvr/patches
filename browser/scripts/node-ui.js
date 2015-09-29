@@ -16,7 +16,7 @@ var uiNodeCategoriesThatNormallyDisplayOutputInHeader = [
 NodeUI = function(parent_node, x, y, z) {
 	var that = this
 
-	this.nid = parent_node.uid;
+	this.nid = 'n' + parent_node.uid;
 	this.flags = {
 		set				: false,
 		has_subgraph	: false,
