@@ -531,6 +531,215 @@
     }
 }
 
+
+.modal-dialog .file-select-control {
+    border: 0;
+    float: left;
+    padding: 20px 0 0;
+    .tab-content {
+        display: block;
+        position: relative;
+        float: left;
+        width: 100%;
+        padding: 0;
+        border: 0;
+    }
+    ul.nav-tabs {
+        display: table;
+        position: relative;
+        float: left;
+        width: 100%;
+        height: 32px;
+        margin: 0;
+        padding: 0;
+        border-bottom: 1px solid @bg-darker;
+        border-left: 1px solid @bg-darker;
+        > li {
+            display: table-cell;
+            position: relative;
+            text-align: center;
+            vertical-align: middle;
+            float: none;
+            height: 32px;
+            background: @bg-light;
+            border-right: 1px solid @bg-darker;
+            border-top: 1px solid @bg-darker;
+            :last-child {
+                border: 0;    
+            }
+            a {
+                padding-top: 8px; 
+                height: 32px;
+                outline: none;
+                color: @tab-text-inactive;
+                font-size: 12px;
+                font-weight: 600;
+                display: block;
+                border-radius: 0;
+                h4 {
+                    margin: 0;
+                    padding: 0;
+                    color: @tab-text-inactive;
+                    line-height: 1.33;
+                    font-weight: 600;
+                }
+            }
+            a:active, a:focus {
+                text-decoration: none;
+                }
+            &:hover a {
+                background: none;
+            }
+        }
+        > li.active {
+                background: @bg-lighter;
+                a {
+                    color: @editor-text-active;
+                    background: none;
+                    h4 {
+                        color: @editor-text-active;
+                    }
+                }
+        }
+        > li.active:hover {
+                a {
+                    text-decoration: none; 
+                }
+        }
+        > li:hover {
+                a {
+                    text-decoration: none; 
+                    color: @editor-text-active;
+                    h4 {
+                        color: @editor-text-active;
+                    }
+                }
+        }
+    }
+}
+
+.modal-dialog tr#buttons-row {
+    td {
+        vertical-align: middle;
+        button {
+            height: @searchbox-height;
+            padding: 0 8px;
+        }
+    }
+}
+
+.modal-dialog .fileUploadForm {
+    margin: 10px 0;
+    width: 100%;
+    > input, > button {
+        float: left;
+        display: table-cell;
+    }
+    > .browse-button {
+        margin: 0;
+        width: 25%;
+        &:hover {
+            color: @editor-text-default;
+        }
+    }
+    > #fileUploadName {
+        width: 46%;
+        margin: 0 2%;
+        background: @bg-dark;
+        color: @editor-text-default;
+    }
+    .btn-primary {
+        height: @searchbox-height;
+        background: @bg-bright;
+        color: @editor-text-active;
+        &:hover {
+            color: @editor-text-default;
+        }
+    }
+    #fileUploadFile {
+        display: none;
+    }
+}
+
+.userpage-dialog {
+    .modal-content {
+        .modal-body {
+            background: #ffffff;
+            div.form-input {
+                background: #f6f7f8;
+                input, label {
+                    color: #535c6b;
+                }
+                label:after {
+                    display: none;
+                }
+            }
+            div.form-select {
+                .icon-arrow-down {
+                    height: 7px;
+                    width: 10px;
+                    position: absolute;
+                    right: 20px;
+                    top: 22px;
+                    stroke: #535c6b;
+                    left: auto;
+                    z-index: 97;
+                }
+                input {
+                    display: none;
+                }
+                label {
+                    cursor: pointer;
+                    z-index: 98;
+                }
+                ul {
+                    position: relative;
+                    width: 100%;
+                    height: @modal-input-height;;
+                    margin-top: @modal-input-height;
+                    li {
+                        width: 100%;
+                        float: left;
+                        position: relative;
+                        height: @modal-input-height;
+                        background: #f6f7f8;
+                        color: #535c6b;
+                        padding: 15px 20px 0 36px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        font-weight: 400;
+                        border-top: 1px solid #fff;
+                        &:hover {
+                            background: @bg-bright;
+                            color: @editor-text-active;
+                        }
+                        &:last-child {
+                            border-radius: 0 0 4px 4px;
+                        }
+                    }
+                }
+                &.active {
+                    overflow: visible;
+                    .icon-arrow-down {
+                        transform: rotate(180deg);
+                    }
+                }
+            }
+            button.user-btn {
+                width: 100%;
+                height: @modal-control-height;
+                border: 0 none;
+                padding: 0;
+                color: @editor-text-active;
+                font-size: 16px;
+                text-transform: uppercase;
+                font-weight: 600;
+                text-align: center;
+            }
+        }
+    }
+}
+
 @keyframes revealModalError {
     0% {
         height: 0;

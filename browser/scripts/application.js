@@ -1125,18 +1125,33 @@ Application.prototype.toggleNoodles = function() {
 	E2.dom.canvas_parent.toggle(this.noodlesVisible)
 }
 
-Application.prototype.toggleWorldEditor = function() {
+Application.prototype.enterVRView = function() {
 	var is_active = this.worldEditor.isActive()
-	if (is_active) {
-		this.worldEditor.deactivate()
-	}
-	else {
+	if (!is_active) {
 		this.worldEditor.activate()
 	}
 	is_active = this.worldEditor.isActive()
 
 	if (E2.ui)
 		E2.ui.setWorldEditorMode(is_active)
+	
+	E2.dom.btnCamView.attr('disabled', !is_active).popover('hide');
+	E2.dom.btnVRView.attr('disabled', is_active).popover('hide');
+
+	return is_active
+}
+Application.prototype.enterCamView = function() {
+	var is_active = this.worldEditor.isActive()
+	if (is_active) {
+		this.worldEditor.deactivate()
+	}
+	is_active = this.worldEditor.isActive()
+
+	if (E2.ui)
+		E2.ui.setWorldEditorMode(is_active)
+	
+	E2.dom.btnCamView.attr('disabled', !is_active).popover('hide');
+	E2.dom.btnVRView.attr('disabled', is_active).popover('hide');
 
 	return is_active
 }
@@ -2262,7 +2277,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.fscreen = $('#fullscreen');
 	E2.dom.vrview = $('#vrview');
 	
-	E2.dom.btnViewMode = $('#btn-cam');
+	E2.dom.btnCamView = $('#btn-cam');
+	E2.dom.btnVRView = $('#btn-vr');
 
 	$.ajaxSetup({ cache: false });
 

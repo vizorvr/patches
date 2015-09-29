@@ -7,7 +7,8 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2);
 
 	// things that live elsewhere are called elsewhere
-	dom.btnViewMode.click(e2.app.toggleWorldEditor.bind(e2.app));
+	dom.btnCamView.click(e2.app.enterCamView.bind(e2.app));
+	dom.btnVRView.click(e2.app.enterVRView.bind(e2.app));
 	dom.btnGraph.click(e2.app.toggleNoodles.bind(e2.app));
 	dom.btnAccountMenu.click(e2.app.onAccountMenuClicked.bind(e2.app));
 
