@@ -191,10 +191,21 @@ NodeUI = function(parent_node, x, y, z) {
 //NodeUI.prototype = Object.create(EventEmitter.prototype);
 
 NodeUI.prototype.destroy = function() {
-	jQuery('div.popover').remove();	// clean up any tooltips
-	[this.input_col, this.output_col, this.inline_in,
-		this.inline_out, this.header, this.content,
-		this.plugin_container, this.plugin_ui].forEach(function(j){ if (typeof j === 'function') j.remove(); j={}; });
+	jQuery('div.popover').remove();	// clean up any tooltips, globally
+	[this.input_col,
+		this.output_col,
+		this.inline_in,
+		this.inline_out,
+		this.header,
+		this.content,
+		this.plugin_container,
+		this.plugin_ui].forEach(
+		function(j){
+			if (typeof j === 'function') {
+				j.remove();
+			}
+			j={};
+		});
 	this.dom.remove();
 	return this;
 }
