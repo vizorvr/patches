@@ -19,7 +19,6 @@
 				name: 'object3d',
 				dt: core.datatypes.OBJECT3D,
 				desc: 'Optional existing mesh to modify',
-				array: true,
 				def: null
 			}
 		].concat(this.input_slots)
@@ -47,9 +46,12 @@
 		AbstractThreeMeshPlugin.prototype.update_state.apply(this)
 
 		var delta = this.core.delta_t
-		for(var i = 0; i < this.object3d.children.length; ++i) {
-			if (this.object3d.children[i] instanceof THREE.MorphAnimMesh) {
-				this.object3d.children[i].updateAnimation(delta * 1000)
+
+		if (this.object3d) {
+			for(var i = 0; i < this.object3d.children.length; ++i) {
+				if (this.object3d.children[i] instanceof THREE.MorphAnimMesh) {
+					this.object3d.children[i].updateAnimation(delta * 1000)
+				}
 			}
 		}
 	}

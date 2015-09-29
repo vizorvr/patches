@@ -127,7 +127,7 @@
 					//	f *= fadeoutfactor
 					//}
 
-					that.vertices[idx].set(x * f, y * f, -1.0)
+					that.vertices[idx].set(x * f, y * f, -0.1)
 
 					idx++
 				}
@@ -158,7 +158,7 @@
 		}
 
 		this.raycaster.setFromCamera(new THREE.Vector3(0, 0, 0), this.camera)
-		var intersects = this.raycaster.intersectObjects(this.scene.children[0].children)
+		var intersects = this.raycaster.intersectObjects(this.scene.children[0].children, /*recursive =*/ true)
 
 		var hadObj = false
 
@@ -208,7 +208,7 @@
 
 		mesh.position.copy(this.camera.position)
 		mesh.quaternion.copy(this.camera.quaternion)
-		mesh.scale.copy(new THREE.Vector3(0.05, 0.05, 1.0))
+		mesh.scale.copy(new THREE.Vector3(0.01, 0.01, 1.0))
 
 		this.geometry.update(this.clickFactor, Math.max(1.0 - Math.max(0.0, this.clickTime - this.clickDelay) * 10.0, 0.0))
 
