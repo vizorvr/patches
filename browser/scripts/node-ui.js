@@ -166,11 +166,8 @@ NodeUI = function(parent_node, x, y, z) {
 		$header.hover(NodeUI.onShowTooltip.bind($header), NodeUI.onHideTooltip.bind($header));
 	}
 
-
-
 	this.setCssClass();
 	this.redrawSlots();
-	this.update();	// place in position; and redraw
 
 	this.parent_node.on('openStateChanged', function(isOpen) {
 		that.setCssClass();
@@ -183,9 +180,9 @@ NodeUI = function(parent_node, x, y, z) {
 	make_draggable($dom,
 		E2.app.onNodeDragged.bind(E2.app, parent_node),
 		E2.app.onNodeDragStopped.bind(E2.app, parent_node))
+    	
 
-
-
+	this.update();	// place in position;
 //	this.parent_node.addListener('slotAdded', this.redrawSlots.bind(this));
 //	this.parent_node.addListener('slotRemoved', this.redrawSlots.bind(this));
 
@@ -510,6 +507,8 @@ NodeUI.onShowTooltip = function(e) {
 
 	var $elem = $(e.currentTarget);
 	var tokens = $elem.attr('alt').split('_');
+	console.log(tokens);
+
 	var core = E2.core;
 	var node = E2.core.active_graph.nuid_lut[tokens[0]];
 	var txt = '';
@@ -588,10 +587,11 @@ NodeUI.onShowTooltip = function(e) {
 
 		that._tooltipElem = $elem;
 		that._tooltipTimer = null;
-		setTimeout(NodeUI.onHideTooltip.bind(that), 5000);
+		setTimeout(NodeUI.onHideTooltip.bind(that), 10000);
 
 	}, 1000);
 
+	e.stopPropagation();
 };
 
 NodeUI.onHideTooltip = function() {
@@ -638,10 +638,12 @@ NodeUI.prototype.create_slot = function(container, s, type) {
 	var is_dynamic = (typeof s.uid != 'undefined')
 	var is_connected = (typeof s.is_connected != 'undefined') && s.is_connected;
 
+	var sid;
 	if (is_dynamic)
-		$div.attr('id', nid + (is_input ? 'di' : 'do') + s.uid);	// note this breaks the UI
+		sid = nid + (is_input ? 'di' : 'do') + s.uid;
 	else
-		$div.attr('id', nid + (is_input ? 'si' : 'so') + s.index);
+		sid = nid + (is_input ? 'si' : 'so') + s.index;
+	$div.attr('id',sid);
 
 	$div.addClass('pl_slot p_slot');
 	$div.addClass( (is_input) ? 'p_in' : 'p_out' );
@@ -664,8 +666,15 @@ NodeUI.prototype.create_slot = function(container, s, type) {
 	$div.mouseenter(E2.app.onSlotEntered.bind(E2.app, parent_node, s, $div))
 	$div.mouseleave(E2.app.onSlotExited.bind(E2.app, parent_node, s, $div))
 	$div.mousedown(E2.app.onSlotClicked.bind(E2.app, parent_node, s, $div, type))
+	$div.hover(NodeUI.onShowTooltip.bind($div), NodeUI.onHideTooltip.bind($div));
 
-//	$div.hover(NodeUI.onShowTooltip.bind($div), NodeUI.onHideTooltip.bind($div));
+	var altSid = '' + parent_node.uid;
+
+	altSid += '_' + (s.uid !== undefined ? 'd' : 's');
+	altSid += type === E2.slot_type.input ? 'i' : 'o';
+	altSid += '_' + (s.uid !== undefined ? s.uid : s.index);
+
+	$div.attr('alt', altSid);
 
 	return $div;
 };
@@ -676,7 +685,6 @@ NodeUI.prototype.render_slots = function(container, slots, type) {
 };
 
 // open nested graph for editing
-// @todo remove this or the other function
 NodeUI.drilldown = function(node) {	// taken from nested graph plugin
 	var p = node.plugin;
 	if(p.graph) {
@@ -691,3 +699,4 @@ NodeUI.drilldown = function(node) {	// taken from nested graph plugin
 	}
 	return false;
 };
+

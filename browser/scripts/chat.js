@@ -84,26 +84,12 @@ ChatStore.prototype.isForMe = function(pl) {
 // ------------------------------
 
 function Chat($el, handlebars) {
-	var that = this
-
 	this._hbs = handlebars || window.Handlebars
 	this.$messages = $el.find('.messages')
 	this.$input = $el.find('input')
 
 	E2.app.chatStore.on('added',
 		this._renderMessage.bind(this))
-
-	E2.app.chatStore.on('joined', function(message) {
-		message.meta = true
-		message.message = 'joined the chat'
-		that._renderMessage(message)
-	})
-
-	E2.app.chatStore.on('left', function(message) {
-		message.meta = true
-		message.message = 'left the chat'
-		that._renderMessage(message)
-	})
 
 	this.setupInput()
 	this.scrollDown()
