@@ -507,7 +507,6 @@ NodeUI.onShowTooltip = function(e) {
 
 	var $elem = $(e.currentTarget);
 	var tokens = $elem.attr('alt').split('_');
-	console.log(tokens);
 
 	var core = E2.core;
 	var node = E2.core.active_graph.nuid_lut[tokens[0]];
@@ -571,6 +570,8 @@ NodeUI.onShowTooltip = function(e) {
 		if (E2.app.inDrag)
 			return;
 
+		jQuery('body div.popover').remove();
+
 		$elem.tooltip('destroy')
 
 		$elem.popover({
@@ -589,9 +590,8 @@ NodeUI.onShowTooltip = function(e) {
 		that._tooltipTimer = null;
 		setTimeout(NodeUI.onHideTooltip.bind(that), 10000);
 
-	}, 1000);
+	}, 750);
 
-	e.stopPropagation();
 };
 
 NodeUI.onHideTooltip = function() {
