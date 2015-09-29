@@ -174,32 +174,32 @@ VizorUI.prototype.onBtnAssetsClicked = function() {
 }
 
 VizorUI.prototype.enterVRView = function() {
-	var is_active = E2.app.worldEditor.isActive()
-	if (!is_active) {
+	var isActive = E2.app.worldEditor.isActive()
+	if (!isActive) {
 		E2.app.worldEditor.activate()
 	}
-	is_active = E2.app.worldEditor.isActive()
+	isActive = E2.app.worldEditor.isActive()
 
-	this.setWorldEditorMode(is_active)
+	this.setWorldEditorMode(isActive)
 	
-	this.dom.btnCamView.attr('disabled', !is_active).popover('hide');
-	this.dom.btnVRView.attr('disabled', is_active).popover('hide');
+	this.dom.btnCamView.attr('disabled', !isActive).popover('hide');
+	this.dom.btnVRView.attr('disabled', isActive).popover('hide');
 
-	return is_active;
+	return isActive;
 }
 VizorUI.prototype.enterCamView = function() {
-	var is_active = E2.app.worldEditor.isActive()
-	if (is_active) {
+	var isActive = E2.app.worldEditor.isActive()
+	if (isActive) {
 		E2.app.worldEditor.deactivate()
 	}
-	is_active = E2.app.worldEditor.isActive()
+	isActive = E2.app.worldEditor.isActive()
 
-	this.setWorldEditorMode(is_active)
+	this.setWorldEditorMode(isActive)
 	
-	this.dom.btnCamView.attr('disabled', !is_active).popover('hide');
-	this.dom.btnVRView.attr('disabled', is_active).popover('hide');
+	this.dom.btnCamView.attr('disabled', !isActive).popover('hide');
+	this.dom.btnVRView.attr('disabled', isActive).popover('hide');
 
-	return is_active;
+	return isActive;
 }
 
 VizorUI.prototype.onChatResize = function() {
