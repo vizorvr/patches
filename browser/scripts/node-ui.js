@@ -14,9 +14,11 @@ var uiNodeCategoriesThatNormallyDisplayOutputInHeader = [
 ]
 
 NodeUI = function(parent_node, x, y, z) {
+//	EventEmitter.call(this);
 	var that = this
 
-	this.nid = parent_node.uid;
+	this._id = E2.uid();
+	this.nid = 'n' + parent_node.uid;
 	this.flags = {
 		set				: false,
 		has_subgraph	: false,
@@ -161,11 +163,14 @@ NodeUI = function(parent_node, x, y, z) {
 
 	if (parent_node.plugin.desc) {
 		$header.attr('alt', '' + parent_node.uid);
-		$header.hover(E2.app.onShowTooltip.bind(E2.app), E2.app.onHideTooltip.bind(E2.app));
+		$header.hover(NodeUI.onShowTooltip.bind($header), NodeUI.onHideTooltip.bind($header));
 	}
+
+
 
 	this.setCssClass();
 	this.redrawSlots();
+	this.update();	// place in position; and redraw
 
 	this.parent_node.on('openStateChanged', function(isOpen) {
 		that.setCssClass();
@@ -178,12 +183,23 @@ NodeUI = function(parent_node, x, y, z) {
 	make_draggable($dom,
 		E2.app.onNodeDragged.bind(E2.app, parent_node),
 		E2.app.onNodeDragStopped.bind(E2.app, parent_node))
-    	
 
-	this.update();	// place in position;
+
+
 //	this.parent_node.addListener('slotAdded', this.redrawSlots.bind(this));
 //	this.parent_node.addListener('slotRemoved', this.redrawSlots.bind(this));
 
+}
+
+//NodeUI.prototype = Object.create(EventEmitter.prototype);
+
+NodeUI.prototype.destroy = function() {
+	jQuery('div.popover').remove();	// clean up any tooltips
+	[this.input_col, this.output_col, this.inline_in,
+		this.inline_out, this.header, this.content,
+		this.plugin_container, this.plugin_ui].forEach(function(j){ if (typeof j === 'function') j.remove(); j={}; });
+	this.dom.remove();
+	return this;
 }
 
 NodeUI.prototype.onRenamed = function(graph, node) {
@@ -327,32 +343,30 @@ NodeUI.prototype.redrawSlots = function() {
 	this.output_col.empty();
 
 	if (can_display_inline) {
-		NodeUI.render_slots(this.parent_node, this.nid, this.inline_in, this.parent_node.plugin.input_slots, E2.slot_type.input);
-		NodeUI.render_slots(this.parent_node, this.nid, this.inline_out, this.parent_node.plugin.output_slots, E2.slot_type.output);
-		NodeUI.render_slots(this.parent_node, this.nid, this.inline_in, this.parent_node.dyn_inputs, E2.slot_type.input);
-		NodeUI.render_slots(this.parent_node, this.nid, this.inline_out, this.parent_node.dyn_outputs, E2.slot_type.output);
+		this.render_slots(this.inline_in, this.parent_node.plugin.input_slots, E2.slot_type.input);
+		this.render_slots(this.inline_out, this.parent_node.plugin.output_slots, E2.slot_type.output);
+		this.render_slots(this.inline_in, this.parent_node.dyn_inputs, E2.slot_type.input);
+		this.render_slots(this.inline_out, this.parent_node.dyn_outputs, E2.slot_type.output);
 		return this;
 	}
 	// else...
 
 	// render inputs
-	NodeUI.render_slots(this.parent_node, this.nid, this.input_col, this.parent_node.plugin.input_slots, E2.slot_type.input);
+	this.render_slots(this.input_col, this.parent_node.plugin.input_slots, E2.slot_type.input);
 	if(this.parent_node.dyn_inputs)
-		NodeUI.render_slots(this.parent_node, this.nid, this.input_col, this.parent_node.dyn_inputs, E2.slot_type.input);
+		this.render_slots(this.input_col, this.parent_node.dyn_inputs, E2.slot_type.input);
 
 	// render outputs
 
 	if (this.canDisplayOutputInHeader()) {
-		NodeUI.render_slots(this.parent_node, this.nid, this.inline_out, this.parent_node.plugin.output_slots, E2.slot_type.output);
-		this.output_col.html();	// clear the output_col
+		this.render_slots(this.inline_out, this.parent_node.plugin.output_slots, E2.slot_type.output);
 		// just in case
 		if(this.parent_node.dyn_outputs)
-			NodeUI.render_slots(this.parent_node, this.nid, this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
+			this.render_slots(this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
 	} else {
-		this.inline_out.html();	// clear the inline output
-		NodeUI.render_slots(this.parent_node, this.nid, this.output_col, this.parent_node.plugin.output_slots, E2.slot_type.output);
+		this.render_slots(this.output_col, this.parent_node.plugin.output_slots, E2.slot_type.output);
 		if(this.parent_node.dyn_outputs)
-			NodeUI.render_slots(this.parent_node, this.nid, this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
+			this.render_slots(this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
 	}
 	return this;
 };
@@ -424,10 +438,11 @@ NodeUI.prototype.update = function() {
 	var yy = this.position.y;
 
 	// temporary fix for plugins appearing at -98px top, until VP allows plugins to display at negative positions.
-	if (xx < 0) this.position.x = this.x = xx = 10;
-	if (yy < 0) this.position.y = this.y = yy = 10;
+	if (xx < 0) this.position.x = this.x = xx = 0;
+	if (yy < 0) this.position.y = this.y = yy = 0;
 	s.left = '' + xx + 'px';
 	s.top = '' + yy + 'px';
+
 };
 
 
@@ -487,6 +502,109 @@ NodeUI.prototype.getDisplayName = function() {
 
 
 
+NodeUI.onShowTooltip = function(e) {
+	var that = this
+
+	if(E2.app.inDrag)
+		return false;
+
+	var $elem = $(e.currentTarget);
+	var tokens = $elem.attr('alt').split('_');
+	var core = E2.core;
+	var node = E2.core.active_graph.nuid_lut[tokens[0]];
+	var txt = '';
+	var readmore= '';
+
+	if(tokens.length < 2) // Node?
+	{
+		var p_name = core.pluginManager.keybyid[node.plugin.id];
+
+		txt += '<b>' + p_name + '</b><br/><br/>' + node.plugin.desc;
+	}
+	else // Slot
+	{
+		var plugin = node.plugin;
+		var slot = null;
+
+		if(tokens[1][0] === 'd')
+			slot = node.findSlotByUid(tokens[2])
+		else
+			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
+
+		txt = '<b>Type:</b> ' + slot.dt.name;
+
+		if (slot.array)
+			txt += '<br><b>Array:</b> yes';
+
+		if (slot.inactive)
+			txt += '<br><b>Inactive:</b> yes';
+
+		if(slot.lo !== undefined || slot.hi !== undefined)
+			txt += '<br><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
+
+		if (slot.def !== undefined) {
+			txt += '<br><b>Default:</b> '
+
+			if (slot.def === null)
+				txt += 'Nothing'
+			else
+				txt += slot.def
+		}
+
+		txt += '<br /><br />';
+
+		if (readmore) {
+			readmore = '<div class="readmore">' + readmore + '</div>'
+		}
+
+		if(slot.desc)
+			txt += slot.desc.replace(/\n/g, '<br/>');
+	}
+
+
+	if (this._tooltipTimer) clearTimeout(this._tooltipTimer);
+	if (this._tooltipElem) {
+		this._tooltipElem.popover('hide')
+		this._tooltipElem = null
+	}
+
+	this._tooltipTimer = setTimeout(function() {
+		if (E2.app.inDrag)
+			return;
+
+		$elem.tooltip('destroy')
+
+		$elem.popover({
+			title: txt,
+			content: readmore,
+			container: 'body',
+			animation: false,
+			trigger: 'manual',
+			placement: 'top',
+			html: true,
+			template: '<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-title"></div><div class="popover-content"></div></div>'
+		})
+		.popover('show');
+
+		that._tooltipElem = $elem;
+		that._tooltipTimer = null;
+		setTimeout(NodeUI.onHideTooltip.bind(that), 5000);
+
+	}, 1000);
+
+};
+
+NodeUI.onHideTooltip = function() {
+	clearTimeout(this._tooltipTimer)
+
+	if (this._tooltipElem) {
+		this._tooltipElem.popover('hide')
+		this._tooltipElem = null
+	}
+
+	if (E2.app.inDrag)
+		return false
+};
 
 /**** "static" *****/
 
@@ -510,8 +628,11 @@ NodeUI.makeSpriteSVGButton = function($svg, alt_text, $have_button) {
 };
 
 
-NodeUI.create_slot = function(parent_node, nid, container, s, type) {
+NodeUI.prototype.create_slot = function(container, s, type) {
 	var $div = make('div');
+
+	var parent_node = this.parent_node;
+	var nid = parent_node.uid;
 
 	var is_input = (type === E2.slot_type.input);
 	var is_dynamic = (typeof s.uid != 'undefined')
@@ -543,17 +664,15 @@ NodeUI.create_slot = function(parent_node, nid, container, s, type) {
 	$div.mouseenter(E2.app.onSlotEntered.bind(E2.app, parent_node, s, $div))
 	$div.mouseleave(E2.app.onSlotExited.bind(E2.app, parent_node, s, $div))
 	$div.mousedown(E2.app.onSlotClicked.bind(E2.app, parent_node, s, $div, type))
-	$div.hover(E2.app.onShowTooltip.bind(E2.app), E2.app.onHideTooltip.bind(E2.app));
+
+//	$div.hover(NodeUI.onShowTooltip.bind($div), NodeUI.onHideTooltip.bind($div));
 
 	return $div;
 };
 
-NodeUI.render_slots = function(parent_node, nid, container, slots, type) {
-	if (!parent_node.ui) {
-		console.log('render_slots but no UI for ', parent_node);
-	}
+NodeUI.prototype.render_slots = function(container, slots, type) {
 	for(var i = 0, len = slots.length; i < len; i++)
-		NodeUI.create_slot(parent_node, nid, container, slots[i], type);
+		this.create_slot(container, slots[i], type);
 };
 
 // open nested graph for editing
@@ -572,4 +691,3 @@ NodeUI.drilldown = function(node) {	// taken from nested graph plugin
 	}
 	return false;
 };
-
