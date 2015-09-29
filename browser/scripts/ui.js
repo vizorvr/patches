@@ -7,7 +7,6 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2);
 
 	// things that live elsewhere are called elsewhere
-	dom.btnViewMode.click(e2.app.toggleWorldEditor.bind(e2.app));
 	dom.btnGraph.click(e2.app.toggleNoodles.bind(e2.app));
 	dom.btnAccountMenu.click(e2.app.onAccountMenuClicked.bind(e2.app));
 
@@ -28,6 +27,9 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.presetsClose.click(this.onPresetsCloseClicked.bind(this));
 	dom.presetsToggle.click(this.onPresetsToggleClicked.bind(this));
 	dom.btnInspector.click(this.onInspectorClicked.bind(this));
+	
+	dom.btnCamView.click(this.enterCamView.bind(e2.app));
+	dom.btnVRView.click(this.enterVRView.bind(e2.app));
 };
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
@@ -171,7 +173,36 @@ VizorUI.prototype.onBtnAssetsClicked = function() {
 	this.syncVisibility();
 }
 
+VizorUI.prototype.enterVRView = function() {
+	var is_active = this.worldEditor.isActive()
+	if (!is_active) {
+		this.worldEditor.activate()
+	}
+	is_active = this.worldEditor.isActive()
 
+	if (E2.ui)
+		E2.ui.setWorldEditorMode(is_active)
+	
+	E2.dom.btnCamView.attr('disabled', !is_active).popover('hide');
+	E2.dom.btnVRView.attr('disabled', is_active).popover('hide');
+
+	return is_active
+}
+VizorUI.prototype.enterCamView = function() {
+	var is_active = this.worldEditor.isActive()
+	if (is_active) {
+		this.worldEditor.deactivate()
+	}
+	is_active = this.worldEditor.isActive()
+
+	if (E2.ui)
+		E2.ui.setWorldEditorMode(is_active)
+	
+	E2.dom.btnCamView.attr('disabled', !is_active).popover('hide');
+	E2.dom.btnVRView.attr('disabled', is_active).popover('hide');
+
+	return is_active
+}
 
 VizorUI.prototype.onChatResize = function() {
 	var dom = this.dom;

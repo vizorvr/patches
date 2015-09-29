@@ -259,6 +259,24 @@ FileSelectControl.prototype._bindUploadForm = function()
 	var that = this;
 	var container = $('#upload', this._el);
 	var $form = $('form.fileUploadForm', container);
+	var browsebutton = $('.btn.browse-button');
+	var fileUploadName = $('#fileUploadName');
+	var fileUploadFile = $('#fileUploadFile');
+	
+	browsebutton.click(function() {
+		fileUploadFile.trigger('click');
+		return false;
+	});
+	
+	fileUploadName.click(function() {
+		fileUploadFile.trigger('click');
+		return false;
+	});
+	
+	fileUploadFile.on('change', function() {
+		fileUploadName.val(fileUploadFile.val());
+	});
+	
 
 	if (!$form)
 		return;
