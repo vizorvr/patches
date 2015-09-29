@@ -41,11 +41,13 @@
 
 	ThreeClickableObject.prototype.on_click = function() {
 		this.setClickedOnNextUpdate = true
+
+		E2.core.runtimeEvents.emit('objectClicked', this)
 	}
 
 	ThreeClickableObject.prototype.update_state = function() {
 		if (this.object3d && this.object3d.onClick === undefined) {
-			var clickFun = this.on_click.bind(this)
+			var clickFun = this.on_click.bind(this.object3d)
 			this.object3d.traverse(function(n) {
 				n.onClick = clickFun
 			})
