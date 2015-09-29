@@ -1,6 +1,8 @@
 (function() {
 	var ThreeClickableObject = E2.plugins.three_clickable_object = function(core) {
-		this.desc = 'Clickable object'
+		this.desc = 'Clickable object. When gaze clicking on this object' +
+		            '\'objectClicked\' events are sent. objectClicked events' +
+		             'can be caught using the \'On Runtime Event\' plugin.'
 		Plugin.apply(this, arguments)
 
 		this.input_slots = [
@@ -8,20 +10,19 @@
 		]
 
 		this.output_slots = [
-			{name: 'object3d', dt: core.datatypes.OBJECT3D},
-			{name: 'clicked', dt: core.datatypes.BOOL}
+			{name: 'object3d', dt: core.datatypes.OBJECT3D}
 		]
 	}
 
 	ThreeClickableObject.prototype.reset = function() {
-		this.setClickedOnNextUpdate = false
-		this.clicked = false
+		this.meshDirty = false
 	}
 
 	ThreeClickableObject.prototype.update_input = function(slot, data) {
 		switch(slot.index) {
 		case 0: // object3d
 			this.object3d = data
+			this.meshDirty = true
 			break
 		default:
 			break
@@ -29,23 +30,18 @@
 	}
 
 	ThreeClickableObject.prototype.update_output = function(slot) {
-		switch(slot.index) {
-		case 0:
-			return this.object3d
-		case 1:
-			return this.clicked
-		default:
-			break
-		}
+		return this.object3d
 	}
 
 	ThreeClickableObject.prototype.on_click = function() {
-		this.setClickedOnNextUpdate = true
-
 		E2.core.runtimeEvents.emit('objectClicked', this)
 	}
 
 	ThreeClickableObject.prototype.update_state = function() {
+		if (!this.meshDirty) {
+			return
+		}
+
 		if (this.object3d && this.object3d.onClick === undefined) {
 			var clickFun = this.on_click.bind(this.object3d)
 			this.object3d.traverse(function(n) {
@@ -53,7 +49,6 @@
 			})
 		}
 
-		this.clicked = this.setClickedOnNextUpdate
-		this.setClickedOnNextUpdate = false
+		this.meshDirty = false
 	}
 })()
