@@ -110,6 +110,20 @@ function parseErrors(errors) {
  		)
  }
 
+exports.checkUserName = function(req, res, next) {
+  User.findOne({ username: req.body.username },
+    function(err, existingUser) {
+      if (err)
+        return next(err)
+
+      if (!existingUser)
+        return res.json({ ok: true })
+
+      return res.status(409).end()
+    }
+  )
+}
+
 /**
  * POST /signup
  * Create a new local account.

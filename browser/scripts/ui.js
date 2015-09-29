@@ -1,7 +1,9 @@
 // require ui-core.js
 
 VizorUI.prototype.setupEventHandlers = function(e2, dom) {
-	if (typeof e2 === 'undefined') return false;
+	if (typeof e2 === 'undefined')
+		return false;
+
 	dom = dom || this.dom;
 	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2);
 
@@ -60,6 +62,7 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	if (chatTop < (editorHeaderHeight + breadcrumbHeight)) {
 		chatTop = breadcrumbHeight + breadcrumbHeight + 40;
 	}
+
 	dom.chatWindow.css({'top': chatTop});
 	dom.chatWindow.movable();
 

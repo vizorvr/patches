@@ -102,6 +102,7 @@ AccountController.prototype._bindEvents = function(el, dfd)
 			var errText = 'Please use a password of at least 8 characters' 
 			that.showError('password',errText);
 		}
+
 		if (E2.models.user.get('username')) {
 			currentUsername = E2.models.user.get('username');
 		}
