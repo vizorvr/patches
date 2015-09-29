@@ -22,18 +22,26 @@ Graph.prototype.get_node_uid = function() {
 Graph.prototype.update = function() {
 	var nodes = this.nodes
 	var roots = this.roots
+	var children = this.children
 	var dirty = false
+	var i, len
 	
-	for(var i = 0, len = nodes.length; i < len; i++)
+	for(i = 0, len = nodes.length; i < len; i++)
 		nodes[i].update_count = 0
 	
-	for(var i = 0, len = roots.length; i < len; i++)
+	for(i = 0, len = roots.length; i < len; i++)
 		dirty = roots[i].update_recursive(this.connections) || dirty
+	
+	// also update subgraphs that don't have root pullers
+	for(i = 0, len = children.length; i < len; i++) {
+		if (children[i].update_count === 0)
+			dirty = children[i].update_recursive(this.connections) || dirty
+	}
 
 	if(dirty && this === E2.app.player.core.active_graph)
 		E2.app.player.core.active_graph_dirty = dirty
 	
-	for(var i = 0, len = nodes.length; i < len; i++)
+	for(i = 0, len = nodes.length; i < len; i++)
 		nodes[i].plugin.updated = false
 
 	return dirty;
