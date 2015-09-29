@@ -273,6 +273,9 @@ CollapsibleSelectControl.prototype.scoreResult = function(oq, resultStr) {
 	var scr = 0
 	oq = oq.toLowerCase()
 	
+	if (lstr.indexOf(oq) === 0)
+		return 1000
+	
 	if (lstr.indexOf(oq) > -1)
 		return 500
 
