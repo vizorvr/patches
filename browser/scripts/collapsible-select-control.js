@@ -17,7 +17,7 @@ function dragAndDropMouseDownHandler(e) {
 					  + '<span style="display: none;">Drop to create:</span>'+title+'</div>')
 	var hoverArea = $('<div class="dragging-allowed"></div>')
 	var dragPreviewInDom = false // only append the preview element when moving the mouse cursor while dragging
-
+	
 	var canvas = $('#canvases')
 	var canvasWidth = canvas.width()
 	var canvasHeight = canvas.height()
@@ -25,6 +25,13 @@ function dragAndDropMouseDownHandler(e) {
 	var canvasY = canvas.position().top
 	var cp = E2.dom.canvas_parent
 	var scrollHoverAreaSize = 25 // Pixel size for hover area for scrolling around the canvas
+	
+	var itemParentId = $(e.target).closest('.floating-box').attr('id');
+	var itemParent = $('#'+itemParentId);
+	var parentHeight = itemParent.outerHeight(true);
+	var parentWidth = itemParent.outerWidth(true);
+	var parentX = itemParent.position().left;
+	var parentY = itemParent.position().top;
 
 	// Handle document scrolling
 	var scrollHandler = function() {
@@ -134,7 +141,12 @@ function dragAndDropMouseDownHandler(e) {
 		mouseMoveBound = false
 		scrollBound = false
 		clearInterval(scrollInterval)
-
+		
+		// Hide  source library if patch appeared under it after click
+		if(evt.pageX < (parentWidth + parentX) && evt.pageX > parentX && evt.pageY < (parentHeight + parentY) && evt.pageY > parentY) {
+			itemParent.fadeOut().delay(1000).fadeIn();
+		}
+		
 		// Only create new item when released over the canvas
 		if(evt.pageX < (canvasWidth + canvasX) && evt.pageX > canvasX && evt.pageY < (canvasHeight + canvasY) && evt.pageY > canvasY) {
 			e.data.dropSuccessCb(e)
@@ -272,6 +284,9 @@ CollapsibleSelectControl.prototype.scoreResult = function(oq, resultStr) {
 	var lstr = resultStr.toLowerCase()//.replace(/\//gim, '')
 	var scr = 0
 	oq = oq.toLowerCase()
+	
+	if (lstr.indexOf(oq) === 0)
+		return 1000
 	
 	if (lstr.indexOf(oq) > -1)
 		return 500
