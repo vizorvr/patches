@@ -184,13 +184,13 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 EditorChannel.prototype.snapshot = function() {
 	var graphSer = E2.core.serialise()
-	
+
+	E2.app.snapshotPending = false
+
 	this.send({
 		actionType: 'graphSnapshotted',
 		data: graphSer
 	})
-
-	E2.app.snapshotPending = false
 }
 
 /**
@@ -200,9 +200,6 @@ EditorChannel.prototype.snapshot = function() {
 EditorChannel.prototype._localDispatchHandler = function _localDispatchHandler(payload) {
 	if (payload.from)
 		return;
-
-	if (E2.app.snapshotPending && isEditAction(payload))
-		this.snapshot()
 
 	if (this.isOnChannel)
 		return this.send(payload)
@@ -294,6 +291,9 @@ EditorChannel.prototype.join = function(channelName, cb) {
 EditorChannel.prototype.send = function(payload) {
 	if (!isAcceptedDispatch(payload))
 		return;
+
+	if (E2.app.snapshotPending && isEditAction(payload))
+		this.snapshot()
 
 	this.wsChannel.send(
 		payload.channel === 'Global' ? payload.channel : this.channelName,
