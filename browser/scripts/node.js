@@ -80,8 +80,6 @@ Node.prototype.setOpenState = function(isOpen) {
 	
 Node.prototype.create_ui = function() {
 	this.ui = new NodeUI(this, this.x, this.y)
-	this.update_connections();
-	E2.app.updateCanvas(true)
 }
 
 Node.prototype.destroy_ui = function() {

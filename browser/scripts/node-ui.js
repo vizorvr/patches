@@ -632,7 +632,7 @@ NodeUI.prototype.create_slot = function(container, s, type) {
 	var $div = make('div');
 
 	var parent_node = this.parent_node;
-	var nid = parent_node.uid;
+	var nid = this.nid;
 
 	var is_input = (type === E2.slot_type.input);
 	var is_dynamic = (typeof s.uid != 'undefined')
