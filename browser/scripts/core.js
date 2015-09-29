@@ -148,6 +148,8 @@ function Core() {
 
 	this._listeners = {};
 	
+	this.runtimeEvents = new EventEmitter()
+
 	this.asset_tracker = new AssetTracker(this);
 
 	this.active_graph_dirty = true;
