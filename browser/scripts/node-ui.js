@@ -1,8 +1,8 @@
-UIpoint = function(x,y,z) {
+function UIpoint(x,y,z) {
 	this.x = x || 0;
 	this.y = y || 0;
 	this.z = z || 0;
-};
+}
 
 var uiNodeCategoriesThatNormallyDisplayInputInHeader = [];
 var uiNodeCategoriesThatNormallyDisplayOutputInHeader = [
@@ -13,12 +13,16 @@ var uiNodeCategoriesThatNormallyDisplayOutputInHeader = [
 	uiNodeCategory.texture
 ]
 
-NodeUI = function(parent_node, x, y, z) {
-//	EventEmitter.call(this);
+
+
+function NodeUI(parent_node, x, y, z) {
+	EventEmitter.call(this);
 	var that = this
 
-	this._id = E2.uid();
 	this.nid = 'n' + parent_node.uid;
+	this._id = E2.uid();
+	this._destroying = false;
+	this._destroyed = false;
 	this.flags = {
 		set				: false,
 		has_subgraph	: false,
@@ -31,6 +35,8 @@ NodeUI = function(parent_node, x, y, z) {
 		single_in 		: false,
 		single_out 		: false
 	};
+
+	this._ttdata = null;		// used for tooltip switching
 
 	/** @var Node */
 	this.parent_node = parent_node;		// the node we represent
@@ -147,12 +153,17 @@ NodeUI = function(parent_node, x, y, z) {
 		})
 	});
 
+	var myCategory = this.getNodeCategory();
 	$dom.addClass('vp graph-node plugin');
-	$dom.addClass('p_cat_' + this.getNodeCategory());
+	$dom.addClass('p_cat_' + myCategory);
 	$dom.addClass('p_id_' + this.parent_node.plugin.id);
 	$dom.attr('id', this.nid);
-
+	$dom.data('uiid', this._id).attr('data-uiid', this._id);
+	$dom.data('nuid', this.parent_node.uid).attr('data-nuid', this.parent_node.uid);
+	$dom.data('cat', myCategory).attr('data-cat', myCategory);
 	E2.dom.canvas_parent.append($dom);
+
+
 	$dom.mousemove(E2.app.onMouseMoved.bind(E2.app)); // Make sure we don't stall during slot connection, when the mouse enters a node.
 
 	$header.mousedown(E2.app.onNodeHeaderMousedown.bind(E2.app));
@@ -163,9 +174,10 @@ NodeUI = function(parent_node, x, y, z) {
 
 	if (parent_node.plugin.desc) {
 		$header.attr('alt', '' + parent_node.uid);
-		$header.hover(NodeUI.onShowTooltip.bind($header), NodeUI.onHideTooltip.bind($header));
+		this.setupTooltips($header);
 	}
 
+	this.getPluginUIFlags(true);
 	this.setCssClass();
 	this.redrawSlots();
 
@@ -180,7 +192,6 @@ NodeUI = function(parent_node, x, y, z) {
 	make_draggable($dom,
 		E2.app.onNodeDragged.bind(E2.app, parent_node),
 		E2.app.onNodeDragStopped.bind(E2.app, parent_node))
-    	
 
 	this.update();	// place in position;
 //	this.parent_node.addListener('slotAdded', this.redrawSlots.bind(this));
@@ -188,10 +199,41 @@ NodeUI = function(parent_node, x, y, z) {
 
 }
 
-//NodeUI.prototype = Object.create(EventEmitter.prototype);
+NodeUI.prototype = Object.create(EventEmitter.prototype);
+
+NodeUI.prototype.updateTooltipsPosition = function(data) {	// find any tooltips that have our nodeId and move them accordingly.
+	var repositionMyTooltips = function(data) {
+		// data has uiid, dx,dy,and dz;
+		var uiid = data.uiid;
+		var $tooltips = jQuery('div.popover')
+							.filter(function(){
+									return $(this).data('uiid') == data.uiid;
+								});
+		if ($tooltips.length < 1) return true;
+		$tooltips.each(function(){
+			var $tip = jQuery(this);
+			var t_uiid = $tip.data('uiid');		// the tip contains the id of UI that "owns" it
+			if (!t_uiid) return;
+			if (t_uiid !== uiid) return;		// check if this is us by comparing with uuid from arguments
+			var pos = $tip.position();
+			$tip.css({
+				top: ''+ (pos.top + data.dy) + 'px',
+				left: ''+ (pos.left + data.dx) + 'px'
+			});
+		});
+	}
+	repositionMyTooltips(data);
+	return true;
+};
 
 NodeUI.prototype.destroy = function() {
+	this._destroying = true;
+	this.removeAllListeners();
+
 	jQuery('div.popover').remove();	// clean up any tooltips, globally
+	this.onHideTooltip(null);
+
+	// clean up our own dom and remove it
 	[this.input_col,
 		this.output_col,
 		this.inline_in,
@@ -199,7 +241,8 @@ NodeUI.prototype.destroy = function() {
 		this.header,
 		this.content,
 		this.plugin_container,
-		this.plugin_ui].forEach(
+		this.plugin_ui
+	].forEach(
 		function(j){
 			if (typeof j === 'function') {
 				j.remove();
@@ -207,6 +250,7 @@ NodeUI.prototype.destroy = function() {
 			j={};
 		});
 	this.dom.remove();
+	this._destroyed = true;
 	return this;
 }
 
@@ -294,41 +338,37 @@ NodeUI.prototype.canDisplayInputInHeader = function() {
 NodeUI.prototype.canDisplayOutputInHeader = function() {
 	var p = this.getPluginUIFlags();
 	var can = p.single_out && (!p.has_edit) && (!p.has_dynamic_slots);	// check !p.has_inputs if stricter
-	can &= !p.has_subgraph;
+	can = can && !p.has_subgraph;
 
 	var exceptPlugins = ['envelope_modulator'];
 
 	var myCategory = this.getNodeCategory();
-	can &= (uiNodeCategoriesThatNormallyDisplayOutputInHeader.indexOf(myCategory) > -1);
-	can &= (exceptPlugins.indexOf(this.parent_node.plugin.id) === -1);
+	can = can && (uiNodeCategoriesThatNormallyDisplayOutputInHeader.indexOf(myCategory) > -1);
+	can = can && (exceptPlugins.indexOf(this.parent_node.plugin.id) === -1);
 
 	return can;
 };
 
 NodeUI.prototype.canDisplayInline = function() {
 	var p = this.getPluginUIFlags();	// variables used to make a decision.
-
 	var category = this.getNodeCategory();
-	var is_io = category === uiNodeCategory.io;
+	var is_io = (category === uiNodeCategory.io);
 	var can = !p.has_plugin_ui;
-	can &= !p.has_subgraph;
-
-	can &= (is_io);
+	can = can && !p.has_subgraph;
+	can = can && is_io;
 	if (is_io) {
-		can &= (p.single_in && !p.has_outputs)
-				|| (p.single_out && !p.has_inputs)
-				|| ((this.parent_node.dyn_inputs.length == 1) && (!p.has_outputs))		// read var
-				|| ((this.parent_node.dyn_outputs.length == 1) && (!p.has_inputs));		// write var
+		can = can && ((p.single_in && !p.has_outputs) ||
+				(p.single_out && !p.has_inputs) ||
+				((this.parent_node.dyn_inputs.length === 1) && (!p.has_outputs)) ||		// read var
+				((this.parent_node.dyn_outputs.length === 1) && (!p.has_inputs)));		// write var
 	} else {
-		can &= (p.single_in && !p.has_outputs) || (p.single_out && !p.has_inputs);
+		can = can && ((p.single_in && !p.has_outputs) || (p.single_out && !p.has_inputs));
 	}
-
 
 	return can;
 };
 
 NodeUI.prototype.getContainerForSlotsOfType = function(is_inp, is_dyn) {
-//	var plugin_flags = this.getPluginUIFlags();
 	var can_inline = this.canDisplayInline();
 	var out_h = this.canDisplayOutputInHeader();
 	var in_h = this.canDisplayInputInHeader();
@@ -342,7 +382,6 @@ NodeUI.prototype.getContainerForSlotsOfType = function(is_inp, is_dyn) {
 }
 
 NodeUI.prototype.redrawSlots = function() {
-	var plugin_flags = this.getPluginUIFlags();
 	var can_display_inline = this.canDisplayInline();
 
 	this.inline_in.empty();
@@ -429,10 +468,25 @@ NodeUI.prototype.hasBeenRenamed = function() {
 NodeUI.prototype.isRenamed = NodeUI.prototype.hasBeenRenamed;
 
 NodeUI.prototype.setPosition = function(x, y, z) {
-	if (typeof x != 'undefined') this.position.x = this.x = x;
-	if (typeof y != 'undefined') this.position.y = this.y = y;
-	if (typeof z != 'undefined') this.position.z = this.z = z;
-	this.update();
+	var data = {
+		uiid: this._id,
+		nid: this.nid,
+		dx: this.position.x,
+		dy: this.position.y,
+		dz: this.position.z
+	};
+	if (typeof x !== 'undefined') this.position.x = this.x = x;
+	if (typeof y !== 'undefined') this.position.y = this.y = y;
+	if (typeof z !== 'undefined') this.position.z = this.z = z;
+
+	this.update();	// this may adjust position
+
+	data.dx = this.position.x - data.dx;
+	data.dy = this.position.y - data.dy;
+	data.dz = this.position.z - data.dz;
+	this.updateTooltipsPosition(data);
+
+	this.emit(uiNodeEventType.positionChanged, data);	// @todo this doesn't always emit?
 };
 
 /**
@@ -450,7 +504,6 @@ NodeUI.prototype.update = function() {
 	if (yy < 0) this.position.y = this.y = yy = 0;
 	s.left = '' + xx + 'px';
 	s.top = '' + yy + 'px';
-
 };
 
 
@@ -509,14 +562,21 @@ NodeUI.prototype.getDisplayName = function() {
 };
 
 
-
-NodeUI.onShowTooltip = function(e) {
-	var that = this
+NodeUI.prototype.onShowTooltip = function(e) {
+	var that = this		// NodeUI
 
 	if(E2.app.inDrag)
 		return false;
 
 	var $elem = $(e.currentTarget);
+
+	if (!this._ttdata) this._ttdata = {
+		_tooltipElem : null,
+		_tooltipTimer : null,
+		_tooltipHideTimer : null
+	};
+	var data = this._ttdata;
+
 	var tokens = $elem.attr('alt').split('_');
 
 	var core = E2.core;
@@ -571,19 +631,23 @@ NodeUI.onShowTooltip = function(e) {
 	}
 
 
-	if (this._tooltipTimer) clearTimeout(this._tooltipTimer);
-	if (this._tooltipElem) {
-		this._tooltipElem.popover('hide')
-		this._tooltipElem = null
+	var popovers = jQuery('body div.popover');
+	var timeout = (popovers.length > 0) ? 100 : 750;
+
+	if (data._tooltipTimer) clearTimeout(data._tooltipTimer);
+	if (data._tooltipElem) {
+		data._tooltipElem.popover('destroy');
+		data._tooltipElem = null;
+		clearTimeout(data._tooltipHideTimer);
 	}
 
-	this._tooltipTimer = setTimeout(function() {
+	var uiid = this._id;
+	data._tooltipTimer = setTimeout(function() {
 		if (E2.app.inDrag)
 			return;
 
-		jQuery('body div.popover').remove();
-
-		$elem.tooltip('destroy')
+		$elem.popover('destroy');
+		popovers.remove();
 
 		$elem.popover({
 			title: txt,
@@ -593,28 +657,37 @@ NodeUI.onShowTooltip = function(e) {
 			trigger: 'manual',
 			placement: 'top',
 			html: true,
-			template: '<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-title"></div><div class="popover-content"></div></div>'
+			template: '<div class="popover" role="tooltip" data-uiid="'+uiid+'"><div class="arrow"></div><div class="popover-title"></div><div class="popover-content"></div></div>'
 		})
 		.popover('show');
 
-		that._tooltipElem = $elem;
-		that._tooltipTimer = null;
-		setTimeout(NodeUI.onHideTooltip.bind(that), 10000);
+		data._tooltipElem = $elem;
+		data._tooltipHideTimer = setTimeout(that.onHideTooltip.bind(that), 20000);
 
-	}, 750);
+	}, timeout);
+
+	return true;
 
 };
 
-NodeUI.onHideTooltip = function() {
-	clearTimeout(this._tooltipTimer)
+NodeUI.prototype.onHideTooltip = function(e) {	// this = $(element that has popovers)
+	var data = this._ttdata;
+	if (!data) return true;
 
-	if (this._tooltipElem) {
-		this._tooltipElem.popover('hide')
-		this._tooltipElem = null
-	}
+	clearTimeout(data._tooltipTimer)
+	clearTimeout(data._tooltipHideTimer)
+	var kill_tooltip = function() {
+		if (data._tooltipElem) {
+			data._tooltipElem.popover('destroy');
+			data._tooltipElem = null;
+		}
+	};
+	if (this._destroying)
+		kill_tooltip()
+	else
+		setTimeout(kill_tooltip, 35);	// note this timeout must be less than the least in onShowToolTip
 
-	if (E2.app.inDrag)
-		return false
+	return (E2.app.inDrag)
 };
 
 /**** "static" *****/
@@ -630,7 +703,7 @@ NodeUI.makeSpriteSVG = function(xlink, className) {
  * @returns jQuery
  */
 NodeUI.makeSpriteSVGButton = function($svg, alt_text, $have_button) {
-	if (typeof $have_button == 'undefined') $have_button = makeButton(null, '');
+	if (typeof $have_button === 'undefined') $have_button = makeButton(null, '');
 	return $have_button
 		.attr('title', (alt_text || ''))
 		.removeClass('btn')
@@ -638,6 +711,16 @@ NodeUI.makeSpriteSVGButton = function($svg, alt_text, $have_button) {
 		.append($svg);
 };
 
+
+// sets up tooltip event listeners for a dom element that represents a node or slot
+NodeUI.prototype.setupTooltips = function($element) {
+	var uiId = $element.data('uiid');
+	if ((typeof uiId === 'undefined') || (!uiId)) {
+		$element.attr('data-uiid', this._id).data('uiid', this._id);
+	}
+	$element.hover(this.onShowTooltip.bind(this), this.onHideTooltip.bind(this));
+	return $element;
+};
 
 NodeUI.prototype.create_slot = function(container, s, type) {
 	var $div = make('div');
@@ -674,10 +757,9 @@ NodeUI.prototype.create_slot = function(container, s, type) {
 	}
 
 	container.append($div);
-	$div.mouseenter(E2.app.onSlotEntered.bind(E2.app, parent_node, s, $div))
-	$div.mouseleave(E2.app.onSlotExited.bind(E2.app, parent_node, s, $div))
-	$div.mousedown(E2.app.onSlotClicked.bind(E2.app, parent_node, s, $div, type))
-	$div.hover(NodeUI.onShowTooltip.bind($div), NodeUI.onHideTooltip.bind($div));
+	$div.mouseenter(E2.app.onSlotEntered.bind(E2.app, parent_node, s, $div));
+	$div.mouseleave(E2.app.onSlotExited.bind(E2.app, parent_node, s, $div));
+	$div.mousedown(E2.app.onSlotClicked.bind(E2.app, parent_node, s, $div, type));
 
 	var altSid = '' + parent_node.uid;
 
@@ -687,8 +769,16 @@ NodeUI.prototype.create_slot = function(container, s, type) {
 
 	$div.attr('alt', altSid);
 
+	// some more metadata
+	var is_dyn = is_dynamic.toString();
+	$div.data('nid', this.nid).attr('data-nid', this.nid);
+	$div.data('dyn', is_dyn).attr('data-dyn', is_dyn);
+	$div.data('type', type).attr('data-type', type);
+	this.setupTooltips($div);
+
 	return $div;
 };
+
 
 NodeUI.prototype.render_slots = function(container, slots, type) {
 	for(var i = 0, len = slots.length; i < len; i++)

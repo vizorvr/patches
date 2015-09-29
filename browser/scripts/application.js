@@ -138,7 +138,7 @@ Application.prototype.activateHoverSlot = function() {
 	var hs = this.hover_slot;
 
 	if(!hs)
-		return;
+		return true;
 
 	// Mark any attached connection
 	var conns = E2.core.active_graph.connections;
@@ -157,6 +157,7 @@ Application.prototype.activateHoverSlot = function() {
 
 	if (dirty)
 		this.updateCanvas(false);
+	return true;
 }
 
 Application.prototype.releaseHoverSlot = function() {
@@ -167,6 +168,7 @@ Application.prototype.releaseHoverSlot = function() {
 	}
 
 	this.releaseHoverConnections();
+	return true;
 }
 
 Application.prototype.setSlotCssClasses = function(slot, slot_div) {	/* @var slot_div jQuery */
@@ -269,6 +271,8 @@ Application.prototype.onSlotEntered = function(node, slot, slot_div) {
 
 	if (this.shift_pressed)
 		this.activateHoverSlot()
+
+	return true;
 }
 
 Application.prototype.onSlotExited = function(node, slot, slot_div) {
@@ -277,6 +281,7 @@ Application.prototype.onSlotExited = function(node, slot, slot_div) {
 	}
 	this.setSlotCssClasses(slot, slot_div);
 	this.releaseHoverSlot();
+	return true;
 }
 
 Application.prototype.onMouseReleased = function() {
