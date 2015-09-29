@@ -50,7 +50,6 @@ RunTimeEventReadPlugin.prototype.update_input = function(slot, data) {
 }
 
 RunTimeEventReadPlugin.prototype.update_state = function() {
-	console.log('update_state', this.lsg.dt)
 	if (this.frames++ > 0)
 		this.value = this.lsg.core.get_default_value(this.lsg.dt)
 }
