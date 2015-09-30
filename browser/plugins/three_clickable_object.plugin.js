@@ -44,9 +44,7 @@
 
 		if (this.object3d && this.object3d.onClick === undefined) {
 			var clickFun = this.on_click.bind(this.object3d)
-			this.object3d.traverse(function(n) {
-				n.onClick = clickFun
-			})
+			this.object3d.onClick = clickFun
 		}
 
 		this.meshDirty = false

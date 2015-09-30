@@ -127,7 +127,7 @@
 					//	f *= fadeoutfactor
 					//}
 
-					that.vertices[idx].set(x * f, y * f, -0.1)
+					that.vertices[idx].set(x * f, y * f, -0.2)
 
 					idx++
 				}
@@ -145,7 +145,7 @@
 	ThreeGazeClicker.prototype.get_mesh = function() {
 		if (!this.object3d) {
 			this.geometry = new this.GeometryGenerator()
-			this.material = new THREE.MeshBasicMaterial()
+			this.material = new THREE.MeshBasicMaterial({color:0xffffff})
 			this.object3d = new THREE.Mesh(this.geometry, this.material)
 		}
 
@@ -163,12 +163,15 @@
 		var hadObj = false
 
 		if (intersects.length > 0) {
-			if (intersects[0].object.onClick) {
-				var curObj = intersects[0].object
+			var obj = intersects[0].object
+			while (obj && !obj.onClick) {
+				obj = obj.parent
+			}
 
-				if (curObj != this.lastObj) {
+			if (obj && obj.onClick) {
+				if (obj != this.lastObj) {
 					this.objTimer = this.core.abs_t
-					this.lastObj = curObj
+					this.lastObj = obj
 				}
 
 				hadObj = true
@@ -215,7 +218,5 @@
 		if (this.scene.children[1].children.indexOf(mesh) < 0) {
 			this.scene.children[1].add(mesh)
 		}
-
-		this.updated = true
 	}
 })()
