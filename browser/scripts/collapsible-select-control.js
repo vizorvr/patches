@@ -256,7 +256,14 @@ CollapsibleSelectControl.prototype._filterData = function(text) {
 		return items;
 	}, [])
 	.sort(function(a,b) {
-		var dif = b.score - a.score
+		var dif = b.score - a.score;
+		var ltext = text.toLowerCase();
+		var aTitle = a.title.toLowerCase();
+		var bTitle = b.title.toLowerCase();
+		if (ltext === aTitle)
+			return -1
+		if (ltext === bTitle)
+			return 1
 		if (dif === 0) {
 			if (a.title < b.title)
 				return -1
@@ -272,9 +279,6 @@ CollapsibleSelectControl.prototype.scoreResult = function(oq, resultStr) {
 	var lstr = resultStr.toLowerCase()//.replace(/\//gim, '')
 	var scr = 0
 	oq = oq.toLowerCase()
-	
-	if (lstr.indexOf(oq) === 0)
-		return 1000
 	
 	if (lstr.indexOf(oq) > -1)
 		return 500
