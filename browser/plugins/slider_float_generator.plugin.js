@@ -50,7 +50,7 @@ Slider.prototype.create_ui = function() {
 	$slider.on('input', function() {
 		if (t) clearTimeout(t);
 		that.$display.html($slider.val());
-		t = setTimeout(function(){that.undoableSetState('val', parseFloat($slider.val()), that.state.val)}, 300);
+		t = setTimeout(function(){that.undoableSetState('val', parseFloat($slider.val()), that.state.val)}, 100);
 		return true;
 	})
 

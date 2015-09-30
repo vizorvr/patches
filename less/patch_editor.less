@@ -72,7 +72,8 @@ div.graph-node {
 	border-radius: @vp-node-border-radius;
 	background: @vp-node-bg;
 	color: @vp-node-color;
-	overflow: hidden;
+  	overflow:hidden;	// required by io or other inline nodes to round their corners
+  	// note node-ui.js may set width:auto on this
   	.p_header {
 	  position:relative;
 	  border-top-left-radius: @vp-node-border-radius;
@@ -80,6 +81,7 @@ div.graph-node {
 	  >div {
 		  display:table;
 		  width:100%;
+
 		  position:relative;
 		  height: @device-header-height;
 		  span.p_title {

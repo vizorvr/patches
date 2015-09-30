@@ -311,6 +311,7 @@ NodeUI.prototype.setCssClass = function() {
 	classIf(this.isSelected(), 'p_selected');
 	classIf(this.isRenamed(), 'p_renamed');
 
+	$dom.css('width', 'auto');	// fix Safari width bug
 	return this;
 };
 
@@ -457,7 +458,7 @@ NodeUI.prototype.hasEditButton = function() {
 	return false;
 };
 
-NodeUI.prototype.hasBeenRenamed = function() {
+NodeUI.prototype.isRenamed = function() {
 	var has_title = (this.parent_node.title || false);
 	var has_no_subgraph = !this.hasSubgraph();
 	var node_category = this.getNodeCategory();
@@ -465,7 +466,7 @@ NodeUI.prototype.hasBeenRenamed = function() {
 	return (has_title && not_exempt && has_no_subgraph && (this.parent_node.title !== this.parent_node.id));
 };
 
-NodeUI.prototype.isRenamed = NodeUI.prototype.hasBeenRenamed;
+NodeUI.prototype.hasBeenRenamed = NodeUI.prototype.isRenamed;
 
 NodeUI.prototype.setPosition = function(x, y, z) {
 	var data = {
@@ -632,7 +633,7 @@ NodeUI.prototype.onShowTooltip = function(e) {
 
 
 	var popovers = jQuery('body div.popover');
-	var timeout = (popovers.length > 0) ? 100 : 750;
+	var timeout = (popovers.length > 0) ? 350 : 2500;
 
 	if (data._tooltipTimer) clearTimeout(data._tooltipTimer);
 	if (data._tooltipElem) {
@@ -662,7 +663,7 @@ NodeUI.prototype.onShowTooltip = function(e) {
 		.popover('show');
 
 		data._tooltipElem = $elem;
-		data._tooltipHideTimer = setTimeout(that.onHideTooltip.bind(that), 20000);
+		data._tooltipHideTimer = setTimeout(that.onHideTooltip.bind(that), 30000);
 
 	}, timeout);
 
@@ -685,7 +686,7 @@ NodeUI.prototype.onHideTooltip = function(e) {	// this = $(element that has popo
 	if (this._destroying)
 		kill_tooltip()
 	else
-		setTimeout(kill_tooltip, 35);	// note this timeout must be less than the least in onShowToolTip
+		setTimeout(kill_tooltip, 50);	// note this timeout must be less than the least in onShowToolTip
 
 	return (E2.app.inDrag)
 };
