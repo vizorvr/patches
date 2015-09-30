@@ -49,6 +49,8 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 
 	e2.app.onWindowResize();
 	this.setWorldEditorMode(e2.app.worldEditor.isActive());
+	
+	this.setPageTitle();
 }
 
 
@@ -66,6 +68,22 @@ VizorUI.prototype.showLoadingIndicator = function() {
 // stubs
 // VizorUI.prototype.openModal
 // VizorUI.prototype.closeModal
+
+VizorUI.prototype.setPageTitle = function() {
+	var graphname = E2.app.path;
+	var isLoggedIn = E2.models.user.get('username');
+	var newTitle = document.title;
+	
+	if (!isLoggedIn)
+		return false;
+
+	graphname = graphname.split('/')
+	if (graphname.length > 1)
+		graphname=graphname[1];
+	
+	newTitle = graphname + " | " + document.title;	
+	document.title = newTitle;
+}
 
 VizorUI.prototype.openLoginModal = function() {
 	return E2.controllers.account.openLoginModal();
