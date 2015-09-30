@@ -2168,6 +2168,10 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.vrview = $('#vrview');
 	
 	E2.dom.btnViewMode = $('#btn-cam');
+	
+	E2.dom.dragOverlay = $('#drag-overlay');
+	E2.dom.dropArea = $('#drop-area');
+	E2.dom.dropUploading = $('#drop-uploading');
 
 	$.ajaxSetup({ cache: false });
 
