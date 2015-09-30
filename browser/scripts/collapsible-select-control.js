@@ -3,7 +3,16 @@
  * @param  {Event} e         Mousedown event from bind
  */
 function dragAndDropMouseDownHandler(e) {
-
+	var chatWindow = E2.dom.chatWindow;
+	var chatVisible = E2.ui.visibility.panel_chat;
+	var closeChat = E2.ui.onChatCloseClicked.bind(E2.ui);
+	var presetsLib = E2.dom.presetsLib;
+	var presetsVisible = E2.ui.visibility.panel_presets;
+	var closePresets = E2.ui.onPresetsCloseClicked.bind(E2.ui);
+	var assetsLib = E2.dom.assetsLib;
+	var assetsVisible = E2.ui.visibility.panel_assets;
+	var closeAssets = E2.ui.onAssetsCloseClicked.bind(E2.ui);
+	
 	var mouseMoveBound = false
 	var mouseX = 0
 	var mouseY = 0
@@ -26,12 +35,24 @@ function dragAndDropMouseDownHandler(e) {
 	var cp = E2.dom.canvas_parent
 	var scrollHoverAreaSize = 25 // Pixel size for hover area for scrolling around the canvas
 	
-	var itemParentId = $(e.target).closest('.floating-box').attr('id');
-	var itemParent = $('#'+itemParentId);
-	var parentHeight = itemParent.outerHeight(true);
-	var parentWidth = itemParent.outerWidth(true);
-	var parentX = itemParent.position().left;
-	var parentY = itemParent.position().top;
+	if (presetsVisible) {
+		var plHeight = presetsLib.outerHeight(true);
+		var plWidth = presetsLib.outerWidth(true);
+		var plX = presetsLib.position().left;
+		var plY = presetsLib.position().top;
+	}
+	if (assetsVisible) {
+		var alHeight = assetsLib.outerHeight(true);
+		var alWidth = assetsLib.outerWidth(true);
+		var alX = assetsLib.position().left;
+		var alY = assetsLib.position().top;
+	}
+	if (chatVisible) {
+		var chHeight = chatWindow.outerHeight(true);
+		var chWidth = chatWindow.outerWidth(true);
+		var chX = chatWindow.position().left;
+		var chY = chatWindow.position().top;
+	}
 
 	// Handle document scrolling
 	var scrollHandler = function() {
@@ -142,14 +163,19 @@ function dragAndDropMouseDownHandler(e) {
 		scrollBound = false
 		clearInterval(scrollInterval)
 		
-		// Hide  source library if patch appeared under it after click
-		if(evt.pageX < (parentWidth + parentX) && evt.pageX > parentX && evt.pageY < (parentHeight + parentY) && evt.pageY > parentY) {
-			itemParent.fadeOut().delay(1000).fadeIn();
-		}
-		
-		// Only create new item when released over the canvas
+		// Only create new item when released over the canvas and hide floating box if dropped under it;
 		if(evt.pageX < (canvasWidth + canvasX) && evt.pageX > canvasX && evt.pageY < (canvasHeight + canvasY) && evt.pageY > canvasY) {
 			e.data.dropSuccessCb(e)
+
+			if ((presetsVisible) && (evt.pageX < (plWidth + plX) && evt.pageX > plX && evt.pageY < (plHeight + plY) && evt.pageY > plY)) { 
+				closePresets();
+			}
+			if ((assetsVisible) && (evt.pageX < (alWidth + alX) && evt.pageX > alX && evt.pageY < (alHeight + alY) && evt.pageY > alY)) { 
+				closeAssets();
+			}
+			if ((chatVisible) && (evt.pageX < (chWidth + chX) && evt.pageX > chX && evt.pageY < (chHeight + chY) && evt.pageY > chY)) { 
+				closeChat();
+			}
 		}
 
 	}
