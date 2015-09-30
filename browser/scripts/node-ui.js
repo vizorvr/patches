@@ -311,7 +311,10 @@ NodeUI.prototype.setCssClass = function() {
 	classIf(this.isSelected(), 'p_selected');
 	classIf(this.isRenamed(), 'p_renamed');
 
-	$dom.css('width', 'auto');	// fix Safari width bug
+	var currentWidth = $dom[0].style.width;
+	if (!currentWidth) currentWidth = 'auto';
+	$dom.css('width', currentWidth);	// fix Safari width bug
+
 	return this;
 };
 
