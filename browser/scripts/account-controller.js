@@ -84,6 +84,7 @@ AccountController.prototype._bindEvents = function(el, dfd)
 			$(this).val('').removeClass('taken');
 	});
 	$('.form-input input', el).on('blur', function() {
+		var currentUsername = '';
 		if (!$(this).val())
 			$(this).parent().find('label').removeClass('filled-label');
 			
@@ -91,8 +92,10 @@ AccountController.prototype._bindEvents = function(el, dfd)
 			var errText = 'Please use a password of at least 8 characters' 
 			that.showError('password',errText);
 		}
-			
-		if (($(this).attr('name') === 'username') && $(this).val() && $(this).val()!==user.username) {
+		if (E2.models.user.get('username')) {
+			currentUsername = E2.models.user.get('username');
+		}
+		if (($(this).attr('name') === 'username') && $(this).val() && $(this).val()!==currentUsername) {
 			var formEl = $('#signup-form_id');
 			var formData = formEl.serialize();
 			$.ajax(
