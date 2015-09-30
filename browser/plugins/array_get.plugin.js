@@ -33,6 +33,7 @@ ArrayGetPlugin.prototype = Object.create(Plugin.prototype)
 
 ArrayGetPlugin.prototype.reset = function() {
 	this.item = this.lsg.infer_dt()
+	this.output_slots[0].array = false
 }
 
 ArrayGetPlugin.prototype.connection_changed = function(on, conn, slot) {
@@ -62,4 +63,5 @@ ArrayGetPlugin.prototype.state_changed = function(ui) {
 	this.array = []
 	
 	this.lsg.infer_dt()
+	this.output_slots[0].array = false
 } 

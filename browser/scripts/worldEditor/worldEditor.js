@@ -49,7 +49,7 @@ function WorldEditor() {
 		that.editorControls.enabled = true
 	})
 
-	this.setup_object_picking()
+	this.setupObjectPicking()
 }
 
 WorldEditor.prototype.update = function() {
@@ -147,7 +147,7 @@ WorldEditor.prototype.setSelection = function(selected) {
 }
 
 
-WorldEditor.prototype.pick_object = function(e) {
+WorldEditor.prototype.pickObject = function(e) {
 	if (E2.app.noodlesVisible === true)
 		return;
 
@@ -193,17 +193,19 @@ WorldEditor.prototype.pick_object = function(e) {
 }
 
 WorldEditor.prototype.mouseDown = function(e) {
-	this.dragContext = {startX: e.pageX, startY: e.pageY}
+	if (this.isActive()) {
+		this.dragContext = {startX: e.pageX, startY: e.pageY}
+	}
 }
 
 WorldEditor.prototype.mouseUp = function(e) {
 	if (this.dragContext && e.pageX === this.dragContext.startX && e.pageY === this.dragContext.startY) {
 		// only pick an object if there was no drag
-		this.pick_object(e)
+		this.pickObject(e)
 	}
 }
 
-WorldEditor.prototype.setup_object_picking = function() {
+WorldEditor.prototype.setupObjectPicking = function() {
 	$(document).mousedown(this.mouseDown.bind(this))
 	$(document).mouseup(this.mouseUp.bind(this))
 	this.raycaster = new THREE.Raycaster()

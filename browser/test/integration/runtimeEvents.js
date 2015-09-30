@@ -195,7 +195,7 @@ describe('Array function', function() {
 			src_nuid: textNode.uid,
 			dst_nuid: emitNode.uid,
 			src_slot: 0,
-			dst_slot: 0,
+			dst_slot: 1,
 		})
 
 		// connect text.output to readNode.eventName
@@ -212,7 +212,8 @@ describe('Array function', function() {
 		graph.update()
 
 		var epl = emitNode.plugin
-		epl.update_input(epl.input_slots[1], 32.62)
+		epl.update_input(epl.input_slots[0], true)
+		epl.update_input(epl.input_slots[2], 32.62)
 
 		graph.update()
 		
