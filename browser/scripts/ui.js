@@ -71,19 +71,22 @@ VizorUI.prototype.openLoginModal = function() {
 
 
 VizorUI.prototype.onSearchResultsChange = function() {
-	var resultsCount = $('.result.table tbody').children().length;
+  var presetsLib = E2.dom.presetsLib;
+  var resultsCount = $('.result.table tbody').children().length;  
+	var presetsList = presetsLib.find('.preset-list-container');
+	var maxHeight = presetsList.css('maxHeight');
 	if (resultsCount>0) {
-		E2.dom.presetsLib.removeClass('collapsed');
-		E2.dom.presetsLib.find('.preset-list-container').show();
+		presetsLib.removeClass('collapsed');
+		presetsList.show();
 		var resultsHeight = $('.result.table').outerHeight(true);
-		var maxHeight = E2.dom.presetsLib.find('.preset-list-container').css('maxHeight')
 		var newHeight = resultsHeight;
 		newHeight = ( newHeight >= maxHeight ) ? (maxHeight) : (newHeight);
-		E2.dom.presetsLib.height('auto')
-						 .find('.preset-list-container').height(newHeight);
+		presetsLib.height('auto');
+		presetsList.height(newHeight);
 	}
 	 else {
-		E2.dom.presetsLib.height('auto');
+		presetsLib.height('auto');
+		presetsList.height(maxHeight);
 	}
 };
 
