@@ -60,7 +60,10 @@ button.vp.svg {
 }
 div.graph-node.p_renamed .p_header > div span.p_title {color: #ffc;}
 
-
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  // force buttons to their specified width in webkit
+  div.graph-node .p_header>div span.p_title {width: 100%;}
+}
 div.graph-node {
   	box-shadow: 0 0 2px rgba(0,0,0,0.2);
   	display: table;
@@ -82,7 +85,6 @@ div.graph-node {
 		  span.p_title {
 			  font-weight: 600;
 			  cursor: move;
-			  min-width:50px;	// force buttons to their specified width, was width:100% creating issues with some plugins
 		  }
 		  span, button {
 			  display: table-cell;

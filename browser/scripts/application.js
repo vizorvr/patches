@@ -138,7 +138,7 @@ Application.prototype.activateHoverSlot = function() {
 	var hs = this.hover_slot;
 
 	if(!hs)
-		return;
+		return true;
 
 	// Mark any attached connection
 	var conns = E2.core.active_graph.connections;
@@ -157,6 +157,7 @@ Application.prototype.activateHoverSlot = function() {
 
 	if (dirty)
 		this.updateCanvas(false);
+	return true;
 }
 
 Application.prototype.releaseHoverSlot = function() {
@@ -167,6 +168,7 @@ Application.prototype.releaseHoverSlot = function() {
 	}
 
 	this.releaseHoverConnections();
+	return true;
 }
 
 Application.prototype.setSlotCssClasses = function(slot, slot_div) {	/* @var slot_div jQuery */
@@ -269,6 +271,8 @@ Application.prototype.onSlotEntered = function(node, slot, slot_div) {
 
 	if (this.shift_pressed)
 		this.activateHoverSlot()
+
+	return true;
 }
 
 Application.prototype.onSlotExited = function(node, slot, slot_div) {
@@ -277,6 +281,7 @@ Application.prototype.onSlotExited = function(node, slot, slot_div) {
 	}
 	this.setSlotCssClasses(slot, slot_div);
 	this.releaseHoverSlot();
+	return true;
 }
 
 Application.prototype.onMouseReleased = function() {
@@ -612,7 +617,6 @@ Application.prototype.clearSelection = function() {
 	this.selectedNodes = [];
 	this.selectedConnections = [];
 
-	this.onHideTooltip();
 }
 
 Application.prototype.redrawConnection = function(connection) {
@@ -1546,103 +1550,6 @@ Application.prototype.growl = function(title, type, duration, person) {
 	setTimeout(remove, duration * $('#notifications-area .notification').length + 1000)
 }
 
-Application.prototype.onShowTooltip = function(e) {
-	var that = this
-
-	if(this.inDrag)
-		return false;
-
-	var $elem = $(e.currentTarget);
-	var tokens = $elem.attr('alt').split('_');
-	var core = this.player.core;
-	var node = E2.core.active_graph.nuid_lut[tokens[0]];
-	var txt = '';
-	var readmore= '';
-
-	if(tokens.length < 2) // Node?
-	{
-		var p_name = core.pluginManager.keybyid[node.plugin.id];
-
-		txt += '<b>' + p_name + '</b><br/><br/>' + node.plugin.desc;
-	}
-	else // Slot
-	{
-		var plugin = node.plugin;
-		var slot = null;
-
-		if(tokens[1][0] === 'd')
-			slot = node.findSlotByUid(tokens[2])
-		else
-			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
-
-		txt = '<b>Type:</b> ' + slot.dt.name;
-
-		if (slot.array)
-			txt += '<br><b>Array:</b> yes';
-
-		if (slot.inactive)
-			txt += '<br><b>Inactive:</b> yes';
-
-		if(slot.lo !== undefined || slot.hi !== undefined)
-			txt += '<br><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
-
-		if (slot.def !== undefined) {
-			txt += '<br><b>Default:</b> '
-
-			if (slot.def === null)
-				txt += 'Nothing'
-			else
-				txt += slot.def
-		}
-
-		txt += '<br /><br />';
-		
-		if (readmore) {
-			readmore = '<div class="readmore">' + readmore + '</div>'
-		};
-
-		if(slot.desc)
-			txt += slot.desc.replace(/\n/g, '<br/>');
-	}
-
-	clearTimeout(this._tooltipTimer);
-
-	this._tooltipTimer = setTimeout(function() {
-		if (that.inDrag)
-			return;
-
-		$elem.tooltip('destroy')
-
-		$elem.popover({
-			title: txt,
-			content: readmore,
-			container: 'body',
-			animation: false,
-			trigger: 'manual',
-			placement: 'bottom',
-			html: true,
-			template: '<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-title"></div><div class="popover-content"></div></div>'
-		})
-		.popover('show');
-
-		that._tooltipElem = $elem;
-
-	}, 500);
-
-};
-
-Application.prototype.onHideTooltip = function() {
-	clearTimeout(this._tooltipTimer)
-
-	if (this._tooltipElem) {
-		this._tooltipElem.popover('hide')
-		this._tooltipElem = null
-	}
-
-	if (this.inDrag)
-		return false
-}
-
 Application.prototype.setupStoreListeners = function() {
 	function onGraphChanged() {
 		if (E2.core.active_graph.plugin)
@@ -1664,8 +1571,6 @@ Application.prototype.setupStoreListeners = function() {
 	}
 
 	function onNodeRemoved(graph, node) {
-		E2.app.onHideTooltip()
-
 		node.destroy_ui()
 
 		if (node.plugin.isGraph)

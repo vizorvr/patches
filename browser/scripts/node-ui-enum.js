@@ -1,3 +1,7 @@
+var uiNodeEventType = {
+	positionChanged : 'uiPositionChanged'
+};
+
 /**
  * Below values are arbitrary for the purposes of UI development.
  * They are used to set a default css class for every type of known node.

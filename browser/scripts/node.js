@@ -86,7 +86,8 @@ Node.prototype.destroy_ui = function() {
 	if (!this.ui)
 		return;
 
-	this.ui.dom.remove()
+	this.ui.destroy();
+
 	this.ui = null
 
 	if (this.plugin.destroy_ui)
