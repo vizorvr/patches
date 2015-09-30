@@ -294,7 +294,14 @@ CollapsibleSelectControl.prototype._filterData = function(text) {
 		return items;
 	}, [])
 	.sort(function(a,b) {
-		var dif = b.score - a.score
+		var dif = b.score - a.score;
+		var ltext = text.toLowerCase();
+		var aTitle = a.title.toLowerCase();
+		var bTitle = b.title.toLowerCase();
+		if (ltext === aTitle)
+			return -1
+		if (ltext === bTitle)
+			return 1
 		if (dif === 0) {
 			if (a.title < b.title)
 				return -1
