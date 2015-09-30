@@ -36,7 +36,6 @@ RunTimeEventWritePlugin.prototype.update_input = function(slot, data) {
 
 RunTimeEventWritePlugin.prototype.update_state = function() {
 	if (this.hasNewData && this.eventName && this.value && this.emitActive) {
-		console.log('emit ', this.eventName)
 		E2.core.runtimeEvents.emit(this.eventName, this.value)
 
 		this.hasNewData = false
