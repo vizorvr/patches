@@ -2167,7 +2167,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.fscreen = $('#fullscreen');
 	E2.dom.vrview = $('#vrview');
 	
-	E2.dom.btnViewMode = $('#btn-cam');
+	E2.dom.btnCamView = $('#btn-cam');
+	E2.dom.btnVRView = $('#btn-vr');
 
 	$.ajaxSetup({ cache: false });
 
