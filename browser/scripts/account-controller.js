@@ -96,6 +96,7 @@ AccountController.prototype._bindEvents = function(el, dfd)
 			currentUsername = E2.models.user.get('username');
 		}
 		if (($(this).attr('name') === 'username') && $(this).val() && $(this).val()!==currentUsername) {
+			return
 			var formEl = $('#signup-form_id');
 			var formData = formEl.serialize();
 			$.ajax(
@@ -390,12 +391,29 @@ AccountController.prototype.openResetPasswordModal = function(dfd) {
 	return dfd.promise
 }
 
+AccountController.prototype.fillAccountForm = function() {
+	var formEl = $('#account-modal-form');
+	var nameIn = $('#name_id');
+	var unameIn = $('#username_id');
+	var emailIn = $('#email_id');
+	nameIn.val(E2.models.user.get('name'));
+	unameIn.val(E2.models.user.get('username'));
+	emailIn.val(E2.models.user.get('email'));
+	
+	if (nameIn.val())
+		nameIn.parent().find('label').addClass('filled-label');
+	if (unameIn.val())
+		unameIn.parent().find('label').addClass('filled-label');
+	if (emailIn.val())
+		emailIn.parent().find('label').addClass('filled-label');
+}
+
 AccountController.prototype.openAccountModal = function(dfd) {
 	var that = this;
 	var dfd = dfd || when.defer();
 	var accountTemplate = E2.views.account.account;
 	
-	ga('send', 'event', 'account', 'open', 'resetModal');
+	ga('send', 'event', 'account', 'open', 'accountModal');
 	
 	var bb = bootbox.dialog(
 	{
@@ -404,6 +422,7 @@ AccountController.prototype.openAccountModal = function(dfd) {
 		message: 'Rendering',
 	}).init(function() {
 		E2.app.useCustomBootboxTemplate(accountTemplate);
+		that.fillAccountForm();
 	});
 
 	this._bindEvents(bb, dfd);
@@ -434,6 +453,7 @@ AccountController.prototype.openAccountModal = function(dfd) {
 			},
 			dataType: 'json'
 		});
+		return false;
 	});
 
 	return dfd.promise

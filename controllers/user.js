@@ -99,7 +99,6 @@ function parseErrors(errors) {
  	req.assert('username', 'Username is not valid').isAlphanumeric();
  	req.assert('email', 'Email is not valid').isEmail();
  	req.assert('password', 'Password must be at least 4 characters long').len(4);
- 	req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
 
  	var errors = req.validationErrors();
 
@@ -109,6 +108,7 @@ function parseErrors(errors) {
  	}
 
  	var user = new User({
+		name: req.body.name,
  		username: req.body.username,
  		email: req.body.email,
  		password: req.body.password
@@ -171,6 +171,7 @@ function parseErrors(errors) {
  		if (err) return next(err);
  		user.email = req.body.email || '';
  		user.username = req.body.username || '';
+ 		user.name = req.body.username || '';
  		user.profile.gender = req.body.gender || '';
  		user.profile.location = req.body.location || '';
  		user.profile.website = req.body.website || '';
@@ -192,7 +193,6 @@ function parseErrors(errors) {
  exports.postUpdatePassword = function(req, res, next) {
 
  	req.assert('password', 'Password must be at least 4 characters long').len(4);
- 	req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
 
  	var errors = req.validationErrors();
 

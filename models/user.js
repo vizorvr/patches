@@ -3,6 +3,7 @@ var bcrypt = require('bcrypt-nodejs');
 var crypto = require('crypto');
 
 var userSchema = new mongoose.Schema({
+	name: { type: String, required: false, unique: false, lowercase: false },
 	username: { type: String, required: true, unique: true, lowercase: true },
 	email: { type: String, required: true, unique: true, lowercase: true },
 	password: String,
@@ -53,7 +54,9 @@ userSchema.pre('save', function(next)
 userSchema.methods.toJSON = function()
 {
 	return {
-		username: this.username
+		username: this.username,
+		email: this.email,
+		name: this.name
 	};
 };
 
