@@ -89,6 +89,23 @@ function parseErrors(errors) {
  };
 
 /**
+ * GET /account/exists
+ **/
+exports.checkUserName = function(req, res, next) {
+  User.findOne({ username: req.body.username },
+    function(err, existingUser) {
+      if (err)
+        return next(err)
+
+      if (!existingUser)
+        return res.json({ ok: true })
+
+      return res.status(409).end()
+    }
+  )
+}
+
+/**
  * POST /signup
  * Create a new local account.
  * @param email
@@ -103,12 +120,11 @@ function parseErrors(errors) {
  	var errors = req.validationErrors();
 
  	if (errors) {
- 		req.flash('errors', parseErrors(errors));
- 		return res.redirect('/signup');
+ 		return res.status(400).json(errors);
  	}
 
  	var user = new User({
-		name: req.body.name,
+		name: req.body.name.replace(/[<>\;\\\'\"]+/gim, ''),
  		username: req.body.username,
  		email: req.body.email,
  		password: req.body.password
@@ -116,32 +132,28 @@ function parseErrors(errors) {
 
  	User.findOne({ username: req.body.username }, function(err, existingUser) {
  		if (existingUser) {
- 			if (req.xhr)
- 			{
- 				return res.status(400).json({ message: 'Account with that username already exists.' });
+ 			if (req.xhr){
+ 				return res.status(400).json({
+          message: 'Account with that username already exists.'
+        });
  			}
- 			req.flash('errors', { message: 'Account with that username already exists.' });
  			return res.redirect('/signup');
  		}
  		User.findOne({ email: req.body.email }, function(err, existingUser) {
  			if (existingUser) {
- 				if (req.xhr)
- 				{
+ 				if (req.xhr) {
  					return res.status(400).json({ message: 'Account with that email already exists.' });
  				}
- 				req.flash('errors', { message: 'Account with that email address already exists.' });
  				return res.redirect('/signup');
  			}
+
  			user.save(function(err) {
  				if (err) return next(err);
  				req.logIn(user, function(err) {
  					if (err) return next(err);
- 					if (req.xhr)
- 					{
+ 					if (req.xhr) {
  						res.json(user.toJSON());
- 					}
- 					else
- 					{
+ 					} else {
  						res.redirect(req.session.returnTo || '/account');
  					}
  				});
@@ -167,18 +179,31 @@ function parseErrors(errors) {
  */
 
  exports.postUpdateProfile = function(req, res, next) {
- 	User.findById(req.user.id, function(err, user) {
+  req.assert('username', 'Username is not valid').isAlphanumeric();
+  req.assert('email', 'Email is not valid').isEmail();
+  req.assert('password', 'Password must be at least 4 characters long').len(4);
+  
+  var errors = req.validationErrors();
+
+  if (errors) {
+    return res.status(400).json(errors);
+  }
+
+	User.findById(req.user.id, function(err, user) {
  		if (err) return next(err);
- 		user.email = req.body.email || '';
- 		user.username = req.body.username || '';
- 		user.name = req.body.username || '';
- 		user.profile.gender = req.body.gender || '';
- 		user.profile.location = req.body.location || '';
- 		user.profile.website = req.body.website || '';
+
+    user.name = req.body.name.replace(/[<>\;\\\'\"]+/gim, '');
+ 		user.email = req.body.email
+ 		user.username = req.body.username
+
+ 		// user.profile.gender = req.body.gender || '';
+ 		// user.profile.location = req.body.location || '';
+ 		// user.profile.website = req.body.website || '';
 
  		user.save(function(err) {
- 			if (err) return next(err);
- 			req.flash('success', { message: 'Profile information updated.' });
+ 			if (err)
+        return next(err);
+
  			res.redirect('/account');
  		});
  	});

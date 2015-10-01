@@ -102,16 +102,14 @@ AccountController.prototype._bindEvents = function(el, dfd)
 			$.ajax(
 				{
 					type: "POST",
-					url: '/checkusername',
+					url: '/account/exists',
 					data: formData,
-					error: function(err, msg)
-					{
+					error: function(err, msg) {
 						var errText = 'Sorry, this username is already taken'
 						that.showError('username',errText);
 						$('#username_id').addClass('taken').parent().addClass('wrong');
 					},
-					success: function(user)
-					{
+					success: function(user) {
 						ga('send', 'event', 'account', 'signedUp', user.username)
 						that.hideError('username');
 					},
@@ -243,8 +241,7 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	this._bindEvents(bb, dfd);
 
 	var formEl = $('#signup-form_id');
-	formEl.submit(function( event )
-	{
+	formEl.submit(function( event ) {
 		event.preventDefault();
 		
 		if (!that.checkSignupFields(formEl)) {
@@ -256,19 +253,23 @@ AccountController.prototype.openSignupModal = function(dfd) {
 			
 		var formData = formEl.serialize();
 
-		$.ajax(
-		{
-			type: "POST",
+		$.ajax({
+			type: 'POST',
 			url: formEl.attr('action'),
 			data: formData,
-			error: function(err, msg)
-			{
-				var errText = 'Sign up failed. Please check required fields.'
-				that.showError('general',errText);
+			error: function(err) {
+				if (err.responseJSON) {
+					err.responseJSON.map(function(ei) {
+						that.showError(ei.param, ei.msg)
+					})
+				} else {
+					var errText = 'Sign up failed. Please check required fields.'
+					that.showError('general', errText);
+				}
+
 				$('#signup-form_id .required').parent().addClass('wrong');
 			},
-			success: function(user)
-			{
+			success: function(user) {
 				ga('send', 'event', 'account', 'signedUp', user.username)
 				E2.models.user.set(user);
 				bootbox.hideAll();
@@ -428,21 +429,26 @@ AccountController.prototype.openAccountModal = function(dfd) {
 	this._bindEvents(bb, dfd);
 	
 	var formEl = $('#account-modal-form');
-	formEl.submit(function( event )
-	{
+	formEl.submit(function( event ) {
 		event.preventDefault();
 		
 		var formData = formEl.serialize();
 
-		$.ajax(
-		{
+		$.ajax({
 			type: "POST",
 			url: formEl.attr('action'),
 			data: formData,
-			error: function(err)
-			{	
-				var errText = 'Account update failed.'
-				that.showError('general',errText);
+			error: function(err) {
+				if (err.responseJSON) {
+					err.responseJSON.map(function(ei) {
+						that.showError(ei.param, ei.msg)
+					})
+				} else {
+					var errText = 'Account update failed.'
+					that.showError('general', errText);
+				}
+			
+				$('#signup-form_id .required').parent().addClass('wrong');
 			},
 			success: function(user)
 			{
