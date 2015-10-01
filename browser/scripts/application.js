@@ -1401,6 +1401,8 @@ Application.prototype.loadGraph = function(graphPath, cb) {
 
 			E2.app.player.play() // autoplay
 			E2.app.changeControlState()
+			
+			E2.ui.setPageTitle();
 
 			if (cb)
 				cb()
@@ -2075,6 +2077,8 @@ Application.prototype.setupEditorChannel = function() {
 	} else 
 		joinChannel()
 
+	E2.ui.setPageTitle();
+	
 	return dfd.promise
 }
 
