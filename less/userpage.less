@@ -9,52 +9,49 @@
 @ca-icons-default:          @light-text-default;
 @ca-icons-hover:            @light-text-hover;
 
-html, body, div, span, h1, h2, h3, h4, h5, h6,
-p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del,
-dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup,
-tt, var, dl, dt, dd, ol, ul, li, fieldset, form,
-label, legend, table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, figure, figcaption, footer,
-header, hgroup, menu, nav, output, section, summary, time, mark,
-audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  line-height: 100%;
-  vertical-align: baseline;
-  outline: 0 none;
-  box-sizing: border-box;
-  list-style: none;
-}
-
-html, body {
-    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 12px;
-    font-weight: 400;
-    width: 100%;
-    height: 100%;
-    background: #f2f2f2;
-    text-rendering:optimizeLegibility; 
-    -webkit-font-smoothing: antialiased;
-    font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-.btn {
-    display: block;
-    border: 0 none;
-    padding: 0;
-    margin: 0;
-    background: none; 
-    box-shadow: 0 0 0 rgba(0,0,0,0);
-    outline: none;
-    vartical-align: middle;
-    text-align: center;
-    cursor: pointer;
-}
-
-a:focus {
-    outline: 0 none;
+body.userpage {
+	html, body, div, span, h1, h2, h3, h4, h5, h6,
+	p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del,
+	dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup,
+	tt, var, dl, dt, dd, ol, ul, li, fieldset, form,
+	label, legend, table, caption, tbody, tfoot, thead, tr, th, td,
+	article, aside, canvas, details, embed, figure, figcaption, footer,
+	header, hgroup, menu, nav, output, section, summary, time, mark,
+	audio, video {
+	    padding: 0;
+	    border: 0;
+	    line-height: 100%;
+	    vertical-align: baseline;
+	    outline: 0 none;
+	    box-sizing: border-box;
+	    list-style: none;
+	}
+	font-family: @font-family-sans-serif;
+	font-size: 12px;
+	font-weight: 400;
+	width: 100%;
+	height: 100%;
+	background: #f2f2f2;
+	text-rendering: optimizeLegibility; 
+	-webkit-font-smoothing: antialiased;
+	font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	.btn {
+	    display: block;
+	    border: 0 none;
+	    padding: 0;
+	    margin: 0;
+	    background: none; 
+	    box-shadow: 0 0 0 rgba(0,0,0,0);
+	    outline: none;
+	    vartical-align: middle;
+	    text-align: center;
+	    cursor: pointer;
+	}
+	
+	a:focus {
+	    outline: 0 none;
+	}
 }
 
 .icon-arrow-left {
