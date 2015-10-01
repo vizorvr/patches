@@ -179,9 +179,7 @@ exports.checkUserName = function(req, res, next) {
  */
 
  exports.postUpdateProfile = function(req, res, next) {
-  req.assert('username', 'Username is not valid').isAlphanumeric();
   req.assert('email', 'Email is not valid').isEmail();
-  req.assert('password', 'Password must be at least 4 characters long').len(4);
   
   var errors = req.validationErrors();
 
@@ -194,17 +192,12 @@ exports.checkUserName = function(req, res, next) {
 
     user.name = req.body.name.replace(/[<>\;\\\'\"]+/gim, '');
  		user.email = req.body.email
- 		user.username = req.body.username
-
- 		// user.profile.gender = req.body.gender || '';
- 		// user.profile.location = req.body.location || '';
- 		// user.profile.website = req.body.website || '';
 
  		user.save(function(err) {
  			if (err)
         return next(err);
 
- 			res.redirect('/account');
+ 			res.json({})
  		});
  	});
  };
