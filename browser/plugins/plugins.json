@@ -283,7 +283,8 @@
 
 
     "EVENT EMITTER": {
-        "Emit Runtime Event": "runtime_event_write",
+        "Emit Single Runtime Event": "runtime_event_write",
+        "Emit Continuous Runtime Events": "runtime_event_write_continuous",
         "On Runtime Event": "runtime_event_read"
     },
 
