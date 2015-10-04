@@ -1,5 +1,5 @@
 {
-    "abs_t": 46.699,
+    "abs_t": 14.353,
     "active_graph": "root",
     "graph_uid": "TXDgBc0JJtS3",
     "root": {
@@ -730,15 +730,6 @@
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "15IxXPkBEzqL",
-                            "dst_nuid": "lwo9bsWEEtaF",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "t0z8c2CCckgw",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
                             "src_nuid": "9CtqhxjQDPWR",
                             "dst_nuid": "j9pZPtR8i8s1",
                             "src_slot": 0,
@@ -757,6 +748,15 @@
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "15IxXPkBEzqL",
+                            "dst_nuid": "lwo9bsWEEtaF",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "GhK2U8XgB9KB",
+                            "src_connected": true,
+                            "dst_connected": true
                         }
                     ]
                 },
@@ -1377,17 +1377,6 @@
                 "dst_dyn": true
             },
             {
-                "src_nuid": "sqwIFj7gwhsH",
-                "dst_nuid": "qflZidzjtnQX",
-                "src_slot": 0,
-                "dst_slot": 2,
-                "uid": "shAYIWCAHwSV",
-                "src_connected": true,
-                "dst_connected": true,
-                "src_dyn": true,
-                "dst_dyn": true
-            },
-            {
                 "src_nuid": "C8CcPoF6VOIJ",
                 "dst_nuid": "qflZidzjtnQX",
                 "src_slot": 0,
@@ -1416,6 +1405,17 @@
                 "uid": "YOHDSi4OkNPu",
                 "src_connected": true,
                 "dst_connected": true,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": "sqwIFj7gwhsH",
+                "dst_nuid": "qflZidzjtnQX",
+                "src_slot": 0,
+                "dst_slot": 2,
+                "uid": "a3GWgIP04BRp",
+                "src_connected": true,
+                "dst_connected": true,
+                "src_dyn": true,
                 "dst_dyn": true
             }
         ]
