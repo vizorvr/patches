@@ -85,10 +85,6 @@
 	}
 
 	UrlTexture.prototype.update_input = function(slot, data) {
-		if (this.state.url === data)
-			return;
-		this.state.url = data
-		this.state_changed()
 	}
 
 	UrlTexture.prototype.update_state = function() {
