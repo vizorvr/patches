@@ -4,11 +4,14 @@
 
 		this.desc = 'THREE.js Directional Light'
 
-		this.params = {/*color: core.renderer.color_white, */intensity: 1.0}
+		this.params = {
+			color: new THREE.Color(0xffffff),
+			intensity: 1.0
+		}
 
 		this.input_slots = [
 			{ name: 'intensity', dt: core.datatypes.FLOAT, def: this.params.intensity },
-			//{ name: 'color', dt: core.datatypes.COLOR, def: this.params.color },
+			{ name: 'color', dt: core.datatypes.COLOR, def: this.params.color }
 		].concat(this.input_slots)
 	}
 
