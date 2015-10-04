@@ -111,36 +111,32 @@ VizorUI.prototype.onSearchResultsChange = function() {
 };
 
 VizorUI.prototype.openPublishGraphModal = function() {
+	var dfd = when.defer()
 	var that = this;
 	var publishTemplate = E2.views.filebrowser.publishModal;
 	var graphname = E2.app.path.split('/')
    
    if (graphname.length > 1)
-        graphname=p[1];
+        graphname = graphname[1];
 	
 	ga('send', 'event', 'account', 'open', 'forgotModal');
 	
-	var bb = bootbox.dialog(
-	{
+	bootbox.dialog({
 		show: true,
 		animate: false,
 		message: 'Rendering',
 	}).init(function() {
 		E2.app.useCustomBootboxTemplate(publishTemplate);
 		$('#userGraphName_id').val(graphname);
-	});
+	})
 
-	this._bindEvents(bb, dfd);
-	
 	var formEl = $('#publish-form_id');
-	formEl.submit(function( event )
-	{
+	formEl.submit(function( event ){
 		event.preventDefault();
 		E2.ui.updateProgressBar(65);
 		
 		var path = $('#userGraphName_id').val();
 
-		
 		if (!path)
 			return bootbox.alert('Please enter a graph name');
 
@@ -148,7 +144,7 @@ VizorUI.prototype.openPublishGraphModal = function() {
 
 		$.ajax({
 			type: 'POST',
-			url: URL_GRAPHS,
+			url: '/graph',
 			data: {
 				path: path,
 				graph: ser

@@ -1,39 +1,41 @@
 <div class="flex-column">
-<div class="menu-bar"> <!-- menu bar -->
-	<div class="header left-cell pull-left" id="top-header-logo">
-		<div class="info-pane pull-left" id="info">
-			<span>
-				<img id="infopanelogo" src="../../images/logo-graphic.png">
-			</span>
-			<span class="logo-text">Vizor</span>
-		</div>
-		<div id="load-spinner"></div>
-	</div>
-
-	<div class="header">
-		<div id="top-header">
-			<div class="top-header-col" id="top-header-left">
-			<h5>
-				<i><strong>{{graph.name}}</strong></i>
-				by
-				<i><strong>{{graph.owner}}</strong></i>
-			</h5>
+<div class="flex-row"> <!-- header row -->
+	<div class="menu-bar"> <!-- menu bar -->
+		<div class="header left-cell pull-left" id="top-header-logo">
+			<div class="info-pane pull-left" id="info">
+				<span>
+					<img id="infopanelogo" src="../../images/logo-graphic.png">
+				</span>
+				<span class="logo-text">Vizor</span>
 			</div>
+			<div id="load-spinner"></div>
+		</div>
 
-			<div class="top-header-col" id="top-header-right">
-				<div class="header pull-right">
-					<button id="edit" class="btn btn-primary">
-						<i class="fa fa-code"> Edit</i>
-					</button>
+		<div class="header">
+			<div id="top-header">
+				<div class="top-header-col" id="top-header-left">
+				<h5>
+					<i><strong>{{graph.name}}</strong></i>
+					by
+					<i><strong>{{graph.owner}}</strong></i>
+				</h5>
+				</div>
 
-					<button id="fullscreen" class="btn btn-primary">
-						<i class="fa fa-expand"></i>
-					</button>
+				<div class="top-header-col" id="top-header-right">
+					<div class="header pull-right">
+						<button id="edit" class="btn btn-primary">
+							<i class="fa fa-code"> Edit</i>
+						</button>
+
+						<button id="fullscreen" class="btn btn-primary">
+							<i class="fa fa-expand"></i>
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-</div> <!-- menu bar -->
+	</div> <!-- menu bar -->
+</div> <!-- row -->
 
 <div class="flex-row"> <!-- main row -->
 <div class="stage--front">
