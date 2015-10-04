@@ -6,7 +6,8 @@
 
 		this.input_slots = [{
 			name: 'texture',
-			dt: core.datatypes.TEXTURE
+			dt: core.datatypes.TEXTURE,
+			def: new THREE.Texture()
 		}, {
 			name: 'u offset',
 			dt: core.datatypes.FLOAT,
@@ -44,16 +45,13 @@
 	}
 
 	ThreeUVModifierPlugin.prototype.update_input = function(slot, data) {
-		if (slot.index === 0 && data) { // texture
-			if (data.image === THREE.Texture.DEFAULT_IMAGE) {
-				// store a reference - if the map is not there, the texture
-				// hasn't loaded - force the node to update until one is loaded
-				this.pendingTexture = data
-				this.always_update = true
-			}
-			else {
+		if (slot.index === 0) { // texture
+			if (data) {
 				this.texture = data.clone()
 				this.dirty = true
+			}
+			else {
+				this.texture = undefined
 			}
 		}
 		else if (slot.index === 1) { // u offset
@@ -81,13 +79,6 @@
 	}
 
 	ThreeUVModifierPlugin.prototype.update_state = function() {
-		if (this.pendingTexture && this.pendingTexture.image !== THREE.Texture.DEFAULT_IMAGE) {
-			this.texture = this.pendingTexture.clone()
-			//this.texture.version = this.pendingTexture.version + 1
-			this.always_update = false
-			this.pendingTexture = undefined
-			this.dirty = true
-		}
 
 		if (this.dirty && this.texture) {
 			this.texture.offset.set(this.uOffset, this.vOffset)
