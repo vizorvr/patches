@@ -85,6 +85,14 @@ WorldEditor.prototype.update = function() {
 	}
 }
 
+WorldEditor.prototype.preRenderUpdate = function() {
+	// add the editor tree to the scene if it's not there already
+	var editorIdx = this.scene.children.indexOf(this.editorTree)
+	if (editorIdx < 0) {
+		this.scene.add(this.editorTree)
+	}
+}
+
 WorldEditor.prototype.getCamera = function() {
 	return this.camera.perspectiveCamera
 }
@@ -116,13 +124,6 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 	if (scene) {
 		scene.children[0].traverse( nodeHandler )
 	}
-
-	// add the editor tree to the scene if it's not there already
-	var editorIdx = this.scene.children.indexOf(this.editorTree)
-	if (editorIdx < 0) {
-		this.scene.add(this.editorTree)
-	}
-
 }
 
 WorldEditor.prototype.getEditorSceneTree = function() {
