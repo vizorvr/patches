@@ -234,8 +234,7 @@ FileSelectControl.prototype._render = function()
 	return this;
 };
 
-FileSelectControl.prototype._bindTable = function()
-{
+FileSelectControl.prototype._bindTable = function() {
 	var self = this;
 
 	// bind file rows and click handlers
@@ -252,96 +251,87 @@ FileSelectControl.prototype._bindTable = function()
 		self._onChange();
 		self.ok();
 	});
-};
+}
 
-FileSelectControl.prototype._bindUploadForm = function()
-{
+FileSelectControl.prototype._bindUploadForm = function() {
 	var that = this;
 	var container = $('#upload', this._el);
 	var $form = $('form.fileUploadForm', container);
-	var browsebutton = $('.btn.browse-button');
+	var browsebutton = $('.browse-button');
 	var fileUploadName = $('#fileUploadName');
 	var fileUploadFile = $('#fileUploadFile');
 	
-	browsebutton.click(function() {
-		fileUploadFile.trigger('click');
-		return false;
-	});
+	browsebutton.click(function(e) {
+		fileUploadFile.trigger('click')
+		return false
+	})
 	
 	fileUploadName.click(function() {
-		fileUploadFile.trigger('click');
-		return false;
-	});
+		fileUploadFile.trigger('click')
+		return false
+	})
 	
 	fileUploadFile.on('change', function() {
-		fileUploadName.val(fileUploadFile.val());
-	});
+		fileUploadName.val(fileUploadFile.val())
+	})
 	
-
 	if (!$form)
-		return;
+		return
 
-	$form.on('submit', function(e)
-	{
-		e.preventDefault();
-		e.stopPropagation();
+	$form.on('submit', function(e) {
+		e.preventDefault()
+		e.stopPropagation()
 
-		$('.progress', container).show();
-		var $progress = $('.progress-bar', container);
+		$('.progress', container).show()
+		var $progress = $('.progress-bar', container)
 
-		var formData = new FormData($form[0]);
-		$.ajax(
-		{
+		var formData = new FormData($form[0])
+		$.ajax({
 			url: $form[0].action,
 			type: 'POST',
-			xhr: function ()
-			{
+			xhr: function() {
 				var xhr = $.ajaxSettings.xhr();
-				xhr.upload.addEventListener('progress', function(evt)
-				{
+				xhr.upload.addEventListener('progress', function(evt) {
 					if (evt.lengthComputable)
 						$progress.css('width', Math.floor(evt.loaded/evt.total * 100) + '%');
-				}, false);
+				}, false)
 
-				return xhr;
+				return xhr
 			},
-			success: function(file)
-			{
-				$progress.removeClass('active');
+			success: function(file) {
+				$progress.removeClass('active')
 
-				$('#message', container).html('<h4>Uploaded successfully!</h4>');
-				that.selected(file.path);
-				that._fileList.addFile(file);
+				$('#message', container).html('<h4>Uploaded successfully!</h4>')
+				that.selected(file.path)
+				that._fileList.addFile(file)
 
-				setTimeout(function()
-				{
-					that._onSelect($('tr.file-row:first', that._el));
-					$('.nav-tabs a:first', that._el).tab('show');
-				}, 1000);
+				setTimeout(function() {
+					that._onSelect($('tr.file-row:first', that._el))
+					$('.nav-tabs a:first', that._el).tab('show')
+				}, 1000)
 			},
-			error: function(err)
-			{
+			error: function(err) {
 				$progress
 					.removeClass('active')
 					.removeClass('progress-bar-info')
-					.addClass('progress-bar-danger');
+					.addClass('progress-bar-danger')
 
-				$('#message', container).html('<h4>Upload failed: '
-					+ err.responseJSON ? err.responseJSON.message : err
-					+'</h4>');
+				$('#message', container).html('<h4>Upload failed: ' +
+					err.responseJSON ? err.responseJSON.message : err +
+					'</h4>')
 			},
 			data: formData,
 			cache: false,
 			contentType: false,
 			processData: false,
 			dataType: 'json'
-		});
+		})
 
-		$('#message', container).html('<h4>Please wait...</h4>');
+		$('#message', container).html('<h4>Please wait...</h4>')
 
-		return false;
-	});
-};
+		return false
+	})
+}
 
 FileSelectControl.prototype._onKeyPress = function(e) {
 	e.stopPropagation();
