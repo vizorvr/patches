@@ -1935,10 +1935,6 @@ Application.prototype.start = function() {
 		})
 	});
 
-	$('button#fullscreen').click(function() {
-		E2.app.toggleFullscreen()
-	});
-
 	$('button#help').click(function() {
 		window.open('/help/introduction.html', 'Vizor Create Help');
 	});
