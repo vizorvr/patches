@@ -86,7 +86,7 @@
 
 	UrlTexture.prototype.update_input = function(slot, data) {
 		if (this.state.url === data)
-			return;
+			return
 		this.state.url = data
 		this.state_changed()
 	}
@@ -96,10 +96,24 @@
 			return
 
 		this.texture = this.core.textureCache.get(this.state.url)
+		
+		// if the texture isn't ready, set a flag to indicate that we need to
+		// send an extra update after the texture has finished loaded
+		if (!this.texture.image || !this.texture.image.width === 0) {
+			this.waitingToLoad = true
+		}
+		
 		this.dirty = false
 	}
 
 	UrlTexture.prototype.update_output = function() {
+		if (this.waitingToLoad && this.texture && this.texture.image && this.texture.image.width !== 0) {
+			// force an extra update through the graph with a texture that has
+			// actual image data
+			this.waitingToLoad = false
+			this.updated = true
+		}
+
 		return this.texture
 	}
 
