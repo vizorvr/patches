@@ -1935,10 +1935,6 @@ Application.prototype.start = function() {
 		})
 	});
 
-	$('button#help').click(function() {
-		window.open('/help/introduction.html', 'Vizor Create Help');
-	});
-
 	E2.dom.viewSourceButton.click(function() {
 		bootbox.dialog({
 			message: '<textarea class="form-control" cols=80 rows=40>'+
