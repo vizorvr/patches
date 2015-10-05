@@ -1344,9 +1344,13 @@ Application.prototype.changeControlState = function()
 	if (cs !== s.PLAYING) {
 		E2.dom.playPauseIcon.attr('xlink:href','#icon-play')
 		E2.dom.stop.addClass('disabled')
+		E2.dom.stop.parent().addClass('active');
+		E2.dom.play.parent().removeClass('active');
 	} else {
 		E2.dom.playPauseIcon.attr('xlink:href','#icon-pause')
 		E2.dom.stop.removeClass('disabled')
+		E2.dom.stop.parent().removeClass('active');
+		E2.dom.play.parent().addClass('active');
 	}
 }
 
@@ -1356,7 +1360,10 @@ Application.prototype.onPlayClicked = function()
 		this.player.pause();
 	else
 		this.player.play();
-
+		
+	E2.dom.stop.parent().removeClass('active');
+	E2.dom.play.parent().addClass('active');
+	
 	this.changeControlState();
 };
 
@@ -1367,6 +1374,8 @@ Application.prototype.onPauseClicked = function() {
 
 Application.prototype.onStopClicked = function() {
 	this.player.schedule_stop(this.changeControlState.bind(this))
+	E2.dom.stop.parent().addClass('active');
+	E2.dom.play.parent().removeClass('active');
 }
 
 Application.prototype.onOpenClicked = function() {
@@ -2163,8 +2172,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.fscreen = $('#fullscreen');
 	E2.dom.vrview = $('#vrview');
 	
-	E2.dom.btnCamView = $('#btn-cam');
-	E2.dom.btnVRView = $('#btn-vr');
+	E2.dom.btnVRCam = $('#btn-vrcam');
+	E2.dom.btnEditorCam = $('#btn-editorcam');
 
 	$.ajaxSetup({ cache: false });
 

@@ -28,8 +28,8 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.presetsToggle.click(this.onPresetsToggleClicked.bind(this));
 	dom.btnInspector.click(this.onInspectorClicked.bind(this));
 	
-	dom.btnCamView.click(this.enterCamView.bind(this));
-	dom.btnVRView.click(this.enterVRView.bind(this));
+	dom.btnEditorCam.click(this.enterEditorView.bind(this));
+	dom.btnVRCam.click(this.enterVRView.bind(this));
 };
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
@@ -190,8 +190,10 @@ VizorUI.prototype.onBtnAssetsClicked = function() {
 	this.syncVisibility();
 }
 
-VizorUI.prototype.enterVRView = function() {
+VizorUI.prototype.enterEditorView = function() {
 	var isActive = E2.app.worldEditor.isActive()
+	var btnEditorCam = this.dom.btnEditorCam;
+	var btnVRCam = this.dom.btnVRCam;
 	if (!isActive) {
 		E2.app.worldEditor.activate()
 	}
@@ -199,13 +201,17 @@ VizorUI.prototype.enterVRView = function() {
 
 	this.setWorldEditorMode(isActive)
 	
-	this.dom.btnCamView.attr('disabled', !isActive).popover('hide');
-	this.dom.btnVRView.attr('disabled', isActive).popover('hide');
+	btnEditorCam.attr('disabled', isActive).popover('hide');
+	btnEditorCam.parent().toggleClass('active');
+	btnVRCam.attr('disabled', !isActive).popover('hide');
+	btnVRCam.parent().toggleClass('active');
 
 	return isActive;
 }
-VizorUI.prototype.enterCamView = function() {
+VizorUI.prototype.enterVRView = function() {
 	var isActive = E2.app.worldEditor.isActive()
+	var btnEditorCam = this.dom.btnEditorCam;
+	var btnVRCam = this.dom.btnVRCam;
 	if (isActive) {
 		E2.app.worldEditor.deactivate()
 	}
@@ -213,8 +219,10 @@ VizorUI.prototype.enterCamView = function() {
 
 	this.setWorldEditorMode(isActive)
 	
-	this.dom.btnCamView.attr('disabled', !isActive).popover('hide');
-	this.dom.btnVRView.attr('disabled', isActive).popover('hide');
+	btnEditorCam.attr('disabled', isActive).popover('hide');
+	btnEditorCam.parent().toggleClass('active');
+	btnVRCam.attr('disabled', !isActive).popover('hide');
+	btnVRCam.parent().toggleClass('active');
 
 	return isActive;
 }
