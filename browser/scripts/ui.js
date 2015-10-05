@@ -429,7 +429,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 				if (!name)
 					return bootbox.alert('Please enter a name for the preset')
 
-				serializedGraph = serializedGraph || that.player.core.serialise()
+				serializedGraph = serializedGraph || E2.app.player.core.serialise()
 
 				$.ajax({
 					type: 'POST',
