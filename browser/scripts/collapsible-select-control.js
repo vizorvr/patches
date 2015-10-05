@@ -5,13 +5,13 @@
 function dragAndDropMouseDownHandler(e) {
 	var chatWindow = E2.dom.chatWindow;
 	var chatVisible = E2.ui.visibility.panel_chat;
-	var closeChat = E2.ui.onChatCloseClicked.bind(E2.ui);
+	var collapseChat = E2.ui.onChatToggleClicked.bind(E2.ui);
 	var presetsLib = E2.dom.presetsLib;
 	var presetsVisible = E2.ui.visibility.panel_presets;
-	var closePresets = E2.ui.onPresetsCloseClicked.bind(E2.ui);
+	var collapsePresets = E2.ui.onPresetsToggleClicked.bind(E2.ui);
 	var assetsLib = E2.dom.assetsLib;
 	var assetsVisible = E2.ui.visibility.panel_assets;
-	var closeAssets = E2.ui.onAssetsCloseClicked.bind(E2.ui);
+	var collapseAssets = E2.ui.onAssetsToggleClicked.bind(E2.ui);
 	
 	var mouseMoveBound = false
 	var mouseX = 0
@@ -166,15 +166,15 @@ function dragAndDropMouseDownHandler(e) {
 		// Only create new item when released over the canvas and hide floating box if dropped under it;
 		if(evt.pageX < (canvasWidth + canvasX) && evt.pageX > canvasX && evt.pageY < (canvasHeight + canvasY) && evt.pageY > canvasY) {
 			e.data.dropSuccessCb(e)
-
+			
 			if ((presetsVisible) && (evt.pageX < (plWidth + plX) && evt.pageX > plX && evt.pageY < (plHeight + plY) && evt.pageY > plY)) { 
-				closePresets();
+				collapsePresets();
 			}
 			if ((assetsVisible) && (evt.pageX < (alWidth + alX) && evt.pageX > alX && evt.pageY < (alHeight + alY) && evt.pageY > alY)) { 
-				closeAssets();
+				collapseAssets();
 			}
 			if ((chatVisible) && (evt.pageX < (chWidth + chX) && evt.pageX > chX && evt.pageY < (chHeight + chY) && evt.pageY > chY)) { 
-				closeChat();
+				collapseChat();
 			}
 		}
 

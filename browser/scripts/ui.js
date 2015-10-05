@@ -72,7 +72,7 @@ VizorUI.prototype.showLoadingIndicator = function() {
 VizorUI.prototype.setPageTitle = function() {
 	var graphname = E2.app.path;
 	var isLoggedIn = E2.models.user.get('username');
-	var newTitle = document.title;
+	var newTitle = "Vizor";
 	
 	if (!isLoggedIn)
 		return false;
@@ -81,7 +81,7 @@ VizorUI.prototype.setPageTitle = function() {
 	if (graphname.length > 1)
 		graphname=graphname[1];
 	
-	newTitle = graphname + " | " + document.title;	
+	newTitle = graphname + " | " + newTitle;	
 	document.title = newTitle;
 }
 
@@ -250,9 +250,20 @@ VizorUI.prototype.onAssetsCloseClicked = function() {
 	return false;
 }
 
+VizorUI.prototype.onTreeClicked = function(e) {
+	this.dom.presetsLib.removeClass('collapsed').height('auto');
+	return true;
+}
 
-VizorUI.prototype.onPresetsToggleClicked = function() {
+VizorUI.prototype.onPresetsToggleClicked = function(e) {
 	var dom = this.dom;
+
+	var $graphTab = jQuery('div#graph.tab-pane');
+	if ($graphTab.hasClass('active')) {	// we're looking at the graph Tab, which shouldn't collapse
+		dom.presetsLib.removeClass('collapsed').height('auto');
+		return true;
+	}
+	// else
 	var controlsHeight = dom.presetsLib.find('.drag-handle').outerHeight(true)
 					   + dom.presetsLib.find('.block-header').outerHeight(true)
 					   + dom.presetsLib.find('.searchbox').outerHeight(true);
@@ -260,11 +271,21 @@ VizorUI.prototype.onPresetsToggleClicked = function() {
 		dom.presetsLib.removeClass('collapsed');
 		this.onSearchResultsChange();
 	} else {
+		// should collapse
 		dom.presetsLib.addClass('collapsed').height(controlsHeight);
 	}
 	return false;
 }
 
+VizorUI.prototype.onLibSearchClicked = function(e) {
+	var $input = jQuery(e.target);
+	var currentLib = $input.parents('.vp-library');
+	if (currentLib.hasClass('collapsed')) {
+		currentLib.removeClass('collapsed')
+		this.onSearchResultsChange();
+	}
+	return false;
+}
 
 VizorUI.prototype.onPresetsCloseClicked = function() {
 	this.dom.presetsLib.removeClass('uiopen').hide();
@@ -498,11 +519,7 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 
 	var firstTimeTemplate = E2.views.account.firsttime;
 	var diag = bootbox.dialog({
-		title: 'First time here?',
-		message: '<h4>Check out our '+
-			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank">Youtube tutorials</a> '+
-			'or<br>'+
-			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>',
+		message: 'Rendering',
 		onEscape: true,
 		html: true
 	}).init(function() {
@@ -511,23 +528,24 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 
 	diag.find('.modal-dialog').addClass('welcome');
 
-	diag.find('a.login').on('click', function(evt)
+	diag.find('.login').on('click', function(evt)
 	{
 		evt.preventDefault();
 		bootbox.hideAll();
 		E2.controllers.account.openLoginModal();
 	});
 
-	diag.find('button.signup').on('click', function(evt)
+	diag.find('.signup').on('click', function(evt)
 	{
 		evt.preventDefault();
 		bootbox.hideAll();
 		E2.controllers.account.openSignupModal();
 	});
 
-	diag.find('button#welcome-new').on('click', function()
+	diag.find('button#welcome-gs').on('click', function(evt)
 	{
-		E2.app.onNewClicked();
+		evt.preventDefault();
+		bootbox.hideAll();
 	});
 
 }

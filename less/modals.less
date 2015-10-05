@@ -14,6 +14,9 @@
 
 .modal-dialog {
     width: 400px;
+    &.file-select-dialog {
+    	width: 600px;
+    }
     border-radius: 0;
     margin: (@menu-bar-height + @breadcrumb-height + 30) auto 0 auto;
     .button {
@@ -83,6 +86,7 @@
             .modal-body {
                 background: @bg-light;
                 padding: 22px 40px 18px;
+                box-sizing: border-box;
                 font-size: 14px;
                 color: #fff;
                 font-weight: 300;
@@ -239,6 +243,7 @@
                 border: 0 none;
                 text-align: center;
                 padding: 20px 40px;
+                box-sizing: border-box;
                 span, p {
                     padding: 0;
                     margin: 0;
@@ -407,10 +412,11 @@
     top: 50%;
     border-radius: 0;
     .welcome-screen {
-        background: url("/images/welcome-bg.jpg") no-repeat center center;
+        background: url("/images/welcome-bg.jpg") no-repeat center top;
         position: relative;
         float: left;
         width: 100%;
+        min-height: 374px;
         text-align: center;
         > button {
             outline: 0!important;
@@ -419,6 +425,18 @@
                 right: 0;
                 top: 0;
                 margin: 0;
+            }
+            &#welcome-gs {
+            	width: 210px;
+            	height: 50px;
+            	text-align: center;
+            	vertical-align: middle;
+            	background: #1B9CFF;
+            	font-weight: 400;
+            	color: #ffffff;
+            	font-size: 20px;
+            	border-radius: 4px;
+            	border: 0;
             }
             &#welcome-new {
                 background: rgba(30,33,31,0.8);
@@ -467,16 +485,16 @@
             }
         }
         .welcome-logo {
-            margin: 54px auto 42px auto;
+            margin: 45px auto 50px auto;
             position: relative;
             clear: both;
             svg {
                 display: block;
                 position: relative;
-                margin: 0 auto 7px;
+                margin: 0 auto 45px;
                 clear: both;
-                height: 36px;
-                width: 36px;
+                height: 50px;
+                width: 50px;
                 fill: #ffffff;
             }
             h1 {
@@ -486,7 +504,7 @@
                 clear: both;
                 text-align: center;
                 padding: 0;
-                font-size: 36px;
+                font-size: 42px;
                 line-height: 1.33;
             }
         }
@@ -509,23 +527,34 @@
         }  
     }
     .welcome-footer {
-        height: 48px;
+        height: 63px;
         width: 100%;
         float: left;
         background: #385a8a;
         text-align: center;
+        span {
+        	color: #ffffff;
+        	font-weight: 300;
+        	font-size: 14px;
+        	padding: 23px 2px 0;
+        	display: inline-block;
+            height: 48px;
+            &.link-separator {
+            	padding: 16px 6px 0;
+            	font-weight: 700;
+            }
+        }
         a, a:active {
             color: #ffffff;
-            font-weight: 300;
+            font-weight: 400;
             text-decoration: none; 
             display: inline-block;
             height: 48px;
-            padding: 16px 23px 0 23px;
+            padding: 23px 2px 0;
             text-decoration: none;
             font-size: 14px;
             &:hover {
-                background: @bg-bright;
-                text-decoration: none;
+                text-decoration: underline;
             }
         }
     }
@@ -535,6 +564,7 @@
     border: 0;
     float: left;
     padding: 20px 0 0;
+    width: 100%;
     .tab-content {
         display: block;
         position: relative;
