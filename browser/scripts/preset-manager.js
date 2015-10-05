@@ -102,6 +102,9 @@ PresetManager.prototype.render = function()
 
 		that.openPreset(path)
 	})
+	
+	var presetSearch = $('#presets-lib .searchbox input');
+	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui));
 }
 
 PresetManager.prototype.openPreset = function(name) {

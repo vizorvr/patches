@@ -38,7 +38,7 @@ VizorUI = function VizorUI() {	// E2.ui
 	this.visibility = {			// granular flags
 		floating_panels: true,
 		panel_chat: true,
-		panel_assets: true,
+		panel_assets: false,
 		panel_presets: true,
 		patch_editor: true,
 		breadcrumb: true,
@@ -168,7 +168,10 @@ VizorUI.prototype.onKeyDown = function(e) {
 			}
 			this.visibility.panel_presets = true;
 			this.updateVisibility();
-			setTimeout(function(){$('#presetSearch').focus().select()}, 100);
+			setTimeout(function(){
+				jQuery('#presets-lib div.block-header ul.nav-tabs li').first().find('a').trigger('click');
+				jQuery('#presetSearch').focus().select();
+			}, 100);
 
 			e.preventDefault();
 			e.stopPropagation();
