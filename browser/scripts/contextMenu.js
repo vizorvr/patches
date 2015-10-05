@@ -81,7 +81,7 @@ Menu.prototype.create = function(parent, position, is_root)
 			li.mousedown(function(self, item) { return function(e)
 			{
 				self.cm.hide();
-				self.callback(item.icon, self.cm.pos);
+				self.callback(item.icon, self.cm.called_pos);
 				e.stopPropagation();
 				return false;
 			}}(this, item));
@@ -149,18 +149,23 @@ Menu.prototype.destroy = function()
 function ContextMenu(parent, items) {
 	EventEmitter.call(this)
 	var that = this;
-	
+
+	this.pos = [0, 0];
+	this.called_pos = [0,0];
+
 	this.items = items;
 	this.callback = function(icon, pos) {
-		that.emit('created', icon, pos)
+		that.emit('created', icon, that.called_pos)
 	};
-	this.pos = [0, 0];
+
 	
 	$(document).bind('contextmenu', function(e) {
 		if(e.target.id !== 'canvas')
 			return true;
-		
-		that.show([e.pageX, e.pageY]);		// THIS SHOWS THE MENU AT PAGEX/PAGEY
+
+		that.pos = [e.pageX, e.pageY];
+		that.called_pos = [e.offsetX, e.offsetY];	// remembers the offset in the canvas for creating the plugin later
+		that.show(that.pos);						// shows the menu as before
 		return false;
 	})
 
@@ -174,7 +179,7 @@ ContextMenu.prototype = Object.create(EventEmitter.prototype)
 
 ContextMenu.prototype.show = function(pos) {
 	this.pos = pos;
-	this.hide();	
+	this.hide();
 	this.menu = new Menu(this, this.items, this.callback);
 	this.menu.create(null, pos, true);
 }
