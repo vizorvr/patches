@@ -764,12 +764,20 @@ ul.iconic-nav>li.open>button span {
 }
 
 .floating-box.dragging-not-allowed {
+	* {
+		user-select: none;
+	   -o-user-select: none;
+	   -moz-user-select: none;
+	   -khtml-user-select: none;
+	   -webkit-user-select: none;
+	}
     transition: opacity 0.3s;
+    z-index: 65;
 }
 
 .floating-box.dragging-not-allowed:hover {
     cursor: grab;
-    opacity:0;
+    opacity: 0;
     * {
         pointer-events: none;
     }
