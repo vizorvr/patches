@@ -30,6 +30,9 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	
 	dom.btnEditorCam.click(this.enterEditorView.bind(this));
 	dom.btnVRCam.click(this.enterVRView.bind(this));
+
+	jQuery('div#presets-lib ul li').last().find('a').click(this.onTreeClicked.bind(this));
+
 };
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
