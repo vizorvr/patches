@@ -175,16 +175,6 @@ Node.prototype.add_slot = function(slot_type, def) {
 		slots[i].index = i
 	}
 
-	if (this.ui) {
-		// TODO refactor: remove ui link - emit an event from NodeStore instead
-		this.ui.redrawSlots();
-		this.inputs.concat(this.outputs).map(function(c) {
-			c.ui.resolve_slot_divs()
-		})
-		E2.app.updateCanvas(true)
-		this.update_connections();
-	}
-
 	this.emit('slotAdded', def)
 	
 	return def.uid;
@@ -236,15 +226,6 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 	
 		if (s === slot) {
 			pending.push(c);
-			
-			if (c.ui)
-				canvas_dirty = true;
-		} else if(s.uid !== undefined && s.index >= idx) {
-			if (c.ui) {
-				c.ui.resolve_slot_divs()
-				E2.app.redrawConnection(c)
-				canvas_dirty = true;
-			}
 		}
 	}
 	
@@ -254,8 +235,6 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 		
 	this.emit('slotRemoved', slot)
 
-	if(canvas_dirty)
-		E2.app.updateCanvas(true);
 };
 
 Node.prototype.findSlotByUid = function(suid) {
@@ -287,19 +266,15 @@ Node.prototype.find_dynamic_slot = function(slot_type, suid) {
 }
 
 Node.prototype.rename_slot = function(slot_type, suid, name) {
-	var is_inp = slot_type === E2.slot_type.input;
 	var slot = this.find_dynamic_slot(slot_type, suid);
-
+	var renamed = false;
 	if (slot) {
 		slot.name = name;
-
 		if (this.ui) {
-			this.ui.dom.find('#n' + this.uid + 
-				(is_inp ? 'di' : 'do') + 
-				slot.uid)
-			.text(name);
+			renamed = this.ui.renameSlot(slot, name, suid, slot_type);
 		}
 	}
+	return renamed;
 }
 	
 Node.prototype.change_slot_datatype = function(slot_type, suid, dt, arrayness) {

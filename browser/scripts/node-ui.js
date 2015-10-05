@@ -24,7 +24,7 @@ function NodeUI(parent_node, x, y, z) {
 	this._destroying = false;
 	this._destroyed = false;
 	this.flags = {
-		set				: false,
+		_set				: false,
 		has_subgraph	: false,
 		has_plugin_ui 	: false,
 		has_inputs 		: false,
@@ -194,8 +194,14 @@ function NodeUI(parent_node, x, y, z) {
 		E2.app.onNodeDragStopped.bind(E2.app, parent_node))
 
 	this.update();	// place in position;
-//	this.parent_node.addListener('slotAdded', this.redrawSlots.bind(this));
-//	this.parent_node.addListener('slotRemoved', this.redrawSlots.bind(this));
+	this.parent_node.on('slotAdded', function(slot){
+		this.setCssClass();	// resets this.flags
+		this.redrawSlots();
+	}.bind(this));
+	this.parent_node.on('slotRemoved', function(slot){
+		this.setCssClass();
+		this.redrawSlots();
+	}.bind(this));
 
 }
 
@@ -282,6 +288,7 @@ NodeUI.prototype.isSelected = function() { return !!this.selected; };
 
 NodeUI.prototype.setCssClass = function() {
 	var $dom = this.dom;
+	var flags = this.getPluginUIFlags(true);
 
 	if (this.canDisplayInline()) {
 		$dom.removeClass('p_expand').removeClass('p_collapse').addClass('p_inline');
@@ -302,10 +309,10 @@ NodeUI.prototype.setCssClass = function() {
 			$j.removeClass(className);
 		return $j
 	};
-	classIf(this.hasInputs(), 'p_has_ins');
-	classIf(this.hasOutputs(), 'p_has_outs');
-	classIf(this.hasSingleInputOnly(), 'p_1in');
-	classIf(this.hasSingleOutputOnly(), 'p_1out');
+	classIf(flags.has_inputs, 'p_has_ins');
+	classIf(flags.has_outputs, 'p_has_outs');
+	classIf(flags.single_in, 'p_1in');
+	classIf(flags.single_out, 'p_1out');
 	classIf(this.canDisplayOutputInHeader(), 'p_header_out');
 	classIf(this.canDisplayInputInHeader(), 'p_header_in');
 	classIf(this.isSelected(), 'p_selected');
@@ -320,8 +327,8 @@ NodeUI.prototype.setCssClass = function() {
 
 NodeUI.prototype.getPluginUIFlags = function(reset) {
 	if (typeof reset === 'undefined') reset = false;
-	if (reset) this.flags.set = false;
-	if (this.flags.set) return this.flags;
+	if (reset) this.flags._set = false;
+	if (this.flags._set) return this.flags;
 	this.flags.has_subgraph 	= this.hasSubgraph();
 	this.flags.has_plugin_ui 	= this.hasPluginUI();
 	this.flags.has_inputs 		= this.hasInputs();
@@ -331,7 +338,7 @@ NodeUI.prototype.getPluginUIFlags = function(reset) {
 	this.flags.has_edit 		= this.hasEditButton();
 	this.flags.single_in 		= this.hasSingleInputOnly();
 	this.flags.single_out 		= this.hasSingleOutputOnly();
-	this.flags.set = true;
+	this.flags._set = true;
 	return this.flags;
 };
 
@@ -419,6 +426,8 @@ NodeUI.prototype.redrawSlots = function() {
 		if(this.parent_node.dyn_outputs)
 			this.render_slots(this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
 	}
+
+	NodeUI.redrawActiveGraph();	// fix #584
 	return this;
 };
 
@@ -538,7 +547,7 @@ NodeUI.prototype.showRenameControl = function() {
 
 				if (name) {
 					E2.app.graphApi.renameNode(E2.core.active_graph, node, name);
-					that.setCssClass();	// @todo remove call once nodeRenamed handler works
+					that.redrawActiveGraph();	// @todo remove call once nodeRenamed handler works
 				}
 
 				input.remove();
@@ -733,8 +742,8 @@ NodeUI.prototype.create_slot = function(container, s, type) {
 	var nid = this.nid;
 
 	var is_input = (type === E2.slot_type.input);
-	var is_dynamic = (typeof s.uid != 'undefined')
-	var is_connected = (typeof s.is_connected != 'undefined') && s.is_connected;
+	var is_dynamic = (typeof s.uid !== 'undefined')
+	var is_connected = (typeof s.is_connected !== 'undefined') && s.is_connected;
 
 	var sid;
 	if (is_dynamic)
@@ -749,16 +758,15 @@ NodeUI.prototype.create_slot = function(container, s, type) {
 	if (is_connected) $div.addClass('p_connected');
 
 	var $status = make('span');	// contains the two svg-s, on and off, loaded from sprite already in the document.
+	var $label = make('label').html(s.name);
+	if (is_input) {
+		$div.append($status, $label);
+	} else {
+		$div.append($label, $status);
+	}
 	$status.addClass('status');
 	$status.append(NodeUI.makeSpriteSVG('vp-port-connected', 'p_conn_status p_on'));
 	$status.append(NodeUI.makeSpriteSVG('vp-port-unconnected', 'p_conn_status p_off'));
-	if (is_input) {
-		$div.append($status);
-		$div.append('<label>'+ s.name +'</label>');
-	} else {
-		$div.append('<label>'+ s.name +'</label>');
-		$div.append($status);
-	}
 
 	container.append($div);
 	$div.mouseenter(E2.app.onSlotEntered.bind(E2.app, parent_node, s, $div));
@@ -773,9 +781,11 @@ NodeUI.prototype.create_slot = function(container, s, type) {
 
 	$div.attr('alt', altSid);
 
+	var suid = s.uid || '';
 	// some more metadata
 	var is_dyn = is_dynamic.toString();
 	$div.data('nid', this.nid).attr('data-nid', this.nid);
+	$div.data('sid', suid).attr('data-sid', suid);
 	$div.data('dyn', is_dyn).attr('data-dyn', is_dyn);
 	$div.data('type', type).attr('data-type', type);
 	this.setupTooltips($div);
@@ -783,6 +793,26 @@ NodeUI.prototype.create_slot = function(container, s, type) {
 	return $div;
 };
 
+NodeUI.prototype.renameSlot = function(slot, name, suid, slot_type) {
+	if (!slot) return false;	// don't know what we're doing
+
+	var is_inp = slot.type === E2.slot_type.input;
+	var seek = (is_inp) ? [this.input_col, this.inline_in] : [this.output_col, this.inline_out];
+
+	var did_rename = false;
+	seek.forEach(function($j){
+		var slots = $j.find('div.p_slot');
+		slots.filter(function(){
+			return (jQuery(this).data('sid') === slot.uid);
+		})
+		.each(function(){
+			jQuery(this).find('label').html(name);
+			did_rename = true;
+		});
+	});
+
+	return did_rename;
+};
 
 NodeUI.prototype.render_slots = function(container, slots, type) {
 	for(var i = 0, len = slots.length; i < len; i++)
@@ -805,3 +835,24 @@ NodeUI.drilldown = function(node) {	// taken from nested graph plugin
 	return false;
 };
 
+/**
+ * forces all connections to resolve their slot divs and redraws the canvas.
+ * expensive and heavy-handed. use as a last resort. (gm)
+ * @return bool if updateCanvas was called
+ */
+NodeUI.redrawActiveGraph = function() {
+	var changed = false;
+	if (!E2.core.active_graph) return false;
+	E2.core.active_graph.connections.forEach(function(c){
+		if (c.ui) {
+			c.ui.resolve_slot_divs(false);
+			E2.app.redrawConnection(c);
+			changed = true;
+		}
+	});
+
+	if (changed) {
+		E2.app.updateCanvas(true);
+	}
+	return changed;
+}

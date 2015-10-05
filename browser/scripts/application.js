@@ -80,6 +80,7 @@ Application.prototype.offsetToCanvasCoord = function(ofs) {
 
 	o[0] -= co.left;
 	o[1] -= co.top;
+
 	o[0] += so[0];
 	o[1] += so[1];
 
@@ -88,33 +89,36 @@ Application.prototype.offsetToCanvasCoord = function(ofs) {
 
 Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 	var area = node.open ? slot_div : node.ui.dom;
-	var o = this.offsetToCanvasCoord(area.offset());
+	if (!area) return false;
+	var areaOffset = area.offset();
+	if (!areaOffset) return false;
+	var o = this.offsetToCanvasCoord(areaOffset);
 
 	result[0] = Math.round(type === E2.slot_type.input ? o[0] : o[0] + area.width() + (node.open ? 0 : 5));
 	result[1] = Math.round(o[1] + (area.height() / 2));
 };
 
-Application.prototype.instantiatePlugin = function(id, pos) {
+Application.prototype.instantiatePlugin = function(id, position) {
 	var that = this
-	var cp = E2.dom.canvas_parent
-	var co = cp.offset()
+	var $canvasParent = E2.dom.canvas_parent
+	var parentOffset = $canvasParent.offset()
 
-	pos = pos || this.mousePosition
+	position = position || this.mousePosition
 
 	function createPlugin(name) {
-		var ag = E2.core.active_graph
+		var activeGraph = E2.core.active_graph
 
-		var node = new Node(ag, id,
-			Math.floor((pos[0] - co.left) + that.scrollOffset[0]),
-			Math.floor((pos[1] - co.top) + that.scrollOffset[1]));
+		var newX = Math.floor(position[0] + that.scrollOffset[0]);
+		var newY = Math.floor(position[1] + that.scrollOffset[1]);
+		var node = new Node(activeGraph, id, newX, newY);
 
 		if (name) { // is graph?
-			node.plugin.setGraph(new Graph(E2.core, ag))
+			node.plugin.setGraph(new Graph(E2.core, activeGraph))
 			node.title = name
 			node.plugin.graph.plugin = node.plugin
 		}
 
-		that.graphApi.addNode(ag, node)
+		that.graphApi.addNode(activeGraph, node)
 
 		return node
 	}
@@ -619,13 +623,16 @@ Application.prototype.clearSelection = function() {
 
 }
 
-Application.prototype.redrawConnection = function(connection) {
-	var gsp = this.getSlotPosition.bind(this);
+Application.prototype.redrawConnection = function(connection) {	/* @TODO: rename this method */
 	var cn = connection
+	if (!cn.ui) {
+		console.warn('redrawConnection but no ui for ' + cn.uid);
+		return;
+	}
 	var cui = cn.ui
 
-	gsp(cn.src_node, cui.src_slot_div, E2.slot_type.output, cui.src_pos);
-	gsp(cn.dst_node, cui.dst_slot_div, E2.slot_type.input, cui.dst_pos);
+	this.getSlotPosition(cn.src_node, cui.src_slot_div, E2.slot_type.output, cui.src_pos);
+	this.getSlotPosition(cn.dst_node, cui.dst_slot_div, E2.slot_type.input, cui.dst_pos);
 }
 
 Application.prototype.onCanvasMouseDown = function(e) {

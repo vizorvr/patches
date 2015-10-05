@@ -65,9 +65,7 @@
 			E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
 		})
 
-		layout.append(removeButton)
-		layout.append(make('br'))
-		layout.append(addButton)
+		layout.append(removeButton, addButton)
 
 		return layout
 	}
