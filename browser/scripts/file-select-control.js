@@ -189,7 +189,7 @@ FileSelectControl.prototype._render = function()
 			e.preventDefault();
 			e.stopPropagation();
 			buttonCb.call(self, self._inputEl.val());
-			self.close();
+			bootbox.hideAll();
 			return false;
 		}
 	}
@@ -198,15 +198,17 @@ FileSelectControl.prototype._render = function()
 	{
 		var btn = self._buttons[name];
 		$('<td>').append(
-			$('<button class="btn btn-default">'+name+'</button>')
-			.click(clickHandler(btn))
+			$('<button class="btn btn-default" id="fbBtn'+name+'">'+name+'</button>')
 		).appendTo(buttonsRow);
 	});
-
+	
 	$('button:last', el)
 		.removeClass('btn-default')
 		.addClass('btn-primary');
-
+	
+	$('#fbBtnSelect').click(clickHandler($('#fbBtnSelect')));
+	$('#fbBtnCancel').click(this.cancel());
+	
 	// bind file rows and click handlers
 	this._bindTable();
 
@@ -229,9 +231,6 @@ FileSelectControl.prototype._render = function()
 
 	// bind upload form
 	this._bindUploadForm();
-
-	// show
-	el.appendTo('body');
 
 	return this;
 };
