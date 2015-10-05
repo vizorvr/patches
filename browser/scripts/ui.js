@@ -257,6 +257,15 @@ VizorUI.prototype.onPresetsToggleClicked = function() {
 	return false;
 }
 
+VizorUI.prototype.onLibSearchClicked = function() {
+	var searchInput = $('.searchbox input:focus');
+	var currentLib = searchInput.closest('.vp-library')
+	if (searchInput.val() && currentLib.hasClass('collapsed')) {
+		currentLib.removeClass('collapsed')
+		this.onSearchResultsChange();
+	}
+	return false;
+}
 
 VizorUI.prototype.onPresetsCloseClicked = function() {
 	this.dom.presetsLib.removeClass('uiopen').hide();
