@@ -60,8 +60,8 @@ VizorUI = function VizorUI() {	// E2.ui
 
 VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 	this.dom = e2.dom;
-	window.addEventListener('keydown', this.onKeyDown.bind(this));
-	window.addEventListener('keyup', this.onKeyUp.bind(this));
+	document.body.addEventListener('keydown', this.onKeyDown.bind(this));
+	document.body.addEventListener('keyup', this.onKeyUp.bind(this));
 	e2.core.on('resize', this.onWindowResize.bind(this));
 	e2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this));
 	e2.core.on('progress', this.updateProgressBar.bind(this));
@@ -117,6 +117,7 @@ VizorUI.prototype.getModifiedKeyCode = function(keyCode) {	// adds modifier keys
 	return keyCode;
 };
 VizorUI.prototype.onKeyDown = function(e) {
+
 	this._trackModifierKeys(e.keyCode, true);
 	if (this.isModalOpen() || E2.util.isTextInputInFocus(e)) return true;
 	var keyCode = this.getModifiedKeyCode(e.keyCode);
@@ -178,12 +179,12 @@ VizorUI.prototype.onKeyDown = function(e) {
 			break;
 	}
 
-	var keyIdentifier = (typeof e.keyIdentifier != 'undefined') ? e.keyIdentifier : (e.key || '');
+	var keyIdentifier = (typeof e.keyIdentifier !== 'undefined') ? e.keyIdentifier : (e.key || '');
 	switch (keyIdentifier) {
-		case uiKeys.focusChatPanel:
+		case uiKeys.focusChatPanel:		// fallthrough
 		case uiKeys.focusChatPanelAlt:
 			var v = this.visibility;
-			if (!this.visible) { // there's nothing on the screen and we just want the chat
+			if (!this.visible) {		// there's nothing on the screen and we just want the chat
 				this.visible = true
 				v.patch_editor = false;
 				v.floating_panels = true;

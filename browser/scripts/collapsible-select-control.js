@@ -409,6 +409,11 @@ CollapsibleSelectControl.prototype.render = function(el) {
 		keyTimer = setTimeout(that._search.bind(that, $input.val(), 100))
 	})
 
+	$input.on('blur', function(e) {
+		jQuery(e.target).parent().parent().find('td.active').removeClass('active');
+		return true;
+	});
+
 	$input.on('keydown', function(e) {
 		var res = that._resultEls
 		var sel = that._selectedIndex
@@ -428,7 +433,7 @@ CollapsibleSelectControl.prototype.render = function(el) {
 			case 13: // ok
 				if ($sel) {
 					$sel.trigger('dblclick')
-					$input.blur()
+					setTimeout(function(){$input.trigger('blur');}, 100);
 				}
 				break;
 			case 38: // up
@@ -441,8 +446,42 @@ CollapsibleSelectControl.prototype.render = function(el) {
 				break;
 		}
 
-		$sel = $($(res)[that._selectedIndex])
+		// constrain
+		var $res = $(res);
+		if (that._selectedIndex >= $res.length)
+			that._selectedIndex = $res.length - 1;
+		if (that._selectedIndex < 0)
+			that._selectedIndex = 0;
+
+		$sel = $($res[that._selectedIndex])
 		$sel.addClass('active')
+
+		if ($sel.length > 0) {
+			var selectionOffsetTop = $sel.offset().top;
+			var selectionHeight = $sel.outerHeight(true);
+			var $findParent = $sel.parents('.scrollbar');
+
+			if ($findParent.length > 0) {
+				var parentScrollHeight = $findParent.innerHeight();
+				var parentOffsetTop = $findParent.offset().top;
+				var parentScrollTop = $findParent.scrollTop();
+
+				selectionOffsetTop -= parentOffsetTop;
+
+				var newY = 0;
+				if (selectionOffsetTop + selectionHeight >= parentScrollHeight) {
+					newY = parentScrollTop + (selectionOffsetTop - parentOffsetTop) - selectionHeight;
+					$findParent.scrollTop(newY);
+				}
+				else if (selectionOffsetTop <= 0) {
+					newY = parentScrollTop - selectionHeight + selectionOffsetTop;
+					if (newY < 0) newY = 0;
+					$findParent.scrollTop(newY);
+				}
+			}
+		}
+
+
 	})
 
 	return this;
