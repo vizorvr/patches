@@ -30,6 +30,8 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	
 	dom.btnCamView.click(this.enterCamView.bind(this));
 	dom.btnVRView.click(this.enterVRView.bind(this));
+
+	jQuery('div#presets-lib ul li').last().find('a').click(this.onTreeClicked.bind(this));
 };
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
@@ -242,9 +244,20 @@ VizorUI.prototype.onAssetsCloseClicked = function() {
 	return false;
 }
 
+VizorUI.prototype.onTreeClicked = function(e) {
+	this.dom.presetsLib.removeClass('collapsed').height('auto');
+	return true;
+}
 
-VizorUI.prototype.onPresetsToggleClicked = function() {
+VizorUI.prototype.onPresetsToggleClicked = function(e) {
 	var dom = this.dom;
+
+	var $graphTab = jQuery('div#graph.tab-pane');
+	if ($graphTab.hasClass('active')) {	// we're looking at the graph Tab, which shouldn't collapse
+		dom.presetsLib.removeClass('collapsed').height('auto');
+		return true;
+	}
+	// else
 	var controlsHeight = dom.presetsLib.find('.drag-handle').outerHeight(true)
 					   + dom.presetsLib.find('.block-header').outerHeight(true)
 					   + dom.presetsLib.find('.searchbox').outerHeight(true);
@@ -252,15 +265,16 @@ VizorUI.prototype.onPresetsToggleClicked = function() {
 		dom.presetsLib.removeClass('collapsed');
 		this.onSearchResultsChange();
 	} else {
+		// should collapse
 		dom.presetsLib.addClass('collapsed').height(controlsHeight);
 	}
 	return false;
 }
 
-VizorUI.prototype.onLibSearchClicked = function() {
-	var searchInput = $('.searchbox input:focus');
-	var currentLib = searchInput.closest('.vp-library')
-	if (searchInput.val() && currentLib.hasClass('collapsed')) {
+VizorUI.prototype.onLibSearchClicked = function(e) {
+	var $input = jQuery(e.target);
+	var currentLib = $input.parents('.vp-library');
+	if (currentLib.hasClass('collapsed')) {
 		currentLib.removeClass('collapsed')
 		this.onSearchResultsChange();
 	}
