@@ -873,11 +873,14 @@ ul.iconic-nav>li.open>button span {
             display: block;
             float: left;
             position: relative;
+            width: 60px;
+            background: @bg-darker;
             >button {
                 height: @bottom-panel-height;
                 position: relative;
                 background: none;
                 outline: none!important;
+                width: 60px;
                 svg {
                     position: absolute;
                     height: 26px;
@@ -887,7 +890,23 @@ ul.iconic-nav>li.open>button span {
                     top: 50%;
                     stroke: @editor-text-default;
                     }
-                }
+                &.disabled {
+		            opacity: 1;
+		            svg {
+		                stroke: @editor-text-current!important;
+		            }
+		        }
+            }
+            &.active:before {
+		        content: '';
+		        display: block;
+		        width: 100%;
+		        height: 3px;
+		        top: 0;
+		        left: 0;
+		        position: absolute;
+		        background: @bg-bright;
+		   }
         }
         :hover button svg {
                     stroke: @editor-text-active;
@@ -901,33 +920,6 @@ ul.iconic-nav>li.open>button span {
     margin: 0 auto;
     width: 180px;
     position: relative;
-    >li {
-        width: 60px;
-        background: @bg-darker;
-        >button {
-            width: 60px;
-            outline: none!important;
-            svg {
-                left: 50%;
-                }
-        }
-        .disabled {
-            opacity: 1;
-            svg {
-                stroke: @editor-text-current!important;
-            }
-        }
-    }
-    .active:before {
-        content: '';
-        display: block;
-        width: 100%;
-        height: 3px;
-        top: 0;
-        left: 0;
-        position: absolute;
-        background: @bg-bright;
-        }
 }
 
 button.show-timeline {
