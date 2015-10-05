@@ -497,11 +497,22 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 };
 
 VizorUI.prototype.setWorldEditorMode = function(is_active) {
+	var dom = this.dom;
 	is_active = !!is_active;	// force bool
-	if (is_active)
+	if (is_active) 
 		this.viewmode = uiViewMode.world_editor;
-	else
+	else 
 		this.viewmode = uiViewMode.patch_editor;
+	
+	dom.btnSavePatch.attr('disabled',is_active);
+	dom.btnInspector.attr('disabled',is_active);
+	dom.btnSavePatch.attr('disabled',is_active);
+	dom.btnZoomOut.attr('disabled',is_active);
+	dom.btnZoom.attr('disabled',is_active);
+	dom.btnZoomIn.attr('disabled',is_active);
+	
+	dom.btnScale.attr('disabled',!is_active);
+	dom.btnRotate.attr('disabled',!is_active);
 };
 
 
