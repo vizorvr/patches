@@ -54,7 +54,7 @@
                             "state": {
                                 "position": {
                                     "x": 0,
-                                    "y": 0,
+                                    "y": 3.7,
                                     "z": 0
                                 },
                                 "scale": {
@@ -189,9 +189,9 @@
                             "uid": "j9pZPtR8i8s1",
                             "state": {
                                 "position": {
-                                    "x": 0.7065966680318122,
-                                    "y": -3.735881819006885,
-                                    "z": 1.4875445986688665
+                                    "x": 0,
+                                    "y": -0.05,
+                                    "z": 0
                                 },
                                 "scale": {
                                     "x": 8.6,
@@ -712,15 +712,6 @@
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "G00kVDLpVHHf",
-                            "dst_nuid": "lwo9bsWEEtaF",
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "QiWp1nhlol86",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
                             "src_nuid": "lwo9bsWEEtaF",
                             "dst_nuid": "j9pZPtR8i8s1",
                             "src_slot": 0,
@@ -1212,9 +1203,9 @@
                                         "y": 277,
                                         "uid": "bIbQqXVnofvl",
                                         "state": {
-                                            "val": 0,
+                                            "val": 3.7,
                                             "min": -1,
-                                            "max": 1
+                                            "max": 10
                                         },
                                         "title": "Position Y"
                                     },
