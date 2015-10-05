@@ -525,6 +525,15 @@ VizorUI.prototype.toggleFullscreenVRViewButtons = function() {
 
 /***** MISC UI MODALS/DIALOGS *****/
 
+VizorUI.prototype.viewSource = function() {
+	var b = bootbox.dialog({
+		message: '<h3 style="margin-top:0;padding-top:0;">source</h3><textarea spellcheck="false" autocorrect="false" readonly="true" class="form-control" cols="80" rows="40">'+
+			E2.core.serialise()+'</textarea>',
+		buttons: { 'OK': function() {} }
+	});
+	jQuery(b).addClass('wideauto').addClass('viewsource');
+};
+
 VizorUI.prototype.showFirstTimeDialog = function() {
 	if (!E2.util.isFirstTime())
 		return;
