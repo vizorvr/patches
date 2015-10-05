@@ -20,6 +20,23 @@
 @vp-node-button-border-color: 	@btn-primary-border;
 @vp-node-button-border-radius: 	@border-radius-small;
 
+/* modals */
+
+div.modal.viewsource textarea {
+  background:#111;
+  color:white;
+  font-family:  Courier, fixed;
+  font-size: 92%; line-height:105%;
+  &::selection {
+	background: #999;
+  }
+  &::-moz-selection {
+	background: #444;
+  }
+}
+
+/* graphics */
+
 button.vp.svg {	// for (square) buttons with svg icons inside
 	background: none;
 	position: relative;
@@ -58,6 +75,10 @@ button.vp.svg {
 	top: 55%;
   }
 }
+
+
+/* nodes */
+
 div.graph-node.p_renamed .p_header > div span.p_title {color: #ffc;}
 
 @media screen and (-webkit-min-device-pixel-ratio:0) {

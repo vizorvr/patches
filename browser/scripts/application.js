@@ -1951,13 +1951,7 @@ Application.prototype.start = function() {
 		})
 	});
 
-	E2.dom.viewSourceButton.click(function() {
-		bootbox.dialog({
-			message: '<textarea class="form-control" cols=80 rows=40>'+
-				E2.core.serialise()+'</textarea>', 
-			buttons: { 'OK': function() {} }
-		})
-	})
+	E2.dom.viewSourceButton.click(E2.ui.viewSource);
 
 	E2.dom.saveACopy.click(E2.app.onSaveACopyClicked.bind(E2.app))
 	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))

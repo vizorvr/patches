@@ -14,6 +14,7 @@ var uiKeys = {
 	toggleFloatingPanels : 66,		// 	(ctrl+) b
 	focusPresetSearch: 191,			//	/
 	focusPresetSearchAlt: 81,		//  q
+	viewSource:		220,			//	\
 
 	focusChatPanel: 'U+0040',		// @ - this key moves so is checked by value/identifier
 	focusChatPanelAlt: '@',			//
@@ -33,7 +34,6 @@ VizorUI = function VizorUI() {	// E2.ui
 	var that = this;
 	this.dom = {};				// init sets this to E2.dom
 
-	this.$modal = jQuery('div.bootbox.modal');
 	this.visible = true;		// overall visibility of the UI
 	this.visibility = {			// granular flags
 		floating_panels: true,
@@ -85,7 +85,8 @@ VizorUI.prototype.isVRCameraActive = function() {
 }
 VizorUI.prototype.isModalOpen = function() {
 	// was: return ($("body").data('bs.modal') || {}).isShown;
-	this.visibility.modal = this.$modal.hasClass('in');
+	var $modal = jQuery('div.bootbox.modal');
+	this.visibility.modal = $modal.hasClass('in');
 	return this.visibility.modal;
 }
 
@@ -122,6 +123,10 @@ VizorUI.prototype.onKeyDown = function(e) {
 	var keyCode = this.getModifiedKeyCode(e.keyCode);
 
 	switch (keyCode) {
+		case (uiKeys.viewSource):
+			this.viewSource();
+			e.preventDefault();
+			break;
 		case (uiKeys.openInspector):
 			this.onInspectorClicked();
 			e.preventDefault();
