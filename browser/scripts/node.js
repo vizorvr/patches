@@ -86,7 +86,8 @@ Node.prototype.destroy_ui = function() {
 	if (!this.ui)
 		return;
 
-	this.ui.destroy();
+	if (this.ui.destroy)
+		this.ui.destroy()
 
 	this.ui = null
 

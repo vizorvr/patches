@@ -69,8 +69,6 @@ ColorPicker.prototype.create_ui = function()
 		that._mouseDownValue = null;	// otherwise we keep tracking the mouse
 	}
 
-
-
 	var ww = 178;	// container width
 	var hh = 120;
 	var ch = hh + 24;	// container height = picker + hue
@@ -140,7 +138,6 @@ ColorPicker.prototype.create_ui = function()
 	c.append(s);
 	c.append(h);
 	c.append(hs);
-
 
 	var c_down = function(self, c, i, s) { return function(e) 
 	{ 
@@ -235,6 +232,7 @@ ColorPicker.prototype.create_ui_valuesIndicator = function(/* @var jQuery */ c) 
 }
 
 ColorPicker.prototype.update_state = function() {
+	this.update_hue();
 	this.update_value(this.c);
 };
 

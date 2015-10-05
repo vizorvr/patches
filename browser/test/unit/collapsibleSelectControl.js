@@ -57,7 +57,7 @@ describe('filtering',function(){
 
 	it('finds oscillators with `oscillate`', function() {
 		var f = c._filterData('oscillate')
-		assert.deepEqual(f[0].score, 500)
+		assert.deepEqual(f[0].score, 1000)
 		assert.deepEqual(f[0].title, 'Oscillate 2 values with in tween')
 	})
 

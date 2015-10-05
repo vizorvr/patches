@@ -85,6 +85,8 @@
 		}
 
 		if (E2.app.worldEditor.isActive()) {
+			E2.app.worldEditor.preRenderUpdate()
+			
 			// Render the scene through the world editor camera
 			this.manager.render(this.scene, E2.app.worldEditor.getCamera())
 		}
@@ -95,10 +97,9 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.patchSceneForWorldEditor = function() {
-		if (E2.app.worldEditor.isActive()) {
+		if (E2.app.worldEditor.updateScene) {
 			// tell the editor about changes in the scene
 			E2.app.worldEditor.updateScene(this.scene, this.perspectiveCamera)
-
 		}
 	}
 

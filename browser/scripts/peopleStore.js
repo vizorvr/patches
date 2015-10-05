@@ -108,7 +108,10 @@ PeopleStore.prototype.initialize = function() {
 	E2.app.channel
 	.on('disconnected', function() {
 		that.empty()
-		that.me = null
+	})
+	.on('reconnected', function() {
+		that.people = {}
+		that.me = undefined
 	})
 	.on('leave', function(m) {
 		var person = that.people[m.id]
@@ -174,11 +177,13 @@ PeopleStore.prototype._mouseMoveHandler = function(e) {
  */
 PeopleStore.prototype.empty = function empty() {
 	var that = this
+
 	this.list().map(function(person) {
-		that.emit('removed', person.uid)
+		if (person.uid !== E2.app.channel.uid) {
+			delete that.people[person.uid]
+			that.emit('removed', person.uid)
+		}
 	})
-	this.people = {}
-	this.people[E2.app.channel.uid] = this.me
 }
 
 PeopleStore.prototype.findByUid = function findByUid(uid) {

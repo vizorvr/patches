@@ -143,7 +143,8 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 				E2.app.growl('Disconnected from server. Reconnecting.', 'reconnecting')
 
 			reconnecting = true
-			setTimeout(that.connect.bind(that), RECONNECT_INTERVAL)
+			
+			setTimeout(that.connect.bind(that, wsHost, wsPort, options), RECONNECT_INTERVAL)
 
 			that.isOnChannel = false
 			that.emit('disconnected')
@@ -154,13 +155,13 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 			that.connected = true
 
-			that.emit('ready', uid)
-
 			if (reconnecting) {
 				reconnecting = false
 				E2.app.growl('Reconnected to server!', 'reconnected')
 				that.emit('reconnected')
 			}
+
+			that.emit('ready', uid)
 
 			that.wsChannel.on('*', function(m) {
 				if (m.kind === 'kicked') { // kicked by server

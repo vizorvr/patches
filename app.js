@@ -500,8 +500,7 @@ r.connect({
 	app.post('/upload/:model',
 		requireController,
 		passportConf.isAuthenticated,
-		multer(
-		{
+		multer( {
 			dest: tempDir,
 			limits: {
 				fileSize: 1024 * 1024 * 128 // 128m
@@ -511,20 +510,17 @@ r.connect({
 				return filename.replace(/\W+/g, '-');
 			}
 		}),
-		function(req, res, next)
-		{
+		function(req, res, next) {
 			// imageProcessor will checksum the file
 			if (req.params.model === 'image')
 				return next();
 
 			req.controller.checksumUpload(req, res, next);
 		},
-		function(req, res, next)
-		{
+		function(req, res, next) {
 			req.controller.canWriteUpload(req, res, next);
 		},
-		function(req, res, next)
-		{
+		function(req, res, next) {
 			req.controller.upload(req, res, next);
 		}
 	);

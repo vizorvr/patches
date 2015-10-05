@@ -5,7 +5,7 @@
 		this.desc = 'THREE.js Point Light'
 
 		this.params = {
-			/*color: core.renderer.color_white, */
+			color: new THREE.Color(0xffffff),
 			intensity: 1.0,
 			distance: 0.0,
 			decay: 1.0
@@ -14,8 +14,8 @@
 		this.input_slots = [
 			{ name: 'intensity', dt: core.datatypes.FLOAT, def: this.params.intensity },
 			{ name: 'distance', dt: core.datatypes.FLOAT, def: this.params.distance },
-			{ name: 'decay', dt: core.datatypes.FLOAT, def: this.params.decay }
-			//{ name: 'color', dt: core.datatypes.COLOR, def: this.params.color },
+			{ name: 'decay', dt: core.datatypes.FLOAT, def: this.params.decay },
+			{ name: 'color', dt: core.datatypes.COLOR, def: this.params.color }
 		].concat(this.input_slots)
 	}
 
