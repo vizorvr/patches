@@ -159,14 +159,12 @@
 
 	ThreeMaterialModifier.prototype.adjustMaterialSlots = function() {
 		var slots = this.dynInputs = this.node.getDynamicInputSlots()
-		var renamed = false;
 		for (var i = 0, len = slots.length; i < len; i++) {
-			renamed = this.node.rename_slot(
+			this.node.rename_slot(
 				slots[i].type, 
 				slots[i].uid,
 				i < this.materialNames.length ? this.materialNames[i] : ('input ' + i))
 		}
-		return renamed;
 	}
 
 })()
