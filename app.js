@@ -37,7 +37,7 @@ var templateCache = new TemplateCache().compile();
 
 // Framework controllers (see below for asset controllers)
 var homeController = require('./controllers/home');
-var userController = require('./controllers/user');
+var userController = require('./controllers/userController');
 
 // API keys + Passport configuration
 var secrets = require('./config/secrets');
@@ -401,8 +401,11 @@ r.connect({
 	app.post('/forgot', userController.postForgot);
 	app.get('/reset/:token', userController.getReset);
 	app.post('/reset/:token', userController.postReset);
+
 	app.get('/signup', userController.getSignup);
 	app.post('/signup', userController.postSignup);
+	app.post('/account/exists', userController.checkUserName);
+
 	app.get('/account', passportConf.isAuthenticated, userController.getAccount);
 	app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
 	app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);

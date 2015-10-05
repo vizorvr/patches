@@ -601,6 +601,7 @@
 	$(document).ready(function() {
 		if (!Cookies.get('vizor'))
 			E2.util.checkBrowser();
+
 		E2.models = {
 			user: new User({})
 		}
@@ -608,7 +609,9 @@
 		if ('{{user.username}}') {
 			E2.models.user.set( {
 				id: '{{user._id}}',
-				username: '{{user.username}}'
+				name: '{{user.name}}',
+				username: '{{user.username}}',
+				email: '{{user.email}}',
 			})
 		}
 
