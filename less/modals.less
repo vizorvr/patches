@@ -14,6 +14,9 @@
 
 .modal-dialog {
     width: 400px;
+    &.file-select-dialog {
+    	width: 600px;
+    }
     border-radius: 0;
     margin: (@menu-bar-height + @breadcrumb-height + 30) auto 0 auto;
     .button {
@@ -535,6 +538,7 @@
     border: 0;
     float: left;
     padding: 20px 0 0;
+    width: 100%;
     .tab-content {
         display: block;
         position: relative;
