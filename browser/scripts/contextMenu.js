@@ -7,7 +7,7 @@ var Menu = function(cm, items, callback) {
 	this.selected = null;
 };
 
-Menu.prototype.create = function(parent, pos, is_root)
+Menu.prototype.create = function(parent, position, is_root)
 {
 	var ul = $('<ul>');
 	
@@ -48,20 +48,20 @@ Menu.prototype.create = function(parent, pos, is_root)
 		
 		if(item.items)
 		{
-			var grp = make('span');
+			var $group = make('span');
 			
 			span.addClass('menu-lbl-grp');
 			li.addClass('menu-grp-item');
-			li.append(grp.addClass('menu-grp-img'));
+			li.append($group.addClass('menu-grp-img'));
 		
-			li.mouseenter(function(self, grp, li, item) { return function(e)
+			li.mouseenter(function(self, $groupElement, li, item) { return function(e)
 			{
-				var ofs = grp.offset();
+				var groupOffset = $groupElement.offset();
 				
 				self.select(li)
 				self.child = new Menu(self.cm, item.items, self.callback);
-				self.child.create(self, [ofs.left + 18, ofs.top - 4], true);
-			}}(this, grp, li, item));
+				self.child.create(self, [groupOffset.left + 18, groupOffset.top - 4], true);
+			}}(this, $group, li, item));
 
 			li.mousedown(function(e)
 			{
@@ -100,20 +100,20 @@ Menu.prototype.create = function(parent, pos, is_root)
 	var win = window;
 	
 	// Not quite good enough, but passable for now.
-	if(pos[0] + w >= win.innerWidth - 16)
+	if(position[0] + w >= win.innerWidth - 16)
 	{
 		var ofs = w + (parent ? parent.dom.width() : 0);
 		
-		pos[0] = pos[0] >= ofs ? pos[0] - ofs : 0; 
+		position[0] = position[0] >= ofs ? position[0] - ofs : 0;
 	}
 		
-	if(pos[1] + h >= win.innerHeight - 16)
-		pos[1] = pos[1] >= h ? pos[1] - (h - 18) : 0; 
+	if(position[1] + h >= win.innerHeight - 16)
+		position[1] = position[1] >= h ? position[1] - (h - 18) : 0;
 	
 	var s = ul[0].style;
 	
-	s.left = '' + Math.round(pos[0]) + 'px';
-	s.top = '' + Math.round(pos[1]) + 'px';
+	s.left = '' + Math.round(position[0]) + 'px';
+	s.top = '' + Math.round(position[1]) + 'px';
 };
 
 Menu.prototype.select = function(elem)
@@ -160,7 +160,7 @@ function ContextMenu(parent, items) {
 		if(e.target.id !== 'canvas')
 			return true;
 		
-		that.show([e.pageX, e.pageY]);
+		that.show([e.pageX, e.pageY]);		// THIS SHOWS THE MENU AT PAGEX/PAGEY
 		return false;
 	})
 

@@ -80,6 +80,7 @@ Application.prototype.offsetToCanvasCoord = function(ofs) {
 
 	o[0] -= co.left;
 	o[1] -= co.top;
+
 	o[0] += so[0];
 	o[1] += so[1];
 
@@ -94,27 +95,33 @@ Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 	result[1] = Math.round(o[1] + (area.height() / 2));
 };
 
-Application.prototype.instantiatePlugin = function(id, pos) {
+Application.prototype.instantiatePlugin = function(id, position) {
 	var that = this
-	var cp = E2.dom.canvas_parent
-	var co = cp.offset()
+	var $canvasParent = E2.dom.canvas_parent
+	var parentOffset = $canvasParent.offset()
 
-	pos = pos || this.mousePosition
+	position = position || this.mousePosition
 
 	function createPlugin(name) {
-		var ag = E2.core.active_graph
+		var activeGraph = E2.core.active_graph
 
-		var node = new Node(ag, id,
-			Math.floor((pos[0] - co.left) + that.scrollOffset[0]),
-			Math.floor((pos[1] - co.top) + that.scrollOffset[1]));
+		console.log('that', that.scrollOffset);
+		console.log('parent', parentOffset);
+		console.log('position', position);
+
+		var newX = Math.floor(position[0] + that.scrollOffset[0]);
+		var newY = Math.floor(position[1] + that.scrollOffset[1]);
+		var node = new Node(activeGraph, id, newX, newY);
+
+		console.log('xy', newX, newY);
 
 		if (name) { // is graph?
-			node.plugin.setGraph(new Graph(E2.core, ag))
+			node.plugin.setGraph(new Graph(E2.core, activeGraph))
 			node.title = name
 			node.plugin.graph.plugin = node.plugin
 		}
 
-		that.graphApi.addNode(ag, node)
+		that.graphApi.addNode(activeGraph, node)
 
 		return node
 	}

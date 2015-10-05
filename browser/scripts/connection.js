@@ -10,13 +10,15 @@ function ConnectionUI(parent_conn) {
 	this.color = '#000'
 }
 
-ConnectionUI.prototype.resolve_slot_divs = function() {
+ConnectionUI.prototype.resolve_slot_divs = function(and_redraw) {
 	var pc = this.parent_conn;
-	
+	and_redraw = (typeof and_redraw === 'undefined' ) ? true : !!and_redraw;	// force to bool, default true
+
 	this.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + (pc.src_slot.uid !== undefined ? 'do' + pc.src_slot.uid : 'so' + pc.src_slot.index));
 	this.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + (pc.dst_slot.uid !== undefined ? 'di' + pc.dst_slot.uid : 'si' + pc.dst_slot.index));
 
-	E2.app.redrawConnection(pc)
+	if (and_redraw)
+		E2.app.redrawConnection(pc)
 }
 
 function Connection(src_node, dst_node, src_slot, dst_slot, offset) {

@@ -419,6 +419,8 @@ NodeUI.prototype.redrawSlots = function() {
 		if(this.parent_node.dyn_outputs)
 			this.render_slots(this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
 	}
+
+	NodeUI.redrawActiveGraph();	// fix #584
 	return this;
 };
 
@@ -805,3 +807,20 @@ NodeUI.drilldown = function(node) {	// taken from nested graph plugin
 	return false;
 };
 
+/**
+ * forces all connections to resolve their slot divs and redraws the canvas.
+ * expensive and heavy-handed. use as a last resort. (gm)
+ * @return bool if updateCanvas was called
+ */
+NodeUI.redrawActiveGraph = function() {
+	var changed = false;
+	if (!E2.core.active_graph) return false;
+	E2.core.active_graph.connections.forEach(function(c){
+		if (c.ui) {
+			c.ui.resolve_slot_divs(false);
+			changed = true;
+		}
+	});
+	if (changed) E2.app.updateCanvas(true);
+	return changed;
+}
