@@ -52,7 +52,7 @@
 			E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
 				type: E2.slot_type.input,
 				name: that.dynInputs.length + '',
-				dt: that.lsg.dt
+				dt: E2.dt.MATERIAL
 			})
 		})
 
