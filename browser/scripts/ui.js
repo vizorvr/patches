@@ -72,7 +72,7 @@ VizorUI.prototype.showLoadingIndicator = function() {
 VizorUI.prototype.setPageTitle = function() {
 	var graphname = E2.app.path;
 	var isLoggedIn = E2.models.user.get('username');
-	var newTitle = document.title;
+	var newTitle = "Vizor";
 	
 	if (!isLoggedIn)
 		return false;
@@ -81,7 +81,7 @@ VizorUI.prototype.setPageTitle = function() {
 	if (graphname.length > 1)
 		graphname=graphname[1];
 	
-	newTitle = graphname + " | " + document.title;	
+	newTitle = graphname + " | " + newTitle;	
 	document.title = newTitle;
 }
 
@@ -490,11 +490,7 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 
 	var firstTimeTemplate = E2.views.account.firsttime;
 	var diag = bootbox.dialog({
-		title: 'First time here?',
-		message: '<h4>Check out our '+
-			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank">Youtube tutorials</a> '+
-			'or<br>'+
-			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>',
+		message: 'Rendering',
 		onEscape: true,
 		html: true
 	}).init(function() {
@@ -503,23 +499,24 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 
 	diag.find('.modal-dialog').addClass('welcome');
 
-	diag.find('a.login').on('click', function(evt)
+	diag.find('.login').on('click', function(evt)
 	{
 		evt.preventDefault();
 		bootbox.hideAll();
 		E2.controllers.account.openLoginModal();
 	});
 
-	diag.find('button.signup').on('click', function(evt)
+	diag.find('.signup').on('click', function(evt)
 	{
 		evt.preventDefault();
 		bootbox.hideAll();
 		E2.controllers.account.openSignupModal();
 	});
 
-	diag.find('button#welcome-new').on('click', function()
+	diag.find('button#welcome-gs').on('click', function(evt)
 	{
-		E2.app.onNewClicked();
+		evt.preventDefault();
+		bootbox.hideAll();
 	});
 
 }
