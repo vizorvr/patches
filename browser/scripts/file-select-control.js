@@ -173,6 +173,8 @@ FileSelectControl.prototype._render = function()
 	{
 		title: this._header,
 		message: this._frame
+	}).init(function() {
+		$('.modal-dialog').addClass('file-select-dialog');
 	});
 
 	this._el = el;
