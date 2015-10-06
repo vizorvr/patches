@@ -2136,6 +2136,10 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.graphs_list = $('#graphs-list');
 	E2.dom.filename_input = $('#filename-input');
 	
+	E2.dom.dragOverlay = $('#drag-overlay');
+	E2.dom.dropArea = $('#drop-area');
+	E2.dom.dropUploading = $('#drop-uploading');
+	
 	E2.dom.bottomBar = $('.bottom-panel');
 	
 	E2.dom.btnTimeline = $('#btn-timeline');

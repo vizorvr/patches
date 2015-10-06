@@ -73,6 +73,7 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	dom.chatWindow.css({'top': chatTop});
 	dom.chatWindow.movable();
 
+	this.initDropUpload();
 	this.setPageTitle();
 
 	dom.assetsLib.on(uiEvent.moved, this.updateState.bind(this));
@@ -526,6 +527,67 @@ VizorUI.prototype.toggleFullscreenVRViewButtons = function() {
 	E2.dom.vrview.parent.toggle(vr);
 }
 
+VizorUI.prototype.initDropUpload = function() {
+	var that = this;
+	var target = $(document);
+	
+	var newHeight = E2.dom.canvas_parent.height();
+	E2.dom.dragOverlay.height(newHeight);
+	
+	target.on('dragenter', function (e) 
+	{
+		e.stopPropagation();
+		e.preventDefault();
+	});
+	
+	target.on('dragover', function (e) 
+	{
+		e.stopPropagation();
+		e.preventDefault();
+		$('body').css('pointerEvents','none');
+		if (!that.isUploading()) {
+			E2.dom.dragOverlay.show();
+			E2.dom.dropArea.show();
+		} else {
+			return false;
+		}
+	});
+	
+	target.on('drop', function (e) 
+	{
+		e.preventDefault();
+		
+		E2.dom.dropArea.hide();
+		E2.dom.dropUploading.show();
+		that.uploading = true;
+		
+		//handle dropped file below;
+		setTimeout(function(e) {
+			E2.dom.dropUploading.hide();
+			E2.dom.dragOverlay.hide();
+			that.uploading = false;
+			$('body').css('pointerEvents','all');
+		},5000)
+		
+		var files = e.originalEvent.dataTransfer.files;
+		
+		return false;
+	});
+	target.on('dragleave dragend', function (e) 
+	{
+		e.stopPropagation();
+		e.preventDefault();
+		if (!that.isUploading()) {
+			return false;
+		} else {
+			E2.dom.dropUploading.hide();
+			E2.dom.dragOverlay.hide();
+			that.uploading = false;
+			$('body').css('pointerEvents','all');
+		}
+		return false;
+	});
+}
 
 /***** MISC UI MODALS/DIALOGS *****/
 

@@ -235,6 +235,9 @@ VizorUI.prototype.isVisible = function() {
 VizorUI.prototype.isLoading = function() {
 	return this.flags.loading;
 }
+VizorUI.prototype.isUploading = function() {
+	return this.uploading;
+}
 VizorUI.prototype.isVRCameraActive = function() {
 	return E2.app.worldEditor.isActive();	// app.isVRCameraActive ORs between this and noodles visible
 }
