@@ -273,5 +273,9 @@ VizorUI.prototype.togglePatchEditor = function(forceVisibility) {
 	else
 		this.visibility.patch_editor = !this.visibility.patch_editor;
 	this.updateVisibility();
+
+	if (this.visibility.patch_editor)
+		NodeUI.redrawActiveGraph();
+
 }
 VizorUI.prototype.toggleNoodles = VizorUI.prototype.togglePatchEditor; // @deprecated
