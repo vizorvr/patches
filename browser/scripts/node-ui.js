@@ -529,13 +529,11 @@ NodeUI.prototype.showRenameControl = function() {
 	input
 		.appendTo($dom)
 		.val(node.title || node.id)
-		.keyup(function(e) {
-
+		.keydown(function(e){
 			var code = e.keyCode || e.which
-
 			if(code === 13) {
-
 				var name = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
+				jQuery(e.target).trigger('blur');
 
 				if (name === "") {
 					if (node.id === "Graph") {
@@ -551,11 +549,16 @@ NodeUI.prototype.showRenameControl = function() {
 				}
 
 				input.remove();
-
 			}
-			else if(code === 27) {
+			return true;
+		})
+		.keyup(function(e) {
+
+			var code = e.keyCode || e.which
+			if(code === 27) {
 				input.remove();
 			}
+			return true;
 
 		})
 		.select()

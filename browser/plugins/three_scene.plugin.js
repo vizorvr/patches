@@ -63,7 +63,7 @@
 		})
 
 		layout.append(removeButton, '<br />', addButton);
-		
+
 		return layout
 	}
 
