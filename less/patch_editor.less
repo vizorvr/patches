@@ -128,6 +128,23 @@ div.graph-node {
 	color: @vp-node-color;
   	overflow:hidden;	// required by io or other inline nodes to round their corners
   	// note node-ui.js may set width:auto on this
+  	&.p_renaming {
+	  input.p_rename {
+		position : absolute;
+		left:	40px;
+		right: 40px;
+		top : 5px;
+		width : 80%;
+		margin-right: 40px;
+		background: none;
+		border: 0;
+		color:white ! important;
+		font-weight: 600;
+	  }
+	  .p_header .p_wrap {
+		span.p_title, button.edit, .ic, .ic .p_slot span svg {visibility: hidden;}
+	  }
+	}
   	.p_header {
 	  position:relative;
 	  border-top-left-radius: @vp-node-border-radius;

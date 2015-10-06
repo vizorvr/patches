@@ -177,7 +177,6 @@ function NodeUI(parent_node, x, y, z) {
 		this.setupTooltips($header);
 	}
 
-	this.getPluginUIFlags(true);
 	this.setCssClass();
 	this.redrawSlots();
 
@@ -524,10 +523,15 @@ NodeUI.prototype.showRenameControl = function() {
 	var that = this
 	var node = this.parent_node;
 	var $dom = this.dom;
+
+	if ($dom.hasClass('p_renaming')) return true;
+
 	var input = $('<input class="node-title-input" placeholder="Type a title" />')
 
+	$dom.addClass('p_renaming');
 	input
-		.appendTo($dom)
+		.appendTo($dom.find('.p_wrap'))
+		.addClass('p_rename')
 		.val(node.title || node.id)
 		.keydown(function(e){
 			var code = e.keyCode || e.which
@@ -545,6 +549,7 @@ NodeUI.prototype.showRenameControl = function() {
 
 				if (name) {
 					E2.app.graphApi.renameNode(E2.core.active_graph, node, name);
+					that.setCssClass();
 					that.redrawActiveGraph();	// @todo remove call once nodeRenamed handler works
 				}
 
@@ -564,6 +569,7 @@ NodeUI.prototype.showRenameControl = function() {
 		.select()
 		.bind('blur', function() {
 			$(this).remove();	// this = input
+			$dom.removeClass('p_renaming');
 		})
 		.focus()
 };
