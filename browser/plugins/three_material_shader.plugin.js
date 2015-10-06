@@ -122,7 +122,7 @@
 			createEditor('pixel', 'ps_src')
 		})
 
-		layout.append(vertexButton, pixelButton)
+		layout.append(vertexButton, '<br />', pixelButton)
 
 		return layout
 	}
