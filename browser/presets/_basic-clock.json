@@ -1,28 +1,29 @@
 {
-    "abs_t": 744.936,
+    "abs_t": 1560.541,
     "active_graph": "root",
-    "graph_uid": "F2SOwIkvCgXj",
+    "graph_uid": "TXDgBc0JJtS3",
     "root": {
         "uid": "root",
         "parent_uid": -1,
+        "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 366,
-                "y": 131,
-                "uid": "vGt5vCiIn0yZ",
+                "x": 728,
+                "y": 242,
+                "uid": "FAvCOYsg6S0E",
                 "state": {
                     "always_update": true,
                     "input_sids": {
-                        "Jbz3XPuDacCK": "1"
+                        "lWZ6zcEWL28x": "1"
                     },
                     "output_sids": {
-                        "WgYCdAW73VJV": "0"
+                        "MFrrjLlHx0mc": "0"
                     }
                 },
                 "title": "Basic clock",
                 "graph": {
-                    "uid": "DbDMDkJpJl2A",
+                    "uid": "Kspfso87MuNq",
                     "parent_uid": "root",
                     "open": true,
                     "nodes": [
@@ -30,19 +31,19 @@
                             "plugin": "delta_t_generator",
                             "x": 234,
                             "y": 203,
-                            "uid": "fIMVOQj5VlE7"
+                            "uid": "1d9VHAjac8c9"
                         },
                         {
                             "plugin": "multiply_modulator",
                             "x": 359,
                             "y": 193,
-                            "uid": "i2V6LQD5xbO8"
+                            "uid": "HxOxxSg1yA0l"
                         },
                         {
                             "plugin": "output_proxy",
                             "x": 785,
                             "y": 240,
-                            "uid": "WgYCdAW73VJV",
+                            "uid": "MFrrjLlHx0mc",
                             "title": "time",
                             "dyn_in": [
                                 {
@@ -61,7 +62,7 @@
                             "plugin": "input_proxy",
                             "x": 250,
                             "y": 262,
-                            "uid": "Jbz3XPuDacCK",
+                            "uid": "lWZ6zcEWL28x",
                             "title": "Speed",
                             "dyn_out": [
                                 {
@@ -80,7 +81,7 @@
                             "plugin": "variable_local_read",
                             "x": 376,
                             "y": 310,
-                            "uid": "sf0ViXPXOdAF",
+                            "uid": "G0INFbPgkThM",
                             "title": "float",
                             "dyn_out": [
                                 {
@@ -98,7 +99,7 @@
                             "plugin": "variable_local_write",
                             "x": 745,
                             "y": 188,
-                            "uid": "OklcyCxp6MZ5",
+                            "uid": "HoAY9TAtDrzY",
                             "title": "float",
                             "dyn_in": [
                                 {
@@ -116,19 +117,19 @@
                             "plugin": "add_modulator",
                             "x": 484,
                             "y": 223,
-                            "uid": "ZPp3JDl02xfr"
+                            "uid": "DdN24g1a32H3"
                         },
                         {
                             "plugin": "if_else_modulator",
                             "x": 604,
                             "y": 249,
-                            "uid": "PbkbkSSf2F3u"
+                            "uid": "PFwQIUjrqe8O"
                         },
                         {
                             "plugin": "const_float_generator",
                             "x": 488,
                             "y": 351,
-                            "uid": "PBE4Cl1ODrCa",
+                            "uid": "jALr1ZzL6lPF",
                             "state": {
                                 "val": 0
                             },
@@ -138,91 +139,91 @@
                             "plugin": "initialise_generator",
                             "x": 520,
                             "y": 160,
-                            "uid": "9jwgyJCGFrH7"
+                            "uid": "25WAISKP7Cxm"
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": "fIMVOQj5VlE7",
-                            "dst_nuid": "i2V6LQD5xbO8",
+                            "src_nuid": "1d9VHAjac8c9",
+                            "dst_nuid": "HxOxxSg1yA0l",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "NRoxHGMHZGKx",
+                            "uid": "FWMZJAQBENbS",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "Jbz3XPuDacCK",
-                            "dst_nuid": "i2V6LQD5xbO8",
+                            "src_nuid": "lWZ6zcEWL28x",
+                            "dst_nuid": "HxOxxSg1yA0l",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "xSrtRVD07J8e",
+                            "uid": "BdZSpwaqDwNc",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "9jwgyJCGFrH7",
-                            "dst_nuid": "PbkbkSSf2F3u",
+                            "src_nuid": "25WAISKP7Cxm",
+                            "dst_nuid": "PFwQIUjrqe8O",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "IeX10Q5LngcC",
+                            "uid": "HhoSFcJRhL6I",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "sf0ViXPXOdAF",
-                            "dst_nuid": "ZPp3JDl02xfr",
+                            "src_nuid": "G0INFbPgkThM",
+                            "dst_nuid": "DdN24g1a32H3",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "zfkfg3kdU8FY",
+                            "uid": "v5E9gZeH6IAA",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "i2V6LQD5xbO8",
-                            "dst_nuid": "ZPp3JDl02xfr",
+                            "src_nuid": "HxOxxSg1yA0l",
+                            "dst_nuid": "DdN24g1a32H3",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "dllElo6OGQKY",
+                            "uid": "buq56NIoihEc",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "ZPp3JDl02xfr",
-                            "dst_nuid": "PbkbkSSf2F3u",
+                            "src_nuid": "DdN24g1a32H3",
+                            "dst_nuid": "PFwQIUjrqe8O",
                             "src_slot": 0,
                             "dst_slot": 2,
-                            "uid": "jGmZy24toFwT",
+                            "uid": "XSOOeCxAg0gQ",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "PBE4Cl1ODrCa",
-                            "dst_nuid": "PbkbkSSf2F3u",
+                            "src_nuid": "jALr1ZzL6lPF",
+                            "dst_nuid": "PFwQIUjrqe8O",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "fGzwkitZQz5u",
+                            "uid": "O4y9aU75ayyu",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "PbkbkSSf2F3u",
-                            "dst_nuid": "OklcyCxp6MZ5",
+                            "src_nuid": "PFwQIUjrqe8O",
+                            "dst_nuid": "HoAY9TAtDrzY",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "W7U2OGS1YSkZ",
+                            "uid": "by2g4CFnu9Xd",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true
                         },
                         {
-                            "src_nuid": "PbkbkSSf2F3u",
-                            "dst_nuid": "WgYCdAW73VJV",
+                            "src_nuid": "PFwQIUjrqe8O",
+                            "dst_nuid": "MFrrjLlHx0mc",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "Unhfwza6jTj4",
+                            "uid": "UhgtavGUBgJS",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true,
@@ -260,11 +261,11 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 67,
-                "y": 169,
-                "uid": "0zwut6icT5GW",
+                "x": 429,
+                "y": 274,
+                "uid": "LSlIirXXDY28",
                 "state": {
-                    "val": 0.36666666666666664,
+                    "val": 0.3,
                     "min": 0,
                     "max": 1
                 },
@@ -273,11 +274,11 @@
         ],
         "conns": [
             {
-                "src_nuid": "0zwut6icT5GW",
-                "dst_nuid": "vGt5vCiIn0yZ",
+                "src_nuid": "LSlIirXXDY28",
+                "dst_nuid": "FAvCOYsg6S0E",
                 "src_slot": 0,
                 "dst_slot": 0,
-                "uid": "mn9zfEnYvKRf",
+                "uid": "ZkDOKkmhiuoe",
                 "src_connected": true,
                 "dst_connected": true,
                 "dst_dyn": true
