@@ -43,35 +43,39 @@
 			'background-size': 'cover'
 		})
 
-		function clickHandler() {
+		var clickHandler = function() {
+			var that = this;
 			var oldValue = that.state.url
 			var newValue = oldValue
 
-			function setValue(v) {
+			var setValueFn = function(v) {
 				that.state.url = newValue = v
 				that.updated = true
-				that.state_changed()
-			}
+				that.state_changed();
+				return true;
+			};
 
 			FileSelectControl
 			.createTextureSelector(oldValue, function(control) {
-				control	
-				.template('texture')
-				.selected(oldValue)
-				.onChange(setValue.bind(this))
-				.buttons({
-					'Cancel': setValue.bind(this),
-					'Select': setValue.bind(this)
-				})
-				.on('closed', function() {
-					if (newValue === oldValue)
-						return;
-				
-					that.undoableSetState('url', newValue, oldValue)
-				})
-				.modal()
-			})
-		}
+				control
+					.template('texture')
+					.selected(oldValue)
+					.onChange(setValueFn)
+					.buttons({
+						'Cancel': setValueFn,
+						'Select': setValueFn
+					})
+					.on('closed', function() {
+						if (newValue === oldValue)
+							return;
+
+						that.undoableSetState('url', newValue, oldValue)
+					})
+					.modal()
+			});
+
+			return false;
+		}.bind(this);
 
 		inp.click(clickHandler)
 		this.thumbnail.click(clickHandler)

@@ -169,8 +169,7 @@ FileSelectControl.prototype._render = function()
 
 	$('.file-selector', this._frame).html(this._renderFiles());
 
-	var el = bootbox.dialog(
-	{
+	var el = bootbox.dialog({
 		title: this._header,
 		message: this._frame
 	}).init(function() {
@@ -178,42 +177,46 @@ FileSelectControl.prototype._render = function()
 	});
 
 	this._el = el;
-	this._inputEl = $('#file-url', this._el);
-	this._selectedEl = $('tr.success', this._el);
+	this._inputEl = $('#file-url', el);
+	this._selectedEl = $('tr.success', el);
 
 	// add buttons
 	var buttonsRow = $('#buttons-row', el);
 
+	var keypressFn = this._onKeyPress.bind(this);
+	el[0].addEventListener('keydown', keypressFn);
+
 	function clickHandler(buttonCb) {
-		return function (e) {
+		return function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 			buttonCb.call(self, self._inputEl.val());
+			el[0].removeEventListener('keydown',keypressFn);
 			self.close();
 			return false;
 		}
 	}
 
+
 	Object.keys(this._buttons).map(function(name)
 	{
 		var btn = self._buttons[name];
 		$('<td>').append(
-			$('<button class="btn btn-default">'+name+'</button>')
-			.click(clickHandler(btn))
+			$('<button class="btn btn-default" id="fbBtn'+name+'">'+name+'</button>')
+				.click(clickHandler(btn))
 		).appendTo(buttonsRow);
 	});
-
+	
 	$('button:last', el)
 		.removeClass('btn-default')
 		.addClass('btn-primary');
+
 
 	// bind file rows and click handlers
 	this._bindTable();
 
 	$('input', el).on('change', this._onChange.bind(this))
-	$('button.close', el).click(this.close.bind(this))
-
-	el.bind('keydown', this._onKeyPress.bind(this))
+//	$('button.close', el).click(this.close.bind(this))
 
 	// show selected file when modal is opened
 	$(el).on('shown.bs.modal', function (e) {
@@ -229,9 +232,6 @@ FileSelectControl.prototype._render = function()
 
 	// bind upload form
 	this._bindUploadForm();
-
-	// show
-	el.appendTo('body');
 
 	return this;
 };
@@ -337,7 +337,6 @@ FileSelectControl.prototype._bindUploadForm = function() {
 
 FileSelectControl.prototype._onKeyPress = function(e) {
 	e.stopPropagation();
-
 	switch(e.keyCode) {
 		case 27:
 			this.cancel();
@@ -359,7 +358,8 @@ FileSelectControl.prototype._onKeyPress = function(e) {
 				this._onSelect(next);
 			this._scroll(1);
 			break;
-	};
+	}
+	return true;
 };
 
 FileSelectControl.prototype._scroll = function(amt) {
@@ -386,9 +386,8 @@ FileSelectControl.prototype._onSelect = function(row) {
 	this._onChange();
 };
 
-FileSelectControl.prototype.ok = function()
-{
-	$('button:last', this._el).click();
+FileSelectControl.prototype.ok = function() {
+	$('button.btn:last', this._el).click();
 };
 
 FileSelectControl.prototype.cancel = function() {
@@ -397,7 +396,7 @@ FileSelectControl.prototype.cancel = function() {
 };
 
 FileSelectControl.prototype.close = function() {
-	$(this._el).modal('hide');
+	bootbox.hideAll();
 	this.emit('closed')
 };
 
@@ -426,10 +425,10 @@ function createSelector(path, selected, okButton, okFn, cb)
 		buttons[okButton] = okFn;
 
 		ctl
-		.url(path)
-		.buttons(buttons)
-		.files(files)
-		.selected(selected)
+			.url(path)
+			.buttons(buttons)
+			.files(files)
+			.selected(selected)
 
 		cb(ctl)
 	});
@@ -469,17 +468,17 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 		var selectedPath;
 
 		ctl
-		.url('/graph')
-		.frame('graph-frame')
-		.template('graph')
-		.buttons(buttons)
-		.files(files)
-		.selected(selected)
-		.onChange(function(path) {
-			$('.links').show();
-			selectedPath = path;
-		})
-		.modal();
+			.url('/graph')
+			.frame('graph-frame')
+			.template('graph')
+			.buttons(buttons)
+			.files(files)
+			.selected(selected)
+			.onChange(function(path) {
+				$('.links').show();
+				selectedPath = path;
+			})
+			.modal();
 
 		$('.links .download').click(function(e) {
 			e.preventDefault();

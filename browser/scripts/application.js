@@ -1856,8 +1856,8 @@ Application.prototype.start = function() {
 
 	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
-	window.addEventListener('keydown', this.onKeyDown.bind(this))
-	window.addEventListener('keyup', this.onKeyUp.bind(this))
+	document.body.addEventListener('keydown', this.onKeyDown.bind(this))
+	document.body.addEventListener('keyup', this.onKeyUp.bind(this))
 
 	E2.dom.canvas_parent[0].addEventListener('scroll', function() {
 		that.scrollOffset = [ E2.dom.canvas_parent.scrollLeft(), E2.dom.canvas_parent.scrollTop() ]
