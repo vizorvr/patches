@@ -528,10 +528,18 @@ NodeUI.prototype.showRenameControl = function() {
 
 	var input = $('<input class="node-title-input" placeholder="Type a title" />')
 
+	$titleSpan = $dom.find('span.p_title').first();
+	var titleOffset = $titleSpan.offset();
+	var domOffset = $dom.offset();
+
 	$dom.addClass('p_renaming');
 	input
 		.appendTo($dom.find('.p_wrap'))
 		.addClass('p_rename')
+		.css({
+			width:  '' + $titleSpan.innerWidth() - 10 + 'px',
+			left: '' + (10 + titleOffset.left - domOffset.left) + 'px'
+		})
 		.val(node.title || node.id)
 		.keydown(function(e){
 			var code = e.keyCode || e.which
@@ -553,7 +561,6 @@ NodeUI.prototype.showRenameControl = function() {
 					NodeUI.redrawActiveGraph();
 				}
 
-				input.remove();
 			}
 			return true;
 		})
@@ -561,7 +568,7 @@ NodeUI.prototype.showRenameControl = function() {
 
 			var code = e.keyCode || e.which
 			if(code === 27) {
-				input.remove();
+				jQuery(e.target).trigger('blur');
 			}
 			return true;
 

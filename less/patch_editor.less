@@ -131,18 +131,16 @@ div.graph-node {
   	&.p_renaming {
 	  input.p_rename {
 		position : absolute;
-		left:	40px;
-		right: 40px;
 		top : 5px;
-		width : 80%;
-		margin-right: 40px;
+		outline:none;
 		background: none;
 		border: 0;
 		color:white ! important;
 		font-weight: 600;
 	  }
 	  .p_header .p_wrap {
-		span.p_title, button.edit, .ic, .ic .p_slot span svg {visibility: hidden;}
+		button.edit, .ic, .ic .p_slot span svg {visibility: hidden;}
+		span.p_title {color: rgba(1,1,1,0); width:auto;}
 	  }
 	}
   	.p_header {
@@ -670,6 +668,11 @@ div.graph-node.p_1in, div.graph-node.p_1out .p_header .p_slot span {width: 26px;
 
 div.graph-node.p_inline {
   background: none ! important;
+  &.p_renaming {
+	 .p_header .p_wrap {
+		.ic, .ic .p_slot span svg, span.p_title {visibility: visible;}
+	  }
+  }
 }
 div.graph-node.p_inline .p_header.p_inline {
   background: none;
@@ -698,6 +701,7 @@ div.graph-node.p_cat_io .p_header
   svg {
 	background: #EE5400;
   }
+
 }
 
 
