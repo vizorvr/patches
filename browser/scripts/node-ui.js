@@ -550,7 +550,7 @@ NodeUI.prototype.showRenameControl = function() {
 				if (name) {
 					E2.app.graphApi.renameNode(E2.core.active_graph, node, name);
 					that.setCssClass();
-					that.redrawActiveGraph();	// @todo remove call once nodeRenamed handler works
+					NodeUI.redrawActiveGraph();
 				}
 
 				input.remove();
