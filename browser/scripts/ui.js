@@ -53,6 +53,7 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	e2.app.onWindowResize();
 	this.setWorldEditorMode(e2.app.worldEditor.isActive());
 	
+	this.initDropUpload();
 	this.setPageTitle();
 }
 
@@ -522,6 +523,63 @@ VizorUI.prototype.toggleFullscreenVRViewButtons = function() {
 	E2.dom.vrview.parent.toggle(vr);
 }
 
+VizorUI.prototype.initDropUpload = function() {
+	var that = this;
+	var target = $("body");
+	
+	var newHeight = E2.dom.canvas_parent.height();
+	E2.dom.dragOverlay.height(newHeight);
+	
+	target.on('dragenter', function (e) 
+		{
+		e.stopPropagation();
+		e.preventDefault();
+		if (!that.isUploading()) {
+			E2.dom.dragOverlay.show();
+		} else {
+			that.uploading = true;
+			return false;
+		}
+	});
+	E2.dom.dragOverlay.on('dragover', function (e) 
+	{
+		e.stopPropagation();
+		e.preventDefault();
+		if (!that.isUploading()) {
+			E2.dom.dropArea.show();
+		} else {
+			that.uploading = true;
+			return false;
+		}
+	});
+	E2.dom.dragOverlay.on('drop', function (e) 
+	{
+		e.preventDefault();
+		
+		E2.dom.dropArea.hide();
+		E2.dom.dropUploading.show();
+		
+		//handle dropped file below;
+		setTimeout(function(e) {
+			E2.dom.dropUploading.hide();
+			E2.dom.dragOverlay.hide();
+			that.uploading = false;
+		},5000)
+		
+		var files = e.originalEvent.dataTransfer.files;
+		
+		return false;
+	});
+	E2.dom.dragOverlay.on('dragleave dragend', function (e) 
+	{
+		e.stopPropagation();
+		e.preventDefault();
+		E2.dom.dropUploading.hide();
+		E2.dom.dragOverlay.hide();
+		that.uploading = false;
+		return true;
+	});
+}
 
 /***** MISC UI MODALS/DIALOGS *****/
 
