@@ -396,8 +396,7 @@ FileSelectControl.prototype.cancel = function() {
 };
 
 FileSelectControl.prototype.close = function() {
-	this._el.modal('hide');
-	bootbox.hideAll();	// quick fix @todo investigate
+	bootbox.hideAll();
 	this.emit('closed')
 };
 
