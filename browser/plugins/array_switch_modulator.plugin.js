@@ -84,9 +84,6 @@ ArraySwitch.prototype.update_input = function(slot, data) {
 				this.number = n
 			}
 
-			for (var i=0; i < this.node.dyn_inputs.length; i++)
-				this.node.dyn_inputs[i].inactive = i !== n
-
 			return 
 		}
 	} else { // dynamic slot
@@ -98,6 +95,9 @@ ArraySwitch.prototype.update_state = function() {
 	if (this.value !== this.values[this.number]) {
 		this.value = this.values[this.number]
 		this.updated = true
+
+		for (var i=0; i < this.dynInputs.length; i++)
+			this.dynInputs[i].inactive = (i !== this.number)
 	}
 	else {
 		this.updated = false
@@ -125,6 +125,7 @@ ArraySwitch.prototype.state_changed = function(ui) {
 
 		for(var i = 0, len = slots.length; i < len; i++) {
 			this.lsg.add_dyn_slot(slots[i])
+			slots[i].inactive = false
 		}
 		
 		this.number = -1
