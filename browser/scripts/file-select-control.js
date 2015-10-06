@@ -169,8 +169,7 @@ FileSelectControl.prototype._render = function()
 
 	$('.file-selector', this._frame).html(this._renderFiles());
 
-	var el = bootbox.dialog(
-	{
+	var el = bootbox.dialog({
 		title: this._header,
 		message: this._frame
 	}).init(function() {
@@ -184,11 +183,15 @@ FileSelectControl.prototype._render = function()
 	// add buttons
 	var buttonsRow = $('#buttons-row', el);
 
+	var keypressFn = this._onKeyPress.bind(this);
+	el[0].addEventListener('keydown', keypressFn);
+
 	function clickHandler(buttonCb) {
 		return function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 			buttonCb.call(self, self._inputEl.val());
+			el[0].removeEventListener('keydown',keypressFn);
 			self.close();
 			return false;
 		}
@@ -214,8 +217,6 @@ FileSelectControl.prototype._render = function()
 
 	$('input', el).on('change', this._onChange.bind(this))
 //	$('button.close', el).click(this.close.bind(this))
-
-	el.bind('keydown', this._onKeyPress.bind(this))
 
 	// show selected file when modal is opened
 	$(el).on('shown.bs.modal', function (e) {
@@ -386,7 +387,7 @@ FileSelectControl.prototype._onSelect = function(row) {
 };
 
 FileSelectControl.prototype.ok = function() {
-	$('button:last', this._el).click();
+	$('button.btn:last', this._el).click();
 };
 
 FileSelectControl.prototype.cancel = function() {
