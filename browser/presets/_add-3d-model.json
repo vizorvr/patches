@@ -1,5 +1,5 @@
 {
-    "abs_t": 3344.851,
+    "abs_t": 31.491,
     "active_graph": "root",
     "graph_uid": "TXDgBc0JJtS3",
     "root": {
@@ -9,41 +9,48 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 632,
-                "y": 242,
-                "uid": "w4i4hKaMEMby",
+                "x": 441,
+                "y": 172,
+                "uid": "dGUhrR3y0Ugh",
                 "open": false,
                 "state": {
                     "always_update": true,
-                    "input_sids": {
-                        "IgaLbCjmi84v": "lOz0fKTfMesH"
-                    },
+                    "input_sids": {},
                     "output_sids": {
-                        "tFGH2vFKPMtC": "mh0rTKkFm0nD"
+                        "hqMOmKyCUHxE": "Ys30r7aVEks1"
                     }
                 },
-                "title": "360 photo",
+                "title": "3D model",
                 "graph": {
-                    "uid": "QUrkeTFfX7q4",
+                    "uid": "FwFVVKYAaxEY",
                     "parent_uid": "root",
                     "open": true,
                     "nodes": [
                         {
+                            "plugin": "three_loader_model",
+                            "x": 321,
+                            "y": 234,
+                            "uid": "20BsetSGKAXF",
+                            "state": {
+                                "url": "/data/scene/flamingo/flamingo.js"
+                            }
+                        },
+                        {
                             "plugin": "three_mesh",
-                            "x": 994,
-                            "y": 338,
-                            "uid": "Wdbkj1yNGm4I",
+                            "x": 687,
+                            "y": 203,
+                            "uid": "HfckSNLLNC1p",
                             "open": false,
                             "state": {
                                 "position": {
                                     "x": 0,
-                                    "y": 0,
+                                    "y": 0.890837835382039,
                                     "z": 0
                                 },
                                 "scale": {
-                                    "x": 1,
-                                    "y": 1,
-                                    "z": 1
+                                    "x": 0.0094948370835134,
+                                    "y": 0.0094948370835134,
+                                    "z": 0.0094948370835134
                                 },
                                 "quaternion": {
                                     "_x": 0,
@@ -55,16 +62,16 @@
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 1182,
-                            "y": 340,
-                            "uid": "tFGH2vFKPMtC",
+                            "x": 883,
+                            "y": 205,
+                            "uid": "hqMOmKyCUHxE",
                             "title": "object3d",
                             "dyn_in": [
                                 {
                                     "name": "output",
                                     "dt": 21,
                                     "def": null,
-                                    "uid": "bEdPpC9C6Rh1",
+                                    "uid": "UW8xhKSPhTFp",
                                     "dynamic": true,
                                     "type": 0,
                                     "index": 0,
@@ -72,220 +79,52 @@
                                     "connected": true
                                 }
                             ]
-                        },
-                        {
-                            "plugin": "three_material",
-                            "x": 712,
-                            "y": 222,
-                            "uid": "mPcQ9lOReqiW",
-                            "open": false
-                        },
-                        {
-                            "plugin": "const_float_generator",
-                            "x": 540,
-                            "y": 275,
-                            "uid": "WJ066XS7jOvS",
-                            "open": false,
-                            "state": {
-                                "val": 1
-                            },
-                            "title": "Side"
-                        },
-                        {
-                            "plugin": "three_uv_modifier",
-                            "x": 499,
-                            "y": 143,
-                            "uid": "iP7c0gMbqw70",
-                            "open": false
-                        },
-                        {
-                            "plugin": "const_float_generator",
-                            "x": 240,
-                            "y": 182,
-                            "uid": "NBkYbE1hGyM8",
-                            "state": {
-                                "val": 1
-                            },
-                            "title": "X repeat photo"
-                        },
-                        {
-                            "plugin": "input_proxy",
-                            "x": 251,
-                            "y": 103,
-                            "uid": "IgaLbCjmi84v",
-                            "title": "texture",
-                            "dyn_out": [
-                                {
-                                    "name": "input",
-                                    "dt": 2,
-                                    "uid": "q2TtZnBOutlf",
-                                    "dynamic": true,
-                                    "type": 1,
-                                    "index": 0,
-                                    "is_connected": true,
-                                    "connected": true
-                                }
-                            ]
-                        },
-                        {
-                            "plugin": "three_geometry_dodecahedron",
-                            "x": 744,
-                            "y": 437,
-                            "uid": "OWrBIkQlD2JE",
-                            "open": false
-                        },
-                        {
-                            "plugin": "const_float_generator",
-                            "x": 559,
-                            "y": 398,
-                            "uid": "07i7Esd7weVE",
-                            "state": {
-                                "val": 30
-                            },
-                            "title": "Radius"
-                        },
-                        {
-                            "plugin": "const_float_generator",
-                            "x": 562,
-                            "y": 480,
-                            "uid": "KLrnpXkezRVi",
-                            "open": false,
-                            "state": {
-                                "val": 1
-                            },
-                            "title": "Detail"
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": "Wdbkj1yNGm4I",
-                            "dst_nuid": "tFGH2vFKPMtC",
+                            "src_nuid": "20BsetSGKAXF",
+                            "dst_nuid": "HfckSNLLNC1p",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "qPPdkXfIwHIU",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "HfckSNLLNC1p",
+                            "dst_nuid": "hqMOmKyCUHxE",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "g6fxeylNsKVb",
+                            "uid": "iT2wKJhju6fa",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true
                         },
                         {
-                            "src_nuid": "mPcQ9lOReqiW",
-                            "dst_nuid": "Wdbkj1yNGm4I",
-                            "src_slot": 0,
+                            "src_nuid": "20BsetSGKAXF",
+                            "dst_nuid": "HfckSNLLNC1p",
+                            "src_slot": 1,
                             "dst_slot": 2,
-                            "uid": "Js4HareGPumN",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "WJ066XS7jOvS",
-                            "dst_nuid": "mPcQ9lOReqiW",
-                            "src_slot": 0,
-                            "dst_slot": 8,
-                            "uid": "EINkakaeEjbm",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "iP7c0gMbqw70",
-                            "dst_nuid": "mPcQ9lOReqiW",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "Abi6savoxZ1a",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "NBkYbE1hGyM8",
-                            "dst_nuid": "iP7c0gMbqw70",
-                            "src_slot": 0,
-                            "dst_slot": 3,
-                            "uid": "v1ldb9QgGriB",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "IgaLbCjmi84v",
-                            "dst_nuid": "iP7c0gMbqw70",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "f4ocYTXIXi89",
-                            "src_connected": true,
-                            "dst_connected": true,
-                            "src_dyn": true
-                        },
-                        {
-                            "src_nuid": "OWrBIkQlD2JE",
-                            "dst_nuid": "Wdbkj1yNGm4I",
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "r6bGcRaHPFML",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "KLrnpXkezRVi",
-                            "dst_nuid": "OWrBIkQlD2JE",
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "Qtccj0ZxRnqg",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "07i7Esd7weVE",
-                            "dst_nuid": "OWrBIkQlD2JE",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "I4PpBFduLT5n",
+                            "uid": "6z9Y75hrq8Jp",
                             "src_connected": true,
                             "dst_connected": true
                         }
                     ]
                 },
-                "dyn_in": [
-                    {
-                        "name": "texture",
-                        "dt": 2,
-                        "index": 0,
-                        "uid": "lOz0fKTfMesH",
-                        "dynamic": true,
-                        "type": 0,
-                        "is_connected": true
-                    }
-                ],
                 "dyn_out": [
                     {
                         "name": "object3d",
                         "dt": 21,
                         "index": 0,
-                        "uid": "mh0rTKkFm0nD",
+                        "uid": "Ys30r7aVEks1",
                         "dynamic": true,
                         "type": 1,
                         "is_connected": true
                     }
                 ]
-            },
-            {
-                "plugin": "url_texture_generator",
-                "x": 362,
-                "y": 213,
-                "uid": "hvXOXW8EXCNo",
-                "state": {
-                    "url": "/data/image/dcc8eb0748f7e5b02001133e567b08965cabb944.png"
-                }
             }
         ],
-        "conns": [
-            {
-                "src_nuid": "hvXOXW8EXCNo",
-                "dst_nuid": "w4i4hKaMEMby",
-                "src_slot": 0,
-                "dst_slot": 0,
-                "uid": "KPx2Tkx2dMB4",
-                "src_connected": true,
-                "dst_connected": true,
-                "dst_dyn": true
-            }
-        ]
+        "conns": []
     }
 }
