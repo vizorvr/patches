@@ -438,6 +438,7 @@ function createSelector(path, selected, okButton, okFn, cb)
 
 FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 {
+	if (E2.ui.isModalOpen()) return null;
 	var ctl = new FileSelectControl();
 
 	okButton = okButton || 'Ok';
