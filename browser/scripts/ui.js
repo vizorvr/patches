@@ -2,7 +2,7 @@
 
 
 VizorUI.prototype.setupEventHandlers = function(e2, dom) {
-	if (typeof e2 == 'undefined') return false;
+	if (typeof e2 === 'undefined') return false;
 	dom = dom || this.dom;
 	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2);
 
@@ -43,9 +43,14 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	dom.presetsLib.movable();
 	dom.assetsLib.movable();
 
-	var chatTop = $(window).height() - $('.chat-users').height() - $('.bottom-panel').height() - 40;
-	if (chatTop<($('.editor-header').height()+$('#breadcrumb').height())) {
-		chatTop= $('.editor-header').height() + $('#breadcrumb').height() + 40;
+	var chatUsersHeight = jQuery('.chat-users').height();
+	var bottomPanelHeight = jQuery('.bottom-panel').height();
+	var editorHeaderHeight = jQuery('.editor-header').height();
+	var breadcrumbHeight = jQuery('#breadcrumb').height();
+
+	var chatTop = $(window).height() - chatUsersHeight - bottomPanelHeight - 40;
+	if (chatTop < (editorHeaderHeight + breadcrumbHeight)) {
+		chatTop = breadcrumbHeight + breadcrumbHeight + 40;
 	}
 	dom.chatWindow.css({'top': chatTop});
 	dom.chatWindow.movable();
@@ -54,6 +59,8 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	this.setWorldEditorMode(e2.app.worldEditor.isActive());
 	
 	this.setPageTitle();
+
+	this._initialised = true;
 }
 
 
@@ -73,12 +80,12 @@ VizorUI.prototype.showLoadingIndicator = function() {
 // VizorUI.prototype.closeModal
 
 VizorUI.prototype.setPageTitle = function() {
-	var graphname = E2.app.path;
 	var isLoggedIn = E2.models.user.get('username');
-	var newTitle = "Vizor";
-	
 	if (!isLoggedIn)
 		return false;
+
+	var graphname = E2.app.path;
+	var newTitle = "Vizor";
 
 	graphname = graphname.split('/')
 	if (graphname.length > 1)
@@ -86,6 +93,7 @@ VizorUI.prototype.setPageTitle = function() {
 	
 	newTitle = graphname + " | " + newTitle;	
 	document.title = newTitle;
+	return newTitle;
 }
 
 VizorUI.prototype.openLoginModal = function() {
@@ -127,7 +135,7 @@ VizorUI.prototype.openPublishGraphModal = function() {
 	bootbox.dialog({
 		show: true,
 		animate: false,
-		message: 'Rendering',
+		message: 'Rendering'
 	}).init(function() {
 		E2.app.useCustomBootboxTemplate(publishTemplate);
 		$('#userGraphName_id').val(graphname);
@@ -232,12 +240,28 @@ VizorUI.prototype.enterVRView = function() {
 
 VizorUI.prototype.onChatResize = function() {
 	var dom = this.dom;
-	var restHeight = dom.chatWindow.find('.drag-handle').height()
-				   + dom.chatTabs.height()
-				   + dom.chat.find('.chat-nav').outerHeight(true)
-				   + dom.chat.find('.composer').outerHeight(true);
-	var newHeight = dom.chatWindow.height() - restHeight;
-	dom.chat.height('auto').find('.messages').height(newHeight);
+	var $chatPanel = dom.chatWindow;
+	var $chat = dom.chat;
+
+	var panelHeight = $chatPanel.outerHeight(true);
+	if (panelHeight < 120) {
+		panelHeight = 120;
+		$chatPanel.height(panelHeight);
+	}
+	var chatParentHeight = $chatPanel.parent().height();
+	if (panelHeight > chatParentHeight) {
+		$chatPanel.height(chatParentHeight - 10);
+	}
+
+	var restHeight = $chatPanel.find('.drag-handle').height()
+	restHeight += dom.chatTabs.height();
+	restHeight += $chat.find('.chat-nav').outerHeight(true);
+	restHeight += $chat.find('.composer').outerHeight(true);
+
+	var newHeight = panelHeight - restHeight - 2;
+	$chat.height('auto').find('.messages').height(newHeight);
+
+
 };
 
 
@@ -258,7 +282,7 @@ VizorUI.prototype.onTreeClicked = function(e) {
 	return true;
 }
 
-VizorUI.prototype.onPresetsToggleClicked = function(e) {
+VizorUI.prototype.onPresetsToggleClicked = function(e) {	// this = ui
 	var dom = this.dom;
 
 	var $graphTab = jQuery('div#graph.tab-pane');
@@ -367,10 +391,8 @@ VizorUI.prototype.onPeopleListChanged = function(storeAction) {
 			dom.chatWindow.height(dom.chatWindow.find('.drag-handle').height()
 								   + dom.chatTabs.height()
 								   + $peopleList.find('.meta').outerHeight(true)
-								   + itemHeight * ($('.graph-users>li').length
-								   + listChange));
-			$peopleScroll.height($('.chat-users').height()
-									 - $('.chat-tabs').height());
+								   + itemHeight * ($('.graph-users>li').length + listChange));
+			$peopleScroll.height($('.chat-users').height() - $('.chat-tabs').height());
 			$peopleList.height($peopleScroll.height());
 		} else {
 			dom.chatWindow.height(dom.chatWindow.find('.drag-handle').height()
@@ -385,27 +407,26 @@ VizorUI.prototype.onPeopleListChanged = function(storeAction) {
 }
 
 
-VizorUI.prototype.onChatToggleClicked = function() {
+VizorUI.prototype.onChatToggleClicked = function() {	// this = ui
 	var dom = this.dom;
-	if (dom.chatWindow.hasClass('collapsed')) {
+	var $chatWindow = dom.chatWindow;
+	var dragHandleHeight = $chatWindow.find('.drag-handle').height();
+	var chatTabHeight = dom.chatTabs.height();
+	if ($chatWindow.hasClass('collapsed')) {
+		$chatWindow.removeClass('collapsed');
 		if (dom.peopleTab.hasClass('active')) {
-			dom.chatWindow.removeClass('collapsed');
 			this.onPeopleListChanged(null);
 		} else {
-			dom.chatWindow.removeClass('collapsed')
-							 .height(dom.chatWindow.find('.drag-handle').height()
-								   + dom.chatTabs.height()
-								   + dom.chat.height());
+			$chatWindow.height(dragHandleHeight + chatTabHeight + dom.chat.height());
 		}
 	} else {
-		dom.chatWindow.addClass('collapsed')
-						 .height(dom.chatWindow.find('.drag-handle').height()
-							   + dom.chatTabs.height());
+		$chatWindow.addClass('collapsed');
+		$chatWindow.height(dragHandleHeight + chatTabHeight);
 	}
 	return false;
 };
 
-VizorUI.prototype.onAssetsToggleClicked = function() {
+VizorUI.prototype.onAssetsToggleClicked = function() {	// this = ui
 	var dom = this.dom;
 	var controlsHeight = dom.assetsLib.find('.drag-handle').outerHeight(true)
 					   + dom.assetsLib.find('.block-header').outerHeight(true)
