@@ -73,6 +73,7 @@ function isEditAction(m) {
 		case 'uiConnected':
 		case 'uiDisconnected':
 		case 'uiGraphTreeReordered':
+		case 'uiPluginTransientStateChanged':
 		case 'uiPluginStateChanged':
 			return true;
 	}
