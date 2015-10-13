@@ -29,7 +29,7 @@ var uiViewMode = {
 	world_editor : 'editor'
 };
 
-var uiEvents = {
+var uiEvent = {
 	moved			: 'uiMoved',		// panels via movable.js
 	state_updated	: 'stateUpdated'	// E2.ui / VizorUI
 }
@@ -37,14 +37,13 @@ var uiEvents = {
 VizorUI = function() {			// becomes E2.ui
 	EventEmitter.apply(this, arguments)
 
-	var that = this;
+	this._initialised = false;
+
 	this.dom = {				// init sets this to E2.dom
 		chatWindow : null,
 		presetsLib : null,
 		assetsLib : null
 	};
-
-	this._initialised = false;
 
 	this.state = {
 		visible:	true,		// overall visibility of the UI
@@ -71,7 +70,7 @@ VizorUI = function() {			// becomes E2.ui
 			availHeight	: window.screen.availHeight
 		}
 	};
-	this.setupState();	// adds code to update the current or apply new state
+	this.setupStateMethods();	// adds code to update the current or apply new state
 
 	this.viewmode = uiViewMode.patch_editor; // one of uiViewMode keys
 	this.flags = {
@@ -103,15 +102,15 @@ VizorUI.prototype.updateState = function(e) {
 		'presets':	this.dom.presetsLib,
 		'assets':	this.dom.assetsLib
 	});
-	this.emit(uiEvents.state_updated, this.state._getCopy());
+	this.emit(uiEvent.state_updated, this.state._getCopy());
 	return true;
 }
 
-VizorUI.prototype.setupState = function() {
+VizorUI.prototype.setupStateMethods = function() {
 	var ui = this;
 
 	this.state._update = function(domPanelStates) {	/* @var domPanelStates {key: $domElement, ...} */
-		if (!ui._initialised) return false;
+		if (!ui._initialised) return msg('ERROR: UI not initialised');
 		// this = ui.state
 		this.context.availWidth = window.screen.availWidth;
 		this.context.availHeight = window.screen.availHeight;
@@ -128,14 +127,15 @@ VizorUI.prototype.setupState = function() {
 	};
 
 	this.state._apply = function(newState) {
-		if ((!ui._initialised) || (typeof newState !== 'object')) return false;
+		if (!ui._initialised) return msg('ERROR: UI not initialised');
+		if (typeof newState !== 'object') return msg('ERROR: invalid newState')
 		// this = ui.state
 		this.visible = newState.visible;
 		this.visibility = clone(newState.visibility);
 		ui.applyVisibility();
 		ui.setWorldEditorMode(newState.viewmode === uiViewMode.world_editor);
 
-		if (typeof newState.panelStates === 'undefined') return true;
+		if (typeof newState.panelStates === 'undefined') return true;	// nothing else left to do
 
 		var ps = newState.panelStates;
 		if (typeof ps.chat !== 'undefined') {
@@ -170,79 +170,33 @@ VizorUI.prototype.setupState = function() {
 };
 
 VizorUI.prototype.getStateJSON = function() {
-	if (!this._initialised) return false;
+	if (!this._initialised) return msg('ERROR: UI not initialised');
 	return JSON.stringify(this.state, null, '  ');
 }
 
 VizorUI.prototype.setStateJSON = function(stateJSON) {
 	var newstate = JSON.parse(stateJSON);
-	if (!this._initialised) return false;
+	if (!this._initialised) return msg('ERROR: UI not initialised')
 	this.state._apply(newstate);
 	this.enforceConstraints();
 	return true;
 }
 
 VizorUI.prototype.enforceConstraints = function() {
+	if (!this.isVisible()) return;
 
-	var state = this.state;
-	var visibility = state.visibility;
+	var visibility = this.state.visibility;
 
 	var referenceTop	= jQuery('#canvases').offset().top;
 	var referenceBottom	= 45;	// #652
 	var referenceLeft	= 0;
-	var that = this;
 
-	var constrainPanel = function($panel, constrainHeight) {
-		if (!$panel.is(':visible')) return false;
-		constrainHeight = !!(constrainHeight || false);
-		var panelHeight = $panel.outerHeight(true);
-		var panelWidth = $panel.outerWidth(true);
-		var parentHeight = $panel.parent().innerHeight();
-		var parentWidth = $panel.parent().innerWidth();
-		var availableHeight = parentHeight - referenceBottom;	// #652
-		var availableWidth = parentWidth;
-
-		var pos = $panel.position();
-		if (pos.left === 0) pos = $panel.offset();
-
-		var panelTop = pos.top;
-		var panelLeft = pos.left;
-		var newX = panelLeft, newY = panelTop, newH = panelHeight;
-
-		if (panelHeight > parentHeight) {
-			$panel.height(parentHeight - 10);
-		}
-		if (panelTop + panelHeight > availableHeight) {	// try to fit this on screen
-			if (newH > availableHeight) {
-				newH = availableHeight;
-			}
-			if (newH <= availableHeight) {	// first change the top only
-				newY -= ((newY + newH) - availableHeight);
-			}
-			if (newY < referenceTop) {		// if not enough, change height too
-				newH = newH - (referenceTop - newY) - 10;
-				newY = referenceTop + 5;
-			}
-		}
-		if (panelLeft + panelWidth > parentWidth) {		// same for x and fixed width
-			newX -= ((newX + panelWidth) - availableWidth);
-		}
-		if (newX < referenceLeft) newX = referenceLeft + 5;
-
-		if (constrainHeight) $panel.height(newH);	// only resizable panels take height (i.e. chat)
-		$panel.css({top: newY, left: newX});
-
-		return true;
+	if (visibility.panel_chat) {
+		VizorUI.constrainPanel(this.dom.chatWindow, referenceTop, referenceBottom, referenceLeft, true);
+		setTimeout(this.onChatResize.bind(this), 200);
 	}
-
-	if (this.isVisible()) {
-		if (visibility.panel_chat) {
-			constrainPanel(this.dom.chatWindow, true);
-			setTimeout(this.onChatResize.bind(this), 200);
-		}
-		if (visibility.panel_assets) constrainPanel(this.dom.assetsLib);
-		if (visibility.panel_presets) constrainPanel(this.dom.presetsLib);
-	}
+	if (visibility.panel_assets) VizorUI.constrainPanel(this.dom.assetsLib, referenceTop, referenceBottom, referenceLeft);
+	if (visibility.panel_presets) VizorUI.constrainPanel(this.dom.presetsLib,  referenceTop, referenceBottom, referenceLeft);
 }
 
 /***** IS... *****/
@@ -598,3 +552,47 @@ VizorUI.applyPanelState = function($el, panelState, collapseCallback) {
 
 	return true;
 };
+
+//called by ui.enforceConstraints
+VizorUI.constrainPanel = function($panel, referenceTop, referenceBottom, referenceLeft, doConstrainHeight) {
+	if (!$panel.is(':visible')) return false;
+	doConstrainHeight = !!(doConstrainHeight || false);
+	var panelHeight = $panel.outerHeight(true);
+	var panelWidth = $panel.outerWidth(true);
+	var parentHeight = $panel.parent().innerHeight();
+	var parentWidth = $panel.parent().innerWidth();
+	var availableHeight = parentHeight - referenceBottom;	// #652
+	var availableWidth = parentWidth;
+
+	var pos = $panel.position();
+	if (pos.left === 0) pos = $panel.offset();
+
+	var panelTop = pos.top;
+	var panelLeft = pos.left;
+	var newX = panelLeft, newY = panelTop, newH = panelHeight;
+
+	if (panelHeight > parentHeight) {
+		$panel.height(parentHeight - 10);
+	}
+	if (panelTop + panelHeight > availableHeight) {	// try to fit this on screen
+		if (newH > availableHeight) {
+			newH = availableHeight;
+		}
+		if (newH <= availableHeight) {	// first change the top only
+			newY -= ((newY + newH) - availableHeight);
+		}
+		if (newY < referenceTop) {		// if not enough, change height too
+			newH = newH - (referenceTop - newY) - 10;
+			newY = referenceTop + 5;
+		}
+	}
+	if (panelLeft + panelWidth > parentWidth) {		// same for x and fixed width
+		newX -= ((newX + panelWidth) - availableWidth);
+	}
+	if (newX < referenceLeft) newX = referenceLeft + 5;
+
+	if (doConstrainHeight) $panel.height(newH);	// only resizable panels take height (i.e. chat)
+	$panel.css({top: newY, left: newX});
+
+	return true;
+}

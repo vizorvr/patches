@@ -60,9 +60,9 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 
 	this.setPageTitle();
 
-	dom.assetsLib.on(uiEvents.moved, this.updateState.bind(this));
-	dom.chatWindow.on(uiEvents.moved, this.updateState.bind(this));
-	dom.presetsLib.on(uiEvents.moved, this.updateState.bind(this));
+	dom.assetsLib.on(uiEvent.moved, this.updateState.bind(this));
+	dom.chatWindow.on(uiEvent.moved, this.updateState.bind(this));
+	dom.presetsLib.on(uiEvent.moved, this.updateState.bind(this));
 
 	this._initialised = true;
 }

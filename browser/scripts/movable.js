@@ -9,7 +9,7 @@
 		$dragEl = $dragEl.find('.drag-handle');
 	};
 
-	var uimoved = (typeof uiEvents !== 'undefined') ? uiEvents.moved : 'uiMoved';
+	var uimoved = (typeof uiEvent !== 'undefined') ? uiEvent.moved : 'uiMoved';
 	var $dragged = $(this);
 		$dragEl
 			.on('mousedown touchstart', function(e) {
