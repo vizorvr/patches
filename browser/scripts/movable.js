@@ -8,7 +8,8 @@
 		$dragEl.prepend('<div class="drag-handle"></div>');
 		$dragEl = $dragEl.find('.drag-handle');
 	};
-	
+
+	var uimoved = (typeof uiEvents !== 'undefined') ? uiEvents.moved : 'uiMoved';
 	var $dragged = $(this);
 		$dragEl
 			.on('mousedown touchstart', function(e) {
@@ -51,6 +52,7 @@
 						return false;
 					})
 					.one('mouseup touchend touchcancel', function() {
+						$dragEl.trigger(uimoved);
 						$(this).off('mousemove.movable touchmove.movable click.movable');
 					});
 				e.preventDefault();

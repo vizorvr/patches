@@ -1132,8 +1132,7 @@ Application.prototype.onWindowResize = function() {
 }
 
 Application.prototype.toggleNoodles = function() {
-	this.noodlesVisible = !this.noodlesVisible
-	E2.dom.canvas_parent.toggle(this.noodlesVisible)
+	E2.ui.togglePatchEditor(!this.noodlesVisible);
 }
 
 Application.prototype.toggleWorldEditor = function() {

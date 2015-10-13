@@ -332,8 +332,9 @@ MouseKeyboardPositionSensorVRDevice.prototype.getState = function() {
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.onKeyDown_ = function(e) {
+  if ((typeof E2 === 'undefined') || (typeof E2.app === 'undefined')) return true;
   if (!E2.app.isVRCameraActive() || E2.util.isTextInputInFocus(e))
-    return;
+    return true;
 
   // Track WASD and arrow keys.
   if (e.keyCode == 38 || e.keyCode == 87) { // W or Up key.
@@ -345,6 +346,7 @@ MouseKeyboardPositionSensorVRDevice.prototype.onKeyDown_ = function(e) {
   } else if (e.keyCode == 37 || e.keyCode == 65) { // A or Left key.
     this.animateTheta_(this.theta + KEY_SPEED);
   }
+  return true;
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.animateTheta_ = function(targetAngle) {

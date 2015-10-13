@@ -1,6 +1,5 @@
 // require ui-core.js
 
-
 VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	if (typeof e2 === 'undefined') return false;
 	dom = dom || this.dom;
@@ -10,28 +9,28 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.btnGraph.click(e2.app.toggleNoodles.bind(e2.app));
 	dom.btnAccountMenu.click(e2.app.onAccountMenuClicked.bind(e2.app));
 
-	// elements under our control call us
+	// menu shell
 	dom.btnSignIn.click(this.openLoginModal.bind(this));
-
-	dom.chatTabBtn.click(this.onChatTabClicked.bind(this));
-	dom.chatToggleButton.click(this.onChatToggleClicked.bind(this));
-	dom.chatClose.click(this.onChatCloseClicked.bind(this));
-	dom.peopleTabBtn.click(this.onChatPeopleTabClicked.bind(this));
-	dom.btnChatDisplay.click(this.onChatDisplayClicked.bind(this));
-
 	dom.btnAssets.click(this.onBtnAssetsClicked.bind(this));
-	dom.assetsClose.click(this.onAssetsCloseClicked.bind(this));
-	dom.assetsToggle.click(this.onAssetsToggleClicked.bind(this));
-
 	dom.btnPresets.click(this.onBtnPresetsClicked.bind(this));
-	dom.presetsClose.click(this.onPresetsCloseClicked.bind(this));
-	dom.presetsToggle.click(this.onPresetsToggleClicked.bind(this));
 	dom.btnInspector.click(this.onInspectorClicked.bind(this));
-	
 	dom.btnEditorCam.click(this.enterEditorView.bind(this));
 	dom.btnVRCam.click(this.enterVRView.bind(this));
 
+	dom.chatToggleButton.click(this.onChatToggleClicked.bind(this));
+	dom.chatClose.click(this.onChatCloseClicked.bind(this));
+	dom.chatTabBtn.click(this.onChatTabClicked.bind(this));
+	dom.peopleTabBtn.click(this.onChatPeopleTabClicked.bind(this));
+	dom.btnChatDisplay.click(this.onChatDisplayClicked.bind(this));
+
+	dom.assetsClose.click(this.onAssetsCloseClicked.bind(this));
+	dom.assetsToggle.click(this.onAssetsToggleClicked.bind(this));
+
+	dom.presetsClose.click(this.onPresetsCloseClicked.bind(this));
+	dom.presetsToggle.click(this.onPresetsToggleClicked.bind(this));
+
 	jQuery('div#presets-lib ul li').last().find('a').click(this.onTreeClicked.bind(this));
+	jQuery('div#presets-lib ul li').first().find('a').click(this.updateState.bind(this));
 
 };
 
@@ -44,21 +43,26 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	dom.assetsLib.movable();
 
 	var chatUsersHeight = jQuery('.chat-users').height();
+
 	var bottomPanelHeight = jQuery('.bottom-panel').height();
 	var editorHeaderHeight = jQuery('.editor-header').height();
 	var breadcrumbHeight = jQuery('#breadcrumb').height();
-
 	var chatTop = $(window).height() - chatUsersHeight - bottomPanelHeight - 40;
+
 	if (chatTop < (editorHeaderHeight + breadcrumbHeight)) {
 		chatTop = breadcrumbHeight + breadcrumbHeight + 40;
 	}
 	dom.chatWindow.css({'top': chatTop});
 	dom.chatWindow.movable();
-
 	e2.app.onWindowResize();
+
 	this.setWorldEditorMode(e2.app.worldEditor.isActive());
-	
+
 	this.setPageTitle();
+
+	dom.assetsLib.on(uiEvents.moved, this.updateState.bind(this));
+	dom.chatWindow.on(uiEvents.moved, this.updateState.bind(this));
+	dom.presetsLib.on(uiEvents.moved, this.updateState.bind(this));
 
 	this._initialised = true;
 }
@@ -119,6 +123,7 @@ VizorUI.prototype.onSearchResultsChange = function() {
 		presetsLib.height('auto');
 		presetsList.height(maxHeight);
 	}
+	this.updateState();
 };
 
 VizorUI.prototype.openPublishGraphModal = function() {
@@ -190,15 +195,17 @@ VizorUI.prototype.openPublishGraphModal = function() {
 }
 
 VizorUI.prototype.onBtnPresetsClicked = function() {
-	if (this.isVisible())
+	if (this.isVisible()) {
 		this.dom.presetsLib.toggle().toggleClass('uiopen');
-	this.syncVisibility();
+		this.syncVisibility();
+	}
 }
 
 VizorUI.prototype.onBtnAssetsClicked = function() {
-	if (this.isVisible())
+	if (this.isVisible()) {
 		this.dom.assetsLib.toggle().toggleClass('uiopen');
-	this.syncVisibility();
+		this.syncVisibility();
+	}
 }
 
 VizorUI.prototype.enterEditorView = function() {
@@ -260,8 +267,6 @@ VizorUI.prototype.onChatResize = function() {
 
 	var newHeight = panelHeight - restHeight - 2;
 	$chat.height('auto').find('.messages').height(newHeight);
-
-
 };
 
 
@@ -279,6 +284,7 @@ VizorUI.prototype.onAssetsCloseClicked = function() {
 
 VizorUI.prototype.onTreeClicked = function(e) {
 	this.dom.presetsLib.removeClass('collapsed').height('auto');
+	this.updateState();
 	return true;
 }
 
@@ -288,6 +294,7 @@ VizorUI.prototype.onPresetsToggleClicked = function(e) {	// this = ui
 	var $graphTab = jQuery('div#graph.tab-pane');
 	if ($graphTab.hasClass('active')) {	// we're looking at the graph Tab, which shouldn't collapse
 		dom.presetsLib.removeClass('collapsed').height('auto');
+		this.updateState();
 		return true;
 	}
 	// else
@@ -301,6 +308,7 @@ VizorUI.prototype.onPresetsToggleClicked = function(e) {	// this = ui
 		// should collapse
 		dom.presetsLib.addClass('collapsed').height(controlsHeight);
 	}
+	this.updateState();
 	return false;
 }
 
@@ -311,6 +319,7 @@ VizorUI.prototype.onLibSearchClicked = function(e) {
 		currentLib.removeClass('collapsed')
 		this.onSearchResultsChange();
 	}
+	this.updateState();
 	return false;
 }
 
@@ -332,6 +341,7 @@ VizorUI.prototype.onChatTabClicked = function() {
 	if (dom.chatWindow.hasClass('collapsed')) {
 		dom.chatWindow.removeClass('collapsed')
 	}
+	this.updateState();
 	return true;
 };
 
@@ -347,6 +357,7 @@ VizorUI.prototype.onChatPeopleTabClicked = function() {
 		dom.chatWindow.removeClass('collapsed');
 		this.onPeopleListChanged(null);
 	}
+	this.updateState();
 	return true;
 };
 
@@ -423,6 +434,7 @@ VizorUI.prototype.onChatToggleClicked = function() {	// this = ui
 		$chatWindow.addClass('collapsed');
 		$chatWindow.height(dragHandleHeight + chatTabHeight);
 	}
+	this.updateState();
 	return false;
 };
 
@@ -441,6 +453,7 @@ VizorUI.prototype.onAssetsToggleClicked = function() {	// this = ui
 	} else {
 		dom.assetsLib.addClass('collapsed').height(controlsHeight);
 	}
+	this.updateState();
 	return false;
 };
 
@@ -456,6 +469,8 @@ VizorUI.prototype.onInspectorClicked = function() {
 	} else {
 		app.growl('Select one particular patch to see its settings.','info',4000);
 	}
+	this.updateState();
+	return true;
 }
 
 
@@ -521,9 +536,9 @@ VizorUI.prototype.setWorldEditorMode = function(is_active) {
 	var dom = this.dom;
 	is_active = !!is_active;	// force bool
 	if (is_active) 
-		this.viewmode = uiViewMode.world_editor;
+		this.state.viewmode = uiViewMode.world_editor;
 	else 
-		this.viewmode = uiViewMode.patch_editor;
+		this.state.viewmode = uiViewMode.patch_editor;
 	
 	dom.btnSavePatch.attr('disabled',is_active);
 	dom.btnInspector.attr('disabled',is_active);
