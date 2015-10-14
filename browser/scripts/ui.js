@@ -13,15 +13,15 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.btnSignIn.click(this.openLoginModal.bind(this));
 	dom.btnAssets.click(this.onBtnAssetsClicked.bind(this));
 	dom.btnPresets.click(this.onBtnPresetsClicked.bind(this));
+	dom.btnChatDisplay.click(this.onChatDisplayClicked.bind(this));
 	dom.btnInspector.click(this.onInspectorClicked.bind(this));
 	dom.btnEditorCam.click(this.enterEditorView.bind(this));
-	dom.btnVRCam.click(this.enterVRView.bind(this));
 
+	dom.btnVRCam.click(this.enterVRView.bind(this));
 	dom.chatToggleButton.click(this.onChatToggleClicked.bind(this));
 	dom.chatClose.click(this.onChatCloseClicked.bind(this));
 	dom.chatTabBtn.click(this.onChatTabClicked.bind(this));
 	dom.peopleTabBtn.click(this.onChatPeopleTabClicked.bind(this));
-	dom.btnChatDisplay.click(this.onChatDisplayClicked.bind(this));
 
 	dom.assetsClose.click(this.onAssetsCloseClicked.bind(this));
 	dom.assetsToggle.click(this.onAssetsToggleClicked.bind(this));
@@ -35,6 +35,8 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 };
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
+	e2.app.onWindowResize();
+
 	this._init(e2);
 	this.setupEventHandlers(e2,this.dom);
 
@@ -54,7 +56,6 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	}
 	dom.chatWindow.css({'top': chatTop});
 	dom.chatWindow.movable();
-	e2.app.onWindowResize();
 
 	this.setWorldEditorMode(e2.app.worldEditor.isActive());
 
@@ -65,6 +66,8 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	dom.presetsLib.on(uiEvent.moved, this.updateState.bind(this));
 
 	this._initialised = true;
+
+	this.emit(uiEvent.initialised, this);
 }
 
 
@@ -195,17 +198,17 @@ VizorUI.prototype.openPublishGraphModal = function() {
 }
 
 VizorUI.prototype.onBtnPresetsClicked = function() {
-	if (this.isVisible()) {
-		this.dom.presetsLib.toggle().toggleClass('uiopen');
-		this.syncVisibility();
-	}
+	if (!this.isVisible()) return false;
+	this.state.visibility.panel_presets = !this.state.visibility.panel_presets;
+	this.applyVisibility();
+	return false;
 }
 
 VizorUI.prototype.onBtnAssetsClicked = function() {
-	if (this.isVisible()) {
-		this.dom.assetsLib.toggle().toggleClass('uiopen');
-		this.syncVisibility();
-	}
+	if (!this.isVisible()) return false;
+	this.state.visibility.panel_assets = !this.state.visibility.panel_assets;
+	this.applyVisibility();
+	return false;
 }
 
 VizorUI.prototype.enterEditorView = function() {
@@ -271,14 +274,20 @@ VizorUI.prototype.onChatResize = function() {
 
 
 VizorUI.prototype.onChatCloseClicked = function() {
-	this.dom.chatWindow.removeClass('uiopen').hide();
-	this.syncVisibility();
+	this.state.visibility.panel_chat = false;
+	this.applyVisibility();
 	return false;
 }
 
 VizorUI.prototype.onAssetsCloseClicked = function() {
-	this.dom.assetsLib.removeClass('uiopen').hide();
-	this.syncVisibility();
+	this.state.visibility.panel_assets = false;
+	this.applyVisibility();
+	return false;
+}
+
+VizorUI.prototype.onPresetsCloseClicked = function() {
+	this.state.visibility.panel_presets = false;
+	this.applyVisibility();
 	return false;
 }
 
@@ -323,12 +332,6 @@ VizorUI.prototype.onLibSearchClicked = function(e) {
 	return false;
 }
 
-VizorUI.prototype.onPresetsCloseClicked = function() {
-	this.dom.presetsLib.removeClass('uiopen').hide();
-	this.syncVisibility();
-	return false;
-}
-
 VizorUI.prototype.onChatTabClicked = function() {
 	var dom = this.dom;
 	if (!$(this).parent().hasClass('active')) {
@@ -364,11 +367,13 @@ VizorUI.prototype.onChatPeopleTabClicked = function() {
 
 VizorUI.prototype.onChatDisplayClicked = function() {
 	var isUiVisible = this.isVisible();
+	if (!isUiVisible) return false;
+
+	this.state.visibility.panel_chat = !this.state.visibility.panel_chat;
+	this.applyVisibility(false);	// do not update state just yet
+
 	var dom = this.dom;
 	if (!dom.chatWindow.hasClass('collapsed')) {
-		if (isUiVisible)
-			dom.chatWindow.toggle();
-		dom.chatWindow.toggleClass('uiopen');
 		if (dom.peopleTab.hasClass('active') && dom.chatWindow.hasClass('active') && isUiVisible) {
 			this.onPeopleListChanged(null);
 		}
@@ -382,7 +387,8 @@ VizorUI.prototype.onChatDisplayClicked = function() {
 							 .height(dom.chatTabs.height + dom.chat.height)
 		}
 	}
-	this.syncVisibility();
+	this.updateState();
+	return false;
 }
 
 VizorUI.prototype.onPeopleListChanged = function(storeAction) {

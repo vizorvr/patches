@@ -30,8 +30,9 @@ var uiViewMode = {
 };
 
 var uiEvent = {
+	initialised		: 'uiInitialised',
 	moved			: 'uiMoved',		// panels via movable.js
-	state_updated	: 'stateUpdated'	// E2.ui / VizorUI
+	stateChanged	: 'stateChanged'	// E2.ui / VizorUI
 }
 
 VizorUI = function() {			// becomes E2.ui
@@ -93,16 +94,19 @@ VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 	e2.core.on('resize', this.onWindowResize.bind(this));
 	e2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this));
 	e2.core.on('progress', this.updateProgressBar.bind(this));
+
+	this.on(uiEvent.initialised, this.recallState.bind(this));
+	this.on(uiEvent.stateChanged, this.storeState.bind(this));
 };
 
 
-VizorUI.prototype.updateState = function(e) {
+VizorUI.prototype.updateState = function() {
 	this.state._update({
 		'chat':		this.dom.chatWindow,
 		'presets':	this.dom.presetsLib,
 		'assets':	this.dom.assetsLib
 	});
-	this.emit(uiEvent.state_updated, this.state._getCopy());
+	this.emit(uiEvent.stateChanged, this.state._getCopy());
 	return true;
 }
 
@@ -169,15 +173,22 @@ VizorUI.prototype.setupStateMethods = function() {
 
 };
 
-VizorUI.prototype.getStateJSON = function() {
+VizorUI.prototype.getState = function() {
 	if (!this._initialised) return msg('ERROR: UI not initialised');
-	return JSON.stringify(this.state, null, '  ');
+	return this.state._getCopy();
 }
 
-VizorUI.prototype.setStateJSON = function(stateJSON) {
-	var newstate = JSON.parse(stateJSON);
+VizorUI.prototype.setState = function(stateObjOrJSON) {
 	if (!this._initialised) return msg('ERROR: UI not initialised')
-	this.state._apply(newstate);
+	var newState;
+	try {
+		newState = (typeof stateObjOrJSON === 'object') ? stateObjOrJSON : JSON.parse(stateObjOrJSON);
+	}
+	catch (e) {
+		console.error(e);
+		return msg('ERROR: failed parsing state json');
+	}
+	this.state._apply(newState);
 	this.enforceConstraints();
 	return true;
 }
@@ -376,6 +387,25 @@ VizorUI.prototype.onWindowResize = function() {	// placeholder
 };
 
 
+// uiEvent.stateChanged
+VizorUI.prototype.storeState = function(uiState) {
+	var storage = VizorUI.getPersistentStorageRef();
+	if (!storage) return;
+	storage.setItem('uiState', JSON.stringify(uiState));
+}
+
+// uiEvent.initialised
+VizorUI.prototype.recallState = function() {
+	var storage = VizorUI.getPersistentStorageRef();
+	if (!storage) return;
+	var uiState = storage.getItem('uiState');
+	if (uiState) {
+		var ok = this.setState(uiState);
+		if (!ok) storage.removeItem('uiState');		// ui refused so this is useless
+	}
+}
+
+
 // reads the visibility state of various parts of the UI
 VizorUI.prototype.syncVisibility = function() {
 	var $assets = this.dom.assetsLib, $presets = this.dom.presetsLib, $chat = this.dom.chatWindow;
@@ -395,15 +425,24 @@ VizorUI.prototype.applyVisibility = function(andUpdateState) {
 	var $assets = this.dom.assetsLib, $presets = this.dom.presetsLib, $chat = this.dom.chatWindow;
 	var $patch_editor = E2.dom.canvas_parent;
 	var show_panels = state.visible && visibility.floating_panels;
-	$assets.toggle(show_panels && visibility.panel_assets);
-	$presets.toggle(show_panels && visibility.panel_presets);
-	$chat.toggle(show_panels && visibility.panel_chat);
+
+	$assets.toggle(show_panels && visibility.panel_assets)
+		.toggleClass('uiopen', show_panels && visibility.panel_assets);
+	$presets.toggle(show_panels && visibility.panel_presets)
+		.toggleClass('uiopen', show_panels && visibility.panel_presets);
+	$chat.toggle(show_panels && visibility.panel_chat)
+		.toggleClass('uiopen', show_panels && visibility.panel_chat);
+
+	this.dom.btnAssets.toggleClass('ui_off', !visibility.panel_assets);
+	this.dom.btnPresets.toggleClass('ui_off', !visibility.panel_presets);
+	this.dom.btnChatDisplay.toggleClass('ui_off', !visibility.panel_chat);
+	this.dom.btnGraph.toggleClass('ui_off', !visibility.patch_editor);
+
 	$patch_editor.toggle(state.visible && visibility.patch_editor);
 	if (andUpdateState) this.updateState();
 	this.enforceConstraints();
 	E2.app.noodlesVisible = visibility.patch_editor;
 };
-
 
 
 /***** TOGGLE LAYERS OF THE UI ON OR OFF *****/
@@ -595,4 +634,18 @@ VizorUI.constrainPanel = function($panel, referenceTop, referenceBottom, referen
 	$panel.css({top: newY, left: newX});
 
 	return true;
+}
+
+
+VizorUI.getPersistentStorageRef = function() {
+	var storage = window.sessionStorage;
+	var quotaExceeded = DOMException.QUOTA_EXCEEDED_ERR || 22;
+	try {
+		storage.setItem('test', 1);
+		storage.removeItem('test');
+	}
+	catch (e) {
+		if (e.code === quotaExceeded && storage.length === 0) return null;
+	}
+	return storage;
 }
