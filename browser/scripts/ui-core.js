@@ -62,6 +62,7 @@ VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 	this.dom = e2.dom;
 	document.body.addEventListener('keydown', this.onKeyDown.bind(this));
 	document.body.addEventListener('keyup', this.onKeyUp.bind(this));
+	window.addEventListener('blur', this._clearModifierKeys.bind(this));
 	e2.core.on('resize', this.onWindowResize.bind(this));
 	e2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this));
 	e2.core.on('progress', this.updateProgressBar.bind(this));
@@ -92,11 +93,19 @@ VizorUI.prototype.isModalOpen = function() {
 
 
 /**** EVENT HANDLERS ****/
+
+VizorUI.prototype._clearModifierKeys = function() {	// blur
+	this.flags.key_ctrl_pressed = false;
+	this.flags.key_alt_pressed = false;
+	this.flags.key_shift_pressed = false;
+	return true;
+}
+
 VizorUI.prototype._trackModifierKeys = function(keyCode, isDown) {	// returns bool if any modifiers changed
 	if ((typeof keyCode === 'undefined') || this.always_track_keys.indexOf(keyCode) === -1) return false;
 	var newvalue = !!(isDown || false);
 	switch (keyCode) {
-		case uiKeys.ctrl:	// fall-through
+		case uiKeys.ctrl:	// fallthrough
 		case uiKeys.left_window_key:
 		case uiKeys.meta:
 			this.flags.key_ctrl_pressed = newvalue;
@@ -111,14 +120,13 @@ VizorUI.prototype._trackModifierKeys = function(keyCode, isDown) {	// returns bo
 	return true;
 };
 VizorUI.prototype.getModifiedKeyCode = function(keyCode) {	// adds modifier keys value to keyCode if necessary
-	if (typeof keyCode != 'number') return keyCode;
+	if (typeof keyCode !== 'number') return keyCode;
 	if (this.flags.key_shift_pressed) keyCode += uiKeys.mod_shift;
 	if (this.flags.key_alt_pressed) keyCode += uiKeys.mod_alt;
 	if (this.flags.key_ctrl_pressed) keyCode += uiKeys.mod_ctrl;
 	return keyCode;
 };
 VizorUI.prototype.onKeyDown = function(e) {
-
 	this._trackModifierKeys(e.keyCode, true);
 	if (this.isModalOpen() || E2.util.isTextInputInFocus(e)) return true;
 	var keyCode = this.getModifiedKeyCode(e.keyCode);
