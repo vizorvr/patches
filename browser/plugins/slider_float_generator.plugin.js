@@ -50,7 +50,7 @@ Slider.prototype.create_ui = function() {
 
 	$slider.on('input', function() {
 		that.$display.html($slider.val())
-		that.realtimeSetState('val', parseFloat($slider.val()))
+		that.transientSetState('val', parseFloat($slider.val()))
 		return true;
 	})
 

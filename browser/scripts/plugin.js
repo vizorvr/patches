@@ -20,7 +20,7 @@ Plugin.prototype.undoableSetState = function(key, newValue, oldValue) {
 	))
 }
 
-Plugin.prototype.realtimeSetState = function(key, newValue) {
+Plugin.prototype.transientSetState = function(key, newValue) {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiPluginTransientStateChanged',
 		graphUid: this.node.parent_graph.uid,
