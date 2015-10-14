@@ -1,0 +1,57 @@
+body.bPlayer {
+  height:100%; width:100%;
+}
+#playerpage {
+  header>* {height: 60px; line-height: 60px; border:0; margin: 0; padding:0;}
+  header {
+	  border-bottom: 1px solid #999;
+	  background: @bg-light;
+	  /*
+	  background: rgb(26,62,136);
+	  background: linear-gradient(to right, rgb(59,95,141) 30%,rgb(26,62,136) 50%,rgb(59,95,141) 70%);
+	  */
+	  /* background: radial-gradient(ellipse at center, rgb(26,62,136) 0%, rgb(26,62,136) 70%, rgb(59,95,141) 100%); */
+	a {border:0; margin:0; padding:0;}
+	#logo_h {
+	  float:left;
+	  span {display:none;}
+	  span#load_spinner {
+		float:left;
+		display: block;
+		visibility: hidden;
+		height:30px; width:30px;
+		margin:13px 2px 0 5px;
+	  }
+	}
+	.controls {
+	  float:right;
+	  padding-right: 25px;    /* 25+12 = as logo */
+	}
+	button.svg {
+	  cursor:hand ! important; cursor:pointer ! important;
+	  background: none; border:0; outline:none; padding:0 12px;
+	  svg { width: 26px; height:26px; vertical-align: middle; opacity:0.7}
+	  &:hover svg { width: 26px; height:26px; vertical-align: middle; opacity:1}
+	}
+	#graph_heading {
+	  text-align: center; font-size: 12pt; font-weight: 100; color: #ddd;
+	  span.title {color: #fff;}
+	}
+  }
+  div.popover {
+	background: #ddd ! important;
+	color: #000 ! important;
+	padding: 10px ! important;
+	&.bottom > .arrow::after {
+	  border-bottom-color: #ddd!important;
+  	}
+	.popover-title {
+	  font-size: 13px ! important;
+	}
+  }
+  div.nojs, div.nowebgl {
+	font-size: 130%;
+	width: 600px;
+	margin: 100px auto;
+  }
+}

@@ -1,45 +1,55 @@
-<div class="flex-column">
-<div class="flex-row"> <!-- header row -->
-	<div class="menu-bar"> <!-- menu bar -->
-		<div class="header left-cell pull-left" id="top-header-logo">
-			<div class="info-pane pull-left" id="info">
-				<span>
-					<img id="infopanelogo" src="../../images/logo-graphic.png">
-				</span>
-				<span class="logo-text">Vizor</span>
-			</div>
-			<div id="load-spinner"></div>
-		</div>
-
-		<div class="header">
-			<div id="top-header">
-				<div class="top-header-col" id="top-header-left">
-				<h5>
-					<i><strong>{{graph.name}}</strong></i>
-					by
-					<i><strong>{{graph.owner}}</strong></i>
-				</h5>
-				</div>
-
-				<div class="top-header-col" id="top-header-right">
-					<div class="header pull-right">
-						<button id="edit" class="btn btn-primary">
-							<i class="fa fa-code"> Edit</i>
-						</button>
-
-						<button id="fullscreen" class="btn btn-primary">
-							<i class="fa fa-expand"></i>
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div> <!-- menu bar -->
-</div> <!-- row -->
-
-<div class="flex-row"> <!-- main row -->
-<div class="stage--front">
+<svg style="display:none;">
+    <symbol id="vizor-top-logo" viewBox="0 0 66 24">
+		<polyline points="1,1 5.199,1 10.156,16.305 15.113,1 19.312,1 12.197,22.568 8.115,22.568 1,1 "/>
+		<rect x="20.154" y="7.795" width="3.994" height="14.773"/>
+		<polyline points="25.458,18.965 33.128,11.372 25.576,11.372 25.576,7.795 38.493,7.795 38.493,11.43 30.825,18.994 38.641,18.994 38.641,22.568 25.458,22.568 25.458,18.965 "/>
+		<path d="M50.152,15.182c0-2.098-1.633-3.84-3.674-3.84c-2.069,0-3.646,1.742-3.646,3.84c0,2.102,1.574,3.842,3.646,3.842C48.521,19.023,50.152,17.281,50.152,15.182z M38.927,15.182c0-4.253,3.354-7.682,7.554-7.682s7.553,3.428,7.553,7.682c0,4.256-3.354,7.686-7.553,7.686S38.927,19.438,38.927,15.182z"/>
+		<path d="M55.05,7.795h3.966v2.424c0.729-1.537,2.041-2.424,4.024-2.424h1.604v3.93h-2.537c-2.129,0-3.063,1.123-3.063,3.871v6.973H55.05V7.795"/>
+		<path d="M20.14,3.037C20.14,1.912,21.04,1,22.151,1c1.111,0,2.012,0.912,2.012,2.037c0,1.127-0.901,2.039-2.012,2.039C21.04,5.076,20.14,4.164,20.14,3.037"/>
+	</symbol>
+    <symbol id="icon-fullscreen" viewbox="0 0 26 26">
+        <g stroke="#fff" fill="#fff">
+            <line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="3.417" y1="22.583" x2="22.583" y2="3.417"/>
+            <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="7.583,22.583 3.417,22.583 3.417,18.417 "/>
+            <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="22.583,7.583 22.583,3.417 18.417,3.417 "/>
+            <line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="3.417" y1="3.417" x2="22.583" y2="22.583"/>
+            <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="3.417,7.583 3.417,3.417 7.583,3.417 "/>
+            <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="18.417,22.583 22.583,22.583 22.583,18.417 "/>
+        </g>
+	</symbol>
+    <symbol id="player-pencil">
+        <g transform="translate(0, 1) scale(0.98,0.98)" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M6.5,20.5 L0,22.5 L2,16 L14,4 L18.5,8.5 L6.5,20.5 L6.5,20.5 Z"></path>
+            <path d="M14,3.6685 L17.086,0.5835 C17.864,-0.1945 19.136,-0.1945 19.914,0.5835 L21.586,2.2545 C22.364,3.0335 22.364,4.3055 21.586,5.0835 L18.5,8.1685" ></path>
+            <path d="M16.75,6 L6,16.75"></path>
+            <path d="M2,16 L3,17 L5.5,17 L5.5,19.5 L6.5,20.5"></path>
+            <path d="M1,19 L3,21"></path>
+            <path d="M16,2 L20.5,6.5"></path>
+        </g>
+    </symbol>
+</svg>
+<header id="topbar" class="clearfix">
+    <h1 id="logo_h">
+        <span id="load_spinner"></span>
+        <a href="/"><svg alt="Vizor logo" style="width:64px; height:24px; fill:#eee;"><use xlink:href="#vizor-top-logo"></use></svg></a>
+    </h1>
+    <div class="controls">
+        <button id="fullscreen" data-tooltip="Enter full screen" class="svg">
+            <svg alt="Enter full screen"><use xlink:href="#icon-fullscreen"></use></svg>
+        </button>
+        <button id="edit" data-tooltip="Edit graph" class="svg">
+            <svg alt="Edit graph"><use xlink:href="#player-pencil"></use></svg>
+        </button>
+    </div>
+    <h2 id="graph_heading">
+        <span class="title">{{graph.name}}</span>
+        by
+        <span class="author">{{graph.owner}}</span>
+    </h2>
+</header>
+<div class="stage--front" style="height:100%; width:100%;">
 	<canvas
+        style="display:none;"
 		id="webgl-canvas"
 		class="webgl-canvas-normal"
 		width="1400px"
@@ -49,70 +59,102 @@
 		data-graph-url="{{graphMinUrl}}">
 	>
 	</canvas>
-
 	<div class="progress" style="display:none">
 		<div class="progress-bar" style="width: 00%;"></div>
 	</div>
 </div>
-</div> <!-- main row -->
-</div> <!-- page column -->	
-
 <script>
-	var $canvas = $('#webgl-canvas')
-	var $window = $(window)
-	var $stage = $('.stage--front')
-	var footerHeight = 76
+    var have_webgl = (function(){   // http://www.browserleaks.com/webgl#howto-detect-webgl
+        if (!window.WebGLRenderingContext) return false;    /* WebGL not supported*/
+        var canvas = document.createElement("canvas"), names = ["webgl", "experimental-webgl", "moz-webgl"], gl = false;
+        for(var i in names) {
+            try {
+                gl = canvas.getContext(names[i]);
+                if (gl && typeof gl.getParameter == "function") { /* WebGL is enabled */
+                    return names[i];    /* or return true; */
+                }
+            } catch(e) {}
+        }
+        return false;  /* WebGL is supported, but disabled */
+    })();
+    function initPlayer() {
+        document.getElementById('topbar').addEventListener('mousedown',
+        function(e){
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        }, true);   // capture
+        jQuery('button').each(function(){
+            var $this = jQuery(this);
+            var contentText = $this.data('tooltip');
+            $this.popover({
+                trigger: 'hover',
+                title: contentText,
+                placement: 'bottom',
+                delay: {show:500, hide:100}
+            });
+        });
 
-	window.Vizor = {
-		hideWebVRButton: true
-	}
 
-	function onResize() {
-		setTimeout(function() {
-			var width = $window.width()
-			var height = $window.height()
-			var devicePixelRatio = window.devicePixelRatio || 1;
-			var pixelRatioAdjustedWidth = devicePixelRatio * width;
-			var pixelRatioAdjustedHeight = devicePixelRatio * height;
+        var $canvas = $('#webgl-canvas')
+        $canvas.css({display: 'block'});
+        var $window = $(window)
+        var $stage = $('.stage--front')
+        var footerHeight = 76
 
-			$canvas[0].width = pixelRatioAdjustedWidth
-			$canvas[0].height = pixelRatioAdjustedHeight
-			$stage.css('width', width + 'px')
-			$stage.css('height', height + 'px')
-		
-			var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
-			
-			if (isFullscreen) {
-				$canvas.removeClass('webgl-canvas-normal')
-				$canvas.addClass('webgl-canvas-fs')
-			} else {
-				$canvas.removeClass('webgl-canvas-fs')
-				$canvas.addClass('webgl-canvas-normal')
-			}
+        window.Vizor = {
+            hideWebVRButton: true
+        }
 
-			E2.core.emit('resize')
-		}, 20)
-	}
+        function onResize() {
+            setTimeout(function() {
+                var width = $window.width()
+                var height = $window.height()
+                var devicePixelRatio = window.devicePixelRatio || 1;
+                var pixelRatioAdjustedWidth = devicePixelRatio * width;
+                var pixelRatioAdjustedHeight = devicePixelRatio * height;
 
-	$('#edit').click(function() {
-		window.location = window.location + '/edit'
-	})
+                $canvas[0].width = pixelRatioAdjustedWidth
+                $canvas[0].height = pixelRatioAdjustedHeight
 
-	$('#fullscreen').click(function() {
-		E2.core.emit('fullScreenChangeRequested')
-	})
+                var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
-	$(window).on('resize', onResize)
-	$(window).on('vizorLoaded', function() {
-		$('#load-spinner').hide()
+                if (isFullscreen) {
+                    $canvas.removeClass('webgl-canvas-normal')
+                    $canvas.addClass('webgl-canvas-fs')
+                } else {
+                    $canvas.removeClass('webgl-canvas-fs')
+                    $canvas.addClass('webgl-canvas-normal')
+                }
 
-		E2.app.calculateCanvasArea = function() {
-			return {
-				width: window.innerWidth,
-				height: window.innerHeight
-			}
-		}
+                E2.core.emit('resize')
+            }, 20)
+        }
 
-		onResize()
-	})
+        $('#edit').click(function() {
+            window.location = window.location + '/edit'
+        })
+
+        $('#fullscreen').click(function() {
+            E2.core.emit('fullScreenChangeRequested')
+        })
+
+        $(window).on('resize', onResize)
+        $(window).on('vizorLoaded', function() {
+            $('#load-spinner').hide()
+
+            E2.app.calculateCanvasArea = function() {
+                return {
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                }
+            }
+
+            onResize()
+        })
+    }
+
+    jQuery(document).ready(have_webgl ? initPlayer : function(){
+        document.getElementById('nowebgl').style.display = 'block';
+    });
 </script>
