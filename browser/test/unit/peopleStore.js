@@ -63,6 +63,7 @@ describe('PeopleStore', function() {
 		E2.app.channel.uid = 'foo'
 		E2.app.channel.emit('join', { id: 'bar'})
 		E2.app.channel.emit('join', { id: 'baz'})
+		E2.app.channel.emit('join', { id: 'foo'})
 		E2.app.channel.emit('leave', { id: 'foo' })
 		assert.equal(ps.list().length, 1)
 	})

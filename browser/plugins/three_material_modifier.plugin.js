@@ -19,7 +19,6 @@
 			}
 		]
 
-
 		this.lsg = new LinkedSlotGroup(core, node, [], [])
 		this.lsg.set_dt(core.datatypes.MATERIAL)
 
@@ -43,7 +42,7 @@
 	ThreeMaterialModifier.prototype.create_ui = function () {
 		var that = this
 		var layout = make('div')
-		var removeButton = makeButton('Remove Slot', 'Click to remove the last material input.')
+		var removeButton = makeButton('Remove', 'Click to remove the last material input.')
 		var addButton = makeButton('Add Slot', 'Click to add another material input.')
 
 		removeButton.css('width', '65px')
@@ -53,7 +52,7 @@
 			E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
 				type: E2.slot_type.input,
 				name: that.dynInputs.length + '',
-				dt: that.lsg.dt
+				dt: E2.dt.MATERIAL
 			})
 		})
 
@@ -66,9 +65,7 @@
 			E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
 		})
 
-		layout.append(removeButton)
-		layout.append(make('br'))
-		layout.append(addButton)
+		layout.append(removeButton, '<br />', addButton)
 
 		return layout
 	}

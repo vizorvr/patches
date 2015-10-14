@@ -6,8 +6,13 @@
 		
 		this.input_slots = [
 			{	name: 'texture', dt: core.datatypes.TEXTURE },
+			{   name: 'lightMap', dt: core.datatypes.TEXTURE, def: undefined },
+			{   name: 'bumpMap', dt: core.datatypes.TEXTURE, def: undefined },
+			{   name: 'normalMap', dt: core.datatypes.TEXTURE, def: undefined },
+			{   name: 'specularMap', dt: core.datatypes.TEXTURE, def: undefined },
+			{   name: 'displacementMap', dt: core.datatypes.TEXTURE, def: undefined },
+			{   name: 'alphaMap', dt: core.datatypes.TEXTURE, def: undefined },
 			{	name: 'color', dt: core.datatypes.COLOR },
-			{	name: 'lightMap', dt: core.datatypes.TEXTURE },
 			{	name: 'wireframe', dt: core.datatypes.BOOL },
 			{	name: 'fog', dt: core.datatypes.BOOL, def: true,
 				desc: 'Define whether the material color is affected by global fog settings.'

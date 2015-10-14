@@ -66,8 +66,7 @@ AudioGainModulator.prototype.create_ui = function() {
 		E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
 	})
 
-	layout.append(inp_add)
-	layout.append(inp_rem)
+	layout.append(inp_add, '<br />', inp_rem)
 	
 	return layout;
 }

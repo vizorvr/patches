@@ -5,140 +5,580 @@
 	</div>
 </noscript>
 
-<div class="flex-column">
-<div class="menu-bar"> <!-- menu bar -->
-	<div class="header left-cell pull-left" id="top-header-logo">
-		<div class="info-pane pull-left" id="info">
-			<span>
-				<img id="infopanelogo" src="../../images/logo-graphic.png">
-			</span>
-			<span class="logo-text">Vizor</span>
+<div class="editor-header">
+	<div class="menu-bar">
+		{{> svgSprite}}
+		<div id="top-header-logo">
+			<svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg>
 		</div>
-		<div id="load-spinner"></div>
+		<ul class="iconic-nav">
+			<li>
+				<button class="btn" id="btn-new">
+					<svg class="icon-new-graph"><use xlink:href="#icon-new-graph"></use></svg>
+					<span>New</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="fork-button">
+					<svg class="icon-new-graph"><use xlink:href="#icon-duplicate"></use></svg>
+					<span>Duplicate</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="publish-button">
+					<svg class="icon-save-patch"><use xlink:href="#icon-save-patch"></use></svg>
+					<span>Publish</span>
+				</button>
+			</li>
+		</ul>
+		<ul class="iconic-nav">
+			<li>
+				<button class="btn" id="btn-scale" disabled>
+					<svg class="icon-scale"><use xlink:href="#icon-scale"></use></svg>
+					<span>Scale</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-rotate" disabled>
+					<svg class="icon-rotate"><use xlink:href="#icon-rotate"></use></svg>
+					<span>Rotate</span>
+				</button>
+			</li>
+		</ul>
+		<ul class="iconic-nav">
+			<li>
+				<button class="btn" id="save-as-preset">
+					<svg class="icon-save-patch"><use xlink:href="#icon-save-patch"></use></svg>
+					<span>Save Patch</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-inspector">
+					<svg class="icon-inspector"><use xlink:href="#icon-inspector"></use></svg>
+					<span>Inspector</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-zoom">
+					<svg class="icon-zoom"><use xlink:href="#icon-zoom"></use></svg>
+					<span id="current-zoom">100%</span>
+				</button>
+				<button class="btn" id="btn-zoom-out">
+					<svg class="icon-zoom-out"><use xlink:href="#icon-zoom-out"></use></svg>
+				</button>
+				<button class="btn" id="btn-zoom-in">
+					<svg class="icon-zoom-in"><use xlink:href="#icon-zoom-in"></use></svg>
+				</button>
+			</li>
+		</ul>
+		<ul class="iconic-nav">
+			<li>
+				<button class="btn" id="btn-graph">
+					<svg class="icon-graph-toggle"><use xlink:href="#icon-graph"></use></svg>
+					<span>Graph</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-presets">
+					<svg class="icon-add-patch"><use xlink:href="#icon-presets"></use></svg>
+					<span>Patches</span>
+				</button>
+			</li>
+			<li>
+				<button class="btn" id="btn-assets">
+					<svg class="icon-add-object"><use xlink:href="#icon-assets"></use></svg>
+					<span>Assets</span>
+				</button>
+			</li>
+	
+			<li>
+				<button class="btn" id="btn-chat-display">
+					<svg class="icon-chat"><use xlink:href="#icon-chat"></use></svg>
+					<span>Chat</span>
+				</button>
+			</li>
+		</ul>
+		<ul class="iconic-nav pull-right">
+			<li id="account">
+				{{> userpulldown}}
+			</li>
+		</ul>
 	</div>
-
-	<div class="header">
-		<div id="top-header">
-			<div class="top-header-col" id="top-header-left">
-				<a href="/edit" id="new" class="btn btn-sm btn-default">New</a>
-
-				<button id="fork-button" class="btn btn-sm btn-default">Edit a Copy</button>
-
-				<div class="btn-group pull-left">
-					<button type="button" class="btn btn-sm btn-default save-copy-button">Save a Copy</button>
-					<button type="button" class="btn btn-default btn-dropdown" data-toggle="dropdown">
-						<span class="fa fa-caret-down"></span>
-					</button>
-					<ul class="dropdown-menu" role="menu">
-						<li><a class="save-copy-button">Save a Copy</a></li>
-						<li><a id="save-as-preset">Save as Preset</a></li>
-						<li><a id="save-selection-as-preset">Save Selection as Preset</a></li>
-						<li><hr></li>
-						<li><a id="view-source">View Source</a></li>
-					</ul>
-				</div>
-
-				<button id="open" class="btn btn-sm btn-default">Open</button>
-				
-				<button id="publish-button" class="btn btn-sm btn-default">Publish</button>
-				
-				<!--
-				<button id="worldEditor" class="btn btn-sm btn-default">Camera View</button>
-				-->
-
-			</div>
-
-			<div class="top-header-col" id="top-header-right">
-
-				<button id="help" class="btn btn-sm btn-default pull-right">Help</button>
-
-				<div class="header pull-right">
-					<button id="play" class="btn btn-primary">
-						<i class="fa fa-play"></i>
-					</button>
-					<button id="stop" class="btn btn-primary">
-						<i class="fa fa-stop"></i>
-					</button>
-					<button id="fullscreen" class="btn btn-primary">
-						<i class="fa fa-expand"></i>
-					</button>
-					{{> userpulldown}}
-				</div>
-
-			</div>
-
-		</div>
-
-	</div>
-</div> <!-- menu bar -->
-
-<div class="flex-row"> <!-- main row -->
-	<div class="flex-column left-cell" id="left-nav">
-		<div>
+</div>
+<div id="breadcrumb"></div>
+<div id="progressbar"></div>
+<div class="presets-block vp-library floating-box uiopen" id="presets-lib">
+		<div class="block-header">
+			<button class="toggle-button" id="presets-toggle" type="button">
+				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
+			</button>
 			<ul class="nav nav-tabs" role="tablist">
-				<li class="active"><a href="#presets" role="tab" data-toggle="tab"><h4>Presets</h4></a></li>
-				<li><a href="#graph" role="tab" data-toggle="tab"><h4>Graph Tree</h4></a></li>
-				<li><a href="#peopleTab" role="tab" data-toggle="tab"><h4>People</h4></a></li>
+				<li class="active"><a href="#presets" role="tab" data-toggle="tab">Patch Library</a></li>
+				<li><a href="#graph" role="tab" data-toggle="tab">Tree</a></li>
 			</ul>
+			<button class="close-button" id="presets-close" type="button">
+				<svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
+			</button>
+		</div>
 
-			<div class="tab-content">
-				<div role="tabpanel" class="tab-pane active" id="presets">
-					<div id="presets" class="flex-column"></div>
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="presets">
+				<div id="presets"></div>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="graph">
+				<div class="cell" id="structure"></div>
+			</div>
+		</div>
+
+</div>
+
+<div class="assets-block vp-library floating-box" id="assets-lib" style="display:none">
+		<div class="block-header">
+			<button class="toggle-button" id="assets-toggle" type="button">
+				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
+			</button>
+			<h4>Asset Library</h4>
+			<button class="close-button" id="assets-close" type="button">
+				<svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
+			</button>
+		</div>
+		<div id="assets">
+			<div class="searchbox">
+				<svg class="icon-search"><use xlink:href="#icon-search"/></svg>
+				<input type="text" onblur="this.placeholder = 'Search'" onfocus="this.placeholder = ''" placeholder="Search" class="form-control" id="assetSearch">
+			</div>
+			<ul class="lib-tabs" role="tablist" id="assets-tabs">
+				<li class="active">
+					<a data-toggle="tab" role="tab" href="#objectsTab" id="objectsTabBtn">Objects</a>
+				</li>
+				<li>
+					<a data-toggle="tab" role="tab" href="#imagesTab" id="imagesTabBtn">Images</a>
+				</li>
+				<li>
+					<a data-toggle="tab" role="tab" href="#audioTab" id="audioTabBtn">Audio</a>
+				</li>
+				<li>
+					<a data-toggle="tab" role="tab" href="#videoTab" id="videoTabBtn">Video</a>
+				</li>
+			</ul>
+			<div class="tab-content active" id="objectsTab">
+				<div class="assets-frame scrollbar">
+					<div class="assets-group">
+						<span class="group-title">Primitives</span>
+						<ul class="assets-list">
+							<li class="active">
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+						</ul>
+					</div>
+					<div class="assets-group">
+						<span class="group-title">Primitives</span>
+						<ul class="assets-list">
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+						</ul>
+					</div>
 				</div>
-
-				<div role="tabpanel" class="tab-pane" id="graph">
-					<div class="cell" id="structure"></div>
+			</div>
+			<div class="tab-content" id="imagesTab">
+				<div class="assets-frame scrollbar">
+					<div class="assets-group">
+						<span class="group-title">Images Group</span>
+						<ul class="assets-list">
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Image object</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+						</ul>
+					</div>
+					<div class="assets-group">
+						<span class="group-title">Primitives</span>
+						<ul class="assets-list">
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+						</ul>
+					</div>
 				</div>
-
-				<div role="tabpanel" class="tab-pane " id="peopleTab">
+			</div>
+			<div class="tab-content" id="audioTab">
+				<div class="assets-frame scrollbar">
+					<div class="assets-group">
+						<span class="group-title">Audio Group</span>
+						<ul class="assets-list">
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Audio object</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+						</ul>
+					</div>
+					<div class="assets-group">
+						<span class="group-title">Primitives</span>
+						<ul class="assets-list">
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="tab-content" id="videoTab">
+				<div class="assets-frame scrollbar">
+					<div class="assets-group">
+						<span class="group-title">Video Group</span>
+						<ul class="assets-list">
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Video object</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+						</ul>
+					</div>
+					<div class="assets-group">
+						<span class="group-title">Primitives</span>
+						<ul class="assets-list">
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+							<li>
+								<svg class="icon-asset"><use xlink:href="#icon-asset-default"></use></svg>
+								<span>Sphere</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="load-buttons">
+				<button id="#uploadAsset">
+					<svg class="icon-load"><use xlink:href="#icon-upload"></use></svg>
+					<span>Upload</span>
+				</button>
+				<button id="#uploadAsset">
+					<svg class="icon-load"><use xlink:href="#icon-download"></use></svg>
+					<span>Download</span>
+				</button>
+			</div>
+			<div id="asset-info">
+				<div>
+					<div class="asset-image">
+						<img src="images/logo-graphic.png" />
+					</div>
+					<div class="asset-details">
+						<span id="asset-type">JSON file</span><br />
+						<span id="asset-demensions">6 polygons</span><br />
+						<span id="asset-size">26 KB</span>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="resize-handle left-pane-handle" data-target="#left-nav"></div>
+</div>
 
-	<div class="flex-column mid-pane pane-hidden" id="mid-pane">
-		<div class="header">
-			<ul class="nav nav-tabs" role="tablist"></ul>
+<div class="chat-users floating-box uiopen" id="chat-window">
+	<div class="chat-tabs block-header">
+		<button class="toggle-button" id="chat-toggle" type="button">
+			<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
+		</button>
+		<ul class="nav nav-tabs" role="tablist">
+			<li class="active">
+				<a data-toggle="tab" role="tab" href="#chatTab" id="chatTabBtn">Chat</a>
+			</li>
+			<li>
+				<a data-toggle="tab" role="tab" href="#peopleTab" id="peopleTabBtn">Users</a>
+			</li>
+		</ul>
+		<button class="close-button" id="chat-close" type="button">
+			<svg class="icon-chat-close"><use xlink:href="#icon-close"></use></svg>
+		</button>
+	</div>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="chatTab">
+			<div id="chat" class="chat">
+				<div class="chat-nav">
+					<div class="chat-tree">
+						<a href="#globalchat">Global</a><svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg><span>Graph</span>
+					</div>
+				</div>
+				<div class="messages scrollbar"></div>
+				<div class="composer">
+					<input type="text" name="message" id="new-message-input">
+				</div>
+			</div>
 		</div>
-		<div class="tab-content"></div>
+		<div role="tabpanel" class="tab-pane" id="peopleTab">
+		</div>
 	</div>
-	<div class="resize-handle mid-pane-handle" data-target="#mid-pane"></div>
+	<div class="resize-handle"></div>
+</div>
+<pre class="info-pane" id="dbg"></pre>
 
-	<div class="flex-column" id="canvases">
-		<canvas id="webgl-canvas"
-			class="webgl-canvas-normal"
-			width="940"
-			height="620"
-			oncontextmenu="return false;">
+<div id="canvases">
+	<canvas id="webgl-canvas"
+		class="webgl-canvas-normal"
+		width="940"
+		height="620"
+		oncontextmenu="return false;">
+	</canvas>
+
+	<div id="canvas_parent">
+		<canvas id="canvas" width="940" height="620">
+		<!-- editor noodles -->
 		</canvas>
-
-		<div id="canvas_parent">
-			<div id="breadcrumb"></div>
-			<canvas id="canvas" width="940" height="620">
-			<!-- editor noodles -->
-			</canvas>
-		</div>
 	</div>
+</div>
 
-	<div class="resize-handle right-pane-handle" data-target="#right-pane"></div>
-	<div class="flex-column right-pane" id="right-pane">
-		<div class="tab-content chat flex-column" id="chat">
-			<div class="messages"></div>
-			<div class="composer">
-				<input type="text" name="message" id="new-message-input">
-			</div>
-		</div>
-	</div>
-
-	<pre class="info-pane" id="dbg"></pre>
-</div> <!-- main row -->
-</div> <!-- page column -->	
+<div class="bottom-panel">
+	<button class="btn show-timeline" id="btn-timeline" data-toggle="popover" data-placement="top" title="Toggle timeline" style="display: none;">
+		<svg class="icon-timeline"><use xlink:href="#icon-timeline"></use></svg>
+		<span>Show</span>
+	</button>
+	<ul class="playback-controls">
+		<li class="play-pause active">
+			<button class="btn" id="play" data-toggle="popover" data-placement="top" title="Play/Pause">
+				<svg class="icon-pause"><use xlink:href="#icon-play"></use></svg>
+			</button>
+		</li>
+		<li class="stop">
+			<button class="btn" id="stop" data-toggle="popover" data-placement="top" title="Stop">
+				<svg class="icon-pause"><use xlink:href="#icon-stop"></use></svg>
+			</button>
+		</li>
+		<li class="fscreen">
+			<button class="btn" id="fullscreen" data-toggle="popover" data-placement="top" title="Fullscreen">
+				<svg class="icon-fscreen"><use xlink:href="#icon-fullscreen"></use></svg>
+			</button>
+		</li>
+		<li class="vrview" style="display: none;">
+			<button class="btn" id="vrview" data-toggle="popover" data-placement="top" title="View in VR">
+				<svg class="icon-vr"><use xlink:href="#icon-vr"></use></svg>
+			</button>
+		</li>
+	</ul>
+	<ul class="view-modes">
+		<li class="active">
+			<button class="btn" id="btn-vrcam" disabled data-toggle="popover" data-placement="top" title="VR camera">
+				<svg class="icon-vr"><use xlink:href="#icon-view-cam"></use></svg>
+			</button>
+		</li>
+		<li>
+			<button class="btn" id="btn-editorcam" data-toggle="popover" data-placement="top" title="Editor camera">
+				<svg class="icon-vr"><use xlink:href="#icon-view-vr"></use></svg>
+			</button>
+		</li>
+		<li style="display: none;">
+			<button class="btn" id="btn-v3" data-toggle="popover" data-placement="top" title="View 3">
+				<svg class="icon-vr"><use xlink:href="#icon-view-3"></use></svg>
+			</button>
+		</li>
+		<li style="display: none;">
+			<button class="btn" id="btn-v4" data-toggle="popover" data-placement="top" title="View 4">
+				<svg class="icon-vr"><use xlink:href="#icon-view-4"></use></svg>
+			</button>
+		</li>
+		
+	</ul>
+</div>
 
 <script type="text/javascript">
-	var Vizor = {}
 	var boot = {}
 	boot.hasEdits = {{hasEdits}}
+
+	// THREE webvr-manager reads from here.
+	window.Vizor = {
+		hideWebVRButton: true
+	}
 
 	{{#if graph}}
 		boot.graph = {
@@ -154,31 +594,14 @@
 	}
 
 	function EnumerateVRDevices(devices) {
-		var hmd = null, sensor = null;
-
-		for(var i = 0; i < devices.length; i++) {
-			if(devices[i] instanceof HMDVRDevice) {
-				// Just use the first device we find for now.
-				hmd = devices[i];
-				break;
-			}
-		}
-
-		if(hmd) {
-			for(var i = 0; i < devices.length; i++) {
-				var d = devices[i];
-
-				if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId) {
-					sensor = devices[i];
-					break;
-				}
-			}
-		}
-
-		startEditor([hmd, sensor]);
+		var d = hardware.enumerateVRDevices(devices);
+		startEditor([d.hmd, d.sensor]);
 	}
 
 	$(document).ready(function() {
+		if (!Cookies.get('vizor'))
+			E2.util.checkBrowser();
+
 		E2.models = {
 			user: new User({})
 		}
@@ -186,7 +609,9 @@
 		if ('{{user.username}}') {
 			E2.models.user.set( {
 				id: '{{user._id}}',
-				username: '{{user.username}}'
+				name: '{{user.name}}',
+				username: '{{user.username}}',
+				email: '{{user.email}}',
 			})
 		}
 
@@ -194,11 +619,7 @@
 			account: new AccountController()
 		}
 
-		if(navigator.getVRDevices) {
-			navigator.getVRDevices().then(EnumerateVRDevices)
-		} else if(navigator.mozGetVRDevices) {
-			navigator.mozGetVRDevices(EnumerateVRDevices)
-		} else {
+		if (!hardware.ifVR(EnumerateVRDevices)) {
 			startEditor([null, null])
 		}
 

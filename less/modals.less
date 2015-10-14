@@ -1,0 +1,795 @@
+.bootbox.modal, .bootbox.modal:before {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.bootbox.modal:before {
+    background-color: darken(rgba(61,67,83,0.8), 50%);;
+    content: '';
+}
+.modal.wide .modal-dialog {
+  width: 800px;
+}
+
+.modal.wideauto .modal-dialog {
+  width: 90%;
+}
+
+.modal-dialog {
+    width: 400px;
+    &.file-select-dialog {
+    	width: 600px;
+    }
+    border-radius: 0;
+    margin: (@menu-bar-height + @breadcrumb-height + 30) auto 0 auto;
+    .button {
+        box-shadow: 0 0 0 rgba(0,0,0,0)!important;
+    }
+    input {
+        box-shadow: 0 0 0 rgba(0,0,0,0)!important;
+        outline: none!important;
+    }
+    button.bootbox-close-button {
+        display: block;
+        position: absolute;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: 0 none;
+        background: transparent;
+        opacity: 1;
+        svg {
+            display: block;
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            left: 50%;
+            top: 50%;
+            fill: #bccbe4;
+        }
+        &:hover svg {
+            fill: #ffffff;
+        }
+    }
+    .modal-content {
+            border-radius: 4px;
+            box-shadow: 0 0 2px rgba(0,0,0,0.22);
+            background: transparent;
+            overflow: hidden;
+            float: left;
+            position: relative;
+            width: 100%;
+            > div {
+                display: block;
+                position: relative;
+                float: left;
+                width: 100%;
+            }
+            .modal-header {
+                background: @bg-dark;
+                height: 60px;
+                border: 0 none;
+                text-align: center;
+                padding: 0;
+                > h4 {
+                    padding: 20px 20px 0 20px;
+                    color: #bccbe4;
+                    font-size: 22px;
+                    font-weight: 300;
+                    margin: 0;
+                    line-height: 1;
+                } 
+                button.bootbox-close-button {
+                    right: 28px;
+                    top: 50%;
+                    margin: -18px -25px 0 0;
+                }
+            }
+            .modal-body {
+                background: @bg-light;
+                padding: 22px 40px 18px;
+                box-sizing: border-box;
+                font-size: 14px;
+                color: #fff;
+                font-weight: 300;
+                .bootbox-body {
+                    padding: 0;
+                    text-align: center;
+                }
+                h4 {
+                    font-size: 14px;
+                    color: @editor-text-active;
+                    padding: 10px 0;
+                    a, a:active {
+                        color: @bg-bright;
+                        text-decoration: none;
+                        &:hover {
+                            color: @editor-text-active;
+                            text-decoration: none;
+                        }
+                    }
+                }
+                div.form-input {
+                    height: @modal-control-height;
+                    width: 100%;
+                    background: @bg-dark;
+                    border-radius: 4px;
+                    margin: 0 auto 18px;
+                    overflow: hidden;
+                    position: relative;
+                    float: left;
+                    text-align: left;
+                    > * {
+                        display: block;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        height: @modal-control-height;
+                        width: 100%;
+                        margin: 0;
+                    }
+                    &.wrong {
+                        border: 1px solid @editor-text-hover;
+                    }
+                    input {
+                        border: 0 none;
+                        background: transparent;
+                        padding: 0 10px 0 36px;
+                        font-size: 16px;
+                        line-height: 1.33;
+                        font-weight: 400;
+                        color: @editor-text-active; 
+                    }
+                    label {
+                        color: #414857;
+                        padding: 15px 20px 0 36px;
+                        font-size: 16px;
+                        line-height: 1.33;
+                        font-weight: 400;
+                        &:after {
+                            content: '';
+                            background: darken(@bg-dark, 2%);
+                            display: block;
+                            position: absolute;
+                            top: 0;
+                            left: 0 - @modal-input-width;
+                            border-radius: 3px;
+                            width: @modal-input-width;
+                            height: @modal-control-height;
+                            transition: left 0.3s ease-out;
+                        }
+                        &.filled-label:after {
+                            left: 0;
+                        }
+                    }
+                }
+                div.modal-error {
+                    height: 0;
+                    overflow: hidden;
+                    display: none;
+                    margin: -8px 0 8px 0;
+                    position: relative;
+                    float: left;
+                    width: 100%;
+                    span {
+                        color: #ff6868;
+                        display: block;
+                        width: 100%;
+                        height: 16px;
+                        text-align: right;
+                        position: absolute;
+                        bottom: 0;
+                        font-size: 12px;
+                    }
+                    &#general-error span {
+                        text-align: center;
+                    }
+                    &.revealError {
+                        display: block;
+                        height: 16px;
+                        animation: revealModalError 0.35s ease-out;
+                    }
+                    &.hideError {
+                        display: block;
+                        height: 0;
+                        animation: hideModalError 0.35s ease-in;
+                    }
+                }
+                button {
+                    display: block;
+                    position: relative;
+                    border-radius: 4px;
+                    float: left;
+                    background: @bg-bright;
+                    &.bootbox-close-button {
+                        background: transparent;
+                        opacity: 1;
+                        float: none;
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                        margin: 0;
+                    }
+                }
+                button.sign-btn {
+                    width: 100%;
+                    height: @modal-control-height;
+                    color: @editor-text-default;
+                    border: 0 none;
+                    padding: 0;
+                    span {
+                        display: block;
+                        position: relative;
+                        padding: 15px 20px 0 36px;
+                        height: @modal-control-height;
+                        font-size: 16px;
+                        float: left;
+                        color: @editor-text-active;
+                    }
+                    svg {
+                        width: 24px;
+                        height: 24px;
+                        position: absolute;
+                        right: 24px;
+                        top: 50%;
+                        margin: -12px 0 0;
+                        stroke: @editor-text-active;
+                    }
+                    &.disabled {
+                        background: #515c75;
+                    }
+                }
+            }
+            .modal-footer {
+                background: @bg-dark;
+                border: 0 none;
+                text-align: center;
+                padding: 20px 40px;
+                box-sizing: border-box;
+                span, p {
+                    padding: 0;
+                    margin: 0;
+                    display: block;
+                    color: @editor-text-hover;
+                    font-size: 12px;
+                    a, a:active {
+                        color: #2d93c9;
+                        text-decoration: none;
+                        &:hover {
+                            color: @editor-text-active;
+                            text-decoration: none;
+                        }
+                    }
+                }
+                p {
+                    padding: 0 40px 8px 40px;
+                    text-align: center;
+                    &:last-child {
+                        padding: 0 40px;
+                    }
+                }
+                button.btn {
+                    border-radius: 4px;
+                    background: @bg-bright;
+                    border: 0 none;
+                    font-size: 16px;
+                    color: #ffffff;
+                    padding: 8px 12px;
+                    &:hover {
+                        border: 0 none;
+                        color: @editor-text-active;
+                    }
+                }
+            }
+            
+    }
+    &.patch-inspector {
+        .modal-header {
+            text-align: left;
+            background: @bg-light;
+            border-bottom: 1px solid @bg-darker;
+            min-height: 60px;
+            height: auto;
+            h4 {
+                color: @editor-text-default;
+                font-weight: 600;
+                font-size: 16px;
+                padding: 20px 18px;
+            }
+            button.bootbox-close-button {
+                top: 28px;
+                svg {
+                     fill: @editor-text-default;
+                }
+            }
+            ul {
+                display: table;
+                position: relative;
+                padding: 0;
+                margin: 0 auto;
+                float: left;
+                height: 35px;
+                li {
+                    display: table-cell;
+                    position: relative;
+                    text-align: center;
+                    vertical-align: center;
+                    height: 35px;
+                    border-top: 1px solid @bg-darker;
+                    border-right: 1px solid @bg-darker;
+                    &:last-child {
+                        border-right: 0;
+                    }
+                    a, a:active {
+                        display: block;
+                        font-weight: 600;
+                        height: 35px;
+                        font-size: 14px;
+                        text-transform: uppercase;
+                        text-decoration: none;
+                        color: @editor-text-default;
+                        outline: none;
+                        padding: 8px 0 0;
+                        &:hover {
+                            color: @editor-text-hover;
+                            text-decoration: none;
+                        }
+                    }
+                    &.active {
+                        background: @bg-lighter;
+                        a, a:active, a:hover {
+                            color: @editor-text-default;
+                            text-decoration: none;
+                        }
+                    }
+                }
+            }
+        }
+        .modal-body {
+            padding: 30px 16px;
+            input[type=checkbox] {
+                display: none;
+            }
+            input[type=checkbox] + label {
+                font-size: 14px;
+                font-weight: 400;
+                color: @editor-text-default;
+                cursor: pointer;
+            }
+            input[type=checkbox] + label span {
+                display: inline-block;
+                border: 0 none;
+                border-radius: 2px;
+                background: #394055;
+                height: 14px;
+                width: 14px;
+                margin: 3px 10px 0 0;
+                position: relative;
+                float: left;
+                svg {
+                    display: none;
+                    height: 14px;
+                    width: 14px;
+                    float: left;
+                }
+            }
+            input[type=checkbox]:checked + label span {
+                background: #6b748f;
+                svg {
+                    display: block;
+                }
+            }
+        }
+        .modal-footer {
+            background: @bg-light;
+            border-top: 1px solid @bg-darker;
+            padding: 20px 16px;
+            button.btn {
+                height: 28px;
+                min-width: 100px;
+                background: #1e222c;
+                color: @editor-text-default;
+                padding: 0;
+                font-size: 12px;
+                font-weight: 400;
+                float: left;
+                &:last-child {
+                    float: right;
+                }
+                &:first-child {
+                    float: left;
+                }
+                &.btn-primary {
+                    float: right;
+                }
+            }
+        }
+    }
+}
+
+.modal-dialog.welcome {
+    width: 588px;
+    height: auto;
+    margin-top: -300px;
+    top: 50%;
+    border-radius: 0;
+    .welcome-screen {
+        background: url("/images/welcome-bg.jpg") no-repeat center top;
+        position: relative;
+        float: left;
+        width: 100%;
+        min-height: 374px;
+        text-align: center;
+        > button {
+            outline: 0!important;
+            box-shadow: 0 0 0 rgba(0,0,0,0) !important;
+            &.bootbox-close-button {
+                right: 0;
+                top: 0;
+                margin: 0;
+            }
+            &#welcome-gs {
+            	width: 210px;
+            	height: 50px;
+            	text-align: center;
+            	vertical-align: middle;
+            	background: #1B9CFF;
+            	font-weight: 400;
+            	color: #ffffff;
+            	font-size: 20px;
+            	border-radius: 4px;
+            	border: 0;
+            }
+            &#welcome-new {
+                background: rgba(30,33,31,0.8);
+                width: 261px;
+                height: 60px;
+                position: relative;
+                margin: 22px auto 34px;
+                clear: both;
+                padding-left: 45px;
+                color: #ffffff;
+                font-size: 18px;
+                font-weight: 600;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                border: 0 none;
+                border-radius: 4px;
+                svg {
+                    position: absolute;
+                    display: block;
+                    left: 25px;
+                    top: 50%;
+                    margin-top: -8px;
+                    height: 16px;
+                    width: 16px;
+                    fill: #ffffff;
+                }
+                &:hover {
+                    background: rgba(30,33,31,0.9);
+                }
+            }
+            &#welcome-sign-up {
+                margin: 22px auto 10px;
+                display: block;
+                position: relative;
+                border: 1px solid #ffffff;
+                border-radius: 4px;
+                background: transparent;
+                color: #ffffff;
+                font-weight: 300;
+                font-size: 16px;
+                height: 37px;
+                width: 125px;
+                &:hover {
+                    background: rgba(30,33,31,0.5);
+                }
+            }
+        }
+        .welcome-logo {
+            margin: 45px auto 50px auto;
+            position: relative;
+            clear: both;
+            svg {
+                display: block;
+                position: relative;
+                margin: 0 auto 45px;
+                clear: both;
+                height: 50px;
+                width: 50px;
+                fill: #ffffff;
+            }
+            h1 {
+                font-weight: 300;
+                color: #ffffff;
+                margin: 0 auto;
+                clear: both;
+                text-align: center;
+                padding: 0;
+                font-size: 42px;
+                line-height: 1.33;
+            }
+        }
+        > p {
+            padding: 0;
+            color: #ffffff;
+            font-weight: 300;
+            font-size: 14px;
+            text-align: center;
+            margin: 0 auto 26px;
+            a, a:active {
+                text-decoration: none;
+                font-weight: 400;
+                color: #ffffff;
+                &:hover {
+                    text-decoration: underline;
+                    color: #ffffff;
+                }
+            }
+        }  
+    }
+    .welcome-footer {
+        height: 63px;
+        width: 100%;
+        float: left;
+        background: #385a8a;
+        text-align: center;
+        span {
+        	color: #ffffff;
+        	font-weight: 300;
+        	font-size: 14px;
+        	padding: 23px 2px 0;
+        	display: inline-block;
+            height: 48px;
+            &.link-separator {
+            	padding: 16px 6px 0;
+            	font-weight: 700;
+            }
+        }
+        a, a:active {
+            color: #ffffff;
+            font-weight: 400;
+            text-decoration: none; 
+            display: inline-block;
+            height: 48px;
+            padding: 23px 2px 0;
+            text-decoration: none;
+            font-size: 14px;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+.modal-dialog .file-select-control {
+    border: 0;
+    float: left;
+    padding: 20px 0 0;
+    width: 100%;
+    .tab-content {
+        display: block;
+        position: relative;
+        float: left;
+        width: 100%;
+        padding: 0;
+        border: 0;
+    }
+    ul.nav-tabs {
+        display: table;
+        position: relative;
+        float: left;
+        width: 100%;
+        height: 32px;
+        margin: 0;
+        padding: 0;
+        border-bottom: 1px solid @bg-darker;
+        border-left: 1px solid @bg-darker;
+        > li {
+            display: table-cell;
+            position: relative;
+            text-align: center;
+            vertical-align: middle;
+            float: none;
+            height: 32px;
+            background: @bg-light;
+            border-right: 1px solid @bg-darker;
+            border-top: 1px solid @bg-darker;
+            :last-child {
+                border: 0;    
+            }
+            a {
+                padding-top: 8px; 
+                height: 32px;
+                outline: none;
+                color: @tab-text-inactive;
+                font-size: 12px;
+                font-weight: 600;
+                display: block;
+                border-radius: 0;
+                h4 {
+                    margin: 0;
+                    padding: 0;
+                    color: @tab-text-inactive;
+                    line-height: 1.33;
+                    font-weight: 600;
+                }
+            }
+            a:active, a:focus {
+                text-decoration: none;
+                }
+            &:hover a {
+                background: none;
+            }
+        }
+        > li.active {
+                background: @bg-lighter;
+                a {
+                    color: @editor-text-active;
+                    background: none;
+                    h4 {
+                        color: @editor-text-active;
+                    }
+                }
+        }
+        > li.active:hover {
+                a {
+                    text-decoration: none; 
+                }
+        }
+        > li:hover {
+                a {
+                    text-decoration: none; 
+                    color: @editor-text-active;
+                    h4 {
+                        color: @editor-text-active;
+                    }
+                }
+        }
+    }
+}
+
+.modal-dialog tr#buttons-row {
+    td {
+        vertical-align: middle;
+        button {
+            height: @searchbox-height;
+            padding: 0 8px;
+        }
+    }
+}
+
+.modal-dialog .fileUploadForm {
+    margin: 10px 0;
+    width: 100%;
+    > input, > button {
+        float: left;
+        display: table-cell;
+    }
+    > .browse-button {
+        margin: 0;
+        width: 25%;
+        &:hover {
+            color: @editor-text-default;
+        }
+    }
+    > #fileUploadName {
+        width: 46%;
+        margin: 0 2%;
+        background: @bg-dark;
+        color: @editor-text-default;
+    }
+    .btn-primary {
+        height: @searchbox-height;
+        background: @bg-bright;
+        color: @editor-text-active;
+        &:hover {
+            color: @editor-text-default;
+        }
+    }
+    #fileUploadFile {
+        display: none;
+    }
+}
+
+.userpage-dialog {
+    .modal-content {
+        .modal-body {
+            background: #ffffff;
+            div.form-input {
+                background: #f6f7f8;
+                input, label {
+                    color: #535c6b;
+                }
+                label:after {
+                    display: none;
+                }
+            }
+            div.form-select {
+                .icon-arrow-down {
+                    height: 7px;
+                    width: 10px;
+                    position: absolute;
+                    right: 20px;
+                    top: 22px;
+                    stroke: #535c6b;
+                    left: auto;
+                    z-index: 97;
+                }
+                input {
+                    display: none;
+                }
+                label {
+                    cursor: pointer;
+                    z-index: 98;
+                }
+                ul {
+                    position: relative;
+                    width: 100%;
+                    height: @modal-input-height;;
+                    margin-top: @modal-input-height;
+                    li {
+                        width: 100%;
+                        float: left;
+                        position: relative;
+                        height: @modal-input-height;
+                        background: #f6f7f8;
+                        color: #535c6b;
+                        padding: 15px 20px 0 36px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        font-weight: 400;
+                        border-top: 1px solid #fff;
+                        &:hover {
+                            background: @bg-bright;
+                            color: @editor-text-active;
+                        }
+                        &:last-child {
+                            border-radius: 0 0 4px 4px;
+                        }
+                    }
+                }
+                &.active {
+                    overflow: visible;
+                    .icon-arrow-down {
+                        transform: rotate(180deg);
+                    }
+                }
+            }
+            button.user-btn {
+                width: 100%;
+                height: @modal-control-height;
+                border: 0 none;
+                padding: 0;
+                color: @editor-text-active;
+                font-size: 16px;
+                text-transform: uppercase;
+                font-weight: 600;
+                text-align: center;
+            }
+        }
+    }
+}
+
+@keyframes revealModalError {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 16px;
+    }
+}
+
+@keyframes hideModalError {
+    0% {
+        height: 16px;
+    }
+    100% {
+        height: 0;
+    }
+}

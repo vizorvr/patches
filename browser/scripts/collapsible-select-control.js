@@ -3,7 +3,16 @@
  * @param  {Event} e         Mousedown event from bind
  */
 function dragAndDropMouseDownHandler(e) {
-
+	var chatWindow = E2.dom.chatWindow;
+	var chatVisible = E2.ui.visibility.panel_chat;
+	var collapseChat = E2.ui.onChatToggleClicked.bind(E2.ui);
+	var presetsLib = E2.dom.presetsLib;
+	var presetsVisible = E2.ui.visibility.panel_presets;
+	var collapsePresets = E2.ui.onPresetsToggleClicked.bind(E2.ui);
+	var assetsLib = E2.dom.assetsLib;
+	var assetsVisible = E2.ui.visibility.panel_assets;
+	var collapseAssets = E2.ui.onAssetsToggleClicked.bind(E2.ui);
+	
 	var mouseMoveBound = false
 	var mouseX = 0
 	var mouseY = 0
@@ -12,10 +21,12 @@ function dragAndDropMouseDownHandler(e) {
 
 	var title = $(e.target).text()
 
-	var dragPreview = $('<div class="plugin-drag-preview"><span style="display: none;">Drop to create:</span>'+title+'</div>')
+	var dragPreview = $('<div class="plugin-drag-preview"><div class="drag-add-icon"><svg class='
+					  + '"icon-drag-add"><use xlink:href="#icon-drag-add"></use></svg></div>'
+					  + '<span style="display: none;">Drop to create:</span>'+title+'</div>')
 	var hoverArea = $('<div class="dragging-allowed"></div>')
 	var dragPreviewInDom = false // only append the preview element when moving the mouse cursor while dragging
-
+	
 	var canvas = $('#canvases')
 	var canvasWidth = canvas.width()
 	var canvasHeight = canvas.height()
@@ -23,6 +34,25 @@ function dragAndDropMouseDownHandler(e) {
 	var canvasY = canvas.position().top
 	var cp = E2.dom.canvas_parent
 	var scrollHoverAreaSize = 25 // Pixel size for hover area for scrolling around the canvas
+	
+	if (presetsVisible) {
+		var plHeight = presetsLib.outerHeight(true);
+		var plWidth = presetsLib.outerWidth(true);
+		var plX = presetsLib.position().left;
+		var plY = presetsLib.position().top;
+	}
+	if (assetsVisible) {
+		var alHeight = assetsLib.outerHeight(true);
+		var alWidth = assetsLib.outerWidth(true);
+		var alX = assetsLib.position().left;
+		var alY = assetsLib.position().top;
+	}
+	if (chatVisible) {
+		var chHeight = chatWindow.outerHeight(true);
+		var chWidth = chatWindow.outerWidth(true);
+		var chX = chatWindow.position().left;
+		var chY = chatWindow.position().top;
+	}
 
 	// Handle document scrolling
 	var scrollHandler = function() {
@@ -79,7 +109,7 @@ function dragAndDropMouseDownHandler(e) {
 			dragPreview.css({ opacity: 0.5 }).find('span').hide()
 		}
 
-		dragPreview.css({ top: mouseY, left: mouseX })
+		dragPreview.css({ top: mouseY - dragPreview.outerHeight(true) + 8, left: mouseX - (dragPreview.outerWidth(true) / 2) })
 
 	}
 
@@ -93,14 +123,17 @@ function dragAndDropMouseDownHandler(e) {
 			dragPreview.appendTo('body')
 			dragPreviewInDom = true
 
-			$('#left-nav').addClass('dragging-not-allowed')
-			$('.menu-bar').addClass('dragging-not-allowed')
-			$('.resize-handle').addClass('dragging-not-allowed')
+			E2.dom.editorHeader.addClass('dragging-not-allowed');
+			E2.dom.breadcrumb.addClass('dragging-not-allowed');
+			E2.dom.assetsLib.addClass('dragging-not-allowed');
+			E2.dom.presetsLib.addClass('dragging-not-allowed');
+			E2.dom.chatWindow.addClass('dragging-not-allowed');
+			E2.dom.bottomBar.addClass('dragging-not-allowed');
 
 			hoverArea
 				.appendTo('body')
-				.width(canvas.width() - 6)
-				.height(canvas.height() - 6)
+				.width(canvas.width())
+				.height(canvas.height())
 				.css({ top: canvas.position().top, left: canvas.position().left })
 
 			mouseMoveBound = true
@@ -119,17 +152,30 @@ function dragAndDropMouseDownHandler(e) {
 		$(document).unbind('mousemove', mouseMoveHandler)
 		$(document).unbind('mouseup', mouseUpHandler)
 		$(document).unbind('mousedown', scrollHandler)
-		$('#left-nav').removeClass('dragging-not-allowed')
-		$('.menu-bar').removeClass('dragging-not-allowed')
-		$('.resize-handle').removeClass('dragging-not-allowed')
+		E2.dom.editorHeader.removeClass('dragging-not-allowed');
+		E2.dom.breadcrumb.removeClass('dragging-not-allowed');
+		E2.dom.assetsLib.removeClass('dragging-not-allowed');
+		E2.dom.presetsLib.removeClass('dragging-not-allowed');
+		E2.dom.chatWindow.removeClass('dragging-not-allowed');
+		E2.dom.bottomBar.removeClass('dragging-not-allowed');
 
 		mouseMoveBound = false
 		scrollBound = false
 		clearInterval(scrollInterval)
-
-		// Only create new item when released over the canvas
+		
+		// Only create new item when released over the canvas and hide floating box if dropped under it;
 		if(evt.pageX < (canvasWidth + canvasX) && evt.pageX > canvasX && evt.pageY < (canvasHeight + canvasY) && evt.pageY > canvasY) {
 			e.data.dropSuccessCb(e)
+			
+			if ((presetsVisible) && (evt.pageX < (plWidth + plX) && evt.pageX > plX && evt.pageY < (plHeight + plY) && evt.pageY > plY)) { 
+				collapsePresets();
+			}
+			if ((assetsVisible) && (evt.pageX < (alWidth + alX) && evt.pageX > alX && evt.pageY < (alHeight + alY) && evt.pageY > alY)) { 
+				collapseAssets();
+			}
+			if ((chatVisible) && (evt.pageX < (chWidth + chX) && evt.pageX > chX && evt.pageY < (chHeight + chY) && evt.pageY > chY)) { 
+				collapseChat();
+			}
 		}
 
 	}
@@ -180,9 +226,11 @@ CollapsibleSelectControl.prototype.focus = function() {
 }
 
 CollapsibleSelectControl.prototype._reset = function() {
-	$('.panel', this._el).show()
-	$('table.result', this._el).empty().remove()
-	$('.preset-result', this._el).empty()
+	$('.panel', this._el).show();
+	$('table.result', this._el).empty().remove();
+	$('.preset-result', this._el).empty();
+	if (E2.ui)
+		E2.ui.onSearchResultsChange();
 }
 
 CollapsibleSelectControl.prototype._search = function(text) {
@@ -196,9 +244,9 @@ CollapsibleSelectControl.prototype._search = function(text) {
 	$('.panel', this._el).hide()
 
 	var $pr = $('.preset-result', this._el)
-
+	
 	var data = this._filterData(text)
-
+	
 	var $result = this._resultTpl(data)
 	$pr.empty().html($result)
 
@@ -222,6 +270,9 @@ CollapsibleSelectControl.prototype._search = function(text) {
 		$(this._resultEls.get(0)).addClass('active')
 
 	this._selectedIndex = 0
+	
+	if (E2.ui)
+		E2.ui.onSearchResultsChange();
 
 }
 
@@ -243,7 +294,14 @@ CollapsibleSelectControl.prototype._filterData = function(text) {
 		return items;
 	}, [])
 	.sort(function(a,b) {
-		var dif = b.score - a.score
+		var dif = b.score - a.score;
+		var ltext = text.toLowerCase();
+		var aTitle = a.title.toLowerCase();
+		var bTitle = b.title.toLowerCase();
+		if (ltext === aTitle)
+			return -1
+		if (ltext === bTitle)
+			return 1
 		if (dif === 0) {
 			if (a.title < b.title)
 				return -1
@@ -258,7 +316,11 @@ CollapsibleSelectControl.prototype._filterData = function(text) {
 CollapsibleSelectControl.prototype.scoreResult = function(oq, resultStr) {
 	var lstr = resultStr.toLowerCase()//.replace(/\//gim, '')
 	var scr = 0
-
+	oq = oq.toLowerCase()
+	
+	if (lstr.indexOf(oq) === 0)
+		return 1000
+	
 	if (lstr.indexOf(oq) > -1)
 		return 500
 
@@ -347,6 +409,11 @@ CollapsibleSelectControl.prototype.render = function(el) {
 		keyTimer = setTimeout(that._search.bind(that, $input.val(), 100))
 	})
 
+	$input.on('blur', function(e) {
+		jQuery(e.target).parent().parent().find('td.active').removeClass('active');
+		return true;
+	});
+
 	$input.on('keydown', function(e) {
 		var res = that._resultEls
 		var sel = that._selectedIndex
@@ -366,7 +433,7 @@ CollapsibleSelectControl.prototype.render = function(el) {
 			case 13: // ok
 				if ($sel) {
 					$sel.trigger('dblclick')
-					$input.blur()
+					setTimeout(function(){$input.trigger('blur');}, 100);
 				}
 				break;
 			case 38: // up
@@ -379,8 +446,42 @@ CollapsibleSelectControl.prototype.render = function(el) {
 				break;
 		}
 
-		$sel = $($(res)[that._selectedIndex])
+		// constrain
+		var $res = $(res);
+		if (that._selectedIndex >= $res.length)
+			that._selectedIndex = $res.length - 1;
+		if (that._selectedIndex < 0)
+			that._selectedIndex = 0;
+
+		$sel = $($res[that._selectedIndex])
 		$sel.addClass('active')
+
+		if ($sel.length > 0) {
+			var selectionOffsetTop = $sel.offset().top;
+			var selectionHeight = $sel.outerHeight(true);
+			var $findParent = $sel.parents('.scrollbar');
+
+			if ($findParent.length > 0) {
+				var parentScrollHeight = $findParent.innerHeight();
+				var parentOffsetTop = $findParent.offset().top;
+				var parentScrollTop = $findParent.scrollTop();
+
+				selectionOffsetTop -= parentOffsetTop;
+
+				var newY = 0;
+				if (selectionOffsetTop + selectionHeight >= parentScrollHeight) {
+					newY = parentScrollTop + (selectionOffsetTop - parentOffsetTop) - selectionHeight;
+					$findParent.scrollTop(newY);
+				}
+				else if (selectionOffsetTop <= 0) {
+					newY = parentScrollTop - selectionHeight + selectionOffsetTop;
+					if (newY < 0) newY = 0;
+					$findParent.scrollTop(newY);
+				}
+			}
+		}
+
+
 	})
 
 	return this;

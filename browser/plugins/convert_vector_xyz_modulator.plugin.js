@@ -3,7 +3,7 @@ E2.p = E2.plugins["convert_vector_xyz_modulator"] = function(core, node)
 	this.desc = 'Decompose a vector to its individual XYZ components so they can be manipulated individually.';
 	
 	this.input_slots = [
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Input vector.', def: [0.0, 0.0, 0.0] } 
+		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'Input vector.', def: new THREE.Vector3() }
 	];
 	
 	this.output_slots = [
@@ -15,7 +15,7 @@ E2.p = E2.plugins["convert_vector_xyz_modulator"] = function(core, node)
 
 E2.p.prototype.reset = function()
 {
-	this.value = [0.0, 0.0, 0.0];
+	this.value = new THREE.Vector3();
 };
 
 E2.p.prototype.update_input = function(slot, data)
@@ -25,5 +25,13 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_output = function(slot)
 {
-	return this.value[slot.index];
+	if (slot.index === 0) {
+		return this.value.x
+	}
+	else if (slot.index === 1) {
+		return this.value.y
+	}
+	else {
+		return this.value.z
+	}
 };

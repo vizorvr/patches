@@ -50,28 +50,19 @@ function Application() {
 	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
-	this.noodlesVisible = !E2.util.isMobile()
-
+	this.noodlesVisible = !E2.util.isMobile();
 	this.mousePosition = [400,200]
-
 	this.path = getChannelFromPath(window.location.pathname)
-
 	this.dispatcher = new Flux.Dispatcher()
-
 	this.undoManager = new UndoManager()
 	this.graphApi = new GraphApi(this.undoManager)
-
 	this.graphStore = new GraphStore()
 	this.peopleStore = new PeopleStore()
-
 	this.peopleManager = new PeopleManager(this.peopleStore, $('#peopleTab'))
 
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
 
-	$('#left-nav-collapse-btn').click(function(e) {
-		that.toggleLeftPane()
-	})
 }
 
 Application.prototype.getNIDFromSlot = function(id) {
@@ -89,6 +80,7 @@ Application.prototype.offsetToCanvasCoord = function(ofs) {
 
 	o[0] -= co.left;
 	o[1] -= co.top;
+
 	o[0] += so[0];
 	o[1] += so[1];
 
@@ -97,33 +89,36 @@ Application.prototype.offsetToCanvasCoord = function(ofs) {
 
 Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 	var area = node.open ? slot_div : node.ui.dom;
-	var o = this.offsetToCanvasCoord(area.offset());
+	if (!area) return false;
+	var areaOffset = area.offset();
+	if (!areaOffset) return false;
+	var o = this.offsetToCanvasCoord(areaOffset);
 
 	result[0] = Math.round(type === E2.slot_type.input ? o[0] : o[0] + area.width() + (node.open ? 0 : 5));
 	result[1] = Math.round(o[1] + (area.height() / 2));
 };
 
-Application.prototype.instantiatePlugin = function(id, pos) {
+Application.prototype.instantiatePlugin = function(id, position) {
 	var that = this
-	var cp = E2.dom.canvas_parent
-	var co = cp.offset()
+	var $canvasParent = E2.dom.canvas_parent
+	var parentOffset = $canvasParent.offset()
 
-	pos = pos || this.mousePosition
+	position = position || this.mousePosition
 
 	function createPlugin(name) {
-		var ag = E2.core.active_graph
+		var activeGraph = E2.core.active_graph
 
-		var node = new Node(ag, id,
-			Math.floor((pos[0] - co.left) + that.scrollOffset[0]),
-			Math.floor((pos[1] - co.top) + that.scrollOffset[1]));
+		var newX = Math.floor(position[0] + that.scrollOffset[0]);
+		var newY = Math.floor(position[1] + that.scrollOffset[1]);
+		var node = new Node(activeGraph, id, newX, newY);
 
 		if (name) { // is graph?
-			node.plugin.setGraph(new Graph(E2.core, ag))
+			node.plugin.setGraph(new Graph(E2.core, activeGraph))
 			node.title = name
 			node.plugin.graph.plugin = node.plugin
 		}
 
-		that.graphApi.addNode(ag, node)
+		that.graphApi.addNode(activeGraph, node)
 
 		return node
 	}
@@ -147,9 +142,7 @@ Application.prototype.activateHoverSlot = function() {
 	var hs = this.hover_slot;
 
 	if(!hs)
-		return;
-
-	this.hover_slot_div[0].style.backgroundColor = E2.erase_color;
+		return true;
 
 	// Mark any attached connection
 	var conns = E2.core.active_graph.connections;
@@ -168,17 +161,36 @@ Application.prototype.activateHoverSlot = function() {
 
 	if (dirty)
 		this.updateCanvas(false);
+	return true;
 }
 
 Application.prototype.releaseHoverSlot = function() {
 	if (this.hover_slot) {
-		this.hover_slot_div[0].style.backgroundColor = 'inherit';
-		this.hover_slot_div[0].style.color = '#000';
+		this.setSlotCssClasses(this.hover_slot, this.hover_slot_div);
 		this.hover_slot_div = null;
 		this.hover_slot = null;
 	}
 
 	this.releaseHoverConnections();
+	return true;
+}
+
+Application.prototype.setSlotCssClasses = function(slot, slot_div) {	/* @var slot_div jQuery */
+	if (typeof slot_div === 'undefined') return false;
+	if (!slot_div) return false;
+
+	if (slot_div !== this.hover_slot_div)
+		slot_div.removeClass('p_connecting')
+
+	slot_div.removeClass('p_compatible')
+			.removeClass('p_incompatible');
+
+	if (slot && slot.is_connected)
+		slot_div.addClass('p_connected')
+	else
+		slot_div.removeClass('p_connected');
+
+	return true;
 }
 
 Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
@@ -196,6 +208,7 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 				null
 			)
 
+			slot_div.addClass('p_connecting');
 			this.getSlotPosition(node, slot_div, E2.slot_type.output,
 				this.editConn.ui.src_pos);
 
@@ -218,7 +231,7 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 			});
 
 			this.editConn.offset = offset;
-			slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
+
 		} else { // drag connection from input
 			var conn = graph.find_connection_to(node, slot);
 			if (!conn) {
@@ -230,6 +243,8 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 					slot_div)
 
 				this.editConn.offset = 0;
+
+				slot_div.addClass('p_connecting');
 
 				this.getSlotPosition(node, slot_div, E2.slot_type.input,
 					this.editConn.ui.src_pos);
@@ -248,10 +263,11 @@ Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 
 Application.prototype.onSlotEntered = function(node, slot, slot_div) {
 	if (this.editConn) {
-		if (this.editConn.hoverSlot(node, slot)) {
-			slot_div[0].style.color = E2.COLOR_COMPATIBLE_SLOT;
-		} else
-			slot_div[0].style.color = E2.erase_color;
+		if (this.editConn.hoverSlot(node, slot)) {	// returns canConnectTo()
+			slot_div.removeClass('p_incompatible').addClass('p_compatible');
+		} else {
+			slot_div.removeClass('p_compatible').addClass('p_incompatible');
+		}
 	}
 
 	this.hover_slot = slot;
@@ -259,15 +275,17 @@ Application.prototype.onSlotEntered = function(node, slot, slot_div) {
 
 	if (this.shift_pressed)
 		this.activateHoverSlot()
+
+	return true;
 }
 
 Application.prototype.onSlotExited = function(node, slot, slot_div) {
 	if (this.editConn) {
-		slot_div[0].style.color = '#000';
 		this.editConn.blurSlot(slot)
 	}
-
+	this.setSlotCssClasses(slot, slot_div);
 	this.releaseHoverSlot();
+	return true;
 }
 
 Application.prototype.onMouseReleased = function() {
@@ -276,16 +294,20 @@ Application.prototype.onMouseReleased = function() {
 	// Creating a connection?
 	if (this.editConn) {
 		var ec = this.editConn
+		var old_connection_uid = ec.connection.uid;
+		var success = false;
+
 		this.editConn = null
 		var c = ec.commit()
 
+		success = (ec.connection && (old_connection_uid != ec.connection.uid));
 		if (c)
 			c.signal_change(true)
 
 		if (ec.srcSlotDiv)
-			ec.srcSlotDiv[0].style.color = '#000'
+			this.setSlotCssClasses(ec.srcSlot, ec.srcSlotDiv);
 		if (ec.dstSlotDiv)
-			ec.dstSlotDiv[0].style.color = '#000'
+			this.setSlotCssClasses(ec.dstSlot, ec.dstSlotDiv);
 
 		changed = true
 	}
@@ -483,39 +505,6 @@ Application.prototype.onNodeHeaderClicked = function() {
 
 Application.prototype.onNodeHeaderDblClicked = function(node) {
 
-	var that = this
-
-	var input = $('<input class="node-title-input" placeholder="Type a title" />')
-
-	input
-		.appendTo(node.ui.dom.context)
-		.val(node.title || node.id)
-		.keyup(function(e) {
-
-			var code = e.keyCode || e.which
-
-			if(code === 13) {
-
-				var name = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
-
-				if(name) {
-					that.graphApi.renameNode(E2.core.active_graph, node, name)
-				}
-
-				input.remove();
-
-			}
-			else if(code === 27) {
-				input.remove();
-			}
-
-		})
-		.select()
-		.bind('blur', function() {
-			$(this).remove();
-		})
-		.focus()
-
 }
 
 Application.prototype.isNodeInSelection = function(node) {
@@ -532,10 +521,7 @@ Application.prototype.executeNodeDrag = function(nodes, conns, dx, dy) {
 
 		if (!node.ui)
 			continue;
-
-		var style = node.ui.dom[0].style
-		style.left = node.x + 'px'
-		style.top = node.y + 'px'
+		node.ui.setPosition(node.x,node.y);
 	}
 
 	var cl = conns.length
@@ -621,8 +607,7 @@ Application.prototype.clearSelection = function() {
 		var nui = sn[i].ui;
 
 		if(nui) {
-			nui.selected = false;
-			nui.dom[0].style.border = this.normal_border_style;
+			nui.setSelected(false);
 		}
 	}
 
@@ -636,16 +621,18 @@ Application.prototype.clearSelection = function() {
 	this.selectedNodes = [];
 	this.selectedConnections = [];
 
-	this.onHideTooltip();
 }
 
-Application.prototype.redrawConnection = function(connection) {
-	var gsp = this.getSlotPosition.bind(this);
+Application.prototype.redrawConnection = function(connection) {	/* @TODO: rename this method */
 	var cn = connection
+	if (!cn.ui) {
+		console.warn('redrawConnection but no ui for ' + cn.uid);
+		return;
+	}
 	var cui = cn.ui
 
-	gsp(cn.src_node, cui.src_slot_div, E2.slot_type.output, cui.src_pos);
-	gsp(cn.dst_node, cui.dst_slot_div, E2.slot_type.input, cui.dst_pos);
+	this.getSlotPosition(cn.src_node, cui.src_slot_div, E2.slot_type.output, cui.src_pos);
+	this.getSlotPosition(cn.dst_node, cui.dst_slot_div, E2.slot_type.input, cui.dst_pos);
 }
 
 Application.prototype.onCanvasMouseDown = function(e) {
@@ -821,10 +808,11 @@ Application.prototype._performSelection = function(e) {
 	var ns = []
 
 	for(var i = 0, len = sn.length; i < len; i++)
-		sn[i].ui.selected = false
+		sn[i].ui.setSelected(false);
 
 	for(var i = 0, len = nodes.length; i < len; i++) {
 		var n = nodes[i]
+		if (n && (typeof n.ui === 'undefined')) continue; // recover, should a node ref ever break..
 		var nui = n.ui.dom[0]
 		var p_x = nui.offsetLeft
 		var p_y = nui.offsetTop
@@ -843,8 +831,7 @@ Application.prototype._performSelection = function(e) {
 	for(var i = 0, len = sn.length; i < len; i++) {
 		var n = sn[i]
 
-		if (!n.ui.selected)
-			n.ui.dom[0].style.border = this.normal_border_style
+		if (!n.ui.selected) n.ui.setSelected(false);
 	}
 
 	this.selectedNodes = ns
@@ -1059,8 +1046,7 @@ Application.prototype.onPaste = function() {
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 	if (node.ui) {
-		node.ui.dom[0].style.border = this.selection_border_style
-		node.ui.selected = true
+		node.ui.setSelected(true);
 	}
 
 	if (addToSelection !== false)
@@ -1069,9 +1055,7 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 
 Application.prototype.deselectNode = function(node) {
 	this.selectedNodes.splice(this.selectedNodes.indexOf(node), 1)
-
-	node.ui.dom[0].style.border = this.normal_border_style
-	node.ui.selected = false
+	node.ui.setSelected(false);
 }
 
 Application.prototype.markConnectionAsSelected = function(conn) {
@@ -1100,16 +1084,9 @@ Application.prototype.calculateCanvasArea = function() {
 	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
 	if (!isFullscreen && !this.condensed_view) {
-		width = $(window).width() -
-			$('#left-nav').outerWidth(true) - 
-			$('#mid-pane').outerWidth(true) - 
-			$('.mid-pane-handle').outerWidth(true) - 
-			$('.left-pane-handle').outerWidth(true) -
-			$('#right-pane').outerWidth(true) - 
-			$('.right-pane-handle').outerWidth(true)
-
+		width = $(window).width();
 		height = $(window).height() -
-			$('.menu-bar').outerHeight(true);
+			$('.editor-header').outerHeight(true) - $('#breadcrumb').outerHeight(true) - $('.bottom-panel').outerHeight(true);
 	} else {
 		width = window.innerWidth
 		height = window.innerHeight
@@ -1149,13 +1126,6 @@ Application.prototype.onWindowResize = function() {
 	E2.dom.webgl_canvas.css('width', width);
 	E2.dom.webgl_canvas.css('height', height);
 
-	// Update preset list height so it scrolls correctly
-	$('.preset-list-container').height(
-		$('#left-nav').height() -
-		$('#left-nav .nav-tabs').outerHeight(true) -
-		$('#left-nav .tab-content .searchbox').outerHeight(true)
-	);
-
 	E2.core.emit('resize')
 
 	this.updateCanvas(true)
@@ -1166,27 +1136,27 @@ Application.prototype.toggleNoodles = function() {
 	E2.dom.canvas_parent.toggle(this.noodlesVisible)
 }
 
-Application.prototype.toggleLeftPane = function() {
-	this.condensed_view = !this.condensed_view;
+Application.prototype.toggleWorldEditor = function() {
+	var is_active = this.worldEditor.isActive()
+	if (is_active) {
+		this.worldEditor.deactivate()
+	}
+	else {
+		this.worldEditor.activate()
+	}
+	is_active = this.worldEditor.isActive()
 
-	E2.dom.left_nav.toggle(!this.condensed_view);
-	E2.dom.mid_pane.toggle(!this.condensed_view);
-	$('.resize-handle').toggle(!this.condensed_view);
-	E2.dom.right_pane.toggle(!this.condensed_view);
+	if (E2.ui)
+		E2.ui.setWorldEditorMode(is_active)
 
-	if(this.condensed_view)
-		E2.dom.dbg.toggle(false);
-	else if(!this.collapse_log)
-		E2.dom.dbg.toggle(true);
-
-	this.onWindowResize();
-};
+	return is_active
+}
 
 Application.prototype.isVRCameraActive = function() {
 	//console.log('noodles:', this.noodlesVisible, 'we: ', E2.app.worldEditor)
 	return !(this.noodlesVisible || E2.app.worldEditor.isActive())
 }
-
+	
 Application.prototype.toggleFullscreen = function() {
 	E2.core.emit('fullScreenChangeRequested')
 }
@@ -1194,7 +1164,7 @@ Application.prototype.toggleFullscreen = function() {
 Application.prototype.onFullScreenChanged = function() {
 	var $canvas = E2.dom.webgl_canvas
 	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
-	
+
 	if (isFullscreen) {
 		$canvas.removeClass('webgl-canvas-normal')
 		$canvas.addClass('webgl-canvas-fs')
@@ -1209,11 +1179,16 @@ Application.prototype.onFullScreenChanged = function() {
 }
 
 Application.prototype.onKeyDown = function(e) {
+	// best to return something here, as webkit sometimes has issues with null returns
+	// return true, unless the ball stops here, in which case return false after stopPropagation and/or preventDefault
+
 	var that = this
 
-	if (E2.util.isTextInputInFocus(e))
-		return;
+	if (E2.ui.isModalOpen()) return true;
 
+	if (E2.util.isTextInputInFocus(e))
+		return true;
+	
 	var toggleFullScreenKey = 70
 	var toggleNoodlesKey = 9
 	var toggleWorldEditorKey = 86
@@ -1221,7 +1196,9 @@ Application.prototype.onKeyDown = function(e) {
 	var exceptionKeys = [ toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey ]
 
 	if (this.isVRCameraActive() && exceptionKeys.indexOf(e.keyCode) === -1)
-		return;
+		return true;
+
+	var ret = true;
 
 	// arrow up || down
 	var arrowKeys = [37,38,39,40]
@@ -1239,20 +1216,18 @@ Application.prototype.onKeyDown = function(e) {
 				dx, dy)
 		}
 		e.preventDefault()
+		ret = false;
 	}
 
 	if (e.keyCode === 8 || e.keyCode === 46) { // use backspace and delete for deleting nodes
 		this.onDelete(e);
 		e.preventDefault();
-	}
-	else if(e.keyCode === toggleNoodlesKey) // tab to show/hide noodles
-	{
-		this.toggleNoodles()
-		e.preventDefault();
+		ret = false;
 	}
 	else if(e.keyCode === 13) { // enter = deselect (eg. commit move)
 		this.clearEditState()
 		this.clearSelection()
+		ret = false;
 	}
 	else if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
 	{
@@ -1286,11 +1261,10 @@ Application.prototype.onKeyDown = function(e) {
 	}
 
 
-
 	// number keys
 	else if (e.keyCode > 47 && e.keyCode < 58) { // 0-9
 		if (this.ctrl_pressed || this.shift_pressed || this.alt_pressed)
-			return;
+			return true;
 
 		var numberHotKeys = [
 			'plugin:output_proxy', // 0
@@ -1302,7 +1276,7 @@ Application.prototype.onKeyDown = function(e) {
 			'plugin:multiply_modulator', // 6
 			'preset:time_oscillate_between_2_values', // 7
 			'preset:image_show_image', // 8
-			'plugin:knob_float_generator', // 9
+			'plugin:knob_float_generator' // 9
 		]
 
 		var item = numberHotKeys[e.keyCode - 48]
@@ -1311,19 +1285,16 @@ Application.prototype.onKeyDown = function(e) {
 			that.presetManager.openPreset('/presets/'+name+'.json')
 		else
 			this.instantiatePlugin(name)
-	}
 
+		ret = false;
+	}
 
 
 	else if(e.keyCode === toggleFullScreenKey) // f
 	{
 		this.toggleFullscreen()
 		e.preventDefault();
-	} else if (e.keyCode === 81 || e.keyCode === 191) { // q or / to focus preset search
-		$('#presetSearch').focus()
-		$('#presetSearch').select()
-		e.preventDefault();
-		return false;
+		ret = false;
 	}
 	else if(this.ctrl_pressed || e.metaKey)
 	{
@@ -1334,15 +1305,9 @@ Application.prototype.onKeyDown = function(e) {
 			e.stopPropagation();
 			return false;
 		}
-		if(e.keyCode === 66) // CTRL+b
-		{
-			this.toggleLeftPane();
-			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
-			return;
-		}
 		else if(e.keyCode === 76) // CTRL+l
 		{
-			return;
+			return false;
 		}
 
 		if(e.keyCode === 67) // CTRL+c
@@ -1355,6 +1320,7 @@ Application.prototype.onKeyDown = function(e) {
 		if (e.keyCode === 90) { // z
 			e.preventDefault()
 			e.stopPropagation()
+			ret = false;
 
 			if (!this.shift_pressed)
 				this.undoManager.undo()
@@ -1363,28 +1329,14 @@ Application.prototype.onKeyDown = function(e) {
 		}
 	}
 	else if (e.keyCode === toggleWorldEditorKey) { // v
-		if (E2.app.worldEditor.isActive()) {
-			E2.app.worldEditor.deactivate()
-		}
-		else {
-			E2.app.worldEditor.activate()
-		}
+		this.toggleWorldEditor();
+		ret = false;
 	}
 
-
+	return ret;
 
 };
 
-Application.prototype.toggleWorldEditor = function() {
-	if (E2.app.worldEditor.isActive()) {
-		E2.dom.worldEditorButton.text('Editor View')
-		E2.app.worldEditor.deactivate()
-	}
-	else {
-		E2.dom.worldEditorButton.text('Camera View')
-		E2.app.worldEditor.activate()
-	}
-}
 
 Application.prototype.onKeyUp = function(e)
 {
@@ -1410,13 +1362,15 @@ Application.prototype.changeControlState = function()
 	var cs = this.player.current_state;
 
 	if (cs !== s.PLAYING) {
-		E2.dom.play_i.removeClass('fa-pause')
-		E2.dom.play_i.addClass('fa-play')
+		E2.dom.playPauseIcon.attr('xlink:href','#icon-play')
 		E2.dom.stop.addClass('disabled')
+		E2.dom.stop.parent().addClass('active');
+		E2.dom.play.parent().removeClass('active');
 	} else {
-		E2.dom.play_i.removeClass('fa-play')
-		E2.dom.play_i.addClass('fa-pause')
+		E2.dom.playPauseIcon.attr('xlink:href','#icon-pause')
 		E2.dom.stop.removeClass('disabled')
+		E2.dom.stop.parent().removeClass('active');
+		E2.dom.play.parent().addClass('active');
 	}
 }
 
@@ -1426,7 +1380,10 @@ Application.prototype.onPlayClicked = function()
 		this.player.pause();
 	else
 		this.player.play();
-
+		
+	E2.dom.stop.parent().removeClass('active');
+	E2.dom.play.parent().addClass('active');
+	
 	this.changeControlState();
 };
 
@@ -1437,6 +1394,8 @@ Application.prototype.onPauseClicked = function() {
 
 Application.prototype.onStopClicked = function() {
 	this.player.schedule_stop(this.changeControlState.bind(this))
+	E2.dom.stop.parent().addClass('active');
+	E2.dom.play.parent().removeClass('active');
 }
 
 Application.prototype.onOpenClicked = function() {
@@ -1456,6 +1415,8 @@ Application.prototype.onOpenClicked = function() {
 		})
 }
 
+
+
 Application.prototype.loadGraph = function(graphPath, cb) {
 	var that = this
 
@@ -1469,6 +1430,8 @@ Application.prototype.loadGraph = function(graphPath, cb) {
 
 			E2.app.player.play() // autoplay
 			E2.app.changeControlState()
+			
+			E2.ui.setPageTitle();
 
 			if (cb)
 				cb()
@@ -1485,66 +1448,16 @@ Application.prototype.onSaveSelectionAsPresetClicked = function() {
 	this.openPresetSaveDialog(JSON.stringify({ root: graph }))
 }
 
-Application.prototype.openPresetSaveDialog = function(serializedGraph) {
-	var that = this
-	var username = E2.models.user.get('username')
-	if (!username) {
-		return E2.controllers.account.openLoginModal()
-	}
+Application.prototype.openPresetSaveDialog = null;	// ui replaces this
 
-	var presetsPath = '/'+username+'/presets/'
-
-	E2.dom.load_spinner.show()
-
-	$.get(presetsPath, function(files) {
-		var fcs = new FileSelectControl()
-		.frame('save-frame')
-		.template('preset')
-		.buttons({
-			'Cancel': function() {
-				E2.dom.load_spinner.hide()
-			},
-			'Save': function(name) {
-				if (!name)
-					return bootbox.alert('Please enter a name for the preset')
-
-				serializedGraph = serializedGraph || that.player.core.serialise()
-
-				$.ajax({
-					type: 'POST',
-					url: presetsPath,
-					data: {
-						name: name,
-						graph: serializedGraph
-					},
-					dataType: 'json',
-					success: function(saved) {
-						E2.dom.load_spinner.hide()
-						that.presetManager.refresh()
-					},
-					error: function(x, t, err) {
-						E2.dom.load_spinner.hide();
-
-						if (x.status === 401)
-							return E2.controllers.account.openLoginModal();
-
-						if (x.responseText)
-							bootbox.alert('Save failed: ' + x.responseText);
-						else
-							bootbox.alert('Save failed: ' + err);
-					}
-				});
-			}
-		})
-		.files(files)
-		.modal();
-
-		return fcs;
-	})
-};
 
 Application.prototype.onPublishClicked = function() {
-	this.openSaveACopyDialog()
+	if (!E2.models.user.get('username')) {
+		return E2.controllers.account.openLoginModal()
+			.then(this.onPublishClicked.bind(this))
+	}
+	
+	E2.ui.openPublishGraphModal()
 	.then(function(path) {
 		window.location.href = path
 	})
@@ -1563,7 +1476,7 @@ Application.prototype.openSaveACopyDialog = function() {
 			.then(this.openSaveACopyDialog.bind(this))
 	}
 
-	E2.dom.load_spinner.show();
+	E2.ui.updateProgressBar(65);
 
 	ga('send', 'event', 'Save a Copy', 'clicked')
 
@@ -1571,9 +1484,10 @@ Application.prototype.openSaveACopyDialog = function() {
 		var fcs = new FileSelectControl()
 		.frame('save-frame')
 		.template('graph')
+		.header('Save as')
 		.buttons({
 			'Cancel': function() {
-				E2.dom.load_spinner.hide();
+				E2.ui.updateProgressBar(100);
 			},
 			'Save': function(path, tags) {
 				if (!path)
@@ -1591,12 +1505,12 @@ Application.prototype.openSaveACopyDialog = function() {
 					},
 					dataType: 'json',
 					success: function(saved) {
-						E2.dom.load_spinner.hide();
+						E2.ui.updateProgressBar(100);
 						ga('send', 'event', 'graph', 'saved')
 						dfd.resolve(saved.path)
 					},
 					error: function(x, t, err) {
-						E2.dom.load_spinner.hide()
+						E2.ui.updateProgressBar(100);
 
 						if (x.status === 401) {
 							return dfd.resolve(
@@ -1624,122 +1538,47 @@ Application.prototype.openSaveACopyDialog = function() {
 	return dfd.promise
 }
 
-var growlOpen
-Application.prototype.growl = function(title, duration) {
-	var tt = $('#breadcrumb')
-
+Application.prototype.growl = function(title, type, duration, person) {
+	var letter=title.charAt(0);
+	var image=''
+	type= type || 'info';
+	if (!$('symbol#icon-'+type).length) {
+		type='info'
+	}
+	if (person) {
+		var image='<div style="background-color: '+person.color+';" class="image-crop"><span>'+letter+'</span></div>';
+	} 
+	
+	/** TODO: when users will have pics - use this:
+	if (person.userpic) {
+		image = '<div style="background-image: url('+person.userpic+');" class="image-crop"></div>';
+	}
+	*/
+	
+	var glyph = '<div class="glyph">'+image+'<svg class="icon-'+type+'"><use xlink:href="#icon-'+type+'"></use></svg></div>';
+	
+	if (!$('#notifications-area').length) {
+		$('body').append('<div id="notifications-area"></div>');
+	}
+	
 	function close() {
-		tt.tooltip('hide')
-		tt.tooltip('destroy')
-		growlOpen = false
+		$('#notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
 	}
-
-	if (growlOpen)
-		close()
-
-	tt.tooltip({
-		title: title,
-		container: 'body',
-		animation: false,
-		trigger: 'manual',
-		placement: 'bottom'
-	})
-
-	growlOpen = true
-
-	tt.tooltip('show')
-
-	setTimeout(close, duration || 3000)
-}
-
-Application.prototype.onShowTooltip = function(e) {
-	var that = this
-
-	if(this.inDrag)
-		return false;
-
-	var $elem = $(e.currentTarget);
-	var tokens = $elem.attr('alt').split('_');
-	var core = this.player.core;
-	var node = E2.core.active_graph.nuid_lut[tokens[0]];
-	var txt = '';
-
-	if(tokens.length < 2) // Node?
-	{
-		var p_name = core.pluginManager.keybyid[node.plugin.id];
-
-		txt += '<b>' + p_name + '</b><br/><br/>' + node.plugin.desc;
-	}
-	else // Slot
-	{
-		var plugin = node.plugin;
-		var slot = null;
-
-		if(tokens[1][0] === 'd')
-			slot = node.findSlotByUid(tokens[2])
-		else
-			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
-
-		txt = '<b>Type:</b> ' + slot.dt.name;
-
-		if (slot.array)
-			txt += '<br><b>Array:</b> yes';
-
-		if (slot.inactive)
-			txt += '<br><b>Inactive:</b> yes';
-
-		if(slot.lo !== undefined || slot.hi !== undefined)
-			txt += '<br><b>Range:</b> ' + (slot.lo !== undefined ? 'min. ' + slot.lo : '') + (slot.hi !== undefined ? (slot.lo !== undefined ? ', ' : '') + 'max. ' + slot.hi : '')
-
-		if (slot.def !== undefined) {
-			txt += '<br><b>Default:</b> '
-
-			if (slot.def === null)
-				txt += 'Nothing'
-			else
-				txt += slot.def
+	
+	function remove() {
+		$('.notification-hide:first-child').remove();
+		$('#notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
+		if (!$('#notifications-area>div').length) {
+			$('#notifications-area').remove();
 		}
-
-		txt += '<br /><br />';
-
-		if(slot.desc)
-			txt += slot.desc.replace(/\n/g, '<br/>');
 	}
 
-	clearTimeout(this._tooltipTimer);
-
-	this._tooltipTimer = setTimeout(function() {
-		if (that.inDrag)
-			return;
-
-		$elem.tooltip('destroy')
-
-		$elem.tooltip({
-			title: txt,
-			container: 'body',
-			animation: false,
-			trigger: 'manual',
-			placement: 'bottom',
-			html: true
-		})
-		.tooltip('show');
-
-		that._tooltipElem = $elem;
-
-	}, 500);
-
-};
-
-Application.prototype.onHideTooltip = function() {
-	clearTimeout(this._tooltipTimer)
-
-	if (this._tooltipElem) {
-		this._tooltipElem.tooltip('hide')
-		this._tooltipElem = null
-	}
-
-	if (this.inDrag)
-		return false
+	$('#notifications-area').append('<div class="notification notification-show"><div class="nt-content">'+glyph+'<div class="text"><span>'+title+'</span></div></div></div>');
+	
+	duration = duration || 2000;
+	
+	setTimeout(close, duration * $('#notifications-area .notification').length)
+	setTimeout(remove, duration * $('#notifications-area .notification').length + 1000)
 }
 
 Application.prototype.setupStoreListeners = function() {
@@ -1763,8 +1602,6 @@ Application.prototype.setupStoreListeners = function() {
 	}
 
 	function onNodeRemoved(graph, node) {
-		E2.app.onHideTooltip()
-
 		node.destroy_ui()
 
 		if (node.plugin.isGraph)
@@ -1844,7 +1681,7 @@ Application.prototype.onGraphSelected = function(graph) {
 			sp.css({ 'text-decoration': 'underline' })
 		}
 
-		parentEl.prepend($('<span> / </span>'))
+		parentEl.prepend($('<svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg>'))
 		parentEl.prepend(sp)
 
 		if (graph.parent_graph)
@@ -1888,6 +1725,8 @@ Application.prototype.setupPeopleEvents = function() {
 
 		$cursor.remove()
 		delete cursors[uid]
+		if (E2.ui)
+			E2.ui.onPeopleListChanged('removed');
 	})
 
 	this.peopleStore.on('added', function(person) {
@@ -1909,6 +1748,9 @@ Application.prototype.setupPeopleEvents = function() {
 
 		if (person.activeGraphUid !== E2.core.active_graph.uid)
 			$cursor.hide()
+
+		if (E2.ui)
+			E2.ui.onPeopleListChanged('added');
 	})
 
 	this.peopleStore.on('mouseMoved', function(person) {
@@ -2000,8 +1842,24 @@ Application.prototype.setupPeopleEvents = function() {
 	})
 }
 
+Application.prototype.onNewClicked = function() {
+	window.location.href = '/edit';
+}
+
 Application.prototype.onForkClicked = function() {
 	this.channel.fork()
+}
+
+Application.prototype.onAccountMenuClicked = function() {
+	var username = E2.models.user.get('username')
+	if (username) {
+		E2.dom.userPullDown.toggle();
+	}
+}
+
+Application.prototype.useCustomBootboxTemplate = function(template) {
+	$('.modal-content').hide().html(template).show();
+	$('.bootbox-close-button').attr('style','');
 }
 
 Application.prototype.start = function() {
@@ -2011,8 +1869,8 @@ Application.prototype.start = function() {
 
 	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
-	window.addEventListener('keydown', this.onKeyDown.bind(this))
-	window.addEventListener('keyup', this.onKeyUp.bind(this))
+	document.body.addEventListener('keydown', this.onKeyDown.bind(this))
+	document.body.addEventListener('keyup', this.onKeyUp.bind(this))
 
 	E2.dom.canvas_parent[0].addEventListener('scroll', function() {
 		that.scrollOffset = [ E2.dom.canvas_parent.scrollLeft(), E2.dom.canvas_parent.scrollTop() ]
@@ -2079,60 +1937,42 @@ Application.prototype.start = function() {
 	});
 
 	$('.resize-handle').on('mousedown', function(e) {
-		var $handle = $(e.target)
-		var $pane = $($handle.data('target'))
-		var ow = $pane.width()
-		var ox = e.pageX
+		var $handle = $(this)
+		var $target = $(this).parent()
+		var oh = $target.height()
+		var oy = e.pageY
 		var $doc = $(document)
 		var changed = false
-		var rightToLeft = $handle.hasClass('right-pane-handle')
 
 		e.preventDefault()
 
 		function mouseMoveHandler(e) {
 			changed = true
-			var nw = ow + (e.pageX - ox)
-			if (rightToLeft)
-				nw = ow + (ox - e.pageX)
+			var nh = oh + (e.pageY - oy)
 			e.preventDefault()
-			$pane.css('flex', '0 0 '+nw+'px')
-			$pane.css('width', nw+'px')
-			$pane.css('max-width', nw+'px')
-			E2.app.onWindowResize()
+			$target.css('height', nh+'px')
+			if ($target.hasClass('chat-users')) {
+				if (E2.ui)
+					E2.ui.onChatResize();
+			}
 		}
 
 		$doc.on('mousemove', mouseMoveHandler)
 		$doc.one('mouseup', function(e) {
-			if (!changed) {
-
-				$pane.toggleClass('pane-hidden')
-
-				// Collapse top header logo to make the header look nicer
-				if($handle.hasClass('left-pane-handle')) {
-					$('#top-header-logo').toggleClass('collapsed');
-				}
-
-				E2.app.onWindowResize()
-			}
 			e.preventDefault()
 			$doc.off('mousemove', mouseMoveHandler)
 		})
+	});
 
-	})
-
-	E2.dom.viewSourceButton.click(function() {
-		bootbox.dialog({
-			message: '<textarea class="form-control" cols=80 rows=40>'+
-				E2.core.serialise()+'</textarea>', 
-			buttons: { 'OK': function() {} }
-		})
-	})
+	E2.dom.viewSourceButton.click(E2.ui.viewSource);
 
 	E2.dom.saveACopy.click(E2.app.onSaveACopyClicked.bind(E2.app))
 	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
 	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
+	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
+
 
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
@@ -2140,41 +1980,27 @@ Application.prototype.start = function() {
 
 	this.midPane = new E2.MidPane()
 
-	E2.dom.load_spinner.hide()
+	E2.ui.updateProgressBar(100);
 
 	E2.app.player.play() // autoplay
 	E2.app.changeControlState()
 
-	E2.app.showFirstTimeDialog()
-}
 
-Application.prototype.showFirstTimeDialog = function() {
-	if (!E2.util.isFirstTime())
-		return;
-
-	Cookies.set('vizor050', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
-
-	var diag = bootbox.dialog({
-		title: '<h3>First time here?</h3>',
-		message: '<h4>Check out our '+
-			'<a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank">Youtube tutorials</a> '+
-			'or<br>'+
-			'drop by <a href="http://twitter.com/Vizor_VR" target="_blank">our Twitter</a> and say hello. </h4>' +
-			'<br><br>Looking for your old stuff? You can find it at <a href="http://old.vizor.io/" target="_blank">old.vizor.io</a> until November 2015.',
-		onEscape: true,
-		html: true,
-		buttons: { Ok: function() {}}
-	})
-
-	diag.find('.modal-dialog').addClass('modal-sm')
-	diag.css({
-		top: '50%',
-		'margin-top': function () {
-			return -(diag.height() / 2);
-		}
+	E2.ui.showFirstTimeDialog();
+	
+	$('[data-toggle="popover"]').popover({
+			container: 'body',
+			trigger: 'hover',
+			animation: false
 	});
-
+	
+	$(document).on("shown.bs.modal", function() {
+		$('.bootbox-close-button').html('<svg class="icon-dialog-close">'
+									  + '<use xlink:href="#icon-close"></use></svg>')
+								  .attr('style','');
+	});
 }
+
 
 /**
  * Called when Core has been initialized
@@ -2184,6 +2010,7 @@ Application.prototype.showFirstTimeDialog = function() {
 Application.prototype.onCoreReady = function(loadGraphUrl) {
 	var that = this
 
+	E2.ui.init(E2);
 	this.presetManager = new PresetManager('/presets')
 
 	that.setupPeopleEvents()
@@ -2212,6 +2039,7 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 		E2.app.loadGraph(loadGraphUrl, start)
 	else
 		E2.app.setupEditorChannel().then(start)
+	
 }
 
 Application.prototype.setupChat = function() {
@@ -2264,17 +2092,67 @@ Application.prototype.setupEditorChannel = function() {
 	} else 
 		joinChannel()
 
+	E2.ui.setPageTitle();
+	
 	return dfd.promise
 }
 
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
+	E2.dom.editorHeader = $('.editor-header');
+
+	E2.dom.progressBar = $('#progressbar');
+	
+	E2.dom.btnNew = $('#btn-new');
+	
+	E2.dom.btnScale = $('#btn-scale');
+	E2.dom.btnRotate = $('#btn-rotate');
+	E2.dom.btnAssets = $('#btn-assets');
+	
+	E2.dom.btnInspector = $('#btn-inspector');
+	E2.dom.btnPresets = $('#btn-presets');
+	E2.dom.btnSavePatch = $('#btn-save-patch');
+	
+	E2.dom.btnGraph = $('#btn-graph');
+	E2.dom.btnEditor = $('#btn-editor');
+	E2.dom.btnZoomOut = $('#btn-zoom-out');
+	E2.dom.btnZoom = $('#btn-zoom');
+	E2.dom.btnZoomIn = $('#btn-zoom-in');
+	E2.dom.zoomDisplay = $('#current-zoom');
+	E2.dom.btnChatDisplay = $('#btn-chat-display');
+	
+	E2.dom.btnSignIn = $('#btn-sign-in');
+	E2.dom.btnAccountMenu = $('#btn-account-top');
+	E2.dom.userPullDown = $('#userPullDown');
+	
+	E2.dom.breadcrumb = $('#breadcrumb');
+	
+	E2.dom.uiLayer = $('#ui-layer');
+	
+	E2.dom.assetsLib = $('#assets-lib');
+	E2.dom.assetsToggle = $('#assets-toggle');
+	E2.dom.assetsClose = $('#assets-close');
+	
+	E2.dom.presetsLib = $('#presets-lib');
+	E2.dom.presets_list = $('#presets');
+	
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
-	E2.dom.left_nav = $('#left-nav');
-	E2.dom.mid_pane = $('#mid-pane');
-	E2.dom.right_pane = $('#right-pane');
+	
+	E2.dom.chatWindow = $('#chat-window');
+	E2.dom.chatTabs = $('#chat-window>.chat-tabs');
+	E2.dom.chatToggleButton = $('#chat-toggle');
+	E2.dom.chatClose = $('#chat-close');
+	E2.dom.chatTabBtn = $('#chatTabBtn');
+	E2.dom.peopleTabBtn = $('#peopleTabBtn');
+	E2.dom.chatTab = $('#chatTab');
+	E2.dom.chat = $('#chat');
+	
+	E2.dom.peopleTab = $('#peopleTab');
+	E2.dom.presetsToggle = $('#presets-toggle');
+	E2.dom.presetsClose = $('#presets-close');
+	
 	E2.dom.dbg = $('#dbg');
 	E2.dom.worldEditorButton = $('#worldEditor');
 	E2.dom.publishButton = $('#publish-button');
@@ -2295,12 +2173,23 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.info._defaultContent = E2.dom.info.html()
 	E2.dom.tabs = $('#tabs');
 	E2.dom.graphs_list = $('#graphs-list');
-	E2.dom.presets_list = $('#presets');
-	E2.dom.breadcrumb = $('#breadcrumb');
-	E2.dom.load_spinner = $('#load-spinner');
 	E2.dom.filename_input = $('#filename-input');
+	
+	E2.dom.bottomBar = $('.bottom-panel');
+	
+	E2.dom.btnTimeline = $('#btn-timeline');
+	
+	E2.dom.play = $('#play');
+	E2.dom.playPauseIcon = $('#play use');
+	E2.dom.pause = $('#pause');
+	E2.dom.stop = $('#stop');
+	E2.dom.fscreen = $('#fullscreen');
+	E2.dom.vrview = $('#vrview');
+	
+	E2.dom.btnVRCam = $('#btn-vrcam');
+	E2.dom.btnEditorCam = $('#btn-editorcam');
 
-	// $.ajaxSetup({ cache: false });
+	$.ajaxSetup({ cache: false });
 
 	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, ex) {
 		if (settings.dataType === 'script') {
@@ -2326,6 +2215,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 
 	E2.core = new Core(vr_devices)
 	E2.app = new Application()
+	E2.ui = new VizorUI();
 
 	var player = new Player(vr_devices, E2.dom.webgl_canvas)
 
@@ -2353,6 +2243,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	}
 
 	E2.app.worldEditor = new WorldEditor()
+
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
 	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})

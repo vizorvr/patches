@@ -24,7 +24,7 @@ global.NodeUI = function() {
 	this.dom.find = function() { return { remove: function(){} } }
 	this.dom[0].style = {}
 }
-global.NodeUI.create_slot = function(){}
+
 global.Node.prototype.create_ui = function(){
 	// this.ui = new global.NodeUI()
 	return null

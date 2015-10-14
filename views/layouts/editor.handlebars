@@ -1,13 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head id="head">
-    <title>Vizor</title>
+    <title>Vizor Create</title>
     <link href="/style/less.css" rel="Stylesheet" type="text/css"/>
     <link href="/style/menu.css" rel="Stylesheet" type="text/css"/>
     <link href="/style/tree.css" rel="Stylesheet" type="text/css"/>
     <link href="/style/icons/style.css" rel="Stylesheet" type="text/css"/>
     <link href="/vendor/font-awesome-4.2.0/css/font-awesome.min.css" rel="Stylesheet" type="text/css" />
-    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,700,300" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700' rel='stylesheet' type='text/css'>
     
     <script>{{> ga}}</script>
 
@@ -26,12 +27,15 @@
 
     <script type="text/javascript" src="/node_modules/handlebars/dist/handlebars.min.js"></script>
     <script type="text/javascript" src="/node_modules/moment/min/moment.min.js"></script>
+	
+    <script type="text/javascript" src="/vendor/webgl-debug.js"></script>
 
     <script type="text/javascript" src="/scripts/event-emitter.js"></script>
 
     <script type="text/javascript" src="/scripts/core.js"></script>
     <script type="text/javascript" src="/scripts/util.js"></script>
     <script type="text/javascript" src="/scripts/draggable.js"></script>
+	<script type="text/javascript" src="/scripts/movable.js"></script>
     <script type="text/javascript" src="/scripts/treeview.js"></script>
 
     <script type="text/javascript" src="/scripts/file-select-control.js"></script>
@@ -43,9 +47,13 @@
     <script type="text/javascript" src="/scripts/connection.js"></script>
     <script type="text/javascript" src="/scripts/graph.js"></script>
     <script type="text/javascript" src="/scripts/node.js"></script>
+    <script type="text/javascript" src="/scripts/node-ui-enum.js"></script>
     <script type="text/javascript" src="/scripts/node-ui.js"></script>
     <script type="text/javascript" src="/scripts/variables.js"></script>
+    <script type="text/javascript" src="/scripts/player.js"></script>
     <script type="text/javascript" src="/scripts/application.js"></script>
+    <script type="text/javascript" src="/scripts/ui-core.js"></script>
+    <script type="text/javascript" src="/scripts/ui.js"></script>
     <script type="text/javascript" src="/scripts/editConnection.js"></script>
     <script type="text/javascript" src="/scripts/player.js"></script>
 
@@ -84,13 +92,16 @@
     <script type="text/javascript" src="/vendor/three/OBJMTLLoader.js"></script>
     <script type="text/javascript" src="/vendor/three/MTLLoader.js"></script>
     <script type="text/javascript" src="/vendor/three/DDSLoader.js"></script>
+    <script type="text/javascript" src="/vendor/three/SceneLoader.js"></script>
 
     <script type="text/javascript" src="/vendor/three/VREffect.js"></script>
     <script type="text/javascript" src="/vendor/three/VRControls.js"></script>
     <script type="text/javascript" src="/vendor/three/EditorControls.js"></script>
     <script type="text/javascript" src="/vendor/three/TransformControls.js"></script>
+
     <script type="text/javascript" src="/vendor/three/webvr-polyfill.js"></script>
     <script type="text/javascript" src="/vendor/three/webvr-manager.js"></script>
+    <script type="text/javascript" src="/scripts/hardware.js"></script>
 
     <script type="text/javascript" src="/vendor/random.min.js"></script>
 
@@ -104,9 +115,9 @@
     <script type="text/javascript" src="/scripts/abstractThreeMaterialPlugin.js"></script>
     <script type="text/javascript" src="/scripts/abstractThreeMeshPlugin.js"></script>
 
-	<script type="text/javascript" src="/scripts/worldEditor/worldEditorCamera.js"></script>
-	<script type="text/javascript" src="/scripts/worldEditor/worldEditor.js"></script>
-	<script type="text/javascript" src="/scripts/worldEditor/worldEditorOriginGrid.js"></script>
+    <script type="text/javascript" src="/scripts/worldEditor/worldEditorCamera.js"></script>
+    <script type="text/javascript" src="/scripts/worldEditor/worldEditor.js"></script>
+    <script type="text/javascript" src="/scripts/worldEditor/worldEditorOriginGrid.js"></script>
 
     <!-- next line replaced by build: -->
     <!-- {{editor.min.js}} -->

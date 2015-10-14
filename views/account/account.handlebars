@@ -1,0 +1,49 @@
+<div class="modal-header">
+	<h4>Account</h4>
+	<button aria-hidden="true" data-dismiss="modal" class="bootbox-close-button" type="button">
+		<svg class="icon-dialog-close"><use xlink:href="#icon-close"></use></svg>
+	</button>
+</div>
+
+<div class="modal-body">
+	<form action="/account/profile" id="account-modal-form" class="panel form-horizontal" method="POST">
+		<input type="hidden" name="_csrf" value={{_csrf}}>
+		
+		<div class="form-input">
+			<label for="name_id">Name</label>
+			<input type="text" name="name" id="name_id" value="{{user.name}}" placeholder="" tabindex="-1">
+		</div> 
+		
+		<div class="modal-error" id="name-error">
+			<span></span>
+		</div>
+
+<!-- 		<div class="form-input">
+			<label for="username_id">Username</label>
+			<input type="text" class="required" name="username" value="{{user.username}}" id="username_id" placeholder="">
+		</div> 
+		
+		<div class="modal-error" id="username-error">
+			<span></span>
+		</div>
+
+ -->		<div class="form-input">
+			<label for="email_id">Email</label>
+			<input type="text" class="required" name="email" value="{{user.email}}" id="email_id" placeholder="">
+		</div>
+		
+		<div class="modal-error" id="email-error">
+			<span></span>
+		</div>
+		
+		<button id="update-profile-btn" class="sign-btn" type="submit">
+			<span>Update Account</span>
+			<svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
+		</button>
+	</form>
+</div>
+
+<div class="modal-footer">
+	<span class="pull-left"><a href="/account/delete" class="delet-account">Delete account</a></span>
+	<span class="pull-right"><a href="/changepassword" class="change-password" id="change-passworg">Change password</a></span>
+</div>

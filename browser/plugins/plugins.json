@@ -95,7 +95,9 @@
         "Mesh": "three_mesh",
         "Point Cloud Mesh": "three_point_cloud_mesh",
         "3D model loader": "three_loader_model",
-        "Particle Emitter": "three_particle_emitter"
+        "Particle Emitter": "three_particle_emitter",
+        "3D scene loader": "three_loader_scene",
+        "Mesh attributes": "three_object3d_attribute_extractor"
     },
 
     "MATERIALS AND LIGHTS": {
@@ -277,6 +279,12 @@
         "Triangle": "triangle_modulator",
         "In Tweens": "tween_in_modulator",
         "Out Tweens": "tween_out_modulator"
+    },
+
+
+    "EVENT EMITTER": {
+        "Emit Runtime Event": "runtime_event_write",
+        "On Runtime Event": "runtime_event_read"
     },
 
 

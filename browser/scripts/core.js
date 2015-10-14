@@ -27,6 +27,7 @@ var E2 = {};
 window.E2 = E2; // global scope so plugins can access it
 
 E2.app = null;
+E2.ui = null;	// app sets this to a VizorUI instance
 E2.dom = {};
 E2.plugins = {};
 E2.slot_type = { input: 0, output: 1 };
@@ -91,9 +92,9 @@ AssetTracker.prototype.signal_failed = function()
 AssetTracker.prototype.signal_update = function()
 {
 	var l = this.listeners;
-	
-	if(E2.dom.load_spinner)
-		E2.dom.load_spinner.css('display', this.started === (this.completed + this.failed) ? 'none' : 'inherit');
+	var prc = (this.completed + this.failed) / (this.started / 100);
+
+	E2.core.emit('progress', this.started === (this.completed + this.failed) ? 100 : prc)
 	
 	for(var i = 0, len = l.length; i < len; i++)
 		l[i]();
@@ -138,8 +139,8 @@ function Core() {
 		matrix_identity: new THREE.Matrix4().identity(),
 		vector_origin: new THREE.Vector3(),
 		material_default: new THREE.MeshBasicMaterial(),
-		color_white: new THREE.Color('0xffffff'),
-		color_black: new THREE.Color('0x000000'),
+		color_white: new THREE.Color(0xffffff),
+		color_black: new THREE.Color(0x000000),
 		blend_mode: {
 			NORMAL: 1
 		}
@@ -147,6 +148,8 @@ function Core() {
 
 	this._listeners = {};
 	
+	this.runtimeEvents = new EventEmitter()
+
 	this.asset_tracker = new AssetTracker(this);
 
 	this.active_graph_dirty = true;
@@ -213,7 +216,7 @@ Core.prototype.create_dialog = function(diag, title, w, h, done_func, open_func)
 	var modal = bootbox.dialog({
 		title: title,
 		message: diag,
-		buttons: {'Ok': function(){}}
+		buttons: {'OK': function(){}}
 	})
 
 	function close()
@@ -230,7 +233,7 @@ Core.prototype.create_dialog = function(diag, title, w, h, done_func, open_func)
 
 	modal.on('show.bs.modal', function()
 	{
-		$('.modal-dialog', modal).css('width', w + 40);
+		$('.modal-dialog', modal).css('width', w + 40).addClass('patch-inspector');
 	});
 
 	modal.on('shown.bs.modal', function()

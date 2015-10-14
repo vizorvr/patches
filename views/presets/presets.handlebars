@@ -1,13 +1,16 @@
 <div class="searchbox">
+	<svg class="icon-search"><use xlink:href="#icon-search"></use></svg>
 	<input id="presetSearch"
 		class="form-control"
 		type="text"
-		placeholder="Search presets and plugins"/>
+		placeholder="Search"
+		onfocus="this.placeholder = ''" 
+		onblur="this.placeholder = 'Search'"/>
 </div>
 
 <div class="preset-list-container">
 
-	<div class="preset-list-content">
+	<div class="preset-list-content scrollbar">
 
 		<div class="preset-result preset-list-contained-box"></div>
 

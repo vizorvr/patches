@@ -4,9 +4,27 @@
 
 		console.log("VR Camera inputs: ", this.input_slots ? this.input_slots.length : "undefined")
 
+		this.defaultFOV = 20
+
+		// try to find out default fov from the device
+		if (window.HMDVRDevice && window.HMDVRDevice.getEyeParameters) {
+			console.log('has VR device')
+			var eyeParams = window.HMDVRDevice.getEyeParameters()
+			console.log(eyeParams)
+
+			if (eyeParams.recommendedFieldOfView) {
+				this.defaultFOV = eyeParams.recommendedFieldOfView
+				console.log('has recommended FOV')
+			}
+			else if (eyeParams.leftDegrees && eyeParams.rightDegrees) {
+				this.defaultFOV = eyeParams.leftDegrees + eyeParams.rightDegrees
+				console.log('has left & right degrees')
+			}
+		}
+
 		this.input_slots = [
 			{ name: 'position', dt: core.datatypes.VECTOR },
-			{ name: 'fov', dt: core.datatypes.FLOAT, def: 45.0 },
+			{ name: 'fov', dt: core.datatypes.FLOAT, def: this.defaultFOV },
 			{ name: 'aspectRatio', dt: core.datatypes.FLOAT, def: 1.0},
 			{ name: 'near', dt: core.datatypes.FLOAT, def: 1.0 },
 			{ name: 'far', dt: core.datatypes.FLOAT, def: 1000.0 }
@@ -26,10 +44,9 @@
 	ThreeVRCameraPlugin.prototype.reset = function() {
 		console.log('ThreeVRCameraPlugin reset camera')
 		this.domElement = E2.dom.webgl_canvas[0]
-		this.positionFromGraph = new THREE.Vector3(0,0,0)
 
 		this.perspectiveCamera = new THREE.PerspectiveCamera(
-			90,
+			this.defaultFOV,
 			this.domElement.clientWidth / this.domElement.clientHeight,
 			0.1,
 			1000)

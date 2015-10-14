@@ -93,11 +93,9 @@
 		if (!this.state.url)
 			return;
 
-		if (this.geometries)
-			this.geometries = this.getDefaultGeometries()
+		this.geometries = this.getDefaultGeometries()
 
-		if (this.materials)
-			this.materials = this.getDefaultMaterials()
+		this.materials = this.getDefaultMaterials()
 
 		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 
