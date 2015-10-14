@@ -1164,7 +1164,7 @@ Application.prototype.toggleFullscreen = function() {
 Application.prototype.onFullScreenChanged = function() {
 	var $canvas = E2.dom.webgl_canvas
 	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
-	
+
 	if (isFullscreen) {
 		$canvas.removeClass('webgl-canvas-normal')
 		$canvas.addClass('webgl-canvas-fs')
@@ -1179,12 +1179,15 @@ Application.prototype.onFullScreenChanged = function() {
 }
 
 Application.prototype.onKeyDown = function(e) {
+	// best to return something here, as webkit sometimes has issues with null returns
+	// return true, unless the ball stops here, in which case return false after stopPropagation and/or preventDefault
+
 	var that = this
 
 	if (E2.ui.isModalOpen()) return true;
 
 	if (E2.util.isTextInputInFocus(e))
-		return true;		// Chrome doesn't like undefined returns
+		return true;
 	
 	var toggleFullScreenKey = 70
 	var toggleNoodlesKey = 9
@@ -1194,6 +1197,8 @@ Application.prototype.onKeyDown = function(e) {
 
 	if (this.isVRCameraActive() && exceptionKeys.indexOf(e.keyCode) === -1)
 		return true;
+
+	var ret = true;
 
 	// arrow up || down
 	var arrowKeys = [37,38,39,40]
@@ -1211,15 +1216,18 @@ Application.prototype.onKeyDown = function(e) {
 				dx, dy)
 		}
 		e.preventDefault()
+		ret = false;
 	}
 
 	if (e.keyCode === 8 || e.keyCode === 46) { // use backspace and delete for deleting nodes
 		this.onDelete(e);
 		e.preventDefault();
+		ret = false;
 	}
 	else if(e.keyCode === 13) { // enter = deselect (eg. commit move)
 		this.clearEditState()
 		this.clearSelection()
+		ret = false;
 	}
 	else if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
 	{
@@ -1256,7 +1264,7 @@ Application.prototype.onKeyDown = function(e) {
 	// number keys
 	else if (e.keyCode > 47 && e.keyCode < 58) { // 0-9
 		if (this.ctrl_pressed || this.shift_pressed || this.alt_pressed)
-			return;
+			return true;
 
 		var numberHotKeys = [
 			'plugin:output_proxy', // 0
@@ -1277,6 +1285,8 @@ Application.prototype.onKeyDown = function(e) {
 			that.presetManager.openPreset('/presets/'+name+'.json')
 		else
 			this.instantiatePlugin(name)
+
+		ret = false;
 	}
 
 
@@ -1284,6 +1294,7 @@ Application.prototype.onKeyDown = function(e) {
 	{
 		this.toggleFullscreen()
 		e.preventDefault();
+		ret = false;
 	}
 	else if(this.ctrl_pressed || e.metaKey)
 	{
@@ -1296,7 +1307,7 @@ Application.prototype.onKeyDown = function(e) {
 		}
 		else if(e.keyCode === 76) // CTRL+l
 		{
-			return;
+			return false;
 		}
 
 		if(e.keyCode === 67) // CTRL+c
@@ -1309,6 +1320,7 @@ Application.prototype.onKeyDown = function(e) {
 		if (e.keyCode === 90) { // z
 			e.preventDefault()
 			e.stopPropagation()
+			ret = false;
 
 			if (!this.shift_pressed)
 				this.undoManager.undo()
@@ -1318,9 +1330,10 @@ Application.prototype.onKeyDown = function(e) {
 	}
 	else if (e.keyCode === toggleWorldEditorKey) { // v
 		this.toggleWorldEditor();
+		ret = false;
 	}
 
-
+	return ret;
 
 };
 
