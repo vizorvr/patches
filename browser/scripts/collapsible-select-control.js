@@ -3,14 +3,15 @@
  * @param  {Event} e         Mousedown event from bind
  */
 function dragAndDropMouseDownHandler(e) {
+	var uiState = E2.ui.state;
 	var chatWindow = E2.dom.chatWindow;
-	var chatVisible = E2.ui.visibility.panel_chat;
+	var chatVisible = uiState.visibility.panel_chat;
 	var collapseChat = E2.ui.onChatToggleClicked.bind(E2.ui);
 	var presetsLib = E2.dom.presetsLib;
-	var presetsVisible = E2.ui.visibility.panel_presets;
+	var presetsVisible = uiState.visibility.panel_presets;
 	var collapsePresets = E2.ui.onPresetsToggleClicked.bind(E2.ui);
 	var assetsLib = E2.dom.assetsLib;
-	var assetsVisible = E2.ui.visibility.panel_assets;
+	var assetsVisible = uiState.visibility.panel_assets;
 	var collapseAssets = E2.ui.onAssetsToggleClicked.bind(E2.ui);
 	
 	var mouseMoveBound = false
