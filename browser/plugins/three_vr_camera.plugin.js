@@ -1,21 +1,34 @@
 (function() {
 	var ThreeVRCameraPlugin = E2.plugins.three_vr_camera = function(core) {
 		this.desc = 'THREE.js VR Camera'
+		
+		this.defaultFOV = 90
 
-		console.log("VR Camera inputs: ", this.input_slots ? this.input_slots.length : "undefined")
+		// try to find out default fov from the device
+		if (window.HMDVRDevice && window.HMDVRDevice.getEyeParameters) {
+			var eyeParams = window.HMDVRDevice.getEyeParameters()
+
+			if (eyeParams.recommendedFieldOfView) {
+				this.defaultFOV = eyeParams.recommendedFieldOfView
+			}
+			else if (eyeParams.leftDegrees && eyeParams.rightDegrees) {
+				this.defaultFOV = eyeParams.leftDegrees + eyeParams.rightDegrees
+			}
+		}
 
 		this.input_slots = [
 			{ name: 'position', dt: core.datatypes.VECTOR },
-			{ name: 'fov', dt: core.datatypes.FLOAT, def: 45.0 },
+			{ name: 'fov', dt: core.datatypes.FLOAT, def: this.defaultFOV },
 			{ name: 'aspectRatio', dt: core.datatypes.FLOAT, def: 1.0},
 			{ name: 'near', dt: core.datatypes.FLOAT, def: 1.0 },
 			{ name: 'far', dt: core.datatypes.FLOAT, def: 1000.0 }
 		]
 
-		this.output_slots = [{
-			name: 'camera',
-			dt: core.datatypes.CAMERA
-		}]
+		this.output_slots = [
+			{name: 'camera',	dt: core.datatypes.CAMERA},
+			{name: 'position',	dt: core.datatypes.VECTOR},
+			{name: 'rotation',	dt: core.datatypes.VECTOR}
+		]
 
 		this.always_update = true
 		this.dirty = false
@@ -24,12 +37,10 @@
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
 
 	ThreeVRCameraPlugin.prototype.reset = function() {
-		console.log('ThreeVRCameraPlugin reset camera')
 		this.domElement = E2.dom.webgl_canvas[0]
-		this.positionFromGraph = new THREE.Vector3(0,0,0)
 
 		this.perspectiveCamera = new THREE.PerspectiveCamera(
-			90,
+			this.defaultFOV,
 			this.domElement.clientWidth / this.domElement.clientHeight,
 			0.1,
 			1000)
@@ -42,8 +53,6 @@
 	}
 
 	ThreeVRCameraPlugin.prototype.resize = function() {
-		console.log('ThreeVRCameraPlugin.resize')
-
 		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement);
 		var wh = { width: window.innerWidth, height: window.innerHeight }
 
@@ -100,8 +109,17 @@
 		}
 	}
 
-	ThreeVRCameraPlugin.prototype.update_output = function() {
-		return this.perspectiveCamera
+	ThreeVRCameraPlugin.prototype.update_output = function(slot) {
+		if (slot.index === 0) { // camera
+			return this.perspectiveCamera
+		}
+		else if (slot.index === 1) { // position
+			return this.perspectiveCamera.position
+		}
+		else if (slot.index === 2) { // rotation
+			var euler = new THREE.Euler().setFromQuaternion(this.perspectiveCamera.quaternion)
+			return new THREE.Vector3(euler.x, euler.y, euler.z)
+		}
 	}
 
 	ThreeVRCameraPlugin.prototype.state_changed = function(ui) {

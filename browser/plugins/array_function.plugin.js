@@ -27,19 +27,8 @@ var ArrayFunctionPlugin = E2.plugins.array_function = function(core) {
 
 ArrayFunctionPlugin.prototype = Object.create(SubGraphPlugin.prototype)
 
-ArrayFunctionPlugin.prototype.create_ui = function() {
-	var ui = make('div')
-	var inp_edit = makeButton('Edit', 'Open this loop for editing.')
-
-	inp_edit.click(function() {
-		if (this.graph)
-			this.graph.tree_node.activate()
-	}.bind(this))
-
-	ui.css('text-align', 'center')
-	ui.append(inp_edit)
-
-	return ui
+ArrayFunctionPlugin.prototype.drilldown = function() {
+	return NodeUI.drilldown(this);
 }
 
 ArrayFunctionPlugin.prototype.update_input = function(slot, data) {
@@ -97,10 +86,6 @@ ArrayFunctionPlugin.prototype.state_changed = function(ui) {
 	var node = this.parent_node
 
 	if (ui) {
-		// Decorate the auto generated dom base element with an
-		// additional class to allow custom styling.
-		node.ui.dom.addClass('graph arrayfunction')
-
 		return
 	}
 

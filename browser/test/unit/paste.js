@@ -30,12 +30,14 @@ global.THREE = {
 }
 global.THREE.Matrix4.prototype.identity = function() {}
 
+
 global.NodeUI = function() {
 	this.dom = [$()]
 	this.dom.position = this.dom[0].position
 	this.dom.width = this.dom[0].width
 	this.dom.height = this.dom[0].height
 	this.dom[0].style = {}
+	this.setSelected = function(){}
 }
 global.TextureCache = function() {}
 global.PresetManager = function() {}

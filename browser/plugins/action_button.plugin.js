@@ -21,7 +21,7 @@ E2.p.prototype.reset = function()
 
 E2.p.prototype.create_ui = function()
 {
-	var inp = makeButton('Click', null, 'e_btn');
+	var inp = makeButton('Click', '', 'fxtrigger');
 	
 	inp.click(function(self) { return function(e) 
 	{

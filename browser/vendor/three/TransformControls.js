@@ -869,7 +869,7 @@
 
 						oldPosition.set( scope.plugin.state.position.x, scope.plugin.state.position.y, scope.plugin.state.position.z );
 						oldScale.set( scope.plugin.state.scale.x, scope.plugin.state.scale.y, scope.plugin.state.scale.z );
-						oldQuaternion.set( scope.plugin.state.quaternion.x, scope.plugin.state.quaternion.y, scope.plugin.state.quaternion.z, scope.plugin.state.quaternion.w )
+						oldQuaternion.set( scope.plugin.state.quaternion._x, scope.plugin.state.quaternion._y, scope.plugin.state.quaternion._z, scope.plugin.state.quaternion._w )
 
 						oldRotationMatrix.extractRotation( scope.plugin.object3d.matrix );
 						worldRotationMatrix.extractRotation( scope.plugin.object3d.matrixWorld );

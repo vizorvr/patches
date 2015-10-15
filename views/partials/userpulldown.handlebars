@@ -1,21 +1,26 @@
-<ul class="nav navbar-nav navbar-right" id="user-pulldown">
-  {{#if user}}
-  <li class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-      {{user.username}}
-      <i class="caret"></i>
-    </a>
-    <ul class="dropdown-menu">
-      <li>
-        <a class="account" href="/account"><span class='ion-person'></span> My Account</a>
-      </li>
-      <li>
-        <a href="/logout"><span class="ion-log-out"></span> Logout</a>
-      </li>
-    </ul>
-  </li>
-  {{else}}
-  <li><a class="login btn btn-sm btn-default" href="/login">Login</a></li>
-  <li><a class="signup btn btn-sm btn-default" href="/signup">Sign up</a></li>
-  {{/if}}
+{{#if user.username }}
+
+<button class="btn btn-account-top" id="btn-account-top">
+	<div class="top-userpic">
+		<img class="gravatar-in-form" src="{{user.gravatar}}" id="top-userpic" />
+	</div>
+	<span>{{user.username}}</span>
+</button>
+
+<ul class="dropdown-menu" role="menu" id="userPullDown">
+	<li>
+		<a class="account" href="/account">Account</a>
+	</li>
+	<li>
+		<a href="/logout">Sign out</a>
+	</li>
 </ul>
+
+{{else}}
+
+<button class="btn" id="btn-sign-in">
+	<svg class="icon-sign-in"><use xlink:href="#icon-sign-in"></use></svg>
+	<span>Sign in</span>
+</button>
+
+{{/if}}

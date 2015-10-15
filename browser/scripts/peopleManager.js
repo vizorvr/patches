@@ -10,13 +10,13 @@ function PeopleManager(peopleStore, $el) {
 	this.peopleStore.on('removed', this.render.bind(this))
 	this.peopleStore.on('userUnfollowed', function(person, followee) {
 		if (followee.uid === E2.app.channel.uid)
-			E2.app.growl(person.username+' stopped following you')
+			E2.app.growl(person.username+' stopped following you', 'unfollowed', 4000, person)
 
 		that.render()
 	})
 	this.peopleStore.on('userFollowed', function(person, followee) {
 		if (followee.uid === E2.app.channel.uid)
-			E2.app.growl(person.username+' started following you')
+			E2.app.growl(person.username+' started following you', 'followed', 4000, person)
 
 		that.render()
 	})

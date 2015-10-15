@@ -71,9 +71,7 @@ ArraySwitch.prototype.create_ui = function() {
 		E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
 	})
 
-	layout.append(removeButton)
-	layout.append(make('br'))
-	layout.append(addButton)
+	layout.append(removeButton, '<br />', addButton);
 	
 	return layout
 }
@@ -84,11 +82,7 @@ ArraySwitch.prototype.update_input = function(slot, data) {
 			var n = Math.floor(data)
 			if (this.number !== n) {
 				this.number = n
-				this.updated = true
 			}
-
-			for (var i=0; i < this.node.dyn_inputs.length; i++)
-				this.node.dyn_inputs[i].inactive = i !== n
 
 			return 
 		}
@@ -101,6 +95,12 @@ ArraySwitch.prototype.update_state = function() {
 	if (this.value !== this.values[this.number]) {
 		this.value = this.values[this.number]
 		this.updated = true
+
+		for (var i=0; i < this.dynInputs.length; i++)
+			this.dynInputs[i].inactive = (i !== this.number)
+	}
+	else {
+		this.updated = false
 	}
 }
 
@@ -125,6 +125,7 @@ ArraySwitch.prototype.state_changed = function(ui) {
 
 		for(var i = 0, len = slots.length; i < len; i++) {
 			this.lsg.add_dyn_slot(slots[i])
+			slots[i].inactive = false
 		}
 		
 		this.number = -1

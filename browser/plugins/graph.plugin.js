@@ -15,20 +15,24 @@ var GraphPlugin = E2.plugins.graph = function(core) {
 	}
 		
 	this.is_reset = true
+
 }
 
 GraphPlugin.prototype = Object.create(SubGraphPlugin.prototype)
 
-GraphPlugin.prototype.open_editor = function(self) {
+GraphPlugin.prototype.open_inspector = function(self) {
 	var diag = make('div')
-	var always_upd = $('<input id="always_upd" type="checkbox" title="If false, this graph is updated only when one of its inputs updates." />')
-	var upd_lbl = $('<div>Always update:</div>')
+	var always_upd = $('<input id="always_upd" name="alwaysupdate"'
+					 + ' type="checkbox" title="If false, this graph'
+					 + ' is updated only when one of its inputs updates." />');
+	var upd_lbl = $('<label for="always_upd"><span><svg class="icon-checked">'
+				  + '<use xlink:href="#icon-checked"></use></svg></span>Always update</div>');
 	var r1 = make('div')
 	
 	var lbl_css = {
 		'font-size': '14px',
 		'float': 'left',
-		'padding': '8px 0px 2px 2px',
+		'padding': '8px 0px 2px 2px'
 	}
 	
 	var inp_css = {
@@ -40,7 +44,7 @@ GraphPlugin.prototype.open_editor = function(self) {
 
 	diag.css({
 		'margin': '0px',
-		'padding': '2px',
+		'padding': '2px'
 	})
 
 	r1.css('clear', 'both')
@@ -52,8 +56,8 @@ GraphPlugin.prototype.open_editor = function(self) {
 	
 	always_upd.attr('checked', self.state.always_update)
 
-	r1.append(upd_lbl)
 	r1.append(always_upd)
+	r1.append(upd_lbl)
 	diag.append(r1)
 
 	
@@ -65,26 +69,17 @@ GraphPlugin.prototype.open_editor = function(self) {
 	self.core.create_dialog(diag, 'Edit Preferences', 460, 250, store_state(self, always_upd))
 }
 
+GraphPlugin.prototype.drilldown = function() {
+	return NodeUI.drilldown(this);
+}
+
+/*
 GraphPlugin.prototype.create_ui = function() {
 	var ui = make('div')
 	var inp_edit = makeButton('Edit', 'Open this graph for editing.')
 	
-	inp_edit.click(function(self) { return function() 
-	{
-		if(self.graph)
-		{
-			var ptn = self.graph.parent_graph.tree_node
-			
-			if(!ptn.open)
-			{
-				ptn.graph.open = true
-				ptn.rebuild_dom()
-			}
-			
-			self.graph.tree_node.activate()
-		}
-	}}(this))
-	
+	inp_edit.click(this.drilldown.bind(this));
+
 	ui.css('text-align', 'center')
 	ui.append(inp_edit)
 	
@@ -92,6 +87,7 @@ GraphPlugin.prototype.create_ui = function() {
 	
 	return ui
 }
+*/
 
 GraphPlugin.prototype.update_input = function(slot, data) {
 	if (slot.uid === undefined) {
@@ -123,14 +119,6 @@ GraphPlugin.prototype.state_changed = function(ui) {
 		// Decorate the auto generated dom base element with an
 		// additional class to allow custom styling.
 		node.ui.dom.addClass('graph')
-
-		var inp_config = makeButton(null, 'Edit preferences', 'config_btn')
-
-		inp_config.click(function() {
-			self.open_editor(self)
-		})
-		
-		$(node.ui.dom[0].children[0].children[0].children[0]).append(inp_config)
 		return
 	}
 	

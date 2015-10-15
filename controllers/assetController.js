@@ -131,10 +131,11 @@ AssetController.prototype.save = function(req, res, next)
 	});
 }
 
-AssetController.prototype.checksumUpload = function(req, res, next)
-{
-	checksum.file(req.files.file.path, function(err, sum)
-	{
+AssetController.prototype.checksumUpload = function(req, res, next) {
+	if (!req.files)
+		return next(new Error('No files uploaded'));
+
+	checksum.file(req.files.file.path, function(err, sum) {
 		if (err)
 			return next(err);
 
@@ -144,8 +145,7 @@ AssetController.prototype.checksumUpload = function(req, res, next)
 	});
 }
 
-AssetController.prototype.canWriteUpload = function(req, res, next)
-{
+AssetController.prototype.canWriteUpload = function(req, res, next) {
 	var that = this;
 
 	if (!req.files)

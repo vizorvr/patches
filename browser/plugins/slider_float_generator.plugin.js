@@ -30,14 +30,12 @@ Slider.prototype.create_ui = function() {
 
 	var html = '<table class="slider-table">'+
 		'<tr>'+
-			'<td><input class="min" type="number" step="0.2" style="width: 50px;"/></td>'+
-			'<td><input class="slider" type="range" step="0.001"></td>'+
-			'<td><input class="max" type="number" step="0.2" style="width: 50px;"/></td>'+
+			'<td colspan="3"><input class="slider" type="range" step="0.001" style="width:190px;"></td>'+
 		'</tr>'+
 		'<tr>'+
-			'<td></td>'+
-			'<td class="slider-value">0.0</td>'+
-			'<td></td>'+
+			'<td style="width: 50px;"><input class="min" type="number" step="0.2" style="width: 50px;"/></td>'+
+			'<td class="slider-value" style="text-align:center;">0.0</td>'+
+			'<td style="width: 50px;"><input class="max" type="number" step="0.2" style="width: 50px;"/></td>'+
 		'</tr>'+
 		'</table>'
 
@@ -48,8 +46,22 @@ Slider.prototype.create_ui = function() {
 	var $slider = this.$slider = $el.find('input.slider')
 	this.$display = $el.find('td.slider-value')
 
+	var originalValue = this.state.val
+
 	$slider.on('input', function() {
-		that.undoableSetState('val', parseFloat($slider.val()), that.state.val)
+		that.$display.html($slider.val())
+		that.transientSetState('val', parseFloat($slider.val()))
+		return true;
+	})
+
+	$slider.on('mousedown', function() {
+		originalValue = that.state.val
+	})
+
+	$slider.on('mouseup', function() {
+		var sliderValue = parseFloat($slider.val())
+		if (originalValue !== sliderValue)
+			that.undoableSetState('val', sliderValue, originalValue)
 	})
 
 	$min.on('change', function() {

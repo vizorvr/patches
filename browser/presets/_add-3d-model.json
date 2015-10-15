@@ -1,49 +1,70 @@
 {
-    "abs_t": 195.259,
+    "abs_t": 31.491,
     "active_graph": "root",
-    "graph_uid": "jG8ul210Feym",
+    "graph_uid": "TXDgBc0JJtS3",
     "root": {
         "uid": "root",
         "parent_uid": -1,
+        "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 300,
-                "y": 330,
-                "uid": "ItVQTjsvXddz",
+                "x": 441,
+                "y": 172,
+                "uid": "dGUhrR3y0Ugh",
+                "open": false,
                 "state": {
                     "always_update": true,
                     "input_sids": {},
                     "output_sids": {
-                        "LnlCdXD64rll": "Ys30r7aVEks1"
+                        "hqMOmKyCUHxE": "Ys30r7aVEks1"
                     }
                 },
                 "title": "3D model",
                 "graph": {
-                    "uid": "CpU1XEra6wYG",
+                    "uid": "FwFVVKYAaxEY",
                     "parent_uid": "root",
                     "open": true,
                     "nodes": [
                         {
                             "plugin": "three_loader_model",
-                            "x": 155,
-                            "y": 112,
-                            "uid": "MmaFyDwse6Tw",
+                            "x": 321,
+                            "y": 234,
+                            "uid": "20BsetSGKAXF",
                             "state": {
                                 "url": "/data/scene/flamingo/flamingo.js"
                             }
                         },
                         {
                             "plugin": "three_mesh",
-                            "x": 886,
-                            "y": 217,
-                            "uid": "wL5eyIOLLdd1"
+                            "x": 687,
+                            "y": 203,
+                            "uid": "HfckSNLLNC1p",
+                            "open": false,
+                            "state": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0.890837835382039,
+                                    "z": 0
+                                },
+                                "scale": {
+                                    "x": 0.0094948370835134,
+                                    "y": 0.0094948370835134,
+                                    "z": 0.0094948370835134
+                                },
+                                "quaternion": {
+                                    "_x": 0,
+                                    "_y": 0,
+                                    "_z": 0,
+                                    "_w": 1
+                                }
+                            }
                         },
                         {
                             "plugin": "output_proxy",
-                            "x": 1104,
-                            "y": 160,
-                            "uid": "LnlCdXD64rll",
+                            "x": 883,
+                            "y": 205,
+                            "uid": "hqMOmKyCUHxE",
                             "title": "object3d",
                             "dyn_in": [
                                 {
@@ -58,445 +79,34 @@
                                     "connected": true
                                 }
                             ]
-                        },
-                        {
-                            "plugin": "graph",
-                            "x": 144,
-                            "y": 312,
-                            "uid": "gKGDZSVVlQLt",
-                            "state": {
-                                "always_update": true,
-                                "input_sids": {},
-                                "output_sids": {
-                                    "Sy7PxgTRLBca": "xnmIRUOwsegz",
-                                    "nFatFydRNlnG": "ejxO7eIJpw4m",
-                                    "P00ZULSrSNiF": "H3AwGhvcvewD"
-                                }
-                            },
-                            "title": "Position, Rotation, Scale",
-                            "graph": {
-                                "uid": "fSVMHMDletXD",
-                                "parent_uid": "CpU1XEra6wYG",
-                                "open": true,
-                                "nodes": [
-                                    {
-                                        "plugin": "slider_float_generator",
-                                        "x": 82,
-                                        "y": 105,
-                                        "uid": "3Onp9i4gPmnQ",
-                                        "state": {
-                                            "val": 0,
-                                            "min": -1,
-                                            "max": 1
-                                        },
-                                        "title": "Position X"
-                                    },
-                                    {
-                                        "plugin": "slider_float_generator",
-                                        "x": 83,
-                                        "y": 172,
-                                        "uid": "ufB1v5emPAJl",
-                                        "state": {
-                                            "val": 0,
-                                            "min": -1,
-                                            "max": 1
-                                        },
-                                        "title": "Position Y"
-                                    },
-                                    {
-                                        "plugin": "slider_float_generator",
-                                        "x": 81,
-                                        "y": 238,
-                                        "uid": "QgLwbFFb9nub",
-                                        "state": {
-                                            "val": 0,
-                                            "min": -1,
-                                            "max": 1
-                                        },
-                                        "title": "Position Z"
-                                    },
-                                    {
-                                        "plugin": "vector",
-                                        "x": 585,
-                                        "y": 200,
-                                        "uid": "3dbZnYHlzdXo",
-                                        "open": false,
-                                        "title": "Position"
-                                    },
-                                    {
-                                        "plugin": "vector",
-                                        "x": 290,
-                                        "y": 610,
-                                        "uid": "2VimltpuNrWz",
-                                        "title": "Scale"
-                                    },
-                                    {
-                                        "plugin": "vector",
-                                        "x": 581,
-                                        "y": 413,
-                                        "uid": "Iijto5liEfgm",
-                                        "open": false,
-                                        "title": "Rotation"
-                                    },
-                                    {
-                                        "plugin": "const_float_generator",
-                                        "x": 113,
-                                        "y": 636,
-                                        "uid": "VlIFuIXdKcAv",
-                                        "state": {
-                                            "val": 0.01
-                                        },
-                                        "title": "Scale XYZ"
-                                    },
-                                    {
-                                        "plugin": "output_proxy",
-                                        "x": 803,
-                                        "y": 252,
-                                        "uid": "Sy7PxgTRLBca",
-                                        "title": "position",
-                                        "dyn_in": [
-                                            {
-                                                "name": "output",
-                                                "dt": 5,
-                                                "def": null,
-                                                "uid": "S0aurqIbmI1x",
-                                                "dynamic": true,
-                                                "type": 0,
-                                                "index": 0,
-                                                "is_connected": true,
-                                                "connected": true
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "plugin": "output_proxy",
-                                        "x": 818,
-                                        "y": 400,
-                                        "uid": "nFatFydRNlnG",
-                                        "title": "rotation",
-                                        "dyn_in": [
-                                            {
-                                                "name": "output",
-                                                "dt": 5,
-                                                "def": null,
-                                                "uid": "ueZzDAy1hfyc",
-                                                "dynamic": true,
-                                                "type": 0,
-                                                "index": 0,
-                                                "is_connected": true,
-                                                "connected": true
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "plugin": "output_proxy",
-                                        "x": 825,
-                                        "y": 549,
-                                        "uid": "P00ZULSrSNiF",
-                                        "title": "scale",
-                                        "dyn_in": [
-                                            {
-                                                "name": "output",
-                                                "dt": 5,
-                                                "def": null,
-                                                "uid": "TTvvZvj40kZI",
-                                                "dynamic": true,
-                                                "type": 0,
-                                                "index": 0,
-                                                "is_connected": true,
-                                                "connected": true
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "plugin": "slider_float_generator",
-                                        "x": 85,
-                                        "y": 369,
-                                        "uid": "P6atJeua19TD",
-                                        "state": {
-                                            "val": 0,
-                                            "min": 0,
-                                            "max": 5
-                                        },
-                                        "title": "Rotate X"
-                                    },
-                                    {
-                                        "plugin": "slider_float_generator",
-                                        "x": 82,
-                                        "y": 436,
-                                        "uid": "RaQN5pRBqboI",
-                                        "state": {
-                                            "val": 0,
-                                            "min": 0,
-                                            "max": 5
-                                        },
-                                        "title": "Rotate Y"
-                                    },
-                                    {
-                                        "plugin": "slider_float_generator",
-                                        "x": 80,
-                                        "y": 502,
-                                        "uid": "5ntWSvCBpT9n",
-                                        "state": {
-                                            "val": 0,
-                                            "min": 0,
-                                            "max": 5
-                                        },
-                                        "title": "Rotate Z"
-                                    }
-                                ],
-                                "conns": [
-                                    {
-                                        "src_nuid": "3Onp9i4gPmnQ",
-                                        "dst_nuid": "3dbZnYHlzdXo",
-                                        "src_slot": 0,
-                                        "dst_slot": 0,
-                                        "uid": "1v1Y8A9O26W2",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    },
-                                    {
-                                        "src_nuid": "ufB1v5emPAJl",
-                                        "dst_nuid": "3dbZnYHlzdXo",
-                                        "src_slot": 0,
-                                        "dst_slot": 1,
-                                        "uid": "BPjc5Bra03An",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    },
-                                    {
-                                        "src_nuid": "QgLwbFFb9nub",
-                                        "dst_nuid": "3dbZnYHlzdXo",
-                                        "src_slot": 0,
-                                        "dst_slot": 2,
-                                        "uid": "yzJ0LVGRc2m6",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    },
-                                    {
-                                        "src_nuid": "VlIFuIXdKcAv",
-                                        "dst_nuid": "2VimltpuNrWz",
-                                        "src_slot": 0,
-                                        "dst_slot": 0,
-                                        "uid": "OC8sCxU8CY2z",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    },
-                                    {
-                                        "src_nuid": "VlIFuIXdKcAv",
-                                        "dst_nuid": "2VimltpuNrWz",
-                                        "src_slot": 0,
-                                        "dst_slot": 1,
-                                        "uid": "TJkKZSI1GGXd",
-                                        "src_connected": true,
-                                        "dst_connected": true,
-                                        "offset": 1
-                                    },
-                                    {
-                                        "src_nuid": "VlIFuIXdKcAv",
-                                        "dst_nuid": "2VimltpuNrWz",
-                                        "src_slot": 0,
-                                        "dst_slot": 2,
-                                        "uid": "Iygtp6ErlHtW",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    },
-                                    {
-                                        "src_nuid": "3dbZnYHlzdXo",
-                                        "dst_nuid": "Sy7PxgTRLBca",
-                                        "src_slot": 0,
-                                        "dst_slot": 0,
-                                        "uid": "v7C0AdMqMPXa",
-                                        "src_connected": true,
-                                        "dst_connected": true,
-                                        "dst_dyn": true
-                                    },
-                                    {
-                                        "src_nuid": "Iijto5liEfgm",
-                                        "dst_nuid": "nFatFydRNlnG",
-                                        "src_slot": 0,
-                                        "dst_slot": 0,
-                                        "uid": "UqPd3RaqBrep",
-                                        "src_connected": true,
-                                        "dst_connected": true,
-                                        "dst_dyn": true
-                                    },
-                                    {
-                                        "src_nuid": "2VimltpuNrWz",
-                                        "dst_nuid": "P00ZULSrSNiF",
-                                        "src_slot": 0,
-                                        "dst_slot": 0,
-                                        "uid": "OE1GkXao0NiS",
-                                        "src_connected": true,
-                                        "dst_connected": true,
-                                        "dst_dyn": true
-                                    },
-                                    {
-                                        "src_nuid": "P6atJeua19TD",
-                                        "dst_nuid": "Iijto5liEfgm",
-                                        "src_slot": 0,
-                                        "dst_slot": 0,
-                                        "uid": "DEJlsOsOgOeZ",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    },
-                                    {
-                                        "src_nuid": "RaQN5pRBqboI",
-                                        "dst_nuid": "Iijto5liEfgm",
-                                        "src_slot": 0,
-                                        "dst_slot": 1,
-                                        "uid": "6hkLa5u4hnMF",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    },
-                                    {
-                                        "src_nuid": "5ntWSvCBpT9n",
-                                        "dst_nuid": "Iijto5liEfgm",
-                                        "src_slot": 0,
-                                        "dst_slot": 2,
-                                        "uid": "FgnYshrHU8bf",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    }
-                                ]
-                            },
-                            "dyn_out": [
-                                {
-                                    "name": "scale",
-                                    "dt": 5,
-                                    "index": 0,
-                                    "uid": "H3AwGhvcvewD",
-                                    "dynamic": true,
-                                    "type": 1,
-                                    "is_connected": true
-                                },
-                                {
-                                    "name": "rotation",
-                                    "dt": 5,
-                                    "index": 1,
-                                    "uid": "ejxO7eIJpw4m",
-                                    "dynamic": true,
-                                    "type": 1,
-                                    "is_connected": true
-                                },
-                                {
-                                    "name": "position",
-                                    "dt": 5,
-                                    "index": 2,
-                                    "uid": "xnmIRUOwsegz",
-                                    "dynamic": true,
-                                    "type": 1,
-                                    "is_connected": true
-                                }
-                            ]
-                        },
-                        {
-                            "plugin": "three_material_modifier",
-                            "x": 628,
-                            "y": 282,
-                            "uid": "bVorfV7GMFjx"
-                        },
-                        {
-                            "plugin": "three_material_phong",
-                            "x": 396,
-                            "y": 474,
-                            "uid": "ScjBw0aAKXeh"
-                        },
-                        {
-                            "plugin": "url_texture_generator",
-                            "x": 172,
-                            "y": 526,
-                            "uid": "lZ4e9H1HO2sB",
-                            "state": {
-                                "url": "/data/image/b09b6c37eebe3b22dc21a9c5884be3cc4a1cda74.png"
-                            }
-                        },
-                        {
-                            "plugin": "annotation",
-                            "x": 83,
-                            "y": 417,
-                            "uid": "dpTShcCm6Lrc",
-                            "state": {
-                                "text": "To connect/modify a material, add a slot to the material modifier and connect the Phong material ...",
-                                "width": 265,
-                                "height": 56
-                            }
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": "MmaFyDwse6Tw",
-                            "dst_nuid": "wL5eyIOLLdd1",
+                            "src_nuid": "20BsetSGKAXF",
+                            "dst_nuid": "HfckSNLLNC1p",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "Qnn45GzsHj38",
+                            "uid": "qPPdkXfIwHIU",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "wL5eyIOLLdd1",
-                            "dst_nuid": "LnlCdXD64rll",
+                            "src_nuid": "HfckSNLLNC1p",
+                            "dst_nuid": "hqMOmKyCUHxE",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "jLILBVSTCJ1H",
+                            "uid": "iT2wKJhju6fa",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true
                         },
                         {
-                            "src_nuid": "gKGDZSVVlQLt",
-                            "dst_nuid": "wL5eyIOLLdd1",
-                            "src_slot": 0,
-                            "dst_slot": 5,
-                            "uid": "yvwghO96ZJaw",
-                            "src_connected": true,
-                            "dst_connected": true,
-                            "src_dyn": true
-                        },
-                        {
-                            "src_nuid": "gKGDZSVVlQLt",
-                            "dst_nuid": "wL5eyIOLLdd1",
+                            "src_nuid": "20BsetSGKAXF",
+                            "dst_nuid": "HfckSNLLNC1p",
                             "src_slot": 1,
-                            "dst_slot": 4,
-                            "uid": "rtH6kGG6wqkL",
-                            "src_connected": true,
-                            "dst_connected": true,
-                            "src_dyn": true
-                        },
-                        {
-                            "src_nuid": "gKGDZSVVlQLt",
-                            "dst_nuid": "wL5eyIOLLdd1",
-                            "src_slot": 2,
-                            "dst_slot": 3,
-                            "uid": "9Qs8f57NlfNB",
-                            "src_connected": true,
-                            "dst_connected": true,
-                            "src_dyn": true
-                        },
-                        {
-                            "src_nuid": "bVorfV7GMFjx",
-                            "dst_nuid": "wL5eyIOLLdd1",
-                            "src_slot": 0,
                             "dst_slot": 2,
-                            "uid": "RdTcgIyfwCB7",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "MmaFyDwse6Tw",
-                            "dst_nuid": "bVorfV7GMFjx",
-                            "src_slot": 1,
-                            "dst_slot": 0,
-                            "uid": "Mp3VrV9Hto1b",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "lZ4e9H1HO2sB",
-                            "dst_nuid": "ScjBw0aAKXeh",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "zqvhhIpHJE67",
+                            "uid": "6z9Y75hrq8Jp",
                             "src_connected": true,
                             "dst_connected": true
                         }

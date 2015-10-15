@@ -5,11 +5,13 @@
 		this.desc = 'Load a texture from a URL. JPEG and PNG supported. Hover over the Browse button to select an existing image from the library.'
 		
 		this.input_slots = []
-		this.input_slots = [
+
+		// #542
+		/* this.input_slots = [
 			{ name: 'url', dt: core.datatypes.TEXT,
 				desc: 'URL to fetch image from. The image width and height must be in powers of two, for example 256x512.',
 				def: '' }
-		]
+		] */
 		
 		this.output_slots = [
 			{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The loaded texture.' }
@@ -25,51 +27,55 @@
 
 	UrlTexture.prototype.create_ui = function() {
 		var container = make('div')
-		var inp = makeButton('Browse', 'No texture selected.', 'url')
+		// var inp = makeButton('Browse', 'No texture selected.', 'url')
+		var inp = NodeUI.makeSpriteSVGButton(
+			NodeUI.makeSpriteSVG('vp-edit-icon', 'cmd_edit_graph'),
+			'No texture selected'
+		);
+		inp.addClass('p_round');
+
 		var that = this
 
-		this.thumbnail = make('div')
+		this.thumbnail = make('div').addClass('p_thumbnail');
 		
 		this.thumbnail.css({
-			'width': '71px',
-			'height': '71px',
-			'z-index': '3003',
-			'border': '2px solid #8e8e8e',
-			'border-radius': '5px',
 			'background-image': 'url(\'images/no_texture.png\')',
-			'background-size': 'cover',
-			'margin-bottom': '3px'
+			'background-size': 'cover'
 		})
 
-		function clickHandler() {
+		var clickHandler = function() {
+			var that = this;
 			var oldValue = that.state.url
 			var newValue = oldValue
 
-			function setValue(v) {
+			var setValueFn = function(v) {
 				that.state.url = newValue = v
 				that.updated = true
-				that.state_changed()
-			}
+				that.state_changed();
+				return true;
+			};
 
 			FileSelectControl
 			.createTextureSelector(oldValue, function(control) {
-				control	
-				.template('texture')
-				.selected(oldValue)
-				.onChange(setValue.bind(this))
-				.buttons({
-					'Cancel': setValue.bind(this),
-					'Select': setValue.bind(this)
-				})
-				.on('closed', function() {
-					if (newValue === oldValue)
-						return;
-				
-					that.undoableSetState('url', newValue, oldValue)
-				})
-				.modal()
-			})
-		}
+				control
+					.template('texture')
+					.selected(oldValue)
+					.onChange(setValueFn)
+					.buttons({
+						'Cancel': setValueFn,
+						'Select': setValueFn
+					})
+					.on('closed', function() {
+						if (newValue === oldValue)
+							return;
+
+						that.undoableSetState('url', newValue, oldValue)
+					})
+					.modal()
+			});
+
+			return false;
+		}.bind(this);
 
 		inp.click(clickHandler)
 		this.thumbnail.click(clickHandler)
@@ -83,10 +89,6 @@
 	}
 
 	UrlTexture.prototype.update_input = function(slot, data) {
-		if (this.state.url === data)
-			return;
-		this.state.url = data
-		this.state_changed()
 	}
 
 	UrlTexture.prototype.update_state = function() {
@@ -94,10 +96,24 @@
 			return
 
 		this.texture = this.core.textureCache.get(this.state.url)
+		
+		// if the texture isn't ready, set a flag to indicate that we need to
+		// send an extra update after the texture has finished loaded
+		if (!this.texture.image || !this.texture.image.width === 0) {
+			this.waitingToLoad = true
+		}
+		
 		this.dirty = false
 	}
 
 	UrlTexture.prototype.update_output = function() {
+		if (this.waitingToLoad && this.texture && this.texture.image && this.texture.image.width !== 0) {
+			// force an extra update through the graph with a texture that has
+			// actual image data
+			this.waitingToLoad = false
+			this.updated = true
+		}
+
 		return this.texture
 	}
 

@@ -124,10 +124,8 @@ FromMeshCustomShader.prototype.create_ui = function() {
 		createEditor('pixel', 'ps_src')
 	})
 	
-	layout.append(vertexButton)
-	layout.append(make('br'))
-	layout.append(pixelButton)
-	
+	layout.append(vertexButton, '<br />', pixelButton);
+
 	return layout
 }
 

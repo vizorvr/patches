@@ -1,16 +1,24 @@
 <html>
+
 <head>
 	<title>Vizor Create</title>
-	<link href="style.css" rel="stylesheet"></link>
-	<link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet" type="text/css"  />
-	<link href="/vendor/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css" rel="Stylesheet" type="text/css"  />
-</head>
-<body>
 
+    <link href="style.css" rel="Stylesheet" type="text/css"/>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="description" content="Vizor lets you create compelling VR content right in your browser" />
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body>
 	<div id="container" style="width:800px">
-		<img src="../images/logo--horizontal.png">
 		<br><br>
-		<iframe width="560" height="315" src="//www.youtube.com/embed/9n9UdwaDe68" frameborder="0" allowfullscreen></iframe>
+		<img src="../images/logo--horizontal.png">
+
+		<br><br>
+			<iframe width="560" height="315" src="//www.youtube.com/embed/9n9UdwaDe68" frameborder="0" allowfullscreen></iframe>
 		<br>
 
 		<h3>Editing graphs:</h3>
@@ -23,7 +31,6 @@
 		<span class="highlight">Double click</span> to add Presets to the graph.<br><br>
 		<span class="highlight">Click and drag</span> on the canvas to select plugins.<br><br>
 		Collapse plugins by clicking on their header icon.<br>
-		<br>
 		<br>
 
 		<h3>Hotkeys:</h3>
@@ -69,51 +76,40 @@
 		<span class="highlight">9</span>
 			Knob<br><br>
 		<span class="highlight">0</span>
-			Output proxy<br><br>
+			Output proxy<br>
 
 
 		<h3>Source code:</h3>
 		<br>
 		The source code can be found from our <a href="https://github.com/vizorvr/create">GitHub page</a>. Please report any issues to the <a href="https://github.com/vizorvr/create/issues">GitHub issues page</a>.
 		<br>
-		<br>
-
-		<h3>Uploading your own 3D Scenes:</h3>
-		<br>
-		First download our <a href="vizor_create_blender_exporter.zip">Blender exporter script</a>. Unzip the file. Then download <a href="http://www.blender.org/">Blender</a> (minimum required version is 2.69). Install our converter plugin by copying or linking to your <span class="highlight">[blender]/[version]/scripts/addons</span> path. Remeber to enable the plugin in your user preferences.
-		<br>
-		Next, load your scene into blender. Export it using vizor format to a new folder, and give it the name "scene.json".<br>
-		<br>
-		Then compress the contents of the folder into a .ZIP file. This zip you can then upload to Vizor Create via the "scene from URL" plugin.<br>
-		<br>
-		Direct scene uploading is coming soon.<br>
-		<br>
-		<br>
-
+		
 		<h3>Video:</h3>
 		<br>
 		Videos are .ogv files. Converting works with <a href="http://www.ffmpeg.org/">ffmpeg</a> using these arguments:<br>
 		<br>
 		<span class="highlight">ffmpeg -i inputfile.mpg -an -vcodec libtheora -vb 1024k -s 256x256 -aspect 1:1 output.ogv</span>
 		<br>
-		<br>
 
 		<h3>Audio:</h3>
 		<br>
-		Audio player plays standard .ogg files which can be converted via <a href="http://audacity.sourceforge.net/">Audacity</a>.
-		<br>
-		<br>
-
-		<h3>Custom shaders:</h3>
-		<br>
-		You can write your own GLSL vertex and pixel shaders using the <span class="highlight">Generators/Shaders/From mesh custom</span> shader plugin in Engi. This gives you a code editor, where you can program GLSL and add inputs and outputs using the <span class="highlight">+</span> and <span class="highlight">-</span> buttons. You can compile the code using the <span class="highlight">Compile</span> button. Read more about custom shaders <a href="custom_shaders.html">here</a>.
-		<br>
+		Audio player plays standard .ogg files which can be converted with eg. <a href="http://audacity.sourceforge.net/">Audacity</a>.
 		<br>
 
-
-		<h3>Plugin API:</h3>
+		<h3>Plugin API</h3>
 		<br>
-		<a href="plugin_api.html">Link to plugin API documentation.</a>
+		<a href="plugin_api.html">Plugin API documentation.</a>
+		<br>
+
+		<h3>Attributions</h3>
+		<br>
+		<a href="https://docs.google.com/document/d/1L87rs9baSoR4PfOZ2cY9BFp3Pb43y8cFvS93k1HLk60/edit?usp=sharing">Attributions</a>
+		<br>
+
+		<h3>Terms of Service & Privacy policy</h3>
+		<a href="https://docs.google.com/document/d/172dWVz8bSEDxS_y2InXpqWhVvbM7w1Z9MSp1-Lw1rIc/edit?usp=sharing">Terms & Privacy</a>
+		
+
 	</div>
 
 </body>

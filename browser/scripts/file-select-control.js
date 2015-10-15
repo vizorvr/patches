@@ -116,6 +116,11 @@ FileSelectControl.prototype.buttons = function(buttons) {
 	return this;
 };
 
+FileSelectControl.prototype.header = function(header) {
+	this._header = header;
+	return this;
+};
+
 FileSelectControl.prototype.modal = function()
 {
 	this._render();
@@ -164,48 +169,54 @@ FileSelectControl.prototype._render = function()
 
 	$('.file-selector', this._frame).html(this._renderFiles());
 
-	var el = bootbox.dialog(
-	{
+	var el = bootbox.dialog({
+		title: this._header,
 		message: this._frame
+	}).init(function() {
+		$('.modal-dialog').addClass('file-select-dialog');
 	});
 
 	this._el = el;
-	this._inputEl = $('#file-url', this._el);
-	this._selectedEl = $('tr.success', this._el);
+	this._inputEl = $('#file-url', el);
+	this._selectedEl = $('tr.success', el);
 
 	// add buttons
 	var buttonsRow = $('#buttons-row', el);
 
+	var keypressFn = this._onKeyPress.bind(this);
+	el[0].addEventListener('keydown', keypressFn);
+
 	function clickHandler(buttonCb) {
-		return function (e) {
+		return function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 			buttonCb.call(self, self._inputEl.val());
+			el[0].removeEventListener('keydown',keypressFn);
 			self.close();
 			return false;
 		}
 	}
 
+
 	Object.keys(this._buttons).map(function(name)
 	{
 		var btn = self._buttons[name];
 		$('<td>').append(
-			$('<button class="btn btn-default">'+name+'</button>')
-			.click(clickHandler(btn))
+			$('<button class="btn btn-default" id="fbBtn'+name+'">'+name+'</button>')
+				.click(clickHandler(btn))
 		).appendTo(buttonsRow);
 	});
-
+	
 	$('button:last', el)
 		.removeClass('btn-default')
 		.addClass('btn-primary');
+
 
 	// bind file rows and click handlers
 	this._bindTable();
 
 	$('input', el).on('change', this._onChange.bind(this))
-	$('button.close', el).click(this.close.bind(this))
-
-	el.bind('keydown', this._onKeyPress.bind(this))
+//	$('button.close', el).click(this.close.bind(this))
 
 	// show selected file when modal is opened
 	$(el).on('shown.bs.modal', function (e) {
@@ -222,14 +233,10 @@ FileSelectControl.prototype._render = function()
 	// bind upload form
 	this._bindUploadForm();
 
-	// show
-	el.appendTo('body');
-
 	return this;
 };
 
-FileSelectControl.prototype._bindTable = function()
-{
+FileSelectControl.prototype._bindTable = function() {
 	var self = this;
 
 	// bind file rows and click handlers
@@ -246,82 +253,90 @@ FileSelectControl.prototype._bindTable = function()
 		self._onChange();
 		self.ok();
 	});
-};
+}
 
-FileSelectControl.prototype._bindUploadForm = function()
-{
+FileSelectControl.prototype._bindUploadForm = function() {
 	var that = this;
 	var container = $('#upload', this._el);
 	var $form = $('form.fileUploadForm', container);
-
+	var browsebutton = $('.browse-button');
+	var fileUploadName = $('#fileUploadName');
+	var fileUploadFile = $('#fileUploadFile');
+	
+	browsebutton.click(function(e) {
+		fileUploadFile.trigger('click')
+		return false
+	})
+	
+	fileUploadName.click(function() {
+		fileUploadFile.trigger('click')
+		return false
+	})
+	
+	fileUploadFile.on('change', function() {
+		fileUploadName.val(fileUploadFile.val())
+	})
+	
 	if (!$form)
-		return;
+		return
 
-	$form.on('submit', function(e)
-	{
-		e.preventDefault();
-		e.stopPropagation();
+	$form.on('submit', function(e) {
+		e.preventDefault()
+		e.stopPropagation()
 
-		$('.progress', container).show();
-		var $progress = $('.progress-bar', container);
+		$('.progress', container).show()
+		var $progress = $('.progress-bar', container)
 
-		var formData = new FormData($form[0]);
-		$.ajax(
-		{
+		var formData = new FormData($form[0])
+		$.ajax({
 			url: $form[0].action,
 			type: 'POST',
-			xhr: function ()
-			{
+			xhr: function() {
 				var xhr = $.ajaxSettings.xhr();
-				xhr.upload.addEventListener('progress', function(evt)
-				{
+				xhr.upload.addEventListener('progress', function(evt) {
 					if (evt.lengthComputable)
 						$progress.css('width', Math.floor(evt.loaded/evt.total * 100) + '%');
-				}, false);
+				}, false)
 
-				return xhr;
+				return xhr
 			},
-			success: function(file)
-			{
-				$progress.removeClass('active');
+			success: function(file) {
+				$progress.removeClass('active')
 
-				$('#message', container).html('<h4>Uploaded successfully!</h4>');
-				that.selected(file.path);
-				that._fileList.addFile(file);
+				$('#message', container).html('<h4>Uploaded successfully!</h4>')
+				that.selected(file.path)
+				that._fileList.addFile(file)
 
-				setTimeout(function()
-				{
-					that._onSelect($('tr.file-row:first', that._el));
-					$('.nav-tabs a:first', that._el).tab('show');
-				}, 1000);
+				setTimeout(function() {
+					that._onSelect($('tr.file-row:first', that._el))
+					$('.nav-tabs a:first', that._el).tab('show')
+				}, 1000)
 			},
-			error: function(err)
-			{
+			error: function(err) {
 				$progress
 					.removeClass('active')
 					.removeClass('progress-bar-info')
-					.addClass('progress-bar-danger');
+					.addClass('progress-bar-danger')
 
-				$('#message', container).html('<h4>Upload failed: '
-					+ err.responseJSON ? err.responseJSON.message : err
-					+'</h4>');
+				$('#message', container).html('<h4>Upload failed: ' +
+					err.responseJSON ? err.responseJSON.message : err +
+					'</h4>')
 			},
 			data: formData,
 			cache: false,
 			contentType: false,
 			processData: false,
 			dataType: 'json'
-		});
+		})
 
-		$('#message', container).html('<h4>Please wait...</h4>');
+		$('#message', container).html('<h4>Please wait...</h4>')
 
-		return false;
-	});
-};
+		return false
+	})
+}
 
 FileSelectControl.prototype._onKeyPress = function(e) {
 	e.stopPropagation();
-
 	switch(e.keyCode) {
 		case 27:
 			this.cancel();
@@ -343,7 +358,8 @@ FileSelectControl.prototype._onKeyPress = function(e) {
 				this._onSelect(next);
 			this._scroll(1);
 			break;
-	};
+	}
+	return true;
 };
 
 FileSelectControl.prototype._scroll = function(amt) {
@@ -370,9 +386,8 @@ FileSelectControl.prototype._onSelect = function(row) {
 	this._onChange();
 };
 
-FileSelectControl.prototype.ok = function()
-{
-	$('button:last', this._el).click();
+FileSelectControl.prototype.ok = function() {
+	$('button.btn:last', this._el).click();
 };
 
 FileSelectControl.prototype.cancel = function() {
@@ -381,7 +396,7 @@ FileSelectControl.prototype.cancel = function() {
 };
 
 FileSelectControl.prototype.close = function() {
-	$(this._el).modal('hide');
+	bootbox.hideAll();
 	this.emit('closed')
 };
 
@@ -397,11 +412,11 @@ function createSelector(path, selected, okButton, okFn, cb)
 	if (selected && selected.indexOf('://') === -1)
 		selected = selected.substring(selected.lastIndexOf('/') + 1);
 
-	E2.dom.load_spinner.show();
+	E2.ui.updateProgressBar(65);
 
 	$.get(path, function(files)
 	{
-		E2.dom.load_spinner.hide();
+		E2.ui.updateProgressBar(100);
 
 		var buttons = {
 			'Cancel': function() {}
@@ -410,10 +425,10 @@ function createSelector(path, selected, okButton, okFn, cb)
 		buttons[okButton] = okFn;
 
 		ctl
-		.url(path)
-		.buttons(buttons)
-		.files(files)
-		.selected(selected)
+			.url(path)
+			.buttons(buttons)
+			.files(files)
+			.selected(selected)
 
 		cb(ctl)
 	});
@@ -423,6 +438,7 @@ function createSelector(path, selected, okButton, okFn, cb)
 
 FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 {
+	if (E2.ui.isModalOpen()) return null;
 	var ctl = new FileSelectControl();
 
 	okButton = okButton || 'Ok';
@@ -431,11 +447,11 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 	if (selected && selected.indexOf('://') === -1)
 		selected = selected.substring(selected.lastIndexOf('/') + 1);
 
-	E2.dom.load_spinner.show();
+	E2.ui.updateProgressBar(65);
 
 	$.get('/graph', function(files)
 	{
-		E2.dom.load_spinner.hide();
+		E2.ui.updateProgressBar(100);
 
 		var buttons = {
 			// 'Copy to clipboard': function(file)
@@ -453,17 +469,17 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 		var selectedPath;
 
 		ctl
-		.url('/graph')
-		.frame('graph-frame')
-		.template('graph')
-		.buttons(buttons)
-		.files(files)
-		.selected(selected)
-		.onChange(function(path) {
-			$('.links').show();
-			selectedPath = path;
-		})
-		.modal();
+			.url('/graph')
+			.frame('graph-frame')
+			.template('graph')
+			.buttons(buttons)
+			.files(files)
+			.selected(selected)
+			.onChange(function(path) {
+				$('.links').show();
+				selectedPath = path;
+			})
+			.modal();
 
 		$('.links .download').click(function(e) {
 			e.preventDefault();

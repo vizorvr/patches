@@ -1,20 +1,35 @@
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 	<head id="head">
 		<title>{{title}}</title>
 
 	    <link href="/style/less.css" rel="Stylesheet" type="text/css"/>
 		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-
 		<script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
-	
+		<script type="text/javascript" src="/vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
 	    <script>{{> ga}}</script>
 	</head>
-	<body>
+	<body class="bPlayer">
 		<script type="text/javascript" src="/scripts/player.min.js"></script>
-		{{{body}}}
-
-		<div class="clearfix"></div>
+        <div class="wrap clearfix" id="playerpage">
+		    {{{body}}}
+            <noscript>
+                <div class="nojs clearfix">
+                    <div style="float: left; margin: 5px 8px 0 0;"><img src="/images/warning.png" width="64px" height="64px" /></div>
+                    <p>This page requires javascript in order to display properly.</p>
+                    <p>
+                        If you're running a script blocker - such as NoScript - please whitelist this page.<br />
+                        If you have disabled javascript in your browser, please enable it and reload.
+                    </p>
+                </div>
+            </noscript>
+            <div class="nowebgl clearfix" style="display:none;" id="nowebgl">
+                <div style="float: left; margin: 5px 8px 0 0;"><img src="/images/warning.png" width="64px" height="64px" /></div>
+                <p>This page requires WebGL in order to display properly.</p>
+                <p>
+                    If you're running a compatible browser, such as Chrome, Firefox, or Safari, please make sure WebGL is enabled and reload.
+                </p>
+            </div>
+        </div>
 	</body>
 </html>

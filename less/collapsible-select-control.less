@@ -1,15 +1,55 @@
+.preset-list-contained-box {
+	overflow: hidden !important;
+}
+
+.preset-list-container {
+	overflow: hidden;
+	width: 100%;
+	max-height: 310px;
+	.preset-list-content {
+		width: 100%;
+		max-height: 310px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		.panel {
+		    min-height: 32px;
+		    padding: 8px 16px 5px 10px;
+		    color: @editor-text-default;
+		    box-sizing: border-box;
+		}
+	}
+}
+
+.result.table {
+    width: @floating-box-width;
+}
 .result li,
 .panel {
 	margin-top: 1px;
 	margin-bottom: 1px;
 }
 
+.result-item  {
+    color: @editor-text-default;
+    padding: 8px 16px 8px 24px !important;
+}
+
+.result.table td.result-item.active {
+  color: lighten(@editor-text-default, 20);
+  background: rgba(0,0,0,0.1);
+}
+
+.result-item:hover {
+    color: @editor-text-hover;
+    background: rgba(0,0,0,0.05);
+}
+
 .panel-default {
-	border-color: @gray-dark;
+	border-color: @bg-darker;
 }
 .panel-default > .panel-heading {
 	background-image: none;
-	background-color: @gray-base;
+	background-color: @bg-light;
 }
 
 .panel-group .panel-heading+.panel-collapse .panel-body {
@@ -37,8 +77,8 @@
 
 .result li:hover,
 .panel-heading:hover, {
-	color: #aaa;
-	background-color: @gray-dark;
+	color: @editor-text-hover;
+	background-color: @bg-light;
 	background-image: none;
 }
 
@@ -55,16 +95,16 @@
     border-top: 0px;
 }
 
-.preset-result table tbody tr td {
-	padding: 3px !important;
-}
-
 .result tr,
 .panel-body li {
 	cursor: pointer;
 }
 
+.panel-body li {
+    padding: 10px 0 5px 15px;
+}
+
 li.active,
 .panel-body li:hover {
-	color: @gray-lighter;
+	color: @editor-text-hover;
 }

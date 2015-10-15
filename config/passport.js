@@ -24,25 +24,19 @@ passport.deserializeUser(function(id, done)
 });
 
 // Sign in using Email and Password.
-passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, password, done)
-{
-	User.findOne({ email: email }, function(err, user)
-	{
+passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, password, done) {
+	User.findOne({ email: email }, function(err, user) {
 		if (!user)
-			return done(null, false, { message: 'Email ' + email + ' not found'});
+			return done(null, false, { message: 'That account does not exist.' })
 
-		user.comparePassword(password, function(err, isMatch)
-		{
+		user.comparePassword(password, function(err, isMatch) {
 			if (isMatch)
-			{
-				return done(null, user);
-			} else
-			{
-				return done(null, false, { message: 'Invalid email or password.' });
-			}
-		});
-	});
-}));
+				return done(null, user)
+
+			return done(null, false, { message: 'Incorrect password.' })
+		})
+	})
+}))
 
 // Login Required middleware.
 exports.isAuthenticated = function(req, res, next)

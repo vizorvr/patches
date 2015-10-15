@@ -1,30 +1,31 @@
 {
-    "abs_t": 30.684,
+    "abs_t": 1673.851,
     "active_graph": "root",
-    "graph_uid": "F2SOwIkvCgXj",
+    "graph_uid": "TXDgBc0JJtS3",
     "root": {
         "uid": "root",
         "parent_uid": -1,
+        "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 368,
-                "y": 77,
-                "uid": "6oqB7CRixYjD",
+                "x": 784,
+                "y": 264,
+                "uid": "2KfJGi5FygJr",
                 "state": {
                     "always_update": true,
                     "input_sids": {
-                        "9DAzDhfq5jjX": "6",
-                        "9BdFcBLBPuUQ": "8",
-                        "ZUA0NuWktq7e": "9"
+                        "7lp29KnD8kND": "6",
+                        "JI3XGVwSccBV": "8",
+                        "nk9dwR98FxHJ": "9"
                     },
                     "output_sids": {
-                        "uEH8dSH2kd6i": "7"
+                        "2Lbjuy0Py94H": "7"
                     }
                 },
                 "title": "Oscillate Sawtooth",
                 "graph": {
-                    "uid": "eoEaf2mUk9sh",
+                    "uid": "QvlGqr3ZNFzv",
                     "parent_uid": "root",
                     "open": true,
                     "nodes": [
@@ -32,19 +33,19 @@
                             "plugin": "delta_t_generator",
                             "x": 62,
                             "y": 232,
-                            "uid": "jB8rTLD12Gal"
+                            "uid": "Weo7eKicW3Gn"
                         },
                         {
                             "plugin": "multiply_modulator",
                             "x": 187,
                             "y": 222,
-                            "uid": "Tj98JrsEgVif"
+                            "uid": "eoFJRgUPokZf"
                         },
                         {
                             "plugin": "input_proxy",
                             "x": 78,
                             "y": 291,
-                            "uid": "9DAzDhfq5jjX",
+                            "uid": "7lp29KnD8kND",
                             "title": "Speed",
                             "dyn_out": [
                                 {
@@ -63,7 +64,7 @@
                             "plugin": "variable_local_read",
                             "x": 204,
                             "y": 339,
-                            "uid": "73elwgCHrzxO",
+                            "uid": "mpKncp3hEffs",
                             "title": "float",
                             "dyn_out": [
                                 {
@@ -81,7 +82,7 @@
                             "plugin": "variable_local_write",
                             "x": 589,
                             "y": 178,
-                            "uid": "MJfs6ccxFwhO",
+                            "uid": "pxdhWaCnAzlP",
                             "title": "float",
                             "dyn_in": [
                                 {
@@ -99,19 +100,19 @@
                             "plugin": "add_modulator",
                             "x": 312,
                             "y": 252,
-                            "uid": "gESSO7HrAojx"
+                            "uid": "7AgA56ACdoxn"
                         },
                         {
                             "plugin": "if_else_modulator",
                             "x": 432,
                             "y": 278,
-                            "uid": "5shpltgLY3AL"
+                            "uid": "2Vlf638yfXyb"
                         },
                         {
                             "plugin": "const_float_generator",
                             "x": 316,
                             "y": 380,
-                            "uid": "A2zFRSQHQbxD",
+                            "uid": "STN6RF7dPWmO",
                             "state": {
                                 "val": 0
                             },
@@ -121,37 +122,37 @@
                             "plugin": "initialise_generator",
                             "x": 348,
                             "y": 189,
-                            "uid": "E9AM0tcnPnHb"
+                            "uid": "7RsyF1Ry1q9C"
                         },
                         {
                             "plugin": "subtract_modulator",
                             "x": 664,
                             "y": 404,
-                            "uid": "6zWvGXKhmOLI"
+                            "uid": "A6zeOtpw35IN"
                         },
                         {
                             "plugin": "convert_oscilator_unit_modulator",
                             "x": 629,
                             "y": 289,
-                            "uid": "tZxENIFQMUCO"
+                            "uid": "eaHEZWueeMks"
                         },
                         {
                             "plugin": "multiply_modulator",
                             "x": 753,
                             "y": 289,
-                            "uid": "AbHOFYNZY5GK"
+                            "uid": "9YdOJBWubtjA"
                         },
                         {
                             "plugin": "add_modulator",
                             "x": 836,
                             "y": 344,
-                            "uid": "sCWwEPLNyRo1"
+                            "uid": "8RoT09Lwu2Hl"
                         },
                         {
                             "plugin": "output_proxy",
                             "x": 919,
                             "y": 344,
-                            "uid": "uEH8dSH2kd6i",
+                            "uid": "2Lbjuy0Py94H",
                             "title": "float",
                             "dyn_in": [
                                 {
@@ -170,7 +171,7 @@
                             "plugin": "input_proxy",
                             "x": 538,
                             "y": 399,
-                            "uid": "9BdFcBLBPuUQ",
+                            "uid": "JI3XGVwSccBV",
                             "title": "Min",
                             "dyn_out": [
                                 {
@@ -189,7 +190,7 @@
                             "plugin": "input_proxy",
                             "x": 604,
                             "y": 404,
-                            "uid": "ZUA0NuWktq7e",
+                            "uid": "nk9dwR98FxHJ",
                             "title": "Max",
                             "dyn_out": [
                                 {
@@ -208,170 +209,170 @@
                             "plugin": "sawtooth_modulator",
                             "x": 543,
                             "y": 286,
-                            "uid": "5rXb50zXUix1"
+                            "uid": "Gm5djnB2ptB2"
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": "jB8rTLD12Gal",
-                            "dst_nuid": "Tj98JrsEgVif",
+                            "src_nuid": "Weo7eKicW3Gn",
+                            "dst_nuid": "eoFJRgUPokZf",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "KwgRqNgkB7oF",
+                            "uid": "vatuVESuHt5M",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "9DAzDhfq5jjX",
-                            "dst_nuid": "Tj98JrsEgVif",
+                            "src_nuid": "7lp29KnD8kND",
+                            "dst_nuid": "eoFJRgUPokZf",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "TzPl2Q4DgCgx",
+                            "uid": "CJ1Sm7mjwglT",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "Tj98JrsEgVif",
-                            "dst_nuid": "gESSO7HrAojx",
+                            "src_nuid": "eoFJRgUPokZf",
+                            "dst_nuid": "7AgA56ACdoxn",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "aSCmIyK1jkF8",
+                            "uid": "z03Lx9KXJIUL",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "73elwgCHrzxO",
-                            "dst_nuid": "gESSO7HrAojx",
+                            "src_nuid": "mpKncp3hEffs",
+                            "dst_nuid": "7AgA56ACdoxn",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "3z00bD8AWpdW",
+                            "uid": "d0NmPjNQLVwZ",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "gESSO7HrAojx",
-                            "dst_nuid": "5shpltgLY3AL",
+                            "src_nuid": "7AgA56ACdoxn",
+                            "dst_nuid": "2Vlf638yfXyb",
                             "src_slot": 0,
                             "dst_slot": 2,
-                            "uid": "sTqoBG3IalK6",
+                            "uid": "DjvORLdEWVsD",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "E9AM0tcnPnHb",
-                            "dst_nuid": "5shpltgLY3AL",
+                            "src_nuid": "7RsyF1Ry1q9C",
+                            "dst_nuid": "2Vlf638yfXyb",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "vNik3Ee9uKZN",
+                            "uid": "AbC3dfHuIAz8",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "A2zFRSQHQbxD",
-                            "dst_nuid": "5shpltgLY3AL",
+                            "src_nuid": "STN6RF7dPWmO",
+                            "dst_nuid": "2Vlf638yfXyb",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "8nv0ObmnaXdY",
+                            "uid": "dmYylhh1seIL",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "ZUA0NuWktq7e",
-                            "dst_nuid": "6zWvGXKhmOLI",
+                            "src_nuid": "nk9dwR98FxHJ",
+                            "dst_nuid": "A6zeOtpw35IN",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "DOlYk4InTesj",
+                            "uid": "OmcMuaouKvPf",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "9BdFcBLBPuUQ",
-                            "dst_nuid": "6zWvGXKhmOLI",
+                            "src_nuid": "JI3XGVwSccBV",
+                            "dst_nuid": "A6zeOtpw35IN",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "OrPe5xyKptSY",
+                            "uid": "pDIUwg5vxGqj",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true,
                             "offset": 1
                         },
                         {
-                            "src_nuid": "6zWvGXKhmOLI",
-                            "dst_nuid": "AbHOFYNZY5GK",
+                            "src_nuid": "A6zeOtpw35IN",
+                            "dst_nuid": "9YdOJBWubtjA",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "0ThMvs8L3hdC",
+                            "uid": "ECmOO9q1M9l4",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "tZxENIFQMUCO",
-                            "dst_nuid": "AbHOFYNZY5GK",
+                            "src_nuid": "eaHEZWueeMks",
+                            "dst_nuid": "9YdOJBWubtjA",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "0uMtTN1xTACc",
+                            "uid": "6U16jUeQIYv6",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "AbHOFYNZY5GK",
-                            "dst_nuid": "sCWwEPLNyRo1",
+                            "src_nuid": "9YdOJBWubtjA",
+                            "dst_nuid": "8RoT09Lwu2Hl",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "AOkXbDybRCl9",
+                            "uid": "OtuprF4bZN5i",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "9BdFcBLBPuUQ",
-                            "dst_nuid": "sCWwEPLNyRo1",
+                            "src_nuid": "JI3XGVwSccBV",
+                            "dst_nuid": "8RoT09Lwu2Hl",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "0kMwkufd11JV",
+                            "uid": "VGkhV09EnUxi",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "sCWwEPLNyRo1",
-                            "dst_nuid": "uEH8dSH2kd6i",
+                            "src_nuid": "8RoT09Lwu2Hl",
+                            "dst_nuid": "2Lbjuy0Py94H",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "0LfpiDffzSPs",
+                            "uid": "XYiyBc16DSps",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true,
                             "offset": 1
                         },
                         {
-                            "src_nuid": "5shpltgLY3AL",
-                            "dst_nuid": "MJfs6ccxFwhO",
+                            "src_nuid": "2Vlf638yfXyb",
+                            "dst_nuid": "pxdhWaCnAzlP",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "foiZEENaAtip",
+                            "uid": "I9FxBlOv5sgC",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true
                         },
                         {
-                            "src_nuid": "5shpltgLY3AL",
-                            "dst_nuid": "5rXb50zXUix1",
+                            "src_nuid": "2Vlf638yfXyb",
+                            "dst_nuid": "Gm5djnB2ptB2",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "XOWzdkxTdVF4",
+                            "uid": "C3b7xsV0LS3Z",
                             "src_connected": true,
                             "dst_connected": true,
                             "offset": 1
                         },
                         {
-                            "src_nuid": "5rXb50zXUix1",
-                            "dst_nuid": "tZxENIFQMUCO",
+                            "src_nuid": "Gm5djnB2ptB2",
+                            "dst_nuid": "eaHEZWueeMks",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "WgarV64FYSh2",
+                            "uid": "jRoI43gG2hRA",
                             "src_connected": true,
                             "dst_connected": true
                         }
@@ -425,9 +426,9 @@
             },
             {
                 "plugin": "slider_float_generator",
-                "x": 90,
-                "y": 76,
-                "uid": "sVgMERcO7HCA",
+                "x": 501,
+                "y": 234,
+                "uid": "ULwwZILoIuDL",
                 "state": {
                     "val": 0.42,
                     "min": 0,
@@ -437,9 +438,9 @@
             },
             {
                 "plugin": "const_float_generator",
-                "x": 89,
-                "y": 140,
-                "uid": "dOkzUlLnUqBU",
+                "x": 492,
+                "y": 343,
+                "uid": "QN8mZnWlWob0",
                 "state": {
                     "val": 0
                 },
@@ -447,9 +448,9 @@
             },
             {
                 "plugin": "const_float_generator",
-                "x": 177,
-                "y": 140,
-                "uid": "kTlvxOOUmwcQ",
+                "x": 613,
+                "y": 343,
+                "uid": "AkJDjwjhqQ0A",
                 "state": {
                     "val": 1
                 },
@@ -458,31 +459,31 @@
         ],
         "conns": [
             {
-                "src_nuid": "sVgMERcO7HCA",
-                "dst_nuid": "6oqB7CRixYjD",
+                "src_nuid": "ULwwZILoIuDL",
+                "dst_nuid": "2KfJGi5FygJr",
                 "src_slot": 0,
                 "dst_slot": 0,
-                "uid": "uhHzeLrOoxS2",
+                "uid": "kGZrkcylNUnj",
                 "src_connected": true,
                 "dst_connected": true,
                 "dst_dyn": true
             },
             {
-                "src_nuid": "dOkzUlLnUqBU",
-                "dst_nuid": "6oqB7CRixYjD",
+                "src_nuid": "QN8mZnWlWob0",
+                "dst_nuid": "2KfJGi5FygJr",
                 "src_slot": 0,
                 "dst_slot": 1,
-                "uid": "XkLyJYBwPLHf",
+                "uid": "VwuLlUdlzVG9",
                 "src_connected": true,
                 "dst_connected": true,
                 "dst_dyn": true
             },
             {
-                "src_nuid": "kTlvxOOUmwcQ",
-                "dst_nuid": "6oqB7CRixYjD",
+                "src_nuid": "AkJDjwjhqQ0A",
+                "dst_nuid": "2KfJGi5FygJr",
                 "src_slot": 0,
                 "dst_slot": 2,
-                "uid": "qhZkqsbSYK4f",
+                "uid": "scr5PbAt52bP",
                 "src_connected": true,
                 "dst_connected": true,
                 "dst_dyn": true

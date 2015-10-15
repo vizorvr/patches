@@ -9,7 +9,7 @@
 	padding-top: 30px; /* height of header */
 	margin-bottom: 10px;
 	padding-bottom: 1px;
-	border-bottom: 1px solid @gray-light;
+	border-bottom: 1px solid @bg-darker;
 }
 
 .file-selector table {
@@ -24,7 +24,7 @@
 }
 
 .header-background {
-	background-color: #555;
+	background-color: @bg-darker;
 	height: 30px; /* height of header */
 	position: absolute;
 	top: 0;
@@ -74,7 +74,6 @@
 }
 
 .file-selector thead th {
-	font-weight: bold;
 	border-bottom: none;
 	border: none !important;
 	padding: 0px 5px 0px 10px !important;
@@ -125,5 +124,23 @@
 }
 
 #buttons-row td {
-	padding: 0px;
+	padding: 0px 16px 0 0;
+	&:last-child {
+	    padding: 0;  
+	}
+}
+.fixed-table-container-inner .table > tbody > tr > td {
+    color: @editor-text-default;
+    &:hover {
+        background: @bg-light;
+        color: @editor-text-hover;
+    }
+}
+.fixed-table-container-inner .table > tbody > tr.success > td {
+    background: @bg-darker;
+    color: @editor-text-active;
+    &:hover {
+        background: @bg-darker;
+        color: @editor-text-active;
+    }
 }

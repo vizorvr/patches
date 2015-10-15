@@ -18,10 +18,11 @@ var app = require('../../app.js');
 describe('Upload', function() {
 	var username = 'test'+testId;
 	var deets = {
+		name: 'Foo bar',
 		username: username,
 		email: username+'@test.foo',
-		password: 'abc123',
-		confirmPassword: 'abc123'
+		password: 'abcd1234',
+		confirmPassword: 'abcd1234'
 	};
 
 	var agent = request.agent(app);

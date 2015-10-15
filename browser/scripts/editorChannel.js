@@ -73,6 +73,7 @@ function isEditAction(m) {
 		case 'uiConnected':
 		case 'uiDisconnected':
 		case 'uiGraphTreeReordered':
+		case 'uiPluginTransientStateChanged':
 		case 'uiPluginStateChanged':
 			return true;
 	}
@@ -140,10 +141,11 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 				return;
 
 			if (!reconnecting)
-				E2.app.growl('Disconnected from server. Reconnecting.')
+				E2.app.growl('Disconnected from server. Reconnecting.', 'reconnecting')
 
 			reconnecting = true
-			setTimeout(that.connect.bind(that), RECONNECT_INTERVAL)
+			
+			setTimeout(that.connect.bind(that, wsHost, wsPort, options), RECONNECT_INTERVAL)
 
 			that.isOnChannel = false
 			that.emit('disconnected')
@@ -154,17 +156,17 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 			that.connected = true
 
-			that.emit('ready', uid)
-
 			if (reconnecting) {
 				reconnecting = false
-				E2.app.growl('Reconnected to server!')
+				E2.app.growl('Reconnected to server!', 'reconnected')
 				that.emit('reconnected')
 			}
 
+			that.emit('ready', uid)
+
 			that.wsChannel.on('*', function(m) {
 				if (m.kind === 'kicked') { // kicked by server
-					E2.app.growl('You have been disconnected by the server: '+ m.reason, 30000)
+					E2.app.growl('You have been disconnected by the server: '+ m.reason, 'disconnected', 30000)
 					that.kicked = true
 					return;
 				}
@@ -184,13 +186,13 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 EditorChannel.prototype.snapshot = function() {
 	var graphSer = E2.core.serialise()
-	
+
+	E2.app.snapshotPending = false
+
 	this.send({
 		actionType: 'graphSnapshotted',
 		data: graphSer
 	})
-
-	E2.app.snapshotPending = false
 }
 
 /**
@@ -200,9 +202,6 @@ EditorChannel.prototype.snapshot = function() {
 EditorChannel.prototype._localDispatchHandler = function _localDispatchHandler(payload) {
 	if (payload.from)
 		return;
-
-	if (E2.app.snapshotPending && isEditAction(payload))
-		this.snapshot()
 
 	if (this.isOnChannel)
 		return this.send(payload)
@@ -215,18 +214,17 @@ EditorChannel.prototype._localDispatchHandler = function _localDispatchHandler(p
 }
 
 EditorChannel.prototype.fork = function(payload) {
-	E2.dom.load_spinner.show()
+	E2.ui.updateProgressBar(65);
 
 	// FORK
 	var fc = new ForkCommand()
 	fc.fork(payload)
 		.then(function() {
-			E2.dom.load_spinner.hide()
-			E2.app.growl("We've made a copy of this for you to edit.",
-				5000)
+			E2.ui.updateProgressBar(100);
+			E2.app.growl("We've made a copy of this for you to edit.", 'copy', 5000)
 		})
 		.catch(function(err) {
-			E2.app.growl('Error while forking: ' + err)
+			E2.app.growl('Error while forking: ' + err, 'error')
 			throw err
 		})
 }
@@ -295,6 +293,9 @@ EditorChannel.prototype.join = function(channelName, cb) {
 EditorChannel.prototype.send = function(payload) {
 	if (!isAcceptedDispatch(payload))
 		return;
+
+	if (E2.app.snapshotPending && isEditAction(payload))
+		this.snapshot()
 
 	this.wsChannel.send(
 		payload.channel === 'Global' ? payload.channel : this.channelName,
