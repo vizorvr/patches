@@ -60,6 +60,13 @@ GraphStore.prototype._setupListeners = function() {
 			case 'uiNodesMoved':
 				this._uiNodesMoved(graph, payload.nodeUids, payload.delta)
 				break;
+			case 'uiPluginTransientStateChanged':
+				this._uiPluginTransientStateChanged(
+					graph,
+					payload.nodeUid,
+					payload.key,
+					payload.value)
+				break;
 			case 'uiPluginStateChanged':
 				this._uiPluginStateChanged(
 					graph,
@@ -204,11 +211,13 @@ GraphStore.prototype._uiNodesMoved = function(graph, nodeUids, delta) {
 		delta.y)
 }
 
+GraphStore.prototype._uiPluginTransientStateChanged = function(graph, nodeUid, key, value) {
+	return this._uiPluginStateChanged(graph, nodeUid, key, value)
+}
+
 GraphStore.prototype._uiPluginStateChanged = function(graph, nodeUid, key, value) {
 	var node = graph.findNodeByUid(nodeUid)
-
 	node.setPluginState(key, value)
-	
 	this.emit('changed')
 }
 
