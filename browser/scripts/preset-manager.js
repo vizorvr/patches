@@ -30,7 +30,7 @@ PresetManager.prototype.loadPresets = function(cb) {
 	var that = this
 
 	if (E2.core.presetsByCategory)
-		processPresets()
+		processPresets(E2.core.presetsByCategory)
 
 	function processPresets(data) {
 		E2.core.presetsByCategory = data

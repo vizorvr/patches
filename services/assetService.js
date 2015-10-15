@@ -37,6 +37,9 @@ AssetService.prototype.findByCreatorName = function(username) {
 		if (err)
 			return dfd.reject(err)
 
+		if (!user)
+			return dfd.resolve([])
+
 		dfd.resolve(that.find({ '_creator': user._id }))
 	})
 	return dfd.promise
