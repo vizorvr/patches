@@ -30,10 +30,11 @@
 			{ name: 'far', dt: core.datatypes.FLOAT, def: 1000.0 }
 		]
 
-		this.output_slots = [{
-			name: 'camera',
-			dt: core.datatypes.CAMERA
-		}]
+		this.output_slots = [
+			{name: 'camera',	dt: core.datatypes.CAMERA},
+			{name: 'position',	dt: core.datatypes.VECTOR},
+			{name: 'rotation',	dt: core.datatypes.VECTOR}
+		]
 
 		this.always_update = true
 		this.dirty = false
@@ -117,8 +118,17 @@
 		}
 	}
 
-	ThreeVRCameraPlugin.prototype.update_output = function() {
-		return this.perspectiveCamera
+	ThreeVRCameraPlugin.prototype.update_output = function(slot) {
+		if (slot.index === 0) { // camera
+			return this.perspectiveCamera
+		}
+		else if (slot.index === 1) { // position
+			return this.perspectiveCamera.position
+		}
+		else if (slot.index === 2) { // rotation
+			var euler = new THREE.Euler().setFromQuaternion(this.perspectiveCamera.quaternion)
+			return new THREE.Vector3(euler.x, euler.y, euler.z)
+		}
 	}
 
 	ThreeVRCameraPlugin.prototype.state_changed = function(ui) {
