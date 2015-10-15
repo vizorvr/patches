@@ -216,7 +216,7 @@ exports.checkUserName = function(req, res, next) {
 
  	if (errors) {
     req.flash('errors', parseErrors(errors));
-    console.log(parsedErrors);
+    console.log(errors);
  		return res.redirect('/account');
  	}
 
