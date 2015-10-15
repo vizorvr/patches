@@ -20,10 +20,11 @@ function rand() {
 describe('Preset', function() {
 	var username = 'user'+rand()
 	var deets = {
+		name: 'Foo Bar',
 		username: username,
 		email: username+'@test.foo',
-		password: 'abc123',
-		confirmPassword: 'abc123'
+		password: 'abcd1234',
+		confirmPassword: 'abcd1234'
 	}
 
 	var agent = request.agent(app)

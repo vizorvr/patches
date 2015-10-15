@@ -1,17 +1,17 @@
-var _ = require('lodash');
-var async = require('async');
-var crypto = require('crypto');
-var passport = require('passport');
-var User = require('../models/user');
-var secrets = require('../config/secrets');
-var mailer = require('../lib/mailer');
+var _ = require('lodash')
+var async = require('async')
+var crypto = require('crypto')
+var passport = require('passport')
+var User = require('../models/user')
+var secrets = require('../config/secrets')
+var mailer = require('../lib/mailer')
 
 function parseErrors(errors) {
-  var parsedErrors = [];
-  for( var i=0; i < errors.length; i++ ) {
-    parsedErrors.push({ message: errors[i].msg });
-  }
-  return parsedErrors;
+	var parsedErrors = []
+	for( var i=0; i < errors.length; i++ ) {
+		parsedErrors.push({ message: errors[i].msg })
+	}
+	return parsedErrors
 }
 
 /**
@@ -21,11 +21,11 @@ function parseErrors(errors) {
 
  exports.getLogin = function(req, res) {
  	if (req.user)
- 		return res.redirect('/');
+ 		return res.redirect('/')
  	res.render('account/login', {
  		title: 'Login'
- 	});
- };
+ 	})
+ }
 
 /**
  * POST /login
@@ -35,75 +35,77 @@ function parseErrors(errors) {
  */
 
  exports.postLogin = function(req, res, next) {
- 	req.assert('email', 'Email is not valid').isEmail();
- 	req.assert('password', 'Password cannot be blank').notEmpty();
+ 	req.assert('email', 'Email is not valid').isEmail()
+ 	req.assert('password', 'Password cannot be blank').notEmpty()
 
- 	var errors = req.validationErrors();
+ 	var errors = req.validationErrors()
  	var wantJson = req.xhr || req.path.slice(-5) === '.json'
 
  	if (errors) {
-    req.flash('errors', parseErrors(errors));
- 		return res.redirect('/login');
+ 		req.flash('errors', parseErrors(errors))
+ 		return res.redirect('/login')
  	}
 
  	passport.authenticate('local', function(err, user, info) {
  		if (err)
- 			return next(err);
+ 			return next(err)
+
  		if (!user) {
  			if (wantJson)
- 				return res.status(401).send();
- 			req.flash('errors', { message: info.message });
- 			return res.redirect('/login');
+ 				return res.status(401).send()
+
+ 			req.flash('errors', { message: info.message })
+
+ 			return res.redirect('/login')
  		}
+
  		req.logIn(user, function(err) {
- 			if (err) return next(err);
- 			req.flash('success', { message: 'Success! You are logged in.' });
+ 			if (err) return next(err)
+
+ 			req.flash('success', { message: 'Success! You are logged in.' })
+
  			if (wantJson)
- 			{
- 				res.json(user.toJSON());
- 			}
+ 				res.json(user.toJSON())
  			else
- 			{
- 				res.redirect(req.session.returnTo || '/account');
- 			}
- 		});
- 	})(req, res, next);
- };
+ 				res.redirect(req.session.returnTo || '/account')
+ 		})
+ 	})(req, res, next)
+ }
 
 /**
  * GET /logout
  */
  exports.logout = function(req, res) {
- 	req.logout();
- 	res.redirect('/');
- };
+ 	req.logout()
+ 	res.redirect('/')
+ }
 
 /**
  * GET /signup
  */
  exports.getSignup = function(req, res) {
- 	if (req.user) return res.redirect('/');
+ 	if (req.user) return res.redirect('/')
  	res.render('account/signup', {
  		title: 'Create Account'
- 	});
- };
+ 	})
+ }
 
 /**
  * GET /account/exists
  **/
-exports.checkUserName = function(req, res, next) {
-  User.findOne({ username: req.body.username },
-    function(err, existingUser) {
-      if (err)
-        return next(err)
+ exports.checkUserName = function(req, res, next) {
+ 	User.findOne({ username: req.body.username },
+ 		function(err, existingUser) {
+ 			if (err)
+ 				return next(err)
 
-      if (!existingUser)
-        return res.json({ ok: true })
+ 			if (!existingUser)
+ 				return res.json({ ok: true })
 
-      return res.status(409).end()
-    }
-  )
-}
+ 			return res.status(409).end()
+ 		}
+ 		)
+ }
 
 /**
  * POST /signup
@@ -113,54 +115,54 @@ exports.checkUserName = function(req, res, next) {
  */
 
  exports.postSignup = function(req, res, next) {
- 	req.assert('username', 'Username is not valid').isAlphanumeric();
- 	req.assert('email', 'Email is not valid').isEmail();
- 	req.assert('password', 'Password must be at least 4 characters long').len(4);
+ 	req.assert('username', 'Username is not valid').isAlphanumeric()
+ 	req.assert('email', 'Email is not valid').isEmail()
+ 	req.assert('password', 'Password must be at least 8 characters long').len(8)
 
- 	var errors = req.validationErrors();
+ 	var errors = req.validationErrors()
 
  	if (errors) {
- 		return res.status(400).json(errors);
+ 		return res.status(400).json(errors)
  	}
 
  	var user = new User({
-		name: req.body.name.replace(/[<>\;\\\'\"]+/gim, ''),
+ 		name: req.body.name.replace(/[<>\\\\'\"]+/gim, ''),
  		username: req.body.username,
  		email: req.body.email,
  		password: req.body.password
- 	});
+ 	})
 
  	User.findOne({ username: req.body.username }, function(err, existingUser) {
  		if (existingUser) {
  			if (req.xhr){
  				return res.status(400).json({
-          message: 'Account with that username already exists.'
-        });
+ 					message: 'An account with that username already exists.'
+ 				})
  			}
- 			return res.redirect('/signup');
+ 			return res.redirect('/signup')
  		}
  		User.findOne({ email: req.body.email }, function(err, existingUser) {
  			if (existingUser) {
  				if (req.xhr) {
- 					return res.status(400).json({ message: 'Account with that email already exists.' });
+ 					return res.status(400).json({ message: 'An account with that email already exists.' })
  				}
- 				return res.redirect('/signup');
+ 				return res.redirect('/signup')
  			}
 
  			user.save(function(err) {
- 				if (err) return next(err);
+ 				if (err) return next(err)
  				req.logIn(user, function(err) {
- 					if (err) return next(err);
+ 					if (err) return next(err)
  					if (req.xhr) {
- 						res.json(user.toJSON());
+ 						res.json(user.toJSON())
  					} else {
- 						res.redirect(req.session.returnTo || '/account');
+ 						res.redirect(req.session.returnTo || '/account')
  					}
- 				});
- 			});
- 		});
- 	});
- };
+ 				})
+ 			})
+ 		})
+ 	})
+ }
 
 /**
  * GET /account
@@ -170,8 +172,8 @@ exports.checkUserName = function(req, res, next) {
  exports.getAccount = function(req, res) {
  	res.render('account/profile', {
  		title: 'Account Management'
- 	});
- };
+ 	})
+ }
 
 /**
  * POST /account/profile
@@ -179,28 +181,38 @@ exports.checkUserName = function(req, res, next) {
  */
 
  exports.postUpdateProfile = function(req, res, next) {
-  req.assert('email', 'Email is not valid').isEmail();
-  
-  var errors = req.validationErrors();
+ 	req.assert('email', 'Email is not valid').isEmail()
+ 	req.assert('name', 'Name is not valid').notEmpty()
 
-  if (errors) {
-    return res.status(400).json(errors);
-  }
+ 	var errors = req.validationErrors()
+ 	var wantJson = req.xhr || req.path.slice(-5) === '.json'
 
-	User.findById(req.user.id, function(err, user) {
- 		if (err) return next(err);
+ 	if (errors) {
+ 		if (wantJson) {
+ 			return res.status(400).json(errors)
+ 		} else {
+ 			req.flash('errors', parseErrors(errors))
+ 			return res.redirect('/account')
+ 		}
+ 	}
 
-    user.name = req.body.name.replace(/[<>\;\\\'\"]+/gim, '');
+ 	User.findById(req.user.id, function(err, user) {
+ 		if (err) return next(err)
+
+ 		user.name = req.body.name.replace(/[<>\\\\'\"]+/gim, '')
  		user.email = req.body.email
 
  		user.save(function(err) {
  			if (err)
-        return next(err);
+ 				return next(err)
 
- 			res.json({})
- 		});
- 	});
- };
+ 			if (wantJson)
+	 			res.json({})
+	 		else
+	 			res.redirect('/account')
+ 		})
+ 	})
+ }
 
 /**
  * POST /account/password
@@ -209,29 +221,28 @@ exports.checkUserName = function(req, res, next) {
  */
 
  exports.postUpdatePassword = function(req, res, next) {
+ 	req.assert('password', 'Password must be at least 8 characters long').len(8)
 
- 	req.assert('password', 'Password must be at least 4 characters long').len(4);
-
- 	var errors = req.validationErrors();
+ 	var errors = req.validationErrors()
 
  	if (errors) {
-    req.flash('errors', parseErrors(errors));
-    console.log(errors);
- 		return res.redirect('/account');
+ 		req.flash('errors', parseErrors(errors))
+ 		console.log(errors)
+ 		return res.redirect('/account')
  	}
 
  	User.findById(req.user.id, function(err, user) {
- 		if (err) return next(err);
+ 		if (err) return next(err)
 
- 		user.password = req.body.password;
+ 		user.password = req.body.password
 
  		user.save(function(err) {
- 			if (err) return next(err);
- 			req.flash('success', { message: 'Password has been changed.' });
- 			res.redirect('/account');
- 		});
- 	});
- };
+ 			if (err) return next(err)
+ 			req.flash('success', { message: 'Password has been changed.' })
+ 			res.redirect('/account')
+ 		})
+ 	})
+ }
 
 /**
  * POST /account/delete
@@ -240,12 +251,12 @@ exports.checkUserName = function(req, res, next) {
 
  exports.postDeleteAccount = function(req, res, next) {
  	User.remove({ _id: req.user.id }, function(err) {
- 		if (err) return next(err);
- 		req.logout();
- 		req.flash('info', { message: 'Your account has been deleted.' });
- 		res.redirect('/');
- 	});
- };
+ 		if (err) return next(err)
+ 		req.logout()
+ 		req.flash('info', { message: 'Your account has been deleted.' })
+ 		res.redirect('/')
+ 	})
+ }
 
 /**
  * GET /account/unlink/:provider
@@ -255,20 +266,20 @@ exports.checkUserName = function(req, res, next) {
  */
 
  exports.getOauthUnlink = function(req, res, next) {
- 	var provider = req.params.provider;
+ 	var provider = req.params.provider
  	User.findById(req.user.id, function(err, user) {
- 		if (err) return next(err);
+ 		if (err) return next(err)
 
- 		user[provider] = undefined;
- 		user.tokens = _.reject(user.tokens, function(token) { return token.kind === provider; });
+ 		user[provider] = undefined
+ 		user.tokens = _.reject(user.tokens, function(token) { return token.kind === provider })
 
  		user.save(function(err) {
- 			if (err) return next(err);
- 			req.flash('info', { message: provider + ' account has been unlinked.' });
- 			res.redirect('/account');
- 		});
- 	});
- };
+ 			if (err) return next(err)
+ 			req.flash('info', { message: provider + ' account has been unlinked.' })
+ 			res.redirect('/account')
+ 		})
+ 	})
+ }
 
 /**
  * GET /reset/:token
@@ -277,7 +288,7 @@ exports.checkUserName = function(req, res, next) {
 
  exports.getReset = function(req, res) {
  	if (req.isAuthenticated()) {
- 		return res.redirect('/');
+ 		return res.redirect('/')
  	}
 
  	User
@@ -285,15 +296,15 @@ exports.checkUserName = function(req, res, next) {
  	.where('resetPasswordExpires').gt(Date.now())
  	.exec(function(err, user) {
  		if (!user) {
- 			req.flash('errors', { message: 'Password reset token is invalid or has expired.' });
- 			return res.redirect('/forgot');
+ 			req.flash('errors', { message: 'Password reset token is invalid or has expired.' })
+ 			return res.redirect('/forgot')
  		}
  		res.render('account/reset', {
  			title: 'Password Reset',
  			token: req.params.token
- 		});
- 	});
- };
+ 		})
+ 	})
+ }
 
 /**
  * POST /reset/:token
@@ -301,14 +312,14 @@ exports.checkUserName = function(req, res, next) {
  */
 
  exports.postReset = function(req, res, next) {
- 	req.assert('password', 'Password must be at least 4 characters long.').len(4);
- 	req.assert('confirm', 'Passwords must match.').equals(req.body.password);
+ 	req.assert('password', 'Password must be at least 8 characters long').len(8)
+ 	req.assert('confirm', 'Passwords must match.').equals(req.body.password)
 
- 	var errors = req.validationErrors();
+ 	var errors = req.validationErrors()
 
  	if (errors) {
-    req.flash('errors', parseErrors(errors));
- 		return res.redirect('back');
+ 		req.flash('errors', parseErrors(errors))
+ 		return res.redirect('back')
  	}
 
  	async.waterfall([
@@ -318,21 +329,21 @@ exports.checkUserName = function(req, res, next) {
  			.where('resetPasswordExpires').gt(Date.now())
  			.exec(function(err, user) {
  				if (!user) {
- 					req.flash('errors', { message: 'Password reset token is invalid or has expired.' });
- 					return res.redirect('back');
+ 					req.flash('errors', { message: 'Password reset token is invalid or has expired.' })
+ 					return res.redirect('back')
  				}
 
- 				user.password = req.body.password;
- 				user.resetPasswordToken = undefined;
- 				user.resetPasswordExpires = undefined;
+ 				user.password = req.body.password
+ 				user.resetPasswordToken = undefined
+ 				user.resetPasswordExpires = undefined
 
  				user.save(function(err) {
- 					if (err) return next(err);
+ 					if (err) return next(err)
  					req.logIn(user, function(err) {
- 						done(err, user);
- 					});
- 				});
- 			});
+ 						done(err, user)
+ 					})
+ 				})
+ 			})
  		},
  		function(user, done) {
  			var mail = {
@@ -351,10 +362,10 @@ exports.checkUserName = function(req, res, next) {
  			.catch(done)
  		}
  		], function(err) {
- 			if (err) return next(err);
- 			res.redirect('/');
- 		});
-};
+ 			if (err) return next(err)
+ 			res.redirect('/')
+ 		})
+}
 
 /**
  * GET /forgot
@@ -363,12 +374,12 @@ exports.checkUserName = function(req, res, next) {
 
  exports.getForgot = function(req, res) {
  	if (req.isAuthenticated()) {
- 		return res.redirect('/account');
+ 		return res.redirect('/account')
  	}
  	res.render('account/forgot', {
  		title: 'Forgot Password'
- 	});
- };
+ 	})
+ }
 
 /**
  * POST /forgot
@@ -377,36 +388,36 @@ exports.checkUserName = function(req, res, next) {
  */
 
  exports.postForgot = function(req, res, next) {
- 	req.assert('email', 'Please enter a valid email address.').isEmail();
+ 	req.assert('email', 'Please enter a valid email address.').isEmail()
 
- 	var errors = req.validationErrors();
+ 	var errors = req.validationErrors()
 
  	if (errors) {
-    req.flash('errors', parseErrors(errors));
- 		return res.redirect('/forgot');
+ 		req.flash('errors', parseErrors(errors))
+ 		return res.redirect('/forgot')
  	}
 
  	async.waterfall([
  		function(done) {
  			crypto.randomBytes(16, function(err, buf) {
- 				var token = buf.toString('hex');
- 				done(err, token);
- 			});
+ 				var token = buf.toString('hex')
+ 				done(err, token)
+ 			})
  		},
  		function(token, done) {
  			User.findOne({ email: req.body.email.toLowerCase() }, function(err, user) {
  				if (!user) {
- 					req.flash('errors', { message: 'No account with that email address exists.' });
- 					return res.redirect('/forgot');
+ 					req.flash('errors', { message: 'No account with that email address exists.' })
+ 					return res.redirect('/forgot')
  				}
 
- 				user.resetPasswordToken = token;
-				user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+ 				user.resetPasswordToken = token
+				user.resetPasswordExpires = Date.now() + 3600000 // 1 hour
 
 				user.save(function(err) {
-					done(err, token, user);
-				});
-			});
+					done(err, token, user)
+				})
+			})
  		},
  		function(token, user, done) {
  			var mail = {
