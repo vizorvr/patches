@@ -1,19 +1,29 @@
-function AccountController(handlebars)
-{
+function AccountController(handlebars) {
+	EventEmitter.call(this)
+
 	this._handlebars = handlebars || window.Handlebars
 
 	E2.models.user.on('change', this.renderLoginView.bind(this));
-
-	this._bindEvents();
+	
+	this.renderLoginView(E2.models.user)
 }
 
-AccountController.prototype.renderLoginView = function(user)
-{
-	var viewTemplate = E2.views.partials.userpulldown;
-	var html = viewTemplate({ user: user.toJSON() });
-	$('#account').html(html);
+AccountController.prototype = Object.create(EventEmitter.prototype)
 
-	this._bindEvents($('#user-pulldown'));
+AccountController.prototype.renderLoginView = function(user) {
+	var viewTemplate = E2.views.partials.userpulldown
+
+	var html = viewTemplate({
+		user: user.toJSON()
+	})
+
+	$('#account').html(html)
+
+	E2.dom.userPullDown = $('#userPullDown')
+
+	this._bindEvents(E2.dom.userPullDown)
+
+	this.emit('redrawn')
 }
 
 AccountController.prototype.isValidEmail = function(email) {
@@ -203,13 +213,11 @@ AccountController.prototype.openLoginModal = function(dfd) {
 			type: "POST",
 			url: formEl.attr('action'),
 			data: formData,
-			error: function(err)
-			{	
+			error: function() {
 				var errText = 'Whoops! This email and password combination isn\'t right'
-				that.showError('general',errText);
+				that.showError('general', errText);
 			},
-			success: function(user)
-			{
+			success: function(user) {
 				ga('send', 'event', 'account', 'loggedIn', user.username)
 				E2.models.user.set(user);
 				bootbox.hideAll();

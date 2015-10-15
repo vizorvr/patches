@@ -102,7 +102,6 @@
 		</ul>
 		<ul class="iconic-nav pull-right">
 			<li id="account">
-				{{> userpulldown}}
 			</li>
 		</ul>
 	</div>
@@ -611,11 +610,12 @@
 			user: new User({})
 		}
 
-		if ('{{user.username}}') {
+		if ('{{user.username}}' !== '') {
 			E2.models.user.set( {
 				id: '{{user._id}}',
 				name: '{{user.name}}',
 				username: '{{user.username}}',
+				gravatar: '{{{user.gravatar}}}',
 				email: '{{user.email}}',
 			})
 		}

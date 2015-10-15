@@ -7,6 +7,12 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 
 	// things that live elsewhere are called elsewhere
 	dom.btnGraph.click(e2.app.toggleNoodles.bind(e2.app));
+
+	E2.controllers.account.on('redrawn', function() {
+		dom.btnAccountMenu = $('.btn-account-top')
+		dom.btnAccountMenu.click(e2.app.onAccountMenuClicked.bind(e2.app));
+	})
+
 	dom.btnAccountMenu.click(e2.app.onAccountMenuClicked.bind(e2.app));
 
 	// menu shell
