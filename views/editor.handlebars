@@ -549,26 +549,29 @@
 		</li>
 	</ul>
 	<ul class="view-modes">
-		<li class="active">
-			<button class="btn" id="btn-vrcam" disabled data-toggle="popover" data-placement="top" title="VR camera">
-				<svg class="icon-vr"><use xlink:href="#icon-view-cam"></use></svg>
-			</button>
-		</li>
 		<li>
 			<button class="btn" id="btn-editorcam" data-toggle="popover" data-placement="top" title="Editor camera">
-				<svg class="icon-vr"><use xlink:href="#icon-view-vr"></use></svg>
+                <svg class="icon-vr"><use xlink:href="#icon-view-cam"></use></svg>
 			</button>
 		</li>
-		<li style="display: none;">
+        <li class="active">
+			<button class="btn" id="btn-vrcam" disabled data-toggle="popover" data-placement="top" title="VR camera">
+			    <svg class="icon-vr"><use xlink:href="#icon-view-vr"></use></svg>
+			</button>
+		</li>
+
+        {{!-- {{ #694
+		<li>
 			<button class="btn" id="btn-v3" data-toggle="popover" data-placement="top" title="View 3">
 				<svg class="icon-vr"><use xlink:href="#icon-view-3"></use></svg>
 			</button>
 		</li>
-		<li style="display: none;">
+		<li>
 			<button class="btn" id="btn-v4" data-toggle="popover" data-placement="top" title="View 4">
 				<svg class="icon-vr"><use xlink:href="#icon-view-4"></use></svg>
 			</button>
 		</li>
+        }} --}}
 		
 	</ul>
 </div>
