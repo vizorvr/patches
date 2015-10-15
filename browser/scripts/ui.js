@@ -586,7 +586,7 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 	if (!E2.util.isFirstTime())
 		return;
 
-	Cookies.set('vizor050', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
+	Cookies.set('vizor100', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
 	var firstTimeTemplate = E2.views.account.firsttime;
 	var diag = bootbox.dialog({
@@ -599,22 +599,19 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 
 	diag.find('.modal-dialog').addClass('welcome');
 
-	diag.find('.login').on('click', function(evt)
-	{
+	diag.find('.login').on('click', function(evt) {
 		evt.preventDefault();
 		bootbox.hideAll();
 		E2.controllers.account.openLoginModal();
 	});
 
-	diag.find('.signup').on('click', function(evt)
-	{
+	diag.find('.signup').on('click', function(evt) {
 		evt.preventDefault();
 		bootbox.hideAll();
 		E2.controllers.account.openSignupModal();
 	});
 
-	diag.find('button#welcome-gs').on('click', function(evt)
-	{
+	diag.find('button#welcome-gs').on('click', function(evt) {
 		evt.preventDefault();
 		bootbox.hideAll();
 	});
