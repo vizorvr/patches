@@ -41,26 +41,29 @@ function parseErrors(errors) {
  	var errors = req.validationErrors()
  	var wantJson = req.xhr || req.path.slice(-5) === '.json'
 
- 	if (errors) {
- 		req.flash('errors', parseErrors(errors))
+ 	function returnErrors(errors, status) {
+ 		if (wantJson)
+	 		return res.status(status || 400).json(errors)
+
+ 		req.flash('errors', errors)
  		return res.redirect('/login')
  	}
 
+ 	if (errors)
+ 		return returnErrors(parseErrors(errors))
+
  	passport.authenticate('local', function(err, user, info) {
  		if (err)
- 			return next(err)
+ 			return returnErrors([{ message: err.toString() }])
 
  		if (!user) {
- 			if (wantJson)
- 				return res.status(401).send()
-
- 			req.flash('errors', { message: info.message })
-
- 			return res.redirect('/login')
+ 			if (info)
+	 			return returnErrors([ info ], 401)
  		}
 
  		req.logIn(user, function(err) {
- 			if (err) return next(err)
+ 			if (err)
+	 			return returnErrors([{ message: err.toString() }])
 
  			req.flash('success', { message: 'Success! You are logged in.' })
 
@@ -227,7 +230,6 @@ function parseErrors(errors) {
 
  	if (errors) {
  		req.flash('errors', parseErrors(errors))
- 		console.log(errors)
  		return res.redirect('/account')
  	}
 
