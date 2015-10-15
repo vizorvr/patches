@@ -201,7 +201,7 @@ AccountController.prototype.openLoginModal = function(dfd) {
 		event.preventDefault();
 		
 		if (!that.isValidEmail(formEl.find('#email_id').val())) {
-			var errText = 'Whoops! This isn\'t a valid email address';
+			var errText = 'Whoops! That isn\'t a valid email address.';
 			that.showError('email',errText);
 			return;
 		}
@@ -213,9 +213,10 @@ AccountController.prototype.openLoginModal = function(dfd) {
 			type: "POST",
 			url: formEl.attr('action'),
 			data: formData,
-			error: function() {
-				var errText = 'Whoops! This email and password combination isn\'t right'
-				that.showError('general', errText);
+			error: function(err) {
+				err.responseJSON.map(function(error) {
+					that.showError('general', error.message);
+				})
 			},
 			success: function(user) {
 				ga('send', 'event', 'account', 'loggedIn', user.username)

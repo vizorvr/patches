@@ -41,34 +41,40 @@ function parseErrors(errors) {
  	var errors = req.validationErrors();
  	var wantJson = req.xhr || req.path.slice(-5) === '.json'
 
- 	if (errors) {
-    req.flash('errors', parseErrors(errors));
- 		return res.redirect('/login');
+ 	function returnErrors(errors) {
+ 		if (wantJson)
+	 		return res.status(400).json(errors)
+
+ 		req.flash('errors', errors)
+ 		return res.redirect('/login')
  	}
+
+ 	if (errors)
+ 		return returnErrors(parseErrors(errors))
 
  	passport.authenticate('local', function(err, user, info) {
  		if (err)
- 			return next(err);
+ 			return returnErrors([{ message: err.toString() }])
+
  		if (!user) {
- 			if (wantJson)
- 				return res.status(401).send();
- 			req.flash('errors', { message: info.message });
- 			return res.redirect('/login');
+ 			if (info)
+	 			return returnErrors([ info ])
  		}
+
  		req.logIn(user, function(err) {
- 			if (err) return next(err);
- 			req.flash('success', { message: 'Success! You are logged in.' });
+ 			if (err)
+	 			return returnErrors([{ message: err.toString() }])
+
+ 			req.flash('success', { message: 'Success! You are logged in.' })
+
  			if (wantJson)
- 			{
- 				res.json(user.toJSON());
- 			}
+ 				res.json(user.toJSON())
  			else
- 			{
- 				res.redirect(req.session.returnTo || '/account');
- 			}
- 		});
- 	})(req, res, next);
- };
+ 				res.redirect(req.session.returnTo || '/account')
+ 		})
+ 	})(req, res, next)
+
+ }
 
 /**
  * GET /logout
@@ -216,7 +222,6 @@ exports.checkUserName = function(req, res, next) {
 
  	if (errors) {
     req.flash('errors', parseErrors(errors));
-    console.log(errors);
  		return res.redirect('/account');
  	}
 
