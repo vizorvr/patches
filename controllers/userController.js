@@ -136,7 +136,7 @@ function parseErrors(errors) {
  		if (existingUser) {
  			if (req.xhr){
  				return res.status(400).json({
- 					message: 'Account with that username already exists.'
+ 					message: 'An account with that username already exists.'
  				})
  			}
  			return res.redirect('/signup')
@@ -144,7 +144,7 @@ function parseErrors(errors) {
  		User.findOne({ email: req.body.email }, function(err, existingUser) {
  			if (existingUser) {
  				if (req.xhr) {
- 					return res.status(400).json({ message: 'Account with that email already exists.' })
+ 					return res.status(400).json({ message: 'An account with that email already exists.' })
  				}
  				return res.redirect('/signup')
  			}
