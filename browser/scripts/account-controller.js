@@ -1,19 +1,29 @@
-function AccountController(handlebars)
-{
+function AccountController(handlebars) {
+	EventEmitter.call(this)
+
 	this._handlebars = handlebars || window.Handlebars
 
 	E2.models.user.on('change', this.renderLoginView.bind(this));
 	
 	this.renderLoginView(E2.models.user)
-	
-	this._bindEvents();
 }
 
+AccountController.prototype = Object.create(EventEmitter.prototype)
+
 AccountController.prototype.renderLoginView = function(user) {
-	var viewTemplate = E2.views.partials.userpulldown;
-	var html = viewTemplate({ user: user.toJSON() });
-	$('#account').html(html);
-	this._bindEvents($('#user-pulldown'));
+	var viewTemplate = E2.views.partials.userpulldown
+
+	var html = viewTemplate({
+		user: user.toJSON()
+	})
+
+	$('#account').html(html)
+
+	E2.dom.userPullDown = $('#userPullDown')
+
+	this._bindEvents(E2.dom.userPullDown)
+
+	this.emit('redrawn')
 }
 
 AccountController.prototype.isValidEmail = function(email) {
