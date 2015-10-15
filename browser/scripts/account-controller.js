@@ -196,8 +196,7 @@ AccountController.prototype.openLoginModal = function(dfd) {
 	this._bindEvents(bb, dfd);
 
 	var formEl = $('#login-form_id');
-	formEl.submit(function( event )
-	{
+	formEl.submit(function( event ) {
 		event.preventDefault();
 		
 		if (!that.isValidEmail(formEl.find('#email_id').val())) {
@@ -208,8 +207,7 @@ AccountController.prototype.openLoginModal = function(dfd) {
 
 		var formData = formEl.serialize();
 
-		$.ajax(
-		{
+		$.ajax({
 			type: "POST",
 			url: formEl.attr('action'),
 			data: formData,
