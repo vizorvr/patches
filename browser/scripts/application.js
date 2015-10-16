@@ -1991,11 +1991,7 @@ Application.prototype.start = function() {
 			animation: false
 	});
 	
-	$(document).on("shown.bs.modal", function() {
-		$('.bootbox-close-button').html('<svg class="icon-dialog-close">'
-									  + '<use xlink:href="#icon-close"></use></svg>')
-								  .attr('style','');
-	});
+
 }
 
 

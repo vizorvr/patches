@@ -185,7 +185,7 @@ AccountController.prototype.openLoginModal = function(dfd) {
 
 	ga('send', 'event', 'account', 'open', 'loginModal');
 
-	var bb = VizorUI.modalOpen(loginTemplate())
+	var bb = VizorUI.modalOpen(loginTemplate(), 'nopad login')
 
 	this._bindEvents(bb, dfd);
 

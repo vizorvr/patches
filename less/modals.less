@@ -97,6 +97,14 @@
                 font-size: 14px;
                 color: #fff;
                 font-weight: 300;
+				a, a:active {
+					color: @bg-bright;
+					text-decoration: none;
+					&:hover {
+						color: @editor-text-active;
+						text-decoration: none;
+					}
+				}
                 .bootbox-body {
                     padding: 0;
                     text-align: center;
@@ -105,14 +113,6 @@
                     font-size: 14px;
                     color: @editor-text-active;
                     padding: 10px 0;
-                    a, a:active {
-                        color: @bg-bright;
-                        text-decoration: none;
-                        &:hover {
-                            color: @editor-text-active;
-                            text-decoration: none;
-                        }
-                    }
                 }
                 div.form-input {
                     height: @modal-control-height;
@@ -203,8 +203,8 @@
                 button {
                     display: block;
 				  // gm: NO
-//                  position: relative;
 //				  	float: left;
+                  	position: relative;
                     border-radius: 4px;
                     background: @bg-bright;
                     &.bootbox-close-button {
@@ -212,8 +212,8 @@
                         opacity: 1;
                         float: none;
                         position: absolute;
-                        right: 0;
-                        top: 0;
+                        right: 2px;
+                        top: 10px;
                         margin: 0;
                     }
                 }
@@ -414,6 +414,27 @@
 }
 .bootbox.modal.nopad {
   .modal-content, .modal-body {padding:0;}
+}
+
+.modal.login {
+  button.close {
+	top: 12px;
+	right: 2px;
+  }
+  h3:first-child {
+	background: rgba(0,0,0,0.2);
+	margin: 0;
+	padding: 18px;
+  }
+  form {
+	margin: 20px 40px;
+  }
+  div.modal-footer {
+	background: rgba(0,0,0,0.2);
+	font-size: 12px;
+	font-weight: 500;
+	color: #ccc;
+  }
 }
 
 .bootbox.modal.welcome {

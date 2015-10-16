@@ -9,6 +9,12 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.btnGraph.click(e2.app.toggleNoodles.bind(e2.app));
 	dom.btnAccountMenu.click(e2.app.onAccountMenuClicked.bind(e2.app));
 
+
+	E2.controllers.account.on('redrawn', function() {
+		dom.btnAccountMenu = $('.btn-account-top')
+		dom.btnAccountMenu.click(e2.app.onAccountMenuClicked.bind(e2.app));
+	})
+
 	// menu shell
 	dom.btnSignIn.click(this.openLoginModal.bind(this));
 	dom.btnAssets.click(this.onBtnAssetsClicked.bind(this));
@@ -32,6 +38,11 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	jQuery('div#presets-lib ul li').last().find('a').click(this.onTreeClicked.bind(this));
 	jQuery('div#presets-lib ul li').first().find('a').click(this.updateState.bind(this));
 
+	$(document).on("shown.bs.modal", function() {
+		$('.bootbox-close-button').html('<svg class="icon-dialog-close">'
+									  + '<use xlink:href="#icon-close"></use></svg>')
+								  .attr('style','');
+	});
 };
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object

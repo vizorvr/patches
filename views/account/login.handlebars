@@ -1,11 +1,11 @@
-<h4>Sign in</h4>
+<h3>Sign in</h3>
 
 <form action="/login" id="login-form_id" method="POST" class="clearfix">
     <input type="hidden" name="_csrf" value={{_csrf}}>
 
     <div class="form-input">
         <label for="email_id">Email</label>
-        <input type="email" name="email" id="email_id" placeholder="" tabindex="-1">
+        <input type="email" name="email" id="email_id" >
     </div>
 
     <div class="modal-error" id="email-error">
@@ -30,11 +30,12 @@
         <svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
     </button>
 </form>
-<div class="twocol clearfix">
-    <div class="col left">
+
+<div class="twocol clearfix modal-footer">
+    <div class="col left" style="width:34%">
         <a href="/forgot" class="forgot">Forgot password?</a>
     </div>
-    <div class="col right" style="text-align:right">
+    <div class="col right" style="text-align:right; width:65%">
         Don't have an account? <a href="/signup" class="signup" id="signup-link">Sign up here</a>
     </div>
 </div>
