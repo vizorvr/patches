@@ -1,19 +1,29 @@
-function AccountController(handlebars)
-{
+function AccountController(handlebars) {
+	EventEmitter.call(this)
+
 	this._handlebars = handlebars || window.Handlebars
 
 	E2.models.user.on('change', this.renderLoginView.bind(this));
-
-	this._bindEvents();
+	
+	this.renderLoginView(E2.models.user)
 }
 
-AccountController.prototype.renderLoginView = function(user)
-{
-	var viewTemplate = E2.views.partials.userpulldown;
-	var html = viewTemplate({ user: user.toJSON() });
-	$('#account').html(html);
+AccountController.prototype = Object.create(EventEmitter.prototype)
 
-	this._bindEvents($('#user-pulldown'));
+AccountController.prototype.renderLoginView = function(user) {
+	var viewTemplate = E2.views.partials.userpulldown
+
+	var html = viewTemplate({
+		user: user.toJSON()
+	})
+
+	$('#account').html(html)
+
+	E2.dom.userPullDown = $('#userPullDown')
+
+	this._bindEvents(E2.dom.userPullDown)
+
+	this.emit('redrawn')
 }
 
 AccountController.prototype.isValidEmail = function(email) {
@@ -180,30 +190,27 @@ AccountController.prototype.openLoginModal = function(dfd) {
 	this._bindEvents(bb, dfd);
 
 	var formEl = $('#login-form_id');
-	formEl.submit(function( event )
-	{
+	formEl.submit(function( event ) {
 		event.preventDefault();
 		
 		if (!that.isValidEmail(formEl.find('#email_id').val())) {
-			var errText = 'Whoops! This isn\'t a valid email address';
+			var errText = 'Whoops! That isn\'t a valid email address.';
 			that.showError('email',errText);
 			return;
 		}
 
 		var formData = formEl.serialize();
 
-		$.ajax(
-		{
+		$.ajax({
 			type: "POST",
 			url: formEl.attr('action'),
 			data: formData,
-			error: function(err)
-			{	
-				var errText = 'Whoops! This email and password combination isn\'t right'
-				that.showError('general',errText);
+			error: function(err) {
+				err.responseJSON.map(function(error) {
+					that.showError('general', error.message);
+				})
 			},
-			success: function(user)
-			{
+			success: function(user) {
 				ga('send', 'event', 'account', 'loggedIn', user.username)
 				E2.models.user.set(user);
 				bootbox.hideAll();

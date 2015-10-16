@@ -1,24 +1,18 @@
 (function() {
 	var ThreeVRCameraPlugin = E2.plugins.three_vr_camera = function(core) {
 		this.desc = 'THREE.js VR Camera'
-
-		console.log("VR Camera inputs: ", this.input_slots ? this.input_slots.length : "undefined")
-
-		this.defaultFOV = 20
+		
+		this.defaultFOV = 90
 
 		// try to find out default fov from the device
 		if (window.HMDVRDevice && window.HMDVRDevice.getEyeParameters) {
-			console.log('has VR device')
 			var eyeParams = window.HMDVRDevice.getEyeParameters()
-			console.log(eyeParams)
 
 			if (eyeParams.recommendedFieldOfView) {
 				this.defaultFOV = eyeParams.recommendedFieldOfView
-				console.log('has recommended FOV')
 			}
 			else if (eyeParams.leftDegrees && eyeParams.rightDegrees) {
 				this.defaultFOV = eyeParams.leftDegrees + eyeParams.rightDegrees
-				console.log('has left & right degrees')
 			}
 		}
 
@@ -43,7 +37,6 @@
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
 
 	ThreeVRCameraPlugin.prototype.reset = function() {
-		console.log('ThreeVRCameraPlugin reset camera')
 		this.domElement = E2.dom.webgl_canvas[0]
 
 		this.perspectiveCamera = new THREE.PerspectiveCamera(
@@ -60,8 +53,6 @@
 	}
 
 	ThreeVRCameraPlugin.prototype.resize = function() {
-		console.log('ThreeVRCameraPlugin.resize')
-
 		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement);
 		var wh = { width: window.innerWidth, height: window.innerHeight }
 

@@ -46,12 +46,22 @@ Slider.prototype.create_ui = function() {
 	var $slider = this.$slider = $el.find('input.slider')
 	this.$display = $el.find('td.slider-value')
 
-	var t = null;
+	var originalValue = this.state.val
+
 	$slider.on('input', function() {
-		if (t) clearTimeout(t);
-		that.$display.html($slider.val());
-		t = setTimeout(function(){that.undoableSetState('val', parseFloat($slider.val()), that.state.val)}, 100);
+		that.$display.html($slider.val())
+		that.transientSetState('val', parseFloat($slider.val()))
 		return true;
+	})
+
+	$slider.on('mousedown', function() {
+		originalValue = that.state.val
+	})
+
+	$slider.on('mouseup', function() {
+		var sliderValue = parseFloat($slider.val())
+		if (originalValue !== sliderValue)
+			that.undoableSetState('val', sliderValue, originalValue)
 	})
 
 	$min.on('change', function() {

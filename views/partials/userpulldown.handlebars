@@ -1,10 +1,12 @@
-{{#if user}}
-<button class="btn" id="btn-account-top">
+{{#if user.username }}
+
+<button class="btn btn-account-top" id="btn-account-top">
 	<div class="top-userpic">
 		<img class="gravatar-in-form" src="{{user.gravatar}}" id="top-userpic" />
 	</div>
 	<span>{{user.username}}</span>
 </button>
+
 <ul class="dropdown-menu" role="menu" id="userPullDown">
 	<li>
 		<a class="account" href="/account">Account</a>
@@ -13,9 +15,12 @@
 		<a href="/logout">Sign out</a>
 	</li>
 </ul>
+
 {{else}}
+
 <button class="btn" id="btn-sign-in">
 	<svg class="icon-sign-in"><use xlink:href="#icon-sign-in"></use></svg>
 	<span>Sign in</span>
 </button>
+
 {{/if}}
