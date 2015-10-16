@@ -202,9 +202,10 @@
                 }
                 button {
                     display: block;
-                    position: relative;
+				  // gm: NO
+//                  position: relative;
+//				  	float: left;
                     border-radius: 4px;
-                    float: left;
                     background: @bg-bright;
                     &.bootbox-close-button {
                         background: transparent;
@@ -411,19 +412,19 @@
         }
     }
 }
+.bootbox.modal.nopad {
+  .modal-content, .modal-body {padding:0;}
+}
 
-.modal-dialog.welcome {
-    width: 588px;
-    height: auto;
-    margin-top: -300px;
-    top: 50%;
+.bootbox.modal.welcome {
     border-radius: 0;
+	.modal-content {
+	  width: 588px;
+	  left: -94px;	// relative to center for 400px
+	}
     .welcome-screen {
         background: url("/images/welcome-bg.jpg") no-repeat center top;
-        position: relative;
-        float: left;
-        width: 100%;
-        min-height: 374px;
+        height: 374px;
         text-align: center;
         > button {
             outline: 0!important;
@@ -436,6 +437,7 @@
             &#welcome-gs {
             	width: 210px;
             	height: 50px;
+			  	margin: 0 auto;
             	text-align: center;
             	vertical-align: middle;
             	background: #1B9CFF;
@@ -492,9 +494,7 @@
             }
         }
         .welcome-logo {
-            margin: 45px auto 50px auto;
-            position: relative;
-            clear: both;
+		  	padding:50px 0;
             svg {
                 display: block;
                 position: relative;
@@ -535,8 +535,6 @@
     }
     .welcome-footer {
         height: 63px;
-        width: 100%;
-        float: left;
         background: #385a8a;
         text-align: center;
         span {

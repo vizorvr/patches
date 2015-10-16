@@ -1859,7 +1859,6 @@ Application.prototype.onAccountMenuClicked = function() {
 
 Application.prototype.useCustomBootboxTemplate = function(template) {
 	$('.modal-content').hide().html(template).show();
-	$('.bootbox-close-button').attr('style','');
 }
 
 Application.prototype.start = function() {
@@ -1986,8 +1985,6 @@ Application.prototype.start = function() {
 	E2.app.changeControlState()
 
 
-	E2.ui.showFirstTimeDialog();
-	
 	$('[data-toggle="popover"]').popover({
 			container: 'body',
 			trigger: 'hover',
@@ -2028,6 +2025,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
 			}
 		}
+
+		E2.ui.showFirstTimeDialog();
 	}
 
 	if (!loadGraphUrl && !boot.hasEdits) {
@@ -2039,7 +2038,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 		E2.app.loadGraph(loadGraphUrl, start)
 	else
 		E2.app.setupEditorChannel().then(start)
-	
+
+
 }
 
 Application.prototype.setupChat = function() {

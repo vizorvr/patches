@@ -107,6 +107,9 @@ VizorUI.prototype.openLoginModal = function() {
 	return E2.controllers.account.openLoginModal();
 }
 
+VizorUI.prototype.openSignupModal = function() {
+	return E2.controllers.account.openSignupModal();
+}
 
 VizorUI.prototype.onSearchResultsChange = function() {
   var presetsLib = E2.dom.presetsLib;
@@ -580,39 +583,26 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 	if (!E2.util.isFirstTime())
 		return;
 
-	Cookies.set('vizor050', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
+	var that = this;
 
-	var firstTimeTemplate = E2.views.account.firsttime;
-	var diag = bootbox.dialog({
-		message: 'Rendering',
-		onEscape: true,
-		html: true
-	}).init(function() {
-		E2.app.useCustomBootboxTemplate(firstTimeTemplate);
-	});
+	Cookies.set('vizor100', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
-	diag.find('.modal-dialog').addClass('welcome');
-
-	diag.find('.login').on('click', function(evt)
-	{
+	var welcomeModal = VizorUI.modalOpen(
+		E2.views.account.firsttime({user:E2.models.user.toJSON()}),
+		'nopad welcome'
+	);
+	welcomeModal.find('a.login').on('click', function(evt) {
 		evt.preventDefault();
-		bootbox.hideAll();
-		E2.controllers.account.openLoginModal();
+		VizorUI.modalClose();
+		that.openLoginModal();
+		return false;
 	});
-
-	diag.find('.signup').on('click', function(evt)
-	{
+	welcomeModal.find('a.signup').on('click', function(evt) {
 		evt.preventDefault();
-		bootbox.hideAll();
-		E2.controllers.account.openSignupModal();
+		VizorUI.modalClose();
+		that.openSignupModal();
+		return false;
 	});
-
-	diag.find('button#welcome-gs').on('click', function(evt)
-	{
-		evt.preventDefault();
-		bootbox.hideAll();
-	});
-
 }
 
 VizorUI.prototype.updateProgressBar = function(percent) {
@@ -639,3 +629,31 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 			$(this).fadeOut('slow');
 	}});
 }
+
+
+/***** HELPER METHODS *****/
+
+VizorUI.isLoggedIn = function() {
+	var user = E2.models.user.toJSON();
+	return (typeof user.username !== 'undefined') && (user.username !== '');
+}
+
+VizorUI.getUser = function() {
+	return E2.models.user.toJSON();
+}
+
+/***** INTERIM MODAL LAYER *****/
+VizorUI.modalOpen = function(html, className, allowclose) {
+	allowclose = (typeof allowclose !== 'undefined') ? !!allowclose : true;
+	var opts = {
+		message: html,
+		onEscape: allowclose,
+		backdrop: allowclose
+	};
+	if (typeof className !== 'undefined') opts.className = className;
+	return bootbox.dialog(opts)
+};
+
+VizorUI.modalClose = function() {
+	bootbox.hideAll();
+};

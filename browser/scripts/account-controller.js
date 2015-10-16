@@ -174,14 +174,8 @@ AccountController.prototype.openLoginModal = function(dfd) {
 	var loginTemplate = E2.views.account.login;
 
 	ga('send', 'event', 'account', 'open', 'loginModal');
-	
-	var bb = bootbox.dialog({
-		animate: false,
-		show: true,
-		message: 'Rendering',
-	}).init(function() {
-		E2.app.useCustomBootboxTemplate(loginTemplate());
-	});
+
+	var bb = VizorUI.modalOpen(loginTemplate())
 
 	this._bindEvents(bb, dfd);
 
@@ -223,9 +217,10 @@ AccountController.prototype.openLoginModal = function(dfd) {
 }
 
 AccountController.prototype.openSignupModal = function(dfd) {
+	if (E2.models.user)
 	var that = this;
 	var dfd = dfd || when.defer();
-	var signupTemplate = E2.views.account.signup;
+	var signupTemplate = E2.views.account.signup();
 	
 	ga('send', 'event', 'account', 'open', 'signupModal');
 
@@ -233,9 +228,7 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	{
 		show: true,
 		animate: false,
-		message: 'Rendering',
-	}).init(function() {
-		E2.app.useCustomBootboxTemplate(signupTemplate);
+		message: signupTemplate
 	});
 
 	this._bindEvents(bb, dfd);
@@ -397,9 +390,9 @@ AccountController.prototype.fillAccountForm = function() {
 	var nameIn = $('#name_id');
 	var unameIn = $('#username_id');
 	var emailIn = $('#email_id');
-	nameIn.val(E2.models.user.get('name'));
-	unameIn.val(E2.models.user.get('username'));
-	emailIn.val(E2.models.user.get('email'));
+//	nameIn.val(E2.models.user.get('name'));
+//	unameIn.val(E2.models.user.get('username'));
+//	emailIn.val(E2.models.user.get('email'));
 	
 	if (nameIn.val())
 		nameIn.parent().find('label').addClass('filled-label');
@@ -412,7 +405,7 @@ AccountController.prototype.fillAccountForm = function() {
 AccountController.prototype.openAccountModal = function(dfd) {
 	var that = this;
 	var dfd = dfd || when.defer();
-	var accountTemplate = E2.views.account.account;
+	var accountTemplate = E2.views.account.account(E2.models.user.attributes);
 	
 	ga('send', 'event', 'account', 'open', 'accountModal');
 	
@@ -420,9 +413,8 @@ AccountController.prototype.openAccountModal = function(dfd) {
 	{
 		show: true,
 		animate: false,
-		message: 'Rendering',
+		message: accountTemplate,
 	}).init(function() {
-		E2.app.useCustomBootboxTemplate(accountTemplate);
 		that.fillAccountForm();
 	});
 
