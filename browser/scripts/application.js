@@ -1242,23 +1242,6 @@ Application.prototype.onKeyDown = function(e) {
 	{
 		this.alt_pressed = true;
 	}
-	else if(e.keyCode === 32) // space
-	{
-		if(this.player.current_state === this.player.state.PLAYING)
-		{
-			if(this.ctrl_pressed)
-				this.onPauseClicked();
-			else
-				this.onStopClicked();
-		}
-		else
-		{
-			this.onPlayClicked();
-		}
-
-		e.preventDefault();
-		return false;
-	}
 
 
 	// number keys
