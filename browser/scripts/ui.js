@@ -554,7 +554,6 @@ VizorUI.prototype.setWorldEditorMode = function(is_active) {
 	
 	dom.btnSavePatch.attr('disabled',is_active);
 	dom.btnInspector.attr('disabled',is_active);
-	dom.btnSavePatch.attr('disabled',is_active);
 	dom.btnZoomOut.attr('disabled',is_active);
 	dom.btnZoom.attr('disabled',is_active);
 	dom.btnZoomIn.attr('disabled',is_active);
