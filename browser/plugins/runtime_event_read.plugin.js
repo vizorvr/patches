@@ -6,15 +6,22 @@ function RunTimeEventReadPlugin(core, node) {
 		dt: E2.dt.TEXT
 	}]
 
-	this.output_slots = [{
-		name: 'data',
-		dt: E2.dt.ANY
-	}]
+	this.output_slots = [
+		{
+			name: 'triggered',
+			dt: E2.dt.BOOL
+		},
+		{
+			name: 'data',
+			dt: E2.dt.ANY
+		}
+	]
 
 	this.node = node
 
 	this.value = null
 	this.frames = 0
+	this.triggered = false
 	this._handleMessageBound = this._handleMessage.bind(this)
 
 	this.lsg = new LinkedSlotGroup(core, node, 
@@ -31,6 +38,7 @@ RunTimeEventReadPlugin.prototype.connection_changed = function(on, conn, slot) {
 RunTimeEventReadPlugin.prototype._handleMessage = function(messageData) {
 	this.value = messageData
 	this.frames = 0
+	this.triggered = true
 	this.node.queued_update = 1
 	this.updated = true
 }
@@ -50,11 +58,16 @@ RunTimeEventReadPlugin.prototype.update_input = function(slot, data) {
 }
 
 RunTimeEventReadPlugin.prototype.update_state = function() {
-	if (this.frames++ > 0)
+	if (this.frames++ > 0) {
+		this.triggered = false
 		this.value = this.lsg.core.get_default_value(this.lsg.dt)
+	}
 }
 
-RunTimeEventReadPlugin.prototype.update_output = function() {
+RunTimeEventReadPlugin.prototype.update_output = function(slot) {
+	if (slot.index === 0)
+		return this.triggered
+
 	return this.value
 }
 
