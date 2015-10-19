@@ -1423,10 +1423,6 @@ Application.prototype.loadGraph = function(graphPath, cb) {
 }
 
 Application.prototype.onSaveAsPresetClicked = function() {
-	this.openPresetSaveDialog()
-}
-
-Application.prototype.onSaveSelectionAsPresetClicked = function() {
 	var graph = this.selectionToObject(this.selectedNodes, this.selectedConnections)
 	this.openPresetSaveDialog(JSON.stringify({ root: graph }))
 }
@@ -1951,7 +1947,6 @@ Application.prototype.start = function() {
 
 	E2.dom.saveACopy.click(E2.app.onSaveACopyClicked.bind(E2.app))
 	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
-	E2.dom.saveSelectionAsPreset.click(E2.app.onSaveSelectionAsPresetClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
 	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
@@ -2148,7 +2143,6 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
 	E2.dom.saveAsPreset = $('#save-as-preset');
-	E2.dom.saveSelectionAsPreset = $('#save-selection-as-preset');
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
 	E2.dom.structure = $('#structure');
