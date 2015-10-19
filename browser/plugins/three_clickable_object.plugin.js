@@ -1,12 +1,14 @@
 (function() {
 	var ThreeClickableObject = E2.plugins.three_clickable_object = function(core) {
-		this.desc = 'Clickable object. When gaze clicking on this object' +
-		            '\'objectClicked\' events are sent. objectClicked events' +
-		             'can be caught using the \'On Runtime Event\' plugin.'
+		this.desc = 'Clickable object. When gaze clicking on this object, ' +
+		            '\'objectClicked\' events are sent. objectClicked events ' +
+		             'can be received by using the \'On Runtime Event\' plugin.'
+
 		Plugin.apply(this, arguments)
 
 		this.input_slots = [
 			{name: 'object3d', dt: core.datatypes.OBJECT3D},
+			{name: 'eventName', dt: core.datatypes.TEXT, def: 'objectClicked'},
 		]
 
 		this.output_slots = [
