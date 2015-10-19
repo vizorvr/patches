@@ -207,7 +207,7 @@ E2.util = {
 		}
 		else if (E2.util.isMobile()) {
 			$dialog = bootbox.dialog({
-				title: '<h3>Mobile support</h3>',
+				title: 'Mobile support',
 				message: '<h4>Please view this page on your desktop/laptop. '+
 						 'The editor is not ready for mobile just yet.</h4>',
 				onEscape: true,
@@ -225,7 +225,7 @@ E2.util = {
 		}
 		else {
 		   $dialog = bootbox.dialog({
-				title: '<h3>Browser support</h3>',
+				title: 'Browser support',
 				message: '<h4>We want you to fully enjoy Vizor. Please use '+
 						 '<a href="http://www.google.com/chrome/" target="_'+
 						 'blank" alt="Get Chrome">Chrome</a> or <a href="ht'+

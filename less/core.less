@@ -1044,6 +1044,15 @@ button.show-timeline:hover svg {
 	width: 49.5%;
 	text-align: left;
 	&.left {float:left;}
-	&.right {float:right;}
+	&:first-child {float:left}
+	&.right {
+	  float:right;
+	  &.pull {text-align:right}
+	}
+	&:last-child {
+	  float:right;
+	  &.pull {text-align:right}
+	}
+
   }
 }

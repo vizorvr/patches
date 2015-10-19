@@ -44,7 +44,7 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	$(document).on("shown.bs.modal", function() {
 		$('.bootbox-close-button').html('<svg class="icon-dialog-close">'
 									  + '<use xlink:href="#icon-close"></use></svg>')
-								  .attr('style','');
+								  .attr('style','opacity:1');
 	});
 };
 
@@ -568,6 +568,7 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 
 	var welcomeModal = VizorUI.modalOpen(
 		E2.views.account.firsttime({user:E2.models.user.toJSON()}),
+		null,
 		'nopad welcome'
 	);
 	welcomeModal.find('a.login').on('click', function(evt) {
@@ -622,13 +623,14 @@ VizorUI.getUser = function() {
 }
 
 /***** INTERIM MODAL LAYER *****/
-VizorUI.modalOpen = function(html, className, allowclose) {
+VizorUI.modalOpen = function(html, heading, className, allowclose) {
 	allowclose = (typeof allowclose !== 'undefined') ? !!allowclose : true;
 	var opts = {
 		message: html,
 		onEscape: allowclose,
 		backdrop: allowclose
 	};
+	if ((typeof heading !== 'undefined') && heading) opts.title = heading;
 	if (typeof className !== 'undefined') opts.className = className;
 	return bootbox.dialog(opts)
 };

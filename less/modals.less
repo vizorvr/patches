@@ -84,12 +84,9 @@
                     margin: 0;
                     line-height: 1;
                 } 
-                button.bootbox-close-button {
-                    right: 28px;
-                    top: 50%;
-                    margin: -18px -25px 0 0;
-                }
+
             }
+
             .modal-body {
                 background: @bg-light;
                 padding: 22px 40px 18px;
@@ -202,20 +199,9 @@
                 }
                 button {
                     display: block;
-				  // gm: NO
-//				  	float: left;
                   	position: relative;
                     border-radius: 4px;
                     background: @bg-bright;
-                    &.bootbox-close-button {
-                        background: transparent;
-                        opacity: 1;
-                        float: none;
-                        position: absolute;
-                        right: 2px;
-                        top: 10px;
-                        margin: 0;
-                    }
                 }
                 button.sign-btn {
                     width: 100%;
@@ -414,6 +400,9 @@
 }
 .bootbox.modal.nopad {
   .modal-content, .modal-body {padding:0;}
+  .modal-body form {
+	margin: 20px 40px;
+  }
 }
 
 .modal.login {
@@ -426,14 +415,25 @@
 	margin: 0;
 	padding: 18px;
   }
-  form {
-	margin: 20px 40px;
-  }
   div.modal-footer {
 	background: rgba(0,0,0,0.2);
 	font-size: 12px;
 	font-weight: 500;
 	color: #ccc;
+  }
+}
+
+div.bootbox.modal {
+  .modal-header, .modal-content {	// necessary for selector weight
+	button.bootbox-close-button {
+		background: transparent;
+		opacity: 0;		// js will set this to 1 when replaced with svg button
+		float: none;
+		position: absolute;
+		right: 2px;
+		top: 9px;
+		margin: 0;
+	}
   }
 }
 

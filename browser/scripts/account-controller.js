@@ -132,7 +132,7 @@ AccountController.prototype._bindEvents = function(el, dfd)
 			that.showError('email',errText);
 		}
 	});
-	
+
 	$('#signup-form_id .form-input input').on('keyup keypress blur change', function() {
 		if (that.checkSignupFields()) {
 			$('#sign-up-btn').removeClass('disabled');
@@ -162,16 +162,11 @@ AccountController.prototype._bindEvents = function(el, dfd)
 		that.openForgotPasswordModal(dfd);
 	});
 	
-	$('a.change-password', el).on('click', function(evt)
-	{
-		evt.preventDefault();
-		bootbox.hideAll();
-		that.openResetPasswordModal(dfd);
-	});
+
 	$('a.account', el).on('click', function(evt)
 	{
 		evt.preventDefault();
-		bootbox.hideAll();
+		VizorUI.modalClose();
 		that.openAccountModal(dfd);
 		if (E2.dom.userPullDown.is(':visible'))
 			E2.dom.userPullDown.hide();
@@ -185,7 +180,7 @@ AccountController.prototype.openLoginModal = function(dfd) {
 
 	ga('send', 'event', 'account', 'open', 'loginModal');
 
-	var bb = VizorUI.modalOpen(loginTemplate(), 'nopad login')
+	var bb = VizorUI.modalOpen(loginTemplate(), null, 'nopad login')
 
 	this._bindEvents(bb, dfd);
 
@@ -343,16 +338,8 @@ AccountController.prototype.openResetPasswordModal = function(dfd) {
 	var resetTemplate = E2.views.account.reset;
 	
 	ga('send', 'event', 'account', 'open', 'resetModal');
-	
-	var bb = bootbox.dialog(
-	{
-		show: true,
-		animate: false,
-		message: 'Rendering',
-	}).init(function() {
-		E2.app.useCustomBootboxTemplate(resetTemplate);
-	});
 
+	var bb = VizorUI.modalOpen(resetTemplate, null, 'nopad');
 	this._bindEvents(bb, dfd);
 	
 	var formEl = $('#reset-form_id');
@@ -392,41 +379,38 @@ AccountController.prototype.openResetPasswordModal = function(dfd) {
 	return dfd.promise
 }
 
-AccountController.prototype.fillAccountForm = function() {
+AccountController.prototype.checkAccountFormFilled = function() {
 	var formEl = $('#account-modal-form');
-	var nameIn = $('#name_id');
-	var unameIn = $('#username_id');
-	var emailIn = $('#email_id');
-//	nameIn.val(E2.models.user.get('name'));
-//	unameIn.val(E2.models.user.get('username'));
-//	emailIn.val(E2.models.user.get('email'));
-	
-	if (nameIn.val())
-		nameIn.parent().find('label').addClass('filled-label');
-	if (unameIn.val())
-		unameIn.parent().find('label').addClass('filled-label');
-	if (emailIn.val())
-		emailIn.parent().find('label').addClass('filled-label');
+	var nameIn = $('#name_id', formEl);
+	var unameIn = $('#username_id', formEl);
+	var emailIn = $('#email_id', formEl);
+
+	nameIn.parent().find('label').toggleClass('filled-label', !!nameIn.val());
+	unameIn.parent().find('label').toggleClass('filled-label', !!unameIn.val());
+	emailIn.parent().find('label').toggleClass('filled-label', !!emailIn.val());
 }
 
 AccountController.prototype.openAccountModal = function(dfd) {
 	var that = this;
 	var dfd = dfd || when.defer();
-	var accountTemplate = E2.views.account.account(E2.models.user.attributes);
-	
+	var accountTemplate = E2.views.account.account({user: E2.models.user.toJSON()});
+
 	ga('send', 'event', 'account', 'open', 'accountModal');
-	
-	var bb = bootbox.dialog(
-	{
-		show: true,
-		animate: false,
-		message: accountTemplate,
-	}).init(function() {
-		that.fillAccountForm();
+
+	var bb = VizorUI.modalOpen(accountTemplate, null, 'nopad', true)
+	this.checkAccountFormFilled();
+	jQuery('a#changePasswordLink', bb).on('click', function(evt) {
+		evt.preventDefault();
+		VizorUI.modalClose();
+		that.openResetPasswordModal(dfd);
+	});
+	jQuery('a#changePasswordLink', bb).on('click', function(evt) {
+		evt.preventDefault();
+		VizorUI.modalClose();
+		that.openResetPasswordModal(dfd);
 	});
 
-	this._bindEvents(bb, dfd);
-	
+
 	var formEl = $('#account-modal-form');
 	formEl.submit(function( event ) {
 		event.preventDefault();
