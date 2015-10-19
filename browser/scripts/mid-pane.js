@@ -3,7 +3,7 @@
 function MidPane() {
 	this._tabs = []
 
-	this._$pane = $('#mid-pane')
+	this._$pane = $('#shader-block')
 	this._$tabs = $('ul.nav-tabs', this._$pane)
 	this._$tabContent = $('.tab-content', this._$pane)
 }
