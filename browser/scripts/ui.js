@@ -5,15 +5,17 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom = dom || this.dom;
 	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2);
 
-	// things that live elsewhere are called elsewhere
+	this.on(uiEvent.worldEditChanged, function(isActive){	// this = ui
+		this.state.viewCamera = (isActive) ? uiViewCam.world_editor : uiViewCam.vr;
+		this.applyVisibility()
+	}.bind(this));
 	dom.btnGraph.click(e2.app.toggleNoodles.bind(e2.app));
-	dom.btnAccountMenu.click(e2.app.onAccountMenuClicked.bind(e2.app));
 
-
-	E2.controllers.account.on('redrawn', function() {
-		dom.btnAccountMenu = $('.btn-account-top')
-		dom.btnAccountMenu.click(e2.app.onAccountMenuClicked.bind(e2.app));
-	})
+	e2.controllers.account.on('redrawn', function() {
+		dom.btnAccountMenu = $('.btn-account-top');
+		dom.btnAccountMenu.click(this.toggleAccountDropdown.bind(this));
+	}.bind(this));
+	dom.btnAccountMenu.click(this.toggleAccountDropdown.bind(this));
 
 	// menu shell
 	dom.btnSignIn.click(this.openLoginModal.bind(this));
@@ -35,8 +37,9 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.presetsClose.click(this.onPresetsCloseClicked.bind(this));
 	dom.presetsToggle.click(this.onPresetsToggleClicked.bind(this));
 
-	jQuery('div#presets-lib ul li').last().find('a').click(this.onTreeClicked.bind(this));
-	jQuery('div#presets-lib ul li').first().find('a').click(this.updateState.bind(this));
+	var $presetsLibItems = jQuery('div#presets-lib ul li');
+	$presetsLibItems.last().find('a').click(this.onTreeClicked.bind(this));
+	$presetsLibItems.first().find('a').click(this.updateState.bind(this));
 
 	$(document).on("shown.bs.modal", function() {
 		$('.bootbox-close-button').html('<svg class="icon-dialog-close">'
@@ -47,6 +50,7 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	e2.app.onWindowResize();
+	this.setWorldEditorMode(this.state.viewCamera === uiViewCam.world_editor);
 
 	this._init(e2);
 	this.setupEventHandlers(e2,this.dom);
@@ -67,8 +71,6 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	}
 	dom.chatWindow.css({'top': chatTop});
 	dom.chatWindow.movable();
-
-	this.setWorldEditorMode(e2.app.worldEditor.isActive());
 
 	this.setPageTitle();
 
@@ -92,11 +94,6 @@ VizorUI.prototype.showLoadingIndicator = function() {
 	this.updateProgressBar(10);
 }
 
-/***** MODAL DIALOGS/WINDOWS *****/
-// stubs
-// VizorUI.prototype.openModal
-// VizorUI.prototype.closeModal
-
 VizorUI.prototype.setPageTitle = function() {
 	var isLoggedIn = E2.models.user.get('username');
 	if (!isLoggedIn)
@@ -114,6 +111,16 @@ VizorUI.prototype.setPageTitle = function() {
 	return newTitle;
 }
 
+VizorUI.prototype.toggleAccountDropdown = function() {	//
+	var username = E2.models.user.get('username')
+	if (username) {
+		this.dom.userPullDown.toggle();
+	}
+	return false;
+}
+
+/***** MODAL DIALOGS/WINDOWS *****/
+
 VizorUI.prototype.openLoginModal = function() {
 	return E2.controllers.account.openLoginModal();
 }
@@ -121,27 +128,6 @@ VizorUI.prototype.openLoginModal = function() {
 VizorUI.prototype.openSignupModal = function() {
 	return E2.controllers.account.openSignupModal();
 }
-
-VizorUI.prototype.onSearchResultsChange = function() {
-  var presetsLib = E2.dom.presetsLib;
-  var resultsCount = $('.result.table tbody').children().length;  
-	var presetsList = presetsLib.find('.preset-list-container');
-	var maxHeight = presetsList.css('maxHeight');
-	if (resultsCount>0) {
-		presetsLib.removeClass('collapsed');
-		presetsList.show();
-		var resultsHeight = $('.result.table').outerHeight(true);
-		var newHeight = resultsHeight;
-		newHeight = ( newHeight >= maxHeight ) ? (maxHeight) : (newHeight);
-		presetsLib.height('auto');
-		presetsList.height(newHeight);
-	}
-	 else {
-		presetsLib.height('auto');
-		presetsList.height(maxHeight);
-	}
-	this.updateState();
-};
 
 VizorUI.prototype.openPublishGraphModal = function() {
 	var dfd = when.defer()
@@ -211,6 +197,29 @@ VizorUI.prototype.openPublishGraphModal = function() {
 	return dfd.promise
 }
 
+/***** EVENT HANDLERS *****/
+
+VizorUI.prototype.onSearchResultsChange = function() {
+  var presetsLib = E2.dom.presetsLib;
+  var resultsCount = $('.result.table tbody').children().length;
+	var presetsList = presetsLib.find('.preset-list-container');
+	var maxHeight = presetsList.css('maxHeight');
+	if (resultsCount>0) {
+		presetsLib.removeClass('collapsed');
+		presetsList.show();
+		var resultsHeight = $('.result.table').outerHeight(true);
+		var newHeight = resultsHeight;
+		newHeight = ( newHeight >= maxHeight ) ? (maxHeight) : (newHeight);
+		presetsLib.height('auto');
+		presetsList.height(newHeight);
+	}
+	 else {
+		presetsLib.height('auto');
+		presetsList.height(maxHeight);
+	}
+	this.updateState();
+};
+
 VizorUI.prototype.onBtnPresetsClicked = function() {
 	if (!this.isVisible()) return false;
 	this.state.visibility.panel_presets = !this.state.visibility.panel_presets;
@@ -226,40 +235,14 @@ VizorUI.prototype.onBtnAssetsClicked = function() {
 }
 
 VizorUI.prototype.enterEditorView = function() {
-	var isActive = E2.app.worldEditor.isActive()
-	var btnEditorCam = this.dom.btnEditorCam;
-	var btnVRCam = this.dom.btnVRCam;
-	if (!isActive) {
-		E2.app.worldEditor.activate()
-	}
-	isActive = E2.app.worldEditor.isActive()
-
-	this.setWorldEditorMode(isActive)
-	
-	btnEditorCam.attr('disabled', isActive).popover('hide');
-	btnEditorCam.parent().toggleClass('active');
-	btnVRCam.attr('disabled', !isActive).popover('hide');
-	btnVRCam.parent().toggleClass('active');
-
-	return isActive;
+	if ((this.state.viewCamera === uiViewCam.world_editor) && E2.app.worldEditor.isActive()) return false;
+	E2.app.toggleWorldEditor(true);
+	return false;
 }
 VizorUI.prototype.enterVRView = function() {
-	var isActive = E2.app.worldEditor.isActive()
-	var btnEditorCam = this.dom.btnEditorCam;
-	var btnVRCam = this.dom.btnVRCam;
-	if (isActive) {
-		E2.app.worldEditor.deactivate()
-	}
-	isActive = E2.app.worldEditor.isActive()
-
-	this.setWorldEditorMode(isActive)
-	
-	btnEditorCam.attr('disabled', isActive).popover('hide');
-	btnEditorCam.parent().toggleClass('active');
-	btnVRCam.attr('disabled', !isActive).popover('hide');
-	btnVRCam.parent().toggleClass('active');
-
-	return isActive;
+	if ((this.state.viewCamera === uiViewCam.vr) && !E2.app.worldEditor.isActive()) return false;
+	E2.app.toggleWorldEditor(false);
+	return false;
 }
 
 VizorUI.prototype.onChatResize = function() {
@@ -498,7 +481,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 	var that = this
 	var username = E2.models.user.get('username')
 	if (!username) {
-		return E2.controllers.account.openLoginModal()
+		return this.openLoginModal();
 	}
 
 	var presetsPath = '/'+username+'/presets/'
@@ -552,22 +535,8 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 	})
 };
 
-VizorUI.prototype.setWorldEditorMode = function(is_active) {
-	var dom = this.dom;
-	is_active = !!is_active;	// force bool
-	if (is_active) 
-		this.state.viewmode = uiViewMode.world_editor;
-	else 
-		this.state.viewmode = uiViewMode.patch_editor;
-	
-	dom.btnSavePatch.attr('disabled',is_active);
-	dom.btnInspector.attr('disabled',is_active);
-	dom.btnZoomOut.attr('disabled',is_active);
-	dom.btnZoom.attr('disabled',is_active);
-	dom.btnZoomIn.attr('disabled',is_active);
-	
-	dom.btnScale.attr('disabled',!is_active);
-	dom.btnRotate.attr('disabled',!is_active);
+VizorUI.prototype.setWorldEditorMode = function(isActive) {
+	return E2.app.toggleWorldEditor(isActive);	// E2.app will emit an event back at us
 };
 
 

@@ -1136,20 +1136,17 @@ Application.prototype.toggleNoodles = function() {
 	E2.ui.togglePatchEditor(this.noodlesVisible);
 }
 
-Application.prototype.toggleWorldEditor = function() {
-	var is_active = this.worldEditor.isActive()
-	if (is_active) {
-		this.worldEditor.deactivate()
-	}
-	else {
+Application.prototype.toggleWorldEditor = function(forceState) {
+	var newActive = (typeof forceState !== 'undefined') ? forceState : !this.worldEditor.isActive()
+	if (newActive) {
 		this.worldEditor.activate()
 	}
-	is_active = this.worldEditor.isActive()
-
-	if (E2.ui)
-		E2.ui.setWorldEditorMode(is_active)
-
-	return is_active
+	else {
+		this.worldEditor.deactivate()
+	}
+	var isActive = this.worldEditor.isActive()
+	E2.ui.emit(uiEvent.worldEditChanged, isActive)
+	return isActive
 }
 
 Application.prototype.isVRCameraActive = function() {
@@ -1829,12 +1826,6 @@ Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
 
-Application.prototype.onAccountMenuClicked = function() {
-	var username = E2.models.user.get('username')
-	if (username) {
-		E2.dom.userPullDown.toggle();
-	}
-}
 
 Application.prototype.useCustomBootboxTemplate = function(template) {
 	$('.modal-content').hide().html(template).show();
