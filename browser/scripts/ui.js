@@ -632,7 +632,7 @@ VizorUI.modalOpen = function(html, heading, className, allowclose) {
 	};
 	if ((typeof heading !== 'undefined') && heading) opts.title = heading;
 	if (typeof className !== 'undefined') opts.className = className;
-	return bootbox.dialog(opts)
+	return bootbox.dialog(opts);
 };
 
 VizorUI.modalClose = function() {

@@ -173,9 +173,18 @@ function parseErrors(errors) {
  */
 
  exports.getAccount = function(req, res) {
- 	res.render('account/profile', {
- 		title: 'Account Management'
- 	})
+	var wantJSON = req.xhr;
+	User.findById(req.user.id, function(err, user) {
+		if (err) return next(err)
+		if (wantJSON) {
+			return res.json({'user': user.toJSON()});
+		}
+		else {
+			res.render('account/profile', {
+				title: 'Account Management'
+			})
+		}
+	});
  }
 
 /**
@@ -184,6 +193,8 @@ function parseErrors(errors) {
  */
 
  exports.postUpdateProfile = function(req, res, next) {
+	req.sanitize('name').trim();
+	req.sanitize('email').trim();
  	req.assert('email', 'Email is not valid').isEmail()
  	req.assert('name', 'Name is not valid').notEmpty()
 
@@ -210,7 +221,7 @@ function parseErrors(errors) {
  				return next(err)
 
  			if (wantJson)
-	 			res.json({})
+				return res.json({success: true, message:'Account details updated.', user: user.toJSON()})
 	 		else
 	 			res.redirect('/account')
  		})
@@ -225,12 +236,17 @@ function parseErrors(errors) {
 
  exports.postUpdatePassword = function(req, res, next) {
  	req.assert('password', 'Password must be at least 8 characters long').len(8)
+	var wantJSON = req.xhr;
 
  	var errors = req.validationErrors()
 
  	if (errors) {
- 		req.flash('errors', parseErrors(errors))
- 		return res.redirect('/account')
+		if (!wantJSON) {
+			req.flash('errors', parseErrors(errors))
+			return res.redirect('/account')
+		} else {
+			return res.status(400).json(errors)
+		}
  	}
 
  	User.findById(req.user.id, function(err, user) {
@@ -240,8 +256,12 @@ function parseErrors(errors) {
 
  		user.save(function(err) {
  			if (err) return next(err)
- 			req.flash('success', { message: 'Password has been changed.' })
- 			res.redirect('/account')
+			if (wantJSON) {
+				return res.json({success: true, message:'Password has been changed.', user: user.toJSON()})
+			} else {
+				req.flash('success', { message: 'Password has been changed.' })
+				res.redirect('/account')
+			}
  		})
  	})
  }

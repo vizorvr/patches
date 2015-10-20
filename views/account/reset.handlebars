@@ -1,11 +1,11 @@
 <h3>Change Password</h3>
 
-<form action="/reset/{{token}}" id="reset-form_id" class="panel" method="POST">
+<form action="/account/password" id="resetpasswordform" class="panel" method="POST">
     <input type="hidden" name="_csrf" value={{_csrf}}>
 
     <div class="form-input">
-        <label for="password_id">Password</label>
-        <input type="password" name="password" id="password_id" placeholder="" tabindex="-1">
+        <label for="passwordinput">Password</label>
+        <input type="password" name="password" id="passwordinput" tabindex="1">
     </div>
 
     <div class="modal-error" id="password-error">
@@ -13,8 +13,8 @@
     </div>
 
     <div class="form-input">
-        <label for="password-confirm_id">Confirm password</label>
-        <input type="password" name="confirm" id="password-confirm_id" placeholder="">
+        <label for="confirmpasswordinput">Confirm password</label>
+        <input type="password" name="confirm" id="confirmpasswordinput" tabindex="2">
     </div>
 
     <div class="modal-error" id="confirm-error">
