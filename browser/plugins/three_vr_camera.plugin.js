@@ -20,7 +20,7 @@
 			{ name: 'position', dt: core.datatypes.VECTOR },
 			{ name: 'fov', dt: core.datatypes.FLOAT, def: this.defaultFOV },
 			{ name: 'aspectRatio', dt: core.datatypes.FLOAT, def: 1.0},
-			{ name: 'near', dt: core.datatypes.FLOAT, def: 1.0 },
+			{ name: 'near', dt: core.datatypes.FLOAT, def: 0.001 },
 			{ name: 'far', dt: core.datatypes.FLOAT, def: 1000.0 }
 		]
 
@@ -42,7 +42,7 @@
 		this.perspectiveCamera = new THREE.PerspectiveCamera(
 			this.defaultFOV,
 			this.domElement.clientWidth / this.domElement.clientHeight,
-			0.1,
+			0.001,
 			1000)
 
 		this.controls = new THREE.VRControls(this.perspectiveCamera)

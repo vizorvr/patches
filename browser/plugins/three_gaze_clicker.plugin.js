@@ -5,10 +5,14 @@
 
 		this.core = core
 
+		this.iconDistance = 0.02914
+
 		this.input_slots = [
 			{name: 'camera', dt: core.datatypes.CAMERA},
 			{name: 'scene', dt: core.datatypes.SCENE},
-			{name: 'delay', dt: core.datatypes.FLOAT, def: 1.0}
+			{name: 'delay', dt: core.datatypes.FLOAT, def: 1.0},
+			{name: 'eye distance', dt: core.datatypes.FLOAT, def: this.iconDistance,
+			 desc: 'Eye Distance for Gaze Clicker icon in VR'}
 		]
 
 		this.output_slots = [
@@ -43,6 +47,15 @@
 		default:
 			break
 		}
+
+		// 'debug' option to move the gaze clicker eye distance
+		if (slot.name === 'eye distance') {
+			this.iconDistance = data
+			if (this.scene.children[1].children.indexOf(this.object3d) >= 0) {
+				this.scene.children[1].remove(this.object3d)
+			}
+			this.object3d = undefined
+		}
 	}
 
 	ThreeGazeClicker.prototype.update_output = function() {
@@ -56,7 +69,7 @@
 	}
 
 	// geometry ---
-	ThreeGazeClicker.prototype.GeometryGenerator = function() {
+	ThreeGazeClicker.prototype.GeometryGenerator = function(parent) {
 		this.type = 'Gaze Aim'
 
 		this.segments = 16
@@ -69,26 +82,40 @@
 
 			that.dynamic = true
 
-			for (j = 0; j < that.segments + 1; j++) {
-				for (i = 0; i < that.radialMarkers.length; i++) {
-					that.vertices.push(new THREE.Vector3())
+			var i, j, clickerIdx
+
+			// clickerIdx:
+			//   -1 = left eye
+			//    0 = mono
+			//    1 = right eye
+			for (clickerIdx = -1; clickerIdx < 2; clickerIdx++) {
+				for (j = 0; j < that.segments + 1; j++) {
+					for (i = 0; i < that.radialMarkers.length; i++) {
+						that.vertices.push(new THREE.Vector3())
+					}
 				}
 			}
-
 			var normal = new THREE.Vector3(0,0,1)
 
-			for (var j = 0; j < that.segments; j++) {
-				for (var i = 0; i < that.radialMarkers.length; i+=2) {
-					var faceidxa = (j) * that.radialMarkers.length + i
-					var faceidxb = (j) * that.radialMarkers.length + i + 1
-					var faceidxc = (j + 1) * that.radialMarkers.length + i
-					var faceidxd = (j + 1) * that.radialMarkers.length + i + 1
+			// clickerIdx:
+			//   -1 = left eye
+			//    0 = mono
+			//    1 = right eye
+			for (clickerIdx = -1; clickerIdx < 2; clickerIdx++) {
+				var baseIdx = (clickerIdx + 1) * (that.segments + 1) * that.radialMarkers.length
+				for (j = 0; j < that.segments; j++) {
+					for (i = 0; i < that.radialMarkers.length; i += 2) {
+						var faceidxa = baseIdx + (j) * that.radialMarkers.length + i
+						var faceidxb = baseIdx + (j) * that.radialMarkers.length + i + 1
+						var faceidxc = baseIdx + (j + 1) * that.radialMarkers.length + i
+						var faceidxd = baseIdx + (j + 1) * that.radialMarkers.length + i + 1
 
-					that.faces.push(new THREE.Face3(faceidxa, faceidxb, faceidxc, normal))
-					that.faces.push(new THREE.Face3(faceidxb, faceidxd, faceidxc, normal))
+						that.faces.push(new THREE.Face3(faceidxa, faceidxb, faceidxc, normal))
+						that.faces.push(new THREE.Face3(faceidxb, faceidxd, faceidxc, normal))
 
-					that.faces.push(new THREE.Face3(faceidxa, faceidxc, faceidxb, normal))
-					that.faces.push(new THREE.Face3(faceidxb, faceidxc, faceidxd, normal))
+						that.faces.push(new THREE.Face3(faceidxa, faceidxc, faceidxb, normal))
+						that.faces.push(new THREE.Face3(faceidxb, faceidxc, faceidxd, normal))
+					}
 				}
 			}
 		}
@@ -107,29 +134,39 @@
 				radialMarkers[2] = this.radialMarkers[1] + (this.radialMarkers[3] - this.radialMarkers[1]) * (1 - fadeoutfactor)
 			}
 
-			for (var j = 0; j < that.segments + 1; j++) {
-				for (var i = 0; i < radialMarkers.length; i++) {
-					var angle = j / that.segments
+			var i, j, clickerIdx
 
-					// clamp outer ring
-					if (i > 1) {
-						angle = Math.min(angle, fillfactor)
+			// clickerIdx:
+			//   -1 = left eye
+			//    0 = mono
+			//    1 = right eye
+			for (clickerIdx = -1; clickerIdx < 2; clickerIdx++) {
+				var horizOffset = parent.iconDistance * clickerIdx
+
+				for (j = 0; j < that.segments + 1; j++) {
+					for (i = 0; i < radialMarkers.length; i++) {
+						var angle = j / that.segments
+
+						// clamp outer ring
+						if (i > 1) {
+							angle = Math.min(angle, fillfactor)
+						}
+
+						angle *= 3.14159 * 2
+
+						var x = Math.sin(angle)
+						var y = Math.cos(angle)
+
+						var f = radialMarkers[i]
+
+						//if (i > 1) {
+						//	f *= fadeoutfactor
+						//}
+
+						that.vertices[idx].set(x * f * 0.0008 + horizOffset, y * f * 0.0008, -0.01)
+
+						idx++
 					}
-
-					angle *= 3.14159 * 2
-
-					var x = Math.sin(angle)
-					var y = Math.cos(angle)
-
-					var f = radialMarkers[i]
-
-					//if (i > 1) {
-					//	f *= fadeoutfactor
-					//}
-
-					that.vertices[idx].set(x * f, y * f, -0.2)
-
-					idx++
 				}
 			}
 
@@ -144,7 +181,7 @@
 
 	ThreeGazeClicker.prototype.get_mesh = function() {
 		if (!this.object3d) {
-			this.geometry = new this.GeometryGenerator()
+			this.geometry = new this.GeometryGenerator(this)
 			this.material = new THREE.MeshBasicMaterial({color:0xffffff})
 			this.object3d = new THREE.Mesh(this.geometry, this.material)
 		}
@@ -211,7 +248,6 @@
 
 		mesh.position.copy(this.camera.position)
 		mesh.quaternion.copy(this.camera.quaternion)
-		mesh.scale.copy(new THREE.Vector3(0.01, 0.01, 1.0))
 
 		this.geometry.update(this.clickFactor, Math.max(1.0 - Math.max(0.0, this.clickTime - this.clickDelay) * 10.0, 0.0))
 
