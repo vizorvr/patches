@@ -134,65 +134,31 @@ VizorUI.prototype.openPublishGraphModal = function() {
 	var that = this;
 	var publishTemplate = E2.views.filebrowser.publishModal;
 	var graphname = E2.app.path.split('/')
-   
-   if (graphname.length > 1)
+    if (graphname.length > 1)
         graphname = graphname[1];
-	
-	ga('send', 'event', 'account', 'open', 'forgotModal');
-	
-	bootbox.dialog({
-		show: true,
-		animate: false,
-		message: 'Rendering'
-	}).init(function() {
-		E2.app.useCustomBootboxTemplate(publishTemplate);
-		$('#userGraphName_id').val(graphname);
-	})
 
-	var formEl = $('#publish-form_id');
-	formEl.submit(function( event ){
-		event.preventDefault();
-		E2.ui.updateProgressBar(65);
-		
-		var path = $('#userGraphName_id').val();
+	var graphdata = E2.app.player.core.serialise();
+	var data = {
+		path:	graphname,
+		graph:	graphdata
+	};
 
-		if (!path)
-			return bootbox.alert('Please enter a graph name');
+	var openSaveGraph = function(dfd) {
+		ga('send', 'event', 'account', 'open', 'publishGraphModal');
+		var $modal = VizorUI.modalOpen(publishTemplate(data), 'Publish this scene', 'nopad');
+		var $form = $('#publishGraphForm', $modal);
+		VizorUI.setupXHRForm($form, function(saved){
+			ga('send', 'event', 'graph', 'saved')
+			dfd.resolve(saved.path);
+		});
+	}
 
-		var ser = E2.app.player.core.serialise();
-
-		$.ajax({
-			type: 'POST',
-			url: '/graph',
-			data: {
-				path: path,
-				graph: ser
-			},
-			dataType: 'json',
-			success: function(saved) {
-				E2.ui.updateProgressBar(100);
-				ga('send', 'event', 'graph', 'saved')
-				dfd.resolve(saved.path)
-			},
-			error: function(x, t, err) {
-				E2.ui.updateProgressBar(100);
-
-				if (x.status === 401) {
-					return dfd.resolve(
-						E2.controllers.account.openLoginModal()
-							.then(that.openPublishGraphModal.bind(that))
-					)
-				}
-
-				if (x.responseText)
-					bootbox.alert('Publish failed: ' + x.responseText);
-				else
-					bootbox.alert('Publish failed: ' + err);
-
-				dfd.reject(err)
-			}
-		})
-	});
+	if (!VizorUI.userIsLoggedIn()) {
+		E2.controllers.account.openLoginModal()
+			.then(openSaveGraph);
+	} else {
+		openSaveGraph(dfd);
+	}
 
 	return dfd.promise
 }
@@ -615,14 +581,11 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 
 /***** HELPER METHODS *****/
 
-VizorUI.isLoggedIn = function() {
+VizorUI.userIsLoggedIn = function() {
 	var user = E2.models.user.toJSON();
 	return (typeof user.username !== 'undefined') && (user.username !== '');
 }
 
-VizorUI.getUser = function() {
-	return E2.models.user.toJSON();
-}
 
 /***** INTERIM MODAL LAYER *****/
 VizorUI.modalOpen = function(html, heading, className, allowclose, opts) {
@@ -639,6 +602,19 @@ VizorUI.modalOpen = function(html, heading, className, allowclose, opts) {
 VizorUI.modalClose = function() {
 	bootbox.hideAll();
 };
+
+// shorthand
+VizorUI.modalAlert = function(message, heading, className, okLabel) {
+	var opts = {
+		buttons: {
+			OK : {
+				label: okLabel || "OK",
+				callback: function(){}
+			}
+		}
+	}
+	return VizorUI.modalOpen('<p>'+message+'</p>', heading, className, true, opts);
+}
 
 VizorUI.checkCompatibleBrowser = function() {
 	var agent = navigator.userAgent;
@@ -664,7 +640,7 @@ VizorUI.checkCompatibleBrowser = function() {
 }
 
 
-VizorUI.setupGenericAjaxForm = function($form, onSuccess) {	// see views/account/signup for example
+VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup for example
 	if (!($form instanceof jQuery)) {
 		msg("ERROR: $form not a jQuery object")
 		return false;
@@ -702,10 +678,13 @@ VizorUI.setupGenericAjaxForm = function($form, onSuccess) {	// see views/account
 		}
 	});
 
+	var inProgress = false;
+	var $body = jQuery(document.body);
 
 	$form.submit(function(event) {
 
-		// var can_submit = true;
+		if (inProgress) return false;
+
 		// if (!can_submit) return false;
 
 		// future decision on forms without this set
@@ -720,37 +699,66 @@ VizorUI.setupGenericAjaxForm = function($form, onSuccess) {	// see views/account
 
 		var $unknownError = jQuery('#unknown_error', $form);
 		$unknownError.html('').hide();
+		inProgress = true;
+		$body.addClass('loading');
 		jQuery.ajax({
 			type:	'POST',
 			url:	actionURL,
 			data:	formData,
 			dataType: 'json',
 			error: function(err) {
+				inProgress = false;
+				$body.removeClass('loading');
 				console.log(err);
 				if (err.responseJSON) {
+					var errors
 					// validation returns array, but simple responses only have message
-					var errors = (err.responseJSON instanceof Array) ?
-							err.responseJSON  :
-							[{
-								param:	err.responseJSON.param || '',
-								msg:	err.responseJSON.message
-							}];
+					if (err.responseJSON instanceof Array) {
+						errors = err.responseJSON;
+					}
+					else if (err.responseJSON.error && err.responseJSON.error.errors){	// graphController
+						errors = [];
+						var ers = err.responseJSON.error.errors;
+						for (var key in ers) {
+							if (ers.hasOwnProperty(key)) {
+								errors.push({
+									param: key,
+									msg: ers[key].message
+								});
+							}
+						}
+					}
+					else {
+						errors = [{
+							param:	err.responseJSON.param || '',
+							msg:	err.responseJSON.message
+						}];
+					}
 					errors.map(function(ei) {
-						if (ei.param && ei.msg) {
-							$form.find('#f_'+ei.param).addClass('error')
-							.find('span.message').html(ei.msg)
+						var $field = $form.find('#f_'+ei.param);
+						if (ei.param && ei.msg && ($field.length>0)) {
+							$field.addClass('error')
+								.find('span.message').html(ei.msg)
 						} else {
 							// in case no 'param' comes back
-
 							$unknownError.html($unknownError.html() + '<span>'+ (ei.msg || ei.message) + '</span>').show();
 						}
 					});
 				} else {
-					// in case no responseJSON comes back, e.g. just a code
-					$unknownError.html('<span>An error ('+err.status+')occurred. Please check all required fields</span>').show();
+					if (err.status === 200) {	// the response was deemed an error but has good status
+						$unknownError.html('<span>The server said: (' + err.status + '): ' + err.statusText +'</span>').show();
+					} else {
+						// in case no responseJSON comes back, e.g. just a code
+						$unknownError.html('<span>An error ('+err.status+') occurred. Please check all required fields</span>').show();
+					}
 				}
 			},
-			success: onSuccess
+			success: function() {
+				inProgress = false;
+				$body.removeClass('loading');
+				onSuccess.apply(this,arguments);
+			}
+
 		});
 		return false;
 	});

@@ -60,8 +60,6 @@
             border-radius: 4px;
             box-shadow: 0 0 2px rgba(0,0,0,0.22);
             background: transparent;
-//            overflow: hidden;
-//            float: left;
             position: relative;
             width: 100%;
             > div {
@@ -83,10 +81,8 @@
                     font-weight: 300;
                     margin: 0;
                     line-height: 1;
-                } 
-
+                }
             }
-
             .modal-body {
                 background: @bg-light;
                 padding: 22px 40px 18px;
@@ -113,24 +109,11 @@
                 }
 			  	fieldset {margin-bottom:1em;}
                 div.form-input {
-//                    height: @modal-control-height;
                     width: 100%;
-//                    background: @bg-dark;
                     border-radius: 4px;
                     margin: 0 auto 5px;
                     position: relative;
                     text-align: left;
-				  /*
-                    >label, >input {
-                        display: block;
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        height: @modal-control-height;
-                        width: 100%;
-                        margin: 0;
-                    }
-                    */
                     &.error input {
                         border: 1px solid @editor-text-hover;
                     }
@@ -149,80 +132,47 @@
 					::-webkit-input-placeholder {
 					   color: lighten(#414857, 10%);
 					}
-
 					::-moz-placeholder {
 					   color: lighten(#414857, 10%);
 					}
 				  	.in_focus::-webkit-input-placeholder {
 					   color: darken(#414857, 5%);
 					}
-
 					.in_focus::-moz-placeholder {
 					   color: darken(#414857, 5%);
 					}
-
                     >label {
 					  	display:none; // modals only!
                         color: #414857;
-//                        padding: 15px 20px 0 36px;
                         font-size: 16px;
-//                        line-height: 1.33;
                         font-weight: 400;
 					  	float:left;
 					  	position:absolute;
 					  	top:0;
-//					  	top: 50%;
-//					  	margin-top: -0.5em;
-//					  	left: 1em;
 					  	z-index: 0;
-					  /*
-					  // @todo remove
-                        &:after {
-                            content: '';
-                            background: darken(@bg-dark, 2%);
-                            display: block;
-                            position: absolute;
-                            top: 0;
-                            left: 0 - @modal-input-width;
-                            border-radius: 3px;
-                            width: @modal-input-width;
-                            height: @modal-control-height;
-                            transition: left 0.1s ease-out;
-                        }
-                        */
                     }
 				  	>span.message {
 					  clear: left;
 					  display: block;
 					  text-align: right;
 					  color: #fff;
-					  padding-top:2px;	// prevent from collapsing
+					  padding-top:2px;
 					  font-size: 85%;
 					}
 					>span.message:after {
-					  content: "."; color: rgba(0,0,0,0);
+					  content: "."; color: rgba(0,0,0,0);		// prevent from collapsing
 					}
 				  	&.error>span.message {
 					  color: #ff6868;
 					}
                 }
                 div.modal-error {
-				      display: none;
-//                    height: 0;
-//                    overflow: hidden;
-
-//                    margin: -8px 0 8px 0;
-//                    position: relative;
-//                    float: left;
-//                    width: 100%;
+				    display: none;
                     span {
                         color: #ff6868;
                         display: block;
                         width: 100%;
                         height: 16px;
-//                        text-align: center;
-//                        position: absolute;
-//                        bottom: 0;
                         font-size: 12px;
                     }
                     &#general-error span {
@@ -242,7 +192,7 @@
                 button {
                   	position: relative;
                     border-radius: 4px;
-                    background: @bg-bright;
+                    background: darken(@bg-bright, 5%);
                 }
                 button.sign-btn {
                     width: 100%;
@@ -253,7 +203,7 @@
                     span {
                         display: block;
                         position: relative;
-                        padding: 15px 20px 0 36px;
+                        padding: 15px 20px 0 22px;
                         height: @modal-control-height;
                         font-size: 16px;
                         float: left;
@@ -263,7 +213,7 @@
                         width: 24px;
                         height: 24px;
                         position: absolute;
-                        right: 24px;
+                        right: 22px;
                         top: 50%;
                         margin: -12px 0 0;
                         stroke: @editor-text-active;
@@ -271,6 +221,9 @@
                     &.disabled {
                         background: #515c75;
                     }
+					&:hover {
+					  background: @bg-bright;
+					}
                 }
             }
             .modal-footer {
@@ -279,12 +232,13 @@
                 text-align: center;
                 padding: 20px 40px;
                 box-sizing: border-box;
+			  	color: @editor-text-hover;
+			  	font-size: 12px;
+			  	font-weight: 400;
                 span, p {
                     padding: 0;
                     margin: 0;
                     display: block;
-                    color: @editor-text-hover;
-                    font-size: 12px;
                     a, a:active {
                         color: #2d93c9;
                         text-decoration: none;
@@ -444,6 +398,15 @@
   .modal-body form {
 	margin: 20px 40px;
   }
+  .modal-body p.left {text-align: left;}
+  .modal-body>p {
+	margin-left: 40px; margin-right: 40px;
+  }
+  .modal-body .bootbox-body {
+	p:only-child {
+	  margin: 20px 40px;
+	}
+  }
 }
 
 .modal.login {
@@ -460,7 +423,6 @@
 	background: rgba(0,0,0,0.2);
 	font-size: 12px;
 	font-weight: 500;
-	color: #ccc;
   }
 }
 
@@ -468,11 +430,12 @@ div.bootbox.modal {
   .modal-header, .modal-content {	// necessary for selector weight
 	button.bootbox-close-button {
 		background: transparent;
-		opacity: 0;		// js will set this to 1 when replaced with svg button
+	  	color:#ccc;
+	  	font-weight: 100;
 		float: none;
 		position: absolute;
-		right: 2px;
 		top: 9px;
+	  	right: 2px;
 		margin: 0;
 	}
   }
@@ -496,7 +459,7 @@ div.bootbox.modal {
                 top: 0;
                 margin: 0;
             }
-            &#welcome-gs {
+            &#welcome-gs {	// get started button
             	width: 210px;
             	height: 50px;
 			  	margin: 0 auto;
@@ -508,35 +471,6 @@ div.bootbox.modal {
             	font-size: 20px;
             	border-radius: 4px;
             	border: 0;
-            }
-            &#welcome-new {
-                background: rgba(30,33,31,0.8);
-                width: 261px;
-                height: 60px;
-                position: relative;
-                margin: 22px auto 34px;
-                clear: both;
-                padding-left: 45px;
-                color: #ffffff;
-                font-size: 18px;
-                font-weight: 600;
-                letter-spacing: 1px;
-                text-transform: uppercase;
-                border: 0 none;
-                border-radius: 4px;
-                svg {
-                    position: absolute;
-                    display: block;
-                    left: 25px;
-                    top: 50%;
-                    margin-top: -8px;
-                    height: 16px;
-                    width: 16px;
-                    fill: #ffffff;
-                }
-                &:hover {
-                    background: rgba(30,33,31,0.9);
-                }
             }
             &#welcome-sign-up {
                 margin: 22px auto 10px;
@@ -613,6 +547,7 @@ div.bootbox.modal {
         }
         a, a:active {
             color: #ffffff;
+		  	border: 0;
             font-weight: 400;
             text-decoration: none; 
             display: inline-block;
@@ -800,7 +735,7 @@ div.bootbox.modal {
                         height: @modal-input-height;
                         background: #f6f7f8;
                         color: #535c6b;
-                        padding: 15px 20px 0 36px;
+                        padding: 15px 20px 0 22px;
                         cursor: pointer;
                         font-size: 16px;
                         font-weight: 400;

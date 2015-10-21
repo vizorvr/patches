@@ -138,8 +138,6 @@ function parseErrors(errors) {
  	req.assert('email', 'Email is not valid').isEmail()
  	req.assert('password', 'Password must be at least 8 characters long').len(8)
 
-	// @todo roll "username exists" and "email exists" errors into response errors
-
  	var errors = req.validationErrors()
 
  	if (errors) {
@@ -434,12 +432,17 @@ function parseErrors(errors) {
 
  exports.postForgot = function(req, res, next) {
  	req.assert('email', 'Please enter a valid email address.').isEmail()
+	var wantJSON = req.xhr;
 
  	var errors = req.validationErrors()
 
  	if (errors) {
- 		req.flash('errors', parseErrors(errors))
- 		return res.redirect('/forgot')
+		if (wantJSON) {
+			return res.status(400).json(errors);
+		} else {
+			req.flash('errors', parseErrors(errors))
+			return res.redirect('/forgot')
+		}
  	}
 
  	async.waterfall([
@@ -452,8 +455,13 @@ function parseErrors(errors) {
  		function(token, done) {
  			User.findOne({ email: req.body.email.toLowerCase() }, function(err, user) {
  				if (!user) {
- 					req.flash('errors', { message: 'No account with that email address exists.' })
- 					return res.redirect('/forgot')
+					var msg = 'No account with that email address exists.';
+					if (wantJSON) {
+						return res.status(400).json({ok:false, success: false, message: msg, msg:msg, param:'email'});
+					} else {
+						req.flash('errors', { message: msg })
+						return res.redirect('/forgot')
+					}
  				}
 
  				user.resetPasswordToken = token
@@ -477,17 +485,30 @@ function parseErrors(errors) {
 
  			mailer.send(mail.to, mail.subject, mail.text)
  			.then(function() {
- 				req.flash('info', {
- 					message: 'An e-mail has been sent to ' + user.email + ' with further instructions.'
- 				})
+				if (!wantJSON) {
+					req.flash('info', {
+						message: 'We emailed further instructions to ' + user.email + '.'
+					})
+				}
  				done()
  			})
  			.catch(done)
  		}
  		], function(err) {
- 			if (err)
+ 			if (err) {
+				res.status(500).json({ok:false, message: 'The server could not email you. Please contact us for assistance.'})
  				return next(err)
+			}
+			if (wantJSON) {
+				return res.status(200).json({
+					ok:		true,
+					success:true,
+					message: 'We emailed further instructions to ' + req.body.email + '.',
+					email:	req.body.email
+				})
+			} else {
+				res.redirect('/forgot')
+			}
 
- 			res.redirect('/forgot')
  		})
 }

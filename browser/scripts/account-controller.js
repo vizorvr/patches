@@ -18,59 +18,9 @@ AccountController.prototype.renderLoginView = function(user) {
 	})
 
 	$('#account').html(html)
-
 	E2.dom.userPullDown = $('#userPullDown')
-
 	this._bindModalLinks(E2.dom.userPullDown)
-
 	this.emit('redrawn')
-}
-
-AccountController.prototype.isValidEmail = function(email) {
-    var re = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-    return re.test(email);
-}
-
-AccountController.prototype.showError = function(ertype, ertext) {
-	$('#'+ertype+'-error span').html(ertext);
-	$('#'+ertype+'-error').addClass('revealError');
-
-	// @todo remove this validation code
-
-	switch (true) {
-		case (ertype === 'signin'): {
-			$('#login-form_id .form-input').addClass('wrong');
-			break;
-		}
-		case (ertype === 'email'): {
-			$('#email_id').addClass('wrong');
-			break;
-		}
-		case (ertype === 'username'): {
-			$('#username_id').addClass('wrong');
-			break;
-		}
-		case (ertype === 'password'): {
-			$('#password_id').addClass('wrong');
-			break;
-		}
-		case (ertype === 'confirm'): {
-			$('#password_confirm_id').addClass('wrong');
-			break;
-		}
-	}
-}
-
-AccountController.prototype.hideError = function(ertype) {
-	if ($('#'+ertype+'-error').hasClass('revealError')) {
-		$('#'+ertype+'-error').addClass('hideError')
-							.removeClass('revealError');
-		setTimeout(function() {
-			$('#'+ertype+'-error').removeClass('hideError')
-								.find('span')
-								.html('');
-		},1000)
-	}
 }
 
 AccountController.prototype._bindModalLinks = function(el, dfd) {
@@ -96,7 +46,6 @@ AccountController.prototype._bindModalLinks = function(el, dfd) {
 		that.openForgotPasswordModal(dfd);
 		return false;
 	});
-	
 
 	$('a.account', el).on('click', function(evt) {
 		evt.preventDefault();
@@ -109,14 +58,13 @@ AccountController.prototype._bindModalLinks = function(el, dfd) {
 }
 
 AccountController.prototype.openLoginModal = function(dfd) {
-	var that = this;
-	var dfd = dfd || when.defer();
+	dfd = dfd || when.defer();
 	var loginTemplate = E2.views.account.login;
 
 	ga('send', 'event', 'account', 'open', 'loginModal');
 
-	var bb = VizorUI.modalOpen(loginTemplate(), 'Sign in', 'nopad login')
-	this._bindModalLinks(bb, dfd);
+	var $modal = VizorUI.modalOpen(loginTemplate(), 'Sign in', 'nopad login');
+	this._bindModalLinks($modal, dfd);
 
 	var onSuccess = function(user) {
 		ga('send', 'event', 'account', 'loggedIn', user.username)
@@ -125,27 +73,27 @@ AccountController.prototype.openLoginModal = function(dfd) {
 		dfd.resolve()
 	};
 
-	var $form = $('#loginForm', bb);
-	VizorUI.setupGenericAjaxForm($form, onSuccess);
+	var $form = $('#loginForm', $modal);
+	VizorUI.setupXHRForm($form, onSuccess);
 
 	return dfd.promise
 }
 
 /**
  * adds handler to check whether desired username is available.
- * this is used in the signup and edit account details forms
- * @param $el jQuery
+ * this is used in the signup form, and may be used in the account details form
+ * @param $input jQuery
  */
-AccountController.prototype.setupAccountUsernameField = function($el) {
-	if (!($el instanceof jQuery)) {
-		msg("ERROR: unrecognised $el");
+AccountController.prototype._setupAccountUsernameField = function($input) {
+	if (!($input instanceof jQuery)) {
+		msg("ERROR: unrecognised $input");
 		return false;
 	}
 	var _t = null;
 	var lastValue=false;
-	$el.on('keyup', function(e){
+	$input.on('keyup', function(e){
 		var currentUsername = (E2.models.user) ? E2.models.user.username : '';
-		var value = $el.val().trim();
+		var value = $input.val().trim();
 		if (value && (value !== currentUsername) && (value !== lastValue)) {
 			lastValue=value;
 			if (_t) clearTimeout(_t);
@@ -154,14 +102,13 @@ AccountController.prototype.setupAccountUsernameField = function($el) {
 					type: "POST",
 					url: '/account/exists',
 					data: jQuery.param({'username': value}),
-					error: function(err, msg) {
-						// err.status = 409
+					error: function(err) { // assume 409
 						var errText = 'Sorry, this username is already taken'
-						$el.parent().addClass('error').find('span.message').html(errText);
+						$input.parent().addClass('error').find('span.message').html(errText);
 					},
-					success: function(user) {
-						if ($el.val() === value) {	//
-							$el.parent().removeClass('error').find('span.message').html('');
+					success: function() {	// 200
+						if ($input.val() === value) {	//
+							$input.parent().removeClass('error').find('span.message').html('');
 						}
 					},
 					dataType: 'json'
@@ -170,8 +117,6 @@ AccountController.prototype.setupAccountUsernameField = function($el) {
 		}
 		return true;
 	});
-
-
 }
 
 AccountController.prototype.openSignupModal = function(dfd) {
@@ -180,113 +125,78 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	var signupTemplate = E2.views.account.signup();
 	ga('send', 'event', 'account', 'open', 'signupModal');
 
-	var bb = VizorUI.modalOpen(signupTemplate, 'Sign up', 'nopad mSignup', true, {backdrop:null});
+	var $modal = VizorUI.modalOpen(signupTemplate, 'Sign up', 'nopad mSignup', true, {backdrop:null});
 
-	that._bindModalLinks(bb, dfd);
+	that._bindModalLinks($modal, dfd);
 
-	var $form = jQuery('#signupForm', bb);
+	var $form = jQuery('#signupForm', $modal);
 	var $usernameField = jQuery('input#username_id', $form);
 	var onSuccess = function(user) {
 		ga('send', 'event', 'account', 'signedUp', user.username)
 		E2.models.user.set(user);
 		VizorUI.modalClose();
+		VizorUI.modalAlert('Enjoy Vizor, ' + user.username + '!', 'Welcome')
 		dfd.resolve()
 	};
 
-	VizorUI.setupGenericAjaxForm($form, onSuccess);
-	this.setupAccountUsernameField($usernameField);		// username check
+	VizorUI.setupXHRForm($form, onSuccess);
+	this._setupAccountUsernameField($usernameField);		// username check
 
 	return dfd.promise;
 }
 
 AccountController.prototype.openForgotPasswordModal = function(dfd) {
-	var that = this;
-	var dfd = dfd || when.defer();
+	dfd = dfd || when.defer();
 	var forgotTemplate = E2.views.account.forgot;
 	
 	ga('send', 'event', 'account', 'open', 'forgotModal');
-	
-	var bb = bootbox.dialog(
-	{
-		show: true,
-		animate: false,
-		message: 'Rendering',
-	}).init(function() {
-		E2.app.useCustomBootboxTemplate(forgotTemplate);
-	});
 
-	this._bindModalLinks(bb, dfd);
-	
-	var formEl = $('#forgot-form_id');
-	formEl.submit(function( event )
-	{
-		event.preventDefault();
-		
-		if (!that.isValidEmail(formEl.find('#email_id').val())) {
-			var errText = 'Whoops! This isn\'t a valid email address';
-			that.showError('email',errText);
-			return;
+	var $modal = VizorUI.modalOpen(forgotTemplate(), 'Forgot password', 'nopad mForgotpassword');
+	this._bindModalLinks($modal, dfd);
+	var $form = $('#forgotPasswordForm');
+	VizorUI.setupXHRForm($form, function(response){
+		VizorUI.modalClose();
+		if (response.ok) {
+			ga('send', 'event', 'account', 'passwordReset', response.email)
+			VizorUI.modalAlert(response.message, 'Done');
 		}
-
-		var formData = formEl.serialize();
-
-		$.ajax(
-		{
-			type: "POST",
-			url: formEl.attr('action'),
-			data: formData,
-			error: function(err)
-			{	
-				var errText = 'Whoops! This email isn\'t registered'
-				that.showError('general',errText);
-			},
-			success: function(user)
-			{
-				ga('send', 'event', 'account', 'passwordReset', user.username)
-				bootbox.hideAll();
-				bootbox.alert('Instructions have been sent. Please check your email.');
-				dfd.resolve();
-			},
-			dataType: 'json'
-		});
+		dfd.resolve();
 	});
-
-	return dfd.promise
+	return dfd.promise;
 }
 
 AccountController.prototype.openResetPasswordModal = function(dfd) {
-	var that = this;
-	var dfd = dfd || when.defer();
+	dfd = dfd || when.defer();
 	var resetTemplate = E2.views.account.reset;
 	
 	ga('send', 'event', 'account', 'open', 'resetModal');
 
-	var bb = VizorUI.modalOpen(resetTemplate, 'Change Password', 'nopad');
-	this._bindModalLinks(bb, dfd);
+	var $modal = VizorUI.modalOpen(resetTemplate, 'Change Password', 'nopad');
+	this._bindModalLinks($modal, dfd);
 	
-	var $form = jQuery('#resetPasswordForm', bb);
+	var $form = jQuery('#resetPasswordForm', $modal);
 	var onSuccess = function(data) {
 		var user = data.user;
-		ga('send', 'event', 'account', 'passwordChanged', user.username)
 		VizorUI.modalClose();
-		bootbox.alert('Password for ' + user.username + ' was changed.');
+		ga('send', 'event', 'account', 'passwordChanged', user.username)
+		VizorUI.modalAlert('Password for ' + user.username + ' was changed.', 'Done');
 		dfd.resolve();
 	};
-	VizorUI.setupGenericAjaxForm($form, onSuccess);
+	VizorUI.setupXHRForm($form, onSuccess);
 
 	return dfd.promise
 }
 
 AccountController.prototype.openAccountModal = function(dfd) {
 	var that = this;
-	var dfd = dfd || when.defer();
+	dfd = dfd || when.defer();
 	var accountTemplate = E2.views.account.account({user: E2.models.user.toJSON()});
 
 	ga('send', 'event', 'account', 'open', 'accountModal');
 
-	var bb = VizorUI.modalOpen(accountTemplate, 'Account', 'nopad', true)
+	var $modal = VizorUI.modalOpen(accountTemplate, 'Account', 'nopad', true)
 
-	jQuery('a#changePasswordLink', bb).on('click', function(evt) {
+	jQuery('a#changePasswordLink', $modal).on('click', function(evt) {
 		evt.preventDefault();
 		VizorUI.modalClose();
 		that.openResetPasswordModal(dfd);
@@ -294,23 +204,23 @@ AccountController.prototype.openAccountModal = function(dfd) {
 
 	// #704
 	/*
-	jQuery('a#deleteAccountLink', bb).on('click', function(evt) {
+	jQuery('a#deleteAccountLink', $modal).on('click', function(evt) {
 		evt.preventDefault();
-		VizorUI.modalClose();
+		// ...
 	});
 	*/
 
 	var onSuccess = function(data) {
 		var user = data.user || null;
-		if (user) E2.models.user.set(user);
-		ga('send', 'event', 'account', 'accountUpdated', user.username)
+		E2.models.user.set(user);
+		ga('send', 'event', 'account', 'accountUpdated', user.username);
 		VizorUI.modalClose();
-		bootbox.alert('Account updated!');
+		VizorUI.modalAlert(data.message, 'Done');
 		dfd.resolve();
 	};
 
-	var $form = jQuery('#accountDetailsForm', bb);
-	VizorUI.setupGenericAjaxForm($form, onSuccess);
+	var $form = jQuery('#accountDetailsForm', $modal);
+	VizorUI.setupXHRForm($form, onSuccess);
 	return dfd.promise
 }
 
