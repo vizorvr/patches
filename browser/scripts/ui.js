@@ -3,7 +3,7 @@
 VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	if (typeof e2 === 'undefined') return false;
 	dom = dom || this.dom;
-	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2);
+	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2.app);
 
 	this.on(uiEvent.worldEditChanged, function(isActive){	// this = ui
 		this.state.viewCamera = (isActive) ? uiViewCam.world_editor : uiViewCam.vr;
@@ -444,61 +444,74 @@ VizorUI.prototype.onInspectorClicked = function() {
 
 
 VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
-	var that = this
-	var username = E2.models.user.get('username')
-	if (!username) {
-		return this.openLoginModal();
+
+	var that = this;	// e2.app
+	var ui = E2.ui;
+
+	var presetDialog = function() {
+
+		var username = E2.models.user.get('username');
+		var presetsPath = '/'+username+'/presets/'
+
+		ui.updateProgressBar(65);
+
+		$.get(presetsPath, function(files) {
+			var fcs = new FileSelectControl()
+			.frame('save-frame')
+			.template('preset')
+			.buttons({
+				'Cancel': function() {
+					ui.updateProgressBar(100);
+				},
+				'Save': function(name) {
+					if (!name)
+					{
+						bootbox.alert('Please enter a name for the preset')
+						return false;
+					}
+
+					serializedGraph = serializedGraph || that.player.core.serialise()
+
+					$.ajax({
+						type: 'POST',
+						url: presetsPath,
+						data: {
+							name: name,
+							graph: serializedGraph
+						},
+						dataType: 'json',
+						success: function(saved) {
+							ui.updateProgressBar(100);
+							that.presetManager.refresh()
+						},
+						error: function(x, t, err) {
+							ui.updateProgressBar(100);
+
+							// since we ask first thing above
+							// if (x.status === 401)
+							//	return E2.controllers.account.openLoginModal();
+
+							if (x.responseText)
+								bootbox.alert('Save failed: ' + x.responseText);
+							else
+								bootbox.alert('Save failed: ' + err);
+						}
+					});
+				}
+			})
+			.files(files)
+			.modal();
+
+			return fcs;
+		})
+	};
+
+	if (!VizorUI.userIsLoggedIn()) {
+		return ui.openLoginModal().then(presetDialog);
 	}
 
-	var presetsPath = '/'+username+'/presets/'
+	return presetDialog();
 
-	E2.ui.updateProgressBar(65);
-
-	$.get(presetsPath, function(files) {
-		var fcs = new FileSelectControl()
-		.frame('save-frame')
-		.template('preset')
-		.buttons({
-			'Cancel': function() {
-				E2.ui.updateProgressBar(100);
-			},
-			'Save': function(name) {
-				if (!name)
-					return bootbox.alert('Please enter a name for the preset')
-
-				serializedGraph = serializedGraph || E2.app.player.core.serialise()
-
-				$.ajax({
-					type: 'POST',
-					url: presetsPath,
-					data: {
-						name: name,
-						graph: serializedGraph
-					},
-					dataType: 'json',
-					success: function(saved) {
-						E2.ui.updateProgressBar(100);
-						that.presetManager.refresh()
-					},
-					error: function(x, t, err) {
-						E2.ui.updateProgressBar(100);
-
-						if (x.status === 401)
-							return E2.controllers.account.openLoginModal();
-
-						if (x.responseText)
-							bootbox.alert('Save failed: ' + x.responseText);
-						else
-							bootbox.alert('Save failed: ' + err);
-					}
-				});
-			}
-		})
-		.files(files)
-		.modal();
-
-		return fcs;
-	})
 };
 
 VizorUI.prototype.setWorldEditorMode = function(isActive) {
