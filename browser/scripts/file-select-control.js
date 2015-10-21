@@ -172,9 +172,8 @@ FileSelectControl.prototype._render = function()
 	var el = bootbox.dialog({
 		title: this._header,
 		message: this._frame
-	}).init(function() {
-		$('.modal-dialog').addClass('file-select-dialog');
 	});
+	$('.modal-dialog').addClass('file-select-dialog');
 
 	this._el = el;
 	this._inputEl = $('#file-url', el);
@@ -399,7 +398,7 @@ FileSelectControl.prototype.cancel = function() {
 };
 
 FileSelectControl.prototype.close = function() {
-	bootbox.hideAll();
+	this._el.modal('hide');
 	this.emit('closed')
 };
 
