@@ -1826,11 +1826,6 @@ Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
 
-
-Application.prototype.useCustomBootboxTemplate = function(template) {
-	$('.modal-content').hide().html(template).show();
-}
-
 Application.prototype.start = function() {
 	var that = this
 
