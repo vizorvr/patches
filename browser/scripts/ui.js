@@ -466,7 +466,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 				'Save': function(name) {
 					if (!name)
 					{
-						bootbox.alert('Please enter a name for the preset')
+						bootbox.alert('Please enter a name for the preset');
 						return false;
 					}
 

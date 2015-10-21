@@ -186,13 +186,15 @@ FileSelectControl.prototype._render = function()
 	var keypressFn = this._onKeyPress.bind(this);
 	el[0].addEventListener('keydown', keypressFn);
 
-	function clickHandler(buttonCb) {
+	function clickHandler(buttonCb) {	// #732 return false from your handler to prevent the panel closing
 		return function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-			buttonCb.call(self, self._inputEl.val());
-			el[0].removeEventListener('keydown',keypressFn);
-			self.close();
+			var okToClose = buttonCb.call(self, self._inputEl.val());
+			if (okToClose !== false) {
+				el[0].removeEventListener('keydown',keypressFn);
+				self.close();
+			}
 			return false;
 		}
 	}
@@ -342,6 +344,7 @@ FileSelectControl.prototype._onKeyPress = function(e) {
 			this.cancel();
 			break;
 		case 13:
+			e.preventDefault();
 			this.ok();
 			break;
 		case 38:
