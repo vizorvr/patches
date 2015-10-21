@@ -21,15 +21,15 @@
             var that = this;
             var $statusCode, $statusText, $responsePre, $errorsPre;
 
-            this.sendRequest = function(method, path, data, clientId, clientSecret, settings) {
+            this.sendRequest = function(method, path, contentType, data, clientId, clientSecret, settings) {
                 var s = settings || {};
-                s.dataType = 'json';
+                s.dataType = 'json';    // (expecting from server)
                 s.data = data;
                 if (typeof s.headers === 'undefined') s.headers = {};
                 s.headers['x-vizor-clientid'] = clientId;
                 s.headers['x-vizor-clientsecret'] = clientSecret;
                 s.headers['Accept'] = "application/json; charset=utf-8";
-                s.headers['Content-Type'] = "text/plain; charset=utf-8";
+                s.headers['Content-Type'] = contentType || "text/plain; charset=utf-8";
                 s.url = path;
                 s.method = method;
                 s.type = method; // pre-1.9
@@ -64,10 +64,11 @@
                 var clientId = jQuery('#client_id', $form).val();
                 var clientSecret = jQuery('#client_secret', $form).val();
                 var data = jQuery('#request_body', $form).val();
+                var contentType = jQuery('#content_type', $form).val();
 
                 if (!path) return false;
 
-                that.sendRequest(method, path, data, clientId, clientSecret);
+                that.sendRequest(method, path, contentType, data, clientId, clientSecret);
                 return false;
             };
             this.init = function() {
@@ -115,7 +116,15 @@
 
         <label for="request_body">Request body</label>
         <textarea name="request_body" id="request_body"></textarea>
+
+        <label for="content_type">Content type</label>
+        <select name="content_type" id="content_type">
+            <option value="application/x-www-form-urlencoded; charset=UTF-8">x-www-form-urlencoded</option>
+            <option value="application/json; charset=UTF-8">application/json</option>
+            <option value="text/plain; charset=UTF-8">text/plain</option>
+        </select>
         </fieldset>
+
         <div style="text-align: right">
             <button id="sendbutton" type="submit">Send request</button>
         </div>

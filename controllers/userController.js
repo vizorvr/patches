@@ -45,12 +45,12 @@ function parseErrors(errors) {
  		if (wantJson)
 	 		return res.status(status || 400).json(errors)
 
- 		req.flash('errors', errors)
+ 		req.flash('errors', parseErrors(errors))
  		return res.redirect('/login')
  	}
 
  	if (errors)
- 		return returnErrors(parseErrors(errors))
+ 		return returnErrors(errors)
 
  	passport.authenticate('local', function(err, user, info) {
  		if (err)
@@ -87,10 +87,22 @@ function parseErrors(errors) {
  * GET /signup
  */
  exports.getSignup = function(req, res) {
- 	if (req.user) return res.redirect('/')
- 	res.render('account/signup', {
- 		title: 'Create Account'
- 	})
+	var wantJSON = req.xhr
+	if (wantJSON) {
+		if (req.user) {
+			return res.status(403).json({message: 'user already logged in'}).end()
+		}
+
+		return res.status(501).json({message: 'not yet implemented'}).end()
+
+	} else {
+		if (req.user) {
+			return res.redirect('/')
+		}
+		res.render('account/signup', {
+			title: 'Create Account'
+		})
+	}
  }
 
 /**
@@ -118,9 +130,15 @@ function parseErrors(errors) {
  */
 
  exports.postSignup = function(req, res, next) {
- 	req.assert('username', 'Username is not valid').isAlphanumeric()
+	req.sanitize('name').trim()
+	req.sanitize('username').trim()
+	req.sanitize('email').trim()
+ 	req.assert('name', 'Please enter a name').notEmpty()
+ 	req.assert('username', 'Username is empty or invalid').isAlphanumeric()
  	req.assert('email', 'Email is not valid').isEmail()
  	req.assert('password', 'Password must be at least 8 characters long').len(8)
+
+	// @todo roll "username exists" and "email exists" errors into response errors
 
  	var errors = req.validationErrors()
 
@@ -139,7 +157,8 @@ function parseErrors(errors) {
  		if (existingUser) {
  			if (req.xhr){
  				return res.status(400).json({
- 					message: 'An account with that username already exists.'
+					message: 'An account with that username already exists.',
+					param: 'username'
  				})
  			}
  			return res.redirect('/signup')
@@ -147,7 +166,10 @@ function parseErrors(errors) {
  		User.findOne({ email: req.body.email }, function(err, existingUser) {
  			if (existingUser) {
  				if (req.xhr) {
- 					return res.status(400).json({ message: 'An account with that email already exists.' })
+ 					return res.status(400).json({
+						message: 'An account with that email already exists.',
+						param: 'email'
+					})
  				}
  				return res.redirect('/signup')
  			}
@@ -236,6 +258,7 @@ function parseErrors(errors) {
 
  exports.postUpdatePassword = function(req, res, next) {
  	req.assert('password', 'Password must be at least 8 characters long').len(8)
+ 	req.assert('confirm', 'Passwords must match').equals(req.body.password);
 	var wantJSON = req.xhr;
 
  	var errors = req.validationErrors()

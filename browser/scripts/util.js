@@ -200,49 +200,6 @@ E2.util = {
 		return is
 	},
 	checkBrowser: function() {
-		var agent = navigator.userAgent;
-		var $dialog;
-		if ((/Chrome/i.test(agent)) || (/Firefox/i.test(agent))) {
-			
-		}
-		else if (E2.util.isMobile()) {
-			$dialog = bootbox.dialog({
-				title: 'Mobile support',
-				message: '<h4>Please view this page on your desktop/laptop. '+
-						 'The editor is not ready for mobile just yet.</h4>',
-				onEscape: true,
-				html: true,
-				buttons: { Ok: function() {}}
-			})
-
-			$dialog.find('.modal-dialog').addClass('modal-sm')
-			$dialog.css({
-				top: '50%',
-				'margin-top': function () {
-					return -($dialog.height() / 2);
-				}
-			});
-		}
-		else {
-		   $dialog = bootbox.dialog({
-				title: 'Browser support',
-				message: '<h4>We want you to fully enjoy Vizor. Please use '+
-						 '<a href="http://www.google.com/chrome/" target="_'+
-						 'blank" alt="Get Chrome">Chrome</a> or <a href="ht'+
-						 'tp://www.mozilla.org/firefox/new/" target="_blank"'+
-						 ' alt="Get Firefox">Firefox</a> to launch Vizor.</h4>',
-				onEscape: true,
-				html: true,
-				buttons: { Ok: function() {}}
-			}).init(function(){
-				$dialog.find('.modal-dialog').addClass('modal-sm')
-				$dialog.css({
-					top: '50%',
-					'margin-top': function () {
-						return -(this.height() / 2);
-					}
-				});
-			});
-		}
+		return VizorUI.checkCompatibleBrowser();
 	}
 }

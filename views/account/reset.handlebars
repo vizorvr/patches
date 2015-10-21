@@ -1,29 +1,20 @@
-<h3>Change Password</h3>
-
-<form action="/account/password" id="resetpasswordform" class="panel" method="POST">
+<form action="/account/password" id="resetPasswordForm" class="panel" method="POST">
     <input type="hidden" name="_csrf" value={{_csrf}}>
+    <fieldset>
+        <div class="form-input" id="f_password">
+            <label for="passwordinput">Password</label>
+            <input type="password" class="required" placeholder="Password"  name="password" id="passwordinput" tabindex="1">
+            <span class="message"></span>
+        </div>
 
-    <div class="form-input">
-        <label for="passwordinput">Password</label>
-        <input type="password" name="password" id="passwordinput" tabindex="1">
-    </div>
+        <div class="form-input" id="f_confirm">
+            <label for="confirmpasswordinput">Confirm password</label>
+            <input type="password" class="required" placeholder="Confirm password" name="confirm" id="confirmpasswordinput" tabindex="2">
+            <span class="message"></span>
+        </div>
 
-    <div class="modal-error" id="password-error">
-        <span></span>
-    </div>
-
-    <div class="form-input">
-        <label for="confirmpasswordinput">Confirm password</label>
-        <input type="password" name="confirm" id="confirmpasswordinput" tabindex="2">
-    </div>
-
-    <div class="modal-error" id="confirm-error">
-        <span></span>
-    </div>
-
-    <div class="modal-error" id="general-error">
-        <span></span>
-    </div>
+        <div class="modal-error" id="unknown_error"><span></span></div>
+    </fieldset>
 
     <button id="rest-btn" class="sign-btn" type="submit">
         <span>Change password</span>

@@ -611,6 +611,8 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 }
 
 
+
+
 /***** HELPER METHODS *****/
 
 VizorUI.isLoggedIn = function() {
@@ -623,18 +625,133 @@ VizorUI.getUser = function() {
 }
 
 /***** INTERIM MODAL LAYER *****/
-VizorUI.modalOpen = function(html, heading, className, allowclose) {
+VizorUI.modalOpen = function(html, heading, className, allowclose, opts) {
 	allowclose = (typeof allowclose !== 'undefined') ? !!allowclose : true;
-	var opts = {
-		message: html,
-		onEscape: allowclose,
-		backdrop: allowclose
-	};
+	opts = opts || {}
+	opts.message = html;
+	opts.onEscape = allowclose;
+	if (typeof opts.backdrop === 'udefined') opts.backdrop = allowclose;	// bb 4.4+
 	if ((typeof heading !== 'undefined') && heading) opts.title = heading;
-	if (typeof className !== 'undefined') opts.className = className;
+	if ((typeof className !== 'undefined') && className) opts.className = className;
 	return bootbox.dialog(opts);
 };
 
 VizorUI.modalClose = function() {
 	bootbox.hideAll();
 };
+
+VizorUI.checkCompatibleBrowser = function() {
+	var agent = navigator.userAgent;
+	var heading=false,message=false;
+	if ((/Chrome/i.test(agent)) || (/Firefox/i.test(agent))) {
+
+	}
+	else if (E2.util.isMobile()) {
+		heading = 'Mobile support';
+		message = '<h4>Please view this page on your desktop/laptop. '+
+					 'The editor is not ready for mobile just yet.</h4>';
+	}
+	else {
+		heading = 'Browser support';
+		message = '<h4>We want you to fully enjoy Vizor. <br />The editor works best in '+
+					 '<a href="http://www.google.com/chrome/" target="_blank"'+
+					 ' alt="Get Chrome">Chrome</a> or '+
+					 '<a href="http://www.mozilla.org/firefox/new/" target="_blank"'+
+					 ' alt="Get Firefox">Firefox</a>.</h4>';
+
+	}
+	if (message) VizorUI.modalOpen(message, heading, 'note', true, {buttons: { Ok: function() {}}});
+}
+
+
+VizorUI.setupGenericAjaxForm = function($form, onSuccess) {	// see views/account/signup for example
+	if (!($form instanceof jQuery)) {
+		msg("ERROR: $form not a jQuery object")
+		return false;
+	}
+
+	$form.find('input, textarea').each(function(){
+		var $this = jQuery(this);
+		var placeholder = $this.attr('placeholder');
+		var required = $this.hasClass('required');
+		var had_error = false;
+		var had_error_value = false;
+		if (placeholder) {
+			if (required) placeholder += '*';
+			$this.attr('placeholder', placeholder);
+			$this.on('focus', function(){
+				had_error = $this.parent().hasClass('error');
+				had_error_value = (had_error) ? $this.val() : false;
+				$this.parent().removeClass('error').find('span.message').html('');
+				$this.addClass('in_focus');
+				// ux
+				//	$this.data('placeholder', placeholder);
+				//	$this.attr('placeholder', '');
+				return true;
+			});
+
+			$this.on('blur', function(){
+				// ux
+				//	$this.attr('placeholder', $this.data('placeholder'));
+				$this.removeClass('in_focus');
+				if (required && had_error &&
+					(($this.val() === '') || ($this.val() === had_error_value))
+					) $this.parent().addClass('error');
+				return true;
+			});
+		}
+	});
+
+
+	$form.submit(function(event) {
+
+		// var can_submit = true;
+		// if (!can_submit) return false;
+
+		// future decision on forms without this set
+		var actionURL = $form.attr('action');
+		if (!actionURL) return true;
+
+		event.preventDefault();
+		var formData = $form.serialize();
+
+		$form.find('span.message').html('');
+		$form.find('div.form-input').removeClass('error');
+
+		var $unknownError = jQuery('#unknown_error', $form);
+		$unknownError.html('').hide();
+		jQuery.ajax({
+			type:	'POST',
+			url:	actionURL,
+			data:	formData,
+			dataType: 'json',
+			error: function(err) {
+				console.log(err);
+				if (err.responseJSON) {
+					// validation returns array, but simple responses only have message
+					var errors = (err.responseJSON instanceof Array) ?
+							err.responseJSON  :
+							[{
+								param:	err.responseJSON.param || '',
+								msg:	err.responseJSON.message
+							}];
+					errors.map(function(ei) {
+						if (ei.param && ei.msg) {
+							$form.find('#f_'+ei.param).addClass('error')
+							.find('span.message').html(ei.msg)
+						} else {
+							// in case no 'param' comes back
+
+							$unknownError.html($unknownError.html() + '<span>'+ (ei.msg || ei.message) + '</span>').show();
+						}
+					});
+				} else {
+					// in case no responseJSON comes back, e.g. just a code
+					$unknownError.html('<span>An error ('+err.status+')occurred. Please check all required fields</span>').show();
+				}
+			},
+			success: onSuccess
+		});
+		return false;
+	});
+}

@@ -1,35 +1,32 @@
-<h3>Sign up</h3>
 <form action="/signup" id="signupForm" method="POST">
     <input type="hidden" name="_csrf" value={{_csrf}}>
+    <fieldset>
+        <div class="form-input required" id="f_name">
+            <label for="name_id">Your Name</label>
+            <input class="required" type="text" name="name" id="name_id" placeholder="Your Name" tabindex="1">
+            <span class="message"></span>
+        </div>
 
-    <div class="form-input required" id="f_name">
-        <label for="name_id">Your Name</label>
-        <input type="text" name="name" id="name_id" placeholder="" tabindex="1">
-        <span class="error"></span>
-    </div>
+        <div class="form-input required" id="f_username">
+            <label for="username_id">Username</label>
+            <input class="required" type="text" name="username" id="username_id" placeholder="Username" tabindex="2">
+            <span class="message"></span>
+        </div>
 
-    <div class="form-input required" id="f_username">
-        <label for="username_id">Username</label>
-        <input type="text" class="required" name="username" id="username_id" placeholder="" tabindex="2">
-        <span class="error"></span>
-    </div>
+        <div class="form-input required" id="f_email">
+            <label for="email_id">Email</label>
+            <input class="required" type="email" name="email" id="email_id" placeholder="Email" tabindex="3">
+            <span class="message"></span>
+        </div>
 
+        <div class="form-input required" id="f_password">
+            <label for="password_id">Password</label>
+            <input class="required" type="password" name="password" id="password_id" placeholder="Password" tabindex="4">
+            <span class="message"></span>
+        </div>
 
-    <div class="form-input required" id="f_email">
-        <label for="email_id">Email</label>
-        <input type="text" class="required" name="email" id="email_id" placeholder="" tabindex="3">
-        <span class="error"></span>
-    </div>
-
-    <div class="form-input required" id="f_password">
-        <label for="password_id">Password</label>
-        <input type="password" class="required" name="password" id="password_id" placeholder="" tabindex="4">
-        <span class="error"></span>
-    </div>
-
-    <div class="modal-error" id="general-error">
-        <span></span>
-    </div>
+        <div class="modal-error" id="unknown_error"><span></span></div>
+    </fieldset>
 
     <button id="sign-up-btn" class="sign-btn" type="submit">
         <span>Create an Account</span>
