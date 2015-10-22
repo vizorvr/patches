@@ -134,7 +134,7 @@ describe('Runtime events', function() {
 		var c = Connection.hydrate(graph, {
 			src_nuid: readNode.uid,
 			dst_nuid: floatNode.uid,
-			src_slot: 0,
+			src_slot: 1,
 			dst_slot: 0,
 		})
 
@@ -183,7 +183,7 @@ describe('Runtime events', function() {
 		var c = Connection.hydrate(graph, {
 			src_nuid: readNode.uid,
 			dst_nuid: floatNode.uid,
-			src_slot: 0,
+			src_slot: 1,
 			dst_slot: 0,
 		})
 
@@ -242,7 +242,7 @@ describe('Runtime events', function() {
 		var c = Connection.hydrate(graph, {
 			src_nuid: readNode.uid,
 			dst_nuid: floatNode.uid,
-			src_slot: 0,
+			src_slot: 1,
 			dst_slot: 0,
 		})
 
