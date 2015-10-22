@@ -1,0 +1,17 @@
+<div class="assets-frame scrollbar">
+	{{#each groups}}
+	<div class="assets-group">
+		<span class="group-title">{{groupTitle}}</span>
+		<ul class="assets-list">
+			{{#each assets}}
+			<li class="{{#if isFirst}}active{{/if}}">
+				<svg class="icon-asset">
+					<use xlink:href="#icon-asset-default"></use>
+				</svg>
+				<span>{{name}}</span>
+			</li>
+			{{/each}}
+		</ul>
+	</div>
+	{{/each}}
+</div>

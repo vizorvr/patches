@@ -1,25 +1,21 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose')
+var Schema = mongoose.Schema
 
-exports.schema = 
-{
+exports.schema =  {
 	_creator: { type: Schema.Types.ObjectId, ref: 'User' },
 	path: {
 		type: String,
 		required: true, 
-		match:
-		[
+		match: [
 			/[\w0-9\-\_\/\.]/,
 			'Path must be alphanumeric'
 		],
 		unique: true
 	},
 	url: { type: String, required: true },
-	tags:
-	[{
+	tags: [{
 		type: String,
-		match:
-		[
+		match: [
 			/[a-z0-9\-\_]/,
 			'Tags must be alphanumeric and lowercase'
 		],
@@ -29,9 +25,9 @@ exports.schema =
 	createdAt: { type: Date, default: Date.now }
 }
 
-exports.slugify = function slugify(name)
-{
+exports.slugify = function slugify(name) {
 	return name.toLowerCase()
 		.replace(/[^\w-]+/g,' ')
-		.replace(/ +/g, '-');
-};
+		.replace(/ +/g, '-')
+}
+
