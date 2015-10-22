@@ -730,14 +730,21 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 				$body.removeClass('loading');
 				console.log(err);
 				if (err.responseJSON) {
+					var json = err.responseJSON;
 					var errors
-					// validation returns array, but simple responses only have message
-					if (err.responseJSON instanceof Array) {
-						errors = err.responseJSON;
+					// best case expect err.responseJSON.errors[{msg:'',param:'',value:''}, ...]
+					if (json.errors instanceof Array) {
+						errors = json.errors
+					} // exceptions follow
+					else if (json instanceof Array) {
+						// validation returns array, but some simple responses only have message
+						errors = json;
+						msg("ERROR: #596 lazy format error");
+						console.log(errors);
 					}
-					else if (err.responseJSON.error && err.responseJSON.error.errors){	// graphController
+					else if (json.error && json.error.errors){	// graphController
 						errors = [];
-						var ers = err.responseJSON.error.errors;
+						var ers = json.error.errors;
 						for (var key in ers) {
 							if (ers.hasOwnProperty(key)) {
 								errors.push({
@@ -748,26 +755,32 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 						}
 					}
 					else {
+						msg("ERROR: #596 lazy format error");
+						console.log(json);
 						errors = [{
-							param:	err.responseJSON.param || '',
-							msg:	err.responseJSON.message
+							param:	json.param || '',
+							msg:	json.message
 						}];
 					}
 					errors.map(function(ei) {
 						var $field = $form.find('#f_'+ei.param);
-						if (ei.param && ei.msg && ($field.length>0)) {
+
+						if (ei.param && (ei.msg || ei.message) && ($field.length>0)) {
 							$field.addClass('error')
-								.find('span.message').html(ei.msg)
+								.find('span.message').html(ei.msg || ei.message)
 						} else {
 							// in case no 'param' comes back
 							$unknownError.html($unknownError.html() + '<span>'+ (ei.msg || ei.message) + '</span>').show();
 						}
 					});
+					if (!errors.length) {	// should errors be empty
+						$unknownError.html($unknownError.html() + '<span>'+ (json.message) + '</span>').show();
+					}
 				} else {
-					if (err.status === 200) {	// the response was deemed an error but has good status
+					if (err.status === 200) {	// the response was deemed an error but has good status (jQuery timeout / last resort)
 						$unknownError.html('<span>The server said: (' + err.status + '): ' + err.statusText +'</span>').show();
 					} else {
-						// in case no responseJSON comes back, e.g. just a code
+						// in case no json comes back, e.g. just a code
 						$unknownError.html('<span>An error ('+err.status+') occurred. Please check all required fields</span>').show();
 					}
 				}

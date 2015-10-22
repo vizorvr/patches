@@ -63,10 +63,11 @@ AccountController.prototype.openLoginModal = function(dfd) {
 
 	ga('send', 'event', 'account', 'open', 'loginModal');
 
-	var $modal = VizorUI.modalOpen(loginTemplate(), 'Sign in', 'nopad login');
+	var $modal = VizorUI.modalOpen(loginTemplate(), 'Sign in', 'nopad mLogin');
 	this._bindModalLinks($modal, dfd);
 
-	var onSuccess = function(user) {
+	var onSuccess = function(response) {
+		var user = response.data;
 		ga('send', 'event', 'account', 'loggedIn', user.username)
 		E2.models.user.set(user);
 		bootbox.hideAll();
@@ -131,7 +132,8 @@ AccountController.prototype.openSignupModal = function(dfd) {
 
 	var $form = jQuery('#signupForm', $modal);
 	var $usernameField = jQuery('input#username_id', $form);
-	var onSuccess = function(user) {
+	var onSuccess = function(response) {
+		var user = response.data;
 		ga('send', 'event', 'account', 'signedUp', user.username)
 		E2.models.user.set(user);
 		VizorUI.modalClose();
@@ -156,8 +158,8 @@ AccountController.prototype.openForgotPasswordModal = function(dfd) {
 	var $form = $('#forgotPasswordForm');
 	VizorUI.setupXHRForm($form, function(response){
 		VizorUI.modalClose();
-		if (response.ok) {
-			ga('send', 'event', 'account', 'passwordReset', response.email)
+		if (response.success) {
+			ga('send', 'event', 'account', 'passwordReset', response.data.email)
 			VizorUI.modalAlert(response.message, 'Done');
 		}
 		dfd.resolve();
@@ -165,18 +167,18 @@ AccountController.prototype.openForgotPasswordModal = function(dfd) {
 	return dfd.promise;
 }
 
-AccountController.prototype.openResetPasswordModal = function(dfd) {
+AccountController.prototype.openChangePasswordModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var resetTemplate = E2.views.account.reset;
 	
 	ga('send', 'event', 'account', 'open', 'resetModal');
 
-	var $modal = VizorUI.modalOpen(resetTemplate, 'Change Password', 'nopad');
+	var $modal = VizorUI.modalOpen(resetTemplate, 'Change Password', 'nopad mChangepassword');
 	this._bindModalLinks($modal, dfd);
 	
 	var $form = jQuery('#resetPasswordForm', $modal);
-	var onSuccess = function(data) {
-		var user = data.user;
+	var onSuccess = function(response) {
+		var user = response.data;
 		VizorUI.modalClose();
 		ga('send', 'event', 'account', 'passwordChanged', user.username)
 		VizorUI.modalAlert('Password for ' + user.username + ' was changed.', 'Done');
@@ -194,12 +196,12 @@ AccountController.prototype.openAccountModal = function(dfd) {
 
 	ga('send', 'event', 'account', 'open', 'accountModal');
 
-	var $modal = VizorUI.modalOpen(accountTemplate, 'Account', 'nopad', true)
+	var $modal = VizorUI.modalOpen(accountTemplate, 'Account', 'nopad mAccountdetails', true)
 
 	jQuery('a#changePasswordLink', $modal).on('click', function(evt) {
 		evt.preventDefault();
 		VizorUI.modalClose();
-		that.openResetPasswordModal(dfd);
+		that.openChangePasswordModal(dfd);
 	});
 
 	// #704
@@ -210,12 +212,12 @@ AccountController.prototype.openAccountModal = function(dfd) {
 	});
 	*/
 
-	var onSuccess = function(data) {
-		var user = data.user || null;
+	var onSuccess = function(response) {
+		var user = response.data;
 		E2.models.user.set(user);
 		ga('send', 'event', 'account', 'accountUpdated', user.username);
 		VizorUI.modalClose();
-		VizorUI.modalAlert(data.message, 'Done');
+		VizorUI.modalAlert(response.message, 'Done');
 		dfd.resolve();
 	};
 

@@ -6,6 +6,26 @@ var User = require('../models/user')
 var secrets = require('../config/secrets')
 var mailer = require('../lib/mailer')
 
+// #596
+function responseStatusSuccess(message, data, options) {
+    return _.extend(options || {}, { success: true, message: message, data: data || {} })
+}
+
+function responseStatusError(message, errors, options) {
+	errors = errors || []
+	if (!(errors instanceof Array)) errors=[errors]
+    return _.extend(options || {}, { success: false, message: message, errors: errors || [] })
+}
+// genericXHRform <3 expressValidator.defaults.errorFormatter
+function formatResponseError(param, value, msg) {
+	return {
+		param: param,
+		msg: msg,
+		value: value
+	}
+}
+// /#596
+
 function parseErrors(errors) {
 	var parsedErrors = []
 	for( var i=0; i < errors.length; i++ ) {
@@ -38,39 +58,40 @@ function parseErrors(errors) {
  	req.assert('email', 'Email is not valid').isEmail()
  	req.assert('password', 'Password cannot be blank').notEmpty()
 
- 	var errors = req.validationErrors()
  	var wantJson = req.xhr || req.path.slice(-5) === '.json'
 
- 	function returnErrors(errors, status) {
+ 	function returnErrors(errors, status, reason) {
  		if (wantJson)
-	 		return res.status(status || 400).json(errors)
+	 		return res.status(status || 400).json(responseStatusError(reason, errors))
 
  		req.flash('errors', parseErrors(errors))
  		return res.redirect('/login')
  	}
 
+	var errors = req.validationErrors()
  	if (errors)
- 		return returnErrors(errors)
+ 		return returnErrors(errors, 400, 'Validation failed')
 
  	passport.authenticate('local', function(err, user, info) {
  		if (err)
- 			return returnErrors([{ message: err.toString() }])
+ 			return returnErrors([{ message: err.toString() }], 500, 'Server error')
 
  		if (!user) {
  			if (info)
-	 			return returnErrors([ info ], 401)
+	 			return returnErrors([ info ], 401, 'Failed authentication')
  		}
 
  		req.logIn(user, function(err) {
  			if (err)
-	 			return returnErrors([{ message: err.toString() }])
+	 			return returnErrors([{ message: err.toString() }], null, 'could not login')
 
- 			req.flash('success', { message: 'Success! You are logged in.' })
-
+			var message = 'Success! You are logged in.'
  			if (wantJson)
- 				res.json(user.toJSON())
- 			else
+ 				res.json(responseStatusSuccess(message, user.toJSON()))
+ 			else {
+				req.flash('success', { message: message})
  				res.redirect(req.session.returnTo || '/account')
+			}
  		})
  	})(req, res, next)
  }
@@ -90,10 +111,10 @@ function parseErrors(errors) {
 	var wantJSON = req.xhr
 	if (wantJSON) {
 		if (req.user) {
-			return res.status(403).json({message: 'user already logged in'}).end()
+			return res.status(403).json(responseStatusError('user already logged in')).end()
 		}
 
-		return res.status(501).json({message: 'not yet implemented'}).end()
+		return res.status(501).json(responseStatusError('not yet implemented')).end()
 
 	} else {
 		if (req.user) {
@@ -110,15 +131,21 @@ function parseErrors(errors) {
  **/
 
 exports.checkUserName = function(req, res, next) {
-  User.findOne({ username: req.body.username },
+  User.findOne({ username: req.body.username },	// #664
     function(err, existingUser) {
       if (err)
         return next(err)
 
       if (!existingUser)
-        return res.json({ ok: true })
+        return res.json(
+			responseStatusSuccess('Username is available', {username: req.body.username})
+		)
 
-      return res.status(409).end()
+	  var msg = 'Username unavailable'
+	  var error = formatResponseError('username', req.body.username, msg)
+      return res.status(409)
+				.json(responseStatusError(msg,error))
+				.end()
     }
   )
 }
@@ -152,23 +179,21 @@ exports.checkUserName = function(req, res, next) {
  		password: req.body.password
  	})
 
- 	User.findOne({ username: req.body.username }, function(err, existingUser) {
+ 	User.findOne({ username: req.body.username }, function(err, existingUser) {	// #664
  		if (existingUser) {
  			if (req.xhr){
- 				return res.status(400).json({
-					message: 'An account with that username already exists.',
-					param: 'username'
- 				})
+				var msg = 'An account with that username already exists.'
+				var error = formatResponseError('username', req.body.username, msg)
+ 				return res.status(400).json(responseStatusError(msg, error))
  			}
  			return res.redirect('/signup')
  		}
- 		User.findOne({ email: req.body.email }, function(err, existingUser) {
+ 		User.findOne({ email: req.body.email }, function(err, existingUser) {	// #664
  			if (existingUser) {
  				if (req.xhr) {
- 					return res.status(400).json({
-						message: 'An account with that email already exists.',
-						param: 'email'
-					})
+					var msg = 'An account with that email already exists.'
+					var error = formatResponseError('email', req.body.email, msg)
+ 					return res.status(400).json(responseStatusError(msg, error))
  				}
  				return res.redirect('/signup')
  			}
@@ -178,7 +203,7 @@ exports.checkUserName = function(req, res, next) {
  				req.logIn(user, function(err) {
  					if (err) return next(err)
  					if (req.xhr) {
- 						res.json(user.toJSON())
+						res.status(200).json(responseStatusSuccess('New account created', user.toJSON()))
  					} else {
  						res.redirect(req.session.returnTo || '/account')
  					}
@@ -194,18 +219,18 @@ exports.checkUserName = function(req, res, next) {
  */
 
  exports.getAccount = function(req, res) {
-	var wantJSON = req.xhr;
+	var wantJSON = req.xhr
 	User.findById(req.user.id, function(err, user) {
 		if (err) return next(err)
 		if (wantJSON) {
-			return res.json({'user': user.toJSON()});
+			return res.status(200).json(responseStatusSuccess('OK', user.toJSON()))
 		}
 		else {
 			res.render('account/profile', {
 				title: 'Account Management'
 			})
 		}
-	});
+	})
  }
 
 /**
@@ -214,8 +239,8 @@ exports.checkUserName = function(req, res, next) {
  */
 
  exports.postUpdateProfile = function(req, res, next) {
-	req.sanitize('name').trim();
-	req.sanitize('email').trim();
+	req.sanitize('name').trim()
+	req.sanitize('email').trim()
  	req.assert('email', 'Email is not valid').isEmail()
  	req.assert('name', 'Name is not valid').notEmpty()
 
@@ -224,7 +249,9 @@ exports.checkUserName = function(req, res, next) {
 
  	if (errors) {
  		if (wantJson) {
- 			return res.status(400).json(errors)
+ 			return res.status(400).json(
+				responseStatusError('Failed validation', errors, {request:req.body})
+			)
  		} else {
  			req.flash('errors', parseErrors(errors))
  			return res.redirect('/account')
@@ -242,7 +269,9 @@ exports.checkUserName = function(req, res, next) {
  				return next(err)
 
  			if (wantJson)
-				return res.json({success: true, message:'Account details updated.', user: user.toJSON()})
+				return res.status(200).json(
+					responseStatusSuccess('Account details updated', user.toJSON())
+				)
 	 		else
 	 			res.redirect('/account')
  		})
@@ -257,8 +286,8 @@ exports.checkUserName = function(req, res, next) {
 
  exports.postUpdatePassword = function(req, res, next) {
  	req.assert('password', 'Password must be at least 8 characters long').len(8)
- 	req.assert('confirm', 'Passwords must match').equals(req.body.password);
-	var wantJSON = req.xhr;
+ 	req.assert('confirm', 'Passwords must match').equals(req.body.password)
+	var wantJSON = req.xhr
 
  	var errors = req.validationErrors()
 
@@ -267,7 +296,9 @@ exports.checkUserName = function(req, res, next) {
 			req.flash('errors', parseErrors(errors))
 			return res.redirect('/account')
 		} else {
-			return res.status(400).json(errors)
+			return res.status(400).json(
+				responseStatusError('Failed validation', errors)	// request intentionally not returned
+			)
 		}
  	}
 
@@ -279,7 +310,9 @@ exports.checkUserName = function(req, res, next) {
  		user.save(function(err) {
  			if (err) return next(err)
 			if (wantJSON) {
-				return res.json({success: true, message:'Password has been changed.', user: user.toJSON()})
+				return res.json(
+					responseStatusSuccess('Password has been changed.', user.toJSON())
+				)
 			} else {
 				req.flash('success', { message: 'Password has been changed.' })
 				res.redirect('/account')
@@ -432,20 +465,24 @@ exports.checkUserName = function(req, res, next) {
  */
 
  exports.postForgot = function(req, res, next) {
+	req.sanitize('email').trim()
  	req.assert('email', 'Please enter a valid email address.').isEmail()
-	var wantJSON = req.xhr;
+	var wantJSON = req.xhr
 
  	var errors = req.validationErrors()
 
  	if (errors) {
 		if (wantJSON) {
-			return res.status(400).json(errors);
+			return res.status(400).json(
+				responseStatusError('Failed validation', errors, {request:req.body})
+			)
 		} else {
 			req.flash('errors', parseErrors(errors))
 			return res.redirect('/forgot')
 		}
  	}
 
+	var email = req.body.email
  	async.waterfall([
  		function(done) {
  			crypto.randomBytes(16, function(err, buf) {
@@ -454,11 +491,13 @@ exports.checkUserName = function(req, res, next) {
  			})
  		},
  		function(token, done) {
- 			User.findOne({ email: req.body.email.toLowerCase() }, function(err, user) {
+ 			User.findOne({ email: req.body.email }, function(err, user) { // #664
  				if (!user) {
-					var msg = 'No account with that email address exists.';
+					var msg = 'No account with that email address exists.'
 					if (wantJSON) {
-						return res.status(400).json({ok:false, success: false, message: msg, msg:msg, param:'email'});
+						return res.status(400).json(
+							responseStatusError(msg, formatResponseError('email', email, msg), {request: req.body})
+						)
 					} else {
 						req.flash('errors', { message: msg })
 						return res.redirect('/forgot')
@@ -497,16 +536,15 @@ exports.checkUserName = function(req, res, next) {
  		}
  		], function(err) {
  			if (err) {
-				res.status(500).json({ok:false, message: 'The server could not email you. Please contact us for assistance.'})
+				res.status(500).json(
+					responseStatusError('The server could not email you. Please contact us for assistance.', [], {diag: err})
+				)
  				return next(err)
 			}
 			if (wantJSON) {
-				return res.status(200).json({
-					ok:		true,
-					success:true,
-					message: 'We emailed further instructions to ' + req.body.email + '.',
-					email:	req.body.email
-				})
+				return res.status(200).json(
+					responseStatusSuccess('We emailed further instructions to ' + email + '.', {email: email})
+				)
 			} else {
 				res.redirect('/forgot')
 			}

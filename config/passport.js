@@ -27,13 +27,13 @@ passport.deserializeUser(function(id, done)
 passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, password, done) {
 	User.findOne({ email: email }, function(err, user) {
 		if (!user)
-			return done(null, false, { message: 'That account does not exist.' })
+			return done(null, false, { param: 'email', value: email, message: 'That account does not exist.' })
 
 		user.comparePassword(password, function(err, isMatch) {
 			if (isMatch)
 				return done(null, user)
 
-			return done(null, false, { message: 'Incorrect password.' })
+			return done(null, false, { param: 'password', message: 'Incorrect password.' })
 		})
 	})
 }))
