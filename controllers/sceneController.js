@@ -19,7 +19,7 @@ SceneController.prototype.canWriteUpload = function(req, res, next) {
 		return next(new Error('No files uploaded'))
 
 	var file = req.files.file
-	var folder = '/'+req.params.model
+	var folder = '/' + req.user.username + '/assets/scene'
 
 	// remove .zip from scene name
 	var dest = folder + '/'+ fsPath.basename(file.name, fsPath.extname(file.name))
@@ -40,7 +40,7 @@ SceneController.prototype.upload = function(req, res, next) {
 	var that = this
 
 	var file = req.files.file
-	var folder = '/scene' 
+	var folder = '/' + req.user.username + '/assets/scene'
 	var dest = folder + '/'+ fsPath.basename(file.name, fsPath.extname(file.name))
 
 	var allowedExtensions = ['.zip', '.obj', '.js', '.json']

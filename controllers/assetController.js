@@ -65,12 +65,13 @@ AssetController.prototype._parseTags = function(tags) {
 }
 
 AssetController.prototype._makePath = function(req, path) {
-	return fsPath.join(
+	return '/' + fsPath.join(
 		req.user.username,
 		'assets',
 		this._modelName,
-		assetHelper.slugify(fsPath.basename(path, fsPath.extname(path))),
-		fsPath.extname(path)
+		assetHelper.slugify(
+			fsPath.basename(path, fsPath.extname(path))
+		) + fsPath.extname(path)
 	)
 }
 
@@ -174,8 +175,7 @@ AssetController.prototype.canWriteUpload = function(req, res, next) {
 	})
 } 
 
-AssetController.prototype.upload = function(req, res, next)
-{
+AssetController.prototype.upload = function(req, res, next) {
 	var that = this
 
 	var file = req.files.file
@@ -183,19 +183,16 @@ AssetController.prototype.upload = function(req, res, next)
 	var gridFsPath = this._makeGridFsPath(req)
 
 	return that._service.canWrite(req.user, path)
-	.then(function(can)
-	{
+	.then(function(can) {
 		if (!can)
 			return res.status(403)
 				.json({message: 'Sorry, permission denied'})
 
 		// move the uploaded file into GridFS / local FS
 		return that._fs.move(file.path, gridFsPath)
-		.then(function(url)
-		{
+		.then(function(url) {
 			return that._service.findByPath(path)
-			.then(function(model)
-			{
+			.then(function(model) {
 				if (!model)
 					model = { path: path }
 
@@ -203,8 +200,7 @@ AssetController.prototype.upload = function(req, res, next)
 
 				// save/update the model
 				return that._service.save(model, req.user)
-				.then(function(asset)
-				{
+				.then(function(asset) {
 					res.json(asset)
 				})
 			})

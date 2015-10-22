@@ -13,12 +13,11 @@ function ImageController(imageService, fs)
 
 ImageController.prototype = Object.create(AssetController.prototype);
 
-ImageController.prototype.upload = function(req, res, next)
-{
+ImageController.prototype.upload = function(req, res, next) {
 	var that = this;
 
 	var file = req.files.file;
-	var folder = '/image';
+	var folder = '/' + req.user.username + '/assets/image'
 
 	new ImageProcessor(this._fs)
 		.handleUpload(file, folder)
@@ -30,8 +29,7 @@ ImageController.prototype.upload = function(req, res, next)
 			info.url = info.original.url;
 
 			return that._service.save(info, req.user)
-			.then(function(asset)
-			{
+			.then(function(asset) {
 				res.json(asset);
 			});
 		})

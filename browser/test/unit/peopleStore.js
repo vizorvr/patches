@@ -29,7 +29,7 @@ global.E2 = {
 E2.app.channel.setMaxListeners(0)
 
 var assert = require('assert')
-var PeopleStore = require('../../scripts/peopleStore')
+var PeopleStore = require('../../scripts/stores/peopleStore')
 
 describe('PeopleStore', function() {
 	var ps
