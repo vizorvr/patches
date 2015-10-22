@@ -402,6 +402,9 @@ FileSelectControl.prototype.close = function() {
 
 function createSelector(path, selected, okButton, okFn, cb) {
 	var ctl = new FileSelectControl()
+	var systemFiles = [], userFiles = []
+	var userDfd = when.defer()
+	var systemDfd = when.defer()
 
 	okButton = okButton || 'Ok'
 	okFn = okFn || function() {}
@@ -411,28 +414,37 @@ function createSelector(path, selected, okButton, okFn, cb) {
 
 	E2.ui.updateProgressBar(65)
 
-	$.get('/vizor/assets' + path, function(systemFiles) {
-		E2.ui.updateProgressBar(80)
-
-		systemFiles = systemFiles || []
-		
+	if (E2.models.user.get('username') !== '') {
 		$.get(path, function(files) {
-			E2.ui.updateProgressBar(100)
-
-			var buttons = {
-				'Cancel': function() {}
-			}
-
-			buttons[okButton] = okFn
-
-			ctl
-				.url(path)
-				.buttons(buttons)
-				.files(files.concat(systemFiles))
-				.selected(selected)
-
-			cb(ctl)
+			userFiles = files || []
+			userDfd.resolve()
 		})
+	} else {
+		userDfd.resolve()
+	}
+
+	$.get('/vizor/assets' + path, function(files) {
+		systemFiles = files || []
+		systemDfd.resolve()
+	})
+
+	when.all([ userDfd.promise, systemDfd.promise ]).then(function() {
+		E2.ui.updateProgressBar(100)
+
+		var buttons = {
+			'Cancel': function() {}
+		}
+
+		buttons[okButton] = okFn
+
+		ctl
+			.url(path)
+			.buttons(buttons)
+			.files(userFiles.concat(systemFiles))
+			.selected(selected)
+
+		cb(ctl)
+
 	})
 
 	return ctl
