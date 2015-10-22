@@ -555,7 +555,6 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 		VizorUI.modalClose();
 		return false;
 	});
-	
 	welcomeModal.find('a.login').on('click', function(evt) {
 		evt.preventDefault();
 		VizorUI.modalClose();
