@@ -1,42 +1,33 @@
-<div class="modal-header">
-	<h4>Sign in</h4>
-	<button aria-hidden="true" data-dismiss="modal" class="bootbox-close-button" type="button">
-		<svg class="icon-dialog-close"><use xlink:href="#icon-close"></use></svg>
-	</button>
-</div>
-<div class="modal-body">
-	<form action="/login" id="login-form_id" method="POST">
-		<input type="hidden" name="_csrf" value={{_csrf}}>
+<form action="/login" id="loginForm" method="POST" class="clearfix">
+    <fieldset>
+        <input type="hidden" name="_csrf" value={{_csrf}}>
 
-		<div class="form-input">
-			<label for="email_id">Email</label>
-			<input type="email" name="email" id="email_id" placeholder="" tabindex="-1">
-		</div> 
-		
-		<div class="modal-error" id="email-error">
-			<span></span>
-		</div>
-		
-		<div class="form-input">
-			<label for="password_id">Password</label>
-			<input type="password" name="password" id="password_id" placeholder="">
-		</div>
-		
-		<div class="modal-error" id="password-error">
-			<span></span>
-		</div>
-		
-		<div class="modal-error" id="general-error">
-			<span></span>
-		</div>
-		
-		<button id="sign-in-btn" class="sign-btn" type="submit">
-			<span>Sign in to Vizor</span>
-			<svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
-		</button>
-	</form>
-</div>
-<div class="modal-footer">
-	<span class="pull-left"><a href="/forgot" class="forgot">Forgot password?</a></span>
-	<span class="pull-right">Don't have an account? <a href="/signup" class="signup" id="signup-link">Sign up here</a></span>
+        <div class="form-input" id="f_email">
+            <label for="email_id">Email</label>
+            <input type="email" name="email" id="email_id" class="required" placeholder="Email">
+            <span class="message"></span>
+        </div>
+
+        <div class="form-input" id="f_password">
+            <label for="password_id">Password</label>
+            <input type="password" name="password" id="password_id" placeholder="Password" class="required">
+            <span class="message"></span>
+        </div>
+
+        <div class="modal-error" id="unknown_error"><span></span></div>
+    </fieldset>
+
+    <button id="sign-in-btn" class="sign-btn action" type="submit">
+        <span>Sign in to Vizor</span>
+        <svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
+    </button>
+</form>
+
+<div class="twocol clearfix modal-footer">
+    <div class="col left" style="width:34%">
+        <a href="/forgot" id="forgotPasswordLink" class="forgot">Forgot password?</a>
+    </div>
+    <div class="col right" style="text-align:right; width:65%">
+        Don't have an account? <a href="/signup" class="signup" id="signupLink">Sign up here</a>
+    </div>
 </div>

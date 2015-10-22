@@ -1,49 +1,37 @@
-<div class="modal-header">
-	<h4>Account</h4>
-	<button aria-hidden="true" data-dismiss="modal" class="bootbox-close-button" type="button">
-		<svg class="icon-dialog-close"><use xlink:href="#icon-close"></use></svg>
-	</button>
-</div>
+<form action="/account/profile" id="accountDetailsForm" class="panel form-horizontal" method="POST">
+    <input type="hidden" name="_csrf" value={{_csrf}}>
+    <fieldset>
 
-<div class="modal-body">
-	<form action="/account/profile" id="account-modal-form" class="panel form-horizontal" method="POST">
-		<input type="hidden" name="_csrf" value={{_csrf}}>
-		
-		<div class="form-input">
-			<label for="name_id">Name</label>
-			<input type="text" name="name" id="name_id" value="{{user.name}}" placeholder="" tabindex="-1">
-		</div> 
-		
-		<div class="modal-error" id="name-error">
-			<span></span>
-		</div>
+        <div class="form-input" id="f_name">
+            <label for="name_id">Name</label>
+            <input type="text" class="required" placeholder="Your name" name="name" id="name_id" value="{{user.name}}" tabindex="1">
+            <span class="message"></span>
+        </div>
 
-<!-- 		<div class="form-input">
-			<label for="username_id">Username</label>
-			<input type="text" class="required" name="username" value="{{user.username}}" id="username_id" placeholder="">
-		</div> 
-		
-		<div class="modal-error" id="username-error">
-			<span></span>
-		</div>
+        {{!--
+        <div class="form-input" id="f_username">
+            <label for="username_id">Username</label>
+            <input type="text" class="required" placeholder="Username" name="username" value="{{user.username}}" id="username_id" >
+            <span class="message"></span>
+        </div>
+        --}}
 
- -->		<div class="form-input">
-			<label for="email_id">Email</label>
-			<input type="text" class="required" name="email" value="{{user.email}}" id="email_id" placeholder="">
-		</div>
-		
-		<div class="modal-error" id="email-error">
-			<span></span>
-		</div>
-		
-		<button id="update-profile-btn" class="sign-btn" type="submit">
-			<span>Update Account</span>
-			<svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
-		</button>
-	</form>
-</div>
+        <div class="form-input" id="f_email">
+            <label for="email_id">Email</label>
+            <input type="email" class="required" name="email" value="{{user.email}}" id="email_id" placeholder="Email" tabindex="2">
+            <span class="message"></span>
+        </div>
 
-<div class="modal-footer">
-	<span class="pull-left"><a href="/account/delete" class="delet-account">Delete account</a></span>
-	<span class="pull-right"><a href="/changepassword" class="change-password" id="change-passworg">Change password</a></span>
+        <div class="modal-error" id="unknown_error"><span></span></div>
+    </fieldset>
+
+    <button id="update-profile-btn" class="sign-btn" type="submit">
+        <span>Update Account</span>
+        <svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
+    </button>
+</form>
+
+<div class="modal-footer clearfix twocol">
+	{{!-- <div class="col left"><a href="#/account/delete" id="delete_account">Delete account</a></div> #704 --}}
+	<div class="col right pull"><a href="#/changepassword" id="changePasswordLink">Change password</a></div>
 </div>

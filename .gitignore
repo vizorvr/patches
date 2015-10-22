@@ -1,4 +1,5 @@
 .DS_Store
+browser/ajaxconsole.html
 browser/build
 browser/data/scenes/**
 browser/data/textures/**

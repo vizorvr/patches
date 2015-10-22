@@ -24,15 +24,16 @@ var uiKeys = {
 	mod_alt : 100000
 };
 
-var uiViewMode = {
-	patch_editor : 'patches',
-	world_editor : 'editor'
+var uiViewCam = {
+	vr				: 'hmd',
+	world_editor	: 'editor'
 };
 
-var uiEvent = {
+var uiEvent = { // emitted by ui (E2.ui) unless comments state otherwise
 	initialised		: 'uiInitialised',
-	moved			: 'uiMoved',		// panels via movable.js
-	stateChanged	: 'stateChanged'	// E2.ui / VizorUI
+	moved			: 'uiMoved',			// panels via movable.js
+	stateChanged	: 'uiStateChanged',
+	worldEditChanged : 'uiWorldEditorChanged'	// ui and E2.app
 }
 
 VizorUI = function() {			// becomes E2.ui
@@ -57,7 +58,8 @@ VizorUI = function() {			// becomes E2.ui
 			breadcrumb: true,		// always true	(20151012)
 			player_controls : true,	// always true	(20151012)
 			main_toolbar : true,	// always true	(20151012)
-			inspector	: false		// always false (20151012)
+			inspector	: false,	// always false (20151012)
+			timeline	: false		// (20151019)
 		},
 		panelStates: {
 			chat:		null,
@@ -69,11 +71,11 @@ VizorUI = function() {			// becomes E2.ui
 			height		: window.screen.height,
 			availWidth	: window.screen.availWidth,
 			availHeight	: window.screen.availHeight
-		}
+		},
+		viewCamera : uiViewCam.vr		// one of uiViewCam keys
 	};
 	this.setupStateMethods();	// adds code to update the current or apply new state
 
-	this.viewmode = uiViewMode.patch_editor; // one of uiViewMode keys
 	this.flags = {
 		loading: false,
 		fullscreen: false,
@@ -136,9 +138,17 @@ VizorUI.prototype.setupStateMethods = function() {
 		if (typeof newState !== 'object') return msg('ERROR: invalid newState')
 		// this = ui.state
 		this.visible = newState.visible;
-		this.visibility = clone(newState.visibility);
-		ui.applyVisibility();
-		ui.setWorldEditorMode(newState.viewmode === uiViewMode.world_editor);
+		var newVisibility = newState.visibility;
+		if (typeof newState.viewCamera !== 'undefined') this.viewCamera = newState.viewCamera;
+
+		// take values from supplied visibility, but default to current
+		var k;
+		for (k in this.visibility) {
+			if (typeof newVisibility[k] !== 'undefined') this.visibility[k] = newVisibility[k];
+		}
+		k=null;
+
+		ui.applyVisibility(false);
 
 		if (typeof newState.panelStates === 'undefined') return true;	// nothing else left to do
 
@@ -160,12 +170,15 @@ VizorUI.prototype.setupStateMethods = function() {
 			VizorUI.applyPanelState(ui.dom.assetsLib, ps.assets, ui.onAssetsToggleClicked.bind(ui));
 		}
 
+		ui.setWorldEditorMode(this.viewCamera === uiViewCam.world_editor);
+
 		return true;
 	};
 
 	this.state._getCopy = function() {
 		return {
 			visible: this.visible,
+			viewCamera: this.viewCamera,
 			visibility: clone(this.visibility),
 			panelStates: clone(this.panelStates),
 			context: clone(this.context)
@@ -428,10 +441,11 @@ VizorUI.prototype.syncVisibility = function() {
 // applies visibility state to parts of UI as dictated by this.state.visible and this.state.visibility
 VizorUI.prototype.applyVisibility = function(andUpdateState) {
 	andUpdateState = (typeof andUpdateState === 'undefined') ? true : !!andUpdateState;
+	var dom = this.dom;		// normally E2.dom
 	var state = this.state;
 	var visibility = state.visibility;
-	var $assets = this.dom.assetsLib, $presets = this.dom.presetsLib, $chat = this.dom.chatWindow;
-	var $patch_editor = E2.dom.canvas_parent;
+	var $assets = dom.assetsLib, $presets = dom.presetsLib, $chat = dom.chatWindow;
+	var $patch_editor = dom.canvas_parent;
 	var show_panels = state.visible && visibility.floating_panels;
 
 	$assets.toggle(show_panels && visibility.panel_assets)
@@ -441,14 +455,27 @@ VizorUI.prototype.applyVisibility = function(andUpdateState) {
 	$chat.toggle(show_panels && visibility.panel_chat)
 		.toggleClass('uiopen', show_panels && visibility.panel_chat);
 
-	this.dom.btnAssets.toggleClass('ui_off', !visibility.panel_assets);
-	this.dom.btnPresets.toggleClass('ui_off', !visibility.panel_presets);
-	this.dom.btnChatDisplay.toggleClass('ui_off', !visibility.panel_chat);
-	this.dom.btnGraph.toggleClass('ui_off', !visibility.patch_editor);
+	dom.btnAssets.toggleClass('ui_off', !visibility.panel_assets);
+	dom.btnPresets.toggleClass('ui_off', !visibility.panel_presets);
+	dom.btnChatDisplay.toggleClass('ui_off', !visibility.panel_chat);
+	dom.btnGraph.toggleClass('ui_off', !visibility.patch_editor);
 
 	$patch_editor.toggle(state.visible && visibility.patch_editor);
 	if (andUpdateState) this.updateState();
 	this.enforceConstraints();
+
+	// sync camera buttons
+	var worldEditorActive = state.viewCamera === uiViewCam.world_editor;
+	dom.btnSavePatch.attr('disabled',worldEditorActive);
+	dom.btnInspector.attr('disabled',worldEditorActive);
+	dom.btnZoomOut.attr('disabled',worldEditorActive);
+	dom.btnZoom.attr('disabled',worldEditorActive);
+	dom.btnZoomIn.attr('disabled',worldEditorActive);
+	dom.btnScale.attr('disabled',!worldEditorActive);
+	dom.btnRotate.attr('disabled',!worldEditorActive);
+	dom.btnEditorCam.parent().toggleClass('active', worldEditorActive);
+	dom.btnVRCam.parent().toggleClass('active', !worldEditorActive);
+
 	E2.app.noodlesVisible = visibility.patch_editor;
 };
 
