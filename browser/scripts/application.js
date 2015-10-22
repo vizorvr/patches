@@ -56,8 +56,10 @@ function Application() {
 	this.dispatcher = new Flux.Dispatcher()
 	this.undoManager = new UndoManager()
 	this.graphApi = new GraphApi(this.undoManager)
+	
 	this.graphStore = new GraphStore()
 	this.peopleStore = new PeopleStore()
+	
 	this.peopleManager = new PeopleManager(this.peopleStore, $('#peopleTab'))
 
 	// Make the UI visible now that we know that we can execute JS

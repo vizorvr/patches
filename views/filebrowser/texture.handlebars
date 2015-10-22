@@ -6,19 +6,21 @@
 				<th class="thumbnail-header"><div class="th-inner">Thumbnail</div></th>
 				<th class="name-header"><div class="th-inner">Name</div></th>
 				<th class="size-header"><div class="th-inner">Size</div></th>
+				<th class="by-header"><div class="th-inner">By</div></th>
 			</tr>
 		</thead>
 		<tbody>
 		{{#each files}}
 			<tr class="file-row{{#if selected}} success{{/if}}" 
 				data-url="{{scaled.url}}">
-				<td><img src="{{scaledThumbnail.url}}"/></td>
-				<td>{{scaled.path}}</td>
+				<td><img class="thumb" src="{{scaledThumbnail.url}}"/></td>
+				<td class="path">{{scaled.path}}</td>
 				<td>{{scaled.width}}x{{scaled.height}}</td>
+				<td>{{_creator}}</td>
 			</tr>
 		{{else}}
 			<tr class="file-row">
-				<td class="name" colspan="3">No files found</td>
+				<td class="name" colspan="4">No files found</td>
 			</tr>
 		{{/each}}
 		</tbody>

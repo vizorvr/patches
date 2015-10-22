@@ -1,5 +1,4 @@
 (function() {
-	
 	window.User = Backbone.Model.extend({})
 
 	window.FileList = Backbone.Model.extend({

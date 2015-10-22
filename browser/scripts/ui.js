@@ -2,6 +2,7 @@
 
 VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	if (typeof e2 === 'undefined') return false;
+
 	dom = dom || this.dom;
 	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2.app);
 

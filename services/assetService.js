@@ -45,6 +45,12 @@ AssetService.prototype.findByCreatorName = function(username) {
 	return dfd.promise
 }
 
+AssetService.prototype.findByCreatorId = function(userId) {
+	return this.find({
+		'_creator': userId
+	})
+}
+
 AssetService.prototype.canWrite = function(user, path)
 {
 	return this.findByPath(path)
