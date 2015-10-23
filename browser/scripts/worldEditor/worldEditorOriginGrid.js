@@ -45,7 +45,7 @@ function WorldEditorOriginGrid() {
 
 	var textShapes = THREE.FontUtils.generateShapes("")
 	var text = new THREE.ShapeGeometry(textShapes)
-	this.textMesh = new THREE.Mesh(text, new THREE.MeshBasicMaterial({color: this.mesh.color1}))
+	this.textMesh = new THREE.Mesh(text, new THREE.MeshBasicMaterial({color: this.mesh.color1, fog: false}))
 	this.textMesh.scale.set(0.001, 0.001, 0.001)
 	this.textMesh.position.set(1, 0, -1)
 	this.textMesh.quaternion.setFromEuler(new THREE.Euler(-3.14159/2,0,0))
