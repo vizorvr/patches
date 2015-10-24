@@ -100,19 +100,13 @@ Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 	result[1] = Math.round(o[1] + (area.height() / 2));
 };
 
-Application.prototype.instantiatePlugin = function(id, position) {
-	var that = this
-	var $canvasParent = E2.dom.canvas_parent
-	var parentOffset = $canvasParent.offset()
-
+Application.prototype.createPlugin = function(id, position) {
 	position = position || this.mousePosition
 
-	function createPlugin(name) {
+	function _create(name) {
 		var activeGraph = E2.core.active_graph
 
-		var newX = Math.floor(position[0] + that.scrollOffset[0]);
-		var newY = Math.floor(position[1] + that.scrollOffset[1]);
-		var node = new Node(activeGraph, id, newX, newY);
+		var node = new Node(activeGraph, id, position[0], position[1]);
 
 		if (name) { // is graph?
 			node.plugin.setGraph(new Graph(E2.core, activeGraph))
@@ -120,23 +114,29 @@ Application.prototype.instantiatePlugin = function(id, position) {
 			node.plugin.graph.plugin = node.plugin
 		}
 
-		that.graphApi.addNode(activeGraph, node)
-
 		return node
 	}
 
 	var node
 
 	if (id === 'graph')
-		node = createPlugin('Graph')
+		node = _create('Graph')
 	else if (id === 'loop')
-		node = createPlugin('Loop')
+		node = _create('Loop')
 	else if (id === 'array_function')
-		node = createPlugin('Array function')
+		node = _create('Array function')
 	else
-		node = createPlugin(null)
+		node = _create(null)
 
 	return node
+}
+
+Application.prototype.instantiatePlugin = function(id, position) {
+	position = position || this.mousePosition
+	var newX = Math.floor(position[0] + this.scrollOffset[0])
+	var newY = Math.floor(position[1] + this.scrollOffset[1])
+	var node = this.createPlugin(id, [newX, newY])
+	this.graphApi.addNode(E2.core.active_graph, node)
 }
 
 Application.prototype.activateHoverSlot = function() {
@@ -1026,7 +1026,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 	return { nodes: createdNodes, connections: createdConnections }
 }
 
-Application.prototype.onPaste = function() {
+Application.prototype.onPaste = function(x, y) {
 	if (this.clipboard === null)
 		return;
 
@@ -1040,10 +1040,12 @@ Application.prototype.onPaste = function() {
 	var ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
 	var oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
 
-	var pasted = this.paste(doc, ox, oy)
+	var pasted = this.paste(doc, x || ox, y || oy)
 
 	pasted.nodes.map(this.markNodeAsSelected.bind(this))
 	pasted.connections.map(this.markConnectionAsSelected.bind(this))
+
+	return pasted
 }
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {

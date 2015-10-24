@@ -36,7 +36,7 @@ var uiEvent = { // emitted by ui (E2.ui) unless comments state otherwise
 	worldEditChanged : 'uiWorldEditorChanged'	// ui and E2.app
 }
 
-VizorUI = function() {			// becomes E2.ui
+var VizorUI = function() {			// becomes E2.ui
 	EventEmitter.apply(this, arguments)
 
 	this._initialised = false;
@@ -100,8 +100,7 @@ VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 
 	this.on(uiEvent.initialised, this.recallState.bind(this));
 	this.on(uiEvent.stateChanged, this.storeState.bind(this));
-};
-
+}
 
 VizorUI.prototype.updateState = function() {
 	this.state._update({
@@ -231,6 +230,9 @@ VizorUI.prototype.isFullScreen = function() {
 }
 VizorUI.prototype.isVisible = function() {
 	return this.state.visible;
+}
+VizorUI.prototype.isPatchVisible = function() {
+	return this.state.visibility.patch_editor;
 }
 VizorUI.prototype.isLoading = function() {
 	return this.flags.loading;

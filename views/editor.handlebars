@@ -581,7 +581,8 @@
 			E2.util.checkBrowser();
 
 		E2.models = {
-			user: new User({})
+			user: new User({}),
+			fileList: new FileList({})
 		}
 
 		if ('{{user.username}}' !== '') {
