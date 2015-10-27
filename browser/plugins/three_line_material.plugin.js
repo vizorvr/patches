@@ -2,7 +2,7 @@
 	var ThreeLineMaterialPlugin = E2.plugins.three_line_material = function(core) {
 		AbstractThreeMaterialPlugin.apply(this, arguments)
 
-		this.desc = 'THREE.js Point Cloud Material'
+		this.desc = 'THREE.js Line Material'
 
 		this.input_slots = [
 			{	name: 'color', dt: core.datatypes.COLOR },
