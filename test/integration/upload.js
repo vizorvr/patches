@@ -24,6 +24,10 @@ describe('Upload', function() {
 		password: 'abcd1234',
 		confirmPassword: 'abcd1234'
 	};
+	
+	function makePath(model, name) {
+		return '/' + fsPath.join(deets.username, 'assets', model, name)
+	}
 
 	var agent = request.agent(app);
 	var db;
@@ -62,10 +66,10 @@ describe('Upload', function() {
 	describe('Image', function()
 	{
 		it('should upload correctly', function(done) {
-			var original = '/image/'+testId+'.png';
-			var thumb = '/image/'+testId+'-thumb.png'
-			var scaled = '/image/'+testId+'-scaled.png'
-			var scaledThumb = '/image/'+testId+'-scaled-thumb.png'
+			var original = makePath('image', testId+'.png')
+			var thumb = makePath('image', testId+'-thumb.png')
+			var scaled = makePath('image', testId+'-scaled.png')
+			var scaledThumb = makePath('image', testId+'-scaled-thumb.png')
 			var stream = fs.createReadStream(__dirname+'/../fixtures/te-2rb.jpg');
 			stream.path = original
 
@@ -106,10 +110,9 @@ describe('Upload', function() {
 		});
 	});
 
-	describe('Scene', function()
-	{
+	describe('Scene', function() {
 		it('should upload correctly', function(done) {
-			var scene = '/scene/'+testId;
+			var scene = makePath('scene', ''+testId);
 			var original = scene+'.zip';
 			var stream = fs.createReadStream(__dirname+'/../fixtures/scene.zip');
 			stream.path = original
@@ -146,10 +149,9 @@ describe('Upload', function() {
 		});
 	});
 
-	describe('Audio', function()
-	{
+	describe('Audio', function() {
 		it('should upload correctly', function(done) {
-			var audio = '/audio/'+testId+'.ogg';
+			var audio = makePath('audio', testId+'.ogg');
 			var stream = fs.createReadStream(__dirname+'/../../browser/data/audio/inedible_candy.ogg');
 			stream.path = audio
 
@@ -178,7 +180,7 @@ describe('Upload', function() {
 	describe('JSON', function()
 	{
 		it('should upload correctly', function(done) {
-			var jsonFile = '/json/'+testId+'.json';
+			var jsonFile = makePath('json', testId+'.json');
 			var stream = fs.createReadStream(__dirname+'/../fixtures/graph.json');
 			stream.path = jsonFile
 

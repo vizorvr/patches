@@ -1,9 +1,9 @@
 var assert = require('assert');
 
 global.EventEmitter = require('events').EventEmitter
-global.Store = require('../../scripts/store')
+global.Store = require('../../scripts/stores/store')
 
-var GraphStore = require('../../scripts/graphStore')
+var GraphStore = require('../../scripts/stores/graphStore')
 var Node = require('../../scripts/node').Node
 
 describe('GraphStore', function() {

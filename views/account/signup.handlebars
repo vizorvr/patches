@@ -1,62 +1,40 @@
-<div class="modal-header">
-	<h4>Sign up</h4>
-	<button aria-hidden="true" data-dismiss="modal" class="bootbox-close-button" type="button">
-		<svg class="icon-dialog-close"><use xlink:href="#icon-close"></use></svg>
-	</button>
-</div>
+<form action="/signup" id="signupForm" method="POST">
+    <input type="hidden" name="_csrf" value={{_csrf}}>
+    <fieldset>
+        <div class="form-input required" id="f_name">
+            <label for="name_id">Your Name</label>
+            <input class="required" type="text" name="name" id="name_id" placeholder="Your Name" tabindex="1">
+            <span class="message"></span>
+        </div>
 
-<div class="modal-body">
-	<form action="/signup" id="signup-form_id" method="POST">
-		<input type="hidden" name="_csrf" value={{_csrf}}>
+        <div class="form-input required" id="f_username">
+            <label for="username_id">Username</label>
+            <input class="required" type="text" name="username" id="username_id" placeholder="Username" tabindex="2">
+            <span class="message"></span>
+        </div>
 
-		<div class="form-input">
-			<label for="name_id">Your Name</label>
-			<input type="text" name="name" id="name_id" placeholder="" tabindex="-1">
-		</div> 
+        <div class="form-input required" id="f_email">
+            <label for="email_id">Email</label>
+            <input class="required" type="email" name="email" id="email_id" placeholder="Email" tabindex="3">
+            <span class="message"></span>
+        </div>
 
-		<div class="modal-error" id="name-error">
-			<span></span>
-		</div>
+        <div class="form-input required" id="f_password">
+            <label for="password_id">Password</label>
+            <input class="required" type="password" name="password" id="password_id" placeholder="Password" tabindex="4">
+            <span class="message"></span>
+        </div>
 
-		<div class="form-input">
-			<label for="username_id">Username</label>
-			<input type="text" class="required" name="username" id="username_id" placeholder="">
-		</div> 
-		
-		<div class="modal-error" id="username-error">
-			<span></span>
-		</div>
+        <div class="modal-error" id="unknown_error"><span></span></div>
+    </fieldset>
 
-		<div class="form-input">
-			<label for="email_id">Email</label>
-			<input type="text" class="required" name="email" id="email_id" placeholder="">
-		</div>
-		
-		<div class="modal-error" id="email-error">
-			<span></span>
-		</div>
-		
-		<div class="form-input">
-			<label for="password_id">Password</label>
-			<input type="password" class="required" name="password" id="password_id" placeholder="">
-		</div>
-		
-		<div class="modal-error" id="password-error">
-			<span></span>
-		</div>
-		
-		<div class="modal-error" id="general-error">
-			<span></span>
-		</div>
-		
-		<button id="sign-up-btn" class="sign-btn disabled" type="submit">
-			<span>Create an Account</span>
-			<svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
-		</button>
-	  
-	</form>
-</div>
+    <button id="sign-up-btn" class="sign-btn" type="submit">
+        <span>Create an Account</span>
+        <svg class="actionicon"><use xlink:href="#icon-go"></use></svg>
+    </button>
+</form>
+
 <div class="modal-footer">
-	<p>By signing up you agree to <a href="https://docs.google.com/document/d/172dcWVz8bSEDxS_y2InXpqWhVvbM7w1Z9MSp1-Lw1rIc/edit?usp=sharing" target="_blank" alt="Read Terms of Service">Terms of Service</a>
+	<p>By signing up you agree to our <a href="https://docs.google.com/document/d/172dcWVz8bSEDxS_y2InXpqWhVvbM7w1Z9MSp1-Lw1rIc/edit?usp=sharing" target="_blank" alt="Read Terms of Service">Terms of Service</a>
 	<p>Already have an account? <a href="/login" id="signinModalLink" class="login" alt="Sign in">Sign in here</a>
 </div>

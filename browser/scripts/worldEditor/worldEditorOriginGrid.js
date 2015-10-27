@@ -42,10 +42,27 @@ function WorldEditorOriginGrid() {
 
 	this.mesh = new EditorGridHelper(10, 1)
 	this.mesh.add(new EditorGridHelper(1, 0.1))
+
+	var textShapes = THREE.FontUtils.generateShapes("")
+	var text = new THREE.ShapeGeometry(textShapes)
+	this.textMesh = new THREE.Mesh(text, new THREE.MeshBasicMaterial({color: this.mesh.color1, fog: false}))
+	this.textMesh.scale.set(0.001, 0.001, 0.001)
+	this.textMesh.position.set(1, 0, -1)
+	this.textMesh.quaternion.setFromEuler(new THREE.Euler(-3.14159/2,0,0))
+	this.mesh.add(this.textMesh)
+
+	this.gridScale = 0
+	this.scale(1)
 }
 
 WorldEditorOriginGrid.prototype.scale = function(s) {
-	this.mesh.scale.set(s, s, s)
+	if (s !== this.gridScale) {
+		var textShapes = THREE.FontUtils.generateShapes(s.toString() + " m")
+		this.textMesh.geometry = new THREE.ShapeGeometry(textShapes)
+
+		this.gridScale = s
+		this.mesh.scale.set(s, s, s)
+	}
 }
 
 

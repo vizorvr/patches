@@ -27,7 +27,7 @@ function TagControl($input, $fileList) {
 
 		return true;
 	});
-};
+}
 _.extend(TagControl.prototype, Backbone.Events);
 
 function FileSelectControl(handlebars) {
@@ -65,67 +65,65 @@ FileSelectControl.prototype._onFilesChange = function(model) {
 
 	$('.file-selector', this._frame).html(this._renderFiles());
 	this._bindTable();
-};
+}
 
 FileSelectControl.prototype.template = function(name)
 {
 	this._template = E2.views.filebrowser[name];
 	return this;
-};
+}
 
 FileSelectControl.prototype.frame = function(name)
 {
 	this._frameTemplate = E2.views.filebrowser[name];
 	return this;
-};
+}
 
 FileSelectControl.prototype.url = function(url)
 {
 	this._url = url;
 	return this;
-};
+}
 
-FileSelectControl.prototype.files = function(files)
-{
-	var items = files.map(function(file)
-	{
+FileSelectControl.prototype.files = function(files) {
+	var items = files.map(function(file) {
 		if (typeof(file) === 'string')
-			return { path: file };
+			return { path: file }
 
-		return file;
-	});
+		return file
+	})
 
-	this._fileList.setFiles(items);
+	this._fileList.setFiles(items)
 
-	return this;
-};
+	return this
+}
 
 FileSelectControl.prototype.selected = function(file) {
 	this._original = file
 	this._selected = file
 	return this
-};
+}
 
 FileSelectControl.prototype.onChange = function(cb) {
 	this._cb = cb;
 	return this;
-};
+}
 
 FileSelectControl.prototype.buttons = function(buttons) {
 	this._buttons = buttons;
 	return this;
-};
+}
 
 FileSelectControl.prototype.header = function(header) {
 	this._header = header;
 	return this;
-};
+}
 
 FileSelectControl.prototype.modal = function()
 {
 	this._render();
 	return this;
-};
+}
 
 FileSelectControl.prototype._renderFiles = function()
 {
@@ -154,7 +152,7 @@ FileSelectControl.prototype._renderFiles = function()
 	});
 
 	return html;
-};
+}
 
 FileSelectControl.prototype._render = function()
 {
@@ -172,9 +170,8 @@ FileSelectControl.prototype._render = function()
 	var el = bootbox.dialog({
 		title: this._header,
 		message: this._frame
-	}).init(function() {
-		$('.modal-dialog').addClass('file-select-dialog');
 	});
+	$('.modal-dialog').addClass('file-select-dialog');
 
 	this._el = el;
 	this._inputEl = $('#file-url', el);
@@ -186,13 +183,15 @@ FileSelectControl.prototype._render = function()
 	var keypressFn = this._onKeyPress.bind(this);
 	el[0].addEventListener('keydown', keypressFn);
 
-	function clickHandler(buttonCb) {
+	function clickHandler(buttonCb) {	// #732 return false from your handler to prevent the panel closing
 		return function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-			buttonCb.call(self, self._inputEl.val());
-			el[0].removeEventListener('keydown',keypressFn);
-			self.close();
+			var okToClose = buttonCb.call(self, self._inputEl.val());
+			if (okToClose !== false) {
+				el[0].removeEventListener('keydown',keypressFn);
+				self.close();
+			}
 			return false;
 		}
 	}
@@ -234,7 +233,7 @@ FileSelectControl.prototype._render = function()
 	this._bindUploadForm();
 
 	return this;
-};
+}
 
 FileSelectControl.prototype._bindTable = function() {
 	var self = this;
@@ -342,6 +341,7 @@ FileSelectControl.prototype._onKeyPress = function(e) {
 			this.cancel();
 			break;
 		case 13:
+			e.preventDefault();
 			this.ok();
 			break;
 		case 38:
@@ -360,7 +360,7 @@ FileSelectControl.prototype._onKeyPress = function(e) {
 			break;
 	}
 	return true;
-};
+}
 
 FileSelectControl.prototype._scroll = function(amt) {
 	if (!this._selectedEl.length)
@@ -369,11 +369,11 @@ FileSelectControl.prototype._scroll = function(amt) {
 	var container = $('.fixed-table-container-inner');
 	var threshold = 4 * this._selectedEl.height();
 	container.scrollTop(this._selectedEl.offset().top - container.offset().top + container.scrollTop() - threshold);
-};
+}
 
 FileSelectControl.prototype._onChange = function() {
 	this._cb(this._inputEl.val());
-};
+}
 
 FileSelectControl.prototype._onSelect = function(row) {
 	var path = row.data('url');
@@ -384,57 +384,73 @@ FileSelectControl.prototype._onSelect = function(row) {
 	this._selectedEl = row;
 	this._inputEl.val(path);
 	this._onChange();
-};
+}
 
 FileSelectControl.prototype.ok = function() {
 	$('button.btn:last', this._el).click();
-};
+}
 
 FileSelectControl.prototype.cancel = function() {
 	this._cb(this._original);
 	this.close();
-};
+}
 
 FileSelectControl.prototype.close = function() {
-	bootbox.hideAll();
+	this._el.modal('hide');
 	this.emit('closed')
-};
+}
 
 // ------------------------------------------
 
-function createSelector(path, selected, okButton, okFn, cb)
-{
-	var ctl = new FileSelectControl();
+function createSelector(path, selected, okButton, okFn, cb) {
+	var ctl = new FileSelectControl()
+	var systemFiles = [], userFiles = []
+	var userDfd = when.defer()
+	var systemDfd = when.defer()
 
-	okButton = okButton || 'Ok';
-	okFn = okFn || function() {};
+	okButton = okButton || 'Ok'
+	okFn = okFn || function() {}
 
 	if (selected && selected.indexOf('://') === -1)
-		selected = selected.substring(selected.lastIndexOf('/') + 1);
+		selected = selected.substring(selected.lastIndexOf('/') + 1)
 
-	E2.ui.updateProgressBar(65);
+	E2.ui.updateProgressBar(65)
 
-	$.get(path, function(files)
-	{
-		E2.ui.updateProgressBar(100);
+	if (E2.models.user.get('username') !== '') {
+		$.get(path, function(files) {
+			userFiles = files || []
+			userDfd.resolve()
+		})
+	} else {
+		userDfd.resolve()
+	}
+
+	$.get('/vizor/assets' + path, function(files) {
+		systemFiles = files || []
+		systemDfd.resolve()
+	})
+
+	when.all([ userDfd.promise, systemDfd.promise ]).then(function() {
+		E2.ui.updateProgressBar(100)
 
 		var buttons = {
 			'Cancel': function() {}
-		};
+		}
 
-		buttons[okButton] = okFn;
+		buttons[okButton] = okFn
 
 		ctl
 			.url(path)
 			.buttons(buttons)
-			.files(files)
+			.files(userFiles.concat(systemFiles))
 			.selected(selected)
 
 		cb(ctl)
-	});
 
-	return ctl;
-};
+	})
+
+	return ctl
+}
 
 FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 {
@@ -442,7 +458,7 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 	var ctl = new FileSelectControl();
 
 	okButton = okButton || 'Ok';
-	okFn = okFn || function() {};
+	okFn = okFn || function() {}
 
 	if (selected && selected.indexOf('://') === -1)
 		selected = selected.substring(selected.lastIndexOf('/') + 1);
@@ -462,7 +478,7 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 			// 	});
 			// }
 			'Cancel': function() {}
-		};
+		}
 
 		buttons[okButton] = okFn;
 
@@ -502,7 +518,7 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 	});
 
 	return ctl;
-};
+}
 
 FileSelectControl.createVideoSelector = function(selected, okButton, okFn)
 {
@@ -511,7 +527,7 @@ FileSelectControl.createVideoSelector = function(selected, okButton, okFn)
 		ctl
 		.modal();
 	});
-};
+}
 
 FileSelectControl.createJsonSelector = function(selected, okButton, okFn)
 {
@@ -520,7 +536,7 @@ FileSelectControl.createJsonSelector = function(selected, okButton, okFn)
 		ctl
 		.modal();
 	});
-};
+}
 
 FileSelectControl.createAudioSelector = function(selected, okButton, okFn)
 {
@@ -529,7 +545,7 @@ FileSelectControl.createAudioSelector = function(selected, okButton, okFn)
 		ctl
 		.modal();
 	});
-};
+}
 
 FileSelectControl.createPresetSelector = function(selected, okButton, okFn) {
 	return createSelector('/preset', selected, okButton, okFn, function(ctl) {
@@ -545,7 +561,7 @@ FileSelectControl.createSceneSelector = function(selected, okButton, okFn)
 		ctl
 		.modal();
 	});
-};
+}
 
 FileSelectControl.createTextureSelector = function(selected, cb){
 	return createSelector('/image', selected, 'Select', function(){}, cb)

@@ -1,31 +1,18 @@
-<div class="modal-header">
-	<h4>Publish graph</h4>
-	<button aria-hidden="true" data-dismiss="modal" class="bootbox-close-button" type="button">
-		<svg class="icon-dialog-close"><use xlink:href="#icon-close"></use></svg>
-	</button>
-</div>
+<form action="/graph" id="publishGraphForm" method="POST">
+    <input type="hidden" name="_csrf" value={{_csrf}} />
+    <input type="hidden" name="graph" value="{{graph}}" />
+    <fieldset>
+        <div class="form-input" id="f_name"><!-- #728, changed from f_path originally -->
+            <label for="pathInput">Graph name</label>
+            <input type="text" name="path" id="pathInput" placeholder="Friendly name" class="required" tabindex="1">
+            <span class="message"></span>
+        </div>
 
-<div class="modal-body">
-	<form action="/publish" id="publish-form_id" method="POST">
-		<input type="hidden" name="_csrf" value={{_csrf}}>
+        <div class="modal-error" id="unknown_error"><span></span></div>
+    </fieldset>
 
-		<div class="form-input">
-			<label for="userGraphName_id">Graph name</label>
-			<input type="text" name="userGraphName" id="userGraphName_id" placeholder="" tabindex="-1">
-		</div> 
-		
-		<div class="modal-error" id="graphname-error">
-			<span></span>
-		</div>
-		
-		<div class="modal-error" id="general-error">
-			<span></span>
-		</div>
-
-		<button id="publish-graph-btn" class="sign-btn" type="submit">
-			<span>Publish</span>
-			<svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
-		</button>
-
-	</form>
-</div>
+    <button id="publish-graph-btn" class="sign-btn" type="submit">
+        <span>Publish</span>
+        <svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
+    </button>
+</form>

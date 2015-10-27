@@ -17,21 +17,26 @@ function RunTimeEventWritePlugin() {
 	}]
 	
 	this.output_slots = []
+
+	this.desc = 'Emit a single runtime event when the data-input changes ' +
+				'behaviour can be controlled by the emit-input. When emit becomes ' +
+				'true, any data not yet sent will be emitted.'
 }
 
 RunTimeEventWritePlugin.prototype.update_input = function(slot, data) {
 	if (slot.name === 'emit') {
 		this.emitActive = data
-		this.hasNewData = true
 	}
 
-	if (slot.name === 'eventName')
+	if (slot.name === 'eventName') {
 		this.eventName = data
-	
+	}
+
 	if (slot.name === 'data') {
 		this.value = data
-		this.hasNewData = true
 	}
+
+	this.hasNewData = true
 }
 
 RunTimeEventWritePlugin.prototype.update_state = function() {

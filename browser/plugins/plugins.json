@@ -97,7 +97,8 @@
         "3D model loader": "three_loader_model",
         "Particle Emitter": "three_particle_emitter",
         "3D scene loader": "three_loader_scene",
-        "Mesh attributes": "three_object3d_attribute_extractor"
+        "Mesh attributes": "three_object3d_attribute_extractor",
+        "Line Segments": "three_line_segments"
     },
 
     "MATERIALS AND LIGHTS": {
@@ -111,7 +112,8 @@
         "UV Modifier": "three_uv_modifier",
         "Ambient Light": "three_ambient_light",
         "Directional Light": "three_directional_light",
-        "Point Light": "three_point_light"
+        "Point Light": "three_point_light",
+        "Line Material": "three_line_material"
     },
 
     "INTERACTION STUFF": {
@@ -283,7 +285,8 @@
 
 
     "EVENT EMITTER": {
-        "Emit Runtime Event": "runtime_event_write",
+        "Emit Single Runtime Event": "runtime_event_write",
+        "Emit Continuous Runtime Events": "runtime_event_write_continuous",
         "On Runtime Event": "runtime_event_read"
     },
 

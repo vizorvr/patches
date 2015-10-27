@@ -1,74 +1,84 @@
-var image = require('../models/image');
-var fsPath = require('path');
-var checksum = require('checksum');
-var assetHelper = require('../models/asset-helper');
+var image = require('../models/image')
+var fsPath = require('path')
+var checksum = require('checksum')
+var assetHelper = require('../models/asset-helper')
 
-function AssetController(modelClass, assetService, fs)
-{
-	this._model = modelClass;
-	this._modelName = this._model.modelName.toString().toLowerCase();
-	this._service = assetService;
-	this._fs = fs;
-};
+function AssetController(modelClass, assetService, fs) {
+	this._model = modelClass
+	this._modelName = this._model.modelName.toString().toLowerCase()
+	this._service = assetService
+	this._fs = fs
+}
 
-AssetController.prototype.validate = function(req, res, next)
-{
-	var asset = new this._model(req.body);
+AssetController.prototype.validate = function(req, res, next) {
+	var asset = new this._model(req.body)
 
-	asset.validate(function(err)
-	{
+	asset.validate(function(err) {
 		if (err)
-			return res.status(400).json(err.errors);
+			return res.status(400).json(err.errors)
 
-		next();
-	});
+		next()
+	})
 } 
 
 // GET /:model
-AssetController.prototype.index = function(req, res, next)
-{
-	this._service.list()
-	.then(function(list)
-	{
-		res.json(list);
-	})
-	.catch(next);
-};
+AssetController.prototype.userIndex = function(req, res, next) {
+	var dfd 
 
-AssetController.prototype._parseTags = function(tags)
-{
+	if (req.params.username === 'vizor') {
+		dfd = this._service.findByCreatorName(req.params.username)
+	} else {
+		dfd = this._service.findByCreatorId(req.session.userId)
+	}
+	
+	dfd.then(function(list) {
+		res.json(list)
+	})
+	.catch(next)
+}
+
+AssetController.prototype.index = function(req, res, next) {
+	this._service.list()
+	.then(function(list) {
+		res.json(list)
+	})
+	.catch(next)
+}
+
+AssetController.prototype._parseTags = function(tags) {
 	if (!tags || !tags.length)
-		return [];
+		return []
 
 	if (!Array.isArray(tags))
-		tags = tags.split(' ');
+		tags = tags.split(' ')
 
-	return tags.map(function(tag)
-	{
+	return tags.map(function(tag) {
 		if (tag[0] !== '#')
-			return '#' + tag;
+			return '#' + tag
 
-		return tag;
+		return tag
 	})
-	.filter(function(tag)
-	{
-		return tag.length > 0;
-	});
+	.filter(function(tag) {
+		return tag.length > 0
+	})
 
 }
 
-AssetController.prototype._makePath = function(req, path)
-{
-	return '/' + this._modelName
-		+ '/' + assetHelper.slugify(fsPath.basename(path, fsPath.extname(path)))
-		+ fsPath.extname(path);
+AssetController.prototype._makePath = function(req, path) {
+	return '/' + fsPath.join(
+		req.user.username,
+		'assets',
+		this._modelName,
+		assetHelper.slugify(
+			fsPath.basename(path, fsPath.extname(path))
+		) + fsPath.extname(path)
+	)
 }
 
-AssetController.prototype._makeGridFsPath = function(req, path) {
-	var file = req.files.file;
-	return '/'+this._modelName+'/'+file.sha1+fsPath.extname(file.path);
+AssetController.prototype._makeGridFsPath = function(req) {
+	var file = req.files.file
+	return '/'+this._modelName+'/'+file.sha1+fsPath.extname(file.path)
 }
-
 
 // eg. GET /:username/presets
 AssetController.prototype.findByCreatorName = function(req, res, next) {
@@ -83,9 +93,9 @@ AssetController.prototype.findByCreatorName = function(req, res, next) {
 // GET /:model/tag/tag
 AssetController.prototype.findByTag = function(req, res, next)
 {
-	var tag = req.params.tag;
+	var tag = req.params.tag
 	if (!tag)
-		return res.status(400).json({message: 'No tag'});
+		return res.status(400).json({message: 'No tag'})
 
 	this._service.find(
 	{
@@ -93,11 +103,11 @@ AssetController.prototype.findByTag = function(req, res, next)
 	})
 	.then(function(list)
 	{
-		console.log('list');
-		res.json(list);
+		console.log('list')
+		res.json(list)
 	})
-	.catch(next);
-};
+	.catch(next)
+}
 
 // GET /:model/:slug
 AssetController.prototype.load = function(req, res, next)
@@ -105,30 +115,30 @@ AssetController.prototype.load = function(req, res, next)
 	this._service.findByPath(req.params.path)
 	.then(function(item)
 	{
-		res.json(item);
+		res.json(item)
 	})
-	.catch(next);
-};
+	.catch(next)
+}
 
 // POST /:model
 AssetController.prototype.save = function(req, res, next)
 {
-	var that = this;
+	var that = this
 
 	this._service.canWrite(req.user, req.body.path)
 	.then(function(can)
 	{
 		if (!can)
 			return res.status(403)
-				.json({message: 'Sorry, permission denied'});
+				.json({message: 'Sorry, permission denied'})
 
 		return that._service.save(req.body, req.user)
 		.then(function(asset)
 		{
-			asset.tags = that._parseTags(req.body.tags);
-			res.json(asset);
-		});
-	});
+			asset.tags = that._parseTags(req.body.tags)
+			res.json(asset)
+		})
+	})
 }
 
 AssetController.prototype.checksumUpload = function(req, res, next) {
@@ -137,21 +147,21 @@ AssetController.prototype.checksumUpload = function(req, res, next) {
 
 	checksum.file(req.files.file.path, function(err, sum) {
 		if (err)
-			return next(err);
+			return next(err)
 
-		req.files.file.sha1 = sum;
+		req.files.file.sha1 = sum
 
-		next();
-	});
+		next()
+	})
 }
 
 AssetController.prototype.canWriteUpload = function(req, res, next) {
 	var that = this;
 
 	if (!req.files)
-		return next(new Error('No files uploaded'));
+		return next(new Error('No files uploaded'))
 
-	var file = req.files.file;
+	var file = req.files.file
 	var dest = this._makePath(req, file.path)
 
 	that._service.canWrite(req.user, dest)
@@ -159,52 +169,47 @@ AssetController.prototype.canWriteUpload = function(req, res, next) {
 	{
 		if (!can)
 			return res.status(403)
-				.json({message: 'Sorry, permission denied'});
+				.json({message: 'Sorry, permission denied'})
 
-		next();
-	});
+		next()
+	})
 } 
 
-AssetController.prototype.upload = function(req, res, next)
-{
-	var that = this;
+AssetController.prototype.upload = function(req, res, next) {
+	var that = this
 
-	var file = req.files.file;
+	var file = req.files.file
 	var path = this._makePath(req, file.path)
 	var gridFsPath = this._makeGridFsPath(req)
 
 	return that._service.canWrite(req.user, path)
-	.then(function(can)
-	{
+	.then(function(can) {
 		if (!can)
 			return res.status(403)
-				.json({message: 'Sorry, permission denied'});
+				.json({message: 'Sorry, permission denied'})
 
 		// move the uploaded file into GridFS / local FS
 		return that._fs.move(file.path, gridFsPath)
-		.then(function(url)
-		{
+		.then(function(url) {
 			return that._service.findByPath(path)
-			.then(function(model)
-			{
+			.then(function(model) {
 				if (!model)
-					model = { path: path };
+					model = { path: path }
 
-				model.url = url;
+				model.url = url
 
 				// save/update the model
 				return that._service.save(model, req.user)
-				.then(function(asset)
-				{
-					res.json(asset);
-				});
-			});
-		});
+				.then(function(asset) {
+					res.json(asset)
+				})
+			})
+		})
 	})
 	.catch(function(err)
 	{
-		return next(err);
-	});
-};
+		return next(err)
+	})
+}
 
-module.exports = AssetController;
+module.exports = AssetController

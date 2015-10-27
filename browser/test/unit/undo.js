@@ -15,8 +15,8 @@ var helpers = require('./plugins/helpers')
 var Connection = require('../../scripts/connection').Connection
 var Graph = require('../../scripts/graph');
 var GraphApi = require('../../scripts/graphApi');
-global.Store = require('../../scripts/store');
-var GraphStore = require('../../scripts/graphStore');
+global.Store = require('../../scripts/stores/store');
+var GraphStore = require('../../scripts/stores/graphStore');
 var UndoManager = require('../../scripts/commands/undoManager');
 
 var commands = require('../../scripts/commands/graphEditCommands')

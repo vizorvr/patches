@@ -56,8 +56,10 @@ function Application() {
 	this.dispatcher = new Flux.Dispatcher()
 	this.undoManager = new UndoManager()
 	this.graphApi = new GraphApi(this.undoManager)
+	
 	this.graphStore = new GraphStore()
 	this.peopleStore = new PeopleStore()
+	
 	this.peopleManager = new PeopleManager(this.peopleStore, $('#peopleTab'))
 
 	// Make the UI visible now that we know that we can execute JS
@@ -1136,20 +1138,17 @@ Application.prototype.toggleNoodles = function() {
 	E2.ui.togglePatchEditor(this.noodlesVisible);
 }
 
-Application.prototype.toggleWorldEditor = function() {
-	var is_active = this.worldEditor.isActive()
-	if (is_active) {
-		this.worldEditor.deactivate()
-	}
-	else {
+Application.prototype.toggleWorldEditor = function(forceState) {
+	var newActive = (typeof forceState !== 'undefined') ? forceState : !this.worldEditor.isActive()
+	if (newActive) {
 		this.worldEditor.activate()
 	}
-	is_active = this.worldEditor.isActive()
-
-	if (E2.ui)
-		E2.ui.setWorldEditorMode(is_active)
-
-	return is_active
+	else {
+		this.worldEditor.deactivate()
+	}
+	var isActive = this.worldEditor.isActive()
+	E2.ui.emit(uiEvent.worldEditChanged, isActive)
+	return isActive
 }
 
 Application.prototype.isVRCameraActive = function() {
@@ -1829,18 +1828,6 @@ Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
 
-Application.prototype.onAccountMenuClicked = function() {
-	var username = E2.models.user.get('username')
-	if (username) {
-		E2.dom.userPullDown.toggle();
-	}
-}
-
-Application.prototype.useCustomBootboxTemplate = function(template) {
-	$('.modal-content').hide().html(template).show();
-	$('.bootbox-close-button').attr('style','');
-}
-
 Application.prototype.start = function() {
 	var that = this
 
@@ -1964,19 +1951,13 @@ Application.prototype.start = function() {
 	E2.app.changeControlState()
 
 
-	E2.ui.showFirstTimeDialog();
-	
 	$('[data-toggle="popover"]').popover({
 			container: 'body',
 			trigger: 'hover',
 			animation: false
 	});
 	
-	$(document).on("shown.bs.modal", function() {
-		$('.bootbox-close-button').html('<svg class="icon-dialog-close">'
-									  + '<use xlink:href="#icon-close"></use></svg>')
-								  .attr('style','');
-	});
+
 }
 
 
@@ -2006,6 +1987,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
 			}
 		}
+
+		E2.ui.showFirstTimeDialog();
 	}
 
 	if (!loadGraphUrl && !boot.hasEdits) {
@@ -2017,7 +2000,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 		E2.app.loadGraph(loadGraphUrl, start)
 	else
 		E2.app.setupEditorChannel().then(start)
-	
+
+
 }
 
 Application.prototype.setupChat = function() {

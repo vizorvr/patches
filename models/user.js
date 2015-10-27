@@ -72,8 +72,6 @@ userSchema.virtual('gravatar').get(function(size) {
 	if (!size)
 		size = 200
 
-console.log('gravatar', this.email)
-
  	if (!this.email) {
 		return 'https://gravatar.com/avatar/?s=' + size + '&d=retro'
 	}

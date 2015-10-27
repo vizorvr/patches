@@ -8,12 +8,14 @@
 
 		this.input_slots = [
 			{name: 'object3d', dt: core.datatypes.OBJECT3D},
-			{name: 'eventName', dt: core.datatypes.TEXT, def: 'objectClicked'},
+			{name: 'eventName', dt: core.datatypes.TEXT, def: 'objectClicked'}
 		]
 
 		this.output_slots = [
 			{name: 'object3d', dt: core.datatypes.OBJECT3D}
 		]
+
+		this.eventName = 'objectClicked'
 	}
 
 	ThreeClickableObject.prototype.reset = function() {
@@ -26,6 +28,9 @@
 			this.object3d = data
 			this.meshDirty = true
 			break
+		case 1: // eventName
+			this.eventName = data
+			break
 		default:
 			break
 		}
@@ -36,7 +41,7 @@
 	}
 
 	ThreeClickableObject.prototype.on_click = function() {
-		E2.core.runtimeEvents.emit('objectClicked', this)
+		E2.core.runtimeEvents.emit(this.eventName, this.object3d)
 	}
 
 	ThreeClickableObject.prototype.update_state = function() {
@@ -45,7 +50,7 @@
 		}
 
 		if (this.object3d && this.object3d.onClick === undefined) {
-			var clickFun = this.on_click.bind(this.object3d)
+			var clickFun = this.on_click.bind(this)
 			this.object3d.onClick = clickFun
 		}
 
