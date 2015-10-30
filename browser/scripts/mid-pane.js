@@ -1,11 +1,21 @@
 (function() {
 
 function MidPane() {
+	var that = this
 	this._tabs = []
 
 	this._$pane = $('#shader-block')
 	this._$tabs = $('ul.nav-tabs', this._$pane)
 	this._$tabContent = $('.tab-content', this._$pane)
+
+	jQuery('div.block-header button').off('.midpane')
+	jQuery('div.block-header button.close-button', this._$pane).on('click.midpane', this.close.bind(this))
+	jQuery('div.block-header button.toggle-button', this._$pane).on('click.midpane', function(){
+		that._$pane.toggleClass('collapsed')
+		jQuery('div.tab-content', that._$pane).toggle()
+		return false
+	})
+	// @todo #761
 }
 
 MidPane.prototype._tabClosed = function(tab) {
@@ -20,10 +30,10 @@ MidPane.prototype._tabClosed = function(tab) {
 }
 
 MidPane.prototype.show = function() {
-	if (this._$pane.hasClass('pane-hidden')) {
-		this._$pane.removeClass('pane-hidden')
-		E2.app.onWindowResize()
-	}
+	if (this._$pane.hasClass('uiopen')) return false
+	this._$pane.addClass('uiopen').show()
+	E2.app.onWindowResize()
+	return true
 }
 
 MidPane.prototype.closeAll = function() {
@@ -33,8 +43,9 @@ MidPane.prototype.closeAll = function() {
 }
 
 MidPane.prototype.close = function() {
-	this._$pane.addClass('pane-hidden')
+	this._$pane.removeClass('uiopen').hide()
 	E2.app.onWindowResize()
+	return true
 }
 
 // @returns tab body after creating tab header and content divs
