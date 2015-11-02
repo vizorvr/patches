@@ -5,7 +5,7 @@
 
 		var that = this
 
-		this.desc = 'Auto-generate a shader embedding user-defined main bodies tailored to correctly and optimally render the supplied mesh.'
+		this.desc = 'Shader Material'
 
 		this.input_slots = []
 
@@ -111,7 +111,6 @@
 			})
 
 			that._editors[which].stateKey = stateKey
-			that._editors[which]._ace
 		}
 
 		vertexButton.click(function() {

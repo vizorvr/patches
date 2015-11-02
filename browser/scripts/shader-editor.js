@@ -180,10 +180,12 @@ ShaderEditor.prototype.render = function(title, $dest) {
 	$dest.append($html)
 
 	this._ace = createAce(this._src, id)
+
 	this._ace.on('change', function() {
 		that.emit('changed', that._ace.getValue())
 		that.build()
 	})
+
 	this._ace.commands.addCommand({
 		name:'build',
 		bindKey: {
@@ -192,19 +194,13 @@ ShaderEditor.prototype.render = function(title, $dest) {
 		},
 		exec: function() {
 			that.build(true)
-	}})
+		}
+	})
 
 	this.drawInputs()
 
-	function _onResize() {
-		var height = $aceParent.height() - that._$inputEditor.height() - 20;
-		that._ace.setOption('minLines', Math.floor(height / 16));
-		that._ace.setOption('maxLines', Math.floor(height / 16));
-	}
-
-    // E2.app.player.core.renderer.on('resize', _onResize)
-
-    _onResize()
+	that._ace.setOption('minLines', 50);
+	that._ace.setOption('maxLines', 50);
 
 	return this
 }
@@ -240,8 +236,7 @@ ShaderEditor.prototype.drawInputs = function() {
 
 // ---- static methods
 
-ShaderEditor.open = function(name, src, inputs)
-{
+ShaderEditor.open = function(name, src, inputs) {
 	var editor
 	var tab = E2.app.midPane.newTab(name, function() {
 		if (editor)
@@ -249,7 +244,8 @@ ShaderEditor.open = function(name, src, inputs)
 	})
 
 	editor = new ShaderEditor(window.Handlebars, src, inputs)
-		.render(name, tab.body)
+
+	editor.render(name, tab.body)
 
 	editor.on('shown', tab.show)
 	editor.on('closed', tab.close)

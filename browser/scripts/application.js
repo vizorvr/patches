@@ -1242,7 +1242,6 @@ Application.prototype.onKeyDown = function(e) {
 		this.alt_pressed = true;
 	}
 
-
 	// number keys
 	else if (e.keyCode > 47 && e.keyCode < 58) { // 0-9
 		if (this.ctrl_pressed || this.shift_pressed || this.alt_pressed)
