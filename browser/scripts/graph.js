@@ -308,8 +308,11 @@ Graph.prototype.patch_up = function(graphs) {
 			prune.push(c);
 	}
 	
-	for(i = 0, len = prune.length; i < len; i++)
-		conns.remove(prune[i]);
+	for(i = 0, len = prune.length; i < len; i++) {
+		var idx = conns.indexOf(prune[i])
+		if (idx > -1)
+			conns.splice(idx, 1)
+	}
 }
 
 Graph.prototype.initialise = function() {

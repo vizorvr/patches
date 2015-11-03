@@ -14,14 +14,6 @@ window.cancelAnimFrame = (function()
 		window.mozCancelAnimationFrame
 })();
 
-Array.prototype.remove = function(obj)
-{
-	var i = this.indexOf(obj);
-	
-	if(i !== -1)
-		this.splice(i, 1);
-};
-
 function clone_recursive(from, to)
 {
     if (from == null || typeof from != "object") return from;
