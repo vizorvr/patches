@@ -330,7 +330,9 @@ Graph.prototype.getTitle = function() {
 
 Graph.prototype.reorder_children = function(original, sibling, insert_after) {
 	function reorder(arr) {
-		arr.remove(original);
+		var originalIdx = arr.indexOf(original)
+		if (originalIdx > -1)
+			arr.splice(originalIdx, 1);
 		
 		var i = arr.indexOf(sibling);
 		
