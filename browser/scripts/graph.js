@@ -308,8 +308,11 @@ Graph.prototype.patch_up = function(graphs) {
 			prune.push(c);
 	}
 	
-	for(i = 0, len = prune.length; i < len; i++)
-		conns.remove(prune[i]);
+	for(i = 0, len = prune.length; i < len; i++) {
+		var idx = conns.indexOf(prune[i])
+		if (idx > -1)
+			conns.splice(idx, 1)
+	}
 }
 
 Graph.prototype.initialise = function() {
@@ -327,7 +330,9 @@ Graph.prototype.getTitle = function() {
 
 Graph.prototype.reorder_children = function(original, sibling, insert_after) {
 	function reorder(arr) {
-		arr.remove(original);
+		var originalIdx = arr.indexOf(original)
+		if (originalIdx > -1)
+			arr.splice(originalIdx, 1);
 		
 		var i = arr.indexOf(sibling);
 		
