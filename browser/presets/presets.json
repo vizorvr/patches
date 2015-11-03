@@ -47,7 +47,7 @@
 		"Oscillate 2 values with out tween": "_oscillate-with-out-tween",
 		"Oscillate with a sawtooth": "_oscillate-sawtooth",
 		"Oscillate with a triangle": "time_oscillate_with_triangle",
-		"Stop watch": "time_stop_watch",
+		"Stopwatch": "_stopwatch",
 		"Timer from 0 to 1": "time_timer_from_0_to_1",
 		"Timer from 1 to 0": "time_timer_from_1_to_0",	
 		"Circular motion to XYZ": "time_circular_motion_to_xyz",
