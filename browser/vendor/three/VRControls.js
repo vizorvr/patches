@@ -36,6 +36,7 @@ THREE.VRControls = function ( object, onError ) {
 	}
 
 	function gotVRDevices( devices ) {
+
 		devices = filterInvalidDevices( devices );
 
 		for ( var i = 0; i < devices.length; i ++ ) {

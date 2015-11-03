@@ -19,8 +19,9 @@ THREE.OBJMTLLoader.prototype = {
 
 		var scope = this;
 
-		var mtlLoader = new THREE.MTLLoader( url.substr( 0, url.lastIndexOf( "/" ) + 1 ) );
-		mtlLoader.crossOrigin = scope.crossOrigin;
+		var mtlLoader = new THREE.MTLLoader( this.manager );
+		mtlLoader.setBaseUrl( url.substr( 0, url.lastIndexOf( "/" ) + 1 ) );
+		mtlLoader.setCrossOrigin( this.crossOrigin );
 		mtlLoader.load( mtlurl, function ( materials ) {
 
 			var materialsCreator = materials;
@@ -59,6 +60,12 @@ THREE.OBJMTLLoader.prototype = {
 			}, onProgress, onError );
 
 		}, onProgress, onError );
+
+	},
+
+	setCrossOrigin: function ( value ) {
+
+		this.crossOrigin = value;
 
 	},
 
@@ -137,17 +144,17 @@ THREE.OBJMTLLoader.prototype = {
 			if ( normals_inds === undefined ) {
 
 				geometry.faces.push( face3(
-					parseInt( a ) - (face_offset + 1),
-					parseInt( b ) - (face_offset + 1),
-					parseInt( c ) - (face_offset + 1)
+					parseInt( a ) - ( face_offset + 1 ),
+					parseInt( b ) - ( face_offset + 1 ),
+					parseInt( c ) - ( face_offset + 1 )
 				) );
 
 			} else {
 
 				geometry.faces.push( face3(
-					parseInt( a ) - (face_offset + 1),
-					parseInt( b ) - (face_offset + 1),
-					parseInt( c ) - (face_offset + 1),
+					parseInt( a ) - ( face_offset + 1 ),
+					parseInt( b ) - ( face_offset + 1 ),
+					parseInt( c ) - ( face_offset + 1 ),
 					[
 						normals[ parseInt( normals_inds[ 0 ] ) - 1 ].clone(),
 						normals[ parseInt( normals_inds[ 1 ] ) - 1 ].clone(),
@@ -169,31 +176,33 @@ THREE.OBJMTLLoader.prototype = {
 
 		}
 
-		function handle_face_line(faces, uvs, normals_inds) {
+		function handle_face_line( faces, uvs, normals_inds ) {
 
 			if ( faces[ 3 ] === undefined ) {
 
 				add_face( faces[ 0 ], faces[ 1 ], faces[ 2 ], normals_inds );
 
-				if (!(uvs === undefined) && uvs.length > 0) {
+				if ( ! ( uvs === undefined ) && uvs.length > 0 ) {
+
 					add_uvs( uvs[ 0 ], uvs[ 1 ], uvs[ 2 ] );
+
 				}
 
 			} else {
 
-				if (!(normals_inds === undefined) && normals_inds.length > 0) {
+				if ( ! ( normals_inds === undefined ) && normals_inds.length > 0 ) {
 
-					add_face( faces[ 0 ], faces[ 1 ], faces[ 3 ], [ normals_inds[ 0 ], normals_inds[ 1 ], normals_inds[ 3 ] ]);
-					add_face( faces[ 1 ], faces[ 2 ], faces[ 3 ], [ normals_inds[ 1 ], normals_inds[ 2 ], normals_inds[ 3 ] ]);
+					add_face( faces[ 0 ], faces[ 1 ], faces[ 3 ], [ normals_inds[ 0 ], normals_inds[ 1 ], normals_inds[ 3 ] ] );
+					add_face( faces[ 1 ], faces[ 2 ], faces[ 3 ], [ normals_inds[ 1 ], normals_inds[ 2 ], normals_inds[ 3 ] ] );
 
 				} else {
 
-					add_face( faces[ 0 ], faces[ 1 ], faces[ 3 ]);
-					add_face( faces[ 1 ], faces[ 2 ], faces[ 3 ]);
+					add_face( faces[ 0 ], faces[ 1 ], faces[ 3 ] );
+					add_face( faces[ 1 ], faces[ 2 ], faces[ 3 ] );
 
 				}
 
-				if (!(uvs === undefined) && uvs.length > 0) {
+				if ( ! ( uvs === undefined ) && uvs.length > 0 ) {
 
 					add_uvs( uvs[ 0 ], uvs[ 1 ], uvs[ 3 ] );
 					add_uvs( uvs[ 1 ], uvs[ 2 ], uvs[ 3 ] );
@@ -231,7 +240,7 @@ THREE.OBJMTLLoader.prototype = {
 
 		// f vertex//normal vertex//normal vertex//normal ...
 
-		var face_pattern4 = /f( +(\d+)\/\/(\d+))( +(\d+)\/\/(\d+))( +(\d+)\/\/(\d+))( +(\d+)\/\/(\d+))?/
+		var face_pattern4 = /f( +(\d+)\/\/(\d+))( +(\d+)\/\/(\d+))( +(\d+)\/\/(\d+))( +(\d+)\/\/(\d+))?/;
 
 		//
 
@@ -244,22 +253,30 @@ THREE.OBJMTLLoader.prototype = {
 		}
 
 		for ( var i = 0; i < lines.length; i ++ ) {
+
 			var line = lines[ i ];
 			line = line.trim();
 
 			var result;
 
 			if ( line.length === 0 || line.charAt( 0 ) === '#' ) {
+
 				continue;
+
 			} else if ( ( result = vertex_pattern.exec( line ) ) !== null ) {
+
 				// ["v 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
+
 				vertices.push( vector(
 					parseResult( result[ 1 ] ),
 					parseResult( result[ 2 ] ),
 					parseResult( result[ 3 ] )
 				) );
+
 			} else if ( ( result = normal_pattern.exec( line ) ) !== null ) {
+
 				// ["vn 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
+
 				normals.push( vector(
 					parseResult( result[ 1 ] ),
 					parseResult( result[ 2 ] ),
@@ -267,7 +284,9 @@ THREE.OBJMTLLoader.prototype = {
 				) );
 
 			} else if ( ( result = uv_pattern.exec( line ) ) !== null ) {
+
 				// ["vt 0.1 0.2", "0.1", "0.2"]
+
 				uvs.push( uv(
 					parseResult( result[ 1 ] ),
 					parseResult( result[ 2 ] )
@@ -277,7 +296,7 @@ THREE.OBJMTLLoader.prototype = {
 
 				// ["f 1 2 3", "1", "2", "3", undefined]
 
-				handle_face_line([ result[ 1 ], result[ 2 ], result[ 3 ], result[ 4 ] ]);
+				handle_face_line( [ result[ 1 ], result[ 2 ], result[ 3 ], result[ 4 ] ] );
 
 			} else if ( ( result = face_pattern2.exec( line ) ) !== null ) {
 
@@ -356,7 +375,7 @@ THREE.OBJMTLLoader.prototype = {
 		}
 
 		//Add last object
-		meshN(undefined, undefined);
+		meshN( undefined, undefined );
 
 		return group;
 
