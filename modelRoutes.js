@@ -28,6 +28,10 @@ function modelRoutes(
 	var AssetService = require('./services/assetService');
 	var GraphService = require('./services/graphService');
 
+	var EditLogController = require('./controllers/editLogController');
+
+	var editLogController = new EditLogController()
+
 	var graphController = new GraphController(
 		new GraphService(require('./models/graph'), gfs),
 		gfs,
@@ -126,6 +130,24 @@ function modelRoutes(
 	);
 
 	// -----
+	// Edit Log routes
+	app.get('/editlog', function(req, res, next) {
+		return editLogController.userIndex(req, res, next)
+	})
+
+	app.get('/editlog/:channelName', function(req, res, next) {
+		return editLogController.show(req, res, next)
+	})
+
+	app.post('/editlog/:channelName', function(req, res, next) {
+		return editLogController.save(req, res, next)
+	})
+
+	app.post('/editlog/:channelName/join', function(req, res, next) {
+		return editLogController.join(req, res, next)
+	})
+
+	// -----
 	// Preset routes
 	app.get('/:username/presets', function(req, res, next) {
 		presetController.findByCreatorName(req, res, next);
@@ -190,7 +212,7 @@ function modelRoutes(
 		requireController(req, res, function(err) {
 			if (err)
 				return next(err)
-console.log('jees')
+
 			return req.controller.userIndex(req, res, next)
 		})
 	})
