@@ -255,7 +255,7 @@ EditorChannel.prototype._messageHandler = function _messageHandler(payload) {
 	this._dispatcher.dispatch(hydrate(payload))
 }
 
-EditorChannel.prototype.join = function(channelName, cb) {
+EditorChannel.prototype.join = function(channelName, readableName, cb) {
 	var that = this
 
 	if (this.channelName && this.channelName !== channelName) {
@@ -267,6 +267,7 @@ EditorChannel.prototype.join = function(channelName, cb) {
 	var joinMessage = {
 		kind: 'join',
 		channel: channelName,
+		readableName: readableName,
 		activeGraphUid: E2.core.active_graph.uid,
 		lastEditSeen: this.lastEditSeen
 	}
