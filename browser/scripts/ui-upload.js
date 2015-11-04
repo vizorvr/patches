@@ -248,8 +248,6 @@ VizorUI.prototype.initDropUpload = function() {
 	})
 	
 	target.on('dragleave dragend', function(e) {
-		console.log('dragleave dragend', e.target.tagName)
-
 		e.stopPropagation()
 		e.preventDefault()
 
