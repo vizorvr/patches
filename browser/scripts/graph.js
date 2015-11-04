@@ -299,7 +299,7 @@ Graph.prototype.patch_up = function(graphs) {
 	for(i = 0, len = nodes.length; i < len; i++)
 		nodes[i].patch_up(graphs);
 
-	prune = [];
+	var prune = [];
 	
 	for(i = 0, len = conns.length; i < len; i++) {
 		var c = conns[i];
@@ -371,6 +371,22 @@ Graph.prototype.findNodeByUid = function(nuid) {
 		msg('ERROR: Failed to resolve node('+nuid+') in graph(' + this.uid + ')')
 		console.log('Graph nodes', this.nodes)
 	}
+
+	return node
+}
+
+Graph.prototype.findNodeByPlugin = function(name) {
+	var node
+
+	this.nodes.some(function(n) {
+		if (n.plugin.id === name) {
+			node = n
+			return true
+		}
+	})
+
+	if (!node)
+		msg('ERROR: Failed to resolve node by plugin ('+name+') in graph(' + this.uid + ')')
 
 	return node
 }

@@ -555,6 +555,20 @@
 	</ul>
 </div>
 
+<div id="drag-overlay">
+	<div id="drop-area">
+		<div class="drop-info">
+			<svg class="icon-drop-upload"><use xlink:href="#icon-drop-upload"></use></svg>
+		</div>
+	</div>
+	<div id="drop-uploading">
+		<div class="drop-info">
+			<svg class="icon-drop-uploading"><use xlink:href="#icon-drop-uploading"></use></svg>
+			<span>Uploading your file..</span>
+		</div>
+	</div>
+</div>
+
 <script type="text/javascript">
 	var boot = {}
 	boot.hasEdits = {{hasEdits}}
@@ -587,7 +601,8 @@
 			E2.util.checkBrowser();
 
 		E2.models = {
-			user: new User({})
+			user: new User({}),
+			fileList: new FileList({})
 		}
 
 		if ('{{user.username}}' !== '') {
