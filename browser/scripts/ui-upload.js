@@ -170,6 +170,8 @@ VizorUI.prototype.initDropUpload = function() {
 		E2.dom.dragOverlay.hide()
 		that.uploading = false
 		$('body').css('pointerEvents', 'all')
+		document.removeEventListener('visibilitychange', cleanup)
+		return false
 	}
 
 	target.on('drop', function(e) {
@@ -197,9 +199,10 @@ VizorUI.prototype.initDropUpload = function() {
 		}
 
 		if (!acceptedFiles.length)
-			return false
+			return cleanup()
 
 		E2.dom.dropUploading.show()
+
 		that.uploading = true
 
 		when.map(acceptedFiles, uploadFile)
@@ -225,6 +228,7 @@ VizorUI.prototype.initDropUpload = function() {
 	target.on('dragenter', function(e) {
 		e.stopPropagation()
 		e.preventDefault()
+		document.addEventListener('visibilitychange', cleanup)
 	})
 	
 	target.on('dragover', function(e) {
@@ -237,7 +241,6 @@ VizorUI.prototype.initDropUpload = function() {
 			E2.dom.dragOverlay.show()
 			E2.dom.dropArea.show()
 		} else {
-			cleanup()
 			return false
 		}
 
@@ -245,14 +248,16 @@ VizorUI.prototype.initDropUpload = function() {
 	})
 	
 	target.on('dragleave dragend', function(e) {
+		console.log('dragleave dragend', e.target.tagName)
+
 		e.stopPropagation()
 		e.preventDefault()
 
-		if (!that.isUploading()) {
-			return false
-		} else {
-			cleanup()
-		}
+		// we get dragleave on CANVAS and HTML elements, drop the CANVAS ones
+		if (e.target.tagName !== 'HTML')
+			return;
+
+		cleanup()
 
 		return false
 	})
