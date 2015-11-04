@@ -2024,7 +2024,8 @@ Application.prototype.setupEditorChannel = function() {
 			return dfd.resolve()
 		}
 
-		that.channel.join(that.path, function() {
+		var readableName = that.path 
+		that.channel.join(that.path, readableName, function() {
 			dfd.resolve()
 		})
 	}

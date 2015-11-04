@@ -2,6 +2,7 @@ var when = require('when')
 var r = require('rethinkdb')
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
+var User = require('./user')
 
 var alphanumeric = [
 	/[a-z0-9\-\_]/,
@@ -43,6 +44,47 @@ editLogSchema.methods.addParticipant = function(userId) {
 	return dfd.promise
 }
 
+// statics
+
+editLogSchema.statics.joinOrCreate = function(channelName, readableName, userId) {
+	var dfd = when.defer()
+	
+	this.findOne({ name: channelName })
+	.exec(function(err, exLog) {
+		if (err)
+			return dfd.reject(err)
+
+		if (exLog)
+			return dfd.resolve(exLog.addParticipant(userId))
+
+		User.findById(userId).exec(function(err, user) {
+			if (err)
+				return dfd.reject(err)
+
+			new EditLog({
+				name: channelName,
+				readableName: readableName,
+				owner: userId,
+				participants: [ userId ]
+			}).save(function(err, editLog) {
+				if (err) {
+					if (err.code === 11000) {
+						// duplicate, try to join again
+						return dfd.resolve(EditLog.joinOrCreate(channelName, readableName, userId))
+					}
+
+					return dfd.reject(err)
+				}
+
+				dfd.resolve(editLog)				
+			})
+		})
+	})
+
+	return dfd.promise
+}
+
+
 /**
  * check whether RethinkDB has any edits for this
  * @returns Promise<boolean>
@@ -65,4 +107,5 @@ editLogSchema.statics.hasEditsByName = function(rethinkConn, name) {
 	return dfd.promise
 }
 
-module.exports = mongoose.model('EditLog', editLogSchema);
+var EditLog = mongoose.model('EditLog', editLogSchema)
+module.exports = EditLog

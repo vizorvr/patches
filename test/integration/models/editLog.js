@@ -22,7 +22,7 @@ describe('EditLog', function() {
 			new mongo.Server('localhost', 27017),
 			{ safe: true })
 
-		EditLog.on('index', function() {
+		db.open(function() {
 			done()
 		})
 	})
