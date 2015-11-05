@@ -50,7 +50,7 @@ function Application() {
 	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
-	this.noodlesVisible = !E2.util.isMobile();
+	this.noodlesVisible = false
 	this.mousePosition = [400,200]
 	this.path = getChannelFromPath(window.location.pathname)
 	this.dispatcher = new Flux.Dispatcher()

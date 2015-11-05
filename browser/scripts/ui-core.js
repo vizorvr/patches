@@ -54,7 +54,7 @@ var VizorUI = function() {			// becomes E2.ui
 			panel_chat: true,
 			panel_assets: false,
 			panel_presets: true,
-			patch_editor: true,
+			patch_editor: false,
 			breadcrumb: true,		// always true	(20151012)
 			player_controls : true,	// always true	(20151012)
 			main_toolbar : true,	// always true	(20151012)
