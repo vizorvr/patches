@@ -124,6 +124,26 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 	if (scene) {
 		scene.children[0].traverse( nodeHandler )
 	}
+
+	// if there's a pending selection (something was pasted),
+	// set selection accordingly
+	if (this.pendingSelection !== undefined) {
+		if (--this.pendingSelection.waitTime < 0) {
+			var selectNodes = []
+
+			for(var i = 0; i < this.pendingSelection.selection.length; ++i) {
+				this.pendingSelection.selection[i].plugin.object3d.traverse(function(n) {
+					if (n.backReference) {
+						selectNodes.push(n)
+					}
+				})
+			}
+
+			this.setSelection(selectNodes)
+
+			delete this.pendingSelection
+		}
+	}
 }
 
 WorldEditor.prototype.getEditorSceneTree = function() {
@@ -136,7 +156,7 @@ WorldEditor.prototype.setSelection = function(selected) {
 	this.transformControls.detach()
 
 	for (var i = 0; i < selected.length; ++i) {
-		var obj = selected[i].object
+		var obj = selected[i]
 		if (obj.backReference !== undefined) {
 			this.transformControls.attach(obj)
 			this.selectionTree.add(this.transformControls)
@@ -147,6 +167,97 @@ WorldEditor.prototype.setSelection = function(selected) {
 	}
 }
 
+WorldEditor.prototype.onPaste = function(nodes) {
+	if (!nodes || nodes.length < 1) {
+		return
+	}
+
+	var dropNode = nodes[0]
+
+	// find scene node
+	var sceneNode = this.scene.backReference.parentNode
+
+	// add a slot in the scene
+	E2.app.graphApi.addSlot(E2.core.root_graph, sceneNode, {
+		type: E2.slot_type.input,
+		name: sceneNode.getDynamicInputSlots().length + '',
+		dt: E2.dt.OBJECT3D
+	})
+
+	var slots = sceneNode.getDynamicInputSlots()
+	var slot = slots[slots.length - 1]
+
+	// connect the new patch to the scene
+	E2.app.graphApi.connect(E2.core.root_graph, Connection.hydrate(E2.core.root_graph, {
+		src_nuid: dropNode.uid,
+		dst_nuid: sceneNode.uid,
+		src_slot: 0,
+		src_dyn: true, // TODO: the src slot is not necessarily a dyn slot
+		dst_slot: slot.index,
+		dst_dyn: true
+	}))
+
+	// set a pending selection object for the pasted objects
+	// we have to wait for one update to pass before actually
+	// setting the selection, because mesh creation itself is
+	// deferred in AbstractThreeMeshPlugin
+	var pendingSelection = {waitTime: 1, selection: []}
+
+	function collectMeshes(node) {
+		if (node.plugin && node.plugin.object3d) {
+			pendingSelection.selection.push(node)
+		}
+
+		if (node.plugin.graph) {
+			for (var n = 0; n < node.plugin.graph.nodes.length; ++n) {
+				collectMeshes(node.plugin.graph.nodes[n])
+			}
+		}
+	}
+
+	for (var i = 0; i < nodes.length; ++i) {
+		var node = nodes[i]
+		collectMeshes(node)
+	}
+
+	this.pendingSelection = pendingSelection
+
+	// TODO: if this.pendingSelection.length === 0, we didn't paste any objects
+	// and we could warn the user somehow
+}
+
+WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) {
+	function markNodeSelectedIfConnectedTo(curNode, endNode) {
+		var allOutputs = curNode.outputs.concat(curNode.dyn_outputs)
+
+		if (curNode.id === 'Output proxy' && curNode.parent_graph && curNode.parent_graph.plugin && curNode.parent_graph.plugin.parentNode) {
+			if (markNodeSelectedIfConnectedTo(curNode.parent_graph.plugin.parentNode, sceneNode)) {
+				// selected a whole subgraph node, don't recurse back into the subgraph
+				return false
+			}
+		}
+
+		for(var i = 0; i < allOutputs.length; ++i) {
+			var candidateNode = allOutputs[i].dst_node
+			var foundRouteToEnd = (candidateNode === endNode) || markNodeSelectedIfConnectedTo(candidateNode, sceneNode)
+
+			if (foundRouteToEnd) {
+				// go to the correct graph level for this node
+				curNode.parent_graph.tree_node.activate()
+
+				// select this node and recurse back in the graph to select the path we came here via
+				E2.app.markNodeAsSelected(curNode)
+				curNode.getConnections().map(E2.app.markConnectionAsSelected.bind(E2.app))
+
+				return true
+			}
+		}
+
+		return false
+	}
+
+	markNodeSelectedIfConnectedTo(meshNode, sceneNode)
+}
 
 WorldEditor.prototype.pickObject = function(e) {
 	if (E2.app.noodlesVisible === true)
@@ -167,9 +278,11 @@ WorldEditor.prototype.pickObject = function(e) {
 		this.raycaster.setFromCamera(mouseVector, this.getCamera())
 
 		var intersects = this.raycaster.intersectObjects(this.scene.children, /*recursive = */ true)
+		var selectObjects = []
 
 		for (var i = 0; i < intersects.length; i++) {
 			var obj = intersects[i].object
+			selectObjects.push(obj)
 
 			// traverse the tree hierarchy up to find a parent with a node back reference
 			while (obj && obj.backReference === undefined) {
@@ -180,12 +293,23 @@ WorldEditor.prototype.pickObject = function(e) {
 				continue
 			}
 
+			if (obj.backReference.parentNode === this.scene.backReference.parentNode) {
+				// trying to select the scene, ignore
+				continue
+			}
+
 			E2.app.clearSelection()
-			E2.app.markNodeAsSelected(obj.backReference.parentNode)
+			
+			// select everything between the mesh and scene nodes 
+			// (and any complete subgraph that contains the mesh)
+			this.selectMeshAndDependencies(obj.backReference.parentNode, this.scene.backReference.parentNode)
+
+			// only select a single object
+			break
 		}
 
 		if (isEditor) {
-			this.setSelection(intersects)
+			this.setSelection(selectObjects)
 		}
 	}
 	else if (isEditor) {
@@ -210,4 +334,8 @@ WorldEditor.prototype.setupObjectPicking = function() {
 	$(document).mousedown(this.mouseDown.bind(this))
 	$(document).mouseup(this.mouseUp.bind(this))
 	this.raycaster = new THREE.Raycaster()
+}
+
+WorldEditor.prototype.getActiveSceneNode = function() {
+	return this.scene.backReference.parentNode
 }

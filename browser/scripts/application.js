@@ -1021,6 +1021,10 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 		createdConnections.push(ag.findConnectionByUid(dc.uid))
 	}
 
+	if (this.isWorldEditorActive()) {
+		this.worldEditor.onPaste(createdNodes)
+	}
+
 	this.undoManager.end()
 
 	return { nodes: createdNodes, connections: createdConnections }
@@ -1153,9 +1157,16 @@ Application.prototype.toggleWorldEditor = function(forceState) {
 	return isActive
 }
 
+// is the VR (experience) camera active AND controllable?
+// i.e. graph is not visible
 Application.prototype.isVRCameraActive = function() {
-	//console.log('noodles:', this.noodlesVisible, 'we: ', E2.app.worldEditor)
 	return !(this.noodlesVisible || E2.app.worldEditor.isActive())
+}
+
+// is the world editor visible AND controllable
+// i.e. graph is not visible
+Application.prototype.isWorldEditorActive = function() {
+	return !this.noodlesVisible && E2.app.worldEditor.isActive()
 }
 	
 Application.prototype.toggleFullscreen = function() {
@@ -1297,8 +1308,9 @@ Application.prototype.onKeyDown = function(e) {
 			this.onCopy(e);
 		else if(e.keyCode === 88) // CTRL+x
 			this.onCut(e);
-		else if(e.keyCode === 86) // CTRL+v
-			this.onPaste(e);
+		else if(e.keyCode === 86) { // CTRL+v
+			var pasted = this.onPaste(e);
+		}
 
 		if (e.keyCode === 90) { // z
 			e.preventDefault()

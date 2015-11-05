@@ -123,7 +123,7 @@ function instantiateTemplateForUpload(uploaded, position) {
 		var dropNode = pasted.nodes[0]
 
 		// find scene node
-		var sceneNode = E2.core.root_graph.findNodeByPlugin('three_scene')
+		var sceneNode = E2.app.worldEditor.getActiveSceneNode() || E2.core.root_graph.findNodeByPlugin('three_scene')
 
 		// add a slot in the scene
 		E2.app.graphApi.addSlot(E2.core.root_graph, sceneNode, {
