@@ -230,7 +230,7 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 	function markNodeSelectedIfConnectedTo(curNode, endNode) {
 		var allOutputs = curNode.outputs.concat(curNode.dyn_outputs)
 
-		if (curNode.id === 'Output proxy' && curNode.parent_graph && curNode.parent_graph.plugin && curNode.parent_graph.plugin.parentNode) {
+		if (curNode.plugin.id === 'output_proxy' && curNode.parent_graph && curNode.parent_graph.plugin && curNode.parent_graph.plugin.parentNode) {
 			if (markNodeSelectedIfConnectedTo(curNode.parent_graph.plugin.parentNode, sceneNode)) {
 				// selected a whole subgraph node, don't recurse back into the subgraph
 				return false
@@ -239,7 +239,7 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 
 		for(var i = 0; i < allOutputs.length; ++i) {
 			var candidateNode = allOutputs[i].dst_node
-			var foundRouteToEnd = (candidateNode === endNode) || markNodeSelectedIfConnectedTo(candidateNode, sceneNode)
+			var foundRouteToEnd = (candidateNode === endNode) || markNodeSelectedIfConnectedTo(candidateNode, endNode)
 
 			if (foundRouteToEnd) {
 				// go to the correct graph level for this node
