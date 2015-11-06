@@ -119,31 +119,9 @@ function instantiateTemplateForUpload(uploaded, position) {
 
 		E2.app.fillCopyBuffer(preset.root.nodes, preset.root.conns, 0, 0)
 
-		var pasted = E2.app.onPaste(100)
-		var dropNode = pasted.nodes[0]
-
-		// find scene node
-		var sceneNode = E2.core.root_graph.findNodeByPlugin('three_scene')
-
-		// add a slot in the scene
-		E2.app.graphApi.addSlot(E2.core.root_graph, sceneNode, {
-			type: E2.slot_type.input,
-			name: sceneNode.getDynamicInputSlots().length + '',
-			dt: E2.dt.OBJECT3D
-		})
-
-		var slots = sceneNode.getDynamicInputSlots()
-		var slot = slots[slots.length - 1]
-		
-		// connect the new patch to the scene
-		E2.app.graphApi.connect(E2.core.root_graph, Connection.hydrate(E2.core.root_graph, {
-			src_nuid: dropNode.uid,
-			dst_nuid: sceneNode.uid,
-			src_slot: 0,
-			src_dyn: true,
-			dst_slot: slot.index,
-			dst_dyn: true
-		}))
+		// paste. auto-connecting to the scene will be handled inside paste
+		// by the world editor
+		E2.app.onPaste(100)
 
 		E2.app.undoManager.end()
 

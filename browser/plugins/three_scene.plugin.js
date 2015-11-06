@@ -110,6 +110,7 @@
 
 	ThreeScenePlugin.prototype.reset = function () {
 		this.scene = new THREE.Scene()
+		this.scene.backReference = this
 
 		// add two children:
 		// [0] is the main scene
