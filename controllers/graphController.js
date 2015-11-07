@@ -117,6 +117,18 @@ GraphController.prototype.edit = function(req, res, next) {
 	.catch(next)
 }
 
+
+// GET /latest-graph
+GraphController.prototype.latest = function(req, res) {
+	this._service.list()
+	.then(function(list) {
+		var graph = list[0]
+		console.log('redirecting to ', graph.path)
+		res.redirect(graph.path)
+	});
+}
+
+
 // GET /fthr/dunes-world
 GraphController.prototype.graphLanding = function(req, res, next) {
 	this._service.findByPath(req.params.path)

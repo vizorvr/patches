@@ -167,6 +167,11 @@ function modelRoutes(
 	// -----
 	// Generic model routes
 
+	// latest ("I'm feeling lucky")
+	app.get('/graph/latest', function(req,res,next) {
+		graphController.latest(req, res, next)
+	})
+
 	// list
 	app.get(['/graph', '/graphs', '/graphs.json', '/graph.json'], function(req,res,next){
 		graphController.index(req, res, next)
