@@ -397,18 +397,8 @@
                                         "uid": "PebURM39WZta",
                                         "open": false,
                                         "title": "Camera position"
-                                    },
-                                    {
-                                        "plugin": "const_float_generator",
-                                        "x": 772,
-                                        "y": 183,
-                                        "uid": "lDNOp9lLfFqS",
-                                        "state": {
-                                            "val": 90
-                                        },
-                                        "title": "FOV"
                                     }
-                                ],
+								],
                                 "conns": [
                                     {
                                         "src_nuid": "gZN3eErqzQto",
@@ -453,15 +443,6 @@
                                         "src_slot": 0,
                                         "dst_slot": 0,
                                         "uid": "tYjEduMiX0GO",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    },
-                                    {
-                                        "src_nuid": "lDNOp9lLfFqS",
-                                        "dst_nuid": "gZN3eErqzQto",
-                                        "src_slot": 0,
-                                        "dst_slot": 1,
-                                        "uid": "oBbg3TUDO9tJ",
                                         "src_connected": true,
                                         "dst_connected": true
                                     }

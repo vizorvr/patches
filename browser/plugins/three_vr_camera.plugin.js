@@ -18,6 +18,7 @@
 
 		this.input_slots = [
 			{ name: 'position', dt: core.datatypes.VECTOR },
+			{ name: 'rotation', dt: core.datatypes.VECTOR },
 			{ name: 'fov', dt: core.datatypes.FLOAT, def: this.defaultFOV },
 			{ name: 'aspectRatio', dt: core.datatypes.FLOAT, def: 1.0},
 			{ name: 'near', dt: core.datatypes.FLOAT, def: 0.001 },
@@ -53,7 +54,6 @@
 
 		this.controls = new THREE.VRControls(this.perspectiveCamera)
 
-		this.perspectiveCamera.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
 	}
 
 	ThreeVRCameraPlugin.prototype.play = function() {
@@ -84,7 +84,7 @@
 
 		this.perspectiveCamera.updateMatrixWorld()
 
-		this.controls.update(this.positionFromGraph)
+		this.controls.update(this.positionFromGraph, this.rotationFromGraph)
 	}
 
 	ThreeVRCameraPlugin.prototype.update_input = function(slot, data) {
@@ -101,19 +101,24 @@
 			this.state.position.z = data.z
 			this.dirty = true
 			break
-		case 1: // fov
+		case 1: // rotation
+			this.rotationFromGraph.set(data.x, data.y, data.z)
+			this.perspectiveCamera.rotation.set(data.x, data.y, data.z)
+			this.dirty = true
+			break
+		case 2: // fov
 			this.perspectiveCamera.fov = data
 			this.dirty = true
 			break
-		case 2: // aspect ratio
+		case 3: // aspect ratio
 			this.perspectiveCamera.aspectRatio = data
 			this.dirty = true
 			break
-		case 3: // near
+		case 4: // near
 			this.perspectiveCamera.near = data
 			this.dirty = true
 			break
-		case 4: // far
+		case 5: // far
 			this.perspectiveCamera.far = data
 			this.dirty = true
 			break
