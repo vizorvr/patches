@@ -122,9 +122,7 @@ GraphController.prototype.edit = function(req, res, next) {
 GraphController.prototype.latest = function(req, res) {
 	this._service.list()
 	.then(function(list) {
-		var graph = list[0]
-		console.log('redirecting to ', graph.path)
-		res.redirect(graph.path)
+		res.redirect(list[0].path)
 	});
 }
 
