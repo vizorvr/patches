@@ -12,14 +12,10 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	}.bind(this));
 	dom.btnGraph.click(e2.app.toggleNoodles.bind(e2.app));
 
-	e2.controllers.account.on('redrawn', function() {
-		dom.btnAccountMenu = $('.btn-account-top');
-		dom.btnAccountMenu.click(this.toggleAccountDropdown.bind(this));
-	}.bind(this));
-	dom.btnAccountMenu.click(this.toggleAccountDropdown.bind(this));
-
 	// menu shell
-	dom.btnSignIn.click(this.openLoginModal.bind(this));
+	dom.btnSignIn.click(VizorUI.openLoginModal);
+
+
 	dom.btnAssets.click(this.onBtnAssetsClicked.bind(this));
 	dom.btnPresets.click(this.onBtnPresetsClicked.bind(this));
 	dom.btnChatDisplay.click(this.onChatDisplayClicked.bind(this));
@@ -112,23 +108,9 @@ VizorUI.prototype.setPageTitle = function() {
 	return newTitle;
 }
 
-VizorUI.prototype.toggleAccountDropdown = function() {	//
-	var username = E2.models.user.get('username')
-	if (username) {
-		this.dom.userPullDown.toggle();
-	}
-	return false;
-}
 
 /***** MODAL DIALOGS/WINDOWS *****/
 
-VizorUI.prototype.openLoginModal = function() {
-	return E2.controllers.account.openLoginModal();
-}
-
-VizorUI.prototype.openSignupModal = function() {
-	return E2.controllers.account.openSignupModal();
-}
 
 VizorUI.prototype.openPublishGraphModal = function() {
 	var dfd = when.defer()
@@ -559,13 +541,13 @@ VizorUI.prototype.showFirstTimeDialog = function() {
 	welcomeModal.find('a.login').on('click', function(evt) {
 		evt.preventDefault();
 		VizorUI.modalClose();
-		that.openLoginModal();
+		VizorUI.openLoginModal();
 		return false;
 	});
 	welcomeModal.find('a.signup').on('click', function(evt) {
 		evt.preventDefault();
 		VizorUI.modalClose();
-		that.openSignupModal();
+		VizorUI.openSignupModal();
 		return false;
 	});
 }
@@ -600,48 +582,27 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 
 /***** HELPER METHODS *****/
 
-VizorUI.userIsLoggedIn = function() {
-	var user = E2.models.user.toJSON();
-	return (typeof user.username !== 'undefined') && (user.username !== '');
-}
 
 
-/***** INTERIM MODAL LAYER *****/
-VizorUI.modalOpen = function(html, heading, className, allowclose, opts) {
-	allowclose = (typeof allowclose !== 'undefined') ? !!allowclose : true;
-	opts = opts || {}
-	opts.message = html;
-	opts.onEscape = allowclose;
-	if (typeof opts.backdrop === 'udefined') opts.backdrop = allowclose;	// bb 4.4+
-	if ((typeof heading !== 'undefined') && heading) opts.title = heading;
-	if ((typeof className !== 'undefined') && className) opts.className = className;
-	return bootbox.dialog(opts);
-};
-
-VizorUI.modalClose = function() {
-	bootbox.hideAll();
-};
-
-// shorthand
-VizorUI.modalAlert = function(message, heading, className, okLabel) {
-	var opts = {
-		buttons: {
-			OK : {
-				label: okLabel || "OK",
-				callback: function(){}
-			}
-		}
-	}
-	return VizorUI.modalOpen('<p>'+message+'</p>', heading, className, true, opts);
-}
 
 VizorUI.checkCompatibleBrowser = function() {
 	var agent = navigator.userAgent;
-	var heading=false,message=false;
+	var heading=false, message=false;
+	var isMobile;
+
+	if ((typeof E2 !== 'undefined') &&
+		(typeof E2.util !== 'undefined') &&
+		(typeof E2.util.isMobile === 'function')) {
+
+		isMobile = E2.util.isMobile;
+	} else {
+		isMobile = VizorUI.isMobile.any;	// last resort
+	}
+
 	if ((/Chrome/i.test(agent)) || (/Firefox/i.test(agent))) {
 
 	}
-	else if (E2.util.isMobile()) {
+	else if (isMobile()) {
 		heading = 'Mobile support';
 		message = '<h4>Please view this page on your desktop/laptop. '+
 					 'The editor is not ready for mobile just yet.</h4>';
@@ -656,142 +617,4 @@ VizorUI.checkCompatibleBrowser = function() {
 
 	}
 	if (message) VizorUI.modalOpen(message, heading, 'note', true, {buttons: { Ok: function() {}}});
-}
-
-
-VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup for example
-	if (!($form instanceof jQuery)) {
-		msg("ERROR: $form not a jQuery object")
-		return false;
-	}
-
-	$form.find('input, textarea').each(function(){
-		var $this = jQuery(this);
-		var placeholder = $this.attr('placeholder');
-		var required = $this.hasClass('required');
-		var had_error = false;
-		var had_error_value = false;
-		if (placeholder) {
-			if (required) placeholder += '*';
-			$this.attr('placeholder', placeholder);
-			$this.on('focus', function(){
-				had_error = $this.parent().hasClass('error');
-				had_error_value = (had_error) ? $this.val() : false;
-				$this.parent().removeClass('error').find('span.message').html('');
-				$this.addClass('in_focus');
-				// ux
-				//	$this.data('placeholder', placeholder);
-				//	$this.attr('placeholder', '');
-				return true;
-			});
-
-			$this.on('blur', function(){
-				// ux
-				//	$this.attr('placeholder', $this.data('placeholder'));
-				$this.removeClass('in_focus');
-				if (required && had_error &&
-					(($this.val() === '') || ($this.val() === had_error_value))
-					) $this.parent().addClass('error');
-				return true;
-			});
-		}
-	});
-
-	var inProgress = false;
-	var $body = jQuery(document.body);
-
-	$form.submit(function(event) {
-
-		if (inProgress) return false;
-
-		// if (!can_submit) return false;
-
-		// future decision on forms without this set
-		var actionURL = $form.attr('action');
-		if (!actionURL) return true;
-
-		event.preventDefault();
-		var formData = $form.serialize();
-
-		$form.find('span.message').html('');
-		$form.find('div.form-input').removeClass('error');
-
-		var $unknownError = jQuery('#unknown_error', $form);
-		$unknownError.html('').hide();
-		inProgress = true;
-		$body.addClass('loading');
-		jQuery.ajax({
-			type:	'POST',
-			url:	actionURL,
-			data:	formData,
-			dataType: 'json',
-			error: function(err) {
-				inProgress = false;
-				$body.removeClass('loading');
-				console.log(err);
-				if (err.responseJSON) {
-					var json = err.responseJSON;
-					var errors
-					// best case expect err.responseJSON.errors[{msg:'',param:'',value:''}, ...]
-					if (json.errors instanceof Array) {
-						errors = json.errors
-					} // exceptions follow
-					else if (json instanceof Array) {
-						// validation returns array, but some simple responses only have message
-						errors = json;
-						msg("ERROR: #596 lazy format error");
-						console.log(errors);
-					}
-					else if (json.error && json.error.errors){	// graphController
-						errors = [];
-						var ers = json.error.errors;
-						for (var key in ers) {
-							if (ers.hasOwnProperty(key)) {
-								errors.push({
-									param: key,
-									msg: ers[key].message
-								});
-							}
-						}
-					}
-					else {
-						msg("ERROR: #596 lazy format error");
-						console.log(json);
-						errors = [{
-							param:	json.param || '',
-							msg:	json.message
-						}];
-					}
-					errors.map(function(ei) {
-						var $field = $form.find('#f_'+ei.param);
-
-						if (ei.param && (ei.msg || ei.message) && ($field.length>0)) {
-							$field.addClass('error')
-								.find('span.message').html(ei.msg || ei.message)
-						} else {
-							// in case no 'param' comes back
-							$unknownError.html($unknownError.html() + '<span>'+ (ei.msg || ei.message) + '</span>').show();
-						}
-					});
-					if (!errors.length) {	// should errors be empty
-						$unknownError.html($unknownError.html() + '<span>'+ (json.message) + '</span>').show();
-					}
-				} else {
-					if (err.status === 200) {	// the response was deemed an error but has good status (jQuery timeout / last resort)
-						$unknownError.html('<span>The server said: (' + err.status + '): ' + err.statusText +'</span>').show();
-					} else {
-						// in case no json comes back, e.g. just a code
-						$unknownError.html('<span>An error ('+err.status+') occurred. Please check all required fields</span>').show();
-					}
-				}
-			},
-			success: function() {
-				inProgress = false;
-				$body.removeClass('loading');
-				onSuccess.apply(this,arguments);
-			}
-
-		});
-		return false;
-	});
 }

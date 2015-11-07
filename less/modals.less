@@ -1,3 +1,5 @@
+@color-placeholder: 	#414857;
+
 .bootbox.modal, .bootbox.modal:before {
     display: block;
     position: fixed;
@@ -17,6 +19,14 @@
 
 .modal.wideauto .modal-dialog {
   width: 90%;
+}
+
+.modal.popupEmbed .modal-dialog {
+  width: 700px;
+  .modal-content {}
+  .modal-body {
+	padding:30px;
+  }
 }
 
 .modal-dialog {
@@ -65,7 +75,7 @@
             > div {
                 display: block;
                 position: relative;
-                float: left;
+			  	border-top:1px solid transparent; // safari
                 width: 100%;
             }
             .modal-header {
@@ -130,16 +140,16 @@
 					  	z-index: 1;
                     }
 					::-webkit-input-placeholder {
-					   color: lighten(#414857, 10%);
+					   color: lighten(@color-placeholder, 10%);
 					}
 					::-moz-placeholder {
-					   color: lighten(#414857, 10%);
+					   color: lighten(@color-placeholder, 10%);
 					}
 				  	.in_focus::-webkit-input-placeholder {
-					   color: darken(#414857, 5%);
+					   color: darken(@color-placeholder, 5%);
 					}
 					.in_focus::-moz-placeholder {
-					   color: darken(#414857, 5%);
+					   color: darken(@color-placeholder, 5%);
 					}
                     >label {
 					  	display:none; // modals only!

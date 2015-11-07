@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 2000 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:1.41421;">
+<g id="Vizor-mark" style="stroke:#555">
+<g id="Vizor-mark-outline-1px">
+<circle id="Oval-1" cx="1000" cy="11.066" r="10" style="fill:none;stroke-width:1px;"/>
+<path id="Rectangle-5" d="M1006.88,11.066c0,-2.07 -1.68,-3.75 -3.75,-3.75l-6.25,0c-2.07,0 -3.75,1.68 -3.75,3.75c0,2.069 1.68,3.75 3.75,3.75l6.25,0c2.07,0 3.75,-1.681 3.75,-3.75Z" style="fill:none;stroke-width:1px;"/>
+<path id="Line" d="M994.063,3.253l2.5,4.113" style="fill:none;stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;"/>
+<path id="Line-Copy-7" d="M1005.94,3.253l-2.5,4.113" style="fill:none;stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;"/>
+<path id="Line1" d="M994.063,18.878l2.5,-4.112" style="fill:none;stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;"/>
+<path id="Line-Copy-71" d="M1005.94,18.878l-2.5,-4.112" style="fill:none;stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;"/>
+</g>
+<path id="Line-Copy" d="M9.557,11.066l980.5,0" style="fill:none;stroke-width:1px;stroke-linecap:round;"/>
+<path id="Line-Copy-5" d="M1010.52,11.066l980.5,0" style="fill:none;stroke-width:1px;stroke-linecap:round;"/>
+</g>
+</svg>

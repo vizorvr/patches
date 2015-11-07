@@ -67,6 +67,10 @@ app.events = new EventEmitter()
 app.set('views', path.join(__dirname, 'views'));
 var hbs = exphbs.create({
 	defaultLayout: 'main',
+	partialsDir: [
+		{dir:'views/partials'},
+		{dir:'views/server/partials', namespace: 'srv'}
+	],
 	helpers: _.extend(
 		hbsHelpers,
 		diyHbsHelpers,
@@ -404,8 +408,10 @@ r.connect({
 	app.post('/signup', userController.postSignup);
 	app.post('/account/exists', userController.checkUserName);
 
-	app.get('/account', passportConf.isAuthenticated, userController.getAccount);
+	app.get('/account', passportConf.isAuthenticated, userController.getAccount)
 	app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
+	app.get('/account/profile', passportConf.isAuthenticated, userController.getAccountProfile);
+
 	app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
 	app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
 	app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);

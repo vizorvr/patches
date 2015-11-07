@@ -1,8 +1,14 @@
+var _ = require('lodash')
 var Graph = require('../models/graph')
 var AssetController = require('./assetController')
 var fsPath = require('path')
 var assetHelper = require('../models/asset-helper')
 var templateCache = new(require('../lib/templateCache'))
+
+// want middleware
+function responseStatusSuccess(message, data, options) {
+    return _.extend(options || {}, { success: true, message: message, data: data || {} })
+}
 
 var EditLog = require('../models/editLog')
 
@@ -24,20 +30,33 @@ function GraphController(s, gfs, rethinkConnection) {
 
 GraphController.prototype = Object.create(AssetController.prototype);
 
-// GET /fthr
 GraphController.prototype.userIndex = function(req, res, next) {
+	var wantJson = req.xhr;
 	this._service.userGraphs(req.params.model)
 	.then(function(list)
 	{
 		if (!list || !list.length)
 			return next();
 
-		res.render('graph/index',
-		{
-			layout: 'min',
-			graphs: list,
-			title: 'Graphs'
+		var data = {
+			profile: {
+				username: req.params.model
+			},
+			graphs: list
+		};
+
+		if (wantJson) {
+			return res.status(200).json(responseStatusSuccess("OK", data));
+		}
+
+		_.extend(data, {
+			meta : {
+				title: 'Graphs',
+				bodyclass: 'bUserpage',
+				scripts : ['site/userpages.js']
+			}
 		});
+		res.render('server/pages/userpage', data);
 	});
 }
 

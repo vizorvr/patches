@@ -1,0 +1,32 @@
+<!-- project #{{uid}} -->
+{{!--
+	project {
+		owner: 'eesn',
+		name: 'Test graph',
+		updatedAt: 'Wed Oct 14 2015 17:01:37 GMT+0100 (BST)'
+
+		uid: (unique identifier)
+		title:
+		description:
+		image: (src)
+		(
+		graphs: [
+			{}
+		]
+		)
+	}
+--}}
+<article class="project asset card" data-objectid="{{_id}}" data-url="#{{owner}}/{{title}}" data-asset-type="project">
+	<div class="meta">
+		<h4 class="editable" data-svgref="icon-ca-rename">{{title}}</h4>
+		<p class="description">{{description}}</p>
+	</div>
+	<div class="image" style="background-image: url('{{image}}');">
+		<div class="overlay">
+			{{> assets/commonActions id=uid context="project"}}
+			<button class="btn action open" data-action="open">
+				Open
+			</button>
+		</div>
+	</div>
+</article>

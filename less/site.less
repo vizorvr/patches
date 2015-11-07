@@ -1,0 +1,576 @@
+// gm: common site css
+
+@bgcolor-body: 	#f2f2f2;
+@color-body: #333;
+
+@bgcolor-message: 	#999;
+@color-message: #fff;
+@bgcolor-message-success: 	#fff;
+@color-message-success: #2EB046;
+
+@bgcolor-button: #4040bb;
+@bgcolor-button-warn: #c20b25;
+@color-button: #fff;
+
+@bgcolor-header: #262c3d;
+@color-header: #7e8dab;
+
+@color-placeholder-lightbg: #999;
+@color-placeholder-lightbg-focus: rgba(153,153,153,0.5);
+
+@bgcolor-formcontrol: 	rgba(0,0,0,0.1);
+@color-formcontrol: #333;
+@color-formcontrol-error: #c00;
+@bordercolor-formcontrol: #999;
+
+@bordercolor-launch-button: #fff;
+
+@bgcolor-asset-card: #fff;
+@bgcolor-asset-card-overlay: rgba(38,44,61,0.7);
+@bgcolor-asset-card-graph: #fff;
+@bgcolor-asset-card-project: #fff;
+@color-asset-card-title: #777;
+
+@margin-asset-card	:   15px;
+@card-asset-width	:  220px;
+@card-asset-height	:  255px;
+
+
+// BOX-SIZING IS BORDER BOX!
+
+button.nofx, a.nofx {
+  outline: 0;
+  border:0;
+  background: none;
+  padding: 0;
+  &:hover {
+	background: none;
+  }
+}
+
+
+body div.bootbox div.modal-dialog button.btn-primary {
+  outline: 0;	// bootbox
+}
+
+body.bMain.modal-open {
+  overflow: auto;	// seriously, bootbox
+}
+
+.modal-body {
+  .clearfix()
+}
+
+body.bMain {
+
+  #brandTop, .brandTop {
+	width: 120px;
+	height: 30px;
+	line-height: normal;
+	padding:0 !important;
+	* {vertical-align: middle}
+  }
+  .brandTop svg {
+	margin:0; padding:0; display: block;
+  }
+
+
+  footer {
+	h6#footerBrand {
+	  width: 153px;
+	  height: 60px;
+	  background: url('/images/home/vizor_footer_logo.png');
+	  background-size: 100% 100%;
+	  text-indent: -10000px;
+	  padding:0;
+	}
+  }
+  // https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+  .flexcenter {
+	display:-webkit-flex;
+	-webkit-flex-flow: row wrap;
+	-webkit-justify-content: center;
+	-webkit-align-items: center;
+	-webkit-align-content: center;
+
+	display:flex;
+	justify-content: center;
+	flex-flow: row wrap;
+	align-items: center;
+	align-content: center;
+
+	>* {
+	  -webkit-flex-basis: auto;
+	  -webkit-flex-grow: 1;
+	  -webkit-align-self: center;
+
+	  flex-basis: auto;
+	  flex-grow: 1;
+	  align-self: center;
+	}
+  }
+
+  .popover {
+	padding: 8px 15px;
+  }
+
+  background: @bgcolor-body;
+  color: @color-body;
+  font-size: 11pt;
+  p {margin-bottom: 1em;}
+  nav ul {padding-left:0;margin-left:0;}
+  .modal-footer {
+	border-top: 0;
+  }
+  .panel {
+	background: none;
+	border-bottom:0;
+	margin-bottom: 2em;
+	fieldset {
+	  label  {
+	  	display: block;
+	  }
+	}
+  }
+
+  a {
+	color: @color-body;
+  }
+
+  button svg {
+	display: none;
+  }
+  a.svg.go, ul.cta li {
+	background: url('/images/v2/icon_go.svg') right center no-repeat;
+	background-size: auto 85%;
+	padding-right: 40px;
+  }
+
+
+  a.btn {
+	font-size: 120%;
+  }
+  header a.btn {
+	font-size: inherit;
+  }
+  button.svg svg, a.btn.svg svg {
+	display: inline;
+	width:24px;
+	height:24px;
+  }
+
+  #wrapper {width:100%;}
+  >header, &.bHome header, #contentwrap, >footer, #contentwrap>footer, div#flash, #contentcontainer, #secondarynav {
+	padding:0;
+	>.in, >section>.in,
+		>div>section>.in // mobileonly/nomobile
+	{
+	  	max-width: 1260px;
+	  	margin:0 auto;
+	  	padding: 15px;
+	    position:relative;
+	}
+  }
+  &.bHome header >.in {
+	padding:0;
+  }
+  #contentcontainer {
+	min-height: 500px;
+  }
+  >header {
+	background: @bgcolor-header;
+	color: @color-header;
+	a {color:@color-header;}
+  }
+
+  #flash div.alert {
+	color:white;
+  }
+  #topnav {
+	li#logo {
+	  font-size: 250%;
+	  font-weight: 500;
+	  >a {
+		display: block;
+		background: url(../images/v2/textlogo-66x24.svg) center center no-repeat;
+	  	background-size: 66px 24px;
+		height: 24px; width: 66px;
+		font-size: 1px;
+		text-indent: -1000px;
+		opacity: 0.9;
+		&:hover {opacity: 1;}
+	  }
+	}
+	li {
+	  display: inline-block;
+	  vertical-align: middle;
+	  line-height: 2em;
+	}
+	.col.right ul {
+	  text-align: right;
+	}
+  }
+
+  a.btn, button.btn {
+	background: #777;
+	color: @color-button;
+	border: 1px solid rgba(0,0,0,0.5);
+	padding: 7px 10px;
+	border-radius: 3px;
+	&:hover {
+	  border: 1px solid rgba(0,0,0,1);
+	}
+	&:active {
+	  background: #fff;
+	  color: black;
+
+	}
+  	&.warn {
+	  background: @bgcolor-button-warn;
+	}
+  }
+
+  .smalltext {
+	 font-size: 87.5%;
+  }
+
+
+
+  ul.errors {margin-left:0; color: #c00; padding-left:0;}
+  #contentcontainer form, section.contentcontainer form, #contentwrap>div.in form {
+	input:focus,
+	select:focus,
+  	button:focus,
+  	textarea:focus
+	{
+		outline:0;
+	}
+	input, select, button, textarea
+	{
+		border:1px solid @bordercolor-formcontrol; font-size: 120%; padding: 5px;
+	}
+	.xhr.message {
+	  background: @bgcolor-message;
+	  color: @color-message;
+	  padding: 5px 15px;
+	  border-radius: 3px;
+	  display:inline-block;
+	  &.success {
+		background: @bgcolor-message-success;
+		color: @color-message-success;
+		border: 1px solid #ddd;
+	  }
+	}
+
+	fieldset {margin-bottom:1em;}
+	div.form-input {
+		width: auto;
+		border-radius: 4px;
+		margin: 0 auto 5px;
+		position: relative;
+		text-align: left;
+		&.error input {
+			border: 1px solid @color-formcontrol-error;
+		}
+		>input, >label {
+		  width: 100%;
+		}
+		>input {
+		 	padding: 10px;
+			background: @bgcolor-formcontrol;
+			border: 1px solid @bordercolor-formcontrol;
+			border-radius: 3px;
+			font-size: 16px;
+			line-height: 1.33;
+			font-weight: 400;
+			color: @color-formcontrol;
+			z-index: 1;
+		}
+		::-webkit-input-placeholder {
+		   color: @color-placeholder-lightbg;
+		}
+		::-moz-placeholder {
+		   color: @color-placeholder-lightbg;
+		}
+		.in_focus::-webkit-input-placeholder {
+		   color: @color-placeholder-lightbg-focus;
+		}
+		.in_focus::-moz-placeholder {
+		   color: @color-placeholder-lightbg-focus;
+		}
+		>label {
+			padding: 2px 5px;
+			font-size: 16px;
+			font-weight: 400;
+			top:0;
+			z-index: 0;
+
+		}
+		>span.message {
+		  clear: left;
+		  display: block;
+		  color: #333;
+		  padding:2px 0 0 5px;
+		  font-size: 95%;
+		}
+		>span.message:after {
+		  content: "."; color: rgba(0,0,0,0);		// prevent from collapsing
+		}
+		&.error>span.message {
+		  color: #ff6868;
+		}
+
+	} //  end  div.form-input
+	div.modal-error {
+		display: none;
+		span {
+			color: #ff6868;
+			display: block;
+			width: 100%;
+			height: 16px;
+			font-size: 12px;
+		}
+		&#general-error span {
+			text-align: center;
+		}
+	}
+
+	button {
+	  border: 0;
+	  border-radius: 3px;
+	  padding: 7px 12px;
+	  svg {
+		opacity: 0.85;
+		stroke-width: 1.75px;
+		stroke: #111;
+		fill: #111;
+		width: 1em; height: 1em;
+		margin-top: -0.2em;
+		margin-left: 0.5em;
+		vertical-align: middle;
+	  }
+	  &.warn { // button.warn
+		svg {
+		  stroke: #fff;
+		  fill: #fff;
+		  stroke-width: 1.5px;
+		}
+	  }
+	  &:hover svg {
+		opacity: 1;
+	  }
+	}
+
+	// specific forms
+
+	&#accountDetailsForm {
+	  &.err_name #f_name,
+	  &.err_email #f_email
+	  {
+		color:#c00;
+		input {
+			border:1px solid #c00;
+		}
+	  }
+	}
+  } // end form
+
+  h1.decorative, h2.decorative, h3.decorative {
+	text-align: center;
+	padding-bottom: 0;
+	span {
+	  background: url(../images/v2/heading_decor_dark.svg) center bottom no-repeat;
+	  background-size: 2000px 22px;
+	  display:inline-block;
+	  padding-bottom:0;
+	}
+	i.fa {
+	  font-size: 80%;
+	  opacity: 0.5;
+	  line-height: inherit;
+	  vertical-align: 3%;
+	  padding: 0 0.2ex;
+	}
+	&.light span {
+	  background-image: url(../images/v2/heading_decor.svg);
+	}
+  }
+  h1.decorative span {height: 1.85em}
+  h2.decorative span {height: 2.15em}
+  h3.decorative span {height: 2.5em}
+
+  .twocol.clearfix section.col,
+  section.center {
+	box-sizing: border-box;
+	width:50%;
+	padding: 0 40px;
+	form {
+	  box-sizing: border-box;
+	  max-width: 600px;
+	  * {
+		box-sizing: border-box
+	  };
+	}
+  }
+  .threecol.clearfix {
+	.col {
+	  box-sizing: border-box;
+	  width: 33.3%;
+	  padding: 0;
+	  &.left, &.mid {
+		float:left;
+	  }
+	  &.right {
+		float:right;
+	  }
+	}
+  }
+  section.centre, section.center {
+	margin: 0 auto;
+	form, p, div {
+	  text-align: center;
+	}
+  }
+
+  section {
+	margin-top: 30px;
+	margin-bottom:30px;
+  }
+  body>section:first-child {margin-top:0}
+  #contentcontainer>section:first-child {margin-top:0}
+  #contentcontainer>nav+section {margin-top:0}
+
+}	// body.bMain
+
+button.svg.tiny {
+  border: 0;
+  background: none;
+  height: 24px;
+  width: 24px;
+  font-size: 0.1px;
+  color: transparent;
+  padding:0;
+  svg {
+	height: 24px;
+	width: 24px;
+	stroke: #333;
+	fill: none;
+	position: absolute;
+	left:0;
+	top:0;
+  }
+}
+
+
+
+section.list {
+  margin: 0 -@margin-asset-card;
+  article.card {
+	float:left;
+	margin:@margin-asset-card;
+  }
+}
+
+article.asset.card {
+	width: @card-asset-width;
+  	height: @card-asset-height;
+  	background: white;
+  	border-radius: 4px;
+  	position:relative;
+	button.open, a.open {
+	  border: 1px solid rgba(255,255,255,0.5);
+	  background: rgba(0,0,0,0.1);
+	  max-width: 6em;
+	  text-transform: uppercase;
+	  font-weight: 500;
+	  font-size: 90%;
+	  // margin-top:15px;	// post-allowActions
+	  &:hover {
+		border-color: #fff;
+	  }
+	}
+  	>div {
+	  position:absolute;
+	  left: 0;
+	  right: 0;
+	}
+  	div.meta {
+	  padding: 5px;
+	  padding-bottom:0;
+	  bottom:0;
+	  top: 165px;
+	  overflow: auto;
+	  h4 {
+		font-size: 120%;
+		font-weight: 300;
+		color: @color-asset-card-title;
+		text-align: center;
+		margin-bottom: 10px;
+		margin-top: 15px;
+	  }
+	  p {
+		font-size: 75%;
+		text-align: center;
+		color: #999;
+		padding-bottom:0;
+		margin-bottom: 0;
+	  }
+	}
+  	div.image, div.overlay {
+	  // safari..
+	  border-top-left-radius: 4px;
+	  border-top-right-radius: 4px;
+	}
+	div.image {
+	  top:0;
+	  height: 165px;
+	  background-size: 100%;
+	  background-image: url('../images/v2/placeholder_440x330.png');
+	}
+  	div.overlay {
+	  display: -webkit-flex;
+	  display: flex;
+	  position: absolute;
+	  top:0; bottom:0; left:0; right:0;
+	  background-color: @bgcolor-asset-card-overlay;
+	  opacity: 0;
+	  transition: opacity 0.2s linear;
+	  &:hover {
+		opacity: 1;
+	  }
+	  button {
+		svg {stroke: rgba(255,255,255,0.5); stroke-width:1px; }
+		&:hover svg {stroke: #fff;}
+	  }
+	}
+
+	div.actions {
+	  position:absolute;
+	  top:10px; left:0; right:0; height: 24px;
+	  padding: 0 5px;
+	}
+  	div.actions button {
+	  &.tiny {	// button tiny
+		svg {
+		  position:absolute; left:50%;top:50%;
+		  margin-left:-12px;
+		  margin-top:-12px;
+		}
+	  }
+
+	}
+
+  button.svg>svg {
+	stroke: #fff !important;
+  }
+}
+
+body.bUserpage #secondarynav {
+  li {
+	display:inline-block;
+  }
+}
+
+body.bProfile {
+  section.center + section.center {margin-top: 3em;}
+}
