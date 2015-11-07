@@ -33,6 +33,12 @@ AbstractThreeLoaderObjPlugin.prototype.onObjLoaded = function(geoms, mats) {
 	this.geometries = geoms
 	this.materials = mats
 
+	for (var i = 0; i < this.geometries.length; ++i) {
+		if (this.geometries[i].getAttribute('normal') === undefined) {
+			this.geometries[i].computeVertexNormals(true)
+		}
+	}
+
 	msg('Finished loading '+ this.state.url)
 
 	this.updated = true
