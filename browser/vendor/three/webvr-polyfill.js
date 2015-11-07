@@ -529,6 +529,10 @@ MouseKeyboardPositionSensorVRDevice.prototype.getState = function() {
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.onKeyDown_ = function(e) {
+  if ((typeof E2 === 'undefined') || (typeof E2.app === 'undefined')) return true;
+  if (!E2.app.isVRCameraActive() || E2.util.isTextInputInFocus(e))
+    return true;
+
   // Track WASD and arrow keys.
   if (e.keyCode == 38) { // Up key.
     this.animatePhi_(this.phi + KEY_SPEED);
@@ -539,6 +543,8 @@ MouseKeyboardPositionSensorVRDevice.prototype.onKeyDown_ = function(e) {
   } else if (e.keyCode == 37) { // Left key.
     this.animateTheta_(this.theta + KEY_SPEED);
   }
+
+  return true
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.animateTheta_ = function(targetAngle) {
@@ -577,6 +583,9 @@ MouseKeyboardPositionSensorVRDevice.prototype.animateKeyTransitions_ = function(
 };
 
 MouseKeyboardPositionSensorVRDevice.prototype.onMouseDown_ = function(e) {
+  if (!E2.app.isVRCameraActive())
+    return;
+
   this.rotateStart.set(e.clientX, e.clientY);
   this.isDragging = true;
 };
