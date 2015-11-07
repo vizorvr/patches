@@ -11,12 +11,16 @@
 				<li><a class="scrollto" href="#whyusevizor">Why Vizor?</a></li>
 				<li><a class="scrollto" href="#howitworks">How it works</a></li>
 				<li><a class="scrollto" href="#vizorteam">Meet the team</a></li>
+				{{#unless user.username}}
 				<li class="signin nomobile">
 					<a id="homeSignin" href="#/login" class="sign-btn">Sign in</a>
 				</li>
 				<li class="signin nomobile">
 					<a class="sign-btn btn scrollto" href="#getstarted">Sign up</a>
 				</li>
+				{{else}}
+					<li class="nomobile"><a class="sign-btn btn openeditor" href="/edit">Open the Editor</a></li>
+				{{/unless}}
 			</ul>
 		</div>
 		<div class="mobileonly" style="position:absolute; top:15px; right: 10px; width: 30px; height: 30px;">
@@ -36,7 +40,9 @@
 				</p>
 
 				<a class="launch-button btn action nomobile" href="/edit">Try the Beta</a>
+				{{#unless user.username}}
 				<a class="launch-button btn action nomobile scrollto" href="#getstarted">Sign up</a>
+				{{/unless}}
 			</div>
 			<div class="col right protrudeimg clearfix">
 				<img src="/images/home/screenshot1.png" width="810" height="504" alt="Vizor Patch Editor" />
