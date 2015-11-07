@@ -46,7 +46,7 @@ function createClient(channelName, lastEditSeen) {
 				duration: 4100421,
 				activeDuration: 190248
 			}, {
-				userId: 'test1234' + (''+Date.now()).substring(8,12)
+				userId: new mongoose.Types.ObjectId('test1234' + (''+Date.now()).substring(8,12))
 			})
 		}
 	})
@@ -54,7 +54,7 @@ function createClient(channelName, lastEditSeen) {
 		chan.lastEditSeen = lastEditSeen
 
 		if (channelName)
-			chan.join(channelName)
+			chan.join(channelName, channelName)
 	})
 
 	chan.dispatcher = dispatcher
@@ -301,7 +301,7 @@ describe('Multiuser', function() {
 
 				s3.once('youJoined', function() {
 					// join original channel again
-					s3.join(ogChannel, function() {
+					s3.join(ogChannel, ogChannel, function() {
 						s3.dispatcher.register(function(m) {
 							assert.ok(m.number === 1)
 							s3.close()
@@ -310,7 +310,7 @@ describe('Multiuser', function() {
 					})
 				})
 
-				s3.join(channel, function() {})
+				s3.join(channel, channel, function() {})
 			})
 		})
 
