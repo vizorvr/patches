@@ -941,7 +941,7 @@ function WebVRManager(renderer, effect, params) {
   this.mode = Modes.UNKNOWN;
 
   // Set option to hide the button.
-  var hideButton = Vizor.hideWebButton || this.params.hideButton || false;
+  var hideButton = Vizor.hideWebVRButton || this.params.hideButton || false;
 
   // Save the THREE.js renderer and effect for later.
   this.renderer = renderer;
