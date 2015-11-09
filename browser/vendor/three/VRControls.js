@@ -64,7 +64,7 @@ THREE.VRControls = function ( object, onError ) {
 
 	this.scale = 1;
 
-	this.update = function (positionOffset) {
+	this.update = function (positionOffset, rotationOffset) {
 		for ( var i = 0; i < vrInputs.length; i ++ ) {
 
 			var vrInput = vrInputs[ i ];
@@ -72,8 +72,8 @@ THREE.VRControls = function ( object, onError ) {
 			var state = vrInput.getState();
 
 			if ( state.orientation !== null ) {
-
-				object.quaternion.copy( state.orientation );
+				object.quaternion.setFromEuler(rotationOffset, /*update = */false)
+				object.quaternion.multiply(state.orientation)
 
 			}
 
