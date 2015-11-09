@@ -113,7 +113,8 @@
         "Ambient Light": "three_ambient_light",
         "Directional Light": "three_directional_light",
         "Point Light": "three_point_light",
-        "Line Material": "three_line_material"
+        "Line Material": "three_line_material",
+        "Material Extractor": "three_material_extractor"
     },
 
     "INTERACTION STUFF": {
