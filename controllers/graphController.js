@@ -5,7 +5,6 @@ var fsPath = require('path')
 var assetHelper = require('../models/asset-helper')
 var templateCache = new(require('../lib/templateCache'))
 
-// @todo #596
 function responseStatusSuccess(message, data, options) {
     return _.extend(options || {}, { success: true, message: message, data: data || {} })
 }
