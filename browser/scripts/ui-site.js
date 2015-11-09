@@ -24,8 +24,9 @@ var siteUI = new function() {
 		VizorUI.enableScrollToLinks($body);
 		VizorUI.enablePopupEmbedLinks($body);
 
-		var signupCallback = null;	// default
-
+		var signupCallback = function() {	// slush
+			window.location.href = '/edit';
+		};
 		var $signupForm = jQuery('#signupForm')
 		VizorUI.setupXHRForm($signupForm, signupCallback);
 		VizorUI._setupAccountUsernameField(jQuery('input[name=username]', $signupForm)); // currentUsername is still unavailable
@@ -37,9 +38,6 @@ var siteUI = new function() {
 
 		if (jQuery('body.bHome').length > 0) {
 			that.initHomepage();
-			signupCallback = function() {	// #slush
-				window.location.href = '/edit';
-			};
 		}
 
 	};
@@ -138,10 +136,6 @@ jQuery('document').ready(siteUI.init);
 if (typeof VizorUI === 'undefined') var VizorUI = {};
 
 VizorUI.makeVRCanvasResizeHandler = function($playerCanvas, $containerRef) {
-	if (!($playerCanvas instanceof jQuery)) {
-		msg("ERROR: $playerCanvas not jQuery");
-		return false;
-	}
 	if (typeof $containerRef === 'undefined') $containerRef = jQuery(window);
 	return function() {
 		setTimeout(function() {
@@ -171,10 +165,6 @@ VizorUI.makeVRCanvasResizeHandler = function($playerCanvas, $containerRef) {
 
 // youtube only for the time being
 VizorUI.enablePopupEmbedLinks = function($container) {
-	if (!($container instanceof jQuery)) {
-		msg("ERROR: $container not jQuery");
-		return false;
-	}
 	var $links = jQuery('a.popup.embed', $container);
 	$links.off('.popupembed');
 
@@ -190,10 +180,6 @@ VizorUI.enablePopupEmbedLinks = function($container) {
 
 // a class='scrollto' href='#anchor'
 VizorUI.enableScrollToLinks = function($container) {
-	if (!($container instanceof jQuery)) {
-		msg("ERROR: $container not jQuery");
-		return false;
-	}
 	jQuery('a.scrollto', $container)
 		.off('.scrollto')
 		.on('click.scrollto', function(e){
@@ -260,7 +246,6 @@ VizorUI.modalAlert = function(message, heading, className, okLabel) {
 	return VizorUI.modalOpen('<p>'+message+'</p>', heading, className, true, opts);
 }
 
-// fallback function in case E2.util is unavailable
 VizorUI.isMobile = {
 	Android: function() {
 		return navigator.userAgent.match(/Android/i);
@@ -278,7 +263,7 @@ VizorUI.isMobile = {
 		return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
 	},
 	any: function() {
-		return (isMobile.iOS() || isMobile.Android() || isMobile.Windows() || isMobile.BlackBerry() || isMobile.Opera());
+		return E2.util.isMobile();
 	}
 }
 
@@ -289,10 +274,6 @@ VizorUI.isMobile = {
  * @param currentUsername string
  */
 VizorUI._setupAccountUsernameField = function($input, currentUsername) {
-	if (!($input instanceof jQuery)) {
-		msg("ERROR: unrecognised $input");
-		return false;
-	}
 	var _t = null;
 	var lastValue=false;
 	$input.on('keyup', function(e){
@@ -331,13 +312,11 @@ VizorUI._setupAccountUsernameField = function($input, currentUsername) {
  */
 VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup for example
 
-	if (!($form instanceof jQuery)) {
-		msg("ERROR: $form not a jQuery object")
+	var xhrEnabled = $form.data('xhrEnabled');
+	if (xhrEnabled) {
+		msg("ERROR: setupXHRForm but form already enabled " + $form.attr('id'))
 		return false;
 	}
-
-	var xhrEnabled = $form.data('xhrEnabled');
-	if (xhrEnabled) return false;
 
 	if (typeof onSuccess !== 'function') {
 		onSuccess = function(response) {
@@ -505,10 +484,6 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
  * @returns {boolean} replaced any
  */
 VizorUI.replaceSVGButtons = function($selector) {
-	if (!($selector instanceof jQuery)) {
-		console.error('ERROR: $selector not jQuery');
-		return false;
-	}
 
 	var numReplaced=0;
 	$selector.find('button.svg[data-svgref!=""]').each(function(){
@@ -545,10 +520,6 @@ VizorUI.replaceSVGButtons = function($selector) {
  * @param $card
  */
 VizorUI.setupAssetCard = function($card) {
-	if (!($card instanceof jQuery)) {
-		console.error('ERROR: $card not jQuery');
-		return false;
-	}
 
 	VizorUI.replaceSVGButtons($card);
 

@@ -593,21 +593,14 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 VizorUI.checkCompatibleBrowser = function() {
 	var agent = navigator.userAgent;
 	var heading=false, message=false;
-	var isMobile;
 
-	if ((typeof E2 !== 'undefined') &&
-		(typeof E2.util !== 'undefined') &&
-		(typeof E2.util.isMobile === 'function')) {
+	var isMobile = VizorUI.isMobile.any();
 
-		isMobile = E2.util.isMobile;
-	} else {
-		isMobile = VizorUI.isMobile.any;	// last resort
-	}
 
 	if ((/Chrome/i.test(agent)) || (/Firefox/i.test(agent))) {
 
 	}
-	else if (isMobile()) {
+	else if (isMobile) {
 		heading = 'Mobile support';
 		message = '<h4>Please view this page on your desktop/laptop. '+
 					 'The editor is not ready for mobile just yet.</h4>';
