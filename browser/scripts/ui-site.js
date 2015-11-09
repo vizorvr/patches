@@ -278,7 +278,7 @@ VizorUI._setupAccountUsernameField = function($input, currentUsername) {
 	var lastValue=false;
 	$input.on('keyup', function(e){
 		var value = $input.val().trim();
-		var checkUsername = currentUsername || E2.models.user.username;	// last resort
+		var checkUsername = currentUsername || E2.models.user.get('username');	// last resort
 		if (value && (value !== checkUsername) && (value !== lastValue)) {
 			lastValue=value;
 			if (_t) clearTimeout(_t);

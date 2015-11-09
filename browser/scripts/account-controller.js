@@ -96,7 +96,7 @@ AccountController.prototype.openLoginModal = function(dfd) {
 
 
 AccountController.prototype._setupAccountUsernameField = function($input) {
-	var currentUsername = (E2.models.user) ? E2.models.user.username : '';
+	var currentUsername = (E2.models.user) ? E2.models.user.get('username') : '';
 	return VizorUI._setupAccountUsernameField($input, currentUsername);
 }
 
