@@ -124,6 +124,12 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 	if (scene) {
 		scene.children[0].traverse( nodeHandler )
 	}
+	
+	// add handles for the camera helper
+	this.cameraHelper = new VRCameraHelper(camera)
+	this.cameraHelper.backReference = camera.backReference
+	this.handleTree.add(this.cameraHelper)
+
 
 	// if there's a pending selection (something was pasted),
 	// set selection accordingly
@@ -158,6 +164,12 @@ WorldEditor.prototype.setSelection = function(selected) {
 	for (var i = 0; i < selected.length; ++i) {
 		var obj = selected[i]
 		if (obj.backReference !== undefined) {
+
+			if (obj instanceof VRCameraHelper) {
+				// special case for VR camera - point back to the original camera
+				obj = this.vrCamera
+			}
+
 			this.transformControls.attach(obj)
 			this.selectionTree.add(this.transformControls)
 

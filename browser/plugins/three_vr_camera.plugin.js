@@ -33,6 +33,10 @@
 
 		this.always_update = true
 		this.dirty = false
+
+		this.state = {
+			position: {x: 0, y: 0, z:0}
+		}
 	}
 
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
@@ -46,9 +50,10 @@
 			0.001,
 			1000)
 
+		this.perspectiveCamera.backReference = this
+
 		this.controls = new THREE.VRControls(this.perspectiveCamera)
 
-		this.rotationFromGraph = new THREE.Euler()
 	}
 
 	ThreeVRCameraPlugin.prototype.play = function() {
@@ -72,12 +77,14 @@
 	}
 
 	ThreeVRCameraPlugin.prototype.update_state = function() {
+		this.perspectiveCamera.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
+
 		if (this.dirty)
 			this.perspectiveCamera.updateProjectionMatrix()
 
-		this.controls.update(this.positionFromGraph, this.rotationFromGraph)
+		this.perspectiveCamera.updateMatrixWorld()
 
-		this.updated = true
+		this.controls.update(this.positionFromGraph, this.rotationFromGraph)
 	}
 
 	ThreeVRCameraPlugin.prototype.update_input = function(slot, data) {
@@ -88,7 +95,10 @@
 		switch(slot.index) {
 		case 0: // position
 			this.positionFromGraph = data
-			this.perspectiveCamera.position.set(data.x, data.y, data.z)
+			//this.perspectiveCamera.position.set(data.x, data.y, data.z)
+			this.state.position.x = data.x
+			this.state.position.y = data.y
+			this.state.position.z = data.z
 			this.dirty = true
 			break
 		case 1: // rotation
