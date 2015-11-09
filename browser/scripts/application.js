@@ -1309,7 +1309,7 @@ Application.prototype.onKeyDown = function(e) {
 		else if(e.keyCode === 88) // CTRL+x
 			this.onCut(e);
 		else if(e.keyCode === 86) { // CTRL+v
-			var pasted = this.onPaste(e);
+			var pasted = this.onPaste();
 		}
 
 		if (e.keyCode === 90) { // z
