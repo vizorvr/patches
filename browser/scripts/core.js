@@ -68,7 +68,9 @@ AssetTracker.prototype.add_listener = function(listener)
 
 AssetTracker.prototype.remove_listener = function(listener)
 {
-	this.listeners.remove(listener);
+	var listenerIdx = this.listeners.indexOf(listener)
+	if (listenerIdx > -1)
+		this.listeners.splice(listenerIdx, 1);
 };
 
 AssetTracker.prototype.signal_started = function()

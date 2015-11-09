@@ -108,6 +108,26 @@
 </div>
 <div id="breadcrumb"></div>
 <div id="progressbar"></div>
+
+<div class="shader-block floating-box" id="shader-block" style="display:none">
+		<div class="block-header">
+			<button class="toggle-button" id="shader-toggle" type="button">
+				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
+			</button>
+			<ul class="nav nav-tabs" role="tablist">
+			</ul>
+			<button class="close-button" id="shader-close" type="button">
+				<svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
+			</button>
+		</div>
+
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="shader">
+			</div>
+		</div>
+
+</div>
+
 <div class="presets-block vp-library floating-box uiopen" id="presets-lib">
 		<div class="block-header">
 			<button class="toggle-button" id="presets-toggle" type="button">
@@ -535,6 +555,21 @@
 	</ul>
 </div>
 
+<div id="drag-overlay">
+	<div id="drop-area">
+		<div class="drop-info">
+			<svg class="icon-drop-upload"><use xlink:href="#icon-drop-upload"></use></svg>
+		</div>
+	</div>
+	<div id="drop-uploading">
+		<div class="drop-info">
+			<svg class="icon-drop-uploading"><use xlink:href="#icon-drop-uploading"></use></svg>
+			<span>Uploading your file..</span>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
 <script>
 	var boot = {}
 	boot.hasEdits = {{hasEdits}}
@@ -567,7 +602,8 @@
 			E2.util.checkBrowser();
 
 		E2.models = {
-			user: new User({})
+			user: new User({}),
+			fileList: new FileList({})
 		}
 
 		if ('{{user.username}}' !== '') {

@@ -53,6 +53,10 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	this.setupEventHandlers(e2,this.dom);
 
 	var dom = this.dom;
+
+	var shaderBlock = $('.shader-block')
+	shaderBlock.movable()
+
 	dom.presetsLib.movable();
 	dom.assetsLib.movable();
 
@@ -69,6 +73,7 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	dom.chatWindow.css({'top': chatTop});
 	dom.chatWindow.movable();
 
+	this.initDropUpload();
 	this.setPageTitle();
 
 	dom.assetsLib.on(uiEvent.moved, this.updateState.bind(this));

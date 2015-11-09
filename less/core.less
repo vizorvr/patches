@@ -1032,6 +1032,70 @@ button.show-timeline:hover svg {
     z-index: 42;
 }
 
+#drag-overlay {
+	display: none;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: @menu-bar-height + @breadcrumb-height;
+	left: 0;
+	background-image: linear-gradient(-180deg, rgba(5,150,203,0.9) 0%, rgba(128,0,210,0.9) 100%);
+	z-index: 1050;
+	#drop-area, #drop-uploading {
+		width: 200px;
+		height: 200px;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		margin: -100px 0 0 -100px;
+		text-align: center;
+		pointer-events: none;
+		display: none;
+		span {
+			color: @editor-text-active;
+			font-weight: 300;
+			font-size: 22px;
+			text-align: center;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			height: 30px;
+		}
+	}
+	#drop-area {
+		.icon-drop-upload {
+			position: relative;
+			margin: 0 auto;
+			width: 150px;
+			height: 150px;
+			fill: @editor-text-active;
+		}
+	}
+	#drop-uploading {
+		.icon-drop-uploading {
+			position: absolute;
+			width: 64px;
+			height: 64px;
+			top: 50%;
+			left: 50%;
+			margin: -32px 0 0 -32px;
+			transform: rotate(-360deg);
+			animation: rotateUploadIcon 2s infinite linear;
+			stroke: @editor-text-active;
+		}
+	}
+}
+
+@keyframes rotateUploadIcon {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(-360deg);
+	}
+}
+
 #progressbar {
     display: none;
     position: absolute;

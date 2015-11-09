@@ -37,7 +37,7 @@ var uiEvent = { // emitted by ui (E2.ui) unless comments state otherwise
 	xhrFormSuccess	: 'xhrFormSuccess'		//	dispatched on document in ui-site js
 }
 
-VizorUI = function() {			// becomes E2.ui
+var VizorUI = function() {			// becomes E2.ui
 	EventEmitter.apply(this, arguments)
 
 	this._initialised = false;
@@ -55,7 +55,7 @@ VizorUI = function() {			// becomes E2.ui
 			panel_chat: true,
 			panel_assets: false,
 			panel_presets: true,
-			patch_editor: true,
+			patch_editor: false,
 			breadcrumb: true,		// always true	(20151012)
 			player_controls : true,	// always true	(20151012)
 			main_toolbar : true,	// always true	(20151012)
@@ -101,8 +101,7 @@ VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 
 	this.on(uiEvent.initialised, this.recallState.bind(this));
 	this.on(uiEvent.stateChanged, this.storeState.bind(this));
-};
-
+}
 
 VizorUI.prototype.updateState = function() {
 	this.state._update({
@@ -233,8 +232,14 @@ VizorUI.prototype.isFullScreen = function() {
 VizorUI.prototype.isVisible = function() {
 	return this.state.visible;
 }
+VizorUI.prototype.isPatchVisible = function() {
+	return this.state.visibility.patch_editor;
+}
 VizorUI.prototype.isLoading = function() {
 	return this.flags.loading;
+}
+VizorUI.prototype.isUploading = function() {
+	return this.uploading;
 }
 VizorUI.prototype.isVRCameraActive = function() {
 	return E2.app.worldEditor.isActive();	// app.isVRCameraActive ORs between this and noodles visible

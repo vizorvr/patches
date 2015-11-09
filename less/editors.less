@@ -1,39 +1,77 @@
 // E2.ShaderEditor
 
-.shader-editor .input-editor {
+.shader-editor {
+  .input-editor {
 	overflow: auto;
-}
-
-.shader-editor .input-button i {
-	margin-right: 2px;
-}
-
-.shader-editor .input-button {
+  }
+  .input-button {
 	border-radius: 3px;
 	margin: 1px;
-}
-
-.shader-editor .input-remove-button {
+	i {
+		margin-right: 2px;
+	}
+  }
+  .input-remove-button {
 	@hclr: @brand-success;
 	color: @gray-dark;
 	background-color: @hclr;
 	border-color: @hclr;
+	&:hover {
+	  @hclr: @brand-danger;
+	  color: @gray-dark;
+	  background-color: @hclr;
+	  border-color: @hclr;
+	}
+  }
+  div.ace_editor {
+	max-height: 600px;
+  }
 }
 
-.shader-editor .input-remove-button:hover {
-	@hclr: @brand-danger;
-	color: @gray-dark;
-	background-color: @hclr;
-	border-color: @hclr;
+.shader-block {
+  left: 350px;
+  width: 660px;
+  z-index: 65;
+  .block-header {
+	width:100%;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-justify-content: space-between;
+	justify-content: space-between;
+	height: 40px;
+  }
+  i.tab-close-button {
+	line-height: 1.4em;
+  }
+  ul.nav-tabs {
+	width:85%;
+  }
+
+  div.ace-tomorrow-night-eighties, {
+	background-color: rgba(0,0,0,0.15);
+  }
+  div.ace_gutter {
+	background-color: rgba(0,0,0,0.5);
+  }
+}
+
+form.addInputDialog select.form-control {
+  line-height: 1.2em;
+  font-weight: normal;
+  font-size: 100%;
+  height:auto;
 }
 
 .shader-ace {
-	display: flex;
-	justify-content: flex-end;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
 }
 
+
 .ace_editor {
-	z-index: 0
+  z-index: 0
 }
 
 // E2.EnvelopeEditor
@@ -60,4 +98,3 @@
   fill: #ff7f0e;
   stroke: #ff7f0e;
 }
-

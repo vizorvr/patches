@@ -37,7 +37,7 @@ function FileSelectControl(handlebars) {
 
 	this._handlebars = handlebars || window.Handlebars
 	this._frame = null;
-	this._fileList = new FileList();
+	this._fileList = E2.models.fileList;
 	this._fileList.on('change:files', this._onFilesChange, this);
 
 	this._cb = function() {}

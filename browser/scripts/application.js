@@ -50,7 +50,7 @@ function Application() {
 	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
-	this.noodlesVisible = !E2.util.isMobile();
+	this.noodlesVisible = false
 	this.mousePosition = [400,200]
 	this.path = getChannelFromPath(window.location.pathname)
 	this.dispatcher = new Flux.Dispatcher()
@@ -100,19 +100,13 @@ Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 	result[1] = Math.round(o[1] + (area.height() / 2));
 };
 
-Application.prototype.instantiatePlugin = function(id, position) {
-	var that = this
-	var $canvasParent = E2.dom.canvas_parent
-	var parentOffset = $canvasParent.offset()
-
+Application.prototype.createPlugin = function(id, position) {
 	position = position || this.mousePosition
 
-	function createPlugin(name) {
+	function _create(name) {
 		var activeGraph = E2.core.active_graph
 
-		var newX = Math.floor(position[0] + that.scrollOffset[0]);
-		var newY = Math.floor(position[1] + that.scrollOffset[1]);
-		var node = new Node(activeGraph, id, newX, newY);
+		var node = new Node(activeGraph, id, position[0], position[1]);
 
 		if (name) { // is graph?
 			node.plugin.setGraph(new Graph(E2.core, activeGraph))
@@ -120,23 +114,29 @@ Application.prototype.instantiatePlugin = function(id, position) {
 			node.plugin.graph.plugin = node.plugin
 		}
 
-		that.graphApi.addNode(activeGraph, node)
-
 		return node
 	}
 
 	var node
 
 	if (id === 'graph')
-		node = createPlugin('Graph')
+		node = _create('Graph')
 	else if (id === 'loop')
-		node = createPlugin('Loop')
+		node = _create('Loop')
 	else if (id === 'array_function')
-		node = createPlugin('Array function')
+		node = _create('Array function')
 	else
-		node = createPlugin(null)
+		node = _create(null)
 
 	return node
+}
+
+Application.prototype.instantiatePlugin = function(id, position) {
+	position = position || this.mousePosition
+	var newX = Math.floor(position[0] + this.scrollOffset[0])
+	var newY = Math.floor(position[1] + this.scrollOffset[1])
+	var node = this.createPlugin(id, [newX, newY])
+	this.graphApi.addNode(E2.core.active_graph, node)
 }
 
 Application.prototype.activateHoverSlot = function() {
@@ -1021,12 +1021,16 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 		createdConnections.push(ag.findConnectionByUid(dc.uid))
 	}
 
+	if (this.isWorldEditorActive()) {
+		this.worldEditor.onPaste(createdNodes)
+	}
+
 	this.undoManager.end()
 
 	return { nodes: createdNodes, connections: createdConnections }
 }
 
-Application.prototype.onPaste = function() {
+Application.prototype.onPaste = function(x, y) {
 	if (this.clipboard === null)
 		return;
 
@@ -1040,10 +1044,12 @@ Application.prototype.onPaste = function() {
 	var ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
 	var oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
 
-	var pasted = this.paste(doc, ox, oy)
+	var pasted = this.paste(doc, x || ox, y || oy)
 
 	pasted.nodes.map(this.markNodeAsSelected.bind(this))
 	pasted.connections.map(this.markConnectionAsSelected.bind(this))
+
+	return pasted
 }
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
@@ -1151,9 +1157,16 @@ Application.prototype.toggleWorldEditor = function(forceState) {
 	return isActive
 }
 
+// is the VR (experience) camera active AND controllable?
+// i.e. graph is not visible
 Application.prototype.isVRCameraActive = function() {
-	//console.log('noodles:', this.noodlesVisible, 'we: ', E2.app.worldEditor)
 	return !(this.noodlesVisible || E2.app.worldEditor.isActive())
+}
+
+// is the world editor visible AND controllable
+// i.e. graph is not visible
+Application.prototype.isWorldEditorActive = function() {
+	return !this.noodlesVisible && E2.app.worldEditor.isActive()
 }
 	
 Application.prototype.toggleFullscreen = function() {
@@ -1242,7 +1255,6 @@ Application.prototype.onKeyDown = function(e) {
 		this.alt_pressed = true;
 	}
 
-
 	// number keys
 	else if (e.keyCode > 47 && e.keyCode < 58) { // 0-9
 		if (this.ctrl_pressed || this.shift_pressed || this.alt_pressed)
@@ -1296,8 +1308,9 @@ Application.prototype.onKeyDown = function(e) {
 			this.onCopy(e);
 		else if(e.keyCode === 88) // CTRL+x
 			this.onCut(e);
-		else if(e.keyCode === 86) // CTRL+v
-			this.onPaste(e);
+		else if(e.keyCode === 86) { // CTRL+v
+			var pasted = this.onPaste(e);
+		}
 
 		if (e.keyCode === 90) { // z
 			e.preventDefault()
@@ -2025,7 +2038,8 @@ Application.prototype.setupEditorChannel = function() {
 			return dfd.resolve()
 		}
 
-		that.channel.join(that.path, function() {
+		var readableName = that.path 
+		that.channel.join(that.path, readableName, function() {
 			dfd.resolve()
 		})
 	}
@@ -2135,6 +2149,10 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.tabs = $('#tabs');
 	E2.dom.graphs_list = $('#graphs-list');
 	E2.dom.filename_input = $('#filename-input');
+	
+	E2.dom.dragOverlay = $('#drag-overlay');
+	E2.dom.dropArea = $('#drop-area');
+	E2.dom.dropUploading = $('#drop-uploading');
 	
 	E2.dom.bottomBar = $('.bottom-panel');
 	

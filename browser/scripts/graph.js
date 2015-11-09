@@ -299,7 +299,7 @@ Graph.prototype.patch_up = function(graphs) {
 	for(i = 0, len = nodes.length; i < len; i++)
 		nodes[i].patch_up(graphs);
 
-	prune = [];
+	var prune = [];
 	
 	for(i = 0, len = conns.length; i < len; i++) {
 		var c = conns[i];
@@ -308,8 +308,11 @@ Graph.prototype.patch_up = function(graphs) {
 			prune.push(c);
 	}
 	
-	for(i = 0, len = prune.length; i < len; i++)
-		conns.remove(prune[i]);
+	for(i = 0, len = prune.length; i < len; i++) {
+		var idx = conns.indexOf(prune[i])
+		if (idx > -1)
+			conns.splice(idx, 1)
+	}
 }
 
 Graph.prototype.initialise = function() {
@@ -327,7 +330,9 @@ Graph.prototype.getTitle = function() {
 
 Graph.prototype.reorder_children = function(original, sibling, insert_after) {
 	function reorder(arr) {
-		arr.remove(original);
+		var originalIdx = arr.indexOf(original)
+		if (originalIdx > -1)
+			arr.splice(originalIdx, 1);
 		
 		var i = arr.indexOf(sibling);
 		
@@ -366,6 +371,22 @@ Graph.prototype.findNodeByUid = function(nuid) {
 		msg('ERROR: Failed to resolve node('+nuid+') in graph(' + this.uid + ')')
 		console.log('Graph nodes', this.nodes)
 	}
+
+	return node
+}
+
+Graph.prototype.findNodeByPlugin = function(name) {
+	var node
+
+	this.nodes.some(function(n) {
+		if (n.plugin.id === name) {
+			node = n
+			return true
+		}
+	})
+
+	if (!node)
+		msg('ERROR: Failed to resolve node by plugin ('+name+') in graph(' + this.uid + ')')
 
 	return node
 }

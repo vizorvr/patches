@@ -1,0 +1,188 @@
+{
+    "abs_t": 367.574,
+    "active_graph": "root",
+    "graph_uid": "TXDgBc0JJtS3",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 256,
+                "y": 373,
+                "uid": "5zkZJ1kVzShg",
+                "open": false,
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "0uogYZhTulp7": "mh0rTKkFm0nD"
+                    }
+                },
+                "title": "Video Player",
+                "graph": {
+                    "uid": "Hzr5rg9SHgsb",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "three_mesh",
+                            "x": 936,
+                            "y": 319,
+                            "uid": "GxMrrSaA44wq",
+                            "open": false,
+                            "state": {
+                                "position": {
+                                    "x": 0,
+                                    "y": -0.01311748567091614,
+                                    "z": 0.000023347093529794483
+                                },
+                                "scale": {
+                                    "x": 16.260185647641777,
+                                    "y": 16.260185647641777,
+                                    "z": 16.260185647641777
+                                },
+                                "quaternion": {
+                                    "_x": -0.7077357707678449,
+                                    "_y": 0,
+                                    "_z": 0,
+                                    "_w": 0.7064772456816478
+                                }
+                            }
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1105,
+                            "y": 321,
+                            "uid": "0uogYZhTulp7",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "bEdPpC9C6Rh1",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "three_geometry_plane",
+                            "x": 751,
+                            "y": 270,
+                            "uid": "tr9n2eRfks8M",
+                            "open": false
+                        },
+                        {
+                            "plugin": "video_player",
+                            "x": 488,
+                            "y": 443,
+                            "uid": "DKiwCxqBvTWY",
+                            "open": false
+                        },
+                        {
+                            "plugin": "url_video_generator",
+                            "x": 213,
+                            "y": 383,
+                            "uid": "fzrkMl5UU1Ai",
+                            "state": {
+                                "url": "{{url}}"
+                            }
+                        },
+                        {
+                            "plugin": "three_material",
+                            "x": 727,
+                            "y": 443,
+                            "uid": "HmBLJ6OJLRNE",
+                            "open": false
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 234,
+                            "y": 475,
+                            "uid": "py9oPpuzeuqs",
+                            "open": false,
+                            "state": {
+                                "enabled": true
+                            }
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "GxMrrSaA44wq",
+                            "dst_nuid": "0uogYZhTulp7",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "lJTzbafg9t8D",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "tr9n2eRfks8M",
+                            "dst_nuid": "GxMrrSaA44wq",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "0XCswCxPk54c",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "DKiwCxqBvTWY",
+                            "dst_nuid": "HmBLJ6OJLRNE",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "41pe2v5jS54Y",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "HmBLJ6OJLRNE",
+                            "dst_nuid": "GxMrrSaA44wq",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "hXT3U5U8SycZ",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "fzrkMl5UU1Ai",
+                            "dst_nuid": "DKiwCxqBvTWY",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "Sp4C04pxormC",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "py9oPpuzeuqs",
+                            "dst_nuid": "DKiwCxqBvTWY",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "Jm6TxkfqY1az",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "mh0rTKkFm0nD",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}
