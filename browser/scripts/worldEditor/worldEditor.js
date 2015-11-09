@@ -189,12 +189,7 @@ WorldEditor.prototype.onPaste = function(nodes) {
 	// find scene node
 	var sceneNode = this.scene.backReference.parentNode
 
-	// add a slot in the scene
-	E2.app.graphApi.addSlot(E2.core.root_graph, sceneNode, {
-		type: E2.slot_type.input,
-		name: sceneNode.getDynamicInputSlots().length + '',
-		dt: E2.dt.OBJECT3D
-	})
+	sceneNode.slots_dirty = true
 
 	var slots = sceneNode.getDynamicInputSlots()
 	var slot = slots[slots.length - 1]
