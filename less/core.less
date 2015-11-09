@@ -1,9 +1,12 @@
 html, body {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+html.hVizor, body.bEditor, body.bPlayer {
 	height: 100%;
 	width: 100%;
-	margin: 0;
-	border: 0;
-	padding: 0;
 	overflow: hidden;
 }
 
@@ -12,12 +15,6 @@ body {
 	text-shadow: none;
 	line-height: @line-height-base;
 	font-size: @font-size-base;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
 }
 
 .noselect
@@ -219,8 +216,8 @@ ul.iconic-nav>li>button:hover svg {
     stroke: @editor-text-hover;    
 }
 button {
-    outline: none!important;
-    box-shadow:  0 0 0 rgba(0,0,0,0)!important;
+    outline: none;
+    box-shadow:  0 0 0 rgba(0,0,0,0);
   	position:relative;
 }
 ul.iconic-nav>li>button:active span {
@@ -332,15 +329,13 @@ ul.iconic-nav>li.open>button span {
 	border-right: 10px solid #222;
 }
 
-.dropdown-menu {
-	padding: 0 !important;
-	border-radius: 0 0 5px 5px !important;
-	margin: 0 !important;
-	border: 0 none !important;
+ul.dropdown-menu {
+	padding: 0;
+	border-radius: 0 0 5px 5px;
+	margin: 0;
+	border: 0 none;
 	min-width: 130px;
 	background: @bg-light;
-	overflow: hidden;
-	top: @menu-bar-height + @breadcrumb-height;
 	z-index: 42;
 	&#userPullDown {
 	    width: 130px;
@@ -349,11 +344,24 @@ ul.iconic-nav>li.open>button span {
 	    left: auto;
 	}
 }
+body.bEditor {
+  ul.dropdown-menu {
+  	top: @menu-bar-height + @breadcrumb-height;
+	overflow: hidden;
+  }
+}
+
+header nav ul.dropdown-menu {
+  li {
+	padding:0;
+	display: block;
+  }
+}
 
 .dropdown-menu > li > a {
-	padding: 12px 20px !important;
+	padding: 12px 20px;
 	cursor: pointer;
-	border-top: 1px solid @bg-darker !important;
+	border-top: 1px solid @bg-darker;
 	color: #909fb9;
 }
 
@@ -397,8 +405,8 @@ ul.iconic-nav>li.open>button span {
 }
 
 .block-header .nav-tabs>li>a, .nav-tabs>li>a:active {
-    padding-top:  (@blocks-header-height / 2) - (@tabs-font-size * 0.75) !important; 
-    background: @bg-darker !important;
+    padding-top:  (@blocks-header-height / 2) - (@tabs-font-size * 0.75);
+    background: @bg-darker;
     height: @blocks-header-height;
     outline: none;
     color: @editor-text-inactive;
@@ -408,9 +416,9 @@ ul.iconic-nav>li.open>button span {
     background: @bg-darker;
 }
 .block-header .nav-tabs>li.active>a {
-    background: none!important;
-    color: @editor-text-default!important;
-    border: 0!important;
+    background: none;
+    color: @editor-text-default;
+    border: 0;
 }
 
 .block-header h4 {
@@ -530,7 +538,7 @@ ul.iconic-nav>li.open>button span {
 	background:-moz-linear-gradient(center top, #fdfdfd 5%, #c8c8c8 100%);
 	background:-ms-linear-gradient(top, #fdfdfd 5%, #c8c8c8 100%);
 	background:-webkit-gradient(linear, left top, left bottom, color-stop(5%, #fdfdfd), color-stop(100%, #c8c8c8));
-	background-color:#fdeded !important;
+	background-color:#fdeded ;
 }
 
 .e_btn:active
@@ -688,7 +696,6 @@ ul.iconic-nav>li.open>button span {
 }
 
 .btn-dropdown {
-	outline: none !important;
 	border-left: 1px solid @gray-base;
 	line-height: @line-height-small;
 }
@@ -845,10 +852,8 @@ ul.iconic-nav>li.open>button span {
 }
 
 .panel {
-    border-bottom: 1px solid @bg-darker!important;
-    border-top: 0!important;
-    border-left: 0!important;
-    border-right: 0!important;
+    border:0;
+  	border-bottom: 1px solid @bg-darker;
 }
 
 .drag-handle {
@@ -993,7 +998,7 @@ button.show-timeline:hover svg {
     color: @chat-text-color!important;
     font-size: 12px;
   	line-height:1.5em;
-    padding: 16px 20px!important;
+    padding: 16px 20px;
 }
 .popover-title {
     padding: 0!important;

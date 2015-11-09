@@ -1,65 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-<!--[if IE 8]>         <html class="ie8"> <![endif]-->
-<!--[if IE 9]>         <html class="ie9 gt-ie8"> <![endif]-->
-<!--[if gt IE 9]><!--> <html class="gt-ie8 gt-ie9 not-ie"> <!--<![endif]-->
 <head>
-    <title>{{title}}</title>
+    <meta charset="utf-8" />
+
+	{{#if meta.title}}
+		<title>{{meta.title}}</title>
+	{{else}}
+		<title>Vizor - create and share VR on the web</title>
+	{{/if}}
     {{#if meta.keywords }}
+        <meta name="keywords" content="{{meta.keywords}}" />
+    {{else}}
         <meta name="keywords" content="vizor, vr, webvr, virtual reality, webgl, visual programming, animation" />
     {{/if}}
     {{#if meta.description}}
+        <meta name="description" content="{{meta.description}}" />
+    {{else}}
         <meta name="description" content="Vizor lets you create compelling VR content right in your browser" />
     {{/if}}
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,700,300" type="text/css" />
-    <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet" type="text/css" />
-    <link href="/style/less.css" rel="stylesheet" type="text/css" />
-    <link href="/style/icons/style.css" rel="stylesheet" type="text/css" />
-    <link href="/style/player.css" rel="stylesheet" type="text/css" />
-    <link href="/style/website.css" rel="stylesheet" type="text/css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <!-- facebook -->
+    <meta name="og:description" content="Vizor lets you create compelling VR content right in your browser" />
+    <meta name="og:image" content="/images/vizor_social.jpg" />
+    <meta name="og:restrictions:age" content="13+" />
+    <meta name="fb:profile_id" content="980737135276580" />
 
-    <script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="/vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/vendor/when.js"></script>
-    <script type="text/javascript" src="/node_modules/lodash/dist/lodash.min.js"></script>
-    <script type="text/javascript" src="/scripts/event-emitter.js"></script>
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400" />
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:200,300,400" />
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
 
-    <!--[if lt IE 9]>
-      <script src="assets/javascripts/ie.min.js"></script>
-    <![endif]-->
+	{{{css 'less'}}}
+	{{{css 'icons/style'}}}
+
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="/node_modules/lodash/dist/lodash.min.js"></script>
+	<script src="/vendor/when.js"></script>
+
+	{{{js 'event-emitter'}}}
+
+	<script src="/vendor/flux.js"></script>
+    <script src="/vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+	<script src="/vendor/bootbox.min.js"></script>
+	<script src="/node_modules/backbone/backbone-min.js"></script>
+
+    <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
+
+	{{{js 'models'}}}
+	{{{js 'account-controller'}}}
+	{{{js 'ui-site'}}}
+
+	{{#if meta.scripts}}{{#each meta.scripts}}
+		<script type="text/javascript" src="/scripts/{{this}}"></script>
+	{{/each}}{{/if}}
+
+	{{{js 'core'}}}
+    {{{js 'application'}}}
+    {{{js 'player.min'}}}
+
+
+	<script>
+		jQuery(document).ready(function(){
+			(function(){
+				{{{templateCache}}}
+			}).apply(window);
+
+			window.Vizor = {
+				hideWebVRButton: true
+			};
+
+			if (typeof E2.models === 'undefined') E2.models = {};
+			if (typeof E2.controllers === 'undefined') E2.controllers = {};
+
+			E2.models.user = new User({});
+			if ('{{user.username}}' !== '') {
+				E2.models.user.set( {
+					id: '{{user._id}}',
+					name: '{{user.name}}',
+					username: '{{user.username}}',
+					gravatar: '{{{user.gravatar}}}',
+					email: '{{user.email}}'
+				})
+			}
+
+			E2.controllers.account = new AccountController();
+		});
+    </script>
+
     <script>{{> ga}}</script>
 </head>
 
-<body class="{{extraClasses}}">
-    <!-- Get jQuery from Google CDN -->
-    <!--[if !IE]> -->
-      <script type="text/javascript"> window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">'+"<"+"/script>"); </script>
-    <!-- <![endif]-->
-    <!--[if lte IE 9]>
-      <script type="text/javascript"> window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js">'+"<"+"/script>"); </script>
-    <![endif]-->
+<body class="bMain {{meta.bodyclass}} {{extraClasses}}">
+{{> srv/siteSvgSprite }}
 
-    <div id="main-wrapper">
-        {{> navbar}}
+	{{#unless meta.noheader}}
+    <header>
+		{{> navbar}}
+    </header>
+	{{/unless}}
 
-        <div id="content-wrapper"> <!-- formerly content-wrapper -->
-            <div class="container">
-              {{> flash}}
+	{{> flash}}
 
-              {{{body}}}
-            </div>
-        </div>
+	<div id="contentwrap">{{!-- main. for server-rendered html --}}
+          {{{body}}}
+    </div>
 
-    </div> <!-- / #main-wrapper -->
+	{{!-- future use
 
-    <!-- Javascripts -->
-    {{{js 'core'}}}
-    {{{js 'application'}}}
+	{{#unless meta.nofooter}}
+    <footer>
+        {{ > footer }}
+    </footer>
+    {{/unless}}
+
+    --}}
 
 </body>
 </html>

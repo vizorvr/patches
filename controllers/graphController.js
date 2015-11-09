@@ -1,8 +1,13 @@
+var _ = require('lodash')
 var Graph = require('../models/graph')
 var AssetController = require('./assetController')
 var fsPath = require('path')
 var assetHelper = require('../models/asset-helper')
 var templateCache = new(require('../lib/templateCache'))
+
+function responseStatusSuccess(message, data, options) {
+    return _.extend(options || {}, { success: true, message: message, data: data || {} })
+}
 
 var EditLog = require('../models/editLog')
 
@@ -24,20 +29,33 @@ function GraphController(s, gfs, rethinkConnection) {
 
 GraphController.prototype = Object.create(AssetController.prototype);
 
-// GET /fthr
 GraphController.prototype.userIndex = function(req, res, next) {
+	var wantJson = req.xhr;
 	this._service.userGraphs(req.params.model)
 	.then(function(list)
 	{
 		if (!list || !list.length)
 			return next();
 
-		res.render('graph/index',
-		{
-			layout: 'min',
-			graphs: list,
-			title: 'Graphs'
+		var data = {
+			profile: {
+				username: req.params.model
+			},
+			graphs: list
+		};
+
+		if (wantJson) {
+			return res.status(200).json(responseStatusSuccess("OK", data));
+		}
+
+		_.extend(data, {
+			meta : {
+				title: 'Graphs',
+				bodyclass: 'bUserpage',
+				scripts : ['site/userpages.js']
+			}
 		});
+		res.render('server/pages/userpage', data);
 	});
 }
 
@@ -97,6 +115,16 @@ GraphController.prototype.edit = function(req, res, next) {
 	})
 	.catch(next)
 }
+
+
+// GET /latest-graph
+GraphController.prototype.latest = function(req, res) {
+	this._service.list()
+	.then(function(list) {
+		res.redirect(list[0].path)
+	});
+}
+
 
 // GET /fthr/dunes-world
 GraphController.prototype.graphLanding = function(req, res, next) {

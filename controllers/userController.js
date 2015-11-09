@@ -42,8 +42,12 @@ function parseErrors(errors) {
  exports.getLogin = function(req, res) {
  	if (req.user)
  		return res.redirect('/')
- 	res.render('account/login', {
- 		title: 'Login'
+ 	res.render('server/pages/account/login', {
+ 		meta: {
+			title: 'Login',
+			noUserPanel: true,
+			scripts: ['site/accountpages.js']
+		}
  	})
  }
 
@@ -87,7 +91,9 @@ function parseErrors(errors) {
 
 			var message = 'Success! You are logged in.'
  			if (wantJson)
- 				res.json(responseStatusSuccess(message, user.toJSON()))
+ 				res.json(responseStatusSuccess(message, user.toJSON(), {
+					redirect: req.session.returnTo || '/account'
+				}))
  			else {
 				req.flash('success', { message: message})
  				res.redirect(req.session.returnTo || '/account')
@@ -120,8 +126,12 @@ function parseErrors(errors) {
 		if (req.user) {
 			return res.redirect('/')
 		}
-		res.render('account/signup', {
-			title: 'Create Account'
+		res.render('server/pages/account/signup', {
+			meta : {
+				title: 'Sign up to Vizor',
+				noUserPanel: true,
+				scripts: ['site/accountpages.js']
+			}
 		})
 	}
  }
@@ -166,10 +176,17 @@ exports.checkUserName = function(req, res, next) {
  	req.assert('email', 'Email is not valid').isEmail()
  	req.assert('password', 'Password must be at least 8 characters long').len(8)
 
+	var wantJSON = req.xhr;
  	var errors = req.validationErrors()
 
  	if (errors) {
- 		return res.status(400).json(errors)
+		var lastreq = req.body;
+		delete(lastreq.password);
+		if (wantJSON)
+ 			return res.status(400).json(responseStatusError('Failed validation', errors, {request:lastreq}))
+
+		req.flash('errors', parseErrors(errors));
+		return res.redirect('/signup');
  	}
 
  	var user = new User({
@@ -203,7 +220,9 @@ exports.checkUserName = function(req, res, next) {
  				req.logIn(user, function(err) {
  					if (err) return next(err)
  					if (req.xhr) {
-						res.status(200).json(responseStatusSuccess('New account created', user.toJSON()))
+						res.status(200).json(responseStatusSuccess('New account created', user.toJSON(), {
+							redirect: req.session.returnTo || '/account'
+						}))
  					} else {
  						res.redirect(req.session.returnTo || '/account')
  					}
@@ -212,6 +231,15 @@ exports.checkUserName = function(req, res, next) {
  		})
  	})
  }
+
+/**
+ * GET /account/profile
+ * simply redirect back
+ */
+exports.getAccountProfile = function(req, res) {
+	res.redirect('/account');
+}
+
 
 /**
  * GET /account
@@ -226,9 +254,15 @@ exports.checkUserName = function(req, res, next) {
 			return res.status(200).json(responseStatusSuccess('OK', user.toJSON()))
 		}
 		else {
-			res.render('account/profile', {
-				title: 'Account Management'
-			})
+			var data = {
+				meta: {
+					title: 'Account Management',
+					bodyclass: 'bProfile',
+					noUserPanel: true,
+					scripts: ['site/accountpages.js']
+				}
+			}
+			res.render('server/pages/account/profile', data)
 		}
 	})
  }
@@ -273,6 +307,7 @@ exports.checkUserName = function(req, res, next) {
 					responseStatusSuccess('Account details updated', user.toJSON())
 				)
 	 		else
+				req.flash('success', {message:'Account details updated'});
 	 			res.redirect('/account')
  		})
  	})
@@ -376,7 +411,7 @@ exports.checkUserName = function(req, res, next) {
  			req.flash('errors', { message: 'Password reset token is invalid or has expired.' })
  			return res.redirect('/forgot')
  		}
- 		res.render('account/reset', {
+ 		res.render('partials/account/changepassword', {
  			title: 'Password Reset',
  			token: req.params.token
  		})
@@ -453,8 +488,11 @@ exports.checkUserName = function(req, res, next) {
  	if (req.isAuthenticated()) {
  		return res.redirect('/account')
  	}
- 	res.render('account/forgot', {
- 		title: 'Forgot Password'
+ 	res.render('server/pages/account/forgotPassword', {
+		meta: {
+			title: 'Forgot Password',
+			bodyclass: 'bAccount'
+		}
  	})
  }
 

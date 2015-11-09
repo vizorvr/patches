@@ -1,7 +1,6 @@
-<div id="flash">
-
+{{#if messages}}<div id="flash">
   {{#if messages.errors}}
-  <div class="alert alert-danger animated fadeIn">
+  <div class="in alert alert-danger animated fadeIn">
     <button class="close" type="button" data-dismiss="alert">
       <span class="ion-close-circled"></span>
     </button>
@@ -12,7 +11,7 @@
   {{/if}}
 
   {{#if messages.info}}
-  <div class="alert alert-info animated fadeIn">
+  <div class="in alert alert-info animated fadeIn">
     <button class="close" type="button" data-dismiss="alert">
       <span class="ion-close-circled"></span>
     </button>
@@ -23,7 +22,7 @@
   {{/if}}
 
   {{#if messages.success}}
-  <div class="alert alert-success animated fadeIn">
+  <div class="in alert alert-success animated fadeIn">
     <button class="close" type="button" data-dismiss="alert">
       <span class="ion-close-circled"></span>
     </button>
@@ -32,5 +31,4 @@
     {{/each}}
   </div>
   {{/if}}
-
-</div>
+</div>{{/if}}

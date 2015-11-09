@@ -1,10 +1,13 @@
 function AccountController(handlebars) {
 	EventEmitter.call(this)
 
-	this._handlebars = handlebars || window.Handlebars
+	this.dom = {
+		container : jQuery('#account')
+	};
 
+	this._handlebars = handlebars || window.Handlebars;
 	E2.models.user.on('change', this.renderLoginView.bind(this));
-	
+
 	this.renderLoginView(E2.models.user)
 }
 
@@ -12,54 +15,65 @@ AccountController.prototype = Object.create(EventEmitter.prototype)
 
 AccountController.prototype.renderLoginView = function(user) {
 	var viewTemplate = E2.views.partials.userpulldown
-
 	var html = viewTemplate({
 		user: user.toJSON()
 	})
 
-	$('#account').html(html)
-	E2.dom.userPullDown = $('#userPullDown')
-	this._bindModalLinks(E2.dom.userPullDown)
+	$('a, button', this.dom.container).off('.accountController');
+	this.dom.container.html(html);
+
+	this._bindModalLinks(this.dom.container)
 	this.emit('redrawn')
 }
 
 AccountController.prototype._bindModalLinks = function(el, dfd) {
 	var that = this;
 
-	$('a.login', el).on('click', function(evt) {
+	var $userPullDown = jQuery('#userPullDown', el);
+
+	$('a, button', el).off('.accountController');
+
+	$('a.login, #btn-sign-in', el).on('click.accountController', function(evt) {
 		evt.preventDefault();
 		VizorUI.modalClose();
 		that.openLoginModal(dfd);
 		return false;
 	});
 	
-	$('a.signup', el).on('click', function(evt) {
+	$('a.signup', el).on('click.accountController', function(evt) {
 		evt.preventDefault();
 		VizorUI.modalClose();
 		that.openSignupModal(dfd);
 		return false;
 	});
 	
-	$('a.forgot', el).on('click', function(evt) {
+	$('a.forgot', el).on('click.accountController', function(evt) {
 		evt.preventDefault();
 		VizorUI.modalClose();
 		that.openForgotPasswordModal(dfd);
 		return false;
 	});
 
-	$('a.account', el).on('click', function(evt) {
+	$('a.account', el).on('click.accountController', function(evt) {
 		evt.preventDefault();
 		VizorUI.modalClose();
 		that.openAccountModal(dfd);
-		if (E2.dom.userPullDown.is(':visible'))
-			E2.dom.userPullDown.hide();
+		if ($userPullDown.is(':visible'))
+			$userPullDown.hide();
+		return false;
+	});
+
+	$('#btn-account-top', el).on('click.accountController', function(evt){
+		evt.preventDefault();
+		VizorUI.modalClose();
+		$userPullDown.toggle();
 		return false;
 	});
 }
 
 AccountController.prototype.openLoginModal = function(dfd) {
 	dfd = dfd || when.defer();
-	var loginTemplate = E2.views.account.login;
+	var loginTemplate = E2.views.partials.account.login;
 
 	ga('send', 'event', 'account', 'open', 'loginModal');
 
@@ -80,50 +94,16 @@ AccountController.prototype.openLoginModal = function(dfd) {
 	return dfd.promise
 }
 
-/**
- * adds handler to check whether desired username is available.
- * this is used in the signup form, and may be used in the account details form
- * @param $input jQuery
- */
+
 AccountController.prototype._setupAccountUsernameField = function($input) {
-	if (!($input instanceof jQuery)) {
-		msg("ERROR: unrecognised $input");
-		return false;
-	}
-	var _t = null;
-	var lastValue=false;
-	$input.on('keyup', function(e){
-		var currentUsername = (E2.models.user) ? E2.models.user.username : '';
-		var value = $input.val().trim();
-		if (value && (value !== currentUsername) && (value !== lastValue)) {
-			lastValue=value;
-			if (_t) clearTimeout(_t);
-			_t = setTimeout(function(){
-				jQuery.ajax({		// backend responds with 409 or 200 here.
-					type: "POST",
-					url: '/account/exists',
-					data: jQuery.param({'username': value}),
-					error: function(err) { // assume 409
-						var errText = 'Sorry, this username is already taken'
-						$input.parent().addClass('error').find('span.message').html(errText);
-					},
-					success: function() {	// 200
-						if ($input.val() === value) {	//
-							$input.parent().removeClass('error').find('span.message').html('');
-						}
-					},
-					dataType: 'json'
-				});
-			}, 1000);	// every sec
-		}
-		return true;
-	});
+	var currentUsername = (E2.models.user) ? E2.models.user.get('username') : '';
+	return VizorUI._setupAccountUsernameField($input, currentUsername);
 }
 
 AccountController.prototype.openSignupModal = function(dfd) {
 	var that = this;
 	var dfd = dfd || when.defer();
-	var signupTemplate = E2.views.account.signup();
+	var signupTemplate = E2.views.partials.account.signup();
 	ga('send', 'event', 'account', 'open', 'signupModal');
 
 	var $modal = VizorUI.modalOpen(signupTemplate, 'Sign up', 'nopad mSignup', true, {backdrop:null});
@@ -149,11 +129,11 @@ AccountController.prototype.openSignupModal = function(dfd) {
 
 AccountController.prototype.openForgotPasswordModal = function(dfd) {
 	dfd = dfd || when.defer();
-	var forgotTemplate = E2.views.account.forgot;
+	var forgotTemplate = E2.views.partials.account.forgotpassword;
 	
 	ga('send', 'event', 'account', 'open', 'forgotModal');
 
-	var $modal = VizorUI.modalOpen(forgotTemplate(), 'Forgot password', 'nopad mForgotpassword');
+	var $modal = VizorUI.modalOpen(forgotTemplate({modal:true}), 'Forgot password', 'nopad mForgotpassword');
 	this._bindModalLinks($modal, dfd);
 	var $form = $('#forgotPasswordForm');
 	VizorUI.setupXHRForm($form, function(response){
@@ -169,7 +149,7 @@ AccountController.prototype.openForgotPasswordModal = function(dfd) {
 
 AccountController.prototype.openChangePasswordModal = function(dfd) {
 	dfd = dfd || when.defer();
-	var resetTemplate = E2.views.account.reset;
+	var resetTemplate = E2.views.partials.account.changepassword({modal:true});
 	
 	ga('send', 'event', 'account', 'open', 'resetModal');
 
@@ -192,7 +172,7 @@ AccountController.prototype.openChangePasswordModal = function(dfd) {
 AccountController.prototype.openAccountModal = function(dfd) {
 	var that = this;
 	dfd = dfd || when.defer();
-	var accountTemplate = E2.views.account.account({user: E2.models.user.toJSON()});
+	var accountTemplate = E2.views.partials.account.account({user: E2.models.user.toJSON(), modal:true});
 
 	ga('send', 'event', 'account', 'open', 'accountModal');
 

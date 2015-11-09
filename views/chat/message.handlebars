@@ -1,21 +1,8 @@
-<div class="message">
-	<div class="table-row">
-		<div class="table-cell icon-column">
-			<div class="icon" style="background-color: {{color}}"></div>
-		</div>
-		<div class="table-cell">
-			<div class="table-row">
-				<div class="table-cell">
-					<span class="username">{{from}}</span>
-					<span class="date">{{date}}</span>
-				</div>
-			</div>
-			<div class="table-row">
-				<div class="table-cell text-cell">
-					<span class="text">{{{message}}}</span>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="message clearfix">
+	<div class="icon" style="background-color: {{color}}"></div>
+	<p class="meta">
+		<span class="username">{{from}}</span>
+		<time>{{date}}</time>
+	</p>
+	<p>{{{message}}}</p>
 </div>
-

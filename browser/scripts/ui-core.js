@@ -33,7 +33,8 @@ var uiEvent = { // emitted by ui (E2.ui) unless comments state otherwise
 	initialised		: 'uiInitialised',
 	moved			: 'uiMoved',			// panels via movable.js
 	stateChanged	: 'uiStateChanged',
-	worldEditChanged : 'uiWorldEditorChanged'	// ui and E2.app
+	worldEditChanged : 'uiWorldEditorChanged',	// ui and E2.app
+	xhrFormSuccess	: 'xhrFormSuccess'		//	dispatched on document in ui-site js
 }
 
 var VizorUI = function() {			// becomes E2.ui

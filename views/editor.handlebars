@@ -7,7 +7,7 @@
 
 <div class="editor-header">
 	<div class="menu-bar">
-		{{> svgSprite}}
+		{{> srv/editorSvgSprite}}
 		<div id="top-header-logo">
 			<svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg>
 		</div>
@@ -493,7 +493,7 @@
 		oncontextmenu="return false;">
 	</canvas>
 
-	<div id="canvas_parent">
+	<div id="canvas_parent" class="scrollbar">
 		<canvas id="canvas" width="940" height="620">
 		<!-- editor noodles -->
 		</canvas>
@@ -569,7 +569,7 @@
 	</div>
 </div>
 
-<script type="text/javascript">
+<script>
 	var boot = {}
 	boot.hasEdits = {{hasEdits}}
 
@@ -611,13 +611,13 @@
 				name: '{{user.name}}',
 				username: '{{user.username}}',
 				gravatar: '{{{user.gravatar}}}',
-				email: '{{user.email}}',
+				email: '{{user.email}}'
 			})
 		}
 
-		E2.controllers = {
-			account: new AccountController()
-		}
+		if (typeof E2.controllers === 'undefined') E2.controllers = {};
+
+		E2.controllers.account = new AccountController()
 
 		if (!hardware.ifVR(EnumerateVRDevices)) {
 			startEditor([null, null])
