@@ -77,13 +77,7 @@
 
 			return
 		}
-
-		var count = 0
-		this.scene.traverse(function(n) {
-			count = count + 1
-		})
-		console.log('scene', count)
-
+		
 		if (this.manager.isVRMode()) {
 			// vr mode doesn't necessarily update the world matrix
 			// could be a bug in new version of three.js
