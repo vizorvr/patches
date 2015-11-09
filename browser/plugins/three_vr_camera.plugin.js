@@ -37,6 +37,8 @@
 		this.state = {
 			position: {x: 0, y: 0, z:0}
 		}
+
+		this.rotationFromGraph = new THREE.Euler()
 	}
 
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
