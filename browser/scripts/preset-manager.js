@@ -111,7 +111,7 @@ PresetManager.prototype.openPreset = function(name) {
 	$.get(name)
 	.done(function(data) {
 		E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0)
-		E2.app.onPaste({ target: { id: 'notpersist' }})
+		E2.app.onPaste()
 	})
 	.fail(function(_j, _textStatus, _errorThrown) {
 		msg('ERROR: Failed to load the selected preset.')
