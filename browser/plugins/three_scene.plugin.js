@@ -35,38 +35,6 @@
 		this.meshes_dirty = true
 	}
 
-	ThreeScenePlugin.prototype.create_ui = function () {
-		var that = this
-		var layout = make('div')
-		var removeButton = makeButton('Remove', 'Click to remove the last mesh input.')
-		var addButton = makeButton('Add Slot', 'Click to add another Object3D input.')
-
-		removeButton.css('width', '65px')
-		addButton.css({'width': '65px', 'margin-top': '5px'})
-
-		addButton.click(function () {
-			E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
-				type: E2.slot_type.input,
-				name: that.dynInputs.length + '',
-				dt: that.lsg.dt,
-				array: true
-			})
-		})
-
-		removeButton.click(function () {
-			var inputs = that.dynInputs
-			if (!inputs)
-				return
-
-			var suid = inputs[inputs.length - 1].uid
-			E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
-		})
-
-		layout.append(removeButton, '<br />', addButton);
-
-		return layout
-	}
-
 	ThreeScenePlugin.prototype.update_meshes = function () {
 		if (!this.meshes_dirty) {
 			return
@@ -142,7 +110,9 @@
 		if (!on && slot.type === E2.slot_type.input && slot.dynamic) {
 			this.meshes[slot.index] = undefined
 		}
+
 		this.meshes_dirty = true
+		this.slots_dirty = true
 	}
 
 	ThreeScenePlugin.prototype.update_output = function () {
@@ -164,9 +134,49 @@
 		}
 	}
 
+	ThreeScenePlugin.prototype.updateFreeSlots = function() {
+		var that = this
+		function addSlot() {
+			E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
+				type: E2.slot_type.input,
+				name: that.dynInputs.length + '',
+				dt: that.lsg.dt,
+				array: true
+			})
+		}
+
+		function removeSlot() {
+			var inputs = that.dynInputs
+			if (!inputs)
+				return
+
+			var suid = inputs[inputs.length - 1].uid
+			E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
+		}
+
+		// remove slots until there's only one unconnected in the end
+		var lastIndex = this.dynInputs.length - 1
+		while (lastIndex > 0 && !this.dynInputs[lastIndex - 1].is_connected) {
+			removeSlot()
+
+			--lastIndex
+		}
+
+		// ensure there's at least one free slot in the end
+		if (this.dynInputs[this.dynInputs.length -1].is_connected) {
+			addSlot()
+		}
+
+		this.slots_dirty = false
+	}
+
 	ThreeScenePlugin.prototype.update_state = function () {
 		if (this.meshes_dirty) {
 			this.update_meshes()
+		}
+
+		if (this.slots_dirty) {
+			this.updateFreeSlots()
 		}
 	}
 
