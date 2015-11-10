@@ -2001,7 +2001,7 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 			}
 		}
 
-		E2.ui.showFirstTimeDialog();
+		E2.ui.showStartDialog();
 	}
 
 	if (!loadGraphUrl && !boot.hasEdits) {

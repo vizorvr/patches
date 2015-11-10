@@ -525,36 +525,47 @@ VizorUI.prototype.viewSource = function() {
 	jQuery(b).addClass('wideauto').addClass('viewsource');
 };
 
-VizorUI.prototype.showFirstTimeDialog = function() {
-	if (!E2.util.isFirstTime())
+VizorUI.prototype.showStartDialog = function() {
+	if (!E2.util.isFirstTime()) {	// checks for vizor welcome cookie
+		E2.util.checkBrowser();
 		return;
-
-	var that = this;
+	}
 
 	Cookies.set('vizor100', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
 	var welcomeModal = VizorUI.modalOpen(
-		E2.views.account.firsttime({user:E2.models.user.toJSON()}),
+		E2.views.patch_editor.intro({user:E2.models.user.toJSON()}),
 		null,
-		'nopad welcome'
+		'nopad welcome editorIntro'
 	);
-	welcomeModal.find('#welcome-gs').on('click', function(evt) {
-		evt.preventDefault();
-		VizorUI.modalClose();
+	welcomeModal.on('hidden.bs.modal', function(){
+		VizorUI.checkCompatibleBrowser();
+	})
+
+	var $slides = jQuery('.minislides', welcomeModal);
+	var ms = new Minislides($slides);
+
+	jQuery('a.modal-close', $slides).on('click', function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		VizorUI.modalClose(welcomeModal);
 		return false;
 	});
-	welcomeModal.find('a.login').on('click', function(evt) {
-		evt.preventDefault();
-		VizorUI.modalClose();
-		VizorUI.openLoginModal();
+
+	jQuery('a.sign-in', $slides).on('click', function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		E2.controllers.account.openLoginModal();
 		return false;
 	});
-	welcomeModal.find('a.signup').on('click', function(evt) {
-		evt.preventDefault();
-		VizorUI.modalClose();
-		VizorUI.openSignupModal();
+
+	jQuery('a.sign-up', $slides).on('click', function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		E2.controllers.account.openSignupModal();
 		return false;
 	});
+
 }
 
 VizorUI.prototype.updateProgressBar = function(percent) {
@@ -583,12 +594,7 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 }
 
 
-
-
 /***** HELPER METHODS *****/
-
-
-
 
 VizorUI.checkCompatibleBrowser = function() {
 	var agent = navigator.userAgent;

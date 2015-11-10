@@ -1,0 +1,92 @@
+<article class="minislides" id="editorIntro">
+	<h1 class="brandTop">
+		<svg style="fill:#fff;" width="128" height="32" >
+			<use x="-35" y="0" transform="scale(1)" xlink:href="#vizor-logo-flat" />
+			<use x="58" y="7"  transform="scale(0.65)" xlink:href="#vizor-top-logo" />
+		</svg>
+	</h1>
+	<div class="slides crossfade">
+		<section style="background-image:url('/images/v2/welcome/mountain.jpg');">
+			<aside>
+				<ul>
+					<li><a href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank">Watch a tutorial</a></li>
+					<li><a href="https://www.youtube.com/watch?v=l8ZnWT-ydqg" target="_blank">Create a 360 Photo</a></li>
+					<li><a href="#">View an example</a></li>
+				</ul>
+				{{#unless user.username}}
+				<ul>
+					<li><a href="/login" class="sign-up">Sign up</a></li>
+					<li><a href="/signup" class="sign-in">Sign in</a></li>
+				</ul>
+				{{else}}
+				<ul>
+					<li><a href="#" class="modal-close">Dive in</a></li>
+				</ul>
+				{{/unless}}
+				<p>
+					Need help from a human?<br />
+					Just ask in the chat channel.
+				</p>
+			</aside>
+			<a href="#" class="cta btn launch-button slide-next">Take a quick tour</a>
+		</section>
+
+		<section style="">
+			<aside>
+				<h5>Publish your scene</h5>
+				<p>Share your work with others by publishing it. You'll need to be signed in to do this.</p>
+			</aside>
+			<img src="/images/v2/welcome/publish.png" height="114" />
+		</section>
+
+		<section style="">
+			<aside>
+				<h5>Connect your patches</h5>
+				<p>Connect and modify patches to add effects and interaction.</p>
+			</aside>
+			<img src="/images/v2/welcome/patch.png" height="248"/>
+		</section>
+
+		<section style="">
+			<aside>
+				<h5>Build and program</h5>
+				<p>Build with objects and program with patches. Press Tab to switch between Build and Program modes.</p>
+			</aside>
+			<img src="/images/v2/welcome/tab.png" height="256" />
+		</section>
+
+
+		<section style="">
+			<aside>
+				<h5>Drag and Drop</h5>
+				<p>Drag and drop objects in Build mode and patches when in Program mode.</p>
+			</aside>
+			<img src="/images/v2/welcome/drag_and_drop.png"  height="256"/>
+		</section>
+
+		<section style="background-image:url('/images/v2/welcome/mountain.jpg');">
+			<aside>
+				<ul>
+					<li><a>Watch a tutorial</a></li>
+					<li><a>Create a 360 Photo</a></li>
+					<li><a>View an example</a></li>
+				</ul>
+				{{#unless user.username}}
+				<ul>
+					<li><a href="#" class="sign-up">Sign up</a></li>
+					<li><a href="#" class="sign-in">Sign in</a></li>
+				</ul>
+				{{else}}
+				<ul>
+					<li><a href="#" class="modal-close">Dive in</a></li>
+				</ul>
+				{{/unless}}
+				<p>
+					Need help from a human?<br />
+					Just ask in the chat channel.
+				</p>
+			</aside>
+			<a href="#" class="cta btn launch-button modal-close">Get Started</a>
+		</section>
+	</div>
+</article>
