@@ -1,0 +1,16 @@
+<div class="growl notification nt-type-{{type}}">
+	<div class="nt-content">
+		<div class="glyph">
+			{{#if fromUser}}
+				{{#if fromUser.pic}}
+					<div style="background-image: url('{{fromUser.pic}}');" class="image-crop"></div>
+				{{else}}
+					<div style="background-color: {{fromUser.color}};" class="image-crop"><span>{{fromUser.firstLetter}}</span></div>
+				{{/if}}
+			{{else}}
+				<svg class="icon-{{type}}"><use xlink:href="#icon-{{type}}"></use></svg>
+			{{/if}}
+		</div>
+		<div class="text"><span>{{message}}</span></div>
+	</div>
+</div>
