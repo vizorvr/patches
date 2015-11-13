@@ -101,6 +101,12 @@
 
 	{{> flash}}
 
+	{{#if meta.breadcrumb }}
+		<div class="breadcrumbcontainer contentwrap dark">
+			{{> breadcrumb meta.breadcrumb}}
+		</div>
+	{{/if}}
+
 	<div id="contentwrap">{{!-- main. for server-rendered html --}}
           {{{body}}}
     </div>

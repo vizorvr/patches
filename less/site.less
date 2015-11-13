@@ -48,6 +48,9 @@ button.nofx, a.nofx {
   }
 }
 
+div.breadcrumb {
+  padding:0; margin:0;
+}
 
 body div.bootbox div.modal-dialog button.btn-primary {
   outline: 0;	// bootbox
@@ -160,7 +163,7 @@ body.bMain {
   }
 
   #wrapper {width:100%;}
-  >header, &.bHome header, #contentwrap, >footer, #contentwrap>footer, div#flash, #contentcontainer, #secondarynav {
+  >header, &.bHome header, #contentwrap, >footer, #contentwrap>footer, div#flash, #contentcontainer, #secondarynav, .contentwrap {
 	padding:0;
 	>.in, >section>.in,
 		>div>section>.in // mobileonly/nomobile
@@ -439,6 +442,20 @@ body.bMain {
   body>section:first-child {margin-top:0}
   #contentcontainer>section:first-child {margin-top:0}
   #contentcontainer>nav+section {margin-top:0}
+
+  .breadcrumbcontainer.dark {
+	background: @bg-darker;
+	color: white;
+	a {
+	  color: white;
+	}
+	svg {
+	  stroke: white;
+	}
+	>.in {
+	  padding: 20px 22px;
+	}
+  }
 
 }	// body.bMain
 

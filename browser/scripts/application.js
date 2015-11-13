@@ -1667,26 +1667,18 @@ Application.prototype.onGraphSelected = function(graph) {
 
 	E2.dom.breadcrumb.children().remove()
 
+	var b = new UIbreadcrumb()
 	function buildBreadcrumb(parentEl, graph, add_handler) {
-		var sp = $('<span>' + graph.tree_node.title + '</span>')
-		sp.css('cursor', 'pointer')
-
 		if (add_handler) {
-			sp.click(function() {
-				graph.tree_node.activate()
-			})
-
-			sp.css({ 'text-decoration': 'underline' })
+			b.prepend(graph.tree_node.title, null, function() { graph.tree_node.activate() })
+		} else {
+			b.prepend(graph.tree_node.title, null)
 		}
-
-		parentEl.prepend($('<svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg>'))
-		parentEl.prepend(sp)
-
 		if (graph.parent_graph)
 			buildBreadcrumb(parentEl, graph.parent_graph, true)
 	}
-
 	buildBreadcrumb(E2.dom.breadcrumb, E2.core.active_graph, false)
+	b.render(E2.dom.breadcrumb)
 
 	E2.core.active_graph.create_ui()
 

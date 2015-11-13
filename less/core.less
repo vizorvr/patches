@@ -270,6 +270,9 @@ ul.iconic-nav>li.open>button span {
     text-align: center;
     top: auto;
     z-index: 10;
+    a, span {
+	  color: @editor-text-inactive;
+	}
 }
 
 #breadcrumb span {
@@ -278,7 +281,7 @@ ul.iconic-nav>li.open>button span {
     display: inline-block;
 }
 
-#breadcrumb svg {
+#breadcrumb svg, .breadcrumb svg {
     display: inline-block;
     width: 19px;
     height: 10px;
