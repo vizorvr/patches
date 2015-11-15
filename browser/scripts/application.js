@@ -1530,23 +1530,25 @@ Application.prototype.openSaveACopyDialog = function() {
 }
 
 Application.prototype.growl = function(message, type, duration, user) {
-	user = user || null
 	type = type || 'info'
-	duration = duration || 2000
+	duration = 500 + (duration || 2000)			// account for reveal animations
 
-	if (typeof user !== 'object') {
-		user = {
-			username: user,
-			firstLetter: null,
-			pic: null,
-			color: 'transparent'
-		};
+	var fromUser = _.extend({
+		username: '',
+		color: 'transparent',
+		firstLetter: '',
+		gravatar: ''
+	}, user)
+
+	if (fromUser.username) {
+		fromUser.firstLetter = fromUser.username.charAt(0)
 	}
 
-	if (user) {
-		user.firstLetter = user.username.charAt(0);
-		if (typeof user.color === 'undefined') user.color='transparent';
-	} 
+	var data = {
+		type: type,
+		fromUser: fromUser,
+		message: message
+	}
 
 	var $notificationArea = jQuery('#notifications-area')
 	if (!$notificationArea.length) {
@@ -1554,11 +1556,6 @@ Application.prototype.growl = function(message, type, duration, user) {
 		jQuery('body').append($notificationArea)
 	}
 
-	var data = {
-		type: type,
-		fromUser: user,
-		message: message
-	}
 	var $notification = jQuery(E2.views.partials.notification(data))
 
 	var remove = function () {
@@ -1574,7 +1571,7 @@ Application.prototype.growl = function(message, type, duration, user) {
 	}
 
 	$notificationArea.append($notification)
-	$notification.addClass('notification-show');
+	$notification.addClass('notification-show')
 
 	setTimeout(close, duration * $('.notification', $notificationArea).length)
 

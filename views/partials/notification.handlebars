@@ -1,9 +1,9 @@
 <div class="growl notification nt-type-{{type}}">
 	<div class="nt-content">
 		<div class="glyph">
-			{{#if fromUser}}
-				{{#if fromUser.pic}}
-					<div style="background-image: url('{{fromUser.pic}}');" class="image-crop"></div>
+			{{#if fromUser.username}}
+				{{#if fromUser.gravatar}}
+					<div style="background-image: url('{{fromUser.gravatar}}');" class="image-crop"></div>
 				{{else}}
 					<div style="background-color: {{fromUser.color}};" class="image-crop"><span>{{fromUser.firstLetter}}</span></div>
 				{{/if}}
