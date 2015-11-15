@@ -1529,47 +1529,53 @@ Application.prototype.openSaveACopyDialog = function() {
 	return dfd.promise
 }
 
-Application.prototype.growl = function(title, type, duration, person) {
-	var letter=title.charAt(0);
-	var image=''
-	type= type || 'info';
-	if (!$('symbol#icon-'+type).length) {
-		type='info'
+Application.prototype.growl = function(message, type, duration, user) {
+	type = type || 'info'
+	duration = 500 + (duration || 2000)			// account for reveal animations
+
+	var fromUser = _.extend({
+		username: '',
+		color: 'transparent',
+		firstLetter: '',
+		gravatar: ''
+	}, user)
+
+	if (fromUser.username) {
+		fromUser.firstLetter = fromUser.username.charAt(0)
 	}
-	if (person) {
-		var image='<div style="background-color: '+person.color+';" class="image-crop"><span>'+letter+'</span></div>';
-	} 
-	
-	/** TODO: when users will have pics - use this:
-	if (person.userpic) {
-		image = '<div style="background-image: url('+person.userpic+');" class="image-crop"></div>';
+
+	var data = {
+		type: type,
+		fromUser: fromUser,
+		message: message
 	}
-	*/
-	
-	var glyph = '<div class="glyph">'+image+'<svg class="icon-'+type+'"><use xlink:href="#icon-'+type+'"></use></svg></div>';
-	
-	if (!$('#notifications-area').length) {
-		$('body').append('<div id="notifications-area"></div>');
+
+	var $notificationArea = jQuery('#notifications-area')
+	if (!$notificationArea.length) {
+		$notificationArea = jQuery('<div id="notifications-area"></div>')
+		jQuery('body').append($notificationArea)
 	}
-	
-	function close() {
-		$('#notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
-	}
-	
-	function remove() {
-		$('.notification-hide:first-child').remove();
-		$('#notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
-		if (!$('#notifications-area>div').length) {
-			$('#notifications-area').remove();
+
+	var $notification = jQuery(E2.views.partials.notification(data))
+
+	var remove = function () {
+		$notification.remove()
+		if (jQuery('>div', $notificationArea).length === 0) {
+			$notificationArea.remove()
 		}
 	}
 
-	$('#notifications-area').append('<div class="notification notification-show"><div class="nt-content">'+glyph+'<div class="text"><span>'+title+'</span></div></div></div>');
-	
-	duration = duration || 2000;
-	
-	setTimeout(close, duration * $('#notifications-area .notification').length)
-	setTimeout(remove, duration * $('#notifications-area .notification').length + 1000)
+	var close = function() {
+		$notification.removeClass('notification-show').addClass('notification-hide')
+		setTimeout(remove, 1000)
+	}
+
+	$notificationArea.append($notification)
+	$notification.addClass('notification-show')
+
+	setTimeout(close, duration * $('.notification', $notificationArea).length)
+
+	return $notification
 }
 
 Application.prototype.setupStoreListeners = function() {
