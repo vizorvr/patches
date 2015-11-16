@@ -19,7 +19,6 @@ var siteUI = new function() {
 			VizorUI.setupXHRForm(jQuery(this));
 		});
 
-
 		var $body = jQuery('body');
 		VizorUI.enableScrollToLinks($body);
 		VizorUI.enablePopupEmbedLinks($body);
@@ -43,6 +42,8 @@ var siteUI = new function() {
 	};
 
 	this.initHomepage = function($body) {
+        mixpanel.track('Front Page')
+        
 		jQuery('a#homeSignin', $body).on('click', function(e){
 			e.preventDefault();
 			e.stopPropagation();

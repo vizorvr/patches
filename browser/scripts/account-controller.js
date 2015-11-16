@@ -75,14 +75,18 @@ AccountController.prototype.openLoginModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var loginTemplate = E2.views.partials.account.login;
 
-	ga('send', 'event', 'account', 'open', 'loginModal');
-
 	var $modal = VizorUI.modalOpen(loginTemplate(), 'Sign in', 'nopad mLogin');
 	this._bindModalLinks($modal, dfd);
 
 	var onSuccess = function(response) {
 		var user = response.data;
-		ga('send', 'event', 'account', 'loggedIn', user.username)
+		mixpanel.identify(user.username)
+		mixpanel.people.set({
+			"$name": user.name,
+			username: user.username,
+			"$email": user.email
+		})
+		mixpanel.track('SignIn/SignedIn')
 		E2.models.user.set(user);
 		bootbox.hideAll();
 		dfd.resolve()
@@ -104,7 +108,8 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	var that = this;
 	var dfd = dfd || when.defer();
 	var signupTemplate = E2.views.partials.account.signup();
-	ga('send', 'event', 'account', 'open', 'signupModal');
+
+	mixpanel.track('SignUp/Open')
 
 	var $modal = VizorUI.modalOpen(signupTemplate, 'Sign up', 'nopad mSignup', true, {backdrop:null});
 
@@ -114,7 +119,15 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	var $usernameField = jQuery('input#username_id', $form);
 	var onSuccess = function(response) {
 		var user = response.data;
-		ga('send', 'event', 'account', 'signedUp', user.username)
+
+		mixpanel.alias(user.username)
+		mixpanel.people.set({
+			"$name": user.name,
+			username: user.username,
+			"$email": user.email
+		})
+		mixpanel.track('SignUp/SignedUp')
+
 		E2.models.user.set(user);
 		VizorUI.modalClose();
 		VizorUI.modalAlert('Enjoy Vizor, ' + user.username + '!', 'Welcome')
@@ -131,7 +144,7 @@ AccountController.prototype.openForgotPasswordModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var forgotTemplate = E2.views.partials.account.forgotpassword;
 	
-	ga('send', 'event', 'account', 'open', 'forgotModal');
+	mixpanel.track('Forgot/Open')
 
 	var $modal = VizorUI.modalOpen(forgotTemplate({modal:true}), 'Forgot password', 'nopad mForgotpassword');
 	this._bindModalLinks($modal, dfd);
@@ -139,7 +152,7 @@ AccountController.prototype.openForgotPasswordModal = function(dfd) {
 	VizorUI.setupXHRForm($form, function(response){
 		VizorUI.modalClose();
 		if (response.success) {
-			ga('send', 'event', 'account', 'passwordReset', response.data.email)
+			mixpanel.track('Forgot/PasswordReset')
 			VizorUI.modalAlert(response.message, 'Done');
 		}
 		dfd.resolve();
@@ -151,7 +164,7 @@ AccountController.prototype.openChangePasswordModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var resetTemplate = E2.views.partials.account.changepassword({modal:true});
 	
-	ga('send', 'event', 'account', 'open', 'resetModal');
+	mixpanel.track('ChangePassword/Open')
 
 	var $modal = VizorUI.modalOpen(resetTemplate, 'Change Password', 'nopad mChangepassword');
 	this._bindModalLinks($modal, dfd);
@@ -160,7 +173,7 @@ AccountController.prototype.openChangePasswordModal = function(dfd) {
 	var onSuccess = function(response) {
 		var user = response.data;
 		VizorUI.modalClose();
-		ga('send', 'event', 'account', 'passwordChanged', user.username)
+		mixpanel.track('ChangePassword/Changed')
 		VizorUI.modalAlert('Password for ' + user.username + ' was changed.', 'Done');
 		dfd.resolve();
 	};

@@ -144,6 +144,10 @@ PresetManager.prototype.renderObjects = function() {
 PresetManager.prototype.openPreset = function(name) {
 	$.get(name)
 	.done(function(data) {
+		mixpanel.track('Preset Added', {
+			name: name
+		})
+
 		E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0)
 		E2.app.onPaste()
 	})

@@ -447,7 +447,7 @@ r.connect({
 		ecs.listen(httpServer)
 	}
 
-	app.use(function(err, req, res) {
+	app.use(function(err, req, res, next) {
 		console.error(err.message, err.stack);
 
 		res.status(err.status || 500);
