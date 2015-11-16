@@ -4,109 +4,61 @@
 		<div style="padding-top: 4px;">This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
 	</div>
 </noscript>
-
-<div class="editor-header">
+{{> srv/editorSvgSprite}}
+<div class="editor-header clearfix">
+	<div id="top-header-logo">
+		<svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg>
+	</div>
 	<div class="menu-bar">
-		{{> srv/editorSvgSprite}}
-		<div id="top-header-logo">
-			<svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg>
+		<div class="buttons button-group" id="grpFileIO" >
+			<button class="btn svg" id="btn-new" data-svgref="icon-new-graph"><svg /> New</button>
+			<button class="btn svg" id="fork-button" data-svgref="icon-duplicate"><svg /> Duplicate</button>
 		</div>
-		<ul class="iconic-nav">
-			<li>
-				<button class="btn" id="btn-new">
-					<svg class="icon-new-graph"><use xlink:href="#icon-new-graph"></use></svg>
-					<span>New</span>
-				</button>
-			</li>
-			<li>
-				<button class="btn" id="fork-button">
-					<svg class="icon-new-graph"><use xlink:href="#icon-duplicate"></use></svg>
-					<span>Duplicate</span>
-				</button>
-			</li>
-			<li>
-				<button class="btn" id="publish-button">
-					<svg class="icon-save-patch"><use xlink:href="#icon-save-patch"></use></svg>
-					<span>Publish</span>
-				</button>
-			</li>
-		</ul>
-		<ul class="iconic-nav">
-			<li>
-				<button class="btn" id="btn-scale" disabled>
-					<svg class="icon-scale"><use xlink:href="#icon-scale"></use></svg>
-					<span>Scale</span>
-				</button>
-			</li>
-			<li>
-				<button class="btn" id="btn-rotate" disabled>
-					<svg class="icon-rotate"><use xlink:href="#icon-rotate"></use></svg>
-					<span>Rotate</span>
-				</button>
-			</li>
-		</ul>
-		<ul class="iconic-nav">
-			<li>
-				<button class="btn" id="save-as-preset">
-					<svg class="icon-save-patch"><use xlink:href="#icon-save-patch"></use></svg>
-					<span>Save As Preset</span>
-				</button>
-			</li>
-			<li>
-				<button class="btn" id="btn-inspector">
-					<svg class="icon-inspector"><use xlink:href="#icon-inspector"></use></svg>
-					<span>Inspector</span>
-				</button>
-			</li>
-			<li>
-				<button class="btn" id="btn-zoom">
-					<svg class="icon-zoom"><use xlink:href="#icon-zoom"></use></svg>
-					<span id="current-zoom">100%</span>
-				</button>
-				<button class="btn" id="btn-zoom-out">
-					<svg class="icon-zoom-out"><use xlink:href="#icon-zoom-out"></use></svg>
-				</button>
-				<button class="btn" id="btn-zoom-in">
-					<svg class="icon-zoom-in"><use xlink:href="#icon-zoom-in"></use></svg>
-				</button>
-			</li>
-		</ul>
-		<ul class="iconic-nav">
-			<li>
-				<button class="btn" id="btn-graph">
-					<svg class="icon-graph-toggle"><use xlink:href="#icon-graph"></use></svg>
-					<span>Graph</span>
-				</button>
-			</li>
-			<li>
-				<button class="btn" id="btn-presets">
-					<svg class="icon-add-patch"><use xlink:href="#icon-presets"></use></svg>
-					<span>Patches</span>
-				</button>
-			</li>
-            {{!-- {{ #676
-			<li>
-				<button class="btn" id="btn-assets">
-					<svg class="icon-add-object"><use xlink:href="#icon-assets"></use></svg>
-					<span>Assets</span>
-				</button>
-			</li>
-            }} --}}
-	
-			<li>
-				<button class="btn" id="btn-chat-display">
-					<svg class="icon-chat"><use xlink:href="#icon-chat"></use></svg>
-					<span>Chat</span>
-				</button>
-			</li>
-		</ul>
-		<ul class="iconic-nav pull-right">
-			<li id="account">
-			</li>
-		</ul>
+		<div class="buttons button-group" id="grpTransform">
+			<button class="svg btn" id="btn-move" data-svgref="icon-move"><svg /> Move</button>
+			<button class="svg btn" id="btn-scale" data-svgref="icon-scale"><svg /> Scale</button>
+			<button class="svg btn" id="btn-rotate" data-svgref="icon-rotate"><svg /> Rotate</button>
+		</div>
+
+		<div class="buttons button-group" id="grpZoom">
+			<button class="btn svg zoom" id="btn-zoom-in" data-svgref="icon-zoom-in" /><button class="btn svg zoom" id="btn-zoom" data-svgref="icon-zoom"><svg />
+				<span id="current-zoom">100%</span>
+			</button><button class="btn svg zoom" id="btn-zoom-out" data-svgref="icon-zoom-out" />
+		</div>
+
+
+		<div class="buttons button-group" id="grpPatchControls">
+			<button class="svg btn" id="btn-save-patch" data-svgref="icon-save-patch"><svg /> Save Patch</button>
+			<button class="svg btn" id="btn-inspector" data-svgref="icon-inspector"><svg /> Inspector</button>
+		</div>
+
+		<div class="spacer"></div>
+
+		<div class="buttons button-group" id="grpToggles">
+			<button class="btn svg" id="btn-presets" data-svgref="icon-presets"><svg /> Patches</button>
+			{{!-- <button class="btn svg" id="btn-graph" data-svgref="icon-graph"><svg /> Graph</button>
+				#676 <button class="btn" id="btn-assets" data-svgref="icon-assets"><svg /> Assets</button> --}}
+			<button class="btn svg" id="btn-chat-display" data-svgref="icon-chat"><svg /> Chat</button>
+		</div>
+
+		<div class="spacer"></div>
+
+		<div class="buttons button-group" id="grpElse">
+			<button class="btn svg" id="btn-publish" data-svgref="icon-publish"><svg /> Publish</button>
+			<div id="account" class="button">{{!-- account-controller populates this --}}</div>
+		</div>
 	</div>
 </div>
-<div id="breadcrumb"></div>
+<div id="row2">
+	<div id="modeSwitcher">
+		<button id="buildModeBtn" class="svg" data-svgref="icon-mode-build"><svg />Build</button>
+		<button id="programModeBtn" class="svg" data-svgref="icon-mode-patch"><svg />Program</button>
+	</div>
+	<div id="graphNameLabel" class="auto-editable">
+		(untitled)
+	</div>
+	<div id="breadcrumb"></div>
+</div>
 <div id="progressbar"></div>
 
 <div class="shader-block floating-box" id="shader-block" style="display:none">
@@ -120,12 +72,10 @@
 				<svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
 			</button>
 		</div>
-
 		<div class="tab-content">
 			<div role="tabpanel" class="tab-pane active" id="shader">
 			</div>
 		</div>
-
 </div>
 
 <div class="presets-block vp-library floating-box uiopen" id="presets-lib">
@@ -134,21 +84,22 @@
 				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
 			</button>
 			<ul class="nav nav-tabs" role="tablist">
-				<li class="active"><a href="#presets" role="tab" data-toggle="tab">Patch Library</a></li>
-				<li><a href="#graph" role="tab" data-toggle="tab">Tree</a></li>
+				<li class="active"><a href="#objects" role="tab" data-toggle="tab">Objects</a></li>
+				<li><a href="#presets" role="tab" data-toggle="tab">Patches</a></li>
+				{{!-- <li><a href="#graph" role="tab" data-toggle="tab">Tree</a></li> --}}
 			</ul>
 			<button class="close-button" id="presets-close" type="button">
 				<svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
 			</button>
 		</div>
-
 		<div class="tab-content">
 			<div role="tabpanel" class="tab-pane active" id="presets">
-				<div id="presets"></div>
 			</div>
-			<div role="tabpanel" class="tab-pane" id="graph">
+			<div role="tabpanel" class="tab-pane" id="objects">
+			</div>
+			{{!-- <div role="tabpanel" class="tab-pane" id="graph">
 				<div class="cell" id="structure"></div>
-			</div>
+			</div> --}}
 		</div>
 
 </div>

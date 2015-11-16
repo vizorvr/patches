@@ -528,7 +528,7 @@ NodeUI.prototype.showRenameControl = function() {
 
 	var input = $('<input class="node-title-input" placeholder="Type a title" />')
 
-	$titleSpan = $dom.find('span.p_title').first();
+	var $titleSpan = $dom.find('span.p_title').first();
 	var titleOffset = $titleSpan.offset();
 	var domOffset = $dom.offset();
 

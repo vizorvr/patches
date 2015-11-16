@@ -51,6 +51,13 @@ button.nofx, a.nofx {
 div.breadcrumb {
   padding:0; margin:0;
 }
+.breadcrumb svg {
+	display: inline-block;
+	width: 19px;
+	height: 10px;
+	margin-bottom: -1px;
+	stroke: @editor-text-inactive;
+}
 
 body div.bootbox div.modal-dialog button.btn-primary {
   outline: 0;	// bootbox
@@ -478,6 +485,12 @@ button.svg.tiny {
   }
 }
 
+button.svg {
+  svg {
+	max-height: 100%;
+  }
+}
+
 
 
 section.list {
@@ -590,4 +603,29 @@ body.bUserpage #secondarynav {
 
 body.bProfile {
   section.center + section.center {margin-top: 3em;}
+}
+
+#account {
+  button.action.login {
+	background: none;
+  }
+  span {display: block}
+  svg {
+	width: 32px;
+	height: 32px;
+  }
+  .top-userpic {
+	margin: 5px auto 6px;
+  }
+  button {
+	width: 56px;
+	margin-right: 10px;
+  }
+}
+
+.bMain #account button {
+  border: 0; outline: 0; box-shadow: 0;
+  svg {
+	stroke: #fff;
+  }
 }

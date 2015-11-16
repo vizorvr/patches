@@ -1,0 +1,230 @@
+body.bEditor {
+
+  /* buttons */
+  button.ui_off svg, button[disabled] svg {
+	opacity: 0.5;
+  }
+  button[disabled] {	// reset the reset..
+	opacity: 1;
+  }
+
+  button.svg {	// default
+	background: transparent;
+	color: #ccc;
+	svg {
+	  stroke: #ccc;
+	  background: none;
+	}
+  }
+
+  div#row2 {
+	display: -webkit-flex;
+	-webkit-flex-flow: row wrap;
+	-webkit-justify-content: center;
+	-webkit-align-items: center;
+	-webkit-align-content: center;
+
+	display:flex;
+	justify-content: center;
+	flex-flow: row wrap;
+	align-items: center;
+	align-content: center;
+
+	>div {
+	  -webkit-flex: 1;
+	  flex: 1;
+	  height: 24px;
+	  line-height: 24px;
+	}
+
+
+	border-top: 1px solid @editor-text-inactive;
+	border-bottom: 1px solid @editor-text-inactive;
+	#modeSwitcher {
+	  text-align: right;
+	  button {
+		border-left: 1px solid @editor-text-inactive;
+	  }
+	  button.ui_on {
+		background: rgba(255,255,255,0.075);
+	  }
+	}
+	#graphNameLabel {
+	  border-left: 1px solid @editor-text-inactive;
+	  border-right: 1px solid @editor-text-inactive;
+	  text-align: center;
+	  -webkit-flex: 0.45;
+	  flex: 0.45;
+	}
+	padding:0;
+	background: @bg-dark;
+	color: @editor-text-inactive;
+	a {
+	 	color: @editor-text-inactive;
+	}
+
+
+  }
+
+
+  /* breadcrumb */
+  #breadcrumb {
+	overflow:hidden;
+	width: auto;
+	margin: 0;
+	padding: 0 0 0 10px;
+	a {
+	  color: @editor-text-inactive;
+	  &:hover {
+		color: @editor-text-current;
+	  }
+	}
+	span {
+	  color: @editor-text-current;
+	}
+  }
+
+  /* modals */
+
+  div.modal.viewsource textarea {
+	background:#111;
+	color:white;
+	font-family:  'Source Sans Pro', Courier, fixed;
+	font-weight: 400;
+	font-size: 92%; line-height:105%;
+	letter-spacing: 1px;
+	&::selection {
+	  background: #999;
+	}
+	&::-moz-selection {
+	  background: #444;
+	}
+  }
+
+  #modeSwitcher button {
+	&+button {
+	  margin-left:-2px;
+	}
+	border: 0;
+	margin:0;
+	padding:0;
+	outline: 0;
+	font-size: 100%;
+	width: 25ex;
+	color: @editor-text-default;
+	* {
+	  vertical-align: middle;
+	}
+	svg {
+	  margin-right: 10px;
+	  width: 23px;
+	  height: 16px;
+	  stroke: @editor-text-default;
+	}
+	&:hover {
+	  background: rgba(255,255,255,0.075);
+	  color: @editor-text-hover;
+	  svg {
+		stroke: @editor-text-hover;
+	  }
+	}
+  }
+
+
+  .editor-header {
+	height: @menu-bar-height;
+	width: 100%;
+	position: relative;
+	background-color: @bg-light;
+	z-index: 10;
+  }
+
+  .menu-bar {
+	margin-left: 180px;
+	font-family: @font-family-sans-serif;
+	height: @menu-bar-height;
+	position: relative;
+  }
+
+  #top-header-logo {
+	width: 156px;
+	float: left;
+  }
+
+  #top-header-logo svg {
+	fill: @editor-text-default;
+  }
+
+  div.menu-bar {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-justify-content: space-between;
+	justify-content: space-between;
+
+	div.buttons, ul.iconic-nav {
+	  -webkit-flex-shrink: 0;
+	  flex-shrink: 0;
+	  button {
+		margin: 0 2px;
+	  }
+	}
+  }
+
+
+
+  .menu-bar {
+
+	button {
+	  font-weight: 600;
+	  color: @editor-text-default;
+	  svg {
+		stroke: @editor-text-default;
+	  }
+	  &:hover {
+		color: @editor-text-hover;
+		svg {
+			stroke: @editor-text-hover;
+		}
+	  }
+	}
+
+	button[disabled] {
+	  color: @editor-text-inactive;
+	  svg {
+
+	  }
+	}
+	button>span {
+	  display: block;
+	}
+	.button-group .spacer {
+	  width: 5px;
+	}
+
+	button.zoom {
+	  margin: 0 !important;
+	  span {display: block;}
+	}
+	#btn-zoom {
+	  width: 42px;
+	  span {margin-left: 2px;}
+	}
+	#btn-zoom svg {
+	  width: 36px;
+	}
+	#btn-zoom-in, #btn-zoom-out {
+	  width: 16px;
+	  min-width: 0;
+	  svg {
+		height: 34px;
+		width: 16px;
+	  }
+	}
+
+
+	#grpElse {
+		padding-right: 40px;
+	}
+  }
+}
+
