@@ -1443,6 +1443,7 @@ Application.prototype.openPresetSaveDialog = null;	// ui replaces this
 
 
 Application.prototype.onPublishClicked = function() {
+
 	if (!E2.models.user.get('username')) {
 		return E2.controllers.account.openLoginModal()
 			.then(this.onPublishClicked.bind(this))
@@ -1895,10 +1896,6 @@ Application.prototype.start = function() {
 		E2.app.toggleWorldEditor()
 	});
 
-	E2.dom.publishButton.click(function() {
-		E2.app.onPublishClicked()
-	});
-
 	$('button#fullscreen').click(function() {
 		E2.app.toggleFullscreen()
 	});
@@ -2123,7 +2120,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	
 	E2.dom.dbg = $('#dbg');
 	E2.dom.worldEditorButton = $('#worldEditor');
-	E2.dom.publishButton = $('#publish-button');
+	E2.dom.publishButton = $('#btn-publish');
 	E2.dom.play = $('#play');
 	E2.dom.play_i = $('i', E2.dom.play);
 	E2.dom.pause = $('#pause');
@@ -2132,7 +2129,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.forkButton = $('#fork-button');
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
-	E2.dom.saveAsPreset = $('#save-as-preset');
+	E2.dom.saveAsPreset = E2.dom.btnSavePatch;
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
 	E2.dom.structure = $('#structure');
