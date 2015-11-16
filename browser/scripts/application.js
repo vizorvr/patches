@@ -1452,6 +1452,7 @@ Application.prototype.onPublishClicked = function() {
 	
 	E2.ui.openPublishGraphModal()
 	.then(function(path) {
+		window.onbeforeunload = null;	// override "you might be leaving work" prompt (release mode)
 		window.location.href = path
 	})
 }
@@ -1912,7 +1913,6 @@ Application.prototype.start = function() {
 	});
 
 	$('.resize-handle').on('mousedown', function(e) {
-		var $handle = $(this)
 		var $target = $(this).parent()
 		var oh = $target.height()
 		var oy = e.pageY
@@ -1920,6 +1920,7 @@ Application.prototype.start = function() {
 		var changed = false
 
 		e.preventDefault()
+		e.stopPropagation();
 
 		function mouseMoveHandler(e) {
 			changed = true

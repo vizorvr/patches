@@ -513,6 +513,9 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 				}
 			})
 			.files(files)
+			.on('closed', function(){
+				ui.updateProgressBar(100);
+			})
 			.modal();
 
 			return fcs;
@@ -520,7 +523,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 	};
 
 	if (!VizorUI.userIsLoggedIn()) {
-		return ui.openLoginModal().then(presetDialog);
+		return VizorUI.openLoginModal().then(presetDialog);
 	}
 
 	return presetDialog();
@@ -596,7 +599,7 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 	var barWidth = dom.progressBar.width();
 	var newWidth = winWidth / 100 * percent;
 	var barSpace = winWidth - barWidth;
-	var barSpeed = 2000 - percent * 12;
+	var barSpeed = 1000 - percent * 8;
 	
 	percent = (percent === 0) ? (barWidth / newWidth + 5) : (percent);
 	newWidth = (newWidth <= barWidth) ? (barSpace / 100 * percent + barWidth) : (newWidth);
