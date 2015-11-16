@@ -2107,6 +2107,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	
 	E2.dom.presetsLib = $('#presets-lib');
 	E2.dom.presets_list = $('#presets');
+	E2.dom.objectsList = $('#objects');
 	
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');

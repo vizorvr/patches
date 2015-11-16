@@ -46,7 +46,6 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	});
 
 	var $presetsLibItems = jQuery('div#presets-lib ul li');
-	// $presetsLibItems.last().find('a').click(this.onTreeClicked.bind(this));
 	$presetsLibItems.find('a').click(this.updateState.bind(this));
 
 	$(document).on("shown.bs.modal", function() {
