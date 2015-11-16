@@ -73,7 +73,7 @@ var VizorUI = function() {			// becomes E2.ui
 			availWidth	: window.screen.availWidth,
 			availHeight	: window.screen.availHeight
 		},
-		viewCamera : uiViewCam.vr		// one of uiViewCam keys
+		viewCamera : uiViewCam.world_editor		// one of uiViewCam keys
 	};
 	this.setupStateMethods();	// adds code to update the current or apply new state
 
