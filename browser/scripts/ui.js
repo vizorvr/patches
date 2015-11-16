@@ -107,6 +107,7 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 
 	this._initialised = true;
 
+	this.applyVisibility(false);
 	this.emit(uiEvent.initialised, this);
 }
 
