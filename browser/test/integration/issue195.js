@@ -124,6 +124,7 @@ describe('Redo complex connection', function() {
 		};
 
 		app = E2.app = new Application()
+		app.worldEditor = { isActive: function() { return false } }
 		app.updateCanvas = function() {}
 		core = E2.core = new Core()
 		core.renderer = dummyCore.renderer

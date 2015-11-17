@@ -137,6 +137,7 @@ Application.prototype.instantiatePlugin = function(id, position) {
 	var newY = Math.floor(position[1] + this.scrollOffset[1])
 	var node = this.createPlugin(id, [newX, newY])
 	this.graphApi.addNode(E2.core.active_graph, node)
+	return node
 }
 
 Application.prototype.activateHoverSlot = function() {
