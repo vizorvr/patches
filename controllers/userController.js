@@ -165,6 +165,7 @@ function parseErrors(errors) {
  * GET /account/email/exists
  **/
  exports.checkEmailExists = function(req, res, next) {
+ 	console.log('checkEmailExists', req.body.email)
  	User.findOne({ email: req.body.email },
  		function(err, existingUser) {
  			if (err)
