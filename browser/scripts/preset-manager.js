@@ -29,9 +29,6 @@ PresetManager.prototype.loadPlugins = function(cb) {
 PresetManager.prototype.loadPresets = function(cb) {
 	var that = this
 
-	if (E2.core.presetsByCategory)
-		processPresets(E2.core.presetsByCategory)
-
 	function processPresets(data) {
 		E2.core.presetsByCategory = data
 
@@ -43,6 +40,9 @@ PresetManager.prototype.loadPresets = function(cb) {
 
 		cb()
 	}
+
+	if (E2.core.presetsByCategory)
+		return processPresets(E2.core.presetsByCategory)
 
 	$.ajax({
 		url: this._base_url + '/presets.json',
@@ -73,6 +73,8 @@ PresetManager.prototype.loadUserPresets = function(cb) {
 
 PresetManager.prototype.refresh = function() {
 	var that = this
+
+	this._presets = []
 
 	this.loadUserPresets(function() {
 		that.loadPresets(function() {
