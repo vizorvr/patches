@@ -4,10 +4,7 @@ var AssetController = require('./assetController')
 var fsPath = require('path')
 var assetHelper = require('../models/asset-helper')
 var templateCache = new(require('../lib/templateCache'))
-
-function responseStatusSuccess(message, data, options) {
-    return _.extend(options || {}, { success: true, message: message, data: data || {} })
-}
+var helper = require('./controllerHelpers')
 
 var EditLog = require('../models/editLog')
 
@@ -45,7 +42,7 @@ GraphController.prototype.userIndex = function(req, res, next) {
 		};
 
 		if (wantJson) {
-			return res.status(200).json(responseStatusSuccess("OK", data));
+			return res.status(200).json(helper.responseStatusSuccess("OK", data));
 		}
 
 		_.extend(data, {

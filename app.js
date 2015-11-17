@@ -407,6 +407,7 @@ r.connect({
 	app.get('/signup', userController.getSignup);
 	app.post('/signup', userController.postSignup);
 	app.post('/account/exists', userController.checkUserName);
+	app.post('/account/email/exists', userController.checkEmailExists);
 
 	app.get('/account', passportConf.isAuthenticated, userController.getAccount)
 	app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
