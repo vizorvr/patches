@@ -3,36 +3,8 @@ var async = require('async')
 var crypto = require('crypto')
 var passport = require('passport')
 var User = require('../models/user')
-var secrets = require('../config/secrets')
 var mailer = require('../lib/mailer')
-
-// #596
-function responseStatusSuccess(message, data, options) {
-    return _.extend(options || {}, { success: true, message: message, data: data || {} })
-}
-
-function responseStatusError(message, errors, options) {
-	errors = errors || []
-	if (!(errors instanceof Array)) errors=[errors]
-    return _.extend(options || {}, { success: false, message: message, errors: errors || [] })
-}
-// genericXHRform <3 expressValidator.defaults.errorFormatter
-function formatResponseError(param, value, msg) {
-	return {
-		param: param,
-		msg: msg,
-		value: value
-	}
-}
-// /#596
-
-function parseErrors(errors) {
-	var parsedErrors = []
-	for( var i=0; i < errors.length; i++ ) {
-		parsedErrors.push({ message: errors[i].msg })
-	}
-	return parsedErrors
-}
+var helper = require('./controllerHelpers')
 
 /**
  * GET /login
@@ -66,9 +38,9 @@ function parseErrors(errors) {
 
  	function returnErrors(errors, status, reason) {
  		if (wantJson)
-	 		return res.status(status || 400).json(responseStatusError(reason, errors))
+	 		return res.status(status || 400).json(helper.responseStatusError(reason, errors))
 
- 		req.flash('errors', parseErrors(errors))
+ 		req.flash('errors', helper.parseErrors(errors))
  		return res.redirect('/login')
  	}
 
@@ -91,7 +63,7 @@ function parseErrors(errors) {
 
 			var message = 'Success! You are logged in.'
  			if (wantJson)
- 				res.json(responseStatusSuccess(message, user.toJSON(), {
+ 				res.json(helper.responseStatusSuccess(message, user.toJSON(), {
 					redirect: req.session.returnTo || '/account'
 				}))
  			else {
@@ -117,10 +89,10 @@ function parseErrors(errors) {
 	var wantJSON = req.xhr
 	if (wantJSON) {
 		if (req.user) {
-			return res.status(403).json(responseStatusError('user already logged in')).end()
+			return res.status(403).json(helper.responseStatusError('user already logged in')).end()
 		}
 
-		return res.status(501).json(responseStatusError('not yet implemented')).end()
+		return res.status(501).json(helper.responseStatusError('not yet implemented')).end()
 
 	} else {
 		if (req.user) {
@@ -147,15 +119,15 @@ function parseErrors(errors) {
 
  			if (!existingUser) {
  				return res.json(
- 					responseStatusSuccess('Username is available',
+ 					helper.responseStatusSuccess('Username is available',
  						{username: req.body.username})
  				)
  			}
 
  			var msg = 'Username taken'
- 			var error = formatResponseError('username', req.body.username, msg)
+ 			var error = helper.formatResponseError('username', req.body.username, msg)
  			return res.status(409)
- 				.json(responseStatusError(msg,error))
+ 				.json(helper.responseStatusError(msg,error))
  				.end()
  		}
  	)
@@ -173,15 +145,15 @@ function parseErrors(errors) {
 
  			if (!existingUser) {
  				return res.json(
- 					responseStatusSuccess('Email is available',
+ 					helper.responseStatusSuccess('Email is available',
  						{email: req.body.email})
  				)
  			}
 
  			var msg = 'Email taken'
- 			var error = formatResponseError('email', req.body.email, msg)
+ 			var error = helper.formatResponseError('email', req.body.email, msg)
  			return res.status(409)
-	 			.json(responseStatusError(msg, error))
+	 			.json(helper.responseStatusError(msg, error))
  				.end()
  		}
  	)
@@ -210,9 +182,9 @@ function parseErrors(errors) {
 		var lastreq = req.body;
 		delete(lastreq.password);
 		if (wantJSON)
- 			return res.status(400).json(responseStatusError('Failed validation', errors, {request:lastreq}))
+ 			return res.status(400).json(helper.responseStatusError('Failed validation', errors, {request:lastreq}))
 
-		req.flash('errors', parseErrors(errors));
+		req.flash('errors', helper.parseErrors(errors));
 		return res.redirect('/signup');
  	}
 
@@ -227,8 +199,8 @@ function parseErrors(errors) {
  		if (existingUser) {
  			if (req.xhr){
 				var msg = 'An account with that username already exists.'
-				var error = formatResponseError('username', req.body.username, msg)
- 				return res.status(400).json(responseStatusError(msg, error))
+				var error = helper.formatResponseError('username', req.body.username, msg)
+ 				return res.status(400).json(helper.responseStatusError(msg, error))
  			}
  			return res.redirect('/signup')
  		}
@@ -236,8 +208,8 @@ function parseErrors(errors) {
  			if (existingUser) {
  				if (req.xhr) {
 					var msg = 'An account with that email already exists.'
-					var error = formatResponseError('email', req.body.email, msg)
- 					return res.status(400).json(responseStatusError(msg, error))
+					var error = helper.formatResponseError('email', req.body.email, msg)
+ 					return res.status(400).json(helper.responseStatusError(msg, error))
  				}
  				return res.redirect('/signup')
  			}
@@ -247,7 +219,7 @@ function parseErrors(errors) {
  				req.logIn(user, function(err) {
  					if (err) return next(err)
  					if (req.xhr) {
-						res.status(200).json(responseStatusSuccess('New account created', user.toJSON(), {
+						res.status(200).json(helper.responseStatusSuccess('New account created', user.toJSON(), {
 							redirect: req.session.returnTo || '/account'
 						}))
  					} else {
@@ -278,7 +250,7 @@ exports.getAccountProfile = function(req, res) {
 	User.findById(req.user.id, function(err, user) {
 		if (err) return next(err)
 		if (wantJSON) {
-			return res.status(200).json(responseStatusSuccess('OK', user.toJSON()))
+			return res.status(200).json(helper.responseStatusSuccess('OK', user.toJSON()))
 		}
 		else {
 			var data = {
@@ -311,10 +283,10 @@ exports.getAccountProfile = function(req, res) {
  	if (errors) {
  		if (wantJson) {
  			return res.status(400).json(
-				responseStatusError('Failed validation', errors, {request:req.body})
+				helper.responseStatusError('Failed validation', errors, {request:req.body})
 			)
  		} else {
- 			req.flash('errors', parseErrors(errors))
+ 			req.flash('errors', helper.parseErrors(errors))
  			return res.redirect('/account')
  		}
  	}
@@ -331,7 +303,7 @@ exports.getAccountProfile = function(req, res) {
 
  			if (wantJson)
 				return res.status(200).json(
-					responseStatusSuccess('Account details updated', user.toJSON())
+					helper.responseStatusSuccess('Account details updated', user.toJSON())
 				)
 	 		else
 				req.flash('success', {message:'Account details updated'});
@@ -355,11 +327,11 @@ exports.getAccountProfile = function(req, res) {
 
  	if (errors) {
 		if (!wantJSON) {
-			req.flash('errors', parseErrors(errors))
+			req.flash('errors', helper.parseErrors(errors))
 			return res.redirect('/account')
 		} else {
 			return res.status(400).json(
-				responseStatusError('Failed validation', errors)	// request intentionally not returned
+				helper.responseStatusError('Failed validation', errors)	// request intentionally not returned
 			)
 		}
  	}
@@ -373,7 +345,7 @@ exports.getAccountProfile = function(req, res) {
  			if (err) return next(err)
 			if (wantJSON) {
 				return res.json(
-					responseStatusSuccess('Password has been changed.', user.toJSON())
+					helper.responseStatusSuccess('Password has been changed.', user.toJSON())
 				)
 			} else {
 				req.flash('success', { message: 'Password has been changed.' })
@@ -457,7 +429,7 @@ exports.getAccountProfile = function(req, res) {
  	var errors = req.validationErrors()
 
  	if (errors) {
- 		req.flash('errors', parseErrors(errors))
+ 		req.flash('errors', helper.parseErrors(errors))
  		return res.redirect('back')
  	}
 
@@ -539,10 +511,10 @@ exports.getAccountProfile = function(req, res) {
  	if (errors) {
 		if (wantJSON) {
 			return res.status(400).json(
-				responseStatusError('Failed validation', errors, {request:req.body})
+				helper.responseStatusError('Failed validation', errors, {request:req.body})
 			)
 		} else {
-			req.flash('errors', parseErrors(errors))
+			req.flash('errors', helper.parseErrors(errors))
 			return res.redirect('/forgot')
 		}
  	}
@@ -561,7 +533,7 @@ exports.getAccountProfile = function(req, res) {
 					var msg = 'No account with that email address exists.'
 					if (wantJSON) {
 						return res.status(400).json(
-							responseStatusError(msg, formatResponseError('email', email, msg), {request: req.body})
+							helper.responseStatusError(msg, helper.formatResponseError('email', email, msg), {request: req.body})
 						)
 					} else {
 						req.flash('errors', { message: msg })
@@ -602,13 +574,13 @@ exports.getAccountProfile = function(req, res) {
  		], function(err) {
  			if (err) {
 				res.status(500).json(
-					responseStatusError('The server could not email you. Please contact us for assistance.', [], {diag: err})
+					helper.responseStatusError('The server could not email you. Please contact us for assistance.', [], {diag: err})
 				)
  				return next(err)
 			}
 			if (wantJSON) {
 				return res.status(200).json(
-					responseStatusSuccess('We emailed further instructions to ' + email + '.', {email: email})
+					helper.responseStatusSuccess('We emailed further instructions to ' + email + '.', {email: email})
 				)
 			} else {
 				res.redirect('/forgot')
