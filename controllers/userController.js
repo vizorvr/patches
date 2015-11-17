@@ -139,26 +139,52 @@ function parseErrors(errors) {
 /**
  * GET /account/exists
  **/
+ exports.checkUserName = function(req, res, next) {
+ 	User.findOne({ username: req.body.username },	
+ 		function(err, existingUser) {
+ 			if (err)
+ 				return next(err)
 
-exports.checkUserName = function(req, res, next) {
-  User.findOne({ username: req.body.username },	// #664
-    function(err, existingUser) {
-      if (err)
-        return next(err)
+ 			if (!existingUser) {
+ 				return res.json(
+ 					responseStatusSuccess('Username is available',
+ 						{username: req.body.username})
+ 				)
+ 			}
 
-      if (!existingUser)
-        return res.json(
-			responseStatusSuccess('Username is available', {username: req.body.username})
-		)
+ 			var msg = 'Username taken'
+ 			var error = formatResponseError('username', req.body.username, msg)
+ 			return res.status(409)
+ 				.json(responseStatusError(msg,error))
+ 				.end()
+ 		}
+ 	)
+ }
 
-	  var msg = 'Username unavailable'
-	  var error = formatResponseError('username', req.body.username, msg)
-      return res.status(409)
-				.json(responseStatusError(msg,error))
-				.end()
-    }
-  )
-}
+/**
+ * GET /account/email/exists
+ **/
+ exports.checkEmailExists = function(req, res, next) {
+ 	User.findOne({ email: req.body.email },
+ 		function(err, existingUser) {
+ 			if (err)
+ 				return next(err)
+
+ 			if (!existingUser) {
+ 				return res.json(
+ 					responseStatusSuccess('Email is available',
+ 						{email: req.body.email})
+ 				)
+ 			}
+
+ 			var msg = 'Email taken'
+ 			var error = formatResponseError('email', req.body.email, msg)
+ 			return res.status(409)
+	 			.json(responseStatusError(msg, error))
+ 				.end()
+ 		}
+ 	)
+ }
 
 /**
  * POST /signup
