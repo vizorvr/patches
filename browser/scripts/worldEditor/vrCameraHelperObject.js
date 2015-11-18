@@ -136,6 +136,8 @@ function VRCameraHelper( camera ) {
 	this.matrixAutoUpdate = false
 
 	this.matrix = this.camera.matrixWorld
+
+	this.backReference = this.camera.backReference
 }
 
 VRCameraHelper.prototype = Object.create( THREE.Mesh.prototype )

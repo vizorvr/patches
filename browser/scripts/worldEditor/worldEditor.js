@@ -164,12 +164,6 @@ WorldEditor.prototype.setSelection = function(selected) {
 	for (var i = 0; i < selected.length; ++i) {
 		var obj = selected[i]
 		if (obj.backReference !== undefined) {
-
-			if (obj instanceof VRCameraHelper) {
-				// special case for VR camera - point back to the original camera
-				obj = this.vrCamera
-			}
-
 			this.transformControls.attach(obj)
 			this.selectionTree.add(this.transformControls)
 
@@ -246,7 +240,7 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 
 		for(var i = 0; i < allOutputs.length; ++i) {
 			var candidateNode = allOutputs[i].dst_node
-			var foundRouteToEnd = (candidateNode === endNode) || markNodeSelectedIfConnectedTo(candidateNode, endNode)
+			var foundRouteToEnd = (candidateNode === endNode) || (candidateNode ? markNodeSelectedIfConnectedTo(candidateNode, endNode) : false)
 
 			if (foundRouteToEnd) {
 				// go to the correct graph level for this node
@@ -263,7 +257,9 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 		return false
 	}
 
-	markNodeSelectedIfConnectedTo(meshNode, sceneNode)
+	if (meshNode) {
+		markNodeSelectedIfConnectedTo(meshNode, sceneNode)
+	}
 }
 
 WorldEditor.prototype.pickObject = function(e) {
