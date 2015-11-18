@@ -867,11 +867,33 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 	d.nodes = [];
 	d.conns = [];
 
+	var domHasValidDimensions = true
+
 	for(var i = 0, len = nodes.length; i < len; i++) {
 		var n = nodes[i];
 		var dom = n.ui ? n.ui.dom : null;
-		var p = dom ? dom.position() : { left: n.x, top: n.y };
-		var b = [p.left, p.top, p.left + (dom ? dom.width() : 0), p.top + (dom ? dom.height() : 0)];
+
+		domHasValidDimensions = domHasValidDimensions && (dom ? true : false)
+		if (domHasValidDimensions && dom.position().left === 0 && dom.position().top === 0 && dom.width() === 0 && dom.height() === 0) {
+			// dom is there but not visible (graph is hidden), use default dimensions instead
+			domHasValidDimensions = false
+		}
+
+		var p, width, height
+
+		if (domHasValidDimensions) {
+			p = dom.position()
+			width = dom.width()
+			height = dom.height()
+		}
+		else {
+			// defaults
+			p = { left: n.x, top: n.y }
+			width = 100
+			height = 20
+		}
+
+		var b = [p.left, p.top, p.left + width, p.top + height];
 
 		if(dom)
 			n = n.serialise();
@@ -884,10 +906,18 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 		d.nodes.push(n);
 	}
 
-	d.x1 = x1 + sx;
-	d.y1 = y1 + sy;
-	d.x2 = x2 + sx;
-	d.y2 = y2 + sy;
+	if (domHasValidDimensions) {
+		d.x1 = x1 + sx;
+		d.y1 = y1 + sy;
+		d.x2 = x2 + sx;
+		d.y2 = y2 + sy;
+	}
+	else {
+		d.x1 = x1
+		d.y1 = y1
+		d.x2 = x2
+		d.y2 = y2
+	}
 
 	for(var i = 0, len = conns.length; i < len; i++) {
 		var c = conns[i];
@@ -1031,6 +1061,104 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 	return { nodes: createdNodes, connections: createdConnections }
 }
 
+Application.prototype.getNodeBoundingBox = function(node) {
+	var dom = node.ui ? node.ui.dom : null;
+	var pos = { left: node.x, top: node.y };
+
+	var width = (dom ? dom.width() : 0)
+	var height = (dom ? dom.height() : 0)
+
+	// default width / height = 100 / 20 if the graph is not visible
+	if (width === 0)
+		width = 100
+
+	if (height === 0)
+		height = 20
+
+	return {
+		x1: pos.left,
+		y1: pos.top,
+		x2: pos.left + width,
+		y2: pos.top + height};
+}
+
+// find a space for doc in the currently active graph
+// return a {x: ..., y: ...} object with coordinates
+// where the object will fit without overlapping with
+// any pre-existing nodes
+Application.prototype.findSpaceInGraphFor = function(doc) {
+	var activeGraph = E2.core.active_graph
+
+	// minimum spacing between nodes
+	var spacing = {x: 30, y: 20}
+
+	// create sorted array of nodes in y
+	var sortedNodes = activeGraph.nodes.slice()
+	sortedNodes.sort(function(a, b) {
+		return a.y - b.y
+	})
+
+	// find the initial set of bboxes that account for this operation -
+	// i.e. anything below the pasted node set
+	var bboxes = []
+
+	for(var i = 0; i < sortedNodes.length; ++i) {
+		var bbox = this.getNodeBoundingBox(sortedNodes[i])
+
+		if (bbox.y2 + spacing.y < doc.y1) {
+			// ignore any nodes above our one, they don't matter
+			continue
+		}
+		else {
+			bboxes.push(bbox)
+		}
+	}
+
+	// easy case, nothing overlaps
+	if (bboxes.length === 0) {
+		return {x: doc.x1, y: doc.y1}
+	}
+
+	// easy case, the next node is outside our bbox vertically
+	if (bboxes[0].y1 > doc.y2 + spacing.y) {
+		return {x: doc.x1, y: doc.y1}
+	}
+
+	// scan the set of bboxes down to find space for our pasted node(s)
+
+	// helper function to find space for pasteBbox within
+	// an area filled with graphNodeBboxes
+	// returns a {x1, y1, x2, y2} object with an area large
+	// enough to contain pasteBbox.
+	function autoLayout(pasteBbox, graphNodeBboxes) {
+		for(var i = 0; i < graphNodeBboxes.length; ++i) {
+			if (graphNodeBboxes[i].y1 > pasteBbox.y2 + spacing.y) {
+				// nothing overlaps anymore - return the current location
+				return pasteBbox
+			}
+			else if (pasteBbox.x1 - spacing.x > graphNodeBboxes[i].x2 || pasteBbox.x2 + spacing.x < graphNodeBboxes[i].x1) {
+				// ignore any bboxes entirely outside the candidate bbox
+			}
+			else {
+				// move the candidate bbox down by offset = height of a node + spacing
+				// and recurse back into trying to match the new candidate area
+				var offset = graphNodeBboxes[i].y2 - pasteBbox.y1 + spacing.y
+
+				var newBboxes = graphNodeBboxes.splice(i + 1)
+				var newNodeBbox = {x1: pasteBbox.x1, y1: pasteBbox.y1 + offset, x2: pasteBbox.x2, y2: pasteBbox.y2 + offset}
+
+				return autoLayout(newNodeBbox, newBboxes)
+			}
+		}
+
+		return pasteBbox
+	}
+
+	var result = autoLayout(doc, bboxes)
+
+	return {x: result.x1, y: result.y1}
+}
+
 Application.prototype.onPaste = function(x, y) {
 	if (this.clipboard === null)
 		return;
@@ -1042,8 +1170,21 @@ Application.prototype.onPaste = function(x, y) {
 	var sx = this.scrollOffset[0]
 	var sy = this.scrollOffset[1]
 
-	var ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
-	var oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
+	var ox
+	var oy
+
+	// pasted node bbox: doc.x1, doc.y1 - doc.x2, doc.y2
+
+	// calculate paste position
+	if (this.isWorldEditorActive()) {
+		var autoLayoutPosition = this.findSpaceInGraphFor(doc)
+		ox = autoLayoutPosition.x // doc.x1 // doc.nodes[0].x
+		oy = autoLayoutPosition.y // doc.y1 // doc.nodes[0].y
+	}
+	else {
+		ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
+		oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
+	}
 
 	var pasted = this.paste(doc, x || ox, y || oy)
 
