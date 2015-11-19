@@ -1,5 +1,5 @@
 {
-    "abs_t": 29.286,
+    "abs_t": 0.0,
     "active_graph": "root",
     "graph_uid": "TXDgBc0JJtS3",
     "root": {
@@ -938,15 +938,27 @@
                                 "nodes": [
                                     {
                                         "plugin": "three_vr_camera",
-                                        "x": 966,
-                                        "y": 211,
+                                        "x": 536,
+                                        "y": 212,
                                         "uid": "mtzlRxy1mqkA",
-                                        "open": false
+                                        "state": {
+                                            "position": {
+                                                "x": 0,
+                                                "y": 0.8,
+                                                "z": 2
+                                            },
+                                            "quaternion": {
+                                                "_x": 0,
+                                                "_y": 0,
+                                                "_z": 0,
+                                                "_w": 1
+                                            }
+                                        }
                                     },
                                     {
                                         "plugin": "output_proxy",
-                                        "x": 1217,
-                                        "y": 212,
+                                        "x": 787,
+                                        "y": 213,
                                         "uid": "RKXcXi2YUOaG",
                                         "title": "camera",
                                         "dyn_in": [
@@ -962,51 +974,8 @@
                                                 "connected": true
                                             }
                                         ]
-                                    },
-                                    {
-                                        "plugin": "slider_float_generator",
-                                        "x": 412,
-                                        "y": 169,
-                                        "uid": "kSThr0T0bXJA",
-                                        "state": {
-                                            "val": 0,
-                                            "min": -10,
-                                            "max": 10
-                                        },
-                                        "title": "Position X"
-                                    },
-                                    {
-                                        "plugin": "slider_float_generator",
-                                        "x": 413,
-                                        "y": 282,
-                                        "uid": "cgWGMXndmk1G",
-                                        "state": {
-                                            "val": 0.8,
-                                            "min": -10,
-                                            "max": 10
-                                        },
-                                        "title": "Position Y"
-                                    },
-                                    {
-                                        "plugin": "slider_float_generator",
-                                        "x": 413,
-                                        "y": 397,
-                                        "uid": "fefVHWMl1zKK",
-                                        "state": {
-                                            "val": 2,
-                                            "min": -10,
-                                            "max": 10
-                                        },
-                                        "title": "Position Z"
-                                    },
-                                    {
-                                        "plugin": "vector",
-                                        "x": 736,
-                                        "y": 283,
-                                        "uid": "I4bNzNCpsH1f",
-                                        "open": false,
-                                        "title": "Camera position"
-                                    }                                ],
+                                    }
+                                ],
                                 "conns": [
                                     {
                                         "src_nuid": "mtzlRxy1mqkA",
@@ -1017,44 +986,8 @@
                                         "src_connected": true,
                                         "dst_connected": true,
                                         "dst_dyn": true
-                                    },
-                                    {
-                                        "src_nuid": "kSThr0T0bXJA",
-                                        "dst_nuid": "I4bNzNCpsH1f",
-                                        "src_slot": 0,
-                                        "dst_slot": 0,
-                                        "uid": "aigu1woTyEm0",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    },
-                                    {
-                                        "src_nuid": "cgWGMXndmk1G",
-                                        "dst_nuid": "I4bNzNCpsH1f",
-                                        "src_slot": 0,
-                                        "dst_slot": 1,
-                                        "uid": "wXCjjy0JiFOH",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    },
-                                    {
-                                        "src_nuid": "fefVHWMl1zKK",
-                                        "dst_nuid": "I4bNzNCpsH1f",
-                                        "src_slot": 0,
-                                        "dst_slot": 2,
-                                        "uid": "wy2AUtzMosu7",
-                                        "src_connected": true,
-                                        "dst_connected": true
-                                    },
-                                    {
-                                        "src_nuid": "I4bNzNCpsH1f",
-                                        "dst_nuid": "mtzlRxy1mqkA",
-                                        "src_slot": 0,
-                                        "dst_slot": 0,
-                                        "uid": "5yOVKrDYG7Ne",
-                                        "src_connected": true,
-                                        "dst_connected": true
                                     }
-								]
+                                ]
                             },
                             "dyn_out": [
                                 {
