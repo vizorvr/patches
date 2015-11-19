@@ -2,8 +2,20 @@
 
 body.bEditor {
 
-  /* buttons */
+  #canvases {	// considered the master viewport
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: @height-editor-header;
+	bottom: @height-editor-footer;
+	overflow: hidden;
+  }
 
+  #canvas_parent {
+	min-height: 270px;
+  }
+
+  /* buttons */
   button.ui_off svg, button[disabled] svg {
 	opacity: 0.5;
   }

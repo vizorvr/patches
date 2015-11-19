@@ -1544,7 +1544,7 @@ Application.prototype.growl = function(title, type, duration, person) {
 	if (person) {
 		var image='<div style="background-color: '+person.color+';" class="image-crop"><span>'+letter+'</span></div>';
 	} 
-	
+
 	/** TODO: when users will have pics - use this:
 	if (person.userpic) {
 		image = '<div style="background-image: url('+person.userpic+');" class="image-crop"></div>';
@@ -1702,8 +1702,6 @@ Application.prototype.setupPeopleEvents = function() {
 
 		$cursor.remove()
 		delete cursors[uid]
-		if (E2.ui)
-			E2.ui.onPeopleListChanged('removed');
 	})
 
 	this.peopleStore.on('added', function(person) {
@@ -1725,14 +1723,11 @@ Application.prototype.setupPeopleEvents = function() {
 
 		if (person.activeGraphUid !== E2.core.active_graph.uid)
 			$cursor.hide()
-
-		if (E2.ui)
-			E2.ui.onPeopleListChanged('added');
 	})
 
 	this.peopleStore.on('mouseMoved', function(person) {
 		var $cursor = cursors[person.uid]
-		var cp = E2.dom.canvas_parent[0];
+		var cp = E2.dom.canvases[0];
 		$cursor.removeClass('inactive outside')
 
 		// Update the user's cursor fade-out timeout
@@ -1871,11 +1866,13 @@ Application.prototype.start = function() {
 	document.addEventListener('mozfullscreenchange', this.onFullScreenChanged.bind(this))
 
 	window.addEventListener('resize', function() {
-		// To avoid UI lag, we don't respond to window resize events directly.
-		// Instead, we set up a timer that gets superceeded for each (spurious)
-		// resize event within a 200 ms window.
-		clearTimeout(that.resize_timer)
-		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 200)
+		// avoid ui lag
+		if (that.resize_timer) return
+		that.resize_timer = setTimeout(function(){
+			clearTimeout(that.resize_timer)
+			that.resize_timer = null;
+			that.onWindowResize()
+		}, 100)
 	})
 
 	// close bootboxes on click
@@ -1912,16 +1909,15 @@ Application.prototype.start = function() {
 			var nh = oh + (e.pageY - oy)
 			e.preventDefault()
 			$target.css('height', nh+'px')
-			if ($target.hasClass('chat-users')) {
-				if (E2.ui)
-					E2.ui.onChatResize();
-			}
+			return true
 		}
 
 		$doc.on('mousemove', mouseMoveHandler)
 		$doc.one('mouseup', function(e) {
 			e.preventDefault()
 			$doc.off('mousemove', mouseMoveHandler)
+			var uiResized = (typeof uiEvent !== 'undefined') ? uiEvent.resized : 'uiResized'
+			$target.trigger(uiResized)
 		})
 	});
 
@@ -2092,6 +2088,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');
+	E2.dom.canvases = $('#canvases');
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
 	

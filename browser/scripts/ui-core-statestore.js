@@ -14,7 +14,7 @@ var uiModifyMode = {
  * if persistentStorageRef, except for a number of ignored properties, the object will persist
  * @param persistentStorageRef (store or recall state)
  */
-var UiStateStore = function(persistentStorageRef) {
+var UiStateStore = function(persistentStorageRef, context) {
 	EventEmitter.apply(this, arguments)
 	var that = this
 
@@ -67,7 +67,7 @@ var UiStateStore = function(persistentStorageRef) {
 		visibility	: {},
 		panelStates : {},
 		selectedObjects	: [],						// [node, ...], does not autosave
-		context 	: {}
+		context 	: context || {}
 	}, emit())
 	a(this._.visibility, {
 		floating_panels: true,
@@ -88,13 +88,6 @@ var UiStateStore = function(persistentStorageRef) {
 		assets:		null
 	}, emit('changed:panelStates'))
 
-	a(this._.context, {
-			width		: window.screen.width,
-			height		: window.screen.height,
-			availWidth	: window.screen.availWidth,
-			availHeight	: window.screen.availHeight
-	}, emit('changed:context'))
-
 	this._storageRef = persistentStorageRef
 	this._save_t = null
 	this.allowStoreOnChange = true
@@ -106,7 +99,11 @@ var UiStateStore = function(persistentStorageRef) {
 			if (ignoredProperties.indexOf(prop) > -1) return;
 
 			if (that._save_t) return	// a saveState is scheduled already
-			that._save_t = setTimeout(that.store.bind(that), 500)	// schedule in a while
+			that._save_t = setTimeout(function(){
+				clearTimeout(that._save_t)
+				that._save_t = null
+				that.store()
+			}, 500)	// schedule in a while
 		})
 	}
 }

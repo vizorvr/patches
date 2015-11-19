@@ -18,7 +18,7 @@ function draggable_mousemove(data) { return function(e)
 	var ui = data.ui[0];
 	var nx = data.oleft + t.pageX - data.ox;
 	var ny = data.otop + t.pageY - data.oy;
-	var cp = E2.dom.canvas_parent;
+	var cp = E2.dom.canvases;
 	var co = cp.offset();
 	
 	if(t.pageX < co.left)

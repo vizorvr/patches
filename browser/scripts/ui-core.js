@@ -41,6 +41,7 @@ var uiViewCam = {
 var uiEvent = { // emitted by ui (E2.ui) unless comments state otherwise
 	initialised		: 'uiInitialised',
 	moved			: 'uiMoved',			// panels via movable.js
+	resized			: 'uiResized',			// panels via draggable.js
 	stateChanged	: 'uiStateChanged',
 	worldEditChanged : 'uiWorldEditorChanged',	// ui and E2.app
 	xhrFormSuccess	: 'xhrFormSuccess'		//	dispatched on document in ui-site js
@@ -58,7 +59,7 @@ var VizorUI = function() {			// becomes E2.ui
 		assetsLib : null
 	};
 
-	this.state = new UiStateStore(VizorUI.getPersistentStorageRef())
+	this.state = new UiStateStore(VizorUI.getPersistentStorageRef(), VizorUI.getContext())
 	this.state.allowStoreOnChange = false;
 
 	this.flags = {
@@ -106,8 +107,10 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 				.toggleClass('ui_off', inBuildMode);
 
 			if (inProgramMode) {
-
+				dom.tabObjects.addClass('inactive ui_off');
+				dom.tabPresets.removeClass('inactive ui_off');
 			} else {
+				dom.tabObjects.removeClass('inactive ui_off');
 				dom.tabPresets.addClass('inactive ui_off');
 			}
 
@@ -116,13 +119,6 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 			dom.btnMove.attr('disabled',inProgramMode);
 			dom.btnScale.attr('disabled',inProgramMode);
 			dom.btnRotate.attr('disabled',inProgramMode);
-
-			//  these will still zoom, whatever the mode?
-			/*
-			dom.btnZoomOut.attr('disabled',isProgramMode);
-			dom.btnZoom.attr('disabled',worldEditorActive);
-			dom.btnZoomIn.attr('disabled',worldEditorActive);
-			*/
 		})
 		.emit('changed:mode', state.mode);
 
@@ -137,13 +133,13 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 
 	state
 		.on('changed:visible', function(visible){
+			that.dom.btnHideAll.toggleClass('ui_off', visible);	// inverse
 			state.emit('changed:visibility:patch_editor', 	visibility.patch_editor)
 			state.emit('changed:visibility:floating_panels', 	visibility.floating_panels)
 			state.emit('changed:selectedObjects', 	state.selectedObjects)
-			that.dom.btnHideAll.toggleClass('ui_off', visible);	// reverse
 		})
 		.emit('changed:visible', state.visible);
-		// emit
+
 	state
 		.on('changed:visibility:floating_panels', function() {
 			state.emit('changed:visibility:panel_assets', 	visibility.panel_assets)
@@ -151,7 +147,6 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 			state.emit('changed:visibility:panel_chat', 	visibility.panel_chat)
 		});
 		// .emit('changed:visibility:floating_panels', visibility.floating_panels)
-
 
 
 	var changedVisibilityPanelHandler = function($panel, $button) {
@@ -162,11 +157,8 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 				.toggle(show)
 				.toggleClass('uiopen', show);
 			$button.toggleClass('ui_off', !show);
-			that.enforceConstraints()
-			if (!that.isAnyUIElementVisible()) {
-				that.dom.btnHideAll.removeClass('ui_off');
-				state._.visible = false;	// looks like we're hidden
-			}
+
+			if (visible) VizorUI.constrainPanel($panel);	// soft constrain
 		};
 	};
 
@@ -210,19 +202,10 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 		.emit('changed:modifyMode', state.modifyMode);
 
 
-	// first in panel states (not visibility)
-	state
-		.on('changed:context', function(context){
-			that.enforceConstraints(true);
-		})
-		.emit('changed:context', state.context);
-
-
 	state.on('changed:panelStates:presets', function(panelState){
 		if (!panelState) return;
-		VizorUI.applyPanelState(dom.presetsLib, panelState, function(){
-
-		});
+		if (!panelState._found) return;
+		VizorUI.applyPanelState(dom.presetsLib, panelState);
 		var controlsHeight = dom.presetsLib.find('.drag-handle').outerHeight(true) +
 					   dom.presetsLib.find('.block-header').outerHeight(true) +
 					   dom.presetsLib.find('.searchbox').outerHeight(true);
@@ -231,54 +214,64 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 		} else {
 			dom.presetsLib.addClass('collapsed').height(controlsHeight);
 		}
-		that.enforceConstraints()
-
+		VizorUI.constrainPanel(dom.presetsLib);
 	});
 
 	state.on('changed:panelStates:assets', function(panelState){
 		if (!panelState) return;
-		VizorUI.applyPanelState(dom.assetsLib, panelState, function(){
-			var controlsHeight = dom.assetsLib.find('.drag-handle').outerHeight(true) +
+		if (!panelState._found) return;
+		VizorUI.applyPanelState(dom.assetsLib, panelState);
+		var controlsHeight = dom.assetsLib.find('.drag-handle').outerHeight(true) +
 					   dom.assetsLib.find('.block-header').outerHeight(true) +
 					   dom.assetsLib.find('.searchbox').outerHeight(true);
-			if (E2.dom.assetsLib.hasClass('collapsed')) {
-				var newHeight = controlsHeight
-							   + dom.assetsLib.find('#assets-tabs').outerHeight(true)
-							   + dom.assetsLib.find('.tab-content.active .assets-frame').outerHeight(true)
-							   + dom.assetsLib.find('.load-buttons').outerHeight(true)
-							   + dom.assetsLib.find('#asset-info').outerHeight(true)
-				dom.assetsLib.removeClass('collapsed').height(newHeight);
-			} else {
-				dom.assetsLib.addClass('collapsed').height(controlsHeight);
-			}
-		});
+		if (E2.dom.assetsLib.hasClass('collapsed')) {
+			var newHeight = controlsHeight +
+						   dom.assetsLib.find('#assets-tabs').outerHeight(true) +
+						   dom.assetsLib.find('.tab-content.active .assets-frame').outerHeight(true) +
+						   dom.assetsLib.find('.load-buttons').outerHeight(true) +
+						   dom.assetsLib.find('#asset-info').outerHeight(true)
+			dom.assetsLib.removeClass('collapsed').height(newHeight);
+		} else {
+			dom.assetsLib.addClass('collapsed').height(controlsHeight);
+		}
+		VizorUI.constrainPanel(dom.assetsLib);
 	});
 
 	state.on('changed:panelStates:chat', function(panelState){
 		if (!panelState) return;
-		VizorUI.applyPanelState(dom.chatWindow, panelState, function(){
-			var $resizeHandle = $chat.find('.resize-handle');
+		if (!panelState._found) return;
+		var $chat = dom.chatWindow;
+		VizorUI.applyPanelState($chat, panelState);
+		var $resizeHandle = $chat.find('.resize-handle');
+		var chatTabsHeight = dom.chatTabs.height();
+		var dragHandleHeight = $chat.find('.drag-handle').height();
 
-			var chatTabsHeight = dom.chatTabs.height();
-			var dragHandleHeight = $chat.find('.drag-handle').height();
-
-			if (panelState.collapsed) {
-				$resizeHandle.hide();
-				dom.chatWindow.height(dragHandleHeight + chatTabsHeight);
-			} else {
-				$resizeHandle.show();
-				var height = (panelState.h >= 120) ? panelState.h : 'auto';
-				dom.chatWindow.height(height)
-				that.onChatResize();
-			}
-		})
-		that.enforceConstraints();
+		if (panelState.collapsed) {
+			$resizeHandle.hide();
+			$chat.height(dragHandleHeight + chatTabsHeight);
+		} else {
+			$resizeHandle.show();
+			var height = (panelState.h >= 120) ? panelState.h : 'auto';
+			$chat.height(height)
+			VizorUI.constrainPanel($chat, true);
+			that.onChatResize();
+		}
 	});
 
 	state
-		.emit('changed:panelStates:presets', state.panelStates.presets)
-		.emit('changed:panelStates:assets', state.panelStates.assets)
-		.emit('changed:panelStates:chat', state.panelStates.chat)
+		.on('changed:context', function(context){
+			// sync the panels
+			state
+				.emit('changed:panelStates:presets', state.panelStates.presets)
+				.emit('changed:panelStates:assets', state.panelStates.assets)
+				.emit('changed:panelStates:chat', state.panelStates.chat)
+			// store the panel states and sync again
+			that.state.panelStates.chat = VizorUI.getDomPanelState(dom.chatWindow);
+			that.state.panelStates.assets = VizorUI.getDomPanelState(dom.assetsLib);
+			that.state.panelStates.presets = VizorUI.getDomPanelState(dom.presetsLib);
+		})
+		.emit('changed:context', state.context)
+
 };
 
 VizorUI.prototype.updateState = function() {
@@ -296,37 +289,6 @@ VizorUI.prototype.setState = function(newState) {
 	return this.state.setState(newState);
 }
 
-
-VizorUI.prototype.enforceConstraints = function(andSaveStates) {
-	if (!this.isVisible()) return;
-	andSaveStates = !!andSaveStates
-
-	var dom = this.dom;
-	var visibility = this.state.visibility;
-
-	var referenceTop	= jQuery('#canvases').offset().top;
-	var referenceBottom	= 45;	// #652
-	var referenceLeft	= 0;
-
-	var didConstrain = false;
-	if (visibility.panel_chat) {
-		didConstrain = VizorUI.constrainPanel(dom.chatWindow, referenceTop, referenceBottom, referenceLeft, true);
-		if (andSaveStates && didConstrain) {
-			this.state.panelStates.chat = VizorUI.getDomPanelState(dom.chatWindow);
-		}
-	}
-	if (visibility.panel_assets) {
-		didConstrain = VizorUI.constrainPanel(dom.assetsLib, referenceTop, referenceBottom, referenceLeft);
-		if (andSaveStates && didConstrain)
-			this.state.panelStates.assets = VizorUI.getDomPanelState(dom.assetsLib);
-	}
-	if (visibility.panel_presets) {
-		didConstrain = VizorUI.constrainPanel(dom.presetsLib,  referenceTop, referenceBottom, referenceLeft);
-		if (andSaveStates && didConstrain)
-			this.state.panelStates.presets = VizorUI.getDomPanelState(dom.presetsLib);
-	}
-}
-
 /***** IS... *****/
 
 VizorUI.prototype.isFullScreen = function() {
@@ -335,7 +297,7 @@ VizorUI.prototype.isFullScreen = function() {
 VizorUI.prototype.isVisible = function() {
 	return this.state.visible;
 }
-VizorUI.prototype.isPatchVisible = function() {
+VizorUI.prototype.isPatchEditorVisible = function() {
 	return this.state.visibility.patch_editor;
 }
 VizorUI.prototype.isInProgramMode = function() {
@@ -546,8 +508,8 @@ VizorUI.prototype.onFullScreenChanged = function() {	// placeholder
 	return true;
 };
 
-VizorUI.prototype.onWindowResize = function() {	// placeholder
-	this.enforceConstraints();
+VizorUI.prototype.onWindowResize = function() {
+	this.state.context = VizorUI.getContext();
 	return true;
 };
 
@@ -581,6 +543,17 @@ VizorUI.prototype.togglePatchEditor = function(forceVisibility) {
 
 
 /***** HELPER METHODS *****/
+
+VizorUI.getContext = function() {
+	return {
+		width 			: window.innerWidth  || document.documentElement.clientWidth  || document.body.clientWidth,
+		height 			: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
+		screenWidth		: window.screen.width,
+		screenHeight	: window.screen.height,
+		availWidth		: window.screen.availWidth,
+		availHeight		: window.screen.availHeight
+	}
+};
 
 /**
  * get the state of a UI (tabbed) panel. if no $domElement provided, then _found = false
@@ -630,12 +603,14 @@ VizorUI.getDomPanelState = function($domElement) {	/* @var $domElement jQuery */
  * Apply a panelState obtained via VizorUI.getPanelState to a floating panel of the UI
  * @param $el
  * @param panelState
- * @param beforeSetDimensions
  * @returns {boolean}
  */
-VizorUI.applyPanelState = function($el, panelState, beforeSetDimensions) {
+VizorUI.applyPanelState = function($el, panelState) {
 	if ((typeof $el !== 'object') || ($el.length === 0)) return false;
-	if (!panelState) return false;
+	if (!panelState) {
+		msg("ERROR: no panelState to apply");
+		return false;
+	}
 
 	// parse state
 	// ignores visibility which is already applied
@@ -649,9 +624,6 @@ VizorUI.applyPanelState = function($el, panelState, beforeSetDimensions) {
 
 	// collapse if needed
 	$el.toggleClass('collapsed', collapsed);
-	if (typeof beforeSetDimensions === 'function') {	// collapse callback will collapse the window or not
-		beforeSetDimensions($el);
-	}
 
 	// position and check dimensions
 	if (!((x===0) && (y === 0))) {
@@ -675,7 +647,7 @@ VizorUI.applyPanelState = function($el, panelState, beforeSetDimensions) {
 			'top' : '' + y + 'px'
 		});
 
-		// $el.height(h);	// @TODO review
+		// $el.height(h);	// currently ignored
 	}
 
 	if (!selectedTab) return true;
@@ -689,16 +661,21 @@ VizorUI.applyPanelState = function($el, panelState, beforeSetDimensions) {
 	return true;
 };
 
-//called by ui.enforceConstraints
-VizorUI.constrainPanel = function($panel, referenceTop, referenceBottom, referenceLeft, doConstrainHeight) {
-	if (!$panel.is(':visible')) return false;
+VizorUI.constrainPanel = function($panel, doConstrainHeight, referenceTop, referenceBottom, referenceLeft) {
+	var viewport = E2.dom.canvases;
+	referenceTop	= referenceTop || 0;
+	referenceBottom	= referenceBottom || 0;	// #652
+	referenceLeft	= referenceLeft || 0;
 	doConstrainHeight = !!doConstrainHeight;
+
+	if (!$panel.is(':visible')) return false;	// jQuery
+
 	var panelHeight = $panel.outerHeight(true);
 	var panelWidth = $panel.outerWidth(true);
 	var parentHeight = $panel.parent().innerHeight();
 	var parentWidth = $panel.parent().innerWidth();
-	var availableHeight = parentHeight - referenceBottom;	// #652
-	var availableWidth = parentWidth;
+	var availableHeight =  viewport.outerHeight(true);
+	var availableWidth = viewport.outerWidth(true);
 
 	var doConstrain = false;
 
@@ -756,4 +733,3 @@ VizorUI.getPersistentStorageRef = function() {
 	}
 	return storage;
 }
-

@@ -21,7 +21,6 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.btnVRCam.click(this.enterVRView.bind(this));
 
 
-
 	var makeTabHandler = function(panelStateKey) {
 		return function(e) {
 			var $li = jQuery(e.currentTarget).parent();
@@ -39,19 +38,14 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 				this.state.panelStates[panelStateKey] = s;
 			if (e) {
 				e.preventDefault();
-				// e.stopPropagation();
 			}
 			return false;
 		}.bind(that);
 	};
 
-	jQuery()
-		.add(dom.chatTabBtn)
-		.add(dom.peopleTabBtn)
-		.click(makeTabHandler('chat'));
-
-	jQuery('div#presets-lib ul.nav-tabs a').click(makeTabHandler('presets'));
-	// ^ same for assets
+	jQuery('ul.nav-tabs a', dom.chatWindow).click(makeTabHandler('chat'));
+	jQuery('ul.nav-tabs a', dom.presetsLib).click(makeTabHandler('presets'));
+	jQuery('ul.nav-tabs a', dom.assetsLib).click(makeTabHandler('assets'));
 
 	var makeToggleHandler = function(panelStateKey) {
 		return function(e) {
@@ -69,7 +63,6 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.assetsToggle.click(makeToggleHandler('assets'));
 	dom.presetsToggle.click(makeToggleHandler('presets'));
 
-
 	dom.assetsClose.click(this.closePanelAssets.bind(this));
 	dom.presetsClose.click(this.closePanelPresets.bind(this));
 	dom.chatClose.click(this.closePanelChat.bind(this));
@@ -81,18 +74,21 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 		E2.app.onPublishClicked()
 	});
 
-
-
-	// var $presetsLibItems = jQuery('div#presets-lib ul li');
-	// $presetsLibItems.last().find('a').click(this.onTreeClicked.bind(this));
-	// $presetsLibItems.find('a').click(this.updateState.bind(this));
-
 	var updatePanelState = function(which, domElement) {
 		that.state.panelStates[which] = VizorUI.getDomPanelState(domElement);
 	}
-	dom.assetsLib.on(uiEvent.moved, function(){updatePanelState('assets', dom.assetsLib)});
-	dom.chatWindow.on(uiEvent.moved, function(){updatePanelState('chat', dom.chatWindow)});
-	dom.presetsLib.on(uiEvent.moved, function(){updatePanelState('presets', dom.presetsLib)});
+	// drag handlers, for when the panels are dragged
+	dom.assetsLib.on(uiEvent.moved, function(){  updatePanelState('assets', dom.assetsLib)   });
+	dom.presetsLib.on(uiEvent.moved, function(){ updatePanelState('presets', dom.presetsLib) });
+	dom.chatWindow
+		.on(uiEvent.moved, function() {
+			updatePanelState('chat', dom.chatWindow)
+		})
+		.on(uiEvent.resized, function(){
+			updatePanelState('chat', dom.chatWindow);
+		})
+		.find('.resize-handle')
+		.on('mousemove touchmove', that.onChatResize.bind(that))
 
 	var switchMode = function(modifyMode){
 		return function(e){
@@ -106,11 +102,6 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.btnRotate.on('mousedown', switchMode(uiModifyMode.rotate));
 	dom.btnScale.on('mousedown', switchMode(uiModifyMode.scale));
 
-	$(document).on("shown.bs.modal", function() {
-		$('.bootbox-close-button').html('<svg class="icon-dialog-close">'
-									  + '<use xlink:href="#icon-close"></use></svg>')
-								  .attr('style','opacity:1');
-	});
 };
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
@@ -121,7 +112,6 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	var that = this;
 	var dom = this.dom;
 
-	this.onPeopleListChanged(null);	// initialise chat panel correctly
 
 	this.state.panelStates.assets = VizorUI.getDomPanelState(dom.assetsLib);
 	this.state.panelStates.presets = VizorUI.getDomPanelState(dom.presetsLib);
@@ -338,7 +328,6 @@ VizorUI.prototype.onBtnChatClicked = function(e) {
 	if (!this.isVisible()) return false;
 	var v = this.state.visibility;
 	if (!v.floating_panels) {
-		// nothing displayed so we expect just the chat
 		v._.panel_chat = true
 		v._.panel_assets = false;
 		v._.panel_presets = false;
@@ -397,8 +386,7 @@ VizorUI.prototype.closePanelPresets = function() {
 	return false;
 }
 
-VizorUI.prototype.onTreeClicked = function(e) {
-	this.dom.presetsLib.removeClass('collapsed').height('auto');
+VizorUI.prototype.onTreeClicked = function(e) {	// currently unused
 	var s = this.state.panelStates.presets || {};
 	s.selectedTab = '#graph';
 	this.state.panelStates.presets = s;
@@ -408,7 +396,6 @@ VizorUI.prototype.onTreeClicked = function(e) {
 	}
 	return false;
 }
-
 
 VizorUI.prototype.onLibSearchClicked = function(e) {
 	var $input = jQuery(e.target);
@@ -433,12 +420,15 @@ VizorUI.prototype.isPanelAssetsVisible = function() {
 	return s.visible && v.floating_panels && v.panel_assets;
 }
 
-VizorUI.prototype.onPeopleListChanged = function(storeAction) {
-	return;
+VizorUI.prototype.togglePanelChatCollapsed = function() {
+	this.dom.chatToggleButton.trigger('click');
 }
-
-
-
+VizorUI.prototype.togglePanelAssetsCollapsed = function() {
+	this.dom.chatToggleButton.trigger('click');
+}
+VizorUI.prototype.togglePanelPresetsCollapsed = function() {
+	this.dom.chatToggleButton.trigger('click');
+}
 
 VizorUI.prototype.onInspectorClicked = function() {
 	var app = E2.app;
@@ -469,7 +459,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 		ui.updateProgressBar(65);
 
 		$.get(presetsPath, function(files) {
-			var fcs = new FileSelectControl()
+			var fsc = new FileSelectControl()
 			.frame('save-frame')
 			.template('preset')
 			.buttons({
@@ -518,7 +508,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 			})
 			.modal();
 
-			return fcs;
+			return fsc;
 		})
 	};
 
@@ -543,7 +533,6 @@ VizorUI.prototype.setModeProgram = function() {
 	state.visibility.patch_editor = true
 	state.viewCamera = uiViewCam.vr;
 	this.dom.tabPresets.find('a').trigger('click');
-	this.dom.tabPresets.addClass('inactive ui_off');
 	return true;
 };
 

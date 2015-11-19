@@ -141,7 +141,7 @@ VizorUI.prototype.initDropUpload = function() {
 	var that = this
 	var target = $(document)
 
-	E2.dom.dragOverlay.height(E2.dom.canvas_parent.height())
+	E2.dom.dragOverlay.height(E2.dom.canvases.height())
 
 	function cleanup() {
 		E2.dom.dropUploading.hide()
@@ -189,7 +189,7 @@ VizorUI.prototype.initDropUpload = function() {
 		})
 		.then(function(uploadedFiles) {
 			return when.map(uploadedFiles, function(uploaded) {
-				if (E2.ui.isPatchVisible()) {
+				if (E2.ui.isPatchEditorVisible()) {
 					return instantiatePluginForUpload(uploaded, dropPosition)
 				} else {
 					return instantiateTemplateForUpload(uploaded, dropPosition)

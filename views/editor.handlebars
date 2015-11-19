@@ -5,63 +5,69 @@
 	</div>
 </noscript>
 {{> srv/editorSvgSprite}}
-<div class="editor-header clearfix">
-	<div id="top-header-logo">
-		<svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg>
+<header id="editor-header" class="clearfix">
+	<div class="editor-header clearfix">
+		<div id="top-header-logo">
+			<svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg>
+		</div>
+		<div class="menu-bar">
+			<div class="buttons button-group" id="grpFileIO" >
+				<button class="btn svg" id="btn-new" data-svgref="icon-new-graph"><svg /> New</button>
+				<button class="btn svg" id="fork-button" data-svgref="icon-duplicate"><svg /> Duplicate</button>
+			</div>
+			<div class="buttons button-group" id="grpTransform">
+				<button class="svg btn" id="btn-move" data-svgref="icon-move"><svg /> Move</button>
+				<button class="svg btn" id="btn-scale" data-svgref="icon-scale"><svg /> Scale</button>
+				<button class="svg btn" id="btn-rotate" data-svgref="icon-rotate"><svg /> Rotate</button>
+			</div>
+
+			{{!--
+			<div class="buttons button-group" id="grpZoom">
+				<button class="btn svg zoom" id="btn-zoom-in" data-svgref="icon-zoom-in" /><button class="btn svg zoom" id="btn-zoom" data-svgref="icon-zoom"><svg />
+					<span id="current-zoom">100%</span>
+				</button><button class="btn svg zoom" id="btn-zoom-out" data-svgref="icon-zoom-out" />
+			</div>
+			--}}
+
+			<div class="buttons button-group" id="grpPatchControls">
+				<button class="svg btn" id="btn-save-patch" data-svgref="icon-save-patch"><svg /> Save Patch</button>
+				<button class="svg btn" id="btn-inspector" data-svgref="icon-inspector"><svg /> Inspector</button>
+			</div>
+
+			<div class="spacer"></div>
+
+			<div class="buttons button-group" id="grpToggles">
+				<button class="btn svg" id="btn-presets" data-svgref="icon-presets"><svg /> Patches</button>
+				{{!-- <button class="btn svg" id="btn-graph" data-svgref="icon-graph"><svg /> Graph</button>
+					#676 <button class="btn" id="btn-assets" data-svgref="icon-assets"><svg /> Assets</button> --}}
+				<button class="btn svg" id="btn-chat-display" data-svgref="icon-chat"><svg /> Chat</button>
+				<button class="btn svg ui_off" id="btn-hide-all" data-svgref="icon-hide-all"><svg /> Hide All</button>
+			</div>
+
+			<div class="spacer"></div>
+
+			<div class="buttons button-group" id="grpElse">
+				<button class="btn svg" id="btn-publish" data-svgref="icon-publish"><svg /> Publish</button>
+				<div id="account" class="button">{{!-- account-controller populates this --}}</div>
+			</div>
+		</div>
 	</div>
-	<div class="menu-bar">
-		<div class="buttons button-group" id="grpFileIO" >
-			<button class="btn svg" id="btn-new" data-svgref="icon-new-graph"><svg /> New</button>
-			<button class="btn svg" id="fork-button" data-svgref="icon-duplicate"><svg /> Duplicate</button>
+	<div id="row2">
+		<div id="modeSwitcher">
+			<button id="buildModeBtn" class="svg" data-svgref="icon-mode-build"><svg />Build</button>
+			<button id="programModeBtn" class="svg" data-svgref="icon-mode-patch"><svg />Program</button>
 		</div>
-		<div class="buttons button-group" id="grpTransform">
-			<button class="svg btn" id="btn-move" data-svgref="icon-move"><svg /> Move</button>
-			<button class="svg btn" id="btn-scale" data-svgref="icon-scale"><svg /> Scale</button>
-			<button class="svg btn" id="btn-rotate" data-svgref="icon-rotate"><svg /> Rotate</button>
+		<div id="graphNameLabel" class="auto-editable">
+			(untitled)
 		</div>
-
-		{{!--
-		<div class="buttons button-group" id="grpZoom">
-			<button class="btn svg zoom" id="btn-zoom-in" data-svgref="icon-zoom-in" /><button class="btn svg zoom" id="btn-zoom" data-svgref="icon-zoom"><svg />
-				<span id="current-zoom">100%</span>
-			</button><button class="btn svg zoom" id="btn-zoom-out" data-svgref="icon-zoom-out" />
-		</div>
-		--}}
-
-		<div class="buttons button-group" id="grpPatchControls">
-			<button class="svg btn" id="btn-save-patch" data-svgref="icon-save-patch"><svg /> Save Patch</button>
-			<button class="svg btn" id="btn-inspector" data-svgref="icon-inspector"><svg /> Inspector</button>
-		</div>
-
-		<div class="spacer"></div>
-
-		<div class="buttons button-group" id="grpToggles">
-			<button class="btn svg" id="btn-presets" data-svgref="icon-presets"><svg /> Patches</button>
-			{{!-- <button class="btn svg" id="btn-graph" data-svgref="icon-graph"><svg /> Graph</button>
-				#676 <button class="btn" id="btn-assets" data-svgref="icon-assets"><svg /> Assets</button> --}}
-			<button class="btn svg" id="btn-chat-display" data-svgref="icon-chat"><svg /> Chat</button>
-			<button class="btn svg ui_off" id="btn-hide-all" data-svgref="icon-hide-all"><svg /> Hide All</button>
-		</div>
-
-		<div class="spacer"></div>
-
-		<div class="buttons button-group" id="grpElse">
-			<button class="btn svg" id="btn-publish" data-svgref="icon-publish"><svg /> Publish</button>
-			<div id="account" class="button">{{!-- account-controller populates this --}}</div>
-		</div>
+		<div id="breadcrumb"></div>
 	</div>
-</div>
-<div id="row2">
-	<div id="modeSwitcher">
-		<button id="buildModeBtn" class="svg" data-svgref="icon-mode-build"><svg />Build</button>
-		<button id="programModeBtn" class="svg" data-svgref="icon-mode-patch"><svg />Program</button>
-	</div>
-	<div id="graphNameLabel" class="auto-editable">
-		(untitled)
-	</div>
-	<div id="breadcrumb"></div>
-</div>
+</header>
 <div id="progressbar"></div>
+
+<pre class="info-pane" id="dbg"></pre>
+
+<div id="canvases">
 
 <div class="shader-block floating-box" id="shader-block" style="display:none">
 		<div class="block-header">
@@ -139,9 +145,7 @@
 	</div>
 	<div class="resize-handle"></div>
 </div>
-<pre class="info-pane" id="dbg"></pre>
 
-<div id="canvases">
 	<canvas id="webgl-canvas"
 		class="webgl-canvas-normal"
 		width="940"
@@ -155,8 +159,7 @@
 		</canvas>
 	</div>
 </div>
-
-<div class="bottom-panel">
+<footer id="editor-footer" class="bottom-panel">
 	<button class="btn show-timeline" id="btn-timeline" data-toggle="popover" data-placement="top" title="Toggle timeline" style="display: none;">
 		<svg class="icon-timeline"><use xlink:href="#icon-timeline"></use></svg>
 		<span>Show</span>
@@ -186,26 +189,25 @@
 	<ul class="view-modes">
 		<li>
 			<button class="btn" id="btn-editorcam" data-toggle="popover" data-placement="top" title="Editor camera">
-                <svg class="icon-vr"><use xlink:href="#icon-view-cam"></use></svg>
+				<svg class="icon-vr"><use xlink:href="#icon-view-cam"></use></svg>
 			</button>
 		</li>
-        <li>
+		<li>
 			<button class="btn" id="btn-vrcam" data-toggle="popover" data-placement="top" title="VR camera">
-			    <svg class="icon-vr"><use xlink:href="#icon-view-vr"></use></svg>
+				<svg class="icon-vr"><use xlink:href="#icon-view-vr"></use></svg>
 			</button>
 		</li>
 
-        {{!-- #694
+		{{!-- #694
 		<li>
 			<button class="btn" id="btn-v3" data-toggle="popover" data-placement="top" title="View 3">
 				<svg class="icon-vr"><use xlink:href="#icon-view-3"></use></svg>
 			</button>
 		</li>
-        --}}
-		
-	</ul>
-</div>
+		--}}
 
+	</ul>
+</footer>
 <div id="drag-overlay">
 	<div id="drop-area">
 		<div class="drop-info">
