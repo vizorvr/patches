@@ -874,8 +874,16 @@
 						oldRotationMatrix.extractRotation( scope.plugin.object3d.matrix );
 						worldRotationMatrix.extractRotation( scope.plugin.object3d.matrixWorld );
 
-						parentRotationMatrix.extractRotation( scope.plugin.object3d.parent.matrixWorld );
-						parentScale.setFromMatrixScale( tempMatrix.getInverse( scope.plugin.object3d.parent.matrixWorld ) );
+						if (scope.plugin.object3d.parent) {
+							parentRotationMatrix.extractRotation( scope.plugin.object3d.parent.matrixWorld );
+							parentScale.setFromMatrixScale( tempMatrix.getInverse( scope.plugin.object3d.parent.matrixWorld ) );
+						}
+						else {
+							// cameras don't have a parent in scene hierarchy
+							parentRotationMatrix.identity()
+							parentScale.set(1, 1, 1)
+						}
+
 
 						offset.copy( planeIntersect.point );
 

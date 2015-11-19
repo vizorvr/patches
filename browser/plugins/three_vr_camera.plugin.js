@@ -1,5 +1,7 @@
 (function() {
 	var ThreeVRCameraPlugin = E2.plugins.three_vr_camera = function(core) {
+		Plugin.apply(this, arguments)
+
 		this.desc = 'THREE.js VR Camera'
 		
 		this.defaultFOV = 90
@@ -35,7 +37,11 @@
 		this.dirty = false
 
 		this.state = {
-			position: {x: 0, y: 0, z:0}
+			position: {x: 0, y: 0, z:0},
+
+			// names with underscores have to match with THREE.Quaternion
+			// member variable names because of to/from json serialisation
+			quaternion: {_x: 0, _y: 0, _z:0, _w:1}
 		}
 
 		this.rotationFromGraph = new THREE.Euler()
@@ -44,18 +50,30 @@
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
 
 	ThreeVRCameraPlugin.prototype.reset = function() {
+		Plugin.prototype.reset.apply(this, arguments)
+
 		this.domElement = E2.dom.webgl_canvas[0]
 
-		this.perspectiveCamera = new THREE.PerspectiveCamera(
-			this.defaultFOV,
-			this.domElement.clientWidth / this.domElement.clientHeight,
-			0.001,
-			1000)
+		if (!this.perspectiveCamera) {
+			this.perspectiveCamera = new THREE.PerspectiveCamera(
+					this.defaultFOV,
+					this.domElement.clientWidth / this.domElement.clientHeight,
+					0.001,
+					1000)
+		}
+
+		// create a object3d reference so that the world editor sees the camera
+		// as an object3d
+		this.object3d = this.perspectiveCamera
 
 		this.perspectiveCamera.backReference = this
 
-		this.controls = new THREE.VRControls(this.perspectiveCamera)
+		if (!this.controls) {
+			this.controls = new THREE.VRControls(this.perspectiveCamera)
+		}
 
+		this.perspectiveCamera.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
+		this.perspectiveCamera.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
 	}
 
 	ThreeVRCameraPlugin.prototype.play = function() {
@@ -80,6 +98,10 @@
 
 	ThreeVRCameraPlugin.prototype.update_state = function() {
 		this.perspectiveCamera.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
+		this.perspectiveCamera.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
+
+		var eulerRotation = new THREE.Euler().setFromQuaternion(this.perspectiveCamera.quaternion)
+		this.rotationFromGraph.set(eulerRotation.x, eulerRotation.y, eulerRotation.z)
 
 		if (this.dirty)
 			this.perspectiveCamera.updateProjectionMatrix()
@@ -104,8 +126,12 @@
 			this.dirty = true
 			break
 		case 1: // rotation
-			this.rotationFromGraph.set(data.x, data.y, data.z)
-			this.perspectiveCamera.rotation.set(data.x, data.y, data.z)
+			var temp = new THREE.Quaternion().setFromEuler(new THREE.Euler(data.x, data.y, data.z))
+			this.state.quaternion._x = temp._x
+			this.state.quaternion._y = temp._y
+			this.state.quaternion._z = temp._z
+			this.state.quaternion._w = temp._w
+
 			this.dirty = true
 			break
 		case 2: // fov
