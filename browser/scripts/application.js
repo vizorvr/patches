@@ -393,7 +393,7 @@ Application.prototype.updateCanvas = function(clear) {
 }
 
 Application.prototype.mouseEventPosToCanvasCoord = function(e, result) {
-	var cp = E2.dom.canvas_parent[0];
+	var cp = E2.dom.canvases[0];
 
 	result[0] = (e.pageX - cp.offsetLeft) + this.scrollOffset[0];
 	result[1] = (e.pageY - cp.offsetTop) + this.scrollOffset[1];
