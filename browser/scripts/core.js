@@ -36,7 +36,7 @@ E2.COLOR_COMPATIBLE_SLOT = '#080';
 
 (function() {
 	E2.uid = function() {
-		var keys = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+		var keys = 'abcdefghijklmnopqrstuvwxyz0123456789'
 		var uid = ''
 		for (var i=0; i < 12; i++) {
 			uid += keys[Math.floor(Math.random() * keys.length)]
