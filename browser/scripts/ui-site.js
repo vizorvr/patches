@@ -224,14 +224,15 @@ VizorUI.modalOpen = function(html, heading, className, allowclose, opts) {
 	opts = opts || {}
 	opts.message = html;
 	opts.onEscape = allowclose;
-	if (typeof opts.backdrop === 'udefined') opts.backdrop = allowclose;	// bb 4.4+
+	if (typeof opts.backdrop === 'undefined') opts.backdrop = allowclose;	// bb 4.4+
 	if ((typeof heading !== 'undefined') && heading) opts.title = heading;
 	if ((typeof className !== 'undefined') && className) opts.className = className;
 	return bootbox.dialog(opts);
 };
 
-VizorUI.modalClose = function() {
-	bootbox.hideAll();
+VizorUI.modalClose = function(bb) {
+	if (typeof bb !== 'undefined') bb.modal('hide');
+	else bootbox.hideAll();
 };
 
 // shorthand

@@ -9,7 +9,7 @@ var helper = require('./controllerHelpers')
 var EditLog = require('../models/editLog')
 
 function makeRandomPath() {
-	var keys = 'abcdefghijklmnopqrstuvwxyz0123456789'
+	var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
 	var uid = ''
 	for (var i=0; i < 12; i++) {
 		uid += keys[Math.floor(Math.random() * keys.length)]
