@@ -319,7 +319,6 @@ VizorUI.prototype.toggleUILayer = function() {
 
 VizorUI.prototype.onBtnHideAllClicked = function(e) {
 	e.preventDefault();
-	console.log('toggle');
 	this.toggleUILayer();
 	return false;
 }

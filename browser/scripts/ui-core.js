@@ -151,6 +151,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 
 	var changedVisibilityPanelHandler = function($panel, $button) {
 		return function(visible){
+			if (that.isFullScreen()) return;
 			var isOn = visibility.floating_panels && visible;
 			var show = state.visible && isOn;
 			$panel
@@ -205,6 +206,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 	state.on('changed:panelStates:presets', function(panelState){
 		if (!panelState) return;
 		if (!panelState._found) return;
+		if (that.isFullScreen()) return;
 		VizorUI.applyPanelState(dom.presetsLib, panelState);
 		var controlsHeight = dom.presetsLib.find('.drag-handle').outerHeight(true) +
 					   dom.presetsLib.find('.block-header').outerHeight(true) +
@@ -220,6 +222,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 	state.on('changed:panelStates:assets', function(panelState){
 		if (!panelState) return;
 		if (!panelState._found) return;
+		if (that.isFullScreen()) return;
 		VizorUI.applyPanelState(dom.assetsLib, panelState);
 		var controlsHeight = dom.assetsLib.find('.drag-handle').outerHeight(true) +
 					   dom.assetsLib.find('.block-header').outerHeight(true) +
@@ -240,6 +243,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 	state.on('changed:panelStates:chat', function(panelState){
 		if (!panelState) return;
 		if (!panelState._found) return;
+		if (that.isFullScreen()) return;
 		var $chat = dom.chatWindow;
 		VizorUI.applyPanelState($chat, panelState);
 		var $resizeHandle = $chat.find('.resize-handle');
