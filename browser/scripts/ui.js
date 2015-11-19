@@ -529,7 +529,7 @@ VizorUI.prototype.showStartDialog = function() {
 	var dfd = when.defer()
 	var selectedTemplateUrl = null
 
-	if (false && !E2.util.isFirstTime()) {	// checks for vizor welcome cookie
+	if (!E2.util.isFirstTime()) {	// checks for vizor welcome cookie
 		E2.util.checkBrowser();
 		dfd.resolve()
 		return dfd.promise;
@@ -555,7 +555,6 @@ VizorUI.prototype.showStartDialog = function() {
 		e.preventDefault();
 		e.stopPropagation();
 		VizorUI.modalClose(welcomeModal);
-		dfd.resolve();
 		return false;
 	});
 
