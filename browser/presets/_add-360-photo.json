@@ -1,5 +1,5 @@
 {
-    "abs_t": 182.685,
+    "abs_t": 0.0,
     "active_graph": "root",
     "graph_uid": "TXDgBc0JJtS3",
     "root": {
@@ -11,19 +11,19 @@
                 "plugin": "graph",
                 "x": 604,
                 "y": 248,
-                "uid": "jMmSKEqxVR5g",
+                "uid": "WDra7EU6QpcD",
                 "state": {
                     "always_update": true,
                     "input_sids": {
-                        "mbxMQHaN8TnK": "lOz0fKTfMesH"
+                        "VuvNyBF6J3fc": "lOz0fKTfMesH"
                     },
                     "output_sids": {
-                        "Q3drNRB6scjn": "mh0rTKkFm0nD"
+                        "BcCZ8AvwH46g": "mh0rTKkFm0nD"
                     }
                 },
                 "title": "360 photo",
                 "graph": {
-                    "uid": "yQkuaHxAETyy",
+                    "uid": "s8wtdGhRhpX7",
                     "parent_uid": "root",
                     "open": true,
                     "nodes": [
@@ -31,7 +31,7 @@
                             "plugin": "three_mesh",
                             "x": 1252,
                             "y": 373,
-                            "uid": "H5nfZy82gDbN",
+                            "uid": "SwWZUPX9fgfc",
                             "state": {
                                 "position": {
                                     "x": 0,
@@ -55,7 +55,7 @@
                             "plugin": "output_proxy",
                             "x": 1438,
                             "y": 405,
-                            "uid": "Q3drNRB6scjn",
+                            "uid": "BcCZ8AvwH46g",
                             "title": "object3d",
                             "dyn_in": [
                                 {
@@ -75,15 +75,15 @@
                             "plugin": "three_material",
                             "x": 974,
                             "y": 130,
-                            "uid": "XR2eSUk9FXQC"
+                            "uid": "nn5PsLNx5aZe"
                         },
                         {
                             "plugin": "const_float_generator",
                             "x": 723,
                             "y": 214,
-                            "uid": "ZzzgmT92cawL",
+                            "uid": "q4jez2DjSwLx",
                             "state": {
-                                "val": 0
+                                "val": 1
                             },
                             "title": "Side"
                         },
@@ -91,15 +91,15 @@
                             "plugin": "three_uv_modifier",
                             "x": 553,
                             "y": 87,
-                            "uid": "vcKrs7TP8LSg"
+                            "uid": "hVxB9qTKL6mX"
                         },
                         {
                             "plugin": "const_float_generator",
                             "x": 297,
                             "y": 197,
-                            "uid": "WqQmtBFxJVPM",
+                            "uid": "5kBthatTyKu7",
                             "state": {
-                                "val": 1
+                                "val": -1
                             },
                             "title": "X repeat photo"
                         },
@@ -107,7 +107,7 @@
                             "plugin": "input_proxy",
                             "x": 321,
                             "y": 122,
-                            "uid": "mbxMQHaN8TnK",
+                            "uid": "VuvNyBF6J3fc",
                             "title": "texture",
                             "dyn_out": [
                                 {
@@ -126,13 +126,13 @@
                             "plugin": "three_geometry_sphere",
                             "x": 939,
                             "y": 467,
-                            "uid": "aCqRsCMS7CHw"
+                            "uid": "MqxX8jyNUfTe"
                         },
                         {
                             "plugin": "const_float_generator",
                             "x": 670,
                             "y": 421,
-                            "uid": "mzWLFd8uaQFW",
+                            "uid": "9TkSwQYbB7Hh",
                             "state": {
                                 "val": 30
                             },
@@ -142,7 +142,7 @@
                             "plugin": "const_float_generator",
                             "x": 676,
                             "y": 502,
-                            "uid": "NJaYdQrMg36v",
+                            "uid": "Rf5NhmauQAAe",
                             "state": {
                                 "val": 40
                             },
@@ -152,7 +152,7 @@
                             "plugin": "const_float_generator",
                             "x": 678,
                             "y": 584,
-                            "uid": "KwzmDTTPLhGP",
+                            "uid": "VgdJxGaCH2FA",
                             "state": {
                                 "val": 40
                             },
@@ -162,7 +162,7 @@
                             "plugin": "toggle_button",
                             "x": 724,
                             "y": 292,
-                            "uid": "H4fbwSAQutBa",
+                            "uid": "kNF6KZKHtGNR",
                             "state": {
                                 "enabled": false
                             },
@@ -171,103 +171,103 @@
                     ],
                     "conns": [
                         {
-                            "src_nuid": "H5nfZy82gDbN",
-                            "dst_nuid": "Q3drNRB6scjn",
+                            "src_nuid": "SwWZUPX9fgfc",
+                            "dst_nuid": "BcCZ8AvwH46g",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "WtLx6hTLyEus",
+                            "uid": "7PNGLkM8UNL5",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true
                         },
                         {
-                            "src_nuid": "XR2eSUk9FXQC",
-                            "dst_nuid": "H5nfZy82gDbN",
+                            "src_nuid": "nn5PsLNx5aZe",
+                            "dst_nuid": "SwWZUPX9fgfc",
                             "src_slot": 0,
                             "dst_slot": 2,
-                            "uid": "Fsd3zh58A4dH",
+                            "uid": "tkkxtj36JbwS",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "ZzzgmT92cawL",
-                            "dst_nuid": "XR2eSUk9FXQC",
+                            "src_nuid": "q4jez2DjSwLx",
+                            "dst_nuid": "nn5PsLNx5aZe",
                             "src_slot": 0,
                             "dst_slot": 8,
-                            "uid": "tjeHA48P4A8f",
+                            "uid": "FNMK3etEr4wX",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "vcKrs7TP8LSg",
-                            "dst_nuid": "XR2eSUk9FXQC",
+                            "src_nuid": "hVxB9qTKL6mX",
+                            "dst_nuid": "nn5PsLNx5aZe",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "2mTybbb8AeBc",
+                            "uid": "TQta32uvrM8r",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "WqQmtBFxJVPM",
-                            "dst_nuid": "vcKrs7TP8LSg",
+                            "src_nuid": "5kBthatTyKu7",
+                            "dst_nuid": "hVxB9qTKL6mX",
                             "src_slot": 0,
                             "dst_slot": 3,
-                            "uid": "qXkVJhQnduwM",
+                            "uid": "d5ZfX3MTQqQJ",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "mbxMQHaN8TnK",
-                            "dst_nuid": "vcKrs7TP8LSg",
+                            "src_nuid": "VuvNyBF6J3fc",
+                            "dst_nuid": "hVxB9qTKL6mX",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "6B8XyK4usQsW",
+                            "uid": "WDqfdMckEvhr",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "mzWLFd8uaQFW",
-                            "dst_nuid": "aCqRsCMS7CHw",
+                            "src_nuid": "9TkSwQYbB7Hh",
+                            "dst_nuid": "MqxX8jyNUfTe",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "pxEqb3RPx3t9",
+                            "uid": "2VWyvHGxfdyz",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "NJaYdQrMg36v",
-                            "dst_nuid": "aCqRsCMS7CHw",
+                            "src_nuid": "Rf5NhmauQAAe",
+                            "dst_nuid": "MqxX8jyNUfTe",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "vessm4DaegWL",
+                            "uid": "xzLapBYSUTQ9",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "KwzmDTTPLhGP",
-                            "dst_nuid": "aCqRsCMS7CHw",
+                            "src_nuid": "VgdJxGaCH2FA",
+                            "dst_nuid": "MqxX8jyNUfTe",
                             "src_slot": 0,
                             "dst_slot": 2,
-                            "uid": "jbYdDwVGcTMX",
+                            "uid": "3MmQbSuQ9yh5",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "aCqRsCMS7CHw",
-                            "dst_nuid": "H5nfZy82gDbN",
+                            "src_nuid": "MqxX8jyNUfTe",
+                            "dst_nuid": "SwWZUPX9fgfc",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "VBxgFP7Z9NU4",
+                            "uid": "Gd82xdBEsbfJ",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "H4fbwSAQutBa",
-                            "dst_nuid": "XR2eSUk9FXQC",
+                            "src_nuid": "kNF6KZKHtGNR",
+                            "dst_nuid": "nn5PsLNx5aZe",
                             "src_slot": 0,
                             "dst_slot": 3,
-                            "uid": "5RTGcqXxzTPn",
+                            "uid": "JMQSzME6VbMp",
                             "src_connected": true,
                             "dst_connected": true
                         }
@@ -300,7 +300,7 @@
                 "plugin": "url_texture_generator",
                 "x": 334,
                 "y": 219,
-                "uid": "LsdKECQFv3u2",
+                "uid": "A4rRjGAVjpWW",
                 "state": {
                     "url": "/data/image/dcc8eb0748f7e5b02001133e567b08965cabb944.png"
                 }
@@ -308,11 +308,11 @@
         ],
         "conns": [
             {
-                "src_nuid": "LsdKECQFv3u2",
-                "dst_nuid": "jMmSKEqxVR5g",
+                "src_nuid": "A4rRjGAVjpWW",
+                "dst_nuid": "WDra7EU6QpcD",
                 "src_slot": 0,
                 "dst_slot": 0,
-                "uid": "Je9qyxUX2Suc",
+                "uid": "JpFHkaRFzPyB",
                 "src_connected": true,
                 "dst_connected": true,
                 "dst_dyn": true
