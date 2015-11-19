@@ -558,12 +558,6 @@ VizorUI.prototype.showStartDialog = function() {
 	var dfd = when.defer()
 	var selectedTemplateUrl = null
 
-	if (!E2.util.isFirstTime()) {	// checks for vizor welcome cookie
-		E2.util.checkBrowser();
-		dfd.resolve()
-		return dfd.promise;
-	}
-
 	Cookies.set('vizor100', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
 
 	var welcomeModal = VizorUI.modalOpen(
