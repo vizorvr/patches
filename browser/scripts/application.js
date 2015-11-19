@@ -25,6 +25,7 @@ function Application() {
 	};
 
 	this.canvas = E2.dom.canvas;
+	this.breadcrumb = null;
 	this.c2d = E2.dom.canvas[0].getContext('2d');
 	this.editConn = null;
 	this.shift_pressed = false;
@@ -623,6 +624,8 @@ Application.prototype.clearSelection = function() {
 	this.selectedNodes = [];
 	this.selectedConnections = [];
 
+	if (E2.ui) E2.ui.state.selectedObjects = this.selectedNodes
+
 }
 
 Application.prototype.redrawConnection = function(connection) {	/* @TODO: rename this method */
@@ -670,6 +673,7 @@ Application.prototype.releaseSelection = function()
 	this.selection_start = null;
 	this.selection_end = null;
 	this.selection_last = null;
+	if (E2.ui) E2.ui.state.selectedObjects = this.selectedNodes
 
 	if(this.selection_dom)
 		this.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
@@ -1057,13 +1061,17 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 		node.ui.setSelected(true);
 	}
 
-	if (addToSelection !== false)
+	if (addToSelection !== false) {
 		this.selectedNodes.push(node)
+		if (E2.ui) E2.ui.state.selectedObjects = this.selectedNodes
+	}
+
 }
 
 Application.prototype.deselectNode = function(node) {
 	this.selectedNodes.splice(this.selectedNodes.indexOf(node), 1)
 	node.ui.setSelected(false);
+	if (E2.ui) E2.ui.state.selectedObjects = this.selectedNodes
 }
 
 Application.prototype.markConnectionAsSelected = function(conn) {
@@ -1094,7 +1102,7 @@ Application.prototype.calculateCanvasArea = function() {
 	if (!isFullscreen && !this.condensed_view) {
 		width = $(window).width();
 		height = $(window).height() -
-			$('.editor-header').outerHeight(true) - $('#breadcrumb').outerHeight(true) - $('.bottom-panel').outerHeight(true);
+			$('.editor-header').outerHeight(true) - $('#row2').outerHeight(true) - $('.bottom-panel').outerHeight(true);
 	} else {
 		width = window.innerWidth
 		height = window.innerHeight
@@ -1153,7 +1161,7 @@ Application.prototype.toggleWorldEditor = function(forceState) {
 		this.worldEditor.deactivate()
 	}
 	var isActive = this.worldEditor.isActive()
-	E2.ui.emit(uiEvent.worldEditChanged, isActive)
+
 	return isActive
 }
 
@@ -1323,10 +1331,6 @@ Application.prototype.onKeyDown = function(e) {
 				this.undoManager.redo()
 		}
 	}
-	else if (e.keyCode === toggleWorldEditorKey) { // v
-		this.toggleWorldEditor();
-		ret = false;
-	}
 
 	return ret;
 
@@ -1443,7 +1447,6 @@ Application.prototype.openPresetSaveDialog = null;	// ui replaces this
 
 
 Application.prototype.onPublishClicked = function() {
-
 	if (!E2.models.user.get('username')) {
 		return E2.controllers.account.openLoginModal()
 			.then(this.onPublishClicked.bind(this))
@@ -1662,18 +1665,7 @@ Application.prototype.onGraphSelected = function(graph) {
 
 	E2.dom.breadcrumb.children().remove()
 
-	var b = new UIbreadcrumb()
-	function buildBreadcrumb(parentEl, graph, add_handler) {
-		if (add_handler) {
-			b.prepend(graph.tree_node.title, null, function() { graph.tree_node.activate() })
-		} else {
-			b.prepend(graph.tree_node.title, null)
-		}
-		if (graph.parent_graph)
-			buildBreadcrumb(parentEl, graph.parent_graph, true)
-	}
-	buildBreadcrumb(E2.dom.breadcrumb, E2.core.active_graph, false)
-	b.render(E2.dom.breadcrumb)
+	if (E2.ui) E2.ui.buildBreadcrumb(E2.core.active_graph)
 
 	E2.core.active_graph.create_ui()
 
@@ -2012,7 +2004,7 @@ Application.prototype.setupChat = function() {
 		return
 
 	this.chatStore = new E2.ChatStore()
-	this.chat = new E2.Chat($('#chat'))
+	this.chat = new E2.Chat(E2.dom.chatTab)
 }
 
 /**
@@ -2069,11 +2061,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.progressBar = $('#progressbar');
 	
 	E2.dom.btnNew = $('#btn-new');
-	
-	E2.dom.btnScale = $('#btn-scale');
-	E2.dom.btnRotate = $('#btn-rotate');
+
 	E2.dom.btnAssets = $('#btn-assets');
-	
 	E2.dom.btnInspector = $('#btn-inspector');
 	E2.dom.btnPresets = $('#btn-presets');
 	E2.dom.btnSavePatch = $('#btn-save-patch');

@@ -40,6 +40,7 @@
 			{{!-- <button class="btn svg" id="btn-graph" data-svgref="icon-graph"><svg /> Graph</button>
 				#676 <button class="btn" id="btn-assets" data-svgref="icon-assets"><svg /> Assets</button> --}}
 			<button class="btn svg" id="btn-chat-display" data-svgref="icon-chat"><svg /> Chat</button>
+			<button class="btn svg ui_off" id="btn-hide-all" data-svgref="icon-hide-all"><svg /> Hide All</button>
 		</div>
 
 		<div class="spacer"></div>
@@ -124,17 +125,13 @@
 		</button>
 	</div>
 	<div class="tab-content">
-		<div role="tabpanel" class="tab-pane active" id="chatTab">
-			<div id="chat" class="chat">
-				<div class="chat-nav">
-					<div class="chat-tree">
-						<a href="#globalchat">Global</a><svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg><span>Graph</span>
-					</div>
-				</div>
-				<div class="messages scrollbar"></div>
-				<div class="composer">
-					<input type="text" name="message" id="new-message-input">
-				</div>
+		<div role="tabpanel" class="tab-pane" id="chatTab">
+			<div class="chat-nav">
+				<a href="#globalchat">Global</a><svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg><span>Graph</span>
+			</div>
+			<div class="messages scrollbar"></div>
+			<div class="composer">
+				<input type="text" name="message" id="new-message-input">
 			</div>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="peopleTab">

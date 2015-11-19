@@ -870,5 +870,6 @@ NodeUI.redrawActiveGraph = function() {
 	if (changed) {
 		E2.app.updateCanvas(true);
 	}
+	if (E2.ui) E2.ui.state.selectedObjects = E2.ui.state.selectedObjects;	// force refresh
 	return changed;
 }

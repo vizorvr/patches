@@ -1,6 +1,9 @@
+@editor-topbar-button-margin:	4px;
+
 body.bEditor {
 
   /* buttons */
+
   button.ui_off svg, button[disabled] svg {
 	opacity: 0.5;
   }
@@ -165,7 +168,7 @@ body.bEditor {
 	  -webkit-flex-shrink: 0;
 	  flex-shrink: 0;
 	  button {
-		margin: 0 2px;
+		margin: 0 @editor-topbar-button-margin;
 	  }
 	}
   }
@@ -177,6 +180,9 @@ body.bEditor {
 	button {
 	  font-weight: 600;
 	  color: @editor-text-default;
+	  &.ui_off {
+		// color: @editor-text-inactive;
+	  }
 	  svg {
 		stroke: @editor-text-default;
 	  }

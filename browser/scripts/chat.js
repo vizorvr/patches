@@ -85,8 +85,9 @@ ChatStore.prototype.isForMe = function(pl) {
 
 function Chat($el, handlebars) {
 	this._hbs = handlebars || window.Handlebars
-	this.$messages = $el.find('.messages')
-	this.$input = $el.find('input')
+	this.$container = $el;
+	this.$messages = jQuery('.messages', this.$container)
+	this.$input = jQuery('input', this.$container)
 
 	E2.app.chatStore.on('added',
 		this._renderMessage.bind(this))
@@ -117,7 +118,7 @@ Chat.prototype.setupInput = function() {
 }
 
 Chat.prototype._renderMessage = function(message) {
-	var $last = $('.chat .message:last')
+	var $last = this.$messages.find('.message:last')
 	var wasScrolledDown = $last.length ? 
 		E2.util.isScrolledIntoView($last) : true
 
