@@ -73,7 +73,7 @@ var VizorUI = function() {			// becomes E2.ui
 			availWidth	: window.screen.availWidth,
 			availHeight	: window.screen.availHeight
 		},
-		viewCamera : uiViewCam.vr		// one of uiViewCam keys
+		viewCamera : uiViewCam.world_editor		// one of uiViewCam keys
 	};
 	this.setupStateMethods();	// adds code to update the current or apply new state
 
@@ -235,6 +235,10 @@ VizorUI.prototype.isVisible = function() {
 VizorUI.prototype.isPatchVisible = function() {
 	return this.state.visibility.patch_editor;
 }
+VizorUI.prototype.isInProgramMode = VizorUI.prototype.isPatchVisible;
+VizorUI.prototype.isInBuildMode = function() {
+	return !this.isInProgramMode();
+}
 VizorUI.prototype.isLoading = function() {
 	return this.flags.loading;
 }
@@ -346,8 +350,14 @@ VizorUI.prototype.onKeyDown = function(e) {
 			state.visibility.panel_presets = true;
 			this.applyVisibility(false);	// do not update the state
 			setTimeout(function(){
-				jQuery('#presets-lib div.block-header ul.nav-tabs li').first().find('a').trigger('click');
-				jQuery('#presetSearch').focus().select();
+				if (that.isInProgramMode()) {
+					that.dom.tabPresets.find('a').trigger('click');
+					jQuery('#presetSearch').focus().select();
+				} else {
+					that.dom.tabObjects.find('a').trigger('click');
+					jQuery('#objectSearch').focus().select();
+				}
+
 				that.updateState();
 			}, 100);
 
@@ -470,19 +480,42 @@ VizorUI.prototype.applyVisibility = function(andUpdateState) {
 	if (andUpdateState) this.updateState();
 	this.enforceConstraints();
 
+	var inBuildMode = !visibility.patch_editor,
+		inProgramMode = visibility.patch_editor;
+
 	// sync camera buttons
 	var worldEditorActive = state.viewCamera === uiViewCam.world_editor;
-	dom.btnSavePatch.attr('disabled',worldEditorActive);
-	dom.btnInspector.attr('disabled',worldEditorActive);
-	dom.btnZoomOut.attr('disabled',worldEditorActive);
+
+
+	dom.btnBuildMode.toggleClass('ui_on', inBuildMode)
+		.toggleClass('ui_off', inProgramMode);
+	dom.btnProgramMode.toggleClass('ui_on', inProgramMode)
+		.toggleClass('ui_off', inBuildMode);
+
+	dom.btnSavePatch.attr('disabled', inBuildMode);
+	dom.btnInspector.attr('disabled', inBuildMode);
+
+//  these will still zoom, whatever the mode?
+	/*
+	dom.btnZoomOut.attr('disabled',isProgramMode);
 	dom.btnZoom.attr('disabled',worldEditorActive);
 	dom.btnZoomIn.attr('disabled',worldEditorActive);
-	dom.btnScale.attr('disabled',!worldEditorActive);
-	dom.btnRotate.attr('disabled',!worldEditorActive);
+	*/
+
+	dom.btnMove.attr('disabled',inProgramMode);
+	dom.btnScale.attr('disabled',inProgramMode);
+	dom.btnRotate.attr('disabled',inProgramMode);
 	dom.btnEditorCam.parent().toggleClass('active', worldEditorActive);
 	dom.btnVRCam.parent().toggleClass('active', !worldEditorActive);
 
-	E2.app.noodlesVisible = visibility.patch_editor;
+	if (inProgramMode) {
+		dom.tabPresets.find('a').trigger('click');
+	} else {
+		dom.tabObjects.find('a').trigger('click');
+		dom.tabPresets.addClass('inactive ui_off');
+	}
+
+	E2.app.noodlesVisible = inProgramMode;
 };
 
 

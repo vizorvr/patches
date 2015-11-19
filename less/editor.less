@@ -23,21 +23,6 @@
 
 div.menu-bar {z-index:100;}	// #756
 
-/* modals */
-
-div.modal.viewsource textarea {
-  background:#111;
-  color:white;
-  font-family:  Courier, fixed;
-  font-size: 92%; line-height:105%;
-  &::selection {
-	background: #999;
-  }
-  &::-moz-selection {
-	background: #444;
-  }
-}
-
 /* graphics */
 
 button.vp.svg {	// for (square) buttons with svg icons inside
@@ -204,6 +189,9 @@ div.graph-node {
 	  	display: table;
 	  	width:100%;
 	  	height:100%;	// required for ins and outs to achieve 100% height
+
+
+
 	  	>.p_plugin, >.p_ins, >.p_outs {
 		  position: relative;
 		  display:table-cell;
@@ -365,6 +353,9 @@ div.graph-node {
 }
 div.graph-node.p_inline {
   box-shadow: none;
+}
+div.graph-node.p_inline .p_header {
+  height: 32px;	/* fix 3px discrepancy in safari #804 */
 }
 div.graph-node.p_selected,
 div.graph-node.p_inline.p_selected
@@ -579,11 +570,17 @@ div.graph-node .p_content .p_plugin button.vp.svg.p_round {
 div.graph-node.p_id_url_texture_generator {
   div.p_plugin {
 	position:relative;
-	background: #000;
+	// safari
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	overflow: hidden;
+	// /safari
 	&.p_ui_col {padding:0;}
 	div.p_thumbnail {
+	  background: #000;
 	  width:200px;
 	  height:120px;
+	  margin-bottom: 1px;
 	  vertical-align: middle;
 	  text-align: center;
 	  opacity: 0.8;
@@ -688,7 +685,3 @@ div.graph-node.p_cat_io.p_id_variable_local_write .p_header
 
 div.ace_content {text-align: left;}
 
-
-button.ui_off svg {
-  opacity: 0.4;
-}

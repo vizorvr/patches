@@ -48,6 +48,16 @@ button.nofx, a.nofx {
   }
 }
 
+div.breadcrumb {
+  padding:0; margin:0;
+}
+.breadcrumb svg {
+	display: inline-block;
+	width: 19px;
+	height: 10px;
+	margin-bottom: -1px;
+	stroke: @editor-text-inactive;
+}
 
 body div.bootbox div.modal-dialog button.btn-primary {
   outline: 0;	// bootbox
@@ -160,7 +170,7 @@ body.bMain {
   }
 
   #wrapper {width:100%;}
-  >header, &.bHome header, #contentwrap, >footer, #contentwrap>footer, div#flash, #contentcontainer, #secondarynav {
+  >header, &.bHome header, #contentwrap, >footer, #contentwrap>footer, div#flash, #contentcontainer, #secondarynav, .contentwrap {
 	padding:0;
 	>.in, >section>.in,
 		>div>section>.in // mobileonly/nomobile
@@ -440,6 +450,20 @@ body.bMain {
   #contentcontainer>section:first-child {margin-top:0}
   #contentcontainer>nav+section {margin-top:0}
 
+  .breadcrumbcontainer.dark {
+	background: @bg-darker;
+	color: white;
+	a {
+	  color: white;
+	}
+	svg {
+	  stroke: white;
+	}
+	>.in {
+	  padding: 20px 22px;
+	}
+  }
+
 }	// body.bMain
 
 button.svg.tiny {
@@ -458,6 +482,12 @@ button.svg.tiny {
 	position: absolute;
 	left:0;
 	top:0;
+  }
+}
+
+button.svg {
+  svg {
+	max-height: 100%;
   }
 }
 
@@ -573,4 +603,29 @@ body.bUserpage #secondarynav {
 
 body.bProfile {
   section.center + section.center {margin-top: 3em;}
+}
+
+#account {
+  button.action.login {
+	background: none;
+  }
+  span {display: block}
+  svg {
+	width: 32px;
+	height: 32px;
+  }
+  .top-userpic {
+	margin: 5px auto 6px;
+  }
+  button {
+	width: 56px;
+	margin-right: 10px;
+  }
+}
+
+.bMain #account button {
+  border: 0; outline: 0; box-shadow: 0;
+  svg {
+	stroke: #fff;
+  }
 }

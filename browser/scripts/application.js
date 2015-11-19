@@ -1585,6 +1585,7 @@ Application.prototype.openPresetSaveDialog = null;	// ui replaces this
 
 
 Application.prototype.onPublishClicked = function() {
+
 	if (!E2.models.user.get('username')) {
 		return E2.controllers.account.openLoginModal()
 			.then(this.onPublishClicked.bind(this))
@@ -1592,6 +1593,7 @@ Application.prototype.onPublishClicked = function() {
 	
 	E2.ui.openPublishGraphModal()
 	.then(function(path) {
+		window.onbeforeunload = null;	// override "you might be leaving work" prompt (release mode)
 		window.location.href = path
 	})
 }
@@ -1808,26 +1810,18 @@ Application.prototype.onGraphSelected = function(graph) {
 
 	E2.dom.breadcrumb.children().remove()
 
+	var b = new UIbreadcrumb()
 	function buildBreadcrumb(parentEl, graph, add_handler) {
-		var sp = $('<span>' + graph.tree_node.title + '</span>')
-		sp.css('cursor', 'pointer')
-
 		if (add_handler) {
-			sp.click(function() {
-				graph.tree_node.activate()
-			})
-
-			sp.css({ 'text-decoration': 'underline' })
+			b.prepend(graph.tree_node.title, null, function() { graph.tree_node.activate() })
+		} else {
+			b.prepend(graph.tree_node.title, null)
 		}
-
-		parentEl.prepend($('<svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg>'))
-		parentEl.prepend(sp)
-
 		if (graph.parent_graph)
 			buildBreadcrumb(parentEl, graph.parent_graph, true)
 	}
-
 	buildBreadcrumb(E2.dom.breadcrumb, E2.core.active_graph, false)
+	b.render(E2.dom.breadcrumb)
 
 	E2.core.active_graph.create_ui()
 
@@ -2051,10 +2045,6 @@ Application.prototype.start = function() {
 		E2.app.toggleWorldEditor()
 	});
 
-	E2.dom.publishButton.click(function() {
-		E2.app.onPublishClicked()
-	});
-
 	$('button#fullscreen').click(function() {
 		E2.app.toggleFullscreen()
 	});
@@ -2064,7 +2054,6 @@ Application.prototype.start = function() {
 	});
 
 	$('.resize-handle').on('mousedown', function(e) {
-		var $handle = $(this)
 		var $target = $(this).parent()
 		var oh = $target.height()
 		var oy = e.pageY
@@ -2072,6 +2061,7 @@ Application.prototype.start = function() {
 		var changed = false
 
 		e.preventDefault()
+		e.stopPropagation();
 
 		function mouseMoveHandler(e) {
 			changed = true
@@ -2258,6 +2248,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	
 	E2.dom.presetsLib = $('#presets-lib');
 	E2.dom.presets_list = $('#presets');
+	E2.dom.objectsList = $('#objects');
 	
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');
@@ -2279,7 +2270,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	
 	E2.dom.dbg = $('#dbg');
 	E2.dom.worldEditorButton = $('#worldEditor');
-	E2.dom.publishButton = $('#publish-button');
+	E2.dom.publishButton = $('#btn-publish');
 	E2.dom.play = $('#play');
 	E2.dom.play_i = $('i', E2.dom.play);
 	E2.dom.pause = $('#pause');
@@ -2288,7 +2279,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.forkButton = $('#fork-button');
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
-	E2.dom.saveAsPreset = $('#save-as-preset');
+	E2.dom.saveAsPreset = E2.dom.btnSavePatch;
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
 	E2.dom.structure = $('#structure');

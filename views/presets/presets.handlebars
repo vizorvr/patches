@@ -8,7 +8,7 @@
 		onblur="this.placeholder = 'Search'"/>
 </div>
 
-<div class="preset-list-container">
+<div class="preset-list-container" id="preset-list-container">
 
 	<div class="preset-list-content scrollbar">
 
@@ -21,12 +21,12 @@
 					data-toggle="collapse"
 					data-category="{{@key}}"
 					data-parent="#{{../controlId}}"
-					href="#cscat{{@index}}">
+					href="#cscat{{../controlId}}-{{@index}}">
 						<i class="glyphicon glyphicon-chevron-right"></i>
 						{{@key}}
 				</div>
 			
-				<div id="cscat{{@index}}"
+				<div id="cscat{{../controlId}}-{{@index}}"
 					class="panel-collapse collapse">
 
 					<div class="panel-body">

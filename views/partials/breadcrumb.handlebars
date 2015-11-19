@@ -1,0 +1,22 @@
+<div class="breadcrumb in">
+	{{#each crumbs}}
+		{{#unless @first}}
+			{{#with ../../options}}
+				{{#if useSeparator}}
+					{{#if ../separatorHtml}}
+						{{../../separatorHtml}}
+					{{else}}
+						<svg class="separator"><use xlink:href="#breadcrumb-separator"></use></svg>
+					{{/if}}
+				{{/if}}
+			{{/with}}
+		{{/unless}}
+		<span class="crumb"><!-- crumb: {{@index}} -->
+			{{#if this.link}}
+				<a data-uid="{{this.uid}}" href="{{this.link}}">{{this.text}}</a>
+			{{else}}
+				{{this.text}}
+			{{/if}}
+		</span>
+	{{/each}}
+</div>

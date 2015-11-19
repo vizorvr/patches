@@ -165,20 +165,26 @@ function dragAndDropMouseDownHandler(e) {
 		clearInterval(scrollInterval)
 		
 		// Only create new item when released over the canvas and hide floating box if dropped under it;
-		if(evt.pageX < (canvasWidth + canvasX) && evt.pageX > canvasX && evt.pageY < (canvasHeight + canvasY) && evt.pageY > canvasY) {
+		if (E2.app.isWorldEditorActive() ||
+			(evt.pageX < (canvasWidth + canvasX) &&
+			evt.pageX > canvasX &&
+			evt.pageY < (canvasHeight + canvasY) &&
+			evt.pageY > canvasY))
+		{
 			e.data.dropSuccessCb(e)
 			
 			if ((presetsVisible) && (evt.pageX < (plWidth + plX) && evt.pageX > plX && evt.pageY < (plHeight + plY) && evt.pageY > plY)) { 
 				collapsePresets();
 			}
+			
 			if ((assetsVisible) && (evt.pageX < (alWidth + alX) && evt.pageX > alX && evt.pageY < (alHeight + alY) && evt.pageY > alY)) { 
 				collapseAssets();
 			}
+
 			if ((chatVisible) && (evt.pageX < (chWidth + chX) && evt.pageX > chX && evt.pageY < (chHeight + chY) && evt.pageY > chY)) { 
 				collapseChat();
 			}
 		}
-
 	}
 
 	// Take care to only bind mouse movement and mouseup once
@@ -257,13 +263,12 @@ CollapsibleSelectControl.prototype._search = function(text) {
 		that._cb($(e.target).data('path'))
 	})
 
-	$lis.bind('mousedown',
-		{
-			dropSuccessCb: function(e) {
-				that._cb($(e.target).data('path'))
-			}
-		},
-		dragAndDropMouseDownHandler)
+	$lis.bind('mousedown', {
+		dropSuccessCb: function(e) {
+			that._cb($(e.target).data('path'))
+		}
+	},
+	dragAndDropMouseDownHandler)
 
 	this._resultEls = $lis
 
@@ -392,7 +397,11 @@ CollapsibleSelectControl.prototype.render = function(el) {
 	})
 
 	// Drag and drop an element from the list
-	$('li', el).bind('mousedown', { dropSuccessCb: function(e) { that._cb($(e.target).data('path')) } }, dragAndDropMouseDownHandler)
+	$('li', el).bind('mousedown', {
+		dropSuccessCb: function(e) {
+			that._cb($(e.target).data('path'))
+		}
+	}, dragAndDropMouseDownHandler)
 
 	var keyTimer
 	$input.on('keyup', function(e) {
@@ -434,7 +443,9 @@ CollapsibleSelectControl.prototype.render = function(el) {
 			case 13: // ok
 				if ($sel) {
 					$sel.trigger('dblclick')
-					setTimeout(function(){$input.trigger('blur');}, 100);
+					setTimeout(function() {
+						$input.trigger('blur');
+					}, 100);
 				}
 				break;
 			case 38: // up

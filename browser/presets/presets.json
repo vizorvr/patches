@@ -1,76 +1,71 @@
 {
 	"TEMPLATES": {
-		"Basic VR scene": "_template-basic-vr-scene",
-		"360 photo template": "_template-360-photo"
+		"Basic VR scene": { "name": "_template-basic-vr-scene" },
+		"360 photo template": { "name": "_template-360-photo" }
 	},
 
 	"ADD OBJECTS": {
-		"3D model": "_add-3d-model",
-		"Box": "_add-box",
-		"360 photo": "_add-360-photo",
-		"Sphere": "_add-sphere",
-		"Dodecahedron": "_add-dodecahedron",
-		"Plane": "_add-plane-no-shading",
-		"Cylinder": "_add-cylinder",
-		"Sky sphere": "_add-sky-sphere",
-		"Floor": "_add-floor",
-		"Text": "_add-text"
+		"3D model": { "name": "_add-3d-model", "isObject3d": true },
+		"Box": { "name": "_add-box", "isObject3d": true },
+		"360 photo": { "name": "_add-360-photo", "isObject3d": true },
+		"Sphere": { "name": "_add-sphere", "isObject3d": true },
+		"Dodecahedron": { "name": "_add-dodecahedron", "isObject3d": true },
+		"Plane": { "name": "_add-plane-no-shading", "isObject3d": true },
+		"Cylinder": { "name": "_add-cylinder", "isObject3d": true },
+		"Sky sphere": { "name": "_add-sky-sphere", "isObject3d": true },
+		"Floor": { "name": "_add-floor", "isObject3d": true },
+		"Text": { "name": "_add-text", "isObject3d": true }
 	},
 
 	"ADD LIGHTS": {
-		"Point light": "_add-point-light",
-		"Directional light": "_add-directional-light",
-		"Ambient light": "_add-ambient-light"
-
+		"Point light": { "name": "_add-point-light", "isObject3d": true },
+		"Directional light": { "name": "_add-directional-light", "isObject3d": true },
+		"Ambient light": { "name": "_add-ambient-light", "isObject3d": true }
 	},
 
-		"ADD PARTICLES": {
-		"Particle emitter": "_add-particle-emitter",
-		"Geometry as particles": "_add-particle-geometry"
-
+	"ADD PARTICLES": {
+		"Particle emitter": { "name": "_add-particle-emitter", "isObject3d": true },
+		"Geometry as particles": { "name": "_add-particle-geometry", "isObject3d": true }
 	},
 
 	"INTERACTION": {
-		"Keypress increase/decrease": "interaction_up_and_down_counter_with_init_and_clamp"
+		"Keypress increase/decrease": { "name": "interaction_up_and_down_counter_with_init_and_clamp" }
 	},
-
 
 	"AUDIO": {
-		"Audio player": "audio_audio_player_old"
+		"Audio player": { "name": "audio_audio_player_old" }
 	},
 
-
 	"TIME & ANIMATION ": {
-		"Basic clock": "_basic-clock",
-		"Oscillate between 2 values": "_oscillate-between-2-values",
-		"Oscillate 2 values with in tween": "_oscillate-with-in-tween",
-		"Oscillate 2 values with out tween": "_oscillate-with-out-tween",
-		"Oscillate with a sawtooth": "_oscillate-sawtooth",
-		"Oscillate with a triangle": "time_oscillate_with_triangle",
-		"Stopwatch": "_stopwatch",
-		"Timer from 0 to 1": "time_timer_from_0_to_1",
-		"Timer from 1 to 0": "time_timer_from_1_to_0",	
-		"Circular motion to XYZ": "time_circular_motion_to_xyz",
-		"Shaky random between 0 & 1": "time_shaky_random",
-		"Random with speed": "util_random_with_speed"
+		"Basic clock": { "name": "_basic-clock" },
+		"Oscillate between 2 values": { "name": "_oscillate-between-2-values" },
+		"Oscillate 2 values with in tween": { "name": "_oscillate-with-in-tween" },
+		"Oscillate 2 values with out tween": { "name": "_oscillate-with-out-tween" },
+		"Oscillate with a sawtooth": { "name": "_oscillate-sawtooth" },
+		"Oscillate with a triangle": { "name": "time_oscillate_with_triangle" },
+		"Stopwatch": { "name": "_stopwatch" },
+		"Timer from 0 to 1": { "name": "time_timer_from_0_to_1" },
+		"Timer from 1 to 0": { "name": "time_timer_from_1_to_0" },	
+		"Circular motion to XYZ": { "name": "time_circular_motion_to_xyz" },
+		"Shaky random between 0 & 1": { "name": "time_shaky_random" },
+		"Random with speed": { "name": "util_random_with_speed" }
 	},
 
 	"COLOR ": {
-		"Hue / Saturation / Luminosity / Alpha": "color_hsla",
-		"Red / Green / Blue / Alpha": "color_rgba",
-		"Color to vector XYZ": "util_color_to_vector"
-
+		"Hue / Saturation / Luminosity / Alpha": { "name": "color_hsla" },
+		"Red / Green / Blue / Alpha": { "name": "color_rgba" },
+		"Color to vector XYZ": { "name": "util_color_to_vector" }
 	},
 
 	"UTILS": {
-		"4 step stepsequencer": "util_4_step_stepsequencer",
-		"1 step stepsequencer": "util_1_step_stepsequencer",
-		"9 step stepsequencer": "util_9_step_stepsequencer",
-		"Display number": "_util-display-number"
+		"4 step stepsequencer": { "name": "util_4_step_stepsequencer" },
+		"1 step stepsequencer": { "name": "util_1_step_stepsequencer" },
+		"9 step stepsequencer": { "name": "util_9_step_stepsequencer" },
+		"Display number": { "name": "_util-display-number" }
 	},
 
 	"EXAMPLES": {
-		"Rotating cube": "_example-rotating-cube",
-		"Spawn particles from mesh": "_example-particle-spawn-from-mesh"
+		"Rotating cube": { "name": "_example-rotating-cube" },
+		"Spawn particles from mesh": { "name": "_example-particle-spawn-from-mesh" }
 	}
 }

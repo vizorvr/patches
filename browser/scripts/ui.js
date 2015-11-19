@@ -6,15 +6,15 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom = dom || this.dom;
 	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2.app);
 
+	var that = this;
+
 	this.on(uiEvent.worldEditChanged, function(isActive){	// this = ui
 		this.state.viewCamera = (isActive) ? uiViewCam.world_editor : uiViewCam.vr;
 		this.applyVisibility()
 	}.bind(this));
-	dom.btnGraph.click(e2.app.toggleNoodles.bind(e2.app));
 
 	// menu shell
 	dom.btnSignIn.click(VizorUI.openLoginModal);
-
 
 	dom.btnAssets.click(this.onBtnAssetsClicked.bind(this));
 	dom.btnPresets.click(this.onBtnPresetsClicked.bind(this));
@@ -34,9 +34,19 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.presetsClose.click(this.onPresetsCloseClicked.bind(this));
 	dom.presetsToggle.click(this.onPresetsToggleClicked.bind(this));
 
+	dom.btnBuildMode.click(function(){
+		that.togglePatchEditor(false);
+	});
+	dom.btnProgramMode.click(function(){
+		that.togglePatchEditor(true);
+	});
+
+	dom.publishButton.click(function() {
+		E2.app.onPublishClicked()
+	});
+
 	var $presetsLibItems = jQuery('div#presets-lib ul li');
-	$presetsLibItems.last().find('a').click(this.onTreeClicked.bind(this));
-	$presetsLibItems.first().find('a').click(this.updateState.bind(this));
+	$presetsLibItems.find('a').click(this.updateState.bind(this));
 
 	$(document).on("shown.bs.modal", function() {
 		$('.bootbox-close-button').html('<svg class="icon-dialog-close">'
@@ -50,9 +60,17 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	this.setWorldEditorMode(this.state.viewCamera === uiViewCam.world_editor);
 
 	this._init(e2);
-	this.setupEventHandlers(e2,this.dom);
-
 	var dom = this.dom;
+
+	dom.btnBuildMode = jQuery('#buildModeBtn');
+	dom.btnProgramMode = jQuery('#programModeBtn');
+	dom.btnMove = jQuery('#btn-move');
+
+	var presetsTabs = jQuery('#presets-lib div.block-header ul.nav-tabs li');
+	dom.tabPresets = presetsTabs.find("a[href='#presets']").parent();
+	dom.tabObjects = presetsTabs.find("a[href='#objects']").parent();
+
+	this.setupEventHandlers(e2,this.dom);
 
 	var shaderBlock = $('.shader-block')
 	shaderBlock.movable()
@@ -80,8 +98,15 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	dom.chatWindow.on(uiEvent.moved, this.updateState.bind(this));
 	dom.presetsLib.on(uiEvent.moved, this.updateState.bind(this));
 
+	dom.structure.addClass('scrollbar'); // #805
+	dom.menubar = jQuery('div.menu-bar')
+
+	VizorUI.replaceSVGButtons(dom.menubar);
+	VizorUI.replaceSVGButtons(jQuery('#row2'));
+
 	this._initialised = true;
 
+	this.applyVisibility(false);
 	this.emit(uiEvent.initialised, this);
 }
 
@@ -488,6 +513,9 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 				}
 			})
 			.files(files)
+			.on('closed', function(){
+				ui.updateProgressBar(100);
+			})
 			.modal();
 
 			return fcs;
@@ -495,7 +523,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 	};
 
 	if (!VizorUI.userIsLoggedIn()) {
-		return ui.openLoginModal().then(presetDialog);
+		return VizorUI.openLoginModal().then(presetDialog);
 	}
 
 	return presetDialog();
@@ -571,7 +599,7 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 	var barWidth = dom.progressBar.width();
 	var newWidth = winWidth / 100 * percent;
 	var barSpace = winWidth - barWidth;
-	var barSpeed = 2000 - percent * 12;
+	var barSpeed = 1000 - percent * 8;
 	
 	percent = (percent === 0) ? (barWidth / newWidth + 5) : (percent);
 	newWidth = (newWidth <= barWidth) ? (barSpace / 100 * percent + barWidth) : (newWidth);

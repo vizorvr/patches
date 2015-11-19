@@ -509,7 +509,12 @@ VizorUI.replaceSVGButtons = function($selector) {
 			});
 			$button.text('');
 		}
-		$button.append($svg);
+		// place an empty <svg> wherever you want the image, or one will be appended
+		var $existingSvg = jQuery('svg', $button);
+		if ($existingSvg.length > 0)
+			$existingSvg.replaceWith($svg);
+		else
+			$button.append($svg);
 	});
 
 	return (numReplaced>0);

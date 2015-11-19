@@ -27,6 +27,12 @@ body {
 	user-select: none;
 }
 
+*[contenteditable]:not([disabled]) {
+	-webkit-touch-callout: initial;
+	-webkit-user-select: initial;
+	user-select: initial;
+}
+
 #dbg
 {
 	display: none;
@@ -91,142 +97,58 @@ table
 	vertical-align: center;
 }
 
-.editor-header {
-    height: @menu-bar-height;
-    width: 100%;
-    position: relative;
-}
 
-.menu-bar {
+.iconic-nav, .buttons {
+  height: @menu-bar-height;
+  >* {
+	height: @menu-bar-height;
+    position: relative;
+	display: inline-block;
+  }
+  button, div.button {
+	outline: none;
     font-family: @font-family-sans-serif;
-    height: @menu-bar-height;
-    background-color: @bg-light;
-    position: relative;
-    width: 100%;
-    min-width: 992px;
-}
-    
-#top-header-logo {
-    width: 156px;
-    height: @menu-bar-height;
-    float: left;
-}
-
-#top-header-logo svg {
-   fill: @editor-text-default;
-}
-
-ul.iconic-nav {
-    margin: 0 0 0 2%;
-    @media @desktop-xl {
-        margin: 0 0 0 8%;
-    };
-    @media @desktop-l {
-        margin: 0 0 0 6%;
-    };
-    @media @desktop {
-        margin: 0 0 0 3%;
-    };
-    @media @tablet {
-        margin: 0;
-    };
-}
-
-ul.iconic-nav:first-of-type {
-    margin: 0 0 0 4%;
-    @media @tablet {
-        margin: 0 0 0 2%;
-    };
-}
-ul.iconic-nav:last-child {
-    margin: 0 4% 0 0;
-    @media @tablet {
-        margin: 0 2% 0 0;
-    };
-}
-    
-ul.iconic-nav, ul.iconic-nav>li {
-    height: @menu-bar-height;
-    display: block;
-    float: left;
-    padding: 0 5px;
-}
-ul.iconic-nav>li {
-    min-width: 36px;
-    float: left;
-    position: relative;
-    line-height: 100%;
-}
-ul.iconic-nav button {
-    outline: none;    
-    font-family: @font-family-sans-serif;
-}
-ul.iconic-nav>li>button {
-    background: none;  
+	background: none;
     padding: 0;
     height: @menu-bar-height;
     vertical-align: top;
-    outline: none!important;
-}
-ul.iconic-nav>li>button#btn-zoom {
-    width: 52px;    
-}
-ul.iconic-nav>li>button#btn-zoom-in, ul.iconic-nav>li>button#btn-zoom-out {
-    height: 34px;
-    width: 16px; 
-    position: absolute;
-    top: 50%;
-    margin-top: -24px;
-    z-index: 11;
-}
-ul.iconic-nav>li>button#btn-zoom-in svg, ul.iconic-nav>li>button#btn-zoom-out svg {
-    height: 34px;
-    width: 16px;
-}
-ul.iconic-nav>li>button#btn-zoom-in {
-    right: 10px;
-}
-ul.iconic-nav>li>button#btn-zoom-out {  
-    left: 10px;
-} 
-ul.iconic-nav>li>button svg {
-    width: 32px;
-    height: 32px;
-    display: block;
-    margin: 0 auto;
-    stroke: @editor-text-default;
-    overflow: visible;
-}
-ul.iconic-nav>li>button svg.icon-zoom {
-    width: 44px;    
-}
-ul.iconic-nav>li>button span {
-    font-weight: 600;
-    font-size: 12px;
-    text-align: center;
-    margin: 0 auto;
-    color: @editor-text-default;
+	box-shadow:  0 0 0 rgba(0,0,0,0);
+	svg {
+	  width: 32px;
+	  height: 32px;
+	  display: block;
+	  margin: 0 auto 3px auto;
+	  stroke: @editor-text-default;
+	  overflow: visible;
+  	}
+	span {
+	  font-weight: 600;
+	  font-size: 12px;
+	  text-align: center;
+	  margin: 0 auto;
+	  color: @editor-text-default;
+  	}
+	&:hover {
+	  span {
+		color: @editor-text-hover;
+	  }
+	  svg {
+	  	stroke: @editor-text-hover;
+	  }
+	}
+	&:active {
+	  span {
+		color: @editor-text-active;
+	  }
+	  svg {
+		stroke: @editor-text-active;
+	  }
+	}
+  }
 }
 
-ul.iconic-nav>li>button:hover span {
-    color: @editor-text-hover;
-}
 
-ul.iconic-nav>li>button:hover svg {
-    stroke: @editor-text-hover;    
-}
-button {
-    outline: none;
-    box-shadow:  0 0 0 rgba(0,0,0,0);
-  	position:relative;
-}
-ul.iconic-nav>li>button:active span {
-    color: @editor-text-active;
-}
 
-ul.iconic-nav>li>button:active svg {
-    stroke: @editor-text-active;   
-}
 ul.iconic-nav>li.open>button svg {
     stroke: @editor-text-active;
 }
@@ -234,21 +156,21 @@ ul.iconic-nav>li.open>button .icon-file-menu {
     transform: rotate(180deg);
 }
 ul.iconic-nav>li.open>button span {
-    color:  @editor-text-active;  
+    color:  @editor-text-active;
 }
 
 .top-userpic {
     display: block;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 100%;
     position: relative;
-    margin: 0 auto 5px;
+    margin: 15px auto 6px;
     overflow: hidden;
     img {
-        width: 20px;
+        width: 24px;
         height: auto;
-        margin: -10px 0  0 -10px;
+        margin: -12px 0  0 -12px;
         position: absolute;
         left: 50%;
         top: 50%;
@@ -257,34 +179,6 @@ ul.iconic-nav>li.open>button span {
     }
 }
 
-#breadcrumb {
-    height: @breadcrumb-height;
-    width: 100%;
-    position: relative;
-    background: @bg-dark;
-    color: @editor-text-inactive;
-    font-size: 14px;
-    margin: 0;
-    padding: 0;
-    opacity: 1;
-    text-align: center;
-    top: auto;
-    z-index: 10;
-}
-
-#breadcrumb span {
-    line-height: 1.5;
-    margin: 4px auto;
-    display: inline-block;
-}
-
-#breadcrumb svg {
-    display: inline-block;
-    width: 19px;
-    height: 10px;
-    margin-bottom: -1px;
-    stroke: @editor-text-inactive;
-}
 
 #top-header-logo svg {
     width: 66px;
@@ -346,7 +240,7 @@ ul.dropdown-menu {
 }
 body.bEditor {
   ul.dropdown-menu {
-  	top: @menu-bar-height + @breadcrumb-height;
+  	top: @menu-bar-height;
 	overflow: hidden;
   }
 }
