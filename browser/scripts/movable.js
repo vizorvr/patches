@@ -13,11 +13,12 @@
 	var $dragged = $(this);
 		$dragEl
 			.on('mousedown touchstart', function(e) {
+				var viewport = E2.dom.canvases;
 				var x = $dragged.offset().left - e.pageX;
 				var	y = $dragged.offset().top - e.pageY;
-				var uiw = E2.dom.canvas_parent.width();
-				var uih = E2.dom.canvas_parent.height();
-				var co =  E2.dom.canvas_parent.offset();
+				var uiw = viewport.width();
+				var uih = viewport.height();
+				var co =  viewport.offset();
 				var dhw = $dragEl.outerWidth(true);
 				var dhh = $dragEl.outerHeight(true);
 				var bhh = $dragged.find('.block-header').outerHeight(true);

@@ -30,6 +30,11 @@ var siteUI = new function() {
 		VizorUI.setupXHRForm($signupForm, signupCallback);
 		VizorUI._setupAccountUsernameField(jQuery('input[name=username]', $signupForm)); // currentUsername is still unavailable
 
+		$(document).on("shown.bs.modal", function() {
+			$('.bootbox-close-button')
+				.html('<svg class="icon-dialog-close"><use xlink:href="#icon-close"></use></svg>')
+				.attr('style','opacity:1');
+		});
 	};
 
 	this.init = function() {

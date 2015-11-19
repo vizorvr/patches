@@ -1,4 +1,19 @@
+@editor-topbar-button-margin:	4px;
+
 body.bEditor {
+
+  #canvases {	// considered the master viewport
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: @height-editor-header;
+	bottom: @height-editor-footer;
+	overflow: hidden;
+  }
+
+  #canvas_parent {
+	min-height: 270px;
+  }
 
   /* buttons */
   button.ui_off svg, button[disabled] svg {
@@ -165,7 +180,7 @@ body.bEditor {
 	  -webkit-flex-shrink: 0;
 	  flex-shrink: 0;
 	  button {
-		margin: 0 2px;
+		margin: 0 @editor-topbar-button-margin;
 	  }
 	}
   }
@@ -177,6 +192,9 @@ body.bEditor {
 	button {
 	  font-weight: 600;
 	  color: @editor-text-default;
+	  &.ui_off {
+		// color: @editor-text-inactive;
+	  }
 	  svg {
 		stroke: @editor-text-default;
 	  }

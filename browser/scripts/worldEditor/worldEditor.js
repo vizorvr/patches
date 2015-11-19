@@ -50,6 +50,19 @@ function WorldEditor() {
 	})
 
 	this.setupObjectPicking()
+
+	E2.ui.state.on('changed:modifyMode', function(modifyMode){
+		switch (modifyMode) {
+			case 'translate':
+				return that.setModifyModeTranslate()
+			case 'rotate':
+				return that.setModifyModeRotate()
+			case 'scale':
+				return that.setModifyModeScale()
+		}
+		return that
+	});
+
 }
 
 WorldEditor.prototype.update = function() {
@@ -68,21 +81,24 @@ WorldEditor.prototype.update = function() {
 
 	this.grid.scale(v)
 
-	// modes: 'translate'/'rotate'/'scale'
-	if (!E2.app.shift_pressed && E2.app.ctrl_pressed) {
-		this.transformControls.setMode('rotate')
-		this.transformControls.setSpace('local')
-	}
+}
 
-	if (E2.app.shift_pressed && E2.app.ctrl_pressed) {
-		this.transformControls.setMode('scale')
-		this.transformControls.setSpace('local')
-	}
+WorldEditor.prototype.setModifyModeTranslate = function() {
+	this.transformControls.setMode('translate')
+	this.transformControls.setSpace('local')
+	return this
+}
 
-	if (!E2.app.shift_pressed && !E2.app.ctrl_pressed) {
-		this.transformControls.setMode('translate')
-		this.transformControls.setSpace('local')
-	}
+WorldEditor.prototype.setModifyModeRotate = function() {
+	this.transformControls.setMode('rotate')
+	this.transformControls.setSpace('local')
+	return this
+}
+
+WorldEditor.prototype.setModifyModeScale = function() {
+	this.transformControls.setMode('scale')
+	this.transformControls.setSpace('local')
+	return this
 }
 
 WorldEditor.prototype.preRenderUpdate = function() {
