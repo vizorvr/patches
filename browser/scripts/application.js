@@ -1988,6 +1988,11 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	that.setupPeopleEvents()
 	that.setupStoreListeners()
 
+	if (!loadGraphUrl && !boot.hasEdits) {
+		loadGraphUrl = '/data/graphs/default.json'
+		E2.app.snapshotPending = true
+	}
+
 	function start() {
 		E2.dom.canvas_parent.toggle(that.noodlesVisible)
 		
@@ -2000,21 +2005,23 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
 			}
 		}
-
-		E2.ui.showStartDialog();
 	}
 
-	if (!loadGraphUrl && !boot.hasEdits) {
-		loadGraphUrl = '/data/graphs/default.json'
-		E2.app.snapshotPending = true
-	}
+	E2.ui.showStartDialog()
+	.then(function(selectedTemplateUrl) {
+		if (selectedTemplateUrl && boot.hasEdits) {
+			var path = that.path = E2.uid()
+			history.pushState({}, '', path)
+		}
 
-	if (loadGraphUrl)
-		E2.app.loadGraph(loadGraphUrl, start)
-	else
-		E2.app.setupEditorChannel().then(start)
-
-
+		if (selectedTemplateUrl) {
+			E2.app.loadGraph(selectedTemplateUrl, start)
+		} else if (loadGraphUrl) {
+			E2.app.loadGraph(loadGraphUrl, start)
+		} else {
+			E2.app.setupEditorChannel().then(start)
+		}
+	})
 }
 
 Application.prototype.setupChat = function() {

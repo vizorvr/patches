@@ -526,9 +526,13 @@ VizorUI.prototype.viewSource = function() {
 };
 
 VizorUI.prototype.showStartDialog = function() {
-	if (!E2.util.isFirstTime()) {	// checks for vizor welcome cookie
+	var dfd = when.defer()
+	var selectedTemplateUrl = null
+
+	if (false && !E2.util.isFirstTime()) {	// checks for vizor welcome cookie
 		E2.util.checkBrowser();
-		return;
+		dfd.resolve()
+		return dfd.promise;
 	}
 
 	Cookies.set('vizor100', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
@@ -537,35 +541,55 @@ VizorUI.prototype.showStartDialog = function() {
 		E2.views.patch_editor.intro({user:E2.models.user.toJSON()}),
 		null,
 		'nopad welcome editorIntro'
-	);
+	)
+
 	welcomeModal.on('hidden.bs.modal', function(){
-		VizorUI.checkCompatibleBrowser();
+		VizorUI.checkCompatibleBrowser()
+		dfd.resolve(selectedTemplateUrl)
 	})
 
-	var $slides = jQuery('.minislides', welcomeModal);
+	var $slides = jQuery('.minislides', welcomeModal)
 	var ms = new Minislides($slides);
 
 	jQuery('a.modal-close', $slides).on('click', function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		VizorUI.modalClose(welcomeModal);
+		dfd.resolve();
+		return false;
+	});
+
+	jQuery('a.view-create360', $slides).on('click', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		VizorUI.modalClose(welcomeModal);
+		selectedTemplateUrl = '/data/graphs/create-360.json'
+		return false;
+	});
+
+	jQuery('a.view-example', $slides).on('click', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		VizorUI.modalClose(welcomeModal);
+		selectedTemplateUrl = '/data/graphs/example.json'
 		return false;
 	});
 
 	jQuery('a.sign-in', $slides).on('click', function(e){
 		e.preventDefault();
 		e.stopPropagation();
-		E2.controllers.account.openLoginModal();
+		E2.controllers.account.openLoginModal()
 		return false;
 	});
 
 	jQuery('a.sign-up', $slides).on('click', function(e){
 		e.preventDefault();
 		e.stopPropagation();
-		E2.controllers.account.openSignupModal();
+		E2.controllers.account.openSignupModal()
 		return false;
 	});
 
+	return dfd.promise;
 }
 
 VizorUI.prototype.updateProgressBar = function(percent) {
