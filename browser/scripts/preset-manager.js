@@ -5,6 +5,7 @@ function PresetManager(base_url)
 
 	this._base_url = base_url
 	this._presets = []
+	this._objects = []
 
 	this.refresh()
 
