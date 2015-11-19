@@ -23,6 +23,17 @@
 		this.oldColor = this.color.clone();
 		this.oldOpacity = this.opacity;
 
+		this.disable = function( disabled ) {
+			if ( disabled ) {
+				this.color.setRGB(
+					0.5 + (this.oldColor.r - 0.5) * 0.2,
+					0.5 + (this.oldColor.g - 0.5) * 0.2,
+					0.5 + (this.oldColor.b - 0.5) * 0.2)
+			} else {
+				this.color.copy( this.oldColor )
+			}
+		}
+
 		this.highlight = function( highlighted ) {
 
 			if ( highlighted ) {
@@ -60,6 +71,17 @@
 		this.oldOpacity = this.opacity;
 
 		this.fog = false
+
+		this.disable = function( disabled ) {
+			if ( disabled ) {
+				this.color.setRGB(
+					0.5 + (this.oldColor.r - 0.5) * 0.2,
+					0.5 + (this.oldColor.g - 0.5) * 0.2,
+					0.5 + (this.oldColor.b - 0.5) * 0.2)
+			} else {
+				this.color.copy(this.oldColor)
+			}
+		}
 
 		this.highlight = function( highlighted ) {
 
@@ -198,6 +220,14 @@
 			} );
 
 		};
+
+		this.disable = function(disable) {
+			this.traverse( function( child ) {
+				if (child.material && child.material.disable) {
+					child.material.disable(disable)
+				}
+			})
+		}
 
 	};
 
@@ -730,8 +760,31 @@
 			this.plugin = object.backReference
 			this.object = this.plugin.object3d;
 			this.visible = true;
-			this.update();
 
+			// enable / disable the three transform modes
+			_gizmo.translate.isEnabled = true
+			_gizmo.rotate.isEnabled = true
+			_gizmo.scale.isEnabled = true
+
+			for (var i = 0; i < this.plugin.input_slots.length; ++i)
+			{
+				var input = this.plugin.input_slots[i]
+				if (input.name === 'position' && input.is_connected) {
+					_gizmo.translate.isEnabled = false
+				}
+				else if (input.name === 'rotation' && input.is_connected) {
+					_gizmo.rotate.isEnabled = false
+				}
+				else if (input.name === 'scale' && input.is_connected) {
+					_gizmo.scale.isEnabled = false
+				}
+			}
+
+			_gizmo.translate.isEnabled = _gizmo.translate.isEnabled && (this.plugin.state.position !== undefined)
+			_gizmo.rotate.isEnabled = _gizmo.rotate.isEnabled && (this.plugin.state.quaternion !== undefined)
+			_gizmo.scale.isEnabled = _gizmo.scale.isEnabled && (this.plugin.state.scale !== undefined)
+
+			this.update();
 		};
 
 		this.detach = function () {
@@ -806,8 +859,12 @@
 
 			}
 
-			_gizmo[ _mode ].highlight( scope.axis );
-
+			if (_gizmo[ _mode ].isEnabled) {
+				_gizmo[ _mode ].highlight( scope.axis );
+			}
+			else {
+				_gizmo[ _mode].disable(true)
+			}
 		};
 
 		function onPointerHover( event ) {
@@ -842,6 +899,10 @@
 
 			if ( scope.object === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
 
+			if ( !_gizmo[ _mode ].isEnabled ) {
+				return
+			}
+
 			var pointer = event.changedTouches ? event.changedTouches[ 0 ] : event;
 
 			if ( pointer.button === 0 || pointer.button === undefined ) {
@@ -867,9 +928,20 @@
 
 					if ( planeIntersect ) {
 
-						oldPosition.set( scope.plugin.state.position.x, scope.plugin.state.position.y, scope.plugin.state.position.z );
-						oldScale.set( scope.plugin.state.scale.x, scope.plugin.state.scale.y, scope.plugin.state.scale.z );
-						oldQuaternion.set( scope.plugin.state.quaternion._x, scope.plugin.state.quaternion._y, scope.plugin.state.quaternion._z, scope.plugin.state.quaternion._w )
+						if (scope.plugin.state.position)
+							oldPosition.set( scope.plugin.state.position.x, scope.plugin.state.position.y, scope.plugin.state.position.z );
+						else
+							oldPosition.set(0, 0, 0)
+
+						if (scope.plugin.state.scale)
+							oldScale.set( scope.plugin.state.scale.x, scope.plugin.state.scale.y, scope.plugin.state.scale.z );
+						else
+							oldScale.set(1, 1, 1, 1)
+
+						if (scope.plugin.state.quaternion)
+							oldQuaternion.set( scope.plugin.state.quaternion._x, scope.plugin.state.quaternion._y, scope.plugin.state.quaternion._z, scope.plugin.state.quaternion._w )
+						else
+							oldQuaternion.set(0, 0, 0, 1)
 
 						oldRotationMatrix.extractRotation( scope.plugin.object3d.matrix );
 						worldRotationMatrix.extractRotation( scope.plugin.object3d.matrixWorld );
@@ -902,6 +974,10 @@
 		function onPointerMove( event ) {
 
 			if ( scope.object === undefined || scope.axis === null || _dragging === false || ( event.button !== undefined && event.button !== 0 ) ) return;
+
+			if ( !_gizmo[ _mode ].isEnabled ) {
+				return
+			}
 
 			var pointer = event.changedTouches ? event.changedTouches[ 0 ] : event;
 
@@ -1084,6 +1160,10 @@
 		}
 
 		function onPointerUp( event ) {
+			if ( !_gizmo[ _mode].isEnabled ) {
+				return
+			}
+
 			E2.app.undoManager.end()
 
 			if ( event.button !== undefined && event.button !== 0 ) return;
