@@ -278,20 +278,6 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 
 };
 
-VizorUI.prototype.updateState = function() {
-	console.error('DO NOT CALL updateSTATE ANYMORE');
-	return true;
-}
-
-VizorUI.prototype.getState = function() {
-	console.error('DO NOT CALL getState ANYMORE');
-}
-
-VizorUI.prototype.setState = function(newState) {
-	console.error('DO NOT CALL setState ANYMORE');
-	if (!this._initialised) return msg('ERROR: UI not initialised')
-	return this.state.setState(newState);
-}
 
 /***** IS... *****/
 
