@@ -167,7 +167,7 @@ VizorUI.prototype.openPublishGraphModal = function() {
 	}
 
 	if (!VizorUI.userIsLoggedIn()) {
-		E2.controllers.account.openLoginModal()
+		VizorUI.openLoginModal()
 			.then(openSaveGraph);
 	} else {
 		openSaveGraph(dfd);
@@ -493,8 +493,9 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 							graph: serializedGraph
 						},
 						dataType: 'json',
-						success: function(saved) {
+						success: function() {
 							ui.updateProgressBar(100);
+							mixpanel.track('Preset Saved')
 							that.presetManager.refresh()
 						},
 						error: function(x, t, err) {

@@ -301,6 +301,11 @@ FileSelectControl.prototype._bindUploadForm = function() {
 			},
 			success: function(file) {
 				$progress.removeClass('active')
+		
+				mixpanel.track('Uploaded', {
+					modelName: file.modelName,
+					path: file.url
+				})
 
 				$('#message', container).html('<h4>Uploaded successfully!</h4>')
 				that.selected(file.path)

@@ -36,6 +36,11 @@ function uploadFile(file) {
 			return xhr
 		},
 		success: function(uploadedFile) {
+			mixpanel.track('Uploaded', {
+				modelName: modelName,
+				path: uploadedFile.url
+			})
+
 			E2.ui.updateProgressBar(100)
 			E2.models.fileList.addFile(file)
 			uploadedFile.modelName = modelName
@@ -77,6 +82,12 @@ function instantiatePluginForUpload(uploaded, position) {
 
 	var node = E2.app.createPlugin(pluginId, position)
 	node.plugin.state.url = uploaded.url
+
+	mixpanel.track('Node Created', {
+		id: pluginId,
+		fromUpload: true
+	})
+
 	E2.app.graphApi.addNode(E2.core.active_graph, node)
 
 	dfd.resolve(node)
@@ -118,6 +129,11 @@ function instantiateTemplateForUpload(uploaded, position) {
 		E2.app.undoManager.begin('Drag & Drop')
 
 		E2.app.fillCopyBuffer(preset.root.nodes, preset.root.conns, 0, 0)
+
+		mixpanel.track('Preset Added', {
+			name: templateName,
+			fromUpload: true
+		})
 
 		// paste. auto-connecting to the scene will be handled inside paste
 		// by the world editor

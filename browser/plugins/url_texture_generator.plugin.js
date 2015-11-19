@@ -6,13 +6,6 @@
 		
 		this.input_slots = []
 
-		// #542
-		/* this.input_slots = [
-			{ name: 'url', dt: core.datatypes.TEXT,
-				desc: 'URL to fetch image from. The image width and height must be in powers of two, for example 256x512.',
-				def: '' }
-		] */
-		
 		this.output_slots = [
 			{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The loaded texture.' }
 		]
@@ -27,7 +20,6 @@
 
 	UrlTexture.prototype.create_ui = function() {
 		var container = make('div')
-		// var inp = makeButton('Browse', 'No texture selected.', 'url')
 		var inp = NodeUI.makeSpriteSVGButton(
 			NodeUI.makeSpriteSVG('vp-edit-icon', 'cmd_edit_graph'),
 			'No texture selected'
@@ -69,6 +61,7 @@
 						if (newValue === oldValue)
 							return;
 
+						mixpanel.track('UrlTexture Texture Changed')
 						that.undoableSetState('url', newValue, oldValue)
 					})
 					.modal()
@@ -88,8 +81,7 @@
 		return container
 	}
 
-	UrlTexture.prototype.update_input = function(slot, data) {
-	}
+	UrlTexture.prototype.update_input = function() {}
 
 	UrlTexture.prototype.update_state = function() {
 		if (!this.dirty)
