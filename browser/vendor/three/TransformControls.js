@@ -762,27 +762,9 @@
 			this.visible = true;
 
 			// enable / disable the three transform modes
-			_gizmo.translate.isEnabled = true
-			_gizmo.rotate.isEnabled = true
-			_gizmo.scale.isEnabled = true
-
-			for (var i = 0; i < this.plugin.input_slots.length; ++i)
-			{
-				var input = this.plugin.input_slots[i]
-				if (input.name === 'position' && input.is_connected) {
-					_gizmo.translate.isEnabled = false
-				}
-				else if (input.name === 'rotation' && input.is_connected) {
-					_gizmo.rotate.isEnabled = false
-				}
-				else if (input.name === 'scale' && input.is_connected) {
-					_gizmo.scale.isEnabled = false
-				}
-			}
-
-			_gizmo.translate.isEnabled = _gizmo.translate.isEnabled && (this.plugin.state.position !== undefined)
-			_gizmo.rotate.isEnabled = _gizmo.rotate.isEnabled && (this.plugin.state.quaternion !== undefined)
-			_gizmo.scale.isEnabled = _gizmo.scale.isEnabled && (this.plugin.state.scale !== undefined)
+			_gizmo.translate.isEnabled = this.plugin.state.position !== undefined
+			_gizmo.rotate.isEnabled = this.plugin.state.quaternion !== undefined
+			_gizmo.scale.isEnabled = this.plugin.state.scale !== undefined
 
 			this.update();
 		};
