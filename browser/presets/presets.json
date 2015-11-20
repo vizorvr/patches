@@ -33,7 +33,7 @@
 	},
 
 	"AUDIO": {
-		"Audio player": { "name": "audio_audio_player_old" }
+		"Audio player": { "name": "_audio-player" }
 	},
 
 	"TIME & ANIMATION ": {
