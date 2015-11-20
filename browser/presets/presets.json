@@ -48,7 +48,8 @@
 		"Timer from 1 to 0": { "name": "time_timer_from_1_to_0" },	
 		"Circular motion to XYZ": { "name": "time_circular_motion_to_xyz" },
 		"Shaky random between 0 & 1": { "name": "time_shaky_random" },
-		"Random with speed": { "name": "util_random_with_speed" }
+		"Random with speed": { "name": "util_random_with_speed" },
+		"Move in a circle and turn": { "name": "_animation-move-in-a-circle-and-turn" }
 	},
 
 	"COLOR ": {
