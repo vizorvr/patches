@@ -630,7 +630,7 @@ Application.prototype.clearSelection = function() {
 	this.selectedNodes = [];
 	this.selectedConnections = [];
 
-	if (E2.ui) E2.ui.state.selectedObjects = this.selectedNodes
+	E2.ui.state.selectedObjects = this.selectedNodes
 
 }
 
@@ -679,7 +679,7 @@ Application.prototype.releaseSelection = function()
 	this.selection_start = null;
 	this.selection_end = null;
 	this.selection_last = null;
-	if (E2.ui) E2.ui.state.selectedObjects = this.selectedNodes
+	E2.ui.state.selectedObjects = this.selectedNodes
 
 	if(this.selection_dom)
 		this.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
@@ -1210,7 +1210,7 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 
 	if (addToSelection !== false) {
 		this.selectedNodes.push(node)
-		if (E2.ui) E2.ui.state.selectedObjects = this.selectedNodes
+		E2.ui.state.selectedObjects = this.selectedNodes
 	}
 
 }
@@ -1218,7 +1218,7 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 Application.prototype.deselectNode = function(node) {
 	this.selectedNodes.splice(this.selectedNodes.indexOf(node), 1)
 	node.ui.setSelected(false);
-	if (E2.ui) E2.ui.state.selectedObjects = this.selectedNodes
+	E2.ui.state.selectedObjects = this.selectedNodes
 }
 
 Application.prototype.markConnectionAsSelected = function(conn) {
@@ -1819,7 +1819,7 @@ Application.prototype.onGraphSelected = function(graph) {
 
 	E2.dom.breadcrumb.children().remove()
 
-	if (E2.ui) E2.ui.buildBreadcrumb(E2.core.active_graph)
+	E2.ui.buildBreadcrumb(E2.core.active_graph)
 
 	E2.core.active_graph.create_ui()
 

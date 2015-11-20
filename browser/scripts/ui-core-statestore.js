@@ -18,9 +18,9 @@ var UiStateStore = function(persistentStorageRef, context) {
 	EventEmitter.apply(this, arguments)
 	var that = this
 
-	var a = function(o, props, callback) { // ES5
+	var defineGettersAndSetters = function(obj, properties, callback) { // ES5
 		// top-level setter (e.g. obj.property = value) generates a changed:property event
-		o._ = props
+		obj._ = properties
 		var defineProperty = function(o, prop) {
 			Object.defineProperty(o, prop, {
 				get: function(){return this._[prop]},
@@ -34,11 +34,11 @@ var UiStateStore = function(persistentStorageRef, context) {
 			})
 		}
 		var prop
-		for (prop in o._) {
-			if (o._.hasOwnProperty(prop))
-				defineProperty(o, prop)
+		for (prop in obj._) {
+			if (obj._.hasOwnProperty(prop))
+				defineProperty(obj, prop)
 		}
-		return o
+		return obj
 	}
 
 	// emit: 	'changed' , 'changed:{key}'
@@ -59,7 +59,7 @@ var UiStateStore = function(persistentStorageRef, context) {
 		}
 	}
 
-    a(this,{
+    defineGettersAndSetters(this,{
 		mode 		: uiMode.build,
 		visible		: true,							// overall visibility of the UI
 		modifyMode 	: uiModifyMode.move,			// does not autosave
@@ -69,7 +69,7 @@ var UiStateStore = function(persistentStorageRef, context) {
 		selectedObjects	: [],						// [node, ...], does not autosave
 		context 	: context || {}
 	}, emit())
-	a(this._.visibility, {
+	defineGettersAndSetters(this._.visibility, {
 		floating_panels: true,
 		panel_chat: true,
 		panel_assets: false,
@@ -82,7 +82,7 @@ var UiStateStore = function(persistentStorageRef, context) {
 		timeline	: false		// (20151019)
 	}, emit('changed:visibility'))
 
-	a(this._.panelStates, {
+	defineGettersAndSetters(this._.panelStates, {
 		chat:		null,
 		presets:	null,
 		assets:		null
