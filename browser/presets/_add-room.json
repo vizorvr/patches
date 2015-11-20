@@ -1,0 +1,189 @@
+{
+    "abs_t": 139.142,
+    "active_graph": "root",
+    "graph_uid": "TXDgBc0JJtS3",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 624,
+                "y": 145,
+                "uid": "LyjUUzYcQJDX",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "6prUVLH8Mhzs": "mh0rTKkFm0nD"
+                    }
+                },
+                "title": "Room",
+                "graph": {
+                    "uid": "kY4ASuQHXV8S",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "three_geometry_box",
+                            "x": 883,
+                            "y": 690,
+                            "uid": "9kscLz9y69au"
+                        },
+                        {
+                            "plugin": "three_mesh",
+                            "x": 1254,
+                            "y": 337,
+                            "uid": "3r8T4LqCWtDj",
+                            "state": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "scale": {
+                                    "x": 21.284179039880932,
+                                    "y": 11.848232853084218,
+                                    "z": 11.848232853084218
+                                },
+                                "quaternion": {
+                                    "_x": 0,
+                                    "_y": 0,
+                                    "_z": 0,
+                                    "_w": 1
+                                }
+                            }
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1444,
+                            "y": 331,
+                            "uid": "6prUVLH8Mhzs",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "bEdPpC9C6Rh1",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 546,
+                            "y": 151,
+                            "uid": "hZhR2ENFEPMM",
+                            "state": {
+                                "url": "/data/image/7cbc45195c04d1595c43be42418755520068c72e.png"
+                            },
+                            "title": "Box texture"
+                        },
+                        {
+                            "plugin": "three_material_phong",
+                            "x": 878,
+                            "y": 205,
+                            "uid": "pA9kzjqBXJkC"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 686,
+                            "y": 844,
+                            "uid": "AupqWu4LWeP6",
+                            "state": {
+                                "val": 1
+                            }
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 636,
+                            "y": 671,
+                            "uid": "szVTvthU3Qzu",
+                            "state": {
+                                "val": 2
+                            }
+                        },
+                        {
+                            "plugin": "annotation",
+                            "x": 388,
+                            "y": 429,
+                            "uid": "rXR64R6vs3pD",
+                            "state": {
+                                "text": "This is a big cube, and \"side\" is set to 2, meaning it renders the inside of it as well. So if the camera is inside of this, you get the illusion of being in a room.",
+                                "width": 150,
+                                "height": 70
+                            },
+                            "title": "Info"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "3r8T4LqCWtDj",
+                            "dst_nuid": "6prUVLH8Mhzs",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "NfGcNNLKSESt",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "9kscLz9y69au",
+                            "dst_nuid": "3r8T4LqCWtDj",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "C7smgBg6HmmG",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "hZhR2ENFEPMM",
+                            "dst_nuid": "pA9kzjqBXJkC",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "QbqRKbq6VzC8",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "pA9kzjqBXJkC",
+                            "dst_nuid": "3r8T4LqCWtDj",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "5wsLGLQg9UEp",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "szVTvthU3Qzu",
+                            "dst_nuid": "pA9kzjqBXJkC",
+                            "src_slot": 0,
+                            "dst_slot": 14,
+                            "uid": "ED8M7tCaxvPX",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "mh0rTKkFm0nD",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}

@@ -14,6 +14,7 @@
 		"Cylinder": { "name": "_add-cylinder", "isObject3d": true },
 		"Sky sphere": { "name": "_add-sky-sphere", "isObject3d": true },
 		"Floor": { "name": "_add-floor", "isObject3d": true },
+		"Room": { "name": "_add-room", "isObject3d": true },
 		"Text": { "name": "_add-text", "isObject3d": true }
 	},
 
