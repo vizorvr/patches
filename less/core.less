@@ -10,8 +10,9 @@ html.hVizor, body.bEditor, body.bPlayer {
 	overflow: hidden;
 }
 
-.glyphicon-chevron-right {
-  font-weight: 200 ! important;
+button, button:focus {	// force no button outlines
+	outline: 0 ! important;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
 }
 
 body {
