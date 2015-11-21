@@ -14,6 +14,7 @@
 		"Cylinder": { "name": "_add-cylinder", "isObject3d": true },
 		"Sky sphere": { "name": "_add-sky-sphere", "isObject3d": true },
 		"Floor": { "name": "_add-floor", "isObject3d": true },
+		"Room": { "name": "_add-room", "isObject3d": true },
 		"Text": { "name": "_add-text", "isObject3d": true }
 	},
 
@@ -33,7 +34,7 @@
 	},
 
 	"AUDIO": {
-		"Audio player": { "name": "audio_audio_player_old" }
+		"Audio player": { "name": "_audio-player" }
 	},
 
 	"TIME & ANIMATION ": {
@@ -48,7 +49,8 @@
 		"Timer from 1 to 0": { "name": "time_timer_from_1_to_0" },	
 		"Circular motion to XYZ": { "name": "time_circular_motion_to_xyz" },
 		"Shaky random between 0 & 1": { "name": "time_shaky_random" },
-		"Random with speed": { "name": "util_random_with_speed" }
+		"Random with speed": { "name": "util_random_with_speed" },
+		"Move in a circle and turn": { "name": "_animation-move-in-a-circle-and-turn" }
 	},
 
 	"COLOR ": {
