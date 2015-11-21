@@ -90,7 +90,7 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 		.find('.resize-handle')
 		.on('mousemove touchmove', that.onChatResize.bind(that))
 
-	var switchMode = function(modifyMode){
+	var switchModifyMode = function(modifyMode){
 		return function(e){
 			e.preventDefault();
 			e.stopPropagation();
@@ -98,9 +98,9 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 			return false;
 		}
 	}
-	dom.btnMove.on('mousedown', switchMode(uiModifyMode.move));
-	dom.btnRotate.on('mousedown', switchMode(uiModifyMode.rotate));
-	dom.btnScale.on('mousedown', switchMode(uiModifyMode.scale));
+	dom.btnMove.on('mousedown', switchModifyMode(uiModifyMode.move));
+	dom.btnRotate.on('mousedown', switchModifyMode(uiModifyMode.rotate));
+	dom.btnScale.on('mousedown', switchModifyMode(uiModifyMode.scale));
 
 };
 
@@ -129,8 +129,6 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	var presetsTabs = jQuery('#presets-lib div.block-header ul.nav-tabs li');
 	dom.tabPresets = presetsTabs.find("a[href='#presets']").parent();
 	dom.tabObjects = presetsTabs.find("a[href='#objects']").parent();
-
-
 
 	var shaderBlock = $('.shader-block')
 	shaderBlock.movable()
@@ -262,60 +260,6 @@ VizorUI.prototype.onSearchResultsChange = function() {
 	}
 };
 
-VizorUI.prototype.onBtnPresetsClicked = function() {
-	if (!this.isVisible()) return false;
-	var v = this.state.visibility;
-	if (!v.floating_panels) {
-		// nothing displayed so we expect just the presets
-		v._.panel_chat = false
-		v._.panel_assets = false;
-		v._.panel_presets = true;
-		v.floating_panels = true;
-	} else {
-		v.panel_presets = !v.panel_presets;
-	}
-	return false;
-}
-
-VizorUI.prototype.onBtnAssetsClicked = function() {
-	if (!this.isVisible()) return false;
-	var v = this.state.visibility;
-	if (!v.floating_panels) {
-		// nothing displayed so we expect just the assets
-		v._.panel_chat = false
-		v._.panel_assets = true;
-		v._.panel_presets = false;
-		v.floating_panels = true;
-	} else {
-		v.panel_assets = !v.panel_assets;
-	}
-	return false;
-}
-
-VizorUI.prototype.isAnyUIElementVisible = function() {
-	var state = this.state, v = state.visibility;
-	var x = state.visible;
-	var anyFloatingPanels = v.floating_panels && (v.panel_presets || v.panel_assets || v.panel_chat)
-	x = x && (v.patch_editor || anyFloatingPanels);
-	return x;
-}
-
-VizorUI.prototype.toggleUILayer = function() {
-	var state = this.state, v = state.visibility;
-
-	var newVisible = !this.isAnyUIElementVisible();
-	if (newVisible) {
-		if (v.floating_panels && !v.patch_editor) {
-			if (!(v.panel_chat || v.panel_presets)) {
-				v._.panel_chat = v._.panel_presets = true;
-			}
-		}
-		else {
-			v._.patch_editor = v._.floating_panels = true;
-		}
-	}
-	state.visible = newVisible;	// cascades
-}
 
 VizorUI.prototype.onBtnHideAllClicked = function(e) {
 	e.preventDefault();
@@ -324,17 +268,40 @@ VizorUI.prototype.onBtnHideAllClicked = function(e) {
 }
 
 VizorUI.prototype.onBtnChatClicked = function(e) {
-	if (!this.isVisible()) return false;
-	var v = this.state.visibility;
-	if (!v.floating_panels) {
-		v._.panel_chat = true
-		v._.panel_assets = false;
-		v._.panel_presets = false;
-		v.floating_panels = true;
-	} else {
-		v.panel_chat = !v.panel_chat;
-	}
+	this.state.visibility.panel_chat = !this.state.visibility.panel_chat;
 	return false;
+}
+
+VizorUI.prototype.onBtnPresetsClicked = function() {
+	this.state.visibility.panel_presets = !this.state.visibility.panel_presets;
+	return false;
+}
+
+VizorUI.prototype.onBtnAssetsClicked = function() {
+	this.state.visibility.panel_assets = !this.state.visibility.panel_assets;
+	return false;
+}
+
+
+/***** TOGGLE LAYERS OF THE UI ON OR OFF *****/
+VizorUI.prototype.toggleFloatingPanels = function(forceVisibility) {
+	var v = this.state.visibility;
+	if (typeof forceVisibility !== 'undefined')
+		v.floating_panels = forceVisibility;
+	else
+		v.floating_panels = !v.floating_panels;
+};
+
+VizorUI.prototype.togglePatchEditor = function(forceVisibility) {
+	var v = this.state.visibility;
+	if (typeof forceVisibility !== 'undefined')
+		v.patch_editor = forceVisibility;
+	else
+		v.patch_editor = !v.patch_editor;
+}
+
+VizorUI.prototype.toggleUILayer = function() {
+	this.state.visible = !this.state.visible;
 }
 
 VizorUI.prototype.enterEditorView = function() {
@@ -520,19 +487,18 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 };
 
 VizorUI.prototype.setModeBuild = function() {
-	var state = this.state;
-	state.mode = uiMode.build
-	state.visibility.patch_editor = false
-	state.viewCamera = uiViewCam.world_editor;
-	this.dom.tabObjects.find('a').trigger('click');
+	this.state.mode = uiMode.build
+	setTimeout(function(){
+		this.dom.tabObjects.find('a').trigger('click');
+	}.bind(this), 100);
+
 	return true;
 };
 VizorUI.prototype.setModeProgram = function() {
-	var state = this.state;
-	state.mode = uiMode.program
-	state.visibility.patch_editor = true
-	state.viewCamera = uiViewCam.vr;
-	this.dom.tabPresets.find('a').trigger('click');
+	this.state.mode = uiMode.program
+	setTimeout(function(){
+		this.dom.tabPresets.find('a').trigger('click');
+	}.bind(this), 100);
 	return true;
 };
 

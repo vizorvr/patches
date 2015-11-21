@@ -9,12 +9,12 @@ var uiKeys = {
 
 	openInspector	: 73,			//	i
 	viewHelp		: 1191,			//  ?
-	toggleUILayer	: 1085,			// 	shift + u,
+	toggleUILayer	: 11085,		// 	cmd/ctrl + shift + u,
 	toggleMode 		: 9,			// 	tab
 	togglePatchEditor: 	1009,		//  shift+tab
 	toggleEditorCamera: 86,			//  v
 	toggleFullScreen : 70,			// 	f,
-	toggleFloatingPanels : 10066,	// 	ctrl+ b (cmd+ b)
+	toggleFloatingPanels : 10066,	// 	cmd/ctrl + b
 	focusPresetSearch: 191,			//	/
 	focusPresetSearchAlt: 81,		//  q
 	viewSource:		220,			//	\
@@ -134,30 +134,21 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 	state
 		.on('changed:visible', function(visible){
 			that.dom.btnHideAll.toggleClass('ui_off', visible);	// inverse
-			state.emit('changed:visibility:patch_editor', 	visibility.patch_editor)
-			state.emit('changed:visibility:floating_panels', 	visibility.floating_panels)
-			state.emit('changed:selectedObjects', 	state.selectedObjects)
 		})
 		.emit('changed:visible', state.visible);
 
 	state
-		.on('changed:visibility:floating_panels', function() {
-			state.emit('changed:visibility:panel_assets', 	visibility.panel_assets)
-			state.emit('changed:visibility:panel_presets', 	visibility.panel_presets)
-			state.emit('changed:visibility:panel_chat', 	visibility.panel_chat)
-		});
-		// .emit('changed:visibility:floating_panels', visibility.floating_panels)
+		.on('changed:visibility:floating_panels', function(){}) // stub, if a button exists
+		.emit('changed:visibility:floating_panels', visibility.floating_panels);
 
 
 	var changedVisibilityPanelHandler = function($panel, $button) {
 		return function(visible){
 			if (that.isFullScreen()) return;
-			var isOn = visibility.floating_panels && visible;
-			var show = state.visible && isOn;
 			$panel
-				.toggle(show)
-				.toggleClass('uiopen', show);
-			$button.toggleClass('ui_off', !show);
+				.toggle(visible)
+				.toggleClass('uiopen', visible);
+			$button.toggleClass('ui_off', !visible);
 
 			if (visible) VizorUI.constrainPanel($panel);	// soft constrain
 		};
@@ -173,9 +164,15 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 
 	state
 		.on('changed:visibility:patch_editor', function(visible){
-			E2.app.noodlesVisible = state.visible && visible;
+			E2.app.noodlesVisible = visible;
 			$patch_editor.toggle(E2.app.noodlesVisible);	// ui is visible and patch editor is visible (or not)
 			if (E2.app.noodlesVisible) NodeUI.redrawActiveGraph();
+			if (that.isInBuildMode() && !that.state.visibility.patch_editor) {
+					that.dom.tabObjects.find('a').trigger('click')
+			}
+			if (that.isInProgramMode() && that.state.visibility.patch_editor) {
+				that.dom.tabPresets.find('a').trigger('click')
+			}
 		})
 		.emit('changed:visibility:patch_editor', visibility.patch_editor);
 
@@ -263,19 +260,18 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 	});
 
 	state
+		.emit('changed:panelStates:presets', state.panelStates.presets)
+		.emit('changed:panelStates:assets', state.panelStates.assets)
+		.emit('changed:panelStates:chat', state.panelStates.chat)
+
+	state
 		.on('changed:context', function(context){
-			// sync the panels
-			state
-				.emit('changed:panelStates:presets', state.panelStates.presets)
-				.emit('changed:panelStates:assets', state.panelStates.assets)
-				.emit('changed:panelStates:chat', state.panelStates.chat)
 			// store the panel states and sync again
 			that.state.panelStates.chat = VizorUI.getDomPanelState(dom.chatWindow);
 			that.state.panelStates.assets = VizorUI.getDomPanelState(dom.assetsLib);
 			that.state.panelStates.presets = VizorUI.getDomPanelState(dom.presetsLib);
 		})
 		.emit('changed:context', state.context)
-
 };
 
 
@@ -310,7 +306,13 @@ VizorUI.prototype.isModalOpen = function() {
 	var $modal = jQuery('div.bootbox.modal');
 	return $modal.hasClass('in');
 }
-
+VizorUI.prototype.isAnyUIElementVisible = function() {
+	var state = this.state, v = state.visibility;
+	var x = state.visible;
+	var anyFloatingPanels = v.floating_panels && (v.panel_presets || v.panel_assets || v.panel_chat)
+	x = x && (v.patch_editor || anyFloatingPanels);
+	return x;
+}
 
 /**** EVENT HANDLERS ****/
 
@@ -389,14 +391,7 @@ VizorUI.prototype.onKeyDown = function(e) {
 			e.preventDefault();
 			break;
 		case (uiKeys.toggleFloatingPanels):
-			if (!state.visible) {
-				// nothing is visible and we just want the panels so reset the UI
-				state.visibility.patch_editor = false;
-				state.visible = true;
-				this.toggleFloatingPanels(true);
-			} else {
-				this.toggleFloatingPanels();
-			}
+			this.toggleFloatingPanels();
 			e.preventDefault();
 			break;
 		case (uiKeys.toggleMode):
@@ -413,13 +408,7 @@ VizorUI.prototype.onKeyDown = function(e) {
 			e.stopPropagation();
 			break;
 		case (uiKeys.togglePatchEditor):
-			if (!state.visible) {
-				// nothing is visible and we just want the noodles so reset the UI
-				state.visible=true;
-				state.visibility.floating_panels = false;
-				this.togglePatchEditor(true);
-			} else
-				this.togglePatchEditor();
+			this.togglePatchEditor();
 			e.preventDefault();
 			break;
 		case (uiKeys.toggleUILayer):
@@ -428,24 +417,16 @@ VizorUI.prototype.onKeyDown = function(e) {
 			break;
 		case (uiKeys.focusPresetSearchAlt):	// fallthrough
 		case (uiKeys.focusPresetSearch):
-			if (state.visible) {
-				if (!state.visibility.floating_panels) {
-					// reset the floating panels
-					state.visibility.floating_panels = true;
-					state.visibility.panel_chat = state.visibility.panel_assets = false;
-				}
-			}
 			state.visibility.panel_presets = true;
 			setTimeout(function(){
-				if (that.isInProgramMode()) {
-					that.dom.tabPresets.find('a').trigger('click');
-					jQuery('#presetSearch').focus().select();
+				if (that.isInProgramMode() || that.state.visibility.patch_editor) {
+					that.dom.tabPresets.find('a').trigger('click')
+					that.dom.presets_list.find('.searchbox input').focus().select();
 				} else {
-					that.dom.tabObjects.find('a').trigger('click');
-					jQuery('#objectSearch').focus().select();
+					that.dom.tabObjects.find('a').trigger('click')
+					that.dom.objectsList.find('.searchbox input').focus().select();
 				}
 			}, 100);
-
 			e.preventDefault();
 			e.stopPropagation();
 			break;
@@ -455,20 +436,7 @@ VizorUI.prototype.onKeyDown = function(e) {
 	switch (keyIdentifier) {
 		case uiKeys.focusChatPanel:		// fallthrough
 		case uiKeys.focusChatPanelAlt:
-			var v = state.visibility;
-			if (!state.visible) {		// there's nothing on the screen and we just want the chat
-				state.visible = true
-				v.patch_editor = false;
-				v.floating_panels = true;
-				v.panel_assets = false;
-				v.panel_presets = false;
-			}
-			else if (!v.floating_panels) {
-				v.floating_panels = true;
-				v.panel_assets = false;
-				v.panel_presets = false;
-			}
-			v.panel_chat = true;
+			var v = state.visibility.panel_chat = true;
 			this.dom.chatWindow.find('#new-message-input').focus();
 
 			e.preventDefault();
@@ -502,33 +470,6 @@ VizorUI.prototype.onWindowResize = function() {
 	this.state.context = VizorUI.getContext();
 	return true;
 };
-
-
-/***** TOGGLE LAYERS OF THE UI ON OR OFF *****/
-VizorUI.prototype.toggleFloatingPanels = function(forceVisibility) {
-	var v = this.state.visibility;
-	if ((forceVisibility !== false) && (!v.panel_assets) && (!v.panel_chat) && (!v.panel_presets)) {
-		// v._.panel_assets = true;
-		v._.panel_chat = true;
-		v._.panel_presets = true;
-		// nothing is visible and we want all panels
-		v._.floating_panels = false;	// force trigger change
-		v.floating_panels = true;
-	} else {
-		if (typeof forceVisibility !== 'undefined')
-			v.floating_panels = forceVisibility;
-		else
-			v.floating_panels = !v.floating_panels;
-	}
-};
-
-VizorUI.prototype.togglePatchEditor = function(forceVisibility) {
-	var v = this.state.visibility;
-	if (typeof forceVisibility !== 'undefined')
-		v.patch_editor = forceVisibility;
-	else
-		v.patch_editor = !v.patch_editor;
-}
 
 
 
