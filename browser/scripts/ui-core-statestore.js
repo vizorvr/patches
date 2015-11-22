@@ -14,7 +14,7 @@ var uiModifyMode = {
  * if persistentStorageRef, except for a number of ignored properties, the object will persist
  * @param persistentStorageRef (store or recall state)
  */
-var UiStateStore = function(persistentStorageRef, context) {
+var UiState = function(persistentStorageRef, context) {
 	EventEmitter.apply(this, arguments)
 	var that = this
 
@@ -47,13 +47,14 @@ var UiStateStore = function(persistentStorageRef, context) {
 	// emit: 	'changed' , 'changed:{key}'
 	//		or 	'changed' ,  eventName  ,  eventName:{key}
 	var makeEmitter = function(obj, eventName) {
-		return function(k, v) {
-			that.emit('changed', obj, k, v)
+		return function(prop) {
+			var value = obj[prop]
+			that.emit('changed', obj, prop, value)
 			if (eventName) {
-				that.emit(eventName, k, v)
-				that.emit(eventName +':' +k, v)
+				that.emit(eventName, prop, value)
+				that.emit(eventName +':' +prop, value)
 			} else {
-				that.emit('changed:'+k, v)
+				that.emit('changed:'+prop, value)
 			}
 		}
 	}
@@ -63,7 +64,7 @@ var UiStateStore = function(persistentStorageRef, context) {
 		selectedObjects	: []						// [node, ...], does not autosave
 	}
 
-	var emitMain 		= makeEmitter(this._)
+	var emitMain 		= makeEmitter(this)
 	defineGettersAndSetters(this, emitMain)
 
 
@@ -99,10 +100,10 @@ var UiStateStore = function(persistentStorageRef, context) {
 	})
 
 
-	var emitPanels 		= makeEmitter(this._.panelStates._, 'changed:panelStates'),
-		emitVisibility 	= makeEmitter(this._.visibility._,'changed:visibility')
-	defineGettersAndSetters(this._.panelStates, emitPanels)
-	defineGettersAndSetters(this._.visibility, emitVisibility)
+	var emitPanels 		= makeEmitter(this.panelStates, 'changed:panelStates'),
+		emitVisibility 	= makeEmitter(this.visibility,'changed:visibility')
+	defineGettersAndSetters(this.panelStates, emitPanels)
+	defineGettersAndSetters(this.visibility, emitVisibility)
 
 
 	_.extend(this._.visibility._,
@@ -155,7 +156,14 @@ var UiStateStore = function(persistentStorageRef, context) {
 			if (value) {	// off -> on
 				var nothingVisible = !(v.floating_panels || v.patch_editor)
 				if (nothingVisible) {
-					v.patch_editor = true
+					switch (this.mode) {
+						case uiMode.program:
+							v.patch_editor = true
+							break
+						case uiMode.build:
+							v.floating_panels = true
+							break
+					}
 				}
 			}
 			emitVisibility('panel_chat', v.panel_chat)
@@ -169,11 +177,25 @@ var UiStateStore = function(persistentStorageRef, context) {
 		}
 	})
 
+	var notifyVisible = function(visible) {
+		var v = that.visibility
+		var isAnythingVisible = v._.patch_editor || v._.floating_panels
+
+		if (isAnythingVisible && !that.visible) {
+			that.visible = true
+		}
+		else if (that.visible && !isAnythingVisible) {
+			that.visible = false
+		}
+		else
+			emitMain('visible', that.visible)
+	}
+	this.on('_:patch_editor', notifyVisible)
+	this.on('_:floating_panels', notifyVisible)
 
 	defineProperty(this._.visibility, 'floating_panels', {
 			get: function() {
-				return that._.visible && this._.floating_panels &&
-					(this._.panel_chat || this._.panel_presets || this._.panel_assets)
+				return that._.visible && this._.floating_panels
 			},
 			set: function(value) {	// this = state.visibility
 				var old = this.floating_panels
@@ -181,9 +203,11 @@ var UiStateStore = function(persistentStorageRef, context) {
 
 				this._.floating_panels = value
 
+				var oldVisible = that.visible
+				that.emit('_:floating_panels', value)	// super
+
 				if (value) {
-					if (!that.visible) {
-						that.visible = true
+					if (!oldVisible) {
 						this.patch_editor = false
 					}
 					var noPanelsAreSetToVisible = !(this._.panel_chat || this._.panel_presets || this._.panel_assets)
@@ -198,83 +222,95 @@ var UiStateStore = function(persistentStorageRef, context) {
 				emitVisibility('panel_presets', this.panel_presets)
 				emitVisibility('panel_assets', this.panel_assets)
 				emitVisibility('floating_panels', this.floating_panels)
-				emitMain('visible', that.visible)
 			}
 		}
 	)
 
+	var notifyFloatingPanels = function(visible) {
+		var v = that.visibility
+		var isAnyPanelVisible = (v._.panel_chat || v._.panel_presets || v._.panel_assets)
+		if (isAnyPanelVisible && !v.floating_panels) {
+			v.floating_panels = true
+		}
+		else if (v.floating_panels && !isAnyPanelVisible) {
+			v.floating_panels = false
+		}
+		else
+			emitVisibility('floating_panels')
+	}
+	this.on('_:visibility:panel_chat', notifyFloatingPanels)
+	this.on('_:visibility:panel_presets', notifyFloatingPanels)
+	this.on('_:visibility:panel_assets', notifyFloatingPanels)
 
 	defineProperty(this._.visibility, 'panel_chat', {
 			get: function() {
-				return that._.visible && this._.floating_panels && this._.panel_chat
+				return this.floating_panels && this._.panel_chat
 			},
 			set: function(value) {	// this = state.visibility
 				var old = this.panel_chat
 				if (value === old) return
 
 				this._.panel_chat = value
+				var oldFloatingPanels = this.floating_panels
+				that.emit('_:visibility:panel_chat', value)
+
 				if (value) {
-					if (!this.floating_panels) {
-						this.floating_panels = true
+					if (!oldFloatingPanels) {
 						this.panel_assets = false
 						this.panel_presets = false
 					}
 				}
+
 				emitVisibility('panel_chat', this.panel_chat)
-				emitVisibility('floating_panels', this.floating_panels)
-				emitMain('visible', that.visible)
 			}
 		}
 	)
 
-
 	defineProperty(this._.visibility, 'panel_presets', {
 			get: function() {
-				return that._.visible && this._.floating_panels && this._.panel_presets
+				return this.floating_panels && this._.panel_presets
 			},
 			set: function(value) {	// this = state.visibility
 				var old = this.panel_presets
 				if (value === old) return
 
 				this._.panel_presets = value
+				var oldFloatingPanels = this.floating_panels
+				that.emit('_:visibility:panel_presets', value)
+
 				if (value) {
-					if (!this.floating_panels) {
-						this.floating_panels = true
+					if (!oldFloatingPanels) {
 						this.panel_assets = false
 						this.panel_chat = false
 					}
 				}
 				emitVisibility('panel_presets', this.panel_presets)
-				emitVisibility('floating_panels', this.floating_panels)
-				emitMain('visible', that.visible)
 			}
 		}
 	)
 
-
 	defineProperty(this._.visibility, 'panel_assets', {
 			get: function() {
-				return that._.visible && this._.floating_panels && this._.panel_assets
+				return this.floating_panels && this._.panel_assets
 			},
 			set: function(value) {	// this = state.visibility
 				var old = this.panel_assets
 				if (value === old) return
 
 				this._.panel_assets = value
+				var oldFloatingPanels = this.floating_panels
+				that.emit('_:visibility:panel_presets', value)
+
 				if (value) {
-					if (!this.floating_panels) {
-						this.floating_panels = true
+					if (!oldFloatingPanels) {
 						this.panel_presets = false
 						this.panel_chat = false
 					}
 				}
 				emitVisibility('panel_assets', this.panel_assets)
-				emitVisibility('floating_panels', this.floating_panels)
-				emitMain('visible', that.visible)
 			}
 		}
 	)
-
 
 	defineProperty(this._.visibility, 'patch_editor', {
 			get: function() {
@@ -285,18 +321,18 @@ var UiStateStore = function(persistentStorageRef, context) {
 				if (value === old) return
 
 				this._.patch_editor = value
+				var oldVisible = that.visible
+				that.emit('_:patch_editor', value)
+
 				if (value) {
-					if (!that.visible) {
-						that.visible = true
+					if (!oldVisible) {
 						this.floating_panels = false
 					}
 				}
 				emitVisibility('patch_editor', this.patch_editor)
-				emitMain('visible', that.visible)
 			}
 		}
 	)
-
 
 	defineProperty(this, 'context', {
 		get: function() { return this._.context },
@@ -329,9 +365,9 @@ var UiStateStore = function(persistentStorageRef, context) {
 	}
 }
 
-UiStateStore.prototype = Object.create(EventEmitter.prototype)
+UiState.prototype = Object.create(EventEmitter.prototype)
 
-UiStateStore.prototype.store = function() {
+UiState.prototype.store = function() {
 	this._save_t = null
 	if (!this._storageRef) {
 		msg("ERROR: storeState but no storageRef")
@@ -341,7 +377,7 @@ UiStateStore.prototype.store = function() {
 	return true
 }
 
-UiStateStore.prototype.recall = function() {
+UiState.prototype.recall = function() {
 	if (!this._storageRef) return false
 	var storage = this._storageRef
 	var uiState = storage.getItem('uiState100')
@@ -353,7 +389,7 @@ UiStateStore.prototype.recall = function() {
 	return true
 }
 
-UiStateStore.prototype._getCopy = function() {
+UiState.prototype._getCopy = function() {
 	return {
 		mode: this.mode,
 		modifyMode: this.modifyMode,
@@ -367,7 +403,7 @@ UiStateStore.prototype._getCopy = function() {
 }
 
 
-UiStateStore.prototype._apply = function(newState) {
+UiState.prototype._apply = function(newState) {
 	if (typeof newState !== 'object') return msg('ERROR: invalid newState')
 
 	// context is ignored but may be used for additional checks
@@ -395,7 +431,7 @@ UiStateStore.prototype._apply = function(newState) {
 }
 
 
-UiStateStore.prototype.setState = function(stateObjOrJSON) {
+UiState.prototype.setState = function(stateObjOrJSON) {
 	var newState
 	try {
 		newState = (typeof stateObjOrJSON === 'object') ? stateObjOrJSON : JSON.parse(stateObjOrJSON)

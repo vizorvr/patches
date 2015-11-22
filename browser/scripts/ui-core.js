@@ -59,7 +59,7 @@ var VizorUI = function() {			// becomes E2.ui
 		assetsLib : null
 	};
 
-	this.state = new UiStateStore(VizorUI.getPersistentStorageRef(), VizorUI.getContext())
+	this.state = new UiState(VizorUI.getPersistentStorageRef(), VizorUI.getContext())
 	this.state.allowStoreOnChange = false;
 
 	this.flags = {
@@ -80,6 +80,7 @@ VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 	document.body.addEventListener('keydown', this.onKeyDown.bind(this));
 	document.body.addEventListener('keyup', this.onKeyUp.bind(this));
 	window.addEventListener('blur', this._clearModifierKeys.bind(this));
+	window.addEventListener('focus', this._clearModifierKeys.bind(this));
 	e2.core.on('resize', this.onWindowResize.bind(this));
 	e2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this));
 	e2.core.on('progress', this.updateProgressBar.bind(this));
