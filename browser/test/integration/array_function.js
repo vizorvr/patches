@@ -62,6 +62,7 @@ global.ConnectionUI.prototype.resolve_slot_divs = function() {
 	this.dst_slot_div = $()
 }
 global.navigator = { userAgent: 'test' }
+global.mixpanel = { track: function() {} }
 
 describe('Array function', function() {
 	
