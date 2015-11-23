@@ -25,10 +25,11 @@ var UiState = function(persistentStorageRef, context) {
 	var defineProperty = function(obj, prop, options, callback) {
 		options = _.extend({
 			get: function() {
-				return this._internal[prop]},
+				return this._internal[prop]
+			},
 			set: function(v){
 				var ov = this._internal[prop]
-				if (! (typeof v === 'object') || (typeof v === 'function')) {
+				if ( ! ((typeof(v) === 'object') || (typeof(v) === 'function'))) {
 					if (v === ov) return	// nothing to do
 				}
 				this._internal[prop] = v
