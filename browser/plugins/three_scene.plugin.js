@@ -156,14 +156,17 @@
 
 		// remove slots until there's only one unconnected in the end
 		var lastIndex = this.dynInputs.length - 1
-		while (lastIndex > 0 && !this.dynInputs[lastIndex - 1].is_connected) {
-			removeSlot()
 
-			--lastIndex
+		// if the last slot is connected, can't remove any slots
+		if (lastIndex > 0 && !this.dynInputs[lastIndex].is_connected ) {
+			while (lastIndex > 0 && !this.dynInputs[lastIndex - 1].is_connected) {
+				removeSlot()
+
+				--lastIndex
+			}
 		}
-
-		// ensure there's at least one free slot in the end
-		if (this.dynInputs[this.dynInputs.length -1].is_connected) {
+		else if (this.dynInputs.length === 0 || this.dynInputs[this.dynInputs.length - 1].is_connected) {
+			// ensure there's at least one free slot in the end
 			addSlot()
 		}
 
