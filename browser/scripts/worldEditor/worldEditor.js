@@ -43,6 +43,10 @@ function WorldEditor() {
 
 	this.transformControls.addEventListener('mouseDown', function() {
 		that.editorControls.enabled = false
+		if (E2.app.alt_pressed) {
+			E2.app.onCopy()
+			E2.app.onPaste()
+		}
 	})
 
 	this.transformControls.addEventListener('mouseUp', function() {
@@ -159,7 +163,7 @@ WorldEditor.prototype.getEditorSceneTree = function() {
 WorldEditor.prototype.setSelection = function(selected) {
 	this.selectionTree.children = []
 
-	this.transformControls.detach()
+	var anySelected = false
 
 	for (var i = 0; i < selected.length; ++i) {
 		var obj = selected[i]
@@ -167,9 +171,14 @@ WorldEditor.prototype.setSelection = function(selected) {
 			this.transformControls.attach(obj)
 			this.selectionTree.add(this.transformControls)
 
+			anySelected = true
 			// only attach to first valid item
 			break
 		}
+	}
+
+	if (!anySelected) {
+		this.transformControls.detach()
 	}
 }
 
@@ -264,7 +273,11 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 
 WorldEditor.prototype.pickObject = function(e) {
 	if (E2.app.noodlesVisible === true)
-		return;
+		return
+
+	if (E2.app.alt_pressed) {
+		return
+	}
 
 	var isEditor = this.isActive()
 

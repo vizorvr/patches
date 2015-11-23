@@ -948,12 +948,18 @@ Application.prototype.onDelete = function(e) {
 Application.prototype.onCopy = function(e) {
 	if (this.selectedNodes.length < 1) {
 		msg('Copy: Nothing selected.');
-		e.stopPropagation();
+
+		if (e)
+			e.stopPropagation();
+
 		return false;
 	}
 
 	this.fillCopyBuffer(this.selectedNodes, this.selectedConnections, this.scrollOffset[0], this.scrollOffset[1]);
-	e.stopPropagation();
+
+	if (e)
+		e.stopPropagation();
+
 	return false;
 };
 
@@ -1352,7 +1358,9 @@ Application.prototype.onKeyDown = function(e) {
 	var toggleNoodlesKey = 9
 	var toggleWorldEditorKey = 86
 
-	var exceptionKeys = [ toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey ]
+	var altKey = 18
+
+	var exceptionKeys = [ toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey, altKey ]
 
 	if (this.isVRCameraActive() && exceptionKeys.indexOf(e.keyCode) === -1)
 		return true;
@@ -1397,7 +1405,7 @@ Application.prototype.onKeyDown = function(e) {
 	{
 		this.ctrl_pressed = true;
 	}
-	else if(e.keyCode === 18) // alt
+	else if(e.keyCode === altKey) // alt
 	{
 		this.alt_pressed = true;
 	}
