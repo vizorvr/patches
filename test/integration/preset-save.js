@@ -77,7 +77,7 @@ describe('Preset', function() {
 			.expect(200).end(function(err, res)
 			{
 				if (err) return done(err)
-				assert.ok(res.body.abs_t > 0)
+				assert.equal(res.body.active_graph, 'root')
 				done()
 			})
 		})

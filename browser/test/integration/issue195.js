@@ -32,6 +32,12 @@ global.NodeUI = function() {
 }
 
 global.PresetManager = function() {}
+global.UIbreadcrumb = function() {
+	return {
+		prepend: function() {},
+		render: function() {}
+	}
+}
 
 require('../../scripts/commands/graphEditCommands')
 
@@ -56,6 +62,7 @@ global.ConnectionUI.prototype.resolve_slot_divs = function() {
 	this.dst_slot_div = $()
 }
 global.navigator = { userAgent: 'test' }
+global.mixpanel = { track: function() {} }
 
 describe('Redo complex connection', function() {
 	var source
