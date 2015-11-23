@@ -1,9 +1,8 @@
-<div class="people-scroll">
-	<div class="peopleList scrollbar">
-		<div class="meta"> 
-			<span class="text">Users currently viewing your graph</span>
-		</div>
-		<ul class="graph-users">
+<div class="meta">
+	Users currently viewing your graph
+</div>
+<div class="peopleList scrollbar">
+	<ul class="graph-users">
 		{{#each people}}
 		<li data-uid="{{uid}}">
 			<div class="icon" style="background-color: {{color}}"></div>
@@ -11,7 +10,8 @@
 				<span class="name">{{username}}</span>
 				<span class="info">{{#if itsMe}}This is you :){{/if}}</span>
 			</div>
-			{{#if itsMe}} {{else}}
+			{{!--
+			{{#unless itsMe}}
 			<button	class="btn follow-state {{#if followed}}unfollow{{else}}follow{{/if}}" >
 				{{#if followed}}
 				<svg class="icon-unfollow"><use xlink:href="#icon-unfollow"></use></svg>
@@ -25,10 +25,9 @@
 				<svg class="icon-kick"><use xlink:href="#icon-kick"></use></svg>
 				<span>Kick</span>
 			</button>
-			{{/if}}
+			{{/unless}}
+			--}}
 		</li>
 		{{/each}}
 	</ul>
-	</div>
 </div>
-

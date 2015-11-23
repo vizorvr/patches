@@ -12,50 +12,72 @@
     width: @floating-box-width;
 }
 
-.chat {
-	-moz-user-select: text;
-	-webkit-user-select: text;
-	-ms-user-select: text;
-	width: @floating-box-width;
-	height: @chat-height - @blocks-header-height;
-	overflow: hidden;
-}
+#chatTab {
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  width: @floating-box-width;
+  height: @chat-height - @blocks-header-height;
+  position:relative;
+  background: @bg-light;
+  color: @editor-text-hover;
+  >.chat-nav, >.messages, >.composer {
+	position: absolute;
+	left: 0;
+	right: 0;
+  }
 
-.chat .chat-nav {
-    background: @bg-light;
-    width: @chat-width; 
-    height: @chat-nav-height;
-    color: @editor-text-hover;
-    margin: 0;
-    border-bottom: 1px solid @bg-darker;
-}
-.chat .chat-nav .chat-tree {
-    padding: 10px 20px;
-}
+  .chat-nav {
+	height: @chat-nav-height;
+	border-bottom: 1px solid @bg-darker;
+	top: 0;
+	padding: 10px 20px;
+	span {
+	  color: @editor-text-current;
+	}
+	a {
+	  color: @chat-text-color;
+  	}
+	svg {
+	  display: inline-block;
+	  width: 19px;
+	  height: 10px;
+	  stroke: @editor-text-inactive;
+  	}
+  }
 
-.chat .chat-nav .chat-tree span {
-    color: @editor-text-current;
-}
-
-.chat .chat-nav .chat-tree a {
-    color: @chat-text-color;
-}
-.chat .chat-nav .chat-tree svg {
-    display: inline-block;
-    width: 19px;
-    height: 10px;
-    margin-bottom: -1px;
-    stroke: @editor-text-inactive;    
-} 
-
-.chat .messages {
+  .messages {
 	overflow-y: auto;
 	overflow-x: hidden;
-	width: 100%;
-	height: @chat-height - @blocks-header-height - @chat-composer-height - @chat-nav-height;
+	padding: 1px 5px;
+	top: @chat-nav-height;
+	bottom: @chat-composer-height;
+   }
+
+  .composer {
+	width: @chat-width;
+	height: @chat-composer-height;
+	bottom: 0;
+	background: @bg-darker;
+	input {
+	  height: 18px;
+	  font-family:   @font-family-sans-serif;
+	  margin-top: @chat-composer-height/2 - 9;
+	  font-size: 12px;
+	  color: @color-chat-composer;
+	  background: none;
+	  border: 0;
+	  width: @chat-width - 40;
+	  margin-left: 20px;
+	}
+	input:focus {
+	  outline: 0;
+	}
+  }
 }
 
-.chat .message {
+
+#chatTab .message {
   margin: 0 15px-3px 10px 15px;	// gently nudged to the right because scrollbar
   color: @color-chat-message;
   p {
@@ -90,26 +112,3 @@
 	float:left;
   }
 }
-
-.chat .composer {
-  width: @chat-width;
-  height: @chat-composer-height;
-  background: @bg-darker;
-  input {
-	height: 18px;
-	font-family:   @font-family-sans-serif;
-	margin-top: @chat-composer-height/2 - 9;
-	font-size: 12px;
-	color: @color-chat-composer;
-	background: none;
-	border: 0;
-	width: @chat-width - 40;
-	margin-left: 20px;
-  }
-  input:focus {
-  	outline: 0;
-  }
-}
-
-
-

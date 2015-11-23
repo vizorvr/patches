@@ -25,6 +25,7 @@ function Application() {
 	};
 
 	this.canvas = E2.dom.canvas;
+	this.breadcrumb = null;
 	this.c2d = E2.dom.canvas[0].getContext('2d');
 	this.editConn = null;
 	this.shift_pressed = false;
@@ -398,7 +399,7 @@ Application.prototype.updateCanvas = function(clear) {
 }
 
 Application.prototype.mouseEventPosToCanvasCoord = function(e, result) {
-	var cp = E2.dom.canvas_parent[0];
+	var cp = E2.dom.canvases[0];
 
 	result[0] = (e.pageX - cp.offsetLeft) + this.scrollOffset[0];
 	result[1] = (e.pageY - cp.offsetTop) + this.scrollOffset[1];
@@ -629,6 +630,8 @@ Application.prototype.clearSelection = function() {
 	this.selectedNodes = [];
 	this.selectedConnections = [];
 
+	E2.ui.state.selectedObjects = this.selectedNodes
+
 }
 
 Application.prototype.redrawConnection = function(connection) {	/* @TODO: rename this method */
@@ -676,6 +679,7 @@ Application.prototype.releaseSelection = function()
 	this.selection_start = null;
 	this.selection_end = null;
 	this.selection_last = null;
+	E2.ui.state.selectedObjects = this.selectedNodes
 
 	if(this.selection_dom)
 		this.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
@@ -1210,13 +1214,17 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 		node.ui.setSelected(true);
 	}
 
-	if (addToSelection !== false)
+	if (addToSelection !== false) {
 		this.selectedNodes.push(node)
+		E2.ui.state.selectedObjects = this.selectedNodes
+	}
+
 }
 
 Application.prototype.deselectNode = function(node) {
 	this.selectedNodes.splice(this.selectedNodes.indexOf(node), 1)
 	node.ui.setSelected(false);
+	E2.ui.state.selectedObjects = this.selectedNodes
 }
 
 Application.prototype.markConnectionAsSelected = function(conn) {
@@ -1247,7 +1255,7 @@ Application.prototype.calculateCanvasArea = function() {
 	if (!isFullscreen && !this.condensed_view) {
 		width = $(window).width();
 		height = $(window).height() -
-			$('.editor-header').outerHeight(true) - $('#breadcrumb').outerHeight(true) - $('.bottom-panel').outerHeight(true);
+			$('.editor-header').outerHeight(true) - $('#row2').outerHeight(true) - $('.bottom-panel').outerHeight(true);
 	} else {
 		width = window.innerWidth
 		height = window.innerHeight
@@ -1306,7 +1314,7 @@ Application.prototype.toggleWorldEditor = function(forceState) {
 		this.worldEditor.deactivate()
 	}
 	var isActive = this.worldEditor.isActive()
-	E2.ui.emit(uiEvent.worldEditChanged, isActive)
+
 	return isActive
 }
 
@@ -1477,10 +1485,6 @@ Application.prototype.onKeyDown = function(e) {
 			else
 				this.undoManager.redo()
 		}
-	}
-	else if (e.keyCode === toggleWorldEditorKey) { // v
-		this.toggleWorldEditor();
-		ret = false;
 	}
 
 	return ret;
@@ -1823,18 +1827,7 @@ Application.prototype.onGraphSelected = function(graph) {
 
 	E2.dom.breadcrumb.children().remove()
 
-	var b = new UIbreadcrumb()
-	function buildBreadcrumb(parentEl, graph, add_handler) {
-		if (add_handler) {
-			b.prepend(graph.tree_node.title, null, function() { graph.tree_node.activate() })
-		} else {
-			b.prepend(graph.tree_node.title, null)
-		}
-		if (graph.parent_graph)
-			buildBreadcrumb(parentEl, graph.parent_graph, true)
-	}
-	buildBreadcrumb(E2.dom.breadcrumb, E2.core.active_graph, false)
-	b.render(E2.dom.breadcrumb)
+	E2.ui.buildBreadcrumb(E2.core.active_graph)
 
 	E2.core.active_graph.create_ui()
 
@@ -1871,8 +1864,6 @@ Application.prototype.setupPeopleEvents = function() {
 
 		$cursor.remove()
 		delete cursors[uid]
-		if (E2.ui)
-			E2.ui.onPeopleListChanged('removed');
 	})
 
 	this.peopleStore.on('added', function(person) {
@@ -1894,14 +1885,11 @@ Application.prototype.setupPeopleEvents = function() {
 
 		if (person.activeGraphUid !== E2.core.active_graph.uid)
 			$cursor.hide()
-
-		if (E2.ui)
-			E2.ui.onPeopleListChanged('added');
 	})
 
 	this.peopleStore.on('mouseMoved', function(person) {
 		var $cursor = cursors[person.uid]
-		var cp = E2.dom.canvas_parent[0];
+		var cp = E2.dom.canvases[0];
 		$cursor.removeClass('inactive outside')
 
 		// Update the user's cursor fade-out timeout
@@ -2040,11 +2028,13 @@ Application.prototype.start = function() {
 	document.addEventListener('mozfullscreenchange', this.onFullScreenChanged.bind(this))
 
 	window.addEventListener('resize', function() {
-		// To avoid UI lag, we don't respond to window resize events directly.
-		// Instead, we set up a timer that gets superceeded for each (spurious)
-		// resize event within a 200 ms window.
-		clearTimeout(that.resize_timer)
-		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 200)
+		// avoid ui lag
+		if (that.resize_timer) return
+		that.resize_timer = setTimeout(function(){
+			clearTimeout(that.resize_timer)
+			that.resize_timer = null;
+			that.onWindowResize()
+		}, 100)
 	})
 
 	// close bootboxes on click
@@ -2081,16 +2071,15 @@ Application.prototype.start = function() {
 			var nh = oh + (e.pageY - oy)
 			e.preventDefault()
 			$target.css('height', nh+'px')
-			if ($target.hasClass('chat-users')) {
-				if (E2.ui)
-					E2.ui.onChatResize();
-			}
+			return true
 		}
 
 		$doc.on('mousemove', mouseMoveHandler)
 		$doc.one('mouseup', function(e) {
 			e.preventDefault()
 			$doc.off('mousemove', mouseMoveHandler)
+			var uiResized = (typeof uiEvent !== 'undefined') ? uiEvent.resized : 'uiResized'
+			$target.trigger(uiResized)
 		})
 	});
 
@@ -2180,7 +2169,7 @@ Application.prototype.setupChat = function() {
 		return
 
 	this.chatStore = new E2.ChatStore()
-	this.chat = new E2.Chat($('#chat'))
+	this.chat = new E2.Chat(E2.dom.chatTab)
 }
 
 /**
@@ -2238,11 +2227,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.progressBar = $('#progressbar');
 	
 	E2.dom.btnNew = $('#btn-new');
-	
-	E2.dom.btnScale = $('#btn-scale');
-	E2.dom.btnRotate = $('#btn-rotate');
+
 	E2.dom.btnAssets = $('#btn-assets');
-	
 	E2.dom.btnInspector = $('#btn-inspector');
 	E2.dom.btnPresets = $('#btn-presets');
 	E2.dom.btnSavePatch = $('#btn-save-patch');
@@ -2273,6 +2259,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');
+	E2.dom.canvases = $('#canvases');
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
 	

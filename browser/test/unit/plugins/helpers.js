@@ -128,7 +128,8 @@ exports.reset = function() {
 			prepend: function() {}
 		},
 		canvas: [{ getContext: function(){} }],
-		canvas_parent: $()
+		canvas_parent: $(),
+		canvases: $()
 	}
 
 	global.make = function() {

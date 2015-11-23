@@ -6,14 +6,14 @@ function dragAndDropMouseDownHandler(e) {
 	var uiState = E2.ui.state;
 	var chatWindow = E2.dom.chatWindow;
 	var chatVisible = uiState.visibility.panel_chat;
-	var collapseChat = E2.ui.onChatToggleClicked.bind(E2.ui);
+	var collapseChat = E2.ui.togglePanelChatCollapsed.bind(E2.ui);
 	var presetsLib = E2.dom.presetsLib;
 	var presetsVisible = uiState.visibility.panel_presets;
-	var collapsePresets = E2.ui.onPresetsToggleClicked.bind(E2.ui);
+	var collapsePresets = E2.ui.togglePanelPresetsCollapsed.bind(E2.ui);
 	var assetsLib = E2.dom.assetsLib;
 	var assetsVisible = uiState.visibility.panel_assets;
-	var collapseAssets = E2.ui.onAssetsToggleClicked.bind(E2.ui);
-	
+	var collapseAssets = E2.ui.togglePanelAssetsCollapsed.bind(E2.ui);
+
 	var mouseMoveBound = false
 	var mouseX = 0
 	var mouseY = 0
@@ -33,7 +33,7 @@ function dragAndDropMouseDownHandler(e) {
 	var canvasHeight = canvas.height()
 	var canvasX = canvas.position().left
 	var canvasY = canvas.position().top
-	var cp = E2.dom.canvas_parent
+	var cp = E2.dom.canvases
 	var scrollHoverAreaSize = 25 // Pixel size for hover area for scrolling around the canvas
 	
 	if (presetsVisible) {

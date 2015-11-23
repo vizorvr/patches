@@ -8,16 +8,25 @@ var uiKeys = {
 	spacebar: 32,
 
 	openInspector	: 73,			//	i
-	toggleUILayer	: 9,			// 	(shift+) tab,
-	togglePatchEditor : 9,			// 	tab
+	viewHelp		: 1191,			//  ?
+	toggleUILayer	: 11085,		// 	cmd/ctrl + shift + u,
+	toggleMode 		: 9,			// 	tab
+	togglePatchEditor: 	1009,		//  shift+tab
+	toggleEditorCamera: 86,			//  v
 	toggleFullScreen : 70,			// 	f,
-	toggleFloatingPanels : 66,		// 	(ctrl+) b
+	toggleFloatingPanels : 10066,	// 	cmd/ctrl + b
 	focusPresetSearch: 191,			//	/
 	focusPresetSearchAlt: 81,		//  q
 	viewSource:		220,			//	\
 
+	modifyModeMove	: 77,			// m
+	modifyModeScale : 83,			// s
+	modifyModeRotate: 82,			// r
+
 	focusChatPanel: 'U+0040',		// @ - this key moves so is checked by value/identifier
 	focusChatPanelAlt: '@',			//
+	openHelpAlt : '?',
+
 
 	mod_shift : 1000,
 	mod_ctrl : 10000,
@@ -32,10 +41,12 @@ var uiViewCam = {
 var uiEvent = { // emitted by ui (E2.ui) unless comments state otherwise
 	initialised		: 'uiInitialised',
 	moved			: 'uiMoved',			// panels via movable.js
+	resized			: 'uiResized',			// panels via draggable.js
 	stateChanged	: 'uiStateChanged',
 	worldEditChanged : 'uiWorldEditorChanged',	// ui and E2.app
 	xhrFormSuccess	: 'xhrFormSuccess'		//	dispatched on document in ui-site js
 }
+
 
 var VizorUI = function() {			// becomes E2.ui
 	EventEmitter.apply(this, arguments)
@@ -48,34 +59,8 @@ var VizorUI = function() {			// becomes E2.ui
 		assetsLib : null
 	};
 
-	this.state = {
-		visible:	true,		// overall visibility of the UI
-		visibility: {			// granular flags
-			floating_panels: true,
-			panel_chat: true,
-			panel_assets: false,
-			panel_presets: true,
-			patch_editor: false,
-			breadcrumb: true,		// always true	(20151012)
-			player_controls : true,	// always true	(20151012)
-			main_toolbar : true,	// always true	(20151012)
-			inspector	: false,	// always false (20151012)
-			timeline	: false		// (20151019)
-		},
-		panelStates: {
-			chat:		null,
-			presets:	null,
-			assets:		null
-		},
-		context: {
-			width		: window.screen.width,
-			height		: window.screen.height,
-			availWidth	: window.screen.availWidth,
-			availHeight	: window.screen.availHeight
-		},
-		viewCamera : uiViewCam.world_editor		// one of uiViewCam keys
-	};
-	this.setupStateMethods();	// adds code to update the current or apply new state
+	this.state = new UiState(VizorUI.getPersistentStorageRef(), VizorUI.getContext())
+	this.state.allowStoreOnChange = false;
 
 	this.flags = {
 		loading: false,
@@ -95,134 +80,201 @@ VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 	document.body.addEventListener('keydown', this.onKeyDown.bind(this));
 	document.body.addEventListener('keyup', this.onKeyUp.bind(this));
 	window.addEventListener('blur', this._clearModifierKeys.bind(this));
+	window.addEventListener('focus', this._clearModifierKeys.bind(this));
 	e2.core.on('resize', this.onWindowResize.bind(this));
 	e2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this));
 	e2.core.on('progress', this.updateProgressBar.bind(this));
-
-	this.on(uiEvent.initialised, this.recallState.bind(this));
-	this.on(uiEvent.stateChanged, this.storeState.bind(this));
 }
 
-VizorUI.prototype.updateState = function() {
-	this.state._update({
-		'chat':		this.dom.chatWindow,
-		'presets':	this.dom.presetsLib,
-		'assets':	this.dom.assetsLib
-	});
-	this.emit(uiEvent.stateChanged, this.state._getCopy());
-	return true;
-}
 
-VizorUI.prototype.setupStateMethods = function() {
-	var ui = this;
 
-	this.state._update = function(domPanelStates) {	/* @var domPanelStates {key: $domElement, ...} */
-		if (!ui._initialised) return msg('ERROR: UI not initialised');
-		// this = ui.state
-		this.context.availWidth = window.screen.availWidth;
-		this.context.availHeight = window.screen.availHeight;
-		var ps = this.panelStates;					// ref
-		if (typeof domPanelStates === 'object') {
-			var key;
-			for (key in domPanelStates) {
-				if (domPanelStates.hasOwnProperty(key)) {
-					ps[key] = VizorUI.getDomPanelState(domPanelStates[key]);
-				}
+VizorUI.prototype.setupStateStoreEventListeners = function() {
+	var that = this;
+	var dom = this.dom;		// normally E2.dom
+	var state = this.state;
+	var visibility = state.visibility;
+	var $assets = dom.assetsLib, $presets = dom.presetsLib, $chat = dom.chatWindow;
+	var $patch_editor = dom.canvas_parent;
+
+	state
+		.on('changed:mode', function(mode) {
+			var inBuildMode = mode === uiMode.build
+			var inProgramMode = !inBuildMode
+			dom.btnBuildMode
+				.toggleClass('ui_on', inBuildMode)
+				.toggleClass('ui_off', inProgramMode);
+			dom.btnProgramMode
+				.toggleClass('ui_on', inProgramMode)
+				.toggleClass('ui_off', inBuildMode);
+
+			if (inProgramMode) {
+				dom.tabObjects.addClass('inactive ui_off');
+				dom.tabPresets.removeClass('inactive ui_off');
+			} else {
+				dom.tabObjects.removeClass('inactive ui_off');
+				dom.tabPresets.addClass('inactive ui_off');
 			}
-		}
-		return this;
-	};
+		})
+		.emit('changed:mode', state.mode);
 
-	this.state._apply = function(newState) {
-		if (!ui._initialised) return msg('ERROR: UI not initialised');
-		if (typeof newState !== 'object') return msg('ERROR: invalid newState')
-		// this = ui.state
-		this.visible = newState.visible;
-		var newVisibility = newState.visibility;
-		if (typeof newState.viewCamera !== 'undefined') this.viewCamera = newState.viewCamera;
+	state
+		.on('changed:viewCamera', function(camera){
+			var worldEditorActive = camera === uiViewCam.world_editor;
+			dom.btnEditorCam.parent().toggleClass('active', worldEditorActive);
+			dom.btnVRCam.parent().toggleClass('active', !worldEditorActive);
+			E2.app.toggleWorldEditor(worldEditorActive);
 
-		// take values from supplied visibility, but default to current
-		var k;
-		for (k in this.visibility) {
-			if (typeof newVisibility[k] !== 'undefined') this.visibility[k] = newVisibility[k];
-		}
-		k=null;
+			dom.btnMove.attr('disabled',!worldEditorActive);
+			dom.btnScale.attr('disabled',!worldEditorActive);
+			dom.btnRotate.attr('disabled',!worldEditorActive);
 
-		ui.applyVisibility(false);
+		})
+		.emit('changed:viewCamera', state.viewCamera);
 
-		if (typeof newState.panelStates === 'undefined') return true;	// nothing else left to do
+	state
+		.on('changed:visible', function(visible){
+			that.dom.btnHideAll.toggleClass('ui_off', visible);	// inverse
+		})
+		.emit('changed:visible', state.visible);
 
-		var ps = newState.panelStates;
-		if (typeof ps.chat !== 'undefined') {
-			var $chatPanel = ui.dom.chatWindow;
-			var chatState = ps.chat;
-			VizorUI.applyPanelState($chatPanel, chatState, ui.onChatToggleClicked.bind(ui));
-			var activeTabIsChat = (chatState.selectedTab === '#chatTab') || (chatState.selectedTab === 'chat');
-			if (activeTabIsChat && (chatState.h > 0)) {	// only apply height if the state had chat selected
-				ui.dom.chatWindow.height(chatState.h);
-				ui.onChatResize();
-			}
-		}
-		if (typeof ps.presets !== 'undefined') {
-			VizorUI.applyPanelState(ui.dom.presetsLib, ps.presets, ui.onPresetsToggleClicked.bind(ui));
-		}
-		if (typeof ps.assets !== 'undefined') {
-			VizorUI.applyPanelState(ui.dom.assetsLib, ps.assets, ui.onAssetsToggleClicked.bind(ui));
-		}
+	state
+		.on('changed:visibility:floating_panels', function(){}) // stub, if a button exists
+		.emit('changed:visibility:floating_panels', visibility.floating_panels);
 
-		ui.setWorldEditorMode(this.viewCamera === uiViewCam.world_editor);
 
-		return true;
-	};
+	var changedVisibilityPanelHandler = function($panel, $button) {
+		return function(visible){
+			if (that.isFullScreen()) return;
+			$panel
+				.toggle(visible)
+				.toggleClass('uiopen', visible);
+			$button.toggleClass('ui_off', !visible);
 
-	this.state._getCopy = function() {
-		return {
-			visible: this.visible,
-			viewCamera: this.viewCamera,
-			visibility: clone(this.visibility),
-			panelStates: clone(this.panelStates),
-			context: clone(this.context)
+			if (visible) VizorUI.constrainPanel($panel);	// soft constrain
 		};
-	}
+	};
 
+	state
+		.on('changed:visibility:panel_assets', 	changedVisibilityPanelHandler($assets, dom.btnAssets))
+		.on('changed:visibility:panel_presets', changedVisibilityPanelHandler($presets, dom.btnPresets))
+		.on('changed:visibility:panel_chat', 	changedVisibilityPanelHandler($chat, dom.btnChatDisplay))
+		.emit('changed:visibility:panel_assets', 	visibility.panel_assets)
+		.emit('changed:visibility:panel_presets', 	visibility.panel_presets)
+		.emit('changed:visibility:panel_chat', 		visibility.panel_chat);
+
+	state
+		.on('changed:visibility:patch_editor', function(visible){
+			E2.app.noodlesVisible = visible;
+			$patch_editor.toggle(E2.app.noodlesVisible);	// ui is visible and patch editor is visible (or not)
+			if (E2.app.noodlesVisible) NodeUI.redrawActiveGraph();
+			if (that.isInBuildMode() && !that.state.visibility.patch_editor) {
+					that.dom.tabObjects.find('a').trigger('click')
+			}
+			if (that.isInProgramMode() && that.state.visibility.patch_editor) {
+				that.dom.tabPresets.find('a').trigger('click')
+			}
+			dom.btnSavePatch.attr('disabled', !visible);
+			dom.btnInspector.attr('disabled', !visible);
+		})
+		.emit('changed:visibility:patch_editor', visibility.patch_editor);
+
+	state
+		.on('changed:selectedObjects', function(selected){
+			var what = '';
+			if (selected.length > 1) what = selected.length + ' objects';
+			else if (selected.length === 1) what = selected[0].title || selected[0].id;
+			that.buildBreadcrumb(E2.core.active_graph, function(b){if (what) b.add(what)});
+		})
+		.emit('changed:selectedObjects', state.selectedObjects);
+
+	state
+		.on('changed:modifyMode', function(modifyMode){
+			dom.btnScale
+				.toggleClass('ui_off', modifyMode !== uiModifyMode.scale)
+				.toggleClass('ui_on', modifyMode === uiModifyMode.scale)
+			dom.btnRotate
+				.toggleClass('ui_off', modifyMode !== uiModifyMode.rotate)
+				.toggleClass('ui_on', modifyMode === uiModifyMode.rotate)
+			dom.btnMove
+				.toggleClass('ui_off', modifyMode !== uiModifyMode.move)
+				.toggleClass('ui_on', modifyMode === uiModifyMode.move)
+		})
+		.emit('changed:modifyMode', state.modifyMode);
+
+	state.on('changed:panelStates:presets', function(panelState){
+		if (!panelState) return;
+		if (!panelState._found) return;
+		if (that.isFullScreen()) return;
+		VizorUI.applyPanelState(dom.presetsLib, panelState);
+		var controlsHeight = dom.presetsLib.find('.drag-handle').outerHeight(true) +
+					   dom.presetsLib.find('.block-header').outerHeight(true) +
+					   dom.presetsLib.find('.searchbox').outerHeight(true);
+		if (!panelState.collapsed) {
+			that.onSearchResultsChange();
+		} else {
+			dom.presetsLib.addClass('collapsed').height(controlsHeight);
+		}
+		VizorUI.constrainPanel(dom.presetsLib);
+	});
+
+	state.on('changed:panelStates:assets', function(panelState){
+		if (!panelState) return;
+		if (!panelState._found) return;
+		if (that.isFullScreen()) return;
+		VizorUI.applyPanelState(dom.assetsLib, panelState);
+		var controlsHeight = dom.assetsLib.find('.drag-handle').outerHeight(true) +
+					   dom.assetsLib.find('.block-header').outerHeight(true) +
+					   dom.assetsLib.find('.searchbox').outerHeight(true);
+		if (E2.dom.assetsLib.hasClass('collapsed')) {
+			var newHeight = controlsHeight +
+						   dom.assetsLib.find('#assets-tabs').outerHeight(true) +
+						   dom.assetsLib.find('.tab-content.active .assets-frame').outerHeight(true) +
+						   dom.assetsLib.find('.load-buttons').outerHeight(true) +
+						   dom.assetsLib.find('#asset-info').outerHeight(true)
+			dom.assetsLib.removeClass('collapsed').height(newHeight);
+		} else {
+			dom.assetsLib.addClass('collapsed').height(controlsHeight);
+		}
+		VizorUI.constrainPanel(dom.assetsLib);
+	});
+
+	state.on('changed:panelStates:chat', function(panelState){
+		if (!panelState) return;
+		if (!panelState._found) return;
+		if (that.isFullScreen()) return;
+		var $chat = dom.chatWindow;
+		VizorUI.applyPanelState($chat, panelState);
+		var $resizeHandle = $chat.find('.resize-handle');
+		var chatTabsHeight = dom.chatTabs.height();
+		var dragHandleHeight = $chat.find('.drag-handle').height();
+
+		if (panelState.collapsed) {
+			$resizeHandle.hide();
+			$chat.height(dragHandleHeight + chatTabsHeight);
+		} else {
+			$resizeHandle.show();
+			var height = (panelState.h >= 120) ? panelState.h : 'auto';
+			$chat.height(height)
+			VizorUI.constrainPanel($chat, true);
+			that.onChatResize();
+		}
+	});
+
+	state
+		.emit('changed:panelStates:presets', state.panelStates.presets)
+		.emit('changed:panelStates:assets', state.panelStates.assets)
+		.emit('changed:panelStates:chat', state.panelStates.chat)
+
+	state
+		.on('changed:context', function(context){
+			// store the panel states and sync again
+			that.state.panelStates.chat = VizorUI.getDomPanelState(dom.chatWindow);
+			that.state.panelStates.assets = VizorUI.getDomPanelState(dom.assetsLib);
+			that.state.panelStates.presets = VizorUI.getDomPanelState(dom.presetsLib);
+		})
+		.emit('changed:context', state.context)
 };
 
-VizorUI.prototype.getState = function() {
-	if (!this._initialised) return msg('ERROR: UI not initialised');
-	return this.state._getCopy();
-}
-
-VizorUI.prototype.setState = function(stateObjOrJSON) {
-	if (!this._initialised) return msg('ERROR: UI not initialised')
-	var newState;
-	try {
-		newState = (typeof stateObjOrJSON === 'object') ? stateObjOrJSON : JSON.parse(stateObjOrJSON);
-	}
-	catch (e) {
-		console.error(e);
-		return msg('ERROR: failed parsing state json');
-	}
-	this.state._apply(newState);
-	this.enforceConstraints();
-	return true;
-}
-
-VizorUI.prototype.enforceConstraints = function() {
-	if (!this.isVisible()) return;
-
-	var visibility = this.state.visibility;
-
-	var referenceTop	= jQuery('#canvases').offset().top;
-	var referenceBottom	= 45;	// #652
-	var referenceLeft	= 0;
-
-	if (visibility.panel_chat) {
-		VizorUI.constrainPanel(this.dom.chatWindow, referenceTop, referenceBottom, referenceLeft, true);
-		setTimeout(this.onChatResize.bind(this), 200);
-	}
-	if (visibility.panel_assets) VizorUI.constrainPanel(this.dom.assetsLib, referenceTop, referenceBottom, referenceLeft);
-	if (visibility.panel_presets) VizorUI.constrainPanel(this.dom.presetsLib,  referenceTop, referenceBottom, referenceLeft);
-}
 
 /***** IS... *****/
 
@@ -232,12 +284,14 @@ VizorUI.prototype.isFullScreen = function() {
 VizorUI.prototype.isVisible = function() {
 	return this.state.visible;
 }
-VizorUI.prototype.isPatchVisible = function() {
+VizorUI.prototype.isPatchEditorVisible = function() {
 	return this.state.visibility.patch_editor;
 }
-VizorUI.prototype.isInProgramMode = VizorUI.prototype.isPatchVisible;
+VizorUI.prototype.isInProgramMode = function() {
+	return this.state.mode === uiMode.program
+}
 VizorUI.prototype.isInBuildMode = function() {
-	return !this.isInProgramMode();
+	return this.state.mode === uiMode.build
 }
 VizorUI.prototype.isLoading = function() {
 	return this.flags.loading;
@@ -251,10 +305,15 @@ VizorUI.prototype.isVRCameraActive = function() {
 VizorUI.prototype.isModalOpen = function() {
 	// was: return ($("body").data('bs.modal') || {}).isShown;
 	var $modal = jQuery('div.bootbox.modal');
-	this.state.visibility.modal = $modal.hasClass('in');
-	return this.state.visibility.modal;
+	return $modal.hasClass('in');
 }
-
+VizorUI.prototype.isAnyUIElementVisible = function() {
+	var state = this.state, v = state.visibility;
+	var x = state.visible;
+	var anyFloatingPanels = v.floating_panels && (v.panel_presets || v.panel_assets || v.panel_chat)
+	x = x && (v.patch_editor || anyFloatingPanels);
+	return x;
+}
 
 /**** EVENT HANDLERS ****/
 
@@ -273,15 +332,15 @@ VizorUI.prototype._trackModifierKeys = function(keyCode, isDown) {	// returns bo
 		case uiKeys.left_window_key:
 		case uiKeys.meta:
 			this.flags.key_ctrl_pressed = newvalue;
-			break;
+			return true;
 		case uiKeys.alt:
 			this.flags.key_alt_pressed = newvalue;
-			break;
+			return true;
 		case uiKeys.shift:
 			this.flags.key_shift_pressed = newvalue;
-			break;
+			return true;
 	}
-	return true;
+	return false;
 };
 VizorUI.prototype.getModifiedKeyCode = function(keyCode) {	// adds modifier keys value to keyCode if necessary
 	if (typeof keyCode !== 'number') return keyCode;
@@ -290,14 +349,40 @@ VizorUI.prototype.getModifiedKeyCode = function(keyCode) {	// adds modifier keys
 	if (this.flags.key_ctrl_pressed) keyCode += uiKeys.mod_ctrl;
 	return keyCode;
 };
+VizorUI.prototype.trackModifierKeysForWorldEditor = function() {
+	if (!this.isInBuildMode()) return;
+	if (!this.state.selectedObjects.length) return;
+
+	if (!this.flags.key_shift_pressed && this.flags.key_ctrl_pressed) {
+		this.state.modifyMode = uiModifyMode.rotate
+	}
+	if (this.flags.key_shift_pressed && this.flags.key_ctrl_pressed) {
+		this.state.modifyMode = uiModifyMode.scale
+	}
+	if (!this.flags.key_shift_pressed && !this.flags.key_ctrl_pressed) {
+		this.state.modifyMode = uiModifyMode.move
+	}
+}
 VizorUI.prototype.onKeyDown = function(e) {
-	this._trackModifierKeys(e.keyCode, true);
-	if (this.isModalOpen() || E2.util.isTextInputInFocus(e)) return true;
+	var isModifierKey = this._trackModifierKeys(e.keyCode, true);
+
+	if (this.isModalOpen() || E2.util.isTextInputInFocus(e) || this.isFullScreen()) return true;
 	var keyCode = this.getModifiedKeyCode(e.keyCode);
 
 	var state = this.state;
 	var that = this;
+
+	if (isModifierKey) this.trackModifierKeysForWorldEditor();
 	switch (keyCode) {
+		case (uiKeys.modifyModeMove):
+			this.state.modifyMode = uiModifyMode.move;
+			break;
+		case (uiKeys.modifyModeRotate):
+			this.state.modifyMode = uiModifyMode.rotate;
+			break;
+		case (uiKeys.modifyModeScale):
+			this.state.modifyMode = uiModifyMode.scale;
+			break;
 		case (uiKeys.viewSource):
 			this.viewSource();
 			e.preventDefault();
@@ -306,61 +391,43 @@ VizorUI.prototype.onKeyDown = function(e) {
 			this.onInspectorClicked();
 			e.preventDefault();
 			break;
-		case (uiKeys.toggleFloatingPanels + uiKeys.mod_ctrl):
-			if (!state.visible) {
-				// nothing is visible and we just want the panels so reset the UI
-				state.visibility.patch_editor = false;
-				state.visible = true;
-				this.toggleFloatingPanels(true);
-			} else {
-				this.toggleFloatingPanels();
-			}
+		case (uiKeys.toggleFloatingPanels):
+			this.toggleFloatingPanels();
 			e.preventDefault();
+			break;
+		case (uiKeys.toggleMode):
+			if (state.mode === uiMode.build)
+				that.setModeProgram();
+			else
+				that.setModeBuild();
+			e.preventDefault();
+			e.stopPropagation();
+			break;
+		case (uiKeys.toggleEditorCamera):
+			state.viewCamera = (state.viewCamera === uiViewCam.vr) ? uiViewCam.world_editor : uiViewCam.vr;
+			e.preventDefault();
+			e.stopPropagation();
 			break;
 		case (uiKeys.togglePatchEditor):
-			if (!state.visible) {
-				// nothing is visible and we just want the noodles so reset the UI
-				state.visible=true;
-				state.visibility.floating_panels = false;
-				this.togglePatchEditor(true);
-			} else
-				this.togglePatchEditor();
+			this.togglePatchEditor();
 			e.preventDefault();
 			break;
-		case (uiKeys.toggleUILayer + uiKeys.mod_shift):
-			if (state.visible) {
-				if (!(state.visibility.floating_panels || state.visibility.patch_editor)) {	// UI is visible but parts aren't so show them
-					state.visibility.patch_editor = state.visibility.floating_panels = true;
-					state.visible = false;	// pretend we were invisible
-				}
-			}
-			state.visible = !state.visible;
-			this.applyVisibility();
+		case (uiKeys.toggleUILayer):
+			that.toggleUILayer();
 			e.preventDefault();
 			break;
 		case (uiKeys.focusPresetSearchAlt):	// fallthrough
 		case (uiKeys.focusPresetSearch):
-			if (state.visible) {
-				if (!state.visibility.floating_panels) {
-					// reset the floating panels
-					state.visibility.floating_panels = true;
-					state.visibility.panel_chat = state.visibility.panel_assets = false;
-				}
-			}
 			state.visibility.panel_presets = true;
-			this.applyVisibility(false);	// do not update the state
 			setTimeout(function(){
-				if (that.isInProgramMode()) {
-					that.dom.tabPresets.find('a').trigger('click');
-					jQuery('#presetSearch').focus().select();
+				if (that.isInProgramMode() || that.state.visibility.patch_editor) {
+					that.dom.tabPresets.find('a').trigger('click')
+					that.dom.presets_list.find('.searchbox input').focus().select();
 				} else {
-					that.dom.tabObjects.find('a').trigger('click');
-					jQuery('#objectSearch').focus().select();
+					that.dom.tabObjects.find('a').trigger('click')
+					that.dom.objectsList.find('.searchbox input').focus().select();
 				}
-
-				that.updateState();
 			}, 100);
-
 			e.preventDefault();
 			e.stopPropagation();
 			break;
@@ -370,21 +437,7 @@ VizorUI.prototype.onKeyDown = function(e) {
 	switch (keyIdentifier) {
 		case uiKeys.focusChatPanel:		// fallthrough
 		case uiKeys.focusChatPanelAlt:
-			var v = state.visibility;
-			if (!state.visible) {		// there's nothing on the screen and we just want the chat
-				state.visible = true
-				v.patch_editor = false;
-				v.floating_panels = true;
-				v.panel_assets = false;
-				v.panel_presets = false;
-			}
-			else if (!v.floating_panels) {
-				v.floating_panels = true;
-				v.panel_assets = false;
-				v.panel_presets = false;
-			}
-			v.panel_chat = true;
-			this.applyVisibility();
+			var v = state.visibility.panel_chat = true;
 			this.dom.chatWindow.find('#new-message-input').focus();
 
 			e.preventDefault();
@@ -400,15 +453,12 @@ VizorUI.prototype.onKeyDown = function(e) {
 
 	return true;
 };
-VizorUI.prototype.onKeyUp = function(e) {	// bound for future use
-	this._trackModifierKeys(e.keyCode, false);
-	if (this.isModalOpen() || E2.util.isTextInputInFocus(e)) return true;
+VizorUI.prototype.onKeyUp = function(e) {
+	var isModifierKey = this._trackModifierKeys(e.keyCode, false);
+	if (this.isModalOpen() || E2.util.isTextInputInFocus(e) || this.isFullScreen()) return true;
+	if (isModifierKey) this.trackModifierKeysForWorldEditor();
 	var keyCode = this.getModifiedKeyCode(e.keyCode);
-
-	if (this.isVRCameraActive()) {
-		return true;
-	}
-
+	// ...
 	return true;
 };
 
@@ -417,137 +467,25 @@ VizorUI.prototype.onFullScreenChanged = function() {	// placeholder
 	return true;
 };
 
-VizorUI.prototype.onWindowResize = function() {	// placeholder
-	this.enforceConstraints();
-	this.updateState();
+VizorUI.prototype.onWindowResize = function() {
+	this.state.context = VizorUI.getContext();
 	return true;
 };
 
 
-// uiEvent.stateChanged
-VizorUI.prototype.storeState = function(uiState) {
-	var storage = VizorUI.getPersistentStorageRef();
-	if (!storage) return;
-	storage.setItem('uiState', JSON.stringify(uiState));
-}
-
-// uiEvent.initialised
-VizorUI.prototype.recallState = function() {
-	var storage = VizorUI.getPersistentStorageRef();
-	if (!storage) return;
-	var uiState = storage.getItem('uiState');
-	if (uiState) {
-		var ok = this.setState(uiState);
-		if (!ok) storage.removeItem('uiState');		// ui refused so this is useless
-	}
-}
-
-
-// reads the visibility state of various parts of the UI
-VizorUI.prototype.syncVisibility = function() {
-	var $assets = this.dom.assetsLib, $presets = this.dom.presetsLib, $chat = this.dom.chatWindow;
-	var v = this.state.visibility;
-	v.panel_assets	= $assets.hasClass('uiopen');
-	v.panel_presets	= $presets.hasClass('uiopen');
-	v.panel_chat	= $chat.hasClass('uiopen');
-	v.patch_editor	= E2.app.noodlesVisible;
-	this.updateState();
-};
-
-// applies visibility state to parts of UI as dictated by this.state.visible and this.state.visibility
-VizorUI.prototype.applyVisibility = function(andUpdateState) {
-	andUpdateState = (typeof andUpdateState === 'undefined') ? true : !!andUpdateState;
-	var dom = this.dom;		// normally E2.dom
-	var state = this.state;
-	var visibility = state.visibility;
-	var $assets = dom.assetsLib, $presets = dom.presetsLib, $chat = dom.chatWindow;
-	var $patch_editor = dom.canvas_parent;
-	var show_panels = state.visible && visibility.floating_panels;
-
-	$assets.toggle(show_panels && visibility.panel_assets)
-		.toggleClass('uiopen', show_panels && visibility.panel_assets);
-	$presets.toggle(show_panels && visibility.panel_presets)
-		.toggleClass('uiopen', show_panels && visibility.panel_presets);
-	$chat.toggle(show_panels && visibility.panel_chat)
-		.toggleClass('uiopen', show_panels && visibility.panel_chat);
-
-	dom.btnAssets.toggleClass('ui_off', !visibility.panel_assets);
-	dom.btnPresets.toggleClass('ui_off', !visibility.panel_presets);
-	dom.btnChatDisplay.toggleClass('ui_off', !visibility.panel_chat);
-	dom.btnGraph.toggleClass('ui_off', !visibility.patch_editor);
-
-	$patch_editor.toggle(state.visible && visibility.patch_editor);
-	if (andUpdateState) this.updateState();
-	this.enforceConstraints();
-
-	var inBuildMode = !visibility.patch_editor,
-		inProgramMode = visibility.patch_editor;
-
-	// sync camera buttons
-	var worldEditorActive = state.viewCamera === uiViewCam.world_editor;
-
-
-	dom.btnBuildMode.toggleClass('ui_on', inBuildMode)
-		.toggleClass('ui_off', inProgramMode);
-	dom.btnProgramMode.toggleClass('ui_on', inProgramMode)
-		.toggleClass('ui_off', inBuildMode);
-
-	dom.btnSavePatch.attr('disabled', inBuildMode);
-	dom.btnInspector.attr('disabled', inBuildMode);
-
-//  these will still zoom, whatever the mode?
-	/*
-	dom.btnZoomOut.attr('disabled',isProgramMode);
-	dom.btnZoom.attr('disabled',worldEditorActive);
-	dom.btnZoomIn.attr('disabled',worldEditorActive);
-	*/
-
-	dom.btnMove.attr('disabled',inProgramMode);
-	dom.btnScale.attr('disabled',inProgramMode);
-	dom.btnRotate.attr('disabled',inProgramMode);
-	dom.btnEditorCam.parent().toggleClass('active', worldEditorActive);
-	dom.btnVRCam.parent().toggleClass('active', !worldEditorActive);
-
-	if (inProgramMode) {
-		dom.tabPresets.find('a').trigger('click');
-	} else {
-		dom.tabObjects.find('a').trigger('click');
-		dom.tabPresets.addClass('inactive ui_off');
-	}
-
-	E2.app.noodlesVisible = inProgramMode;
-};
-
-
-/***** TOGGLE LAYERS OF THE UI ON OR OFF *****/
-VizorUI.prototype.toggleFloatingPanels = function(forceVisibility) {
-	var v = this.state.visibility;
-	if (typeof forceVisibility !== 'undefined')
-		v.floating_panels = forceVisibility;
-	else
-		v.floating_panels = !v.floating_panels;
-
-	this.applyVisibility();
-};
-
-VizorUI.prototype.togglePatchEditor = function(forceVisibility) {
-	var v = this.state.visibility;
-	if (typeof forceVisibility !== 'undefined')
-		v.patch_editor = forceVisibility;
-	else
-		v.patch_editor = !v.patch_editor;
-	this.applyVisibility();
-
-	if (v.patch_editor)
-		NodeUI.redrawActiveGraph();
-}
-
-VizorUI.prototype.toggleNoodles = VizorUI.prototype.togglePatchEditor; // @deprecated
-
-
-
 
 /***** HELPER METHODS *****/
+
+VizorUI.getContext = function() {
+	return {
+		width 			: window.innerWidth  || document.documentElement.clientWidth  || document.body.clientWidth,
+		height 			: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
+		screenWidth		: window.screen.width,
+		screenHeight	: window.screen.height,
+		availWidth		: window.screen.availWidth,
+		availHeight		: window.screen.availHeight
+	}
+};
 
 /**
  * get the state of a UI (tabbed) panel. if no $domElement provided, then _found = false
@@ -597,15 +535,18 @@ VizorUI.getDomPanelState = function($domElement) {	/* @var $domElement jQuery */
  * Apply a panelState obtained via VizorUI.getPanelState to a floating panel of the UI
  * @param $el
  * @param panelState
- * @param collapseCallback
  * @returns {boolean}
  */
-VizorUI.applyPanelState = function($el, panelState, collapseCallback) {
+VizorUI.applyPanelState = function($el, panelState) {
 	if ((typeof $el !== 'object') || ($el.length === 0)) return false;
+	if (!panelState) {
+		msg("ERROR: no panelState to apply");
+		return false;
+	}
 
 	// parse state
 	// ignores visibility which is already applied
-	var collapsed = panelState.collapsed || false;
+	var collapsed = !!panelState.collapsed;
 	var selectedTab = panelState.selectedTab || false;
 	var x = panelState.x || 0;
 	var y = panelState.y || 0;
@@ -614,20 +555,7 @@ VizorUI.applyPanelState = function($el, panelState, collapseCallback) {
 
 
 	// collapse if needed
-	if (typeof collapseCallback === 'function') {	// collapse callback will collapse the window or not
-		if (collapsed) {
-			$el.removeClass('collapsed');
-		} else {
-			$el.addClass('collapsed');
-		}
-		collapseCallback();
-	} else {										// we collapse or expand the window
-		if (collapsed) {
-			$el.addClass('collapsed');
-		} else {
-			$el.removeClass('collapsed');
-		}
-	}
+	$el.toggleClass('collapsed', collapsed);
 
 	// position and check dimensions
 	if (!((x===0) && (y === 0))) {
@@ -650,32 +578,38 @@ VizorUI.applyPanelState = function($el, panelState, collapseCallback) {
 			'left' : '' + x + 'px',
 			'top' : '' + y + 'px'
 		});
+
+		// $el.height(h);	// currently ignored
 	}
 
 	if (!selectedTab) return true;
 
-	// activate the selected tab by triggering a click on the link
-	if (selectedTab.indexOf('#') === 0) {	// this is a href, so find link to click
-		var $a = $el.find("a[href='"+selectedTab+"']");
-		$a.parent().removeClass('active')
-		$a.trigger('click');
-	} else {
-		$el.find("li[data-tabname='"+selectedTab+"'").find('a').trigger('click');
-	}
+	// activate the selected tab
+	jQuery('.tab-content>.tab-pane', $el).hide().removeClass('active');
+	jQuery('.tab-content', $el).find(selectedTab).show().addClass('active');
+	jQuery('.nav-tabs li', $el).removeClass('active');
+	jQuery('a[href="' + selectedTab + '"]', $el).parent().addClass('active');
 
 	return true;
 };
 
-//called by ui.enforceConstraints
-VizorUI.constrainPanel = function($panel, referenceTop, referenceBottom, referenceLeft, doConstrainHeight) {
-	if (!$panel.is(':visible')) return false;
-	doConstrainHeight = !!(doConstrainHeight || false);
+VizorUI.constrainPanel = function($panel, doConstrainHeight, referenceTop, referenceBottom, referenceLeft) {
+	var viewport = E2.dom.canvases;
+	referenceTop	= referenceTop || 0;
+	referenceBottom	= referenceBottom || 0;	// #652
+	referenceLeft	= referenceLeft || 0;
+	doConstrainHeight = !!doConstrainHeight;
+
+	if (!$panel.is(':visible')) return false;	// jQuery
+
 	var panelHeight = $panel.outerHeight(true);
 	var panelWidth = $panel.outerWidth(true);
 	var parentHeight = $panel.parent().innerHeight();
 	var parentWidth = $panel.parent().innerWidth();
-	var availableHeight = parentHeight - referenceBottom;	// #652
-	var availableWidth = parentWidth;
+	var availableHeight =  viewport.outerHeight(true);
+	var availableWidth = viewport.outerWidth(true);
+
+	var doConstrain = false;
 
 	var pos = $panel.position();
 	if (pos.left === 0) pos = $panel.offset();
@@ -686,8 +620,10 @@ VizorUI.constrainPanel = function($panel, referenceTop, referenceBottom, referen
 
 	if (panelHeight > parentHeight) {
 		$panel.height(parentHeight - 10);
+		doConstrain = true;
 	}
 	if (panelTop + panelHeight > availableHeight) {	// try to fit this on screen
+		doConstrain = true;
 		if (newH > availableHeight) {
 			newH = availableHeight;
 		}
@@ -700,14 +636,20 @@ VizorUI.constrainPanel = function($panel, referenceTop, referenceBottom, referen
 		}
 	}
 	if (panelLeft + panelWidth > parentWidth) {		// same for x and fixed width
+		doConstrain = true;
 		newX -= ((newX + panelWidth) - availableWidth);
 	}
-	if (newX < referenceLeft) newX = referenceLeft + 5;
+	if (newX < referenceLeft) {
+		newX = referenceLeft + 5;
+		doConstrain = true;
+	}
 
-	if (doConstrainHeight) $panel.height(newH);	// only resizable panels take height (i.e. chat)
-	$panel.css({top: newY, left: newX});
+	if (doConstrain) {
+		if (doConstrainHeight) $panel.height(newH);	// only resizable panels take height (i.e. chat)
+		$panel.css({top: newY, left: newX});
+	}
 
-	return true;
+	return doConstrain;
 }
 
 

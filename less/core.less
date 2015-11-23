@@ -10,6 +10,11 @@ html.hVizor, body.bEditor, body.bPlayer {
 	overflow: hidden;
 }
 
+button, button:focus {	// force no button outlines
+	outline: 0 ! important;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+}
+
 body {
 	font-family: @font-family-sans-serif;
 	text-shadow: none;
@@ -271,7 +276,8 @@ header nav ul.dropdown-menu {
     font-size: @tabs-font-size;
     font-weight: 600;
     color: #ffffff;
-    border-bottom: 1px solid @bg-darker;    
+    border-bottom: 1px solid @bg-darker;
+  	background: @bg-dark;
 }
 
 .block-header .nav-tabs {
@@ -300,18 +306,19 @@ header nav ul.dropdown-menu {
 
 .block-header .nav-tabs>li>a, .nav-tabs>li>a:active {
     padding-top:  (@blocks-header-height / 2) - (@tabs-font-size * 0.75);
-    background: @bg-darker;
+
     height: @blocks-header-height;
     outline: none;
     color: @editor-text-inactive;
 }
 .block-header .nav-tabs>li>a:hover, .nav-tabs>li>a:focus {
+  	background: @bg-dark;
     color: @editor-text-active;
-    background: @bg-darker;
 }
 .block-header .nav-tabs>li.active>a {
     background: none;
     color: @editor-text-default;
+  	background: @bg-light;
     border: 0;
 }
 
@@ -354,8 +361,9 @@ header nav ul.dropdown-menu {
 .block-header>button:hover svg {
     fill: #ffffff;    
 }
-.collapsed .toggle-button {
-    transform: rotate(180deg); 
+.collapsed .toggle-button svg {
+    -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
 }
 
 .floating-box {
@@ -391,16 +399,6 @@ header nav ul.dropdown-menu {
 	margin-right: 0;
 }
 
-#canvases {
-	flex: 1;
-	overflow: hidden;
-}
-
-#canvas-parent
-{
-	min-height: 270px;
-	overflow: hidden;
-}
 
 #canvas
 {
@@ -695,23 +693,27 @@ header nav ul.dropdown-menu {
 }
 
 .searchbox {
-    background: @bg-darker;  
+    background: @bg-darker;
     height: @searchbox-height;
     width: 100%;
     position: relative;
 }
 
+.floating-box .searchbox {
+  background: @bg-light;
+}
+
 .searchbox svg {
     position: relative;
-    margin-left: 14px;
+    margin-right: 10px;
     width: 40px;
     height: 40px;
-    float: left;
+    float: right;
     stroke: @editor-text-default;
 }
 
 .searchbox input {
-    background: @bg-darker;  
+    background: none;
     border: 0;
     outline: 0;
     width: @floating-box-width - 80;
@@ -721,7 +723,7 @@ header nav ul.dropdown-menu {
     font-size: 12px;
     font-weight: 700;
     height: 18px;
-    margin-left: 10px;
+    margin-left: 18px;
     margin-top: 11px;
     padding: 0;
     -moz-appearance: textfield;
@@ -731,15 +733,13 @@ header nav ul.dropdown-menu {
 }
 
 .searchbox input::-webkit-input-placeholder { 
-    color: @editor-text-hover;
+    color: @editor-text-default;
 }
 .searchbox input::-moz-placeholder { 
-   color: @editor-text-hover;
+   color: @editor-text-default;
    opacity:  1;
 }
-.searchbox input:-ms-input-placeholder { 
-   color: @editor-text-hover;
-}
+
 
 .panel-heading {
     background: @bg-light!important;    
@@ -755,7 +755,7 @@ header nav ul.dropdown-menu {
     position: relative; 
     height: @drag-helper-height;
     width: 100%;
-    background: #292f3f;
+    background: @bg-light;
     border-bottom: 1px solid @bg-darker;
     box-sizing: border-box;
 }
