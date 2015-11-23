@@ -114,12 +114,6 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 				dom.tabObjects.removeClass('inactive ui_off');
 				dom.tabPresets.addClass('inactive ui_off');
 			}
-
-			dom.btnSavePatch.attr('disabled', inBuildMode);
-			dom.btnInspector.attr('disabled', inBuildMode);
-			dom.btnMove.attr('disabled',inProgramMode);
-			dom.btnScale.attr('disabled',inProgramMode);
-			dom.btnRotate.attr('disabled',inProgramMode);
 		})
 		.emit('changed:mode', state.mode);
 
@@ -129,6 +123,11 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 			dom.btnEditorCam.parent().toggleClass('active', worldEditorActive);
 			dom.btnVRCam.parent().toggleClass('active', !worldEditorActive);
 			E2.app.toggleWorldEditor(worldEditorActive);
+
+			dom.btnMove.attr('disabled',!worldEditorActive);
+			dom.btnScale.attr('disabled',!worldEditorActive);
+			dom.btnRotate.attr('disabled',!worldEditorActive);
+
 		})
 		.emit('changed:viewCamera', state.viewCamera);
 
@@ -174,6 +173,8 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 			if (that.isInProgramMode() && that.state.visibility.patch_editor) {
 				that.dom.tabPresets.find('a').trigger('click')
 			}
+			dom.btnSavePatch.attr('disabled', !visible);
+			dom.btnInspector.attr('disabled', !visible);
 		})
 		.emit('changed:visibility:patch_editor', visibility.patch_editor);
 
@@ -199,7 +200,6 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 				.toggleClass('ui_on', modifyMode === uiModifyMode.move)
 		})
 		.emit('changed:modifyMode', state.modifyMode);
-
 
 	state.on('changed:panelStates:presets', function(panelState){
 		if (!panelState) return;
