@@ -106,7 +106,7 @@ ThreeObject3DPlugin.prototype.update_state = function() {
 	this.object3d.position.set(
 		this.graphInputs.position.x + this.state.position.x,
 		this.graphInputs.position.y + this.state.position.y,
-		this.graphInputs.positiongit co.z + this.state.position.z)
+		this.graphInputs.position.z + this.state.position.z)
 
 	this.object3d.quaternion.set(
 		this.state.quaternion._x,
