@@ -32,7 +32,7 @@
                             "y": 234,
                             "uid": "H4iok82Go737",
                             "state": {
-                                "url": "/data/vizor/assets/scene/flamingo/flamingo.js"
+                                "url": "/data/scene/flamingo/flamingo.js"
                             }
                         },
                         {
@@ -526,7 +526,7 @@
                             "y": 180,
                             "uid": "EtDika07Vgah",
                             "state": {
-                                "url": "/data/vizor/assets/image/3968db2bdad274fc19d8283eb73c4691b14ac0b1.png"
+                                "url": "/data/image/3968db2bdad274fc19d8283eb73c4691b14ac0b1.png"
                             },
                             "title": "Box texture"
                         },
@@ -711,7 +711,7 @@
                             "y": 63,
                             "uid": "CN1HiUFJop0r",
                             "state": {
-                                "url": "/data/vizor/assets/image/7cbc45195c04d1595c43be42418755520068c72e.png"
+                                "url": "/data/image/7cbc45195c04d1595c43be42418755520068c72e.png"
                             },
                             "title": "Texture"
                         },
