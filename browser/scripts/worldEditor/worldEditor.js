@@ -19,6 +19,8 @@ function WorldEditor() {
 		return active
 	}
 
+	this.transformMode = 'translate'
+
 	this.editorTree = new THREE.Object3D()
 
 	// grid around origin along x, z axises
@@ -55,18 +57,12 @@ function WorldEditor() {
 
 	this.setupObjectPicking()
 
-	E2.ui.state.on('changed:modifyMode', function(modifyMode){
-		switch (modifyMode) {
-			case 'translate':
-				return that.setModifyModeTranslate()
-			case 'rotate':
-				return that.setModifyModeRotate()
-			case 'scale':
-				return that.setModifyModeScale()
-		}
-		return that
-	});
+	E2.ui.state.on('changed:modifyMode', this.setTransformMode.bind(this));
 
+}
+
+WorldEditor.prototype.setTransformMode = function(mode) {
+	this.transformMode = mode
 }
 
 WorldEditor.prototype.update = function() {
@@ -85,24 +81,9 @@ WorldEditor.prototype.update = function() {
 
 	this.grid.scale(v)
 
-}
-
-WorldEditor.prototype.setModifyModeTranslate = function() {
-	this.transformControls.setMode('translate')
+	// needs calling on every update otherwise the transform controls draw incorrectly
+	this.transformControls.setMode(this.transformMode)
 	this.transformControls.setSpace('local')
-	return this
-}
-
-WorldEditor.prototype.setModifyModeRotate = function() {
-	this.transformControls.setMode('rotate')
-	this.transformControls.setSpace('local')
-	return this
-}
-
-WorldEditor.prototype.setModifyModeScale = function() {
-	this.transformControls.setMode('scale')
-	this.transformControls.setSpace('local')
-	return this
 }
 
 WorldEditor.prototype.preRenderUpdate = function() {
