@@ -45,6 +45,7 @@
 		}
 
 		this.rotationFromGraph = new THREE.Euler()
+		this.positionFromGraph = new THREE.Vector3()
 	}
 
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
