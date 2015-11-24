@@ -96,10 +96,12 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 	var $assets = dom.assetsLib, $presets = dom.presetsLib, $chat = dom.chatWindow;
 	var $patch_editor = dom.canvas_parent;
 
+
 	state
 		.on('changed:mode', function(mode) {
 			var inBuildMode = mode === uiMode.build
 			var inProgramMode = !inBuildMode
+
 			dom.btnBuildMode
 				.toggleClass('ui_on', inBuildMode)
 				.toggleClass('ui_off', inProgramMode);
@@ -107,38 +109,42 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 				.toggleClass('ui_on', inProgramMode)
 				.toggleClass('ui_off', inBuildMode);
 
-			if (inProgramMode) {
-				dom.tabObjects.addClass('inactive ui_off');
-				dom.tabPresets.removeClass('inactive ui_off');
-			} else {
-				dom.tabObjects.removeClass('inactive ui_off');
-				dom.tabPresets.addClass('inactive ui_off');
-			}
+			// LIs
+			dom.tabObjects
+				.toggleClass('disabled', inProgramMode)
+				.toggleClass('ui_off', inProgramMode)
+				.toggleClass('ui_on', inBuildMode)
+
+			dom.tabPresets
+				.toggleClass('disabled', inBuildMode)
+				.toggleClass('ui_off', inBuildMode)
+				.toggleClass('ui_on', inProgramMode)
+
+			dom.btnMove.attr('disabled',!inBuildMode);
+			dom.btnScale.attr('disabled',!inBuildMode);
+			dom.btnRotate.attr('disabled',!inBuildMode);
+
+			if (inBuildMode) dom.tabObjects.find('a').trigger('click')
+			else if (inProgramMode) dom.tabPresets.find('a').trigger('click')
+
 		})
 		.emit('changed:mode', state.mode);
 
 	state
 		.on('changed:viewCamera', function(camera){
-			var worldEditorActive = camera === uiViewCam.world_editor;
+			var worldEditorActive = (camera === uiViewCam.world_editor);
 			dom.btnEditorCam.parent().toggleClass('active', worldEditorActive);
 			dom.btnVRCam.parent().toggleClass('active', !worldEditorActive);
 			E2.app.toggleWorldEditor(worldEditorActive);
-
-			dom.btnMove.attr('disabled',!worldEditorActive);
-			dom.btnScale.attr('disabled',!worldEditorActive);
-			dom.btnRotate.attr('disabled',!worldEditorActive);
-
 		})
 		.emit('changed:viewCamera', state.viewCamera);
 
-	state
-		.on('changed:visible', function(visible){
-			that.dom.btnHideAll.toggleClass('ui_off', visible);	// inverse
-		})
-		.emit('changed:visible', state.visible);
+	// nothing UI for top-level 'changed:visible' to process
 
 	state
-		.on('changed:visibility:floating_panels', function(){}) // stub, if a button exists
+		.on('changed:visibility:floating_panels', function(visible){
+			that.dom.btnHideAll.toggleClass('ui_off', visible);	// inverse
+		})
 		.emit('changed:visibility:floating_panels', visibility.floating_panels);
 
 
@@ -419,15 +425,13 @@ VizorUI.prototype.onKeyDown = function(e) {
 		case (uiKeys.focusPresetSearchAlt):	// fallthrough
 		case (uiKeys.focusPresetSearch):
 			state.visibility.panel_presets = true;
-			setTimeout(function(){
-				if (that.isInProgramMode() || that.state.visibility.patch_editor) {
-					that.dom.tabPresets.find('a').trigger('click')
-					that.dom.presets_list.find('.searchbox input').focus().select();
-				} else {
-					that.dom.tabObjects.find('a').trigger('click')
-					that.dom.objectsList.find('.searchbox input').focus().select();
-				}
-			}, 100);
+			if (that.isInProgramMode()) {
+				that.dom.tabPresets.find('a').trigger('click')
+				that.dom.presets_list.find('.searchbox input').focus().select();
+			} else {
+				that.dom.tabObjects.find('a').trigger('click')
+				that.dom.objectsList.find('.searchbox input').focus().select();
+			}
 			e.preventDefault();
 			e.stopPropagation();
 			break;

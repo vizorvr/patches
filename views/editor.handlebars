@@ -91,19 +91,19 @@
 			<button class="toggle-button" id="presets-toggle" type="button">
 				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
 			</button>
-			<ul class="nav nav-tabs" role="tablist">
-				<li class="active"><a href="#objects" role="tab" data-toggle="tab">Objects</a></li>
-				<li><a href="#presets" role="tab" data-toggle="tab">Patches</a></li>
-				{{!-- <li><a href="#graph" role="tab" data-toggle="tab">Tree</a></li> --}}
+			<ul class="nav nav-tabs">
+				<li><a href="#objects">Objects</a></li>
+				<li><a href="#presets">Patches</a></li>
+				{{!-- <li><a href="#graph">Tree</a></li> --}}
 			</ul>
 			<button class="close-button" id="presets-close" type="button">
 				<svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
 			</button>
 		</div>
 		<div class="tab-content">
-			<div role="tabpanel" class="tab-pane active" id="presets">
+			<div class="tab-pane active" id="presets">
 			</div>
-			<div role="tabpanel" class="tab-pane" id="objects">
+			<div class="tab-pane" id="objects">
 			</div>
 			{{!-- <div role="tabpanel" class="tab-pane" id="graph">
 				<div class="cell" id="structure"></div>
@@ -120,10 +120,10 @@
 		</button>
 		<ul class="nav nav-tabs" role="tablist">
 			<li class="active">
-				<a data-toggle="tab" role="tab" href="#chatTab" id="chatTabBtn">Chat</a>
+				<a href="#chatTab" id="chatTabBtn">Chat</a>
 			</li>
 			<li>
-				<a data-toggle="tab" role="tab" href="#peopleTab" id="peopleTabBtn">Users</a>
+				<a href="#peopleTab" id="peopleTabBtn">Users</a>
 			</li>
 		</ul>
 		<button class="close-button" id="chat-close" type="button">

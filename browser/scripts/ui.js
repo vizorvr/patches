@@ -23,7 +23,12 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 
 	var makeTabHandler = function(panelStateKey) {
 		return function(e) {
-			var $li = jQuery(e.currentTarget).parent();
+			if (e) {
+				e.preventDefault();
+			}
+			var $a = jQuery(e.currentTarget);
+			var $li = $a.parent();	// e.g. dom.tabObjects, dom.tabPresets, etc.
+			if ($li.hasClass('disabled')) return true;
 			var s = this.state.panelStates[panelStateKey];
 			var stateChanged = false;
 			if (s.collapsed) {
@@ -36,16 +41,13 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 			}
 			if (stateChanged)
 				this.state.panelStates[panelStateKey] = s;
-			if (e) {
-				e.preventDefault();
-			}
 			return false;
 		}.bind(that);
 	};
 
-	jQuery('ul.nav-tabs a', dom.chatWindow).click(makeTabHandler('chat'));
-	jQuery('ul.nav-tabs a', dom.presetsLib).click(makeTabHandler('presets'));
-	jQuery('ul.nav-tabs a', dom.assetsLib).click(makeTabHandler('assets'));
+	dom.chatWindow.find('ul.nav-tabs a').click(makeTabHandler('chat'));
+	dom.presetsLib.find('ul.nav-tabs a').click(makeTabHandler('presets'));
+	if (dom.assetsLib) dom.assetsLib.find('ul.nav-tabs a').click(makeTabHandler('assets'));
 
 	var makeToggleHandler = function(panelStateKey) {
 		return function(e) {
@@ -263,7 +265,7 @@ VizorUI.prototype.onSearchResultsChange = function() {
 
 VizorUI.prototype.onBtnHideAllClicked = function(e) {
 	e.preventDefault();
-	this.toggleUILayer();
+	this.toggleFloatingPanels();
 	return false;
 }
 
@@ -304,15 +306,15 @@ VizorUI.prototype.toggleUILayer = function() {
 	this.state.visible = !this.state.visible;
 }
 
-VizorUI.prototype.enterEditorView = function() {
-	if ((this.state.viewCamera === uiViewCam.world_editor) && E2.app.worldEditor.isActive()) return false;
-	E2.app.toggleWorldEditor(true);
-	return false;
+VizorUI.prototype.enterEditorView = function(e) {
+	this.state.viewCamera = uiViewCam.world_editor
+	if (e) e.preventDefault()
+	return true;
 }
-VizorUI.prototype.enterVRView = function() {
-	if ((this.state.viewCamera === uiViewCam.vr) && !E2.app.worldEditor.isActive()) return false;
-	E2.app.toggleWorldEditor(false);
-	return false;
+VizorUI.prototype.enterVRView = function(e) {
+	this.state.viewCamera = uiViewCam.vr
+	if (e) e.preventDefault()
+	return true;
 }
 
 VizorUI.prototype.onChatResize = function() {
@@ -488,17 +490,10 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 
 VizorUI.prototype.setModeBuild = function() {
 	this.state.mode = uiMode.build
-	setTimeout(function(){
-		this.dom.tabObjects.find('a').trigger('click');
-	}.bind(this), 100);
-
 	return true;
 };
 VizorUI.prototype.setModeProgram = function() {
 	this.state.mode = uiMode.program
-	setTimeout(function(){
-		this.dom.tabPresets.find('a').trigger('click');
-	}.bind(this), 100);
 	return true;
 };
 
