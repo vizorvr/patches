@@ -2044,9 +2044,6 @@ Application.prototype.start = function() {
 			bootbox.hideAll()
 	})
 
-	E2.dom.worldEditorButton.click(function() {
-		E2.app.toggleWorldEditor()
-	});
 
 	$('button#fullscreen').click(function() {
 		E2.app.toggleFullscreen()
@@ -2277,7 +2274,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.presetsClose = $('#presets-close');
 	
 	E2.dom.dbg = $('#dbg');
-	E2.dom.worldEditorButton = $('#worldEditor');
+
 	E2.dom.publishButton = $('#btn-publish');
 	E2.dom.play = $('#play');
 	E2.dom.play_i = $('i', E2.dom.play);
