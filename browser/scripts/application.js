@@ -303,15 +303,19 @@ Application.prototype.onMouseReleased = function() {
 	// Creating a connection?
 	if (this.editConn) {
 		var ec = this.editConn
-		var old_connection_uid = ec.connection.uid;
-		var success = false;
 
 		this.editConn = null
-		var c = ec.commit()
 
-		success = (ec.connection && (old_connection_uid != ec.connection.uid));
-		if (c)
-			c.signal_change(true)
+		ec.commit()
+		.then(function(connection) {
+			if (connection.dst_node && connection.dst_node.plugin &&
+				connection.dst_node.plugin.lsg)
+				connection.dst_node.plugin.lsg.updateFreeSlots()
+
+			if (connection.src_node && connection.src_node.plugin &&
+				connection.src_node.plugin.lsg)
+				connection.src_node.plugin.lsg.updateFreeSlots()
+		})
 
 		if (ec.srcSlotDiv)
 			this.setSlotCssClasses(ec.srcSlot, ec.srcSlotDiv);

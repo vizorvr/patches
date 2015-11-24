@@ -15,7 +15,7 @@
 
 		this.node = node
 
-		this.lsg = new LinkedSlotGroup(core, node, [], [])
+		this.lsg = new AutoSlotGroup(core, node, [], [])
 		this.lsg.set_dt(core.datatypes.OBJECT3D)
 
 		var that = this
@@ -112,7 +112,6 @@
 		}
 
 		this.meshes_dirty = true
-		this.slots_dirty = true
 	}
 
 	ThreeScenePlugin.prototype.update_output = function () {
@@ -134,53 +133,11 @@
 		}
 	}
 
-	ThreeScenePlugin.prototype.updateFreeSlots = function() {
-		var that = this
-		function addSlot() {
-			E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
-				type: E2.slot_type.input,
-				name: that.dynInputs.length + '',
-				dt: that.lsg.dt,
-				array: true
-			})
-		}
-
-		function removeSlot() {
-			var inputs = that.dynInputs
-			if (!inputs)
-				return
-
-			var suid = inputs[inputs.length - 1].uid
-			E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
-		}
-
-		// remove slots until there's only one unconnected in the end
-		var lastIndex = this.dynInputs.length - 1
-
-		// if the last slot is connected, can't remove any slots
-		if (lastIndex > 0 && !this.dynInputs[lastIndex].is_connected ) {
-			while (lastIndex > 0 && !this.dynInputs[lastIndex - 1].is_connected) {
-				removeSlot()
-
-				--lastIndex
-			}
-		}
-		else if (this.dynInputs.length === 0 || this.dynInputs[this.dynInputs.length - 1].is_connected) {
-			// ensure there's at least one free slot in the end
-			addSlot()
-		}
-
-		this.slots_dirty = false
-	}
-
 	ThreeScenePlugin.prototype.update_state = function () {
 		if (this.meshes_dirty) {
 			this.update_meshes()
 		}
 
-		if (this.slots_dirty) {
-			this.updateFreeSlots()
-		}
 	}
 
 })()
