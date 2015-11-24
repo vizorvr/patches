@@ -19,7 +19,7 @@ global.E2 = {
 		scrollOffset: [0, 0]
 	},
 	dom: {
-		canvas_parent: [{
+		canvases: [{
 			offsetLeft: 32,
 			offsetTop: 32
 		}]

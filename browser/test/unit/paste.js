@@ -69,6 +69,7 @@ describe('Paste', function() {
 		global.window = { location: { pathname: 'test/test' } }
 
 		app = E2.app = new Application()
+		E2.ui = { state: {} }
 		app.player = { core: core }
 		app.worldEditor = { isActive: function() { return false } }
 		app.channel = { broadcast: function(){}}

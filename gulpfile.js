@@ -22,6 +22,7 @@ paths = {
 			'./browser/scripts/variables.js',
 			'./browser/scripts/graph.js',
 			'./browser/scripts/node.js',
+			'./browser/scripts/autoSlotGroup.js',
 
 			'./browser/scripts/plugin.js',
 			'./browser/scripts/subGraphPlugin.js',
