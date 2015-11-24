@@ -1,5 +1,5 @@
-function WorldEditor() {
-	this.domElement = E2.dom.webgl_canvas[0]
+function WorldEditor(domElement) {
+	this.domElement = domElement
 	this.camera = new WorldEditorCamera(this.domElement)
 
 	var active = false
@@ -283,9 +283,13 @@ WorldEditor.prototype.pickObject = function(e) {
 	var w = this.domElement.clientWidth
 	var h = this.domElement.clientHeight
 
-	mouseVector.x = (((e.pageX - this.domElement.offsetLeft) / w) * 2.0) - 1.0
-	mouseVector.y = ((1.0 - ((e.pageY - this.domElement.offsetTop) / h)) * 2.0) - 1.0
-	mouseVector.z = 0
+	var pointer = e.changedTouches ? e.changedTouches[0] : e
+
+	var rect = this.domElement.getBoundingClientRect();
+	var x = ( pointer.clientX - rect.left ) / rect.width;
+	var y = ( pointer.clientY - rect.top ) / rect.height;
+
+	mouseVector.set( ( x * 2 ) - 1, - ( y * 2 ) + 1 );
 
 	if (this.scene && this.scene.children && this.scene.children.length > 0) {
 		this.raycaster.setFromCamera(mouseVector, this.getCamera())
