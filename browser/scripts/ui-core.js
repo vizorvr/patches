@@ -124,10 +124,9 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 			dom.btnScale.attr('disabled',!inBuildMode);
 			dom.btnRotate.attr('disabled',!inBuildMode);
 
-			setTimeout(function(){
-				if (inBuildMode) dom.tabObjects.find('a').trigger('click')
-				else if (inProgramMode) dom.tabPresets.find('a').trigger('click')
-			}, 100);
+			if (inBuildMode) dom.tabObjects.find('a').trigger('click')
+			else if (inProgramMode) dom.tabPresets.find('a').trigger('click')
+
 		})
 		.emit('changed:mode', state.mode);
 
@@ -140,11 +139,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 		})
 		.emit('changed:viewCamera', state.viewCamera);
 
-	state
-		.on('changed:visible', function(visible){
-
-		}) // stub, if a button exists
-		.emit('changed:visible', state.visible);
+	// nothing UI for top-level 'changed:visible' to process
 
 	state
 		.on('changed:visibility:floating_panels', function(visible){
@@ -430,15 +425,13 @@ VizorUI.prototype.onKeyDown = function(e) {
 		case (uiKeys.focusPresetSearchAlt):	// fallthrough
 		case (uiKeys.focusPresetSearch):
 			state.visibility.panel_presets = true;
-			setTimeout(function(){
-				if (that.isInProgramMode() || that.state.visibility.patch_editor) {
-					that.dom.tabPresets.find('a').trigger('click')
-					that.dom.presets_list.find('.searchbox input').focus().select();
-				} else {
-					that.dom.tabObjects.find('a').trigger('click')
-					that.dom.objectsList.find('.searchbox input').focus().select();
-				}
-			}, 100);
+			if (that.isInProgramMode()) {
+				that.dom.tabPresets.find('a').trigger('click')
+				that.dom.presets_list.find('.searchbox input').focus().select();
+			} else {
+				that.dom.tabObjects.find('a').trigger('click')
+				that.dom.objectsList.find('.searchbox input').focus().select();
+			}
 			e.preventDefault();
 			e.stopPropagation();
 			break;
