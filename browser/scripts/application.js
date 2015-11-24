@@ -2368,7 +2368,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		preserveDrawingBuffer: false
 	}
 
-	E2.app.worldEditor = new WorldEditor()
+	E2.app.worldEditor = new WorldEditor(E2.dom.webgl_canvas[0])
 
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
