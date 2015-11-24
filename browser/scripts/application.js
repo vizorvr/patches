@@ -1490,6 +1490,12 @@ Application.prototype.onKeyDown = function(e) {
 				this.undoManager.redo()
 		}
 	}
+	else if (e.keyCode === 187 && this.isWorldEditorActive()) // '=' match vr camera to world editor camera
+	{
+		this.worldEditor.matchCamera()
+	}
+
+
 
 	return ret;
 

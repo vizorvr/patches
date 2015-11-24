@@ -34,7 +34,7 @@ function VRCameraHelper( camera ) {
 
 				var x = Math.sin(fj * 3.14159 * 2) * size
 				var y = (fi - 0.5) * hmdScale * size
-				var z = -Math.cos(fj * 3.14159 * 2) * size
+				var z = size - Math.cos(fj * 3.14159 * 2) * size
 
 				this.vertices.push(new THREE.Vector3(x, y, z))
 
