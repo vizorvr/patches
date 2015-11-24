@@ -294,6 +294,10 @@
     "VIDEO TOOLS": {
         "Duration": "video_get_duration_modulator",
         "Current time": "video_get_current_time_modulator"
+    },
+
+    "EXPERIMENTAL" : {
+        "Stereo Cube Map": "stereo_cube_map"
     }
 
 
