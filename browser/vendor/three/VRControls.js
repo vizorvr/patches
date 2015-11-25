@@ -64,16 +64,23 @@ THREE.VRControls = function ( object, onError ) {
 
 	this.scale = 1;
 
-	this.update = function (positionOffset, rotationOffset) {
+	var tempOrientationQuaternion = new THREE.Quaternion()
+
+	this.update = function (positionOffset, quaternionOffset) {
 		for ( var i = 0; i < vrInputs.length; i ++ ) {
 
 			var vrInput = vrInputs[ i ];
 
 			var state = vrInput.getState();
 
+
 			if ( state.orientation !== null ) {
-				object.quaternion.setFromEuler(rotationOffset, /*update = */false)
-				object.quaternion.multiply(state.orientation)
+				object.quaternion.copy(quaternionOffset)
+
+				// state is a DOMPoint object by webvr specification, not a three.js Quaternion, so we need to convert to one before multiplying
+				tempOrientationQuaternion.set(state.orientation.x, state.orientation.y, state.orientation.z, state.orientation.w)
+
+				object.quaternion.multiply(tempOrientationQuaternion)
 
 			}
 
