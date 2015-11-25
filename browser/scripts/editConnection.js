@@ -104,25 +104,19 @@ EditConnection.prototype.isConnectable = function() {
 }
 
 EditConnection.prototype.commit = function() {
+	if (this.isConnectable() && this.connection.src_slot === this.srcSlot &&
+		this.connection.dst_slot === this.dstSlot) 
+		return; 
+
+	// connection changed or removed?
 	if (this.connection.src_slot && this.connection.dst_slot &&
-		(this.srcSlot !== this.connection.src_slot || this.dstSlot !== this.connection.dst_slot))
-	{
-		// connection changed or removed
+		(this.srcSlot !== this.connection.src_slot || this.dstSlot !== this.connection.dst_slot)) {
 		this.graphApi.disconnect(E2.core.active_graph, this.connection)
-		E2.app.onLocalConnectionChanged(this.connection)
-		return;
 	}
 
-	if (!this.isConnectable()) {
-		return;
-	}
-
-	if (this.isConnectable() && 
-		this.connection.src_slot === this.srcSlot &&
-		this.connection.dst_slot === this.dstSlot)
+	if (!this.isConnectable())
 		return;
 
-	// new connection
 	this.connection.src_node = this.srcNode
 	this.connection.dst_node = this.dstNode
 	this.connection.src_slot = this.srcSlot
