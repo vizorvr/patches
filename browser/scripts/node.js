@@ -723,6 +723,8 @@ LinkedSlotGroup.prototype.infer_dt = function() {
 	return null;
 };
 
+LinkedSlotGroup.prototype.updateFreeSlots = function() {}
+
 
 if (typeof(module) !== 'undefined') {
 	module.exports.Node = Node
