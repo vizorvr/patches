@@ -357,7 +357,6 @@ VizorUI.prototype.getModifiedKeyCode = function(keyCode) {	// adds modifier keys
 };
 VizorUI.prototype.trackModifierKeysForWorldEditor = function() {
 	if (!this.isInBuildMode()) return;
-	if (!this.state.selectedObjects.length) return;
 
 	if (!this.flags.key_shift_pressed && this.flags.key_ctrl_pressed) {
 		this.state.modifyMode = uiModifyMode.rotate
