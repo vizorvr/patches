@@ -244,5 +244,59 @@ body.bEditor {
 		padding-right: 40px;
 	}
   }
-}
 
+  div.modal.mHelp {
+
+	.modal-dialog {
+	  width: 700px;
+	  max-width: 95%;
+	}
+	.modal-dialog .modal-content .modal-body div.bootbox-body {
+	  text-align: left;
+	}
+	.modal-body h4 {
+	  margin-bottom:0;
+	  color: rgba(255,255,255,0.8);
+	  padding: 0 5px;
+	  span {
+	  	border-bottom: 1px solid @bg-lightest;
+	  }
+	}
+	dl {
+	  .clearfix;
+	}
+	dt, dd {
+	  line-height: 1.5em;
+	  padding: 5px;
+	  margin:0;
+	  border-top: 1px solid @bg-dark;
+	  &:first-of-type {
+		border-top:0;
+	  }
+	}
+	dt {
+	  clear: left;
+	  float: left;
+	  width: 66%;
+	  font-weight: 300;
+	}
+	dd {
+	  margin-left: 66%;
+	  font-weight: 400;
+	  span {
+//		border: 1px solid rgba(255,255,255,0.7);
+		background: rgba(255,255,255,0.5);
+		color: #000;
+		border-radius: 3px 3px;
+		padding: 1px 5px;
+		text-transform: capitalize;
+		&.modifier {
+		  border: 1px solid rgba(255,255,255,0.5);
+		  background: none;
+		  color: rgba(255,255,255,0.8);
+		}
+	  }
+	}
+  }
+
+}

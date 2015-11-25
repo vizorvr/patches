@@ -435,6 +435,11 @@ VizorUI.prototype.onKeyDown = function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 			break;
+		case (uiKeys.viewHelp):
+			VizorUI.openEditorHelp();
+			e.preventDefault();
+			e.stopPropagation();
+			break;
 	}
 
 	var keyIdentifier = (typeof e.keyIdentifier !== 'undefined') ? e.keyIdentifier : (e.key || '');

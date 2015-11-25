@@ -1,0 +1,45 @@
+{{#with this.keys}}
+<dl class="clearfix">
+	<dt>Switch between Build and Program</dt>
+	<dd>{{{toggleMode}}}</dd>
+
+	<dt>Switch between VR and Editor camera</dt>
+	<dd>{{{toggleEditorCamera}}}</dd>
+
+	<dt>Enter fullscreen (press ESC to exit)</dt>
+	<dd>{{{toggleFullScreen}}}</dd>
+</dl>
+
+<h4><span>Panels</span></h4>
+<dl>
+	<dt>Toggle floating panels</dt>
+	<dd>{{{toggleFloatingPanels}}}</dd>
+
+	<dt>Focus preset/object search</dt>
+	<dd>{{{focusPresetSearch}}} or {{{focusPresetSearchAlt}}}</dd>
+
+	<dt>Focus chat panel</dt>
+	<dd>{{{focusChatPanelAlt}}}</dd>
+</dl>
+
+<h4><span>Build</span></h4>
+<dl>
+	<dt>Move</dt>
+	<dd>{{{modifyModeMove}}}</dd>
+
+	<dt>Rotate</dt>
+	<dd>{{{modifyModeRotate}}} or hold {{{mod_meta}}}</dd>
+
+	<dt>Scale</dt>
+	<dd>{{{modifyModeScale}}} or hold {{{mod_shift}}} + {{{mod_ctrl}}}</dd>
+</dl>
+
+<h4><span>Program</span></h4>
+<dl>
+	<dt>Open Inspector (nested graphs only)</dt>
+	<dd>{{{openInspector}}}</dd>
+
+	<dt>View source</dt>
+	<dd>{{{viewSource}}}</dd>
+</dl>
+{{/with}}
