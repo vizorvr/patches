@@ -212,6 +212,8 @@ WorldEditor.prototype.onPaste = function(nodes) {
 
 	E2.app.onLocalConnectionChanged(connection)
 
+	E2.app.markConnectionAsSelected(connection)
+
 	// set a pending selection object for the pasted objects
 	// we have to wait for one update to pass before actually
 	// setting the selection, because mesh creation itself is
