@@ -98,18 +98,20 @@
 	}
 
 	ThreeVRCameraPlugin.prototype.update_state = function() {
-		this.perspectiveCamera.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
-		this.perspectiveCamera.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
+		this.perspectiveCamera.position.set(
+			this.positionFromGraph.x + this.state.position.x,
+			this.positionFromGraph.y + this.state.position.y,
+			this.positionFromGraph.z + this.state.position.z)
 
-		var eulerRotation = new THREE.Euler().setFromQuaternion(this.perspectiveCamera.quaternion)
-		this.rotationFromGraph.set(eulerRotation.x, eulerRotation.y, eulerRotation.z)
+		this.perspectiveCamera.quaternion.setFromEuler(this.rotationFromGraph)
+		this.perspectiveCamera.quaternion.multiply(this.state.quaternion)
 
 		if (this.dirty)
 			this.perspectiveCamera.updateProjectionMatrix()
 
 		this.perspectiveCamera.updateMatrixWorld()
 
-		this.controls.update(this.positionFromGraph, this.rotationFromGraph)
+		this.controls.update(this.perspectiveCamera.position.clone(), this.perspectiveCamera.quaternion.clone())
 	}
 
 	ThreeVRCameraPlugin.prototype.update_input = function(slot, data) {
@@ -119,20 +121,11 @@
 
 		switch(slot.index) {
 		case 0: // position
-			this.positionFromGraph = data
-			//this.perspectiveCamera.position.set(data.x, data.y, data.z)
-			this.state.position.x = data.x
-			this.state.position.y = data.y
-			this.state.position.z = data.z
+			this.positionFromGraph.copy(data)
 			this.dirty = true
 			break
 		case 1: // rotation
-			var temp = new THREE.Quaternion().setFromEuler(new THREE.Euler(data.x, data.y, data.z))
-			this.state.quaternion._x = temp._x
-			this.state.quaternion._y = temp._y
-			this.state.quaternion._z = temp._z
-			this.state.quaternion._w = temp._w
-
+			this.rotationFromGraph.set(data.x, data.y, data.z)
 			this.dirty = true
 			break
 		case 2: // fov
