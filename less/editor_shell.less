@@ -244,5 +244,110 @@ body.bEditor {
 		padding-right: 40px;
 	}
   }
-}
 
+  div.modal.mShortcuts {
+	@color-keyboard-shortcuts:  #afbfdf;
+	@color-divider-rule: rgb(34,39,54);
+	font-smoothing: antialiased;
+	abbr {text-decoration: none; border-bottom:0;}
+	.modal-dialog {
+	  width: 700px;
+	  max-width: 95%;
+	  margin-top: 100px;
+	}
+	.modal-dialog .modal-content .modal-body div.bootbox-body {
+	  text-align: left;
+	}
+	.modal-body h3 {
+	  color: @color-keyboard-shortcuts;
+	  padding: 0 5px 5px 5px;
+	  font-weight: 300;
+	  font-size: 125%;
+	  &:first-of-type {
+		margin-top:0;
+	  }
+	}
+	div.col.left {
+	  border-right: 1px solid @color-divider-rule;
+	  padding: 0 20px 0 0;
+	}
+	div.col.right {
+	  padding: 0 0 0 20px;
+	}
+	dl+h3 {
+	  margin-top: 2em;
+	}
+	dl {
+	  .clearfix;
+	  dt, dd {font-weight: 300;}
+	  &:last-of-type {
+		margin-bottom: 0;
+	  }
+	  color: @color-keyboard-shortcuts;
+	}
+	dt, dd {
+	  line-height: 30px;
+	  padding: 6px;
+	  margin:0;
+	}
+	dt {
+	  clear: right;
+	  float: right;
+	  width: 45%;
+	}
+	dd {
+	  margin-right: 45%;
+	  kbd {
+		font-family: "Source Sans Pro", "Source Sans";
+	  	font-size: 100%; // bootstrap
+		font-weight: 400;
+		color: @color-keyboard-shortcuts;
+		border: 1px solid @color-keyboard-shortcuts;
+		background: none;
+		border-radius: 3px 3px;
+		padding: 0px 5px;
+		margin: 0 5px;
+		min-width: 30px;
+		line-height: 28px;
+		display: inline-block;
+		text-align: center;
+		text-transform: capitalize;
+		&.wide {
+		  padding: 0 15px;
+		}
+		&:first-child {
+		  margin-left: 0;
+		}
+		&.modifier {
+		  text-indent: -10000px;
+		  position: relative;
+		  padding: 0;
+		  &:after {
+			content: "";
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-left: -15px;
+			margin-top: -15px;
+			width: 30px;
+			height: 30px;
+			background: url('/images/v2/mod_keys.svg') no-repeat;
+		  }
+		  &.key_cmd:after {
+			background-position: 0px 0;
+		  }
+		  &.key_ctrl:after {
+			background-position: -30px 0;
+		  }
+		  &.key_alt:after {
+			background-position: -60px 0;
+		  }
+		  &.key_shift:after {
+			background-position: -90px 0;
+		  }
+		}
+	  }
+	}
+  }
+
+}
