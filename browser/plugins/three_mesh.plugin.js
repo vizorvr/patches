@@ -35,7 +35,7 @@
 	ThreeMeshPlugin.prototype.update_input = function (slot, data) {
 		AbstractThreeMeshPlugin.prototype.update_input.apply(this, arguments)
 
-		if (slot.name === 'object3d' && data) {
+		if (slot.name === 'object3d' && data && this.object3d !== data) {
 			this.object3d = data
 			this.geoms = []
 			this.mats = []
@@ -45,14 +45,14 @@
 	ThreeMeshPlugin.prototype.update_state = function () {
 		AbstractThreeMeshPlugin.prototype.update_state.apply(this)
 
-		var delta = this.core.delta_t
+		var delta = this.core.delta_t * 0.001
 
 		if (this.object3d) {
-			for(var i = 0; i < this.object3d.children.length; ++i) {
-				if (this.object3d.children[i] instanceof THREE.MorphAnimMesh) {
-					this.object3d.children[i].updateAnimation(delta * 1000)
+			this.object3d.traverse(function(n) {
+				if (n instanceof THREE.MorphAnimMesh) {
+					n.updateAnimation(delta)
 				}
-			}
+			})
 		}
 	}
 
