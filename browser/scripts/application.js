@@ -952,6 +952,11 @@ Application.prototype.onDelete = function(e) {
 		return;
 
 	this.hoverNode = this.selectedNodes[0];
+
+	if (this.isWorldEditorActive()) {
+		this.worldEditor.onDelete(this.selectedNodes)
+	}
+
 	this.deleteSelectedNodes();
 }
 

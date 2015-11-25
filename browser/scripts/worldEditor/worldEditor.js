@@ -183,6 +183,10 @@ WorldEditor.prototype.setSelection = function(selected) {
 	}
 }
 
+WorldEditor.prototype.onDelete = function(nodes) {
+	this.transformControls.detach()
+}
+
 WorldEditor.prototype.onPaste = function(nodes) {
 	if (!nodes || nodes.length < 1) {
 		return
