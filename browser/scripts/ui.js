@@ -655,7 +655,7 @@ VizorUI.openEditorHelp = function() {
 				modifiedKeyCode -= mod_ctrl;
 			}
 			if (modifiedKeyCode >= mod_shift) {
-				add('alt', 'modifier key_shift');
+				add('shift', 'modifier key_shift');
 				modifiedKeyCode -= mod_shift;
 			}
 
