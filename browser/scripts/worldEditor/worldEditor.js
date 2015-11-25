@@ -6,9 +6,13 @@ function WorldEditor(domElement) {
 
 	this.activate = function() {
 		active = true
+		this.transformControls.enabled = true
+		this.editorControls.enabled = true
 	}
 
 	this.deactivate = function() {
+		this.transformControls.enabled = false
+		this.editorControls.enabled = false
 		if (this.editorTree.parent) {
 			this.editorTree.parent.remove(this.editorTree)
 		}
