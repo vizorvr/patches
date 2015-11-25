@@ -195,14 +195,18 @@ WorldEditor.prototype.onPaste = function(nodes) {
 	var slot = slots[slots.length - 1]
 
 	// connect the new patch to the scene
-	E2.app.graphApi.connect(E2.core.root_graph, Connection.hydrate(E2.core.root_graph, {
+	var connection = Connection.hydrate(E2.core.root_graph, {
 		src_nuid: dropNode.uid,
 		dst_nuid: sceneNode.uid,
 		src_slot: 0,
 		src_dyn: true, // TODO: the src slot is not necessarily a dyn slot
 		dst_slot: slot.index,
 		dst_dyn: true
-	}))
+	})
+
+	E2.app.graphApi.connect(E2.core.root_graph, connection)
+
+	E2.app.onLocalConnectionChanged(connection)
 
 	// set a pending selection object for the pasted objects
 	// we have to wait for one update to pass before actually

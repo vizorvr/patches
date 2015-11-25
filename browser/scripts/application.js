@@ -297,6 +297,16 @@ Application.prototype.onSlotExited = function(node, slot, slot_div) {
 	return true;
 }
 
+Application.prototype.onLocalConnectionChanged = function(connection) {
+	if (connection.dst_node && connection.dst_node.plugin &&
+		connection.dst_node.plugin.lsg)
+		connection.dst_node.plugin.lsg.updateFreeSlots()
+
+	if (connection.src_node && connection.src_node.plugin &&
+		connection.src_node.plugin.lsg)
+		connection.src_node.plugin.lsg.updateFreeSlots()
+}
+
 Application.prototype.onMouseReleased = function() {
 	var changed = false
 
@@ -307,18 +317,10 @@ Application.prototype.onMouseReleased = function() {
 		this.editConn = null
 
 		ec.commit()
-		.then(function(connection) {
-			if (connection.dst_node && connection.dst_node.plugin &&
-				connection.dst_node.plugin.lsg)
-				connection.dst_node.plugin.lsg.updateFreeSlots()
-
-			if (connection.src_node && connection.src_node.plugin &&
-				connection.src_node.plugin.lsg)
-				connection.src_node.plugin.lsg.updateFreeSlots()
-		})
 
 		if (ec.srcSlotDiv)
 			this.setSlotCssClasses(ec.srcSlot, ec.srcSlotDiv);
+
 		if (ec.dstSlotDiv)
 			this.setSlotCssClasses(ec.dstSlot, ec.dstSlotDiv);
 
@@ -1044,6 +1046,9 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
 		var dc = doc.conns[i]
+
+		if (!dc.dst_nuid || !dc.src_nuid)
+			continue;
 
 		var destNode = ag.findNodeByUid(dc.dst_nuid)
 		if (!destNode)

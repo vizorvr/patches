@@ -178,7 +178,6 @@ GraphStore.prototype._uiConnected = function(graph, connection) {
 
 	graph.connect(connection)
 
-	this.emit('connected:'+connection.uid, graph, connection)
 	this.emit('connected', graph, connection)
 	this.emit('changed')
 }
@@ -192,7 +191,6 @@ GraphStore.prototype._uiDisconnected = function(graph, connectionUid) {
 
 	graph.disconnect(connection)
 
-	this.emit('disconnected:'+connectionUid, graph, connection)
 	this.emit('disconnected', graph, connection)
 	this.emit('changed')
 }

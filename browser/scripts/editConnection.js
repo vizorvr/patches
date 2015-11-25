@@ -104,42 +104,35 @@ EditConnection.prototype.isConnectable = function() {
 }
 
 EditConnection.prototype.commit = function() {
-	var dfd = when.defer()
-	var that = this
-
 	if (this.connection.src_slot && this.connection.dst_slot &&
 		(this.srcSlot !== this.connection.src_slot || this.dstSlot !== this.connection.dst_slot))
 	{
 		// connection changed or removed
-		E2.app.graphStore.once('disconnected:'+this.connection.uid, function() {
-			dfd.resolve(that.connection)
-		})
-
 		this.graphApi.disconnect(E2.core.active_graph, this.connection)
-	} else if (!this.isConnectable()) {
-		dfd.reject('Not connectable')
-	} else if (this.isConnectable() && 
-		this.connection.src_slot === this.srcSlot &&
-		this.connection.dst_slot === this.dstSlot)
-	{
-		dfd.reject('Not connectable: same source or destination')
-	} else {
-		// new connection
-		this.connection.src_node = this.srcNode
-		this.connection.dst_node = this.dstNode
-		this.connection.src_slot = this.srcSlot
-		this.connection.dst_slot = this.dstSlot
-		this.connection.uid = E2.uid()
-
-		E2.app.graphStore.once('connected:'+this.connection.uid, function() {
-			dfd.resolve(that.connection)
-		})
-
-		this.graphApi.connect(E2.core.active_graph,
-			Connection.hydrate(E2.core.active_graph, this.connection.serialise()))
+		E2.app.onLocalConnectionChanged(this.connection)
+		return;
 	}
 
-	return dfd.promise
+	if (!this.isConnectable()) {
+		return;
+	}
+
+	if (this.isConnectable() && 
+		this.connection.src_slot === this.srcSlot &&
+		this.connection.dst_slot === this.dstSlot)
+		return;
+
+	// new connection
+	this.connection.src_node = this.srcNode
+	this.connection.dst_node = this.dstNode
+	this.connection.src_slot = this.srcSlot
+	this.connection.dst_slot = this.dstSlot
+	this.connection.uid = E2.uid()
+
+	this.graphApi.connect(E2.core.active_graph,
+		Connection.hydrate(E2.core.active_graph, this.connection.serialise()))
+
+	E2.app.onLocalConnectionChanged(this.connection)
 }
 
 if (typeof(module) !== 'undefined')
