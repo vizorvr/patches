@@ -59,6 +59,12 @@ AbstractThreeMeshPlugin.prototype.update_mesh = function()
 				// clone the material, because we don't want to edit properties on some random material
 				var mat = (this.mats && this.mats.length > 0) ? this.mats[i % this.mats.length].clone() : undefined
 				mesh = this.createAnimatedMesh(this.geoms[i], mat)
+
+				var animName = this.geoms[i].animations.length > 0 ? this.geoms[i].animations[0].name : undefined
+				if (animName) {
+					mesh.playAnimation(animName, 100)
+				}
+
 				mesh.material.morphTargets = true
 				this.always_update = true
 			}

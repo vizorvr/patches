@@ -5,7 +5,7 @@
 
 		var that = this
 
-		this.desc = 'Auto-generate a shader embedding user-defined main bodies tailored to correctly and optimally render the supplied mesh.'
+		this.desc = 'Shader Material'
 
 		this.input_slots = []
 
@@ -111,7 +111,6 @@
 			})
 
 			that._editors[which].stateKey = stateKey
-			that._editors[which]._ace
 		}
 
 		vertexButton.click(function() {
@@ -181,6 +180,10 @@
 				else if(dtid === dts.TEXTURE.id) {
 					three_dt = 't'
 					shader_dt = 'sampler2D'
+				}
+				else if(dtid === dts.CUBETEXTURE.id) {
+					three_dt = 't'
+					shader_dt = 'samplerCube'
 				}
 				else if(dtid === dts.COLOR.id) {
 					three_dt = 'v4'

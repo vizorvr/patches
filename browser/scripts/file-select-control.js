@@ -37,7 +37,7 @@ function FileSelectControl(handlebars) {
 
 	this._handlebars = handlebars || window.Handlebars
 	this._frame = null;
-	this._fileList = new FileList();
+	this._fileList = E2.models.fileList;
 	this._fileList.on('change:files', this._onFilesChange, this);
 
 	this._cb = function() {}
@@ -301,6 +301,11 @@ FileSelectControl.prototype._bindUploadForm = function() {
 			},
 			success: function(file) {
 				$progress.removeClass('active')
+		
+				mixpanel.track('Uploaded', {
+					modelName: file.modelName,
+					path: file.url
+				})
 
 				$('#message', container).html('<h4>Uploaded successfully!</h4>')
 				that.selected(file.path)

@@ -1,0 +1,24 @@
+<form action="/mailinglist" id="newsletterForm" method="POST" class="clearfix xhr">
+    <fieldset>
+        <input type="hidden" name="_csrf" value={{_csrf}}>
+
+        <div class="form-input" id="f_email">
+            <label for="email_id">Email</label>
+            <input type="email" name="email" class="required" placeholder="Email">
+            <span class="message"></span>
+        </div>
+
+        <div class="modal-error genericError"><span></span></div>
+    </fieldset>
+
+    <button class="sign-btn action svg" type="submit">
+        <span>Subscribe</span>
+        <svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
+    </button>
+</form>
+
+<div class="modal-footer">
+    <p>
+		We will only send you a newsletter and nothing else - we hate spam too.
+    </p>
+</div>

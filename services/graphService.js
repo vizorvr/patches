@@ -45,7 +45,7 @@ GraphService.prototype.userGraphs = function(username)
 	{
 		if (err)
 			return dfd.reject(err);
-		
+
 		dfd.resolve(list);
 	});
 

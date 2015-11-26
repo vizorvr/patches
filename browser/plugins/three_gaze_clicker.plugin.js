@@ -194,6 +194,8 @@
 			this.raycaster = new THREE.Raycaster()
 		}
 
+		this.camera.updateMatrixWorld()
+
 		this.raycaster.setFromCamera(new THREE.Vector3(0, 0, 0), this.camera)
 		var intersects = this.raycaster.intersectObjects(this.scene.children[0].children, /*recursive =*/ true)
 

@@ -36,7 +36,7 @@ E2.COLOR_COMPATIBLE_SLOT = '#080';
 
 (function() {
 	E2.uid = function() {
-		var keys = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+		var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
 		var uid = ''
 		for (var i=0; i < 12; i++) {
 			uid += keys[Math.floor(Math.random() * keys.length)]
@@ -68,7 +68,9 @@ AssetTracker.prototype.add_listener = function(listener)
 
 AssetTracker.prototype.remove_listener = function(listener)
 {
-	this.listeners.remove(listener);
+	var listenerIdx = this.listeners.indexOf(listener)
+	if (listenerIdx > -1)
+		this.listeners.splice(listenerIdx, 1);
 };
 
 AssetTracker.prototype.signal_started = function()
@@ -132,7 +134,9 @@ function Core() {
 		
 		VECTOR4: { id: 22, name: 'Vector 4' },
 
-		ENVIRONMENTSETTINGS: { id: 23, name: 'Environment Settings' }
+		ENVIRONMENTSETTINGS: { id: 23, name: 'Environment Settings' },
+
+		CUBETEXTURE: { id: 24, name: 'CubeTexture' },
 	}
 
 	this.renderer = { // compat for old plugins

@@ -32,6 +32,12 @@ global.NodeUI = function() {
 }
 
 global.PresetManager = function() {}
+global.UIbreadcrumb = function() {
+	return {
+		prepend: function() {},
+		render: function() {}
+	}
+}
 
 require('../../scripts/commands/graphEditCommands')
 
@@ -56,6 +62,7 @@ global.ConnectionUI.prototype.resolve_slot_divs = function() {
 	this.dst_slot_div = $()
 }
 global.navigator = { userAgent: 'test' }
+global.mixpanel = { track: function() {} }
 
 describe('Redo complex connection', function() {
 	var source
@@ -124,6 +131,8 @@ describe('Redo complex connection', function() {
 		};
 
 		app = E2.app = new Application()
+		E2.ui = { state: {}, buildBreadcrumb: function() {} }
+		app.worldEditor = { isActive: function() { return false } }
 		app.updateCanvas = function() {}
 		core = E2.core = new Core()
 		core.renderer = dummyCore.renderer

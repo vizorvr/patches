@@ -45,6 +45,8 @@ global.ConnectionUI.prototype.resolve_slot_divs = function() {
 }
 global.navigator = { userAgent: 'test' }
 
+global.mixpanel = { track: function() {} }
+
 describe('Simple graph shapes', function() {
 	var core, app
 

@@ -656,7 +656,10 @@ LinkedSlotGroup.prototype.add_dyn_slot = function(slot) {
 }
 
 LinkedSlotGroup.prototype.remove_dyn_slot = function(slot) {
-	(slot.type === E2.slot_type.input ? this.inputs : this.outputs).remove(slot);
+	var inOrOut = (slot.type === E2.slot_type.input ? this.inputs : this.outputs)
+	var slotIdx = inOrOut.indexOf(slot)
+	if (slotIdx > -1)
+		inOrOut.splice(slotIdx, 1);
 }
 
 LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot) {
@@ -719,6 +722,8 @@ LinkedSlotGroup.prototype.infer_dt = function() {
 	
 	return null;
 };
+
+LinkedSlotGroup.prototype.updateFreeSlots = function() {}
 
 
 if (typeof(module) !== 'undefined') {

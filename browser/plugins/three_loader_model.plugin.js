@@ -36,6 +36,7 @@
 					that.state_changed(null)
 					that.state_changed(inp)
 					that.updated = true
+					mixpanel.track('ThreeLoaderModelPlugin Model Changed')
 				})
 				.on('closed', function() {
 					if (newValue === oldValue)

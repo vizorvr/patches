@@ -19,6 +19,7 @@ ForkCommand.prototype.fork = function(editAction) {
 	// save the current graph as an object
 	var graphSer = E2.core.serialise()
 
+	var oldName = E2.app.path
 	var forkName = getForkName(E2.app.path)
 
 	history.pushState({}, null, '/' + forkName)
@@ -30,6 +31,11 @@ ForkCommand.prototype.fork = function(editAction) {
 			E2.app.dispatcher.dispatch({
 				actionType: 'graphSnapshotted',
 				data: graphSer
+			})
+
+			mixpanel.track('Forked', {
+				fromName: oldName,
+				forkName: forkName 
 			})
 
 			if (!editAction)

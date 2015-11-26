@@ -26,6 +26,12 @@ function ThreeObject3DPlugin(core) {
 		// member variable names because of to/from json serialisation
 		quaternion: {_x: 0, _y: 0, _z:0, _w:1}
 	}
+
+	this.graphInputs = {
+		position: new THREE.Vector3(0, 0, 0),
+		scale: new THREE.Vector3(0, 0, 0),
+		quaternion: new THREE.Quaternion(0, 0, 0, 1)
+	}
 }
 
 ThreeObject3DPlugin.prototype = Object.create(Plugin.prototype)
@@ -51,21 +57,17 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 
 	var handlers = [
 		function() {
-			that.state.position.x = data.x
-			that.state.position.y = data.y
-			that.state.position.z = data.z
+			that.graphInputs.position.x = data.x
+			that.graphInputs.position.y = data.y
+			that.graphInputs.position.z = data.z
 		},
 		function() {
-			var temp = new THREE.Quaternion().setFromEuler(new THREE.Euler(data.x, data.y, data.z))
-			that.state.quaternion._x = temp._x
-			that.state.quaternion._y = temp._y
-			that.state.quaternion._z = temp._z
-			that.state.quaternion._w = temp._w
+			that.graphInputs.quaternion.setFromEuler(new THREE.Euler(data.x, data.y, data.z))
 		},
 		function() {
-			that.state.scale.x = data.x
-			that.state.scale.y = data.y
-			that.state.scale.z = data.z
+			that.graphInputs.scale.x = data.x
+			that.graphInputs.scale.y = data.y
+			that.graphInputs.scale.z = data.z
 		},
 		function() { that.object3d.visible = data },
 		function() { that.object3d.castShadow = data },
@@ -96,7 +98,21 @@ ThreeObject3DPlugin.prototype.state_changed = function(ui) {
 }
 
 ThreeObject3DPlugin.prototype.update_state = function() {
-	this.object3d.scale.set(this.state.scale.x, this.state.scale.y, this.state.scale.z)
-	this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
-	this.object3d.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
+	this.object3d.scale.set(
+		this.graphInputs.scale.x + this.state.scale.x,
+		this.graphInputs.scale.y + this.state.scale.y,
+		this.graphInputs.scale.z + this.state.scale.z)
+
+	this.object3d.position.set(
+		this.graphInputs.position.x + this.state.position.x,
+		this.graphInputs.position.y + this.state.position.y,
+		this.graphInputs.position.z + this.state.position.z)
+
+	this.object3d.quaternion.set(
+		this.state.quaternion._x,
+		this.state.quaternion._y,
+		this.state.quaternion._z,
+		this.state.quaternion._w)
+
+	this.object3d.quaternion.multiply(this.graphInputs.quaternion)
 }

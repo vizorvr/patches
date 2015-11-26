@@ -22,6 +22,7 @@ paths = {
 			'./browser/scripts/variables.js',
 			'./browser/scripts/graph.js',
 			'./browser/scripts/node.js',
+			'./browser/scripts/autoSlotGroup.js',
 
 			'./browser/scripts/plugin.js',
 			'./browser/scripts/subGraphPlugin.js',
@@ -42,6 +43,8 @@ paths = {
 			'./browser/vendor/three/VREffect.js',
 			'./browser/vendor/three/VRControls.js',
 			'./browser/vendor/three/SceneLoader.js',
+			'./browser/vendor/three/ObjectLoader.js',
+			'./browser/vendor/three/MorphAnimMesh.js',
 			'./browser/vendor/three/webvr-polyfill.js',
 			'./browser/vendor/three/webvr-manager.js',
 

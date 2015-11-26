@@ -1,23 +1,28 @@
-.people-scroll {
-    width: @chat-width;
-	height: @chat-height - @blocks-header-height;
-	overflow: hidden;   
-}
-#peopleTab .meta {
-    background: @bg-light;
-    width: @chat-width; 
-    color: @editor-text-hover;
-    margin: 10px 0;
-}
-#peopleTab .meta span {
-    margin: 0 20px;    
-}
-.peopleList {
+#peopleTab {
+  background: @bg-light;
+  position: relative;
+  color: @editor-text-hover;
+  width: @floating-box-width;
+  height: @chat-height - @blocks-header-height;
+  >.meta, >.peopleList {
+	position: absolute;
+	left: 0;
+	right: 0;
+  }
+  .meta {
+    padding: 10px 20px;
+	top: 0;
+	height: @chat-nav-height;
+	border-bottom: 1px solid @bg-darker;
+  }
+  .peopleList {
     overflow-y: auto;
 	overflow-x: hidden;
-	width: 100%;
-	height: @chat-height - @blocks-header-height; 
+	top: @chat-nav-height;
+	bottom: 0;
+  }
 }
+
 .graph-users {
     padding: 0;
     margin: 0;

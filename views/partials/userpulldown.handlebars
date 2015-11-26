@@ -1,13 +1,13 @@
 {{#if user.username }}
 
-<button class="btn btn-account-top" id="btn-account-top">
-	<div class="top-userpic">
+<button class="nofx smalltext" id="btn-account-top">
+	<span class="top-userpic">
 		<img class="gravatar-in-form" src="{{user.gravatar}}" id="top-userpic" />
-	</div>
-	<span>{{user.username}}</span>
+	</span>
+	<span id="userpulldownUsername">{{user.username}}</span>
 </button>
 
-<ul class="dropdown-menu" role="menu" id="userPullDown">
+<ul class="dropdown dropdown-menu" role="menu" id="userPullDown">
 	<li>
 		<a class="account" href="/account">Account</a>
 	</li>
@@ -18,7 +18,7 @@
 
 {{else}}
 
-<button class="btn" id="btn-sign-in">
+<button class="btn svg action login" id="btn-sign-in" data-action="login">
 	<svg class="icon-sign-in"><use xlink:href="#icon-sign-in"></use></svg>
 	<span>Sign in</span>
 </button>

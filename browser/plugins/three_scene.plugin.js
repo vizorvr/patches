@@ -15,7 +15,7 @@
 
 		this.node = node
 
-		this.lsg = new LinkedSlotGroup(core, node, [], [])
+		this.lsg = new AutoSlotGroup(core, node, [], [])
 		this.lsg.set_dt(core.datatypes.OBJECT3D)
 
 		var that = this
@@ -33,38 +33,6 @@
 		this.meshes = {}
 
 		this.meshes_dirty = true
-	}
-
-	ThreeScenePlugin.prototype.create_ui = function () {
-		var that = this
-		var layout = make('div')
-		var removeButton = makeButton('Remove', 'Click to remove the last mesh input.')
-		var addButton = makeButton('Add Slot', 'Click to add another Object3D input.')
-
-		removeButton.css('width', '65px')
-		addButton.css({'width': '65px', 'margin-top': '5px'})
-
-		addButton.click(function () {
-			E2.app.graphApi.addSlot(that.node.parent_graph, that.node, {
-				type: E2.slot_type.input,
-				name: that.dynInputs.length + '',
-				dt: that.lsg.dt,
-				array: true
-			})
-		})
-
-		removeButton.click(function () {
-			var inputs = that.dynInputs
-			if (!inputs)
-				return
-
-			var suid = inputs[inputs.length - 1].uid
-			E2.app.graphApi.removeSlot(that.node.parent_graph, that.node, suid)
-		})
-
-		layout.append(removeButton, '<br />', addButton);
-
-		return layout
 	}
 
 	ThreeScenePlugin.prototype.update_meshes = function () {
@@ -110,6 +78,7 @@
 
 	ThreeScenePlugin.prototype.reset = function () {
 		this.scene = new THREE.Scene()
+		this.scene.backReference = this
 
 		// add two children:
 		// [0] is the main scene
@@ -141,6 +110,7 @@
 		if (!on && slot.type === E2.slot_type.input && slot.dynamic) {
 			this.meshes[slot.index] = undefined
 		}
+
 		this.meshes_dirty = true
 	}
 
@@ -167,6 +137,7 @@
 		if (this.meshes_dirty) {
 			this.update_meshes()
 		}
+
 	}
 
 })()

@@ -25,6 +25,7 @@ function Application() {
 	};
 
 	this.canvas = E2.dom.canvas;
+	this.breadcrumb = null;
 	this.c2d = E2.dom.canvas[0].getContext('2d');
 	this.editConn = null;
 	this.shift_pressed = false;
@@ -50,7 +51,7 @@ function Application() {
 	this.selection_border_style = '1px solid #09f';
 	this.normal_border_style = 'none';
 	this.is_panning = false;
-	this.noodlesVisible = !E2.util.isMobile();
+	this.noodlesVisible = false
 	this.mousePosition = [400,200]
 	this.path = getChannelFromPath(window.location.pathname)
 	this.dispatcher = new Flux.Dispatcher()
@@ -100,19 +101,13 @@ Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 	result[1] = Math.round(o[1] + (area.height() / 2));
 };
 
-Application.prototype.instantiatePlugin = function(id, position) {
-	var that = this
-	var $canvasParent = E2.dom.canvas_parent
-	var parentOffset = $canvasParent.offset()
-
+Application.prototype.createPlugin = function(id, position) {
 	position = position || this.mousePosition
 
-	function createPlugin(name) {
+	function _create(name) {
 		var activeGraph = E2.core.active_graph
 
-		var newX = Math.floor(position[0] + that.scrollOffset[0]);
-		var newY = Math.floor(position[1] + that.scrollOffset[1]);
-		var node = new Node(activeGraph, id, newX, newY);
+		var node = new Node(activeGraph, id, position[0], position[1]);
 
 		if (name) { // is graph?
 			node.plugin.setGraph(new Graph(E2.core, activeGraph))
@@ -120,22 +115,34 @@ Application.prototype.instantiatePlugin = function(id, position) {
 			node.plugin.graph.plugin = node.plugin
 		}
 
-		that.graphApi.addNode(activeGraph, node)
-
 		return node
 	}
 
 	var node
 
 	if (id === 'graph')
-		node = createPlugin('Graph')
+		node = _create('Graph')
 	else if (id === 'loop')
-		node = createPlugin('Loop')
+		node = _create('Loop')
 	else if (id === 'array_function')
-		node = createPlugin('Array function')
+		node = _create('Array function')
 	else
-		node = createPlugin(null)
+		node = _create(null)
 
+	return node
+}
+
+Application.prototype.instantiatePlugin = function(id, position) {
+	position = position || this.mousePosition
+	var newX = Math.floor(position[0] + this.scrollOffset[0])
+	var newY = Math.floor(position[1] + this.scrollOffset[1])
+	var node = this.createPlugin(id, [newX, newY])
+
+	mixpanel.track('Node Added', {
+		id: id
+	})
+
+	this.graphApi.addNode(E2.core.active_graph, node)
 	return node
 }
 
@@ -290,24 +297,30 @@ Application.prototype.onSlotExited = function(node, slot, slot_div) {
 	return true;
 }
 
+Application.prototype.onLocalConnectionChanged = function(connection) {
+	if (connection.dst_node && connection.dst_node.plugin &&
+		connection.dst_node.plugin.lsg)
+		connection.dst_node.plugin.lsg.updateFreeSlots()
+
+	if (connection.src_node && connection.src_node.plugin &&
+		connection.src_node.plugin.lsg)
+		connection.src_node.plugin.lsg.updateFreeSlots()
+}
+
 Application.prototype.onMouseReleased = function() {
 	var changed = false
 
 	// Creating a connection?
 	if (this.editConn) {
 		var ec = this.editConn
-		var old_connection_uid = ec.connection.uid;
-		var success = false;
 
 		this.editConn = null
-		var c = ec.commit()
 
-		success = (ec.connection && (old_connection_uid != ec.connection.uid));
-		if (c)
-			c.signal_change(true)
+		ec.commit()
 
 		if (ec.srcSlotDiv)
 			this.setSlotCssClasses(ec.srcSlot, ec.srcSlotDiv);
+
 		if (ec.dstSlotDiv)
 			this.setSlotCssClasses(ec.dstSlot, ec.dstSlotDiv);
 
@@ -392,7 +405,7 @@ Application.prototype.updateCanvas = function(clear) {
 }
 
 Application.prototype.mouseEventPosToCanvasCoord = function(e, result) {
-	var cp = E2.dom.canvas_parent[0];
+	var cp = E2.dom.canvases[0];
 
 	result[0] = (e.pageX - cp.offsetLeft) + this.scrollOffset[0];
 	result[1] = (e.pageY - cp.offsetTop) + this.scrollOffset[1];
@@ -623,6 +636,8 @@ Application.prototype.clearSelection = function() {
 	this.selectedNodes = [];
 	this.selectedConnections = [];
 
+	E2.ui.state.selectedObjects = this.selectedNodes
+
 }
 
 Application.prototype.redrawConnection = function(connection) {	/* @TODO: rename this method */
@@ -670,6 +685,7 @@ Application.prototype.releaseSelection = function()
 	this.selection_start = null;
 	this.selection_end = null;
 	this.selection_last = null;
+	E2.ui.state.selectedObjects = this.selectedNodes
 
 	if(this.selection_dom)
 		this.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
@@ -866,11 +882,33 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 	d.nodes = [];
 	d.conns = [];
 
+	var domHasValidDimensions = true
+
 	for(var i = 0, len = nodes.length; i < len; i++) {
 		var n = nodes[i];
 		var dom = n.ui ? n.ui.dom : null;
-		var p = dom ? dom.position() : { left: n.x, top: n.y };
-		var b = [p.left, p.top, p.left + (dom ? dom.width() : 0), p.top + (dom ? dom.height() : 0)];
+
+		domHasValidDimensions = domHasValidDimensions && (dom ? true : false)
+		if (domHasValidDimensions && dom.position().left === 0 && dom.position().top === 0 && dom.width() === 0 && dom.height() === 0) {
+			// dom is there but not visible (graph is hidden), use default dimensions instead
+			domHasValidDimensions = false
+		}
+
+		var p, width, height
+
+		if (domHasValidDimensions) {
+			p = dom.position()
+			width = dom.width()
+			height = dom.height()
+		}
+		else {
+			// defaults
+			p = { left: n.x, top: n.y }
+			width = 100
+			height = 20
+		}
+
+		var b = [p.left, p.top, p.left + width, p.top + height];
 
 		if(dom)
 			n = n.serialise();
@@ -883,10 +921,18 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 		d.nodes.push(n);
 	}
 
-	d.x1 = x1 + sx;
-	d.y1 = y1 + sy;
-	d.x2 = x2 + sx;
-	d.y2 = y2 + sy;
+	if (domHasValidDimensions) {
+		d.x1 = x1 + sx;
+		d.y1 = y1 + sy;
+		d.x2 = x2 + sx;
+		d.y2 = y2 + sy;
+	}
+	else {
+		d.x1 = x1
+		d.y1 = y1
+		d.x2 = x2
+		d.y2 = y2
+	}
 
 	for(var i = 0, len = conns.length; i < len; i++) {
 		var c = conns[i];
@@ -906,18 +952,29 @@ Application.prototype.onDelete = function(e) {
 		return;
 
 	this.hoverNode = this.selectedNodes[0];
+
+	if (this.isWorldEditorActive()) {
+		this.worldEditor.onDelete(this.selectedNodes)
+	}
+
 	this.deleteSelectedNodes();
 }
 
 Application.prototype.onCopy = function(e) {
 	if (this.selectedNodes.length < 1) {
 		msg('Copy: Nothing selected.');
-		e.stopPropagation();
+
+		if (e)
+			e.stopPropagation();
+
 		return false;
 	}
 
 	this.fillCopyBuffer(this.selectedNodes, this.selectedConnections, this.scrollOffset[0], this.scrollOffset[1]);
-	e.stopPropagation();
+
+	if (e)
+		e.stopPropagation();
+
 	return false;
 };
 
@@ -995,6 +1052,9 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 	for(i = 0, len = doc.conns.length; i < len; i++) {
 		var dc = doc.conns[i]
 
+		if (!dc.dst_nuid || !dc.src_nuid)
+			continue;
+
 		var destNode = ag.findNodeByUid(dc.dst_nuid)
 		if (!destNode)
 			continue;
@@ -1021,12 +1081,114 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 		createdConnections.push(ag.findConnectionByUid(dc.uid))
 	}
 
+	if (this.isWorldEditorActive()) {
+		this.worldEditor.onPaste(createdNodes)
+	}
+
 	this.undoManager.end()
 
 	return { nodes: createdNodes, connections: createdConnections }
 }
 
-Application.prototype.onPaste = function() {
+Application.prototype.getNodeBoundingBox = function(node) {
+	var dom = node.ui ? node.ui.dom : null;
+	var pos = { left: node.x, top: node.y };
+
+	var width = (dom ? dom.width() : 0)
+	var height = (dom ? dom.height() : 0)
+
+	// default width / height = 100 / 20 if the graph is not visible
+	if (width === 0)
+		width = 100
+
+	if (height === 0)
+		height = 20
+
+	return {
+		x1: pos.left,
+		y1: pos.top,
+		x2: pos.left + width,
+		y2: pos.top + height};
+}
+
+// find a space for doc in the currently active graph
+// return a {x: ..., y: ...} object with coordinates
+// where the object will fit without overlapping with
+// any pre-existing nodes
+Application.prototype.findSpaceInGraphFor = function(doc) {
+	var activeGraph = E2.core.active_graph
+
+	// minimum spacing between nodes
+	var spacing = {x: 30, y: 20}
+
+	// create sorted array of nodes in y
+	var sortedNodes = activeGraph.nodes.slice()
+	sortedNodes.sort(function(a, b) {
+		return a.y - b.y
+	})
+
+	// find the initial set of bboxes that account for this operation -
+	// i.e. anything below the pasted node set
+	var bboxes = []
+
+	for(var i = 0; i < sortedNodes.length; ++i) {
+		var bbox = this.getNodeBoundingBox(sortedNodes[i])
+
+		if (bbox.y2 + spacing.y < doc.y1) {
+			// ignore any nodes above our one, they don't matter
+			continue
+		}
+		else {
+			bboxes.push(bbox)
+		}
+	}
+
+	// easy case, nothing overlaps
+	if (bboxes.length === 0) {
+		return {x: doc.x1, y: doc.y1}
+	}
+
+	// easy case, the next node is outside our bbox vertically
+	if (bboxes[0].y1 > doc.y2 + spacing.y) {
+		return {x: doc.x1, y: doc.y1}
+	}
+
+	// scan the set of bboxes down to find space for our pasted node(s)
+
+	// helper function to find space for pasteBbox within
+	// an area filled with graphNodeBboxes
+	// returns a {x1, y1, x2, y2} object with an area large
+	// enough to contain pasteBbox.
+	function autoLayout(pasteBbox, graphNodeBboxes) {
+		for(var i = 0; i < graphNodeBboxes.length; ++i) {
+			if (graphNodeBboxes[i].y1 > pasteBbox.y2 + spacing.y) {
+				// nothing overlaps anymore - return the current location
+				return pasteBbox
+			}
+			else if (pasteBbox.x1 - spacing.x > graphNodeBboxes[i].x2 || pasteBbox.x2 + spacing.x < graphNodeBboxes[i].x1) {
+				// ignore any bboxes entirely outside the candidate bbox
+			}
+			else {
+				// move the candidate bbox down by offset = height of a node + spacing
+				// and recurse back into trying to match the new candidate area
+				var offset = graphNodeBboxes[i].y2 - pasteBbox.y1 + spacing.y
+
+				var newBboxes = graphNodeBboxes.splice(i + 1)
+				var newNodeBbox = {x1: pasteBbox.x1, y1: pasteBbox.y1 + offset, x2: pasteBbox.x2, y2: pasteBbox.y2 + offset}
+
+				return autoLayout(newNodeBbox, newBboxes)
+			}
+		}
+
+		return pasteBbox
+	}
+
+	var result = autoLayout(doc, bboxes)
+
+	return {x: result.x1, y: result.y1}
+}
+
+Application.prototype.onPaste = function(x, y) {
 	if (this.clipboard === null)
 		return;
 
@@ -1037,13 +1199,28 @@ Application.prototype.onPaste = function() {
 	var sx = this.scrollOffset[0]
 	var sy = this.scrollOffset[1]
 
-	var ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
-	var oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
+	var ox
+	var oy
 
-	var pasted = this.paste(doc, ox, oy)
+	// pasted node bbox: doc.x1, doc.y1 - doc.x2, doc.y2
+
+	// calculate paste position
+	if (this.isWorldEditorActive()) {
+		var autoLayoutPosition = this.findSpaceInGraphFor(doc)
+		ox = autoLayoutPosition.x // doc.x1 // doc.nodes[0].x
+		oy = autoLayoutPosition.y // doc.y1 // doc.nodes[0].y
+	}
+	else {
+		ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
+		oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
+	}
+
+	var pasted = this.paste(doc, x || ox, y || oy)
 
 	pasted.nodes.map(this.markNodeAsSelected.bind(this))
 	pasted.connections.map(this.markConnectionAsSelected.bind(this))
+
+	return pasted
 }
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
@@ -1051,13 +1228,17 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 		node.ui.setSelected(true);
 	}
 
-	if (addToSelection !== false)
+	if (addToSelection !== false) {
 		this.selectedNodes.push(node)
+		E2.ui.state.selectedObjects = this.selectedNodes
+	}
+
 }
 
 Application.prototype.deselectNode = function(node) {
 	this.selectedNodes.splice(this.selectedNodes.indexOf(node), 1)
 	node.ui.setSelected(false);
+	E2.ui.state.selectedObjects = this.selectedNodes
 }
 
 Application.prototype.markConnectionAsSelected = function(conn) {
@@ -1088,7 +1269,7 @@ Application.prototype.calculateCanvasArea = function() {
 	if (!isFullscreen && !this.condensed_view) {
 		width = $(window).width();
 		height = $(window).height() -
-			$('.editor-header').outerHeight(true) - $('#breadcrumb').outerHeight(true) - $('.bottom-panel').outerHeight(true);
+			$('.editor-header').outerHeight(true) - $('#row2').outerHeight(true) - $('.bottom-panel').outerHeight(true);
 	} else {
 		width = window.innerWidth
 		height = window.innerHeight
@@ -1147,13 +1328,20 @@ Application.prototype.toggleWorldEditor = function(forceState) {
 		this.worldEditor.deactivate()
 	}
 	var isActive = this.worldEditor.isActive()
-	E2.ui.emit(uiEvent.worldEditChanged, isActive)
+
 	return isActive
 }
 
+// is the VR (experience) camera active AND controllable?
+// i.e. graph is not visible
 Application.prototype.isVRCameraActive = function() {
-	//console.log('noodles:', this.noodlesVisible, 'we: ', E2.app.worldEditor)
 	return !(this.noodlesVisible || E2.app.worldEditor.isActive())
+}
+
+// is the world editor visible AND controllable
+// i.e. graph is not visible
+Application.prototype.isWorldEditorActive = function() {
+	return !this.noodlesVisible && E2.app.worldEditor.isActive()
 }
 	
 Application.prototype.toggleFullscreen = function() {
@@ -1192,7 +1380,9 @@ Application.prototype.onKeyDown = function(e) {
 	var toggleNoodlesKey = 9
 	var toggleWorldEditorKey = 86
 
-	var exceptionKeys = [ toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey ]
+	var altKey = 18
+
+	var exceptionKeys = [ toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey, altKey ]
 
 	if (this.isVRCameraActive() && exceptionKeys.indexOf(e.keyCode) === -1)
 		return true;
@@ -1237,11 +1427,10 @@ Application.prototype.onKeyDown = function(e) {
 	{
 		this.ctrl_pressed = true;
 	}
-	else if(e.keyCode === 18) // alt
+	else if(e.keyCode === altKey) // alt
 	{
 		this.alt_pressed = true;
 	}
-
 
 	// number keys
 	else if (e.keyCode > 47 && e.keyCode < 58) { // 0-9
@@ -1296,8 +1485,9 @@ Application.prototype.onKeyDown = function(e) {
 			this.onCopy(e);
 		else if(e.keyCode === 88) // CTRL+x
 			this.onCut(e);
-		else if(e.keyCode === 86) // CTRL+v
-			this.onPaste(e);
+		else if(e.keyCode === 86) { // CTRL+v
+			var pasted = this.onPaste();
+		}
 
 		if (e.keyCode === 90) { // z
 			e.preventDefault()
@@ -1310,10 +1500,12 @@ Application.prototype.onKeyDown = function(e) {
 				this.undoManager.redo()
 		}
 	}
-	else if (e.keyCode === toggleWorldEditorKey) { // v
-		this.toggleWorldEditor();
-		ret = false;
+	else if (e.keyCode === 187 && this.isWorldEditorActive()) // '=' match vr camera to world editor camera
+	{
+		this.worldEditor.matchCamera()
 	}
+
+
 
 	return ret;
 
@@ -1430,6 +1622,7 @@ Application.prototype.openPresetSaveDialog = null;	// ui replaces this
 
 
 Application.prototype.onPublishClicked = function() {
+
 	if (!E2.models.user.get('username')) {
 		return E2.controllers.account.openLoginModal()
 			.then(this.onPublishClicked.bind(this))
@@ -1437,6 +1630,8 @@ Application.prototype.onPublishClicked = function() {
 	
 	E2.ui.openPublishGraphModal()
 	.then(function(path) {
+		window.onbeforeunload = null;	// override "you might be leaving work" prompt (release mode)
+		mixpanel.track('Published')
 		window.location.href = path
 	})
 }
@@ -1455,8 +1650,6 @@ Application.prototype.openSaveACopyDialog = function() {
 	}
 
 	E2.ui.updateProgressBar(65);
-
-	ga('send', 'event', 'Save a Copy', 'clicked')
 
 	$.get(URL_GRAPHS, function(files) {
 		var fcs = new FileSelectControl()
@@ -1484,11 +1677,12 @@ Application.prototype.openSaveACopyDialog = function() {
 					dataType: 'json',
 					success: function(saved) {
 						E2.ui.updateProgressBar(100);
-						ga('send', 'event', 'graph', 'saved')
+						mixpanel.track('Saved a Copy');
 						dfd.resolve(saved.path)
 					},
 					error: function(x, t, err) {
 						E2.ui.updateProgressBar(100);
+
 
 						if (x.status === 401) {
 							return dfd.resolve(
@@ -1516,47 +1710,53 @@ Application.prototype.openSaveACopyDialog = function() {
 	return dfd.promise
 }
 
-Application.prototype.growl = function(title, type, duration, person) {
-	var letter=title.charAt(0);
-	var image=''
-	type= type || 'info';
-	if (!$('symbol#icon-'+type).length) {
-		type='info'
+Application.prototype.growl = function(message, type, duration, user) {
+	type = type || 'info'
+	duration = 500 + (duration || 2000)			// account for reveal animations
+
+	var fromUser = _.extend({
+		username: '',
+		color: 'transparent',
+		firstLetter: '',
+		gravatar: ''
+	}, user)
+
+	if (fromUser.username) {
+		fromUser.firstLetter = fromUser.username.charAt(0)
 	}
-	if (person) {
-		var image='<div style="background-color: '+person.color+';" class="image-crop"><span>'+letter+'</span></div>';
-	} 
-	
-	/** TODO: when users will have pics - use this:
-	if (person.userpic) {
-		image = '<div style="background-image: url('+person.userpic+');" class="image-crop"></div>';
+
+	var data = {
+		type: type,
+		fromUser: fromUser,
+		message: message
 	}
-	*/
-	
-	var glyph = '<div class="glyph">'+image+'<svg class="icon-'+type+'"><use xlink:href="#icon-'+type+'"></use></svg></div>';
-	
-	if (!$('#notifications-area').length) {
-		$('body').append('<div id="notifications-area"></div>');
+
+	var $notificationArea = jQuery('#notifications-area')
+	if (!$notificationArea.length) {
+		$notificationArea = jQuery('<div id="notifications-area"></div>')
+		jQuery('body').append($notificationArea)
 	}
-	
-	function close() {
-		$('#notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
-	}
-	
-	function remove() {
-		$('.notification-hide:first-child').remove();
-		$('#notifications-area>.notification-show:first-child').removeClass('notification-show').addClass('notification-hide');
-		if (!$('#notifications-area>div').length) {
-			$('#notifications-area').remove();
+
+	var $notification = jQuery(E2.views.partials.notification(data))
+
+	var remove = function () {
+		$notification.remove()
+		if (jQuery('>div', $notificationArea).length === 0) {
+			$notificationArea.remove()
 		}
 	}
 
-	$('#notifications-area').append('<div class="notification notification-show"><div class="nt-content">'+glyph+'<div class="text"><span>'+title+'</span></div></div></div>');
-	
-	duration = duration || 2000;
-	
-	setTimeout(close, duration * $('#notifications-area .notification').length)
-	setTimeout(remove, duration * $('#notifications-area .notification').length + 1000)
+	var close = function() {
+		$notification.removeClass('notification-show').addClass('notification-hide')
+		setTimeout(remove, 1000)
+	}
+
+	$notificationArea.append($notification)
+	$notification.addClass('notification-show')
+
+	setTimeout(close, duration * $('.notification', $notificationArea).length)
+
+	return $notification
 }
 
 Application.prototype.setupStoreListeners = function() {
@@ -1647,26 +1847,7 @@ Application.prototype.onGraphSelected = function(graph) {
 
 	E2.dom.breadcrumb.children().remove()
 
-	function buildBreadcrumb(parentEl, graph, add_handler) {
-		var sp = $('<span>' + graph.tree_node.title + '</span>')
-		sp.css('cursor', 'pointer')
-
-		if (add_handler) {
-			sp.click(function() {
-				graph.tree_node.activate()
-			})
-
-			sp.css({ 'text-decoration': 'underline' })
-		}
-
-		parentEl.prepend($('<svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg>'))
-		parentEl.prepend(sp)
-
-		if (graph.parent_graph)
-			buildBreadcrumb(parentEl, graph.parent_graph, true)
-	}
-
-	buildBreadcrumb(E2.dom.breadcrumb, E2.core.active_graph, false)
+	E2.ui.buildBreadcrumb(E2.core.active_graph)
 
 	E2.core.active_graph.create_ui()
 
@@ -1703,8 +1884,6 @@ Application.prototype.setupPeopleEvents = function() {
 
 		$cursor.remove()
 		delete cursors[uid]
-		if (E2.ui)
-			E2.ui.onPeopleListChanged('removed');
 	})
 
 	this.peopleStore.on('added', function(person) {
@@ -1726,14 +1905,11 @@ Application.prototype.setupPeopleEvents = function() {
 
 		if (person.activeGraphUid !== E2.core.active_graph.uid)
 			$cursor.hide()
-
-		if (E2.ui)
-			E2.ui.onPeopleListChanged('added');
 	})
 
 	this.peopleStore.on('mouseMoved', function(person) {
 		var $cursor = cursors[person.uid]
-		var cp = E2.dom.canvas_parent[0];
+		var cp = E2.dom.canvases[0];
 		$cursor.removeClass('inactive outside')
 
 		// Update the user's cursor fade-out timeout
@@ -1872,11 +2048,13 @@ Application.prototype.start = function() {
 	document.addEventListener('mozfullscreenchange', this.onFullScreenChanged.bind(this))
 
 	window.addEventListener('resize', function() {
-		// To avoid UI lag, we don't respond to window resize events directly.
-		// Instead, we set up a timer that gets superceeded for each (spurious)
-		// resize event within a 200 ms window.
-		clearTimeout(that.resize_timer)
-		that.resize_timer = setTimeout(that.onWindowResize.bind(that), 200)
+		// avoid ui lag
+		if (that.resize_timer) return
+		that.resize_timer = setTimeout(function(){
+			clearTimeout(that.resize_timer)
+			that.resize_timer = null;
+			that.onWindowResize()
+		}, 100)
 	})
 
 	// close bootboxes on click
@@ -1886,13 +2064,6 @@ Application.prototype.start = function() {
 			bootbox.hideAll()
 	})
 
-	E2.dom.worldEditorButton.click(function() {
-		E2.app.toggleWorldEditor()
-	});
-
-	E2.dom.publishButton.click(function() {
-		E2.app.onPublishClicked()
-	});
 
 	$('button#fullscreen').click(function() {
 		E2.app.toggleFullscreen()
@@ -1903,7 +2074,6 @@ Application.prototype.start = function() {
 	});
 
 	$('.resize-handle').on('mousedown', function(e) {
-		var $handle = $(this)
 		var $target = $(this).parent()
 		var oh = $target.height()
 		var oy = e.pageY
@@ -1911,22 +2081,22 @@ Application.prototype.start = function() {
 		var changed = false
 
 		e.preventDefault()
+		e.stopPropagation();
 
 		function mouseMoveHandler(e) {
 			changed = true
 			var nh = oh + (e.pageY - oy)
 			e.preventDefault()
 			$target.css('height', nh+'px')
-			if ($target.hasClass('chat-users')) {
-				if (E2.ui)
-					E2.ui.onChatResize();
-			}
+			return true
 		}
 
 		$doc.on('mousemove', mouseMoveHandler)
 		$doc.one('mouseup', function(e) {
 			e.preventDefault()
 			$doc.off('mousemove', mouseMoveHandler)
+			var uiResized = (typeof uiEvent !== 'undefined') ? uiEvent.resized : 'uiResized'
+			$target.trigger(uiResized)
 		})
 	});
 
@@ -1975,6 +2145,11 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	that.setupPeopleEvents()
 	that.setupStoreListeners()
 
+	if (!loadGraphUrl && !boot.hasEdits) {
+		loadGraphUrl = '/data/graphs/default.json'
+		E2.app.snapshotPending = true
+	}
+
 	function start() {
 		E2.dom.canvas_parent.toggle(that.noodlesVisible)
 		
@@ -1987,21 +2162,23 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
 			}
 		}
-
-		E2.ui.showFirstTimeDialog();
 	}
 
-	if (!loadGraphUrl && !boot.hasEdits) {
-		loadGraphUrl = '/data/graphs/default.json'
-		E2.app.snapshotPending = true
-	}
+	E2.ui.showStartDialog()
+	.then(function(selectedTemplateUrl) {
+		if (selectedTemplateUrl && boot.hasEdits) {
+			var path = that.path = E2.uid()
+			history.pushState({}, '', path)
+		}
 
-	if (loadGraphUrl)
-		E2.app.loadGraph(loadGraphUrl, start)
-	else
-		E2.app.setupEditorChannel().then(start)
-
-
+		if (selectedTemplateUrl) {
+			E2.app.loadGraph(selectedTemplateUrl, start)
+		} else if (loadGraphUrl) {
+			E2.app.loadGraph(loadGraphUrl, start)
+		} else {
+			E2.app.setupEditorChannel().then(start)
+		}
+	})
 }
 
 Application.prototype.setupChat = function() {
@@ -2009,7 +2186,7 @@ Application.prototype.setupChat = function() {
 		return
 
 	this.chatStore = new E2.ChatStore()
-	this.chat = new E2.Chat($('#chat'))
+	this.chat = new E2.Chat(E2.dom.chatTab)
 }
 
 /**
@@ -2025,7 +2202,9 @@ Application.prototype.setupEditorChannel = function() {
 			return dfd.resolve()
 		}
 
-		that.channel.join(that.path, function() {
+		var readableName = that.path 
+		that.channel.join(that.path, readableName, function() {
+			mixpanel.track('Editor Opened')
 			dfd.resolve()
 		})
 	}
@@ -2065,11 +2244,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.progressBar = $('#progressbar');
 	
 	E2.dom.btnNew = $('#btn-new');
-	
-	E2.dom.btnScale = $('#btn-scale');
-	E2.dom.btnRotate = $('#btn-rotate');
+
 	E2.dom.btnAssets = $('#btn-assets');
-	
 	E2.dom.btnInspector = $('#btn-inspector');
 	E2.dom.btnPresets = $('#btn-presets');
 	E2.dom.btnSavePatch = $('#btn-save-patch');
@@ -2096,9 +2272,11 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	
 	E2.dom.presetsLib = $('#presets-lib');
 	E2.dom.presets_list = $('#presets');
+	E2.dom.objectsList = $('#objects');
 	
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');
+	E2.dom.canvases = $('#canvases');
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
 	
@@ -2116,8 +2294,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.presetsClose = $('#presets-close');
 	
 	E2.dom.dbg = $('#dbg');
-	E2.dom.worldEditorButton = $('#worldEditor');
-	E2.dom.publishButton = $('#publish-button');
+
+	E2.dom.publishButton = $('#btn-publish');
 	E2.dom.play = $('#play');
 	E2.dom.play_i = $('i', E2.dom.play);
 	E2.dom.pause = $('#pause');
@@ -2126,7 +2304,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.forkButton = $('#fork-button');
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
-	E2.dom.saveAsPreset = $('#save-as-preset');
+	E2.dom.saveAsPreset = E2.dom.btnSavePatch;
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
 	E2.dom.structure = $('#structure');
@@ -2135,6 +2313,10 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.tabs = $('#tabs');
 	E2.dom.graphs_list = $('#graphs-list');
 	E2.dom.filename_input = $('#filename-input');
+	
+	E2.dom.dragOverlay = $('#drag-overlay');
+	E2.dom.dropArea = $('#drop-area');
+	E2.dom.dropUploading = $('#drop-uploading');
 	
 	E2.dom.bottomBar = $('.bottom-panel');
 	
@@ -2203,7 +2385,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		preserveDrawingBuffer: false
 	}
 
-	E2.app.worldEditor = new WorldEditor()
+	E2.app.worldEditor = new WorldEditor(E2.dom.webgl_canvas[0])
 
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)

@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en" class="hVizor">
   <head id="head">
     <title>Vizor Create</title>
     <link href="/style/less.css" rel="Stylesheet" type="text/css"/>
@@ -47,13 +47,19 @@
     <script type="text/javascript" src="/scripts/connection.js"></script>
     <script type="text/javascript" src="/scripts/graph.js"></script>
     <script type="text/javascript" src="/scripts/node.js"></script>
+    <script type="text/javascript" src="/scripts/autoSlotGroup.js"></script>
     <script type="text/javascript" src="/scripts/node-ui-enum.js"></script>
     <script type="text/javascript" src="/scripts/node-ui.js"></script>
     <script type="text/javascript" src="/scripts/variables.js"></script>
     <script type="text/javascript" src="/scripts/player.js"></script>
     <script type="text/javascript" src="/scripts/application.js"></script>
-    <script type="text/javascript" src="/scripts/ui-core.js"></script>
+    <script type="text/javascript" src="/scripts/ui-core-statestore.js"></script>
+	<script type="text/javascript" src="/scripts/ui-core.js"></script>
+    <script type="text/javascript" src="/scripts/ui-breadcrumb.js"></script>
+    <script type="text/javascript" src="/scripts/ui-site.js"></script>
+    <script type="text/javascript" src="/scripts/ui-minislides.js"></script>
     <script type="text/javascript" src="/scripts/ui.js"></script>
+    <script type="text/javascript" src="/scripts/ui-upload.js"></script>
     <script type="text/javascript" src="/scripts/editConnection.js"></script>
     <script type="text/javascript" src="/scripts/player.js"></script>
 
@@ -93,6 +99,8 @@
     <script type="text/javascript" src="/vendor/three/MTLLoader.js"></script>
     <script type="text/javascript" src="/vendor/three/DDSLoader.js"></script>
     <script type="text/javascript" src="/vendor/three/SceneLoader.js"></script>
+    <script type="text/javascript" src="/vendor/three/ObjectLoader.js"></script>
+    <script type="text/javascript" src="/vendor/three/MorphAnimMesh.js"></script>
 
     <script type="text/javascript" src="/vendor/three/VREffect.js"></script>
     <script type="text/javascript" src="/vendor/three/VRControls.js"></script>
@@ -121,13 +129,15 @@
     <script type="text/javascript" src="/scripts/worldEditor/worldEditorCamera.js"></script>
     <script type="text/javascript" src="/scripts/worldEditor/worldEditor.js"></script>
     <script type="text/javascript" src="/scripts/worldEditor/worldEditorOriginGrid.js"></script>
+    <script type="text/javascript" src="/scripts/worldEditor/vrCameraHelperObject.js"></script>
 
     <!-- next line replaced by build: -->
     <!-- {{editor.min.js}} -->
 
+    <script>{{> mixpanel}}</script>
   </head>
 
-<body class="{{extraClasses}}">
+<body class="noselect bEditor {{extraClasses}}">
   {{{body}}}
 
     <script>

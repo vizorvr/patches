@@ -153,7 +153,7 @@ PeopleStore.prototype._mouseMoveHandler = function(e) {
 
 	var x = e.pageX
 	var y = e.pageY
-	var cp = E2.dom.canvas_parent[0]
+	var cp = E2.dom.canvases[0]
 
 	var adjustedX = x - cp.offsetLeft
 	var adjustedY = y - cp.offsetTop

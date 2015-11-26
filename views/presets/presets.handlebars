@@ -1,6 +1,7 @@
+{{!-- used more than once on same page, mind id-s --}}
 <div class="searchbox">
 	<svg class="icon-search"><use xlink:href="#icon-search"></use></svg>
-	<input id="presetSearch"
+	<input
 		class="form-control"
 		type="text"
 		placeholder="Search"
@@ -21,12 +22,12 @@
 					data-toggle="collapse"
 					data-category="{{@key}}"
 					data-parent="#{{../controlId}}"
-					href="#cscat{{@index}}">
+					href="#cscat{{../controlId}}-{{@index}}">
 						<i class="glyphicon glyphicon-chevron-right"></i>
 						{{@key}}
 				</div>
 			
-				<div id="cscat{{@index}}"
+				<div id="cscat{{../controlId}}-{{@index}}"
 					class="panel-collapse collapse">
 
 					<div class="panel-body">

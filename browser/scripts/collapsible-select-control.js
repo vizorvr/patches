@@ -6,14 +6,14 @@ function dragAndDropMouseDownHandler(e) {
 	var uiState = E2.ui.state;
 	var chatWindow = E2.dom.chatWindow;
 	var chatVisible = uiState.visibility.panel_chat;
-	var collapseChat = E2.ui.onChatToggleClicked.bind(E2.ui);
+	var collapseChat = E2.ui.togglePanelChatCollapsed.bind(E2.ui);
 	var presetsLib = E2.dom.presetsLib;
 	var presetsVisible = uiState.visibility.panel_presets;
-	var collapsePresets = E2.ui.onPresetsToggleClicked.bind(E2.ui);
+	var collapsePresets = E2.ui.togglePanelPresetsCollapsed.bind(E2.ui);
 	var assetsLib = E2.dom.assetsLib;
 	var assetsVisible = uiState.visibility.panel_assets;
-	var collapseAssets = E2.ui.onAssetsToggleClicked.bind(E2.ui);
-	
+	var collapseAssets = E2.ui.togglePanelAssetsCollapsed.bind(E2.ui);
+
 	var mouseMoveBound = false
 	var mouseX = 0
 	var mouseY = 0
@@ -33,7 +33,7 @@ function dragAndDropMouseDownHandler(e) {
 	var canvasHeight = canvas.height()
 	var canvasX = canvas.position().left
 	var canvasY = canvas.position().top
-	var cp = E2.dom.canvas_parent
+	var cp = E2.dom.canvases
 	var scrollHoverAreaSize = 25 // Pixel size for hover area for scrolling around the canvas
 	
 	if (presetsVisible) {
@@ -165,20 +165,26 @@ function dragAndDropMouseDownHandler(e) {
 		clearInterval(scrollInterval)
 		
 		// Only create new item when released over the canvas and hide floating box if dropped under it;
-		if(evt.pageX < (canvasWidth + canvasX) && evt.pageX > canvasX && evt.pageY < (canvasHeight + canvasY) && evt.pageY > canvasY) {
+		if (E2.app.isWorldEditorActive() ||
+			(evt.pageX < (canvasWidth + canvasX) &&
+			evt.pageX > canvasX &&
+			evt.pageY < (canvasHeight + canvasY) &&
+			evt.pageY > canvasY))
+		{
 			e.data.dropSuccessCb(e)
 			
 			if ((presetsVisible) && (evt.pageX < (plWidth + plX) && evt.pageX > plX && evt.pageY < (plHeight + plY) && evt.pageY > plY)) { 
 				collapsePresets();
 			}
+			
 			if ((assetsVisible) && (evt.pageX < (alWidth + alX) && evt.pageX > alX && evt.pageY < (alHeight + alY) && evt.pageY > alY)) { 
 				collapseAssets();
 			}
+
 			if ((chatVisible) && (evt.pageX < (chWidth + chX) && evt.pageX > chX && evt.pageY < (chHeight + chY) && evt.pageY > chY)) { 
 				collapseChat();
 			}
 		}
-
 	}
 
 	// Take care to only bind mouse movement and mouseup once
@@ -257,13 +263,12 @@ CollapsibleSelectControl.prototype._search = function(text) {
 		that._cb($(e.target).data('path'))
 	})
 
-	$lis.bind('mousedown',
-		{
-			dropSuccessCb: function(e) {
-				that._cb($(e.target).data('path'))
-			}
-		},
-		dragAndDropMouseDownHandler)
+	$lis.bind('mousedown', {
+		dropSuccessCb: function(e) {
+			that._cb($(e.target).data('path'))
+		}
+	},
+	dragAndDropMouseDownHandler)
 
 	this._resultEls = $lis
 
@@ -392,7 +397,11 @@ CollapsibleSelectControl.prototype.render = function(el) {
 	})
 
 	// Drag and drop an element from the list
-	$('li', el).bind('mousedown', { dropSuccessCb: function(e) { that._cb($(e.target).data('path')) } }, dragAndDropMouseDownHandler)
+	$('li', el).bind('mousedown', {
+		dropSuccessCb: function(e) {
+			that._cb($(e.target).data('path'))
+		}
+	}, dragAndDropMouseDownHandler)
 
 	var keyTimer
 	$input.on('keyup', function(e) {
@@ -434,7 +443,9 @@ CollapsibleSelectControl.prototype.render = function(el) {
 			case 13: // ok
 				if ($sel) {
 					$sel.trigger('dblclick')
-					setTimeout(function(){$input.trigger('blur');}, 100);
+					setTimeout(function() {
+						$input.trigger('blur');
+					}, 100);
 				}
 				break;
 			case 38: // up

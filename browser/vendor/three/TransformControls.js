@@ -23,6 +23,17 @@
 		this.oldColor = this.color.clone();
 		this.oldOpacity = this.opacity;
 
+		this.disable = function( disabled ) {
+			if ( disabled ) {
+				this.color.setRGB(
+					0.5 + (this.oldColor.r - 0.5) * 0.2,
+					0.5 + (this.oldColor.g - 0.5) * 0.2,
+					0.5 + (this.oldColor.b - 0.5) * 0.2)
+			} else {
+				this.color.copy( this.oldColor )
+			}
+		}
+
 		this.highlight = function( highlighted ) {
 
 			if ( highlighted ) {
@@ -60,6 +71,17 @@
 		this.oldOpacity = this.opacity;
 
 		this.fog = false
+
+		this.disable = function( disabled ) {
+			if ( disabled ) {
+				this.color.setRGB(
+					0.5 + (this.oldColor.r - 0.5) * 0.2,
+					0.5 + (this.oldColor.g - 0.5) * 0.2,
+					0.5 + (this.oldColor.b - 0.5) * 0.2)
+			} else {
+				this.color.copy(this.oldColor)
+			}
+		}
 
 		this.highlight = function( highlighted ) {
 
@@ -198,6 +220,14 @@
 			} );
 
 		};
+
+		this.disable = function(disable) {
+			this.traverse( function( child ) {
+				if (child.material && child.material.disable) {
+					child.material.disable(disable)
+				}
+			})
+		}
 
 	};
 
@@ -620,7 +650,8 @@
 
 		this.object = undefined;
 		this.visible = false;
-		this.snap = null;
+		this.translationSnap = null;
+		this.rotationSnap = null;
 		this.space = "world";
 		this.size = 1;
 		this.axis = null;
@@ -730,8 +761,13 @@
 			this.plugin = object.backReference
 			this.object = this.plugin.object3d;
 			this.visible = true;
-			this.update();
 
+			// enable / disable the three transform modes
+			_gizmo.translate.isEnabled = this.plugin.state.position !== undefined
+			_gizmo.rotate.isEnabled = this.plugin.state.quaternion !== undefined
+			_gizmo.scale.isEnabled = this.plugin.state.scale !== undefined
+
+			this.update();
 		};
 
 		this.detach = function () {
@@ -756,9 +792,15 @@
 
 		};
 
-		this.setSnap = function ( snap ) {
+		this.setTranslationSnap = function ( translationSnap ) {
 
-			scope.snap = snap;
+			scope.translationSnap = translationSnap;
+
+		};
+
+		this.setRotationSnap = function ( rotationSnap ) {
+
+			scope.rotationSnap = rotationSnap;
 
 		};
 
@@ -806,8 +848,12 @@
 
 			}
 
-			_gizmo[ _mode ].highlight( scope.axis );
-
+			if (_gizmo[ _mode ].isEnabled) {
+				_gizmo[ _mode ].highlight( scope.axis );
+			}
+			else {
+				_gizmo[ _mode].disable(true)
+			}
 		};
 
 		function onPointerHover( event ) {
@@ -842,6 +888,10 @@
 
 			if ( scope.object === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
 
+			if ( !_gizmo[ _mode ].isEnabled ) {
+				return
+			}
+
 			var pointer = event.changedTouches ? event.changedTouches[ 0 ] : event;
 
 			if ( pointer.button === 0 || pointer.button === undefined ) {
@@ -867,15 +917,34 @@
 
 					if ( planeIntersect ) {
 
-						oldPosition.set( scope.plugin.state.position.x, scope.plugin.state.position.y, scope.plugin.state.position.z );
-						oldScale.set( scope.plugin.state.scale.x, scope.plugin.state.scale.y, scope.plugin.state.scale.z );
-						oldQuaternion.set( scope.plugin.state.quaternion._x, scope.plugin.state.quaternion._y, scope.plugin.state.quaternion._z, scope.plugin.state.quaternion._w )
+						if (scope.plugin.state.position)
+							oldPosition.set( scope.plugin.state.position.x, scope.plugin.state.position.y, scope.plugin.state.position.z );
+						else
+							oldPosition.set(0, 0, 0)
+
+						if (scope.plugin.state.scale)
+							oldScale.set( scope.plugin.state.scale.x, scope.plugin.state.scale.y, scope.plugin.state.scale.z );
+						else
+							oldScale.set(1, 1, 1, 1)
+
+						if (scope.plugin.state.quaternion)
+							oldQuaternion.set( scope.plugin.state.quaternion._x, scope.plugin.state.quaternion._y, scope.plugin.state.quaternion._z, scope.plugin.state.quaternion._w )
+						else
+							oldQuaternion.set(0, 0, 0, 1)
 
 						oldRotationMatrix.extractRotation( scope.plugin.object3d.matrix );
 						worldRotationMatrix.extractRotation( scope.plugin.object3d.matrixWorld );
 
-						parentRotationMatrix.extractRotation( scope.plugin.object3d.parent.matrixWorld );
-						parentScale.setFromMatrixScale( tempMatrix.getInverse( scope.plugin.object3d.parent.matrixWorld ) );
+						if (scope.plugin.object3d.parent) {
+							parentRotationMatrix.extractRotation( scope.plugin.object3d.parent.matrixWorld );
+							parentScale.setFromMatrixScale( tempMatrix.getInverse( scope.plugin.object3d.parent.matrixWorld ) );
+						}
+						else {
+							// cameras don't have a parent in scene hierarchy
+							parentRotationMatrix.identity()
+							parentScale.set(1, 1, 1)
+						}
+
 
 						offset.copy( planeIntersect.point );
 
@@ -894,6 +963,10 @@
 		function onPointerMove( event ) {
 
 			if ( scope.object === undefined || scope.axis === null || _dragging === false || ( event.button !== undefined && event.button !== 0 ) ) return;
+
+			if ( !_gizmo[ _mode ].isEnabled ) {
+				return
+			}
 
 			var pointer = event.changedTouches ? event.changedTouches[ 0 ] : event;
 
@@ -941,14 +1014,26 @@
 
 				}
 
-				if ( scope.snap !== null ) {
+				if ( scope.translationSnap !== null ) {
+
+					if ( scope.space === "local" ) {
+
+						newValue.applyMatrix4( tempMatrix.getInverse( worldRotationMatrix ) );
+
+					}
 
 					if ( scope.axis.search( "X" ) !== - 1 ) newValue.x = Math.round( newValue.x / scope.snap ) * scope.snap;
 					if ( scope.axis.search( "Y" ) !== - 1 ) newValue.y = Math.round( newValue.y / scope.snap ) * scope.snap;
 					if ( scope.axis.search( "Z" ) !== - 1 ) newValue.z = Math.round( newValue.z / scope.snap ) * scope.snap;
 
-				}
+					if ( scope.space === "local" ) {
 
+						newValue.applyMatrix4( worldRotationMatrix );
+
+					}
+
+				}
+				
 				scope.plugin.undoableSetState('position', newValue.clone(), oldPosition.clone())
 
 			} else if ( _mode === "scale" ) {
@@ -1033,9 +1118,20 @@
 					offsetRotation.set( Math.atan2( tempVector.z, tempVector.y ), Math.atan2( tempVector.x, tempVector.z ), Math.atan2( tempVector.y, tempVector.x ) );
 
 					quaternionXYZ.setFromRotationMatrix( oldRotationMatrix );
-					quaternionX.setFromAxisAngle( unitX, rotation.x - offsetRotation.x );
-					quaternionY.setFromAxisAngle( unitY, rotation.y - offsetRotation.y );
-					quaternionZ.setFromAxisAngle( unitZ, rotation.z - offsetRotation.z );
+
+					if ( scope.rotationSnap !== null ) {
+
+						quaternionX.setFromAxisAngle( unitX, Math.round( ( rotation.x - offsetRotation.x ) / scope.rotationSnap ) * scope.rotationSnap );
+						quaternionY.setFromAxisAngle( unitY, Math.round( ( rotation.y - offsetRotation.y ) / scope.rotationSnap ) * scope.rotationSnap );
+						quaternionZ.setFromAxisAngle( unitZ, Math.round( ( rotation.z - offsetRotation.z ) / scope.rotationSnap ) * scope.rotationSnap );
+
+					} else {
+
+						quaternionX.setFromAxisAngle( unitX, rotation.x - offsetRotation.x );
+						quaternionY.setFromAxisAngle( unitY, rotation.y - offsetRotation.y );
+						quaternionZ.setFromAxisAngle( unitZ, rotation.z - offsetRotation.z );
+
+					}
 
 					if ( scope.axis === "X" ) quaternionXYZ.multiplyQuaternions( quaternionXYZ, quaternionX );
 					if ( scope.axis === "Y" ) quaternionXYZ.multiplyQuaternions( quaternionXYZ, quaternionY );
@@ -1051,9 +1147,20 @@
 
 					tempQuaternion.setFromRotationMatrix( tempMatrix.getInverse( parentRotationMatrix ) );
 
-					quaternionX.setFromAxisAngle( unitX, rotation.x - offsetRotation.x );
-					quaternionY.setFromAxisAngle( unitY, rotation.y - offsetRotation.y );
-					quaternionZ.setFromAxisAngle( unitZ, rotation.z - offsetRotation.z );
+					if ( scope.rotationSnap !== null ) {
+
+						quaternionX.setFromAxisAngle( unitX, Math.round( ( rotation.x - offsetRotation.x ) / scope.rotationSnap ) * scope.rotationSnap );
+						quaternionY.setFromAxisAngle( unitY, Math.round( ( rotation.y - offsetRotation.y ) / scope.rotationSnap ) * scope.rotationSnap );
+						quaternionZ.setFromAxisAngle( unitZ, Math.round( ( rotation.z - offsetRotation.z ) / scope.rotationSnap ) * scope.rotationSnap );
+
+					} else {
+
+						quaternionX.setFromAxisAngle( unitX, rotation.x - offsetRotation.x );
+						quaternionY.setFromAxisAngle( unitY, rotation.y - offsetRotation.y );
+						quaternionZ.setFromAxisAngle( unitZ, rotation.z - offsetRotation.z );
+
+					}
+
 					quaternionXYZ.setFromRotationMatrix( worldRotationMatrix );
 
 					if ( scope.axis === "X" ) tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionX );
@@ -1076,6 +1183,10 @@
 		}
 
 		function onPointerUp( event ) {
+			if ( !_gizmo[ _mode].isEnabled ) {
+				return
+			}
+
 			E2.app.undoManager.end()
 
 			if ( event.button !== undefined && event.button !== 0 ) return;

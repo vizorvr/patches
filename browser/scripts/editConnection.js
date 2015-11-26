@@ -123,8 +123,10 @@ EditConnection.prototype.commit = function() {
 	this.connection.dst_slot = this.dstSlot
 	this.connection.uid = E2.uid()
 
-	return this.graphApi.connect(E2.core.active_graph,
+	this.graphApi.connect(E2.core.active_graph,
 		Connection.hydrate(E2.core.active_graph, this.connection.serialise()))
+
+	E2.app.onLocalConnectionChanged(this.connection)
 }
 
 if (typeof(module) !== 'undefined')

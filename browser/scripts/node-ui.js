@@ -528,7 +528,7 @@ NodeUI.prototype.showRenameControl = function() {
 
 	var input = $('<input class="node-title-input" placeholder="Type a title" />')
 
-	$titleSpan = $dom.find('span.p_title').first();
+	var $titleSpan = $dom.find('span.p_title').first();
 	var titleOffset = $titleSpan.offset();
 	var domOffset = $dom.offset();
 
@@ -870,5 +870,6 @@ NodeUI.redrawActiveGraph = function() {
 	if (changed) {
 		E2.app.updateCanvas(true);
 	}
+	E2.ui.state.selectedObjects = E2.ui.state.selectedObjects;	// force refresh
 	return changed;
 }

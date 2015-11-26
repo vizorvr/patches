@@ -1,26 +1,27 @@
 {
-    "abs_t": 789.575,
+    "abs_t": 573.637,
     "active_graph": "root",
-    "graph_uid": "F2SOwIkvCgXj",
+    "graph_uid": "TXDgBc0JJtS3",
     "root": {
         "uid": "root",
         "parent_uid": -1,
+        "open": true,
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 116,
-                "y": 218,
-                "uid": "BhN5v7qaFZfd",
+                "x": 708,
+                "y": 331,
+                "uid": "ksxrAudWHG44",
                 "state": {
                     "always_update": true,
                     "input_sids": {},
                     "output_sids": {
-                        "suB9gyn7URZr": "547odbJKrTzG"
+                        "a9CTd7P6Ydtk": "547odbJKrTzG"
                     }
                 },
                 "title": "Directional light",
                 "graph": {
-                    "uid": "hulFWwdWM6AD",
+                    "uid": "jW3JJfyGAJ2n",
                     "parent_uid": "root",
                     "open": true,
                     "nodes": [
@@ -28,7 +29,7 @@
                             "plugin": "output_proxy",
                             "x": 1110,
                             "y": 223,
-                            "uid": "suB9gyn7URZr",
+                            "uid": "a9CTd7P6Ydtk",
                             "title": "object3d",
                             "dyn_in": [
                                 {
@@ -45,53 +46,10 @@
                             ]
                         },
                         {
-                            "plugin": "slider_float_generator",
-                            "x": 306,
-                            "y": 399,
-                            "uid": "hZz5Hf9ETprx",
-                            "state": {
-                                "val": 1,
-                                "min": -1,
-                                "max": 1
-                            },
-                            "title": "X"
-                        },
-                        {
-                            "plugin": "slider_float_generator",
-                            "x": 306,
-                            "y": 465,
-                            "uid": "mr0BtxVRQfzV",
-                            "state": {
-                                "val": 0.06,
-                                "min": -1,
-                                "max": 1
-                            },
-                            "title": "Y"
-                        },
-                        {
-                            "plugin": "slider_float_generator",
-                            "x": 301,
-                            "y": 532,
-                            "uid": "3a16Szisg5yz",
-                            "state": {
-                                "val": 2,
-                                "min": -1,
-                                "max": 2
-                            },
-                            "title": "Z"
-                        },
-                        {
-                            "plugin": "vector",
-                            "x": 645,
-                            "y": 384,
-                            "uid": "27Un19PnJIfr",
-                            "title": "Position"
-                        },
-                        {
                             "plugin": "const_float_generator",
                             "x": 304,
                             "y": 295,
-                            "uid": "5331vcBKBGh0",
+                            "uid": "nPGfweNeNqWx",
                             "state": {
                                 "val": 1
                             },
@@ -101,64 +59,46 @@
                             "plugin": "three_directional_light",
                             "x": 877,
                             "y": 274,
-                            "uid": "QFgRhotPn0Z8"
+                            "uid": "hZ62Har5UPNg",
+                            "state": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "scale": {
+                                    "x": 1,
+                                    "y": 1,
+                                    "z": 1
+                                },
+                                "quaternion": {
+                                    "_x": 0,
+                                    "_y": 0,
+                                    "_z": 0,
+                                    "_w": 1
+                                }
+                            }
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": "hZz5Hf9ETprx",
-                            "dst_nuid": "27Un19PnJIfr",
+                            "src_nuid": "nPGfweNeNqWx",
+                            "dst_nuid": "hZ62Har5UPNg",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "NZW5xDaeXFi8",
+                            "uid": "rw2SbJ7gH9uU",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "mr0BtxVRQfzV",
-                            "dst_nuid": "27Un19PnJIfr",
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "nmJ5p0YXhKdn",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "3a16Szisg5yz",
-                            "dst_nuid": "27Un19PnJIfr",
-                            "src_slot": 0,
-                            "dst_slot": 2,
-                            "uid": "HoxCSfLWVK1u",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "5331vcBKBGh0",
-                            "dst_nuid": "QFgRhotPn0Z8",
+                            "src_nuid": "hZ62Har5UPNg",
+                            "dst_nuid": "a9CTd7P6Ydtk",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "FtqBgy1NGt5o",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "QFgRhotPn0Z8",
-                            "dst_nuid": "suB9gyn7URZr",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "Y43yx63boVYM",
+                            "uid": "tbUNWQvc5ej6",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true
-                        },
-                        {
-                            "src_nuid": "27Un19PnJIfr",
-                            "dst_nuid": "QFgRhotPn0Z8",
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "2DFnfhYQIoJL",
-                            "src_connected": true,
-                            "dst_connected": true
                         }
                     ]
                 },

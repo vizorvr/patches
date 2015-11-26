@@ -113,7 +113,8 @@
         "Ambient Light": "three_ambient_light",
         "Directional Light": "three_directional_light",
         "Point Light": "three_point_light",
-        "Line Material": "three_line_material"
+        "Line Material": "three_line_material",
+        "Material Extractor": "three_material_extractor"
     },
 
     "INTERACTION STUFF": {
@@ -227,7 +228,6 @@
         "Typed array item to object": "typed_array_item_to_object_modulator",
         "Typed array item to string": "typed_array_item_to_string_modulator",
         "Typed array item to typed array": "typed_array_item_to_typed_array_modulator",
-        "Typed array to mesh": "typed_array_to_mesh_modulator",
         "Typed array to texture": "typed_array_to_texture_modulator",
         "Get typed array": "typed_array_get_modulator",
         "Get typed array as": "typed_array_get_as_modulator",
@@ -294,6 +294,10 @@
     "VIDEO TOOLS": {
         "Duration": "video_get_duration_modulator",
         "Current time": "video_get_current_time_modulator"
+    },
+
+    "EXPERIMENTAL" : {
+        "Stereo Cube Map": "stereo_cube_map"
     }
 
 

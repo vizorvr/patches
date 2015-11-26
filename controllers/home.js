@@ -5,8 +5,11 @@
 exports.index = function(req, res)
 {
 	res.render('home', {
-		layout: 'home',
-		title: 'Vizor'
+		layout: 'main',
+		meta : {
+			bodyclass : 'bHome',
+			noheader: true
+		}
 	});
 }
 

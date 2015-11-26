@@ -36,6 +36,7 @@ THREE.VRControls = function ( object, onError ) {
 	}
 
 	function gotVRDevices( devices ) {
+
 		devices = filterInvalidDevices( devices );
 
 		for ( var i = 0; i < devices.length; i ++ ) {
@@ -64,16 +65,23 @@ THREE.VRControls = function ( object, onError ) {
 
 	this.scale = 1;
 
-	this.update = function (positionOffset) {
+	var tempOrientationQuaternion = new THREE.Quaternion()
+
+	this.update = function (positionOffset, quaternionOffset) {
 		for ( var i = 0; i < vrInputs.length; i ++ ) {
 
 			var vrInput = vrInputs[ i ];
 
 			var state = vrInput.getState();
 
-			if ( state.orientation !== null ) {
 
-				object.quaternion.copy( state.orientation );
+			if ( state.orientation !== null ) {
+				object.quaternion.copy(quaternionOffset)
+
+				// state is a DOMPoint object by webvr specification, not a three.js Quaternion, so we need to convert to one before multiplying
+				tempOrientationQuaternion.set(state.orientation.x, state.orientation.y, state.orientation.z, state.orientation.w)
+
+				object.quaternion.multiply(tempOrientationQuaternion)
 
 			}
 

@@ -1,0 +1,94 @@
+{
+    "abs_t": 94.241,
+    "active_graph": "root",
+    "graph_uid": "TXDgBc0JJtS3",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 646,
+                "y": 289,
+                "uid": "tdLMZZFKJO5h",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {}
+                },
+                "title": "Play audio",
+                "graph": {
+                    "uid": "zlY3EUtPcyZD",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "audio_source_player",
+                            "x": 1045,
+                            "y": 291,
+                            "uid": "zLm7iqJQF7sB"
+                        },
+                        {
+                            "plugin": "audio_buffer_source_modulator",
+                            "x": 796,
+                            "y": 235,
+                            "uid": "4selAN9HQPSB",
+                            "state": 1
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 597,
+                            "y": 320,
+                            "uid": "RbRoszxhhFZr",
+                            "state": {
+                                "enabled": true
+                            },
+                            "title": "Play"
+                        },
+                        {
+                            "plugin": "url_audio_buffer_generator",
+                            "x": 517,
+                            "y": 223,
+                            "uid": "kuY3VNzJchaE",
+                            "state": {
+                                "url": "/data/audio/ceaba38724a30fbaa0ac85962d58e58952d16c0d.mp3"
+                            },
+                            "title": "The audio file"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "4selAN9HQPSB",
+                            "dst_nuid": "zLm7iqJQF7sB",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "JALdJ2LRgUeg",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "RbRoszxhhFZr",
+                            "dst_nuid": "4selAN9HQPSB",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "TDkW14Gmx2A8",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "kuY3VNzJchaE",
+                            "dst_nuid": "4selAN9HQPSB",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "okHIP2iqBeTu",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                }
+            }
+        ],
+        "conns": []
+    }
+}

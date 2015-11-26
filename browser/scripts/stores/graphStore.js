@@ -177,6 +177,7 @@ GraphStore.prototype._uiConnected = function(graph, connection) {
 	}
 
 	graph.connect(connection)
+
 	this.emit('connected', graph, connection)
 	this.emit('changed')
 }

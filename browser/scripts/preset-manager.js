@@ -5,6 +5,7 @@ function PresetManager(base_url)
 
 	this._base_url = base_url
 	this._presets = []
+	this._objects = []
 
 	this.refresh()
 
@@ -13,8 +14,9 @@ function PresetManager(base_url)
 
 PresetManager.prototype = Object.create(EventEmitter.prototype)
 
-PresetManager.prototype.loadPlugins = function(cb) {
+PresetManager.prototype.loadPlugins = function() {
 	var that = this
+	var dfd = when.defer()
 
 	var data = E2.core.pluginsByCategory
 
@@ -23,26 +25,35 @@ PresetManager.prototype.loadPlugins = function(cb) {
 			that.add(catName, title, 'plugin/'+data[catName][title])
 		})
 	})
-	cb()
+
+	dfd.resolve()
+
+	return dfd.promise
 }
 
-PresetManager.prototype.loadPresets = function(cb) {
+PresetManager.prototype.loadPresets = function() {
 	var that = this
-
-	if (E2.core.presetsByCategory)
-		processPresets(E2.core.presetsByCategory)
+	var dfd = when.defer()
 
 	function processPresets(data) {
 		E2.core.presetsByCategory = data
 
 		Object.keys(data).forEach(function(catName) {
 			Object.keys(data[catName]).forEach(function(title) {
-				that.add(catName, title, that._base_url+'/'+data[catName][title]+'.json')
+				var entry = data[catName][title]
+				var name = entry.name
+				that.add(catName, title, that._base_url+'/'+name+'.json')
+
+				if (entry.isObject3d)
+					that.addObject3d(catName, title, that._base_url+'/'+name+'.json')
 			})
 		})
 
-		cb()
+		dfd.resolve()
 	}
+
+	if (E2.core.presetsByCategory)
+		return processPresets(E2.core.presetsByCategory)
 
 	$.ajax({
 		url: this._base_url + '/presets.json',
@@ -51,71 +62,107 @@ PresetManager.prototype.loadPresets = function(cb) {
 	.done(processPresets)
 	.fail(function() {
 		msg('ERROR: PresetsMgr: No presets found.')
+		dfd.reject('ERROR: PresetsMgr: No presets found.')
 	})
+
+	return dfd.promise
 }
 
-PresetManager.prototype.loadUserPresets = function(cb) {
+PresetManager.prototype.loadUserPresets = function() {
 	var that = this
+	var dfd = when.defer()
+
 	var username = E2.models.user.get('username')
-	if (!username)
-		return cb()
+	if (!username) {
+		dfd.resolve()
+	} else {
+		$.get('/'+username+'/presets', function(presets) {
+			var cat = 'MY PRESETS'
 
-	$.get('/'+username+'/presets', function(presets) {
-		var cat = 'MY PRESETS'
+			presets.forEach(function(preset) {
+				that.add(cat, preset.name, preset.url)
+			})
 
-		presets.forEach(function(preset) {
-			that.add(cat, preset.name, preset.url)
+			dfd.resolve()
 		})
+	}
 
-		cb()
-	})
+	return dfd.promise
 }
 
 PresetManager.prototype.refresh = function() {
 	var that = this
 
-	this.loadUserPresets(function() {
-		that.loadPresets(function() {
-			that.loadPlugins(function() {
-				that.render()
-			})
-		})
+	this._presets = []
+
+	this.loadUserPresets()
+	.then(function() {
+		return that.loadPresets()
+	})
+	.then(function() {
+		return that.loadPlugins()
+	})
+	.then(function() {
+		that.renderPresets()
+		that.renderObjects()
 	})
 }
 
-PresetManager.prototype.render = function()
-{
-	var that = this
+PresetManager.prototype.onOpen = function(path) {
+	if (path.indexOf('plugin/') === 0) {
+		return this.openPlugin(path);
+	}
 
+	this.openPreset(path)
+}
+
+PresetManager.prototype.renderPresets = function() {
 	E2.dom.presets_list.empty()
 
 	new CollapsibleSelectControl()
 	.data(this._presets)
 	.template(E2.views.presets.presets)
 	.render(E2.dom.presets_list)
-	.onOpen(function(path) {
-		if (path.indexOf('plugin/') === 0) {
-			return that.openPlugin(path);
-		}
-
-		msg('Loading preset from: ' + path);
-
-		that.openPreset(path)
-	})
+	.onOpen(this.onOpen.bind(this))
 	
 	var presetSearch = $('#presets-lib .searchbox input');
 	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui));
 }
 
+PresetManager.prototype.renderObjects = function() {
+	E2.dom.objectsList.empty()
+
+	new CollapsibleSelectControl()
+	.data(this._objects)
+	.template(E2.views.presets.presets)
+	.render(E2.dom.objectsList)
+	.onOpen(this.onOpen.bind(this))
+	
+	var objectSearch = $('.searchbox input', E2.dom.objectsList);
+	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui));
+}
+
 PresetManager.prototype.openPreset = function(name) {
 	$.get(name)
 	.done(function(data) {
+		mixpanel.track('Preset Added', {
+			name: name
+		})
+
 		E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0)
-		E2.app.onPaste({ target: { id: 'notpersist' }})
+		E2.app.onPaste()
 	})
 	.fail(function(_j, _textStatus, _errorThrown) {
 		msg('ERROR: Failed to load the selected preset.')
 		console.error(_errorThrown)
+	})
+}
+
+PresetManager.prototype.addObject3d = function(category, title, path) {
+	this._objects.push({
+		category: category, 
+		title: title,
+		path: path
 	})
 }
 
