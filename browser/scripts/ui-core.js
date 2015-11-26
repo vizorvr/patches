@@ -18,6 +18,7 @@ var uiKeys = {
 	focusPresetSearch: 191,			//	/
 	focusPresetSearchAlt: 81,		//  q
 	viewSource:		220,			//	\
+	setVRCameraPositionToEditorCameraPosition: 187,		// =
 
 	modifyModeMove	: 77,			// m
 	modifyModeScale : 83,			// s

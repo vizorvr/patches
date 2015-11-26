@@ -659,7 +659,19 @@ VizorUI.openEditorHelp = function() {
 				modifiedKeyCode -= mod_shift;
 			}
 
-			key = String.fromCharCode(modifiedKeyCode);
+			var keyCodeMap = {	// keys without shift
+				186: 59,
+				187: 61,
+				188: 63,
+				189: 45,
+				190: 62,
+				191: 47,
+				192: 96,
+				219: 91,
+				220: 92,
+				221: 93,
+				222: 39
+			}
 			switch (modifiedKeyCode) {
 				case 9:
 					add('tab');
@@ -670,16 +682,11 @@ VizorUI.openEditorHelp = function() {
 				case 32:
 					add('space');
 					break;
-				case 191:
-					add('/')
-					break;
-				case 220:
-					add('\\');
-					break;
 				case 0:		// modifier keys only
 					break;
 				default:
-					add(key);
+					if (keyCodeMap[modifiedKeyCode]) modifiedKeyCode = keyCodeMap[modifiedKeyCode]	// .fromCharCode misses these
+					add(String.fromCharCode(modifiedKeyCode));
 			}
 		}
 		return html.join(" + ");
