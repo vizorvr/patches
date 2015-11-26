@@ -250,6 +250,7 @@ body.bEditor {
 	.modal-dialog {
 	  width: 700px;
 	  max-width: 95%;
+	  margin-top: 70px;
 	}
 	.modal-dialog .modal-content .modal-body div.bootbox-body {
 	  text-align: left;
@@ -264,6 +265,9 @@ body.bEditor {
 	}
 	dl {
 	  .clearfix;
+	  &:last-of-type {
+		margin-bottom: 0;
+	  }
 	}
 	dt, dd {
 	  line-height: 1.5em;
@@ -284,11 +288,11 @@ body.bEditor {
 	  margin-left: 66%;
 	  font-weight: 400;
 	  span {
-//		border: 1px solid rgba(255,255,255,0.7);
 		background: rgba(255,255,255,0.5);
 		color: #000;
 		border-radius: 3px 3px;
 		padding: 1px 5px;
+		margin: 0 1px;
 		text-transform: capitalize;
 		&.modifier {
 		  border: 1px solid rgba(255,255,255,0.5);
