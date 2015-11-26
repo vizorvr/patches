@@ -37,8 +37,11 @@
 		})
 
 		this.defaultObj = new THREE.Mesh(
-			new THREE.BoxGeometry(100, 100, 100),
+			new THREE.BoxGeometry(50, 50, 50),
 			defMaterial)
+		
+		this.leftChannel = 1
+		this.rightChannel = 2
 
 	}
 
@@ -76,14 +79,16 @@
 			var leftTexture = new THREE.CubeTexture(textures.splice(0, 6))
 			leftTexture.needsUpdate = true
 
-			var leftShader = THREE.ShaderLib['cube']
-			leftShader.uniforms['tCube'].value = leftTexture
-			leftShader.uniforms['tFlip'].value = 1
+			var shader = THREE.ShaderLib['cube']
+
+			var leftUniforms = {
+				"tCube": { type: "t", value: leftTexture },
+				"tFlip": { type: "f", value: 1 } }
 
 			var leftMaterial = new THREE.ShaderMaterial({
-				fragmentShader: leftShader.fragmentShader,
-				vertexShader: leftShader.vertexShader,
-				uniforms: leftShader.uniforms,
+				fragmentShader: shader.fragmentShader,
+				vertexShader: shader.vertexShader,
+				uniforms: leftUniforms,
 				depthWrite: false,
 				side: THREE.DoubleSide
 			})
@@ -92,20 +97,20 @@
 					new THREE.BoxGeometry(50, 50, 50),
 					leftMaterial)
 
-			that.leftObj.channels.set(1)
+			that.leftObj.channels.set(that.leftChannel)
 
 			// right eye
 			var rightTexture = new THREE.CubeTexture(textures.splice(0, 6))
 			rightTexture.needsUpdate = true
 
-			var rightShader = THREE.ShaderLib['cube']
-			rightShader.uniforms['tCube'].value = rightTexture
-			rightShader.uniforms['tFlip'].value = 1
+			var rightUniforms = {
+				"tCube": { type: "t", value: rightTexture },
+				"tFlip": { type: "f", value: 1 } }
 
 			var rightMaterial = new THREE.ShaderMaterial({
-				fragmentShader: rightShader.fragmentShader,
-				vertexShader: rightShader.vertexShader,
-				uniforms: rightShader.uniforms,
+				fragmentShader: shader.fragmentShader,
+				vertexShader: shader.vertexShader,
+				uniforms: rightUniforms,
 				depthWrite: false,
 				side: THREE.DoubleSide
 			})
@@ -114,7 +119,7 @@
 				new THREE.BoxGeometry(50, 50, 50),
 				rightMaterial)
 
-			that.rightObj.channels.set(2)
+			that.rightObj.channels.set(that.rightChannel)
 
 			that.updated = true
 		},
