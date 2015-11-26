@@ -4,16 +4,19 @@
 
 		this.desc = 'Stereo Cube Map'
 
-		this.input_slots = []
+		this.input_slots = [
+			{
+				name: 'url',
+				dt: core.datatypes.TEXT,
+				def: ''
+			}
+		]
 
 		this.output_slots = [
 			{
-				name: 'left cube',
-				dt: core.datatypes.OBJECT3D
-			},
-			{
-				name: 'right cube',
-				dt: core.datatypes.OBJECT3D
+				name: 'cube',
+				dt: core.datatypes.OBJECT3D,
+				array: true
 			}
 		]
 
@@ -41,11 +44,7 @@
 
 	StereoCubeMapPlugin.prototype = Object.create(Plugin.prototype)
 
-
-	StereoCubeMapPlugin.prototype.createTextures = function() {
-		var url = 'https://vr1.otoycdn.net/vr/pano/5542_3A5ABDE6-26A5-4EDC-8E00-CF0C2CE475FE_pano.png'
-		//var url = 'https://labs.chaosgroup.com/wp-content/uploads/2015/07/Construct_ImminentCollision.jpg'
-
+	StereoCubeMapPlugin.prototype.loadTextures = function() {
 		var textures = []
 
 		var loader = new THREE.ImageLoader( THREE.DefaultLoadingManager );
@@ -53,7 +52,7 @@
 
 		var that = this
 
-		loader.load( url, function ( img ) {
+		loader.load( this.url, function ( img ) {
 			var imageWidth = img.width
 			var imageHeight = img.height
 
@@ -116,12 +115,8 @@
 			that.rightObj.channels.set(2)
 
 			that.updated = true
-
-			console.log('loaded ' + url)
 		},
-		function(x) {
-			console.log('loading ' + url, x)
-		},
+		undefined,
 		function(e) {
 			console.log('failed to load ' + url, e)
 		})
@@ -131,17 +126,28 @@
 
 	}
 
+	StereoCubeMapPlugin.prototype.update_input = function(slot, data) {
+		if (slot.name === 'url' && this.url !== data) {
+			delete this.leftObj
+			delete this.rightObj
+
+			this.url = data
+
+			this.loadTextures()
+		}
+	}
+
 	StereoCubeMapPlugin.prototype.update_output = function(slot) {
 		if (this.leftObj === undefined) {
-			return this.defaultObj
+			return [this.defaultObj]
 		}
 
-		return slot.index === 0 ? this.leftObj : this.rightObj
+		return [this.leftObj, this.rightObj]
 	}
 
 	StereoCubeMapPlugin.prototype.state_changed = function(ui) {
 		if (!ui) {
-			this.createTextures()
+			this.loadTextures()
 		}
 	}
 })()
