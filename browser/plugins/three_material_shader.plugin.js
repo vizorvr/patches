@@ -181,6 +181,10 @@
 					three_dt = 't'
 					shader_dt = 'sampler2D'
 				}
+				else if(dtid === dts.CUBETEXTURE.id) {
+					three_dt = 't'
+					shader_dt = 'samplerCube'
+				}
 				else if(dtid === dts.COLOR.id) {
 					three_dt = 'v4'
 					shader_dt = 'vec4'

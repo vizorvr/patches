@@ -134,7 +134,9 @@ function Core() {
 		
 		VECTOR4: { id: 22, name: 'Vector 4' },
 
-		ENVIRONMENTSETTINGS: { id: 23, name: 'Environment Settings' }
+		ENVIRONMENTSETTINGS: { id: 23, name: 'Environment Settings' },
+
+		CUBETEXTURE: { id: 24, name: 'CubeTexture' },
 	}
 
 	this.renderer = { // compat for old plugins

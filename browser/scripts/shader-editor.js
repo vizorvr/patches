@@ -6,6 +6,7 @@ function addInputDialog(cb) {
 	var validDatatypes = {
 		FLOAT: E2.dt.FLOAT,
 		TEXTURE: E2.dt.TEXTURE,
+		CUBETEXTURE: E2.dt.CUBETEXTURE,
 		COLOR: E2.dt.COLOR,
 		MATRIX: E2.dt.MATRIX,
 		VECTOR: E2.dt.VECTOR,
