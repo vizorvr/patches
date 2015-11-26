@@ -78,6 +78,7 @@
 
 			var leftShader = THREE.ShaderLib['cube']
 			leftShader.uniforms['tCube'].value = leftTexture
+			leftShader.uniforms['tFlip'].value = 1
 
 			var leftMaterial = new THREE.ShaderMaterial({
 				fragmentShader: leftShader.fragmentShader,
@@ -99,6 +100,7 @@
 
 			var rightShader = THREE.ShaderLib['cube']
 			rightShader.uniforms['tCube'].value = rightTexture
+			rightShader.uniforms['tFlip'].value = 1
 
 			var rightMaterial = new THREE.ShaderMaterial({
 				fragmentShader: rightShader.fragmentShader,
