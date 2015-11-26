@@ -61,6 +61,8 @@
 					this.domElement.clientWidth / this.domElement.clientHeight,
 					0.001,
 					1000)
+
+			this.perspectiveCamera.channels.enable(1)
 		}
 
 		// create a object3d reference so that the world editor sees the camera

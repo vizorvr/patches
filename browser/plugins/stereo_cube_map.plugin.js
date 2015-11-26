@@ -8,14 +8,35 @@
 
 		this.output_slots = [
 			{
-				name: 'texture',
-				dt: core.datatypes.CUBETEXTURE
+				name: 'left cube',
+				dt: core.datatypes.OBJECT3D
+			},
+			{
+				name: 'right cube',
+				dt: core.datatypes.OBJECT3D
 			}
 		]
 
-		var deftex = core.textureCache.defaultTexture
+		var deftex = core.textureCache.defaultTexture.image
 
-		this.defaultTexture = new THREE.CubeTexture([deftex, deftex, deftex, deftex, deftex, deftex])
+		var defTexture = new THREE.CubeTexture([deftex, deftex, deftex, deftex, deftex, deftex])
+		defTexture.needsUpdate = true
+
+		var defShader = THREE.ShaderLib['cube']
+		defShader.uniforms['tCube'].value = defTexture
+
+		var defMaterial = new THREE.ShaderMaterial({
+			fragmentShader: defShader.fragmentShader,
+			vertexShader: defShader.vertexShader,
+			uniforms: defShader.uniforms,
+			depthWrite: false,
+			side: THREE.BackSide
+		})
+
+		this.defaultObj = new THREE.Mesh(
+			new THREE.BoxGeometry(100, 100, 100),
+			defMaterial)
+
 	}
 
 	StereoCubeMapPlugin.prototype = Object.create(Plugin.prototype)
@@ -52,13 +73,51 @@
 				textures.push(tileCanvas)
 			}
 
-			that.left_texture = new THREE.CubeTexture(textures.splice(0, 6))
-			that.left_texture.needsUpdate = true
+			// left eye
+			var leftTexture = new THREE.CubeTexture(textures.splice(0, 6))
+			leftTexture.needsUpdate = true
 
-			that.right_texture = new THREE.CubeTexture(textures.splice(0, 6))
-			that.right_texture.needsUpdate = true
+			var leftShader = THREE.ShaderLib['cube']
+			leftShader.uniforms['tCube'].value = leftTexture
+
+			var leftMaterial = new THREE.ShaderMaterial({
+				fragmentShader: leftShader.fragmentShader,
+				vertexShader: leftShader.vertexShader,
+				uniforms: leftShader.uniforms,
+				depthWrite: false,
+				side: THREE.DoubleSide
+			})
+
+			that.leftObj = new THREE.Mesh(
+					new THREE.BoxGeometry(50, 50, 50),
+					leftMaterial)
+
+			that.leftObj.channels.set(1)
+
+			// right eye
+			var rightTexture = new THREE.CubeTexture(textures.splice(0, 6))
+			rightTexture.needsUpdate = true
+
+			var rightShader = THREE.ShaderLib['cube']
+			rightShader.uniforms['tCube'].value = rightTexture
+
+			var rightMaterial = new THREE.ShaderMaterial({
+				fragmentShader: rightShader.fragmentShader,
+				vertexShader: rightShader.vertexShader,
+				uniforms: rightShader.uniforms,
+				depthWrite: false,
+				side: THREE.DoubleSide
+			})
+
+			that.rightObj = new THREE.Mesh(
+				new THREE.BoxGeometry(50, 50, 50),
+				rightMaterial)
+
+			that.rightObj.channels.set(2)
 
 			that.updated = true
+
+			console.log('loaded ' + url)
 		},
 		function(x) {
 			console.log('loading ' + url, x)
@@ -72,8 +131,12 @@
 
 	}
 
-	StereoCubeMapPlugin.prototype.update_output = function() {
-		return this.left_texture ? this.left_texture : this.defaultTexture
+	StereoCubeMapPlugin.prototype.update_output = function(slot) {
+		if (this.leftObj === undefined) {
+			return this.defaultObj
+		}
+
+		return slot.index === 0 ? this.leftObj : this.rightObj
 	}
 
 	StereoCubeMapPlugin.prototype.state_changed = function(ui) {
