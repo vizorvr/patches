@@ -16,6 +16,8 @@ function load()
 			play()
 		}
 
+		mixpanel.track('Player Opened')
+
 		$(window).trigger('vizorLoaded')
 	});
 }

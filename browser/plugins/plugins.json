@@ -189,6 +189,9 @@
 
     "INPUT METHODS": {
         "Key press": "key_press_generator",
+        "Touching": "touching_generator",
+        "Touch Start": "touch_start_generator",
+        "Touch End": "touch_end_generator",
         "Mouse buttons": "mouse_button_generator",
         "Mouse position": "mouse_position_generator",
         "Mouse wheel": "mouse_wheel_generator",
@@ -294,6 +297,10 @@
     "VIDEO TOOLS": {
         "Duration": "video_get_duration_modulator",
         "Current time": "video_get_current_time_modulator"
+    },
+
+    "EXPERIMENTAL" : {
+        "Stereo Cube Map": "stereo_cube_map"
     }
 
 

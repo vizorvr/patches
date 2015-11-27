@@ -46,6 +46,8 @@
 
 		this.rotationFromGraph = new THREE.Euler()
 		this.positionFromGraph = new THREE.Vector3()
+
+		this.perspectiveCameraRotationEuler = new THREE.Euler()
 	}
 
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
@@ -61,6 +63,8 @@
 					this.domElement.clientWidth / this.domElement.clientHeight,
 					0.001,
 					1000)
+
+			this.perspectiveCamera.channels.enable(1)
 		}
 
 		// create a object3d reference so that the world editor sees the camera
@@ -112,6 +116,8 @@
 		this.perspectiveCamera.updateMatrixWorld()
 
 		this.controls.update(this.perspectiveCamera.position.clone(), this.perspectiveCamera.quaternion.clone())
+
+		this.updated = true
 	}
 
 	ThreeVRCameraPlugin.prototype.update_input = function(slot, data) {
@@ -157,8 +163,8 @@
 			return this.perspectiveCamera.position
 		}
 		else if (slot.index === 2) { // rotation
-			var euler = new THREE.Euler().setFromQuaternion(this.perspectiveCamera.quaternion)
-			return new THREE.Vector3(euler.x, euler.y, euler.z)
+			this.perspectiveCameraRotationEuler.setFromQuaternion(this.perspectiveCamera.quaternion)
+			return this.perspectiveCameraRotationEuler
 		}
 	}
 

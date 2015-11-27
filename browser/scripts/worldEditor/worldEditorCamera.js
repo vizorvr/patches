@@ -9,6 +9,8 @@ function WorldEditorCamera(domElement) {
 	this.perspectiveCamera.position.set(5, 5, 5)
 	this.perspectiveCamera.lookAt(new THREE.Vector3(0,0,0))
 
+	this.perspectiveCamera.channels.enable(1)
+
 	E2.core.on('resize', this.resize.bind(this))
 }
 

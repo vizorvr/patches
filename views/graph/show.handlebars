@@ -1,38 +1,40 @@
 {{> srv/siteSvgSprite }}
-<header id="topbar" class="clearfix">
-    <h1 id="logo_h">
-        <span id="load_spinner"></span>
-        <a href="/"><svg alt="Vizor logo" style="width:64px; height:24px; fill:#eee;"><use xlink:href="#vizor-top-logo"></use></svg></a>
-    </h1>
-    <div class="controls">
-        <button id="fullscreen" data-tooltip="Enter full screen" class="svg">
-            <svg alt="Enter full screen"><use xlink:href="#icon-fullscreen"></use></svg>
-        </button>
-        <button id="edit" data-tooltip="Edit graph" class="svg">
-            <svg alt="Edit graph"><use xlink:href="#player-pencil"></use></svg>
-        </button>
-    </div>
-    <h2 id="graph_heading">
-        <span class="title">{{graph.name}}</span>
-        by
-        <span class="author">{{graph.owner}}</span>
-    </h2>
+<div id="playerWrap">
+<header id="topbar" class="clearfix" style="height:58px;">
+	<h1 id="logo_h">
+		<span id="load_spinner"></span>
+		<a href="/"><svg alt="Vizor logo" style="width:64px; height:24px; fill:#eee;"><use xlink:href="#vizor-top-logo"></use></svg></a>
+	</h1>
+	<div class="controls">
+		<button id="fullscreen" data-tooltip="Enter full screen" class="svg">
+			<svg alt="Enter full screen"><use xlink:href="#icon-fullscreen"></use></svg>
+		</button>
+		<button id="edit" data-tooltip="Edit graph" class="svg">
+			<svg alt="Edit graph"><use xlink:href="#player-pencil"></use></svg>
+		</button>
+	</div>
+	<h2 id="graph_heading">
+		<span class="title">{{graph.name}}</span>
+		by
+		<span class="author">{{graph.owner}}</span>
+	</h2>
+	<div class="progress" style="display:none">
+		<div class="progress-bar" style="width: 00%;"></div>
+	</div>
 </header>
-<div class="stage--front" style="height:100%; width:100%;">
+<div id="stage" class="stage--front" style="min-height: 100px; background: #666;">
 	<canvas
-        style="display:none;"
+		style="display: none;"
 		id="webgl-canvas"
 		class="webgl-canvas-normal"
-		width="1400px"
-		height="700px"
+		width="100%"
+		height="100%"
 		oncontextmenu="return false;"
 		data-autoplay="true"
 		data-graph-url="{{graphMinUrl}}">
 	>
 	</canvas>
-	<div class="progress" style="display:none">
-		<div class="progress-bar" style="width: 00%;"></div>
-	</div>
+</div>
 </div>
 <script>
     var have_webgl = (function(){   // http://www.browserleaks.com/webgl#howto-detect-webgl
@@ -51,38 +53,13 @@
     function initPlayer() {
         var $canvas = $('#webgl-canvas')
         $canvas.css({display: 'block'});
-        var $window = $(window)
-        var $stage = $('.stage--front')
-        var footerHeight = 76
+        var $stage = $('#stage')
 
         window.Vizor = {
             hideWebVRButton: true
         }
 
-        function onResize() {
-            setTimeout(function() {
-                var width = $window.width()
-                var height = $window.height()
-                var devicePixelRatio = window.devicePixelRatio || 1;
-                var pixelRatioAdjustedWidth = devicePixelRatio * width;
-                var pixelRatioAdjustedHeight = devicePixelRatio * height;
-
-                $canvas[0].width = pixelRatioAdjustedWidth
-                $canvas[0].height = pixelRatioAdjustedHeight
-
-                var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
-
-                if (isFullscreen) {
-                    $canvas.removeClass('webgl-canvas-normal')
-                    $canvas.addClass('webgl-canvas-fs')
-                } else {
-                    $canvas.removeClass('webgl-canvas-fs')
-                    $canvas.addClass('webgl-canvas-normal')
-                }
-
-                E2.core.emit('resize')
-            }, 20)
-        }
+		var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
 
         $('#edit').click(function() {
             window.location = window.location + '/edit'
@@ -92,18 +69,19 @@
             E2.core.emit('fullScreenChangeRequested')
         })
 
-        $(window).on('resize', onResize)
+        $(window).on('resize', onResize);
         $(window).on('vizorLoaded', function() {
             $('#load-spinner').hide()
-
-            E2.app.calculateCanvasArea = function() {
-                return {
-                    width: window.innerWidth,
-                    height: window.innerHeight
+			var $playerContainer = jQuery('#stage');
+			var onResize = VizorUI.makeVRCanvasResizeHandler(jQuery('#webgl-canvas'), $playerContainer);
+            E2.app.isVRCameraActive = function(){return false};	// disable panning on homepage player, see #790
+			E2.app.calculateCanvasArea = function() {
+                return{
+                    width: $playerContainer.innerWidth(),
+                    height: $playerContainer.innerHeight()
                 }
             }
-
-            onResize()
+			onResize();
         })
     }
 
