@@ -90,11 +90,10 @@ var siteUI = new function() {
 
 			E2.app.isVRCameraActive = function(){return false};	// disable panning on homepage player, see #790
 			E2.app.calculateCanvasArea = function() {
-                var ret = {
+                return{
                     width: $homePlayerContainer.innerWidth(),
                     height: $homePlayerContainer.innerHeight()
                 }
-				return ret;
             }
 			onResize();
 		});

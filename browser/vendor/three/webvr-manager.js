@@ -1202,19 +1202,30 @@ WebVRManager.prototype.resizeIfNeeded_ = function(camera) {
   var size = this.renderer.getSize();
 
   // gm #896
-  var container = (this.renderer.domElement) ? this.renderer.domElement.parentNode : window;
-  var w = container.innerWidth || container.clientWidth;
-  var h = container.innerHeight || container.clientHeight;
+  var container, width, height;
+  if (this.renderer.domElement) {
+	  container = this.renderer.domElement.parentNode;
+	  width = container.clientWidth;
+	  height = container.clientHeight
+	  if (!width || !height) {	// fullscreen
+		  width = window.innerWidth;
+		  height = window.innerHeight;
+	  }
+  } else {
+	  container = window;
+	  width = container.innerWidth;
+	  height = container.innerHeight;
+  }
 
-  if ( size.width != w || size.height != h) {
-    camera.aspect = w / h;
+  if ( size.width != width || size.height != height) {
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    this.resize_()
+    this.resize_(width, height)
   }
 };
 
-WebVRManager.prototype.resize_ = function() {
-  this.effect.setSize(window.innerWidth, window.innerHeight);
+WebVRManager.prototype.resize_ = function(width, height) {
+  this.effect.setSize(width, height);
 };
 
 WebVRManager.prototype.onOrientationChange_ = function(e) {
