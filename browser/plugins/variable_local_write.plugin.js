@@ -32,9 +32,9 @@ VariableLocalWrite.prototype.renamed = function() {
 }
 
 VariableLocalWrite.prototype.connection_changed = function(on, conn) {
-	var reg_conn_count = this.variables.connection_changed(this.node.title, on)
+	this.variables.connection_changed(this.node.title, on)
 
-	if(on && reg_conn_count === 1)
+	if (this.dt.id === E2.dt.ANY.id)
 		this.variables.set_datatype(this.node.title, conn.src_slot.dt, conn.src_slot.array)
 }
 
@@ -66,14 +66,12 @@ VariableLocalWrite.prototype.state_changed = function(ui) {
 			})
 
 			inputs = this.node.getDynamicInputSlots()
-		} else {
-			this.dt = inputs[0].dt
-			this.variables.set_datatype(this.node.title, this.dt, inputs[0].array)
 		}
 
+		this.dt = inputs[0].dt
 		this.slotId = inputs[0].uid
-
 		this.target_reg(this.node.title)
+		this.variables.set_datatype(this.node.title, this.dt, inputs[0].array)
 	}
 }
 
