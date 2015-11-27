@@ -1200,8 +1200,14 @@ WebVRManager.prototype.anyModeToNormal = function() {
 WebVRManager.prototype.resizeIfNeeded_ = function(camera) {
   // Only resize the canvas if it needs to be resized.
   var size = this.renderer.getSize();
-  if (size.width != window.innerWidth || size.height != window.innerHeight) {
-    camera.aspect = window.innerWidth / window.innerHeight;
+
+  // gm #896
+  var container = (this.renderer.domElement) ? this.renderer.domElement.parentNode : window;
+  var w = container.innerWidth || container.clientWidth;
+  var h = container.innerHeight || container.clientHeight;
+
+  if ( size.width != w || size.height != h) {
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
     this.resize_()
   }

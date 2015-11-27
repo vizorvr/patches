@@ -83,17 +83,18 @@ var siteUI = new function() {
 			return false;
 		});
 
-		var $getStarted = jQuery('section#getstarted').first();
-		var onResize = VizorUI.makeVRCanvasResizeHandler(jQuery('#webgl-canvas'), $getStarted);
+		var $homePlayerContainer = jQuery('#player_home');
+		var onResize = VizorUI.makeVRCanvasResizeHandler(jQuery('#webgl-canvas'), $homePlayerContainer);
 		$(window).on('resize', onResize);
 		$(window).on('vizorLoaded', function() {
 
 			E2.app.isVRCameraActive = function(){return false};	// disable panning on homepage player, see #790
 			E2.app.calculateCanvasArea = function() {
-                return {
-                    width: $getStarted.innerWidth(),
-                    height: $getStarted.innerHeight()
+                var ret = {
+                    width: $homePlayerContainer.innerWidth(),
+                    height: $homePlayerContainer.innerHeight()
                 }
+				return ret;
             }
 			onResize();
 		});
@@ -142,30 +143,32 @@ jQuery('document').ready(siteUI.init);
 if (typeof VizorUI === 'undefined') var VizorUI = {};
 
 VizorUI.makeVRCanvasResizeHandler = function($playerCanvas, $containerRef) {
-	if (typeof $containerRef === 'undefined') $containerRef = jQuery(window);
+	if (typeof $containerRef === 'undefined') {
+		msg("ERROR: - using window for $containerRef");
+		$containerRef = jQuery(window);
+	}
 	return function() {
-		setTimeout(function() {
-			var width = $containerRef.width()
-			var height = $containerRef.height()
-			var devicePixelRatio = window.devicePixelRatio || 1;
-			var pixelRatioAdjustedWidth = devicePixelRatio * width;
-			var pixelRatioAdjustedHeight = devicePixelRatio * height;
+		var width = $containerRef.outerWidth()
+		var height = $containerRef.outerHeight()
+		var devicePixelRatio = window.devicePixelRatio || 1;
+		var pixelRatioAdjustedWidth = devicePixelRatio * width;
+		var pixelRatioAdjustedHeight = devicePixelRatio * height;
 
-			$playerCanvas[0].width = pixelRatioAdjustedWidth
-			$playerCanvas[0].height = pixelRatioAdjustedHeight
+		$playerCanvas
+			.width(pixelRatioAdjustedWidth)
+			.height(pixelRatioAdjustedHeight);
 
-			var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
-			if (isFullscreen) {
-				$playerCanvas.removeClass('webgl-canvas-normal')
-				$playerCanvas.addClass('webgl-canvas-fs')
-			} else {
-				$playerCanvas.removeClass('webgl-canvas-fs')
-				$playerCanvas.addClass('webgl-canvas-normal')
-			}
+		if (isFullscreen) {
+			$playerCanvas.removeClass('webgl-canvas-normal')
+			$playerCanvas.addClass('webgl-canvas-fs')
+		} else {
+			$playerCanvas.removeClass('webgl-canvas-fs')
+			$playerCanvas.addClass('webgl-canvas-normal')
+		}
 
-			E2.core.emit('resize')
-		}, 20)
+		E2.core.emit('resize')
 	};
 }
 
