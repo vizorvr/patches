@@ -10,8 +10,7 @@ Variables.prototype.lock = function(plugin, name, connections) {
 		this.variables[name].ref_count++
 		if (connections > 0)
 			this.variables[name].connections += connections
-	}
-	else
+	} else {
 		this.variables[name] = {
 			dt: E2.dt.ANY,
 			value: null,
@@ -19,6 +18,7 @@ Variables.prototype.lock = function(plugin, name, connections) {
 			ref_count: 1,
 			connections: 0
 		}
+	}
 	
 	var u = this.variables[name].users
 	
