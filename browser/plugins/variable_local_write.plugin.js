@@ -19,7 +19,7 @@ VariableLocalWrite.prototype.reset = function() {
 }
 
 VariableLocalWrite.prototype.destroy = function() {
-	this.regs.unlock(this, this.node.title)
+	this.variables.unlock(this, this.node.title)
 }
 
 VariableLocalWrite.prototype.variable_dt_changed = function(dt, arrayness) {
@@ -27,27 +27,27 @@ VariableLocalWrite.prototype.variable_dt_changed = function(dt, arrayness) {
 }
 
 VariableLocalWrite.prototype.renamed = function() {
-	this.regs.unlock(this, this.old_title)
+	this.variables.unlock(this, this.old_title)
 	this.target_reg(this.node.title)
 }
 
 VariableLocalWrite.prototype.connection_changed = function(on, conn) {
-	var reg_conn_count = this.regs.connection_changed(this.node.title, on)
+	var reg_conn_count = this.variables.connection_changed(this.node.title, on)
 
 	if(on && reg_conn_count === 1)
-		this.regs.set_datatype(this.node.title, conn.src_slot.dt, conn.src_slot.array)
+		this.variables.set_datatype(this.node.title, conn.src_slot.dt, conn.src_slot.array)
 }
 
 VariableLocalWrite.prototype.update_input = function(slot, data) {
-	this.regs.write(this.node.title, data)
+	this.variables.write(this.node.title, data)
 }
 
 VariableLocalWrite.prototype.target_reg = function(id) {
 	var dslot = this.node.find_dynamic_slot(E2.slot_type.input, this.slotId)
 	
-	this.regs.lock(this, id, this.node.getConnections().length)
+	this.variables.lock(this, id, this.node.getConnections().length)
 
-	var r = this.regs.variables[id]
+	var r = this.variables.variables[id]
 	
 	if (r.dt.id !== this.core.datatypes.ANY.id)
 		this.variable_dt_changed(dslot.dt, r.array)
@@ -55,21 +55,25 @@ VariableLocalWrite.prototype.target_reg = function(id) {
 
 VariableLocalWrite.prototype.state_changed = function(ui) {
 	if (!ui) {
-		var n = this.node
 		var inputs = this.node.getDynamicInputSlots()
+		this.variables = this.node.parent_graph.variables
 
-		if (!inputs.length)
+		if (!inputs.length) {
 			this.node.add_slot(E2.slot_type.input, {
 				name: 'value',
 				dt: this.core.datatypes.ANY,
 				desc: ''
 			})
 
-		inputs = this.node.getDynamicInputSlots()
+			inputs = this.node.getDynamicInputSlots()
+		} else {
+			this.dt = inputs[0].dt
+			this.variables.set_datatype(this.node.title, this.dt, inputs[0].array)
+		}
+
 		this.slotId = inputs[0].uid
 
-		this.regs = n.parent_graph.variables
-		this.target_reg(n.title)
+		this.target_reg(this.node.title)
 	}
 }
 

@@ -65,8 +65,8 @@ VariableLocalRead.prototype.target_reg = function(id) {
 
 VariableLocalRead.prototype.state_changed = function(ui) {
 	if (!ui) {
-		var n = this.node
 		var outputs = this.node.getDynamicOutputSlots()
+		this.variables = this.node.parent_graph.variables
 
 		if (!outputs.length) {
 			this.node.add_slot(E2.slot_type.output, {
@@ -74,13 +74,16 @@ VariableLocalRead.prototype.state_changed = function(ui) {
 				dt: this.core.datatypes.ANY,
 				desc: ''
 			})
+	
+			outputs = this.node.getDynamicOutputSlots()
+		} else {
+			this.dt = outputs[0].dt
+			this.variables.set_datatype(this.node.title, this.dt, outputs[0].array)
 		}
 
-		outputs = this.node.getDynamicOutputSlots()
 		this.slotId = outputs[0].uid
 
-		this.variables = n.parent_graph.variables
-		this.target_reg(n.title)
+		this.target_reg(this.node.title)
 	}
 }
 
