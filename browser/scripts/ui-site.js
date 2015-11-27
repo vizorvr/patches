@@ -148,8 +148,8 @@ VizorUI.makeVRCanvasResizeHandler = function($playerCanvas, $containerRef) {
 		$containerRef = jQuery(window);
 	}
 	return function() {
-		var width = $containerRef.outerWidth()
-		var height = $containerRef.outerHeight()
+		var width = $containerRef.innerWidth()
+		var height = $containerRef.innerHeight()
 		var devicePixelRatio = window.devicePixelRatio || 1;
 		var pixelRatioAdjustedWidth = devicePixelRatio * width;
 		var pixelRatioAdjustedHeight = devicePixelRatio * height;
