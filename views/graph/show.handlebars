@@ -1,6 +1,6 @@
 {{> srv/siteSvgSprite }}
-<div id="playerWrap" style="position: fixed; top:0; bottom:0; left: 0; right:0; display:flex; flex-direction: column;">
-<header id="topbar" class="clearfix" style="flex: 0 1 auto; order: 1; height:58px;">
+<div id="playerWrap">
+<header id="topbar" class="clearfix" style="height:58px;">
 	<h1 id="logo_h">
 		<span id="load_spinner"></span>
 		<a href="/"><svg alt="Vizor logo" style="width:64px; height:24px; fill:#eee;"><use xlink:href="#vizor-top-logo"></use></svg></a>
@@ -22,9 +22,9 @@
 		<div class="progress-bar" style="width: 00%;"></div>
 	</div>
 </header>
-<div id="stage" class="stage--front" style="flex:1; order: 2;">
+<div id="stage" class="stage--front" style="min-height: 100px; background: #666;">
 	<canvas
-        style="display:none;"
+		style="display: none;"
 		id="webgl-canvas"
 		class="webgl-canvas-normal"
 		width="100%"
