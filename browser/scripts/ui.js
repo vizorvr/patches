@@ -699,7 +699,7 @@ VizorUI.openEditorHelp = function() {
 		keys: keyData
 	}
 	var html = E2.views.patch_editor.help_shortcuts(viewData);
-	return VizorUI.modalOpen(html, 'Keyboard shortcuts', 'mHelp mShortcuts')
+	return VizorUI.modalOpen(html, 'Keyboard Shortcuts', 'mHelp mShortcuts')
 
 }
 

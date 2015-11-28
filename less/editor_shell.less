@@ -245,10 +245,11 @@ body.bEditor {
 	}
   }
 
-  div.modal.mHelp {
+  div.modal.mShortcuts {
 	@color-keyboard-shortcuts:  #afbfdf;
 	@color-divider-rule: rgb(34,39,54);
 	font-smoothing: antialiased;
+	abbr {text-decoration: none; border-bottom:0;}
 	.modal-dialog {
 	  width: 700px;
 	  max-width: 95%;
@@ -262,6 +263,9 @@ body.bEditor {
 	  padding: 0 5px 5px 5px;
 	  font-weight: 300;
 	  font-size: 125%;
+	  &:first-of-type {
+		margin-top:0;
+	  }
 	}
 	div.col.left {
 	  border-right: 1px solid @color-divider-rule;
@@ -283,7 +287,7 @@ body.bEditor {
 	}
 	dt, dd {
 	  line-height: 30px;
-	  padding: 5px;
+	  padding: 6px;
 	  margin:0;
 	}
 	dt {
