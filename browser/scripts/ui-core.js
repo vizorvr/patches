@@ -18,7 +18,9 @@ var uiKeys = {
 	focusPresetSearch: 191,			//	/
 	focusPresetSearchAlt: 81,		//  q
 	viewSource:		220,			//	\
-	setVRCameraPositionToEditorCameraPosition: 187,		// =
+	zeroVRCamera: 	187,			// =
+	gotoParentGraph: 188,
+	gotoParentGraphAlt: ',',
 
 	modifyModeMove	: 77,			// m
 	modifyModeScale : 83,			// s
@@ -446,7 +448,7 @@ VizorUI.prototype.onKeyDown = function(e) {
 	switch (keyIdentifier) {
 		case uiKeys.focusChatPanel:		// fallthrough
 		case uiKeys.focusChatPanelAlt:
-			var v = state.visibility.panel_chat = true;
+			state.visibility.panel_chat = true;
 			this.dom.chatWindow.find('#new-message-input').focus();
 
 			e.preventDefault();

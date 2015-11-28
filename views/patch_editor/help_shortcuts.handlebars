@@ -1,62 +1,72 @@
 {{#with this.keys}}
-<dl class="clearfix">
-	<dt>Switch between Build and Program</dt>
-	<dd>{{{toggleMode}}}</dd>
+	<div class="twocol clearfix">
+		<div class="col left">
+			<h3>Global</h3>
 
-	<dt>Switch between VR and Editor camera</dt>
-	<dd>{{{toggleEditorCamera}}}</dd>
+			<dl class="clearfix">
+				<dt>Build / Program</dt>
+				<dd>{{{toggleMode}}}</dd>
 
-	<dt>Copy, Cut, Paste</dt>
-	<dd>{{{mod_ctrl}}} + <span>C</span>, <span>X</span>, <span>V</span></dd>
+				<dt>Editor / VR Camera</dt>
+				<dd>{{{toggleEditorCamera}}}</dd>
 
-	<dt>Undo</dt>
-	<dd>{{{mod_ctrl}}} + <span>Z</span></dd>
+				<dt>Enter fullscreen</dt>
+				<dd>{{{toggleFullScreen}}}</dd>
 
-	<dt>Enter fullscreen (press ESC to exit)</dt>
-	<dd>{{{toggleFullScreen}}}</dd>
-</dl>
+				<dt>Exit fullscreen</dt>
+				<dd><kbd class="wide">Esc</kbd></dd>
 
-<h4><span>Build</span></h4>
-<dl>
-	<dt>Move</dt>
-	<dd>{{{modifyModeMove}}}</dd>
+				<dt>Cut</dt>
+				<dd>{{{mod_ctrl}}} + <kbd>x</kbd></dd>
 
-	<dt>Rotate</dt>
-	<dd>{{{modifyModeRotate}}} or hold {{{mod_ctrl}}}</dd>
+				<dt>Copy</dt>
+				<dd>{{{mod_ctrl}}} + <kbd>c</kbd></dd>
 
-	<dt>Scale</dt>
-	<dd>{{{modifyModeScale}}} or hold {{{mod_shift}}} + {{{mod_ctrl}}}</dd>
+				<dt>Paste</dt>
+				<dd>{{{mod_ctrl}}} + <kbd>v</kbd></dd>
 
-	<dt>Make the current editor camera position the VR camera position</dt>
-	<dd>{{{setVRCameraPositionToEditorCameraPosition}}} when camera helper is selected </dd>
-</dl>
+				<dt>Undo</dt>
+				<dd>{{{mod_ctrl}}} + <kbd>z</kbd></dd>
 
-<h4><span>Program</span></h4>
-<dl>
-	<dt>Commonly used modules</dt>
-	<dd>
-		<span>1</span> ,
-		<span>2</span> ... <span>0</span>
-	</dd>
+				<dt>Hide all panels</dt>
+				<dd>{{{toggleFloatingPanels}}}</dd>
 
-	<dt>Open Inspector (nested graphs only)</dt>
-	<dd>{{{openInspector}}}</dd>
+				<dt>Focus on chat panel</dt>
+				<dd>{{{focusChatPanelAlt}}}</dd>
 
-	<dt>View source</dt>
-	<dd>{{{viewSource}}}</dd>
-</dl>
+				<dt>Search patches</dt>
+				<dd>{{{focusPresetSearch}}} / {{{focusPresetSearchAlt}}}</dd>
+			</dl>
+		</div>
+		<div class="col right">
+			<h3>Build</h3>
+			<dl>
+				<dt>Move</dt>
+				<dd>{{{modifyModeMove}}}</dd>
 
+				<dt>Rotate</dt>
+				<dd>{{{modifyModeRotate}}} / {{{mod_ctrl}}}</dd>
 
-<h4><span>Panels</span></h4>
-<dl>
-	<dt>Show or hide the floating panels</dt>
-	<dd>{{{toggleFloatingPanels}}}</dd>
+				<dt>Scale</dt>
+				<dd>{{{modifyModeScale}}} / {{{mod_shift}}} + {{{mod_ctrl}}}</dd>
 
-	<dt>Focus preset/object search</dt>
-	<dd>{{{focusPresetSearch}}} or {{{focusPresetSearchAlt}}}</dd>
+				<dt>Zero VR camera</dt>
+				<dd>{{{zeroVRCamera}}}</dd>
+			</dl>
+			<h3>Program</h3>
+			<dl>
+				<dt>Handy patches</dt>
+				<dd><kbd>0</kbd> - <kbd>9</kbd></dd>
 
-	<dt>Focus chat panel</dt>
-	<dd>{{{focusChatPanelAlt}}}</dd>
-</dl>
+				<dt>Inspect patches</dt>
+				<dd>{{{openInspector}}}</dd>
 
+				<dt>Go to parent graph</dt>
+				<dd>{{{gotoParentGraphAlt}}}</dd>
+
+				<dt>View source</dt>
+				<dd>{{{viewSource}}}</dd>
+			</dl>
+		</div>
+	</div>
 {{/with}}

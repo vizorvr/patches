@@ -246,58 +246,101 @@ body.bEditor {
   }
 
   div.modal.mHelp {
-
+	@color-keyboard-shortcuts:  #afbfdf;
+	@color-divider-rule: rgb(34,39,54);
+	font-smoothing: antialiased;
 	.modal-dialog {
-	  width: 760px;
+	  width: 700px;
 	  max-width: 95%;
-	  margin-top: 70px;
+	  margin-top: 100px;
 	}
 	.modal-dialog .modal-content .modal-body div.bootbox-body {
 	  text-align: left;
 	}
-	.modal-body h4 {
-	  margin-bottom:0;
-	  color: rgba(255,255,255,0.8);
-	  padding: 0 5px;
-	  span {
-	  	border-bottom: 1px solid @bg-lightest;
-	  }
+	.modal-body h3 {
+	  color: @color-keyboard-shortcuts;
+	  padding: 0 5px 5px 5px;
+	  font-weight: 300;
+	  font-size: 125%;
+	}
+	div.col.left {
+	  border-right: 1px solid @color-divider-rule;
+	  padding: 0 20px 0 0;
+	}
+	div.col.right {
+	  padding: 0 0 0 20px;
+	}
+	dl+h3 {
+	  margin-top: 2em;
 	}
 	dl {
 	  .clearfix;
+	  dt, dd {font-weight: 300;}
 	  &:last-of-type {
 		margin-bottom: 0;
 	  }
+	  color: @color-keyboard-shortcuts;
 	}
 	dt, dd {
-	  line-height: 1.5em;
+	  line-height: 30px;
 	  padding: 5px;
 	  margin:0;
-	  border-top: 1px solid @bg-dark;
-	  &:first-of-type {
-		border-top:0;
-	  }
 	}
 	dt {
-	  clear: left;
-	  float: left;
-	  width: 66%;
-	  font-weight: 300;
+	  clear: right;
+	  float: right;
+	  width: 45%;
 	}
 	dd {
-	  margin-left: 66%;
-	  font-weight: 400;
-	  span {
-		background: rgba(255,255,255,0.5);
-		color: #000;
+	  margin-right: 45%;
+	  kbd {
+		font-family: "Source Sans Pro", "Source Sans";
+	  	font-size: 100%; // bootstrap
+		font-weight: 400;
+		color: @color-keyboard-shortcuts;
+		border: 1px solid @color-keyboard-shortcuts;
+		background: none;
 		border-radius: 3px 3px;
-		padding: 1px 5px;
-		margin: 0 1px;
+		padding: 0px 5px;
+		margin: 0 5px;
+		min-width: 30px;
+		line-height: 28px;
+		display: inline-block;
+		text-align: center;
 		text-transform: capitalize;
+		&.wide {
+		  padding: 0 15px;
+		}
+		&:first-child {
+		  margin-left: 0;
+		}
 		&.modifier {
-		  border: 1px solid rgba(255,255,255,0.5);
-		  background: none;
-		  color: rgba(255,255,255,0.8);
+		  text-indent: -10000px;
+		  position: relative;
+		  padding: 0;
+		  &:after {
+			content: "";
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-left: -15px;
+			margin-top: -15px;
+			width: 30px;
+			height: 30px;
+			background: url('/images/v2/mod_keys.svg') no-repeat;
+		  }
+		  &.key_cmd:after {
+			background-position: -30px 0;
+		  }
+		  &.key_ctrl:after {
+			background-position: 0px 0;
+		  }
+		  &.key_alt:after {
+			background-position: -60px 0;
+		  }
+		  &.key_shift:after {
+			background-position: -90px 0;
+		  }
 		}
 	  }
 	}

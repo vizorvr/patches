@@ -630,21 +630,21 @@ VizorUI.openEditorHelp = function() {
 	var htmlFromKeyCode = function(modifiedKeyCode) {
 		var isOSX = /mac os x/.test(navigator.userAgent.toLowerCase());
 		var key='', html = []
+		var add = function(key, className) {
+			var tag
+			if (typeof className !== 'undefined')
+				tag = '<kbd class="' + className + '">'
+			else
+				tag = '<kbd>';
+			var end = '</kbd>'
+			html.push(tag + key.toLowerCase() + end)
+		}
+
 		if (Object.prototype.toString.call(modifiedKeyCode) === '[object String]' ) { // isString()
 			key = modifiedKeyCode;
-			html.push('<span>' + key.toLowerCase() + '</span>');
+			add(key.toLowerCase());
 		} else {
 			var key_meta = (isOSX) ? 'cmd' : 'ctrl';
-
-			var add = function(key, className) {
-				var tag
-				if (typeof className !== 'undefined')
-					tag = '<span class="' + className + '">'
-				else
-					tag = '<span>';
-				var end = '</span>'
-				html.push(tag + key.toLowerCase() + end)
-			}
 
 			if (modifiedKeyCode >= mod_alt) {
 				add('alt', 'modifier key_alt');
@@ -674,7 +674,7 @@ VizorUI.openEditorHelp = function() {
 			}
 			switch (modifiedKeyCode) {
 				case 9:
-					add('tab');
+					add('tab', 'wide');
 					break;
 				case 13:
 					add('enter');
