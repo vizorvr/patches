@@ -8,7 +8,6 @@ var uiKeys = {
 	spacebar: 32,
 
 	openInspector	: 73,			//	i
-	viewHelp		: 1191,			//  ?
 	toggleUILayer	: 11085,		// 	cmd/ctrl + shift + u,
 	toggleMode 		: 9,			// 	tab
 	togglePatchEditor: 	1009,		//  shift+tab
@@ -18,19 +17,25 @@ var uiKeys = {
 	focusPresetSearch: 191,			//	/
 	focusPresetSearchAlt: 81,		//  q
 	viewSource:		220,			//	\
-	zeroVRCamera: 	187,			// =
-	gotoParentGraph: 188,
-	gotoParentGraphAlt: ',',
 
 	modifyModeMove	: 77,			// m
 	modifyModeScale : 83,			// s
 	modifyModeRotate: 82,			// r
 
-	focusChatPanel: 'U+0040',		// @ - this key moves so is checked by value/identifier
-	focusChatPanelAlt: '@',			//
-	openHelpAlt : '?',
+	// keys that move are checked by character (firefox) or identifier (webkit)
+	focusChatPanel: '@',
+	focusChatPanelU: 'U+0040',
 
+	viewHelp 		: '?',
+	viewHelpU		: 'U+003F',
 
+	zeroVRCamera	: '=',
+	zeroVRCameraU	: 'U+003D',
+
+	gotoParentGraph: ',',
+	gotoParentGraphU: 'U+002C',
+
+	// added in getModifiedKeyCode
 	mod_shift : 1000,
 	mod_ctrl : 10000,
 	mod_alt : 100000
@@ -424,7 +429,7 @@ VizorUI.prototype.onKeyDown = function(e) {
 			that.toggleUILayer();
 			e.preventDefault();
 			break;
-		case (uiKeys.focusPresetSearchAlt):	// fallthrough
+		case (uiKeys.focusPresetSearchAlt):
 		case (uiKeys.focusPresetSearch):
 			state.visibility.panel_presets = true;
 			if (that.isInProgramMode()) {
@@ -437,20 +442,20 @@ VizorUI.prototype.onKeyDown = function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 			break;
-		case (uiKeys.viewHelp):
-			VizorUI.openEditorHelp();
-			e.preventDefault();
-			e.stopPropagation();
-			break;
 	}
 
 	var keyIdentifier = (typeof e.keyIdentifier !== 'undefined') ? e.keyIdentifier : (e.key || '');
 	switch (keyIdentifier) {
-		case uiKeys.focusChatPanel:		// fallthrough
-		case uiKeys.focusChatPanelAlt:
+		case uiKeys.focusChatPanelU:
+		case uiKeys.focusChatPanel:
 			state.visibility.panel_chat = true;
 			this.dom.chatWindow.find('#new-message-input').focus();
-
+			e.preventDefault();
+			e.stopPropagation();
+			break;
+		case (uiKeys.viewHelpU):
+		case (uiKeys.viewHelp):
+			VizorUI.openEditorHelp();
 			e.preventDefault();
 			e.stopPropagation();
 			break;
