@@ -322,9 +322,16 @@ VizorUI.prototype._clearModifierKeys = function() {	// blur
 }
 
 VizorUI.prototype._trackModifierKeys = function(e) {	// returns bool if any modifiers changed
+	var oldMeta = this.flags.pressedMeta,
+		oldAlt = this.flags.pressedAlt,
+		oldShift = this.flags.pressedShift;
 	this.flags.pressedMeta = e.metaKey || e.ctrlKey;
 	this.flags.pressedAlt = e.altKey;
 	this.flags.pressedShift = e.shiftKey;
+	var modifiersChanged = (oldMeta !== this.flags.pressedMeta) ||
+							(oldAlt !== this.flags.pressedAlt) ||
+							(oldShift !== this.flags.pressedShift)
+	return modifiersChanged;
 };
 
 VizorUI.prototype.getModifiedKeyCode = function(keyCode) {	// adds modifier keys value to keyCode if necessary
@@ -351,7 +358,6 @@ VizorUI.prototype.trackModifierKeysForWorldEditor = function() {
 
 VizorUI.prototype.onKeyPress = function(e) {
 	if (this.isModalOpen() || E2.util.isTextInputInFocus(e) || this.isFullScreen()) return true;
-	console.log('keypress', e);
 	var state = this.state;
 	var that = this;
 
@@ -412,9 +418,9 @@ VizorUI.prototype.onKeyPress = function(e) {
 };
 
 VizorUI.prototype.onKeyDown = function(e) {
-	var isModifierKey = this._trackModifierKeys(e);
+	var modifiersChanged = this._trackModifierKeys(e);
 	if (this.isModalOpen() || E2.util.isTextInputInFocus(e) || this.isFullScreen()) return true;
-	if (isModifierKey) this.trackModifierKeysForWorldEditor();
+	if (modifiersChanged) this.trackModifierKeysForWorldEditor();
 	var state = this.state;
 	var that = this;
 	var modifiedKeyCode = this.getModifiedKeyCode(e.keyCode);
@@ -444,9 +450,9 @@ VizorUI.prototype.onKeyDown = function(e) {
 	return true;
 }
 VizorUI.prototype.onKeyUp = function(e) {
-	var isModifierKey = this._trackModifierKeys(e, false);
+	var modifiersChanged = this._trackModifierKeys(e);
+	if (modifiersChanged) this.trackModifierKeysForWorldEditor();
 	if (this.isModalOpen() || E2.util.isTextInputInFocus(e) || this.isFullScreen()) return true;
-	if (isModifierKey) this.trackModifierKeysForWorldEditor();
 	return true;
 };
 
