@@ -71,7 +71,9 @@ VariableLocalWrite.prototype.state_changed = function(ui) {
 		this.dt = inputs[0].dt
 		this.slotId = inputs[0].uid
 		this.target_reg(this.node.title)
-		this.variables.set_datatype(this.node.title, this.dt, inputs[0].array)
+
+		if (this.dt.id !== E2.dt.ANY.id)
+			this.variables.set_datatype(this.node.title, this.dt, inputs[0].array)
 	}
 }
 
