@@ -57,7 +57,7 @@ VariableLocalRead.prototype.target_reg = function(id) {
 
 	this.dt = r.dt
 
-	if (r.dt.id !== this.core.datatypes.ANY.id) {
+	if (r.dt.id !== E2.dt.ANY.id) {
 		this.variable_dt_changed(r.dt, r.array)
 		this.data = this.variables.variables[id].value
 	}
@@ -81,7 +81,9 @@ VariableLocalRead.prototype.state_changed = function(ui) {
 		this.dt = outputs[0].dt
 		this.slotId = outputs[0].uid
 		this.target_reg(this.node.title)
-		this.variables.set_datatype(this.node.title, this.dt, outputs[0].array)
+	
+		if (this.dt.id !== E2.dt.ANY.id)
+			this.variables.set_datatype(this.node.title, this.dt, outputs[0].array)
 	}
 }
 
