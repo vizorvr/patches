@@ -1,44 +1,40 @@
 var uiKeys = {
-	enter: 13,
-	shift : 16,
-	ctrl: 17,						// 	ctrl
-	left_window_key : 91,			// 	cmd, = ctrl for us
-	meta : 224,						// 	firefox
-	alt: 18,
+	enter	: 13,
+	shift	: 16,
+	ctrl	: 17,
+	left_window_key : 91,	// 	cmd, = ctrl (webkit)
+	meta	: 224,			// 	cmd firefox ^
+	alt		: 18,
 	spacebar: 32,
 
-	openInspector	: 73,			//	i
-	toggleUILayer	: 11085,		// 	cmd/ctrl + shift + u,
-	toggleMode 		: 9,			// 	tab
-	togglePatchEditor: 	1009,		//  shift+tab
-	toggleEditorCamera: 86,			//  v
-	toggleFullScreen : 70,			// 	f,
-	toggleFloatingPanels : 10066,	// 	cmd/ctrl + b
-	focusPresetSearch: 191,			//	/
-	focusPresetSearchAlt: 81,		//  q
-	viewSource:		220,			//	\
+	// handled on keydown - keycode + modifier value
+	toggleMode 			: 9,	// Tab
+	togglePatchEditor	: 1009,	// Shift+Tab
+	toggleUILayer		: 11085,	// meta+Shift+U
+	toggleFloatingPanels : 10066, // meta+B
 
-	modifyModeMove	: 77,			// m
-	modifyModeScale : 83,			// s
-	modifyModeRotate: 82,			// r
+	// single characters handled on keypress
+	openInspector		: 'I',
+	toggleEditorCamera	: 'V',
+	focusPresetSearch	: '/',
+	focusPresetSearchAlt: 'Q',
+	viewSource			: '\\',
 
-	// keys that move are checked by character (firefox) or identifier (webkit)
-	focusChatPanel: '@',
-	focusChatPanelU: 'U+0040',
+	modifyModeMove		: 'M',
+	modifyModeScale 	: 'S',
+	modifyModeRotate	: 'R',
+	focusChatPanel		: '@',
+	viewHelp 			: '?',
 
-	viewHelp 		: '?',
-	viewHelpU		: 'U+003F',
+	// handled in application.js
+	toggleFullScreen 	: 'F',
+	zeroVRCamera		: '=',
+	gotoParentGraph		: ',',
 
-	zeroVRCamera	: '=',
-	zeroVRCameraU	: 'U+003D',
-
-	gotoParentGraph: ',',
-	gotoParentGraphU: 'U+002C',
-
-	// added in getModifiedKeyCode
-	mod_shift : 1000,
-	mod_ctrl : 10000,
-	mod_alt : 100000
+	// added to code in getModifiedKeyCode
+	modShift 	: 1000,
+	modMeta 	: 10000,	// ctrl == cmd
+	modAlt 		: 100000
 };
 
 var uiViewCam = {
@@ -51,7 +47,6 @@ var uiEvent = { // emitted by ui (E2.ui) unless comments state otherwise
 	moved			: 'uiMoved',			// panels via movable.js
 	resized			: 'uiResized',			// panels via draggable.js
 	stateChanged	: 'uiStateChanged',
-	worldEditChanged : 'uiWorldEditorChanged',	// ui and E2.app
 	xhrFormSuccess	: 'xhrFormSuccess'		//	dispatched on document in ui-site js
 }
 
@@ -73,13 +68,10 @@ var VizorUI = function() {			// becomes E2.ui
 	this.flags = {
 		loading: false,
 		fullscreen: false,
-		key_shift_pressed: false,
-		key_alt_pressed : false,
-		key_ctrl_pressed : false		// ctrl or cmd on osx, ctrl on windows
+		pressedShift: false,
+		pressedAlt : false,
+		pressedMeta : false		// ctrl or cmd on osx, ctrl on windows
 	};
-	this.always_track_keys = [			// always update ui.flags with the status of these keys
-		uiKeys.alt, uiKeys.shift, uiKeys.ctrl, uiKeys.left_window_key, uiKeys.meta
-	];
 };
 VizorUI.prototype = Object.create(EventEmitter.prototype);
 
@@ -87,6 +79,7 @@ VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 	this.dom = e2.dom;
 	document.body.addEventListener('keydown', this.onKeyDown.bind(this));
 	document.body.addEventListener('keyup', this.onKeyUp.bind(this));
+	document.addEventListener('keypress', this.onKeyPress.bind(this), true);	// first
 	window.addEventListener('blur', this._clearModifierKeys.bind(this));
 	window.addEventListener('focus', this._clearModifierKeys.bind(this));
 	e2.core.on('resize', this.onWindowResize.bind(this));
@@ -313,124 +306,84 @@ VizorUI.prototype.isLoading = function() {
 VizorUI.prototype.isUploading = function() {
 	return this.uploading;
 }
-VizorUI.prototype.isVRCameraActive = function() {
-	return E2.app.worldEditor.isActive();	// app.isVRCameraActive ORs between this and noodles visible
-}
 VizorUI.prototype.isModalOpen = function() {
 	// was: return ($("body").data('bs.modal') || {}).isShown;
 	var $modal = jQuery('div.bootbox.modal');
 	return $modal.hasClass('in');
 }
-VizorUI.prototype.isAnyUIElementVisible = function() {
-	var state = this.state, v = state.visibility;
-	var x = state.visible;
-	var anyFloatingPanels = v.floating_panels && (v.panel_presets || v.panel_assets || v.panel_chat)
-	x = x && (v.patch_editor || anyFloatingPanels);
-	return x;
-}
 
 /**** EVENT HANDLERS ****/
 
 VizorUI.prototype._clearModifierKeys = function() {	// blur
-	this.flags.key_ctrl_pressed = false;
-	this.flags.key_alt_pressed = false;
-	this.flags.key_shift_pressed = false;
+	this.flags.pressedMeta = false;
+	this.flags.pressedAlt = false;
+	this.flags.pressedShift = false;
 	return true;
 }
 
-VizorUI.prototype._trackModifierKeys = function(keyCode, isDown) {	// returns bool if any modifiers changed
-	if ((typeof keyCode === 'undefined') || this.always_track_keys.indexOf(keyCode) === -1) return false;
-	var newvalue = !!(isDown || false);
-	switch (keyCode) {
-		case uiKeys.ctrl:	// fallthrough
-		case uiKeys.left_window_key:
-		case uiKeys.meta:
-			this.flags.key_ctrl_pressed = newvalue;
-			return true;
-		case uiKeys.alt:
-			this.flags.key_alt_pressed = newvalue;
-			return true;
-		case uiKeys.shift:
-			this.flags.key_shift_pressed = newvalue;
-			return true;
-	}
-	return false;
+VizorUI.prototype._trackModifierKeys = function(e) {	// returns bool if any modifiers changed
+	this.flags.pressedMeta = e.metaKey || e.ctrlKey;
+	this.flags.pressedAlt = e.altKey;
+	this.flags.pressedShift = e.shiftKey;
 };
+
 VizorUI.prototype.getModifiedKeyCode = function(keyCode) {	// adds modifier keys value to keyCode if necessary
 	if (typeof keyCode !== 'number') return keyCode;
-	if (this.flags.key_shift_pressed) keyCode += uiKeys.mod_shift;
-	if (this.flags.key_alt_pressed) keyCode += uiKeys.mod_alt;
-	if (this.flags.key_ctrl_pressed) keyCode += uiKeys.mod_ctrl;
+	if (this.flags.pressedShift) keyCode += uiKeys.modShift;
+	if (this.flags.pressedAlt)   keyCode += uiKeys.modAlt;
+	if (this.flags.pressedMeta)  keyCode += uiKeys.modMeta;
 	return keyCode;
 };
+
 VizorUI.prototype.trackModifierKeysForWorldEditor = function() {
 	if (!this.isInBuildMode()) return;
 
-	if (!this.flags.key_shift_pressed && this.flags.key_ctrl_pressed) {
+	if (!this.flags.pressedShift && this.flags.pressedMeta) {
 		this.state.modifyMode = uiModifyMode.rotate
 	}
-	if (this.flags.key_shift_pressed && this.flags.key_ctrl_pressed) {
+	if (this.flags.pressedShift && this.flags.pressedMeta) {
 		this.state.modifyMode = uiModifyMode.scale
 	}
-	if (!this.flags.key_shift_pressed && !this.flags.key_ctrl_pressed) {
+	if (!this.flags.pressedShift && !this.flags.pressedMeta) {
 		this.state.modifyMode = uiModifyMode.move
 	}
 }
-VizorUI.prototype.onKeyDown = function(e) {
-	var isModifierKey = this._trackModifierKeys(e.keyCode, true);
 
+VizorUI.prototype.onKeyPress = function(e) {
 	if (this.isModalOpen() || E2.util.isTextInputInFocus(e) || this.isFullScreen()) return true;
-	var keyCode = this.getModifiedKeyCode(e.keyCode);
-
+	console.log('keypress', e);
 	var state = this.state;
 	var that = this;
 
-	if (isModifierKey) this.trackModifierKeysForWorldEditor();
-	switch (keyCode) {
-		case (uiKeys.modifyModeMove):
+	var key = e.charCode;
+	if (!key) return true;	// if this is 0 then the code does not apply to this handler, because Firefox
+
+	key = String.fromCharCode(key).toUpperCase();	// num->str
+	switch (key) {
+		case uiKeys.modifyModeMove:
 			this.state.modifyMode = uiModifyMode.move;
 			break;
-		case (uiKeys.modifyModeRotate):
+		case uiKeys.modifyModeRotate:
 			this.state.modifyMode = uiModifyMode.rotate;
 			break;
-		case (uiKeys.modifyModeScale):
+		case uiKeys.modifyModeScale:
 			this.state.modifyMode = uiModifyMode.scale;
 			break;
-		case (uiKeys.viewSource):
+		case uiKeys.viewSource:
 			this.viewSource();
 			e.preventDefault();
 			break;
-		case (uiKeys.openInspector):
+		case uiKeys.openInspector:
 			this.onInspectorClicked();
 			e.preventDefault();
 			break;
-		case (uiKeys.toggleFloatingPanels):
-			this.toggleFloatingPanels();
-			e.preventDefault();
-			break;
-		case (uiKeys.toggleMode):
-			if (state.mode === uiMode.build)
-				that.setModeProgram();
-			else
-				that.setModeBuild();
-			e.preventDefault();
-			e.stopPropagation();
-			break;
-		case (uiKeys.toggleEditorCamera):
+		case uiKeys.toggleEditorCamera:
 			state.viewCamera = (state.viewCamera === uiViewCam.vr) ? uiViewCam.world_editor : uiViewCam.vr;
 			e.preventDefault();
 			e.stopPropagation();
 			break;
-		case (uiKeys.togglePatchEditor):
-			this.togglePatchEditor();
-			e.preventDefault();
-			break;
-		case (uiKeys.toggleUILayer):
-			that.toggleUILayer();
-			e.preventDefault();
-			break;
-		case (uiKeys.focusPresetSearchAlt):
-		case (uiKeys.focusPresetSearch):
+		case uiKeys.focusPresetSearchAlt:
+		case uiKeys.focusPresetSearch:
 			state.visibility.panel_presets = true;
 			if (that.isInProgramMode()) {
 				that.dom.tabPresets.find('a').trigger('click')
@@ -442,39 +395,58 @@ VizorUI.prototype.onKeyDown = function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 			break;
-	}
-
-	var keyIdentifier = (typeof e.keyIdentifier !== 'undefined') ? e.keyIdentifier : (e.key || '');
-	switch (keyIdentifier) {
-		case uiKeys.focusChatPanelU:
 		case uiKeys.focusChatPanel:
 			state.visibility.panel_chat = true;
 			this.dom.chatWindow.find('#new-message-input').focus();
 			e.preventDefault();
 			e.stopPropagation();
 			break;
-		case (uiKeys.viewHelpU):
-		case (uiKeys.viewHelp):
+		case uiKeys.viewHelp:
 			VizorUI.openEditorHelp();
 			e.preventDefault();
 			e.stopPropagation();
 			break;
 	}
 
-	if (this.isVRCameraActive()) {
-		return true;
-	}
-
-	// non-vr-events only here
-
 	return true;
 };
-VizorUI.prototype.onKeyUp = function(e) {
-	var isModifierKey = this._trackModifierKeys(e.keyCode, false);
+
+VizorUI.prototype.onKeyDown = function(e) {
+	var isModifierKey = this._trackModifierKeys(e);
 	if (this.isModalOpen() || E2.util.isTextInputInFocus(e) || this.isFullScreen()) return true;
 	if (isModifierKey) this.trackModifierKeysForWorldEditor();
-	var keyCode = this.getModifiedKeyCode(e.keyCode);
-	// ...
+	var state = this.state;
+	var that = this;
+	var modifiedKeyCode = this.getModifiedKeyCode(e.keyCode);
+
+	switch (modifiedKeyCode) {
+		case uiKeys.toggleFloatingPanels:
+			this.toggleFloatingPanels();
+			e.preventDefault();
+			break;
+		case uiKeys.toggleMode:
+			if (state.mode === uiMode.build)
+				that.setModeProgram();
+			else
+				that.setModeBuild();
+			e.preventDefault();
+			e.stopPropagation();
+			break;
+		case uiKeys.togglePatchEditor:
+			this.togglePatchEditor();
+			e.preventDefault();
+			break;
+		case uiKeys.toggleUILayer:
+			that.toggleUILayer();
+			e.preventDefault();
+			break;
+	}
+	return true;
+}
+VizorUI.prototype.onKeyUp = function(e) {
+	var isModifierKey = this._trackModifierKeys(e, false);
+	if (this.isModalOpen() || E2.util.isTextInputInFocus(e) || this.isFullScreen()) return true;
+	if (isModifierKey) this.trackModifierKeysForWorldEditor();
 	return true;
 };
 

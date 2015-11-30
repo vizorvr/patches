@@ -623,13 +623,13 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 
 VizorUI.openEditorHelp = function() {
 	var keyData = _.extend({}, uiKeys);
-	var mod_shift = uiKeys.mod_shift,
-	 	mod_ctrl = uiKeys.mod_ctrl,
-	 	mod_alt = uiKeys.mod_alt;
+	var modShift = uiKeys.modShift,
+	 	modMeta = uiKeys.modMeta,
+	 	modAlt = uiKeys.modAlt;
 
-	var htmlFromKeyCode = function(modifiedKeyCode) {
+	var htmlFromKey = function(charOrKeycode) {
 		var isOSX = /mac os x/.test(navigator.userAgent.toLowerCase());
-		var key='', html = []
+		var html = []
 		var add = function(key, className) {
 			var tag
 			if (typeof className !== 'undefined')
@@ -639,45 +639,34 @@ VizorUI.openEditorHelp = function() {
 			var end = '</kbd>'
 			html.push(tag + key.toLowerCase() + end)
 		}
+		var key_meta = (isOSX) ? 'cmd' : 'ctrl';
 
-		if (Object.prototype.toString.call(modifiedKeyCode) === '[object String]' ) { // isString()
-			key = modifiedKeyCode;
-			add(key.toLowerCase());
+		if (Object.prototype.toString.call(charOrKeycode) === '[object String]' ) { // isString()
+			add(charOrKeycode)
 		} else {
-			var key_meta = (isOSX) ? 'cmd' : 'ctrl';
 
-			if (modifiedKeyCode >= mod_alt) {
+			if (charOrKeycode >= modAlt) {
 				add('alt', 'modifier key_alt');
-				modifiedKeyCode -= mod_alt;
+				charOrKeycode -= modAlt;
 			}
-			if (modifiedKeyCode >= mod_ctrl) {
-				add(key_meta, 'modifier key_ctrl key_cmd');
-				modifiedKeyCode -= mod_ctrl;
+			if (charOrKeycode >= modMeta) {
+				add(key_meta, (isOSX) ? 'modifier key_cmd' : 'modifier key_ctrl');
+				charOrKeycode -= modMeta;
 			}
-			if (modifiedKeyCode >= mod_shift) {
+			if (charOrKeycode >= modShift) {
 				add('shift', 'modifier key_shift');
-				modifiedKeyCode -= mod_shift;
+				charOrKeycode -= modShift;
 			}
 
-			var keyCodeMap = {	// keys without shift
-				186: 59,
-				187: 61,
-				188: 63,
-				189: 45,
-				190: 62,
-				191: 47,
-				192: 96,
-				219: 91,
-				220: 92,
-				221: 93,
-				222: 39
-			}
-			switch (modifiedKeyCode) {
+			switch (charOrKeycode) {
 				case 9:
 					add('tab', 'wide');
 					break;
 				case 13:
 					add('enter');
+					break;
+				case 27:
+					add('esc', 'wide');
 					break;
 				case 32:
 					add('space');
@@ -685,15 +674,14 @@ VizorUI.openEditorHelp = function() {
 				case 0:		// modifier keys only
 					break;
 				default:
-					if (keyCodeMap[modifiedKeyCode]) modifiedKeyCode = keyCodeMap[modifiedKeyCode]	// .fromCharCode misses these
-					add(String.fromCharCode(modifiedKeyCode));
+					add(String.fromCharCode(charOrKeycode));
 			}
 		}
 		return html.join(" + ");
 	};
 	for (var z in keyData) {
 		if (keyData.hasOwnProperty(z))
-			keyData[z] = htmlFromKeyCode(keyData[z]);
+			keyData[z] = htmlFromKey(keyData[z]);
 	}
 	var viewData = {
 		keys: keyData
