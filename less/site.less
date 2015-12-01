@@ -38,12 +38,16 @@
 
 // BOX-SIZING IS BORDER BOX!
 
+.modal-body {
+  .clearfix()
+}
+
 button.svg {
   position: relative;
 }
 
 button.toggle-button {
-  outline: none;
+  outline: 0;
 }
 
 button.nofx, a.nofx {
@@ -55,6 +59,43 @@ button.nofx, a.nofx {
 	background: none;
   }
 }
+
+body div.bootbox div.modal-dialog button.btn-primary {
+  outline: 0;	// bootbox
+}
+
+
+/* generic columns */
+
+.css2col, .css3col {
+  -webkit-column-gap: 40px;
+  -moz-column-gap: 40px;
+  column-gap: 40px;
+
+  -webkit-column-rule-style: solid;
+  -moz-column-rule-style: solid;
+  column-rule-style: solid;
+
+  -webkit-column-rule-width: 0px;
+  -moz-column-rule-width: 0px;
+  column-rule-width: 0px;
+}
+.css2col {
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
+  column-count: 2;
+}
+.css3col {
+  -webkit-column-count: 3;
+  -moz-column-count: 3;
+  column-count: 3;
+}
+
+h1, h2, h3 {
+    -webkit-column-span: all;
+    column-span: all;
+}
+/* /generic columns */
 
 div.breadcrumb {
   padding:0; margin:0;
@@ -85,16 +126,8 @@ div.breadcrumb {
 }
 
 
-body div.bootbox div.modal-dialog button.btn-primary {
-  outline: 0;	// bootbox
-}
-
 body.bMain.modal-open {
-  overflow: auto;	// seriously, bootbox
-}
-
-.modal-body {
-  .clearfix()
+  overflow: auto;	// bootbox
 }
 
 body.bMain {

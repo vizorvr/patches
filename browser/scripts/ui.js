@@ -621,6 +621,75 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 
 /***** HELPER METHODS *****/
 
+VizorUI.openEditorHelp = function() {
+	var keyData = _.extend({}, uiKeys);
+	var modShift = uiKeys.modShift,
+	 	modMeta = uiKeys.modMeta,
+	 	modAlt = uiKeys.modAlt;
+
+	var htmlFromKey = function(charOrKeycode) {
+		var isOSX = /mac os x/.test(navigator.userAgent.toLowerCase());
+		var html = []
+		var add = function(key, className) {
+			var tag
+			if (typeof className !== 'undefined')
+				tag = '<kbd class="' + className + '">'
+			else
+				tag = '<kbd>';
+			var end = '</kbd>'
+			html.push(tag + key.toLowerCase() + end)
+		}
+		var key_meta = (isOSX) ? 'cmd' : 'ctrl';
+
+		if (Object.prototype.toString.call(charOrKeycode) === '[object String]' ) { // isString()
+			add(charOrKeycode)
+		} else {
+
+			if (charOrKeycode >= modAlt) {
+				add('alt', 'modifier key_alt');
+				charOrKeycode -= modAlt;
+			}
+			if (charOrKeycode >= modMeta) {
+				add(key_meta, (isOSX) ? 'modifier key_cmd' : 'modifier key_ctrl');
+				charOrKeycode -= modMeta;
+			}
+			if (charOrKeycode >= modShift) {
+				add('shift', 'modifier key_shift');
+				charOrKeycode -= modShift;
+			}
+
+			switch (charOrKeycode) {
+				case 9:
+					add('tab', 'wide');
+					break;
+				case 13:
+					add('enter');
+					break;
+				case 27:
+					add('esc', 'wide');
+					break;
+				case 32:
+					add('space');
+					break;
+				case 0:		// modifier keys only
+					break;
+				default:
+					add(String.fromCharCode(charOrKeycode));
+			}
+		}
+		return html.join(" + ");
+	};
+	for (var z in keyData) {
+		if (keyData.hasOwnProperty(z))
+			keyData[z] = htmlFromKey(keyData[z]);
+	}
+	var viewData = {
+		keys: keyData
+	}
+	var html = E2.views.patch_editor.help_shortcuts(viewData);
+	return VizorUI.modalOpen(html, 'Keyboard Shortcuts', 'mHelp mShortcuts')
+
+}
 
 
 
