@@ -147,6 +147,7 @@ VizorUI.makeVRCanvasResizeHandler = function($playerCanvas, $containerRef) {
 		$containerRef = jQuery(window);
 	}
 	return function() {
+
 		var width = $containerRef.innerWidth()
 		var height = $containerRef.innerHeight()
 		var devicePixelRatio = window.devicePixelRatio || 1;
@@ -160,11 +161,19 @@ VizorUI.makeVRCanvasResizeHandler = function($playerCanvas, $containerRef) {
 		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 
 		if (isFullscreen) {
-			$playerCanvas.removeClass('webgl-canvas-normal')
-			$playerCanvas.addClass('webgl-canvas-fs')
+			$playerCanvas
+				.removeClass('webgl-canvas-normal')
+				.addClass('webgl-canvas-fs');
+			$containerRef
+				.removeClass('webgl-container-normal')
+				.addClass('webgl-container-fs');
 		} else {
-			$playerCanvas.removeClass('webgl-canvas-fs')
-			$playerCanvas.addClass('webgl-canvas-normal')
+			$playerCanvas
+				.removeClass('webgl-canvas-fs')
+				.addClass('webgl-canvas-normal');
+			$containerRef
+				.removeClass('webgl-container-fs')
+				.addClass('webgl-container-normal');
 		}
 
 		E2.core.emit('resize')
