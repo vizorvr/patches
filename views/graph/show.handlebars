@@ -74,7 +74,6 @@
             $('#load-spinner').hide()
 			var $playerContainer = jQuery('#stage');
 			var onResize = VizorUI.makeVRCanvasResizeHandler(jQuery('#webgl-canvas'), $playerContainer);
-            E2.app.isVRCameraActive = function(){return false};	// disable panning on homepage player, see #790
 			E2.app.calculateCanvasArea = function() {
                 return{
                     width: $playerContainer.innerWidth(),
