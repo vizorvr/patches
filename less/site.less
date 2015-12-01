@@ -38,12 +38,20 @@
 
 // BOX-SIZING IS BORDER BOX!
 
+.modal-body {
+  .clearfix()
+}
+
+body div.bootbox div.modal-dialog button.btn-primary {
+  outline: 0;	// bootbox
+}
+
 button.svg {
   position: relative;
 }
 
 button.toggle-button {
-  outline: none;
+  outline: 0;
 }
 
 button.nofx, a.nofx {
@@ -85,20 +93,16 @@ div.breadcrumb {
 }
 
 
-body div.bootbox div.modal-dialog button.btn-primary {
-  outline: 0;	// bootbox
-}
-
 body.bMain.modal-open {
   overflow: auto;	// seriously, bootbox
 }
 
-.modal-body {
-  .clearfix()
-}
-
 body.bMain {
 
+  &.modal-open {
+	overflow: auto;	// bootbox
+  }
+	
   #brandTop, .brandTop {
 	width: 120px;
 	height: 30px;

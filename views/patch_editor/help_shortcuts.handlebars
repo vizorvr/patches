@@ -1,0 +1,72 @@
+{{#with this.keys}}
+	<div class="twocol clearfix">
+		<div class="col left">
+			<h3>Global</h3>
+
+			<dl class="clearfix">
+				<dt>Build / Program</dt>
+				<dd>{{{toggleMode}}}</dd>
+
+				<dt>Editor / VR Camera</dt>
+				<dd>{{{toggleEditorCamera}}}</dd>
+
+				<dt>Enter fullscreen</dt>
+				<dd>{{{toggleFullScreen}}}</dd>
+
+				<dt>Exit fullscreen</dt>
+				<dd><kbd class="wide">Esc</kbd></dd>
+
+				<dt>Cut</dt>
+				<dd>{{{modMeta}}} + <kbd>x</kbd></dd>
+
+				<dt>Copy</dt>
+				<dd>{{{modMeta}}} + <kbd>c</kbd></dd>
+
+				<dt>Paste</dt>
+				<dd>{{{modMeta}}} + <kbd>v</kbd></dd>
+
+				<dt>Undo</dt>
+				<dd>{{{modMeta}}} + <kbd>z</kbd></dd>
+
+				<dt>Hide all panels</dt>
+				<dd>{{{toggleFloatingPanels}}}</dd>
+
+				<dt>Focus on chat panel</dt>
+				<dd>{{{focusChatPanel}}}</dd>
+
+				<dt>Search patches</dt>
+				<dd>{{{focusPresetSearch}}} / {{{focusPresetSearchAlt}}}</dd>
+			</dl>
+		</div>
+		<div class="col right">
+			<h3>Build</h3>
+			<dl>
+				<dt>Move</dt>
+				<dd>{{{modifyModeMove}}}</dd>
+
+				<dt>Rotate</dt>
+				<dd>{{{modifyModeRotate}}} / {{{modMeta}}}</dd>
+
+				<dt>Scale</dt>
+				<dd>{{{modifyModeScale}}} / {{{modShift}}} + {{{modMeta}}}</dd>
+
+				<dt><abbr title="Sets the selected VR camera position to the current editor position">Zero VR camera</abbr></dt>
+				<dd>{{{zeroVRCamera}}}</dd>
+			</dl>
+			<h3>Program</h3>
+			<dl>
+				<dt>Handy patches</dt>
+				<dd><kbd>0</kbd> - <kbd>9</kbd></dd>
+
+				<dt>Inspect patches</dt>
+				<dd>{{{openInspector}}}</dd>
+
+				<dt>Go to parent graph</dt>
+				<dd>{{{gotoParentGraph}}}</dd>
+
+				<dt>View source</dt>
+				<dd>{{{viewSource}}}</dd>
+			</dl>
+		</div>
+	</div>
+{{/with}}

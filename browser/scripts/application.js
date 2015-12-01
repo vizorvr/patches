@@ -1500,6 +1500,12 @@ Application.prototype.onKeyDown = function(e) {
 				this.undoManager.redo()
 		}
 	}
+
+	else if (e.keyCode === 188) { // , goes up a graph level
+		if (E2.core.active_graph.parent_graph)
+			E2.app.onGraphSelected(E2.core.active_graph.parent_graph)
+	}
+
 	else if (e.keyCode === 187 && this.isWorldEditorActive()) // '=' match vr camera to world editor camera
 	{
 		this.worldEditor.matchCamera()

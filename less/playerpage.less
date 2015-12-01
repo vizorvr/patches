@@ -2,6 +2,32 @@ body.bPlayer {
   height:100%; width:100%;
 }
 #playerpage {
+  min-height: 100%;
+
+  #playerWrap {
+	  position: fixed;
+	  top:0;
+	  bottom:0;
+	  left: 0;
+	  right:0;
+	  display: flex;
+	  flex-direction: column;
+	  height: 100%;
+	  display: -webkit-flex;
+	  -webkit-flex-direction: column;
+  }
+  #playerWrap header {
+	  -webkit-flex: 0 1 auto;
+	  -webkit-flex-order: 1;
+	  flex: 0 1 auto;
+	  order: 1;
+  }
+  #stage {
+	  -webkit-flex: 1;
+	  -webkit-flex-order: 2;
+	  flex:1;
+	  order: 2;
+  }
   header>* {height: 60px; line-height: 60px; border:0; margin: 0; padding:0;}
   header {
 	  background: @bg-light;

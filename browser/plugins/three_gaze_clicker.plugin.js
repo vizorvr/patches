@@ -11,17 +11,21 @@
 			{name: 'camera', dt: core.datatypes.CAMERA},
 			{name: 'scene', dt: core.datatypes.SCENE},
 			{name: 'delay', dt: core.datatypes.FLOAT, def: 1.0},
+			{name: 'show icon', dt: core.datatypes.BOOL, def: true},
 			{name: 'eye distance', dt: core.datatypes.FLOAT, def: this.iconDistance,
 			 desc: 'Eye Distance for Gaze Clicker icon in VR'}
 		]
 
 		this.output_slots = [
 			{name: 'scene', dt: core.datatypes.SCENE},
+			{name: 'object', dt: core.datatypes.OBJECT3D}
 		]
 
 		this.always_update = true
 
 		this.clickDelay = 1.0
+
+		this.showIcon = true
 	}
 
 	ThreeGazeClicker.prototype = Object.create(Plugin.prototype)
@@ -44,6 +48,9 @@
 		case 2: // delay
 			this.clickDelay = data
 			break
+		case 3: // icon
+			this.showIcon = data
+			break
 		default:
 			break
 		}
@@ -58,8 +65,13 @@
 		}
 	}
 
-	ThreeGazeClicker.prototype.update_output = function() {
-		return this.scene
+	ThreeGazeClicker.prototype.update_output = function(slot) {
+		if (slot.index === 0) {
+			return this.scene
+		}
+		else if (slot.index === 1) {
+			return this.lastObj
+		}
 	}
 
 	ThreeGazeClicker.prototype.state_changed = function(ui) {
@@ -251,10 +263,17 @@
 		mesh.position.copy(this.camera.position)
 		mesh.quaternion.copy(this.camera.quaternion)
 
-		this.geometry.update(this.clickFactor, Math.max(1.0 - Math.max(0.0, this.clickTime - this.clickDelay) * 10.0, 0.0))
+		if (this.showIcon) {
+			this.geometry.update(this.clickFactor, Math.max(1.0 - Math.max(0.0, this.clickTime - this.clickDelay) * 10.0, 0.0))
 
-		if (this.scene.children[1].children.indexOf(mesh) < 0) {
-			this.scene.children[1].add(mesh)
+			if (this.scene.children[1].children.indexOf(mesh) < 0) {
+				this.scene.children[1].add(mesh)
+			}
+		}
+		else {
+			if (this.scene.children[1].children.indexOf(mesh) >= 0) {
+				this.scene.children[1].remove(mesh)
+			}
 		}
 	}
 })()
