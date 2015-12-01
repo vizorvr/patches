@@ -39,7 +39,7 @@ var InputsToArray = E2.plugins.inputs_to_array = function InputsToArray(core, no
 }
 
 InputsToArray.prototype.update_input = function(slot, data) {
-	if (data === null)
+	if (data === null || data === undefined)
 		delete this.array[slot.index]
 	else if (data instanceof Array)
 		this.array[slot.index] = data[0]
@@ -57,6 +57,8 @@ InputsToArray.prototype.update_output = function(slot) {
 InputsToArray.prototype.connection_changed = function(on, conn, slot) {
 	if (this.lsg.connection_changed(on, conn, slot))
 		this.lsg.infer_dt()
+
+	this.updated = true
 }
 
 InputsToArray.prototype.state_changed = function(ui) {
@@ -79,7 +81,7 @@ InputsToArray.prototype.state_changed = function(ui) {
 
 		this.lsg.infer_dt()
 	}
-};
+}
 
 
 })();
