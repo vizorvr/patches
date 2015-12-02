@@ -95,8 +95,8 @@ Connection.prototype.signal_change = function(on) {
 
 	if (!on && dstNode.plugin.update_input) {
 		if (this.dst_slot.def !== undefined) {
-				dstNode.plugin.update_input(this.dst_slot, clone(this.dst_slot.def))
-				dstNode.plugin.updated = true
+			dstNode.plugin.update_input(this.dst_slot, clone(this.dst_slot.def))
+			dstNode.plugin.updated = true
 		} else {
 			dstNode.plugin.update_input(this.dst_slot, E2.app.player.core.get_default_value(this.dst_slot.dt))
 			dstNode.plugin.updated = true
