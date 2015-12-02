@@ -296,7 +296,7 @@ EditorChannel.prototype.send = function(payload) {
 		return;
 
 	if (E2.app.snapshotPending && isEditAction(payload))
-		this.snapshot()
+		return this.snapshot()
 
 	this.wsChannel.send(
 		payload.channel === 'Global' ? payload.channel : this.channelName,
