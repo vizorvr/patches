@@ -20,10 +20,11 @@
 			}
 		]
 
-		var deftex = core.textureCache.defaultTexture.image
+		var deftex = core.textureCache.loadingTexture.image
 
 		var defTexture = new THREE.CubeTexture([deftex, deftex, deftex, deftex, deftex, deftex])
 		defTexture.needsUpdate = true
+
 
 		var defShader = THREE.ShaderLib['cube']
 		defShader.uniforms['tCube'].value = defTexture
@@ -125,7 +126,7 @@
 		},
 		undefined,
 		function(e) {
-			console.log('failed to load ' + url, e)
+			console.log('failed to load ' + that.url, e)
 		})
 	}
 
