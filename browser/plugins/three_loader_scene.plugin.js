@@ -103,6 +103,7 @@
 
 					that.updated = true
 				    
+					mixpanel.track('ThreeLoaderScenePlugin Model Changed')
 				    E2.app.undoManager.end()
 			    })
 			})
