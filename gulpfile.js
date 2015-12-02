@@ -14,6 +14,8 @@ paths = {
 		plugins: './browser/plugins/*.plugin.js',
 		player:
 		[
+			'./browser/vendor/when.js',
+
 			'./browser/scripts/event-emitter.js',
 			'./browser/scripts/core.js',
 			'./browser/scripts/util.js',
@@ -34,6 +36,8 @@ paths = {
 			'./browser/scripts/worldEditor/worldEditor.js',
 			'./browser/scripts/worldEditor/worldEditorCamera.js',
 			'./browser/scripts/worldEditor/worldEditorOriginGrid.js',
+
+			'./browser/scripts/loaders/multiObjectLoader.js',
 
 			'./browser/vendor/three/three.js',
 			'./browser/vendor/three/OBJLoader.js',

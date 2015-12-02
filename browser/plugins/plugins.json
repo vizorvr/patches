@@ -94,9 +94,9 @@
         "Procedural Ground": "three_procedural_ground",
         "Mesh": "three_mesh",
         "Point Cloud Mesh": "three_point_cloud_mesh",
-        "3D model loader": "three_loader_model",
+        "3D Geometry Loader": "three_loader_model",
         "Particle Emitter": "three_particle_emitter",
-        "3D scene loader": "three_loader_scene",
+        "3D Model Loader": "three_loader_scene",
         "Mesh attributes": "three_object3d_attribute_extractor",
         "Line Segments": "three_line_segments"
     },
