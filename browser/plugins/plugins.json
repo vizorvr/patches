@@ -211,6 +211,7 @@
     },
 
     "ARRAYS & OBJECTS": {
+        "Inputs to Array": "inputs_to_array",
         "Array Set": "array_set",
         "Array Get": "array_get",
         "Array Remove": "array_remove",
