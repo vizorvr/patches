@@ -104,6 +104,8 @@ EditConnection.prototype.isConnectable = function() {
 }
 
 EditConnection.prototype.commit = function() {
+	var disconnected = false 
+
 	if (this.isConnectable() && this.connection.src_slot === this.srcSlot &&
 		this.connection.dst_slot === this.dstSlot) 
 		return; 
@@ -111,12 +113,15 @@ EditConnection.prototype.commit = function() {
 	// connection changed or removed?
 	if (this.connection.src_slot && this.connection.dst_slot &&
 		(this.srcSlot !== this.connection.src_slot || this.dstSlot !== this.connection.dst_slot)) {
-		E2.app.onLocalConnectionChanged(this.connection)
 		this.graphApi.disconnect(E2.core.active_graph, this.connection)
+		disconnected = true
 	}
 
-	if (!this.isConnectable())
+	if (!this.isConnectable()) {
+		if (disconnected)
+			E2.app.onLocalConnectionChanged(this.connection)
 		return;
+	}
 
 	this.connection.src_node = this.srcNode
 	this.connection.dst_node = this.dstNode
