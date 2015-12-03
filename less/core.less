@@ -32,9 +32,16 @@ body {
   margin:0;
 }
 
-.noselect
-{
+.noselect {
 	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.noselect_all, .noselect_all * {
+  	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
