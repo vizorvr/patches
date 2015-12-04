@@ -20,14 +20,13 @@
 			}
 		]
 
-		var deftex = core.textureCache.loadingTexture.image
+		var deftex = E2.core.assetLoader.loadingTexture.image
 
 		var defTexture = new THREE.CubeTexture([deftex, deftex, deftex, deftex, deftex, deftex])
 		defTexture.needsUpdate = true
 
-
-		var defShader = THREE.ShaderLib['cube']
-		defShader.uniforms['tCube'].value = defTexture
+		var defShader = THREE.ShaderLib.cube
+		defShader.uniforms.tCube.value = defTexture
 
 		var defMaterial = new THREE.ShaderMaterial({
 			fragmentShader: defShader.fragmentShader,
@@ -51,12 +50,11 @@
 	StereoCubeMapPlugin.prototype.loadTextures = function() {
 		var textures = []
 
-		var loader = new THREE.ImageLoader( THREE.DefaultLoadingManager );
-		loader.setCrossOrigin( '' );
-
 		var that = this
 
-		loader.load( this.url, function ( img ) {
+		E2.core.assetLoader
+		.loadAsset('image', this.url)
+		.then(function(img) {
 			var imageWidth = img.width
 			var imageHeight = img.height
 
@@ -80,7 +78,7 @@
 			var leftTexture = new THREE.CubeTexture(textures.splice(0, 6))
 			leftTexture.needsUpdate = true
 
-			var shader = THREE.ShaderLib['cube']
+			var shader = THREE.ShaderLib.cube
 
 			var leftUniforms = {
 				"tCube": { type: "t", value: leftTexture },
@@ -123,10 +121,6 @@
 			that.rightObj.channels.set(that.rightChannel)
 
 			that.updated = true
-		},
-		undefined,
-		function(e) {
-			console.log('failed to load ' + that.url, e)
 		})
 	}
 

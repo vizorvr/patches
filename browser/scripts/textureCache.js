@@ -10,7 +10,7 @@ TextureCache.prototype.get = function(url) {
 	var ce = this.textures[url]
 
 	if (ce) {
-		msg('INFO: Returning cahed version of texture \'' + url + '\'.')
+		msg('INFO: Returning cached version of texture \'' + url + '\'.')
 		ce.count++
 		return ce.texture
 	}
@@ -18,12 +18,15 @@ TextureCache.prototype.get = function(url) {
 	function onLoadFail() {
 		// set image to default texture
 		this.textures[url].texture.image = this.defaultTexture.image
-
 		this.textures[url].texture.needsUpdate = true
 	}
 	
 	// load a texture, set wrap mode to repeat
-	var texture = THREE.ImageUtils.loadTexture(url, undefined, undefined, onLoadFail.bind(this))
+	var texture = THREE.ImageUtils.loadTexture(url, 
+		undefined,
+		undefined,
+		onLoadFail.bind(this))
+
 	texture.wrapS = THREE.RepeatWrapping
 	texture.wrapT = THREE.RepeatWrapping
 

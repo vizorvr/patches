@@ -49,44 +49,6 @@
 		return inp
 	}
 
-	ThreeLoaderModelPlugin.prototype.loadObj = function() {
-		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
-
-		console.log('ThreeLoaderModelPlugin loading OBJ', this.state.url)
-
-		var mtlUrl = this.state.url.replace('.obj', '.mtl')
-
-		var that = this
-
-		$.get('/stat' + mtlUrl, function(data) {
-			if (data.error === undefined) {
-				// .mtl exists on server, load .obj and .mtl
-				new THREE.OBJMTLLoader()
-					.load(that.state.url, mtlUrl, that.onObjLoaded.bind(that), progress.bind(that), errorHandler)
-			}
-			else {
-				// no .mtl on server, load .obj only
-				new THREE.OBJLoader()
-					.load(that.state.url, that.onObjLoaded.bind(that), progress.bind(that), errorHandler)
-			}
-		})
-	}
-
-	ThreeLoaderModelPlugin.prototype.onJsonLoaded = function(geoms, mats) {
-		this.onObjLoaded([geoms], mats)
-	}
-
-	ThreeLoaderModelPlugin.prototype.loadJson = function() {
-		console.log('ThreeLoaderModelPlugin loading JSON', this.state.url)
-
-		new THREE.JSONLoader()
-			.load(this.state.url,
-				this.onJsonLoaded.bind(this),
-				progress.bind(this),
-				errorHandler
-			)
-	}
-
 	ThreeLoaderModelPlugin.prototype.update_state = function() {
 		if (!this.dirty)
 			return
@@ -94,29 +56,18 @@
 		if (!this.state.url)
 			return;
 
+		var that = this
+
 		this.geometries = this.getDefaultGeometries()
-
 		this.materials = this.getDefaultMaterials()
-
-		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 
 		console.log('AbstractThreeLoaderObjPlugin loading', this.state.url)
 
-		var url = this.state.url
-		var extname = url.substring(url.lastIndexOf('.'))
-		console.log('loading', extname)
-		switch(extname) {
-			case '.obj':
-				this.loadObj()
-				break;
-			case '.js':
-			case '.json':
-				this.loadJson()
-				break;
-			default:
-				msg('ERROR: Don`t know how to load', extname)
-				break;
-		}
+		E2.core.assetLoader
+		.loadAsset('model', this.state.url)
+		.then(function(asset) {
+			that.onObjLoaded(asset.geometries, asset.materials)
+		})
 
 		this.dirty = false
 	}

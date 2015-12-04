@@ -106,11 +106,15 @@ Player.prototype.load_from_json = function(json, cb) {
 
 Player.prototype.load_from_object = function(obj, cb) {
 	var c = this.core
-	
-	c.deserialiseObject(obj)
 
-	if (cb)
-		cb()
+	E2.core.assetLoader
+		.loadAssetsForGraph(obj.root)
+		.then(function() {
+			c.deserialiseObject(obj)
+
+			if (cb)
+				cb()
+		})
 }
 
 Player.prototype.load_from_url = function(url, cb) {

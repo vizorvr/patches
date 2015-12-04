@@ -37,6 +37,8 @@ paths = {
 			'./browser/scripts/worldEditor/worldEditorCamera.js',
 			'./browser/scripts/worldEditor/worldEditorOriginGrid.js',
 
+			'./browser/scripts/loaders/loaders.js',
+			'./browser/scripts/loaders/assetLoader.js',
 			'./browser/scripts/loaders/multiObjectLoader.js',
 
 			'./browser/vendor/three/three.js',
@@ -73,11 +75,6 @@ function errorHandler(err) {
 	this.emit('end')
 }
 
-gulp.task('clean:js:plugins', function(cb)
-{
-	del('./browser/plugins/all.plugins.js', cb);
-});
-
 gulp.task('clean:js:player', function(cb)
 {
 	del('./browser/scripts/player.min.js', cb);
@@ -88,36 +85,23 @@ gulp.task('clean:less', function(cb)
 	del('./browser/style/less.css', cb);
 });
 
-gulp.task('clean:js', ['clean:js:plugins', 'clean:js:player']);
+gulp.task('clean:js', ['clean:js:player']);
 
 gulp.task('clean', ['clean:js']);
-
-
-gulp.task('js:plugins', ['clean:js:plugins'], function()
-{
-	gulp.src(paths.js.plugins)
-	.pipe(slash())
-	.pipe(uglify().on('error', errorHandler))
-    .pipe(concat.header(';\n'))
-	.pipe(concat('all.plugins.js'))
-	.pipe(gulp.dest(path.join(__dirname, 'browser', 'plugins')))
-	.on('error', errorHandler)
-
-});
 
 gulp.task('js:player', ['clean:js:player'], function()
 {
 	gulp.src(paths.js.player)
 	.pipe(slash())
 	.pipe(preprocess({context: { FQDN: process.env.FQDN || 'vizor.io' } }))
-	.pipe(uglify().on('error', errorHandler))
+	// .pipe(uglify().on('error', errorHandler))
     .pipe(concat.header(';\n'))
 	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))
 	.on('error', errorHandler)
 });
 
-gulp.task('js', ['js:plugins', 'js:player']);
+gulp.task('js', ['js:player']);
 
 gulp.task('less', ['clean:less'], function() {
 	gulp.src(paths.less)
@@ -132,7 +116,6 @@ gulp.task('less', ['clean:less'], function() {
 
 gulp.task('watch', ['default'], function() {
 	gulp.watch('less/**/*', ['less']);
-	gulp.watch(paths.js.plugins, ['js:plugins']);
 	gulp.watch(paths.js.player, ['js:player']);
 });
 
@@ -141,7 +124,6 @@ gulp.task('watch:less', function() {
 });
 
 gulp.task('watch:player', function() {
-	gulp.watch(paths.js.plugins, ['js:plugins']);
 	gulp.watch(paths.js.player, ['js:player']);
 });
 

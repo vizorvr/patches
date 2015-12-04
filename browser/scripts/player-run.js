@@ -1,25 +1,36 @@
-function play()
-{
-	E2.app.player.play();
+function play() {
+	E2.app.player.play()
 }
 
-function load()
-{
-	var $canvas = $('canvas[data-graph-url]');
-	var url = $canvas.data('graph-url');
-	var autoplay = $canvas.data('autoplay');
-	E2.app.player.core.asset_tracker.add_listener(progress);
+function progress(pct) {
+	var at = E2.core.assetLoader
+	var $progress = $('.progress-bar')
+
+	$('.progress').show()
+
+	if (pct === 100)
+		$('.progress').hide()
+
+	$progress.css('width', pct + '%')
+}
+
+function load() {
+	var $canvas = $('canvas[data-graph-url]')
+	var url = $canvas.data('graph-url')
+	var autoplay = $canvas.data('autoplay')
+
+	E2.core.assetLoader.on('progress', progress)
+
 	E2.app.player.stop()
 	E2.app.player.on_update()
 	E2.app.player.load_from_url(url, function() {
-		if (autoplay) {
+		if (autoplay)
 			play()
-		}
 
 		mixpanel.track('Player Opened')
 
 		$(window).trigger('vizorLoaded')
-	});
+	})
 }
 
 function findVrDevices(devices)
@@ -60,15 +71,4 @@ $(document).ready(function()
 	else
 		CreatePlayer([null, null], load);
 });
-
-function progress()
-{
-	var at = E2.app.player.core.asset_tracker;
-	var $progress = $('.progress-bar');
-	var pct = Math.floor(((at.failed + at.completed) / at.started) * 100);
-	$('.progress').show();
-	if (pct === 100)
-		$('.progress').hide();
-	$progress.css('width', pct + '%');
-}
 
