@@ -7,7 +7,34 @@ if (typeof msg === 'undefined') var msg = function(msg) {console.error(msg)};
 var siteUI = new function() {
 	var that = this;
 
+	// same as in css
+	var breakMobile = 550;
+	var breakTablet = 900;
+
+	if (window.matchMedia) {
+		this.mqMobile = window.matchMedia("only screen and (max-width: "+ (breakMobile-1) +"px)")
+		this.mqTablet = window.matchMedia("screen and (max-width: "+ (breakTablet-1) +"px)")
+		this.mqDesktop = window.matchMedia("screen and (min-width: "+  breakTablet    +"px)")
+	} else {
+		this.mqMobile = this.mqTablet = this.mqMobile = { matches: false }	// stub
+	}
+
+
+	this.devicePixelRatio = window.devicePixelRatio || 1;
+	this.hasOrientationChange = "onorientationchange" in window;
+	this.previousOrientation = (this.hasOrientationChange) ? window.orientation : null;
+
+	// states (bool)
+	this.lastLayout = null;
+	this.lastPortrait = null;
+
+	this.onResize = function() {
+		that.tagBodyClass();
+	};
+
 	this.attach = function() {
+
+		$(window).on('resize', this.onResize.bind(this));
 
 		// common account forms
 		VizorUI.setupXHRForm(jQuery('#accountDetailsForm'));
@@ -38,17 +65,19 @@ var siteUI = new function() {
 	};
 
 	this.init = function() {
+		that.tagBodyClass();
 		that.attach();
 
 		if (jQuery('body.bHome').length > 0) {
 			that.initHomepage();
 		}
-
 	};
 
 	this.initHomepage = function($body) {
         mixpanel.track('Front Page')
-        
+
+		$body = $body || jQuery('body');
+
 		jQuery('a#homeSignin', $body).on('click', function(e){
 			e.preventDefault();
 			e.stopPropagation();
@@ -59,17 +88,37 @@ var siteUI = new function() {
 			return false;
 		});
 
-		jQuery('a.readmore.mobileonly', $body)
+		jQuery('h3.readmore a', $body)
 			.on('click', function(e){
+				if (this.href.split('#').length <= 1) return true;	// not for us
 				e.preventDefault();
 				e.stopPropagation();
-				jQuery(this).addClass('used');
-				var anchor = '#'+this.href.split('#')[1];
-				jQuery(anchor)
-					.hide()
-					.removeClass('nomobile')
-					.css({margin: '0 0 10px 0'})
-					.slideDown('medium');
+				if (!$body.hasClass('layoutMobile')) return false;
+
+				var anchor = '#'+ this.href.split('#')[1];
+				var $target = jQuery(anchor);
+				var $a = jQuery(this);
+
+				var wasVisible = $target.is(':visible');
+				if (wasVisible) {
+					$target
+						.slideUp('medium', function(){
+							jQuery(this)
+								.addClass('nomobile')
+								.css({margin: '0'})
+								.show()
+						})
+				} else {
+					$target
+						.hide()
+						.removeClass('nomobile')
+						.css({margin: '0 0 10px 0'})
+						.slideDown('medium')
+				}
+
+				$a
+					.toggleClass('closed', wasVisible)
+					.toggleClass('open', !wasVisible);
 				return false;
 			});
 
@@ -134,10 +183,56 @@ var siteUI = new function() {
 
 	}
 
+
+	// check if device resembles touch-capable.
+	this.isTouchCapable = function() {
+	  return !!('ontouchstart' in window);
+	};
+
+	/**
+	 * tags document.body with mobile|nonmobile and portrait|landscape classes. invoked at start
+	 */
+	this.tagBodyClass = function() {
+		var $body = jQuery('body');
+		var o = that.isPortraitLike();
+		if (o !== that.lastPortrait) {
+			that.lastPortrait = o
+			$body
+				.toggleClass('portrait', o)
+				.toggleClass('landscape', !o);
+		}
+		var l = that.getLayoutMode();
+		if (l !== that.lastLayout) {
+			that.lastLayout = l;
+			$body
+				.toggleClass('layoutMobile',  l === 'mobile')
+				.toggleClass('layoutTablet',  l === 'tablet')
+				.toggleClass('layoutDesktop', l === 'desktop')
+		}
+		return true;
+	};
+
+	// check if orientation resembles portrait
+	this.isPortraitLike = function() {
+		// http://caniuse.com/#search=matchmedia
+		var mql = window.matchMedia("(orientation: portrait)");
+		return mql.matches;
+	};
+
+	this.getLayoutMode = function() {	// note, match css!
+		if (this.mqMobile.matches)
+			return 'mobile';
+		else if (this.mqTablet.matches)
+			return 'tablet';
+		else if (this.mqDesktop.matches)
+			return 'desktop';
+		else
+			return 'default'
+	};
+
 }
 
 jQuery('document').ready(siteUI.init);
-
 
 if (typeof VizorUI === 'undefined') var VizorUI = {};
 
@@ -263,6 +358,27 @@ VizorUI.modalAlert = function(message, heading, className, okLabel) {
 	}
 	return VizorUI.modalOpen('<p>'+message+'</p>', heading, className, true, opts);
 }
+
+VizorUI.isBrowser = {
+	WebKit: function() {
+		return navigator.userAgent.match(/AppleWebKit/);
+	},
+	Gecko: function() {
+		return navigator.userAgent.match(/Gecko/);
+	},
+	Firefox: function() {
+		return navigator.userAgent.match(/Firefox/);
+	},
+	Chrome: function() {
+		return navigator.userAgent.match(/Chrome/);
+	},
+	Safari: function() {
+		return navigator.userAgent.match(/Safari/);
+	},
+	Edge: function() {
+		return navigator.userAgent.match(/Edge/);
+	}
+};
 
 VizorUI.isMobile = {
 	Android: function() {
