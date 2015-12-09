@@ -11,6 +11,8 @@ function ThreeObject3DPlugin(core) {
 		{ name: 'visible', dt: core.datatypes.BOOL, def: true },
 		{ name: 'castShadow', dt: core.datatypes.BOOL },
 		{ name: 'receiveShadow', dt: core.datatypes.BOOL },
+
+		{ name: 'name', dt: core.datatypes.TEXT, def: ''}
 	]
 
 	this.output_slots = [{
@@ -71,7 +73,8 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 		},
 		function() { that.object3d.visible = data },
 		function() { that.object3d.castShadow = data },
-		function() { that.object3d.receiveShadow = data }
+		function() { that.object3d.receiveShadow = data },
+		function() { that.object3d.name = data }
 	]
 
 	var slotOffset = this.node.plugin.input_slots.length - handlers.length

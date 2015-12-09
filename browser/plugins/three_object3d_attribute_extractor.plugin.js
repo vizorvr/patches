@@ -11,7 +11,8 @@
 		this.output_slots = [
 			{ name: 'position', dt: core.datatypes.VECTOR },
 			{ name: 'rotation', dt: core.datatypes.VECTOR },
-			{ name: 'scale', dt: core.datatypes.VECTOR }
+			{ name: 'scale', dt: core.datatypes.VECTOR },
+			{ name: 'name', dt: core.datatypes.TEXT }
 		]
 
 		this.desc = 'Extract position, rotation and scale from a Mesh'
@@ -29,6 +30,8 @@
 		this.rotation = new THREE.Vector3(0, 0, 0)
 		this.scale = new THREE.Vector3(1, 1, 1)
 
+		this.name = ''
+
 		this.meshDirty = false
 	}
 
@@ -41,6 +44,9 @@
 		}
 		else if (slot.name === 'scale') {
 			return this.scale
+		}
+		else if (slot.name === 'name') {
+			return this.name
 		}
 	}
 
@@ -59,6 +65,8 @@
 		this.rotation.set(this.euler.x, this.euler.y, this.euler.z)
 
 		this.scale.copy(this.object3d.scale)
+
+		this.name = this.object3d.name
 
 		this.meshDirty = false
 	}
