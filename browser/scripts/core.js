@@ -34,16 +34,16 @@ E2.slot_type = { input: 0, output: 1 };
 E2.erase_color = '#ff3b3b';
 E2.COLOR_COMPATIBLE_SLOT = '#080';
 
-(function() {
-	E2.uid = function() {
-		var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
-		var uid = ''
-		for (var i=0; i < 12; i++) {
-			uid += keys[Math.floor(Math.random() * keys.length)]
-		}
-		return uid
+E2.GRAPH_NODES = ['graph', 'loop', 'array_function'];
+
+E2.uid = function() {
+	var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
+	var uid = ''
+	for (var i=0; i < 12; i++) {
+		uid += keys[Math.floor(Math.random() * keys.length)]
 	}
-})()
+	return uid
+}
 
 function Delegate(delegate, dt, count)
 {

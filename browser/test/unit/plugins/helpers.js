@@ -24,6 +24,8 @@ exports.reset = function() {
 	E2 = global.E2
 
 	E2.slot_type = { input: 0, output: 1 }
+	
+	E2.GRAPH_NODES = ['graph', 'loop', 'array_function'];
 
 	E2.dt = {
 		FLOAT: { id: 0, name: 'Float' },

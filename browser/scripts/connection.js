@@ -43,43 +43,43 @@ Connection.prototype.destroy_ui = function() {
 Connection.prototype.reset = function() {
 	if (this.ui && this.ui.flow) {
 		this.ui.flow = false;
-		this.ui.color = '#000';
-	}
-};
-
-Connection.prototype.r_update_inbound = function(node)
-{
-	node.queued_update = 1;
-	
-	if(node.plugin.id !== 'input_proxy')
-	{
-		for(var i = 0, len = node.inputs.length; i < len; i++)
-			this.r_update_inbound(node.inputs[i].src_node);
-	}
-	else
-	{
-		var rp = node.parent_graph.plugin;
-		
-		if(rp && rp.parent_node.queued_update < 0 && rp.state.enabled)
-			this.r_update_inbound(rp.parent_node);
+		this.ui.color = '#000'
 	}
 }
 
-Connection.prototype.r_update_outbound = function(node)
-{
+Connection.prototype.updateInboundNodes = function(node) {
 	node.queued_update = 1;
 	
-	if(node.plugin.id !== 'output_proxy')
-	{
-		for(var i = 0, len = node.outputs.length; i < len; i++)
-			this.r_update_outbound(node.outputs[i].dst_node);
-	}
-	else
-	{
-		var rp = node.parent_graph.plugin;
+	if (node.plugin.id !== 'input_proxy') {
+		if (E2.GRAPH_NODES.indexOf(node.plugin.id) > -1) {
+			node.plugin.graph.roots.map(this.updateInboundNodes.bind(this))
+		}
 
-		if(rp && rp.parent_node.queued_update < 0 && rp.state.enabled)
-			this.r_update_outbound(rp.parent_node);
+		for(var i = 0, len = node.inputs.length; i < len; i++)
+			this.updateInboundNodes(node.inputs[i].src_node)
+	} else {
+		var rp = node.parent_graph.plugin
+		
+		if (rp && rp.parent_node.queued_update < 0)
+			this.updateInboundNodes(rp.parent_node)
+	}
+}
+
+Connection.prototype.updateOutboundNodes = function(node) {
+	node.queued_update = 1
+	
+	if (node.plugin.id !== 'output_proxy') {
+		if (E2.GRAPH_NODES.indexOf(node.plugin.id) > -1) {
+			node.plugin.graph.roots.map(this.updateOutboundNodes.bind(this))
+		}
+
+		for(var i = 0, len = node.outputs.length; i < len; i++)
+			this.updateOutboundNodes(node.outputs[i].dst_node)
+	} else {
+		var rp = node.parent_graph.plugin
+
+		if (rp && rp.parent_node.queued_update < 0)
+			this.updateOutboundNodes(rp.parent_node)
 	}
 }
 
@@ -109,8 +109,8 @@ Connection.prototype.signal_change = function(on) {
 	}
 	
 	if (on) {
-		this.r_update_inbound(dstNode)
-		this.r_update_outbound(dstNode)
+		this.updateInboundNodes(dstNode)
+		this.updateOutboundNodes(dstNode)
 	}
 };
 
