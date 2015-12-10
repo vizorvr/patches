@@ -101,7 +101,8 @@
         "Particle Emitter": "three_particle_emitter",
         "3D Model Loader": "three_loader_scene",
         "Mesh attributes": "three_object3d_attribute_extractor",
-        "Line Segments": "three_line_segments"
+        "Line Segments": "three_line_segments",
+        "3D Object Group": "three_group"
     },
 
     "MATERIALS AND LIGHTS": {

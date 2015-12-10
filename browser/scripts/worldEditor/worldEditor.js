@@ -202,12 +202,27 @@ WorldEditor.prototype.onPaste = function(nodes) {
 	var slots = sceneNode.getDynamicInputSlots()
 	var slot = slots[slots.length - 1]
 
+	function findObject3DOutput(node) {
+		var staticSlots = node.plugin.output_slots
+		for (var i = 0; i < staticSlots.length; ++i) {
+			if (staticSlots[i].dt === E2.core.datatypes.OBJECT3D) {
+				return {index: i, dynamic: false}
+			}
+		}
+
+		// if it's not a static slot,
+		// assume it's the first dynamic slot
+		return {index: 0, dynamic: true}
+	}
+
+	var srcSlot = findObject3DOutput(dropNode)
+
 	// connect the new patch to the scene
 	var connection = Connection.hydrate(E2.core.root_graph, {
 		src_nuid: dropNode.uid,
 		dst_nuid: sceneNode.uid,
-		src_slot: 0,
-		src_dyn: true, // TODO: the src slot is not necessarily a dyn slot
+		src_slot: srcSlot.index,
+		src_dyn: srcSlot.dynamic, // TODO: the src slot is not necessarily a dyn slot
 		dst_slot: slot.index,
 		dst_dyn: true
 	})
@@ -248,11 +263,13 @@ WorldEditor.prototype.onPaste = function(nodes) {
 }
 
 WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) {
-	function markNodeSelectedIfConnectedTo(curNode, endNode) {
+	var selectNodes = []
+
+	function collectConnectingNodesBetween(curNode, endNode) {
 		var allOutputs = curNode.outputs.concat(curNode.dyn_outputs)
 
 		if (curNode.plugin.id === 'output_proxy' && curNode.parent_graph && curNode.parent_graph.plugin && curNode.parent_graph.plugin.parentNode) {
-			if (markNodeSelectedIfConnectedTo(curNode.parent_graph.plugin.parentNode, sceneNode)) {
+			if (collectConnectingNodesBetween(curNode.parent_graph.plugin.parentNode, sceneNode)) {
 				// selected a whole subgraph node, don't recurse back into the subgraph
 				return false
 			}
@@ -260,15 +277,23 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 
 		for(var i = 0; i < allOutputs.length; ++i) {
 			var candidateNode = allOutputs[i].dst_node
-			var foundRouteToEnd = (candidateNode === endNode) || (candidateNode ? markNodeSelectedIfConnectedTo(candidateNode, endNode) : false)
+
+			var atEndNode = candidateNode === endNode
+
+			var foundRouteToEnd =
+					atEndNode ||
+					(candidateNode ?
+							collectConnectingNodesBetween(candidateNode, endNode) :
+							false)
 
 			if (foundRouteToEnd) {
 				// go to the correct graph level for this node
 				curNode.parent_graph.tree_node.activate()
 
-				// select this node and recurse back in the graph to select the path we came here via
-				E2.app.markNodeAsSelected(curNode)
-				curNode.getConnections().map(E2.app.markConnectionAsSelected.bind(E2.app))
+				// select this node and recurse back in the graph to select the path via which we came here
+				if (selectNodes.indexOf(curNode) === -1) {
+					selectNodes.push(curNode)
+				}
 
 				return true
 			}
@@ -277,8 +302,42 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 		return false
 	}
 
+	E2.app.clearSelection()
+
 	if (meshNode) {
-		markNodeSelectedIfConnectedTo(meshNode, sceneNode)
+		// step 1:
+		// collect nodes between mesh and scene
+		collectConnectingNodesBetween(meshNode, sceneNode)
+
+		if (selectNodes.length === 0) {
+			// found nothing
+			return
+		}
+
+		// step 2:
+		// add any objects hidden in group hierarchies into selection
+		var resolvedMeshNode = selectNodes[selectNodes.length - 1]
+		var origSelection = selectNodes.slice(0)
+
+		for (var i = 0; i < origSelection.length; ++i) {
+			var node = origSelection[i]
+
+			if (node.plugin.object3d) {
+				node.plugin.object3d.traverse(function(obj) {
+					if (obj.backReference && selectNodes.indexOf(obj.backReference.node) === -1) {
+						collectConnectingNodesBetween(obj.backReference.node, sceneNode)
+					}
+				})
+			}
+		}
+
+		// step 3:
+		// select the collected nodes
+		for (var i = 0; i < selectNodes.length; ++i) {
+			E2.app.markNodeAsSelected(selectNodes[i])
+			selectNodes[i].getConnections().map(E2.app.markConnectionAsSelected.bind(E2.app))
+		}
+
 	}
 }
 
@@ -312,28 +371,35 @@ WorldEditor.prototype.pickObject = function(e) {
 		var selectObjects = []
 
 		for (var i = 0; i < intersects.length; i++) {
-			var obj = intersects[i].object
-			selectObjects.push(obj)
+			// ancestor = object closest to object3d tree root
+			var ancestorObj = undefined
+
+			var seekObj = intersects[i].object
 
 			// traverse the tree hierarchy up to find a parent with a node back reference
-			while (obj && obj.backReference === undefined) {
-				obj = obj.parent
+			// store a reference to the object closest to the scene root (ancestorObj)
+			while (seekObj) {
+				if (seekObj.backReference && seekObj !== this.scene) {
+					ancestorObj = seekObj
+				}
+
+				seekObj = seekObj.parent
 			}
-			if (!obj) {
+			if (!ancestorObj) {
 				// nothing found
 				continue
 			}
 
-			if (obj.backReference.parentNode === this.scene.backReference.parentNode) {
+			if (ancestorObj.backReference.parentNode === this.scene.backReference.parentNode) {
 				// trying to select the scene, ignore
 				continue
 			}
 
-			E2.app.clearSelection()
-			
-			// select everything between the mesh and scene nodes 
+			selectObjects.push(ancestorObj)
+
+			// select everything between the mesh and scene nodes
 			// (and any complete subgraph that contains the mesh)
-			this.selectMeshAndDependencies(obj.backReference.parentNode, this.scene.backReference.parentNode)
+			this.selectMeshAndDependencies(ancestorObj.backReference.parentNode, this.scene.backReference.parentNode)
 
 			// only select a single object
 			break
