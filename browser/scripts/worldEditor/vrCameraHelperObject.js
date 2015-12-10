@@ -124,20 +124,17 @@ function VRCameraHelper( camera ) {
 	VRCameraGeometry.prototype = Object.create(THREE.Geometry.prototype)
 	VRCameraGeometry.prototype.constructor = THREE.Geometry
 
-	this.camera = camera
-	this.camera.updateMatrixWorld()
 	this.geometry = new VRCameraGeometry()
 	this.material = new THREE.MeshLambertMaterial({color: 0xffffff})
 	this.material.wireframe = false
 
 	THREE.Mesh.call(this, this.geometry, this.material)
 
-	this.camera.updateMatrixWorld()
 	this.matrixAutoUpdate = false
 
-	this.matrix = this.camera.matrixWorld
-
-	this.backReference = this.camera.backReference
+	if (camera) {
+		this.attachCamera(camera)
+	}
 }
 
 VRCameraHelper.prototype = Object.create( THREE.Mesh.prototype )
@@ -148,3 +145,10 @@ VRCameraHelper.prototype.dispose = function() {
 	this.material.dispose()
 }
 
+VRCameraHelper.prototype.attachCamera = function(camera) {
+	this.camera = camera
+
+	this.matrix = this.camera.matrixWorld
+
+	this.backReference = this.camera.backReference
+}

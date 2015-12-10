@@ -113,9 +113,9 @@
 		if (this.dirty)
 			this.perspectiveCamera.updateProjectionMatrix()
 
-		this.perspectiveCamera.updateMatrixWorld()
-
 		this.controls.update(this.perspectiveCamera.position.clone(), this.perspectiveCamera.quaternion.clone())
+
+		this.perspectiveCamera.updateMatrixWorld()
 
 		this.updated = true
 	}

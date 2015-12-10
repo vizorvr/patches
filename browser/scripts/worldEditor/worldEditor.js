@@ -45,6 +45,8 @@ function WorldEditor(domElement) {
 	// transform controls
 	this.transformControls = new THREE.TransformControls(this.camera.perspectiveCamera, this.domElement)
 
+	this.cameraHelper = new VRCameraHelper()
+
 	var that = this
 
 	this.transformControls.addEventListener('mouseDown', function() {
@@ -129,12 +131,10 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 	if (scene) {
 		scene.children[0].traverse( nodeHandler )
 	}
-	
-	// add handles for the camera helper
-	this.cameraHelper = new VRCameraHelper(camera)
-	this.cameraHelper.backReference = camera.backReference
-	this.handleTree.add(this.cameraHelper)
 
+	// add handles for the camera helper
+	this.cameraHelper.attachCamera(camera)
+	this.handleTree.add(this.cameraHelper)
 
 	// if there's a pending selection (something was pasted),
 	// set selection accordingly
