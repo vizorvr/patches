@@ -7,6 +7,8 @@ function MultiObjectLoader(manager) {
 	this.objectLoader = new THREE.ObjectLoader(manager)
 	this.sceneLoader = new THREE.SceneLoader(manager)
 	this.jsonLoader = new THREE.JSONLoader(manager)
+
+	this.texturePath = ''
 }
 
 MultiObjectLoader.prototype = {
@@ -14,6 +16,10 @@ MultiObjectLoader.prototype = {
 
 	load: function (url, onGeomsMatsLoaded, onObject3DLoaded, onProgress, onError) {
 		var that = this
+
+		if ( this.texturePath === '' ) {
+			this.setTexturePath(url.substring( 0, url.lastIndexOf( '/' ) + 1 ))
+		}
 
 		var loader = new THREE.XHRLoader(this.manager)
 		loader.setCrossOrigin(this.crossOrigin)
@@ -45,6 +51,8 @@ MultiObjectLoader.prototype = {
 	},
 
 	setTexturePath: function (value) {
+		this.texturePath = value
+
 		this.objectLoader.texturePath = value
 		this.jsonLoader.texturePath = value
 
