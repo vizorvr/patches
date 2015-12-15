@@ -1,5 +1,5 @@
 {
-    "abs_t": 50.372,
+    "abs_t": 0.0,
     "active_graph": "root",
     "graph_uid": "TXDgBc0JJtS3",
     "root": {
@@ -9,23 +9,23 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 651,
-                "y": 171,
-                "uid": "crVbkE15KX4Z",
+                "x": 687,
+                "y": 334,
+                "uid": "zyXxTUrVE39G",
                 "state": {
                     "always_update": true,
                     "input_sids": {
-                        "0s7IEuQRRu9B": "0",
-                        "ecCZx0bnBoVh": "1",
-                        "mSzJQfGG0Kh9": "2"
+                        "2pqAjJX7sG5x": "0",
+                        "UCh37BXLYFp8": "1",
+                        "h9W8N3NKcerd": "2"
                     },
                     "output_sids": {
-                        "sVjur2pCquBx": "3"
+                        "aWt6MXRp4aqV": "3"
                     }
                 },
                 "title": "Stopwatch",
                 "graph": {
-                    "uid": "1Sb9KsH7Y0pW",
+                    "uid": "wU6dMvTdfwza",
                     "parent_uid": "root",
                     "open": true,
                     "nodes": [
@@ -33,19 +33,19 @@
                             "plugin": "delta_t_generator",
                             "x": 878,
                             "y": 221,
-                            "uid": "WaMUepQc0mES"
+                            "uid": "fmghqGyDRPcS"
                         },
                         {
                             "plugin": "add_modulator",
                             "x": 1028,
                             "y": 221,
-                            "uid": "xfd2eWKknyyN"
+                            "uid": "ApCHV9RQ2vPb"
                         },
                         {
                             "plugin": "variable_local_read",
                             "x": 44,
                             "y": 394,
-                            "uid": "AobzzGh3As7A",
+                            "uid": "UMTRYQWNgAnR",
                             "title": "time",
                             "dyn_out": [
                                 {
@@ -63,7 +63,7 @@
                             "plugin": "variable_local_write",
                             "x": 1566,
                             "y": 201,
-                            "uid": "LvkuWoL5hQ2M",
+                            "uid": "6BAKrwXbsWaL",
                             "title": "time",
                             "dyn_in": [
                                 {
@@ -81,7 +81,7 @@
                             "plugin": "variable_local_read",
                             "x": 41,
                             "y": 173,
-                            "uid": "i8bkr8lLaKMg",
+                            "uid": "mfuBTDHYAVYH",
                             "title": "state",
                             "dyn_out": [
                                 {
@@ -99,13 +99,13 @@
                             "plugin": "if_else_modulator",
                             "x": 1267,
                             "y": 212,
-                            "uid": "ltHMlQZfl8oi"
+                            "uid": "N3pjV8RKTSPS"
                         },
                         {
                             "plugin": "variable_local_write",
                             "x": 781,
                             "y": 306,
-                            "uid": "LeQFUeBFoolc",
+                            "uid": "vgAAa7C8GLSe",
                             "title": "state",
                             "dyn_in": [
                                 {
@@ -123,7 +123,7 @@
                             "plugin": "variable_local_write",
                             "x": 837,
                             "y": 69,
-                            "uid": "lAy0TdeR6Nd2",
+                            "uid": "SYcUBZcfB8dX",
                             "title": "state",
                             "dyn_in": [
                                 {
@@ -141,7 +141,7 @@
                             "plugin": "const_float_generator",
                             "x": 316,
                             "y": 505,
-                            "uid": "IM88K0Ha3HXg",
+                            "uid": "jEKBStaD6kyx",
                             "state": {
                                 "val": 0
                             }
@@ -150,7 +150,7 @@
                             "plugin": "variable_local_write",
                             "x": 737,
                             "y": 454,
-                            "uid": "JzDVXP5WQmjA",
+                            "uid": "bWyXkspTurVA",
                             "title": "time",
                             "dyn_in": [
                                 {
@@ -168,31 +168,31 @@
                             "plugin": "const_float_generator",
                             "x": 329,
                             "y": 133,
-                            "uid": "pxCW3kWbWXC8",
+                            "uid": "3wj9xC9bM4Ac",
                             "state": {
-                                "val": 0
+                                "val": 1
                             }
                         },
                         {
                             "plugin": "const_float_generator",
                             "x": 338,
                             "y": 300,
-                            "uid": "iE2Kv3rcxNmd",
+                            "uid": "cctGgm5uTXyg",
                             "state": {
-                                "val": 1
+                                "val": 0
                             }
                         },
                         {
                             "plugin": "equals_modulator",
                             "x": 1030,
                             "y": 98,
-                            "uid": "rKfwWdLn4C00"
+                            "uid": "tpvzV7YRqdxN"
                         },
                         {
                             "plugin": "input_proxy",
                             "x": 370,
                             "y": 12,
-                            "uid": "0s7IEuQRRu9B",
+                            "uid": "2pqAjJX7sG5x",
                             "title": "start",
                             "dyn_out": [
                                 {
@@ -211,7 +211,7 @@
                             "plugin": "input_proxy",
                             "x": 377,
                             "y": 221,
-                            "uid": "ecCZx0bnBoVh",
+                            "uid": "UCh37BXLYFp8",
                             "title": "stop",
                             "dyn_out": [
                                 {
@@ -230,7 +230,7 @@
                             "plugin": "input_proxy",
                             "x": 376,
                             "y": 409,
-                            "uid": "mSzJQfGG0Kh9",
+                            "uid": "h9W8N3NKcerd",
                             "title": "reset",
                             "dyn_out": [
                                 {
@@ -249,7 +249,7 @@
                             "plugin": "output_proxy",
                             "x": 1548,
                             "y": 434,
-                            "uid": "sVjur2pCquBx",
+                            "uid": "aWt6MXRp4aqV",
                             "title": "time",
                             "dyn_in": [
                                 {
@@ -269,227 +269,227 @@
                             "plugin": "if_else_modulator",
                             "x": 576,
                             "y": 6,
-                            "uid": "iNgnMb5Tf08O"
+                            "uid": "3MdCeC6ehG2x"
                         },
                         {
                             "plugin": "if_else_modulator",
                             "x": 535,
                             "y": 202,
-                            "uid": "2ombOFXrKDWR"
+                            "uid": "khUzPCvMmg6X"
                         },
                         {
                             "plugin": "if_else_modulator",
                             "x": 522,
                             "y": 418,
-                            "uid": "R5c1VDFSyGII"
+                            "uid": "MzAQWCJPcXHv"
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": "WaMUepQc0mES",
-                            "dst_nuid": "xfd2eWKknyyN",
+                            "src_nuid": "fmghqGyDRPcS",
+                            "dst_nuid": "ApCHV9RQ2vPb",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "W8dP48P1FALh",
+                            "uid": "dFFSmrATyFG3",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "AobzzGh3As7A",
-                            "dst_nuid": "xfd2eWKknyyN",
+                            "src_nuid": "UMTRYQWNgAnR",
+                            "dst_nuid": "ApCHV9RQ2vPb",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "davh0eesdr8H",
+                            "uid": "87bEYWZEb3Yw",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "xfd2eWKknyyN",
-                            "dst_nuid": "ltHMlQZfl8oi",
+                            "src_nuid": "ApCHV9RQ2vPb",
+                            "dst_nuid": "N3pjV8RKTSPS",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "UpOiJ3ii0PPQ",
+                            "uid": "zNQjVJUtAvht",
                             "src_connected": true,
                             "dst_connected": true,
                             "offset": 1
                         },
                         {
-                            "src_nuid": "AobzzGh3As7A",
-                            "dst_nuid": "ltHMlQZfl8oi",
+                            "src_nuid": "UMTRYQWNgAnR",
+                            "dst_nuid": "N3pjV8RKTSPS",
                             "src_slot": 0,
                             "dst_slot": 2,
-                            "uid": "gQZ2hFtFvG4p",
+                            "uid": "t7VUw3xEzRJW",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true,
                             "offset": 1
                         },
                         {
-                            "src_nuid": "ltHMlQZfl8oi",
-                            "dst_nuid": "LvkuWoL5hQ2M",
+                            "src_nuid": "N3pjV8RKTSPS",
+                            "dst_nuid": "6BAKrwXbsWaL",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "zVEZ9jZi0JTg",
+                            "uid": "7tqTsS69w9VW",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true
                         },
                         {
-                            "src_nuid": "i8bkr8lLaKMg",
-                            "dst_nuid": "rKfwWdLn4C00",
+                            "src_nuid": "mfuBTDHYAVYH",
+                            "dst_nuid": "tpvzV7YRqdxN",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "nx9WnOrIab3g",
+                            "uid": "5SuNHtcFGWVr",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "rKfwWdLn4C00",
-                            "dst_nuid": "ltHMlQZfl8oi",
+                            "src_nuid": "tpvzV7YRqdxN",
+                            "dst_nuid": "N3pjV8RKTSPS",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "iMuwh1zRIA0B",
+                            "uid": "tjLeBxzSbUVB",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "pxCW3kWbWXC8",
-                            "dst_nuid": "rKfwWdLn4C00",
+                            "src_nuid": "3wj9xC9bM4Ac",
+                            "dst_nuid": "tpvzV7YRqdxN",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "2B7jTVDoLqlO",
+                            "uid": "dgsP5u7Ur42A",
                             "src_connected": true,
                             "dst_connected": true,
                             "offset": 1
                         },
                         {
-                            "src_nuid": "ltHMlQZfl8oi",
-                            "dst_nuid": "sVjur2pCquBx",
+                            "src_nuid": "N3pjV8RKTSPS",
+                            "dst_nuid": "aWt6MXRp4aqV",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "BOe6YNxrR3dG",
+                            "uid": "hnKB8NVsJtK2",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true,
                             "offset": 2
                         },
                         {
-                            "src_nuid": "pxCW3kWbWXC8",
-                            "dst_nuid": "iNgnMb5Tf08O",
+                            "src_nuid": "3wj9xC9bM4Ac",
+                            "dst_nuid": "3MdCeC6ehG2x",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "a8R8lTgfkaD6",
+                            "uid": "48CjJgrhVvnN",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "0s7IEuQRRu9B",
-                            "dst_nuid": "iNgnMb5Tf08O",
+                            "src_nuid": "2pqAjJX7sG5x",
+                            "dst_nuid": "3MdCeC6ehG2x",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "KIQ8Dbym1gSX",
+                            "uid": "wfF9C4Pxc9YY",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "i8bkr8lLaKMg",
-                            "dst_nuid": "iNgnMb5Tf08O",
+                            "src_nuid": "mfuBTDHYAVYH",
+                            "dst_nuid": "3MdCeC6ehG2x",
                             "src_slot": 0,
                             "dst_slot": 2,
-                            "uid": "sv9I4gILoDGV",
+                            "uid": "9A3KbaTHDEhU",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true,
                             "offset": 2
                         },
                         {
-                            "src_nuid": "ecCZx0bnBoVh",
-                            "dst_nuid": "2ombOFXrKDWR",
+                            "src_nuid": "UCh37BXLYFp8",
+                            "dst_nuid": "khUzPCvMmg6X",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "hAl5B7sXusHY",
+                            "uid": "hCJG58S4Y5jy",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "iE2Kv3rcxNmd",
-                            "dst_nuid": "2ombOFXrKDWR",
+                            "src_nuid": "cctGgm5uTXyg",
+                            "dst_nuid": "khUzPCvMmg6X",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "c7ZzUm8NBmR2",
+                            "uid": "dPB4GTeucHzr",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "i8bkr8lLaKMg",
-                            "dst_nuid": "2ombOFXrKDWR",
+                            "src_nuid": "mfuBTDHYAVYH",
+                            "dst_nuid": "khUzPCvMmg6X",
                             "src_slot": 0,
                             "dst_slot": 2,
-                            "uid": "nME350n2b8pH",
+                            "uid": "aWuGRGMtZtdM",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true,
                             "offset": 3
                         },
                         {
-                            "src_nuid": "2ombOFXrKDWR",
-                            "dst_nuid": "LeQFUeBFoolc",
+                            "src_nuid": "khUzPCvMmg6X",
+                            "dst_nuid": "vgAAa7C8GLSe",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "O2jJv6Q02IIh",
+                            "uid": "kdZbB3hRUKH4",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true
                         },
                         {
-                            "src_nuid": "mSzJQfGG0Kh9",
-                            "dst_nuid": "R5c1VDFSyGII",
+                            "src_nuid": "h9W8N3NKcerd",
+                            "dst_nuid": "MzAQWCJPcXHv",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "tv4fluxFPGIk",
+                            "uid": "QqBLnhEBvWjV",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "IM88K0Ha3HXg",
-                            "dst_nuid": "R5c1VDFSyGII",
+                            "src_nuid": "jEKBStaD6kyx",
+                            "dst_nuid": "MzAQWCJPcXHv",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "EJYUOjWXfbSB",
+                            "uid": "GrmcJNV3fgjK",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "R5c1VDFSyGII",
-                            "dst_nuid": "JzDVXP5WQmjA",
+                            "src_nuid": "MzAQWCJPcXHv",
+                            "dst_nuid": "bWyXkspTurVA",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "t1vPDxqmYufc",
+                            "uid": "XhGvxVTE9Epr",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true
                         },
                         {
-                            "src_nuid": "AobzzGh3As7A",
-                            "dst_nuid": "R5c1VDFSyGII",
+                            "src_nuid": "UMTRYQWNgAnR",
+                            "dst_nuid": "MzAQWCJPcXHv",
                             "src_slot": 0,
                             "dst_slot": 2,
-                            "uid": "QK8HSRy703gr",
+                            "uid": "PpLB8XvHeNG7",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "iNgnMb5Tf08O",
-                            "dst_nuid": "lAy0TdeR6Nd2",
+                            "src_nuid": "3MdCeC6ehG2x",
+                            "dst_nuid": "SYcUBZcfB8dX",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "Q7OfiSo2Ydbi",
+                            "uid": "ubbe7AjWfPxH",
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true
@@ -498,11 +498,11 @@
                     "variables": [
                         {
                             "id": "time",
-                            "dt": 8
+                            "dt": 0
                         },
                         {
                             "id": "state",
-                            "dt": 8
+                            "dt": 0
                         }
                     ]
                 },
@@ -549,69 +549,69 @@
             },
             {
                 "plugin": "action_button",
-                "x": 443,
-                "y": 129,
-                "uid": "7dEOtvEdNa5E",
+                "x": 479,
+                "y": 292,
+                "uid": "Ep6pvcXRBw8p",
                 "title": "Start"
             },
             {
                 "plugin": "action_button",
-                "x": 444,
-                "y": 231,
-                "uid": "INUEtIW7ddv3",
+                "x": 480,
+                "y": 394,
+                "uid": "uFnfkJdpKUPm",
                 "title": "Stop"
             },
             {
                 "plugin": "action_button",
-                "x": 444,
-                "y": 334,
-                "uid": "MdL1Z6GYr7aw",
+                "x": 480,
+                "y": 497,
+                "uid": "xhWUbN3W7Hqf",
                 "title": "Reset"
             },
             {
                 "plugin": "float_display",
-                "x": 896,
-                "y": 196,
-                "uid": "MLOWrTkIRqA8"
+                "x": 932,
+                "y": 359,
+                "uid": "u69sweL6V7WZ"
             }
         ],
         "conns": [
             {
-                "src_nuid": "7dEOtvEdNa5E",
-                "dst_nuid": "crVbkE15KX4Z",
+                "src_nuid": "Ep6pvcXRBw8p",
+                "dst_nuid": "zyXxTUrVE39G",
                 "src_slot": 0,
                 "dst_slot": 0,
-                "uid": "0ex06HsjhPd1",
+                "uid": "ew8MFSG7PyKN",
                 "src_connected": true,
                 "dst_connected": true,
                 "dst_dyn": true
             },
             {
-                "src_nuid": "INUEtIW7ddv3",
-                "dst_nuid": "crVbkE15KX4Z",
+                "src_nuid": "uFnfkJdpKUPm",
+                "dst_nuid": "zyXxTUrVE39G",
                 "src_slot": 0,
                 "dst_slot": 1,
-                "uid": "8ed070ZdstQJ",
+                "uid": "UCWjZt9uuQ8u",
                 "src_connected": true,
                 "dst_connected": true,
                 "dst_dyn": true
             },
             {
-                "src_nuid": "MdL1Z6GYr7aw",
-                "dst_nuid": "crVbkE15KX4Z",
+                "src_nuid": "xhWUbN3W7Hqf",
+                "dst_nuid": "zyXxTUrVE39G",
                 "src_slot": 0,
                 "dst_slot": 2,
-                "uid": "i6TizgTwAp1w",
+                "uid": "vxsNR2JptuZM",
                 "src_connected": true,
                 "dst_connected": true,
                 "dst_dyn": true
             },
             {
-                "src_nuid": "crVbkE15KX4Z",
-                "dst_nuid": "MLOWrTkIRqA8",
+                "src_nuid": "zyXxTUrVE39G",
+                "dst_nuid": "u69sweL6V7WZ",
                 "src_slot": 0,
                 "dst_slot": 0,
-                "uid": "SSALepvssWc1",
+                "uid": "UGbEt7tDZGuj",
                 "src_connected": true,
                 "dst_connected": true,
                 "src_dyn": true
