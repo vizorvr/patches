@@ -373,17 +373,15 @@ WorldEditor.prototype.getActiveSceneNode = function() {
 
 WorldEditor.prototype.matchCamera = function() {
 	// match the selected vr camera to world editor camera
-	if (this.transformControls.object instanceof THREE.PerspectiveCamera) {
-		var vrCameraPlugin = this.transformControls.plugin
-		var editCamera = this.getCamera()
+	var vrCameraPlugin = this.vrCamera.backReference
+	var editCamera = this.getCamera()
 
-		E2.app.undoManager.begin()
+	E2.app.undoManager.begin()
 
-		var tempPosition = new THREE.Vector3(vrCameraPlugin.state.position.x, vrCameraPlugin.state.position.y, vrCameraPlugin.state.position.z)
-		vrCameraPlugin.undoableSetState('position', editCamera.position.clone(), tempPosition)
-		var tempQuaternion = new THREE.Quaternion(vrCameraPlugin.state.quaternion._x, vrCameraPlugin.state.quaternion._y, vrCameraPlugin.state.quaternion._z, vrCameraPlugin.state.quaternion._w)
-		vrCameraPlugin.undoableSetState('quaternion', editCamera.quaternion.clone(), tempQuaternion)
+	var tempPosition = new THREE.Vector3(vrCameraPlugin.state.position.x, vrCameraPlugin.state.position.y, vrCameraPlugin.state.position.z)
+	vrCameraPlugin.undoableSetState('position', editCamera.position.clone(), tempPosition)
+	var tempQuaternion = new THREE.Quaternion(vrCameraPlugin.state.quaternion._x, vrCameraPlugin.state.quaternion._y, vrCameraPlugin.state.quaternion._z, vrCameraPlugin.state.quaternion._w)
+	vrCameraPlugin.undoableSetState('quaternion', editCamera.quaternion.clone(), tempQuaternion)
 
-		E2.app.undoManager.end()
-	}
+	E2.app.undoManager.end()
 }
