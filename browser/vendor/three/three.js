@@ -16037,7 +16037,7 @@ THREE.ObjectLoader.prototype = {
 
 				scope.manager.itemEnd( url );
 
-			} );
+			});
 
 		}
 

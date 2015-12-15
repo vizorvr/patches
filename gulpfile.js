@@ -47,7 +47,6 @@ paths = {
 			'./browser/vendor/three/VREffect.js',
 			'./browser/vendor/three/VRControls.js',
 			'./browser/vendor/three/SceneLoader.js',
-			'./browser/vendor/three/ObjectLoader.js',
 			'./browser/vendor/three/MorphAnimMesh.js',
 			'./browser/vendor/three/webvr-polyfill.js',
 			'./browser/vendor/three/webvr-manager.js',

@@ -156,7 +156,15 @@
 
 		var that = this
 
+		var removeObjects = []
+
 		this.object3d.traverse(function(n) {
+			// filter lights and cameras out of the scene
+
+			if (n instanceof THREE.Light || n instanceof THREE.Camera) {
+				removeObjects.push({parent: n.parent, object: n})
+			}
+
 			n.backReference = that
 
 			var geom = n.geometry
@@ -186,6 +194,10 @@
 				}
 			}
 		})
+
+		for (var i = 0; i < removeObjects.length; ++i) {
+			removeObjects[i].parent.remove(removeObjects[i].object)
+		}
 	}
 
 	ThreeLoaderScenePlugin.prototype.onGeomsMatsLoaded = function(dfd, geoms, mats) {
