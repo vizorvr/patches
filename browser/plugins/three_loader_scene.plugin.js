@@ -11,6 +11,8 @@
 	var ThreeLoaderScenePlugin = E2.plugins.three_loader_scene = function(core) {
 		ThreeObject3DPlugin.apply(this, arguments)
 
+		this.core = core
+
 		this.desc = '3D Object/Scene loader. Loads .obj and THREE.js .json object hierarchies.'
 
 		this.urlDirty = true
@@ -26,6 +28,8 @@
 		this.defaultObject = new THREE.Object3D(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({color: 0x777777}))
 
 		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
+
+		this.hasAnimation = false
 	}
 
 	ThreeLoaderScenePlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
@@ -147,6 +151,9 @@
 	}
 
 	ThreeLoaderScenePlugin.prototype.postLoadFixUp = function() {
+		this.hasAnimation = false
+		this.always_update = true
+
 		var that = this
 
 		this.object3d.traverse(function(n) {
@@ -170,19 +177,32 @@
 				if (!bufferGeometryHasVtxNormals && !normalGeometryHasFaceNormals && !normalGeometryHasVtxNormals) {
 					geom.computeVertexNormals(true)
 				}
+
+				if (geom.animations && geom.animations.length > 0) {
+					n.playAnimation(geom.animations[0].name, 100)
+					n.material.morphTargets = true
+					that.hasAnimation = true
+					that.always_update = true
+				}
 			}
 		})
 	}
 
 	ThreeLoaderScenePlugin.prototype.onGeomsMatsLoaded = function(dfd, geoms, mats) {
+		var hasMorphAnimations = geoms.length > 0 && geoms[0].morphTargets && geoms[0].morphTargets.length > 0
+
+		var createMesh = hasMorphAnimations ?
+				function(geom, mat) {return new THREE.MorphAnimMesh(geom, mat)}
+			:   function(geom, mat) {return new THREE.Mesh(geom, mat)}
+
 		if (geoms.length === 1 && mats.length === 1) {
-				this.object3d = new THREE.Mesh(geoms[0], mats[0])
+			this.object3d = createMesh(geoms[0], mats[0])
 		}
 		else if (geoms.length > 1 && mats.length === geoms.length) {
 			this.object3d = new THREE.Group()
 
 			for (var i = 0; i < geoms.length; ++i) {
-				this.object3d.add(new THREE.Mesh(geoms[i], mats[i]))
+				this.object3d.add(createMesh(geoms[i], mats[i]))
 			}
 		}
 		else if (geoms.length === 1) {
@@ -276,6 +296,16 @@
 		}
 
 		ThreeObject3DPlugin.prototype.update_state.apply(this)
+
+		var delta = this.core.delta_t * 0.001
+
+		if (this.object3d && this.hasAnimation) {
+			this.object3d.traverse(function(n) {
+				if (n instanceof THREE.MorphAnimMesh) {
+					n.updateAnimation(delta)
+				}
+			})
+		}
 	}
 
 	ThreeLoaderScenePlugin.prototype.update_output = function(slot) {
