@@ -8,10 +8,10 @@ if (typeof(module) !== 'undefined') {
 var loadingPlugins = {
 	'three_loader_model': 'model',
 	'three_loader_scene': 'scene',
+	'url_texture_generator': 'texture',
 	// 'url_audio_buffer_generator': 'audiobuffer',
 	// 'url_audio_generator': 'audio',
 	// 'url_json_generator': 'json',
-	'url_texture_generator': 'texture',
 	// 'url_video_generator': 'video'
 }
 
@@ -24,10 +24,10 @@ function AssetLoader(loaders) {
 	this.defaultTexture = THREE.ImageUtils.loadTexture('/data/textures/defaulttex.png')
 
 	var defaultLoaders = {
-		image: ImageLoader,
-		texture: TextureLoader,
-		model: ModelLoader,
-		scene: SceneLoader
+		image: E2.Loaders.ImageLoader,
+		texture: E2.Loaders.TextureLoader,
+		model: E2.Loaders.ModelLoader,
+		scene: E2.Loaders.SceneLoader
 	}
 
 	this.loaders = loaders || defaultLoaders
@@ -52,11 +52,9 @@ AssetLoader.prototype.loadAsset = function(assetType, assetUrl) {
 		var cache = this.assetPromises[assetUrl]
 
 		if (cache.progress < 1) {
-			console.log('loadAsset PROMISE found', assetType, assetUrl)
 			return cache.promise
 		}
 
-		console.log('loadAsset CACHE HIT', assetType, assetUrl)
 		dfd.resolve(this.assetPromises[assetUrl].asset)
 	} else {
 		this.assetsFound++
@@ -113,13 +111,11 @@ AssetLoader.prototype.loadAssetsForGraph = function(graph) {
 	assetTypes.map(function(assetType) {
 		var typeAssets = assets[assetType]
 
-		console.log('Loading type:', assetType)
-
 		typeAssets.map(function(assetUrl) {
 			if (!assetUrl)
 				return;
 
-			console.log(' - loading asset', assetUrl)
+			console.log('Loading', assetType, assetUrl)
 
 			that.loadAsset(assetType, assetUrl)
 			.then(function() {
@@ -166,7 +162,6 @@ E2.AssetLoader = AssetLoader
 
 if (typeof(module) !== 'undefined') {
 	module.exports.AssetLoader = AssetLoader
-	module.exports.modelLoader = modelLoader
 }
 
 })()

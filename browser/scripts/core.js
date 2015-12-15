@@ -274,10 +274,6 @@ Core.prototype.deserialiseObject = function(d) {
 	
 	this.active_graph = resolve_graph(this.graphs, ''+d.active_graph); 
 
-	if (E2.app.player.current_state === E2.app.player.state.PLAYING) {
-		this.active_graph.play()	
-	}
-
 	if(!this.active_graph) {
 		msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
 		this.active_graph = this.root_graph;

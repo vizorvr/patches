@@ -5,8 +5,9 @@ var assert = require('assert')
 var fs = require('fs')
 var graph = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/preloader1.json'))
 
-var AssetLoader = require('../../scripts/assetLoader.js').AssetLoader
-var modelLoader = require('../../scripts/assetLoader.js').modelLoader
+var AssetLoader = require('../../scripts/loaders/assetLoader.js').AssetLoader
+var ModelLoader = require('../../scripts/loaders/loaders').ModelLoader
+var ImageLoader = require('../../scripts/loaders/loaders').ImageLoader
 
 describe('Asset loading', function() {
 	beforeEach(function() {
@@ -18,45 +19,32 @@ describe('Asset loading', function() {
 		}
 		global.THREE = {
 			DDSLoader: function() {},
-			JSONLoader: function() {
-				return {
-					load: function(url, cb) {
-						process.nextTick(cb.bind(cb, 'model'))
-					}
-				}
-			},
 			ImageUtils: {
 				loadTexture: function() {}
 			},
 			Loader: {
 				Handlers: { add: function() {} }
 			},
-			TextureLoader: function() {
-				return {
-					load: function(url, cb) {
-						process.nextTick(cb.bind(cb, 'texture'))
-					}
-				}
-			}
 		}
 	})
 
-	describe('modelLoader', function() {
-		var jsonLoadFn = function(url, loadedCb, progressFn) {
-			process.nextTick(function() {
-				progressFn({ loaded: 3, total: 6 })
-				loadedCb()
-			})
-		}
-
+	describe('ModelLoader', function() {
 		beforeEach(function() {
 			global.THREE.JSONLoader = function() {
-				return { load: jsonLoadFn }
+				return {
+					load: function(url, loadedCb, progressFn) {
+						process.nextTick(function() {
+							progressFn({ loaded: 3, total: 6 })
+							loadedCb()
+						})
+					}
+				}
 			}
 		})
 
 		it('reports progress', function(done) {
-			modelLoader('foo.json')
+			var loader = new ModelLoader('foo.json')
+			loader
 			.on('progress', function(pct) {
 				console.log('foo.json progress')
 				assert.equal(0.5, pct)

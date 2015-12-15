@@ -32,14 +32,16 @@
 			this.undoableSetState('url', url, this.state.url)
 		}
 
+		this.loadedUrl = url
+
 		this.object3d = this.defaultObject
 		this.updated = true
 
 		this.loader = E2.core.assetLoader.loadAsset('scene', url)
 
 		this.loader
-		.then(function() {
-			that.loadedUrl = url
+		.then(function(asset) {
+			that.object3d = asset
 			that.postLoadFixUp()
 		})
 		.finally(function() {
@@ -170,7 +172,6 @@
 	}
 
 	ThreeLoaderScenePlugin.prototype.update_state = function() {
-		console.log('update_state', this.state.url)
 		if (this.loadedUrl !== this.state.url) {
 			var that = this
 
