@@ -8,8 +8,6 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 
 	var that = this;
 
-	// menu shell
-	dom.btnSignIn.click(VizorUI.openLoginModal);
 
 	dom.btnAssets.click(this.onBtnAssetsClicked.bind(this));
 	dom.btnPresets.click(this.onBtnPresetsClicked.bind(this));
