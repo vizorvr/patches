@@ -342,6 +342,14 @@ VizorUI.prototype.getModifiedKeyCode = function(keyCode) {	// adds modifier keys
 	return keyCode;
 };
 
+// adds meta+alt+shift (in this order) to key from keyPress
+VizorUI.prototype.getModifiedKey = function(key) {
+	if (this.flags.pressedShift) key = "shift+" + key;
+	if (this.flags.pressedAlt) key = "alt+" + key;
+	if (this.flags.pressedMeta) key = "meta+" + key;
+	return key;
+}
+
 VizorUI.prototype.trackModifierKeysForWorldEditor = function() {
 	if (!this.isInBuildMode()) return;
 
@@ -365,6 +373,9 @@ VizorUI.prototype.onKeyPress = function(e) {
 	if (!key) return true;	// if this is 0 then the code does not apply to this handler, because Firefox
 
 	key = String.fromCharCode(key).toUpperCase();	// num->str
+	key = this.getModifiedKey(key);					// attach modifiers e.g. shift+M
+
+	// note dual-case for '/','shift+/' depending on keyboard layout
 	switch (key) {
 		case uiKeys.modifyModeMove:
 			this.state.modifyMode = uiModifyMode.move;
@@ -376,6 +387,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 			this.state.modifyMode = uiModifyMode.scale;
 			break;
 		case uiKeys.viewSource:
+		case 'shift+' + uiKeys.viewSource:
 			this.viewSource();
 			e.preventDefault();
 			break;
@@ -390,6 +402,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 			break;
 		case uiKeys.focusPresetSearchAlt:
 		case uiKeys.focusPresetSearch:
+		case 'shift+' + uiKeys.focusPresetSearch:
 			state.visibility.panel_presets = true;
 			if (that.isInProgramMode()) {
 				that.dom.tabPresets.find('a').trigger('click')
@@ -402,6 +415,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 			e.stopPropagation();
 			break;
 		case uiKeys.focusChatPanel:
+		case 'shift+'+uiKeys.focusChatPanel:
 			state.visibility.panel_chat = true;
 			this.dom.chatWindow.find('#new-message-input').focus();
 			e.preventDefault();
