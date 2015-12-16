@@ -67,6 +67,7 @@ var VizorUI = function() {			// becomes E2.ui
 
 	this.flags = {
 		loading: false,
+		dragging: false,
 		fullscreen: false,
 		pressedShift: false,
 		pressedAlt : false,
@@ -282,6 +283,9 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 		.emit('changed:context', state.context)
 };
 
+VizorUI.prototype.setDragging = function(isOn) {
+	this.flags.dragging = isOn
+}
 
 /***** IS... *****/
 
@@ -299,6 +303,9 @@ VizorUI.prototype.isInProgramMode = function() {
 }
 VizorUI.prototype.isInBuildMode = function() {
 	return this.state.mode === uiMode.build
+}
+VizorUI.prototype.isDragging = function() {
+	return this.flags.dragging;
 }
 VizorUI.prototype.isLoading = function() {
 	return this.flags.loading;
@@ -352,6 +359,7 @@ VizorUI.prototype.getModifiedKey = function(key) {
 
 VizorUI.prototype.trackModifierKeysForWorldEditor = function() {
 	if (!this.isInBuildMode()) return;
+	if (this.isDragging()) return;
 
 	if (!this.flags.pressedShift && this.flags.pressedMeta) {
 		this.state.modifyMode = uiModifyMode.rotate
@@ -375,7 +383,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 	key = String.fromCharCode(key).toUpperCase();	// num->str
 	key = this.getModifiedKey(key);					// attach modifiers e.g. shift+M
 
-	// note dual-case for '/','shift+/' depending on keyboard layout
+	// note dual-case for '/','shift+/' etc depending on keyboard layout
 	switch (key) {
 		case uiKeys.modifyModeMove:
 			this.state.modifyMode = uiModifyMode.move;
@@ -422,6 +430,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 			e.stopPropagation();
 			break;
 		case uiKeys.viewHelp:
+		case 'shift+'+uiKeys.viewHelp:
 			VizorUI.openEditorHelp();
 			e.preventDefault();
 			e.stopPropagation();
@@ -435,6 +444,12 @@ VizorUI.prototype.onKeyDown = function(e) {
 	var modifiersChanged = this._trackModifierKeys(e);
 	if (this.isModalOpen() || E2.util.isTextInputInFocus(e) || this.isFullScreen()) return true;
 	if (modifiersChanged) this.trackModifierKeysForWorldEditor();
+	if (this.isDragging()) {
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
+	}
+
 	var state = this.state;
 	var that = this;
 	var modifiedKeyCode = this.getModifiedKeyCode(e.keyCode);

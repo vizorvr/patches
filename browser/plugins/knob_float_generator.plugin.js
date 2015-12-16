@@ -1,4 +1,10 @@
 (function() {
+var knobImgWidth = 44
+var knobImgHalfWidth = 22
+var knobCssTransform = 'translate(-'+ knobImgHalfWidth +'px,-'+knobImgHalfWidth+'px) scale(0.5) rotate('
+var knobRotationMin = 30.0;
+var knobRotationRange = 300.0;
+
 var Knob = E2.plugins.knob_float_generator = function(core, node) {
 	Plugin.apply(this, arguments)
 
@@ -18,101 +24,84 @@ Knob.prototype = Object.create(Plugin.prototype)
 
 Knob.prototype.reset = function() {}
 
-Knob.prototype.set_rotation = function() {
-	var rot = 'rotate(' + Math.floor(this.state.val * 270.0) + 'deg)'
+Knob.prototype.setRotation = function() {
+	var rotation = knobRotationMin + Math.floor(this.state.val * knobRotationRange);
+	var transform = knobCssTransform + rotation + 'deg)'
 	
 	this.knob.css({
-		'transform': rot,
-		'-moz-transform': rot,
-		'-webkit-transform': rot
+		'-webkit-transform': transform,
+		'-moz-transform': transform,
+		'transform':  transform
 	})
 }
 
 Knob.prototype.create_ui = function() {
 	var that = this
-	var shadow = make('div')
-	
+	var $container = make('div');
+
+	this.readout = make('span')
 	this.knob = make('div')
-	
-	var knob_mouseup = function(data) { return function(e)
-	{
-		document.removeEventListener('mouseup', data.mouseup)
-		document.removeEventListener('mousemove', data.mousemove)
 
-		that.undoableSetState('val', that.state.val, that._mouseDownValue)
+	// sized at 2x and scaled down for smoother svg display
+	this.knob
+		.css({
+			'width': (2 * knobImgWidth) + 'px',
+			'height': (2 * knobImgWidth) + 'px'
+		})
 
-		if(e.stopPropagation) e.stopPropagation()
-		if(e.preventDefault) e.preventDefault()
-		return false
-	}}
+	this.readout
+		.css({
+			'height': ( knobImgWidth-2) + 'px',
+			'width': ( knobImgWidth-2) + 'px',
+			'line-height': (knobImgWidth) + 'px'
+		})
 
-	var knob_mousemove = function(self, data) { return function(e)
-	{
-		var y_delta = e.pageY - data.last_y
-		var old_val = self.state.val
-		
-		data.last_y = e.pageY
-		self.state.val -= y_delta * 0.01
-		self.state.val = self.state.val < 0.0 ? 0.0 : self.state.val > 1.0 ? 1.0 : self.state.val
-		
-		if(self.state.val !== old_val)
-		{
-			self.set_rotation()
-			self.updated = true
-		}
+	$container.append(this.knob, this.readout)
 
-		if(e.stopPropagation) e.stopPropagation()
-		if(e.preventDefault) e.preventDefault()
-		return false				
-	}}
-	
-	var knob_mousedown = function(self) { return function(e)
-	{
-		self._mouseDownValue = self.state.val
-		var data = { last_y: e.pageY }
-		
-		// Defer registration of event listeners until needed.
-		data.mouseup = knob_mouseup(data)
-		data.mousemove = knob_mousemove(self, data)
-		document.addEventListener('mouseup', data.mouseup)
-		document.addEventListener('mousemove', data.mousemove)
-		
-		if(e.stopPropagation) e.stopPropagation()
-		if(e.preventDefault) e.preventDefault()
-		return false
-	}}
-		
-	shadow.css({
-		'width': '32px',
-		'height': '32px',
-		'z-index': '3000',
-		'background': 'url(\'/images/knob/shadow.png\')'
-	})
-	
-	this.knob.css({
-		'width': '32px',
-		'height': '32px',
-		'z-index': '3001',
-		'background': 'url(\'/images/knob/knob.png\')'
-	})
+	var oldValue = that.state.val
+	var onEnd = function() {
+		that.undoableSetState('val', that.state.val, oldValue)
+	}
+	var onChange = function(v) {
+		that.state.val = v
+		that.update_ui()
+		that.updated = true
+	}
+	var onStart = function() {
+		oldValue = that.state.val
+	}
 
-	shadow.append(this.knob)
-	this.knob[0].addEventListener('mousedown', knob_mousedown(this))
-	
 	this.ui = this.knob
 
-	this.node.on('pluginStateChanged', this.updateUi.bind(this))
+	var opts = {
+		cssCursor: 'ns-resize',
+		getValue : function() {return that.state.val},
+		min : 0.0,
+		max : 1.0,
+		step : 0.01
+	}
+	NodeUI.makeUIAdjustableValue(this.knob[0]	, onStart, onChange, onEnd, opts)
+	NodeUI.makeUIAdjustableValue(this.readout[0], onStart, onChange, onEnd, opts)
 
-	return shadow
+	this.node.on('pluginStateChanged', this.update_ui.bind(this))
+	this.update_ui();
+
+	return $container
 }
 
 Knob.prototype.update_output = function() {
 	return this.state.val
 }
 
-Knob.prototype.updateUi = function() {
-	if (this.ui)
-		this.set_rotation()
+Knob.prototype.updateReadout = function() {
+	this.readout.text(this.state.val.toFixed(2))
+}
+
+Knob.prototype.update_ui = function() {
+	if (this.ui) {
+		this.setRotation()
+		this.updateReadout()
+	}
 }
 
 })()

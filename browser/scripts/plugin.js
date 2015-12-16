@@ -4,8 +4,8 @@ function Plugin(core, node) {
 	this.node = node
 
 	this.node.on('pluginStateChanged', function() {
-		if (that.state_changed && that.node.ui && that.node.ui.plugin_ui)
-			that.state_changed(that.node.ui.plugin_ui)
+		if (that.state_changed && that.node.ui && that.node.ui.pluginUI)
+			that.state_changed(that.node.ui.pluginUI)
 	})
 }
 

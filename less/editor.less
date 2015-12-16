@@ -147,7 +147,6 @@ div.graph-node {
 			  padding: 0 20px 0 10px;
 			  line-height: @vp-node-text-size;
 			  font-size: @vp-node-text-size;
-			  color: @device-def-color;
 			  height: @device-header-height;
 		  }
 	  }
@@ -161,7 +160,7 @@ div.graph-node {
 			padding:0;
 			width:32px;
 			min-width:32px;
-			height: 28px;
+			height: 27px;
 			vertical-align: middle;
 			position:relative;
 			>svg {
@@ -477,31 +476,32 @@ div.graph-node.p_id_annotation {
   }
 }
 
+@bgcolor-cat-value: 	rgba(77,125,194,0.95);
+@bgcolor-cat-renderer: 	rgba(89, 89, 109, 0.95);
+@bgcolor-cat-loader: 	rgba(26, 19, 90, 0.94);
+@bgcolor-cat-environment: 	#59596D;
+@bgcolor-cat-material: rgba(71, 101, 141, 0.95);
+@bgcolor-cat-math: 	rgba(40, 51, 66, 0.95);
+@bgcolor-cat-interaction: rgba(103, 0, 36, 0.95);
 
-div.graph-node.p_cat_value {
-  background: rgba(77, 125, 194, 0.95);
-}
+div.graph-node.p_cat_value 		{ background: @bgcolor-cat-value }
+div.graph-node.p_cat_math 		{ background: @bgcolor-cat-math; color: #c4c4cc; }
+div.graph-node.p_cat_renderer 	{ background: @bgcolor-cat-renderer }
+div.graph-node.p_cat_loader 	{ background: @bgcolor-cat-loader}
+div.graph-node.p_cat_interaction	{ background: @bgcolor-cat-interaction}
 
-div.graph-node.p_cat_renderer {
-  background: rgba(89, 89, 109, 0.95);
-}
+div.graph-node.p_cat_material,
+div.graph-node.p_cat_texture 	{ background: @bgcolor-cat-material }
 
 div.graph-node.p_cat_environment {
-  background: #59596D;
+  background: @bgcolor-cat-environment;
   .p_content button {
 	background: rgba(255,255,255,0.4);
 	color: #fff;
   }
 }
-
-div.graph-node.p_cat_material,
-div.graph-node.p_cat_texture {
-  background: rgba(71, 101, 141, 0.95);
-}
-
 div.graph-node.p_cat_light {
   background: rgba(185, 184, 140, 0.95);
-  color: #222;
 }
 
 div.graph-node.p_cat_compound {
@@ -510,6 +510,32 @@ div.graph-node.p_cat_compound {
 	background: rgba(255,255,255,0.4);
   }
 }
+
+
+
+div.graph-node.p_cat_io .p_header
+{
+  .p_ins .p_slot, .p_outs .p_slot, span {
+  	background: #C74C09;
+  }
+  svg {
+	background: #EE5400;
+  }
+
+}
+
+
+div.graph-node.p_cat_io.p_id_variable_local_read .p_header,
+div.graph-node.p_cat_io.p_id_variable_local_write .p_header
+{
+  .p_ins .p_slot, .p_outs .p_slot, span {
+  	background: #24A219;
+  }
+  svg {
+	background: #17820B;
+  }
+}
+
 
 div.graph-node.p_id_color_picker {
   .p_content {
@@ -537,6 +563,14 @@ div.graph-node.p_id_color_picker {
 		border-radius: 2px;
 		text-transform: uppercase;
 	  }
+	}
+	input.uiTextEntry {
+	  font-size: 110%;
+	  background: rgba(0,0,0,0.8);
+	  text-transform: uppercase;
+	  font-weight: 600;
+	  width: 100%;
+	  text-align: center;
 	}
 
   }
@@ -601,10 +635,14 @@ div.graph-node.p_id_url_texture_generator {
   }
 }
 
-div.graph-node.p_inline  {
+div.graph-node.p_cat_io.p_inline  {
+   background: none;
   .p_header {
 	background: none;
   }
+}
+
+div.graph-node.p_inline  {
   .p_content, .p_header .p_slot label {
 	display: none;
   }
@@ -634,7 +672,6 @@ div.graph-node.p_inline  {
 div.graph-node.p_1in, div.graph-node.p_1out .p_header .p_slot span {width: 26px; min-width: 26px;}
 
 div.graph-node.p_inline {
-  background: none ! important;
   &.p_renaming {
 	 .p_header .p_wrap {
 		.ic, .ic .p_slot span svg, span.p_title {visibility: visible;}
@@ -658,30 +695,45 @@ div.graph-node.p_inline .p_header.p_inline {
   }
 }
 
-
-
-div.graph-node.p_cat_io .p_header
-{
-  .p_ins .p_slot, .p_outs .p_slot, span {
-  	background: #C74C09;
-  }
-  svg {
-	background: #EE5400;
-  }
-
-}
-
-
-div.graph-node.p_cat_io.p_id_variable_local_read .p_header,
-div.graph-node.p_cat_io.p_id_variable_local_write .p_header
-{
-  .p_ins .p_slot, .p_outs .p_slot, span {
-  	background: #24A219;
-  }
-  svg {
-	background: #17820B;
-  }
-}
-
 div.ace_content {text-align: left;}
 
+div.graph-node.p_id_knob_float_generator .p_content .p_plugin>div {
+  position: relative;
+  width: 100px;
+  height: 50px;
+  margin: 0 auto;
+  >div, >span {
+	position: absolute;
+	z-index: 3001;
+  }
+  >span {	// readout
+	display: block;
+	border-radius: 6px;
+	text-align: center;
+	font-size:  110%;
+	background: rgba(0,0,0,0.3);
+	top: 5px;
+	right: 0;
+  }
+  >div {	// knob
+	top	: 4px;
+	left: 0px;
+	background: url("/images/knob/knob_v2.svg");
+	transform: translate(-22px,-22px) scale(0.5);
+	-webkit-transform: translate(-22px,-22px) scale(0.5);
+  }
+}
+div.graph-node .p_content {
+  .uiValueAdjustable {
+	&:hover {
+	  // stub
+	}
+  }
+}
+
+input.uiTextEntry {
+  margin:0;
+  outline: 0;
+  border: 0;
+  background: solid #000;
+}
