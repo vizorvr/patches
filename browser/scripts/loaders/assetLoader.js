@@ -80,6 +80,7 @@ AssetLoader.prototype.loadAsset = function(assetType, assetUrl) {
 			that.emit('progress', pct * 100)
 		})
 		.on('error', function(err) {
+			msg('ERROR: ' + err.toString())
 			dfd.reject(err)
 		})
 		.on('loaded', function(asset) {

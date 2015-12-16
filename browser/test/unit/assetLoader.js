@@ -6,8 +6,8 @@ var fs = require('fs')
 var graph = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/preloader1.json'))
 
 var AssetLoader = require('../../scripts/loaders/assetLoader.js').AssetLoader
-var ModelLoader = require('../../scripts/loaders/loaders').ModelLoader
-var ImageLoader = require('../../scripts/loaders/loaders').ImageLoader
+var Loader = require('../../scripts/loaders/loader.js').Loader
+var ModelLoader = require('../../scripts/loaders/modelLoader').ModelLoader
 
 describe('Asset loading', function() {
 	beforeEach(function() {

@@ -37,7 +37,11 @@ paths = {
 			'./browser/scripts/worldEditor/worldEditorCamera.js',
 			'./browser/scripts/worldEditor/worldEditorOriginGrid.js',
 
-			'./browser/scripts/loaders/loaders.js',
+			'./browser/scripts/loaders/loader.js',
+			'./browser/scripts/loaders/imageLoader.js',
+			'./browser/scripts/loaders/textureLoader.js',
+			'./browser/scripts/loaders/modelLoader.js',
+			'./browser/scripts/loaders/sceneLoader.js',
 			'./browser/scripts/loaders/assetLoader.js',
 			'./browser/scripts/loaders/multiObjectLoader.js',
 
