@@ -15389,7 +15389,9 @@ THREE.LoadingManager = function ( onLoad, onProgress, onError ) {
 
 	var scope = this;
 
-	var isLoading = false, itemsLoaded = 0, itemsTotal = 0;
+	var isLoading = false, itemsLoaded = 0, itemsFailed = 0, itemsTotal = 0;
+
+	this.allowErrors = false;
 
 	this.onStart = undefined;
 	this.onLoad = onLoad;
@@ -15414,6 +15416,27 @@ THREE.LoadingManager = function ( onLoad, onProgress, onError ) {
 
 	};
 
+	function onItemDone () {
+
+		if ( itemsLoaded + itemsFailed === itemsTotal ) {
+
+			isLoading = false;
+
+			if ( itemsFailed === 0 || scope.allowErrors ) {
+
+				if ( scope.onLoad !== undefined ) {
+
+					scope.onLoad();
+
+				}
+
+			}
+
+
+		}
+
+	}
+
 	this.itemEnd = function ( url ) {
 
 		itemsLoaded ++;
@@ -15424,27 +15447,27 @@ THREE.LoadingManager = function ( onLoad, onProgress, onError ) {
 
 		}
 
-		if ( itemsLoaded === itemsTotal ) {
-
-			isLoading = false;
-
-			if ( scope.onLoad !== undefined ) {
-
-				scope.onLoad();
-
-			}
-
-		}
+		onItemDone();
 
 	};
 
 	this.itemError = function ( url ) {
+
+		itemsFailed ++;
 
 		if ( scope.onError !== undefined ) {
 
 			scope.onError( url );
 
 		}
+
+		onItemDone();
+
+	};
+
+	this.setAllowErrors = function ( allowErrors ) {
+
+		this.allowErrors = allowErrors;
 
 	};
 
@@ -16037,6 +16060,11 @@ THREE.ObjectLoader.prototype = {
 
 				scope.manager.itemEnd( url );
 
+			}, undefined, function() {
+				console.error( 'THREE.ObjectLoader: cannot load texture', url );
+
+				scope.manager.itemError( url );
+
 			});
 
 		}
@@ -16044,6 +16072,7 @@ THREE.ObjectLoader.prototype = {
 		if ( json !== undefined && json.length > 0 ) {
 
 			var manager = new THREE.LoadingManager( onLoad );
+			manager.setAllowErrors( true );
 
 			var loader = new THREE.ImageLoader( manager );
 			loader.setCrossOrigin( this.crossOrigin );
