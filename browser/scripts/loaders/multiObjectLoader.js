@@ -40,7 +40,7 @@ MultiObjectLoader.prototype = {
 				var object = that.jsonLoader.parse(json, that.jsonLoader.texturePath)
 				onGeomsMatsLoaded([object.geometry], object.materials)
 			}
-		})
+		}, onProgress, onError)
 
 	},
 
