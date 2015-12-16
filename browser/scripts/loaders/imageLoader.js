@@ -31,7 +31,7 @@ function ImageLoader(url) {
 }
 ImageLoader.prototype = Object.create(E2.Loader.prototype)
 ImageLoader.prototype.onImageLoaded = function(img) {
-	that.emit('loaded', img)
+	this.emit('loaded', img)
 }
 
 E2.Loaders.ImageLoader = ImageLoader
