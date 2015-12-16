@@ -93,6 +93,10 @@ body.bHome #contentwrap {
 	ul {	// top right links
 	  font-size: 92%;
 	  letter-spacing: @letter-spacing-home;
+	  display: -webkit-flex;
+	  -webkit-justify-content: space-between;
+	  -webkit-align-items: center;
+	  -webkit-align-content: stretch;
 	  display: flex;
 	  justify-content: space-between;
 	  align-items: center;
@@ -100,6 +104,7 @@ body.bHome #contentwrap {
 	  padding-left: 0;
 	  text-align: center;
 	  li {
+		-webkit-flex: 1;
 		flex: 1;
 		margin-left: 0;
 		padding-left: 0;
@@ -365,6 +370,10 @@ body.bHome #contentwrap {
 	  max-width: @max-width-desktop;
 	  margin: 0 auto;
 	  padding: 0;
+	  display: -webkit-flex;
+	  -webkit-flex-wrap: wrap;
+	  -webkit-align-content: center;
+	  -webkit-justify-content: center;
 	  display: flex;
 	  flex-wrap: wrap;
 	  align-content: center;
@@ -499,6 +508,9 @@ body.bHome #contentwrap {
 	  margin-left: 0;
 	  li {
 		height: 16.65%;
+		display: -webkit-flex;
+		-webkit-justify-content:stretch;
+		-webkit-position:relative;
 		display: flex;
 		justify-content:stretch;
 		position:relative;
@@ -633,6 +645,8 @@ body.bHome #contentwrap {
 
 	section#whyusevizor {
 	  div.in>div {
+		display: -webkit-flex;
+		-webkit-flex-wrap: wrap;
 		display: flex;
 		flex-wrap: wrap;
 	  }
@@ -642,10 +656,17 @@ body.bHome #contentwrap {
 		  max-width: 90%;
 		}
 	  }
-	  #why1 {order: 1; flex-basis: 49.5%;}
-	  #why2 {order: 2; flex-basis: 49.5%;}
+	  #why1, #why2 {
+		 -webkit-flex-basis: 49.5;
+		flex-basis: 49.5%
+	  }
+	  #why1 { -webkit-order:1; order: 1; }
+	  #why2 { -webkit-order:2; order: 1; }
+
 	  #why3 {
 		position: relative;
+		-webkit-order: 3;
+		-webkit-flex-basis: 100%;
 		order: 3;
 		flex-basis: 100%;
 		padding-left: 49.5%;
@@ -663,10 +684,14 @@ body.bHome #contentwrap {
 
 	section#howitworks {
 	  .in div.text>div {
+		display: -webkit-flex;
+		-webkit-align-items: space-between;
+		-webkit-justify-content: space-between;
 		display: flex;
 		align-items: space-between;
 		justify-content: space-between;
 		p {
+		  -webkit-flex-basis: 45%;
 		  flex-basis: 45%;
 		}
 	  }
@@ -681,6 +706,7 @@ body.bHome #contentwrap {
 	}
 
 	.team-member {
+	  -webkit-flex-basis: 50%;
 	  flex-basis: 50%;
 	  min-height: 210px;
 	  min-width: 200px;
@@ -774,10 +800,13 @@ body.bHome #contentwrap {
 		height: 20px;
 		background: url('/images/v2/chevron.svg') 5px center no-repeat;
 		background-size: 19px ;
+		-webkit-transform: rotate(0deg) translate3d(-5px, 0, 0);
+		-webkit-transition: -webkit-transform 0.1s linear;
 		transform: rotate(0deg) translate3d(-5px, 0, 0);
 		transition: transform 0.1s linear;
 	  }
 	  &.open:before {
+		-webkit-transform: rotate(90deg) translate3d(-5px, 0, 0);
 		transform: rotate(90deg) translate3d(-5px, 0, 0);
 	  }
 
@@ -852,6 +881,7 @@ body.bHome #contentwrap {
 
 	#vizorteam  {
 	  .team-member {
+		-webkit-flex-basis: 100%;
 		flex-basis: 100%;
 		min-height: 260px;
 		padding: 26px 0px;
@@ -920,6 +950,7 @@ body.bHome #contentwrap {
 		border-top: 0;
 	  }
 	  #why1, #why2, #why3 {
+		-webkit-flex-basis: 100%;
 		flex-basis: 100%;
 		margin-top: 0;
 	  }
@@ -959,6 +990,7 @@ body.bHome #contentwrap {
 		flex-wrap: wrap;
 		padding-top: 20px;
 		ul {
+		  -webkit-flex-basis: 100%;
 		  flex-basis: 100%;
 		}
 	  }
@@ -1076,6 +1108,7 @@ body.bHome #contentwrap {
 	}
 
 	.team-member {
+	  -webkit-flex-basis: 33%;
 	  flex-basis: 33%;
 	  min-height: 220px;
 	  min-width: 200px;

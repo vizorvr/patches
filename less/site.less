@@ -662,6 +662,12 @@ body.bProfile {
 
 
 .flexcolumns {
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  -webkit-justify-content: space-between;
+  -webkit-align-items: stretch;
+  -webkit-align-content: stretch;
+
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -669,16 +675,19 @@ body.bProfile {
   align-content: stretch;
   &.c2 {
 	>ul, >div, >p {
+		-webkit-flex-basis: 50%;
 		flex-basis: 50%;
 	}
   }
   &.c3 {
 	>ul, >div, >p {
+		-webkit-flex-basis: 33.3%;
 		flex-basis: 33.3%;
 	}
   }
   &.c4 {
 	>ul, >div, >p {
+		-webkit-flex-basis: 25%;
 		flex-basis: 25%;
 	}
   }
