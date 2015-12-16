@@ -198,7 +198,7 @@ Graph.prototype.create_ui = function() {
 		n.create_ui()
 
 		if (n.plugin.state_changed)
-			n.plugin.state_changed(n.ui.plugin_ui)
+			n.plugin.state_changed(n.ui.pluginUI)
 	},
 	function(c) {
 		c.create_ui()
