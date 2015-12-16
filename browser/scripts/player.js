@@ -115,6 +115,11 @@ Player.prototype.load_from_object = function(obj, cb) {
 			if (cb)
 				cb()
 		})
+		.catch(function(err) {
+			console.error('Player preload failed: '+err)
+
+			cb(err)
+		})
 }
 
 Player.prototype.load_from_url = function(url, cb) {

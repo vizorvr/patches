@@ -10,12 +10,16 @@ function ImageLoader(url) {
 	xhr.crossOrigin = 'Anonymous'
 	xhr.responseType = 'arraybuffer'
 
-	xhr.onerror = function(err) {
-		that.emit('error', err.responseText)
+	xhr.onerror = function() {
+		that.errorHandler(new Error(this.status))
 	}
 
 	xhr.onload = function() {
 		console.time('Parse image')
+
+		if (this.status >= 400)
+			return this.onerror()
+
 		var blob = new Blob([this.response])
 		img.src = window.URL.createObjectURL(blob)
 		console.timeEnd('Parse image')

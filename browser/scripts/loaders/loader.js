@@ -5,8 +5,8 @@ function Loader() {
 }
 Loader.prototype = Object.create(EventEmitter.prototype)
 
-Loader.prototype.errorHandler = function(xhr) {
-	this.emit('error', xhr.responseText)
+Loader.prototype.errorHandler = function(err) {
+	this.emit('error', err)
 }
 
 Loader.prototype.progressHandler = function(xhr) {

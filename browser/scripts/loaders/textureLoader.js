@@ -3,7 +3,9 @@
 function TextureLoader() {
 	E2.Loaders.ImageLoader.apply(this, arguments)
 }
+
 TextureLoader.prototype = Object.create(E2.Loaders.ImageLoader.prototype)
+
 TextureLoader.prototype.onImageLoaded = function(img) {
 	var texture = new THREE.Texture()
 	texture.wrapS = THREE.RepeatWrapping

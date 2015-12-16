@@ -80,7 +80,12 @@ AssetLoader.prototype.loadAsset = function(assetType, assetUrl) {
 			that.emit('progress', pct * 100)
 		})
 		.on('error', function(err) {
-			msg('ERROR: ' + err.toString())
+			that.assetsLoaded++;
+			that.totalProgress++;
+			delete that.assetPromises[assetUrl]
+
+			msg('ERROR: AssetLoader failed to load ' + assetUrl +': ' + err.toString())
+
 			dfd.reject(err)
 		})
 		.on('loaded', function(asset) {
@@ -124,6 +129,9 @@ AssetLoader.prototype.loadAssetsForGraph = function(graph) {
 					that.emit('progress', 100)
 					dfd.resolve()
 				}
+			})
+			.catch(function(err) {
+				dfd.reject(err)
 			})
 		})
 	})
