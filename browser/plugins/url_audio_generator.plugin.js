@@ -44,7 +44,7 @@ UrlAudio.prototype.create_ui = function()
 			.selected(oldValue)
 			.onChange(setValue.bind(this))
 			.buttons({
-				'Cancel': setValue.bind(this),
+				'Cancel': setValue.bind(this, oldValue),
 				'Select': setValue.bind(this)
 			})
 			.on('closed', function() {
@@ -52,6 +52,7 @@ UrlAudio.prototype.create_ui = function()
 					return;
 			
 				that.undoableSetState('url', newValue, oldValue)
+				mixpanel.track('UrlAudio Model Changed')
 			})
 			.modal()
 		})

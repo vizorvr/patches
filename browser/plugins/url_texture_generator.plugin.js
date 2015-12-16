@@ -54,7 +54,7 @@
 					.selected(oldValue)
 					.onChange(setValueFn)
 					.buttons({
-						'Cancel': setValueFn,
+						'Cancel': setValueFn.bind(this, oldValue),
 						'Select': setValueFn
 					})
 					.on('closed', function() {
