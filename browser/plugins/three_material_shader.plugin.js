@@ -1,17 +1,16 @@
 (function() {
 
 	var ThreeShaderMaterialPlugin = E2.plugins.three_material_shader = function(core, node) {
-		Plugin.apply(this, arguments)
+		AbstractThreeMaterialPlugin.apply(this, arguments)
 
 		var that = this
 
 		this.desc = 'Shader Material'
 
-		this.input_slots = []
-
-		this.output_slots = [{
-			name: 'material', dt: core.datatypes.MATERIAL
-		}]
+		this.input_slots = [
+			{   name: 'depthTest', dt: core.datatypes.BOOL, def: true  },
+			{   name: 'depthWrite', dt: core.datatypes.BOOL, def: true  }
+		].concat(this.input_slots)
 
 		this.state = {
 			vs_src: '',
@@ -37,7 +36,7 @@
 		this.uniforms_dirty = true
 	}
 
-	ThreeShaderMaterialPlugin.prototype = Object.create(Plugin.prototype)
+	ThreeShaderMaterialPlugin.prototype = Object.create(AbstractThreeMaterialPlugin.prototype)
 
 	ThreeShaderMaterialPlugin.prototype._refreshEditor = function() {
 		var that = this
@@ -144,6 +143,8 @@
 			this.slot_data[slot.uid] = data
 			this.uniforms_dirty = true
 		}
+
+		AbstractThreeMaterialPlugin.prototype.update_input.apply(this, arguments)
 	}
 
 	ThreeShaderMaterialPlugin.prototype.update_state = function()
@@ -258,10 +259,6 @@
 			this.material.fragmentShader = this.state.ps_src
 
 		this.uniforms_dirty = this.shader_dirty = true
-	}
-
-	ThreeShaderMaterialPlugin.prototype.update_output = function() {
-		return this.material
 	}
 
 	ThreeShaderMaterialPlugin.prototype.state_changed = function(ui) {
