@@ -11,7 +11,7 @@
 		]
 		
 		this.state = { url: '' }
-		this.texture = null
+		this.texture = E2.core.assetLoader.defaultTexture
 		this.dirty = false
 		this.thumbnail = null
 	}
@@ -87,13 +87,24 @@
 		if (!this.dirty)
 			return
 
-		this.texture = this.core.textureCache.get(this.state.url)
-		
-		// if the texture isn't ready, set a flag to indicate that we need to
-		// send an extra update after the texture has finished loaded
-		if (!this.texture.image || !this.texture.image.width === 0) {
-			this.waitingToLoad = true
-		}
+		var that = this
+
+		this.waitingToLoad = true
+
+		this.texture = E2.core.assetLoader.loadingTexture
+
+		E2.core.assetLoader
+		.loadAsset('texture', this.state.url)
+		.then(function(texture) {
+			that.texture = texture
+			that.waitingToLoad = false
+			that.updated = true
+		})
+		.catch(function() {
+			that.texture = E2.core.assetLoader.defaultTexture
+			that.waitingToLoad = false
+			that.updated = true
+		})
 		
 		this.dirty = false
 	}

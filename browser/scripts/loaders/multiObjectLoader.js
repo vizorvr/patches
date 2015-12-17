@@ -41,7 +41,6 @@ MultiObjectLoader.prototype = {
 				onGeomsMatsLoaded([object.geometry], object.materials)
 			}
 		}, onProgress, onError)
-
 	},
 
 	setCrossOrigin: function (value) {

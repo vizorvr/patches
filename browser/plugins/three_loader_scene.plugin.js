@@ -1,13 +1,4 @@
 (function() {
-	function progress() {
-		console.log('Loading progress', this.state.url, arguments)
-	}
-
-	function errorHandler(dfd, err) {
-		console.error('ERROR: '+err.toString())
-		dfd.reject('object failed to load' + err.toString)
-	}
-
 	var ThreeLoaderScenePlugin = E2.plugins.three_loader_scene = function(core) {
 		ThreeObject3DPlugin.apply(this, arguments)
 
@@ -35,49 +26,29 @@
 	ThreeLoaderScenePlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
 
 	ThreeLoaderScenePlugin.prototype.loadObject = function(url) {
-		var dfd = when.defer()
-
-		// store the promise so that sequential loads can be chained together
-		// and processed in order
-		this.loader = dfd.promise
+		var that = this
 
 		if (url !== this.state.url) {
 			this.undoableSetState('url', url, this.state.url)
 		}
+
 		this.loadedUrl = url
-
-		var that = this
-
-		dfd.promise.finally(function() {
-			delete that.loader
-		})
 
 		this.object3d = this.defaultObject
 		this.updated = true
 
-		if (url.length > 0) {
+		this.loader = E2.core.assetLoader.loadAsset('scene', url)
 
-			var extname = url.substring(url.lastIndexOf('.'))
+		this.loader
+		.then(function(asset) {
+			that.object3d = asset
+			that.postLoadFixUp()
+		})
+		.finally(function() {
+			delete that.loader
+		})
 
-			switch (extname) {
-			case '.js':
-			case '.json':
-				this.loadJson(dfd, url)
-				break
-			case '.obj':
-				this.loadObj(dfd, url)
-				break
-			default:
-				msg('ERROR: SceneLoader: Don`t know how to load', extname)
-				break;
-			}
-		}
-		else {
-			msg('ERROR: SceneLoader: Invalid Url', extname)
-			dfd.reject('invalid url')
-		}
-
-		return dfd.promise
+		return this.loader
 	}
 
 	ThreeLoaderScenePlugin.prototype.create_ui = function() {
@@ -122,7 +93,6 @@
 		this.object3d.traverse(function (n) {
 			if (n.geometry) {
 				n.geometry.computeBoundingBox()
-				var bb = n.geometry.boundingBox
 				bbox.expandByPoint(n.geometry.boundingBox.min)
 				bbox.expandByPoint(n.geometry.boundingBox.max)
 			}
@@ -201,90 +171,6 @@
 		}
 	}
 
-	ThreeLoaderScenePlugin.prototype.onGeomsMatsLoaded = function(dfd, geoms, mats) {
-		var hasMorphAnimations = geoms.length > 0 && geoms[0].morphTargets && geoms[0].morphTargets.length > 0
-
-		var createMesh = hasMorphAnimations ?
-				function(geom, mat) {return new THREE.MorphAnimMesh(geom, mat)}
-			:   function(geom, mat) {return new THREE.Mesh(geom, mat)}
-
-		if (geoms.length === 1 && mats.length === 1) {
-			this.object3d = createMesh(geoms[0], mats[0])
-		}
-		else if (geoms.length > 1 && mats.length === geoms.length) {
-			this.object3d = new THREE.Group()
-
-			for (var i = 0; i < geoms.length; ++i) {
-				this.object3d.add(createMesh(geoms[i], mats[i]))
-			}
-		}
-		else if (geoms.length === 1) {
-			this.object3d = THREE.SceneUtils.createMultiMaterialObject(geoms[0], mats)
-		}
-		else {
-			console.error('ThreeLoaderScenePlugin: Invalid geometry + material combination', geoms.length, 'geometries', mats.length, 'materials')
-		}
-
-		this.postLoadFixUp()
-
-		dfd.resolve()
-	}
-
-	ThreeLoaderScenePlugin.prototype.onHierarchyLoaded = function(dfd, scene) {
-		if (scene.scene) {
-			this.object3d = new THREE.Object3D()
-			this.object3d.copy(scene.scene, /*recursive = */false)
-
-			while (scene.scene.children.length > 0) {
-				var obj = scene.scene.children[0]
-				scene.scene.remove(obj)
-				this.object3d.add(obj)
-			}
-		}
-		else {
-			this.object3d = scene
-		}
-
-		this.postLoadFixUp()
-
-		dfd.resolve()
-	}
-
-	ThreeLoaderScenePlugin.prototype.loadJson = function(dfd, url) {
-		var loader = new MultiObjectLoader()
-
-		loader.load(
-				url,
-				this.onGeomsMatsLoaded.bind(this, dfd),
-				this.onHierarchyLoaded.bind(this, dfd),
-				progress.bind(this),
-				errorHandler.bind(this, dfd))
-	}
-
-	ThreeLoaderScenePlugin.prototype.loadObj = function(dfd, url) {
-		var mtlUrl = url.replace('.obj', '.mtl')
-
-		var that = this
-
-		$.get('/stat' + mtlUrl, function(data) {
-			if (data.error === undefined) {
-				// .mtl exists on server, load .obj and .mtl
-				new THREE.OBJMTLLoader()
-						.load(url, mtlUrl, that.onGeomsMatsLoaded.bind(that, dfd), progress.bind(that), errorHandler.bind(that, dfd))
-			}
-			else {
-				// no .mtl on server, load .obj only
-				new THREE.OBJLoader()
-						.load(url, that.onGeomsMatsLoaded.bind(that, dfd), progress.bind(that), errorHandler.bind(that, dfd))
-			}
-		})
-	}
-
-	ThreeLoaderScenePlugin.prototype.state_changed = function(ui) {
-		if (!ui) {
-		}
-	}
-
 	ThreeLoaderScenePlugin.prototype.update_state = function() {
 		if (this.loadedUrl !== this.state.url) {
 			var that = this
@@ -305,7 +191,6 @@
 				// load straight away
 				doLoad()
 			}
-
 		}
 
 		ThreeObject3DPlugin.prototype.update_state.apply(this)

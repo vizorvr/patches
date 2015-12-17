@@ -45,62 +45,11 @@ E2.uid = function() {
 	return uid
 }
 
-function Delegate(delegate, dt, count)
-{
+function Delegate(delegate, dt, count) {
 	this.delegate = delegate;
 	this.dt = dt;
 	this.count = count;
 }
-
-function AssetTracker(core)
-{
-	this.core = core;
-	this.started = 0;
-	this.completed = 0;
-	this.failed = 0;
-	this.listeners = [];
-}
-
-AssetTracker.prototype.add_listener = function(listener)
-{
-	this.listeners.push(listener);
-};
-
-AssetTracker.prototype.remove_listener = function(listener)
-{
-	var listenerIdx = this.listeners.indexOf(listener)
-	if (listenerIdx > -1)
-		this.listeners.splice(listenerIdx, 1);
-};
-
-AssetTracker.prototype.signal_started = function()
-{
-	this.started++;
-	this.signal_update();
-};
-
-AssetTracker.prototype.signal_completed = function()
-{
-	this.completed++;
-	this.signal_update();
-};
-
-AssetTracker.prototype.signal_failed = function()
-{
-	this.failed++;
-	this.signal_update();
-};
-
-AssetTracker.prototype.signal_update = function()
-{
-	var l = this.listeners;
-	var prc = (this.completed + this.failed) / (this.started / 100);
-
-	E2.core.emit('progress', this.started === (this.completed + this.failed) ? 100 : prc)
-	
-	for(var i = 0, len = l.length; i < len; i++)
-		l[i]();
-};
 
 function Core() {
 	EventEmitter.apply(this, arguments)
@@ -154,7 +103,13 @@ function Core() {
 	
 	this.runtimeEvents = new EventEmitter()
 
-	this.asset_tracker = new AssetTracker(this);
+	this.assetLoader = new E2.AssetLoader()
+
+	// relay events from AssetLoader
+	this.assetLoader.on('progress', function(pct) {
+		console.log('core progress', pct)
+		E2.core.emit('progress', pct)
+	})
 
 	this.active_graph_dirty = true;
 
@@ -165,8 +120,6 @@ function Core() {
 	this.delta_t = 0.0;
 	this.graph_uid = this.get_uid()
 	this.uidCounter = 0
-
-	this.textureCache = new TextureCache()
 
 	this.pluginManager = new PluginManager(this, '/plugins');
 
@@ -321,10 +274,6 @@ Core.prototype.deserialiseObject = function(d) {
 	
 	this.active_graph = resolve_graph(this.graphs, ''+d.active_graph); 
 
-	if (E2.app.player.current_state === E2.app.player.state.PLAYING) {
-		this.active_graph.play()	
-	}
-
 	if(!this.active_graph) {
 		msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
 		this.active_graph = this.root_graph;
@@ -364,8 +313,7 @@ Core.prototype.rebuild_structure_tree = function() {
 	E2.dom.structure.tree.root.rebuild_dom();
 };
 
-Core.prototype.add_aux_script = function(script_url, onload)
-{
+Core.prototype.add_aux_script = function(script_url, onload) {
 	if(this.aux_scripts.hasOwnProperty(script_url)) {
 		if (onload)
 			onload()
@@ -379,41 +327,17 @@ Core.prototype.add_aux_script = function(script_url, onload)
 	}.bind(this));
 };
 
-Core.prototype.add_aux_style = function(style_url)
-{
+Core.prototype.add_aux_style = function(style_url) {
 	if(this.aux_styles.hasOwnProperty(style_url))
 		return;
 	
 	load_style('/plugins/' + style_url);
 	this.aux_styles[style_url] = true;
-};
+}
 
 Core.prototype.onPluginsLoaded = function() {
 	this.emit('ready');
-};
-
-Core.prototype.on = function(kind, cb)
-{
-	if (!cb)
-		return;
-
-	if (!this._listeners[kind])
-		this._listeners[kind] = [];
-
-	this._listeners[kind].push(cb);
 }
-
-Core.prototype.emit = function(kind)
-{
-	if (!this._listeners[kind])
-		return;
-
-	this._listeners[kind].forEach(function(cb)
-	{
-		cb();
-	});
-};
-
 
 if (typeof(module) !== 'undefined') {
 	module.exports = Core

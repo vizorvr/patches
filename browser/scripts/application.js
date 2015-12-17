@@ -540,13 +540,18 @@ Application.prototype.executeNodeDrag = function(nodes, conns, dx, dy) {
 	}
 
 	var cl = conns.length
+	var changed = false // eg. if not active graph
+
 	if (cl && conns[0].ui) {
+		changed = true
+
 		for (var i=0; i < cl; i++) {
 			E2.app.redrawConnection(conns[i])
 		}
 	}
 
-	this.updateCanvas(true)
+	if (changed)
+		this.updateCanvas(true)
 }
 
 Application.prototype.onNodeDragged = function(node) {

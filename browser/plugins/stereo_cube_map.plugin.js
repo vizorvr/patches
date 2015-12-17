@@ -20,7 +20,7 @@
 			}
 		]
 
-		var deftex = core.textureCache.loadingTexture.image
+		var deftex = E2.core.assetLoader.loadingTexture.image
 
 		var defTexture = new THREE.CubeTexture([deftex, deftex, deftex, deftex, deftex, deftex])
 		defTexture.needsUpdate = true
