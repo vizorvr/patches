@@ -91,6 +91,8 @@
         "Dodecahedron": "three_geometry_dodecahedron",
         "Sphere": "three_geometry_sphere",
         "Plane": "three_geometry_plane",
+        "Ring": "three_geometry_ring",
+        "Torus": "three_geometry_torus",
         "Procedural Ground": "three_procedural_ground",
         "Mesh": "three_mesh",
         "Point Cloud Mesh": "three_point_cloud_mesh",
