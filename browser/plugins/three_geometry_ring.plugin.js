@@ -1,5 +1,7 @@
 (function() {
 	var ThreeRingGeometryPlugin = E2.plugins.three_geometry_ring = function(core) {
+		Plugin.apply(this, arguments)
+
 		this.desc = 'THREE.js Ring Geometry'
 
 		this.input_slots = [{
@@ -10,7 +12,7 @@
 		{
 			name: 'outerRadius',
 			dt: core.datatypes.FLOAT,
-			def: 50
+			def: 1
 		},
 		{
 			name: 'thetaSegments',
@@ -40,40 +42,30 @@
 
 		this.subdivisions = 1
 
-		this.parameters = {
-			innerRadius: 0,
-			outerRadius: 50,
-			thetaSegments: 8,
-			phiSegments: 8,
-			thetaStart: 0,
-			thetaLenght: Math.PI * 2
-		}
-
 		this.geometryDirty = true
 	}
+
+	ThreeRingGeometryPlugin.prototype = Object.create(Plugin.prototype)
 
 	ThreeRingGeometryPlugin.prototype.generateGeometry = function() {
 		this.geometry = new THREE.BufferGeometry().fromGeometry(
 		new THREE.RingGeometry(
-			this.parameters.innerRadius,
-			this.parameters.outerRadius,
-			this.parameters.thetaSegments,
-			this.parameters.phiSegments,
-			this.parameters.thetaStart,
-			this.parameters.thetaLength))
+			this.inputValues.innerRadius,
+			this.inputValues.outerRadius,
+			this.inputValues.thetaSegments,
+			this.inputValues.phiSegments,
+			this.inputValues.thetaStart,
+			this.inputValues.thetaLength))
 
 		this.geometryDirty = false
 	}
 
-	ThreeRingGeometryPlugin.prototype.reset = function() {
-	}
-
 	ThreeRingGeometryPlugin.prototype.update_input = function(slot, data) {
-		if (this.parameters[slot.name] !== data) {
-			this.parameters[slot.name] = data
-
+		if (this.inputValues[slot.name] !== data) {
 			this.geometryDirty = true
 		}
+
+		Plugin.prototype.update_input.apply(this, arguments)
 	}
 
 	ThreeRingGeometryPlugin.prototype.update_state = function() {

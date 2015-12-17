@@ -1,16 +1,18 @@
 (function() {
 	var ThreeTorusGeometryPlugin = E2.plugins.three_geometry_torus = function(core) {
+		Plugin.apply(this, arguments)
+
 		this.desc = 'THREE.js Torus Geometry'
 
 		this.input_slots = [{
 			name: 'radius',
 			dt: core.datatypes.FLOAT,
-			def: 100
+			def: 1
 		},
 		{
 			name: 'tube',
 			dt: core.datatypes.FLOAT,
-			def: 40
+			def: 0.4
 		},
 		{
 			name: 'radialSegments',
@@ -35,38 +37,29 @@
 
 		this.subdivisions = 1
 
-		this.parameters = {
-			radius: 100,
-			tube: 40,
-			radialSegments: 8,
-			tubularSegments: 6,
-			arc: Math.PI * 2
-		}
-
 		this.geometryDirty = true
 	}
+
+	ThreeTorusGeometryPlugin.prototype = Object.create(Plugin.prototype)
 
 	ThreeTorusGeometryPlugin.prototype.generateGeometry = function() {
 		this.geometry = new THREE.BufferGeometry().fromGeometry(
 			new THREE.TorusGeometry(
-				this.parameters.radius,
-				this.parameters.tube,
-				this.parameters.radialSegments,
-				this.parameters.tubularSegments,
-				this.parameters.arc))
+				this.inputValues.radius,
+				this.inputValues.tube,
+				this.inputValues.radialSegments,
+				this.inputValues.tubularSegments,
+				this.inputValues.arc))
 
 		this.geometryDirty = false
 	}
 
-	ThreeTorusGeometryPlugin.prototype.reset = function() {
-	}
-
 	ThreeTorusGeometryPlugin.prototype.update_input = function(slot, data) {
-		if (this.parameters[slot.name] !== data) {
-			this.parameters[slot.name] = data
-
+		if (this.inputValues[slot.name] !== data) {
 			this.geometryDirty = true
 		}
+
+		Plugin.prototype.update_input.apply(this, arguments)
 	}
 
 	ThreeTorusGeometryPlugin.prototype.update_state = function() {
