@@ -21,7 +21,12 @@ function AssetLoader(loaders) {
 	EventEmitter.call(this)
 
 	this.loadingTexture = THREE.ImageUtils.loadTexture('/data/textures/loadingtex.png')
+	this.loadingTexture.wrapS = THREE.RepeatWrapping
+	this.loadingTexture.wrapT = THREE.RepeatWrapping
+
 	this.defaultTexture = THREE.ImageUtils.loadTexture('/data/textures/defaulttex.png')
+	this.defaultTexture.wrapS = THREE.RepeatWrapping
+	this.defaultTexture.wrapT = THREE.RepeatWrapping
 
 	var defaultLoaders = {
 		image: E2.Loaders.ImageLoader,
