@@ -215,6 +215,7 @@ function NodeUI(parent_node, x, y, z) {
 		this.redrawSlots();
 	}.bind(this));
 
+	VizorUI.disableContextMenu($dom[0]);
 }
 
 NodeUI.prototype = Object.create(EventEmitter.prototype);
