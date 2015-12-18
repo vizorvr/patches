@@ -195,7 +195,7 @@ WorldEditor.prototype.onPaste = function(nodes) {
 	var dropNode = nodes[0]
 
 	// find scene node
-	var sceneNode = this.scene.backReference.parentNode
+	var sceneNode = this.currentGroup || this.scene.backReference.parentNode
 
 	sceneNode.slots_dirty = true
 
@@ -262,7 +262,7 @@ WorldEditor.prototype.onPaste = function(nodes) {
 	// and we could warn the user somehow
 }
 
-WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) {
+WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, selectSingleObject) {
 	var selectNodes = []
 
 	function collectConnectingNodesBetween(curNode, endNode) {
@@ -276,6 +276,10 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 		}
 
 		for(var i = 0; i < allOutputs.length; ++i) {
+			if (!allOutputs[i].src_slot.is_connected || allOutputs[i].src_slot.dt !== E2.core.datatypes.OBJECT3D) {
+				continue
+			}
+
 			var candidateNode = allOutputs[i].dst_node
 
 			var atEndNode = candidateNode === endNode
@@ -287,9 +291,6 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 							false)
 
 			if (foundRouteToEnd) {
-				// go to the correct graph level for this node
-				curNode.parent_graph.tree_node.activate()
-
 				// select this node and recurse back in the graph to select the path via which we came here
 				if (selectNodes.indexOf(curNode) === -1) {
 					selectNodes.push(curNode)
@@ -303,6 +304,7 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 	}
 
 	E2.app.clearSelection()
+	this.currentGroup = undefined
 
 	if (meshNode) {
 		// step 1:
@@ -315,6 +317,19 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 		}
 
 		// step 2:
+		// if we're selecting a single object, drop anything after group
+		// nodes from the selection
+		if (selectSingleObject) {
+			for (var i = selectNodes.length - 1; i >= 0; --i) {
+				if (selectNodes[i].plugin instanceof E2.plugins.three_group) {
+					this.currentGroup = selectNodes[i]
+					selectNodes.splice(0, i + 1)
+					break
+				}
+			}
+		}
+
+		// step 3:
 		// add any objects hidden in group hierarchies into selection
 		var resolvedMeshNode = selectNodes[selectNodes.length - 1]
 		var origSelection = selectNodes.slice(0)
@@ -322,16 +337,22 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode) 
 		for (var i = 0; i < origSelection.length; ++i) {
 			var node = origSelection[i]
 
-			if (node.plugin.object3d) {
+			if (node.plugin.object3d && node.plugin instanceof E2.plugins.three_group) {
 				node.plugin.object3d.traverse(function(obj) {
 					if (obj.backReference && selectNodes.indexOf(obj.backReference.node) === -1) {
-						collectConnectingNodesBetween(obj.backReference.node, sceneNode)
+						collectConnectingNodesBetween(obj.backReference.node, node)
 					}
 				})
 			}
 		}
 
-		// step 3:
+
+		// go to the correct graph level for the selection
+		if (selectNodes.length > 0) {
+			selectNodes[0].parent_graph.tree_node.activate()
+		}
+
+		// step 4:
 		// select the collected nodes
 		for (var i = 0; i < selectNodes.length; ++i) {
 			E2.app.markNodeAsSelected(selectNodes[i])
@@ -345,11 +366,9 @@ WorldEditor.prototype.pickObject = function(e) {
 	if (E2.app.noodlesVisible === true)
 		return
 
-	//if (E2.app.alt_pressed) {
-	//	return
-	//}
-
-	var selectChildObject = E2.app.alt_pressed
+	// if alt is pressed, we try to select the single object we click
+	// otherwise we select the topmost group the clicked object is in
+	var selectSingleObject = E2.app.alt_pressed
 
 	var isEditor = this.isActive()
 
@@ -395,7 +414,7 @@ WorldEditor.prototype.pickObject = function(e) {
 				if (seekObj.backReference && seekObj !== this.scene) {
 					ancestorObj = seekObj
 
-					if (selectChildObject) {
+					if (selectSingleObject) {
 						break
 					}
 				}
@@ -419,9 +438,12 @@ WorldEditor.prototype.pickObject = function(e) {
 				selectObjects.push(ancestorObj)
 			}
 
+			var selectionStartNode = ancestorObj.backReference.parentNode
+			var selectionEndNode = this.scene.backReference.parentNode
+
 			// select everything between the mesh and scene nodes
 			// (and any complete subgraph that contains the mesh)
-			this.selectMeshAndDependencies(ancestorObj.backReference.parentNode, this.scene.backReference.parentNode)
+			this.selectMeshAndDependencies(selectionStartNode, selectionEndNode, selectSingleObject)
 
 			// only select a single object
 			break
