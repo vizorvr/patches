@@ -134,8 +134,12 @@
 			for (var i = 0; i < parent.children.length; ++i) {
 				var obj = parent.children[i]
 
-				center.add(obj.position)
-				++count
+				if (obj.backReference) {
+					center.x += obj.backReference.state.position.x
+					center.y += obj.backReference.state.position.y
+					center.z += obj.backReference.state.position.z
+					++count
+				}
 			}
 		}
 
@@ -143,16 +147,24 @@
 			center.divideScalar(count)
 		}
 
-		var oldPivot = (this.pivot || new THREE.Vector3()).clone()
-		this.pivot = center
+		function applyRotation(v, m) {
+			var x = v.x, y = v.y, z = v.z
 
-		this.state.position.x += this.pivot.x - oldPivot.x
-		this.state.position.y += this.pivot.y - oldPivot.y
-		this.state.position.z += this.pivot.z - oldPivot.z
+			var e = m.elements
+
+			v.x = e[ 0 ] * x + e[ 4 ] * y + e[ 8 ]  * z
+			v.y = e[ 1 ] * x + e[ 5 ] * y + e[ 9 ]  * z
+			v.z = e[ 2 ] * x + e[ 6 ] * y + e[ 10 ] * z
+
+			return v
+		}
+
+		this.state.pivot = center
+		var transformedPivot = applyRotation(center.clone(), this.object3d.matrix)
 
 		for (var j = 0; j < this.object3d.children.length; ++j) {
 			var parent = this.object3d.children[j]
-			parent.position.set(-center.x, -center.y, -center.z)
+			parent.position.set(transformedPivot.x, transformedPivot.y, transformedPivot.z)
 		}
 	}
 })()

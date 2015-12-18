@@ -345,9 +345,11 @@ WorldEditor.prototype.pickObject = function(e) {
 	if (E2.app.noodlesVisible === true)
 		return
 
-	if (E2.app.alt_pressed) {
-		return
-	}
+	//if (E2.app.alt_pressed) {
+	//	return
+	//}
+
+	var selectChildObject = E2.app.alt_pressed
 
 	var isEditor = this.isActive()
 
@@ -373,14 +375,29 @@ WorldEditor.prototype.pickObject = function(e) {
 		for (var i = 0; i < intersects.length; i++) {
 			// ancestor = object closest to object3d tree root
 			var ancestorObj = undefined
+			var substituteObj = undefined
 
 			var seekObj = intersects[i].object
+
+			/*if (    seekObj.backReference &&
+					seekObj.backReference.object3d &&
+					seekObj.backReference.object3d !== seekObj) {
+				// the picked object isn't the object
+				// stored by it's plugin
+				// i.e. the object is a helper object
+				substituteObj = seekObj
+				seekObj = seekObj.backReference.object3d
+			}*/
 
 			// traverse the tree hierarchy up to find a parent with a node back reference
 			// store a reference to the object closest to the scene root (ancestorObj)
 			while (seekObj) {
 				if (seekObj.backReference && seekObj !== this.scene) {
 					ancestorObj = seekObj
+
+					if (selectChildObject) {
+						break
+					}
 				}
 
 				seekObj = seekObj.parent
@@ -395,7 +412,12 @@ WorldEditor.prototype.pickObject = function(e) {
 				continue
 			}
 
-			selectObjects.push(ancestorObj)
+			if (substituteObj) {
+				selectObjects.push(substituteObj)
+			}
+			else {
+				selectObjects.push(ancestorObj)
+			}
 
 			// select everything between the mesh and scene nodes
 			// (and any complete subgraph that contains the mesh)
