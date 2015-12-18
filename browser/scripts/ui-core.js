@@ -688,3 +688,15 @@ VizorUI.getPersistentStorageRef = function() {
 	}
 	return storage;
 }
+
+
+// separate function so it can be removed
+VizorUI._disableEvent = function(e) {
+	e.preventDefault()
+	e.stopPropagation()
+	return false
+}
+
+VizorUI.disableContextMenu = function(domElement) {
+	domElement.addEventListener('contextmenu', VizorUI._disableEvent, true)		// top down
+}
