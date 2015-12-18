@@ -320,7 +320,7 @@ var UiState = function(persistentStorageRef, context) {
 
 				this._internal.panel_assets = value
 				var oldFloatingPanels = this.floating_panels
-				that.emit('_internal:visibility:panel_presets', value)
+				that.emit('_internal:visibility:panel_assets', value)
 
 				if (value) {
 					if (!oldFloatingPanels) {
@@ -424,30 +424,34 @@ UiState.prototype.getCopy = function() {
 	}
 }
 
-
+// note: overwrites the entire state, generating no events
 UiState.prototype._apply = function(newState) {
 	if (typeof newState !== 'object') return msg('ERROR: invalid newState')
 
-	// context is ignored but may be used for additional checks
-	this.visible = (typeof newState.visible === 'boolean') ? newState.visible : true
-	var newVisibility = newState.visibility
-	if (newState.mode) this.mode = newState.mode
-	if (newState.viewCamera) this.viewCamera = newState.viewCamera
+	var internal = this._internal;
+	var internalVisibility = internal.visibility._internal;
+	var internalPanelStates = internal.panelStates._internal;
 
-	// if (newState.modifyMode) this.modifyMode = newState.modifyMode
-	// if (newState.selectedObjects instanceof Array) this.selectedObjects = newState.selectedObjects
+	// context is ignored but may be used for additional checks
+	internal.visible = (typeof newState.visible === 'boolean') ? newState.visible : true
+	var newVisibility = newState.visibility
+	if (newState.mode) 			internal.mode = newState.mode
+	if (newState.viewCamera) 	internal.viewCamera = newState.viewCamera
+	// modifyMode and selectedObjects ignored
 
 	// take values from supplied visibility, but default to current
-	for (var k in this.visibility._internal) {
-		if (typeof newVisibility[k] !== 'undefined') this.visibility[k] = newVisibility[k]
+	for (var k in internalVisibility) {
+		if (typeof newVisibility[k] !== 'undefined') internalVisibility[k] = newVisibility[k]
 	}
 
-	if (!newState.panelStates) return true	// nothing else left to do
+	if (newState.panelStates)  {
+		var ps = newState.panelStates
+		if (ps.chat) 	internalPanelStates.chat = ps.chat
+		if (ps.presets) internalPanelStates.presets = ps.presets
+		if (ps.assets) 	internalPanelStates.assets = ps.assets
+	}
 
-	var ps = newState.panelStates
-	if (ps.chat) this.panelStates.chat = ps.chat
-	if (ps.presets) this.panelStates.presets = ps.presets
-	if (ps.assets) this.panelStates.assets = ps.assets
+	this.emit('replaced', this);
 
 	return true
 }
