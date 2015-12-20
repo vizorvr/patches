@@ -13,6 +13,7 @@ var ColorPicker = E2.plugins.color_picker = function(core) {
 		}
 	];
 
+	this._oldState = null;
 	this.state = { hue: 0.0, sat: 0.0, lum: 1.0 };
 	// note: .lum above is used as B/V so model is actually HSV
 	// 		 http://codeitdown.com/hsl-hsb-hsv-color/
@@ -46,33 +47,33 @@ ColorPicker.prototype.create_ui = function()
 
 	function beginModifyState() {
 		E2.app.undoManager.begin('Pick color')
-		that._mouseDownValue = { hue: that.state.hue, sat: that.state.sat, lum: that.state.lum }
+		that._oldState = { hue: that.state.hue, sat: that.state.sat, lum: that.state.lum }
 	}
 
 	function endModifyState() {
-		if (!that._mouseDownValue)
+		if (!that._oldState)
 			return;
 
-		if (that._mouseDownValue.hue !== that.state.hue)
+		if (that._oldState.hue !== that.state.hue)
 			that.undoableSetState('hue',
 				that.state.hue,
-				that._mouseDownValue.hue
+				that._oldState.hue
 			)
 
-		if (that._mouseDownValue.sat !== that.state.sat)
+		if (that._oldState.sat !== that.state.sat)
 			that.undoableSetState('sat',
 				that.state.sat,
-				that._mouseDownValue.sat
+				that._oldState.sat
 			)
 
-		if (that._mouseDownValue.lum !== that.state.lum)
+		if (that._oldState.lum !== that.state.lum)
 			that.undoableSetState('lum',
 				that.state.lum,
-				that._mouseDownValue.lum
+				that._oldState.lum
 			)
 
 		E2.app.undoManager.end()
-		that._mouseDownValue = null;	// otherwise we keep tracking the mouse
+		that._oldState = null	// otherwise we keep tracking the mouse
 	}
 
 	var ww = 178;	// container width
