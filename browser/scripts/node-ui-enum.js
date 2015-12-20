@@ -92,7 +92,6 @@ var uiNodeCategoryMap = {};
         'three_point_light' : c.light,
 
 		'url_texture_generator'	: 	c.texture,
-		'texture_from_text_generator' : c.texture,
 
 		'action_button' : 			c.value,
         'blend_mode_generator' : 	c.value,
@@ -183,228 +182,27 @@ var uiNodeCategoryMap = {};
 
 		'runtime_event_write'			: c.meta,
 		'runtime_event_write_continuous': c.meta,
-		'runtime_event_read'			: c.meta
+		'runtime_event_read'			: c.meta,
 
+		'audio_player'					: c.media,
+		'audio_source_player'			: c.media,
+		'module_player'					: c.media,
+		'video_player'					: c.media,
+
+		'audio_get_current_time_modulator'	: c.time,
+		'clock_generator'					: c.time,
+		'delta_t_generator'					: c.time,
+		'video_get_current_time_modulator'	: c.time,
+
+		'texture_from_text_generator'		: c.text,
+		'string_concatenate_modulator'		: c.text
 
 		// everything else is c.generic
 
-/*
-
-    "RENDERING BASICS": {
-        "Render To Screen": "three_webgl_renderer",
-        "Render To Texture": "three_webgl_texture_renderer",
-        "Scene": "three_scene",
-        "Environment Settings": "three_environment_settings"
-
-    },
-
-    "3D GEOMETRY AND MESH TOOLS": {
-        "Box": "three_geometry_box",
-        "Circle": "three_geometry_circle",
-        "Cylinder": "three_geometry_cylinder",
-        "Dodecahedron": "three_geometry_dodecahedron",
-        "Sphere": "three_geometry_sphere",
-        "Plane": "three_geometry_plane",
-        "Procedural Ground": "three_procedural_ground",
-        "Mesh": "three_mesh",
-        "Point Cloud Mesh": "three_point_cloud_mesh",
-        "3D Geometry Loader": "three_loader_model",
-        "Particle Emitter": "three_particle_emitter",
-        "3D Model Loader": "three_loader_scene",
-        "Mesh attributes": "three_object3d_attribute_extractor",
-        "Line Segments": "three_line_segments"
-    },
-
-    "MATERIALS AND LIGHTS": {
-        "Basic Material": "three_material",
-        "Depth Material": "three_material_depth",
-        "Lambert Material": "three_material_lambert",
-        "Phong Material": "three_material_phong",
-        "Shader": "three_material_shader",
-        "Point Cloud Material": "three_point_cloud_material",
-        "Material Modifier": "three_material_modifier",
-        "UV Modifier": "three_uv_modifier",
-        "Ambient Light": "three_ambient_light",
-        "Directional Light": "three_directional_light",
-        "Point Light": "three_point_light",
-        "Line Material": "three_line_material",
-        "Material Extractor": "three_material_extractor"
-    },
-
-
-    "STATE AND STRUCTURE": {
-        "Read Variable": "variable_local_read",
-        "Write Variable": "variable_local_write",
-        "Input proxy": "input_proxy",
-        "Output proxy": "output_proxy",
-        "Graph": "graph",
-        "Loop": "loop",
-        "Array Function": "array_function",
-        "Annotation": "annotation"
-
-    },
-
-
-
-    "PLAYERS": {
-        "Audio player": "audio_player",
-        "Audio source player": "audio_source_player",
-        "Module player": "module_player",
-        "Video player": "video_player"
-    },
-
-       "AUDIO": {
-        "Audio player": "audio_player",
-        "Audio source player": "audio_source_player",
-        "Analyse": "audio_analyse_modulator",
-        "Buffer source": "audio_buffer_source_modulator",
-        "Delay": "audio_delay_modulator",
-        "Current time": "audio_get_current_time_modulator",
-        "Duration": "audio_get_duration_modulator",
-        "Gain (mix)": "audio_gain_modulator"
-    },
-
-    "DEBUG TOOLS": {
-        "Bool": "bool_display",
-        "Color": "color_display",
-        "Data info": "data_info_display",
-        "Float": "float_display",
-        "Led": "led_display",
-        "Log": "log_display",
-        "Matrix": "matrix_display",
-        "Plot": "plot_display",
-        "Text": "text_display",
-        "Object": "object_display",
-        "Vector": "vector_display"
-    },
-
-    "GRAPH CONTROL": {
-        "Stop playback": "stop_emitter",
-        "Load graph": "load_graph",
-        "Initialise": "initialise_generator",
-        "Completed": "assets_completed_generator",
-        "Completed emitter": "assets_signal_completed_generator",
-        "Failed": "assets_failed_generator",
-        "Failed emitter": "assets_signal_failed_generator",
-        "Started": "assets_started_generator",
-        "Started emitter": "assets_signal_started_generator"
-
-    },
-
-    "INPUT METHODS": {
-        "Key press": "key_press_generator",
-        "Touching": "touching_generator",
-        "Touch Start": "touch_start_generator",
-        "Touch End": "touch_end_generator",
-        "Mouse buttons": "mouse_button_generator",
-        "Mouse position": "mouse_position_generator",
-        "Mouse wheel": "mouse_wheel_generator",
-        "Game pad": "gamepad_generator"
-    },
-
-
-    "TEXT TOOLS": {
-        "From text": "texture_from_text_generator",
-        "Concatenate": "string_concatenate_modulator",
-        "Parse JSON": "parse_json_modulator"
-    },
-
-    "CLOCKS": {
-        "Clock": "clock_generator",
-        "Delta time": "delta_t_generator"
-    },
-
-    "ARRAYS & OBJECTS": {
-        "Inputs to Array": "inputs_to_array",
-        "Array Set": "array_set",
-        "Array Get": "array_get",
-        "Array Remove": "array_remove",
-        "Array Clear": "array_clear",
-        "Array Length": "array_length",
-        "Object array length": "member_array_length_modulator",
-        "Object member to bool": "member_to_bool_modulator",
-        "Object member to float": "member_to_float_modulator",
-        "Object member to object": "member_to_object_modulator",
-        "Object member to string": "member_to_string_modulator",
-        "Object member to typed array": "member_to_typed_array_modulator"
-    },
-
-    "TYPED ARRAYS": {
-        "Typed array": "typed_array_generator",
-        "Typed array item to bool": "typed_array_item_to_bool_modulator",
-        "Typed array item to float": "typed_array_item_to_float_modulator",
-        "Typed array item to object": "typed_array_item_to_object_modulator",
-        "Typed array item to string": "typed_array_item_to_string_modulator",
-        "Typed array item to typed array": "typed_array_item_to_typed_array_modulator",
-        "Typed array to texture": "typed_array_to_texture_modulator",
-        "Get typed array": "typed_array_get_modulator",
-        "Get typed array as": "typed_array_get_as_modulator",
-        "Typed array Length": "typed_array_length_modulator",
-        "Set typed array": "typed_array_set_modulator",
-        "Set typed array as": "typed_array_set_as_modulator"
-    },
-
-
-    "COLOR MODULATORS": {
-        "Add color": "color_add_modulator",
-        "Blend color": "color_blend_modulator",
-        "Multiply color": "color_multiply_modulator"
-    },
-
-    "CONVERTERS": {
-        "Camera matrices": "convert_camera_matrices",
-        "Matrices to Camera": "convert_matrices_camera",
-        "Color to HSL": "convert_color_hsl_modulator",
-        "Color to RGB": "convert_color_rgb_modulator",
-        "HSL to Color": "convert_hsl_color_modulator",
-        "RGB to Color": "convert_rgb_color_modulator",
-        "Float as string": "format_string_float",
-        "Bool to Float": "convert_bool_float_modulator",
-        "Float to Bool": "convert_float_bool_modulator",
-        "Oscilator to unit": "convert_oscilator_unit_modulator",
-        "String to float": "convert_string_float_modulator",
-        "Vector to XYZ": "convert_vector_xyz_modulator",
-        "Vector to screenspace": "vector_to_screenspace",
-        "XYZ to Vector": "vector",
-        "Object to JSON": "object_stringify"
-    },
-
-    "VECTOR MATH": {
-        "Add Vector": "vector_add",
-        "Cross": "vector_cross",
-        "Dot": "vector_dot",
-        "Magnitude": "vector_magnitude",
-        "Multiply vector": "vector_multiply",
-        "Normalize": "vector_normalize",
-        "Scale": "vector_scale",
-        "Transform": "vector_transform"
-    },
-
-
-    "OSCILLATORS": {
-        "Cosine": "cosine_modulator",
-        "Sawtooth": "sawtooth_modulator",
-        "Sine": "sine_modulator",
-        "Square": "square_modulator",
-        "Triangle": "triangle_modulator",
-        "In Tweens": "tween_in_modulator",
-        "Out Tweens": "tween_out_modulator"
-    },
-
-
-
-    "VIDEO TOOLS": {
-        "Duration": "video_get_duration_modulator",
-        "Current time": "video_get_current_time_modulator"
-    },
-
-
-	*/
 	};
 })();
 
 uiNodeCategoryMap.getCategory = function(plugin_id) {
-	var ret = ((typeof uiNodeCategoryMap[plugin_id] != 'undefined') && (uiNodeCategoryMap[plugin_id])) ?
+	return ((typeof uiNodeCategoryMap[plugin_id] !== 'undefined') && (uiNodeCategoryMap[plugin_id])) ?
 				uiNodeCategoryMap[plugin_id] : uiNodeCategory.generic;
-	return ret;
 };
