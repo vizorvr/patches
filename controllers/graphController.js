@@ -219,8 +219,7 @@ GraphController.prototype.upload = function(req, res, next)
 };
 
 // POST /graph
-GraphController.prototype.save = function(req, res, next)
-{
+GraphController.prototype.save = function(req, res, next) {
 	var that = this;
 	var path = this._makePath(req, req.body.path);
 	var gridFsPath = '/graph'+path+'.json';
@@ -228,34 +227,29 @@ GraphController.prototype.save = function(req, res, next)
 	var tags = that._parseTags(req.body.tags);
 
 	this._service.canWrite(req.user, path)
-	.then(function(can)
-	{
-		if (!can)
-		{
+	.then(function(can) {
+		if (!can) {
 			return res.status(403)
 				.json({message: 'Sorry, permission denied'});
 		}
 
 		return that._fs.writeString(gridFsPath, req.body.graph)
-		.then(function()
-		{
+		.then(function() {
 			var url = that._fs.url(gridFsPath);
 
-			var model =
-			{
+			var model = {
 				path: path,
 				tags: tags,
 				url: url
-			};
+			}
 
 			return that._service.save(model, req.user)
-			.then(function(asset)
-			{
-				res.json(asset);
-			});
-		});	
+			.then(function(asset) {
+				res.json(asset)
+			})
+		})
 	})
-	.catch(next);
+	.catch(next)
 }
 
 module.exports = GraphController;

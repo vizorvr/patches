@@ -21,7 +21,8 @@ items.map(function(item) {
 
 		console.log(sout.toString())
 	} catch(e) {
-		throw e
+		// the error was already logged, just exit
+		process.exit(1)
 	}
 })
 

@@ -68,6 +68,7 @@
 
     "LOAD CONTENT": {
         "Texture": "url_texture_generator",
+        "Stereo Cubemap": "url_stereo_cubemap_generator",
         "3D model": "three_loader_model",
         "Array": "url_array_generator",
         "Audio": "url_audio_generator",
