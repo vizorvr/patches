@@ -150,16 +150,21 @@ var siteUI = new function() {
 		jQuery('button#mobileMenuOpenButton').on('mousedown touchdown', function(e){
 			e.preventDefault();
 			e.stopPropagation();
+			var $contentWrap = jQuery('div#contentwrap')
 			var $mobileMenu = jQuery(E2.views.partials.homeMobileMenu())
 				.appendTo('div#contentwrap');
 			var menuHeight = $mobileMenu.outerHeight();
 
 			var $body = jQuery('body');
-			$body.css({height:menuHeight, overflow:'hidden'});
+			var css = {height:menuHeight, overflow:'hidden'};
+			$body.css(css);
 			$body.scrollTop(0);
+			$contentWrap.css(css);
 
 			var dismissMenu = function() {
-				$body.css({height:'', overflow:'initial'});
+				var css = {height:'', overflow:'initial'}
+				$body.css(css);
+				$contentWrap.css(css);
 				jQuery('#mobilemenu')
 					.fadeOut('fast', function(){
 						jQuery(this).remove();
