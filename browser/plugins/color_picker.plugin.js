@@ -361,7 +361,7 @@ ColorPicker.prototype.create_ui_valuesIndicator = function(/* @var jQuery */ c) 
 }
 
 ColorPicker.prototype.update_state = function() {
-
+	this.update_rgb_value()
 };
 
 ColorPicker.prototype.update_output = function() {
