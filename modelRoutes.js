@@ -222,10 +222,21 @@ function modelRoutes(
 		})
 	})
 
-	// list by tag
-	app.get('/:model/tag/:tag', requireController, function(req, res, next) {
-		req.controller.findByTag(req, res, next)
+	// list by tag for user
+	app.get('/:username/assets/:model/tag/:tag', requireController, function(req, res, next) {
+		req.controller.findByTagAndUsername(req, res, next)
 	})
+
+	// list by tag for current user
+	app.get('/:model/tag/:tag',
+		requireController, 
+		function(req, res, next) {
+			if (!req.user || !req.user.username)
+				return res.json([])
+
+			req.params.username = req.user.username;
+			req.controller.findByTagAndUsername(req, res, next)
+		})
 
 	// get
 	app.get('/:model/:id', requireController, function(req, res, next) {

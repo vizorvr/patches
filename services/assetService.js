@@ -86,28 +86,35 @@ AssetService.prototype.findOne = function(q)
 	return dfd.promise;
 };
 
+AssetService.prototype.findByTagAndUserId = function(tag, userId) {
+	return this.find({
+		tags: tag.replace(/[^a-zA-Z0-9]/g, ''),
+		_creator: userId
+	})
+}
+
 AssetService.prototype.findByPath = function(path)
 {
 	return this.findOne({path: path});
 };
 
-AssetService.prototype.save = function(data, user)
-{
+AssetService.prototype.save = function(data, user) {
 	var that = this;
 
 	return this.findByPath(data.path)
-	.then(function(asset)
-	{
+	.then(function(asset) {
 		if (!asset)
 			asset = new that._model(data);
 
 		asset._creator = user.id;
 		asset.updatedAt = Date.now();
 
+		if (data.tags)
+			asset.tags = data.tags
+
 		var dfd = when.defer();
 
-		asset.save(function(err)
-		{
+		asset.save(function(err) {
 			if (err)
 				return dfd.reject(err);
 

@@ -154,14 +154,15 @@ FileSelectControl.prototype._renderFiles = function()
 	return html;
 }
 
-FileSelectControl.prototype._render = function()
-{
+FileSelectControl.prototype._render = function() {
 	var self = this;
 
-	this._frame = $(this._frameTemplate(
-	{
+	var modelName = this._url.split('/')[1]
+
+	this._frame = $(this._frameTemplate({
 		original: this._original,
 		url: this._url,
+		modelName: modelName,
 		user: E2.models.user.toJSON()
 	}));
 
@@ -569,7 +570,11 @@ FileSelectControl.createSceneSelector = function(selected, okButton, okFn)
 }
 
 FileSelectControl.createTextureSelector = function(selected, cb){
-	return createSelector('/image', selected, 'Select', function(){}, cb)
+	return createSelector('/image/tag/texture', selected, 'Select', function(){}, cb)
+}
+
+FileSelectControl.createStereoCubeMapSelector = function(selected, cb){
+	return createSelector('/image/tag/stereocubemap', selected, 'Select', function(){}, cb)
 }
 
 FileSelectControl.createModelSelector = function(model, selected, cb){

@@ -143,8 +143,7 @@ describe('Graph', function() {
 	it('can be found by tag after saving', function(done) {
 		var path = 'graph-tag-'+process.pid
 
-		agent.post('/graph').send(
-		{
+		agent.post('/graph').send({
 			path: path,
 			tags: [ 'tags', '#are', 'cool' ],
 			graph: fs.readFileSync(graphFile)
@@ -152,13 +151,17 @@ describe('Graph', function() {
 		.expect(200)
 		.end(function(err, res) {
 			if (err) return done(err)
-			request(app) .get('/graph/tag/are') .expect(200)
-			.end(function(err, res)
-			{
-				if (err) return done(err)
-				expect(res.body[0].tags).to.deep.equal(
-				[
-					'#tags', '#are', '#cool'
+			
+			request(app)
+			.get('/'+username+'/assets/graph/tag/are')
+			.expect(200)
+			.end(function(err, res) {
+				if (err)
+					return done(err)
+
+				expect(res.body[0].tags)
+				.to.deep.equal([
+					'tags', 'are', 'cool'
 				])
 				done(err)
 			})

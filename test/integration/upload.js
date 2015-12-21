@@ -32,35 +32,27 @@ describe('Upload', function() {
 	var agent = request.agent(app);
 	var db;
 
-	before(function(done)
-	{
+	before(function(done) {
 		var that = this;
 
 		db = new mongo.Db('upload'+testId,
 			new mongo.Server('localhost', 27017),
 			{ safe: true }
-		);
+		)
 
 		db.open(done);
-	});
+	})
 
-	after(function()
-	{
+	after(function() {
 		db.dropDatabase();
-	});
+	})
 
-	before(function(done)
-	{
+	before(function(done) {
 		agent
 		.post('/signup')
 		.send(deets)
 		.expect(302)
 		.end(done);
-	});
-
-	after(function()
-	{
-
 	});
 
 	describe('Image', function()
@@ -98,7 +90,7 @@ describe('Upload', function() {
 				delete json.url; delete json.scaled.url; delete json.original.url; delete json.scaledThumbnail.url; delete json.thumbnail.url; 
 
 				expect({__v:0,path:original,
-					tags:[],
+					tags:['texture'],
 					scaledThumbnail:{mimetype:'image/png',width:128,height:128,path:scaledThumb},
 					scaled:{mimetype:'image/png',width:1024,height:1024,path:scaled},
 					thumbnail:{mimetype:'image/png',width:128,height:72,path:thumb},
