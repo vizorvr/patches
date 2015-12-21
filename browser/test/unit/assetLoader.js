@@ -20,7 +20,9 @@ describe('Asset loading', function() {
 		global.THREE = {
 			DDSLoader: function() {},
 			ImageUtils: {
-				loadTexture: function() {}
+				loadTexture: function() {
+					return {}
+				}
 			},
 			Loader: {
 				Handlers: { add: function() {} }

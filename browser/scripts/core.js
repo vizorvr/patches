@@ -103,7 +103,7 @@ function Core() {
 	
 	this.runtimeEvents = new EventEmitter()
 
-	this.assetLoader = new E2.AssetLoader()
+	this.assetLoader = new AssetLoader()
 
 	// relay events from AssetLoader
 	this.assetLoader.on('progress', function(pct) {

@@ -172,10 +172,10 @@ AssetLoader.prototype.parse = function(graph) {
 	return assets
 }
 
-E2.AssetLoader = AssetLoader
-
 if (typeof(module) !== 'undefined') {
 	module.exports.AssetLoader = AssetLoader
+} else {
+	window.AssetLoader = AssetLoader
 }
 
 })()
