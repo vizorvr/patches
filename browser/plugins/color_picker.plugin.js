@@ -1,7 +1,10 @@
 (function() {
+
+var clamp = THREE.Math.clamp
+
 var ColorPicker = E2.plugins.color_picker = function(core) {
 	Plugin.apply(this, arguments)
-	this.desc = 'Provides an intuitive way of picking arbitrary colors via a hue slider and saturation / value selection area.';
+	this.desc = 'Provides an intuitive way of picking arbitrary colors via a hue slider and saturation/value selection area.';
 	this.input_slots = [];
 	
 	this.output_slots = [
@@ -16,10 +19,12 @@ var ColorPicker = E2.plugins.color_picker = function(core) {
 	this._oldState = null;
 	this.state = { hue: 0.0, sat: 0.0, lum: 1.0 };
 	// note: .lum above is used as B/V so model is actually HSV
+	// note: .hue above is inverted (1.0 - hue) and therefore goes clockwise - #990
 	// 		 http://codeitdown.com/hsl-hsb-hsv-color/
 
 	this.ui = null;
-	this.color = {};
+	this.color = new THREE.Color(1,1,1);
+	this.updated = false;	// update_state
 };
 
 ColorPicker.prototype = Object.create(Plugin.prototype)
@@ -138,20 +143,16 @@ ColorPicker.prototype.create_ui = function()
 	c.append(h);
 	c.append(hs);
 
-	function afterMove() {
-		that.update_picker(c, s);
-		that.update_rgb_value();
-		that.indicator.update(that.color);
-	}
 
+	// SV
 	function moveV(val) {
 		that.state.lum = val;
-		afterMove()
+		that.state_changed(that.ui)
 	}
 
 	function moveS(sat) {
 		that.state.sat = sat;
-		afterMove()
+		that.state_changed(that.ui)
 	}
 
 	var opts = {
@@ -165,13 +166,13 @@ ColorPicker.prototype.create_ui = function()
 		orientation : 'horizontal'
 	}
 
-	// one for the area
+	// two for the area (x/y)
 	NodeUI.makeUIAdjustableValue(i[0], beginModifyState, moveS, endModifyState, opts)
 	opts.surfaceDomNode = i[0]
 	NodeUI.makeUIAdjustableValue(s[0], beginModifyState, moveS, endModifyState, opts)
 	delete(opts.surfaceDomNode)
 
-	// one for the picker within the area
+	// two for the picker within the area (x/y)
 	opts.getValue = function() { return that.state.lum }
 	opts.orientation = 'vertical'
 	opts.min = 1.0
@@ -180,11 +181,10 @@ ColorPicker.prototype.create_ui = function()
 	opts.surfaceDomNode = i[0]
 	NodeUI.makeUIAdjustableValue(s[0], beginModifyState, moveV, endModifyState, opts)
 
+	// HUE
 	function moveH(hue) {
-		that.state.hue = hue
-		that.update_hue(i, h, hs);
-		that.update_rgb_value();
-		that.indicator.update(that.color);
+		that.state.hue = 1.0 - hue	// note hue is inverted
+		that.state_changed(that.ui)
 	}
 
 	opts = {
@@ -196,7 +196,7 @@ ColorPicker.prototype.create_ui = function()
 		cssCursor: 'crosshair',
 		orientation: 'horizontal'
 	}
-	// as sv
+	// one for surface, one for indicator
 	NodeUI.makeUIAdjustableValue(h[0], beginModifyState, moveH, endModifyState, opts)
 	opts.surfaceDomNode = h[0]
 	NodeUI.makeUIAdjustableValue(hs[0], beginModifyState, moveH, endModifyState, opts)
@@ -213,21 +213,20 @@ ColorPicker.prototype.create_ui = function()
 		var hsl = that.color.getHSL();
 		var _s, _v, _h, _l;		// clamp everything
 
-		_h = hsl.h;
-		_h = _h < 0.0 ? 0.0 : _h > 1.0 ? 1.0 : _h;
-
-		_l = hsl.l;
-		_l = _l < 0.0 ? 0.0 : _l > 1.0 ? 1.0 : _l;
+		_h = clamp(hsl.h, 0.0, 1.0)
+		_l = clamp(hsl.l, 0.0, 1.0)
 
 		_v = 0.5 * (2 * _l + hsl.s * (1 - Math.abs(2 * _l - 1)))
-		_v = _v <= 0.0 ? 0.000001 : _v > 1.0 ? 1.0 : _v;	// /0
+		_v = clamp(_v, 0.0, 1.0)
+		var tv = (_v === 0.0) ? 0.000001 : _v;	// avoid division by zero
 
-		_s = (2 * (_v - _l)) /  _v ;
-		_s = _s < 0.0 ? 0.0 : _s > 1.0 ? 1.0 : _s;
+		_s = (2 * (_v - _l)) /  tv ;
+		_s = clamp(_s, 0.0, 1.0)
 
-		that.state.hue = _h;
 		that.state.sat = _s;
 		that.state.lum = _v;	// !
+		if (_s > 0.0)
+			that.state.hue = 1.0 - _h;		// note hue is inverted
 	}
 
 	var getComponent = function (which) {
@@ -236,7 +235,6 @@ ColorPicker.prototype.create_ui = function()
 
 	var setComponent = function(which) {
 		return function(v) {
-
 			that.color[which] = v;
 			makeStateFromThisColor()
 			that.state_changed(that.ui)
@@ -311,25 +309,23 @@ ColorPicker.prototype.create_ui = function()
 	return this.ui;
 };
 
-// converts the state (HSV) to HSL and sets the referenced color
+// sets the referenced color from the current state
 ColorPicker.prototype.setFromState = function(/* @var THREE.Color */ color) {
-	var _h, _s, _l;
+	var _h, _s, _l, _v;
 
-	var _v = this.state.lum;	// !
-	_v = _v < 0.0 ? 0.0 : _v > 1.0 ? 1.0 : _v;
+	// this.state has HSV, THREE.Color needs HSL
+	_v = clamp(this.state.lum, 0.0, 1.0)
 
-	_h = this.state.hue;
-	_h = _h < 0.0 ? 0.0 : _h > 1.0 ? 1.0 : _h;
+	// hue is inverted
+	_h = clamp(1.0 - this.state.hue, 0.0, 1.0)
 
 	_l = 0.5 * _v * (2 - this.state.sat);
-	_l = _l < 0.0 ? 0.0 : _l > 1.0 ? 1.0 : _l;
-	var tl = _l;
-	_l = _l <= 0.0 ? 0.000001 : _l >= 1.0 ? 0.999999 : _l;	// avoid division by zero below
+	_l = clamp(_l, 0.0, 1.0)
 
-	_s = _v * this.state.sat / (1 - Math.abs(2 * _l - 1));
-	_s = _s < 0.0 ? 0.0 : _s > 1.0 ? 1.0 : _s;
+	var tl = clamp(_l, 0.00001, 0.999999)	// avoid division by zero below
 
-	_l = tl;
+	_s = _v * this.state.sat / (1 - Math.abs(2 * tl - 1));
+	_s = clamp(_s, 0.0, 1.0)
 
 	color.setHSL(_h, _s, _l);
 	return color;
@@ -349,19 +345,19 @@ ColorPicker.prototype.create_ui_valuesIndicator = function(/* @var jQuery */ c) 
 	$t.append($row1, $row2);
 	i._oldcolor = new THREE.Color(0,0,0);
 	i.update = function(c){
-		if (this._oldcolor.equals(c)) return true;	// nothing to update
+		if (this._oldcolor.equals(c)) return;	// nothing to update
 		this._oldcolor = c.clone();
 		this.Hex.html(c.getHexString());
 		this.R.html(Math.round(255 * c.r));
 		this.G.html(Math.round(255 * c.g));
 		this.B.html(Math.round(255 * c.b));
-		// this.A.html(Math.round(255 * c.a));	// three.color has no alpha
+		// three.color has no alpha
 	}.bind(i);
 	return $t;
 }
 
 ColorPicker.prototype.update_state = function() {
-	this.update_rgb_value()
+	if (!this.updated) this.state_changed(this.ui)
 };
 
 ColorPicker.prototype.update_output = function() {
@@ -369,10 +365,8 @@ ColorPicker.prototype.update_output = function() {
 };
 
 ColorPicker.prototype.update_rgb_value = function() {
-	if (this.color) {
-		this.setFromState(this.color);
-		this.updated = true;
-	}
+	this.setFromState(this.color);
+	this.updated = true;
 };
 
 
@@ -385,57 +379,26 @@ ColorPicker.prototype.update_picker = function(c, s) {
 
 
 ColorPicker.prototype.update_hue = function(i, h, hs) {
-	var hue = this.state.hue;
-
-	var t1 = 0.0;
-	var t3 = [hue + 1.0 / 3.0, hue, hue - 1.0 / 3.0];
-	var c = [0, 0, 0];
-
-	for(var x = 0; x < 3; x++)
-	{
-		if(t3[x] < 0.0)
-			t3[x] += 1.0;
-		else if(t3[x] > 1.0)
-			t3[x] -= 1.0;
-
-		var t3v = t3[x];
-			
-		if(6.0 * t3v < 1.0)
-			c[x] = t3v * 6.0;
-		else if(2.0 * t3v < 1.0)
-			c[x] = 1.0;
-		else if(3.0 * t3v < 2.0)
-			c[x] = ((2.0 / 3.0) - t3v) * 6.0;
-		else
-			c[x] = t1;
-
-		c[x] = Math.round(c[x] * 255.0);
-	}
+	var cc = new THREE.Color()
+	var hue = 1.0 - this.state.hue;
+	cc.setHSL(hue, 1.0, 0.5);	// peg to max brightness
 
 	if(i)
-		i.css('background-color', 'rgb(' + c[0] + ', ' + c[1] + ', ' + c[2] + ')');
+		i.css('background-color', '#' + cc.getHexString())
 
 	if(h && hs) {
 		// horizontal
-		hs.css('left', Math.round(( (this.state.hue) * this.picker_width) - 2));
+		hs.css('left', Math.round(( (hue) * this.picker_width) - 2));
 	}
 };
 
-ColorPicker.prototype.clip = function(ev, e) {
-	var o = e.offset();
-	return ev.pageX < o.left || ev.pageX > o.left + e.width() || ev.pageY < o.top || ev.pageY > o.top + e.height();
-};
 
-ColorPicker.prototype.state_changed = function(/* @var jQuery */ ui)
-{
+ColorPicker.prototype.state_changed = function(/* @var jQuery */ ui) {
+	this.update_rgb_value();
 	if(ui) {
-		this.update_rgb_value();
 		this.update_hue(this.i, this.h, this.hs);
 		this.update_picker(ui, this.s);
 		this.indicator.update(this.color);
-	} else {
-		this.color = new THREE.Color(1,1,1);
-		this.update_hue(null, null, null);
 	}
 };
 
