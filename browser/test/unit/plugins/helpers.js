@@ -1,6 +1,7 @@
 var fs = require('fs');
 var vm = require('vm');
 var browserPath = __dirname+'/../../../';
+var EventEmitter = require('events').EventEmitter
 
 var _ = require('lodash')
 
@@ -17,13 +18,24 @@ exports.slot = function slot(index, type, dt) {
 	};
 }
 
+exports.mockE2Classes = function() {
+	global.AssetLoader = function AssetLoader() {
+		EventEmitter.call(this)
+		this.defaultTexture = {}
+		this.loadingTexture = {}
+	}
+	global.AssetLoader.prototype = Object.create(EventEmitter.prototype)
+}
+
 exports.reset = function() {
-	if (!global.E2)
+	if (typeof(global.E2) === 'undefined')
 		global.E2 = {}
 
 	E2 = global.E2
 
 	E2.slot_type = { input: 0, output: 1 }
+	
+	E2.GRAPH_NODES = ['graph', 'loop', 'array_function'];
 
 	E2.dt = {
 		FLOAT: { id: 0, name: 'Float' },
@@ -51,6 +63,8 @@ exports.reset = function() {
 
 	if (!global.E2.app)
 		global.E2.app = {}
+
+	exports.mockE2Classes()
 
 	global.E2.app.getSlotPosition = function() {}
 	global.E2.app.channel = {
@@ -90,6 +104,7 @@ exports.reset = function() {
 	core = {
 		datatypes: E2.dt,
 		get_uid: E2.uid,
+		assetLoader: new AssetLoader(),
 		renderer: {
 			context: {},
 			canvas: [$()],

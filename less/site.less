@@ -80,12 +80,11 @@ div.breadcrumb {
   border:1px solid @bordercolor-launch-button;
   padding: 15px 20px;
   background: none;
-  margin: 10px 0;
-  border-radius: 5px;
+  margin: 20px 0;
+  border-radius: 6px;
   font-weight: @font-weight-home;
   font-size: 150%;
   width: 11em;
-  margin-top:30px;
   &:hover {
 	border:2px solid #fff;
 	padding: 14px 20px;
@@ -208,7 +207,7 @@ body.bMain {
 	{
 	  	max-width: 1260px;
 	  	margin:0 auto;
-	  	padding: 15px;
+	  	padding: 15px 0;
 	    position:relative;
 	}
   }
@@ -658,5 +657,43 @@ body.bProfile {
   border: 0; outline: 0; box-shadow: 0;
   svg {
 	stroke: #fff;
+  }
+}
+
+
+.flexcolumns {
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  -webkit-justify-content: space-between;
+  -webkit-align-items: stretch;
+  -webkit-align-content: stretch;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  align-content: stretch;
+  &.c2 {
+	>ul, >div, >p {
+		-webkit-flex-basis: 50%;
+		flex-basis: 50%;
+	}
+  }
+  &.c3 {
+	>ul, >div, >p {
+		-webkit-flex-basis: 33.3%;
+		flex-basis: 33.3%;
+	}
+  }
+  &.c4 {
+	>ul, >div, >p {
+		-webkit-flex-basis: 25%;
+		flex-basis: 25%;
+	}
+  }
+
+  >ul {
+	padding-left: 0;
+	margin-right: 20px;
   }
 }

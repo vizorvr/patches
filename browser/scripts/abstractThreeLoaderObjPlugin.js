@@ -25,7 +25,7 @@ function AbstractThreeLoaderObjPlugin(core) {
 
 AbstractThreeLoaderObjPlugin.prototype = Object.create(Plugin.prototype)
 
-AbstractThreeLoaderObjPlugin.prototype.update_input = function(slot, data) {
+AbstractThreeLoaderObjPlugin.prototype.update_input = function() {
 	return Plugin.prototype.update_input.apply(this, arguments)
 }
 

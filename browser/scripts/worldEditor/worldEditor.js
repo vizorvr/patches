@@ -45,6 +45,8 @@ function WorldEditor(domElement) {
 	// transform controls
 	this.transformControls = new THREE.TransformControls(this.camera.perspectiveCamera, this.domElement)
 
+	this.cameraHelper = new VRCameraHelper()
+
 	var that = this
 
 	this.transformControls.addEventListener('mouseDown', function() {
@@ -129,12 +131,10 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 	if (scene) {
 		scene.children[0].traverse( nodeHandler )
 	}
-	
-	// add handles for the camera helper
-	this.cameraHelper = new VRCameraHelper(camera)
-	this.cameraHelper.backReference = camera.backReference
-	this.handleTree.add(this.cameraHelper)
 
+	// add handles for the camera helper
+	this.cameraHelper.attachCamera(camera)
+	this.handleTree.add(this.cameraHelper)
 
 	// if there's a pending selection (something was pasted),
 	// set selection accordingly
@@ -373,17 +373,15 @@ WorldEditor.prototype.getActiveSceneNode = function() {
 
 WorldEditor.prototype.matchCamera = function() {
 	// match the selected vr camera to world editor camera
-	if (this.transformControls.object instanceof THREE.PerspectiveCamera) {
-		var vrCameraPlugin = this.transformControls.plugin
-		var editCamera = this.getCamera()
+	var vrCameraPlugin = this.vrCamera.backReference
+	var editCamera = this.getCamera()
 
-		E2.app.undoManager.begin()
+	E2.app.undoManager.begin()
 
-		var tempPosition = new THREE.Vector3(vrCameraPlugin.state.position.x, vrCameraPlugin.state.position.y, vrCameraPlugin.state.position.z)
-		vrCameraPlugin.undoableSetState('position', editCamera.position.clone(), tempPosition)
-		var tempQuaternion = new THREE.Quaternion(vrCameraPlugin.state.quaternion._x, vrCameraPlugin.state.quaternion._y, vrCameraPlugin.state.quaternion._z, vrCameraPlugin.state.quaternion._w)
-		vrCameraPlugin.undoableSetState('quaternion', editCamera.quaternion.clone(), tempQuaternion)
+	var tempPosition = new THREE.Vector3(vrCameraPlugin.state.position.x, vrCameraPlugin.state.position.y, vrCameraPlugin.state.position.z)
+	vrCameraPlugin.undoableSetState('position', editCamera.position.clone(), tempPosition)
+	var tempQuaternion = new THREE.Quaternion(vrCameraPlugin.state.quaternion._x, vrCameraPlugin.state.quaternion._y, vrCameraPlugin.state.quaternion._z, vrCameraPlugin.state.quaternion._w)
+	vrCameraPlugin.undoableSetState('quaternion', editCamera.quaternion.clone(), tempQuaternion)
 
-		E2.app.undoManager.end()
-	}
+	E2.app.undoManager.end()
 }

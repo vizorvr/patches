@@ -1,9 +1,8 @@
 <header>
 	<nav class="clearfix in" style="position:relative">
 		<h1 id="brandTop" class="brandTop">
-			<svg style="fill:#fff;" width="112" height="26" >
-				<use x="-35" y="0" xlink:href="#vizor-logo-flat" />
-				<use x="20" y="0"  xlink:href="#vizor-top-logo" />
+			<svg style="fill:#fff;" width="68" height="24" >
+				<use xlink:href="#vizor-top-logo" />
 			</svg>
 		</h1>
 		<div class="nomobile">
@@ -15,42 +14,24 @@
 				<li class="signin nomobile">
 					<a id="homeSignin" href="#/login" class="sign-btn">Sign in</a>
 				</li>
-				<li class="signin nomobile">
+				<li class="signup nomobile">
 					<a class="sign-btn btn scrollto" href="#getstarted">Sign up</a>
 				</li>
 				{{else}}
-					<li class="nomobile"><a class="sign-btn btn openeditor" href="/edit">Open the Editor</a></li>
+					<li class="nomobile wider"><a class="sign-btn btn openeditor" href="/edit">Open the Editor</a></li>
 				{{/unless}}
 			</ul>
 		</div>
-		<div class="mobileonly" style="position:absolute; top:15px; right: 10px; width: 30px; height: 30px;">
-			<button class="nofx" id="mobileMenuOpenButton"><i class="fa fa-bars fa-2x"></i></button>
+		<div class="mobileonly" style="position:absolute; top:16px; right: 10px; width: 30px; height: 30px;">
+			<button class="nofx" id="mobileMenuOpenButton">
+				<img src="/images/home/xmenu.png" width="22" height="32" alt="" />
+			</button>
 		</div>
 	</nav>
 </header>
 
 <!-- main content -->
-	<section id="homeintro">
-		<div class="twocol clearfix in">
-			<div class="col left">
-				<h2>Create and share VR <br />in your browser</h2>
-				<p class="nomobile">
-					You don’t need to be a game developer to create VR content on the web.
-					With Vizor's visual editor, anyone can create and share their own VR experiences in  a web browser, and it’s free.
-				</p>
-
-				<a class="launch-button btn action nomobile" href="/edit">Try the Beta</a>
-				{{#unless user.username}}
-				<a class="launch-button btn action nomobile scrollto" href="#getstarted">Sign up</a>
-				{{/unless}}
-			</div>
-			<div class="col right protrudeimg clearfix">
-				<img src="/images/home/screenshot1.png" width="810" height="504" alt="Vizor Patch Editor" />
-				<a class="launch-button btn action mobileonly scrollto" href="#getnewsletter">Get our newsletter</a>
-			</div>
-
-		</div>
-	</section>
+	{{> srv/home/createAndShareVR }}
 	<div class="scrolldownContainer">
 		<a class="nofx scrollto noselect" href="#whyusevizor"><img src="/images/home/oval_arrow.svg" class="scrolldownPrompt"/></a>
 	</div>
@@ -59,32 +40,30 @@
 	{{> srv/home/meetTheTeam }}
 
 	{{> srv/home/getStarted }}
-
 	{{> srv/home/getNewsletter }}
-
 <!-- /main content -->
 
 
 <footer class="dark">
-	<div class="in">
+	<div class="in clearfix">
 		<h6 id="footerBrand">
 			<a href="#contentwrap" class="nofx scrollto" style="display: block; height: 100%">
 				<span>Vizor VR</span>
 				<p>Create & Share VR content on the Web</p>
 			</a>
 		</h6>
-		<div class="threecol c3 clearfix">
-			<ul class="col left">
+		<div class="flexcolumns">
+			<ul>
 				<li><a class="email" href="mailto:info@vizor.io?subject=hello" target="_blank" title="Email us">Email us</a></li>
 				<li><a class="twitter" href="https://twitter.com/Vizor_VR" target="_blank" title="Follow us">@Vizor_VR</a></li>
 				<li><a class="github" href="https://github.com/vizorvr/vizor" target="_blank" title="GitHub">Vizor on GitHub</a></li>
 			</ul>
-			<ul class="col mid">
+			<ul>
 				<li><a class="angellist" href="https://angel.co/vizor" target="_blank" title="Vizor on Angellist">Vizor on Angellist</a></li>
 				<li><a class="vizor editor" href="/edit" title="Open the Editor">Open the editor</a></li>
 				<li><a class="vizor player" href="/graph/latest" title="View latest graph">View latest Graph</a></li>
 			</ul>
-			<ul class="col right">
+			<ul>
 				<li><a class="youtube" href="https://www.youtube.com/channel/UClYzX_mug6rxkCqlAKdDJFQ" target="_blank" title="Tutorials">Tutorials</a></li>
 				<li><a class="googledocs legal terms" href="https://docs.google.com/document/d/172dWVz8bSEDxS_y2InXpqWhVvbM7w1Z9MSp1-Lw1rIc/edit?usp=sharing" target="_blank" title="Terms & Privacy">Terms & Privacy</a></li>
 				<li><a class="googledocs legal" href="https://docs.google.com/document/d/1L87rs9baSoR4PfOZ2cY9BFp3Pb43y8cFvS93k1HLk60/edit?usp=sharing" target="_blank" title="Attribution">Attribution</a></li>

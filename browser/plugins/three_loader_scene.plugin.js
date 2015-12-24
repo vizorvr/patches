@@ -1,26 +1,55 @@
 (function() {
-	function progress() {
-		console.log('Loading progress', this.state.url, arguments)
-	}
-
-	function errorHandler(err) {
-		console.log('ERROR: '+err.toString())
-	}
-
-
 	var ThreeLoaderScenePlugin = E2.plugins.three_loader_scene = function(core) {
 		ThreeObject3DPlugin.apply(this, arguments)
 
-		this.desc = 'THREE.js Scene loader'
+		this.core = core
+
+		this.desc = '3D Object/Scene loader. Loads .obj and THREE.js .json object hierarchies.'
 
 		this.urlDirty = true
 
+		// the url this node should be loading
 		this.state.url = ''
 
+		// the url we've actually loaded (or are loading)
+		this.loadedUrl = ''
+
 		this.input_slots = [].concat(this.input_slots)
+
+		this.defaultObject = new THREE.Object3D(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({color: 0x777777}))
+
+		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
+
+		this.hasAnimation = false
 	}
 
 	ThreeLoaderScenePlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
+
+	ThreeLoaderScenePlugin.prototype.loadObject = function(url) {
+		var that = this
+
+		if (url !== this.state.url) {
+			this.undoableSetState('url', url, this.state.url)
+		}
+
+		this.loadedUrl = url
+
+		this.object3d = this.defaultObject
+		this.updated = true
+
+		this.loader = E2.core.assetLoader.loadAsset('scene', url)
+
+		this.loader
+		.then(function(asset) {
+			that.object3d = asset
+			that.postLoadFixUp()
+		})
+		.finally(function() {
+			delete that.loader
+		})
+
+		return this.loader
+	}
 
 	ThreeLoaderScenePlugin.prototype.create_ui = function() {
 		var inp = makeButton('Change', 'No model selected.', 'url')
@@ -33,78 +62,148 @@
 			FileSelectControl
 			.createSceneSelector(that.state.url)
 			.onChange(function(v) {
-				newValue = that.state.url = v
-				that.state_changed(null)
-				that.state_changed(inp)
-				that.updated = true
-				that.urlDirty = true
+				newValue = v
 			})
 			.on('closed', function() {
-				if (newValue === oldValue)
+				if (newValue === oldValue || newValue.length === 0)
 					return
 
-				that.undoableSetState('url', newValue, oldValue)
+				E2.app.undoManager.begin('Load Object')
+
+ 				that.loadObject(newValue).then(function() {
+					that.scaleToUnitSize()
+
+					// apply state to object3d
+					that.update_state()
+
+					that.updated = true
+				    
+					mixpanel.track('ThreeLoaderScenePlugin Model Changed')
+				    E2.app.undoManager.end()
+			    })
 			})
 		})
 
 		return inp
 	}
 
-	ThreeLoaderScenePlugin.prototype.onJsonLoaded = function(scene) {
-		console.log('json loaded', this.state.url)
+	ThreeLoaderScenePlugin.prototype.scaleToUnitSize = function() {
+		var bbox = new THREE.Box3()
 
-		this.object3d = new THREE.Object3D()
-		this.object3d.copy(scene.scene, /*recursive = */false)
-
-		while (scene.scene.children.length > 0) {
-			var obj = scene.scene.children[0]
-			scene.scene.remove(obj)
-			this.object3d.add(obj)
-		}
-
-		var that = this
-		this.object3d.traverse(function(n) {
-			n.backReference = that
+		this.object3d.traverse(function (n) {
+			if (n.geometry) {
+				n.geometry.computeBoundingBox()
+				bbox.expandByPoint(n.geometry.boundingBox.min)
+				bbox.expandByPoint(n.geometry.boundingBox.max)
+			}
 		})
 
-		// apply state to object3d
-		this.update_state()
+		var xLen = bbox.max.x - bbox.min.x
+		var yLen = bbox.max.y - bbox.min.y
+		var zLen = bbox.max.z - bbox.min.z
 
-		this.updated = true
+		var scaleFactor = 1
+
+		if (xLen > 0 && xLen > yLen && xLen > zLen) {
+			// x longest
+			scaleFactor /= xLen
+		}
+		else if (yLen > 0 && yLen > xLen && yLen > zLen) {
+			// y longest
+			scaleFactor /= yLen
+		}
+		else if (zLen > 0 && zLen > xLen && zLen > yLen) {
+			// z longest
+			scaleFactor /= zLen
+		}
+		// if none of the above match, there is no valid bounding volume (empty / corrupt model?)
+
+		this.undoableSetState('scale', new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor), new THREE.Vector3(this.state.scale.x, this.state.scale.y, this.state.scale.z))
 	}
 
-	ThreeLoaderScenePlugin.prototype.loadJson = function() {
-		var loader = new THREE.SceneLoader()
+	ThreeLoaderScenePlugin.prototype.postLoadFixUp = function() {
+		this.hasAnimation = false
+		this.always_update = true
 
-		loader.load(
-				this.state.url,
-				this.onJsonLoaded.bind(this),
-				progress.bind(this),
-				errorHandler)
+		var that = this
+
+		var removeObjects = []
+
+		this.object3d.traverse(function(n) {
+			// filter lights and cameras out of the scene
+
+			if (n instanceof THREE.Light || n instanceof THREE.Camera) {
+				removeObjects.push({parent: n.parent, object: n})
+			}
+
+			n.backReference = that
+
+			var geom = n.geometry
+
+			if (geom) {
+				var bufferGeometryHasVtxNormals =
+						geom instanceof THREE.BufferGeometry &&
+						geom.getAttribute('normal') !== undefined
+
+				var normalGeometryHasFaceNormals =
+						(geom.faces && geom.faces.length > 0 &&
+						geom.faces[0].normal.lengthSq() !== 0)
+
+				var normalGeometryHasVtxNormals =
+						(geom.faces && geom.faces.length > 0 &&
+						geom.faces[0].vertexNormals.length > 0)
+
+				if (!bufferGeometryHasVtxNormals && !normalGeometryHasFaceNormals && !normalGeometryHasVtxNormals) {
+					geom.computeVertexNormals(true)
+				}
+
+				if (geom.animations && geom.animations.length > 0) {
+					n.playAnimation(geom.animations[0].name, 100)
+					n.material.morphTargets = true
+					that.hasAnimation = true
+					that.always_update = true
+				}
+			}
+		})
+
+		for (var i = 0; i < removeObjects.length; ++i) {
+			removeObjects[i].parent.remove(removeObjects[i].object)
+		}
 	}
 
 	ThreeLoaderScenePlugin.prototype.update_state = function() {
-		if (this.urlDirty && this.state.url) {
-			this.object3d = new THREE.Object3D()
+		if (this.loadedUrl !== this.state.url) {
+			var that = this
 
-			THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
-
-			var url = this.state.url
-			var extname = url.substring(url.lastIndexOf('.'))
-			switch(extname) {
-			case '.js':
-			case '.json':
-				this.loadJson()
-				break;
-			default:
-				msg('ERROR: SceneLoader: Don`t know how to load', extname)
-				break;
+			var doLoad = function() {
+				that.loadObject(that.state.url).then(function () {
+					// apply state to object3d
+					that.update_state()
+					that.updated = true
+				})
 			}
 
-			this.urlDirty = false
+			if (this.loader) {
+				// chain to an existing loader, ensuring order
+				this.loader.then(doLoad)
+			}
+			else {
+				// load straight away
+				doLoad()
+			}
 		}
 
 		ThreeObject3DPlugin.prototype.update_state.apply(this)
+
+		var delta = this.core.delta_t * 0.001
+
+		if (this.object3d && this.hasAnimation) {
+			this.object3d.traverse(function(n) {
+				if (n instanceof THREE.MorphAnimMesh) {
+					n.updateAnimation(delta)
+				}
+			})
+		}
 	}
 
 	ThreeLoaderScenePlugin.prototype.update_output = function(slot) {
@@ -114,4 +213,3 @@
 	}
 
 })()
-

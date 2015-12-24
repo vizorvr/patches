@@ -126,6 +126,7 @@ var UiState = function(persistentStorageRef, context) {
 		set: function(value) {
 			if (value === this._internal.viewCamera) return
 			this._internal.viewCamera = value
+			that.emit('_internal:viewCamera', value)
 			emitMain('viewCamera', this.viewCamera)
 		}
 	})
@@ -133,8 +134,7 @@ var UiState = function(persistentStorageRef, context) {
 
 	defineProperty(this, 'mode', {
 		get: function() {
-			// return this._internal.mode
-			return (this.visibility.patch_editor) ? uiMode.program : uiMode.build
+			return this._internal.mode
 		},
 		set: function(value) {
 			if (!this.visible) {	// nothing is visible, we expect patch editor or world editor
@@ -143,11 +143,9 @@ var UiState = function(persistentStorageRef, context) {
 			}
 			if (value === this._internal.mode) return
 			this._internal.mode = value
-			var cannotBuildFromCamera = this.viewCamera === uiViewCam.vr
 
 			switch (value) {
 				case uiMode.build:
-					if (cannotBuildFromCamera) this.viewCamera = uiViewCam.world_editor
 					this.visibility.patch_editor = false
 					break
 				case uiMode.program:
@@ -159,10 +157,13 @@ var UiState = function(persistentStorageRef, context) {
 	})
 
 	var notifyBuildMode = function() {
-		if (that.visibility._internal.patch_editor) this.mode = uiMode.program
-		else that.mode = uiMode.build
+		if (that.visibility._internal.patch_editor)
+			that.mode = uiMode.program
+		else if (that.viewCamera !== uiViewCam.vr)
+			that.mode = uiMode.build
 	}
 	this.on('_internal:patch_editor', notifyBuildMode)
+	this.on('_internal:viewCamera', notifyBuildMode)
 
 	defineProperty(this, 'visible', {
 		get: function() {

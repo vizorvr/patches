@@ -27,39 +27,6 @@
                     "open": true,
                     "nodes": [
                         {
-                            "plugin": "three_loader_model",
-                            "x": 321,
-                            "y": 234,
-                            "uid": "57aubpRLDLV7",
-                            "state": {
-                                "url": "{{url}}"
-                            }
-                        },
-                        {
-                            "plugin": "three_mesh",
-                            "x": 687,
-                            "y": 203,
-                            "uid": "fbOgeJFDYozB",
-                            "state": {
-                                "position": {
-                                    "x": 0,
-                                    "y": 0.890837835382039,
-                                    "z": 0
-                                },
-                                "scale": {
-                                    "x": 1,
-                                    "y": 1,
-                                    "z": 1
-                                },
-                                "quaternion": {
-                                    "_x": 0,
-                                    "_y": 0,
-                                    "_z": 0,
-                                    "_w": 1
-                                }
-                            }
-                        },
-                        {
                             "plugin": "output_proxy",
                             "x": 883,
                             "y": 205,
@@ -78,20 +45,36 @@
                                     "connected": true
                                 }
                             ]
+                        },
+                        {
+                            "plugin": "three_loader_scene",
+                            "x": 446,
+                            "y": 116,
+                            "uid": "kTkQLcbSMN4G",
+                            "state": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "scale": {
+                                    "x": 0.00909090909090909,
+                                    "y": 0.00909090909090909,
+                                    "z": 0.00909090909090909
+                                },
+                                "quaternion": {
+                                    "_x": 0,
+                                    "_y": 0,
+                                    "_z": 0,
+                                    "_w": 1
+                                },
+                                "url": "{{url}}"
+                            }
                         }
 					],
                     "conns": [
                         {
-                            "src_nuid": "57aubpRLDLV7",
-                            "dst_nuid": "fbOgeJFDYozB",
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "sJS81xAL3ldN",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "fbOgeJFDYozB",
+                            "src_nuid": "kTkQLcbSMN4G",
                             "dst_nuid": "S2TweIhjn1vD",
                             "src_slot": 0,
                             "dst_slot": 0,
@@ -99,15 +82,6 @@
                             "src_connected": true,
                             "dst_connected": true,
                             "dst_dyn": true
-                        },
-                        {
-                            "src_nuid": "57aubpRLDLV7",
-                            "dst_nuid": "fbOgeJFDYozB",
-                            "src_slot": 1,
-                            "dst_slot": 2,
-                            "uid": "cDOPN2lNyFbj",
-                            "src_connected": true,
-                            "dst_connected": true
                         }
                     ]
                 },

@@ -656,6 +656,8 @@
 		this.size = 1;
 		this.axis = null;
 
+		this.objectCenter = new THREE.Vector3()
+
 		var scope = this;
 
 		var _mode = "translate";
@@ -756,6 +758,23 @@
 
 		};
 
+		this.calculateObjectCenter = function() {
+			var bbox = new THREE.Box3()
+
+			this.object.traverse( function(n) {
+				if (!n.boundingBox && n.calculateBoundingBox) {
+					n.calculateBoundingBox()
+				}
+
+				if (n.boundingBox) {
+					bbox.expandByPoint(n.boundingBox.min)
+					bbox.expandByPoint(n.boundingBox.max)
+				}
+			})
+
+			this.objectCenter.set((bbox.min.x + bbox.max.x) * 0.5, (bbox.min.y + bbox.max.y) * 0.5, (bbox.min.z + bbox.max.z) * 0.5)
+		}
+
 		this.attach = function ( object ) {
 
 			this.plugin = object.backReference
@@ -768,6 +787,8 @@
 			_gizmo.scale.isEnabled = this.plugin.state.scale !== undefined
 
 			this.update();
+
+			this.calculateObjectCenter()
 		};
 
 		this.detach = function () {
@@ -776,6 +797,8 @@
 			this.plugin = undefined
 			this.visible = false;
 			this.axis = null;
+
+			this.objectCenter.set(0, 0, 0)
 
 		};
 
@@ -833,7 +856,11 @@
 			camRotation.setFromRotationMatrix( tempMatrix.extractRotation( camera.matrixWorld ) );
 
 			scale = worldPosition.distanceTo( camPosition ) / 6 * scope.size;
-			this.position.copy( worldPosition );
+
+			var centerPosition = (scope.objectCenter || worldPosition).clone()
+			centerPosition.applyMatrix4(scope.object.matrixWorld)
+
+			this.position.copy( centerPosition );
 			this.scale.set( scale, scale, scale );
 
 			eye.copy( camPosition ).sub( worldPosition ).normalize();

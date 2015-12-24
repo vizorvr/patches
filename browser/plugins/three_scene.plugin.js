@@ -30,36 +30,24 @@
 			that.updated = true
 		})
 
-		this.meshes = {}
+		this.createScene()
+	}
 
-		this.meshes_dirty = true
+	ThreeScenePlugin.prototype.createScene = function() {
+		this.scene = new THREE.Scene()
+		this.scene.backReference = this
+
+		// add two children:
+		// [0] is the main scene
+		this.sceneRoot = new THREE.Group()
+		this.scene.add(this.sceneRoot)
+
+		// [1] is the overlay scene
+		this.overlayRoot = new THREE.Group()
+		this.scene.add(this.overlayRoot)
 	}
 
 	ThreeScenePlugin.prototype.update_meshes = function () {
-		if (!this.meshes_dirty) {
-			return
-		}
-
-		this.reset()
-
-		if (this.envSettings) {
-			this.scene.fog = this.envSettings.fog
-		}
-
-		for (mesh in this.meshes) {
-			// {id: 0, mesh: mesh}
-
-			if (this.meshes[mesh]) {
-				if (this.meshes[mesh].length !== undefined) {
-					for (var i=0; i < this.meshes[mesh].length; i++) {
-						this.sceneRoot.add(this.meshes[mesh][i])
-					}
-				}
-				else
-					this.sceneRoot.add(this.meshes[mesh])
-			}
-		}
-
 		// If lights have changed, we have to set affected materials as needing
 		// to be updated. This would be better done in an analytical manner
 		// and only update the ones that actually need updating; however we'll
@@ -72,50 +60,81 @@
 				}
 			})
 		}
-
-		this.meshes_dirty = false
 	}
 
 	ThreeScenePlugin.prototype.reset = function () {
-		this.scene = new THREE.Scene()
-		this.scene.backReference = this
-
-		// add two children:
-		// [0] is the main scene
-		this.sceneRoot = new THREE.Object3D()
-		this.scene.add(this.sceneRoot)
-
-		// [1] is the overlay scene
-		this.overlayRoot = new THREE.Object3D()
-		this.scene.add(this.overlayRoot)
-
-		this.meshes_dirty = true
 	}
 
 	ThreeScenePlugin.prototype.update_input = function (slot, data) {
 		if (slot.dynamic) {
-			if (this.meshes[slot.index] !== data) {
-				this.meshes[slot.index] = data
-				this.meshes_dirty = true
+			var parent = this.scene.children[0].children[slot.index]
+
+			if (data) {
+				if (slot.array) {
+					parent.children = data
+
+					for (var i = 0; i < data.length; ++i) {
+						if (data[i].parent && data[i].parent !== parent) {
+							// the object is in another scene, remove from there
+							data[i].parent.remove(data[i])
+						}
+
+						data[i].parent = parent
+						data[i].dispatchEvent({type: 'added'})
+					}
+				}
+				else {
+					if (data.parent && data.parent !== this) {
+						// the objects is in another scene, remove from there
+						data.parent.remove(data)
+					}
+
+					parent.children = [data]
+
+					data.parent = parent
+					data.dispatchEvent({type: 'added'})
+				}
 			}
+			else {
+				while (parent.children.length > 0) {
+					parent.remove(parent.children[0])
+				}
+			}
+			this.update_meshes()
 		}
 		else {
 			// the only static input slot is environment settings
 			this.envSettings = data
-			this.meshes_dirty = true
 		}
 	}
 
 	ThreeScenePlugin.prototype.connection_changed = function(on, conn, slot) {
-		if (!on && slot.type === E2.slot_type.input && slot.dynamic) {
-			this.meshes[slot.index] = undefined
+		if (on && slot.dynamic) {
+			// ensure there is a sufficient amount of slots
+			var mainSceneRoot = this.scene.children[0]
+			while (mainSceneRoot.children.length < this.dynInputs.length) {
+				mainSceneRoot.children.push(new THREE.Group())
+			}
 		}
 
-		this.meshes_dirty = true
+		// disconnect
+		if (!on && slot.type === E2.slot_type.input && slot.dynamic) {
+			var parent = this.scene.children[0].children[slot.index]
+
+			while (parent.children.length > 0) {
+				parent.remove(parent.children[0])
+			}
+		}
+
+		// connect
+		else if (on && slot.type === E2.slot_type.input && slot.dynamic) {
+			this.scene.children[0].children[slot.index].children = []
+		}
+
+		this.update_meshes()
 	}
 
 	ThreeScenePlugin.prototype.update_output = function () {
-		// console.log('update scene output')
 		return this.scene
 	}
 
@@ -126,18 +145,11 @@
 		var slots = this.dynInputs = this.node.getDynamicInputSlots()
 		for (var i = 0, len = slots.length; i < len; i++) {
 			this.lsg.add_dyn_slot(slots[i])
-		}
-
-		if (this.meshes_dirty) {
-			this.update_meshes()
+			this.scene.children[0].children.push(new THREE.Group())
 		}
 	}
 
 	ThreeScenePlugin.prototype.update_state = function () {
-		if (this.meshes_dirty) {
-			this.update_meshes()
-		}
-
 	}
 
 })()

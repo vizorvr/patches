@@ -48,6 +48,9 @@ THREE.OBJMTLLoader.prototype = {
 
 							mats.push(material)
 						}
+						else {
+							mats.push(new THREE.MeshBasicMaterial({color: 0xff0000}))
+						}
 
 						geoms.push(object.geometry)
 					}

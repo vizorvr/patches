@@ -106,7 +106,7 @@ ArraySwitch.prototype.update_state = function() {
 
 ArraySwitch.prototype.update_output = function(slot) {
 	if (slot.index === 1)
-		return this.dynInputs.length // XXX avoid function call
+		return this.dynInputs.length
 
 	if (this.value !== undefined)
 		return this.value
