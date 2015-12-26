@@ -34,7 +34,7 @@ function bundleEditorScripts() {
 	})
 
 	// add plugins
-	scripts.push(path.resolve(__dirname, '..') + '/browser/plugins/all.plugins.js')
+	scripts.push(path.resolve(__dirname, '..') + '/browser/plugins/*.plugin.js')
 
 	// concat scripts with gulp
 	gulp.src(scripts)
