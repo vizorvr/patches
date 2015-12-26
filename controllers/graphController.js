@@ -74,7 +74,8 @@ GraphController.prototype.index = function(req, res) {
 }
 
 function renderEditor(res, graph, hasEdits) {
-	var layout = process.env.NODE_ENV === 'production' ? 'editor-prod' : 'editor'
+	var releaseMode = process.env.NODE_ENV === 'production'
+	var layout = releaseMode ? 'editor-prod' : 'editor'
 	
 	res.header('Cache-control', 'no-cache, must-revalidate, max-age=0')
 
@@ -82,11 +83,12 @@ function renderEditor(res, graph, hasEdits) {
 		res.render('editor', {
 			layout: layout,
 			graph: graph,
-			hasEdits: hasEdits
+			hasEdits: hasEdits,
+			releaseMode: releaseMode
 		});
 	}
 
-	if (process.env.NODE_ENV !== 'production') {
+	if (!releaseMode) {
 		templateCache.recompile(function() {
 			respond()
 		})

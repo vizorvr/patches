@@ -6,7 +6,6 @@ function PluginManager(core, base_url) {
 	this.base_url = base_url
 	this.core = core
 	this.keybyid = {}
-	this.release_mode = false
 	this.lid = 1
 	this.total = 0
 	this.loaded = 0
@@ -23,12 +22,12 @@ function PluginManager(core, base_url) {
 				var pg_root = new PluginGroup('root')
 				
 				$.each(data, function(category)  {
-					if (!that.release_mode)
+					if (!Vizor.releaseMode)
 						that.total += Object.keys(data[category]).length
 
 					$.each(data[category], function(title, id)  {
 						var url = that.base_url + '/' + id + '.plugin.js';
-						if (!that.release_mode)
+						if (!Vizor.releaseMode)
 							load_script(url, that.onload.bind(that), that.onerror.bind(that));
 						that.register_plugin(pg_root, category+'/'+title, id);
 					})
@@ -41,7 +40,7 @@ function PluginManager(core, base_url) {
 					})
 				}
 
-				if (that.release_mode) {
+				if (Vizor.releaseMode) {
 					that.total = 1
 					that.loaded = 1
 					this.failed = 0
@@ -51,10 +50,7 @@ function PluginManager(core, base_url) {
 		})
 	}
 
-	// if we already have some plugins, we're in release_mode
-	this.release_mode = Object.keys(E2.plugins).length > 0
-
-	msg('PluginMgr: Running in release mode: '+this.release_mode)
+	msg('PluginMgr: Running in release mode: '+Vizor.releaseMode)
 
 	loadPlugins()
 }
