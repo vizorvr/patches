@@ -22,8 +22,10 @@ function ImageLoader(url) {
 
 		var blob = new Blob([this.response])
 		img.src = window.URL.createObjectURL(blob)
-		console.timeEnd('Parse image')
-		that.onImageLoaded(img)
+		img.onload = function() {
+			console.timeEnd('Parse image')
+			that.onImageLoaded(img)
+		}
 	}
 
 	xhr.onprogress = function(evt) {
