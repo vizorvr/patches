@@ -1,0 +1,135 @@
+{{> srv/siteSvgSprite }}
+<div id="playerWrap">
+
+<div id="stage" class="stage--front" 
+    style="min-height: 500px; background: #666;">
+
+    <!-- play button -->
+    <div id="pauseStage" style="width: 560px; height: 315px">
+        <h1 id="playButton" style="position: absolute; left: 40%; top: 40%">
+            play
+        </h1>
+    </div>
+
+    <!-- loading stage -->
+    <div id="loadingStage" style="width: 560px; height: 315px; display: none">
+        <h1 style="position: absolute; left: 40%; top: 40%">
+            load <span id="progress">0</span>%
+        </h1>
+    </div>
+
+    <!-- error stage -->
+    <div id="errorStage" style="width: 560px; height: 315px; display: none">
+        <h1 style="position: absolute; left: 40%; top: 40%">
+            <span class="error"></span>
+        </h1>
+    </div>
+
+	<canvas
+		style="display: none;"
+		id="webgl-canvas"
+		class="webgl-canvas-normal"
+		width="560"
+		height="315"
+		oncontextmenu="return false;"
+		data-graph-url="{{graphMinUrl}}">
+	>
+	</canvas>
+</div>
+</div>
+<script>
+    window.Vizor = {
+        hideWebVRButton: true
+    }
+
+    var haveWebGl = (function() {   // http://www.browserleaks.com/webgl#howto-detect-webgl
+        if (!window.WebGLRenderingContext)
+            return false;    /* WebGL not supported*/
+        
+        var canvas = document.createElement("canvas")
+        var names = ["webgl", "experimental-webgl", "moz-webgl"]
+        var gl = false
+
+        for(var i in names) {
+            try {
+                gl = canvas.getContext(names[i]);
+                if (gl && typeof gl.getParameter == "function") {
+                    return true // webgl supported
+                }
+            } catch(e) {}
+        }
+
+        return false;  /* WebGL is supported, but disabled */
+    })()
+
+    function initPlayer() {
+        var $canvas = $('#webgl-canvas')
+        $canvas.css({ display: 'block' });
+        var $stage = $('#stage')
+
+		var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
+
+        $('#edit').click(function() {
+            window.location = window.location + '/edit'
+        })
+
+        $('#fullscreen').click(function() {
+            E2.core.emit('fullScreenChangeRequested')
+        })
+
+        $(window).on('resize', onResize)
+
+        $(window).on('vizorLoaded', function() {
+            $('#load-spinner').hide()
+			var $playerContainer = jQuery('#stage');
+			var onResize = VizorUI.makeVRCanvasResizeHandler(jQuery('#webgl-canvas'), $playerContainer);
+
+			E2.app.calculateCanvasArea = function() {
+                return {
+                    width: $playerContainer.innerWidth(),
+                    height: $playerContainer.innerHeight()
+                }
+            }
+
+			onResize();
+        })
+    }
+
+	function init_() {
+        $('#pauseStage').click(function() {
+            $('#pauseStage').hide()
+            $('#loadingStage').show()
+
+            E2.core.on('progress', function(pct) {
+                $('#progress').html(pct)
+            })
+
+            E2.core.on('assetsLoaded', function() {
+                $('#loadingStage').hide()
+            })
+
+            playVizorFile()
+            .catch(function(err) {
+                $('#errorStage').show()
+                $('#errorStage .error').html(err)
+            })
+        })
+
+        jQuery('button').each(function(){
+            var $this = jQuery(this);
+            var contentText = $this.data('tooltip');
+            $this.popover({
+                trigger: 'hover',
+                title: contentText,
+                placement: 'bottom',
+                delay: {show:500, hide:100}
+            });
+        });
+
+		initPlayer();
+	}
+
+    jQuery(document).ready(haveWebGl ? init_ : function(){
+        document.getElementById('nowebgl').style.display = 'block';
+    });
+</script>

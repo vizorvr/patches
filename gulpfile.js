@@ -79,13 +79,11 @@ function errorHandler(err) {
 	this.emit('end')
 }
 
-gulp.task('clean:js:player', function(cb)
-{
+gulp.task('clean:js:player', function(cb) {
 	del('./browser/scripts/player.min.js', cb);
 });
 
-gulp.task('clean:less', function(cb)
-{
+gulp.task('clean:less', function(cb) {
 	del('./browser/style/less.css', cb);
 });
 
@@ -93,8 +91,7 @@ gulp.task('clean:js', ['clean:js:player']);
 
 gulp.task('clean', ['clean:js']);
 
-gulp.task('js:player', ['clean:js:player'], function()
-{
+gulp.task('js:player', ['clean:js:player'], function() {
 	gulp.src(paths.js.player)
 	.pipe(slash())
 	.pipe(preprocess({context: { FQDN: process.env.FQDN || 'vizor.io' } }))

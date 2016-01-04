@@ -1,9 +1,6 @@
-function play() {
-	E2.app.player.play()
-}
+(function() {
 
 function progress(pct) {
-	var at = E2.core.assetLoader
 	var $progress = $('.progress-bar')
 
 	$('.progress').show()
@@ -14,61 +11,61 @@ function progress(pct) {
 	$progress.css('width', pct + '%')
 }
 
-function load() {
+window.playVizorFile = function playVizorFile() {
 	var $canvas = $('canvas[data-graph-url]')
-	var url = $canvas.data('graph-url')
+    var url = $canvas.data('graph-url')
+    return E2.app.player.loadAndPlay(url)
+}
+
+function onCoreReady() {
+	var $canvas = $('canvas[data-graph-url]')
 	var autoplay = $canvas.data('autoplay')
 
-	E2.core.assetLoader.on('progress', progress)
+	E2.core.on('progress', progress)
 
 	E2.app.player.stop()
 	E2.app.player.on_update()
-	E2.app.player.load_from_url(url, function() {
-		if (autoplay)
-			play()
 
-		mixpanel.track('Player Opened')
+	mixpanel.track('Player Opened')
 
-		$(window).trigger('vizorLoaded')
-	})
+	if (autoplay) {
+		var url = $canvas.data('graph-url')
+		E2.app.player.loadAndPlay(url, autoplay)
+	}
+
+	$(window).trigger('vizorLoaded')
 }
 
-function findVrDevices(devices)
-{
+function findVrDevices(devices) {
 	var hmd = null, sensor = null;
 
-	devices.some(function(device)
-	{
-		if (device instanceof HMDVRDevice)
-		{
+	devices.some(function(device) {
+		if (device instanceof HMDVRDevice) {
 			// Just use the first device we find for now.
 			hmd = device;
 			return true;
 		}
 	});
 
-	if(hmd)
-	{
-		devices.some(function(d)
-		{
-			if (d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId)
-			{
+	if (hmd) {
+		devices.some(function(d) {
+			if (d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId) {
 				sensor = d;
 				return true;
 			}
 		});
 	}
 
-	CreatePlayer([hmd, sensor], load);
+	CreatePlayer([hmd, sensor], onCoreReady);
 }
 
-$(document).ready(function()
-{
+$(document).ready(function() {
 	if(navigator.getVRDevices)
 		navigator.getVRDevices().then(findVrDevices);
 	else if(navigator.mozGetVRDevices)
 		navigator.mozGetVRDevices(findVrDevices);
 	else
-		CreatePlayer([null, null], load);
+		CreatePlayer([null, null], onCoreReady);
 });
 
+})()
