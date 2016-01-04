@@ -118,7 +118,8 @@ Player.prototype.load_from_object = function(obj, cb) {
 		.catch(function(err) {
 			console.error('Player preload failed: '+err)
 
-			cb(err)
+			if (cb)
+				cb(err)
 		})
 }
 
