@@ -9,18 +9,31 @@
 		this.output_slots = [
 			{
 				name: 'left',
-				dt: core.datatypes.TEXTURE,
+				dt: core.datatypes.CUBETEXTURE,
 				desc: 'The left side of the loaded stereo cubemap.'
 			},
 			{
 				name: 'right',
-				dt: core.datatypes.TEXTURE,
+				dt: core.datatypes.CUBETEXTURE,
 				desc: 'The right side of the loaded stereo cubemap.'
 			}
 		]
 		
 		this.state = { url: '' }
-		this.texture = E2.core.assetLoader.defaultTexture
+
+		var loadTex = E2.core.assetLoader.loadingTexture.image
+		this.loadingTexture = new THREE.CubeTexture([
+			loadTex, loadTex, loadTex, loadTex, loadTex, loadTex
+		])
+
+		var defTex = E2.core.assetLoader.defaultTexture.image
+		this.defaultTexture = new THREE.CubeTexture([
+			defTex, defTex, defTex, defTex, defTex, defTex
+		])
+
+		this.leftTexture = this.loadingTexture
+		this.rightTexture = this.loadingTexture
+
 		this.dirty = false
 		this.thumbnail = null
 	}
@@ -34,8 +47,6 @@
 			'No texture selected'
 		);
 		inp.addClass('p_round');
-
-		var that = this
 
 		this.thumbnail = make('div').addClass('p_thumbnail');
 		
@@ -100,17 +111,17 @@
 
 		this.waitingToLoad = true
 
-		this.texture = E2.core.assetLoader.loadingTexture
+		this.leftTexture = this.loadingTexture
+		this.rightTexture = this.loadingTexture
 
 		E2.core.assetLoader
 		.loadAsset('image', this.state.url)
 		.then(function(img) {
-			that.texture = texture
-			that.waitingToLoad = false
-			that.updated = true
+			that.makeTexturesFromImage(img)
 		})
 		.catch(function() {
-			that.texture = E2.core.assetLoader.defaultTexture
+			that.leftTexture = that.defaultTexture
+			that.rightTexture = that.defaultTexture
 			that.waitingToLoad = false
 			that.updated = true
 		})
@@ -118,15 +129,56 @@
 		this.dirty = false
 	}
 
-	UrlStereoCubeMap.prototype.update_output = function() {
-		if (this.waitingToLoad && this.texture && this.texture.image && this.texture.image.width !== 0) {
-			// force an extra update through the graph with a texture that has
-			// actual image data
+	UrlStereoCubeMap.prototype.makeTexturesFromImage = function(img) {
+		var imageWidth = img.width
+		var imageHeight = img.height
+
+		var tiles = 12
+
+		var tileWidth = imageWidth / tiles
+		var tileHeight = imageHeight
+
+		var textures = []
+
+		for (var i = 0; i < tiles; ++i) {
+			var tileCanvas = document.createElement('canvas')
+			tileCanvas.width = tileWidth
+			tileCanvas.height = tileHeight
+
+			var ctx = tileCanvas.getContext('2d')
+			ctx.drawImage(img, i * tileWidth, 0,
+				tileWidth, tileHeight, 0, 0, tileWidth, tileHeight)
+
+			textures.push(tileCanvas)
+		}
+
+		// left eye
+		var leftTexture = new THREE.CubeTexture(textures.splice(0, 6))
+		leftTexture.needsUpdate = true
+
+		// right eye
+		var rightTexture = new THREE.CubeTexture(textures.splice(0, 6))
+		rightTexture.needsUpdate = true
+
+		this.leftTexture = leftTexture
+		this.rightTexture = rightTexture
+
+		this.updated = true
+	}
+
+	UrlStereoCubeMap.prototype.update_output = function(slot) {
+		if (this.waitingToLoad &&
+			this.leftTexture && this.rightTexture &&
+			this.leftTexture.image && this.leftTexture.image.width !== 0 &&
+			this.rightTexture.image && this.rightTexture.image.width !== 0)
+		{
+			// force an extra update through the graph
+			// with a texture that has actual image data
 			this.waitingToLoad = false
 			this.updated = true
 		}
 
-		return this.texture
+		return slot.index === 0 ? this.leftTexture : this.rightTexture
 	}
 
 	UrlStereoCubeMap.prototype.state_changed = function() {
