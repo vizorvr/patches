@@ -2168,7 +2168,7 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 
 		E2.app.onWindowResize()
 
-		if (E2.core.pluginManager.release_mode) {
+		if (Vizor.releaseMode) {
 			window.onbeforeunload = function() {
 				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
 			}
@@ -2222,7 +2222,7 @@ Application.prototype.setupEditorChannel = function() {
 
 	var wsHost
 	
-	if (!E2.core.pluginManager.release_mode) {
+	if (!Vizor.releaseMode) {
 		// dev mode
 		wsHost = window.location.hostname
 	}
