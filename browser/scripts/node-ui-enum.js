@@ -206,3 +206,28 @@ uiNodeCategoryMap.getCategory = function(plugin_id) {
 	return ((typeof uiNodeCategoryMap[plugin_id] !== 'undefined') && (uiNodeCategoryMap[plugin_id])) ?
 				uiNodeCategoryMap[plugin_id] : uiNodeCategory.generic;
 };
+
+// exceptions to general logic follow
+
+var uiPluginCategoriesThatMustNotDisplayOutputInHeader = []
+var uiPluginsThatMustNotDisplayOutputInHeader = [
+	'envelope_modulator'
+];
+var uiPluginsThatForceDisplayOutputInHeader = [	// override the logic (e.g. when dynamic slots)
+	'three_scene'
+];
+var uiPluginCategoriesAutoRenamed = [
+	uiNodeCategory.value
+];
+
+var uiPluginsThatAlwaysDisplayInline = [
+	'pi_generator',
+	'clock_generator',
+	'delta_t_generator',
+	'initialise_generator',
+	'assets_completed_generator',
+	'assets_failed_generator',
+	'assets_started_generator',
+	'mouse_wheel_generator'
+];
+

@@ -4,29 +4,6 @@ function UIpoint(x,y,z) {
 	this.z = z || 0;
 }
 
-var uiPluginCategoriesThatShouldNotDisplayOutputInHeader = []
-var uiPluginsThatShouldNotDisplayOutputInHeader = [
-	'envelope_modulator'
-];
-var uiPluginsThatShouldForceDisplayOutputInHeader = [	// required for anything with dynamic slots
-	'three_scene'
-];
-var uiPluginCategoriesAutoRenamed = [
-	uiNodeCategory.value
-];
-
-var uiPluginsThatAlwaysDisplayInline = [
-	'pi_generator',
-	'clock_generator',
-	'delta_t_generator',
-	'initialise_generator',
-	'assets_completed_generator',
-	'assets_failed_generator',
-	'assets_started_generator',
-	'mouse_wheel_generator'
-];
-
-
 function NodeUI(parent_node, x, y, z) {
 	EventEmitter.call(this);
 	var that = this
@@ -362,15 +339,15 @@ NodeUI.prototype.canDisplayInputInHeader = function() {
 NodeUI.prototype.canDisplayOutputInHeader = function() {
 	var myCategory = this.getNodeCategory();
 
-	if (uiPluginsThatShouldForceDisplayOutputInHeader.indexOf(this.parent_node.plugin.id) !== -1)
+	if (uiPluginsThatForceDisplayOutputInHeader.indexOf(this.parent_node.plugin.id) !== -1)
 		return true;
 
 	var p = this.getPluginUIFlags();
 	var can = p.single_out && (!p.has_edit) && (!p.has_dynamic_slots);	// check !p.has_inputs if stricter
 	can = can && !p.has_subgraph;
 
-	can = can && (uiPluginCategoriesThatShouldNotDisplayOutputInHeader.indexOf(myCategory) === -1);
-	can = can && (uiPluginsThatShouldNotDisplayOutputInHeader.indexOf(this.parent_node.plugin.id) === -1);
+	can = can && (uiPluginCategoriesThatMustNotDisplayOutputInHeader.indexOf(myCategory) === -1);
+	can = can && (uiPluginsThatMustNotDisplayOutputInHeader.indexOf(this.parent_node.plugin.id) === -1);
 
 	return can;
 };
@@ -949,29 +926,8 @@ NodeUI.makeUIAdjustableValue = function(domNode, onStart, onChange, onEnd, optio
 	var value = getValue()
 
 	// helpers
-	function map(value, fromMin, fromMax, toMin, toMax) {
-		if (fromMin > fromMax) {
-			var t
-			t = fromMax
-			fromMax = fromMin
-			fromMin = t
-			t = toMax
-			toMax = toMin
-			toMin = t
-		}
-		if (value < fromMin) return toMin
-		if (value > fromMax) return toMax
-		return (value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin
-	}
-
-	function clamp(v, min, max) {
-		if (min > max) {
-			var t = max
-			max = min
-			min = t
-		}
-		return v < min ? min : v > max ? max : v
-	}
+	var clamp = THREE.Math.clamp
+	var mapLinear = THREE.Math.mapLinear
 
 	var parseInputValue = (typeof o.parseTextInput === 'function') ? o.parseTextInput : function(inputValue) {
 		var v = parseFloat(inputValue)
@@ -997,7 +953,6 @@ NodeUI.makeUIAdjustableValue = function(domNode, onStart, onChange, onEnd, optio
 		document.removeEventListener('mouseup', data.up)
 		document.removeEventListener('touchcancel', data.up)
 		document.removeEventListener('touchend', data.up)
-//		if(e.stopPropagation) e.stopPropagation()
 		if(e.preventDefault) e.preventDefault()
 		onEnd(value)
 		document.body.style.cursor = '';
@@ -1041,14 +996,13 @@ NodeUI.makeUIAdjustableValue = function(domNode, onStart, onChange, onEnd, optio
 				}
 
 				normValue = clamp(normValue, 0.0, o.size);
-				value = map(normValue, 0.0, o.size, o.min, o.max);
+				value = mapLinear(normValue, 0.0, o.size, o.min, o.max);
 
 				if ((value !== oldValue)) {
 					onChange(value, delta)
 				}
 			}
 
-//			if(e.stopPropagation) e.stopPropagation()
 			if(e.preventDefault) e.preventDefault()
 			return true
 		} // end closure
@@ -1068,13 +1022,13 @@ NodeUI.makeUIAdjustableValue = function(domNode, onStart, onChange, onEnd, optio
 			if (o.isSurface) {	// size ourselves as per element in question
 				var rectRef = o.surfaceDomNode || domNode
 				data.rect = rectRef.getBoundingClientRect()
-				o.size = 0.0 + ( (isVertical) ? data.rect.height : data.rect.width )
+				o.size =  (isVertical) ? data.rect.height : data.rect.width
 				data.last_pos -= (isVertical) ? data.rect.top : data.rect.left
 			}
 
 			minPixels = o.size / numSteps
 
-			normValue = map(value, o.min, o.max, 0, o.size)
+			normValue = mapLinear(value, o.min, o.max, 0, o.size)
 
 			data.up = up(data)
 			data.move = move(data)
@@ -1084,7 +1038,6 @@ NodeUI.makeUIAdjustableValue = function(domNode, onStart, onChange, onEnd, optio
 			document.addEventListener('touchmove', data.move, true)
 			document.addEventListener('mousemove', data.move, true)
 
-//			if(e.stopPropagation) e.stopPropagation()
 			if(e.preventDefault) e.preventDefault()
 
 			onStart(value)
@@ -1103,7 +1056,7 @@ NodeUI.makeUIAdjustableValue = function(domNode, onStart, onChange, onEnd, optio
 		v = clamp(v, o.min, o.max)
 		if (oldValue !== v) {
 			value = v
-			normValue = map(value, o.min, o.max, 0, o.size)
+			normValue = mapLinear(value, o.min, o.max, 0, o.size)
 			onStart()
 			onChange(value)
 			onEnd()
