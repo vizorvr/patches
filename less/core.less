@@ -291,7 +291,7 @@ header nav ul.dropdown-menu {
     height: @blocks-header-height;
     position: relative;
     font-size: @tabs-font-size;
-    font-weight: 600;
+    font-weight: 500;
     color: #ffffff;
     border-bottom: 1px solid @bg-darker;
   	background: @bg-dark;
@@ -709,10 +709,9 @@ header nav ul.dropdown-menu {
 	line-height: 2;
 }
 
-.searchbox {
+.searchbox {	// div
     background: @bg-darker;
     height: @searchbox-height;
-    width: 100%;
     position: relative;
 }
 
@@ -733,12 +732,12 @@ header nav ul.dropdown-menu {
     background: none;
     border: 0;
     outline: 0;
-    width: @floating-box-width - 80;
+    width: @floating-box-width - 90;
     font-family: @font-family-sans-serif;
     float: left;
     color: @editor-text-hover;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 500;
     height: 18px;
     margin-left: 18px;
     margin-top: 11px;
@@ -750,10 +749,10 @@ header nav ul.dropdown-menu {
 }
 
 .searchbox input::-webkit-input-placeholder { 
-    color: @editor-text-default;
+    color: @editor-text-current;
 }
 .searchbox input::-moz-placeholder { 
-   color: @editor-text-default;
+   color: @editor-text-current;
    opacity:  1;
 }
 

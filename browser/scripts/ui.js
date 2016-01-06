@@ -240,23 +240,24 @@ VizorUI.prototype.openPublishGraphModal = function() {
 
 /***** EVENT HANDLERS *****/
 
-VizorUI.prototype.onSearchResultsChange = function() {
-  var presetsLib = E2.dom.presetsLib;
-  var resultsCount = $('.result.table tbody').children().length;
-	var presetsList = presetsLib.find('.preset-list-container');
-	var maxHeight = presetsList.css('maxHeight');
+VizorUI.prototype.onSearchResultsChange = function($libContainer) {
+  var presetsPanel = E2.dom.presetsLib;
+  var $activeLib = $libContainer || presetsPanel.find('.tab-pane.active');
+  var resultsCount = $('.result.table tbody', $activeLib).children().length;
+	var $list = $activeLib.find('.preset-list-container');
+	var maxHeight = $list.css('maxHeight');
 	if (resultsCount>0) {
-		presetsLib.removeClass('collapsed');
-		presetsList.show();
-		var resultsHeight = $('.result.table').outerHeight(true);
+		presetsPanel.removeClass('collapsed');
+		$list.show();
+		var resultsHeight = $('.result.table', $activeLib).outerHeight(true);
 		var newHeight = resultsHeight;
 		newHeight = ( newHeight >= maxHeight ) ? (maxHeight) : (newHeight);
-		presetsLib.height('auto');
-		presetsList.height(newHeight);
+		presetsPanel.height('auto');
+		$list.height(newHeight);
 	}
 	 else {
-		presetsLib.height('auto');
-		presetsList.height(maxHeight);
+		presetsPanel.height('auto');
+		$list.height(maxHeight);
 	}
 };
 
@@ -390,10 +391,10 @@ VizorUI.prototype.togglePanelChatCollapsed = function() {
 	this.dom.chatToggleButton.trigger('click');
 }
 VizorUI.prototype.togglePanelAssetsCollapsed = function() {
-	this.dom.chatToggleButton.trigger('click');
+	this.dom.assetsToggle.trigger('click');
 }
 VizorUI.prototype.togglePanelPresetsCollapsed = function() {
-	this.dom.chatToggleButton.trigger('click');
+	this.dom.presetsToggle.trigger('click');
 }
 
 VizorUI.prototype.onInspectorClicked = function() {
