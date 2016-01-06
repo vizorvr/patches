@@ -1783,7 +1783,7 @@ Application.prototype.setupStoreListeners = function() {
 			node.create_ui()
 
 			if (node.ui && node.plugin.state_changed)
-				node.plugin.state_changed(node.ui.plugin_ui)
+				node.plugin.state_changed(node.ui.pluginUI)
 		}
 
 		if (node.plugin.isGraph)

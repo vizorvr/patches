@@ -67,6 +67,7 @@ var VizorUI = function() {			// becomes E2.ui
 
 	this.flags = {
 		loading: false,
+		dragging: false,
 		fullscreen: false,
 		pressedShift: false,
 		pressedAlt : false,
@@ -282,6 +283,9 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 		.emit('changed:context', state.context)
 };
 
+VizorUI.prototype.setDragging = function(isOn) {
+	this.flags.dragging = isOn
+}
 
 /***** IS... *****/
 
@@ -299,6 +303,9 @@ VizorUI.prototype.isInProgramMode = function() {
 }
 VizorUI.prototype.isInBuildMode = function() {
 	return this.state.mode === uiMode.build
+}
+VizorUI.prototype.isDragging = function() {
+	return this.flags.dragging;
 }
 VizorUI.prototype.isLoading = function() {
 	return this.flags.loading;
@@ -342,8 +349,17 @@ VizorUI.prototype.getModifiedKeyCode = function(keyCode) {	// adds modifier keys
 	return keyCode;
 };
 
+// adds meta+alt+shift (in this order) to key from keyPress
+VizorUI.prototype.getModifiedKey = function(key) {
+	if (this.flags.pressedShift) key = "shift+" + key;
+	if (this.flags.pressedAlt) key = "alt+" + key;
+	if (this.flags.pressedMeta) key = "meta+" + key;
+	return key;
+}
+
 VizorUI.prototype.trackModifierKeysForWorldEditor = function() {
 	if (!this.isInBuildMode()) return;
+	if (this.isDragging()) return;
 
 	if (!this.flags.pressedShift && this.flags.pressedMeta) {
 		this.state.modifyMode = uiModifyMode.rotate
@@ -365,6 +381,9 @@ VizorUI.prototype.onKeyPress = function(e) {
 	if (!key) return true;	// if this is 0 then the code does not apply to this handler, because Firefox
 
 	key = String.fromCharCode(key).toUpperCase();	// num->str
+	key = this.getModifiedKey(key);					// attach modifiers e.g. shift+M
+
+	// note dual-case for '/','shift+/' etc depending on keyboard layout
 	switch (key) {
 		case uiKeys.modifyModeMove:
 			this.state.modifyMode = uiModifyMode.move;
@@ -376,6 +395,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 			this.state.modifyMode = uiModifyMode.scale;
 			break;
 		case uiKeys.viewSource:
+		case 'shift+' + uiKeys.viewSource:
 			this.viewSource();
 			e.preventDefault();
 			break;
@@ -390,6 +410,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 			break;
 		case uiKeys.focusPresetSearchAlt:
 		case uiKeys.focusPresetSearch:
+		case 'shift+' + uiKeys.focusPresetSearch:
 			state.visibility.panel_presets = true;
 			if (that.isInProgramMode()) {
 				that.dom.tabPresets.find('a').trigger('click')
@@ -402,12 +423,14 @@ VizorUI.prototype.onKeyPress = function(e) {
 			e.stopPropagation();
 			break;
 		case uiKeys.focusChatPanel:
+		case 'shift+'+uiKeys.focusChatPanel:
 			state.visibility.panel_chat = true;
 			this.dom.chatWindow.find('#new-message-input').focus();
 			e.preventDefault();
 			e.stopPropagation();
 			break;
 		case uiKeys.viewHelp:
+		case 'shift+'+uiKeys.viewHelp:
 			VizorUI.openEditorHelp();
 			e.preventDefault();
 			e.stopPropagation();
@@ -421,6 +444,12 @@ VizorUI.prototype.onKeyDown = function(e) {
 	var modifiersChanged = this._trackModifierKeys(e);
 	if (this.isModalOpen() || E2.util.isTextInputInFocus(e) || this.isFullScreen()) return true;
 	if (modifiersChanged) this.trackModifierKeysForWorldEditor();
+	if (this.isDragging()) {
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
+	}
+
 	var state = this.state;
 	var that = this;
 	var modifiedKeyCode = this.getModifiedKeyCode(e.keyCode);
@@ -658,4 +687,16 @@ VizorUI.getPersistentStorageRef = function() {
 		if (e.code === quotaExceeded && storage.length === 0) return null;
 	}
 	return storage;
+}
+
+
+// separate function so it can be removed
+VizorUI._disableEvent = function(e) {
+	e.preventDefault()
+	e.stopPropagation()
+	return false
+}
+
+VizorUI.disableContextMenu = function(domElement) {
+	domElement.addEventListener('contextmenu', VizorUI._disableEvent, true)		// top down
 }

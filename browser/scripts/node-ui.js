@@ -4,17 +4,6 @@ function UIpoint(x,y,z) {
 	this.z = z || 0;
 }
 
-var uiNodeCategoriesThatNormallyDisplayInputInHeader = [];
-var uiNodeCategoriesThatNormallyDisplayOutputInHeader = [
-	uiNodeCategory.value,
-	uiNodeCategory.material,
-	uiNodeCategory.geometry,
-	uiNodeCategory.light,
-	uiNodeCategory.texture
-]
-
-
-
 function NodeUI(parent_node, x, y, z) {
 	EventEmitter.call(this);
 	var that = this
@@ -43,14 +32,14 @@ function NodeUI(parent_node, x, y, z) {
 	this.selected = false;
 
 	/* jQueries */
-	this.input_col = null;
-	this.output_col = null;
-	this.inline_in = null;
-	this.inline_out = null;
+	this.inputCol = null;
+	this.outputCol = null;
+	this.inlineIn = null;
+	this.inlineOut = null;
 	this.header = null;
 	this.content = null;
-	this.plugin_container = null;
-	this.plugin_ui = null;
+	this.pluginContainer = null;
+	this.pluginUI = null;
 
 	// use .setPosition() to modify these
 	this.x = x || 0;
@@ -66,8 +55,8 @@ function NodeUI(parent_node, x, y, z) {
 	// INIT TEMPLATE
 
 	var viewdata = {
-		inline_in: 		null,
-		inline_out: 	null,
+		inlineIn: 		null,
+		inlineOut: 	null,
 		toggle_control: null,
 		edit_control: 	null,
 		node_title: 	null,
@@ -98,35 +87,35 @@ function NodeUI(parent_node, x, y, z) {
 		$content = this.content = $dom.children('.p_content').first();	// normally contains ins, outs, and the plugin ui/content
 		$toggle = $header.find('button.toggle').first();
 		$edit = $header.find('button.edit').first();
-		this.inline_in = $header.find('.p_ins').first();
-		this.inline_out = $header.find('.p_outs').first();
-		this.input_col = $content.find('.p_ins').first();
-		this.output_col = $content.find('.p_outs').first();
-		this.plugin_container = $dom.find('.p_plugin').first();
+		this.inlineIn = $header.find('.p_ins').first();
+		this.inlineOut = $header.find('.p_outs').first();
+		this.inputCol = $content.find('.p_ins').first();
+		this.outputCol = $content.find('.p_outs').first();
+		this.pluginContainer = $dom.find('.p_plugin').first();
 	} else {
 		// recover
 		$header = this.header 	= make('div');
 		$content = this.content = make('div');
-		this.input_col 			= make('div');
-		this.plugin_container 	= make('div');
-		this.output_col 		= make('div');
-		this.inline_in 			= make('div');
-		this.inline_out 		= make('div');
+		this.inputCol 			= make('div');
+		this.pluginContainer 	= make('div');
+		this.outputCol 		= make('div');
+		this.inlineIn 			= make('div');
+		this.inlineOut 		= make('div');
 		$toggle = make('button');
 		$edit = make('button');
 		$header.append($toggle, $edit);
-		$dom.append($header.append(this.inline_in, this.inline_out), $content.append(this.input_col, this.plugin_container, this.output_col));
+		$dom.append($header.append(this.inlineIn, this.inlineOut), $content.append(this.inputCol, this.pluginContainer, this.outputCol));
 	}
 
 	// ATTACH HANDLERS ETC
 
 	var plugin = parent_node.plugin;
 	if (plugin.create_ui) {
-		this.plugin_ui = plugin.create_ui();
-		this.plugin_container.append(this.plugin_ui);
+		this.pluginUI = plugin.create_ui();
+		this.pluginContainer.append(this.pluginUI);
 	}
 	else
-		this.plugin_ui = {}; // We must set a dummy object so plugins can tell why they're being called.
+		this.pluginUI = {}; // We must set a dummy object so plugins can tell why they're being called.
 
 	if (this.hasSubgraph()) {	// create a preferences button and wire it up
 		NodeUI.makeSpriteSVGButton(
@@ -190,7 +179,8 @@ function NodeUI(parent_node, x, y, z) {
 
 	make_draggable($dom,
 		E2.app.onNodeDragged.bind(E2.app, parent_node),
-		E2.app.onNodeDragStopped.bind(E2.app, parent_node))
+		E2.app.onNodeDragStopped.bind(E2.app, parent_node),
+		$header)
 
 	this.update();	// place in position;
 	this.parent_node.on('slotAdded', function(slot){
@@ -202,6 +192,7 @@ function NodeUI(parent_node, x, y, z) {
 		this.redrawSlots();
 	}.bind(this));
 
+	VizorUI.disableContextMenu($dom[0]);
 }
 
 NodeUI.prototype = Object.create(EventEmitter.prototype);
@@ -239,14 +230,14 @@ NodeUI.prototype.destroy = function() {
 	this.onHideTooltip(null);
 
 	// clean up our own dom and remove it
-	[this.input_col,
-		this.output_col,
-		this.inline_in,
-		this.inline_out,
+	[this.inputCol,
+		this.outputCol,
+		this.inlineIn,
+		this.inlineOut,
 		this.header,
 		this.content,
-		this.plugin_container,
-		this.plugin_ui
+		this.pluginContainer,
+		this.pluginUI
 	].forEach(
 		function(j){
 			if (typeof j === 'function') {
@@ -335,8 +326,8 @@ NodeUI.prototype.getPluginUIFlags = function(reset) {
 	this.flags.has_preferences 	= this.hasPreferences();
 	this.flags.has_dynamic_slots = this.hasDynamicSlots();
 	this.flags.has_edit 		= this.hasEditButton();
-	this.flags.single_in 		= this.hasSingleInputOnly();
-	this.flags.single_out 		= this.hasSingleOutputOnly();
+	this.flags.single_in 		= this.hasOnly1Input();
+	this.flags.single_out 		= this.hasOnly1Output();
 	this.flags._set = true;
 	return this.flags;
 };
@@ -346,15 +337,17 @@ NodeUI.prototype.canDisplayInputInHeader = function() {
 };
 
 NodeUI.prototype.canDisplayOutputInHeader = function() {
+	var myCategory = this.getNodeCategory();
+
+	if (uiPluginsThatForceDisplayOutputInHeader.indexOf(this.parent_node.plugin.id) !== -1)
+		return true;
+
 	var p = this.getPluginUIFlags();
 	var can = p.single_out && (!p.has_edit) && (!p.has_dynamic_slots);	// check !p.has_inputs if stricter
 	can = can && !p.has_subgraph;
 
-	var exceptPlugins = ['envelope_modulator'];
-
-	var myCategory = this.getNodeCategory();
-	can = can && (uiNodeCategoriesThatNormallyDisplayOutputInHeader.indexOf(myCategory) > -1);
-	can = can && (exceptPlugins.indexOf(this.parent_node.plugin.id) === -1);
+	can = can && (uiPluginCategoriesThatMustNotDisplayOutputInHeader.indexOf(myCategory) === -1);
+	can = can && (uiPluginsThatMustNotDisplayOutputInHeader.indexOf(this.parent_node.plugin.id) === -1);
 
 	return can;
 };
@@ -363,9 +356,10 @@ NodeUI.prototype.canDisplayInline = function() {
 	var p = this.getPluginUIFlags();	// variables used to make a decision.
 	var category = this.getNodeCategory();
 	var is_io = (category === uiNodeCategory.io);
+	var alwaysInline = (uiPluginsThatAlwaysDisplayInline.indexOf(this.parent_node.plugin.id) > -1);
 	var can = !p.has_plugin_ui;
 	can = can && !p.has_subgraph;
-	can = can && is_io;
+	can = can && (is_io || alwaysInline);
 	if (is_io) {
 		can = can && ((p.single_in && !p.has_outputs) ||
 				(p.single_out && !p.has_inputs) ||
@@ -378,52 +372,58 @@ NodeUI.prototype.canDisplayInline = function() {
 	return can;
 };
 
-NodeUI.prototype.getContainerForSlotsOfType = function(is_inp, is_dyn) {
-	var can_inline = this.canDisplayInline();
-	var out_h = this.canDisplayOutputInHeader();
-	var in_h = this.canDisplayInputInHeader();
-	if (can_inline) return (is_inp) ? this.inline_in : this.inline_out;
+NodeUI.prototype.getContainerForSlotsOfType = function(isInput, isDynamic) {
+	var canDisplayInline = this.canDisplayInline();
+	var canDisplayOutputInHeader = this.canDisplayOutputInHeader();
+	var canDisplayInputInHeader = this.canDisplayInputInHeader();
+
+	if (canDisplayInline)
+		return (isInput) ? this.inlineIn : this.inlineOut;
 	// else
-	if (is_dyn) return (is_inp) ? this.input_col : this.output_col;
+	if (isDynamic)
+		return (isInput) ? this.inputCol : this.outputCol;
 	// else static
-	if (out_h && !is_inp) return this.inline_out;
-	if (in_h && is_inp) return this.inline_in;
+	if (canDisplayOutputInHeader && !isInput)
+		return this.inlineOut;
+
+	if (canDisplayInputInHeader && isInput)
+		return this.inlineIn;
+
 	return null;
 }
 
 NodeUI.prototype.redrawSlots = function() {
-	var can_display_inline = this.canDisplayInline();
+	var canDisplayInline = this.canDisplayInline();
 
-	this.inline_in.empty();
-	this.inline_out.empty();
-	this.input_col.empty();
-	this.output_col.empty();
+	this.inlineIn.empty();
+	this.inlineOut.empty();
+	this.inputCol.empty();
+	this.outputCol.empty();
 
-	if (can_display_inline) {
-		this.render_slots(this.inline_in, this.parent_node.plugin.input_slots, E2.slot_type.input);
-		this.render_slots(this.inline_out, this.parent_node.plugin.output_slots, E2.slot_type.output);
-		this.render_slots(this.inline_in, this.parent_node.dyn_inputs, E2.slot_type.input);
-		this.render_slots(this.inline_out, this.parent_node.dyn_outputs, E2.slot_type.output);
+	if (canDisplayInline) {
+		this.renderSlots(this.inlineIn, this.parent_node.plugin.input_slots, E2.slot_type.input);
+		this.renderSlots(this.inlineOut, this.parent_node.plugin.output_slots, E2.slot_type.output);
+		this.renderSlots(this.inlineIn, this.parent_node.dyn_inputs, E2.slot_type.input);
+		this.renderSlots(this.inlineOut, this.parent_node.dyn_outputs, E2.slot_type.output);
 		return this;
 	}
 	// else...
 
 	// render inputs
-	this.render_slots(this.input_col, this.parent_node.plugin.input_slots, E2.slot_type.input);
+	this.renderSlots(this.inputCol, this.parent_node.plugin.input_slots, E2.slot_type.input);
 	if(this.parent_node.dyn_inputs)
-		this.render_slots(this.input_col, this.parent_node.dyn_inputs, E2.slot_type.input);
+		this.renderSlots(this.inputCol, this.parent_node.dyn_inputs, E2.slot_type.input);
 
 	// render outputs
-
 	if (this.canDisplayOutputInHeader()) {
-		this.render_slots(this.inline_out, this.parent_node.plugin.output_slots, E2.slot_type.output);
+		this.renderSlots(this.inlineOut, this.parent_node.plugin.output_slots, E2.slot_type.output);
 		// just in case
 		if(this.parent_node.dyn_outputs)
-			this.render_slots(this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
+			this.renderSlots(this.outputCol, this.parent_node.dyn_outputs, E2.slot_type.output);
 	} else {
-		this.render_slots(this.output_col, this.parent_node.plugin.output_slots, E2.slot_type.output);
+		this.renderSlots(this.outputCol, this.parent_node.plugin.output_slots, E2.slot_type.output);
 		if(this.parent_node.dyn_outputs)
-			this.render_slots(this.output_col, this.parent_node.dyn_outputs, E2.slot_type.output);
+			this.renderSlots(this.outputCol, this.parent_node.dyn_outputs, E2.slot_type.output);
 	}
 
 	NodeUI.redrawActiveGraph();	// fix #584
@@ -435,15 +435,18 @@ NodeUI.prototype.hasSubgraph = function() {
 };
 
 NodeUI.prototype.hasDynamicSlots = function() {
-	return this.parent_node.dyn_inputs.length + this.parent_node.dyn_outputs.length > 0;
+	var node = this.parent_node;
+	return node.dyn_inputs.length + node.dyn_outputs.length > 0;
 }
 
 NodeUI.prototype.hasInputs = function() {
-	return (this.parent_node.plugin.input_slots.length + this.parent_node.dyn_inputs.length) > 0;
+	var node = this.parent_node;
+	return (node.plugin.input_slots.length + node.dyn_inputs.length) > 0;
 };
 
 NodeUI.prototype.hasOutputs = function() {
-	return (this.parent_node.plugin.output_slots.length + this.parent_node.dyn_outputs.length) > 0;
+	var node = this.parent_node;
+	return (node.plugin.output_slots.length + node.dyn_outputs.length) > 0;
 };
 
 NodeUI.prototype.hasPluginUI = function() {
@@ -457,12 +460,14 @@ NodeUI.prototype.hasPreferences = function() {
 // aliases
 NodeUI.prototype.hasInspector = NodeUI.prototype.hasPreferences;
 
-NodeUI.prototype.hasSingleInputOnly = function() {
-	return (this.parent_node.plugin.input_slots.length === 1) && (this.parent_node.dyn_inputs.length === 0);
+NodeUI.prototype.hasOnly1Input = function() {
+	var node = this.parent_node;
+	return (node.plugin.input_slots.length === 1) && (node.dyn_inputs.length === 0);
 };
 
-NodeUI.prototype.hasSingleOutputOnly = function() {
-	return (this.parent_node.plugin.output_slots.length === 1) && (this.parent_node.dyn_outputs.length === 0);
+NodeUI.prototype.hasOnly1Output = function() {
+	var node = this.parent_node;
+	return (node.plugin.output_slots.length === 1) && (node.dyn_outputs.length === 0);
 };
 
 NodeUI.prototype.hasEditButton = function() {
@@ -470,11 +475,11 @@ NodeUI.prototype.hasEditButton = function() {
 };
 
 NodeUI.prototype.isRenamed = function() {
-	var has_title = (this.parent_node.title || false);
-	var has_no_subgraph = !this.hasSubgraph();
-	var node_category = this.getNodeCategory();
-	var not_exempt = [uiNodeCategory.value].indexOf(node_category) === -1;	// renaming some nodes is mandatory
-	return (has_title && not_exempt && has_no_subgraph && (this.parent_node.title !== this.parent_node.id));
+	var hasTitle = (this.parent_node.title || false);
+	var hasNoSubgraph = !this.hasSubgraph();
+	var nodeCategory = this.getNodeCategory();
+	var notExempt = uiPluginCategoriesAutoRenamed.indexOf(nodeCategory) === -1;
+	return (hasTitle && notExempt && hasNoSubgraph && (this.parent_node.title !== this.parent_node.id));
 };
 
 NodeUI.prototype.hasBeenRenamed = NodeUI.prototype.isRenamed;
@@ -624,12 +629,20 @@ NodeUI.prototype.onShowTooltip = function(e) {
 		var plugin = node.plugin;
 		var slot = null;
 
-		if(tokens[1][0] === 'd')
+		var isDynamic = tokens[1][0] === 'd';
+		var isInput = tokens[1][1] === 'i';
+		var isOutput = !isInput;
+
+		if(isDynamic)
 			slot = node.findSlotByUid(tokens[2])
 		else
-			slot = (tokens[1][1] === 'i' ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
+			slot = (isInput ? plugin.input_slots : plugin.output_slots)[parseInt(tokens[2], 10)];
 
 		txt = '<b>Type:</b> ' + slot.dt.name;
+
+		if ( (isOutput && this.hasOnly1Output()) || (isInput && this.canDisplayInline()) ) {
+			txt += '<br><b>Name:</b> ' + slot.name;
+		}
 
 		if (slot.array)
 			txt += '<br><b>Array:</b> yes';
@@ -705,16 +718,16 @@ NodeUI.prototype.onHideTooltip = function(e) {	// this = $(element that has popo
 
 	clearTimeout(data._tooltipTimer)
 	clearTimeout(data._tooltipHideTimer)
-	var kill_tooltip = function() {
+	var killTooltip = function() {
 		if (data._tooltipElem) {
 			data._tooltipElem.popover('destroy');
 			data._tooltipElem = null;
 		}
 	};
 	if (this._destroying)
-		kill_tooltip()
+		killTooltip()
 	else
-		setTimeout(kill_tooltip, 50);	// note this timeout must be less than the least in onShowToolTip
+		setTimeout(killTooltip, 50);	// note this timeout must be less than the least in onShowToolTip
 
 	return (E2.app.inDrag)
 };
@@ -751,31 +764,31 @@ NodeUI.prototype.setupTooltips = function($element) {
 	return $element;
 };
 
-NodeUI.prototype.create_slot = function(container, s, type) {
+NodeUI.prototype.createSlot = function(container, s, type) {
 	var $div = make('div');
 
-	var parent_node = this.parent_node;
+	var node = this.parent_node;
 	var nid = this.nid;
 
-	var is_input = (type === E2.slot_type.input);
-	var is_dynamic = (typeof s.uid !== 'undefined')
-	var is_connected = (typeof s.is_connected !== 'undefined') && s.is_connected;
+	var isInput = (type === E2.slot_type.input);
+	var isDynamic = (typeof s.uid !== 'undefined')
+	var isConnected = (typeof s.is_connected !== 'undefined') && s.is_connected;
 
 	var sid;
-	if (is_dynamic)
-		sid = nid + (is_input ? 'di' : 'do') + s.uid;
+	if (isDynamic)
+		sid = nid + (isInput ? 'di' : 'do') + s.uid;
 	else
-		sid = nid + (is_input ? 'si' : 'so') + s.index;
+		sid = nid + (isInput ? 'si' : 'so') + s.index;
 	$div.attr('id',sid);
 
 	$div.addClass('pl_slot p_slot');
-	$div.addClass( (is_input) ? 'p_in' : 'p_out' );
-	if (is_dynamic) $div.addClass('p_dynamic');
-	if (is_connected) $div.addClass('p_connected');
+	$div.addClass( (isInput) ? 'p_in' : 'p_out' );
+	if (isDynamic) $div.addClass('p_dynamic');
+	if (isConnected) $div.addClass('p_connected');
 
 	var $status = make('span');	// contains the two svg-s, on and off, loaded from sprite already in the document.
 	var $label = make('label').html(s.name);
-	if (is_input) {
+	if (isInput) {
 		$div.append($status, $label);
 	} else {
 		$div.append($label, $status);
@@ -785,11 +798,11 @@ NodeUI.prototype.create_slot = function(container, s, type) {
 	$status.append(NodeUI.makeSpriteSVG('vp-port-unconnected', 'p_conn_status p_off'));
 
 	container.append($div);
-	$div.mouseenter(E2.app.onSlotEntered.bind(E2.app, parent_node, s, $div));
-	$div.mouseleave(E2.app.onSlotExited.bind(E2.app, parent_node, s, $div));
-	$div.mousedown(E2.app.onSlotClicked.bind(E2.app, parent_node, s, $div, type));
+	$div.mouseenter(E2.app.onSlotEntered.bind(E2.app, node, s, $div));
+	$div.mouseleave(E2.app.onSlotExited.bind(E2.app, node, s, $div));
+	$div.mousedown(E2.app.onSlotClicked.bind(E2.app, node, s, $div, type));
 
-	var altSid = '' + parent_node.uid;
+	var altSid = '' + node.uid;
 
 	altSid += '_' + (s.uid !== undefined ? 'd' : 's');
 	altSid += type === E2.slot_type.input ? 'i' : 'o';
@@ -799,7 +812,7 @@ NodeUI.prototype.create_slot = function(container, s, type) {
 
 	var suid = s.uid || '';
 	// some more metadata
-	var is_dyn = is_dynamic.toString();
+	var is_dyn = isDynamic.toString();
 	$div.data('nid', this.nid).attr('data-nid', this.nid);
 	$div.data('sid', suid).attr('data-sid', suid);
 	$div.data('dyn', is_dyn).attr('data-dyn', is_dyn);
@@ -813,7 +826,7 @@ NodeUI.prototype.renameSlot = function(slot, name, suid, slot_type) {
 	if (!slot) return false;	// don't know what we're doing
 
 	var is_inp = slot.type === E2.slot_type.input;
-	var seek = (is_inp) ? [this.input_col, this.inline_in] : [this.output_col, this.inline_out];
+	var seek = (is_inp) ? [this.inputCol, this.inlineIn] : [this.outputCol, this.inlineOut];
 
 	var did_rename = false;
 	seek.forEach(function($j){
@@ -830,9 +843,9 @@ NodeUI.prototype.renameSlot = function(slot, name, suid, slot_type) {
 	return did_rename;
 };
 
-NodeUI.prototype.render_slots = function(container, slots, type) {
+NodeUI.prototype.renderSlots = function(container, slots, type) {
 	for(var i = 0, len = slots.length; i < len; i++)
-		this.create_slot(container, slots[i], type);
+		this.createSlot(container, slots[i], type);
 };
 
 // open nested graph for editing
@@ -872,4 +885,300 @@ NodeUI.redrawActiveGraph = function() {
 	}
 	E2.ui.state.selectedObjects = E2.ui.state.selectedObjects;	// force refresh
 	return changed;
-}
+};
+
+// makes an element adjustable by dragging in two directions
+// onChange callback is (value, screenDelta)
+// note, does not support css/dom rotation of surface element
+// can be bound twice for XY controls
+NodeUI.makeUIAdjustableValue = function(domNode, onStart, onChange, onEnd, options) {
+
+	var o = _.extend({
+		min : 0.0,
+		max : 1.0,
+		step : 1.0,	// do not track X by default
+		size : 100,	// size of full range of control (e.g. min to max in 100px)
+		getValue : null,	// supply function to dynamically read this value from elsewhere (e.g. state)
+		value : 0.5,	// default if no getValue()
+
+		allowTextInput : true,
+		parseTextInput : null,
+		textInputParentNode : null,	// which node to attach the dynamic input control to
+
+		orientation: 'vertical',
+		isSurface : false,			// use the domNode as a surface, scaling value along the node's width or height
+		surfaceDomNode : null,		// use another domNode's dimensions as surface, instead of this one (it won't move the node!)
+		cssCursor: 'ns-resize'		// e.g. ns-resize, we-resize, crosshair, all-scroll, etc
+	}, options)
+
+	if (parseFloat(o.step) === 0.0) {
+		err("step cannot be zero")
+		return
+	}
+
+	var isVertical = (o.orientation === 'vertical')
+	var getValue = (typeof o.getValue === 'function') ? o.getValue : function(){return parseFloat(o.value)}
+	if (o.isSurface) o.allowTextInput = false	// not supported
+	if (!o.textInputParentNode) o.allowTextInput = false
+
+	onEnd = onEnd || function(){}
+
+	var value = getValue()
+
+	// helpers
+	var clamp = THREE.Math.clamp
+	var mapLinear = THREE.Math.mapLinear
+
+	var parseInputValue = (typeof o.parseTextInput === 'function') ? o.parseTextInput : function(inputValue) {
+		var v = parseFloat(inputValue)
+		if (isNaN(v)) return false
+		if (!isFinite(v)) return false
+		return clamp(v, o.min, o.max)
+	}
+
+	var numSteps = (o.max - o.min) / o.step
+
+	// down() will set these
+	var minPixels = 1,
+		normValue = o.max / value
+
+	var isShiftPressed = function() {
+		return E2.ui.flags.pressedShift;
+	}
+
+	var up = function(data) { return function(e) {
+		E2.ui.setDragging(false);
+		document.removeEventListener('mousemove', data.move, true)
+		document.removeEventListener('touchmove', data.move, true)
+		document.removeEventListener('mouseup', data.up)
+		document.removeEventListener('touchcancel', data.up)
+		document.removeEventListener('touchend', data.up)
+		if(e.preventDefault) e.preventDefault()
+		onEnd(value)
+		document.body.style.cursor = '';
+		return true
+	}}
+
+
+
+	var move = function(data) {
+		return function(e) {
+			var t = (e.touches) ? e.touches[data.touchId] : e;
+
+			var pos
+			if (data.rect) { // constrain xy within rect
+				if (isVertical) {
+					pos = t.pageY - data.rect.top
+					clamp(pos, 0.0, 0.0 + data.rect.height);
+				} else {
+					pos = t.pageX - data.rect.left
+					clamp(pos, 0.0, 0.0 + data.rect.width);
+				}
+			}
+			else
+				pos = (isVertical) ? t.pageY : t.pageX
+
+			var delta = pos - data.last_pos
+
+			if (Math.abs(delta) >= minPixels) {
+				data.last_pos = pos
+				if (isShiftPressed()) {
+					delta /= 10.0;
+				}
+				var oldValue = value;
+
+				if (!data.rect) {
+					// single point
+					normValue += (isVertical) ? (- delta) : delta;
+				} else {
+					// surface, cast to float
+					normValue = 0.0 + pos
+				}
+
+				normValue = clamp(normValue, 0.0, o.size);
+				value = mapLinear(normValue, 0.0, o.size, o.min, o.max);
+
+				if ((value !== oldValue)) {
+					onChange(value, delta)
+				}
+			}
+
+			if(e.preventDefault) e.preventDefault()
+			return true
+		} // end closure
+	}
+
+	var down = function() {
+		return function(e) {
+			var t = (e.touches) ? e.touches[0] : e;
+
+			value = getValue()
+
+			var data = {
+				last_pos: (isVertical) ? t.pageY : t.pageX,
+				touchId : 0
+			}
+
+			if (o.isSurface) {	// size ourselves as per element in question
+				var rectRef = o.surfaceDomNode || domNode
+				data.rect = rectRef.getBoundingClientRect()
+				o.size =  (isVertical) ? data.rect.height : data.rect.width
+				data.last_pos -= (isVertical) ? data.rect.top : data.rect.left
+			}
+
+			minPixels = o.size / numSteps
+
+			normValue = mapLinear(value, o.min, o.max, 0, o.size)
+
+			data.up = up(data)
+			data.move = move(data)
+			document.addEventListener('touchend', data.up)
+			document.addEventListener('touchcancel', data.up)
+			document.addEventListener('mouseup', data.up)
+			document.addEventListener('touchmove', data.move, true)
+			document.addEventListener('mousemove', data.move, true)
+
+			if(e.preventDefault) e.preventDefault()
+
+			onStart(value)
+			E2.ui.setDragging(true);
+			document.body.style.cursor = o.cssCursor;
+
+			data.move(e)
+			return true
+		}
+	}
+
+	function evChange(v) {
+		var oldValue = value
+		v = parseInputValue(v)
+		if (v === false) v = oldValue
+		v = clamp(v, o.min, o.max)
+		if (oldValue !== v) {
+			value = v
+			normValue = mapLinear(value, o.min, o.max, 0, o.size)
+			onStart()
+			onChange(value)
+			onEnd()
+		}
+	}
+
+	if (o.allowTextInput) {
+		domNode.addEventListener('dblclick', function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			NodeUI.enterValueControl(domNode, o.textInputParentNode, evChange)
+			return false
+		}, true);
+	}
+	domNode.addEventListener('touchstart', down())
+	domNode.addEventListener('mousedown', down())
+	domNode.addEventListener('mouseenter', function(){
+		domNode.style.cursor = o.cssCursor;
+	})
+	domNode.addEventListener('mouseleave', function() {
+		domNode.style.cursor = '';
+	})
+	if (domNode.className && (domNode.className.indexOf('uiValueAdjustable') === -1))
+		domNode.className += ' uiValueAdjustable'
+	else
+		domNode.className = 'uiValueAdjustable'
+
+};
+
+
+
+
+NodeUI.enterValueControl = function(node, parentNode, onChange, options) {
+
+	var $node = jQuery(node)
+	var $parent = jQuery(parentNode)
+	if ($node.hasClass('uiTextInput')) return true;
+	var o = {
+		type : 'text',
+		placeholder : ''
+	}
+
+	var $input = $('<input class="node-value-input" type="'+ o.type +'" placeholder="'+ o.placeholder +'" />')
+
+	var nodeOffset = $node.offset();
+	var parentOffset = $parent.offset();
+
+	$node.addClass('uiTextEntry');
+	var controlWidth = $node.innerWidth()
+	if (controlWidth < 30) controlWidth = 30;
+
+	var parentStylePosition = $parent.css('position');
+	if (parentStylePosition === 'static') parentStylePosition = ''
+	if (!parentStylePosition) {
+		$parent.css({
+			'position' : 'relative'
+		})
+	}
+
+	function tryChange(value) {
+		if (value === "") value = oldValue
+		if (value !== oldValue) {
+			onChange(value, oldValue)
+			oldValue = value
+			return true;
+		}
+		return false
+	}
+	var oldValue = $node.text();
+	var cancelling = false
+	var done = false
+
+	var forceBlur = function(e) {
+		var t = e.target
+		if (t !== $input[0]) $input.trigger('blur')
+		return true;
+	}
+
+	document.addEventListener('mousedown', forceBlur, true)
+	$input
+		.addClass('uiTextEntry')
+		.appendTo($parent)
+		.css({
+			position: 'absolute',
+			width:  '' + controlWidth + 'px',
+			left: '' + (nodeOffset.left - parentOffset.left -1) + 'px',
+			top: '' + (nodeOffset.top - parentOffset.top -1) + 'px',
+			'z-index' : 3001,
+			margin: 0
+		})
+		.val(oldValue)
+		.keydown(function(e){
+			var code = e.keyCode || e.which
+			if (code === 13) {
+				var value = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
+				done = true
+				jQuery(e.target).trigger('blur');
+				tryChange(value)
+			}
+			return true;
+		})
+		.keyup(function(e) {
+			var code = e.keyCode || e.which
+			if(code === 27) {
+				cancelling = true
+				jQuery(e.target).trigger('blur');
+			}
+			return true;
+		})
+		.select()
+		.bind('blur', function(e) {
+			if (!(cancelling || done)) {
+				var value = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
+				tryChange(value)
+			}
+			$(this).remove();	// this = input
+			$node.removeClass('uiTextEntry');
+			$parent.css({
+				position: parentStylePosition
+			});
+			document.removeEventListener('mousedown', forceBlur, true)
+		})
+		.focus()
+
+};

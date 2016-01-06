@@ -8,8 +8,6 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 
 	var that = this;
 
-	// menu shell
-	dom.btnSignIn.click(VizorUI.openLoginModal);
 
 	dom.btnAssets.click(this.onBtnAssetsClicked.bind(this));
 	dom.btnPresets.click(this.onBtnPresetsClicked.bind(this));
@@ -537,7 +535,36 @@ VizorUI.prototype.showStartDialog = function() {
 	var dfd = when.defer()
 	var selectedTemplateUrl = null
 
-	Cookies.set('vizor100', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
+	// keep track of how many times the dialog has been seen
+	// do not show dialog if user logged in and shown more than twice
+	// do not show if user not logged in and shown more than five times
+	// cookie keeps for 24h from visit
+	var cookieName = 'vizor100'
+	var c = Cookies.get(cookieName), times = 0
+
+	try { c = JSON.parse(c) }
+	catch (e) { c = {} }
+
+	if (c && ('seen' in c)) {
+		times = parseInt(c.seen)
+		c.seen = (isNaN(times)) ?  0  : times++
+	} else {
+		times = 1
+		c = { seen: times }
+	}
+
+	var doNotShowDialog =
+		(VizorUI.userIsLoggedIn() &&  times > 2) ||
+			(!VizorUI.userIsLoggedIn() &&  times > 5)
+
+	var d = new Date()
+	d.setTime(d.getTime() + (86400*1000))	// tomorrow
+	Cookies.set(cookieName, {seen: times}, {expires: d})
+
+	if (c && doNotShowDialog) {
+		dfd.resolve(selectedTemplateUrl)
+		return dfd.promise;
+	}
 
 	var welcomeModal = VizorUI.modalOpen(
 		E2.views.patch_editor.intro({user:E2.models.user.toJSON()}),
@@ -698,7 +725,6 @@ VizorUI.checkCompatibleBrowser = function() {
 	var heading=false, message=false;
 
 	var isMobile = VizorUI.isMobile.any();
-
 
 	if ((/Chrome/i.test(agent)) || (/Firefox/i.test(agent))) {
 
