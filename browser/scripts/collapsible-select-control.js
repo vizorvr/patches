@@ -20,7 +20,7 @@ function dragAndDropMouseDownHandler(e) {
 	var scrollInterval
 	var scrollBound = false
 
-	var title = $(e.target).text()
+	var title = $('span.title', e.currentTarget).text()
 
 	var dragPreview = $('<div class="plugin-drag-preview"><div class="drag-add-icon"><svg class='
 					  + '"icon-drag-add"><use xlink:href="#icon-drag-add"></use></svg></div>'
@@ -42,7 +42,7 @@ function dragAndDropMouseDownHandler(e) {
 		var plX = presetsLib.position().left;
 		var plY = presetsLib.position().top;
 	}
-	if (assetsVisible) {
+	if (assetsVisible && assetsLib.length) {
 		var alHeight = assetsLib.outerHeight(true);
 		var alWidth = assetsLib.outerWidth(true);
 		var alX = assetsLib.position().left;
@@ -145,8 +145,9 @@ function dragAndDropMouseDownHandler(e) {
 
 	}
 
+	var mouseUpHandler
 	// On mouseup unbind everything and destroy the preview box
-	var mouseUpHandler = function(evt) {
+	mouseUpHandler = function(evt) {
 		dragPreview.remove()
 		hoverArea.remove()
 		dragPreviewInDom = false
@@ -198,7 +199,7 @@ function dragAndDropMouseDownHandler(e) {
 function CollapsibleSelectControl(handlebars) {
 	this._handlebars = handlebars || Handlebars
 	this._cb = function() {}
-
+	this._controlId = 'csc_' + E2.uid()
 	this._resultTpl = this._handlebars
 }
 
@@ -237,7 +238,7 @@ CollapsibleSelectControl.prototype._reset = function() {
 	$('table.result', this._el).empty().remove();
 	$('.preset-result', this._el).empty();
 	if (E2.ui)
-		E2.ui.onSearchResultsChange();
+		E2.ui.onSearchResultsChange(this._el);
 }
 
 CollapsibleSelectControl.prototype._search = function(text) {
@@ -260,12 +261,12 @@ CollapsibleSelectControl.prototype._search = function(text) {
 	var $lis = $('td', $pr)
 
 	$lis.dblclick(function(e) {
-		that._cb($(e.target).data('path'))
+		that._cb($(e.currentTarget).data('path'))
 	})
 
 	$lis.bind('mousedown', {
 		dropSuccessCb: function(e) {
-			that._cb($(e.target).data('path'))
+			that._cb($(e.currentTarget).data('path'))
 		}
 	},
 	dragAndDropMouseDownHandler)
@@ -278,7 +279,7 @@ CollapsibleSelectControl.prototype._search = function(text) {
 	this._selectedIndex = 0
 	
 	if (E2.ui)
-		E2.ui.onSearchResultsChange();
+		E2.ui.onSearchResultsChange(this._el);
 
 }
 
@@ -363,8 +364,17 @@ CollapsibleSelectControl.prototype.scoreResult = function(oq, resultStr) {
 	return scr
 }
 
-CollapsibleSelectControl.prototype.render = function(el) {
+CollapsibleSelectControl.prototype.render = function(el, templateOptions) {
 	var that = this
+
+	var templateData = _.extend({
+		searchPlaceholderText : 'Search'
+	}, templateOptions)
+
+	_.extend(templateData, {
+		controlId: this._controlId,
+		categories: this._data
+	})
 
 	el.empty()
 
@@ -372,34 +382,31 @@ CollapsibleSelectControl.prototype.render = function(el) {
 
 	this._el = el
 
-	el.html(this._template({
-		controlId: "col-sel-"+Date.now(),
-		categories: this._data
-	}))
+	el.html(this._template(templateData))
 
 	var $input = $('input', el)
 
 	el.on('hide.bs.collapse', function(e) {
-		$('.glyphicon', $(e.target).prev())
-			.removeClass('glyphicon-chevron-down')
-			.addClass('glyphicon-chevron-right')
+		$(e.currentTarget).prev()
+			.removeClass('expanded')
+			.addClass('collapsed')
 	})
 
 	el.on('show.bs.collapse', function(e) {
-		$('.glyphicon', $(e.target).prev())
-			.addClass('glyphicon-chevron-down')
-			.removeClass('glyphicon-chevron-right')
+		$(e.currentTarget).prev()
+			.removeClass('collapsed')
+			.addClass('expanded')
 	})
 
 	$('li', el).dblclick(function(e) {
-		that._cb($(e.target).data('path'))
+		that._cb($(e.currentTarget).data('path'))
 		$(window).unbind('mousemove')
 	})
 
 	// Drag and drop an element from the list
 	$('li', el).bind('mousedown', {
 		dropSuccessCb: function(e) {
-			that._cb($(e.target).data('path'))
+			that._cb($(e.currentTarget).data('path'))
 		}
 	}, dragAndDropMouseDownHandler)
 
@@ -416,7 +423,7 @@ CollapsibleSelectControl.prototype.render = function(el) {
 		if (e.keyCode === 38 || e.keyCode === 40)
 			return;
 
-		keyTimer = setTimeout(that._search.bind(that, $input.val(), 100))
+		keyTimer = setTimeout(that._search.bind(that, $input.val()), 100)
 	})
 
 	$input.on('blur', function(e) {
@@ -483,7 +490,7 @@ CollapsibleSelectControl.prototype.render = function(el) {
 				var newY = 0;
 				if (selectionOffsetTop + selectionHeight >= parentScrollHeight) {
 					newY = parentScrollTop + (selectionOffsetTop - parentOffsetTop) - selectionHeight;
-					$findParent.scrollTop(newY);
+					$findParent.scrollTop(newY + selectionHeight);
 				}
 				else if (selectionOffsetTop <= 0) {
 					newY = parentScrollTop - selectionHeight + selectionOffsetTop;
@@ -499,5 +506,5 @@ CollapsibleSelectControl.prototype.render = function(el) {
 	return this;
 }
 
-if (typeof(module) !== 'undefined')
+if (typeof module !== 'undefined')
 	module.exports = CollapsibleSelectControl

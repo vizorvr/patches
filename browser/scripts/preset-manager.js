@@ -122,11 +122,13 @@ PresetManager.prototype.renderPresets = function() {
 	new CollapsibleSelectControl()
 	.data(this._presets)
 	.template(E2.views.presets.presets)
-	.render(E2.dom.presets_list)
+	.render(E2.dom.presets_list, {
+		searchPlaceholderText : 'Search patches'
+	})
 	.onOpen(this.onOpen.bind(this))
 	
 	var presetSearch = $('#presets-lib .searchbox input');
-	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui));
+	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui, E2.dom.presets_list));
 }
 
 PresetManager.prototype.renderObjects = function() {
@@ -135,11 +137,13 @@ PresetManager.prototype.renderObjects = function() {
 	new CollapsibleSelectControl()
 	.data(this._objects)
 	.template(E2.views.presets.presets)
-	.render(E2.dom.objectsList)
+	.render(E2.dom.objectsList, {
+		searchPlaceholderText : 'Search objects'
+	})
 	.onOpen(this.onOpen.bind(this))
 	
 	var objectSearch = $('.searchbox input', E2.dom.objectsList);
-	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui));
+	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui, E2.dom.objectsList));
 }
 
 PresetManager.prototype.openPreset = function(name) {
@@ -177,12 +181,13 @@ PresetManager.prototype.add = function(category, title, path) {
 PresetManager.prototype.openPlugin = function(path, cb)
 {
 	var id = path.substring('plugin/'.length);
-	var canvasX = E2.dom.canvas_parent.position().left;
+	var canvasX = E2.dom.canvases.position().left;
 	var mouseX = E2.app.mousePosition[0];
-	var canvasY = E2.dom.canvas_parent.position().top;
+	var canvasY = E2.dom.canvases.position().top;
 	var mouseY = E2.app.mousePosition[1];
 
 	if(canvasX > mouseX) mouseX += canvasX; // Add the canvas X position to the mouse X position when double clicking from the preset list to avoid spawning plugins under the list
+	mouseY -= canvasY
 	E2.app.instantiatePlugin(id, [mouseX, mouseY]);
 }
 
