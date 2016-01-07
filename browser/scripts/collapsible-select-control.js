@@ -387,13 +387,13 @@ CollapsibleSelectControl.prototype.render = function(el, templateOptions) {
 	var $input = $('input', el)
 
 	el.on('hide.bs.collapse', function(e) {
-		$(e.currentTarget).prev()
+		$(e.target).prev()
 			.removeClass('expanded')
 			.addClass('collapsed')
 	})
 
 	el.on('show.bs.collapse', function(e) {
-		$(e.currentTarget).prev()
+		$(e.target).prev()
 			.removeClass('collapsed')
 			.addClass('expanded')
 	})
