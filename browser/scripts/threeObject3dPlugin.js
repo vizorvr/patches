@@ -12,7 +12,14 @@ function ThreeObject3DPlugin(core) {
 		{ name: 'castShadow', dt: core.datatypes.BOOL },
 		{ name: 'receiveShadow', dt: core.datatypes.BOOL },
 
-		{ name: 'name', dt: core.datatypes.TEXT, def: ''}
+		{ name: 'name', dt: core.datatypes.TEXT, def: ''},
+
+		{
+			name:   'stereo view',
+			dt:     core.datatypes.FLOAT,
+			def:    0,
+			desc:   'Affects how this object is rendered in stereo<br/>Stereo View - 0: both eyes, 1: left eye only, 2: right eye only'
+		}
 	]
 
 	this.output_slots = [{
@@ -74,7 +81,8 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 		function() { that.object3d.visible = data },
 		function() { that.object3d.castShadow = data },
 		function() { that.object3d.receiveShadow = data },
-		function() { that.object3d.name = data }
+		function() { that.object3d.name = data },
+		function() { that.object3d.channels.set(data) }
 	]
 
 	var slotOffset = this.node.plugin.input_slots.length - handlers.length

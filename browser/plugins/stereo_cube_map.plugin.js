@@ -1,19 +1,22 @@
 (function() {
-	var StereoCubeMapPlugin = E2.plugins.stereo_cube_map = function (core, node) {
+	var StereoCubeMapPlugin = E2.plugins.stereo_cube_map = function (core) {
 		Plugin.apply(this, arguments)
 
 		this.desc = 'Stereo Cube Map'
 
-		this.input_slots = [
+		this.input_slots = [{
+				name: 'left',
+				dt: core.datatypes.CUBETEXTURE,
+				desc: 'The left side of the stereo cubemap.'
+			},
 			{
-				name: 'url',
-				dt: core.datatypes.TEXT,
-				def: ''
+				name: 'right',
+				dt: core.datatypes.CUBETEXTURE,
+				desc: 'The right side of the stereo cubemap.'
 			}
 		]
 
-		this.output_slots = [
-			{
+		this.output_slots = [{
 				name: 'cube',
 				dt: core.datatypes.OBJECT3D,
 				array: true
@@ -25,9 +28,8 @@
 		var defTexture = new THREE.CubeTexture([deftex, deftex, deftex, deftex, deftex, deftex])
 		defTexture.needsUpdate = true
 
-
-		var defShader = THREE.ShaderLib['cube']
-		defShader.uniforms['tCube'].value = defTexture
+		var defShader = THREE.ShaderLib.cube
+		defShader.uniforms.tCube.value = defTexture
 
 		var defMaterial = new THREE.ShaderMaterial({
 			fragmentShader: defShader.fragmentShader,
@@ -48,104 +50,67 @@
 
 	StereoCubeMapPlugin.prototype = Object.create(Plugin.prototype)
 
-	StereoCubeMapPlugin.prototype.loadTextures = function() {
-		var textures = []
-
+	StereoCubeMapPlugin.prototype.updateMesh = function() {
+		var shader = THREE.ShaderLib.cube
 		if (!this.url)
 			return;
 
-		var loader = new THREE.ImageLoader( THREE.DefaultLoadingManager );
-		loader.setCrossOrigin( '' );
 
-		var that = this
+		// left eye
+		var leftUniforms = {
+			tCube: { type: 't', value: this.leftTexture },
+			tFlip: { type: 'f', value: 1 }
+		}
 
-		loader.load( this.url, function ( img ) {
-			var imageWidth = img.width
-			var imageHeight = img.height
-
-			var tiles = 12
-
-			var tileWidth = imageWidth / tiles
-			var tileHeight = imageHeight
-
-			for (var i = 0; i < tiles; ++i) {
-				var tileCanvas = document.createElement('canvas')
-				tileCanvas.width = tileWidth
-				tileCanvas.height = tileHeight
-
-				var ctx = tileCanvas.getContext('2d')
-				ctx.drawImage(img, i * tileWidth, 0, tileWidth, tileHeight, 0, 0, tileWidth, tileHeight)
-
-				textures.push(tileCanvas)
-			}
-
-			// left eye
-			var leftTexture = new THREE.CubeTexture(textures.splice(0, 6))
-			leftTexture.needsUpdate = true
-
-			var shader = THREE.ShaderLib['cube']
-
-			var leftUniforms = {
-				"tCube": { type: "t", value: leftTexture },
-				"tFlip": { type: "f", value: 1 } }
-
-			var leftMaterial = new THREE.ShaderMaterial({
-				fragmentShader: shader.fragmentShader,
-				vertexShader: shader.vertexShader,
-				uniforms: leftUniforms,
-				depthWrite: false,
-				side: THREE.DoubleSide
-			})
-
-			that.leftObj = new THREE.Mesh(
-					new THREE.BoxGeometry(50, 50, 50),
-					leftMaterial)
-
-			that.leftObj.channels.set(that.leftChannel)
-
-			// right eye
-			var rightTexture = new THREE.CubeTexture(textures.splice(0, 6))
-			rightTexture.needsUpdate = true
-
-			var rightUniforms = {
-				"tCube": { type: "t", value: rightTexture },
-				"tFlip": { type: "f", value: 1 } }
-
-			var rightMaterial = new THREE.ShaderMaterial({
-				fragmentShader: shader.fragmentShader,
-				vertexShader: shader.vertexShader,
-				uniforms: rightUniforms,
-				depthWrite: false,
-				side: THREE.DoubleSide
-			})
-
-			that.rightObj = new THREE.Mesh(
-				new THREE.BoxGeometry(50, 50, 50),
-				rightMaterial)
-
-			that.rightObj.channels.set(that.rightChannel)
-
-			that.updated = true
-		},
-		undefined,
-		function(e) {
-			console.log('failed to load ' + that.url, e)
+		var leftMaterial = new THREE.ShaderMaterial({
+			fragmentShader: shader.fragmentShader,
+			vertexShader: shader.vertexShader,
+			uniforms: leftUniforms,
+			depthWrite: false,
+			side: THREE.DoubleSide
 		})
+
+		this.leftObj = new THREE.Mesh(
+				new THREE.BoxGeometry(50, 50, 50),
+				leftMaterial)
+
+		this.leftObj.channels.set(this.leftChannel)
+
+		// right eye
+		var rightUniforms = {
+			tCube: { type: 't', value: this.rightTexture },
+			tFlip: { type: 'f', value: 1 }
+		}
+
+		var rightMaterial = new THREE.ShaderMaterial({
+			fragmentShader: shader.fragmentShader,
+			vertexShader: shader.vertexShader,
+			uniforms: rightUniforms,
+			depthWrite: false,
+			side: THREE.DoubleSide
+		})
+
+		this.rightObj = new THREE.Mesh(
+			new THREE.BoxGeometry(50, 50, 50),
+			rightMaterial)
+
+		this.rightObj.channels.set(this.rightChannel)
+
+		this.updated = true
 	}
 
 	StereoCubeMapPlugin.prototype.reset = function() {
-
 	}
 
 	StereoCubeMapPlugin.prototype.update_input = function(slot, data) {
-		if (slot.name === 'url' && this.url !== data) {
-			delete this.leftObj
-			delete this.rightObj
+		if (slot.index === 0)
+			this.leftTexture = data
+		else
+			this.rightTexture = data
 
-			this.url = data
-
-			this.loadTextures()
-		}
+		if (this.leftTexture && this.rightTexture && 
+			this.leftTexture.image && this.rightTexture.image)
+			this.updateMesh()
 	}
 
 	StereoCubeMapPlugin.prototype.update_output = function() {
@@ -156,9 +121,6 @@
 		return [this.leftObj, this.rightObj]
 	}
 
-	StereoCubeMapPlugin.prototype.state_changed = function(ui) {
-		if (!ui) {
-			this.loadTextures()
-		}
+	StereoCubeMapPlugin.prototype.state_changed = function() {
 	}
 })()

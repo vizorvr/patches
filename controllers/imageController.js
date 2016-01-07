@@ -2,38 +2,35 @@ var Image = require('../models/image');
 var AssetController = require('./assetController');
 var ImageProcessor = require('../lib/imageProcessor');
 var fs = require('fs');
-var fsPath = require('path');
 
-function ImageController(imageService, fs)
-{
+function ImageController() {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Image);
 	AssetController.apply(this, args);
-};
+}
 
-ImageController.prototype = Object.create(AssetController.prototype);
+ImageController.prototype = Object.create(AssetController.prototype)
 
 ImageController.prototype.upload = function(req, res, next) {
-	var that = this;
+	var that = this
 
-	var file = req.files.file;
+	var file = req.files.file
 	var folder = '/' + req.user.username + '/assets/image'
 
 	new ImageProcessor(this._fs)
 		.handleUpload(file, folder)
-		.then(function(info)
-		{
-			fs.unlink(file.path, function() {});
+		.then(function(info) {
+			fs.unlink(file.path, function() {})
 
-			info.path = info.original.path;
-			info.url = info.original.url;
+			info.path = info.original.path
+			info.url = info.original.url
 
 			return that._service.save(info, req.user)
 			.then(function(asset) {
-				res.json(asset);
-			});
+				res.json(asset)
+			})
 		})
-		.catch(next);
-};
+		.catch(next)
+}
 
 module.exports = ImageController;

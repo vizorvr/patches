@@ -1,7 +1,7 @@
 {{#if user.username}}
 <form enctype="multipart/form-data"
 	method="post"
-	action="/upload{{url}}"
+	action="/upload/{{modelName}}"
 	class="form-inline fileUploadForm">
 	<button class="browse-button">Browse</button>
 	<input type="text" id="fileUploadName" name="filename" class="form-control"/>
