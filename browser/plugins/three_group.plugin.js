@@ -160,8 +160,10 @@
 		// set state directly, this will be recalculated on demand
 		// so no need to create an undo step
 
-		var quat = new THREE.Quaternion(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
-		var m = new THREE.Matrix4().makeRotationFromQuaternion(quat)
+		var quat = new THREE.Quaternion(this.object3d.quaternion._x, this.object3d.quaternion._y, this.object3d.quaternion._z, this.object3d.quaternion._w)
+		var scale = new THREE.Vector3(this.object3d.scale.x, this.object3d.scale.y, this.object3d.scale.z)
+
+		var m = new THREE.Matrix4().makeRotationFromQuaternion(quat).scale(scale)
 
 		var translation = center.clone().sub(this.lastCenter).applyMatrix4(m)
 		this.state.pivot.x += translation.x

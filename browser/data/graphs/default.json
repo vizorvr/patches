@@ -9,8 +9,8 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 123,
-                "y": 161,
+                "x": 228,
+                "y": 313,
                 "uid": "sW61WYtysOa4",
                 "open": false,
                 "state": {
@@ -57,11 +57,6 @@
                                     "_y": 0,
                                     "_z": 0,
                                     "_w": 1
-                                },
-                                "pivot": {
-                                    "x": 0,
-                                    "y": 0,
-                                    "z": 0
                                 }
                             }
                         },
@@ -131,8 +126,8 @@
             },
             {
                 "plugin": "three_scene",
-                "x": 467,
-                "y": 61,
+                "x": 572,
+                "y": 213,
                 "uid": "u2O8M5ItNlW5",
                 "dyn_in": [
                     {
@@ -192,25 +187,14 @@
                         "array": true,
                         "uid": "oIEkIRoSmV9S",
                         "dynamic": true,
-                        "index": 5,
-                        "is_connected": true
-                    },
-                    {
-                        "type": 0,
-                        "name": "6",
-                        "dt": 21,
-                        "array": true,
-                        "uid": "qbZJtqJVDcK8",
-                        "dynamic": true,
-                        "index": 6,
-                        "is_connected": false
+                        "index": 5
                     }
                 ]
             },
             {
                 "plugin": "graph",
-                "x": 179,
-                "y": 8,
+                "x": 284,
+                "y": 160,
                 "uid": "d9slZ3PC0CIC",
                 "open": false,
                 "state": {
@@ -345,8 +329,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 155,
-                "y": 60,
+                "x": 260,
+                "y": 212,
                 "uid": "nvHKHIESiXU4",
                 "open": false,
                 "state": {
@@ -404,11 +388,6 @@
                                     "_y": 0,
                                     "_z": 0,
                                     "_w": 1
-                                },
-                                "pivot": {
-                                    "x": 0,
-                                    "y": 0,
-                                    "z": 0
                                 }
                             }
                         },
@@ -479,8 +458,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 151,
-                "y": 221,
+                "x": 256,
+                "y": 373,
                 "uid": "5zkZJ1kVzShg",
                 "open": false,
                 "state": {
@@ -518,11 +497,6 @@
                                     "_y": 0,
                                     "_z": 0,
                                     "_w": 0.707106781186548
-                                },
-                                "pivot": {
-                                    "x": 0,
-                                    "y": 0,
-                                    "z": 0
                                 }
                             }
                         },
@@ -669,8 +643,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 170,
-                "y": 280,
+                "x": 275,
+                "y": 432,
                 "uid": "OFAU6PiJpRKz",
                 "open": false,
                 "state": {
@@ -708,11 +682,6 @@
                                     "_y": 0,
                                     "_z": 0,
                                     "_w": 1
-                                },
-                                "pivot": {
-                                    "x": 0,
-                                    "y": 0,
-                                    "z": 0
                                 }
                             }
                         },
@@ -904,8 +873,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 819,
-                "y": 162,
+                "x": 924,
+                "y": 314,
                 "uid": "A36bzZH8DcdD",
                 "open": false,
                 "state": {
@@ -1070,8 +1039,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 131,
-                "y": 113,
+                "x": 236,
+                "y": 265,
                 "uid": "T6PXHoQNqdKa",
                 "open": false,
                 "state": {
@@ -1129,11 +1098,6 @@
                                     "_y": 0,
                                     "_z": 0,
                                     "_w": 1
-                                },
-                                "pivot": {
-                                    "x": 0,
-                                    "y": 0,
-                                    "z": 0
                                 }
                             }
                         },
@@ -1199,351 +1163,6 @@
                         "dynamic": true,
                         "type": 1,
                         "is_connected": true
-                    }
-                ]
-            },
-            {
-                "plugin": "graph",
-                "x": 68,
-                "y": 384,
-                "uid": "7mqgbThQ5TSC",
-                "state": {
-                    "always_update": true,
-                    "input_sids": {},
-                    "output_sids": {
-                        "LpNkz6Zb9cM6": "mh0rTKkFm0nD"
-                    }
-                },
-                "title": "Box",
-                "graph": {
-                    "uid": "csUqnPZxDrtD",
-                    "parent_uid": "root",
-                    "open": true,
-                    "nodes": [
-                        {
-                            "plugin": "three_geometry_box",
-                            "x": 883,
-                            "y": 690,
-                            "uid": "dAuxtFUHN5x3"
-                        },
-                        {
-                            "plugin": "three_mesh",
-                            "x": 1254,
-                            "y": 337,
-                            "uid": "BrWLfUemWGg7",
-                            "state": {
-                                "position": {
-                                    "x": 1.4985918892974062,
-                                    "y": 0,
-                                    "z": 0
-                                },
-                                "scale": {
-                                    "x": 1,
-                                    "y": 1,
-                                    "z": 1
-                                },
-                                "quaternion": {
-                                    "_x": 0,
-                                    "_y": 0,
-                                    "_z": 0,
-                                    "_w": 1
-                                },
-                                "pivot": {
-                                    "x": 0,
-                                    "y": 0,
-                                    "z": 0
-                                }
-                            }
-                        },
-                        {
-                            "plugin": "output_proxy",
-                            "x": 1444,
-                            "y": 331,
-                            "uid": "LpNkz6Zb9cM6",
-                            "title": "object3d",
-                            "dyn_in": [
-                                {
-                                    "name": "output",
-                                    "dt": 21,
-                                    "def": null,
-                                    "uid": "bEdPpC9C6Rh1",
-                                    "dynamic": true,
-                                    "type": 0,
-                                    "index": 0,
-                                    "is_connected": true,
-                                    "connected": true
-                                }
-                            ]
-                        },
-                        {
-                            "plugin": "url_texture_generator",
-                            "x": 546,
-                            "y": 151,
-                            "uid": "KfnkPqCawTw4",
-                            "state": {
-                                "url": "/data/image/7cbc45195c04d1595c43be42418755520068c72e.png"
-                            },
-                            "title": "Box texture"
-                        },
-                        {
-                            "plugin": "three_material_phong",
-                            "x": 878,
-                            "y": 205,
-                            "uid": "ymtEbrGGdAws"
-                        }
-                    ],
-                    "conns": [
-                        {
-                            "src_nuid": "BrWLfUemWGg7",
-                            "dst_nuid": "LpNkz6Zb9cM6",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "vmMgDDHxxWNr",
-                            "src_connected": true,
-                            "dst_connected": true,
-                            "dst_dyn": true
-                        },
-                        {
-                            "src_nuid": "dAuxtFUHN5x3",
-                            "dst_nuid": "BrWLfUemWGg7",
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "7A52XvFTmCB8",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "KfnkPqCawTw4",
-                            "dst_nuid": "ymtEbrGGdAws",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "UGSHJWbWDpEn",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "ymtEbrGGdAws",
-                            "dst_nuid": "BrWLfUemWGg7",
-                            "src_slot": 0,
-                            "dst_slot": 2,
-                            "uid": "p4ubdFjGWH4h",
-                            "src_connected": true,
-                            "dst_connected": true
-                        }
-                    ]
-                },
-                "dyn_out": [
-                    {
-                        "name": "object3d",
-                        "dt": 21,
-                        "index": 0,
-                        "uid": "mh0rTKkFm0nD",
-                        "dynamic": true,
-                        "type": 1,
-                        "is_connected": true
-                    }
-                ]
-            },
-            {
-                "plugin": "graph",
-                "x": 68,
-                "y": 467,
-                "uid": "hpp4TrMmkv69",
-                "state": {
-                    "always_update": true,
-                    "input_sids": {},
-                    "output_sids": {
-                        "k345S6Az8kKm": "mh0rTKkFm0nD"
-                    }
-                },
-                "title": "Box",
-                "graph": {
-                    "uid": "7EWpLjqj8dXZ",
-                    "parent_uid": "root",
-                    "open": true,
-                    "nodes": [
-                        {
-                            "plugin": "three_geometry_box",
-                            "x": 883,
-                            "y": 690,
-                            "uid": "bgasZvcJXJZc"
-                        },
-                        {
-                            "plugin": "three_mesh",
-                            "x": 1254,
-                            "y": 337,
-                            "uid": "KgjtmLUzxyMc",
-                            "state": {
-                                "position": {
-                                    "x": -1.5241494978844137,
-                                    "y": 0,
-                                    "z": 0
-                                },
-                                "scale": {
-                                    "x": 1,
-                                    "y": 1,
-                                    "z": 1
-                                },
-                                "quaternion": {
-                                    "_x": 0,
-                                    "_y": 0,
-                                    "_z": 0,
-                                    "_w": 1
-                                },
-                                "pivot": {
-                                    "x": 0,
-                                    "y": 0,
-                                    "z": 0
-                                }
-                            }
-                        },
-                        {
-                            "plugin": "output_proxy",
-                            "x": 1444,
-                            "y": 331,
-                            "uid": "k345S6Az8kKm",
-                            "title": "object3d",
-                            "dyn_in": [
-                                {
-                                    "name": "output",
-                                    "dt": 21,
-                                    "def": null,
-                                    "uid": "bEdPpC9C6Rh1",
-                                    "dynamic": true,
-                                    "type": 0,
-                                    "index": 0,
-                                    "is_connected": true,
-                                    "connected": true
-                                }
-                            ]
-                        },
-                        {
-                            "plugin": "url_texture_generator",
-                            "x": 546,
-                            "y": 151,
-                            "uid": "X3gYLbcr6zUQ",
-                            "state": {
-                                "url": "/data/image/7cbc45195c04d1595c43be42418755520068c72e.png"
-                            },
-                            "title": "Box texture"
-                        },
-                        {
-                            "plugin": "three_material_phong",
-                            "x": 878,
-                            "y": 205,
-                            "uid": "Jas9mrKLZwyp"
-                        }
-                    ],
-                    "conns": [
-                        {
-                            "src_nuid": "KgjtmLUzxyMc",
-                            "dst_nuid": "k345S6Az8kKm",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "gvAn5ESG3jXF",
-                            "src_connected": true,
-                            "dst_connected": true,
-                            "dst_dyn": true
-                        },
-                        {
-                            "src_nuid": "bgasZvcJXJZc",
-                            "dst_nuid": "KgjtmLUzxyMc",
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "q5evYQx93acF",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "X3gYLbcr6zUQ",
-                            "dst_nuid": "Jas9mrKLZwyp",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "AHjYvATTtT9b",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "Jas9mrKLZwyp",
-                            "dst_nuid": "KgjtmLUzxyMc",
-                            "src_slot": 0,
-                            "dst_slot": 2,
-                            "uid": "pQf593j29QYJ",
-                            "src_connected": true,
-                            "dst_connected": true
-                        }
-                    ]
-                },
-                "dyn_out": [
-                    {
-                        "name": "object3d",
-                        "dt": 21,
-                        "index": 0,
-                        "uid": "mh0rTKkFm0nD",
-                        "dynamic": true,
-                        "type": 1,
-                        "is_connected": true
-                    }
-                ]
-            },
-            {
-                "plugin": "three_group",
-                "x": 247,
-                "y": 431,
-                "uid": "KHtjmZwTMqDG",
-                "open": false,
-                "state": {
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "scale": {
-                        "x": 1,
-                        "y": 1,
-                        "z": 1
-                    },
-                    "quaternion": {
-                        "_x": 0,
-                        "_y": 0,
-                        "_z": 0,
-                        "_w": 1
-                    },
-                    "pivot": {
-                        "x": -0.012778804293503754,
-                        "y": 0,
-                        "z": 0
-                    }
-                },
-                "dyn_in": [
-                    {
-                        "name": "0",
-                        "dt": 21,
-                        "array": false,
-                        "uid": "rjLvM5K5uNeL",
-                        "dynamic": true,
-                        "type": 0,
-                        "index": 0,
-                        "is_connected": true
-                    },
-                    {
-                        "type": 0,
-                        "name": "1",
-                        "dt": 21,
-                        "array": false,
-                        "uid": "kwAyKzLVTE5p",
-                        "dynamic": true,
-                        "index": 1,
-                        "is_connected": true
-                    },
-                    {
-                        "type": 0,
-                        "name": "2",
-                        "dt": 21,
-                        "array": false,
-                        "uid": "kDALdFHAjwPR",
-                        "dynamic": true,
-                        "index": 2
                     }
                 ]
             }
@@ -1622,38 +1241,6 @@
                 "src_connected": true,
                 "dst_connected": true,
                 "src_dyn": true,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": "7mqgbThQ5TSC",
-                "dst_nuid": "KHtjmZwTMqDG",
-                "src_slot": 0,
-                "dst_slot": 0,
-                "uid": "HmdXRRK2r3Za",
-                "src_connected": true,
-                "dst_connected": true,
-                "src_dyn": true,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": "hpp4TrMmkv69",
-                "dst_nuid": "KHtjmZwTMqDG",
-                "src_slot": 0,
-                "dst_slot": 1,
-                "uid": "WKJnRazzEGEg",
-                "src_connected": true,
-                "dst_connected": true,
-                "src_dyn": true,
-                "dst_dyn": true
-            },
-            {
-                "src_nuid": "KHtjmZwTMqDG",
-                "dst_nuid": "u2O8M5ItNlW5",
-                "src_slot": 0,
-                "dst_slot": 5,
-                "uid": "sDm9gbddx3AM",
-                "src_connected": true,
-                "dst_connected": true,
                 "dst_dyn": true
             }
         ]
