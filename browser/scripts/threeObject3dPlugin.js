@@ -117,9 +117,9 @@ ThreeObject3DPlugin.prototype.update_state = function() {
 		this.graphInputs.scale.z + this.state.scale.z)
 
 	this.object3d.position.set(
-		this.graphInputs.position.x + this.state.position.x - this.state.pivot.x,
-		this.graphInputs.position.y + this.state.position.y - this.state.pivot.y,
-		this.graphInputs.position.z + this.state.position.z - this.state.pivot.z)
+		this.graphInputs.position.x + this.state.position.x + this.state.pivot.x,
+		this.graphInputs.position.y + this.state.position.y + this.state.pivot.y,
+		this.graphInputs.position.z + this.state.position.z + this.state.pivot.z)
 
 	this.object3d.quaternion.set(
 		this.state.quaternion._x,

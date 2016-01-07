@@ -26,6 +26,8 @@
 		this.object3d = new THREE.Group()
 		this.object3d.name = 'group_plugin'
 		this.object3d.backReference = this
+
+		this.lastCenter = new THREE.Vector3()
 	}
 
 	ThreeGroupPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
@@ -66,11 +68,19 @@
 				}
 			}
 
-			this.updatePivot()
+			this.pivotNeedsUpdate = true
 		}
 		else {
 			ThreeObject3DPlugin.prototype.update_input.apply(this, arguments)
 		}
+	}
+
+	ThreeGroupPlugin.prototype.update_state = function() {
+		if (this.pivotNeedsUpdate) {
+			this.updatePivot()
+		}
+
+		ThreeObject3DPlugin.prototype.update_state.apply(this, arguments)
 	}
 
 	ThreeGroupPlugin.prototype.connection_changed = function(on, conn, slot) {
@@ -95,7 +105,7 @@
 			this.object3d.children[slot.index].children = []
 		}
 
-		this.updatePivot()
+		this.pivotNeedsUpdate = true
 	}
 
 	ThreeGroupPlugin.prototype.state_changed = function(ui) {
@@ -135,36 +145,42 @@
 				var obj = parent.children[i]
 
 				if (obj.backReference) {
-					center.x += obj.backReference.state.position.x
-					center.y += obj.backReference.state.position.y
-					center.z += obj.backReference.state.position.z
+					center.x += obj.position.x
+					center.y += obj.position.y
+					center.z += obj.position.z
 					++count
 				}
 			}
 		}
 
-		if (count) {
+		if (count > 1) {
 			center.divideScalar(count)
 		}
 
-		function applyRotation(v, m) {
-			var x = v.x, y = v.y, z = v.z
+		// set state directly, this will be recalculated on demand
+		// so no need to create an undo step
 
-			var e = m.elements
+		var quat = new THREE.Quaternion(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
+		var m = new THREE.Matrix4().makeRotationFromQuaternion(quat)
 
-			v.x = e[ 0 ] * x + e[ 4 ] * y + e[ 8 ]  * z
-			v.y = e[ 1 ] * x + e[ 5 ] * y + e[ 9 ]  * z
-			v.z = e[ 2 ] * x + e[ 6 ] * y + e[ 10 ] * z
+		var translation = center.clone().sub(this.lastCenter).applyMatrix4(m)
+		this.state.pivot.x += translation.x
+		this.state.pivot.y += translation.y
+		this.state.pivot.z += translation.z
 
-			return v
+		for (var i = 0; i < this.object3d.children.length; ++i) {
+			var subTree = this.object3d.children[i]
+
+			subTree.position.x = -center.x;
+			subTree.position.y = -center.y;
+			subTree.position.z = -center.z;
 		}
 
-		this.state.pivot = center
-		var transformedPivot = applyRotation(center.clone(), this.object3d.matrix)
+		this.matrixWorldNeedsUpdate = true
 
-		for (var j = 0; j < this.object3d.children.length; ++j) {
-			var parent = this.object3d.children[j]
-			parent.position.set(transformedPivot.x, transformedPivot.y, transformedPivot.z)
-		}
+		this.lastCenter.copy(center)
+
+		this.pivotNeedsUpdate = false
 	}
+
 })()

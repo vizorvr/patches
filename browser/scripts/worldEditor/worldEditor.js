@@ -117,12 +117,14 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 			var helper = new THREE.PointLightHelper(node, 0.5)
 
 			helper.backReference = node.backReference
+			helper.helperObjectBackReference = node
 			that.handleTree.add(helper)
 		}
 		else if (node instanceof THREE.DirectionalLight) {
 			var helper = new THREE.DirectionalLightHelper(node, 0.5)
 
 			helper.backReference = node.backReference
+			helper.helperObjectBackReference = node
 			that.handleTree.add(helper)
 		}
 	}
@@ -222,7 +224,7 @@ WorldEditor.prototype.onPaste = function(nodes) {
 		src_nuid: dropNode.uid,
 		dst_nuid: sceneNode.uid,
 		src_slot: srcSlot.index,
-		src_dyn: srcSlot.dynamic, // TODO: the src slot is not necessarily a dyn slot
+		src_dyn: srcSlot.dynamic,
 		dst_slot: slot.index,
 		dst_dyn: true
 	})
@@ -394,23 +396,18 @@ WorldEditor.prototype.pickObject = function(e) {
 		for (var i = 0; i < intersects.length; i++) {
 			// ancestor = object closest to object3d tree root
 			var ancestorObj = undefined
-			var substituteObj = undefined
 
 			var seekObj = intersects[i].object
-
-			/*if (    seekObj.backReference &&
-					seekObj.backReference.object3d &&
-					seekObj.backReference.object3d !== seekObj) {
-				// the picked object isn't the object
-				// stored by it's plugin
-				// i.e. the object is a helper object
-				substituteObj = seekObj
-				seekObj = seekObj.backReference.object3d
-			}*/
 
 			// traverse the tree hierarchy up to find a parent with a node back reference
 			// store a reference to the object closest to the scene root (ancestorObj)
 			while (seekObj) {
+				if (seekObj.helperObjectBackReference !== undefined) {
+					// resolve back from a helper object to the object
+					// the helper is for
+					seekObj = seekObj.helperObjectBackReference
+				}
+
 				if (seekObj.backReference && seekObj !== this.scene) {
 					ancestorObj = seekObj
 
@@ -431,12 +428,7 @@ WorldEditor.prototype.pickObject = function(e) {
 				continue
 			}
 
-			if (substituteObj) {
-				selectObjects.push(substituteObj)
-			}
-			else {
-				selectObjects.push(ancestorObj)
-			}
+			selectObjects.push(ancestorObj)
 
 			var selectionStartNode = ancestorObj.backReference.parentNode
 			var selectionEndNode = this.scene.backReference.parentNode
