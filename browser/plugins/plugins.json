@@ -117,6 +117,7 @@
         "Directional Light": "three_directional_light",
         "Point Light": "three_point_light",
         "Line Material": "three_line_material",
+        "Cubemap Material": "three_cube_material",
         "Material Extractor": "three_material_extractor"
     },
 
@@ -301,11 +302,6 @@
     "VIDEO TOOLS": {
         "Duration": "video_get_duration_modulator",
         "Current time": "video_get_current_time_modulator"
-    },
-
-    "EXPERIMENTAL" : {
-        "Stereo Cube": "stereo_cube_map"
     }
-
 
 }
