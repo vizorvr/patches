@@ -40,7 +40,7 @@ var InputsToArray = E2.plugins.inputs_to_array = function InputsToArray(core, no
 
 InputsToArray.prototype.update_input = function(slot, data) {
 	if (data === null || data === undefined)
-		delete this.array[slot.index]
+		this.array.splice(slot.index, 1)
 	else if (data instanceof Array)
 		this.array[slot.index] = data[0]
 	else
