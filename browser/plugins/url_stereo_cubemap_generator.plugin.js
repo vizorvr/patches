@@ -25,11 +25,13 @@
 		this.loadingTexture = new THREE.CubeTexture([
 			loadTex, loadTex, loadTex, loadTex, loadTex, loadTex
 		])
+		this.loadingTexture.needsUpdate = true
 
 		var defTex = E2.core.assetLoader.defaultTexture.image
 		this.defaultTexture = new THREE.CubeTexture([
 			defTex, defTex, defTex, defTex, defTex, defTex
 		])
+		this.defaultTexture.needsUpdate = true
 
 		this.leftTexture = this.loadingTexture
 		this.rightTexture = this.loadingTexture

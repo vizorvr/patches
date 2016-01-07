@@ -17,7 +17,8 @@
 		"Sky sphere": { "name": "_add-sky-sphere", "isObject3d": true },
 		"Floor": { "name": "_add-floor", "isObject3d": true },
 		"Room": { "name": "_add-room", "isObject3d": true },
-		"Text": { "name": "_add-text", "isObject3d": true }
+		"Text": { "name": "_add-text", "isObject3d": true },
+		"Stereo Cubemap": {"name": "_add_stereo_cubemap", "isObject3d": true }
 	},
 
 	"ADD LIGHTS": {

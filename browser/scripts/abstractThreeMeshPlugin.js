@@ -15,6 +15,12 @@ function AbstractThreeMeshPlugin(core) {
 			dt: core.datatypes.MATERIAL,
 			array: true,
 			def: [new THREE.MeshBasicMaterial({color: 0x00FF00})]
+		},
+		{
+			name:   'stereo view',
+			dt:     core.datatypes.FLOAT,
+			def:    0,
+			desc:   'Affects how this mesh is rendered in stereo<br/>Stereo View - 0: both eyes, 1: left eye only, 2: right eye only'
 		}
 	].concat(this.input_slots)
 
@@ -102,6 +108,9 @@ AbstractThreeMeshPlugin.prototype.update_input = function(slot, data) {
 	else if (slot.name === 'material') { // material
 		this.mats = data
 		this.mats_dirty = true
+	}
+	else if (slot.name === 'stereo view') {
+		this.object3d.channels.set(data)
 	}
 	else {
 		ThreeObject3DPlugin.prototype.update_input.apply(this, arguments)
