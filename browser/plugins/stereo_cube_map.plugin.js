@@ -51,6 +51,9 @@
 	StereoCubeMapPlugin.prototype.loadTextures = function() {
 		var textures = []
 
+		if (!this.url)
+			return;
+
 		var loader = new THREE.ImageLoader( THREE.DefaultLoadingManager );
 		loader.setCrossOrigin( '' );
 
@@ -145,7 +148,7 @@
 		}
 	}
 
-	StereoCubeMapPlugin.prototype.update_output = function(slot) {
+	StereoCubeMapPlugin.prototype.update_output = function() {
 		if (this.leftObj === undefined) {
 			return [this.defaultObj]
 		}
