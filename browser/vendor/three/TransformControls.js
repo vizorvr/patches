@@ -775,18 +775,29 @@
 			this.objectCenter.set((bbox.min.x + bbox.max.x) * 0.5, (bbox.min.y + bbox.max.y) * 0.5, (bbox.min.z + bbox.max.z) * 0.5)
 		}
 
+		this.updateTransformLock = function() {
+
+			if (!this.plugin) {
+				return
+			}
+
+			var transformControlsLocked = this.plugin.lockTransformControls
+
+			// enable / disable the three transform modes
+			_gizmo.translate.isEnabled = !transformControlsLocked && this.plugin.state.position !== undefined
+			_gizmo.rotate.isEnabled = !transformControlsLocked && this.plugin.state.quaternion !== undefined
+			_gizmo.scale.isEnabled = !transformControlsLocked && this.plugin.state.scale !== undefined
+		}
+
 		this.attach = function ( object ) {
 
 			this.plugin = object.backReference
-			this.object = this.plugin.object3d;
-			this.visible = true;
+			this.object = this.plugin.object3d
+			this.visible = true
 
-			// enable / disable the three transform modes
-			_gizmo.translate.isEnabled = this.plugin.state.position !== undefined
-			_gizmo.rotate.isEnabled = this.plugin.state.quaternion !== undefined
-			_gizmo.scale.isEnabled = this.plugin.state.scale !== undefined
+			this.updateTranformLock()
 
-			this.update();
+			this.update()
 
 			this.calculateObjectCenter()
 		};

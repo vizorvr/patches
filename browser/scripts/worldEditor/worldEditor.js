@@ -90,6 +90,7 @@ WorldEditor.prototype.update = function() {
 	// needs calling on every update otherwise the transform controls draw incorrectly
 	this.transformControls.setMode(this.transformMode)
 	this.transformControls.setSpace('local')
+	this.transformControls.updateTransformLock()
 }
 
 WorldEditor.prototype.preRenderUpdate = function() {
