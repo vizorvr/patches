@@ -201,6 +201,7 @@ function CollapsibleSelectControl(handlebars) {
 	this._cb = function() {}
 	this._controlId = 'csc_' + E2.uid()
 	this._resultTpl = this._handlebars
+	this._filterText = ''
 }
 
 CollapsibleSelectControl.prototype.template = function(template) {
@@ -237,6 +238,7 @@ CollapsibleSelectControl.prototype._reset = function() {
 	$('.panel', this._el).show();
 	$('table.result', this._el).empty().remove();
 	$('.preset-result', this._el).empty();
+	this._filterText = '';
 	if (E2.ui)
 		E2.ui.onSearchResultsChange(this._el);
 }
@@ -244,10 +246,16 @@ CollapsibleSelectControl.prototype._reset = function() {
 CollapsibleSelectControl.prototype._search = function(text) {
 	var that = this
 
+	text = text.trim();
+
 	if (!text) {
 		this._reset()
 		return
 	}
+
+	if (text === this._filterText) return
+
+	this._filterText = text
 
 	$('.panel', this._el).hide()
 
@@ -412,6 +420,7 @@ CollapsibleSelectControl.prototype.render = function(el, templateOptions) {
 	}, dragAndDropMouseDownHandler)
 
 	var keyTimer
+
 	$input.on('keyup', function(e) {
 		if (keyTimer)
 			clearTimeout(keyTimer)
@@ -440,7 +449,7 @@ CollapsibleSelectControl.prototype.render = function(el, templateOptions) {
 		var filterCodes = [13, 38, 40]
 
 		if (filterCodes.indexOf(e.keyCode) < 0 || !res)
-			return;
+			return true;
 
 		if (res) {
 			res.removeClass('active')
