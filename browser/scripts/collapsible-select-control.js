@@ -201,6 +201,7 @@ function CollapsibleSelectControl(handlebars) {
 	this._cb = function() {}
 	this._controlId = 'csc_' + E2.uid()
 	this._resultTpl = this._handlebars
+	this._filterText = ''
 }
 
 CollapsibleSelectControl.prototype.template = function(template) {
@@ -237,6 +238,7 @@ CollapsibleSelectControl.prototype._reset = function() {
 	$('.panel', this._el).show();
 	$('table.result', this._el).empty().remove();
 	$('.preset-result', this._el).empty();
+	this._filterText = '';
 	if (E2.ui)
 		E2.ui.onSearchResultsChange(this._el);
 }
@@ -244,10 +246,16 @@ CollapsibleSelectControl.prototype._reset = function() {
 CollapsibleSelectControl.prototype._search = function(text) {
 	var that = this
 
+	text = text.trim();
+
 	if (!text) {
 		this._reset()
 		return
 	}
+
+	if (text === this._filterText) return
+
+	this._filterText = text
 
 	$('.panel', this._el).hide()
 
@@ -277,6 +285,7 @@ CollapsibleSelectControl.prototype._search = function(text) {
 		$(this._resultEls.get(0)).addClass('active')
 
 	this._selectedIndex = 0
+	$pr.parent().scrollTop(0)
 	
 	if (E2.ui)
 		E2.ui.onSearchResultsChange(this._el);
@@ -411,6 +420,7 @@ CollapsibleSelectControl.prototype.render = function(el, templateOptions) {
 	}, dragAndDropMouseDownHandler)
 
 	var keyTimer
+
 	$input.on('keyup', function(e) {
 		if (keyTimer)
 			clearTimeout(keyTimer)
@@ -439,7 +449,7 @@ CollapsibleSelectControl.prototype.render = function(el, templateOptions) {
 		var filterCodes = [13, 38, 40]
 
 		if (filterCodes.indexOf(e.keyCode) < 0 || !res)
-			return;
+			return true;
 
 		if (res) {
 			res.removeClass('active')
@@ -476,31 +486,32 @@ CollapsibleSelectControl.prototype.render = function(el, templateOptions) {
 		$sel.addClass('active')
 
 		if ($sel.length > 0) {
-			var selectionOffsetTop = $sel.offset().top;
-			var selectionHeight = $sel.outerHeight(true);
+			var selectionPositionTop = $sel.position().top;
+			var selectionHeight = $sel.outerHeight();
 			var $findParent = $sel.parents('.scrollbar');
 
 			if ($findParent.length > 0) {
 				var parentScrollHeight = $findParent.innerHeight();
-				var parentOffsetTop = $findParent.offset().top;
+				var parentPositionTop = $findParent.position().top;
 				var parentScrollTop = $findParent.scrollTop();
 
-				selectionOffsetTop -= parentOffsetTop;
+				selectionPositionTop -= parentPositionTop;
 
-				var newY = 0;
-				if (selectionOffsetTop + selectionHeight >= parentScrollHeight) {
-					newY = parentScrollTop + (selectionOffsetTop - parentOffsetTop) - selectionHeight;
-					$findParent.scrollTop(newY + selectionHeight);
+				var newY;
+				var pxAllowance = selectionHeight / 4;	// consider result visible within reason
+
+				if (selectionPositionTop + selectionHeight - pxAllowance > parentScrollHeight) { // selected past the bottom
+					newY = parentScrollTop + selectionHeight;
+					$findParent.scrollTop(newY);
 				}
-				else if (selectionOffsetTop <= 0) {
-					newY = parentScrollTop - selectionHeight + selectionOffsetTop;
+				else if (selectionPositionTop + pxAllowance <= 0 ) { // selected above scrolltop
+					newY = parentScrollTop - selectionHeight;
 					if (newY < 0) newY = 0;
 					$findParent.scrollTop(newY);
 				}
+				// else no scroll required
 			}
 		}
-
-
 	})
 
 	return this;
