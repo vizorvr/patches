@@ -277,6 +277,7 @@ CollapsibleSelectControl.prototype._search = function(text) {
 		$(this._resultEls.get(0)).addClass('active')
 
 	this._selectedIndex = 0
+	$pr.parent().scrollTop(0)
 	
 	if (E2.ui)
 		E2.ui.onSearchResultsChange(this._el);
@@ -476,31 +477,32 @@ CollapsibleSelectControl.prototype.render = function(el, templateOptions) {
 		$sel.addClass('active')
 
 		if ($sel.length > 0) {
-			var selectionOffsetTop = $sel.offset().top;
-			var selectionHeight = $sel.outerHeight(true);
+			var selectionPositionTop = $sel.position().top;
+			var selectionHeight = $sel.outerHeight();
 			var $findParent = $sel.parents('.scrollbar');
 
 			if ($findParent.length > 0) {
 				var parentScrollHeight = $findParent.innerHeight();
-				var parentOffsetTop = $findParent.offset().top;
+				var parentPositionTop = $findParent.position().top;
 				var parentScrollTop = $findParent.scrollTop();
 
-				selectionOffsetTop -= parentOffsetTop;
+				selectionPositionTop -= parentPositionTop;
 
-				var newY = 0;
-				if (selectionOffsetTop + selectionHeight >= parentScrollHeight) {
-					newY = parentScrollTop + (selectionOffsetTop - parentOffsetTop) - selectionHeight;
-					$findParent.scrollTop(newY + selectionHeight);
+				var newY;
+				var pxAllowance = selectionHeight / 4;	// consider result visible within reason
+
+				if (selectionPositionTop + selectionHeight - pxAllowance > parentScrollHeight) { // selected past the bottom
+					newY = parentScrollTop + selectionHeight;
+					$findParent.scrollTop(newY);
 				}
-				else if (selectionOffsetTop <= 0) {
-					newY = parentScrollTop - selectionHeight + selectionOffsetTop;
+				else if (selectionPositionTop + pxAllowance <= 0 ) { // selected above scrolltop
+					newY = parentScrollTop - selectionHeight;
 					if (newY < 0) newY = 0;
 					$findParent.scrollTop(newY);
 				}
+				// else no scroll required
 			}
 		}
-
-
 	})
 
 	return this;
