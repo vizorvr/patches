@@ -68,6 +68,7 @@
 
     "LOAD CONTENT": {
         "Texture": "url_texture_generator",
+        "Stereo Cubemap": "url_stereo_cubemap_generator",
         "3D model": "three_loader_model",
         "Array": "url_array_generator",
         "Audio": "url_audio_generator",
@@ -100,7 +101,8 @@
         "Particle Emitter": "three_particle_emitter",
         "3D Model Loader": "three_loader_scene",
         "Mesh attributes": "three_object3d_attribute_extractor",
-        "Line Segments": "three_line_segments"
+        "Line Segments": "three_line_segments",
+        "3D Object Group": "three_group"
     },
 
     "MATERIALS AND LIGHTS": {
@@ -116,6 +118,7 @@
         "Directional Light": "three_directional_light",
         "Point Light": "three_point_light",
         "Line Material": "three_line_material",
+        "Cubemap Material": "three_cube_material",
         "Material Extractor": "three_material_extractor"
     },
 
@@ -300,11 +303,6 @@
     "VIDEO TOOLS": {
         "Duration": "video_get_duration_modulator",
         "Current time": "video_get_current_time_modulator"
-    },
-
-    "EXPERIMENTAL" : {
-        "Stereo Cube Map": "stereo_cube_map"
     }
-
 
 }

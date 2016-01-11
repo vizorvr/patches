@@ -141,8 +141,7 @@ app.use(function(req, res, next)
 	next();
 });
 
-app.use(function(req, res, next)
-{
+app.use(function(req, res, next) {
 	// Remember original destination before login.
 	var path = req.path.split('/')[1];
 

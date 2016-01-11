@@ -2,6 +2,7 @@ var assert = require('assert')
 var fs = require('fs')
 
 global.Handlebars = {}
+global.E2 = {uid:function(){return Date.now()}}
 var CollapsibleSelectControl = require(__dirname+'/../../scripts/collapsible-select-control.js')
 var presetsJson = JSON.parse(fs.readFileSync(__dirname+'/../../presets/presets.json'))
 var presets = Object.keys(presetsJson).reduce(function(arr, catName) {

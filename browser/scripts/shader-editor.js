@@ -112,8 +112,6 @@ function createAce(src, elId) {
 
     editor.setTheme('ace/theme/tomorrow_night_eighties');
     editor.setAutoScrollEditorIntoView(true);
-    editor.setOption('maxLines', 80);
-    editor.setOption('minLines', 40);
 	editor.getSession().setUseWrapMode(false)
 	editor.setBehavioursEnabled(true)
 	editor.setShowPrintMargin(false)
@@ -200,8 +198,8 @@ ShaderEditor.prototype.render = function(title, $dest) {
 
 	this.drawInputs()
 
-	that._ace.setOption('minLines', 50);
-	that._ace.setOption('maxLines', 50);
+	that._ace.setOption('minLines', 24);
+	that._ace.setOption('maxLines', 40);
 
 	return this
 }

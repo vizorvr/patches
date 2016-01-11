@@ -12,7 +12,14 @@ function ThreeObject3DPlugin(core) {
 		{ name: 'castShadow', dt: core.datatypes.BOOL },
 		{ name: 'receiveShadow', dt: core.datatypes.BOOL },
 
-		{ name: 'name', dt: core.datatypes.TEXT, def: ''}
+		{ name: 'name', dt: core.datatypes.TEXT, def: ''},
+
+		{
+			name:   'stereo view',
+			dt:     core.datatypes.FLOAT,
+			def:    0,
+			desc:   'Affects how this object is rendered in stereo<br/>Stereo View - 0: both eyes, 1: left eye only, 2: right eye only'
+		}
 	]
 
 	this.output_slots = [{
@@ -26,7 +33,9 @@ function ThreeObject3DPlugin(core) {
 
 		// names with underscores have to match with THREE.Quaternion
 		// member variable names because of to/from json serialisation
-		quaternion: {_x: 0, _y: 0, _z:0, _w:1}
+		quaternion: {_x: 0, _y: 0, _z:0, _w:1},
+
+		pivot: {x: 0, y: 0, z:0}
 	}
 
 	this.graphInputs = {
@@ -74,7 +83,8 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 		function() { that.object3d.visible = data },
 		function() { that.object3d.castShadow = data },
 		function() { that.object3d.receiveShadow = data },
-		function() { that.object3d.name = data }
+		function() { that.object3d.name = data },
+		function() { that.object3d.channels.set(data) }
 	]
 
 	var slotOffset = this.node.plugin.input_slots.length - handlers.length
@@ -107,9 +117,9 @@ ThreeObject3DPlugin.prototype.update_state = function() {
 		this.graphInputs.scale.z + this.state.scale.z)
 
 	this.object3d.position.set(
-		this.graphInputs.position.x + this.state.position.x,
-		this.graphInputs.position.y + this.state.position.y,
-		this.graphInputs.position.z + this.state.position.z)
+		this.graphInputs.position.x + this.state.position.x + this.state.pivot.x,
+		this.graphInputs.position.y + this.state.position.y + this.state.pivot.y,
+		this.graphInputs.position.z + this.state.position.z + this.state.pivot.z)
 
 	this.object3d.quaternion.set(
 		this.state.quaternion._x,

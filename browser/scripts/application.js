@@ -1200,7 +1200,7 @@ Application.prototype.onPaste = function(x, y) {
 	this.clearSelection()
 
 	var doc = JSON.parse(this.clipboard)
-	var cp = E2.dom.canvas_parent
+	var cp = E2.dom.canvases
 	var sx = this.scrollOffset[0]
 	var sy = this.scrollOffset[1]
 
@@ -1783,7 +1783,7 @@ Application.prototype.setupStoreListeners = function() {
 			node.create_ui()
 
 			if (node.ui && node.plugin.state_changed)
-				node.plugin.state_changed(node.ui.plugin_ui)
+				node.plugin.state_changed(node.ui.pluginUI)
 		}
 
 		if (node.plugin.isGraph)

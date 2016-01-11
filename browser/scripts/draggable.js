@@ -65,7 +65,6 @@ function draggable_mousedown(ui, drag, stop) { return function(e)
 {
 	if(!$(e.target).hasClass('t'))
 		return true;
-
 	var data = 
 	{ 
 		ui: ui,
@@ -89,9 +88,10 @@ function draggable_mousedown(ui, drag, stop) { return function(e)
 	return false;
 };}
 
-function make_draggable(ui, drag, stop)
+function make_draggable(ui, drag, stop, attachOnElement)
 {
-	ui[0].addEventListener('mousedown', draggable_mousedown(ui, drag, stop));
-	ui[0].addEventListener('touchstart', draggable_mousedown(ui, drag, stop));
+	attachOnElement = attachOnElement[0] || ui[0]
+	attachOnElement.addEventListener('mousedown', draggable_mousedown(ui, drag, stop));
+	attachOnElement.addEventListener('touchstart', draggable_mousedown(ui, drag, stop));
 }
 

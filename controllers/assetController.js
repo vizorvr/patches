@@ -1,4 +1,4 @@
-var image = require('../models/image')
+var User = require('../models/user');
 var fsPath = require('path')
 var checksum = require('checksum')
 var assetHelper = require('../models/asset-helper')
@@ -53,15 +53,11 @@ AssetController.prototype._parseTags = function(tags) {
 		tags = tags.split(' ')
 
 	return tags.map(function(tag) {
-		if (tag[0] !== '#')
-			return '#' + tag
-
-		return tag
+		return tag.replace(/[^a-zA-Z0-9]/g, '')
 	})
 	.filter(function(tag) {
 		return tag.length > 0
 	})
-
 }
 
 AssetController.prototype._makePath = function(req, path) {
@@ -90,28 +86,39 @@ AssetController.prototype.findByCreatorName = function(req, res, next) {
 	.catch(next)
 }
 
-// GET /:model/tag/tag
-AssetController.prototype.findByTag = function(req, res, next)
-{
+// GET /:username/assets/:model/tag/:tag
+AssetController.prototype.findByTagAndUsername = function(req, res, next) {
+	var that = this
 	var tag = req.params.tag
-	if (!tag)
-		return res.status(400).json({message: 'No tag'})
 
-	this._service.find(
-	{
-		tags: '#' + tag.replace(/[^a-zA-Z0-9]/g, '')
+	if (!tag) {
+		return res.status(400).json({
+			message: 'No tag given'
+		})
+	}
+
+	function performFind(userId) {
+		that._service.findByTagAndUserId(tag, userId)
+		.then(function(list) {
+			res.json(list)
+		})
+		.catch(next)
+	}
+
+	User.findOne({ username: req.params.username })
+	.exec(function(err, user) {
+		if (err)
+			return next(err)
+
+		if (!user)
+			return res.json([])
+
+		performFind(user._id)
 	})
-	.then(function(list)
-	{
-		console.log('list')
-		res.json(list)
-	})
-	.catch(next)
 }
 
 // GET /:model/:slug
-AssetController.prototype.load = function(req, res, next)
-{
+AssetController.prototype.load = function(req, res, next) {
 	this._service.findByPath(req.params.path)
 	.then(function(item)
 	{
@@ -121,20 +128,17 @@ AssetController.prototype.load = function(req, res, next)
 }
 
 // POST /:model
-AssetController.prototype.save = function(req, res, next)
-{
+AssetController.prototype.save = function(req, res, next) {
 	var that = this
 
 	this._service.canWrite(req.user, req.body.path)
-	.then(function(can)
-	{
+	.then(function(can) {
 		if (!can)
 			return res.status(403)
 				.json({message: 'Sorry, permission denied'})
 
 		return that._service.save(req.body, req.user)
-		.then(function(asset)
-		{
+		.then(function(asset) {
 			asset.tags = that._parseTags(req.body.tags)
 			res.json(asset)
 		})

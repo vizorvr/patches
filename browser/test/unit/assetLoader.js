@@ -88,6 +88,14 @@ describe('Asset loading', function() {
 			assert.equal(assets.texture.length, 2)
 			done()
 		})
+
+		it('resolves if there is nothing to load', function(done) {
+			pre.loadAssetsForGraph({})
+			.then(function() {
+				assert.equal(0, pre.assetsLoaded)
+				done()
+			})
+		})
 		
 		it('loads assets for graph', function(done) {
 			pre.loadAssetsForGraph(graph.root)

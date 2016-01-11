@@ -1,9 +1,13 @@
 (function() {
-var ColorPicker = E2.plugins.color_picker = function(core) {
+
+var clamp = THREE.Math.clamp
+
+var ColorPicker = function(core) {
+
 	Plugin.apply(this, arguments)
-	this.desc = 'Provides an intuitive way of picking arbitary colors via a hue slider and saturation / luminosity selection area.';
+	this.desc = 'Provides an intuitive way of picking arbitrary colors via a hue slider and saturation/value selection area.';
 	this.input_slots = [];
-	
+
 	this.output_slots = [
 		{
 			name: 'color',
@@ -12,201 +16,176 @@ var ColorPicker = E2.plugins.color_picker = function(core) {
 			def: new THREE.Color(1,1,1)
 		}
 	];
-	
+
+	this._oldState = null;
 	this.state = { hue: 0.0, sat: 0.0, lum: 1.0 };
+	// note: .lum above is used as B/V so model is actually HSV
+	// note: .hue above is inverted (1.0 - hue) and therefore goes clockwise - #990
+	// 		 http://codeitdown.com/hsl-hsb-hsv-color/
+
+	this.ui = null;
+	this.color = new THREE.Color(1,1,1);
+	this.updated = false;	// update_state
 };
 
 ColorPicker.prototype = Object.create(Plugin.prototype)
 
-ColorPicker.prototype.reset = function()
-{
-};
+// sets the referenced color from the current state
+ColorPicker.prototype.setFromState = function(/* @var THREE.Color */ color) {
+	var hue, sat, lum, val;
 
-ColorPicker.prototype.create_ui = function()
-{
-	var c = this.c = make('div');
-	var i = this.i = make('img');
-	var s = this.s = make('img');
-	var h = this.h = make('img');
-	var hs = this.hs = make('img');
-	var that = this
+	// this.state has HSV, THREE.Color needs HSL
+	val = clamp(this.state.lum, 0.0, 1.0)
+
+	// hue is inverted (#990)
+	hue = clamp(1.0 - this.state.hue, 0.0, 1.0)
+
+	lum = 0.5 * val * (2 - this.state.sat);
+	lum = clamp(lum, 0.0, 1.0)
+
+	var tl = clamp(lum, 0.00001, 0.999999)	// avoid division by zero below
+
+	sat = val * this.state.sat / (1 - Math.abs(2 * tl - 1));
+	sat = clamp(sat, 0.0, 1.0)
+
+	color.setHSL(hue, sat, lum);
+	return color;
+}
+
+ColorPicker.prototype.makeStateFromThisColor = function() {
+	// modify this.color (rgb), and convert from HSL to this.state (HSV)
+	var hsl = this.color.getHSL();
+	var sat, val, hue, lum;		// clamp everything
+
+	hue = clamp(hsl.h, 0.0, 1.0)
+	lum = clamp(hsl.l, 0.0, 1.0)
+
+	val = 0.5 * (2 * lum + hsl.s * (1 - Math.abs(2 * lum - 1)))
+	val = clamp(val, 0.0, 1.0)
+	var tempVal = (val === 0.0) ? 0.000001 : val;	// avoid division by zero
+
+	sat = 2 * (val - lum) /  tempVal ;
+	sat = clamp(sat, 0.0, 1.0)
+
+	this.state.sat = sat;
+	this.state.lum = val;	// !
+	if (sat > 0.0)
+		this.state.hue = 1.0 - hue;		// note hue is inverted
+}
+
+ColorPicker.prototype.create_ui = function() {
+	var $container = this.c = make('div');
+	var $svSurface = this.i = make('img');
+	var $svPicker = this.s = make('img');
+	var $hueSurface = this.h = make('img');
+	var $huePicker = this.hs = make('img');
 
 	this.indicator = {
+		// dom elements
 		'Hex' : null,
 		'R' : null,
 		'G' : null,
 		'B' : null
 	};
 
-	function onMouseDown() {
-		E2.app.undoManager.begin('Pick color')
-		that._mouseDownValue = { hue: that.state.hue, sat: that.state.sat, lum: that.state.lum }
-	}
-
-	function onMouseUp() {
-		if (!that._mouseDownValue)
-			return;
-
-		if (that._mouseDownValue.hue !== that.state.hue)
-			that.undoableSetState('hue',
-				that.state.hue,
-				that._mouseDownValue.hue
-			)
-
-		if (that._mouseDownValue.sat !== that.state.sat)
-			that.undoableSetState('sat',
-				that.state.sat,
-				that._mouseDownValue.sat
-			)
-
-		if (that._mouseDownValue.lum !== that.state.lum)
-			that.undoableSetState('lum',
-				that.state.lum,
-				that._mouseDownValue.lum
-			)
-
-		E2.app.undoManager.end()
-		that._mouseDownValue = null;	// otherwise we keep tracking the mouse
-	}
-
 	var ww = 178;	// container width
 	var hh = 120;
 	var ch = hh + 24;	// container height = picker + hue
 	this.picker_height = 0.0 + hh;
 	this.picker_width = 0.0 + ww;
-	c.css({
+	$container.css({
 		'height': '' + ch + 'px',
 		'width': '' + ww + 'px',
 		'position': 'relative'
 	});
 
-	h.attr('src', '/images/color_picker/hue_h.svg');
-	h.attr('id', 'hue');
-	s.attr('src', '/images/color_picker/select.gif');
-	s.attr('id', 'sel');
-	hs.attr('src', '/images/color_picker/hue-select_h.svg');
-	hs.attr('id', 'hue-sel');
-	i.attr('src', '/images/color_picker/picker.png');
-	i.attr('id', 'img');
+	$hueSurface.attr('src', '/images/color_picker/hue_h.svg');
+	$huePicker.attr('src', '/images/color_picker/hue-select_h.svg');
+	$svSurface.attr('src', '/images/color_picker/picker.png');
+	$svPicker.attr('src', '/images/color_picker/select.gif');
 
-	h.attr('preserveAspectRatio', 'xMidYMid none');
+	$hueSurface.attr('preserveAspectRatio', 'xMidYMid none');
 	// hue image
-	h.css({
+	$hueSurface.css({
 		'width': ''+ww+'px',
 		'border': '0',
 		'border-radius': '2px',
-		'cursor': 'crosshair',
 		'z-index': '100',
 		'position': 'absolute',
 		'top' : ''+(hh+4)+'px',
 		'left': '0'
 	});
 
-	hs.css({
+	$huePicker.css({
 		'position': 'absolute',
 		'left': '0px',
 		'top': ''+(hh+3)+'px',
 		'height': '20px',
 		'width': '5px',
-		'cursor': 'crosshair',
 		'z-index': '101'
 	});
 
-	s.css({
+	$svPicker.css({
 		'width': '11px',
 		'height': '11px',
-		'cursor': 'crosshair',
 		'z-index': '101',
 		'position': 'absolute'
 	});
 
-	// big image
-	i.css({
+	// big image (saturation + value)
+	$svSurface.css({
 		'width': ''+ww+'px',
 		'height': ''+hh+'px',
 		'border': '0',
 		'border-radius': '2px',
-		'cursor': 'crosshair',
 		'z-index': '100'
 	});
-	i.attr({
+	$svSurface.attr({
 		'width': ww,
 		'height': hh
 	});
 
-	c.append(i);
-	c.append(s);
-	c.append(h);
-	c.append(hs);
+	$container.append($svSurface);
+	$container.append($svPicker);
+	$container.append($hueSurface);
+	$container.append($huePicker);
 
-	var c_down = function(self, c, i, s) { return function(e) 
-	{ 
-		onMouseDown()
-		self.color_drag = true;
-		self.update_picker_ev(e, c, s, i);
-	}}(this, c, i, s);
+	var t = this.ui_createValuesIndicator($container);
+	this.ui = jQuery('<div></div>').append($container,t);
 
-	var c_up = function(self) { return function(e)
-	{ 
-		e.preventDefault(); 
-		self.color_drag = false;
-		onMouseUp()
-	}}(this);
+	this.ui_enableInteraction($container[0], $svSurface[0], $svPicker[0], $hueSurface[0], $huePicker[0])
 
-	var c_move = function(self, c, i, s) { return function(e)
-	{
-		if (!self._mouseDownValue) return true;	// nothing to do
-
-		self.update_picker_ev(e, c, s, i);
-		self.color_clipped = self.clip(e, i);
-		self.indicator.update(self.color);
-
-	}}(this, c, i, s);
-
-	s.mousedown(c_down);
-	s.mouseup(c_up);
-	s.mousemove(c_move);
-
-	i.mousedown(c_down);
-	i.mouseup(c_up);
-	i.mousemove(c_move);
-
-	var h_down = function(self, ui, i, h, hs) { return function(e) 
-	{ 
-		onMouseDown()
-		e.preventDefault(); 
-		self.hue_drag = true;
-		self.update_hue_ev(ui, e, i, h, hs);
-	}}(this, c, i, h, hs);
-
-	var h_up = function(self) { return function(e)
-	{
-		e.preventDefault();
-		self.hue_drag = false;
-		onMouseUp()
-	}}(this);
-
-	var h_move = function(self, ui, i, h, hs) { return function(e)
-	{
-		if (!self._mouseDownValue) return true;	// nothing to do
-		self.update_hue_ev(ui, e, i, h, hs);
-		self.hue_clipped = self.clip(e, h);
-		self.indicator.update(self.color);
-	}}(this, c, i, h, hs);
-
-	hs.mousedown(h_down);
-	hs.mouseup(h_up);
-	hs.mousemove(h_move);
-
-	h.mousedown(h_down);
-	h.mouseup(h_up);
-	h.mousemove(h_move);
-
-	var t = this.create_ui_valuesIndicator(c);
-	return jQuery('<div></div>').append(c,t);
+	return this.ui;
 };
 
-ColorPicker.prototype.create_ui_valuesIndicator = function(/* @var jQuery */ c) {
+ColorPicker.prototype.updateRGBValue = function() {
+	this.setFromState(this.color);
+	this.updated = true;
+};
+
+ColorPicker.prototype.updatePicker = function(c, s) {
+	var left = Math.round(this.state.sat * this.picker_width) - 6;
+	var top = Math.round((1.0 - this.state.lum) * this.picker_height) - 6;
+	s.css('left', left);
+	s.css('top', top );
+};
+
+ColorPicker.prototype.updateHue = function(i, h, hs) {
+	var cc = new THREE.Color()
+	var hue = 1.0 - this.state.hue;
+	cc.setHSL(hue, 1.0, 0.5);	// peg to max brightness
+
+	if(i)
+		i.css('background-color', '#' + cc.getHexString())
+
+	if(h && hs) {
+		// horizontal
+		hs.css('left', Math.round(( (hue) * this.picker_width) - 2));
+	}
+};
+
+// creates the HexRGB widget
+ColorPicker.prototype.ui_createValuesIndicator = function(/* @var jQuery */ c) {
 	var $t = jQuery('<table></table>');
 	var $row1 = jQuery('<tr></tr>');
 	var row2 = [];
@@ -220,164 +199,197 @@ ColorPicker.prototype.create_ui_valuesIndicator = function(/* @var jQuery */ c) 
 	$t.append($row1, $row2);
 	i._oldcolor = new THREE.Color(0,0,0);
 	i.update = function(c){
-		if (this._oldcolor.equals(c)) return true;	// nothing to update
+		if (this._oldcolor.equals(c)) return;	// nothing to update
 		this._oldcolor = c.clone();
 		this.Hex.html(c.getHexString());
 		this.R.html(Math.round(255 * c.r));
 		this.G.html(Math.round(255 * c.g));
 		this.B.html(Math.round(255 * c.b));
-		// this.A.html(Math.round(255 * c.a));	// three.color has no alpha
+		// three.color has no alpha
 	}.bind(i);
 	return $t;
 }
 
+ColorPicker.prototype.ui_enableInteraction = function(containerNode, svSurfaceNode, svPickerNode, hueSurfaceNode, huePickerNode) {
+	var that = this
+
+	function beginModifyState() {
+		E2.app.undoManager.begin('Pick color')
+		that._oldState = { hue: that.state.hue, sat: that.state.sat, lum: that.state.lum }
+	}
+
+	function endModifyState () {
+		if (!that._oldState)
+			return;
+
+		if (that._oldState.hue !== that.state.hue)
+			that.undoableSetState('hue', that.state.hue, that._oldState.hue)
+
+		if (that._oldState.sat !== that.state.sat)
+			that.undoableSetState('sat', that.state.sat, that._oldState.sat)
+
+		if (that._oldState.lum !== that.state.lum)
+			that.undoableSetState('lum', that.state.lum, that._oldState.lum)
+
+		E2.app.undoManager.end()
+		that._oldState = null
+	}
+
+	function moveValue(val) {
+		that.state.lum = val;
+		that.state_changed(that.ui)
+	}
+
+	function moveSaturation(sat) {
+		that.state.sat = sat;
+		that.state_changed(that.ui)
+	}
+
+	function moveHue(hue) {
+		that.state.hue = 1.0 - hue	// #990
+		that.state_changed(that.ui)
+	}
+
+	// sat/val
+	var opts = {
+		min : 0.0,
+		max : 1.0,
+		step : 0.001,
+		getValue : function() { return that.state.sat },
+		isSurface : true,
+		cssCursor : 'crosshair',
+		orientation : 'horizontal'
+	}
+
+	// two for the area (x/y) and two for the picker within the area (x/y)
+	NodeUI.makeUIAdjustableValue(svSurfaceNode, beginModifyState, moveSaturation, endModifyState, opts)
+	opts.surfaceDomNode = svSurfaceNode
+	NodeUI.makeUIAdjustableValue(svPickerNode, beginModifyState, moveSaturation, endModifyState, opts)
+	delete opts.surfaceDomNode
+
+	opts.getValue = function() { return that.state.lum }
+	opts.orientation = 'vertical'
+	opts.min = 1.0
+	opts.max = 0.0
+	NodeUI.makeUIAdjustableValue(svSurfaceNode, beginModifyState, moveValue, endModifyState, opts)
+	opts.surfaceDomNode = svSurfaceNode
+	NodeUI.makeUIAdjustableValue(svPickerNode, beginModifyState, moveValue, endModifyState, opts)
+
+	// hue
+	opts = {
+		min : 0.00001,
+		max : 0.99999,
+		step : 0.001,
+		getValue : function() { return that.state.hue },
+		isSurface: true,
+		cssCursor: 'crosshair',
+		orientation: 'horizontal'
+	}
+	// one for surface, one for indicator
+	NodeUI.makeUIAdjustableValue(hueSurfaceNode, beginModifyState, moveHue, endModifyState, opts)
+	opts.surfaceDomNode = hueSurfaceNode
+	NodeUI.makeUIAdjustableValue(huePickerNode, beginModifyState, moveHue, endModifyState, opts)
+
+	// indicator rgb
+	var getComponent = function (which) {
+		return function(){ return that.color[which] }
+	}
+
+	var setComponent = function(which) {
+		return function(v) {
+			that.color[which] = v;
+			that.makeStateFromThisColor()
+			that.state_changed(that.ui)
+		}
+	}
+
+	var options = {
+		min : 0.00001,
+		max : 1,
+		step : 0.002,
+		cssCursor : 'ns-resize',
+
+		allowTextInput : true,
+		textInputParentNode : containerNode,
+		parseTextInput : function(value) {
+			var v = parseFloat(value)
+			if (isNaN(v)) return false
+			if (!isFinite(v)) return false
+			return v/255
+		}
+	}
+
+	NodeUI.makeUIAdjustableValue(
+		this.indicator.R[0],
+		beginModifyState,
+		setComponent('r'),
+		endModifyState,
+		_.extend(options, {getValue: getComponent('r')} )
+	);
+
+	NodeUI.makeUIAdjustableValue(
+		this.indicator.G[0],
+		beginModifyState,
+		setComponent('g'),
+		endModifyState,
+		_.extend(options, {getValue: getComponent('g')} )
+	);
+
+	NodeUI.makeUIAdjustableValue(
+		this.indicator.B[0],
+		beginModifyState,
+		setComponent('b'),
+		endModifyState,
+		_.extend(options, {getValue: getComponent('b')} )
+	);
+
+	// indicator hex
+	this.indicator.Hex.on('dblclick', function(e){
+		NodeUI.enterValueControl(that.indicator.Hex[0], containerNode, function(hex) {	// child, parent, handler
+			var pad = '000000'
+			hex = hex.toString().replace('#','').toUpperCase()
+			if (hex.length === 3) {
+				var old = hex
+				hex = old.substring(0,1) + old.substring(0,1) +
+					  old.substring(1,2) + old.substring(1,2) +
+					  old.substring(2,3) + old.substring(2,3)
+			} else {
+				hex = '' + hex + pad.substring(0, pad.length - hex.length)
+				hex = hex.substring(0,6)
+			}
+			if (hex.length !== 6) return false
+			var isOk = /^[0-9A-F]{6}$/i.test(hex)
+			if (!isOk) return false
+			beginModifyState()
+			that.color.setHex('0x'+hex)
+			that.makeStateFromThisColor()
+			that.state_changed(that.ui)
+			endModifyState()
+		})
+	})
+}
+
+// === common methods ===
+
+ColorPicker.prototype.reset = function() {};
+
 ColorPicker.prototype.update_state = function() {
-	this.update_hue();
-	this.update_value(this.c);
+	if (!this.updated) this.state_changed(this.ui)
 };
 
 ColorPicker.prototype.update_output = function() {
 	return this.color;
 };
 
-ColorPicker.prototype.update_value = function() {
-	var sat = this.state.sat;
-	var lum = this.state.lum;
-	var nc = [this.hue_rgb[0] / 255.0, this.hue_rgb[1] / 255.0, this.hue_rgb[2] / 255.0];
-	var lc = lum * (1.0 - sat);
-	var cnv = function(cmp) { return lc + (nc[cmp] * lum * sat); };
-	var cnv2 = function(cmp) { return Math.floor(nc[cmp] * 255.0); };
-
-	nc = [cnv(0), cnv(1), cnv(2)];
-	var rgb = this.color ? this.color : null;
-	
-	if(!rgb || rgb.r !== nc[0] || rgb.g !== nc[1] || rgb.b !== nc[2]) {
-		rgb.setRGB(nc[0], nc[1], nc[2])
-		this.updated = true;
-	}
-
-};
-
-ColorPicker.prototype.get_as_rgb_string = function() {
-	if (!this.color) return false;
-	var c = this.color;
-	var ret = 'rgb(' + [255*c.r, 255*c.g, 255*c.b].join(',') + ')';
-	return ret;
-};
-
-ColorPicker.prototype.update_picker_ev = function(e, c, s, i) {
-	e.preventDefault();
-
-	if(!this.color_drag || this.color_clipped)
-		return;
-
-	var i_o = i.offset();
-	var st = this.state;
-	
-	st.sat = (e.pageX - i_o.left) / this.picker_width;
-	st.lum = 1.0 - ((e.pageY - i_o.top) / this.picker_height);
-
-	st.sat = st.sat < 0.0 ? 0.0 : st.sat > 1.0 ? 1.0 : st.sat;
-	st.lum = st.lum < 0.0 ? 0.0 : st.lum > 1.0 ? 1.0 : st.lum;
-	
-	this.update_picker(c, s);
-};
-
-ColorPicker.prototype.update_picker = function(c, s)
-{
-	s.css('left', Math.floor((this.state.sat * this.picker_width)) - 6);
-	s.css('top', Math.floor((1.0 - this.state.lum) * this.picker_height) - 6);
-
-	this.update_value();
-};
-
-ColorPicker.prototype.update_hue_ev = function(ui, e, i, h, hs)
-{
-	e.preventDefault();
-
-	if(!this.hue_drag || this.hue_clipped)
-		return;
-
-//	this.state.hue = (e.pageY - h.offset().top) / this.picker_height	// vertical
-	this.state.hue = 1.0 - (e.pageX - h.offset().left) / this.picker_width;
-	this.update_hue(ui, i, h, hs);
-};
-
-ColorPicker.prototype.update_hue = function(ui, i, h, hs)
-{
-	var hue = 1.0 - this.state.hue;
-
-	var t2 = 1.0;
-	var t1 = 0.0;		
-	var t3 = [hue + 1.0 / 3.0, hue, hue - 1.0 / 3.0];
-	var c = [0, 0, 0];
-
-	for(var x = 0; x < 3; x++)
-	{
-		if(t3[x] < 0.0)
-			t3[x] += 1.0;
-		else if(t3[x] > 1.0)
-			t3[x] -= 1.0;
-
-		var t3v = t3[x];
-			
-		if(6.0 * t3v < 1.0)
-			c[x] = t3v * 6.0;
-		else if(2.0 * t3v < 1.0)
-			c[x] = 1.0;
-		else if(3.0 * t3v < 2.0)
-			c[x] = ((2.0 / 3.0) - t3v) * 6.0;
-		else
-			c[x] = t1;
-
-		c[x] = Math.floor(c[x] * 255.0);
-	}
-
-	this.hue_rgb = c;
-	
-	if(i)
-		i.css('background-color', 'rgb(' + c[0] + ', ' + c[1] + ', ' + c[2] + ')');
-
-	if(h && hs)
-	{
-		var ofs = h.offset();
-
-		// vertical
-		// hs.css('left', (ofs.left - i.offset().left));
-		// hs.css('top', Math.floor((this.state.hue * this.picker_height) - 2));
-
-		// horizontal
-		hs.css('left', Math.floor(( (1.0-this.state.hue) * this.picker_width) - 2));
-	}
-
-	this.update_value();
-};
-
-ColorPicker.prototype.clip = function(ev, e)
-{
-	var o = e.offset();
-
-	return ev.pageX < o.left || ev.pageX > o.left + e.width() || ev.pageY < o.top || ev.pageY > o.top + e.height();
-};
-
-ColorPicker.prototype.state_changed = function(ui)
-{
-	if(ui)
-	{
-		this.update_hue(ui, ui.find('#img'), ui.find('#hue'), ui.find('#hue-sel'));
-		this.update_picker(ui, ui.find('#sel'));
-		if (typeof this.indicator.update != 'undefined') this.indicator.update(this.color);
-	}
-	else
-	{
-		this.hue_rgb = [255.0, 0.0, 0.0];
-		this.hue_drag = false;
-		this.color_drag = false;
-		this.hue_clipped = false;
-		this.color_clipped = false;
-		this.color = new THREE.Color(1,1,1);
-		this.update_hue(null, null, null, null);
+ColorPicker.prototype.state_changed = function(/* @var jQuery */ ui) {
+	this.updateRGBValue();
+	if(ui) {
+		this.updateHue(this.i, this.h, this.hs);
+		this.updatePicker(ui, this.s);
+		this.indicator.update(this.color);
 	}
 };
+
+E2.plugins.color_picker = ColorPicker
 
 })();

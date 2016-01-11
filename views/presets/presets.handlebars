@@ -2,11 +2,12 @@
 <div class="searchbox">
 	<svg class="icon-search"><use xlink:href="#icon-search"></use></svg>
 	<input
+		id="search_{{controlId}}"
 		class="form-control"
 		type="text"
-		placeholder="Search"
+		placeholder="{{searchPlaceholderText}}"
 		onfocus="this.placeholder = ''" 
-		onblur="this.placeholder = 'Search'"/>
+		onblur="this.placeholder = '{{searchPlaceholderText}}'"/>
 </div>
 
 <div class="preset-list-container">
@@ -18,12 +19,12 @@
 		<div class="panel-group selectControl preset-list-contained-box" id="{{controlId}}">
 			{{#each categories}}
 			<div class="panel panel-default">
-				<div class="panel-heading"
+
+				<div class="panel-heading collapsed"
 					data-toggle="collapse"
 					data-category="{{@key}}"
 					data-parent="#{{../controlId}}"
 					href="#cscat{{../controlId}}-{{@index}}">
-						<i class="glyphicon glyphicon-chevron-right"></i>
 						{{@key}}
 				</div>
 			
@@ -38,7 +39,7 @@
 								data-path="{{path}}"
 							>
 							<div class="score"></div>
-							{{title}}
+							<span class="title">{{title}}</span>
 							</li>
 							{{/each}}
 						</ul>

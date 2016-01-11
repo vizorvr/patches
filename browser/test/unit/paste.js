@@ -26,7 +26,8 @@ global.THREE = {
 	Color: function(){},
 	Material: function(){},
 	MeshBasicMaterial: function(){},
-	PerspectiveCamera: function(){}
+	PerspectiveCamera: function(){},
+	Math : { clamp: function(v){return v}, mapLinear: function(v){return v}}
 }
 global.THREE.Matrix4.prototype.identity = function() {}
 

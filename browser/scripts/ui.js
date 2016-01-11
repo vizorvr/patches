@@ -8,8 +8,6 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 
 	var that = this;
 
-	// menu shell
-	dom.btnSignIn.click(VizorUI.openLoginModal);
 
 	dom.btnAssets.click(this.onBtnAssetsClicked.bind(this));
 	dom.btnPresets.click(this.onBtnPresetsClicked.bind(this));
@@ -242,23 +240,24 @@ VizorUI.prototype.openPublishGraphModal = function() {
 
 /***** EVENT HANDLERS *****/
 
-VizorUI.prototype.onSearchResultsChange = function() {
-  var presetsLib = E2.dom.presetsLib;
-  var resultsCount = $('.result.table tbody').children().length;
-	var presetsList = presetsLib.find('.preset-list-container');
-	var maxHeight = presetsList.css('maxHeight');
+VizorUI.prototype.onSearchResultsChange = function($libContainer) {
+  var presetsPanel = E2.dom.presetsLib;
+  var $activeLib = $libContainer || presetsPanel.find('.tab-pane.active');
+  var resultsCount = $('.result.table tbody', $activeLib).children().length;
+	var $list = $activeLib.find('.preset-list-container');
+	var maxHeight = $list.css('maxHeight');
 	if (resultsCount>0) {
-		presetsLib.removeClass('collapsed');
-		presetsList.show();
-		var resultsHeight = $('.result.table').outerHeight(true);
+		presetsPanel.removeClass('collapsed');
+		$list.show();
+		var resultsHeight = $('.result.table', $activeLib).outerHeight(true);
 		var newHeight = resultsHeight;
 		newHeight = ( newHeight >= maxHeight ) ? (maxHeight) : (newHeight);
-		presetsLib.height('auto');
-		presetsList.height(newHeight);
+		presetsPanel.height('auto');
+		$list.height(newHeight);
 	}
 	 else {
-		presetsLib.height('auto');
-		presetsList.height(maxHeight);
+		presetsPanel.height('auto');
+		$list.height(maxHeight);
 	}
 };
 
@@ -392,10 +391,10 @@ VizorUI.prototype.togglePanelChatCollapsed = function() {
 	this.dom.chatToggleButton.trigger('click');
 }
 VizorUI.prototype.togglePanelAssetsCollapsed = function() {
-	this.dom.chatToggleButton.trigger('click');
+	this.dom.assetsToggle.trigger('click');
 }
 VizorUI.prototype.togglePanelPresetsCollapsed = function() {
-	this.dom.chatToggleButton.trigger('click');
+	this.dom.presetsToggle.trigger('click');
 }
 
 VizorUI.prototype.onInspectorClicked = function() {
@@ -537,7 +536,36 @@ VizorUI.prototype.showStartDialog = function() {
 	var dfd = when.defer()
 	var selectedTemplateUrl = null
 
-	Cookies.set('vizor100', { seen: 1 }, { expires: Number.MAX_SAFE_INTEGER })
+	// keep track of how many times the dialog has been seen
+	// do not show dialog if user logged in and shown more than twice
+	// do not show if user not logged in and shown more than five times
+	// cookie keeps for 24h from visit
+	var cookieName = 'vizor100'
+	var c = Cookies.get(cookieName), times = 0
+
+	try { c = JSON.parse(c) }
+	catch (e) { c = {} }
+
+	if (c && ('seen' in c)) {
+		times = parseInt(c.seen)
+		c.seen = (isNaN(times)) ?  0  : times++
+	} else {
+		times = 1
+		c = { seen: times }
+	}
+
+	var doNotShowDialog =
+		(VizorUI.userIsLoggedIn() &&  times > 2) ||
+			(!VizorUI.userIsLoggedIn() &&  times > 5)
+
+	var d = new Date()
+	d.setTime(d.getTime() + (86400*1000))	// tomorrow
+	Cookies.set(cookieName, {seen: times}, {expires: d})
+
+	if (c && doNotShowDialog) {
+		dfd.resolve(selectedTemplateUrl)
+		return dfd.promise;
+	}
 
 	var welcomeModal = VizorUI.modalOpen(
 		E2.views.patch_editor.intro({user:E2.models.user.toJSON()}),
@@ -698,7 +726,6 @@ VizorUI.checkCompatibleBrowser = function() {
 	var heading=false, message=false;
 
 	var isMobile = VizorUI.isMobile.any();
-
 
 	if ((/Chrome/i.test(agent)) || (/Firefox/i.test(agent))) {
 

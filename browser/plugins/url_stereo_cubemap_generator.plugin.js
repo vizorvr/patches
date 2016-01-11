@@ -1,0 +1,200 @@
+(function() {
+
+	var UrlStereoCubeMap = E2.plugins.url_stereo_cubemap_generator = function(core, node) {
+		Plugin.apply(this, arguments)
+		this.desc = 'Load a stereo cubemap from a URL. JPEG and PNG supported. Hover over the Browse button to select an existing image from the library.'
+		
+		this.input_slots = []
+
+		this.output_slots = [
+			{
+				name: 'left',
+				dt: core.datatypes.CUBETEXTURE,
+				desc: 'The left side of the loaded stereo cubemap.'
+			},
+			{
+				name: 'right',
+				dt: core.datatypes.CUBETEXTURE,
+				desc: 'The right side of the loaded stereo cubemap.'
+			}
+		]
+		
+		this.state = { url: '' }
+
+		var loadTex = E2.core.assetLoader.loadingTexture.image
+		this.loadingTexture = new THREE.CubeTexture([
+			loadTex, loadTex, loadTex, loadTex, loadTex, loadTex
+		])
+		this.loadingTexture.needsUpdate = true
+
+		var defTex = E2.core.assetLoader.defaultTexture.image
+		this.defaultTexture = new THREE.CubeTexture([
+			defTex, defTex, defTex, defTex, defTex, defTex
+		])
+		this.defaultTexture.needsUpdate = true
+
+		this.leftTexture = this.loadingTexture
+		this.rightTexture = this.loadingTexture
+
+		this.dirty = false
+		this.thumbnail = null
+	}
+
+	UrlStereoCubeMap.prototype = Object.create(Plugin.prototype)
+
+	UrlStereoCubeMap.prototype.create_ui = function() {
+		var container = make('div')
+		var inp = NodeUI.makeSpriteSVGButton(
+			NodeUI.makeSpriteSVG('vp-edit-icon', 'cmd_edit_graph'),
+			'No texture selected'
+		);
+		inp.addClass('p_round');
+
+		this.thumbnail = make('div').addClass('p_thumbnail');
+		
+		this.thumbnail.css({
+			'background-image': 'url(\'images/no_texture.png\')',
+			'background-size': 'cover'
+		})
+
+		var clickHandler = function() {
+			var that = this;
+			var oldValue = that.state.url
+			var newValue = oldValue
+
+			var setValueFn = function(v) {
+				that.state.url = newValue = v
+				that.updated = true
+				that.state_changed();
+				return true;
+			};
+
+			FileSelectControl
+			.createStereoCubeMapSelector(oldValue, function(control) {
+				control
+					.template('texture')
+					.selected(oldValue)
+					.onChange(setValueFn)
+					.buttons({
+						'Cancel': setValueFn.bind(this, oldValue),
+						'Select': setValueFn
+					})
+					.on('closed', function() {
+						if (newValue === oldValue)
+							return;
+
+						mixpanel.track('UrlStereoCubeMap Texture Changed')
+						that.undoableSetState('url', newValue, oldValue)
+					})
+					.modal()
+			});
+
+			return false;
+		}.bind(this);
+
+		inp.click(clickHandler)
+		this.thumbnail.click(clickHandler)
+		
+		container.append(this.thumbnail)
+		container.append(inp)
+
+		this.node.on('pluginStateChanged', this.updateUi.bind(this))
+
+		return container
+	}
+
+	UrlStereoCubeMap.prototype.update_input = function() {}
+
+	UrlStereoCubeMap.prototype.update_state = function() {
+		if (!this.dirty)
+			return
+
+		var that = this
+
+		this.waitingToLoad = true
+
+		this.leftTexture = this.loadingTexture
+		this.rightTexture = this.loadingTexture
+
+		E2.core.assetLoader
+		.loadAsset('image', this.state.url)
+		.then(function(img) {
+			that.makeTexturesFromImage(img)
+		})
+		.catch(function() {
+			that.leftTexture = that.defaultTexture
+			that.rightTexture = that.defaultTexture
+			that.waitingToLoad = false
+			that.updated = true
+		})
+		
+		this.dirty = false
+	}
+
+	UrlStereoCubeMap.prototype.makeTexturesFromImage = function(img) {
+		var imageWidth = img.width
+		var imageHeight = img.height
+
+		var tiles = 12
+
+		var tileWidth = imageWidth / tiles
+		var tileHeight = imageHeight
+
+		var textures = []
+
+		for (var i = 0; i < tiles; ++i) {
+			var tileCanvas = document.createElement('canvas')
+			tileCanvas.width = tileWidth
+			tileCanvas.height = tileHeight
+
+			var ctx = tileCanvas.getContext('2d')
+			ctx.drawImage(img, i * tileWidth, 0,
+				tileWidth, tileHeight, 0, 0, tileWidth, tileHeight)
+
+			textures.push(tileCanvas)
+		}
+
+		// left eye
+		var leftTexture = new THREE.CubeTexture(textures.splice(0, 6))
+		leftTexture.needsUpdate = true
+
+		// right eye
+		var rightTexture = new THREE.CubeTexture(textures.splice(0, 6))
+		rightTexture.needsUpdate = true
+
+		this.leftTexture = leftTexture
+		this.rightTexture = rightTexture
+
+		this.updated = true
+	}
+
+	UrlStereoCubeMap.prototype.update_output = function(slot) {
+		if (this.waitingToLoad &&
+			this.leftTexture && this.rightTexture &&
+			this.leftTexture.image && this.leftTexture.image.width !== 0 &&
+			this.rightTexture.image && this.rightTexture.image.width !== 0)
+		{
+			// force an extra update through the graph
+			// with a texture that has actual image data
+			this.waitingToLoad = false
+			this.updated = true
+		}
+
+		return slot.index === 0 ? this.leftTexture : this.rightTexture
+	}
+
+	UrlStereoCubeMap.prototype.state_changed = function() {
+		if (!this.state.url)
+			return
+
+		this.updateUi()
+
+		this.dirty = true
+	}
+
+	UrlStereoCubeMap.prototype.updateUi = function() {
+		if (this.thumbnail)
+			this.thumbnail.css({ 'background-image': 'url(\'' + this.state.url + '\')' })
+	}
+
+})()
