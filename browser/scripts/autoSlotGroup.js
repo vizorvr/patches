@@ -13,7 +13,7 @@ AutoSlotGroup.prototype.updateFreeSlots = function() {
 			type: E2.slot_type.input,
 			name: dynInputs.length + '',
 			dt: that.dt,
-			array: dynInputs[0].array // take 0th slot arrayness
+			array: dynInputs.length > 0 ? dynInputs[0].array : false // take 0th slot arrayness
 		})
 	}
 

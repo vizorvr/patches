@@ -113,7 +113,7 @@
 			// ensure there is a sufficient amount of slots
 			var mainSceneRoot = this.scene.children[0]
 			while (mainSceneRoot.children.length < this.dynInputs.length) {
-				mainSceneRoot.children.push(new THREE.Group())
+				mainSceneRoot.add(new THREE.Group())
 			}
 		}
 
@@ -145,7 +145,7 @@
 		var slots = this.dynInputs = this.node.getDynamicInputSlots()
 		for (var i = 0, len = slots.length; i < len; i++) {
 			this.lsg.add_dyn_slot(slots[i])
-			this.scene.children[0].children.push(new THREE.Group())
+			this.scene.children[0].add(new THREE.Group())
 		}
 	}
 

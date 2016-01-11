@@ -53,6 +53,7 @@ AbstractThreeMeshPlugin.prototype.update_mesh = function()
 
 		// non-recursive clone of the root, to preserve transform
 		this.object3d = this.object3d.clone(/*recursive = */false)
+		this.object3d.backReference = this
 
 		for (i = 0; i < this.geoms.length; ++i) {
 			if (this.geoms[i].morphTargets && this.geoms[i].morphTargets.length > 0) {
