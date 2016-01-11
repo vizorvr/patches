@@ -9,8 +9,12 @@ function VRCameraHelper( camera ) {
 		var scale = 0.01
 		var rotation = Math.PI
 
-		var material = new THREE.MeshBasicMaterial({color: 0xffffff, map: texture})
-		material.wireframe = false
+		var material = new THREE.MeshBasicMaterial({
+			color: 0xffffff,
+			map: texture,
+			wireframe: false,
+			opacity: 0.9,
+			transparent: true})
 
 		var mesh = new THREE.Mesh(geometry, material)
 		mesh.scale.set(scale, scale, scale)

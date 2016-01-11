@@ -1,9 +1,8 @@
 function WorldEditorRadialHelper() {
-	/**
-	 * @author mrdoob / http://mrdoob.com/
-	 */
 
-	var EditorGridHelper = function ( size, step ) {
+	var EditorGridHelper = function ( first, last, step ) {
+
+		var size = last
 
 		var geometry = new THREE.Geometry()
 		var material =
@@ -23,7 +22,7 @@ function WorldEditorRadialHelper() {
 
 		var segments = 100
 
-		for ( var j = 0; j <= size; j += step ) {
+		for ( var j = first; j <= last; j += step ) {
 			var scale = j
 
 			for (var i = 0; i < segments + 1; ++i) {
@@ -52,34 +51,29 @@ function WorldEditorRadialHelper() {
 	EditorGridHelper.prototype = Object.create( THREE.LineSegments.prototype )
 	EditorGridHelper.prototype.constructor = THREE.GridHelper
 
-	EditorGridHelper.prototype.setColors = function( colorCenterLine, colorGrid ) {
+	this.mesh = new EditorGridHelper(2, 10, 1)
+	this.mesh.add(new EditorGridHelper(0.2, 1, 0.1))
 
-		this.color1.set( colorCenterLine )
-		this.color2.set( colorGrid )
+	var textRadius = [0.2, 0.4, 0.6, 0.8, 1, 2, 4, 6, 8, 10]
 
-		this.geometry.colorsNeedUpdate = true
+	var emptyTextShape = THREE.FontUtils.generateShapes("")
 
-	};
+	var rotateNinetyDegrees = new THREE.Euler(-Math.PI / 2, 0, 0)
 
-	this.mesh = new EditorGridHelper(10, 1)
-	this.mesh.add(new EditorGridHelper(1, 0.1))
+	this.textMeshes = []
 
-	//for ()
+	for (var i = 0; i < textRadius.length; ++i) {
+		var textGeometry = new THREE.ShapeGeometry(emptyTextShape)
+		var textMesh = new THREE.Mesh(textGeometry, new THREE.MeshBasicMaterial({color: this.mesh.color1, fog: false}))
 
-	var textShapes = THREE.FontUtils.generateShapes("")
-	var text1 = new THREE.ShapeGeometry(textShapes)
-	this.textMesh1 = new THREE.Mesh(text1, new THREE.MeshBasicMaterial({color: this.mesh.color1, fog: false}))
-	this.textMesh1.scale.set(0.001, 0.001, 0.001)
-	this.textMesh1.position.set(1, 0, 0)
-	this.textMesh1.quaternion.setFromEuler(new THREE.Euler(-3.14159/2,0,0))
-	this.mesh.add(this.textMesh1)
+		var scale = textRadius[i] < 1 ? 0.0001 : 0.001
 
-	var text2 = new THREE.ShapeGeometry(textShapes)
-	this.textMesh2 = new THREE.Mesh(text2, new THREE.MeshBasicMaterial({color: this.mesh.color1, fog: false}))
-	this.textMesh2.scale.set(0.002, 0.002, 0.002)
-	this.textMesh2.position.set(10, 0, 0)
-	this.textMesh2.quaternion.setFromEuler(new THREE.Euler(-3.14159/2,0,0))
-	this.mesh.add(this.textMesh2)
+		textMesh.scale.set(scale, scale, scale)
+		textMesh.position.set(textRadius[i], 0, 0)
+		textMesh.quaternion.setFromEuler(rotateNinetyDegrees)
+		this.textMeshes.push({mesh: textMesh, radius: textRadius[i]})
+		this.mesh.add(textMesh)
+	}
 
 	this.gridScale = 0
 	this.scale(1)
@@ -87,11 +81,12 @@ function WorldEditorRadialHelper() {
 
 WorldEditorRadialHelper.prototype.scale = function(s) {
 	if (s !== this.gridScale) {
-		var textShapes = THREE.FontUtils.generateShapes(s.toString() + " m")
-		this.textMesh1.geometry = new THREE.ShapeGeometry(textShapes)
-
-		textShapes = THREE.FontUtils.generateShapes((s*10).toString() + " m")
-		this.textMesh2.geometry = new THREE.ShapeGeometry(textShapes)
+		for (var i = 0; i < this.textMeshes.length; ++i) {
+			var rad = this.textMeshes[i].radius * s
+			var str = rad < 1.0 ? (Math.round((rad * 100)) + " cm") : ((rad) + " m")
+			var textShape = THREE.FontUtils.generateShapes(str)
+			this.textMeshes[i].mesh.geometry = new THREE.ShapeGeometry(textShape)
+		}
 
 		this.gridScale = s
 		this.mesh.scale.set(s, s, s)
