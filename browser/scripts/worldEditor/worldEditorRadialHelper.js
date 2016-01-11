@@ -1,31 +1,29 @@
-function WorldEditorOriginGrid() {
-	this.color1 = new THREE.Color( 0xBBBBBB )
-	this.color2 = new THREE.Color( 0x888888 )
-
-	var that = this
+function WorldEditorRadialHelper() {
+	/**
+	 * @author mrdoob / http://mrdoob.com/
+	 */
 
 	var EditorGridHelper = function ( size, step ) {
-		var lineMaterial =
+
+		var geometry = new THREE.Geometry()
+		var material =
 			new THREE.LineBasicMaterial(
 				{ vertexColors: THREE.VertexColors, linewidth: 1, fog: false } )
 
-		var geometry = new THREE.Geometry()
+		this.color1 = new THREE.Color( 0xBBBBBB )
+		this.color2 = new THREE.Color( 0x888888 )
 
+		geometry.vertices.push(
+			new THREE.Vector3( - size, 0, 0 ), new THREE.Vector3( size, 0, 0 ),
+			new THREE.Vector3( 0, 0, - size ), new THREE.Vector3( 0, 0, size ))
 
-		for ( var i = - size; i <= size; i += step ) {
+		var color = this.color1
 
-			geometry.vertices.push(
-				new THREE.Vector3( - size, 0, i ), new THREE.Vector3( size, 0, i ),
-				new THREE.Vector3( i, 0, - size ), new THREE.Vector3( i, 0, size ))
+		geometry.colors.push( color, color, color, color )
 
-			var color = Math.abs(i) < (step / 2) ? that.color1 : that.color2
-
-			geometry.colors.push( color, color, color, color )
-		}
-/*
 		var segments = 30
 
-		for ( var j = 0; j < size; j += step ) {
+		for ( var j = 0; j <= size; j += step ) {
 			var scale = j
 
 			for (var i = 0; i < segments + 1; ++i) {
@@ -39,20 +37,22 @@ function WorldEditorOriginGrid() {
 				var z2 = Math.cos(f2 * Math.PI * 2) * scale
 
 				geometry.vertices.push(
-					new THREE.Vector3(x1, 0, z1), new THREE.Vector3(x2, 0, z2))
+				new THREE.Vector3(x1, 0, z1), new THREE.Vector3(x2, 0, z2))
 
-				geometry.colors.push(that.color2, that.color2)
+				var color = this.color2
+
+				geometry.colors.push(color, color)
 			}
 		}
-*/
-		THREE.LineSegments.call( this, geometry, lineMaterial )
+
+		THREE.LineSegments.call( this, geometry, material )
 
 	};
 
 	EditorGridHelper.prototype = Object.create( THREE.LineSegments.prototype )
 	EditorGridHelper.prototype.constructor = THREE.GridHelper
 
-	this.setColors = function( colorCenterLine, colorGrid ) {
+	EditorGridHelper.prototype.setColors = function( colorCenterLine, colorGrid ) {
 
 		this.color1.set( colorCenterLine )
 		this.color2.set( colorGrid )
@@ -64,21 +64,13 @@ function WorldEditorOriginGrid() {
 	this.mesh = new EditorGridHelper(10, 1)
 	this.mesh.add(new EditorGridHelper(1, 0.1))
 
-/*	for (var i = 1; i < 10; ++i) {
-		var ring = new THREE.Mesh(
-			new THREE.RingGeometry(i / 10 - 0.01, i / 10, 10, 1),
-			new THREE.LineBasicMaterial({color: this.color2, linewidth: 1, fog: false}))
+	//for ()
 
-		ring.quaternion.setFromEuler(new THREE.Euler(Math.PI/2, 0, 0))
-
-		this.mesh.add(ring)
-	}
-*/
 	var textShapes = THREE.FontUtils.generateShapes("")
 	var text = new THREE.ShapeGeometry(textShapes)
 	this.textMesh = new THREE.Mesh(text, new THREE.MeshBasicMaterial({color: this.mesh.color1, fog: false}))
 	this.textMesh.scale.set(0.001, 0.001, 0.001)
-	this.textMesh.position.set(1, 0, -1)
+	this.textMesh.position.set(1, 0, 0)
 	this.textMesh.quaternion.setFromEuler(new THREE.Euler(-3.14159/2,0,0))
 	this.mesh.add(this.textMesh)
 
@@ -86,7 +78,7 @@ function WorldEditorOriginGrid() {
 	this.scale(1)
 }
 
-WorldEditorOriginGrid.prototype.scale = function(s) {
+WorldEditorRadialHelper.prototype.scale = function(s) {
 	if (s !== this.gridScale) {
 		var textShapes = THREE.FontUtils.generateShapes(s.toString() + " m")
 		this.textMesh.geometry = new THREE.ShapeGeometry(textShapes)
@@ -96,4 +88,6 @@ WorldEditorOriginGrid.prototype.scale = function(s) {
 	}
 }
 
-
+WorldEditorRadialHelper.prototype.position = function(pos) {
+	this.mesh.position.copy(pos)
+}

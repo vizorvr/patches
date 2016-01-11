@@ -28,8 +28,12 @@ function WorldEditor(domElement) {
 	this.editorTree = new THREE.Object3D()
 
 	// grid around origin along x, z axises
-	this.grid = new WorldEditorOriginGrid()
-	this.editorTree.add(this.grid.mesh)
+	this.gridHelper = new WorldEditorOriginGrid()
+	//this.editorTree.add(this.gridHelper.mesh)
+
+	// radial grid
+	this.radialHelper = new WorldEditorRadialHelper()
+	this.editorTree.add(this.radialHelper.mesh)
 
 	// root for any selection bboxes
 	this.selectionTree = new THREE.Object3D()
@@ -85,7 +89,14 @@ WorldEditor.prototype.update = function() {
 	var len = this.camera.perspectiveCamera.position.clone().sub(this.editorControls.center).length() || 1
 	var v = f(len, 0.01)
 
-	this.grid.scale(v)
+	this.gridHelper.scale(v)
+
+	if (this.vrCamera) {
+		console.log('before', this.vrCamera.position.x, this.vrCamera.position.y, this.vrCamera.position.z)
+		this.radialHelper.position(this.vrCamera.position)
+	}
+
+	this.radialHelper.scale(v)
 
 	// needs calling on every update otherwise the transform controls draw incorrectly
 	this.transformControls.setMode(this.transformMode)
