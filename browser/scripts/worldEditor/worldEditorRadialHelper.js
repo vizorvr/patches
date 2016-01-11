@@ -21,7 +21,7 @@ function WorldEditorRadialHelper() {
 
 		geometry.colors.push( color, color, color, color )
 
-		var segments = 30
+		var segments = 100
 
 		for ( var j = 0; j <= size; j += step ) {
 			var scale = j
@@ -67,12 +67,19 @@ function WorldEditorRadialHelper() {
 	//for ()
 
 	var textShapes = THREE.FontUtils.generateShapes("")
-	var text = new THREE.ShapeGeometry(textShapes)
-	this.textMesh = new THREE.Mesh(text, new THREE.MeshBasicMaterial({color: this.mesh.color1, fog: false}))
-	this.textMesh.scale.set(0.001, 0.001, 0.001)
-	this.textMesh.position.set(1, 0, 0)
-	this.textMesh.quaternion.setFromEuler(new THREE.Euler(-3.14159/2,0,0))
-	this.mesh.add(this.textMesh)
+	var text1 = new THREE.ShapeGeometry(textShapes)
+	this.textMesh1 = new THREE.Mesh(text1, new THREE.MeshBasicMaterial({color: this.mesh.color1, fog: false}))
+	this.textMesh1.scale.set(0.001, 0.001, 0.001)
+	this.textMesh1.position.set(1, 0, 0)
+	this.textMesh1.quaternion.setFromEuler(new THREE.Euler(-3.14159/2,0,0))
+	this.mesh.add(this.textMesh1)
+
+	var text2 = new THREE.ShapeGeometry(textShapes)
+	this.textMesh2 = new THREE.Mesh(text2, new THREE.MeshBasicMaterial({color: this.mesh.color1, fog: false}))
+	this.textMesh2.scale.set(0.002, 0.002, 0.002)
+	this.textMesh2.position.set(10, 0, 0)
+	this.textMesh2.quaternion.setFromEuler(new THREE.Euler(-3.14159/2,0,0))
+	this.mesh.add(this.textMesh2)
 
 	this.gridScale = 0
 	this.scale(1)
@@ -81,7 +88,10 @@ function WorldEditorRadialHelper() {
 WorldEditorRadialHelper.prototype.scale = function(s) {
 	if (s !== this.gridScale) {
 		var textShapes = THREE.FontUtils.generateShapes(s.toString() + " m")
-		this.textMesh.geometry = new THREE.ShapeGeometry(textShapes)
+		this.textMesh1.geometry = new THREE.ShapeGeometry(textShapes)
+
+		textShapes = THREE.FontUtils.generateShapes((s*10).toString() + " m")
+		this.textMesh2.geometry = new THREE.ShapeGeometry(textShapes)
 
 		this.gridScale = s
 		this.mesh.scale.set(s, s, s)
@@ -89,5 +99,7 @@ WorldEditorRadialHelper.prototype.scale = function(s) {
 }
 
 WorldEditorRadialHelper.prototype.position = function(pos) {
-	this.mesh.position.copy(pos)
+	this.mesh.position.x = pos.x
+	this.mesh.position.y = 0
+	this.mesh.position.z = pos.z
 }

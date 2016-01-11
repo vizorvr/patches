@@ -92,7 +92,7 @@ WorldEditor.prototype.update = function() {
 	this.gridHelper.scale(v)
 
 	if (this.vrCamera) {
-		console.log('before', this.vrCamera.position.x, this.vrCamera.position.y, this.vrCamera.position.z)
+		//console.log('before', this.vrCamera.position.x, this.vrCamera.position.y, this.vrCamera.position.z)
 		this.radialHelper.position(this.vrCamera.position)
 	}
 
@@ -497,4 +497,15 @@ WorldEditor.prototype.matchCamera = function() {
 	vrCameraPlugin.undoableSetState('quaternion', editCamera.quaternion.clone(), tempQuaternion)
 
 	E2.app.undoManager.end()
+}
+
+WorldEditor.prototype.toggleGrid = function() {
+	if (this.editorTree.children.indexOf(this.gridHelper.mesh) !== -1) {
+		this.editorTree.remove(this.gridHelper.mesh)
+		this.editorTree.add(this.radialHelper.mesh)
+	}
+	else {
+		this.editorTree.remove(this.radialHelper.mesh)
+		this.editorTree.add(this.gridHelper.mesh)
+	}
 }
