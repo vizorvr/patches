@@ -78,6 +78,8 @@ AbstractThreeMeshPlugin.prototype.update_mesh = function()
 		}
 
 		this.geoms_dirty = this.mats_dirty = false
+
+		this.node.emit('meshChanged')
 	}
 
 	if (this.mats_dirty && this.mats && this.mats.length > 0) {

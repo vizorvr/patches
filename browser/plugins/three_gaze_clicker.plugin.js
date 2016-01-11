@@ -215,14 +215,16 @@
 
 		if (intersects.length > 0) {
 			var obj = intersects[0].object
-			while (obj && !obj.onClick) {
+			while (obj && !obj.clickable) {
 				obj = obj.parent
 			}
 
-			if (obj && obj.onClick) {
-				if (obj != this.lastObj) {
+			if (obj && obj.clickable) {
+				if (obj !== this.lastObj) {
 					this.objTimer = this.core.abs_t
 					this.lastObj = obj
+
+					E2.core.runtimeEvents.emit('gazeIn:'+this.lastObj.uuid)
 				}
 
 				hadObj = true
@@ -230,6 +232,9 @@
 		}
 
 		if (!hadObj) {
+			if (this.lastObj)
+				E2.core.runtimeEvents.emit('gazeOut:'+this.lastObj.uuid)
+
 			this.lastObj = undefined
 			this.objTimer = undefined
 		}
@@ -240,7 +245,10 @@
 
 			if (this.clickFactor < 1 && clickFactor >= 1) {
 				// only click once when the timer passes this.clickDelay (default 1 second)
-				this.lastObj.onClick()
+				if (this.lastObj.onClick)
+					this.lastObj.onClick()
+
+				E2.core.runtimeEvents.emit('gazeClicked:'+this.lastObj.uuid)
 			}
 
 			this.clickFactor = clickFactor
