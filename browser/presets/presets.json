@@ -49,6 +49,7 @@
 
 	"TIME & ANIMATION ": {
 		"Basic clock": { "name": "_basic-clock" },
+		"Animate on Trigger": { "name": "_animate-on-trigger" },
 		"Oscillate between 2 values": { "name": "_oscillate-between-2-values" },
 		"Oscillate 2 values with in tween": { "name": "_oscillate-with-in-tween" },
 		"Oscillate 2 values with out tween": { "name": "_oscillate-with-out-tween" },
