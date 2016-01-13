@@ -124,7 +124,11 @@
 
     "INTERACTION STUFF": {
         "Gaze Clicker": "three_gaze_clicker",
-        "Clickable Object": "three_clickable_object"
+        "Clickable Object": "three_clickable_object",
+
+        "Experimental: Object Gaze In": "on_three_object_gaze_in",
+        "Experimental: Object Gaze Out": "on_three_object_gaze_out",
+        "Experimental: Object Gaze Clicked": "on_three_object_gaze_clicked"
     },
 
 

@@ -3,6 +3,8 @@ function Plugin(core, node) {
 	this.core = core
 	this.node = node
 
+	this.state = {}
+
 	this.node.on('pluginStateChanged', function() {
 		if (that.state_changed && that.node.ui && that.node.ui.pluginUI)
 			that.state_changed(that.node.ui.pluginUI)
