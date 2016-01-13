@@ -104,23 +104,20 @@ WorldEditor.prototype.getCamera = function() {
 	return this.camera.perspectiveCamera
 }
 
-WorldEditor.prototype.updateScene = function(scene, camera) {
-	this.scene = scene
-	this.vrCamera = camera
-
+WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 	var needsHandles = []
 	var newHandles = []
 	var removeHandles = []
 
 	var that = this
 
+	// 1. collect objects requiring handles
 	var nodeCollector = function ( node ) {
 		if (node instanceof THREE.PointLight || node instanceof THREE.DirectionalLight) {
 			needsHandles.push(node)
 		}
 	}
 
-	// collect objects requiring handles
 	if (scene) {
 		scene.children[0].traverse( nodeCollector )
 	}
@@ -128,7 +125,7 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 	// add handles for the camera helper
 	needsHandles.push(camera)
 
-	// remove handles that are no longer there
+	// 2. remove handles that are no longer there
 	this.handleTree.traverse(function(n) {
 		if (needsHandles.indexOf(n.helperObjectBackReference) === -1) {
 			removeHandles.push(n)
@@ -139,7 +136,7 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 		this.handleTree.remove(removeHandles[i])
 	}
 
-	// create a list of handles to be created and filter out existing handles
+	// 3. create a list of handles to be created and filter out existing handles
 	newHandles = needsHandles.slice(0)
 
 	for (var i = 0; i < this.handleTree.children.length; ++i) {
@@ -149,7 +146,7 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 		}
 	}
 
-	// create new handles
+	// 4. finally create any new handles
 	for (var i = 0; i < newHandles.length; ++i) {
 		var node = newHandles[i]
 
@@ -173,6 +170,13 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 			this.handleTree.add(this.cameraHelper)
 		}
 	}
+}
+
+WorldEditor.prototype.updateScene = function(scene, camera) {
+	this.scene = scene
+	this.vrCamera = camera
+
+	this.updateHelperHandles(scene, camera)
 
 	// if there's a pending selection (something was pasted),
 	// set selection accordingly
