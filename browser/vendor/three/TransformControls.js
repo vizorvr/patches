@@ -795,7 +795,7 @@
 			this.object = this.plugin.object3d
 			this.visible = true
 
-			this.updateTranformLock()
+			this.updateTransformLock()
 
 			this.update()
 
