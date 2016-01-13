@@ -72,6 +72,7 @@
 	"EXAMPLES": {
 		"Rotating cube": { "name": "_example-rotating-cube" },
 		"Spawn particles from mesh": { "name": "_example-particle-spawn-from-mesh" },
-		"Inputs to Array": { "name": "_example-inputs-to-array" }
+		"Inputs to Array": { "name": "_example-inputs-to-array" },
+		"Gaze Clicking": { "name": "_example-gaze-clicking" }
 	}
 }
