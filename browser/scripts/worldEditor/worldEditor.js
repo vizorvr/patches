@@ -108,35 +108,71 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 	this.scene = scene
 	this.vrCamera = camera
 
-	this.handleTree.children = []
+	var needsHandles = []
+	var newHandles = []
+	var removeHandles = []
 
 	var that = this
 
-	var nodeHandler = function ( node ) {
+	var nodeCollector = function ( node ) {
+		if (node instanceof THREE.PointLight || node instanceof THREE.DirectionalLight) {
+			needsHandles.push(node)
+		}
+	}
+
+	// collect objects requiring handles
+	if (scene) {
+		scene.children[0].traverse( nodeCollector )
+	}
+
+	// add handles for the camera helper
+	needsHandles.push(camera)
+
+	// remove handles that are no longer there
+	this.handleTree.traverse(function(n) {
+		if (needsHandles.indexOf(n.helperObjectBackReference) === -1) {
+			removeHandles.push(n)
+		}
+	})
+
+	for (var i = 0; i < removeHandles.length; ++i) {
+		this.handleTree.remove(removeHandles[i])
+	}
+
+	// create a list of handles to be created and filter out existing handles
+	newHandles = needsHandles.slice(0)
+
+	for (var i = 0; i < this.handleTree.children.length; ++i) {
+		var indexOfHandle = newHandles.indexOf(this.handleTree.children[i].helperObjectBackReference)
+		if (indexOfHandle !== 1) {
+			newHandles.splice(indexOfHandle, 1)
+		}
+	}
+
+	// create new handles
+	for (var i = 0; i < newHandles.length; ++i) {
+		var node = newHandles[i]
+
 		if (node instanceof THREE.PointLight) {
 			var helper = new THREE.PointLightHelper(node, 0.5)
 
 			helper.backReference = node.backReference
 			helper.helperObjectBackReference = node
-			that.handleTree.add(helper)
+			this.handleTree.add(helper)
 		}
 		else if (node instanceof THREE.DirectionalLight) {
 			var helper = new THREE.DirectionalLightHelper(node, 0.5)
 
 			helper.backReference = node.backReference
 			helper.helperObjectBackReference = node
-			that.handleTree.add(helper)
+			this.handleTree.add(helper)
+		}
+		else if (node instanceof THREE.Camera) {
+			this.cameraHelper.helperObjectBackReference = node
+			this.cameraHelper.attachCamera(camera)
+			this.handleTree.add(this.cameraHelper)
 		}
 	}
-
-	// add handles for anything requiring them in the scene
-	if (scene) {
-		scene.children[0].traverse( nodeHandler )
-	}
-
-	// add handles for the camera helper
-	this.cameraHelper.attachCamera(camera)
-	this.handleTree.add(this.cameraHelper)
 
 	// if there's a pending selection (something was pasted),
 	// set selection accordingly
