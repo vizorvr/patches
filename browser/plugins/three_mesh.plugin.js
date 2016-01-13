@@ -39,6 +39,7 @@
 			this.object3d = data
 			this.geoms = []
 			this.mats = []
+			this.node.emit('meshChanged')
 		}
 	}
 

@@ -19,6 +19,12 @@ function ThreeObject3DPlugin(core) {
 			dt:     core.datatypes.FLOAT,
 			def:    0,
 			desc:   'Affects how this object is rendered in stereo<br/>Stereo View - 0: both eyes, 1: left eye only, 2: right eye only'
+		},
+		{
+			name:   'lock transform',
+			dt:     core.datatypes.BOOL,
+			def:    false,
+			desc:   'if enabled, this object\'s transform is locked and can\'t be adjusted in the 3d editor.'
 		}
 	]
 
@@ -37,6 +43,8 @@ function ThreeObject3DPlugin(core) {
 
 		pivot: {x: 0, y: 0, z:0}
 	}
+
+	this.lockTransformControls = false
 
 	this.graphInputs = {
 		position: new THREE.Vector3(0, 0, 0),
@@ -84,7 +92,8 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 		function() { that.object3d.castShadow = data },
 		function() { that.object3d.receiveShadow = data },
 		function() { that.object3d.name = data },
-		function() { that.object3d.channels.set(data) }
+		function() { that.object3d.channels.set(data) },
+		function() { that.lockTransformControls = data }
 	]
 
 	var slotOffset = this.node.plugin.input_slots.length - handlers.length

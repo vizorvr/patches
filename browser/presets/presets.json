@@ -4,6 +4,13 @@
 		"360 photo template": { "name": "_template-360-photo" }
 	},
 
+	"EXAMPLES": {
+		"Rotating cube": { "name": "_example-rotating-cube" },
+		"Spawn particles from mesh": { "name": "_example-particle-spawn-from-mesh" },
+		"Inputs to Array": { "name": "_example-inputs-to-array" },
+		"Gaze Clicking": { "name": "_example-gaze-clicking" }
+	},
+
 	"ADD OBJECTS": {
 		"3D model": { "name": "_add-3d-model", "isObject3d": true },
 		"Box": { "name": "_add-box", "isObject3d": true },
@@ -67,11 +74,5 @@
 		"1 step stepsequencer": { "name": "util_1_step_stepsequencer" },
 		"9 step stepsequencer": { "name": "util_9_step_stepsequencer" },
 		"Display number": { "name": "_util-display-number" }
-	},
-
-	"EXAMPLES": {
-		"Rotating cube": { "name": "_example-rotating-cube" },
-		"Spawn particles from mesh": { "name": "_example-particle-spawn-from-mesh" },
-		"Inputs to Array": { "name": "_example-inputs-to-array" }
 	}
 }

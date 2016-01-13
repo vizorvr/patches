@@ -1,143 +1,47 @@
 function VRCameraHelper( camera ) {
-	function VRCameraGeometry() {
-		THREE.Geometry.call(this)
 
-		var hdetail = 8
-		var vdetail = 2
+	THREE.Object3D.call(this)
 
-		var size = 0.1
+	var that = this
 
-		var hmdHalfProportion = 0.2
+	function geometryLoaded(geometry, texture) {
 
-		// generate a distorted torus which resembles a hmd
-		var i, j
-		for (j = 0; j < hdetail; ++j) {
-			for (i = 0; i < vdetail; ++i) {
-				var fi = i / (vdetail - 1)
-				var fj = j / hdetail
+		var scale = 0.01
+		var rotation = Math.PI
 
-				var fj2 = 1
-				if (fj > 1.0 - hmdHalfProportion) {
-					fj2 = (1.0 - fj) / hmdHalfProportion
-				}
-				else if (fj < hmdHalfProportion) {
-					fj2 = fj / hmdHalfProportion
-				}
+		var material = new THREE.MeshBasicMaterial({
+			color: 0xffffff,
+			map: texture,
+			wireframe: false,
+			opacity: 0.9,
+			transparent: true})
 
-				var hmdScale = 0.25
-				var extrudeScale = 1.05
+		var mesh = new THREE.Mesh(geometry, material)
+		mesh.scale.set(scale, scale, scale)
+		mesh.quaternion.setFromEuler(new THREE.Euler(0, rotation, 0))
 
-				if (fj2 < 1.0) {
-					hmdScale = 1
-					extrudeScale = 1.3 + fj2 * 0.6
-				}
+		that.matrixAutoUpdate = false
 
-				var x = Math.sin(fj * 3.14159 * 2) * size
-				var y = (fi - 0.5) * hmdScale * size
-				var z = size - Math.cos(fj * 3.14159 * 2) * size
+		that.add(mesh)
 
-				this.vertices.push(new THREE.Vector3(x, y, z))
-
-				x *= extrudeScale
-				z *= extrudeScale
-
-				this.vertices.push(new THREE.Vector3(x, y, z))
-			}
-		}
-
-		var a
-		var b
-		var c
-		var d
-		var normal
-		var face
-
-		for (j = 0; j < hdetail; ++j) {
-			for (i = 0; i < vdetail - 1; ++i) {
-				var fj = j / hdetail
-
-				// inside
-				a = (j * vdetail + i + 1) * 2
-				b = (j * vdetail + i) * 2
-				c = (((j + 1) % hdetail * vdetail) + i + 1) * 2
-				d = (((j + 1) % hdetail * vdetail) + i) * 2
-
-				normal = new THREE.Vector3(-Math.sin(fj * 3.14159 * 2), 0, Math.cos(fj * 3.14159 * 2))
-				face = new THREE.Face3(a, b, c)
-				face.normal = normal
-				this.faces.push(face)
-
-				face = new THREE.Face3(b, d, c)
-				face.normal = normal.clone()
-				this.faces.push(face)
-
-				// outside
-				a = (j * vdetail + i) * 2 + 1
-				b = (j * vdetail + i + 1) * 2 + 1
-				c = (((j + 1) % hdetail * vdetail) + i) * 2 + 1
-				d = (((j + 1) % hdetail * vdetail) + i + 1) * 2 + 1
-
-				normal = new THREE.Vector3(Math.sin(fj * 3.14159 * 2), 0, -Math.cos(fj * 3.14159 * 2))
-				face = new THREE.Face3(a, b, c)
-				face.normal = normal
-				this.faces.push(face)
-
-				face = new THREE.Face3(b, d, c)
-				face.normal = normal.clone()
-				this.faces.push(face)
-
-				// bottom
-				a = (j * vdetail + i) * 2
-				b = (j * vdetail + i) * 2 + 1
-				c = (((j + 1) % hdetail * vdetail) + i) * 2
-				d = (((j + 1) % hdetail * vdetail) + i) * 2 + 1
-
-				normal = new THREE.Vector3(0, -1, 0)
-				face = new THREE.Face3(a, b, c)
-				face.normal = normal
-				this.faces.push(face)
-
-				face = new THREE.Face3(b, d, c)
-				face.normal = normal.clone()
-				this.faces.push(face)
-
-				// top
-				a = (j * vdetail + i + 1) * 2 + 1
-				b = (j * vdetail + i + 1) * 2
-				c = (((j + 1) % hdetail * vdetail) + i + 1) * 2 + 1
-				d = (((j + 1) % hdetail * vdetail) + i + 1) * 2
-
-				normal = new THREE.Vector3(0, 1, 0)
-				face = new THREE.Face3(a, b, c)
-				face.normal = normal
-				this.faces.push(face)
-
-				face = new THREE.Face3(b, d, c)
-				face.normal = normal.clone()
-				this.faces.push(face)
-			}
-		}
-
-		this.mergeVertices()
 	}
 
-	VRCameraGeometry.prototype = Object.create(THREE.Geometry.prototype)
-	VRCameraGeometry.prototype.constructor = THREE.Geometry
+	var assetLoader = E2.core.assetLoader
 
-	this.geometry = new VRCameraGeometry()
-	this.material = new THREE.MeshLambertMaterial({color: 0xffffff})
-	this.material.wireframe = false
-
-	THREE.Mesh.call(this, this.geometry, this.material)
-
-	this.matrixAutoUpdate = false
+	assetLoader.loadAsset('texture', "/data/editor-icons/vr-camera/IconTextureMap.png")
+	.then(function(texture) {
+		assetLoader.loadAsset('model', '/data/editor-icons/vr-camera/Head1.obj')
+		.then(function(geomsmats) {
+			geometryLoaded(geomsmats.geometries[0], texture)
+		})
+	})
 
 	if (camera) {
 		this.attachCamera(camera)
 	}
 }
 
-VRCameraHelper.prototype = Object.create( THREE.Mesh.prototype )
+VRCameraHelper.prototype = Object.create( THREE.Object3D.prototype )
 VRCameraHelper.prototype.constructor = THREE.CameraHelper
 
 VRCameraHelper.prototype.dispose = function() {

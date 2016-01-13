@@ -1380,14 +1380,15 @@ Application.prototype.onKeyDown = function(e) {
 
 	if (E2.util.isTextInputInFocus(e))
 		return true;
-	
+
 	var toggleFullScreenKey = 70
 	var toggleNoodlesKey = 9
 	var toggleWorldEditorKey = 86
+	var toggleWorldEditorGridKey = 71 // g
 
 	var altKey = 18
 
-	var exceptionKeys = [ toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey, altKey ]
+	var exceptionKeys = [toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey, altKey]
 
 	if (this.isVRCameraActive() && exceptionKeys.indexOf(e.keyCode) === -1)
 		return true;
@@ -1395,7 +1396,7 @@ Application.prototype.onKeyDown = function(e) {
 	var ret = true;
 
 	// arrow up || down
-	var arrowKeys = [37,38,39,40]
+	var arrowKeys = [37, 38, 39, 40]
 	if (arrowKeys.indexOf(e.keyCode) !== -1) {
 		var dx = 0, dy = 0
 
@@ -1406,8 +1407,8 @@ Application.prototype.onKeyDown = function(e) {
 
 		if (this.selectedNodes.length) {
 			that.executeNodeDrag(this.selectedNodes,
-				this.selectedConnections,
-				dx, dy)
+			this.selectedConnections,
+			dx, dy)
 		}
 		e.preventDefault()
 		ret = false;
@@ -1418,21 +1419,21 @@ Application.prototype.onKeyDown = function(e) {
 		e.preventDefault();
 		ret = false;
 	}
-	else if(e.keyCode === 13) { // enter = deselect (eg. commit move)
+	else if (e.keyCode === 13) { // enter = deselect (eg. commit move)
 		this.clearEditState()
 		this.clearSelection()
 		ret = false;
 	}
-	else if(e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
+	else if (e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
 	{
 		this.shift_pressed = true;
 		this.activateHoverSlot();
 	}
-	else if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
+	else if (e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
 	{
 		this.ctrl_pressed = true;
 	}
-	else if(e.keyCode === altKey) // alt
+	else if (e.keyCode === altKey) // alt
 	{
 		this.alt_pressed = true;
 	}
@@ -1458,7 +1459,7 @@ Application.prototype.onKeyDown = function(e) {
 		var item = numberHotKeys[e.keyCode - 48]
 		var name = item.substring(7)
 		if (item.indexOf('preset:') === 0)
-			that.presetManager.openPreset('/presets/'+name+'.json')
+			that.presetManager.openPreset('/presets/' + name + '.json')
 		else
 			this.instantiatePlugin(name)
 
@@ -1466,11 +1467,15 @@ Application.prototype.onKeyDown = function(e) {
 	}
 
 
-	else if(e.keyCode === toggleFullScreenKey) // f
+	else if (e.keyCode === toggleFullScreenKey) // f
 	{
 		this.toggleFullscreen()
 		e.preventDefault();
 		ret = false;
+	}
+	else if (e.keyCode === toggleWorldEditorGridKey && this.isWorldEditorActive()) // g
+	{
+		this.worldEditor.toggleGrid()
 	}
 	else if(this.ctrl_pressed || e.metaKey)
 	{

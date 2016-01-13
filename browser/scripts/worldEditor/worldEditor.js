@@ -28,8 +28,11 @@ function WorldEditor(domElement) {
 	this.editorTree = new THREE.Object3D()
 
 	// grid around origin along x, z axises
-	this.grid = new WorldEditorOriginGrid()
-	this.editorTree.add(this.grid.mesh)
+	this.gridHelper = new WorldEditorOriginGrid()
+	this.editorTree.add(this.gridHelper.mesh)
+
+	// radial grid
+	this.radialHelper = new WorldEditorRadialHelper()
 
 	// root for any selection bboxes
 	this.selectionTree = new THREE.Object3D()
@@ -82,14 +85,24 @@ WorldEditor.prototype.update = function() {
 		return f(v, n * 10)
 	}
 
-	var len = this.camera.perspectiveCamera.position.clone().sub(this.editorControls.center).length() || 1
-	var v = f(len, 0.01)
+	var cameraDistanceToSelectedObject = this.camera.perspectiveCamera.position.clone().sub(this.editorControls.center).length() || 1
+	var gridScale = f(cameraDistanceToSelectedObject, 0.01)
 
-	this.grid.scale(v)
+	this.gridHelper.scale(gridScale)
+
+	if (this.vrCamera) {
+		this.radialHelper.position(this.vrCamera.position)
+
+		var cameraDistanceToVRCamera = this.camera.perspectiveCamera.position.clone().sub(this.vrCamera.position).length() || 1
+		var gridScale = f(cameraDistanceToVRCamera, 0.01)
+		gridScale = gridScale < 1 ? 1 : gridScale
+		this.radialHelper.scale(gridScale)
+	}
 
 	// needs calling on every update otherwise the transform controls draw incorrectly
 	this.transformControls.setMode(this.transformMode)
 	this.transformControls.setSpace('local')
+	this.transformControls.updateTransformLock()
 }
 
 WorldEditor.prototype.preRenderUpdate = function() {
@@ -104,39 +117,79 @@ WorldEditor.prototype.getCamera = function() {
 	return this.camera.perspectiveCamera
 }
 
-WorldEditor.prototype.updateScene = function(scene, camera) {
-	this.scene = scene
-	this.vrCamera = camera
-
-	this.handleTree.children = []
+WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
+	var needsHandles = []
+	var newHandles = []
+	var removeHandles = []
 
 	var that = this
 
-	var nodeHandler = function ( node ) {
+	// 1. collect objects requiring handles
+	var nodeCollector = function ( node ) {
+		if (node instanceof THREE.PointLight || node instanceof THREE.DirectionalLight) {
+			needsHandles.push(node)
+		}
+	}
+
+	if (scene) {
+		scene.children[0].traverse( nodeCollector )
+	}
+
+	// add handles for the camera helper
+	needsHandles.push(camera)
+
+	// 2. remove handles that are no longer there
+	this.handleTree.traverse(function(n) {
+		if (needsHandles.indexOf(n.helperObjectBackReference) === -1) {
+			removeHandles.push(n)
+		}
+	})
+
+	for (var i = 0; i < removeHandles.length; ++i) {
+		this.handleTree.remove(removeHandles[i])
+	}
+
+	// 3. create a list of handles to be created and filter out existing handles
+	newHandles = needsHandles.slice(0)
+
+	for (var i = 0; i < this.handleTree.children.length; ++i) {
+		var indexOfHandle = newHandles.indexOf(this.handleTree.children[i].helperObjectBackReference)
+		if (indexOfHandle !== 1) {
+			newHandles.splice(indexOfHandle, 1)
+		}
+	}
+
+	// 4. finally create any new handles
+	for (var i = 0; i < newHandles.length; ++i) {
+		var node = newHandles[i]
+
 		if (node instanceof THREE.PointLight) {
 			var helper = new THREE.PointLightHelper(node, 0.5)
 
 			helper.backReference = node.backReference
 			helper.helperObjectBackReference = node
-			that.handleTree.add(helper)
+			this.handleTree.add(helper)
 		}
 		else if (node instanceof THREE.DirectionalLight) {
 			var helper = new THREE.DirectionalLightHelper(node, 0.5)
 
 			helper.backReference = node.backReference
 			helper.helperObjectBackReference = node
-			that.handleTree.add(helper)
+			this.handleTree.add(helper)
+		}
+		else if (node instanceof THREE.Camera) {
+			this.cameraHelper.helperObjectBackReference = node
+			this.cameraHelper.attachCamera(camera)
+			this.handleTree.add(this.cameraHelper)
 		}
 	}
+}
 
-	// add handles for anything requiring them in the scene
-	if (scene) {
-		scene.children[0].traverse( nodeHandler )
-	}
+WorldEditor.prototype.updateScene = function(scene, camera) {
+	this.scene = scene
+	this.vrCamera = camera
 
-	// add handles for the camera helper
-	this.cameraHelper.attachCamera(camera)
-	this.handleTree.add(this.cameraHelper)
+	this.updateHelperHandles(scene, camera)
 
 	// if there's a pending selection (something was pasted),
 	// set selection accordingly
@@ -486,4 +539,15 @@ WorldEditor.prototype.matchCamera = function() {
 	vrCameraPlugin.undoableSetState('quaternion', editCamera.quaternion.clone(), tempQuaternion)
 
 	E2.app.undoManager.end()
+}
+
+WorldEditor.prototype.toggleGrid = function() {
+	if (this.editorTree.children.indexOf(this.gridHelper.mesh) !== -1) {
+		this.editorTree.remove(this.gridHelper.mesh)
+		this.editorTree.add(this.radialHelper.mesh)
+	}
+	else {
+		this.editorTree.remove(this.radialHelper.mesh)
+		this.editorTree.add(this.gridHelper.mesh)
+	}
 }

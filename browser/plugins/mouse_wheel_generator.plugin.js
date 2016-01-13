@@ -14,17 +14,18 @@ E2.p.prototype.update_output = function(slot)
 	return this.delta;
 };
 
-E2.p.prototype.mouse_wheel = function(self) { return function(e, delta)
+E2.p.prototype.mouse_wheel = function(e)
 {
-	self.delta = -delta;
-	self.updated = true;
-}};
+	var delta = e.originalEvent.wheelDelta
+	this.delta = -delta;
+	this.updated = true;
+};
 
 E2.p.prototype.state_changed = function(ui)
 {
 	if(!ui)
 	{
 		this.delta = 0.0;
-		E2.dom.webgl_canvas.bind('mousewheel', this.mouse_wheel(this));
+		E2.dom.webgl_canvas.bind('mousewheel', this.mouse_wheel.bind(this));
 	}
 };

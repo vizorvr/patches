@@ -36,7 +36,7 @@
 		}
 	}
 
-	ThreeClickableObject.prototype.update_output = function(slot) {
+	ThreeClickableObject.prototype.update_output = function() {
 		return this.object3d
 	}
 
@@ -45,12 +45,12 @@
 	}
 
 	ThreeClickableObject.prototype.update_state = function() {
-		if (!this.meshDirty) {
+		if (!this.meshDirty)
 			return
-		}
 
-		if (this.object3d && this.object3d.onClick === undefined) {
+		if (this.object3d && !this.object3d.clickable) {
 			var clickFun = this.on_click.bind(this)
+			this.object3d.clickable = true
 			this.object3d.onClick = clickFun
 		}
 
