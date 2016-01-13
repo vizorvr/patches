@@ -40,7 +40,7 @@
 	},
 
 	"INTERACTION": {
-		"Keypress increase/decrease": { "name": "interaction_up_and_down_counter_with_init_and_clamp" }
+		"Increment / Decrement value on Trigger": { "name": "_increment_or_decrement_on_trigger" }
 	},
 
 	"AUDIO": {
