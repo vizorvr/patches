@@ -29,6 +29,7 @@ paths = {
 			'./browser/scripts/plugin.js',
 			'./browser/scripts/subGraphPlugin.js',
 			'./browser/scripts/threeObject3dPlugin.js',
+			'./browser/scripts/abstractObjectGazePlugin.js',
 			'./browser/scripts/abstractThreeLoaderObjPlugin.js',
 			'./browser/scripts/abstractThreeMaterialPlugin.js',
 			'./browser/scripts/abstractThreeMeshPlugin.js',
