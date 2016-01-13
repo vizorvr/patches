@@ -157,7 +157,7 @@ FileSelectControl.prototype._renderFiles = function()
 FileSelectControl.prototype._render = function() {
 	var self = this;
 
-	var modelName = this._url.split('/')[1]
+	var modelName = this._url ? this._url.split('/')[1] : null
 
 	this._frame = $(this._frameTemplate({
 		original: this._original,
