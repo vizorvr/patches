@@ -96,7 +96,11 @@
     }
 
 	function init_() {
+        mixpanel.track('Embedded Player Opened')
+
         $('#pauseStage').click(function() {
+            mixpanel.track('Embedded Player Loading')
+
             $('#pauseStage').hide()
             $('#loadingStage').show()
 
@@ -109,6 +113,9 @@
             })
 
             playVizorFile()
+            .then(function() {
+                mixpanel.track('Embedded Player Playing')
+            })
             .catch(function(err) {
                 $('#errorStage').show()
                 $('#errorStage .error').html(err)
