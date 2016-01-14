@@ -29,9 +29,10 @@
 
 		return findMeshNodes(E2.core.root_graph)
 		.map(function(meshNode) {
-			var title = meshNode.plugin.inputValues.name || 
-				meshNode.title || 
-				meshNode.id
+			var title = 'Mesh'
+
+			if (meshNode.parent_graph.plugin)
+				title = meshNode.parent_graph.plugin.node.title
 
 			if (titleCounters[title])
 				title = title + ' ' + (++titleCounters[title])
