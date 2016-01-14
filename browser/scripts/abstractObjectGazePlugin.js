@@ -27,7 +27,7 @@
 	function findSelectableMeshNodes() {
 		var titleCounters = {}
 
-		return findMeshNodes(E2.core.active_graph)
+		return findMeshNodes(E2.core.root_graph)
 		.map(function(meshNode) {
 			var title = meshNode.plugin.inputValues.name || 
 				meshNode.title || 
