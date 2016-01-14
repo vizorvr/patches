@@ -1,5 +1,5 @@
 {
-    "abs_t": 35.74,
+    "abs_t": 377.217,
     "active_graph": "root",
     "graph_uid": "TXDgBc0JJtS3",
     "root": {
@@ -897,9 +897,10 @@
             },
             {
                 "plugin": "graph",
-                "x": 864,
-                "y": 205,
+                "x": 842,
+                "y": 235,
                 "uid": "A36bzZH8DcdD",
+                "open": false,
                 "state": {
                     "always_update": true,
                     "input_sids": {
