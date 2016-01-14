@@ -48,6 +48,13 @@
 	}
 
 	ThreeScenePlugin.prototype.update_meshes = function () {
+		if (this.envSettings) {
+			this.scene.fog = this.envSettings.fog
+		}
+		else {
+			this.scene.fog = null
+		}
+
 		// If lights have changed, we have to set affected materials as needing
 		// to be updated. This would be better done in an analytical manner
 		// and only update the ones that actually need updating; however we'll
