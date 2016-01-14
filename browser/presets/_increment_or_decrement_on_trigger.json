@@ -1,0 +1,458 @@
+{
+    "abs_t": 0.0,
+    "active_graph": "root",
+    "graph_uid": "TXDgBc0JJtS3",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 735,
+                "y": 550,
+                "uid": "WBUxg9Q5fz2G",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {
+                        "rvLDgGVpjPRL": "mVnEUjXzKTu9",
+                        "PYjRb2vbEPLM": "RrXnGmd2CdV3",
+                        "X6fUWXLUjYtC": "fQQyfTyQhtVt",
+                        "t7vqUVc2qYF6": "vqzGBrdNCQUn"
+                    },
+                    "output_sids": {
+                        "wyekgcnREvCT": "33F9mKcYFhjZ"
+                    }
+                },
+                "title": "Increase / Decrease on Trigger",
+                "graph": {
+                    "uid": "8wNUmn5UyRNh",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "input_proxy",
+                            "x": 300,
+                            "y": 564,
+                            "uid": "rvLDgGVpjPRL",
+                            "title": "increase trigger",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 7,
+                                    "uid": "aSZDePV2hR2J",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 300,
+                            "y": 611,
+                            "uid": "PYjRb2vbEPLM",
+                            "title": "decrease trigger",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 7,
+                                    "uid": "aSZDePV2hR2J",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1723,
+                            "y": 650,
+                            "uid": "wyekgcnREvCT",
+                            "title": "value",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "def": null,
+                                    "uid": "DsPSgcn6hY6J",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 301,
+                            "y": 658,
+                            "uid": "X6fUWXLUjYtC",
+                            "title": "reset trigger",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 7,
+                                    "uid": "aSZDePV2hR2J",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 301,
+                            "y": 703,
+                            "uid": "t7vqUVc2qYF6",
+                            "title": "start value",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 0,
+                                    "uid": "6JttH4uJyNfW",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "add_modulator",
+                            "x": 1396,
+                            "y": 656,
+                            "uid": "PP6HEsAbzZFU"
+                        },
+                        {
+                            "plugin": "if_else_modulator",
+                            "x": 597,
+                            "y": 318,
+                            "uid": "p8PsbPR8Qt8b"
+                        },
+                        {
+                            "plugin": "variable_local_read",
+                            "x": 338,
+                            "y": 319,
+                            "uid": "T7g4CTDphXGg",
+                            "title": "value",
+                            "dyn_out": [
+                                {
+                                    "name": "value",
+                                    "dt": 0,
+                                    "uid": "2szctpEgKtv8",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "index": 0,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "variable_local_write",
+                            "x": 1541,
+                            "y": 337,
+                            "uid": "YtLz6CSsSsSX",
+                            "title": "value",
+                            "dyn_in": [
+                                {
+                                    "name": "value",
+                                    "dt": 0,
+                                    "uid": "3nZhVDGKFJvn",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "if_else_modulator",
+                            "x": 1020,
+                            "y": 337,
+                            "uid": "NXZEctuvQkDX",
+                            "title": "add on increase"
+                        },
+                        {
+                            "plugin": "add_modulator",
+                            "x": 783,
+                            "y": 432,
+                            "uid": "6eEMaVSPbYd9"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 531,
+                            "y": 163,
+                            "uid": "7madAka4FkB5",
+                            "state": {
+                                "val": 1
+                            },
+                            "title": "one"
+                        },
+                        {
+                            "plugin": "if_else_modulator",
+                            "x": 1286,
+                            "y": 332,
+                            "uid": "YhKCbHfESqLU",
+                            "title": "dec on decrease"
+                        },
+                        {
+                            "plugin": "subtract_modulator",
+                            "x": 1284,
+                            "y": 487,
+                            "uid": "KSR9RM8R83e2"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "t7vqUVc2qYF6",
+                            "dst_nuid": "PP6HEsAbzZFU",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "8vF9nB5BvwEH",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "PP6HEsAbzZFU",
+                            "dst_nuid": "wyekgcnREvCT",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "2cp9HQvqFt8V",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "X6fUWXLUjYtC",
+                            "dst_nuid": "p8PsbPR8Qt8b",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "nKYD2WDhsP8v",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "t7vqUVc2qYF6",
+                            "dst_nuid": "p8PsbPR8Qt8b",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "k7QYXMDvpkUe",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "T7g4CTDphXGg",
+                            "dst_nuid": "p8PsbPR8Qt8b",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "KzdWpZvwCZpV",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "rvLDgGVpjPRL",
+                            "dst_nuid": "NXZEctuvQkDX",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "QB9YCZwvtB85",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "p8PsbPR8Qt8b",
+                            "dst_nuid": "NXZEctuvQkDX",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "BL2spfSRKQh9",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "p8PsbPR8Qt8b",
+                            "dst_nuid": "6eEMaVSPbYd9",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "jLakrUTAK2T3",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "7madAka4FkB5",
+                            "dst_nuid": "6eEMaVSPbYd9",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "d3xFELLp4Uw4",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "6eEMaVSPbYd9",
+                            "dst_nuid": "NXZEctuvQkDX",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "rPEHMWkcwdLh",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "NXZEctuvQkDX",
+                            "dst_nuid": "YhKCbHfESqLU",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "ZfQJxQMEXn2D",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "PYjRb2vbEPLM",
+                            "dst_nuid": "YhKCbHfESqLU",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "7p3GLB5NArRT",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "NXZEctuvQkDX",
+                            "dst_nuid": "KSR9RM8R83e2",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "Q7QYJnkEPULe",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "7madAka4FkB5",
+                            "dst_nuid": "KSR9RM8R83e2",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "fT3QymAQA7RP",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "KSR9RM8R83e2",
+                            "dst_nuid": "YhKCbHfESqLU",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "uFpdDfrGrbAf",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "YhKCbHfESqLU",
+                            "dst_nuid": "YtLz6CSsSsSX",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "6rjG7dkUtyLv",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "YhKCbHfESqLU",
+                            "dst_nuid": "PP6HEsAbzZFU",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "HPxehfdsxTvX",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ],
+                    "variables": [
+                        {
+                            "id": "value",
+                            "dt": 0
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "start value",
+                        "dt": 0,
+                        "index": 0,
+                        "uid": "vqzGBrdNCQUn",
+                        "dynamic": true,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "reset trigger",
+                        "dt": 7,
+                        "index": 1,
+                        "uid": "fQQyfTyQhtVt",
+                        "dynamic": true,
+                        "type": 0,
+                        "is_connected": false
+                    },
+                    {
+                        "name": "decrease trigger",
+                        "dt": 7,
+                        "index": 2,
+                        "uid": "RrXnGmd2CdV3",
+                        "dynamic": true,
+                        "type": 0,
+                        "is_connected": false
+                    },
+                    {
+                        "name": "increase trigger",
+                        "dt": 7,
+                        "index": 3,
+                        "uid": "mVnEUjXzKTu9",
+                        "dynamic": true,
+                        "type": 0,
+                        "is_connected": false
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "value",
+                        "dt": 0,
+                        "index": 0,
+                        "uid": "33F9mKcYFhjZ",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "const_float_generator",
+                "x": 549,
+                "y": 536,
+                "uid": "WvHvCv6evReJ",
+                "state": {
+                    "val": 0
+                },
+                "title": "start"
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": "WvHvCv6evReJ",
+                "dst_nuid": "WBUxg9Q5fz2G",
+                "src_slot": 0,
+                "dst_slot": 0,
+                "uid": "rMFLMNAG3GET",
+                "src_connected": true,
+                "dst_connected": true,
+                "dst_dyn": true
+            }
+        ]
+    }
+}
