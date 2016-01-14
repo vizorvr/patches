@@ -215,11 +215,11 @@
 
 		if (intersects.length > 0) {
 			var obj = intersects[0].object
-			while (obj && !obj.clickable) {
+			while (obj && !obj.gazeClickerCount) {
 				obj = obj.parent
 			}
 
-			if (obj && obj.clickable) {
+			if (obj && obj.gazeClickerCount) {
 				if (obj !== this.lastObj) {
 					this.objTimer = this.core.abs_t
 					this.lastObj = obj
