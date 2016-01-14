@@ -68,6 +68,7 @@
 			that.setupChosenObject()
 		})
 
+		this.state.nodeRef = null
 		this.state.type = 0
 
 		this.triggerState = false
@@ -164,7 +165,7 @@
 
 		$selectObject.change(function() {
 			var selection = $selectObject.val()
-			if (selection === '0') 
+			if (selection === '0')
 				selection = null
 			that.undoableSetState('nodeRef', selection, that.state.nodeRef)
 		})
