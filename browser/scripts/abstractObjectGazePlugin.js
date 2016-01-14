@@ -85,15 +85,20 @@
 
 	AbstractObjectGazePlugin.prototype.clearObjectBinding = function() {
 		if (this.object3d) {
+			delete this.object3d.gazeClickers[this.node.uid]
+			this.targetNode.plugin.updated = true
+
 			E2.core.runtimeEvents.off('gazeOut:'+this.object3d.uuid, this.boundOnGazeOut)
 			E2.core.runtimeEvents.off('gazeIn:'+this.object3d.uuid, this.boundOnGazeIn)
 			E2.core.runtimeEvents.off('gazeClicked:'+this.object3d.uuid, this.boundOnGazeClicked)
+
+			this.object3d = undefined
 		}
 	}
 
 	AbstractObjectGazePlugin.prototype.setupChosenObject = function() {
 		if (!this.state.nodeRef)
-			return
+			return this.clearObjectBinding()
 
 		var oref = this.state.nodeRef.split('.')
 		var guid = oref[0]
@@ -104,16 +109,23 @@
 		if (this.object3d === node.plugin.object3d)
 			return
 
+		this.clearObjectBinding()
+
 		if (this.targetNode)
 			this.targetNode.off('meshChanged', this.boundSetupChosenObject)
 
 		this.targetNode = node
 		this.targetNode.on('meshChanged', this.boundSetupChosenObject)
 
-		this.clearObjectBinding()
-
 		this.object3d = node.plugin.object3d
-		this.object3d.clickable = true
+	
+		if (!this.object3d.gazeClickers)
+			this.object3d.gazeClickers = {}
+
+		this.object3d.gazeClickers[this.node.uid] = true
+
+		// set the Mesh plugin to updated, to update the Scene as clickable
+		this.targetNode.plugin.updated = true 
 
 		E2.core.runtimeEvents.on('gazeOut:'+this.object3d.uuid, this.boundOnGazeOut)
 		E2.core.runtimeEvents.on('gazeIn:'+this.object3d.uuid, this.boundOnGazeIn)
@@ -151,7 +163,10 @@
 		$('<option>', { value: 1, text: 'Continuous' }).appendTo($selectType)
 
 		$selectObject.change(function() {
-			that.undoableSetState('nodeRef', $selectObject.val(), that.state.nodeRef)
+			var selection = $selectObject.val()
+			if (selection === '0') 
+				selection = null
+			that.undoableSetState('nodeRef', selection, that.state.nodeRef)
 		})
 
 		$selectType.change(function() {

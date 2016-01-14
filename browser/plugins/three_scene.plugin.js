@@ -30,6 +30,8 @@
 			that.updated = true
 		})
 
+		this.clickableObjectsInSlot = []
+
 		this.createScene()
 	}
 
@@ -66,6 +68,25 @@
 	}
 
 	ThreeScenePlugin.prototype.update_input = function (slot, data) {
+		var that = this
+		var i
+
+		this.clickableObjectsInSlot[slot.index] = 0
+
+		function addItem(item) {
+			item.parent = parent
+
+			item.traverse(function(child) {
+				if (child.gazeClickers && Object.keys(child.gazeClickers).length)
+					that.clickableObjectsInSlot[slot.index]++
+			})
+
+			if (item.clickable)
+				that.clickableObjectsInSlot[slot.index]++
+
+			item.dispatchEvent({ type: 'added' })
+		}
+
 		if (slot.dynamic) {
 			var parent = this.scene.children[0].children[slot.index]
 
@@ -73,14 +94,13 @@
 				if (slot.array) {
 					parent.children = data
 
-					for (var i = 0; i < data.length; ++i) {
+					for (i = 0; i < data.length; ++i) {
 						if (data[i].parent && data[i].parent !== parent) {
 							// the object is in another scene, remove from there
 							data[i].parent.remove(data[i])
 						}
 
-						data[i].parent = parent
-						data[i].dispatchEvent({type: 'added'})
+						addItem(data[i])
 					}
 				}
 				else {
@@ -91,8 +111,7 @@
 
 					parent.children = [data]
 
-					data.parent = parent
-					data.dispatchEvent({type: 'added'})
+					addItem(data)
 				}
 			}
 			else {
@@ -106,6 +125,12 @@
 			// the only static input slot is environment settings
 			this.envSettings = data
 		}
+
+		var totalClickables = 0
+		for (i=0; i < this.clickableObjectsInSlot.length; i++)
+			totalClickables += this.clickableObjectsInSlot[i]
+
+		this.scene.hasClickableObjects = totalClickables > 0
 	}
 
 	ThreeScenePlugin.prototype.connection_changed = function(on, conn, slot) {
