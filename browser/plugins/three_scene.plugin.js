@@ -73,20 +73,6 @@
 
 		this.clickableObjectsInSlot[slot.index] = 0
 
-		function addItem(item) {
-			item.parent = parent
-
-			item.traverse(function(child) {
-				if (child.gazeClickers && Object.keys(child.gazeClickers).length)
-					that.clickableObjectsInSlot[slot.index]++
-			})
-
-			if (item.clickable)
-				that.clickableObjectsInSlot[slot.index]++
-
-			item.dispatchEvent({ type: 'added' })
-		}
-
 		if (slot.dynamic) {
 			var parent = this.scene.children[0].children[slot.index]
 
@@ -100,7 +86,11 @@
 							data[i].parent.remove(data[i])
 						}
 
-						addItem(data[i])
+						data[i].parent = parent
+						data[i].dispatchEvent({ type: 'added' })
+
+						if (data[i].gazeClickerCount)
+							that.clickableObjectsInSlot[slot.index] += data[i].gazeClickerCount
 					}
 				}
 				else {
@@ -111,7 +101,11 @@
 
 					parent.children = [data]
 
-					addItem(data)
+					data.parent = parent
+					data.dispatchEvent({ type: 'added' })
+
+					if (data.gazeClickerCount)
+						that.clickableObjectsInSlot[slot.index] += data.gazeClickerCount
 				}
 			}
 			else {

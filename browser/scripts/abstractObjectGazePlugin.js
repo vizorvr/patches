@@ -81,25 +81,58 @@
 	AbstractObjectGazePlugin.prototype.onGazeClicked = function() {}
 
 	AbstractObjectGazePlugin.prototype.destroy = function() {
-		this.clearObjectBinding()
+		this.clearClickerOnObject()
 	}
 
-	AbstractObjectGazePlugin.prototype.clearObjectBinding = function() {
-		if (this.object3d) {
-			delete this.object3d.gazeClickers[this.node.uid]
-			this.targetNode.plugin.updated = true
+	AbstractObjectGazePlugin.prototype.installClickerOnObject = function() {
+		if (!this.object3d.gazeClickers)
+			this.object3d.gazeClickers = {}
 
-			E2.core.runtimeEvents.off('gazeOut:'+this.object3d.uuid, this.boundOnGazeOut)
-			E2.core.runtimeEvents.off('gazeIn:'+this.object3d.uuid, this.boundOnGazeIn)
-			E2.core.runtimeEvents.off('gazeClicked:'+this.object3d.uuid, this.boundOnGazeClicked)
+		this.object3d.gazeClickers[this.node.uid] = true
 
-			this.object3d = undefined
+		this.object3d.gazeClickerCount = 
+			Object.keys(this.object3d.gazeClickers).length
+
+		var obj = this.object3d.parent
+		while(obj) {
+			if (!obj.gazeClickerCount)
+				obj.gazeClickerCount = 0
+			obj.gazeClickerCount++
+			obj = obj.parent
 		}
+
+		E2.core.runtimeEvents.on('gazeOut:'+this.object3d.uuid, this.boundOnGazeOut)
+		E2.core.runtimeEvents.on('gazeIn:'+this.object3d.uuid, this.boundOnGazeIn)
+		E2.core.runtimeEvents.on('gazeClicked:'+this.object3d.uuid, this.boundOnGazeClicked)
+	}
+
+	AbstractObjectGazePlugin.prototype.clearClickerOnObject = function() {
+		if (!this.object3d)
+			return;
+
+		delete this.object3d.gazeClickers[this.node.uid]
+
+		this.object3d.gazeClickerCount = 
+			Object.keys(this.object3d.gazeClickers).length
+
+		var obj = this.object3d.parent
+		while(obj) {
+			obj.gazeClickerCount--
+			obj = obj.parent
+		}
+
+		this.targetNode.plugin.updated = true
+
+		E2.core.runtimeEvents.off('gazeOut:'+this.object3d.uuid, this.boundOnGazeOut)
+		E2.core.runtimeEvents.off('gazeIn:'+this.object3d.uuid, this.boundOnGazeIn)
+		E2.core.runtimeEvents.off('gazeClicked:'+this.object3d.uuid, this.boundOnGazeClicked)
+
+		this.object3d = undefined
 	}
 
 	AbstractObjectGazePlugin.prototype.setupChosenObject = function() {
 		if (!this.state.nodeRef)
-			return this.clearObjectBinding()
+			return this.clearClickerOnObject()
 
 		var oref = this.state.nodeRef.split('.')
 		var guid = oref[0]
@@ -110,7 +143,7 @@
 		if (this.object3d === node.plugin.object3d)
 			return
 
-		this.clearObjectBinding()
+		this.clearClickerOnObject()
 
 		if (this.targetNode)
 			this.targetNode.off('meshChanged', this.boundSetupChosenObject)
@@ -120,17 +153,10 @@
 
 		this.object3d = node.plugin.object3d
 	
-		if (!this.object3d.gazeClickers)
-			this.object3d.gazeClickers = {}
-
-		this.object3d.gazeClickers[this.node.uid] = true
+		this.installClickerOnObject()
 
 		// set the Mesh plugin to updated, to update the Scene as clickable
 		this.targetNode.plugin.updated = true 
-
-		E2.core.runtimeEvents.on('gazeOut:'+this.object3d.uuid, this.boundOnGazeOut)
-		E2.core.runtimeEvents.on('gazeIn:'+this.object3d.uuid, this.boundOnGazeIn)
-		E2.core.runtimeEvents.on('gazeClicked:'+this.object3d.uuid, this.boundOnGazeClicked)
 	}
 
 	AbstractObjectGazePlugin.prototype.populateObjectSelector = function() {
