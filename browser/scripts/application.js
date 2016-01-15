@@ -1056,8 +1056,14 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 				var ref = s.nodeRef.split('.')
 				var graphUid = ref[0]
 				var nodeUid = ref[1]
+
 				graphUid = globalUidMap[graphUid]
 				nodeUid = globalUidMap[nodeUid]
+
+				// they have not been remapped (copy & paste in existing graph)
+				if (!graphUid || !nodeUid)
+					return;
+
 				s.nodeRef = graphUid + '.' + nodeUid
 			}
 		})
