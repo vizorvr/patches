@@ -1,4 +1,3 @@
-;
 (function() {
 
 var RECONNECT_INTERVAL = 5000
@@ -105,6 +104,8 @@ function EditorChannel(dispatcher) {
 	this.isOnChannel = false
 	this.lastEditSeen = null
 
+	this.queue = []
+
 	this._dispatcher = dispatcher || E2.app.dispatcher
 
 	this._messageHandlerBound = this._messageHandler.bind(this)
@@ -129,6 +130,7 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 	this.kicked = false
 	this.connected = false
+	this.forking = false
 
 	// listen to messages from network
 	this.wsChannel = new WebSocketChannel()
@@ -179,6 +181,8 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 				that.emit(m.kind, m)
 			})
+
+			that.processQueue()
 		})
 
 	return this
@@ -201,31 +205,42 @@ EditorChannel.prototype.snapshot = function() {
  */
 EditorChannel.prototype._localDispatchHandler = function _localDispatchHandler(payload) {
 	if (payload.from)
-		return;
+		return
 
 	if (this.isOnChannel)
 		return this.send(payload)
 
 	// not on channel -- fork if important
 	if (!isEditAction(payload)) // eg. mouseMove
-		return;
+		return
 
 	this.fork(payload)
 }
 
 EditorChannel.prototype.fork = function(payload) {
-	E2.ui.updateProgressBar(65);
+	var that = this
+
+	if (this.forking)
+		return this.queue.push(payload)
+
+	this.forking = true
+
+	E2.ui.updateProgressBar(65)
 
 	// FORK
 	var fc = new ForkCommand()
 	fc.fork(payload)
 		.then(function() {
-			E2.ui.updateProgressBar(100);
+			E2.ui.updateProgressBar(100)
 			E2.app.growl("We've made a copy of this for you to edit.", 'copy', 5000)
 		})
 		.catch(function(err) {
 			E2.app.growl('Error while forking: ' + err, 'error')
 			throw err
+		})
+		.finally(function() {
+			that.forking = false
+			that.processQueue()
 		})
 }
 
@@ -291,6 +306,10 @@ EditorChannel.prototype.join = function(channelName, readableName, cb) {
 	this.wsChannel.on(channelName, this._messageHandlerBound)
 }
 
+EditorChannel.prototype.canSend = function() {
+	return !this.forking && this.connected
+}
+
 EditorChannel.prototype.send = function(payload) {
 	if (!isAcceptedDispatch(payload))
 		return;
@@ -298,9 +317,22 @@ EditorChannel.prototype.send = function(payload) {
 	if (E2.app.snapshotPending && isEditAction(payload))
 		return this.snapshot()
 
+	this.queue.push(payload)
+
+	this.processQueue()
+}
+
+EditorChannel.prototype.processQueue = function() {
+	if (!this.canSend() || !this.queue.length)
+		return;
+
+	var payload = this.queue.pop()
+
 	this.wsChannel.send(
 		payload.channel === 'Global' ? payload.channel : this.channelName,
 		dehydrate(payload))
+
+	this.processQueue()
 }
 
 if (typeof(module) !== 'undefined')
