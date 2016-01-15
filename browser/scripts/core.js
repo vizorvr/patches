@@ -111,6 +111,8 @@ function Core() {
 		E2.core.emit('progress', pct)
 	})
 
+	this.blendFunctions = new BlendFunctions()
+
 	this.active_graph_dirty = true;
 
 	this.active_graph = this.root_graph = null
