@@ -140,7 +140,7 @@
 		var graph = Graph.lookup(guid)
 		var node = graph.findNodeByUid(nuid)
 
-		if (this.object3d === node.plugin.object3d)
+		if (this.object3d && this.object3d === node.plugin.object3d)
 			return
 
 		this.clearClickerOnObject()
@@ -151,8 +151,10 @@
 		this.targetNode = node
 		this.targetNode.on('meshChanged', this.boundSetupChosenObject)
 
+		if (!node.plugin.object3d) // might not have been set up yet, wait for meshChanged
+			return;
+
 		this.object3d = node.plugin.object3d
-	
 		this.installClickerOnObject()
 
 		// set the Mesh plugin to updated, to update the Scene as clickable
