@@ -998,26 +998,28 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 	var ag = E2.core.active_graph
 	var createdNodes = []
 	var createdConnections = []
-	var uidMap = {}
+	var globalUidMap = {}
 
-	function mapSlotIds(sids, uidMap) {
+	function mapSlotIds(sids, localUidMap) {
 		var nsids = {}
 		Object.keys(sids).map(function(oldUid) {
-			nsids[uidMap[oldUid]] = sids[oldUid]
+			nsids[localUidMap[oldUid]] = sids[oldUid]
 		})
 		return nsids
 	}
 
 	function remapGraph(g, graphNode) {
 		var graph = _.clone(g)
+		var localUidMap = {}
 
 		var newUid = E2.core.get_uid()
-		uidMap[graph.uid] = newUid
+		globalUidMap[graph.uid] = newUid
 		graph.uid = newUid
 
 		graph.nodes.map(function(node) {
 			newUid = E2.core.get_uid()
-			uidMap[node.uid] = newUid
+			globalUidMap[node.uid] = newUid
+			localUidMap[node.uid] = newUid
 			node.uid = newUid
 
 			if (['graph', 'loop', 'array_function'].indexOf(node.plugin) > -1)
@@ -1028,15 +1030,15 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			var s = graphNode.state
 
 			if (s.input_sids)
-				s.input_sids = mapSlotIds(s.input_sids, uidMap)
+				s.input_sids = mapSlotIds(s.input_sids, localUidMap)
 
 			if (s.output_sids)
-				s.output_sids = mapSlotIds(s.output_sids, uidMap)
+				s.output_sids = mapSlotIds(s.output_sids, localUidMap)
 		}
 
 		graph.conns.map(function(conn) {
-			conn.src_nuid = uidMap[conn.src_nuid]
-			conn.dst_nuid = uidMap[conn.dst_nuid]
+			conn.src_nuid = localUidMap[conn.src_nuid]
+			conn.dst_nuid = localUidMap[conn.dst_nuid]
 			conn.uid = E2.uid()
 		})
 
@@ -1048,14 +1050,14 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			if (['graph', 'loop', 'array_function'].indexOf(node.plugin) > -1)
 				node.graph = remapNodeReferences(node.graph)
 
-			// eg. gaze clickers refer to the target object with a nodeRef
+			// eg. gaze clickers refer to the target node with a nodeRef
 			if (node.state && node.state.nodeRef) {
 				var s = node.state
 				var ref = s.nodeRef.split('.')
 				var graphUid = ref[0]
 				var nodeUid = ref[1]
-				graphUid = uidMap[graphUid]
-				nodeUid = uidMap[nodeUid]
+				graphUid = globalUidMap[graphUid]
+				nodeUid = globalUidMap[nodeUid]
 				s.nodeRef = graphUid + '.' + nodeUid
 			}
 		})
