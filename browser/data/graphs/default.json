@@ -1,5 +1,5 @@
 {
-    "abs_t": 377.217,
+    "abs_t": 43.514,
     "active_graph": "root",
     "graph_uid": "TXDgBc0JJtS3",
     "root": {
@@ -548,7 +548,7 @@
                         },
                         {
                             "plugin": "three_material_phong",
-                            "x": 665,
+                            "x": 664,
                             "y": 280,
                             "uid": "IJzf3S2ECiJe",
                             "open": false,
@@ -578,6 +578,16 @@
                                 "val": 40
                             },
                             "title": "Repeat"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 511,
+                            "y": 355,
+                            "uid": "8bakUFdfCftQ",
+                            "open": false,
+                            "state": {
+                                "val": 0
+                            }
                         }
                     ],
                     "conns": [
@@ -642,6 +652,15 @@
                             "src_slot": 0,
                             "dst_slot": 4,
                             "uid": "3Udkt5dADKZd",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "8bakUFdfCftQ",
+                            "dst_nuid": "IJzf3S2ECiJe",
+                            "src_slot": 0,
+                            "dst_slot": 18,
+                            "uid": "QeArHgytjGcm",
                             "src_connected": true,
                             "dst_connected": true
                         }
