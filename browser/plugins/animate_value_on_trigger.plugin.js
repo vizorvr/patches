@@ -34,8 +34,10 @@
 			desc: 'true while the animation is active'
 		}]
 
+		this.blendFunctions = new BlendFunctions()
+
 		this.state = {
-			blendFuncId: E2.core.blendFunctions.getByIndex(0).id
+			blendFuncId: this.blendFunctions.getByIndex(0).id
 		}
 	}
 
@@ -46,15 +48,15 @@
 
 		var $selectBlendType = $('<select class="blend-type-sel" title="Select Blend Type"/>')
 
-		for (var i = 0, len = E2.core.blendFunctions.functions.length; i < len; ++i) {
-			var blendFunc = E2.core.blendFunctions.functions[i]
+		for (var i = 0, len = this.blendFunctions.functions.length; i < len; ++i) {
+			var blendFunc = this.blendFunctions.functions[i]
 			$('<option>', {value: i, text: blendFunc.name}).appendTo($selectBlendType)
 		}
 
 		var that = this
 
 		$selectBlendType.change(function() {
-			var newBlendFunc = E2.core.blendFunctions.getByIndex($selectBlendType.val())
+			var newBlendFunc = that.blendFunctions.getByIndex($selectBlendType.val())
 			var selection = newBlendFunc.id
 			that.undoableSetState('blendFuncId', selection, that.state.blendFuncId)
 
@@ -75,7 +77,7 @@
 		this.startValue = 0
 		this.endValue = 1
 
-		this.blendFunc = E2.core.blendFunctions.getById(this.state.blendFuncId)
+		this.blendFunc = this.blendFunctions.getById(this.state.blendFuncId)
 	}
 
 	AnimateValueOnTrigger.prototype.update_input = function(slot, data) {
@@ -134,8 +136,8 @@
 	AnimateValueOnTrigger.prototype.state_changed = function(ui) {
 		if (ui) {
 			if (this.state.blendFuncId) {
-				var blendFunc = E2.core.blendFunctions.getById(this.state.blendFuncId)
-				var idx = E2.core.blendFunctions.getIndex(blendFunc)
+				var blendFunc = this.blendFunctions.getById(this.state.blendFuncId)
+				var idx = this.blendFunctions.getIndex(blendFunc)
 				ui.find('.blend-type-sel').val(idx)
 			}
 		}
