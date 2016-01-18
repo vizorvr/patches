@@ -129,7 +129,7 @@
 
 		var totalClickables = 0
 		for (i=0; i < this.clickableObjectsInSlot.length; i++)
-			totalClickables += this.clickableObjectsInSlot[i]
+			totalClickables += this.clickableObjectsInSlot[i] || 0
 
 		this.scene.hasClickableObjects = totalClickables > 0
 	}
