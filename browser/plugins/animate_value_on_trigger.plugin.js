@@ -46,25 +46,13 @@
 	AnimateValueOnTrigger.prototype.create_ui = function() {
 		var $ui = make('div')
 
-		var $selectBlendType = $('<select class="blend-type-sel" title="Select Blend Type"/>')
-
-		for (var i = 0, len = this.blendFunctions.functions.length; i < len; ++i) {
-			var blendFunc = this.blendFunctions.functions[i]
-			$('<option>', {value: i, text: blendFunc.name}).appendTo($selectBlendType)
-		}
-
 		var that = this
-
-		$selectBlendType.change(function() {
-			var newBlendFunc = that.blendFunctions.getByIndex($selectBlendType.val())
-			var selection = newBlendFunc.id
-			that.undoableSetState('blendFuncId', selection, that.state.blendFuncId)
+		this.blendFunctions.createUi($ui, function(newBlendFunc, newSelection) {
+			that.undoableSetState('blendFuncId', newSelection, that.state.blendFuncId)
 
 			// cache so that don't need to re-search again
 			that.blendFunc = newBlendFunc
 		})
-
-		$ui.append($selectBlendType)
 
 		return $ui
 	}
@@ -135,11 +123,7 @@
 
 	AnimateValueOnTrigger.prototype.state_changed = function(ui) {
 		if (ui) {
-			if (this.state.blendFuncId) {
-				var blendFunc = this.blendFunctions.getById(this.state.blendFuncId)
-				var idx = this.blendFunctions.getIndex(blendFunc)
-				ui.find('.blend-type-sel').val(idx)
-			}
+			this.blendFunctions.initialise(ui, this.state.blendFuncId)
 		}
 	}
 

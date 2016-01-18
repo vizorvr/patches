@@ -68,4 +68,30 @@ var BlendFunctions = function() {
 		return this.functions.indexOf(blendFunc)
 	}
 
+	this.createUi = function($ui, callback) {
+		var $selectBlendType = $('<select class="blend-type-sel" title="Select Blend Type"/>')
+
+		for (var i = 0, len = this.functions.length; i < len; ++i) {
+			var blendFunc = this.functions[i]
+			$('<option>', {value: i, text: blendFunc.name}).appendTo($selectBlendType)
+		}
+
+		var that = this
+
+		$selectBlendType.change(function() {
+			var newBlendFunc = that.getByIndex($selectBlendType.val())
+			var selection = newBlendFunc.id
+
+			callback(newBlendFunc, selection)
+		})
+
+		$ui.append($selectBlendType)
+	}
+
+	this.initialise = function(ui, id) {
+		var blendFunc = this.getById(id)
+		var idx = this.getIndex(blendFunc)
+		ui.find('.blend-type-sel').val(idx)
+	}
+
 }
