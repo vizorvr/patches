@@ -998,27 +998,31 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 	var ag = E2.core.active_graph
 	var createdNodes = []
 	var createdConnections = []
+	var globalUidMap = {}
 
-	function mapSlotIds(sids, uidMap) {
+	function mapSlotIds(sids, localUidMap) {
 		var nsids = {}
 		Object.keys(sids).map(function(oldUid) {
-			nsids[uidMap[oldUid]] = sids[oldUid]
+			nsids[localUidMap[oldUid]] = sids[oldUid]
 		})
 		return nsids
 	}
 
 	function remapGraph(g, graphNode) {
-		var uidMap = {}
 		var graph = _.clone(g)
+		var localUidMap = {}
 
-		graph.uid = E2.uid()
+		var newUid = E2.core.get_uid()
+		globalUidMap[graph.uid] = newUid
+		graph.uid = newUid
 
 		graph.nodes.map(function(node) {
-			var newUid = E2.core.get_uid()
-			uidMap[node.uid] = newUid
+			newUid = E2.core.get_uid()
+			globalUidMap[node.uid] = newUid
+			localUidMap[node.uid] = newUid
 			node.uid = newUid
 
-			if (['graph', 'loop', 'array_function'].indexOf(node.plugin) > -1)
+			if (Node.isGraphPlugin(node.plugin))
 				node.graph = remapGraph(node.graph, node)
 		})
 
@@ -1026,16 +1030,42 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			var s = graphNode.state
 
 			if (s.input_sids)
-				s.input_sids = mapSlotIds(s.input_sids, uidMap)
+				s.input_sids = mapSlotIds(s.input_sids, localUidMap)
 
 			if (s.output_sids)
-				s.output_sids = mapSlotIds(s.output_sids, uidMap)
+				s.output_sids = mapSlotIds(s.output_sids, localUidMap)
 		}
 
 		graph.conns.map(function(conn) {
-			conn.src_nuid = uidMap[conn.src_nuid]
-			conn.dst_nuid = uidMap[conn.dst_nuid]
+			conn.src_nuid = localUidMap[conn.src_nuid]
+			conn.dst_nuid = localUidMap[conn.dst_nuid]
 			conn.uid = E2.uid()
+		})
+
+		return graph
+	}
+
+	function remapNodeReferences(graph) {
+		graph.nodes.map(function(node) {
+			if (Node.isGraphPlugin(node.plugin))
+				node.graph = remapNodeReferences(node.graph)
+
+			// eg. gaze clickers refer to the target node with a nodeRef
+			if (node.state && node.state.nodeRef) {
+				var s = node.state
+				var ref = s.nodeRef.split('.')
+				var graphUid = ref[0]
+				var nodeUid = ref[1]
+
+				graphUid = globalUidMap[graphUid]
+				nodeUid = globalUidMap[nodeUid]
+
+				// they have not been remapped (copy & paste in existing graph)
+				if (!graphUid || !nodeUid)
+					return;
+
+				s.nodeRef = graphUid + '.' + nodeUid
+			}
 		})
 
 		return graph
@@ -1043,6 +1073,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 	// remap all UID's inside the pasted doc so they are unique in the graph tree.
 	var doc = remapGraph(srcDoc)
+	doc = remapNodeReferences(doc)
 
 	for(var i = 0, len = doc.nodes.length; i < len; i++) {
 		var docNode = doc.nodes[i]
