@@ -307,6 +307,11 @@
     "VIDEO TOOLS": {
         "Duration": "video_get_duration_modulator",
         "Current time": "video_get_current_time_modulator"
+    },
+
+    "ANIMATION": {
+        "Animate on Trigger": "animate_value_on_trigger",
+        "Animate Between Inputs": "array_blend_modulator"
     }
 
 }
