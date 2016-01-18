@@ -621,6 +621,10 @@ Node.hydrate = function(guid, json) {
 	return node
 }
 
+Node.isGraphPlugin = function(pluginId) {
+	return (['graph', 'loop', 'array_function'].indexOf(pluginId) > -1)
+}
+
 
 function LinkedSlotGroup(core, parent_node, inputs, outputs) {
 	this.core = core;

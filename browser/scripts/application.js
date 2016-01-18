@@ -1022,7 +1022,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			localUidMap[node.uid] = newUid
 			node.uid = newUid
 
-			if (['graph', 'loop', 'array_function'].indexOf(node.plugin) > -1)
+			if (Node.isGraphPlugin(node.plugin))
 				node.graph = remapGraph(node.graph, node)
 		})
 
@@ -1047,7 +1047,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 	function remapNodeReferences(graph) {
 		graph.nodes.map(function(node) {
-			if (['graph', 'loop', 'array_function'].indexOf(node.plugin) > -1)
+			if (Node.isGraphPlugin(node.plugin))
 				node.graph = remapNodeReferences(node.graph)
 
 			// eg. gaze clickers refer to the target node with a nodeRef
