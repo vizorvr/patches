@@ -95,3 +95,6 @@ var BlendFunctions = function() {
 	}
 
 }
+
+if (typeof(module) !== 'undefined')
+	module.exports = BlendFunctions
