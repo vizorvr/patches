@@ -36,8 +36,9 @@ Running the tests:
 ### Running
 
 1. Make sure MongoDB and RethinkDB are running.
-2. Run the server: ``` $ npm start```
-3. Open in the browser: [http://localhost:8000/edit](http://localhost:8000/edit)
+2. Run setup: ``` $ npm run setup ```
+3. Run the server: ``` $ npm start```
+4. Open in the browser: [http://localhost:8000/edit](http://localhost:8000/edit)
 
 If you have access to an Oculus Rift DK1 or DK2 and want to play with the VR features, you currently need one of Toji's special Chromium builds. You can find them here: http://blog.tojicode.com/2014/07/bringing-vr-to-chrome.html
 
