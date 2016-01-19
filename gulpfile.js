@@ -33,6 +33,8 @@ paths = {
 			'./browser/scripts/abstractThreeLoaderObjPlugin.js',
 			'./browser/scripts/abstractThreeMaterialPlugin.js',
 			'./browser/scripts/abstractThreeMeshPlugin.js',
+			'./browser/scripts/abstractArrayBlendModulatorPlugin.js',
+			'./browser/scripts/abstractAnimateValueOnTriggerPlugin.js',
 	
 			'./browser/scripts/blendFunctions.js',
 

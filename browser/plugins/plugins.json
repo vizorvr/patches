@@ -310,8 +310,10 @@
     },
 
     "ANIMATION": {
-        "Animate on Trigger": "animate_value_on_trigger",
-        "Animate Between Inputs": "array_blend_modulator"
+        "Animate Float on Trigger": "animate_float_on_trigger",
+        "Animate Vector3 on Trigger": "animate_vector3_on_trigger",
+        "Animate Between Input Floats": "array_blend_modulator_float",
+        "Animate Between Input Vector3s": "array_blend_modulator_vector3"
     }
 
 }
