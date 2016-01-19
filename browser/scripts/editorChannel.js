@@ -2,34 +2,6 @@
 
 var RECONNECT_INTERVAL = 5000
 
-function serialize(objects) {
-	return objects.map(function(ob) {
-		if (!ob)
-			return ob;
-
-		if (ob instanceof Graph)
-			return ob.uid
-
-		if (!ob.serialise) {
-			return ob;
-		}
-
-		return ob.serialise()
-	})
-}
-
-function serializeEvent(evt) {
-	var otwMessage = {
-		type: evt
-	}
-
-	var objects = Array.prototype.slice.call(arguments, 1)
-
-	otwMessage.objects = serialize(objects)
-
-	return otwMessage
-}
-
 function hydrate(pl) {
 	var m = _.clone(pl)
 	switch(m.actionType) {
@@ -137,10 +109,14 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 	this.wsChannel
 		.connect(wsHost, wsPort, '/__editorChannel', options)
 		.on('disconnected', function() {
+			if (!that.connected)
+				return;
+
+			that.isOnChannel = false
 			that.connected = false
 
 			if (that.kicked === true)
-				return;
+				return that.emit('disconnected')
 
 			if (!reconnecting)
 				E2.app.growl('Disconnected from server. Reconnecting.', 'reconnecting')
@@ -149,7 +125,6 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 			
 			setTimeout(that.connect.bind(that, wsHost, wsPort, options), RECONNECT_INTERVAL)
 
-			that.isOnChannel = false
 			that.emit('disconnected')
 		})
 		.on('ready', function(uid) {
@@ -166,7 +141,7 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 			that.emit('ready', uid)
 
-			that.wsChannel.on('*', function(m) {
+			that.wsChannel.on('message', function(m) {
 				if (m.kind === 'kicked') { // kicked by server
 					E2.app.growl('You have been disconnected by the server: '+ m.reason, 'disconnected', 30000)
 					that.kicked = true
