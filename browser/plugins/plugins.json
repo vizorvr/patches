@@ -42,7 +42,8 @@
         "Negate": "negate_modulator",
         "Subtract": "subtract_modulator",
         "Lowpass Filter": "lowpass_filter_modulator",
-        "Sample and hold": "sample_and_hold_modulator"
+        "Sample and hold": "sample_and_hold_modulator",
+        "Add number conditionally": "add_on_trigger_float"
     },
 
     "LOGIC": {
@@ -282,7 +283,8 @@
         "Multiply vector": "vector_multiply",
         "Normalize": "vector_normalize",
         "Scale": "vector_scale",
-        "Transform": "vector_transform"
+        "Transform": "vector_transform",
+        "Add Vectors Conditionally": "add_on_trigger_vector3"
     },
 
 
