@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<style>
+.drop-zone {
+	height: 100%;
+	line-height: 400px;
+	text-align: center;
+	font-size: 20px;
+	text-align: center;
+	padding: 25px;
+	border: 2px dashed #bbb;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+</style>
+
+<script type="text/javascript">
+
+function dropZoneDragOverHandler(evt) {
+	evt.stopPropagation();
+	evt.preventDefault();
+	evt.dataTransfer.dropEffect = "copy";
+};
+
+function fileSelectHandler(evt) {
+	evt.stopPropagation();
+	evt.preventDefault();
+
+	var file;
+	// Either read from the dataTransfer (when drag and dropped)
+	// or from the target.files (when file browsed)
+	if (evt.dataTransfer !== undefined) {
+		file = evt.dataTransfer.files[0];
+	} else if (evt.target.files !== undefined) {
+		file = evt.target.files[0];
+	}
+
+	if (file.type.match('image.*') === null) {
+		alert("File type doesn't match");
+		return;
+	}
+
+	// Create a new image object
+	var img = new Image;
+
+	// This is called after the image succesfully loads
+	img.onload = function() {
+		console.log("img onLoad called");
+		URL.revokeObjectURL(img.src);
+	}
+
+	// Load image from URL
+	img.src = URL.createObjectURL(file);
+};
+
+function initDropZone() {
+	// Local File drop handlers
+	var drop_zone = document.getElementById('drop-zone-360-image');
+	drop_zone.addEventListener("dragover", dropZoneDragOverHandler);
+	drop_zone.addEventListener("drop", fileSelectHandler);
+}
+
+</script>
+
+<title>360 images for everyone!</title>
+
+<body onload="initDropZone()">
+	<h2>Drop a fat 360 file right here</h2>
+
+	<div class="drop-zone" id="drop-zone-360-image">
+			<div id="background-file-drop">Drop Background Image Here</div>
+		</div>
+</body>
