@@ -37,6 +37,9 @@ var templateCache = new TemplateCache().compile();
 var homeController = require('./controllers/home');
 var userController = require('./controllers/userController');
 
+// Threesixty site controller
+var threesixtyController = require('./controllers/threesixty');
+
 // API keys + Passport configuration
 var secrets = require('./config/secrets');
 var passportConf = require('./config/passport');
@@ -432,6 +435,9 @@ r.connect({
 	app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
 
 	app.get('/', homeController.index);
+
+	// 360 photo controller
+	app.get('/threesixty', threesixtyController.index);
 
 	// --------------------------------------------------
 

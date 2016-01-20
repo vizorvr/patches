@@ -1,19 +1,5 @@
 (function() {
 
-var loadingComplete = false
-
-function progress(pct) {
-	var progressNode = document.getElementById('progressbar')
-	if (progressNode) progressNode.value = pct;
-	if (pct == 100) {
-		// sometimes we're called twice
-		if (loadingComplete) return
-		// loaded all assets
-		$('body').addClass('assetsLoaded')
-		loadingComplete = true
-	}
-}
-
 window.playVizorFile = function playVizorFile() {
 	var $canvas = $('canvas[data-graph-url]')
     var url = $canvas.data('graph-url')
@@ -24,12 +10,10 @@ function onCoreReady() {
 	var $canvas = $('canvas[data-graph-url]')
 	var autoplay = window.Vizor.autoplay
 
-	E2.core.on('progress', progress)
-
 	E2.app.player.stop()
 	E2.app.player.on_update()
 
-	mixpanel.track('Player Opened')
+	if (typeof mixpanel !== 'undefined') mixpanel.track('Player Opened')
 
 	if (autoplay) {
 		var url = $canvas.data('graph-url')
@@ -63,7 +47,6 @@ function findVrDevices(devices) {
 }
 
 $(document).ready(function()  {
-	VizorUI.replaceSVGButtons(jQuery('header'))
 
 	if(navigator.getVRDevices)
 		navigator.getVRDevices().then(findVrDevices);

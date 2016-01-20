@@ -1,6 +1,37 @@
+body.bPlayer, body.b360 {
+  .modal.viewinvr .modal-dialog {
+	margin: 15% auto;
+  }
+  .modal.viewinvr .modal-body {
+	border-radius: 5px;
+	-webkit-font-smoothing: subpixel-antialiased;
+  }
+  .modal.viewinvr .bootbox-body {
+	font-family: @font-family-sans-serif;
+	font-size: 140%;
+	padding: 20px;
+	p:first-child {
+	  margin-top:0;padding-top:0;
+	  font-weight: 500;
+	}
+	a {
+	  color: white;
+	  padding: 5px 10px;
+	  border-radius: 5px;
+	}
+  }
+}
 body.bPlayer {
   height:100%; width:100%;
 
+  #playerpage {
+	position: fixed;
+	top:0;
+	left:0;
+	bottom:0;
+	right:0;
+	height: 100%;
+  }
   &.assetsLoaded .loadingonly {display: none}
   &.playing .noplaying,
   &.paused .nopaused,
@@ -129,7 +160,7 @@ body.bPlayer.paused header {
   }
 }
 
-body.bPlayer header {
+#playerpage header {
 
 	-webkit-flex: 0 1 auto;
 	-webkit-flex-order: 1;
@@ -164,6 +195,7 @@ body.bPlayer header {
 	}
   }
   .controls {
+	margin-top: 15px;
 	display: -webkit-flex;
 	display: flex;
 	-webkit-justify-content: space-between;
@@ -195,9 +227,8 @@ body.bPlayer header {
   }
 
   #graph_heading {
-	// border-bottom: 1px solid rgba(175, 191, 223, 0.5);
-	padding-bottom: 0px;
-	margin-bottom: 0px;
+	padding-bottom: 5px;
+	margin-bottom: 10px;
 	text-align: left;
 	font-size: 10.5pt;
 	font-weight: 500;

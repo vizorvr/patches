@@ -1,5 +1,7 @@
 var temp = require('temp').track();
 var multer = require('multer');
+var path = require('path');
+var makeRandomString = require('./lib/stringUtil').makeRandomString
 
 var tempDir;
 temp.mkdir('uploads', function(err, dirPath)
@@ -131,6 +133,38 @@ function modelRoutes(
 		}
 	);
 
+	// anonymous upload, no auth required
+	app.post('/uploadAnonymous/:model',
+		requireController,
+		multer({
+			dest: tempDir,
+			limits: {
+				fileSize: 1024 * 1024 * 128 // 128m
+			},
+			rename: function (fieldname, filename) {
+				// Rename the file to a random string
+				var randomStr = makeRandomString(12);
+				var fileExt = path.extname(filename);
+				var newName = path.join(randomStr, fileExt);
+
+				return newName;
+			}
+		}),
+		function(req, res, next) {
+			// imageProcessor will checksum the file
+			if (req.params.model === 'image')
+				return next()
+
+			req.controller.checksumUpload(req, res, next)
+		},
+		function(req, res, next) {
+			req.controller.canWriteUploadAnonymous(req, res, next)
+		},
+		function(req, res, next) {
+			req.controller.uploadAnonymous(req, res, next)
+		}
+	);
+
 	// -----
 	// Edit Log routes
 	app.get('/editlog', function(req, res, next) {
@@ -184,7 +218,6 @@ function modelRoutes(
 	// GET /fthr/dunes-world.json
 	app.get('/:username/:graph.json', function(req, res, next) {
 		req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
-		console.log('load', req.params.path)
 		graphController.load(req, res, next);
 	});
 
@@ -262,6 +295,17 @@ function modelRoutes(
 		requireController,
 		passportConf.isAuthenticated,
 		function(req, res, next) {
+			req.controller.save(req, res, next)
+		}
+	)
+
+	// save, anonymous
+	app.post('/:model/v',
+		requireController,
+		function(req, res, next) {
+			req.user = {
+				username: 'v'
+			}
 			req.controller.save(req, res, next)
 		}
 	)

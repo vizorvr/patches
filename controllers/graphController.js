@@ -6,6 +6,7 @@ var assetHelper = require('../models/asset-helper')
 var templateCache = new(require('../lib/templateCache'))
 var helper = require('./controllerHelpers')
 var isStringEmpty = require('../lib/stringUtil').isStringEmpty
+var makeRandomString = require('../lib/stringUtil').makeRandomString
 var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
 var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
@@ -16,14 +17,6 @@ var EditLog = require('../models/editLog')
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 
-function makeRandomPath() {
-	var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
-	var uid = ''
-	for (var i=0; i < 12; i++) {
-		uid += keys[Math.floor(Math.random() * keys.length)]
-	}
-	return uid
-}
 
 function prettyPrintGraphInfo(graph) {
 	// Get displayed values for graph and owner
@@ -104,7 +97,7 @@ GraphController.prototype.userIndex = function(req, res, next) {
 					scripts : ['site/userpages.js']
 				}
 			});
-			
+
 			res.render('server/pages/userpage', data);
 		});
 	})
@@ -156,7 +149,7 @@ GraphController.prototype.edit = function(req, res, next) {
 	var that = this
 
 	if (!req.params.path) {
-		return res.redirect('/' + makeRandomPath())
+		return res.redirect('/' + makeRandomString(12))
 	}
 
 	this._service.findByPath(req.params.path)
@@ -216,7 +209,7 @@ GraphController.prototype.embed = function(req, res, next) {
 GraphController.prototype.graphLanding = function(req, res, next) {
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
-		if (!graph) 
+		if (!graph)
 			return next()
 
 		return renderPlayer(graph, req, res, {
@@ -269,13 +262,56 @@ GraphController.prototype.canWriteUpload = function(req, res, next)
 GraphController.prototype.upload = function(req, res, next)
 {
 	var that = this;
-
 	var file = req.files.file;
 
 	if (fsPath.extname(file.path) !== '.json')
 		return next(new Error('The upload is not a graph JSON! Are you sure you are trying to upload a graph?'))
 
 	var path = this._makePath(req, file.path);
+	var gridFsPath = '/graph'+path+'.json';
+
+	// move the uploaded file into GridFS / local FS
+	return that._fs.move(file.path, gridFsPath)
+	.then(function(url)
+	{
+		return that._service.findByPath(path)
+		.then(function(model)
+		{
+			if (!model)
+				model = { path: path };
+
+			model.url = url;
+
+			// save/update the model
+			return that._service.save(model, req.user)
+			.then(function(asset)
+			{
+				res.json(asset);
+			});
+		});
+	})
+	.catch(function(err)
+	{
+		return next(err);
+	});
+};
+
+// POST /graph with file upload, anonymous
+GraphController.prototype.uploadAnonymous = function(req, res, next)
+{
+	var that = this;
+	var file = req.files.file;
+
+	if (fsPath.extname(file.path) !== '.json')
+		return next(new Error('The upload is not a graph JSON! Are you sure you are trying to upload a graph?'))
+
+	// Fake the user
+	req.user = {
+		username: 'v'
+	}
+
+	var path = this._makePath(req, file.path);
+	console.log(path)
 	var gridFsPath = '/graph'+path+'.json';
 
 	// move the uploaded file into GridFS / local FS
