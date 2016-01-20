@@ -1,15 +1,15 @@
 function WorldEditorCamera(domElement) {
 	this.domElement = domElement
-	this.perspectiveCamera = new THREE.PerspectiveCamera(
+	this.camera = new THREE.PerspectiveCamera(
 		90,
 		this.domElement.clientWidth / this.domElement.clientHeight,
 		0.01,
 		10000)
 
-	this.perspectiveCamera.position.set(5, 5, 5)
-	this.perspectiveCamera.lookAt(new THREE.Vector3(0,0,0))
+	this.camera.position.set(5, 5, 5)
+	this.camera.lookAt(new THREE.Vector3(0,0,0))
 
-	this.perspectiveCamera.channels.enable(1)
+	this.camera.channels.enable(1)
 
 	E2.core.on('resize', this.resize.bind(this))
 }
@@ -26,6 +26,10 @@ WorldEditorCamera.prototype.resize = function() {
 			wh = E2.app.calculateCanvasArea()
 	}
 
-	this.perspectiveCamera.aspect = wh.width / wh.height
-	this.perspectiveCamera.updateProjectionMatrix()
+	this.camera.aspect = wh.width / wh.height
+	this.camera.updateProjectionMatrix()
+}
+
+WorldEditorCamera.prototype.update = function() {
+
 }
