@@ -1,4 +1,4 @@
- var
+var
 gulp = require('gulp'),
 fs = require('fs'),
 path = require('path'),
@@ -10,6 +10,7 @@ less = require('gulp-less'),
 preprocess = require('gulp-preprocess'),
 paths = {
 	less: './less/build.less',
+	less360: './less/build_threesixty.less',
 	js: {
 		plugins: './browser/plugins/*.plugin.js',
 		engine: [
@@ -99,9 +100,14 @@ gulp.task('clean:js:player', function(cb) {
 	del('./browser/dist/player.min.js', cb)
 })
 
-gulp.task('clean:js:engine', function(cb) {	
+gulp.task('clean:js:engine', function(cb) {
 	del('./browser/dist/engine.js', cb)
 })
+
+gulp.task('clean:less360', function(cb)
+{
+	del('./browser/style/threesixty.css', cb);
+});
 
 gulp.task('clean:less', function(cb) {
 	del('./browser/style/less.css', cb)
@@ -142,18 +148,35 @@ gulp.task('less', ['clean:less'], function() {
 	.on('error', errorHandler)
 })
 
+gulp.task('less360', ['clean:less360'], function() {
+	gulp.src(paths.less360)
+	.pipe(slash())
+    .pipe(less({
+		paths: [ path.join(__dirname, 'less') ]
+    }).on('error', errorHandler))
+	.pipe(concat('threesixty.css'))
+    .pipe(gulp.dest(path.join(__dirname, 'browser', 'style')))
+	.on('error', errorHandler)
+});
+
 gulp.task('watch', ['default'], function() {
-	gulp.watch('less/**/*', ['less'])
+	gulp.watch('less/**/*', ['less', 'less360']);
 	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player'])
 })
+
+gulp.task('watch:less360', function() {
+	gulp.watch('less/threesixty.less', ['less360']);
+});
+
 
 gulp.task('watch:less', function() {
 	gulp.watch('less/**/*', ['less'])
 })
 
+
 gulp.task('watch:player', function() {
 	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player'])
 })
 
-gulp.task('default', ['less', 'js'])
+gulp.task('default', ['less', 'less360', 'js']);
 

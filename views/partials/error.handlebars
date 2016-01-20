@@ -1,0 +1,22 @@
+<section class="error">
+    <p>
+        {{#if message}}
+            {{message}}
+        {{else}}
+            An error occurred.
+        {{/if}}
+    </p>
+
+    {{#if code}}
+        <p>Please check the details below:</p>
+        <code>
+          {{codeNum}} {{code}}
+        </code>
+    {{else}}
+        <p>Unfortunately we're a little short on details.</p>
+    {{/if}}
+
+    {{#unless withoutTryAgain}}
+        <p>Try again and if this keeps happening, please <a href="mailto:info@vizor.io?subject=where%27s%20the%20love%3F">email us</a>.</p>
+    {{/unless}}
+</section>

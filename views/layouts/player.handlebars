@@ -31,6 +31,12 @@
 	</head>
 	<body class="bPlayer noselect_all dark">
 		<script type="text/javascript" src="/dist/player.min.js"></script>
+		<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                {{{templateCache}}}
+            }.bind(window))
+        </script>
+        {{> srv/siteSvgSprite }}
         <div class="wrap clearfix" id="playerpage">
 		    {{{body}}}
             <noscript>

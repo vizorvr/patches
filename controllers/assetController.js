@@ -179,6 +179,31 @@ AssetController.prototype.canWriteUpload = function(req, res, next) {
 	})
 } 
 
+AssetController.prototype.canWriteUploadAnonymous = function(req, res, next) {
+	var that = this;
+
+	if (!req.files)
+		return next(new Error('No files uploaded'))
+
+	var file = req.files.file
+
+	// Fake the user
+	req.user = {
+		username: 'v'
+	}
+	var dest = this._makePath(req, file.path)
+
+	that._service.canWriteAnonymous(dest)
+	.then(function(can)
+	{
+		if (!can)
+			return res.status(403)
+				.json({message: 'Sorry, permission denied'})
+
+		next()
+	})
+} 
+
 AssetController.prototype.upload = function(req, res, next) {
 	var that = this
 
