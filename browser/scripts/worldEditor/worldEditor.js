@@ -1,6 +1,7 @@
 function WorldEditor(domElement) {
 	this.domElement = domElement
 	this.camera = new WorldEditorCamera(this.domElement)
+	this.showEditorHelpers = true
 
 	var active = false
 
@@ -8,6 +9,7 @@ function WorldEditor(domElement) {
 		active = true
 		this.transformControls.enabled = true
 		this.editorControls.enabled = true
+		this.showEditorHelpers = true
 	}
 
 	this.deactivate = function() {
@@ -108,8 +110,12 @@ WorldEditor.prototype.update = function() {
 WorldEditor.prototype.preRenderUpdate = function() {
 	// add the editor tree to the scene if it's not there already
 	var editorIdx = this.scene.children.indexOf(this.editorTree)
-	if (editorIdx < 0) {
+
+	if (this.showEditorHelpers && editorIdx < 0) {
 		this.scene.add(this.editorTree)
+	}
+	else if (!this.showEditorHelpers && editorIdx >= 0) {
+		this.scene.remove(this.editorTree)
 	}
 }
 
@@ -550,4 +556,8 @@ WorldEditor.prototype.toggleGrid = function() {
 		this.editorTree.remove(this.radialHelper.mesh)
 		this.editorTree.add(this.gridHelper.mesh)
 	}
+}
+
+WorldEditor.prototype.toggleEditorHelpers = function() {
+	this.showEditorHelpers = !this.showEditorHelpers
 }
