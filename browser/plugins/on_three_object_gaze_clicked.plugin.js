@@ -14,6 +14,12 @@
 		this.node.queued_update = 1
 	}
 
+	AbstractObjectGazePlugin.prototype.onGazeOut = function() {
+		this.triggerState = false
+		this.updated = true
+		this.node.queued_update = 1
+	}
+
 	OnThreeObjectGazeClicked.prototype.update_state = function() {
 		if (this.lastState === this.triggerState && this.state.type === 0) {
 			this.triggerState = false
