@@ -1421,6 +1421,7 @@ Application.prototype.onKeyDown = function(e) {
 	var toggleWorldEditorYCameraKey = 89 // y
 	var toggleWorldEditorZCameraKey = 90 // z
 	var toggleWorldEditorOrthographicCameraKey = 79 // o
+	var worldEditorFrameViewToSelectionKey = 84 // t
 
 	var altKey = 18
 
@@ -1503,11 +1504,15 @@ Application.prototype.onKeyDown = function(e) {
 	}
 
 
-	else if (e.keyCode === toggleFullScreenKey) // f
+	else if (e.keyCode === toggleFullScreenKey && !this.isWorldEditorActive()) // f
 	{
 		this.toggleFullscreen()
 		e.preventDefault();
 		ret = false;
+	}
+	else if (e.keyCode === worldEditorFrameViewToSelectionKey && this.isWorldEditorActive()) // t
+	{
+		this.worldEditor.frameSelection()
 	}
 	else if (e.keyCode === toggleWorldEditorGridKey && this.isWorldEditorActive()) // g
 	{
