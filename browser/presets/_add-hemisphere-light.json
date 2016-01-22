@@ -1,0 +1,183 @@
+{
+    "abs_t": 0.0,
+    "active_graph": "root",
+    "graph_uid": "TXDgBc0JJtS3",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 416,
+                "y": 511,
+                "uid": "Skrn6WL9nSrc",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "pfrqCuruhQ7Z": "5VCBtB7FNE6K"
+                    }
+                },
+                "title": "Hemisphere light",
+                "graph": {
+                    "uid": "4FJHgUJGkabm",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1130,
+                            "y": 255,
+                            "uid": "pfrqCuruhQ7Z",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "wr3tnpu9Vuge",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "three_hemisphere_light",
+                            "x": 791,
+                            "y": 261,
+                            "uid": "aWhyKDcXPpSt",
+                            "state": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "scale": {
+                                    "x": 1,
+                                    "y": 1,
+                                    "z": 1
+                                },
+                                "quaternion": {
+                                    "_x": 0,
+                                    "_y": 0,
+                                    "_z": 0,
+                                    "_w": 1
+                                },
+                                "pivot": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            }
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 501,
+                            "y": 625,
+                            "uid": "TFpLnRYvzqGY",
+                            "open": false
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 299,
+                            "y": 623,
+                            "uid": "EkbheqMyx9Eb",
+                            "open": false,
+                            "state": {
+                                "val": 1
+                            }
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 422,
+                            "y": 61,
+                            "uid": "MVRLT6UQTY7P",
+                            "state": {
+                                "hue": 0.44382134831460673,
+                                "sat": 0.2247191011235955,
+                                "lum": 0.975
+                            },
+                            "title": "sky color"
+                        },
+                        {
+                            "plugin": "color_picker",
+                            "x": 424,
+                            "y": 314,
+                            "uid": "ePKM8rJjsF2x",
+                            "state": {
+                                "hue": 0.44382134831460673,
+                                "sat": 0.19101123595505617,
+                                "lum": 0.29166666666666663
+                            },
+                            "title": "ground color"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "aWhyKDcXPpSt",
+                            "dst_nuid": "pfrqCuruhQ7Z",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "J4Cq3CVnCKwU",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "TFpLnRYvzqGY",
+                            "dst_nuid": "aWhyKDcXPpSt",
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "uid": "jR2srEunGU7a",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "EkbheqMyx9Eb",
+                            "dst_nuid": "TFpLnRYvzqGY",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "DtbQJ4L3WeHg",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "MVRLT6UQTY7P",
+                            "dst_nuid": "aWhyKDcXPpSt",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "a9RQU98MBJjj",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "ePKM8rJjsF2x",
+                            "dst_nuid": "aWhyKDcXPpSt",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "6wBeFserC3cS",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "5VCBtB7FNE6K",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            }
+        ],
+        "conns": []
+    }
+}
