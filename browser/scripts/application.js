@@ -1417,6 +1417,10 @@ Application.prototype.onKeyDown = function(e) {
 	var toggleWorldEditorHelpersKey = 72 // h
 	var toggleWorldEditorKey = 86
 	var toggleWorldEditorGridKey = 71 // g
+	var toggleWorldEditorXCameraKey = 88 // x
+	var toggleWorldEditorYCameraKey = 89 // y
+	var toggleWorldEditorZCameraKey = 90 // z
+	var toggleWorldEditorOrthographicCameraKey = 79 // o
 
 	var altKey = 18
 
@@ -1557,7 +1561,25 @@ Application.prototype.onKeyDown = function(e) {
 		this.worldEditor.matchCamera()
 	}
 
+	else if (e.keyCode === toggleWorldEditorXCameraKey && this.isWorldEditorActive())
+	{
+		this.worldEditor.setCameraView(this.shift_pressed ? '+x' : '-x')
+	}
 
+	else if (e.keyCode === toggleWorldEditorYCameraKey && this.isWorldEditorActive())
+	{
+		this.worldEditor.setCameraView(this.shift_pressed ? '+y': '-y')
+	}
+
+	else if (e.keyCode === toggleWorldEditorZCameraKey && this.isWorldEditorActive())
+	{
+		this.worldEditor.setCameraView(this.shift_pressed ? '+z': '-z')
+	}
+
+	else if (e.keyCode === toggleWorldEditorOrthographicCameraKey && this.isWorldEditorActive())
+	{
+		this.worldEditor.toggleCameraOrthographic()
+	}
 
 	return ret;
 

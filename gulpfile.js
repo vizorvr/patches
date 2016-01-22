@@ -39,7 +39,9 @@ paths = {
 			'./browser/scripts/blendFunctions.js',
 
 			'./browser/scripts/worldEditor/worldEditor.js',
-			'./browser/scripts/worldEditor/worldEditorCamera.js',
+			'./browser/scripts/worldEditor/worldEditorPerspectiveCamera.js',
+			'./browser/scripts/worldEditor/worldEditorOrthographicCamera.js',
+			'./browser/scripts/worldEditor/worldEditorCameraSelector.js',
 			'./browser/scripts/worldEditor/worldEditorOriginGrid.js',
 			'./browser/scripts/worldEditor/worldEditorRadialHelper.js',
 
