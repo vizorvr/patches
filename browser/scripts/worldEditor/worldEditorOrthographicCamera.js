@@ -16,7 +16,7 @@ function WorldEditorOrthographicCamera(domElement) {
 }
 
 WorldEditorOrthographicCamera.prototype.resize = function() {
-	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement);
+	var isFullscreen = E2.util.isFullscreen()
 	var wh = { width: window.innerWidth, height: window.innerHeight }
 
 	if (!isFullscreen) {

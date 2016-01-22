@@ -1563,17 +1563,17 @@ Application.prototype.onKeyDown = function(e) {
 
 	else if (e.keyCode === toggleWorldEditorXCameraKey && this.isWorldEditorActive())
 	{
-		this.worldEditor.setCameraView(this.shift_pressed ? '-x' : '+x')
+		this.worldEditor.setCameraView(this.shift_pressed ? '+x' : '-x')
 	}
 
 	else if (e.keyCode === toggleWorldEditorYCameraKey && this.isWorldEditorActive())
 	{
-		this.worldEditor.setCameraView(this.shift_pressed ? '-y': '+y')
+		this.worldEditor.setCameraView(this.shift_pressed ? '+y': '-y')
 	}
 
 	else if (e.keyCode === toggleWorldEditorZCameraKey && this.isWorldEditorActive())
 	{
-		this.worldEditor.setCameraView(this.shift_pressed ? '-z': '+z')
+		this.worldEditor.setCameraView(this.shift_pressed ? '+z': '-z')
 	}
 
 	else if (e.keyCode === toggleWorldEditorOrthographicCameraKey && this.isWorldEditorActive())
