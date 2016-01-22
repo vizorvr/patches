@@ -18,60 +18,13 @@
 }
 </style>
 
-<script type="text/javascript">
-
-function dropZoneDragOverHandler(evt) {
-	evt.stopPropagation();
-	evt.preventDefault();
-	evt.dataTransfer.dropEffect = "copy";
-};
-
-function fileSelectHandler(evt) {
-	evt.stopPropagation();
-	evt.preventDefault();
-
-	var file;
-	// Either read from the dataTransfer (when drag and dropped)
-	// or from the target.files (when file browsed)
-	if (evt.dataTransfer !== undefined) {
-		file = evt.dataTransfer.files[0];
-	} else if (evt.target.files !== undefined) {
-		file = evt.target.files[0];
-	}
-
-	if (file.type.match('image.*') === null) {
-		alert("File type doesn't match");
-		return;
-	}
-
-	// Create a new image object
-	var img = new Image;
-
-	// This is called after the image succesfully loads
-	img.onload = function() {
-		console.log("img onLoad called");
-		URL.revokeObjectURL(img.src);
-	}
-
-	// Load image from URL
-	img.src = URL.createObjectURL(file);
-};
-
-function initDropZone() {
-	// Local File drop handlers
-	var drop_zone = document.getElementById('drop-zone-360-image');
-	drop_zone.addEventListener("dragover", dropZoneDragOverHandler);
-	drop_zone.addEventListener("drop", fileSelectHandler);
-}
-
-</script>
+<script src="/node_modules/jquery/dist/jquery.min.js"></script>
+<script src="/scripts/360-microsite.js"></script>
 
 <title>360 images for everyone!</title>
 
 <body onload="initDropZone()">
-	<h2>Drop a fat 360 file right here</h2>
-
 	<div class="drop-zone" id="drop-zone-360-image">
-			<div id="background-file-drop">Drop Background Image Here</div>
+			<div id="background-file-drop">Drop 360 image here or click to choose</div>
 		</div>
 </body>
