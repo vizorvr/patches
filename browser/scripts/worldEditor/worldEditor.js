@@ -559,3 +559,41 @@ WorldEditor.prototype.toggleEditorHelpers = function() {
 	this.showEditorHelpers = !this.showEditorHelpers
 }
 
+WorldEditor.prototype.frameSelection = function() {
+	var selectedObject = this.cameraSelector.transformControls.object
+
+	var cameraDirection = this.cameraSelector.camera.getWorldDirection()
+
+	var center = new THREE.Vector3()
+	var radius = 1
+
+	if (selectedObject) {
+		center.copy(selectedObject.position)
+		center.applyMatrix4(selectedObject.matrixWorld)
+
+		var tempSphere = new THREE.Sphere()
+
+		selectedObject.traverse(function(n) {
+			if (n.geometry) {
+				if (!n.geometry.boundingSphere) {
+					n.geometry.computeBoundingSphere()
+				}
+
+				tempSphere.copy(n.geometry.boundingSphere)
+				tempSphere.applyMatrix4(n.matrixWorld)
+
+				var nodeRadius = center.distanceTo(tempSphere.center) + tempSphere.radius
+				if (radius < nodeRadius) {
+					radius = nodeRadius
+				}
+			}
+		})
+	}
+
+	this.cameraSelector.camera.position.copy(selectedObject.position.clone().sub(cameraDirection.multiplyScalar(radius * 1.5)))
+
+	if (selectedObject) {
+		this.cameraSelector.camera.lookAt(selectedObject.position)
+		this.cameraSelector.editorControls.focus(selectedObject)
+	}
+}
