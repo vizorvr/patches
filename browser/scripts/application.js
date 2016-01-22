@@ -1414,6 +1414,7 @@ Application.prototype.onKeyDown = function(e) {
 
 	var toggleFullScreenKey = 70
 	var toggleNoodlesKey = 9
+	var toggleWorldEditorHelpersKey = 72 // h
 	var toggleWorldEditorKey = 86
 	var toggleWorldEditorGridKey = 71 // g
 
@@ -1507,6 +1508,10 @@ Application.prototype.onKeyDown = function(e) {
 	else if (e.keyCode === toggleWorldEditorGridKey && this.isWorldEditorActive()) // g
 	{
 		this.worldEditor.toggleGrid()
+	}
+	else if (e.keyCode === toggleWorldEditorHelpersKey && this.isWorldEditorActive()) // h
+	{
+		this.worldEditor.toggleEditorHelpers()
 	}
 	else if(this.ctrl_pressed || e.metaKey)
 	{
