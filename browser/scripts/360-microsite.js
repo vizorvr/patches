@@ -24,7 +24,7 @@ function publishTemplateWithUrl(image_url) {
 
 	// TODO: change to this to actual working production url
 	// maybe we need to add a route or someway serve this static file
-	var template_url = "http://localhost:8000/presets/_template-360-photo.json";
+	var template_url = "/presets/_template-360-photo.json";
 
 	$.ajax({
 		url: template_url,
@@ -68,7 +68,7 @@ function publishTemplateWithUrl(image_url) {
 
 					// Redirect the client to the published graph
 					var redirect_url = asset.path;
-					window.location.replace(redirect_url);
+					window.location.href = redirect_url;
 				});
 			}
 		},
@@ -164,6 +164,10 @@ function initDropZone() {
 	var drop_zone = document.getElementById('drop-zone-360-image');
 	drop_zone.addEventListener("dragover", dropZoneDragOverHandler);
 	drop_zone.addEventListener("drop", fileSelectHandler);
+
+	// The file input picker
+	var file_input = document.getElementById('360-image-input');
+	drop_zone.addEventListener("change", fileSelectHandler);
 }
 
 function dropZoneDragOverHandler(evt) {
