@@ -193,13 +193,15 @@
 
 		$selectObject.change(function() {
 			var selection = $selectObject.val()
-			if (selection === '0')
+			if (selection === 0)
 				selection = null
 			that.undoableSetState('nodeRef', selection, that.state.nodeRef)
 		})
 
 		$selectType.change(function() {
-			that.undoableSetState('type', $selectType.val(), that.state.type)
+			that.undoableSetState('type', 
+				parseInt($selectType.val(), 10), 
+				that.state.type)
 		})
 
 		$ui.append(this.$selectObject)
