@@ -19,8 +19,7 @@
 			{ name: 'distance', dt: core.datatypes.FLOAT, def: this.params.distance },
 			{ name: 'angle', dt: core.datatypes.FLOAT, def: this.params.angle },
 			{ name: 'exponent', dt: core.datatypes.FLOAT, def: this.params.exponent },
-			{ name: 'decay', dt: core.datatypes.FLOAT, def: this.params.decay }/*,
-			{ name: 'target', dt: core.datatypes.VECTOR, def: new THREE.Vector3(0, 0, 0)}*/
+			{ name: 'decay', dt: core.datatypes.FLOAT, def: this.params.decay }
 		].concat(this.input_slots)
 	}
 
@@ -34,15 +33,4 @@
 		// back reference for object picking
 		this.object3d.backReference = this
 	}
-
-	ThreeSpotLightPlugin.prototype.update_input = function(slot, data) {
-		if (slot.name === 'target') {
-			this.object3d.target.position.copy(data)
-
-			return
-		}
-
-		ThreeObject3DPlugin.prototype.update_input.apply(this, arguments)
-	}
-
 })()
