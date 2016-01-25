@@ -33,9 +33,15 @@ paths = {
 			'./browser/scripts/abstractThreeLoaderObjPlugin.js',
 			'./browser/scripts/abstractThreeMaterialPlugin.js',
 			'./browser/scripts/abstractThreeMeshPlugin.js',
-		
+			'./browser/scripts/abstractArrayBlendModulatorPlugin.js',
+			'./browser/scripts/abstractAnimateValueOnTriggerPlugin.js',
+	
+			'./browser/scripts/blendFunctions.js',
+
 			'./browser/scripts/worldEditor/worldEditor.js',
-			'./browser/scripts/worldEditor/worldEditorCamera.js',
+			'./browser/scripts/worldEditor/worldEditorPerspectiveCamera.js',
+			'./browser/scripts/worldEditor/worldEditorOrthographicCamera.js',
+			'./browser/scripts/worldEditor/worldEditorCameraSelector.js',
 			'./browser/scripts/worldEditor/worldEditorOriginGrid.js',
 			'./browser/scripts/worldEditor/worldEditorRadialHelper.js',
 

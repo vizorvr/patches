@@ -45,7 +45,7 @@ WebSocketChannel.prototype.connect = function(wsHost, wsPort, path, options) {
 			that.emit('ready', that.uid)
 		}
 
-		that.emit('*', m)
+		that.emit('message', m)
 		
 		if (m.channel)
 			that.emit(m.channel, m)

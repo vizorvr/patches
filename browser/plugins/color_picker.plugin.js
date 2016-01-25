@@ -374,8 +374,7 @@ ColorPicker.prototype.ui_enableInteraction = function(containerNode, svSurfaceNo
 ColorPicker.prototype.reset = function() {};
 
 ColorPicker.prototype.update_state = function() {
-	if (!this.updated) this.state_changed(this.ui)
-};
+}
 
 ColorPicker.prototype.update_output = function() {
 	return this.color;

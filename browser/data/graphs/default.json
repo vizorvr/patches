@@ -1,5 +1,5 @@
 {
-    "abs_t": 0.0,
+    "abs_t": 43.514,
     "active_graph": "root",
     "graph_uid": "TXDgBc0JJtS3",
     "root": {
@@ -9,8 +9,8 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 228,
-                "y": 313,
+                "x": 319,
+                "y": 337,
                 "uid": "sW61WYtysOa4",
                 "open": false,
                 "state": {
@@ -57,6 +57,11 @@
                                     "_y": 0,
                                     "_z": 0,
                                     "_w": 1
+                                },
+                                "pivot": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
                                 }
                             }
                         },
@@ -126,8 +131,8 @@
             },
             {
                 "plugin": "three_scene",
-                "x": 572,
-                "y": 213,
+                "x": 663,
+                "y": 237,
                 "uid": "u2O8M5ItNlW5",
                 "dyn_in": [
                     {
@@ -193,8 +198,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 284,
-                "y": 160,
+                "x": 375,
+                "y": 184,
                 "uid": "d9slZ3PC0CIC",
                 "open": false,
                 "state": {
@@ -215,6 +220,7 @@
                             "x": 572,
                             "y": 469,
                             "uid": "DU82zgpxCApv",
+                            "state": {},
                             "title": "Environtment settings"
                         },
                         {
@@ -329,8 +335,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 260,
-                "y": 212,
+                "x": 351,
+                "y": 236,
                 "uid": "nvHKHIESiXU4",
                 "open": false,
                 "state": {
@@ -388,6 +394,11 @@
                                     "_y": 0,
                                     "_z": 0,
                                     "_w": 1
+                                },
+                                "pivot": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
                                 }
                             }
                         },
@@ -458,8 +469,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 256,
-                "y": 373,
+                "x": 347,
+                "y": 397,
                 "uid": "5zkZJ1kVzShg",
                 "open": false,
                 "state": {
@@ -497,6 +508,11 @@
                                     "_y": 0,
                                     "_z": 0,
                                     "_w": 0.707106781186548
+                                },
+                                "pivot": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
                                 }
                             }
                         },
@@ -532,10 +548,11 @@
                         },
                         {
                             "plugin": "three_material_phong",
-                            "x": 665,
+                            "x": 664,
                             "y": 280,
                             "uid": "IJzf3S2ECiJe",
-                            "open": false
+                            "open": false,
+                            "state": {}
                         },
                         {
                             "plugin": "three_geometry_plane",
@@ -549,7 +566,8 @@
                             "x": 459,
                             "y": 279,
                             "uid": "yFbNFt740ntr",
-                            "open": false
+                            "open": false,
+                            "state": {}
                         },
                         {
                             "plugin": "const_float_generator",
@@ -560,6 +578,16 @@
                                 "val": 40
                             },
                             "title": "Repeat"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 511,
+                            "y": 355,
+                            "uid": "8bakUFdfCftQ",
+                            "open": false,
+                            "state": {
+                                "val": 0
+                            }
                         }
                     ],
                     "conns": [
@@ -626,6 +654,15 @@
                             "uid": "3Udkt5dADKZd",
                             "src_connected": true,
                             "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "8bakUFdfCftQ",
+                            "dst_nuid": "IJzf3S2ECiJe",
+                            "src_slot": 0,
+                            "dst_slot": 18,
+                            "uid": "QeArHgytjGcm",
+                            "src_connected": true,
+                            "dst_connected": true
                         }
                     ]
                 },
@@ -643,8 +680,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 275,
-                "y": 432,
+                "x": 366,
+                "y": 456,
                 "uid": "OFAU6PiJpRKz",
                 "open": false,
                 "state": {
@@ -682,6 +719,11 @@
                                     "_y": 0,
                                     "_z": 0,
                                     "_w": 1
+                                },
+                                "pivot": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
                                 }
                             }
                         },
@@ -720,7 +762,8 @@
                             "x": 656,
                             "y": 156,
                             "uid": "GULXMKCn1srD",
-                            "open": false
+                            "open": false,
+                            "state": {}
                         },
                         {
                             "plugin": "const_float_generator",
@@ -873,8 +916,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 924,
-                "y": 314,
+                "x": 842,
+                "y": 235,
                 "uid": "A36bzZH8DcdD",
                 "open": false,
                 "state": {
@@ -892,8 +935,8 @@
                     "nodes": [
                         {
                             "plugin": "input_proxy",
-                            "x": 576,
-                            "y": 363,
+                            "x": 366,
+                            "y": 441,
                             "uid": "YlMPXGvqX6Qi",
                             "title": "scene",
                             "dyn_out": [
@@ -911,8 +954,8 @@
                         },
                         {
                             "plugin": "three_webgl_renderer",
-                            "x": 829,
-                            "y": 234,
+                            "x": 789,
+                            "y": 298,
                             "uid": "H3NpBXQ33CMQ",
                             "state": {
                                 "always_update": true
@@ -920,8 +963,8 @@
                         },
                         {
                             "plugin": "graph",
-                            "x": 538,
-                            "y": 163,
+                            "x": 330,
+                            "y": 298,
                             "uid": "K30UllZb98fn",
                             "state": {
                                 "always_update": true,
@@ -1000,6 +1043,13 @@
                                     "is_connected": true
                                 }
                             ]
+                        },
+                        {
+                            "plugin": "three_gaze_clicker",
+                            "x": 530,
+                            "y": 383,
+                            "uid": "eH8L4KPruwXT",
+                            "state": {}
                         }
                     ],
                     "conns": [
@@ -1014,14 +1064,33 @@
                             "src_dyn": true
                         },
                         {
-                            "src_nuid": "YlMPXGvqX6Qi",
-                            "dst_nuid": "H3NpBXQ33CMQ",
+                            "src_nuid": "K30UllZb98fn",
+                            "dst_nuid": "eH8L4KPruwXT",
                             "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "WkdPKvuGVAEc",
+                            "dst_slot": 0,
+                            "uid": "N63zVDY6N8TH",
                             "src_connected": true,
                             "dst_connected": true,
                             "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "YlMPXGvqX6Qi",
+                            "dst_nuid": "eH8L4KPruwXT",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "g67gcNZqFbJy",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "eH8L4KPruwXT",
+                            "dst_nuid": "H3NpBXQ33CMQ",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "AhgRaNHcA58D",
+                            "src_connected": true,
+                            "dst_connected": true
                         }
                     ]
                 },
@@ -1039,8 +1108,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 236,
-                "y": 265,
+                "x": 327,
+                "y": 289,
                 "uid": "T6PXHoQNqdKa",
                 "open": false,
                 "state": {
@@ -1098,6 +1167,11 @@
                                     "_y": 0,
                                     "_z": 0,
                                     "_w": 1
+                                },
+                                "pivot": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
                                 }
                             }
                         },

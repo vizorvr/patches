@@ -29,9 +29,10 @@
 	},
 
 	"ADD LIGHTS": {
-		"Point light": { "name": "_add-point-light", "isObject3d": true },
+		"Ambient light": { "name": "_add-ambient-light", "isObject3d": true },
 		"Directional light": { "name": "_add-directional-light", "isObject3d": true },
-		"Ambient light": { "name": "_add-ambient-light", "isObject3d": true }
+		"Hemisphere light": { "name": "_add-hemisphere-light", "isObject3d": true },
+		"Point light": { "name": "_add-point-light", "isObject3d": true }
 	},
 
 	"ADD PARTICLES": {
@@ -40,7 +41,7 @@
 	},
 
 	"INTERACTION": {
-		"Keypress increase/decrease": { "name": "interaction_up_and_down_counter_with_init_and_clamp" }
+		"Increment / Decrement value on Trigger": { "name": "_increment_or_decrement_on_trigger" }
 	},
 
 	"AUDIO": {
@@ -49,6 +50,7 @@
 
 	"TIME & ANIMATION ": {
 		"Basic clock": { "name": "_basic-clock" },
+		"Animate on Trigger": { "name": "_animate-on-trigger" },
 		"Oscillate between 2 values": { "name": "_oscillate-between-2-values" },
 		"Oscillate 2 values with in tween": { "name": "_oscillate-with-in-tween" },
 		"Oscillate 2 values with out tween": { "name": "_oscillate-with-out-tween" },

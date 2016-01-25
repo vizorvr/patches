@@ -42,7 +42,8 @@
         "Negate": "negate_modulator",
         "Subtract": "subtract_modulator",
         "Lowpass Filter": "lowpass_filter_modulator",
-        "Sample and hold": "sample_and_hold_modulator"
+        "Sample and hold": "sample_and_hold_modulator",
+        "Add number conditionally": "add_on_trigger_float"
     },
 
     "LOGIC": {
@@ -116,7 +117,9 @@
         "UV Modifier": "three_uv_modifier",
         "Ambient Light": "three_ambient_light",
         "Directional Light": "three_directional_light",
+        "Hemisphere Light": "three_hemisphere_light",
         "Point Light": "three_point_light",
+        "Spot Light": "three_spot_light",
         "Line Material": "three_line_material",
         "Cubemap Material": "three_cube_material",
         "Material Extractor": "three_material_extractor"
@@ -282,7 +285,8 @@
         "Multiply vector": "vector_multiply",
         "Normalize": "vector_normalize",
         "Scale": "vector_scale",
-        "Transform": "vector_transform"
+        "Transform": "vector_transform",
+        "Add Vectors Conditionally": "add_on_trigger_vector3"
     },
 
 
@@ -307,6 +311,13 @@
     "VIDEO TOOLS": {
         "Duration": "video_get_duration_modulator",
         "Current time": "video_get_current_time_modulator"
+    },
+
+    "ANIMATION": {
+        "Animate Float on Trigger": "animate_float_on_trigger",
+        "Animate Vector3 on Trigger": "animate_vector3_on_trigger",
+        "Animate Between Input Floats": "array_blend_modulator_float",
+        "Animate Between Input Vector3s": "array_blend_modulator_vector3"
     }
 
 }

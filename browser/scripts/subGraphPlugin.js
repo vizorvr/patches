@@ -291,7 +291,7 @@ SubGraphPlugin.prototype.setupProxies = function() {
 		var n = that.graph.findNodeByUid(uid)
 		if (!n)
 			return msg('ERROR: Failed to find registered proxy node(' + uid +
-				') in graph(' + self.graph.plugin.parent_node.title + ').'); 
+				') in graph(' + that.graph.plugin.parent_node.title + ').'); 
 
 		var p = n.plugin
 		

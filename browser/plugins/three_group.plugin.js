@@ -170,13 +170,20 @@
 		this.state.pivot.y += translation.y
 		this.state.pivot.z += translation.z
 
+		var gazeClickerCount = 0
+
 		for (var i = 0; i < this.object3d.children.length; ++i) {
 			var subTree = this.object3d.children[i]
 
-			subTree.position.x = -center.x;
-			subTree.position.y = -center.y;
-			subTree.position.z = -center.z;
+			subTree.position.x = -center.x
+			subTree.position.y = -center.y
+			subTree.position.z = -center.z
+
+			if (subTree.gazeClickerCount)
+				gazeClickerCount += subTree.gazeClickerCount
 		}
+
+		this.object3d.gazeClickerCount = gazeClickerCount
 
 		this.matrixWorldNeedsUpdate = true
 

@@ -1,35 +1,6 @@
-;
 (function() {
 
 var RECONNECT_INTERVAL = 5000
-
-function serialize(objects) {
-	return objects.map(function(ob) {
-		if (!ob)
-			return ob;
-
-		if (ob instanceof Graph)
-			return ob.uid
-
-		if (!ob.serialise) {
-			return ob;
-		}
-
-		return ob.serialise()
-	})
-}
-
-function serializeEvent(evt) {
-	var otwMessage = {
-		type: evt
-	}
-
-	var objects = Array.prototype.slice.call(arguments, 1)
-
-	otwMessage.objects = serialize(objects)
-
-	return otwMessage
-}
 
 function hydrate(pl) {
 	var m = _.clone(pl)
@@ -105,6 +76,8 @@ function EditorChannel(dispatcher) {
 	this.isOnChannel = false
 	this.lastEditSeen = null
 
+	this.queue = []
+
 	this._dispatcher = dispatcher || E2.app.dispatcher
 
 	this._messageHandlerBound = this._messageHandler.bind(this)
@@ -129,16 +102,21 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 	this.kicked = false
 	this.connected = false
+	this.forking = false
 
 	// listen to messages from network
 	this.wsChannel = new WebSocketChannel()
 	this.wsChannel
 		.connect(wsHost, wsPort, '/__editorChannel', options)
 		.on('disconnected', function() {
+			if (!that.connected)
+				return;
+
+			that.isOnChannel = false
 			that.connected = false
 
 			if (that.kicked === true)
-				return;
+				return that.emit('disconnected')
 
 			if (!reconnecting)
 				E2.app.growl('Disconnected from server. Reconnecting.', 'reconnecting')
@@ -147,7 +125,6 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 			
 			setTimeout(that.connect.bind(that, wsHost, wsPort, options), RECONNECT_INTERVAL)
 
-			that.isOnChannel = false
 			that.emit('disconnected')
 		})
 		.on('ready', function(uid) {
@@ -164,7 +141,7 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 			that.emit('ready', uid)
 
-			that.wsChannel.on('*', function(m) {
+			that.wsChannel.on('message', function(m) {
 				if (m.kind === 'kicked') { // kicked by server
 					E2.app.growl('You have been disconnected by the server: '+ m.reason, 'disconnected', 30000)
 					that.kicked = true
@@ -179,6 +156,8 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 				that.emit(m.kind, m)
 			})
+
+			that.processQueue()
 		})
 
 	return this
@@ -201,31 +180,42 @@ EditorChannel.prototype.snapshot = function() {
  */
 EditorChannel.prototype._localDispatchHandler = function _localDispatchHandler(payload) {
 	if (payload.from)
-		return;
+		return
 
 	if (this.isOnChannel)
 		return this.send(payload)
 
 	// not on channel -- fork if important
 	if (!isEditAction(payload)) // eg. mouseMove
-		return;
+		return
 
 	this.fork(payload)
 }
 
 EditorChannel.prototype.fork = function(payload) {
-	E2.ui.updateProgressBar(65);
+	var that = this
+
+	if (this.forking)
+		return this.queue.push(payload)
+
+	this.forking = true
+
+	E2.ui.updateProgressBar(65)
 
 	// FORK
 	var fc = new ForkCommand()
 	fc.fork(payload)
 		.then(function() {
-			E2.ui.updateProgressBar(100);
+			E2.ui.updateProgressBar(100)
 			E2.app.growl("We've made a copy of this for you to edit.", 'copy', 5000)
 		})
 		.catch(function(err) {
 			E2.app.growl('Error while forking: ' + err, 'error')
 			throw err
+		})
+		.finally(function() {
+			that.forking = false
+			that.processQueue()
 		})
 }
 
@@ -291,6 +281,10 @@ EditorChannel.prototype.join = function(channelName, readableName, cb) {
 	this.wsChannel.on(channelName, this._messageHandlerBound)
 }
 
+EditorChannel.prototype.canSend = function() {
+	return !this.forking && this.connected
+}
+
 EditorChannel.prototype.send = function(payload) {
 	if (!isAcceptedDispatch(payload))
 		return;
@@ -298,9 +292,22 @@ EditorChannel.prototype.send = function(payload) {
 	if (E2.app.snapshotPending && isEditAction(payload))
 		return this.snapshot()
 
+	this.queue.push(payload)
+
+	this.processQueue()
+}
+
+EditorChannel.prototype.processQueue = function() {
+	if (!this.canSend() || !this.queue.length)
+		return;
+
+	var payload = this.queue.pop()
+
 	this.wsChannel.send(
 		payload.channel === 'Global' ? payload.channel : this.channelName,
 		dehydrate(payload))
+
+	this.processQueue()
 }
 
 if (typeof(module) !== 'undefined')

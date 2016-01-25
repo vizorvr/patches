@@ -1,18 +1,18 @@
 function WorldEditor(domElement) {
 	this.domElement = domElement
-	this.camera = new WorldEditorCamera(this.domElement)
-
+	this.showEditorHelpers = true
 	var active = false
 
 	this.activate = function() {
 		active = true
-		this.transformControls.enabled = true
-		this.editorControls.enabled = true
+		this.cameraSelector.transformControls.enabled = true
+		this.cameraSelector.editorControls.enabled = true
+		this.showEditorHelpers = true
 	}
 
 	this.deactivate = function() {
-		this.transformControls.enabled = false
-		this.editorControls.enabled = false
+		this.cameraSelector.transformControls.enabled = false
+		this.cameraSelector.editorControls.enabled = false
 		if (this.editorTree.parent) {
 			this.editorTree.parent.remove(this.editorTree)
 		}
@@ -42,32 +42,15 @@ function WorldEditor(domElement) {
 	this.handleTree = new THREE.Object3D()
 	this.editorTree.add(this.handleTree)
 
-	// editor controls
-	this.editorControls = new THREE.EditorControls(this.camera.perspectiveCamera, this.domElement)
-
-	// transform controls
-	this.transformControls = new THREE.TransformControls(this.camera.perspectiveCamera, this.domElement)
+	this.cameraSelector = new WorldEditorCameraSelector(this.domElement)
 
 	this.cameraHelper = new VRCameraHelper()
 
 	var that = this
 
-	this.transformControls.addEventListener('mouseDown', function() {
-		that.editorControls.enabled = false
-		if (E2.app.alt_pressed) {
-			E2.app.onCopy()
-			E2.app.onPaste()
-		}
-	})
-
-	this.transformControls.addEventListener('mouseUp', function() {
-		that.editorControls.enabled = true
-	})
-
 	this.setupObjectPicking()
 
 	E2.ui.state.on('changed:modifyMode', this.setTransformMode.bind(this));
-
 }
 
 WorldEditor.prototype.setTransformMode = function(mode) {
@@ -85,7 +68,7 @@ WorldEditor.prototype.update = function() {
 		return f(v, n * 10)
 	}
 
-	var cameraDistanceToSelectedObject = this.camera.perspectiveCamera.position.clone().sub(this.editorControls.center).length() || 1
+	var cameraDistanceToSelectedObject = this.cameraSelector.camera.position.clone().sub(this.cameraSelector.editorControls.center).length() || 1
 	var gridScale = f(cameraDistanceToSelectedObject, 0.01)
 
 	this.gridHelper.scale(gridScale)
@@ -93,28 +76,29 @@ WorldEditor.prototype.update = function() {
 	if (this.vrCamera) {
 		this.radialHelper.position(this.vrCamera.position)
 
-		var cameraDistanceToVRCamera = this.camera.perspectiveCamera.position.clone().sub(this.vrCamera.position).length() || 1
+		var cameraDistanceToVRCamera = this.cameraSelector.camera.position.clone().sub(this.vrCamera.position).length() || 1
 		var gridScale = f(cameraDistanceToVRCamera, 0.01)
 		gridScale = gridScale < 1 ? 1 : gridScale
 		this.radialHelper.scale(gridScale)
 	}
 
-	// needs calling on every update otherwise the transform controls draw incorrectly
-	this.transformControls.setMode(this.transformMode)
-	this.transformControls.setSpace('local')
-	this.transformControls.updateTransformLock()
+	this.cameraSelector.update(this.transformMode)
 }
 
 WorldEditor.prototype.preRenderUpdate = function() {
 	// add the editor tree to the scene if it's not there already
 	var editorIdx = this.scene.children.indexOf(this.editorTree)
-	if (editorIdx < 0) {
+
+	if (this.showEditorHelpers && editorIdx < 0) {
 		this.scene.add(this.editorTree)
+	}
+	else if (!this.showEditorHelpers && editorIdx >= 0) {
+		this.scene.remove(this.editorTree)
 	}
 }
 
 WorldEditor.prototype.getCamera = function() {
-	return this.camera.perspectiveCamera
+	return this.cameraSelector.camera
 }
 
 WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
@@ -126,7 +110,10 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 
 	// 1. collect objects requiring handles
 	var nodeCollector = function ( node ) {
-		if (node instanceof THREE.PointLight || node instanceof THREE.DirectionalLight) {
+		if (node instanceof THREE.PointLight
+		||  node instanceof THREE.DirectionalLight
+		||  node instanceof THREE.SpotLight
+		||  node instanceof THREE.HemisphereLight) {
 			needsHandles.push(node)
 		}
 	}
@@ -172,6 +159,20 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 		}
 		else if (node instanceof THREE.DirectionalLight) {
 			var helper = new THREE.DirectionalLightHelper(node, 0.5)
+
+			helper.backReference = node.backReference
+			helper.helperObjectBackReference = node
+			this.handleTree.add(helper)
+		}
+		else if (node instanceof THREE.SpotLight) {
+			var helper = new THREE.SpotLightHelper(node)
+
+			helper.backReference = node.backReference
+			helper.helperObjectBackReference = node
+			this.handleTree.add(helper)
+		}
+		else if (node instanceof THREE.HemisphereLight) {
+			var helper = new THREE.HemisphereLightHelper(node, 0.5)
 
 			helper.backReference = node.backReference
 			helper.helperObjectBackReference = node
@@ -224,8 +225,8 @@ WorldEditor.prototype.setSelection = function(selected) {
 	for (var i = 0; i < selected.length; ++i) {
 		var obj = selected[i]
 		if (obj.backReference !== undefined) {
-			this.transformControls.attach(obj)
-			this.selectionTree.add(this.transformControls)
+			this.cameraSelector.transformControls.attach(obj)
+			this.selectionTree.add(this.cameraSelector.transformControls)
 
 			anySelected = true
 			// only attach to first valid item
@@ -234,12 +235,12 @@ WorldEditor.prototype.setSelection = function(selected) {
 	}
 
 	if (!anySelected) {
-		this.transformControls.detach()
+		this.cameraSelector.transformControls.detach()
 	}
 }
 
 WorldEditor.prototype.onDelete = function(nodes) {
-	this.transformControls.detach()
+	this.cameraSelector.transformControls.detach()
 }
 
 WorldEditor.prototype.onPaste = function(nodes) {
@@ -549,5 +550,67 @@ WorldEditor.prototype.toggleGrid = function() {
 	else {
 		this.editorTree.remove(this.radialHelper.mesh)
 		this.editorTree.add(this.gridHelper.mesh)
+	}
+}
+
+WorldEditor.prototype.setCameraView = function(camera) {
+	this.cameraSelector.setView(camera)
+}
+
+WorldEditor.prototype.toggleCameraOrthographic = function() {
+	// save selected object
+	var selectedObject = this.cameraSelector.transformControls.object
+	if (selectedObject !== undefined) {
+		this.cameraSelector.transformControls.detach()
+	}
+
+	this.cameraSelector.selectCamera(this.cameraSelector.selectedCamera === 'orthographic' ? 'perspective' : 'orthographic')
+
+	// reselect the selection for the new camera
+	if (selectedObject !== undefined) {
+		this.setSelection([selectedObject])
+	}
+}
+
+WorldEditor.prototype.toggleEditorHelpers = function() {
+	this.showEditorHelpers = !this.showEditorHelpers
+}
+
+WorldEditor.prototype.frameSelection = function() {
+	var selectedObject = this.cameraSelector.transformControls.object
+
+	var cameraDirection = this.cameraSelector.camera.getWorldDirection()
+
+	var center = new THREE.Vector3()
+	var radius = 1
+
+	if (selectedObject) {
+		center.copy(selectedObject.position)
+		center.applyMatrix4(selectedObject.matrixWorld)
+
+		var tempSphere = new THREE.Sphere()
+
+		selectedObject.traverse(function(n) {
+			if (n.geometry) {
+				if (!n.geometry.boundingSphere) {
+					n.geometry.computeBoundingSphere()
+				}
+
+				tempSphere.copy(n.geometry.boundingSphere)
+				tempSphere.applyMatrix4(n.matrixWorld)
+
+				var nodeRadius = center.distanceTo(tempSphere.center) + tempSphere.radius
+				if (radius < nodeRadius) {
+					radius = nodeRadius
+				}
+			}
+		})
+	}
+
+	this.cameraSelector.camera.position.copy(selectedObject.position.clone().sub(cameraDirection.multiplyScalar(radius * 1.5)))
+
+	if (selectedObject) {
+		this.cameraSelector.camera.lookAt(selectedObject.position)
+		this.cameraSelector.editorControls.focus(selectedObject)
 	}
 }

@@ -193,5 +193,8 @@ E2.util = {
 	},
 	checkBrowser: function() {
 		return VizorUI.checkCompatibleBrowser();
+	},
+	isFullscreen: function() {
+		return !!(document.mozFullScreenElement || document.webkitFullscreenElement);
 	}
 }

@@ -215,11 +215,11 @@
 
 		if (intersects.length > 0) {
 			var obj = intersects[0].object
-			while (obj && !obj.clickable) {
+			while (obj && !obj.gazeClickerCount) {
 				obj = obj.parent
 			}
 
-			if (obj && obj.clickable) {
+			if (obj && obj.gazeClickerCount) {
 				if (obj !== this.lastObj) {
 					this.objTimer = this.core.abs_t
 					this.lastObj = obj
@@ -252,8 +252,7 @@
 			}
 
 			this.clickFactor = clickFactor
-		}
-		else {
+		} else {
 			this.clickFactor = 0
 			this.clickTime = 0
 		}
@@ -271,7 +270,7 @@
 		mesh.position.copy(this.camera.position)
 		mesh.quaternion.copy(this.camera.quaternion)
 
-		if (this.showIcon) {
+		if (this.scene.hasClickableObjects && this.showIcon !== false) {
 			this.geometry.update(this.clickFactor, Math.max(1.0 - Math.max(0.0, this.clickTime - this.clickDelay) * 10.0, 0.0))
 
 			if (this.scene.children[1].children.indexOf(mesh) < 0) {
