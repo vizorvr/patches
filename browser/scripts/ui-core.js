@@ -113,12 +113,10 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 
 			// LIs
 			dom.tabObjects
-				.toggleClass('disabled', inProgramMode)
 				.toggleClass('ui_off', inProgramMode)
 				.toggleClass('ui_on', inBuildMode)
 
 			dom.tabPresets
-				.toggleClass('disabled', inBuildMode)
 				.toggleClass('ui_off', inBuildMode)
 				.toggleClass('ui_on', inProgramMode)
 
