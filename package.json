@@ -28,7 +28,7 @@
     "fs-extra": "~0.12.0",
     "gm": "~1.17.0",
     "gridfs-stream": "~0.5.1",
-    "gulp": "~3.8.10",
+    "gulp": "3.9.0",
     "gulp-concat": "~2.4.1",
     "gulp-concat-util": "^0.5.2",
     "gulp-declare": "~0.3.0",

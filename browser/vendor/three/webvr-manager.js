@@ -736,10 +736,13 @@ RotateInstructions.prototype.show = function() {
     s.marginLeft = '25%';
     s.marginTop = '25%';
   }
+
+  document.body.dispatchEvent(new CustomEvent('VRManInstructionsShown'))    // vizor.io x Android
 };
 
 RotateInstructions.prototype.hide = function() {
   this.overlay.style.display = 'none';
+  document.body.dispatchEvent(new CustomEvent('VRManInstructionsHidden'))   // vizor.io x Android
 };
 
 RotateInstructions.prototype.showTemporarily = function(ms) {

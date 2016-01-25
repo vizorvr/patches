@@ -151,6 +151,8 @@
 			this.effect = new THREE.VREffect(this.renderer)
 			this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: false })
 
+			E2.core.webVRManager = this.manager		// allow e.g. the player/embed to access this
+
 			E2.core.on('resize', this.resize.bind(this))
 			// E2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this))
 			E2.core.on('fullScreenChangeRequested', this.toggleFullScreen.bind(this))

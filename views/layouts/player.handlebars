@@ -13,13 +13,15 @@
         <link href="/style/less.css" rel="Stylesheet" type="text/css"/>
 		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 		<script src="/node_modules/jquery/dist/jquery.min.js"></script>
+
 		<script src="/vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
 		<script src="/vendor/bootbox.min.js"></script>
+        <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
 		<script src="/scripts/ui-site.js"></script>
         <script>{{> mixpanel}}</script>
 	    <script>{{> ga}}</script>
 	</head>
-	<body class="bPlayer noselect_all">
+	<body class="bPlayer noselect_all dark">
 		<script type="text/javascript" src="/scripts/player.min.js"></script>
         <div class="wrap clearfix" id="playerpage">
 		    {{{body}}}
@@ -33,13 +35,6 @@
                     </p>
                 </div>
             </noscript>
-            <div class="nowebgl clearfix" style="display:none;" id="nowebgl">
-                <div style="float: left; margin: 5px 8px 0 0;"><img src="/images/warning.png" width="64px" height="64px" /></div>
-                <p>This page requires WebGL in order to display properly.</p>
-                <p>
-                    If you're running a compatible browser, such as Chrome, Firefox, or Safari, please make sure WebGL is enabled and reload.
-                </p>
-            </div>
         </div>
 	</body>
 </html>

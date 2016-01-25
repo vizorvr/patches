@@ -4,6 +4,12 @@ html, body {
   padding: 0;
 }
 
+input, textarea, button {
+  &:active, &:focus {
+	outline: 0 !important;
+  }
+}
+
 html.hVizor, body.bEditor, body.bPlayer {
 	height: 100%;
 	width: 100%;
@@ -39,6 +45,14 @@ body {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	.doselect {
+	  -webkit-touch-callout: initial;
+	  -webkit-user-select: initial;
+	  -khtml-user-select: initial;
+	  -moz-user-select: initial;
+	  -ms-user-select: initial;
+	  user-select: initial;
+  }
 }
 .noselect_all, .noselect_all * {
   	-webkit-touch-callout: none;
@@ -47,7 +61,19 @@ body {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+    .doselect_all, .doselect_all * {
+	  -webkit-touch-callout: initial;
+	  -webkit-user-select: initial;
+	  -khtml-user-select: initial;
+	  -moz-user-select: initial;
+	  -ms-user-select: initial;
+	  user-select: initial;
+	}
+
 }
+
+
+
 
 *[contenteditable]:not([disabled]) {
 	-webkit-touch-callout: initial;
@@ -1006,7 +1032,7 @@ button.show-timeline:hover svg {
 	}
 }
 
-#progressbar {
+body.bEditor #progressbar {
     display: none;
     position: absolute;
     top: @menu-bar-height + @breadcrumb-height;
@@ -1033,5 +1059,28 @@ button.show-timeline:hover svg {
 	  &.pull {text-align:right}
 	}
 
+  }
+}
+
+// svgs sometimes prevent button events from triggering (ios), this fixes it
+button.svg>svg {
+  pointer-events: none;
+}
+
+body.deviceMobile .nomobile,
+body.deviceTablet .notablet,
+body.deviceDesktop .nodesktop {
+  display: none;
+}
+
+body {
+  &.deviceTablet, &.deviceDesktop {
+	.mobileonly { display: none}
+  }
+  &.deviceTablet, &.deviceMobile {
+	.desktoponly {display: none}
+  }
+  &.deviceDesktop, &.deviceMobile {
+	.tabletonly { display: none}
   }
 }
