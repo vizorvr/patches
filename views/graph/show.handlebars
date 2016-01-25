@@ -1,110 +1,392 @@
 {{> srv/siteSvgSprite }}
-<div id="playerWrap">
-<header id="topbar" class="clearfix" style="height:58px;">
-	<h1 id="logo_h">
-		<span id="load_spinner"></span>
-		<a href="/"><svg alt="Vizor logo" style="width:64px; height:24px; fill:#eee;"><use xlink:href="#vizor-top-logo"></use></svg></a>
-	</h1>
-	<div class="controls">
-		<button id="fullscreen" data-tooltip="Enter full screen" class="svg">
-			<svg alt="Enter full screen"><use xlink:href="#icon-fullscreen"></use></svg>
-		</button>
-		<button id="edit" data-tooltip="Edit graph" class="svg">
-			<svg alt="Edit graph"><use xlink:href="#player-pencil"></use></svg>
-		</button>
-	</div>
-	<h2 id="graph_heading">
+<script>
+    {{{templateCache}}}
+</script>
+<header id="topbar" style="display:none">
+    <h2 id="graph_heading">
+        <svg stroke="none" fill="#afbfdf"><use xlink:href="#vizor-logo-flat"></use></svg>
 		<span class="title">{{graph.name}}</span>
-		by
-		<span class="author">{{graph.owner}}</span>
+		<span class="author">by <a href="#" data-href="/{{graph.owner}}">{{graph.owner}}</a></span><span class="loadingonly">...</span>
 	</h2>
-	<div class="progress" style="display:none">
-		<div class="progress-bar" style="width: 00%;"></div>
+    <progress id="progressbar" max="100"></progress>
+	<div class="controls">
+        <button id="playButton" class="svg noplaying noautoplay" data-svgref="player-icon-play"><svg></svg>
+            Play
+        </button>
+
+        <button id="entervr" class="svg nopaused nodesktop notablet mobileonly" data-svgref="player-icon-vr"><svg></svg>
+            Enter VR
+		</button>
+
+        <button id="fullscreen" class="svg nopaused nomobile notablet" data-svgref="player-icon-fullscreen"><svg></svg>
+            Fullscreen
+		</button>
+
+        <button id="edit" class="svg nopaused nomobile" data-svgref="player-icon-edit"><svg></svg>
+            Edit
+            {{#eq graph.owner user.username}}
+            {{else}}
+            {{/eq}}
+		</button>
+        <button id="sharebutton" class="svg nopaused" data-svgref="player-icon-share">
+            <svg></svg>
+            Share
+        </button>
 	</div>
 </header>
-<div id="stage" class="stage--front" style="min-height: 100px; background: #666;">
-	<canvas
-		style="display: none;"
-		id="webgl-canvas"
-		class="webgl-canvas-normal"
-		width="100%"
-		height="100%"
-		oncontextmenu="return false;"
-		data-autoplay="true"
-		data-graph-url="{{graphMinUrl}}">
-	>
-	</canvas>
-</div>
+<div id="playerWrap">
+    <div id="loadingStage" class="stage">
+        <svg style="width:100px; height: 100px; fill:#2B3142;">
+            <use xlink:href="#logo-mini"></use>
+        </svg>
+    </div>
+    <div id="errorStage" class="stage"></div>
+    <div id="stage" class="stage front">
+        <canvas
+            style="display: none;"
+            id="webgl-canvas"
+            class="webgl-canvas-normal"
+            width="100%"
+            height="100%"
+            oncontextmenu="return false;"
+            {{#if autoplay}}
+            data-autoplay="true"
+            {{/if}}
+            data-graph-url="{{graphMinUrl}}">
+        >
+        </canvas>
+    </div>
+
 </div>
 <script>
-    var have_webgl = (function(){   // http://www.browserleaks.com/webgl#howto-detect-webgl
-        if (!window.WebGLRenderingContext) return false;    /* WebGL not supported*/
+
+new function() {
+    var have_webgl = (function () {   // http://www.browserleaks.com/webgl#howto-detect-webgl
+        if (!window.WebGLRenderingContext) return false;
+        /* WebGL not supported*/
         var canvas = document.createElement("canvas"), names = ["webgl", "experimental-webgl", "moz-webgl"], gl = false;
-        for(var i in names) {
+        for (var i in names) {
             try {
                 gl = canvas.getContext(names[i]);
                 if (gl && typeof gl.getParameter == "function") { /* WebGL is enabled */
-                    return names[i];    /* or return true; */
+                    return names[i];
+                    /* or return true; */
                 }
-            } catch(e) {}
-        }
-        return false;  /* WebGL is supported, but disabled */
-    })();
-    function initPlayer() {
-        var $canvas = $('#webgl-canvas')
-        $canvas.css({display: 'block'});
-        var $stage = $('#stage')
-
-        window.Vizor = {
-            hideWebVRButton: true
-        }
-
-		var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
-
-        $('#edit').click(function() {
-            window.location = window.location + '/edit'
-        })
-
-        $('#fullscreen').click(function() {
-            E2.core.emit('fullScreenChangeRequested')
-        })
-
-        $(window).on('resize', onResize);
-        $(window).on('vizorLoaded', function() {
-            $('#load-spinner').hide()
-			var $playerContainer = jQuery('#stage');
-			var onResize = VizorUI.makeVRCanvasResizeHandler(jQuery('#webgl-canvas'), $playerContainer);
-			E2.app.calculateCanvasArea = function() {
-                return{
-                    width: $playerContainer.innerWidth(),
-                    height: $playerContainer.innerHeight()
-                }
+            } catch (e) {
             }
-			onResize();
-        })
+        }
+        return false;
+        /* WebGL is supported, but disabled */
+    })();
+
+    var topUrl = 'http://vizor.io'
+
+    var playerUI = {
+        data: {
+            shareURL: topUrl + '/{{graph.owner}}/{{graph.name}}',
+            embedSrc: topUrl + '/embed/{{graph.owner}}/{{graph.name}}'
+        }
     }
 
-	function init_() {
-		document.getElementById('topbar').addEventListener('mousedown',
-        function(e){
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        }, true);   // capture
-        jQuery('button').each(function(){
-            var $this = jQuery(this);
-            var contentText = $this.data('tooltip');
-            $this.popover({
-                trigger: 'hover',
-                title: contentText,
-                placement: 'bottom',
-                delay: {show:500, hide:100}
-            });
-        });
-		initPlayer();
-	}
+    playerUI.selectStage = function (elementId) {
+        var wrap = jQuery("#playerWrap")
+        wrap
+            .find('div.stage')
+            .removeClass('front')
 
-    jQuery(document).ready(have_webgl ? init_ : function(){
-        document.getElementById('nowebgl').style.display = 'block';
+        return wrap
+            .find('#' + elementId)
+            .addClass('front')
+    }
+
+
+
+    playerUI.init = function () {
+
+
+
+        var fadingIn = false
+        var fadingOut = false
+        var overHeader = false
+
+        var $body = $(document.body)
+        var $canvas = $('#webgl-canvas')
+        var $stage = $('#stage')
+        var $wrap = $('#playerWrap')
+        var autoplay = $canvas.data('autoplay')
+
+        siteUI.disableForceTouch()
+
+        function suspendVRcamera() {
+            E2.app.isVRCameraActive = function () {
+                return false
+            }
+        }
+
+        function enableVRcamera() {
+            E2.app.isVRCameraActive = function () {
+                return !overHeader
+            }
+        }
+
+        function bindHeaderBehaviour() {
+            var fadeoutTimer = null
+            var headerFadeoutTimeMs = 2500
+
+            var $header = $('#topbar')
+            if ($header.length <= 0) return
+
+            var inVR = siteUI.isInVR
+
+            var clearFadeoutTimer = function () {
+                if (fadeoutTimer) clearTimeout(fadeoutTimer)
+                fadeoutTimer = null
+                return true
+            }
+
+            var headerFadeout = function () {
+                if (fadingOut) return
+                if (inVR()) {
+                    $header.hide();
+                    return
+                }
+                fadingOut = true
+                $header.fadeOut(1000, function () {
+                    fadingOut = false
+                })
+                return true
+            }
+
+            var queueFadeoutTimer = function () {
+                if (inVR()) {
+                    $header.hide()
+                }
+                if (fadeoutTimer) clearTimeout(fadeoutTimer)
+                fadeoutTimer = setTimeout(headerFadeout, headerFadeoutTimeMs)
+                return true
+            }
+
+            var headerFadein = function () {
+                if (fadingIn) return
+                fadingIn = true
+                clearFadeoutTimer()
+                $header.fadeIn(200, function () {
+                    fadingIn = false
+                })
+                return true
+            }
+
+            $body.on('mousemove touchend', function (e) {
+                if (inVR()) return true
+                headerFadein()
+                if (!overHeader)
+                    queueFadeoutTimer()
+                return true
+            })
+
+            $header
+                .on('mouseenter', function () {
+                    clearFadeoutTimer()
+                    overHeader = true
+                    headerFadein()
+                })
+                .on('mouseleave', function () {
+                    overHeader = false
+                })
+
+            $body
+                .on('VRManInstructionsShown', function () {
+                    $header.hide()
+                    fadingIn = fadingOut = false
+                })
+                .on('VRManInstructionsHidden', function () {
+                    fadingIn = fadingOut = false
+                    if (siteUI.isPortraitLike()) {
+                        headerFadein()
+                        queueFadeoutTimer()
+                    }
+                })
+
+            setTimeout(function () {
+                if (VizorUI.isMobile.any() && !siteUI.isPortraitLike())
+                    headerFadeout()
+                else
+                    queueFadeoutTimer()
+            }, 300)
+        }
+
+        function bindVRBackButton() {
+            $('#backfromvr').off('.vizor').on('click.vizor', function (e) {
+                E2.core.webVRManager.onBackClick_()
+                siteUI.tagBodyClass()
+                return false
+            })
+        }
+
+        function bindShareButton() {
+            var $share = $('button#sharebutton')
+            if ($share.length < 1) return
+
+            $share
+                .on('click', function (e) {
+                    e.preventDefault()
+                    var html = E2.views.partials.embedVRplayer(playerUI.data)
+                    suspendVRcamera()
+                    var modal = VizorUI.modalOpen(html, "Share this", 'player_share doselect_all', enableVRcamera)
+                    modal
+                        .find('textarea, input')
+                        .on('mouseup touchup', function (e) {
+                            e.currentTarget.select()
+                            e.currentTarget.setSelectionRange(0, 9999)
+                            e.preventDefault()
+                            return true
+                        })
+                        .on('focus', function (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false
+                        })
+
+                    return false;
+                })
+        }
+
+        function amendVRManagerInstructions() {
+            var r = E2.core.webVRManager.rotateInstructions
+            r.text.innerHTML += "<br /><br /><button id='backfromvr'>Exit VR view</button>"
+            r.overlay.style.background = '#2b2f37'
+            r.overlay.style.zIndex = "100"
+            $('div:last-child', r.overlay)[0].style.display = 'none'
+        }
+
+        function completeLoading() {
+            $body.addClass('playing')
+            playerUI.selectStage('stage')
+            mixpanel.track('Player playing')
+
+            bindHeaderBehaviour()
+            bindShareButton()
+            amendVRManagerInstructions()
+        }
+
+        $canvas.css({display: 'block'});
+
+        window.Vizor = {
+            hideWebVRButton: false
+        }
+
+        var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
+
+        $('#edit').click(function () {
+            window.location = window.location.href.split('?')[0] + '/edit'
+        })
+
+        function enterFullscreen(e) {
+            // webvr manager has extra provisions if in iframe,
+            // removed E2.core call to emit fullScreenChangeRequested
+            E2.core.webVRManager.onFSClick_()
+            siteUI.tagBodyClass()
+            bindVRBackButton()
+        }
+
+        function enterVR(e) {
+            E2.core.webVRManager.onVRClick_()
+            siteUI.tagBodyClass()
+            bindVRBackButton()
+        }
+
+        $('#fullscreen').on('click', enterFullscreen)
+        $('#entervr').on('click', enterVR)
+
+        $(window).on('resize orientationchange', bindVRBackButton)
+        $(window).on('resize orientationchange', onResize);
+        $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', onResize)
+
+        $(window).on('vizorLoaded', function () {
+
+            E2.core.on('assetsLoaded', completeLoading)
+
+            $('#load-spinner').hide()
+
+            E2.app.calculateCanvasArea = function () {
+                return {
+                    width: $stage.innerWidth(),
+                    height: $stage.innerHeight()
+                }
+            }
+            onResize();
+
+            setTimeout(bindVRBackButton, 500)  // in case the instructions show immediately
+
+            enableVRcamera()
+
+            // provisions for chrome/android
+            $body
+                .on('VRManInstructionsShown', function () {
+                    $wrap.hide()
+                })
+                .on('VRManInstructionsHidden', function () {
+                    $wrap.show();
+                    onResize()
+                });
+
+            if (siteUI.hasOrientationChange && VizorUI.isMobile.Android()) {
+                var allowExtraHeightOnLandscape = function () {
+                    // provisions for android
+                    setTimeout(function () {
+                        if (siteUI.isPortraitLike()) {
+                            $body.css({
+                                height: '100%'
+                            });
+                        }
+                        else {
+                            $body.css({
+                                height: '120%'  // allow dragging the body to hide the top bar
+                            });
+                        }
+                    }, 500)
+                }
+                $(window).on('orientationchange', allowExtraHeightOnLandscape)
+                allowExtraHeightOnLandscape()
+            }
+
+        })
+
+
+        function play() {
+            playerUI.selectStage('stage')
+            playVizorFile()
+                .then(function () {
+                    $body
+                        .removeClass('paused')
+                        .addClass('playing')
+                })
+                .catch(function (err) {
+                    var $err = playerUI.selectStage('errorStage')
+                    $err.html(err)
+                })
+        }
+
+        function preparePlay() {
+            $body.addClass('paused')
+            var $playButton = jQuery('#playButton')
+            $playButton.on('click', play)
+        }
+
+        if (autoplay)
+            $body.addClass('autoplay')
+        else
+            preparePlay()
+
+        playerUI.selectStage('loadingStage')
+
+        $('header').show()
+        $(window).on('unload', function () {})    // iOS frame js issues
+    }
+
+    jQuery(document).ready(have_webgl ? playerUI.init : function () {
+        var $err = playerUI.selectStage('errorStage')
+        $err.html(E2.views.partials.noWebGL({embed: siteUI.isEmbedded}))
     });
+}();
 </script>

@@ -9,16 +9,15 @@ var siteUI = new function() {
 
 	// same as in css
 	var breakMobile = 550;
-	var breakTablet = 900;
+	var breakTablet = 1024;
 
 	if (window.matchMedia) {
 		this.mqMobile = window.matchMedia("only screen and (max-width: "+ (breakMobile-1) +"px)")
 		this.mqTablet = window.matchMedia("screen and (max-width: "+ (breakTablet-1) +"px)")
 		this.mqDesktop = window.matchMedia("screen and (min-width: "+  breakTablet    +"px)")
 	} else {
-		this.mqMobile = this.mqTablet = this.mqMobile = { matches: false }	// stub
+		this.mqMobile = this.mqTablet = this.mqDesktop = { matches: false }
 	}
-
 
 	this.devicePixelRatio = window.devicePixelRatio || 1;
 	this.hasOrientationChange = "onorientationchange" in window;
@@ -27,6 +26,7 @@ var siteUI = new function() {
 	// states (bool)
 	this.lastLayout = null;
 	this.lastPortrait = null;
+	this.isEmbedded = null;
 
 	this.onResize = function() {
 		that.tagBodyClass();
@@ -34,7 +34,8 @@ var siteUI = new function() {
 
 	this.attach = function() {
 
-		$(window).on('resize', this.onResize.bind(this));
+		$(window).on('resize', this.onResize);
+		if (that.hasOrientationChange) $(window).on('orientationchange', this.onResize)
 
 		// common account forms
 		VizorUI.setupXHRForm(jQuery('#accountDetailsForm'));
@@ -194,18 +195,40 @@ var siteUI = new function() {
 	  return !!('ontouchstart' in window);
 	};
 
+	this.disableForceTouch = function() {
+		$('body').on('webkitmouseforcewillbegin webkitmouseforcedown webkitmouseforceup webkitmouseforcechanged', function(e){
+            e.preventDefault()
+            e.stopPropagation()
+            return false
+        })
+	}
+
+	this.isInIframe = function() {
+		try {
+			return window.self !== window.top;
+		} catch (e) {
+			return true;
+		}
+	}
+
+	this.isInVR = function() {
+		if (E2 && E2.core && E2.core.webVRManager && E2.core.webVRManager.isVRMode)
+			return E2.core.webVRManager.isVRMode()
+		return false
+	}
+
 	/**
 	 * tags document.body with mobile|nonmobile and portrait|landscape classes. invoked at start
 	 */
 	this.tagBodyClass = function() {
 		var $body = jQuery('body');
-		var o = that.isPortraitLike();
-		if (o !== that.lastPortrait) {
-			that.lastPortrait = o
-			$body
-				.toggleClass('portrait', o)
-				.toggleClass('landscape', !o);
-		}
+		$body
+			.toggleClass('deviceDesktop', that.deviceIsDesktop)
+			.toggleClass('deviceTablet', that.deviceIsTablet)
+			.toggleClass('deviceMobile', that.deviceIsPhone)
+			.toggleClass('inIframe', that.isEmbedded)
+			.toggleClass('inVR', that.isInVR())
+
 		var l = that.getLayoutMode();
 		if (l !== that.lastLayout) {
 			that.lastLayout = l;
@@ -214,17 +237,64 @@ var siteUI = new function() {
 				.toggleClass('layoutTablet',  l === 'tablet')
 				.toggleClass('layoutDesktop', l === 'desktop')
 		}
+
+		// because of how .isPortraitLike() works on Android, this needs a delay
+		function tagLandscapeOrPortrait() {
+			var o = that.isPortraitLike();
+			if (o !== that.lastPortrait) {
+				that.lastPortrait = o
+				$body
+					.toggleClass('portrait', o)
+					.toggleClass('landscape', !o);
+			}
+		}
+
+		if (VizorUI.isMobile.Android())
+			setTimeout(tagLandscapeOrPortrait, 300)
+		else
+			tagLandscapeOrPortrait()
+
 		return true;
 	};
 
 	// check if orientation resembles portrait
 	this.isPortraitLike = function() {
+		if (VizorUI.isMobile.Android()) {
+			// http://stackoverflow.com/questions/30753522/chrome-43-window-size-bug-after-full-screen
+			// https://www.sencha.com/forum/showthread.php?303224-Wrong-orientation-for-Galaxy-Tab-devices
+			return window.innerWidth <= window.innerHeight
+		}
 		// http://caniuse.com/#search=matchmedia
 		var mql = window.matchMedia("(orientation: portrait)");
 		return mql.matches;
 	};
 
+	this.isDevicePhone = function() {
+		var ua = navigator.userAgent
+		var matchiOS = !!ua.match(/iPhone|iPod/i)
+		var matchMobile = !!ua.match(/Mobile/i)
+		return matchMobile && (matchiOS || !this.isDeviceTablet())
+	}
+
+	this.isDeviceTablet = function() {
+		var ua = navigator.userAgent
+
+		var matchAndroid 	= !!ua.match(/Android/i)
+		var matchMobile 	= !!ua.match(/Mobile/i)
+		var matchiPad 		= !!ua.match(/iPad/i)
+
+		return matchiPad || (matchAndroid && !matchMobile)
+	}
+
+	this.isDeviceDesktop = function() {
+		// match OS
+		var ua = navigator.userAgent
+		var matchOS = !!ua.match(/Windows|Mac OS X|Linux/i)
+		return matchOS && !(this.isDevicePhone() || this.isDeviceTablet())
+	}
+
 	this.getLayoutMode = function() {	// note, match css!
+		if (this.isInIframe()) return 'default'
 		if (this.mqMobile.matches)
 			return 'mobile';
 		else if (this.mqTablet.matches)
@@ -235,6 +305,10 @@ var siteUI = new function() {
 			return 'default'
 	};
 
+	this.deviceIsTablet = this.isDeviceTablet()
+	this.deviceIsPhone = this.isDevicePhone()
+	this.deviceIsDesktop = this.isDeviceDesktop()
+	this.isEmbedded = this.isInIframe()
 }
 
 jQuery('document').ready(siteUI.init);
@@ -246,19 +320,24 @@ VizorUI.makeVRCanvasResizeHandler = function($playerCanvas, $containerRef) {
 		msg("ERROR: - using window for $containerRef");
 		$containerRef = jQuery(window);
 	}
-	return function() {
+	var oldPixelRatioAdjustedWidth = 0, oldPixelRatioAdjustedHeight = 0
+	var oldFullscreen = null
 
+	return function() {
 		var width = $containerRef.innerWidth()
 		var height = $containerRef.innerHeight()
 		var devicePixelRatio = window.devicePixelRatio || 1;
 		var pixelRatioAdjustedWidth = devicePixelRatio * width;
 		var pixelRatioAdjustedHeight = devicePixelRatio * height;
 
-		$playerCanvas
-			.width(pixelRatioAdjustedWidth)
-			.height(pixelRatioAdjustedHeight);
-
 		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+
+		if ((oldPixelRatioAdjustedWidth === pixelRatioAdjustedWidth) &&
+			(oldPixelRatioAdjustedHeight === pixelRatioAdjustedHeight) &&
+			(oldFullscreen === isFullscreen))
+			return true
+
+		if (pixelRatioAdjustedWidth * pixelRatioAdjustedHeight === 0) return true	// vr manager interstitial
 
 		if (isFullscreen) {
 			$playerCanvas
@@ -276,7 +355,16 @@ VizorUI.makeVRCanvasResizeHandler = function($playerCanvas, $containerRef) {
 				.addClass('webgl-container-normal');
 		}
 
+		$playerCanvas
+			.width(pixelRatioAdjustedWidth)
+			.height(pixelRatioAdjustedHeight);
+
 		E2.core.emit('resize')
+
+		oldPixelRatioAdjustedWidth = pixelRatioAdjustedWidth
+		oldPixelRatioAdjustedHeight = pixelRatioAdjustedHeight
+		oldFullscreen = isFullscreen
+
 	};
 }
 
@@ -335,12 +423,12 @@ VizorUI.userIsLoggedIn = function() {
 };
 
 /***** INTERIM MODAL LAYER *****/
-VizorUI.modalOpen = function(html, heading, className, allowclose, opts) {
-	allowclose = (typeof allowclose !== 'undefined') ? !!allowclose : true;
+VizorUI.modalOpen = function(html, heading, className, onEscape, opts) {
+	onEscape = (typeof onEscape !== 'undefined') ? onEscape : true;
 	opts = opts || {}
 	opts.message = html;
-	opts.onEscape = allowclose;
-	if (typeof opts.backdrop === 'undefined') opts.backdrop = allowclose;	// bb 4.4+
+	opts.onEscape = onEscape;
+	if (typeof opts.backdrop === 'undefined') opts.backdrop = onEscape;	// bb 4.4+
 	if ((typeof heading !== 'undefined') && heading) opts.title = heading;
 	if ((typeof className !== 'undefined') && className) opts.className = className;
 	return bootbox.dialog(opts);
