@@ -110,7 +110,10 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 
 	// 1. collect objects requiring handles
 	var nodeCollector = function ( node ) {
-		if (node instanceof THREE.PointLight || node instanceof THREE.DirectionalLight) {
+		if (node instanceof THREE.PointLight
+		||  node instanceof THREE.DirectionalLight
+		||  node instanceof THREE.SpotLight
+		||  node instanceof THREE.HemisphereLight) {
 			needsHandles.push(node)
 		}
 	}
@@ -156,6 +159,20 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 		}
 		else if (node instanceof THREE.DirectionalLight) {
 			var helper = new THREE.DirectionalLightHelper(node, 0.5)
+
+			helper.backReference = node.backReference
+			helper.helperObjectBackReference = node
+			this.handleTree.add(helper)
+		}
+		else if (node instanceof THREE.SpotLight) {
+			var helper = new THREE.SpotLightHelper(node)
+
+			helper.backReference = node.backReference
+			helper.helperObjectBackReference = node
+			this.handleTree.add(helper)
+		}
+		else if (node instanceof THREE.HemisphereLight) {
+			var helper = new THREE.HemisphereLightHelper(node, 0.5)
 
 			helper.backReference = node.backReference
 			helper.helperObjectBackReference = node
