@@ -1,7 +1,4 @@
-FROM node:4.2.6
-
-ENV NPM_CONFIG_LOGLEVEL info
-ENV NODE_VERSION 4.2.6
+FROM node:argon
 
 ENV HOME /root
 ENV NODE_ENV production
