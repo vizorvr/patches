@@ -248,6 +248,7 @@ function modelRoutes(
 		requireController,
 		passportConf.isAuthenticated,
 		function(req, res, next) {
+			console.log("POST to /:model, model = " + req.params.model);
 			req.controller.save(req, res, next)
 		}
 	)

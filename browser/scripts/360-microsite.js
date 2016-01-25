@@ -12,32 +12,28 @@ function uploadGraph(graphData, callback) {
 
 		error: function(err) {
 			var errMsg = err.responseJSON ? err.responseJSON.message : err
-			alert(errMsg);
 		},
 	})
 }
 
 // Fetch the 360 template from our server and publish a graph with 
 // image url from passed in url
-function publishTemplateWithUrl(image_url) {
-	console.log("publishing stereo template with image_url = " + image_url);
+function publishTemplateWithUrl(imageUrl) {
+	console.log("publishing stereo template with imageUrl = " + imageUrl);
 
-	// TODO: change to this to actual working production url
-	// maybe we need to add a route or someway serve this static file
-	var template_url = "/presets/_template-360-photo.json";
+	// TODO: do we need to use a FQN here ?
+	var templateUrl = "/presets/_template-360-photo.json";
 
 	$.ajax({
-		url: template_url,
+		url: templateUrl,
 		type: 'GET',
 		dataType: 'json',
 
 		success: function(graph) {
-			var url_replaced = false;
+			var urlReplaced = false;
 
-			// So .. now we need to replace the url object in ..
-			// this json object
-			//
-			// Go through the graph 'nodes' field
+			// Go through the graph 'nodes' field and find the URL
+			// for the 360 template we are replacing
 			var nodes = graph.root.nodes;
 			for (var i=0; i<nodes.length; i++) {
 				var node = nodes[i];
@@ -45,18 +41,13 @@ function publishTemplateWithUrl(image_url) {
 				// Check if we have the correct node, the 360 graph 
 				// has this node generating the texture
 				if (node.plugin === 'url_texture_generator') {
-					console.log("replacing url " + node.state.url + " with url = " + image_url);
-					node.state.url = image_url;
-					url_replaced = true;
+					node.state.url = imageUrl;
+					urlReplaced = true;
 				}
 			}
 
-			// Now .. we need to publish this scene somehow and then get the UID for that and open
-			// the player with that
-			//
-			// So we want to post this as JSON to the server /graph
-			if (url_replaced === true) {
-				// Generate a unique ID for this graph
+			// Found the url, generate the graph data and upload
+			if (urlReplaced === true) {
 				var name = genGraphUid();
 				var data = {
 					'path': name,
@@ -64,11 +55,9 @@ function publishTemplateWithUrl(image_url) {
 				};
 
 				uploadGraph(data, function(asset) {
-					console.log("upload of graph complete");
-
 					// Redirect the client to the published graph
-					var redirect_url = asset.path;
-					window.location.href = redirect_url;
+					// Use href so back works
+					window.location.href = asset.path;
 				});
 			}
 		},
@@ -80,9 +69,7 @@ function publishTemplateWithUrl(image_url) {
 	})
 }
 
-function uploadFile(file, modelName) {
-	//var dfd = when.defer()
-
+function uploadFile(file, modelName, callback) {
 	var fnl = file.name.toLowerCase()
 	var extname = fnl.substring(fnl.lastIndexOf('.'))
 
@@ -93,12 +80,18 @@ function uploadFile(file, modelName) {
 	$.ajax({
 		url: '/upload/' + modelName,
 		type: 'POST',
+		data: formData,
+		cache: false,
+		contentType: false,
+		processData: false,
+		dataType: 'json',
 
 		xhr: function() {
 			var xhr = $.ajaxSettings.xhr()
 				xhr.upload.addEventListener('progress', function(evt) {
 					if (evt.lengthComputable)
 						//E2.ui.updateProgressBar(Math.floor(evt.loaded/evt.total * 100))
+						// TODO: update real progress
 						console.log(evt.loaded/evt.total * 100);
 				}, false)
 
@@ -106,36 +99,14 @@ function uploadFile(file, modelName) {
 		},
 
 		success: function(uploadedFile) {
-			// So here we get the file from the server .. 
-			//
-			// Now we need to get the template
-			// Replace the correct 'url' field in there with the one now residing on the server
-			//
-			// so .. we need to fetch the template json file
-			// Then pass both that and the uploaded file to the function
-			// that will handle the replacing of the url
-			console.dir(uploadedFile);
-
-			// Get the scaled version of the original image
-			var image_url = uploadedFile.scaled.url;
-			if (image_url !== undefined) {
-				publishTemplateWithUrl(image_url);
-			}
+			callback(uploadedFile);
 		},
 
 		error: function(err) {
 			var errMsg = err.responseJSON ? err.responseJSON.message : err
-				alert(errMsg);
+			console.log(errMsg);
 		},
-
-		data: formData,
-		cache: false,
-		contentType: false,
-		processData: false,
-		dataType: 'json'
 	})
-
-	//return dfd.promise
 }
 
 function fileSelectHandler(evt) {
@@ -143,6 +114,7 @@ function fileSelectHandler(evt) {
 	evt.preventDefault();
 
 	var file_path;
+
 	// Either read from the dataTransfer (when drag and dropped)
 	// or from the target.files (when file browsed)
 	if (evt.dataTransfer !== undefined) {
@@ -152,14 +124,23 @@ function fileSelectHandler(evt) {
 	}
 
 	if (file_path.type.match('image.*') === null) {
+		// TODO: error handling
 		alert("File type doesn't match");
 		return;
 	}
 
-	uploadFile(file_path, "image");
+	uploadFile(file_path, "image", function(uploadedFile) {
+		if (uploadedFile !== undefined) {
+			// Get the scaled version of the original image
+			var imageUrl = uploadedFile.scaled.url;
+			if (imageUrl !== undefined) {
+				publishTemplateWithUrl(imageUrl);
+			}
+		}
+	});
 };
 
-function initDropZone() {
+function addEventHandlers() {
 	// Local File drop handlers
 	var drop_zone = document.getElementById('drop-zone-360-image');
 	drop_zone.addEventListener("dragover", dropZoneDragOverHandler);

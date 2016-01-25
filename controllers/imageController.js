@@ -27,6 +27,9 @@ ImageController.prototype.upload = function(req, res, next) {
 
 			return that._service.save(info, req.user)
 			.then(function(asset) {
+				console.log("---------------------^ asset = ");
+				console.dir(asset);
+
 				res.json(asset)
 			})
 		})

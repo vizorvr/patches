@@ -222,9 +222,13 @@ GraphController.prototype.upload = function(req, res, next)
 
 // POST /graph
 GraphController.prototype.save = function(req, res, next) {
+	console.dir(req.body);
+
 	var that = this;
 	var path = this._makePath(req, req.body.path);
 	var gridFsPath = '/graph'+path+'.json';
+
+	console.log("save, path = " + path);
 
 	var tags = that._parseTags(req.body.tags);
 
@@ -244,6 +248,7 @@ GraphController.prototype.save = function(req, res, next) {
 				tags: tags,
 				url: url
 			}
+
 
 			return that._service.save(model, req.user)
 			.then(function(asset) {
