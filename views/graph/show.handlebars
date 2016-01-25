@@ -252,11 +252,6 @@ new function() {
         }
 
         function amendVRManagerInstructions() {
-            if (!(E2 && E2.core && E2.core.webVRManager && E2.core.webVRManager.rotateInstructions)) {
-                console.error('amend instructions called too early?', E2)
-                return
-            }
-
             var r = E2.core.webVRManager.rotateInstructions
             r.text.innerHTML += "<br /><br /><button id='backfromvr'>Exit VR view</button>"
             r.overlay.style.background = '#2b2f37'
