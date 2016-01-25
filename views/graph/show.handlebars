@@ -265,18 +265,9 @@ new function() {
         }
 
         function completeLoading() {
-            if (E2.util.isMobile()) {
-                // mobile
-            }
-            else if (/iPad/i.test(navigator.userAgent)) {
-                // tablet
-            }
-            else {
-                // desktop / default
-            }
             $body.addClass('playing')
             playerUI.selectStage('stage')
-            mixpanel.track('Player (autoplay)')
+            mixpanel.track('Player playing')
 
             bindHeaderBehaviour()
             bindShareButton()
@@ -374,7 +365,6 @@ new function() {
                     $body
                         .removeClass('paused')
                         .addClass('playing')
-                    mixpanel.track('Embedded Player Playing')
                 })
                 .catch(function (err) {
                     var $err = playerUI.selectStage('errorStage')
