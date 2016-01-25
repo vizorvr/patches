@@ -124,6 +124,11 @@ GraphController.prototype.latest = function(req, res) {
 	});
 }
 
+// "moon-test-one by matt" -> "Moon Test One by Matt"
+function convNameToHumanReadable(name) {
+	var retName = name.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+	return retName;
+}
 
 // GET /embed/fthr/dunes-world
 GraphController.prototype.embed = function(req, res, next) {
@@ -152,7 +157,8 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 			layout: 'player',
 			graph: graph,
 			graphMinUrl: graph.url,
-			autoplay: true
+			autoplay: true,
+			graphNameHumanReadable: convNameToHumanReadable(graph.name)
 		})
 	}).catch(next)
 }
