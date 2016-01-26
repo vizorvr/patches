@@ -584,6 +584,10 @@ WorldEditor.prototype.frameSelection = function() {
 	var center = new THREE.Vector3()
 	var radius = 1
 
+	if (selectedObject === undefined) {
+		selectedObject = this.scene
+	}
+
 	if (selectedObject) {
 		center.copy(selectedObject.position)
 		center.applyMatrix4(selectedObject.matrixWorld)
@@ -605,11 +609,9 @@ WorldEditor.prototype.frameSelection = function() {
 				}
 			}
 		})
-	}
 
-	this.cameraSelector.camera.position.copy(selectedObject.position.clone().sub(cameraDirection.multiplyScalar(radius * 1.5)))
+		this.cameraSelector.camera.position.copy(selectedObject.position.clone().sub(cameraDirection.multiplyScalar(radius * 1.5)))
 
-	if (selectedObject) {
 		this.cameraSelector.camera.lookAt(selectedObject.position)
 		this.cameraSelector.editorControls.focus(selectedObject)
 	}
