@@ -193,26 +193,6 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 	this.vrCamera = camera
 
 	this.updateHelperHandles(scene, camera)
-
-	// if there's a pending selection (something was pasted),
-	// set selection accordingly
-	if (this.pendingSelection !== undefined) {
-		if (--this.pendingSelection.waitTime < 0) {
-			var selectNodes = []
-
-			for(var i = 0; i < this.pendingSelection.selection.length; ++i) {
-				this.pendingSelection.selection[i].plugin.object3d.traverse(function(n) {
-					if (n.backReference) {
-						selectNodes.push(n)
-					}
-				})
-			}
-
-			this.setSelection(selectNodes)
-
-			delete this.pendingSelection
-		}
-	}
 }
 
 WorldEditor.prototype.getEditorSceneTree = function() {
@@ -291,15 +271,15 @@ WorldEditor.prototype.onPaste = function(nodes) {
 
 	E2.app.markConnectionAsSelected(connection)
 
-	// set a pending selection object for the pasted objects
-	// we have to wait for one update to pass before actually
-	// setting the selection, because mesh creation itself is
-	// deferred in AbstractThreeMeshPlugin
-	var pendingSelection = {waitTime: 1, selection: []}
-
+	// select the meshes in world editor
+	var selectNodes = []
 	function collectMeshes(node) {
 		if (node.plugin && node.plugin.object3d) {
-			pendingSelection.selection.push(node)
+			node.plugin.object3d.traverse(function(n) {
+				if (n.backReference) {
+					selectNodes.push(n)
+				}
+			})
 		}
 
 		if (node.plugin.graph) {
@@ -314,9 +294,9 @@ WorldEditor.prototype.onPaste = function(nodes) {
 		collectMeshes(node)
 	}
 
-	this.pendingSelection = pendingSelection
+	this.setSelection(selectNodes)
 
-	// TODO: if this.pendingSelection.length === 0, we didn't paste any objects
+	// TODO: if selectNodes.length === 0, we didn't paste any objects
 	// and we could warn the user somehow
 }
 
@@ -561,7 +541,8 @@ WorldEditor.prototype.setCameraView = function(camera) {
 
 WorldEditor.prototype.toggleCameraOrthographic = function() {
 	// save selected object
-	var selectedObject = this.cameraSelector.transformControls.object
+	var activePlugin = this.cameraSelector.transformControls.plugin
+	var selectedObject = activePlugin ? activePlugin.object3d : undefined
 	if (selectedObject !== undefined) {
 		this.cameraSelector.transformControls.detach()
 	}
