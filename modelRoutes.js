@@ -161,6 +161,12 @@ function modelRoutes(
 
 	app.get(['/editor', '/edit'], graphController.edit.bind(graphController));
 
+	// GET /embed/fthr/dunes-world -- EMBED
+	app.get('/embed/:username/:graph', function(req, res, next) {
+		req.params.path = '/'+req.params.username+'/'+req.params.graph;
+		graphController.embed(req, res, next);
+	});
+
 	// GET /fthr/dunes-world/edit -- EDITOR
 	app.get('/:username/:graph/edit', function(req, res, next) {
 		req.params.path = '/'+req.params.username+'/'+req.params.graph;

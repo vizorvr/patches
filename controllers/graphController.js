@@ -125,6 +125,22 @@ GraphController.prototype.latest = function(req, res) {
 }
 
 
+// GET /embed/fthr/dunes-world
+GraphController.prototype.embed = function(req, res, next) {
+	this._service.findByPath(req.params.path)
+	.then(function(graph) {
+		if (!graph)
+			return next()
+
+		res.render('graph/show', {
+			layout: 'player',
+			autoplay: false,
+			graph: graph,
+			graphMinUrl: graph.url
+		})
+	}).catch(next)
+}
+
 // GET /fthr/dunes-world
 GraphController.prototype.graphLanding = function(req, res, next) {
 	this._service.findByPath(req.params.path)
@@ -135,10 +151,12 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 		res.render('graph/show', {
 			layout: 'player',
 			graph: graph,
-			graphMinUrl: graph.url
+			graphMinUrl: graph.url,
+			autoplay: true
 		})
 	}).catch(next)
 }
+
 // GET /fthr/dunes-world/graph.json
 GraphController.prototype.stream = function(req, res, next)
 {

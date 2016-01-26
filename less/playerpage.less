@@ -1,6 +1,84 @@
 body.bPlayer {
   height:100%; width:100%;
+
+  &.assetsLoaded .loadingonly {display: none}
+  &.playing .noplaying,
+  &.paused .nopaused,
+  &.autoplay .noautoplay
+  {display: none}
+
+  .modal-dialog {
+	max-width: 100%;
+	padding: 0 10px;
+	section+section {
+	  margin-top:20px;
+	}
+  }
+  .modal-dialog, header, button {
+	-webkit-font-smoothing: subpixel-antialiased;
+	font-smoothing: subpixel-antialiased;
+  }
+  .modal-dialog .modal-content .modal-body form fieldset {
+	text-align: left;
+	margin-bottom: 0;
+	label, input, textarea {
+	  color: #afbfdf !important;
+	  &::-moz-selection, &::selection {
+		color: #000;
+		background: #afbfdf;
+	  }
+	}
+	label {
+	  font-weight: 500;
+	}
+	input, textarea {
+	  background: rgba(0,0,0,0.2) !important;
+	  border: 0px solid #afbfdf;
+	  border-radius: 3px;
+	  width: 98%;
+	  max-width: 98%;
+	  margin: 5px 0;
+	  line-height: 1.5em;
+	  padding: 5px;
+	}
+	textarea {
+	  height: 6.5em;
+	  font-size: 91.5%;
+	  resize: none;
+	}
+  }
+
+  #playerWrap {
+	#loadingStage {
+	  background: #000;
+	  svg {
+		position: absolute;
+		top: 25%;
+		left: 50%;
+		margin-left: -50px;
+		margin-top: -50px;
+	  }
+	}
+  }
+
 }
+
+body.inVR #playerpage header {
+  display: none !important;
+}
+
+button#backfromvr {
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: 0;
+  background: rgba(1,1,1,0.3);
+  &:active {
+	background: rgba(255,255,255,0.2);
+  }
+}
+
 #playerpage {
   min-height: 100%;
 
@@ -16,62 +94,206 @@ body.bPlayer {
 	  display: -webkit-flex;
 	  -webkit-flex-direction: column;
   }
-  #playerWrap header {
-	  -webkit-flex: 0 1 auto;
-	  -webkit-flex-order: 1;
-	  flex: 0 1 auto;
-	  order: 1;
-  }
-  #stage {
+
+  #stage, #playerWrap .stage {
 	  -webkit-flex: 1;
 	  -webkit-flex-order: 2;
 	  flex:1;
 	  order: 2;
+	  min-height: 320px;	// should not exceed mobile display shorter side
+	  background: #666;
   }
-  header>* {height: 60px; line-height: 60px; border:0; margin: 0; padding:0;}
-  header {
-	  background: @bg-light;
-	a {border:0; margin:0; padding:0;}
-	#logo_h {
-	  float:left;
-	  span {display:none;}
-	  span#load_spinner {
-		float:left;
-		display: block;
-		visibility: hidden;
-		height:30px; width:30px;
-		margin:13px 2px 0 5px;
-	  }
-	}
-	.controls {
-	  float:right;
-	  padding-right: 25px;    /* 25+12 = as logo */
-	}
-	button.svg {
-	  cursor:hand ! important; cursor:pointer ! important;
-	  background: none; border:0; outline:none; padding:0 12px;
-	  svg { width: 26px; height:26px; vertical-align: middle; opacity:0.7}
-	  &:hover svg { width: 26px; height:26px; vertical-align: middle; opacity:1}
-	}
-	#graph_heading {
-	  text-align: center; font-size: 12pt; font-weight: 100; color: #ddd;
-	  span.title {color: #fff;}
+  #playerWrap .stage {
+	display: none;
+	position: relative;
+	&.front {	// selected stage
+	  display: block
 	}
   }
-  div.popover {
-	background: #ddd ! important;
-	color: #000 ! important;
-	padding: 10px ! important;
-	&.bottom > .arrow::after {
-	  border-bottom-color: #ddd!important;
-  	}
-	.popover-title {
-	  font-size: 13px ! important;
+
+  .noWebGL {
+  	margin: 100px auto 0 auto;
+	width: 400px;
+	svg {
+	  margin-left: -5px;
 	}
-  }
-  div.nojs, div.nowebgl {
-	font-size: 130%;
-	width: 600px;
-	margin: 100px auto;
+	line-height: 1.5em;
+	font-size: 110%;
   }
 }
+
+body.bPlayer.paused header {
+  h2#graph_heading, div.controls button {
+	text-align: center;
+	margin: 0 auto;
+  }
+}
+
+body.bPlayer header {
+
+	-webkit-flex: 0 1 auto;
+	-webkit-flex-order: 1;
+	flex: 0 1 auto;
+	order: 1;
+
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+
+  margin-left: -180px;
+  width: 360px;
+  padding: 20px 30px;
+
+  z-index: 30;
+  background: rgba(0,0,0,0.8);
+  border-radius: 8px;
+
+  &> * { border:0; margin: 0; padding:0;}
+
+  a {border:0; margin:0; padding:0;}
+
+  #logo_h {
+	float:left;
+	span {display:none;}
+	span#load_spinner {
+	  float:left;
+	  display: block;
+	  visibility: hidden;
+	  height:30px; width:30px;
+	  margin:13px 2px 0 5px;
+	}
+  }
+  .controls {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-justify-content: space-between;
+	justify-content: space-between;
+	-webkit-align-items: center;
+	align-items: center;
+  }
+
+  button.svg {
+	cursor:hand ! important; cursor:pointer ! important;
+	background: rgba(73, 78, 113, 0.5);
+	height: 80px;
+	width: 80px;
+	border-radius: 8px;
+	border:0;
+	outline:none;
+	color: #afbfdf;
+	svg {
+	  width: 40px;
+	  height:40px;
+	  margin: 0 auto 3px auto;
+	  vertical-align: middle;
+	  opacity:0.7;
+	  stroke: #afbfdf;
+	  fill: none;
+	  display: block;
+	}
+
+  }
+
+  #graph_heading {
+	// border-bottom: 1px solid rgba(175, 191, 223, 0.5);
+	padding-bottom: 0px;
+	margin-bottom: 0px;
+	text-align: left;
+	font-size: 10.5pt;
+	font-weight: 500;
+	color: #afbfdf;
+	a {color: #afbfdf;}
+	position: relative;
+	svg {height: 2ex; width: 2ex; margin-right: 5px;}
+	>* {vertical-align: middle; }
+  }
+}
+
+div.nojs, div.nowebgl {
+  font-size: 130%;
+  width: 600px;
+  margin: 100px auto;
+}
+
+@bgcolor-progress-complete: darken(#afbfdf, 25);
+@bgcolor-progress-incomplete: darken(#afbfdf, 20);
+@bgcolor-progress-bar: @bg-bright;
+
+#progressbar {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  height: 2px;
+  width: 100%;
+  opacity: 0.75;
+  margin: 20px 0;
+  &::-webkit-progress-value {
+	position:relative;
+	top:-1px;
+	height: 4px;
+	background-color: @bg-bright;
+	border-radius: 2px;
+  }
+  &::-moz-progress-bar {
+	background-color: lighten(@bg-bright,20);
+	height: 2px;
+  }
+  &::-webkit-progress-bar {
+	background-color: @bgcolor-progress-incomplete;
+  }
+  background-color: @bgcolor-progress-incomplete;	// firefox
+  &:not([value]) {
+	&::-moz-progress-bar {
+	  background-color: #555;
+	}
+  }
+  &[value="100"] {
+	&::-webkit-progress-value {
+	  background-color: darken(#afbfdf, 20);
+	  height: 2px;
+	  top:0;
+	}
+	&::-moz-progress-bar {
+	  background-color: darken(#afbfdf, 20);
+	  height: 2px;
+	}
+  }
+}
+
+
+body.deviceDesktop #playerpage header {
+  button.svg {
+	 &:hover svg {
+	  opacity:1;
+	  stroke: #afbddf;
+	}
+  }
+}
+
+body.deviceTablet, body.deviceMobile {
+  #playerpage header button.svg {
+	&:active svg {
+	  opacity:1;
+	  stroke: #afbddf;
+	}
+  }
+}
+
+
+body.deviceMobile #playerpage header, body.deviceTablet #playerpage header {
+  h2#graph_heading {
+	text-align: center;
+	svg {	// preserve heading in center, shifting logo to left
+	  position: absolute;
+	  margin-left: -22px;
+	}
+  }
+  .controls {
+	-webkit-justify-content: center;
+	justify-content: center;
+	button + button {
+	  margin-left: 20px;
+	}
+  }
+}
+

@@ -19,6 +19,13 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.btnVRCam.click(this.enterVRView.bind(this));
 
 
+	var setModeBuild = this.setModeBuild.bind(this),
+	setModeProgram = this.setModeProgram.bind(this)
+	dom.btnBuildMode.click(setModeBuild);
+	dom.btnProgramMode.click(setModeProgram);
+	dom.presetsLib.find('a[href="#objects"]').click(setModeBuild)
+	dom.presetsLib.find('a[href="#presets"]').click(setModeProgram)
+
 	var makeTabHandler = function(panelStateKey) {
 		return function(e) {
 			if (e) {
@@ -45,9 +52,10 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 
 	dom.chatWindow.find('ul.nav-tabs a').click(makeTabHandler('chat'));
 	dom.presetsLib.find('ul.nav-tabs a').click(makeTabHandler('presets'));
+
 	if (dom.assetsLib) dom.assetsLib.find('ul.nav-tabs a').click(makeTabHandler('assets'));
 
-	var makeToggleHandler = function(panelStateKey) {
+	var makeCollapseHandler = function(panelStateKey) {
 		return function(e) {
 			if (e) {
 				e.preventDefault();
@@ -59,16 +67,13 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 			return false;
 		}.bind(that);
 	};
-	dom.chatToggleButton.click(makeToggleHandler('chat'));
-	dom.assetsToggle.click(makeToggleHandler('assets'));
-	dom.presetsToggle.click(makeToggleHandler('presets'));
+	dom.chatToggleButton.click(makeCollapseHandler('chat'));
+	dom.assetsToggle.click(makeCollapseHandler('assets'));
+	dom.presetsToggle.click(makeCollapseHandler('presets'));
 
 	dom.assetsClose.click(this.closePanelAssets.bind(this));
 	dom.presetsClose.click(this.closePanelPresets.bind(this));
 	dom.chatClose.click(this.closePanelChat.bind(this));
-
-	dom.btnBuildMode.click(this.setModeBuild.bind(this));
-	dom.btnProgramMode.click(this.setModeProgram.bind(this));
 
 	dom.publishButton.click(function() {
 		E2.app.onPublishClicked()

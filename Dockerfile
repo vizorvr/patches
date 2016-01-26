@@ -1,4 +1,4 @@
-FROM iojs:onbuild
+FROM node:argon
 
 ENV HOME /root
 ENV NODE_ENV production

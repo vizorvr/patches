@@ -155,6 +155,24 @@ Player.prototype.remove_parameter_listener = function(id, listener) {
 	this.core.variables.unlock(listener, id)
 }
 
+Player.prototype.loadAndPlay = function(url, forcePlay) {
+	var dfd = when.defer()
+
+	E2.app.player.load_from_url(url, function(err) {
+		E2.core.emit('assetsLoaded')
+
+		if (!err || forcePlay === true)
+			E2.app.player.play()
+
+		if (err)
+			return dfd.reject(err)
+
+		dfd.resolve()
+	})
+
+	return dfd.promise
+}
+
 function CreatePlayer(vr_devices, cb) {
 	$(document).ajaxError(function(e, jqxhr, settings, ex) {
 		if(typeof(ex) === 'string') {
@@ -189,7 +207,7 @@ function CreatePlayer(vr_devices, cb) {
 		}
 	}
 
-	E2.app.isVRCameraActive = function() {return true}
+	E2.app.isVRCameraActive = function() { return true }
 
 	// Shared gl context for three
 	var gl_attributes = {
@@ -201,8 +219,13 @@ function CreatePlayer(vr_devices, cb) {
 		preserveDrawingBuffer: false
 	}
 
-	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
-	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})
+	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) ||
+		E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
+	
+	E2.core.renderer = new THREE.WebGLRenderer({
+		context: E2.core.glContext,
+		canvas: E2.dom.webgl_canvas[0]
+	})
 
 	E2.core.on('ready', cb)
 }
