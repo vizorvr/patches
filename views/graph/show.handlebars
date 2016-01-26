@@ -131,7 +131,7 @@ new function() {
 
         function bindHeaderBehaviour() {
             var fadeoutTimer = null
-            var headerFadeoutTimeMs = 2500
+            var headerDefaultFadeoutTimeMs = 2500
 
             var $header = $('#topbar')
             if ($header.length <= 0) return
@@ -157,12 +157,12 @@ new function() {
                 return true
             }
 
-            var queueFadeoutTimer = function () {
+            var queueFadeoutTimer = function(timeoutMs) {
                 if (inVR()) {
                     $header.hide()
                 }
                 if (fadeoutTimer) clearTimeout(fadeoutTimer)
-                fadeoutTimer = setTimeout(headerFadeout, headerFadeoutTimeMs)
+                fadeoutTimer = setTimeout(headerFadeout, timeoutMs || headerDefaultFadeoutTimeMs)
                 return true
             }
 
@@ -176,14 +176,18 @@ new function() {
                 return true
             }
 
-            $body.on('mousemove touchend', function (e) {
+            $body.on('mousemove touchend', function(e) {  // display the header temporarily, and for longer if over header
                 if (inVR()) return true
                 headerFadein()
-                if (!overHeader)
+                if (overHeader && siteUI.deviceIsDesktop)
+                    queueFadeoutTimer(headerDefaultFadeoutTimeMs * 5)
+                else
                     queueFadeoutTimer()
-                return true
+                return true;
             })
 
+
+            // track mouse hover on header
             $header
                 .on('mouseenter', function () {
                     clearFadeoutTimer()
