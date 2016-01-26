@@ -648,7 +648,6 @@
 
 		domElement = ( domElement !== undefined ) ? domElement : document;
 
-		this.object = undefined;
 		this.visible = false;
 		this.translationSnap = null;
 		this.rotationSnap = null;
@@ -761,7 +760,7 @@
 		this.calculateObjectCenter = function() {
 			var bbox = new THREE.Box3()
 
-			this.object.traverse( function(n) {
+			this.plugin.object3d.traverse( function(n) {
 				if (!n.boundingBox && n.calculateBoundingBox) {
 					n.calculateBoundingBox()
 				}
@@ -792,7 +791,6 @@
 		this.attach = function ( object ) {
 
 			this.plugin = object.backReference
-			this.object = this.plugin.object3d
 			this.visible = true
 
 			this.updateTransformLock()
@@ -804,7 +802,6 @@
 
 		this.detach = function () {
 
-			this.object = undefined;
 			this.plugin = undefined
 			this.visible = false;
 			this.axis = null;
@@ -856,11 +853,11 @@
 
 		this.update = function () {
 
-			if ( scope.object === undefined ) return;
+			if ( scope.plugin === undefined ) return;
 
-			scope.object.updateMatrixWorld();
-			worldPosition.setFromMatrixPosition( scope.object.matrixWorld );
-			worldRotation.setFromRotationMatrix( tempMatrix.extractRotation( scope.object.matrixWorld ) );
+			scope.plugin.object3d.updateMatrixWorld();
+			worldPosition.setFromMatrixPosition( scope.plugin.object3d.matrixWorld );
+			worldRotation.setFromRotationMatrix( tempMatrix.extractRotation( scope.plugin.object3d.matrixWorld ) );
 
 			camera.updateMatrixWorld();
 			camPosition.setFromMatrixPosition( camera.matrixWorld );
@@ -869,7 +866,7 @@
 			scale = worldPosition.distanceTo( camPosition ) / 6 * scope.size;
 
 			var centerPosition = (scope.objectCenter || worldPosition).clone()
-			centerPosition.applyMatrix4(scope.object.matrixWorld)
+			centerPosition.applyMatrix4(scope.plugin.object3d.matrixWorld)
 
 			this.position.copy( centerPosition );
 			this.scale.set( scale, scale, scale );
@@ -896,7 +893,7 @@
 
 		function onPointerHover( event ) {
 
-			if ( scope.object === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.plugin === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			var pointer = event.changedTouches ? event.changedTouches[ 0 ] : event;
 
@@ -924,7 +921,7 @@
 
 		function onPointerDown( event ) {
 
-			if ( scope.object === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.plugin === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			if ( !_gizmo[ _mode ].isEnabled ) {
 				return
@@ -942,6 +939,11 @@
 					event.stopPropagation();
 
 					scope.dispatchEvent( mouseDownEvent );
+
+					if(scope.plugin === undefined) {
+						// we lost the object in mouseDownEvent
+						return
+					}
 
 					scope.axis = intersect.object.name;
 
@@ -1000,7 +1002,7 @@
 
 		function onPointerMove( event ) {
 
-			if ( scope.object === undefined || scope.axis === null || _dragging === false || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.plugin === undefined || scope.axis === null || _dragging === false || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			if ( !_gizmo[ _mode ].isEnabled ) {
 				return
@@ -1129,7 +1131,6 @@
 					tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionE );
 					tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionXYZ );
 
-					//scope.object.quaternion.copy( tempQuaternion );
 					scope.plugin.undoableSetState('quaternion', tempQuaternion.clone(), oldQuaternion.clone())
 
 				} else if ( scope.axis === "XYZE" ) {
@@ -1143,7 +1144,6 @@
 					tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionX );
 					tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionXYZ );
 
-					//scope.object.quaternion.copy( tempQuaternion );
 					scope.plugin.undoableSetState('quaternion', tempQuaternion.clone(), oldQuaternion.clone())
 
 				} else if ( scope.space === "local" ) {
@@ -1175,7 +1175,6 @@
 					if ( scope.axis === "Y" ) quaternionXYZ.multiplyQuaternions( quaternionXYZ, quaternionY );
 					if ( scope.axis === "Z" ) quaternionXYZ.multiplyQuaternions( quaternionXYZ, quaternionZ );
 
-					//scope.object.quaternion.copy( quaternionXYZ );
 					scope.plugin.undoableSetState('quaternion', quaternionXYZ.clone(), oldQuaternion.clone())
 
 				} else if ( scope.space === "world" ) {
@@ -1207,7 +1206,6 @@
 
 					tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionXYZ );
 
-					//scope.object.quaternion.copy( tempQuaternion );
 					scope.plugin.undoableSetState('quaternion', tempQuaternion.clone(), oldQuaternion.clone())
 
 				}

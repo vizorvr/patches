@@ -17,6 +17,9 @@
 		this.input_slots = [].concat(this.input_slots)
 
 		this.defaultObject = new THREE.Object3D(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({color: 0x777777}))
+		this.defaultObject.backReference = this
+
+		this.object3d = this.defaultObject
 
 		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 
@@ -41,7 +44,7 @@
 
 		this.loader
 		.then(function(asset) {
-			that.object3d = asset
+			that.object3d = asset.clone()
 			that.postLoadFixUp()
 		})
 		.finally(function() {
@@ -136,8 +139,6 @@
 				removeObjects.push({parent: n.parent, object: n})
 			}
 
-			n.backReference = that
-
 			var geom = n.geometry
 
 			if (geom) {
@@ -169,6 +170,8 @@
 		for (var i = 0; i < removeObjects.length; ++i) {
 			removeObjects[i].parent.remove(removeObjects[i].object)
 		}
+
+		this.object3d.backReference = this
 	}
 
 	ThreeLoaderScenePlugin.prototype.update_state = function() {
