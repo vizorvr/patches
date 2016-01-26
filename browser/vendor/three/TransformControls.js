@@ -857,9 +857,9 @@
 
 			if ( scope.plugin === undefined || !scope.enabled ) return;
 
-			scope.object.updateMatrixWorld();
-			worldPosition.setFromMatrixPosition( scope.object.matrixWorld );
-			worldRotation.setFromRotationMatrix( tempMatrix.extractRotation( scope.object.matrixWorld ) );
+			scope.plugin.object3d.updateMatrixWorld();
+			worldPosition.setFromMatrixPosition( scope.plugin.object3d.matrixWorld );
+			worldRotation.setFromRotationMatrix( tempMatrix.extractRotation( scope.plugin.object3d.matrixWorld ) );
 
 			camera.updateMatrixWorld();
 			camPosition.setFromMatrixPosition( camera.matrixWorld );
