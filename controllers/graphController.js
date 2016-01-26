@@ -140,12 +140,6 @@ GraphController.prototype.embed = function(req, res, next) {
 	}).catch(next)
 }
 
-// "moon-test-one" -> "Moon Test One"
-function convNameToHumanReadable(name) {
-	var retName = name.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-	return retName;
-}
-
 // GET /fthr/dunes-world
 GraphController.prototype.graphLanding = function(req, res, next) {
 	this._service.findByPath(req.params.path)
@@ -154,14 +148,14 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 			return next()
 
 		// Get displayed values for graph and owner
-		var graphHumanReadableName = convNameToHumanReadable(graph.name)
-		var graphOwnerTitle;
+		var graphName = graph.name.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+		var graphOwner;
 
 		var owner = graph._creator;
 		if (owner.name !== "" || owner.name !== undefined) {
-			graphOwnerTitle = owner.name;
+			graphOwner = owner.name;
 		} else {
-			graphOwnerTitle = graph.owner;
+			graphOwner = graph.owner;
 		}
 
 		res.render('graph/show', {
@@ -169,8 +163,8 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 			graph: graph,
 			graphMinUrl: graph.url,
 			autoplay: true,
-			graphNameHumanReadable: graphHumanReadableName,
-			graphOwnerTitle: graphOwnerTitle
+			graphName: graphName,
+			graphOwner: graphOwner
 		})
 	}).catch(next)
 }
