@@ -163,7 +163,7 @@
 			return this.perspectiveCamera.position
 		}
 		else if (slot.index === 2) { // rotation
-			this.perspectiveCameraRotationEuler.setFromQuaternion(this.perspectiveCamera.quaternion)
+			this.perspectiveCameraRotationEuler.setFromQuaternion(this.perspectiveCamera.quaternion, "YZX")
 			return this.perspectiveCameraRotationEuler
 		}
 	}

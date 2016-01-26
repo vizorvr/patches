@@ -81,7 +81,7 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 			that.graphInputs.position.z = data.z
 		},
 		function() {
-			that.graphInputs.quaternion.setFromEuler(new THREE.Euler(data.x, data.y, data.z))
+			that.graphInputs.quaternion.setFromEuler(new THREE.Euler(data.x, data.y, data.z, "YZX"))
 		},
 		function() {
 			that.graphInputs.scale.x = data.x
