@@ -857,9 +857,9 @@
 
 			if ( scope.plugin === undefined || !scope.enabled ) return;
 
-			scope.object.updateMatrixWorld();
-			worldPosition.setFromMatrixPosition( scope.object.matrixWorld );
-			worldRotation.setFromRotationMatrix( tempMatrix.extractRotation( scope.object.matrixWorld ) );
+			scope.plugin.object3d.updateMatrixWorld();
+			worldPosition.setFromMatrixPosition( scope.plugin.object3d.matrixWorld );
+			worldRotation.setFromRotationMatrix( tempMatrix.extractRotation( scope.plugin.object3d.matrixWorld ) );
 
 			camera.updateMatrixWorld();
 			camPosition.setFromMatrixPosition( camera.matrixWorld );
@@ -895,7 +895,7 @@
 
 		function onPointerHover( event ) {
 
-			if ( scope.object === undefined || !scope.enabled || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.plugin === undefined || !scope.enabled || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			var pointer = event.changedTouches ? event.changedTouches[ 0 ] : event;
 
@@ -923,7 +923,7 @@
 
 		function onPointerDown( event ) {
 
-			if ( scope.object === undefined || !scope.enabled || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.plugin === undefined || !scope.enabled || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			if ( !_gizmo[ _mode ].isEnabled ) {
 				return
@@ -1004,7 +1004,7 @@
 
 		function onPointerMove( event ) {
 
-			if ( scope.object === undefined || !scope.enabled || scope.axis === null || _dragging === false || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.plugin === undefined || !scope.enabled || scope.axis === null || _dragging === false || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			if ( !_gizmo[ _mode ].isEnabled ) {
 				return
