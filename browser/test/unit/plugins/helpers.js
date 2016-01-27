@@ -10,6 +10,10 @@ global.clone = _.cloneDeep.bind(_)
 global.SubGraphPlugin = require(browserPath+'scripts/subGraphPlugin.js')
 global.Plugin = require(browserPath+'scripts/plugin.js')
 
+global.EventEmitter = require('events').EventEmitter
+global.Node = require(browserPath+'scripts/node.js').Node
+global.LinkedSlotGroup = require(browserPath+'scripts/node.js').LinkedSlotGroup
+
 exports.slot = function slot(index, type, dt) {
 	return {
 		index: index,

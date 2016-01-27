@@ -676,8 +676,7 @@ LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot) {
 		var otherSlot = (slot.type === E2.slot_type.input) ? conn.src_slot : conn.dst_slot
 		this.set_dt(otherSlot.dt)
 
-		if (otherSlot.array)
-			this.setArrayness(true)
+		this.setArrayness(otherSlot.array)
 
 		return true;
 	}
@@ -701,8 +700,7 @@ LinkedSlotGroup.prototype.infer_dt = function() {
 		if(this.inputs.indexOf(c.dst_slot) !== -1) {
 			dt = c.src_slot.dt.id !== any_dt ? c.src_slot.dt : dt;
 
-			if (c.src_slot.array)
-				this.setArrayness(true)
+			this.setArrayness(c.src_slot.array)
 
 			this.n_connected++;
 		}
@@ -713,8 +711,7 @@ LinkedSlotGroup.prototype.infer_dt = function() {
 		
 		if(this.outputs.indexOf(c.src_slot) !== -1) {
 			dt = c.dst_slot.dt.id !== any_dt ? c.dst_slot.dt : dt;
-			if (c.dst_slot.array)
-				this.setArrayness(true)
+			this.setArrayness(c.dst_slot.array)
 			this.n_connected++;
 		}
 	}

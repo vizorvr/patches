@@ -42,3 +42,6 @@ AutoSlotGroup.prototype.updateFreeSlots = function() {
 	}
 }
 
+if (typeof(module) !== 'undefined') {
+	module.exports.AutoSlotGroup = AutoSlotGroup
+}
