@@ -657,6 +657,8 @@
 
 		this.objectCenter = new THREE.Vector3()
 
+		this.enabled = true
+
 		var scope = this;
 
 		var _mode = "translate";
@@ -853,11 +855,11 @@
 
 		this.update = function () {
 
-			if ( scope.plugin === undefined ) return;
+			if ( scope.plugin === undefined || !scope.enabled ) return;
 
-			scope.plugin.object3d.updateMatrixWorld();
-			worldPosition.setFromMatrixPosition( scope.plugin.object3d.matrixWorld );
-			worldRotation.setFromRotationMatrix( tempMatrix.extractRotation( scope.plugin.object3d.matrixWorld ) );
+			scope.object.updateMatrixWorld();
+			worldPosition.setFromMatrixPosition( scope.object.matrixWorld );
+			worldRotation.setFromRotationMatrix( tempMatrix.extractRotation( scope.object.matrixWorld ) );
 
 			camera.updateMatrixWorld();
 			camPosition.setFromMatrixPosition( camera.matrixWorld );
@@ -893,7 +895,7 @@
 
 		function onPointerHover( event ) {
 
-			if ( scope.plugin === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.object === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			var pointer = event.changedTouches ? event.changedTouches[ 0 ] : event;
 
@@ -921,7 +923,7 @@
 
 		function onPointerDown( event ) {
 
-			if ( scope.plugin === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.object === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			if ( !_gizmo[ _mode ].isEnabled ) {
 				return
@@ -1002,7 +1004,7 @@
 
 		function onPointerMove( event ) {
 
-			if ( scope.plugin === undefined || scope.axis === null || _dragging === false || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.object === undefined || scope.axis === null || _dragging === false || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			if ( !_gizmo[ _mode ].isEnabled ) {
 				return
