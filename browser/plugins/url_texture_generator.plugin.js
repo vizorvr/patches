@@ -12,7 +12,7 @@
 		
 		this.state = { url: '' }
 		this.texture = E2.core.assetLoader.defaultTexture
-		this.dirty = false
+		this.dirty = true
 		this.thumbnail = null
 	}
 
@@ -63,6 +63,8 @@
 
 						mixpanel.track('UrlTexture Texture Changed')
 						that.undoableSetState('url', newValue, oldValue)
+
+						that.dirty = true
 					})
 					.modal()
 			});
@@ -89,23 +91,28 @@
 
 		var that = this
 
-		this.waitingToLoad = true
+		if (this.state.url !== '') {
+			this.waitingToLoad = true
 
-		this.texture = E2.core.assetLoader.loadingTexture
+			this.texture = E2.core.assetLoader.loadingTexture
 
-		E2.core.assetLoader
-		.loadAsset('texture', this.state.url)
-		.then(function(texture) {
-			that.texture = texture
-			that.waitingToLoad = false
-			that.updated = true
-		})
-		.catch(function() {
-			that.texture = E2.core.assetLoader.defaultTexture
-			that.waitingToLoad = false
-			that.updated = true
-		})
-		
+			E2.core.assetLoader
+			.loadAsset('texture', this.state.url)
+			.then(function(texture) {
+				that.texture = texture
+				that.waitingToLoad = false
+				that.updated = true
+			})
+			.catch(function() {
+				that.texture = E2.core.assetLoader.defaultTexture
+				that.waitingToLoad = false
+				that.updated = true
+			})
+		}
+		else {
+			this.texture = E2.core.assetLoader.defaultTexture
+		}
+
 		this.dirty = false
 	}
 
@@ -125,8 +132,6 @@
 			return
 
 		this.updateUi()
-
-		this.dirty = true
 	}
 
 	UrlTexture.prototype.updateUi = function() {
