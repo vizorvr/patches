@@ -47,7 +47,8 @@
 		this.rotationFromGraph = new THREE.Euler()
 		this.positionFromGraph = new THREE.Vector3()
 
-		this.perspectiveCameraRotationEuler = new THREE.Euler()
+		this.outputRotationEuler = new THREE.Euler()
+		this.outputPosition = new THREE.Vector3()
 	}
 
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
@@ -57,28 +58,34 @@
 
 		this.domElement = E2.dom.webgl_canvas[0]
 
-		if (!this.perspectiveCamera) {
-			this.perspectiveCamera = new THREE.PerspectiveCamera(
-					this.defaultFOV,
-					this.domElement.clientWidth / this.domElement.clientHeight,
-					0.001,
-					1000)
+		if (!this.dolly) {
+			this.dolly = new THREE.PerspectiveCamera()
 
-			this.perspectiveCamera.channels.enable(1)
+			this.dolly.channels.enable(1)
+		}
+
+		if (!this.vrControlCamera) {
+			this.vrControlCamera = new THREE.PerspectiveCamera(
+				this.defaultFOV,
+				this.domElement.clientWidth / this.domElement.clientHeight,
+				0.001,
+				1000)
+
+			this.dolly.add(this.vrControlCamera)
 		}
 
 		// create a object3d reference so that the world editor sees the camera
 		// as an object3d
-		this.object3d = this.perspectiveCamera
+		this.object3d = this.dolly
 
-		this.perspectiveCamera.backReference = this
+		this.object3d.backReference = this
 
 		if (!this.controls) {
-			this.controls = new THREE.VRControls(this.perspectiveCamera)
+			this.controls = new THREE.VRControls(this.vrControlCamera)
 		}
 
-		this.perspectiveCamera.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
-		this.perspectiveCamera.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
+		this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
+		this.object3d.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
 	}
 
 	ThreeVRCameraPlugin.prototype.play = function() {
@@ -97,31 +104,31 @@
 				wh = E2.app.calculateCanvasArea()
 		}
 
-		this.perspectiveCamera.aspect = wh.width / wh.height
-		this.perspectiveCamera.updateProjectionMatrix()
+		this.vrControlCamera.aspect = wh.width / wh.height
+		this.vrControlCamera.updateProjectionMatrix()
 	}
 
 	ThreeVRCameraPlugin.prototype.update_state = function() {
-		this.perspectiveCamera.position.set(
+		this.object3d.position.set(
 			this.positionFromGraph.x + this.state.position.x,
 			this.positionFromGraph.y + this.state.position.y,
 			this.positionFromGraph.z + this.state.position.z)
 
-		this.perspectiveCamera.quaternion.setFromEuler(this.rotationFromGraph)
-		this.perspectiveCamera.quaternion.multiply(this.state.quaternion)
+		this.object3d.quaternion.setFromEuler(this.rotationFromGraph)
+		this.object3d.quaternion.multiply(this.state.quaternion)
 
 		if (this.dirty)
-			this.perspectiveCamera.updateProjectionMatrix()
+			this.vrControlCamera.updateProjectionMatrix()
 
-		this.controls.update(this.perspectiveCamera.position.clone(), this.perspectiveCamera.quaternion.clone())
+		this.controls.update(new THREE.Vector3(), new THREE.Quaternion())
 
-		this.perspectiveCamera.updateMatrixWorld()
+		this.object3d.updateMatrixWorld()
 
 		this.updated = true
 	}
 
 	ThreeVRCameraPlugin.prototype.update_input = function(slot, data) {
-		if (!this.perspectiveCamera) {
+		if (!this.object3d) {
 			return
 		}
 
@@ -135,19 +142,19 @@
 			this.dirty = true
 			break
 		case 2: // fov
-			this.perspectiveCamera.fov = data
+			this.vrControlCamera.fov = data
 			this.dirty = true
 			break
 		case 3: // aspect ratio
-			this.perspectiveCamera.aspectRatio = data
+			this.vrControlCamera.aspectRatio = data
 			this.dirty = true
 			break
 		case 4: // near
-			this.perspectiveCamera.near = data
+			this.vrControlCamera.near = data
 			this.dirty = true
 			break
 		case 5: // far
-			this.perspectiveCamera.far = data
+			this.vrControlCamera.far = data
 			this.dirty = true
 			break
 		default:
@@ -157,14 +164,18 @@
 
 	ThreeVRCameraPlugin.prototype.update_output = function(slot) {
 		if (slot.index === 0) { // camera
-			return this.perspectiveCamera
+			return this.vrControlCamera
 		}
 		else if (slot.index === 1) { // position
-			return this.perspectiveCamera.position
+			this.outputPosition.copy(this.vrControlCamera.position)
+			this.outputPosition.applyMatrix4(this.vrControlCamera.matrixWorld)
+			return this.outputPosition
 		}
 		else if (slot.index === 2) { // rotation
-			this.perspectiveCameraRotationEuler.setFromQuaternion(this.perspectiveCamera.quaternion, "YZX")
-			return this.perspectiveCameraRotationEuler
+			var tempQuaternion = this.vrControlCamera.quaternion.clone()
+			tempQuaternion.multiply(this.object3d.quaternion)
+			this.outputRotationEuler.setFromQuaternion(tempQuaternion, "YZX")
+			return this.outputRotationEuler
 		}
 	}
 
