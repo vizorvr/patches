@@ -855,7 +855,7 @@
 
 		this.update = function () {
 
-			if ( scope.object === undefined || !scope.enabled ) return;
+			if ( scope.plugin === undefined || !scope.enabled ) return;
 
 			scope.plugin.object3d.updateMatrixWorld();
 			worldPosition.setFromMatrixPosition( scope.plugin.object3d.matrixWorld );
