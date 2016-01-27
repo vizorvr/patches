@@ -123,7 +123,9 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 	}
 
 	// add handles for the camera helper
-	needsHandles.push(camera)
+	if (camera && camera.parent instanceof THREE.Camera) {
+		needsHandles.push(camera.parent)
+	}
 
 	// 2. remove handles that are no longer there
 	this.handleTree.traverse(function(n) {
@@ -180,7 +182,7 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 		}
 		else if (node instanceof THREE.Camera) {
 			this.cameraHelper.helperObjectBackReference = node
-			this.cameraHelper.attachCamera(camera)
+			this.cameraHelper.attachCamera(node)
 			this.handleTree.add(this.cameraHelper)
 		}
 	}
