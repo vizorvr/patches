@@ -168,9 +168,20 @@
 		if (ui)
 			return;
 
-		var slots = this.dynInputs = this.node.getDynamicInputSlots()
-		for (var i = 0, len = slots.length; i < len; i++) {
-			this.lsg.add_dyn_slot(slots[i])
+		this.dynInputs = this.node.getDynamicInputSlots()
+
+		if (!this.dynInputs.length) {
+			this.node.add_slot(E2.slot_type.input, {
+				name: '0',
+				dt: E2.dt.OBJECT3D,
+				array: false
+			})
+
+			this.dynInputs = this.node.getDynamicInputSlots()
+		}
+
+		for (var i = 0, len = this.dynInputs.length; i < len; i++) {
+			this.lsg.add_dyn_slot(this.dynInputs[i])
 			this.scene.children[0].add(new THREE.Group())
 		}
 	}
