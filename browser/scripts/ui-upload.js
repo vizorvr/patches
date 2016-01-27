@@ -60,6 +60,24 @@ function uploadFile(file) {
 	return dfd.promise
 }
 
+function postPasteFixup(nodes) {
+	function fixupNode(node) {
+		if (node.plugin.id === "graph") {
+			for (var i = 0, len = node.plugin.graph.nodes.length; i < len; ++i) {
+				fixupNode(node.plugin.graph.nodes[i])
+			}
+		}
+
+		if (node.plugin.id === 'three_loader_scene') {
+			node.plugin.requiresScaling = true
+		}
+	}
+
+	for (var i = 0, len = nodes.length; i < len; ++i) {
+		fixupNode(nodes[i])
+	}
+}
+
 function instantiatePluginForUpload(uploaded, position) {
 	var dfd = when.defer()
 	var pluginId
@@ -70,7 +88,7 @@ function instantiatePluginForUpload(uploaded, position) {
 			pluginId = 'url_texture_generator'
 			break;
 		case 'scene':
-			pluginId = 'three_loader_model'
+			pluginId = 'three_loader_scene'
 			break;
 		case 'audio':
 			pluginId = 'url_audio_buffer_generator'
@@ -91,6 +109,8 @@ function instantiatePluginForUpload(uploaded, position) {
 	E2.app.graphApi.addNode(E2.core.active_graph, node)
 
 	dfd.resolve(node)
+
+	postPasteFixup([node])
 
 	return dfd.promise
 }
@@ -137,7 +157,8 @@ function instantiateTemplateForUpload(uploaded, position) {
 
 		// paste. auto-connecting to the scene will be handled inside paste
 		// by the world editor
-		E2.app.onPaste(100)
+		var pasted = E2.app.onPaste(100)
+		postPasteFixup(pasted.nodes)
 
 		E2.app.undoManager.end()
 
