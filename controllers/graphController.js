@@ -159,7 +159,7 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 		// Use that if does, else use the username for display
 		var graphOwner;
 		var creator = graph._creator;
-		if (isStringEmpty(creator.name) === false) {
+		if (creator.name !== undefined && isStringEmpty(creator.name) === false) {
 			graphOwner = creator.name;
 		} else {
 			graphOwner = graph.owner;
