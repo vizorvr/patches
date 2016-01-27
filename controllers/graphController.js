@@ -5,6 +5,7 @@ var fsPath = require('path')
 var assetHelper = require('../models/asset-helper')
 var templateCache = new(require('../lib/templateCache'))
 var helper = require('./controllerHelpers')
+var isStringEmpty = require('../lib/stringUtil').isStringEmpty
 
 var EditLog = require('../models/editLog')
 
@@ -140,11 +141,6 @@ GraphController.prototype.embed = function(req, res, next) {
 	}).catch(next)
 }
 
-// TODO: move to global location
-function isStringEmpty(str) {
-	return (str.length === 0 || !str.trim());
-};
-
 // GET /fthr/dunes-world
 GraphController.prototype.graphLanding = function(req, res, next) {
 	this._service.findByPath(req.params.path)
@@ -159,7 +155,7 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 		// Use that if does, else use the username for display
 		var graphOwner;
 		var creator = graph._creator;
-		if (creator.name !== undefined && isStringEmpty(creator.name) === false) {
+		if (creator.name && isStringEmpty(creator.name) === false) {
 			graphOwner = creator.name;
 		} else {
 			graphOwner = graph.owner;
