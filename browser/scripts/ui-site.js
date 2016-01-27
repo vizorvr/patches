@@ -30,12 +30,24 @@ var siteUI = new function() {
 
 	this.onResize = function() {
 		that.tagBodyClass();
+		return true;
 	};
 
 	this.attach = function() {
 
+		var $body = jQuery('body');
+
 		$(window).on('resize', this.onResize);
-		if (that.hasOrientationChange) $(window).on('orientationchange', this.onResize)
+		if (that.hasOrientationChange) {
+			$(window).on('orientationchange', function () {
+				$body
+					.removeClass('orientationInitial')
+					.addClass('orientationChanged');
+				that.onResize();
+				return true;
+			})
+			$body.addClass('orientationInitial');
+		}
 
 		// common account forms
 		VizorUI.setupXHRForm(jQuery('#accountDetailsForm'));
@@ -47,7 +59,6 @@ var siteUI = new function() {
 			VizorUI.setupXHRForm(jQuery(this));
 		});
 
-		var $body = jQuery('body');
 		VizorUI.enableScrollToLinks($body);
 		VizorUI.enablePopupEmbedLinks($body);
 
