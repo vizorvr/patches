@@ -658,6 +658,8 @@
 
 		this.objectCenter = new THREE.Vector3()
 
+		this.enabled = true
+
 		var scope = this;
 
 		var _mode = "translate";
@@ -856,7 +858,7 @@
 
 		this.update = function () {
 
-			if ( scope.object === undefined ) return;
+			if ( scope.object === undefined || !scope.enabled ) return;
 
 			scope.object.updateMatrixWorld();
 			worldPosition.setFromMatrixPosition( scope.object.matrixWorld );
@@ -896,7 +898,7 @@
 
 		function onPointerHover( event ) {
 
-			if ( scope.object === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.object === undefined || !scope.enabled || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			var pointer = event.changedTouches ? event.changedTouches[ 0 ] : event;
 
@@ -924,7 +926,7 @@
 
 		function onPointerDown( event ) {
 
-			if ( scope.object === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.object === undefined || !scope.enabled || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			if ( !_gizmo[ _mode ].isEnabled ) {
 				return
@@ -1000,7 +1002,7 @@
 
 		function onPointerMove( event ) {
 
-			if ( scope.object === undefined || scope.axis === null || _dragging === false || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.object === undefined || !scope.enabled || scope.axis === null || _dragging === false || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			if ( !_gizmo[ _mode ].isEnabled ) {
 				return
