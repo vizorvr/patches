@@ -24,6 +24,12 @@
 		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 
 		this.hasAnimation = false
+
+		// a flag to indicate that the model should be scaled to unit size
+		// i.e. we want to scale every object to unit size on initial load
+		// but not when subsequently (re-)loaded, to not override user defiend
+		// scaling
+		this.requiresScaling = false
 	}
 
 	ThreeLoaderScenePlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
@@ -122,6 +128,8 @@
 		// if none of the above match, there is no valid bounding volume (empty / corrupt model?)
 
 		this.undoableSetState('scale', new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor), new THREE.Vector3(this.state.scale.x, this.state.scale.y, this.state.scale.z))
+
+		this.requiresScaling = false
 	}
 
 	ThreeLoaderScenePlugin.prototype.postLoadFixUp = function() {
@@ -180,6 +188,9 @@
 
 			var doLoad = function() {
 				that.loadObject(that.state.url).then(function () {
+					if (that.requiresScaling) {
+						that.scaleToUnitSize()
+					}
 					// apply state to object3d
 					that.update_state()
 					that.updated = true
