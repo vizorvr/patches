@@ -560,7 +560,8 @@ WorldEditor.prototype.toggleEditorHelpers = function() {
 }
 
 WorldEditor.prototype.frameSelection = function() {
-	var selectedObject = this.cameraSelector.transformControls.object
+	var activePlugin = this.cameraSelector.transformControls.plugin
+	var selectedObject = activePlugin ? activePlugin.object3d : undefined
 
 	var cameraDirection = this.cameraSelector.camera.getWorldDirection()
 
@@ -568,7 +569,7 @@ WorldEditor.prototype.frameSelection = function() {
 	var radius = 1
 
 	if (selectedObject === undefined) {
-		selectedObject = this.scene
+		selectedObject = this.scene.children[0]
 	}
 
 	if (selectedObject) {
