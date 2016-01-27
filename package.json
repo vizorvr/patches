@@ -75,19 +75,26 @@
   "devDependencies": {
     "chai": "^1.10.0",
     "cheerio": "^0.19.0",
+    "deepmerge": "https://registry.npmjs.org/deepmerge/-/deepmerge-0.2.10.tgz",
     "gulp-concat-util": "https://registry.npmjs.org/gulp-concat-util/-/gulp-concat-util-0.5.2.tgz",
     "minimist": "0.0.8",
     "mocha": "^1.21.5",
     "multiline": "^0.3.4",
+    "q": "https://registry.npmjs.org/q/-/q-1.0.1.tgz",
+    "selenium-standalone": "^5.0.0",
     "sinon": "^1.15.4",
     "supertest": "^0.13.0",
     "uglify-js2": "^2.1.11",
+    "webdriverio": "^4.0.3",
+    "yadda": "^0.17.0",
     "yui-compressor": "^0.1.3"
   },
   "scripts": {
     "setup": "node tools/setup.js",
     "start": "node app.js",
+    "gulp": "node ./node_modules/gulp/bin/gulp",
     "gulp-engine": "node ./node_modules/gulp/bin/gulp js:engine",
+    "selenium-server": "selenium-standalone install && selenium-standalone start",
     "tester": "node tools/test-runner",
     "test:browser:integration": "npm run tester browser/test/integration",
     "test:browser:unit": "npm run tester browser/test/unit",
@@ -98,7 +105,7 @@
     "test:server:integration": "npm run tester test/integration && npm run tester test/integration/models",
     "test:server:services": "npm run tester test/services",
     "test:server": "npm run test:server:unit && npm run test:server:controllers && npm run test:server:integration && npm run test:server:services",
-    "test": "npm run gulp-engine && npm run test:browser && npm run test:server"
+    "test": "npm run gulp && ./browser/test/functional/run.js && npm run test:browser && npm run test:server"
   },
   "author": "Pixelface, Ltd <info@vizor.io>",
   "license": "MIT",
