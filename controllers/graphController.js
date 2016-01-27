@@ -140,6 +140,11 @@ GraphController.prototype.embed = function(req, res, next) {
 	}).catch(next)
 }
 
+// TODO: move to global location
+function isStringEmpty(str) {
+	return (str.length === 0 || !str.trim());
+};
+
 // GET /fthr/dunes-world
 GraphController.prototype.graphLanding = function(req, res, next) {
 	this._service.findByPath(req.params.path)
@@ -148,12 +153,14 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 			return next()
 
 		// Get displayed values for graph and owner
+		// 'this-is-a-graph' => 'This Is A Graph'
 		var graphName = graph.name.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+		// Figure out if the graph owner has a fullname
+		// Use that if does, else use the username for display
 		var graphOwner;
-
-		var owner = graph._creator;
-		if (owner.name !== "" || owner.name !== undefined) {
-			graphOwner = owner.name;
+		var creator = graph._creator;
+		if (isStringEmpty(creator.name) === false) {
+			graphOwner = creator.name;
 		} else {
 			graphOwner = graph.owner;
 		}
