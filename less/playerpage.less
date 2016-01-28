@@ -297,3 +297,11 @@ body.deviceMobile #playerpage header, body.deviceTablet #playerpage header {
   }
 }
 
+body.deviceMobile.landscape {	// cascade correctly from above
+  #playerpage header {
+	button#sharebutton {display: none}
+	.controls button + button {	// only one button in mobile landscape
+	  margin-left: 0;
+	}
+  }
+}

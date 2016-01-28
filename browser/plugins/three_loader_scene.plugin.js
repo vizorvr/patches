@@ -17,10 +17,19 @@
 		this.input_slots = [].concat(this.input_slots)
 
 		this.defaultObject = new THREE.Object3D(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({color: 0x777777}))
+		this.defaultObject.backReference = this
+
+		this.object3d = this.defaultObject
 
 		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 
 		this.hasAnimation = false
+
+		// a flag to indicate that the model should be scaled to unit size
+		// i.e. we want to scale every object to unit size on initial load
+		// but not when subsequently (re-)loaded, to not override user defiend
+		// scaling
+		this.requiresScaling = false
 	}
 
 	ThreeLoaderScenePlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
@@ -41,7 +50,7 @@
 
 		this.loader
 		.then(function(asset) {
-			that.object3d = asset
+			that.object3d = asset.clone()
 			that.postLoadFixUp()
 		})
 		.finally(function() {
@@ -119,6 +128,8 @@
 		// if none of the above match, there is no valid bounding volume (empty / corrupt model?)
 
 		this.undoableSetState('scale', new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor), new THREE.Vector3(this.state.scale.x, this.state.scale.y, this.state.scale.z))
+
+		this.requiresScaling = false
 	}
 
 	ThreeLoaderScenePlugin.prototype.postLoadFixUp = function() {
@@ -135,8 +146,6 @@
 			if (n instanceof THREE.Light || n instanceof THREE.Camera) {
 				removeObjects.push({parent: n.parent, object: n})
 			}
-
-			n.backReference = that
 
 			var geom = n.geometry
 
@@ -169,6 +178,8 @@
 		for (var i = 0; i < removeObjects.length; ++i) {
 			removeObjects[i].parent.remove(removeObjects[i].object)
 		}
+
+		this.object3d.backReference = this
 	}
 
 	ThreeLoaderScenePlugin.prototype.update_state = function() {
@@ -177,6 +188,9 @@
 
 			var doLoad = function() {
 				that.loadObject(that.state.url).then(function () {
+					if (that.requiresScaling) {
+						that.scaleToUnitSize()
+					}
 					// apply state to object3d
 					that.update_state()
 					that.updated = true

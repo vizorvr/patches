@@ -123,7 +123,9 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 	}
 
 	// add handles for the camera helper
-	needsHandles.push(camera)
+	if (camera && camera.parent instanceof THREE.Camera) {
+		needsHandles.push(camera.parent)
+	}
 
 	// 2. remove handles that are no longer there
 	this.handleTree.traverse(function(n) {
@@ -180,7 +182,7 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 		}
 		else if (node instanceof THREE.Camera) {
 			this.cameraHelper.helperObjectBackReference = node
-			this.cameraHelper.attachCamera(camera)
+			this.cameraHelper.attachCamera(node)
 			this.handleTree.add(this.cameraHelper)
 		}
 	}
@@ -191,26 +193,6 @@ WorldEditor.prototype.updateScene = function(scene, camera) {
 	this.vrCamera = camera
 
 	this.updateHelperHandles(scene, camera)
-
-	// if there's a pending selection (something was pasted),
-	// set selection accordingly
-	if (this.pendingSelection !== undefined) {
-		if (--this.pendingSelection.waitTime < 0) {
-			var selectNodes = []
-
-			for(var i = 0; i < this.pendingSelection.selection.length; ++i) {
-				this.pendingSelection.selection[i].plugin.object3d.traverse(function(n) {
-					if (n.backReference) {
-						selectNodes.push(n)
-					}
-				})
-			}
-
-			this.setSelection(selectNodes)
-
-			delete this.pendingSelection
-		}
-	}
 }
 
 WorldEditor.prototype.getEditorSceneTree = function() {
@@ -289,15 +271,15 @@ WorldEditor.prototype.onPaste = function(nodes) {
 
 	E2.app.markConnectionAsSelected(connection)
 
-	// set a pending selection object for the pasted objects
-	// we have to wait for one update to pass before actually
-	// setting the selection, because mesh creation itself is
-	// deferred in AbstractThreeMeshPlugin
-	var pendingSelection = {waitTime: 1, selection: []}
-
+	// select the meshes in world editor
+	var selectNodes = []
 	function collectMeshes(node) {
 		if (node.plugin && node.plugin.object3d) {
-			pendingSelection.selection.push(node)
+			node.plugin.object3d.traverse(function(n) {
+				if (n.backReference) {
+					selectNodes.push(n)
+				}
+			})
 		}
 
 		if (node.plugin.graph) {
@@ -312,9 +294,9 @@ WorldEditor.prototype.onPaste = function(nodes) {
 		collectMeshes(node)
 	}
 
-	this.pendingSelection = pendingSelection
+	this.setSelection(selectNodes)
 
-	// TODO: if this.pendingSelection.length === 0, we didn't paste any objects
+	// TODO: if selectNodes.length === 0, we didn't paste any objects
 	// and we could warn the user somehow
 }
 
@@ -559,7 +541,8 @@ WorldEditor.prototype.setCameraView = function(camera) {
 
 WorldEditor.prototype.toggleCameraOrthographic = function() {
 	// save selected object
-	var selectedObject = this.cameraSelector.transformControls.object
+	var activePlugin = this.cameraSelector.transformControls.plugin
+	var selectedObject = activePlugin ? activePlugin.object3d : undefined
 	if (selectedObject !== undefined) {
 		this.cameraSelector.transformControls.detach()
 	}
@@ -577,12 +560,17 @@ WorldEditor.prototype.toggleEditorHelpers = function() {
 }
 
 WorldEditor.prototype.frameSelection = function() {
-	var selectedObject = this.cameraSelector.transformControls.object
+	var activePlugin = this.cameraSelector.transformControls.plugin
+	var selectedObject = activePlugin ? activePlugin.object3d : undefined
 
 	var cameraDirection = this.cameraSelector.camera.getWorldDirection()
 
 	var center = new THREE.Vector3()
 	var radius = 1
+
+	if (selectedObject === undefined) {
+		selectedObject = this.scene.children[0]
+	}
 
 	if (selectedObject) {
 		center.copy(selectedObject.position)
@@ -605,11 +593,9 @@ WorldEditor.prototype.frameSelection = function() {
 				}
 			}
 		})
-	}
 
-	this.cameraSelector.camera.position.copy(selectedObject.position.clone().sub(cameraDirection.multiplyScalar(radius * 1.5)))
+		this.cameraSelector.camera.position.copy(selectedObject.position.clone().sub(cameraDirection.multiplyScalar(radius * 1.5)))
 
-	if (selectedObject) {
 		this.cameraSelector.camera.lookAt(selectedObject.position)
 		this.cameraSelector.editorControls.focus(selectedObject)
 	}

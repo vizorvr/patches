@@ -36,9 +36,7 @@
 </header>
 <div id="playerWrap">
     <div id="loadingStage" class="stage">
-        <svg style="width:100px; height: 100px; fill:#2B3142;">
-            <use xlink:href="#logo-mini"></use>
-        </svg>
+        
     </div>
     <div id="errorStage" class="stage"></div>
     <div id="stage" class="stage front">
@@ -106,6 +104,7 @@ new function() {
 
 
         var fadingIn = false
+        var headerIsVisible = true
         var fadingOut = false
         var overHeader = false
 
@@ -145,7 +144,7 @@ new function() {
             }
 
             var headerFadeout = function () {
-                if (fadingOut) return
+                if (fadingOut || !headerIsVisible) return
                 if (inVR()) {
                     $header.hide();
                     return
@@ -153,13 +152,16 @@ new function() {
                 fadingOut = true
                 $header.fadeOut(1000, function () {
                     fadingOut = false
+                    headerIsVisible = false
                 })
                 return true
             }
 
             var queueFadeoutTimer = function(timeoutMs) {
+                if (!headerIsVisible) return
                 if (inVR()) {
                     $header.hide()
+                    headerIsVisible = false
                 }
                 if (fadeoutTimer) clearTimeout(fadeoutTimer)
                 fadeoutTimer = setTimeout(headerFadeout, timeoutMs || headerDefaultFadeoutTimeMs)
@@ -170,32 +172,44 @@ new function() {
                 if (fadingIn) return
                 fadingIn = true
                 clearFadeoutTimer()
+                headerIsVisible = true
                 $header.fadeIn(200, function () {
                     fadingIn = false
                 })
                 return true
             }
 
-            $body.on('mousemove touchend', function(e) {  // display the header temporarily, and for longer if over header
-                if (inVR()) return true
-                headerFadein()
-                if (overHeader && siteUI.deviceIsDesktop)
-                    queueFadeoutTimer(headerDefaultFadeoutTimeMs * 5)
-                else
+            var headerHandler = function(e) {  // display the header temporarily, and for longer if over header
+                if (inVR() || siteUI.isDragging) return true
+                if (!headerIsVisible) {
+                    if (e.touches) {
+                        e.stopPropagation()
+                        e.preventDefault()
+                    }
+                    headerFadein()
                     queueFadeoutTimer()
-                return true;
-            })
+                } else {
+                    headerFadeout()
+                }
 
+                return true
+            }
+            // dibs on these
+            document.body.addEventListener('touchend', headerHandler, true)
+            document.body.addEventListener('mouseup', headerHandler, true)
 
             // track mouse hover on header
             $header
                 .on('mouseenter', function () {
-                    clearFadeoutTimer()
                     overHeader = true
-                    headerFadein()
+                    if (!siteUI.isDragging) {
+                        clearFadeoutTimer()
+                        headerFadein()
+                    }
                 })
                 .on('mouseleave', function () {
                     overHeader = false
+                    queueFadeoutTimer()
                 })
 
             $body
@@ -210,6 +224,10 @@ new function() {
                         queueFadeoutTimer()
                     }
                 })
+                .on('backfromVR', function(){
+                    headerFadein()
+                    queueFadeoutTimer()
+                })
 
             setTimeout(function () {
                 if (VizorUI.isMobile.any() && !siteUI.isPortraitLike())
@@ -223,6 +241,7 @@ new function() {
             $('#backfromvr').off('.vizor').on('click.vizor', function (e) {
                 E2.core.webVRManager.onBackClick_()
                 siteUI.tagBodyClass()
+                document.body.dispatchEvent(new CustomEvent('backfromVR'))
                 return false
             })
         }
@@ -257,6 +276,7 @@ new function() {
 
         function amendVRManagerInstructions() {
             var r = E2.core.webVRManager.rotateInstructions
+            r.text.innerHTML = r.text.innerHTML.replace("Cardboard viewer", "VR viewer")
             r.text.innerHTML += "<br /><br /><button id='backfromvr'>Exit VR view</button>"
             r.overlay.style.background = '#2b2f37'
             r.overlay.style.zIndex = "100"
@@ -334,7 +354,10 @@ new function() {
                     onResize()
                 });
 
-            if (siteUI.hasOrientationChange && VizorUI.isMobile.Android()) {
+            if (siteUI.hasOrientationChange
+                && VizorUI.isMobile.any()
+                && VizorUI.isBrowser.Chrome()) {
+
                 var allowExtraHeightOnLandscape = function () {
                     // provisions for android
                     setTimeout(function () {

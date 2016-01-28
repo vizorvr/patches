@@ -27,15 +27,29 @@ var siteUI = new function() {
 	this.lastLayout = null;
 	this.lastPortrait = null;
 	this.isEmbedded = null;
+	this.isDragging = null;
 
 	this.onResize = function() {
 		that.tagBodyClass();
+		return true;
 	};
 
 	this.attach = function() {
 
+		var $body = jQuery('body');
+		this._setupDragRecognition()
+
 		$(window).on('resize', this.onResize);
-		if (that.hasOrientationChange) $(window).on('orientationchange', this.onResize)
+		if (that.hasOrientationChange) {
+			$(window).on('orientationchange', function () {
+				$body
+					.removeClass('orientationInitial')
+					.addClass('orientationChanged');
+				that.onResize();
+				return true;
+			})
+			$body.addClass('orientationInitial');
+		}
 
 		// common account forms
 		VizorUI.setupXHRForm(jQuery('#accountDetailsForm'));
@@ -47,7 +61,6 @@ var siteUI = new function() {
 			VizorUI.setupXHRForm(jQuery(this));
 		});
 
-		var $body = jQuery('body');
 		VizorUI.enableScrollToLinks($body);
 		VizorUI.enablePopupEmbedLinks($body);
 
@@ -64,6 +77,71 @@ var siteUI = new function() {
 				.attr('style','opacity:1');
 		});
 	};
+
+	this._setupDragRecognition = function(domElement, dragThresholdPx) {
+		dragThresholdPx = dragThresholdPx || 3
+
+		var that = this;
+		domElement = domElement || document
+		var dragThreshold = dragThresholdPx * dragThresholdPx
+
+		var up = function(data) { return function(e) {
+			that.isDragging = false;
+			document.removeEventListener('mousemove', data.move, true)
+			document.removeEventListener('touchmove', data.move, true)
+			document.removeEventListener('mouseup', data.up)
+			document.removeEventListener('touchcancel', data.up)
+			document.removeEventListener('touchend', data.up)
+			window.removeEventListener('blur', data.up)
+			return true
+		}}
+
+		function move(data) {
+			function findTouch(inTouches, touchId){
+				for (var i in inTouches) {
+					if (inTouches[i].identifier === touchId)
+						return inTouches[i]
+				}
+				return null
+			}
+			return function(e) {
+				var t = (e.touches) ? findTouch(e.changedTouches, data.touchId) : e;
+				if (!t) return true; // something extraordinary must have happened
+				var distSquared = data.origin.distanceSq(t)
+				if (distSquared > dragThreshold)
+					that.isDragging = true;
+				return true;
+			}
+		}
+
+		function onStart(e) {
+			var t = (e.touches) ? e.changedTouches[0] : e;
+			var data = {
+				touchId : t.identifier || 0,
+				origin: {
+					pageX: t.pageX,
+					pageY: t.pageY,
+					distanceSq: function(fromPointer){
+						var dx = fromPointer.pageX - data.origin.pageX,
+							dy = fromPointer.pageY - data.origin.pageY;
+						return dx*dx + dy*dy
+					}
+				}
+			}
+			data.up = up(data)
+			data.move = move(data)
+			window.addEventListener('blur', data.up)
+			document.addEventListener('touchend', data.up)
+			document.addEventListener('touchcancel', data.up)
+			document.addEventListener('mouseup', data.up)
+			document.addEventListener('touchmove', data.move, true)
+			document.addEventListener('mousemove', data.move, true)
+		}
+
+		domElement.addEventListener('touchstart', onStart)
+		domElement.addEventListener('mousedown', onStart)
+	}
+
 
 	this.init = function() {
 		that.tagBodyClass();
@@ -463,7 +541,7 @@ VizorUI.isBrowser = {
 		return navigator.userAgent.match(/Firefox/);
 	},
 	Chrome: function() {
-		return navigator.userAgent.match(/Chrome/);
+		return navigator.userAgent.match(/Chrome/) || navigator.userAgent.match(/CriOS/);
 	},
 	Safari: function() {
 		return navigator.userAgent.match(/Safari/);

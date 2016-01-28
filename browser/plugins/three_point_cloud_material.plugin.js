@@ -12,7 +12,7 @@
 			{	name: 'fog', dt: core.datatypes.BOOL, def: true,
 				desc: 'Define whether the material color is affected by global fog settings.'
 			},
-			{   name: 'depthTest', dt: core.datatypes.BOOL, default: true}
+			{   name: 'depthTest', dt: core.datatypes.BOOL, def: true}
 		].concat(this.input_slots)
 
 		this.output_slots = [{
