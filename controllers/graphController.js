@@ -150,12 +150,14 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 
 		// Get displayed values for graph and owner
 		// 'this-is-a-graph' => 'This Is A Graph'
-		var graphName = graph.name.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+		var graphName = graph.name.split('-')
+			.map(s => s.charAt(0).toUpperCase() + s.slice(1))
+			.join(' ');
 		// Figure out if the graph owner has a fullname
 		// Use that if does, else use the username for display
 		var graphOwner;
 		var creator = graph._creator;
-		if (creator.name && isStringEmpty(creator.name) === false) {
+		if (creator.name && !isStringEmpty(creator.name)) {
 			graphOwner = creator.name;
 		} else {
 			graphOwner = graph.owner;
