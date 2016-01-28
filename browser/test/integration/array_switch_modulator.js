@@ -286,10 +286,10 @@ describe('array_switch_modulator', function() {
 
 		// select second input, expect 50
 		// ATTENTION: this doesn't work - pending bug #1090
-		//arraySwitchModulator.plugin.update_input({index: 0}, 1)
-		//graph.update()
-		//arraySwitchModulator.plugin.update_state()
-		//assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), 50)
+		arraySwitchModulator.plugin.update_input({index: 0}, 1)
+		graph.update()
+		arraySwitchModulator.plugin.update_state()
+		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), 50)
 	})
 })
 
