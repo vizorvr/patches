@@ -45,6 +45,33 @@ describe('array_switch_modulator', function() {
 		assert.equal(output, 3)
 	})
 
+	it('defaults to input 0', function() {
+		plugin.update_input({index: 0, uid: 1}, 100)
+		plugin.update_input({index: 1, uid: 2}, 200)
+
+		plugin.update_state()
+
+		var output = plugin.update_output({index: 0})
+		assert.equal(output, 100)
+	})
+
+	it('gives a null default value', function() {
+		plugin.update_state()
+
+		var output = plugin.update_output({index: 0})
+		assert.equal(output, null)
+
+		plugin.update_input({index: 0, uid: 1}, 100)
+		plugin.update_state()
+		var output = plugin.update_output({index: 0})
+		assert.equal(output, 100)
+
+		plugin.update_input({index: 0, uid: 1}, null)
+		plugin.update_state()
+		var output = plugin.update_output({index: 0})
+		assert.equal(output, null)
+	})
+
 	it('selects the correct input', function() {
 		plugin.update_input({index: 0, uid: 1}, 10)
 		plugin.update_input({index: 1, uid: 2}, 20)
@@ -76,4 +103,49 @@ describe('array_switch_modulator', function() {
 
 	})
 
+	it ('updates inputs', function() {
+		var output
+
+		// set initial values
+		plugin.update_input({index: 0, uid: 1}, 10)
+		plugin.update_input({index: 1, uid: 2}, 20)
+		plugin.update_input({index: 2, uid: 3}, 30)
+
+		// check all inputs for their initial values
+		plugin.update_input({index: 0}, 0)
+		plugin.update_state()
+		output = plugin.update_output({index: 0})
+		assert.equal(output, 10)
+
+		plugin.update_input({index: 0}, 1)
+		plugin.update_state()
+		output = plugin.update_output({index: 0})
+		assert.equal(output, 20)
+
+		plugin.update_input({index: 0}, 2)
+		plugin.update_state()
+		output = plugin.update_output({index: 0})
+		assert.equal(output, 30)
+
+		// reset all inputs
+		plugin.update_input({index: 0, uid: 1}, 40)
+		plugin.update_input({index: 1, uid: 2}, 50)
+		plugin.update_input({index: 2, uid: 3}, 60)
+
+		// check all inputs for their new values
+		plugin.update_input({index: 0}, 0)
+		plugin.update_state()
+		output = plugin.update_output({index: 0})
+		assert.equal(output, 40)
+
+		plugin.update_input({index: 0}, 1)
+		plugin.update_state()
+		output = plugin.update_output({index: 0})
+		assert.equal(output, 50)
+
+		plugin.update_input({index: 0}, 2)
+		plugin.update_state()
+		output = plugin.update_output({index: 0})
+		assert.equal(output, 60)
+	})
 })

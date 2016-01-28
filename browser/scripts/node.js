@@ -683,6 +683,9 @@ LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot) {
 	
 	if(!on && this.n_connected === 0) {
 		this.set_dt(this.core.datatypes.ANY);
+
+		this.setArrayness(false)
+
 		return true;
 	}
 	
@@ -693,14 +696,18 @@ LinkedSlotGroup.prototype.infer_dt = function() {
 	var node = this.node;
 	var dt = null;
 	var any_dt = this.core.datatypes.ANY.id;
-	
+
+	var anyConnectionIsArray = false
+
 	for(var i = 0, len = node.inputs.length; i < len; i++) {
 		var c = node.inputs[i];
 		
 		if(this.inputs.indexOf(c.dst_slot) !== -1) {
 			dt = c.src_slot.dt.id !== any_dt ? c.src_slot.dt : dt;
 
-			this.setArrayness(c.src_slot.array)
+			if (c.src_slot.array) {
+				anyConnectionIsArray = true
+			}
 
 			this.n_connected++;
 		}
@@ -711,10 +718,15 @@ LinkedSlotGroup.prototype.infer_dt = function() {
 		
 		if(this.outputs.indexOf(c.src_slot) !== -1) {
 			dt = c.dst_slot.dt.id !== any_dt ? c.dst_slot.dt : dt;
-			this.setArrayness(c.dst_slot.array)
+
+			if (c.dst_slot.array) {
+				anyConnectionIsArray = true
+			}
 			this.n_connected++;
 		}
 	}
+
+	this.setArrayness(anyConnectionIsArray)
 	
 	if (dt) {
 		this.set_dt(dt);

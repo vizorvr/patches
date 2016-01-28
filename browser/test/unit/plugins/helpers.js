@@ -116,7 +116,7 @@ exports.reset = function() {
 		},
 		graphs: [],
 		get_default_value: function(dt) {
-			return dt
+			return null
 		}
 	};
 
