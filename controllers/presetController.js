@@ -34,7 +34,7 @@ PresetController.prototype.save = function(req, res, next) {
 	.then(function(can) {
 		if (!can) {
 			return res.status(403)
-				.json({message: 'Sorry, permission denied'})
+				.json({ message: 'Sorry, permission denied' })
 		}
 
 		return that._fs.writeString(gridFsPath, req.body.graph)

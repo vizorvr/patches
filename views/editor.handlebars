@@ -223,7 +223,6 @@
 	var boot = {}
 	boot.hasEdits = {{hasEdits}}
 
-	// THREE webvr-manager reads from here.
 	window.Vizor = {
 		hideWebVRButton: true,
 		releaseMode: {{releaseMode}}
@@ -266,7 +265,8 @@
 			mixpanel.identify('{{user._id}}')
 		}
 
-		if (typeof E2.controllers === 'undefined') E2.controllers = {};
+		if (typeof E2.controllers === 'undefined')
+			E2.controllers = {};
 
 		E2.controllers.account = new AccountController()
 
