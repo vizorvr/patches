@@ -361,6 +361,42 @@ Node.prototype._cascadeFlowOff = function(conn) {
 	}
 }
 
+Node.prototype._update_input = function(inp, pl, conns, needs_update) {
+	var result = {dirty: false, needs_update: needs_update}
+	var sn = inp.src_node;
+
+	result.dirty = sn.update_recursive(conns);
+
+	// TODO: Sampling the output value out here might seem spurious, but isn't:
+	// Some plugin require the ability to set their updated flag in update_output().
+	// Ideally, these should be rewritten to not do so, and this state should
+	// be moved into the clause below to save on function calls.
+	var value = sn.plugin.update_output(inp.src_slot);
+
+	if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
+		if (inp.dst_slot.array && !inp.src_slot.array) {
+			value = [value]
+		} else if (!inp.dst_slot.array && inp.src_slot.array) {
+			value = value[0]
+		}
+
+		pl.update_input(inp.dst_slot, inp.dst_slot.validate ? inp.dst_slot.validate(value) : value);
+
+		pl.updated = true;
+		result.needs_update = true;
+
+		if (inp.ui && !inp.ui.flow) {
+			result.dirty = true;
+			inp.ui.flow = true;
+		}
+	} else if(inp.ui && inp.ui.flow) {
+		inp.ui.flow = false;
+		result.dirty = true;
+	}
+
+	return result
+}
+
 Node.prototype.update_recursive = function(conns) {
 	var dirty = false;
 
@@ -373,46 +409,36 @@ Node.prototype.update_recursive = function(conns) {
 	var pl = this.plugin;
 	var needs_update = this.inputs_changed || pl.updated;
 
-	for(var i = 0, len = inputs.length; i < len; i++) {
-		var inp = inputs[i];
-		
+	var secondPassUpdateInputs = []
+
+	// first pass input update: update active inputs
+	for (var i = 0, len = inputs.length; i < len; ++i) {
+		var inp = inputs[i]
+
 		if (inp.dst_slot.inactive) {
 			if(inp.ui && inp.ui.flow) {
 				this._cascadeFlowOff(inp)
 				dirty = true;
 			}
+			secondPassUpdateInputs.push(inp)
+
 			continue;
 		}
-		
-		var sn = inp.src_node;
-		 
-		dirty = sn.update_recursive(conns) || dirty;
-	
-		// TODO: Sampling the output value out here might seem spurious, but isn't:
-		// Some plugin require the ability to set their updated flag in update_output().
-		// Ideally, these should be rewritten to not do so, and this state should
-		// be moved into the clause below to save on function calls.
-		var value = sn.plugin.update_output(inp.src_slot);
 
-		if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
-			if (inp.dst_slot.array && !inp.src_slot.array) {
-				value = [value]
-			} else if (!inp.dst_slot.array && inp.src_slot.array) {
-				value = value[0]
-			}
+		var result = this._update_input(inp, pl, conns, needs_update)
 
-			pl.update_input(inp.dst_slot, inp.dst_slot.validate ? inp.dst_slot.validate(value) : value);
+		dirty = dirty || result.dirty
+		needs_update = needs_update || result.needs_update
+	}
 
-			pl.updated = true;
-			needs_update = true;
-	
-			if (inp.ui && !inp.ui.flow) {
-				dirty = true;
-				inp.ui.flow = true;
-			}
-		} else if(inp.ui && inp.ui.flow) {
-			inp.ui.flow = false;
-			dirty = true;
+	// second pass input update: update any inputs that were activated
+	for (var i = 0, len = secondPassUpdateInputs.length; i < len; ++i) {
+		var inp = secondPassUpdateInputs[i]
+		if (!inp.dst_slot.inactive) {
+			var result = this._update_input(inp, pl, conns, needs_update)
+
+			dirty = dirty || result.dirty
+			needs_update = needs_update || result.needs_update
 		}
 	}
 
@@ -676,14 +702,16 @@ LinkedSlotGroup.prototype.connection_changed = function(on, conn, slot) {
 		var otherSlot = (slot.type === E2.slot_type.input) ? conn.src_slot : conn.dst_slot
 		this.set_dt(otherSlot.dt)
 
-		if (otherSlot.array)
-			this.setArrayness(true)
+		this.setArrayness(otherSlot.array)
 
 		return true;
 	}
 	
 	if(!on && this.n_connected === 0) {
 		this.set_dt(this.core.datatypes.ANY);
+
+		this.setArrayness(false)
+
 		return true;
 	}
 	
@@ -694,15 +722,18 @@ LinkedSlotGroup.prototype.infer_dt = function() {
 	var node = this.node;
 	var dt = null;
 	var any_dt = this.core.datatypes.ANY.id;
-	
+
+	var anyConnectionIsArray = false
+
 	for(var i = 0, len = node.inputs.length; i < len; i++) {
 		var c = node.inputs[i];
 		
 		if(this.inputs.indexOf(c.dst_slot) !== -1) {
 			dt = c.src_slot.dt.id !== any_dt ? c.src_slot.dt : dt;
 
-			if (c.src_slot.array)
-				this.setArrayness(true)
+			if (c.src_slot.array) {
+				anyConnectionIsArray = true
+			}
 
 			this.n_connected++;
 		}
@@ -713,11 +744,15 @@ LinkedSlotGroup.prototype.infer_dt = function() {
 		
 		if(this.outputs.indexOf(c.src_slot) !== -1) {
 			dt = c.dst_slot.dt.id !== any_dt ? c.dst_slot.dt : dt;
-			if (c.dst_slot.array)
-				this.setArrayness(true)
+
+			if (c.dst_slot.array) {
+				anyConnectionIsArray = true
+			}
 			this.n_connected++;
 		}
 	}
+
+	this.setArrayness(anyConnectionIsArray)
 	
 	if (dt) {
 		this.set_dt(dt);

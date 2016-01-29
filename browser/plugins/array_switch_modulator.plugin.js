@@ -31,7 +31,7 @@ var ArraySwitch = E2.plugins.array_switch_modulator = function ArraySwitch(core,
 	this.node = node
 	this.lsg = new LinkedSlotGroup(core, node, [], [this.output_slots[0]])
 
-	this.number = -1
+	this.number = 0
 	this.values = []
 
 	this.node.on('slotAdded', function() {
@@ -84,7 +84,10 @@ ArraySwitch.prototype.update_input = function(slot, data) {
 				this.number = n
 			}
 
-			return 
+			for (var i=0; i < this.dynInputs.length; i++)
+				this.dynInputs[i].inactive = (i !== this.number)
+
+			return
 		}
 	} else { // dynamic slot
 		this.values[slot.index] = data
@@ -92,12 +95,15 @@ ArraySwitch.prototype.update_input = function(slot, data) {
 }
 
 ArraySwitch.prototype.update_state = function() {
+	if (this.number >= this.values.length) {
+		this.updated = (this.value !== undefined)
+		this.value = undefined
+		return
+	}
+
 	if (this.value !== this.values[this.number]) {
 		this.value = this.values[this.number]
 		this.updated = true
-
-		for (var i=0; i < this.dynInputs.length; i++)
-			this.dynInputs[i].inactive = (i !== this.number)
 	}
 	else {
 		this.updated = false
@@ -111,7 +117,9 @@ ArraySwitch.prototype.update_output = function(slot) {
 	if (this.value !== undefined)
 		return this.value
 
-	return this.core.get_default_value(this.lsg.dt)
+	var def = this.core.get_default_value(this.lsg.dt)
+
+	return def
 }
 
 ArraySwitch.prototype.connection_changed = function(on, conn, slot) {
@@ -128,7 +136,7 @@ ArraySwitch.prototype.state_changed = function(ui) {
 			slots[i].inactive = false
 		}
 		
-		this.number = -1
+		this.number = 0
 		this.value = this.lsg.infer_dt()
 	}
 };
