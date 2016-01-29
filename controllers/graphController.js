@@ -273,7 +273,14 @@ GraphController.prototype.save = function(req, res, next) {
 
 		return that._fs.writeString(gridFsGraphPath, req.body.graph)
 		.then(function() {
-			var previewImage = req.body.previewImage.replace(/^data:image\/\w+;base64,/, "")
+			var previewImage
+			if (req.body.previewImage) {
+				previewImage = req.body.previewImage.replace(/^data:image\/\w+;base64,/, "")
+			}
+			else {
+				previewImage = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAF0lEQVQokWP8z0AaYCJR/aiGUQ1DSAMAQC4BH5CRCM8AAAAASUVORK5CYII="
+			}
+
 			return that._fs.writeString(gridFsPreviewPath, previewImage, 'base64')
 		})
 		.then(function() {
