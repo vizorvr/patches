@@ -259,7 +259,8 @@ GraphController.prototype.upload = function(req, res, next)
 GraphController.prototype.save = function(req, res, next) {
 	var that = this;
 	var path = this._makePath(req, req.body.path);
-	var gridFsPath = '/graph'+path+'.json';
+	var gridFsGraphPath = '/graph'+path+'.json';
+	var gridFsPreviewPath = '/graph'+path+'-preview.png';
 
 	var tags = that._parseTags(req.body.tags);
 
@@ -270,14 +271,20 @@ GraphController.prototype.save = function(req, res, next) {
 				.json({message: 'Sorry, permission denied'});
 		}
 
-		return that._fs.writeString(gridFsPath, req.body.graph)
+		return that._fs.writeString(gridFsGraphPath, req.body.graph)
 		.then(function() {
-			var url = that._fs.url(gridFsPath);
+			var previewImage = req.body.previewImage.replace(/^data:image\/\w+;base64,/, "")
+			return that._fs.writeString(gridFsPreviewPath, previewImage, 'base64')
+		})
+		.then(function() {
+			var url = that._fs.url(gridFsGraphPath);
+			var previewUrl = that._fs.url(gridFsPreviewPath)
 
 			var model = {
 				path: path,
 				tags: tags,
-				url: url
+				url: url,
+				previewUrl: previewUrl
 			}
 
 			return that._service.save(model, req.user)

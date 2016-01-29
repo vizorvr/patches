@@ -2096,6 +2096,11 @@ Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
 
+Application.prototype.getScreenshot = function(width, height) {
+	var ssr = new ScreenshotRenderer(this.worldEditor.scene, this.worldEditor.vrCamera)
+	return ssr.capture(width, height)
+}
+
 Application.prototype.start = function() {
 	var that = this
 
@@ -2474,7 +2479,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		stencil: true,
 		antialias: false,
 		premultipliedAlpha: true,
-		preserveDrawingBuffer: false
+		preserveDrawingBuffer: true
 	}
 
 	E2.app.worldEditor = new WorldEditor(E2.dom.webgl_canvas[0])
