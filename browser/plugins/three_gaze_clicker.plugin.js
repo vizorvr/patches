@@ -148,6 +148,9 @@
 
 			var i, j, clickerIdx
 
+			var clickerDepth = -0.01
+			var clickerRadius = 0.0008
+
 			// clickerIdx:
 			//   -1 = left eye
 			//    0 = mono
@@ -175,7 +178,7 @@
 						//	f *= fadeoutfactor
 						//}
 
-						that.vertices[idx].set(x * f * 0.0008 + horizOffset, y * f * 0.0008, -0.01)
+						that.vertices[idx].set(x * f * clickerRadius + horizOffset, y * f * clickerRadius, clickerDepth)
 
 						idx++
 					}
@@ -196,6 +199,7 @@
 			this.geometry = new this.GeometryGenerator(this)
 			this.material = new THREE.MeshBasicMaterial({color:0xffffff})
 			this.object3d = new THREE.Mesh(this.geometry, this.material)
+			this.object3d.matrixAutoUpdate = false
 		}
 
 		return this.object3d
@@ -267,8 +271,7 @@
 
 		var mesh = this.get_mesh()
 
-		mesh.position.copy(this.camera.position)
-		mesh.quaternion.copy(this.camera.quaternion)
+		mesh.matrix.copy(this.camera.matrixWorld)
 
 		if (this.scene.hasClickableObjects && this.showIcon !== false) {
 			this.geometry.update(this.clickFactor, Math.max(1.0 - Math.max(0.0, this.clickTime - this.clickDelay) * 10.0, 0.0))

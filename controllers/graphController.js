@@ -5,6 +5,7 @@ var fsPath = require('path')
 var assetHelper = require('../models/asset-helper')
 var templateCache = new(require('../lib/templateCache'))
 var helper = require('./controllerHelpers')
+var isStringEmpty = require('../lib/stringUtil').isStringEmpty
 
 var EditLog = require('../models/editLog')
 
@@ -124,7 +125,6 @@ GraphController.prototype.latest = function(req, res) {
 	});
 }
 
-
 // GET /embed/fthr/dunes-world
 GraphController.prototype.embed = function(req, res, next) {
 	this._service.findByPath(req.params.path)
@@ -148,11 +148,28 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 		if (!graph)
 			return next()
 
+		// Get displayed values for graph and owner
+		// 'this-is-a-graph' => 'This Is A Graph'
+		var graphName = graph.name.split('-')
+			.map(s => s.charAt(0).toUpperCase() + s.slice(1))
+			.join(' ');
+		// Figure out if the graph owner has a fullname
+		// Use that if does, else use the username for display
+		var graphOwner;
+		var creator = graph._creator;
+		if (creator.name && !isStringEmpty(creator.name)) {
+			graphOwner = creator.name;
+		} else {
+			graphOwner = graph.owner;
+		}
+
 		res.render('graph/show', {
 			layout: 'player',
 			graph: graph,
 			graphMinUrl: graph.url,
-			autoplay: true
+			autoplay: true,
+			graphName: graphName,
+			graphOwner: graphOwner
 		})
 	}).catch(next)
 }
