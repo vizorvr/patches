@@ -9,6 +9,8 @@ function Plugin(core, node) {
 		if (that.state_changed && that.node.ui && that.node.ui.pluginUI)
 			that.state_changed(that.node.ui.pluginUI)
 	})
+
+	this.inputValues = {}
 }
 
 Plugin.prototype.undoableSetState = function(key, newValue, oldValue) {

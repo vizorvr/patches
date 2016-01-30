@@ -1668,6 +1668,19 @@ Application.prototype.onOpenClicked = function() {
 		})
 }
 
+Application.prototype.navigateToPublishedGraph = function(graphPath, cb) {
+	var graphUrl = '/data/graph' + graphPath + '.json'
+
+	this.path = graphPath
+
+	boot.graph = {
+		path: graphPath,
+		url: graphUrl
+	}
+
+	history.pushState({}, '', graphPath + '/edit')
+	return this.loadGraph(graphUrl, cb)
+}
 
 
 Application.prototype.loadGraph = function(graphPath, cb) {
