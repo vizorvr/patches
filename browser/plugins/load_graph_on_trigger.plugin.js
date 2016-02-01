@@ -1,6 +1,6 @@
 (function() {
 
-var LoadGraphOnTrigger = E2.plugins.load_graph_on_trigger = function(core, node) {
+var LoadGraphOnTrigger = E2.plugins.load_graph_on_trigger = function(core) {
 	Plugin.apply(this, arguments)
 
 	this.desc = 'Loads and plays the Vizor file (replacing the current one) on trigger'
@@ -20,14 +20,12 @@ var LoadGraphOnTrigger = E2.plugins.load_graph_on_trigger = function(core, node)
 	this.output_slots = []
 }
 
-LoadGraphOnTrigger.prototype.update_input = function(slot, data) {
-	Plugin.prototype.update_input.apply(this, arguments)
+LoadGraphOnTrigger.prototype = Object.create(Plugin.prototype)
 
-	if (slot.name === 'trigger' && data && this.inputValues.url) {
+LoadGraphOnTrigger.prototype.update_state = function() {
+	if (this.inputValues.trigger && this.inputValues.url) {
 		var givenUrlParts = this.inputValues.url.split('/')
 		var graphPath = '/' + givenUrlParts.splice(-2, 2).join('/')
-
-		console.log('loading', graphPath)
 
 		// in the editor
 		if (E2.app && E2.app.navigateToPublishedGraph)
@@ -39,6 +37,6 @@ LoadGraphOnTrigger.prototype.update_input = function(slot, data) {
 			E2.app.player.play()
 		})
 	}
-}	
+}
 
 })()
