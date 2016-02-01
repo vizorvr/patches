@@ -168,5 +168,44 @@ describe('Graph', function() {
 		})
 	})
 
+	it('uploads preview images', function(done) {
+		// original data
+		var pngData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAE" +
+		"CAIAAAAmkwkpAAAAOElEQVQImQXBsREAIQgAwWOQAl4CzWjer4ecWOvQXVnrn3O4e+9f" +
+		"O2cLXABaVQEIXDQzI8LMVPUBbrAMzafoUtwAAAAASUVORK5CYII="
+
+		// converted data
+		var expectedConvertedData = "iVBORw0KGgoAAAANSU" +
+		"hEUgAAAAQAAAAECAIAAAAmkwkpAAAANElEQVQI12NkYGBITk5WU1OTkZFhhLPExMRZ1N" +
+		"TUZKRlxMTFRYSFWaSlZcQlxIWFhYWEBAHFOAZ1O2czCAAAAABJRU5ErkJggg=="
+
+		var path = 'graph-with-preview-image-'+process.pid
+		var expectedImagePath = '/data/previews/' + username + '/' + path + '-preview.png'
+
+		agent.post('/graph').send({
+			path: path,
+			graph: fs.readFileSync(graphFile),
+			previewImage: pngData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			request(app).get(expectedImagePath)
+			.expect(200).end(function(err, res)
+			{
+				if (err) return done(err)
+
+				var gotData = new Buffer(res.text).toString()
+				var expectedData = new Buffer(expectedConvertedData, 'base64').toString()
+
+				assert.equal(gotData, expectedData)
+
+				done()
+			})
+		})
+
+	})
+
 })
 

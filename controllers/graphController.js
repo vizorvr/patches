@@ -263,7 +263,7 @@ GraphController.prototype.save = function(req, res, next) {
 	var that = this;
 	var path = this._makePath(req, req.body.path);
 	var gridFsGraphPath = '/graph'+path+'.json';
-	var gridFsPreviewPath = '/graph'+path+'-preview.png';
+	var gridFsPreviewPath = '/previews'+path+'-preview.png';
 
 	var tags = that._parseTags(req.body.tags);
 
@@ -278,7 +278,7 @@ GraphController.prototype.save = function(req, res, next) {
 		.then(function() {
 			return that.previewImageProcessor.process(path, req.body.previewImage)
 			.then(function(processedImage) {
-				that._fs.writeString(gridFsPreviewPath, processedImage, 'base64')
+				return that._fs.writeString(gridFsPreviewPath, processedImage, 'base64')
 			})
 		})
 		.then(function() {
