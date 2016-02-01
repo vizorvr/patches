@@ -511,7 +511,7 @@ WorldEditor.prototype.getActiveSceneNode = function() {
 
 WorldEditor.prototype.matchCamera = function() {
 	// match the selected vr camera to world editor camera
-	var vrCameraPlugin = this.vrCamera.backReference
+	var vrCameraPlugin = this.vrCamera.parent.backReference
 	var editCamera = this.getCamera()
 
 	E2.app.undoManager.begin()
