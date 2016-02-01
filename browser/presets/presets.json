@@ -45,8 +45,8 @@
 		"Increment / Decrement value on Trigger": { "name": "_increment_or_decrement_on_trigger" }
 	},
 
-	"AUDIO": {
-		"Audio player": { "name": "_audio-player" }
+	"MUSIC AND SOUND": {
+		"Play music or sound": { "name": "_audio-player" }
 	},
 
 	"TIME & ANIMATION ": {

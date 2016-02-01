@@ -1,5 +1,5 @@
 {
-    "abs_t": 94.241,
+    "abs_t": 46.672,
     "active_graph": "root",
     "graph_uid": "TXDgBc0JJtS3",
     "root": {
@@ -9,79 +9,111 @@
         "nodes": [
             {
                 "plugin": "graph",
-                "x": 646,
-                "y": 289,
-                "uid": "tdLMZZFKJO5h",
+                "x": 400,
+                "y": 104,
+                "uid": "dftBnhLdWLLe",
                 "state": {
                     "always_update": true,
                     "input_sids": {},
                     "output_sids": {}
                 },
-                "title": "Play audio",
+                "title": "Play sound or music",
                 "graph": {
-                    "uid": "zlY3EUtPcyZD",
+                    "uid": "fyurVePvUZ5t",
                     "parent_uid": "root",
                     "open": true,
                     "nodes": [
                         {
-                            "plugin": "audio_source_player",
-                            "x": 1045,
-                            "y": 291,
-                            "uid": "zLm7iqJQF7sB"
+                            "plugin": "audio_player",
+                            "x": 610,
+                            "y": 231,
+                            "uid": "skGhM7KFeu3c"
                         },
                         {
-                            "plugin": "audio_buffer_source_modulator",
-                            "x": 796,
-                            "y": 235,
-                            "uid": "4selAN9HQPSB",
-                            "state": 1
+                            "plugin": "url_audio_generator",
+                            "x": 370,
+                            "y": 251,
+                            "uid": "5X3JuXUYUyZB",
+                            "state": {
+                                "url": "/data/audio/b25e32c3998dd01f3b0d09f237370687ef4f15e9.mp3"
+                            }
                         },
                         {
                             "plugin": "toggle_button",
-                            "x": 597,
-                            "y": 320,
-                            "uid": "RbRoszxhhFZr",
+                            "x": 374,
+                            "y": 349,
+                            "uid": "edtGsesBtg6E",
                             "state": {
                                 "enabled": true
                             },
                             "title": "Play"
                         },
                         {
-                            "plugin": "url_audio_buffer_generator",
-                            "x": 517,
-                            "y": 223,
-                            "uid": "kuY3VNzJchaE",
+                            "plugin": "toggle_button",
+                            "x": 372,
+                            "y": 442,
+                            "uid": "7zNXzjrEbmqn",
                             "state": {
-                                "url": "/data/audio/ceaba38724a30fbaa0ac85962d58e58952d16c0d.mp3"
+                                "enabled": false
                             },
-                            "title": "The audio file"
+                            "title": "Mute"
+                        },
+                        {
+                            "plugin": "knob_float_generator",
+                            "x": 372,
+                            "y": 528,
+                            "uid": "cd2CZFuh38XP",
+                            "state": {
+                                "val": 0.5000000000000001
+                            },
+                            "title": "Volume"
+                        },
+                        {
+                            "plugin": "annotation",
+                            "x": 362,
+                            "y": 79,
+                            "uid": "qnBpfVXbeu32",
+                            "state": {
+                                "text": "Upload your MPG or OGG file by clicking the \"Source\" button in the Audio patch below.",
+                                "width": 150,
+                                "height": 70
+                            }
                         }
                     ],
                     "conns": [
                         {
-                            "src_nuid": "4selAN9HQPSB",
-                            "dst_nuid": "zLm7iqJQF7sB",
+                            "src_nuid": "5X3JuXUYUyZB",
+                            "dst_nuid": "skGhM7KFeu3c",
                             "src_slot": 0,
                             "dst_slot": 0,
-                            "uid": "JALdJ2LRgUeg",
+                            "uid": "nE2ySLWz3AaS",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "RbRoszxhhFZr",
-                            "dst_nuid": "4selAN9HQPSB",
+                            "src_nuid": "edtGsesBtg6E",
+                            "dst_nuid": "skGhM7KFeu3c",
                             "src_slot": 0,
                             "dst_slot": 1,
-                            "uid": "TDkW14Gmx2A8",
+                            "uid": "7U2vJbc2BZhJ",
                             "src_connected": true,
                             "dst_connected": true
                         },
                         {
-                            "src_nuid": "kuY3VNzJchaE",
-                            "dst_nuid": "4selAN9HQPSB",
+                            "src_nuid": "7zNXzjrEbmqn",
+                            "dst_nuid": "skGhM7KFeu3c",
                             "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "okHIP2iqBeTu",
+                            "dst_slot": 2,
+                            "uid": "JvE3mknczyWG",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "cd2CZFuh38XP",
+                            "dst_nuid": "skGhM7KFeu3c",
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "uid": "jJdgSkN6dkgm",
                             "src_connected": true,
                             "dst_connected": true
                         }
