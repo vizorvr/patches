@@ -1,5 +1,5 @@
 {
-    "abs_t": 26.548,
+    "abs_t": 253.709,
     "active_graph": "root",
     "graph_uid": "TXDgBc0JJtS3",
     "root": {
@@ -9,8 +9,8 @@
         "nodes": [
             {
                 "plugin": "on_three_object_gaze_clicked",
-                "x": 240,
-                "y": 121,
+                "x": 332,
+                "y": 147,
                 "uid": "ysCSJh5vBXbW",
                 "state": {
                     "nodeRef": "XzNSpjZU7Bbj.TC53dADgAn72",
@@ -20,8 +20,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 467,
-                "y": 56,
+                "x": 559,
+                "y": 82,
                 "uid": "ztt8Vrheyrzy",
                 "state": {
                     "always_update": true,
@@ -182,7 +182,7 @@
                             "uid": "kdmG93TBAZhJ",
                             "open": false,
                             "state": {
-                                "value": 508
+                                "value": 553
                             }
                         },
                         {
@@ -387,8 +387,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 683,
-                "y": 56,
+                "x": 775,
+                "y": 82,
                 "uid": "waxfD4gVcEKS",
                 "state": {
                     "always_update": true,
@@ -658,8 +658,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 684,
-                "y": 123,
+                "x": 776,
+                "y": 149,
                 "uid": "NGdc2edkK2mp",
                 "state": {
                     "always_update": true,
@@ -906,8 +906,8 @@
             },
             {
                 "plugin": "graph",
-                "x": 684,
-                "y": 191,
+                "x": 776,
+                "y": 217,
                 "uid": "MwHdm8g9aC35",
                 "state": {
                     "always_update": true,
@@ -1040,7 +1040,7 @@
                             "y": 364,
                             "uid": "4YUF3Yk7dtkh",
                             "state": {
-                                "value": true
+                                "value": false
                             }
                         }
                     ],
@@ -1164,15 +1164,14 @@
             },
             {
                 "plugin": "annotation",
-                "x": 447,
-                "y": 129,
+                "x": 539,
+                "y": 155,
                 "uid": "mH2SWLc2WehA",
                 "state": {
                     "text": "Connect the three object3d slots to the scene to see this example.\n\nGaze clicking the button will display a screen in front of it.",
-                    "width": 0,
-                    "height": 0
-                },
-                "title": "Gaze button example"
+                    "width": 150,
+                    "height": 70
+                }
             }
         ],
         "conns": [
