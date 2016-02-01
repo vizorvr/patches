@@ -303,7 +303,7 @@
     },
 
 
-    "VIDEO TOOLS": {
+    "VIDEO": {
         "Duration": "video_get_duration_modulator",
         "Video player": "video_player",
         "Current time": "video_get_current_time_modulator"
