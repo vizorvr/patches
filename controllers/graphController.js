@@ -6,6 +6,7 @@ var assetHelper = require('../models/asset-helper')
 var templateCache = new(require('../lib/templateCache'))
 var helper = require('./controllerHelpers')
 var isStringEmpty = require('../lib/stringUtil').isStringEmpty
+var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
 var EditLog = require('../models/editLog')
 
@@ -273,15 +274,12 @@ GraphController.prototype.save = function(req, res, next) {
 
 		return that._fs.writeString(gridFsGraphPath, req.body.graph)
 		.then(function() {
-			var previewImage
-			if (req.body.previewImage) {
-				previewImage = req.body.previewImage.replace(/^data:image\/\w+;base64,/, "")
-			}
-			else {
-				previewImage = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAF0lEQVQokWP8z0AaYCJR/aiGUQ1DSAMAQC4BH5CRCM8AAAAASUVORK5CYII="
-			}
+			var previewImageProcessor = new PreviewImageProcessor()
 
-			return that._fs.writeString(gridFsPreviewPath, previewImage, 'base64')
+			return previewImageProcessor.process(req.body.previewImage)
+			.then(function(processedImage) {
+				that._fs.writeString(gridFsPreviewPath, processedImage, 'base64')
+			})
 		})
 		.then(function() {
 			var url = that._fs.url(gridFsGraphPath);
@@ -291,7 +289,7 @@ GraphController.prototype.save = function(req, res, next) {
 				path: path,
 				tags: tags,
 				url: url,
-				previewUrl: previewUrl
+				image: previewUrl
 			}
 
 			return that._service.save(model, req.user)

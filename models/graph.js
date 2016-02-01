@@ -18,6 +18,7 @@ var graphSchema = new mongoose.Schema({
 		match: alphanumeric,
 		index: true
 	}],
+	image: { type: String },
 	updatedAt: { type: Date, default: Date.now },
 	createdAt: { type: Date, default: Date.now }
 },
