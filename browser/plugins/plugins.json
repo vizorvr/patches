@@ -183,15 +183,8 @@
 
     "GRAPH CONTROL": {
         "Stop playback": "stop_emitter",
-        "Load graph": "load_graph",
-        "Initialise": "initialise_generator",
-        "Completed": "assets_completed_generator",
-        "Completed emitter": "assets_signal_completed_generator",
-        "Failed": "assets_failed_generator",
-        "Failed emitter": "assets_signal_failed_generator",
-        "Started": "assets_started_generator",
-        "Started emitter": "assets_signal_started_generator"
-
+        "Load Graph on Trigger": "load_graph_on_trigger",
+        "Initialise": "initialise_generator"
     },
 
     "INPUT METHODS": {
