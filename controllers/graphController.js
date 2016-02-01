@@ -289,7 +289,7 @@ GraphController.prototype.save = function(req, res, next) {
 				path: path,
 				tags: tags,
 				url: url,
-				image: previewUrl
+				previewUrl: previewUrl
 			}
 
 			return that._service.save(model, req.user)

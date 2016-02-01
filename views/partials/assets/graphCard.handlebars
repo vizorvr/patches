@@ -7,7 +7,7 @@
 
 		_id: (unique identifier)
 		(description:)
-		image: (src)
+		previewUrl: (src)
 		project: {
 			(head only, no graph list)
 		}
@@ -20,8 +20,8 @@
 		<p class="description">{{updatedAt}}</p>
 	</div>
 	<div class="image"
-		 {{#if image}}
-		 style="background-image: url('{{image}}');"
+		 {{#if previewUrl}}
+		 style="background-image: url('{{previewUrl}}');"
 		{{/if}}
 	>
 		<div class="overlay flexcenter">
