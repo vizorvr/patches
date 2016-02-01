@@ -24,6 +24,8 @@ function GraphController(s, gfs, rethinkConnection) {
 	args.unshift(Graph);
 	AssetController.apply(this, args);
 	this.rethinkConnection = rethinkConnection
+
+	this.previewImageProcessor = new PreviewImageProcessor()
 }
 
 GraphController.prototype = Object.create(AssetController.prototype);
@@ -274,9 +276,7 @@ GraphController.prototype.save = function(req, res, next) {
 
 		return that._fs.writeString(gridFsGraphPath, req.body.graph)
 		.then(function() {
-			var previewImageProcessor = new PreviewImageProcessor()
-
-			return previewImageProcessor.process(req.body.previewImage)
+			return that.previewImageProcessor.process(path, req.body.previewImage)
 			.then(function(processedImage) {
 				that._fs.writeString(gridFsPreviewPath, processedImage, 'base64')
 			})
