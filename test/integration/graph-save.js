@@ -168,16 +168,23 @@ describe('Graph', function() {
 		})
 	})
 
-	it('uploads preview images', function(done) {
-		// original data
-		var pngData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAE" +
-		"CAIAAAAmkwkpAAAAOElEQVQImQXBsREAIQgAwWOQAl4CzWjer4ecWOvQXVnrn3O4e+9f" +
-		"O2cLXABaVQEIXDQzI8LMVPUBbrAMzafoUtwAAAAASUVORK5CYII="
+	// original data
+	var testPngData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAE" +
+	"CAIAAAAmkwkpAAAAOElEQVQImQXBsREAIQgAwWOQAl4CzWjer4ecWOvQXVnrn3O4e+9f" +
+	"O2cLXABaVQEIXDQzI8LMVPUBbrAMzafoUtwAAAAASUVORK5CYII="
 
-		// converted data
-		var expectedConvertedData = "iVBORw0KGgoAAAANSU" +
-		"hEUgAAAAQAAAAECAIAAAAmkwkpAAAANElEQVQI12NkYGBITk5WU1OTkZFhhLPExMRZ1N" +
-		"TUZKRlxMTFRYSFWaSlZcQlxIWFhYWEBAHFOAZ1O2czCAAAAABJRU5ErkJggg=="
+	// converted data
+	var convertedTestPngData = "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAm" +
+	"kwkpAAAANElEQVQI12NkYGBITk5WU1OTkZFhhLPExMRZ1NTUZKRlxMTFRYSFWaSlZcQl" +
+	"xIWFhYWEBAHFOAZ1O2czCAAAAABJRU5ErkJggg=="
+
+	// expected default image data
+	var invalidImageData = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAA" +
+	"F0lEQVQokWP8z0AaYCJR/aiGUQ1DSAMAQC4BH5CRCM8AAAAASUVORK5CYII="
+
+
+	it('uploads preview images', function(done) {
+
 
 		var path = 'graph-with-preview-image-'+process.pid
 		var expectedImagePath = '/data/previews/' + username + '/' + path + '-preview.png'
@@ -185,7 +192,7 @@ describe('Graph', function() {
 		agent.post('/graph').send({
 			path: path,
 			graph: fs.readFileSync(graphFile),
-			previewImage: pngData
+			previewImage: testPngData
 		})
 		.expect(200)
 		.end(function(err, res) {
@@ -197,15 +204,77 @@ describe('Graph', function() {
 				if (err) return done(err)
 
 				var gotData = new Buffer(res.text).toString()
-				var expectedData = new Buffer(expectedConvertedData, 'base64').toString()
+				var expectedData = new Buffer(convertedTestPngData, 'base64').toString()
 
 				assert.equal(gotData, expectedData)
 
 				done()
 			})
 		})
-
 	})
+
+	it('creates a default image on null preview data', function(done) {
+		// expected default image data
+		var expectedImage = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAA" +
+		"F0lEQVQokWP8z0AaYCJR/aiGUQ1DSAMAQC4BH5CRCM8AAAAASUVORK5CYII="
+
+
+		var path = 'graph-with-preview-image-'+process.pid
+		var expectedImagePath = '/data/previews/' + username + '/' + path + '-preview.png'
+
+		agent.post('/graph').send({
+			path: path,
+			graph: fs.readFileSync(graphFile),
+			previewImage: null
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			request(app).get(expectedImagePath)
+			.expect(200).end(function(err, res)
+			{
+				if (err) return done(err)
+
+				var gotData = new Buffer(res.text).toString()
+				var expectedData = new Buffer(invalidImageData, 'base64').toString()
+
+				assert.equal(gotData, expectedData)
+
+				done()
+			})
+		})
+	})
+
+	it('creates a default image on invalid preview data', function(done) {
+
+		var path = 'graph-with-preview-image-'+process.pid
+		var expectedImagePath = '/data/previews/' + username + '/' + path + '-preview.png'
+
+		agent.post('/graph').send({
+			path: path,
+			graph: fs.readFileSync(graphFile),
+			previewImage: "abcdefg123456789"
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			request(app).get(expectedImagePath)
+			.expect(200).end(function(err, res)
+			{
+				if (err) return done(err)
+
+				var gotData = new Buffer(res.text).toString()
+				var expectedData = new Buffer(invalidImageData, 'base64').toString()
+
+				assert.equal(gotData, expectedData)
+
+				done()
+			})
+		})
+	})
+
 
 })
 
