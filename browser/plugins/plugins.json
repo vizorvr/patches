@@ -72,8 +72,8 @@
         "Stereo Cubemap": "url_stereo_cubemap_generator",
         "3D model": "three_loader_model",
         "Array": "url_array_generator",
-        "Audio": "url_audio_generator",
-        "Audio bufferL": "url_audio_buffer_generator",
+        "Audio file loader": "url_audio_generator",
+        "Audio buffer loader": "url_audio_buffer_generator",
         "JSON": "url_json_generator",
         "Video": "url_video_generator"
     },
@@ -154,12 +154,6 @@
 
     },
 
-    "PLAYERS": {
-        "Audio player": "audio_player",
-        "Audio source player": "audio_source_player",
-        "Module player": "module_player",
-        "Video player": "video_player"
-    },
 
        "AUDIO": {
         "Audio player": "audio_player",
@@ -169,6 +163,7 @@
         "Delay": "audio_delay_modulator",
         "Current time": "audio_get_current_time_modulator",
         "Duration": "audio_get_duration_modulator",
+        "Module player": "module_player",
         "Gain (mix)": "audio_gain_modulator"
     },
 
@@ -310,6 +305,7 @@
 
     "VIDEO TOOLS": {
         "Duration": "video_get_duration_modulator",
+        "Video player": "video_player",
         "Current time": "video_get_current_time_modulator"
     },
 
