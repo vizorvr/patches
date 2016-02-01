@@ -34,6 +34,7 @@ LoadGraphOnTrigger.prototype.update_state = function() {
 		// in the player
 		var graphUrl = '/data/graph' + graphPath + '.min.json'
 		E2.app.player.load_from_url(graphUrl, function() {
+			history.pushState({}, '', graphPath)
 			E2.app.player.play()
 		})
 	}
