@@ -112,6 +112,9 @@ AssetService.prototype.save = function(data, user) {
 		if (data.tags)
 			asset.tags = data.tags
 
+		if (data.image)
+			asset.image = data.image
+
 		var dfd = when.defer();
 
 		asset.save(function(err) {

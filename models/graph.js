@@ -18,6 +18,7 @@ var graphSchema = new mongoose.Schema({
 		match: alphanumeric,
 		index: true
 	}],
+	previewUrl: { type: String },
 	updatedAt: { type: Date, default: Date.now },
 	createdAt: { type: Date, default: Date.now }
 },

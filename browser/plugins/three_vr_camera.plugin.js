@@ -146,7 +146,7 @@
 			this.dirty = true
 			break
 		case 3: // aspect ratio
-			this.vrControlCamera.aspectRatio = data
+			this.vrControlCamera.aspect = data
 			this.dirty = true
 			break
 		case 4: // near

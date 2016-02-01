@@ -6,6 +6,7 @@ var assetHelper = require('../models/asset-helper')
 var templateCache = new(require('../lib/templateCache'))
 var helper = require('./controllerHelpers')
 var isStringEmpty = require('../lib/stringUtil').isStringEmpty
+var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
 var EditLog = require('../models/editLog')
 
@@ -23,6 +24,8 @@ function GraphController(s, gfs, rethinkConnection) {
 	args.unshift(Graph);
 	AssetController.apply(this, args);
 	this.rethinkConnection = rethinkConnection
+
+	this.previewImageProcessor = new PreviewImageProcessor()
 }
 
 GraphController.prototype = Object.create(AssetController.prototype);
@@ -259,7 +262,8 @@ GraphController.prototype.upload = function(req, res, next)
 GraphController.prototype.save = function(req, res, next) {
 	var that = this;
 	var path = this._makePath(req, req.body.path);
-	var gridFsPath = '/graph'+path+'.json';
+	var gridFsGraphPath = '/graph'+path+'.json';
+	var gridFsPreviewPath = '/previews'+path+'-preview.png';
 
 	var tags = that._parseTags(req.body.tags);
 
@@ -270,14 +274,22 @@ GraphController.prototype.save = function(req, res, next) {
 				.json({message: 'Sorry, permission denied'});
 		}
 
-		return that._fs.writeString(gridFsPath, req.body.graph)
+		return that._fs.writeString(gridFsGraphPath, req.body.graph)
 		.then(function() {
-			var url = that._fs.url(gridFsPath);
+			return that.previewImageProcessor.process(path, req.body.previewImage)
+			.then(function(processedImage) {
+				return that._fs.writeString(gridFsPreviewPath, processedImage, 'base64')
+			})
+		})
+		.then(function() {
+			var url = that._fs.url(gridFsGraphPath);
+			var previewUrl = that._fs.url(gridFsPreviewPath)
 
 			var model = {
 				path: path,
 				tags: tags,
-				url: url
+				url: url,
+				previewUrl: previewUrl
 			}
 
 			return that._service.save(model, req.user)

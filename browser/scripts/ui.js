@@ -218,9 +218,13 @@ VizorUI.prototype.openPublishGraphModal = function() {
         graphname = graphname[1];
 
 	var graphdata = E2.app.player.core.serialise();
+
+	var graphpreview = E2.app.getScreenshot(440, 330);
+
 	var data = {
-		path:	graphname,
-		graph:	graphdata
+		path:	        graphname,
+		graph:	        graphdata,
+		previewImage:   graphpreview
 	};
 
 	var openSaveGraph = function(dfd) {
