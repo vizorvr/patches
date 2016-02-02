@@ -173,7 +173,9 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 			autoplay: true,
 			graphName: graphName,
 			graphOwner: graphOwner,
-			previewImage: req.headers.host + graph.previewUrlLarge
+			previewImage: req.headers.host + graph.previewUrlLarge,
+			previewImageWidth: 1280,
+			previewImageHeight: 720
 		})
 	}).catch(next)
 }
