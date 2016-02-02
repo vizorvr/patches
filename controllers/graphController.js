@@ -165,14 +165,15 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 		} else {
 			graphOwner = graph.owner;
 		}
-
+		
 		res.render('graph/show', {
 			layout: 'player',
 			graph: graph,
 			graphMinUrl: graph.url,
 			autoplay: true,
 			graphName: graphName,
-			graphOwner: graphOwner
+			graphOwner: graphOwner,
+			previewImage: req.headers.host + graph.previewUrlLarge
 		})
 	}).catch(next)
 }
@@ -300,13 +301,15 @@ GraphController.prototype.save = function(req, res, next) {
 		})
 		.then(function() {
 			var url = that._fs.url(gridFsGraphPath);
-			var previewUrl = that._fs.url(previewImageSpecs[0].gridFsPath)
+			var previewUrlSmall = that._fs.url(previewImageSpecs[0].gridFsPath)
+			var previewUrlLarge = that._fs.url(previewImageSpecs[1].gridFsPath)
 
 			var model = {
 				path: path,
 				tags: tags,
 				url: url,
-				previewUrl: previewUrl
+				previewUrlSmall: previewUrlSmall,
+				previewUrlLarge: previewUrlLarge
 			}
 
 			return that._service.save(model, req.user)
