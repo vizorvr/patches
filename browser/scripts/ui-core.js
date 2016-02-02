@@ -394,6 +394,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 			break;
 		case uiKeys.viewSource:
 		case 'shift+' + uiKeys.viewSource:
+		case 'alt+shift+' + uiKeys.viewSource:	// .fi
 			this.viewSource();
 			e.preventDefault();
 			break;
