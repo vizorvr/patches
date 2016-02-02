@@ -263,7 +263,16 @@ GraphController.prototype.save = function(req, res, next) {
 	var that = this;
 	var path = this._makePath(req, req.body.path);
 	var gridFsGraphPath = '/graph'+path+'.json';
-	var gridFsPreviewPath = '/previews'+path+'-preview.png';
+
+	var previewImageSpecs = [{
+		gridFsPath: '/previews'+path+'-preview-440x330.png',
+		width: 440,
+		height: 330
+	}, {
+		gridFsPath: '/previews'+path+'-preview-1280x720.png',
+		width: 1280,
+		height: 720,
+	}]
 
 	var tags = that._parseTags(req.body.tags);
 
@@ -276,14 +285,22 @@ GraphController.prototype.save = function(req, res, next) {
 
 		return that._fs.writeString(gridFsGraphPath, req.body.graph)
 		.then(function() {
-			return that.previewImageProcessor.process(path, req.body.previewImage)
-			.then(function(processedImage) {
-				return that._fs.writeString(gridFsPreviewPath, processedImage, 'base64')
+			return that.previewImageProcessor.process(path, req.body.previewImage, previewImageSpecs)
+			.then(function(processedImages) {
+
+				if (processedImages && processedImages.length === 2) {
+					// write small image
+					return that._fs.writeString(previewImageSpecs[0].gridFsPath, processedImages[0], 'base64')
+					.then(function() {
+						// write large image
+						that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
+					})
+				}
 			})
 		})
 		.then(function() {
 			var url = that._fs.url(gridFsGraphPath);
-			var previewUrl = that._fs.url(gridFsPreviewPath)
+			var previewUrl = that._fs.url(previewImageSpecs[0].gridFsPath)
 
 			var model = {
 				path: path,

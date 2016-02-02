@@ -219,7 +219,7 @@ VizorUI.prototype.openPublishGraphModal = function() {
 
 	var graphdata = E2.app.player.core.serialise();
 
-	var graphpreview = E2.app.getScreenshot(440, 330);
+	var graphpreview = E2.app.getScreenshot(1280, 720);
 
 	var data = {
 		path:	        graphname,

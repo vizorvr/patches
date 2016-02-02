@@ -169,25 +169,50 @@ describe('Graph', function() {
 	})
 
 	// original data
-	var testPngData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAE" +
-	"CAIAAAAmkwkpAAAAOElEQVQImQXBsREAIQgAwWOQAl4CzWjer4ecWOvQXVnrn3O4e+9f" +
-	"O2cLXABaVQEIXDQzI8LMVPUBbrAMzafoUtwAAAAASUVORK5CYII="
+	var testPngData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABQAAAALQ" +
+	"BAMAAAA9U8BlAAAAD1BMVEUAAAAAiSMAIYmJAHuJCABsJlEnAAACX0lEQVR42uzSMQEAAAgD" +
+	"oNnA/mmt4D/IQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAABKzQbeBAQAAAAAAAAAAODYu2MaAAAABmH+XU/BDJBWAz8AAAAAAAAAAAAAAAAAAACH" +
+	"tQUtAgQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABg7NIhAQAA" +
+	"CAMwBMHon4oKdzdbhgEAAAAAAAAAAAAAAAAAAAAAAAAAULE3EBMQAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAODZgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVV" +
+	"VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVRX24EAAAAAAAMj/tRFU" +
+	"VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" +
+	"VVVVVYVdOqYBAAYBAEY2I0jAvzoscELSaigAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAGz3MmBMQAAAAAAAuOdXwJiAAAAAAAAAAAAAAAAAAAAAAAAAADR7cCAAAAAAAOT/2giq" +
+	"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq" +
+	"qqqqqtIeHBIAAAAACPr/2hsGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATgIb" +
+	"gAF3C+ZweAAAAABJRU5ErkJggg=="
 
 	// converted data
-	var convertedTestPngData = "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAm" +
-	"kwkpAAAANElEQVQI12NkYGBITk5WU1OTkZFhhLPExMRZ1NTUZKRlxMTFRYSFWaSlZcQl" +
-	"xIWFhYWEBAHFOAZ1O2czCAAAAABJRU5ErkJggg=="
+	var convertedTestPngData440x330 = "iVBORw0KGgoAAAANSUhEUgAAAbgAAAD4CAIAAA" +
+	"ARh2Q8AAABwklEQVR42u3cMRLCIBBA0QXGGJPC1hkrRyvvfzc79QSWZkHfO8FvWKDZCAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAIBtzLE/xym7ohc1OwAAABhYaVF22RHQO1/v/9aOMV+yIw" +
+	"C6VlyWAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmuNZaSHcE4WnYAJKgRj1c8szMAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIFvJDhhczQ4AvmyqcV+jGZ" +
+	"YAn9SItXlUAgAAAAAAAAAAAAAAAADwv6ZqCQmMyMHd0O0QS8uOAOhZKza4AAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAL/oDcceBFjvbLoBAAAAAElFTkSuQmCC"
 
-	// expected default image data
-	var invalidImageData = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAA" +
-	"F0lEQVQokWP8z0AaYCJR/aiGUQ1DSAMAQC4BH5CRCM8AAAAASUVORK5CYII="
-
+	var convertedTestPngData1280x720 = "iVBORw0KGgoAAAANSUhEUgAABQAAAALQBAMAA" +
+	"AA9U8BlAAAAD1BMVEUAAAAAiSMAIYmJAHuJCABsJlEnAAACBklEQVR42u3dSQ3AMBRDwXQBU" +
+	"AiFEAjljyoEcqsiK/ozCHx4d7cGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO7p6egGlCRAAAAAAYJnzTS+gNAECAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAADwy/2lF1CaAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAICFjie9gNIECAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAW3I5QJQAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAJgYs2sBd9eN6WAAAAAASUVORK5CYII="
 
 	it('uploads preview images', function(done) {
-
-
-		var path = 'graph-with-preview-image-'+process.pid
-		var expectedImagePath = '/data/previews/' + username + '/' + path + '-preview.png'
+		var path = 'graph-with-preview-image-good-'+process.pid
+		var expectedSmallImagePath = '/data/previews/' + username + '/' + path + '-preview-440x330.png'
+		var expectedLargeImagePath = '/data/previews/' + username + '/' + path + '-preview-1280x720.png'
 
 		agent.post('/graph').send({
 			path: path,
@@ -198,29 +223,35 @@ describe('Graph', function() {
 		.end(function(err, res) {
 			if (err) return done(err)
 
-			request(app).get(expectedImagePath)
+			request(app).get(expectedSmallImagePath)
 			.expect(200).end(function(err, res)
 			{
 				if (err) return done(err)
 
 				var gotData = new Buffer(res.text).toString()
-				var expectedData = new Buffer(convertedTestPngData, 'base64').toString()
+				var expectedData = new Buffer(convertedTestPngData440x330, 'base64').toString()
 
 				assert.equal(gotData, expectedData)
 
-				done()
+				request(app).get(expectedLargeImagePath)
+				.expect(200).end(function(err, res)
+				{
+					if (err) return done(err)
+
+					var gotData = new Buffer(res.text).toString()
+					var expectedData = new Buffer(convertedTestPngData1280x720, 'base64').toString()
+
+					assert.equal(gotData, expectedData)
+
+					done()
+				})
 			})
 		})
 	})
 
-	it('creates a default image on null preview data', function(done) {
-		// expected default image data
-		var expectedImage = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAA" +
-		"F0lEQVQokWP8z0AaYCJR/aiGUQ1DSAMAQC4BH5CRCM8AAAAASUVORK5CYII="
-
-
-		var path = 'graph-with-preview-image-'+process.pid
-		var expectedImagePath = '/data/previews/' + username + '/' + path + '-preview.png'
+	it('creates no image on null preview data', function(done) {
+		var path = 'graph-with-preview-image-null-'+process.pid
+		var expectedImagePath = '/data/previews/' + username + '/' + path + '-preview-440x330.png'
 
 		agent.post('/graph').send({
 			path: path,
@@ -232,23 +263,17 @@ describe('Graph', function() {
 			if (err) return done(err)
 
 			request(app).get(expectedImagePath)
-			.expect(200).end(function(err, res)
+			.expect(404).end(function(err, res)
 			{
 				if (err) return done(err)
-
-				var gotData = new Buffer(res.text).toString()
-				var expectedData = new Buffer(invalidImageData, 'base64').toString()
-
-				assert.equal(gotData, expectedData)
 
 				done()
 			})
 		})
 	})
 
-	it('creates a default image on invalid preview data', function(done) {
-
-		var path = 'graph-with-preview-image-'+process.pid
+	it('creates no image on invalid preview data', function(done) {
+		var path = 'graph-with-preview-image-invalid-'+process.pid
 		var expectedImagePath = '/data/previews/' + username + '/' + path + '-preview.png'
 
 		agent.post('/graph').send({
@@ -261,14 +286,9 @@ describe('Graph', function() {
 			if (err) return done(err)
 
 			request(app).get(expectedImagePath)
-			.expect(200).end(function(err, res)
+			.expect(404).end(function(err, res)
 			{
 				if (err) return done(err)
-
-				var gotData = new Buffer(res.text).toString()
-				var expectedData = new Buffer(invalidImageData, 'base64').toString()
-
-				assert.equal(gotData, expectedData)
 
 				done()
 			})
