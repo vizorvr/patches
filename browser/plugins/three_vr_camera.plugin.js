@@ -61,7 +61,6 @@
 		if (!this.dolly) {
 			this.dolly = new THREE.PerspectiveCamera()
 
-			this.dolly.channels.enable(1)
 		}
 
 		if (!this.vrControlCamera) {
@@ -70,6 +69,8 @@
 				this.domElement.clientWidth / this.domElement.clientHeight,
 				0.001,
 				1000)
+
+			this.vrControlCamera.channels.enable(1)
 
 			this.dolly.add(this.vrControlCamera)
 		}
