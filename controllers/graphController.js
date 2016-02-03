@@ -267,6 +267,8 @@ GraphController.prototype.save = function(req, res, next) {
 	var path = this._makePath(req, req.body.path);
 	var gridFsGraphPath = '/graph'+path+'.json';
 
+	var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
+
 	var previewImageSpecs = [{
 		gridFsPath: '/previews'+path+'-preview-440x330.png',
 		width: 440,
@@ -288,17 +290,25 @@ GraphController.prototype.save = function(req, res, next) {
 
 		return that._fs.writeString(gridFsGraphPath, req.body.graph)
 		.then(function() {
-			return that.previewImageProcessor.process(path, req.body.previewImage, previewImageSpecs)
-			.then(function(processedImages) {
+			if (!req.body.previewImage) {
+				return
+			}
 
-				if (processedImages && processedImages.length === 2) {
-					// write small image
-					return that._fs.writeString(previewImageSpecs[0].gridFsPath, processedImages[0], 'base64')
-					.then(function() {
-						// write large image
-						that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
-					})
-				}
+			// save original image (if we ever need to batch process any of these)
+			return that._fs.writeString(gridFsOriginalImagePath, req.body.previewImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+			.then(function() {
+				// create preview images
+				return that.previewImageProcessor.process(path, req.body.previewImage, previewImageSpecs)
+				.then(function(processedImages) {
+					if (processedImages && processedImages.length === 2) {
+						// write small image
+						return that._fs.writeString(previewImageSpecs[0].gridFsPath, processedImages[0], 'base64')
+						.then(function() {
+							// write large image
+							that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
+						})
+					}
+				})
 			})
 		})
 		.then(function() {

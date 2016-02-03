@@ -216,6 +216,7 @@ describe('Graph', function() {
 		var path = 'graph-with-preview-image-good-'+process.pid
 		var expectedSmallImagePath = '/data/previews/' + username + '/' + path + '-preview-440x330.png'
 		var expectedLargeImagePath = '/data/previews/' + username + '/' + path + '-preview-1280x720.png'
+		var expectedOriginalImagePath = '/data/previews/' + username + '/' + path + '-preview-original.png'
 
 		agent.post('/graph').send({
 			path: path,
@@ -226,29 +227,44 @@ describe('Graph', function() {
 		.end(function(err, res) {
 			if (err) return done(err)
 
-			request(app).get(expectedSmallImagePath)
-			.expect(200).end(function(err, res)
-			{
+			// check original image
+			request(app).get(expectedOriginalImagePath)
+			.expect(200).end(function(err, res)	{
 				if (err) return done(err)
 
 				var gotData = new Buffer(res.text).toString()
-				var expectedData = new Buffer(convertedTestPngData440x330, 'base64').toString()
+				var expectedData = new Buffer(testPngData.replace(/^data:image\/\w+;base64,/, ""), 'base64').toString()
 
 				assert.equal(gotData, expectedData)
 
-				request(app).get(expectedLargeImagePath)
+				// check small preview
+				request(app).get(expectedSmallImagePath)
 				.expect(200).end(function(err, res)
 				{
 					if (err) return done(err)
 
 					var gotData = new Buffer(res.text).toString()
-					var expectedData = new Buffer(convertedTestPngData1280x720, 'base64').toString()
+					var expectedData = new Buffer(convertedTestPngData440x330, 'base64').toString()
 
 					assert.equal(gotData, expectedData)
 
-					done()
+					// check large preview
+					request(app).get(expectedLargeImagePath)
+					.expect(200).end(function(err, res)
+					{
+						if (err) return done(err)
+
+						var gotData = new Buffer(res.text).toString()
+						var expectedData = new Buffer(convertedTestPngData1280x720, 'base64').toString()
+
+						assert.equal(gotData, expectedData)
+
+						done()
+					})
 				})
+
 			})
+
 		})
 	})
 
