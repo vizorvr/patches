@@ -1,0 +1,651 @@
+{
+    "abs_t": 18.777,
+    "active_graph": "root",
+    "graph_uid": "TXDgBc0JJtS3",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 319,
+                "y": 297,
+                "uid": "v8uQ2TM4Z4FP",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {},
+                    "output_sids": {
+                        "P8L3xL34Q6Cz": "Ys30r7aVEks1"
+                    }
+                },
+                "title": "Switch box position on gaze click",
+                "graph": {
+                    "uid": "VffUakcj37hu",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "three_mesh",
+                            "x": 875,
+                            "y": 124,
+                            "uid": "pvq2t6TeEhcC",
+                            "state": {
+                                "position": {
+                                    "x": 0.03717239065720079,
+                                    "y": 0.03926023317848015,
+                                    "z": -1.193571944882679
+                                },
+                                "scale": {
+                                    "x": 0.0094948370835134,
+                                    "y": 0.0094948370835134,
+                                    "z": 0.0094948370835134
+                                },
+                                "quaternion": {
+                                    "_x": 0,
+                                    "_y": 0,
+                                    "_z": 0,
+                                    "_w": 1
+                                },
+                                "pivot": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            }
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1113,
+                            "y": 194,
+                            "uid": "P8L3xL34Q6Cz",
+                            "title": "object3d",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 21,
+                                    "def": null,
+                                    "uid": "UW8xhKSPhTFp",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "three_material",
+                            "x": 427,
+                            "y": 295,
+                            "uid": "zTgjcXaGDkcm",
+                            "open": false,
+                            "state": {}
+                        },
+                        {
+                            "plugin": "vector",
+                            "x": 661,
+                            "y": 343,
+                            "uid": "xzTuuhtxh5rW",
+                            "open": false
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 486,
+                            "y": 383,
+                            "uid": "Ne9bdVGYjXUY",
+                            "state": {
+                                "val": 1
+                            }
+                        },
+                        {
+                            "plugin": "three_geometry_box",
+                            "x": 647,
+                            "y": 69,
+                            "uid": "erpSxQjbpHY6",
+                            "open": false
+                        },
+                        {
+                            "plugin": "url_texture_generator",
+                            "x": 112,
+                            "y": 322,
+                            "uid": "KWB5DZtPXFTq",
+                            "state": {
+                                "url": ""
+                            }
+                        },
+                        {
+                            "plugin": "on_three_object_gaze_clicked",
+                            "x": 224,
+                            "y": 162,
+                            "uid": "pqMGxhpMQJEv",
+                            "state": {
+                                "nodeRef": "VffUakcj37hu.pvq2t6TeEhcC",
+                                "type": 0
+                            },
+                            "title": "Gaze clicked"
+                        },
+                        {
+                            "plugin": "graph",
+                            "x": 462,
+                            "y": 167,
+                            "uid": "GnQDcHkFDcEa",
+                            "state": {
+                                "always_update": true,
+                                "input_sids": {
+                                    "zsXPyN6zVN9X": "uySY5hZYTGZz"
+                                },
+                                "output_sids": {
+                                    "Bd8FvryqTFuA": "meyY5XDMKJ8m"
+                                }
+                            },
+                            "title": "Switch Position On Gaze Click",
+                            "graph": {
+                                "uid": "Wj5V8qH3Yuxb",
+                                "parent_uid": "VffUakcj37hu",
+                                "open": true,
+                                "nodes": [
+                                    {
+                                        "plugin": "input_proxy",
+                                        "x": 263,
+                                        "y": 415,
+                                        "uid": "zsXPyN6zVN9X",
+                                        "title": "click impulse",
+                                        "dyn_out": [
+                                            {
+                                                "name": "input",
+                                                "dt": 7,
+                                                "uid": "Gt2RHxRweRQW",
+                                                "dynamic": true,
+                                                "type": 1,
+                                                "index": 0,
+                                                "is_connected": true,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "output_proxy",
+                                        "x": 1410,
+                                        "y": 572,
+                                        "uid": "Bd8FvryqTFuA",
+                                        "title": "position",
+                                        "dyn_in": [
+                                            {
+                                                "name": "output",
+                                                "dt": 5,
+                                                "def": null,
+                                                "uid": "FnrtMvEHSK6L",
+                                                "dynamic": true,
+                                                "type": 0,
+                                                "index": 0,
+                                                "is_connected": true,
+                                                "connected": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "array_blend_modulator_vector3",
+                                        "x": 1095,
+                                        "y": 542,
+                                        "uid": "4TLyvMq5wPfn",
+                                        "state": {
+                                            "blendFuncId": "smoothstep-blend"
+                                        },
+                                        "dyn_in": [
+                                            {
+                                                "name": "0",
+                                                "dt": 5,
+                                                "array": false,
+                                                "uid": "LvzQAHbTLkGP",
+                                                "dynamic": true,
+                                                "type": 0,
+                                                "index": 0,
+                                                "is_connected": true
+                                            },
+                                            {
+                                                "type": 0,
+                                                "name": "1",
+                                                "dt": 5,
+                                                "array": false,
+                                                "uid": "hy5VQWU4UJxB",
+                                                "dynamic": true,
+                                                "index": 1,
+                                                "is_connected": true
+                                            },
+                                            {
+                                                "type": 0,
+                                                "name": "2",
+                                                "dt": 5,
+                                                "array": false,
+                                                "uid": "TgZwpQ7gzyTJ",
+                                                "dynamic": true,
+                                                "index": 2,
+                                                "is_connected": true
+                                            },
+                                            {
+                                                "type": 0,
+                                                "name": "3",
+                                                "dt": 5,
+                                                "array": false,
+                                                "uid": "DQeNWu8xf6Cw",
+                                                "dynamic": true,
+                                                "index": 3,
+                                                "is_connected": true
+                                            },
+                                            {
+                                                "type": 0,
+                                                "name": "4",
+                                                "dt": 5,
+                                                "array": false,
+                                                "uid": "hNcuGpYtkLhF",
+                                                "dynamic": true,
+                                                "index": 4
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "plugin": "vector",
+                                        "x": 621,
+                                        "y": 657,
+                                        "uid": "KzhdGjanBa6T",
+                                        "open": false,
+                                        "title": "XYZ to Vector (lower left)"
+                                    },
+                                    {
+                                        "plugin": "vector",
+                                        "x": 620,
+                                        "y": 698,
+                                        "uid": "jjxmcKAetr5C",
+                                        "open": false,
+                                        "title": "XYZ to Vector (lower right)"
+                                    },
+                                    {
+                                        "plugin": "const_float_generator",
+                                        "x": 334,
+                                        "y": 754,
+                                        "uid": "pnTfHjN7D2Gs",
+                                        "state": {
+                                            "val": 1
+                                        }
+                                    },
+                                    {
+                                        "plugin": "const_float_generator",
+                                        "x": 622,
+                                        "y": 563,
+                                        "uid": "JrFce8p3Fs8x",
+                                        "state": {
+                                            "val": 2
+                                        },
+                                        "title": "animation duration"
+                                    },
+                                    {
+                                        "plugin": "const_float_generator",
+                                        "x": 335,
+                                        "y": 660,
+                                        "uid": "JS7SXsCcFKyR",
+                                        "state": {
+                                            "val": -1
+                                        }
+                                    },
+                                    {
+                                        "plugin": "convert_bool_float_modulator",
+                                        "x": 496,
+                                        "y": 383,
+                                        "uid": "e7EUBvqvgkWE"
+                                    },
+                                    {
+                                        "plugin": "accumulate_modulator",
+                                        "x": 702,
+                                        "y": 380,
+                                        "uid": "3CCffGUeVx2J",
+                                        "open": false,
+                                        "state": {
+                                            "value": 9
+                                        }
+                                    },
+                                    {
+                                        "plugin": "modulate_modulator",
+                                        "x": 908,
+                                        "y": 422,
+                                        "uid": "SbGGcsBvbeUQ",
+                                        "open": false
+                                    },
+                                    {
+                                        "plugin": "const_float_generator",
+                                        "x": 647,
+                                        "y": 481,
+                                        "uid": "sgUkqJMZKyWK",
+                                        "open": false,
+                                        "state": {
+                                            "val": 4
+                                        },
+                                        "title": "number of positions"
+                                    },
+                                    {
+                                        "plugin": "vector",
+                                        "x": 620,
+                                        "y": 738,
+                                        "uid": "UdW5tMS7HHGg",
+                                        "open": false,
+                                        "title": "XYZ to Vector (upper right)"
+                                    },
+                                    {
+                                        "plugin": "vector",
+                                        "x": 621,
+                                        "y": 780,
+                                        "uid": "qNkWrw56vLQa",
+                                        "open": false,
+                                        "title": "XYZ to Vector (upper left)"
+                                    }
+                                ],
+                                "conns": [
+                                    {
+                                        "src_nuid": "4TLyvMq5wPfn",
+                                        "dst_nuid": "Bd8FvryqTFuA",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "exKFmwmCCDE7",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": "JrFce8p3Fs8x",
+                                        "dst_nuid": "4TLyvMq5wPfn",
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "uid": "Up7zseus6tYC",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "JS7SXsCcFKyR",
+                                        "dst_nuid": "KzhdGjanBa6T",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "RD2gZMrBeKPu",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "jjxmcKAetr5C",
+                                        "dst_nuid": "4TLyvMq5wPfn",
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "uid": "uh4hfnmDmFxe",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": "pnTfHjN7D2Gs",
+                                        "dst_nuid": "jjxmcKAetr5C",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "RfRkDXE9kJLB",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "KzhdGjanBa6T",
+                                        "dst_nuid": "4TLyvMq5wPfn",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "LePWpwnbEKRZ",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": "zsXPyN6zVN9X",
+                                        "dst_nuid": "e7EUBvqvgkWE",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "gL4XPhSBhzdH",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "src_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": "e7EUBvqvgkWE",
+                                        "dst_nuid": "3CCffGUeVx2J",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "Bf4k4NzKFN89",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "3CCffGUeVx2J",
+                                        "dst_nuid": "SbGGcsBvbeUQ",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "Zak9asAnH5gh",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "SbGGcsBvbeUQ",
+                                        "dst_nuid": "4TLyvMq5wPfn",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "k7S7aWLTUKnw",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "sgUkqJMZKyWK",
+                                        "dst_nuid": "SbGGcsBvbeUQ",
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "uid": "MAqebNyKer7M",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "pnTfHjN7D2Gs",
+                                        "dst_nuid": "UdW5tMS7HHGg",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "kvzXjSkSLQ6m",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "JS7SXsCcFKyR",
+                                        "dst_nuid": "qNkWrw56vLQa",
+                                        "src_slot": 0,
+                                        "dst_slot": 0,
+                                        "uid": "wMNdhj35FABF",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "pnTfHjN7D2Gs",
+                                        "dst_nuid": "UdW5tMS7HHGg",
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "uid": "x786WftVZu8z",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "pnTfHjN7D2Gs",
+                                        "dst_nuid": "qNkWrw56vLQa",
+                                        "src_slot": 0,
+                                        "dst_slot": 1,
+                                        "uid": "D6txqp3LWScs",
+                                        "src_connected": true,
+                                        "dst_connected": true
+                                    },
+                                    {
+                                        "src_nuid": "UdW5tMS7HHGg",
+                                        "dst_nuid": "4TLyvMq5wPfn",
+                                        "src_slot": 0,
+                                        "dst_slot": 2,
+                                        "uid": "FdxtHagJXsYy",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    },
+                                    {
+                                        "src_nuid": "qNkWrw56vLQa",
+                                        "dst_nuid": "4TLyvMq5wPfn",
+                                        "src_slot": 0,
+                                        "dst_slot": 3,
+                                        "uid": "hE5MQE3wRAUs",
+                                        "src_connected": true,
+                                        "dst_connected": true,
+                                        "dst_dyn": true
+                                    }
+                                ]
+                            },
+                            "dyn_in": [
+                                {
+                                    "name": "click impulse",
+                                    "dt": 7,
+                                    "index": 0,
+                                    "uid": "uySY5hZYTGZz",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "is_connected": true
+                                }
+                            ],
+                            "dyn_out": [
+                                {
+                                    "name": "position",
+                                    "dt": 5,
+                                    "index": 0,
+                                    "uid": "meyY5XDMKJ8m",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "is_connected": true
+                                }
+                            ]
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "pvq2t6TeEhcC",
+                            "dst_nuid": "P8L3xL34Q6Cz",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "xtczuFAL4wM4",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "zTgjcXaGDkcm",
+                            "dst_nuid": "pvq2t6TeEhcC",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "xJkDjTmS7aDn",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "xzTuuhtxh5rW",
+                            "dst_nuid": "pvq2t6TeEhcC",
+                            "src_slot": 0,
+                            "dst_slot": 5,
+                            "uid": "LusQpyJVTxDR",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "Ne9bdVGYjXUY",
+                            "dst_nuid": "xzTuuhtxh5rW",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "2B3fNSgbtpwk",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "Ne9bdVGYjXUY",
+                            "dst_nuid": "xzTuuhtxh5rW",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "KTErdMpNRBWf",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "Ne9bdVGYjXUY",
+                            "dst_nuid": "xzTuuhtxh5rW",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "qGZJN6DMhVZz",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "erpSxQjbpHY6",
+                            "dst_nuid": "pvq2t6TeEhcC",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "AQ6Z8m2YrU2Z",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "KWB5DZtPXFTq",
+                            "dst_nuid": "zTgjcXaGDkcm",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "xbk6RfUa94AR",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "pqMGxhpMQJEv",
+                            "dst_nuid": "GnQDcHkFDcEa",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "reYwMwDraXba",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "GnQDcHkFDcEa",
+                            "dst_nuid": "pvq2t6TeEhcC",
+                            "src_slot": 0,
+                            "dst_slot": 3,
+                            "uid": "CaJSBjkeH2mv",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        }
+                    ]
+                },
+                "dyn_out": [
+                    {
+                        "name": "object3d",
+                        "dt": 21,
+                        "index": 0,
+                        "uid": "Ys30r7aVEks1",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "annotation",
+                "x": 320,
+                "y": 363,
+                "uid": "gwSyHznZJfqG",
+                "state": {
+                    "text": "Connect the object3d slot to scene to see this example.\n\nWe move the box between 4 different positions,  which are trigged by a gaze click.",
+                    "width": 272,
+                    "height": 74
+                },
+                "title": "Switch box position on gaze click"
+            }
+        ],
+        "conns": []
+    }
+}
