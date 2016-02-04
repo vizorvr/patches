@@ -19,7 +19,18 @@ var GraphPlugin = E2.plugins.graph = function(core) {
 }
 
 GraphPlugin.prototype = Object.create(SubGraphPlugin.prototype)
+GraphPlugin.prototype.constructor = GraphPlugin
 
+GraphPlugin.prototype.getInspectorProperties = function() {
+	return {
+		always_update : {
+			dt : E2.dt.BOOL,
+			label : 'Always update'
+		}
+	}
+}
+
+/*
 GraphPlugin.prototype.open_inspector = function(self) {
 	var diag = make('div')
 	var always_upd = $('<input id="always_upd" name="alwaysupdate"'
@@ -68,6 +79,7 @@ GraphPlugin.prototype.open_inspector = function(self) {
 	
 	self.core.create_dialog(diag, 'Edit Preferences', 460, 250, store_state(self, always_upd))
 }
+*/
 
 GraphPlugin.prototype.drilldown = function() {
 	return NodeUI.drilldown(this);

@@ -17,6 +17,7 @@ var LoopPlugin = E2.plugins.loop = function(core) {
 }
 
 LoopPlugin.prototype = Object.create(SubGraphPlugin.prototype)
+LoopPlugin.prototype.constructor = LoopPlugin
 
 LoopPlugin.prototype.open_inspector = function(self)
 {

@@ -4,17 +4,21 @@ function Plugin(core, node) {
 	this.node = node
 
 	// though Node.js sets this too,
-	// this is still needed here 
+	// this is still needed here
 	// in case it's referred to in instantiation
 	this.inputValues = {}
 
 	this.state = {}
 	this._oldState = {}
 
-	this.node.on('pluginStateChanged', function() {
-		if (that.state_changed && that.node.ui && that.node.ui.pluginUI)
-			that.state_changed(that.node.ui.pluginUI)
-	})
+	if (this.node) {
+		this.node.on('pluginStateChanged', function() {
+			if (that.state_changed && that.node.ui && that.node.ui.pluginUI)
+				that.state_changed(that.node.ui.pluginUI)
+		})
+	}
+
+	this.inputValues = {}
 }
 
 Plugin.prototype.undoableSetState = function(key, newValue, oldValue) {

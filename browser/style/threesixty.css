@@ -570,23 +570,24 @@ header nav ul.dropdown-menu li {
   display: table-cell;
   float: none;
 }
-.block-header .nav-tabs > li > a {
+.block-header .nav-tabs > li > a,
+.block-header .nav-tabs > li > span {
   border-radius: 0;
   border: 0;
   margin: 0;
-  padding: 16px;
-  box-sizing: border-box;
   text-decoration: none;
+  background: none;
 }
+.block-header .nav-tabs > li > span,
 .block-header .nav-tabs > li > a,
-.nav-tabs > li > a:active {
+.block-header .nav-tabs > li > a:active {
   padding-top: 8.75px;
   height: 37px;
   outline: none;
   color: #515c75;
 }
 .block-header .nav-tabs > li > a:hover,
-.nav-tabs > li > a:focus {
+.block-header .nav-tabs > li > a:focus {
   background: #1f2331;
   color: #ffffff;
 }
@@ -991,7 +992,7 @@ header nav ul.dropdown-menu li {
 .drag-handle {
   cursor: grab;
   position: relative;
-  height: 18px;
+  height: 14px;
   width: 100%;
   background: #262c3d;
   border-bottom: 1px solid #1e2331;

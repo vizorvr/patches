@@ -5,6 +5,8 @@
 
  */
 function SubGraphPlugin(core, node) {
+	Plugin.apply(this, arguments)
+
 	this.core = core
 	this.node = node
 
@@ -17,7 +19,8 @@ function SubGraphPlugin(core, node) {
 	this.ui = null
 	this.isGraph = true
 }
-
+SubGraphPlugin.prototype = Object.create(Plugin.prototype)
+SubGraphPlugin.prototype.constructor = SubGraphPlugin
 
 SubGraphPlugin.prototype.reset = function() {
 	if (this.graph)

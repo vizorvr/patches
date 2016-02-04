@@ -110,6 +110,7 @@ var VizorUI = function() {			// becomes E2.ui
 	};
 };
 VizorUI.prototype = Object.create(EventEmitter.prototype);
+VizorUI.prototype.constructor = VizorUI
 
 VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 	this.dom = e2.dom;
@@ -118,23 +119,34 @@ VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 	document.addEventListener('keypress', this.onKeyPress.bind(this), true);	// first
 	window.addEventListener('blur', this._clearModifierKeys.bind(this));
 	window.addEventListener('focus', this._clearModifierKeys.bind(this));
-	e2.core.on('resize', this.onWindowResize.bind(this));
+	window.addEventListener('resize', this.onWindowResize.bind(this));
 	e2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this));
 	e2.core.on('progress', this.updateProgressBar.bind(this));
 }
 
 
+VizorUI.prototype.refreshBreadcrumb = function() {	// force state to emit an event
+	E2.ui.state.selectedObjects = E2.ui.state.selectedObjects
+}
 
 VizorUI.prototype.setupStateStoreEventListeners = function() {
 	var that = this;
 	var dom = this.dom;		// normally E2.dom
 	var state = this.state;
 	var visibility = state.visibility;
-	var $assets = dom.assetsLib, $presets = dom.presetsLib, $chat = dom.chatWindow;
+	var $assets = dom.assetsLib, $presets = dom.presetsLib, $chat = dom.chatWindow, $properties = dom.propertiesPanel;
 	var $patch_editor = dom.canvas_parent;
 
 	E2.app.graphStore.on('changed:size', function(size) {
 		$('#graphSizeLabel').html(siteUI.formatFileSize(size))
+	})
+	E2.app.graphStore.on('nodeRemoved', function(graph, node){
+		var ix = state.selectedObjects.indexOf(node)
+		if (ix !== -1) {
+			var sel = _.clone(state.selectedObjects)
+			sel.splice(ix, 1)
+			state.selectedObjects = sel	// refresh
+		}
 	})
 
 	state
@@ -158,12 +170,27 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 				.toggleClass('ui_off', inBuildMode)
 				.toggleClass('ui_on', inProgramMode)
 
+			dom.tabObjProperties
+				.toggleClass('ui_off', inProgramMode)
+				.toggleClass('ui_on', inBuildMode)
+
+			dom.tabNodeProperties
+				.toggleClass('ui_off', inBuildMode)
+				.toggleClass('ui_on', inProgramMode)
+
+
 			dom.btnMove.attr('disabled',!inBuildMode);
 			dom.btnScale.attr('disabled',!inBuildMode);
 			dom.btnRotate.attr('disabled',!inBuildMode);
 
-			if (inBuildMode) dom.tabObjects.find('a').trigger('click')
-			else if (inProgramMode) dom.tabPresets.find('a').trigger('click')
+			if (inBuildMode) {
+				dom.tabObjects.find('a').trigger('click')
+				dom.tabObjProperties.find('a').trigger('click')
+			}
+			else if (inProgramMode) {
+				dom.tabPresets.find('a').trigger('click')
+				dom.tabNodeProperties.find('a').trigger('click')
+			}
 
 		})
 		.emit('changed:mode', state.mode);
@@ -201,9 +228,11 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 	state
 		.on('changed:visibility:panel_assets', 	changedVisibilityPanelHandler($assets, dom.btnAssets))
 		.on('changed:visibility:panel_presets', changedVisibilityPanelHandler($presets, dom.btnPresets))
+		.on('changed:visibility:panel_properties', 	changedVisibilityPanelHandler($properties, dom.btnInspector))
 		.on('changed:visibility:panel_chat', 	changedVisibilityPanelHandler($chat, dom.btnChatDisplay))
 		.emit('changed:visibility:panel_assets', 	visibility.panel_assets)
 		.emit('changed:visibility:panel_presets', 	visibility.panel_presets)
+		.emit('changed:visibility:panel_properties', visibility.panel_properties)
 		.emit('changed:visibility:panel_chat', 		visibility.panel_chat);
 
 	state
@@ -218,16 +247,19 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 				that.dom.tabPresets.find('a').trigger('click')
 			}
 			dom.btnSavePatch.attr('disabled', !visible);
-			dom.btnInspector.attr('disabled', !visible);
 		})
 		.emit('changed:visibility:patch_editor', visibility.patch_editor);
 
 	state
 		.on('changed:selectedObjects', function(selected){
-			var what = '';
-			if (selected.length > 1) what = selected.length + ' objects';
-			else if (selected.length === 1) what = selected[0].title || selected[0].id;
-			that.buildBreadcrumb(E2.core.active_graph, function(b){if (what) b.add(what)});
+			var text = '';
+			if (selected) {
+				if (selected.length > 1)
+					text = selected.length + ' objects';
+				else if (selected.length === 1)
+					text = selected[0].title || selected[0].id;
+			}
+			that.buildBreadcrumb(E2.core.active_graph, function(b){if (text) b.add(text)});
 		})
 		.emit('changed:selectedObjects', state.selectedObjects);
 
@@ -244,6 +276,23 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 				.toggleClass('ui_on', modifyMode === uiModifyMode.move)
 		})
 		.emit('changed:modifyMode', state.modifyMode);
+
+
+	state.on('changed:panelStates:properties', function(panelState){
+		if (!panelState) return;
+		if (!panelState._found) return;
+		if (that.isFullScreen()) return;
+		var panel = dom.propertiesPanel
+		VizorUI.applyPanelState(panel, panelState);
+		var controlsHeight = panel.find('.drag-handle').outerHeight(true) +
+					   panel.find('.block-header').outerHeight(true);
+		if (!panelState.collapsed) {
+			panel.removeClass('collapsed').height('auto');
+		} else {
+			panel.addClass('collapsed').height(controlsHeight);
+		}
+		VizorUI.constrainPanel(panel);
+	});
 
 	state.on('changed:panelStates:presets', function(panelState){
 		if (!panelState) return;
@@ -305,6 +354,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 	});
 
 	state
+		.emit('changed:panelStates:properties', state.panelStates.properties)
 		.emit('changed:panelStates:presets', state.panelStates.presets)
 		.emit('changed:panelStates:assets', state.panelStates.assets)
 		.emit('changed:panelStates:chat', state.panelStates.chat)
@@ -315,6 +365,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 			that.state.panelStates.chat = VizorUI.getDomPanelState(dom.chatWindow);
 			that.state.panelStates.assets = VizorUI.getDomPanelState(dom.assetsLib);
 			that.state.panelStates.presets = VizorUI.getDomPanelState(dom.presetsLib);
+			that.state.panelStates.properties = VizorUI.getDomPanelState(dom.propertiesPanel);
 		})
 		.emit('changed:context', state.context)
 };
@@ -426,10 +477,12 @@ VizorUI.prototype.onKeyPress = function(e) {
 			E2.app.toggleFullscreen();
 			e.preventDefault();
 			break;
+
 		case uiKeys.openInspector:
-			this.onInspectorClicked();
+			state.visibility.panel_properties = !state.visibility.panel_properties
 			e.preventDefault();
 			break;
+
 		case uiKeys.toggleEditorCamera:
 			state.viewCamera = (state.viewCamera === uiViewCam.vr) ? uiViewCam.birdsEye : uiViewCam.vr;
 			e.preventDefault();
@@ -480,7 +533,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 		switch(key) {
 			case uiKeys.gotoParentGraph:
 				if (E2.core.active_graph.parent_graph)
-					E2.app.onGraphSelected(E2.core.active_graph.parent_graph);
+					E2.treeView.select(E2.core.active_graph.parent_graph.tree_node)
 				break;
 			case uiKeys.viewSource:
 			case 'shift+' + uiKeys.viewSource:
@@ -681,11 +734,13 @@ VizorUI.prototype.onKeyDown = function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 			E2.app.undoManager.undo();
+			this.emit('undo')
 			break;
 		case uiKeys.redo:
 			e.preventDefault();
 			e.stopPropagation();
 			E2.app.undoManager.redo();
+			this.emit('redo')
 			break;
 	}
 	return true;
@@ -709,7 +764,15 @@ VizorUI.prototype.onFullScreenChanged = function() {	// placeholder
 	return true;
 };
 
+VizorUI.prototype.constrainAllPanels = function() {
+	VizorUI.constrainPanel(this.dom.chatWindow)
+	VizorUI.constrainPanel(this.dom.presetsLib)
+	VizorUI.constrainPanel(this.dom.assetsLib)
+	VizorUI.constrainPanel(this.dom.propertiesPanel)
+}
+
 VizorUI.prototype.onWindowResize = function() {
+	this.constrainAllPanels()
 	this.state.context = VizorUI.getContext();
 	return true;
 };
@@ -717,6 +780,21 @@ VizorUI.prototype.onWindowResize = function() {
 
 
 /***** HELPER METHODS *****/
+
+VizorUI.getControlTypeForDt = function(dt) {
+	var types = E2.core.datatypes
+	switch (dt) {
+		case types.BOOL:
+			return UICheckbox
+		case types.FLOAT:
+			return UIFloatField
+		case types.TEXT:
+			return UITextField
+		case types.VECTOR:
+			return UIVector3
+	}
+	return false
+}
 
 VizorUI.getContext = function() {
 	return {
