@@ -1,4 +1,6 @@
 var assert = require('assert');
+var browserPath = __dirname+'/../../';
+global.Plugin = require(browserPath+'scripts/plugin.js')
 
 global.E2 = {
 	uid: function() {},

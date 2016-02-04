@@ -9,8 +9,8 @@ function ThreeObject3DPlugin(core) {
 		{ name: 'scale', dt: core.datatypes.VECTOR, def: new THREE.Vector3(1, 1, 1) },
 
 		{ name: 'visible', dt: core.datatypes.BOOL, def: true },
-		{ name: 'castShadow', dt: core.datatypes.BOOL, def: true },
-		{ name: 'receiveShadow', dt: core.datatypes.BOOL, def: true },
+		{ name: 'castShadow', dt: core.datatypes.BOOL, def: true, label: "Cast shadow" },
+		{ name: 'receiveShadow', dt: core.datatypes.BOOL, def: true, label: "Receive shadows" },
 
 		{ name: 'name', dt: core.datatypes.TEXT, def: ''},
 
@@ -24,7 +24,9 @@ function ThreeObject3DPlugin(core) {
 			name:   'lock transform',
 			dt:     core.datatypes.BOOL,
 			def:    false,
-			desc:   'if enabled, this object\'s transform is locked and can\'t be adjusted in the 3d editor.'
+			label:  "Lock transform controls",
+			desc:   'if enabled, this object\'s transform is locked and can\'t be adjusted in the 3d editor.',
+			patchable: false
 		}
 	]
 

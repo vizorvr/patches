@@ -90,17 +90,16 @@ Connection.prototype.signal_change = function(on) {
 		srcNode.plugin.connection_changed(on, this, this.src_slot)
 	}
 	
-	var dstNode = this.dst_node
+	var dstNode = this.dst_node, dstPlugin = dstNode.plugin
 	dstNode.inputs_changed = true
 
 	if (!on && dstNode.plugin.update_input) {
-		if (this.dst_slot.def !== undefined) {
-			dstNode.plugin.update_input(this.dst_slot, clone(this.dst_slot.def))
-			dstNode.plugin.updated = true
-		} else {
-			dstNode.plugin.update_input(this.dst_slot, E2.app.player.core.get_default_value(this.dst_slot.dt))
-			dstNode.plugin.updated = true
-		}
+		var def = this.dst_node.getUiSlotValue(this.dst_slot)
+		def = clone(def)
+		if (dstPlugin.inputValues)
+			dstPlugin.inputValues[this.dst_slot.name] = def
+		dstPlugin.update_input(this.dst_slot, def)
+		dstPlugin.updated = true
 	}
 	
 	if (dstNode.plugin.connection_changed) {
@@ -112,6 +111,7 @@ Connection.prototype.signal_change = function(on) {
 		this.updateInboundNodes(dstNode)
 		this.updateOutboundNodes(dstNode)
 	}
+
 };
 
 Connection.prototype.serialise = function() {

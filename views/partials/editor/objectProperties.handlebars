@@ -1,0 +1,54 @@
+<div class="propertiesContent obj3d">
+
+    {{#if properties.common.enabled}}
+
+        <section id="propertiesSectionPosition" class="collapsible">
+           <h4>
+               Position
+               <button id="propertiesResetPosition" class="svg1tiny" data-svgref="icon-properties-reset">rst</button>
+           </h4>
+
+            {{{controls.position.control}}}
+        </section>
+
+        <section id="propertiesSectionRotation" class="collapsible">
+           <h4>
+               Rotation
+               <button id="propertiesResetRotation" class="svg1tiny" data-svgref="icon-properties-reset">rst</button>
+           </h4>
+            {{{controls.rotation.control}}}
+        </section>
+
+        {{#unless adapter.selectedIsCamera}}
+        <section id="propertiesSectionScale" class="collapsible">
+           <h4>
+               Scale
+               <button id="propertiesResetScale" class="svg1tiny" data-svgref="icon-properties-reset">rst</button>
+               <button id="propertiesLinkScale" class="svg1tiny" data-svgref="icon-properties-link">L</button>
+           </h4>
+             {{{controls.scale.control}}}
+        </section>
+        {{/unless}}
+
+        {{#if controls.meshProps}}
+            <section class="collapsible" id="propertiesSectionMesh">
+                {{#each controls.meshProps}}
+                    <div class="prop pt{{this.dtName}}">
+                        <label>
+                            {{{this.control}}}
+                            {{this.label}}</label>
+
+                    </div>
+                {{/each}}
+            </section>
+        {{/if}}
+
+    {{else}}
+
+        <section class="noSelectionOnly">
+            <p>Nothing selected</p>
+        </section>
+
+    {{/if}}
+
+</div>

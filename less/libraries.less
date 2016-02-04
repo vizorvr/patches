@@ -1,13 +1,18 @@
 .presets-block {
 	left: 30px;
-    z-index: 65;
+
 }
 
 .assets-block {
     left: 30 + @floating-box-width + 30;
-    z-index: 64;
+
+}
+.properties-block {
+    right: 230px;
+    top: 30px;
 }
 
+/*
 ul.lib-tabs {
     display: table;
     position: relative;
@@ -29,7 +34,7 @@ ul.lib-tabs {
             border: 0;    
         }
         a {
-            padding-top: 8px; 
+            padding-top: 8px;
             height: 32px;
             outline: none;
             color: @tab-text-inactive;
@@ -61,6 +66,7 @@ ul.lib-tabs {
             }
     }
 }
+*/
 
 #assets {
     display: block; 
@@ -139,7 +145,6 @@ ul.assets-list {
             }
     }
     > li.active {
-        background: @selected-bg;
         cursor: grab;
         svg {
             stroke: @editor-text-active;
@@ -244,13 +249,6 @@ ul.assets-list {
         }
     }
 }
-
-
-
-
-
-
-
 
 
 // ************************** RIGHT CLICK MENU
@@ -383,3 +381,150 @@ li.context-menu-item span  {
 	position: relative;
 	white-space: nowrap;
 }
+
+ul.unit-degree li>span:after {
+  content:"°";
+}
+ul.xyz {
+  li:before {
+	float:left;
+	line-height: 1.4em;
+	margin-right: 5px;
+	padding-top: 1px;
+	color:rgba(255,255,255,0.2);
+  }
+  li.xyz-x:before {content: "X";}
+  li.xyz-y:before {content: "Y";}
+  li.xyz-z:before {content: "Z";}
+}
+
+
+.propertiesContent {
+  ul.xyz {
+	display: flex;
+	display: -webkit-flex;
+	padding-left: 0;
+	li {
+	  -webkit-flex: 1;
+	  flex: 1;
+	  span {
+		background: rgba(255,255,255,0.1);
+		display: block;
+		line-height: 1.4em;
+		padding: 1px;
+		  overflow: hidden;
+          transition: color 0.2s;
+          &.changed {
+              color: white;
+              transition: color 0s;
+          }
+	  }
+	}
+	>li:first-child {
+	  padding-right: 5px;
+	}
+	>li:nth-child(2) {
+	  padding: 0 5px;
+	}
+	>li:last-child {
+	  padding-left: 5px;
+	}
+
+  }
+
+  .noSelection, .noSelectionOnly {
+	color: rgba(255,255,255,0.3);
+	text-align: center;
+  }
+  .propertiesContent svg, .propertiesContent svg use {stroke: #fff; fill: #fff;}
+}
+
+
+#properties-panel {
+    width: 232px;
+    .block-header {
+        width: 232px;
+        .nav-tabs {
+            width: 158px;
+        }
+    }
+    .propertiesContent {
+        section {
+            padding: 10px 15px;
+            ul {
+                padding:0;
+            }
+        }
+        section {
+            ul.xyz.uiDisabled,
+            &.disabled ul.xyz {
+                li span {
+                    background: none;
+                    pointer-events: none;
+                }
+            }
+            button[disabled],
+            &.disabled button {
+                opacity: 0.3;
+            }
+        }
+        h4 {
+            .clearfix;
+            font-size: 100%;
+            margin:0 0 5px 0;
+            button {
+                float:right;
+                height: 16px;
+            }
+        }
+    }
+    #propertiesPane.build {
+        section.noSelectionOnly {
+            display: none;
+        }
+        &.noSelection {
+            section {
+                display: none;
+            }
+            section.noSelectionOnly {
+                display: block;
+            }
+        }
+    }
+    input[type=text] {
+        background: rgba(255,255,255,0.1);
+        outline: none;
+        border: 0;
+        padding: 4px;
+    }
+    section button {
+        background: none;
+        padding: 1px 5px;
+        line-height: 1.1;
+        border: 1px solid #afbfdf;
+        color: #AFBFDF;
+        &.uiToggle_on {
+            background: #afbfdf;
+            color: #000;
+        }
+        &+button {margin-right: 2px}
+    }
+
+    div.nodeInspector {
+        div.prop.ptBoolean {
+            button {
+                width: 1.4em;
+                height: 1.4em;
+                line-height: 1.4em;
+                border-radius: 50%;
+                &[disabled] {
+                    border: 2px dotted #AFBFDF;
+                    &.uiToggle_on {
+                        border: 2px dotted #000;
+                    }
+                }
+            }
+        }
+    }
+}
+

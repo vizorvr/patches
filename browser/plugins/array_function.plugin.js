@@ -26,6 +26,7 @@ var ArrayFunctionPlugin = E2.plugins.array_function = function(core) {
 }
 
 ArrayFunctionPlugin.prototype = Object.create(SubGraphPlugin.prototype)
+ArrayFunctionPlugin.prototype.constructor = ArrayFunctionPlugin
 
 ArrayFunctionPlugin.prototype.drilldown = function() {
 	return NodeUI.drilldown(this);
