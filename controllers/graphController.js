@@ -6,6 +6,7 @@ var assetHelper = require('../models/asset-helper')
 var templateCache = new(require('../lib/templateCache'))
 var helper = require('./controllerHelpers')
 var isStringEmpty = require('../lib/stringUtil').isStringEmpty
+var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
 var EditLog = require('../models/editLog')
 
@@ -23,6 +24,8 @@ function GraphController(s, gfs, rethinkConnection) {
 	args.unshift(Graph);
 	AssetController.apply(this, args);
 	this.rethinkConnection = rethinkConnection
+
+	this.previewImageProcessor = new PreviewImageProcessor()
 }
 
 GraphController.prototype = Object.create(AssetController.prototype);
@@ -162,14 +165,17 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 		} else {
 			graphOwner = graph.owner;
 		}
-
+		
 		res.render('graph/show', {
 			layout: 'player',
 			graph: graph,
 			graphMinUrl: graph.url,
 			autoplay: true,
 			graphName: graphName,
-			graphOwner: graphOwner
+			graphOwner: graphOwner,
+			previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
+			previewImageWidth: 1280,
+			previewImageHeight: 720
 		})
 	}).catch(next)
 }
@@ -259,7 +265,19 @@ GraphController.prototype.upload = function(req, res, next)
 GraphController.prototype.save = function(req, res, next) {
 	var that = this;
 	var path = this._makePath(req, req.body.path);
-	var gridFsPath = '/graph'+path+'.json';
+	var gridFsGraphPath = '/graph'+path+'.json';
+
+	var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
+
+	var previewImageSpecs = [{
+		gridFsPath: '/previews'+path+'-preview-440x330.png',
+		width: 440,
+		height: 330
+	}, {
+		gridFsPath: '/previews'+path+'-preview-1280x720.png',
+		width: 1280,
+		height: 720,
+	}]
 
 	var tags = that._parseTags(req.body.tags);
 
@@ -270,14 +288,40 @@ GraphController.prototype.save = function(req, res, next) {
 				.json({message: 'Sorry, permission denied'});
 		}
 
-		return that._fs.writeString(gridFsPath, req.body.graph)
+		return that._fs.writeString(gridFsGraphPath, req.body.graph)
 		.then(function() {
-			var url = that._fs.url(gridFsPath);
+			if (!req.body.previewImage) {
+				return
+			}
+
+			// save original image (if we ever need to batch process any of these)
+			return that._fs.writeString(gridFsOriginalImagePath, req.body.previewImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+			.then(function() {
+				// create preview images
+				return that.previewImageProcessor.process(path, req.body.previewImage, previewImageSpecs)
+				.then(function(processedImages) {
+					if (processedImages && processedImages.length === 2) {
+						// write small image
+						return that._fs.writeString(previewImageSpecs[0].gridFsPath, processedImages[0], 'base64')
+						.then(function() {
+							// write large image
+							that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
+						})
+					}
+				})
+			})
+		})
+		.then(function() {
+			var url = that._fs.url(gridFsGraphPath);
+			var previewUrlSmall = that._fs.url(previewImageSpecs[0].gridFsPath)
+			var previewUrlLarge = that._fs.url(previewImageSpecs[1].gridFsPath)
 
 			var model = {
 				path: path,
 				tags: tags,
-				url: url
+				url: url,
+				previewUrlSmall: previewUrlSmall,
+				previewUrlLarge: previewUrlLarge
 			}
 
 			return that._service.save(model, req.user)

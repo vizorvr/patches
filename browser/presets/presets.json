@@ -1,15 +1,11 @@
 {
-	"TEMPLATES": {
-		"Basic VR scene": { "name": "_template-basic-vr-scene" },
-		"360 photo template": { "name": "_template-360-photo" }
-	},
-
+	
 	"EXAMPLES": {
-		"Rotating cube": { "name": "_example-rotating-cube" },
-		"Spawn particles from mesh": { "name": "_example-particle-spawn-from-mesh" },
+		"Rotating box": { "name": "_example-rotating-cube" },
+		"Gaze click: Button shows a screen": { "name": "_example-gaze-button" },
+        "Gaze click: switch object position": { "name": "_example-switch-box-position-on-gaze-click" },
 		"Inputs to Array": { "name": "_example-inputs-to-array" },
-		"Gaze Clicking": { "name": "_example-gaze-clicking" },
-		"Gaze Button": { "name": "_example-gaze-button" }
+		"Spawn particles from mesh": { "name": "_example-particle-spawn-from-mesh" }
 	},
 
 	"ADD OBJECTS": {

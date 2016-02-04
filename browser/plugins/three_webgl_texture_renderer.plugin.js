@@ -42,8 +42,6 @@
 	}
 
 	ThreeWebGLTextureRendererPlugin.prototype.reset = function() {
-		this.domElement = E2.dom.webgl_canvas[0]
-
 		this.scene = new THREE.Scene()
 
 		this.perspectiveCamera = new THREE.PerspectiveCamera(

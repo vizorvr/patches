@@ -248,8 +248,6 @@
     },
 
     "CONVERTERS": {
-        "Camera matrices": "convert_camera_matrices",
-        "Matrices to Camera": "convert_matrices_camera",
         "Color to HSL": "convert_color_hsl_modulator",
         "Color to RGB": "convert_color_rgb_modulator",
         "HSL to Color": "convert_hsl_color_modulator",

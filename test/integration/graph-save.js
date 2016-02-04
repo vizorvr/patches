@@ -168,5 +168,152 @@ describe('Graph', function() {
 		})
 	})
 
+	// original data
+	var testPngData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABQAAAALQ" +
+	"BAMAAAA9U8BlAAAAD1BMVEUAAAAAiSMAIYmJAHuJCABsJlEnAAACX0lEQVR42uzSMQEAAAgD" +
+	"oNnA/mmt4D/IQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAABKzQbeBAQAAAAAAAAAAODYu2MaAAAABmH+XU/BDJBWAz8AAAAAAAAAAAAAAAAAAACH" +
+	"tQUtAgQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABg7NIhAQAA" +
+	"CAMwBMHon4oKdzdbhgEAAAAAAAAAAAAAAAAAAAAAAAAAULE3EBMQAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAODZgwMBAAAAACD/10ZQVVVVVVVVVVVVVVVVVVVVVVVV" +
+	"VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVRX24EAAAAAAAMj/tRFU" +
+	"VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" +
+	"VVVVVYVdOqYBAAYBAEY2I0jAvzoscELSaigAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAGz3MmBMQAAAAAAAuOdXwJiAAAAAAAAAAAAAAAAAAAAAAAAAADR7cCAAAAAAAOT/2giq" +
+	"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq" +
+	"qqqqqtIeHBIAAAAACPr/2hsGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATgIb" +
+	"gAF3C+ZweAAAAABJRU5ErkJggg=="
+
+	// converted data
+	var convertedTestPngData440x330 = "iVBORw0KGgoAAAANSUhEUgAAAbgAAAFKCAIAAA" +
+	"Dg8t32AAAACW9GRnMAAABJAAAAAADyfe1qAAACSElEQVR42u3cMWoDMRRF0SdpDJ6BmBC8CJ" +
+	"cmTZrsf0cpw6RKZ3eGrzjnrOAipA9SoQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAA/rBRHQBw15rjnn3PXpvRq9cB4Lae/pmPt7xWhwBMbM1xuP" +
+	"gCAABT6Vu2i6dneCwn6rm0kXFKa9UdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABWW5NzSqzOYhJ0AN6wt7y" +
+	"NLq+4AmNmoDgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAD+oVEdADyjy5be8vVd3fEYvToAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmN" +
+	"Gh5XxIq84A5uOH81+nJdeXdJMS4J6WDFMSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAHuUHbOoIJX3zO+IAAAAASUVORK5CYII="
+
+	var convertedTestPngData1280x720 = "iVBORw0KGgoAAAANSUhEUgAABQAAAALQBAMAA" +
+	"AA9U8BlAAAAD1BMVEUAAAAAiSMAIYmJAHuJCABsJlEnAAACBklEQVR42u3dSQ3AMBRDwXQBU" +
+	"AiFEAjljyoEcqsiK/ozCHx4d7cGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO7p6egGlCRAAAAAAYJnzTS+gNAECAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAADwy/2lF1CaAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAICFjie9gNIECAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAW3I5QJQAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+	"AAAAAAAAAAAAAAAAJgYs2sBd9eN6WAAAAAASUVORK5CYII="
+
+	it('uploads preview images', function(done) {
+		var path = 'graph-with-preview-image-good-'+process.pid
+		var expectedSmallImagePath = '/data/previews/' + username + '/' + path + '-preview-440x330.png'
+		var expectedLargeImagePath = '/data/previews/' + username + '/' + path + '-preview-1280x720.png'
+		var expectedOriginalImagePath = '/data/previews/' + username + '/' + path + '-preview-original.png'
+
+		agent.post('/graph').send({
+			path: path,
+			graph: fs.readFileSync(graphFile),
+			previewImage: testPngData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			// check original image
+			request(app).get(expectedOriginalImagePath)
+			.expect(200).end(function(err, res)	{
+				if (err) return done(err)
+
+				var gotData = new Buffer(res.text).toString()
+				var expectedData = new Buffer(testPngData.replace(/^data:image\/\w+;base64,/, ""), 'base64').toString()
+
+				assert.equal(gotData, expectedData)
+
+				// check small preview
+				request(app).get(expectedSmallImagePath)
+				.expect(200).end(function(err, res)
+				{
+					if (err) return done(err)
+
+					var gotData = new Buffer(res.text).toString()
+					var expectedData = new Buffer(convertedTestPngData440x330, 'base64').toString()
+
+					assert.equal(gotData, expectedData)
+
+					// check large preview
+					request(app).get(expectedLargeImagePath)
+					.expect(200).end(function(err, res)
+					{
+						if (err) return done(err)
+
+						var gotData = new Buffer(res.text).toString()
+						var expectedData = new Buffer(convertedTestPngData1280x720, 'base64').toString()
+
+						assert.equal(gotData, expectedData)
+
+						done()
+					})
+				})
+
+			})
+
+		})
+	})
+
+	it('creates no image on null preview data', function(done) {
+		var path = 'graph-with-preview-image-null-'+process.pid
+		var expectedImagePath = '/data/previews/' + username + '/' + path + '-preview-440x330.png'
+
+		agent.post('/graph').send({
+			path: path,
+			graph: fs.readFileSync(graphFile),
+			previewImage: null
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			request(app).get(expectedImagePath)
+			.expect(404).end(function(err, res)
+			{
+				if (err) return done(err)
+
+				done()
+			})
+		})
+	})
+
+	it('creates no image on invalid preview data', function(done) {
+		var path = 'graph-with-preview-image-invalid-'+process.pid
+		var expectedImagePath = '/data/previews/' + username + '/' + path + '-preview.png'
+
+		agent.post('/graph').send({
+			path: path,
+			graph: fs.readFileSync(graphFile),
+			previewImage: "abcdefg123456789"
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			request(app).get(expectedImagePath)
+			.expect(404).end(function(err, res)
+			{
+				if (err) return done(err)
+
+				done()
+			})
+		})
+	})
+
+
 })
 
