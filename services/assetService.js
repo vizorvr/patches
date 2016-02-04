@@ -112,8 +112,11 @@ AssetService.prototype.save = function(data, user) {
 		if (data.tags)
 			asset.tags = data.tags
 
-		if (data.image)
-			asset.image = data.image
+		if (data.previewUrlSmall)
+			asset.previewUrlSmall = data.previewUrlSmall
+
+		if (data.previewUrlLarge)
+			asset.previewUrlLarge = data.previewUrlLarge
 
 		var dfd = when.defer();
 
