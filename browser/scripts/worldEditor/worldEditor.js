@@ -74,7 +74,7 @@ WorldEditor.prototype.update = function() {
 	this.gridHelper.scale(gridScale)
 
 	if (this.vrCamera) {
-		this.radialHelper.position(this.vrCamera.position)
+		this.radialHelper.position(this.vrCamera.parent.position)
 
 		var cameraDistanceToVRCamera = this.cameraSelector.camera.position.clone().sub(this.vrCamera.position).length() || 1
 		var gridScale = f(cameraDistanceToVRCamera, 0.01)
