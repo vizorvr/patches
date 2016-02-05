@@ -29,10 +29,10 @@ function WorldEditor(domElement) {
 
 	// grid around origin along x, z axises
 	this.gridHelper = new WorldEditorOriginGrid()
-	this.editorTree.add(this.gridHelper.mesh)
 
 	// radial grid
 	this.radialHelper = new WorldEditorRadialHelper()
+	this.editorTree.add(this.radialHelper.mesh)
 
 	// root for any selection bboxes
 	this.selectionTree = new THREE.Object3D()
