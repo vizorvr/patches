@@ -201,6 +201,8 @@ describe('array_switch_modulator', function() {
 	it('propagates arrayness', function() {
 		var graph = E2.core.active_graph
 
+		var inputSelectorNumberNode = E2.app.instantiatePlugin('const_float_generator')
+
 		var floatNode1 = E2.app.instantiatePlugin('const_float_generator')
 		var floatNode2 = E2.app.instantiatePlugin('const_float_generator')
 		var floatNode3 = E2.app.instantiatePlugin('const_float_generator')
@@ -228,6 +230,9 @@ describe('array_switch_modulator', function() {
 			dt: arraySwitchModulator.plugin.lsg.dt
 		})
 
+		// connect input selector to revolver
+		connect(graph, inputSelectorNumberNode, 0, arraySwitchModulator, 0, false)
+
 		// connect arrays to revolver
 		var arrayConn1 = connect(graph, inputsToArrayNode1, 0, arraySwitchModulator, 0, true)
 		var arrayConn2 = connect(graph, inputsToArrayNode2, 0, arraySwitchModulator, 1, true)
@@ -244,13 +249,15 @@ describe('array_switch_modulator', function() {
 		assert.equal(arraySwitchModulator.plugin.update_output({index: 1}), 2)
 
 		// select the second array, expect [20, 30]
-		arraySwitchModulator.plugin.update_input({index: 0}, 1)
+		inputSelectorNumberNode.plugin.state.val = 1
+		inputSelectorNumberNode.plugin.updated = true
 		graph.update()
 		arraySwitchModulator.plugin.update_state()
 		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), [20, 30])
 
 		// select the first array, expect [10, 20]
-		arraySwitchModulator.plugin.update_input({index: 0}, 0)
+		inputSelectorNumberNode.plugin.state.val = 0
+		inputSelectorNumberNode.plugin.updated = true
 		graph.update()
 		arraySwitchModulator.plugin.update_state()
 		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), [10, 20])
@@ -279,17 +286,27 @@ describe('array_switch_modulator', function() {
 		assert.equal(arraySwitchModulator.plugin.update_output({index: 1}), 2)
 
 		// select first input, expect 40
-		arraySwitchModulator.plugin.update_input({index: 0}, 0)
+		inputSelectorNumberNode.plugin.state.val = 0
+		inputSelectorNumberNode.plugin.updated = true
 		graph.update()
 		arraySwitchModulator.plugin.update_state()
 		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), 40)
 
 		// select second input, expect 50
-		// ATTENTION: this doesn't work - pending bug #1090
-		arraySwitchModulator.plugin.update_input({index: 0}, 1)
+		inputSelectorNumberNode.plugin.state.val = 1
+		inputSelectorNumberNode.plugin.updated = true
 		graph.update()
 		arraySwitchModulator.plugin.update_state()
 		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), 50)
+
+		floatNode1.plugin.state.val = 60
+
+		// select first input again, expect 60
+		inputSelectorNumberNode.plugin.state.val = 0
+		inputSelectorNumberNode.plugin.updated = true
+		graph.update()
+		arraySwitchModulator.plugin.update_state()
+		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), 60)
 	})
 })
 

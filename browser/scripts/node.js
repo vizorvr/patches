@@ -411,17 +411,24 @@ Node.prototype.update_recursive = function(conns) {
 
 	var secondPassUpdateInputs = []
 
-	// first pass input update: update active inputs
+	// input update step 1: collect inactive inputs before any inputs have been updated
+	// (which could change the state of activeness on other inputs)
+	for (var i = 0, len = inputs.length; i < len; ++i) {
+		var inp = inputs[i]
+		if (inp.dst_slot.inactive) {
+			if (inp.ui && inp.ui.flow) {
+				this._cascadeFlowOff(inp)
+				dirty = true
+			}
+			secondPassUpdateInputs.push(inp)
+		}
+	}
+
+	// input update step 2: first pass input update: update active inputs
 	for (var i = 0, len = inputs.length; i < len; ++i) {
 		var inp = inputs[i]
 
 		if (inp.dst_slot.inactive) {
-			if(inp.ui && inp.ui.flow) {
-				this._cascadeFlowOff(inp)
-				dirty = true;
-			}
-			secondPassUpdateInputs.push(inp)
-
 			continue;
 		}
 
@@ -431,10 +438,14 @@ Node.prototype.update_recursive = function(conns) {
 		needs_update = needs_update || result.needs_update
 	}
 
-	// second pass input update: update any inputs that were activated
+	// input update step 3: second pass input update: recheck and update any inputs that were deactivated
+	// before the first update
 	for (var i = 0, len = secondPassUpdateInputs.length; i < len; ++i) {
 		var inp = secondPassUpdateInputs[i]
 		if (!inp.dst_slot.inactive) {
+			// set reactivated inputs as updated so that their values are fetched
+			inp.src_node.plugin.updated = true
+			
 			var result = this._update_input(inp, pl, conns, needs_update)
 
 			dirty = dirty || result.dirty
