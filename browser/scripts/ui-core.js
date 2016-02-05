@@ -7,6 +7,9 @@ var uiKeys = {
 	alt		: 18,
 	spacebar: 32,
 
+	backspace   : 8,
+	delete      : 46,
+
 	// handled on keydown - keycode + modifier value
 	toggleMode 			: 9,	// Tab
 	togglePatchEditor	: 1009,	// Shift+Tab
@@ -26,10 +29,42 @@ var uiKeys = {
 	focusChatPanel		: '@',
 	viewHelp 			: '?',
 
-	// handled in application.js
-	toggleFullScreen 	: 'F',
-	zeroVRCamera		: '=',
-	gotoParentGraph		: ',',
+	toggleWorldEditorHelpers            : 'H',
+	toggleWorldEditorGrid               : 'G',
+	toggleWorldEditorXCamera            : 'X',
+	toggleWorldEditorYCamera            : 'Y',
+	toggleWorldEditorZCamera            : 'Z',
+	toggleWorldEditorOrthographicCamera : 'O',
+	frameViewToSelection                : 'T',
+	toggleFullScreen 	                : 'F',
+	zeroVRCamera		                : '=',
+	gotoParentGraph		                : ',',
+
+	moveSelectedNodesUp      : 38, // up arrow
+	moveSelectedNodesDown    : 40, // down arrow
+	moveSelectedNodesLeft    : 37, // left arrow
+	moveSelectedNodesRight   : 38, // right arrow
+
+	shortcutKey0 : '0',
+	shortcutKey1 : '1',
+	shortcutKey2 : '2',
+	shortcutKey3 : '3',
+	shortcutKey4 : '4',
+	shortcutKey5 : '5',
+	shortcutKey6 : '6',
+	shortcutKey7 : '7',
+	shortcutKey8 : '8',
+	shortcutKey9 : '9',
+
+	activateHoverSlot : 1016, // shift only activates hover slot
+	deselect : 13, // enter = deselect / commit move
+
+	selectAll   : 10065, // meta + A: select all
+	copy        : 10067, // meta + C: copy
+	cut         : 10088, // meta + X: cut
+	paste       : 10086, // meta + V: paste
+	undo        : 10090, // meta + Z: undo
+	redo        : 11090, // shift + meta + Z: redo
 
 	// added to code in getModifiedKeyCode
 	modShift 	: 1000,
@@ -381,21 +416,12 @@ VizorUI.prototype.onKeyPress = function(e) {
 	key = String.fromCharCode(key).toUpperCase();	// num->str
 	key = this.getModifiedKey(key);					// attach modifiers e.g. shift+M
 
+	// keys for both program and build modes:
+
 	// note dual-case for '/','shift+/' etc depending on keyboard layout
 	switch (key) {
-		case uiKeys.modifyModeMove:
-			this.state.modifyMode = uiModifyMode.move;
-			break;
-		case uiKeys.modifyModeRotate:
-			this.state.modifyMode = uiModifyMode.rotate;
-			break;
-		case uiKeys.modifyModeScale:
-			this.state.modifyMode = uiModifyMode.scale;
-			break;
-		case uiKeys.viewSource:
-		case 'shift+' + uiKeys.viewSource:
-		case 'alt+shift+' + uiKeys.viewSource:	// .fi
-			this.viewSource();
+		case uiKeys.toggleFullScreen:
+			E2.app.toggleFullscreen();
 			e.preventDefault();
 			break;
 		case uiKeys.openInspector:
@@ -436,6 +462,136 @@ VizorUI.prototype.onKeyPress = function(e) {
 			break;
 	}
 
+	// keys for program-mode (noodles visible) only:
+	if (this.isInProgramMode()) {
+		function openPresetOrPlugin(item) {
+			var name = item.substring(7)
+			if (item.indexOf('preset:') === 0)
+				E2.app.presetManager.openPreset('/presets/' + name + '.json')
+			else
+				E2.app.instantiatePlugin(name)
+		}
+
+		switch(key) {
+			case uiKeys.gotoParentGraph:
+				if (E2.core.active_graph.parent_graph)
+					E2.app.onGraphSelected(E2.core.active_graph.parent_graph);
+				break;
+			case uiKeys.viewSource:
+			case 'shift+' + uiKeys.viewSource:
+			case 'alt+shift+' + uiKeys.viewSource:	// .fi
+				this.viewSource();
+				e.preventDefault();
+				break;
+			case uiKeys.moveSelectedNodesUp:
+				E2.app.executeNodeDrag(
+					E2.app.selectedNodes,
+					E2.app.selectedConnections,
+					0, -10);
+				e.preventDefault();
+				break;
+			case uiKeys.moveSelectedNodesDown:
+				E2.app.executeNodeDrag(
+					E2.app.selectedNodes,
+					E2.app.selectedConnections,
+					0, 10);
+				e.preventDefault();
+				break;
+			case uiKeys.moveSelectedNodesLeft:
+				E2.app.executeNodeDrag(
+					E2.app.selectedNodes,
+					E2.app.selectedConnections,
+					-10, 0);
+				e.preventDefault();
+				break;
+			case uiKeys.moveSelectedNodesRight:
+				E2.app.executeNodeDrag(
+					E2.app.selectedNodes,
+					E2.app.selectedConnections,
+					10, 0);
+				e.preventDefault();
+				break;
+			case uiKeys.shortcutKey0:
+				openPresetOrPlugin('plugin:output_proxy');
+				break;
+			case uiKeys.shortcutKey1:
+				openPresetOrPlugin('plugin:input_proxy');
+				break;
+			case uiKeys.shortcutKey2:
+				openPresetOrPlugin('plugin:graph');
+				break;
+			case uiKeys.shortcutKey3:
+				openPresetOrPlugin('plugin:slider_float_generator');
+				break;
+			case uiKeys.shortcutKey4:
+				openPresetOrPlugin('plugin:const_float_generator');
+				break;
+			case uiKeys.shortcutKey5:
+				openPresetOrPlugin('plugin:float_display');
+				break;
+			case uiKeys.shortcutKey6:
+				openPresetOrPlugin('plugin:multiply_modulator');
+				break;
+			case uiKeys.shortcutKey7:
+				openPresetOrPlugin('preset:time_oscillate_between_2_values');
+				break;
+			case uiKeys.shortcutKey8:
+				openPresetOrPlugin('preset:image_show_image');
+				break;
+			case uiKeys.shortcutKey9:
+				openPresetOrPlugin('plugin:knob_float_generator');
+				break;
+		}
+
+	}
+	else {// E2.app.worldEditor.isActive()
+		// world editor-specific keys
+		switch(key) {
+			case uiKeys.modifyModeMove:
+				this.state.modifyMode = uiModifyMode.move;
+				break;
+			case uiKeys.modifyModeRotate:
+				this.state.modifyMode = uiModifyMode.rotate;
+				break;
+			case uiKeys.modifyModeScale:
+				this.state.modifyMode = uiModifyMode.scale;
+				break;
+			case uiKeys.toggleWorldEditorHelpers:
+				E2.app.worldEditor.toggleEditorHelpers();
+				break;
+			case uiKeys.toggleWorldEditorGrid:
+				E2.app.worldEditor.toggleGrid();
+				break;
+			case uiKeys.toggleWorldEditorXCamera:
+				E2.app.worldEditor.setCameraView('-x');
+				break;
+			case 'shift+'+uiKeys.toggleWorldEditorXCamera:
+				E2.app.worldEditor.setCameraView('+x');
+				break;
+			case uiKeys.toggleWorldEditorYCamera:
+				E2.app.worldEditor.setCameraView('-y');
+				break;
+			case 'shift+'+uiKeys.toggleWorldEditorYCamera:
+				E2.app.worldEditor.setCameraView('+y');
+				break;
+			case uiKeys.toggleWorldEditorZCamera:
+				E2.app.worldEditor.setCameraView('-z');
+				break;
+			case 'shift+'+uiKeys.toggleWorldEditorZCamera:
+				E2.app.worldEditor.setCameraView('+z');
+				break;
+			case uiKeys.toggleWorldEditorOrthographicCamera:
+				E2.app.worldEditor.toggleCameraOrthographic();
+				break;
+			case uiKeys.frameViewToSelection:
+				E2.app.worldEditor.frameSelection();
+				break;
+			case uiKeys.zeroVRCamera:
+				E2.app.worldEditor.matchCamera();
+				break;
+		}
+	}
+
 	return true;
 };
 
@@ -473,6 +629,42 @@ VizorUI.prototype.onKeyDown = function(e) {
 		case uiKeys.toggleUILayer:
 			that.toggleUILayer();
 			e.preventDefault();
+			break;
+		case uiKeys.backspace:
+		case uiKeys.delete:
+			E2.app.onDelete(e);
+			e.preventDefault();
+			break;
+		case uiKeys.deselect: // enter = deselect (eg. commit move)
+			E2.app.clearEditState();
+			E2.app.clearSelection();
+			break;
+		case uiKeys.activateHoverSlot:
+			E2.app.activateHoverSlot();
+			break;
+		case uiKeys.selectAll:
+			E2.app.selectAll();
+			e.preventDefault();
+			e.stopPropagation();
+			break;
+		case uiKeys.copy:
+			E2.app.onCopy(e);
+			break;
+		case uiKeys.cut:
+			E2.app.onCut(e);
+			break;
+		case uiKeys.paste:
+			E2.app.onPaste();
+			break;
+		case uiKeys.undo:
+			e.preventDefault();
+			e.stopPropagation();
+			E2.app.undoManager.undo();
+			break;
+		case uiKeys.redo:
+			e.preventDefault();
+			e.stopPropagation();
+			E2.app.undoManager.redo();
 			break;
 	}
 	return true;
