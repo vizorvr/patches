@@ -411,13 +411,13 @@ Node.prototype.update_recursive = function(conns) {
 
 	var secondPassUpdateInputs = []
 
-	// input update step 1: collect inactive inputs before any inputs haven't been updated
+	// input update step 1: collect inactive inputs before any inputs have been updated
 	// (which could change the state of activeness on other inputs)
 	for (var i = 0, len = inputs.length; i < len; ++i) {
 		var inp = inputs[i]
 		if (inp.dst_slot.inactive) {
 			if (inp.ui && inp.ui.flow) {
-				this._cascadeFlowOff()
+				this._cascadeFlowOff(inp)
 				dirty = true
 			}
 			secondPassUpdateInputs.push(inp)
