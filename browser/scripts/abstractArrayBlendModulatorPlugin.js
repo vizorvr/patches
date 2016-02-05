@@ -84,7 +84,7 @@ AbstractArrayBlendModulatorPlugin.prototype.update_input = function(slot, data) 
 	}
 	else {
 		if (slot.name === 'number') {
-			this.nextTargetIndex = Math.min(Math.max(0, Math.floor(data)), this.values.length - 1)
+			this.nextTargetIndex = data
 		}
 		else if (slot.name === 'duration') {
 			this.duration = data
@@ -110,11 +110,15 @@ AbstractArrayBlendModulatorPlugin.prototype.update_output = function(slot) {
 }
 
 AbstractArrayBlendModulatorPlugin.prototype.update_state = function() {
-	if (this.nextTargetIndex !== undefined && this.values[this.nextTargetIndex] !== this.endValue) {
-		this.startTime = this.core.abs_t
-		this.startValue = this.value
-		this.endValue = this.nextTargetIndex < this.values.length ? this.values[this.nextTargetIndex] : E2.core.get_default_value(this.datatype)
-		this.triggered = true
+	if (this.nextTargetIndex !== undefined && this.values.length > 0) {
+		this.nextTargetIndex = Math.min(Math.max(0, Math.floor(this.nextTargetIndex)), this.values.length - 1)
+
+		if (this.values[this.nextTargetIndex] !== this.endValue) {
+			this.startTime = this.core.abs_t
+			this.startValue = this.value
+			this.endValue = this.nextTargetIndex < this.values.length ? this.values[this.nextTargetIndex] : E2.core.get_default_value(this.datatype)
+			this.triggered = true
+		}
 	}
 
 	if (!this.triggered) {
