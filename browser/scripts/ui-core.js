@@ -463,7 +463,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 	}
 
 	// keys for program-mode (noodles visible) only:
-	if (!E2.app.worldEditor.isActive()) {
+	if (this.isInProgramMode()) {
 		switch(key) {
 			case uiKeys.gotoParentGraph:
 				if (E2.core.active_graph.parent_graph)
