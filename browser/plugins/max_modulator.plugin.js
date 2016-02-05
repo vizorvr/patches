@@ -1,10 +1,9 @@
-E2.p = E2.plugins["max_modulator"] = function(core, node)
-{
+E2.p = E2.plugins.max_modulator = function(core, node) {
 	this.desc = 'Emit the greater of the two input values.';
 	
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The first input value', def: 0.0 },
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The second input value', def: 0.0 } 
+		{ name: 'a', dt: core.datatypes.FLOAT, desc: 'The first input value', def: 0.0 },
+		{ name: 'b', dt: core.datatypes.FLOAT, desc: 'The second input value', def: 0.0 } 
 	];
 	
 	this.output_slots = [

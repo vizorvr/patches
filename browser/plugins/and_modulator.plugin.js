@@ -3,8 +3,8 @@ E2.p = E2.plugins["and_modulator"] = function(core, node)
 	this.desc = 'Emit true if and only if both inputs are true and false otherwise.';
 	
 	this.input_slots = [ 
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The first operand.', def: false },
-		{ name: 'bool', dt: core.datatypes.BOOL, desc: 'The second operand.', def: false } 
+		{ name: 'a', dt: core.datatypes.BOOL, desc: 'The first operand.', def: false },
+		{ name: 'b', dt: core.datatypes.BOOL, desc: 'The second operand.', def: false } 
 	];
 	
 	this.output_slots = [
