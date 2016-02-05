@@ -214,7 +214,7 @@ Connection.prototype.patch_up = function(nodes) {
 		this.dst_slot.dt.id !== any_dt.id)
 	{
 		msg('ERROR: Connection data type mismatch - dropping connection.')
-		console.log('Connection that failed', this.src_slot.dt, this.dst_slot.dt)
+		console.log('Connection that failed', this)
 		return false
 	}
 	

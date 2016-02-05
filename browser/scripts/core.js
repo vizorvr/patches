@@ -130,7 +130,7 @@ function Core() {
 	this.aux_scripts = {};
 	this.aux_styles = {};
 	this.resolve_dt = []; // Table for easy reverse lookup of dt reference by id.
-	this.audio_ctx = null;
+	this.audioContext = null;
 	
 	for(var i in this.datatypes) {
 		var dt = this.datatypes[i];
@@ -140,9 +140,9 @@ function Core() {
 	
 	// HTML5 audio context initialisation
 	if(window.AudioContext)
-		this.audio_ctx = new AudioContext();
+		this.audioContext = new AudioContext();
 	else if(window.webkitAudioContext)
-		this.audio_ctx = new webkitAudioContext();
+		this.audioContext = new webkitAudioContext();
 	else
 		msg('NOTE: This host has no AudioContext support.');
 }

@@ -140,13 +140,13 @@ E2.p.prototype.stop_playback = function()
 
 E2.p.prototype.update_source = function()
 {
-	if(!this.core.audio_ctx)
+	if(!this.core.audioContext)
 	{
 		this.audio_src = null;
 		return;
 	}
 	
-	this.audio_src = this.core.audio_ctx.createBufferSource();
+	this.audio_src = this.core.audioContext.createBufferSource();
 	this.audio_src.player = this;
 	this.state = 0;
 	

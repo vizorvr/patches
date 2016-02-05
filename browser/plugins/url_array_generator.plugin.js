@@ -74,10 +74,8 @@ UrlArray.prototype.update_state = function()
 		return;
 		
 	this.img = new Image();
-	this.core.asset_tracker.signal_started();
 
-	this.img.onload = function()
-	{
+	this.img.onload = function() {
 		var canvas = document.createElement('canvas');
 		var ctx = canvas.getContext('2d');
 		
@@ -99,25 +97,19 @@ UrlArray.prototype.update_state = function()
 
 		msg('INFO: Finished loading data array from ' + this.img.src);
 		
-		this.core.asset_tracker.signal_completed();
 	}.bind(this);
 
-	this.img.onerror = function()
-	{
-		this.core.asset_tracker.signal_failed();
-	}.bind(this);
+	this.img.onerror = function(err) {
+		console.error(err)
+	}
 
-	this.img.onabort = function()
-	{
-		this.core.asset_tracker.signal_failed();
-	}.bind(this);
+	this.img.onabort = function() {}
 
-	this.img.src = this.state.url;		
+	this.img.src = this.state.url;	
 	this.dirty = false;
 };
 
-UrlArray.prototype.update_output = function(slot)
-{
+UrlArray.prototype.update_output = function() {
 	return this.array;
 };
 
