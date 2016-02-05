@@ -45,16 +45,16 @@ var uiKeys = {
 	moveSelectedNodesLeft    : 37, // left arrow
 	moveSelectedNodesRight   : 38, // right arrow
 
-	number0 : 48,
-	number1 : 49,
-	number2 : 50,
-	number3 : 51,
-	number4 : 52,
-	number5 : 53,
-	number6 : 54,
-	number7 : 55,
-	number8 : 56,
-	number9 : 57,
+	shortcutKey0 : '0',
+	shortcutKey1 : '1',
+	shortcutKey2 : '2',
+	shortcutKey3 : '3',
+	shortcutKey4 : '4',
+	shortcutKey5 : '5',
+	shortcutKey6 : '6',
+	shortcutKey7 : '7',
+	shortcutKey8 : '8',
+	shortcutKey9 : '9',
 
 	activateHoverSlot : 1016, // shift only activates hover slot
 	deselect : 13, // enter = deselect / commit move
@@ -464,6 +464,14 @@ VizorUI.prototype.onKeyPress = function(e) {
 
 	// keys for program-mode (noodles visible) only:
 	if (this.isInProgramMode()) {
+		function openPresetOrPlugin(item) {
+			var name = item.substring(7)
+			if (item.indexOf('preset:') === 0)
+				E2.app.presetManager.openPreset('/presets/' + name + '.json')
+			else
+				E2.app.instantiatePlugin(name)
+		}
+
 		switch(key) {
 			case uiKeys.gotoParentGraph:
 				if (E2.core.active_graph.parent_graph)
@@ -503,28 +511,36 @@ VizorUI.prototype.onKeyPress = function(e) {
 					10, 0);
 				e.preventDefault();
 				break;
-		}
-
-		if (key >= uiKeys.number0 && key <= uiKeys.number9) { // 0-9
-			var numberHotKeys = [
-				'plugin:output_proxy', // 0
-				'plugin:input_proxy', // 1
-				'plugin:graph', // 2
-				'plugin:slider_float_generator', // 3
-				'plugin:const_float_generator', // 4
-				'plugin:float_display', // 5
-				'plugin:multiply_modulator', // 6
-				'preset:time_oscillate_between_2_values', // 7
-				'preset:image_show_image', // 8
-				'plugin:knob_float_generator' // 9
-			]
-
-			var item = numberHotKeys[key - uiKeys.number0]
-			var name = item.substring(7)
-			if (item.indexOf('preset:') === 0)
-				E2.app.presetManager.openPreset('/presets/' + name + '.json')
-			else
-				E2.app.instantiatePlugin(name)
+			case uiKeys.shortcutKey0:
+				openPresetOrPlugin('plugin:output_proxy');
+				break;
+			case uiKeys.shortcutKey1:
+				openPresetOrPlugin('plugin:input_proxy');
+				break;
+			case uiKeys.shortcutKey2:
+				openPresetOrPlugin('plugin:graph');
+				break;
+			case uiKeys.shortcutKey3:
+				openPresetOrPlugin('plugin:slider_float_generator');
+				break;
+			case uiKeys.shortcutKey4:
+				openPresetOrPlugin('plugin:const_float_generator');
+				break;
+			case uiKeys.shortcutKey5:
+				openPresetOrPlugin('plugin:float_display');
+				break;
+			case uiKeys.shortcutKey6:
+				openPresetOrPlugin('plugin:multiply_modulator');
+				break;
+			case uiKeys.shortcutKey7:
+				openPresetOrPlugin('preset:time_oscillate_between_2_values');
+				break;
+			case uiKeys.shortcutKey8:
+				openPresetOrPlugin('preset:image_show_image');
+				break;
+			case uiKeys.shortcutKey9:
+				openPresetOrPlugin('plugin:knob_float_generator');
+				break;
 		}
 
 	}
