@@ -673,6 +673,13 @@ VizorUI.prototype.onKeyUp = function(e) {
 	var modifiersChanged = this._trackModifierKeys(e);
 	if (modifiersChanged) this.trackModifierKeysForWorldEditor();
 	if (this.isModalOpen() || E2.util.isTextInputInFocus(e) || this.isFullScreen()) return true;
+
+	if(e.keyCode === uiKeys.shift)
+	{
+		E2.app.releaseHoverSlot();
+		E2.app.releaseHoverNode(false);
+	}
+
 	return true;
 };
 
