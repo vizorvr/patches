@@ -145,9 +145,9 @@
 				var obj = parent.children[i]
 
 				if (obj.backReference) {
-					center.x += obj.position.x
-					center.y += obj.position.y
-					center.z += obj.position.z
+					center.x += obj.backReference.state.position.x
+					center.y += obj.backReference.state.position.y
+					center.z += obj.backReference.state.position.z
 					++count
 				}
 			}
@@ -166,9 +166,9 @@
 		var m = new THREE.Matrix4().makeRotationFromQuaternion(quat).scale(scale)
 
 		var translation = center.clone().sub(this.lastCenter).applyMatrix4(m)
-		this.state.pivot.x += translation.x
-		this.state.pivot.y += translation.y
-		this.state.pivot.z += translation.z
+		this.pivot.x += translation.x
+		this.pivot.y += translation.y
+		this.pivot.z += translation.z
 
 		var gazeClickerCount = 0
 
