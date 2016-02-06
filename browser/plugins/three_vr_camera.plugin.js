@@ -70,7 +70,7 @@
 				0.001,
 				1000)
 
-			this.vrControlCamera.channels.enable(1)
+			this.vrControlCamera.layers.enable(1)
 
 			this.dolly.add(this.vrControlCamera)
 		}

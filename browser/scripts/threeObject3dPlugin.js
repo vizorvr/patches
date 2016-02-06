@@ -92,7 +92,7 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 		function() { that.object3d.castShadow = data },
 		function() { that.object3d.receiveShadow = data },
 		function() { that.object3d.name = data },
-		function() { that.object3d.channels.set(data) },
+		function() { that.object3d.layers.set(data) },
 		function() { that.lockTransformControls = data }
 	]
 
