@@ -78,6 +78,7 @@
 		// create a object3d reference so that the world editor sees the camera
 		// as an object3d
 		this.object3d = this.dolly
+		this.object3d.backReference = this
 
 		this.object3d.backReference = this
 
