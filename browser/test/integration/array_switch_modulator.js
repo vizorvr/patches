@@ -308,6 +308,92 @@ describe('array_switch_modulator', function() {
 		arraySwitchModulator.plugin.update_state()
 		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), 60)
 	})
+
+	it('updates inactive input chains', function() {
+		var graph = E2.core.active_graph
+
+		var inputSelectorNumberNode = E2.app.instantiatePlugin('const_float_generator')
+
+		var floatNode1 = E2.app.instantiatePlugin('const_float_generator')
+		var floatNode2 = E2.app.instantiatePlugin('const_float_generator')
+
+		var addNode = E2.app.instantiatePlugin('add_modulator')
+
+		var arraySwitchModulator = E2.app.instantiatePlugin('array_switch_modulator')
+
+		var pullerNode = E2.app.instantiatePlugin('float_display')
+
+		E2.app.graphApi.addSlot(graph, arraySwitchModulator, {
+			type: E2.slot_type.input,
+			name: '0',
+			dt: arraySwitchModulator.plugin.lsg.dt
+		})
+
+		E2.app.graphApi.addSlot(graph, arraySwitchModulator, {
+			type: E2.slot_type.input,
+			name: '1',
+			dt: arraySwitchModulator.plugin.lsg.dt
+		})
+
+		// connect input selector to revolver
+		connect(graph, inputSelectorNumberNode, 0, arraySwitchModulator, 0, false)
+
+		// connect float1 to add node
+		connect(graph, floatNode1, 0, addNode, 0, false)
+
+		// connect arrays to revolver
+		var arrayConn1 = connect(graph, addNode, 0, arraySwitchModulator, 0, true)
+		var arrayConn2 = connect(graph, floatNode2, 0, arraySwitchModulator, 1, true)
+
+		floatNode1.plugin.state.val = 10
+		floatNode2.plugin.state.val = 20
+
+		connect(graph, arraySwitchModulator, 1, pullerNode, 0)
+
+		arraySwitchModulator.plugin.lsg.infer_dt()
+
+		// select the first array, expect 10
+		inputSelectorNumberNode.plugin.state.val = 0
+		inputSelectorNumberNode.plugin.updated = true
+		graph.update()
+		arraySwitchModulator.plugin.update_state()
+		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), 10)
+
+		// select the second array, expect 20
+		inputSelectorNumberNode.plugin.state.val = 1
+		inputSelectorNumberNode.plugin.updated = true
+		graph.update()
+		arraySwitchModulator.plugin.update_state()
+		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), 20)
+
+		floatNode1.plugin.state.val = 30
+
+		// select first input, expect 30
+		inputSelectorNumberNode.plugin.state.val = 0
+		inputSelectorNumberNode.plugin.updated = true
+		graph.update()
+		arraySwitchModulator.plugin.update_state()
+		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), 30)
+
+		floatNode2.plugin.state.val = 40
+
+		// select second input, expect 40
+		inputSelectorNumberNode.plugin.state.val = 1
+		inputSelectorNumberNode.plugin.updated = true
+		graph.update()
+		arraySwitchModulator.plugin.update_state()
+		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), 40)
+
+		floatNode1.plugin.state.val = 50
+
+		// select first input, expect 50
+		inputSelectorNumberNode.plugin.state.val = 0
+		inputSelectorNumberNode.plugin.updated = true
+		graph.update()
+		arraySwitchModulator.plugin.update_state()
+		assert.deepEqual(arraySwitchModulator.plugin.update_output({index: 0}), 50)
+	})
+
 })
 
 
