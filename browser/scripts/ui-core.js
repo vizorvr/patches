@@ -587,6 +587,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 				E2.app.worldEditor.frameSelection();
 				break;
 			case uiKeys.zeroVRCamera:
+			case "shift+"+uiKeys.zeroVRCamera: // fi
 				E2.app.worldEditor.matchCamera();
 				break;
 		}
