@@ -28,9 +28,6 @@ function Application() {
 	this.breadcrumb = null;
 	this.c2d = E2.dom.canvas[0].getContext('2d');
 	this.editConn = null;
-	this.shift_pressed = false;
-	this.ctrl_pressed = false;
-	this.alt_pressed = false;
 	this.hover_slot = null;
 	this.hover_slot_div = null;
 	this.hover_connections = [];
@@ -205,7 +202,7 @@ Application.prototype.setSlotCssClasses = function(slot, slot_div) {	/* @var slo
 Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 	e.stopPropagation()
 
-	if (!this.shift_pressed) {
+	if (!E2.ui.flags.pressedShift) {
 		var graph = E2.core.active_graph
 
 		if (type === E2.slot_type.output) {
@@ -282,7 +279,7 @@ Application.prototype.onSlotEntered = function(node, slot, slot_div) {
 	this.hover_slot = slot;
 	this.hover_slot_div = slot_div;
 
-	if (this.shift_pressed)
+	if (E2.ui.flags.pressedShift)
 		this.activateHoverSlot()
 
 	return true;
@@ -430,9 +427,6 @@ Application.prototype.clearHoverState = function() {
 Application.prototype.clearEditState = function()
 {
 	this.editConn = null;
-	this.shift_pressed = false;
-	this.ctrl_pressed = false;
-	this.alt_pressed = false;
 	this.clearHoverState()
 };
 
@@ -497,7 +491,7 @@ Application.prototype.onNodeHeaderMousedown = function() {
 	var isIn = this.isNodeInSelection(this.hoverNode)
 	var addNode
 
-	if (!this.shift_pressed) {
+	if (!E2.ui.flags.pressedShift) {
 		if (!isIn) {
 			this.clearSelection()
 			addNode = this.hoverNode
@@ -1408,20 +1402,6 @@ Application.prototype.onKeyDown = function(e) {
 
 Application.prototype.onKeyUp = function(e)
 {
-	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
-	{
-		this.ctrl_pressed = false;
-	}
-	else if (e.keyCode === 18)
-	{
-		this.alt_pressed = false;
-	}
-	else if(e.keyCode === 16)
-	{
-		this.shift_pressed = false;
-		this.releaseHoverSlot();
-		this.releaseHoverNode(false);
-	}
 };
 
 Application.prototype.changeControlState = function()

@@ -406,7 +406,7 @@ WorldEditor.prototype.pickObject = function(e) {
 
 	// if alt is pressed, we try to select the single object we click
 	// otherwise we select the topmost group the clicked object is in
-	var selectSingleObject = E2.app.alt_pressed
+	var selectSingleObject = E2.ui.flags.pressedAlt
 
 	var isEditor = this.isActive()
 
