@@ -29,10 +29,10 @@ function WorldEditor(domElement) {
 
 	// grid around origin along x, z axises
 	this.gridHelper = new WorldEditorOriginGrid()
-	this.editorTree.add(this.gridHelper.mesh)
 
 	// radial grid
 	this.radialHelper = new WorldEditorRadialHelper()
+	this.editorTree.add(this.radialHelper.mesh)
 
 	// root for any selection bboxes
 	this.selectionTree = new THREE.Object3D()
@@ -74,7 +74,7 @@ WorldEditor.prototype.update = function() {
 	this.gridHelper.scale(gridScale)
 
 	if (this.vrCamera) {
-		this.radialHelper.position(this.vrCamera.position)
+		this.radialHelper.position(this.vrCamera.parent.position)
 
 		var cameraDistanceToVRCamera = this.cameraSelector.camera.position.clone().sub(this.vrCamera.position).length() || 1
 		var gridScale = f(cameraDistanceToVRCamera, 0.01)
