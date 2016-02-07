@@ -23,12 +23,27 @@ var pluginCats = Object.keys(plugins)
 
 var docsPath = 'documentation/browser/plugins'
 
-if (process.argv.indexOf('-f') === -1) {
-	console.log(`usage: extract-plugin-docs -f
+var argv = require('minimist')(process.argv.slice(2))
+
+if (!argv['f']) {
+	console.log(`usage: extract-plugin-docs [pluginIds] [-f]
 	
 	extracts the desc fields from all plugins and rewrites
-	documentation in documentation/browser/plugins/`)
+	documentation in documentation/browser/plugins/
+
+	giving pluginIds filters the operation to only the given plugin ids
+
+	if no pluginIds are given, you need -f (force) to overwrite all
+	existing plugin docs`)
 	process.exit(1)
+}
+
+var onlyPlugins = argv['_'].length > 0 ? argv['_'].slice() : undefined
+
+if (process.argv.indexOf('-o') !== -1) {
+	onlyPlugins = process.argv.slice(process.argv.indexOf('-o') + 1)
+
+	console.log('only plugins:', onlyPlugins)
 }
 
 function captureStrings(pluginId, pluginName, plugin) {
@@ -68,6 +83,10 @@ pluginCats.map(function(cat) {
 
 	pluginNames.map(function(pluginName) {
 		var pluginId = plugins[cat][pluginName]
+		if (onlyPlugins && onlyPlugins.indexOf(pluginId) === -1) {
+			// skip if we're filtering
+			return
+		}
 		var pluginSourcePath = pluginsPath+'/'+pluginId+'.plugin.js'
 
 		var pluginSource = fs.readFileSync(pluginSourcePath)

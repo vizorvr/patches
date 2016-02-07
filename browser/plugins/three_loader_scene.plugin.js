@@ -19,7 +19,7 @@
 		this.defaultObject = new THREE.Object3D(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({color: 0x777777}))
 		this.defaultObject.backReference = this
 
-		this.object3d = this.defaultObject
+		this.setObject3D(this.defaultObject)
 
 		THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader())
 
@@ -50,7 +50,7 @@
 
 		this.loader
 		.then(function(asset) {
-			that.object3d = asset.clone()
+			that.setObject3D(asset.clone())
 			that.postLoadFixUp()
 		})
 		.finally(function() {
