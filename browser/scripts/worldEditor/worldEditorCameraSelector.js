@@ -36,7 +36,7 @@ function WorldEditorCameraSelector(domElement) {
 
 		function mouseDown() {
 			this.editorControls.enabled = false
-			if (E2.app.alt_pressed) {
+			if (E2.ui.flags.pressedAlt) {
 				E2.app.onCopy()
 				E2.app.onPaste()
 			}

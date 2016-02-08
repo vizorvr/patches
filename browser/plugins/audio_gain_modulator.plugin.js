@@ -17,7 +17,7 @@ var AudioGainModulator = E2.plugins.audio_gain_modulator = function(core, node) 
 	
 	this.core = core;
 	this.node = node;
-	this.gain_node = core.audio_ctx ? core.audio_ctx.createGain() : null;
+	this.gain_node = core.audioContext ? core.audioContext.createGain() : null;
 	this.lsg = new LinkedSlotGroup(core, node, [], []);
 	this.srcs = [];
 	this.gain = null;

@@ -9,7 +9,7 @@ var loadingPlugins = {
 	'three_loader_model': 'model',
 	'three_loader_scene': 'scene',
 	'url_texture_generator': 'texture',
-	// 'url_audio_buffer_generator': 'audiobuffer',
+	'url_audio_buffer_generator': 'audiobuffer',
 	// 'url_audio_generator': 'audio',
 	// 'url_json_generator': 'json',
 	// 'url_video_generator': 'video'
@@ -32,7 +32,8 @@ function AssetLoader(loaders) {
 		image: E2.Loaders.ImageLoader,
 		texture: E2.Loaders.TextureLoader,
 		model: E2.Loaders.ModelLoader,
-		scene: E2.Loaders.SceneLoader
+		scene: E2.Loaders.SceneLoader,
+		audiobuffer: E2.Loaders.AudioBufferLoader
 	}
 
 	this.loaders = loaders || defaultLoaders

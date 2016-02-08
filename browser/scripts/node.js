@@ -361,6 +361,16 @@ Node.prototype._cascadeFlowOff = function(conn) {
 	}
 }
 
+Node.prototype._cascadeForceUpdate = function(conn) {
+	conn.src_node.plugin.updated = true
+
+	if (conn.src_node.inputs.length) {
+		for (var i = 0, len = conn.src_node.inputs.length; i < len; i++) {
+			this._cascadeForceUpdate(conn.src_node.inputs[i])
+		}
+	}
+}
+
 Node.prototype._update_input = function(inp, pl, conns, needs_update) {
 	var result = {dirty: false, needs_update: needs_update}
 	var sn = inp.src_node;
@@ -411,18 +421,37 @@ Node.prototype.update_recursive = function(conns) {
 
 	var secondPassUpdateInputs = []
 
-	// first pass input update: update active inputs
+	// input update step 1: collect inactive inputs before any inputs have been updated
+	// (which could change the state of activeness on other inputs)
+	for (var i = 0, len = inputs.length; i < len; ++i) {
+		var inp = inputs[i]
+		if (inp.dst_slot.inactive) {
+			if (inp.ui && inp.ui.flow) {
+				this._cascadeFlowOff(inp)
+				dirty = true
+			}
+			secondPassUpdateInputs.push(inp)
+		}
+	}
+
+	var anyInactive = secondPassUpdateInputs.length > 0
+
+	// input update step 2: first pass input update: update active inputs
 	for (var i = 0, len = inputs.length; i < len; ++i) {
 		var inp = inputs[i]
 
-		if (inp.dst_slot.inactive) {
-			if(inp.ui && inp.ui.flow) {
-				this._cascadeFlowOff(inp)
-				dirty = true;
+		if (anyInactive) {
+			if (inp.dst_slot.inactive) {
+				// skip inactive input
+				continue
 			}
-			secondPassUpdateInputs.push(inp)
 
-			continue;
+			// skip inputs which were previously inactive
+			// these need their updated flags set on and
+			// will be updated in step 3 below
+			if (secondPassUpdateInputs.indexOf(inp) !== -1) {
+				continue
+			}
 		}
 
 		var result = this._update_input(inp, pl, conns, needs_update)
@@ -431,10 +460,14 @@ Node.prototype.update_recursive = function(conns) {
 		needs_update = needs_update || result.needs_update
 	}
 
-	// second pass input update: update any inputs that were activated
+	// input update step 3: second pass input update: recheck and update any inputs that were deactivated
+	// before the first update
 	for (var i = 0, len = secondPassUpdateInputs.length; i < len; ++i) {
 		var inp = secondPassUpdateInputs[i]
 		if (!inp.dst_slot.inactive) {
+			// set reactivated inputs as updated so that their values are fetched
+			this._cascadeForceUpdate(inp)
+			
 			var result = this._update_input(inp, pl, conns, needs_update)
 
 			dirty = dirty || result.dirty

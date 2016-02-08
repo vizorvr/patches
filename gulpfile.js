@@ -53,6 +53,7 @@ paths = {
 			'./browser/scripts/loaders/modelLoader.js',
 			'./browser/scripts/loaders/sceneLoader.js',
 			'./browser/scripts/loaders/assetLoader.js',
+			'./browser/scripts/loaders/audioBufferLoader.js',
 			'./browser/scripts/loaders/multiObjectLoader.js',
 
 			'./browser/vendor/three/three.js',

@@ -28,9 +28,6 @@ function Application() {
 	this.breadcrumb = null;
 	this.c2d = E2.dom.canvas[0].getContext('2d');
 	this.editConn = null;
-	this.shift_pressed = false;
-	this.ctrl_pressed = false;
-	this.alt_pressed = false;
 	this.hover_slot = null;
 	this.hover_slot_div = null;
 	this.hover_connections = [];
@@ -205,7 +202,7 @@ Application.prototype.setSlotCssClasses = function(slot, slot_div) {	/* @var slo
 Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 	e.stopPropagation()
 
-	if (!this.shift_pressed) {
+	if (!E2.ui.flags.pressedShift) {
 		var graph = E2.core.active_graph
 
 		if (type === E2.slot_type.output) {
@@ -282,7 +279,7 @@ Application.prototype.onSlotEntered = function(node, slot, slot_div) {
 	this.hover_slot = slot;
 	this.hover_slot_div = slot_div;
 
-	if (this.shift_pressed)
+	if (E2.ui.flags.pressedShift)
 		this.activateHoverSlot()
 
 	return true;
@@ -430,9 +427,6 @@ Application.prototype.clearHoverState = function() {
 Application.prototype.clearEditState = function()
 {
 	this.editConn = null;
-	this.shift_pressed = false;
-	this.ctrl_pressed = false;
-	this.alt_pressed = false;
 	this.clearHoverState()
 };
 
@@ -497,7 +491,7 @@ Application.prototype.onNodeHeaderMousedown = function() {
 	var isIn = this.isNodeInSelection(this.hoverNode)
 	var addNode
 
-	if (!this.shift_pressed) {
+	if (!E2.ui.flags.pressedShift) {
 		if (!isIn) {
 			this.clearSelection()
 			addNode = this.hoverNode
@@ -1402,211 +1396,12 @@ Application.prototype.onFullScreenChanged = function() {
 }
 
 Application.prototype.onKeyDown = function(e) {
-	// best to return something here, as webkit sometimes has issues with null returns
-	// return true, unless the ball stops here, in which case return false after stopPropagation and/or preventDefault
-
-	var that = this
-
-	if (E2.ui.isModalOpen()) return true;
-
-	if (E2.util.isTextInputInFocus(e))
-		return true;
-
-	var toggleFullScreenKey = 70
-	var toggleNoodlesKey = 9
-	var toggleWorldEditorHelpersKey = 72 // h
-	var toggleWorldEditorKey = 86
-	var toggleWorldEditorGridKey = 71 // g
-	var toggleWorldEditorXCameraKey = 88 // x
-	var toggleWorldEditorYCameraKey = 89 // y
-	var toggleWorldEditorZCameraKey = 90 // z
-	var toggleWorldEditorOrthographicCameraKey = 79 // o
-	var worldEditorFrameViewToSelectionKey = 84 // t
-
-	var altKey = 18
-
-	var exceptionKeys = [toggleFullScreenKey, toggleNoodlesKey, toggleWorldEditorKey, altKey]
-
-	if (this.isVRCameraActive() && exceptionKeys.indexOf(e.keyCode) === -1)
-		return true;
-
-	var ret = true;
-
-	// arrow up || down
-	var arrowKeys = [37, 38, 39, 40]
-	if (arrowKeys.indexOf(e.keyCode) !== -1) {
-		var dx = 0, dy = 0
-
-		if (e.keyCode === 37) dx = -10
-		if (e.keyCode === 39) dx = 10
-		if (e.keyCode === 38) dy = -10
-		if (e.keyCode === 40) dy = 10
-
-		if (this.selectedNodes.length) {
-			that.executeNodeDrag(this.selectedNodes,
-			this.selectedConnections,
-			dx, dy)
-		}
-		e.preventDefault()
-		ret = false;
-	}
-
-	if (e.keyCode === 8 || e.keyCode === 46) { // use backspace and delete for deleting nodes
-		this.onDelete(e);
-		e.preventDefault();
-		ret = false;
-	}
-	else if (e.keyCode === 13) { // enter = deselect (eg. commit move)
-		this.clearEditState()
-		this.clearSelection()
-		ret = false;
-	}
-	else if (e.keyCode === 16) // .isShift doesn't work on Chrome. This does.
-	{
-		this.shift_pressed = true;
-		this.activateHoverSlot();
-	}
-	else if (e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
-	{
-		this.ctrl_pressed = true;
-	}
-	else if (e.keyCode === altKey) // alt
-	{
-		this.alt_pressed = true;
-	}
-
-	// number keys
-	else if (e.keyCode > 47 && e.keyCode < 58) { // 0-9
-		if (this.ctrl_pressed || this.shift_pressed || this.alt_pressed)
-			return true;
-
-		var numberHotKeys = [
-			'plugin:output_proxy', // 0
-			'plugin:input_proxy', // 1
-			'plugin:graph', // 2
-			'plugin:slider_float_generator', // 3
-			'plugin:const_float_generator', // 4
-			'plugin:float_display', // 5
-			'plugin:multiply_modulator', // 6
-			'preset:time_oscillate_between_2_values', // 7
-			'preset:image_show_image', // 8
-			'plugin:knob_float_generator' // 9
-		]
-
-		var item = numberHotKeys[e.keyCode - 48]
-		var name = item.substring(7)
-		if (item.indexOf('preset:') === 0)
-			that.presetManager.openPreset('/presets/' + name + '.json')
-		else
-			this.instantiatePlugin(name)
-
-		ret = false;
-	}
-
-
-	else if (e.keyCode === toggleFullScreenKey && !this.isWorldEditorActive()) // f
-	{
-		this.toggleFullscreen()
-		e.preventDefault();
-		ret = false;
-	}
-	else if (e.keyCode === worldEditorFrameViewToSelectionKey && this.isWorldEditorActive()) // t
-	{
-		this.worldEditor.frameSelection()
-	}
-	else if (e.keyCode === toggleWorldEditorGridKey && this.isWorldEditorActive()) // g
-	{
-		this.worldEditor.toggleGrid()
-	}
-	else if (e.keyCode === toggleWorldEditorHelpersKey && this.isWorldEditorActive()) // h
-	{
-		this.worldEditor.toggleEditorHelpers()
-	}
-	else if(this.ctrl_pressed || e.metaKey)
-	{
-		if(e.keyCode === 65) // CTRL+a
-		{
-			this.selectAll();
-			e.preventDefault(); // FF uses this combo for opening the bookmarks sidebar.
-			e.stopPropagation();
-			return false;
-		}
-		else if(e.keyCode === 76) // CTRL+l
-		{
-			return false;
-		}
-
-		if(e.keyCode === 67) // CTRL+c
-			this.onCopy(e);
-		else if(e.keyCode === 88) // CTRL+x
-			this.onCut(e);
-		else if(e.keyCode === 86) { // CTRL+v
-			var pasted = this.onPaste();
-		}
-
-		if (e.keyCode === 90) { // z
-			e.preventDefault()
-			e.stopPropagation()
-			ret = false;
-
-			if (!this.shift_pressed)
-				this.undoManager.undo()
-			else
-				this.undoManager.redo()
-		}
-	}
-
-	else if (e.keyCode === 188) { // , goes up a graph level
-		if (E2.core.active_graph.parent_graph)
-			E2.app.onGraphSelected(E2.core.active_graph.parent_graph)
-	}
-
-	else if (e.keyCode === 187 && this.isWorldEditorActive()) // '=' match vr camera to world editor camera
-	{
-		this.worldEditor.matchCamera()
-	}
-
-	else if (e.keyCode === toggleWorldEditorXCameraKey && this.isWorldEditorActive())
-	{
-		this.worldEditor.setCameraView(this.shift_pressed ? '+x' : '-x')
-	}
-
-	else if (e.keyCode === toggleWorldEditorYCameraKey && this.isWorldEditorActive())
-	{
-		this.worldEditor.setCameraView(this.shift_pressed ? '+y': '-y')
-	}
-
-	else if (e.keyCode === toggleWorldEditorZCameraKey && this.isWorldEditorActive())
-	{
-		this.worldEditor.setCameraView(this.shift_pressed ? '+z': '-z')
-	}
-
-	else if (e.keyCode === toggleWorldEditorOrthographicCameraKey && this.isWorldEditorActive())
-	{
-		this.worldEditor.toggleCameraOrthographic()
-	}
-
-	return ret;
-
+	return true;
 };
 
 
 Application.prototype.onKeyUp = function(e)
 {
-	if(e.keyCode === 17 || e.keyCode === 91) // CMD on OSX, CTRL on everything else
-	{
-		this.ctrl_pressed = false;
-	}
-	else if (e.keyCode === 18)
-	{
-		this.alt_pressed = false;
-	}
-	else if(e.keyCode === 16)
-	{
-		this.shift_pressed = false;
-		this.releaseHoverSlot();
-		this.releaseHoverNode(false);
-	}
 };
 
 Application.prototype.changeControlState = function()

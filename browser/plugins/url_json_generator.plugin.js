@@ -71,7 +71,6 @@ UrlJson.prototype.update_state = function() {
 	var self = this;
 
 	this.object = {};
-	this.core.asset_tracker.signal_started();
 
 	$.ajax({
 		url: this.state.url, 
@@ -79,7 +78,6 @@ UrlJson.prototype.update_state = function() {
 		success: function(self) { return function(data) 
 		{
 			self.object = data;
-			self.core.asset_tracker.signal_completed();
 			self.updated = true
 		}}(self),
 		error: function(self) { return function(jqXHR, textStatus, errorThrown)
@@ -87,7 +85,6 @@ UrlJson.prototype.update_state = function() {
 			msg('ERROR: Failed to load JSON "' + self.state.url + '": ' + textStatus + ', ' + errorThrown);
 			self.state.url = '';
 			self.object = {}
-			self.core.asset_tracker.signal_failed();
 		}}(self)
 	});
 	

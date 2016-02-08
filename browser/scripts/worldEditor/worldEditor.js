@@ -29,10 +29,10 @@ function WorldEditor(domElement) {
 
 	// grid around origin along x, z axises
 	this.gridHelper = new WorldEditorOriginGrid()
-	this.editorTree.add(this.gridHelper.mesh)
 
 	// radial grid
 	this.radialHelper = new WorldEditorRadialHelper()
+	this.editorTree.add(this.radialHelper.mesh)
 
 	// root for any selection bboxes
 	this.selectionTree = new THREE.Object3D()
@@ -74,7 +74,7 @@ WorldEditor.prototype.update = function() {
 	this.gridHelper.scale(gridScale)
 
 	if (this.vrCamera) {
-		this.radialHelper.position(this.vrCamera.position)
+		this.radialHelper.position(this.vrCamera.parent.position)
 
 		var cameraDistanceToVRCamera = this.cameraSelector.camera.position.clone().sub(this.vrCamera.position).length() || 1
 		var gridScale = f(cameraDistanceToVRCamera, 0.01)
@@ -406,7 +406,7 @@ WorldEditor.prototype.pickObject = function(e) {
 
 	// if alt is pressed, we try to select the single object we click
 	// otherwise we select the topmost group the clicked object is in
-	var selectSingleObject = E2.app.alt_pressed
+	var selectSingleObject = E2.ui.flags.pressedAlt
 
 	var isEditor = this.isActive()
 

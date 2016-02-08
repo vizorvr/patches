@@ -146,7 +146,7 @@ AssetController.prototype.save = function(req, res, next) {
 }
 
 AssetController.prototype.checksumUpload = function(req, res, next) {
-	if (!req.files)
+	if (!req.files || !req.files.file)
 		return next(new Error('No files uploaded'));
 
 	checksum.file(req.files.file.path, function(err, sum) {
