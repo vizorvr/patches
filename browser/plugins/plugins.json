@@ -183,7 +183,7 @@
 
     "GRAPH CONTROL": {
         "Stop playback": "stop_emitter",
-        "Load Graph on Trigger": "load_graph_on_trigger",
+        "Load File on Trigger": "load_graph_on_trigger",
         "Initialise": "initialise_generator"
     },
 
