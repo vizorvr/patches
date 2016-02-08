@@ -15,7 +15,8 @@ var methodOverride = require('method-override');
 var crypto = require('crypto')
 
 var flash = require('express-flash');
-var path = require('path');
+
+var fsPath = require('path');
 
 var EventEmitter = require('events').EventEmitter;
 
@@ -64,7 +65,7 @@ var app = express();
 app.events = new EventEmitter()
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', fsPath.join(__dirname, 'views'));
 var hbs = exphbs.create({
 	defaultLayout: 'main',
 	partialsDir: [
@@ -84,8 +85,8 @@ app.use(compress());
 app.use(connectAssets(
 {
 	paths: [
-		path.join(__dirname, 'browser/style'),
-		path.join(__dirname, 'browser/scripts')
+		fsPath.join(__dirname, 'browser/style'),
+		fsPath.join(__dirname, 'browser/scripts')
 	],
 	helperContext: app.locals
 }));
@@ -234,7 +235,7 @@ app.use(function(req, res, next)
 
 // old static flat files
 app.use('/data', express.static(
-		path.join(__dirname, 'browser', 'data'), 
+		fsPath.join(__dirname, 'browser', 'data'), 
 		{ maxAge: week * 52 }
 	)
 )
@@ -278,7 +279,8 @@ r.connect({
 
 	// stream files from fs/gridfs
 	app.get(/^\/data\/.*/, function(req, res, next) {
-		var path = req.path.replace(/^\/data/, '');
+		var path = req.path.replace(/^\/data/, '')
+		var extname = fsPath.extname(path)
 		var model = path.split('/')[1]
 		var cacheControl = 'public'
 
@@ -321,14 +323,20 @@ r.connect({
 			else {
 				// stream whole file in a single request
 				res.header('Content-Type', stat.contentType);
-				res.header('Accept-Ranges', 'bytes');
+
+				// only accept range-requests on audio and video
+				var rangeableTypes = ['.mp3', '.m4a', '.ogg', '.mp4', '.ogm', '.ogv']
+				if (rangeableTypes.indexOf(extname) !== -1)
+						res.header('Accept-Ranges', 'bytes')
+
 				res.header('ETag', stat.md5);
 				res.header('Content-Length', stat.length)
 				res.header('Cache-Control', cacheControl)
 
 				gfs.createReadStream(path)
 				.on('error', next)
-				.pipe(res);
+				.pipe(res)
+
 			}
 		})
 		.catch(next)
@@ -385,11 +393,11 @@ r.connect({
 	}
 
 	app.use(['/node_modules'],
-		express.static(path.join(__dirname, 'node_modules'))
+		express.static(fsPath.join(__dirname, 'node_modules'))
 	);
 
 	// static files
-	app.use(express.static(path.join(__dirname, 'browser'), {
+	app.use(express.static(fsPath.join(__dirname, 'browser'), {
 		maxAge: 300
 	}));
 
