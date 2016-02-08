@@ -325,7 +325,7 @@ r.connect({
 				res.header('Content-Type', stat.contentType);
 
 				// only accept range-requests on audio and video
-				var rangeableTypes = ['.mp3', '.ogg', '.mp4', '.ogm', '.ogv']
+				var rangeableTypes = ['.mp3', '.m4a', '.ogg', '.mp4', '.ogm', '.ogv']
 				if (rangeableTypes.indexOf(extname) !== -1)
 						res.header('Accept-Ranges', 'bytes')
 
