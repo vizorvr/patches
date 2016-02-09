@@ -16,8 +16,8 @@ describe('DocumentationController', function() {
 
 		res.json = function(data) {
 			assert.equal(data.desc, "<p>Emit true if and only if both inputs are true and false otherwise.</p>\n")
-			assert.deepEqual(data.inputs, ['<p>first value\nFirst input value</p>\n', '<p>second value\nSecond input value</p>\n'])
-			assert.deepEqual(data.outputs, ['<p>value\nThe sum of both input values</p>\n'])
+			assert.deepEqual(data.inputs, ['<p>bool\nThe first operand.</p>\n', '<p>bool\nThe second operand.</p>\n'])
+			assert.deepEqual(data.outputs, ['<p>bool\nEmits true if <strong>first</strong> <em>and</em> <strong>second</strong> are true, and false otherwise.</p>\n'])
 
 			done()
 		}

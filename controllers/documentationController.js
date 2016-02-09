@@ -36,9 +36,9 @@ DocumentationController.prototype.parsePluginDocumentation = function(markdown) 
 		outputs: []
 	}
 
-	var desc = getSubstring(markdown, '##Description:', '\n\n')
-	var inputs = getSubstring(markdown, '##Inputs:', '##Outputs:')
-	var outputs = getSubstring(markdown, '##Outputs:', '##Detail')
+	var desc = getSubstring(markdown, '##Description', '\n\n')
+	var inputs = getSubstring(markdown, '##Inputs', '##Outputs')
+	var outputs = getSubstring(markdown, '##Outputs', '##Detail')
 
 	result.desc = marked(desc)
 
@@ -57,6 +57,8 @@ DocumentationController.prototype.parsePluginDocumentation = function(markdown) 
 
 DocumentationController.prototype.getPluginDocumentation = function(req, res, next) {
 	var docPath = './documentation/browser/plugins/' + req.params.pluginName + ".md"
+
+	console.log('fetching docs for ', docPath)
 
 	var that = this
 
