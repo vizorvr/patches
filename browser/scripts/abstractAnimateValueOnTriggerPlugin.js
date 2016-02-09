@@ -128,3 +128,6 @@ AbstractAnimateValueOnTriggerPlugin.prototype.state_changed = function(ui) {
 		this.blendFunctions.initialise(ui, this.state.blendFuncId)
 	}
 }
+
+if (typeof(module) !== 'undefined')
+	module.exports = AbstractAnimateValueOnTriggerPlugin

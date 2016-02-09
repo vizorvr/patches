@@ -32,7 +32,8 @@ GraphController.prototype = Object.create(AssetController.prototype);
 
 GraphController.prototype.userIndex = function(req, res, next) {
 	var wantJson = req.xhr;
-	this._service.userGraphs(req.params.model)
+	var username = req.params.model
+	this._service.userGraphs(username)
 	.then(function(list)
 	{
 		if (!list || !list.length)
@@ -40,7 +41,7 @@ GraphController.prototype.userIndex = function(req, res, next) {
 
 		var data = {
 			profile: {
-				username: req.params.model
+				username: username
 			},
 			graphs: list
 		};
@@ -51,7 +52,7 @@ GraphController.prototype.userIndex = function(req, res, next) {
 
 		_.extend(data, {
 			meta : {
-				title: 'Graphs',
+				title: username+'\'s Files',
 				bodyclass: 'bUserpage',
 				scripts : ['site/userpages.js']
 			}

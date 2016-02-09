@@ -137,6 +137,10 @@ Player.prototype.load_from_url = function(url, cb) {
 	})
 }
 
+Player.prototype.getVariableValue = function(id) {
+	return this.core.root_graph.variables.read(id)
+}
+
 Player.prototype.setVariableValue = function(id, value) {
 	this.core.root_graph.variables.write(id, value)
 }
