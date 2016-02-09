@@ -32,7 +32,7 @@ function modelRoutes(
 	var editLogController = new EditLogController()
 
 	var DocumentationController = require('./controllers/documentationController');
-	var documentationController = new DocumentationController(gfs);
+	var documentationController = new DocumentationController();
 
 	var graphController = new GraphController(
 		new GraphService(require('./models/graph'), gfs),

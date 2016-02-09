@@ -63,7 +63,7 @@ DocumentationController.prototype.getPluginDocumentation = function(req, res, ne
 	fs.stat(docPath, function(err, exists) {
 		if (err) {
 			console.error(err, docPath)
-			throw err
+			return
 		}
 
 		fs.readFile(docPath, function(err, markdown) {
