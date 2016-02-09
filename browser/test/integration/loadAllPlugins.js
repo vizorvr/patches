@@ -247,58 +247,16 @@ describe('loadAllPlugins', function() {
 	})
 
 	var exceptions = [
-		// these are old and don't work
-		'blend_mode_generator',
-		'concatenate_matrix_modulator',
-		'csg_cube_generator',
-		'csg_cylinder_generator',
-		'csg_difference_modulator',
-		'csg_intersection_modulator',
-		'csg_inverse_modulator',
-		'csg_sphere_generator',
-		'csg_to_mesh_modulator',
-		'csg_union_modulator',
-		'cube_mesh_generator',
-		'depth_func_generator',
-		'flat_shader',
-		'grid_mesh_generator',
-		'instance_array_modulator',
-		'instance_cube_modulator',
-		'instance_ifs_modulator',
+		// legacy plugins used in unit tests (paste_complex
 		'mesh_renderer_emitter',
-		'normal_as_color_shader',
-		'null_mesh_generator',
-		'orthographic_camera',
 		'perspective_camera',
-		'plane_mesh_generator',
-		'plane_mesh_unindexed_generator',
-		'quad_mesh_generator',
-		'scale_xyz_matrix',
+		'grid_mesh_generator',
+		'concatenate_matrix_modulator',
 		'scene_renderer_emitter',
-		'screenspace_camera',
-		'sphere_mesh_generator',
-		'texture_diffuse_shader',
-		'texture_from_text_generator',
-		'texture_type_generator',
-		'mesh_primtype_generator',
-		'mesh_primtype_modulator',
-		'texture_filter_generator',
-		'texture_filter_modulator',
-		'texture_wrap_generator',
-		'texture_wrap_modulator',
-		'viewport_height_generator',
-		'viewport_width_generator',
-		'vr_camera_modulator'
 
 		// these will need to be fixed:
-		/*'module_player',
-		'osc_float',
-		'osc_receiver',
-		'osc_xy_float',
-		'osc_xyz_float',
-		'text_editor_generator',
-		'wschannel_receive',
-		'wschannel_send',*/
+		'viewport_height_generator',
+		'viewport_width_generator',
 	]
 
 	it('loads all plugins', function(done) {
