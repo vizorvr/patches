@@ -105,7 +105,10 @@ exports.reset = function() {
 		keydown:function(){},
 		keyup:function(){},
 		mousemove:function(){},
-		outerHeight:function(){}
+		outerHeight:function(){},
+		'0': {
+			getContext: function(){}
+		}
 	}}
 
 	var graphCounter = 0
