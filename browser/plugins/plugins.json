@@ -1,7 +1,6 @@
 {
     "VALUES": {
         "Action": "action_button",
-        "Blend mode": "blend_mode_generator",
         "Color picker": "color_picker",
         "Code Editor": "text_editor_generator",
         "Number": "const_float_generator",
