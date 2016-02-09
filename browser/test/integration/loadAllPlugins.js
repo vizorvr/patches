@@ -237,7 +237,6 @@ describe('loadAllPlugins', function() {
 			}
 		}
 
-
 		// throw any errors
 		global.msg = function(txt) {
 			if (/^ERROR/.test(txt))
@@ -247,7 +246,7 @@ describe('loadAllPlugins', function() {
 	})
 
 	var exceptions = [
-		// legacy plugins used in unit tests (paste_complex
+		// legacy plugins used in unit tests (paste_complex)
 		'mesh_renderer_emitter',
 		'perspective_camera',
 		'grid_mesh_generator',
@@ -273,27 +272,9 @@ describe('loadAllPlugins', function() {
 					// skip
 					continue
 				}
-/*
-				function statFun(err, stat) {
-					if (err) {
-						console.error(err)
-						return
-					}
 
-					console.error(doneCount, this.plugin)
-
-					var plug = E2.app.instantiatePlugin(this.plugin)
-					++doneCount
-					if(doneCount >= files.length) {
-						done()
-					}
-				}
-
-				fs.stat(filename, statFun.bind({plugin: pluginName}))
-*/
 				var stat = fs.statSync(filename)
 				if (stat.isFile()) {
-					console.error(pluginName)
 					var plug = E2.app.instantiatePlugin(pluginName)
 				}
 			}
