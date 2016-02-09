@@ -3,6 +3,7 @@ var assert = require('assert');
 var reset = require('../unit/plugins/helpers').reset;
 var loadPlugin = require('../unit/plugins/helpers').loadPlugin;
 var fs = require('fs');
+var when = require('when');
 
 global.document = {
 	createElement: function() {
@@ -56,7 +57,7 @@ global.AbstractThreeMaterialPlugin = require(__dirname + '/../../scripts/abstrac
 global.AbstractThreeMeshPlugin = require(__dirname + '/../../scripts/abstractThreeMeshPlugin.js')
 global.AbstractThreeLoaderObjPlugin = require(__dirname + '/../../scripts/abstractThreeLoaderObjPlugin.js')
 
-global.load_script = require(__dirname + '/../../scripts/util.js')
+global.load_script = require(__dirname + '/../../scripts/util.js').load_script
 
 require('../../scripts/commands/graphEditCommands')
 
@@ -259,11 +260,14 @@ describe('loadAllPlugins', function() {
 	]
 
 	it('loads all plugins', function(done) {
+		var plugins = []
+		var pluginInstances = []
+
+		var dfd = when.defer()
+		var promise = dfd.promise
+
 		fs.readdir(pluginPath, function(err, files) {
-			if (err) {
-				console.error(err);
-				return
-			}
+			assert.ok(!err)
 
 			for(var i = 0; i < files.length; ++i) {
 				var filename = pluginPath + files[i]
@@ -274,10 +278,22 @@ describe('loadAllPlugins', function() {
 				}
 
 				var stat = fs.statSync(filename)
-				if (stat.isFile()) {
-					var plug = E2.app.instantiatePlugin(pluginName)
+				if (!stat.isFile()) {
+					continue
 				}
+
+				plugins.push(pluginName)
 			}
+
+			for(var i = 0; i < plugins.length; ++i) {
+				assert.doesNotThrow(function() {
+					pluginInstances.push(E2.app.instantiatePlugin(plugins[i]))
+				})
+			}
+
+			assert.ok(plugins.length > 200)
+			assert.equal(pluginInstances.length, plugins.length)
+
 			done()
 		})
 	})

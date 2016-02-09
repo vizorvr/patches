@@ -89,7 +89,7 @@
     "test:browser:unit": "npm run tester browser/test/unit",
     "test:browser:plugins": "npm run tester browser/test/unit/plugins",
     "test:browser": "npm run test:browser:unit && npm run test:browser:plugins && npm run test:browser:integration",
-    "test:server:unit": "npm run tester test/unit test/controllers test/services",
+    "test:server:unit": "npm run tester test/unit",
     "test:server:controllers": "npm run tester test/controllers",
     "test:server:integration": "npm run tester test/integration && npm run tester test/integration/models",
     "test:server:services": "npm run tester test/services",

@@ -200,4 +200,4 @@ E2.util = {
 }
 
 if (typeof(module) !== 'undefined')
-	module.exports = load_script
+	module.exports.load_script = load_script
