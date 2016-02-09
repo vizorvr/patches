@@ -12,8 +12,7 @@ paths = {
 	less: './less/build.less',
 	js: {
 		plugins: './browser/plugins/*.plugin.js',
-		player:
-		[
+		engine: [
 			'./browser/vendor/when.js',
 
 			'./browser/scripts/event-emitter.js',
@@ -44,7 +43,7 @@ paths = {
 			'./browser/scripts/worldEditor/worldEditorCameraSelector.js',
 			'./browser/scripts/worldEditor/worldEditorOriginGrid.js',
 			'./browser/scripts/worldEditor/worldEditorRadialHelper.js',
-			
+
 			'./browser/scripts/screenshot/ScreenshotRenderer.js',
 
 			'./browser/scripts/loaders/loader.js',
@@ -75,14 +74,16 @@ paths = {
 
 			'./browser/scripts/textureCache.js',
 
-			'./browser/scripts/plugin-manager-bundled.js',
-			'./browser/plugins/*.plugin.js',
+			'./browser/scripts/plugin-manager-bundled.js'
+		],
 
+		player: [
+			'./browser/plugins/*.plugin.js',
 			'./browser/scripts/player.js',
 			'./browser/scripts/player-run.js'
 		]
 	}
-};
+}
 
 
 function errorHandler(err) {
@@ -90,23 +91,32 @@ function errorHandler(err) {
 	this.emit('end')
 }
 
-gulp.task('clean:js:player', function(cb)
-{
-	del('./browser/scripts/player.min.js', cb);
-});
+gulp.task('clean:js:player', function(cb) {
+	del('./browser/scripts/player.min.js', cb)
+})
 
-gulp.task('clean:less', function(cb)
-{
-	del('./browser/style/less.css', cb);
-});
+gulp.task('clean:js:engine', function(cb) {
+	del('./browser/scripts/engine.js', cb)
+})
 
-gulp.task('clean:js', ['clean:js:player']);
+gulp.task('clean:less', function(cb) {
+	del('./browser/style/less.css', cb)
+})
 
-gulp.task('clean', ['clean:js']);
+gulp.task('clean:js', ['clean:js:player', 'clean:js:engine'])
 
-gulp.task('js:player', ['clean:js:player'], function()
-{
-	gulp.src(paths.js.player)
+gulp.task('clean', ['clean:js'])
+
+gulp.task('js:engine', ['clean:js:engine'], function() {
+	gulp.src(paths.js.engine)
+	.pipe(concat.header(';\n'))
+	.pipe(concat('engine.js'))
+	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))
+	.on('error', errorHandler)
+})
+
+gulp.task('js:player', ['clean:js:player', 'js:engine'], function() {
+	gulp.src(paths.js.engine.concat(paths.js.player))
 	.pipe(slash())
 	.pipe(preprocess({context: { FQDN: process.env.FQDN || 'vizor.io' } }))
 	.pipe(uglify().on('error', errorHandler))
@@ -114,9 +124,9 @@ gulp.task('js:player', ['clean:js:player'], function()
 	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))
 	.on('error', errorHandler)
-});
+})
 
-gulp.task('js', ['js:player']);
+gulp.task('js', ['js:player'])
 
 gulp.task('less', ['clean:less'], function() {
 	gulp.src(paths.less)
@@ -127,20 +137,20 @@ gulp.task('less', ['clean:less'], function() {
 	.pipe(concat('less.css'))
     .pipe(gulp.dest(path.join(__dirname, 'browser', 'style')))
 	.on('error', errorHandler)
-});
+})
 
 gulp.task('watch', ['default'], function() {
-	gulp.watch('less/**/*', ['less']);
-	gulp.watch(paths.js.player, ['js:player']);
-});
+	gulp.watch('less/**/*', ['less'])
+	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player'])
+})
 
 gulp.task('watch:less', function() {
-	gulp.watch('less/**/*', ['less']);
-});
+	gulp.watch('less/**/*', ['less'])
+})
 
 gulp.task('watch:player', function() {
-	gulp.watch(paths.js.player, ['js:player']);
-});
+	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player'])
+})
 
-gulp.task('default', ['less', 'js']);
+gulp.task('default', ['less', 'js'])
 

@@ -5,6 +5,7 @@ browser/data/scenes/**
 browser/data/textures/**
 browser/plugins/all.plugins.js
 browser/scripts/player.min.js
+browser/scripts/engine.js
 browser/tools/node_modules
 browser/scripts/editor-*.min.js
 views/layouts/editor-prod.handlebars
