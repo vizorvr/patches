@@ -101,7 +101,14 @@ exports.reset = function() {
 		remove: function(){ },
 		movable: function(){},
 		popover:function(){},
-		removeClass:function(){}
+		removeClass:function(){},
+		keydown:function(){},
+		keyup:function(){},
+		mousemove:function(){},
+		outerHeight:function(){},
+		'0': {
+			getContext: function(){}
+		}
 	}}
 
 	var graphCounter = 0

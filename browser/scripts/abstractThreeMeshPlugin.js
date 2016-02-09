@@ -116,3 +116,6 @@ AbstractThreeMeshPlugin.prototype.update_state = function() {
 
 	ThreeObject3DPlugin.prototype.update_state.apply(this)
 }
+
+if (typeof(module) !== 'undefined')
+	module.exports = AbstractThreeMeshPlugin

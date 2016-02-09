@@ -30,6 +30,8 @@ describe('AssetController', function() {
 		var res = {}
 		var list = [{ a: '1' }, { b: '2' }]
 
+		req.params = {}
+		req.params.username = ''
 		req.session = { userId: 'me'}
 
 		svc.findByCreatorId = function(userId) {
@@ -51,6 +53,8 @@ describe('AssetController', function() {
 		var res = {}
 		var list = [{ a: '1' }, { b: '2' }]
 
+		req.params = {}
+		req.params.username = ''
 		req.session = { userId: 'system'}
 
 		svc.findByCreatorId = function(userId) {

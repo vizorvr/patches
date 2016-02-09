@@ -255,4 +255,8 @@
 	}
 
 	window.AbstractObjectGazePlugin = AbstractObjectGazePlugin
+
+	if (typeof(module) !== 'undefined')
+		module.exports = AbstractObjectGazePlugin
 })()
+
