@@ -73,4 +73,25 @@ $(document).ready(function()  {
 		CreatePlayer([null, null], onCoreReady);
 });
 
+// postMessage API for setting variables in embedded files
+window.addEventListener('message', function(e) {
+	function send(message) {
+		e.source.postMessage(message, e.origin)
+	}
+
+	switch(e.data.command) {
+		case 'getVariable':
+			send({
+				value: E2.app.player.getVariableValue(e.data.name)
+			})
+			break;
+
+		case 'setVariable':
+			E2.app.player.setVariableValue(e.data.name, e.data.value)
+			break;
+	}
+}, false)
+
+
 })()
+

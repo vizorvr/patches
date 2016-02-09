@@ -1,0 +1,52 @@
+<html>
+	<head>
+    	<script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
+    </head>
+
+	<body>
+	<h1>postMessage</h1>
+
+	<iframe id="vizor" src="/embed/kschzt/postmessage" width="800" height="450" frameborder="0" allowfullscreen></iframe>
+
+	<br>
+
+	scale <input id="scale" type="range" min="0" max="77" step="0.1"/>
+
+	<br>
+
+	<pre id="log"></pre>
+
+	<script>
+		var $log = $('#log')
+		var $scale = $('#scale')
+		var $vizor = $('#vizor')
+
+		function log(message) {
+			$log.append(message + '<br>')
+		}
+
+		function send(message) {
+			log('OUT: '+ JSON.stringify(message))
+			$vizor[0].contentWindow
+				.postMessage(message, '*')
+		}
+
+		$scale.on('input', function() {
+			send({
+				command: 'setVariable',
+				name: 'scale',
+				value: $scale.val()
+			})
+			
+			send({
+				command: 'getVariable',
+				name: 'scale'
+			})
+		})
+
+		window.addEventListener('message', function(e) {
+			log('IN: ' + JSON.stringify(e.data))
+		}, false)
+	</script>
+	</body>
+</html>
