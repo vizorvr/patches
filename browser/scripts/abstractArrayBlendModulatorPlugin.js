@@ -159,3 +159,7 @@ AbstractArrayBlendModulatorPlugin.prototype.state_changed = function(ui) {
 		this.dynInputs = this.node.getDynamicInputSlots()
 	}
 }
+
+if (typeof(module) !== 'undefined')
+	module.exports = AbstractArrayBlendModulatorPlugin
+

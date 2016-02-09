@@ -67,3 +67,7 @@ AbstractThreeLoaderObjPlugin.prototype.state_changed = function(ui) {
 		this.dirty = true
 }
 
+if (typeof(module) !== 'undefined')
+	module.exports = AbstractThreeLoaderObjPlugin
+
+

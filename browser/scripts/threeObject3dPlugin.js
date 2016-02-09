@@ -138,3 +138,6 @@ ThreeObject3DPlugin.prototype.update_state = function() {
 
 	this.object3d.quaternion.multiply(this.graphInputs.quaternion)
 }
+
+if (typeof(module) !== 'undefined')
+	module.exports = ThreeObject3DPlugin

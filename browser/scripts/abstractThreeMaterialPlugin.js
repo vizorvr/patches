@@ -39,3 +39,5 @@ AbstractThreeMaterialPlugin.prototype.update_input = function(slot, data) {
 	this.material.needsUpdate = true
 }
 
+if (typeof(module) !== 'undefined')
+	module.exports = AbstractThreeMaterialPlugin

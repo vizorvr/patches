@@ -198,3 +198,6 @@ E2.util = {
 		return !!(document.mozFullScreenElement || document.webkitFullscreenElement);
 	}
 }
+
+if (typeof(module) !== 'undefined')
+	module.exports = load_script
