@@ -968,19 +968,16 @@ Application.prototype.serialiseSelection = function() {
 Application.prototype.onCopy = function(e) {
 	if (this.selectedNodes.length < 1) {
 		msg('Copy: Nothing selected.')
-		
-		if (e)
-			e.stopPropagation()
 
 		return false
 	}
 
 	var data = this.serialiseSelection()
-	e.clipboardData.setData('text/plain', data)
-	console.log('copy', data)
-
-	if (e)
-		e.stopPropagation()
+	
+	this.clipboard = data
+	
+	if (e && e.clipboardData)
+		e.clipboardData.setData('text/plain', data)
 
 	return false
 }
@@ -1232,6 +1229,8 @@ Application.prototype.findSpaceInGraphFor = function(doc) {
 
 Application.prototype.onPaste = function(json, x, y) {
 	this.clearSelection()
+
+	json = json || this.clipboard
 
 	var doc = JSON.parse(json)
 
@@ -1958,7 +1957,7 @@ Application.prototype.start = function() {
 		e.preventDefault()
 	})
 
-	document.addEventListener('paste', function(e) {
+	window.addEventListener('paste', function(e) {
 		var data = e.clipboardData.getData('text/plain')
 		that.onPaste(data)
 		e.preventDefault()

@@ -648,6 +648,27 @@ VizorUI.prototype.onKeyDown = function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 			break;
+		case uiKeys.copy:
+			if (VizorUI.isBrowser.Chrome())
+				return;
+			E2.app.onCopy(e);
+			e.preventDefault();
+			e.stopPropagation();
+			break;
+		case uiKeys.cut:
+			if (VizorUI.isBrowser.Chrome())
+				return;
+			E2.app.onCut(e);
+			e.preventDefault();
+			e.stopPropagation();
+			break;
+		case uiKeys.paste:
+			if (VizorUI.isBrowser.Chrome())
+				return;
+			E2.app.onPaste();
+			e.preventDefault();
+			e.stopPropagation();
+			break;
 		case uiKeys.undo:
 			e.preventDefault();
 			e.stopPropagation();
