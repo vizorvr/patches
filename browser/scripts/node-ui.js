@@ -161,10 +161,10 @@ function NodeUI(parent_node, x, y, z) {
 	$header.mouseenter(E2.app.onNodeHeaderEntered.bind(E2.app, parent_node));
 	$header.mouseleave(E2.app.onNodeHeaderExited.bind(E2.app));
 
-	if (parent_node.plugin.desc) {
-		$header.attr('alt', '' + parent_node.uid);
-		this.setupTooltips($header);
-	}
+	this.setupDocs();
+
+	$header.attr('alt', '' + parent_node.uid);
+	this.setupTooltips($header);
 
 	this.setCssClass();
 	this.redrawSlots();
@@ -196,6 +196,35 @@ function NodeUI(parent_node, x, y, z) {
 }
 
 NodeUI.prototype = Object.create(EventEmitter.prototype);
+
+NodeUI.prototype.setupDocs = function() {
+	var that = this
+
+	E2.ui.pluginDocsCache.loadDocs(this.parent_node.plugin.id)
+	.then(function(docs) {
+		// docs.desc = '...'
+		// docs.inputs = [{name: '...', desc: '...'}, ...]
+		// docs.outputs = [{name: '...', desc: '...'}, ...]
+
+		that.parent_node.plugin.desc = docs.desc
+
+		function slotMatcher(docSlots) {
+			return function (slot) {
+				for (var i = 0, len = docSlots.length; i < len; ++i) {
+					if (docSlots[i].name === slot.name) {
+						slot.desc = docSlots[i].desc
+						return
+					}
+				}
+
+				console.error('no docs for ', that.parent_node.plugin.id, '.', slot.name)
+			}
+		}
+
+		that.parent_node.plugin.input_slots.map(slotMatcher(docs.inputs))
+		that.parent_node.plugin.output_slots.map(slotMatcher(docs.outputs))
+	})
+}
 
 NodeUI.prototype.updateTooltipsPosition = function(data) {	// find any tooltips that have our nodeId and move them accordingly.
 	var repositionMyTooltips = function(data) {

@@ -45,11 +45,34 @@ DocumentationController.prototype.parsePluginDocumentation = function(markdown) 
 	inputs = getSubstrings(inputs, '###', '\n\n')
 	outputs = getSubstrings(outputs, '###', '\n\n')
 
+	// extract Name (first line) from:
+	// Name
+	// Description
+	function getName(str) {
+		str = str.trim()
+		var linelen = str.indexOf('\n')
+		var name = linelen > 0 ? str.substring(0, linelen) : str
+		if (!name) {
+			console.error('no name in', str)
+		}
+		return name
+	}
+
+	// extract Description (everything but the first line) from:
+	// ###Name
+	// Description
+	function getDesc(str) {
+		str = str.trim()
+		var linelen = str.indexOf('\n')
+		var desc = linelen > 0 ? str.substring(linelen) : ""
+		return desc
+	}
+
 	for (var i = 0; i < inputs.length; ++i) {
-		result.inputs.push(marked(inputs[i]))
+		result.inputs.push({name: getName(inputs[i]), desc: marked(getDesc(inputs[i]))})
 	}
 	for (var i = 0; i < outputs.length; ++i) {
-		result.outputs.push(marked(outputs[i]))
+		result.outputs.push({name: getName(outputs[i]), desc: marked(getDesc(outputs[i]))})
 	}
 
 	return result
