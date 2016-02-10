@@ -34,4 +34,19 @@ describe('Graph analysis', function() {
 		})
 	})
 
+	it('returns 0 size if assets not found', function(done) {
+		ga = new GraphAnalyser({
+			stat: function() {
+				return when.resolve()
+			}
+		})
+
+		ga.analyse(graphJson)
+		.then(function(stat) {
+			assert.equal(stat.numAssets, 4)
+			assert.equal(stat.size, 0)
+			done()
+		})
+	})
+
 })
