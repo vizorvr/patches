@@ -9,7 +9,7 @@ var assert = require('assert')
 var expect = require('chai').expect
 
 var graphFile = __dirname+'/../../browser/data/graphs/default.json'
-var graphData = fs.readFileSync(graphFile)
+var graphData = fs.readFileSync(graphFile).toString('utf8')
 
 function rand() {
 	return Math.floor(Math.random() * 10000)
@@ -146,7 +146,7 @@ describe('Graph', function() {
 		agent.post('/graph').send({
 			path: path,
 			tags: [ 'tags', '#are', 'cool' ],
-			graph: fs.readFileSync(graphFile)
+			graph: graphData
 		})
 		.expect(200)
 		.end(function(err, res) {
@@ -220,7 +220,7 @@ describe('Graph', function() {
 
 		agent.post('/graph').send({
 			path: path,
-			graph: fs.readFileSync(graphFile),
+			graph: graphData,
 			previewImage: testPngData
 		})
 		.expect(200)
@@ -274,7 +274,7 @@ describe('Graph', function() {
 
 		agent.post('/graph').send({
 			path: path,
-			graph: fs.readFileSync(graphFile),
+			graph: graphData,
 			previewImage: null
 		})
 		.expect(200)
@@ -297,7 +297,7 @@ describe('Graph', function() {
 
 		agent.post('/graph').send({
 			path: path,
-			graph: fs.readFileSync(graphFile),
+			graph: graphData,
 			previewImage: "abcdefg123456789"
 		})
 		.expect(200)

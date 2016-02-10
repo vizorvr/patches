@@ -7,6 +7,11 @@ var alphanumeric = [
 	'Must be alphanumeric'
 ];
 
+var statSpec = {
+	size: { type: Number, required: true }, 
+	numAssets: { type: Number, required: true }
+};
+
 var graphSchema = new mongoose.Schema({
 	_creator: { type: Schema.Types.ObjectId, ref: 'User' },
 	owner: { type: String, required: true, match: alphanumeric },
@@ -20,6 +25,7 @@ var graphSchema = new mongoose.Schema({
 	}],
 	previewUrlSmall: { type: String },
 	previewUrlLarge: { type: String },
+	stat: statSpec,
 	updatedAt: { type: Date, default: Date.now },
 	createdAt: { type: Date, default: Date.now }
 },

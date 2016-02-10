@@ -8,6 +8,8 @@ var helper = require('./controllerHelpers')
 var isStringEmpty = require('../lib/stringUtil').isStringEmpty
 var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
+var GraphAnalyser = require('../lib/graphAnalyser').GraphAnalyser
+
 var EditLog = require('../models/editLog')
 
 function makeRandomPath() {
@@ -25,6 +27,7 @@ function GraphController(s, gfs, rethinkConnection) {
 	AssetController.apply(this, args);
 	this.rethinkConnection = rethinkConnection
 
+	this.graphAnalyser = new GraphAnalyser(gfs)
 	this.previewImageProcessor = new PreviewImageProcessor()
 }
 
@@ -34,8 +37,7 @@ GraphController.prototype.userIndex = function(req, res, next) {
 	var wantJson = req.xhr;
 	var username = req.params.model
 	this._service.userGraphs(username)
-	.then(function(list)
-	{
+	.then(function(list) {
 		if (!list || !list.length)
 			return next();
 
@@ -313,6 +315,9 @@ GraphController.prototype.save = function(req, res, next) {
 			})
 		})
 		.then(function() {
+			return that.graphAnalyser.analyse(req.body.graph)
+		})
+		.then(function(stat) {
 			var url = that._fs.url(gridFsGraphPath);
 			var previewUrlSmall = that._fs.url(previewImageSpecs[0].gridFsPath)
 			var previewUrlLarge = that._fs.url(previewImageSpecs[1].gridFsPath)
@@ -321,6 +326,7 @@ GraphController.prototype.save = function(req, res, next) {
 				path: path,
 				tags: tags,
 				url: url,
+				stat: stat,
 				previewUrlSmall: previewUrlSmall,
 				previewUrlLarge: previewUrlLarge
 			}
