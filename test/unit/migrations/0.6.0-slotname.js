@@ -1,7 +1,7 @@
 var fs = require('fs')
 var assert = require('assert')
 
-var migrateGraphToUseSlotNames = require(__dirname+'/../../../tools/migration/0.6.0-slotname')
+var migrateGraphToUseSlotNames = require(__dirname+'/../../../tools/migration/0.6.0/migrate')
 	.migrateGraphToUseSlotNames
 
 var fixture = fs.readFileSync(__dirname+'/../../fixtures/slider-float.json')

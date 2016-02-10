@@ -73,5 +73,6 @@ function migrateGraphToUseSlotNames(slotNameMap, graph) {
 	return graph
 }
 
+exports.migrateGraphToUseSlotNames = migrateGraphToUseSlotNames
 exports.migrateGraphFile = migrateGraphFile
 exports.migrateGraph = migrateGraph
