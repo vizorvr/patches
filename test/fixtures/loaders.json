@@ -1,0 +1,49 @@
+{
+    "abs_t": 50.354,
+    "active_graph": "root",
+    "graph_uid": "TXDgBc0JJtS3",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "three_loader_model",
+                "x": 509,
+                "y": 350,
+                "uid": "jVkWDXLAjTrT",
+                "state": {
+                    "url": "/data/kschzt/assets/scene/fox/fox.js"
+                }
+            },
+            {
+                "plugin": "url_audio_buffer_generator",
+                "x": 767,
+                "y": 332,
+                "uid": "bxM3RuTrhSZK",
+                "state": {
+                    "url": "/data/audio/d6cfcad4024860b287561594147b423820b34405.jpg"
+                }
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 540,
+                "y": 173,
+                "uid": "8CCL3ZhmbM2p",
+                "state": {
+                    "url": "/data/image/bc028b7bcbc058acca2f0f48d4340f7db78c7f0f.png"
+                }
+            },
+            {
+                "plugin": "url_texture_generator",
+                "x": 494,
+                "y": 446,
+                "uid": "7yhVPYBfqeGv",
+                "state": {
+                    "url": "/data/image/0bc8d920b61be5fe7a12bb255d53f4eaf454ba55.png"
+                }
+            }
+        ],
+        "conns": []
+    }
+}
