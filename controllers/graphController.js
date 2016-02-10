@@ -21,6 +21,29 @@ function makeRandomPath() {
 	return uid
 }
 
+function prettyPrintGraphInfo(graph) {
+	// Get displayed values for graph and owner
+	// 'this-is-a-graph' => 'This Is A Graph'
+	var graphName = graph.name.split('-')
+		.map(s => s.charAt(0).toUpperCase() + s.slice(1))
+		.join(' ');
+
+	// Figure out if the graph owner has a fullname
+	// Use that if does, else use the username for display
+	var graphOwner;
+	var creator = graph._creator;
+	if (creator.name && !isStringEmpty(creator.name)) {
+		graphOwner = creator.name;
+	} else {
+		graphOwner = graph.owner;
+	}
+
+	graph.prettyOwner = graphOwner
+	graph.prettyName = graphName
+
+	return graph
+}
+
 function GraphController(s, gfs, rethinkConnection) {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
@@ -138,11 +161,18 @@ GraphController.prototype.embed = function(req, res, next) {
 		if (!graph)
 			return next()
 
+		graph = prettyPrintGraphInfo(graph)
+
 		res.render('graph/show', {
 			layout: 'player',
 			autoplay: false,
 			graph: graph,
-			graphMinUrl: graph.url
+			graphMinUrl: graph.url,
+			graphName: graph.prettyName,
+			graphOwner: graph.prettyOwner,
+			previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
+			previewImageWidth: 1280,
+			previewImageHeight: 720
 		})
 	}).catch(next)
 }
@@ -154,28 +184,15 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 		if (!graph)
 			return next()
 
-		// Get displayed values for graph and owner
-		// 'this-is-a-graph' => 'This Is A Graph'
-		var graphName = graph.name.split('-')
-			.map(s => s.charAt(0).toUpperCase() + s.slice(1))
-			.join(' ');
-		// Figure out if the graph owner has a fullname
-		// Use that if does, else use the username for display
-		var graphOwner;
-		var creator = graph._creator;
-		if (creator.name && !isStringEmpty(creator.name)) {
-			graphOwner = creator.name;
-		} else {
-			graphOwner = graph.owner;
-		}
+		graph = prettyPrintGraphInfo(graph)
 		
 		res.render('graph/show', {
 			layout: 'player',
 			graph: graph,
 			graphMinUrl: graph.url,
 			autoplay: true,
-			graphName: graphName,
-			graphOwner: graphOwner,
+			graphName: graph.prettyName,
+			graphOwner: graph.prettyOwner,
 			previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
 			previewImageWidth: 1280,
 			previewImageHeight: 720
