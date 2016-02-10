@@ -648,15 +648,6 @@ VizorUI.prototype.onKeyDown = function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 			break;
-		case uiKeys.copy:
-			E2.app.onCopy(e);
-			break;
-		case uiKeys.cut:
-			E2.app.onCut(e);
-			break;
-		case uiKeys.paste:
-			E2.app.onPaste();
-			break;
 		case uiKeys.undo:
 			e.preventDefault();
 			e.stopPropagation();
