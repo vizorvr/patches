@@ -10,6 +10,8 @@ var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
 var GraphAnalyser = require('../lib/graphAnalyser').GraphAnalyser
 
+var User = require('../models/user')
+
 var EditLog = require('../models/editLog')
 
 function makeRandomPath() {
@@ -59,31 +61,44 @@ GraphController.prototype = Object.create(AssetController.prototype);
 GraphController.prototype.userIndex = function(req, res, next) {
 	var wantJson = req.xhr;
 	var username = req.params.model
-	this._service.userGraphs(username)
-	.then(function(list) {
-		if (!list || !list.length)
-			return next();
 
-		var data = {
-			profile: {
-				username: username
-			},
-			graphs: list
-		};
+	var that = this
 
-		if (wantJson) {
-			return res.status(200).json(helper.responseStatusSuccess("OK", data));
-		}
+	User.findOne({ username: username }, function(err, user) {
+		if (err)
+			return next(err)
 
-		_.extend(data, {
-			meta : {
-				title: username+'\'s Files',
-				bodyclass: 'bUserpage',
-				scripts : ['site/userpages.js']
+		that._service.userGraphs(username)
+		.then(function(list) {
+			// no files found, but if there is a user
+			// then show empty userpage
+			if (!user && (!list || !list.length)) {
+				return next()
 			}
+
+			var data = {
+				profile: {
+					username: username
+				},
+				graphs: list || []
+			}
+
+			if (wantJson) {
+				return res.status(200).json(
+					helper.responseStatusSuccess("OK", data))
+			}
+
+			_.extend(data, {
+				meta : {
+					title: username+'\'s Files',
+					bodyclass: 'bUserpage',
+					scripts : ['site/userpages.js']
+				}
+			});
+			
+			res.render('server/pages/userpage', data);
 		});
-		res.render('server/pages/userpage', data);
-	});
+	})
 }
 
 // GET /graph
