@@ -302,7 +302,15 @@ new function() {
         var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
 
         $('#edit').click(function () {
-            window.location = window.location.href.split('?')[0] + '/edit'
+            var editUrl = '/' +
+                window.location.href
+                .split('?')[0]
+                .split('/')
+                .slice(-2)
+                .concat('edit')
+                .join('/')
+
+            window.location = editUrl
         })
 
         function enterFullscreen(e) {
