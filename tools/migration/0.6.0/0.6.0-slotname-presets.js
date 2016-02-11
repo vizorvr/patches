@@ -30,6 +30,15 @@ exports.execute = function() {
 		migrateGraphFile(defaultGraphsPath+'/'+fn)
 	})
 
+	// then defaults & templates
+	var defaultGraphsPath = __dirname+'/../../../browser/test/fixtures'
+	fs.readdirSync(defaultGraphsPath).map(function(fn) {
+		if (fn[0] === '.')
+			return;
+
+		migrateGraphFile(defaultGraphsPath+'/'+fn)
+	})
+
 	dfd.resolve()
 
 	return dfd.promise
