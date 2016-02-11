@@ -1106,7 +1106,9 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			continue;
 
 		var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
-		var slot = slots[dc.dst_slot]
+		var slot = dc.dst_dyn ?
+			destNode.plugin.input_slots[dc.dst_slot.index] :
+			destNode.findInputSlotByName(dc.dst_slot) 
 
 		if (!slot)
 			continue;
