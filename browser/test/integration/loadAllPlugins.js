@@ -56,6 +56,8 @@ global.ThreeObject3DPlugin = require(__dirname + '/../../scripts/threeObject3dPl
 global.AbstractThreeMaterialPlugin = require(__dirname + '/../../scripts/abstractThreeMaterialPlugin.js')
 global.AbstractThreeMeshPlugin = require(__dirname + '/../../scripts/abstractThreeMeshPlugin.js')
 global.AbstractThreeLoaderObjPlugin = require(__dirname + '/../../scripts/abstractThreeLoaderObjPlugin.js')
+global.Loader = require(__dirname + '/../../scripts/loaders/loader.js')
+global.PluginDocsCache = require(__dirname + '/../../scripts/documentation/pluginDocsCache.js')
 
 global.load_script = require(__dirname + '/../../scripts/util.js').load_script
 

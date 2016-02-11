@@ -10,12 +10,12 @@
 		]
 		
 		this.output_slots = [ 
-			{ name: 'color', dt: core.datatypes.COLOR, desc: 'The output color', def: new THREE.Color('0xffffff') } 
+			{ name: 'color', dt: core.datatypes.COLOR, desc: 'The output color', def: new THREE.Color(0xffffff) }
 		]
 	}
 
 	ConvertRGBColorModulator.prototype.reset = function() {
-		this.color = new THREE.Color('0xffffff')
+		this.color = new THREE.Color(0xffffff)
 	}
 
 	ConvertRGBColorModulator.prototype.update_input = function(slot, data) {

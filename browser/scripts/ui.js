@@ -117,7 +117,6 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	var that = this;
 	var dom = this.dom;
 
-
 	this.state.panelStates.assets = VizorUI.getDomPanelState(dom.assetsLib);
 	this.state.panelStates.presets = VizorUI.getDomPanelState(dom.presetsLib);
 	this.state.panelStates.chat = VizorUI.getDomPanelState(dom.chatWindow);
@@ -171,6 +170,8 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	this.setupEventHandlers(e2,this.dom);
 	this.setupStateStoreEventListeners();
 	this.state.allowStoreOnChange = true;
+
+	this.pluginDocsCache = new PluginDocsCache()
 
 	this._initialised = true;
 

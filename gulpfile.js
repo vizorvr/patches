@@ -55,6 +55,8 @@ paths = {
 			'./browser/scripts/loaders/audioBufferLoader.js',
 			'./browser/scripts/loaders/multiObjectLoader.js',
 
+			'./browser/scripts/documentation/pluginDocsCache.js',
+
 			'./browser/vendor/three/three.js',
 			'./browser/vendor/three/OBJLoader.js',
 			'./browser/vendor/three/OBJMTLLoader.js',

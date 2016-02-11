@@ -1,5 +1,6 @@
 E2.p = E2.plugins["absolute_modulator"] = function(core, node)
 {
+
 	this.desc = 'Emit the absolute value of the input.';
 	
 	this.input_slots = [ 
