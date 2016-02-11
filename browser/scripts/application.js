@@ -966,6 +966,13 @@ Application.prototype.serialiseSelection = function() {
 }
 
 Application.prototype.onCopy = function(e) {
+	if (e && E2.util.isTextInputInFocus(e)) {
+		return true
+	}
+
+	if (e)
+		e.preventDefault()
+
 	if (this.selectedNodes.length < 1) {
 		msg('Copy: Nothing selected.')
 
@@ -1953,8 +1960,7 @@ Application.prototype.start = function() {
 	})
 
 	document.addEventListener('copy', function(e) {
-		that.onCopy(e)
-		e.preventDefault()
+		return that.onCopy(e)
 	})
 
 	window.addEventListener('paste', function(e) {
