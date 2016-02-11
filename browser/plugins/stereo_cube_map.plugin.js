@@ -101,7 +101,7 @@
 					new THREE.BoxGeometry(50, 50, 50),
 					leftMaterial)
 
-			that.leftObj.channels.set(that.leftChannel)
+			that.leftObj.layers.set(that.leftChannel)
 
 			// right eye
 			var rightTexture = new THREE.CubeTexture(textures.splice(0, 6))
@@ -123,7 +123,7 @@
 				new THREE.BoxGeometry(50, 50, 50),
 				rightMaterial)
 
-			that.rightObj.channels.set(that.rightChannel)
+			that.rightObj.layers.set(that.rightChannel)
 
 			that.updated = true
 		},

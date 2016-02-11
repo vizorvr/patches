@@ -36,6 +36,8 @@ function VRCameraHelper( camera ) {
 		})
 	})
 
+	this.name = 'vr camera helper object'
+
 	if (camera) {
 		this.attachCamera(camera)
 	}

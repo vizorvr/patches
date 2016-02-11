@@ -70,7 +70,7 @@
 				0.001,
 				1000)
 
-			this.vrControlCamera.channels.enable(1)
+			this.vrControlCamera.layers.enable(1)
 
 			this.dolly.add(this.vrControlCamera)
 		}
@@ -78,6 +78,7 @@
 		// create a object3d reference so that the world editor sees the camera
 		// as an object3d
 		this.object3d = this.dolly
+		this.object3d.backReference = this
 
 		this.object3d.backReference = this
 

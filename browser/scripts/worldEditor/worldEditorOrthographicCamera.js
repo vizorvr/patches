@@ -10,7 +10,7 @@ function WorldEditorOrthographicCamera(domElement) {
 	this.camera.zoom = 10
 	this.aspect = 1
 
-	this.camera.channels.enable(1)
+	this.camera.layers.enable(1)
 
 	E2.core.on('resize', this.resize.bind(this))
 }
