@@ -153,8 +153,8 @@ PresetManager.prototype.openPreset = function(name) {
 			name: name
 		})
 
-		E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0)
-		E2.app.onPaste()
+		var doc = E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0)
+		E2.app.onPaste(doc)
 	})
 	.fail(function(_j, _textStatus, _errorThrown) {
 		msg('ERROR: Failed to load the selected preset.')

@@ -232,6 +232,10 @@ WorldEditor.prototype.onPaste = function(nodes) {
 
 	var dropNode = nodes[0]
 
+	// empty graph can have this
+	if (!this.scene && !this.currentGroup)
+		return;
+
 	// find scene node
 	var sceneNode = this.currentGroup || this.scene.backReference.parentNode
 

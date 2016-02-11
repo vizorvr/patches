@@ -39,7 +39,6 @@ function Application() {
 	this.selectedNodes = [];
 	this.selectedConnections = [];
 	this.selection_dom = null;
-	this.clipboard = null;
 	this.inDrag = false;
 	this.resize_timer = null;
 	this.is_osx = /mac os x/.test(navigator.userAgent.toLowerCase());
@@ -942,9 +941,8 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 }
 
 Application.prototype.fillCopyBuffer = function(nodes, conns, sx, sy) {
-	this.clipboard = JSON.stringify(this.selectionToObject(nodes, conns, sx, sy))
-	msg('Copy.')
-};
+	return JSON.stringify(this.selectionToObject(nodes, conns, sx, sy))
+}
 
 Application.prototype.onDelete = function(e) {
 	if (!this.selectedNodes.length)
@@ -959,23 +957,30 @@ Application.prototype.onDelete = function(e) {
 	this.deleteSelectedNodes();
 }
 
+Application.prototype.serialiseSelection = function() {
+	return this.fillCopyBuffer(
+		this.selectedNodes,
+		this.selectedConnections,
+		this.scrollOffset[0],
+		this.scrollOffset[1])
+}
+
 Application.prototype.onCopy = function(e) {
 	if (this.selectedNodes.length < 1) {
-		msg('Copy: Nothing selected.');
+		msg('Copy: Nothing selected.')
 
-		if (e)
-			e.stopPropagation();
-
-		return false;
+		return false
 	}
 
-	this.fillCopyBuffer(this.selectedNodes, this.selectedConnections, this.scrollOffset[0], this.scrollOffset[1]);
+	var data = this.serialiseSelection()
+	
+	this.clipboard = data
+	
+	if (e && e.clipboardData)
+		e.clipboardData.setData('text/plain', data)
 
-	if (e)
-		e.stopPropagation();
-
-	return false;
-};
+	return false
+}
 
 Application.prototype.onCut = function(e) {
 	if (this.selectedNodes.length > 0) {
@@ -993,6 +998,9 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 	var createdNodes = []
 	var createdConnections = []
 	var globalUidMap = {}
+
+	var docX1 = srcDoc.x1 || 0
+	var docY1 = srcDoc.y1 || 0
 
 	function mapSlotIds(sids, localUidMap) {
 		var nsids = {}
@@ -1071,8 +1079,9 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 	for(var i = 0, len = doc.nodes.length; i < len; i++) {
 		var docNode = doc.nodes[i]
-		docNode.x = Math.floor((docNode.x - doc.x1) + offsetX)
-		docNode.y = Math.floor((docNode.y - doc.y1) + offsetY)
+
+		docNode.x = Math.floor((docNode.x - docX1) + offsetX)
+		docNode.y = Math.floor((docNode.y - docY1) + offsetY)
 
 		this.graphApi.addNode(ag, Node.hydrate(ag.uid, docNode))
 
@@ -1218,13 +1227,16 @@ Application.prototype.findSpaceInGraphFor = function(doc) {
 	return {x: result.x1, y: result.y1}
 }
 
-Application.prototype.onPaste = function(x, y) {
-	if (this.clipboard === null)
-		return;
-
+Application.prototype.onPaste = function(json, x, y) {
 	this.clearSelection()
 
-	var doc = JSON.parse(this.clipboard)
+	json = json || this.clipboard
+
+	var doc = JSON.parse(json)
+
+	if (doc.root)
+		doc = doc.root
+
 	var cp = E2.dom.canvases
 	var sx = this.scrollOffset[0]
 	var sy = this.scrollOffset[1]
@@ -1934,6 +1946,22 @@ Application.prototype.start = function() {
 	window.addEventListener('blur', function() {
 		that.clearEditState()
 	})
+
+	document.addEventListener('cut', function(e) {
+		that.onCut(e)
+		e.preventDefault()
+	})
+
+	document.addEventListener('copy', function(e) {
+		that.onCopy(e)
+		e.preventDefault()
+	})
+
+	window.addEventListener('paste', function(e) {
+		var data = e.clipboardData.getData('text/plain')
+		that.onPaste(data)
+		e.preventDefault()
+	}, false)
 
 	document.addEventListener('fullscreenchange', this.onFullScreenChanged.bind(this))
 	document.addEventListener('webkitfullscreenchange', this.onFullScreenChanged.bind(this))
