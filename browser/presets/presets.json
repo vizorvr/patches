@@ -62,12 +62,6 @@
 		"Move in a circle and turn": { "name": "_animation-move-in-a-circle-and-turn" }
 	},
 
-	"COLOR ": {
-		"Hue / Saturation / Luminosity / Alpha": { "name": "color_hsla" },
-		"Red / Green / Blue / Alpha": { "name": "color_rgba" },
-		"Color to vector XYZ": { "name": "util_color_to_vector" }
-	},
-
 	"UTILS": {
 		"4 step stepsequencer": { "name": "util_4_step_stepsequencer" },
 		"1 step stepsequencer": { "name": "util_1_step_stepsequencer" },

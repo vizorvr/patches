@@ -4,9 +4,9 @@
 		this.desc = 'Multiplies the two supplied values and emits the result.'
 		
 		this.input_slots = [ 
-			{ name: 'value', dt: core.datatypes.FLOAT,
+			{ name: 'a', dt: core.datatypes.FLOAT,
 				desc: 'The first operand.', def: 0.0 },
-			{ name: 'value', dt: core.datatypes.FLOAT,
+			{ name: 'b', dt: core.datatypes.FLOAT,
 				desc: 'The second operand.', def: 1.0 } 
 		]
 		

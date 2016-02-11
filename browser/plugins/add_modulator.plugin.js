@@ -3,8 +3,8 @@ E2.p = E2.plugins["add_modulator"] = function(core, node)
 	this.desc = 'Add two floating point values.';
 	
 	this.input_slots = [ 
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The first operand.', def: 0.0 },
-		{ name: 'value', dt: core.datatypes.FLOAT, desc: 'The second operand.', def: 0.0 } 
+		{ name: 'a', dt: core.datatypes.FLOAT, desc: 'The first operand.', def: 0.0 },
+		{ name: 'b', dt: core.datatypes.FLOAT, desc: 'The second operand.', def: 0.0 } 
 	];
 	
 	this.output_slots = [ 

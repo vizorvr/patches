@@ -239,7 +239,6 @@
         "Set typed array as": "typed_array_set_as_modulator"
     },
 
-
     "COLOR MODULATORS": {
         "Add color": "color_add_modulator",
         "Blend color": "color_blend_modulator",

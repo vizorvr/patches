@@ -3,8 +3,8 @@ E2.p = E2.plugins["vector_dot"] = function(core, node)
 	this.desc = 'Emits the dot products of the two supplied vectors.';
 	
 	this.input_slots = [ 
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The first operand.', def: core.renderer.vector_origin }, 
-		{ name: 'vector', dt: core.datatypes.VECTOR, desc: 'The second operand.', def: core.renderer.vector_origin } 
+		{ name: 'a', dt: core.datatypes.VECTOR, desc: 'The first operand.', def: core.renderer.vector_origin }, 
+		{ name: 'b', dt: core.datatypes.VECTOR, desc: 'The second operand.', def: core.renderer.vector_origin } 
 	];
 	
 	this.output_slots = [

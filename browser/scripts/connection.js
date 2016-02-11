@@ -14,8 +14,8 @@ ConnectionUI.prototype.resolve_slot_divs = function(and_redraw) {
 	var pc = this.parent_conn;
 	and_redraw = (typeof and_redraw === 'undefined' ) ? true : !!and_redraw;	// force to bool, default true
 
-	this.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + (pc.src_slot.uid !== undefined ? 'do' + pc.src_slot.uid : 'so' + pc.src_slot.index));
-	this.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + (pc.dst_slot.uid !== undefined ? 'di' + pc.dst_slot.uid : 'si' + pc.dst_slot.index));
+	this.src_slot_div = pc.src_node.ui.dom.find('#n' + pc.src_node.uid + (pc.src_slot.dynamic ? 'do' + pc.src_slot.uid : 'so' + pc.src_slot.index));
+	this.dst_slot_div = pc.dst_node.ui.dom.find('#n' + pc.dst_node.uid + (pc.dst_slot.dynamic ? 'di' + pc.dst_slot.uid : 'si' + pc.dst_slot.index));
 
 	if (and_redraw)
 		E2.app.redrawConnection(pc)
@@ -51,7 +51,7 @@ Connection.prototype.updateInboundNodes = function(node) {
 	node.queued_update = 1;
 	
 	if (node.plugin.id !== 'input_proxy') {
-		if (E2.GRAPH_NODES.indexOf(node.plugin.id) > -1) {
+		if (Node.isGraphPlugin(node.plugin.id)) {
 			node.plugin.graph.roots.map(this.updateInboundNodes.bind(this))
 		}
 
@@ -114,51 +114,69 @@ Connection.prototype.signal_change = function(on) {
 	}
 };
 
-Connection.prototype.serialise = function()
-{
-	var d = {};
+Connection.prototype.serialise = function() {
+	var d = {}
 
 	d.src_nuid = this.src_node.uid
 	d.dst_nuid = this.dst_node.uid
-	d.src_slot = this.src_slot.index
-	d.dst_slot = this.dst_slot.index
+	d.src_slot = this.src_slot.dynamic ? this.src_slot.index : this.src_slot.name
+	d.dst_slot = this.dst_slot.dynamic ? this.dst_slot.index : this.dst_slot.name
 	d.uid = this.uid
 	
-	d.src_connected = this.src_slot.is_connected;
-	d.dst_connected = this.dst_slot.is_connected;
+	d.src_connected = this.src_slot.is_connected
+	d.dst_connected = this.dst_slot.is_connected
 	
-	if(this.src_slot.uid !== undefined)
-		d.src_dyn = true;
+	if (this.src_slot.uid !== undefined)
+		d.src_dyn = true
 	
-	if(this.dst_slot.uid !== undefined)
-		d.dst_dyn = true;
+	if (this.dst_slot.uid !== undefined)
+		d.dst_dyn = true
 
-	if(this.offset !== 0)
-		d.offset = this.offset;
+	if (this.offset !== 0)
+		d.offset = this.offset
 	
-	return d;
-};
+	return d
+}
 
 Connection.prototype.deserialise = function(d) {
 	this.src_node = '' + d.src_nuid
 	this.dst_node = '' + d.dst_nuid
 
-	if (this.src_node === this.dst_node)
-		debugger;
-
 	this.uid = d.uid || E2.uid()
 
 	this.src_slot = {
-		index: d.src_slot,
-		dynamic: d.src_dyn ? true : false,
+		dynamic: !!d.src_dyn,
 		is_connected: d.src_connected
-	};
+	}
+
+	if (this.src_slot.dynamic) {
+		this.src_slot.index = d.src_slot
+	} else {
+		// support old editlogs
+		// can be removed in ~March 2016
+		if (typeof(d.src_slot) === 'number')
+			this.src_slot.index = d.src_slot
+		else
+			this.src_slot.name = d.src_slot
+	}
+
 	this.dst_slot = {
-		index: d.dst_slot,
-		dynamic: d.dst_dyn ? true : false,
+		dynamic: !!d.dst_dyn,
 		is_connected: d.dst_connected
-	};
-	this.offset = d.offset ? d.offset : 0;
+	}
+
+	if (this.dst_slot.dynamic) {
+		this.dst_slot.index = d.dst_slot
+	} else {
+		// support old editlogs
+		// can be removed in ~March 2016
+		if (typeof(d.dst_slot) === 'number')
+			this.dst_slot.index = d.dst_slot
+		else
+			this.dst_slot.name = d.dst_slot
+	}
+
+	this.offset = d.offset ? d.offset : 0
 }
 
 Connection.prototype.patch_up = function(nodes) {
@@ -173,7 +191,7 @@ Connection.prototype.patch_up = function(nodes) {
 			return nuid
 
 		for(var i = 0, len = nodes.length; i < len; i++) {
-			if(nodes[i].uid === nuid)
+			if (nodes[i].uid === nuid)
 				return nodes[i]
 		}
 		
@@ -190,17 +208,21 @@ Connection.prototype.patch_up = function(nodes) {
 		return false
 	}
 
-	var ss = (this.src_slot.dynamic ? 
-		this.src_node.dyn_outputs :
-		this.src_node.plugin.output_slots)[this.src_slot.index]
+	var ss = this.src_slot.dynamic ?
+		this.src_node.dyn_outputs[this.src_slot.index] :
+		(this.src_slot.name ? // support old editlogs, until 3.2016
+			this.src_node.findOutputSlotByName(this.src_slot.name) :
+			this.src_node.plugin.output_slots[this.src_slot.index])
 
-	var ds = (this.dst_slot.dynamic ? 
-		this.dst_node.dyn_inputs :
-		this.dst_node.plugin.input_slots)[this.dst_slot.index]
+	var ds = this.dst_slot.dynamic ? 
+		this.dst_node.dyn_inputs[this.dst_slot.index] :
+		(this.dst_slot.name ? // support old editlogs, until 3.2016
+			this.dst_node.findInputSlotByName(this.dst_slot.name) :
+			this.dst_node.plugin.input_slots[this.dst_slot.index])
 	
 	if (!ss || !ds) {
 		msg('ERROR: Source or destination slot invalid - dropping connection.')
-		console.log('Connection that failed', this)
+		console.error('Connection that failed', this)
 		return false
 	}
 
