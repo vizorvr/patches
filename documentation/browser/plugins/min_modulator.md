@@ -4,10 +4,10 @@
 Emit the lesser of the two input values.
 
 ##Inputs
-###value
+###a
 The first input value
 
-###value
+###b
 The second input value
 
 ##Outputs

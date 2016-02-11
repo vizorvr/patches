@@ -4,10 +4,10 @@
 Emits true if either input value is true and false otherwise.
 
 ##Inputs
-###bool
+###a
 The first operand.
 
-###bool
+###b
 The second operand.
 
 ##Outputs

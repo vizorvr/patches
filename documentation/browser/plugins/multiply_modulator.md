@@ -4,10 +4,10 @@
 Multiplies the two supplied values and emits the result.
 
 ##Inputs
-###value
+###a
 The first operand.
 
-###value
+###b
 The second operand.
 
 ##Outputs

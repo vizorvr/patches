@@ -4,10 +4,10 @@
 Emits true when the values of the two inputs are different and false when they're identical.
 
 ##Inputs
-###bool
+###a
 The first operand.
 
-###bool
+###b
 The second operand.
 
 ##Outputs

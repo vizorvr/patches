@@ -4,10 +4,10 @@
 Add two floating point values.
 
 ##Inputs
-###value
+###a
 The first operand.
 
-###value
+###b
 The second operand.
 
 ##Outputs

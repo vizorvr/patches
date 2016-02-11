@@ -4,10 +4,10 @@
 Emits the dot products of the two supplied vectors.
 
 ##Inputs
-###vector
+###a
 The first operand.
 
-###vector
+###b
 The second operand.
 
 ##Outputs

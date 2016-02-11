@@ -4,10 +4,10 @@
 Concatenates the two supplied strings.
 
 ##Inputs
-###text
+###a
 The first string.
 
-###text
+###b
 The second string.
 
 ##Outputs

@@ -4,10 +4,10 @@
 Subtract the second value from the first and emit the result.
 
 ##Inputs
-###value
+###a
 The first operand.
 
-###value
+###b
 The second operand.
 
 ##Outputs
