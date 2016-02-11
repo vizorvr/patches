@@ -219,7 +219,12 @@
 
 		if (intersects.length > 0) {
 			var obj = intersects[0].object
-			while (obj && !obj.gazeClickerCount) {
+
+			// traverse the hierarchy back
+			// we need to find an object with:
+			// - a positive gazeClickerCount (something is tracking its clickable state)
+			// - a reference back to a node (it is a object3d plugin's root object)
+			while (obj && !obj.gazeClickerCount && !(obj.backReference && obj.backReference.object3d === obj)) {
 				obj = obj.parent
 			}
 
