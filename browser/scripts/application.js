@@ -1105,13 +1105,14 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 		if (!destNode)
 			continue;
 
-		var slots = dc.dst_dyn ? destNode.dyn_inputs : destNode.plugin.input_slots
 		var slot = dc.dst_dyn ?
 			destNode.plugin.input_slots[dc.dst_slot.index] :
 			destNode.findInputSlotByName(dc.dst_slot) 
 
-		if (!slot)
+		if (!slot) {
+			console.warn('Slot not found in', destNode.plugin.id, dc)
 			continue;
+		}
 	
 		if (dc.src_nuid === undefined || dc.dst_nuid === undefined) {
 			// not a valid connection, clear it and skip it

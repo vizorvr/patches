@@ -1,75 +1,19 @@
 var assert = require('assert');
 var fs = require('fs')
 
-var reset = require('./plugins/helpers').reset;
-var loadPlugin = require('./plugins/helpers').loadPlugin;
-
-global.E2 = {}
-global.window = {}
-var Application = require('../../scripts/application')
-
-global._ = require('lodash')
-global.EventEmitter = require('../../scripts/event-emitter')
-global.Node = require('../../scripts/node').Node
-global.EditorChannel = function(){}
-global.Graph = require('../../scripts/graph')
-global.Flux = require('../../vendor/flux')
-global.Plugin = require('../../scripts/plugin');
-global.Store = require('../../scripts/stores/store');
-global.GraphStore = require('../../scripts/stores/graphStore');
-global.PeopleManager = function() {}
-global.PeopleStore = function(){}
-
-global.THREE = {
-	Vector3: function(){},
-	Matrix4: function(){},
-	Color: function(){},
-	Material: function(){},
-	MeshBasicMaterial: function(){},
-	PerspectiveCamera: function(){},
-	Math : { clamp: function(v){return v}, mapLinear: function(v){return v}}
-}
-global.THREE.Matrix4.prototype.identity = function() {}
-
-
-global.NodeUI = function() {
-	this.dom = [$()]
-	this.dom.position = this.dom[0].position
-	this.dom.width = this.dom[0].width
-	this.dom.height = this.dom[0].height
-	this.dom[0].style = {}
-	this.setSelected = function(){}
-}
-global.TextureCache = function() {}
-global.PresetManager = function() {}
-require('../../scripts/commands/graphEditCommands')
-global.UndoManager = require('../../scripts/commands/undoManager.js')
-global.GraphApi = require('../../scripts/graphApi.js')
-global.Connection = require('../../scripts/connection.js').Connection
-global.ConnectionUI = require('../../scripts/connection.js').ConnectionUI
-global.ConnectionUI.prototype.resolve_slot_divs = function() {
-	this.src_slot_div = $()
-	this.dst_slot_div = $()
-}
-global.navigator = { userAgent: 'test' }
+var helpers = require('./helpers')
 
 describe('Paste', function() {
 	var core, app
 
 	beforeEach(function() {
-		core = reset()
-		global.E2.Variables = function() {
-			this.serialise = function(){}
-		}
-		core.active_graph = new Graph(core, null, {})
-		core.graphs = [ core.active_graph ]
-		
+		core = helpers.reset()
+		helpers.setupThree()
+
 		E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 		require('../../scripts/util')
 
-		global.window = { location: { pathname: 'test/test' } }
-
-		app = E2.app = new Application()
+		app = E2.app
 		E2.ui = { state: {} }
 		app.player = { core: core }
 		app.worldEditor = { isActive: function() { return false } }
@@ -86,7 +30,6 @@ describe('Paste', function() {
 			app.paste(source, 0, 0)
 			assert.equal(core.active_graph.nodes.length, 3)
 			assert.equal(core.active_graph.connections.length, 2)
-			assert.equal(core.active_graph.nodes[2].outputs.length, 2)
 		})
 
 		it('pastes correctly when repeated', function() {
@@ -95,8 +38,6 @@ describe('Paste', function() {
 			app.paste(source, 0, 0)
 			assert.equal(core.active_graph.nodes.length, 6)
 			assert.equal(core.active_graph.connections.length, 4)
-			assert.equal(core.active_graph.nodes[2].outputs.length, 2)
-			assert.equal(core.active_graph.nodes[5].outputs.length, 2)
 		})
 
 		it('discards invalid connections', function() {
@@ -110,6 +51,7 @@ describe('Paste', function() {
 			var nodeAdded = 0
 			var connected = 0
 			app.dispatcher.register(function(pl) {
+				console.log('event', pl.actionType)
 				if (pl.actionType==='uiNodeAdded')
 					nodeAdded++
 				if (pl.actionType==='uiConnected')
@@ -142,7 +84,7 @@ describe('Paste', function() {
 		PluginManager.prototype = Object.create(EventEmitter.prototype)
 		PluginManager.prototype.create = function(id, node) {
 			if (!E2.plugins[id])
-				loadPlugin(id)
+				helpers.loadPlugin(id)
 			var p = new E2.plugins[id](core, node)
 			p.id = id
 			return p
@@ -157,7 +99,7 @@ describe('Paste', function() {
 		global.TreeNode = TreeNode
 
 		beforeEach(function() {
-			var dummyCore = reset()
+			var dummyCore = helpers.reset()
 			E2.commands.graph = require('../../scripts/commands/graphEditCommands')
 	
 			E2.plugins.url_scene_generator = function(){
@@ -165,7 +107,7 @@ describe('Paste', function() {
 				this.output_slots = [ { name: 'x', dt: core.datatypes.BOOL } ]
 			}
 
-			app = E2.app = new Application()
+			app = E2.app
 			app.updateCanvas = function() {}
 			app.worldEditor = { isActive: function() { return false } }
 			app.channel = { broadcast: function(){} }
@@ -187,8 +129,7 @@ describe('Paste', function() {
 		it('creates the right number of nodes, connections and outputs', function() {
 			app.paste(source, 0, 0)
 			assert.equal(core.active_graph.nodes.length, 8)
-			assert.equal(core.active_graph.connections.length, 6)
-			assert.equal(core.active_graph.nodes[2].outputs.length, 1)
+			assert.equal(core.active_graph.connections.length, 5)
 		})
 
 		it('sends the right events', function() {
@@ -202,18 +143,18 @@ describe('Paste', function() {
 			})
 			app.paste(source, 0, 0)
 			assert.equal(nodeAdded, 8)
-			assert.equal(connected, 6)
+			assert.equal(connected, 5)
 		})
 
 		it('creates a subgraph in the right place', function() {
 			app.paste(source, 0, 0)
-			assert.equal(core.graphs[2].plugin.id, 'graph')
+			assert.equal(core.graphs[1].plugin.id, 'graph')
 		})
 
 		it('sets up the right parent relationships', function() {
 			app.paste(source, 0, 0)
 			assert.equal(
-				core.graphs[1].nodes[0]
+				core.graphs[1].nodes[1]
 					.plugin.node.parent_graph, // input proxy's parent
 				core.graphs[1]
 			)
@@ -222,18 +163,18 @@ describe('Paste', function() {
 		it('registers the right number of inputs and outputs', function() {
 			app.setupStoreListeners()
 			app.paste(source, 0, 0)
-			var node = core.graphs[0].nodes[0]
-			assert.equal(node.inputs.length, 3)
-			assert.equal(node.outputs.length, 2)
+			var node = core.graphs[0].nodes[5]
+			assert.equal(node.inputs.length, 2)
+			assert.equal(node.outputs.length, 1)
 		})
 
 		// this doesn't really belong here, but it's a good case to have
 		it('has the correct number of connections after removing a node', function() {
 			var ag = core.active_graph
 			app.paste(source, 0, 0)
-			assert.equal(ag.connections.length, 6)
-			app.graphApi.removeNode(ag, ag.nodes[3])
 			assert.equal(ag.connections.length, 5)
+			app.graphApi.removeNode(ag, ag.nodes[3])
+			assert.equal(ag.connections.length, 2)
 		})
 
 		it('adds the nodes and connections to the selection', function() {
@@ -241,7 +182,7 @@ describe('Paste', function() {
 			var ag = core.active_graph
 			app.clipboard = JSON.stringify(source)
 			app.onPaste()
-			assert.equal(app.selectedConnections.length, 6)
+			assert.equal(app.selectedConnections.length, 5)
 			assert.equal(app.selectedNodes.length, 8)
 		})
 

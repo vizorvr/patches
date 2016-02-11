@@ -305,7 +305,7 @@ describe('Multiuser', function() {
 						s3.dispatcher.register(function(m) {
 							assert.ok(m.number === 1)
 							s3.close()
-							s3.on('disconnected', done)
+							s3.once('disconnected', done)
 						})
 					})
 				})

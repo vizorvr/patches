@@ -1,4 +1,5 @@
 var assert = require('assert');
+var when = require('when')
 
 global.EventEmitter = require('events').EventEmitter
 global.Store = require('../../scripts/stores/store')
@@ -9,21 +10,24 @@ var Node = require('../../scripts/node').Node
 describe('GraphStore', function() {
 	var graph, node
 
-	global.E2 = {
-		uid: function() {
-			return '' + Math.random()
-		},
-		app: {
-			dispatcher: {
-				register: function(){}
+	beforeEach(function() {
+		global.E2 = {
+			uid: function() {
+				return '' + Math.random()
+			},
+			core: {
+				root_graph: {}
+			},
+			app: {
+				dispatcher: {
+					register: function(){}
+				}
 			}
 		}
-	}
 
-	beforeEach(function() {
 		graph = { addNode: function() {} }
 		node = new Node()
-		node.plugin = {}
+		node.plugin = { id: 'url_texture_generator' }
 	})
 
 	describe('uiNodeAdded', function() {
