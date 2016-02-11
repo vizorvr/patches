@@ -208,7 +208,7 @@ describe('Multiuser', function() {
 		
 		s1 = createClient(channel)
 		s1.once('join', burst)
-		s1.on('disconnected', function() {
+		s1.once('disconnected', function() {
 			s2 = createClient(channel)
 			s2.dispatcher.register(function(m) {
 				if (!m.actionType)
@@ -282,6 +282,7 @@ describe('Multiuser', function() {
 	it('sends log on join, leave, join back', function(done) {
 		var channel = 'one-'+Math.random()
 		var ogChannel = channel
+		var closed = false
 		
 		s1 = createClient(channel)
 		s1.once('join', function() {
@@ -303,8 +304,12 @@ describe('Multiuser', function() {
 					// join original channel again
 					s3.join(ogChannel, ogChannel, function() {
 						s3.dispatcher.register(function(m) {
+							if (closed)
+								return;
+
 							assert.ok(m.number === 1)
 							s3.close()
+							closed = true
 							s3.once('disconnected', done)
 						})
 					})
@@ -343,7 +348,7 @@ describe('Multiuser', function() {
 					assert.notEqual(m.number, 1)
 					assert.equal(m.id, lastId)
 					s3.close()
-					s3.on('disconnected', done)
+					s3.once('disconnected', done)
 				})
 			})
 

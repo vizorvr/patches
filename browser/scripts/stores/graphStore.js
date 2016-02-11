@@ -1,5 +1,15 @@
 (function() {
 
+var assetLoadingPlugins = [
+	'three_loader_model',
+	'three_loader_scene',
+	'url_texture_generator',
+	'url_audio_buffer_generator',
+	'url_audio_generator',
+	'url_json_generator',
+	'url_video_generator',
+]
+
 function mapConnections(node, fn) {
 	node.inputs.concat(node.outputs).map(fn)
 }
@@ -8,11 +18,19 @@ function GraphStore() {
 	Store.apply(this, arguments)
 	this._setupListeners()
 	this.storeName = 'graph'
+
+	// keep track of graph size
+	this.stat = {
+		size: 0,
+		numAssets: 0
+	}
 }
 
 GraphStore.prototype = Object.create(Store.prototype)
 
 GraphStore.prototype._setupListeners = function() {
+	E2.core.on('vizorFileLoaded', this._calculateGraphSize.bind(this))
+
 	E2.app.dispatcher.register(function receiveFromDispatcher(payload) {
 		if (payload.actionType === 'graphSnapshotted')
 			return this._graphSnapshotted(payload.data)
@@ -100,6 +118,8 @@ GraphStore.prototype._uiNodeAdded = function(graph, node, info) {
 		graph.connect(conn)
 	})
 
+	this.assetsMayHaveChanged(node)
+
 	this.emit('nodeAdded', graph, node, info)
 
 	if (info && info.proxy && info.proxy.connection) {
@@ -113,12 +133,18 @@ GraphStore.prototype._uiNodeAdded = function(graph, node, info) {
 
 GraphStore.prototype._uiNodeRemoved = function(graph, nodeUid) {
 	var node = graph.findNodeByUid(nodeUid)
+
 	if (!node) {
 		console.warn('_uiNodeRemoved: node not found in graph', graph.uid)
 		return;
 	}
+
 	mapConnections(node, graph.disconnect.bind(graph))
+
 	graph.removeNode(node)
+
+	this.assetsMayHaveChanged(node)
+
 	this.emit('nodeRemoved', graph, node)
 	this.emit('changed')
 }
@@ -201,10 +227,47 @@ function _gatherConnections(nodes) {
 	}, [])
 }
 
+GraphStore.prototype.assetsMayHaveChanged = function(node) {
+	if (assetLoadingPlugins.indexOf(node.plugin.id) === 0)
+		return;
+
+	this._calculateGraphSize()
+}
+
+GraphStore.prototype._calculateGraphSize = function() {
+	var that = this
+
+	console.time('_calculateGraphSize')
+
+	if (this._statDfd) {
+		return this._statDfd
+		.then(function() {
+			that._calculateGraphSize()
+		})
+	}
+
+	this._statDfd = new E2.GraphAnalyser(new E2.GridFsClient())
+		.analyseGraph(E2.core.root_graph)
+		.then(function(stat) {
+			console.timeEnd('_calculateGraphSize')
+			that.stat = stat
+			console.log('graph size', that.stat)
+			that.emit('changed:size', that.stat.size)
+		})
+		.finally(function() {
+			that._statDfd = null
+		})
+}
+
+GraphStore.prototype.getGraphSize = function() {
+	return this.stat
+}
+
 GraphStore.prototype._uiNodesMoved = function(graph, nodeUids, delta) {
 	var nodes = nodeUids.map(function(nid) {
 		return graph.findNodeByUid(nid)
 	})
+
 	var connections = _gatherConnections(nodes)
 	E2.app.executeNodeDrag(nodes,
 		connections,
@@ -219,6 +282,7 @@ GraphStore.prototype._uiPluginTransientStateChanged = function(graph, nodeUid, k
 GraphStore.prototype._uiPluginStateChanged = function(graph, nodeUid, key, value) {
 	var node = graph.findNodeByUid(nodeUid)
 	node.setPluginState(key, value)
+	this.assetsMayHaveChanged(node)
 	this.emit('changed')
 }
 

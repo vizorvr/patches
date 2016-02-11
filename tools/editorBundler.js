@@ -30,6 +30,7 @@ function bundleEditorScripts() {
 	scripts = scripts.map(function(script) {
 		return path.resolve(__dirname, '..') + (/src="(.*)"/.exec(script)[1])
 			.replace('/scripts/', '/browser/scripts/')
+			.replace('/common/', '/common/')
 			.replace('/vendor/', '/browser/vendor/')
 	})
 

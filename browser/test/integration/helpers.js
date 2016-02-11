@@ -48,6 +48,13 @@ exports.mockE2Classes = function() {
 		return p
 	}
 
+	global.E2.GraphAnalyser = function() {}
+	global.E2.GraphAnalyser.prototype.analyseGraph = function(){
+		return when.resolve()
+	}
+
+	global.E2.GridFsClient = function() {}
+
 	global.E2.EnvironmentSettings = function(){}
 
 	global.E2.EnvironmentSettings = function(){}

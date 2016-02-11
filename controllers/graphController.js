@@ -8,7 +8,7 @@ var helper = require('./controllerHelpers')
 var isStringEmpty = require('../lib/stringUtil').isStringEmpty
 var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
-var GraphAnalyser = require('../lib/graphAnalyser').GraphAnalyser
+var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
 
 var User = require('../models/user')
 
@@ -42,6 +42,13 @@ function prettyPrintGraphInfo(graph) {
 
 	graph.prettyOwner = graphOwner
 	graph.prettyName = graphName
+
+	graph.size = '...'
+
+	if (graph.stat) {
+		var sizeInKb = (graph.stat.size / 1048576).toFixed(2) // megabytes
+		graph.size = sizeInKb + ' MB'
+	}
 
 	return graph
 }
@@ -347,7 +354,7 @@ GraphController.prototype.save = function(req, res, next) {
 			})
 		})
 		.then(function() {
-			return that.graphAnalyser.analyse(req.body.graph)
+			return that.graphAnalyser.analyseJson(req.body.graph)
 		})
 		.then(function(stat) {
 			var url = that._fs.url(gridFsGraphPath);
@@ -358,7 +365,10 @@ GraphController.prototype.save = function(req, res, next) {
 				path: path,
 				tags: tags,
 				url: url,
-				stat: stat,
+				stat: {
+					size: stat.size,
+					numAssets: stat.numAssets
+				},
 				previewUrlSmall: previewUrlSmall,
 				previewUrlLarge: previewUrlLarge
 			}
@@ -366,6 +376,9 @@ GraphController.prototype.save = function(req, res, next) {
 			return that._service.save(model, req.user)
 			.then(function(asset) {
 				res.json(asset)
+			})
+			.catch(function(err) {
+				console.error('err', err)
 			})
 		})
 	})

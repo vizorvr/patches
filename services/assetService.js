@@ -118,6 +118,9 @@ AssetService.prototype.save = function(data, user) {
 		if (data.previewUrlLarge)
 			asset.previewUrlLarge = data.previewUrlLarge
 
+		if (data.stat)
+			asset.stat = data.stat
+
 		var dfd = when.defer();
 
 		asset.save(function(err) {

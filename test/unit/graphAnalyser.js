@@ -1,7 +1,7 @@
 var assert = require('assert')
 var fs = require('fs')
 var when = require('when')
-var GraphAnalyser = require('../../lib/graphAnalyser').GraphAnalyser
+var GraphAnalyser = require('../../common/graphAnalyser').GraphAnalyser
 
 var graphJson = fs.readFileSync(__dirname+'/../fixtures/loaders.json')
 
@@ -19,7 +19,7 @@ describe('Graph analysis', function() {
 	})
 
 	it('parses the size', function(done) {
-		ga.analyse(graphJson)
+		ga.analyseJson(graphJson)
 		.then(function(stat) {
 			assert.equal(stat.size, 8)
 			done()
@@ -27,7 +27,7 @@ describe('Graph analysis', function() {
 	})
 
 	it('parses the number of assets', function(done) {
-		ga.analyse(graphJson)
+		ga.analyseJson(graphJson)
 		.then(function(stat) {
 			assert.equal(stat.numAssets, 4)
 			done()
@@ -41,7 +41,7 @@ describe('Graph analysis', function() {
 			}
 		})
 
-		ga.analyse(graphJson)
+		ga.analyseJson(graphJson)
 		.then(function(stat) {
 			assert.equal(stat.numAssets, 4)
 			assert.equal(stat.size, 0)
