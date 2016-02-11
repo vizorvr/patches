@@ -79,7 +79,16 @@ DocumentationController.prototype.parsePluginDocumentation = function(markdown) 
 }
 
 DocumentationController.prototype.getPluginDocumentation = function(req, res, next) {
-	var docPath = './documentation/browser/plugins/' + req.params.pluginName + ".md"
+	var pluginName = req.params.pluginName
+
+	var pluginNameIsValid = /^[a-zA-Z0-9._-]*$/.test(pluginName)
+
+	if (!pluginNameIsValid) {
+		var err = new Error('Invalid Plugin name:' + pluginName)
+		return next(err)
+	}
+
+	var docPath = './documentation/browser/plugins/' + pluginName + ".md"
 
 	console.log('fetching docs for ', docPath)
 
@@ -88,16 +97,17 @@ DocumentationController.prototype.getPluginDocumentation = function(req, res, ne
 	fs.stat(docPath, function(err, exists) {
 		if (err) {
 			console.error(err, docPath)
-			return
+			return next(err)
 		}
 
 		fs.readFile(docPath, function(err, markdown) {
 			if (err) {
 				console.error(err, docPath)
-				throw err
+				return next(err)
 			}
 
 			res.json(that.parsePluginDocumentation(markdown.toString()))
+
 		})
 	})
 }

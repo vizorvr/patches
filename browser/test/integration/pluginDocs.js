@@ -82,9 +82,7 @@ describe('plugin docs', function() {
 				script = new vm.Script(pluginSource, {filename: pluginId})
 				script.runInContext(context)
 
-				var req = {params: {}}
 				var res = {}
-				req.params.pluginName = pluginId
 
 				dc.getPluginDocumentation({
 					params: {
