@@ -87,7 +87,7 @@ global.THREE = {
 	Material: function(){},
 	MeshBasicMaterial: function(){},
 	PerspectiveCamera: function(){
-		this.channels = {
+		this.layers = {
 			enable: function() {}
 		}
 	},
