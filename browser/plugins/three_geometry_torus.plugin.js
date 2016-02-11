@@ -47,8 +47,8 @@
 			new THREE.TorusGeometry(
 				this.inputValues.radius,
 				this.inputValues.tube,
-				this.inputValues.radialSegments,
-				this.inputValues.tubularSegments,
+				Math.floor(this.inputValues.radialSegments),
+				Math.floor(this.inputValues.tubularSegments),
 				this.inputValues.arc))
 
 		this.geometryDirty = false
