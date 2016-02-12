@@ -86,7 +86,8 @@ app.use(connectAssets(
 {
 	paths: [
 		fsPath.join(__dirname, 'browser/style'),
-		fsPath.join(__dirname, 'browser/scripts')
+		fsPath.join(__dirname, 'browser/scripts'),
+		fsPath.join(__dirname, 'browser/dist')
 	],
 	helperContext: app.locals
 }));
