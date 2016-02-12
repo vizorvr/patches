@@ -16,6 +16,7 @@ describe('GraphStore', function() {
 				return '' + Math.random()
 			},
 			core: {
+				on: function(){},
 				root_graph: {}
 			},
 			GraphAnalyser: function() {
