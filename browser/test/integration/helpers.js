@@ -185,7 +185,7 @@ exports.reset = function() {
 
 	global.WebVRConfig = {}
 
-	exports.runScript(browserPath+'scripts/engine.js')
+	exports.runScript(browserPath+'dist/engine.js')
 	exports.mockE2Classes()
 
 	var Application = require(browserPath+'scripts/application.js')

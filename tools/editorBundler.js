@@ -41,7 +41,7 @@ function bundleEditorScripts() {
 	.pipe(slash())
 	.pipe(uglify().on('error', errorHandler))
 	.pipe(concat(scriptName))
-	.pipe(gulp.dest(path.join(__dirname, '..', 'browser', 'scripts')))
+	.pipe(gulp.dest(path.join(__dirname, '..', 'browser', 'dist')))
 	.on('error', errorHandler)
 
 	// remove all scripts
@@ -53,7 +53,7 @@ function bundleEditorScripts() {
 
 	// replace magic with the editor bundle
 	html = html.replace('<!-- {{editor.min.js}} -->',
-		'<script type="text/javascript" src="/scripts/'+scriptName+'"></script>')
+		'<script type="text/javascript" src="/dist/'+scriptName+'"></script>')
 
 	// write output
 	fs.writeFileSync(htmlOutPath, html)

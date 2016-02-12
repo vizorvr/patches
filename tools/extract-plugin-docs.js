@@ -10,7 +10,7 @@ const pluginsPath = 'browser/plugins'
 var sandbox = createVizorSandbox()
 var context = new vm.createContext(sandbox)
 
-var engineSource = fs.readFileSync('browser/scripts/engine.js')
+var engineSource = fs.readFileSync('browser/dist/engine.js')
 engineSource += ';\nE2.core = new Core();\n'
 engineSource += ';\nE2.app = { player: { core: E2.core }};\n'
 engineSource += 'E2.core.root_graph = new Graph();\n'

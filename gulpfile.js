@@ -94,11 +94,11 @@ function errorHandler(err) {
 }
 
 gulp.task('clean:js:player', function(cb) {
-	del('./browser/scripts/player.min.js', cb)
+	del('./browser/dist/player.min.js', cb)
 })
 
-gulp.task('clean:js:engine', function(cb) {
-	del('./browser/scripts/engine.js', cb)
+gulp.task('clean:js:engine', function(cb) {	
+	del('./browser/dist/engine.js', cb)
 })
 
 gulp.task('clean:less', function(cb) {
@@ -113,7 +113,7 @@ gulp.task('js:engine', ['clean:js:engine'], function() {
 	gulp.src(paths.js.engine)
 	.pipe(concat.header(';\n'))
 	.pipe(concat('engine.js'))
-	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))
+	.pipe(gulp.dest(path.join(__dirname, 'browser', 'dist')))
 	.on('error', errorHandler)
 })
 
@@ -124,7 +124,7 @@ gulp.task('js:player', ['clean:js:player', 'js:engine'], function() {
 	.pipe(uglify().on('error', errorHandler))
 	.pipe(concat.header(';\n'))
 	.pipe(concat('player.min.js'))
-	.pipe(gulp.dest(path.join(__dirname, 'browser', 'scripts')))
+	.pipe(gulp.dest(path.join(__dirname, 'browser', 'dist')))
 	.on('error', errorHandler)
 })
 
