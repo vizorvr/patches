@@ -28,14 +28,19 @@ Graph.prototype.update = function() {
 	
 	for(i = 0, len = nodes.length; i < len; i++)
 		nodes[i].update_count = 0
+
+	var updateContext = {
+		abs_t: E2.app.player.core.abs_t,
+		delta_t: E2.app.player.core.delta_t
+	}
 	
 	for(i = 0, len = roots.length; i < len; i++)
-		dirty = roots[i].update_recursive(this.connections) || dirty
+		dirty = roots[i].update_recursive(updateContext, this.connections) || dirty
 	
 	// also update subgraphs that don't have root pullers
 	for(i = 0, len = children.length; i < len; i++) {
 		if (children[i].update_count === 0)
-			dirty = children[i].update_recursive(this.connections) || dirty
+			dirty = children[i].update_recursive(updateContext, this.connections) || dirty
 	}
 
 	if(dirty && this === E2.app.player.core.active_graph)

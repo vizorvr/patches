@@ -182,7 +182,7 @@
 		this.object3d.backReference = this
 	}
 
-	ThreeLoaderScenePlugin.prototype.update_state = function() {
+	ThreeLoaderScenePlugin.prototype.update_state = function(updateContext) {
 		if (this.loadedUrl !== this.state.url) {
 			var that = this
 
@@ -207,9 +207,9 @@
 			}
 		}
 
-		ThreeObject3DPlugin.prototype.update_state.apply(this)
+		ThreeObject3DPlugin.prototype.update_state.apply(this, arguments)
 
-		var delta = this.core.delta_t * 0.001
+		var delta = updateContext.delta_t * 0.001
 
 		if (this.object3d && this.hasAnimation) {
 			this.object3d.traverse(function(n) {

@@ -163,7 +163,7 @@ Core.prototype.update = function(abs_t, delta_t)
 	this.abs_t = abs_t;
 	this.delta_t = delta_t;
 	
-	this.root_graph.update(delta_t);
+	this.root_graph.update();
 			
 	var dirty = this.active_graph_dirty;
 			

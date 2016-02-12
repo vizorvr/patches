@@ -30,7 +30,7 @@ describe('array_function', function() {
 		var updates = 0
 		plugin.update_input({ name: 'length' }, 3)
 		plugin.graph.update = function() { updates++ }
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		assert.equal(updates, 3)
 	})
 
@@ -41,7 +41,7 @@ describe('array_function', function() {
 			assert.equal(0, v)
 			done()
 		}
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 	})
 
 	it('uses loop output', function() {
@@ -49,7 +49,7 @@ describe('array_function', function() {
 		plugin.graph.variables.read = function() {
 			return 'foo'
 		}
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		assert.equal(plugin.array[0], 'foo')
 	})
 

@@ -33,14 +33,14 @@ describe('array_switch_modulator', function() {
 	})
 
 	it('uses the correct input count', function() {
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		var output = plugin.update_output({index: 1})
 		assert.equal(output, 3)
 
 		plugin.update_input({ index: 0, uid: 1 }, 10)
 		plugin.update_input({ index: 1, uid: 2 }, 20)
 
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		output = plugin.update_output({index: 1})
 		assert.equal(output, 3)
 	})
@@ -49,25 +49,25 @@ describe('array_switch_modulator', function() {
 		plugin.update_input({index: 0, uid: 1}, 100)
 		plugin.update_input({index: 1, uid: 2}, 200)
 
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 
 		var output = plugin.update_output({index: 0})
 		assert.equal(output, 100)
 	})
 
 	it('gives a null default value', function() {
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 
 		var output = plugin.update_output({index: 0})
 		assert.equal(output, null)
 
 		plugin.update_input({index: 0, uid: 1}, 100)
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		var output = plugin.update_output({index: 0})
 		assert.equal(output, 100)
 
 		plugin.update_input({index: 0, uid: 1}, null)
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		var output = plugin.update_output({index: 0})
 		assert.equal(output, null)
 	})
@@ -80,7 +80,7 @@ describe('array_switch_modulator', function() {
 		// select input 1
 		plugin.update_input({index: 0}, 1)
 
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 
 		var output = plugin.update_output({index: 0})
 		assert.equal(output, 20)
@@ -88,7 +88,7 @@ describe('array_switch_modulator', function() {
 		// select input 0
 		plugin.update_input({index: 0}, 0)
 
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 
 		output = plugin.update_output({index: 0})
 		assert.equal(output, 10)
@@ -96,7 +96,7 @@ describe('array_switch_modulator', function() {
 		// select input 2
 		plugin.update_input({index: 0}, 2)
 
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 
 		output = plugin.update_output({index: 0})
 		assert.equal(output, 30)
@@ -113,17 +113,17 @@ describe('array_switch_modulator', function() {
 
 		// check all inputs for their initial values
 		plugin.update_input({index: 0}, 0)
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		output = plugin.update_output({index: 0})
 		assert.equal(output, 10)
 
 		plugin.update_input({index: 0}, 1)
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		output = plugin.update_output({index: 0})
 		assert.equal(output, 20)
 
 		plugin.update_input({index: 0}, 2)
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		output = plugin.update_output({index: 0})
 		assert.equal(output, 30)
 
@@ -134,17 +134,17 @@ describe('array_switch_modulator', function() {
 
 		// check all inputs for their new values
 		plugin.update_input({index: 0}, 0)
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		output = plugin.update_output({index: 0})
 		assert.equal(output, 40)
 
 		plugin.update_input({index: 0}, 1)
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		output = plugin.update_output({index: 0})
 		assert.equal(output, 50)
 
 		plugin.update_input({index: 0}, 2)
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 		output = plugin.update_output({index: 0})
 		assert.equal(output, 60)
 	})

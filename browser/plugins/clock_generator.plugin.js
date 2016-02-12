@@ -11,12 +11,13 @@ E2.p = E2.plugins["clock_generator"] = function(core, node)
 	this.core = core;
 };
 
-E2.p.prototype.update_state = function()
+E2.p.prototype.update_state = function(updateContext)
 {
+	this.abs_t = updateContext.abs_t
 	this.updated = true;
 };
 
 E2.p.prototype.update_output = function(slot)
 {
-	return this.core.abs_t;
+	return this.abs_t;
 };
