@@ -300,6 +300,14 @@ var siteUI = new function() {
 	 */
 	this.tagBodyClass = function() {
 		var $body = jQuery('body');
+
+		var isBrowser = VizorUI.isBrowser
+		$body
+			.toggleClass('uaSafari', isBrowser.Safari())
+			.toggleClass('uaFirefox', isBrowser.Firefox())
+			.toggleClass('uaChrome', isBrowser.Chrome())
+			.toggleClass('uaEdge', isBrowser.Edge())
+
 		$body
 			.toggleClass('deviceDesktop', that.deviceIsDesktop)
 			.toggleClass('deviceTablet', that.deviceIsTablet)
@@ -531,25 +539,25 @@ VizorUI.modalAlert = function(message, heading, className, okLabel) {
 }
 
 VizorUI.isBrowser = {
-	WebKit: function() {
-		return navigator.userAgent.match(/AppleWebKit/);
+	WebKit: function () {
+		return !!navigator.userAgent.match(/AppleWebKit/)
 	},
-	Gecko: function() {
-		return navigator.userAgent.match(/Gecko/);
+	Gecko: function () {
+		return !!navigator.userAgent.match(/Gecko/)
 	},
-	Firefox: function() {
-		return navigator.userAgent.match(/Firefox/);
+	Firefox: function () {
+		return !!navigator.userAgent.match(/Firefox/)
 	},
-	Chrome: function() {
-		return navigator.userAgent.match(/Chrome/) || navigator.userAgent.match(/CriOS/);
+	Chrome: function () {
+		return (!!navigator.userAgent.match(/Chrome/)) || (!!navigator.userAgent.match(/CriOS/))
 	},
-	Safari: function() {
-		return navigator.userAgent.match(/Safari/);
+	Safari: function () {
+		return !!navigator.userAgent.match(/Safari/)
 	},
-	Edge: function() {
-		return navigator.userAgent.match(/Edge/);
+	Edge: function () {
+		return !!navigator.userAgent.match(/Edge/)
 	}
-};
+}
 
 VizorUI.isMobile = {
 	Android: function() {
