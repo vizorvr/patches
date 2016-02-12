@@ -251,7 +251,6 @@ GraphStore.prototype._calculateGraphSize = function() {
 		.then(function(stat) {
 			console.timeEnd('_calculateGraphSize')
 			that.stat = stat
-			console.log('graph size', that.stat)
 			that.emit('changed:size', that.stat.size)
 		})
 		.finally(function() {
