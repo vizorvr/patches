@@ -122,7 +122,7 @@
 		for (var i = 0; i < this.particles.length; ++i) {
 			var p = this.particles[i]
 			if (p.lifetime > 0.0) {
-				p.position.add(p.velocity)
+				p.position.addScaledVector(p.velocity, updateContext.delta_t * 30) // 30 for backwards compatibility to not break old graphs too much
 				p.lifetime -= updateContext.delta_t
 				if (this.gravity) {
 					p.velocity.add(gravity)
