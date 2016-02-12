@@ -86,7 +86,8 @@ app.use(connectAssets(
 {
 	paths: [
 		fsPath.join(__dirname, 'browser/style'),
-		fsPath.join(__dirname, 'browser/scripts')
+		fsPath.join(__dirname, 'browser/scripts'),
+		fsPath.join(__dirname, 'browser/dist')
 	],
 	helperContext: app.locals
 }));
@@ -364,7 +365,7 @@ r.connect({
 
 	// allow strong caching for editor-*.min.js
 	app.get([
-		'/scripts/editor-*.min.js',
+		'/dist/editor-*.min.js',
 		'/vendor/*',
 		'/images/*',
 		'/fonts/*',
@@ -377,7 +378,7 @@ r.connect({
 	// minimal caching for frequently updating things
 	app.use([
 		'/style/*',
-		'/scripts/player.min.js',
+		'/dist/player.min.js',
 		'/plugins/plugins.json',
 		'/presets/presets.json'
 		],
