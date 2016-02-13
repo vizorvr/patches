@@ -4,6 +4,7 @@ function Plugin(core, node) {
 	this.node = node
 
 	this.state = {}
+	this._oldState = {}
 
 	this.node.on('pluginStateChanged', function() {
 		if (that.state_changed && that.node.ui && that.node.ui.pluginUI)
@@ -47,6 +48,39 @@ Plugin.prototype.update_input = function(slot, data) {
 	this.inputValues[slot.name] = data
 }
 
+
+Plugin.prototype.beginBatchModifyState = function() {
+	var that = this, state = that.state, oldState = that._oldState
+	if (oldState) {
+		Object.keys(oldState).forEach(function(prop) {
+			delete oldState[prop]
+		})
+	} else {
+		oldState = this._oldState = {}
+	}
+
+	Object.keys(state).forEach(function(prop) {
+		oldState[prop] = state[prop]
+	})
+	return true
+}
+
+Plugin.prototype.endBatchModifyState = function(stepName) {
+	var that = this, state = that.state, oldState = that._oldState
+	if ( !oldState  ||  Object.keys(oldState).length === 0 ) return
+	E2.app.undoManager.begin(stepName)
+	Object.keys(state).forEach(function(prop) {
+		if (oldState[prop] !== state[prop] ) {
+			that.undoableSetState(prop, state[prop], oldState[prop])
+		}
+	})
+	E2.app.undoManager.end()
+
+	Object.keys(oldState).forEach(function(prop) {
+		delete oldState[prop]
+	})
+	return true
+}
 
 if (typeof(module) !== 'undefined')
 	module.exports = Plugin
