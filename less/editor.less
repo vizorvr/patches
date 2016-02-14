@@ -74,6 +74,7 @@ div.graph-node.p_renamed .p_header > div span.p_title {color: #ffc;}
   div.graph-node .p_header>div span.p_title {width: 100%;}
 }
 div.graph-node {
+    -webkit-font-smoothing: subpixel-antialiased;
   	box-shadow: 0 0 2px rgba(0,0,0,0.2);
   	display: table;
     border: 0;
@@ -91,7 +92,7 @@ div.graph-node {
 		background: none;
 		border: 0;
 		color:white ! important;
-		font-weight: 600;
+		font-weight: 500;
 	  }
 	  .p_header .p_wrap {
 		button.edit, .ic, .ic .p_slot span svg {visibility: hidden;}
@@ -109,7 +110,7 @@ div.graph-node {
 		  position:relative;
 		  height: @device-header-height;
 		  span.p_title {
-			  font-weight: 600;
+			  font-weight: 500;
 			  cursor: move;
 		  }
 		  span, button {
@@ -727,6 +728,136 @@ div.graph-node .p_content {
   .uiValueAdjustable {
 	&:hover {
 	  // stub
+	}
+  }
+}
+
+
+/* styling the slider */
+div.p_id_slider_float_generator .p_content {
+  @slider-color-lightblue: rgb(122,164,226);
+  @slider-color-minmax: rgb(77, 126, 195);
+  @slider-vpad: 8px;
+  @slider-hpad: 12px;
+  .ic {
+	display: none;	// hide 1px ins&outs from plugin area
+  }
+  .p_ui_col {
+	padding: 0;		// we'll do our own layout
+  }
+
+  .p_plugin {
+
+	table.slider-table {
+	  width: 181px;
+	  td {
+		padding: 0;
+		input, span {
+		  font-size: 9pt;
+		  background: none;
+		  border: 0;
+		  font-weight: 500;
+		  padding: 0;
+		  margin: 0;
+		  -webkit-font-smoothing: subpixel-antialiased;
+		}
+		// ff always has a border :/
+
+		input[type=number] {
+		  width: 40px;
+		  -moz-appearance:textfield;
+		}
+		input[type=number]::-webkit-inner-spin-button,
+		input[type=number]::-webkit-outer-spin-button {
+		  -webkit-appearance: none;
+		  margin: 0;
+		}
+		input[type=number]:focus {
+		  color: #ccc;
+		}
+	  }
+
+	  tr:first-of-type td {
+		padding: @slider-vpad (@slider-hpad - 1) @slider-vpad  @slider-hpad  ;
+	  }
+	  tr:last-of-type {
+		background: rgba(0,0,0,0.3);
+		td {
+		  vertical-align: middle;
+		  padding: @slider-vpad 5px;
+		  input {
+			color: @slider-color-minmax;
+		  }
+		}
+		td:first-of-type {
+		  padding-left: @slider-hpad;
+		  input {text-align: left;}
+		}
+		td:last-of-type {
+		  padding-right: @slider-hpad;
+		  input {text-align: right;}
+		}
+	  }
+	  td.sliderContainer {
+		position: relative;
+		input {
+		  z-index: 10;
+		}
+		svg {
+		  position: absolute;
+		  top:50%;
+		  height: 8px;
+		  width: 8px;
+		  margin-top: -4px;
+		  z-index: 1;
+		  pointer-events: none;
+		  fill: @slider-color-lightblue;
+		  use {
+			fill: @slider-color-lightblue;
+		  }
+		  &:first-of-type {
+			left: @slider-hpad;
+		  }
+		  &:last-of-type {
+			right: (@slider-hpad - 1);
+		  }
+		}
+	  }
+	}
+
+	input[type=range] {
+	  -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+	  width: 100%; /* Specific width is required for Firefox. */
+	}
+
+	input[type=range] {
+	  &::-moz-range-thumb {
+		border: 0;
+		height: 18px;
+		width: 8px;
+		background: @slider-color-lightblue;
+		border-radius: 4px;
+	  }
+	  &::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		border: 0;
+		height: 18px;
+		width: 8px;
+		background: @slider-color-lightblue;
+		border-radius: 4px;
+		margin-top: -8px;
+	  }
+	  &::-webkit-slider-container {
+		height: 18px;
+	  }
+	  &::-webkit-slider-runnable-track {
+		background: @slider-color-lightblue;
+		height: 2px;
+	  }
+	  &::-moz-range-track {
+		background: @slider-color-lightblue;
+		height: 2px;
+	  }
 	}
   }
 }

@@ -1,4 +1,14 @@
 (function(){
+
+function formatVal(val) {
+	// format
+	var aval = Math.abs(val)
+	if (aval < 1000) return val.toFixed(3)
+	else if (aval < 10000) return val.toFixed(3)
+	else if (aval < 100000) return val.toFixed(2)
+	return val.toFixed(1)
+}
+
 var Slider = E2.plugins.slider_float_generator = function(core, node) {
 	Plugin.apply(this, arguments)
 
@@ -28,14 +38,15 @@ Slider.prototype.reset = function() {}
 Slider.prototype.create_ui = function() {
 	var that = this
 
+	var svg = '<svg><use xlink:href="#vp-circle"></use></svg>'
 	var html = '<table class="slider-table">'+
 		'<tr>'+
-			'<td colspan="3"><input class="slider" type="range" step="0.001" style="width:190px;"></td>'+
+			'<td colspan="3" class="sliderContainer">'+svg+'<input class="slider" type="range" step="0.001">'+svg+'</td>'+
 		'</tr>'+
-		'<tr>'+
-			'<td style="width: 50px;"><input class="min" type="number" step="0.2" style="width: 50px;"/></td>'+
-			'<td class="slider-value" style="text-align:center;">0.0</td>'+
-			'<td style="width: 50px;"><input class="max" type="number" step="0.2" style="width: 50px;"/></td>'+
+		'<tr class="">'+
+			'<td style="width: 50px;"><input class="min" type="number" step="0.2" /></td>'+
+			'<td class="slider-value" style="text-align:center;"><span>0.0</span></td>'+
+			'<td style="width: 50px;"><input class="max" type="number" step="0.2" /></td>'+
 		'</tr>'+
 		'</table>'
 
@@ -44,13 +55,15 @@ Slider.prototype.create_ui = function() {
 	var $min = this.$min = $el.find('input.min')
 	var $max = this.$max = $el.find('input.max')
 	var $slider = this.$slider = $el.find('input.slider')
-	this.$display = $el.find('td.slider-value')
+	this.$display = $el.find('td.slider-value span')
 
 	var originalValue = this.state.val
 
+
 	$slider.on('input', function() {
-		that.$display.html($slider.val())
-		that.transientSetState('val', parseFloat($slider.val()))
+		var val = parseFloat($slider.val())
+		that.$display.html(formatVal(val))
+		that.transientSetState('val', val)
 		return true;
 	})
 
@@ -81,7 +94,7 @@ Slider.prototype.updateUi = function() {
 	if (!this.$slider)
 		return;
 	this.$slider.val(this.state.val)
-	this.$display.html(this.state.val)
+	this.$display.html(formatVal(this.state.val))
 	this.$min.val(this.state.min)
 	this.$max.val(this.state.max)
 
