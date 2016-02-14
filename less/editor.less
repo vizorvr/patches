@@ -761,7 +761,15 @@ div.p_id_slider_float_generator .p_content {
 		  margin: 0;
 		  -webkit-font-smoothing: subpixel-antialiased;
 		}
-		// ff always has a border :/
+		span.uiTextEntry {
+		  opacity: 0;
+		}
+		input.uiTextEntry {
+		  color: #eee !important;
+		  background: rgba(0,0,0,0.3);
+		  text-align: center;
+		}
+
 
 		input[type=number] {
 		  width: 40px;
@@ -826,10 +834,11 @@ div.p_id_slider_float_generator .p_content {
 	}
 
 	input[type=range] {
-	  -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
-	  width: 100%; /* Specific width is required for Firefox. */
+	  -webkit-appearance: none; // css-tricks.com/styling-cross-browser-compatible-range-inputs-css
+	  width: 100%; // ff
 	}
 
+	// (ff won't remove outline)
 	input[type=range] {
 	  &::-moz-range-thumb {
 		border: 0;
@@ -866,5 +875,5 @@ input.uiTextEntry {
   margin:0;
   outline: 0;
   border: 0;
-  background: solid #000;
+  background: #000;
 }

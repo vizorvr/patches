@@ -4,9 +4,9 @@ function formatVal(val) {
 	// format
 	var aval = Math.abs(val)
 	if (aval < 1000) return val.toFixed(3)
-	else if (aval < 10000) return val.toFixed(3)
-	else if (aval < 100000) return val.toFixed(2)
-	return val.toFixed(1)
+	else if (aval < 10000) return val.toFixed(2)
+	else if (aval < 100000) return val.toFixed(1)
+	return val.toFixed(0)
 }
 
 var Slider = E2.plugins.slider_float_generator = function(core, node) {
@@ -58,6 +58,15 @@ Slider.prototype.create_ui = function() {
 	this.$display = $el.find('td.slider-value span')
 
 	var originalValue = this.state.val
+
+	this.$display.on('dblclick', function(){
+		originalValue = that.state.val
+		NodeUI.enterValueControl(this, this.parentNode, function(v){
+			$slider.val(v)
+			$slider.trigger('input')
+			$slider.trigger('mouseup')
+		})
+	})
 
 
 	$slider.on('input', function() {
