@@ -61,7 +61,15 @@ describe('Paste', function() {
 			assert.equal(nodeAdded, 3)
 			assert.equal(connected, 2)
 		})
+	})
 
+	describe('Clock', function() {
+		var source = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/paste-clock.json'))
+
+		it('pastes correctly', function() {
+			app.paste(source, 0, 0)
+			assert.equal(core.active_graph.connections.length, 2)
+		})
 	})
 
 	describe('Complex', function() {
