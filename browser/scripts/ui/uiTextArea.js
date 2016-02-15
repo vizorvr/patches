@@ -53,8 +53,8 @@ var UITextArea = function(adapter, onBeginChange, onChange, onEndChange) {
 
 	resizer.css({
 		'position' 	: 'absolute',
-		'bottom' 	: '-3px',
-		'right' 	: '-3px',
+		'bottom' 	: '-8px',
+		'right' 	: '-8px',
 		'z-index' 	: 2
 	})
 
