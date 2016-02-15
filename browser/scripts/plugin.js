@@ -50,19 +50,8 @@ Plugin.prototype.update_input = function(slot, data) {
 
 
 Plugin.prototype.beginBatchModifyState = function() {
-	var that = this, state = that.state, oldState = that._oldState
-	if (oldState) {
-		Object.keys(oldState).forEach(function(prop) {
-			delete oldState[prop]
-		})
-	} else {
-		oldState = this._oldState = {}
-	}
-
-	Object.keys(state).forEach(function(prop) {
-		oldState[prop] = state[prop]
-	})
-	return true
+	this._oldState = _.clone(this.state)
+	return true	// allow use as event handler
 }
 
 Plugin.prototype.endBatchModifyState = function(stepName) {
@@ -76,9 +65,7 @@ Plugin.prototype.endBatchModifyState = function(stepName) {
 	})
 	E2.app.undoManager.end()
 
-	Object.keys(oldState).forEach(function(prop) {
-		delete oldState[prop]
-	})
+	this._oldState = {}
 	return true
 }
 

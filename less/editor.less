@@ -27,8 +27,26 @@ div.menu-bar {z-index:100;}	// #756
   -webkit-font-smoothing: subpixel-antialiased;
 }
 
-.uiTextArea {
-  .resizecorner {
+.uiTextArea,
+div.graph-node .p_content .p_plugin div.uiTextArea {
+  padding-top: 	2px;
+  margin: 		5px 0 2px 18px;
+  >textarea {
+	-webkit-appearance: none;
+	color: #fff;
+	background: none;
+	background: transparent;
+	font-size	: 8.7pt;
+    line-height : 1.45;
+	margin		: 0 0 5px 0;
+	border	: 0;
+	padding: 2px;
+	.wkForceSubpixel;
+	.scrollbar;
+  }
+  >.resizecorner {
+	bottom 	: 0;	// control may override these
+    right 	: 0;	//	"
 	width: 12px;
 	height: 12px;
 	opacity: 0;
@@ -37,6 +55,7 @@ div.menu-bar {z-index:100;}	// #756
 	}
   }
 }
+
 
 /* graphics */
 

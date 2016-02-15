@@ -23,33 +23,25 @@ var UITextArea = function(adapter, onBeginChange, onChange, onEndChange) {
 	onEndChange = onEndChange || dummyCall
 
 	var container = $('<div style="position:relative"></div>')
-	var textarea = $('<textarea style="background:transparent" placeholder="Type text here" />')
+	var textarea = $('<textarea placeholder="Type text here" />')
 	var resizer = $('<svg class="resizecorner"><use xlink:href="#resizecorner"></use></svg>')
 
 	container.append(textarea)
 	container.append(resizer)
 	container.css({
-		'padding-top': '2px',
 		'width':		adapter.width + 'px',
 		'height':		adapter.width + 'px',
-		'margin': 		'5px 0px 2px 18px'
 	})
 	container.addClass('uiTextArea')
 
 	textarea.css({
-		'font-size'	: '8.7pt',
-		'line-height': '1.45',
-		'border'	: borderPx + 'px solid #999',
-		'margin'	: '0 0 5px 0',
-		'padding'	: paddingPx + 'px',
+		'width'		: adapter.width + 'px',
+		'height'	: adapter.width + 'px',
 		'resize' 	: 'none',
 		'position' 	: 'absolute',
 		'z-index' 	: 1,
-		'width'		: adapter.width + 'px',
-		'height'	: adapter.width + 'px',
 		'pointer-events': 'initial'
 	})
-		.addClass('wkForceSubpixel scrollbar')
 
 	resizer.css({
 		'position' 	: 'absolute',
