@@ -148,7 +148,11 @@ function instantiateTemplateForUpload(uploaded, position) {
 
 		E2.app.undoManager.begin('Drag & Drop')
 
-		E2.app.fillCopyBuffer(preset.root.nodes, preset.root.conns, 0, 0)
+		var copyBuffer = E2.app.fillCopyBuffer(
+			preset.root.nodes,
+			preset.root.conns,
+			0,
+			0)
 
 		mixpanel.track('Preset Added', {
 			name: templateName,
@@ -157,7 +161,7 @@ function instantiateTemplateForUpload(uploaded, position) {
 
 		// paste. auto-connecting to the scene will be handled inside paste
 		// by the world editor
-		var pasted = E2.app.onPaste(100)
+		var pasted = E2.app.onPaste(copyBuffer)
 		postPasteFixup(pasted.nodes)
 
 		E2.app.undoManager.end()

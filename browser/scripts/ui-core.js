@@ -37,8 +37,10 @@ var uiKeys = {
 	toggleWorldEditorOrthographicCamera : 'O',
 	frameViewToSelection                : 'T',
 	toggleFullScreen 	                : 'F',
-	zeroVRCamera		                : '=',
+	moveVRCameraToEditorCamera          : '=',
+	moveEditorCameraToVRCamera          : 'shift+'+'V',
 	gotoParentGraph		                : ',',
+
 
 	moveSelectedNodesUp      : 38, // up arrow
 	moveSelectedNodesDown    : 40, // down arrow
@@ -133,6 +135,10 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 	var $assets = dom.assetsLib, $presets = dom.presetsLib, $chat = dom.chatWindow;
 	var $patch_editor = dom.canvas_parent;
 
+	E2.app.graphStore.on('changed:size', function(size) {
+		var sizeInKb = (size / 1048576).toFixed(2) // megabytes
+		$('#graphSizeLabel').html(sizeInKb + ' MB')
+	})
 
 	state
 		.on('changed:mode', function(mode) {
@@ -586,9 +592,12 @@ VizorUI.prototype.onKeyPress = function(e) {
 			case uiKeys.frameViewToSelection:
 				E2.app.worldEditor.frameSelection();
 				break;
-			case uiKeys.zeroVRCamera:
-			case "shift+"+uiKeys.zeroVRCamera: // fi
-				E2.app.worldEditor.matchCamera();
+			case uiKeys.moveVRCameraToEditorCamera:
+			case "shift+"+uiKeys.moveVRCameraToEditorCamera: // fi
+				E2.app.worldEditor.matchVRToEditorCamera();
+				break;
+			case uiKeys.moveEditorCameraToVRCamera:
+				E2.app.worldEditor.matchEditorToVRCamera()
 				break;
 		}
 	}
@@ -649,13 +658,25 @@ VizorUI.prototype.onKeyDown = function(e) {
 			e.stopPropagation();
 			break;
 		case uiKeys.copy:
+			if (VizorUI.isBrowser.Chrome())
+				return;
 			E2.app.onCopy(e);
+			e.preventDefault();
+			e.stopPropagation();
 			break;
 		case uiKeys.cut:
+			if (VizorUI.isBrowser.Chrome())
+				return;
 			E2.app.onCut(e);
+			e.preventDefault();
+			e.stopPropagation();
 			break;
 		case uiKeys.paste:
+			if (VizorUI.isBrowser.Chrome())
+				return;
 			E2.app.onPaste();
+			e.preventDefault();
+			e.stopPropagation();
 			break;
 		case uiKeys.undo:
 			e.preventDefault();

@@ -48,7 +48,7 @@
 		return selectables
 	}
 
-	var AbstractObjectGazePlugin = function(core) {
+	function AbstractObjectGazePlugin(core) {
 		var that = this
 
 		Plugin.apply(this, arguments)
@@ -63,6 +63,7 @@
 		this.boundOnGazeOut = this.onGazeOut.bind(this)
 		this.boundOnGazeClicked = this.onGazeClicked.bind(this)
 		this.boundSetupChosenObject = this.setupChosenObject.bind(this)
+		this.boundOnGraphNodesChanged = this.onGraphNodesChanged.bind(this)
 
 		this.node.on('pluginStateChanged', function() {
 			that.setupChosenObject()
@@ -75,6 +76,10 @@
 	}
 
 	AbstractObjectGazePlugin.prototype = Object.create(Plugin.prototype)
+
+	AbstractObjectGazePlugin.prototype.reset = function() {
+		this.graph = this.node.parent_graph
+	}
 
 	AbstractObjectGazePlugin.prototype.onGazeIn = function() {}
 	AbstractObjectGazePlugin.prototype.onGazeOut = function() {}
@@ -138,6 +143,12 @@
 		var guid = oref[0]
 		var nuid = oref[1]
 		var graph = Graph.lookup(guid)
+
+		if (!graph) {
+			console.warn('AbstractObjectGazePlugin.setupChosenObject() could not find Graph', guid)
+			return;
+		}
+
 		var node = graph.findNodeByUid(nuid)
 
 		if (this.object3d && this.object3d === node.plugin.object3d)
@@ -164,6 +175,8 @@
 	AbstractObjectGazePlugin.prototype.populateObjectSelector = function() {
 		var that = this
 
+		that.$selectObject.empty()
+
 		$('<option>', { value: 0, text: 'Select Object' })
 			.appendTo(that.$selectObject)
 
@@ -175,6 +188,10 @@
 			})
 			.appendTo(that.$selectObject)
 		})
+	}
+
+	AbstractObjectGazePlugin.prototype.onGraphNodesChanged = function() {
+		this.populateObjectSelector()
 	}
 
 	AbstractObjectGazePlugin.prototype.create_ui = function() {
@@ -207,7 +224,18 @@
 		$ui.append(this.$selectObject)
 		$ui.append($selectType)
 
+		// if nodes change in this current graph, update selector
+		this.graph.on('nodeAdded', this.boundOnGraphNodesChanged)
+		this.graph.on('nodeRemoved', this.boundOnGraphNodesChanged)
+		this.graph.on('nodeRenamed', this.boundOnGraphNodesChanged)
+
 		return $ui
+	}
+
+	AbstractObjectGazePlugin.prototype.destroy_ui = function() {
+		this.graph.off('nodeAdded', this.boundOnGraphNodesChanged)
+		this.graph.off('nodeRemoved', this.boundOnGraphNodesChanged)
+		this.graph.off('nodeRenamed', this.boundOnGraphNodesChanged)
 	}
 
 	AbstractObjectGazePlugin.prototype.update_output = function() {
@@ -258,5 +286,5 @@
 
 	if (typeof(module) !== 'undefined')
 		module.exports = AbstractObjectGazePlugin
-})()
+})();
 

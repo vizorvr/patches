@@ -232,6 +232,10 @@ WorldEditor.prototype.onPaste = function(nodes) {
 
 	var dropNode = nodes[0]
 
+	// empty graph can have this
+	if (!this.scene && !this.currentGroup)
+		return;
+
 	// find scene node
 	var sceneNode = this.currentGroup || this.scene.backReference.parentNode
 
@@ -509,7 +513,7 @@ WorldEditor.prototype.getActiveSceneNode = function() {
 	return this.scene.backReference.parentNode
 }
 
-WorldEditor.prototype.matchCamera = function() {
+WorldEditor.prototype.matchVRToEditorCamera = function() {
 	// match the selected vr camera to world editor camera
 	var vrCameraPlugin = this.vrCamera.parent.backReference
 	var editCamera = this.getCamera()
@@ -522,6 +526,15 @@ WorldEditor.prototype.matchCamera = function() {
 	vrCameraPlugin.undoableSetState('quaternion', editCamera.quaternion.clone(), tempQuaternion)
 
 	E2.app.undoManager.end()
+}
+
+WorldEditor.prototype.matchEditorToVRCamera = function() {
+	// match the selected vr camera to world editor camera
+	var vrCameraPlugin = this.vrCamera.parent.backReference
+	var editCamera = this.getCamera()
+
+	editCamera.position.copy(vrCameraPlugin.state.position)
+	editCamera.quaternion.set(vrCameraPlugin.state.quaternion._x, vrCameraPlugin.state.quaternion._y, vrCameraPlugin.state.quaternion._z, vrCameraPlugin.state.quaternion._w)
 }
 
 WorldEditor.prototype.toggleGrid = function() {

@@ -38,21 +38,20 @@ ModelLoader.prototype.loadObj = function(url) {
 	var mtlUrl = url.replace('.obj', '.mtl')
 
 	$.get('/stat' + mtlUrl, function(data) {
-		var loader
-
 		if (data.error === undefined) {
 			// .mtl exists on server, load .obj and .mtl
-			loader = new THREE.OBJMTLLoader()
-			loader.crossOrigin = 'Anonymous'
-			loader.load(url,
-				mtlUrl,
-				that.onObjLoaded.bind(that),
-				that.progressHandler.bind(that),
-				that.errorHandler.bind(that))
+			var mtlLoader = new THREE.MTLLoader()
+			mtlLoader.load(mtlUrl, function(materials) {
+				var objLoader = new THREE.OBJLoader()
+				objLoader.load(url,
+					that.onObjLoaded.bind(that),
+					that.progressHandler.bind(that),
+					that.errorHandler.bind(that))
+			}, that.progressHandler.bind(that), that.errorHandler.bind(that))
 		}
 		else {
 			// no .mtl on server, load .obj only
-			loader = new THREE.OBJLoader()
+			var loader = new THREE.OBJLoader()
 			loader.crossOrigin = 'Anonymous'
 			loader.load(url,
 				that.onObjLoaded.bind(that),

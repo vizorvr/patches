@@ -60,6 +60,7 @@
 		<div id="graphNameLabel" class="auto-editable">
 			(untitled)
 		</div>
+		<div id="graphSizeLabel"></div>
 		<div id="breadcrumb"></div>
 	</div>
 </header>
@@ -223,7 +224,6 @@
 	var boot = {}
 	boot.hasEdits = {{hasEdits}}
 
-	// THREE webvr-manager reads from here.
 	window.Vizor = {
 		hideWebVRButton: true,
 		releaseMode: {{releaseMode}}
@@ -251,6 +251,7 @@
 
 		E2.models = {
 			user: new User({}),
+			graph: new Graph({}),
 			fileList: new FileList({})
 		}
 
@@ -266,7 +267,8 @@
 			mixpanel.identify('{{user._id}}')
 		}
 
-		if (typeof E2.controllers === 'undefined') E2.controllers = {};
+		if (typeof E2.controllers === 'undefined')
+			E2.controllers = {}
 
 		E2.controllers.account = new AccountController()
 

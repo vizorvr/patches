@@ -48,15 +48,19 @@ Node.prototype.getDynamicOutputSlots = function() {
 Node.prototype.set_plugin = function(plugin) {
 	this.plugin = plugin;
 	this.plugin.updated = true;
-	
-	if (!plugin.input_slots)
-		debugger;
 
+	var usedSlotNames = []
+	
 	function init_slot(slot, index, type) {
-		slot.index = index;
 		slot.type = type;
-		
-		if(!slot.dt)
+		slot.index = index;
+
+		if (usedSlotNames.indexOf(''+type+slot.name) > -1)
+			throw new Error('Double slot name '+slot.name+' in '+plugin.id)
+
+		usedSlotNames.push(''+type+slot.name)
+
+		if (!slot.dt)
 			msg('ERROR: The slot \'' + slot.name + '\' does not declare a datatype.');
 	}
 	
@@ -71,7 +75,7 @@ Node.prototype.set_plugin = function(plugin) {
 
 	// back reference for object picking
 	this.plugin.parentNode = this
-};
+}
 
 Node.prototype.setOpenState = function(isOpen) {
 	this.open = isOpen
@@ -129,20 +133,19 @@ Node.prototype.reset = function() {
 	}
 }
 
-Node.prototype.geometry_updated = function()
-{
-	if(this.outputs.length < 1)
-		return;
+Node.prototype.geometry_updated = function() {
+	if (this.outputs.length < 1)
+		return
 	
-	for(var i = 0, len = this.outputs.length; i < len; i++)
-	{
-		var c = this.outputs[i];
+	for(var i = 0, len = this.outputs.length; i < len; i++) {
+		var c = this.outputs[i]
 		
-		E2.app.getSlotPosition(c.src_node, c.ui.src_slot_div, E2.slot_type.output, c.ui.src_pos);
+		E2.app.getSlotPosition(c.src_node, c.ui.src_slot_div,
+			E2.slot_type.output, c.ui.src_pos)
 	}
 	
-	E2.app.updateCanvas(true);
-};
+	E2.app.updateCanvas(true)
+}
 
 Node.prototype.add_slot = function(slot_type, def) {
 	var is_inp = slot_type === E2.slot_type.input;
@@ -183,6 +186,7 @@ Node.prototype.add_slot = function(slot_type, def) {
 Node.prototype.remove_slot = function(slot_type, suid) {
 	var is_inp = slot_type === E2.slot_type.input;
 	var slots = is_inp ? this.dyn_inputs : this.dyn_outputs;
+	var s, i, len;
 
 	if (!slots.length)
 		return;
@@ -190,8 +194,8 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 	var slot = null;
 	var idx = -1;
 
-	for(var i = 0, len = slots.length; i < len; i++) {
-		var s = slots[i];
+	for(i = 0, len = slots.length; i < len; i++) {
+		s = slots[i];
 
 		if (s.uid === suid) {
 			slot = s;
@@ -207,7 +211,7 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 	
 	if (slots.length) {
 		// Patch up cached slot indices.
-		for(var i = 0, len = slots.length; i < len; i++) {
+		for(i = 0, len = slots.length; i < len; i++) {
 			slots[i].index = i
 		}
 	}
@@ -218,24 +222,54 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 	
 	var att = is_inp ? this.inputs : this.outputs;
 	var pending = [];
-	var canvas_dirty = false;
 	
-	for(var i = 0, len = att.length; i < len; i++) {
+	for(i = 0, len = att.length; i < len; i++) {
 		var c = att[i];
-		var s = is_inp ? c.dst_slot : c.src_slot;
+		s = is_inp ? c.dst_slot : c.src_slot;
 	
 		if (s === slot) {
 			pending.push(c);
 		}
 	}
 	
-	for(var i = 0, len = pending.length; i < len; i++) {
+	for(i = 0, len = pending.length; i < len; i++) {
 		this.parent_graph.disconnect(pending[i]);
 	}
 		
 	this.emit('slotRemoved', slot)
+}
 
-};
+Node.prototype.findInputSlotByName = function(name) {
+	var slot
+
+	this.plugin.input_slots.some(function(s) {
+		if (s.name === name) {
+			slot = s
+			return true
+		}
+	})
+
+	if (!slot)
+		console.error('findInputSlotByName not found', name)
+
+	return slot
+}
+
+Node.prototype.findOutputSlotByName = function(name) {
+	var slot
+
+	this.plugin.output_slots.some(function(s) {
+		if (s.name === name) {
+			slot = s
+			return true
+		}
+	})
+
+	if (!slot)
+		console.error('findOutputSlotByName not found', name)
+
+	return slot
+}
 
 Node.prototype.findSlotByUid = function(suid) {
 	var slot

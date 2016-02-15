@@ -9,7 +9,7 @@ function WorldEditorCamera(domElement) {
 	this.camera.position.set(5, 5, 5)
 	this.camera.lookAt(new THREE.Vector3(0,0,0))
 
-	this.camera.channels.enable(1)
+	this.camera.layers.enable(1)
 
 	E2.core.on('resize', this.resize.bind(this))
 }

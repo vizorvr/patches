@@ -42,7 +42,8 @@
 	},
 
 	"MUSIC AND SOUND": {
-		"Play music or sound": { "name": "_audio-player" }
+		"Play music or sound": { "name": "_audio-player" },
+		"Play music + FFT output": { "name": "_audio-player-and-fft" }
 	},
 
 	"TIME & ANIMATION ": {
@@ -60,12 +61,6 @@
 		"Shaky random between 0 & 1": { "name": "time_shaky_random" },
 		"Random with speed": { "name": "util_random_with_speed" },
 		"Move in a circle and turn": { "name": "_animation-move-in-a-circle-and-turn" }
-	},
-
-	"COLOR ": {
-		"Hue / Saturation / Luminosity / Alpha": { "name": "color_hsla" },
-		"Red / Green / Blue / Alpha": { "name": "color_rgba" },
-		"Color to vector XYZ": { "name": "util_color_to_vector" }
 	},
 
 	"UTILS": {

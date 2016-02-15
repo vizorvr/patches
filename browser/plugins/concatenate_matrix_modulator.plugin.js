@@ -3,9 +3,9 @@ E2.p = E2.plugins["concatenate_matrix_modulator"] = function(core, node)
 	this.desc = 'Combine two matrices. Order is significant.';
 	
 	this.input_slots = [ 
-		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The first matrix operand.',
+		{ name: 'a', dt: core.datatypes.MATRIX, desc: 'The first matrix operand.',
 			def: core.renderer.matrix_identity },
-		{ name: 'matrix', dt: core.datatypes.MATRIX, desc: 'The second matrix operand.',
+		{ name: 'b', dt: core.datatypes.MATRIX, desc: 'The second matrix operand.',
 			def: core.renderer.matrix_identity }
 	];
 	

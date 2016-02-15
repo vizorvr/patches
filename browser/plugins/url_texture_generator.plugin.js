@@ -89,31 +89,32 @@
 		if (!this.dirty)
 			return
 
-		var that = this
-
 		if (this.state.url !== '') {
-			this.waitingToLoad = true
-
-			this.texture = E2.core.assetLoader.loadingTexture
-
-			E2.core.assetLoader
-			.loadAsset('texture', this.state.url)
-			.then(function(texture) {
-				that.texture = texture
-				that.waitingToLoad = false
-				that.updated = true
-			})
-			.catch(function() {
-				that.texture = E2.core.assetLoader.defaultTexture
-				that.waitingToLoad = false
-				that.updated = true
-			})
+			this.loadTexture()
 		}
 		else {
 			this.texture = E2.core.assetLoader.defaultTexture
 		}
 
 		this.dirty = false
+	}
+
+	UrlTexture.prototype.loadTexture = function() {
+		var that = this
+		this.waitingToLoad = true
+
+		E2.core.assetLoader
+		.loadAsset('texture', this.state.url)
+		.then(function(texture) {
+			that.texture = texture
+			that.waitingToLoad = false
+			that.updated = true
+		})
+		.catch(function() {
+			that.texture = E2.core.assetLoader.defaultTexture
+			that.waitingToLoad = false
+			that.updated = true
+		})
 	}
 
 	UrlTexture.prototype.update_output = function() {
@@ -127,9 +128,14 @@
 		return this.texture
 	}
 
-	UrlTexture.prototype.state_changed = function() {
+	UrlTexture.prototype.state_changed = function(ui) {
 		if (!this.state.url)
 			return
+
+		var that = this
+
+		if (!ui)
+			this.loadTexture()
 
 		this.updateUi()
 	}

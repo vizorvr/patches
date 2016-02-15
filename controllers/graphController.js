@@ -8,6 +8,10 @@ var helper = require('./controllerHelpers')
 var isStringEmpty = require('../lib/stringUtil').isStringEmpty
 var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
+var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
+
+var User = require('../models/user')
+
 var EditLog = require('../models/editLog')
 
 function makeRandomPath() {
@@ -19,12 +23,43 @@ function makeRandomPath() {
 	return uid
 }
 
+function prettyPrintGraphInfo(graph) {
+	// Get displayed values for graph and owner
+	// 'this-is-a-graph' => 'This Is A Graph'
+	var graphName = graph.name.split('-')
+		.map(s => s.charAt(0).toUpperCase() + s.slice(1))
+		.join(' ');
+
+	// Figure out if the graph owner has a fullname
+	// Use that if does, else use the username for display
+	var graphOwner;
+	var creator = graph._creator;
+	if (creator.name && !isStringEmpty(creator.name)) {
+		graphOwner = creator.name;
+	} else {
+		graphOwner = graph.owner;
+	}
+
+	graph.prettyOwner = graphOwner
+	graph.prettyName = graphName
+
+	graph.size = '...'
+
+	if (graph.stat) {
+		var sizeInKb = (graph.stat.size / 1048576).toFixed(2) // megabytes
+		graph.size = sizeInKb + ' MB'
+	}
+
+	return graph
+}
+
 function GraphController(s, gfs, rethinkConnection) {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
 	AssetController.apply(this, args);
 	this.rethinkConnection = rethinkConnection
 
+	this.graphAnalyser = new GraphAnalyser(gfs)
 	this.previewImageProcessor = new PreviewImageProcessor()
 }
 
@@ -33,32 +68,44 @@ GraphController.prototype = Object.create(AssetController.prototype);
 GraphController.prototype.userIndex = function(req, res, next) {
 	var wantJson = req.xhr;
 	var username = req.params.model
-	this._service.userGraphs(username)
-	.then(function(list)
-	{
-		if (!list || !list.length)
-			return next();
 
-		var data = {
-			profile: {
-				username: username
-			},
-			graphs: list
-		};
+	var that = this
 
-		if (wantJson) {
-			return res.status(200).json(helper.responseStatusSuccess("OK", data));
-		}
+	User.findOne({ username: username }, function(err, user) {
+		if (err)
+			return next(err)
 
-		_.extend(data, {
-			meta : {
-				title: username+'\'s Files',
-				bodyclass: 'bUserpage',
-				scripts : ['site/userpages.js']
+		that._service.userGraphs(username)
+		.then(function(list) {
+			// no files found, but if there is a user
+			// then show empty userpage
+			if (!user && (!list || !list.length)) {
+				return next()
 			}
+
+			var data = {
+				profile: {
+					username: username
+				},
+				graphs: list || []
+			}
+
+			if (wantJson) {
+				return res.status(200).json(
+					helper.responseStatusSuccess("OK", data))
+			}
+
+			_.extend(data, {
+				meta : {
+					title: username+'\'s Files',
+					bodyclass: 'bUserpage',
+					scripts : ['site/userpages.js']
+				}
+			});
+			
+			res.render('server/pages/userpage', data);
 		});
-		res.render('server/pages/userpage', data);
-	});
+	})
 }
 
 // GET /graph
@@ -136,11 +183,18 @@ GraphController.prototype.embed = function(req, res, next) {
 		if (!graph)
 			return next()
 
+		graph = prettyPrintGraphInfo(graph)
+
 		res.render('graph/show', {
 			layout: 'player',
 			autoplay: false,
 			graph: graph,
-			graphMinUrl: graph.url
+			graphMinUrl: graph.url,
+			graphName: graph.prettyName,
+			graphOwner: graph.prettyOwner,
+			previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
+			previewImageWidth: 1280,
+			previewImageHeight: 720
 		})
 	}).catch(next)
 }
@@ -152,28 +206,15 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 		if (!graph)
 			return next()
 
-		// Get displayed values for graph and owner
-		// 'this-is-a-graph' => 'This Is A Graph'
-		var graphName = graph.name.split('-')
-			.map(s => s.charAt(0).toUpperCase() + s.slice(1))
-			.join(' ');
-		// Figure out if the graph owner has a fullname
-		// Use that if does, else use the username for display
-		var graphOwner;
-		var creator = graph._creator;
-		if (creator.name && !isStringEmpty(creator.name)) {
-			graphOwner = creator.name;
-		} else {
-			graphOwner = graph.owner;
-		}
+		graph = prettyPrintGraphInfo(graph)
 		
 		res.render('graph/show', {
 			layout: 'player',
 			graph: graph,
 			graphMinUrl: graph.url,
 			autoplay: true,
-			graphName: graphName,
-			graphOwner: graphOwner,
+			graphName: graph.prettyName,
+			graphOwner: graph.prettyOwner,
 			previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
 			previewImageWidth: 1280,
 			previewImageHeight: 720
@@ -313,6 +354,9 @@ GraphController.prototype.save = function(req, res, next) {
 			})
 		})
 		.then(function() {
+			return that.graphAnalyser.analyseJson(req.body.graph)
+		})
+		.then(function(stat) {
 			var url = that._fs.url(gridFsGraphPath);
 			var previewUrlSmall = that._fs.url(previewImageSpecs[0].gridFsPath)
 			var previewUrlLarge = that._fs.url(previewImageSpecs[1].gridFsPath)
@@ -321,6 +365,10 @@ GraphController.prototype.save = function(req, res, next) {
 				path: path,
 				tags: tags,
 				url: url,
+				stat: {
+					size: stat.size,
+					numAssets: stat.numAssets
+				},
 				previewUrlSmall: previewUrlSmall,
 				previewUrlLarge: previewUrlLarge
 			}
@@ -328,6 +376,9 @@ GraphController.prototype.save = function(req, res, next) {
 			return that._service.save(model, req.user)
 			.then(function(asset) {
 				res.json(asset)
+			})
+			.catch(function(err) {
+				console.error('err', err)
 			})
 		})
 	})

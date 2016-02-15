@@ -3,6 +3,8 @@ var vm = require('vm');
 var browserPath = __dirname+'/../../../';
 var EventEmitter = require('events').EventEmitter
 
+var when = require('when')
+
 var _ = require('lodash')
 
 global.clone = _.cloneDeep.bind(_)
@@ -29,6 +31,13 @@ exports.mockE2Classes = function() {
 		this.loadingTexture = {}
 	}
 	global.AssetLoader.prototype = Object.create(EventEmitter.prototype)
+
+	global.E2.GraphAnalyser = function() {}
+	global.E2.GraphAnalyser.prototype.analyseGraph = function(){
+		return when.resolve({ size: 0, numAssets: 0 })
+	}
+
+	global.E2.GridFsClient = function() {}
 }
 
 exports.reset = function() {
@@ -124,7 +133,8 @@ exports.reset = function() {
 		graphs: [],
 		get_default_value: function(dt) {
 			return null
-		}
+		},
+		on: function(){}
 	};
 
 	core.pluginManager = {

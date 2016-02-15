@@ -6,6 +6,7 @@ var http = require('http');
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var compress = require('compression');
+var connectAssets = require('connect-assets');
 var sessions = require('client-sessions');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
@@ -25,7 +26,6 @@ var r = require('rethinkdb')
 
 var passport = require('passport');
 var expressValidator = require('express-validator');
-var connectAssets = require('connect-assets');
 var exphbs  = require('express-handlebars');
 
 var diyHbsHelpers = require('diy-handlebars-helpers');
@@ -81,12 +81,13 @@ var hbs = exphbs.create({
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
-app.use(compress());
+app.use(compress())
 app.use(connectAssets(
 {
 	paths: [
 		fsPath.join(__dirname, 'browser/style'),
-		fsPath.join(__dirname, 'browser/scripts')
+		fsPath.join(__dirname, 'browser/scripts'),
+		fsPath.join(__dirname, 'browser/dist')
 	],
 	helperContext: app.locals
 }));
@@ -273,6 +274,8 @@ r.connect({
 
 			delete stat._id
 
+			res.header('Cache-Control', 'public')
+
 			return res.json(stat)
 		})
 	})
@@ -364,10 +367,11 @@ r.connect({
 
 	// allow strong caching for editor-*.min.js
 	app.get([
-		'/scripts/editor-*.min.js',
+		'/dist/editor-*.min.js',
 		'/vendor/*',
 		'/images/*',
-		'/fonts/*'
+		'/fonts/*',
+		'/docs/*'
 		], function(req, res, next) {
 		res.setHeader('Cache-Control', 'public, max-age=604800');
 		next();
@@ -376,7 +380,7 @@ r.connect({
 	// minimal caching for frequently updating things
 	app.use([
 		'/style/*',
-		'/scripts/player.min.js',
+		'/dist/player.min.js',
 		'/plugins/plugins.json',
 		'/presets/presets.json'
 		],
@@ -397,9 +401,11 @@ r.connect({
 	);
 
 	// static files
-	app.use(express.static(fsPath.join(__dirname, 'browser'), {
-		maxAge: 300
-	}));
+	app.use(express.static(fsPath.join(__dirname, 'browser'),
+		{ maxAge: hour }))
+
+	app.use('/common', express.static(fsPath.join(__dirname, 'common'),
+		{ maxAge: hour }))
 
 	// accounts
 

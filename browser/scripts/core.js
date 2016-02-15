@@ -23,8 +23,13 @@ var URL_DATA = '/data/'
 var URL_GRAPHS = '/graph/'
 var URL_GRAPH_FILES = URL_DATA+'graph/'
 
-var E2 = {};
-window.E2 = E2; // global scope so plugins can access it
+var E2 = {}
+
+if (typeof(window) !== 'undefined')
+	window.E2 = E2; // global scope so plugins can access it
+
+if (typeof(global) !== 'undefined')
+	global.E2 = E2;
 
 E2.app = null;
 E2.ui = null;	// app sets this to a VizorUI instance

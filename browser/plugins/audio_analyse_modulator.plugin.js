@@ -5,6 +5,7 @@ E2.p = E2.plugins.audio_analyse_modulator = function(core) {
 		{ name: 'source', dt: core.datatypes.OBJECT, desc: 'An audio source to analyse.', def: null },
 		{ name: 'bin-count', dt: core.datatypes.FLOAT, desc: 'Number of FFT bins. Will be made power-of-two and clamped to 8-2048.', def: 32 },
 		{ name: 'multiplier', dt: core.datatypes.FLOAT, desc: 'Multiplier for each bin value', def: 1.0 },
+		{ name: 'smoothing', dt: core.datatypes.FLOAT, desc: 'Amount of FFT smoothing between frames', min: 0, max: 1, def: 0.9 }
 	]
 	
 	this.output_slots = [
@@ -22,6 +23,8 @@ E2.p = E2.plugins.audio_analyse_modulator = function(core) {
 	this.array.datatype = 6
 	this.array.stride = 4
 	this.first = true
+
+	this.smoothing = 0.9
 }
 
 E2.p.prototype.reset = function() {
@@ -41,6 +44,8 @@ E2.p.prototype.update_input = function(slot, data) {
 		}		
 	} else if (slot.name === 'multiplier') {
 		this.multiplier = data
+	} else if (slot.name === 'smoothing') {
+		this.smoothing = data
 	} else if (slot.name === 'bin-count') {
 		this.fft_bins = data
 
@@ -58,9 +63,10 @@ E2.p.prototype.update_state = function() {
 
 	if ((this.analyser_node.frequencyBinCount !== this.fft_bins) || this.first) {
 		this.analyser_node.fftSize = this.fft_bins || 128
-		this.analyser_node.smoothingTimeConstant = 0.9
 		this.first = false
 	}
+
+	this.analyser_node.smoothingTimeConstant = this.smoothing
 
 	this.analyser_node.getFloatFrequencyData(this.data)
 	var data = this.data
