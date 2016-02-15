@@ -42,7 +42,8 @@
 	},
 
 	"MUSIC AND SOUND": {
-		"Play music or sound": { "name": "_audio-player" }
+		"Play music or sound": { "name": "_audio-player" },
+		"Play music + FFT output": { "name": "_audio-player-and-fft" }
 	},
 
 	"TIME & ANIMATION ": {

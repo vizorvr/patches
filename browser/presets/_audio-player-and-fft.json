@@ -1,0 +1,394 @@
+{
+    "abs_t": 109.274,
+    "active_graph": "root",
+    "graph_uid": "TXDgBc0JJtS3",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [
+            {
+                "plugin": "graph",
+                "x": 643,
+                "y": 143,
+                "uid": "zYJ4w8XeWjh3",
+                "state": {
+                    "always_update": true,
+                    "input_sids": {
+                        "ECNDUqFeauhU": "wZXVLBHKaJkT",
+                        "Z6kQdB98tQCe": "vyDYtCSzVH3D",
+                        "ytka9379RXjT": "BkCNEjj55hF9"
+                    },
+                    "output_sids": {
+                        "7NGDgyCmxBu5": "Y5HOn4ZWnlUE"
+                    }
+                },
+                "title": "Music player with FFT output",
+                "graph": {
+                    "uid": "kgd6ThrVhkWB",
+                    "parent_uid": "root",
+                    "open": true,
+                    "nodes": [
+                        {
+                            "plugin": "audio_source_player",
+                            "x": 1042,
+                            "y": 45,
+                            "uid": "HrvJYNuL6v2A",
+                            "open": false
+                        },
+                        {
+                            "plugin": "audio_buffer_source_modulator",
+                            "x": 450,
+                            "y": 90,
+                            "uid": "hAcrDFhFpn5c",
+                            "state": 1
+                        },
+                        {
+                            "plugin": "audio_analyse_modulator",
+                            "x": 783,
+                            "y": 136,
+                            "uid": "LFTJXVtVuZxu"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 461,
+                            "y": 269,
+                            "uid": "j8eSFJcCtAzk",
+                            "state": {
+                                "val": 64
+                            },
+                            "title": "Bin count"
+                        },
+                        {
+                            "plugin": "typed_array_get_modulator",
+                            "x": 1307,
+                            "y": 96,
+                            "uid": "r99wpQgKg8Za"
+                        },
+                        {
+                            "plugin": "output_proxy",
+                            "x": 1531,
+                            "y": 136,
+                            "uid": "7NGDgyCmxBu5",
+                            "title": "fft bin output",
+                            "dyn_in": [
+                                {
+                                    "name": "output",
+                                    "dt": 0,
+                                    "def": null,
+                                    "uid": "OM6pLe00QGiv",
+                                    "dynamic": true,
+                                    "type": 0,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "toggle_button",
+                            "x": 234,
+                            "y": 163,
+                            "uid": "bLuL37k2ythk",
+                            "state": {
+                                "enabled": false
+                            },
+                            "title": "loop"
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 247,
+                            "y": 29,
+                            "uid": "ECNDUqFeauhU",
+                            "title": "input",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 18,
+                                    "uid": "CUfxf4DHkFyf",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 496,
+                            "y": 373,
+                            "uid": "Z6kQdB98tQCe",
+                            "title": "mul",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 0,
+                                    "uid": "L23fd2b2gMeV",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "input_proxy",
+                            "x": 258,
+                            "y": 118,
+                            "uid": "ytka9379RXjT",
+                            "title": "play",
+                            "dyn_out": [
+                                {
+                                    "name": "input",
+                                    "dt": 7,
+                                    "uid": "P9AV2kuWAvRQ",
+                                    "dynamic": true,
+                                    "type": 1,
+                                    "index": 0,
+                                    "is_connected": true,
+                                    "connected": true
+                                }
+                            ]
+                        },
+                        {
+                            "plugin": "annotation",
+                            "x": 478,
+                            "y": 416,
+                            "uid": "36guNYmn594E",
+                            "state": {
+                                "text": "We use 64 bins of frequencies between 0 and 22khz, and carefully select the  bin we would like to synch to depending on the music.",
+                                "width": 347,
+                                "height": 136
+                            },
+                            "title": "Info"
+                        },
+                        {
+                            "plugin": "const_float_generator",
+                            "x": 1105,
+                            "y": 267,
+                            "uid": "EG924WwwSmeZ",
+                            "state": {
+                                "val": 1
+                            },
+                            "title": "Bin number"
+                        },
+                        {
+                            "plugin": "annotation",
+                            "x": 1330,
+                            "y": 290,
+                            "uid": "5kMJqYxYzg7U",
+                            "state": {
+                                "text": "To add more bins, Copypaste the following plugins:\n\n-Bin number\n-Get typed array\n-Bin output\n\nThen connect the fft-bins output from Analyse into the array of your new copypaste. Then change the bin number to something else.",
+                                "width": 297,
+                                "height": 116
+                            },
+                            "title": "Adding more bins"
+                        }
+                    ],
+                    "conns": [
+                        {
+                            "src_nuid": "hAcrDFhFpn5c",
+                            "dst_nuid": "LFTJXVtVuZxu",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "dTw9CMhkM9Lz",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "LFTJXVtVuZxu",
+                            "dst_nuid": "HrvJYNuL6v2A",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "TXEgt9eqZvyE",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "j8eSFJcCtAzk",
+                            "dst_nuid": "LFTJXVtVuZxu",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "FtrCzsVNP2gT",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "LFTJXVtVuZxu",
+                            "dst_nuid": "r99wpQgKg8Za",
+                            "src_slot": 1,
+                            "dst_slot": 0,
+                            "uid": "yWN27acceUjU",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "r99wpQgKg8Za",
+                            "dst_nuid": "7NGDgyCmxBu5",
+                            "src_slot": 1,
+                            "dst_slot": 0,
+                            "uid": "UfBFKutHx7nS",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "dst_dyn": true
+                        },
+                        {
+                            "src_nuid": "bLuL37k2ythk",
+                            "dst_nuid": "hAcrDFhFpn5c",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "AG76j4Ht3ShJ",
+                            "src_connected": true,
+                            "dst_connected": true
+                        },
+                        {
+                            "src_nuid": "ECNDUqFeauhU",
+                            "dst_nuid": "hAcrDFhFpn5c",
+                            "src_slot": 0,
+                            "dst_slot": 0,
+                            "uid": "ReYW7AP6uEPc",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "Z6kQdB98tQCe",
+                            "dst_nuid": "LFTJXVtVuZxu",
+                            "src_slot": 0,
+                            "dst_slot": 2,
+                            "uid": "DFWUZnRh5nnj",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "ytka9379RXjT",
+                            "dst_nuid": "hAcrDFhFpn5c",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "aA7kB4MeKTUK",
+                            "src_connected": true,
+                            "dst_connected": true,
+                            "src_dyn": true
+                        },
+                        {
+                            "src_nuid": "EG924WwwSmeZ",
+                            "dst_nuid": "r99wpQgKg8Za",
+                            "src_slot": 0,
+                            "dst_slot": 1,
+                            "uid": "nLp9UwjJynn4",
+                            "src_connected": true,
+                            "dst_connected": true
+                        }
+                    ]
+                },
+                "dyn_in": [
+                    {
+                        "name": "play",
+                        "dt": 7,
+                        "index": 0,
+                        "uid": "BkCNEjj55hF9",
+                        "dynamic": true,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "mul",
+                        "dt": 0,
+                        "index": 1,
+                        "uid": "vyDYtCSzVH3D",
+                        "dynamic": true,
+                        "type": 0,
+                        "is_connected": true
+                    },
+                    {
+                        "name": "input",
+                        "dt": 18,
+                        "index": 2,
+                        "uid": "wZXVLBHKaJkT",
+                        "dynamic": true,
+                        "type": 0,
+                        "is_connected": true
+                    }
+                ],
+                "dyn_out": [
+                    {
+                        "name": "fft bin output",
+                        "dt": 0,
+                        "index": 0,
+                        "uid": "Y5HOn4ZWnlUE",
+                        "dynamic": true,
+                        "type": 1,
+                        "is_connected": true
+                    }
+                ]
+            },
+            {
+                "plugin": "url_audio_buffer_generator",
+                "x": 387,
+                "y": 207,
+                "uid": "qY4FufJ8PLC2",
+                "state": {
+                    "url": "/data/audio/5bfd9d2ebdb633881640222bf57432d23d0af5c7.mp3"
+                },
+                "title": "Load audio file"
+            },
+            {
+                "plugin": "slider_float_generator",
+                "x": 385,
+                "y": 102,
+                "uid": "dXBDr2yL9zet",
+                "state": {
+                    "val": 41.222,
+                    "min": 1,
+                    "max": 222
+                },
+                "title": "FFT multiplier"
+            },
+            {
+                "plugin": "toggle_button",
+                "x": 387,
+                "y": 291,
+                "uid": "QHuYYMpEB9ej",
+                "state": {
+                    "enabled": true
+                },
+                "title": "Play"
+            }
+        ],
+        "conns": [
+            {
+                "src_nuid": "QHuYYMpEB9ej",
+                "dst_nuid": "zYJ4w8XeWjh3",
+                "src_slot": 0,
+                "dst_slot": 0,
+                "uid": "P5UR7feYX9S4",
+                "src_connected": true,
+                "dst_connected": true,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": "dXBDr2yL9zet",
+                "dst_nuid": "zYJ4w8XeWjh3",
+                "src_slot": 0,
+                "dst_slot": 1,
+                "uid": "gtmbuQGYBGbw",
+                "src_connected": true,
+                "dst_connected": true,
+                "dst_dyn": true
+            },
+            {
+                "src_nuid": "qY4FufJ8PLC2",
+                "dst_nuid": "zYJ4w8XeWjh3",
+                "src_slot": 0,
+                "dst_slot": 2,
+                "uid": "LQGh5sLymjaw",
+                "src_connected": true,
+                "dst_connected": true,
+                "dst_dyn": true
+            }
+        ]
+    }
+}
