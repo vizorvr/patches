@@ -1074,7 +1074,7 @@ body.bHome #contentwrap {
 	}
 
 	header nav ul {
-	  width: 525px;
+	  width: 655px;
 	  float:right;
 	}
 
@@ -1174,5 +1174,19 @@ body.bHome #contentwrap {
 	}
   } // END DESKTOP
 
-
 } // body.bHome
+
+body.bHome.layoutDesktop #contentwrap {
+  header nav ul {
+	display: block;
+	width: auto;
+	text-align: right;
+	 li {
+	  display: inline-block;
+	  padding: 0 30px;
+	}
+	li:last-of-type {
+	  padding-right: 0;
+	}
+  }
+}
