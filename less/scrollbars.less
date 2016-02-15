@@ -1,34 +1,32 @@
 @bgcolor-transparent-brand: rgba(38,44,61,0.7);
 @bgcolor-transparent-bright: rgba(228,234,251,0.7);
 
-.scrollbar::-webkit-scrollbar {
+// mixin form
+.scrollbar{
+  &::-webkit-scrollbar {
     width: 8px;
   	height: 8px;
-}
-
-.scrollbar::-webkit-scrollbar-button {  
-    display: none!important; 
-}
-
-.scrollbar::-webkit-scrollbar-track {  
+  }
+  &::-webkit-scrollbar-button {
+    display: none!important;
+  }
+  &::-webkit-scrollbar-track {
     border-radius: 6px;
-  	border: none;
-}
-
-.scrollbar::-webkit-scrollbar-track-piece {
-  background-color: @bgcolor-transparent-brand;
-  border: none;
-}
-
-.scrollbar::-webkit-scrollbar-thumb { 
+    border: none;
+  }
+  &::-webkit-scrollbar-track-piece {
+    background-color: @bgcolor-transparent-brand;
+    border: none;
+  }
+  &::-webkit-scrollbar-thumb {
     background-color: rgba(255,255,255,0.3);
     border-radius: 6px;
     border: 1px solid rgba(0,0,0,0.1);
     background-clip: content-box;
-}
-
-.scrollbar::-webkit-scrollbar-corner { 
+  }
+  &::-webkit-scrollbar-corner {
     display: none!important;
+  }
 }
 
 .card .scrollbar::-webkit-scrollbar-track-piece {

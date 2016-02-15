@@ -23,6 +23,40 @@
 
 div.menu-bar {z-index:100;}	// #756
 
+.wkForceSubpixel {
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.uiTextArea,
+div.graph-node .p_content .p_plugin div.uiTextArea {
+  padding-top: 	2px;
+  margin: 		5px 0 2px 18px;
+  >textarea {
+	-webkit-appearance: none;
+	color: #fff;
+	background: none;
+	background: transparent;
+	font-size	: 8.7pt;
+    line-height : 1.45;
+	margin		: 0 0 5px 0;
+	border	: 0;
+	padding: 2px;
+	.wkForceSubpixel;
+	.scrollbar;
+  }
+  >.resizecorner {
+	bottom 	: 0;	// control may override these
+    right 	: 0;	//	"
+	width: 12px;
+	height: 12px;
+	opacity: 0;
+	&:hover {
+	  cursor: nwse-resize;
+	}
+  }
+}
+
+
 /* graphics */
 
 button.vp.svg {	// for (square) buttons with svg icons inside
@@ -458,23 +492,6 @@ div.graph-node.p_cat_meta {
   background: rgba(182, 164, 0, 0.95);
 }
 
-
-div.graph-node.p_id_annotation {
-  color: #fff;
-  div.p_content {
-	padding: 0px;
-	textarea {
-	  font-size: 9pt;
-	  font-weight: 600;
-	  min-height: 90px;
-	  min-width: 200px;
-	  padding: 10px 25px;
-	  margin: 3px -5px 3px 5px;
-	  background: none;
-	  border: none;
-	}
-  }
-}
 
 @bgcolor-cat-value: 	rgba(77,125,194,0.95);
 @bgcolor-cat-renderer: 	rgba(89, 89, 109, 0.95);
