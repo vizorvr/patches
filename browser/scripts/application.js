@@ -22,7 +22,7 @@ function Application() {
 		STOPPED: 0,
 		PLAYING: 1,
 		PAUSED: 2
-	};
+	}
 
 	this.canvas = E2.dom.canvas;
 	this.breadcrumb = null;
@@ -84,7 +84,7 @@ Application.prototype.offsetToCanvasCoord = function(ofs) {
 	o[1] += so[1];
 
 	return o;
-};
+}
 
 Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 	var area = node.open ? slot_div : node.ui.dom;
@@ -95,7 +95,7 @@ Application.prototype.getSlotPosition = function(node, slot_div, type, result) {
 
 	result[0] = Math.round(type === E2.slot_type.input ? o[0] : o[0] + area.width() + (node.open ? 0 : 5));
 	result[1] = Math.round(o[1] + (area.height() / 2));
-};
+}
 
 Application.prototype.createPlugin = function(id, position) {
 	position = position || this.mousePosition
@@ -405,7 +405,7 @@ Application.prototype.mouseEventPosToCanvasCoord = function(e, result) {
 
 	result[0] = (e.pageX - cp.offsetLeft) + this.scrollOffset[0];
 	result[1] = (e.pageY - cp.offsetTop) + this.scrollOffset[1];
-};
+}
 
 Application.prototype.releaseHoverNode = function(release_conns) {
 	if (this.hoverNode !== null) {
@@ -421,13 +421,13 @@ Application.prototype.clearHoverState = function() {
 	this.hover_slot_div = null;
 	this.hover_connections = [];
 	this.hoverNode = null;
-};
+}
 
 Application.prototype.clearEditState = function()
 {
 	this.editConn = null;
 	this.clearHoverState()
-};
+}
 
 Application.prototype.releaseHoverConnections = function() {
 	this.hover_connections.map(function(hc) {
@@ -689,7 +689,7 @@ Application.prototype.releaseSelection = function()
 		this.selection_dom.removeClass('noselect'); // .removeAttr('disabled');
 
 	this.selection_dom = null;
-};
+}
 
 Application.prototype.onCanvasMouseUp = function(e)
 {
@@ -734,7 +734,7 @@ Application.prototype.onCanvasMouseUp = function(e)
 					sconns.push(c);
 				}
 			}
-		};
+		}
 
 		// Select all pertinent connections
 		for(var i = 0, len = nodes.length; i < len; i++)
@@ -752,7 +752,7 @@ Application.prototype.onCanvasMouseUp = function(e)
 	// Clear focus to prevent problems with the user dragging over text areas (bringing them in focus) during selection.
 	if(document.activeElement)
 			document.activeElement.blur();
-};
+}
 
 Application.prototype.onMouseMoved = function(e) {
 	this.mousePosition = [e.pageX, e.pageY];
@@ -871,7 +871,7 @@ Application.prototype._performSelection = function(e) {
 }
 
 Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
-	var d = {};
+	var d = {}
 	var x1 = 9999999.0, y1 = 9999999.0, x2 = 0, y2 = 0;
 
 	sx = sx || 50
@@ -1141,7 +1141,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 Application.prototype.getNodeBoundingBox = function(node) {
 	var dom = node.ui ? node.ui.dom : null;
-	var pos = { left: node.x, top: node.y };
+	var pos = { left: node.x, top: node.y }
 
 	var width = (dom ? dom.width() : 0)
 	var height = (dom ? dom.height() : 0)
@@ -1157,7 +1157,8 @@ Application.prototype.getNodeBoundingBox = function(node) {
 		x1: pos.left,
 		y1: pos.top,
 		x2: pos.left + width,
-		y2: pos.top + height};
+		y2: pos.top + height
+	}
 }
 
 // find a space for doc in the currently active graph
@@ -1308,7 +1309,7 @@ Application.prototype.selectAll = function() {
 	ag.connections.map(this.markConnectionAsSelected.bind(this))
 
 	this.updateCanvas(true)
-};
+}
 
 /**
  * Calculate real area left for canvas
@@ -1330,7 +1331,7 @@ Application.prototype.calculateCanvasArea = function() {
 	return {
 		width: width,
 		height: height
-	};
+	}
 }
 
 Application.prototype.onWindowResize = function() {
@@ -1419,12 +1420,11 @@ Application.prototype.onFullScreenChanged = function() {
 
 Application.prototype.onKeyDown = function(e) {
 	return true;
-};
+}
 
 
-Application.prototype.onKeyUp = function(e)
-{
-};
+Application.prototype.onKeyUp = function(e) {
+}
 
 Application.prototype.changeControlState = function()
 {
@@ -1455,7 +1455,7 @@ Application.prototype.onPlayClicked = function()
 	E2.dom.play.parent().addClass('active');
 	
 	this.changeControlState();
-};
+}
 
 Application.prototype.onPauseClicked = function() {
 	this.player.pause()
@@ -1510,6 +1510,8 @@ Application.prototype.loadGraph = function(graphPath, cb) {
 		that.setupEditorChannel().then(function() {
 			E2.core.rebuild_structure_tree()
 			E2.app.onGraphSelected(E2.core.active_graph)
+
+			E2.core.emit('vizorFileLoaded')
 
 			E2.app.player.play() // autoplay
 			E2.app.changeControlState()

@@ -60,6 +60,7 @@
 		<div id="graphNameLabel" class="auto-editable">
 			(untitled)
 		</div>
+		<div id="graphSizeLabel"></div>
 		<div id="breadcrumb"></div>
 	</div>
 </header>
@@ -250,6 +251,7 @@
 
 		E2.models = {
 			user: new User({}),
+			graph: new Graph({}),
 			fileList: new FileList({})
 		}
 
@@ -266,7 +268,7 @@
 		}
 
 		if (typeof E2.controllers === 'undefined')
-			E2.controllers = {};
+			E2.controllers = {}
 
 		E2.controllers.account = new AccountController()
 

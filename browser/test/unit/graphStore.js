@@ -16,8 +16,17 @@ describe('GraphStore', function() {
 				return '' + Math.random()
 			},
 			core: {
+				on: function(){},
 				root_graph: {}
 			},
+			GraphAnalyser: function() {
+				return {
+					analyseGraph: function() {
+						return when.resolve({ size: 1 })
+					}
+				}
+			},
+			GridFsClient: function() {},
 			app: {
 				dispatcher: {
 					register: function(){}
@@ -35,6 +44,15 @@ describe('GraphStore', function() {
 			var gs = new GraphStore()
 			node.reset = done
 			gs._uiNodeAdded(graph, node)
+		})
+
+		it('emits graph size on uiNodeAdded', function(done) {
+			var gs = new GraphStore()
+			gs._uiNodeAdded(graph, node)
+			gs.once('changed:size', function(size) {
+				assert.equal(size, 1)
+				done()
+			})
 		})
 
 		it('calls initialise on node', function(done) {

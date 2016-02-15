@@ -1,4 +1,4 @@
-var
+ var
 gulp = require('gulp'),
 fs = require('fs'),
 path = require('path'),
@@ -120,7 +120,6 @@ gulp.task('js:engine', ['clean:js:engine'], function() {
 gulp.task('js:player', ['clean:js:player', 'js:engine'], function() {
 	gulp.src(paths.js.engine.concat(paths.js.player))
 	.pipe(slash())
-	.pipe(preprocess({context: { FQDN: process.env.FQDN || 'vizor.io' } }))
 	.pipe(uglify().on('error', errorHandler))
 	.pipe(concat.header(';\n'))
 	.pipe(concat('player.min.js'))
