@@ -1106,11 +1106,12 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			continue;
 
 		var slot = dc.dst_dyn ?
-			destNode.plugin.input_slots[dc.dst_slot.index] :
+			destNode.dyn_inputs[dc.dst_slot] :
 			destNode.findInputSlotByName(dc.dst_slot) 
 
 		if (!slot) {
-			console.warn('Slot not found in', destNode.plugin.id, dc)
+			console.warn('Slot not found in', destNode.plugin.id, dc,
+				destNode.dyn_inputs)
 			continue;
 		}
 	
