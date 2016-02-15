@@ -43,9 +43,9 @@ function prettyPrintGraphInfo(graph) {
 	graph.prettyOwner = graphOwner
 	graph.prettyName = graphName
 
-	graph.size = '...'
+	graph.size = ''
 
-	if (graph.stat) {
+	if (graph.stat && graph.stat.size) {
 		var sizeInKb = (graph.stat.size / 1048576).toFixed(2) // megabytes
 		graph.size = sizeInKb + ' MB'
 	}
