@@ -37,8 +37,10 @@ var uiKeys = {
 	toggleWorldEditorOrthographicCamera : 'O',
 	frameViewToSelection                : 'T',
 	toggleFullScreen 	                : 'F',
-	zeroVRCamera		                : '=',
+	moveVRCameraToEditorCamera          : '=',
+	moveEditorCameraToVRCamera          : 'shift+'+'V',
 	gotoParentGraph		                : ',',
+
 
 	moveSelectedNodesUp      : 38, // up arrow
 	moveSelectedNodesDown    : 40, // down arrow
@@ -586,9 +588,12 @@ VizorUI.prototype.onKeyPress = function(e) {
 			case uiKeys.frameViewToSelection:
 				E2.app.worldEditor.frameSelection();
 				break;
-			case uiKeys.zeroVRCamera:
-			case "shift+"+uiKeys.zeroVRCamera: // fi
-				E2.app.worldEditor.matchCamera();
+			case uiKeys.moveVRCameraToEditorCamera:
+			case "shift+"+uiKeys.moveVRCameraToEditorCamera: // fi
+				E2.app.worldEditor.matchVRToEditorCamera();
+				break;
+			case uiKeys.moveEditorCameraToVRCamera:
+				E2.app.worldEditor.matchEditorToVRCamera()
 				break;
 		}
 	}
