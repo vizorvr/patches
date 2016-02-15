@@ -39,11 +39,6 @@ Player.prototype.play = function() {
 Player.prototype.pause = function() {
 	this.current_state = this.state.PAUSED
 	
-	/*if(this.interval !== null) {
-		cancelAnimFrame(this.interval)
-		this.interval = null
-	}*/
-
 	this.core.root_graph.pause()
 }
 
@@ -83,7 +78,7 @@ Player.prototype.on_update = function() {
 		return
 	}
 
-	var time = this.current_state !== this.state.PAUSED ? (new Date()).getTime() : this.last_time
+	var time = this.current_state !== this.state.PAUSED ? Date.now() : this.last_time
 	var delta_t = (time - this.last_time) * 0.001
 	
 	if(this.core.update(this.abs_time, delta_t) && E2.app.updateCanvas)

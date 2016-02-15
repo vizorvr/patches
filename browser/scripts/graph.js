@@ -19,7 +19,7 @@ Graph.prototype.get_node_uid = function() {
 	return E2.core.get_uid()
 }
 
-Graph.prototype.update = function() {
+Graph.prototype.update = function(updateContext) {
 	var nodes = this.nodes
 	var roots = this.roots
 	var children = this.children
@@ -29,11 +29,6 @@ Graph.prototype.update = function() {
 	for(i = 0, len = nodes.length; i < len; i++)
 		nodes[i].update_count = 0
 
-	var updateContext = {
-		abs_t: E2.app.player.core.abs_t,
-		delta_t: E2.app.player.core.delta_t
-	}
-	
 	for(i = 0, len = roots.length; i < len; i++)
 		dirty = roots[i].update_recursive(updateContext, this.connections) || dirty
 	
