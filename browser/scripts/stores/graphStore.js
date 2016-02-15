@@ -228,7 +228,7 @@ function _gatherConnections(nodes) {
 }
 
 GraphStore.prototype.assetsMayHaveChanged = function(node) {
-	if (assetLoadingPlugins.indexOf(node.plugin.id) === 0)
+	if (assetLoadingPlugins.indexOf(node.plugin.id) === -1)
 		return;
 
 	this._calculateGraphSize()
