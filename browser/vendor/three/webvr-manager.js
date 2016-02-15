@@ -296,6 +296,11 @@ function CardboardDistorter(renderer) {
 
     renderer.setSize = function (width, height) {
       genuineSetSize.call(renderer, width, height);
+
+      if (textureTarget && textureTarget.width == renderer.context.canvas.width && textureTarget.height == renderer.context.canvas.height) {
+        return
+      }
+
       textureTarget = createRenderTarget(renderer);
     };
   }
