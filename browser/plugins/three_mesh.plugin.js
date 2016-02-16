@@ -50,7 +50,7 @@
 
 		if (this.object3d) {
 			this.object3d.traverse(function(n) {
-				if (n instanceof THREE.MorphAnimMesh) {
+				if (THREE.MorphAnimMesh && n instanceof THREE.MorphAnimMesh) {
 					n.updateAnimation(delta)
 				}
 			})

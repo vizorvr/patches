@@ -40,7 +40,7 @@ describe('SubGraphCutUndo', function() {
 
 		var activeGraph = E2.core.active_graph
 
-		rootGraph.update()
+		rootGraph.update({abs_t: 0, delta_t: 1/60})
 
 		assert.equal(rootGraph.nodes[1].dyn_outputs[0].array, activeGraph.nodes[2].dyn_inputs[0].array)
 	})

@@ -73,90 +73,8 @@ function Color() {}
 }
 
 exports.setupThree = function() {
-	global.THREE = {
-		Vector2: function(){},
-		Vector3: function(){
-			this.subVectors = function() {}
-			this.normalize = function() {}
-			this.crossVectors = function() {}
-			this.clone = function() {}
-		},
-		Matrix4: function() {},
-		Color: Color,
-		Material: function(){},
-		MeshBasicMaterial: function(){},
-		PerspectiveCamera: function(){
-			this.layers = {
-				enable: function() {}
-			}
-		},
-		Math: {clamp:function(){}},
-		CubeTexture: function(){},
-		ShaderLib: {'cube': {uniforms: {'tCube':{value:0}}}},
-		ShaderMaterial: function(){},
-		BoxGeometry: function(){},
-		Mesh: function(){},
-		Quaternion: function(){},
-		Object3D: function() {
-			this.position = {
-				set: function() {}
-			}
-			this.quaternion = {
-				set: function() {}
-			}
-			this.scale = {
-				set: function() {}
-			}
-			this.add = function() {}
-		},
-		AmbientLight: function() {},
-		DirectionalLight: function() {},
-		PointLight: function() {},
-		SpotLight: function() {},
-		HemisphereLight: function() {},
-		Geometry: function() {
-			this.vertices = []
-			this.faces = []
-			this.faceVertexUvs = [[]]
-		},
-		BufferGeometry: function() {
-			this.fromGeometry = function(){}
-		},
-		Face3: function() {},
-		MeshFaceMaterial: function() {},
-		CircleGeometry: function() {},
-		CylinderGeometry: function() {},
-		DodecahedronGeometry: function() {},
-		PlaneGeometry: function() {},
-		SphereGeometry: function() {},
-		SphereBufferGeometry: function() {},
-		Group: function() {},
-		LineBasicMaterial: function() {},
-		LineSegments: function() {},
-		Loader: {
-			Handlers: {
-				add: function() {}
-			}
-		},
-		DDSLoader: function() {},
-		MeshDepthMaterial: function() {},
-		MeshLambertMaterial: function() {},
-		MeshPhongMaterial: function() {},
-		MeshBasicMaterial: function() {},
-		PointCloudMaterial: function() {},
-		PointCloud: function() {},
-		Euler: function() {},
-		Scene: function() {
-			this.add = function() {}
-			this.children = [{add: function(){}, children:[]}]
-		},
-		Texture: function() {},
-		VRControls: function() {},
-		VREffect: function(){
-			this.setSize = function(){}
-		},
-		Camera: function(){}
-	}
+
+	global.THREE = require(browserPath + 'vendor/three/three.js')
 }
 
 
@@ -306,7 +224,8 @@ exports.reset = function() {
 
 	// don't try to load a graph
 	global.boot = {hasEdits: true}
-	E2.app.onCoreReady()
+	//E2.app.onCoreReady()
+	E2.app.setupStoreListeners()
 
 	return E2.core;
 }
