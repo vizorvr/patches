@@ -1073,6 +1073,12 @@ body.layoutDesktop .nodesktop {
   display: none;
 }
 
+body.deviceMobile .noDeviceMobile,
+body.deviceTablet .noDeviceTablet,
+body.deviceDesktop .noDeviceDesktop {
+  display: none;
+}
+
 body {
   &.layoutTablet, &.layoutDesktop {
 	.mobileonly { display: none}
@@ -1082,5 +1088,14 @@ body {
   }
   &.layoutDesktop, &.layoutMobile {
 	.tabletonly { display: none}
+  }
+  &.deviceTablet, &.deviceDesktop {
+	.mobileDeviceOnly { display: none}
+  }
+  &.deviceTablet, &.deviceMobile {
+	.desktopDeviceOnly {display: none}
+  }
+  &.deviceDesktop, &.deviceMobile {
+	.tabletDeviceOnly { display: none}
   }
 }

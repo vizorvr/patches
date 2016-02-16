@@ -15,15 +15,15 @@
             Play
         </button>
 
-        <button id="entervr" class="svg nopaused nodesktop notablet mobileonly" data-svgref="player-icon-vr"><svg></svg>
+        <button id="entervr" class="svg nopaused noDeviceDesktop noDeviceTablet mobileDeviceOnly" data-svgref="player-icon-vr"><svg></svg>
             Enter VR
 		</button>
 
-        <button id="fullscreen" class="svg nopaused nomobile notablet" data-svgref="player-icon-fullscreen"><svg></svg>
+        <button id="fullscreen" class="svg nopaused noDeviceMobile noDeviceTablet" data-svgref="player-icon-fullscreen"><svg></svg>
             Fullscreen
 		</button>
 
-        <button id="edit" class="svg nopaused nomobile" data-svgref="player-icon-edit"><svg></svg>
+        <button id="edit" class="svg nopaused noDeviceMobile" data-svgref="player-icon-edit"><svg></svg>
             Edit
             {{#eq graph.owner user.username}}
             {{else}}
