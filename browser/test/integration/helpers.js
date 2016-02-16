@@ -101,6 +101,13 @@ exports.setupThree = function() {
 			this.position = {
 				set: function() {}
 			}
+			this.quaternion = {
+				set: function() {}
+			}
+			this.scale = {
+				set: function() {}
+			}
+			this.add = function() {}
 		},
 		AmbientLight: function() {},
 		DirectionalLight: function() {},
@@ -141,7 +148,7 @@ exports.setupThree = function() {
 		Euler: function() {},
 		Scene: function() {
 			this.add = function() {}
-			this.children = [{add: function(){}}]
+			this.children = [{add: function(){}, children:[]}]
 		},
 		Texture: function() {},
 		VRControls: function() {},
@@ -297,6 +304,10 @@ exports.reset = function() {
 		getSize: function() {return {width: 1, height: 1}}
 	}
 
+	// don't try to load a graph
+	global.boot = {hasEdits: true}
+	E2.app.onCoreReady()
+
 	return E2.core;
 }
 
@@ -322,9 +333,13 @@ exports.setupGlobals = function() {
 	global.PeopleManager = function() {}
 
 	global.PeopleStore = function(){}
-	global.PeopleStore.prototype.list = function() {
-		return []
+	global.PeopleStore.prototype = {
+		list: function () {
+			return []
+		},
+		on: function() {}
 	}
+
 
 	global.NodeUI = function() {
 		this.dom = [$()]
@@ -353,6 +368,7 @@ exports.setupGlobals = function() {
 
 	E2.ui = {
 		buildBreadcrumb: function() {},
-		state: {}
+		state: {},
+		showStartDialog: function() {return when.resolve()}
 	}
 }
