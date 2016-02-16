@@ -7,7 +7,6 @@ function WorldEditor(domElement) {
 		active = true
 		this.cameraSelector.transformControls.enabled = true
 		this.cameraSelector.editorControls.enabled = true
-		this.showEditorHelpers = true
 	}
 
 	this.deactivate = function() {
@@ -82,7 +81,7 @@ WorldEditor.prototype.update = function() {
 		this.radialHelper.scale(gridScale)
 	}
 
-	this.cameraSelector.update(this.transformMode)
+	this.cameraSelector.update(this.transformMode, this.vrCamera)
 }
 
 WorldEditor.prototype.preRenderUpdate = function() {
@@ -123,7 +122,7 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 	}
 
 	// add handles for the camera helper
-	if (camera && camera.parent instanceof THREE.Camera) {
+	if (camera && camera.parent instanceof THREE.Camera && this.cameraSelector.selectedCamera !== 'vr') {
 		needsHandles.push(camera.parent)
 	}
 
@@ -528,6 +527,21 @@ WorldEditor.prototype.matchVRToEditorCamera = function() {
 	E2.app.undoManager.end()
 }
 
+WorldEditor.prototype.selectCamera = function(cameraId) {
+	var activePlugin = this.cameraSelector.transformControls.plugin
+	var selectedObject = activePlugin ? activePlugin.object3d : undefined
+	if (selectedObject !== undefined) {
+		this.cameraSelector.transformControls.detach()
+	}
+
+	this.cameraSelector.selectCamera(cameraId)
+
+	// reselect the selection for the new camera
+	if (selectedObject !== undefined) {
+		this.setSelection([selectedObject])
+	}
+}
+
 WorldEditor.prototype.matchEditorToVRCamera = function() {
 	// match the selected vr camera to world editor camera
 	var vrCameraPlugin = this.vrCamera.parent.backReference
@@ -553,23 +567,15 @@ WorldEditor.prototype.setCameraView = function(camera) {
 }
 
 WorldEditor.prototype.toggleCameraOrthographic = function() {
-	// save selected object
-	var activePlugin = this.cameraSelector.transformControls.plugin
-	var selectedObject = activePlugin ? activePlugin.object3d : undefined
-	if (selectedObject !== undefined) {
-		this.cameraSelector.transformControls.detach()
-	}
-
-	this.cameraSelector.selectCamera(this.cameraSelector.selectedCamera === 'orthographic' ? 'perspective' : 'orthographic')
-
-	// reselect the selection for the new camera
-	if (selectedObject !== undefined) {
-		this.setSelection([selectedObject])
-	}
+	this.selectCamera(this.cameraSelector.selectedCamera === 'orthographic' ? 'perspective' : 'orthographic')
 }
 
-WorldEditor.prototype.toggleEditorHelpers = function() {
-	this.showEditorHelpers = !this.showEditorHelpers
+WorldEditor.prototype.setEditorHelpers = function(set) {
+	this.showEditorHelpers = set
+}
+
+WorldEditor.prototype.areEditorHelpersActive = function() {
+	return this.showEditorHelpers
 }
 
 WorldEditor.prototype.frameSelection = function() {

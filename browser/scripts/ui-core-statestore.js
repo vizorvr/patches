@@ -77,7 +77,7 @@ var UiState = function(persistentStorageRef, context) {
 		mode 		: uiMode.build,
 		visible 	: true,				// overall visibility of the UI
 		context		: context || {},
-		viewCamera	: uiViewCam.world_editor,
+		viewCamera	: uiViewCam.birdsEye,
 		visibility	: {
 			_internal: {
 				breadcrumb: true,		// always true	(20151012)
@@ -159,7 +159,7 @@ var UiState = function(persistentStorageRef, context) {
 	var notifyBuildMode = function() {
 		if (that.visibility._internal.patch_editor)
 			that.mode = uiMode.program
-		else if (that.viewCamera !== uiViewCam.vr)
+		else //if (that.viewCamera !== uiViewCam.vr)
 			that.mode = uiMode.build
 	}
 	this.on('_internal:patch_editor', notifyBuildMode)

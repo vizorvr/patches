@@ -2,6 +2,8 @@ function WorldEditorCameraSelector(domElement) {
 
 	var perspectiveCamera = new WorldEditorCamera(domElement)
 	var orthographicCamera = new WorldEditorOrthographicCamera(domElement)
+	var vrCamera = new WorldEditorCamera(domElement)
+	vrCamera.camera.matrixAutoUpdate = false
 
 	this.axisCameras = {
 		'+x': {position: new THREE.Vector3(-1, 0, 0) },
@@ -10,6 +12,11 @@ function WorldEditorCameraSelector(domElement) {
 		'-x': {position: new THREE.Vector3( 1, 0, 0) },
 		'-y': {position: new THREE.Vector3( 0, 1, 0) },
 		'-z': {position: new THREE.Vector3( 0, 0, 1) }
+	}
+
+	var dummyEditorControls = {
+		center: new THREE.Vector3(),
+		enable: true
 	}
 
 	this.cameras = {
@@ -22,6 +29,11 @@ function WorldEditorCameraSelector(domElement) {
 			camera: orthographicCamera,
 			editorControls: new THREE.EditorControls(orthographicCamera.camera, domElement),
 			transformControls: new THREE.TransformControls(orthographicCamera.camera, domElement)
+		},
+		'vr' : {
+			camera: vrCamera,
+			editorControls: dummyEditorControls,
+			transformControls: new THREE.TransformControls(vrCamera.camera, domElement)
 		}
 	}
 
@@ -116,12 +128,18 @@ WorldEditorCameraSelector.prototype = {
 		}
 	},
 
-	update: function(transformMode) {
+	update: function(transformMode, vrCamera) {
 		// needs calling on every update otherwise the transform controls draw incorrectly
 		this.transformControls.setMode(transformMode)
 		this.transformControls.setSpace('local')
 		this.transformControls.updateTransformLock()
 
 		this.cameras[this.currentCameraId].camera.update();
+
+		if (vrCamera && this.currentCameraId === 'vr') {
+			// keep the editor vr camera in sync with the current vr camera plugin
+			vrCamera.updateMatrixWorld()
+			this.cameras.vr.camera.camera.matrixWorld.copy(vrCamera.matrixWorld)
+		}
 	}
 }
