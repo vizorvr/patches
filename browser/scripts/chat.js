@@ -135,7 +135,7 @@ Chat.prototype._messageCleaner = function(message) {
 				'<a target="_blank" '+
 					'href="http://$1vizor.io$2">'+
 						'$1vizor.io$2</a>')
-			console.log('word', oword, replaced)
+
 			return replaced
 		})
 		.join(' ')
