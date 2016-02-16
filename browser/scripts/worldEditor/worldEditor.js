@@ -504,8 +504,8 @@ WorldEditor.prototype.mouseUp = function(e) {
 }
 
 WorldEditor.prototype.setupObjectPicking = function() {
-	$(document).mousedown(this.mouseDown.bind(this))
-	$(document).mouseup(this.mouseUp.bind(this))
+	this.domElement.addEventListener( 'mousedown', this.mouseDown.bind(this), false );
+	this.domElement.addEventListener( 'mouseup', this.mouseUp.bind(this), false );
 	this.raycaster = new THREE.Raycaster()
 }
 

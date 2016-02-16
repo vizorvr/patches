@@ -405,11 +405,11 @@ Node.prototype._cascadeForceUpdate = function(conn) {
 	}
 }
 
-Node.prototype._update_input = function(inp, pl, conns, needs_update) {
+Node.prototype._update_input = function(updateContext, inp, pl, conns, needs_update) {
 	var result = {dirty: false, needs_update: needs_update}
 	var sn = inp.src_node;
 
-	result.dirty = sn.update_recursive(conns);
+	result.dirty = sn.update_recursive(updateContext, conns);
 
 	// TODO: Sampling the output value out here might seem spurious, but isn't:
 	// Some plugin require the ability to set their updated flag in update_output().
@@ -441,7 +441,7 @@ Node.prototype._update_input = function(inp, pl, conns, needs_update) {
 	return result
 }
 
-Node.prototype.update_recursive = function(conns) {
+Node.prototype.update_recursive = function(updateContext, conns) {
 	var dirty = false;
 
 	if (this.update_count > 0)
@@ -488,7 +488,7 @@ Node.prototype.update_recursive = function(conns) {
 			}
 		}
 
-		var result = this._update_input(inp, pl, conns, needs_update)
+		var result = this._update_input(updateContext, inp, pl, conns, needs_update)
 
 		dirty = dirty || result.dirty
 		needs_update = needs_update || result.needs_update
@@ -502,7 +502,7 @@ Node.prototype.update_recursive = function(conns) {
 			// set reactivated inputs as updated so that their values are fetched
 			this._cascadeForceUpdate(inp)
 			
-			var result = this._update_input(inp, pl, conns, needs_update)
+			var result = this._update_input(updateContext, inp, pl, conns, needs_update)
 
 			dirty = dirty || result.dirty
 			needs_update = needs_update || result.needs_update
@@ -510,21 +510,21 @@ Node.prototype.update_recursive = function(conns) {
 	}
 
 	if (pl.always_update || (pl.isGraph && pl.state.always_update)) {
-		pl.update_state();
+		pl.update_state(updateContext);
 	} else if(this.queued_update > -1) {
 		if(pl.update_state)
-			pl.update_state();
+			pl.update_state(updateContext);
 
 		pl.updated = true;
 		this.queued_update--;
 	} else if(needs_update || (pl.output_slots.length === 0 && (!this.outputs || this.outputs.length === 0))) {
 		if(pl.update_state)
-			pl.update_state();
+			pl.update_state(updateContext);
 	
 		this.inputs_changed = false;
 	} else if(pl.input_slots.length === 0 && (!this.inputs || this.inputs.length === 0)) {
 		if(pl.update_state)
-			pl.update_state();
+			pl.update_state(updateContext);
 	}
 	
 	return dirty;

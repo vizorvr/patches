@@ -43,10 +43,10 @@
 		}
 	}
 
-	ThreeMeshPlugin.prototype.update_state = function () {
+	ThreeMeshPlugin.prototype.update_state = function (updateContext) {
 		AbstractThreeMeshPlugin.prototype.update_state.apply(this)
 
-		var delta = this.core.delta_t * 0.001
+		var delta = updateContext.delta_t * 0.001
 
 		if (this.object3d) {
 			this.object3d.traverse(function(n) {

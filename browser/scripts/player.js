@@ -31,17 +31,14 @@ Player.prototype.play = function() {
 	this.core.root_graph.play()
 	this.current_state = this.state.PLAYING
 	this.last_time = (new Date()).getTime()
-	this.interval = requestAnimFrame(this.on_anim_frame.bind(this))
+	if (!this.interval) {
+		this.interval = requestAnimFrame(this.on_anim_frame.bind(this))
+	}
 }
 
 Player.prototype.pause = function() {
 	this.current_state = this.state.PAUSED
 	
-	if(this.interval !== null) {
-		cancelAnimFrame(this.interval)
-		this.interval = null
-	}
-
 	this.core.root_graph.pause()
 }
 
@@ -80,15 +77,15 @@ Player.prototype.on_update = function() {
 		this.scheduled_stop = null
 		return
 	}
-	
-	var time = (new Date()).getTime()
+
+	var time = this.current_state !== this.state.PAUSED ? Date.now() : this.last_time
 	var delta_t = (time - this.last_time) * 0.001
 	
 	if(this.core.update(this.abs_time, delta_t) && E2.app.updateCanvas)
 		E2.app.updateCanvas(false)
 
 	E2.app.worldEditor.update()
-	
+
 	this.last_time = time
 	this.abs_time += delta_t
 	this.frames++

@@ -33,7 +33,7 @@ describe('material_modifier', function()
 		m[0].name = 'm1'
 		plugin.update_input({index: 0}, m)
 
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 
 		var o = plugin.update_output({index: 0})
 
@@ -50,7 +50,7 @@ describe('material_modifier', function()
 		plugin.update_input({index: 0, name: 'material array'}, m1)
 		plugin.update_input({index: 0, uid: 0x1234, name: 'default material'}, m2[0])
 
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 
 		var o = plugin.update_output({index: 0})
 
@@ -77,7 +77,7 @@ describe('material_modifier', function()
 		plugin.update_input({index: 0, name: 'material array'}, m1)
 		plugin.update_input({index: 3, uid: 0x1234, name: 'mat3'}, m2[0])
 
-		plugin.update_state()
+		plugin.update_state({abs_t:0, delta_t:(1/60)})
 
 		var o = plugin.update_output({index: 0})
 
