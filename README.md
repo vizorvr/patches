@@ -12,8 +12,10 @@ Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentatio
 Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [RethinkDB](http://rethinkdb.com) and either [node.js](https://nodejs.org) or [io.js](https://iojs.org/). To install the required packages, issue the following commands (on Mac using Homebrew):
 
 ```
-    $ npm install && npm install -g gulp mocha
+    $ npm install && npm install -g gulp
     $ brew install graphicsmagick
+    $ node tools/setup.js
+    $ gulp
 ```
 
 NOTE1: We strongly recommend [io.js](https://iojs.org/en/index.html) for its JavaScript ES6 features. 
@@ -30,6 +32,7 @@ To build the LESS, plugins, etc [continuously]:
 Running the tests:
 
 ```
+    $ npm install -g mocha
     $ npm test
 ```
 
