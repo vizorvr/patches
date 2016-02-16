@@ -254,9 +254,14 @@ var siteUI = new function() {
 			jQuery('button#mobileMenuCloseButton', $mobileMenu).on('mousedown touchdown', function(e){
 				e.preventDefault();
 				e.stopPropagation();
+				window.removeEventListener('resize', dismissMenu)
+				if (that.hasOrientationChange) window.removeEventListener('orientationchange', dismissMenu)
 				dismissMenu();
 				return false;
 			});
+
+			if (that.hasOrientationChange) window.addEventListener('orientationchange', dismissMenu)
+			window.addEventListener('resize', dismissMenu)
 
 			$mobileMenu.fadeIn('fast');
 			jQuery('a', $mobileMenu).on('mousedown touchdown', dismissMenu)
