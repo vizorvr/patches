@@ -1373,6 +1373,10 @@ Application.prototype.toggleNoodles = function() {
 	E2.ui.togglePatchEditor(this.noodlesVisible);
 }
 
+Application.prototype.canInitiateCameraMove = function(e) {
+	return this.isVRCameraActive() && E2.util.isCanvasInFocus(e)
+}
+
 Application.prototype.toggleWorldEditor = function(forceState) {
 	var newActive = (typeof forceState !== 'undefined') ? forceState : !this.worldEditor.isActive()
 	if (newActive) {

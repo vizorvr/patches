@@ -191,6 +191,13 @@ E2.util = {
 		var is= (rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly);
 		return is
 	},
+
+	isCanvasInFocus: function isCanvasInFocus(e) {
+		var rx = /CANVAS/i;
+		var is = rx.test(e.target.tagName);
+		return is
+	},
+
 	checkBrowser: function() {
 		return VizorUI.checkCompatibleBrowser();
 	},
