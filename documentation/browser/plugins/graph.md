@@ -1,7 +1,7 @@
-#Graph
+#Nested Patch
 
 ##Description
-Encapsulate a nested graph into- and out of which arbitrary data can be routed and the encapsulated logic. Add input / output proxies inside the graph to feed data in / out of the graph.
+A special patch that structures the graph by containing a group of other patches. View the contents of a Nested Patch by clicking the pencil on top right of the patch. All Nested Patches are purple.
 
 ##Inputs
 ##Outputs

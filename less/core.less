@@ -1067,20 +1067,20 @@ button.svg>svg {
   pointer-events: none;
 }
 
-body.deviceMobile .nomobile,
-body.deviceTablet .notablet,
-body.deviceDesktop .nodesktop {
+body.layoutMobile .nomobile,
+body.layoutTablet .notablet,
+body.layoutDesktop .nodesktop {
   display: none;
 }
 
 body {
-  &.deviceTablet, &.deviceDesktop {
+  &.layoutTablet, &.layoutDesktop {
 	.mobileonly { display: none}
   }
-  &.deviceTablet, &.deviceMobile {
+  &.layoutTablet, &.layoutMobile {
 	.desktoponly {display: none}
   }
-  &.deviceDesktop, &.deviceMobile {
+  &.layoutDesktop, &.layoutMobile {
 	.tabletonly { display: none}
   }
 }

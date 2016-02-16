@@ -1,5 +1,11 @@
 (function(){
 
+var minWidth = 120
+var minHeight = 80
+var maxWidth = 550
+var maxHeight = 440
+var clamp = THREE.Math.clamp
+
 var Annotation = E2.plugins.annotation = function() {
 	Plugin.apply(this, arguments)
 	this.desc = 'Add textual hints to the graph.'
@@ -8,36 +14,38 @@ var Annotation = E2.plugins.annotation = function() {
 	
 	this.output_slots = []
 	
-	this.state = { text: '', width: 0, height: 0 }
+	this.state = { text: '', width: minWidth, height: minHeight }
 }
 
 Annotation.prototype = Object.create(Plugin.prototype)
 
 Annotation.prototype.create_ui = function() {
 	var that = this
-	var inp = $('<textarea placeholder="Type text here" />')
-	inp.css({
-		'resize': true
-	})
-	
-	inp.on('change', function() {
-		that.undoableSetState('text', inp.val(), that.state.text)
-	})
-	
-	// Chrome doesn't handle resize properly for anything but the window object,
-	// so we store the potentially altered size of the textarea on mouseup.
-	inp.mouseup(function() {
-		var ta = $(this)
 
-		that.state.width = ta.width()
-		that.state.height = ta.height()
-	})
+	var adapter = {
+		get text()  	{ return that.state.text; },
+		set text(str) 	{ return that.state.text = str},
+		get width()  	{ return that.state.width },
+		set width(px) 	{ return that.state.width = clamp(px, minWidth, maxWidth) },
+		get height()  	{ return that.state.height },
+		set height(px) 	{ return that.state.height = clamp(px, minHeight, maxHeight) }
+	}
 
+	var onChange 		= this.updateUi.bind(this)
+	var onBeginChange 	= this.beginBatchModifyState.bind(this)
+	var onEndChange 	= function() { that.endBatchModifyState('Annotation') }
+	this.ui = new UITextArea(adapter, onBeginChange, onChange, onEndChange)
+
+	var inp = this.ui.dom.find('textarea')
+	var t = null
+	inp.on('keyup', function(){
+		if (t) clearTimeout(t)
+		t = setTimeout(function(){that.transientSetState('text', inp.val())}, 300)
+	})
 	this.node.on('pluginStateChanged', this.updateUi.bind(this))
-	
-	this.ui = inp
 
-	return this.ui
+	return this.ui.dom
+
 }
 
 Annotation.prototype.state_changed = function() {
@@ -48,18 +56,7 @@ Annotation.prototype.updateUi = function() {
 	if (!this.ui)
 		return
 
-	var s = this.state
-	
-	if(!s.text)
-		return
-
-	this.ui.val(s.text)
-		
-	if(s.width > 0)
-		this.ui.css('width', s.width)
-		
-	if(s.height > 0)
-		this.ui.css('height', s.height)
+	this.ui.update()
 }
 
 })()

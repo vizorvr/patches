@@ -50,7 +50,7 @@ exports.mockE2Classes = function() {
 
 	global.E2.GraphAnalyser = function() {}
 	global.E2.GraphAnalyser.prototype.analyseGraph = function(){
-		return when.resolve()
+		return when.resolve({ size: 0, numAssets: 0 })
 	}
 
 	global.E2.GridFsClient = function() {}
@@ -292,7 +292,9 @@ exports.reset = function() {
 	E2.core.renderer = {
 		setPixelRatio: function() {},
 		domElement: {},
-		setSize: function(){}
+		setSize: function(){},
+		setClearColor: function() {},
+		getSize: function() {return {width: 1, height: 1}}
 	}
 
 	return E2.core;

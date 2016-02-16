@@ -17,7 +17,6 @@ var ColorPicker = function(core) {
 		}
 	];
 
-	this._oldState = null;
 	this.state = { hue: 0.0, sat: 0.0, lum: 1.0 };
 	// note: .lum above is used as B/V so model is actually HSV
 	// note: .hue above is inverted (1.0 - hue) and therefore goes clockwise - #990
@@ -214,25 +213,11 @@ ColorPicker.prototype.ui_enableInteraction = function(containerNode, svSurfaceNo
 	var that = this
 
 	function beginModifyState() {
-		E2.app.undoManager.begin('Pick color')
-		that._oldState = { hue: that.state.hue, sat: that.state.sat, lum: that.state.lum }
+		that.beginBatchModifyState()
 	}
 
 	function endModifyState () {
-		if (!that._oldState)
-			return;
-
-		if (that._oldState.hue !== that.state.hue)
-			that.undoableSetState('hue', that.state.hue, that._oldState.hue)
-
-		if (that._oldState.sat !== that.state.sat)
-			that.undoableSetState('sat', that.state.sat, that._oldState.sat)
-
-		if (that._oldState.lum !== that.state.lum)
-			that.undoableSetState('lum', that.state.lum, that._oldState.lum)
-
-		E2.app.undoManager.end()
-		that._oldState = null
+		return that.endBatchModifyState('Pick color')
 	}
 
 	function moveValue(val) {

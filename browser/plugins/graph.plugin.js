@@ -97,12 +97,12 @@ GraphPlugin.prototype.update_input = function(slot, data) {
 	}
 }
 
-GraphPlugin.prototype.update_state = function() {
+GraphPlugin.prototype.update_state = function(updateContext) {
 	this.updated = false
 	this.updated_sids.length = 0
 
 	if(this.graph) {
-		if(this.graph.update() && this.graph === E2.app.player.core.active_graph)
+		if(this.graph.update(updateContext) && this.graph === E2.app.player.core.active_graph)
 			E2.app.updateCanvas(false)
 	}
 }

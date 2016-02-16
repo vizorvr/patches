@@ -108,27 +108,27 @@
 		this.buffersDirty = false
 	}
 
-	ThreeParticleEmitter.prototype.updateParticles = function() {
+	ThreeParticleEmitter.prototype.updateParticles = function(updateContext) {
 		var particlesToSpawn =
-			this.particleCount * this.spawnRate * E2.core.delta_t
+			this.particleCount * this.spawnRate * updateContext.delta_t
 
 		var gravity
 
 		if (this.gravity) {
 			gravity = this.gravity.clone()
-			gravity.multiplyScalar(E2.core.delta_t)
+			gravity.multiplyScalar(updateContext.delta_t)
 		}
 
 		for (var i = 0; i < this.particles.length; ++i) {
 			var p = this.particles[i]
 			if (p.lifetime > 0.0) {
-				p.position.add(p.velocity)
-				p.lifetime -= E2.core.delta_t
+				p.position.addScaledVector(p.velocity, updateContext.delta_t * 30) // 30 for backwards compatibility to not break old graphs too much
+				p.lifetime -= updateContext.delta_t
 				if (this.gravity) {
 					p.velocity.add(gravity)
 				}
 				if (this.noise > 0) {
-					var noiseMin = -E2.core.delta_t * this.noise
+					var noiseMin = -updateContext.delta_t * this.noise
 					var noiseMax = -noiseMin
 
 					p.velocity.x += this.random.real(noiseMin, noiseMax)
@@ -228,11 +228,11 @@
 		return this.geometry
 	}
 
-	ThreeParticleEmitter.prototype.update_state = function() {
+	ThreeParticleEmitter.prototype.update_state = function(updateContext) {
 		if (this.buffersDirty) {
 			this.createBuffers()
 		}
 
-		this.updateParticles()
+		this.updateParticles(updateContext)
 	}
 })()

@@ -109,12 +109,12 @@ AbstractArrayBlendModulatorPlugin.prototype.update_output = function(slot) {
 	}
 }
 
-AbstractArrayBlendModulatorPlugin.prototype.update_state = function() {
+AbstractArrayBlendModulatorPlugin.prototype.update_state = function(updateContext) {
 	if (this.nextTargetIndex !== undefined && this.values.length > 0) {
 		this.nextTargetIndex = Math.min(Math.max(0, Math.floor(this.nextTargetIndex)), this.values.length - 1)
 
 		if (this.values[this.nextTargetIndex] !== this.endValue) {
-			this.startTime = this.core.abs_t
+			this.startTime = updateContext.abs_t
 			this.startValue = this.value
 			this.endValue = this.nextTargetIndex < this.values.length ? this.values[this.nextTargetIndex] : E2.core.get_default_value(this.datatype)
 			this.triggered = true
@@ -126,7 +126,7 @@ AbstractArrayBlendModulatorPlugin.prototype.update_state = function() {
 		this.always_update = false
 	}
 	else {
-		var t = this.core.abs_t - this.startTime
+		var t = updateContext.abs_t - this.startTime
 		if (t <= this.duration && this.duration > 0) {
 			this.value = this.lerpFunc(this.startValue, this.endValue, this.blendFunc.func(t / this.duration))
 			this.updated = true

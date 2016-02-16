@@ -105,7 +105,7 @@ LoopPlugin.prototype.update_input = function(slot, data)
 	}
 };
 
-LoopPlugin.prototype.update_state = function()
+LoopPlugin.prototype.update_state = function(updateContext)
 {
 	this.updated = false;
 	this.updated_sids.length = 0;
@@ -127,7 +127,7 @@ LoopPlugin.prototype.update_state = function()
 			this.graph.variables.write('index', cnt);
 			this.graph.reset();
 
-			if(this.graph.update())
+			if(this.graph.update(updateContext))
 				updated = true;
 		}
 

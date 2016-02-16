@@ -933,9 +933,6 @@ body.bHome #contentwrap {
 	 float:none;
   	}
 
-	.nomobile {
-	  display: none !important;
-	}
 
 	.mobileonly, .launch-button.mobileonly {
 	  display: block;
@@ -1074,7 +1071,7 @@ body.bHome #contentwrap {
 	}
 
 	header nav ul {
-	  width: 525px;
+	  width: 655px;
 	  float:right;
 	}
 
@@ -1096,6 +1093,9 @@ body.bHome #contentwrap {
 	  }
 	  div.text {
 		min-height: 365px;
+		p {
+		  margin-bottom: 50px;
+		}
 	  }
 	}
 	section>div.in, footer>div.in {
@@ -1174,5 +1174,19 @@ body.bHome #contentwrap {
 	}
   } // END DESKTOP
 
-
 } // body.bHome
+
+body.bHome.layoutDesktop #contentwrap {
+  header nav ul {
+	display: block;
+	width: auto;
+	text-align: right;
+	 li {
+	  display: inline-block;
+	  padding: 0 30px;
+	}
+	li:last-of-type {
+	  padding-right: 0;
+	}
+  }
+}

@@ -205,7 +205,7 @@
 		return this.object3d
 	}
 
-	ThreeGazeClicker.prototype.update_click = function() {
+	ThreeGazeClicker.prototype.update_click = function(updateContext) {
 		if (!this.raycaster) {
 			this.raycaster = new THREE.Raycaster()
 		}
@@ -230,7 +230,7 @@
 
 			if (obj && obj.gazeClickerCount) {
 				if (obj !== this.lastObj) {
-					this.objTimer = this.core.abs_t
+					this.objTimer = updateContext.abs_t
 					this.lastObj = obj
 
 					E2.core.runtimeEvents.emit('gazeIn:'+this.lastObj.uuid)
@@ -249,7 +249,7 @@
 		}
 
 		if (this.lastObj) {
-			this.clickTime = this.core.abs_t - this.objTimer
+			this.clickTime = updateContext.abs_t - this.objTimer
 			var clickFactor = Math.min(this.clickTime, this.clickDelay) / this.clickDelay // 0..1
 
 			if (this.clickFactor < 1 && clickFactor >= 1) {
@@ -267,12 +267,12 @@
 		}
 	}
 
-	ThreeGazeClicker.prototype.update_state = function() {
+	ThreeGazeClicker.prototype.update_state = function(updateContext) {
 		if (!this.scene || !this.camera) {
 			return
 		}
 
-		this.update_click()
+		this.update_click(updateContext)
 
 		var mesh = this.get_mesh()
 
