@@ -539,10 +539,10 @@ VizorUI.prototype.onKeyPress = function(e) {
 				openPresetOrPlugin('plugin:multiply_modulator');
 				break;
 			case uiKeys.shortcutKey7:
-				openPresetOrPlugin('preset:time_oscillate_between_2_values');
+				openPresetOrPlugin('plugin:vector');
 				break;
 			case uiKeys.shortcutKey8:
-				openPresetOrPlugin('preset:image_show_image');
+				openPresetOrPlugin('plugin:toggle_button');
 				break;
 			case uiKeys.shortcutKey9:
 				openPresetOrPlugin('plugin:knob_float_generator');
