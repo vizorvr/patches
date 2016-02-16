@@ -216,7 +216,7 @@ var siteUI = new function() {
 		$(window).on('resize', onResize);
 		$(window).on('vizorLoaded', function() {
 
-			E2.app.canInititateCameraMove = function(){return false};	// disable panning on homepage player, see #790
+			E2.app.canInitiateCameraMove = function(){return false};	// disable panning on homepage player, see #790
 			E2.app.calculateCanvasArea = function() {
                 return{
                     width: $homePlayerContainer.innerWidth(),
