@@ -1,60 +1,55 @@
-E2.p = E2.plugins["audio_source_player"] = function(core, node)
-{
-	this.desc = 'Plays a supplied audio source.';
+(function() {
+
+var AudioSourcePlayerPlugin = E2.plugins.audio_source_player = function(core, node) {
+	this.desc = 'Plays a supplied audio source.'
 	
 	this.input_slots = [ 
-		{ name: 'source', dt: core.datatypes.OBJECT, desc: 'The audio source to play.', def: null }
-	];
-	
-	this.output_slots = [
+		{ name: 'source', dt: core.datatypes.OBJECT,
+			desc: 'The audio source to play.', def: null }
 	]
 	
-	this.core = core;
-	this.node = node;
-	this.audio_src = null;
-};
+	this.output_slots = []
+	
+	this.core = core
+	this.node = node
+	this.audioSource = null
 
-E2.p.prototype.connection_changed = function(on, conn, slot)
-{
-	if(!on && this.audio_src)
-	{
-		this.audio_src.player.stop_playback();
-		this.audio_src = null;
+	var that = this
+}
+
+AudioSourcePlayerPlugin.prototype.connection_changed = function(on, conn, slot) {
+	if (!on && this.audioSource) {
+		this.audioSource.player.stop_playback()
+		this.audioSource = null
 	}		
-};
+}
 
-E2.p.prototype.update_input = function(slot, data)
-{
-	if(slot.index === 0)
-	{
-		if(data && (!data.context || data.context.toString() !== '[object AudioContext]'))
-		{
-			msg('ERROR: Can\'t play audio source: The supplied object isn\'t a valid AudioSource object.');
-			return;
+AudioSourcePlayerPlugin.prototype.update_input = function(slot, data) {
+	if (slot.index === 0) {
+		if (data && !data.context) {
+			msg('ERROR: Can\'t play audio source.')
+			return
 		}
 		
-		if(!data && this.audio_src && this.audio_src.buffer)
-		{
-			this.audio_src.player.stop_playback();
-			return;
-		}
+		if (!data && this.audioSource && this.audioSource.buffer)
+			return this.audioSource.player.stop_playback()
 
-		if(this.audio_src && this.audio_src !== data)
-			this.audio_src.player.stop_playback();
+		if (this.audioSource && this.audioSource !== data)
+			this.audioSource.player.stop_playback()
 		
-		if(this.core.audioContext && data)
-		{
-			data.connect(this.core.audioContext.destination);
+		if (this.core.audioContext && data) {
+			data.connect(this.core.audioContext.destination)
 			
-			if(data.player)
-				data.player.start_playback();
+			if (data.player)
+				data.player.start_playback()
 		}
 
-		this.audio_src = data;
+		this.audioSource = data
 	}
-};
+}
 
-E2.p.prototype.update_state = function()
-{
-	this.updated = true;
-};
+AudioSourcePlayerPlugin.prototype.update_state = function() {
+	this.updated = true
+}
+
+})()

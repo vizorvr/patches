@@ -25,6 +25,7 @@ var graphSchema = new mongoose.Schema({
 	}],
 	previewUrlSmall: { type: String },
 	previewUrlLarge: { type: String },
+	hasAudio: { type: Boolean, default: false },
 	stat: statSpec,
 	updatedAt: { type: Date, default: Date.now },
 	createdAt: { type: Date, default: Date.now }
