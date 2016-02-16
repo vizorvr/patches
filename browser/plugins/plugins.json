@@ -149,8 +149,8 @@
     "CAMERAS": {
         "VR Camera": "three_vr_camera",
         "Perspective Camera": "three_perspective_camera",
-        "Screen Space Transform Extractor": "three_screen_space_transform_extractor"
-
+        "Screen Space Transform Extractor": "three_screen_space_transform_extractor",
+        "Viewport Size": "viewport_size_generator"
     },
 
 

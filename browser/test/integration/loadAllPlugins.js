@@ -20,10 +20,6 @@ describe('loadAllPlugins', function() {
 		'grid_mesh_generator',
 		'concatenate_matrix_modulator',
 		'scene_renderer_emitter',
-
-		// these will need to be fixed:
-		'viewport_height_generator',
-		'viewport_width_generator',
 	]
 
 	it('loads all plugins', function(done) {
