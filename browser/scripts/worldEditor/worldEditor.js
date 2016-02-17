@@ -527,19 +527,28 @@ WorldEditor.prototype.matchVRToEditorCamera = function() {
 	E2.app.undoManager.end()
 }
 
-WorldEditor.prototype.selectCamera = function(cameraId) {
+WorldEditor.prototype.callAndRetainSelection = function(callback) {
 	var activePlugin = this.cameraSelector.transformControls.plugin
 	var selectedObject = activePlugin ? activePlugin.object3d : undefined
 	if (selectedObject !== undefined) {
 		this.cameraSelector.transformControls.detach()
 	}
 
-	this.cameraSelector.selectCamera(cameraId)
+	if (callback) {
+		callback()
+	}
 
 	// reselect the selection for the new camera
 	if (selectedObject !== undefined) {
 		this.setSelection([selectedObject])
 	}
+}
+
+WorldEditor.prototype.selectCamera = function(cameraId) {
+	var that = this
+	this.callAndRetainSelection(function() {
+		that.cameraSelector.selectCamera(cameraId)
+	})
 }
 
 WorldEditor.prototype.matchEditorToVRCamera = function() {
@@ -567,7 +576,10 @@ WorldEditor.prototype.setCameraView = function(camera) {
 }
 
 WorldEditor.prototype.toggleCameraOrthographic = function() {
-	this.selectCamera(this.cameraSelector.selectedCamera === 'orthographic' ? 'perspective' : 'orthographic')
+	var that = this
+	this.callAndRetainSelection(function() {
+		that.cameraSelector.selectNextCameraInCurrentCategory()
+	})
 }
 
 WorldEditor.prototype.setEditorHelpers = function(set) {
