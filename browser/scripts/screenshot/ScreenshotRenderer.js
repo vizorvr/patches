@@ -1,4 +1,8 @@
 function ScreenshotRenderer(scene, camera) {
+	if (!(scene && scene.children.length > 0 && camera && camera.parent && E2.core.renderer)) {
+		return
+	}
+
 	// clone scene without overlays
 	this.scene = scene.clone(false)
 	this.scene.add(scene.children[0].clone())
@@ -12,6 +16,13 @@ function ScreenshotRenderer(scene, camera) {
 }
 
 ScreenshotRenderer.prototype.capture = function(width, height) {
+	if (!this.camera) {
+		// return a dark gray texture as default
+		return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAA" +
+		"mkwkpAAAAJklEQVQImS3IMQEAMBCEMHhV598YXZoxbkOt4AQiES6RyOR+EvkARQ0MsXQ" +
+		"l4RoAAAAASUVORK5CYII="
+	}
+
 	var texture = new THREE.WebGLRenderTarget(width * 2, height * 2, {
 		minFilter: THREE.LinearFilter,
 		magFilter: THREE.NearestFilter,
