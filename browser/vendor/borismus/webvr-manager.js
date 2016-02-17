@@ -2155,11 +2155,19 @@ Util.isLandscapeMode = function() {
 };
 
 Util.getScreenWidth = function() {
+  if (!window.screen) {
+    return 0;
+  }
+
   return Math.max(window.screen.width, window.screen.height) *
       window.devicePixelRatio;
 };
 
 Util.getScreenHeight = function() {
+  if (!window.screen) {
+    return 0;
+  }
+
   return Math.min(window.screen.width, window.screen.height) *
       window.devicePixelRatio;
 };
@@ -2533,7 +2541,10 @@ function WebVRManager(renderer, effect, params) {
   // Create device info and set the correct default viewer.
   this.deviceInfo = new DeviceInfo(this.dpdb.getDeviceParams());
   this.deviceInfo.viewer = DeviceInfo.Viewers[this.viewerSelector.selectedKey];
-  console.log('Using the %s viewer.', this.getViewer().label);
+  var viewer = this.getViewer()
+  if (shouldFetch) {
+    console.log('Using the %s viewer.', viewer.label);
+  }
 
   this.isVRCompatible = false;
   this.isFullscreenDisabled = !!Util.getQueryParameter('no_fullscreen');

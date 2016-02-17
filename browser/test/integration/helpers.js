@@ -82,6 +82,9 @@ exports.setupThree = function() {
 exports.reset = function() {
 	global.E2 = {}
 	global.window = global
+
+	global.window.screen = {width: 1280, height: 720}
+
 	global.addEventListener = function() {}
 	global.location = {
 		pathname: 'test/test'
@@ -105,7 +108,9 @@ exports.reset = function() {
 		addEventListener: global.addEventListener,
 		body: domNode(),
 		createElement: function() {
-			return domNode()
+			var el = domNode()
+			el.setAttribute = function() {}
+			return el
 		},
 		getElementsByTagName: function() {
 			return [ domNode() ]
@@ -116,7 +121,9 @@ exports.reset = function() {
 		userAgent: 'node'
 	}
 
-	global.WebVRConfig = {}
+	global.WebVRConfig = {
+		NO_DPDB_FETCH: true
+	}
 
 	exports.runScript(browserPath+'dist/engine.js')
 	exports.mockE2Classes()
