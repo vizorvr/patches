@@ -159,7 +159,7 @@ var UiState = function(persistentStorageRef, context) {
 	var notifyBuildMode = function() {
 		if (that.visibility._internal.patch_editor)
 			that.mode = uiMode.program
-		else //if (that.viewCamera !== uiViewCam.vr)
+		else 
 			that.mode = uiMode.build
 	}
 	this.on('_internal:patch_editor', notifyBuildMode)
