@@ -551,9 +551,10 @@ VizorUI.prototype.onKeyPress = function(e) {
 		}
 
 	}
-	else if (E2.app.worldEditor.isActive && E2.app.worldEditor.cameraSelector.selectedCamera !== 'vr') {
-		// world editor (bird's eye camera only) -specific keys
-		switch(key) {
+	else if (E2.app.worldEditor.isActive) {
+		if (E2.app.worldEditor.cameraSelector.selectedCamera !== 'vr') {
+			// world editor (bird's eye camera only) -specific keys
+			switch(key) {
 			case uiKeys.toggleWorldEditorXCamera:
 				E2.app.worldEditor.setCameraView('-x');
 				break;
@@ -578,10 +579,10 @@ VizorUI.prototype.onKeyPress = function(e) {
 			case uiKeys.frameViewToSelection:
 				E2.app.worldEditor.frameSelection();
 				break;
+			}
 		}
-	}
-	else {// E2.app.worldEditor.isActive() && selected camera !== 'vr'
-		// world editor (vr and bird's eye camera) -specific keys
+
+		// world editor (any camera) -specific keys
 		switch(key) {
 			case uiKeys.modifyModeMove:
 				this.state.modifyMode = uiModifyMode.move;
