@@ -89,16 +89,6 @@ describe('Upload', function() {
 				expect(json.scaledThumbnail.url.length).to.equal(56);
 				expect(json.thumbnail.url.length).to.equal(56);
 
-				delete json.url; delete json.scaled.url; delete json.original.url; delete json.scaledThumbnail.url; delete json.thumbnail.url; 
-
-				expect({__v:0,path:original,
-					tags:['texture'],
-					scaledThumbnail:{mimetype:'image/png',width:128,height:128,path:scaledThumb},
-					scaled:{mimetype:'image/png',width:1024,height:1024,path:scaled},
-					thumbnail:{mimetype:'image/png',width:128,height:72,path:thumb},
-					original:{mimetype:'image/png',width:1920,height:1080,path:original}
-					})
-					.to.deep.equal(json);
 				done(err);
 			});
 		});

@@ -37,8 +37,6 @@ ImageController.prototype.uploadAnonymous = function(req, res, next) {
 	var that = this
 
 	var file = req.files.file
-	// TODO: we should probably define the anonymous username somewhere
-	// where we can change it globally
 	var folder = '/v/assets/image'
 
 	new ImageProcessor(this._fs)

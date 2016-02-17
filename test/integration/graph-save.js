@@ -36,12 +36,43 @@ describe('Graph', function() {
 		.end(cb)
 	}
 
+	function sendAnonymousGraph(path, cb) {
+		return agent.post('/graph/v').send({
+			path: path,
+			graph: graphData
+		})
+		.expect(200)
+		.end(cb)
+	}
+
 	before(function(done) {
 		agent
 		.post('/signup')
 		.send(deets)
 		.expect(302)
 		.end(done)
+	})
+
+	it('should accept anonymous save', function(done) {
+		var path = 'some-'+rand()
+		var expectedPath = '/v/'+path
+
+		sendAnonymousGraph(path, function(err, res) {
+			if (err) return done(err)
+			var json = {
+				name: res.body.name,
+				owner: res.body.owner,
+				url: res.body.url,
+				path: res.body.path
+			}
+  			expect({
+				name: path,
+				owner: 'v',
+				path: expectedPath,
+				url: '/data/graph'+expectedPath+'.json'
+			}).to.deep.equal(json)
+			done()
+		})
 	})
 
 	it('should use the expected name, owner, path, and url', function(done) {
