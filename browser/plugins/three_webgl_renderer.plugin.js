@@ -135,7 +135,7 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.toggleFullScreen = function() {
-		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+		var isFullscreen = E2.util.isFullscreen()
 		console.log('ThreeWebGLRendererPlugin.toggleFullScreen', !isFullscreen)
 		this.manager.toggleFullScreen()
 	}

@@ -1377,23 +1377,22 @@ Application.prototype.canInitiateCameraMove = function(e) {
 	return this.isVRCameraActive() && E2.util.isCanvasInFocus(e)
 }
 
-Application.prototype.toggleWorldEditor = function(forceState) {
-	var newActive = (typeof forceState !== 'undefined') ? forceState : !this.worldEditor.isActive()
-	if (newActive) {
-		this.worldEditor.activate()
-	}
-	else {
+Application.prototype.setViewCamera = function(cameraId) {
+	this.worldEditor.selectCamera(cameraId)
+
+	// if helper objects are off, and we're in vr camera, disable world editor entirely
+	if (!this.worldEditor.areEditorHelpersActive() && cameraId === 'vr') {
 		this.worldEditor.deactivate()
 	}
-	var isActive = this.worldEditor.isActive()
-
-	return isActive
+	else if (!this.worldEditor.isActive()) {
+		this.worldEditor.activate()
+	}
 }
 
 // is the VR (experience) camera active AND controllable?
 // i.e. graph is not visible
 Application.prototype.isVRCameraActive = function() {
-	return !(this.noodlesVisible || E2.app.worldEditor.isActive())
+	return !this.noodlesVisible && (!E2.app.worldEditor.isActive() || E2.app.worldEditor.cameraSelector.selectedCamera === 'vr')
 }
 
 // is the world editor visible AND controllable
@@ -1403,7 +1402,30 @@ Application.prototype.isWorldEditorActive = function() {
 }
 	
 Application.prototype.toggleFullscreen = function() {
+	var goingToFullscreen = !E2.util.isFullscreen()
+	if (goingToFullscreen) {
+		this.worldEditor.cameraSelector.selectCamera('vr')
+		if (this.worldEditor.isActive()) {
+			this.worldEditor.deactivate()
+		}
+	}
+
 	E2.core.emit('fullScreenChangeRequested')
+}
+
+Application.prototype.toggleHelperObjects = function() {
+	// toggle helper objects on & off
+	// additionally, if helper objects are off, and we're in vr camera, disable world editor entirely
+	var helpersActive = !this.worldEditor.areEditorHelpersActive()
+	this.worldEditor.setEditorHelpers(helpersActive)
+
+	if (this.worldEditor.isActive() && !helpersActive && this.worldEditor.cameraSelector.selectedCamera === 'vr') {
+		this.worldEditor.deactivate()
+	}
+	else if (!this.worldEditor.isActive() && helpersActive) {
+		// re-enable world editor if needed
+		this.worldEditor.activate()
+	}
 }
 
 Application.prototype.onFullScreenChanged = function() {

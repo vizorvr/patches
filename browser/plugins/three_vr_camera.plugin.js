@@ -59,6 +59,7 @@
 		this.domElement = E2.dom.webgl_canvas[0]
 
 		if (!this.dolly) {
+
 			this.dolly = new THREE.PerspectiveCamera()
 
 		}

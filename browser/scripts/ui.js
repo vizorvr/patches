@@ -316,7 +316,7 @@ VizorUI.prototype.toggleUILayer = function() {
 }
 
 VizorUI.prototype.enterEditorView = function(e) {
-	this.state.viewCamera = uiViewCam.world_editor
+	this.state.viewCamera = uiViewCam.birdsEye
 	if (e) e.preventDefault()
 	return true;
 }
