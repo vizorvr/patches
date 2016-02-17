@@ -12,7 +12,7 @@ function ScreenshotRenderer(scene, camera) {
 }
 
 ScreenshotRenderer.prototype.capture = function(width, height) {
-	var texture = new THREE.WebGLRenderTarget(width, height, {
+	var texture = new THREE.WebGLRenderTarget(width * 2, height * 2, {
 		minFilter: THREE.LinearFilter,
 		magFilter: THREE.NearestFilter,
 		format: THREE.RGBFormat } );
@@ -27,10 +27,27 @@ ScreenshotRenderer.prototype.capture = function(width, height) {
 	this.renderer.clear()
 	this.renderer.render(this.scene, this.camera, texture)
 
-	var imgData = new Uint8Array(width * height * 4)
+	var doubleResImgData = new Uint8Array(width * 2 * height * 2 * 4)
 
 	var gl = this.renderer.getContext()
-	gl.readPixels( 0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, imgData)
+	gl.readPixels( 0, 0, width * 2, height * 2, gl.RGBA, gl.UNSIGNED_BYTE, doubleResImgData)
+
+	var imgData = new Uint8Array(width * height * 4)
+
+	// scale to half res
+	for (var j = 0, j2 = 0; j < height; ++j, j2 += 2) {
+		for (var i = 0, i2 = 0; i < width; ++i, i2 += 2) {
+			for (var comp = 0; comp < 4; ++comp) {
+				var v = (
+					doubleResImgData[((j2    ) * width * 2 + i2    ) * 4 + comp] +
+					doubleResImgData[((j2    ) * width * 2 + i2 + 1) * 4 + comp] +
+					doubleResImgData[((j2 + 1) * width * 2 + i2    ) * 4 + comp] +
+					doubleResImgData[((j2 + 1) * width * 2 + i2 + 1) * 4 + comp]) / 4
+
+				imgData[(j * width + i) * 4 + comp] = v
+			}
+		}
+	}
 
 	var canvas = document.createElement('canvas');
 	canvas.width = width;
