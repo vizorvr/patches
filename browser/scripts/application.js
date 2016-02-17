@@ -2071,9 +2071,8 @@ Application.prototype.start = function() {
 Application.prototype.onCoreReady = function(loadGraphUrl) {
 	var that = this
 
-	if (E2.ui.init) {
-		E2.ui.init(E2);
-	}
+	E2.ui.init(E2);
+
 	this.presetManager = new PresetManager('/presets')
 
 	that.setupPeopleEvents()

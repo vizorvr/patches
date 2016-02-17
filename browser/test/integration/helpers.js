@@ -75,6 +75,7 @@ function Color() {}
 exports.setupThree = function() {
 
 	global.THREE = require(browserPath + 'vendor/three/three.js')
+	global.THREE.MorphAnimMesh = function() {}
 }
 
 
