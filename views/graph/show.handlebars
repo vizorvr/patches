@@ -108,7 +108,7 @@ new function() {
         var $stage = $('#stage')
         var $wrap = $('#playerWrap')
 
-        var autoplay = {{autoplay}}
+        var autoplay = {{#if autoplay}}true{{else}}false{{/if}}
 
         if (playerUI.hasAudio && VizorUI.isMobile.iOS())
             autoplay = false
