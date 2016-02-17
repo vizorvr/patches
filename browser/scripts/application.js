@@ -1402,6 +1402,14 @@ Application.prototype.isWorldEditorActive = function() {
 }
 	
 Application.prototype.toggleFullscreen = function() {
+	var goingToFullscreen = !E2.util.isFullscreen()
+	if (goingToFullscreen) {
+		this.worldEditor.cameraSelector.selectCamera('vr')
+		if (this.worldEditor.isActive()) {
+			this.worldEditor.deactivate()
+		}
+	}
+
 	E2.core.emit('fullScreenChangeRequested')
 }
 
