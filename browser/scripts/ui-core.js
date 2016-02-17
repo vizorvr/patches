@@ -174,7 +174,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 			var birdsEyeCameraActive = (camera === uiViewCam.birdsEye);
 			dom.btnEditorCam.parent().toggleClass('active', birdsEyeCameraActive);
 			dom.btnVRCam.parent().toggleClass('active', !birdsEyeCameraActive);
-			E2.app.setViewCamera(birdsEyeCameraActive ? 'perspective' : 'vr');
+			E2.app.setViewCamera(birdsEyeCameraActive);
 		})
 		.emit('changed:viewCamera', state.viewCamera);
 

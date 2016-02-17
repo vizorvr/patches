@@ -1377,11 +1377,11 @@ Application.prototype.canInitiateCameraMove = function(e) {
 	return this.isVRCameraActive() && E2.util.isCanvasInFocus(e)
 }
 
-Application.prototype.setViewCamera = function(cameraId) {
-	this.worldEditor.selectCamera(cameraId)
+Application.prototype.setViewCamera = function(isBirdsEyeCamera) {
+	this.worldEditor.selectCamera(isBirdsEyeCamera ? 'birdsEye' : 'vr')
 
 	// if helper objects are off, and we're in vr camera, disable world editor entirely
-	if (!this.worldEditor.areEditorHelpersActive() && cameraId === 'vr') {
+	if (!this.worldEditor.areEditorHelpersActive() && !isBirdsEyeCamera) {
 		this.worldEditor.deactivate()
 	}
 	else if (!this.worldEditor.isActive()) {
