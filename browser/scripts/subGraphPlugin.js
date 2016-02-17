@@ -106,6 +106,9 @@ SubGraphPlugin.prototype.connection_changed = function(on, conn, externalSlot) {
 			if (!proxyNode)
 				return;
 			internalSlot = proxyNode.dyn_outputs[0]
+
+			// match internal & external slot arrayness
+			internalSlot.array = externalSlot.array
 		} else {
 			// external output slot was connected
 			// assume the datatype and arrayness if not already set
@@ -118,6 +121,9 @@ SubGraphPlugin.prototype.connection_changed = function(on, conn, externalSlot) {
 			if (!proxyNode)
 				return;
 			internalSlot = proxyNode.dyn_inputs[0]
+
+			// match internal & external slot arrayness
+			internalSlot.array = externalSlot.array
 		}
 		
 		if (internalSlot.dt.id === E2.dt.ANY.id) {

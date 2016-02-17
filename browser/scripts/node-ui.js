@@ -1211,3 +1211,6 @@ NodeUI.enterValueControl = function(node, parentNode, onChange, options) {
 		.focus()
 
 };
+
+if (typeof(module) !== 'undefined')
+	module.exports = NodeUI
