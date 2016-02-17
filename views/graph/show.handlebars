@@ -118,13 +118,13 @@ new function() {
         siteUI.disableForceTouch()
 
         function suspendVRcamera() {
-            E2.app.isVRCameraActive = function () {
+            E2.app.canInititateCameraMove = function () {
                 return false
             }
         }
 
         function enableVRcamera() {
-            E2.app.isVRCameraActive = function () {
+            E2.app.canInititateCameraMove = function () {
                 return !overHeader
             }
         }

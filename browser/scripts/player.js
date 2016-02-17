@@ -208,7 +208,7 @@ function CreatePlayer(vr_devices, cb) {
 		}
 	}
 
-	E2.app.isVRCameraActive = function() { return true }
+	E2.app.canInitiateCameraMove = function() { return true }
 
 	// Shared gl context for three
 	var gl_attributes = {
