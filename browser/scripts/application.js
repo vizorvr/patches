@@ -2123,6 +2123,7 @@ Application.prototype.setupChat = function() {
 
 	this.chatStore = new E2.ChatStore()
 	this.chat = new E2.Chat(E2.dom.chatTab)
+	this.chat.start()
 }
 
 /**

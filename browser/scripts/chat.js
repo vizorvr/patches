@@ -86,17 +86,19 @@ ChatStore.prototype.isForMe = function(pl) {
 function Chat($el, handlebars) {
 	this._hbs = handlebars || window.Handlebars
 	this.$container = $el;
-	this.$messages = jQuery('.messages', this.$container)
-	this.$input = jQuery('input', this.$container)
+	this.$messages = $('.messages', this.$container)
+	this.$input = $('input', this.$container)
 
 	E2.app.chatStore.on('added',
 		this._renderMessage.bind(this))
-
-	this.setupInput()
-	this.scrollDown()
 }
 
 Chat.prototype = Object.create(EventEmitter.prototype)
+
+Chat.prototype.start = function() {
+	this.setupInput()
+	this.scrollDown()
+}
 
 Chat.prototype.setupInput = function() {
 	var $i = this.$input
@@ -117,6 +119,28 @@ Chat.prototype.setupInput = function() {
 	})
 }
 
+Chat.prototype._messageCleaner = function(message) {
+	return message
+		.split(' ')
+		.map(function(word) {
+			var oword = word
+
+			if (word.indexOf('vizor.io') === -1)
+				return word
+
+			word = word.replace(/^https?:\/\//, '')
+
+			var replaced = word.replace(
+				/(\S*)vizor\.io(\S*)/,
+				'<a target="_blank" '+
+					'href="http://$1vizor.io$2">'+
+						'$1vizor.io$2</a>')
+
+			return replaced
+		})
+		.join(' ')
+}
+
 Chat.prototype._renderMessage = function(message) {
 	var $last = this.$messages.find('.message:last')
 	var wasScrolledDown = $last.length ? 
@@ -130,9 +154,9 @@ Chat.prototype._renderMessage = function(message) {
 			E2.app.peopleStore.me.username
 		),
 		date: moment(message.date).formatTimeToday(),
-		message: $('<span/>').text(message.message).html() // escape 
-			.replace(/[htps:\/]?vizor\.io[\/]?(\S*)/,
-				'<a target="_blank" href="//vizor.io/$1">vizor.io/$1</a>')
+		message: this._messageCleaner(
+			$('<span/>').text(message.message).html() // escape 
+		)
 	}
 
 	var html = messageTemplate(renderable)
