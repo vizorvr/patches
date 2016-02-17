@@ -148,7 +148,7 @@
 
 			this.renderer.setPixelRatio(window.devicePixelRatio)
 
-			this.effect = new THREE.VREffect(this.renderer)
+			this.effect = new THREE.CardboardEffect(this.renderer)
 			this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: true })
 
 			E2.core.webVRManager = this.manager		// allow e.g. the player/embed to access this

@@ -63,11 +63,13 @@ paths = {
 			'./browser/vendor/three/MTLLoader.js',
 			'./browser/vendor/three/DDSLoader.js',
 			'./browser/vendor/three/VREffect.js',
+			'./browser/vendor/three/CardboardEffect.js',
 			'./browser/vendor/three/VRControls.js',
 			'./browser/vendor/three/SceneLoader.js',
 			'./browser/vendor/three/MorphAnimMesh.js',
-			'./browser/vendor/three/webvr-polyfill.js',
-			'./browser/vendor/three/webvr-manager.js',
+
+			'./browser/vendor/borismus/webvr-polyfill.js',
+			'./browser/vendor/borismus/webvr-manager.js',
 
 			'./browser/scripts/noise.js',
 			'./browser/vendor/random.min.js',
