@@ -63,38 +63,5 @@ describe('GraphController', function() {
 		}, done)
 	});
 
-	it('handles anonymous graph post', function(done)
-	{
-		var wrote = false;
-		fs.writeString = function() {
-			wrote = true;
-			return resolved();
-		}
-		svc.save = function(data)
-		{
-			assert.equal(data.path, '/v/foo');
-			assert.equal(data.graph, undefined);
-			return resolved(data);
-		}
-
-		ctrl.save({
-			body: { path: 'foo', graph: 'graph' },
-			user: { username: 'v'}
-		},
-		{
-			json: function(json)
-			{
-				assert.deepEqual(json,
-				{
-					path: '/v/foo',
-					url: '/root/graph/v/foo.json',
-					tags: []
-				});
-				assert.ok(wrote);
-				done();
-			}
-		}, done)
-	});
-
 });
 

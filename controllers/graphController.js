@@ -296,9 +296,8 @@ GraphController.prototype.upload = function(req, res, next)
 	});
 };
 
-// POST /graph with file upload, anonymous
-GraphController.prototype.uploadAnonymous = function(req, res, next)
-{
+// POST /graph/v with file upload, anonymous
+GraphController.prototype.uploadAnonymous = function(req, res, next) {
 	var that = this;
 	var file = req.files.file;
 
@@ -311,28 +310,28 @@ GraphController.prototype.uploadAnonymous = function(req, res, next)
 	}
 
 	var path = this._makePath(req, file.path);
-	console.log(path)
 	var gridFsPath = '/graph'+path+'.json';
 
 	// move the uploaded file into GridFS / local FS
 	return that._fs.move(file.path, gridFsPath)
-	.then(function(url)
-	{
-		return that._service.findByPath(path)
-		.then(function(model)
-		{
-			if (!model)
-				model = { path: path };
+	.then(function(url) {
+		return that._fs.readString(gridFsPath)
+		.then(function(stat) {
+			return that._service.findByPath(path)
+			.then(function(model) {
+				if (!model)
+					model = { path: path }
 
-			model.url = url;
+				model.url = url;
+				model.stat = stat;
 
-			// save/update the model
-			return that._service.save(model, req.user)
-			.then(function(asset)
-			{
-				res.json(asset);
+				// save/update the model
+				return that._service.save(model, req.user)
+				.then(function(asset) {
+					res.json(asset);
+				});
 			});
-		});
+		})
 	})
 	.catch(function(err)
 	{
