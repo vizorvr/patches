@@ -579,6 +579,10 @@ VizorUI.prototype.onKeyPress = function(e) {
 			case uiKeys.frameViewToSelection:
 				E2.app.worldEditor.frameSelection();
 				break;
+			case uiKeys.moveVRCameraToEditorCamera:
+			case "shift+"+uiKeys.moveVRCameraToEditorCamera: // fi
+				E2.app.worldEditor.matchVRToEditorCamera();
+				break;
 			}
 		}
 
@@ -595,10 +599,6 @@ VizorUI.prototype.onKeyPress = function(e) {
 				break;
 			case uiKeys.toggleWorldEditorGrid:
 				E2.app.worldEditor.toggleGrid();
-				break;
-			case uiKeys.moveVRCameraToEditorCamera:
-			case "shift+"+uiKeys.moveVRCameraToEditorCamera: // fi
-				E2.app.worldEditor.matchVRToEditorCamera();
 				break;
 		}
 	}
