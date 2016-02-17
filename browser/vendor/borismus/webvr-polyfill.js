@@ -3174,7 +3174,9 @@ var PositionSensorVRDevice = require('./base.js').PositionSensorVRDevice;
 function WebVRPolyfill() {
   this.devices = [];
 
-  if (!this.isWebVRAvailable()) {
+  var nativeWebVRAvailable = this.isWebVRAvailable();
+  window.vizorNativeWebVRAvailable = nativeWebVRAvailable;
+  if (!nativeWebVRAvailable) {
     this.enablePolyfill();
   }
 }
