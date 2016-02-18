@@ -1539,6 +1539,16 @@ var DPDB_CACHE = {
     "bw": 3,
     "ac": 1000
   },
+  { // Samsung S6 
+    "type": "android",
+    "rules": [
+      { "mdmh": "samsung/*/SM-G920T/*" },
+      { "ua": "SM-G920T" }
+    ],
+    "dpi": 580.6,
+    "bw": 3,
+    "ac": 500
+  },
   {
     "type": "android",
     "rules": [

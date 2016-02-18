@@ -69,8 +69,12 @@ THREE.CardboardEffect = function ( renderer ) {
 	//
 
 	this.setSize = function ( width, height ) {
+		var pixelRatio = window.devicePixelRatio
 
-		_renderTarget.setSize( width, height );
+		var realWidth = width * pixelRatio
+		var realHeight = height * pixelRatio
+
+		_renderTarget.setSize( realWidth, realHeight );
 
 		renderer.setSize( width, height );
 
