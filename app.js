@@ -434,10 +434,16 @@ r.connect({
 	app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
 	app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
 
-	app.get('/', homeController.index);
-
-	// 360 photo controller
-	app.get('/threesixty', threesixtyController.index);
+	switch (process.env.SITE) {
+		case '360.vizor.io':
+			// 360 photo site
+			app.get('/', threesixtyController.index);
+		default:
+			// default site
+			app.get('/', homeController.index);
+			app.get('/threesixty', threesixtyController.index);
+			break;
+	}
 
 	// --------------------------------------------------
 
