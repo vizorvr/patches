@@ -120,10 +120,7 @@
 
         "Scene Lighting": "scene_lighting",
         "Point Light": "three_point_light",
-        "Spot Light": "three_spot_light",
-
-        "Deprecated: Hemisphere Light": "three_hemisphere_light",
-        "Deprecated: Directional Light": "three_directional_light"
+        "Spot Light": "three_spot_light"
     },
 
     "INTERACTION STUFF": {
