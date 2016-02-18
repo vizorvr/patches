@@ -26,11 +26,14 @@ function prettyPrintGraphInfo(graph) {
 	// Figure out if the graph owner has a fullname
 	// Use that if does, else use the username for display
 	var graphOwner;
-	var creator = graph._creator;
-	if (creator.name && !isStringEmpty(creator.name)) {
+	var creator = graph._creator
+	if (creator && creator.name && !isStringEmpty(creator.name)) {
 		graphOwner = creator.name;
 	} else {
-		graphOwner = graph.owner;
+		if (graph.owner)
+			graphOwner = graph.owner
+		else
+			graphOwner = 'anonymous'
 	}
 
 	graph.prettyOwner = graphOwner

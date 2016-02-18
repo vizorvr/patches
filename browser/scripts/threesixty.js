@@ -1,12 +1,5 @@
+
 var vizor360 = new function() {
-
-
-	// @todo
-	// http://stackoverflow.com/questions/4551175/how-to-cancel-abort-jquery-ajax-request
-
-	// TODO:
-	// replace document.getElementById with jquery $()
-	// also event handlers to jquery versions
 
 	var that = this
 	var $body = {},
@@ -22,8 +15,6 @@ var vizor360 = new function() {
 	function clearBodyClass() {
 		$body.removeClass('dragentered dragover dragover-dropzone uploading error')
 	}
-
-
 
 	/* lastTarget is set first on dragenter, then
 	   compared with during dragleave. */
@@ -76,7 +67,8 @@ var vizor360 = new function() {
 		// Load from the JSON url in the asset
 		clearBodyClass()
 		playerUI.selectStage('stage')
-		E2.core.addOnceListener('player:stateChanged', function(s){
+
+		E2.core.once('player:stateChanged', function(s){
 			if (s === E2.app.player.state.PLAYING) {
 				$body.removeClass('firsttime')
 				that.minProgress = 0
@@ -86,20 +78,23 @@ var vizor360 = new function() {
 			}
 			return false
 		})
+
 		var host = window.location.hostname
 		if (window.location.port) {
 			host = host + (window.location.port === 80) ? '' : (':' + window.location.port)
 		}
+		
 		var baseUrl = 'http://' + host
 		playerUI.data.shareURL = baseUrl + asset.path
 		playerUI.data.embedSrc = baseUrl + 'embed/' + asset.path
+		history.pushState({}, '', asset.path)
 		E2.app.player.loadAndPlay(asset.url, true);
 	}
 
 	// STEP 3
 	// POST graph to the server
-	this.uploadGraph = function(graphData, callback) {	// @todo implement promise
-		var p = $.Deferred()
+	this.uploadGraph = function(graphData, callback) {
+		var p = when.defer()
 
 		console.log("uploading graphData");
 		console.dir(graphData);
@@ -118,26 +113,25 @@ var vizor360 = new function() {
 
 			error: function(err) {
 				var errMsg = err.responseJSON ? err.responseJSON.message : err.status;
-				// @todo message could not upload graph
+				alert('Sorry, an error occurred while uploading the file.')
 				p.reject('Could not post file', errMsg)
 			}
 		})
 
-		return p
+		return p.promise
 	}
 
 	// STEP 2
 	// Fetch the 360 template from our server and publish a graph with
 	// image url from passed in url
-	this.publishTemplateWithUrl = function(imageUrl) {		// @todo return promise
+	this.publishTemplateWithUrl = function(imageUrl) {
 		console.log("publishing stereo template with imageUrl = " + imageUrl);
 
-		var dfd = $.Deferred()
+		var dfd = when.defer()
 
-		// TODO: do we need to use a FQN here ?
 		var templateUrl = "/presets/_template-360-photo.json";
 
-		function genGraphUid() {		// @todo deterministic based on milliseconds
+		function genGraphUid() {
 			var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 			var uid = '';
 
@@ -180,7 +174,7 @@ var vizor360 = new function() {
 
 					that.uploadGraph(data, function(asset) {
 						updateProgressBar(55)
-						dfd.resolve(asset,data)
+						dfd.resolve(asset, data)
 					});
 				}
 			},
@@ -191,7 +185,7 @@ var vizor360 = new function() {
 			}
 		})
 
-		return dfd
+		return dfd.promise
 	}
 
 	this.beforeUpload = function() {
@@ -212,7 +206,7 @@ var vizor360 = new function() {
 	// STEP 1
 	this.uploadFile = function(file, modelName) {
 		this.beforeUpload()
-		var dfd = $.Deferred()
+		var dfd = when.defer()
 
 		var fnl = file.name.toLowerCase()
 		var extname = fnl.substring(fnl.lastIndexOf('.'))
@@ -266,7 +260,7 @@ var vizor360 = new function() {
 			}
 		})
 		
-		return dfd
+		return dfd.promise
 	}
 
 
@@ -303,18 +297,19 @@ var vizor360 = new function() {
 
 		that
 			.uploadFile(file_path, "image")
-			.then(function(uploadedFile) {		// @todo promise
+			.then(function(uploadedFile) {
 				if (uploadedFile) {
 					that.beforeGraphPublish()
 					// Get the scaled version of the original image
 					var imageUrl = uploadedFile.scaled.url;
-					return that.publishTemplateWithUrl(imageUrl);	// @todo promise
+					return that.publishTemplateWithUrl(imageUrl);
 				}
 				else {
-					return $.Deferred().reject()
+					return when.reject()
 				}
-			}, err)
-			.then(that.loadGraphAndPlay, err)
+			})
+			.then(that.loadGraphAndPlay)
+			.catch(err)
 
 
 		return false
