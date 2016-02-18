@@ -27,6 +27,8 @@ function AbstractThreeMeshPlugin(core) {
 AbstractThreeMeshPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
 
 AbstractThreeMeshPlugin.prototype.reset = function() {
+	ThreeObject3DPlugin.prototype.reset.apply(this)
+
 	this.setObject3D(this.createMeshRoot())
 
 	this.geoms = [new THREE.Geometry()]
@@ -37,8 +39,6 @@ AbstractThreeMeshPlugin.prototype.reset = function() {
 
 	// back reference for object picking
 	this.object3d.backReference = this
-
-	ThreeObject3DPlugin.prototype.reset.apply(this)
 }
 
 AbstractThreeMeshPlugin.prototype.update_mesh = function()

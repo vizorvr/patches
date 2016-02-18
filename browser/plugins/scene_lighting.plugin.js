@@ -26,7 +26,9 @@
 	SceneLightingPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
 
 	SceneLightingPlugin.prototype.reset = function() {
-		if (!this.object3d) {
+		ThreeObject3DPlugin.prototype.reset.apply(this)
+
+		if (!this.ambientLight) {
 			this.ambientLight = new THREE.AmbientLight(this.params.ambientColor)
 			this.hemisphereLight = new THREE.HemisphereLight(this.params.skyColor, this.params.groundColor)
 			this.directionalLight = new THREE.DirectionalLight(this.params.lightColor, this.params.intensity)
@@ -36,8 +38,6 @@
 
 			this.setObject3D(this.ambientLight)
 		}
-
-		ThreeObject3DPlugin.prototype.reset.apply(this)
 	}
 
 	SceneLightingPlugin.prototype.update_state = function() {

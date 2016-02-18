@@ -70,6 +70,12 @@ ThreeObject3DPlugin.prototype.reset = function() {
 ThreeObject3DPlugin.prototype.setObject3D = function(newObject3d) {
 	this.object3d = newObject3d
 
+	var that = this
+	this.object3d.traverse(function(n) {
+		n.castShadow = that.inputValues.castShadow
+		n.receiveShadow = that.inputValues.receiveShadow
+	})
+
 	function hierarchyChanged(event) {
 		var obj = event.target
 		var castShadow = obj.castShadow
@@ -109,16 +115,30 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 			that.graphInputs.scale.y = data.y
 			that.graphInputs.scale.z = data.z
 		},
-		function() { that.object3d.visible = data },
-		function() { that.object3d.traverse(function(n) {n.castShadow = data}) },
-		function() { that.object3d.traverse(function(n) {n.receiveShadow = data}) },
-		function() { that.object3d.name = data },
+		function() {
+			that.object3d.visible = data
+		},
+		function() {
+			that.object3d.traverse(function(n) {
+				n.castShadow = data
+			})
+		},
+		function() {
+			that.object3d.traverse(function(n) {
+				n.receiveShadow = data
+			})
+		},
+		function() {
+			that.object3d.name = data
+		},
 		function() {
 			that.object3d.traverse( function(n) {
 				n.layers.set(data)
 			})
 		},
-		function() { that.lockTransformControls = data }
+		function() {
+			that.lockTransformControls = data
+		}
 	]
 
 	var slotOffset = this.node.plugin.input_slots.length - handlers.length
