@@ -4516,7 +4516,7 @@ body.b360 #playerpage header {
   width: auto;
   height: 100%;
   border-radius: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 300;
 }
 body.b360 #playerpage header div.controls {
