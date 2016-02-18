@@ -164,19 +164,19 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 			this.handleTree.add(helper)
 		}
 		else if (node instanceof THREE.SpotLight) {
-			helper.attach(node)
 			var helper = new SpotLightHelper(node)
+			helper.attach(node)
 			this.handleTree.add(helper)
 		}
 		// Directional & Hemisphere lights are legacy but we don't want to break old graphs:
 		else if (node instanceof THREE.HemisphereLight) {
-			helper.attach(node)
 			var helper = new HemisphereLightHelper(node)
+			helper.attach(node)
 			this.handleTree.add(helper)
 		}
 		else if (node instanceof THREE.DirectionalLight) {
+			var helper = new DirectionalLightHelper(node)
 			helper.attach(node)
-			var helper = new DirectionalLight(node)
 			this.handleTree.add(helper)
 		}
 		else if (node instanceof THREE.Camera) {
