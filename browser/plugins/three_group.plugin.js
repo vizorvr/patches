@@ -24,16 +24,12 @@
 		})
 
 		this.lastCenter = new THREE.Vector3()
+
+		this.setObject3D(new THREE.Group())
+		this.object3d.name = 'group_plugin'
 	}
 
 	ThreeGroupPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
-
-	ThreeGroupPlugin.prototype.reset = function() {
-		if (!this.object3d) {
-			this.setObject3D(new THREE.Group())
-			this.object3d.name = 'group_plugin'
-		}
-	}
 
 	ThreeGroupPlugin.prototype.update_input = function(slot, data) {
 		if (slot.dynamic) {
