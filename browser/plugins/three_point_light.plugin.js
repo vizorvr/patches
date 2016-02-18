@@ -17,6 +17,16 @@
 			{ name: 'decay', dt: core.datatypes.FLOAT, def: this.params.decay },
 			{ name: 'color', dt: core.datatypes.COLOR, def: this.params.color }
 		].concat(this.input_slots)
+
+		// disable shadows by default for point lights - they're slow
+		this.input_slots.map(function(input) {
+			if (input.name === 'castShadow') {
+				input.def = false
+			}
+			else if (input.name === 'receiveShadow') {
+				input.def = false
+			}
+		})
 	}
 
 	ThreePointLightPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)

@@ -17,7 +17,8 @@
 			{ name: 'ambient color', dt: core.datatypes.COLOR, def: this.params.ambientColor },
 			{ name: 'light color', dt: core.datatypes.COLOR, def: this.params.lightColor },
 			{ name: 'ground color', dt: core.datatypes.COLOR, def: this.params.groundColor },
-			{ name: 'sky color', dt: core.datatypes.COLOR, def: this.params.skyColor }
+			{ name: 'sky color', dt: core.datatypes.COLOR, def: this.params.skyColor },
+			{ name: 'shadow radius', dt: core.datatypes.FLOAT, def: 1 }
 		].concat(this.input_slots)
 
 		this.always_update = true
@@ -65,6 +66,9 @@
 		}
 		else if (slot.name === 'intensity') {
 			this.directionalLight.intensity = data
+		}
+		else if (slot.name === 'shadow radius') {
+			this.directionalLight.shadow.radius = data
 		}
 		else {
 			ThreeObject3DPlugin.prototype.update_input.apply(this, arguments)
