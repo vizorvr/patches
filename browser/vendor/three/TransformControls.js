@@ -782,12 +782,10 @@
 				return
 			}
 
-			var transformControlsLocked = this.plugin.lockTransformControls
-
 			// enable / disable the three transform modes
-			_gizmo.translate.isEnabled = !transformControlsLocked && this.plugin.state.position !== undefined
-			_gizmo.rotate.isEnabled = !transformControlsLocked && this.plugin.state.quaternion !== undefined
-			_gizmo.scale.isEnabled = !transformControlsLocked && this.plugin.state.scale !== undefined
+			_gizmo.translate.isEnabled = this.plugin.canEditPosition()
+			_gizmo.rotate.isEnabled = this.plugin.canEditQuaternion()
+			_gizmo.scale.isEnabled = this.plugin.canEditScale()
 		}
 
 		this.attach = function ( object ) {

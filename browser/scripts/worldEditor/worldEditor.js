@@ -112,9 +112,8 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 	// 1. collect objects requiring handles
 	var nodeCollector = function ( node ) {
 		if (node instanceof THREE.PointLight
-		||  node instanceof THREE.DirectionalLight
-		||  node instanceof THREE.SpotLight
-		||  node instanceof THREE.HemisphereLight) {
+		||  node instanceof THREE.AmbientLight
+		||  node instanceof THREE.SpotLight) {
 			needsHandles.push(node)
 		}
 	}
@@ -149,41 +148,31 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 		}
 	}
 
-	// 4. finally create any new handles
+	// 4. finally create any new helpers
 	for (var i = 0; i < newHandles.length; ++i) {
 		var node = newHandles[i]
 
-		if (node instanceof THREE.PointLight) {
-			var helper = new THREE.PointLightHelper(node, 0.5)
-
-			helper.backReference = node.backReference
-			helper.helperObjectBackReference = node
+		/*if (node instanceof THREE.DirectionalLight &&
+		node.parent instanceof THREE.AmbientLight &&
+		node.parent.children.length === 2 &&
+		node.parent.children[0] instanceof THREE.HemisphereLight) {*/
+		if (node instanceof THREE.AmbientLight) {
+			var helper = new SceneLightingHelper(node)
+			helper.attach(node)
 			this.handleTree.add(helper)
 		}
-		else if (node instanceof THREE.DirectionalLight) {
-			var helper = new THREE.DirectionalLightHelper(node, 0.5)
-
-			helper.backReference = node.backReference
-			helper.helperObjectBackReference = node
+		else if (node instanceof THREE.PointLight) {
+			var helper = new PointLightHelper(node)
+			helper.attach(node)
 			this.handleTree.add(helper)
 		}
 		else if (node instanceof THREE.SpotLight) {
-			var helper = new THREE.SpotLightHelper(node)
-
-			helper.backReference = node.backReference
-			helper.helperObjectBackReference = node
-			this.handleTree.add(helper)
-		}
-		else if (node instanceof THREE.HemisphereLight) {
-			var helper = new THREE.HemisphereLightHelper(node, 0.5)
-
-			helper.backReference = node.backReference
-			helper.helperObjectBackReference = node
+			helper.attach(node)
+			var helper = new SpotLightHelper(node)
 			this.handleTree.add(helper)
 		}
 		else if (node instanceof THREE.Camera) {
-			this.cameraHelper.helperObjectBackReference = node
-			this.cameraHelper.attachCamera(node)
+			this.cameraHelper.attach(node)
 			this.handleTree.add(this.cameraHelper)
 		}
 	}

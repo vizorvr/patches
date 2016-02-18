@@ -85,7 +85,7 @@ DocumentationController.prototype.getPluginDocumentation = function(req, res, ne
 
 	if (!pluginNameIsValid) {
 		var err = new Error('Invalid Plugin name:' + pluginName)
-		return next(err)
+		return res.json({ error: 404 })
 	}
 
 	var docPath = './documentation/browser/plugins/' + pluginName + ".md"
