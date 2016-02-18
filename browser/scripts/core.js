@@ -25,6 +25,12 @@ var URL_GRAPH_FILES = URL_DATA+'graph/'
 
 var E2 = {}
 
+// disable DPDB (device database) fetching for WebVR boilerplate because
+// the list in the device database doesn't have Samsung S6 on the list.
+window.WebVRConfig = window.WebVRConfig || {}
+window.WebVRConfig.NO_DPDB_FETCH = true
+
+
 if (typeof(window) !== 'undefined')
 	window.E2 = E2; // global scope so plugins can access it
 
