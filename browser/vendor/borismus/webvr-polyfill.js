@@ -607,10 +607,20 @@ MouseKeyboardPositionSensorVRDevice.prototype.onMouseMove_ = function(e) {
   this.rotateDelta.subVectors(this.rotateEnd, this.rotateStart);
   this.rotateStart.copy(this.rotateEnd);
 
+  // gm #896
+  var element = document.body,
+      height = element.clientHeight,
+      width = element.clientWidth
+
+  if (WebVRConfig && WebVRConfig.getContainerMeta) {  // gm #896
+     var meta = WebVRConfig.getContainerMeta()
+     height  = meta.height
+     width   = meta.width
+  }
   // Keep track of the cumulative euler angles.
-  var element = document.body;
-  this.phi += 2 * Math.PI * this.rotateDelta.y / element.clientHeight * MOUSE_SPEED_Y;
-  this.theta += 2 * Math.PI * this.rotateDelta.x / element.clientWidth * MOUSE_SPEED_X;
+
+  this.phi += 2 * Math.PI * this.rotateDelta.y / height * MOUSE_SPEED_Y;
+  this.theta += 2 * Math.PI * this.rotateDelta.x / width * MOUSE_SPEED_X;
 
   // Prevent looking too far up or down.
   this.phi = Util.clamp(this.phi, -Math.PI/2, Math.PI/2);

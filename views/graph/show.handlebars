@@ -236,10 +236,10 @@ var playerUI = new function() {
 
         if (!window.Vizor) {
             window.Vizor = {
-                hideWebVRButton: false
+                hideWebVRButton:    false,
+                autoplay:           autoplay
             }
         }
-
 
         WebVRConfig.getContainerMeta = function() {
             var el = document.getElementById('stage')

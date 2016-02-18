@@ -431,7 +431,8 @@ var vizor360 = new function() {
 		that.addCancelButton()
 		that.attach()
 		window.Vizor = {
-			hideVRbutton : true
+			hideVRbutton : true,
+			autoplay: true
 		}
 		window.Vizor.onProgress = function(pct) {
 			var factor = 100 / (100 - that.minProgress)
