@@ -2066,7 +2066,7 @@ RotateInstructions.prototype.show = function() {
     s.marginTop = '25%';
   }
 
-  document.body.dispatchEvent(new CustomEvent('VRManInstructionsShown'))    // vizor.io x Android
+  //document.body.dispatchEvent(new CustomEvent('VRManInstructionsShown'))    // vizor.io x Android
 };
 
 RotateInstructions.prototype.hide = function() {
