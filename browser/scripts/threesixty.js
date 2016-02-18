@@ -42,7 +42,7 @@ var vizor360 = new function() {
 		})
 		console.log('error!! ' + message + ' ' + details)
 		window.Vizor.disableHeaderClick = true
-		var bb = VizorUI.modalOpen(html, heading, 'error', true, {
+		var bb = VizorUI.modalOpen(html, heading, 'error doselect_all', true, {
 			callback: function(){
 				console.log('modal dismissed')
 			}
@@ -76,20 +76,21 @@ var vizor360 = new function() {
 		// Load from the JSON url in the asset
 		clearBodyClass()
 		playerUI.selectStage('stage')
-		E2.core.addOnceListener('player:stateChanged', function(_, s){
+		E2.core.addOnceListener('player:stateChanged', function(s){
 			if (s === E2.app.player.state.PLAYING) {
 				$body.removeClass('firsttime')
 				that.minProgress = 0
 				playerUI.headerFadeOut()
+				playerUI.amendVRManagerInstructions()
 				return true
 			}
 			return false
 		})
-		var baseUrl = [
-			'http://',
-			window.location.hostname,
-			(window.location.port === 80) ? '' : (':' + window.location.port)
-		].join('')
+		var host = window.location.hostname
+		if (window.location.port) {
+			host = host + (window.location.port === 80) ? '' : (':' + window.location.port)
+		}
+		var baseUrl = 'http://' + host
 		playerUI.data.shareURL = baseUrl + asset.path
 		playerUI.data.embedSrc = baseUrl + 'embed/' + asset.path
 		E2.app.player.loadAndPlay(asset.url, true);
@@ -294,7 +295,7 @@ var vizor360 = new function() {
 
 		console.log(file_path)
 
-		if (file_path.type.match('image.*') === null) {
+		if (file_path && file_path.type.match('image.*') === null) {
 			cancelledUploading()
 			return that.fileUploadErrorWrongType()
 		}

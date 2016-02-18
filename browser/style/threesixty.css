@@ -276,6 +276,22 @@ body {
   min-width: 100% ! important;
   margin: 0;
 }
+.mixinSelectAllow {
+  -webkit-touch-callout: initial;
+  -webkit-user-select: initial;
+  -khtml-user-select: initial;
+  -moz-user-select: initial;
+  -ms-user-select: initial;
+  user-select: initial;
+}
+.mixinSelectDeny {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 .noselect {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -4315,11 +4331,12 @@ body.deviceMobile.landscape #playerpage header .controls button + button {
   margin-left: 0;
 }
 body.b360 {
+  background: #999;
   margin: 0;
   padding: 0;
   height: 100%;
+  width: 100%;
   min-height: 100%;
-  border: 1px solid green;
 }
 body.b360.deviceDesktop button#entervr {
   display: block;
@@ -4479,6 +4496,14 @@ body.b360 #threesixty-image-input {
   overflow: hidden;
   opacity: 0;
   outline: 0 !important;
+}
+body.b360 #playerpage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 100%;
 }
 body.b360 #playerpage header {
   position: absolute;

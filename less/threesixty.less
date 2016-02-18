@@ -1,5 +1,7 @@
 body.b360 {
 
+  	background: #999;
+
   &.deviceDesktop button#entervr {
 	display: block;	// set to .nodesktop otherwise
   }
@@ -31,8 +33,8 @@ body.b360 {
   margin:0;
   padding:0;
   height: 100%;
+  width: 100%;
   min-height: 100%;
-  border: 1px solid green;
 
   &.withPlayerControls, &.modal-open {
 	header {
@@ -170,6 +172,15 @@ body.b360 {
 	overflow: hidden;
 	opacity: 0;
 	outline: 0 !important;
+  }
+
+  #playerpage {
+	position: fixed;
+	top:0;
+	left:0;
+	bottom:0;
+	right:0;
+	height: 100%;
   }
 
   #playerpage header {
