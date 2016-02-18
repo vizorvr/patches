@@ -24,12 +24,10 @@
 	ThreePointLightPlugin.prototype.reset = function() {
 		ThreeObject3DPlugin.prototype.reset.apply(this)
 
-		this.setObject3D(new THREE.PointLight( 0xFFFFFF )) // soft white light
-	}
+		this.object3d = new THREE.PointLight( 0xFFFFFF ); // soft white light
 
-	// disable scaling, it doesn't make sense for lights
-	ThreePointLightPlugin.prototype.canEditScale = function() {
-		return false
+		// back reference for object picking
+		this.object3d.backReference = this
 	}
 
 })()

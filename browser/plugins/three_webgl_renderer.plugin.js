@@ -77,8 +77,6 @@
 
 			return
 		}
-
-		this.renderer.shadowMap.enabled = true
 		
 		if (this.manager.isVRMode()) {
 			// vr mode doesn't necessarily update the world matrix

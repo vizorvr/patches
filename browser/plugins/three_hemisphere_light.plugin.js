@@ -22,16 +22,10 @@
 	ThreeHemisphereLightPlugin.prototype.reset = function() {
 		ThreeObject3DPlugin.prototype.reset.apply(this)
 
-		this.setObject3D(new THREE.HemisphereLight( this.params.skyColor, this.params.groundColor ))
-	}
+		this.object3d = new THREE.HemisphereLight( this.params.skyColor, this.params.groundColor );
 
-	// disable scaling and quaternion as hemisphere light only has a colour from above and from below
-	ThreeHemisphereLightPlugin.prototype.canEditQuaternion = function() {
-		return false
-	}
-
-	ThreeHemisphereLightPlugin.prototype.canEditScale = function() {
-		return false
+		// back reference for object picking
+		this.object3d.backReference = this
 	}
 
 })()

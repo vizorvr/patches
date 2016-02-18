@@ -81,6 +81,8 @@
 		this.object3d = this.dolly
 		this.object3d.backReference = this
 
+		this.object3d.backReference = this
+
 		if (!this.controls) {
 			this.controls = new THREE.VRControls(this.vrControlCamera)
 		}
@@ -184,18 +186,6 @@
 		if (!ui) {
 			E2.core.on('resize', this.resize.bind(this))
 		}
-	}
-
-	ThreeVRCameraPlugin.prototype.canEditPosition = function() {
-		return true
-	}
-
-	ThreeVRCameraPlugin.prototype.canEditQuaternion = function() {
-		return true
-	}
-
-	ThreeVRCameraPlugin.prototype.canEditScale = function() {
-		return false
 	}
 
 })()

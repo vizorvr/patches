@@ -13,8 +13,10 @@
 
 	ThreeAmbientLightPlugin.prototype.reset = function() {
 		ThreeObject3DPlugin.prototype.reset.apply(this)
+		this.object3d = new THREE.AmbientLight( 0x777777 ); // soft white light
 
-		this.setObject3D(new THREE.AmbientLight( 0x777777 )) // soft white light
+		// back reference for object picking
+		this.object3d.backReference = this
 	}
 
 	ThreeAmbientLightPlugin.prototype.update_input = function(slot, data) {
@@ -22,17 +24,6 @@
 			return;
 
 		this.object3d.color = data
-	}
-
-	// disable scaling & quaternion, they don't make sense for ambient lights
-	// (position doesn't either but we'll keep it so that the helper can
-	// be moved out of the way)
-	ThreeAmbientLightPlugin.prototype.canEditScale = function() {
-		return false
-	}
-
-	ThreeAmbientLightPlugin.prototype.canEditQuaternion = function() {
-		return false
 	}
 
 })()

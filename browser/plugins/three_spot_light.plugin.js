@@ -28,14 +28,9 @@
 	ThreeSpotLightPlugin.prototype.reset = function() {
 		ThreeObject3DPlugin.prototype.reset.apply(this)
 
-		this.setObject3D(new THREE.SpotLight( 0xFFFFFF ))
+		this.object3d = new THREE.SpotLight( 0xFFFFFF );
 
 		// back reference for object picking
 		this.object3d.backReference = this
-	}
-
-	// disable scaling, it doesn't make sense for lights
-	ThreeSpotLightPlugin.prototype.canEditScale = function() {
-		return false
 	}
 })()

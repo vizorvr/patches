@@ -36,7 +36,7 @@
 		AbstractThreeMeshPlugin.prototype.update_input.apply(this, arguments)
 
 		if (slot.name === 'object3d' && data && this.object3d !== data) {
-			this.setObject3D(data)
+			this.object3d = data
 			this.geoms = []
 			this.mats = []
 			this.node.emit('meshChanged')

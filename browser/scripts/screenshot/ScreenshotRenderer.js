@@ -35,8 +35,6 @@ ScreenshotRenderer.prototype.capture = function(width, height) {
 	this.renderer.setClearColor(new THREE.Color(0,0,0))
 	this.renderer.setRenderTarget(texture)
 
-	this.renderer.shadowMap.enabled = true
-
 	this.renderer.clear()
 	this.renderer.render(this.scene, this.camera, texture)
 
