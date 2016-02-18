@@ -17,9 +17,9 @@ AbstractWorldEditorHelperObject.prototype.geometryLoaded = function(geometry, te
 	var material = new THREE.MeshBasicMaterial({
 		color: 0xffffff,
 		map: texture,
-		wireframe: false,
 		opacity: 0.9,
-		transparent: true})
+		transparent: true,
+		fog: false})
 
 	var mesh = new THREE.Mesh(geometry, material)
 	mesh.scale.set(scale, scale, scale)

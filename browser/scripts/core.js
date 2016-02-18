@@ -30,6 +30,9 @@ var E2 = {}
 window.WebVRConfig = window.WebVRConfig || {}
 window.WebVRConfig.NO_DPDB_FETCH = true
 
+// These can be used to force VR on desktop
+//window.WebVRConfig.FORCE_ENABLE_VR = true
+//window.WebVRConfig.FORCE_DISTORTION = true
 
 if (typeof(window) !== 'undefined')
 	window.E2 = E2; // global scope so plugins can access it

@@ -1,7 +1,13 @@
 function SceneLightingHelper(light) {
 	AbstractWorldEditorHelperObject.call(this)
 
-	this.directionalLight = light.children[1]
+	var that = this
+
+	light.traverse(function(n) {
+		if (!that.directionalLight && n instanceof THREE.DirectionalLight) {
+			that.directionalLight = n
+		}
+	})
 
 	var that = this
 
@@ -9,7 +15,7 @@ function SceneLightingHelper(light) {
 	.then(function(texture) {
 		that.assetLoader.loadAsset('model', '/data/editor-icons/directional-light/directional.obj')
 		.then(function(geomsmats) {
-			that.geometryLoaded(geomsmats.geometries[0], texture, 0.1)
+			that.geometryLoaded(geomsmats.geometries[0], texture, 0.05)
 			that.children[0].material.color = that.directionalLight.color
 		})
 	})
