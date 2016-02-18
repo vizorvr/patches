@@ -25,12 +25,12 @@
 	ThreePerspectiveCameraPlugin.prototype.reset = function() {
 		ThreeObject3DPlugin.prototype.reset.apply(this, arguments)
 
-		this.object3d = new THREE.PerspectiveCamera(
+		this.setObject3D(new THREE.PerspectiveCamera(
 			45,
 			window.innerWidth/window.innerHeight,
 			0.1,
 			1000
-		);
+		))
 
 		this.object3d.position.z = 5
 	}

@@ -23,10 +23,6 @@
 			that.updated = true
 		})
 
-		this.object3d = new THREE.Group()
-		this.object3d.name = 'group_plugin'
-		this.object3d.backReference = this
-
 		this.lastCenter = new THREE.Vector3()
 
 		this.setObject3D(new THREE.Group())
