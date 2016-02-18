@@ -159,6 +159,14 @@ Player.prototype.remove_parameter_listener = function(id, listener) {
 Player.prototype.loadAndPlay = function(url, forcePlay) {
 	var dfd = when.defer()
 
+	if (E2.core.audioContext) {
+		// iOS requires a user interaction to play sound
+		// so as this is called on touchstart,
+		// create a dummy audio source and play it
+		var audioSource = E2.core.audioContext.createBufferSource()
+		audioSource.start()//noteOn(0)
+	}
+
 	E2.app.player.load_from_url(url, function(err) {
 		E2.core.emit('assetsLoaded')
 

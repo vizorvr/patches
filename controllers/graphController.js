@@ -356,7 +356,7 @@ GraphController.prototype.save = function(req, res, next) {
 		.then(function() {
 			return that.graphAnalyser.analyseJson(req.body.graph)
 		})
-		.then(function(stat) {
+		.then(function(analysis) {
 			var url = that._fs.url(gridFsGraphPath);
 			var previewUrlSmall = that._fs.url(previewImageSpecs[0].gridFsPath)
 			var previewUrlLarge = that._fs.url(previewImageSpecs[1].gridFsPath)
@@ -365,9 +365,10 @@ GraphController.prototype.save = function(req, res, next) {
 				path: path,
 				tags: tags,
 				url: url,
+				hasAudio: !!analysis.hasAudio,
 				stat: {
-					size: stat.size,
-					numAssets: stat.numAssets
+					size: analysis.size,
+					numAssets: analysis.numAssets
 				},
 				previewUrlSmall: previewUrlSmall,
 				previewUrlLarge: previewUrlLarge

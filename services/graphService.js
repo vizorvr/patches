@@ -52,12 +52,52 @@ GraphService.prototype.userGraphs = function(username)
 	return dfd.promise;
 };
 
+GraphService.prototype._save = function(data, user) {
+	var that = this;
+
+	return this.findByPath(data.path)
+	.then(function(asset) {
+		if (!asset)
+			asset = new that._model(data);
+
+		asset._creator = user.id;
+		asset.updatedAt = Date.now();
+
+		if (data.tags)
+			asset.tags = data.tags
+
+		if (data.previewUrlSmall)
+			asset.previewUrlSmall = data.previewUrlSmall
+
+		if (data.previewUrlLarge)
+			asset.previewUrlLarge = data.previewUrlLarge
+
+		if (data.stat)
+			asset.stat = data.stat
+
+		if (data.hasAudio)
+			asset.hasAudio = data.hasAudio
+
+		var dfd = when.defer();
+
+		asset.save(function(err) {
+			if (err)
+				return dfd.reject(err);
+
+			dfd.resolve(asset);
+		});
+
+		return dfd.promise;
+	});
+};
+
+
 GraphService.prototype.save = function(data, user) {
 	var that = this;
 	var gridFsPath = '/graph'+data.path+'.json';
 	var optimisedGfsPath = '/graph'+data.path+'.min.json';
 
-	return AssetService.prototype.save.apply(this, arguments)
+	return this._save.apply(this, arguments)
 	.then(function(asset) {
 		// make an optimized copy
 		return that._fs.readString(gridFsPath)

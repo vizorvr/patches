@@ -13,6 +13,11 @@ var loadingPlugins = [
 	'url_video_generator',
 ]
 
+var audioPlugins = [
+	'url_audio_buffer_generator',
+	'url_audio_generator'
+]
+
 function GraphAnalyser(gfs) {
 	this._fs = gfs
 }
@@ -22,7 +27,7 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 	var assets = {}
 	var totalSize = 0
 	var assetsFound = 0
-	var stat = { size: 0, numAssets: 0 }
+	var stat = { size: 0, numAssets: 0, hasAudio: false }
 
 	function findInGraph(subgraph) {
 		if (!subgraph.nodes)
@@ -41,6 +46,9 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 			
 			if (!aurl)
 				return
+
+			if (audioPlugins.indexOf(id) > -1)
+				stat.hasAudio = true
 
 			// on server, remove /data from path
 			if (isNode)

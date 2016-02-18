@@ -48,9 +48,6 @@
             width="100%"
             height="100%"
             oncontextmenu="return false;"
-            {{#if autoplay}}
-            data-autoplay="true"
-            {{/if}}
             data-graph-url="{{graphMinUrl}}">
         >
         </canvas>
@@ -81,6 +78,7 @@ new function() {
     var topUrl = 'http://vizor.io'
 
     var playerUI = {
+        hasAudio: {{graph.hasAudio}},
         data: {
             shareURL: topUrl + '/{{graph.owner}}/{{graph.name}}',
             embedSrc: topUrl + '/embed/{{graph.owner}}/{{graph.name}}'
@@ -98,11 +96,7 @@ new function() {
             .addClass('front')
     }
 
-
-
     playerUI.init = function () {
-
-
 
         var fadingIn = false
         var headerIsVisible = true
@@ -113,7 +107,11 @@ new function() {
         var $canvas = $('#webgl-canvas')
         var $stage = $('#stage')
         var $wrap = $('#playerWrap')
-        var autoplay = $canvas.data('autoplay')
+
+        var autoplay = {{#if autoplay}}true{{else}}false{{/if}}
+
+        if (playerUI.hasAudio && VizorUI.isMobile.iOS())
+            autoplay = false
 
         siteUI.disableForceTouch()
 
@@ -297,7 +295,8 @@ new function() {
         $canvas.css({display: 'block'});
 
         window.Vizor = {
-            hideWebVRButton: false
+            hideWebVRButton: false,
+            autoplay: autoplay
         }
 
         var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
@@ -391,6 +390,7 @@ new function() {
 
         function play() {
             playerUI.selectStage('stage')
+            
             playVizorFile()
                 .then(function () {
                     $body
