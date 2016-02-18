@@ -19,7 +19,8 @@
         <meta name="description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
     {{/if}}
 
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+	<!-- meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" / -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
     <!-- facebook -->
     <meta name="og:description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
     <meta name="og:image" content="/images/vizor_social.jpg" />
@@ -40,8 +41,14 @@
     <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
 
     {{{js 'ui-site'}}}
-	{{{js 'threesixty'}}}
+
     <script type="text/javascript" src="/dist/player.min.js"></script>
+    <script>
+        (function(){
+            {{{templateCache}}}
+        }.apply(window))
+    </script>
+    {{{js 'threesixty'}}}
 
 	<script>{{> mixpanel}}</script>
     <script>{{> ga}}</script>
@@ -52,12 +59,6 @@
 
     {{> srv/siteSvgSprite}}
     {{> srv/editorSvgSprite}}
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            {{{templateCache}}}
-        }.bind(window))
-    </script>
 
     <div id="drop-zone">
         <svg class="icon-upload" style='fill: #fff; stroke: #fff'><use xlink:href="#icon-upload"></use></svg>

@@ -182,11 +182,9 @@ var playerUI = new function() {
         return true
     }
 
-    var headerFadeOut = that.headerFadeOut
-    var headerFadeIn = that.headerFadeIn
 
     this.queueHeaderFadeOut = function(timeoutMs) {
-                if (E2.app.player.current_state !== E2.app.player.state.PLAYING) return true
+        if (E2.app.player.current_state !== E2.app.player.state.PLAYING) return true
         if (!headerIsVisible) return
         if (inVR()) {
             $body.removeClass('withPlayerControls')
@@ -197,16 +195,42 @@ var playerUI = new function() {
         fadeoutTimer = setTimeout(headerFadeOut, timeoutMs || that.headerDefaultFadeoutTimeMs)
         return true
     }
-    var queueFadeoutTimer = that.queueHeaderFadeOut
 
+    /*
+    function bindVRBackButton() {
+        $('#backfromvr').off('.vizor').on('click.vizor', function (e) {
+            console.log('back from vr clicked')
+            E2.core.webVRManager.onBackClick_()
+            siteUI.tagBodyClass()
+            return false
+        })
+    }
+    */
+
+    this.amendVRManagerInstructions = function() {
+        var r = E2.core.webVRManager.rotateInstructions
+        r.text.innerHTML = r.text.innerHTML.replace("Cardboard viewer", "VR viewer")
+        // if not bound directly, it sometimes stops working when reloading player files
+        var onclick = "E2.core.webVRManager.onBackClick_();siteUI.tagBodyClass();return false;"
+        r.text.innerHTML += "<br /><br /><button style='color:white' onclick='"+onclick+"' id='backfromvr'>Exit VR view</button>"
+        r.overlay.style.color = '#ccc'
+        r.overlay.style.background = '#2b2f37'
+        r.overlay.style.zIndex = "100"
+        $('div:last-child', r.overlay)[0].style.display = 'none'
+    }
+
+    var headerFadeOut = this.headerFadeOut
+    var headerFadeIn = this.headerFadeIn
+    var queueFadeoutTimer = this.queueHeaderFadeOut
+    var suspendVRcamera = this.suspendVRcamera
+    var enableVRcamera = this.enableVRcamera
+    var amendVRManagerInstructions = this.amendVRManagerInstructions
 
     this.displayVRPlayerUrl = function() {
         var url = that.data.shareURL || window.location.href
         that.headerFadeOut()
         return VizorUI.modalOpen("<p>View in VR on your phone</p><a href='" + url + "'>" + url + "</a>", null, 'viewinvr')
     }
-
-
 
     this.init = function () {
 
@@ -216,8 +240,6 @@ var playerUI = new function() {
             }
         }
 
-        var suspendVRcamera = that.suspendVRcamera
-        var enableVRcamera = that.enableVRcamera
 
         WebVRConfig.getContainerMeta = function() {
             var el = document.getElementById('stage')
@@ -240,7 +262,6 @@ var playerUI = new function() {
             }
             return ret
         }
-
 
         VizorUI.replaceSVGButtons(jQuery('header'))
         siteUI.disableForceTouch()
@@ -290,6 +311,8 @@ var playerUI = new function() {
 
             $body
                 .on(that.eventNames.vrInstructionsShown, function () {
+                    console.log('instructions shown!')
+//                    bindVRBackButton()
                     $header.hide()
                     fadingIn = fadingOut = false
                 })
@@ -324,13 +347,6 @@ var playerUI = new function() {
             }, 300)
         }
 
-        function bindVRBackButton() {
-            $('#backfromvr').off('.vizor').on('click.vizor', function (e) {
-                E2.core.webVRManager.onBackClick_()
-                siteUI.tagBodyClass()
-                return false
-            })
-        }
 
         function bindShareButton() {
             var $share = $('button#sharebutton')
@@ -361,14 +377,8 @@ var playerUI = new function() {
                 })
         }
 
-        function amendVRManagerInstructions() {
-            var r = E2.core.webVRManager.rotateInstructions
-            r.text.innerHTML = r.text.innerHTML.replace("Cardboard viewer", "VR viewer")
-            r.text.innerHTML += "<br /><br /><button id='backfromvr'>Exit VR view</button>"
-            r.overlay.style.background = '#2b2f37'
-            r.overlay.style.zIndex = "100"
-            $('div:last-child', r.overlay)[0].style.display = 'none'
-        }
+
+
 
         that.controlsBound = false
         function completeLoading() {
@@ -405,7 +415,7 @@ var playerUI = new function() {
             // removed E2.core call to emit fullScreenChangeRequested
             E2.core.webVRManager.onFSClick_()
             siteUI.tagBodyClass()
-            bindVRBackButton()
+//            bindVRBackButton()
         }
 
         function enterVR(e) {
@@ -415,13 +425,13 @@ var playerUI = new function() {
             }
             E2.core.webVRManager.onVRClick_()
             siteUI.tagBodyClass()
-            bindVRBackButton()
+//            bindVRBackButton()
         }
 
         $('#fullscreen').on('click', enterFullscreen)
         $('#entervr').on('click', enterVR)
 
-        $(window).on('resize orientationchange', bindVRBackButton)
+//        $(window).on('resize orientationchange', bindVRBackButton)
         $(window).on('resize orientationchange', onResize);
         $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', onResize)
 
@@ -456,35 +466,44 @@ var playerUI = new function() {
             }
             onResize();
 
-            setTimeout(bindVRBackButton, 500)  // in case the instructions show immediately
+//            setTimeout(bindVRBackButton, 500)  // in case the instructions show immediately
             enableVRcamera()
 
             // provisions for chrome/android
             $body
-                .on('VRManInstructionsShown', function () {
+                .on(that.eventNames.vrInstructionsShown, function () {
                     $wrap.hide()
+//                    bindVRBackButton()
                 })
-                .on('VRManInstructionsHidden', function () {
+                .on(that.eventNames.vrInstructionsHidden, function () {
                     $wrap.show();
                     onResize()
                 });
 
             if (siteUI.hasOrientationChange
                 && VizorUI.isMobile.any()
-                && VizorUI.isBrowser.Chrome()) {
+//                && VizorUI.isBrowser.Chrome()
+            ) {
 
                 var allowExtraHeightOnLandscape = function () {
-                    // provisions for android
+                    // provisions for mobile
                     setTimeout(function () {
+                        var h = window.innerHeight
                         if (siteUI.isPortraitLike()) {
                             $body.css({
-                                height: '100%'
-                            });
+                                height: h + 'px'
+                            })
+                            $wrap.css({
+                                bottom: '0'
+                            })
                         }
                         else {
                             $body.css({
-                                height: '120%'  // allow dragging the body to hide the top bar
-                            });
+                                height: (1.1*h) + 'px'  // allow dragging the body to hide the top bar
+                            })
+                            $wrap.css({
+                                bottom: (0.1*h) + 'px'
+                            })
                         }
                     }, 500)
                 }

@@ -397,17 +397,18 @@ var siteUI = new function() {
 			return 'default'
 	};
 
+	this.isModalOpen = function() {
+		var $modal = jQuery('div.bootbox.modal');
+		that.lastModalIsOpen = $modal.hasClass('in');
+		return that.lastModalIsOpen
+	}
+
 	this.deviceIsTablet = this.isDeviceTablet()
 	this.deviceIsPhone = this.isDevicePhone()
 	this.deviceIsDesktop = this.isDeviceDesktop()
 	this.isEmbedded = this.isInIframe()
 
 	this.lastModalIsOpen = false
-	this.isModalOpen = function() {
-		var $modal = jQuery('div.bootbox.modal');
-		that.lastModalIsOpen = $modal.hasClass('in');
-		return that.lastModalIsOpen
-	}
 }
 
 jQuery('document').ready(siteUI.init);
