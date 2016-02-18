@@ -8,7 +8,7 @@
 			{	name: 'texture', dt: core.datatypes.TEXTURE },
 			{   name: 'specularMap', dt: core.datatypes.TEXTURE, def: undefined },
 			{   name: 'alphaMap', dt: core.datatypes.TEXTURE, def: undefined },
-			{	name: 'color', dt: core.datatypes.COLOR },
+			{	name: 'color', dt: core.datatypes.COLOR, def: new THREE.Color(0xffffff) },
 			{	name: 'wireframe', dt: core.datatypes.BOOL, def: false },
 			{	name: 'fog', dt: core.datatypes.BOOL, def: true,
 				desc: 'Define whether the material color is affected by global fog settings.'

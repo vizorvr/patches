@@ -14,6 +14,8 @@ engineSource += ';\nE2.core = new Core();\n'
 engineSource += ';\nE2.app = { player: { core: E2.core }};\n'
 engineSource += 'E2.core.root_graph = new Graph();\n'
 
+console.error(engineSource)
+
 var engineScript = new vm.Script(engineSource, { filename: 'engine.js' })
 engineScript.runInContext(context)
 

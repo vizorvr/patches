@@ -26,6 +26,14 @@ describe('Graph analysis', function() {
 		})
 	})
 
+	it('finds audio', function(done) {
+		ga.analyseJson(graphJson)
+		.then(function(stat) {
+			assert.equal(stat.hasAudio, true)
+			done()
+		})
+	})
+
 	it('parses the number of assets', function(done) {
 		ga.analyseJson(graphJson)
 		.then(function(stat) {

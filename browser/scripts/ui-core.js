@@ -29,7 +29,7 @@ var uiKeys = {
 	focusChatPanel		: '@',
 	viewHelp 			: '?',
 
-	toggleWorldEditorHelpers            : 'H',
+	toggleEditorHelpers                 : 'H',
 	toggleWorldEditorGrid               : 'G',
 	toggleWorldEditorXCamera            : 'X',
 	toggleWorldEditorYCamera            : 'Y',
@@ -38,9 +38,7 @@ var uiKeys = {
 	frameViewToSelection                : 'T',
 	toggleFullScreen 	                : 'F',
 	moveVRCameraToEditorCamera          : '=',
-	moveEditorCameraToVRCamera          : 'shift+'+'V',
 	gotoParentGraph		                : ',',
-
 
 	moveSelectedNodesUp      : 38, // up arrow
 	moveSelectedNodesDown    : 40, // down arrow
@@ -75,8 +73,8 @@ var uiKeys = {
 };
 
 var uiViewCam = {
-	vr				: 'hmd',
-	world_editor	: 'editor'
+	vr			: 'hmd',
+	birdsEye	: 'birdsEye'
 };
 
 var uiEvent = { // emitted by ui (E2.ui) unless comments state otherwise
@@ -173,10 +171,10 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 
 	state
 		.on('changed:viewCamera', function(camera){
-			var worldEditorActive = (camera === uiViewCam.world_editor);
-			dom.btnEditorCam.parent().toggleClass('active', worldEditorActive);
-			dom.btnVRCam.parent().toggleClass('active', !worldEditorActive);
-			E2.app.toggleWorldEditor(worldEditorActive);
+			var birdsEyeCameraActive = (camera === uiViewCam.birdsEye);
+			dom.btnEditorCam.parent().toggleClass('active', birdsEyeCameraActive);
+			dom.btnVRCam.parent().toggleClass('active', !birdsEyeCameraActive);
+			E2.app.setViewCamera(birdsEyeCameraActive ? 'perspective' : 'vr');
 		})
 		.emit('changed:viewCamera', state.viewCamera);
 
@@ -435,9 +433,12 @@ VizorUI.prototype.onKeyPress = function(e) {
 			e.preventDefault();
 			break;
 		case uiKeys.toggleEditorCamera:
-			state.viewCamera = (state.viewCamera === uiViewCam.vr) ? uiViewCam.world_editor : uiViewCam.vr;
+			state.viewCamera = (state.viewCamera === uiViewCam.vr) ? uiViewCam.birdsEye : uiViewCam.vr;
 			e.preventDefault();
 			e.stopPropagation();
+			break;
+		case uiKeys.toggleEditorHelpers:
+			E2.app.toggleHelperObjects()
 			break;
 		case uiKeys.focusPresetSearchAlt:
 		case uiKeys.focusPresetSearch:
@@ -550,8 +551,38 @@ VizorUI.prototype.onKeyPress = function(e) {
 		}
 
 	}
-	else {// E2.app.worldEditor.isActive()
-		// world editor-specific keys
+	else if (E2.app.worldEditor.isActive) {
+		if (E2.app.worldEditor.cameraSelector.selectedCamera !== 'vr') {
+			// world editor (bird's eye camera only) -specific keys
+			switch(key) {
+			case uiKeys.toggleWorldEditorXCamera:
+				E2.app.worldEditor.setCameraView('-x');
+				break;
+			case 'shift+' + uiKeys.toggleWorldEditorXCamera:
+				E2.app.worldEditor.setCameraView('+x');
+				break;
+			case uiKeys.toggleWorldEditorYCamera:
+				E2.app.worldEditor.setCameraView('-y');
+				break;
+			case 'shift+' + uiKeys.toggleWorldEditorYCamera:
+				E2.app.worldEditor.setCameraView('+y');
+				break;
+			case uiKeys.toggleWorldEditorZCamera:
+				E2.app.worldEditor.setCameraView('-z');
+				break;
+			case 'shift+' + uiKeys.toggleWorldEditorZCamera:
+				E2.app.worldEditor.setCameraView('+z');
+				break;
+			case uiKeys.toggleWorldEditorOrthographicCamera:
+				E2.app.worldEditor.toggleCameraOrthographic();
+				break;
+			case uiKeys.frameViewToSelection:
+				E2.app.worldEditor.frameSelection();
+				break;
+			}
+		}
+
+		// world editor (any camera) -specific keys
 		switch(key) {
 			case uiKeys.modifyModeMove:
 				this.state.modifyMode = uiModifyMode.move;
@@ -562,42 +593,12 @@ VizorUI.prototype.onKeyPress = function(e) {
 			case uiKeys.modifyModeScale:
 				this.state.modifyMode = uiModifyMode.scale;
 				break;
-			case uiKeys.toggleWorldEditorHelpers:
-				E2.app.worldEditor.toggleEditorHelpers();
-				break;
 			case uiKeys.toggleWorldEditorGrid:
 				E2.app.worldEditor.toggleGrid();
-				break;
-			case uiKeys.toggleWorldEditorXCamera:
-				E2.app.worldEditor.setCameraView('-x');
-				break;
-			case 'shift+'+uiKeys.toggleWorldEditorXCamera:
-				E2.app.worldEditor.setCameraView('+x');
-				break;
-			case uiKeys.toggleWorldEditorYCamera:
-				E2.app.worldEditor.setCameraView('-y');
-				break;
-			case 'shift+'+uiKeys.toggleWorldEditorYCamera:
-				E2.app.worldEditor.setCameraView('+y');
-				break;
-			case uiKeys.toggleWorldEditorZCamera:
-				E2.app.worldEditor.setCameraView('-z');
-				break;
-			case 'shift+'+uiKeys.toggleWorldEditorZCamera:
-				E2.app.worldEditor.setCameraView('+z');
-				break;
-			case uiKeys.toggleWorldEditorOrthographicCamera:
-				E2.app.worldEditor.toggleCameraOrthographic();
-				break;
-			case uiKeys.frameViewToSelection:
-				E2.app.worldEditor.frameSelection();
 				break;
 			case uiKeys.moveVRCameraToEditorCamera:
 			case "shift+"+uiKeys.moveVRCameraToEditorCamera: // fi
 				E2.app.worldEditor.matchVRToEditorCamera();
-				break;
-			case uiKeys.moveEditorCameraToVRCamera:
-				E2.app.worldEditor.matchEditorToVRCamera()
 				break;
 		}
 	}

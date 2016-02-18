@@ -52,6 +52,7 @@ describe('GraphController', function()
 					path: '/memyselfandi/foo',
 					url: '/root/graph/memyselfandi/foo.json',
 					tags: [],
+					hasAudio: false,
 					stat: { size: 0, numAssets: 0 },
 					previewUrlSmall: '/root/previews/memyselfandi/foo-preview-440x330.png',
 					previewUrlLarge: '/root/previews/memyselfandi/foo-preview-1280x720.png',

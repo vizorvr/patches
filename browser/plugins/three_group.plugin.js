@@ -28,6 +28,9 @@
 		this.object3d.backReference = this
 
 		this.lastCenter = new THREE.Vector3()
+
+		this.object3d = new THREE.Group()
+		this.object3d.name = 'group_plugin'
 	}
 
 	ThreeGroupPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)

@@ -82,8 +82,9 @@
  				that.loadObject(newValue).then(function() {
 					that.scaleToUnitSize()
 
-					// apply state to object3d
-					that.update_state()
+					// apply state to object3d (with an empty updateContext, 
+					// Object3D doesn't need this for this purpose)
+					ThreeObject3DPlugin.prototype.update_state.apply(that, {})
 
 					that.updated = true
 				    
@@ -192,7 +193,7 @@
 						that.scaleToUnitSize()
 					}
 					// apply state to object3d
-					that.update_state()
+					ThreeObject3DPlugin.prototype.update_state.apply(that, arguments)
 					that.updated = true
 				})
 			}

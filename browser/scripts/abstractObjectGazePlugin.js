@@ -151,7 +151,7 @@
 
 		var node = graph.findNodeByUid(nuid)
 
-		if (this.object3d && this.object3d === node.plugin.object3d)
+		if (!node || (this.object3d && this.object3d === node.plugin.object3d))
 			return
 
 		this.clearClickerOnObject()

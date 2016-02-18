@@ -73,89 +73,18 @@ function Color() {}
 }
 
 exports.setupThree = function() {
-	global.THREE = {
-		Vector2: function(){},
-		Vector3: function(){
-			this.subVectors = function() {}
-			this.normalize = function() {}
-			this.crossVectors = function() {}
-			this.clone = function() {}
-		},
-		Matrix4: function() {},
-		Color: Color,
-		Material: function(){},
-		MeshBasicMaterial: function(){},
-		PerspectiveCamera: function(){
-			this.layers = {
-				enable: function() {}
-			}
-		},
-		Math: {clamp:function(){}},
-		CubeTexture: function(){},
-		ShaderLib: {'cube': {uniforms: {'tCube':{value:0}}}},
-		ShaderMaterial: function(){},
-		BoxGeometry: function(){},
-		Mesh: function(){},
-		Quaternion: function(){},
-		Object3D: function() {
-			this.position = {
-				set: function() {}
-			}
-		},
-		AmbientLight: function() {},
-		DirectionalLight: function() {},
-		PointLight: function() {},
-		SpotLight: function() {},
-		HemisphereLight: function() {},
-		Geometry: function() {
-			this.vertices = []
-			this.faces = []
-			this.faceVertexUvs = [[]]
-		},
-		BufferGeometry: function() {
-			this.fromGeometry = function(){}
-		},
-		Face3: function() {},
-		MeshFaceMaterial: function() {},
-		CircleGeometry: function() {},
-		CylinderGeometry: function() {},
-		DodecahedronGeometry: function() {},
-		PlaneGeometry: function() {},
-		SphereGeometry: function() {},
-		SphereBufferGeometry: function() {},
-		Group: function() {},
-		LineBasicMaterial: function() {},
-		LineSegments: function() {},
-		Loader: {
-			Handlers: {
-				add: function() {}
-			}
-		},
-		DDSLoader: function() {},
-		MeshDepthMaterial: function() {},
-		MeshLambertMaterial: function() {},
-		MeshPhongMaterial: function() {},
-		MeshBasicMaterial: function() {},
-		PointCloudMaterial: function() {},
-		PointCloud: function() {},
-		Euler: function() {},
-		Scene: function() {
-			this.add = function() {}
-			this.children = [{add: function(){}}]
-		},
-		Texture: function() {},
-		VRControls: function() {},
-		VREffect: function(){
-			this.setSize = function(){}
-		},
-		Camera: function(){}
-	}
+
+	global.THREE = require(browserPath + 'vendor/three/three.js')
+	global.THREE.MorphAnimMesh = function() {}
 }
 
 
 exports.reset = function() {
 	global.E2 = {}
 	global.window = global
+
+	global.window.screen = {width: 1280, height: 720}
+
 	global.addEventListener = function() {}
 	global.location = {
 		pathname: 'test/test'
@@ -179,7 +108,9 @@ exports.reset = function() {
 		addEventListener: global.addEventListener,
 		body: domNode(),
 		createElement: function() {
-			return domNode()
+			var el = domNode()
+			el.setAttribute = function() {}
+			return el
 		},
 		getElementsByTagName: function() {
 			return [ domNode() ]
@@ -190,7 +121,9 @@ exports.reset = function() {
 		userAgent: 'node'
 	}
 
-	global.WebVRConfig = {}
+	global.WebVRConfig = {
+		NO_DPDB_FETCH: true
+	}
 
 	exports.runScript(browserPath+'dist/engine.js')
 	exports.mockE2Classes()
@@ -297,6 +230,11 @@ exports.reset = function() {
 		getSize: function() {return {width: 1, height: 1}}
 	}
 
+	// don't try to load a graph
+	global.boot = {hasEdits: true}
+	//E2.app.onCoreReady()
+	E2.app.setupStoreListeners()
+
 	return E2.core;
 }
 
@@ -322,9 +260,13 @@ exports.setupGlobals = function() {
 	global.PeopleManager = function() {}
 
 	global.PeopleStore = function(){}
-	global.PeopleStore.prototype.list = function() {
-		return []
+	global.PeopleStore.prototype = {
+		list: function () {
+			return []
+		},
+		on: function() {}
 	}
+
 
 	global.NodeUI = function() {
 		this.dom = [$()]
@@ -353,6 +295,7 @@ exports.setupGlobals = function() {
 
 	E2.ui = {
 		buildBreadcrumb: function() {},
-		state: {}
+		state: {},
+		showStartDialog: function() {return when.resolve()}
 	}
 }

@@ -135,7 +135,7 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.toggleFullScreen = function() {
-		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+		var isFullscreen = E2.util.isFullscreen()
 		console.log('ThreeWebGLRendererPlugin.toggleFullScreen', !isFullscreen)
 		this.manager.toggleFullScreen()
 	}
@@ -148,7 +148,15 @@
 
 			this.renderer.setPixelRatio(window.devicePixelRatio)
 
-			this.effect = new THREE.VREffect(this.renderer)
+			// for now (three.js r74) VREffect is not compatible with webvr-boilerplate
+			// nor three.js so we use THREE.CardboardEffect instead
+			if (!window.vizorNativeWebVRAvailable) {
+				this.effect = new THREE.CardboardEffect(this.renderer)
+			}
+			else {
+				this.effect = new THREE.VREffect(this.renderer)
+			}
+
 			this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: true })
 
 			E2.core.webVRManager = this.manager		// allow e.g. the player/embed to access this

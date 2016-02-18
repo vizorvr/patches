@@ -1,0 +1,173 @@
+{
+	"abs_t": 382.121,
+	"active_graph": "root",
+	"graph_uid": "TXDgBc0JJtS3",
+	"root": {
+		"uid": "root",
+		"parent_uid": -1,
+		"open": true,
+		"nodes": [
+			{
+				"plugin": "three_scene",
+				"x": 749,
+				"y": 333,
+				"uid": "u2O8M5ItNlW5",
+				"dyn_in": [
+					{
+						"type": 0,
+						"name": "0",
+						"dt": 21,
+						"array": true,
+						"uid": "DDzcOXqI6iRM",
+						"dynamic": true,
+						"index": 0,
+						"is_connected": true
+					},
+					{
+						"type": 0,
+						"name": "1",
+						"dt": 21,
+						"array": true,
+						"uid": "gH5pmBKZK4lm",
+						"dynamic": true,
+						"index": 1,
+						"is_connected": false
+					}
+				]
+			},
+			{
+				"plugin": "graph",
+				"x": 554,
+				"y": 360,
+				"uid": "5zkZJ1kVzShg",
+				"state": {
+					"always_update": true,
+					"input_sids": {},
+					"output_sids": {
+						"0uogYZhTulp7": "mh0rTKkFm0nD"
+					}
+				},
+				"title": "Floor",
+				"graph": {
+					"uid": "Hzr5rg9SHgsb",
+					"parent_uid": "root",
+					"open": true,
+					"nodes": [
+						{
+							"plugin": "three_mesh",
+							"x": 936,
+							"y": 221,
+							"uid": "GxMrrSaA44wq",
+							"state": {
+								"position": {
+									"x": 0,
+									"y": -0.01311748567091614,
+									"z": 0.000023347093529794483
+								},
+								"scale": {
+									"x": 16.260185647641777,
+									"y": 16.260185647641777,
+									"z": 16.260185647641777
+								},
+								"quaternion": {
+									"_x": -0.707106781186548,
+									"_y": 0,
+									"_z": 0,
+									"_w": 0.707106781186548
+								}
+							}
+						},
+						{
+							"plugin": "output_proxy",
+							"x": 1105,
+							"y": 223,
+							"uid": "0uogYZhTulp7",
+							"title": "object3d",
+							"dyn_in": [
+								{
+									"name": "output",
+									"dt": 21,
+									"def": null,
+									"uid": "bEdPpC9C6Rh1",
+									"dynamic": true,
+									"type": 0,
+									"index": 0,
+									"is_connected": true,
+									"connected": true
+								}
+							]
+						},
+						{
+							"plugin": "three_geometry_plane",
+							"x": 751,
+							"y": 172,
+							"uid": "tr9n2eRfks8M",
+							"open": false
+						},
+						{
+							"plugin": "three_material",
+							"x": 713,
+							"y": 357,
+							"uid": "K4pX2hXH8Ba8",
+							"state": {}
+						}
+					],
+					"conns": [
+						{
+							"src_nuid": "GxMrrSaA44wq",
+							"dst_nuid": "0uogYZhTulp7",
+							"src_slot": "object3d",
+							"dst_slot": 0,
+							"uid": "lJTzbafg9t8D",
+							"src_connected": true,
+							"dst_connected": true,
+							"dst_dyn": true
+						},
+						{
+							"src_nuid": "tr9n2eRfks8M",
+							"dst_nuid": "GxMrrSaA44wq",
+							"src_slot": "geometry",
+							"dst_slot": "geometry",
+							"uid": "0XCswCxPk54c",
+							"src_connected": true,
+							"dst_connected": true
+						},
+						{
+							"src_nuid": "K4pX2hXH8Ba8",
+							"dst_nuid": "GxMrrSaA44wq",
+							"src_slot": "material",
+							"dst_slot": "material",
+							"uid": "3VCDHDVyWCrf",
+							"src_connected": true,
+							"dst_connected": true
+						}
+					]
+				},
+				"dyn_out": [
+					{
+						"name": "object3d",
+						"dt": 21,
+						"index": 0,
+						"uid": "mh0rTKkFm0nD",
+						"dynamic": true,
+						"type": 1,
+						"is_connected": true
+					}
+				]
+			}
+		],
+		"conns": [
+			{
+				"src_nuid": "5zkZJ1kVzShg",
+				"dst_nuid": "u2O8M5ItNlW5",
+				"src_slot": 0,
+				"dst_slot": 0,
+				"uid": "kDBxFStA4tSD",
+				"src_connected": true,
+				"dst_connected": true,
+				"src_dyn": true,
+				"dst_dyn": true
+			}
+		]
+	}
+}

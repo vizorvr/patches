@@ -15,15 +15,15 @@
             Play
         </button>
 
-        <button id="entervr" class="svg nopaused nodesktop notablet mobileonly" data-svgref="player-icon-vr"><svg></svg>
+        <button id="entervr" class="svg nopaused noDeviceDesktop noDeviceTablet mobileDeviceOnly" data-svgref="player-icon-vr"><svg></svg>
             Enter VR
 		</button>
 
-        <button id="fullscreen" class="svg nopaused nomobile notablet" data-svgref="player-icon-fullscreen"><svg></svg>
+        <button id="fullscreen" class="svg nopaused noDeviceMobile noDeviceTablet" data-svgref="player-icon-fullscreen"><svg></svg>
             Fullscreen
 		</button>
 
-        <button id="edit" class="svg nopaused nomobile" data-svgref="player-icon-edit"><svg></svg>
+        <button id="edit" class="svg nopaused noDeviceMobile" data-svgref="player-icon-edit"><svg></svg>
             Edit
             {{#eq graph.owner user.username}}
             {{else}}
@@ -48,9 +48,6 @@
             width="100%"
             height="100%"
             oncontextmenu="return false;"
-            {{#if autoplay}}
-            data-autoplay="true"
-            {{/if}}
             data-graph-url="{{graphMinUrl}}">
         >
         </canvas>
@@ -81,6 +78,7 @@ new function() {
     var topUrl = 'http://vizor.io'
 
     var playerUI = {
+        hasAudio: {{graph.hasAudio}},
         data: {
             shareURL: topUrl + '/{{graph.owner}}/{{graph.name}}',
             embedSrc: topUrl + '/embed/{{graph.owner}}/{{graph.name}}'
@@ -98,11 +96,7 @@ new function() {
             .addClass('front')
     }
 
-
-
     playerUI.init = function () {
-
-
 
         var fadingIn = false
         var headerIsVisible = true
@@ -113,18 +107,22 @@ new function() {
         var $canvas = $('#webgl-canvas')
         var $stage = $('#stage')
         var $wrap = $('#playerWrap')
-        var autoplay = $canvas.data('autoplay')
+
+        var autoplay = {{#if autoplay}}true{{else}}false{{/if}}
+
+        if (playerUI.hasAudio && VizorUI.isMobile.iOS())
+            autoplay = false
 
         siteUI.disableForceTouch()
 
         function suspendVRcamera() {
-            E2.app.isVRCameraActive = function () {
+            E2.app.canInititateCameraMove = function () {
                 return false
             }
         }
 
         function enableVRcamera() {
-            E2.app.isVRCameraActive = function () {
+            E2.app.canInititateCameraMove = function () {
                 return !overHeader
             }
         }
@@ -297,7 +295,8 @@ new function() {
         $canvas.css({display: 'block'});
 
         window.Vizor = {
-            hideWebVRButton: false
+            hideWebVRButton: false,
+            autoplay: autoplay
         }
 
         var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
@@ -391,6 +390,7 @@ new function() {
 
         function play() {
             playerUI.selectStage('stage')
+            
             playVizorFile()
                 .then(function () {
                     $body

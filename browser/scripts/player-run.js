@@ -22,7 +22,7 @@ window.playVizorFile = function playVizorFile() {
 
 function onCoreReady() {
 	var $canvas = $('canvas[data-graph-url]')
-	var autoplay = $canvas.data('autoplay')
+	var autoplay = window.Vizor.autoplay
 
 	E2.core.on('progress', progress)
 
