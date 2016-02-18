@@ -139,7 +139,7 @@
         "Write Variable": "variable_local_write",
         "Input proxy": "input_proxy",
         "Output proxy": "output_proxy",
-        "Graph": "graph",
+        "Nested Patch": "graph",
         "Loop": "loop",
         "Array Function": "array_function",
         "Annotation": "annotation"
