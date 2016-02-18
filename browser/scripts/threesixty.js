@@ -425,16 +425,27 @@ var vizor360 = new function() {
 		that.addUploadButton()
 		that.addCancelButton()
 		that.attach()
+
 		window.Vizor = {
 			hideVRbutton : true,
 			autoplay: true
 		}
+		
 		window.Vizor.onProgress = function(pct) {
 			var factor = 100 / (100 - that.minProgress)
 			var ret = that.minProgress + pct / factor;
 			console.log('relative progress ' + pct + ' = ' + ret)
 			playerUI.onProgress(ret)
 		}
+
+		window.onpopstate = function(event) {
+			if (event.state && event.state.initial) 
+				window.location = window.location
+		}
+
+		history.replaceState({
+			initial: true
+		}, null)
 
 		playerUI.data.shareURL = null
 	}
