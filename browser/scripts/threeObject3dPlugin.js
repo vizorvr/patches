@@ -18,7 +18,7 @@ function ThreeObject3DPlugin(core) {
 			name:   'stereo view',
 			dt:     core.datatypes.FLOAT,
 			def:    0,
-			desc:   'Affects how this object is rendered in stereo<br/>Stereo View - 0: both eyes, 1: left eye only, 2: right eye only'
+			desc:   'Affects how this object is rendered in stereo<br/>Stereo View - 0: both eyes, 1: left eye only, 2: right eye only, 3: mono view only'
 		},
 		{
 			name:   'lock transform',
