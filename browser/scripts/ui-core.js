@@ -174,7 +174,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 			var birdsEyeCameraActive = (camera === uiViewCam.birdsEye);
 			dom.btnEditorCam.parent().toggleClass('active', birdsEyeCameraActive);
 			dom.btnVRCam.parent().toggleClass('active', !birdsEyeCameraActive);
-			E2.app.setViewCamera(birdsEyeCameraActive ? 'perspective' : 'vr');
+			E2.app.setViewCamera(birdsEyeCameraActive);
 		})
 		.emit('changed:viewCamera', state.viewCamera);
 
@@ -579,6 +579,10 @@ VizorUI.prototype.onKeyPress = function(e) {
 			case uiKeys.frameViewToSelection:
 				E2.app.worldEditor.frameSelection();
 				break;
+			case uiKeys.moveVRCameraToEditorCamera:
+			case "shift+"+uiKeys.moveVRCameraToEditorCamera: // fi
+				E2.app.worldEditor.matchVRToEditorCamera();
+				break;
 			}
 		}
 
@@ -595,10 +599,6 @@ VizorUI.prototype.onKeyPress = function(e) {
 				break;
 			case uiKeys.toggleWorldEditorGrid:
 				E2.app.worldEditor.toggleGrid();
-				break;
-			case uiKeys.moveVRCameraToEditorCamera:
-			case "shift+"+uiKeys.moveVRCameraToEditorCamera: // fi
-				E2.app.worldEditor.matchVRToEditorCamera();
 				break;
 		}
 	}
