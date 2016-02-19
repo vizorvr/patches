@@ -215,6 +215,19 @@ var vizor360 = new function() {
 		formData.append('filename', file.name);
 		formData.append('file', file);
 
+		var fakeMin = 30
+		var fakeMax = 50
+		var fakeInc = (fakeMax - fakeMin) / 1000
+		var fakeInterval = 1000/60
+
+		function fakeProgressBar() {
+			var currVal = $progress.val()
+			if (currVal < fakeMax) {
+				updateProgressBar(currVal + fakeInc)
+				setTimeout(fakeProgressBar, fakeInterval)
+			}
+		}
+		
 		$.ajax({
 			url: '/uploadAnonymous/' + modelName,
 			type: 'POST',
@@ -234,11 +247,15 @@ var vizor360 = new function() {
 
 					xhr.upload.addEventListener('progress', function(evt) {
 						if (evt.lengthComputable) {
-							// Limit this to 50, we continue with the player core progress
+							// Limit this to fakeMin, we continue with the player core progress
 							// from there
-							var percent = Math.floor(evt.loaded/evt.total * 100) * 0.5;
-							updateProgressBar(percent);
-							console.log(" progress = " + percent);
+							var percent = Math.floor(evt.loaded/evt.total * 100) * (fakeMin / 100)
+							updateProgressBar(percent)
+
+							// we've gone over 100 already on the upload, start the fake progress
+							if (percent >= fakeMin) {
+								setTimeout(fakeProgressBar, fakeInterval)
+							}
 						}
 					}, false);
 
