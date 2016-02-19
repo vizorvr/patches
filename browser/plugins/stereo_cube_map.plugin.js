@@ -43,6 +43,7 @@
 		
 		this.leftChannel = 1
 		this.rightChannel = 2
+		this.monoChannel = 3
 
 	}
 
@@ -102,6 +103,7 @@
 					leftMaterial)
 
 			that.leftObj.layers.set(that.leftChannel)
+			that.leftObj.layers.enable(that.monoChannel)
 
 			// right eye
 			var rightTexture = new THREE.CubeTexture(textures.splice(0, 6))
@@ -124,6 +126,7 @@
 				rightMaterial)
 
 			that.rightObj.layers.set(that.rightChannel)
+			that.rightObj.layers.enable(that.monoChannel)
 
 			that.updated = true
 		},
