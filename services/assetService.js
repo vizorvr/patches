@@ -74,9 +74,6 @@ AssetService.prototype.canWriteAnonymous = function(path)
 	return this.findByPath(path)
 	.then(function(asset)
 	{
-		console.log("canWriteAnonymous path = " + path + " , asset = ");
-		console.dir(asset);
-
 		// Asset is null, doesn't exist, we can write
 		if (!asset) {
 			return true;
