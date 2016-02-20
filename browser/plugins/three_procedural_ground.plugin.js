@@ -253,7 +253,7 @@
 			this.geometry.initialise(this.xSize, this.ySize, this.zSize)
 			this.material = new THREE.MeshFaceMaterial([new THREE.MeshLambertMaterial({ color: 0xB29E8C }), new THREE.MeshLambertMaterial({ color: 0xCC6D14 }), new THREE.MeshLambertMaterial({ color: 0x6DB273 })])
 			//this.material.wireframe = true
-			this.object3d = new THREE.Mesh(this.geometry, this.material)
+			this.setObject3D(new THREE.Mesh(this.geometry, this.material))
 		}
 
 		// update the actual vertex data
