@@ -241,8 +241,10 @@ var playerUI = new function() {
 
     this.displayVRPlayerUrl = function() {
         var url = that.data.shareURL || window.location.href
+        var niceurl = url.replace(/^(http)s?:\/\//i, '');
         that.headerFadeOut()
-        return VizorUI.modalOpen("<p>View in VR on your phone</p><a href='" + url + "'>" + url + "</a>", null, 'viewinvr')
+
+        return VizorUI.modalOpen("<p>View in VR on your phone</p><a href='" + url + "'>" + niceurl + "</a>", null, 'viewinvr')
     }
 
     this.init = function () {
