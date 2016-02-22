@@ -85,6 +85,7 @@ var vizor360 = new function() {
 		var baseUrl = 'http://' + host
 		playerUI.data.shareURL = baseUrl + asset.path
 		playerUI.data.embedSrc = baseUrl + 'embed/' + asset.path
+		playerUI.headerEnableAutoFadeout()
 		history.pushState({}, '', asset.path)
 		E2.app.player.loadAndPlay(asset.url, true);
 	}
@@ -410,7 +411,7 @@ var vizor360 = new function() {
 
 	this.init = function() {
 		// scoped above
-		playerUI.headerDefaultFadeoutTimeMs = 4000
+		playerUI.headerDefaultFadeoutTimeMs = 3500
 
 		var $header = $('header')
 		var $container360 = $('#container360')
@@ -448,6 +449,7 @@ var vizor360 = new function() {
 		}, null)
 
 		playerUI.data.shareURL = null
+		playerUI.headerDisableAutoFadeout()
 	}
 }
 
