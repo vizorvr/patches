@@ -27,7 +27,9 @@ function AbstractThreeMeshPlugin(core) {
 AbstractThreeMeshPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
 
 AbstractThreeMeshPlugin.prototype.reset = function() {
-	this.object3d = this.createMeshRoot()
+	ThreeObject3DPlugin.prototype.reset.apply(this)
+
+	this.setObject3D(this.createMeshRoot())
 
 	this.geoms = [new THREE.Geometry()]
 	this.mats = [new THREE.MeshBasicMaterial({color: 0x00ff00})]
@@ -37,8 +39,6 @@ AbstractThreeMeshPlugin.prototype.reset = function() {
 
 	// back reference for object picking
 	this.object3d.backReference = this
-
-	ThreeObject3DPlugin.prototype.reset.apply(this)
 }
 
 AbstractThreeMeshPlugin.prototype.update_mesh = function()
@@ -52,8 +52,7 @@ AbstractThreeMeshPlugin.prototype.update_mesh = function()
 		this.always_update = false
 
 		// non-recursive clone of the root, to preserve transform
-		this.object3d = this.object3d.clone(/*recursive = */false)
-		this.object3d.backReference = this
+		this.setObject3D(this.object3d.clone(/*recursive = */false))
 
 		for (i = 0; i < this.geoms.length; ++i) {
 			if (this.geoms[i].morphTargets && this.geoms[i].morphTargets.length > 0) {

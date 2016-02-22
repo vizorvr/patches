@@ -83,8 +83,21 @@
 		if (slot.dynamic) {
 			var parent = this.scene.children[0].children[slot.index]
 
-			if (data) {
+			if (data && (slot.array && data.length > 0 && data[0])) {
 				if (slot.array) {
+					if (parent.children.length === data.length) {
+						var allUidsMatch = true
+						for (i = 0; i < data.length; ++i) {
+							if (data[i].uuid !== parent.children[i].uuid) {
+								allUidsMatch = false
+							}
+						}
+						if (allUidsMatch) {
+							// nothing to do
+							return
+						}
+					}
+
 					parent.children = data
 
 					for (i = 0; i < data.length; ++i) {
@@ -101,6 +114,11 @@
 					}
 				}
 				else {
+					if (parent.children.length === 1 && parent.children[0].uid === data.uid) {
+						// nothing to do
+						return
+					}
+
 					if (data.parent && data.parent !== this) {
 						// the objects is in another scene, remove from there
 						data.parent.remove(data)
