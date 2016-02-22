@@ -74,7 +74,9 @@
         "Audio file loader": "url_audio_generator",
         "Audio buffer loader": "url_audio_buffer_generator",
         "JSON": "url_json_generator",
-        "Video": "url_video_generator"
+        "Video": "url_video_generator",
+
+        "Deprecated: Stereo Cubemap": "stereo_cube_map"
     },
 
     "RENDERING BASICS": {

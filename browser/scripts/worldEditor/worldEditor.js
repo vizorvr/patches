@@ -80,11 +80,13 @@ WorldEditor.prototype.update = function() {
 		gridScale = gridScale < 1 ? 1 : gridScale
 		this.radialHelper.scale(gridScale)
 	}
-
-	this.cameraSelector.update(this.transformMode, this.vrCamera)
 }
 
 WorldEditor.prototype.preRenderUpdate = function() {
+	// update the camera selector just before render so that we get up to date
+	// camera information for this frame
+	this.cameraSelector.update(this.transformMode, this.vrCamera)
+
 	// add the editor tree to the scene if it's not there already
 	var editorIdx = this.scene.children.indexOf(this.editorTree)
 

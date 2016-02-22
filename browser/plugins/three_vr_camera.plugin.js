@@ -71,7 +71,8 @@
 				0.001,
 				1000)
 
-			this.vrControlCamera.layers.enable(1)
+			// layer is for mono camera only
+			this.vrControlCamera.layers.enable(3)
 
 			this.dolly.add(this.vrControlCamera)
 		}

@@ -18,7 +18,7 @@ function ThreeObject3DPlugin(core) {
 			name:   'stereo view',
 			dt:     core.datatypes.FLOAT,
 			def:    0,
-			desc:   'Affects how this object is rendered in stereo<br/>Stereo View - 0: both eyes, 1: left eye only, 2: right eye only'
+			desc:   'Affects how this object is rendered in stereo<br/>Stereo View - 0: both eyes, 1: left eye only, 2: right eye only, 3: mono view only'
 		},
 		{
 			name:   'lock transform',
@@ -92,7 +92,11 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 		function() { that.object3d.castShadow = data },
 		function() { that.object3d.receiveShadow = data },
 		function() { that.object3d.name = data },
-		function() { that.object3d.layers.set(data) },
+		function() {
+			that.object3d.traverse( function(n) {
+				n.layers.set(data)
+			})
+		},
 		function() { that.lockTransformControls = data }
 	]
 
@@ -120,6 +124,13 @@ ThreeObject3DPlugin.prototype.state_changed = function(ui) {
 }
 
 ThreeObject3DPlugin.prototype.update_state = function() {
+	if (this.object3d.layers !== this.inputValues['stereo view']) {
+		var that = this
+		this.object3d.traverse(function(n) {
+			n.layers.set(that.inputValues['stereo view'])
+		})
+	}
+
 	this.object3d.scale.set(
 		this.graphInputs.scale.x + this.state.scale.x,
 		this.graphInputs.scale.y + this.state.scale.y,
