@@ -195,6 +195,21 @@ function modelRoutes(
 	// -----
 	// Graph routes
 
+	// save, anonymous
+	app.post('/:model/v',
+		requireController,
+		function(req, res, next) {
+			req.user = {
+				username: 'v'
+			}
+
+			if (req.params.model === 'graph')
+				return req.controller.saveAnonymous(req, res, next)
+			
+			req.controller.uploadAnonymous(req, res, next)
+		}
+	)
+
 	app.get(['/editor', '/edit'], graphController.edit.bind(graphController));
 
 	// GET /embed/fthr/dunes-world -- EMBED
@@ -295,17 +310,6 @@ function modelRoutes(
 		requireController,
 		passportConf.isAuthenticated,
 		function(req, res, next) {
-			req.controller.save(req, res, next)
-		}
-	)
-
-	// save, anonymous
-	app.post('/:model/v',
-		requireController,
-		function(req, res, next) {
-			req.user = {
-				username: 'v'
-			}
 			req.controller.save(req, res, next)
 		}
 	)
