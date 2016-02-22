@@ -73,6 +73,9 @@ var have_webgl = (function () {   // http://www.browserleaks.com/webgl#howto-det
 var playerUI = new function() {
     var that = this
 
+    this.headerEnableQueueFadeout = true
+    this.headerDefaultFadeoutTimeMs = 2500
+
     this.eventNames = {
         controlsDisplayed : 'controlsDisplayed',
         controlsHidden :    'controlsHidden',
@@ -89,7 +92,7 @@ var playerUI = new function() {
     this.vrCameraEnabled = true
     this.data = {}
     var topUrl = 'http://' + window.location.hostname
-    this.data.shareURL = topUrl + '/{{graph.owner}}/{{graph.name}}',
+    this.data.shareURL = topUrl + '/{{graph.owner}}/{{graph.name}}'
     this.data.embedSrc = topUrl + '/embed/{{graph.owner}}/{{graph.name}}'
 
     this.selectStage = function(elementId) {
@@ -142,7 +145,6 @@ var playerUI = new function() {
 
 
     var fadeoutTimer = null
-    this.headerDefaultFadeoutTimeMs = 2500
 
 
     var clearFadeoutTimer = function () {
@@ -182,9 +184,20 @@ var playerUI = new function() {
         return true
     }
 
+    this.headerDisableAutoFadeout = function() {
+        clearFadeoutTimer()
+        this.headerEnableQueueFadeout = false
+        this.headerFadeIn()
+    }
 
-    this.queueHeaderFadeOut = function(timeoutMs) {
+    this.headerEnableAutoFadeout = function() {
+        this.headerEnableQueueFadeout = true
+    }
+
+
+    this.queueHeaderFadeOut = function(timeoutMs, forceIfAutoDisabled) {
         if (E2.app.player.current_state !== E2.app.player.state.PLAYING) return true
+        if (!that.headerEnableQueueFadeout && (!forceIfAutoDisabled)) return true
         if (!headerIsVisible) return
         if (inVR()) {
             $body.removeClass('withPlayerControls')
@@ -286,7 +299,7 @@ var playerUI = new function() {
                     headerFadeIn()
                     queueFadeoutTimer()
                 } else {
-                    queueFadeoutTimer(100)  // give any button some time to react
+                    queueFadeoutTimer(100, true)  // give any button some time to react
                 }
 
                 return true
