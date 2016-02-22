@@ -6,8 +6,8 @@ exports.index = function(req, res) {
 	// get show frontpage graph URL
 	res.render('graph/show', {
 		layout: 'threesixty',
-		graphSrc: '/data/graph/eesn/flamingofront.json',
-		graphMinUrl: '/data/graph/eesn/flamingofront.json',
+		graphSrc: '/threesixty/featured',
+		graphMinUrl: '/threesixty/featured',
 		autoplay: true,
 		hideEditButton: true,
 		hideShareButton: true,
@@ -18,3 +18,15 @@ exports.index = function(req, res) {
 	});
 }
 
+exports.featured = function(req,res) {
+	var featuredGraph = '/data/graph/eesn/flamingofront.json'
+	switch (process.env.SITE) {
+		case '360.vizor.io':
+		case 'rc.vizor.io':
+		case 'vizor.io':
+		case '360vr.io':
+			featuredGraph = '/data/graph/v/hrpfbjje86s5.json'
+			break;
+	}
+	res.redirect(featuredGraph)
+}
