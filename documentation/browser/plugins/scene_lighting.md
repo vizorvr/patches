@@ -1,4 +1,4 @@
-#Scene Lighting
+#Experimental: Scene Lighting
 
 ##Description
 Scene Lighting
@@ -7,16 +7,13 @@ Scene Lighting
 ###intensity
 
 
-###ambient color
+###directional light color
 
 
-###light color
+###sky light color
 
 
-###ground color
-
-
-###sky color
+###ground light color
 
 
 ###shadow radius
