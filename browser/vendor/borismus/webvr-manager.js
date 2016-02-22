@@ -2076,18 +2076,17 @@ RotateInstructions.prototype.show = function() {
     s.marginTop = '25%';
   }
 
-  //document.body.dispatchEvent(new CustomEvent('VRManInstructionsShown'))    // vizor.io x Android
+  document.body.dispatchEvent(new CustomEvent('VRManInstructionsShown'))
 };
 
 RotateInstructions.prototype.hide = function() {
   this.overlay.style.display = 'none';
+  document.body.dispatchEvent(new CustomEvent('VRManInstructionsHidden'))
 };
 
 RotateInstructions.prototype.showTemporarily = function(ms) {
   this.show();
   this.timer = setTimeout(this.hide.bind(this), ms);
-
-  document.body.dispatchEvent(new CustomEvent('VRManInstructionsHidden'))   // vizor.io x Android
 };
 
 RotateInstructions.prototype.disableShowTemporarily = function() {
