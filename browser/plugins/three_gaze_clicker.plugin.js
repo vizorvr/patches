@@ -135,7 +135,7 @@
 
 			var i, j
 
-			var clickerDepth = -0.01
+			var clickerDepth = -0.0111 // slightly farther away than camera near plane to prevent z fighting
 			var clickerRadius = 0.0008
 
 			for (j = 0; j < that.segments + 1; j++) {
@@ -276,8 +276,7 @@
 			return
 		}
 
-		// gaze clicker is active when the world editor is not
-		var isActive = !E2.app.worldEditor.isActive()
+		var isActive = true
 
 		if (isActive) {
 			this.update_click(updateContext)
