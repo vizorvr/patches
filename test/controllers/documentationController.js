@@ -22,6 +22,20 @@ describe('DocumentationController', function() {
 			done()
 		}
 
-		dc.getPluginDocumentation(req, res)
+		dc.getPluginDocumentation(req, res, function() {assert.ok(false); done()})
+	})
+
+	it('fetches 404 for plugin without documentation', function(done) {
+		var req = {params: {}}
+		var res = {}
+		req.params.pluginName = 'nonexistent_test_plugin'
+
+		res.json = function(data) {
+			assert.ok(false, 'found an nonexistent plugin documentation')
+
+			done()
+		}
+
+		dc.getPluginDocumentation(req, res, function(e) {assert.ok(e.status === 404); done()})
 	})
 })

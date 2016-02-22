@@ -95,7 +95,7 @@ describe('plugin docs', function() {
 							done()
 						}
 					})
-				})
+				}, function(e) {done(e)})
 			})
 		})
 	})
