@@ -6,7 +6,6 @@
 
 		this.params = {
 			intensity: 1.0,
-			ambientColor: new THREE.Color(0),
 			lightColor: new THREE.Color(0x147DCC),
 			groundColor: new THREE.Color(0x666739),
 			skyColor: new THREE.Color(0),
@@ -14,10 +13,9 @@
 
 		this.input_slots = [
 			{ name: 'intensity', dt: core.datatypes.FLOAT, def: this.params.intensity },
-			{ name: 'ambient color', dt: core.datatypes.COLOR, def: this.params.ambientColor },
-			{ name: 'light color', dt: core.datatypes.COLOR, def: this.params.lightColor },
-			{ name: 'ground color', dt: core.datatypes.COLOR, def: this.params.groundColor },
-			{ name: 'sky color', dt: core.datatypes.COLOR, def: this.params.skyColor },
+			{ name: 'directional light color', dt: core.datatypes.COLOR, def: this.params.lightColor },
+			{ name: 'sky light color', dt: core.datatypes.COLOR, def: this.params.skyColor },
+			{ name: 'ground light color', dt: core.datatypes.COLOR, def: this.params.groundColor },
 			{ name: 'shadow radius', dt: core.datatypes.FLOAT, def: 1 }
 		].concat(this.input_slots)
 
@@ -29,15 +27,13 @@
 	SceneLightingPlugin.prototype.reset = function() {
 		ThreeObject3DPlugin.prototype.reset.apply(this)
 
-		if (!this.ambientLight) {
-			this.ambientLight = new THREE.AmbientLight(this.params.ambientColor)
+		if (!this.hemisphereLight) {
 			this.hemisphereLight = new THREE.HemisphereLight(this.params.skyColor, this.params.groundColor)
 			this.directionalLight = new THREE.DirectionalLight(this.params.lightColor, this.params.intensity)
 
-			this.ambientLight.add(this.hemisphereLight)
-			this.ambientLight.add(this.directionalLight)
+			this.hemisphereLight.add(this.directionalLight)
 
-			this.setObject3D(this.ambientLight)
+			this.setObject3D(this.hemisphereLight)
 		}
 	}
 
@@ -52,16 +48,13 @@
 	}
 
 	SceneLightingPlugin.prototype.update_input = function(slot, data) {
-		if(slot.name === 'ambient color') {
-			this.ambientLight.color.copy(data)
-		}
-		else if(slot.name === 'light color') {
+		if(slot.name === 'directional light color') {
 			this.directionalLight.color.copy(data)
 		}
-		else if (slot.name === 'ground color') {
+		else if (slot.name === 'ground light color') {
 			this.hemisphereLight.groundColor.copy(data)
 		}
-		else if (slot.name === 'sky color') {
+		else if (slot.name === 'sky light color') {
 			this.hemisphereLight.color.copy(data)
 		}
 		else if (slot.name === 'intensity') {
@@ -76,7 +69,7 @@
 	}
 
 	SceneLightingPlugin.prototype.update_output = function() {
-		return this.ambientLight
+		return this.object3d
 	}
 
 	// disable scaling, it doesn't make sense for lights

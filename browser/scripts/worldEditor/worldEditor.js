@@ -155,7 +155,7 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 	for (var i = 0; i < newHandles.length; ++i) {
 		var node = newHandles[i]
 
-		if (node instanceof THREE.AmbientLight && node.children.length === 2) {
+		if (node instanceof THREE.HemisphereLight && node.children.length === 1 && node.children[0] instanceof THREE.DirectionalLight) {
 			var helper = new SceneLightingHelper(node)
 			helper.attach(node)
 			this.handleTree.add(helper)
@@ -170,20 +170,21 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 			helper.attach(node)
 			this.handleTree.add(helper)
 		}
+		else if (node instanceof THREE.Camera) {
+			this.cameraHelper.attach(node)
+			this.handleTree.add(this.cameraHelper)
+		}
+
 		// Directional & Hemisphere lights are legacy but we don't want to break old graphs:
-		else if (node instanceof THREE.HemisphereLight && !(node.parent instanceof THREE.AmbientLight)) {
+		else if (node instanceof THREE.HemisphereLight && !(node.children.length == 1 && node.children[0] instanceof THREE.DirectionalLight)) {
 			var helper = new HemisphereLightHelper(node)
 			helper.attach(node)
 			this.handleTree.add(helper)
 		}
-		else if (node instanceof THREE.DirectionalLight && !(node.parent instanceof THREE.AmbientLight)) {
+		else if (node instanceof THREE.DirectionalLight && !(node.parent instanceof THREE.HemisphereLight)) {
 			var helper = new DirectionalLightHelper(node)
 			helper.attach(node)
 			this.handleTree.add(helper)
-		}
-		else if (node instanceof THREE.Camera) {
-			this.cameraHelper.attach(node)
-			this.handleTree.add(this.cameraHelper)
 		}
 	}
 }

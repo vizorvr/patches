@@ -83,7 +83,7 @@
 		if (slot.dynamic) {
 			var parent = this.scene.children[0].children[slot.index]
 
-			if (data) {
+			if (data && (slot.array && data.length > 0 && data[0])) {
 				if (slot.array) {
 					if (parent.children.length === data.length) {
 						var allUidsMatch = true

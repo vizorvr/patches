@@ -28,7 +28,7 @@ SceneLightingHelper.prototype = Object.create( AbstractWorldEditorHelperObject.p
 SceneLightingHelper.prototype.attach = function(referenceObj) {
 	this.referenceObj = referenceObj
 
-	this.matrix = this.referenceObj.children[1].matrixWorld
+	this.matrix = this.referenceObj.children[0].matrixWorld
 
 	this.backReference = this.referenceObj.backReference
 	this.helperObjectBackReference = this.referenceObj

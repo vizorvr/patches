@@ -120,12 +120,13 @@
         "Cubemap Material": "three_cube_material",
         "Material Extractor": "three_material_extractor",
 
-        "Scene Lighting": "scene_lighting",
+        "Experimental: Scene Lighting": "scene_lighting",
         "Point Light": "three_point_light",
         "Spot Light": "three_spot_light",
 
         "Deprecated: Hemisphere Light": "three_hemisphere_light",
-        "Deprecated: Directional Light": "three_directional_light"
+        "Deprecated: Directional Light": "three_directional_light",
+        "Deprecated: Ambient Light": "three_ambient_light"
     },
 
     "INTERACTION STUFF": {
