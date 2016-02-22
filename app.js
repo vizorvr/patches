@@ -251,8 +251,6 @@ r.connect({
 	if (err)
 		throw err
 
-	console.log('RethinkDB connected')
-
 	rethinkConnection = conn
 
 	mongoose.connect(secrets.db);
@@ -287,8 +285,12 @@ r.connect({
 		var model = path.split('/')[1]
 		var cacheControl = 'public'
 
-		if (model === 'graph')
-			cacheControl = 'public, must-revalidate'
+		switch(model) {
+			case 'dist':
+			case 'graph':
+				cacheControl = 'public, must-revalidate'
+				break;
+		}
 
 		gfs.stat(path)
 		.then(function(stat) {
@@ -345,13 +347,11 @@ r.connect({
 		.catch(next)
 	});
 
-	app.get(/^\/dl\/.*/, function(req, res, next)
-	{
-		var path = req.path.replace(/^\/dl\/data/, '');
+	app.get(/^\/dl\/.*/, function(req, res, next) {
+		var path = req.path.replace(/^\/dl\/data/, '')
 
 		gfs.stat(path)
-		.then(function(stat)
-		{
+		.then(function(stat) {
 			if (!stat)
 				return res.status(404).send();
 
