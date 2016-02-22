@@ -81,7 +81,7 @@ var vizor360 = new function() {
 
 		var host = window.location.hostname
 		if (window.location.port) {
-			host = host + (window.location.port === 80) ? '' : (':' + window.location.port)
+			host = host + ((window.location.port === 80) ? '' : (':' + window.location.port))
 		}
 		
 		var baseUrl = 'http://' + host
