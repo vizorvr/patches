@@ -438,10 +438,12 @@ r.connect({
 		case '360.vizor.io':
 			// 360 photo site
 			app.get('/', threesixtyController.index);
+			app.get('/featured', threesixtyController.featured)
 		default:
 			// default site
 			app.get('/', homeController.index);
 			app.get('/threesixty', threesixtyController.index);
+			app.get('/threesixty/featured', threesixtyController.featured);
 			break;
 	}
 
