@@ -129,7 +129,8 @@ describe('Graph', function() {
 	})
 
 	it('should save graph version', function(done) {
-		var path = '/'+username+'/'+rand()+'.json'
+		var name = 'button-'+rand()
+		var path = '/'+username+'/'+name+'.json'
 
 		sendGraph(name, function(err, res) {
 			if (err) return done(err)
