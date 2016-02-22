@@ -68,12 +68,10 @@ describe('Graph', function() {
 				url: res.body.url,
 				path: res.body.path
 			}
-  			expect({
-				name: path,
-				owner: 'v',
-				path: expectedPath,
-				url: '/data/graph'+expectedPath+'.json'
-			}).to.deep.equal(json)
+			expect(json.name).to.not.equal(path)
+			expect(json.owner).to.equal('v')
+			expect(json.path).to.equal('/v/'+json.name)
+			expect(json.url).to.equal('/data/graph/v/'+json.name+'.json')
 			done()
 		})
 	})
