@@ -35,6 +35,7 @@ body.bPlayer {
   &.assetsLoaded .loadingonly {display: none}
   &.playing .noplaying,
   &.paused .nopaused,
+  &.stopped .nopaused,
   &.autoplay .noautoplay
   {display: none}
 
@@ -153,7 +154,9 @@ button#backfromvr {
   }
 }
 
-body.bPlayer.paused header {
+body.bPlayer.paused header,
+body.bPlayer.stopped header
+{
   h2#graph_heading, div.controls button {
 	text-align: center;
 	margin: 0 auto;

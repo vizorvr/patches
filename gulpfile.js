@@ -161,7 +161,6 @@ gulp.task('less', ['clean:less'], function() {
 
 gulp.task('less360', ['clean:less360'], function() {
 	gulp.src(paths.less360)
-	.pipe(slash())
     .pipe(less({
 		paths: [ path.join(__dirname, 'less') ]
     }).on('error', errorHandler))

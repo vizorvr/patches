@@ -4044,6 +4044,7 @@ body.bPlayer.assetsLoaded .loadingonly {
 }
 body.bPlayer.playing .noplaying,
 body.bPlayer.paused .nopaused,
+body.bPlayer.stopped .nopaused,
 body.bPlayer.autoplay .noautoplay {
   display: none;
 }
@@ -4162,7 +4163,9 @@ button#backfromvr:active {
   margin-left: -5px;
 }
 body.bPlayer.paused header h2#graph_heading,
-body.bPlayer.paused header div.controls button {
+body.bPlayer.stopped header h2#graph_heading,
+body.bPlayer.paused header div.controls button,
+body.bPlayer.stopped header div.controls button {
   text-align: center;
   margin: 0 auto;
 }
