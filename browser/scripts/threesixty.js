@@ -31,11 +31,13 @@ var vizor360 = new function() {
 			message: message,
 			code: details
 		})
-		console.log('error!! ' + message + ' ' + details)
+
+		console.error(message, details)
+
 		window.Vizor.disableHeaderClick = true
+
 		var bb = VizorUI.modalOpen(html, heading, 'error doselect_all', true, {
-			callback: function(){
-				console.log('modal dismissed')
+			callback: function() {
 			}
 		})
 	}
@@ -56,11 +58,7 @@ var vizor360 = new function() {
 
 	// STEP 4
 	this.loadGraphAndPlay = function(asset, data) {
-		console.log('asset', asset)
-		console.log('data', data)
-
 		if (!asset) {
-			console.log("No asset found!");
 			return;
 		}
 
@@ -96,8 +94,6 @@ var vizor360 = new function() {
 	this.uploadGraph = function(graphData, callback) {
 		var p = when.defer()
 
-		console.log("uploading graphData");
-		console.dir(graphData);
 		clearBodyClass()
 		$body.addClass('uploading')
 
@@ -106,11 +102,10 @@ var vizor360 = new function() {
 			type: 'POST',
 			data: graphData,
 			dataType: 'json',
-			success: function(response){
+			success: function(response) {
 				callback(response)
 				p.resolve()
 			},
-
 			error: function(err) {
 				var errMsg = err.responseJSON ? err.responseJSON.message : err.status;
 				alert('Sorry, an error occurred while uploading the file.')
@@ -130,17 +125,6 @@ var vizor360 = new function() {
 		var dfd = when.defer()
 
 		var templateUrl = "/presets/_template-360-photo.json";
-
-		function genGraphUid() {
-			var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-			var uid = '';
-
-			for (var i=0; i < 12; i++) {
-				uid += keys[Math.floor(Math.random() * keys.length)];
-			}
-
-			return uid;
-		}
 
 		$.ajax({
 			url: templateUrl,
@@ -166,7 +150,7 @@ var vizor360 = new function() {
 
 				// Found the url, generate the graph data and upload
 				if (urlReplaced === true) {
-					var name = genGraphUid();
+					var name = 'n/a'
 					var data = {
 						'path': name,
 						'graph': JSON.stringify(graph)
@@ -435,7 +419,6 @@ var vizor360 = new function() {
 
 		$body = $('body')
 		$progress = $('#progressbar')
-		console.log('360 init')
 
 		$body.addClass('firsttime')
 

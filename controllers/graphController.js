@@ -15,6 +15,14 @@ var User = require('../models/user')
 
 var EditLog = require('../models/editLog')
 
+function makeUid() {
+	var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
+	var uid = ''
+	for (var i=0; i < 12; i++) {
+		uid += keys[Math.floor(Math.random() * keys.length)]
+	}
+	return uid
+}
 
 function prettyPrintGraphInfo(graph) {
 	// Get displayed values for graph and owner
@@ -261,8 +269,7 @@ GraphController.prototype.canWriteUpload = function(req, res, next)
 } 
 
 // POST /graph with file upload
-GraphController.prototype.upload = function(req, res, next)
-{
+GraphController.prototype.upload = function(req, res, next) {
 	var that = this;
 	var file = req.files.file;
 
@@ -272,60 +279,22 @@ GraphController.prototype.upload = function(req, res, next)
 	var path = this._makePath(req, file.path);
 	var gridFsPath = '/graph'+path+'.json';
 
-	// move the uploaded file into GridFS / local FS
-	return that._fs.move(file.path, gridFsPath)
-	.then(function(url)
-	{
-		return that._service.findByPath(path)
-		.then(function(model)
-		{
-			if (!model)
-				model = { path: path };
+	return this._service.canWrite(req.user, path)
+	.then(function(can) {
+		if (!can) {
+			return res.status(403)
+				.json({message: 'Sorry, permission denied'});
+		}
 
-			model.url = url;
-
-			// save/update the model
-			return that._service.save(model, req.user)
-			.then(function(asset)
-			{
-				res.json(asset);
-			});
-		});
-	})
-	.catch(function(err)
-	{
-		return next(err);
-	});
-};
-
-// POST /graph/v with file upload, anonymous
-GraphController.prototype.uploadAnonymous = function(req, res, next) {
-	var that = this;
-	var file = req.files.file;
-
-	if (fsPath.extname(file.path) !== '.json')
-		return next(new Error('The upload is not a graph JSON! Are you sure you are trying to upload a graph?'))
-
-	// Fake the user
-	req.user = {
-		username: 'v'
-	}
-
-	var path = this._makePath(req, file.path);
-	var gridFsPath = '/graph'+path+'.json';
-
-	// move the uploaded file into GridFS / local FS
-	return that._fs.move(file.path, gridFsPath)
-	.then(function(url) {
-		return that._fs.readString(gridFsPath)
-		.then(function(stat) {
+		// move the uploaded file into GridFS / local FS
+		return that._fs.move(file.path, gridFsPath)
+		.then(function(url) {
 			return that._service.findByPath(path)
 			.then(function(model) {
 				if (!model)
-					model = { path: path }
+					model = { path: path };
 
 				model.url = url;
-				model.stat = stat;
 
 				// save/update the model
 				return that._service.save(model, req.user)
@@ -335,11 +304,47 @@ GraphController.prototype.uploadAnonymous = function(req, res, next) {
 			});
 		})
 	})
-	.catch(function(err)
-	{
+	.catch(function(err) {
 		return next(err);
 	});
 };
+
+// POST /graph
+GraphController.prototype.saveAnonymous = function(req, res, next) {
+	var that = this
+	var anonReq = { user: { username: 'v' } }
+	var path = this._makePath(anonReq, makeUid())
+
+	var gridFsGraphPath = '/graph'+path+'.json'
+	var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
+
+	return that._fs.writeString(gridFsGraphPath, req.body.graph)
+	.then(function() {
+		return that.graphAnalyser.analyseJson(req.body.graph)
+	})
+	.then(function(analysis) {
+		var url = that._fs.url(gridFsGraphPath);
+
+		var model = {
+			path: path,
+			url: url,
+			hasAudio: false,
+			stat: {
+				size: analysis.size,
+				numAssets: analysis.numAssets
+			}
+		}
+
+		return that._service.save(model, anonReq.user)
+		.then(function(asset) {
+			res.json(asset)
+		})
+		.catch(function(err) {
+			next(err)
+		})
+	})
+	.catch(next)
+}
 
 // POST /graph
 GraphController.prototype.save = function(req, res, next) {
