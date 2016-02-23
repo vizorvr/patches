@@ -322,17 +322,17 @@ GraphController.prototype.saveAnonymous = function(req, res, next) {
 	var that = this
 	var anonReq = { user: { username: 'v' } }
 
-	return that.graphAnalyser.analyseJson(req.body.graph)
+	return this.graphAnalyser.analyseJson(req.body.graph)
 	.then(function(analysis) {
 		if (!analysis.numNodes) {
 			return res.status(400)
 				.json({ message: 'Invalid data' })
 		}
 
-		return this.serialNumber.next('anonymousGraph')
+		return that.serialNumber.next('anonymousGraph')
 		.then(function(serial) {
 			var uid = makeHashid(serial)
-			var path = this._makePath(anonReq, uid)
+			var path = that._makePath(anonReq, uid)
 
 			var gridFsGraphPath = '/graph'+path+'.json'
 			var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
