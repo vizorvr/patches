@@ -180,7 +180,6 @@ AssetController.prototype.canWriteUpload = function(req, res, next) {
 } 
 
 AssetController.prototype.canWriteUploadAnonymous = function(req, res, next) {
-	console.log('canWriteUploadAnonymous')
 	var that = this;
 
 	if (!req.files)

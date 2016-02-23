@@ -34,7 +34,6 @@ ImageController.prototype.upload = function(req, res, next) {
 }
 
 ImageController.prototype.uploadAnonymous = function(req, res, next) {
-	console.log('uploadAnonymous')
 	var that = this
 
 	var file = req.files.file
