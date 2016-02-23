@@ -191,7 +191,7 @@ function renderPlayer(graph, req, res, options) {
 	version = version.split('.').slice(0,2).join('.')
 
 	res.render('graph/show', {
-		layout: 'player',
+		layout: res.locals.layout || 'player',
 		playerVersion: version,
 		autoplay: false,
 		graph: graph,
