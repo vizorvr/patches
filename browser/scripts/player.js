@@ -173,6 +173,14 @@ Player.prototype.remove_parameter_listener = function(id, listener) {
 Player.prototype.loadAndPlay = function(url, forcePlay) {
 	var dfd = when.defer()
 
+	// if there's an existing anim frame request, cancel it
+	// so that nothing gets rendered until we ask to play() again after
+	// loading
+	if(this.interval !== null) {
+		cancelAnimFrame(this.interval)
+		this.interval = null
+	}
+
 	if (E2.core.audioContext) {
 		// iOS requires a user interaction to play sound
 		// so as this is called on touchstart,
