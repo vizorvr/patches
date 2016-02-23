@@ -43,6 +43,14 @@ var vizor360 = new function() {
 	}
 
 	var cancelledUploading = function() {
+		// remove fake progress bar
+		if (that.fakeProgressBarId) {
+			clearTimeout(that.fakeProgressBarId)
+		}
+
+		// reset progress bar
+		updateProgressBar(0);
+
 		clearBodyClass()
 		playerUI.selectStage('stage')
 		E2.app.player.play()
@@ -205,14 +213,19 @@ var vizor360 = new function() {
 		var fakeInc = (fakeMax - fakeMin) / 1000
 		var fakeInterval = 1000/60
 
+		var that = this;
+
 		function fakeProgressBar() {
 			var currVal = $progress.val()
 			if (currVal < fakeMax) {
 				updateProgressBar(currVal + fakeInc)
-				setTimeout(fakeProgressBar, fakeInterval)
+				that.fakeProgressBarId = setTimeout(fakeProgressBar, fakeInterval)
+			}
+			else if (that.fakeProgressBarId) {
+				clearTimeout(that.fakeProgressBarId)
 			}
 		}
-		
+
 		$.ajax({
 			url: '/uploadAnonymous/' + modelName,
 			type: 'POST',
@@ -239,7 +252,7 @@ var vizor360 = new function() {
 
 							// we've gone over 100 already on the upload, start the fake progress
 							if (percent >= fakeMin) {
-								setTimeout(fakeProgressBar, fakeInterval)
+								that.fakeProgressBarId = setTimeout(fakeProgressBar, fakeInterval)
 							}
 						}
 					}, false);
@@ -258,6 +271,7 @@ var vizor360 = new function() {
 
 			error: function(err) {
 				var errMsg = err.responseJSON ? err.responseJSON.message : err.status
+				cancelledUploading();
 				dfd.reject('Could not upload file', errMsg)
 			}
 		})
