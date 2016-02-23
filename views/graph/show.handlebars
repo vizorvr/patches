@@ -248,7 +248,6 @@ var playerUI = new function() {
     }
 
     this.init = function () {
-
         if (!window.Vizor) {
             window.Vizor = {
                 hideWebVRButton:    false,
@@ -256,6 +255,7 @@ var playerUI = new function() {
             }
         }
 
+        if (!window.WebVRConfig) window.WebVRConfig = {}
         WebVRConfig.getContainerMeta = function() {
             var el = document.getElementById('stage')
             var c = document.getElementById('webgl-canvas')

@@ -26,16 +26,16 @@
 		<script src="/vendor/bootbox.min.js"></script>
         <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
 		<script src="/scripts/ui-site.js"></script>
+        <script type="text/javascript" src="/data/dist/{{playerVersion}}/player.min.js"></script>
+        <script>
+        (function(){
+            {{{templateCache}}}
+        }.apply(window))
+        </script>
         <script>{{> mixpanel}}</script>
 	    <script>{{> ga}}</script>
 	</head>
 	<body class="bPlayer noselect_all dark">
-		<script type="text/javascript" src="/data/dist/{{playerVersion}}/player.min.js"></script>
-		<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                {{{templateCache}}}
-            }.bind(window))
-        </script>
         {{> srv/siteSvgSprite }}
         <div class="wrap clearfix" id="playerpage">
 		    {{{body}}}
