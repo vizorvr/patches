@@ -439,6 +439,10 @@ r.connect({
 			// 360 photo site
 			app.get('/', threesixtyController.index);
 			app.get('/featured', threesixtyController.featured)
+			app.get('/v/:graph', function(req, res, next) {
+				res.locals.layout = 'threesixty'
+				next()
+			})
 		default:
 			// default site
 			app.get('/', homeController.index);
