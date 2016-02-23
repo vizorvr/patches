@@ -69,6 +69,21 @@ AssetService.prototype.canWrite = function(user, path)
 	});
 };
 
+AssetService.prototype.canWriteAnonymous = function(path)
+{
+	return this.findByPath(path)
+	.then(function(asset)
+	{
+		// Asset is null, doesn't exist, we can write
+		if (!asset) {
+			return true;
+		}
+
+		// Asset already found, can't overwrite
+		return false;
+	});
+};
+
 AssetService.prototype.findOne = function(q)
 {
 	var dfd = when.defer();

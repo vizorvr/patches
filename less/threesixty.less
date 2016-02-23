@@ -1,0 +1,333 @@
+body.b360 {
+
+  background: #999;
+  margin:0;
+  padding:0;
+  height: 100%;
+  width: 100%;
+  min-height: 100%;
+
+  &.deviceDesktop button#entervr {
+	display: block;	// set to .nodesktop otherwise
+  }
+
+  button:active, button:focus {
+	outline: 0;
+  }
+
+  &.assetsLoaded.playing #progressbar {
+	display: none;
+  }
+
+  div.modal.viewinvr .modal-dialog .modal-content .modal-body {
+	button.bootbox-close-button {
+	  top: 4px;
+	  right: 4px;
+	  color: transparent;
+	  svg, use {
+		fill: rgba(255,255,255,0.4);
+	  }
+	}
+  }
+
+  div.modal-backdrop.fade.in {
+	opacity: 0;
+	filter: none;
+	display: none;
+  }
+  .bootbox.modal:before {
+	background-color: transparent;
+  }
+
+  div.modal-dialog {
+	.modal-content {
+	  border: 0;
+	  box-shadow: none;
+	  -webkit-box-shadow: none;
+	  -moz-box-shadow: none;
+	}
+	.modal-body {
+	  font-family: @font-family-sans-serif;
+	  -webkit-font-smoothing: subpixel-antialiased;
+	  background: rgba(38, 44, 61, 0.9);
+	}
+  }
+  div.modal.viewinvr .modal-dialog {
+	.modal-content {
+	  .modal-body {
+		font-size: 1.03rem;
+		background: rgba(38, 44, 61, 0.75);
+		.bootbox-body {
+		  padding: 10px 5px 15px 5px;
+		  p {
+			font-weight: 300;
+			letter-spacing: 0.75px;
+			margin-bottom: 10px;
+		  }
+		  a {
+			word-wrap: break-word;
+			font-weight: 500;
+			font-size: 120%;
+		  }
+		}
+	  }
+	}
+  }
+  div.modal.error .modal-dialog {
+	width: 600px;
+	.modal-body .bootbox-body {
+	  text-align: left;
+	  code {
+		max-width: 600px;
+		word-wrap: break-word;
+		font-size: 87.5%;
+		font-weight:normal;
+		font-family: @font-family-monospace;
+	  }
+	}
+  }
+
+
+
+  &.withPlayerControls, &.modal-open {
+	header {
+	  pointer-events: none;
+	}
+	div.controls {
+	  pointer-events: initial;
+	}
+  }
+
+  #progressbar {
+	position: absolute;
+	top:45%;
+	left:50%;
+	width: 400px;
+	margin-left: -200px;
+  }
+
+  #drop-zone {
+	display: none;
+  }
+  &.dragentered #drop-zone {
+	display: block;
+  }
+  #drop-zone {
+	pointer-events: initial;
+	svg {
+	  @size: 180px;
+	  position: absolute;
+	  top: 45%;
+	  left: 50%;
+	  height: @size;
+	  width: @size;
+	  margin-left: -(@size/2);
+	  margin-top: -(@size/2);
+	}
+  }
+
+  #container360 {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	font-family: @font-family-sans-serif;
+	z-index: 501;
+	color: white;
+	pointer-events: none;
+	#logo360 {
+	  font-weight: 900;
+	  position: absolute;
+	  top: 10px;
+	  left: 20px;
+	  font-size: 32px;
+	  line-height: 1;
+	  a {color: #fff; text-decoration: none; pointer-events: initial;}
+	}
+	#lander-header {
+	  @lander-width: 680px;
+	  font-size: 150%;
+	  line-height: 1;
+	  height: 7.5em;
+	  width: @lander-width;
+	  text-align: center;
+	  position: absolute;
+	  top: 50%;
+	  left: 50%;
+	  margin-left: -(@lander-width/2);
+	  margin-top: -2em;
+	  opacity: 1;
+	  transition: opacity 0.2s;
+	  h2 {
+		margin: 0;
+		font-size: 46px;
+		letter-spacing: -0.5px;
+		font-weight: 700;
+	  }
+	  p {margin:15px auto;}
+	}
+  }
+
+  &.firsttime #lander-header {display: block}
+  #lander-header {display: none}
+
+  #btn-cancel {
+	display: none;
+	position: absolute;
+	left: 50%;
+	top: 45%;
+	margin-left: -20px;
+  }
+
+  #drop-zone svg {
+	pointer-events: none;
+  }
+
+  &.dragentered {
+	header {
+	  pointer-events: none;
+	}
+
+	#container360 #lander-header {
+	  opacity: 0;
+	}
+  }
+
+
+  &.withPlayerControls, &.deviceMobile, &.modal-open {
+	#container360 {pointer-events: none;}
+	#drop-zone {display: none;}
+  }
+
+  &.deviceMobile  {
+	#container360 {
+	  display: none;
+	  pointer-events: none;
+	}
+	#drop-zone {
+	  pointer-events: none;
+	}
+  }
+
+  #drop-zone {
+	position: fixed;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+	height: 100%;
+	z-index: 200;
+	background: rgba(0,0,0,0.3);
+	opacity: 0;
+  }
+  &.dragentered #drop-zone {
+	opacity: 1;
+  }
+
+  #threesixty-image-input {
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	opacity: 0;
+	outline: 0 !important;
+  }
+
+  #playerpage {
+	position: fixed;
+	top:0;
+	left:0;
+	bottom:0;
+	right:0;
+	height: 100%;
+  }
+
+  #playerpage header {
+	position: absolute;
+	top:0px;
+	right:0px;
+	bottom: 0;
+	left: 0;
+	margin: 0;
+	padding:0;
+	width: auto;
+	height: 100%;
+	border-radius: 0;
+	background: rgba(0,0,0,0.3);
+	z-index: 300;
+	div.controls {
+	  position: absolute;
+	  top: 10px;
+	  right: 50px;
+	  width: 260px;
+	  bottom: auto;
+	  left: auto;
+	}
+	h2#graph_heading {
+	  display: none;
+	}
+	button.svg {
+	  background: none;
+	  position: relative;
+	  span {display: none; position: absolute; bottom: 5px; left: 0; right: 0; height: 1em;}
+	  svg {
+		stroke-width: 1.5px;
+		stroke: white;
+		fill: none;
+		opacity: 0.9;
+	  }
+	  &:hover {
+		color: white;
+		svg {
+		  stroke: white;
+		  use {
+			stroke: white;
+		  }
+		}
+	  }
+	}
+  }
+
+  &.deviceMobile #playerpage header div.controls {
+	right: 20px;
+	width: 150px;
+  }
+
+}
+
+body.deviceDesktop #playerpage header div.controls button {
+  &:hover span { display: inline; }
+}
+
+
+body #playerpage header div.controls {
+  button {
+	transition: bottom;
+	transition-duration: 0.2s;
+	transition-delay: 0s;
+  }
+}
+
+body.b360.withPlayerControls #playerpage header div.controls {
+  button {
+	bottom: 0;
+	&:nth-last-of-type(2) {
+	  transition-delay: 0.05s;
+	}
+	&:nth-last-of-type(3) {
+	  transition-delay: 0.1s;
+	}
+	&:nth-last-of-type(4) {
+	  transition-delay: 0.15s;
+	}
+	&:nth-last-of-type(5) {
+	  transition-delay: 0.2s;
+	}
+  }
+}
+
+body.b360, body.b360.uploading {
+  #playerpage header div.controls button {
+	bottom: 120px;
+  }
+}

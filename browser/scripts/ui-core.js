@@ -352,8 +352,7 @@ VizorUI.prototype.isUploading = function() {
 }
 VizorUI.prototype.isModalOpen = function() {
 	// was: return ($("body").data('bs.modal') || {}).isShown;
-	var $modal = jQuery('div.bootbox.modal');
-	return $modal.hasClass('in');
+	return siteUI.isModalOpen()
 }
 
 /**** EVENT HANDLERS ****/

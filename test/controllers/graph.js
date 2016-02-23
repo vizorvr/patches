@@ -63,5 +63,5 @@ describe('GraphController', function() {
 		}, done)
 	});
 
-})
+});
 

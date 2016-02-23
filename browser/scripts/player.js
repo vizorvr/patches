@@ -4,7 +4,8 @@ function Player() {
 	this.state = {
 		STOPPED: 0,
 		PLAYING: 1,
-		PAUSED: 2
+		PAUSED: 2,
+		LOADING: 3
 	}
 
 	this.app = E2.app
@@ -13,7 +14,19 @@ function Player() {
 	this.interval = null
 	this.abs_time = 0.0
 	this.last_time = (new Date()).getTime()
-	this.current_state = this.state.STOPPED
+
+	this._current_state = this.state.STOPPED
+	Object.defineProperty(this, 'current_state', {
+		get : function() {
+			return this._current_state
+		},
+		set : function(newState) {
+			var oldState = this._current_state
+			this._current_state = newState
+			E2.core.emit('player:stateChanged', newState, oldState)
+		}
+	})
+
 	this.frames = 0
 	this.scheduled_stop = null
 	
@@ -132,6 +145,7 @@ Player.prototype.load_from_url = function(url, cb) {
 			that.load_from_json(json, cb)
 		}
 	})
+	E2.core.emit('player:loading')
 }
 
 Player.prototype.getVariableValue = function(id) {
@@ -158,6 +172,14 @@ Player.prototype.remove_parameter_listener = function(id, listener) {
 
 Player.prototype.loadAndPlay = function(url, forcePlay) {
 	var dfd = when.defer()
+
+	// if there's an existing anim frame request, cancel it
+	// so that nothing gets rendered until we ask to play() again after
+	// loading
+	if(this.interval !== null) {
+		cancelAnimFrame(this.interval)
+		this.interval = null
+	}
 
 	if (E2.core.audioContext) {
 		// iOS requires a user interaction to play sound
