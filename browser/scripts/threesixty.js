@@ -77,14 +77,8 @@ var vizor360 = new function() {
 			return false
 		})
 
-		var host = window.location.hostname
-		if (window.location.port) {
-			host = host + ((window.location.port === 80) ? '' : (':' + window.location.port))
-		}
-		
-		var baseUrl = 'http://' + host
-		playerUI.data.shareURL = baseUrl + asset.path
-		playerUI.data.embedSrc = baseUrl + 'embed/' + asset.path
+		Vizor.shareURL = window.location.origin  + asset.path
+		Vizor.embedSrc = window.location.origin  + 'embed/' + asset.path
 		playerUI.headerEnableAutoFadeout()
 		history.pushState({}, '', asset.path)
 		E2.app.player.loadAndPlay(asset.url, true);
@@ -121,8 +115,6 @@ var vizor360 = new function() {
 	// Fetch the 360 template from our server and publish a graph with
 	// image url from passed in url
 	this.publishTemplateWithUrl = function(imageUrl) {
-		console.log("publishing stereo template with imageUrl = " + imageUrl);
-
 		var dfd = when.defer()
 
 		var templateUrl = "/presets/_template-360-photo.json";
@@ -227,7 +219,6 @@ var vizor360 = new function() {
 					xhr.upload.addEventListener('loadstart', function(evt) {
 						clearBodyClass()
 						$body.addClass('uploading')
-						console.log("load started");
 					}, false);
 
 					xhr.upload.addEventListener('progress', function(evt) {
@@ -245,7 +236,6 @@ var vizor360 = new function() {
 					}, false);
 
 					xhr.upload.addEventListener('load', function(evt) {
-						console.log("load finished");
 						updateProgressBar(50);
 					}, false);
 
@@ -278,18 +268,14 @@ var vizor360 = new function() {
 		e.stopPropagation();
 		e.preventDefault();
 
-		console.log("fileSelectHandler");
-
 		// Either read from the dataTransfer (when drag and dropped)
 		// or from the target.files (when file browsed)
 
-		console.log(e)
 
 		var file_path = (e.dataTransfer) ? e.dataTransfer.files : e.target.files
 		if (! file_path && (file_path.length>0)) return
 		file_path = file_path[0]
 
-		console.log(file_path)
 
 		if (file_path && file_path.type.match('image.*') === null) {
 			cancelledUploading()
@@ -321,7 +307,6 @@ var vizor360 = new function() {
 
 		$body.addClass('dragentered')
 
-		console.log('360 dragenter', e.target)
 		playerUI.headerFadeOut(100)
 
 		e.stopPropagation();
@@ -332,8 +317,6 @@ var vizor360 = new function() {
 	}
 
 	this.dragLeaveHandler = function(e) {
-		console.log('360 dragleave', e.target)
-
 		e.stopPropagation();
 		e.preventDefault();
 		if(e.target === lastDragTarget) {
@@ -368,8 +351,6 @@ var vizor360 = new function() {
 		window.addEventListener("dragleave", dragLeaveHandler);
 
 		console.log('360 attached')
-
-
 	}
 
 	this.addUploadButton = function() {
@@ -427,15 +408,13 @@ var vizor360 = new function() {
 		that.addCancelButton()
 		that.attach()
 
-		window.Vizor = {
-			hideVRbutton : true,
-			autoplay: true
-		}
+		if (!window.Vizor) window.Vizor = {}
+		window.Vizor.hideVRbutton = true
+		window.Vizor.autoplay = true
 		
 		window.Vizor.onProgress = function(pct) {
 			var factor = 100 / (100 - that.minProgress)
 			var ret = that.minProgress + pct / factor;
-			console.log('relative progress ' + pct + ' = ' + ret)
 			playerUI.onProgress(ret)
 		}
 
@@ -448,9 +427,9 @@ var vizor360 = new function() {
 			initial: true
 		}, null)
 
-		playerUI.data.shareURL = null
+		window.Vizor.shareURL = null
 		playerUI.headerDisableAutoFadeout()
 	}
 }
 
-jQuery('document').ready(vizor360.init)
+document.addEventListener('DOMContentLoaded', vizor360.init)

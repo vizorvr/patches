@@ -8,7 +8,7 @@ window.playVizorFile = function playVizorFile() {
 
 function onCoreReady() {
 	var $canvas = $('canvas[data-graph-url]')
-	var autoplay = window.Vizor.autoplay
+	var autoplay = (window.Vizor) ? window.Vizor.autoplay : true
 
 	E2.app.player.stop()
 	E2.app.player.on_update()
