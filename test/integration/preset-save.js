@@ -39,13 +39,14 @@ describe('Preset', function() {
 		.end(cb)
 	}
 
-	before(function(done)
-	{
-		agent
-		.post('/signup')
-		.send(deets)
-		.expect(302)
-		.end(done)
+	before(function(done) {
+		app.events.on('ready', function() {
+			agent
+			.post('/signup')
+			.send(deets)
+			.expect(302)
+			.end(done)
+		})
 	})
 
 	it('should use the expected name, owner, path, and url', function(done) {
