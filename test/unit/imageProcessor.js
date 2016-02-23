@@ -104,7 +104,7 @@ describe('ImageProcessor', function() {
 			var fplen = '/files/image/abc83484eec1f6e0e597147c47978488ef39e795.png'.length
 			assert.equal(data.original.path, '/images/te-2rb.jpg')
 			assert.equal(data.original.url.length, fplen)
-			assert.equal(data.scaled.path, '/images/te-2rb-scaled.png')
+			assert.equal(data.scaled.path, '/images/te-2rb-scaled.jpg')
 			assert.equal(data.scaled.url.length, fplen)
 			assert.equal(data.scaledThumbnail.path, '/images/te-2rb-scaled-thumb.png')
 			assert.equal(data.scaledThumbnail.url.length, fplen)
