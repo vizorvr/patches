@@ -4348,10 +4348,53 @@ body.b360 button:focus {
 body.b360.assetsLoaded.playing #progressbar {
   display: none;
 }
-body.b360 div.modal.error .modal-dialog {
-  width: 600px;
+body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body button.bootbox-close-button {
+  top: 4px;
+  right: 4px;
+  color: transparent;
+}
+body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body button.bootbox-close-button svg,
+body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body button.bootbox-close-button use {
+  fill: rgba(255, 255, 255, 0.4);
+}
+body.b360 div.modal-backdrop.fade.in {
+  opacity: 0;
+  filter: none;
+  display: none;
+}
+body.b360 .bootbox.modal:before {
+  background-color: transparent;
+}
+body.b360 div.modal-dialog .modal-content {
+  border: 0;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+}
+body.b360 div.modal-dialog .modal-body {
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: subpixel-antialiased;
+  background: rgba(38, 44, 61, 0.9);
+}
+body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body {
+  font-size: 1.03rem;
+  background: rgba(38, 44, 61, 0.75);
+}
+body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body .bootbox-body {
+  padding: 10px 5px 15px 5px;
+}
+body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body .bootbox-body p {
+  font-weight: 300;
+  letter-spacing: 0.75px;
+  margin-bottom: 10px;
+}
+body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body .bootbox-body a {
+  word-wrap: break-word;
+  font-weight: 500;
+  font-size: 120%;
+}
+body.b360 div.modal.error .modal-dialog {
+  width: 600px;
 }
 body.b360 div.modal.error .modal-dialog .modal-body .bootbox-body {
   text-align: left;
@@ -4377,6 +4420,12 @@ body.b360 #progressbar {
   left: 50%;
   width: 400px;
   margin-left: -200px;
+}
+body.b360 #drop-zone {
+  display: none;
+}
+body.b360.dragentered #drop-zone {
+  display: block;
 }
 body.b360 #drop-zone {
   pointer-events: initial;
@@ -4516,7 +4565,7 @@ body.b360 #playerpage header {
   width: auto;
   height: 100%;
   border-radius: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.3);
   z-index: 300;
 }
 body.b360 #playerpage header div.controls {
@@ -4564,36 +4613,27 @@ body.b360.deviceMobile #playerpage header div.controls {
 body.deviceDesktop #playerpage header div.controls button:hover span {
   display: inline;
 }
-/*
-body #playerpage header div.controls {
-  button {
-	transition: bottom;
-	transition-duration: 0.2s;
-	transition-delay: 0s;
-  }
+body #playerpage header div.controls button {
+  transition: bottom;
+  transition-duration: 0.2s;
+  transition-delay: 0s;
 }
-
-body.b360.withPlayerControls #playerpage header div.controls {
-  button {
-	bottom: 0;
-	&:nth-last-of-type(2) {
-	  transition-delay: 0.05s;
-	}
-	&:nth-last-of-type(3) {
-	  transition-delay: 0.1s;
-	}
-	&:nth-last-of-type(4) {
-	  transition-delay: 0.15s;
-	}
-	&:nth-last-of-type(5) {
-	  transition-delay: 0.2s;
-	}
-  }
+body.b360.withPlayerControls #playerpage header div.controls button {
+  bottom: 0;
 }
-
-body.b360 #playerpage header div.controls, body.b360.uploading #playerpage header div.controls {
-  button {
-	bottom: 120px;
-  }
+body.b360.withPlayerControls #playerpage header div.controls button:nth-last-of-type(2) {
+  transition-delay: 0.05s;
 }
-*/
+body.b360.withPlayerControls #playerpage header div.controls button:nth-last-of-type(3) {
+  transition-delay: 0.1s;
+}
+body.b360.withPlayerControls #playerpage header div.controls button:nth-last-of-type(4) {
+  transition-delay: 0.15s;
+}
+body.b360.withPlayerControls #playerpage header div.controls button:nth-last-of-type(5) {
+  transition-delay: 0.2s;
+}
+body.b360 #playerpage header div.controls button,
+body.b360.uploading #playerpage header div.controls button {
+  bottom: 120px;
+}
