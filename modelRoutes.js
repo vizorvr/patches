@@ -145,7 +145,7 @@ function modelRoutes(
 				// Rename the file to a random string
 				var randomStr = makeRandomString(12);
 				var fileExt = path.extname(filename);
-				var newName = path.join(randomStr, fileExt);
+				var newName = randomStr + fileExt;
 
 				return newName;
 			}

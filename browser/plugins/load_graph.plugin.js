@@ -57,6 +57,6 @@ LoadGraph.prototype.update_input = function(slot, data) {
 			goToGraph()
 			break;
 	}
-}	
+}
 
 })()
