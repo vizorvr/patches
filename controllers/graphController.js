@@ -11,8 +11,10 @@ var PreviewImageProcessor = require('../lib/previewImageProcessor');
 var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
 
 var User = require('../models/user')
-
 var EditLog = require('../models/editLog')
+
+var fs = require('fs')
+var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 
 function makeRandomPath() {
 	var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
@@ -176,6 +178,27 @@ GraphController.prototype.latest = function(req, res) {
 	});
 }
 
+function renderPlayer(graph, req, res, options) {
+	graph = prettyPrintGraphInfo(graph)
+
+	// which version of player to use?
+	var version = graph.version || packageJson.version
+	version = version.split('.').slice(0,2).join('.')
+
+	res.render('graph/show', {
+		layout: 'player',
+		playerVersion: version,
+		autoplay: false,
+		graph: graph,
+		graphMinUrl: graph.url,
+		graphName: graph.prettyName,
+		graphOwner: graph.prettyOwner,
+		previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
+		previewImageWidth: 1280,
+		previewImageHeight: 720
+	})
+}
+
 // GET /embed/fthr/dunes-world
 GraphController.prototype.embed = function(req, res, next) {
 	this._service.findByPath(req.params.path)
@@ -183,18 +206,8 @@ GraphController.prototype.embed = function(req, res, next) {
 		if (!graph)
 			return next()
 
-		graph = prettyPrintGraphInfo(graph)
-
-		res.render('graph/show', {
-			layout: 'player',
-			autoplay: false,
-			graph: graph,
-			graphMinUrl: graph.url,
-			graphName: graph.prettyName,
-			graphOwner: graph.prettyOwner,
-			previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
-			previewImageWidth: 1280,
-			previewImageHeight: 720
+		return renderPlayer(graph, req, res, {
+			autoplay: false
 		})
 	}).catch(next)
 }
@@ -203,33 +216,21 @@ GraphController.prototype.embed = function(req, res, next) {
 GraphController.prototype.graphLanding = function(req, res, next) {
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
-		if (!graph)
+		if (!graph) 
 			return next()
 
-		graph = prettyPrintGraphInfo(graph)
-		
-		res.render('graph/show', {
-			layout: 'player',
-			graph: graph,
-			graphMinUrl: graph.url,
-			autoplay: true,
-			graphName: graph.prettyName,
-			graphOwner: graph.prettyOwner,
-			previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
-			previewImageWidth: 1280,
-			previewImageHeight: 720
+		return renderPlayer(graph, req, res, {
+			autoplay: true
 		})
 	}).catch(next)
 }
 
 // GET /fthr/dunes-world/graph.json
-GraphController.prototype.stream = function(req, res, next)
-{
+GraphController.prototype.stream = function(req, res, next) {
 	var that = this;
 
 	this._service.findByPath(req.params.path)
-	.then(function(item)
-	{
+	.then(function(item) {
 		that._fs.createReadStream(item.url)
 		.pipe(res)
 		.on('error', next);
@@ -327,7 +328,7 @@ GraphController.prototype.save = function(req, res, next) {
 	.then(function(can) {
 		if (!can) {
 			return res.status(403)
-				.json({message: 'Sorry, permission denied'});
+				.json({ message: 'Sorry, permission denied' })
 		}
 
 		return that._fs.writeString(gridFsGraphPath, req.body.graph)
@@ -379,7 +380,7 @@ GraphController.prototype.save = function(req, res, next) {
 				res.json(asset)
 			})
 			.catch(function(err) {
-				console.error('err', err)
+				next(err)
 			})
 		})
 	})

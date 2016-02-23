@@ -3,6 +3,10 @@ var util = require('util');
 var AssetService = require('./assetService');
 var GraphOptimizer = require('../lib/graphOptimizer');
 
+var fs = require('fs')
+var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
+var currentPlayerVersion = packageJson.version.split('.').slice(0,2).join('.')
+
 function GraphService(assetModel, gfs) {
 	AssetService.call(this);
 	this._model = assetModel;
@@ -10,14 +14,12 @@ function GraphService(assetModel, gfs) {
 };
 util.inherits(GraphService, AssetService);
 
-GraphService.prototype.findByPath = function(path)
-{
+GraphService.prototype.findByPath = function(path) {
 	var parts = path.split('/');
 	return this.findOne({ owner: parts[1], name: parts[2] });
 };
 
-GraphService.prototype.minimalList = function()
-{
+GraphService.prototype.minimalList = function() {
 	var dfd = when.defer();
 	this._model
 		.find()
@@ -34,8 +36,7 @@ GraphService.prototype.minimalList = function()
 	return dfd.promise;
 };
 
-GraphService.prototype.userGraphs = function(username)
-{
+GraphService.prototype.userGraphs = function(username) {
 	var dfd = when.defer();
 	this._model
 		.find({ owner: username })
@@ -77,6 +78,8 @@ GraphService.prototype._save = function(data, user) {
 
 		if (data.hasAudio)
 			asset.hasAudio = data.hasAudio
+
+		data.version = currentPlayerVersion
 
 		var dfd = when.defer();
 

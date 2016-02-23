@@ -1,14 +1,15 @@
- var
-gulp = require('gulp'),
-fs = require('fs'),
-path = require('path'),
-uglify = require('gulp-uglify'),
-concat = require('gulp-concat-util'),
-slash = require('gulp-slash'),
-del = require('del'),
-less = require('gulp-less'),
-preprocess = require('gulp-preprocess'),
-paths = {
+const gulp = require('gulp')
+const fs = require('fs')
+const path = require('path')
+const uglify = require('gulp-uglify')
+const concat = require('gulp-concat-util')
+const del = require('del')
+const less = require('gulp-less')
+const preprocess = require('gulp-preprocess')
+
+const pushPlayerToGrid = require('./tools/pushPlayerToGrid')
+
+var paths = {
 	less: './less/build.less',
 	js: {
 		plugins: './browser/plugins/*.plugin.js',
@@ -111,29 +112,39 @@ gulp.task('clean:js', ['clean:js:player', 'clean:js:engine'])
 
 gulp.task('clean', ['clean:js'])
 
-gulp.task('js:engine', ['clean:js:engine'], function() {
+gulp.task('js:engine', ['clean:js:engine'], function(cb) {
 	gulp.src(paths.js.engine)
 	.pipe(concat.header(';\n'))
 	.pipe(concat('engine.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'dist')))
 	.on('error', errorHandler)
+	.on('end', cb)
 })
 
-gulp.task('js:player', ['clean:js:player', 'js:engine'], function() {
-	gulp.src(paths.js.engine.concat(paths.js.player))
-	.pipe(slash())
-	.pipe(uglify().on('error', errorHandler))
+gulp.task('js:player', ['clean:js:player', 'js:engine'], function(cb) {
+	var playerPipe = gulp.src(paths.js.engine.concat(paths.js.player))
+
+	// only uglify in production
+	if (process.env.NODE_ENV === 'production') {
+		playerPipe
+			.pipe(uglify().on('error', errorHandler))
+	}
+
+	playerPipe
 	.pipe(concat.header(';\n'))
 	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'dist')))
 	.on('error', errorHandler)
+	.on('end', function() {
+		pushPlayerToGrid()
+		.then(cb, cb)
+	})
 })
 
 gulp.task('js', ['js:player'])
 
 gulp.task('less', ['clean:less'], function() {
 	gulp.src(paths.less)
-	.pipe(slash())
     .pipe(less({
 		paths: [ path.join(__dirname, 'less') ]
     }).on('error', errorHandler))

@@ -21,6 +21,7 @@ function bundleEditorScripts() {
 	}
 
 	console.log('Building editor bundle', scriptName)
+
 	// read input html
 	var html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
 

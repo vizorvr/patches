@@ -11,6 +11,9 @@ var expect = require('chai').expect
 var graphFile = __dirname+'/../../browser/data/graphs/default.json'
 var graphData = fs.readFileSync(graphFile).toString('utf8')
 
+var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../../package.json'))
+var currentVersion = packageJson.version.split('.').slice(0,2).join('.')
+
 function rand() {
 	return Math.floor(Math.random() * 10000)
 }
@@ -120,6 +123,41 @@ describe('Graph', function() {
 			{
 				if (err) return done(err)
 				expect(res.body.path).to.equal(expectedPath)
+				done()
+			})
+		})
+	})
+
+	it('should save graph version', function(done) {
+		var name = 'button-'+rand()
+		var path = '/'+username+'/'+name+'.json'
+
+		sendGraph(name, function(err, res) {
+			if (err) return done(err)
+			request(app).get(path)
+			.expect(200).end(function(err, res) {
+				if (err) return done(err)
+				expect(res.body.version).to.equal(currentVersion)
+				done()
+			})
+		})
+	})
+
+	it('should use the player version for the graph', function(done) {
+		var name = 'button-'+rand()
+		var path = '/'+username+'/'+name
+
+		sendGraph(name, function(err, res) {
+			if (err) return done(err)
+			request(app).get(path)
+			.set('Accept', 'text/html')
+			.expect(200).end(function(err, res) {
+				if (err) return done(err)
+
+				expect(res.text
+					.split('/'+currentVersion+'/player.min.js').length)
+					.to.equal(2)
+
 				done()
 			})
 		})
