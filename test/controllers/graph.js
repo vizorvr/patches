@@ -27,7 +27,11 @@ describe('GraphController', function() {
 			},
 			writeString: resolved
 		}
-		ctrl = new GraphController(svc, fs)
+
+		var mongo = {
+			collection: function() {}
+		}
+		ctrl = new GraphController(svc, fs, {}, mongo)
 	})
 
 	it('calls save on graph post', function(done) {
