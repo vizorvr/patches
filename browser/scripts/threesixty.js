@@ -58,7 +58,7 @@ var vizor360 = new function() {
 		return false
 	}
 
-	var err = function(message, details){
+	function errorHandler(message, details){
 		cancelledUploading()
 		that.displayError(message, details)
 	}
@@ -89,6 +89,11 @@ var vizor360 = new function() {
 		Vizor.embedSrc = window.location.origin  + 'embed/' + asset.path
 		playerUI.headerEnableAutoFadeout()
 		history.pushState({}, '', asset.path)
+
+		mixpanel.track('ThreeSixty Loading Graph', {
+			path: asset.path
+		})
+
 		E2.app.player.loadAndPlay(asset.url, true);
 	}
 
@@ -100,18 +105,32 @@ var vizor360 = new function() {
 		clearBodyClass()
 		$body.addClass('uploading')
 
+		mixpanel.track('ThreeSixty Uploading Graph')
+
 		$.ajax({
 			url: '/graph/v',
 			type: 'POST',
 			data: graphData,
 			dataType: 'json',
 			success: function(response) {
+				mixpanel.track('ThreeSixty Uploaded Graph', {
+					path: response.path
+				})
+
 				callback(response)
+
 				p.resolve()
 			},
 			error: function(err) {
-				var errMsg = err.responseJSON ? err.responseJSON.message : err.status;
+				var errMsg = err.responseJSON ? err.responseJSON.message : err.status
+
+				mixpanel.track('ThreeSixty Error Uploading Graph', {
+					type: 'error',
+					error: errMsg
+				})
+
 				alert('Sorry, an error occurred while uploading the file.')
+
 				p.reject('Could not post file', errMsg)
 			}
 		})
@@ -138,6 +157,7 @@ var vizor360 = new function() {
 				// Go through the graph 'nodes' field and find the URL
 				// for the 360 template we are replacing
 				var nodes = graph.root.nodes;
+
 				for (var i=0; i<nodes.length; i++) {
 					var node = nodes[i];
 
@@ -186,7 +206,6 @@ var vizor360 = new function() {
 	this.beforePlay = function() {
 		playerUI.selectStage('stage')
 	}
-
 
 	// STEP 1
 	this.uploadFile = function(file, modelName) {
@@ -262,6 +281,12 @@ var vizor360 = new function() {
 			error: function(err) {
 				var errMsg = err.responseJSON ? err.responseJSON.message : err.status
 				cancelledUploading();
+		
+				mixpanel.track('ThreeSixty Error Uploading', {
+					type: 'error',
+					error: errMsg
+				})
+
 				dfd.reject('Could not upload file', errMsg)
 			}
 		})
@@ -269,14 +294,17 @@ var vizor360 = new function() {
 		return dfd.promise
 	}
 
+	this.fileUploadErrorWrongType = function(filePath) {
+		mixpanel.track('ThreeSixty Error Wrong File Type', {
+			type: 'error',
+			filePath: filePath,
+			fileType: filePath.type
+		})
 
+		errorHandler('File type does not match', 'Accepted file types are .jpg and .jpeg')
 
-
-	this.fileUploadErrorWrongType = function() {
-		err("File type does not match", "Accepted file types are .jpg and .jpeg")
 		return false
 	}
-
 
 	this.fileSelectHandler = function(e) {
 		e.stopPropagation();
@@ -285,23 +313,34 @@ var vizor360 = new function() {
 		// Either read from the dataTransfer (when drag and dropped)
 		// or from the target.files (when file browsed)
 
+		var filePath = (e.dataTransfer) ? e.dataTransfer.files : e.target.files
 
-		var file_path = (e.dataTransfer) ? e.dataTransfer.files : e.target.files
-		if (! file_path && (file_path.length>0)) return
-		file_path = file_path[0]
+		if (!filePath)
+			return
 
+		filePath = filePath[0]
 
-		if (file_path && file_path.type.match('image.*') === null) {
+		if (filePath && filePath.type.match('image.*') === null) {
 			cancelledUploading()
-			return that.fileUploadErrorWrongType()
+			return that.fileUploadErrorWrongType(filePath)
 		}
 
+		mixpanel.track('ThreeSixty Uploading', {
+			filePath: filePath,
+			fileType: filePath.type
+		})
 
 		that
-			.uploadFile(file_path, "image")
+			.uploadFile(filePath, 'image')
 			.then(function(uploadedFile) {
+				mixpanel.track('ThreeSixty Uploaded', {
+					filePath: filePath,
+					uploadedFile: uploadedFile
+				})
+
 				if (uploadedFile) {
 					that.beforeGraphPublish()
+
 					// Get the scaled version of the original image
 					var imageUrl = uploadedFile.scaled.url;
 					return that.publishTemplateWithUrl(imageUrl);
@@ -313,7 +352,6 @@ var vizor360 = new function() {
 			.then(that.loadGraphAndPlay)
 			.catch(err)
 
-
 		return false
 	}
 
@@ -323,6 +361,8 @@ var vizor360 = new function() {
 
 		playerUI.headerFadeOut(100)
 
+		mixpanel.track('ThreeSixty DragEnter')
+
 		e.stopPropagation();
 		e.preventDefault();
 
@@ -331,6 +371,8 @@ var vizor360 = new function() {
 	}
 
 	this.dragLeaveHandler = function(e) {
+		mixpanel.track('ThreeSixty DragLeave')
+
 		e.stopPropagation();
 		e.preventDefault();
 		if(e.target === lastDragTarget) {
@@ -350,6 +392,7 @@ var vizor360 = new function() {
 
 		// Needs to be defined also for the 'drop' event handler to work
 		drop_zone.addEventListener("dragover", function(evt) {
+			mixpanel.track('ThreeSixty DragOver')
 			evt.stopPropagation();
 			evt.preventDefault();
 		});
@@ -363,8 +406,6 @@ var vizor360 = new function() {
 
 		// Hide the overlay
 		window.addEventListener("dragleave", dragLeaveHandler);
-
-		console.log('360 attached')
 	}
 
 	this.addUploadButton = function() {
