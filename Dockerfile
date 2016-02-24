@@ -16,9 +16,9 @@ ADD . /usr/src/app
 WORKDIR /usr/src/app
 
 RUN npm install --silent -g forever
-RUN npm install --unsafe-perm
+RUN npm install --silent --unsafe-perm
 
-RUN ./node_modules/.bin/gulp
+RUN ./node_modules/.bin/gulp golive
 
 RUN node ./tools/editorBundler.js
 
