@@ -173,7 +173,7 @@ gulp.task('less360', ['clean:less360'], function() {
 
 gulp.task('watch', ['default'], function() {
 	gulp.watch('less/**/*', ['less', 'less360']);
-	gulp.watch(paths.js.player.concat(paths.js.engine), ['push'])
+	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player', 'push'])
 })
 
 gulp.task('watch:less360', function() {
@@ -185,7 +185,7 @@ gulp.task('watch:less', function() {
 })
 
 gulp.task('watch:player', function() {
-	gulp.watch(paths.js.player.concat(paths.js.engine), ['push'])
+	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player', 'push'])
 })
 
 gulp.task('golive', ['less', 'less360', 'js'])
