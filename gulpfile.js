@@ -118,21 +118,21 @@ gulp.task('clean:js', ['clean:js:player', 'clean:js:engine'])
 
 gulp.task('clean', ['clean:js'])
 
-gulp.task('js:engine', ['clean:js:engine'], function(cb) {
+gulp.task('js:engine', ['clean:js:engine'], function(done) {
 	gulp.src(paths.js.engine)
 	.pipe(concat.header(';\n'))
 	.pipe(concat('engine.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'dist')))
 	.on('error', errorHandler)
-	.on('end', cb)
+	.on('end', done)
 })
 
-gulp.task('js:player', ['clean:js:player', 'js:engine'], function(cb) {
+gulp.task('js:player', ['clean:js:player', 'js:engine'], function(done) {
 	var playerPipe = gulp.src(paths.js.engine.concat(paths.js.player))
 
 	// only uglify in production
 	if (process.env.NODE_ENV === 'production') {
-		playerPipe
+		playerPipe = playerPipe
 			.pipe(uglify().on('error', errorHandler))
 	}
 
@@ -141,10 +141,12 @@ gulp.task('js:player', ['clean:js:player', 'js:engine'], function(cb) {
 	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'dist')))
 	.on('error', errorHandler)
-	.on('end', function() {
-		pushPlayerToGrid()
-		.then(cb, cb)
-	})
+	.on('end', done)
+})
+
+gulp.task('push', ['js:player'], function(done) {
+	pushPlayerToGrid()
+		.then(done, errorHandler)
 })
 
 gulp.task('js', ['js:player'])
@@ -171,22 +173,22 @@ gulp.task('less360', ['clean:less360'], function() {
 
 gulp.task('watch', ['default'], function() {
 	gulp.watch('less/**/*', ['less', 'less360']);
-	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player'])
+	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player', 'push'])
 })
 
 gulp.task('watch:less360', function() {
 	gulp.watch('less/threesixty.less', ['less360']);
 });
 
-
 gulp.task('watch:less', function() {
 	gulp.watch('less/**/*', ['less'])
 })
 
-
 gulp.task('watch:player', function() {
-	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player'])
+	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player', 'push'])
 })
 
-gulp.task('default', ['less', 'less360', 'js']);
+gulp.task('golive', ['less', 'less360', 'js'])
+
+gulp.task('default', ['less', 'less360', 'js', 'push'])
 
