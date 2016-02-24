@@ -33,7 +33,7 @@ echo ----------------------------------------
 
 # run provisioning step
 d run --rm \
-	--link destroy-mongo:mongo \
+	--link mongo:mongo \
 	$FQDN:v1 \
 	node ./node_modules/gulp/bin/gulp push
 
@@ -51,6 +51,6 @@ d run -d --name $FQDN \
      -e "SESSION_SECRET=$SESSION_SECRET" \
      -e "ENGI_BIND_PORT=$PORT" \
      -p 127.0.0.1:$PORT:$PORT \
-     --link destroy-mongo:mongo \
-     --link destroy-rethink:rethink $FQDN:v1
+     --link mongo:mongo \
+     --link rethink:rethink $FQDN:v1
 
