@@ -17,18 +17,20 @@ var have_webgl = (function () {   // http://www.browserleaks.com/webgl#howto-det
 })();
 
 var VizorPlayerUI = function() {
+	var that = this
 	this.eventNames = {
-        controlsDisplayed : 'controlsDisplayed',
-        controlsHidden :    'controlsHidden',
-        vrModeChanged :     'vrManagerModeChanged',
-        vrInstructionsShown : 'VRManInstructionsShown',
-        vrInstructionsHidden : 'VRManInstructionsHidden',
-        playerLoaded :      'vizorLoaded',
-        loadingProgress :   'progress',
+		controlsDisplayed	: 'controlsDisplayed',
+		controlsHidden		: 'controlsHidden',
+		vrModeChanged 		: 'vrManagerModeChanged',
+		vrInstructionsShown : 'VRManInstructionsShown',
+		vrInstructionsHidden : 'VRManInstructionsHidden',
+		playerLoaded		: 'vizorLoaded',
+		loadingProgress		: 'progress',
 
-        doneLoading :       'assetsLoaded',
-        stateChanged :      'player:stateChanged'
+		doneLoading			: 'assetsLoaded',
+		playerStateChanged	: 'player:stateChanged'
     }
+	var events = this.eventNames
 
 	// jQuery
 	this.$body = null
@@ -67,196 +69,108 @@ var VizorPlayerUI = function() {
         }
     }
 
-    this.init = function () {
-		var that = this
-		var events = this.eventNames
-		this.controlsBound = false
-		this.$body = $(document.body)
-		this.$canvas = $('#webgl-canvas')
-		this.$stage = $('#stage')
-		this.$wrap = $('#playerWrap')
-		this.autoplay = this.$canvas.data('autoplay')
-		this.$header = $('#topbar')
-		this.$controls = this.$header.find('div.controls').first()
+	this.onPlayerStateChanged = function(newState, old) {
+		var s = E2.app.player.state
+		that.$body
+			.toggleClass('playing', newState === s.PLAYING)
+			.toggleClass('paused', 	newState === s.PAUSED)
+			.toggleClass('stopped', newState === s.STOPPED)
+			.toggleClass('loading', newState === s.LOADING)
 
-		var $body = this.$body,
-			$canvas = this.$canvas,
-			$header = this.$header,
-			$controls = this.$controls,
-			$stage = this.$stage,
-			$wrap = this.$wrap
+		if (newState === s.PLAYING)
+			that.queueHeaderFadeOut()
+		else
+			that.headerFadeIn()
+	}
 
-        if (!window.WebVRConfig) window.WebVRConfig = {}
-        WebVRConfig.getContainerMeta = function() {
-            var el = document.getElementById('stage')
-            var c = document.getElementById('webgl-canvas')
-			var ret
-            var fsel = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement
-            if (fsel) {
-                ret = {
-                    element: c,
-                    width :  window.innerWidth,
-                    height : window.innerHeight
-                }
-            } else {
-                var r = el.getBoundingClientRect()
-                ret = {
-                    element : el,
-                    width   : r.width,
-                    height  : r.height
-                }
-            }
-			if (!ret.width || !ret.height) {
-				console.error('adjusting dimensions')
-				ret.width = 1
-				ret.height = 1
+	this.onPlayerLoaded = function() {
+		var $canvas = that.$canvas,
+			$stage = that.$stage,
+			$body = that.$body,
+			$wrap = that.$wrap
+
+		E2.core.on(events.playerStateChanged, that.onPlayerStateChanged)
+
+		E2.app.isVRCameraActive = function () {
+			if (siteUI && siteUI.lastModalIsOpen) return false
+			return that.vrCameraEnabled && !(that.overHeader || that.overControls)
+		}
+
+		E2.app.calculateCanvasArea = function () {
+			return {
+				width: 	$stage.innerWidth(),
+				height: $stage.innerHeight()
 			}
-			return ret
-        }
+		}
 
-        VizorUI.replaceSVGButtons($header)
-        siteUI.disableForceTouch()
+		var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
+        $(window).on('resize orientationchange', onResize)
+        $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', onResize)
+		onResize()
 
-        function bindHeaderBehaviour() {
-            var headerHandler = function(e) {  // display the header temporarily, and for longer if over header
+		that.enableVRcamera()
 
-                if (['INPUT','TEXTAREA','BUTTON', 'SVG', 'USE'].indexOf(e.target.tagName) > -1 ) return true
-                if (siteUI.isInVR() || siteUI.isDragging) return true
-                if (siteUI.isModalOpen()) return true
-                if (window.Vizor && window.Vizor.disableHeaderClick) return true
+		// allow 360 to redirect progressbar entirely
+		var progress = (window.Vizor && window.Vizor.onProgress) ? window.Vizor.onProgress : that.onProgress
+		E2.core.on(events.loadingProgress, progress)
 
-                if (!that.headerIsVisible) {
-                    if (e.touches) {
-                        e.stopPropagation()
-                        e.preventDefault()
-                    }
-                    that.headerFadeIn()
-                    that.queueHeaderFadeOut()
-                } else {
-                    that.queueHeaderFadeOut(100, true)  // give any button some time to react
-                }
-
-                return true
-            }
-            // dibs on these
-            document.body.addEventListener('touchend', headerHandler, true)
-            document.body.addEventListener('mouseup', headerHandler, true)
-
-            // track mouse hover on header
-            $controls
-                .on('mouseenter', function () {
-                    that.overControls = true
-                    if (!siteUI.isDragging) {
-                        that.clearFadeoutTimer()
-                        that.headerFadeIn()
-                    }
-                })
-                .on('mouseleave', function () {
-                    that.overControls = false
-                    that.queueHeaderFadeOut()
-                })
-
-            $body
-                .on(events.vrInstructionsShown, function () {
-                    console.log('instructions shown!')
-//                    bindVRBackButton()
-                    $header.hide()
-                    that.fadingIn = that.fadingOut = false
-                })
-                .on(events.vrInstructionsHidden, function () {
-                    that.fadingIn = that.fadingOut = false
-                    if (siteUI.isPortraitLike()) {
-                        that.headerFadeIn()
-                        that.queueHeaderFadeOut()
-                    }
-                })
-
-            var onVRModeChanged = function(e) {
-                var mode = e.detail.mode, oldMode = e.detail.oldMode
-                if (mode !== 3) {
-                    $body.removeClass('inVR')
-                    that.headerIsVisible = false
-                    that.overHeader = false
-                    that.overControls = false
-                    that.fadingOut = false
-                    that.fadingIn = false
-                    that.headerFadeIn()
-                    that.queueHeaderFadeOut()
-                }
-            }
-            $body[0].addEventListener(events.vrModeChanged, onVRModeChanged)
-
-            setTimeout(function () {
-                if (VizorUI.isMobile.any() && !siteUI.isPortraitLike())
-                    that.headerFadeOut()
-                else
-                    that.queueHeaderFadeOut()
-            }, 300)
-        }
-
-        function bindShareButton() {
-            var $share = $('button#sharebutton')
-            if ($share.length < 1) return
-
-            $share
-                .on('click', function (e) {
-                    e.preventDefault()
-					var data = {
-						shareURL : Vizor.shareURL,
-						embedSrc : Vizor.embedSrc
-					}
-                    var html = E2.views.partials.embedVRplayer(data)
-                    that.suspendVRcamera()
-                    that.headerFadeOut(200)
-                    var modal = VizorUI.modalOpen(html, "Share this", 'player_share doselect_all', that.enableVRcamera)
-                    modal
-                        .find('textarea, input')
-                        .on('mouseup touchup', function (e) {
-                            e.currentTarget.select()
-                            e.currentTarget.setSelectionRange(0, 9999)
-                            e.preventDefault()
-                            return true
-                        })
-                        .on('focus', function (e) {
-                            e.preventDefault()
-                            e.stopPropagation()
-                            return false
-                        })
-
-                    return false
-                })
-        }
-
-
-        function completeLoading() {
+		function completeLoading() {
             that.selectStage('stage')
             mixpanel.track('Player playing')
 
             if (!that.controlsBound) {
-                bindHeaderBehaviour()
-                bindShareButton()
+                that.bindHeaderBehaviour()
+                that.bindButtons()
                 that.amendVRManagerInstructions()
                 that.controlsBound = true
             }
         }
+		E2.core.on(events.doneLoading, completeLoading)
 
-        $canvas.css({display: 'block'})
+		// provisions for chrome/android
+		$body
+			.on(events.vrInstructionsShown, function () {
+				$wrap.hide()
+			})
+			.on(events.vrInstructionsHidden, function () {
+				$wrap.show()
+				onResize()
+			})
 
-        var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
+		if (siteUI.hasOrientationChange
+			&& VizorUI.isMobile.any()
+//				&& VizorUI.isBrowser.Chrome()
+		) {
+			var allowExtraHeightOnLandscape = function () {
+				// provisions for mobile
+				setTimeout(function () {
+					var h = window.innerHeight
+					if (siteUI.isPortraitLike()) {
+						$body.css({
+							height: h + 'px'
+						})
+						$wrap.css({
+							bottom: '0'
+						})
+					}
+					else {
+						$body.css({
+							height: (1.1*h) + 'px'  // allow dragging the body to hide the top bar
+						})
+						$wrap.css({
+							bottom: (0.1*h) + 'px'
+						})
+					}
+				}, 500)
+			}
+			$(window).on('orientationchange', allowExtraHeightOnLandscape)
+			allowExtraHeightOnLandscape()
+		}
+	}
 
-        $('#edit').click(function () {
-            var editUrl = '/' +
-                window.location.href
-                .split('?')[0]
-                .split('/')
-                .slice(-2)
-                .concat('edit')
-                .join('/')
-
-            window.location = editUrl
-        })
-
-        function enterFullscreen(e) {
+	// called in onPlayerLoaded:completeLoading
+	this.bindButtons = function() {
+		function enterFullscreen(e) {
             // webvr manager has extra provisions if in iframe, so E2.core.emit(fullScreenChangeRequested) wont do
             E2.core.webVRManager.onFSClick_()
             siteUI.tagBodyClass()
@@ -272,124 +186,217 @@ var VizorPlayerUI = function() {
             siteUI.tagBodyClass()
         }
 
+		function share(e) {
+			e.preventDefault()
+			var data = {
+				shareURL : Vizor.shareURL,
+				embedSrc : Vizor.embedSrc
+			}
+			var html = E2.views.partials.embedVRplayer(data)
+			that.suspendVRcamera()
+			that.headerFadeOut(200)
+			var modal = VizorUI.modalOpen(html, "Share this", 'player_share doselect_all', that.enableVRcamera)
+			modal
+				.find('textarea, input')
+				.on('mouseup touchup', function (e) {
+					e.currentTarget.select()
+					e.currentTarget.setSelectionRange(0, 9999)
+					e.preventDefault()
+					return true
+				})
+				.on('focus', function (e) {
+					e.preventDefault()
+					e.stopPropagation()
+					return false
+				})
+
+			return false
+		}
+
+		function edit(e) {
+			var editUrl = '/' +
+				window.location.href
+				.split('?')[0]
+				.split('/')
+				.slice(-2)
+				.concat('edit')
+				.join('/')
+
+			window.location = editUrl
+		}
+
+
+		$('#fullscreen, #entervr, #sharebutton, #edit').off('click')
+		$('#edit').click(edit)
         $('#fullscreen').on('click', enterFullscreen)
         $('#entervr').on('click', enterVR)
+		$('#sharebutton').on('click', share)
+	}
 
-        $(window).on('resize orientationchange', onResize)
-        $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', onResize)
+	this.bindHeaderBehaviour = function() {
+		var $body = that.$body,
+			$controls = that.$controls,
+			$header = that.$header
+		var headerHandler = function(e) {  // display the header temporarily, and for longer if over header
 
-        $(window).on(events.playerLoaded, function () {
+			if (['INPUT','TEXTAREA','BUTTON', 'SVG', 'USE'].indexOf(e.target.tagName) > -1 ) return true
+			if (siteUI.isInVR() || siteUI.isDragging) return true
+			if (siteUI.isModalOpen()) return true
+			if (window.Vizor && window.Vizor.disableHeaderClick) return true
 
-            E2.core.on(events.stateChanged, function(newState, old) {
-                var s = E2.app.player.state
-                $body
-                    .toggleClass('playing', newState === s.PLAYING)
-                    .toggleClass('paused', newState === s.PAUSED)
-                    .toggleClass('stopped', newState === s.STOPPED)
-                    .toggleClass('loading', newState === s.LOADING)
+			if (!that.headerIsVisible) {
+				if (e.touches) {
+					e.stopPropagation()
+					e.preventDefault()
+				}
+				that.headerFadeIn()
+				that.queueHeaderFadeOut()
+			} else {
+				that.queueHeaderFadeOut(100, true)  // give any button some time to react
+			}
 
-                if (newState === s.PLAYING)
-					that.queueHeaderFadeOut()
-				else
+			return true
+		}
+		// dibs on these
+		document.body.addEventListener('touchend', headerHandler, true)
+		document.body.addEventListener('mouseup', headerHandler, true)
+
+		// track mouse hover on header
+		$controls
+			.on('mouseenter', function () {
+				that.overControls = true
+				if (!siteUI.isDragging) {
+					that.clearFadeoutTimer()
 					that.headerFadeIn()
-            })
+				}
+			})
+			.on('mouseleave', function () {
+				that.overControls = false
+				that.queueHeaderFadeOut()
+			})
 
-            var progress = (window.Vizor && window.Vizor.onProgress) ? window.Vizor.onProgress : that.onProgress
-            E2.core.on(events.loadingProgress, progress)
-            E2.core.on(events.doneLoading, completeLoading)
+		$body
+			.on(events.vrInstructionsShown, function () {
+				$header.hide()
+				that.fadingIn = that.fadingOut = false
+			})
+			.on(events.vrInstructionsHidden, function () {
+				that.fadingIn = that.fadingOut = false
+				if (siteUI.isPortraitLike()) {
+					that.headerFadeIn()
+					that.queueHeaderFadeOut()
+				}
+			})
 
-            E2.app.isVRCameraActive = function () {
-                if (siteUI && siteUI.lastModalIsOpen) return false
-                return that.vrCameraEnabled && !(that.overHeader || that.overControls)
-            }
+		var onVRModeChanged = function(e) {
+			var mode = e.detail.mode, oldMode = e.detail.oldMode
+			if (mode !== 3) {
+				$body.removeClass('inVR')
+				that.headerIsVisible = false
+				that.overHeader = false
+				that.overControls = false
+				that.fadingOut = false
+				that.fadingIn = false
+				that.headerFadeIn()
+				that.queueHeaderFadeOut()
+			}
+		}
+		$body[0].addEventListener(events.vrModeChanged, onVRModeChanged)
 
-            E2.app.calculateCanvasArea = function () {
-                return {
-                    width: $stage.innerWidth(),
-                    height: $stage.innerHeight()
-                }
-            }
-            onResize()
+		setTimeout(function () {
+			if (VizorUI.isMobile.any() && !siteUI.isPortraitLike())
+				that.headerFadeOut()
+			else
+				that.queueHeaderFadeOut()
+		}, 300)
+	}
 
-            that.enableVRcamera()
+	// the canvas is positioned absolute within its container, which is sometimes hidden
+	// this makes sure we always return correct dimensions, even when the player isn't fullscreen or alone on the page
+	this.installDimensionsHandler = function() {
+		if (!window.WebVRConfig) window.WebVRConfig = {}
+		WebVRConfig.getContainerMeta = function() {
+			var stage = document.getElementById('stage')
+			var canvas = document.getElementById('webgl-canvas')
+			var ret
+			var fsel = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement
+			if (fsel) {
+				ret = {
+					element: canvas,
+					width :  window.innerWidth,
+					height : window.innerHeight
+				}
+			} else {
+				var r = stage.getBoundingClientRect()
+				ret = {
+					element : stage,
+					width   : r.width,
+					height  : r.height
+				}
+			}
+			// special provision for webvr boilerplate
+			if (!ret.width || !ret.height) {
+				console.error('adjusting dimensions')
+				ret.width = 1
+				ret.height = 1
+			}
+			return ret
+		}
+	}
 
-            // provisions for chrome/android
-            $body
-                .on(events.vrInstructionsShown, function () {
-                    $wrap.hide()
-                })
-                .on(events.vrInstructionsHidden, function () {
-                    $wrap.show()
-                    onResize()
-                })
+    this.init = function () {
+		var that = this
+		var events = this.eventNames
+		this.controlsBound = false
+		this.$body = $(document.body)
+		this.$canvas = $('#webgl-canvas')
+		this.$stage = $('#stage')
+		this.$wrap = $('#playerWrap')
+		this.autoplay = this.$canvas.data('autoplay')
+		this.$header = $('#topbar')
+		this.$controls = this.$header.find('div.controls').first()
 
-            if (siteUI.hasOrientationChange
-                && VizorUI.isMobile.any()
-//                && VizorUI.isBrowser.Chrome()
-            ) {
+		var $body = this.$body,
+			$canvas = this.$canvas,
+			$header = this.$header
 
-                var allowExtraHeightOnLandscape = function () {
-                    // provisions for mobile
-                    setTimeout(function () {
-                        var h = window.innerHeight
-                        if (siteUI.isPortraitLike()) {
-                            $body.css({
-                                height: h + 'px'
-                            })
-                            $wrap.css({
-                                bottom: '0'
-                            })
-                        }
-                        else {
-                            $body.css({
-                                height: (1.1*h) + 'px'  // allow dragging the body to hide the top bar
-                            })
-                            $wrap.css({
-                                bottom: (0.1*h) + 'px'
-                            })
-                        }
-                    }, 500)
-                }
-                $(window).on('orientationchange', allowExtraHeightOnLandscape)
-                allowExtraHeightOnLandscape()
-            }
+		siteUI.disableForceTouch()
+		VizorUI.replaceSVGButtons($header)
+		$(window).on('unload', function () {})    // fix iOS frame js issues
 
-        })		//   /playerLoaded
+		this.installDimensionsHandler()
 
-        var play = this.play
+		// PLAYER LOADED
+		// binds buttons, defines the header behaviour and other things
+		$(window).on(events.playerLoaded, this.onPlayerLoaded.bind(this))
 
+		// play button loads and plays so this is separate from the rest of header
         function preparePlay() {
             $body.addClass('paused')
             var $playButton = jQuery('#playButton')
-            $playButton.on('click', play.bind(that))
+            $playButton.on('click', that.play.bind(that))
         }
 
-		var autoplay = (window.Vizor && window.Vizor.autoplay)
-        if (autoplay)
+        if (window.Vizor && window.Vizor.autoplay)
             $body.addClass('autoplay')
         else
             preparePlay()
 
+		// ready to show
         that.selectStage('loadingStage')
+        that.headerFadeIn()
 
-        $('header').show()
-        $body.addClass('withPlayerControls')
-
-
-        $(window).on('unload', function () {})    // iOS frame js issues
     } // end .init()
 }
 
-var prot = VizorPlayerUI.prototype
-
-prot.displayVRPlayerUrl = function() {
+VizorPlayerUI.prototype.displayVRPlayerUrl = function() {
 	var url = (window.Vizor && Vizor.shareURL) ? Vizor.shareURL : window.location.href
 	var niceurl = url.replace(/^(http)s?:\/\//i, '')
 	this.headerFadeOut()
 	return VizorUI.modalOpen("<p>View in VR on your phone</p><a href='" + url + "'>" + niceurl + "</a>", null, 'viewinvr')
 }
 
-prot.selectStage = function(elementId) {
+VizorPlayerUI.prototype.selectStage = function(elementId) {
 	var wrap = jQuery("#playerWrap")
 	wrap
 		.find('div.stage')
@@ -400,15 +407,15 @@ prot.selectStage = function(elementId) {
 		.addClass('front')
 }
 
-prot.suspendVRcamera = function() {
+VizorPlayerUI.prototype.suspendVRcamera = function() {
 	this.vrCameraEnabled = false
 }
 
-prot.enableVRcamera = function() {
+VizorPlayerUI.prototype.enableVRcamera = function() {
 	this.vrCameraEnabled = true
 }
 
-prot.play = function() {
+VizorPlayerUI.prototype.play = function() {
 	this.selectStage('stage')
 	playVizorFile()
 		.catch(function (err) {
@@ -417,7 +424,7 @@ prot.play = function() {
 		})
 }
 
-prot.amendVRManagerInstructions = function() {
+VizorPlayerUI.prototype.amendVRManagerInstructions = function() {
 	var r = E2.core.webVRManager.rotateInstructions
 	r.text.innerHTML = r.text.innerHTML.replace("Cardboard viewer", "VR viewer")
 	// if not bound directly, it sometimes stops working when reloading player files
@@ -429,22 +436,22 @@ prot.amendVRManagerInstructions = function() {
 	$('div:last-child', r.overlay)[0].style.display = 'none'
 }
 
-prot.headerDisableAutoFadeout = function() {
+VizorPlayerUI.prototype.headerDisableAutoFadeout = function() {
 	this.clearFadeoutTimer()
 	this.headerQueueFadeoutEnabled = false
 	this.headerFadeIn()
 }
 
-prot.headerEnableAutoFadeout = function() {
+VizorPlayerUI.prototype.headerEnableAutoFadeout = function() {
 	this.headerQueueFadeoutEnabled = true
 }
 
-prot.clearFadeoutTimer = function () {
+VizorPlayerUI.prototype.clearFadeoutTimer = function () {
 	clearTimeout(this.fadeoutTimer)
 	this.fadeoutTimer = null
 }
 
-prot.queueHeaderFadeOut = function(timeoutMs, forceIfAutoDisabled) {
+VizorPlayerUI.prototype.queueHeaderFadeOut = function(timeoutMs, forceIfAutoDisabled) {
 	if (E2.app.player.current_state !== E2.app.player.state.PLAYING) return true
 	if (!this.headerQueueFadeoutEnabled  &&  !forceIfAutoDisabled) return true
 	if (!this.headerIsVisible) return
@@ -458,7 +465,7 @@ prot.queueHeaderFadeOut = function(timeoutMs, forceIfAutoDisabled) {
 	return true
 }
 
-prot.headerFadeOut = function (duration) {
+VizorPlayerUI.prototype.headerFadeOut = function (duration) {
 	duration = duration || 500
 	if (this.fadingOut || !this.headerIsVisible) return
 	if (siteUI.isInVR()) {
@@ -477,7 +484,7 @@ prot.headerFadeOut = function (duration) {
 	return true
 }
 
-prot.headerFadeIn = function () {
+VizorPlayerUI.prototype.headerFadeIn = function () {
 	if (this.fadingIn) return
 	this.fadingIn = true
 	this.clearFadeoutTimer()
@@ -490,9 +497,6 @@ prot.headerFadeIn = function () {
 	})
 	return true
 }
-
-
-prot = null	// cleanup
 
 var playerUI = new VizorPlayerUI()
 document.addEventListener('DOMContentLoaded', function(){
