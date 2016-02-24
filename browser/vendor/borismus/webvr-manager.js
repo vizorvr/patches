@@ -2530,7 +2530,7 @@ function WebVRManager(renderer, effect, params) {
   this.mode = Modes.UNKNOWN;
 
   // Set option to hide the button.
-  this.hideButton = Vizor.hideWebVRButton || this.params.hideButton || false;
+  this.hideButton = (window.Vizor && Vizor.hideWebVRButton) || this.params.hideButton || false;
   // Whether or not the FOV should be distorted or un-distorted. By default, it
   // should be distorted, but in the case of vertex shader based distortion,
   // ensure that we use undistorted parameters.
