@@ -90,22 +90,28 @@ var VizorPlayerUI = function() {
         WebVRConfig.getContainerMeta = function() {
             var el = document.getElementById('stage')
             var c = document.getElementById('webgl-canvas')
-
+			var ret
             var fsel = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement
             if (fsel) {
-                return {
+                ret = {
                     element: c,
                     width :  window.innerWidth,
                     height : window.innerHeight
                 }
             } else {
                 var r = el.getBoundingClientRect()
-                return {
+                ret = {
                     element : el,
                     width   : r.width,
                     height  : r.height
                 }
             }
+			if (!ret.width || !ret.height) {
+				console.error('adjusting dimensions')
+				ret.width = 1
+				ret.height = 1
+			}
+			return ret
         }
 
         VizorUI.replaceSVGButtons($header)
