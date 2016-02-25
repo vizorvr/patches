@@ -16,6 +16,7 @@ function modelRoutes(
 	app,
 	gfs,
 	rethinkConnection,
+	mongoConnection,
 	passportConf
 ){
 	// ----- MODEL ROUTES
@@ -39,7 +40,8 @@ function modelRoutes(
 	var graphController = new GraphController(
 		new GraphService(require('./models/graph'), gfs),
 		gfs,
-		rethinkConnection
+		rethinkConnection,
+		mongoConnection
 	);
 
 	var imageController = new ImageController(

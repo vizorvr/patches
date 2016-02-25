@@ -58,11 +58,13 @@ describe('Graph', function() {
 	}
 
 	before(function(done) {
-		agent
-		.post('/signup')
-		.send(deets)
-		.expect(302)
-		.end(done)
+		app.events.on('ready', function() {
+			agent
+			.post('/signup')
+			.send(deets)
+			.expect(302)
+			.end(done)
+		})
 	})
 
 	it('should accept anonymous save', function(done) {

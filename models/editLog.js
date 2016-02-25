@@ -5,7 +5,7 @@ var Schema = mongoose.Schema
 var User = require('./user')
 
 var alphanumeric = [
-	/[a-z0-9\-\_]/,
+	/[a-zA-Z0-9\-\_]/,
 	'Must be alphanumeric'
 ];
 

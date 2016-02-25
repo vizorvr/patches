@@ -244,6 +244,47 @@ app.use('/data', express.static(
 	)
 )
 
+// accounts
+
+app.get('/login', userController.getLogin);
+app.post('/login', userController.postLogin);
+app.post('/login.json', userController.postLogin);
+app.get('/logout', userController.logout);
+app.get('/forgot', userController.getForgot);
+app.post('/forgot', userController.postForgot);
+app.get('/reset/:token', userController.getReset);
+app.post('/reset/:token', userController.postReset);
+
+app.get('/signup', userController.getSignup);
+app.post('/signup', userController.postSignup);
+app.post('/account/exists', userController.checkUserName);
+app.post('/account/email/exists', userController.checkEmailExists);
+
+app.get('/account', passportConf.isAuthenticated, userController.getAccount)
+app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
+app.get('/account/profile', passportConf.isAuthenticated, userController.getAccountProfile);
+
+app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
+app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
+app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
+
+switch (process.env.SITE) {
+	case '360.vizor.io':
+		// 360 photo site
+		app.get('/', threesixtyController.index);
+		app.get('/featured', threesixtyController.featured)
+		app.get('/v/:graph', function(req, res, next) {
+			res.locals.layout = 'threesixty'
+			next()
+		})
+	default:
+		// default site
+		app.get('/', homeController.index);
+		app.get('/threesixty', threesixtyController.index);
+		app.get('/threesixty/featured', threesixtyController.featured);
+		break;
+}
+
 var rethinkConnection
 var rethinkDbName = process.env.RETHINKDB_NAME || 'vizor'
 r.connect({
@@ -259,8 +300,14 @@ r.connect({
 	mongoose.connect(secrets.db);
 	mongoose.connection.on('error', function(err) {
 		throw err
-	});
+	})
 
+	mongoose.connection.on('connected', (connection) => {
+		setupModelRoutes(mongoose.connection.db)
+	})
+})
+
+function setupModelRoutes(mongoConnection) {
 	var GridFsStorage = require('./lib/gridfs-storage');
 	var gfs = new GridFsStorage('/data');
 
@@ -410,47 +457,6 @@ r.connect({
 	app.use('/common', express.static(fsPath.join(__dirname, 'common'),
 		{ maxAge: hour }))
 
-	// accounts
-
-	app.get('/login', userController.getLogin);
-	app.post('/login', userController.postLogin);
-	app.post('/login.json', userController.postLogin);
-	app.get('/logout', userController.logout);
-	app.get('/forgot', userController.getForgot);
-	app.post('/forgot', userController.postForgot);
-	app.get('/reset/:token', userController.getReset);
-	app.post('/reset/:token', userController.postReset);
-
-	app.get('/signup', userController.getSignup);
-	app.post('/signup', userController.postSignup);
-	app.post('/account/exists', userController.checkUserName);
-	app.post('/account/email/exists', userController.checkEmailExists);
-
-	app.get('/account', passportConf.isAuthenticated, userController.getAccount)
-	app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
-	app.get('/account/profile', passportConf.isAuthenticated, userController.getAccountProfile);
-
-	app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
-	app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
-	app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
-
-	switch (process.env.SITE) {
-		case '360.vizor.io':
-			// 360 photo site
-			app.get('/', threesixtyController.index);
-			app.get('/featured', threesixtyController.featured)
-			app.get('/v/:graph', function(req, res, next) {
-				res.locals.layout = 'threesixty'
-				next()
-			})
-		default:
-			// default site
-			app.get('/', homeController.index);
-			app.get('/threesixty', threesixtyController.index);
-			app.get('/threesixty/featured', threesixtyController.featured);
-			break;
-	}
-
 	// --------------------------------------------------
 
 	/**
@@ -461,6 +467,7 @@ r.connect({
 		app,
 		gfs,
 		rethinkConnection,
+		mongoConnection,
 		passportConf
 	)
 
@@ -497,6 +504,6 @@ r.connect({
 	app.use(errorHandler());
 
 	app.events.emit('ready')
-})
+}
 
 module.exports = app;

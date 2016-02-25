@@ -6,26 +6,25 @@ var assetHelper = require('../models/asset-helper')
 var templateCache = new(require('../lib/templateCache'))
 var helper = require('./controllerHelpers')
 var isStringEmpty = require('../lib/stringUtil').isStringEmpty
-var makeRandomString = require('../lib/stringUtil').makeRandomString
 var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
 var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
+var SerialNumber = require('../lib/serialNumber')
 
 var User = require('../models/user')
 
 var EditLog = require('../models/editLog')
 
-function makeUid() {
-	var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
-	var uid = ''
-	for (var i=0; i < 12; i++) {
-		uid += keys[Math.floor(Math.random() * keys.length)]
-	}
-	return uid
-}
+var secrets = require('../config/secrets')
+var Hashids = require('hashids')
+var hashids = new Hashids(secrets.sessionSecret)
+ 
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 
+function makeHashid(serial) {
+	return hashids.encode(serial)
+}
 
 function prettyPrintGraphInfo(graph) {
 	// Get displayed values for graph and owner
@@ -60,11 +59,15 @@ function prettyPrintGraphInfo(graph) {
 	return graph
 }
 
-function GraphController(s, gfs, rethinkConnection) {
+function GraphController(s, gfs, rethinkConnection, mongoConnection) {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
 	AssetController.apply(this, args);
+
 	this.rethinkConnection = rethinkConnection
+
+	this.serialNumber = new SerialNumber(mongoConnection)
+	this.serialNumber.init()
 
 	this.graphAnalyser = new GraphAnalyser(gfs)
 	this.previewImageProcessor = new PreviewImageProcessor()
@@ -161,7 +164,10 @@ GraphController.prototype.edit = function(req, res, next) {
 	var that = this
 
 	if (!req.params.path) {
-		return res.redirect('/' + makeRandomString(12))
+		return this.serialNumber.next('editLog')
+		.then(function(serial) {
+			return res.redirect('/' + makeHashid(serial))
+		})
 	}
 
 	this._service.findByPath(req.params.path)
@@ -315,34 +321,41 @@ GraphController.prototype.upload = function(req, res, next) {
 GraphController.prototype.saveAnonymous = function(req, res, next) {
 	var that = this
 	var anonReq = { user: { username: 'v' } }
-	var path = this._makePath(anonReq, makeUid())
 
-	var gridFsGraphPath = '/graph'+path+'.json'
-	var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
-
-	return that._fs.writeString(gridFsGraphPath, req.body.graph)
-	.then(function() {
-		return that.graphAnalyser.analyseJson(req.body.graph)
-	})
+	return this.graphAnalyser.analyseJson(req.body.graph)
 	.then(function(analysis) {
-		var url = that._fs.url(gridFsGraphPath);
-
-		var model = {
-			path: path,
-			url: url,
-			hasAudio: false,
-			stat: {
-				size: analysis.size,
-				numAssets: analysis.numAssets
-			}
+		if (!analysis.numNodes) {
+			return res.status(400)
+				.json({ message: 'Invalid data' })
 		}
 
-		return that._service.save(model, anonReq.user)
-		.then(function(asset) {
-			res.json(asset)
-		})
-		.catch(function(err) {
-			next(err)
+		return that.serialNumber.next('anonymousGraph')
+		.then(function(serial) {
+			var uid = makeHashid(serial)
+			var path = that._makePath(anonReq, uid)
+
+			var gridFsGraphPath = '/graph'+path+'.json'
+			var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
+
+			return that._fs.writeString(gridFsGraphPath, req.body.graph)
+			.then(function() {
+				var url = that._fs.url(gridFsGraphPath);
+
+				var model = {
+					path: path,
+					url: url,
+					hasAudio: false,
+					stat: {
+						size: analysis.size,
+						numAssets: analysis.numAssets
+					}
+				}
+
+				return that._service.save(model, anonReq.user)
+				.then(function(asset) {
+					res.json(asset)
+				})
+			})
 		})
 	})
 	.catch(next)

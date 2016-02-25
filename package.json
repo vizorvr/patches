@@ -39,6 +39,7 @@
     "gulp-uglify": "~1.0.1",
     "gulp-wrap": "~0.5.0",
     "handlebars": "~2.0.0",
+    "hashids": "^1.0.2",
     "helmet": "^0.4.2",
     "jquery": "2.1.0",
     "less": "^1.7.4",
