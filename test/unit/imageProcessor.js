@@ -38,7 +38,6 @@ describe('ImageProcessor', function() {
 	it('analyzes image correctly', function(done) {
 		imp.analyze(images.small.path)
 		.then(function(data) {
-			console.log('data', data)
 			assert.equal(data.width, 164)
 			assert.equal(data.height, 164)
 			assert.equal(data.sha1, 'f09d10f5fa34355c597ad20294f4542ebe3111cc')
@@ -59,8 +58,8 @@ describe('ImageProcessor', function() {
 	it('maintains aspect ratio for thumbnail', function(done) {
 		imp.handleUpload(images.large, 'foo')
 		.then(function(data) {
-			assert.equal(data.thumbnail.width, 128)
-			assert.equal(data.thumbnail.height, 72)
+			assert.equal(data.scaledThumbnail.width, 128)
+			assert.equal(data.scaledThumbnail.height, 64)
 			done()
 		})
 		.catch(done)
@@ -70,8 +69,7 @@ describe('ImageProcessor', function() {
 		imp.handleUpload(images.large, 'foo')
 		.then(function(data) {
 			assert.equal(data.original.width, 1920)
-			assert.equal(data.thumbnail.width, 128)
-			assert.equal(data.scaled.width, 1024)
+			assert.equal(data.scaled.width, 2048)
 			assert.equal(data.scaledThumbnail.width, 128)
 			done()
 		})
@@ -82,7 +80,6 @@ describe('ImageProcessor', function() {
 		imp.handleUpload(images.largeTexture, 'foo')
 		.then(function(data) {
 			assert.equal(data.original.width, 256)
-			assert.equal(data.thumbnail.width, 128)
 			assert.equal(data.scaled.width, 256)
 			assert.equal(data.scaledThumbnail.width, 128)
 			done()
@@ -94,7 +91,6 @@ describe('ImageProcessor', function() {
 		imp.handleUpload(images.small, 'foo')
 		.then(function(data) {
 			assert.equal(data.original.width, 164)
-			assert.equal(data.thumbnail.width, 128)
 			assert.equal(data.scaled.width, 128)
 			assert.equal(data.scaledThumbnail.width, 128)
 			done()
@@ -108,9 +104,7 @@ describe('ImageProcessor', function() {
 			var fplen = '/files/image/abc83484eec1f6e0e597147c47978488ef39e795.png'.length
 			assert.equal(data.original.path, '/images/te-2rb.jpg')
 			assert.equal(data.original.url.length, fplen)
-			assert.equal(data.thumbnail.path, '/images/te-2rb-thumb.png')
-			assert.equal(data.thumbnail.url.length, fplen)
-			assert.equal(data.scaled.path, '/images/te-2rb-scaled.png')
+			assert.equal(data.scaled.path, '/images/te-2rb-scaled.jpg')
 			assert.equal(data.scaled.url.length, fplen)
 			assert.equal(data.scaledThumbnail.path, '/images/te-2rb-scaled-thumb.png')
 			assert.equal(data.scaledThumbnail.url.length, fplen)
@@ -118,7 +112,6 @@ describe('ImageProcessor', function() {
 		})
 		.catch(done)
 	})
-
 
 	it('sets up the correct tag for texture', function(done) {
 		imp.handleUpload(images.small, 'foo')

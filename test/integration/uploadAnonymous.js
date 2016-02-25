@@ -81,13 +81,11 @@ describe('Upload', function() {
 				delete json.original.bytes;
 				delete json.scaledThumbnail.bytes;
 				delete json.scaled.bytes;
-				delete json.thumbnail.bytes;
 
 				expect(json.url.length).to.equal(56);
 				expect(json.original.url.length).to.equal(56);
 				expect(json.scaled.url.length).to.equal(56);
 				expect(json.scaledThumbnail.url.length).to.equal(56);
-				expect(json.thumbnail.url.length).to.equal(56);
 
 				done(err);
 			});

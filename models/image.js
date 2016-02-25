@@ -16,7 +16,6 @@ var sizeSpec =
 var imageSchema = new mongoose.Schema(_.assign(
 {
 	original: _.clone(sizeSpec),
-	thumbnail: _.clone(sizeSpec),
 	scaled: _.clone(sizeSpec),
 	scaledThumbnail: _.clone(sizeSpec),
 }, assetHelper.schema));
