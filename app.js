@@ -268,7 +268,8 @@ app.post('/account/password', passportConf.isAuthenticated, userController.postU
 app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
 
-switch (process.env.SITE) {
+switch (process.env.FQDN) {
+	case '360vr.io':
 	case '360.vizor.io':
 		// 360 photo site
 		app.get('/', threesixtyController.index);
