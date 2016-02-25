@@ -48,6 +48,15 @@ describe('Graph', function() {
 		.end(cb)
 	}
 
+	function findAutoplayInHTML(bodyHtml) {
+		var canvasRX 	= /<canvas\/?[\w\s="/.':;#-\/]+>[.\s\S]*<\/canvas>/gi.exec(bodyHtml)
+		var endScriptRX	= /<script>[.\s\S]*<\/script>/gi.exec(bodyHtml)
+		return {
+			canvasTag: 		canvasRX.length === 1 	? canvasRX[0] 	: '',
+			endScriptTag: 	endScriptRX.length > 0 	? endScriptRX.pop()	: ''
+		}
+	}
+
 	before(function(done) {
 		agent
 		.post('/signup')
@@ -192,6 +201,53 @@ describe('Graph', function() {
 		})
 	})
 
+
+	it('should autoplay graphs by default', function(done) {
+		var name = 'button-'+rand()
+		var path = '/'+username+'/'+name
+
+		sendGraph(name, function(err, res) {
+			if (err) return done(err)
+			request(app).get(path)
+			.set('Accept', 'text/html')
+			.expect(200).end(function(err, res) {
+				if (err) return done(err)
+				var autoplay = findAutoplayInHTML(res.text)
+				expect(autoplay.canvasTag
+					.split('data-autoplay="true"').length)
+					.to.equal(2)
+
+				expect(autoplay.endScriptTag
+					.split('Vizor.autoplay = true').length)
+					.to.equal(2)
+				done()
+			})
+		})
+	})
+
+	it('should not autoplay embedded graphs', function(done) {
+		var name = 'button-'+rand()
+		var path = '/embed/'+username+'/'+name
+
+		sendGraph(name, function(err, res) {
+			if (err) return done(err)
+			request(app).get(path)
+			.set('Accept', 'text/html')
+			.expect(200).end(function(err, res) {
+				if (err) return done(err)
+				var autoplay = findAutoplayInHTML(res.text)
+				expect(autoplay.canvasTag
+					.split('data-autoplay="true"').length)
+					.to.equal(1)
+
+				expect(autoplay.endScriptTag
+					.split('Vizor.autoplay = false').length)
+					.to.equal(2)
+				done()
+			})
+		})
+	})
+
 /*	it('should return graph landing by path', function(done) {
 		var path = 'button-'+rand()
 		var expectedPath = '/'+username+'/'+path
@@ -218,7 +274,7 @@ describe('Graph', function() {
 		.expect(200)
 		.end(function(err, res) {
 			if (err) return done(err)
-			
+
 			request(app)
 			.get('/'+username+'/assets/graph/tag/are')
 			.expect(200)
