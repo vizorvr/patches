@@ -193,7 +193,7 @@ function renderPlayer(graph, req, res, options) {
 	res.render('graph/show', {
 		layout: res.locals.layout || 'player',
 		playerVersion: version,
-		autoplay: false,
+		autoplay: !!(options && options.autoplay),
 		graph: graph,
 		graphMinUrl: graph.url,
 		graphName: graph.prettyName,
