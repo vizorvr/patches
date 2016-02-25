@@ -30,14 +30,18 @@ exports.config = {
      *   default: 500
      */
     options: {
-        logLevel: 'silent'
+        logLevel: 'silent',
+        waitforTimeout: 30000
     },
 
     /**
      * desired capabilities
      */
     capabilities: {
-        browserName: 'chrome'
+        browserName: 'chrome',
+        chromeOptions: {
+            args: ['--ignore-gpu-blacklist', '--use-gl']
+        }
     },
 
     /**
@@ -62,7 +66,7 @@ exports.config = {
      */
     mochaOpts: {
         reporter: 'spec',
-        timeout: 10000,
+        timeout: 30000,
         require: 'chai'
     }
 };

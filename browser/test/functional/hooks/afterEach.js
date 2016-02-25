@@ -1,36 +1,31 @@
 var fs = require('fs')
 
 var AfterEachHook = module.exports = function (done) {
-	if (this.state !== 'failed')
+	if (this.state === 'passed') {
 		return done()
+	}
 
-	if (!process.env.CI_BUILD_NUMBER)
+	if (!process.env.CI_BUILD_NUMBER) {
 		return done()
+	}
 
 	var that = this
 
-	var shotName = './' + process.env.CI_BUILD_NUMBER + '.png'
+	if (!fs.existsSync(process.env.CI_BUILD_NUMBER))
+		fs.mkdirSync(process.env.CI_BUILD_NUMBER)
 
-	this.browser.log('browser')
-	.then(function(log) {
-		var logStr  = 'Failed: '+that.scenario + ' / ' + that.step + '\n\n'
-			logStr += 'Screenshot: http://fail.vizor.lol/'+
-				process.env.CI_BUILD_NUMBER + '.png'+'\n\n'
-			logStr += 'Browser log:\n\n'
+	var shotName = './' +
+		process.env.CI_BUILD_NUMBER + '/' +
+		(this.scenario + '_' + this.step)
+		.replace(/\W+/g, ' ')
+		.trim()
+		.replace(/\W+/g, '-') +
+		'.png'
 
-		log.value.map(function(item) {
-			var itemStr = item.timestamp + ' ' + item.level + ' ' + item.message
-			console.error(itemStr)
-			logStr += itemStr + '\n'
-		})
-
-		fs.writeFileSync('./' + process.env.CI_BUILD_NUMBER + '.txt', logStr)
-
-		that.browser
-		.saveScreenshot(shotName)
-		.then(function() {
-			done()
-		});
-	})
-
+	this.browser
+	.saveScreenshot(shotName)
+	.then(function() {
+		console.log('Screenshot taken as', shotName)
+		done()
+	});
 };

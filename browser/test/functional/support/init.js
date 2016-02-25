@@ -106,7 +106,7 @@ files.forEach(function (file, i, files) {
                                 context.browser = context.browser.select(scenario.annotations.executedBy);
                             }
 
-                            yadda.run(step, context, done);
+                            yadda.run(step, context, done)
                         }
                     );
                 }
@@ -119,14 +119,22 @@ files.forEach(function (file, i, files) {
                 }
             );
 
-            after(function(done) {
-                global.testscope.state = this.currentTest.state
+            afterEach(function(done) {
+                global.testscope.state = this.currentTest ? this.currentTest.state : 'failed'
 
-                if (++processed === fileCount) {
-                    return afterEachHook.call(global.testscope, afterHook.bind(global.testscope, done));
-                }
+                if (global.testscope.state === 'failed')
+                    global.testscope.hadFailures = true
 
                 afterEachHook.call(global.testscope, done);
+            })
+
+            after(function(done) {
+                global.testscope.state = this.currentTest ? this.currentTest.state : 'failed'
+                
+                if (global.testscope.state === 'failed')
+                    global.testscope.hadFailures = true
+
+                return afterHook.call(global.testscope, done);
             });
 
         }

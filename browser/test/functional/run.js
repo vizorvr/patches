@@ -21,6 +21,7 @@ args.push(path.join(__dirname, 'support', 'init.js'));
 /**
  * set mocha configs
  */
+
 for (flag in (config.mochaOpts || {})) {
     args.push('--' + flag + '=' + config.mochaOpts[flag]);
 }

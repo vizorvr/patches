@@ -631,11 +631,6 @@
         }
       }
     },
-    "diff": {
-      "version": "1.0.8",
-      "from": "https://registry.npmjs.org/diff/-/diff-1.0.8.tgz",
-      "resolved": "https://registry.npmjs.org/diff/-/diff-1.0.8.tgz"
-    },
     "diy-handlebars-helpers": {
       "version": "1.0.10",
       "from": "https://registry.npmjs.org/diy-handlebars-helpers/-/diy-handlebars-helpers-1.0.10.tgz",
@@ -1656,15 +1651,15 @@
           "from": "https://registry.npmjs.org/asn1/-/asn1-0.1.11.tgz",
           "resolved": "https://registry.npmjs.org/asn1/-/asn1-0.1.11.tgz"
         },
-        "aws-sign2": {
-          "version": "0.5.0",
-          "from": "https://registry.npmjs.org/aws-sign2/-/aws-sign2-0.5.0.tgz",
-          "resolved": "https://registry.npmjs.org/aws-sign2/-/aws-sign2-0.5.0.tgz"
-        },
         "assert-plus": {
           "version": "0.1.5",
           "from": "https://registry.npmjs.org/assert-plus/-/assert-plus-0.1.5.tgz",
           "resolved": "https://registry.npmjs.org/assert-plus/-/assert-plus-0.1.5.tgz"
+        },
+        "aws-sign2": {
+          "version": "0.5.0",
+          "from": "https://registry.npmjs.org/aws-sign2/-/aws-sign2-0.5.0.tgz",
+          "resolved": "https://registry.npmjs.org/aws-sign2/-/aws-sign2-0.5.0.tgz"
         },
         "boom": {
           "version": "0.4.2",
@@ -3050,7 +3045,7 @@
           "dependencies": {
             "mime": {
               "version": "1.2.11",
-              "from": "mime@1.2.11",
+              "from": "https://registry.npmjs.org/mime/-/mime-1.2.11.tgz",
               "resolved": "https://registry.npmjs.org/mime/-/mime-1.2.11.tgz"
             }
           }
@@ -3060,15 +3055,15 @@
           "from": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.0.27-1.tgz",
           "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.0.27-1.tgz"
         },
-        "combined-stream": {
-          "version": "0.0.7",
-          "from": "https://registry.npmjs.org/combined-stream/-/combined-stream-0.0.7.tgz",
-          "resolved": "https://registry.npmjs.org/combined-stream/-/combined-stream-0.0.7.tgz"
-        },
         "async": {
           "version": "0.2.10",
           "from": "https://registry.npmjs.org/async/-/async-0.2.10.tgz",
           "resolved": "https://registry.npmjs.org/async/-/async-0.2.10.tgz"
+        },
+        "combined-stream": {
+          "version": "0.0.7",
+          "from": "https://registry.npmjs.org/combined-stream/-/combined-stream-0.0.7.tgz",
+          "resolved": "https://registry.npmjs.org/combined-stream/-/combined-stream-0.0.7.tgz"
         },
         "delayed-stream": {
           "version": "0.0.5",

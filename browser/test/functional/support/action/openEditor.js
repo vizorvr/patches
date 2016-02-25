@@ -1,13 +1,15 @@
+var config = require('../../config').config
+
 module.exports = function (done) {
     var url = this.baseUrl + '/edit'
-    var timeout = 10000
+    var timeout = config.options.waitforTimeout
 
     this.browser
 	    .setViewportSize({ width: 1024, height: 768 })
         .url(url)
-        .waitForVisible('div.welcome', timeout)
+        .waitForVisible('div.welcome')
         .click('button.close')
-        .waitForExist('div.welcome', timeout, true)
+        .waitForExist('div.welcome', null, true)
 	    .timeoutsAsyncScript(timeout)
         .executeAsync(function(cb) {
         	var interval = setInterval(function() {
