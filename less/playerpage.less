@@ -1,11 +1,11 @@
 body.bPlayer, body.b360 {
+  .modal {
+	-webkit-font-smoothing: subpixel-antialiased;
+  }
   .modal.viewinvr .modal-dialog {
 	margin: 15% auto;
   }
-  .modal.viewinvr .modal-body {
-	border-radius: 5px;
-	-webkit-font-smoothing: subpixel-antialiased;
-  }
+
   .modal.viewinvr .bootbox-body {
 	font-family: @font-family-sans-serif;
 	font-size: 140%;
@@ -50,7 +50,8 @@ body.bPlayer {
 	-webkit-font-smoothing: subpixel-antialiased;
 	font-smoothing: subpixel-antialiased;
   }
-  .modal-dialog .modal-content .modal-body form fieldset {
+
+  #shareDialog {
 	text-align: left;
 	margin-bottom: 0;
 	label, input, textarea {
@@ -326,16 +327,9 @@ body.deviceMobile #playerpage header, body.deviceTablet #playerpage header {
 	-webkit-justify-content: center;
 	justify-content: center;
 	button + button {
-	  margin-left: 20px;
+	  margin-left: 10px;
+	  margin-right: 10px;
 	}
   }
 }
 
-body.deviceMobile.landscape {	// cascade correctly from above
-  #playerpage header {
-	button#sharebutton {display: none}
-	.controls button + button {	// only one button in mobile landscape
-	  margin-left: 0;
-	}
-  }
-}
