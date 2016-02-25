@@ -102,7 +102,7 @@
     "test:server:integration": "npm run tester test/integration && npm run tester test/integration/models",
     "test:server:services": "npm run tester test/services",
     "test:server": "npm run test:server:unit && npm run test:server:controllers && npm run test:server:integration && npm run test:server:services",
-    "test": "npm run gulp && ./browser/test/functional/run.js && npm run test:browser && npm run test:server"
+    "test": "npm run gulp && sh bin/test-browser.sh && npm run test:browser && npm run test:server"
   },
   "author": "Pixelface, Ltd <info@vizor.io>",
   "license": "MIT",

@@ -7,6 +7,7 @@ var Yadda = require('yadda'),
     beforeHook = require('../hooks/before.js'),
     afterHook = require('../hooks/after.js'),
     beforeEachHook = require('../hooks/beforeEach.js'),
+    fs = require('fs'),
     afterEachHook = require('../hooks/afterEach.js'),
     processed = 0,
     fileCount = null,
@@ -96,6 +97,9 @@ files.forEach(function (file, i, files) {
                     steps(
                         scenario.steps,
                         function (step, done) {
+                            global.testscope.scenario = scenario.title
+                            global.testscope.step = step
+
                             var context = merge(global.testscope, config.env);
 
                             if (scenario.annotations.executedBy) {
@@ -115,7 +119,9 @@ files.forEach(function (file, i, files) {
                 }
             );
 
-            after(function (done) {
+            after(function(done) {
+                global.testscope.state = this.currentTest.state
+
                 if (++processed === fileCount) {
                     return afterEachHook.call(global.testscope, afterHook.bind(global.testscope, done));
                 }
