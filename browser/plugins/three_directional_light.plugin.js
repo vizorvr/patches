@@ -26,12 +26,14 @@
 	}
 
 	ThreeDirectionalLightPlugin.prototype.update_state = function() {
+		ThreeObject3DPlugin.prototype.update_state.apply(this, arguments)
+
+		this.object3d.updateMatrixWorld()
+
 		var directionVector = new THREE.Vector3(0, -1, 0)
 		directionVector.applyMatrix4(this.object3d.matrixWorld)
 		this.object3d.target.position.copy(directionVector)
 		this.object3d.target.updateMatrixWorld()
-
-		return ThreeObject3DPlugin.prototype.update_state.apply(this, arguments)
 	}
 
 	// disable scaling, it doesn't make sense for lights

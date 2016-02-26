@@ -112,6 +112,8 @@
         "Depth Material": "three_material_depth",
         "Lambert Material": "three_material_lambert",
         "Phong Material": "three_material_phong",
+        "Standard Material": "three_material_standard",
+
         "Shader": "three_material_shader",
         "Point Cloud Material": "three_point_cloud_material",
         "Material Modifier": "three_material_modifier",
