@@ -1,0 +1,47 @@
+/*** MADE WITH VIZOR ***/
+#madeByVizorWidget {
+  width: 180px;
+  font-weight: 600;
+  a:last-child {
+	text-align: right;
+	height: 24px;
+	float:right;
+	line-height: 24px;
+	margin:0 5px 0 0;
+	overflow: hidden;
+	-webkit-font-smoothing: antialiased;
+  }
+  a {
+	line-height: 24px;
+	display: block;
+	color: #fff;
+	text-decoration: none;
+  }
+  a, a svg {
+	border: 0;
+	pointer-events: initial;
+  }
+  a:last-child svg {
+	display: inline-block;
+	vertical-align:middle;
+	margin: 0 0 5px 0;
+	fill: #fff;
+  }
+  >a:first-child {
+	float: right;
+	pointer-events: initial;
+	>svg {fill: #fff;  }
+  }
+}
+
+.deviceDesktop #madeByVizorWidget {
+  a:last-child {
+	width: 0;
+	transition: width 0.2s 0.3s, opacity 0.2s 0.3s, text-indent 0.2s 0.3s;
+  }
+  &:hover a:last-child {
+	width: 145px;
+	transition: width 0.15s 0s, opacity 0.15s 0s, text-indent 0.15s 0s;
+  }
+}
+/*** /made with Vizor ***/

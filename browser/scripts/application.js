@@ -1372,7 +1372,7 @@ Application.prototype.toggleNoodles = function() {
 }
 
 Application.prototype.canInitiateCameraMove = function(e) {
-	return this.isVRCameraActive() && E2.util.isCanvasInFocus(e)
+	return E2.ui.isFullScreen() ||  this.isVRCameraActive() && E2.util.isCanvasInFocus(e)
 }
 
 Application.prototype.setViewCamera = function(isBirdsEyeCamera) {

@@ -4000,14 +4000,13 @@ body.bHome.layoutDesktop #contentwrap header nav ul li {
 body.bHome.layoutDesktop #contentwrap header nav ul li:last-of-type {
   padding-right: 0;
 }
+body.bPlayer .modal,
+body.b360 .modal {
+  -webkit-font-smoothing: subpixel-antialiased;
+}
 body.bPlayer .modal.viewinvr .modal-dialog,
 body.b360 .modal.viewinvr .modal-dialog {
   margin: 15% auto;
-}
-body.bPlayer .modal.viewinvr .modal-body,
-body.b360 .modal.viewinvr .modal-body {
-  border-radius: 5px;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 body.bPlayer .modal.viewinvr .bootbox-body,
 body.b360 .modal.viewinvr .bootbox-body {
@@ -4061,29 +4060,29 @@ body.bPlayer button {
   -webkit-font-smoothing: subpixel-antialiased;
   font-smoothing: subpixel-antialiased;
 }
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset {
+body.bPlayer #shareDialog {
   text-align: left;
   margin-bottom: 0;
 }
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset label,
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset input,
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset textarea {
+body.bPlayer #shareDialog label,
+body.bPlayer #shareDialog input,
+body.bPlayer #shareDialog textarea {
   color: #afbfdf !important;
 }
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset label::-moz-selection,
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset input::-moz-selection,
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset textarea::-moz-selection,
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset label::selection,
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset input::selection,
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset textarea::selection {
+body.bPlayer #shareDialog label::-moz-selection,
+body.bPlayer #shareDialog input::-moz-selection,
+body.bPlayer #shareDialog textarea::-moz-selection,
+body.bPlayer #shareDialog label::selection,
+body.bPlayer #shareDialog input::selection,
+body.bPlayer #shareDialog textarea::selection {
   color: #000;
   background: #afbfdf;
 }
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset label {
+body.bPlayer #shareDialog label {
   font-weight: 500;
 }
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset input,
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset textarea {
+body.bPlayer #shareDialog input,
+body.bPlayer #shareDialog textarea {
   background: rgba(0, 0, 0, 0.2) !important;
   border: 0px solid #afbfdf;
   border-radius: 3px;
@@ -4093,7 +4092,7 @@ body.bPlayer .modal-dialog .modal-content .modal-body form fieldset textarea {
   line-height: 1.5em;
   padding: 5px;
 }
-body.bPlayer .modal-dialog .modal-content .modal-body form fieldset textarea {
+body.bPlayer #shareDialog textarea {
   height: 6.5em;
   font-size: 91.5%;
   resize: none;
@@ -4325,13 +4324,28 @@ body.deviceTablet #playerpage header .controls {
 }
 body.deviceMobile #playerpage header .controls button + button,
 body.deviceTablet #playerpage header .controls button + button {
-  margin-left: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
-body.deviceMobile.landscape #playerpage header button#sharebutton {
-  display: none;
+.big {
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: none !important;
+  text-align: center !important;
+  word-wrap: break-word !important;
+  font-weight: 500 !important;
+  color: #fff !important;
+  letter-spacing: initial !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
-body.deviceMobile.landscape #playerpage header .controls button + button {
-  margin-left: 0;
+.roundbutton {
+  border: 0px;
+  background: rgba(0, 0, 0, 0.5);
+  height: 40px;
+  font-size: 16px;
+  line-height: 40px;
+  color: #fff;
+  border-radius: 20px;
 }
 body.b360 {
   background: #999;
@@ -4341,23 +4355,77 @@ body.b360 {
   width: 100%;
   min-height: 100%;
 }
+body.b360 button#edit {
+  display: none;
+}
 body.b360.deviceDesktop button#entervr {
   display: block;
+}
+body.b360.deviceDesktop button#sharebutton {
+  display: none;
+}
+body.b360.deviceDesktop .modal.player_share .modal-dialog {
+  margin: 15% auto;
+}
+body.b360 #embedSource {
+  display: none;
+}
+body.b360 button#fullscreen svg {
+  stroke-width: 1px !important;
 }
 body.b360 button:active,
 body.b360 button:focus {
   outline: 0;
 }
+body.b360 #madeByVizorWidget {
+  position: absolute;
+  bottom: 20px;
+  right: 40px;
+}
+body.b360.deviceMobile #madeByVizorWidget {
+  display: none;
+}
+body.b360.deviceMobile button#backfromvr {
+  border: 0px;
+  background: rgba(0, 0, 0, 0.5);
+  height: 40px;
+  font-size: 16px;
+  line-height: 40px;
+  color: #fff;
+  border-radius: 20px;
+  width: 16ex;
+  padding: 0;
+  margin-top: 20px;
+}
 body.b360.assetsLoaded.playing #progressbar {
   display: none;
 }
-body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body button.bootbox-close-button {
+body.b360 #shareDialog label {
+  display: none;
+}
+body.b360 #shareDialog input {
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: none !important;
+  text-align: center !important;
+  word-wrap: break-word !important;
+  font-weight: 500 !important;
+  color: #fff !important;
+  letter-spacing: initial !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 24px !important;
+}
+body.b360 div.modal.player_share .modal-body,
+body.b360 div.modal.viewinvr .modal-body {
+  padding-top: 0;
+}
+body.b360 div.modal .modal-dialog button.bootbox-close-button {
   top: 4px;
   right: 4px;
   color: transparent;
 }
-body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body button.bootbox-close-button svg,
-body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body button.bootbox-close-button use {
+body.b360 div.modal .modal-dialog button.bootbox-close-button svg,
+body.b360 div.modal .modal-dialog button.bootbox-close-button use {
   fill: rgba(255, 255, 255, 0.4);
 }
 body.b360 div.modal-backdrop.fade.in {
@@ -4368,36 +4436,72 @@ body.b360 div.modal-backdrop.fade.in {
 body.b360 .bootbox.modal:before {
   background-color: transparent;
 }
+body.b360 div.modal-dialog section,
+body.b360 div.modal-dialog fieldset {
+  border: 0;
+}
 body.b360 div.modal-dialog .modal-content {
   border: 0;
   box-shadow: none;
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
+  border-radius: 5px !important;
+  background: rgba(38, 44, 61, 0.65) !important;
 }
 body.b360 div.modal-dialog .modal-body {
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: subpixel-antialiased;
-  background: rgba(38, 44, 61, 0.9);
+  background: none !important;
 }
+body.b360 div.modal-dialog .modal-content .modal-header {
+  background: none !important;
+}
+body.b360 div.modal.player_share .modal-dialog .modal-content .modal-header h4.modal-title,
+body.b360 div.modal.error .modal-dialog .modal-content .modal-header h4.modal-title,
+body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-header h4.modal-title {
+  font-weight: 300;
+  letter-spacing: 0.75px;
+  margin-bottom: 10px;
+  color: #fff;
+  font-size: 24px;
+}
+body.b360 div.modal.player_share .modal-dialog .modal-content .modal-body,
+body.b360 div.modal.error .modal-dialog .modal-content .modal-body,
 body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body {
   font-size: 1.03rem;
   background: rgba(38, 44, 61, 0.75);
 }
+body.b360 div.modal.player_share .modal-dialog .modal-content .modal-body .bootbox-body,
+body.b360 div.modal.error .modal-dialog .modal-content .modal-body .bootbox-body,
 body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body .bootbox-body {
-  padding: 10px 5px 15px 5px;
+  padding: 5px 5px 5px 5px;
 }
-body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body .bootbox-body p {
-  font-weight: 300;
-  letter-spacing: 0.75px;
-  margin-bottom: 10px;
-}
+body.b360 div.modal.player_share .modal-dialog .modal-content .modal-body .bootbox-body a,
+body.b360 div.modal.error .modal-dialog .modal-content .modal-body .bootbox-body a,
 body.b360 div.modal.viewinvr .modal-dialog .modal-content .modal-body .bootbox-body a {
-  word-wrap: break-word;
-  font-weight: 500;
-  font-size: 120%;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: none !important;
+  text-align: center !important;
+  word-wrap: break-word !important;
+  font-weight: 500 !important;
+  color: #fff !important;
+  letter-spacing: initial !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 24px !important;
 }
 body.b360 div.modal.error .modal-dialog {
   width: 600px;
+}
+body.b360 div.modal.error .modal-dialog .modal-content .modal-body .bootbox-body section.error p:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+}
+body.b360 div.modal.error .modal-dialog .modal-content .modal-body .bootbox-body section.error a {
+  font-size: inherit !important;
+}
+body.b360 div.modal.error .modal-dialog .modal-body {
+  padding: 10px 20px;
 }
 body.b360 div.modal.error .modal-dialog .modal-body .bootbox-body {
   text-align: left;
@@ -4408,6 +4512,24 @@ body.b360 div.modal.error .modal-dialog .modal-body .bootbox-body code {
   font-size: 87.5%;
   font-weight: normal;
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+body.b360.deviceMobile.portrait div.modal.player_share .modal-dialog,
+body.b360.deviceMobile.portrait div.modal.error .modal-dialog,
+body.b360.deviceMobile.portrait div.modal.viewinvr .modal-dialog {
+  width: 95%;
+}
+body.b360.deviceMobile.portrait div.modal.player_share .modal-dialog .modal-content .modal-body .bootbox-body a,
+body.b360.deviceMobile.portrait div.modal.error .modal-dialog .modal-content .modal-body .bootbox-body a,
+body.b360.deviceMobile.portrait div.modal.viewinvr .modal-dialog .modal-content .modal-body .bootbox-body a,
+body.b360.deviceMobile.portrait div.modal.player_share .modal-dialog .modal-content .modal-body .bootbox-body article#shareDialog > section > input,
+body.b360.deviceMobile.portrait div.modal.error .modal-dialog .modal-content .modal-body .bootbox-body article#shareDialog > section > input,
+body.b360.deviceMobile.portrait div.modal.viewinvr .modal-dialog .modal-content .modal-body .bootbox-body article#shareDialog > section > input {
+  font-size: 120% !important;
+}
+body.b360.deviceMobile.portrait div.modal.player_share .modal-dialog code,
+body.b360.deviceMobile.portrait div.modal.error .modal-dialog code,
+body.b360.deviceMobile.portrait div.modal.viewinvr .modal-dialog code {
+  max-width: 100%;
 }
 body.b360.withPlayerControls header,
 body.b360.modal-open header {
@@ -4423,6 +4545,10 @@ body.b360 #progressbar {
   left: 50%;
   width: 400px;
   margin-left: -200px;
+}
+body.b360.deviceMobile #progressbar {
+  width: 310px;
+  margin-left: -155px;
 }
 body.b360 #drop-zone {
   display: none;
@@ -4456,8 +4582,9 @@ body.b360 #container360 {
 body.b360 #container360 #logo360 {
   font-weight: 900;
   position: absolute;
-  top: 10px;
-  left: 20px;
+  top: 30px;
+  margin-top: 0;
+  left: 30px;
   font-size: 32px;
   line-height: 1;
 }
@@ -4473,7 +4600,7 @@ body.b360 #container360 #lander-header {
   width: 680px;
   text-align: center;
   position: absolute;
-  top: 50%;
+  top: 45%;
   left: 50%;
   margin-left: -340px;
   margin-top: -2em;
@@ -4481,7 +4608,7 @@ body.b360 #container360 #lander-header {
   transition: opacity 0.2s;
 }
 body.b360 #container360 #lander-header h2 {
-  margin: 0;
+  margin: -20px 0 22px 0;
   font-size: 46px;
   letter-spacing: -0.5px;
   font-weight: 700;
@@ -4495,12 +4622,26 @@ body.b360.firsttime #lander-header {
 body.b360 #lander-header {
   display: none;
 }
-body.b360 #btn-cancel {
+body.b360 #cancelbutton {
+  pointer-events: initial;
+  z-index: 100;
   display: none;
   position: absolute;
   left: 50%;
-  top: 45%;
-  margin-left: -20px;
+  top: 55%;
+  margin-left: -6ex;
+  margin-top: -20px;
+  width: 12ex;
+  border: 0px;
+  background: rgba(0, 0, 0, 0.5);
+  height: 40px;
+  font-size: 16px;
+  line-height: 40px;
+  color: #fff;
+  border-radius: 20px;
+}
+body.b360.uploading #cancelbutton {
+  display: block;
 }
 body.b360 #drop-zone svg {
   pointer-events: none;
@@ -4521,9 +4662,15 @@ body.b360.deviceMobile #drop-zone,
 body.b360.modal-open #drop-zone {
   display: none;
 }
+body.b360.deviceMobile #logo360 {
+  left: 20px;
+}
 body.b360.deviceMobile #container360 {
-  display: none;
   pointer-events: none;
+}
+body.b360.deviceMobile #container360 #lander-header h2 {
+  font-size: 24px;
+  font-weight: 400;
 }
 body.b360.deviceMobile #drop-zone {
   pointer-events: none;
@@ -4559,8 +4706,8 @@ body.b360 #playerpage {
 }
 body.b360 #playerpage header {
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: 0;
+  right: 0;
   bottom: 0;
   left: 0;
   margin: 0;
@@ -4574,10 +4721,11 @@ body.b360 #playerpage header {
 body.b360 #playerpage header div.controls {
   position: absolute;
   top: 10px;
-  right: 50px;
+  right: 20px;
   width: 260px;
   bottom: auto;
   left: auto;
+  margin-top: 0;
 }
 body.b360 #playerpage header h2#graph_heading {
   display: none;
@@ -4609,10 +4757,6 @@ body.b360 #playerpage header button.svg:hover svg {
 body.b360 #playerpage header button.svg:hover svg use {
   stroke: white;
 }
-body.b360.deviceMobile #playerpage header div.controls {
-  right: 20px;
-  width: 150px;
-}
 body.deviceDesktop #playerpage header div.controls button:hover span {
   display: inline;
 }
@@ -4640,3 +4784,69 @@ body.b360 #playerpage header div.controls button,
 body.b360.uploading #playerpage header div.controls button {
   bottom: 120px;
 }
+body.b360.uploading button#uploadbutton {
+  display: none;
+}
+body.b360.deviceMobile #playerpage header div.controls,
+body.b360.layoutMobile #playerpage header div.controls {
+  top: auto;
+  left: auto;
+  right: auto;
+  bottom: 5px;
+  width: 100%;
+}
+body.b360.deviceMobile #playerpage header div.controls button,
+body.b360.layoutMobile #playerpage header div.controls button {
+  bottom: -120px;
+}
+body.b360.deviceMobile.withPlayerControls #playerpage header div.controls button,
+body.b360.layoutMobile.withPlayerControls #playerpage header div.controls button {
+  bottom: 0px;
+}
+/*** MADE WITH VIZOR ***/
+#madeByVizorWidget {
+  width: 180px;
+  font-weight: 600;
+}
+#madeByVizorWidget a:last-child {
+  text-align: right;
+  height: 24px;
+  float: right;
+  line-height: 24px;
+  margin: 0 5px 0 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+#madeByVizorWidget a {
+  line-height: 24px;
+  display: block;
+  color: #fff;
+  text-decoration: none;
+}
+#madeByVizorWidget a,
+#madeByVizorWidget a svg {
+  border: 0;
+  pointer-events: initial;
+}
+#madeByVizorWidget a:last-child svg {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0 5px 0;
+  fill: #fff;
+}
+#madeByVizorWidget > a:first-child {
+  float: right;
+  pointer-events: initial;
+}
+#madeByVizorWidget > a:first-child > svg {
+  fill: #fff;
+}
+.deviceDesktop #madeByVizorWidget a:last-child {
+  width: 0;
+  transition: width 0.2s 0.3s, opacity 0.2s 0.3s, text-indent 0.2s 0.3s;
+}
+.deviceDesktop #madeByVizorWidget:hover a:last-child {
+  width: 145px;
+  transition: width 0.15s 0s, opacity 0.15s 0s, text-indent 0.15s 0s;
+}
+/*** /made with Vizor ***/

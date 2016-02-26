@@ -55,7 +55,7 @@
 
 </head>
 
-<body class="{{meta.bodyclass}} {{extraClasses}} noselect_all" >
+<body class="{{meta.bodyclass}} {{extraClasses}} b360 bPlayer noselect_all" >
 
     {{> srv/siteSvgSprite}}
     {{> srv/editorSvgSprite}}
@@ -67,9 +67,10 @@
         <h1 id="logo360"><a href="/threesixty">ThreeSixty°</a></h1>
         <div id="lander-header">
             <h2>Simple 360 VR photo sharing</h2>
-            <p>Drag and drop a 360 photo anywhere to share it</p>
+            <p class="noDeviceMobile noDeviceTablet">Drag and drop a 360 photo anywhere to share it</p>
             <input id="threesixty-image-input" type="file" name="image" accept="image/*" />
         </div>
+        {{> srv/madeWithVizor }}
     </div>
     <div class="wrap clearfix" id="playerpage">
         {{{body}}}

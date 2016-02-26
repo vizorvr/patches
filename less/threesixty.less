@@ -1,4 +1,28 @@
+.big {
+  font-family: @font-family-sans-serif;
+  background:  none !important;
+  text-align: center !important;
+  word-wrap: break-word !important;;
+  font-weight: 500 !important;
+  color: #fff !important;
+  letter-spacing: initial !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.roundbutton {
+  border: 0px;
+  background: rgba(0,0,0,0.5);
+  height: 40px;
+  font-size: 16px;
+  line-height: 40px;
+  color: #fff;
+  border-radius: 20px;
+}
+
 body.b360 {
+
+  @controls-right: 20px;
 
   background: #999;
   margin:0;
@@ -7,25 +31,78 @@ body.b360 {
   width: 100%;
   min-height: 100%;
 
-  &.deviceDesktop button#entervr {
-	display: block;	// set to .nodesktop otherwise
+  // design
+  button#edit {
+	display: none;
+  }
+
+  &.deviceDesktop {
+	button#entervr {
+	  display: block; // set to .nodesktop otherwise
+	}
+	button#sharebutton {
+	  display: none;
+	}
+	.modal.player_share .modal-dialog {
+	  margin: 15% auto;
+	}
+  }
+
+  #embedSource {
+	display: none;
+  }
+  button#fullscreen svg {
+	stroke-width: 1px !important;
   }
 
   button:active, button:focus {
 	outline: 0;
   }
 
+  #madeByVizorWidget {
+	position: absolute;
+	bottom: 20px;
+	right: @controls-right + 20;
+  }
+
+  &.deviceMobile {
+	#madeByVizorWidget {
+	  display: none;
+	}
+	button#backfromvr {
+	  .roundbutton;
+	  width: 16ex;
+	  padding:0;
+	  margin-top: 20px;
+	}
+  }
+
   &.assetsLoaded.playing #progressbar {
 	display: none;
   }
 
-  div.modal.viewinvr .modal-dialog .modal-content .modal-body {
-	button.bootbox-close-button {
-	  top: 4px;
-	  right: 4px;
-	  color: transparent;
-	  svg, use {
-		fill: rgba(255,255,255,0.4);
+
+  #shareDialog {
+	label { display: none}
+	input {
+	  .big;
+	  font-size: 24px !important;
+	}
+  }
+  div.modal.player_share, div.modal.viewinvr {
+	.modal-body {
+	  padding-top: 0;
+	}
+  }
+  div.modal {
+	.modal-dialog {
+	  button.bootbox-close-button {
+		top: 4px;
+		right: 4px;
+		color: transparent;
+		svg, use {
+		  fill: rgba(255, 255, 255, 0.4);
+		}
 	  }
 	}
   }
@@ -40,49 +117,90 @@ body.b360 {
   }
 
   div.modal-dialog {
+	section, fieldset {
+	  border: 0;
+	}
 	.modal-content {
 	  border: 0;
 	  box-shadow: none;
 	  -webkit-box-shadow: none;
 	  -moz-box-shadow: none;
+		border-radius: 5px !important;
+  		background: rgba(38, 44, 61, 0.65) !important;
 	}
 	.modal-body {
 	  font-family: @font-family-sans-serif;
 	  -webkit-font-smoothing: subpixel-antialiased;
-	  background: rgba(38, 44, 61, 0.9);
+	  background: none !important;
 	}
   }
+
+  div.modal-dialog .modal-content .modal-header {
+	background: none !important;
+  }
+  div.modal.player_share .modal-dialog,
+  div.modal.error .modal-dialog,
   div.modal.viewinvr .modal-dialog {
 	.modal-content {
+	  .modal-header h4.modal-title {
+		font-weight: 300;
+		letter-spacing: 0.75px;
+		margin-bottom: 10px;
+		color: #fff;
+		font-size: 24px;
+	  }
 	  .modal-body {
 		font-size: 1.03rem;
 		background: rgba(38, 44, 61, 0.75);
 		.bootbox-body {
-		  padding: 10px 5px 15px 5px;
-		  p {
-			font-weight: 300;
-			letter-spacing: 0.75px;
-			margin-bottom: 10px;
-		  }
+		  padding: 5px 5px 5px 5px;
 		  a {
-			word-wrap: break-word;
-			font-weight: 500;
-			font-size: 120%;
+			.big;
+			font-size: 24px !important;
 		  }
 		}
 	  }
 	}
   }
+
   div.modal.error .modal-dialog {
 	width: 600px;
-	.modal-body .bootbox-body {
-	  text-align: left;
+	.modal-content .modal-body .bootbox-body section.error {
+	  p:first-of-type {
+		margin-top:0; padding-top:0;
+	  }
+	  a {
+		font-size: inherit !important;
+	  }
+	}
+	.modal-body {
+	  padding: 10px 20px;
+	  .bootbox-body {
+		text-align: left;
+		code {
+		  max-width: 600px;
+		  word-wrap: break-word;
+		  font-size: 87.5%;
+		  font-weight: normal;
+		  font-family: @font-family-monospace;
+		}
+	  }
+	}
+  }
+
+
+  &.deviceMobile.portrait {
+	div.modal.player_share .modal-dialog,
+	div.modal.error .modal-dialog,
+  	div.modal.viewinvr .modal-dialog {
+	  width: 95%;
+	  .modal-content .modal-body .bootbox-body {
+		a, article#shareDialog>section>input {
+		  font-size: 120% !important;
+		}
+	  }
 	  code {
-		max-width: 600px;
-		word-wrap: break-word;
-		font-size: 87.5%;
-		font-weight:normal;
-		font-family: @font-family-monospace;
+		max-width: 100%;
 	  }
 	}
   }
@@ -104,6 +222,11 @@ body.b360 {
 	left:50%;
 	width: 400px;
 	margin-left: -200px;
+  }
+
+  &.deviceMobile #progressbar {
+	width: 310px;
+	margin-left: -155px;
   }
 
   #drop-zone {
@@ -139,8 +262,9 @@ body.b360 {
 	#logo360 {
 	  font-weight: 900;
 	  position: absolute;
-	  top: 10px;
-	  left: 20px;
+	  top: 30px;
+	  margin-top:0;
+	  left: 30px;
 	  font-size: 32px;
 	  line-height: 1;
 	  a {color: #fff; text-decoration: none; pointer-events: initial;}
@@ -153,14 +277,14 @@ body.b360 {
 	  width: @lander-width;
 	  text-align: center;
 	  position: absolute;
-	  top: 50%;
+	  top: 45%;
 	  left: 50%;
 	  margin-left: -(@lander-width/2);
 	  margin-top: -2em;
 	  opacity: 1;
 	  transition: opacity 0.2s;
 	  h2 {
-		margin: 0;
+		margin: -20px 0 22px 0;
 		font-size: 46px;
 		letter-spacing: -0.5px;
 		font-weight: 700;
@@ -172,13 +296,22 @@ body.b360 {
   &.firsttime #lander-header {display: block}
   #lander-header {display: none}
 
-  #btn-cancel {
+  #cancelbutton {
+	pointer-events: initial;
+	z-index: 100;
 	display: none;
 	position: absolute;
 	left: 50%;
-	top: 45%;
-	margin-left: -20px;
+	top: 55%;
+	margin-left: -6ex;
+	margin-top: -20px;
+	width: 12ex;
+	.roundbutton
   }
+  &.uploading #cancelbutton {
+	display: block;
+  }
+
 
   #drop-zone svg {
 	pointer-events: none;
@@ -201,9 +334,15 @@ body.b360 {
   }
 
   &.deviceMobile  {
+	#logo360 {
+	  left: 20px;
+	}
+
 	#container360 {
-	  display: none;
 	  pointer-events: none;
+	  #lander-header {
+		h2 { font-size: 24px; font-weight: 400 }
+	  }
 	}
 	#drop-zone {
 	  pointer-events: none;
@@ -244,8 +383,8 @@ body.b360 {
 
   #playerpage header {
 	position: absolute;
-	top:0px;
-	right:0px;
+	top:0;
+	right:0;
 	bottom: 0;
 	left: 0;
 	margin: 0;
@@ -258,10 +397,11 @@ body.b360 {
 	div.controls {
 	  position: absolute;
 	  top: 10px;
-	  right: 50px;
+	  right: @controls-right;
 	  width: 260px;
 	  bottom: auto;
 	  left: auto;
+	  margin-top: 0;
 	}
 	h2#graph_heading {
 	  display: none;
@@ -269,7 +409,13 @@ body.b360 {
 	button.svg {
 	  background: none;
 	  position: relative;
-	  span {display: none; position: absolute; bottom: 5px; left: 0; right: 0; height: 1em;}
+	  span {
+		display: none;
+		position: absolute;
+		bottom: 5px;
+		left: 0;
+		right: 0;
+		height: 1em;}
 	  svg {
 		stroke-width: 1.5px;
 		stroke: white;
@@ -287,12 +433,6 @@ body.b360 {
 	  }
 	}
   }
-
-  &.deviceMobile #playerpage header div.controls {
-	right: 20px;
-	width: 150px;
-  }
-
 }
 
 body.deviceDesktop #playerpage header div.controls button {
@@ -329,5 +469,37 @@ body.b360.withPlayerControls #playerpage header div.controls {
 body.b360, body.b360.uploading {
   #playerpage header div.controls button {
 	bottom: 120px;
+  }
+}
+body.b360.uploading {
+  button#uploadbutton {display: none}
+}
+
+body.b360 {
+  &.deviceMobile, &.layoutMobile {
+	#playerpage header {
+	  div.controls {
+		top: auto;
+		left: auto;
+		right: auto;
+		bottom: 5px;
+		width: 100%;
+	  }
+	}
+  }
+}
+
+body.b360 {
+  &.deviceMobile, &.layoutMobile {
+	#playerpage header div.controls {
+	  button {
+		bottom: -120px;
+	  }
+	}
+	&.withPlayerControls #playerpage header div.controls {
+	  button {
+		bottom: 0px;
+	  }
+	}
   }
 }

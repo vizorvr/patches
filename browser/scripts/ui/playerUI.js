@@ -130,10 +130,10 @@ var VizorPlayerUI = function() {
 		// provisions for chrome/android
 		$body
 			.on(events.vrInstructionsShown, function () {
-				$wrap.hide()
+				$canvas.hide()
 			})
 			.on(events.vrInstructionsHidden, function () {
-				$wrap.show()
+				$canvas.show()
 				onResize()
 			})
 
@@ -192,7 +192,7 @@ var VizorPlayerUI = function() {
 				shareURL : Vizor.shareURL,
 				embedSrc : Vizor.embedSrc
 			}
-			var html = E2.views.partials.embedVRplayer(data)
+			var html = E2.views.partials.playerShareDialog(data)
 			that.suspendVRcamera()
 			that.headerFadeOut(200)
 			var modal = VizorUI.modalOpen(html, "Share this", 'player_share doselect_all', that.enableVRcamera)
@@ -393,7 +393,7 @@ VizorPlayerUI.prototype.displayVRPlayerUrl = function() {
 	var url = (window.Vizor && Vizor.shareURL) ? Vizor.shareURL : window.location.href
 	var niceurl = url.replace(/^(http)s?:\/\//i, '')
 	this.headerFadeOut()
-	return VizorUI.modalOpen("<p>View in VR on your phone</p><a href='" + url + "'>" + niceurl + "</a>", null, 'viewinvr')
+	return VizorUI.modalOpen("<a href='" + url + "'>" + niceurl + "</a>", 'View in VR on your phone', 'viewinvr')
 }
 
 VizorPlayerUI.prototype.selectStage = function(elementId) {
@@ -426,10 +426,37 @@ VizorPlayerUI.prototype.play = function() {
 
 VizorPlayerUI.prototype.amendVRManagerInstructions = function() {
 	var r = E2.core.webVRManager.rotateInstructions
+	var o = r.overlay
+	o.className = 'VRInstructions'
+
+	var originalImage = o.getElementsByTagName('IMG')
+	originalImage[0].style.display = 'none';
+
+	var svg = $('<svg><use xlink:href="#player-mobile-graphic"></use>')
+	svg.css({
+		'margin-left': '-92px',
+		'margin-top': '-54px',
+		'left': '50%',
+		'top': '35%',
+		'position' : 'absolute',
+		'width': '184px',
+		'height': '108px',
+		'display': 'block'
+	})
+	$(o)
+		.css({
+			'height': '100%'
+		})
+		.prepend(svg)
 	r.text.innerHTML = r.text.innerHTML.replace("Cardboard viewer", "VR viewer")
 	// if not bound directly, it sometimes stops working when reloading player files
 	var onclick = "E2.core.webVRManager.onBackClick_();siteUI.tagBodyClass();return false;"
 	r.text.innerHTML += "<br /><br /><button style='color:white' onclick='"+onclick+"' id='backfromvr'>Exit VR view</button>"
+
+	$(r.text).css({
+		position: 'absolute',
+		top: '50%'
+	})
 	r.overlay.style.color = '#ccc'
 	r.overlay.style.background = '#2b2f37'
 	r.overlay.style.zIndex = "100"

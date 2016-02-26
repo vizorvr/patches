@@ -36,9 +36,8 @@ var vizor360 = new function() {
 
 		window.Vizor.disableHeaderClick = true
 
-		var bb = VizorUI.modalOpen(html, heading, 'error doselect_all', true, {
-			callback: function() {
-			}
+		VizorUI.modalOpen(html, heading, 'error doselect_all', true, {
+			callback: function() {}
 		})
 	}
 
@@ -50,6 +49,7 @@ var vizor360 = new function() {
 
 		// reset progress bar
 		updateProgressBar(0);
+		$('#threesixty-image-input').val('')	// force clear
 
 		clearBodyClass()
 		playerUI.selectStage('stage')
@@ -237,7 +237,7 @@ var vizor360 = new function() {
 			}
 		}
 
-		$.ajax({
+		var xhr = $.ajax({
 			url: '/uploadAnonymous/' + modelName,
 			type: 'POST',
 			data: formData,
@@ -278,7 +278,12 @@ var vizor360 = new function() {
 				dfd.resolve(uploadedFile)
 			},
 
-			error: function(err) {
+			error: function(err, text_status) {
+				if (text_status === "abort") {
+					// http://paulrademacher.com/blog/jquery-gotcha-error-callback-triggered-on-xhr-abort/
+					mixpanel.track('ThreeSixty Cancelled Uploading')
+					return
+				}
 				var errMsg = err.responseJSON ? err.responseJSON.message : err.status
 				cancelledUploading();
 		
@@ -290,6 +295,14 @@ var vizor360 = new function() {
 				dfd.reject('Could not upload file', errMsg)
 			}
 		})
+		$('#cancelbutton')
+			.off('click')
+			.on('click', function(){
+
+				xhr.abort()
+				cancelledUploading()
+				return false;
+			})
 		
 		return dfd.promise
 	}
@@ -350,7 +363,7 @@ var vizor360 = new function() {
 				}
 			})
 			.then(that.loadGraphAndPlay)
-			.catch(err)
+			.catch(errorHandler)
 
 		return false
 	}
@@ -417,6 +430,7 @@ var vizor360 = new function() {
 		button.appendChild(span)
 		button.dataset.svgref = 'vr360-upload-image'
 		button.className = 'svg'
+		button.id = 'uploadbutton'
 		span.innerText = 'Upload'
 
 		var controlsDiv = document.getElementById('topbar').getElementsByTagName('div')[0]
@@ -434,13 +448,11 @@ var vizor360 = new function() {
 
 
 	this.addCancelButton = function() {
-		// <button class="round-transparent" id="btn-cancel" type="button">Cancel</button>
-		var ls = document.getElementById('loadingStage')
+		var ls = document.getElementById('container360')
 		if (!ls) return
 
 		var b = document.createElement('button')
-		b.id = 'btn-cancel'
-		b.className = 'round-transparent'
+		b.id = 'cancelbutton'
 		b.innerHTML = 'Cancel'
 		ls.appendChild(b)
 	}
@@ -482,8 +494,8 @@ var vizor360 = new function() {
 			initial: true
 		}, null)
 
-		window.Vizor.shareURL = null
-		playerUI.headerDisableAutoFadeout()
+		if (Window.Vizor && (Vizor.graphName === ''))
+			playerUI.headerDisableAutoFadeout()
 	}
 }
 
