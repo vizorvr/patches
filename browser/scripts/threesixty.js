@@ -494,7 +494,8 @@ var vizor360 = new function() {
 			initial: true
 		}, null)
 
-		playerUI.headerDisableAutoFadeout()
+		if (Window.Vizor && (Vizor.graphName === ''))
+			playerUI.headerDisableAutoFadeout()
 	}
 }
 

@@ -4584,7 +4584,7 @@ body.b360 #container360 #logo360 {
   position: absolute;
   top: 30px;
   margin-top: 0;
-  left: 20px;
+  left: 30px;
   font-size: 32px;
   line-height: 1;
 }
@@ -4608,7 +4608,7 @@ body.b360 #container360 #lander-header {
   transition: opacity 0.2s;
 }
 body.b360 #container360 #lander-header h2 {
-  margin: 0;
+  margin: -20px 0 22px 0;
   font-size: 46px;
   letter-spacing: -0.5px;
   font-weight: 700;
@@ -4661,6 +4661,9 @@ body.b360.withPlayerControls #drop-zone,
 body.b360.deviceMobile #drop-zone,
 body.b360.modal-open #drop-zone {
   display: none;
+}
+body.b360.deviceMobile #logo360 {
+  left: 20px;
 }
 body.b360.deviceMobile #container360 {
   pointer-events: none;
