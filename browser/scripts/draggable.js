@@ -82,7 +82,9 @@ function draggable_mousedown(ui, drag, stop) { return function(e)
 	document.addEventListener('mousemove', data.mousemove);
 	document.addEventListener('touchend', data.mouseup);
 	document.addEventListener('touchmove', data.mousemove);
-	
+
+	if(document.activeElement)
+			document.activeElement.blur();
 	if(e.stopPropagation) e.stopPropagation();
 	if(e.preventDefault) e.preventDefault();
 	return false;

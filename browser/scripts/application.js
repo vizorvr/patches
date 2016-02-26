@@ -201,6 +201,8 @@ Application.prototype.setSlotCssClasses = function(slot, slot_div) {	/* @var slo
 Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 	e.stopPropagation()
 
+	if(document.activeElement)
+			document.activeElement.blur();
 	if (!E2.ui.flags.pressedShift) {
 		var graph = E2.core.active_graph
 

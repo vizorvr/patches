@@ -1067,6 +1067,9 @@ NodeUI.makeUIAdjustableValue = function(domNode, onStart, onChange, onEnd, optio
 			document.addEventListener('touchmove', data.move, true)
 			document.addEventListener('mousemove', data.move, true)
 
+			if(document.activeElement)
+				document.activeElement.blur();
+			
 			if(e.preventDefault) e.preventDefault()
 
 			onStart(value)
