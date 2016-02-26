@@ -130,10 +130,10 @@ var VizorPlayerUI = function() {
 		// provisions for chrome/android
 		$body
 			.on(events.vrInstructionsShown, function () {
-				$wrap.hide()
+				$canvas.hide()
 			})
 			.on(events.vrInstructionsHidden, function () {
-				$wrap.show()
+				$canvas.show()
 				onResize()
 			})
 
@@ -427,6 +427,8 @@ VizorPlayerUI.prototype.play = function() {
 VizorPlayerUI.prototype.amendVRManagerInstructions = function() {
 	var r = E2.core.webVRManager.rotateInstructions
 	var o = r.overlay
+	o.className = 'VRInstructions'
+
 	var originalImage = o.getElementsByTagName('IMG')
 	originalImage[0].style.display = 'none';
 
