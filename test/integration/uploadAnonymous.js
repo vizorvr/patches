@@ -8,8 +8,7 @@ var fsPath = require('path');
 var mongo = require('mongodb');
 var expect = require('chai').expect;
 
-function rand()
-{
+function rand() {
 	return Math.floor(Math.random() * 100000);
 }
 
@@ -47,15 +46,9 @@ describe('Upload', function() {
 		db.dropDatabase();
 	})
 
-	/*
 	before(function(done) {
-		agent
-		.post('/signup')
-		.send(deets)
-		.expect(302)
-		.end(done);
+		app.events.on('ready', done)
 	});
-	*/
 
 	describe('Image', function()
 	{

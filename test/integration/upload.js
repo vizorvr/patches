@@ -32,27 +32,27 @@ describe('Upload', function() {
 	var agent = request.agent(app);
 	var db;
 
-	before(function(done) {
-		var that = this;
-
-		db = new mongo.Db('upload'+testId,
-			new mongo.Server('localhost', 27017),
-			{ safe: true }
-		)
-
-		db.open(done);
-	})
-
 	after(function() {
 		db.dropDatabase();
 	})
 
 	before(function(done) {
-		agent
-		.post('/signup')
-		.send(deets)
-		.expect(302)
-		.end(done);
+		app.events.on('ready', function() {
+			var that = this;
+
+			db = new mongo.Db('upload'+testId,
+				new mongo.Server('localhost', 27017),
+				{ safe: true }
+			)
+
+			db.open(function() {
+				agent
+				.post('/signup')
+				.send(deets)
+				.expect(302)
+				.end(done)
+			});
+		})
 	});
 
 	describe('Image', function()
