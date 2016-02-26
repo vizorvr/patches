@@ -115,6 +115,9 @@ PeopleStore.prototype.initialize = function() {
 	})
 	.on('leave', function(m) {
 		var person = that.people[m.id]
+		if (!person) // haven't seen them yet
+			return;
+
 		if (m.id === E2.app.channel.uid) {
 			that.empty()
 		} else {

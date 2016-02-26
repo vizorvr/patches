@@ -12,8 +12,9 @@ var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
 var SerialNumber = require('../lib/serialNumber')
 
 var User = require('../models/user')
-
 var EditLog = require('../models/editLog')
+
+var redis = require('redis')
 
 var secrets = require('../config/secrets')
 var Hashids = require('hashids')
@@ -59,15 +60,17 @@ function prettyPrintGraphInfo(graph) {
 	return graph
 }
 
-function GraphController(s, gfs, rethinkConnection, mongoConnection) {
+function GraphController(s, gfs, mongoConnection) {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
 	AssetController.apply(this, args);
 
-	this.rethinkConnection = rethinkConnection
-
 	this.serialNumber = new SerialNumber(mongoConnection)
 	this.serialNumber.init()
+
+	this.redisClient = redis.createClient({
+		host: process.env.REDIS || 'localhost'
+	})
 
 	this.graphAnalyser = new GraphAnalyser(gfs)
 	this.previewImageProcessor = new PreviewImageProcessor()
@@ -172,7 +175,7 @@ GraphController.prototype.edit = function(req, res, next) {
 
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
-		EditLog.hasEditsByName(that.rethinkConnection, req.params.path.substring(1))
+		EditLog.hasEditsByName(that.redisClient, req.params.path.substring(1))
 		.then(function(hasEdits) {
 			renderEditor(res, graph, hasEdits)
 		})

@@ -24,7 +24,6 @@ var fsPath = require('path');
 var EventEmitter = require('events').EventEmitter;
 
 var mongoose = require('mongoose');
-var r = require('rethinkdb')
 
 var passport = require('passport');
 var expressValidator = require('express-validator');
@@ -288,30 +287,17 @@ switch (process.env.FQDN) {
 		break;
 }
 
-var rethinkConnection
 var gfs
 
-var rethinkDbName = process.env.RETHINKDB_NAME || 'vizor'
-r.connect({
-	host: process.env.RETHINKDB_HOST || 'localhost',
-	port: 28015,
-	db: rethinkDbName
-}, function(err, conn) {
-	if (err)
-		throw err
+mongoose.connect(secrets.db);
+mongoose.connection.on('error', function(err) {
+	throw err
+})
 
-	rethinkConnection = conn
-
-	mongoose.connect(secrets.db);
-	mongoose.connection.on('error', function(err) {
-		throw err
-	})
-
-	mongoose.connection.on('connected', (connection) => {	
-		gfs = new GridFsStorage('/data')
-		gfs.on('ready', function() {
-			setupModelRoutes(mongoose.connection.db)
-		})
+mongoose.connection.on('connected', (connection) => {	
+	gfs = new GridFsStorage('/data')
+	gfs.on('ready', function() {
+		setupModelRoutes(mongoose.connection.db)
 	})
 })
 
@@ -471,7 +457,6 @@ function setupModelRoutes(mongoConnection) {
 	require('./modelRoutes.js')(
 		app,
 		gfs,
-		rethinkConnection,
 		mongoConnection,
 		passportConf
 	)
@@ -487,7 +472,7 @@ function setupModelRoutes(mongoConnection) {
 
 	if (config.server.enableChannels) {
 		new WsChannelServer().listen(httpServer)
-		var ecs = new EditorChannelServer(rethinkConnection)
+		var ecs = new EditorChannelServer()
 		ecs.listen(httpServer)
 	}
 

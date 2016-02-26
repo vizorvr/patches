@@ -9,7 +9,7 @@ Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentatio
 
 ### Installing
 
-Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [RethinkDB](http://rethinkdb.com) and either [node.js](https://nodejs.org) or [io.js](https://iojs.org/). To install the required packages, issue the following commands (on Mac using Homebrew):
+Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [Redis](http://redis.ui) and either [node.js](https://nodejs.org) or [io.js](https://iojs.org/). To install the required packages, issue the following commands (on Mac using Homebrew):
 
 ```
     $ npm install && npm install -g gulp
@@ -38,7 +38,7 @@ Running the tests:
 
 ### Running
 
-1. Make sure MongoDB and RethinkDB are running.
+1. Make sure MongoDB and Redis are running.
 2. Run setup: ``` $ npm run setup ```
 3. Run the server: ``` $ npm start```
 4. Open in the browser: [http://localhost:8000/edit](http://localhost:8000/edit)

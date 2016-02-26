@@ -1,6 +1,5 @@
 var testId = rand()
 process.env.MONGODB = 'mongodb://localhost:27017/mutest'+testId
-process.env.RETHINKDB_NAME = 'test' + testId
 
 global.WebSocket = require('ws')
 global.EventEmitter = require('events').EventEmitter
@@ -11,12 +10,11 @@ var mongo = require('mongodb')
 var assert = require('assert')
 global.WebSocketChannel = require('../../browser/scripts/wschannel')
 var EditorChannel = require('../../browser/scripts/editorChannel')
-var r = require('rethinkdb')
 var session = require('client-sessions')
 var secrets = require('../../config/secrets');
 global.Flux = require('../../browser/vendor/flux')
 
-var setupRethinkDatabase = require('../../tools/setup').setupRethinkDatabase
+const redis = require('redis')
 
 global.window = {
 	location: { hostname: 'localhost', port: 8000 }
@@ -30,6 +28,12 @@ function rand() {
 
 var app = require('../../app.js')
 var agent = request.agent(app)
+
+function redisClient() {
+	return redis.createClient({
+		host: process.env.REDIS || 'localhost'
+	})
+}
 
 function createClient(channelName, lastEditSeen) {
 	var dispatcher = new Flux.Dispatcher()
@@ -62,23 +66,6 @@ function createClient(channelName, lastEditSeen) {
 	return chan
 }
 
-var rethinkConnection
-function setupDatabase() {
-	var dbName = process.env.RETHINKDB_NAME
-
-	return r.connect({
-		host: 'localhost',
-		port: 28015,
-		db: dbName
-	})
-	.then(function(conn) {
-		rethinkConnection = conn
-		return setupRethinkDatabase()
-	})
-	.error(function(err) {
-		throw err
-	})
-} 
 
 var s1, s2
 
@@ -119,15 +106,12 @@ describe('Multiuser', function() {
 		}
 
 		app.events.on('ready', function() {
-			setupDatabase()
-			.then(function() {
-				db = new mongo.Db('mutest'+testId, 
-					new mongo.Server('localhost', 27017),
-					{ safe: true })
+			db = new mongo.Db('mutest'+testId, 
+				new mongo.Server('localhost', 27017),
+				{ safe: true })
 
-				db.open(function() {
-					done()
-				})
+			db.open(function() {
+				done()
 			})
 		})
 	})
@@ -136,14 +120,7 @@ describe('Multiuser', function() {
 		mongoose.models = {}
 		mongoose.modelSchemas = {}
 		mongoose.connection.close()
-
-		r.dbDrop(process.env.RETHINKDB_NAME)
-			.run(rethinkConnection, function() {
-				db.dropDatabase()
-				db.close()
-				rethinkConnection.close()
-				done()
-			})
+		done()
 	})
 
 	beforeEach(function() {})
@@ -164,7 +141,7 @@ describe('Multiuser', function() {
 	})
 
 	it('sends acks', function(done) {
-		s1 = createClient('testack')
+		s1 = createClient('testack.' + Date.now())
 		s1.once('youJoined', function() {
 			s1.on('ackAbc', function() {
 				done()
@@ -275,9 +252,7 @@ describe('Multiuser', function() {
 				}
 			})
 		})
-
 	})
-
 
 	it('sends log on join, leave, join back', function(done) {
 		var channel = 'one-'+Math.random()
@@ -318,7 +293,6 @@ describe('Multiuser', function() {
 				s3.join(channel, channel, function() {})
 			})
 		})
-
 	})
 
 
@@ -362,6 +336,28 @@ describe('Multiuser', function() {
 					number: n
 				})
 			})
+		})
+	})
+
+
+	it('relays messages to user from cluster', function(done) {
+		var channel = 'test'+Math.random()
+		
+		s1 = createClient(channel)
+		var rc = redisClient()
+
+		s1.on('youJoined', function(you) {
+			s1.on('join', function(m) {
+				if (m.id === 'alice')
+					done()
+			})
+
+			// write to user's channel
+			rc.publish(s1.uid, JSON.stringify({
+				kind: 'join',
+				channel: channel,
+				id: 'alice'
+			}))
 		})
 	})
 
