@@ -15,6 +15,8 @@ var csrf = require('lusca').csrf();
 var methodOverride = require('method-override');
 var crypto = require('crypto')
 
+var GridFsStorage = require('./lib/gridfs-storage');
+
 var flash = require('express-flash');
 
 var fsPath = require('path');
@@ -287,6 +289,8 @@ switch (process.env.FQDN) {
 }
 
 var rethinkConnection
+var gfs
+
 var rethinkDbName = process.env.RETHINKDB_NAME || 'vizor'
 r.connect({
 	host: process.env.RETHINKDB_HOST || 'localhost',
@@ -303,15 +307,15 @@ r.connect({
 		throw err
 	})
 
-	mongoose.connection.on('connected', (connection) => {
-		setupModelRoutes(mongoose.connection.db)
+	mongoose.connection.on('connected', (connection) => {	
+		gfs = new GridFsStorage('/data')
+		gfs.on('ready', function() {
+			setupModelRoutes(mongoose.connection.db)
+		})
 	})
 })
 
 function setupModelRoutes(mongoConnection) {
-	var GridFsStorage = require('./lib/gridfs-storage');
-	var gfs = new GridFsStorage('/data');
-
 	// stat() files in gridfs
 	app.get(/^\/stat\/data\/.*/, function(req, res) {
 		var path = req.path.replace(/^\/stat\/data/, '');
