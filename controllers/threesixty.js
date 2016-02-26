@@ -20,7 +20,7 @@ exports.index = function(req, res) {
 
 exports.featured = function(req,res) {
 	var featuredGraph = '/data/graph/eesn/flamingofront.json'
-	switch (process.env.SITE) {
+	switch (process.env.FQDN) {
 		case '360.vizor.io':
 		case 'rc.vizor.io':
 		case 'vizor.io':
