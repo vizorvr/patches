@@ -966,10 +966,6 @@ Application.prototype.serialiseSelection = function() {
 }
 
 Application.prototype.onCopy = function(e) {
-	if (e && E2.util.isTextInputInFocus(e)) {
-		return true
-	}
-
 	if (e)
 		e.preventDefault()
 
@@ -1987,15 +1983,24 @@ Application.prototype.start = function() {
 	})
 
 	document.addEventListener('cut', function(e) {
+		if (e && E2.util.isTextInputInFocus(e))
+			return true
+
 		that.onCut(e)
 		e.preventDefault()
 	})
 
 	document.addEventListener('copy', function(e) {
+		if (e && E2.util.isTextInputInFocus(e))
+			return true
+
 		return that.onCopy(e)
 	})
 
 	window.addEventListener('paste', function(e) {
+		if (e && E2.util.isTextInputInFocus(e))
+			return true
+
 		var data = e.clipboardData.getData('text/plain')
 		that.onPaste(data)
 		e.preventDefault()
