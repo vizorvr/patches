@@ -65,12 +65,11 @@ function GraphController(s, gfs, mongoConnection) {
 	args.unshift(Graph);
 	AssetController.apply(this, args);
 
-	this.serialNumber = new SerialNumber(mongoConnection)
-	this.serialNumber.init()
-
 	this.redisClient = redis.createClient({
 		host: process.env.REDIS || 'localhost'
 	})
+
+	this.serialNumber = new SerialNumber(this.redisClient)
 
 	this.graphAnalyser = new GraphAnalyser(gfs)
 	this.previewImageProcessor = new PreviewImageProcessor()

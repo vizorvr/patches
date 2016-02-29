@@ -295,7 +295,6 @@ describe('Multiuser', function() {
 		})
 	})
 
-
 	it('sends log from where left off', function(done) {
 		var channel = 'test'+Math.random()
 		
@@ -309,7 +308,7 @@ describe('Multiuser', function() {
 				firstId = m.id
 
 			lastId = m.id
-			
+
 			// wait until last message
 			if (m.number !== 2)
 				return;
@@ -319,8 +318,8 @@ describe('Multiuser', function() {
 			s3.once('join', function() {
 				// assert that we only get number 2
 				s3.dispatcher.register(function(m) {
-					assert.notEqual(m.number, 1)
-					assert.equal(m.id, lastId)
+					assert.equal(m.number, 2)
+					assert.equal(m.id, 2)
 					s3.close()
 					s3.once('disconnected', done)
 				})
