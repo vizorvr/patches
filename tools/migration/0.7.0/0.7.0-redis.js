@@ -85,8 +85,10 @@ exports.execute = function() {
 	})
 	.then(function() {
 		console.log('Indexing')
-		return r.table('editlog').indexWait('name')
+		return r.table('editlog')
+		.indexCreate('name')
 		.run(rethinkConnection)
+		.error(function() {})
 	})
 	.then(function() {
 		console.log('Counting')
