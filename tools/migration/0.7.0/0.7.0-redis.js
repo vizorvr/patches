@@ -112,7 +112,7 @@ exports.execute = function() {
 
 		return cursor.eachAsync(function(row) {
 			var idfd = when.defer()
-			sn.next('serial:'+row.name)
+			sn.next(row.name)
 			.then(function(serial) {
 				if (++i % 1000 === 0) {
 					console.log('    ', i, 'of', total, '-',
