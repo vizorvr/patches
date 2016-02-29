@@ -11,6 +11,9 @@ var expect = require('chai').expect
 var graphFile = __dirname+'/../../browser/data/graphs/default.json'
 var graphData = fs.readFileSync(graphFile).toString('utf8')
 
+var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../../package.json'))
+var currentVersion = packageJson.version.split('.').slice(0,2).join('.')
+
 function rand() {
 	return Math.floor(Math.random() * 10000)
 }
@@ -36,12 +39,52 @@ describe('Graph', function() {
 		.end(cb)
 	}
 
+	function sendAnonymousGraph(path, cb) {
+		return agent.post('/graph/v').send({
+			path: path,
+			graph: graphData
+		})
+		.expect(200)
+		.end(cb)
+	}
+
+	function findAutoplayInHTML(bodyHtml) {
+		var canvasRX 	= /<canvas\/?[\w\s="/.':;#-\/]+>[.\s\S]*<\/canvas>/gi.exec(bodyHtml)
+		var endScriptRX	= /<script>[.\s\S]*<\/script>/gi.exec(bodyHtml)
+		return {
+			canvasTag: 		canvasRX.length === 1 	? canvasRX[0] 	: '',
+			endScriptTag: 	endScriptRX.length > 0 	? endScriptRX.pop()	: ''
+		}
+	}
+
 	before(function(done) {
-		agent
-		.post('/signup')
-		.send(deets)
-		.expect(302)
-		.end(done)
+		app.events.on('ready', function() {
+			agent
+			.post('/signup')
+			.send(deets)
+			.expect(302)
+			.end(done)
+		})
+	})
+
+	it('should accept anonymous save', function(done) {
+		var path = 'some-'+rand()
+		var expectedPath = '/v/'+path
+
+		sendAnonymousGraph(path, function(err, res) {
+			if (err) return done(err)
+			var json = {
+				name: res.body.name,
+				owner: res.body.owner,
+				url: res.body.url,
+				path: res.body.path
+			}
+			expect(json.name).to.not.equal(path)
+			expect(json.owner).to.equal('v')
+			expect(json.path).to.equal('/v/'+json.name)
+			expect(json.url).to.equal('/data/graph/v/'+json.name+'.json')
+			done()
+		})
 	})
 
 	it('should use the expected name, owner, path, and url', function(done) {
@@ -125,6 +168,88 @@ describe('Graph', function() {
 		})
 	})
 
+	it('should save graph version', function(done) {
+		var name = 'button-'+rand()
+		var path = '/'+username+'/'+name+'.json'
+
+		sendGraph(name, function(err, res) {
+			if (err) return done(err)
+			request(app).get(path)
+			.expect(200).end(function(err, res) {
+				if (err) return done(err)
+				expect(res.body.version).to.equal(currentVersion)
+				done()
+			})
+		})
+	})
+
+	it('should use the player version for the graph', function(done) {
+		var name = 'button-'+rand()
+		var path = '/'+username+'/'+name
+
+		sendGraph(name, function(err, res) {
+			if (err) return done(err)
+			request(app).get(path)
+			.set('Accept', 'text/html')
+			.expect(200).end(function(err, res) {
+				if (err) return done(err)
+
+				expect(res.text
+					.split('/'+currentVersion+'/player.min.js').length)
+					.to.equal(2)
+
+				done()
+			})
+		})
+	})
+
+
+	it('should autoplay graphs by default', function(done) {
+		var name = 'button-'+rand()
+		var path = '/'+username+'/'+name
+
+		sendGraph(name, function(err, res) {
+			if (err) return done(err)
+			request(app).get(path)
+			.set('Accept', 'text/html')
+			.expect(200).end(function(err, res) {
+				if (err) return done(err)
+				var autoplay = findAutoplayInHTML(res.text)
+				expect(autoplay.canvasTag
+					.split('data-autoplay="true"').length)
+					.to.equal(2)
+
+				expect(autoplay.endScriptTag
+					.split('Vizor.autoplay = true').length)
+					.to.equal(2)
+				done()
+			})
+		})
+	})
+
+	it('should not autoplay embedded graphs', function(done) {
+		var name = 'button-'+rand()
+		var path = '/embed/'+username+'/'+name
+
+		sendGraph(name, function(err, res) {
+			if (err) return done(err)
+			request(app).get(path)
+			.set('Accept', 'text/html')
+			.expect(200).end(function(err, res) {
+				if (err) return done(err)
+				var autoplay = findAutoplayInHTML(res.text)
+				expect(autoplay.canvasTag
+					.split('data-autoplay="true"').length)
+					.to.equal(1)
+
+				expect(autoplay.endScriptTag
+					.split('Vizor.autoplay = false').length)
+					.to.equal(2)
+				done()
+			})
+		})
+	})
+
 /*	it('should return graph landing by path', function(done) {
 		var path = 'button-'+rand()
 		var expectedPath = '/'+username+'/'+path
@@ -151,7 +276,7 @@ describe('Graph', function() {
 		.expect(200)
 		.end(function(err, res) {
 			if (err) return done(err)
-			
+
 			request(app)
 			.get('/'+username+'/assets/graph/tag/are')
 			.expect(200)

@@ -201,6 +201,8 @@ Application.prototype.setSlotCssClasses = function(slot, slot_div) {	/* @var slo
 Application.prototype.onSlotClicked = function(node, slot, slot_div, type, e) {
 	e.stopPropagation()
 
+	if(document.activeElement)
+			document.activeElement.blur();
 	if (!E2.ui.flags.pressedShift) {
 		var graph = E2.core.active_graph
 
@@ -966,10 +968,6 @@ Application.prototype.serialiseSelection = function() {
 }
 
 Application.prototype.onCopy = function(e) {
-	if (e && E2.util.isTextInputInFocus(e)) {
-		return true
-	}
-
 	if (e)
 		e.preventDefault()
 
@@ -1374,14 +1372,14 @@ Application.prototype.toggleNoodles = function() {
 }
 
 Application.prototype.canInitiateCameraMove = function(e) {
-	return this.isVRCameraActive() && E2.util.isCanvasInFocus(e)
+	return E2.ui.isFullScreen() ||  this.isVRCameraActive() && E2.util.isCanvasInFocus(e)
 }
 
-Application.prototype.setViewCamera = function(cameraId) {
-	this.worldEditor.selectCamera(cameraId)
+Application.prototype.setViewCamera = function(isBirdsEyeCamera) {
+	this.worldEditor.selectCamera(isBirdsEyeCamera ? 'birdsEye' : 'vr')
 
 	// if helper objects are off, and we're in vr camera, disable world editor entirely
-	if (!this.worldEditor.areEditorHelpersActive() && cameraId === 'vr') {
+	if (!this.worldEditor.areEditorHelpersActive() && !isBirdsEyeCamera) {
 		this.worldEditor.deactivate()
 	}
 	else if (!this.worldEditor.isActive()) {
@@ -1987,15 +1985,24 @@ Application.prototype.start = function() {
 	})
 
 	document.addEventListener('cut', function(e) {
+		if (e && E2.util.isTextInputInFocus(e))
+			return true
+
 		that.onCut(e)
 		e.preventDefault()
 	})
 
 	document.addEventListener('copy', function(e) {
+		if (e && E2.util.isTextInputInFocus(e))
+			return true
+
 		return that.onCopy(e)
 	})
 
 	window.addEventListener('paste', function(e) {
+		if (e && E2.util.isTextInputInFocus(e))
+			return true
+
 		var data = e.clipboardData.getData('text/plain')
 		that.onPaste(data)
 		e.preventDefault()

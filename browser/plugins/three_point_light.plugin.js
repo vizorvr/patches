@@ -17,6 +17,16 @@
 			{ name: 'decay', dt: core.datatypes.FLOAT, def: this.params.decay },
 			{ name: 'color', dt: core.datatypes.COLOR, def: this.params.color }
 		].concat(this.input_slots)
+
+		// disable shadows by default for point lights - they're slow
+		this.input_slots.map(function(input) {
+			if (input.name === 'castShadow') {
+				input.def = false
+			}
+			else if (input.name === 'receiveShadow') {
+				input.def = false
+			}
+		})
 	}
 
 	ThreePointLightPlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
@@ -24,10 +34,12 @@
 	ThreePointLightPlugin.prototype.reset = function() {
 		ThreeObject3DPlugin.prototype.reset.apply(this)
 
-		this.object3d = new THREE.PointLight( 0xFFFFFF ); // soft white light
+		this.setObject3D(new THREE.PointLight( 0xFFFFFF )) // soft white light
+	}
 
-		// back reference for object picking
-		this.object3d.backReference = this
+	// disable scaling, it doesn't make sense for lights
+	ThreePointLightPlugin.prototype.canEditScale = function() {
+		return false
 	}
 
 })()

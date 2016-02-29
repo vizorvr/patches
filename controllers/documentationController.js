@@ -85,7 +85,7 @@ DocumentationController.prototype.getPluginDocumentation = function(req, res, ne
 
 	if (!pluginNameIsValid) {
 		var err = new Error('Invalid Plugin name:' + pluginName)
-		return next(err)
+		return res.json({ error: 404 })
 	}
 
 	var docPath = './documentation/browser/plugins/' + pluginName + ".md"
@@ -96,13 +96,16 @@ DocumentationController.prototype.getPluginDocumentation = function(req, res, ne
 
 	fs.stat(docPath, function(err, exists) {
 		if (err) {
-			console.error(err, docPath)
-			return next(err)
+			var e = new Error(err.toString()+docPath);
+			e.status = 404
+
+			return next(e)
 		}
 
 		fs.readFile(docPath, function(err, markdown) {
 			if (err) {
-				console.error(err, docPath)
+				var e = new Error(err.toString()+docPath);
+				e.status = 404
 				return next(err)
 			}
 

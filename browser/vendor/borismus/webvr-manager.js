@@ -2076,18 +2076,17 @@ RotateInstructions.prototype.show = function() {
     s.marginTop = '25%';
   }
 
-  //document.body.dispatchEvent(new CustomEvent('VRManInstructionsShown'))    // vizor.io x Android
+  document.body.dispatchEvent(new CustomEvent('VRManInstructionsShown'))
 };
 
 RotateInstructions.prototype.hide = function() {
   this.overlay.style.display = 'none';
+  document.body.dispatchEvent(new CustomEvent('VRManInstructionsHidden'))
 };
 
 RotateInstructions.prototype.showTemporarily = function(ms) {
   this.show();
   this.timer = setTimeout(this.hide.bind(this), ms);
-
-  document.body.dispatchEvent(new CustomEvent('VRManInstructionsHidden'))   // vizor.io x Android
 };
 
 RotateInstructions.prototype.disableShowTemporarily = function() {
@@ -2531,7 +2530,7 @@ function WebVRManager(renderer, effect, params) {
   this.mode = Modes.UNKNOWN;
 
   // Set option to hide the button.
-  this.hideButton = Vizor.hideWebVRButton || this.params.hideButton || false;
+  this.hideButton = (window.Vizor && Vizor.hideWebVRButton) || this.params.hideButton || false;
   // Whether or not the FOV should be distorted or un-distorted. By default, it
   // should be distorted, but in the case of vertex shader based distortion,
   // ensure that we use undistorted parameters.
@@ -2689,8 +2688,10 @@ WebVRManager.prototype.setMode_ = function(mode) {
     return;
   }
   console.log('Mode change: %s => %s', this.mode, mode);
+  var oldMode = this.mode
   this.mode = mode;
   this.button.setMode(mode, this.isVRCompatible);
+  document.body.dispatchEvent(new CustomEvent('vrManagerModeChanged', {detail: {mode: mode, oldMode: oldMode, vrCompatible: this.isVRCompatible}}))      // gm
 
   if (this.mode == Modes.VR && Util.isLandscapeMode() && Util.isMobile()) {
     // In landscape mode, temporarily show the "put into Cardboard"
@@ -2842,6 +2843,17 @@ WebVRManager.prototype.anyModeToNormal_ = function() {
 };
 
 WebVRManager.prototype.getContainerDimensions = function() {	  // gm #896
+
+  if (WebVRConfig && WebVRConfig.getContainerMeta) {
+     var meta = WebVRConfig.getContainerMeta()
+     var ret = {
+       width:   meta.width,
+       height:  meta.height
+     }
+    return ret
+  }
+
+  // else old behavior
 	var container, width, height;
 	if (this.renderer.domElement) {
 	  container = this.renderer.domElement.parentNode;

@@ -26,18 +26,20 @@ describe('EditLog', function() {
 	var db
 
 	before(function(done) {
-		agent = request.agent(app)
-		db = new mongo.Db('editLog'+testId,
-			new mongo.Server('localhost', 27017),
-			{ safe: true }
-		)
+		app.events.on('ready', function() {
+			agent = request.agent(app)
+			db = new mongo.Db('editLog'+testId,
+				new mongo.Server('localhost', 27017),
+				{ safe: true }
+			)
 
-		db.open(function() {
-			agent
-			.post('/signup')
-			.send(deets)
-			.expect(302)
-			.end(done)
+			db.open(function() {
+				agent
+				.post('/signup')
+				.send(deets)
+				.expect(302)
+				.end(done)
+			})
 		})
 	})
 

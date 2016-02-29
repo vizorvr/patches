@@ -71,7 +71,8 @@
 				0.001,
 				1000)
 
-			this.vrControlCamera.layers.enable(1)
+			// layer is for mono camera only
+			this.vrControlCamera.layers.enable(3)
 
 			this.dolly.add(this.vrControlCamera)
 		}
@@ -79,8 +80,6 @@
 		// create a object3d reference so that the world editor sees the camera
 		// as an object3d
 		this.object3d = this.dolly
-		this.object3d.backReference = this
-
 		this.object3d.backReference = this
 
 		if (!this.controls) {
@@ -186,6 +185,18 @@
 		if (!ui) {
 			E2.core.on('resize', this.resize.bind(this))
 		}
+	}
+
+	ThreeVRCameraPlugin.prototype.canEditPosition = function() {
+		return true
+	}
+
+	ThreeVRCameraPlugin.prototype.canEditQuaternion = function() {
+		return true
+	}
+
+	ThreeVRCameraPlugin.prototype.canEditScale = function() {
+		return false
 	}
 
 })()

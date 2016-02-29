@@ -2,6 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var assetHelper = require('./asset-helper');
 
+var fs = require('fs')
+var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
+var currentPlayerVersion = packageJson.version.split('.').slice(0,2).join('.')
+
 var alphanumeric = [
 	/[a-z0-9\-\_]/,
 	'Must be alphanumeric'
@@ -26,6 +30,7 @@ var graphSchema = new mongoose.Schema({
 	previewUrlSmall: { type: String },
 	previewUrlLarge: { type: String },
 	hasAudio: { type: Boolean, default: false },
+	version: { type: String, default: currentPlayerVersion },
 	stat: statSpec,
 	updatedAt: { type: Date, default: Date.now },
 	createdAt: { type: Date, default: Date.now }

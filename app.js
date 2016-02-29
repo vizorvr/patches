@@ -15,6 +15,8 @@ var csrf = require('lusca').csrf();
 var methodOverride = require('method-override');
 var crypto = require('crypto')
 
+var GridFsStorage = require('./lib/gridfs-storage');
+
 var flash = require('express-flash');
 
 var fsPath = require('path');
@@ -36,6 +38,9 @@ var templateCache = new TemplateCache().compile();
 // Framework controllers (see below for asset controllers)
 var homeController = require('./controllers/home');
 var userController = require('./controllers/userController');
+
+// Threesixty site controller
+var threesixtyController = require('./controllers/threesixty');
 
 // API keys + Passport configuration
 var secrets = require('./config/secrets');
@@ -241,7 +246,51 @@ app.use('/data', express.static(
 	)
 )
 
+// accounts
+
+app.get('/login', userController.getLogin);
+app.post('/login', userController.postLogin);
+app.post('/login.json', userController.postLogin);
+app.get('/logout', userController.logout);
+app.get('/forgot', userController.getForgot);
+app.post('/forgot', userController.postForgot);
+app.get('/reset/:token', userController.getReset);
+app.post('/reset/:token', userController.postReset);
+
+app.get('/signup', userController.getSignup);
+app.post('/signup', userController.postSignup);
+app.post('/account/exists', userController.checkUserName);
+app.post('/account/email/exists', userController.checkEmailExists);
+
+app.get('/account', passportConf.isAuthenticated, userController.getAccount)
+app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
+app.get('/account/profile', passportConf.isAuthenticated, userController.getAccountProfile);
+
+app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
+app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
+app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
+
+switch (process.env.FQDN) {
+	case '360vr.io':
+	case '360.vizor.io':
+		// 360 photo site
+		app.get('/', threesixtyController.index);
+		app.get('/featured', threesixtyController.featured)
+		app.get('/v/:graph', function(req, res, next) {
+			res.locals.layout = 'threesixty'
+			next()
+		})
+	default:
+		// default site
+		app.get('/', homeController.index);
+		app.get('/threesixty', threesixtyController.index);
+		app.get('/threesixty/featured', threesixtyController.featured);
+		break;
+}
+
 var rethinkConnection
+var gfs
+
 var rethinkDbName = process.env.RETHINKDB_NAME || 'vizor'
 r.connect({
 	host: process.env.RETHINKDB_HOST || 'localhost',
@@ -251,18 +300,22 @@ r.connect({
 	if (err)
 		throw err
 
-	console.log('RethinkDB connected')
-
 	rethinkConnection = conn
 
 	mongoose.connect(secrets.db);
 	mongoose.connection.on('error', function(err) {
 		throw err
-	});
+	})
 
-	var GridFsStorage = require('./lib/gridfs-storage');
-	var gfs = new GridFsStorage('/data');
+	mongoose.connection.on('connected', (connection) => {	
+		gfs = new GridFsStorage('/data')
+		gfs.on('ready', function() {
+			setupModelRoutes(mongoose.connection.db)
+		})
+	})
+})
 
+function setupModelRoutes(mongoConnection) {
 	// stat() files in gridfs
 	app.get(/^\/stat\/data\/.*/, function(req, res) {
 		var path = req.path.replace(/^\/stat\/data/, '');
@@ -287,8 +340,12 @@ r.connect({
 		var model = path.split('/')[1]
 		var cacheControl = 'public'
 
-		if (model === 'graph')
-			cacheControl = 'public, must-revalidate'
+		switch(model) {
+			case 'dist':
+			case 'graph':
+				cacheControl = 'public, must-revalidate'
+				break;
+		}
 
 		gfs.stat(path)
 		.then(function(stat) {
@@ -345,13 +402,11 @@ r.connect({
 		.catch(next)
 	});
 
-	app.get(/^\/dl\/.*/, function(req, res, next)
-	{
-		var path = req.path.replace(/^\/dl\/data/, '');
+	app.get(/^\/dl\/.*/, function(req, res, next) {
+		var path = req.path.replace(/^\/dl\/data/, '')
 
 		gfs.stat(path)
-		.then(function(stat)
-		{
+		.then(function(stat) {
 			if (!stat)
 				return res.status(404).send();
 
@@ -407,32 +462,6 @@ r.connect({
 	app.use('/common', express.static(fsPath.join(__dirname, 'common'),
 		{ maxAge: hour }))
 
-	// accounts
-
-	app.get('/login', userController.getLogin);
-	app.post('/login', userController.postLogin);
-	app.post('/login.json', userController.postLogin);
-	app.get('/logout', userController.logout);
-	app.get('/forgot', userController.getForgot);
-	app.post('/forgot', userController.postForgot);
-	app.get('/reset/:token', userController.getReset);
-	app.post('/reset/:token', userController.postReset);
-
-	app.get('/signup', userController.getSignup);
-	app.post('/signup', userController.postSignup);
-	app.post('/account/exists', userController.checkUserName);
-	app.post('/account/email/exists', userController.checkEmailExists);
-
-	app.get('/account', passportConf.isAuthenticated, userController.getAccount)
-	app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
-	app.get('/account/profile', passportConf.isAuthenticated, userController.getAccountProfile);
-
-	app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
-	app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
-	app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
-
-	app.get('/', homeController.index);
-
 	// --------------------------------------------------
 
 	/**
@@ -443,6 +472,7 @@ r.connect({
 		app,
 		gfs,
 		rethinkConnection,
+		mongoConnection,
 		passportConf
 	)
 
@@ -479,6 +509,6 @@ r.connect({
 	app.use(errorHandler());
 
 	app.events.emit('ready')
-})
+}
 
 module.exports = app;

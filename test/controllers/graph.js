@@ -1,64 +1,68 @@
 var assert = require('assert');
 var GraphController = require('../../controllers/graphController');
 var when = require('when');
+var fs = require('fs')
 
-describe('GraphController', function()
-{
-	var ctrl, svc, stream;
-	var resolved = function(data)
-	{
-		var dfd = when.defer();
-		dfd.resolve(data || true);
-		return dfd.promise;
-	};
+describe('GraphController', function() {
+	var ctrl, svc, stream
+	var res = { json: function() {} }
 
-	beforeEach(function()
-	{
-		svc = { canWrite: resolved };
-		fs =
-		{
-			url: function(str)
-			{
-				return '/root'+str;
+	function resolved(data) {
+		return when.resolve(data)
+	}
+
+	beforeEach(function() {
+		svc = {
+			canWrite: resolved,
+			save: function(data) {
+				return resolved(data)
+			}
+		}
+		fs = {
+			url: function(str) {
+				return '/root'+str
+			},
+			writeString: function() {
+				return resolved()
 			},
 			writeString: resolved
-		};
-		ctrl = new GraphController(svc, fs);
-	});
-
-	it('handles graph post', function(done)
-	{
-		var wrote = false;
-		fs.writeString = function() {
-			wrote = true;
-			return resolved();
 		}
-		svc.save = function(data)
-		{
-			assert.equal(data.path, '/memyselfandi/foo');
-			assert.equal(data.graph, undefined);
-			return resolved(data);
+
+		var mongo = {
+			collection: function() {}
+		}
+		ctrl = new GraphController(svc, fs, {}, mongo)
+	})
+
+	it('calls save on graph post', function(done) {
+		svc.save = function(data) {
+			assert.equal(data.path, '/memyselfandi/foo')
+			assert.equal(data.graph, undefined)
+			return resolved(data)
+		}
+
+		fs.writeString = function() {
+			done()
+			return resolved()
 		}
 
 		ctrl.save({
 			body: { path: 'foo', graph: '{ "root": {}}' },
+			user: { username: 'memyselfandi' }
+		}, res, done)
+	});
+
+	it('handles graph post', function(done) {
+		ctrl.save({
+			body: { path: 'foo', graph: '{ "root": {}}' },
 			user: { username: 'memyselfandi'}
-		},
-		{
-			json: function(json)
-			{
-				assert.deepEqual(json,
-				{
-					path: '/memyselfandi/foo',
-					url: '/root/graph/memyselfandi/foo.json',
-					tags: [],
-					hasAudio: false,
-					stat: { size: 0, numAssets: 0 },
-					previewUrlSmall: '/root/previews/memyselfandi/foo-preview-440x330.png',
-					previewUrlLarge: '/root/previews/memyselfandi/foo-preview-1280x720.png',
-				});
-				assert.ok(wrote);
-				done();
+		}, {
+			json: function(json) {
+				assert.equal(json.path, '/memyselfandi/foo')
+				assert.equal(json.url, '/root/graph/memyselfandi/foo.json')
+				assert.equal(json.previewUrlSmall, '/root/previews/memyselfandi/foo-preview-440x330.png')
+				assert.equal(json.previewUrlLarge, '/root/previews/memyselfandi/foo-preview-1280x720.png')
+				done()
 			}
 		}, done)
 	});

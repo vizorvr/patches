@@ -27,7 +27,12 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 	var assets = {}
 	var totalSize = 0
 	var assetsFound = 0
-	var stat = { size: 0, numAssets: 0, hasAudio: false }
+	var stat = {
+		size: 0,
+		numAssets: 0,
+		numNodes: 0,
+		hasAudio: false
+	}
 
 	function findInGraph(subgraph) {
 		if (!subgraph.nodes)
@@ -35,6 +40,8 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 
 		return when.map(subgraph.nodes, function(node) {
 			var id = node.plugin.id || node.plugin
+
+			stat.numNodes++
 
 			if (id === 'graph')
 				return findInGraph(node.graph || node.plugin.graph)

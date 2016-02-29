@@ -29,6 +29,7 @@ var siteUI = new function() {
 	this.isEmbedded = null;
 	this.isDragging = null;
 
+
 	this.onResize = function() {
 		that.tagBodyClass();
 		return true;
@@ -396,10 +397,18 @@ var siteUI = new function() {
 			return 'default'
 	};
 
+	this.isModalOpen = function() {
+		var $modal = jQuery('div.bootbox.modal');
+		that.lastModalIsOpen = $modal.hasClass('in');
+		return that.lastModalIsOpen
+	}
+
 	this.deviceIsTablet = this.isDeviceTablet()
 	this.deviceIsPhone = this.isDevicePhone()
 	this.deviceIsDesktop = this.isDeviceDesktop()
 	this.isEmbedded = this.isInIframe()
+
+	this.lastModalIsOpen = false
 }
 
 jQuery('document').ready(siteUI.init);
@@ -522,7 +531,14 @@ VizorUI.modalOpen = function(html, heading, className, onEscape, opts) {
 	if (typeof opts.backdrop === 'undefined') opts.backdrop = onEscape;	// bb 4.4+
 	if ((typeof heading !== 'undefined') && heading) opts.title = heading;
 	if ((typeof className !== 'undefined') && className) opts.className = className;
-	return bootbox.dialog(opts);
+	var b = bootbox.dialog(opts);
+
+	var trackModalStatus = function(){siteUI.isModalOpen(); return true}
+	b
+		.on('hidden.bs.modal', trackModalStatus)
+		.on('shown.bs.modal', trackModalStatus)
+
+	return b
 };
 
 VizorUI.modalClose = function(bb) {

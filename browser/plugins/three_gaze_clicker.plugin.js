@@ -94,40 +94,27 @@
 
 			that.dynamic = true
 
-			var i, j, clickerIdx
+			var i, j
 
-			// clickerIdx:
-			//   -1 = left eye
-			//    0 = mono
-			//    1 = right eye
-			for (clickerIdx = -1; clickerIdx < 2; clickerIdx++) {
-				for (j = 0; j < that.segments + 1; j++) {
-					for (i = 0; i < that.radialMarkers.length; i++) {
-						that.vertices.push(new THREE.Vector3())
-					}
+			for (j = 0; j < that.segments + 1; j++) {
+				for (i = 0; i < that.radialMarkers.length; i++) {
+					that.vertices.push(new THREE.Vector3())
 				}
 			}
 			var normal = new THREE.Vector3(0,0,1)
 
-			// clickerIdx:
-			//   -1 = left eye
-			//    0 = mono
-			//    1 = right eye
-			for (clickerIdx = -1; clickerIdx < 2; clickerIdx++) {
-				var baseIdx = (clickerIdx + 1) * (that.segments + 1) * that.radialMarkers.length
-				for (j = 0; j < that.segments; j++) {
-					for (i = 0; i < that.radialMarkers.length; i += 2) {
-						var faceidxa = baseIdx + (j) * that.radialMarkers.length + i
-						var faceidxb = baseIdx + (j) * that.radialMarkers.length + i + 1
-						var faceidxc = baseIdx + (j + 1) * that.radialMarkers.length + i
-						var faceidxd = baseIdx + (j + 1) * that.radialMarkers.length + i + 1
+			for (j = 0; j < that.segments; j++) {
+				for (i = 0; i < that.radialMarkers.length; i += 2) {
+					var faceidxa = (j) * that.radialMarkers.length + i
+					var faceidxb = (j) * that.radialMarkers.length + i + 1
+					var faceidxc = (j + 1) * that.radialMarkers.length + i
+					var faceidxd = (j + 1) * that.radialMarkers.length + i + 1
 
-						that.faces.push(new THREE.Face3(faceidxa, faceidxb, faceidxc, normal))
-						that.faces.push(new THREE.Face3(faceidxb, faceidxd, faceidxc, normal))
+					that.faces.push(new THREE.Face3(faceidxa, faceidxb, faceidxc, normal))
+					that.faces.push(new THREE.Face3(faceidxb, faceidxd, faceidxc, normal))
 
-						that.faces.push(new THREE.Face3(faceidxa, faceidxc, faceidxb, normal))
-						that.faces.push(new THREE.Face3(faceidxb, faceidxc, faceidxd, normal))
-					}
+					that.faces.push(new THREE.Face3(faceidxa, faceidxc, faceidxb, normal))
+					that.faces.push(new THREE.Face3(faceidxb, faceidxc, faceidxd, normal))
 				}
 			}
 		}
@@ -146,42 +133,34 @@
 				radialMarkers[2] = this.radialMarkers[1] + (this.radialMarkers[3] - this.radialMarkers[1]) * (1 - fadeoutfactor)
 			}
 
-			var i, j, clickerIdx
+			var i, j
 
-			var clickerDepth = -0.01
+			var clickerDepth = -0.0111 // slightly farther away than camera near plane to prevent z fighting
 			var clickerRadius = 0.0008
 
-			// clickerIdx:
-			//   -1 = left eye
-			//    0 = mono
-			//    1 = right eye
-			for (clickerIdx = -1; clickerIdx < 2; clickerIdx++) {
-				var horizOffset = parent.iconDistance * clickerIdx
+			for (j = 0; j < that.segments + 1; j++) {
+				for (i = 0; i < radialMarkers.length; i++) {
+					var angle = j / that.segments
 
-				for (j = 0; j < that.segments + 1; j++) {
-					for (i = 0; i < radialMarkers.length; i++) {
-						var angle = j / that.segments
-
-						// clamp outer ring
-						if (i > 1) {
-							angle = Math.min(angle, fillfactor)
-						}
-
-						angle *= 3.14159 * 2
-
-						var x = Math.sin(angle)
-						var y = Math.cos(angle)
-
-						var f = radialMarkers[i]
-
-						//if (i > 1) {
-						//	f *= fadeoutfactor
-						//}
-
-						that.vertices[idx].set(x * f * clickerRadius + horizOffset, y * f * clickerRadius, clickerDepth)
-
-						idx++
+					// clamp outer ring
+					if (i > 1) {
+						angle = Math.min(angle, fillfactor)
 					}
+
+					angle *= 3.14159 * 2
+
+					var x = Math.sin(angle)
+					var y = Math.cos(angle)
+
+					var f = radialMarkers[i]
+
+					//if (i > 1) {
+					//	f *= fadeoutfactor
+					//}
+
+					that.vertices[idx].set(x * f * clickerRadius, y * f * clickerRadius, clickerDepth)
+
+					idx++
 				}
 			}
 
@@ -198,8 +177,33 @@
 		if (!this.object3d) {
 			this.geometry = new this.GeometryGenerator(this)
 			this.material = new THREE.MeshBasicMaterial({color:0xffffff})
-			this.object3d = new THREE.Mesh(this.geometry, this.material)
-			this.object3d.matrixAutoUpdate = false
+
+			var group = new THREE.Group()
+			group.matrixAutoUpdate = false
+
+			// mono eye icon
+			var monoEyeIcon = new THREE.Mesh(this.geometry, this.material)
+			monoEyeIcon.matrixAutoUpdate = false
+			monoEyeIcon.layers.set(3)
+			group.add(monoEyeIcon)
+
+			// left eye icon
+			var leftEyeIcon = new THREE.Mesh(this.geometry, this.material)
+			leftEyeIcon.layers.set(1)
+			leftEyeIcon.position.x = -this.iconDistance
+			leftEyeIcon.updateMatrix()
+			leftEyeIcon.updateMatrixWorld()
+			group.add(leftEyeIcon)
+
+			// right eye icon
+			var rightEyeIcon = new THREE.Mesh(this.geometry, this.material)
+			rightEyeIcon.layers.set(2)
+			rightEyeIcon.position.x = this.iconDistance
+			rightEyeIcon.updateMatrix()
+			rightEyeIcon.updateMatrixWorld()
+			group.add(rightEyeIcon)
+
+			this.object3d = group
 		}
 
 		return this.object3d
@@ -272,13 +276,17 @@
 			return
 		}
 
-		this.update_click(updateContext)
+		var isActive = true
+
+		if (isActive) {
+			this.update_click(updateContext)
+		}
 
 		var mesh = this.get_mesh()
 
-		mesh.matrix.copy(this.camera.matrixWorld)
+		if (isActive && this.scene.hasClickableObjects && this.showIcon !== false) {
+			mesh.matrix.copy(this.camera.matrixWorld)
 
-		if (this.scene.hasClickableObjects && this.showIcon !== false) {
 			this.geometry.update(this.clickFactor, Math.max(1.0 - Math.max(0.0, this.clickTime - this.clickDelay) * 10.0, 0.0))
 
 			if (this.scene.children[1].children.indexOf(mesh) < 0) {

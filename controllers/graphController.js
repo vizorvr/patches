@@ -9,18 +9,21 @@ var isStringEmpty = require('../lib/stringUtil').isStringEmpty
 var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
 var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
+var SerialNumber = require('../lib/serialNumber')
 
 var User = require('../models/user')
 
 var EditLog = require('../models/editLog')
 
-function makeRandomPath() {
-	var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
-	var uid = ''
-	for (var i=0; i < 12; i++) {
-		uid += keys[Math.floor(Math.random() * keys.length)]
-	}
-	return uid
+var secrets = require('../config/secrets')
+var Hashids = require('hashids')
+var hashids = new Hashids(secrets.sessionSecret)
+ 
+var fs = require('fs')
+var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
+
+function makeHashid(serial) {
+	return hashids.encode(serial)
 }
 
 function prettyPrintGraphInfo(graph) {
@@ -33,11 +36,14 @@ function prettyPrintGraphInfo(graph) {
 	// Figure out if the graph owner has a fullname
 	// Use that if does, else use the username for display
 	var graphOwner;
-	var creator = graph._creator;
-	if (creator.name && !isStringEmpty(creator.name)) {
+	var creator = graph._creator
+	if (creator && creator.name && !isStringEmpty(creator.name)) {
 		graphOwner = creator.name;
 	} else {
-		graphOwner = graph.owner;
+		if (graph.owner)
+			graphOwner = graph.owner
+		else
+			graphOwner = 'anonymous'
 	}
 
 	graph.prettyOwner = graphOwner
@@ -53,11 +59,15 @@ function prettyPrintGraphInfo(graph) {
 	return graph
 }
 
-function GraphController(s, gfs, rethinkConnection) {
+function GraphController(s, gfs, rethinkConnection, mongoConnection) {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
 	AssetController.apply(this, args);
+
 	this.rethinkConnection = rethinkConnection
+
+	this.serialNumber = new SerialNumber(mongoConnection)
+	this.serialNumber.init()
 
 	this.graphAnalyser = new GraphAnalyser(gfs)
 	this.previewImageProcessor = new PreviewImageProcessor()
@@ -102,7 +112,7 @@ GraphController.prototype.userIndex = function(req, res, next) {
 					scripts : ['site/userpages.js']
 				}
 			});
-			
+
 			res.render('server/pages/userpage', data);
 		});
 	})
@@ -154,7 +164,10 @@ GraphController.prototype.edit = function(req, res, next) {
 	var that = this
 
 	if (!req.params.path) {
-		return res.redirect('/' + makeRandomPath())
+		return this.serialNumber.next('editLog')
+		.then(function(serial) {
+			return res.redirect('/' + makeHashid(serial))
+		})
 	}
 
 	this._service.findByPath(req.params.path)
@@ -176,6 +189,27 @@ GraphController.prototype.latest = function(req, res) {
 	});
 }
 
+function renderPlayer(graph, req, res, options) {
+	graph = prettyPrintGraphInfo(graph)
+
+	// which version of player to use?
+	var version = graph.version || packageJson.version
+	version = version.split('.').slice(0,2).join('.')
+
+	res.render('graph/show', {
+		layout: res.locals.layout || 'player',
+		playerVersion: version,
+		autoplay: !!(options && options.autoplay),
+		graph: graph,
+		graphMinUrl: graph.url,
+		graphName: graph.prettyName,
+		graphOwner: graph.prettyOwner,
+		previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
+		previewImageWidth: 1280,
+		previewImageHeight: 720
+	})
+}
+
 // GET /embed/fthr/dunes-world
 GraphController.prototype.embed = function(req, res, next) {
 	this._service.findByPath(req.params.path)
@@ -183,18 +217,8 @@ GraphController.prototype.embed = function(req, res, next) {
 		if (!graph)
 			return next()
 
-		graph = prettyPrintGraphInfo(graph)
-
-		res.render('graph/show', {
-			layout: 'player',
-			autoplay: false,
-			graph: graph,
-			graphMinUrl: graph.url,
-			graphName: graph.prettyName,
-			graphOwner: graph.prettyOwner,
-			previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
-			previewImageWidth: 1280,
-			previewImageHeight: 720
+		return renderPlayer(graph, req, res, {
+			autoplay: false
 		})
 	}).catch(next)
 }
@@ -206,30 +230,18 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 		if (!graph)
 			return next()
 
-		graph = prettyPrintGraphInfo(graph)
-		
-		res.render('graph/show', {
-			layout: 'player',
-			graph: graph,
-			graphMinUrl: graph.url,
-			autoplay: true,
-			graphName: graph.prettyName,
-			graphOwner: graph.prettyOwner,
-			previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
-			previewImageWidth: 1280,
-			previewImageHeight: 720
+		return renderPlayer(graph, req, res, {
+			autoplay: true
 		})
 	}).catch(next)
 }
 
 // GET /fthr/dunes-world/graph.json
-GraphController.prototype.stream = function(req, res, next)
-{
+GraphController.prototype.stream = function(req, res, next) {
 	var that = this;
 
 	this._service.findByPath(req.params.path)
-	.then(function(item)
-	{
+	.then(function(item) {
 		that._fs.createReadStream(item.url)
 		.pipe(res)
 		.on('error', next);
@@ -265,10 +277,8 @@ GraphController.prototype.canWriteUpload = function(req, res, next)
 } 
 
 // POST /graph with file upload
-GraphController.prototype.upload = function(req, res, next)
-{
+GraphController.prototype.upload = function(req, res, next) {
 	var that = this;
-
 	var file = req.files.file;
 
 	if (fsPath.extname(file.path) !== '.json')
@@ -277,31 +287,79 @@ GraphController.prototype.upload = function(req, res, next)
 	var path = this._makePath(req, file.path);
 	var gridFsPath = '/graph'+path+'.json';
 
-	// move the uploaded file into GridFS / local FS
-	return that._fs.move(file.path, gridFsPath)
-	.then(function(url)
-	{
-		return that._service.findByPath(path)
-		.then(function(model)
-		{
-			if (!model)
-				model = { path: path };
+	return this._service.canWrite(req.user, path)
+	.then(function(can) {
+		if (!can) {
+			return res.status(403)
+				.json({message: 'Sorry, permission denied'});
+		}
 
-			model.url = url;
+		// move the uploaded file into GridFS / local FS
+		return that._fs.move(file.path, gridFsPath)
+		.then(function(url) {
+			return that._service.findByPath(path)
+			.then(function(model) {
+				if (!model)
+					model = { path: path };
 
-			// save/update the model
-			return that._service.save(model, req.user)
-			.then(function(asset)
-			{
-				res.json(asset);
+				model.url = url;
+
+				// save/update the model
+				return that._service.save(model, req.user)
+				.then(function(asset) {
+					res.json(asset);
+				});
 			});
-		});
+		})
 	})
-	.catch(function(err)
-	{
+	.catch(function(err) {
 		return next(err);
 	});
 };
+
+// POST /graph
+GraphController.prototype.saveAnonymous = function(req, res, next) {
+	var that = this
+	var anonReq = { user: { username: 'v' } }
+
+	return this.graphAnalyser.analyseJson(req.body.graph)
+	.then(function(analysis) {
+		if (!analysis.numNodes) {
+			return res.status(400)
+				.json({ message: 'Invalid data' })
+		}
+
+		return that.serialNumber.next('anonymousGraph')
+		.then(function(serial) {
+			var uid = makeHashid(serial)
+			var path = that._makePath(anonReq, uid)
+
+			var gridFsGraphPath = '/graph'+path+'.json'
+			var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
+
+			return that._fs.writeString(gridFsGraphPath, req.body.graph)
+			.then(function() {
+				var url = that._fs.url(gridFsGraphPath);
+
+				var model = {
+					path: path,
+					url: url,
+					hasAudio: false,
+					stat: {
+						size: analysis.size,
+						numAssets: analysis.numAssets
+					}
+				}
+
+				return that._service.save(model, anonReq.user)
+				.then(function(asset) {
+					res.json(asset)
+				})
+			})
+		})
+	})
+	.catch(next)
+}
 
 // POST /graph
 GraphController.prototype.save = function(req, res, next) {
@@ -327,7 +385,7 @@ GraphController.prototype.save = function(req, res, next) {
 	.then(function(can) {
 		if (!can) {
 			return res.status(403)
-				.json({message: 'Sorry, permission denied'});
+				.json({ message: 'Sorry, permission denied' })
 		}
 
 		return that._fs.writeString(gridFsGraphPath, req.body.graph)
@@ -379,7 +437,7 @@ GraphController.prototype.save = function(req, res, next) {
 				res.json(asset)
 			})
 			.catch(function(err) {
-				console.error('err', err)
+				next(err)
 			})
 		})
 	})

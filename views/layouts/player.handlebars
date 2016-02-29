@@ -18,7 +18,7 @@
         <meta name="twitter:title" content="{{graphName}} by {{graphOwner}}" />
         <meta name="twitter:description" content="Vizor is a platform for creating and sharing VR experiences" />
         <meta name="twitter:image" content="{{previewImage}}" />
-        <link href="/style/less.css" rel="Stylesheet" type="text/css"/>
+        <link href="/style/less.css" rel="stylesheet" type="text/css"/>
 		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 		<script src="/node_modules/jquery/dist/jquery.min.js"></script>
 
@@ -26,11 +26,18 @@
 		<script src="/vendor/bootbox.min.js"></script>
         <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
 		<script src="/scripts/ui-site.js"></script>
+        <script src="/data/dist/{{playerVersion}}/player.min.js"></script>
+        <script>
+        (function(){
+            {{{templateCache}}}
+        }.apply(window))
+        </script>
+        {{{js 'ui/playerUI'}}}
         <script>{{> mixpanel}}</script>
 	    <script>{{> ga}}</script>
 	</head>
 	<body class="bPlayer noselect_all dark">
-		<script type="text/javascript" src="/dist/player.min.js"></script>
+        {{> srv/siteSvgSprite }}
         <div class="wrap clearfix" id="playerpage">
 		    {{{body}}}
             <noscript>

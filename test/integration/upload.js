@@ -32,27 +32,27 @@ describe('Upload', function() {
 	var agent = request.agent(app);
 	var db;
 
-	before(function(done) {
-		var that = this;
-
-		db = new mongo.Db('upload'+testId,
-			new mongo.Server('localhost', 27017),
-			{ safe: true }
-		)
-
-		db.open(done);
-	})
-
 	after(function() {
 		db.dropDatabase();
 	})
 
 	before(function(done) {
-		agent
-		.post('/signup')
-		.send(deets)
-		.expect(302)
-		.end(done);
+		app.events.on('ready', function() {
+			var that = this;
+
+			db = new mongo.Db('upload'+testId,
+				new mongo.Server('localhost', 27017),
+				{ safe: true }
+			)
+
+			db.open(function() {
+				agent
+				.post('/signup')
+				.send(deets)
+				.expect(302)
+				.end(done)
+			});
+		})
 	});
 
 	describe('Image', function()
@@ -79,21 +79,18 @@ describe('Upload', function() {
 				delete json.original.bytes;
 				delete json.scaledThumbnail.bytes;
 				delete json.scaled.bytes;
-				delete json.thumbnail.bytes;
 
 				expect(json.url.length).to.equal(56);
 				expect(json.original.url.length).to.equal(56);
 				expect(json.scaled.url.length).to.equal(56);
 				expect(json.scaledThumbnail.url.length).to.equal(56);
-				expect(json.thumbnail.url.length).to.equal(56);
 
-				delete json.url; delete json.scaled.url; delete json.original.url; delete json.scaledThumbnail.url; delete json.thumbnail.url; 
+				delete json.url; delete json.scaled.url; delete json.original.url; delete json.scaledThumbnail.url;
 
 				expect({__v:0,path:original,
 					tags:['texture'],
-					scaledThumbnail:{mimetype:'image/png',width:128,height:128,path:scaledThumb},
-					scaled:{mimetype:'image/png',width:1024,height:1024,path:scaled},
-					thumbnail:{mimetype:'image/png',width:128,height:72,path:thumb},
+					scaledThumbnail:{mimetype:'image/png',width:128,height:64,path:scaledThumb},
+					scaled:{mimetype:'image/png',width:2048,height:1024,path:scaled},
 					original:{mimetype:'image/png',width:1920,height:1080,path:original}
 					})
 					.to.deep.equal(json);

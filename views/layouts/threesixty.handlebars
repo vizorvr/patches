@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+
+	{{#if meta.title}}
+		<title>{{meta.title}}</title>
+	{{else}}
+		<title>360vr.io - Threesixty VR</title>
+	{{/if}}
+    {{#if meta.keywords }}
+        <meta name="keywords" content="{{meta.keywords}}" />
+    {{else}}
+        <meta name="keywords" content="vizor, vr, webvr, virtual reality, webgl, visual programming, animation, world editor, 3d editor" />
+    {{/if}}
+    {{#if meta.description}}
+        <meta name="description" content="{{meta.description}}" />
+    {{else}}
+        <meta name="description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
+    {{/if}}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <!-- facebook -->
+    <meta name="og:description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
+    <meta name="og:image" content="/images/vizor_social.jpg" />
+    <meta name="og:restrictions:age" content="13+" />
+    <meta name="fb:profile_id" content="980737135276580" />
+
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900" />
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:200,300,400" />
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
+
+	{{{css 'threesixty'}}}
+
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/node_modules/lodash/dist/lodash.min.js"></script>
+    <script src="/vendor/when.js"></script>
+    <script src="/vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+	<script src="/vendor/bootbox.min.js"></script>
+    <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
+
+    {{{js 'ui-site'}}}
+
+    <script src="/data/dist/0.6/player.min.js"></script>
+    <script>
+        (function(){
+            {{{templateCache}}}
+        }.apply(window))
+    </script>
+    {{{js 'ui/playerUI'}}}
+    {{{js 'threesixty'}}}
+
+	<script>{{> mixpanel}}</script>
+    <script>{{> ga}}</script>
+
+</head>
+
+<body class="{{meta.bodyclass}} {{extraClasses}} b360 bPlayer noselect_all" >
+
+    {{> srv/siteSvgSprite}}
+    {{> srv/editorSvgSprite}}
+
+    <div id="drop-zone">
+        <svg class="icon-upload" style='fill: #fff; stroke: #fff'><use xlink:href="#icon-upload"></use></svg>
+    </div>
+    <div id="container360">
+        <h1 id="logo360"><a href="/threesixty">ThreeSixty°</a></h1>
+        <div id="lander-header">
+            <h2>Simple 360 VR photo sharing</h2>
+            <p class="noDeviceMobile noDeviceTablet">Drag and drop a 360 photo anywhere to share it</p>
+            <input id="threesixty-image-input" type="file" name="image" accept="image/*" />
+        </div>
+        {{> srv/madeWithVizor }}
+    </div>
+    <div class="wrap clearfix" id="playerpage">
+        {{{body}}}
+    </div>
+</body>
+
+</html>

@@ -74,7 +74,9 @@
         "Audio file loader": "url_audio_generator",
         "Audio buffer loader": "url_audio_buffer_generator",
         "JSON": "url_json_generator",
-        "Video": "url_video_generator"
+        "Video": "url_video_generator",
+
+        "Deprecated: Stereo Cubemap": "stereo_cube_map"
     },
 
     "RENDERING BASICS": {
@@ -110,18 +112,23 @@
         "Depth Material": "three_material_depth",
         "Lambert Material": "three_material_lambert",
         "Phong Material": "three_material_phong",
+        "Standard Material": "three_material_standard",
+
         "Shader": "three_material_shader",
         "Point Cloud Material": "three_point_cloud_material",
         "Material Modifier": "three_material_modifier",
         "UV Modifier": "three_uv_modifier",
-        "Ambient Light": "three_ambient_light",
-        "Directional Light": "three_directional_light",
-        "Hemisphere Light": "three_hemisphere_light",
-        "Point Light": "three_point_light",
-        "Spot Light": "three_spot_light",
         "Line Material": "three_line_material",
         "Cubemap Material": "three_cube_material",
-        "Material Extractor": "three_material_extractor"
+        "Material Extractor": "three_material_extractor",
+
+        "Hemisphere Light": "three_hemisphere_light",
+        "Directional Light": "three_directional_light",
+
+        "Point Light": "three_point_light",
+        "Spot Light": "three_spot_light",
+
+        "Ambient Light": "three_ambient_light"
     },
 
     "INTERACTION STUFF": {
@@ -139,7 +146,7 @@
         "Write Variable": "variable_local_write",
         "Input proxy": "input_proxy",
         "Output proxy": "output_proxy",
-        "Graph": "graph",
+        "Nested Patch": "graph",
         "Loop": "loop",
         "Array Function": "array_function",
         "Annotation": "annotation"
@@ -150,7 +157,8 @@
         "VR Camera": "three_vr_camera",
         "Perspective Camera": "three_perspective_camera",
         "Screen Space Transform Extractor": "three_screen_space_transform_extractor",
-        "Viewport Size": "viewport_size_generator"
+        "Viewport Size": "viewport_size_generator",
+        "Camera Forward Vector": "camera_forward_vector"
     },
 
 

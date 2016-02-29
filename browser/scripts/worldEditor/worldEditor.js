@@ -80,11 +80,13 @@ WorldEditor.prototype.update = function() {
 		gridScale = gridScale < 1 ? 1 : gridScale
 		this.radialHelper.scale(gridScale)
 	}
-
-	this.cameraSelector.update(this.transformMode, this.vrCamera)
 }
 
 WorldEditor.prototype.preRenderUpdate = function() {
+	// update the camera selector just before render so that we get up to date
+	// camera information for this frame
+	this.cameraSelector.update(this.transformMode, this.vrCamera)
+
 	// add the editor tree to the scene if it's not there already
 	var editorIdx = this.scene.children.indexOf(this.editorTree)
 
@@ -110,8 +112,10 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 	// 1. collect objects requiring handles
 	var nodeCollector = function ( node ) {
 		if (node instanceof THREE.PointLight
-		||  node instanceof THREE.DirectionalLight
+		||  node instanceof THREE.AmbientLight
 		||  node instanceof THREE.SpotLight
+		// legacy lights:
+		||  node instanceof THREE.DirectionalLight
 		||  node instanceof THREE.HemisphereLight) {
 			needsHandles.push(node)
 		}
@@ -147,42 +151,40 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 		}
 	}
 
-	// 4. finally create any new handles
+	// 4. finally create any new helpers
 	for (var i = 0; i < newHandles.length; ++i) {
 		var node = newHandles[i]
 
-		if (node instanceof THREE.PointLight) {
-			var helper = new THREE.PointLightHelper(node, 0.5)
-
-			helper.backReference = node.backReference
-			helper.helperObjectBackReference = node
+		if (node instanceof THREE.HemisphereLight && node.children.length === 1 && node.children[0] instanceof THREE.DirectionalLight) {
+			var helper = new SceneLightingHelper(node)
+			helper.attach(node)
 			this.handleTree.add(helper)
 		}
-		else if (node instanceof THREE.DirectionalLight) {
-			var helper = new THREE.DirectionalLightHelper(node, 0.5)
-
-			helper.backReference = node.backReference
-			helper.helperObjectBackReference = node
+		else if (node instanceof THREE.PointLight) {
+			var helper = new PointLightHelper(node)
+			helper.attach(node)
 			this.handleTree.add(helper)
 		}
 		else if (node instanceof THREE.SpotLight) {
-			var helper = new THREE.SpotLightHelper(node)
-
-			helper.backReference = node.backReference
-			helper.helperObjectBackReference = node
-			this.handleTree.add(helper)
-		}
-		else if (node instanceof THREE.HemisphereLight) {
-			var helper = new THREE.HemisphereLightHelper(node, 0.5)
-
-			helper.backReference = node.backReference
-			helper.helperObjectBackReference = node
+			var helper = new SpotLightHelper(node)
+			helper.attach(node)
 			this.handleTree.add(helper)
 		}
 		else if (node instanceof THREE.Camera) {
-			this.cameraHelper.helperObjectBackReference = node
-			this.cameraHelper.attachCamera(node)
+			this.cameraHelper.attach(node)
 			this.handleTree.add(this.cameraHelper)
+		}
+
+		// Directional & Hemisphere lights are legacy but we don't want to break old graphs:
+		else if (node instanceof THREE.HemisphereLight && !(node.children.length == 1 && node.children[0] instanceof THREE.DirectionalLight)) {
+			var helper = new HemisphereLightHelper(node)
+			helper.attach(node)
+			this.handleTree.add(helper)
+		}
+		else if (node instanceof THREE.DirectionalLight && !(node.parent instanceof THREE.HemisphereLight)) {
+			var helper = new DirectionalLightHelper(node)
+			helper.attach(node)
+			this.handleTree.add(helper)
 		}
 	}
 }
@@ -527,19 +529,28 @@ WorldEditor.prototype.matchVRToEditorCamera = function() {
 	E2.app.undoManager.end()
 }
 
-WorldEditor.prototype.selectCamera = function(cameraId) {
+WorldEditor.prototype.callAndRetainSelection = function(callback) {
 	var activePlugin = this.cameraSelector.transformControls.plugin
 	var selectedObject = activePlugin ? activePlugin.object3d : undefined
 	if (selectedObject !== undefined) {
 		this.cameraSelector.transformControls.detach()
 	}
 
-	this.cameraSelector.selectCamera(cameraId)
+	if (callback) {
+		callback()
+	}
 
 	// reselect the selection for the new camera
 	if (selectedObject !== undefined) {
 		this.setSelection([selectedObject])
 	}
+}
+
+WorldEditor.prototype.selectCamera = function(cameraId) {
+	var that = this
+	this.callAndRetainSelection(function() {
+		that.cameraSelector.selectCamera(cameraId)
+	})
 }
 
 WorldEditor.prototype.matchEditorToVRCamera = function() {
@@ -567,7 +578,10 @@ WorldEditor.prototype.setCameraView = function(camera) {
 }
 
 WorldEditor.prototype.toggleCameraOrthographic = function() {
-	this.selectCamera(this.cameraSelector.selectedCamera === 'orthographic' ? 'perspective' : 'orthographic')
+	var that = this
+	this.callAndRetainSelection(function() {
+		that.cameraSelector.selectNextCameraInCurrentCategory()
+	})
 }
 
 WorldEditor.prototype.setEditorHelpers = function(set) {

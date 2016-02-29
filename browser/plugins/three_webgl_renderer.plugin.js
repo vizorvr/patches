@@ -1,5 +1,7 @@
 (function() {
 	var ThreeWebGLRendererPlugin = E2.plugins.three_webgl_renderer = function(core) {
+		Plugin.apply(this, arguments)
+
 		this.desc = 'THREE.js WebGL renderer'
 
 		this.input_slots = [
@@ -17,6 +19,12 @@
 				name: 'bgcolor',
 				dt: core.datatypes.COLOR,
 				desc: 'Background color'
+			},
+			{
+				name: 'shadowsEnabled',
+				dt: core.datatypes.BOOL,
+				desc: 'Master control for whether shadows are rendered',
+				def: false
 			}
 		]
 
@@ -27,6 +35,8 @@
 
 		this.clearColor = new THREE.Color(0,0,0)
 	}
+
+	ThreeWebGLRendererPlugin.prototype = Object.create(Plugin.prototype)
 
 	ThreeWebGLRendererPlugin.prototype.stop = function() {
 		if (this.renderer) {
@@ -55,15 +65,17 @@
 		switch(slot.index) {
 			case 0:
 				this.perspectiveCamera = data
-				break;
+				return
 			case 1:
 				this.scene = data
 				this.patchSceneForWorldEditor(this.scene)
-				break;
+				return
 			case 2:
 				this.clearColor = new THREE.Color(data.r, data.g, data.b)
-				break;
+				return
 		}
+
+		Plugin.prototype.update_input.apply(this, arguments)
 	}
 
 	ThreeWebGLRendererPlugin.prototype.update_state = function() {
@@ -77,7 +89,9 @@
 
 			return
 		}
-		
+
+		this.renderer.shadowMap.enabled = this.inputValues.shadowsEnabled
+
 		if (this.manager.isVRMode()) {
 			// vr mode doesn't necessarily update the world matrix
 			// could be a bug in new version of three.js
