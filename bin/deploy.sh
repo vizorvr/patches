@@ -52,5 +52,5 @@ d run -d --name $FQDN \
      -e "ENGI_BIND_PORT=$PORT" \
      -p 127.0.0.1:$PORT:$PORT \
      --link mongo:mongo \
-     --link rethink:rethink $FQDN:v1
+     --link redis:redis $FQDN:v1
 
