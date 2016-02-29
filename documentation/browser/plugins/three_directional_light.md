@@ -10,6 +10,12 @@ THREE.js Directional Light
 ###color
 
 
+###shadow radius
+
+
+###shadow darkness
+
+
 ###position
 
 
