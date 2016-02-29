@@ -16,7 +16,8 @@
 			{ name: 'directional light color', dt: core.datatypes.COLOR, def: this.params.lightColor },
 			{ name: 'sky light color', dt: core.datatypes.COLOR, def: this.params.skyColor },
 			{ name: 'ground light color', dt: core.datatypes.COLOR, def: this.params.groundColor },
-			{ name: 'shadow radius', dt: core.datatypes.FLOAT, def: 1 }
+			{ name: 'shadow radius', dt: core.datatypes.FLOAT, def: 1 },
+			{ name: 'shadow darkness', dt: core.datatypes.FLOAT, def: 1}
 		].concat(this.input_slots)
 
 		this.always_update = true
@@ -31,6 +32,10 @@
 			this.hemisphereLight = new THREE.HemisphereLight(this.params.skyColor, this.params.groundColor)
 			this.directionalLight = new THREE.DirectionalLight(this.params.lightColor, this.params.intensity)
 
+			this.directionalLight.intensity = this.inputValues.intensity
+			this.directionalLight.shadow.radius = this.inputValues['shadow radius']
+			this.directionalLight.shadow.darkness = this.inputValues['shadow darkness']
+
 			this.hemisphereLight.add(this.directionalLight)
 
 			this.setObject3D(this.hemisphereLight)
@@ -38,13 +43,13 @@
 	}
 
 	SceneLightingPlugin.prototype.update_state = function() {
-		this.directionalLight.updateMatrixWorld()
+		ThreeObject3DPlugin.prototype.update_state.apply(this, arguments)
+
+		this.object3d.updateMatrixWorld()
 		var directionVector = new THREE.Vector3(0, -1, 0)
 		directionVector.applyMatrix4(this.directionalLight.matrixWorld)
 		this.directionalLight.target.position.copy(directionVector)
 		this.directionalLight.target.updateMatrixWorld()
-
-		return ThreeObject3DPlugin.prototype.update_state.apply(this, arguments)
 	}
 
 	SceneLightingPlugin.prototype.update_input = function(slot, data) {
@@ -62,6 +67,9 @@
 		}
 		else if (slot.name === 'shadow radius') {
 			this.directionalLight.shadow.radius = data
+		}
+		else if (slot.name === 'shadow darkness') {
+			this.directionalLight.shadow.darkness = data
 		}
 		else {
 			ThreeObject3DPlugin.prototype.update_input.apply(this, arguments)

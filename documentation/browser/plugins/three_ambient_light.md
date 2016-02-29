@@ -1,4 +1,4 @@
-#Ambient Light
+#Deprecated: Ambient Light
 
 ##Description
 THREE.js Ambient Light

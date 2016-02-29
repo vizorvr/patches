@@ -112,6 +112,8 @@
         "Depth Material": "three_material_depth",
         "Lambert Material": "three_material_lambert",
         "Phong Material": "three_material_phong",
+        "Standard Material": "three_material_standard",
+
         "Shader": "three_material_shader",
         "Point Cloud Material": "three_point_cloud_material",
         "Material Modifier": "three_material_modifier",
@@ -120,13 +122,13 @@
         "Cubemap Material": "three_cube_material",
         "Material Extractor": "three_material_extractor",
 
-        "Experimental: Scene Lighting": "scene_lighting",
+        "Hemisphere Light": "three_hemisphere_light",
+        "Directional Light": "three_directional_light",
+
         "Point Light": "three_point_light",
         "Spot Light": "three_spot_light",
 
-        "Deprecated: Hemisphere Light": "three_hemisphere_light",
-        "Deprecated: Directional Light": "three_directional_light",
-        "Deprecated: Ambient Light": "three_ambient_light"
+        "Ambient Light": "three_ambient_light"
     },
 
     "INTERACTION STUFF": {
