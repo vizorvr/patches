@@ -1,4 +1,4 @@
-#Deprecated: Hemisphere Light
+#Hemisphere Light
 
 ##Description
 THREE.js Hemisphere Light

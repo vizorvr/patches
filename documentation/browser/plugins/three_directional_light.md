@@ -1,4 +1,4 @@
-#Deprecated: Directional Light
+#Directional Light
 
 ##Description
 THREE.js Directional Light

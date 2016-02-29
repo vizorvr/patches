@@ -11,7 +11,9 @@
 
 		this.input_slots = [
 			{ name: 'intensity', dt: core.datatypes.FLOAT, def: this.params.intensity },
-			{ name: 'color', dt: core.datatypes.COLOR, def: this.params.color }
+			{ name: 'color', dt: core.datatypes.COLOR, def: this.params.color },
+			{ name: 'shadow radius', dt: core.datatypes.FLOAT, def: 1 },
+			{ name: 'shadow darkness', dt: core.datatypes.FLOAT, def: 1}
 		].concat(this.input_slots)
 
 		this.always_update = true
@@ -34,6 +36,18 @@
 		directionVector.applyMatrix4(this.object3d.matrixWorld)
 		this.object3d.target.position.copy(directionVector)
 		this.object3d.target.updateMatrixWorld()
+	}
+
+	ThreeDirectionalLightPlugin.prototype.update_input = function(slot, data) {
+		if (slot.name === 'shadow radius') {
+			this.object3d.shadow.radius = data
+		}
+		else if (slot.name === 'shadow darkness') {
+			this.object3d.shadow.darkness = data
+		}
+		else {
+			ThreeObject3DPlugin.prototype.update_input.apply(this, arguments)
+		}
 	}
 
 	// disable scaling, it doesn't make sense for lights
