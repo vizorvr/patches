@@ -91,6 +91,11 @@ exports.execute = function() {
 		.error(function() {})
 	})
 	.then(function() {
+		return r.table('editlog')
+		.indexWait('name')
+		.run(rethinkConnection)
+	})
+	.then(function() {
 		console.log('Counting')
 		return r.table('editlog').count()
 		.run(rethinkConnection)
