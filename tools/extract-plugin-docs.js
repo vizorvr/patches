@@ -25,8 +25,8 @@ var docsPath = 'documentation/browser/plugins'
 
 var argv = require('minimist')(process.argv.slice(2))
 
-if (!argv['f']) {
-	console.log(`usage: extract-plugin-docs [pluginIds] [-f]
+if (!argv['f'] && !argv['o']) {
+	console.log(`usage: extract-plugin-docs [-o pluginId [otherPluginId] [...]] [-f]
 	
 	extracts the desc fields from all plugins and rewrites
 	documentation in documentation/browser/plugins/

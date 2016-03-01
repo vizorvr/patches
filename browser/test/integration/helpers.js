@@ -192,7 +192,8 @@ exports.reset = function() {
 		bind:function(){},
 		'0': {
 			clientWidth:1,
-			clientHeight:1
+			clientHeight:1,
+			addEventListener: function() {}
 		}
 	}
 

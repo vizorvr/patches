@@ -67,6 +67,7 @@ var paths = {
 			'./browser/vendor/three/VREffect.js',
 			'./browser/vendor/three/CardboardEffect.js',
 			'./browser/vendor/three/VRControls.js',
+			'./browser/vendor/three/OrbitControls.js',
 			'./browser/vendor/three/SceneLoader.js',
 			'./browser/vendor/three/MorphAnimMesh.js',
 
