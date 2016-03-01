@@ -52,6 +52,10 @@ ThreeMeshLineMaterialPlugin.prototype.reset = function() {
 	this.resize()
 }
 
+ThreeMeshLineMaterialPlugin.prototype.state_changed = function(ui) {
+	E2.core.on('resize', this.resize.bind(this))
+}
+
 ThreeMeshLineMaterialPlugin.prototype.update_input = function(slot, data) {
 	// Need to update the params also, used to recreate the material
 	this.params[slot.name] = data
