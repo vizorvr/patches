@@ -65,13 +65,11 @@ function ChatStore() {
 
 			E2.app.dispatcher.dispatch(pl)
 		})
-
 	}
 
 	connect()
 
-	E2.app.channel.on('reconnected', connect)
-
+	E2.app.channel.on('ready', connect)
 }
 
 ChatStore.prototype = Object.create(EventEmitter.prototype)

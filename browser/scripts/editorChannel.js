@@ -104,11 +104,15 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 	this.connected = false
 	this.forking = false
 
+	this.reconnectFn = this.connect.bind(this, wsHost, wsPort, options)
+
+	E2.models.user.once('change', this.onLoginChanged.bind(this))
+
 	// listen to messages from network
 	this.wsChannel = new WebSocketChannel()
 	this.wsChannel
 		.connect(wsHost, wsPort, '/__editorChannel', options)
-		.on('disconnected', function() {
+		.once('disconnected', function() {
 			if (!that.connected)
 				return;
 
@@ -123,11 +127,11 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 			reconnecting = true
 			
-			setTimeout(that.connect.bind(that, wsHost, wsPort, options), RECONNECT_INTERVAL)
+			setTimeout(that.reconnectFn, RECONNECT_INTERVAL)
 
 			that.emit('disconnected')
 		})
-		.on('ready', function(uid) {
+		.once('ready', function(uid) {
 			console.log('EditorChannel ready', uid)
 			that.uid = uid
 
@@ -161,6 +165,18 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 		})
 
 	return this
+}
+
+EditorChannel.prototype.onLoginChanged = function() {
+	var that = this
+	this.emit('disconnected')
+	this.isOnChannel = false
+	this.connected = false
+	this.reconnecting = true
+	this.close()
+	this.wsChannel.once('disconnected', function() {
+		that.reconnectFn()
+	})
 }
 
 EditorChannel.prototype.snapshot = function() {
@@ -237,7 +253,8 @@ EditorChannel.prototype._messageHandler = function _messageHandler(payload) {
 	if (!isAcceptedDispatch(payload))
 		return;
 
-	this.lastEditSeen = payload.id
+	if (isEditAction(payload))
+		this.lastEditSeen = payload.id
 
 	if (payload.from === this.uid)
 		return;
