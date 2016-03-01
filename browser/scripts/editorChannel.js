@@ -113,9 +113,6 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 	this.wsChannel
 		.connect(wsHost, wsPort, '/__editorChannel', options)
 		.once('disconnected', function() {
-			if (!that.connected)
-				return;
-
 			that.isOnChannel = false
 			that.connected = false
 
@@ -128,6 +125,9 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 			reconnecting = true
 			
 			setTimeout(that.reconnectFn, RECONNECT_INTERVAL)
+
+			if (!that.connected)
+				return;
 
 			that.emit('disconnected')
 		})
