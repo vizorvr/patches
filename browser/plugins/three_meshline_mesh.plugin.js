@@ -23,7 +23,7 @@
 		this.meshLine.setMatrixWorld(this.object3d.matrixWorld)
 
 		// Create our actual THREE.Mesh that is then added to our scene
-		mesh = new THREE.Mesh(this.meshLine.geometry, mats)
+		var mesh = new THREE.Mesh(this.meshLine.geometry, mats)
 
 		// Override the default raycast
 		var that = this
