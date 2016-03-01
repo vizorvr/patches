@@ -3,7 +3,7 @@ var assert = require('assert')
 var SerialNumber = require('../../lib/serialNumber')
 
 var secrets = require('../../config/secrets')
-var mongo = require('mongodb')
+var redis = require('redis')
 
 function rand() {
 	return Math.floor(Math.random() * 100000);
@@ -12,19 +12,15 @@ function rand() {
 var testId = rand()
 
 describe('SerialNumber', function() {
-	var sn, db
+	var sn, rc
 
 	before(function(done) {
-		db = new mongo.Db('sequence'+testId,
-			new mongo.Server('localhost', 27017),
-			{ safe: true }
-		);
-
-		db.open(done)
+		rc = redis.createClient()
+		rc.on('connect', done)
 	})
 
 	beforeEach(function(done) {
-		sn = new SerialNumber(db)
+		sn = new SerialNumber(rc)
 		sn.init()
 		sn.__reset('test')
 			.then(function(v) {
@@ -33,7 +29,7 @@ describe('SerialNumber', function() {
 	})
 
 	after(function() {
-		db.dropDatabase()
+		rc.end()
 	})
 
 	it('can get current value', function(done) {

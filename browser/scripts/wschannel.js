@@ -32,7 +32,7 @@ WebSocketChannel.prototype.connect = function(wsHost, wsPort, path, options) {
 	}
 
 	this.ws.onclose = function() {
-		console.warn('WsChannel disconnected', path, arguments)
+		console.warn('WsChannel disconnected')
 		that._state = 'disconnected'
 		that.emit('disconnected')
 	}

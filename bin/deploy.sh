@@ -53,5 +53,5 @@ d run -d --name $FQDN \
      -e "KEY_GA=$KEY_GA" \
      -p 127.0.0.1:$PORT:$PORT \
      --link mongo:mongo \
-     --link rethink:rethink $FQDN:v1
+     --link redis:redis $FQDN:v1
 

@@ -1,5 +1,4 @@
 var when = require('when')
-var r = require('rethinkdb')
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 var User = require('./user')
@@ -86,22 +85,18 @@ editLogSchema.statics.joinOrCreate = function(channelName, readableName, userId)
 
 
 /**
- * check whether RethinkDB has any edits for this
+ * check whether Redis has any edits for this
  * @returns Promise<boolean>
  */
-editLogSchema.statics.hasEditsByName = function(rethinkConn, name) {
+editLogSchema.statics.hasEditsByName = function(redisClient, name) {
 	var dfd = when.defer()
 
-	r.table('editlog')
-	.filter(r.row('name').eq(name))
-	.limit(1)
-	.orderBy('id')
-	.run(rethinkConn, function(err, cursor) {
+	redisClient.zcard(name, function(err, cardinality) {
 		if (err)
 			return dfd.reject(err)
 
-		console.log('EditLog.hasEditsByName', name, cursor.length)
-		dfd.resolve(cursor.length > 0)
+		console.log('EditLog.hasEditsByName', name, cardinality)
+		dfd.resolve(cardinality > 0)
 	})
 
 	return dfd.promise
