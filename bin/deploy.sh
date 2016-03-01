@@ -46,10 +46,11 @@ d run -d --name $FQDN \
      -e "FQDN=$FQDN" \
      -e "MANDRILL=$MANDRILL" \
      -e "NODE_ENV=$NODE_ENV" \
-     -e "KEY_GA=$KEY_GA" \
      -e "NEWRELIC=$NEWRELIC" \
      -e "SESSION_SECRET=$SESSION_SECRET" \
      -e "ENGI_BIND_PORT=$PORT" \
+     -e "KEY_MIXPANEL=$KEY_MIXPANEL" \
+     -e "KEY_GA=$KEY_GA" \
      -p 127.0.0.1:$PORT:$PORT \
      --link mongo:mongo \
      --link rethink:rethink $FQDN:v1
