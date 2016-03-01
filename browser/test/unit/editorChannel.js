@@ -1,4 +1,5 @@
 var assert = require('assert')
+var when = require('when')
 
 global.EventEmitter = require('events').EventEmitter
 
@@ -6,16 +7,27 @@ var EditorChannel = require('../../scripts/editorChannel')
 
 describe('EditorChannel', function() {
 	var ec 
+	var forkPromise
 
 	beforeEach(function() {
 		global._ = {
 			clone: function() {}
 		}
 		global.E2 = {
+			ui: {
+				updateProgressBar: function() {}
+			},
 			app: {
+				growl: function() {},
 				dispatcher: {
 					register: function() {}
 				}
+			}
+		}
+		global.ForkCommand = function() {
+			this.fork = function() {
+				forkPromise = when.defer()
+				return forkPromise.promise
 			}
 		}
 
@@ -52,5 +64,17 @@ describe('EditorChannel', function() {
 		assert.equal(ec.queue.length, 0)
 	})
 
+	it('replays queued messages after fork', function(done) {
+		var dispatches = 0
+		ec.fork()
+		ec.send({ actionType: 'uiNodeRemoved' })
+		ec.send({ actionType: 'uiDisconnected' })
+		assert.equal(ec.queue.length, 2)
+		forkPromise.resolve()
+		global.E2.app.dispatcher.dispatch = function(pl) {
+			if (++dispatches === 2)
+				done()
+		}
+	})
 
 })
