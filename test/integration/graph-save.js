@@ -108,6 +108,30 @@ describe('Graph', function() {
 		})
 	})
 
+	it('trim the space from the end', function(done) {
+		var r = rand()
+		var path = 'some'+r+'    '
+		var goodPath = 'some'+r
+		var expectedPath = '/'+username+'/'+goodPath
+
+		sendGraph(path, function(err, res) {
+			if (err) return done(err)
+			var json = {
+				name: res.body.name,
+				owner: res.body.owner,
+				url: res.body.url,
+				path: res.body.path
+			}
+  			expect({
+				name: goodPath,
+				owner: username,
+				path: expectedPath,
+				url: '/data/graph'+expectedPath+'.json'
+			}).to.deep.equal(json)
+			done()
+		})
+	})
+
 	it('should return data by url', function(done) {
 		var path = 'button-'+rand()
 
