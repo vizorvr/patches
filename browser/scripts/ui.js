@@ -737,7 +737,7 @@ VizorUI.checkCompatibleBrowser = function() {
 
 	var isMobile = VizorUI.isMobile.any();
 
-	if ((/Chrome/i.test(agent)) || (/Firefox/i.test(agent))) {
+	if ((/Safari/i.test(agent)) || (/Chrome/i.test(agent)) || (/Firefox/i.test(agent))) {
 
 	}
 	else if (isMobile) {
