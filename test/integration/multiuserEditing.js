@@ -44,8 +44,8 @@ function createClient(channelName, lastEditSeen) {
 
 	chan.connect(wsHost, wsPort, {
 		headers: {
-			'Cookie': 'vs050='+session.util.encode({
-				cookieName: 'vs050',
+			'Cookie': 'vs070='+session.util.encode({
+				cookieName: 'vs070',
 				secret: secrets.sessionSecret,
 				duration: 4100421,
 				activeDuration: 190248
@@ -97,6 +97,11 @@ describe('Multiuser', function() {
 
 	before(function(done) {
 		global.E2 = {
+			models: {
+				user: {
+					once: function(){}
+				}
+			},
 			app: {
 				growl: function() {}
 			},
@@ -357,6 +362,31 @@ describe('Multiuser', function() {
 				channel: channel,
 				id: 'alice'
 			}))
+		})
+	})
+
+
+
+	it('reconnects when user changes', function(done) {
+		var listener
+		global.E2.models.user = {
+			once: function(key, cb) {
+				listener = cb
+			}
+		}
+
+		var channel = 'test'+Math.random()
+		s1 = createClient(channel)
+		s1.once('ready', function(uid) {
+			var preUid = uid
+			s1.once('disconnected', function(m) {
+				s1.once('ready', function(uid) {
+					assert.notEqual(uid, preUid)
+					done()
+				})
+			})
+
+			listener()
 		})
 	})
 
