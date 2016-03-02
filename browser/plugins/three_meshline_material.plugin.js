@@ -49,11 +49,13 @@ ThreeMeshLineMaterialPlugin.prototype = Object.create(AbstractThreeMaterialPlugi
 ThreeMeshLineMaterialPlugin.prototype.reset = function() {
 	AbstractThreeMaterialPlugin.prototype.reset.call(this)
 	this.material = new THREE.MeshLineMaterial(this.params)
-	this.resize()
 }
 
 ThreeMeshLineMaterialPlugin.prototype.state_changed = function(ui) {
-	E2.core.on('resize', this.resize.bind(this))
+	// if ui is null, first time called, bind the resize
+	if (!ui) {
+		E2.core.on('resize', this.resize.bind(this))
+	}
 }
 
 ThreeMeshLineMaterialPlugin.prototype.update_input = function(slot, data) {
