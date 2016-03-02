@@ -264,13 +264,12 @@ Node.prototype.setInputSlotValue = function(name, value) {
 
 	if (value === slot.def) {
 		delete this.uiSlotValues[name]
-		delete this.plugin.inputValues[name]
 	} else {
 		this.uiSlotValues[name] = value
-		this.plugin.inputValues[name] = value
 	}
 
 	this.plugin.updated = true
+	this.plugin.inputValues[name] = value
 
 	this.plugin.update_input(slot, value)
 }

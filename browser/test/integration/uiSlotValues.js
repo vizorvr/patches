@@ -49,9 +49,9 @@ describe('Changing Slot Values', function() {
 
 	it('uses slot default after override ends', function() {
 		var slot = orNode.findInputSlotByName('a')
-		E2.app.graphApi
-			.changeSlotValue(graph, orNode, 'a', false)
 		slot.def = 3
+		E2.app.graphApi
+			.changeSlotValue(graph, orNode, 'a', 3)
 		assert.equal(orNode.getInputSlotValue('a'), 3)
 	})
 
