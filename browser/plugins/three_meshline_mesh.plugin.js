@@ -6,18 +6,18 @@
 	var createThreeMeshLineMesh = function(geom, mats) {
 		// Have to convert the bufferGeometry to THREE.Geometry(), as the MeshLine only
 		// accepts THREE.Geometry()
-		var set_geom;
+		var setGeom;
 
 		if (geom instanceof THREE.Geometry) {
-			set_geom = geom;
+			setGeom = geom;
 		} else if (geom instanceof THREE.BufferGeometry) {
-			set_geom = new THREE.Geometry().fromBufferGeometry(geom)
+			setGeom = new THREE.Geometry().fromBufferGeometry(geom)
 		}
 
 		// Create our meshLine object, which is actually not a Mesh or a object3d, but
 		// only contains a bufferGeometry meshLine.geometry
 		this.meshLine = new THREE.MeshLine()
-		this.meshLine.setGeometry(set_geom)
+		this.meshLine.setGeometry(setGeom)
 
 		// We need this for the raycast method to work
 		this.meshLine.setMatrixWorld(this.object3d.matrixWorld)
