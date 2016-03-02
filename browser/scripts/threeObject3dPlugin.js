@@ -141,8 +141,6 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 		}
 	}
 
-	var slotOffset = this.node.plugin.input_slots.length - handlers.length
-
 	if (handlers[slot.name]) {
 		if (data !== undefined) {
 			handlers[slot.name]()
