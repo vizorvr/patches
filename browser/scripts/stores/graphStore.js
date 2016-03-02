@@ -92,6 +92,13 @@ GraphStore.prototype._setupListeners = function() {
 					payload.key,
 					payload.value)
 				break;
+			case 'uiSlotValueChanged':
+				this._uiSlotValueChanged(
+					graph,
+					payload.nodeUid,
+					payload.slotName,
+					payload.value)
+				break;
 		}
 	}.bind(this))
 }
@@ -281,6 +288,13 @@ GraphStore.prototype._uiPluginTransientStateChanged = function(graph, nodeUid, k
 GraphStore.prototype._uiPluginStateChanged = function(graph, nodeUid, key, value) {
 	var node = graph.findNodeByUid(nodeUid)
 	node.setPluginState(key, value)
+	this.assetsMayHaveChanged(node)
+	this.emit('changed')
+}
+
+GraphStore.prototype._uiSlotValueChanged = function(graph, nodeUid, slotName, value) {
+	var node = graph.findNodeByUid(nodeUid)
+	node.setInputSlotValue(slotName, value)
 	this.assetsMayHaveChanged(node)
 	this.emit('changed')
 }

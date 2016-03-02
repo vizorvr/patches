@@ -263,8 +263,11 @@ Core.prototype.get_default_value = function(dt)
 	return null;
 };
 
-Core.prototype.serialise = function()
-{
+Core.prototype.serialise = function() {
+	return JSON.stringify(this.serialiseToObject());
+};
+
+Core.prototype.serialiseToObject = function() {
 	var d = {};
 	
 	d.abs_t = Math.round(this.abs_t * Math.pow(10, 4)) / Math.pow(10, 4);
@@ -272,7 +275,7 @@ Core.prototype.serialise = function()
 	d.graph_uid = this.graph_uid;
 	d.root = this.root_graph.serialise();
 	
-	return JSON.stringify(d, undefined, 4);
+	return d
 };
 
 Core.prototype.deserialiseObject = function(d) {
@@ -297,6 +300,8 @@ Core.prototype.deserialiseObject = function(d) {
 		msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
 		this.active_graph = this.root_graph;
 	}
+
+	return this.root_graph
 }
 
 Core.prototype.deserialise = function(str) {

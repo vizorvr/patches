@@ -48,5 +48,10 @@ GraphApi.prototype.reorder = function(graph, original, sibling, insertAfter) {
 	return this.undoManager.execute(cmd)
 }
 
+GraphApi.prototype.changeSlotValue = function(graph, node, slotName, newValue) {
+	var cmd = new E2.commands.graph.ChangeSlotValue(graph, node, slotName, newValue)
+	return this.undoManager.execute(cmd)
+}
+
 if (typeof(module) !== 'undefined')
 	module.exports = GraphApi

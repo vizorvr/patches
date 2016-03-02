@@ -14,6 +14,8 @@ function Node(parent_graph, plugin_id, x, y) {
 	this.dyn_inputs = []
 	this.dyn_outputs = []
 
+	this.uiSlotValues = {}
+
 	this.uid = E2.uid()
 
 	if (plugin_id) { // Don't initialise if we're loading.
@@ -48,6 +50,8 @@ Node.prototype.getDynamicOutputSlots = function() {
 Node.prototype.set_plugin = function(plugin) {
 	this.plugin = plugin;
 	this.plugin.updated = true;
+
+	this.plugin.inputValues = {}
 
 	var usedSlotNames = []
 	
@@ -127,10 +131,26 @@ Node.prototype.get_disp_name = function() {
 Node.prototype.reset = function() {
 	var p = this.plugin
 
-	if (p.reset) {
-		p.reset()
-		p.updated = true
+	p.inputValues = {}
+
+	if (p.input_slots) {
+		p.input_slots.map(function(slot) {
+			var def = slot.def !== undefined ? slot.def : E2.core.get_default_value(slot.dt)
+			p.inputValues[slot.name] = def
+		})
 	}
+
+	if (p.reset)
+		p.reset()
+
+	for(slotName in this.uiSlotValues) {
+		if (!this.uiSlotValues.hasOwnProperty(slotName))
+			continue
+
+		this.setInputSlotValue(slotName, this.uiSlotValues[slotName])
+	}
+
+	p.updated = true
 }
 
 Node.prototype.geometry_updated = function() {
@@ -239,6 +259,29 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 	this.emit('slotRemoved', slot)
 }
 
+Node.prototype.setInputSlotValue = function(name, value) {
+	var slot = this.findInputSlotByName(name)
+
+	if (value === slot.def) {
+		delete this.uiSlotValues[name]
+		delete this.plugin.inputValues[name]
+	} else {
+		this.uiSlotValues[name] = value
+		this.plugin.inputValues[name] = value
+	}
+
+	this.plugin.updated = true
+
+	this.plugin.update_input(slot, value)
+}
+
+Node.prototype.getInputSlotValue = function(name) {
+	var slot = this.findInputSlotByName(name)
+	return this.plugin.inputValues[name] !== undefined ?
+		this.plugin.inputValues[name] :
+		slot.def
+}
+
 Node.prototype.findInputSlotByName = function(name) {
 	var slot
 
@@ -248,6 +291,15 @@ Node.prototype.findInputSlotByName = function(name) {
 			return true
 		}
 	})
+
+	if (!slot) {
+		this.plugin.dyn_inputs.some(function(s) {
+			if (s.name === name) {
+				slot = s
+				return true
+			}
+		})
+	}
 
 	if (!slot)
 		console.error('findInputSlotByName not found', name)
@@ -406,16 +458,16 @@ Node.prototype._cascadeForceUpdate = function(conn) {
 }
 
 Node.prototype._update_input = function(updateContext, inp, pl, conns, needs_update) {
-	var result = {dirty: false, needs_update: needs_update}
-	var sn = inp.src_node;
+	var result = { dirty: false, needs_update: needs_update }
+	var sn = inp.src_node
 
-	result.dirty = sn.update_recursive(updateContext, conns);
+	result.dirty = sn.update_recursive(updateContext, conns)
 
 	// TODO: Sampling the output value out here might seem spurious, but isn't:
 	// Some plugin require the ability to set their updated flag in update_output().
 	// Ideally, these should be rewritten to not do so, and this state should
 	// be moved into the clause below to save on function calls.
-	var value = sn.plugin.update_output(inp.src_slot);
+	var value = sn.plugin.update_output(inp.src_slot)
 
 	if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
 		if (inp.dst_slot.array && !inp.src_slot.array) {
@@ -424,18 +476,24 @@ Node.prototype._update_input = function(updateContext, inp, pl, conns, needs_upd
 			value = value[0]
 		}
 
-		pl.update_input(inp.dst_slot, inp.dst_slot.validate ? inp.dst_slot.validate(value) : value);
+		var validValue = inp.dst_slot.validate ? inp.dst_slot.validate(value) : value
 
-		pl.updated = true;
-		result.needs_update = true;
+		// cache the input value for lookups elsewhere
+		pl.inputValues[inp.dst_slot.name] = validValue
+
+		// tell the plugin the input has changed
+		pl.update_input(inp.dst_slot, validValue)
+
+		pl.updated = true
+		result.needs_update = true
 
 		if (inp.ui && !inp.ui.flow) {
-			result.dirty = true;
-			inp.ui.flow = true;
+			result.dirty = true
+			inp.ui.flow = true
 		}
 	} else if(inp.ui && inp.ui.flow) {
-		inp.ui.flow = false;
-		result.dirty = true;
+		inp.ui.flow = false
+		result.dirty = true
 	}
 
 	return result
@@ -540,6 +598,8 @@ Node.prototype.setPluginState = function(key, value) {
 }
 
 Node.prototype.serialise = function(flat) {
+	var that = this
+
 	function pack_dt(slots) {
 		for(var i = 0, len = slots.length; i < len; i++) {
 			delete slots[i].desc;
@@ -554,20 +614,23 @@ Node.prototype.serialise = function(flat) {
 	d.y = Math.round(this.y);
 	d.uid = this.uid;
 	
-	if(!this.open)
+	if (Object.keys(this.uiSlotValues).length)
+		d.uiSlotValues = this.uiSlotValues
+
+	if (!this.open)
 		d.open = this.open;
 	
-	if(this.plugin.state)
+	if (this.plugin.state)
 		d.state = this.plugin.state;
 
-	if(this.title)
+	if (this.title)
 		d.title = this.title;
 	
 	if (!flat && this.plugin.isGraph)
 		d.graph = this.plugin.graph.serialise();
 	
 	if (this.dyn_inputs.length || this.dyn_outputs.length) {
-		if(this.dyn_inputs.length) {
+		if (this.dyn_inputs.length) {
 			d.dyn_in = clone(this.dyn_inputs);
 			pack_dt(d.dyn_in);
 		}
@@ -613,7 +676,7 @@ Node.prototype.deserialise = function(guid, d) {
 	this.open = d.open !== undefined ? d.open : true;
 	
 	this.title = d.title ? d.title : null;
-	
+
 	var plg = E2.core.pluginManager.create(d.plugin, this);
 	
 	if (!plg) {
@@ -636,10 +699,10 @@ Node.prototype.deserialise = function(guid, d) {
 		this.fixStateSidsIssue135(d.state)
 
 		for(var key in d.state) {
-			if(!d.state.hasOwnProperty(key))
+			if (!d.state.hasOwnProperty(key))
 				continue;
-				
-			if(key in this.plugin.state)
+
+			if (key in this.plugin.state)
 				this.plugin.state[key] = d.state[key];
 		}
 	}
@@ -668,6 +731,9 @@ Node.prototype.deserialise = function(guid, d) {
 		}
 	}
 
+	if (d.uiSlotValues)
+		this.uiSlotValues = d.uiSlotValues
+
 	return true;
 };
 
@@ -694,18 +760,17 @@ Node.prototype.patch_up = function(graphs) {
 
 	initStructure(this.parent_graph, this)
 	
-	if(this.plugin.isGraph)
-		this.plugin.graph.patch_up(graphs);
-};
+	if (this.plugin.isGraph)
+		this.plugin.graph.patch_up(graphs)
+}
 
-Node.prototype.initialise = function()
-{
-	if(this.plugin.state_changed)
-		this.plugin.state_changed(null);
+Node.prototype.initialise = function() {
+	if (this.plugin.state_changed)
+		this.plugin.state_changed(null)
 
-	if(this.plugin.isGraph)
-		this.plugin.graph.initialise();
-};
+	if (this.plugin.isGraph)
+		this.plugin.graph.initialise()
+}
 
 Node.hydrate = function(guid, json) {
 	var node = new Node()
