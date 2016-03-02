@@ -7,6 +7,9 @@ THREE.js Mesh
 ###object3d
 Optional existing mesh to modify
 
+###animation speed
+Animation speed multiplier
+
 ###geometry
 
 

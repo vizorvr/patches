@@ -21,7 +21,14 @@
 				desc: 'Optional existing mesh to modify',
 				def: null
 			}
-		].concat(this.input_slots)
+		].concat(this.input_slots).concat([
+			{
+				name: 'animation speed',
+				dt: core.datatypes.FLOAT,
+				desc: 'Animation speed',
+				def: 1
+			}
+		])
 
 		this.desc = 'THREE.js Mesh'
 
@@ -46,7 +53,7 @@
 	ThreeMeshPlugin.prototype.update_state = function (updateContext) {
 		AbstractThreeMeshPlugin.prototype.update_state.apply(this)
 
-		var delta = updateContext.delta_t * 0.001
+		var delta = updateContext.delta_t * 0.001 * this.inputValues['animation speed']
 
 		if (this.object3d) {
 			this.object3d.traverse(function(n) {
