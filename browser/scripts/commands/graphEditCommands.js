@@ -303,7 +303,7 @@ ChangePluginState.prototype.redo = function() {
 
 // -------------------------------
 
-function ChangeSlotValue(graph, node, slotName, newValue) {
+function ChangeInputSlotValue(graph, node, slotName, newValue) {
 	GraphEditCommand.apply(this, arguments)
 	this.node = node
 	this.slotName = slotName
@@ -311,9 +311,9 @@ function ChangeSlotValue(graph, node, slotName, newValue) {
 	this.newValue = newValue
 	this.title = 'Slot Value Changed'
 }
-ChangeSlotValue.prototype = Object.create(GraphEditCommand.prototype)
+ChangeInputSlotValue.prototype = Object.create(GraphEditCommand.prototype)
 
-ChangeSlotValue.prototype.undo = function() {
+ChangeInputSlotValue.prototype.undo = function() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiSlotValueChanged',
 		graphUid: this.graph.uid,
@@ -323,7 +323,7 @@ ChangeSlotValue.prototype.undo = function() {
 	})
 }
 
-ChangeSlotValue.prototype.redo = function() {
+ChangeInputSlotValue.prototype.redo = function() {
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiSlotValueChanged',
 		graphUid: this.graph.uid,
@@ -390,7 +390,7 @@ if (typeof(E2) !== 'undefined') {
 	E2.commands.graph.Reorder = Reorder
 
 	E2.commands.graph.ChangePluginState = ChangePluginState
-	E2.commands.graph.ChangeSlotValue = ChangeSlotValue
+	E2.commands.graph.ChangeInputSlotValue = ChangeInputSlotValue
 }
 
 if (typeof(module) !== 'undefined') {

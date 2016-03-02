@@ -20,7 +20,7 @@ describe('Changing Slot Values', function() {
 		connect(graph, orNode, 0, floatDisplay, 0, false)
 
 		E2.app.graphApi
-			.changeSlotValue(graph, orNode, 'a', true)
+			.changeInputSlotValue(graph, orNode, 'a', true)
 	})
 
 	it('sets values on dispatch', function() {
@@ -31,7 +31,7 @@ describe('Changing Slot Values', function() {
 
 	it('can undo to previous value', function() {
 		E2.app.graphApi
-			.changeSlotValue(graph, orNode, 'a', false)
+			.changeInputSlotValue(graph, orNode, 'a', false)
 
 		assert.equal(false, orNode.plugin.conds[0])
 
@@ -51,8 +51,16 @@ describe('Changing Slot Values', function() {
 		var slot = orNode.findInputSlotByName('a')
 		slot.def = 3
 		E2.app.graphApi
-			.changeSlotValue(graph, orNode, 'a', 3)
+			.changeInputSlotValue(graph, orNode, 'a', 3)
 		assert.equal(orNode.getInputSlotValue('a'), 3)
+	})
+
+	it('refuses if slot is connected', function() {
+		var slot = orNode.findInputSlotByName('a')
+		slot.is_connected = true
+		E2.app.graphApi
+			.changeInputSlotValue(graph, orNode, 'a', false)
+		assert.equal(orNode.getInputSlotValue('a'), true)
 	})
 
 	it('can deserialize slot values', function() {
@@ -61,6 +69,21 @@ describe('Changing Slot Values', function() {
 
 		assert.equal(graph.nodes[0]
 			.getInputSlotValue('a'), true)
+	})
+
+	it('calls update_input before update_state', function(done) {
+		var updateInputCalled = false
+		orNode.plugin.update_input = function() {
+			updateInputCalled = true
+		}
+		orNode.plugin.update_state = function() {
+			assert.ok(updateInputCalled)
+			done()
+		}
+		E2.app.graphApi
+			.changeInputSlotValue(graph, orNode, 'a', false)
+
+		graph.update()
 	})
 
 })
