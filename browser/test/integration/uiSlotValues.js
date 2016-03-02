@@ -56,14 +56,11 @@ describe('Changing Slot Values', function() {
 	})
 
 	it('can deserialize slot values', function() {
-		E2.app.graphApi
-			.changeSlotValue(graph, orNode, 'a', false)
-
 		var ser = E2.core.serialise()
 		graph = E2.core.deserialise(ser)
 
 		assert.equal(graph.nodes[0]
-			.getInputSlotValue('a'), false)
+			.getInputSlotValue('a'), true)
 	})
 
 })
