@@ -728,13 +728,17 @@ function LinkedSlotGroup(core, parent_node, inputs, outputs) {
 	this.dt = core.datatypes.ANY;
 }
 
+LinkedSlotGroup.prototype.forceOutputArrayness = function(arrayness) {
+	this.forcedOutputArrayness = arrayness
+}
+
 LinkedSlotGroup.prototype.setArrayness = function(arrayness) {
 	for(var i = 0, len = this.inputs.length; i < len; i++) {
 		this.inputs[i].array = arrayness
 	}
 
 	for(var i = 0, len = this.outputs.length; i < len; i++) {
-		this.outputs[i].array = arrayness
+		this.outputs[i].array = this.forcedOutputArrayness === undefined ? arrayness : this.forcedOutputArrayness
 	}
 }
 

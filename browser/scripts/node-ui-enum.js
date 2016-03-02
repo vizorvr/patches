@@ -87,9 +87,11 @@ var uiNodeCategoryMap = {};
         'three_line_material' : c.material,
         'three_material_extractor' : c.material,
 
-        'three_ambient_light' : c.light,
+        'three_ambient_light' :     c.light,
         'three_directional_light' : c.light,
-        'three_point_light' : c.light,
+        'three_point_light' :       c.light,
+		'three_spot_light' :        c.light,
+		'three_hemisphere_light' :  c.light,
 
 		'url_texture_generator'	: 	c.texture,
 
