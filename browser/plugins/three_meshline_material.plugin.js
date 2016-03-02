@@ -10,7 +10,6 @@ var ThreeMeshLineMaterialPlugin = E2.plugins.three_meshline_material = function(
 		{ name: 'lineWidth',		dt: core.datatypes.FLOAT, def: 0.01 },
 		{ name: 'near',			dt: core.datatypes.FLOAT, def: 0.01 },
 		{ name: 'far',			dt: core.datatypes.FLOAT, def: 1000 },
-		{ name: 'depthTest',		dt: core.datatypes.BOOL,  def: true },
 		{ name: 'wireframe',		dt: core.datatypes.BOOL,  def: false }
 	].concat(this.input_slots)
 	
