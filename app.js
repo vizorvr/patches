@@ -131,8 +131,6 @@ app.use(flash());
 // 	csrf(req, res, next);
 // });
 
-app.upgra
-
 app.use(function(req, res, next) {
 	if (!req.user) {
 		req.session.userId = crypto.randomBytes(12).toString('hex')
