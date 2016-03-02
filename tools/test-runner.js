@@ -17,7 +17,7 @@ items.map(function(item) {
 	try {
 		var tp = fsPath.join(testFolder, item)
 		console.log('----- Running ', tp)
-		var sout = execSync('./node_modules/mocha/bin/mocha --timeout 8000 ' + tp)
+		var sout = execSync('./node_modules/mocha/bin/mocha --timeout 8000 --full-trace --verbose --colors ' + tp)
 
 		console.log(sout.toString())
 	} catch(e) {
