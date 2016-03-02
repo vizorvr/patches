@@ -745,14 +745,5 @@ VizorUI.checkCompatibleBrowser = function() {
 		message = '<h4>Please view this page on your desktop/laptop. '+
 					 'The editor is not ready for mobile just yet.</h4>';
 	}
-	else {
-		heading = 'Browser support';
-		message = '<h4>We want you to fully enjoy Vizor. <br />The editor works best in '+
-					 '<a href="http://www.google.com/chrome/" target="_blank"'+
-					 ' alt="Get Chrome">Chrome</a> or '+
-					 '<a href="http://www.mozilla.org/firefox/new/" target="_blank"'+
-					 ' alt="Get Firefox">Firefox</a>.</h4>';
-
-	}
 	if (message) VizorUI.modalOpen(message, heading, 'note', true, {buttons: { Ok: function() {}}});
 }
