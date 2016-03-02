@@ -215,15 +215,7 @@ EditorChannel.prototype.fork = function(payload) {
 		})
 		.finally(function() {
 			that.forking = false
-
-			var forkQueue = that.queue.slice()
-			that.queue = []
-
-			while(forkQueue.length) {
-				var dispatch = forkQueue.pop()
-				// re-dispatch queued events after snapshot
-				E2.app.dispatcher.dispatch(dispatch)
-			}
+			that.processQueue()
 		})
 }
 
@@ -300,18 +292,9 @@ EditorChannel.prototype.send = function(payload) {
 	if (E2.app.snapshotPending && isEditAction(payload))
 		return this.snapshot()
 
-	if (this.canSend() && !this.queue.length)
-		return this.sendPayload(payload)
-
 	this.queue.push(payload)
 
 	this.processQueue()
-}
-
-EditorChannel.prototype.sendPayload = function(payload) {
-	this.wsChannel.send(
-		payload.channel === 'Global' ? payload.channel : this.channelName,
-		dehydrate(payload))
 }
 
 EditorChannel.prototype.processQueue = function() {
