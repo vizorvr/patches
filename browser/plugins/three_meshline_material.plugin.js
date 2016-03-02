@@ -4,28 +4,22 @@ var ThreeMeshLineMaterialPlugin = E2.plugins.three_meshline_material = function(
 
 	this.desc = 'THREE.js MeshLine Material'
 
-	// Just override the input slots here
-	// If we want to get the stuff from the material, then would have to concat
 	this.input_slots = [ 
 		{ name: 'color',		dt: core.datatypes.COLOR, def: new THREE.Color(0xffffff) },
-		{ name: 'opacity',		dt: core.datatypes.FLOAT, def: 1.0 },
-		{ name: 'transparent',		dt: core.datatypes.BOOL,  def: false },
 		{ name: 'sizeAttenuation',	dt: core.datatypes.BOOL,  def: true },
 		{ name: 'lineWidth',		dt: core.datatypes.FLOAT, def: 0.01 },
 		{ name: 'near',			dt: core.datatypes.FLOAT, def: 0.01 },
 		{ name: 'far',			dt: core.datatypes.FLOAT, def: 1000 },
 		{ name: 'depthTest',		dt: core.datatypes.BOOL,  def: true },
-		{ name: 'side',			dt: core.datatypes.FLOAT, def: THREE.DoubleSide },
 		{ name: 'wireframe',		dt: core.datatypes.BOOL,  def: false }
-	]
-	//].concat(this.input_slots)
+	].concat(this.input_slots)
 	
 	this.output_slots = [{
 		name: 'material',
 		dt: core.datatypes.MATERIAL
 	}]
 	
-	// Needed for the shader
+	// Needed for the shader sizeAttenuation
 	this.resolution = new THREE.Vector2(1, 1)
 
 	// Get the parameters from the input_slots
@@ -52,7 +46,8 @@ ThreeMeshLineMaterialPlugin.prototype.update_input = function(slot, data) {
 
 	if ( slot.name === 'transparent' 
 	  || slot.name === 'wireframe' 
-	  || slot.name === 'side') {
+	  || slot.name === 'side'
+	  || slot.name === 'blending' ) {
 		// Use the abstract material update method
 		AbstractThreeMaterialPlugin.prototype.update_input.apply(this, arguments)
 	} else {
@@ -62,10 +57,10 @@ ThreeMeshLineMaterialPlugin.prototype.update_input = function(slot, data) {
 }
 
 ThreeMeshLineMaterialPlugin.prototype.resize = function() {
+	// Need to recalculate the resolution
 	var canvasArea = E2.app.calculateCanvasArea()
-
-	// Need to recalculate the resolution for sizeAttenuation
 	this.resolution.set(canvasArea.width, canvasArea.height)
+
 	this.material.uniforms.resolution.value = this.resolution
 }
 
