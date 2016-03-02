@@ -10,7 +10,7 @@ Color of the material
 ###sizeAttenuation
 Specify whether line width will get smaller with the distance.
 
-###linewidth
+###lineWidth
 Width of the resulting vector lines
 
 ###near
