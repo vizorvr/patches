@@ -1,35 +1,16 @@
 var assert = require('assert');
 
+var helpers = require('./helpers')
+var reset = helpers.reset
+var connect = helpers.connect
+var disconnect = helpers.disconnect
+
 var reset = require('./helpers').reset;
 
 describe('array_switch_modulator', function() {
 	beforeEach(function() {
 		reset()
 	})
-
-	function connect(graph, a, aidx, b, bidx, dyn) {
-		var ss = a.plugin.output_slots[aidx]
-		var ds = dyn ? b.getDynamicInputSlots()[bidx] : b.plugin.input_slots[bidx]
-
-		assert.ok(ss)
-		assert.ok(ds)
-
-		var conn = new Connection(a, b, ss, ds)
-		conn.uid = E2.uid()
-
-		conn.patch_up()
-		E2.app.graphApi.connect(graph, conn)
-		E2.app.onLocalConnectionChanged(conn)
-		conn.signal_change(true)
-
-		return conn
-	}
-
-	function disconnect(graph, conn) {
-		E2.app.graphApi.disconnect(graph, conn)
-		E2.app.onLocalConnectionChanged(conn)
-		conn.signal_change(false)
-	}
 
 	it('clears arrayness', function() {
 		var graph = E2.core.active_graph

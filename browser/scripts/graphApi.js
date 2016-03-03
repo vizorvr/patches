@@ -48,5 +48,13 @@ GraphApi.prototype.reorder = function(graph, original, sibling, insertAfter) {
 	return this.undoManager.execute(cmd)
 }
 
+GraphApi.prototype.changeInputSlotValue = function(graph, node, slotName, newValue) {
+	var slot = node.findInputSlotByName(slotName)
+	if (slot.is_connected)
+		return;
+	var cmd = new E2.commands.graph.ChangeInputSlotValue(graph, node, slotName, newValue)
+	return this.undoManager.execute(cmd)
+}
+
 if (typeof(module) !== 'undefined')
 	module.exports = GraphApi
