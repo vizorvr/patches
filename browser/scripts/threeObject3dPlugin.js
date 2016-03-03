@@ -101,52 +101,49 @@ ThreeObject3DPlugin.prototype.update_input = function(slot, data) {
 
 	var that = this
 
-	var handlers = [
-		function() {
+	var handlers = {
+		"position": function() {
 			that.graphInputs.position.x = data.x
 			that.graphInputs.position.y = data.y
 			that.graphInputs.position.z = data.z
 		},
-		function() {
+		"rotation": function() {
 			that.graphInputs.quaternion.setFromEuler(new THREE.Euler(data.x, data.y, data.z, "YZX"))
 		},
-		function() {
+		"scale": function() {
 			that.graphInputs.scale.x = data.x
 			that.graphInputs.scale.y = data.y
 			that.graphInputs.scale.z = data.z
 		},
-		function() {
+		"visible": function() {
 			that.object3d.visible = data
 		},
-		function() {
-			that.object3d.traverse(function(n) {
+		"castShadow": function() {
+			that.object3d.traverse(function (n) {
 				n.castShadow = data
 			})
 		},
-		function() {
-			that.object3d.traverse(function(n) {
+		"receiveShadow": function() {
+			that.object3d.traverse(function (n) {
 				n.receiveShadow = data
 			})
 		},
-		function() {
+		"name": function() {
 			that.object3d.name = data
 		},
-		function() {
-			that.object3d.traverse( function(n) {
+		"stereo view": function() {
+			that.object3d.traverse(function (n) {
 				n.layers.set(data)
 			})
 		},
-		function() {
+		"lock transform": function() {
 			that.lockTransformControls = data
 		}
-	]
+	}
 
-	var slotOffset = this.node.plugin.input_slots.length - handlers.length
-	var adjSlotIndex = slot.index - slotOffset
-
-	if (handlers[adjSlotIndex]) {
+	if (handlers[slot.name]) {
 		if (data !== undefined) {
-			handlers[adjSlotIndex]()
+			handlers[slot.name]()
 		}
 	}
 	else {

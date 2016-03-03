@@ -135,9 +135,9 @@
         "Gaze Clicker": "three_gaze_clicker",
         "Clickable Object": "three_clickable_object",
 
-        "Experimental: Object Gaze In": "on_three_object_gaze_in",
-        "Experimental: Object Gaze Out": "on_three_object_gaze_out",
-        "Experimental: Object Gaze Clicked": "on_three_object_gaze_clicked"
+        "Object Gaze In": "on_three_object_gaze_in",
+        "Object Gaze Out": "on_three_object_gaze_out",
+        "Object Gaze Clicked": "on_three_object_gaze_clicked"
     },
 
 
@@ -155,6 +155,7 @@
 
     "CAMERAS": {
         "VR Camera": "three_vr_camera",
+        "Orbit Camera": "three_orbit_camera",
         "Perspective Camera": "three_perspective_camera",
         "Screen Space Transform Extractor": "three_screen_space_transform_extractor",
         "Viewport Size": "viewport_size_generator",

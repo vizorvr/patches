@@ -25,7 +25,8 @@ passport.deserializeUser(function(id, done)
 
 // Sign in using Email and Password.
 passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, password, done) {
-	User.findOne({ email: email }, function(err, user) {
+	var emailRe = new RegExp('^'+email+'$', 'i')
+	User.findOne({ email: emailRe }, function(err, user) {
 		if (!user)
 			return done(null, false, { param: 'email', value: email, message: 'That account does not exist.' })
 

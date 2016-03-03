@@ -5,4 +5,4 @@ Feature: Editor feature
 
   Scenario: Going to Program mode
     Given I go to Program mode
-    Then I should see a patch called "Scene"
+    Then I should see a patch called "Scene 1"

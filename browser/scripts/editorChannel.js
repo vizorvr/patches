@@ -104,12 +104,16 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 	this.connected = false
 	this.forking = false
 
+	this.reconnectFn = this.connect.bind(this, wsHost, wsPort, options)
+
+	E2.models.user.once('change', this.onLoginChanged.bind(this))
+
 	// listen to messages from network
 	this.wsChannel = new WebSocketChannel()
 	this.wsChannel
 		.connect(wsHost, wsPort, '/__editorChannel', options)
-		.on('disconnected', function() {
-			if (!that.connected)
+		.once('disconnected', function() {
+			if (!that.connected && !reconnecting)
 				return;
 
 			that.isOnChannel = false
@@ -123,11 +127,11 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 
 			reconnecting = true
 			
-			setTimeout(that.connect.bind(that, wsHost, wsPort, options), RECONNECT_INTERVAL)
+			setTimeout(that.reconnectFn, RECONNECT_INTERVAL)
 
 			that.emit('disconnected')
 		})
-		.on('ready', function(uid) {
+		.once('ready', function(uid) {
 			console.log('EditorChannel ready', uid)
 			that.uid = uid
 
@@ -161,6 +165,17 @@ EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
 		})
 
 	return this
+}
+
+EditorChannel.prototype.onLoginChanged = function() {
+	var that = this
+	this.emit('disconnected')
+	this.isOnChannel = false
+	this.connected = false
+	this.close()
+	this.wsChannel.once('disconnected', function() {
+		that.reconnectFn()
+	})
 }
 
 EditorChannel.prototype.snapshot = function() {
@@ -215,7 +230,15 @@ EditorChannel.prototype.fork = function(payload) {
 		})
 		.finally(function() {
 			that.forking = false
-			that.processQueue()
+
+			var forkQueue = that.queue.slice()
+			that.queue = []
+
+			while(forkQueue.length) {
+				var dispatch = forkQueue.pop()
+				// re-dispatch queued events after snapshot
+				E2.app.dispatcher.dispatch(dispatch)
+			}
 		})
 }
 
@@ -237,7 +260,8 @@ EditorChannel.prototype._messageHandler = function _messageHandler(payload) {
 	if (!isAcceptedDispatch(payload))
 		return;
 
-	this.lastEditSeen = payload.id
+	if (isEditAction(payload))
+		this.lastEditSeen = payload.id
 
 	if (payload.from === this.uid)
 		return;
@@ -292,9 +316,18 @@ EditorChannel.prototype.send = function(payload) {
 	if (E2.app.snapshotPending && isEditAction(payload))
 		return this.snapshot()
 
+	if (this.canSend() && !this.queue.length)
+		return this.sendPayload(payload)
+
 	this.queue.push(payload)
 
 	this.processQueue()
+}
+
+EditorChannel.prototype.sendPayload = function(payload) {
+	this.wsChannel.send(
+		payload.channel === 'Global' ? payload.channel : this.channelName,
+		dehydrate(payload))
 }
 
 EditorChannel.prototype.processQueue = function() {

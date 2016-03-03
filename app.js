@@ -24,7 +24,6 @@ var fsPath = require('path');
 var EventEmitter = require('events').EventEmitter;
 
 var mongoose = require('mongoose');
-var r = require('rethinkdb')
 
 var passport = require('passport');
 var expressValidator = require('express-validator');
@@ -87,8 +86,7 @@ app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
 app.use(compress())
-app.use(connectAssets(
-{
+app.use(connectAssets({
 	paths: [
 		fsPath.join(__dirname, 'browser/style'),
 		fsPath.join(__dirname, 'browser/scripts'),
@@ -98,12 +96,10 @@ app.use(connectAssets(
 }));
 
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
-app.use(bodyParser.json(
-{
+app.use(bodyParser.json({
 	limit: 1024 * 1024 * 128
 }));
-app.use(bodyParser.urlencoded(
-{
+app.use(bodyParser.urlencoded( {
 	extended: true,
 	limit: 1024 * 1024 * 128
 }));
@@ -112,7 +108,7 @@ app.use(methodOverride());
 
 app.use(cookieParser());
 app.use(sessions({
-	cookieName: 'vs050',
+	cookieName: 'vs070',
 	requestKey: 'session',
 	cookie: {
 		domain: process.env.FQDN,
@@ -135,12 +131,12 @@ app.use(flash());
 // 	csrf(req, res, next);
 // });
 
-app.use(function(req, res, next)
-{
-	if (!req.user)
+app.use(function(req, res, next) {
+	if (!req.user) {
 		req.session.userId = crypto.randomBytes(12).toString('hex')
-	else
+	} else {
 		req.session.userId = req.user._id
+	}
 
 	res.locals.user = req.user;
 	res.locals.KEY_GA = process.env.KEY_GA;
@@ -152,8 +148,7 @@ app.use(function(req, res, next) {
 	// Remember original destination before login.
 	var path = req.path.split('/')[1];
 
-	if (/auth||assets|login|logout|signup|img|fonts|favicon/i.test(path))
-	{
+	if (/auth||assets|login|logout|signup|img|fonts|favicon/i.test(path)) {
 		return next();
 	}
 
@@ -166,8 +161,7 @@ app.use(function(req, res, next) {
 // for old (pre-asm 2015) vizor experiences
 // These are explicitly disabled so that links to old vizor experiences
 // don't display a new editor page.
-app.use(function(req, res, next)
-{
+app.use(function(req, res, next) {
   // list of old vizor exprience ids (http://vizor.io/id)
 	var disallowedPaths = [
 		"m1Z1rgbbrfoj",
@@ -288,30 +282,17 @@ switch (process.env.FQDN) {
 		break;
 }
 
-var rethinkConnection
 var gfs
 
-var rethinkDbName = process.env.RETHINKDB_NAME || 'vizor'
-r.connect({
-	host: process.env.RETHINKDB_HOST || 'localhost',
-	port: 28015,
-	db: rethinkDbName
-}, function(err, conn) {
-	if (err)
-		throw err
+mongoose.connect(secrets.db);
+mongoose.connection.on('error', function(err) {
+	throw err
+})
 
-	rethinkConnection = conn
-
-	mongoose.connect(secrets.db);
-	mongoose.connection.on('error', function(err) {
-		throw err
-	})
-
-	mongoose.connection.on('connected', (connection) => {	
-		gfs = new GridFsStorage('/data')
-		gfs.on('ready', function() {
-			setupModelRoutes(mongoose.connection.db)
-		})
+mongoose.connection.on('connected', (connection) => {	
+	gfs = new GridFsStorage('/data')
+	gfs.on('ready', function() {
+		setupModelRoutes(mongoose.connection.db)
 	})
 })
 
@@ -471,7 +452,6 @@ function setupModelRoutes(mongoConnection) {
 	require('./modelRoutes.js')(
 		app,
 		gfs,
-		rethinkConnection,
 		mongoConnection,
 		passportConf
 	)
@@ -487,7 +467,7 @@ function setupModelRoutes(mongoConnection) {
 
 	if (config.server.enableChannels) {
 		new WsChannelServer().listen(httpServer)
-		var ecs = new EditorChannelServer(rethinkConnection)
+		var ecs = new EditorChannelServer()
 		ecs.listen(httpServer)
 	}
 

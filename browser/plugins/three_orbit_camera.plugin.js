@@ -1,9 +1,9 @@
 (function() {
-	var ThreeVRCameraPlugin = E2.plugins.three_vr_camera = function(core) {
+	var ThreeOrbitCameraPlugin = E2.plugins.three_orbit_camera = function(core) {
 		Plugin.apply(this, arguments)
 
-		this.desc = 'THREE.js VR Camera'
-		
+		this.desc = 'THREE.js Orbit Camera'
+
 		this.defaultFOV = 90
 
 		// try to find out default fov from the device
@@ -21,6 +21,7 @@
 		this.input_slots = [
 			{ name: 'position', dt: core.datatypes.VECTOR },
 			{ name: 'rotation', dt: core.datatypes.VECTOR },
+			{ name: 'offset', dt: core.datatypes.VECTOR, def: new THREE.Vector3(2, 2, 2)},
 			{ name: 'fov', dt: core.datatypes.FLOAT, def: this.defaultFOV },
 			{ name: 'aspectRatio', dt: core.datatypes.FLOAT, def: 1.0},
 			{ name: 'near', dt: core.datatypes.FLOAT, def: 0.001 },
@@ -51,30 +52,28 @@
 		this.outputPosition = new THREE.Vector3()
 	}
 
-	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
+	ThreeOrbitCameraPlugin.prototype = Object.create(Plugin.prototype)
 
-	ThreeVRCameraPlugin.prototype.reset = function() {
+	ThreeOrbitCameraPlugin.prototype.reset = function() {
 		Plugin.prototype.reset.apply(this, arguments)
 
 		this.domElement = E2.dom.webgl_canvas[0]
 
 		if (!this.dolly) {
-
 			this.dolly = new THREE.PerspectiveCamera()
-
 		}
 
-		if (!this.vrControlCamera) {
-			this.vrControlCamera = new THREE.PerspectiveCamera(
+		if (!this.orbitControlCamera) {
+			this.orbitControlCamera = new THREE.PerspectiveCamera(
 				this.defaultFOV,
 				this.domElement.clientWidth / this.domElement.clientHeight,
 				0.001,
 				1000)
 
 			// layer is for mono camera only
-			this.vrControlCamera.layers.enable(3)
+			this.orbitControlCamera.layers.enable(3)
 
-			this.dolly.add(this.vrControlCamera)
+			this.dolly.add(this.orbitControlCamera)
 		}
 
 		// create an object3d reference so that the world editor sees the camera
@@ -83,18 +82,23 @@
 		this.object3d.backReference = this
 
 		if (!this.controls) {
-			this.controls = new THREE.VRControls(this.vrControlCamera)
+			this.controls = new THREE.OrbitControls(this.orbitControlCamera, this.domElement)
 		}
 
 		this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
 		this.object3d.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
+
+		this.positionFromGraph.copy(this.inputValues.position)
+		this.orbitControlCamera.position.copy(this.inputValues.offset)
+
+		this.controls.update()
 	}
 
-	ThreeVRCameraPlugin.prototype.play = function() {
+	ThreeOrbitCameraPlugin.prototype.play = function() {
 		this.resize()
 	}
 
-	ThreeVRCameraPlugin.prototype.resize = function() {
+	ThreeOrbitCameraPlugin.prototype.resize = function() {
 		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement);
 		var wh = { width: window.innerWidth, height: window.innerHeight }
 
@@ -106,11 +110,11 @@
 				wh = E2.app.calculateCanvasArea()
 		}
 
-		this.vrControlCamera.aspect = wh.width / wh.height
-		this.vrControlCamera.updateProjectionMatrix()
+		this.orbitControlCamera.aspect = wh.width / wh.height
+		this.orbitControlCamera.updateProjectionMatrix()
 	}
 
-	ThreeVRCameraPlugin.prototype.update_state = function() {
+	ThreeOrbitCameraPlugin.prototype.update_state = function() {
 		this.object3d.position.set(
 			this.positionFromGraph.x + this.state.position.x,
 			this.positionFromGraph.y + this.state.position.y,
@@ -120,82 +124,80 @@
 		this.object3d.quaternion.multiply(this.state.quaternion)
 
 		if (this.dirty)
-			this.vrControlCamera.updateProjectionMatrix()
-
-		this.controls.update(new THREE.Vector3(), new THREE.Quaternion())
+			this.orbitControlCamera.updateProjectionMatrix()
 
 		this.object3d.updateMatrixWorld()
 
 		this.updated = true
 	}
 
-	ThreeVRCameraPlugin.prototype.update_input = function(slot, data) {
+	ThreeOrbitCameraPlugin.prototype.update_input = function(slot, data) {
 		if (!this.object3d) {
 			return
 		}
 
-		switch(slot.index) {
-		case 0: // position
+		if (slot.name === 'position') { // position
 			this.positionFromGraph.copy(data)
 			this.dirty = true
-			break
-		case 1: // rotation
+		}
+		else if (slot.name === 'rotation') {
 			this.rotationFromGraph.set(data.x, data.y, data.z)
 			this.dirty = true
-			break
-		case 2: // fov
-			this.vrControlCamera.fov = data
+		}
+		else if (slot.name === 'offset') {
+			this.orbitControlCamera.position.copy(data)
 			this.dirty = true
-			break
-		case 3: // aspect ratio
-			this.vrControlCamera.aspect = data
+		}
+		else if (slot.name === 'fov') {
+			this.orbitControlCamera.fov = data
 			this.dirty = true
-			break
-		case 4: // near
-			this.vrControlCamera.near = data
+		}
+		else if (slot.name === 'aspectRatio') {
+			this.orbitControlCamera.aspect = data
 			this.dirty = true
-			break
-		case 5: // far
-			this.vrControlCamera.far = data
+		}
+		else if (slot.name === 'near') {
+			this.orbitControlCamera.near = data
 			this.dirty = true
-			break
-		default:
-			break
+		}
+		else if (slot.name === 'far') {
+			this.orbitControlCamera.far = data
+			this.dirty = true
 		}
 	}
 
-	ThreeVRCameraPlugin.prototype.update_output = function(slot) {
+	ThreeOrbitCameraPlugin.prototype.update_output = function(slot) {
 		if (slot.index === 0) { // camera
-			return this.vrControlCamera
+			return this.orbitControlCamera
 		}
 		else if (slot.index === 1) { // position
-			this.outputPosition.copy(this.vrControlCamera.position)
-			this.outputPosition.applyMatrix4(this.vrControlCamera.matrixWorld)
+			this.outputPosition.copy(this.orbitControlCamera.position)
+			this.outputPosition.applyMatrix4(this.orbitControlCamera.matrixWorld)
 			return this.outputPosition
 		}
 		else if (slot.index === 2) { // rotation
-			var tempQuaternion = this.vrControlCamera.quaternion.clone()
+			var tempQuaternion = this.orbitControlCamera.quaternion.clone()
 			tempQuaternion.multiply(this.object3d.quaternion)
 			this.outputRotationEuler.setFromQuaternion(tempQuaternion, "YZX")
 			return this.outputRotationEuler
 		}
 	}
 
-	ThreeVRCameraPlugin.prototype.state_changed = function(ui) {
+	ThreeOrbitCameraPlugin.prototype.state_changed = function(ui) {
 		if (!ui) {
 			E2.core.on('resize', this.resize.bind(this))
 		}
 	}
 
-	ThreeVRCameraPlugin.prototype.canEditPosition = function() {
+	ThreeOrbitCameraPlugin.prototype.canEditPosition = function() {
 		return true
 	}
 
-	ThreeVRCameraPlugin.prototype.canEditQuaternion = function() {
+	ThreeOrbitCameraPlugin.prototype.canEditQuaternion = function() {
 		return true
 	}
 
-	ThreeVRCameraPlugin.prototype.canEditScale = function() {
+	ThreeOrbitCameraPlugin.prototype.canEditScale = function() {
 		return false
 	}
 

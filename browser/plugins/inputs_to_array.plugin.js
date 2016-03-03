@@ -25,6 +25,9 @@ var InputsToArray = E2.plugins.inputs_to_array = function InputsToArray(core, no
 	this.node = node
 	this.lsg = new AutoSlotGroup(core, node, [], [this.output_slots[0]])
 
+	// the output is always an array, regardless of whether inputs are
+	this.lsg.forceOutputArrayness(true)
+
 	this.array = []
 
 	this.node.on('slotAdded', function() {
@@ -83,6 +86,4 @@ InputsToArray.prototype.state_changed = function(ui) {
 	}
 }
 
-
 })();
-

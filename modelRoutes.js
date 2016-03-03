@@ -15,7 +15,6 @@ module.exports =
 function modelRoutes(
 	app,
 	gfs,
-	rethinkConnection,
 	mongoConnection,
 	passportConf
 ){
@@ -40,7 +39,6 @@ function modelRoutes(
 	var graphController = new GraphController(
 		new GraphService(require('./models/graph'), gfs),
 		gfs,
-		rethinkConnection,
 		mongoConnection
 	);
 
