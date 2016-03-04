@@ -19,12 +19,35 @@ var redis = require('redis')
 var secrets = require('../config/secrets')
 var Hashids = require('hashids')
 var hashids = new Hashids(secrets.sessionSecret)
- 
+
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 
 function makeHashid(serial) {
 	return hashids.encode(serial)
+}
+
+function makeCardName(name) {
+	var maxLen = 22
+	var nameParts = name.split(' ')
+	var name = nameParts.shift()
+
+	function addNamePart() {
+		var nextPart = nameParts.shift()
+		if (nextPart && name.length + nextPart.length < maxLen) {
+			name += ' ' + nextPart
+
+			if (nameParts.length)
+				addNamePart()
+		}
+	}
+
+	addNamePart()
+
+	if (name.length > maxLen)
+		name = name.substring(0, maxLen)
+
+	return name
 }
 
 function prettyPrintGraphInfo(graph) {
@@ -50,7 +73,7 @@ function prettyPrintGraphInfo(graph) {
 	graph.prettyOwner = graphOwner
 	graph.prettyName = graphName
 
-	graph.size = '...'
+	graph.size = ''
 
 	if (graph.stat && graph.stat.size) {
 		var sizeInKb = (graph.stat.size / 1048576).toFixed(2) // megabytes
@@ -94,6 +117,11 @@ GraphController.prototype.userIndex = function(req, res, next) {
 			if (!user && (!list || !list.length)) {
 				return next()
 			}
+
+			list.map(function(graph) {
+				graph = prettyPrintGraphInfo(graph)
+				graph.prettyName = makeCardName(graph.prettyName)
+			})
 
 			var data = {
 				profile: {

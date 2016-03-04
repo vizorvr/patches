@@ -16,8 +16,9 @@
 
 <article class="graph asset card noselect" data-objectid="{{_id}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
 	<div class="meta scrollbar">
-		<h4 class="editable" data-svgref="icon-ca-rename">{{name}}</h4>
-		<p class="description">{{updatedAt}}</p>
+		<h4 class="editable" data-svgref="icon-ca-rename">{{prettyName}}</h4>
+		<p class="description size">{{size}}</p>
+		<p class="description updatedAt">{{updatedAt}}</p>
 	</div>
 	<div class="image"
 		 {{#if previewUrlSmall}}
