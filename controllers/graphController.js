@@ -150,18 +150,29 @@ GraphController.prototype.userIndex = function(req, res, next) {
 
 // GET /graph
 GraphController.prototype.index = function(req, res) {
-	this._service.minimalList()
-	.then(function(list)
-	{
+	this._service.list()
+	.then(function(list) {
 		if (req.xhr || req.path.slice(-5) === '.json')
 			return res.json(list);
 
-		res.render('graph/index',
-		{
-			layout: 'min',
-			graphs: list,
-			title: 'Graphs'
+		list.map(function(graph) {
+			graph = prettyPrintGraphInfo(graph)
+			graph.prettyName = makeCardName(graph.prettyName)
+		})
+
+		var data = {
+			graphs: list
+		}
+
+		_.extend(data, {
+			meta : {
+				title: 'Graphs',
+				bodyclass: 'bUserpage',
+				scripts : ['site/userpages.js']
+			}
 		});
+
+		res.render('graph/index', data);
 	});
 }
 

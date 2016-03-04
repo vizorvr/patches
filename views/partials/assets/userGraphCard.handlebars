@@ -1,0 +1,35 @@
+<!-- graph #{{_id}} -->
+{{!--
+	graph {
+		owner: 'eesn',
+		name: 'Test graph',
+		updatedAt: 'Wed Oct 14 2015 17:01:37 GMT+0100 (BST)'
+
+		_id: (unique identifier)
+		(description:)
+		previewUrlSmall: (src)
+		project: {
+			(head only, no graph list)
+		}
+	}
+--}}
+
+<article class="graph asset card noselect" data-objectid="{{_id}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
+	<div class="meta scrollbar">
+		<h4 class="editable" data-svgref="icon-ca-rename">{{prettyName}}</h4>
+		<p class="description size">by <a href="{{owner}}">{{owner}}</a> - {{size}}</p>
+		<p class="description updatedAt">{{updatedAt}}</p>
+	</div>
+	<div class="image"
+		 {{#if previewUrlSmall}}
+		 style="background-image: url('{{previewUrlSmall}}');"
+		{{/if}}
+	>
+		<div class="overlay flexcenter">
+			{{!-- > assets/commonActions id=_id context="graph" --}}
+			<a class="btn action open" data-action="open" href="/{{owner}}/{{name}}">
+				Open
+			</a>
+		</div>
+	</div>
+</article>

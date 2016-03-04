@@ -1,16 +1,10 @@
-<div class="container">
-{{#each graphs}}
-	<div class="row">
-		<div class="col-sm-12">
-			<a class="text-muted" href="/{{owner}}/{{name}}">
-			<h1>
-				{{owner}}/{{name}}
-			</h1>
-				</a>
-		</div>
-		<div class="col-sm-12">
-			{{updatedAt}}
-		</div>
-	</div>
-{{/each}}
+<div id="contentcontainer" class="in">
+<h2 class="decorative"><span>All graphs</span></h2>
+
+<section class="list assets clearfix noselect">
+	{{#each graphs}}
+		{{> assets/userGraphCard }}
+	{{/each}}
+</section>
 </div>
+
