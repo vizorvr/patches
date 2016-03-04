@@ -72,7 +72,9 @@ THREE.EditorControls = function ( object, domElement ) {
 
 		delta.multiplyScalar( distance * 0.001 );
 
-		if ( delta.length() > distance ) return;
+		// Limit the zoom level to 10 cm
+		// But let the zoom level come out of distances smaller than that
+		if ( distance >= 0.01 && (distance + delta.z) <= 0.01 ) return;
 
 		delta.applyMatrix3( normalMatrix.getNormalMatrix( object.matrix ) );
 
