@@ -27,8 +27,6 @@
 		var isFullscreen = E2.util.isFullscreen()
 		var isStereo = E2.core.webVRManager.isVRMode()
 
-		//this.updated = this.outputs.fullscreen !== isFullscreen || this.outputs.stereo !== isStereo
-
 		this.outputs.fullscreen = isFullscreen
 		this.outputs.stereo = isStereo
 	}
@@ -55,8 +53,6 @@
 				this.outputs.fullscreen = e.detail.mode !== Modes.NORMAL
 
 				this.updated = true
-
-				console.log('HELLO!!! vrManagerModeChanged to mode', e.detail.mode, this.outputs.stereo, this.outputs.fullscreen)
 			}
 
 			document.body.addEventListener('vrManagerModeChanged',
