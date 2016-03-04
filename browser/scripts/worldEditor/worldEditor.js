@@ -309,7 +309,7 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, 
 	var selectNodes = []
 
 	function collectConnectingNodesBetween(curNode, endNode) {
-		var allOutputs = curNode.outputs.concat(curNode.dyn_outputs)
+		var allOutputs = curNode.outputs
 
 		if (curNode.plugin.id === 'output_proxy' && curNode.parent_graph && curNode.parent_graph.plugin && curNode.parent_graph.plugin.parentNode) {
 			if (collectConnectingNodesBetween(curNode.parent_graph.plugin.parentNode, sceneNode)) {
