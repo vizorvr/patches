@@ -71,6 +71,8 @@ var paths = {
 			'./browser/vendor/three/SceneLoader.js',
 			'./browser/vendor/three/MorphAnimMesh.js',
 
+			'./browser/vendor/spite/THREE.MeshLine.js',
+
 			'./browser/vendor/borismus/webvr-polyfill.js',
 			'./browser/vendor/borismus/webvr-manager.js',
 

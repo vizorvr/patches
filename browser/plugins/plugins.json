@@ -104,6 +104,7 @@
         "3D Model Loader": "three_loader_scene",
         "Mesh attributes": "three_object3d_attribute_extractor",
         "Line Segments": "three_line_segments",
+        "Vector Line": "three_meshline_mesh",
         "3D Object Group": "three_group"
     },
 
@@ -119,6 +120,7 @@
         "Material Modifier": "three_material_modifier",
         "UV Modifier": "three_uv_modifier",
         "Line Material": "three_line_material",
+        "Vector Line Material": "three_meshline_material",
         "Cubemap Material": "three_cube_material",
         "Material Extractor": "three_material_extractor",
 
