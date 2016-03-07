@@ -116,25 +116,23 @@ GraphController.prototype.userIndex = function(req, res, next) {
 			});
 
 			res.render('server/pages/userpage', data);
-		});
+		})
 	})
 }
 
 // GET /graph
 GraphController.prototype.index = function(req, res) {
 	this._service.minimalList()
-	.then(function(list)
-	{
+	.then(function(list) {
 		if (req.xhr || req.path.slice(-5) === '.json')
 			return res.json(list);
 
-		res.render('graph/index',
-		{
+		res.render('graph/index', {
 			layout: 'min',
 			graphs: list,
 			title: 'Graphs'
-		});
-	});
+		})
+	})
 }
 
 function renderEditor(res, graph, hasEdits) {

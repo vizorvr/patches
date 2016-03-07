@@ -33,9 +33,6 @@ function modelRoutes(
 	var EditLogController = require('./controllers/editLogController');
 	var editLogController = new EditLogController()
 
-	var DocumentationController = require('./controllers/documentationController');
-	var documentationController = new DocumentationController();
-
 	var graphController = new GraphController(
 		new GraphService(require('./models/graph'), gfs),
 		gfs,
@@ -240,12 +237,6 @@ function modelRoutes(
 	app.get('/:username/:graph/graph.json', function(req, res, next) {
 		req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
 		graphController.stream(req, res, next);
-	});
-
-	// ----
-	// Documentation
-	app.get('/docs/plugins/:pluginName', function(req, res, next) {
-		documentationController.getPluginDocumentation(req, res, next);
 	});
 
 	// -----

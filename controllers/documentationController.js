@@ -2,6 +2,9 @@ var fs = require('fs')
 var fsPath = require('path')
 var marked = require('marked');
 
+var pluginsList = JSON.parse(fs.readFileSync(__dirname+'/../browser/plugins/plugins.json'))
+var presetsList = JSON.parse(fs.readFileSync(__dirname+'/../browser/presets/presets.json'))
+
 function DocumentationController() {
 }
 
@@ -78,6 +81,48 @@ DocumentationController.prototype.parsePluginDocumentation = function(markdown) 
 	return result
 }
 
+DocumentationController.prototype.index = function(req, res, next) {
+	var pluginsData = { categories: [ ] }
+	var presetsData = { categories: [ ] }
+
+	var cats = Object.keys(pluginsList)
+	pluginsData.categories = cats.map(function(cat) {
+		return {
+			name: cat,
+			plugins: Object.keys(pluginsList[cat])
+				.map(function(pid) {
+					return {
+						name: pid,
+						desc: 'jee '+pid
+					}
+				})
+		}
+	})
+
+	cats = Object.keys(presetsList)
+	presetsData.categories = cats.map(function(cat) {
+		return {
+			name: cat,
+			presets: Object.keys(presetsList[cat])
+				.map(function(pn) {
+					return {
+						name: pn,
+						desc: 'jee '+pn
+					}
+				})
+		}
+	})
+
+	console.log(pluginsData.categories[3])
+
+	res.render('server/pages/docs/index', {
+		layout: 'docs',
+		title: 'Documentation',
+		plugins: pluginsData,
+		presets: presetsData,
+	})
+}
+
 DocumentationController.prototype.getPluginDocumentation = function(req, res, next) {
 	var pluginName = req.params.pluginName
 
@@ -89,8 +134,6 @@ DocumentationController.prototype.getPluginDocumentation = function(req, res, ne
 	}
 
 	var docPath = './documentation/browser/plugins/' + pluginName + ".md"
-
-	console.log('fetching docs for ', docPath)
 
 	var that = this
 
@@ -115,4 +158,4 @@ DocumentationController.prototype.getPluginDocumentation = function(req, res, ne
 	})
 }
 
-module.exports = DocumentationController;
+module.exports = DocumentationController

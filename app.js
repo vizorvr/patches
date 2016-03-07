@@ -38,6 +38,9 @@ var templateCache = new TemplateCache().compile();
 var homeController = require('./controllers/home');
 var userController = require('./controllers/userController');
 
+var DocumentationController = require('./controllers/documentationController');
+var documentationController = new DocumentationController();
+
 // Threesixty site controller
 var threesixtyController = require('./controllers/threesixty');
 
@@ -263,6 +266,14 @@ app.get('/account/profile', passportConf.isAuthenticated, userController.getAcco
 app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
 app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
+
+// ----
+// Documentation
+app.get('/docs', documentationController
+	.index.bind(documentationController))
+
+app.get('/docs/plugins/:pluginName', documentationController
+	.getPluginDocumentation.bind(documentationController))
 
 switch (process.env.FQDN) {
 	case '360vr.io':
