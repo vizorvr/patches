@@ -37,6 +37,9 @@ function WorldEditor(domElement) {
 	this.selectionTree = new THREE.Object3D()
 	this.editorTree.add(this.selectionTree)
 
+	// Our selection bounding box
+	this.selectionBox = new THREE.BoxHelper()
+
 	// root for 3d handles
 	this.handleTree = new THREE.Object3D()
 	this.editorTree.add(this.handleTree)
@@ -210,6 +213,10 @@ WorldEditor.prototype.setSelection = function(selected) {
 		if (obj.backReference !== undefined) {
 			this.cameraSelector.transformControls.attach(obj)
 			this.selectionTree.add(this.cameraSelector.transformControls)
+
+			// Update the selection bounding box
+			this.selectionBox.update(obj)
+			this.selectionTree.add(this.selectionBox)
 
 			anySelected = true
 			// only attach to first valid item
