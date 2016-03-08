@@ -380,8 +380,10 @@ var VizorPlayerUI = function() {
             $playButton.on('click', that.play.bind(that))
         }
 
-		if (Vizor.hasAudio && VizorUI.isMobile.iOS())
+		if (Vizor.hasAudio && VizorUI.isMobile.iOS()) {
+			Vizor.noHeader = false
 			Vizor.autoplay = this.autoplay = false
+		}
 
         if (this.autoplay)
             $body.addClass('autoplay')
@@ -390,7 +392,11 @@ var VizorPlayerUI = function() {
 
 		// ready to show
         that.selectStage('loadingStage')
-        that.headerFadeIn()
+
+    	that.headerIsVisible = !Vizor.noHeader
+
+        if (!Vizor.noHeader)
+	        that.headerFadeIn()
 
     } // end .init()
 }
