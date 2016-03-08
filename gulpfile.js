@@ -45,6 +45,7 @@ var paths = {
 			'./browser/scripts/worldEditor/worldEditorCameraSelector.js',
 			'./browser/scripts/worldEditor/worldEditorOriginGrid.js',
 			'./browser/scripts/worldEditor/worldEditorRadialHelper.js',
+			'./browser/scripts/worldEditor/boundingBox.js',
 
 			'./browser/scripts/screenshot/ScreenshotRenderer.js',
 
