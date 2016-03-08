@@ -218,6 +218,9 @@ var VizorPlayerUI = function() {
 				window.location.href
 				.split('?')[0]
 				.split('/')
+				.join(' ')
+				.trim()
+				.split(' ')
 				.slice(-2)
 				.concat('edit')
 				.join('/')
