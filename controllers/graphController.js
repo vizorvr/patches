@@ -241,6 +241,7 @@ function renderPlayer(graph, req, res, options) {
 		layout: res.locals.layout || 'player',
 		playerVersion: version,
 		autoplay: !!(options && options.autoplay),
+		noHeader: options.noHeader || false,
 		graph: graph,
 		graphMinUrl: graph.url,
 		graphName: graph.prettyName,
@@ -259,7 +260,8 @@ GraphController.prototype.embed = function(req, res, next) {
 			return next()
 
 		return renderPlayer(graph, req, res, {
-			autoplay: req.query.autoplay || false
+			autoplay: req.query.autoplay || false,
+			noHeader: req.query.noheader || false
 		})
 	}).catch(next)
 }
