@@ -38,7 +38,7 @@ function WorldEditor(domElement) {
 	this.editorTree.add(this.selectionTree)
 
 	// Our selection bounding box
-	this.selectionBox = new THREE.BoxHelper()
+	this.selectionBox = new BoundingBox()
 
 	// root for 3d handles
 	this.handleTree = new THREE.Object3D()
@@ -89,6 +89,9 @@ WorldEditor.prototype.preRenderUpdate = function() {
 	// update the camera selector just before render so that we get up to date
 	// camera information for this frame
 	this.cameraSelector.update(this.transformMode, this.vrCamera)
+
+	// Update the selection bounding box
+	this.selectionBox.updateTransform()
 
 	// add the editor tree to the scene if it's not there already
 	var editorIdx = this.scene.children.indexOf(this.editorTree)
@@ -215,7 +218,7 @@ WorldEditor.prototype.setSelection = function(selected) {
 			this.selectionTree.add(this.cameraSelector.transformControls)
 
 			// Update the selection bounding box
-			this.selectionBox.update(obj)
+			this.selectionBox.attach(obj)
 			this.selectionTree.add(this.selectionBox)
 
 			anySelected = true
