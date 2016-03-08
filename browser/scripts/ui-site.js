@@ -878,7 +878,24 @@ VizorUI.setupAssetCard = function($card) {
 		var cardEvent = new CustomEvent(eventName, {detail: detail});
 		document.dispatchEvent(cardEvent);
 		return true;
-	});
+	})
+
+	function formatDate(date) {
+		var mdate = moment(date)
+		var now = moment(Date.now())
+		
+		if (mdate.isSame(now, 'd'))
+			return moment(date).calendar()
+
+		if (mdate.isSame(now, 'y'))
+			return moment(date).format('MMM Do h:mm A')
+
+		return moment(date).format('ll h:mm A')
+	}
+
+	var $updatedAt = $('.updatedAt', $card)
+	var date = $updatedAt.text()
+	$updatedAt.text(formatDate(date))
 
 	return true;
 }
@@ -889,3 +906,4 @@ VizorUI.toggleAccountDropdown = function() {
 	}
 	return false;
 }
+

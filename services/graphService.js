@@ -40,7 +40,7 @@ GraphService.prototype.userGraphs = function(username) {
 	var dfd = when.defer();
 	this._model
 		.find({ owner: username })
-		.select('owner name previewUrlSmall updatedAt')
+		.select('owner name previewUrlSmall updatedAt stat')
 		.sort('-updatedAt')
 		.exec(function(err, list)
 	{
