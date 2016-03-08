@@ -3,7 +3,7 @@
         <svg stroke="none" fill="#afbfdf"><use xlink:href="#vizor-logo-flat"></use></svg>
 		<span class="title">{{graphName}}</span>
 		<span class="author">by <a href="#" data-href="/{{graph.owner}}">{{graphOwner}}</a></span>
-        <span class="loadingonly">({{graph.size}})</span>
+        <span class="loadingonly">{{#if graph.size}}({{graph.size}}){{/if}}</span>
 	</h2>
     <progress id="progressbar" max="100"></progress>
 	<div class="controls noselect_all">
@@ -56,6 +56,7 @@
         Vizor.shareURL = window.location.origin + '/{{graph.owner}}/{{graph.name}}'
         Vizor.embedSrc = window.location.origin + '/embed/{{graph.owner}}/{{graph.name}}'
         Vizor.autoplay = {{autoplay}}
+        Vizor.hasAudio = {{graph.hasAudio}}
         Vizor.graphName = '{{graphName}}'
         Vizor.hideWebVRButton = false
     })()

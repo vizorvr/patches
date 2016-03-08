@@ -1,3 +1,4 @@
+var assert = require('assert')
 var fs = require('fs');
 var vm = require('vm');
 var when = require('when')
@@ -268,7 +269,6 @@ exports.setupGlobals = function() {
 		on: function() {}
 	}
 
-
 	global.NodeUI = function() {
 		this.dom = [$()]
 		this.dom.position = this.dom[0].position
@@ -299,4 +299,28 @@ exports.setupGlobals = function() {
 		state: {},
 		showStartDialog: function() {return when.resolve()}
 	}
+}
+
+exports.connect = function connect(graph, a, aidx, b, bidx, dyn) {
+	var ss = a.plugin.output_slots[aidx]
+	var ds = dyn ? b.getDynamicInputSlots()[bidx] : b.plugin.input_slots[bidx]
+
+	assert.ok(ss)
+	assert.ok(ds)
+
+	var conn = new Connection(a, b, ss, ds)
+	conn.uid = E2.uid()
+
+	conn.patch_up()
+	E2.app.graphApi.connect(graph, conn)
+	E2.app.onLocalConnectionChanged(conn)
+	conn.signal_change(true)
+
+	return conn
+}
+
+exports.disconnect = function disconnect(graph, conn) {
+	E2.app.graphApi.disconnect(graph, conn)
+	E2.app.onLocalConnectionChanged(conn)
+	conn.signal_change(false)
 }

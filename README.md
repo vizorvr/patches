@@ -9,7 +9,7 @@ Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentatio
 
 ### Installing
 
-Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [Redis](http://redis.io) and either [node.js](https://nodejs.org) or [io.js](https://iojs.org/). To install the required packages, issue the following commands (on Mac using Homebrew):
+Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [Redis](http://redis.io) and  [node.js](https://nodejs.org). To install the required packages, issue the following commands (on Mac using Homebrew):
 
 ```
     $ npm install && npm install -g gulp
@@ -18,8 +18,7 @@ Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [Re
     $ gulp
 ```
 
-NOTE1: We strongly recommend [io.js](https://iojs.org/en/index.html) for its JavaScript ES6 features. 
-NOTE2: Currently using Web Sockets or OSC requires running Vizor locally.
+NOTE: Currently using Web Sockets or OSC requires running Vizor locally.
 
 ### Building
 

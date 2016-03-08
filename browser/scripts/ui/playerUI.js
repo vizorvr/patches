@@ -218,6 +218,9 @@ var VizorPlayerUI = function() {
 				window.location.href
 				.split('?')[0]
 				.split('/')
+				.join(' ')
+				.trim()
+				.split(' ')
 				.slice(-2)
 				.concat('edit')
 				.join('/')
@@ -377,7 +380,10 @@ var VizorPlayerUI = function() {
             $playButton.on('click', that.play.bind(that))
         }
 
-        if (window.Vizor && window.Vizor.autoplay)
+		if (Vizor.hasAudio && VizorUI.isMobile.iOS())
+			Vizor.autoplay = this.autoplay = false
+
+        if (this.autoplay)
             $body.addClass('autoplay')
         else
             preparePlay()

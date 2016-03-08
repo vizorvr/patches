@@ -28,6 +28,7 @@ exports.schema =  {
 exports.slugify = function slugify(name) {
 	return name.toLowerCase()
 		.replace(/[^\w-]+/g,' ')
+		.trim()
 		.replace(/ +/g, '-')
 }
 

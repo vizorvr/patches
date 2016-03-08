@@ -3,6 +3,11 @@ function Plugin(core, node) {
 	this.core = core
 	this.node = node
 
+	// though Node.js sets this too,
+	// this is still needed here 
+	// in case it's referred to in instantiation
+	this.inputValues = {}
+
 	this.state = {}
 	this._oldState = {}
 
@@ -10,8 +15,6 @@ function Plugin(core, node) {
 		if (that.state_changed && that.node.ui && that.node.ui.pluginUI)
 			that.state_changed(that.node.ui.pluginUI)
 	})
-
-	this.inputValues = {}
 }
 
 Plugin.prototype.undoableSetState = function(key, newValue, oldValue) {
@@ -35,19 +38,11 @@ Plugin.prototype.transientSetState = function(key, newValue) {
 	})
 }
 
+// these two are now in Node.js
+// but stubs are required here for inheritance
 Plugin.prototype.reset = function() {
-	var that = this
-	this.inputValues = {}
-	this.input_slots.map(function(slot) {
-		var def = slot.def !== undefined ? slot.def : that.core.get_default_value(slot.dt)
-		that.inputValues[slot.name] = def
-	})
 }
-
-Plugin.prototype.update_input = function(slot, data) {
-	this.inputValues[slot.name] = data
-}
-
+Plugin.prototype.update_input = function() {}
 
 Plugin.prototype.beginBatchModifyState = function() {
 	this._oldState = _.clone(this.state)
