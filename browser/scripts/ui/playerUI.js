@@ -380,7 +380,10 @@ var VizorPlayerUI = function() {
             $playButton.on('click', that.play.bind(that))
         }
 
-        if (window.Vizor && window.Vizor.autoplay)
+		if (Vizor.hasAudio && VizorUI.isMobile.iOS())
+			Vizor.autoplay = this.autoplay = false
+
+        if (this.autoplay)
             $body.addClass('autoplay')
         else
             preparePlay()
