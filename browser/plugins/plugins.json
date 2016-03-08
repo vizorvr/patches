@@ -151,8 +151,8 @@
         "Nested Patch": "graph",
         "Loop": "loop",
         "Array Function": "array_function",
-        "Annotation": "annotation"
-
+        "Annotation": "annotation",
+        "Is In VR": "is_in_vr"
     },
 
     "CAMERAS": {
