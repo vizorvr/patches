@@ -220,7 +220,7 @@ GraphController.prototype.embed = function(req, res, next) {
 			return next()
 
 		return renderPlayer(graph, req, res, {
-			autoplay: false
+			autoplay: req.query.autoplay || false
 		})
 	}).catch(next)
 }
