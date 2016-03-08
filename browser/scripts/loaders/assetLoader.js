@@ -57,13 +57,13 @@ AssetLoader.prototype.loadAsset = function(assetType, assetUrl) {
 	if (this.assetPromises[assetUrl]) {
 		var cache = this.assetPromises[assetUrl]
 
-		if (cache.progress < 1) {
+		if (cache.progress < 1)
 			return cache.promise
-		}
 
 		dfd.resolve(this.assetPromises[assetUrl].asset)
 	} else {
-		this.assetsFound++
+		if (!this.assetPromises[assetUrl])
+			this.assetsFound++
 
 		this.assetPromises[assetUrl] = {
 			promise: dfd.promise,
@@ -86,17 +86,15 @@ AssetLoader.prototype.loadAsset = function(assetType, assetUrl) {
 			that.emit('progress', pct * 100)
 		})
 		.on('error', function(err) {
-			that.assetsLoaded++;
-			that.totalProgress++;
+			that.assetsFound--;
 			delete that.assetPromises[assetUrl]
 
-			msg('ERROR: AssetLoader failed to load ' + assetUrl +': ' + err.toString())
+			msg('ERROR: AssetLoader failed to load ' + assetUrl +': ' + err.status)
 
 			dfd.reject(err)
 		})
 		.on('loaded', function(asset) {
 			that.assetsLoaded++
-			that.totalProgress++
 			that.assetPromises[assetUrl].asset = asset
 			that.assetPromises[assetUrl].progress = 1
 			dfd.resolve(asset)
@@ -116,8 +114,6 @@ AssetLoader.prototype.loadAssetsForGraph = function(graph) {
 
 	var assets = this.parse(graph)
 
-	this.totalProgress = 0
-
 	var assetTypes = Object.keys(assets)
 
 	assetTypes.map(function(assetType) {
@@ -130,14 +126,14 @@ AssetLoader.prototype.loadAssetsForGraph = function(graph) {
 			console.log('Loading', assetType, assetUrl)
 
 			that.loadAsset(assetType, assetUrl)
-			.then(function() {
+			.catch(function(err) {
+				return dfd.reject(err)
+			})
+			.finally(function() {
 				if (that.assetsLoaded === that.assetsFound) {
 					that.emit('progress', 100)
 					dfd.resolve()
 				}
-			})
-			.catch(function(err) {
-				dfd.reject(err)
 			})
 		})
 	})
