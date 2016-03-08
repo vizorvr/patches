@@ -3220,6 +3220,7 @@ WebVRPolyfill.prototype.enablePolyfill = function() {
   window.PositionSensorVRDevice = PositionSensorVRDevice;
 };
 
+
 WebVRPolyfill.prototype.getVRDevices = function() {
   var devices = this.devices;
   return new Promise(function(resolve, reject) {

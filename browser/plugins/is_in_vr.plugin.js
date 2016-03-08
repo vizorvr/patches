@@ -23,7 +23,6 @@
 	IsInVRPlugin.prototype = Object.create(Plugin.prototype)
 
 	IsInVRPlugin.prototype.update_state = function() {
-		console.log('IsInVRPlugin.update_state()')
 		var isFullscreen = E2.util.isFullscreen()
 		var isStereo = E2.core.webVRManager.isVRMode()
 
@@ -55,9 +54,16 @@
 				this.updated = true
 			}
 
+			this.modeChangeListener = refreshCallback.bind(this)
+
 			document.body.addEventListener('vrManagerModeChanged',
-				refreshCallback.bind(this));
+				this.modeChangeListener);
 		}
+	}
+
+	IsInVRPlugin.prototype.destroy = function() {
+		document.body.removeEventListener('vrManagerModeChanged',
+			this.modeChangeListener)
 	}
 
 })()
