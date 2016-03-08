@@ -5,6 +5,10 @@ var fsPath = require('path')
 var assert = require('assert')
 var expect = require('chai').expect
 var urlParse = require('url').parse
+var mongoose = require('mongoose');
+var GridFsStorage = require('../lib/gridfs-storage');
+var secrets = require('../config/secrets');
+var _ = require('lodash')
 
 var argv = require('minimist')(process.argv.slice(2))
 
@@ -78,6 +82,77 @@ function error(err) {
 
 // --------
 
+function pullAsset(gridFsUrl) {
+	var dfd = when.defer()
+
+	console.log('	GET ', gridFsUrl)
+
+	var dpath = gridFsUrl.substring('/data'.length)
+
+	gfs.createWriteStream(dpath)
+		.then(function(writeStream) {
+			remote.get(gridFsUrl)
+				.expect(200)
+				.pipe(writeStream)
+				.on('close', function() {
+					dfd.resolve()
+				})
+		})
+
+	return dfd.promise
+}
+
+var loadingPlugins = [
+	'three_loader_model',
+	'three_loader_scene',
+	'url_texture_generator',
+	'url_audio_buffer_generator',
+	'url_audio_generator',
+	'url_json_generator',
+	'url_video_generator',
+]
+
+var assets = []
+
+function findAssets(subgraph) {
+	if (!subgraph.nodes)
+		return
+
+	subgraph.nodes.map(function(node) {
+		if (node.plugin === 'graph')
+			return findAssets(node.graph)
+
+		if (loadingPlugins.indexOf(node.plugin) === -1)
+			return;
+
+		assets.push(node.state.url)
+	})
+
+	assets = _.uniq(assets)
+}
+
+// --------
+
+var gfs
+
+mongoose.connect(secrets.db);
+mongoose.connection.on('error', function(err) {
+	throw err
+})
+
+mongoose.connection.on('connected', (connection) => {	
+	gfs = new GridFsStorage('/data')
+	gfs.on('ready', function() {
+		Step1()
+	})
+})
+
+function done() {
+	console.log('All done!')
+	gfs.close()
+	mongoose.connection.close()
+}
+
 function Step1() {
 	local.post('/login.json').send(deets).expect(200)
 	.end(function(err, res) {
@@ -91,16 +166,24 @@ function Step2() {
 	console.log('Retrieving:', hn, url)
 	remote.get(url).expect(200).end(function(err, res) {
 		if (err) return error(err)
+
+		var graph = res.body
+		findAssets(graph.root)
+
 		sendGraph(localName, res.body, function(err) {
 			if (err)
 				return error(err)
 
 			var username = deets.email.split('@')[0]
-			console.log('Pulled as: ', localHttp+'/'+username+'/'+localName)
+
+			when.map(assets, function(asset) {
+				return pullAsset(asset)
+			})
+			.then(function() {
+				done()
+			})
 
 		})
 	})
 }
-
-Step1()
 
