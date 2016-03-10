@@ -12,23 +12,36 @@ describe('DocumentationController', function() {
 	it('fetches documentation for plugins', function(done) {
 		var req = {params: {}}
 		var res = {}
-		req.params.pluginName = 'and_modulator'
+
+		req.xhr = true
+		req.params.folder = 'nodes'
+		req.params.item = 'and_modulator'
 
 		res.json = function(data) {
 			assert.equal(data.desc, "<p>Emit true if and only if both inputs are true and false otherwise.</p>\n")
-			assert.deepEqual(data.inputs, [{name: 'a', desc: '<p>The first operand.</p>\n'}, {name: 'b', desc: '<p>The second operand.</p>\n'}])
-			assert.deepEqual(data.outputs, [{name: 'bool', desc: '<p>Emits true if <strong>first</strong> <em>and</em> <strong>second</strong> are true, and false otherwise.</p>\n'}])
+			assert.deepEqual(data.inputs, [{
+				name: 'a',
+				desc: '<p><em>Boolean</em></p>\n<p>The first operand.</p>\n'
+			}, {
+				name: 'b',
+				desc: '<p><em>Boolean</em></p>\n<p>The second operand.</p>\n'
+			}])
+			assert.deepEqual(data.outputs, [{
+				name: 'bool', 
+				desc: '<p><em>Boolean</em></p>\n<p>Emits true if <strong>first</strong> <em>and</em> <strong>second</strong> are true, and false otherwise.</p>\n'
+			}])
 
 			done()
 		}
 
-		dc.getPluginDocumentation(req, res, function() {assert.ok(false); done()})
+		dc.detail(req, res, function() {assert.ok(false); done()})
 	})
 
 	it('fetches 404 for plugin without documentation', function(done) {
 		var req = {params: {}}
 		var res = {}
-		req.params.pluginName = 'nonexistent_test_plugin'
+		req.params.folder = 'nodes'
+		req.params.item = 'nonexistent_test_plugin'
 
 		res.json = function(data) {
 			assert.ok(false, 'found an nonexistent plugin documentation')
@@ -36,6 +49,6 @@ describe('DocumentationController', function() {
 			done()
 		}
 
-		dc.getPluginDocumentation(req, res, function(e) {assert.ok(e.status === 404); done()})
+		dc.detail(req, res, function(e) {assert.ok(e.status === 404); done()})
 	})
 })

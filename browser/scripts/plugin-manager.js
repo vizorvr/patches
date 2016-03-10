@@ -25,7 +25,8 @@ function PluginManager(core, base_url) {
 					if (!Vizor.releaseMode)
 						that.total += Object.keys(data[category]).length
 
-					$.each(data[category], function(title, id)  {
+					$.each(data[category], function(title, def)  {
+						var id = def.name
 						var url = that.base_url + '/' + id + '.plugin.js';
 						if (!Vizor.releaseMode)
 							load_script(url, that.onload.bind(that), that.onerror.bind(that));
@@ -59,7 +60,6 @@ PluginManager.prototype = Object.create(EventEmitter.prototype)
 
 PluginManager.prototype.register_plugin = function(pg_root, key, id) {
 	this.keybyid[id] = pg_root.insert_relative(key, id);
-	// msg('\tLoaded ' + id + ' (' + this.lid + ')');
 	this.lid++;
 };
 
@@ -69,20 +69,17 @@ PluginManager.prototype.update_state = function() {
 	}
 }
 
-PluginManager.prototype.onload = function()
-{
+PluginManager.prototype.onload = function() {
 	this.loaded++;
 	this.update_state();
-};
+}
 
-PluginManager.prototype.onerror = function()
-{
+PluginManager.prototype.onerror = function() {
 	this.failed++;
 	this.update_state();
-};
+}
 
-PluginManager.prototype.create = function(id, node) 
-{
+PluginManager.prototype.create = function(id, node) {
 	if (E2.plugins.hasOwnProperty(id)) {
 		var p = new E2.plugins[id](this.core, node);
 		p.id = id;
@@ -92,7 +89,7 @@ PluginManager.prototype.create = function(id, node)
 	console.assert(false, 'Failed to resolve plugin with id \'' + id + '\'. Please check that the right id is specified by the plugin implementation.');
 
 	return null;
-};
+}
 
 if (typeof(module) !== 'undefined')
 	module.exports = PluginManager

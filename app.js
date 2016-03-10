@@ -269,13 +269,18 @@ app.get('/account/unlink/:provider', passportConf.isAuthenticated, userControlle
 
 // ----
 // Documentation
-app.get('/docs', documentationController
-	.index.bind(documentationController))
+var docs = documentationController
+app.get('/docs', docs.index.bind(docs))
+app.get('/docs/nodes', docs.nodesIndex.bind(docs))
+app.get('/docs/patches', docs.patchesIndex.bind(docs))
+app.get('/docs/:folder', docs.folderIndex.bind(docs))
+app.get('/docs/:folder/:item', docs.detail.bind(docs))
 
-app.get('/docs/plugins/:pluginName', documentationController
-	.getPluginDocumentation.bind(documentationController))
-
+// vhost stuff
 switch (process.env.FQDN) {
+	case 'docs.vizor.io':
+		app.get('/', docs.index.bind(docs))
+		break;
 	case '360vr.io':
 	case '360.vizor.io':
 		// 360 photo site

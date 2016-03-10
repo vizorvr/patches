@@ -1,20 +1,34 @@
-<h1>Plugins</h1>
+<div class="center clearfix" style="width: 80%; margin: 0 auto;">
 
-{{#each plugins.categories}}
-	<h3>{{name}}</h3>
 
-	{{#each plugins}}
-		<h4>{{name}}</h4>
+	<h2 class="decorative">Patches</h2>
+
+	{{#each presets.categories}}
+		<h3>
+			<a href="patches/{{name}}">{{name}}</a>
+		</h3>
+
+		{{#each items}}
+			<h4>
+				<a href="patches/{{name}}">{{title}}</a>
+			</h4>
+		{{/each}}
 	{{/each}}
-{{/each}}
 
-<h1>Presets</h1>
 
-{{#each presets.categories}}
-	<h3>{{name}}</h3>
 
-	{{#each presets}}
-		<h4>{{name}}</h4>
+	<h2 class="decorative">Nodes</h2>
+
+	{{#each plugins.categories}}
+		<h3>
+			<a href="nodes/{{name}}">{{name}}</a>
+		</h3>
+
+		{{#each items}}
+			<h4>
+				<a href="nodes/{{name}}">{{title}}</a>
+			</h4>
+		{{/each}}
 	{{/each}}
-{{/each}}
 
+</div>

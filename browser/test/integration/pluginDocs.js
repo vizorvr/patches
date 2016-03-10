@@ -70,8 +70,9 @@ describe('plugin docs', function() {
 		pluginCats.map(function(cat) {
 			var pluginNames = Object.keys(plugins[cat])
 
-			pluginNames.map(function (pluginName) {
-				var pluginId = plugins[cat][pluginName]
+			pluginNames.map(function(pluginName) {
+				var pluginDef = plugins[cat][pluginName]
+				var pluginId = pluginDef.name
 				var pluginSourcePath = pluginsPath + '/' + pluginId + '.plugin.js'
 
 				var pluginSource = fs.readFileSync(pluginSourcePath)
@@ -82,11 +83,11 @@ describe('plugin docs', function() {
 				script = new vm.Script(pluginSource, {filename: pluginId})
 				script.runInContext(context)
 
-				var res = {}
-
-				dc.getPluginDocumentation({
+				dc.detail({
+					xhr: true,
 					params: {
-						pluginName: pluginId
+						folder: 'nodes',
+						item: pluginId
 					}
 				}, {
 					json: jsonChecker(pluginId, context['plugin' + pluginId].input_slots, context['plugin' + pluginId].output_slots, function() {

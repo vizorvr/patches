@@ -1,0 +1,21 @@
+<div class="center clearfix" style="width: 80%; margin: 0 auto;">
+
+	<p>
+		<a href="../">&lt; Vizor Docs</a>
+	</p>
+
+	<h2 class="decorative">Patches</h2>
+
+	{{#each patches.categories}}
+		<h3>
+			<a href="/docs/patches/{{name}}">{{name}}</a>
+		</h3>
+
+		{{#each items}}
+			<h4>
+				<a href="/docs/patches/{{name}}">{{title}}</a>
+			</h4>
+		{{/each}}
+	{{/each}}
+
+</div>

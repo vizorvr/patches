@@ -84,6 +84,7 @@
     "selenium-standalone": "^5.0.0",
     "sinon": "^1.15.4",
     "supertest": "^0.13.0",
+    "to-markdown": "^2.0.1",
     "uglify-js2": "^2.1.11",
     "webdriverio": "3.4.0",
     "yadda": "0.16.0"
