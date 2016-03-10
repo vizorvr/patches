@@ -297,7 +297,7 @@ var siteUI = new function() {
 
 	this.isInVR = function() {
 		if (E2 && E2.core && E2.core.webVRManager && E2.core.webVRManager.isVRMode)
-			return E2.core.webVRManager.isVRMode()
+			return E2.core.webVRManager.mode === 3
 		return false
 	}
 

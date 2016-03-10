@@ -29,6 +29,7 @@ var E2 = {}
 // the list in the device database doesn't have Samsung S6 on the list.
 window.WebVRConfig = window.WebVRConfig || {}
 window.WebVRConfig.NO_DPDB_FETCH = true
+//window.WebVRConfig.ENABLE_DEPRECATED_API = true
 
 // These can be used to force VR on desktop
 //window.WebVRConfig.FORCE_ENABLE_VR = true
