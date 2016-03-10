@@ -278,6 +278,7 @@ app.get('/docs/:folder/:item', docs.detail.bind(docs))
 
 // vhost stuff
 switch (process.env.FQDN) {
+	case 'docs.vizor.lol':
 	case 'docs.vizor.io':
 		app.get('/', docs.index.bind(docs))
 		break;
