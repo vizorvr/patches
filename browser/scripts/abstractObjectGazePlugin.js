@@ -182,8 +182,10 @@
 
 		findSelectableMeshNodes()
 		.map(function(selectable) {
+			var nodeRef = selectable.node.parent_graph.uid + '.' + selectable.node.uid
 			$('<option>', {
-				value: selectable.node.parent_graph.uid + '.' + selectable.node.uid,
+				value: nodeRef,
+				selected: nodeRef === that.state.nodeRef,
 				text: selectable.title
 			})
 			.appendTo(that.$selectObject)
