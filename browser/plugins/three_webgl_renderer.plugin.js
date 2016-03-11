@@ -59,6 +59,26 @@
 			this.domElement.clientWidth / this.domElement.clientHeight,
 			0.1,
 			1000)
+
+		console.log("this.scene = ")
+		console.dir(this.scene)
+
+		// Initialize our render passes
+		this.renderPasses = {}
+
+		// This is the normal rendering pass, render the models in the scene
+		this.renderPasses.normal = new THREE.RenderPass(this.scene, this.perspectiveCamera)
+		this.renderPasses.bloom = new THREE.BloomPass( 1.6 )
+		this.renderPasses.copy = new THREE.ShaderPass( THREE.CopyShader )
+		this.renderPasses.copy.renderToScreen = true
+
+		// Create our effect composer
+		this.composer = new THREE.EffectComposer(this.renderer)
+		this.composer.addPass(this.renderPasses.normal)
+		this.composer.addPass(this.renderPasses.bloom)
+		this.composer.addPass(this.renderPasses.copy)
+		//composer.renderTarget1.stencilBuffer = true;
+		//composer.renderTarget2.stencilBuffer = true;
 	}
 
 	ThreeWebGLRendererPlugin.prototype.update_input = function(slot, data) {
@@ -102,6 +122,10 @@
 			E2.app.worldEditor.preRenderUpdate()
 			
 			// Render the scene through the world editor camera
+			this.composer.camera = E2.app.worldEditor.getCamera()
+			this.renderer.clear();
+			this.composer.render();
+
 			this.manager.render(this.scene, E2.app.worldEditor.getCamera())
 		}
 		else {
@@ -172,6 +196,7 @@
 			}
 
 			this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: true })
+			//this.manager = new WebVRManager(this.composer, this.effect, { hideButton: true })
 
 			E2.core.webVRManager = this.manager		// allow e.g. the player/embed to access this
 
