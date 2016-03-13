@@ -69,6 +69,8 @@ var uiMakeDragToAdjust = function(domNode, onStart, onChange, onEnd, options) {
 		if(e.preventDefault) e.preventDefault()
 		onEnd(value)
 		document.body.style.cursor = '';
+		var rectRef = o.surfaceDomNode || domNode
+			rectRef.classList.remove('adjusting')
 		return true
 	}}
 
@@ -167,6 +169,8 @@ var uiMakeDragToAdjust = function(domNode, onStart, onChange, onEnd, options) {
 			E2.ui.setDragging(true);
 			document.body.style.cursor = o.cssCursor;
 
+			var rectRef = o.surfaceDomNode || domNode
+			rectRef.classList.add('adjusting')
 			data.move(e)
 			return true
 		}
@@ -195,7 +199,6 @@ var uiMakeDragToAdjust = function(domNode, onStart, onChange, onEnd, options) {
 		}, true);
 	}
 
-	// @todo var h = new UIDragAwareHelper(domNode)
 
 	domNode.addEventListener('touchstart', down())
 	domNode.addEventListener('mousedown', down())
@@ -210,5 +213,4 @@ var uiMakeDragToAdjust = function(domNode, onStart, onChange, onEnd, options) {
 	else
 		domNode.className = 'uiValueAdjustable'
 
-	// return h
 }

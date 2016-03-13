@@ -159,7 +159,7 @@ UIVector3.prototype.attach = function() {
 			max : 1000.0,
 			step : 0.01,
 			size : 100000,
-			textInputParentNode : el,
+			textInputParentNode : that.dom[xyz].parentNode,
 
 			getValue : function () {
 				return adapter.sourceValue[xyz]
@@ -204,6 +204,26 @@ UIVector3.prototype.attach = function() {
 			}))
 		}
 		that.dragger[xyz] = uiMakeDragToAdjust(domElement, onStart, onChange, onEnd, opts)
+		domElement.addEventListener('tabToNext', function(e){
+			e.stopPropagation()
+			var next = null
+			var shiftPressed = E2 && E2.ui && E2.ui.flags.pressedShift
+			switch (xyz) {
+				case 'x':
+					if (!shiftPressed)
+						next = that.dom.y
+					break
+				case 'y':
+					next = (shiftPressed) ? that.dom.x : that.dom.z
+					break
+				case 'z':
+					if (shiftPressed) next = that.dom.y
+					break
+			}
+			if (next)
+				next.dispatchEvent(new CustomEvent('dblclick'))
+			return false
+		})
 	}
 
 	enableEntry(this.dom.x, 'x', this.opts)

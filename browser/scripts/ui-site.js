@@ -880,7 +880,7 @@ VizorUI.replaceSVGButtons = function($selector) {
 
 		$button.data('svgref', false).attr('data-svgref','');
 
-		if ($button.hasClass('tiny')) {
+		if ($button.hasClass('tiny') && ($button.text() !== '')) {
 			$button.popover({
 				content: $button.text(),
 				delay: {
