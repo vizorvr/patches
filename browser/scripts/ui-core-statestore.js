@@ -20,7 +20,7 @@ var UiState = function(persistentStorageRef, context) {
 	EventEmitter.apply(this, arguments)
 	var that = this
 
-	var persistentStorageKey = 'uiState103'
+	var persistentStorageKey = 'uiState104'
 
 	var defineProperty = function(obj, prop, options, callback) {
 		options = _.extend({
@@ -119,7 +119,7 @@ var UiState = function(persistentStorageRef, context) {
 			panel_presets : true,
 			panel_assets : true,
 			patch_editor : false,
-			panel_properties: true
+			panel_properties: false
 		}
 	)
 

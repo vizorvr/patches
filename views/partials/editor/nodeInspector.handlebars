@@ -1,36 +1,48 @@
 <div class="propertiesContent nodeInspector">
-    <section class="collapsible" id="propertiesSectionNode">
-        {{#if controls.stateProps._enabled}}
-            {{#each controls.stateProps}}
-                <div class="prop pt{{this.dtName}}">
-                    <label>{{this.label}}</label>
-                    {{{this.control}}}
-                </div>
-            {{/each}}
-        {{/if}}
 
-        {{#if controls.slotProps._enabled}}
-            {{#each controls.slotProps}}
-                <div class="prop pt{{this.dtName}}">
-                    <label>{{this.label}}</label>
-                    {{{this.control}}}
-                </div>
-            {{/each}}
-        {{/if}}
-
-
+    <section>
         {{#if controls.common._enabled}}
-            <h4>Common</h4>
             {{#with controls.common}}
-                <label>Name: </label>
-                {{{nodeName}}}
+                <div>
+                    <label>Name: </label>
+                    {{{nodeName}}}
+                </div>
             {{/with}}
         {{else}}
-            <h4></h4>
-
             <p class="noSelection">
                 select one graph node to see its properties
             </p>
         {{/if}}
     </section>
+
+    {{#if controls.stateProps._enabled}}
+        <section class="collapsible" id="propertiesSectionNode">
+            {{#each controls.stateProps}}
+                {{#if this.dtName}}
+                    <div class="prop pt{{this.dtName}}">
+                        <label>
+                            {{{this.control}}}
+                            {{this.label}}</label>
+
+                    </div>
+                {{/if}}
+            {{/each}}
+        </section>
+    {{/if}}
+
+    {{#if controls.slotProps._enabled}}
+        <section class="collapsible" id="propertiesSectionSlots">
+        {{#each controls.slotProps}}
+            {{#if this.dtName}}
+                <div class="prop pt{{this.dtName}}">
+                    <label>
+                        {{{this.control}}}
+                        {{this.label}}</label>
+
+                </div>
+            {{/if}}
+        {{/each}}
+        </section>
+    {{/if}}
+
 </div>

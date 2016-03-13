@@ -850,7 +850,6 @@ NodeUI.prototype.createSlot = function(container, s, type) {
 
 	var setSlotLabel = function(slot, value){
 		if (slot !== s) return
-		console.log(slot, value)
 		var isOverride   = (!slot.is_connected) && (typeof slot.def !== 'undefined') && (value !== null) && (value !== slot.def)
 		if (isOverride)
 			$label.html(s.name + '*')

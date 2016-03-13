@@ -60,11 +60,21 @@ var uiEnterValueControl = function(node, parentNode, onChange, options) {
 		.val(oldValue)
 		.keydown(function(e){
 			var code = e.keyCode || e.which
-			if (code === 13) {
+			var commit = function() {
 				var value = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
 				done = true
 				tryChange(value)
 				jQuery(e.target).trigger('blur');
+			}
+			if (code === 13) {
+				commit()
+			}
+			else if (code === 9) {
+				// tab!
+				e.preventDefault()
+				e.stopPropagation()
+				commit()
+				$node[0].dispatchEvent(new CustomEvent('tabToNext'))
 			}
 			return true;
 		})

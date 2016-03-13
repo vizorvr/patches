@@ -7,66 +7,12 @@
     left: 30 + @floating-box-width + 30;
 
 }
-.properties-block {
-    right: 230px;
-    top: 30px;
+body.bEditor div.floating-box.properties-block {
+  right: 30px;
+  top: 10px;
+  z-index: 67;
 }
 
-/*
-ul.lib-tabs {
-    display: table;
-    position: relative;
-    float: left;
-    width: @floating-box-width;
-    height: 32px;
-    margin: 0;
-    padding: 0;
-    border-bottom: 1px solid @bg-darker;
-    > li {
-        display: table-cell;
-        position: relative;
-        text-align: center;
-        vertical-align: middle;
-        height: 32px;
-        background: @bg-light;
-        border-right: 1px solid @bg-darker;
-        :last-child {
-            border: 0;    
-        }
-        a {
-            padding-top: 8px;
-            height: 32px;
-            outline: none;
-            color: @tab-text-inactive;
-            font-size: 12px;
-            font-weight: 600;
-            display: block;
-            box-sizing: border-box;
-            text-decoration: none;
-        }
-        a:active, a:focus {
-            text-decoration: none;
-            }
-    }
-    > li.active {
-            background: @bg-lighter;
-            a {
-                color: @editor-text-active;
-            }
-    }
-    > li.active:hover {
-            a {
-                text-decoration: none; 
-            }
-    }
-    > li:hover {
-            a {
-                text-decoration: none; 
-                color: @editor-text-active;
-            }
-    }
-}
-*/
 
 #assets {
     display: block; 
@@ -393,6 +339,25 @@ ul.xyz {
 	padding-top: 1px;
 	color:rgba(255,255,255,0.2);
   }
+  li {
+
+	&:hover span.uiValueAdjustable {
+	  color: #afbfdf;
+	}
+
+	span.uiValueAdjustable.adjusting:after,
+	&:hover span.uiValueAdjustable:after {	// renders the ^v icon
+	  content: '';
+	  display: block;
+	  float:right;
+	  width: 8px;
+	  height: 17px;
+	  background: url('/images/v2/widgetSprite.svg') -1px 0px no-repeat;
+	}
+  }
+  &.uiDisabled li:hover span.uiValueAdjustable:after {
+	display: none;
+  }
   li.xyz-x:before {content: "X";}
   li.xyz-y:before {content: "Y";}
   li.xyz-z:before {content: "Z";}
@@ -400,6 +365,12 @@ ul.xyz {
 
 
 .propertiesContent {
+  padding-bottom: 5px;
+  label {
+	margin-bottom: 0;
+	font-weight: 500;
+	color: @editor-text-default;
+  }
   ul.xyz {
 	display: flex;
 	display: -webkit-flex;
@@ -407,17 +378,23 @@ ul.xyz {
 	li {
 	  -webkit-flex: 1;
 	  flex: 1;
+	  height: 18px;
 	  span {
-		background: rgba(255,255,255,0.1);
-		display: block;
-		line-height: 1.4em;
-		padding: 1px;
+	  	color: @editor-text-default;
+		  display: block;
+		  line-height: 1.4em;
+		  padding: 1px;
 		  overflow: hidden;
           transition: color 0.2s;
           &.changed {
               color: white;
               transition: color 0s;
           }
+	  }
+	  input.uiTextEntry {
+		border: 1px solid red;
+		padding: 0;
+		line-height: inherit;
 	  }
 	}
 	>li:first-child {
@@ -431,36 +408,46 @@ ul.xyz {
 	}
 
   }
-
-  .noSelection, .noSelectionOnly {
-	color: rgba(255,255,255,0.3);
-	text-align: center;
-  }
-  .propertiesContent svg, .propertiesContent svg use {stroke: #fff; fill: #fff;}
+    .noSelection, .noSelectionOnly {
+      color: rgba(255,255,255,0.3);
+      text-align: center;
+    }
+    #propertiesResetScale, #propertiesResetRotation, #propertiesResetPosition, #propertiesLinkScale {
+      border: 0;
+      width: 15px;
+      height: 18px;
+    }
 }
 
 
 #properties-panel {
-    width: 232px;
+    /* width: 232px;
     .block-header {
         width: 232px;
         .nav-tabs {
             width: 158px;
         }
-    }
+    } */
     .propertiesContent {
         section {
-            padding: 10px 15px;
-            ul {
-                padding:0;
-            }
+		  padding: 5px 0;
+		  ul {
+			margin: 0;
+			padding: 10px 15px;
+			background: #1f2331
+		  }
+		  h4, >div, >p {
+			margin:0;
+			padding: 5px 15px;
+		  }
         }
         section {
             ul.xyz.uiDisabled,
             &.disabled ul.xyz {
                 li span {
-                    background: none;
-                    pointer-events: none;
+				  background: none;
+				  pointer-events: none;
+				  color: @editor-text-inactive;
                 }
             }
             button[disabled],
@@ -471,10 +458,12 @@ ul.xyz {
         h4 {
             .clearfix;
             font-size: 100%;
+		  	font-weight: 500;
+		  	color: @editor-text-default;
             margin:0 0 5px 0;
             button {
                 float:right;
-                height: 16px;
+                height: 18px;
             }
         }
     }
@@ -496,16 +485,38 @@ ul.xyz {
         outline: none;
         border: 0;
         padding: 4px;
+	  &.uiTextEntry.node-value-input {
+		padding:1px;
+		background: rgba(0,0,0,0.3);
+	  }
     }
     section button {
+	  @pbtn-color-on: 	#afbfdf;
+	  @pbtn-color-hover: 	lighten(#afbfdf, 15%);
+	  @pbtn-color-off: 	@editor-text-inactive;
+	  @pbtn-color-neutral: #7e8dab;
+
         background: none;
         padding: 1px 5px;
         line-height: 1.1;
-        border: 1px solid #afbfdf;
-        color: #AFBFDF;
-        &.uiToggle_on {
-            background: #afbfdf;
-            color: #000;
+
+	  	svg, use {
+		  stroke: @pbtn-color-neutral;
+		}
+	  	&:hover {
+		  svg, use {
+			stroke: @pbtn-color-hover;
+		  }
+		}
+        &.uiToggle_off {
+        	svg, use {
+			  stroke: @pbtn-color-off
+			}
+        }
+	  	&.uiToggle_on {
+            svg, use {
+			  stroke: @pbtn-color-on;
+			}
         }
         &+button {margin-right: 2px}
     }
