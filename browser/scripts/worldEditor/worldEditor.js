@@ -211,6 +211,9 @@ WorldEditor.prototype.setSelection = function(selected) {
 			this.cameraSelector.transformControls.attach(obj)
 			this.selectionTree.add(this.cameraSelector.transformControls)
 
+			// Add to our selectionTree a clone of the object
+			this.selectionTree.add(obj.clone());
+
 			anySelected = true
 			// only attach to first valid item
 			break

@@ -65,7 +65,7 @@
 
 		// This is the normal rendering pass, render the models in the scene
 		this.renderPasses.scene = new THREE.RenderPass(this.scene, this.perspectiveCamera)
-		this.renderPasses.bloom = new THREE.BloomPass( 1.6 )
+		this.renderPasses.bloom = new THREE.BloomPass( 1.1 )
 		this.renderPasses.copy = new THREE.ShaderPass( THREE.CopyShader )
 		this.renderPasses.copy.renderToScreen = true
 
@@ -117,6 +117,9 @@
 
 		if (E2.app.worldEditor.isActive()) {
 			E2.app.worldEditor.preRenderUpdate()
+
+			// We can get the selected objects from the worldEditor here
+			var selectionTree = E2.app.worldEditor.selectionTree
 			
 			// Render the scene through the world editor camera
 			this.renderPasses.scene.camera = E2.app.worldEditor.getCamera()
