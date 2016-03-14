@@ -60,21 +60,18 @@
 			0.1,
 			1000)
 
-		console.log("this.scene = ")
-		console.dir(this.scene)
-
 		// Initialize our render passes
 		this.renderPasses = {}
 
 		// This is the normal rendering pass, render the models in the scene
-		this.renderPasses.normal = new THREE.RenderPass(this.scene, this.perspectiveCamera)
+		this.renderPasses.scene = new THREE.RenderPass(this.scene, this.perspectiveCamera)
 		this.renderPasses.bloom = new THREE.BloomPass( 1.6 )
 		this.renderPasses.copy = new THREE.ShaderPass( THREE.CopyShader )
 		this.renderPasses.copy.renderToScreen = true
 
 		// Create our effect composer
 		this.composer = new THREE.EffectComposer(this.renderer)
-		this.composer.addPass(this.renderPasses.normal)
+		this.composer.addPass(this.renderPasses.scene)
 		this.composer.addPass(this.renderPasses.bloom)
 		this.composer.addPass(this.renderPasses.copy)
 		//composer.renderTarget1.stencilBuffer = true;
@@ -122,11 +119,13 @@
 			E2.app.worldEditor.preRenderUpdate()
 			
 			// Render the scene through the world editor camera
-			this.composer.camera = E2.app.worldEditor.getCamera()
-			this.renderer.clear();
+			this.renderPasses.scene.camera = E2.app.worldEditor.getCamera()
+			this.renderPasses.scene.scene = this.scene
+
+			// Use the composer to render now .. 
 			this.composer.render();
 
-			this.manager.render(this.scene, E2.app.worldEditor.getCamera())
+			//this.manager.render(this.scene, E2.app.worldEditor.getCamera())
 		}
 		else {
 			// Render the scene through the experience camera
@@ -185,6 +184,7 @@
 			this.renderer = E2.core.renderer
 
 			this.renderer.setPixelRatio(window.devicePixelRatio)
+			this.renderer.autoClear = false;
 
 			// for now (three.js r74) VREffect is not compatible with webvr-boilerplate
 			// nor three.js so we use THREE.CardboardEffect instead
@@ -196,7 +196,6 @@
 			}
 
 			this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: true })
-			//this.manager = new WebVRManager(this.composer, this.effect, { hideButton: true })
 
 			E2.core.webVRManager = this.manager		// allow e.g. the player/embed to access this
 
