@@ -37,6 +37,19 @@ function WorldEditor(domElement) {
 	this.selectionTree = new THREE.Object3D()
 	this.editorTree.add(this.selectionTree)
 
+	// Our selected object
+	this.selectionOutline = new SelectionOutline()
+
+	// Outline and mask scenes. For the selected object rendering pass.
+	this.passScenes = {}
+	this.passScenes.mask = new THREE.Scene()
+	this.passScenes.outline = new THREE.Scene()
+
+	// Outline & mask render materials
+	this.passMaterials = {}
+	this.passMaterials.outline = this.createOutlineShaderMaterial(0.03, new THREE.Vector3(0.0, 1.0, 1.0));
+	this.passMaterials.mask = new THREE.MeshBasicMaterial({ color: 0x000000 })
+
 	// root for 3d handles
 	this.handleTree = new THREE.Object3D()
 	this.editorTree.add(this.handleTree)
@@ -50,6 +63,75 @@ function WorldEditor(domElement) {
 	this.setupObjectPicking()
 
 	E2.ui.state.on('changed:modifyMode', this.setTransformMode.bind(this));
+}
+
+
+// Create our shader material for rendering the simple outline
+WorldEditor.prototype.createOutlineShaderMaterial = function(offset, color) {
+	var outlineShader = {
+		// TODO: this is too simple
+		// It is just rendering the current material faces with an extended position
+		// resulting in the cube for example missing the corners
+		//
+		// Should just extend the radius of the original object if possible and render with that
+		vertexShader: [
+			"uniform float offset;",
+			"void main() {",
+			"vec4 pos = modelViewMatrix * vec4( position + normal * offset, 1.0 );",
+			"gl_Position = projectionMatrix * pos;",
+			"}"
+		].join("\n"),
+
+		fragmentShader: [
+			"uniform vec3 outlineColor;",
+			"void main(){",
+			"gl_FragColor = vec4(outlineColor, 1.0);",
+			"}"
+		].join("\n")
+	};
+
+	var uniforms = { 
+		// The offset amount the outline object is bigger than the selected object
+		offset: { type: "f", value: offset},
+		// Color we are outlining with
+		outlineColor: { type: "v3", value: color },
+	}
+
+	var outlineShaderMaterial = new THREE.ShaderMaterial({
+		uniforms: uniforms, 
+		vertexShader: outlineShader.vertexShader,
+		fragmentShader: outlineShader.fragmentShader
+	})
+
+	return outlineShaderMaterial
+}
+
+// Add clones of the object mesh passed in to our mask and outline pass scenes
+WorldEditor.prototype.addOutlineObj = function(objMesh) {
+	var maskMesh = objMesh.clone()
+
+	maskMesh.material = this.passMaterials.mask
+	this.passScenes.mask.add(maskMesh)
+
+	var outlineMesh = objMesh.clone()
+
+	outlineMesh.material = this.passMaterials.outline
+	this.passScenes.outline.add(outlineMesh)
+}
+
+WorldEditor.prototype.clearOutlines = function() {
+	var len = this.passScenes.mask.children.length - 1;
+	var obj;
+
+	if (len < 0) return;
+
+	for (var i=len; i>=0; i--) {
+		obj = this.passScenes.mask.children[i];
+		this.passScenes.mask.remove(obj);
+
+		obj = this.passScenes.outline.children[i];
+		this.passScenes.outline.remove(obj);
+	}
 }
 
 WorldEditor.prototype.setTransformMode = function(mode) {
@@ -82,6 +164,41 @@ WorldEditor.prototype.update = function() {
 	}
 }
 
+// So..
+// Let's figure out this logic now ..
+//
+// We are doing this now:
+//
+// 	- When an object is selected, we add do this:
+//
+// 		- selectionOutline.attach(obj)
+// 		- selectionTree.add(selectionOutline)
+//
+// 	- So .. for each frame, when an object is selected, 
+//
+// 		- We have selectionOutline attached to that object
+// 		- And we can find the selectionOutline in selectionTree
+//
+// 	- So ..
+//
+// 		- Clear the outlines
+// 		- Add new outline
+// 			- When ?
+// 				- If selectionOutline has an object attached
+//
+//
+WorldEditor.prototype.updateSelectionOutlines = function() {
+	this.clearOutlines();
+
+	// We can get the selected objects from the worldEditor here
+	if (this.selectionOutline.attachedObj) {
+		var outlineObj = this.selectionOutline.attachedObj.children[0]
+		if (outlineObj) {
+			this.addOutlineObj(outlineObj)
+		}
+	}
+}
+
 WorldEditor.prototype.preRenderUpdate = function() {
 	// update the camera selector just before render so that we get up to date
 	// camera information for this frame
@@ -89,6 +206,8 @@ WorldEditor.prototype.preRenderUpdate = function() {
 
 	// add the editor tree to the scene if it's not there already
 	var editorIdx = this.scene.children.indexOf(this.editorTree)
+
+	this.updateSelectionOutlines()
 
 	if (this.showEditorHelpers && editorIdx < 0) {
 		this.scene.add(this.editorTree)
@@ -202,6 +321,7 @@ WorldEditor.prototype.getEditorSceneTree = function() {
 
 WorldEditor.prototype.setSelection = function(selected) {
 	this.selectionTree.children = []
+	//this.selectionOutline.detach()
 
 	var anySelected = false
 
@@ -211,8 +331,8 @@ WorldEditor.prototype.setSelection = function(selected) {
 			this.cameraSelector.transformControls.attach(obj)
 			this.selectionTree.add(this.cameraSelector.transformControls)
 
-			// Add to our selectionTree a clone of the object
-			this.selectionTree.add(obj.clone());
+			this.selectionOutline.attach(obj)
+			this.selectionTree.add(this.selectionOutline)
 
 			anySelected = true
 			// only attach to first valid item
