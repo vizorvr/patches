@@ -107,7 +107,7 @@ WorldEditor.prototype.createOutlineShaderMaterial = function(offset, color) {
 }
 
 // Add clones of the object mesh passed in to our mask and outline pass scenes
-WorldEditor.prototype.addOutlineObj = function(objMesh) {
+WorldEditor.prototype.addOutlineMesh = function(objMesh) {
 	var maskMesh = objMesh.clone()
 
 	maskMesh.material = this.passMaterials.mask
@@ -192,9 +192,9 @@ WorldEditor.prototype.updateSelectionOutlines = function() {
 
 	// We can get the selected objects from the worldEditor here
 	if (this.selectionOutline.attachedObj) {
-		var outlineObj = this.selectionOutline.attachedObj.children[0]
-		if (outlineObj) {
-			this.addOutlineObj(outlineObj)
+		var outlineMesh = this.selectionOutline.attachedObj.children[0]
+		if (outlineMesh) {
+			this.addOutlineMesh(outlineMesh)
 		}
 	}
 }
@@ -321,7 +321,7 @@ WorldEditor.prototype.getEditorSceneTree = function() {
 
 WorldEditor.prototype.setSelection = function(selected) {
 	this.selectionTree.children = []
-	//this.selectionOutline.detach()
+	this.selectionOutline.detach()
 
 	var anySelected = false
 
