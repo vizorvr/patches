@@ -33,7 +33,7 @@
 		this.always_update = true
 		this.state = { always_update: true }
 
-		this.clearColor = new THREE.Color(0,0,0)
+		this.clearColor = new THREE.Color(0.2,0.2,0.2)
 	}
 
 	ThreeWebGLRendererPlugin.prototype = Object.create(Plugin.prototype)

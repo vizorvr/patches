@@ -47,7 +47,7 @@ function WorldEditor(domElement) {
 
 	// Outline & mask render materials
 	this.passMaterials = {}
-	this.passMaterials.outline = this.createOutlineShaderMaterial(0.03, new THREE.Vector3(0.0, 1.0, 1.0));
+	this.passMaterials.outline = this.createOutlineShaderMaterial(0.05, new THREE.Vector3(0.0, 1.0, 1.0));
 	this.passMaterials.mask = new THREE.MeshBasicMaterial({ color: 0x000000 })
 
 	// root for 3d handles
@@ -107,15 +107,23 @@ WorldEditor.prototype.createOutlineShaderMaterial = function(offset, color) {
 }
 
 // Add clones of the object mesh passed in to our mask and outline pass scenes
-WorldEditor.prototype.addOutlineMesh = function(objMesh) {
+WorldEditor.prototype.addOutlineMesh = function(objMesh, position, scale, rotation) {
 	var maskMesh = objMesh.clone()
-
 	maskMesh.material = this.passMaterials.mask
+
+	maskMesh.position.set(position.x, position.y, position.z)
+	maskMesh.scale.set(scale.x, scale.y, scale.z)
+	maskMesh.rotation.set(rotation.x, rotation.y, rotation.z)
+
 	this.passScenes.mask.add(maskMesh)
 
 	var outlineMesh = objMesh.clone()
-
 	outlineMesh.material = this.passMaterials.outline
+
+	outlineMesh.position.set(position.x, position.y, position.z)
+	outlineMesh.scale.set(scale.x, scale.y, scale.z)
+	outlineMesh.rotation.set(rotation.x, rotation.y, rotation.z)
+
 	this.passScenes.outline.add(outlineMesh)
 }
 
@@ -133,6 +141,22 @@ WorldEditor.prototype.clearOutlines = function() {
 		this.passScenes.outline.remove(obj);
 	}
 }
+
+WorldEditor.prototype.updateSelectionOutlines = function() {
+	this.clearOutlines();
+
+	var attachedObj = this.selectionOutline.attachedObj
+	// We can get the selected objects from the worldEditor here
+	if (attachedObj) {
+		// Get the mesh from the attached object
+		var objMesh = attachedObj.children[0]
+		if (objMesh) {
+			// TODO: get the matrix directly ?
+			this.addOutlineMesh(objMesh, attachedObj.position, attachedObj.scale, attachedObj.rotation)
+		}
+	}
+}
+
 
 WorldEditor.prototype.setTransformMode = function(mode) {
 	this.transformMode = mode
@@ -161,41 +185,6 @@ WorldEditor.prototype.update = function() {
 		var gridScale = f(cameraDistanceToVRCamera, 0.01)
 		gridScale = gridScale < 1 ? 1 : gridScale
 		this.radialHelper.scale(gridScale)
-	}
-}
-
-// So..
-// Let's figure out this logic now ..
-//
-// We are doing this now:
-//
-// 	- When an object is selected, we add do this:
-//
-// 		- selectionOutline.attach(obj)
-// 		- selectionTree.add(selectionOutline)
-//
-// 	- So .. for each frame, when an object is selected, 
-//
-// 		- We have selectionOutline attached to that object
-// 		- And we can find the selectionOutline in selectionTree
-//
-// 	- So ..
-//
-// 		- Clear the outlines
-// 		- Add new outline
-// 			- When ?
-// 				- If selectionOutline has an object attached
-//
-//
-WorldEditor.prototype.updateSelectionOutlines = function() {
-	this.clearOutlines();
-
-	// We can get the selected objects from the worldEditor here
-	if (this.selectionOutline.attachedObj) {
-		var outlineMesh = this.selectionOutline.attachedObj.children[0]
-		if (outlineMesh) {
-			this.addOutlineMesh(outlineMesh)
-		}
 	}
 }
 
