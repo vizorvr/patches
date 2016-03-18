@@ -47,7 +47,7 @@ function WorldEditor(domElement) {
 
 	// Outline & mask render materials
 	this.passMaterials = {}
-	this.passMaterials.outline = this.createOutlineShaderMaterial(0.5, new THREE.Vector3(1.0, 0.0, 1.0));
+	this.passMaterials.outline = this.createOutlineShaderMaterial(0.05, new THREE.Vector3(0.0, 1.0, 1.0));
 	this.passMaterials.mask = new THREE.MeshBasicMaterial({ color: 0x000000 })
 
 	// root for 3d handles
@@ -155,7 +155,6 @@ WorldEditor.prototype.updateSelectionOutlines = function() {
 		}
 	}
 }
-
 
 WorldEditor.prototype.setTransformMode = function(mode) {
 	this.transformMode = mode
