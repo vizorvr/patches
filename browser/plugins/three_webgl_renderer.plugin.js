@@ -33,7 +33,7 @@
 		this.always_update = true
 		this.state = { always_update: true }
 
-		this.clearColor = new THREE.Color(0.2,0.2,0.2)
+		this.clearColor = new THREE.Color(0.0,0.0,0.0)
 	}
 
 	ThreeWebGLRendererPlugin.prototype = Object.create(Plugin.prototype)
@@ -74,10 +74,29 @@
 		this.composer.renderTarget2.stencilBuffer = true
 
 		// Add the passes to our composer
+		//
+		// First we render the scene normally
 		this.composer.addPass(this.renderPasses.scene)
+
+		// Then we render the mask, that equals to the outlined object, but rendered only in 0x000000 color
 		this.composer.addPass(this.renderPasses.mask)
+
+		// Now we render the outline
+		// We have the maskpass enabled, so we are not rendering over the masked area
 		this.composer.addPass(this.renderPasses.outline)
+
+		// Disable the stencil test 
+		//
+		// clearMask pass only does this;
+		// var context = renderer.context;
+		// context.disable( context.STENCIL_TEST );
+		var contextAttributes = this.renderer.context.getContextAttributes();
+		var haveStencilBuffer = contextAttributes.stencil;
+		console.log("haveStencilBuffer = " + haveStencilBuffer);
+
 		this.composer.addPass(this.renderPasses.clearMask)
+
+		// Then we copy the resulting renderTarget onto the canvas
 		this.composer.addPass(this.renderPasses.copy)
 	}
 
@@ -215,7 +234,8 @@
 			this.renderer = E2.core.renderer
 
 			this.renderer.setPixelRatio(window.devicePixelRatio)
-			this.renderer.autoClear = false;
+			this.renderer.autoClear = false
+			this.renderer.autoClearStencil = false
 
 			// for now (three.js r74) VREffect is not compatible with webvr-boilerplate
 			// nor three.js so we use THREE.CardboardEffect instead
