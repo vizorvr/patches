@@ -7,7 +7,8 @@ THREE.EffectComposer = function ( renderer, renderTarget ) {
 	this.renderer = renderer;
 
 	if ( renderTarget === undefined ) {
-
+		// TODO: settings this to 1 seems to fix the pixelated output
+		//var pixelRatio = 1;
 		var pixelRatio = renderer.getPixelRatio();
 
 		var width  = Math.floor( renderer.context.canvas.width  / pixelRatio ) || 1;
@@ -130,10 +131,10 @@ THREE.EffectComposer.prototype = {
 	},
 
 	setSize: function ( width, height ) {
-
+		console.log("RESIZE width = " + width);
+		console.log("RESIZE height = " + height);
 		this.renderTarget1.setSize( width, height );
 		this.renderTarget2.setSize( width, height );
-
 	}
 
 };
