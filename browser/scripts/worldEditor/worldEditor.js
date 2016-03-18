@@ -38,7 +38,7 @@ function WorldEditor(domElement) {
 	this.editorTree.add(this.selectionTree)
 
 	// Our selected object
-	this.selectionOutline = new SelectionOutline()
+	this.selectedObj = new THREE.Object3D()
 
 	// Outline and mask scenes. For the selected object rendering pass.
 	this.passScenes = {}
@@ -47,7 +47,7 @@ function WorldEditor(domElement) {
 
 	// Outline & mask render materials
 	this.passMaterials = {}
-	this.passMaterials.outline = this.createOutlineShaderMaterial(0.05, new THREE.Vector3(0.0, 1.0, 1.0));
+	this.passMaterials.outline = this.createOutlineShaderMaterial(0.5, new THREE.Vector3(1.0, 0.0, 1.0));
 	this.passMaterials.mask = new THREE.MeshBasicMaterial({ color: 0x000000 })
 
 	// root for 3d handles
@@ -109,8 +109,8 @@ WorldEditor.prototype.createOutlineShaderMaterial = function(offset, color) {
 // Add clones of the object mesh passed in to our mask and outline pass scenes
 WorldEditor.prototype.addOutlineMesh = function(objMesh, position, scale, rotation) {
 	var maskMesh = objMesh.clone()
-	maskMesh.material = this.passMaterials.mask
 
+	maskMesh.material = this.passMaterials.mask
 	maskMesh.position.set(position.x, position.y, position.z)
 	maskMesh.scale.set(scale.x, scale.y, scale.z)
 	maskMesh.rotation.set(rotation.x, rotation.y, rotation.z)
@@ -119,6 +119,7 @@ WorldEditor.prototype.addOutlineMesh = function(objMesh, position, scale, rotati
 
 	var outlineMesh = objMesh.clone()
 	outlineMesh.material = this.passMaterials.outline
+	outlineMesh.material.depthWrite = false
 
 	outlineMesh.position.set(position.x, position.y, position.z)
 	outlineMesh.scale.set(scale.x, scale.y, scale.z)
@@ -145,14 +146,12 @@ WorldEditor.prototype.clearOutlines = function() {
 WorldEditor.prototype.updateSelectionOutlines = function() {
 	this.clearOutlines();
 
-	var attachedObj = this.selectionOutline.attachedObj
 	// We can get the selected objects from the worldEditor here
-	if (attachedObj) {
+	if (this.selectedObj) {
 		// Get the mesh from the attached object
-		var objMesh = attachedObj.children[0]
+		var objMesh = this.selectedObj.children[0]
 		if (objMesh) {
-			// TODO: get the matrix directly ?
-			this.addOutlineMesh(objMesh, attachedObj.position, attachedObj.scale, attachedObj.rotation)
+			this.addOutlineMesh(objMesh, this.selectedObj.position, this.selectedObj.scale, this.selectedObj.rotation)
 		}
 	}
 }
@@ -310,7 +309,7 @@ WorldEditor.prototype.getEditorSceneTree = function() {
 
 WorldEditor.prototype.setSelection = function(selected) {
 	this.selectionTree.children = []
-	this.selectionOutline.detach()
+	this.selectedObj = undefined
 
 	var anySelected = false
 
@@ -320,8 +319,7 @@ WorldEditor.prototype.setSelection = function(selected) {
 			this.cameraSelector.transformControls.attach(obj)
 			this.selectionTree.add(this.cameraSelector.transformControls)
 
-			this.selectionOutline.attach(obj)
-			this.selectionTree.add(this.selectionOutline)
+			this.selectedObj = obj
 
 			anySelected = true
 			// only attach to first valid item
