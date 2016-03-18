@@ -74,7 +74,6 @@
 		this.composer.renderTarget2.stencilBuffer = true
 
 		// Add the passes to our composer
-		//
 		// First we render the scene normally
 		this.composer.addPass(this.renderPasses.scene)
 
@@ -87,13 +86,10 @@
 
 		// Disable the stencil test 
 		//
-		// clearMask pass only does this;
+		// does this;
 		// var context = renderer.context;
 		// context.disable( context.STENCIL_TEST );
-		var contextAttributes = this.renderer.context.getContextAttributes();
-		var haveStencilBuffer = contextAttributes.stencil;
-		console.log("haveStencilBuffer = " + haveStencilBuffer);
-
+		//
 		this.composer.addPass(this.renderPasses.clearMask)
 
 		// Then we copy the resulting renderTarget onto the canvas
@@ -154,11 +150,13 @@
 
 		this.renderer.shadowMap.enabled = this.inputValues.shadowsEnabled
 
+			/*
 		if (this.manager.isVRMode()) {
 			// vr mode doesn't necessarily update the world matrix
 			// could be a bug in new version of three.js
 			this.perspectiveCamera.updateMatrixWorld()
 		}
+		*/
 
 		if (E2.app.worldEditor.isActive()) {
 			E2.app.worldEditor.preRenderUpdate()
@@ -179,7 +177,7 @@
 		}
 		else {
 			// Render the scene through the experience camera
-			this.manager.render(this.scene, this.perspectiveCamera)
+			//this.manager.render(this.scene, this.perspectiveCamera)
 		}
 	}
 
@@ -209,22 +207,30 @@
 		}
 
 		this.effect.setSize(wh.width, wh.height)
+
+		if (this.composer) {
+			//var pixelRatio = this.renderer.getPixelRatio()
+			var pixelRatio = 1
+			this.composer.setSize(wh.width * pixelRatio, wh.height * pixelRatio)
+		}
 	}
 
 	ThreeWebGLRendererPlugin.prototype.onFullScreenChanged = function() {
 		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 		console.log('ThreeWebGLRendererPlugin.onFullScreenChanged', isFullscreen)
 
+		/*
 		if (!isFullscreen)
 			this.manager.enterVR()
 		else
 			this.manager.exitVR()
+		*/
 	}
 
 	ThreeWebGLRendererPlugin.prototype.toggleFullScreen = function() {
 		var isFullscreen = E2.util.isFullscreen()
 		console.log('ThreeWebGLRendererPlugin.toggleFullScreen', !isFullscreen)
-		this.manager.toggleFullScreen()
+		//this.manager.toggleFullScreen()
 	}
 
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
@@ -235,7 +241,6 @@
 
 			this.renderer.setPixelRatio(window.devicePixelRatio)
 			this.renderer.autoClear = false
-			this.renderer.autoClearStencil = false
 
 			// for now (three.js r74) VREffect is not compatible with webvr-boilerplate
 			// nor three.js so we use THREE.CardboardEffect instead
@@ -246,9 +251,9 @@
 				this.effect = new THREE.VREffect(this.renderer)
 			}
 
-			this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: true })
+			//this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: true })
 
-			E2.core.webVRManager = this.manager		// allow e.g. the player/embed to access this
+			//E2.core.webVRManager = this.manager		// allow e.g. the player/embed to access this
 
 			E2.core.on('resize', this.resize.bind(this))
 			// E2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this))
