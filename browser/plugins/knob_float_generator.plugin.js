@@ -80,8 +80,8 @@ Knob.prototype.create_ui = function() {
 		max : 1.0,
 		step : 0.01
 	}
-	NodeUI.makeUIAdjustableValue(this.knob[0]	, onStart, onChange, onEnd, opts)
-	NodeUI.makeUIAdjustableValue(this.readout[0], onStart, onChange, onEnd, opts)
+	uiMakeDragToAdjust(this.knob[0]	, onStart, onChange, onEnd, opts)
+	uiMakeDragToAdjust(this.readout[0], onStart, onChange, onEnd, opts)
 
 	this.node.on('pluginStateChanged', this.update_ui.bind(this))
 	this.update_ui();

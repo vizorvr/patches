@@ -1,4 +1,4 @@
-// moved without changes from NodeUI.makeUIAdjustableValue
+// former NodeUI.makeUIAdjustableValue
 
 // makes an element adjustable by dragging in two directions
 // onChange callback is (value, screenDelta)
@@ -194,7 +194,7 @@ var uiMakeDragToAdjust = function(domNode, onStart, onChange, onEnd, options) {
 		domNode.addEventListener('dblclick', function(e){
 			e.preventDefault();
 			e.stopPropagation();
-			NodeUI.enterValueControl(domNode, o.textInputParentNode, evChange)
+			uiEnterValueControl(domNode, o.textInputParentNode, evChange)
 			return false
 		}, true);
 	}

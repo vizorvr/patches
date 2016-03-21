@@ -1,4 +1,4 @@
-// -> create -> (reset: -> detach) -> select -> init -> render -> attach -> done
+// -> create (or reset: -> detach) -> select -> init -> render -> attach -> done
 
 var UIObjectProperties = function UIObjectProperties(domElement) {
 
@@ -129,6 +129,7 @@ UIObjectProperties.prototype.getAdapter = function() {
 }
 
 UIObjectProperties.prototype.render = function() {
+	// for now mostly a placeholder
 	return UIAbstractProperties.prototype.render.call(this, arguments)
 }
 

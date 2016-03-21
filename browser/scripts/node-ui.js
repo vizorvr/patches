@@ -281,8 +281,8 @@ NodeUI.prototype.destroy = function() {
 
 NodeUI.prototype.onRenamed = function(name) {
 	$('span.p_title', this.header).text(name)
-	NodeUI.redrawActiveGraph();
 	this.setCssClass()
+	NodeUI.redrawActiveGraph();
 }
 
 NodeUI.prototype.openInspector = function() {
@@ -929,9 +929,6 @@ NodeUI.redrawActiveGraph = function() {
 	E2.ui.state.selectedObjects = E2.ui.state.selectedObjects;	// force refresh
 	return changed;
 };
-
-NodeUI.makeUIAdjustableValue = uiMakeDragToAdjust
-NodeUI.enterValueControl = uiEnterValueControl
 
 if (typeof(module) !== 'undefined')
 	module.exports = NodeUI

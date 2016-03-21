@@ -1,4 +1,4 @@
-// moved without changes from NodeUI.enterValueControl
+// former NodeUI.enterValueControl
 var uiEnterValueControl = function(node, parentNode, onChange, options) {
 
 	var $node = jQuery(node)
