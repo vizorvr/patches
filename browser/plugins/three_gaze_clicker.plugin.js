@@ -5,7 +5,7 @@
 
 		this.core = core
 
-		this.iconDistance = 0.032
+		this.iconDistance = 0.030
 
 		this.input_slots = [
 			{name: 'camera', dt: core.datatypes.CAMERA},
