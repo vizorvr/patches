@@ -53,6 +53,7 @@ UINodeProperties.prototype.getAdapter = function() {
 
 	var adapter = {
 		common: {
+			canEdit: true,
 			get nodeName() {
 				var n = that.selectedGraphNode
 				if (n) {
@@ -175,14 +176,12 @@ UINodeProperties.prototype.update = function() {	// soft updates the template al
 	var updateControls = function(controlProps, adapterProps) {
 		Object.keys(controlProps).forEach(function (key) {
 			var control = controlProps[key].control
-			if (!control) return	// _enabled
+			if (!control) return	// e.g. [_enabled]
 			control.onSourceChange()
-			if (typeof adapterProps[key].canEdit !== 'undefined') {	// @todo remove
-				if (adapterProps[key].canEdit)
-					control.enable()
-				else
-					control.disable()
-			}
+			if (adapterProps[key].canEdit)
+				control.enable()
+			else
+				control.disable()
 		})
 	}
 	if (that.controls.stateProps)
