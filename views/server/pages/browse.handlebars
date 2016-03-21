@@ -1,0 +1,16 @@
+{{!--
+<div class="secondarynav">
+	<div class="in">
+		{{> srv/userpage/nav }}
+	</div>
+</div>
+--}}
+<div id="contentcontainer" class="in">
+<h2 class="decorative"><span>Browse</span></h2>
+
+<section class="list assets clearfix noselect">
+	{{#each graphs}}
+		{{> assets/graphCard }}
+	{{/each}}
+</section>
+</div>

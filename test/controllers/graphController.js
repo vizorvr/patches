@@ -50,7 +50,7 @@ describe('GraphController', function() {
 			body: { path: 'foo', graph: '{ "root": {}}' },
 			user: { username: 'memyselfandi' }
 		}, res, done)
-	})
+	});
 
 	it('handles graph post', function(done) {
 		ctrl.save({
@@ -65,6 +65,7 @@ describe('GraphController', function() {
 				done()
 			}
 		}, done)
-	})
-})
+	});
+
+});
 
