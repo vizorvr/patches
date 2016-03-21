@@ -78,11 +78,9 @@
 		var that = this
 		var i
 
-		this.clickableObjectsInSlot[slot.index] = 0
-
 		if (slot.dynamic) {
 			var parent = this.scene.children[0].children[slot.index]
-
+	
 			if (data && (!slot.array || (data.length > 0 && data[0]))) {
 				if (slot.array) {
 					if (parent.children.length === data.length) {
@@ -99,6 +97,8 @@
 					}
 
 					parent.children = data
+
+					this.clickableObjectsInSlot[slot.index] = 0
 
 					for (i = 0; i < data.length; ++i) {
 						if (data[i].parent && data[i].parent !== parent) {
@@ -129,6 +129,8 @@
 					data.parent = parent
 					data.dispatchEvent({ type: 'added' })
 
+					this.clickableObjectsInSlot[slot.index] = 0
+
 					if (data.gazeClickerCount)
 						that.clickableObjectsInSlot[slot.index] += data.gazeClickerCount
 				}
@@ -138,18 +140,19 @@
 					parent.remove(parent.children[0])
 				}
 			}
+
 			this.update_meshes()
+	
+			var totalClickables = 0
+			for (i=0; i < this.clickableObjectsInSlot.length; i++)
+				totalClickables += this.clickableObjectsInSlot[i] || 0
+
+			this.scene.hasClickableObjects = totalClickables > 0
 		}
 		else {
 			// the only static input slot is environment settings
 			this.envSettings = data
 		}
-
-		var totalClickables = 0
-		for (i=0; i < this.clickableObjectsInSlot.length; i++)
-			totalClickables += this.clickableObjectsInSlot[i] || 0
-
-		this.scene.hasClickableObjects = totalClickables > 0
 	}
 
 	ThreeScenePlugin.prototype.connection_changed = function(on, conn, slot) {
