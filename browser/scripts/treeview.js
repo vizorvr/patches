@@ -71,7 +71,7 @@ TreeNode.prototype.rebuild_dom = function()
 		
 		dom.append(handle);
 		
-		lbl = $('<span class="tree-name">' + this.title + '</span>');	// @TODO this.title vs this.id
+		lbl = $('<span class="tree-name">' + this.title + '</span>');
 		
 		dom.append(lbl);
 		

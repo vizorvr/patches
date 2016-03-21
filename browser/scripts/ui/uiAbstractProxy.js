@@ -109,7 +109,7 @@ UIAbstractProxy.prototype._attach = function() {
 	}.bind(this)
 	this.attach()
 	this.onSourceChange()
-	this.onEnabledChange(this._enabled)
+	this.onEnabledChange()
 
 	// release extra references
 	this.obj = null
@@ -157,19 +157,19 @@ UIAbstractProxy.prototype.onSourceChange = function() {
 	this._update()
 	return true
 }
-UIAbstractProxy.prototype.onEnabledChange = function(enabled) {
+UIAbstractProxy.prototype.onEnabledChange = function() {
 	if (this.element)
-		this.element.disabled = !enabled
+		this.element.disabled = !this._enabled
 }
 
 UIAbstractProxy.prototype.enable = function() {
 	this._enabled = true
-	this.onEnabledChange(this._enabled)
+	this.onEnabledChange()
 }
 
 UIAbstractProxy.prototype.disable = function() {
 	this._enabled = false
-	this.onEnabledChange(this._enabled)
+	this.onEnabledChange()
 }
 
 UIAbstractProxy.prototype.destroy = function() {

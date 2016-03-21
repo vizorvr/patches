@@ -4,6 +4,8 @@ var UIVector3 = function UIVector3(obj, propertyName, domElement, onChange, opts
 	this.precision = 2
 	this._enabled = true
 	this.opts = opts || {}
+	this.linkXYZ = false
+
 	this.dragger = {
 		x:null,
 		y:null,
@@ -152,6 +154,7 @@ UIVector3.prototype.attach = function() {
 		y: 'uiY',
 		z: 'uiZ'
 	}
+
 	function enableEntry(domElement, xyz, opts) {
 		if (!domElement) return
 		opts = _.extend({
@@ -179,9 +182,18 @@ UIVector3.prototype.attach = function() {
 				}
 			}))
 		}
-		var onChange = function(v, ov) {
+		var onChange = function(v) {
 			previousValue = _.clone(adapter.uiValue)
-			adapter[map[xyz]] = v	// updates dom & uiValue
+
+			if (that.linkXYZ) {
+				var ov = oldValue[xyz]
+				var dv = v - ov
+				adapter[map.x] = oldValue.x  +  dv * oldValue.x
+				adapter[map.y] = oldValue.y  +  dv * oldValue.y
+				adapter[map.z] = oldValue.z  +  dv * oldValue.z
+			}
+			adapter[map[xyz]] = v	// !
+
 			var e = new CustomEvent('change', {
 				detail: {
 					value: _.clone(adapter.uiValue),
@@ -252,8 +264,7 @@ UIVector3.prototype.checkValidElement = function(domElement) {	// we want an ele
 	return (domElement instanceof Element) && (domElement.getElementsByTagName('span').length = 3)
 }
 
-UIVector3.prototype.onEnabledChange = function(enabled) {
-	this._enabled = enabled
+UIVector3.prototype.onEnabledChange = function() {
 	if (this.element) {
 		this.element.classList.toggle('uiEnabled',   this._enabled)
 		this.element.classList.toggle('uiDisabled', !this._enabled)

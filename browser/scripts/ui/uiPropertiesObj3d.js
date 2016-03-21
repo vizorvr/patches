@@ -45,7 +45,6 @@ UIObjectProperties.prototype.getAdapter = function() {
 			eventName: 'pluginStateChanged',
 			dt: E2.core.datatypes.VECTOR,
 			label: 'Scale',
-			linked : true,
 			get canEdit() {
 				return meshPlugin && meshPlugin.canEditScale && meshPlugin.canEditScale()
 			},
@@ -64,7 +63,6 @@ UIObjectProperties.prototype.getAdapter = function() {
 			eventName: 'pluginStateChanged',
 			dt: E2.core.datatypes.VECTOR,
 			label: 'Position',
-			linked : false,
 			get canEdit() {
 				return meshPlugin && meshPlugin.canEditPosition && meshPlugin.canEditPosition()
 			},
@@ -81,7 +79,6 @@ UIObjectProperties.prototype.getAdapter = function() {
 			eventName: 'pluginStateChanged',
 			dt: E2.core.datatypes.VECTOR,
 			label: 'Rotation',
-			linked : false,
 			get canEdit() {
 				return meshPlugin && meshPlugin.canEditQuaternion && meshPlugin.canEditQuaternion()
 			},
@@ -145,20 +142,19 @@ UIObjectProperties.prototype.onObjectPicked = function() {
 }
 
 UIObjectProperties.prototype.onAttach = function() {
-	var that = this
+	var that = this, dom = this.dom
 
 	if (!this.isValidObjectSelection) {
-		this.dom.container.toggleClass('noSelection', true)
+		dom.container.toggleClass('noSelection', true)
 		return
 	}
-	this.dom.container.toggleClass('noSelection', false)
+	dom.container.toggleClass('noSelection', false)
 
-	this.dom.position.reset = document.getElementById('propertiesResetPosition')
-	this.dom.scale.reset = document.getElementById('propertiesResetScale')
-	this.dom.scale.linked = document.getElementById('propertiesLinkScale')
-	this.dom.rotation.reset = document.getElementById('propertiesResetRotation')
+	dom.position.reset = document.getElementById('propertiesResetPosition')
+	dom.scale.reset = document.getElementById('propertiesResetScale')
+	dom.scale.linked = document.getElementById('propertiesLinkScale')
+	dom.rotation.reset = document.getElementById('propertiesResetRotation')
 
-	this.controls.scaleLinked = new UIToggleButton(this.adapter.scale, 'linked', this.dom.scale.linked)
 
 	var plugin = this.selectedEditorObjectMeshPlugin
 
@@ -173,6 +169,7 @@ UIObjectProperties.prototype.onAttach = function() {
 			if (e.detail) {
 				var newValue = (makeValue) ? makeValue(e.detail.value) : e.detail.value
 				var oldSourceValue = (makeValue) ? makeValue(e.detail.oldValue) : e.detail.oldValue
+
 				if (!control.isEqualValue(e.detail.value, e.detail.oldValue))
 					plugin.undoableSetState(propName, newValue, oldSourceValue)
 			}
@@ -223,6 +220,7 @@ UIObjectProperties.prototype.onAttach = function() {
 				return {x: 1.0, y:1.0, z:1.0}
 			})
 		)
+		this.controls.scaleLinked = new UIToggleButton(this.controls.scale.control, 'linkXYZ', dom.scale.linked)
 	}
 
 	if (this.controls.rotation) {
@@ -291,41 +289,7 @@ UIObjectProperties.prototype.getControls = function() {
 
 	function make3dProp(propName, opts) {
 		var meshNode = meshPlugin.parentNode
-		var c = that._makeControl(meshNode, adapter, propName, function(e){
-			// this = c (the control)
-			if (!(e && e.detail)) return
-
-			var value 			= e.detail.value,
-				previousValue 	= e.detail.previousValue,
-				xyz 			= e.detail.part
-
-			var linked = adapter[propName].linked
-
-			if (linked) {
-				// the value has been changed already but if the controls are linked the other parts need changing too
-				// we use the opportunity to modify the uiValue before sourceValue is set to it
-
-				var v = value[xyz]
-				var ov = previousValue[xyz]
-				var dv = v - ov
-				if (xyz !== 'x') {
-					// avoid zero scale when linked
-					value.x += dv * value.x / ( ov === 0 ? 1 : ov)
-				}
-				if (xyz !== 'y') {
-					value.y += dv * value.y / ( ov === 0 ? 1 : ov)
-				}
-				if (xyz !== 'z') {
-					value.z += dv * value.z / ( ov === 0 ? 1 : ov)
-				}
-				if ( ! value.x) value.x = 0.0001
-				if ( ! value.y) value.y = 0.0001
-				if ( ! value.z) value.z = 0.0001
-
-				this.adapter.uiValue = value
-			}
-		}, opts)
-
+		var c = that._makeControl(meshNode, adapter, propName, null, opts)
 		if (!adapter[propName].canEdit) c.disable()
 
 		return {
@@ -346,6 +310,7 @@ UIObjectProperties.prototype.getControls = function() {
 		if (!this.selectedIsCamera) {
 
 			controls.scale = make3dProp('scale')
+			controls.scale.control.linkXYZ = true
 
 			controls.meshProps = {}
 
@@ -393,11 +358,13 @@ UIObjectProperties.prototype.update = function() {	// soft updates the template 
 		return
 
 	if (this.isValidObjectSelection) {
-		;
 		['position', 'rotation', 'scale'].forEach(function (propName) {
 			var prop = that.controls[propName]
 			if (!prop) return
-			prop.control.onEnabledChange(that.adapter[propName].canEdit)
+			if (that.adapter[propName].canEdit)
+				prop.control.enable()
+			else
+				prop.control.disable()
 		})
 	}
 
@@ -415,4 +382,3 @@ UIObjectProperties.prototype.update = function() {	// soft updates the template 
 	}
 
 }
-
