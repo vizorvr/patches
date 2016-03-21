@@ -30,76 +30,9 @@ GraphPlugin.prototype.getInspectorProperties = function() {
 	}
 }
 
-/*
-GraphPlugin.prototype.open_inspector = function(self) {
-	var diag = make('div')
-	var always_upd = $('<input id="always_upd" name="alwaysupdate"'
-					 + ' type="checkbox" title="If false, this graph'
-					 + ' is updated only when one of its inputs updates." />');
-	var upd_lbl = $('<label for="always_upd"><span><svg class="icon-checked">'
-				  + '<use xlink:href="#icon-checked"></use></svg></span>Always update</div>');
-	var r1 = make('div')
-	
-	var lbl_css = {
-		'font-size': '14px',
-		'float': 'left',
-		'padding': '8px 0px 2px 2px'
-	}
-	
-	var inp_css = {
-		'float': 'right',
-		'margin': '2px',
-		'padding': '2px',
-		'width': '70px'
-	}
-
-	diag.css({
-		'margin': '0px',
-		'padding': '2px'
-	})
-
-	r1.css('clear', 'both')
-	r1.addClass('clearfix')
-
-	always_upd.css(inp_css)
-	upd_lbl.css(lbl_css)
-	always_upd.css({ 'width': '13px', 'margin-top': '8px' })
-	
-	always_upd.attr('checked', self.state.always_update)
-
-	r1.append(always_upd)
-	r1.append(upd_lbl)
-	diag.append(r1)
-
-	
-	var store_state = function(self, always_upd) { return function()
-	{
-		self.state.always_update = always_upd.is(":checked")
-	}}
-	
-	self.core.create_dialog(diag, 'Edit Preferences', 460, 250, store_state(self, always_upd))
-}
-*/
-
 GraphPlugin.prototype.drilldown = function() {
 	return NodeUI.drilldown(this);
 }
-
-/*
-GraphPlugin.prototype.create_ui = function() {
-	var ui = make('div')
-	var inp_edit = makeButton('Edit', 'Open this graph for editing.')
-	
-	inp_edit.click(this.drilldown.bind(this));
-
-	ui.css('text-align', 'center')
-	ui.append(inp_edit)
-	
-	this.ui = ui
-	
-	return ui
-}
-*/
 
 GraphPlugin.prototype.update_input = function(slot, data) {
 	if (slot.uid === undefined) {

@@ -247,18 +247,18 @@ ColorPicker.prototype.ui_enableInteraction = function(containerNode, svSurfaceNo
 	}
 
 	// two for the area (x/y) and two for the picker within the area (x/y)
-	NodeUI.makeUIAdjustableValue(svSurfaceNode, beginModifyState, moveSaturation, endModifyState, opts)
+	uiMakeDragToAdjust(svSurfaceNode, beginModifyState, moveSaturation, endModifyState, opts)
 	opts.surfaceDomNode = svSurfaceNode
-	NodeUI.makeUIAdjustableValue(svPickerNode, beginModifyState, moveSaturation, endModifyState, opts)
+	uiMakeDragToAdjust(svPickerNode, beginModifyState, moveSaturation, endModifyState, opts)
 	delete opts.surfaceDomNode
 
 	opts.getValue = function() { return that.state.lum }
 	opts.orientation = 'vertical'
 	opts.min = 1.0
 	opts.max = 0.0
-	NodeUI.makeUIAdjustableValue(svSurfaceNode, beginModifyState, moveValue, endModifyState, opts)
+	uiMakeDragToAdjust(svSurfaceNode, beginModifyState, moveValue, endModifyState, opts)
 	opts.surfaceDomNode = svSurfaceNode
-	NodeUI.makeUIAdjustableValue(svPickerNode, beginModifyState, moveValue, endModifyState, opts)
+	uiMakeDragToAdjust(svPickerNode, beginModifyState, moveValue, endModifyState, opts)
 
 	// hue
 	opts = {
@@ -271,9 +271,9 @@ ColorPicker.prototype.ui_enableInteraction = function(containerNode, svSurfaceNo
 		orientation: 'horizontal'
 	}
 	// one for surface, one for indicator
-	NodeUI.makeUIAdjustableValue(hueSurfaceNode, beginModifyState, moveHue, endModifyState, opts)
+	uiMakeDragToAdjust(hueSurfaceNode, beginModifyState, moveHue, endModifyState, opts)
 	opts.surfaceDomNode = hueSurfaceNode
-	NodeUI.makeUIAdjustableValue(huePickerNode, beginModifyState, moveHue, endModifyState, opts)
+	uiMakeDragToAdjust(huePickerNode, beginModifyState, moveHue, endModifyState, opts)
 
 	// indicator rgb
 	var getComponent = function (which) {
@@ -304,7 +304,7 @@ ColorPicker.prototype.ui_enableInteraction = function(containerNode, svSurfaceNo
 		}
 	}
 
-	NodeUI.makeUIAdjustableValue(
+	uiMakeDragToAdjust(
 		this.indicator.R[0],
 		beginModifyState,
 		setComponent('r'),
@@ -312,7 +312,7 @@ ColorPicker.prototype.ui_enableInteraction = function(containerNode, svSurfaceNo
 		_.extend(options, {getValue: getComponent('r')} )
 	);
 
-	NodeUI.makeUIAdjustableValue(
+	uiMakeDragToAdjust(
 		this.indicator.G[0],
 		beginModifyState,
 		setComponent('g'),
@@ -320,7 +320,7 @@ ColorPicker.prototype.ui_enableInteraction = function(containerNode, svSurfaceNo
 		_.extend(options, {getValue: getComponent('g')} )
 	);
 
-	NodeUI.makeUIAdjustableValue(
+	uiMakeDragToAdjust(
 		this.indicator.B[0],
 		beginModifyState,
 		setComponent('b'),
@@ -330,7 +330,7 @@ ColorPicker.prototype.ui_enableInteraction = function(containerNode, svSurfaceNo
 
 	// indicator hex
 	this.indicator.Hex.on('dblclick', function(e){
-		NodeUI.enterValueControl(that.indicator.Hex[0], containerNode, function(hex) {	// child, parent, handler
+		uiEnterValueControl(that.indicator.Hex[0], containerNode, function(hex) {	// child, parent, handler
 			var pad = '000000'
 			hex = hex.toString().replace('#','').toUpperCase()
 			if (hex.length === 3) {
