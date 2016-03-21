@@ -103,6 +103,10 @@ Node.prototype.destroy_ui = function() {
 		this.plugin.destroy_ui()
 }
 
+Node.prototype.getFullUid = function() {
+	return this.parent_graph.uid + '.' + this.uid
+}
+
 Node.prototype.destroy = function()
 {
 	var graph = this.parent_graph;
