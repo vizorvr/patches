@@ -274,7 +274,7 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 	.then(function(graph) {
 		if (!graph)
 			return next()
-
+		
 		return renderPlayer(graph, req, res, {
 			autoplay: true
 		})
@@ -469,6 +469,7 @@ GraphController.prototype.save = function(req, res, next) {
 				tags: tags,
 				url: url,
 				hasAudio: !!analysis.hasAudio,
+				editable: req.body.editable === false ? false : true,
 				stat: {
 					size: analysis.size,
 					numAssets: analysis.numAssets

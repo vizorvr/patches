@@ -54,15 +54,15 @@ GraphService.prototype.userGraphs = function(username) {
 };
 
 GraphService.prototype._save = function(data, user) {
-	var that = this;
+	var that = this
 
 	return this.findByPath(data.path)
 	.then(function(asset) {
 		if (!asset)
-			asset = new that._model(data);
+			asset = new that._model(data)
 
-		asset._creator = user.id;
-		asset.updatedAt = Date.now();
+		asset._creator = user.id
+		asset.updatedAt = Date.now()
 
 		if (data.tags)
 			asset.tags = data.tags
@@ -79,20 +79,21 @@ GraphService.prototype._save = function(data, user) {
 		if (data.hasAudio)
 			asset.hasAudio = data.hasAudio
 
-		data.version = currentPlayerVersion
+		asset.version = currentPlayerVersion
+		asset.editable = data.editable === false ? false : true
 
-		var dfd = when.defer();
+		var dfd = when.defer()
 
 		asset.save(function(err) {
 			if (err)
-				return dfd.reject(err);
+				return dfd.reject(err)
 
-			dfd.resolve(asset);
-		});
+			dfd.resolve(asset)
+		})
 
-		return dfd.promise;
-	});
-};
+		return dfd.promise
+	})
+}
 
 
 GraphService.prototype.save = function(data, user) {

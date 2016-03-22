@@ -466,5 +466,40 @@ describe('Graph', function() {
 	})
 
 
+	it('sets editable flag true as default', function(done) {
+		var path = 'graph-editable-'+rand()
+
+		agent.post('/graph').send({
+			path: path,
+			graph: graphData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			assert.ok(res.body.editable === true)
+			done()
+		})
+	})
+
+
+	it('stores editable flag', function(done) {
+		var path = 'graph-editable-'+rand()
+
+		agent.post('/graph').send({
+			path: path,
+			editable: false,
+			graph: graphData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			assert.ok(res.body.editable === false)
+			done()
+		})
+	})
+
+
 })
 
