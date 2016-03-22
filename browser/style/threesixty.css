@@ -4000,6 +4000,12 @@ body.bHome.layoutDesktop #contentwrap header nav ul li {
 body.bHome.layoutDesktop #contentwrap header nav ul li:last-of-type {
   padding-right: 0;
 }
+body.bPlayer header {
+  pointer-events: none;
+}
+body.bPlayer header > div {
+  pointer-events: initial;
+}
 body.bPlayer .modal,
 body.b360 .modal {
   -webkit-font-smoothing: subpixel-antialiased;
@@ -4084,7 +4090,7 @@ body.bPlayer #shareDialog label {
 body.bPlayer #shareDialog input,
 body.bPlayer #shareDialog textarea {
   background: rgba(0, 0, 0, 0.2) !important;
-  border: 0px solid #afbfdf;
+  border: 0 solid #afbfdf;
   border-radius: 3px;
   width: 98%;
   max-width: 98%;
@@ -4120,6 +4126,11 @@ button#backfromvr {
 }
 button#backfromvr:active {
   background: rgba(255, 255, 255, 0.2);
+}
+body.b360 #playerpagediv > * {
+  border: 0;
+  margin: 0;
+  padding: 0;
 }
 #playerpage {
   min-height: 100%;
@@ -4173,15 +4184,13 @@ body.bPlayer.stopped header div.controls button {
   -webkit-flex-order: 1;
   flex: 0 1 auto;
   order: 1;
-  position: absolute;
-  bottom: 10%;
-  left: 50%;
-  margin-left: -180px;
-  width: 360px;
-  padding: 20px 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.3);
   z-index: 30;
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 8px;
 }
 #playerpage header > * {
   border: 0;
@@ -4211,48 +4220,55 @@ body.bPlayer.stopped header div.controls button {
   margin-top: 15px;
   display: -webkit-flex;
   display: flex;
-  -webkit-justify-content: space-between;
-  justify-content: space-between;
+  -webkit-justify-content: center;
+  justify-content: center;
   -webkit-align-items: center;
   align-items: center;
 }
 #playerpage header button.svg {
   cursor: hand ! important;
   cursor: pointer ! important;
-  background: rgba(73, 78, 113, 0.5);
-  height: 80px;
-  width: 80px;
-  border-radius: 8px;
+  background: none;
+  height: 50px;
+  /* includes padding */
+  width: 50px;
+  padding: 5px;
+  margin: 5px 10px;
   border: 0;
   outline: none;
-  color: #afbfdf;
+  border-radius: 5px;
 }
 #playerpage header button.svg svg {
   width: 40px;
   height: 40px;
-  margin: 0 auto 3px auto;
   vertical-align: middle;
-  opacity: 0.7;
-  stroke: #afbfdf;
+  stroke: #ddd;
   fill: none;
   display: block;
+}
+#playerpage header button.svg > span {
+  display: none;
 }
 #playerpage header #graph_heading {
   padding-bottom: 5px;
   margin-bottom: 10px;
-  text-align: left;
   font-size: 10.5pt;
   font-weight: 500;
-  color: #afbfdf;
+  color: #fff;
+  text-align: center;
   position: relative;
 }
 #playerpage header #graph_heading a {
-  color: #afbfdf;
+  color: #fff;
 }
 #playerpage header #graph_heading svg {
   height: 2ex;
   width: 2ex;
   margin-right: 5px;
+  margin-left: 0ex;
+  vertical-align: -12.5%;
+  stroke: none;
+  fill: #fff;
 }
 #playerpage header #graph_heading > * {
   vertical-align: middle;
@@ -4270,43 +4286,77 @@ div.nowebgl {
   height: 2px;
   width: 100%;
   opacity: 0.75;
-  margin: 20px 0;
-  background-color: #6685c2;
+  margin: 10px 0;
+  transition: background-color 1s;
+  border: 0;
+  background-color: rgba(32, 32, 32, 0.5);
 }
 #progressbar::-webkit-progress-value {
   position: relative;
   top: -1px;
   height: 4px;
-  background-color: #0597cd;
+  background-color: #ffffff;
+  transition: background-color 1s;
   border-radius: 2px;
 }
 #progressbar::-moz-progress-bar {
-  background-color: #3ec7fa;
+  background-color: #ffffff;
   height: 2px;
 }
 #progressbar::-webkit-progress-bar {
-  background-color: #6685c2;
+  background-color: rgba(32, 32, 32, 0.5);
 }
 #progressbar:not([value])::-moz-progress-bar {
   background-color: #555;
 }
+#progressbar[value="100"] {
+  transition: background-color 5s;
+  height: 1px;
+}
+#progressbar[value="100"]::-webkit-progress-bar {
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: background-color 5s;
+  height: 1px;
+}
 #progressbar[value="100"]::-webkit-progress-value {
-  background-color: #6685c2;
-  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: background-color 5s;
+  height: 1px;
   top: 0;
 }
 #progressbar[value="100"]::-moz-progress-bar {
-  background-color: #6685c2;
-  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  height: 1px;
+  transition: background-color 5s;
+}
+body.bPlayer #playerpage header > div {
+  margin-left: -160px;
+  width: 320px;
+  padding: 20px 30px;
+  bottom: 10%;
+  left: 50%;
+  position: absolute;
+}
+body.bPlayer.b360 #playerpage header > div {
+  margin-left: 0;
+  width: auto;
+  padding: 0;
+  bottom: auto;
+  left: auto;
+  position: static;
 }
 body.deviceDesktop #playerpage header button.svg:hover svg {
   opacity: 1;
-  stroke: #afbddf;
+  stroke: #fff;
+}
+body.deviceTablet #playerpage header button.svg svg,
+body.deviceMobile #playerpage header button.svg svg {
+  stroke: #fff;
 }
 body.deviceTablet #playerpage header button.svg:active svg,
 body.deviceMobile #playerpage header button.svg:active svg {
   opacity: 1;
-  stroke: #afbddf;
+  stroke: #fff;
 }
 body.deviceMobile #playerpage header h2#graph_heading,
 body.deviceTablet #playerpage header h2#graph_heading {
@@ -4326,6 +4376,25 @@ body.deviceMobile #playerpage header .controls button + button,
 body.deviceTablet #playerpage header .controls button + button {
   margin-left: 10px;
   margin-right: 10px;
+}
+body.deviceMobile.landscape .modal-dialog {
+  margin-top: 30px;
+}
+@media all and (max-height: 700px) {
+  body.landscape #playerpage header > div {
+    bottom: 3%;
+  }
+  body.b360 #playerpage header > div {
+    bottom: initial;
+  }
+}
+@media all and (max-height: 500px) {
+  body.landscape #playerpage header > div {
+    bottom: 0;
+  }
+  body.b360 #playerpage header > div {
+    bottom: initial;
+  }
 }
 .big {
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -4574,8 +4643,12 @@ body.b360 #container360 {
   bottom: 0;
   left: 0;
   right: 0;
+  margin: 0;
+  padding: 0;
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   z-index: 501;
+  height: 100%;
+  width: auto;
   color: white;
   pointer-events: none;
 }
@@ -4705,18 +4778,13 @@ body.b360 #playerpage {
   height: 100%;
 }
 body.b360 #playerpage header {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
   margin: 0;
   padding: 0;
-  width: auto;
-  height: 100%;
   border-radius: 0;
-  background: rgba(0, 0, 0, 0.3);
   z-index: 300;
+}
+body.b360 #playerpage header > div {
+  position: absolute;
 }
 body.b360 #playerpage header div.controls {
   position: absolute;
@@ -4733,6 +4801,7 @@ body.b360 #playerpage header h2#graph_heading {
 body.b360 #playerpage header button.svg {
   background: none;
   position: relative;
+  height: 70px;
 }
 body.b360 #playerpage header button.svg span {
   display: none;
