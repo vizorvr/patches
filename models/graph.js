@@ -29,6 +29,7 @@ var graphSchema = new mongoose.Schema({
 	}],
 	previewUrlSmall: { type: String },
 	previewUrlLarge: { type: String },
+	editable: { type: Boolean, default: true },
 	hasAudio: { type: Boolean, default: false },
 	version: { type: String, default: currentPlayerVersion },
 	stat: statSpec,
