@@ -1,4 +1,18 @@
+@bgcolor-progress-incomplete: rgba(255,255,255,1);
+@bgcolor-progress-complete: rgba(255,255,255,0.5);
+@bgcolor-progress-bar: rgba(32,32,32,0.5);
+@bgcolor-graph-heading: rgba(0,0,0,0.1);
+@color-graph-heading: #fff;
+@color-graph-buttons: #ddd;
+
+body.bPlayer header {
+  pointer-events: none;
+  >div {
+	pointer-events: initial;
+  }
+}
 body.bPlayer, body.b360 {
+
   .modal {
 	-webkit-font-smoothing: subpixel-antialiased;
   }
@@ -66,7 +80,7 @@ body.bPlayer {
 	}
 	input, textarea {
 	  background: rgba(0,0,0,0.2) !important;
-	  border: 0px solid #afbfdf;
+	  border: 0 solid #afbfdf;
 	  border-radius: 3px;
 	  width: 98%;
 	  max-width: 98%;
@@ -110,6 +124,10 @@ button#backfromvr {
   &:active {
 	background: rgba(255,255,255,0.2);
   }
+}
+
+body.b360 #playerpage {
+  &div> * { border:0; margin: 0; padding:0;}
 }
 
 #playerpage {
@@ -171,17 +189,16 @@ body.bPlayer.stopped header
 	flex: 0 1 auto;
 	order: 1;
 
-  position: absolute;
-  bottom: 10%;
-  left: 50%;
+  position: fixed;
 
-  margin-left: -180px;
-  width: 360px;
-  padding: 20px 30px;
+
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0,0,0,0.3);
 
   z-index: 30;
-  background: rgba(0,0,0,0.8);
-  border-radius: 8px;
 
   &> * { border:0; margin: 0; padding:0;}
 
@@ -202,44 +219,55 @@ body.bPlayer.stopped header
 	margin-top: 15px;
 	display: -webkit-flex;
 	display: flex;
-	-webkit-justify-content: space-between;
-	justify-content: space-between;
+
+	-webkit-justify-content: center;
+	justify-content: center;
+
 	-webkit-align-items: center;
 	align-items: center;
   }
 
   button.svg {
-	cursor:hand ! important; cursor:pointer ! important;
-	background: rgba(73, 78, 113, 0.5);
-	height: 80px;
-	width: 80px;
-	border-radius: 8px;
-	border:0;
-	outline:none;
-	color: #afbfdf;
+	cursor: hand ! important;
+	cursor: pointer ! important;
+	background: none;
+	height: 50px; /* includes padding */
+	width: 50px;
+	padding: 5px;
+	margin: 5px 10px;
+	border: 0;
+	outline: none;
+	border-radius: 5px;
 	svg {
 	  width: 40px;
-	  height:40px;
-	  margin: 0 auto 3px auto;
+	  height: 40px;
 	  vertical-align: middle;
-	  opacity:0.7;
-	  stroke: #afbfdf;
+	  stroke: @color-graph-buttons;
 	  fill: none;
 	  display: block;
 	}
-
+	> span {
+	  display: none;
+	}
   }
 
   #graph_heading {
 	padding-bottom: 5px;
 	margin-bottom: 10px;
-	text-align: left;
 	font-size: 10.5pt;
 	font-weight: 500;
-	color: #afbfdf;
-	a {color: #afbfdf;}
+	color: @color-graph-heading;
+	text-align: center;
+	a {color: @color-graph-heading;}
 	position: relative;
-	svg {height: 2ex; width: 2ex; margin-right: 5px;}
+	svg {
+	  height: 2ex; width: 2ex;
+	  margin-right: 5px;
+	  margin-left: 0ex;
+	  vertical-align: -12.5%;
+	  stroke: none;
+	  fill:@color-graph-heading;
+	}
 	>* {vertical-align: middle; }
   }
 }
@@ -250,10 +278,6 @@ div.nojs, div.nowebgl {
   margin: 100px auto;
 }
 
-@bgcolor-progress-complete: darken(#afbfdf, 25);
-@bgcolor-progress-incomplete: darken(#afbfdf, 20);
-@bgcolor-progress-bar: @bg-bright;
-
 #progressbar {
   -webkit-appearance: none;
   appearance: none;
@@ -261,55 +285,89 @@ div.nojs, div.nowebgl {
   height: 2px;
   width: 100%;
   opacity: 0.75;
-  margin: 20px 0;
+  margin: 10px 0;
+  transition: background-color 1s;
+  border: 0;
   &::-webkit-progress-value {
 	position:relative;
 	top:-1px;
 	height: 4px;
-	background-color: @bg-bright;
+	background-color:@bgcolor-progress-incomplete;
+	transition: background-color 1s;
 	border-radius: 2px;
   }
   &::-moz-progress-bar {
-	background-color: lighten(@bg-bright,20);
+	background-color: @bgcolor-progress-incomplete;
 	height: 2px;
   }
   &::-webkit-progress-bar {
-	background-color: @bgcolor-progress-incomplete;
+	background-color: @bgcolor-progress-bar;
   }
-  background-color: @bgcolor-progress-incomplete;	// firefox
+  background-color: @bgcolor-progress-bar;	// firefox
+
   &:not([value]) {
 	&::-moz-progress-bar {
 	  background-color: #555;
 	}
   }
   &[value="100"] {
+	transition: background-color 5s;
+	height: 1px;
+	&::-webkit-progress-bar {
+	  background-color: @bgcolor-progress-complete;
+	  transition: background-color 5s;
+	  height: 1px;
+	}
 	&::-webkit-progress-value {
-	  background-color: darken(#afbfdf, 20);
-	  height: 2px;
+	  background-color: @bgcolor-progress-complete;
+	  transition: background-color 5s;
+	  height: 1px;
 	  top:0;
 	}
 	&::-moz-progress-bar {
-	  background-color: darken(#afbfdf, 20);
-	  height: 2px;
+	  background-color: @bgcolor-progress-complete;
+	  height: 1px;
+	  transition: background-color 5s;
 	}
   }
 }
 
+body.bPlayer #playerpage header {
+  >div {
+	margin-left: -160px;
+	width: 320px;
+	padding: 20px 30px;
+	bottom: 10%;
+  	left: 50%;
+	position: absolute;
+  }
+}
+body.bPlayer.b360 #playerpage header>div {
+  margin-left: 0;
+	width: auto;
+	padding: 0;
+	bottom: auto;
+  	left: auto;
+	position: static;
+}
 
 body.deviceDesktop #playerpage header {
   button.svg {
 	 &:hover svg {
 	  opacity:1;
-	  stroke: #afbddf;
+	  stroke: #fff;
 	}
   }
 }
 
 body.deviceTablet, body.deviceMobile {
   #playerpage header button.svg {
+	svg {
+	  stroke: #fff;
+	}
 	&:active svg {
 	  opacity:1;
-	  stroke: #afbddf;
+	  stroke: #fff;
 	}
   }
 }
@@ -333,3 +391,24 @@ body.deviceMobile #playerpage header, body.deviceTablet #playerpage header {
   }
 }
 
+body.deviceMobile.landscape .modal-dialog {
+ 	margin-top: 30px;
+}
+
+@media all and (max-height: 700px) {
+  body.landscape #playerpage header>div {
+		bottom: 3%;
+  }
+  body.b360 #playerpage header>div {
+	bottom:initial;
+  }
+}
+
+@media all and (max-height: 500px) {
+  body.landscape #playerpage header>div {
+		bottom: 0;
+  }
+  body.b360 #playerpage header>div {
+	bottom:initial;
+  }
+}
