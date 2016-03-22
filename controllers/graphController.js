@@ -23,6 +23,12 @@ var hashids = new Hashids(secrets.sessionSecret)
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 
+function render404(res) {
+	res.status(404).render('error', {
+		message: 'Not found'
+	})
+}
+
 function makeHashid(serial) {
 	return hashids.encode(serial)
 }
@@ -213,6 +219,12 @@ GraphController.prototype.edit = function(req, res, next) {
 
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
+		if (graph && graph.editable === false) {
+			if (!req.user || req.user.id !== graph._creator.id) {
+				return render404(res)
+			}
+		}
+
 		EditLog.hasEditsByName(that.redisClient, req.params.path.substring(1))
 		.then(function(hasEdits) {
 			renderEditor(res, graph, hasEdits)
