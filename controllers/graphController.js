@@ -248,7 +248,7 @@ GraphController.prototype.latest = function(req, res) {
 }
 
 function renderPlayer(graph, req, res, options) {
-	prettyPrintGraphInfo(graph)
+	graph = prettyPrintGraphInfo(graph.toJSON())
 
 	// which version of player to use?
 	var version = graph.version || packageJson.version
