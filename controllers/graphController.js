@@ -61,19 +61,21 @@ function prettyPrintGraphInfo(graph) {
 	// 'this-is-a-graph' => 'This Is A Graph'
 	var graphName = graph.name.split('-')
 		.map(s => s.charAt(0).toUpperCase() + s.slice(1))
-		.join(' ');
+		.join(' ')
 
 	// Figure out if the graph owner has a fullname
 	// Use that if does, else use the username for display
-	var graphOwner;
+	var graphOwner
 	var creator = graph._creator
 	if (creator && creator.name && !isStringEmpty(creator.name)) {
-		graphOwner = creator.name;
+		graphOwner = creator.name
+		graph.username = creator.username
 	} else {
 		if (graph.owner)
 			graphOwner = graph.owner
 		else
 			graphOwner = 'anonymous'
+		graph.username = graphOwner
 	}
 
 	graph.prettyOwner = graphOwner
@@ -85,8 +87,7 @@ function prettyPrintGraphInfo(graph) {
 		var sizeInKb = (graph.stat.size / 1048576).toFixed(2) // megabytes
 		graph.size = sizeInKb + ' MB'
 	}
-
-	return graph
+	// by ref
 }
 
 function GraphController(s, gfs, mongoConnection) {
@@ -106,6 +107,7 @@ function GraphController(s, gfs, mongoConnection) {
 
 GraphController.prototype = Object.create(AssetController.prototype);
 
+// GET /fthr
 GraphController.prototype.userIndex = function(req, res, next) {
 	var wantJson = req.xhr;
 	var username = req.params.model
@@ -125,8 +127,9 @@ GraphController.prototype.userIndex = function(req, res, next) {
 			}
 
 			list.map(function(graph) {
-				graph = prettyPrintGraphInfo(graph)
+				prettyPrintGraphInfo(graph)
 				graph.prettyName = makeCardName(graph.prettyName)
+				graph.viewer = req.user.username
 			})
 
 			var data = {
@@ -156,24 +159,29 @@ GraphController.prototype.userIndex = function(req, res, next) {
 
 // GET /graph
 GraphController.prototype.index = function(req, res) {
+	var user = req.user
 	this._service.list()
 	.then(function(list) {
 		if (req.xhr || req.path.slice(-5) === '.json')
 			return res.json(list);
 
 		list.map(function(graph) {
-			graph = prettyPrintGraphInfo(graph)
+			prettyPrintGraphInfo(graph)
 			graph.prettyName = makeCardName(graph.prettyName)
+			graph.viewer = req.user.username
 		})
 
 		var data = {
+			profile: {
+				username: user.username
+			},
 			graphs: list
 		}
 
 		_.extend(data, {
 			meta : {
 				title: 'Graphs',
-				bodyclass: 'bUserpage',
+				bodyclass: 'bGraphs',
 				scripts : ['site/userpages.js']
 			}
 		});
@@ -243,7 +251,7 @@ GraphController.prototype.latest = function(req, res) {
 }
 
 function renderPlayer(graph, req, res, options) {
-	graph = prettyPrintGraphInfo(graph)
+	prettyPrintGraphInfo(graph)
 
 	// which version of player to use?
 	var version = graph.version || packageJson.version

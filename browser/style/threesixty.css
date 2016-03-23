@@ -2774,18 +2774,44 @@ article.asset.card {
   border-radius: 4px;
   position: relative;
 }
-article.asset.card button.open,
-article.asset.card a.open {
-  border: 1px solid rgba(255, 255, 255, 0.5);
+article.asset.card div.overlay {
+  -webkit-flex-flow: column wrap;
+  flex-flow: column wrap;
+  justify-content: center;
+}
+article.asset.card button.mainaction,
+article.asset.card a.btn.mainaction {
+  -webkit-flex-grow: 0;
+  flex-grow: 0;
+  width: 6.75em;
+  max-width: 6.75em;
+  border: 1px solid #afbfdf;
+  border-radius: 3.5px;
+  color: #afbfdf;
   background: rgba(0, 0, 0, 0.1);
-  max-width: 6em;
   text-transform: uppercase;
   font-weight: 500;
-  font-size: 90%;
+  font-size: 85%;
+  margin: 5px;
+  padding: 4px 10px;
 }
-article.asset.card button.open:hover,
-article.asset.card a.open:hover {
+article.asset.card button.mainaction svg,
+article.asset.card a.btn.mainaction svg {
+  stroke: #afbfdf;
+  vertical-align: -45%;
+  height: 22px;
+  width: 22px;
+  margin-left: -5px;
+  margin-right: 5px;
+}
+article.asset.card button.mainaction:hover,
+article.asset.card a.btn.mainaction:hover {
   border-color: #fff;
+  color: #fff;
+}
+article.asset.card button.mainaction:hover svg,
+article.asset.card a.btn.mainaction:hover svg {
+  stroke: #fff;
 }
 article.asset.card > div {
   position: absolute;

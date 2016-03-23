@@ -1,6 +1,7 @@
 var assetUIEvent = {	// CustomEvent names (dispatched on document)
 	graphNew 		: 'graph.new',
 	graphOpen 		: 'graph.open',
+	graphEdit 		: 'graph.edit',
 	graphDuplicate 	: 'graph.duplicate',
 	graphMove 		: 'graph.move',
 	graphDelete 	: 'graph.delete',
