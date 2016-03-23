@@ -117,15 +117,21 @@ AssetLoader.prototype.loadAssetsForGraph = function(graph) {
 	}
 
 	var assets = this.parse(graph)
-
 	var assetTypes = Object.keys(assets)
-	assetTypes.map(function(assetType) {
+
+	// if there are no assets to load, just resolve the promise
+	if (!assetTypes.length) {
+		completed()
+		return dfd.promise
+	}
+
+	when.map(assetTypes, function(assetType) {
 		var typeAssets = assets[assetType]
 
 		if (!typeAssets.length)
-			return completed()
+			return
 
-		when.map(typeAssets, function(assetUrl) {
+		return when.map(typeAssets, function(assetUrl) {
 			if (!assetUrl)
 				return
 
@@ -133,17 +139,13 @@ AssetLoader.prototype.loadAssetsForGraph = function(graph) {
 
 			return that.loadAsset(assetType, assetUrl)
 		})
-		.catch(function(err) {
-			dfd.reject(err)
-		})
-		.finally(function() {
-			completed()
-		})
 	})
-
-	// if there are no assets to load, just resolve the promise
-	if (!assetTypes.length)
+	.catch(function(err) {
+		dfd.reject(err)
+	})
+	.finally(function() {
 		completed()
+	})
 
 	return dfd.promise
 }
