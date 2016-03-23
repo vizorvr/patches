@@ -27,12 +27,21 @@ var graphSchema = new mongoose.Schema({
 		match: alphanumeric,
 		index: true
 	}],
+
 	previewUrlSmall: { type: String },
 	previewUrlLarge: { type: String },
+
 	editable: { type: Boolean, default: true },
+
+	private: { type: Boolean, default: false },
+	rank: { type: Number, default: 0 },
+
 	hasAudio: { type: Boolean, default: false },
+
 	version: { type: String, default: currentPlayerVersion },
+
 	stat: statSpec,
+
 	updatedAt: { type: Date, default: Date.now },
 	createdAt: { type: Date, default: Date.now }
 },
@@ -41,7 +50,11 @@ var graphSchema = new mongoose.Schema({
 	toJSON: { virtuals: true }
 });
 
-graphSchema.index({ owner: 1, name: 1, unique: true }); // schema level
+// unique index on owner+name
+graphSchema.index({ owner: 1, name: 1, unique: true })
+
+// index rank+private for discovery
+graphSchema.index({ rank: 1, private: 1 })
 
 graphSchema.virtual('path').get(function() {
 	return '/'+this.owner+'/'+this.name;

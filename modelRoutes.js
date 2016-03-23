@@ -256,6 +256,11 @@ function modelRoutes(
 		graphController.latest(req, res, next)
 	})
 
+	// discovery
+	app.get(['/browse', '/browse.json'], function(req, res, next) {
+		graphController.publicRankedIndex(req, res, next)
+	})
+
 	// list
 	app.get(['/graph', '/graphs', '/graphs.json', '/graph.json'], function(req,res,next){
 		graphController.index(req, res, next)
