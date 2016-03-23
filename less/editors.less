@@ -1,4 +1,9 @@
 // E2.ShaderEditor
+.codefont {
+  font-family: "Source Code Pro", Monaco, Menlo, 'Ubuntu Mono', Consolas,  monospace;
+  font-weight: 300;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
 
 .shader-editor {
   .input-editor {
@@ -68,9 +73,12 @@ form.addInputDialog select.form-control {
 }
 
 
-.ace_editor {
-  z-index: 0
+.shader-block .ace_editor {
+  z-index: 0;
+  .codefont;
 }
+
+
 
 // E2.EnvelopeEditor
 
