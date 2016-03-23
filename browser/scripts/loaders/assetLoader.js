@@ -109,38 +109,41 @@ AssetLoader.prototype.loadAsset = function(assetType, assetUrl) {
  */
 AssetLoader.prototype.loadAssetsForGraph = function(graph) {
 	var that = this
-
 	var dfd = when.defer()
+
+	function completed() {
+		that.emit('progress', 100)
+		dfd.resolve()
+	}
 
 	var assets = this.parse(graph)
 
 	var assetTypes = Object.keys(assets)
-
 	assetTypes.map(function(assetType) {
 		var typeAssets = assets[assetType]
 
-		typeAssets.map(function(assetUrl) {
+		if (!typeAssets.length)
+			return completed()
+
+		when.map(typeAssets, function(assetUrl) {
 			if (!assetUrl)
-				return;
+				return
 
 			console.log('Loading', assetType, assetUrl)
 
-			that.loadAsset(assetType, assetUrl)
-			.catch(function(err) {
-				return dfd.reject(err)
-			})
-			.finally(function() {
-				if (that.assetsLoaded === that.assetsFound) {
-					that.emit('progress', 100)
-					dfd.resolve()
-				}
-			})
+			return that.loadAsset(assetType, assetUrl)
+		})
+		.catch(function(err) {
+			dfd.reject(err)
+		})
+		.finally(function() {
+			completed()
 		})
 	})
 
 	// if there are no assets to load, just resolve the promise
 	if (!assetTypes.length)
-		dfd.resolve()
+		completed()
 
 	return dfd.promise
 }
