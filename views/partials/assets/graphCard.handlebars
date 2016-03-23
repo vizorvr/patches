@@ -20,7 +20,11 @@
 <article class="graph asset card noselect" data-objectid="{{_id}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
 	<div class="meta scrollbar">
 		<h4 class="editable" data-svgref="icon-ca-rename">{{prettyName}}</h4>
-		<p class="description size">{{size}}</p>
+		<p class="description user size">
+            {{#not-eq this.username profile.username}}
+                <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">@{{owner}}</a>
+            {{/not-eq}}
+            {{size}}</p>
 		<p class="description updatedAt">{{updatedAt}}</p>
 	</div>
 	<div class="image"
