@@ -33,9 +33,9 @@ function makeHashid(serial) {
 	return hashids.encode(serial)
 }
 
-function makeCardName(name) {
+function makeCardName(cardName) {
 	var maxLen = 22
-	var nameParts = name.split(' ')
+	var nameParts = cardName.split(' ')
 	var name = nameParts.shift()
 
 	function addNamePart() {
@@ -79,7 +79,7 @@ function prettyPrintGraphInfo(graph) {
 	}
 
 	graph.prettyOwner = graphOwner
-	graph.prettyName = graphName
+	graph.prettyName = makeCardName(graphName)
 
 	graph.size = ''
 
@@ -87,7 +87,8 @@ function prettyPrintGraphInfo(graph) {
 		var sizeInKb = (graph.stat.size / 1048576).toFixed(2) // megabytes
 		graph.size = sizeInKb + ' MB'
 	}
-	// by ref
+
+	return graph
 }
 
 function GraphController(s, gfs, mongoConnection) {
@@ -149,10 +150,8 @@ GraphController.prototype.userIndex = function(req, res, next) {
 				return next()
 			}
 
-			list.map(function(graph) {
-				prettyPrintGraphInfo(graph)
-				graph.prettyName = makeCardName(graph.prettyName)
-				graph.viewer = req.user.username
+			list = list.map(function(graph) {
+				return prettyPrintGraphInfo(graph.toJSON())
 			})
 
 			var data = {
@@ -188,10 +187,8 @@ GraphController.prototype.index = function(req, res) {
 		if (req.xhr || req.path.slice(-5) === '.json')
 			return res.json(list);
 
-		list.map(function(graph) {
-			prettyPrintGraphInfo(graph)
-			graph.prettyName = makeCardName(graph.prettyName)
-			graph.viewer = req.user.username
+		list = list.map(function(graph) {
+			return prettyPrintGraphInfo(graph.toJSON())
 		})
 
 		var data = {

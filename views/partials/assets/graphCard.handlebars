@@ -17,7 +17,6 @@
 		}
 	}
 --}}
-
 <article class="graph asset card noselect" data-objectid="{{_id}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
 	<div class="meta scrollbar">
 		<h4 class="editable" data-svgref="icon-ca-rename">{{prettyName}}</h4>
@@ -34,7 +33,7 @@
 			<a class="btn action mainaction open svg" data-action="open" href="{{path}}" data-svgref="card-icon-view">
 				<svg /> View
 			</a>
-            {{#eq username viewer}}
+            {{#eq this.username profile.username }}
             <a class="btn action mainaction edit svg" data-action="edit" href="{{path}}/edit" data-svgref="player-icon-edit">
                 <svg /> Edit
             </a>
