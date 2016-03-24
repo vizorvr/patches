@@ -115,7 +115,8 @@ exports.reset = function() {
 		},
 		getElementsByTagName: function() {
 			return [ domNode() ]
-		}
+		},
+		querySelector: function() {}
 	}
 
 	global.navigator = {
