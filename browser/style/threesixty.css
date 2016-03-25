@@ -1429,7 +1429,7 @@ body.deviceMobile .tabletDeviceOnly {
   border-radius: 3px;
   font-size: 16px;
   line-height: 1.33;
-  font-weight: 400;
+  font-weight: 300;
   color: #ffffff;
   z-index: 1;
 }
@@ -1707,7 +1707,7 @@ body.deviceMobile .tabletDeviceOnly {
   padding: 0;
 }
 .bootbox.modal.nopad .modal-body form {
-  margin: 20px 40px;
+  margin: 18px 26px;
 }
 .bootbox.modal.nopad .modal-body p.left {
   text-align: left;
@@ -2510,7 +2510,7 @@ body.bMain #contentwrap > div.in form div.form-input > input {
   border-radius: 3px;
   font-size: 16px;
   line-height: 1.33;
-  font-weight: 400;
+  font-weight: 300;
   color: #333;
   z-index: 1;
 }
@@ -2958,6 +2958,94 @@ body.bProfile section.center + section.center {
 .flexcolumns > ul {
   padding-left: 0;
   margin-right: 20px;
+}
+.toggle-rounded:focus,
+.toggle-rounded:active {
+  outline: 0;
+}
+body.uaFirefox input[type=checkbox].toggle-rounded {
+  visibility: hidden;
+}
+body .toggle-rounded + span {
+  display: none;
+}
+body.uaFirefox .toggle-rounded + span {
+  display: inline-block;
+  pointer-events: none;
+  margin-left: -38px;
+}
+.toggle-rounded,
+body.uaFirefox .toggle-rounded + span {
+  outline: 0;
+  vertical-align: -0.35em;
+  -webkit-touch-callout: none;
+  -webkit-appearance: none;
+  appearance: none;
+  border: 0px solid #666;
+  border-radius: 9px;
+  width: 38px;
+  height: 18px;
+  position: relative;
+  transition: background-color 0.05s 0.05s ease-in;
+  background: rgba(96, 160, 255, 0.9);
+}
+.toggle-rounded::before,
+body.uaFirefox .toggle-rounded + span:before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  background: #afbfdf;
+  border-radius: 50%;
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  margin-left: -9px;
+  margin-top: -9px;
+  transition: left 0.12s linear;
+}
+.toggle-rounded::before,
+.toggle-rounded.off:before,
+body.uaFirefox .toggle-rounded + span:before,
+body.uaFirefox .toggle-rounded.off + span:before {
+  left: 9px;
+}
+.toggle-rounded:checked,
+.toggle-rounded.on,
+body.uaFirefox .toggle-rounded:checked + span,
+body.uaFirefox .toggle-rounded.on + span {
+  background: #ec9d01;
+  transition: background-color 0.1s 0.03s ease-in;
+}
+.toggle-rounded:checked::before,
+.toggle-rounded.on::before,
+body.uaFirefox .toggle-rounded:checked + span:before,
+body.uaFirefox .toggle-rounded.on + span:before {
+  left: 29px;
+}
+@keyframes spinner {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+.withWaitState .waitOn {
+  display: none;
+}
+.withWaitState .waitOff {
+  display: initial;
+}
+.withWaitState.waiting .waitOn,
+form.loading button.withWaitState .waitOn {
+  display: initial;
+}
+.withWaitState.waiting .waitOff,
+form.loading button.withWaitState .waitOff {
+  display: none;
+}
+form.loading button.withWaitState.spinner .waitOn {
+  animation: spinner 1.3s infinite linear;
 }
 body.bHome {
   margin: 0 !important;

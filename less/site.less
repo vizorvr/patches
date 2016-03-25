@@ -322,7 +322,7 @@ body.bMain {
 			border-radius: 3px;
 			font-size: 16px;
 			line-height: 1.33;
-			font-weight: 400;
+			font-weight: 300;
 			color: @color-formcontrol;
 			z-index: 1;
 		}
@@ -730,5 +730,95 @@ body.bProfile {
   >ul {
 	padding-left: 0;
 	margin-right: 20px;
+  }
+}
+
+// checkbox-rounded-toggle
+// <label><input id="publishPublic" type="checkbox" class="cb-rounded" /><span><!-- firefox --></span></label>
+.toggle-rounded:focus, .toggle-rounded:active {
+	outline: 0;
+}
+
+body.uaFirefox input[type=checkbox].toggle-rounded {
+	visibility: hidden;
+}
+
+body .toggle-rounded+span {
+  display: none;
+}
+body.uaFirefox .toggle-rounded +span {
+  display: inline-block;
+  pointer-events: none;
+  margin-left: -38px;
+}
+.toggle-rounded, body.uaFirefox .toggle-rounded +span {
+	outline: 0;
+	vertical-align: -0.35em;
+	-webkit-touch-callout: none;
+	-webkit-appearance: none;
+	appearance: none;
+	border: 0px solid #666;
+	border-radius: 9px;
+	width: 38px;
+	height: 18px;
+	position: relative;
+	transition: background-color 0.05s 0.05s ease-in;
+  	background: rgba(96,160,255,0.9);
+}
+
+.toggle-rounded::before, body.uaFirefox .toggle-rounded +span:before {
+	content: "";
+	width: 18px;
+	height: 18px;
+	background: #afbfdf;
+	border-radius: 50%;
+	display: inline-block;
+	position: absolute;
+	top: 50%;
+	margin-left: -9px;
+	margin-top: -9px;
+	transition: left 0.12s linear;
+}
+.toggle-rounded::before, .toggle-rounded.off:before,
+body.uaFirefox .toggle-rounded +span:before, body.uaFirefox .toggle-rounded.off+span:before {
+  left: 9px;
+}
+.toggle-rounded:checked, .toggle-rounded.on,
+body.uaFirefox .toggle-rounded:checked+span, body.uaFirefox .toggle-rounded.on+span {
+  	background: rgb(236,157,1);
+	transition: background-color 0.1s 0.03s ease-in;
+}
+
+.toggle-rounded:checked::before, .toggle-rounded.on::before,
+body.uaFirefox .toggle-rounded:checked+span:before, body.uaFirefox .toggle-rounded.on+span:before {
+  left: 29px;
+}
+
+
+@keyframes spinner {
+  from {transform: rotate(0deg)}
+  to {transform: rotate(-360deg)}
+}
+
+.withWaitState {
+  .waitOn {
+	display: none;
+  }
+  .waitOff {
+	display: initial;
+  }
+}
+.withWaitState.waiting, form.loading button.withWaitState {
+  .waitOn {
+	display: initial;
+  }
+  .waitOff {
+	display: none;
+  }
+}
+
+form.loading button.withWaitState.spinner {
+  .waitOn {
+	animation: spinner 1.3s infinite linear;
   }
 }
