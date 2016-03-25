@@ -206,48 +206,6 @@ VizorUI.prototype.setPageTitle = function() {
 	return newTitle;
 }
 
-
-/***** MODAL DIALOGS/WINDOWS *****/
-
-
-VizorUI.prototype.openPublishGraphModal = function() {
-	var dfd = when.defer()
-	var that = this;
-	var publishTemplate = E2.views.filebrowser.publishModal;
-	var graphname = E2.app.path.split('/')
-    if (graphname.length > 1)
-        graphname = graphname[1];
-
-	var graphdata = E2.app.player.core.serialise();
-
-	var graphpreview = E2.app.getScreenshot(1280, 720);
-
-	var data = {
-		path:	        graphname,
-		graph:	        graphdata,
-		previewImage:   graphpreview
-	};
-
-	var openSaveGraph = function(dfd) {
-		ga('send', 'event', 'account', 'open', 'publishGraphModal');
-		var $modal = VizorUI.modalOpen(publishTemplate(data), 'Publish this scene', 'nopad');
-		var $form = $('#publishGraphForm', $modal);
-		VizorUI.setupXHRForm($form, function(saved){
-			ga('send', 'event', 'graph', 'saved')
-			dfd.resolve(saved.path);
-		});
-	}
-
-	if (!VizorUI.userIsLoggedIn()) {
-		VizorUI.openLoginModal()
-			.then(openSaveGraph);
-	} else {
-		openSaveGraph(dfd);
-	}
-
-	return dfd.promise
-}
-
 /***** EVENT HANDLERS *****/
 
 VizorUI.prototype.onSearchResultsChange = function($libContainer) {
@@ -531,7 +489,74 @@ VizorUI.prototype.toggleFullscreenVRViewButtons = function() {
 }
 
 
-/***** MISC UI MODALS/DIALOGS *****/
+/***** UI MODALS/DIALOGS *****/
+
+
+
+VizorUI.prototype.openPublishGraphModal = function() {
+	var that = this,
+		dfd = when.defer(),
+		publishTemplate = E2.views.filebrowser.publishModal
+
+	var graphname = E2.app.path.split('/')
+    if (graphname.length > 1)
+        graphname = graphname[1]
+
+	var graphdata = E2.app.player.core.serialise()
+	var graphpreview = E2.app.getScreenshot(1280, 720)
+	var assetdata = _.clone(E2.app.graphStore.getGraphSize())	// {size, numAssets, numNodes, hasAudio}
+
+
+	var data = {
+		path:	        graphname,
+		graph:	        graphdata,
+		previewImage:   graphpreview,
+		assetdata:		assetdata,
+		isPublic:		true,
+		sizeFormatted: 	siteUI.formatFileSize(assetdata.size)
+	}
+console.log(data)
+	var openSaveGraph = function(dfd) {
+		ga('send', 'event', 'account', 'open', 'publishGraphModal')
+		var $modal = VizorUI.modalOpen(publishTemplate(data), 'Publish', 'nopad modal_publish')
+		var $form = $('#publishGraphForm', $modal)
+		VizorUI.setupXHRForm($form, function(saved) {
+			ga('send', 'event', 'graph', 'saved')
+			dfd.resolve(saved.path)
+		})
+
+		var $publicPrivateLabel = $form.find('label#publishPublicPrivateLabel').first()
+		$form.find('input#publishPublic')
+			.on('change', function(e){
+				var isPublic = this.checked
+				$publicPrivateLabel.html( isPublic ? 'Public' : 'Private')
+			})
+
+
+		// disable the form's submit button
+		// on changes to file name box, check file exists
+		// if file exists
+		// 		display message
+		//		change button to say Overwrite
+		//		unlock button
+		// if file does not exist
+		// 		clear message (!)
+		//		change button to say Publish
+		// 		unlock button
+		//	if unable to check, unlock button
+
+	}
+
+	if (!VizorUI.userIsLoggedIn()) {
+		VizorUI.openLoginModal(dfd)
+			.then(openSaveGraph)
+	} else {
+		openSaveGraph(dfd)
+	}
+
+	return dfd.promise
+}
+
 
 VizorUI.prototype.viewSource = function() {
 	var b = bootbox.dialog({
@@ -659,6 +684,11 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 
 /***** HELPER METHODS *****/
 
+VizorUI.prototype.getCurrentGraphSize = function() {
+	var state = E2.app.graphStore.getGraphSize()
+	return state.size
+}
+
 VizorUI.openEditorHelp = function() {
 	var keyData = _.extend({}, uiKeys);
 	var modShift = uiKeys.modShift,
@@ -728,8 +758,6 @@ VizorUI.openEditorHelp = function() {
 	return VizorUI.modalOpen(html, 'Keyboard Shortcuts', 'mHelp mShortcuts')
 
 }
-
-
 
 VizorUI.checkCompatibleBrowser = function() {
 	var agent = navigator.userAgent;

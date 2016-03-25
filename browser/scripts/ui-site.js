@@ -411,6 +411,27 @@ var siteUI = new function() {
 	this.lastModalIsOpen = false
 }
 
+siteUI.formatFileSize = function(size) {	// bytes
+	if (isNaN(size) || (size <= 0)) return size
+
+	if (size < 1024)
+		return size + ' bytes'
+
+	size = size / 1024
+
+	if (size < 1000)
+		return Math.round(size) + ' kB'
+
+	size = size / 1024
+
+	if (size < 1000)
+		return size.toFixed(1) + ' MB'
+
+	size = size / 1024
+
+	return size.toFixed(2) + ' GB'
+}
+
 jQuery('document').ready(siteUI.init);
 
 if (typeof VizorUI === 'undefined') var VizorUI = {};
@@ -505,9 +526,9 @@ VizorUI.enableScrollToLinks = function($container) {
 		});
 }
 
-VizorUI.openLoginModal = function() {
+VizorUI.openLoginModal = function(dfd) {
 	if (E2 && E2.controllers && E2.controllers.account)
-		return E2.controllers.account.openLoginModal();
+		return E2.controllers.account.openLoginModal(dfd)
 	// else
 	// window.location.href="/account";
 	return false;
@@ -722,6 +743,10 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 		event.preventDefault();
 		var formData = $form.serialize();
 
+		$form
+			.removeClass('hasMessage')
+			.addClass('noMessage')
+
 		$form.find('p.xhr.success.message').remove();
 		$form.find('span.message').html('');
 		$form.find('div.form-input').removeClass('error');
@@ -731,6 +756,8 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 		$unknownError.html('').hide();
 		inProgress = true;
 		$body.addClass('loading');
+		$form.addClass('loading');
+
 		jQuery.ajax({
 			type:	'POST',
 			url:	actionURL,
@@ -738,7 +765,9 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 			dataType: 'json',
 			error: function(err) {
 				inProgress = false;
+				var detail = {}
 				$body.removeClass('loading');
+				$form.removeClass('loading');
 				if (err.responseJSON) {
 					var json = err.responseJSON;
 					var errors
@@ -789,6 +818,10 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 					if (!errors.length) {	// should errors be empty
 						$unknownError.html($unknownError.html() + '<span>'+ (json.message) + '</span>').show();
 					}
+					detail = {
+						errors: errors,
+						json: json
+					}
 				} else {
 					if (err.status === 200) {	// the response was deemed an error but has good status (jQuery timeout / last resort)
 						$unknownError.html('<span>The server said: (' + err.status + '): ' + err.statusText +'</span>').show();
@@ -796,7 +829,14 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 						// in case no json comes back, e.g. just a code
 						$unknownError.html('<span>An error ('+err.status+') occurred. Please check all required fields</span>').show();
 					}
+					detail = {
+						err: err
+					}
 				}
+				$form[0].dispatchEvent(new CustomEvent('xhrerror', {detail:detail}))
+				$form
+					.removeClass('noMessage')
+					.addClass('hasMessage')
 			},
 			success: function() {
 				inProgress = false;
@@ -808,7 +848,13 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 		return false;
 	});
 
-	$form.data('xhrEnabled', true);
+	$form
+		.data('xhrEnabled', true)
+		.attr('data-xhrEnabled', 'true')
+
+	$form
+			.removeClass('hasMessage')
+			.addClass('noMessage')
 };
 
 /**

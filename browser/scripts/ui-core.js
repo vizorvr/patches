@@ -134,8 +134,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 	var $patch_editor = dom.canvas_parent;
 
 	E2.app.graphStore.on('changed:size', function(size) {
-		var sizeInKb = (size / 1048576).toFixed(2) // megabytes
-		$('#graphSizeLabel').html(sizeInKb + ' MB')
+		$('#graphSizeLabel').html(siteUI.formatFileSize(size))
 	})
 
 	state
