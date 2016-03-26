@@ -203,6 +203,13 @@ E2.util = {
 	},
 	isFullscreen: function() {
 		return !!(document.mozFullScreenElement || document.webkitFullscreenElement);
+	},
+
+	slugify : function(name) {
+		return name.toLowerCase()
+			.replace(/[^\w-]+/g,' ')
+			.trim()
+			.replace(/ +/g, '-')
 	}
 }
 
