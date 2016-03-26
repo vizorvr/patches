@@ -785,7 +785,7 @@ body.uaFirefox .toggle-rounded +span:before, body.uaFirefox .toggle-rounded.off+
 }
 .toggle-rounded:checked, .toggle-rounded.on,
 body.uaFirefox .toggle-rounded:checked+span, body.uaFirefox .toggle-rounded.on+span {
-  	background: rgb(236,157,1);
+  	background: @alt;
 	transition: background-color 0.1s 0.03s ease-in;
 }
 
@@ -821,4 +821,8 @@ form.loading button.withWaitState.spinner {
   .waitOn {
 	animation: spinner 1.3s infinite linear;
   }
+}
+
+.modal form button {
+  font-weight: 400;
 }

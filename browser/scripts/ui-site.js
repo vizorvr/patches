@@ -412,7 +412,7 @@ var siteUI = new function() {
 }
 
 siteUI.formatFileSize = function(size) {	// bytes
-	if (isNaN(size) || (size <= 0)) return size
+	if (isNaN(size) || (size < 0)) return size
 
 	if (size < 1024)
 		return size + ' bytes'
@@ -743,7 +743,7 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 		event.preventDefault();
 		var formData = $form.serialize();
 
-		$form
+		$form.not('.keepMessage')
 			.removeClass('hasMessage')
 			.addClass('noMessage')
 
@@ -753,7 +753,10 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 
 		var $unknownError = jQuery('#unknown_error', $form);
 		if ($unknownError.length < 1) $unknownError = jQuery('.genericError', $form);
-		$unknownError.html('').hide();
+
+		if (!$form.hasClass('keepMessage'))
+			$unknownError.html('').hide();
+		
 		inProgress = true;
 		$body.addClass('loading');
 		$form.addClass('loading');

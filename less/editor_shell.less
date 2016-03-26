@@ -373,6 +373,10 @@ body.bEditor {
 div.modal.modal_publish .modal-content {
   width: 550px;
   label, li { color: @editor-text-hover; }
+  div.modal-error.warn {
+	color: @message-warn;
+	margin-top:10px;
+  }
   button.close {
 	right: 14px;
   }
@@ -380,6 +384,11 @@ div.modal.modal_publish .modal-content {
 	width: 495px;
 	margin-left: auto;
 	margin-right: auto;
+
+	&.loading button[type='submit'] {
+	 	background: rgb(2,62,133);
+	}
+
 	#pathInput {
 	  padding-top: 12px;
 	  padding-bottom: 12px;
