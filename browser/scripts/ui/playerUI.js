@@ -171,12 +171,16 @@ var VizorPlayerUI = function() {
 	// called in onPlayerLoaded:completeLoading
 	this.bindButtons = function() {
 		function enterFullscreen(e) {
+			mixpanel.track('Enter Fullscreen')
+
             // webvr manager has extra provisions if in iframe, so E2.core.emit(fullScreenChangeRequested) wont do
             E2.core.webVRManager.onFSClick_()
             siteUI.tagBodyClass()
         }
 
         function enterVR(e) {
+			mixpanel.track('Enter VR')
+
             if (siteUI.isDeviceDesktop()) {
                 // display "view in VR" sign
                 return that.displayVRPlayerUrl(that.data.shareURL)
@@ -187,6 +191,8 @@ var VizorPlayerUI = function() {
         }
 
 		function share(e) {
+			mixpanel.track('Share Clicked')
+
 			e.preventDefault()
 			var data = {
 				shareURL : Vizor.shareURL,
@@ -214,6 +220,8 @@ var VizorPlayerUI = function() {
 		}
 
 		function edit(e) {
+			mixpanel.track('Edit Clicked')
+
 			var editUrl = '/' +
 				window.location.href
 				.split('?')[0]
@@ -234,6 +242,10 @@ var VizorPlayerUI = function() {
         $('#fullscreen').on('click', enterFullscreen)
         $('#entervr').on('click', enterVR)
 		$('#sharebutton').on('click', share)
+
+		that.$canvas.on('mousedown touchstart', function() {
+			mixpanel.track('Mouse down')
+		})
 	}
 
 	this.bindHeaderBehaviour = function() {

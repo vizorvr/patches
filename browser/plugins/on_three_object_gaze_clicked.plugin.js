@@ -12,6 +12,10 @@
 		this.triggerState = true
 		this.updated = true
 		this.node.queued_update = 1
+
+		mixpanel.track('Gaze Clicked', {
+			item: this.targetNode.uid
+		})
 	}
 
 	OnThreeObjectGazeClicked.prototype.onGazeOut = function() {
