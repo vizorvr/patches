@@ -243,8 +243,13 @@ var VizorPlayerUI = function() {
         $('#entervr').on('click', enterVR)
 		$('#sharebutton').on('click', share)
 
+		var firstMouseDown = true
+
 		that.$canvas.on('mousedown touchstart', function() {
-			mixpanel.track('Mouse down')
+			if (firstMouseDown) {
+				firstMouseDown = false
+				mixpanel.track('Mouse down')
+			}
 		})
 	}
 
