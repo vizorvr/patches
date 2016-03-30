@@ -50,17 +50,17 @@ Menu.prototype.create = function(parent, position, is_root)
 		{
 			var $group = make('span');
 			
-			span.addClass('menu-lbl-grp');
-			li.addClass('menu-grp-item');
-			li.append($group.addClass('menu-grp-img'));
-		
+			span.addClass('menu-lbl menu-lbl-grp');
+			li.addClass('menu-grp-item menu-item');
+			li.append($group);
+
 			li.mouseenter(function(self, $groupElement, li, item) { return function(e)
 			{
 				var groupOffset = $groupElement.offset();
 				
 				self.select(li)
 				self.child = new Menu(self.cm, item.items, self.callback);
-				self.child.create(self, [groupOffset.left + 18, groupOffset.top - 4], true);
+				self.child.create(self, [groupOffset.left + 12, groupOffset.top - 14], true);
 			}}(this, $group, li, item));
 
 			li.mousedown(function(e)
@@ -103,7 +103,6 @@ Menu.prototype.create = function(parent, position, is_root)
 	if(position[0] + w >= win.innerWidth - 16)
 	{
 		var ofs = w + (parent ? parent.dom.width() : 0);
-		
 		position[0] = position[0] >= ofs ? position[0] - ofs : 0;
 	}
 		
@@ -119,7 +118,7 @@ Menu.prototype.create = function(parent, position, is_root)
 Menu.prototype.select = function(elem)
 {
 	if(this.selected)
-		this.selected.css('background-color', '#eee');
+		this.selected.removeClass('selected')
 	
 	if(this.child)
 	{
@@ -127,7 +126,7 @@ Menu.prototype.select = function(elem)
 		this.child = null;
 	}
 	
-	elem.css('background-color', '#39f');
+	elem.addClass('selected')
 	this.selected = elem;
 };
 
