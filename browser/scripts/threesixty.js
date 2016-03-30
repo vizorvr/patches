@@ -433,7 +433,7 @@ var vizor360 = new function() {
 		button.id = 'uploadbutton'
 		span.innerText = 'Upload'
 
-		var controlsDiv = document.getElementById('topbar').getElementsByTagName('div')[0]
+		var controlsDiv = document.getElementById('topbar').getElementsByTagName('div')[1]
 		controlsDiv.appendChild(button)
 
 		var handler = function(e) {
