@@ -46,6 +46,7 @@ function isEditAction(m) {
 		case 'uiGraphTreeReordered':
 		case 'uiPluginTransientStateChanged':
 		case 'uiPluginStateChanged':
+		case 'uiSlotValueChanged':
 			return true;
 	}
 

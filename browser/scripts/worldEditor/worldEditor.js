@@ -220,6 +220,8 @@ WorldEditor.prototype.setSelection = function(selected) {
 	if (!anySelected) {
 		this.cameraSelector.transformControls.detach()
 	}
+
+	E2.ui.emit('worldEditor:selectionSet')
 }
 
 WorldEditor.prototype.onDelete = function(nodes) {
@@ -593,7 +595,7 @@ WorldEditor.prototype.areEditorHelpersActive = function() {
 }
 
 WorldEditor.prototype.frameSelection = function() {
-	var activePlugin = this.cameraSelector.transformControls.plugin
+	var activePlugin = this.getSelectedObjectPlugin()
 	var selectedObject = activePlugin ? activePlugin.object3d : undefined
 
 	var cameraDirection = this.cameraSelector.camera.getWorldDirection()
@@ -632,4 +634,9 @@ WorldEditor.prototype.frameSelection = function() {
 		this.cameraSelector.camera.lookAt(selectedObject.position)
 		this.cameraSelector.editorControls.focus(selectedObject)
 	}
+}
+
+WorldEditor.prototype.getSelectedObjectPlugin = function() {
+    var activePlugin = this.cameraSelector.transformControls.plugin
+    return activePlugin
 }

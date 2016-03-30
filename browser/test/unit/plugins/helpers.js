@@ -9,8 +9,8 @@ var _ = require('lodash')
 
 global.clone = _.cloneDeep.bind(_)
 
-global.SubGraphPlugin = require(browserPath+'scripts/subGraphPlugin.js')
 global.Plugin = require(browserPath+'scripts/plugin.js')
+global.SubGraphPlugin = require(browserPath+'scripts/subGraphPlugin.js')
 
 global.EventEmitter = require('events').EventEmitter
 global.Node = require(browserPath+'scripts/node.js').Node
@@ -182,4 +182,3 @@ exports.loadPlugin = function(name) {
 	var js = fs.readFileSync(browserPath+'plugins/'+name+'.plugin.js');
 	vm.runInThisContext(js, name);
 }
-

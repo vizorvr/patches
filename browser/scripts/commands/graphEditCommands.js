@@ -303,11 +303,11 @@ ChangePluginState.prototype.redo = function() {
 
 // -------------------------------
 
-function ChangeInputSlotValue(graph, node, slotName, newValue) {
+function ChangeInputSlotValue(graph, node, slotName, newValue, oldValue) {
 	GraphEditCommand.apply(this, arguments)
 	this.node = node
 	this.slotName = slotName
-	this.oldValue = node.getInputSlotValue(slotName)
+	this.oldValue = typeof oldValue !== 'undefined' ? oldValue : node.getInputSlotValue(slotName)
 	this.newValue = newValue
 	this.title = 'Slot Value Changed'
 }

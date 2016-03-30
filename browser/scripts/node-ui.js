@@ -174,8 +174,7 @@ function NodeUI(parent_node, x, y, z) {
 		that.parent_node.update_connections()
 		E2.app.updateCanvas(true)
 	})
-	// @todo this fails?
-	this.parent_node.parent_graph.addListener('nodeRenamed', this.onRenamed.bind(this));
+
 
 	make_draggable($dom,
 		E2.app.onNodeDragged.bind(E2.app, parent_node),
@@ -191,6 +190,7 @@ function NodeUI(parent_node, x, y, z) {
 		this.setCssClass();
 		this.redrawSlots();
 	}.bind(this));
+	this.parent_node.on('renamed', this.onRenamed.bind(this));
 
 	VizorUI.disableContextMenu($dom[0]);
 }
@@ -279,11 +279,10 @@ NodeUI.prototype.destroy = function() {
 	return this;
 }
 
-NodeUI.prototype.onRenamed = function(graph, node) {
-	if (node === this.parent_node) {
-		this.setCssClass();
-	}
-	return true;
+NodeUI.prototype.onRenamed = function(name) {
+	$('span.p_title', this.header).text(name)
+	this.setCssClass()
+	NodeUI.redrawActiveGraph();
 }
 
 NodeUI.prototype.openInspector = function() {
@@ -310,32 +309,26 @@ NodeUI.prototype.setCssClass = function() {
 	var flags = this.getPluginUIFlags(true);
 
 	if (this.canDisplayInline()) {
-		$dom.removeClass('p_expand').removeClass('p_collapse').addClass('p_inline');
+		$dom
+			.removeClass('p_expand')
+			.removeClass('p_collapse')
+			.addClass('p_inline')
 	} else {
-		$dom.removeClass('p_inline');
-		if (this.parent_node.open) {
-			$dom.addClass('p_expand').removeClass('p_collapse');
-		} else {
-			$dom.addClass('p_collapse').removeClass('p_expand');
-		}
+		$dom
+			.removeClass('p_inline')
+			.toggleClass('p_expand', this.parent_node.open)
+			.toggleClass('p_collapse', !this.parent_node.open)
 	}
 
-	var classIf = function(condition, className, $j) {
-		if (typeof $j === 'undefined') $j = $dom;
-		if (condition)
-			$j.addClass(className);
-		else
-			$j.removeClass(className);
-		return $j
-	};
-	classIf(flags.has_inputs, 'p_has_ins');
-	classIf(flags.has_outputs, 'p_has_outs');
-	classIf(flags.single_in, 'p_1in');
-	classIf(flags.single_out, 'p_1out');
-	classIf(this.canDisplayOutputInHeader(), 'p_header_out');
-	classIf(this.canDisplayInputInHeader(), 'p_header_in');
-	classIf(this.isSelected(), 'p_selected');
-	classIf(this.isRenamed(), 'p_renamed');
+	$dom
+		.toggleClass('p_has_ins', flags.has_inputs)
+		.toggleClass('p_has_outs', flags.has_outputs)
+		.toggleClass('p_1in', flags.single_in)
+		.toggleClass('p_1out', flags.single_out)
+		.toggleClass('p_header_out', this.canDisplayOutputInHeader())
+		.toggleClass('p_header_in', this.canDisplayInputInHeader())
+		.toggleClass('p_selected', this.isSelected())
+		.toggleClass('p_renamed', this.isRenamed())
 
 	var currentWidth = $dom[0].style.width;
 	if (!currentWidth) currentWidth = 'auto';
@@ -574,7 +567,7 @@ NodeUI.prototype.showRenameControl = function() {
 			width:  '' + $titleSpan.innerWidth() - 10 + 'px',
 			left: '' + (10 + titleOffset.left - domOffset.left) + 'px'
 		})
-		.val(node.title || node.id)
+		.val(node.get_disp_name())
 		.keydown(function(e){
 			var code = e.keyCode || e.which
 			if(code === 13) {
@@ -591,8 +584,6 @@ NodeUI.prototype.showRenameControl = function() {
 
 				if (name) {
 					E2.app.graphApi.renameNode(E2.core.active_graph, node, name);
-					that.setCssClass();
-					NodeUI.redrawActiveGraph();
 				}
 
 			}
@@ -671,6 +662,15 @@ NodeUI.prototype.onShowTooltip = function(e) {
 
 		if ( (isOutput && this.hasOnly1Output()) || (isInput && this.canDisplayInline()) ) {
 			txt += '<br><b>Name:</b> ' + slot.name;
+		}
+
+		var currentValue = this.parent_node.getUiSlotValue(slot)
+		if ((!slot.is_connected) &&
+			(currentValue !== null) &&
+			(typeof slot.def !== 'undefined') &&
+			(currentValue !== slot.def)
+			&& !(currentValue instanceof Object))  {
+			txt += '<br><b>Current value:</b> ' + currentValue;
 		}
 
 		if (slot.array)
@@ -795,7 +795,7 @@ NodeUI.prototype.setupTooltips = function($element) {
 
 NodeUI.prototype.createSlot = function(container, s, type) {
 	var $div = make('div');
-
+	var isDefaultValue = this.parent_node.getUiSlotValue(s) === s.def
 	var node = this.parent_node;
 	var nid = this.nid;
 
@@ -816,7 +816,7 @@ NodeUI.prototype.createSlot = function(container, s, type) {
 	if (isConnected) $div.addClass('p_connected');
 
 	var $status = make('span');	// contains the two svg-s, on and off, loaded from sprite already in the document.
-	var $label = make('label').html(s.name);
+	var $label = make('label')
 	if (isInput) {
 		$div.append($status, $label);
 	} else {
@@ -848,6 +848,18 @@ NodeUI.prototype.createSlot = function(container, s, type) {
 	$div.data('type', type).attr('data-type', type);
 	this.setupTooltips($div);
 
+	var setSlotLabel = function(slot, value){
+		if (slot !== s) return
+		var isOverride   = (!slot.is_connected) && (typeof slot.def !== 'undefined') && (value !== null) && (value !== slot.def)
+		if (isOverride)
+			$label.html(s.name + '*')
+		else
+			$label.html(s.name)
+	}
+
+	this.parent_node.on('uiSlotValueChanged', setSlotLabel)
+	setSlotLabel(s, this.parent_node.getUiSlotValue(s))
+
 	return $div;
 };
 
@@ -873,8 +885,10 @@ NodeUI.prototype.renameSlot = function(slot, name, suid, slot_type) {
 };
 
 NodeUI.prototype.renderSlots = function(container, slots, type) {
-	for(var i = 0, len = slots.length; i < len; i++)
-		this.createSlot(container, slots[i], type);
+	for(var i = 0, len = slots.length; i < len; i++) {
+		if (slots[i].patchable !== false)
+			this.createSlot(container, slots[i], type);
+	}
 };
 
 // open nested graph for editing
@@ -896,7 +910,7 @@ NodeUI.drilldown = function(node) {	// taken from nested graph plugin
 /**
  * forces all connections to resolve their slot divs and redraws the canvas.
  * expensive and heavy-handed. use as a last resort. (gm)
- * @return bool if updateCanvas was called
+ * @return boolean if updateCanvas was called
  */
 NodeUI.redrawActiveGraph = function() {
 	var changed = false;
@@ -914,305 +928,6 @@ NodeUI.redrawActiveGraph = function() {
 	}
 	E2.ui.state.selectedObjects = E2.ui.state.selectedObjects;	// force refresh
 	return changed;
-};
-
-// makes an element adjustable by dragging in two directions
-// onChange callback is (value, screenDelta)
-// note, does not support css/dom rotation of surface element
-// can be bound twice for XY controls
-NodeUI.makeUIAdjustableValue = function(domNode, onStart, onChange, onEnd, options) {
-
-	var o = _.extend({
-		min : 0.0,
-		max : 1.0,
-		step : 1.0,	// do not track X by default
-		size : 100,	// size of full range of control (e.g. min to max in 100px)
-		getValue : null,	// supply function to dynamically read this value from elsewhere (e.g. state)
-		value : 0.5,	// default if no getValue()
-
-		allowTextInput : true,
-		parseTextInput : null,
-		textInputParentNode : null,	// which node to attach the dynamic input control to
-
-		orientation: 'vertical',
-		isSurface : false,			// use the domNode as a surface, scaling value along the node's width or height
-		surfaceDomNode : null,		// use another domNode's dimensions as surface, instead of this one (it won't move the node!)
-		cssCursor: 'ns-resize'		// e.g. ns-resize, we-resize, crosshair, all-scroll, etc
-	}, options)
-
-	if (parseFloat(o.step) === 0.0) {
-		err("step cannot be zero")
-		return
-	}
-
-	var isVertical = (o.orientation === 'vertical')
-	var getValue = (typeof o.getValue === 'function') ? o.getValue : function(){return parseFloat(o.value)}
-	if (o.isSurface) o.allowTextInput = false	// not supported
-	if (!o.textInputParentNode) o.allowTextInput = false
-
-	onEnd = onEnd || function(){}
-
-	var value = getValue()
-
-	// helpers
-	var clamp = THREE.Math.clamp
-	var mapLinear = THREE.Math.mapLinear
-
-	var parseInputValue = (typeof o.parseTextInput === 'function') ? o.parseTextInput : function(inputValue) {
-		var v = parseFloat(inputValue)
-		if (isNaN(v)) return false
-		if (!isFinite(v)) return false
-		return clamp(v, o.min, o.max)
-	}
-
-	var numSteps = (o.max - o.min) / o.step
-
-	// down() will set these
-	var minPixels = 1,
-		normValue = o.max / value
-
-	var isShiftPressed = function() {
-		return E2.ui.flags.pressedShift;
-	}
-
-	var up = function(data) { return function(e) {
-		E2.ui.setDragging(false);
-		document.removeEventListener('mousemove', data.move, true)
-		document.removeEventListener('touchmove', data.move, true)
-		document.removeEventListener('mouseup', data.up)
-		document.removeEventListener('touchcancel', data.up)
-		document.removeEventListener('touchend', data.up)
-		if(e.preventDefault) e.preventDefault()
-		onEnd(value)
-		document.body.style.cursor = '';
-		return true
-	}}
-
-
-
-	var move = function(data) {
-		return function(e) {
-			var t = (e.touches) ? e.touches[data.touchId] : e;
-
-			var pos
-			if (data.rect) { // constrain xy within rect
-				if (isVertical) {
-					pos = t.pageY - data.rect.top
-					clamp(pos, 0.0, 0.0 + data.rect.height);
-				} else {
-					pos = t.pageX - data.rect.left
-					clamp(pos, 0.0, 0.0 + data.rect.width);
-				}
-			}
-			else
-				pos = (isVertical) ? t.pageY : t.pageX
-
-			var delta = pos - data.last_pos
-
-			if (Math.abs(delta) >= minPixels) {
-				data.last_pos = pos
-				if (isShiftPressed()) {
-					delta /= 10.0;
-				}
-				var oldValue = value;
-
-				if (!data.rect) {
-					// single point
-					normValue += (isVertical) ? (- delta) : delta;
-				} else {
-					// surface, cast to float
-					normValue = 0.0 + pos
-				}
-
-				normValue = clamp(normValue, 0.0, o.size);
-				value = mapLinear(normValue, 0.0, o.size, o.min, o.max);
-
-				if ((value !== oldValue)) {
-					onChange(value, delta)
-				}
-			}
-
-			if(e.preventDefault) e.preventDefault()
-			return true
-		} // end closure
-	}
-
-	var down = function() {
-		return function(e) {
-			var t = (e.touches) ? e.touches[0] : e;
-
-			value = getValue()
-
-			var data = {
-				last_pos: (isVertical) ? t.pageY : t.pageX,
-				touchId : 0
-			}
-
-			if (o.isSurface) {	// size ourselves as per element in question
-				var rectRef = o.surfaceDomNode || domNode
-				data.rect = rectRef.getBoundingClientRect()
-				o.size =  (isVertical) ? data.rect.height : data.rect.width
-				data.last_pos -= (isVertical) ? data.rect.top : data.rect.left
-			}
-
-			minPixels = o.size / numSteps
-
-			normValue = mapLinear(value, o.min, o.max, 0, o.size)
-
-			data.up = up(data)
-			data.move = move(data)
-			document.addEventListener('touchend', data.up)
-			document.addEventListener('touchcancel', data.up)
-			document.addEventListener('mouseup', data.up)
-			document.addEventListener('touchmove', data.move, true)
-			document.addEventListener('mousemove', data.move, true)
-
-			if(document.activeElement)
-				document.activeElement.blur();
-			
-			if(e.preventDefault) e.preventDefault()
-
-			onStart(value)
-			E2.ui.setDragging(true);
-			document.body.style.cursor = o.cssCursor;
-
-			data.move(e)
-			return true
-		}
-	}
-
-	function evChange(v) {
-		var oldValue = value
-		v = parseInputValue(v)
-		if (v === false) v = oldValue
-		v = clamp(v, o.min, o.max)
-		if (oldValue !== v) {
-			value = v
-			normValue = mapLinear(value, o.min, o.max, 0, o.size)
-			onStart()
-			onChange(value)
-			onEnd()
-		}
-	}
-
-	if (o.allowTextInput) {
-		domNode.addEventListener('dblclick', function(e){
-			e.preventDefault();
-			e.stopPropagation();
-			NodeUI.enterValueControl(domNode, o.textInputParentNode, evChange)
-			return false
-		}, true);
-	}
-	domNode.addEventListener('touchstart', down())
-	domNode.addEventListener('mousedown', down())
-	domNode.addEventListener('mouseenter', function(){
-		domNode.style.cursor = o.cssCursor;
-	})
-	domNode.addEventListener('mouseleave', function() {
-		domNode.style.cursor = '';
-	})
-	if (domNode.className && (domNode.className.indexOf('uiValueAdjustable') === -1))
-		domNode.className += ' uiValueAdjustable'
-	else
-		domNode.className = 'uiValueAdjustable'
-
-};
-
-
-
-
-NodeUI.enterValueControl = function(node, parentNode, onChange, options) {
-
-	var $node = jQuery(node)
-	var $parent = jQuery(parentNode)
-	if ($node.hasClass('uiTextInput')) return true;
-	var o = {
-		type : 'text',
-		placeholder : ''
-	}
-
-	var $input = $('<input class="node-value-input" type="'+ o.type +'" placeholder="'+ o.placeholder +'" />')
-
-	var nodeOffset = $node.offset();
-	var parentOffset = $parent.offset();
-
-	$node.addClass('uiTextEntry');
-	var controlWidth = $node.innerWidth()
-	if (controlWidth < 30) controlWidth = 30;
-
-	var parentStylePosition = $parent.css('position');
-	if (parentStylePosition === 'static') parentStylePosition = ''
-	if (!parentStylePosition) {
-		$parent.css({
-			'position' : 'relative'
-		})
-	}
-
-	function tryChange(value) {
-		if (value === "") value = oldValue
-		if (value !== oldValue) {
-			onChange(value, oldValue)
-			oldValue = value
-			return true;
-		}
-		return false
-	}
-	var oldValue = $node.text();
-	var cancelling = false
-	var done = false
-
-	var forceBlur = function(e) {
-		var t = e.target
-		if (t !== $input[0]) $input.trigger('blur')
-		return true;
-	}
-
-	document.addEventListener('mousedown', forceBlur, true)
-	$input
-		.addClass('uiTextEntry')
-		.appendTo($parent)
-		.css({
-			position: 'absolute',
-			width:  '' + controlWidth + 'px',
-			left: '' + (nodeOffset.left - parentOffset.left -1) + 'px',
-			top: '' + (nodeOffset.top - parentOffset.top -1) + 'px',
-			'z-index' : 3001,
-			margin: 0
-		})
-		.val(oldValue)
-		.keydown(function(e){
-			var code = e.keyCode || e.which
-			if (code === 13) {
-				var value = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
-				done = true
-				jQuery(e.target).trigger('blur');
-				tryChange(value)
-			}
-			return true;
-		})
-		.keyup(function(e) {
-			var code = e.keyCode || e.which
-			if(code === 27) {
-				cancelling = true
-				jQuery(e.target).trigger('blur');
-			}
-			return true;
-		})
-		.select()
-		.bind('blur', function(e) {
-			if (!(cancelling || done)) {
-				var value = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
-				tryChange(value)
-			}
-			$(this).remove();	// this = input
-			$node.removeClass('uiTextEntry');
-			$parent.css({
-				position: parentStylePosition
-			});
-			document.removeEventListener('mousedown', forceBlur, true)
-		})
-		.focus()
-
 };
 
 if (typeof(module) !== 'undefined')

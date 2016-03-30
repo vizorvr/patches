@@ -1723,9 +1723,7 @@ Application.prototype.setupStoreListeners = function() {
 	}
 
 	function onNodeRenamed(graph, node) {
-		if (node.ui)
-			node.ui.dom.find('.t').text(node.title)
-		
+		// node ui listens to this too
 		if (node.plugin.isGraph)
 			node.plugin.graph.tree_node.set_title(node.title)
 
