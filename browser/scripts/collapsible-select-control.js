@@ -194,6 +194,10 @@ function dragAndDropMouseDownHandler(e) {
 		$(document).bind('mouseup', mouseUpHandler)
 	}
 
+	// prevent the list from scrolling as mouse is dragged beyond top/bottom when holding item
+	e.preventDefault()
+	e.stopPropagation()
+	return false
 }
 
 function CollapsibleSelectControl(handlebars) {
