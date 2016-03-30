@@ -211,6 +211,7 @@
 
 
     "TEXT TOOLS": {
+        "Experimental: Text Geometry": "three_text_geometry",
         "From text": "texture_from_text_generator",
         "Concatenate": "string_concatenate_modulator",
         "Parse JSON": "parse_json_modulator"
