@@ -820,7 +820,7 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 VizorUI.replaceSVGButtons = function($selector) {
 
 	var numReplaced=0;
-	$selector.find('button.svg[data-svgref!=""]').each(function(){
+	$selector.find('button.svg[data-svgref!=""], a.btn.svg[data-svgref!=""]').each(function(){
 		var $button = jQuery(this);
 		var xref = $button.data('svgref');
 		if (!xref) return;

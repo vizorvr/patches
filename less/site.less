@@ -531,24 +531,54 @@ section.list {
   }
 }
 
+@color-main-action-button: #afbfdf;
+
 article.asset.card {
 	width: @card-asset-width;
   	height: @card-asset-height;
   	background: white;
   	border-radius: 4px;
   	position:relative;
-	button.open, a.open {
-	  border: 1px solid rgba(255,255,255,0.5);
+
+  	div.overlay {
+	  -webkit-flex-flow: column wrap;
+	  flex-flow: column wrap;
+	  justify-content: center;
+
+	}
+
+	button.mainaction, a.btn.mainaction {
+	  -webkit-flex-grow: 0;
+	  flex-grow: 0;
+	  width: 6.75em;
+	  max-width: 6.75em;
+	  border: 1px solid @color-main-action-button;
+	  border-radius: 3.5px;
+	  color: @color-main-action-button;
 	  background: rgba(0,0,0,0.1);
-	  max-width: 6em;
 	  text-transform: uppercase;
 	  font-weight: 500;
-	  font-size: 90%;
+	  font-size: 85%;
+	  margin: 5px;
+	  padding: 4px 10px;
+	  svg {
+		stroke: @color-main-action-button;
+		vertical-align: -45%;
+		height: 22px;
+		width: 22px;
+		margin-left: -5px;
+		margin-right: 5px;
+	  }
 	  // margin-top:15px;	// post-allowActions
 	  &:hover {
 		border-color: #fff;
+		color: #fff;
+		svg {
+		  stroke: #fff;
+		}
 	  }
 	}
+
   	>div {
 	  position:absolute;
 	  left: 0;

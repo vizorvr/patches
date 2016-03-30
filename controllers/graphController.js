@@ -33,9 +33,9 @@ function makeHashid(serial) {
 	return hashids.encode(serial)
 }
 
-function makeCardName(name) {
+function makeCardName(cardName) {
 	var maxLen = 22
-	var nameParts = name.split(' ')
+	var nameParts = cardName.split(' ')
 	var name = nameParts.shift()
 
 	function addNamePart() {
@@ -61,23 +61,25 @@ function prettyPrintGraphInfo(graph) {
 	// 'this-is-a-graph' => 'This Is A Graph'
 	var graphName = graph.name.split('-')
 		.map(s => s.charAt(0).toUpperCase() + s.slice(1))
-		.join(' ');
+		.join(' ')
 
 	// Figure out if the graph owner has a fullname
 	// Use that if does, else use the username for display
-	var graphOwner;
+	var graphOwner
 	var creator = graph._creator
 	if (creator && creator.name && !isStringEmpty(creator.name)) {
-		graphOwner = creator.name;
+		graphOwner = creator.name
+		graph.username = creator.username
 	} else {
 		if (graph.owner)
 			graphOwner = graph.owner
 		else
 			graphOwner = 'anonymous'
+		graph.username = graphOwner
 	}
 
 	graph.prettyOwner = graphOwner
-	graph.prettyName = graphName
+	graph.prettyName = makeCardName(graphName)
 
 	graph.size = ''
 
@@ -130,6 +132,7 @@ GraphController.prototype.publicRankedIndex = function(req, res, next) {
 	.catch(next)
 }
 
+// GET /fthr
 GraphController.prototype.userIndex = function(req, res, next) {
 	var username = req.params.model
 
@@ -147,9 +150,8 @@ GraphController.prototype.userIndex = function(req, res, next) {
 				return next()
 			}
 
-			list.map(function(graph) {
-				graph = prettyPrintGraphInfo(graph)
-				graph.prettyName = makeCardName(graph.prettyName)
+			list = list.map(function(graph) {
+				return prettyPrintGraphInfo(graph.toJSON())
 			})
 
 			var data = {
@@ -179,24 +181,27 @@ GraphController.prototype.userIndex = function(req, res, next) {
 
 // GET /graph
 GraphController.prototype.index = function(req, res) {
+	var user = req.user
 	this._service.list()
 	.then(function(list) {
 		if (req.xhr || req.path.slice(-5) === '.json')
 			return res.json(list);
 
-		list.map(function(graph) {
-			graph = prettyPrintGraphInfo(graph)
-			graph.prettyName = makeCardName(graph.prettyName)
+		list = list.map(function(graph) {
+			return prettyPrintGraphInfo(graph.toJSON())
 		})
 
 		var data = {
+			profile: {
+				username: user.username
+			},
 			graphs: list
 		}
 
 		_.extend(data, {
 			meta : {
 				title: 'Graphs',
-				bodyclass: 'bUserpage',
+				bodyclass: 'bGraphs',
 				scripts : ['site/userpages.js']
 			}
 		});
@@ -266,7 +271,7 @@ GraphController.prototype.latest = function(req, res) {
 }
 
 function renderPlayer(graph, req, res, options) {
-	graph = prettyPrintGraphInfo(graph)
+	graph = prettyPrintGraphInfo(graph.toJSON())
 
 	// which version of player to use?
 	var version = graph.version || packageJson.version
