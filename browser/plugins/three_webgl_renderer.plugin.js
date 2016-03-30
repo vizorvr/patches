@@ -79,8 +79,6 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.update_state = function() {
-		//this.updatePresentationMode()
-
 		// workaround for having to share the renderer between render to texture & render to screen
 		// tbd: remove once https://github.com/mrdoob/three.js/pull/6723 is merged into a three release
 		this.renderer.setPixelRatio(window.devicePixelRatio)
@@ -180,28 +178,7 @@
 			that.manager.exitFullscreen_();
 		}
 	}
-/*
-	ThreeWebGLRendererPlugin.prototype.updatePresentationMode = function() {
-		// work around browser not sending events when going in/out of VR
-		// presentation mode in Android / Desktop VR Chromium
 
-		// this is called on update_state() and exits full screen if
-		// presentation mode has changed without us knowing about it
-
-		// update presentation mode
-		var shouldBePresenting = E2.ui.isVisible()
-
-		if (shouldBePresenting && !this.wasPresenting) {
-			// we can't accidentally have gone to presentation mode so do nothing here
-		}
-		else if (!shouldBePresenting && this.wasPresenting) {
-			// exit presentation mode
-			this.exitVROrFullscreen()
-		}
-
-		this.wasPresenting = shouldBePresenting
-	}
-*/
 	/*
 	application calls this when we intend to get to fullscreen
 	or come back from it to normal mode
@@ -222,10 +199,6 @@
 
 			this.exitVROrFullscreen()
 		}
-
-		// update the flag to tell updatePresentationMode() that we know where
-		// we are
-		this.wasPresenting = this.effect.isPresenting()
 	}
 
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
