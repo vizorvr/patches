@@ -92,5 +92,7 @@
 		}
 
 		this.geometry.computeFaceNormals()
+
+		this.dirty = false
 	}
 })()
