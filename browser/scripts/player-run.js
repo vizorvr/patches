@@ -66,7 +66,8 @@ window.addEventListener('message', function(e) {
 	switch(e.data.command) {
 		case 'getVariable':
 			send({
-				value: E2.app.player.getVariableValue(e.data.name)
+			name: e.data.name, 
+			value: E2.app.player.getVariableValue(e.data.name)
 			})
 			break;
 
