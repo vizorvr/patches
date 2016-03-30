@@ -1941,6 +1941,8 @@ Application.prototype.onForkClicked = function() {
 }
 
 Application.prototype.getScreenshot = function(width, height) {
+	width = width || 1280
+	height = height || 720
 	var ssr = new ScreenshotRenderer(this.worldEditor.scene, this.worldEditor.vrCamera)
 	return ssr.capture(width, height)
 }

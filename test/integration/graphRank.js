@@ -54,7 +54,8 @@ describe('Graph', function() {
 
 		agent.post('/graph').send({
 			path: path,
-			graph: graphData
+			graph: graphData,
+			isPublic: true
 		})
 		.expect(200)
 		.end(function(err, res) {
@@ -90,7 +91,7 @@ describe('Graph', function() {
 
 		agent.post('/graph').send({
 			path: path,
-			private: true,
+			isPublic: false,
 			graph: graphData
 		})
 		.expect(200)

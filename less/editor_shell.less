@@ -1,6 +1,10 @@
 @editor-topbar-button-margin:	4px;
 
 body.bEditor {
+  div.modal {
+	-webkit-font-smoothing: subpixel-antialiased;
+  }
+
 
   #canvases {	// considered the master viewport
 	position: absolute;
@@ -256,7 +260,6 @@ body.bEditor {
   div.modal.mShortcuts {
 	@color-keyboard-shortcuts:  #afbfdf;
 	@color-divider-rule: rgb(34,39,54);
-	font-smoothing: antialiased;
 	abbr {text-decoration: none; border-bottom:0;}
 	.modal-dialog {
 	  width: 700px;
@@ -357,12 +360,115 @@ body.bEditor {
 	  }
 	}
   }
-
 }
 
 .dark .modal-body {
   input, textarea {
 	background: none;
 	color: white;
+  }
+}
+
+
+div.modal.modal_publish .modal-content {
+  width: 550px;
+  label, li { color: @editor-text-hover; }
+  div.modal-error.warn {
+	color: @message-warn;
+	margin-top:10px;
+  }
+  button.close {
+	right: 14px;
+  }
+  form {
+	width: 495px;
+	margin-left: auto;
+	margin-right: auto;
+
+	&.loading button[type='submit'] {
+	 	background: rgb(2,62,133);
+	}
+
+	#pathInput {
+	  padding-top: 12px;
+	  padding-bottom: 12px;
+	  font-weight:300;
+	}
+	label {
+	  font-weight: 500;
+	}
+	fieldset {
+	  margin-bottom: 0;
+	}
+	div.preview {
+	  width: 495px;
+	  height: 188px;
+	  background: center center no-repeat;
+	  background-size: 500px;
+	  border-radius: 4px;
+	  margin-bottom: 14px;
+	  transform: scaleY(-1);
+	}
+	div.flexed {
+	  display: flex;
+	  align-content: stretch;
+	  flex-wrap: nowrap;
+	  >* {
+		flex: auto;
+	  }
+	}
+	div.flexed {
+	  margin-top:12px;
+	  height: 50px;
+	  >* {
+		height: 100%;
+	  }
+	}
+	#publish-graph-btn {
+	  width: 200px;
+	  max-width: 200px;
+	}
+
+	ul.inline-rounded {
+	  padding:0;
+	  display: flex;
+	  align-content: stretch;
+	  flex-wrap: nowrap;
+	  li {
+
+		margin:0;
+		flex: auto;
+	  }
+	  li:first-child {
+		border-top-left-radius: 4px;
+		border-bottom-left-radius: 4px;
+	  }
+	  li:last-child {
+		border-top-right-radius: 4px;
+		border-bottom-right-radius: 4px;
+	  }
+	  li+li {
+		margin-left: 1px;
+	  }
+	}
+
+	ul {
+	  line-height: 50px;
+	  margin-right: 20px;
+	  li {
+		background: @bg-dark;
+		&:first-child {
+		  text-align: left;
+		  padding-left: 21px;
+		}
+		&:last-child {
+		  max-width: 100px;
+		}
+		label:first-of-type {	// public/private text
+		  padding-right: 20px;
+		  width: 10ex;
+		}
+	  }
+	}
   }
 }

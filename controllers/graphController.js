@@ -91,6 +91,17 @@ function prettyPrintGraphInfo(graph) {
 	return graph
 }
 
+function makeGraphSummary(req,graph) {
+	graph = prettyPrintGraphInfo(graph)
+	return {
+		graphMinUrl: 	graph.url,
+		graphName: 		graph.prettyName,
+		previewImage: 	'http://' + req.headers.host + graph.previewUrlLarge,
+		playerVersion: 	graph.version,
+		stat:			graph.stat
+	}
+}
+
 function GraphController(s, gfs, mongoConnection) {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
@@ -306,10 +317,23 @@ GraphController.prototype.embed = function(req, res, next) {
 	}).catch(next)
 }
 
+
 // GET /fthr/dunes-world
+// GET /fthr/dunes-world?summmary=1
 GraphController.prototype.graphLanding = function(req, res, next) {
+	var wantSummary = req.query.summary || false
+
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
+
+		if (wantSummary) {
+			if (!graph)
+					return res.status(404).json(helper.responseStatusError('not found'))
+
+			var data = makeGraphSummary(req,graph.toJSON())
+			return res.json(helper.responseStatusSuccess('found', data))
+		}
+
 		if (!graph)
 			return next()
 		
@@ -448,6 +472,7 @@ GraphController.prototype.saveAnonymous = function(req, res, next) {
 GraphController.prototype.save = function(req, res, next) {
 	var that = this;
 	var path = this._makePath(req, req.body.path);
+	var wantsPrivate = !req.body.isPublic 	// !!req.body.private
 	var gridFsGraphPath = '/graph'+path+'.json';
 
 	var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
@@ -506,7 +531,7 @@ GraphController.prototype.save = function(req, res, next) {
 				path: path,
 				tags: tags,
 				url: url,
-				private: !!req.body.private,
+				private: wantsPrivate,
 				hasAudio: !!analysis.hasAudio,
 				editable: req.body.editable === false ? false : true,
 				stat: {

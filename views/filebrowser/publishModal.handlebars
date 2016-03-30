@@ -2,18 +2,42 @@
     <input type="hidden" name="_csrf" value={{_csrf}} />
     <input type="hidden" name="graph" value="{{graph}}" />
 	<input type="hidden" name="previewImage" value="{{previewImage}}" />
+    <div class="preview" style="background-image:url('{{previewImage}}'); ">
+        &nbsp;
+    </div>
     <fieldset>
         <div class="form-input" id="f_name"><!-- #728, changed from f_path originally -->
             <label for="pathInput">Graph name</label>
-            <input type="text" name="path" id="pathInput" placeholder="Friendly name" class="required" tabindex="1">
-            <span class="message"></span>
+            <input type="text" name="path" id="pathInput" placeholder="File name" class="required" tabindex="1">
+            <!-- span class="message"></span -->
         </div>
-
         <div class="modal-error" id="unknown_error"><span></span></div>
     </fieldset>
 
-    <button id="publish-graph-btn" class="sign-btn" type="submit">
-        <span>Publish</span>
-        <svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
-    </button>
+    <div class="flexed">
+        <ul class="inline-rounded">
+            <li>
+                <label id="publishPublicPrivateLabel" for="publishPublic">
+                    {{#if isPublic}}
+                        Public
+                    {{else}}
+                        Private
+                    {{/if}}
+                </label>
+                <label><input type="checkbox"
+                              {{#if isPublic}}checked{{/if}}
+                              id="publishPublic" class="toggle-rounded" name="isPublic" value="1" /><span><!-- firefox --></span></label>
+            </li>
+            <li>
+                {{sizeFormatted}}
+            </li>
+        </ul>
+
+        <button id="publish-graph-btn" class="sign-btn withWaitState spinner" type="submit">
+            <span>Publish</span>
+            <svg class="waitOff icon-sign-in"><use xlink:href="#icon-go"></use></svg>
+            <svg class="waitOn icon-sign-in"><use xlink:href="#icon-button-spinner"></use></svg>
+        </button>
+    </div>
+
 </form>

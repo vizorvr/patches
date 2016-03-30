@@ -206,48 +206,6 @@ VizorUI.prototype.setPageTitle = function() {
 	return newTitle;
 }
 
-
-/***** MODAL DIALOGS/WINDOWS *****/
-
-
-VizorUI.prototype.openPublishGraphModal = function() {
-	var dfd = when.defer()
-	var that = this;
-	var publishTemplate = E2.views.filebrowser.publishModal;
-	var graphname = E2.app.path.split('/')
-    if (graphname.length > 1)
-        graphname = graphname[1];
-
-	var graphdata = E2.app.player.core.serialise();
-
-	var graphpreview = E2.app.getScreenshot(1280, 720);
-
-	var data = {
-		path:	        graphname,
-		graph:	        graphdata,
-		previewImage:   graphpreview
-	};
-
-	var openSaveGraph = function(dfd) {
-		ga('send', 'event', 'account', 'open', 'publishGraphModal');
-		var $modal = VizorUI.modalOpen(publishTemplate(data), 'Publish this scene', 'nopad');
-		var $form = $('#publishGraphForm', $modal);
-		VizorUI.setupXHRForm($form, function(saved){
-			ga('send', 'event', 'graph', 'saved')
-			dfd.resolve(saved.path);
-		});
-	}
-
-	if (!VizorUI.userIsLoggedIn()) {
-		VizorUI.openLoginModal()
-			.then(openSaveGraph);
-	} else {
-		openSaveGraph(dfd);
-	}
-
-	return dfd.promise
-}
-
 /***** EVENT HANDLERS *****/
 
 VizorUI.prototype.onSearchResultsChange = function($libContainer) {
@@ -531,7 +489,185 @@ VizorUI.prototype.toggleFullscreenVRViewButtons = function() {
 }
 
 
-/***** MISC UI MODALS/DIALOGS *****/
+/***** UI MODALS/DIALOGS *****/
+
+
+
+VizorUI.prototype.openPublishGraphModal = function() {
+	var that = this,
+		dfd = when.defer(),
+		publishTemplate = E2.views.filebrowser.publishModal
+
+	var graphname = E2.app.path.split('/')
+    if (graphname.length > 1)
+        graphname = graphname[1]
+
+	var graphdata = E2.app.player.core.serialise()
+	var graphpreview = E2.app.getScreenshot(1280, 720)
+	var assetdata = _.clone(E2.app.graphStore.getGraphSize())	// {size, numAssets, numNodes, hasAudio}
+
+
+	var data = {
+		path:	        graphname,
+		graph:	        graphdata,
+		previewImage:   graphpreview,
+		assetdata:		assetdata,
+		isPublic:		true,
+		sizeFormatted: 	siteUI.formatFileSize(assetdata.size)
+	}
+
+
+	var openSaveGraph = function(dfd) {
+
+		ga('send', 'event', 'account', 'open', 'publishGraphModal')
+		var $modal = VizorUI.modalOpen(publishTemplate(data), 'Publish', 'nopad modal_publish')
+		var $form = $('#publishGraphForm', $modal)
+		VizorUI.setupXHRForm($form, function(saved) {
+			ga('send', 'event', 'graph', 'saved')
+			dfd.resolve(saved.path)
+		})
+
+		var $publicPrivateLabel = $form.find('label#publishPublicPrivateLabel').first()
+		$form.find('input#publishPublic')
+			.on('change', function(e){
+				var isPublic = this.checked
+				$publicPrivateLabel.html( isPublic ? 'Public' : 'Private')
+			})
+
+		var $pathInput = $('#pathInput', $form),
+			$submit = $form.find('button[type="submit"]'),
+			$submitLabel = $submit.find('span'),
+			$message = $form.find('.modal-error')
+
+		var canSubmit = false
+
+		var makeGraphUrl = function(username, pathInputValue) {
+			return '/' + username + '/' + E2.util.slugify(pathInputValue)
+		}
+
+		var t = null, done_t = null
+
+		var checkGraphExists = function(path) {
+			canSubmit = false
+
+			if (done_t)
+				clearTimeout(done_t)		// set by the response handler
+
+			var username = E2.models.user.toJSON().username
+			$submit.attr('disabled', true)
+
+			var url = makeGraphUrl(username, path) + '?summary=1'
+
+			var responseHandler = function(status, json){
+				var delay = 0
+				var okToSubmit = true	// default
+				switch (status) {
+					case 0:
+						okToSubmit = false
+						// fallthrough
+					case 404:
+						// clear warnings
+						$message
+							.html('')
+							.removeClass('warn')
+							.hide()
+						$form
+							.removeClass('hasMessage keepMessage')
+							.addClass('noMessage')
+						$submitLabel
+							.text('Publish')
+						break
+					case 200:
+						// warn the user and change the button
+						$form
+							.removeClass('noMessage')
+							.addClass('hasMessage keepMessage')
+						$message
+							.html('That file already exists. Do you want to update it with this copy?')
+							.addClass('warn')
+							.show()
+						$submitLabel
+							.text('Yes, publish')
+						delay = 1000
+						break
+					default:
+						console.error('could not parse response', status, json)
+				}
+
+				function done() {
+					// set upper scope to our result
+					canSubmit = okToSubmit
+					$submit.attr('disabled', !canSubmit)
+				}
+				if (delay) {
+					done_t = setTimeout(done, delay)
+				} else {
+					if (done_t) clearTimeout(done_t)
+					done()
+				}
+			}
+
+			if (!path) {
+				responseHandler(0)
+				return
+			}
+
+			$.ajax({
+				url:	url,
+				type: 	'GET',
+				dataType: 'json',
+				success: function(res) {return responseHandler(200, res)},
+				error:	function(err) {return responseHandler(err.status, err.responseJSON)},
+			})
+
+		}
+
+		// handle keyboard input and schedule a check for entered graph name
+		var oldPath = null
+		$pathInput
+			.on('keydown', function(e) {
+				if (e.keyCode === 13) {	// enter
+					if (canSubmit)
+						return true
+
+					// else check in progress
+					e.preventDefault()
+					return false
+				}
+			})
+			.on('keyup blur', function(e) {
+				val = this.value.trim()
+				if (val && (val === oldPath))
+					return true
+
+				oldPath = val
+				canSubmit = false
+				$submit.attr('disabled', true)
+
+				if (t)
+					clearTimeout(t)
+				t = setTimeout(function(){checkGraphExists(val)}, 300)
+				return true
+			})
+			.trigger('keyup')
+
+		$form.on('submit', function(){
+			$submitLabel.text('Publishing')
+			return true
+		})
+
+	}
+
+	if (!VizorUI.userIsLoggedIn()) {
+		VizorUI.openLoginModal(dfd)
+			.then(openSaveGraph)
+	} else {
+		openSaveGraph(dfd)
+	}
+
+	return dfd.promise
+}
+
 
 VizorUI.prototype.viewSource = function() {
 	var b = bootbox.dialog({
@@ -659,6 +795,11 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 
 /***** HELPER METHODS *****/
 
+VizorUI.prototype.getCurrentGraphSize = function() {
+	var state = E2.app.graphStore.getGraphSize()
+	return state.size
+}
+
 VizorUI.openEditorHelp = function() {
 	var keyData = _.extend({}, uiKeys);
 	var modShift = uiKeys.modShift,
@@ -728,8 +869,6 @@ VizorUI.openEditorHelp = function() {
 	return VizorUI.modalOpen(html, 'Keyboard Shortcuts', 'mHelp mShortcuts')
 
 }
-
-
 
 VizorUI.checkCompatibleBrowser = function() {
 	var agent = navigator.userAgent;
