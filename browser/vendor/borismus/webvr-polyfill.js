@@ -434,9 +434,9 @@ FusionPositionSensorVRDevice.prototype.onScreenOrientationChange_ =
   this.setScreenTransform_(screenOrientation || window.orientation);
 };
 
-FusionPositionSensorVRDevice.prototype.setScreenTransform_ = function() {
+FusionPositionSensorVRDevice.prototype.setScreenTransform_ = function(orientation) {
   this.worldToScreenQ.set(0, 0, 0, 1);
-  switch (window.orientation) {
+  switch (orientation) {
     case 0:
       break;
     case 90:
