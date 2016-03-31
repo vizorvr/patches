@@ -106,7 +106,6 @@ var VizorPlayerUI = function() {
 		var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
         $(window).on('resize orientationchange', onResize)
         $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', onResize)
-		onResize()
 
 		that.enableVRcamera()
 
@@ -124,6 +123,8 @@ var VizorPlayerUI = function() {
                 that.amendVRManagerInstructions()
                 that.controlsBound = true
             }
+
+            $(window).trigger('resize')
         }
 		E2.core.on(events.doneLoading, completeLoading)
 
