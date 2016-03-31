@@ -88,6 +88,20 @@
 
 		this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
 		this.object3d.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
+
+		// fix up camera tree when in an iframe, and rotate camera by
+		// 90 degrees so that we're not staring down
+		if (E2.util.isInIFrame()) {
+			var rotateCameraInIFrame = new THREE.PerspectiveCamera()
+			rotateCameraInIFrame.quaternion.setFromEuler(new THREE.Euler(3.14149 / 2, 0, 0))
+
+			this.vrControlCamera.add(rotateCameraInIFrame)
+
+			this.outputCamera = rotateCameraInIFrame
+		}
+		else {
+			this.outputCamera = this.vrControlCamera
+		}
 	}
 
 	ThreeVRCameraPlugin.prototype.play = function() {
@@ -166,7 +180,7 @@
 
 	ThreeVRCameraPlugin.prototype.update_output = function(slot) {
 		if (slot.index === 0) { // camera
-			return this.vrControlCamera
+			return this.outputCamera
 		}
 		else if (slot.index === 1) { // position
 			this.outputPosition.copy(this.vrControlCamera.position)

@@ -210,6 +210,10 @@ E2.util = {
 			.replace(/[^\w-]+/g,' ')
 			.trim()
 			.replace(/ +/g, '-')
+	},
+
+	isInIFrame : function() {
+		return window.self !== window.top
 	}
 }
 
