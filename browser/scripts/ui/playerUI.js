@@ -77,10 +77,8 @@ var VizorPlayerUI = function() {
 			.toggleClass('stopped', newState === s.STOPPED)
 			.toggleClass('loading', newState === s.LOADING)
 
-		if (newState === s.PLAYING) {
-            $(window).trigger('resize')
+		if (newState === s.PLAYING)
 			that.queueHeaderFadeOut()
-		}
 		else
 			that.headerFadeIn()
 	}
@@ -126,6 +124,14 @@ var VizorPlayerUI = function() {
                 that.amendVRManagerInstructions()
                 that.controlsBound = true
             }
+		
+		    setInterval(function() { $(window).trigger('resize') }, 100)
+		    setInterval(function() { $(window).trigger('resize') }, 1000)
+		    setInterval(function() { $(window).trigger('resize') }, 2000)
+		    setInterval(function() { $(window).trigger('resize') }, 3000)
+		    setInterval(function() { $(window).trigger('resize') }, 5000)
+		    setInterval(function() { $(window).trigger('resize') }, 7000)
+		    setInterval(function() { $(window).trigger('resize') }, 20000)
         }
 		E2.core.on(events.doneLoading, completeLoading)
 
