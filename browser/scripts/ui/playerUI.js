@@ -150,6 +150,9 @@ var VizorPlayerUI = function() {
 //				&& VizorUI.isBrowser.Chrome()
 		) {
 			var allowExtraHeightOnLandscape = function () {
+				if (siteUI.isInIframe())
+					return true
+				
 				// provisions for mobile
 				setTimeout(function () {
 					var h = window.innerHeight
