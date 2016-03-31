@@ -13,7 +13,8 @@ function onCoreReady() {
 	E2.app.player.stop()
 	E2.app.player.on_update()
 
-	if (typeof mixpanel !== 'undefined') mixpanel.track('Player Opened')
+	if (typeof mixpanel !== 'undefined')
+		mixpanel.track('Player Opened')
 
 	if (autoplay) {
 		var url = $canvas.data('graph-url')
