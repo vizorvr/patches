@@ -1,5 +1,33 @@
 <html>
 	<h1>embed</h1>
-	<iframe src="/embed/matt/default-complete?autoplay=true&noheader=true" width="800" height="450" frameborder="0" allowfullscreen></iframe>
+
+	<iframe id="vizor" src="/embed/kschzt/oops?autoplay=true&noheader=true" width="800" height="450" frameborder="0" allowfullscreen></iframe>
 	<h3>end</h3>
+
+	<script>
+		window.addEventListener('orientationchange', function() {
+			var iframe = document.getElementById("vizor").contentWindow
+			iframe.postMessage({ orientation: window.orientation }, '*')
+		}, false)
+
+		window.addEventListener('devicemotion', function(deviceMotion) {
+			var iframe = document.getElementById("vizor").contentWindow
+			iframe.postMessage({
+				devicemotion: {
+					accelerationIncludingGravity: {
+						x: deviceMotion.accelerationIncludingGravity.x,
+						y: deviceMotion.accelerationIncludingGravity.y,
+						z: deviceMotion.accelerationIncludingGravity.z,
+					},
+					rotationRate: {
+						alpha: deviceMotion.rotationRate.alpha,
+						beta: deviceMotion.rotationRate.beta,
+						gamma: deviceMotion.rotationRate.gamma,
+					},
+					timeStamp: deviceMotion.timeStamp
+				}
+			}, '*')
+		}, false)
+	</script>
+
 </html>
