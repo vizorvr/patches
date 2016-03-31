@@ -28,9 +28,11 @@
 
 	var url = ''
 	var scripts = document.getElementsByTagName('script')
-	Array.prototype.forEach.call(scripts, function(s){
-		if (s.dataset['vizorurl'])
-			url = s.dataset['vizorurl']
+
+	Array.prototype.forEach.call(scripts, function(s) {
+		var u = s.attributes.getNamedItem('data-vizorurl')
+		if (u)
+			url = u.value
 	})
 
 	document.write('<iframe id="'+iframeId+'" src="'+url+
