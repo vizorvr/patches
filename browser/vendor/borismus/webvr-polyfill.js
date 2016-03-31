@@ -322,7 +322,7 @@ function FusionPositionSensorVRDevice() {
       that.onDeviceMotionChange_(e.data.devicemotion)
     }
 
-    if (firstResize) {
+    if (firstResize && E2.app.player.state.playing) {
       $(window).trigger('resize')
       firstResize = false
     }
