@@ -89,9 +89,9 @@
 		this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
 		this.object3d.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
 
-		// fix up camera tree when in an iframe, and rotate camera by
+		// fix up camera tree when in an iframe and different origin, and rotate camera by
 		// 90 degrees so that we're not staring down
-		if (E2.util.isInIFrame() && VizorUI.isMobile.iOS()) {
+		if (E2.util.isInIFrame() && VizorUI.isMobile.iOS() && window.parent.location.host !== window.location.host) {
 			var rotateCameraInIFrame = new THREE.PerspectiveCamera()
 			rotateCameraInIFrame.quaternion.setFromEuler(new THREE.Euler(3.14149 / 2, 0, 0))
 
