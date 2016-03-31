@@ -66,6 +66,10 @@
         Vizor.hasAudio = {{graph.hasAudio}}
         Vizor.graphName = '{{graphName}}'
         Vizor.hideWebVRButton = false
-        Vizor.isEmbedded = {{isEmbedded}}
+        {{#if isEmbedded}}
+        Vizor.isEmbedded = true
+        {{else}}
+        Vizor.isEmbedded = false
+        {{/if}}
     })()
 </script>
