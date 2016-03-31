@@ -130,13 +130,7 @@ var VizorPlayerUI = function() {
             	$(window).trigger('orientationchange')
             }
 
-		    setTimeout(forceResize, 100)
-		    setTimeout(forceResize, 1000)
-		    setTimeout(forceResize, 2000)
-		    setTimeout(forceResize, 3000)
-		    setTimeout(forceResize, 5000)
-		    setTimeout(forceResize, 7000)
-		    setTimeout(forceResize, 20000)
+            forceResize()
         }
 		E2.core.on(events.doneLoading, completeLoading)
 
