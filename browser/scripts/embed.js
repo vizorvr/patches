@@ -26,16 +26,15 @@
 	var iframeHeight = iframeWidth / aspect
 	var iframeId = _id + 'i'
 
-
 	var url = ''
 	var scripts = document.getElementsByTagName('script')
 	Array.prototype.forEach.call(scripts, function(s){
-		if (s.dataset['vizor-url']) url = s.dataset['vizor-url']
+		if (s.dataset['vizorurl'])
+			url = s.dataset['vizorurl']
 	})
 
-
 	document.write('<iframe id="'+iframeId+'" src="'+url+'" width="' + iframeWidth + '" height="' + iframeHeight +  '" frameborder="0" allowfullscreen></iframe>')
-	iframe = document.getElementById(iframeId)
+	iframe = document.getElementById(iframeId).contentWindow
 
 	window.addEventListener('orientationchange', function() {
             iframe.postMessage({ orientation: window.orientation }, '*')
