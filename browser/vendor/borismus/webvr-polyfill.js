@@ -310,28 +310,21 @@ function FusionPositionSensorVRDevice() {
   this.accelerometer = new THREE.Vector3();
   this.gyroscope = new THREE.Vector3();
 
-  var firstResize = true
-
   window.addEventListener('message', function(e) {
     if (e.data.orientation) {
       that.onScreenOrientationChange_(e.data.orientation)
-      $(window).trigger('resize')
+      $(window).trigger('orientationchange')
     }
 
     if (e.data.devicemotion) {
       that.onDeviceMotionChange_(e.data.devicemotion)
     }
-
-    if (firstResize && E2.app.player.state.playing) {
-      setTimeout(function() {
-        $(window).trigger('resize')
-      }, 100)
-      firstResize = false
-    }
   })
 
   window.addEventListener('devicemotion', this.onDeviceMotionChange_.bind(this));
-  window.addEventListener('orientationchange', this.onScreenOrientationChange_.bind(this));
+  window.addEventListener('orientationchange', function() {
+    that.onScreenOrientationChange_(window.orientation)
+  });
 
   this.filter = new ComplementaryFilter(WebVRConfig.K_FILTER || 0.98);
   this.posePredictor = new PosePredictor(WebVRConfig.PREDICTION_TIME_S || 0.050);
@@ -347,7 +340,7 @@ function FusionPositionSensorVRDevice() {
   }
 
   this.worldToScreenQ = new THREE.Quaternion();
-  this.setScreenTransform_();
+  this.setScreenTransform_(window.orientation);
 
   // Keep track of a reset transform for resetSensor.
   this.resetQ = new THREE.Quaternion();
@@ -436,6 +429,7 @@ FusionPositionSensorVRDevice.prototype.onScreenOrientationChange_ =
 
 FusionPositionSensorVRDevice.prototype.setScreenTransform_ = function(orientation) {
   this.worldToScreenQ.set(0, 0, 0, 1);
+  orientation = orientation || window.orientation
   switch (orientation) {
     case 0:
       break;
