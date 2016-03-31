@@ -162,12 +162,10 @@
 
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
 		if (!ui) {
-			console.log('state_changed')
 			this.domElement = E2.dom.webgl_canvas[0]
 			this.renderer = E2.core.renderer
 
 			this.renderer.setPixelRatio(window.devicePixelRatio)
-			console.log('setPixelRatio', window.devicePixelRatio)
 
 			// for now (three.js r74) VREffect is not compatible with webvr-boilerplate
 			// nor three.js so we use THREE.CardboardEffect instead
@@ -185,9 +183,6 @@
 			E2.core.on('resize', this.resize.bind(this))
 			// E2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this))
 			E2.core.on('fullScreenChangeRequested', this.toggleFullScreen.bind(this))
-
-			// resize to initial size
-			this.resize()
 		}
 	}
 

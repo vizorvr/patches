@@ -2879,7 +2879,6 @@ WebVRManager.prototype.resizeIfNeeded_ = function(camera) {
   var size = this.renderer.getSize();
 
   var d = this.getContainerDimensions();
-
   if ( size.width != d.width || size.height != d.height) {
     camera.aspect = d.width / d.height;
     camera.updateProjectionMatrix();
