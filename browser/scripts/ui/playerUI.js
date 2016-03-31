@@ -130,8 +130,9 @@ var VizorPlayerUI = function() {
             	$(window).trigger('orientationchange')
             }
 
-            forceResize()
+            setTimeout(forceResize, 1000)
         }
+
 		E2.core.on(events.doneLoading, completeLoading)
 
 		// provisions for chrome/android
