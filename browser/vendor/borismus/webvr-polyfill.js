@@ -302,11 +302,23 @@ var Util = require('./util.js');
  * The positional sensor, implemented using DeviceMotion APIs.
  */
 function FusionPositionSensorVRDevice() {
+  var that = this;
+
   this.deviceId = 'webvr-polyfill:fused';
   this.deviceName = 'VR Position Device (webvr-polyfill:fused)';
 
   this.accelerometer = new THREE.Vector3();
   this.gyroscope = new THREE.Vector3();
+
+  window.addEventListener('message', function(e) {
+    if (e.data.orientation) {
+      that.onScreenOrientationChange_(e.data.orientation)
+    }
+
+    if (e.data.devicemotion) {
+      that.onDeviceMotionChange_(e.data.devicemotion)
+    }
+  })
 
   window.addEventListener('devicemotion', this.onDeviceMotionChange_.bind(this));
   window.addEventListener('orientationchange', this.onScreenOrientationChange_.bind(this));
@@ -409,7 +421,7 @@ FusionPositionSensorVRDevice.prototype.onDeviceMotionChange_ = function(deviceMo
 
 FusionPositionSensorVRDevice.prototype.onScreenOrientationChange_ =
     function(screenOrientation) {
-  this.setScreenTransform_();
+  this.setScreenTransform_(screenOrientation || window.orientation);
 };
 
 FusionPositionSensorVRDevice.prototype.setScreenTransform_ = function() {
