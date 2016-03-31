@@ -106,7 +106,7 @@ var VizorPlayerUI = function() {
 		var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
         $(window).on('resize orientationchange', onResize)
         $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', onResize)
-		onResize()
+        onResize()
 
 		that.enableVRcamera()
 
@@ -124,6 +124,13 @@ var VizorPlayerUI = function() {
                 that.amendVRManagerInstructions()
                 that.controlsBound = true
             }
+		
+            function forceResize() {
+            	$(window).trigger('resize')
+            	$(window).trigger('orientationchange')
+            }
+
+            forceResize()
         }
 		E2.core.on(events.doneLoading, completeLoading)
 
@@ -384,6 +391,12 @@ var VizorPlayerUI = function() {
 		VizorUI.replaceSVGButtons($header)
 		$(window).on('unload', function () {})    // fix iOS frame js issues
 
+		// /embed/user/graph?autoplay sent by boilerplate
+		// (not on desktop and not in iframe and therefore already fullscreen so the button makes no sense)
+		if (Vizor.isEmbedded && (!siteUI.isDeviceDesktop()) && !siteUI.isInIframe()) {
+			$('button#fullscreen').hide()
+		}
+		
 		this.installDimensionsHandler()
 
 		// PLAYER LOADED
