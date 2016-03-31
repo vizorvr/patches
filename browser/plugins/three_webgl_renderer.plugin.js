@@ -161,6 +161,7 @@
 			this.renderer = E2.core.renderer
 
 			this.renderer.setPixelRatio(window.devicePixelRatio)
+			console.log('setPixelRatio', window.devicePixelRatio)
 
 			// for now (three.js r74) VREffect is not compatible with webvr-boilerplate
 			// nor three.js so we use THREE.CardboardEffect instead

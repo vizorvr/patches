@@ -323,7 +323,9 @@ function FusionPositionSensorVRDevice() {
     }
 
     if (firstResize && E2.app.player.state.playing) {
-      $(window).trigger('resize')
+      setTimeout(function() {
+        $(window).trigger('resize')
+      }, 100)
       firstResize = false
     }
   })
