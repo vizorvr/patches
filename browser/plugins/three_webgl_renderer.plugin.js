@@ -86,7 +86,7 @@
 		this.renderer.setClearColor(this.clearColor)
 
 	    if (firstResize) {
-			$(window).trigger('resize')
+			this.resize()
 			firstResize = false
 	    }
 
