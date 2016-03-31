@@ -310,8 +310,6 @@ function FusionPositionSensorVRDevice() {
   this.accelerometer = new THREE.Vector3();
   this.gyroscope = new THREE.Vector3();
 
-  var firstResize = true
-
   window.addEventListener('message', function(e) {
     if (e.data.orientation) {
       that.onScreenOrientationChange_(e.data.orientation)
@@ -320,13 +318,6 @@ function FusionPositionSensorVRDevice() {
 
     if (e.data.devicemotion) {
       that.onDeviceMotionChange_(e.data.devicemotion)
-    }
-
-    if (firstResize && E2.app.player.state.playing) {
-      setTimeout(function() {
-        $(window).trigger('resize')
-      }, 100)
-      firstResize = false
     }
   })
 
