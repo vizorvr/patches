@@ -91,7 +91,7 @@
 
 		// fix up camera tree when in an iframe, and rotate camera by
 		// 90 degrees so that we're not staring down
-		if (E2.util.isInIFrame()) {
+		if (E2.util.isInIFrame() && VizorUI.isMobile.iOS()) {
 			var rotateCameraInIFrame = new THREE.PerspectiveCamera()
 			rotateCameraInIFrame.quaternion.setFromEuler(new THREE.Euler(3.14149 / 2, 0, 0))
 
