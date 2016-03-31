@@ -33,12 +33,16 @@
 			url = s.dataset['vizorurl']
 	})
 
-	document.write('<iframe id="'+iframeId+'" src="'+url+'" width="' + iframeWidth + '" height="' + iframeHeight +  '" frameborder="0" allowfullscreen></iframe>')
+	document.write('<iframe id="'+iframeId+'" src="'+url+
+		'" width="' + iframeWidth + 
+		'" height="' + iframeHeight +
+		'" frameborder="0" allowfullscreen></iframe>')
+
 	iframe = document.getElementById(iframeId).contentWindow
 
 	window.addEventListener('orientationchange', function() {
             iframe.postMessage({ orientation: window.orientation }, '*')
-        }, false)
+    }, false)
 
 	window.addEventListener('devicemotion', function(deviceMotion) {
 		iframe.postMessage({
