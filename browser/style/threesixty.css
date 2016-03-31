@@ -4142,7 +4142,7 @@ button#backfromvr:active {
   -webkit-flex-order: 2;
   flex: 1;
   order: 2;
-  min-height: 320px;
+  min-height: 100px;
   background: #666;
 }
 #playerpage #playerWrap .stage {

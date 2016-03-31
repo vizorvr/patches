@@ -1,7 +1,7 @@
 // <iframe src="/embed/eesn/flamingofront?autoplay=true&noheader=true" width="800" height="450" frameborder="0" allowfullscreen></iframe>
 (function(){
 
-	var iframe = {}
+	var iframe = {}, iframeEl = {}
 
 	var getId = function() {
 		var t = (new Date()).getTime()
@@ -22,7 +22,7 @@
 	var n = getParentRef(), r = n.getBoundingClientRect()
 	var aspect = 16 / 9
 
-	var iframeWidth = r.width || 800
+	var iframeWidth = r.width
 	var iframeHeight = iframeWidth / aspect
 	var iframeId = _id + 'i'
 
@@ -36,15 +36,27 @@
 	})
 
 	document.write('<iframe id="'+iframeId+'" src="'+url+
-		'" width="' + iframeWidth + 
-		'" height="' + iframeHeight +
-		'" frameborder="0" allowfullscreen></iframe>')
+		'" width="99%" height="' + iframeHeight +
+		'" frameborder="0" style="box-sizing:border-box;" allowfullscreen></iframe>')
 
+	iframeEl = document.getElementById(iframeId)
 	iframe = document.getElementById(iframeId).contentWindow
 
 	window.addEventListener('orientationchange', function() {
-            iframe.postMessage({ orientation: window.orientation }, '*')
+		iframe.postMessage({ orientation: window.orientation }, '*')
     }, false)
+
+	var resizeIframe = function() {
+		var currentWidth = iframeEl.getBoundingClientRect().width
+		if (currentWidth !== iframeWidth) {
+			iframeHeight = currentWidth / aspect
+			iframeEl.height = iframeHeight
+			iframeWidth = currentWidth
+		}
+		return true
+	}
+	window.addEventListener('orientationchange', resizeIframe, true)
+	window.addEventListener('resize', resizeIframe, true)
 
 	window.addEventListener('devicemotion', function(deviceMotion) {
 		iframe.postMessage({
@@ -65,4 +77,5 @@
 	}, false)
 
 
+	window.getI = function(){return iframe}
 })()
