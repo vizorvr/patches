@@ -242,7 +242,7 @@ function renderPlayer(graph, req, res, options) {
 		playerVersion: version,
 		autoplay: !!(options && options.autoplay),
 		noHeader: options.noHeader || false,
-		isEmbed: options.isEmbed || false,
+		isEmbedded: options.isEmbed || false,
 		graph: graph,
 		graphMinUrl: graph.url,
 		graphName: graph.prettyName,

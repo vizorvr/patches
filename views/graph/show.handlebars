@@ -21,7 +21,7 @@
 
         {{#unless hideFullscreenButton}}
             <button id="fullscreen"
-             {{#unless isEmbed}}
+             {{#unless isEmbedded}}
             	class="svg nopaused noDeviceMobile noDeviceTablet"
 			 {{else}}
             	class="svg nopaused"
@@ -66,5 +66,6 @@
         Vizor.hasAudio = {{graph.hasAudio}}
         Vizor.graphName = '{{graphName}}'
         Vizor.hideWebVRButton = false
+        Vizor.isEmbedded = {{isEmbedded}}
     })()
 </script>
