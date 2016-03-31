@@ -77,8 +77,10 @@ var VizorPlayerUI = function() {
 			.toggleClass('stopped', newState === s.STOPPED)
 			.toggleClass('loading', newState === s.LOADING)
 
-		if (newState === s.PLAYING)
+		if (newState === s.PLAYING) {
+            $(window).trigger('resize')
 			that.queueHeaderFadeOut()
+		}
 		else
 			that.headerFadeIn()
 	}
@@ -106,6 +108,7 @@ var VizorPlayerUI = function() {
 		var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
         $(window).on('resize orientationchange', onResize)
         $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', onResize)
+        onResize()
 
 		that.enableVRcamera()
 
@@ -123,8 +126,6 @@ var VizorPlayerUI = function() {
                 that.amendVRManagerInstructions()
                 that.controlsBound = true
             }
-
-            $(window).trigger('resize')
         }
 		E2.core.on(events.doneLoading, completeLoading)
 
