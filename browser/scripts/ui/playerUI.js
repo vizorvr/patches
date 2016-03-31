@@ -125,13 +125,18 @@ var VizorPlayerUI = function() {
                 that.controlsBound = true
             }
 		
-		    setInterval(function() { $(window).trigger('resize') }, 100)
-		    setInterval(function() { $(window).trigger('resize') }, 1000)
-		    setInterval(function() { $(window).trigger('resize') }, 2000)
-		    setInterval(function() { $(window).trigger('resize') }, 3000)
-		    setInterval(function() { $(window).trigger('resize') }, 5000)
-		    setInterval(function() { $(window).trigger('resize') }, 7000)
-		    setInterval(function() { $(window).trigger('resize') }, 20000)
+            function forceResize() {
+            	$(window).trigger('resize')
+            	$(window).trigger('orientationchange')
+            }
+
+		    setTimeout(forceResize, 100)
+		    setTimeout(forceResize, 1000)
+		    setTimeout(forceResize, 2000)
+		    setTimeout(forceResize, 3000)
+		    setTimeout(forceResize, 5000)
+		    setTimeout(forceResize, 7000)
+		    setTimeout(forceResize, 20000)
         }
 		E2.core.on(events.doneLoading, completeLoading)
 
