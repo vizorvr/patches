@@ -282,10 +282,12 @@ GraphController.prototype.latest = function(req, res) {
 }
 
 function renderPlayer(graph, req, res, options) {
-	graph = prettyPrintGraphInfo(graph.toJSON())
+	graph.increaseViewCount()
+
+	var graphJson = prettyPrintGraphInfo(graph.toJSON())
 
 	// which version of player to use?
-	var version = graph.version || packageJson.version
+	var version = graphJson.version || packageJson.version
 	version = version.split('.').slice(0,2).join('.')
 
 	res.render('graph/show', {
@@ -294,11 +296,11 @@ function renderPlayer(graph, req, res, options) {
 		autoplay: !!(options && options.autoplay),
 		noHeader: options.noHeader || false,
 		isEmbedded: options.isEmbed || false,
-		graph: graph,
-		graphMinUrl: graph.url,
-		graphName: graph.prettyName,
-		graphOwner: graph.prettyOwner,
-		previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
+		graph: graphJson,
+		graphMinUrl: graphJson.url,
+		graphName: graphJson.prettyName,
+		graphOwner: graphJson.prettyOwner,
+		previewImage: 'http://' + req.headers.host + graphJson.previewUrlLarge,
 		previewImageWidth: 1280,
 		previewImageHeight: 720
 	})
