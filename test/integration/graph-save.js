@@ -540,5 +540,40 @@ describe('Graph', function() {
 	})
 
 
+
+	it('increases view count on view', function(done) {
+		var path = 'graph-views-'+rand()
+		var viewPath = '/'+username+'/'+path+''
+		var jsonPath = '/'+username+'/'+path+'.json'
+
+		agent.post('/graph').send({
+			path: path,
+			graph: graphData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			assert.equal(0, res.body.views)
+	
+			request(app).get(viewPath).expect(200).end(function(err) {
+				request(app).get(viewPath).expect(200).end(function(err) {
+					if (err) return done(err)
+
+					request(app).get(jsonPath)
+					.expect(200).end(function(err, res) {
+						if (err)
+							return done(err)
+
+						assert.equal(2, res.body.views)
+						done()
+					})
+				})
+			})
+		})
+	})
+
+
+
 })
 
