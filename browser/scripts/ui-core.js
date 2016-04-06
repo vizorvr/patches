@@ -453,18 +453,18 @@ VizorUI.prototype.trackModifierKeysForWorldEditor = function() {
 	if (!anyModifiersPressed)
 		return anyModifiersPressed
 
-		// 'cmd/ctrl' to rotate
-		// 'cmd/ctrl+shift' to scale
-		// 'shift' to move
+	// 'cmd/ctrl' to rotate
+	// 'cmd/ctrl+shift' to scale
+	// 'shift' to move
 
-		if (flags.pressedMeta &&  !flags.pressedShift &&  !flags.pressedAlt)
-			this.state.modifyMode = uiModifyMode.rotate
+	if (flags.pressedMeta &&  !flags.pressedShift &&  !flags.pressedAlt)
+		this.state.modifyMode = uiModifyMode.rotate
 
-		else if (flags.pressedShift && flags.pressedMeta &&  !flags.pressedAlt)
-			this.state.modifyMode = uiModifyMode.scale
+	else if (flags.pressedShift && flags.pressedMeta &&  !flags.pressedAlt)
+		this.state.modifyMode = uiModifyMode.scale
 
-		else if (flags.pressedShift &&  !flags.pressedAlt &&  !flags.pressedMeta)
-			this.state.modifyMode = uiModifyMode.move
+	else if (flags.pressedShift &&  !flags.pressedAlt &&  !flags.pressedMeta)
+		this.state.modifyMode = uiModifyMode.move
 
 	return anyModifiersPressed
 }
