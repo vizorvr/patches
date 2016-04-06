@@ -100,10 +100,12 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 
 	var switchModifyMode = function(modifyMode){
 		return function(e){
-			e.preventDefault();
-			e.stopPropagation();
-			that.state.modifyMode = modifyMode;
-			return false;
+			e.preventDefault()
+			e.stopPropagation()
+			var state = that.state
+			state.modifyModeDefault = modifyMode
+			state.modifyMode = state.modifyModeDefault
+			return false
 		}
 	}
 	dom.btnMove.on('mousedown', switchModifyMode(uiModifyMode.move));
