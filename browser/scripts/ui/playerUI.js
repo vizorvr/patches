@@ -465,7 +465,7 @@ VizorPlayerUI.prototype.play = function() {
 }
 
 VizorPlayerUI.prototype.amendVRManagerInstructions = function() {
-	var r = E2.core.webVRManager.hmd.rotateInstructions_
+	var r = E2.core.webVRManager.hmd ? E2.core.webVRManager.hmd.rotateInstructions_ : undefined
 
 	if(!r) {
 		console.log('no rotate instructions found')
