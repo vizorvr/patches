@@ -117,8 +117,8 @@ VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 	document.body.addEventListener('keydown', this.onKeyDown.bind(this));
 	document.body.addEventListener('keyup', this.onKeyUp.bind(this));
 	document.addEventListener('keypress', this.onKeyPress.bind(this), true);	// first
-	window.addEventListener('blur', this._clearModifierKeys.bind(this));
-	window.addEventListener('focus', this._clearModifierKeys.bind(this));
+	window.addEventListener('blur', this._onWindowBlur.bind(this));
+	window.addEventListener('focus', this._onWindowFocus.bind(this));
 	window.addEventListener('resize', this.onWindowResize.bind(this));
 	e2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this));
 	e2.core.on('progress', this.updateProgressBar.bind(this));
@@ -407,12 +407,18 @@ VizorUI.prototype.isModalOpen = function() {
 
 /**** EVENT HANDLERS ****/
 
-VizorUI.prototype._clearModifierKeys = function() {	// blur
-	this.flags.pressedMeta = false;
-	this.flags.pressedAlt = false;
-	this.flags.pressedShift = false;
-	return true;
+VizorUI.prototype._onWindowBlur = function() {
+	// clear modifier keys
+	this.flags.pressedMeta = false
+	this.flags.pressedAlt = false
+	this.flags.pressedShift = false
+
+	// set default modify mode
+	this.state.modifyMode = this.state.modifyModeDefault
+
+	return true
 }
+VizorUI.prototype._onWindowFocus = VizorUI.prototype._onWindowBlur
 
 VizorUI.prototype._trackModifierKeys = function(e) {	// returns bool if any modifiers changed
 	var oldMeta = this.flags.pressedMeta,
