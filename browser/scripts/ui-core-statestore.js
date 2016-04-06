@@ -20,7 +20,7 @@ var UiState = function(persistentStorageRef, context) {
 	EventEmitter.apply(this, arguments)
 	var that = this
 
-	var persistentStorageKey = 'uiState104'
+	var persistentStorageKey = 'uiState105'
 
 	var defineProperty = function(obj, prop, options, callback) {
 		options = _.extend({
@@ -66,12 +66,12 @@ var UiState = function(persistentStorageRef, context) {
 
 	this._internal = {
 		modifyMode 	: uiModifyMode.move,			// does not autosave
+		modifyModeDefault: 	uiModifyMode.move,		//	''	, recall when modifications(keydown) end (keyup)
 		selectedObjects	: []						// [node, ...], does not autosave
 	}
 
 	var emitMain 		= makeEmitter(this)
 	defineGettersAndSetters(this, emitMain)
-
 
 	_.extend(this._internal, {
 		mode 		: uiMode.build,
@@ -421,6 +421,7 @@ UiState.prototype.getCopy = function() {
 	return {
 		mode: this.mode,
 		modifyMode: this.modifyMode,
+		modifyModeDefault: this.modifyModeDefault,
 		visible: this.visible,
 		viewCamera: this.viewCamera,
 		visibility: clone(this.visibility._internal),
@@ -443,7 +444,12 @@ UiState.prototype._apply = function(newState) {
 	var newVisibility = newState.visibility
 	if (newState.mode) 			internal.mode = newState.mode
 	if (newState.viewCamera) 	internal.viewCamera = newState.viewCamera
-	// modifyMode and selectedObjects ignored
+
+	if (newState.modifyModeDefault) 	{
+		internal.modifyModeDefault = newState.modifyModeDefault
+		internal.modifyMode = internal.modifyModeDefault
+	}
+	// selectedObjects ignored, and modifyMode set to default if one is given
 
 	// take values from supplied visibility, but default to current
 	for (var k in internalVisibility) {
