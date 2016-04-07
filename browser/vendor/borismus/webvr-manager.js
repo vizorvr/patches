@@ -565,6 +565,18 @@ WebVRManager.prototype.onBackClick_ = function() {
 };
 
 WebVRManager.prototype.getContainerDimensions = function() {	  // gm #896
+
+  // vizor.io gm #896
+  if (WebVRConfig && WebVRConfig.getContainerMeta) {
+     var meta = WebVRConfig.getContainerMeta()
+     var ret = {
+       width:   meta.width,
+       height:  meta.height
+     }
+    return ret
+  }
+  // end vizor.io gm #896
+
 	var container, width, height;
 	if (this.renderer.domElement) {
 	  container = this.renderer.domElement.parentNode;
@@ -585,21 +597,29 @@ WebVRManager.prototype.getContainerDimensions = function() {	  // gm #896
 	}
 }
 
+// vizor.io gm #896
+
 WebVRManager.prototype.resizeIfNeeded_ = function(camera) {
   // Only resize the canvas if it needs to be resized.
   var size = this.renderer.getSize();
-  if (size.width != window.innerWidth || size.height != window.innerHeight) {
-    this.resize_();
+
+  var d = this.getContainerDimensions();
+  if ( size.width != d.width || size.height != d.height) {
+    this.resize_(d, camera);
   }
 };
 
-WebVRManager.prototype.resize_ = function() {
-  this.effect.setSize(window.innerWidth, window.innerHeight);
-  if (this.camera) {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.camera.updateProjectionMatrix();
+WebVRManager.prototype.resize_ = function(dimensions, camera) {
+  dimensions = dimensions || this.getContainerDimensions();
+  this.effect.setSize(dimensions.width, dimensions.height);
+  camera = camera || this.camera
+  if (camera) {
+    camera.aspect = dimensions.width / dimensions.height;
+    camera.updateProjectionMatrix();
   }
 };
+
+// end vizor.io gm #896
 
 WebVRManager.prototype.requestFullscreen_ = function() {
   var canvas = this.renderer.domElement;

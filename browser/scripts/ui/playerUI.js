@@ -452,7 +452,14 @@ VizorPlayerUI.prototype.suspendVRcamera = function() {
 }
 
 VizorPlayerUI.prototype.enableVRcamera = function() {
+	var that = this
 	this.vrCameraEnabled = true
+
+	E2.app.canInitiateCameraMove = function(e){
+		var isKeyboard = (e instanceof KeyboardEvent) && (e.target === document.body)
+		var isCanvas = (!isKeyboard) && E2.util.isCanvasInFocus(e)
+		return siteUI.isFullScreen() || that.vrCameraEnabled && (isKeyboard || isCanvas)
+	}
 }
 
 VizorPlayerUI.prototype.play = function() {
