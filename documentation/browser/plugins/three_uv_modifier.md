@@ -19,6 +19,11 @@ Adjust a texture's UV coordinates
 ###v repeat
 
 
+###filter
+Filter mode:
+0 - nearest / point filtering
+1 - linear filtering
+
 ##Outputs
 ###texture
 

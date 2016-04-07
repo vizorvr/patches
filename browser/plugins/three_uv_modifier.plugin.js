@@ -24,6 +24,11 @@
 			name: 'v repeat',
 			dt: core.datatypes.FLOAT,
 			def: 1.0
+		},  {
+			name: 'filter',
+			dt: core.datatypes.FLOAT,
+			def: 1.0,
+			desc: 'Texture Filter - (0: nearest, 1: linear)'
 		}]
 
 		this.output_slots = [{
@@ -70,6 +75,10 @@
 			this.vRepeat = data
 			this.dirty = true
 		}
+		else if (slot.index === 5) { // filter
+			this.filter = data
+			this.dirty = true
+		}
 	}
 
 	ThreeUVModifierPlugin.prototype.state_changed = function(ui) {
@@ -83,6 +92,7 @@
 		if (this.dirty && this.texture) {
 			this.texture.offset.set(this.uOffset, this.vOffset)
 			this.texture.repeat.set(this.uRepeat, this.vRepeat)
+			this.texture.magFilter = this.filter === 0 ? THREE.NearestFilter : THREE.LinearFilter
 			this.texture.needsUpdate = true
 
 			this.dirty = false
