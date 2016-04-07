@@ -132,6 +132,8 @@ gulp.task('js:engine', ['clean:js:engine'], function(done) {
 
 gulp.task('js:player', ['clean:js:player', 'js:engine'], function(done) {
 	var playerPipe = gulp.src(paths.js.engine.concat(paths.js.player))
+		.pipe(concat.header(';\n'))
+		.pipe(concat('player.min.js'))
 
 	// only uglify in production
 	if (process.env.NODE_ENV === 'production') {
@@ -140,8 +142,6 @@ gulp.task('js:player', ['clean:js:player', 'js:engine'], function(done) {
 	}
 
 	playerPipe
-	.pipe(concat.header(';\n'))
-	.pipe(concat('player.min.js'))
 	.pipe(gulp.dest(path.join(__dirname, 'browser', 'dist')))
 	.on('error', errorHandler)
 	.on('end', done)
