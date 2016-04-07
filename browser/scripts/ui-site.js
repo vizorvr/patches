@@ -153,6 +153,47 @@ var siteUI = new function() {
 		}
 	};
 
+	this.initCollapsible = function($container) {
+		var $links = jQuery('a.trigger', $container)
+		$links.on('click',
+			function(e){
+				if (this.href.split('#').length <= 1) return true	// not for us
+				e.preventDefault()
+				e.stopPropagation()
+
+				var anchor = '#'+ this.href.split('#')[1]
+				var $target = jQuery(anchor)
+				var $a = jQuery(this)
+
+				var wasVisible = $target.is(':visible')
+				if (wasVisible) {
+					$target
+						.slideUp('medium', function(){
+							jQuery(this)
+								.removeClass('uncollapsed')
+								.addClass('collapsed')
+								.css({margin: '0'})
+						})
+				} else {
+					$target
+						.hide()
+						.removeClass('collapsed')
+						.addClass('uncollapsed')
+						.slideDown('medium')
+				}
+
+				$a
+					.toggleClass('closed', wasVisible)
+					.toggleClass('open', !wasVisible)
+				return false
+			})
+		$links.each(function(){
+			var anchor = '#'+ this.href.split('#')[1]
+			var $target = jQuery(anchor)
+			$target.hide()
+		})
+	}
+
 	this.initHomepage = function($body) {
         mixpanel.track('Front Page')
 
@@ -186,7 +227,6 @@ var siteUI = new function() {
 							jQuery(this)
 								.addClass('nomobile')
 								.css({margin: '0'})
-								.show()
 						})
 				} else {
 					$target

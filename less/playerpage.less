@@ -36,6 +36,10 @@ body.bPlayer, body.b360 {
   }
 }
 body.bPlayer {
+  @share-color-text: #eee;
+  @share-bgcolor-text: #ddd;
+  @share-border-radius: 4px;
+
   height:100%; width:100%;
 
   #playerpage {
@@ -59,6 +63,14 @@ body.bPlayer {
 	section+section {
 	  margin-top:20px;
 	}
+	.modal-header {
+	  border-top-left-radius: @share-border-radius;
+	  border-top-right-radius: @share-border-radius;
+	}
+	.modal-body {
+	  border-bottom-left-radius: @share-border-radius;
+	  border-bottom-right-radius: @share-border-radius;
+	}
   }
   .modal-dialog, header, button {
 	-webkit-font-smoothing: subpixel-antialiased;
@@ -68,11 +80,14 @@ body.bPlayer {
   #shareDialog {
 	text-align: left;
 	margin-bottom: 0;
-	label, input, textarea {
-	  color: #afbfdf !important;
+	.collapsible .trigger {
+	  .readmore(16px, -5px);
+	}
+	label, input, textarea, a {
+	  color: @share-color-text !important;
 	  &::-moz-selection, &::selection {
 		color: #000;
-		background: #afbfdf;
+		background: @share-bgcolor-text;
 	  }
 	}
 	label {
@@ -80,13 +95,13 @@ body.bPlayer {
 	}
 	input, textarea {
 	  background: rgba(0,0,0,0.2) !important;
-	  border: 0 solid #afbfdf;
+	  border: 0;
 	  border-radius: 3px;
 	  width: 98%;
 	  max-width: 98%;
 	  margin: 5px 0;
 	  line-height: 1.5em;
-	  padding: 5px;
+	  padding: 10px;
 	}
 	textarea {
 	  height: 6.5em;
