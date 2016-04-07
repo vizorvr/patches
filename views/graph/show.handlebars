@@ -22,11 +22,25 @@
                 </button>
             {{/unless}}
 
+<<<<<<< HEAD
             {{#unless hideFullscreenButton}}
                 <button id="fullscreen" class="svg nopaused noDeviceMobile noDeviceTablet" data-svgref="player-icon-fullscreen"><svg></svg>
                     <span>Fullscreen</span>
                 </button>
             {{/unless}}
+=======
+        {{#unless hideFullscreenButton}}
+            <button id="fullscreen"
+             {{#unless isEmbedded}}
+            	class="svg nopaused noDeviceMobile noDeviceTablet"
+			 {{else}}
+            	class="svg nopaused"
+			 {{/unless}}
+            data-svgref="player-icon-fullscreen"><svg></svg>
+                <span>Fullscreen</span>
+            </button>
+        {{/unless}}
+>>>>>>> origin/master
 
             {{#if graph.editable}}
                 <button id="edit" class="svg nopaused noDeviceMobile" data-svgref="player-icon-edit"><svg></svg>
@@ -66,5 +80,10 @@
         Vizor.hasAudio = {{graph.hasAudio}}
         Vizor.graphName = '{{graphName}}'
         Vizor.hideWebVRButton = false
+        {{#if isEmbedded}}
+        Vizor.isEmbedded = true
+        {{else}}
+        Vizor.isEmbedded = false
+        {{/if}}
     })()
 </script>
