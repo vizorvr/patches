@@ -295,6 +295,7 @@ function renderPlayer(graph, req, res, options) {
 		playerVersion: version,
 		autoplay: !!(options && options.autoplay),
 		noHeader: options.noHeader || false,
+		isEmbedded: options.isEmbed || false,
 		graph: graphJson,
 		graphMinUrl: graphJson.url,
 		graphName: graphJson.prettyName,
@@ -313,6 +314,7 @@ GraphController.prototype.embed = function(req, res, next) {
 			return next()
 
 		return renderPlayer(graph, req, res, {
+			isEmbed: true,
 			autoplay: req.query.autoplay || false,
 			noHeader: req.query.noheader || false
 		})

@@ -78,11 +78,17 @@
 		Plugin.prototype.update_input.apply(this, arguments)
 	}
 
+	var firstResize = true
 	ThreeWebGLRendererPlugin.prototype.update_state = function() {
 		// workaround for having to share the renderer between render to texture & render to screen
 		// tbd: remove once https://github.com/mrdoob/three.js/pull/6723 is merged into a three release
 		this.renderer.setPixelRatio(window.devicePixelRatio)
 		this.renderer.setClearColor(this.clearColor)
+
+	    if (firstResize) {
+			this.resize()
+			firstResize = false
+	    }
 
 		if (!this.scene || !this.perspectiveCamera) {
 			this.renderer.clear()
@@ -203,7 +209,6 @@
 
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
 		if (!ui) {
-			console.log('state_changed')
 			this.domElement = E2.dom.webgl_canvas[0]
 			this.renderer = E2.core.renderer
 
