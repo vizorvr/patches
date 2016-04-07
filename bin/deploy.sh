@@ -1,4 +1,4 @@
-alias d='sudo docker'
+alias d='docker'
 
 # source environment variables from local file
 . ./env
