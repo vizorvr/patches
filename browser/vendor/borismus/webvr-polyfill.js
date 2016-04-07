@@ -5041,7 +5041,7 @@ FusionPoseSensor.prototype.onScreenOrientationChange_ =
 FusionPoseSensor.prototype.setScreenTransform_ = function(orientation) {
   this.worldToScreenQ.set(0, 0, 0, 1);
   orientation = orientation || window.orientation
-  switch (window.orientation) {
+  switch (orientation) {
     case 0:
       break;
     case 90:
