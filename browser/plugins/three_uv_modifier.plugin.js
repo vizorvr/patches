@@ -50,7 +50,7 @@
 	}
 
 	ThreeUVModifierPlugin.prototype.update_input = function(slot, data) {
-		if (slot.index === 0) { // texture
+		if (slot.name === 'texture') { // texture
 			if (data) {
 				this.texture = data.clone()
 				this.dirty = true
@@ -59,23 +59,23 @@
 				this.texture = undefined
 			}
 		}
-		else if (slot.index === 1) { // u offset
+		else if (slot.name === 'u offset') { // u offset
 			this.uOffset = data
 			this.dirty = true
 		}
-		else if (slot.index === 2) { // v offset
+		else if (slot.name === 'v offset') { // v offset
 			this.vOffset = data
 			this.dirty = true
 		}
-		else if (slot.index === 3) { // u repeat
+		else if (slot.name === 'u repeat') { // u repeat
 			this.uRepeat = data
 			this.dirty = true
 		}
-		else if (slot.index === 4) { // v repeat
+		else if (slot.name === 'v repeat') { // v repeat
 			this.vRepeat = data
 			this.dirty = true
 		}
-		else if (slot.index === 5) { // filter
+		else if (slot.name === 'filter') { // filter
 			this.filter = data
 			this.dirty = true
 		}
