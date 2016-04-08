@@ -38,6 +38,42 @@
 
 // BOX-SIZING IS BORDER BOX!
 
+.readmore(@vsize, @offsetLeft) {
+  @voffset: @vsize/2 + @offsetLeft;
+  &:before {
+	  content: " ";
+	  position: absolute;
+	  left: 0;
+	  top: 50%;
+	  margin-top: -@vsize/2;
+	  width: @vsize;
+	  height: @vsize;
+	  background: url('/images/v2/chevron.svg') @voffset center no-repeat;
+	  background-size: @vsize - 1;
+	  -webkit-transform: rotate(0deg) translate3d(-@voffset, 0, 0);
+	  -webkit-transition: -webkit-transform 0.1s linear;
+	  transform: rotate(0deg) translate3d(-@voffset, 0, 0);
+	  transition: transform 0.1s linear;
+	}
+	&.open:before {
+	  -webkit-transform: rotate(90deg) translate3d(-@voffset, 0, 0);
+	  transform: rotate(90deg) translate3d(-@voffset, 0, 0);
+	}
+
+	position: relative;
+	display: block;
+
+	padding: 5px 0 5px @vsize;
+
+	&:hover {
+	  text-decoration: none;
+	  cursor: pointer;
+	}
+	&.btn:before {
+	  content:none;
+	}
+}
+
 .modal-body {
   .clearfix()
 }

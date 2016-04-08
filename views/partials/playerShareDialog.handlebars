@@ -1,11 +1,11 @@
 <article id="shareDialog">
+
     <section id="shareURL">
-        <label>Link:</label>
         <input type="text" value="{{shareURL}}" readonly />
     </section>
     <section id="embedSource">
-        <label>Embed code:</label>
-        <textarea class="scrollbar" readonly
-        ><iframe src="{{embedSrc}}" width="800" height="450" frameborder="0" allowfullscreen></iframe></textarea>
+        <label><a href="#embedcode" class="trigger">Embed code</a></label>
+        <textarea id="embedcode" class="scrollbar target" readonly
+        ><script src="{{origin}}/embed.js" data-vizorurl="{{embedSrc}}" /></textarea>
     </section>
 </article>

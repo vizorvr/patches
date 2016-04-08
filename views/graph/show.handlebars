@@ -2,9 +2,9 @@
         <div>
         <h2 id="graph_heading">
             <span>
-                <svg stroke="none" fill="#afbfdf"><use xlink:href="#vizor-logo-flat"></use></svg>
+                <a href="/" target="_top"><svg stroke="none" fill="#afbfdf"><use xlink:href="#vizor-logo-flat"></use></svg></a>
                 <span class="title">{{graphName}}</span>
-                <span class="author">by <a href="#" data-href="/{{graph.owner}}">{{graphOwner}}</a></span>
+                <span class="author">by <a target="_top" href="/{{graph.owner}}">{{graphOwner}}</a></span>
                 <span class="loadingonly">{{#if graph.size}}({{graph.size}}){{/if}}</span>
             </span>
         </h2>
@@ -22,25 +22,17 @@
                 </button>
             {{/unless}}
 
-<<<<<<< HEAD
             {{#unless hideFullscreenButton}}
-                <button id="fullscreen" class="svg nopaused noDeviceMobile noDeviceTablet" data-svgref="player-icon-fullscreen"><svg></svg>
+                <button id="fullscreen"
+                 {{#unless isEmbedded}}
+                    class="svg nopaused noDeviceMobile noDeviceTablet"
+                 {{else}}
+                    class="svg nopaused"
+                 {{/unless}}
+                data-svgref="player-icon-fullscreen"><svg></svg>
                     <span>Fullscreen</span>
                 </button>
             {{/unless}}
-=======
-        {{#unless hideFullscreenButton}}
-            <button id="fullscreen"
-             {{#unless isEmbedded}}
-            	class="svg nopaused noDeviceMobile noDeviceTablet"
-			 {{else}}
-            	class="svg nopaused"
-			 {{/unless}}
-            data-svgref="player-icon-fullscreen"><svg></svg>
-                <span>Fullscreen</span>
-            </button>
-        {{/unless}}
->>>>>>> origin/master
 
             {{#if graph.editable}}
                 <button id="edit" class="svg nopaused noDeviceMobile" data-svgref="player-icon-edit"><svg></svg>
@@ -73,6 +65,7 @@
 <script>
     (function() {
         if (!window.Vizor) window.Vizor = {}
+        Vizor.origin = window.location.origin
         Vizor.shareURL = window.location.origin + '/{{graph.owner}}/{{graph.name}}'
         Vizor.embedSrc = window.location.origin + '/embed/{{graph.owner}}/{{graph.name}}'
         Vizor.autoplay = {{autoplay}}

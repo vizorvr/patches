@@ -199,6 +199,7 @@ var VizorPlayerUI = function() {
 
 			e.preventDefault()
 			var data = {
+				origin	: Vizor.origin,
 				shareURL : Vizor.shareURL,
 				embedSrc : Vizor.embedSrc
 			}
@@ -220,6 +221,7 @@ var VizorPlayerUI = function() {
 					return false
 				})
 
+			siteUI.initCollapsible(modal)
 			return false
 		}
 
