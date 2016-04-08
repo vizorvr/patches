@@ -4467,6 +4467,12 @@ MouseKeyboardVRDisplay.prototype.getImmediatePose = function() {
 };
 
 MouseKeyboardVRDisplay.prototype.onKeyDown_ = function(e) {
+
+  // vizor.io gm #1504
+  if (E2 && E2.app && !E2.app.canInitiateCameraMove(e))
+      return true
+  // end vizor.io gm #1504
+
   // Track WASD and arrow keys.
   if (e.keyCode == 38) { // Up key.
     this.animatePhi_(this.phi_ + KEY_SPEED);
@@ -4515,6 +4521,11 @@ MouseKeyboardVRDisplay.prototype.animateKeyTransitions_ = function(angleName, ta
 };
 
 MouseKeyboardVRDisplay.prototype.onMouseDown_ = function(e) {
+  // vizor.io gm #1504
+  if (E2 && E2.app &&  !E2.app.canInitiateCameraMove(e))
+      return true
+  // end vizor.io gm #1504
+
   this.rotateStart_.set(e.clientX, e.clientY);
   this.isDragging_ = true;
 };
@@ -4536,9 +4547,22 @@ MouseKeyboardVRDisplay.prototype.onMouseMove_ = function(e) {
   this.rotateDelta_.subVectors(this.rotateEnd_, this.rotateStart_);
   this.rotateStart_.copy(this.rotateEnd_);
 
+  // vizor.io gm #896
+  var element = document.body,
+      height = element.clientHeight,
+      width = element.clientWidth
+
+  if (WebVRConfig && WebVRConfig.getContainerMeta) {
+     var meta = WebVRConfig.getContainerMeta()
+     height  = meta.height
+     width   = meta.width
+  }
+
   // Keep track of the cumulative euler angles.
-  this.phi_ += 2 * Math.PI * this.rotateDelta_.y / screen.height * MOUSE_SPEED_Y;
-  this.theta_ += 2 * Math.PI * this.rotateDelta_.x / screen.width * MOUSE_SPEED_X;
+  this.phi_ += 2 * Math.PI * this.rotateDelta_.y / height * MOUSE_SPEED_Y;
+  this.theta_ += 2 * Math.PI * this.rotateDelta_.x / width * MOUSE_SPEED_X;
+
+  // end vizor.io gm #896
 
   // Prevent looking too far up or down.
   this.phi_ = Util.clamp(this.phi_, -Math.PI/2, Math.PI/2);
@@ -5014,7 +5038,7 @@ FusionPoseSensor.prototype.onDeviceMotionChange_ = function(deviceMotion) {
   var deltaS = timestampS - this.previousTimestampS;
   if (deltaS <= Util.MIN_TIMESTEP || deltaS > Util.MAX_TIMESTEP) {
     console.warn('Invalid timestamps detected. Time step between successive ' +
-                 'gyroscope sensor samples is very small or not monotonic');
+                 'gyroscope sensor samples is very small or not monotonic ');
     this.previousTimestampS = timestampS;
     return;
   }
@@ -7500,6 +7524,12 @@ TouchPanner.prototype.resetSensor = function() {
 };
 
 TouchPanner.prototype.onTouchStart_ = function(e) {
+
+    // vizor.io gm #1504
+    if (E2 && E2.app &&  !E2.app.canInitiateCameraMove(e))
+        return
+    // end vizor.io gm #1504
+
   // Only respond if there is exactly one touch.
   if (e.touches.length != 1) {
     return;
@@ -7548,7 +7578,7 @@ module.exports = TouchPanner;
  */
 var Util = window.Util || {};
 
-Util.MIN_TIMESTEP = 0.001;
+Util.MIN_TIMESTEP = 0.0008;
 Util.MAX_TIMESTEP = 1;
 
 Util.base64 = function(mimeType, base64) {

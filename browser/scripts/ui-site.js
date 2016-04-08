@@ -264,6 +264,8 @@ var siteUI = new function() {
                     height: $homePlayerContainer.innerHeight()
                 }
             }
+
+			WebVRConfig.getContainerMeta = E2.app.calculateCanvasArea
 			onResize();
 		});
 
@@ -325,6 +327,10 @@ var siteUI = new function() {
             e.stopPropagation()
             return false
         })
+	}
+
+	this.isFullScreen = function() {
+		return !!(document.mozFullScreenElement || document.webkitFullscreenElement)
 	}
 
 	this.isInIframe = function() {
