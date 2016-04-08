@@ -67,8 +67,7 @@ var UIAbstractProperties = function UIAbstractProperties(domElement) {
 			return E2.ui.isInBuildMode()
 		}
 	})
-
-	E2.app.peopleStore.on('activeGraphChanged', this.render.bind(this))
+	
 	E2.ui.state.on('changed:mode', this.render.bind(this))
 	E2.ui.on('undo', this.onUndo.bind(this))
 	E2.ui.on('redo', this.onRedo.bind(this))
