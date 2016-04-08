@@ -9,7 +9,7 @@ var isStringEmpty = require('../lib/stringUtil').isStringEmpty
 var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
 var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
-var SerialNumber = require('../lib/serialNumber')
+var SerialNumber = require('redis-serial')
 
 var User = require('../models/user')
 var EditLog = require('../models/editLog')
