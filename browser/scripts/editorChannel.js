@@ -224,7 +224,7 @@ EditorChannel.prototype.fork = function(payload) {
 
 	// FORK
 	var fc = new ForkCommand()
-	fc.fork(payload)
+	fc.fork()
 		.then(function() {
 			E2.ui.updateProgressBar(100)
 			E2.app.growl("We've made a copy of this for you to edit.", 'copy', 5000)

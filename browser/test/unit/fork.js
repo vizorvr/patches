@@ -109,18 +109,6 @@ describe('ForkCommand', function() {
 			.catch(done)
 	})
 
-	it('logs the edit', function(done) {
-		var editAction = { actionType: 'fooEditMade' }
-		var fc = new ForkCommand()
-		fc.fork(editAction)
-			.then(function() {
-				var sent = E2.app.channelSent[1]
-				assert.equal(sent.actionType, 'fooEditMade')
-				done()
-			})
-			.catch(done)
-	})
-
 	it('can fork a fork', function(done) {
 		E2.app.path = 'someuser-graph-fork52'
 		var fc = new ForkCommand()

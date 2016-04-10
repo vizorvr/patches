@@ -15,15 +15,9 @@ function getForkName(path) {
 
 function ForkCommand() {}
 
-ForkCommand.prototype.fork = function(editAction) {
+ForkCommand.prototype.fork = function() {
 	// dispatch the old graph as a snapshot in the log
 	E2.app.channel.snapshot()
-
-	// shove the original edit on top
-	if (editAction) {
-		editAction.graphUid = E2.core.active_graph.uid
-		E2.app.channel.send(editAction)
-	}
 
 	var oldName = E2.app.path
 	var forkName = getForkName(E2.app.path)
@@ -33,7 +27,6 @@ ForkCommand.prototype.fork = function(editAction) {
 
 	return E2.app.setupEditorChannel()
 		.then(function() {
-
 			mixpanel.track('Forked', {
 				fromName: oldName,
 				forkName: forkName 
