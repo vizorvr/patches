@@ -8,6 +8,9 @@ module.exports = function () {
         .given(/I am in the editor$/,
             require('../support/action/openEditor'))
 
+        .given(/I am signed in$/,
+            require('../support/action/signIn'))
+
         .given(/I go to Program mode$/,
             require('../support/action/programMode'))
 

@@ -4,6 +4,17 @@
 
 module.exports = function () {
     this
+        // ---- vizor
+        .when(/^I publish the graph$/, function(done) {
+            this.browser
+            .click('#btn-publish')
+            .waitForVisible('#publishGraphForm', null, true)
+            .setValue('#pathInput', 'test'+Date.now())
+            .submitForm('#publishGraphForm', done)
+        })
+
+        // ---- defaults
+
         .when(/^I (click|doubleclick) on the (link|button|element) "$string"$/,
             require('../support/action/clickElement'))
 

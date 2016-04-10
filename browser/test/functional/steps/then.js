@@ -8,6 +8,9 @@ module.exports = function (dict) {
         .then(/^I should see a patch called "$string"$/,
             require('../support/check/checkPatchVisible'))
 
+        .then(/^I expect the player to play$/,
+            require('../support/check/waitForPlayer'))
+
         // defaults
         .then(/^I expect that the title is( not)* "$string"$/,
             require('../support/check/checkTitle'))
