@@ -6,4 +6,4 @@ Feature: Publishing
 
   Scenario: Publishing
     When I publish the graph
-    Then I expect the player to play
+    Then the player is playing

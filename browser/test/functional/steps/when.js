@@ -2,10 +2,29 @@
  * when steps
  */
 
+var config = require('../config').config
+var os = require('os')
+var ctrlKey = os.type() === 'Darwin' ? '\uE03D' : '\uE009'
+
 module.exports = function () {
     this
         // ---- vizor
-        .when(/^I publish the graph$/, function(done) {
+        .when(/^I select all nodes$/, function(done) {
+            this.browser.keys([ctrlKey, 'a'], done)
+        })
+
+        .when(/^I copypaste$/, function(done) {
+            var that = this
+            var timeout = config.options.waitforTimeout
+            this.browser
+            .execute(function() {
+                E2.app.onCopy()
+                E2.app.onPaste()
+            })
+            .call(done)
+        })
+
+        .when(/^I publish the project$/, function(done) {
             this.browser
             .click('#btn-publish')
             .waitForVisible('#publishGraphForm', null, true)
