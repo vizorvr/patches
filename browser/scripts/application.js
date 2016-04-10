@@ -9,7 +9,7 @@ function getChannelFromPath(pathname) {
 	return p[1]
 }
 
-function isUserOwnedGraph(path) {
+function isPublishedGraph(path) {
 	return path.split('/').length > 1
 }
 
@@ -347,6 +347,12 @@ Application.prototype.updateCanvas = function(clear) {
 	var connsLen = conns.length
 	for (var i=0; i < connsLen; i++) {
 		var cui = conns[i].ui
+		if (!cui) {
+			return console.error('Connection', i, 'from', 
+				conns[i].src_node.uid, 'to',
+				conns[i].dst_node.uid, 'has no UI')
+		}
+
 		// Draw inactive connections first, then connections with data flow,
 		// next selected connections and finally selected connections to
 		// ensure they get rendered on top.
@@ -2164,7 +2170,7 @@ Application.prototype.setupEditorChannel = function() {
 	var that = this
 
 	function joinChannel() {
-		if (isUserOwnedGraph(that.path)) {
+		if (isPublishedGraph(that.path)) {
 			that.channel.leave()
 			return dfd.resolve()
 		}
