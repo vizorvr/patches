@@ -15,9 +15,9 @@ function getForkName(path) {
 
 function ForkCommand() {}
 
-ForkCommand.prototype.fork = function(editAction) {
-	// save the current graph as an object
-	var graphSer = E2.core.serialise()
+ForkCommand.prototype.fork = function() {
+	// dispatch the old graph as a snapshot in the log
+	E2.app.channel.snapshot()
 
 	var oldName = E2.app.path
 	var forkName = getForkName(E2.app.path)
@@ -27,23 +27,10 @@ ForkCommand.prototype.fork = function(editAction) {
 
 	return E2.app.setupEditorChannel()
 		.then(function() {
-			// dispatch the old graph as a snapshot in the log
-			E2.app.dispatcher.dispatch({
-				actionType: 'graphSnapshotted',
-				data: graphSer
-			})
-
 			mixpanel.track('Forked', {
 				fromName: oldName,
 				forkName: forkName 
 			})
-
-			if (!editAction)
-				return;
-
-			// shove the original edit on top
-			editAction.graphUid = E2.core.active_graph.uid
-			E2.app.channel.send(editAction)
 		})
 }
 
