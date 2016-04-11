@@ -19,6 +19,11 @@ var UIObjectProperties = function UIObjectProperties(domElement) {
 		scaleLinked : {}
 	}
 
+	this.flags = {
+		_uid: null,
+		scaleLinkXYZ : true
+	}
+
 	this.controls = {}
 
 	// the world editor does not emit its own events
@@ -142,6 +147,12 @@ UIObjectProperties.prototype.onObjectPicked = function() {
 	this.render()
 }
 
+UIObjectProperties.prototype.resetFlags = function(uid) {	// typically from the mesh node
+	var flags = this.flags
+	flags._uid = uid
+	flags.scaleLinkXYZ = true
+}
+
 UIObjectProperties.prototype.onAttach = function() {
 	var that = this, dom = this.dom
 
@@ -221,7 +232,14 @@ UIObjectProperties.prototype.onAttach = function() {
 				return {x: 1.0, y:1.0, z:1.0}
 			})
 		)
-		this.controls.scaleLinked = new UIToggleButton(this.controls.scale.control, 'linkXYZ', dom.scale.linked)
+		this.controls.scaleLinked = new UIToggleButton(
+			this.controls.scale.control,
+			'linkXYZ',
+			dom.scale.linked,
+			function(e, v) {
+				that.flags.scaleLinkXYZ = v
+			}
+		)
 	}
 
 	if (this.controls.rotation) {
@@ -284,6 +302,7 @@ UIObjectProperties.prototype.getControls = function() {
 
 	var that = this,
 		adapter = this.adapter,
+		flags = this.flags,
 		controls = {}
 
 	var meshPlugin = this.selectedEditorObjectMeshPlugin		// obj3d/mesh plugin
@@ -300,7 +319,12 @@ UIObjectProperties.prototype.getControls = function() {
 		}
 	}
 
+
 	if (meshPlugin) {
+		var meshNode = meshPlugin.parentNode
+		if (meshNode.uid !== flags._uid) 	// reset for any new object selected
+			this.resetFlags(meshNode.uid)
+
 		controls.position = make3dProp('position')
 		controls.rotation = make3dProp('quaternion', {
 			min: -36000.0,
@@ -311,12 +335,11 @@ UIObjectProperties.prototype.getControls = function() {
 		if (!this.selectedIsCamera) {
 
 			controls.scale = make3dProp('scale')
-			controls.scale.control.linkXYZ = true
+			controls.scale.control.linkXYZ = this.flags.scaleLinkXYZ
 
 			controls.meshProps = {}
 
 			var meshProps = adapter.meshProps
-			var meshNode = meshPlugin.parentNode
 			var makeControl = this._makeControl
 
 			Object.keys(meshProps).forEach(function (key) {
@@ -345,6 +368,8 @@ UIObjectProperties.prototype.getControls = function() {
 			})
 		}
 	}
+	else
+		this.resetFlags(null)
 
 	return controls
 }

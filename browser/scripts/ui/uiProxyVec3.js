@@ -186,13 +186,31 @@ UIVector3.prototype.attach = function() {
 			previousValue = _.clone(adapter.uiValue)
 
 			if (that.linkXYZ) {
-				var ov = oldValue[xyz]
-				var dv = v - ov
-				adapter[map.x] = oldValue.x  +  dv * oldValue.x
-				adapter[map.y] = oldValue.y  +  dv * oldValue.y
-				adapter[map.z] = oldValue.z  +  dv * oldValue.z
+				// xyz is 'x', 'y', or 'z'
+				var ov = oldValue[xyz],
+					ox = oldValue.x,
+					oy = oldValue.y,
+					oz = oldValue.z,
+					scaleDelta,
+					oldWasZeros = (ox === 0.0) && (oy === 0.0) && (oz === 0.0)
+
+				if (!oldWasZeros) {
+					// normal op
+					scaleDelta = (v - oldValue[xyz]) / ov
+					adapter[map.x] = oldValue.x + scaleDelta * ox
+					adapter[map.y] = oldValue.y + scaleDelta * oy
+					adapter[map.z] = oldValue.z + scaleDelta * oz
+				} else {
+					// recover from edge case
+					scaleDelta = v - oldValue[xyz]
+					adapter[map.x] = oldValue.x + scaleDelta
+					adapter[map.y] = oldValue.y + scaleDelta
+					adapter[map.z] = oldValue.z + scaleDelta
+				}
 			}
-			adapter[map[xyz]] = v	// !
+			else
+				adapter[map[xyz]] = v
+
 
 			var e = new CustomEvent('change', {
 				detail: {
