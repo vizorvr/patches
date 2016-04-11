@@ -1,7 +1,7 @@
 Feature: Editor feature
 
   Background:
-    Given I am in the editor
+    Given I open the editor
 
   Scenario: Going to Program mode
     Given I go to Program mode

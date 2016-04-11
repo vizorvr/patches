@@ -246,6 +246,8 @@ EditorChannel.prototype.fork = function(payload) {
 				// re-dispatch queued events after snapshot
 				E2.app.dispatcher.dispatch(hydrate(dispatch))
 			}
+
+			E2.core.emit('forked')
 		})
 }
 

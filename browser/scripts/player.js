@@ -41,9 +41,13 @@ function Player() {
 Player.prototype.play = function() {
 	if (this.current_state === this.state.PLAYING)
 		return;
+
 	this.core.root_graph.play()
 	this.current_state = this.state.PLAYING
 	this.last_time = (new Date()).getTime()
+
+	E2.core.emit('player:playing')
+
 	if (!this.interval) {
 		this.interval = requestAnimFrame(this.on_anim_frame.bind(this))
 	}

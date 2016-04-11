@@ -5,8 +5,14 @@
 module.exports = function () {
     this
         // vizor
-        .given(/I am in the editor$/,
+        .given(/I open the editor$/,
             require('../support/action/openEditor'))
+
+        .given(/I am in the editor$/,
+            require('../support/action/waitForEditor'))
+
+        .given(/I am signed in$/,
+            require('../support/action/signIn'))
 
         .given(/I go to Program mode$/,
             require('../support/action/programMode'))
