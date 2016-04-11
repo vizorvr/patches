@@ -3,6 +3,7 @@ FROM node:argon
 ENV HOME=/root \
     ENGI_BIND_IP=0.0.0.0 \
     REDIS=redis \
+    NODE_ENV=production \
     MONGODB=mongodb://mongo:27017/vizor \
     GRIDFS=mongodb://mongo:27017/vizor-assets
 
