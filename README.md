@@ -9,7 +9,7 @@ Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentatio
 
 ### Installing
 
-Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [Redis](http://redis.io) and  [node.js](https://nodejs.org). To install the required packages, issue the following commands (on Mac using Homebrew):
+Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [Redis](http://redis.io) and [node.js](https://nodejs.org) (suggest at least node v4.4.2). To install the required packages, issue the following commands (on Mac using Homebrew):
 
 ```
     $ npm install && npm install -g gulp
@@ -37,9 +37,8 @@ Running the tests:
 ### Running
 
 1. Make sure MongoDB and Redis are running.
-2. Run setup: ``` $ npm run setup ```
-3. Run the server: ``` $ npm start```
-4. Open in the browser: [http://localhost:8000/edit](http://localhost:8000/edit)
+2. Run the server: ``` $ npm start```
+3. Open in the browser: [http://localhost:8000/edit](http://localhost:8000/edit)
 
 If you have access to an Oculus Rift DK1 or DK2 and want to play with the VR features, you currently need one of Toji's special Chromium builds. You can find them here: http://blog.tojicode.com/2014/07/bringing-vr-to-chrome.html
 
