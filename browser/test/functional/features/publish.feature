@@ -5,5 +5,5 @@ Feature: Publishing
     And I am in the editor
 
   Scenario: Publishing
-    When I publish the graph
+    When I publish the project
     Then the player is playing

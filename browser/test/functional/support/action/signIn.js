@@ -1,10 +1,11 @@
 var config = require('../../config').config
 
-var rand = process.hrtime().join('')
 
 module.exports = function (done) {
     var url = this.baseUrl + '/signup'
     var timeout = config.options.waitforTimeout
+
+    var rand = process.hrtime().join('')
 
     this.browser
         .url(url)
