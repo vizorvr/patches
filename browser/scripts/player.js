@@ -246,6 +246,8 @@ function CreatePlayer(vr_devices, cb) {
 		return (e && e.target.tagName === 'CANVAS')  // #790
 	}
 
+	WebVRConfig.canInitiateCameraMove = E2.app.canInitiateCameraMove
+
 	// Shared gl context for three
 	var gl_attributes = {
 		alpha: false,

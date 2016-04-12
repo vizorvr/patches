@@ -245,6 +245,11 @@ exports.reset = function() {
 	//E2.app.onCoreReady()
 	E2.app.setupStoreListeners()
 
+	VizorWebVRAdapter = function(){
+		var mock = function(){}
+		this.on = this.resizeToTarget = mock
+	}
+	VizorWebVRAdapter.isNativeWebVRAvailable = function(){return false}
 	return E2.core;
 }
 

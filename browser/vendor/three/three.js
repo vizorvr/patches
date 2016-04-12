@@ -24846,6 +24846,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	};
 
+	this.setSizeNoResize = function(width, height) {
+		// gm^vizor.io
+		_width = width;
+		_height = height;
+		this.setViewport( 0, 0, width, height );
+	}
+
 	this.setViewport = function ( x, y, width, height ) {
 
 		state.viewport( _viewport.set( x, y, width, height ) );

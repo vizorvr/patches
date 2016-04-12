@@ -114,6 +114,8 @@ function Core() {
 		}
 	}
 
+	this.webVRAdapter = {}
+
 	this._listeners = {};
 	
 	this.runtimeEvents = new EventEmitter()

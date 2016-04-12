@@ -5,6 +5,17 @@
 @color-graph-heading: #fff;
 @color-graph-buttons: #ddd;
 
+.webvr-polyfill-viewer-selector {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10010;	// above canvas
+  width: 100%;
+  height: 100%;
+}
+
 body.bPlayer header {
   pointer-events: none;
   >div {

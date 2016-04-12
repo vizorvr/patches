@@ -4120,6 +4120,16 @@ body.bHome.layoutDesktop #contentwrap header nav ul li {
 body.bHome.layoutDesktop #contentwrap header nav ul li:last-of-type {
   padding-right: 0;
 }
+.webvr-polyfill-viewer-selector {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10010;
+  width: 100%;
+  height: 100%;
+}
 body.bPlayer header {
   pointer-events: none;
 }
@@ -4582,20 +4592,11 @@ body.b360 {
   width: 100%;
   min-height: 100%;
 }
-body.b360 button#edit {
-  display: none;
-}
 body.b360.deviceDesktop button#entervr {
   display: block;
 }
-body.b360.deviceDesktop button#sharebutton {
-  display: none;
-}
 body.b360.deviceDesktop .modal.player_share .modal-dialog {
   margin: 15% auto;
-}
-body.b360 #embedSource {
-  display: none;
 }
 body.b360 button#fullscreen svg {
   stroke-width: 1px !important;
@@ -4607,7 +4608,7 @@ body.b360 button:focus {
 body.b360 #madeByVizorWidget {
   position: absolute;
   bottom: 20px;
-  right: 40px;
+  right: 80px;
 }
 body.b360.deviceMobile #madeByVizorWidget {
   display: none;
@@ -4625,9 +4626,6 @@ body.b360.deviceMobile button#backfromvr {
   margin-top: 20px;
 }
 body.b360.assetsLoaded.playing #progressbar {
-  display: none;
-}
-body.b360 #shareDialog label {
   display: none;
 }
 body.b360 #shareDialog input {
@@ -4947,7 +4945,7 @@ body.b360 #playerpage header > div {
 body.b360 #playerpage header div.controls {
   position: absolute;
   top: 10px;
-  right: 20px;
+  right: 60px;
   width: 260px;
   bottom: auto;
   left: auto;

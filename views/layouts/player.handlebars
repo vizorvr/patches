@@ -3,7 +3,7 @@
 	<head id="head">
 		<meta charset='utf-8' />
         <title>{{graphName}} by {{graphOwner}}</title>
-		<meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+		<meta id="viewportmeta" name="viewport" content="initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
         <meta name="keywords" content="vizor, vr, webvr, virtual reality, webgl, visual programming, animation" />
         <meta name="description" content="Vizor is a platform for creating and sharing VR experiences" />
         <meta name="og:description" content="Vizor is a platform for creating and sharing VR experiences" />
@@ -27,6 +27,7 @@
         <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
 		<script src="/scripts/ui-site.js"></script>
         <script src="/data/dist/{{playerVersion}}/player.min.js"></script>
+        <script src="/scripts/webVRAdapter.js"></script>
         <script>
         (function(){
             {{{templateCache}}}
