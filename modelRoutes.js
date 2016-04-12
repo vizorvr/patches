@@ -89,8 +89,7 @@ function modelRoutes(
 		preset: presetController
 	}
 
-	function getController(req, res, next)
-	{
+	function getController(req, res, next) {
 		req.controller = controllers[req.params.model];
 		next();
 	}
@@ -104,6 +103,20 @@ function modelRoutes(
 		}
 		next();
 	}
+
+	// upload user profile avatar picture
+	app.post('/account/profile/avatar',
+		passportConf.isAuthenticated,
+		multer({
+			dest: tempDir,
+			limits: {
+				fileSize: 1024 * 1024 * 8 // 8m
+			},
+			rename: function (fieldname, filename) {
+				return filename.replace(/\W+/g, '-');
+			}
+		}),
+		imageController.setUserAvatar.bind(imageController))
 
 	// upload
 	app.post('/upload/:model',

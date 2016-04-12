@@ -8,8 +8,7 @@ var fsPath = require('path');
 var mongo = require('mongodb');
 var expect = require('chai').expect;
 
-function rand()
-{
+function rand() {
 	return Math.floor(Math.random() * 100000);
 }
 
