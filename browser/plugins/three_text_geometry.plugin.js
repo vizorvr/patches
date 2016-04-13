@@ -31,6 +31,10 @@
 			name: 'line spacing',
 			dt: E2.dt.FLOAT,
 			def: 1
+		}, {
+			name: 'max line length',
+			dt: E2.dt.FLOAT,
+			def: 80
 		}]
 
 		this.output_slots = [{
@@ -77,7 +81,26 @@
 
 		this.geometry = undefined
 
+		var maxLength = this.inputValues['max line length']
+
 		for (var i = 0; i < lines.length; ++i) {
+			if (lines[i].length > maxLength) {
+				var line = lines[i]
+
+				var splitAt = line.lastIndexOf(' ', maxLength)
+
+				if (splitAt === -1) {
+					// try to find after the break point
+					splitAt = line.indexOf(' ', maxLength)
+				}
+
+				if (splitAt > 0) {
+					lines[i] = line.substring(0, splitAt)
+
+					lines.splice(i + 1, 0, line.substring(splitAt + 1))
+				}
+			}
+
 			var lineShapes = THREE.FontUtils.generateShapes(lines[i], parameters)
 
 			if (this.geometry) {
