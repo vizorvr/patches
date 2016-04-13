@@ -283,7 +283,8 @@
         "Normalize": "vector_normalize",
         "Scale": "vector_scale",
         "Transform": "vector_transform",
-        "Add Vectors Conditionally": "add_on_trigger_vector3"
+        "Add Vectors Conditionally": "add_on_trigger_vector3",
+        "Rotation from Direction": "rotation_from_direction"
     },
 
 
