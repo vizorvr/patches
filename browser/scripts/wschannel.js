@@ -20,7 +20,8 @@ WebSocketChannel.prototype.connect = function(wsHost, wsPort, path, options) {
 
 	this._state = 'connecting'
 
-	var wsUrl = 'ws://' + wsHost + ':' + wsPort + path
+	var wsUrl = (wsPort === 443 ? 'wss': 'ws') +
+		'://' + wsHost + ':' + wsPort + path
 
 	console.log('Connecting WebSocket', wsUrl)
 

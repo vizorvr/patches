@@ -88,9 +88,7 @@ app.set('view engine', 'handlebars');
 app.use(compress())
 app.use(connectAssets({
 	paths: [
-		fsPath.join(__dirname, 'browser/style'),
-		fsPath.join(__dirname, 'browser/scripts'),
-		fsPath.join(__dirname, 'browser/dist')
+		fsPath.join(__dirname, 'browser/style')
 	],
 	helperContext: app.locals
 }));
@@ -232,6 +230,15 @@ app.use(function(req, res, next)
 
 	next();
 });
+
+// remap /scripts to /dist in production
+if (process.env.NODE_ENV === 'production') {
+	app.use('/scripts', express.static(
+			fsPath.join(__dirname, 'browser', 'dist'), 
+			{ maxAge: week * 52 }
+		)
+	)
+}
 
 // old static flat files
 app.use('/data', express.static(
@@ -458,12 +465,11 @@ function setupModelRoutes(mongoConnection) {
 
 	// --------------------------------------------------
 
-	var httpServer = http.createServer(app);
-	httpServer.listen(listenPort, listenHost);
+	var httpServer = http.createServer(app)
+	httpServer.listen(listenPort, listenHost)
 
-	if (config.server.enableOSC) {
-		new OscServer().listen(httpServer);
-	}
+	if (config.server.enableOSC)
+		new OscServer().listen(httpServer)
 
 	if (config.server.enableChannels) {
 		new WsChannelServer().listen(httpServer)

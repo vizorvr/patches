@@ -38,7 +38,7 @@
 	<script src="/node_modules/moment/min/moment.min.js"></script>
 	<script src="/vendor/when.js"></script>
 
-	{{{js 'event-emitter'}}}
+	<script src="/scripts/event-emitter.js"></script>
 
 	<script src="/vendor/flux.js"></script>
     <script src="/vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
@@ -47,16 +47,16 @@
 
     <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
 
-	{{{js 'models'}}}
-	{{{js 'account-controller'}}}
-	{{{js 'ui-site'}}}
+	<script src="/scripts/models.js"></script>
+	<script src="/scripts/account-controller.js"></script>
+	<script src="/scripts/ui-site.js"></script>
 
 	{{#if meta.scripts}}{{#each meta.scripts}}
 		<script type="text/javascript" src="/scripts/{{this}}"></script>
 	{{/each}}{{/if}}
 
-	{{{js 'core'}}}
-    {{{js 'application'}}}
+	<script src="/scripts/core.js"></script>
+	<script src="/scripts/application.js"></script>
 
 	<script>
 		jQuery(document).ready(function(){
@@ -87,7 +87,7 @@
 		});
     </script>
 
-	{{{js 'player.min'}}}
+	<script src="/scripts/player.min.js"></script>
 
     <script>{{> ga}}</script>
     <script>{{> mixpanel}}</script>

@@ -2182,18 +2182,16 @@ Application.prototype.setupEditorChannel = function() {
 		})
 	}
 
+	var secure = Vizor.releaseMode || window.location.protocol === 'https:'
+	var wsPort = window.location.port || (secure ? 443 : 80)
 	var wsHost
-	
-	if (!Vizor.releaseMode) {
-		// dev mode
+
+	if (Vizor.releaseMode) {
+		wsHost = 'ws.' + window.location.hostname
+		wsPort = 443
+	} else {
 		wsHost = window.location.hostname
 	}
-	else {
-		// release mode
-		wsHost = "ws." + window.location.hostname
-	}
-
-	var wsPort = window.location.port || 80
 
 	if (!this.channel) {
 		this.channel = new E2.EditorChannel()

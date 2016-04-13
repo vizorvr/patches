@@ -39,7 +39,7 @@
 	<script src="/vendor/bootbox.min.js"></script>
     <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
 
-    {{{js 'ui-site'}}}
+    <script src="/scripts/ui-site.js"></script>
 
     <script src="/data/dist/0.6/player.min.js"></script>
     <script>
@@ -47,8 +47,9 @@
             {{{templateCache}}}
         }.apply(window))
     </script>
-    {{{js 'ui/playerUI'}}}
-    {{{js 'threesixty'}}}
+
+    <script src="/scripts/ui/playerUI.js"></script>
+    <script src="/scripts/threesixty.js"></script>
 
 	<script>{{> mixpanel}}</script>
     <script>{{> ga}}</script>
