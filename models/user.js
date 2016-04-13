@@ -17,10 +17,8 @@ var userSchema = new mongoose.Schema({
 	tokens: Array,
 
 	profile: {
-		gender: { type: String, default: '' },
-		location: { type: String, default: '' },
-		website: { type: String, default: '' },
-		picture: { type: String, default: '' }
+		avatarOriginal: { type: String, default: '' },
+		avatarScaled: { type: String, default: '' }
 	},
 
 	resetPasswordToken: String,
@@ -54,6 +52,7 @@ userSchema.methods.toJSON = function() {
 	return {
 		username: this.username,
 		email: this.email,
+		avatar: this.profile.avatarScaled,
 		gravatar: this.gravatar,
 		name: this.name
 	}
