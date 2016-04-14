@@ -70,9 +70,9 @@ var paths = {
 			'./browser/vendor/three/OrbitControls.js',
 			'./browser/vendor/three/SceneLoader.js',
 			'./browser/vendor/three/MorphAnimMesh.js',
-			'./browser/vendor/three/FontUtils.js',
-			'./browser/vendor/three/fonts/helvetiker_bold.typeface.js',
-			'./browser/vendor/three/fonts/helvetiker_regular.typeface.js',
+			//'./browser/vendor/three/FontUtils.js',
+			//'./browser/vendor/three/fonts/helvetiker_bold.typeface.js',
+			//'./browser/vendor/three/fonts/helvetiker_regular.typeface.js',
 
 			'./browser/vendor/spite/THREE.MeshLine.js',
 
