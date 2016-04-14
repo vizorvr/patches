@@ -42,6 +42,13 @@
 		}]
 
 		this.desc = 'Generate text'
+
+		var that = this
+
+		var fontLoader = new THREE.FontLoader()
+		fontLoader.load("/data/fonts/helvetiker_regular.typeface.js", function(font) {
+			that.font = font
+		})
 	}
 
 	ThreeTextGeometry.prototype = Object.create(Plugin.prototype)
@@ -62,6 +69,10 @@
 
 	ThreeTextGeometry.prototype.update_state = function() {
 		if (!this.dirty) {
+			return
+		}
+
+		if (!this.font) {
 			return
 		}
 
@@ -101,7 +112,7 @@
 				}
 			}
 
-			var lineShapes = THREE.FontUtils.generateShapes(lines[i], parameters)
+			var lineShapes = this.font.generateShapes(lines[i], parameters.size, parameters.curveSegments)
 
 			if (this.geometry) {
 				var mtx = new THREE.Matrix4().makeTranslation(0, lineHeight, 0)
