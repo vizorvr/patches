@@ -267,6 +267,7 @@ app.get('/account/unlink/:provider', passportConf.isAuthenticated, userControlle
 switch (process.env.FQDN) {
 	case '360vr.io':
 	case '360.vizor.io':
+	case '360.vizor.lol':
 		// 360 photo site
 		app.get('/', threesixtyController.index);
 		app.get('/featured', threesixtyController.featured)
