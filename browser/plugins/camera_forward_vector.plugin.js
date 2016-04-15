@@ -25,8 +25,9 @@
 
 	CameraForwardVector.prototype.update_input = function(slot, data) {
 		if (data) {
-			var el = data.matrixWorld.elements
-			this.forward.set(el[2], el[6], -el[10])
+			this.forward.set(0, 0, -1)
+			this.forward.applyMatrix4(data.matrixWorld)
+			this.forward.sub(new THREE.Vector3().setFromMatrixPosition(data.matrixWorld))
 		}
 		else {
 			this.forward.set(0,0,-1)
