@@ -127,6 +127,13 @@ exports.reset = function() {
 		NO_DPDB_FETCH: true
 	}
 
+	global.XMLHttpRequest = function() {
+		this.overrideMimeType = function() {}
+		this.open = function() {}
+		this.addEventListener = function(name, callback) {}
+		this.send = function() {}
+	}
+
 	exports.runScript(browserPath+'dist/engine.js')
 	exports.mockE2Classes()
 

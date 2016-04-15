@@ -7,10 +7,6 @@
 			dt: E2.dt.TEXT,
 			def: 'hello world'
 		}, {
-			name: 'font',
-			dt: E2.dt.TEXT,
-			def: 'helvetiker'
-		}, {
 			name: 'size',
 			dt: E2.dt.FLOAT,
 			def: 1
@@ -19,14 +15,6 @@
 			dt: E2.dt.FLOAT,
 			def: 4/*,
 			validate: function(v) {return Math.floor(Math.min(Math.max(1, v), 10))}*/
-		}, {
-			name: 'weight',
-			dt: E2.dt.TEXT,
-			def: 'normal'
-		}, {
-			name: 'style',
-			dt: E2.dt.TEXT,
-			def: 'normal'
 		}, {
 			name: 'line spacing',
 			dt: E2.dt.FLOAT,
@@ -42,13 +30,6 @@
 		}]
 
 		this.desc = 'Generate text'
-
-		var that = this
-
-		var fontLoader = new THREE.FontLoader()
-		fontLoader.load("/data/fonts/helvetiker_regular.typeface.js", function(font) {
-			that.font = font
-		})
 	}
 
 	ThreeTextGeometry.prototype = Object.create(Plugin.prototype)
@@ -77,11 +58,8 @@
 		}
 
 		var parameters = {
-			font: this.inputValues.font,
 			curveSegments: this.inputValues.segments,
 			size: this.inputValues.size,
-			weight: this.inputValues.weight,
-			style: this.inputValues.style
 		}
 
 		var lines = this.inputValues.text.split('\n')
@@ -128,5 +106,20 @@
 		this.geometry.computeFaceNormals()
 
 		this.dirty = false
+	}
+
+	ThreeTextGeometry.prototype.state_changed = function(ui) {
+		if (ui) {
+			return
+		}
+
+		var that = this
+
+		if (!this.font) {
+			var fontLoader = new THREE.FontLoader()
+			fontLoader.load("/data/fonts/helvetiker_regular.typeface.js", function(font) {
+				that.font = font
+			})
+		}
 	}
 })()
