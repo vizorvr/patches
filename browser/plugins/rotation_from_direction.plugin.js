@@ -8,7 +8,7 @@
 		}]
 
 		this.output_slots = [{
-			name: 'rotaton',
+			name: 'rotation',
 			dt: E2.dt.VECTOR
 		}]
 
