@@ -178,8 +178,9 @@
 
 			E2.core.webVRAdapter = new VizorWebVRAdapter(this.domElement, this.renderer, this.effect)
 			this.manager = E2.core.webVRAdapter
-			this.manager.on(webVREvents.displayPresentChange, this.onVRPresentChange.bind(this))
-			this.manager.on(webVREvents.targetResized, this.onTargetResized.bind(this))
+			var events = this.manager.events
+			this.manager.on(events.displayPresentChanged, this.onVRPresentChange.bind(this))
+			this.manager.on(events.targetResized, this.onTargetResized.bind(this))
 
 			// resize to initial size
 			this.resize()

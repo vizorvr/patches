@@ -74,12 +74,33 @@ function Color() {}
 }
 
 exports.setupThree = function() {
-
 	global.THREE = require(browserPath + 'vendor/three/three.js')
 	global.THREE.MorphAnimMesh = function() {}
 }
 
+var setupWebVRAdapter = exports.setupWebVRAdapter = function() {
+	var mock = function(){}
 
+	if (typeof global.VizorWebVRAdapter === 'undefined') {
+		global.VizorWebVRAdapter = function () {
+			this.on = this.resizeToTarget = mock
+		}
+		global.VizorWebVRAdapter.isNativeWebVRAvailable = function () {
+			return false
+		}
+		return
+	}
+
+	var vw = global.VizorWebVRAdapter.prototype
+	vw.getDomElementDimensions = function() {
+		return {width: 220, height: 100, devicePixelRatio:1}
+	}
+	vw._onManagerModeChange = function(mode, oldMode){
+		this.emit(this.events.modeChanged, mode, oldMode)
+	}
+	vw.setDomElementDimensions = mock
+
+}
 exports.reset = function() {
 	global.E2 = {}
 	global.window = global
@@ -245,11 +266,8 @@ exports.reset = function() {
 	//E2.app.onCoreReady()
 	E2.app.setupStoreListeners()
 
-	VizorWebVRAdapter = function(){
-		var mock = function(){}
-		this.on = this.resizeToTarget = mock
-	}
-	VizorWebVRAdapter.isNativeWebVRAvailable = function(){return false}
+	setupWebVRAdapter()
+
 	return E2.core;
 }
 

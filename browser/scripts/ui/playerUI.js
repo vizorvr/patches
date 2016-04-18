@@ -134,9 +134,6 @@ var VizorPlayerUI = function() {
 
 		E2.core.on(events.doneLoading, completeLoading)
 
-		// E2.core.on(events.playerPlaying, function(){
-		// 	window.dispatchEvent(new CustomEvent('resize'))
-		// })
 		// provisions for chrome/android
 		$body
 			.on(events.vrInstructionsShown, function () {
@@ -347,7 +344,8 @@ var VizorPlayerUI = function() {
 			}
 		}
 
-		E2.core.webVRAdapter.on(webVREvents.modeChange, onVRModeChanged)
+		var w = E2.core.webVRAdapter
+		w.on(w.events.modeChanged, onVRModeChanged)
 
 		setTimeout(function () {
 			if (VizorUI.isMobile.any() && !siteUI.isPortraitLike())
