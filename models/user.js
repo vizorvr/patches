@@ -8,6 +8,8 @@ var userSchema = new mongoose.Schema({
 	email: { type: String, required: true, unique: true, lowercase: true },
 	password: String,
 
+	createdAt: { type: Date, default: Date.now },
+
 	facebook: String,
 	twitter: String,
 	google: String,
