@@ -25,7 +25,7 @@
 
 		this.lastCenter = new THREE.Vector3()
 
-		this.object3d = new THREE.Group()
+		this.setObject3D(new THREE.Group())
 		this.object3d.name = 'group_plugin'
 	}
 
