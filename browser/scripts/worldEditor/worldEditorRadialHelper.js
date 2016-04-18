@@ -56,24 +56,33 @@ function WorldEditorRadialHelper() {
 
 	var textRadius = [0.2, 0.4, 0.6, 0.8, 1, 2, 4, 6, 8, 10]
 
-	var emptyTextShape = THREE.FontUtils.generateShapes("")
+	var that = this
 
-	var rotateNinetyDegrees = new THREE.Euler(-Math.PI / 2, 0, 0)
+	var fontLoader = new THREE.FontLoader()
+	fontLoader.load("/data/fonts/helvetiker_regular.typeface.js", function(font) {
+		that.font = font
+		var emptyTextShape = font.generateShapes("")
 
-	this.textMeshes = []
+		var rotateNinetyDegrees = new THREE.Euler(-Math.PI / 2, 0, 0)
 
-	for (var i = 0; i < textRadius.length; ++i) {
-		var textGeometry = new THREE.ShapeGeometry(emptyTextShape)
-		var textMesh = new THREE.Mesh(textGeometry, new THREE.MeshBasicMaterial({color: this.mesh.color1, fog: false}))
+		that.textMeshes = []
 
-		var scale = textRadius[i] < 1 ? 0.0001 : 0.001
+		for (var i = 0; i < textRadius.length; ++i) {
+			var textGeometry = new THREE.ShapeGeometry(emptyTextShape)
+			var textMesh = new THREE.Mesh(textGeometry, new THREE.MeshBasicMaterial({
+				color: that.mesh.color1,
+				fog: false
+			}))
 
-		textMesh.scale.set(scale, scale, scale)
-		textMesh.position.set(textRadius[i], 0, 0)
-		textMesh.quaternion.setFromEuler(rotateNinetyDegrees)
-		this.textMeshes.push({mesh: textMesh, radius: textRadius[i]})
-		this.mesh.add(textMesh)
-	}
+			var scale = textRadius[i] < 1 ? 0.0001 : 0.001
+
+			textMesh.scale.set(scale, scale, scale)
+			textMesh.position.set(textRadius[i], 0, 0)
+			textMesh.quaternion.setFromEuler(rotateNinetyDegrees)
+			that.textMeshes.push({mesh: textMesh, radius: textRadius[i]})
+			that.mesh.add(textMesh)
+		}
+	})
 
 	this.gridScale = 0
 	this.scale(1)
@@ -81,11 +90,13 @@ function WorldEditorRadialHelper() {
 
 WorldEditorRadialHelper.prototype.scale = function(s) {
 	if (s !== this.gridScale) {
-		for (var i = 0; i < this.textMeshes.length; ++i) {
-			var rad = this.textMeshes[i].radius * s
-			var str = rad < 1.0 ? (Math.round((rad * 100)) + " cm") : ((rad) + " m")
-			var textShape = THREE.FontUtils.generateShapes(str)
-			this.textMeshes[i].mesh.geometry = new THREE.ShapeGeometry(textShape)
+		if (this.textMeshes) {
+			for (var i = 0; i < this.textMeshes.length; ++i) {
+				var rad = this.textMeshes[i].radius * s
+				var str = rad < 1.0 ? (Math.round((rad * 100)) + " cm") : ((rad) + " m")
+				var textShape = this.font.generateShapes(str)
+				this.textMeshes[i].mesh.geometry = new THREE.ShapeGeometry(textShape)
+			}
 		}
 
 		this.gridScale = s
