@@ -110,11 +110,6 @@ var VizorPlayerUI = function() {
 			}
 		}
 
-		var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
-        $(window).on('resize orientationchange', onResize)
-        $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', onResize)
-        onResize()
-
 		that.enableVRcamera()
 
 		// allow 360 to redirect progressbar entirely
@@ -141,7 +136,6 @@ var VizorPlayerUI = function() {
 			})
 			.on(events.vrInstructionsHidden, function () {
 				$canvas.show()
-				onResize()
 			})
 
 		if (siteUI.hasOrientationChange
@@ -172,6 +166,7 @@ var VizorPlayerUI = function() {
 					}
 				}, 500)
 			}
+
 			$(window).on('orientationchange', allowExtraHeightOnLandscape)
 			allowExtraHeightOnLandscape()
 		}
@@ -190,7 +185,7 @@ var VizorPlayerUI = function() {
         function enterVR(e) {
 			mixpanel.track('Enter VR')
 
-            if (siteUI.isDeviceDesktop()) {
+            if (siteUI.isDeviceDesktop() && !E2.core.webVRAdapter.isVRCompatible()) {
                 // display "view in VR" sign
                 return that.displayVRPlayerUrl(that.data.shareURL)
             }

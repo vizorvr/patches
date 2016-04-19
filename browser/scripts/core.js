@@ -114,8 +114,6 @@ function Core() {
 		}
 	}
 
-	this.webVRAdapter = {}
-
 	this._listeners = {};
 	
 	this.runtimeEvents = new EventEmitter()
@@ -127,6 +125,8 @@ function Core() {
 		console.log('core progress', pct)
 		E2.core.emit('progress', pct)
 	})
+
+	this.webVRAdapter = new VizorWebVRAdapter()
 
 	this.active_graph_dirty = true;
 

@@ -65,16 +65,9 @@
 			iframeElement.height = iframeHeight
 			iframeWidth = currentWidth
 		}
-		/*
-		iframeWindow.postMessage({
-			resize: {
-				width: iframeWidth,
-				height: iframeHeight
-			}
-		},'*')
-		*/
 		return true
 	}
+
 	window.addEventListener('orientationchange', resizeIframe, true)
 	window.addEventListener('resize', resizeIframe, true)
 
