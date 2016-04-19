@@ -465,8 +465,6 @@ GraphController.prototype.saveAnonymous = function(req, res, next) {
 					path: path,
 					url: url,
 					hasAudio: false,
-					private: false,
-					editable: true,
 					stat: {
 						size: analysis.size,
 						numAssets: analysis.numAssets

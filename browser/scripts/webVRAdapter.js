@@ -383,9 +383,8 @@ VizorWebVRAdapter.prototype.amendVRManagerInstructions = function() {
 
 	var o = r.overlay
 
-	if (o.className === 'VRInstructions') {
+	if (o.className === 'VRInstructions') { // already changed
 		this._instructionsChanged = true
-		console.log('rotate instructions already changed')
 		return
 	}
 	o.className = 'VRInstructions'
