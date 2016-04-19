@@ -136,7 +136,10 @@ VizorWebVRAdapter.prototype.configure = function() {
 VizorWebVRAdapter.prototype.patchWebVRManager = function() {
 	var that = this
 	var m = this._manager
-	m.setMode_(1)
+
+	if (m.mode !== this.modes.NORMAL)
+		m.setMode_(this.modes.NORMAL)
+
 	m.requestFullscreen__ = m.requestFullscreen_
 	m.requestFullscreen_ = function() {
 		return this.requestFullscreen__(that.domElement)
@@ -379,6 +382,12 @@ VizorWebVRAdapter.prototype.amendVRManagerInstructions = function() {
 	}
 
 	var o = r.overlay
+
+	if (o.className === 'VRInstructions') {
+		this._instructionsChanged = true
+		console.log('rotate instructions already changed')
+		return
+	}
 	o.className = 'VRInstructions'
 
 	var originalImage = o.getElementsByTagName('IMG')
@@ -472,6 +481,10 @@ VizorWebVRAdapter.prototype._addViewportMeta = function() {
 	}
 	if (meta.getAttribute('data-auto') === 'true') {
 		meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, shrink-to-fit=no')
+	} else {
+		var p = meta.parentElement
+		p.removeChild(meta)
+		p.appendChild(meta)
 	}
 }
 
@@ -485,6 +498,10 @@ VizorWebVRAdapter.prototype._removeViewportMeta = function() {
 			if (meta)
 				meta.parentNode.removeChild(meta)
 		}, 10000)
+	} else {
+		var p = meta.parentElement
+		p.removeChild(meta)
+		p.appendChild(meta)
 	}
 }
 

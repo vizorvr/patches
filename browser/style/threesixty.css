@@ -3777,6 +3777,9 @@ body.bHome #contentwrap .tabletonly {
   body.bHome #contentwrap section#getstarted .col.right {
     width: 100%;
   }
+  body.bHome #contentwrap section#getstarted input {
+    background: rgba(0, 0, 0, 0.5);
+  }
 }
 @media all and (max-width: 549px) {
   body.bHome #contentwrap {
