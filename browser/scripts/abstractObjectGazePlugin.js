@@ -98,7 +98,7 @@
 		this.object3d.gazeClickerCount = 
 			Object.keys(this.object3d.gazeClickers).length
 
-		var obj = this.object3d.parent
+		var obj = this.object3d
 		while(obj) {
 			if (!obj.gazeClickerCount)
 				obj.gazeClickerCount = 0
