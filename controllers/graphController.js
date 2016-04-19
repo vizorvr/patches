@@ -295,14 +295,15 @@ function renderPlayer(graph, req, res, options) {
 		playerVersion: version,
 		autoplay: !!(options && options.autoplay),
 		noHeader: options.noHeader || false,
-		isEmbedded: options.isEmbed || false,
+		isEmbedded: options.isEmbedded || false,
 		graph: graphJson,
 		graphMinUrl: graphJson.url,
 		graphName: graphJson.prettyName,
 		graphOwner: graphJson.prettyOwner,
 		previewImage: 'http://' + req.headers.host + graphJson.previewUrlLarge,
 		previewImageWidth: 1280,
-		previewImageHeight: 720
+		previewImageHeight: 720,
+		startMode : options.startMode || 1
 	})
 }
 
@@ -313,10 +314,18 @@ GraphController.prototype.embed = function(req, res, next) {
 		if (!graph)
 			return next()
 
+		var autoplay = false
+		if (req.query.no_fullscreen === 'true') autoplay = true
+
+		// webvrmanager/boilerplate
+		var startMode = parseInt(req.query.start_mode)
+		if (isNaN(startMode)) startMode = 1
+
 		return renderPlayer(graph, req, res, {
-			isEmbed: true,
-			autoplay: req.query.autoplay || false,
-			noHeader: req.query.noheader || false
+			isEmbedded: true,
+			autoplay: req.query.autoplay || autoplay,
+			noHeader: req.query.noheader || false,
+			startMode : startMode
 		})
 	}).catch(next)
 }

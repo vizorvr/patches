@@ -370,7 +370,7 @@ function WebVRManager(renderer, effect, params) {
   this.mode = Modes.UNKNOWN;
 
   // Set option to hide the button.
-  this.hideButton = Vizor.hideWebVRButton || this.params.hideButton || false;
+  this.hideButton = this.params.hideButton || false;
   // Whether or not the FOV should be distorted or un-distorted. By default, it
   // should be distorted, but in the case of vertex shader based distortion,
   // ensure that we use undistorted parameters.
@@ -382,9 +382,12 @@ function WebVRManager(renderer, effect, params) {
   var polyfillWrapper = document.querySelector('.webvr-polyfill-fullscreen-wrapper');
   this.button = new ButtonManager(polyfillWrapper);
 
-  // Only enable VR mode if we're on a mobile device.
-  // vizor change - always vr compatible because we want to work on vive and oculus
-  this.isVRCompatible = Util.isMobile();
+  if (typeof params.isVRCompatible !== 'undefined') {
+    this.isVRCompatible = params.isVRCompatible;
+  } else {
+    // Only automatically enable VR mode if we're on a mobile device.
+    this.isVRCompatible = Util.isMobile();
+  }
 
   this.isFullscreenDisabled = !!Util.getQueryParameter('no_fullscreen');
   this.startMode = Modes.NORMAL;
@@ -400,8 +403,6 @@ function WebVRManager(renderer, effect, params) {
   // Check if the browser is compatible with WebVR.
   this.getDeviceByType_(VRDisplay).then(function(hmd) {
     this.hmd = hmd;
-
-	this.isVRCompatible = this.isVRCompatible || hmd.capabilities.canPresent
 
     this.emit('initialized');
   }.bind(this));
@@ -421,12 +422,15 @@ function WebVRManager(renderer, effect, params) {
   this.button.on('fs', this.onFSClick_.bind(this));
   this.button.on('vr', this.onVRClick_.bind(this));
 
+  // Bind to fullscreen events.
   document.addEventListener('webkitfullscreenchange',
       this.onFullscreenChange_.bind(this));
   document.addEventListener('mozfullscreenchange',
       this.onFullscreenChange_.bind(this));
   document.addEventListener('msfullscreenchange',
       this.onFullscreenChange_.bind(this));
+
+  // Bind to VR* specific events.
   window.addEventListener('vrdisplaypresentchange',
       this.onVRDisplayPresentChange_.bind(this));
   window.addEventListener('vrdisplaydeviceparamschange',
@@ -459,15 +463,7 @@ WebVRManager.prototype.getDeviceByType_ = function(type) {
   });
 };
 
-WebVRManager.prototype.isVRMode = function() {
-  return this.mode == Modes.VR;
-};
-
 WebVRManager.prototype.render = function(scene, camera, timestamp) {
-  this.camera = camera;
-
-  this.resizeIfNeeded_(camera);
-
   // Scene may be an array of two scenes, one for each eye.
   if (scene instanceof Array) {
     this.effect.render(scene[0], camera);
@@ -486,25 +482,9 @@ WebVRManager.prototype.setMode_ = function(mode) {
   this.mode = mode;
   this.button.setMode(mode, this.isVRCompatible);
 
-  document.body.dispatchEvent(new CustomEvent('vrManagerModeChanged', {detail: {mode: mode, oldMode: oldMode, vrCompatible: this.isVRCompatible}}))      // gm
-
   // Emit an event indicating the mode changed.
   this.emit('modechange', mode, oldMode);
 };
-
-
-WebVRManager.prototype.toggleFullScreen = function() {
-  if (this.isVRCompatible)
-    this.onVRClick_()
-  else
-    this.onFSClick_();
-};
-
-
-WebVRManager.prototype.toggleImmersive = function() {
-  this.onFSClick_()
-};
-
 
 /**
  * Main button was clicked.
@@ -548,87 +528,23 @@ WebVRManager.prototype.onVRClick_ = function() {
     top.location.href = url;
     return;
   }
-  this.hmd.requestPresent({source: this.renderer.domElement});
+  this.hmd.requestPresent({
+    source: this.renderer.domElement,
+    predistorted: this.isUndistorted
+  });
   this.setMode_(Modes.VR);
 };
 
-/**
- * Back button was clicked.
- */
-WebVRManager.prototype.onBackClick_ = function() {
-  if (this.isFullscreenDisabled) {
-    window.history.back();
-    return;
-  }
-  this.setMode_(Modes.NORMAL);
-  this.exitFullscreen_();
-};
-
-WebVRManager.prototype.getContainerDimensions = function() {	  // gm #896
-
-  // vizor.io gm #896
-  if (WebVRConfig && WebVRConfig.getContainerMeta) {
-     var meta = WebVRConfig.getContainerMeta()
-     var ret = {
-       width:   meta.width,
-       height:  meta.height
-     }
-    return ret
-  }
-  // end vizor.io gm #896
-
-	var container, width, height;
-	if (this.renderer.domElement) {
-	  container = this.renderer.domElement.parentNode;
-	  width = container.clientWidth;
-	  height = container.clientHeight
-	  if (!width || !height) {	// fullscreen
-		  width = window.innerWidth;
-		  height = window.innerHeight;
-	  }
-	} else {
-	  container = window;
-	  width = container.innerWidth;
-	  height = container.innerHeight;
-	}
-	return {
-		width: width,
-		height: height
-	}
-}
-
-// vizor.io gm #896
-
-WebVRManager.prototype.resizeIfNeeded_ = function(camera) {
-  // Only resize the canvas if it needs to be resized.
-  var size = this.renderer.getSize();
-
-  var d = this.getContainerDimensions();
-  if ( size.width != d.width || size.height != d.height) {
-    this.resize_(d, camera);
-  }
-};
-
-WebVRManager.prototype.resize_ = function(dimensions, camera) {
-  dimensions = dimensions || this.getContainerDimensions();
-  this.effect.setSize(dimensions.width, dimensions.height);
-  camera = camera || this.camera
-  if (camera) {
-    camera.aspect = dimensions.width / dimensions.height;
-    camera.updateProjectionMatrix();
-  }
-};
-
-// end vizor.io gm #896
-
-WebVRManager.prototype.requestFullscreen_ = function() {
-  var canvas = this.renderer.domElement;
-  if (canvas.requestFullscreen) {
-    canvas.requestFullscreen();
-  } else if (canvas.mozRequestFullScreen) {
-    canvas.mozRequestFullScreen();
-  } else if (canvas.webkitRequestFullscreen) {
-    canvas.webkitRequestFullscreen();
+WebVRManager.prototype.requestFullscreen_ = function(element) {
+  element = element || document.body;
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if (element.mozRequestFullScreen) {
+    element.mozRequestFullScreen();
+  } else if (element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) {
+    element.msRequestFullscreen();
   }
 };
 
@@ -639,11 +555,18 @@ WebVRManager.prototype.exitFullscreen_ = function() {
     document.mozCancelFullScreen();
   } else if (document.webkitExitFullscreen) {
     document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
   }
 };
 
 WebVRManager.prototype.onVRDisplayPresentChange_ = function(e) {
   console.log('onVRDisplayPresentChange_', e);
+  if (this.hmd.isPresenting) {
+    this.setMode_(Modes.VR);
+  } else {
+    this.setMode_(Modes.NORMAL);
+  }
 };
 
 WebVRManager.prototype.onVRDisplayDeviceParamsChange_ = function(e) {

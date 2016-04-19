@@ -1,6 +1,25 @@
 @editor-topbar-button-margin:	4px;
 
 body.bEditor {
+
+  &.inVR {
+	#editor-header, #progressbar, #info-pane, #editor-footer, #drag-overlay, >div.popover {
+	  display: none;
+	}
+	>#canvases {
+	  position: absolute;
+	  top:0;
+	  bottom:0;
+	  >div {
+		display: none;
+	  }
+	  >div.webvr-polyfill-fullscreen-wrapper {
+		display: block;
+	  }
+	}
+  }
+
+
   div.modal {
 	-webkit-font-smoothing: subpixel-antialiased;
   }

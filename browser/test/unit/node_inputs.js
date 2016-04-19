@@ -116,6 +116,8 @@ describe('Node inputs', function() {
 	beforeEach(function() {
 		core = reset()
 
+		global.WebVRConfig = global.WebVRConfig || {}
+
 		global.E2.Variables = function() {
 			this.serialise = function(){}
 		}

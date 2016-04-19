@@ -77,6 +77,8 @@ var paths = {
 
 			'./browser/vendor/borismus/webvr-polyfill.js',
 			'./browser/vendor/borismus/webvr-manager.js',
+			'./browser/scripts/hardware.js',
+			'./browser/scripts/webVRAdapter.js',
 
 			'./browser/scripts/noise.js',
 			'./browser/vendor/random.min.js',

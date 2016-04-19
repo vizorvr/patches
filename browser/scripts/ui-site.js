@@ -265,7 +265,9 @@ var siteUI = new function() {
                 }
             }
 
+			WebVRConfig.canInitiateCameraMove = E2.app.canInitiateCameraMove // see above
 			WebVRConfig.getContainerMeta = E2.app.calculateCanvasArea
+			
 			onResize();
 		});
 
@@ -342,9 +344,7 @@ var siteUI = new function() {
 	}
 
 	this.isInVR = function() {
-		if (E2 && E2.core && E2.core.webVRManager && E2.core.webVRManager.isVRMode)
-			return E2.core.webVRManager.mode === 3
-		return false
+		return (E2 && E2.core && E2.core.webVRAdapter && E2.core.webVRAdapter.isVRMode && E2.core.webVRAdapter.isVRMode())
 	}
 
 	/**
@@ -365,7 +365,7 @@ var siteUI = new function() {
 			.toggleClass('deviceTablet', that.deviceIsTablet)
 			.toggleClass('deviceMobile', that.deviceIsPhone)
 			.toggleClass('inIframe', that.isEmbedded)
-			.toggleClass('inVR', that.isInVR())
+			.toggleClass('inVR', !!that.isInVR())
 
 		var l = that.getLayoutMode();
 		if (l !== that.lastLayout) {
@@ -522,11 +522,12 @@ VizorUI.makeVRCanvasResizeHandler = function($playerCanvas, $containerRef) {
 				.addClass('webgl-container-normal');
 		}
 
-		$playerCanvas
-			.width(pixelRatioAdjustedWidth)
-			.height(pixelRatioAdjustedHeight);
-
-		E2.core.emit('resize')
+		if (typeof E2 === 'undefined') {
+			console.error('resize handler but no E2')
+			return
+		}
+		E2.core.webVRAdapter.setTargetSize(width, height, devicePixelRatio)
+		E2.core.webVRAdapter.resizeToTarget()
 
 		oldPixelRatioAdjustedWidth = pixelRatioAdjustedWidth
 		oldPixelRatioAdjustedHeight = pixelRatioAdjustedHeight

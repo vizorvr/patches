@@ -11,6 +11,7 @@ describe('loadAllPlugins', function() {
 
 	beforeEach(function() {
 		reset()
+		
 	})
 
 	var exceptions = [

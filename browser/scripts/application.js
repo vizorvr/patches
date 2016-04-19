@@ -61,7 +61,7 @@ function Application() {
 
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
-
+	
 }
 
 Application.prototype.getNIDFromSlot = function(id) {

@@ -79,7 +79,6 @@ var vizor360 = new function() {
 				$body.removeClass('firsttime')
 				that.minProgress = 0
 				playerUI.headerFadeOut()
-				playerUI.amendVRManagerInstructions()
 				return true
 			}
 			return false
