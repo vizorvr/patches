@@ -14,7 +14,12 @@ exports.index = function(req, res) {
 		hidePlayButton: true,
 		meta : {
 			bodyclass : 'bThreesixty b360'
-		}
+		},
+		noHeader: false,
+		graph: {
+			hasAudio: false
+		},
+		startMode : 1
 	});
 }
 

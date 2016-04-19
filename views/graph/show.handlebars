@@ -66,18 +66,48 @@
     (function() {
         if (!window.Vizor) window.Vizor = {}
         Vizor.origin = window.location.origin
+
+    {{#if graph.owner}}
         Vizor.shareURL = window.location.origin + '/{{graph.owner}}/{{graph.name}}'
         Vizor.embedSrc = window.location.origin + '/embed/{{graph.owner}}/{{graph.name}}'
+    {{else}}
+        Vizor.shareURL = window.location.origin
+        Vizor.embedSrc = window.location.origin
+    {{/if}}
+
+    {{#if autoplay}}
         Vizor.autoplay = {{autoplay}}
+    {{else}}
+        Vizor.autoplay = false
+    {{/if}}
+
+    {{#if noHeader}}
         Vizor.noHeader = {{noHeader}}
+    {{else}}
+        Vizor.noHeader = false
+    {{/if}}
+
+    {{#if graph.hasAudio}}
         Vizor.hasAudio = {{graph.hasAudio}}
+    {{else}}
+        Vizor.hasAudio = false
+    {{/if}}
+
+
         Vizor.graphName = '{{graphName}}'
         Vizor.hideWebVRButton = false
-        {{#if isEmbedded}}
+
+    {{#if isEmbedded}}
         Vizor.isEmbedded = true
-        {{else}}
+    {{else}}
         Vizor.isEmbedded = false
-        {{/if}}
-        Vizor.startMode = {{startMode}}
+    {{/if}}
+
+    {{#if startMode}}
+            Vizor.startMode = {{startMode}}
+        {{else}}
+            Vizor.startMode = 1
+    {{/if}}
+
     })()
 </script>

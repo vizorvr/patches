@@ -93,7 +93,10 @@ var vizor360 = new function() {
 			path: asset.path
 		})
 
-		E2.app.player.loadAndPlay(asset.url, true);
+		E2.app.player.loadAndPlay(asset.url, true)
+			.then(function(){
+				$('#sharebutton').show()
+			})
 	}
 
 	// STEP 3
@@ -493,8 +496,10 @@ var vizor360 = new function() {
 			initial: true
 		}, null)
 
-		if (Window.Vizor && (Vizor.graphName === ''))
+		if (window.Vizor && (Vizor.graphName === '')) {
 			playerUI.headerDisableAutoFadeout()
+			$('#sharebutton').hide()
+		}
 	}
 }
 
