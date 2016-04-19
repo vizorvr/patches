@@ -2137,20 +2137,11 @@ Application.prototype.setupEditorChannel = function() {
 		})
 	}
 
-	var secure = Vizor.releaseMode || window.location.protocol === 'https:'
-	var wsPort = window.location.port || (secure ? 443 : 80)
-	var wsHost
-
-	if (Vizor.releaseMode) {
-		wsHost = 'ws.' + window.location.hostname
-		wsPort = 443
-	} else {
-		wsHost = window.location.hostname
-	}
+	var wsUrl = this.determineWebSocketEndpoint('/__editorChannel')
 
 	if (!this.channel) {
 		this.channel = new E2.EditorChannel()
-		this.channel.connect(wsHost, wsPort)
+		this.channel.connect(wsUrl)
 		this.channel.on('ready', function() { 
 			that.setupChat()
 			that.peopleStore.initialize()
@@ -2162,6 +2153,23 @@ Application.prototype.setupEditorChannel = function() {
 	E2.ui.setPageTitle();
 	
 	return dfd.promise
+}
+
+Application.prototype.determineWebSocketEndpoint = function(path) {
+	var secure = Vizor.useSecureWebSocket || window.location.protocol === 'https:'
+	var wsPort = secure ? 443 : (window.location.port || 80)
+	var wsHost = window.location.hostname
+
+	if (Vizor.webSocketHost)
+		wsHost = Vizor.webSocketHost
+
+	if (secure)
+		wsPort = 443
+
+	var wsUrl = (secure ? 'wss': 'ws') + '://' + 
+	wsHost + ':' + wsPort + path
+
+	return wsUrl
 }
 
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {

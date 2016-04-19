@@ -232,7 +232,9 @@ function renderEditor(res, graph, hasEdits) {
 			layout: layout,
 			graph: graph,
 			hasEdits: hasEdits,
-			releaseMode: releaseMode
+			releaseMode: releaseMode,
+			webSocketHost: process.env.WSS_HOST || '',
+			useSecureWebSocket: releaseMode || !!process.env.WSS_SECURE
 		});
 	}
 
