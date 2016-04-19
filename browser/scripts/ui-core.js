@@ -120,7 +120,6 @@ VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 	window.addEventListener('blur', this._onWindowBlur.bind(this));
 	window.addEventListener('focus', this._onWindowFocus.bind(this));
 	window.addEventListener('resize', this.onWindowResize.bind(this));
-	e2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this));
 	e2.core.on('progress', this.updateProgressBar.bind(this));
 }
 
@@ -377,7 +376,7 @@ VizorUI.prototype.setDragging = function(isOn) {
 /***** IS... *****/
 
 VizorUI.prototype.isFullScreen = function() {
-	return !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+	return E2.util.isFullscreen()
 }
 VizorUI.prototype.isVisible = function() {
 	return this.state.visible;
@@ -786,11 +785,6 @@ VizorUI.prototype.onKeyUp = function(e) {
 	return true;
 };
 
-VizorUI.prototype.onFullScreenChanged = function() {	// placeholder
-	this.flags.fullscreen = this.isFullScreen();
-	return true;
-};
-
 VizorUI.prototype.constrainAllPanels = function() {
 	VizorUI.constrainPanel(this.dom.chatWindow)
 	VizorUI.constrainPanel(this.dom.presetsLib)
@@ -801,6 +795,7 @@ VizorUI.prototype.constrainAllPanels = function() {
 VizorUI.prototype.onWindowResize = function() {
 	this.constrainAllPanels()
 	this.state.context = VizorUI.getContext();
+	this.flags.fullscreen = this.isFullScreen();
 	return true;
 };
 

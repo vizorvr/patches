@@ -95,7 +95,7 @@ var setupWebVRAdapter = exports.setupWebVRAdapter = function() {
 	vw.getDomElementDimensions = function() {
 		return {width: 220, height: 100, devicePixelRatio:1}
 	}
-	vw._onManagerModeChange = function(mode, oldMode){
+	vw._onManagerModeChanged = function(mode, oldMode){
 		this.emit(this.events.modeChanged, mode, oldMode)
 	}
 	vw.setDomElementDimensions = mock
@@ -108,6 +108,7 @@ exports.reset = function() {
 	global.window.screen = {width: 1280, height: 720}
 
 	global.addEventListener = function() {}
+	global.removeEventListener = function() {}
 	global.location = {
 		pathname: 'test/test'
 	}
@@ -121,6 +122,7 @@ exports.reset = function() {
 			src: '',
 			style: {},
 			addEventListener: global.addEventListener,
+			classList: { toggle: function() {}},
 			appendChild: function() {},
 			dispatchEvent: function() {}
 		}
@@ -134,6 +136,7 @@ exports.reset = function() {
 			el.setAttribute = function() {}
 			return el
 		},
+		removeEventListener: function() {},
 		getElementsByTagName: function() {
 			return [ domNode() ]
 		},

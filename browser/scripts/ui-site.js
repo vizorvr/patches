@@ -40,7 +40,8 @@ var siteUI = new function() {
 		var $body = jQuery('body');
 		this._setupDragRecognition()
 
-		$(window).on('resize', this.onResize);
+		$(window).on('resize', this.onResize)
+
 		if (that.hasOrientationChange) {
 			$(window).on('orientationchange', function () {
 				$body
@@ -253,10 +254,8 @@ var siteUI = new function() {
 		});
 
 		var $homePlayerContainer = jQuery('#player_home');
-		var onResize = VizorUI.makeVRCanvasResizeHandler(jQuery('#webgl-canvas'), $homePlayerContainer);
-		$(window).on('resize', onResize);
+		
 		$(window).on('vizorLoaded', function() {
-
 			E2.app.canInitiateCameraMove = function(){return false};	// disable panning on homepage player, see #790
 			E2.app.calculateCanvasArea = function() {
                 return{
@@ -267,8 +266,6 @@ var siteUI = new function() {
 
 			WebVRConfig.canInitiateCameraMove = E2.app.canInitiateCameraMove // see above
 			WebVRConfig.getContainerMeta = E2.app.calculateCanvasArea
-			
-			onResize();
 		});
 
 		jQuery('button#mobileMenuOpenButton').on('mousedown touchdown', function(e){
@@ -305,7 +302,8 @@ var siteUI = new function() {
 				return false;
 			});
 
-			if (that.hasOrientationChange) window.addEventListener('orientationchange', dismissMenu)
+			if (that.hasOrientationChange)
+				window.addEventListener('orientationchange', dismissMenu)
 			window.addEventListener('resize', dismissMenu)
 
 			$mobileMenu.fadeIn('fast');
@@ -480,61 +478,8 @@ siteUI.formatFileSize = function(size) {	// bytes
 
 jQuery('document').ready(siteUI.init);
 
-if (typeof VizorUI === 'undefined') var VizorUI = {};
-
-VizorUI.makeVRCanvasResizeHandler = function($playerCanvas, $containerRef) {
-	if (typeof $containerRef === 'undefined') {
-		msg("ERROR: - using window for $containerRef");
-		$containerRef = jQuery(window);
-	}
-	var oldPixelRatioAdjustedWidth = 0, oldPixelRatioAdjustedHeight = 0
-	var oldFullscreen = null
-
-	return function() {
-		var width = $containerRef.innerWidth()
-		var height = $containerRef.innerHeight()
-		var devicePixelRatio = window.devicePixelRatio || 1;
-		var pixelRatioAdjustedWidth = devicePixelRatio * width;
-		var pixelRatioAdjustedHeight = devicePixelRatio * height;
-
-		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
-
-		if ((oldPixelRatioAdjustedWidth === pixelRatioAdjustedWidth) &&
-			(oldPixelRatioAdjustedHeight === pixelRatioAdjustedHeight) &&
-			(oldFullscreen === isFullscreen))
-			return true
-
-		if (pixelRatioAdjustedWidth * pixelRatioAdjustedHeight === 0) return true	// vr manager interstitial
-
-		if (isFullscreen) {
-			$playerCanvas
-				.removeClass('webgl-canvas-normal')
-				.addClass('webgl-canvas-fs');
-			$containerRef
-				.removeClass('webgl-container-normal')
-				.addClass('webgl-container-fs');
-		} else {
-			$playerCanvas
-				.removeClass('webgl-canvas-fs')
-				.addClass('webgl-canvas-normal');
-			$containerRef
-				.removeClass('webgl-container-fs')
-				.addClass('webgl-container-normal');
-		}
-
-		if (typeof E2 === 'undefined') {
-			console.error('resize handler but no E2')
-			return
-		}
-		E2.core.webVRAdapter.setTargetSize(width, height, devicePixelRatio)
-		E2.core.webVRAdapter.resizeToTarget()
-
-		oldPixelRatioAdjustedWidth = pixelRatioAdjustedWidth
-		oldPixelRatioAdjustedHeight = pixelRatioAdjustedHeight
-		oldFullscreen = isFullscreen
-
-	};
-}
+if (typeof VizorUI === 'undefined')
+	var VizorUI = {};
 
 // youtube only for the time being
 VizorUI.enablePopupEmbedLinks = function($container) {

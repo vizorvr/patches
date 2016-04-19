@@ -1288,6 +1288,9 @@ body.deviceDesktop .tabletDeviceOnly,
 body.deviceMobile .tabletDeviceOnly {
   display: none;
 }
+body.hasHMD #entervr {
+  display: block !important;
+}
 .bootbox.modal,
 .bootbox.modal:before {
   display: block;

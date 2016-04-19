@@ -53,15 +53,22 @@ var hardware = new function() {
 
 	// executes callback if VR present and returns true, or returns false if no VR
 	this.ifVR = function(thenCallback) {
-		if(navigator.getVRDisplays) {	// webvr-polyfill
-			// navigator.getVRDisplays().then(thenCallback)
+		if (navigator.getVRDisplays) {
 			navigator.getVRDisplays()
-				.then(thenCallback, function(err){console.error(err)})
+				.then(thenCallback, function(err) {
+					console.error(err)
+				})
 		} else if(navigator.mozGetVRDevices) {
 			navigator.mozGetVRDevices(thenCallback)
 		} else {
+			thenCallback(false)
 			return false;
 		}
+
 		return true;
 	};
+
+	this.detect = function() {
+		return this.ifVR(this.enumerateVRDevices.bind(this))
+	}
 }

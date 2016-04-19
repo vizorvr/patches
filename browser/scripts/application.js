@@ -1322,7 +1322,7 @@ Application.prototype.selectAll = function() {
  */
 Application.prototype.calculateCanvasArea = function() {
 	var width, height
-	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+	var isFullscreen = E2.util.isFullscreen()
 
 	if (!isFullscreen && !this.condensed_view) {
 		width = $(window).width();
@@ -1340,34 +1340,18 @@ Application.prototype.calculateCanvasArea = function() {
 }
 
 Application.prototype.onWindowResize = function() {
-	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+	if (E2.util.isFullscreen())
+		return
 
-	if (isFullscreen) {
-		E2.core.emit('resize')
-		return;
-	}
-
-	var canvasArea = this.calculateCanvasArea();
-	var width = canvasArea.width;
-	var height = canvasArea.height;
-
-	// Set noodles and DOM element container size
-	E2.dom.canvas_parent.css('width', width);
-	E2.dom.canvas_parent.css('height', height);
+	var canvasArea = this.calculateCanvasArea()
+	var width = canvasArea.width
+	var height = canvasArea.height
 
 	// Set noodles canvas size
-	E2.dom.canvas[0].width = width;
-	E2.dom.canvas[0].height = height;
-	E2.dom.canvas.css('width', width);
-	E2.dom.canvas.css('height', height);
-
-	// set webgl canvas size
-	E2.dom.webgl_canvas[0].width = width;
-	E2.dom.webgl_canvas[0].height = height;
-	E2.dom.webgl_canvas.css('width', width);
-	E2.dom.webgl_canvas.css('height', height);
-
-	E2.core.emit('resize')
+	E2.dom.canvas[0].width = width
+	E2.dom.canvas[0].height = height
+	E2.dom.canvas.css('width', width)
+	E2.dom.canvas.css('height', height)
 
 	this.updateCanvas(true)
 }
@@ -1378,7 +1362,7 @@ Application.prototype.toggleNoodles = function() {
 }
 
 Application.prototype.canInitiateCameraMove = function(e) {
-	return E2.ui.isFullScreen() ||  this.isVRCameraActive() && E2.util.isCanvasInFocus(e)
+	return E2.util.isFullscreen() || this.isVRCameraActive() && E2.util.isCanvasInFocus(e)
 }
 
 Application.prototype.setViewCamera = function(isBirdsEyeCamera) {
@@ -1414,7 +1398,7 @@ Application.prototype.toggleFullscreen = function() {
 		}
 	}
 
-	E2.core.emit('fullScreenChangeRequested')
+	E2.core.webVRAdapter.enterVROrFullscreen()
 }
 
 Application.prototype.toggleHelperObjects = function() {
@@ -1430,23 +1414,6 @@ Application.prototype.toggleHelperObjects = function() {
 		// re-enable world editor if needed
 		this.worldEditor.activate()
 	}
-}
-
-Application.prototype.onFullScreenChanged = function() {
-	var $canvas = E2.dom.webgl_canvas
-	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
-
-	if (isFullscreen) {
-		$canvas.removeClass('webgl-canvas-normal')
-		$canvas.addClass('webgl-canvas-fs')
-	} else {
-		$canvas.removeClass('webgl-canvas-fs')
-		$canvas.addClass('webgl-canvas-normal')
-	}
-
-	E2.app.onWindowResize()
-
-	E2.core.emit('fullScreenChanged')
 }
 
 Application.prototype.onKeyDown = function(e) {
@@ -1475,8 +1442,7 @@ Application.prototype.changeControlState = function()
 	}
 }
 
-Application.prototype.onPlayClicked = function()
-{
+Application.prototype.onPlayClicked = function() {
 	if (this.player.current_state === this.player.state.PLAYING)
 		this.player.pause();
 	else
@@ -1529,7 +1495,6 @@ Application.prototype.navigateToPublishedGraph = function(graphPath, cb) {
 	history.pushState({}, '', graphPath + '/edit')
 	return this.loadGraph(graphUrl, cb)
 }
-
 
 Application.prototype.loadGraph = function(graphPath, cb) {
 	var that = this
@@ -2014,18 +1979,8 @@ Application.prototype.start = function() {
 		e.preventDefault()
 	}, false)
 
-	document.addEventListener('fullscreenchange', this.onFullScreenChanged.bind(this))
-	document.addEventListener('webkitfullscreenchange', this.onFullScreenChanged.bind(this))
-	document.addEventListener('mozfullscreenchange', this.onFullScreenChanged.bind(this))
-
-	window.addEventListener('resize', function() {
-		// avoid ui lag
-		if (that.resize_timer) return
-		that.resize_timer = setTimeout(function(){
-			clearTimeout(that.resize_timer)
-			that.resize_timer = null;
-			that.onWindowResize()
-		}, 100)
+	E2.core.on('resize', function() {
+		that.onWindowResize()
 	})
 
 	// close bootboxes on click

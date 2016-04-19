@@ -2,7 +2,23 @@
  * wraps around and tweaks webvr boilerplate to work with Vizor
  * @emits VizorWebVRAdapter.events
  */
-var VizorWebVRAdapter = function VizorWebVRAdapter(domElement, renderer, effect, options) {
+function VizorWebVRAdapter() {
+	Object.defineProperty(this, 'mode', {
+		get: function() {
+			return that._manager.mode
+		}
+	})
+
+	Object.defineProperty(this, 'hmd', {
+		get: function() {
+			return that._manager.hmd
+		}
+	})
+}
+
+VizorWebVRAdapter.prototype = Object.create(EventEmitter.prototype)
+
+VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, options) {
 	EventEmitter.apply(this, arguments)
 	
 	this.events = VizorWebVRAdapter.events
@@ -15,6 +31,9 @@ var VizorWebVRAdapter = function VizorWebVRAdapter(domElement, renderer, effect,
 	this.modes = WebVRManager.Modes
 
 	this.domElement = domElement	// typically a canvas
+
+	this.proxyOrientationChange = true
+	this.proxyDeviceMotion = (typeof VizorUI !== 'undefined') && VizorUI.isMobile.iOS()
 
 	this.options = options || {
 		hideButton: 	true,
@@ -32,33 +51,20 @@ var VizorWebVRAdapter = function VizorWebVRAdapter(domElement, renderer, effect,
 			this.haveVRDevices = true
 	}
 	this.options.isVRCompatible = this.haveVRDevices
+	if (document.body.classList)
+		document.body.classList.toggle('hasHMD', this.haveVRDevices)
+
 	this._manager = new WebVRManager(renderer, effect, this.options)
 
 	this.patchWebVRManager()
 
 	this._lastTarget = null
 
-
-	Object.defineProperty(this, 'mode', {
-		get: function() {
-			return that._manager.mode
-		}
-	})
-
-	Object.defineProperty(this, 'hmd', {
-		get: function() {
-			return that._manager.hmd
-		}
-	})
-
 	this.attach()
 
 	this._instructionsChanged = false
-
 }
 
-VizorWebVRAdapter.prototype = Object.create(EventEmitter.prototype)
-VizorWebVRAdapter.prototype.constructor = VizorWebVRAdapter
 VizorWebVRAdapter.events = Object.freeze({
 	displayPresentChanged: 	'displaypresentchanged',
 	displayDeviceParamsChanged: 'displaydeviceparamschanged',
@@ -143,17 +149,50 @@ VizorWebVRAdapter.prototype.attach = function() {
 	window.addEventListener('vrdisplaypresentchange', this._onVRPresentChange.bind(this), false)
 	window.addEventListener('vrdisplaydeviceparamschange', this._onVRDisplayDeviceParamsChange.bind(this), false)
 	this._manager.on('initialized', this._onManagerInitialised.bind(this))
-	this._manager.on('modechange', this._onManagerModeChange.bind(this))
+	this._manager.on('modechange', this._onManagerModeChanged.bind(this))
 
-	E2.core.on('fullScreenChangeRequested', this.enterVROrFullscreen.bind(this))
+	this.listenToBrowserEvents()
+}
 
-	E2.core.on('resize', this.resizeToTarget.bind(this))
-	E2.core.on('orientationchange', this.resizeToTarget.bind(this))
+VizorWebVRAdapter.prototype.listenToBrowserEvents = function() {
+	var handler = this._onBrowserResize
+	if (handler) {
+		window.removeEventListener('resize', handler, true)
+		window.removeEventListener('orientationchange', handler, true)
+		document.removeEventListener('webkitfullscreenchange', handler, true)
+		document.removeEventListener('mozfullscreenchange', handler, true)
+		document.removeEventListener('fullscreenchange', handler, true)
+	} else {
+		this._onBrowserResize = this.onBrowserResize.bind(this)
+		handler = this._onBrowserResize
+	}
+	
+	window.addEventListener('resize', handler, true)
+	window.addEventListener('orientationchange', handler, true)
+	document.addEventListener('webkitfullscreenchange', handler, true)
+	document.addEventListener('mozfullscreenchange', handler, true)
+	document.addEventListener('fullscreenchange', handler, true)
+}
 
+VizorWebVRAdapter.prototype.onBrowserResize = function() {
+	var isFullscreen = E2.util.isFullscreen()
+
+	if (document.body.classList && this.domElement) {
+		var elClasses = this.domElement.classList
+		var parentClasses = this.domElement.parentElement.classList
+
+		elClasses.toggle('webgl-canvas-fs', isFullscreen)
+		elClasses.toggle('webgl-canvas-normal', !isFullscreen)
+
+		parentClasses.toggle('webgl-container-fs', isFullscreen)
+		parentClasses.toggle('webgl-container-normal', !isFullscreen)
+	}
+
+	this.resizeToTarget()
 }
 
 VizorWebVRAdapter.prototype.isElementFullScreen = function() {
-	return !!(document.mozFullScreenElement || document.webkitFullscreenElement);
+	return E2.util.isFullscreen()
 }
 
 VizorWebVRAdapter.prototype.setDomElementDimensions = function(width, height, devicePixelRatio) {
@@ -182,6 +221,8 @@ VizorWebVRAdapter.prototype.getDomElementDimensions = function() {
 }
 
 VizorWebVRAdapter.prototype.resizeToTarget = function() {
+	this.domElement.parentElement.style.zoom = 1
+
 	var size = this.getTargetSize()
 	var lastTarget = this._lastTarget
 
@@ -198,17 +239,17 @@ VizorWebVRAdapter.prototype.resizeToTarget = function() {
 	lastTarget.domElement = this.domElement
 	this._lastTarget = lastTarget
 
+	this.setTargetSize(size.width, size.height, size.devicePixelRatio)
+
 	// resolve bug with iOS 9
 	if ((typeof VizorUI !== 'undefined') && VizorUI.isMobile.iOS()) {
 		var p = lastTarget.domElement.parentElement
-		p.style.zoom = 1.001
+		p.style.zoom = 1.1
+		
 		setTimeout(function () {
 			p.style.zoom = 1
-		}, 20)
+		}, 100)
 	}
-
-	this.setTargetSize(size.width, size.height, size.devicePixelRatio)
-
 }
 
 VizorWebVRAdapter.prototype.setTargetSize = function(width, height, devicePixelRatio) {
@@ -218,11 +259,15 @@ VizorWebVRAdapter.prototype.setTargetSize = function(width, height, devicePixelR
 	}
 
 	this.setDomElementDimensions(width, height, devicePixelRatio)
-	this.emit(this.events.targetResized, {
+	var eventData = {
 		width: width,
 		height: height,
 		devicePixelRatio: devicePixelRatio
-	})
+	}
+
+	this.emit(this.events.targetResized, eventData)
+
+	E2.core.emit('resize', eventData)
 }
 
 VizorWebVRAdapter.prototype.getTargetSize = function() {
@@ -248,7 +293,6 @@ VizorWebVRAdapter.prototype.getTargetSize = function() {
 		size.width /= dpr
 		size.height /= dpr
 		size.devicePixelRatio = dpr
-
 	}
 	else {
 		size.width  = domSize.width
@@ -269,23 +313,15 @@ VizorWebVRAdapter.prototype.onMessageReceived = function(e) {
 
 	var proxyEvent
 
-	if (e.data.orientation) {
+	if (this.proxyOrientationChange && e.data.orientation) {
 		proxyEvent = new CustomEvent('orientationchange', {detail: {orientation: e.data.orientation}})
 		window.dispatchEvent(proxyEvent)
 	}
 
-	if (e.data.devicemotion) {
+	if (this.proxyDeviceMotion && e.data.devicemotion) {
 		proxyEvent = new CustomEvent('devicemotion', {detail: {devicemotion: e.data.devicemotion}})
 		window.dispatchEvent(proxyEvent)
 	}
-
-	/*
-	if (e.data.resize) {
-		this.resizeToTarget()
-		proxyEvent = new CustomEvent('resize', {detail: {devicemotion: e.data.resize}})
-		window.dispatchEvent(proxyEvent)
-	}
-	*/
 }
 
 // event proxies
@@ -308,7 +344,7 @@ VizorWebVRAdapter.prototype._onManagerInitialised = function(e) {
 	})
 }
 
-VizorWebVRAdapter.prototype._onManagerModeChange = function(mode, oldMode) {
+VizorWebVRAdapter.prototype._onManagerModeChanged = function(mode, oldMode) {
 
 	if (typeof siteUI !== 'undefined') {
 		siteUI.tagBodyClass()
@@ -328,12 +364,16 @@ VizorWebVRAdapter.prototype._onManagerModeChange = function(mode, oldMode) {
 	}
 
 	this.emit(this.events.modeChanged, mode, oldMode)
+
+	// fix iOS bug
+	this.onBrowserResize()
+
 }
 
 VizorWebVRAdapter.prototype.amendVRManagerInstructions = function() {
 	var r = this.getHmdRotateInstructions()
 
-	if(!r) {
+	if (!r) {
 		console.log('no rotate instructions found')
 		return
 	}
@@ -498,7 +538,7 @@ VizorWebVRAdapter.prototype.setMode = function(mode) {
 			manager.exitFullscreen_()
 			break
 	}
-	this._onManagerModeChange(mode, oldMode)
+	this._onManagerModeChanged(mode, oldMode)
 
 }
 VizorWebVRAdapter.prototype.getHmdRotateInstructions = function() {

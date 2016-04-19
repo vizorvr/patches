@@ -78,17 +78,11 @@
 		Plugin.prototype.update_input.apply(this, arguments)
 	}
 
-	var firstResize = true
 	ThreeWebGLRendererPlugin.prototype.update_state = function() {
 		// workaround for having to share the renderer between render to texture & render to screen
 		// tbd: remove once https://github.com/mrdoob/three.js/pull/6723 is merged into a three release
 
 		this.renderer.setClearColor(this.clearColor)
-
-	    if (firstResize) {
-			this.resize()
-			firstResize = false
-	    }
 
 		if (!this.scene || !this.perspectiveCamera) {
 			this.renderer.clear()
@@ -120,6 +114,10 @@
 		}
 	}
 
+	ThreeWebGLRendererPlugin.prototype.play = function() {
+		// one initial resize
+		this.manager.resizeToTarget()
+	}
 
 	ThreeWebGLRendererPlugin.prototype.patchSceneForWorldEditor = function() {
 		if (E2.app.worldEditor.updateScene) {
@@ -128,18 +126,7 @@
 		}
 	}
 
-	ThreeWebGLRendererPlugin.prototype.play = function() {
-		this.resize()
-	}
-
-	ThreeWebGLRendererPlugin.prototype.onVRPresentChange = function() {
-		// change canvas size
-		this.resize()
-	}
-
-
 	ThreeWebGLRendererPlugin.prototype.onTargetResized = function(s) {
-
 		function updateCamera(camera, s) {
 			camera.aspect = s.width / s.height;
 			camera.updateProjectionMatrix();
@@ -154,36 +141,20 @@
 		this.effect.setSize(s.width, s.height)
 	}
 
-	ThreeWebGLRendererPlugin.prototype.resize = function() {
-		console.log('ThreeWebGLRendererPlugin.resize')
-		return this.manager.resizeToTarget()
-	}
-
-
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
 		if (!ui) {
-			
 			this.domElement = E2.dom.webgl_canvas[0]
 			this.renderer = E2.core.renderer
 
 			var nativeWebVRAvailable = VizorWebVRAdapter.isNativeWebVRAvailable()
-			// for now (three.js r74) VREffect is not compatible with webvr-boilerplate
-			// nor three.js so we use THREE.CardboardEffect instead
-			//if (!window.vizorNativeWebVRAvailable) {
-			//	this.effect = new THREE.CardboardEffect(this.renderer)
-			//}
-			//else {
-				this.effect = new THREE.VREffect(this.renderer)
-			//}
 
-			E2.core.webVRAdapter = new VizorWebVRAdapter(this.domElement, this.renderer, this.effect)
+			this.effect = new THREE.VREffect(this.renderer)
+
 			this.manager = E2.core.webVRAdapter
-			var events = this.manager.events
-			this.manager.on(events.displayPresentChanged, this.onVRPresentChange.bind(this))
-			this.manager.on(events.targetResized, this.onTargetResized.bind(this))
+			this.manager.initialise(this.domElement, this.renderer, this.effect)
 
-			// resize to initial size
-			this.resize()
+			var events = this.manager.events
+			this.manager.on(events.targetResized, this.onTargetResized.bind(this))
 		}
 	}
 
