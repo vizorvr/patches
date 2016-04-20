@@ -3,6 +3,11 @@
  * @emits VizorWebVRAdapter.events
  */
 function VizorWebVRAdapter() {
+	EventEmitter.apply(this, arguments)
+	this.events = VizorWebVRAdapter.events
+
+	this._initialised = false
+
 	Object.defineProperty(this, 'mode', {
 		get: function() {
 			return that._manager.mode
@@ -19,10 +24,6 @@ function VizorWebVRAdapter() {
 VizorWebVRAdapter.prototype = Object.create(EventEmitter.prototype)
 
 VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, options) {
-	EventEmitter.apply(this, arguments)
-	
-	this.events = VizorWebVRAdapter.events
-
 	var that = this
 
 	// only stored here for convenience/debugging
@@ -58,11 +59,16 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 
 	this.patchWebVRManager()
 
+	this._instructionsChanged = false
 	this._lastTarget = null
 
 	this.attach()
 
-	this._instructionsChanged = false
+	// initial sizing
+	this.resizeToTarget()
+	this.emit(this.events.initialized, this.getTargetSize())
+
+	this._initialised = true
 }
 
 VizorWebVRAdapter.events = Object.freeze({
@@ -70,7 +76,8 @@ VizorWebVRAdapter.events = Object.freeze({
 	displayDeviceParamsChanged: 'displaydeviceparamschanged',
 	managerInitialised: 	'webvrmanagerinitialised',
 	modeChanged: 			'vrmodechanged',
-	targetResized: 			'targetsizechanged'
+	targetResized: 			'targetsizechanged',
+	initialised:			'initialised'
 })
 
 VizorWebVRAdapter.prototype.canInitiateCameraMove = function(e) {
@@ -123,7 +130,9 @@ VizorWebVRAdapter.prototype.configure = function() {
 	var r = E2.core.renderer
 	if (typeof r.setSizeNoResize === 'undefined') {
 		console.error('please patch THREE.WebGLRenderer to include a setSizeNoResize method.')
-	} else {
+	}
+	else if (!r.__setSizePatched) {
+		r.__setSizePatched = true
 		r.setSize = function (width, height) {
 			// debug
 			// console.error('renderer.setSize called instead of setSizeNoResize')
@@ -139,6 +148,9 @@ VizorWebVRAdapter.prototype.patchWebVRManager = function() {
 
 	if (m.mode !== this.modes.NORMAL)
 		m.setMode_(this.modes.NORMAL)
+
+	if (m.requestFullscreen__)
+		return
 
 	m.requestFullscreen__ = m.requestFullscreen_
 	m.requestFullscreen_ = function() {
