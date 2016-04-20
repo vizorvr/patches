@@ -6,8 +6,6 @@ function VizorWebVRAdapter() {
 	EventEmitter.apply(this, arguments)
 	this.events = VizorWebVRAdapter.events
 
-	this._initialised = false
-
 	Object.defineProperty(this, 'mode', {
 		get: function() {
 			return that._manager.mode
@@ -66,9 +64,7 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 
 	// initial sizing
 	this.resizeToTarget()
-	this.emit(this.events.initialized, this.getTargetSize())
 
-	this._initialised = true
 }
 
 VizorWebVRAdapter.events = Object.freeze({
@@ -76,8 +72,7 @@ VizorWebVRAdapter.events = Object.freeze({
 	displayDeviceParamsChanged: 'displaydeviceparamschanged',
 	managerInitialised: 	'webvrmanagerinitialised',
 	modeChanged: 			'vrmodechanged',
-	targetResized: 			'targetsizechanged',
-	initialised:			'initialised'
+	targetResized: 			'targetsizechanged'
 })
 
 VizorWebVRAdapter.prototype.canInitiateCameraMove = function(e) {
@@ -131,8 +126,7 @@ VizorWebVRAdapter.prototype.configure = function() {
 	if (typeof r.setSizeNoResize === 'undefined') {
 		console.error('please patch THREE.WebGLRenderer to include a setSizeNoResize method.')
 	}
-	else if (!r.__setSizePatched) {
-		r.__setSizePatched = true
+	else {
 		r.setSize = function (width, height) {
 			// debug
 			// console.error('renderer.setSize called instead of setSizeNoResize')
@@ -236,6 +230,9 @@ VizorWebVRAdapter.prototype.getDomElementDimensions = function() {
 }
 
 VizorWebVRAdapter.prototype.resizeToTarget = function() {
+	if (this.domElement)
+		return
+
 	this.domElement.parentElement.style.zoom = 1
 
 	var size = this.getTargetSize()
