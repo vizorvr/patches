@@ -247,7 +247,11 @@
 		hideWebVRButton: true,
 		releaseMode: {{releaseMode}},
 		webSocketHost: '{{webSocketHost}}',
-		useSecureWebSocket: {{useSecureWebSocket}}
+        {{#if useSecureWebSocket}}
+		    useSecureWebSocket: {{useSecureWebSocket}}
+        {{else}}
+            useSecureWebSocket: false
+        {{/if}}
 	}
 
 	{{#if graph}}
