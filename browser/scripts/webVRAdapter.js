@@ -165,23 +165,55 @@ VizorWebVRAdapter.prototype.attach = function() {
 }
 
 VizorWebVRAdapter.prototype.listenToBrowserEvents = function() {
-	var handler = this._onBrowserResize
-	if (handler) {
-		window.removeEventListener('resize', handler, true)
-		window.removeEventListener('orientationchange', handler, true)
-		document.removeEventListener('webkitfullscreenchange', handler, true)
-		document.removeEventListener('mozfullscreenchange', handler, true)
-		document.removeEventListener('fullscreenchange', handler, true)
+	var resizeHandler = this._onBrowserResize
+	if (resizeHandler) {
+		window.removeEventListener('resize', resizeHandler, true)
+		window.removeEventListener('orientationchange', resizeHandler, true)
+		document.removeEventListener('webkitfullscreenchange', resizeHandler, true)
+		document.removeEventListener('mozfullscreenchange', resizeHandler, true)
+		document.removeEventListener('fullscreenchange', resizeHandler, true)
 	} else {
 		this._onBrowserResize = this.onBrowserResize.bind(this)
-		handler = this._onBrowserResize
+		resizeHandler = this._onBrowserResize
 	}
-	window.addEventListener('resize', handler, true)
-	window.addEventListener('orientationchange', handler, true)
-	document.addEventListener('webkitfullscreenchange', handler, true)
-	document.addEventListener('mozfullscreenchange', handler, true)
-	document.addEventListener('fullscreenchange', handler, true)
+	window.addEventListener('resize', resizeHandler, true)
+	window.addEventListener('orientationchange', resizeHandler, true)
+	document.addEventListener('webkitfullscreenchange', resizeHandler, true)
+	document.addEventListener('mozfullscreenchange', resizeHandler, true)
+	document.addEventListener('fullscreenchange', resizeHandler, true)
+
+	if (this.iOS) {
+		var scrollHandler = this._onScroll
+		if (scrollHandler) {
+			window.removeEventListener('scroll', scrollHandler, false)
+		} else {
+			this._onScroll = this.onScroll.bind(this)
+			scrollHandler = this._onScroll
+		}
+		window.addEventListener('scroll', scrollHandler, false)
+	}
+
 }
+
+VizorWebVRAdapter.prototype.onScroll = function() {
+	// e.g. iOS needs double-checking viewport after it stops scrolling
+	if (this._onScrollTimeout)
+		clearTimeout(this._onScrollTimeout)
+
+	this._onScrollTimeout = setTimeout(function(){
+		if (!this._renderer)
+			return
+		var size = this.getTargetSize()
+		var rendererSize = this._renderer.getSize()
+
+		if ((size.width !== rendererSize.width) || (size.height !== rendererSize.height)) {
+			console.info('correcting target dimensions')
+			this.resizeToTarget()
+		}
+		return true
+	}.bind(this), 300)
+}
+
 
 VizorWebVRAdapter.prototype.onBrowserResize = function() {
 	var isFullscreen = E2.util.isFullscreen()
@@ -198,6 +230,7 @@ VizorWebVRAdapter.prototype.onBrowserResize = function() {
 	}
 
 	this.resizeToTarget()
+
 }
 
 VizorWebVRAdapter.prototype.isElementFullScreen = function() {
@@ -206,9 +239,6 @@ VizorWebVRAdapter.prototype.isElementFullScreen = function() {
 
 VizorWebVRAdapter.prototype.setDomElementDimensions = function(width, height, devicePixelRatio) {
 	var that = this
-
-	if (this._resetZoomTimeout)
-			clearTimeout(this._resetZoomTimeout)
 
 	if (this.iOS)
 		this.domElement.parentElement.style.zoom = 1.1	// see below
@@ -219,24 +249,15 @@ VizorWebVRAdapter.prototype.setDomElementDimensions = function(width, height, de
 	this.domElement.width = width * devicePixelRatio
 	this.domElement.height = height * devicePixelRatio
 
-	if (this.iOS) {
-		// work around what seems to be a bug in iOS 9.3
-		function resetZoom() {
+	if (this.iOS)
+		setTimeout(function() {
 			that.domElement.parentElement.style.zoom = 1
-		}
-
-		this._resetZoomTimeout = setTimeout(function() {
-			resetZoom()
-			that._resetZoomTimeout = setTimeout(resetZoom, 300)
-		}, 30)
-	}
+		}, 10)
 }
 
 VizorWebVRAdapter.prototype.getDomElementDimensions = function() {
 	var ret
 
-	if (this._resetZoomTimeout)
-		clearTimeout(this._resetZoomTimeout)
 	this.domElement.parentElement.style.zoom = 1
 
 	if (this.isElementFullScreen())
@@ -255,28 +276,11 @@ VizorWebVRAdapter.prototype.getDomElementDimensions = function() {
 }
 
 VizorWebVRAdapter.prototype.resizeToTarget = function() {
-
-	var size = this.getTargetSize()
-	var lastTarget = this._lastTarget
-
-	if (lastTarget &&
-			lastTarget.domElement === this.domElement &&
-			lastTarget.width === size.width &&
-			lastTarget.height === size.height &&
-			lastTarget.devicePixelRatio === size.devicePixelRatio) {
-		console.info('resizeToTarget: element and dimensions are the same')
-		// allow
-	}
-
 	if (!this.domElement)
 		return
 
-	lastTarget = size
-	lastTarget.domElement = this.domElement
-	this._lastTarget = lastTarget
-
+	var size = this.getTargetSize()
 	this.setTargetSize(size.width, size.height, size.devicePixelRatio)
-
 }
 
 VizorWebVRAdapter.prototype.setTargetSize = function(width, height, devicePixelRatio) {
@@ -285,7 +289,24 @@ VizorWebVRAdapter.prototype.setTargetSize = function(width, height, devicePixelR
 		return false
 	}
 
+	var lastTarget = this._lastTarget
+
+	if (lastTarget &&
+			lastTarget.domElement === this.domElement &&
+			lastTarget.width === width &&
+			lastTarget.height === height &&
+			lastTarget.devicePixelRatio === devicePixelRatio) {
+		console.info('resizeToTarget: element and dimensions are the same')
+	}
+
 	this.setDomElementDimensions(width, height, devicePixelRatio)
+	this._lastTarget = {
+		width: width,
+		height: height,
+		devicePixelRatio: devicePixelRatio,
+		domElement: this.domElement
+	}
+
 	var eventData = {
 		width: width,
 		height: height,
@@ -293,7 +314,6 @@ VizorWebVRAdapter.prototype.setTargetSize = function(width, height, devicePixelR
 	}
 
 	this.emit(this.events.targetResized, eventData)
-
 	E2.core.emit('resize', eventData)
 }
 
