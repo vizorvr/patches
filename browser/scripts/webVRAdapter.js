@@ -175,7 +175,6 @@ VizorWebVRAdapter.prototype.listenToBrowserEvents = function() {
 		this._onBrowserResize = this.onBrowserResize.bind(this)
 		handler = this._onBrowserResize
 	}
-	
 	window.addEventListener('resize', handler, true)
 	window.addEventListener('orientationchange', handler, true)
 	document.addEventListener('webkitfullscreenchange', handler, true)
@@ -230,7 +229,7 @@ VizorWebVRAdapter.prototype.getDomElementDimensions = function() {
 }
 
 VizorWebVRAdapter.prototype.resizeToTarget = function() {
-	if (this.domElement)
+	if (!(this.domElement && this.domElement.parentElement))
 		return
 
 	this.domElement.parentElement.style.zoom = 1
