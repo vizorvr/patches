@@ -51,6 +51,8 @@ d run -d --name $FQDN \
      -e "ENGI_BIND_PORT=$PORT" \
      -e "KEY_MIXPANEL=$KEY_MIXPANEL" \
      -e "KEY_GA=$KEY_GA" \
+     -e "WSS_HOST=$WSS_HOST" \
+     -e "WSS_SECURE=$WSS_SECURE" \
      -p 127.0.0.1:$PORT:$PORT \
      --link mongo:mongo \
      --link redis:redis $FQDN:v1

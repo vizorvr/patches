@@ -98,21 +98,21 @@ EditorChannel.prototype.getWsChannel = function() {
 }
 
 var reconnecting = false
-EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
+EditorChannel.prototype.connect = function(wsUrl, options) {
 	var that = this
 
 	this.kicked = false
 	this.connected = false
 	this.forking = false
 
-	this.reconnectFn = this.connect.bind(this, wsHost, wsPort, options)
+	this.reconnectFn = this.connect.bind(this, wsUrl, options)
 
 	E2.models.user.once('change', this.onLoginChanged.bind(this))
 
 	// listen to messages from network
 	this.wsChannel = new WebSocketChannel()
 	this.wsChannel
-		.connect(wsHost, wsPort, '/__editorChannel', options)
+		.connect(wsUrl, options)
 		.once('disconnected', function() {
 			if (!that.connected && !reconnecting)
 				return;
