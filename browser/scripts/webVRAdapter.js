@@ -221,12 +221,11 @@ VizorWebVRAdapter.prototype.setDomElementDimensions = function(width, height, de
 
 	if (this.iOS) {
 		// work around what seems to be a bug in iOS 9.3
-		var resetZoom = function () {
+		function resetZoom() {
 			that.domElement.parentElement.style.zoom = 1
 		}
 
-		resetZoom()
-		this._resetZoomTimeout = setTimeout(function () {
+		this._resetZoomTimeout = setTimeout(function() {
 			resetZoom()
 			that._resetZoomTimeout = setTimeout(resetZoom, 300)
 		}, 30)
