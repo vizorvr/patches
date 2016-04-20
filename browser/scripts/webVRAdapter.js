@@ -17,6 +17,7 @@ function VizorWebVRAdapter() {
 			return that._manager.hmd
 		}
 	})
+	this.iOS = navigator.userAgent.match(/iPhone|iPad|iPod/i);
 }
 
 VizorWebVRAdapter.prototype = Object.create(EventEmitter.prototype)
@@ -204,17 +205,40 @@ VizorWebVRAdapter.prototype.isElementFullScreen = function() {
 }
 
 VizorWebVRAdapter.prototype.setDomElementDimensions = function(width, height, devicePixelRatio) {
+	var that = this
+
+	if (this._resetZoomTimeout)
+			clearTimeout(this._resetZoomTimeout)
+
+	if (this.iOS)
+		this.domElement.parentElement.style.zoom = 1.1	// see below
+
 	// the order here is important for iOS
-	this.domElement.parentElement.style.zoom = 1.1	// issue with iOS 9.3
 	this.domElement.style.width = width + 'px'
 	this.domElement.style.height = height + 'px'
 	this.domElement.width = width * devicePixelRatio
 	this.domElement.height = height * devicePixelRatio
-	this.domElement.parentElement.style.zoom = 1
+
+	if (this.iOS) {
+		// work around what seems to be a bug in iOS 9.3
+		function resetZoom() {
+			that.domElement.parentElement.style.zoom = 1
+		}
+
+		this._resetZoomTimeout = setTimeout(function() {
+			resetZoom()
+			that._resetZoomTimeout = setTimeout(resetZoom, 300)
+		}, 30)
+	}
 }
 
 VizorWebVRAdapter.prototype.getDomElementDimensions = function() {
 	var ret
+
+	if (this._resetZoomTimeout)
+		clearTimeout(this._resetZoomTimeout)
+	this.domElement.parentElement.style.zoom = 1
+
 	if (this.isElementFullScreen())
 		ret = {
 			width:  window.innerWidth,
