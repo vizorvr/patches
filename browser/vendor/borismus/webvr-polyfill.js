@@ -2114,10 +2114,10 @@ var kMiddleRadius = 0.75;
 var kInnerRadius = 0.3125;
 
 // Center line thickness in DP.
-var kCenterLineThicknessDp = 2;
+var kCenterLineThicknessDp = 4;
 
 // Button width in DP.
-var kButtonWidthDp = 20;
+var kButtonWidthDp = 28;
 
 // Factor to scale the touch area that responds to the touch.
 var kTouchSlopFactor = 1.5;
@@ -2220,10 +2220,12 @@ CardboardUI.prototype.onResize = function() {
     var buttonBorder = ((kButtonWidthDp * kTouchSlopFactor) - kButtonWidthDp) * dps;
 
     // Build centerline
+    /*
     vertices.push(midline - lineWidth, buttonSize);
     vertices.push(midline - lineWidth, gl.drawingBufferHeight);
     vertices.push(midline + lineWidth, buttonSize);
     vertices.push(midline + lineWidth, gl.drawingBufferHeight);
+    */
 
     // Build gear
     self.gearOffset = (vertices.length / 2);
@@ -2247,8 +2249,6 @@ CardboardUI.prototype.onResize = function() {
     }
 
     self.gearVertexCount = (vertices.length / 2) - self.gearOffset;
-
-/*   // gm: tapping on this does not work in iOS
 
     // Build back arrow
     self.arrowOffset = (vertices.length / 2);
@@ -2278,7 +2278,7 @@ CardboardUI.prototype.onResize = function() {
     addArrowVertex(kButtonWidthDp * dps, buttonScale + lineWidth);
 
     self.arrowVertexCount = (vertices.length / 2) - self.arrowOffset;
-*/
+
     // Buffer data
     gl.bindBuffer(gl.ARRAY_BUFFER, self.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
