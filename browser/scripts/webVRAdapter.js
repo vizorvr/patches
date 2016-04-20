@@ -3,6 +3,9 @@
  * @emits VizorWebVRAdapter.events
  */
 function VizorWebVRAdapter() {
+	EventEmitter.apply(this, arguments)
+	this.events = VizorWebVRAdapter.events
+
 	Object.defineProperty(this, 'mode', {
 		get: function() {
 			return that._manager.mode
@@ -19,10 +22,6 @@ function VizorWebVRAdapter() {
 VizorWebVRAdapter.prototype = Object.create(EventEmitter.prototype)
 
 VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, options) {
-	EventEmitter.apply(this, arguments)
-	
-	this.events = VizorWebVRAdapter.events
-
 	var that = this
 
 	// only stored here for convenience/debugging
@@ -58,11 +57,14 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 
 	this.patchWebVRManager()
 
+	this._instructionsChanged = false
 	this._lastTarget = null
 
 	this.attach()
 
-	this._instructionsChanged = false
+	// initial sizing
+	this.resizeToTarget()
+
 }
 
 VizorWebVRAdapter.events = Object.freeze({
@@ -123,7 +125,8 @@ VizorWebVRAdapter.prototype.configure = function() {
 	var r = E2.core.renderer
 	if (typeof r.setSizeNoResize === 'undefined') {
 		console.error('please patch THREE.WebGLRenderer to include a setSizeNoResize method.')
-	} else {
+	}
+	else {
 		r.setSize = function (width, height) {
 			// debug
 			// console.error('renderer.setSize called instead of setSizeNoResize')
@@ -139,6 +142,9 @@ VizorWebVRAdapter.prototype.patchWebVRManager = function() {
 
 	if (m.mode !== this.modes.NORMAL)
 		m.setMode_(this.modes.NORMAL)
+
+	if (m.requestFullscreen__)
+		return
 
 	m.requestFullscreen__ = m.requestFullscreen_
 	m.requestFullscreen_ = function() {
@@ -224,6 +230,9 @@ VizorWebVRAdapter.prototype.getDomElementDimensions = function() {
 }
 
 VizorWebVRAdapter.prototype.resizeToTarget = function() {
+	if (this.domElement)
+		return
+
 	this.domElement.parentElement.style.zoom = 1
 
 	var size = this.getTargetSize()

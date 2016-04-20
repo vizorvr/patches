@@ -151,10 +151,12 @@
 			this.effect = new THREE.VREffect(this.renderer)
 
 			this.manager = E2.core.webVRAdapter
+			var events = this.manager.events
+
+			this.manager.on(events.targetResized, this.onTargetResized.bind(this))
+
 			this.manager.initialise(this.domElement, this.renderer, this.effect)
 
-			var events = this.manager.events
-			this.manager.on(events.targetResized, this.onTargetResized.bind(this))
 		}
 	}
 
