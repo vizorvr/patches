@@ -258,7 +258,7 @@ exports.reset = function() {
 	
 	E2.core.renderer = {
 		setPixelRatio: function() {},
-		domElement: {},
+		domElement: {parentElement:{style:{}}},
 		setSize: function(){},
 		setClearColor: function() {},
 		getSize: function() {return {width: 1, height: 1}}

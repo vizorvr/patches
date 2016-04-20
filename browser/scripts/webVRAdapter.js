@@ -205,10 +205,12 @@ VizorWebVRAdapter.prototype.isElementFullScreen = function() {
 
 VizorWebVRAdapter.prototype.setDomElementDimensions = function(width, height, devicePixelRatio) {
 	// the order here is important for iOS
+	this.domElement.parentElement.style.zoom = 1.1	// issue with iOS 9.3
 	this.domElement.style.width = width + 'px'
 	this.domElement.style.height = height + 'px'
 	this.domElement.width = width * devicePixelRatio
 	this.domElement.height = height * devicePixelRatio
+	this.domElement.parentElement.style.zoom = 1
 }
 
 VizorWebVRAdapter.prototype.getDomElementDimensions = function() {
@@ -229,10 +231,6 @@ VizorWebVRAdapter.prototype.getDomElementDimensions = function() {
 }
 
 VizorWebVRAdapter.prototype.resizeToTarget = function() {
-	if (!(this.domElement && this.domElement.parentElement))
-		return
-
-	this.domElement.parentElement.style.zoom = 1
 
 	var size = this.getTargetSize()
 	var lastTarget = this._lastTarget
@@ -246,21 +244,15 @@ VizorWebVRAdapter.prototype.resizeToTarget = function() {
 		// allow
 	}
 
+	if (!this.domElement)
+		return
+
 	lastTarget = size
 	lastTarget.domElement = this.domElement
 	this._lastTarget = lastTarget
 
 	this.setTargetSize(size.width, size.height, size.devicePixelRatio)
 
-	// resolve bug with iOS 9
-	if ((typeof VizorUI !== 'undefined') && VizorUI.isMobile.iOS()) {
-		var p = lastTarget.domElement.parentElement
-		p.style.zoom = 1.1
-		
-		setTimeout(function () {
-			p.style.zoom = 1
-		}, 100)
-	}
 }
 
 VizorWebVRAdapter.prototype.setTargetSize = function(width, height, devicePixelRatio) {
