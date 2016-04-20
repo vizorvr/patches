@@ -50,7 +50,7 @@ function ThreeObject3DPlugin(core) {
 
 	this.graphInputs = {
 		position: new THREE.Vector3(0, 0, 0),
-		scale: new THREE.Vector3(1, 1, 1),
+		scale: new THREE.Vector3(0, 0, 0),
 		quaternion: new THREE.Quaternion(0, 0, 0, 1)
 	}
 }
@@ -167,9 +167,9 @@ ThreeObject3DPlugin.prototype.state_changed = function(ui) {
 
 ThreeObject3DPlugin.prototype.updateTransforms = function() {
 	this.object3d.scale.set(
-		this.graphInputs.scale.x * this.state.scale.x,
-		this.graphInputs.scale.y * this.state.scale.y,
-		this.graphInputs.scale.z * this.state.scale.z)
+		this.graphInputs.scale.x + this.state.scale.x,
+		this.graphInputs.scale.y + this.state.scale.y,
+		this.graphInputs.scale.z + this.state.scale.z)
 
 	this.object3d.position.set(
 		this.graphInputs.position.x + this.state.position.x + this.pivot.x,
