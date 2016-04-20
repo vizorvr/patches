@@ -172,12 +172,9 @@ var VizorPlayerUI = function() {
 		}
 	}
 
-	// called in onPlayerLoaded:completeLoading
 	this.bindButtons = function() {
 		function enterFullscreen(e) {
 			mixpanel.track('Enter Fullscreen')
-
-            // webvr manager has extra provisions if in iframe, so E2.core.emit(fullScreenChangeRequested) wont do
 			E2.core.webVRAdapter.enterFullscreen()
             siteUI.tagBodyClass()
         }
