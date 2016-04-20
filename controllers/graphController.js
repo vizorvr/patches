@@ -234,7 +234,7 @@ function renderEditor(res, graph, hasEdits) {
 			hasEdits: hasEdits,
 			releaseMode: releaseMode,
 			webSocketHost: process.env.WSS_HOST || '',
-			useSecureWebSocket: releaseMode || !!process.env.WSS_SECURE
+			useSecureWebSocket: releaseMode || !!process.env.WSS_SECURE || false
 		});
 	}
 
