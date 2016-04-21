@@ -21,7 +21,7 @@
 
 		this.state = { url: '' }
 
-		this.loadingTexture = E2.core.assetLoader.loadingTexture.image
+		this.loadingTexture = E2.core.assetLoader.loadingTexture
 
 		this.leftTexture = this.loadingTexture
 		this.rightTexture = this.loadingTexture
@@ -60,7 +60,7 @@
 			};
 
 			FileSelectControl
-			.createStereoCubeMapSelector(oldValue, function(control) {
+			.createTextureSelector(oldValue, function(control) {
 				control
 				.template('texture')
 				.selected(oldValue)
@@ -138,22 +138,17 @@
 			tileCanvas.height = tileHeight
 
 			var ctx = tileCanvas.getContext('2d')
-			ctx.drawImage(img, 0, j * tileHeight,
+			ctx.drawImage(img, 0, i * tileHeight,
 			tileWidth, tileHeight, 0, 0, tileWidth, tileHeight)
 
 			textures.push(tileCanvas)
 		}
 
 		// left eye
-		var leftTexture = textures.splice(0, 1)
-		leftTexture.needsUpdate = true
+		this.leftTexture = new THREE.Texture(textures[0])
 
 		// right eye
-		var rightTexture = textures.splice(0, 1)
-		rightTexture.needsUpdate = true
-
-		this.leftTexture = leftTexture
-		this.rightTexture = rightTexture
+		this.rightTexture = new THREE.Texture(textures[1])
 
 		this.updated = true
 	}
