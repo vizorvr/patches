@@ -146,9 +146,11 @@
 
 		// left eye
 		this.leftTexture = new THREE.Texture(textures[0])
-
+		this.leftTexture.needsUpdate = true
+		
 		// right eye
 		this.rightTexture = new THREE.Texture(textures[1])
+		this.rightTexture.needsUpdate = true
 
 		this.updated = true
 	}
