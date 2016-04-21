@@ -86,6 +86,8 @@
 
 	ThreeWebGLTextureRendererPlugin.prototype.update_state = function() {
 		// have to reset as the main renderer will override these
+
+		var oldPixelRatio = this.renderer.getPixelRatio()
 		this.renderer.setPixelRatio(1)
 
 		if (this.texture_dirty) {
@@ -98,6 +100,7 @@
 
 		if (!this.scene || !this.perspectiveCamera) {
 			this.renderer.clear()
+			this.renderer.setPixelRatio(oldPixelRatio)
 
 			return
 		}
@@ -108,6 +111,7 @@
 		// set render target to null as otherwise the next renderer will splat over
 		// the render target we just rendered
 		this.renderer.setRenderTarget(null)
+		this.renderer.setPixelRatio(oldPixelRatio)
 	}
 
 	ThreeWebGLTextureRendererPlugin.prototype.state_changed = function(ui) {
