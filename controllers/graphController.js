@@ -203,9 +203,6 @@ GraphController.prototype.index = function(req, res) {
 		})
 
 		var data = {
-			profile: {
-				username: user.username
-			},
 			graphs: list
 		}
 
