@@ -193,7 +193,7 @@ GraphController.prototype.userIndex = function(req, res, next) {
 // GET /graph
 GraphController.prototype.index = function(req, res) {
 	var user = req.user
-	this._service.list()
+	this._service.listWithPreviews()
 	.then(function(list) {
 		if (req.xhr || req.path.slice(-5) === '.json')
 			return res.json(list);

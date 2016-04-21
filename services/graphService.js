@@ -36,6 +36,23 @@ GraphService.prototype.minimalList = function() {
 	return dfd.promise;
 };
 
+GraphService.prototype.listWithPreviews = function() {
+	var dfd = when.defer();
+	this._model
+		.find()
+		.select('owner name previewUrlSmall updatedAt stat')
+		.sort('-updatedAt')
+		.exec(function(err, list)
+	{
+		if (err)
+			return dfd.reject(err);
+		
+		dfd.resolve(list);
+	});
+
+	return dfd.promise;
+};
+
 GraphService.prototype.publicRankedList = function() {
 	var dfd = when.defer()
 
