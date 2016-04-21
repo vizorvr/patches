@@ -171,15 +171,27 @@
 
 		var gazeClickerCount = 0
 
+		function collectClickers(n) {
+			for (var i = 0; i < n.children.length; ++i) {
+				var subTree = n.children[i]
+
+				if (subTree.gazeClickerCount) {
+					gazeClickerCount += subTree.gazeClickerCount
+				}
+				else if (subTree.children.length > 0) {
+					collectClickers(subTree)
+				}
+			}
+		}
+
+		collectClickers(this.object3d)
+
 		for (var i = 0; i < this.object3d.children.length; ++i) {
 			var subTree = this.object3d.children[i]
 
 			subTree.position.x = -center.x
 			subTree.position.y = -center.y
 			subTree.position.z = -center.z
-
-			if (subTree.gazeClickerCount)
-				gazeClickerCount += subTree.gazeClickerCount
 		}
 
 		this.object3d.gazeClickerCount = gazeClickerCount

@@ -317,6 +317,11 @@
         "Animate Vector3 on Trigger": "animate_vector3_on_trigger",
         "Animate Between Input Floats": "array_blend_modulator_float",
         "Animate Between Input Vector3s": "array_blend_modulator_vector3"
+    },
+
+    "EXPERIMENTAL": {
+        "Radial Point Geometry": "radial_point_geometry",
+        "Stereo Cube Map (old)": "stereo_cube_map"
     }
 
 }

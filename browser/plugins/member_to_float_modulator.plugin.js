@@ -46,7 +46,7 @@ E2.p.prototype.update_state = function()
 		return;
 	}
 	
-	this.value = d;
+	this.value = parseFloat(d);
 };
 
 E2.p.prototype.update_output = function(slot)
