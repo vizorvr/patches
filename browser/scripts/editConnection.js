@@ -28,6 +28,8 @@ EditConnection.prototype.hoverSlot = function(node, slot) {
 		this.dstSlot = slot
 	}
 
+	this.dstSlot.is_connected = true
+
 	return can
 }
 

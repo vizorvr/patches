@@ -20,7 +20,7 @@ var UiState = function(persistentStorageRef, context) {
 	EventEmitter.apply(this, arguments)
 	var that = this
 
-	var persistentStorageKey = 'uiState102'
+	var persistentStorageKey = 'uiState105'
 
 	var defineProperty = function(obj, prop, options, callback) {
 		options = _.extend({
@@ -66,12 +66,12 @@ var UiState = function(persistentStorageRef, context) {
 
 	this._internal = {
 		modifyMode 	: uiModifyMode.move,			// does not autosave
+		modifyModeDefault: 	uiModifyMode.move,		//	''	, recall when modifications(keydown) end (keyup)
 		selectedObjects	: []						// [node, ...], does not autosave
 	}
 
 	var emitMain 		= makeEmitter(this)
 	defineGettersAndSetters(this, emitMain)
-
 
 	_.extend(this._internal, {
 		mode 		: uiMode.build,
@@ -91,7 +91,8 @@ var UiState = function(persistentStorageRef, context) {
 			_internal: {
 				chat:		null,
 				presets:	null,
-				assets:		null
+				assets:		null,
+				properties: null
 			}
 		}
 	})
@@ -117,7 +118,8 @@ var UiState = function(persistentStorageRef, context) {
 			panel_chat : true,
 			panel_presets : true,
 			panel_assets : true,
-			patch_editor : false
+			patch_editor : false,
+			panel_properties: false
 		}
 	)
 
@@ -190,6 +192,7 @@ var UiState = function(persistentStorageRef, context) {
 			emitVisibility('panel_chat', v.panel_chat)
 			emitVisibility('panel_presets', v.panel_presets)
 			emitVisibility('panel_assets', v.panel_assets)
+			emitVisibility('panel_properties', v.panel_properties)
 			emitVisibility('floating_panels', v.floating_panels)
 			emitVisibility('patch_editor', v.patch_editor)
 			emitMain('visible', this.visible)
@@ -231,25 +234,30 @@ var UiState = function(persistentStorageRef, context) {
 					if (!oldVisible) {
 						this.patch_editor = false
 					}
-					var noPanelsAreSetToVisible = !(this._internal.panel_chat || this._internal.panel_presets || this._internal.panel_assets)
+					var noPanelsAreSetToVisible = !(this._internal.panel_chat ||
+						this._internal.panel_presets ||
+						this._internal.panel_assets ||
+						this._internal.panel_properties)
 					if (noPanelsAreSetToVisible) {
 						// this.panel_assets = true // not in this build
 						this.panel_chat = true
 						this.panel_presets = true
+						this.panel_properties = true
 					}
 				}
 
 				emitVisibility('panel_chat', this.panel_chat)
 				emitVisibility('panel_presets', this.panel_presets)
 				emitVisibility('panel_assets', this.panel_assets)
+				emitVisibility('panel_properties', this.panel_properties)
 				emitVisibility('floating_panels', this.floating_panels)
 			}
 		}
 	)
 
 	var notifyFloatingPanels = function() {
-		var v = that.visibility
-		var isAnyPanelVisible = (v._internal.panel_chat || v._internal.panel_presets || v._internal.panel_assets)
+		var v = that.visibility, _vi = that.visibility._internal
+		var isAnyPanelVisible = (_vi.panel_chat || _vi.panel_presets || _vi.panel_assets || _vi.panel_properties)
 		if (isAnyPanelVisible && !v.floating_panels) {
 			v.floating_panels = true
 		}
@@ -262,27 +270,50 @@ var UiState = function(persistentStorageRef, context) {
 	this.on('_internal:visibility:panel_chat', notifyFloatingPanels)
 	this.on('_internal:visibility:panel_presets', notifyFloatingPanels)
 	this.on('_internal:visibility:panel_assets', notifyFloatingPanels)
+	this.on('_internal:visibility:panel_properties', notifyFloatingPanels)
+
+	this.visibility._panelLogic = function(which, value) {
+		// the one panel that is shown is set through internal
+		// the other panels that aren't shown are set through their setters
+		var old = this[which]
+		if (value === old) return value
+
+		var panels = ['panel_assets', 'panel_presets', 'panel_properties', 'panel_chat']
+		var ix = panels.indexOf(which)
+		if (ix === -1) {
+			console.error('not found ' + which)
+			return false
+		}
+		delete panels[ix]
+
+		this._internal[which] = value
+		var oldFloatingPanels = this.floating_panels
+		that.emit('_internal:visibility:' + which, value)
+		if (value && !oldFloatingPanels) {
+			for (var p in panels) {
+				this[panels[p]] = false
+			}
+		}
+		var vv = this[which]
+		emitVisibility(which, vv)
+		return vv
+	}
+
+	defineProperty(this._internal.visibility, 'panel_properties', {
+		get : function() {
+			return this.floating_panels && this._internal.panel_properties
+		},
+		set: function(value) {
+			return this._panelLogic('panel_properties', value)
+		}
+	})
 
 	defineProperty(this._internal.visibility, 'panel_chat', {
 			get: function() {
 				return this.floating_panels && this._internal.panel_chat
 			},
-			set: function(value) {	// this = state.visibility
-				var old = this.panel_chat
-				if (value === old) return
-
-				this._internal.panel_chat = value
-				var oldFloatingPanels = this.floating_panels
-				that.emit('_internal:visibility:panel_chat', value)
-
-				if (value) {
-					if (!oldFloatingPanels) {
-						this.panel_assets = false
-						this.panel_presets = false
-					}
-				}
-
-				emitVisibility('panel_chat', this.panel_chat)
+			set: function(value) {	// this = state._internal.visibility
+				return this._panelLogic('panel_chat', value)
 			}
 		}
 	)
@@ -292,20 +323,7 @@ var UiState = function(persistentStorageRef, context) {
 				return this.floating_panels && this._internal.panel_presets
 			},
 			set: function(value) {	// this = state.visibility
-				var old = this.panel_presets
-				if (value === old) return
-
-				this._internal.panel_presets = value
-				var oldFloatingPanels = this.floating_panels
-				that.emit('_internal:visibility:panel_presets', value)
-
-				if (value) {
-					if (!oldFloatingPanels) {
-						this.panel_assets = false
-						this.panel_chat = false
-					}
-				}
-				emitVisibility('panel_presets', this.panel_presets)
+				return this._panelLogic('panel_presets', value)
 			}
 		}
 	)
@@ -315,20 +333,7 @@ var UiState = function(persistentStorageRef, context) {
 				return this.floating_panels && this._internal.panel_assets
 			},
 			set: function(value) {	// this = state.visibility
-				var old = this.panel_assets
-				if (value === old) return
-
-				this._internal.panel_assets = value
-				var oldFloatingPanels = this.floating_panels
-				that.emit('_internal:visibility:panel_assets', value)
-
-				if (value) {
-					if (!oldFloatingPanels) {
-						this.panel_presets = false
-						this.panel_chat = false
-					}
-				}
-				emitVisibility('panel_assets', this.panel_assets)
+				return this._panelLogic('panel_assets', value)
 			}
 		}
 	)
@@ -363,6 +368,7 @@ var UiState = function(persistentStorageRef, context) {
 			emitPanels('chat', this.panelStates.chat)
 			emitPanels('presets', this.panelStates.presets)
 			emitPanels('assets', this.panelStates.assets)
+			emitPanels('properties', this.panelStates.properties)
 		}
 	})
 
@@ -415,6 +421,7 @@ UiState.prototype.getCopy = function() {
 	return {
 		mode: this.mode,
 		modifyMode: this.modifyMode,
+		modifyModeDefault: this.modifyModeDefault,
 		visible: this.visible,
 		viewCamera: this.viewCamera,
 		visibility: clone(this.visibility._internal),
@@ -437,7 +444,12 @@ UiState.prototype._apply = function(newState) {
 	var newVisibility = newState.visibility
 	if (newState.mode) 			internal.mode = newState.mode
 	if (newState.viewCamera) 	internal.viewCamera = newState.viewCamera
-	// modifyMode and selectedObjects ignored
+
+	if (newState.modifyModeDefault) 	{
+		internal.modifyModeDefault = newState.modifyModeDefault
+		internal.modifyMode = internal.modifyModeDefault
+	}
+	// selectedObjects ignored, and modifyMode set to default if one is given
 
 	// take values from supplied visibility, but default to current
 	for (var k in internalVisibility) {
@@ -449,6 +461,7 @@ UiState.prototype._apply = function(newState) {
 		if (ps.chat) 	internalPanelStates.chat = ps.chat
 		if (ps.presets) internalPanelStates.presets = ps.presets
 		if (ps.assets) 	internalPanelStates.assets = ps.assets
+		if (ps.properties) 	internalPanelStates.properties = ps.properties
 	}
 
 	this.emit('replaced', this);

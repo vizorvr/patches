@@ -1,9 +1,13 @@
 <!-- graph #{{_id}} -->
 {{!--
 	graph {
-		owner: 'eesn',
-		name: 'Test graph',
-		updatedAt: 'Wed Oct 14 2015 17:01:37 GMT+0100 (BST)'
+		name: 'test-graph',
+		username: 'eesn'
+		prettyName: 'Test graph'
+		prettyOwner: 'georgi marinov',
+
+		updatedAt: 'Wed Oct 14 2015 17:01:37 GMT+0100 (BST)',
+		size: '1.6Mb'
 
 		_id: (unique identifier)
 		(description:)
@@ -13,23 +17,31 @@
 		}
 	}
 --}}
-
 <article class="graph asset card noselect" data-objectid="{{_id}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
 	<div class="meta scrollbar">
 		<h4 class="editable" data-svgref="icon-ca-rename">{{prettyName}}</h4>
-		<p class="description size">{{size}}</p>
+		<p class="description user size">
+            {{#not-eq this.username profile.username}}
+                <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">@{{owner}}</a>
+            {{/not-eq}}
+            {{size}}</p>
 		<p class="description updatedAt">{{updatedAt}}</p>
 	</div>
 	<div class="image"
-		 {{#if previewUrlSmall}}
+		{{#if previewUrlSmall}}
 		 style="background-image: url('{{previewUrlSmall}}');"
 		{{/if}}
 	>
 		<div class="overlay flexcenter">
 			{{!-- > assets/commonActions id=_id context="graph" --}}
-			<a class="btn action open" data-action="open" href="/{{owner}}/{{name}}">
-				Open
+			<a class="btn action mainaction open svg" data-action="open" href="{{path}}" data-svgref="card-icon-view">
+				<svg /> View
 			</a>
+            {{#eq this.username profile.username }}
+            <a class="btn action mainaction edit svg" data-action="edit" href="{{path}}/edit" data-svgref="player-icon-edit">
+                <svg /> Edit
+            </a>
+            {{/eq}}
 		</div>
 	</div>
 </article>

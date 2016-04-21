@@ -31,6 +31,8 @@ ScreenshotRenderer.prototype.capture = function(width, height) {
 	this.camera.aspect = width / height
 	this.camera.updateProjectionMatrix()
 
+	var oldPixelRatio = this.renderer.getPixelRatio()
+
 	this.renderer.setPixelRatio(1)
 	this.renderer.setClearColor(new THREE.Color(0,0,0))
 	this.renderer.setRenderTarget(texture)
@@ -73,6 +75,8 @@ ScreenshotRenderer.prototype.capture = function(width, height) {
 	context.putImageData(imageData, 0, 0);
 
 	this.renderer.setRenderTarget(null)
+
+	this.renderer.setPixelRatio(oldPixelRatio)
 
 	return canvas.toDataURL()
 }

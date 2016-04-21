@@ -38,6 +38,42 @@
 
 // BOX-SIZING IS BORDER BOX!
 
+.readmore(@vsize, @offsetLeft) {
+  @voffset: @vsize/2 + @offsetLeft;
+  &:before {
+	  content: " ";
+	  position: absolute;
+	  left: 0;
+	  top: 50%;
+	  margin-top: -@vsize/2;
+	  width: @vsize;
+	  height: @vsize;
+	  background: url('/images/v2/chevron.svg') @voffset center no-repeat;
+	  background-size: @vsize - 1;
+	  -webkit-transform: rotate(0deg) translate3d(-@voffset, 0, 0);
+	  -webkit-transition: -webkit-transform 0.1s linear;
+	  transform: rotate(0deg) translate3d(-@voffset, 0, 0);
+	  transition: transform 0.1s linear;
+	}
+	&.open:before {
+	  -webkit-transform: rotate(90deg) translate3d(-@voffset, 0, 0);
+	  transform: rotate(90deg) translate3d(-@voffset, 0, 0);
+	}
+
+	position: relative;
+	display: block;
+
+	padding: 5px 0 5px @vsize;
+
+	&:hover {
+	  text-decoration: none;
+	  cursor: pointer;
+	}
+	&.btn:before {
+	  content:none;
+	}
+}
+
 .modal-body {
   .clearfix()
 }
@@ -322,7 +358,7 @@ body.bMain {
 			border-radius: 3px;
 			font-size: 16px;
 			line-height: 1.33;
-			font-weight: 400;
+			font-weight: 300;
 			color: @color-formcontrol;
 			z-index: 1;
 		}
@@ -531,24 +567,54 @@ section.list {
   }
 }
 
+@color-main-action-button: #afbfdf;
+
 article.asset.card {
 	width: @card-asset-width;
   	height: @card-asset-height;
   	background: white;
   	border-radius: 4px;
   	position:relative;
-	button.open, a.open {
-	  border: 1px solid rgba(255,255,255,0.5);
+
+  	div.overlay {
+	  -webkit-flex-flow: column wrap;
+	  flex-flow: column wrap;
+	  justify-content: center;
+
+	}
+
+	button.mainaction, a.btn.mainaction {
+	  -webkit-flex-grow: 0;
+	  flex-grow: 0;
+	  width: 6.75em;
+	  max-width: 6.75em;
+	  border: 1px solid @color-main-action-button;
+	  border-radius: 3.5px;
+	  color: @color-main-action-button;
 	  background: rgba(0,0,0,0.1);
-	  max-width: 6em;
 	  text-transform: uppercase;
 	  font-weight: 500;
-	  font-size: 90%;
+	  font-size: 85%;
+	  margin: 5px;
+	  padding: 4px 10px;
+	  svg {
+		stroke: @color-main-action-button;
+		vertical-align: -45%;
+		height: 22px;
+		width: 22px;
+		margin-left: -5px;
+		margin-right: 5px;
+	  }
 	  // margin-top:15px;	// post-allowActions
 	  &:hover {
 		border-color: #fff;
+		color: #fff;
+		svg {
+		  stroke: #fff;
+		}
 	  }
 	}
+
   	>div {
 	  position:absolute;
 	  left: 0;
@@ -701,4 +767,98 @@ body.bProfile {
 	padding-left: 0;
 	margin-right: 20px;
   }
+}
+
+// checkbox-rounded-toggle
+// <label><input id="publishPublic" type="checkbox" class="cb-rounded" /><span><!-- firefox --></span></label>
+.toggle-rounded:focus, .toggle-rounded:active {
+	outline: 0;
+}
+
+body.uaFirefox input[type=checkbox].toggle-rounded {
+	visibility: hidden;
+}
+
+body .toggle-rounded+span {
+  display: none;
+}
+body.uaFirefox .toggle-rounded +span {
+  display: inline-block;
+  pointer-events: none;
+  margin-left: -38px;
+}
+.toggle-rounded, body.uaFirefox .toggle-rounded +span {
+	outline: 0;
+	vertical-align: -0.35em;
+	-webkit-touch-callout: none;
+	-webkit-appearance: none;
+	appearance: none;
+	border: 0px solid #666;
+	border-radius: 9px;
+	width: 38px;
+	height: 18px;
+	position: relative;
+	transition: background-color 0.05s 0.05s ease-in;
+  	background: rgba(96,160,255,0.9);
+}
+
+.toggle-rounded::before, body.uaFirefox .toggle-rounded +span:before {
+	content: "";
+	width: 18px;
+	height: 18px;
+	background: #afbfdf;
+	border-radius: 50%;
+	display: inline-block;
+	position: absolute;
+	top: 50%;
+	margin-left: -9px;
+	margin-top: -9px;
+	transition: left 0.12s linear;
+}
+.toggle-rounded::before, .toggle-rounded.off:before,
+body.uaFirefox .toggle-rounded +span:before, body.uaFirefox .toggle-rounded.off+span:before {
+  left: 9px;
+}
+.toggle-rounded:checked, .toggle-rounded.on,
+body.uaFirefox .toggle-rounded:checked+span, body.uaFirefox .toggle-rounded.on+span {
+  	background: @alt;
+	transition: background-color 0.1s 0.03s ease-in;
+}
+
+.toggle-rounded:checked::before, .toggle-rounded.on::before,
+body.uaFirefox .toggle-rounded:checked+span:before, body.uaFirefox .toggle-rounded.on+span:before {
+  left: 29px;
+}
+
+
+@keyframes spinner {
+  from {transform: rotate(0deg)}
+  to {transform: rotate(-360deg)}
+}
+
+.withWaitState {
+  .waitOn {
+	display: none;
+  }
+  .waitOff {
+	display: initial;
+  }
+}
+.withWaitState.waiting, form.loading button.withWaitState {
+  .waitOn {
+	display: initial;
+  }
+  .waitOff {
+	display: none;
+  }
+}
+
+form.loading button.withWaitState.spinner {
+  .waitOn {
+	animation: spinner 1.3s infinite linear;
+  }
+}
+
+.modal form button {
+  font-weight: 400;
 }

@@ -29,6 +29,7 @@ describe('Graph', function() {
 	}
 
 	var agent = request.agent(app)
+	var anonymousAgent = request.agent(app)
 
 	function sendGraph(path, cb) {
 		return agent.post('/graph').send({
@@ -40,7 +41,7 @@ describe('Graph', function() {
 	}
 
 	function sendAnonymousGraph(path, cb) {
-		return agent.post('/graph/v').send({
+		return anonymousAgent.post('/graph/v').send({
 			path: path,
 			graph: graphData
 		})
@@ -464,6 +465,114 @@ describe('Graph', function() {
 			})
 		})
 	})
+
+
+	it('sets editable flag true as default', function(done) {
+		var path = 'graph-editable-'+rand()
+
+		agent.post('/graph').send({
+			path: path,
+			graph: graphData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			assert.ok(res.body.editable === true)
+			done()
+		})
+	})
+
+
+	it('stores editable flag', function(done) {
+		var path = 'graph-editable-'+rand()
+
+		agent.post('/graph').send({
+			path: path,
+			editable: false,
+			graph: graphData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			assert.ok(res.body.editable === false)
+			done()
+		})
+	})
+
+
+
+	it('allows editing on editable=false by owner', function(done) {
+		var path = 'graph-editable-'+rand()
+		var editPath = '/'+username+'/'+path+'/edit'
+
+		agent.post('/graph').send({
+			path: path,
+			editable: false,
+			graph: graphData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+			
+			agent.get(editPath).expect(200).end(done)
+		})
+	})
+
+
+
+	it('denies editing on editable=false by other', function(done) {
+		var path = 'graph-editable-'+rand()
+		var editPath = '/'+username+'/'+path+'/edit'
+
+		agent.post('/graph').send({
+			path: path,
+			editable: false,
+			graph: graphData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+			
+			anonymousAgent.get(editPath).expect(404).end(done)
+		})
+	})
+
+
+
+	it('increases view count on view', function(done) {
+		var path = 'graph-views-'+rand()
+		var viewPath = '/'+username+'/'+path+''
+		var jsonPath = '/'+username+'/'+path+'.json'
+
+		agent.post('/graph').send({
+			path: path,
+			graph: graphData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			assert.equal(0, res.body.views)
+	
+			request(app).get(viewPath).expect(200).end(function(err) {
+				request(app).get(viewPath).expect(200).end(function(err) {
+					if (err) return done(err)
+
+					request(app).get(jsonPath)
+					.expect(200).end(function(err, res) {
+						if (err)
+							return done(err)
+
+						assert.equal(2, res.body.views)
+						done()
+					})
+				})
+			})
+		})
+	})
+
 
 
 })

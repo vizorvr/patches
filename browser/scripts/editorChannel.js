@@ -46,6 +46,7 @@ function isEditAction(m) {
 		case 'uiGraphTreeReordered':
 		case 'uiPluginTransientStateChanged':
 		case 'uiPluginStateChanged':
+		case 'uiSlotValueChanged':
 			return true;
 	}
 
@@ -97,21 +98,21 @@ EditorChannel.prototype.getWsChannel = function() {
 }
 
 var reconnecting = false
-EditorChannel.prototype.connect = function(wsHost, wsPort, options) {
+EditorChannel.prototype.connect = function(wsUrl, options) {
 	var that = this
 
 	this.kicked = false
 	this.connected = false
 	this.forking = false
 
-	this.reconnectFn = this.connect.bind(this, wsHost, wsPort, options)
+	this.reconnectFn = this.connect.bind(this, wsUrl, options)
 
 	E2.models.user.once('change', this.onLoginChanged.bind(this))
 
 	// listen to messages from network
 	this.wsChannel = new WebSocketChannel()
 	this.wsChannel
-		.connect(wsHost, wsPort, '/__editorChannel', options)
+		.connect(wsUrl, options)
 		.once('disconnected', function() {
 			if (!that.connected && !reconnecting)
 				return;
@@ -207,11 +208,15 @@ EditorChannel.prototype._localDispatchHandler = function _localDispatchHandler(p
 	this.fork(payload)
 }
 
+EditorChannel.prototype.queuePayload = function(payload) {
+	this.queue.push(dehydrate(payload))
+}
+
 EditorChannel.prototype.fork = function(payload) {
 	var that = this
 
 	if (this.forking)
-		return this.queue.push(payload)
+		return this.queuePayload(payload)
 
 	this.forking = true
 
@@ -219,7 +224,7 @@ EditorChannel.prototype.fork = function(payload) {
 
 	// FORK
 	var fc = new ForkCommand()
-	fc.fork(payload)
+	fc.fork()
 		.then(function() {
 			E2.ui.updateProgressBar(100)
 			E2.app.growl("We've made a copy of this for you to edit.", 'copy', 5000)
@@ -231,14 +236,18 @@ EditorChannel.prototype.fork = function(payload) {
 		.finally(function() {
 			that.forking = false
 
+			// handle queue formed while forking by
+			// redispatching inside application
 			var forkQueue = that.queue.slice()
 			that.queue = []
 
 			while(forkQueue.length) {
-				var dispatch = forkQueue.pop()
+				var dispatch = forkQueue.shift()
 				// re-dispatch queued events after snapshot
-				E2.app.dispatcher.dispatch(dispatch)
+				E2.app.dispatcher.dispatch(hydrate(dispatch))
 			}
+
+			E2.core.emit('forked')
 		})
 }
 
@@ -319,7 +328,7 @@ EditorChannel.prototype.send = function(payload) {
 	if (this.canSend() && !this.queue.length)
 		return this.sendPayload(payload)
 
-	this.queue.push(payload)
+	this.queuePayload(payload)
 
 	this.processQueue()
 }
@@ -334,11 +343,11 @@ EditorChannel.prototype.processQueue = function() {
 	if (!this.canSend() || !this.queue.length)
 		return;
 
-	var payload = this.queue.pop()
+	var payload = this.queue.shift()
 
 	this.wsChannel.send(
 		payload.channel === 'Global' ? payload.channel : this.channelName,
-		dehydrate(payload))
+		payload)
 
 	this.processQueue()
 }

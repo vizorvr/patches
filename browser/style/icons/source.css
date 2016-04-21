@@ -1,5 +1,6 @@
 .icon-img
 {
+	/*	/less
 	display: block;
 	float: left;
 	position: relative !important;
@@ -10,6 +11,7 @@
 	background-clip: content-box !important;
 	width: 16px;
 	height: 16px;
+	*/
 }
 .icon-absolute_modulator { background: url('absolute-modulator.png'); }
 .icon-accumulate_modulator { background: url('accumulate-modulator.png'); }

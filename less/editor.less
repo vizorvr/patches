@@ -63,7 +63,7 @@ button.vp.svg {	// for (square) buttons with svg icons inside
 	background: none;
 	position: relative;
 	outline: none;
-	padding: none !important;
+	padding: 0 !important;
   	opacity: 0.8;
   	&.p_fade {
 	 	opacity: 0.4;
@@ -204,6 +204,7 @@ div.graph-node {
 			  top: 50%;
 			  left: 50%;
 			  margin: -4px 0 0 -4px;
+			  pointer-events: none;
 			}
 			>svg.p_on {visibility: hidden;}
 		}
@@ -564,7 +565,7 @@ div.graph-node.p_id_color_picker {
 	  border-spacing: 3px;
 	  th, td {
 		text-align: center;
-		padding: 1px 3px;
+		padding: 2px 3px;
 		margin: 3px ! important;
 		font-weight: 600;
 		border:0;
@@ -766,7 +767,8 @@ div.p_id_slider_float_generator .p_content {
   .p_plugin {
 
 	table.slider-table {
-	  width: 181px;
+	  min-width: 181px;
+	  width: 100%;
 	  td {
 		padding: 0;
 		input, span {
@@ -785,6 +787,7 @@ div.p_id_slider_float_generator .p_content {
 		  color: #eee !important;
 		  background: rgba(0,0,0,0.3);
 		  text-align: center;
+		  border:1px solid transparent;
 		}
 
 

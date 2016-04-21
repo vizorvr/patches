@@ -161,11 +161,13 @@ Graph.prototype.removeNode = function(node) {
 Graph.prototype.renameNode = function(node, title) {
 	node.title = title
 	this.emit('nodeRenamed', node)
+	node.emit('renamed', node.get_disp_name())
 }
 
 Graph.prototype.addConnection = function(connection) {
 	this.connections.push(connection)
-
+	connection.src_node.emit('connected', connection)
+	connection.dst_node.emit('connected', connection)
 	return connection
 }
 
@@ -179,11 +181,15 @@ Graph.prototype.disconnect = function(c) {
 	if (index !== -1)
 		this.connections.splice(index, 1)
 
-	if (c.dst_node)
+	if (c.dst_node) {
 		c.dst_node.removeInput(c)
+		c.dst_node.emit('disconnected', c)
+	}
 
-	if (c.src_node)
+	if (c.src_node) {
 		c.src_node.removeOutput(c)
+		c.src_node.emit('disconnected', c)
+	}
 }
 
 Graph.prototype.create_ui = function() {

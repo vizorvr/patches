@@ -21,14 +21,15 @@ var VizorPlayerUI = function() {
 	this.eventNames = {
 		controlsDisplayed	: 'controlsDisplayed',
 		controlsHidden		: 'controlsHidden',
-		vrModeChanged 		: 'vrManagerModeChanged',
-		vrInstructionsShown : 'VRManInstructionsShown',
-		vrInstructionsHidden : 'VRManInstructionsHidden',
+
+		vrInstructionsShown : 'VRInstructionsShown',
+		vrInstructionsHidden : 'VRInstructionsHidden',
 		playerLoaded		: 'vizorLoaded',
 		loadingProgress		: 'progress',
 
 		doneLoading			: 'assetsLoaded',
-		playerStateChanged	: 'player:stateChanged'
+		playerStateChanged	: 'player:stateChanged',
+		playerPlaying		: 'player:playing'
     }
 	var events = this.eventNames
 
@@ -69,6 +70,7 @@ var VizorPlayerUI = function() {
         }
     }
 
+	var enforceStartMode = this.autoplay && !siteUI.isInIframe()
 	this.onPlayerStateChanged = function(newState, old) {
 		var s = E2.app.player.state
 		that.$body
@@ -77,8 +79,13 @@ var VizorPlayerUI = function() {
 			.toggleClass('stopped', newState === s.STOPPED)
 			.toggleClass('loading', newState === s.LOADING)
 
-		if (newState === s.PLAYING)
+		if (newState === s.PLAYING) {
 			that.queueHeaderFadeOut()
+			if (Vizor.startMode && enforceStartMode) {
+				enforceStartMode = false
+				E2.core.webVRAdapter.setMode(Vizor.startMode)
+			}
+		}
 		else
 			that.headerFadeIn()
 	}
@@ -103,11 +110,6 @@ var VizorPlayerUI = function() {
 			}
 		}
 
-		var onResize = VizorUI.makeVRCanvasResizeHandler($canvas, $stage)
-        $(window).on('resize orientationchange', onResize)
-        $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', onResize)
-        onResize()
-
 		that.enableVRcamera()
 
 		// allow 360 to redirect progressbar entirely
@@ -121,7 +123,6 @@ var VizorPlayerUI = function() {
             if (!that.controlsBound) {
                 that.bindHeaderBehaviour()
                 that.bindButtons()
-                that.amendVRManagerInstructions()
                 that.controlsBound = true
             }
         }
@@ -135,12 +136,10 @@ var VizorPlayerUI = function() {
 			})
 			.on(events.vrInstructionsHidden, function () {
 				$canvas.show()
-				onResize()
 			})
 
 		if (siteUI.hasOrientationChange
 			&& VizorUI.isMobile.any()
-//				&& VizorUI.isBrowser.Chrome()
 		) {
 			var allowExtraHeightOnLandscape = function () {
 				if (siteUI.isInIframe())
@@ -167,30 +166,28 @@ var VizorPlayerUI = function() {
 					}
 				}, 500)
 			}
+
 			$(window).on('orientationchange', allowExtraHeightOnLandscape)
 			allowExtraHeightOnLandscape()
 		}
 	}
 
-	// called in onPlayerLoaded:completeLoading
 	this.bindButtons = function() {
 		function enterFullscreen(e) {
 			mixpanel.track('Enter Fullscreen')
-
-            // webvr manager has extra provisions if in iframe, so E2.core.emit(fullScreenChangeRequested) wont do
-            E2.core.webVRManager.onFSClick_()
+			E2.core.webVRAdapter.enterFullscreen()
             siteUI.tagBodyClass()
         }
 
         function enterVR(e) {
 			mixpanel.track('Enter VR')
 
-            if (siteUI.isDeviceDesktop()) {
+            if (siteUI.isDeviceDesktop() && !E2.core.webVRAdapter.isVRCompatible()) {
                 // display "view in VR" sign
                 return that.displayVRPlayerUrl(that.data.shareURL)
             }
 			// else
-            E2.core.webVRManager.onVRClick_()
+			E2.core.webVRAdapter.enterVR()
             siteUI.tagBodyClass()
         }
 
@@ -199,6 +196,7 @@ var VizorPlayerUI = function() {
 
 			e.preventDefault()
 			var data = {
+				origin	: Vizor.origin,
 				shareURL : Vizor.shareURL,
 				embedSrc : Vizor.embedSrc
 			}
@@ -220,6 +218,7 @@ var VizorPlayerUI = function() {
 					return false
 				})
 
+			siteUI.initCollapsible(modal)
 			return false
 		}
 
@@ -312,20 +311,33 @@ var VizorPlayerUI = function() {
 				}
 			})
 
-		var onVRModeChanged = function(e) {
-			var mode = e.detail.mode, oldMode = e.detail.oldMode
+		var onVRModeChanged = function(mode, oldMode) {
+			siteUI.tagBodyClass()
 			if (mode !== 3) {
-				$body.removeClass('inVR')
-				that.headerIsVisible = false
 				that.overHeader = false
 				that.overControls = false
 				that.fadingOut = false
 				that.fadingIn = false
-				that.headerFadeIn()
-				that.queueHeaderFadeOut()
+			}
+			var modes = E2.core.webVRAdapter.modes
+			switch (mode) {
+				case modes.VR:
+					if (that.headerIsVisible)
+						that.headerFadeOut(10)
+					break
+				case modes.MAGIC_WINDOW:
+					if (that.headerIsVisible)
+						that.headerFadeOut()
+					break
+				case modes.NORMAL:
+					that.headerFadeIn()
+					that.queueHeaderFadeOut()
+					break
 			}
 		}
-		$body[0].addEventListener(events.vrModeChanged, onVRModeChanged)
+
+		var w = E2.core.webVRAdapter
+		w.on(w.events.modeChanged, onVRModeChanged)
 
 		setTimeout(function () {
 			if (VizorUI.isMobile.any() && !siteUI.isPortraitLike())
@@ -335,42 +347,12 @@ var VizorPlayerUI = function() {
 		}, 300)
 	}
 
-	// the canvas is positioned absolute within its container, which is sometimes hidden
-	// this makes sure we always return correct dimensions, even when the player isn't fullscreen or alone on the page
-	this.installDimensionsHandler = function() {
-		if (!window.WebVRConfig) window.WebVRConfig = {}
-		WebVRConfig.getContainerMeta = function() {
-			var stage = document.getElementById('stage')
-			var canvas = document.getElementById('webgl-canvas')
-			var ret
-			var fsel = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement
-			if (fsel) {
-				ret = {
-					element: canvas,
-					width :  window.innerWidth,
-					height : window.innerHeight
-				}
-			} else {
-				var r = stage.getBoundingClientRect()
-				ret = {
-					element : stage,
-					width   : r.width,
-					height  : r.height
-				}
-			}
-			// special provision for webvr boilerplate
-			if (!ret.width || !ret.height) {
-				console.error('adjusting dimensions')
-				ret.width = 1
-				ret.height = 1
-			}
-			return ret
-		}
-	}
-
     this.init = function () {
 		var that = this
 		var events = this.eventNames
+
+		if (!window.WebVRConfig) window.WebVRConfig = {}
+		
 		this.controlsBound = false
 		this.$body = $(document.body)
 		this.$canvas = $('#webgl-canvas')
@@ -394,8 +376,6 @@ var VizorPlayerUI = function() {
 		if (Vizor.isEmbedded && (!siteUI.isDeviceDesktop()) && !siteUI.isInIframe()) {
 			$('button#fullscreen').hide()
 		}
-
-		this.installDimensionsHandler()
 
 		// PLAYER LOADED
 		// binds buttons, defines the header behaviour and other things
@@ -452,7 +432,16 @@ VizorPlayerUI.prototype.suspendVRcamera = function() {
 }
 
 VizorPlayerUI.prototype.enableVRcamera = function() {
+	var that = this
 	this.vrCameraEnabled = true
+
+	var canMoveCamera = function(e){
+		var isKeyboard = (e instanceof KeyboardEvent) && (e.target === document.body)
+		var isCanvas = (!isKeyboard) && E2.util.isCanvasInFocus(e)
+		return siteUI.isFullScreen() || that.vrCameraEnabled && (isKeyboard || isCanvas)
+	}
+	WebVRConfig.canInitiateCameraMove = canMoveCamera
+	E2.app.canInitiateCameraMove = canMoveCamera
 }
 
 VizorPlayerUI.prototype.play = function() {
@@ -462,45 +451,6 @@ VizorPlayerUI.prototype.play = function() {
 			var $err = that.selectStage('errorStage')
 			$err.html(err)
 		})
-}
-
-VizorPlayerUI.prototype.amendVRManagerInstructions = function() {
-	var r = E2.core.webVRManager.rotateInstructions
-	var o = r.overlay
-	o.className = 'VRInstructions'
-
-	var originalImage = o.getElementsByTagName('IMG')
-	originalImage[0].style.display = 'none';
-
-	var svg = $('<svg><use xlink:href="#player-mobile-graphic"></use>')
-	svg.css({
-		'margin-left': '-92px',
-		'margin-top': '-54px',
-		'left': '50%',
-		'top': '35%',
-		'position' : 'absolute',
-		'width': '184px',
-		'height': '108px',
-		'display': 'block'
-	})
-	$(o)
-		.css({
-			'height': '100%'
-		})
-		.prepend(svg)
-	r.text.innerHTML = r.text.innerHTML.replace("Cardboard viewer", "VR viewer")
-	// if not bound directly, it sometimes stops working when reloading player files
-	var onclick = "E2.core.webVRManager.onBackClick_();siteUI.tagBodyClass();return false;"
-	r.text.innerHTML += "<br /><br /><button style='color:white' onclick='"+onclick+"' id='backfromvr'>Exit VR view</button>"
-
-	$(r.text).css({
-		position: 'absolute',
-		top: '50%'
-	})
-	r.overlay.style.color = '#ccc'
-	r.overlay.style.background = '#2b2f37'
-	r.overlay.style.zIndex = "100"
-	$('div:last-child', r.overlay)[0].style.display = 'none'
 }
 
 VizorPlayerUI.prototype.headerDisableAutoFadeout = function() {

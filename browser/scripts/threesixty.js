@@ -79,7 +79,6 @@ var vizor360 = new function() {
 				$body.removeClass('firsttime')
 				that.minProgress = 0
 				playerUI.headerFadeOut()
-				playerUI.amendVRManagerInstructions()
 				return true
 			}
 			return false
@@ -94,7 +93,10 @@ var vizor360 = new function() {
 			path: asset.path
 		})
 
-		E2.app.player.loadAndPlay(asset.url, true);
+		E2.app.player.loadAndPlay(asset.url, true)
+			.then(function(){
+				$('#sharebutton').show()
+			})
 	}
 
 	// STEP 3
@@ -433,7 +435,7 @@ var vizor360 = new function() {
 		button.id = 'uploadbutton'
 		span.innerText = 'Upload'
 
-		var controlsDiv = document.getElementById('topbar').getElementsByTagName('div')[0]
+		var controlsDiv = document.getElementById('topbar').getElementsByTagName('div')[1]
 		controlsDiv.appendChild(button)
 
 		var handler = function(e) {
@@ -494,8 +496,10 @@ var vizor360 = new function() {
 			initial: true
 		}, null)
 
-		if (Window.Vizor && (Vizor.graphName === ''))
+		if (window.Vizor && (Vizor.graphName === '')) {
 			playerUI.headerDisableAutoFadeout()
+			$('#sharebutton').hide()
+		}
 	}
 }
 

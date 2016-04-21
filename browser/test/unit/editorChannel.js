@@ -1,6 +1,7 @@
 var assert = require('assert')
 var when = require('when')
 
+global._ = require('lodash')
 global.EventEmitter = require('events').EventEmitter
 
 var EditorChannel = require('../../scripts/editorChannel')
@@ -10,9 +11,6 @@ describe('EditorChannel', function() {
 	var forkPromise
 
 	beforeEach(function() {
-		global._ = {
-			clone: function() {}
-		}
 		global.E2 = {
 			ui: {
 				updateProgressBar: function() {}
@@ -56,6 +54,7 @@ describe('EditorChannel', function() {
 	})
 
 	it('processes queue if it can send', function() {
+		ec.channelName = 'foo'
 		ec.send({ actionType: 'uiMouseMoved' })
 		ec.send({ actionType: 'uiMouseClicked' })
 		ec.connected = true

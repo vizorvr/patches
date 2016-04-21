@@ -41,9 +41,13 @@ function Player() {
 Player.prototype.play = function() {
 	if (this.current_state === this.state.PLAYING)
 		return;
+
 	this.core.root_graph.play()
 	this.current_state = this.state.PLAYING
 	this.last_time = (new Date()).getTime()
+
+	E2.core.emit('player:playing')
+
 	if (!this.interval) {
 		this.interval = requestAnimFrame(this.on_anim_frame.bind(this))
 	}
@@ -241,6 +245,8 @@ function CreatePlayer(vr_devices, cb) {
 	E2.app.canInitiateCameraMove = function(e) {
 		return (e && e.target.tagName === 'CANVAS')  // #790
 	}
+
+	WebVRConfig.canInitiateCameraMove = E2.app.canInitiateCameraMove
 
 	// Shared gl context for three
 	var gl_attributes = {

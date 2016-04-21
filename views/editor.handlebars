@@ -31,12 +31,12 @@
 
 			<div class="buttons button-group" id="grpPatchControls">
 				<button class="svg btn" id="btn-save-patch" data-svgref="icon-save-patch"><svg /> Save Patch</button>
-				<button class="svg btn" id="btn-inspector" data-svgref="icon-inspector"><svg /> Inspector</button>
 			</div>
 
 			<div class="spacer"></div>
 
 			<div class="buttons button-group" id="grpToggles">
+                <button class="svg btn" id="btn-inspector" data-svgref="icon-inspector"><svg /> Inspector</button>
 				<button class="btn svg" id="btn-presets" data-svgref="icon-presets"><svg /> Patches</button>
 				{{!-- <button class="btn svg" id="btn-graph" data-svgref="icon-graph"><svg /> Graph</button>
 					#676 <button class="btn" id="btn-assets" data-svgref="icon-assets"><svg /> Assets</button> --}}
@@ -69,6 +69,25 @@
 <pre class="info-pane" id="dbg"></pre>
 
 <div id="canvases">
+
+<div id="properties-panel" class="properties-block vp-library floating-box" style="display:none">
+    <div class="block-header">
+        <button class="toggle-button" id="properties-toggle" type="button">
+            <svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
+        </button>
+         <ul class="nav nav-tabs">
+            <li class="active ui_on"><a href="#obj3dPropertiesPane">Properties</a></li>
+            <li><a href="#nodePropertiesPane">Node</a></li>
+         </ul>
+        <button class="close-button" id="properties-close" type="button">
+            <svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
+        </button>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane active" id="obj3dPropertiesPane"></div>
+        <div class="tab-pane" id="nodePropertiesPane"></div>
+    </div>
+</div>
 
 <div class="shader-block floating-box" id="shader-block" style="display:none">
 		<div class="block-header">
@@ -226,7 +245,9 @@
 
 	window.Vizor = {
 		hideWebVRButton: true,
-		releaseMode: {{releaseMode}}
+		releaseMode: {{releaseMode}},
+		webSocketHost: '{{webSocketHost}}',
+		useSecureWebSocket: {{useSecureWebSocket}}
 	}
 
 	{{#if graph}}

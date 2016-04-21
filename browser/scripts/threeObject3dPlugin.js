@@ -9,8 +9,8 @@ function ThreeObject3DPlugin(core) {
 		{ name: 'scale', dt: core.datatypes.VECTOR, def: new THREE.Vector3(1, 1, 1) },
 
 		{ name: 'visible', dt: core.datatypes.BOOL, def: true },
-		{ name: 'castShadow', dt: core.datatypes.BOOL, def: true },
-		{ name: 'receiveShadow', dt: core.datatypes.BOOL, def: true },
+		{ name: 'castShadow', dt: core.datatypes.BOOL, def: true, label: "Cast shadow" },
+		{ name: 'receiveShadow', dt: core.datatypes.BOOL, def: true, label: "Receive shadows" },
 
 		{ name: 'name', dt: core.datatypes.TEXT, def: ''},
 
@@ -24,7 +24,9 @@ function ThreeObject3DPlugin(core) {
 			name:   'lock transform',
 			dt:     core.datatypes.BOOL,
 			def:    false,
-			desc:   'if enabled, this object\'s transform is locked and can\'t be adjusted in the 3d editor.'
+			label:  "Lock transform controls",
+			desc:   'if enabled, this object\'s transform is locked and can\'t be adjusted in the 3d editor.',
+			patchable: false
 		}
 	]
 
@@ -61,10 +63,7 @@ ThreeObject3DPlugin.prototype.reset = function() {
 	if (!this.object3d)
 		this.setObject3D(new THREE.Object3D())
 
-	this.object3d.scale.set(this.state.scale.x, this.state.scale.y, this.state.scale.z)
-	this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
-	this.object3d.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
-
+	this.updateTransforms()
 }
 
 ThreeObject3DPlugin.prototype.setObject3D = function(newObject3d) {
@@ -166,14 +165,7 @@ ThreeObject3DPlugin.prototype.state_changed = function(ui) {
 	}
 }
 
-ThreeObject3DPlugin.prototype.update_state = function() {
-	if (this.object3d.layers !== this.inputValues['stereo view']) {
-		var that = this
-		this.object3d.traverse(function(n) {
-			n.layers.set(that.inputValues['stereo view'])
-		})
-	}
-
+ThreeObject3DPlugin.prototype.updateTransforms = function() {
 	this.object3d.scale.set(
 		this.graphInputs.scale.x + this.state.scale.x,
 		this.graphInputs.scale.y + this.state.scale.y,
@@ -191,6 +183,17 @@ ThreeObject3DPlugin.prototype.update_state = function() {
 		this.state.quaternion._w)
 
 	this.object3d.quaternion.multiply(this.graphInputs.quaternion)
+}
+
+ThreeObject3DPlugin.prototype.update_state = function() {
+	if (this.object3d.layers !== this.inputValues['stereo view']) {
+		var that = this
+		this.object3d.traverse(function(n) {
+			n.layers.set(that.inputValues['stereo view'])
+		})
+	}
+
+	this.updateTransforms()
 }
 
 ThreeObject3DPlugin.prototype.canEditPosition = function() {

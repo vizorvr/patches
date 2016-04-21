@@ -9,7 +9,7 @@ var isStringEmpty = require('../lib/stringUtil').isStringEmpty
 var PreviewImageProcessor = require('../lib/previewImageProcessor');
 
 var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
-var SerialNumber = require('../lib/serialNumber')
+var SerialNumber = require('redis-serial')
 
 var User = require('../models/user')
 var EditLog = require('../models/editLog')
@@ -23,13 +23,19 @@ var hashids = new Hashids(secrets.sessionSecret)
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 
+function render404(res) {
+	res.status(404).render('error', {
+		message: 'Not found'
+	})
+}
+
 function makeHashid(serial) {
 	return hashids.encode(serial)
 }
 
-function makeCardName(name) {
+function makeCardName(cardName) {
 	var maxLen = 22
-	var nameParts = name.split(' ')
+	var nameParts = cardName.split(' ')
 	var name = nameParts.shift()
 
 	function addNamePart() {
@@ -55,23 +61,25 @@ function prettyPrintGraphInfo(graph) {
 	// 'this-is-a-graph' => 'This Is A Graph'
 	var graphName = graph.name.split('-')
 		.map(s => s.charAt(0).toUpperCase() + s.slice(1))
-		.join(' ');
+		.join(' ')
 
 	// Figure out if the graph owner has a fullname
 	// Use that if does, else use the username for display
-	var graphOwner;
+	var graphOwner
 	var creator = graph._creator
 	if (creator && creator.name && !isStringEmpty(creator.name)) {
-		graphOwner = creator.name;
+		graphOwner = creator.name
+		graph.username = creator.username
 	} else {
 		if (graph.owner)
 			graphOwner = graph.owner
 		else
 			graphOwner = 'anonymous'
+		graph.username = graphOwner
 	}
 
 	graph.prettyOwner = graphOwner
-	graph.prettyName = graphName
+	graph.prettyName = makeCardName(graphName)
 
 	graph.size = ''
 
@@ -81,6 +89,17 @@ function prettyPrintGraphInfo(graph) {
 	}
 
 	return graph
+}
+
+function makeGraphSummary(req,graph) {
+	graph = prettyPrintGraphInfo(graph)
+	return {
+		graphMinUrl: 	graph.url,
+		graphName: 		graph.prettyName,
+		previewImage: 	'http://' + req.headers.host + graph.previewUrlLarge,
+		playerVersion: 	graph.version,
+		stat:			graph.stat
+	}
 }
 
 function GraphController(s, gfs, mongoConnection) {
@@ -98,10 +117,34 @@ function GraphController(s, gfs, mongoConnection) {
 	this.previewImageProcessor = new PreviewImageProcessor()
 }
 
-GraphController.prototype = Object.create(AssetController.prototype);
+GraphController.prototype = Object.create(AssetController.prototype)
 
+GraphController.prototype.publicRankedIndex = function(req, res, next) {
+	this._service.publicRankedList()
+	.then(function(list) {
+		list.map(function(graph) {
+			graph = prettyPrintGraphInfo(graph)
+			graph.prettyName = makeCardName(graph.prettyName)
+		})
+
+		if (req.xhr) {
+			return res.json(helper.responseStatusSuccess('OK', list))
+		}
+
+		res.render('server/pages/browse', {
+			meta : {
+				title: 'Vizor - Browse',
+				bodyclass: 'bBrowse',
+				scripts : ['site/userpages.js']
+			},
+			graphs: list
+		})
+	})
+	.catch(next)
+}
+
+// GET /fthr
 GraphController.prototype.userIndex = function(req, res, next) {
-	var wantJson = req.xhr;
 	var username = req.params.model
 
 	var that = this
@@ -118,9 +161,8 @@ GraphController.prototype.userIndex = function(req, res, next) {
 				return next()
 			}
 
-			list.map(function(graph) {
-				graph = prettyPrintGraphInfo(graph)
-				graph.prettyName = makeCardName(graph.prettyName)
+			list = list.map(function(graph) {
+				return prettyPrintGraphInfo(graph.toJSON())
 			})
 
 			var data = {
@@ -130,7 +172,7 @@ GraphController.prototype.userIndex = function(req, res, next) {
 				graphs: list || []
 			}
 
-			if (wantJson) {
+			if (req.xhr) {
 				return res.status(200).json(
 					helper.responseStatusSuccess("OK", data))
 			}
@@ -150,24 +192,27 @@ GraphController.prototype.userIndex = function(req, res, next) {
 
 // GET /graph
 GraphController.prototype.index = function(req, res) {
+	var user = req.user
 	this._service.list()
 	.then(function(list) {
 		if (req.xhr || req.path.slice(-5) === '.json')
 			return res.json(list);
 
-		list.map(function(graph) {
-			graph = prettyPrintGraphInfo(graph)
-			graph.prettyName = makeCardName(graph.prettyName)
+		list = list.map(function(graph) {
+			return prettyPrintGraphInfo(graph.toJSON())
 		})
 
 		var data = {
+			profile: {
+				username: user.username
+			},
 			graphs: list
 		}
 
 		_.extend(data, {
 			meta : {
 				title: 'Graphs',
-				bodyclass: 'bUserpage',
+				bodyclass: 'bGraphs',
 				scripts : ['site/userpages.js']
 			}
 		});
@@ -187,7 +232,9 @@ function renderEditor(res, graph, hasEdits) {
 			layout: layout,
 			graph: graph,
 			hasEdits: hasEdits,
-			releaseMode: releaseMode
+			releaseMode: releaseMode,
+			webSocketHost: process.env.WSS_HOST || '',
+			useSecureWebSocket: releaseMode || !!process.env.WSS_SECURE || false
 		});
 	}
 
@@ -213,6 +260,12 @@ GraphController.prototype.edit = function(req, res, next) {
 
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
+		if (graph && graph.editable === false) {
+			if (!req.user || req.user.id !== graph._creator.id) {
+				return render404(res)
+			}
+		}
+
 		EditLog.hasEditsByName(that.redisClient, req.params.path.substring(1))
 		.then(function(hasEdits) {
 			renderEditor(res, graph, hasEdits)
@@ -231,10 +284,12 @@ GraphController.prototype.latest = function(req, res) {
 }
 
 function renderPlayer(graph, req, res, options) {
-	graph = prettyPrintGraphInfo(graph)
+	graph.increaseViewCount()
+
+	var graphJson = prettyPrintGraphInfo(graph.toJSON())
 
 	// which version of player to use?
-	var version = graph.version || packageJson.version
+	var version = graphJson.version || packageJson.version
 	version = version.split('.').slice(0,2).join('.')
 
 	res.render('graph/show', {
@@ -242,14 +297,15 @@ function renderPlayer(graph, req, res, options) {
 		playerVersion: version,
 		autoplay: !!(options && options.autoplay),
 		noHeader: options.noHeader || false,
-		isEmbedded: options.isEmbed || false,
-		graph: graph,
-		graphMinUrl: graph.url,
-		graphName: graph.prettyName,
-		graphOwner: graph.prettyOwner,
-		previewImage: 'http://' + req.headers.host + graph.previewUrlLarge,
+		isEmbedded: options.isEmbedded || false,
+		graph: graphJson,
+		graphMinUrl: graphJson.url,
+		graphName: graphJson.prettyName,
+		graphOwner: graphJson.prettyOwner,
+		previewImage: 'http://' + req.headers.host + graphJson.previewUrlLarge,
 		previewImageWidth: 1280,
-		previewImageHeight: 720
+		previewImageHeight: 720,
+		startMode : options.startMode || 1
 	})
 }
 
@@ -260,21 +316,42 @@ GraphController.prototype.embed = function(req, res, next) {
 		if (!graph)
 			return next()
 
+		var autoplay = false
+		if (req.query.no_fullscreen === 'true') autoplay = true
+
+		// webvrmanager/boilerplate
+		var startMode = parseInt(req.query.start_mode)
+		if (isNaN(startMode)) startMode = 1
+
 		return renderPlayer(graph, req, res, {
-			isEmbed: true,
-			autoplay: req.query.autoplay || false,
-			noHeader: req.query.noheader || false
+			isEmbedded: true,
+			autoplay: req.query.autoplay || autoplay,
+			noHeader: req.query.noheader || false,
+			startMode : startMode
 		})
 	}).catch(next)
 }
 
+
 // GET /fthr/dunes-world
+// GET /fthr/dunes-world?summmary=1
 GraphController.prototype.graphLanding = function(req, res, next) {
+	var wantSummary = req.query.summary || false
+
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
+
+		if (wantSummary) {
+			if (!graph)
+					return res.status(404).json(helper.responseStatusError('not found'))
+
+			var data = makeGraphSummary(req,graph.toJSON())
+			return res.json(helper.responseStatusSuccess('found', data))
+		}
+
 		if (!graph)
 			return next()
-
+		
 		return renderPlayer(graph, req, res, {
 			autoplay: true
 		})
@@ -410,6 +487,7 @@ GraphController.prototype.saveAnonymous = function(req, res, next) {
 GraphController.prototype.save = function(req, res, next) {
 	var that = this;
 	var path = this._makePath(req, req.body.path);
+	var wantsPrivate = !req.body.isPublic 	// !!req.body.private
 	var gridFsGraphPath = '/graph'+path+'.json';
 
 	var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
@@ -468,7 +546,9 @@ GraphController.prototype.save = function(req, res, next) {
 				path: path,
 				tags: tags,
 				url: url,
+				private: wantsPrivate,
 				hasAudio: !!analysis.hasAudio,
+				editable: req.body.editable === false ? false : true,
 				stat: {
 					size: analysis.size,
 					numAssets: analysis.numAssets

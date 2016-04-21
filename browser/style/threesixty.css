@@ -570,23 +570,24 @@ header nav ul.dropdown-menu li {
   display: table-cell;
   float: none;
 }
-.block-header .nav-tabs > li > a {
+.block-header .nav-tabs > li > a,
+.block-header .nav-tabs > li > span {
   border-radius: 0;
   border: 0;
   margin: 0;
-  padding: 16px;
-  box-sizing: border-box;
   text-decoration: none;
+  background: none;
 }
+.block-header .nav-tabs > li > span,
 .block-header .nav-tabs > li > a,
-.nav-tabs > li > a:active {
+.block-header .nav-tabs > li > a:active {
   padding-top: 8.75px;
   height: 37px;
   outline: none;
   color: #515c75;
 }
 .block-header .nav-tabs > li > a:hover,
-.nav-tabs > li > a:focus {
+.block-header .nav-tabs > li > a:focus {
   background: #1f2331;
   color: #ffffff;
 }
@@ -991,7 +992,7 @@ header nav ul.dropdown-menu li {
 .drag-handle {
   cursor: grab;
   position: relative;
-  height: 18px;
+  height: 14px;
   width: 100%;
   background: #262c3d;
   border-bottom: 1px solid #1e2331;
@@ -1287,6 +1288,9 @@ body.deviceDesktop .tabletDeviceOnly,
 body.deviceMobile .tabletDeviceOnly {
   display: none;
 }
+body.hasHMD #entervr {
+  display: block !important;
+}
 .bootbox.modal,
 .bootbox.modal:before {
   display: block;
@@ -1429,7 +1433,7 @@ body.deviceMobile .tabletDeviceOnly {
   border-radius: 3px;
   font-size: 16px;
   line-height: 1.33;
-  font-weight: 400;
+  font-weight: 300;
   color: #ffffff;
   z-index: 1;
 }
@@ -1707,7 +1711,7 @@ body.deviceMobile .tabletDeviceOnly {
   padding: 0;
 }
 .bootbox.modal.nopad .modal-body form {
-  margin: 20px 40px;
+  margin: 18px 26px;
 }
 .bootbox.modal.nopad .modal-body p.left {
   text-align: left;
@@ -2510,7 +2514,7 @@ body.bMain #contentwrap > div.in form div.form-input > input {
   border-radius: 3px;
   font-size: 16px;
   line-height: 1.33;
-  font-weight: 400;
+  font-weight: 300;
   color: #333;
   z-index: 1;
 }
@@ -2774,18 +2778,44 @@ article.asset.card {
   border-radius: 4px;
   position: relative;
 }
-article.asset.card button.open,
-article.asset.card a.open {
-  border: 1px solid rgba(255, 255, 255, 0.5);
+article.asset.card div.overlay {
+  -webkit-flex-flow: column wrap;
+  flex-flow: column wrap;
+  justify-content: center;
+}
+article.asset.card button.mainaction,
+article.asset.card a.btn.mainaction {
+  -webkit-flex-grow: 0;
+  flex-grow: 0;
+  width: 6.75em;
+  max-width: 6.75em;
+  border: 1px solid #afbfdf;
+  border-radius: 3.5px;
+  color: #afbfdf;
   background: rgba(0, 0, 0, 0.1);
-  max-width: 6em;
   text-transform: uppercase;
   font-weight: 500;
-  font-size: 90%;
+  font-size: 85%;
+  margin: 5px;
+  padding: 4px 10px;
 }
-article.asset.card button.open:hover,
-article.asset.card a.open:hover {
+article.asset.card button.mainaction svg,
+article.asset.card a.btn.mainaction svg {
+  stroke: #afbfdf;
+  vertical-align: -45%;
+  height: 22px;
+  width: 22px;
+  margin-left: -5px;
+  margin-right: 5px;
+}
+article.asset.card button.mainaction:hover,
+article.asset.card a.btn.mainaction:hover {
   border-color: #fff;
+  color: #fff;
+}
+article.asset.card button.mainaction:hover svg,
+article.asset.card a.btn.mainaction:hover svg {
+  stroke: #fff;
 }
 article.asset.card > div {
   position: absolute;
@@ -2932,6 +2962,97 @@ body.bProfile section.center + section.center {
 .flexcolumns > ul {
   padding-left: 0;
   margin-right: 20px;
+}
+.toggle-rounded:focus,
+.toggle-rounded:active {
+  outline: 0;
+}
+body.uaFirefox input[type=checkbox].toggle-rounded {
+  visibility: hidden;
+}
+body .toggle-rounded + span {
+  display: none;
+}
+body.uaFirefox .toggle-rounded + span {
+  display: inline-block;
+  pointer-events: none;
+  margin-left: -38px;
+}
+.toggle-rounded,
+body.uaFirefox .toggle-rounded + span {
+  outline: 0;
+  vertical-align: -0.35em;
+  -webkit-touch-callout: none;
+  -webkit-appearance: none;
+  appearance: none;
+  border: 0px solid #666;
+  border-radius: 9px;
+  width: 38px;
+  height: 18px;
+  position: relative;
+  transition: background-color 0.05s 0.05s ease-in;
+  background: rgba(96, 160, 255, 0.9);
+}
+.toggle-rounded::before,
+body.uaFirefox .toggle-rounded + span:before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  background: #afbfdf;
+  border-radius: 50%;
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  margin-left: -9px;
+  margin-top: -9px;
+  transition: left 0.12s linear;
+}
+.toggle-rounded::before,
+.toggle-rounded.off:before,
+body.uaFirefox .toggle-rounded + span:before,
+body.uaFirefox .toggle-rounded.off + span:before {
+  left: 9px;
+}
+.toggle-rounded:checked,
+.toggle-rounded.on,
+body.uaFirefox .toggle-rounded:checked + span,
+body.uaFirefox .toggle-rounded.on + span {
+  background: #ec9d01;
+  transition: background-color 0.1s 0.03s ease-in;
+}
+.toggle-rounded:checked::before,
+.toggle-rounded.on::before,
+body.uaFirefox .toggle-rounded:checked + span:before,
+body.uaFirefox .toggle-rounded.on + span:before {
+  left: 29px;
+}
+@keyframes spinner {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+.withWaitState .waitOn {
+  display: none;
+}
+.withWaitState .waitOff {
+  display: initial;
+}
+.withWaitState.waiting .waitOn,
+form.loading button.withWaitState .waitOn {
+  display: initial;
+}
+.withWaitState.waiting .waitOff,
+form.loading button.withWaitState .waitOff {
+  display: none;
+}
+form.loading button.withWaitState.spinner .waitOn {
+  animation: spinner 1.3s infinite linear;
+}
+.modal form button {
+  font-weight: 400;
 }
 body.bHome {
   margin: 0 !important;
@@ -3577,7 +3698,7 @@ body.bHome #contentwrap .tabletonly {
   }
   body.bHome #contentwrap section#whyusevizor #why1,
   body.bHome #contentwrap section#whyusevizor #why2 {
-    -webkit-flex-basis: 49.5;
+    -webkit-flex-basis: 49.5%;
     flex-basis: 49.5%;
   }
   body.bHome #contentwrap section#whyusevizor #why1 p,
@@ -3609,10 +3730,8 @@ body.bHome #contentwrap .tabletonly {
   }
   body.bHome #contentwrap section#howitworks .in div.text > div {
     display: -webkit-flex;
-    -webkit-align-items: space-between;
     -webkit-justify-content: space-between;
     display: flex;
-    align-items: space-between;
     justify-content: space-between;
   }
   body.bHome #contentwrap section#howitworks .in div.text > div p:first-of-type {
@@ -3658,6 +3777,9 @@ body.bHome #contentwrap .tabletonly {
   body.bHome #contentwrap section#getstarted .col.right {
     width: 100%;
   }
+  body.bHome #contentwrap section#getstarted input {
+    background: rgba(0, 0, 0, 0.5);
+  }
 }
 @media all and (max-width: 549px) {
   body.bHome #contentwrap {
@@ -3696,26 +3818,27 @@ body.bHome #contentwrap .tabletonly {
   body.bHome #contentwrap h3.readmore a {
     position: relative;
     display: block;
+    padding: 5px 0 5px 20px;
     padding: 5px 0 5px 40px;
   }
   body.bHome #contentwrap h3.readmore a:before {
     content: " ";
     position: absolute;
-    left: 10px;
+    left: 0;
     top: 50%;
     margin-top: -10px;
     width: 20px;
     height: 20px;
-    background: url('/images/v2/chevron.svg') 5px center no-repeat;
-    background-size: 19px ;
-    -webkit-transform: rotate(0deg) translate3d(-5px, 0, 0);
+    background: url('/images/v2/chevron.svg') 15px center no-repeat;
+    background-size: 19px;
+    -webkit-transform: rotate(0deg) translate3d(-15px, 0, 0);
     -webkit-transition: -webkit-transform 0.1s linear;
-    transform: rotate(0deg) translate3d(-5px, 0, 0);
+    transform: rotate(0deg) translate3d(-15px, 0, 0);
     transition: transform 0.1s linear;
   }
   body.bHome #contentwrap h3.readmore a.open:before {
-    -webkit-transform: rotate(90deg) translate3d(-5px, 0, 0);
-    transform: rotate(90deg) translate3d(-5px, 0, 0);
+    -webkit-transform: rotate(90deg) translate3d(-15px, 0, 0);
+    transform: rotate(90deg) translate3d(-15px, 0, 0);
   }
   body.bHome #contentwrap h3.readmore a:hover {
     text-decoration: none;
@@ -3723,6 +3846,9 @@ body.bHome #contentwrap .tabletonly {
   }
   body.bHome #contentwrap h3.readmore a.btn:before {
     content: none;
+  }
+  body.bHome #contentwrap h3.readmore a:before {
+    left: 10px;
   }
   body.bHome #contentwrap section {
     padding-bottom: 0px;
@@ -4000,6 +4126,22 @@ body.bHome.layoutDesktop #contentwrap header nav ul li {
 body.bHome.layoutDesktop #contentwrap header nav ul li:last-of-type {
   padding-right: 0;
 }
+.webvr-polyfill-viewer-selector {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10010;
+  width: 100%;
+  height: 100%;
+}
+body.bPlayer header {
+  pointer-events: none;
+}
+body.bPlayer header > div {
+  pointer-events: initial;
+}
 body.bPlayer .modal,
 body.b360 .modal {
   -webkit-font-smoothing: subpixel-antialiased;
@@ -4054,6 +4196,14 @@ body.bPlayer .modal-dialog {
 body.bPlayer .modal-dialog section + section {
   margin-top: 20px;
 }
+body.bPlayer .modal-dialog .modal-header {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+body.bPlayer .modal-dialog .modal-body {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
 body.bPlayer .modal-dialog,
 body.bPlayer header,
 body.bPlayer button {
@@ -4064,19 +4214,53 @@ body.bPlayer #shareDialog {
   text-align: left;
   margin-bottom: 0;
 }
+body.bPlayer #shareDialog .collapsible .trigger {
+  position: relative;
+  display: block;
+  padding: 5px 0 5px 16px;
+}
+body.bPlayer #shareDialog .collapsible .trigger:before {
+  content: " ";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -8px;
+  width: 16px;
+  height: 16px;
+  background: url('/images/v2/chevron.svg') 3px center no-repeat;
+  background-size: 15px;
+  -webkit-transform: rotate(0deg) translate3d(-3px, 0, 0);
+  -webkit-transition: -webkit-transform 0.1s linear;
+  transform: rotate(0deg) translate3d(-3px, 0, 0);
+  transition: transform 0.1s linear;
+}
+body.bPlayer #shareDialog .collapsible .trigger.open:before {
+  -webkit-transform: rotate(90deg) translate3d(-3px, 0, 0);
+  transform: rotate(90deg) translate3d(-3px, 0, 0);
+}
+body.bPlayer #shareDialog .collapsible .trigger:hover {
+  text-decoration: none;
+  cursor: pointer;
+}
+body.bPlayer #shareDialog .collapsible .trigger.btn:before {
+  content: none;
+}
 body.bPlayer #shareDialog label,
 body.bPlayer #shareDialog input,
-body.bPlayer #shareDialog textarea {
-  color: #afbfdf !important;
+body.bPlayer #shareDialog textarea,
+body.bPlayer #shareDialog a {
+  color: #eee !important;
 }
 body.bPlayer #shareDialog label::-moz-selection,
 body.bPlayer #shareDialog input::-moz-selection,
 body.bPlayer #shareDialog textarea::-moz-selection,
+body.bPlayer #shareDialog a::-moz-selection,
 body.bPlayer #shareDialog label::selection,
 body.bPlayer #shareDialog input::selection,
-body.bPlayer #shareDialog textarea::selection {
+body.bPlayer #shareDialog textarea::selection,
+body.bPlayer #shareDialog a::selection {
   color: #000;
-  background: #afbfdf;
+  background: #ddd;
 }
 body.bPlayer #shareDialog label {
   font-weight: 500;
@@ -4084,21 +4268,18 @@ body.bPlayer #shareDialog label {
 body.bPlayer #shareDialog input,
 body.bPlayer #shareDialog textarea {
   background: rgba(0, 0, 0, 0.2) !important;
-  border: 0px solid #afbfdf;
+  border: 0;
   border-radius: 3px;
   width: 98%;
   max-width: 98%;
   margin: 5px 0;
   line-height: 1.5em;
-  padding: 5px;
+  padding: 10px;
 }
 body.bPlayer #shareDialog textarea {
   height: 6.5em;
   font-size: 91.5%;
   resize: none;
-}
-body.bPlayer #playerWrap #loadingStage {
-  background: #000;
 }
 body.bPlayer #playerWrap #loadingStage svg {
   position: absolute;
@@ -4120,6 +4301,11 @@ button#backfromvr {
 }
 button#backfromvr:active {
   background: rgba(255, 255, 255, 0.2);
+}
+body.b360 #playerpagediv > * {
+  border: 0;
+  margin: 0;
+  padding: 0;
 }
 #playerpage {
   min-height: 100%;
@@ -4143,7 +4329,6 @@ button#backfromvr:active {
   flex: 1;
   order: 2;
   min-height: 100px;
-  background: #666;
 }
 #playerpage #playerWrap .stage {
   display: none;
@@ -4173,15 +4358,13 @@ body.bPlayer.stopped header div.controls button {
   -webkit-flex-order: 1;
   flex: 0 1 auto;
   order: 1;
-  position: absolute;
-  bottom: 10%;
-  left: 50%;
-  margin-left: -180px;
-  width: 360px;
-  padding: 20px 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.3);
   z-index: 30;
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 8px;
 }
 #playerpage header > * {
   border: 0;
@@ -4211,48 +4394,55 @@ body.bPlayer.stopped header div.controls button {
   margin-top: 15px;
   display: -webkit-flex;
   display: flex;
-  -webkit-justify-content: space-between;
-  justify-content: space-between;
+  -webkit-justify-content: center;
+  justify-content: center;
   -webkit-align-items: center;
   align-items: center;
 }
 #playerpage header button.svg {
   cursor: hand ! important;
   cursor: pointer ! important;
-  background: rgba(73, 78, 113, 0.5);
-  height: 80px;
-  width: 80px;
-  border-radius: 8px;
+  background: none;
+  height: 50px;
+  /* includes padding */
+  width: 50px;
+  padding: 5px;
+  margin: 5px 10px;
   border: 0;
   outline: none;
-  color: #afbfdf;
+  border-radius: 5px;
 }
 #playerpage header button.svg svg {
   width: 40px;
   height: 40px;
-  margin: 0 auto 3px auto;
   vertical-align: middle;
-  opacity: 0.7;
-  stroke: #afbfdf;
+  stroke: #ddd;
   fill: none;
   display: block;
+}
+#playerpage header button.svg > span {
+  display: none;
 }
 #playerpage header #graph_heading {
   padding-bottom: 5px;
   margin-bottom: 10px;
-  text-align: left;
   font-size: 10.5pt;
   font-weight: 500;
-  color: #afbfdf;
+  color: #fff;
+  text-align: center;
   position: relative;
 }
 #playerpage header #graph_heading a {
-  color: #afbfdf;
+  color: #fff;
 }
 #playerpage header #graph_heading svg {
   height: 2ex;
   width: 2ex;
   margin-right: 5px;
+  margin-left: 0ex;
+  vertical-align: -12.5%;
+  stroke: none;
+  fill: #fff;
 }
 #playerpage header #graph_heading > * {
   vertical-align: middle;
@@ -4270,43 +4460,77 @@ div.nowebgl {
   height: 2px;
   width: 100%;
   opacity: 0.75;
-  margin: 20px 0;
-  background-color: #6685c2;
+  margin: 10px 0;
+  transition: background-color 1s;
+  border: 0;
+  background-color: rgba(32, 32, 32, 0.5);
 }
 #progressbar::-webkit-progress-value {
   position: relative;
   top: -1px;
   height: 4px;
-  background-color: #0597cd;
+  background-color: #ffffff;
+  transition: background-color 1s;
   border-radius: 2px;
 }
 #progressbar::-moz-progress-bar {
-  background-color: #3ec7fa;
+  background-color: #ffffff;
   height: 2px;
 }
 #progressbar::-webkit-progress-bar {
-  background-color: #6685c2;
+  background-color: rgba(32, 32, 32, 0.5);
 }
 #progressbar:not([value])::-moz-progress-bar {
   background-color: #555;
 }
+#progressbar[value="100"] {
+  transition: background-color 5s;
+  height: 1px;
+}
+#progressbar[value="100"]::-webkit-progress-bar {
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: background-color 5s;
+  height: 1px;
+}
 #progressbar[value="100"]::-webkit-progress-value {
-  background-color: #6685c2;
-  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: background-color 5s;
+  height: 1px;
   top: 0;
 }
 #progressbar[value="100"]::-moz-progress-bar {
-  background-color: #6685c2;
-  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  height: 1px;
+  transition: background-color 5s;
+}
+body.bPlayer #playerpage header > div {
+  margin-left: -160px;
+  width: 320px;
+  padding: 20px 20px;
+  bottom: 10%;
+  left: 50%;
+  position: absolute;
+}
+body.bPlayer.b360 #playerpage header > div {
+  margin-left: 0;
+  width: auto;
+  padding: 0;
+  bottom: auto;
+  left: auto;
+  position: static;
 }
 body.deviceDesktop #playerpage header button.svg:hover svg {
   opacity: 1;
-  stroke: #afbddf;
+  stroke: #fff;
+}
+body.deviceTablet #playerpage header button.svg svg,
+body.deviceMobile #playerpage header button.svg svg {
+  stroke: #fff;
 }
 body.deviceTablet #playerpage header button.svg:active svg,
 body.deviceMobile #playerpage header button.svg:active svg {
   opacity: 1;
-  stroke: #afbddf;
+  stroke: #fff;
 }
 body.deviceMobile #playerpage header h2#graph_heading,
 body.deviceTablet #playerpage header h2#graph_heading {
@@ -4326,6 +4550,25 @@ body.deviceMobile #playerpage header .controls button + button,
 body.deviceTablet #playerpage header .controls button + button {
   margin-left: 10px;
   margin-right: 10px;
+}
+body.deviceMobile.landscape .modal-dialog {
+  margin-top: 30px;
+}
+@media all and (max-height: 700px) {
+  body.landscape #playerpage header > div {
+    bottom: 3%;
+  }
+  body.b360 #playerpage header > div {
+    bottom: initial;
+  }
+}
+@media all and (max-height: 500px) {
+  body.landscape #playerpage header > div {
+    bottom: 0;
+  }
+  body.b360 #playerpage header > div {
+    bottom: initial;
+  }
 }
 .big {
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -4355,20 +4598,14 @@ body.b360 {
   width: 100%;
   min-height: 100%;
 }
-body.b360 button#edit {
-  display: none;
-}
 body.b360.deviceDesktop button#entervr {
   display: block;
-}
-body.b360.deviceDesktop button#sharebutton {
-  display: none;
 }
 body.b360.deviceDesktop .modal.player_share .modal-dialog {
   margin: 15% auto;
 }
-body.b360 #embedSource {
-  display: none;
+body.b360.deviceDesktop .modal.player_share .modal-dialog section#embedSource {
+  text-align: center;
 }
 body.b360 button#fullscreen svg {
   stroke-width: 1px !important;
@@ -4380,7 +4617,7 @@ body.b360 button:focus {
 body.b360 #madeByVizorWidget {
   position: absolute;
   bottom: 20px;
-  right: 40px;
+  right: 80px;
 }
 body.b360.deviceMobile #madeByVizorWidget {
   display: none;
@@ -4398,9 +4635,6 @@ body.b360.deviceMobile button#backfromvr {
   margin-top: 20px;
 }
 body.b360.assetsLoaded.playing #progressbar {
-  display: none;
-}
-body.b360 #shareDialog label {
   display: none;
 }
 body.b360 #shareDialog input {
@@ -4574,8 +4808,12 @@ body.b360 #container360 {
   bottom: 0;
   left: 0;
   right: 0;
+  margin: 0;
+  padding: 0;
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   z-index: 501;
+  height: 100%;
+  width: auto;
   color: white;
   pointer-events: none;
 }
@@ -4705,23 +4943,18 @@ body.b360 #playerpage {
   height: 100%;
 }
 body.b360 #playerpage header {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
   margin: 0;
   padding: 0;
-  width: auto;
-  height: 100%;
   border-radius: 0;
-  background: rgba(0, 0, 0, 0.3);
   z-index: 300;
+}
+body.b360 #playerpage header > div {
+  position: absolute;
 }
 body.b360 #playerpage header div.controls {
   position: absolute;
   top: 10px;
-  right: 20px;
+  right: 60px;
   width: 260px;
   bottom: auto;
   left: auto;
@@ -4733,6 +4966,7 @@ body.b360 #playerpage header h2#graph_heading {
 body.b360 #playerpage header button.svg {
   background: none;
   position: relative;
+  height: 70px;
 }
 body.b360 #playerpage header button.svg span {
   display: none;

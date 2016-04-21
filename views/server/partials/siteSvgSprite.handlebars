@@ -53,7 +53,7 @@
 		<path fill-rule="evenodd" clip-rule="evenodd" d="M16,2C8.28,2,2,8.28,2,16s6.28,14,14,14c7.721,0,14-6.28,14-14 S23.721,2,16,2 M22.139,12.949c0.008,0.132,0.01,0.264,0.01,0.396c0,4.058-3.09,8.738-8.737,8.738c-1.734,0-3.349-0.51-4.708-1.382 c1.603,0.188,3.234-0.241,4.546-1.271c-1.344-0.025-2.477-0.913-2.868-2.134c0.462,0.088,0.937,0.071,1.386-0.052 c-1.405-0.281-2.463-1.522-2.463-3.009v-0.041c0.415,0.229,0.889,0.367,1.391,0.384c-0.823-0.551-1.366-1.49-1.366-2.555 c0-0.563,0.151-1.09,0.417-1.545c1.514,1.858,3.776,3.082,6.33,3.208c-0.053-0.224-0.081-0.46-0.081-0.698 c0-1.696,1.375-3.072,3.071-3.072c0.885,0,1.682,0.373,2.242,0.971c0.699-0.139,2.275-0.31,2.275-0.31 C23.172,11.195,22.74,12.515,22.139,12.949"/>
 	</symbol>
     <symbol id="icon-fullscreen" viewbox="0 0 26 26">
-        <g>
+        <g transform="translate(0.75,0.5)">
             <line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="3.417" y1="22.583" x2="22.583" y2="3.417"/>
             <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="7.583,22.583 3.417,22.583 3.417,18.417 "/>
             <polyline fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="22.583,7.583 22.583,3.417 18.417,3.417 "/>
@@ -96,9 +96,24 @@
         </g>
     </symbol>
     <symbol id="player-icon-share"><!-- fill="#AFBFDF" -->
-        <g transform="scale(0.98,0.98) translate(4,6)">
+        <g transform="scale(0.98,0.98) translate(4.5,6.5)">
             <path d="M13.7619048,6.4 C13.7619048,6.4 34,4 34,24 C27.5238095,12 13.7619048,16 13.7619048,16 L13.7619048,22.4 L0,11.2 L13.7619048,0 L13.7619048,6.4 L13.7619048,6.4 Z" transform="translate(17.000000, 12.000000) scale(-1, 1) translate(-17.000000, -12.000000) "></path>
         </g>
+    </symbol>
+
+    <symbol id="path-icon-view" viewBox="0 0 24 14" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <g>
+            <path d="M23.5,7 C23.5,7 18.352,13.5 12,13.5 C5.648,13.5 0.5,7 0.5,7 C0.5,7 5.648,0.5 12,0.5 C18.352,0.5 23.5,7 23.5,7 L23.5,7 Z"></path>
+            <path d="M16,7 C16,9.21 14.209,11 12,11 C9.791,11 8,9.21 8,7 C8,4.79 9.791,3 12,3 C14.209,3 16,4.79 16,7 L16,7 Z"></path>
+        </g>
+    </symbol>
+
+    <symbol id="player-icon-view" viewBox="0 0 24 14" stroke-width="1">
+        <use xlink:href="#path-icon-view" stroke-width="1"></use>
+    </symbol>
+
+    <symbol id="card-icon-view" viewBox="0 0 24 14">
+        <use xlink:href="#path-icon-view" transform="scale(0.9,0.9) translate(2,0)" stroke-width="1.3"></use>
     </symbol>
 
     <symbol id="player-icon-fullscreen">
@@ -106,7 +121,7 @@
     </symbol>
 
     <symbol id="player-icon-edit" viewBox="0 0 28 28"><!-- fill="#AFBFDF" -->
-        <use transform="scale(0.775,0.775) translate(8,5)" stroke="#fff" xlink:href="#player-pencil"></use>
+        <use transform="scale(0.775,0.775) translate(7,5)" xlink:href="#player-pencil"></use>
     </symbol>
 
     <symbol id="player-icon-edit-alt" viewBox="0 0 28 28"><!-- fill="#AFBFDF" -->
@@ -200,4 +215,16 @@
 		<symbol id="icon-close" viewbox="0 0 16 16">
 			<polygon fill-rule="evenodd" clip-rule="evenodd" points="7.94,8.721 3.44,13.22 2.78,12.56 7.28,8.06 2.66,3.44 3.335,2.765 7.955,7.385 12.68,2.66 13.34,3.32 8.615,8.045 13.234,12.664 12.56,13.34 "/>
 		</symbol>
+
+        <symbol id="path-button-spinner" fill="none" viewbox="0 0 30 30">
+            <g transform="">
+                <path d="M0.124164881,9.1977 L3.6120622,14.5017556 L7.62308155,9.59892222"></path>
+                <path d="M28.374256,14.6944444 L24.8876101,9.39038889 L20.8753393,14.2932222"></path>
+                <path d="M24.8410548,9.43856111 C25.8847958,15.0710056 21.9964223,20.5910056 16.6951188,21.8687833 C12.9982229,22.76195 9.29131518,21.5633944 6.76956667,19.0270056"></path>
+                <path d="M3.61819449,14.4698111 C1.97499063,8.23042222 6.08362604,2.10858889 11.8004237,0.729866667 C15.7501201,-0.224633333 19.7048225,1.2052 22.2178106,4.10447778"></path>
+            </g>
+        </symbol>
+        <symbol id="icon-button-spinner">
+            <use xlink:href="#path-button-spinner" stroke="#ffffff" transform="scale(1,1) translate(0.7, 3)" stroke-width="1.3" />
+        </symbol>
 </svg>

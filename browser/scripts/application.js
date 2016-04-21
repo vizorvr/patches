@@ -9,7 +9,7 @@ function getChannelFromPath(pathname) {
 	return p[1]
 }
 
-function isUserOwnedGraph(path) {
+function isPublishedGraph(path) {
 	return path.split('/').length > 1
 }
 
@@ -61,7 +61,7 @@ function Application() {
 
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
-
+	
 }
 
 Application.prototype.getNIDFromSlot = function(id) {
@@ -347,6 +347,12 @@ Application.prototype.updateCanvas = function(clear) {
 	var connsLen = conns.length
 	for (var i=0; i < connsLen; i++) {
 		var cui = conns[i].ui
+		if (!cui) {
+			return console.error('Connection', i, 'from', 
+				conns[i].src_node.uid, 'to',
+				conns[i].dst_node.uid, 'has no UI')
+		}
+
 		// Draw inactive connections first, then connections with data flow,
 		// next selected connections and finally selected connections to
 		// ensure they get rendered on top.
@@ -1316,7 +1322,7 @@ Application.prototype.selectAll = function() {
  */
 Application.prototype.calculateCanvasArea = function() {
 	var width, height
-	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+	var isFullscreen = E2.util.isFullscreen()
 
 	if (!isFullscreen && !this.condensed_view) {
 		width = $(window).width();
@@ -1334,34 +1340,18 @@ Application.prototype.calculateCanvasArea = function() {
 }
 
 Application.prototype.onWindowResize = function() {
-	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+	if (E2.util.isFullscreen())
+		return
 
-	if (isFullscreen) {
-		E2.core.emit('resize')
-		return;
-	}
-
-	var canvasArea = this.calculateCanvasArea();
-	var width = canvasArea.width;
-	var height = canvasArea.height;
-
-	// Set noodles and DOM element container size
-	E2.dom.canvas_parent.css('width', width);
-	E2.dom.canvas_parent.css('height', height);
+	var canvasArea = this.calculateCanvasArea()
+	var width = canvasArea.width
+	var height = canvasArea.height
 
 	// Set noodles canvas size
-	E2.dom.canvas[0].width = width;
-	E2.dom.canvas[0].height = height;
-	E2.dom.canvas.css('width', width);
-	E2.dom.canvas.css('height', height);
-
-	// set webgl canvas size
-	E2.dom.webgl_canvas[0].width = width;
-	E2.dom.webgl_canvas[0].height = height;
-	E2.dom.webgl_canvas.css('width', width);
-	E2.dom.webgl_canvas.css('height', height);
-
-	E2.core.emit('resize')
+	E2.dom.canvas[0].width = width
+	E2.dom.canvas[0].height = height
+	E2.dom.canvas.css('width', width)
+	E2.dom.canvas.css('height', height)
 
 	this.updateCanvas(true)
 }
@@ -1372,7 +1362,7 @@ Application.prototype.toggleNoodles = function() {
 }
 
 Application.prototype.canInitiateCameraMove = function(e) {
-	return E2.ui.isFullScreen() ||  this.isVRCameraActive() && E2.util.isCanvasInFocus(e)
+	return E2.util.isFullscreen() || this.isVRCameraActive() && E2.util.isCanvasInFocus(e)
 }
 
 Application.prototype.setViewCamera = function(isBirdsEyeCamera) {
@@ -1408,7 +1398,7 @@ Application.prototype.toggleFullscreen = function() {
 		}
 	}
 
-	E2.core.emit('fullScreenChangeRequested')
+	E2.core.webVRAdapter.enterVROrFullscreen()
 }
 
 Application.prototype.toggleHelperObjects = function() {
@@ -1424,23 +1414,6 @@ Application.prototype.toggleHelperObjects = function() {
 		// re-enable world editor if needed
 		this.worldEditor.activate()
 	}
-}
-
-Application.prototype.onFullScreenChanged = function() {
-	var $canvas = E2.dom.webgl_canvas
-	var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
-
-	if (isFullscreen) {
-		$canvas.removeClass('webgl-canvas-normal')
-		$canvas.addClass('webgl-canvas-fs')
-	} else {
-		$canvas.removeClass('webgl-canvas-fs')
-		$canvas.addClass('webgl-canvas-normal')
-	}
-
-	E2.app.onWindowResize()
-
-	E2.core.emit('fullScreenChanged')
 }
 
 Application.prototype.onKeyDown = function(e) {
@@ -1469,8 +1442,7 @@ Application.prototype.changeControlState = function()
 	}
 }
 
-Application.prototype.onPlayClicked = function()
-{
+Application.prototype.onPlayClicked = function() {
 	if (this.player.current_state === this.player.state.PLAYING)
 		this.player.pause();
 	else
@@ -1523,7 +1495,6 @@ Application.prototype.navigateToPublishedGraph = function(graphPath, cb) {
 	history.pushState({}, '', graphPath + '/edit')
 	return this.loadGraph(graphUrl, cb)
 }
-
 
 Application.prototype.loadGraph = function(graphPath, cb) {
 	var that = this
@@ -1723,9 +1694,7 @@ Application.prototype.setupStoreListeners = function() {
 	}
 
 	function onNodeRenamed(graph, node) {
-		if (node.ui)
-			node.ui.dom.find('.t').text(node.title)
-		
+		// node ui listens to this too
 		if (node.plugin.isGraph)
 			node.plugin.graph.tree_node.set_title(node.title)
 
@@ -1941,6 +1910,8 @@ Application.prototype.onForkClicked = function() {
 }
 
 Application.prototype.getScreenshot = function(width, height) {
+	width = width || 1280
+	height = height || 720
 	var ssr = new ScreenshotRenderer(this.worldEditor.scene, this.worldEditor.vrCamera)
 	return ssr.capture(width, height)
 }
@@ -2008,18 +1979,8 @@ Application.prototype.start = function() {
 		e.preventDefault()
 	}, false)
 
-	document.addEventListener('fullscreenchange', this.onFullScreenChanged.bind(this))
-	document.addEventListener('webkitfullscreenchange', this.onFullScreenChanged.bind(this))
-	document.addEventListener('mozfullscreenchange', this.onFullScreenChanged.bind(this))
-
-	window.addEventListener('resize', function() {
-		// avoid ui lag
-		if (that.resize_timer) return
-		that.resize_timer = setTimeout(function(){
-			clearTimeout(that.resize_timer)
-			that.resize_timer = null;
-			that.onWindowResize()
-		}, 100)
+	E2.core.on('resize', function() {
+		that.onWindowResize()
 	})
 
 	// close bootboxes on click
@@ -2164,7 +2125,7 @@ Application.prototype.setupEditorChannel = function() {
 	var that = this
 
 	function joinChannel() {
-		if (isUserOwnedGraph(that.path)) {
+		if (isPublishedGraph(that.path)) {
 			that.channel.leave()
 			return dfd.resolve()
 		}
@@ -2176,20 +2137,11 @@ Application.prototype.setupEditorChannel = function() {
 		})
 	}
 
-	var secure = Vizor.releaseMode || window.location.protocol === 'https:'
-	var wsPort = window.location.port || (secure ? 443 : 80)
-	var wsHost
-
-	if (Vizor.releaseMode) {
-		wsHost = 'ws.' + window.location.hostname
-		wsPort = 443
-	} else {
-		wsHost = window.location.hostname
-	}
+	var wsUrl = this.determineWebSocketEndpoint('/__editorChannel')
 
 	if (!this.channel) {
 		this.channel = new E2.EditorChannel()
-		this.channel.connect(wsHost, wsPort)
+		this.channel.connect(wsUrl)
 		this.channel.on('ready', function() { 
 			that.setupChat()
 			that.peopleStore.initialize()
@@ -2201,6 +2153,23 @@ Application.prototype.setupEditorChannel = function() {
 	E2.ui.setPageTitle();
 	
 	return dfd.promise
+}
+
+Application.prototype.determineWebSocketEndpoint = function(path) {
+	var secure = Vizor.useSecureWebSocket || window.location.protocol === 'https:'
+	var wsPort = secure ? 443 : (window.location.port || 80)
+	var wsHost = window.location.hostname
+
+	if (Vizor.webSocketHost)
+		wsHost = Vizor.webSocketHost
+
+	if (secure)
+		wsPort = 443
+
+	var wsUrl = (secure ? 'wss': 'ws') + '://' + 
+	wsHost + ':' + wsPort + path
+
+	return wsUrl
 }
 
 E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {

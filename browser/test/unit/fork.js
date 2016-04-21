@@ -18,6 +18,15 @@ function MockApp(path) {
 		return dfd.promise
 	}
 	this.channel = {
+		sendPayload: function(e) {
+			that.channelSent.push(e)
+		},
+		snapshot: function() {
+			that.channelSent.push({
+				actionType: 'graphSnapshotted',
+				data: 'serialisedGraph'
+			})
+		},
 		send: function(e) {
 			that.channelSent.push(e)
 		}
@@ -92,21 +101,9 @@ describe('ForkCommand', function() {
 		var fc = new ForkCommand()
 		fc.fork()
 			.then(function() {
-				var dis = E2.app.dispatches[0]
+				var dis = E2.app.channelSent[0]
 				assert.equal(dis.actionType, 'graphSnapshotted')
 				assert.deepEqual(dis.data, 'serialisedGraph')
-				done()
-			})
-			.catch(done)
-	})
-
-	it('logs the edit', function(done) {
-		var editAction = { actionType: 'fooEditMade' }
-		var fc = new ForkCommand()
-		fc.fork(editAction)
-			.then(function() {
-				var sent = E2.app.channelSent[0]
-				assert.equal(sent.actionType, 'fooEditMade')
 				done()
 			})
 			.catch(done)

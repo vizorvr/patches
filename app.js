@@ -231,15 +231,6 @@ app.use(function(req, res, next)
 	next();
 });
 
-// remap /scripts to /dist in production
-if (process.env.NODE_ENV === 'production') {
-	app.use('/scripts', express.static(
-			fsPath.join(__dirname, 'browser', 'dist'), 
-			{ maxAge: week * 52 }
-		)
-	)
-}
-
 // old static flat files
 app.use('/data', express.static(
 		fsPath.join(__dirname, 'browser', 'data'), 
@@ -274,6 +265,7 @@ app.get('/account/unlink/:provider', passportConf.isAuthenticated, userControlle
 switch (process.env.FQDN) {
 	case '360vr.io':
 	case '360.vizor.io':
+	case '360.vizor.lol':
 		// 360 photo site
 		app.get('/', threesixtyController.index);
 		app.get('/featured', threesixtyController.featured)
@@ -443,9 +435,15 @@ function setupModelRoutes(mongoConnection) {
 		express.static(fsPath.join(__dirname, 'node_modules'))
 	);
 
-	// static files
 	app.use(express.static(fsPath.join(__dirname, 'browser'),
 		{ maxAge: hour }))
+
+	// remap /scripts to /dist in production
+	app.use('/scripts', express.static(
+			fsPath.join(__dirname, 'browser', 'dist'), 
+			{ maxAge: week * 52 }
+		)
+	)
 
 	app.use('/common', express.static(fsPath.join(__dirname, 'common'),
 		{ maxAge: hour }))

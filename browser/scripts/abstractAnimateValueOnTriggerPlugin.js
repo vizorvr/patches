@@ -60,6 +60,7 @@ AbstractAnimateValueOnTriggerPlugin.prototype.create_ui = function() {
 }
 
 AbstractAnimateValueOnTriggerPlugin.prototype.reset = function() {
+	this.triggerOnNextUpdate = false
 	this.triggered = false
 	this.oneShot = false
 	this.duration = 1
@@ -72,10 +73,10 @@ AbstractAnimateValueOnTriggerPlugin.prototype.reset = function() {
 
 AbstractAnimateValueOnTriggerPlugin.prototype.update_input = function(slot, data) {
 	if (slot.name === 'trigger' && data && (!this.oneShot || !this.triggered)) {
-		this.triggered = true
-		this.startTime = this.abs_t
+		this.triggerOnNextUpdate = true
 	}
 	else if (slot.name === 'reset' && data) {
+		this.triggerOnNextUpdate = false
 		this.triggered = false
 	}
 	else if (slot.name === 'one-shot') {
@@ -103,6 +104,13 @@ AbstractAnimateValueOnTriggerPlugin.prototype.update_output = function(slot) {
 
 AbstractAnimateValueOnTriggerPlugin.prototype.update_state = function(updateContext) {
 	this.abs_t = updateContext.abs_t
+
+	if (this.triggerOnNextUpdate) {
+		this.triggered = true
+		this.startTime = this.abs_t
+		this.triggerOnNextUpdate = false
+	}
+
 	if (!this.triggered) {
 		this.value = this.lerpFunc(this.startValue, this.endValue, this.blendFunc.func(0))
 		this.always_update = false

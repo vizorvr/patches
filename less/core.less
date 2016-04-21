@@ -312,57 +312,52 @@ header nav ul.dropdown-menu {
 }
 
 .block-header {
-    width: @chat-width;
-    height: @blocks-header-height;
-    position: relative;
-    font-size: @tabs-font-size;
-    font-weight: 500;
-    color: #ffffff;
-    border-bottom: 1px solid @bg-darker;
-  	background: @bg-dark;
+  width: @chat-width;
+  height: @blocks-header-height;
+  position: relative;
+  font-size: @tabs-font-size;
+  font-weight: 500;
+  color: #ffffff;
+  border-bottom: 1px solid @bg-darker;
+  background: @bg-dark;
+  .nav-tabs {
+	height: @blocks-header-height;
+	position: relative;
+	display: table;
+	float: left;
+	border: 0;
+	width: @floating-box-width - (@blocks-header-height * 2);
+	> li {
+	  text-align: center;
+	  display: table-cell;
+	  float: none;
+	  >a, >span {
+		border-radius: 0;
+		border: 0;
+		margin: 0;
+		text-decoration: none;
+		background: none;
+	  }
+	  >span, >a, >a:active {
+		padding-top: (@blocks-header-height / 2) - (@tabs-font-size * 0.75);
+		height: @blocks-header-height;
+		outline: none;
+		color: @editor-text-inactive;
+	  }
+	  >a:hover, >a:focus {
+		background: @bg-dark;
+		color: @editor-text-active;
+	  }
+	  &.active>a {
+		background: none;
+		color: @editor-text-default;
+		background: @bg-light;
+		border: 0;
+	  }
+	}
+  }
 }
 
-.block-header .nav-tabs {
-    height: @blocks-header-height;
-    position: relative;
-    display: table;
-    float: left;
-    border: 0;    
-    width: @floating-box-width - (@blocks-header-height * 2);
-}
-
-.block-header .nav-tabs > li {
-    text-align: center;  
-    display: table-cell;
-    float: none;
-}
-
-.block-header .nav-tabs > li > a {
-   border-radius: 0; 
-   border: 0;
-   margin: 0;
-   padding: 16px;
-   box-sizing: border-box;
-   text-decoration: none;
-}
-
-.block-header .nav-tabs>li>a, .nav-tabs>li>a:active {
-    padding-top:  (@blocks-header-height / 2) - (@tabs-font-size * 0.75);
-
-    height: @blocks-header-height;
-    outline: none;
-    color: @editor-text-inactive;
-}
-.block-header .nav-tabs>li>a:hover, .nav-tabs>li>a:focus {
-  	background: @bg-dark;
-    color: @editor-text-active;
-}
-.block-header .nav-tabs>li.active>a {
-    background: none;
-    color: @editor-text-default;
-  	background: @bg-light;
-    border: 0;
-}
 
 .block-header h4 {
     background: none;
@@ -1096,5 +1091,10 @@ body {
   }
   &.deviceDesktop, &.deviceMobile {
 	.tabletDeviceOnly { display: none}
+  }
+  &.hasHMD {
+	#entervr {
+	  display: block !important;
+	}
   }
 }

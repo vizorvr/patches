@@ -3,7 +3,9 @@ global.E2 = {}
 
 var assert = require('assert')
 var fs = require('fs')
+
 var graph = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/preloader1.json'))
+var tastyGraph = JSON.parse(fs.readFileSync(__dirname+'/../fixtures/tasty1.json'))
 
 var AssetLoader = require('../../scripts/loaders/assetLoader.js').AssetLoader
 var Loader = require('../../scripts/loaders/loader.js').Loader
@@ -91,6 +93,15 @@ describe('Asset loading', function() {
 
 		it('resolves if there is nothing to load', function(done) {
 			pre.loadAssetsForGraph({})
+			.then(function() {
+				assert.equal(0, pre.assetsLoaded)
+				done()
+			})
+		})
+		
+		it('resolves if there is nothing to load 2', function(done) {
+			var assets = pre.parse(tastyGraph.root)
+			pre.loadAssetsForGraph(tastyGraph.root)
 			.then(function() {
 				assert.equal(0, pre.assetsLoaded)
 				done()

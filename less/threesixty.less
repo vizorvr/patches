@@ -22,7 +22,7 @@
 
 body.b360 {
 
-  @controls-right: 20px;
+  @controls-right: 60px;
 
   background: #999;
   margin:0;
@@ -31,26 +31,18 @@ body.b360 {
   width: 100%;
   min-height: 100%;
 
-  // design
-  button#edit {
-	display: none;
-  }
-
   &.deviceDesktop {
 	button#entervr {
 	  display: block; // set to .nodesktop otherwise
 	}
-	button#sharebutton {
-	  display: none;
-	}
 	.modal.player_share .modal-dialog {
 	  margin: 15% auto;
+	  section#embedSource {
+		text-align: center;
+	  }
 	}
   }
 
-  #embedSource {
-	display: none;
-  }
   button#fullscreen svg {
 	stroke-width: 1px !important;
   }
@@ -83,7 +75,6 @@ body.b360 {
 
 
   #shareDialog {
-	label { display: none}
 	input {
 	  .big;
 	  font-size: 24px !important;
@@ -255,8 +246,11 @@ body.b360 {
 	bottom: 0;
 	left: 0;
 	right: 0;
+	margin:0; padding:0;
 	font-family: @font-family-sans-serif;
 	z-index: 501;
+	height: 100%;
+	width: auto;
 	color: white;
 	pointer-events: none;
 	#logo360 {
@@ -382,18 +376,14 @@ body.b360 {
   }
 
   #playerpage header {
-	position: absolute;
-	top:0;
-	right:0;
-	bottom: 0;
-	left: 0;
 	margin: 0;
 	padding:0;
-	width: auto;
-	height: 100%;
 	border-radius: 0;
-	background: rgba(0,0,0,0.3);
 	z-index: 300;
+	>div {
+
+	  position: absolute;
+	}
 	div.controls {
 	  position: absolute;
 	  top: 10px;
@@ -409,6 +399,7 @@ body.b360 {
 	button.svg {
 	  background: none;
 	  position: relative;
+	  height: 70px;
 	  span {
 		display: none;
 		position: absolute;

@@ -9,12 +9,17 @@ exports.index = function(req, res) {
 		graphSrc: '/threesixty/featured',
 		graphMinUrl: '/threesixty/featured',
 		autoplay: true,
-		hideEditButton: true,
-		hideShareButton: true,
+		hideEditButton: false,
+		hideShareButton: false,
 		hidePlayButton: true,
 		meta : {
 			bodyclass : 'bThreesixty b360'
-		}
+		},
+		noHeader: false,
+		graph: {
+			hasAudio: false
+		},
+		startMode : 1
 	});
 }
 

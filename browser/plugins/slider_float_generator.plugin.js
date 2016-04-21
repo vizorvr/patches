@@ -61,7 +61,7 @@ Slider.prototype.create_ui = function() {
 
 	this.$display.on('dblclick', function(){
 		originalValue = that.state.val
-		NodeUI.enterValueControl(this, this.parentNode, function(v){
+		uiEnterValueControl(this, this.parentNode, function(v){
 			$slider.val(v)
 			$slider.trigger('input')
 			$slider.trigger('mouseup')

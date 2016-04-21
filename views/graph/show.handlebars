@@ -1,55 +1,61 @@
 <header id="topbar" style="display:none">
-    <h2 id="graph_heading">
-        <svg stroke="none" fill="#afbfdf"><use xlink:href="#vizor-logo-flat"></use></svg>
-		<span class="title">{{graphName}}</span>
-		<span class="author">by <a href="#" data-href="/{{graph.owner}}">{{graphOwner}}</a></span>
-        <span class="loadingonly">{{#if graph.size}}({{graph.size}}){{/if}}</span>
-	</h2>
-    <progress id="progressbar" max="100"></progress>
-	<div class="controls noselect_all">
-        {{#unless hidePlayButton}}
-            <button id="playButton" class="svg noplaying noautoplay" data-svgref="player-icon-play"><svg></svg>
-                <span>Play</span>
-            </button>
-        {{/unless}}
+        <div>
+        <h2 id="graph_heading">
+            <span>
+                <a href="/" target="_top"><svg stroke="none" fill="#afbfdf"><use xlink:href="#vizor-logo-flat"></use></svg></a>
+                <span class="title">{{graphName}}</span>
+                <span class="author">by <a target="_top" href="/{{graph.owner}}">{{graphOwner}}</a></span>
+                <span class="loadingonly">{{#if graph.size}}({{graph.size}}){{/if}}</span>
+            </span>
+        </h2>
+        <progress id="progressbar" max="100"></progress>
+        <div class="controls noselect_all">
+            {{#unless hidePlayButton}}
+                <button id="playButton" class="svg noplaying noautoplay" data-svgref="player-icon-play"><svg></svg>
+                    <span>Play</span>
+                </button>
+            {{/unless}}
 
-        {{#unless hideVRButton}}
-            <button id="entervr" class="svg nopaused noDeviceDesktop noDeviceTablet mobileDeviceOnly" data-svgref="player-icon-vr"><svg></svg>
-                <span>Enter VR</span>
-            </button>
-        {{/unless}}
+            {{#unless hideVRButton}}
+                <button id="entervr" class="svg nopaused noDeviceDesktop noDeviceTablet mobileDeviceOnly" data-svgref="player-icon-vr"><svg></svg>
+                    <span>Enter VR</span>
+                </button>
+            {{/unless}}
 
-        {{#unless hideFullscreenButton}}
-            <button id="fullscreen"
-             {{#unless isEmbedded}}
-            	class="svg nopaused noDeviceMobile noDeviceTablet"
-			 {{else}}
-            	class="svg nopaused"
-			 {{/unless}}
-            data-svgref="player-icon-fullscreen"><svg></svg>
-                <span>Fullscreen</span>
-            </button>
-        {{/unless}}
+            {{#unless hideFullscreenButton}}
+                <button id="fullscreen"
+                 {{#unless isEmbedded}}
+                    class="svg nopaused noDeviceMobile noDeviceTablet"
+                 {{else}}
+                    class="svg nopaused"
+                 {{/unless}}
+                data-svgref="player-icon-fullscreen"><svg></svg>
+                    <span>Fullscreen</span>
+                </button>
+            {{/unless}}
 
-        {{#unless hideEditButton}}
-            <button id="edit" class="svg nopaused noDeviceMobile" data-svgref="player-icon-edit"><svg></svg>
-                <span>Edit</span>
-                {{#eq graph.owner user.username}}
-                {{else}}
-                {{/eq}}
-            </button>
-        {{/unless}}
+            {{#if graph.editable}}
+                <button id="edit" class="svg nopaused noDeviceMobile" data-svgref="player-icon-edit"><svg></svg>
+                    <span>Edit</span>
+                    {{#eq graph.owner user.username}}
+                    {{else}}
+                    {{/eq}}
+                </button>
+            {{/if}}
 
-        {{#unless hideShareButton}}
-            <button id="sharebutton" class="svg nopaused" data-svgref="player-icon-share">
-                <svg></svg>
-                <span>Share</span>
-            </button>
-        {{/unless}}
-	</div>
+            {{#unless hideShareButton}}
+                {{#unless graph.private}}
+                    <button id="sharebutton" class="svg nopaused" data-svgref="player-icon-share">
+                        <svg></svg>
+                        <span>Share</span>
+                    </button>
+                {{/unless}}
+            {{/unless}}
+        </div>
+    </div>
 </header>
 
-<div id="playerWrap">
+<div id="playerWrap" style="background: #000 url('{{{previewImage}}}') center center no-repeat; background-size: cover;">
     <div id="loadingStage" class="stage"></div>
     <div id="errorStage" class="stage"></div>
     <div id="stage" class="stage front">
@@ -59,17 +65,49 @@
 <script>
     (function() {
         if (!window.Vizor) window.Vizor = {}
+        Vizor.origin = window.location.origin
+
+    {{#if graph.owner}}
         Vizor.shareURL = window.location.origin + '/{{graph.owner}}/{{graph.name}}'
         Vizor.embedSrc = window.location.origin + '/embed/{{graph.owner}}/{{graph.name}}'
+    {{else}}
+        Vizor.shareURL = window.location.origin
+        Vizor.embedSrc = window.location.origin
+    {{/if}}
+
+    {{#if autoplay}}
         Vizor.autoplay = {{autoplay}}
+    {{else}}
+        Vizor.autoplay = false
+    {{/if}}
+
+    {{#if noHeader}}
         Vizor.noHeader = {{noHeader}}
+    {{else}}
+        Vizor.noHeader = false
+    {{/if}}
+
+    {{#if graph.hasAudio}}
         Vizor.hasAudio = {{graph.hasAudio}}
+    {{else}}
+        Vizor.hasAudio = false
+    {{/if}}
+
+
         Vizor.graphName = '{{graphName}}'
         Vizor.hideWebVRButton = false
-        {{#if isEmbedded}}
+
+    {{#if isEmbedded}}
         Vizor.isEmbedded = true
-        {{else}}
+    {{else}}
         Vizor.isEmbedded = false
-        {{/if}}
+    {{/if}}
+
+    {{#if startMode}}
+            Vizor.startMode = {{startMode}}
+        {{else}}
+            Vizor.startMode = 1
+    {{/if}}
+
     })()
 </script>

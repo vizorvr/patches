@@ -102,7 +102,8 @@
         "3D Geometry Loader": "three_loader_model",
         "Particle Emitter": "three_particle_emitter",
         "3D Model Loader": "three_loader_scene",
-        "Mesh attributes": "three_object3d_attribute_extractor",
+        "Mesh Attributes": "three_object3d_attribute_extractor",
+        "Bounding Box Extractor": "three_object3d_bbox_extractor",
         "Line Segments": "three_line_segments",
         "Vector Line": "three_meshline_mesh",
         "3D Object Group": "three_group"
@@ -210,6 +211,7 @@
 
 
     "TEXT TOOLS": {
+        "Experimental: Text Geometry": "three_text_geometry",
         "From text": "texture_from_text_generator",
         "Concatenate": "string_concatenate_modulator",
         "Parse JSON": "parse_json_modulator"
@@ -281,7 +283,8 @@
         "Normalize": "vector_normalize",
         "Scale": "vector_scale",
         "Transform": "vector_transform",
-        "Add Vectors Conditionally": "add_on_trigger_vector3"
+        "Add Vectors Conditionally": "add_on_trigger_vector3",
+        "Rotation from Direction": "rotation_from_direction"
     },
 
 

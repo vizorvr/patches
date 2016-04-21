@@ -40,7 +40,8 @@ var siteUI = new function() {
 		var $body = jQuery('body');
 		this._setupDragRecognition()
 
-		$(window).on('resize', this.onResize);
+		$(window).on('resize', this.onResize)
+
 		if (that.hasOrientationChange) {
 			$(window).on('orientationchange', function () {
 				$body
@@ -153,6 +154,47 @@ var siteUI = new function() {
 		}
 	};
 
+	this.initCollapsible = function($container) {
+		var $links = jQuery('a.trigger', $container)
+		$links.on('click',
+			function(e){
+				if (this.href.split('#').length <= 1) return true	// not for us
+				e.preventDefault()
+				e.stopPropagation()
+
+				var anchor = '#'+ this.href.split('#')[1]
+				var $target = jQuery(anchor)
+				var $a = jQuery(this)
+
+				var wasVisible = $target.is(':visible')
+				if (wasVisible) {
+					$target
+						.slideUp('medium', function(){
+							jQuery(this)
+								.removeClass('uncollapsed')
+								.addClass('collapsed')
+								.css({margin: '0'})
+						})
+				} else {
+					$target
+						.hide()
+						.removeClass('collapsed')
+						.addClass('uncollapsed')
+						.slideDown('medium')
+				}
+
+				$a
+					.toggleClass('closed', wasVisible)
+					.toggleClass('open', !wasVisible)
+				return false
+			})
+		$links.each(function(){
+			var anchor = '#'+ this.href.split('#')[1]
+			var $target = jQuery(anchor)
+			$target.hide()
+		})
+	}
+
 	this.initHomepage = function($body) {
         mixpanel.track('Front Page')
 
@@ -186,7 +228,6 @@ var siteUI = new function() {
 							jQuery(this)
 								.addClass('nomobile')
 								.css({margin: '0'})
-								.show()
 						})
 				} else {
 					$target
@@ -213,10 +254,8 @@ var siteUI = new function() {
 		});
 
 		var $homePlayerContainer = jQuery('#player_home');
-		var onResize = VizorUI.makeVRCanvasResizeHandler(jQuery('#webgl-canvas'), $homePlayerContainer);
-		$(window).on('resize', onResize);
+		
 		$(window).on('vizorLoaded', function() {
-
 			E2.app.canInitiateCameraMove = function(){return false};	// disable panning on homepage player, see #790
 			E2.app.calculateCanvasArea = function() {
                 return{
@@ -224,7 +263,9 @@ var siteUI = new function() {
                     height: $homePlayerContainer.innerHeight()
                 }
             }
-			onResize();
+
+			WebVRConfig.canInitiateCameraMove = E2.app.canInitiateCameraMove // see above
+			WebVRConfig.getContainerMeta = E2.app.calculateCanvasArea
 		});
 
 		jQuery('button#mobileMenuOpenButton').on('mousedown touchdown', function(e){
@@ -261,7 +302,8 @@ var siteUI = new function() {
 				return false;
 			});
 
-			if (that.hasOrientationChange) window.addEventListener('orientationchange', dismissMenu)
+			if (that.hasOrientationChange)
+				window.addEventListener('orientationchange', dismissMenu)
 			window.addEventListener('resize', dismissMenu)
 
 			$mobileMenu.fadeIn('fast');
@@ -287,6 +329,10 @@ var siteUI = new function() {
         })
 	}
 
+	this.isFullScreen = function() {
+		return !!(document.mozFullScreenElement || document.webkitFullscreenElement)
+	}
+
 	this.isInIframe = function() {
 		try {
 			return window.self !== window.top;
@@ -296,9 +342,7 @@ var siteUI = new function() {
 	}
 
 	this.isInVR = function() {
-		if (E2 && E2.core && E2.core.webVRManager && E2.core.webVRManager.isVRMode)
-			return E2.core.webVRManager.isVRMode()
-		return false
+		return (E2 && E2.core && E2.core.webVRAdapter && E2.core.webVRAdapter.isVRMode && E2.core.webVRAdapter.isVRMode())
 	}
 
 	/**
@@ -319,7 +363,7 @@ var siteUI = new function() {
 			.toggleClass('deviceTablet', that.deviceIsTablet)
 			.toggleClass('deviceMobile', that.deviceIsPhone)
 			.toggleClass('inIframe', that.isEmbedded)
-			.toggleClass('inVR', that.isInVR())
+			.toggleClass('inVR', !!that.isInVR())
 
 		var l = that.getLayoutMode();
 		if (l !== that.lastLayout) {
@@ -411,62 +455,31 @@ var siteUI = new function() {
 	this.lastModalIsOpen = false
 }
 
+siteUI.formatFileSize = function(size) {	// bytes
+	if (isNaN(size) || (size < 0)) return size
+
+	if (size < 1024)
+		return size + ' bytes'
+
+	size = size / 1024
+
+	if (size < 1000)
+		return Math.round(size) + ' kB'
+
+	size = size / 1024
+
+	if (size < 1000)
+		return size.toFixed(1) + ' MB'
+
+	size = size / 1024
+
+	return size.toFixed(2) + ' GB'
+}
+
 jQuery('document').ready(siteUI.init);
 
-if (typeof VizorUI === 'undefined') var VizorUI = {};
-
-VizorUI.makeVRCanvasResizeHandler = function($playerCanvas, $containerRef) {
-	if (typeof $containerRef === 'undefined') {
-		msg("ERROR: - using window for $containerRef");
-		$containerRef = jQuery(window);
-	}
-	var oldPixelRatioAdjustedWidth = 0, oldPixelRatioAdjustedHeight = 0
-	var oldFullscreen = null
-
-	return function() {
-		var width = $containerRef.innerWidth()
-		var height = $containerRef.innerHeight()
-		var devicePixelRatio = window.devicePixelRatio || 1;
-		var pixelRatioAdjustedWidth = devicePixelRatio * width;
-		var pixelRatioAdjustedHeight = devicePixelRatio * height;
-
-		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
-
-		if ((oldPixelRatioAdjustedWidth === pixelRatioAdjustedWidth) &&
-			(oldPixelRatioAdjustedHeight === pixelRatioAdjustedHeight) &&
-			(oldFullscreen === isFullscreen))
-			return true
-
-		if (pixelRatioAdjustedWidth * pixelRatioAdjustedHeight === 0) return true	// vr manager interstitial
-
-		if (isFullscreen) {
-			$playerCanvas
-				.removeClass('webgl-canvas-normal')
-				.addClass('webgl-canvas-fs');
-			$containerRef
-				.removeClass('webgl-container-normal')
-				.addClass('webgl-container-fs');
-		} else {
-			$playerCanvas
-				.removeClass('webgl-canvas-fs')
-				.addClass('webgl-canvas-normal');
-			$containerRef
-				.removeClass('webgl-container-fs')
-				.addClass('webgl-container-normal');
-		}
-
-		$playerCanvas
-			.width(pixelRatioAdjustedWidth)
-			.height(pixelRatioAdjustedHeight);
-
-		E2.core.emit('resize')
-
-		oldPixelRatioAdjustedWidth = pixelRatioAdjustedWidth
-		oldPixelRatioAdjustedHeight = pixelRatioAdjustedHeight
-		oldFullscreen = isFullscreen
-
-	};
-}
+if (typeof VizorUI === 'undefined')
+	var VizorUI = {};
 
 // youtube only for the time being
 VizorUI.enablePopupEmbedLinks = function($container) {
@@ -505,9 +518,9 @@ VizorUI.enableScrollToLinks = function($container) {
 		});
 }
 
-VizorUI.openLoginModal = function() {
+VizorUI.openLoginModal = function(dfd) {
 	if (E2 && E2.controllers && E2.controllers.account)
-		return E2.controllers.account.openLoginModal();
+		return E2.controllers.account.openLoginModal(dfd)
 	// else
 	// window.location.href="/account";
 	return false;
@@ -722,15 +735,24 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 		event.preventDefault();
 		var formData = $form.serialize();
 
+		$form.not('.keepMessage')
+			.removeClass('hasMessage')
+			.addClass('noMessage')
+
 		$form.find('p.xhr.success.message').remove();
 		$form.find('span.message').html('');
 		$form.find('div.form-input').removeClass('error');
 
 		var $unknownError = jQuery('#unknown_error', $form);
 		if ($unknownError.length < 1) $unknownError = jQuery('.genericError', $form);
-		$unknownError.html('').hide();
+
+		if (!$form.hasClass('keepMessage'))
+			$unknownError.html('').hide();
+		
 		inProgress = true;
 		$body.addClass('loading');
+		$form.addClass('loading');
+
 		jQuery.ajax({
 			type:	'POST',
 			url:	actionURL,
@@ -738,7 +760,9 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 			dataType: 'json',
 			error: function(err) {
 				inProgress = false;
+				var detail = {}
 				$body.removeClass('loading');
+				$form.removeClass('loading');
 				if (err.responseJSON) {
 					var json = err.responseJSON;
 					var errors
@@ -789,6 +813,10 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 					if (!errors.length) {	// should errors be empty
 						$unknownError.html($unknownError.html() + '<span>'+ (json.message) + '</span>').show();
 					}
+					detail = {
+						errors: errors,
+						json: json
+					}
 				} else {
 					if (err.status === 200) {	// the response was deemed an error but has good status (jQuery timeout / last resort)
 						$unknownError.html('<span>The server said: (' + err.status + '): ' + err.statusText +'</span>').show();
@@ -796,7 +824,14 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 						// in case no json comes back, e.g. just a code
 						$unknownError.html('<span>An error ('+err.status+') occurred. Please check all required fields</span>').show();
 					}
+					detail = {
+						err: err
+					}
 				}
+				$form[0].dispatchEvent(new CustomEvent('xhrerror', {detail:detail}))
+				$form
+					.removeClass('noMessage')
+					.addClass('hasMessage')
 			},
 			success: function() {
 				inProgress = false;
@@ -808,7 +843,13 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 		return false;
 	});
 
-	$form.data('xhrEnabled', true);
+	$form
+		.data('xhrEnabled', true)
+		.attr('data-xhrEnabled', 'true')
+
+	$form
+			.removeClass('hasMessage')
+			.addClass('noMessage')
 };
 
 /**
@@ -820,7 +861,7 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 VizorUI.replaceSVGButtons = function($selector) {
 
 	var numReplaced=0;
-	$selector.find('button.svg[data-svgref!=""]').each(function(){
+	$selector.find('button.svg[data-svgref!=""], a.btn.svg[data-svgref!=""]').each(function(){
 		var $button = jQuery(this);
 		var xref = $button.data('svgref');
 		if (!xref) return;
@@ -831,7 +872,7 @@ VizorUI.replaceSVGButtons = function($selector) {
 
 		$button.data('svgref', false).attr('data-svgref','');
 
-		if ($button.hasClass('tiny')) {
+		if ($button.hasClass('tiny') && ($button.text() !== '')) {
 			$button.popover({
 				content: $button.text(),
 				delay: {

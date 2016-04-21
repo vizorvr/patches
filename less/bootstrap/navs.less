@@ -16,10 +16,12 @@
     position: relative;
     display: block;
 
-    > a {
-      position: relative;
-      display: block;
+    >a, >span {
       padding: @nav-link-padding;
+      display: block;
+    }
+    >a {
+      position: relative;
       &:hover,
       &:focus {
         text-decoration: none;
@@ -68,6 +70,7 @@
   }
 }
 
+/*
 
 // Tabs
 // -------------------------
@@ -81,7 +84,7 @@
     margin-bottom: -1px;
 
     // Actual tabs (as links)
-    > a {
+    >a {
       margin-right: 2px;
       line-height: @line-height-base;
       border: 1px solid transparent;
@@ -111,6 +114,7 @@
   }
 }
 
+*/
 
 // Pills
 // -------------------------

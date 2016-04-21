@@ -47,7 +47,7 @@ describe('Changing Slot Values', function() {
 		assert.equal(ser.root.nodes[0].uiSlotValues.a, true)
 	})
 
-	it('uses slot default after override ends', function() {
+	it('changes slot default (ui) when no override', function() {
 		var slot = orNode.findInputSlotByName('a')
 		slot.def = 3
 		E2.app.graphApi
@@ -84,6 +84,42 @@ describe('Changing Slot Values', function() {
 			.changeInputSlotValue(graph, orNode, 'a', false)
 
 		graph.update()
+	})
+
+	it('uses uiValue after input is disconnected', function(done) {
+		var updateCalled = false
+
+		var boolToggle = E2.app.instantiatePlugin('toggle_button')
+		var conn = connect(graph, boolToggle, 0, orNode, 0, false)
+		graph.update()
+
+		orNode.plugin.update_input = function() {
+			updateCalled = true
+		}
+		orNode.plugin.update_state = function() {
+			assert.ok(updateCalled, 'should have called update upon disconnecting')
+			assert.equal(this.parentNode.getInputSlotValue('a'), true)
+			done()
+		}
+		disconnect(graph, conn)
+		graph.update()
+	})
+
+
+	it('returns correct uiValue regardless of connection status', function(done) {
+		var boolToggle = E2.app.instantiatePlugin('toggle_button')
+
+		var slotA = orNode.findInputSlotByName('a')
+
+		assert.equal(orNode.getUiSlotValue(slotA), true, 'correctly setup uiValue for A')
+
+		var conn = connect(graph, boolToggle, 0, orNode, 0, false)
+		graph.update()
+
+		assert.equal(orNode.getInputSlotValue('a'), false, 'input A is updated')
+		assert.equal(orNode.getUiSlotValue(slotA), true, 'uiValue for A remains true')
+
+		done()
 	})
 
 })

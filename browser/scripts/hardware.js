@@ -2,12 +2,25 @@ var hardware = new function() {
 	var that = this;
 	this.hmd = null;
 	this.sensor = null;
+	this.enumerated = false;
 
 	this.enumerateVRDevices = function(devices) {
 		var hmd = null, sensor = null;
 
+		var haveHMDVR = typeof HMDVRDevice !== 'undefined'
+		var havePositionSensors = typeof PositionSensorVRDevice !== 'undefined'
+
+		var d, isHmd, isSensor
 		for(var i = 0; i < devices.length; i++) {
-			if(devices[i] instanceof HMDVRDevice) {
+			d = devices[i]
+			isHmd = haveHMDVR && (d instanceof HMDVRDevice)
+			if (!isHmd) {
+				if (d instanceof VRDisplay) {
+					isHmd = d.capabilities.canPresent
+				}
+			}
+
+			if (isHmd) {
 				// Just use the first device we find for now.
 				hmd = devices[i];
 				break;
@@ -16,9 +29,15 @@ var hardware = new function() {
 
 		if(hmd) {
 			for(var i = 0; i < devices.length; i++) {
-				var d = devices[i];
+				d = devices[i];
+				isSensor = (havePositionSensors && d instanceof PositionSensorVRDevice)
+				if (!isSensor) {
+					if (d instanceof VRDisplay){
+						isSensor = d.capabilities.hasOrientation
+					}
+				}
 
-				if(d instanceof PositionSensorVRDevice && d.hardwareUnitId === hmd.hardwareUnitId) {
+				if (isSensor && d.hardwareUnitId === hmd.hardwareUnitId) {
 					sensor = devices[i];
 					break;
 				}
@@ -27,18 +46,29 @@ var hardware = new function() {
 
 		this.hmd = hmd;
 		this.sensor = sensor;
+		this.enumerated = true;
+
 		return this;
 	};
 
 	// executes callback if VR present and returns true, or returns false if no VR
 	this.ifVR = function(thenCallback) {
-		if(navigator.getVRDevices) {	// webvr-polyfill
-			navigator.getVRDevices().then(thenCallback)
+		if (navigator.getVRDisplays) {
+			navigator.getVRDisplays()
+				.then(thenCallback, function(err) {
+					console.error(err)
+				})
 		} else if(navigator.mozGetVRDevices) {
 			navigator.mozGetVRDevices(thenCallback)
 		} else {
+			thenCallback(false)
 			return false;
 		}
+
 		return true;
 	};
+
+	this.detect = function() {
+		return this.ifVR(this.enumerateVRDevices.bind(this))
+	}
 }

@@ -3,13 +3,13 @@
   <head id="head">
     <title>Vizor</title>
     <link href="/style/less.css" rel="Stylesheet" type="text/css"/>
-    <link href="/style/menu.css" rel="Stylesheet" type="text/css"/>
     <link href="/style/tree.css" rel="Stylesheet" type="text/css"/>
     <link href="/style/icons/style.css" rel="Stylesheet" type="text/css"/>
     <link href="/vendor/font-awesome-4.2.0/css/font-awesome.min.css" rel="Stylesheet" type="text/css" />
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,700,300" type="text/css">
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700' rel='stylesheet' type='text/css'>
-    
+    <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400' rel='stylesheet' type='text/css'>
+
     <script>{{> ga}}</script>
 
     <script type="text/javascript" src="/vendor/when.js"></script>
@@ -48,8 +48,6 @@
     <script type="text/javascript" src="/scripts/graph.js"></script>
     <script type="text/javascript" src="/scripts/node.js"></script>
     <script type="text/javascript" src="/scripts/autoSlotGroup.js"></script>
-    <script type="text/javascript" src="/scripts/node-ui-enum.js"></script>
-    <script type="text/javascript" src="/scripts/node-ui.js"></script>
     <script type="text/javascript" src="/scripts/variables.js"></script>
 	<script type="text/javascript" src="/scripts/blendFunctions.js"></script>
 
@@ -79,6 +77,19 @@
     <script type="text/javascript" src="/scripts/ui/uiDragAwareHelper.js"></script>
     <script type="text/javascript" src="/scripts/ui/uiTextArea.js"></script>
     <script type="text/javascript" src="/scripts/ui-upload.js"></script>
+    <script type="text/javascript" src="/scripts/ui/uiDragToAdjust.js"></script>
+    <script type="text/javascript" src="/scripts/ui/uiEnterValue.js"></script>
+    <script type="text/javascript" src="/scripts/ui/uiAbstractProxy.js"></script>
+    <script type="text/javascript" src="/scripts/ui/uiProxyCheckbox.js"></script>
+    <script type="text/javascript" src="/scripts/ui/uiProxyTextField.js"></script>
+    <script type="text/javascript" src="/scripts/ui/uiProxyToggleButton.js"></script>
+    <script type="text/javascript" src="/scripts/ui/uiProxyVec3.js"></script>
+    <script type="text/javascript" src="/scripts/ui/uiAbstractProperties.js"></script>
+    <script type="text/javascript" src="/scripts/ui/uiPropertiesObj3d.js"></script>
+    <script type="text/javascript" src="/scripts/ui/uiPropertiesNode.js"></script>
+    <script type="text/javascript" src="/scripts/node-ui-enum.js"></script>
+    <script type="text/javascript" src="/scripts/node-ui.js"></script>
+
     <script type="text/javascript" src="/scripts/editConnection.js"></script>
     <script type="text/javascript" src="/scripts/player.js"></script>
 
@@ -125,16 +136,15 @@
     <script type="text/javascript" src="/vendor/three/OrbitControls.js"></script>
     <script type="text/javascript" src="/vendor/three/EditorControls.js"></script>
     <script type="text/javascript" src="/vendor/three/TransformControls.js"></script>
-    <script type="text/javascript" src="/vendor/three/FontUtils.js"></script>
-    <script type="text/javascript" src="/vendor/three/fonts/helvetiker_bold.typeface.js"></script>
-    <script type="text/javascript" src="/vendor/three/fonts/helvetiker_regular.typeface.js"></script>
+    <script type="text/javascript" src="/vendor/three/Font.js"></script>
+    <script type="text/javascript" src="/vendor/three/FontLoader.js"></script>
 
     <script type="text/javascript" src="/vendor/spite/THREE.MeshLine.js"></script>
 
     <script type="text/javascript" src="/vendor/borismus/webvr-polyfill.js"></script>
     <script type="text/javascript" src="/vendor/borismus/webvr-manager.js"></script>
-
 	<script type="text/javascript" src="/scripts/hardware.js"></script>
+    <script type="text/javascript" src="/scripts/webVRAdapter.js"></script>
 
     <script type="text/javascript" src="/vendor/random.min.js"></script>
 

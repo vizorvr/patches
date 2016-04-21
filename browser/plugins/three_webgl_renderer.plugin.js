@@ -78,21 +78,14 @@
 		Plugin.prototype.update_input.apply(this, arguments)
 	}
 
-	var firstResize = true
 	ThreeWebGLRendererPlugin.prototype.update_state = function() {
 		// workaround for having to share the renderer between render to texture & render to screen
 		// tbd: remove once https://github.com/mrdoob/three.js/pull/6723 is merged into a three release
-		this.renderer.setPixelRatio(window.devicePixelRatio)
-		this.renderer.setClearColor(this.clearColor)
 
-	    if (firstResize) {
-			this.resize()
-			firstResize = false
-	    }
+		this.renderer.setClearColor(this.clearColor)
 
 		if (!this.scene || !this.perspectiveCamera) {
 			this.renderer.clear()
-
 			return
 		}
 
@@ -104,16 +97,26 @@
 			this.perspectiveCamera.updateMatrixWorld()
 		}
 
-		if (E2.app.worldEditor.isActive()) {
+		if (E2.app.worldEditor.isActive())
 			E2.app.worldEditor.preRenderUpdate()
-			
+
+		this.manager.render(this.scene, this.getActiveCamera())
+
+	}
+
+	ThreeWebGLRendererPlugin.prototype.getActiveCamera = function() {
+		if (E2.app.worldEditor.isActive()) {
 			// Render the scene through the world editor camera
-			this.manager.render(this.scene, E2.app.worldEditor.getCamera())
-		}
-		else {
+			return E2.app.worldEditor.getCamera()
+		} else {
 			// Render the scene through the experience camera
-			this.manager.render(this.scene, this.perspectiveCamera)
+			return this.perspectiveCamera
 		}
+	}
+
+	ThreeWebGLRendererPlugin.prototype.play = function() {
+		// one initial resize
+		this.manager.resizeToTarget()
 	}
 
 	ThreeWebGLRendererPlugin.prototype.patchSceneForWorldEditor = function() {
@@ -123,41 +126,19 @@
 		}
 	}
 
-	ThreeWebGLRendererPlugin.prototype.play = function() {
-		this.resize()
-	}
-
-	ThreeWebGLRendererPlugin.prototype.resize = function() {
-		console.log('ThreeWebGLRendererPlugin.resize')
-
-		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement);
-		var wh = { width: window.innerWidth, height: window.innerHeight }
-
-		if (!isFullscreen) {
-			wh.width = this.domElement.clientWidth
-			wh.height = this.domElement.clientHeight
-
-			if (typeof(E2.app.calculateCanvasArea) !== 'undefined')
-				wh = E2.app.calculateCanvasArea()
+	ThreeWebGLRendererPlugin.prototype.onTargetResized = function(s) {
+		function updateCamera(camera, s) {
+			camera.aspect = s.width / s.height;
+			camera.updateProjectionMatrix();
 		}
+		if (this.perspectiveCamera)
+			updateCamera(this.perspectiveCamera, s)
 
-		this.effect.setSize(wh.width, wh.height)
-	}
+		if (E2.app.worldEditor && E2.app.worldEditor.getCamera)
+			updateCamera(E2.app.worldEditor.getCamera(), s)
 
-	ThreeWebGLRendererPlugin.prototype.onFullScreenChanged = function() {
-		var isFullscreen = !!(document.mozFullScreenElement || document.webkitFullscreenElement)
-		console.log('ThreeWebGLRendererPlugin.onFullScreenChanged', isFullscreen)
-
-		if (!isFullscreen)
-			this.manager.enterVR()
-		else
-			this.manager.exitVR()
-	}
-
-	ThreeWebGLRendererPlugin.prototype.toggleFullScreen = function() {
-		var isFullscreen = E2.util.isFullscreen()
-		console.log('ThreeWebGLRendererPlugin.toggleFullScreen', !isFullscreen)
-		this.manager.toggleFullScreen()
+		this.renderer.setPixelRatio(s.devicePixelRatio)
+		this.effect.setSize(s.width, s.height)
 	}
 
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
@@ -165,24 +146,17 @@
 			this.domElement = E2.dom.webgl_canvas[0]
 			this.renderer = E2.core.renderer
 
-			this.renderer.setPixelRatio(window.devicePixelRatio)
+			var nativeWebVRAvailable = VizorWebVRAdapter.isNativeWebVRAvailable()
 
-			// for now (three.js r74) VREffect is not compatible with webvr-boilerplate
-			// nor three.js so we use THREE.CardboardEffect instead
-			if (!window.vizorNativeWebVRAvailable) {
-				this.effect = new THREE.CardboardEffect(this.renderer)
-			}
-			else {
-				this.effect = new THREE.VREffect(this.renderer)
-			}
+			this.effect = new THREE.VREffect(this.renderer)
 
-			this.manager = new WebVRManager(this.renderer, this.effect, { hideButton: true })
+			this.manager = E2.core.webVRAdapter
+			var events = this.manager.events
 
-			E2.core.webVRManager = this.manager		// allow e.g. the player/embed to access this
+			this.manager.on(events.targetResized, this.onTargetResized.bind(this))
 
-			E2.core.on('resize', this.resize.bind(this))
-			// E2.core.on('fullScreenChanged', this.onFullScreenChanged.bind(this))
-			E2.core.on('fullScreenChangeRequested', this.toggleFullScreen.bind(this))
+			this.manager.initialise(this.domElement, this.renderer, this.effect)
+
 		}
 	}
 

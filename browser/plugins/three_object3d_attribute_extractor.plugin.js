@@ -61,7 +61,7 @@
 		}
 		this.position.copy(this.object3d.position)
 
-		this.euler.setFromQuaternion(this.object3d.quaternion)
+		this.euler.setFromQuaternion(this.object3d.quaternion, "YZX")
 		this.rotation.set(this.euler.x, this.euler.y, this.euler.z)
 
 		this.scale.copy(this.object3d.scale)

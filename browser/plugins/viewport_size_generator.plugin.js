@@ -34,7 +34,6 @@
 		if (!ui) {
 			this.domElement = E2.dom.webgl_canvas[0]
 			E2.core.on('resize', this.resize.bind(this))
-			E2.core.on('fullScreenChangeRequested', this.resize.bind(this))
 		}
 	}
 

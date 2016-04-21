@@ -19,7 +19,7 @@
         <meta name="description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
     {{/if}}
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta id="viewportmeta" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no" />
     <!-- facebook -->
     <meta name="og:description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
     <meta name="og:image" content="/images/vizor_social.jpg" />
@@ -41,9 +41,9 @@
 
     <script src="/scripts/ui-site.js"></script>
 
-    <script src="/data/dist/0.6/player.min.js"></script>
+    <script src="/data/dist/0.8/player.min.js"></script>
     <script>
-        (function(){
+        (function() {
             {{{templateCache}}}
         }.apply(window))
     </script>

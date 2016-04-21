@@ -13,9 +13,8 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.btnPresets.click(this.onBtnPresetsClicked.bind(this));
 	dom.btnChatDisplay.click(this.onBtnChatClicked.bind(this));
 	dom.btnHideAll.click(this.onBtnHideAllClicked.bind(this));
-	dom.btnInspector.click(this.onInspectorClicked.bind(this));
+	dom.btnInspector.click(this.onBtnInspectorClicked.bind(this));
 	dom.btnEditorCam.click(this.enterEditorView.bind(this));
-
 	dom.btnVRCam.click(this.enterVRView.bind(this));
 
 
@@ -52,6 +51,7 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 
 	dom.chatWindow.find('ul.nav-tabs a').click(makeTabHandler('chat'));
 	dom.presetsLib.find('ul.nav-tabs a').click(makeTabHandler('presets'));
+	dom.propertiesPanel.find('ul.nav-tabs a').click(makeTabHandler('properties'));
 
 	if (dom.assetsLib) dom.assetsLib.find('ul.nav-tabs a').click(makeTabHandler('assets'));
 
@@ -70,10 +70,12 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.chatToggleButton.click(makeCollapseHandler('chat'));
 	dom.assetsToggle.click(makeCollapseHandler('assets'));
 	dom.presetsToggle.click(makeCollapseHandler('presets'));
+	dom.propertiesToggle.click(makeCollapseHandler('properties'));
 
 	dom.assetsClose.click(this.closePanelAssets.bind(this));
 	dom.presetsClose.click(this.closePanelPresets.bind(this));
 	dom.chatClose.click(this.closePanelChat.bind(this));
+	dom.propertiesClose.click(this.closePanelProperties.bind(this));
 
 	dom.publishButton.click(function() {
 		E2.app.onPublishClicked()
@@ -83,6 +85,7 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 		that.state.panelStates[which] = VizorUI.getDomPanelState(domElement);
 	}
 	// drag handlers, for when the panels are dragged
+	dom.propertiesPanel.on(uiEvent.moved, function(){  updatePanelState('properties', dom.propertiesPanel)   });
 	dom.assetsLib.on(uiEvent.moved, function(){  updatePanelState('assets', dom.assetsLib)   });
 	dom.presetsLib.on(uiEvent.moved, function(){ updatePanelState('presets', dom.presetsLib) });
 	dom.chatWindow
@@ -97,10 +100,12 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 
 	var switchModifyMode = function(modifyMode){
 		return function(e){
-			e.preventDefault();
-			e.stopPropagation();
-			that.state.modifyMode = modifyMode;
-			return false;
+			e.preventDefault()
+			e.stopPropagation()
+			var state = that.state
+			state.modifyModeDefault = modifyMode
+			state.modifyMode = state.modifyModeDefault
+			return false
 		}
 	}
 	dom.btnMove.on('mousedown', switchModifyMode(uiModifyMode.move));
@@ -108,6 +113,7 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.btnScale.on('mousedown', switchModifyMode(uiModifyMode.scale));
 
 };
+
 
 VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	e2.app.onWindowResize();
@@ -117,9 +123,14 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	var that = this;
 	var dom = this.dom;
 
+	dom.propertiesPanel = $('#properties-panel');
+	dom.propertiesClose = $('#properties-close', dom.propertiesPanel)
+	dom.propertiesToggle = $('#properties-toggle', dom.propertiesPanel)
+
 	this.state.panelStates.assets = VizorUI.getDomPanelState(dom.assetsLib);
 	this.state.panelStates.presets = VizorUI.getDomPanelState(dom.presetsLib);
 	this.state.panelStates.chat = VizorUI.getDomPanelState(dom.chatWindow);
+	this.state.panelStates.properties = VizorUI.getDomPanelState(dom.propertiesPanel);
 
 
 	dom.btnBuildMode = $('#buildModeBtn');
@@ -130,15 +141,23 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	dom.btnHideAll = $('#btn-hide-all');
 
 
+
 	var presetsTabs = jQuery('#presets-lib div.block-header ul.nav-tabs li');
 	dom.tabPresets = presetsTabs.find("a[href='#presets']").parent();
 	dom.tabObjects = presetsTabs.find("a[href='#objects']").parent();
 
+
+	var propertiesTabs = jQuery('#properties-panel div.block-header ul.nav-tabs li');
+	dom.tabObjProperties = propertiesTabs.find("a[href='#obj3dPropertiesPane']").parent();
+	dom.tabNodeProperties = propertiesTabs.find("a[href='#nodePropertiesPane']").parent();
+
 	var shaderBlock = $('.shader-block')
 	shaderBlock.movable()
 
+	// drag dragging handlers
 	dom.presetsLib.movable();
 	dom.assetsLib.movable();
+	dom.propertiesPanel.movable();
 
 	var chatUsersHeight = jQuery('.chat-users').height();
 
@@ -168,13 +187,18 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	if (dom.assetsLib.length < 1) this.state.visibility.panel_assets = false;
 
 	this.setupEventHandlers(e2,this.dom);
+
+	this.propertiesPanel = {
+		obj3d : new UIObjectProperties(jQuery('#obj3dPropertiesPane', dom.propertiesPanel)),
+		node :  new UINodeProperties(jQuery('#nodePropertiesPane', dom.propertiesPanel))
+	}
+
 	this.setupStateStoreEventListeners();
 	this.state.allowStoreOnChange = true;
 
 	this.pluginDocsCache = new PluginDocsCache()
 
 	this._initialised = true;
-
 	this.emit(uiEvent.initialised, this);
 }
 
@@ -204,48 +228,6 @@ VizorUI.prototype.setPageTitle = function() {
 	newTitle = graphname + " | " + newTitle;	
 	document.title = newTitle;
 	return newTitle;
-}
-
-
-/***** MODAL DIALOGS/WINDOWS *****/
-
-
-VizorUI.prototype.openPublishGraphModal = function() {
-	var dfd = when.defer()
-	var that = this;
-	var publishTemplate = E2.views.filebrowser.publishModal;
-	var graphname = E2.app.path.split('/')
-    if (graphname.length > 1)
-        graphname = graphname[1];
-
-	var graphdata = E2.app.player.core.serialise();
-
-	var graphpreview = E2.app.getScreenshot(1280, 720);
-
-	var data = {
-		path:	        graphname,
-		graph:	        graphdata,
-		previewImage:   graphpreview
-	};
-
-	var openSaveGraph = function(dfd) {
-		ga('send', 'event', 'account', 'open', 'publishGraphModal');
-		var $modal = VizorUI.modalOpen(publishTemplate(data), 'Publish this scene', 'nopad');
-		var $form = $('#publishGraphForm', $modal);
-		VizorUI.setupXHRForm($form, function(saved){
-			ga('send', 'event', 'graph', 'saved')
-			dfd.resolve(saved.path);
-		});
-	}
-
-	if (!VizorUI.userIsLoggedIn()) {
-		VizorUI.openLoginModal()
-			.then(openSaveGraph);
-	} else {
-		openSaveGraph(dfd);
-	}
-
-	return dfd.promise
 }
 
 /***** EVENT HANDLERS *****/
@@ -286,6 +268,11 @@ VizorUI.prototype.onBtnChatClicked = function(e) {
 VizorUI.prototype.onBtnPresetsClicked = function() {
 	this.state.visibility.panel_presets = !this.state.visibility.panel_presets;
 	return false;
+}
+
+VizorUI.prototype.onBtnInspectorClicked = function() {
+	this.state.visibility.panel_properties = !this.state.visibility.panel_properties
+	return false
 }
 
 VizorUI.prototype.onBtnAssetsClicked = function() {
@@ -353,6 +340,11 @@ VizorUI.prototype.closePanelChat = function() {
 	return false;
 }
 
+VizorUI.prototype.closePanelProperties = function() {
+	this.state.visibility.panel_properties = false;
+	return false;
+}
+
 VizorUI.prototype.closePanelAssets = function() {
 	this.state.visibility.panel_assets = false;
 	return false;
@@ -385,16 +377,16 @@ VizorUI.prototype.onLibSearchClicked = function(e) {
 }
 
 VizorUI.prototype.isPanelChatVisible = function() {
-	var s = this.state, v = s.visibility;
-	return s.visible && v.floating_panels && v.panel_chat;
+	return this.state.visibility.panel_chat
 }
 VizorUI.prototype.isPanelPresetsVisible = function() {
-	var s = this.state, v = s.visibility;
-	return s.visible && v.floating_panels && v.panel_presets;
+	return this.state.visibility.panel_presets
 }
 VizorUI.prototype.isPanelAssetsVisible = function() {
-	var s = this.state, v = s.visibility;
-	return s.visible && v.floating_panels && v.panel_assets;
+	return this.state.visibility.panel_assets
+}
+VizorUI.prototype.isPanelPropertiesVisible = function() {
+	return this.state.visibility.panel_properties
 }
 
 VizorUI.prototype.togglePanelChatCollapsed = function() {
@@ -406,22 +398,9 @@ VizorUI.prototype.togglePanelAssetsCollapsed = function() {
 VizorUI.prototype.togglePanelPresetsCollapsed = function() {
 	this.dom.presetsToggle.trigger('click');
 }
-
-VizorUI.prototype.onInspectorClicked = function() {
-	var app = E2.app;
-	if (app.selectedNodes.length===1) {
-		if (app.selectedNodes[0].ui.hasPreferences()) {
-			app.selectedNodes[0].ui.openInspector();
-		} else {
-			app.growl('This node has no settings.','info',4000);
-		}
-	} else {
-		app.growl('Select one particular patch to see its settings.','info',4000);
-	}
-	this.state.visibility.inspector = true;
-	return true;
+VizorUI.prototype.togglePanelPropertiesCollapsed = function() {
+	this.dom.propertiesToggle.trigger('click');
 }
-
 
 VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 
@@ -509,10 +488,11 @@ VizorUI.prototype.setModeProgram = function() {
 VizorUI.prototype.buildBreadcrumb = function(graph, beforeRender) {
 	var b = new UIbreadcrumb()
 	function buildBreadcrumb(parentEl, graph, add_handler) {
+		var title = graph.tree_node.title || graph.tree_node.id
 		if (add_handler) {
-			b.prepend(graph.tree_node.title, null, function() { graph.tree_node.activate() })
+			b.prepend(title, null, function() { graph.tree_node.activate() })
 		} else {
-			b.prepend(graph.tree_node.title, null)
+			b.prepend(title, null)
 		}
 		if (graph.parent_graph)
 			buildBreadcrumb(parentEl, graph.parent_graph, true)
@@ -531,7 +511,185 @@ VizorUI.prototype.toggleFullscreenVRViewButtons = function() {
 }
 
 
-/***** MISC UI MODALS/DIALOGS *****/
+/***** UI MODALS/DIALOGS *****/
+
+
+
+VizorUI.prototype.openPublishGraphModal = function() {
+	var that = this,
+		dfd = when.defer(),
+		publishTemplate = E2.views.filebrowser.publishModal
+
+	var graphname = E2.app.path.split('/')
+    if (graphname.length > 1)
+        graphname = graphname[1]
+
+	var graphdata = E2.app.player.core.serialise()
+	var graphpreview = E2.app.getScreenshot(1280, 720)
+	var assetdata = _.clone(E2.app.graphStore.getGraphSize())	// {size, numAssets, numNodes, hasAudio}
+
+
+	var data = {
+		path:	        graphname,
+		graph:	        graphdata,
+		previewImage:   graphpreview,
+		assetdata:		assetdata,
+		isPublic:		true,
+		sizeFormatted: 	siteUI.formatFileSize(assetdata.size)
+	}
+
+
+	var openSaveGraph = function(dfd) {
+
+		ga('send', 'event', 'account', 'open', 'publishGraphModal')
+		var $modal = VizorUI.modalOpen(publishTemplate(data), 'Publish', 'nopad modal_publish')
+		var $form = $('#publishGraphForm', $modal)
+		VizorUI.setupXHRForm($form, function(saved) {
+			ga('send', 'event', 'graph', 'saved')
+			dfd.resolve(saved.path)
+		})
+
+		var $publicPrivateLabel = $form.find('label#publishPublicPrivateLabel').first()
+		$form.find('input#publishPublic')
+			.on('change', function(e){
+				var isPublic = this.checked
+				$publicPrivateLabel.html( isPublic ? 'Public' : 'Private')
+			})
+
+		var $pathInput = $('#pathInput', $form),
+			$submit = $form.find('button[type="submit"]'),
+			$submitLabel = $submit.find('span'),
+			$message = $form.find('.modal-error')
+
+		var canSubmit = false
+
+		var makeGraphUrl = function(username, pathInputValue) {
+			return '/' + username + '/' + E2.util.slugify(pathInputValue)
+		}
+
+		var t = null, done_t = null
+
+		var checkGraphExists = function(path) {
+			canSubmit = false
+
+			if (done_t)
+				clearTimeout(done_t)		// set by the response handler
+
+			var username = E2.models.user.toJSON().username
+			$submit.attr('disabled', true)
+
+			var url = makeGraphUrl(username, path) + '?summary=1'
+
+			var responseHandler = function(status, json){
+				var delay = 0
+				var okToSubmit = true	// default
+				switch (status) {
+					case 0:
+						okToSubmit = false
+						// fallthrough
+					case 404:
+						// clear warnings
+						$message
+							.html('')
+							.removeClass('warn')
+							.hide()
+						$form
+							.removeClass('hasMessage keepMessage')
+							.addClass('noMessage')
+						$submitLabel
+							.text('Publish')
+						break
+					case 200:
+						// warn the user and change the button
+						$form
+							.removeClass('noMessage')
+							.addClass('hasMessage keepMessage')
+						$message
+							.html('That file already exists. Do you want to update it with this copy?')
+							.addClass('warn')
+							.show()
+						$submitLabel
+							.text('Yes, publish')
+						delay = 1000
+						break
+					default:
+						console.error('could not parse response', status, json)
+				}
+
+				function done() {
+					// set upper scope to our result
+					canSubmit = okToSubmit
+					$submit.attr('disabled', !canSubmit)
+				}
+				if (delay) {
+					done_t = setTimeout(done, delay)
+				} else {
+					if (done_t) clearTimeout(done_t)
+					done()
+				}
+			}
+
+			if (!path) {
+				responseHandler(0)
+				return
+			}
+
+			$.ajax({
+				url:	url,
+				type: 	'GET',
+				dataType: 'json',
+				success: function(res) {return responseHandler(200, res)},
+				error:	function(err) {return responseHandler(err.status, err.responseJSON)},
+			})
+
+		}
+
+		// handle keyboard input and schedule a check for entered graph name
+		var oldPath = null
+		$pathInput
+			.on('keydown', function(e) {
+				if (e.keyCode === 13) {	// enter
+					if (canSubmit)
+						return true
+
+					// else check in progress
+					e.preventDefault()
+					return false
+				}
+			})
+			.on('keyup blur', function(e) {
+				val = this.value.trim()
+				if (val && (val === oldPath))
+					return true
+
+				oldPath = val
+				canSubmit = false
+				$submit.attr('disabled', true)
+
+				if (t)
+					clearTimeout(t)
+				t = setTimeout(function(){checkGraphExists(val)}, 300)
+				return true
+			})
+			.trigger('keyup')
+
+		$form.on('submit', function(){
+			$submitLabel.text('Publishing')
+			return true
+		})
+
+	}
+
+	if (!VizorUI.userIsLoggedIn()) {
+		VizorUI.openLoginModal(dfd)
+			.then(openSaveGraph)
+	} else {
+		openSaveGraph(dfd)
+	}
+
+	return dfd.promise
+}
+
 
 VizorUI.prototype.viewSource = function() {
 	var b = bootbox.dialog({
@@ -659,6 +817,11 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 
 /***** HELPER METHODS *****/
 
+VizorUI.prototype.getCurrentGraphSize = function() {
+	var state = E2.app.graphStore.getGraphSize()
+	return state.size
+}
+
 VizorUI.openEditorHelp = function() {
 	var keyData = _.extend({}, uiKeys);
 	var modShift = uiKeys.modShift,
@@ -728,8 +891,6 @@ VizorUI.openEditorHelp = function() {
 	return VizorUI.modalOpen(html, 'Keyboard Shortcuts', 'mHelp mShortcuts')
 
 }
-
-
 
 VizorUI.checkCompatibleBrowser = function() {
 	var agent = navigator.userAgent;

@@ -11,7 +11,7 @@
  * @uses UIDragAwareHelper
  * @constructor
  */
-var UITextArea = function(adapter, onBeginChange, onChange, onEndChange) {
+var UITextArea = function UITextArea(adapter, onBeginChange, onChange, onEndChange) {
 	var that = this
 
 	var paddingPx = 2
