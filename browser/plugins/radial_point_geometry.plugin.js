@@ -23,6 +23,10 @@
 			name: 'spacing',
 			dt: E2.dt.FLOAT,
 			def: 0.25
+		}, {
+			name: 'layerRotation',
+			dt: E2.dt.FLOAT,
+			def: 0.1
 		}]
 
 		this.output_slots = [{
@@ -51,6 +55,8 @@
 			var layer1 = Math.floor((i % dotsPerLayer) / this.inputValues.sectors)
 
 			var layer2 = Math.floor(i / dotsPerLayer)
+
+			angle += layer2 * this.inputValues.layerRotation
 
 			var d = this.inputValues.distance + (this.inputValues.spacing * layer1)
 			var h = layer2 * this.inputValues.spacing
