@@ -16,7 +16,7 @@ AccountController.prototype = Object.create(EventEmitter.prototype)
 AccountController.prototype.renderLoginView = function(user) {
 	var viewTemplate = E2.views.partials.userpulldown
 	var html = viewTemplate({
-		user: user.toJSON()
+		username: user.username
 	})
 
 	$('a, button', this.dom.container).off('.accountController');
@@ -80,13 +80,10 @@ AccountController.prototype.openLoginModal = function(dfd) {
 
 	var onSuccess = function(response) {
 		var user = response.data;
-		mixpanel.identify(user.username)
-		mixpanel.people.set({
-			"$name": user.name,
-			username: user.username,
-			"$email": user.email
+		dataLayer.push({
+			event: 'userSignedIn',
+			username: user.username
 		})
-		mixpanel.track('SignIn/SignedIn')
 		E2.models.user.set(user);
 		bootbox.hideAll();
 		dfd.resolve()
@@ -109,7 +106,9 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	var dfd = dfd || when.defer();
 	var signupTemplate = E2.views.partials.account.signup();
 
-	mixpanel.track('SignUp/Open')
+	dataLayer.push({
+		event: 'signInDialogOpened'
+	})
 
 	var $modal = VizorUI.modalOpen(signupTemplate, 'Sign up', 'nopad mSignup', true, {backdrop:null});
 
@@ -120,13 +119,10 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	var onSuccess = function(response) {
 		var user = response.data;
 
-		mixpanel.alias(user.username)
-		mixpanel.people.set({
-			"$name": user.name,
-			username: user.username,
-			"$email": user.email
+		dataLayer.push({
+			event: 'userSignedUp',
+			username: user.username
 		})
-		mixpanel.track('SignUp/SignedUp')
 
 		E2.models.user.set(user);
 		VizorUI.modalClose();
@@ -144,15 +140,17 @@ AccountController.prototype.openForgotPasswordModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var forgotTemplate = E2.views.partials.account.forgotpassword;
 	
-	mixpanel.track('Forgot/Open')
+	dataLayer.push({
+		event: 'forgotDialogOpened'
+	})
 
 	var $modal = VizorUI.modalOpen(forgotTemplate({modal:true}), 'Forgot password', 'nopad mForgotpassword');
 	this._bindModalLinks($modal, dfd);
 	var $form = $('#forgotPasswordForm');
-	VizorUI.setupXHRForm($form, function(response){
+	VizorUI.setupXHRForm($form, function(response) {
 		VizorUI.modalClose();
 		if (response.success) {
-			mixpanel.track('Forgot/PasswordReset')
+			dataLayer.push({ event: 'forgotPasswordReset' })
 			VizorUI.modalAlert(response.message, 'Done');
 		}
 		dfd.resolve();
@@ -164,7 +162,7 @@ AccountController.prototype.openChangePasswordModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var resetTemplate = E2.views.partials.account.changepassword({modal:true});
 	
-	mixpanel.track('ChangePassword/Open')
+	dataLayer.push({ event: 'changePasswordDialogOpened' })
 
 	var $modal = VizorUI.modalOpen(resetTemplate, 'Change Password', 'nopad mChangepassword');
 	this._bindModalLinks($modal, dfd);
@@ -173,7 +171,7 @@ AccountController.prototype.openChangePasswordModal = function(dfd) {
 	var onSuccess = function(response) {
 		var user = response.data;
 		VizorUI.modalClose();
-		mixpanel.track('ChangePassword/Changed')
+		dataLayer.push({ event: 'passwordChanged', username: user.username })
 		VizorUI.modalAlert('Password for ' + user.username + ' was changed.', 'Done');
 		dfd.resolve();
 	};
@@ -187,7 +185,7 @@ AccountController.prototype.openAccountModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var accountTemplate = E2.views.partials.account.account({user: E2.models.user.toJSON(), modal:true});
 
-	ga('send', 'event', 'account', 'open', 'accountModal');
+	dataLayer.push({ event: 'accountDialogOpened' })
 
 	var $modal = VizorUI.modalOpen(accountTemplate, 'Account', 'nopad mAccountdetails', true)
 
@@ -208,7 +206,7 @@ AccountController.prototype.openAccountModal = function(dfd) {
 	var onSuccess = function(response) {
 		var user = response.data;
 		E2.models.user.set(user);
-		ga('send', 'event', 'account', 'accountUpdated', user.username);
+		dataLayer.push({ event: 'accountUpdated', username: E2.models.user.get('username') })
 		VizorUI.modalClose();
 		VizorUI.modalAlert(response.message, 'Done');
 		dfd.resolve();

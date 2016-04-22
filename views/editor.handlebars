@@ -285,7 +285,12 @@
 				email: '{{user.email}}'
 			})
 
-			mixpanel.identify('{{user._id}}')
+			dataLayer.push({
+				event: 'User info',
+				username: '{{user.username}}',
+				name: '{{user.name}}',
+				email: '{{user.email}}'
+			})
 		}
 
 		if (typeof E2.controllers === 'undefined')

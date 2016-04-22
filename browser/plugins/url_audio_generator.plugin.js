@@ -52,7 +52,12 @@ UrlAudio.prototype.create_ui = function()
 					return;
 			
 				that.undoableSetState('url', newValue, oldValue)
-				mixpanel.track('UrlAudio Model Changed')
+
+				dataLayer.push({
+					event: 'assetChanged',
+					plugin: 'UrlAudio',
+					url: newValue
+				})
 			})
 			.modal()
 		})

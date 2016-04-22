@@ -254,7 +254,10 @@ EditorChannel.prototype.fork = function(payload) {
 EditorChannel.prototype.leave = function() {
 	this.wsChannel.leave(this.channelName)
 
-	ga('send', 'event', 'editorChannel', 'left', this.channelName)
+	dataLayer.push({
+		event: 'leftChannel',
+		channelName: this.channelName
+	})
 
 	this.wsChannel.removeListener(this.channelName, this._messageHandlerBound)
 
@@ -301,7 +304,10 @@ EditorChannel.prototype.join = function(channelName, readableName, cb) {
 		if (pl.kind === 'youJoined' && pl.channel === channelName) {
 			that.wsChannel.removeListener(channelName, waitForOwnJoin)
 			
-			ga('send', 'event', 'editorChannel', 'joined', channelName)
+			dataLayer.push({
+				event: 'joinedChannel',
+				channelName: this.channelName
+			})
 
 			that.isOnChannel = true
 			

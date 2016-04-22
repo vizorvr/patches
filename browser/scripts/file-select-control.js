@@ -303,7 +303,8 @@ FileSelectControl.prototype._bindUploadForm = function() {
 			success: function(file) {
 				$progress.removeClass('active')
 		
-				mixpanel.track('Uploaded', {
+				dataLayer.push({ 
+					event: 'uploaded',
 					modelName: file.modelName,
 					path: file.url
 				})

@@ -88,7 +88,12 @@
 
 					that.updated = true
 				    
-					mixpanel.track('ThreeLoaderScenePlugin Model Changed')
+					dataLayer.push({
+						event: 'assetChanged',
+						plugin: 'ThreeLoaderScenePlugin',
+						url: newValue
+					})
+
 				    E2.app.undoManager.end()
 			    })
 			})

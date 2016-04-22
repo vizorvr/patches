@@ -149,7 +149,8 @@ PresetManager.prototype.renderObjects = function() {
 PresetManager.prototype.openPreset = function(name) {
 	$.get(name)
 	.done(function(data) {
-		mixpanel.track('Preset Added', {
+		dataLayer.push({
+			event: 'Preset Added', 
 			name: name
 		})
 

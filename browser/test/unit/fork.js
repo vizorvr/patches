@@ -38,7 +38,7 @@ describe('ForkCommand', function() {
 
 	beforeEach(function() {
 		global.history = { pushState: function() {} }
-		global.mixpanel = { track: function() {} }
+		global.dataLayer = []
 		global.E2 = {
 			core: {
 				root_graph: {

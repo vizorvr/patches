@@ -36,7 +36,8 @@ function uploadFile(file) {
 			return xhr
 		},
 		success: function(uploadedFile) {
-			mixpanel.track('Uploaded', {
+			dataLayer.push({
+				event: 'uploaded', 
 				modelName: modelName,
 				path: uploadedFile.url
 			})
@@ -101,7 +102,8 @@ function instantiatePluginForUpload(uploaded, position) {
 	var node = E2.app.createPlugin(pluginId, position)
 	node.plugin.state.url = uploaded.url
 
-	mixpanel.track('Node Created', {
+	dataLayer.push({
+		event: 'nodeAdded', 
 		id: pluginId,
 		fromUpload: true
 	})
@@ -154,7 +156,8 @@ function instantiateTemplateForUpload(uploaded, position) {
 			0,
 			0)
 
-		mixpanel.track('Preset Added', {
+		dataLayer.push({
+			event: 'presetAdded', 
 			name: templateName,
 			fromUpload: true
 		})

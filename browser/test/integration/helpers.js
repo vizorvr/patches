@@ -27,6 +27,8 @@ exports.slot = function slot(index, type, dt) {
 }
 
 exports.mockE2Classes = function() {
+	global.dataLayer = []
+
 	global.AssetLoader = function AssetLoader() {
 		EventEmitter.call(this)
 		this.defaultTexture = {}
@@ -60,8 +62,6 @@ exports.mockE2Classes = function() {
 
 	global.E2.EnvironmentSettings = function(){}
 	global.E2.Noise = function() {this.noise2D = function(){}}
-
-	global.mixpanel = { track: function() {}}
 }
 
 function Color() {}

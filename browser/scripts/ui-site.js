@@ -295,13 +295,13 @@ var siteUI = new function() {
 	}
 
 	this.initAbout = function($body) {
-		mixpanel.track('About Page')
+		E2.track({ event: 'aboutPage' })
 		this.initHome()
 	}
 
 
 	this.initHomepage = function($body) {
-        mixpanel.track('Front Page')
+        E2.track({ event: 'frontPage' })
 		this.initHome()
 
 		var $homePlayerContainer = jQuery('#player_home');

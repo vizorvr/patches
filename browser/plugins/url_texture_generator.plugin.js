@@ -61,7 +61,12 @@
 						if (newValue === oldValue)
 							return;
 
-						mixpanel.track('UrlTexture Texture Changed')
+						dataLayer.push({
+							event: 'assetChanged',
+							plugin: 'UrlTexture',
+							url: newValue
+						})
+						
 						that.undoableSetState('url', newValue, oldValue)
 
 						that.dirty = true

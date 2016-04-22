@@ -441,7 +441,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 						dataType: 'json',
 						success: function() {
 							ui.updateProgressBar(100);
-							mixpanel.track('Preset Saved')
+							dataLayer.push({ event: 'presetSaved' })
 							that.presetManager.refresh()
 						},
 						error: function(x, t, err) {
@@ -538,14 +538,11 @@ VizorUI.prototype.openPublishGraphModal = function() {
 		sizeFormatted: 	siteUI.formatFileSize(assetdata.size)
 	}
 
-
 	var openSaveGraph = function(dfd) {
-
-		ga('send', 'event', 'account', 'open', 'publishGraphModal')
 		var $modal = VizorUI.modalOpen(publishTemplate(data), 'Publish', 'nopad modal_publish')
 		var $form = $('#publishGraphForm', $modal)
+
 		VizorUI.setupXHRForm($form, function(saved) {
-			ga('send', 'event', 'graph', 'saved')
 			dfd.resolve(saved.path)
 		})
 

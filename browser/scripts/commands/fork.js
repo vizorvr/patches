@@ -27,7 +27,8 @@ ForkCommand.prototype.fork = function() {
 
 	return E2.app.setupEditorChannel()
 		.then(function() {
-			mixpanel.track('Forked', {
+			dataLayer.push({
+				event: 'forked',
 				fromName: oldName,
 				forkName: forkName 
 			})
