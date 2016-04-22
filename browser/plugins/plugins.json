@@ -166,7 +166,7 @@
     },
 
 
-       "AUDIO": {
+    "AUDIO": {
         "Audio player": "audio_player",
         "Audio source player": "audio_source_player",
         "Analyse": "audio_analyse_modulator",
@@ -175,7 +175,9 @@
         "Current time": "audio_get_current_time_modulator",
         "Duration": "audio_get_duration_modulator",
         "Module player": "module_player",
-        "Gain (mix)": "audio_gain_modulator"
+        "Gain (mix)": "audio_gain_modulator",
+        "Spatial Listener": "audio_spatial_listener",
+        "Spatial Panner": "audio_spatial_panner"
     },
 
     "DEBUG TOOLS": {
