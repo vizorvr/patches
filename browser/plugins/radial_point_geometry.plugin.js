@@ -24,6 +24,10 @@
 			dt: E2.dt.FLOAT,
 			def: 0.25
 		}, {
+			name: 'layer spacing',
+			dt: E2.dt.FLOAT,
+			def: 0.25
+		}, {
 			name: 'layerRotation',
 			dt: E2.dt.FLOAT,
 			def: 0.1
@@ -48,6 +52,7 @@
 		this.geometry = new THREE.Geometry()
 
 		var dotsPerLayer = this.inputValues.sectors * this.inputValues.depth
+		var layerSpacing = this.inputValues['layer spacing']
 
 		for (var i = 0, len = this.inputValues['point count']; i < len; ++i) {
 			var angle = (i % dotsPerLayer) / this.inputValues.sectors * Math.PI * 2
@@ -59,7 +64,7 @@
 			angle += layer2 * this.inputValues.layerRotation
 
 			var d = this.inputValues.distance + (this.inputValues.spacing * layer1)
-			var h = layer2 * this.inputValues.spacing
+			var h = layer2 * layerSpacing
 
 			var x = Math.cos(angle) * d
 			var y = -Math.sin(angle) * d
