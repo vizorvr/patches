@@ -73,7 +73,7 @@
 					if (newValue === oldValue)
 						return;
 
-					mixpanel.track('UrlStereoCubeMap Texture Changed')
+					mixpanel.track('UrlStereoLatLongMap Texture Changed')
 					that.undoableSetState('url', newValue, oldValue)
 				})
 				.modal()
