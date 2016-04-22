@@ -69,6 +69,7 @@
     "LOAD CONTENT": {
         "Texture": "url_texture_generator",
         "Stereo Cubemap": "url_stereo_cubemap_generator",
+        "Stereo Lat Long Map": "url_stereo_latlongmap_generator",
         "3D model": "three_loader_model",
         "Array": "url_array_generator",
         "Audio file loader": "url_audio_generator",
@@ -317,6 +318,11 @@
         "Animate Vector3 on Trigger": "animate_vector3_on_trigger",
         "Animate Between Input Floats": "array_blend_modulator_float",
         "Animate Between Input Vector3s": "array_blend_modulator_vector3"
+    },
+
+    "EXPERIMENTAL": {
+        "Radial Point Geometry": "radial_point_geometry",
+        "Stereo Cube Map (old)": "stereo_cube_map"
     }
 
 }
