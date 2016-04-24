@@ -74,13 +74,16 @@ Variables.prototype.read = function(name) {
 Variables.prototype.write = function(name, value) {
 	var r = this.variables[name]
 	var u = r.users
+
+	if (r.value === value)
+		return;
 	
 	r.value = value
 	
 	for(var i = 0, len = u.length; i < len; i++) {
 		var plg = u[i]
 		
-		if(plg.variable_updated)
+		if (plg.variable_updated)
 			plg.variable_updated(value)
 	}
 }
