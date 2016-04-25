@@ -78,9 +78,9 @@ SpatialListener.update_state = function(uc)
 	this.first = false;
 }
 
-/*SpatialListener.update_output = function(slot)
+SpatialListener.update_output = function(slot)
 {
-	return this.audionode;
-}*/
+	this.updated = true;
+}
 
 })();

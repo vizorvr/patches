@@ -30,7 +30,7 @@ SpatialPanner.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
 	{
-		if(this.src)
+		if(this.src && this.src.disconnect)
 			this.src.disconnect(0);
 		
 		if(this.src = data)
@@ -45,7 +45,7 @@ SpatialPanner.prototype.update_input = function(slot, data)
 	}
 }
 
-SpatialPanner.update_state = function()
+SpatialPanner.update_state = function(uc)
 {
 	function ramp(param,v0,v1,t)
 	{
