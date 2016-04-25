@@ -2,31 +2,6 @@ var temp = require('temp').track();
 var multer = require('multer');
 var path = require('path');
 var makeRandomString = require('./lib/stringUtil').makeRandomString
-var basicAuth = require('basic-auth')
-
-function httpBasicAuth(req, res, next) {
-	if (process.env.NODE_ENV !== 'production')
-		return next()
-
-	function unauthorized(res) {
-		res.set('WWW-Authenticate', 'Basic realm=Authorization Required')
-		return res.send(401)
-	}
-
-	var user = basicAuth(req)
-
-	if (!user || !user.name || !user.pass) {
-		return unauthorized(res)
-	}
-
-	if (user.name === process.env.ADMIN_USER &&
-		user.pass === process.env.ADMIN_PASSWORD) 
-	{
-		return next()
-	} else {
-		return unauthorized(res)
-	}
-}
 
 var tempDir;
 temp.mkdir('uploads', function(err, dirPath) {
@@ -34,6 +9,13 @@ temp.mkdir('uploads', function(err, dirPath) {
 		throw err;
 	tempDir = dirPath;
 });
+
+function requireAdminUser(req, res, next) {
+	if (req.user && req.user.isAdmin)
+		return next()
+
+	res.sendStatus(401)
+}
 
 module.exports = 
 function modelRoutes(
@@ -300,7 +282,7 @@ function modelRoutes(
 
 	// list all
 	app.get('/admin/list', 
-		httpBasicAuth,
+		requireAdminUser,
 		function(req, res, next) {
 			graphController.adminIndex(req, res, next)
 		}
