@@ -6,7 +6,7 @@
 
 		this.input_slots = [
 			{	name: 'texture', dt: core.datatypes.TEXTURE },
-			{	name: 'color', dt: core.datatypes.COLOR },
+			{	name: 'color', dt: core.datatypes.COLOR, def: new THREE.Color(0xffffff) },
 			{   name: 'size', dt: core.datatypes.FLOAT, def: 1.0 },
 			{   name: 'sizeAttenuation', dt: core.datatypes.FLOAT, def: 1.0 },
 			{	name: 'fog', dt: core.datatypes.BOOL, def: true,

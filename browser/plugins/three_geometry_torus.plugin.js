@@ -55,9 +55,7 @@
 	}
 
 	ThreeTorusGeometryPlugin.prototype.update_input = function(slot, data) {
-		if (this.inputValues[slot.name] !== data) {
-			this.geometryDirty = true
-		}
+		this.geometryDirty = true
 
 		Plugin.prototype.update_input.apply(this, arguments)
 	}
