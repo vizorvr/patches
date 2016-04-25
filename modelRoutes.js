@@ -4,12 +4,18 @@ var path = require('path');
 var makeRandomString = require('./lib/stringUtil').makeRandomString
 
 var tempDir;
-temp.mkdir('uploads', function(err, dirPath)
-{
+temp.mkdir('uploads', function(err, dirPath) {
 	if (err)
 		throw err;
 	tempDir = dirPath;
 });
+
+function requireAdminUser(req, res, next) {
+	if (req.user && req.user.isAdmin)
+		return next()
+
+	res.sendStatus(401)
+}
 
 module.exports = 
 function modelRoutes(
@@ -270,14 +276,17 @@ function modelRoutes(
 	})
 
 	// discovery
-	app.get(['/browse', '/browse.json'], function(req, res, next) {
+	app.get(['/browse', '/graphs', '/browse.json'], function(req, res, next) {
 		graphController.publicRankedIndex(req, res, next)
 	})
 
-	// list
-	app.get(['/graph', '/graphs', '/graphs.json', '/graph.json'], function(req,res,next){
-		graphController.index(req, res, next)
-	})
+	// list all
+	app.get('/admin/list', 
+		requireAdminUser,
+		function(req, res, next) {
+			graphController.adminIndex(req, res, next)
+		}
+	)
 
 	// list own assets
 	app.get('/:model', getController, function(req, res, next) {

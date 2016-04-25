@@ -19,28 +19,11 @@ GraphService.prototype.findByPath = function(path) {
 	return this.findOne({ owner: parts[1], name: parts[2] });
 };
 
-GraphService.prototype.minimalList = function() {
-	var dfd = when.defer();
-	this._model
-		.find()
-		.select('owner name updatedAt')
-		.sort('-updatedAt')
-		.exec(function(err, list)
-	{
-		if (err)
-			return dfd.reject(err);
-		
-		dfd.resolve(list);
-	});
-
-	return dfd.promise;
-};
-
 GraphService.prototype.listWithPreviews = function() {
 	var dfd = when.defer();
 	this._model
 		.find()
-		.select('owner name previewUrlSmall updatedAt stat')
+		.select('_creator owner name previewUrlSmall updatedAt stat')
 		.sort('-updatedAt')
 		.exec(function(err, list)
 	{
@@ -58,6 +41,7 @@ GraphService.prototype.publicRankedList = function() {
 
 	this._model
 		.find({ private: false })
+		.select('_creator private owner name previewUrlSmall updatedAt stat')
 		.sort('-rank')
 		.exec(function(err, list)
 	{
@@ -74,7 +58,7 @@ GraphService.prototype.userGraphs = function(username) {
 	var dfd = when.defer();
 	this._model
 		.find({ owner: username })
-		.select('owner name previewUrlSmall updatedAt stat')
+		.select('_creator private owner name previewUrlSmall updatedAt stat')
 		.sort('-updatedAt')
 		.exec(function(err, list)
 	{

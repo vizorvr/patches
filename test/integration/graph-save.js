@@ -275,21 +275,31 @@ describe('Graph', function() {
 		})
 	})
 
-/*	it('should return graph landing by path', function(done) {
-		var path = 'button-'+rand()
-		var expectedPath = '/'+username+'/'+path
+	it('can not be found if private', function(done) {
+		var path = 'graph-tag-'+process.pid
 
-		sendGraph(path, function(err, res) {
-			request(app).get(expectedPath)
-			.expect(200).end(function(err, res)
-			{
+		agent.post('/graph').send({
+			path: path,
+			tags: [ '3948tehr' ],
+			graph: graphData,
+			private: true
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			anonymousAgent
+			.get('/'+username)
+			.set('X-Requested-With', 'XMLHttpRequest')
+			.expect(200)
+			.end(function(err, res) {
 				if (err) return done(err)
-				assert.ok(res.body.indexOf('<body') > 0)
+				expect(res.body.data.graphs.length).to.equal(0)
 				done()
 			})
 		})
 	})
-*/
+
 	it('can be found by tag after saving', function(done) {
 		var path = 'graph-tag-'+process.pid
 
