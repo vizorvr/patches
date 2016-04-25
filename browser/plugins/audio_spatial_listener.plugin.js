@@ -39,12 +39,13 @@ SpatialListener.prototype.update_input = function(slot, data)
 	}
 }
 
-SpatialListener.update_state = function(uc)
+SpatialListener.prototype.update_state = function(uc)
 {
 	function ramp(param,v0,v1,t)
 	{
-		if( v0 != v1 )
-			param.linearRampToValue(v0,t);
+//		if( v0 != v1 )
+			param = v1;
+//			param.linearRampToValueAtTime(v0,t);
 	}
 
 	var t = this.audioContext.currentTime + this.first ? 0 : uc.delta_t;
@@ -52,16 +53,25 @@ SpatialListener.update_state = function(uc)
 
 	if( this.position !== null ) 
 	{
-		ramp( listener.positionX, this.position.x, this.prev_position.x, t );
+		listener.setPosition(this.position.x,this.position.y,this.position.z);
+/*		ramp( listener.positionX, this.position.x, this.prev_position.x, t );
 		ramp( listener.positionY, this.position.y, this.prev_position.y, t );
-		ramp( listener.positionZ, this.position.z, this.prev_position.z, t );
+		ramp( listener.positionZ, this.position.z, this.prev_position.z, t );*/
+
+		this.prev_position.copy( this.position );
 	}
 
-	if( this.forward !== null ) 
+	if( this.forward !== null && this.up !== null) 
 	{
-		ramp( listener.forwardX, this.forward.x, this.prev_forward.x, t );
+		listener.setOrientation(
+			this.forward.x,this.forward.y,this.forward.z,
+			this.up.x,this.up.y,this.up.z
+		);
+/*		ramp( listener.forwardX, this.forward.x, this.prev_forward.x, t );
 		ramp( listener.forwardY, this.forward.y, this.prev_forward.y, t );
 		ramp( listener.forwardZ, this.forward.z, this.prev_forward.z, t );
+	
+		this.prev_forward.copy( this.forward );
 	}	
 
 	if( this.up !== null ) 
@@ -69,16 +79,15 @@ SpatialListener.update_state = function(uc)
 		ramp( listener.upX, this.up.x, this.prev_up.x, t );
 		ramp( listener.upY, this.up.y, this.prev_up.y, t );
 		ramp( listener.upZ, this.up.z, this.prev_up.z, t );
+
+		this.prev_up.copy( this.up );*/
 	}	
 
-	this.prev_position.copy( this.position );
-	this.prev_forward.copy( this.forward );
-	this.prev_up.copy( this.up );
 
 	this.first = false;
 }
 
-SpatialListener.update_output = function(slot)
+SpatialListener.prototype.update_output = function(slot)
 {
 	this.updated = true;
 }
