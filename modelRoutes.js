@@ -2,10 +2,34 @@ var temp = require('temp').track();
 var multer = require('multer');
 var path = require('path');
 var makeRandomString = require('./lib/stringUtil').makeRandomString
+var basicAuth = require('basic-auth')
+
+function httpBasicAuth(req, res, next) {
+	if (process.env.NODE_ENV !== 'production')
+		return next()
+
+	function unauthorized(res) {
+		res.set('WWW-Authenticate', 'Basic realm=Authorization Required')
+		return res.send(401)
+	}
+
+	var user = basicAuth(req)
+
+	if (!user || !user.name || !user.pass) {
+		return unauthorized(res)
+	}
+
+	if (user.name === process.env.ADMIN_USER &&
+		user.pass === process.env.ADMIN_PASSWORD) 
+	{
+		return next()
+	} else {
+		return unauthorized(res)
+	}
+}
 
 var tempDir;
-temp.mkdir('uploads', function(err, dirPath)
-{
+temp.mkdir('uploads', function(err, dirPath) {
 	if (err)
 		throw err;
 	tempDir = dirPath;
@@ -270,14 +294,17 @@ function modelRoutes(
 	})
 
 	// discovery
-	app.get(['/browse', '/browse.json'], function(req, res, next) {
+	app.get(['/browse', '/graphs', '/browse.json'], function(req, res, next) {
 		graphController.publicRankedIndex(req, res, next)
 	})
 
-	// list
-	app.get(['/graph', '/graphs', '/graphs.json', '/graph.json'], function(req,res,next){
-		graphController.index(req, res, next)
-	})
+	// list all
+	app.get('/admin/list', 
+		httpBasicAuth,
+		function(req, res, next) {
+			graphController.adminIndex(req, res, next)
+		}
+	)
 
 	// list own assets
 	app.get('/:model', getController, function(req, res, next) {
