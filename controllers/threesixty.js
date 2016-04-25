@@ -30,7 +30,7 @@ exports.featured = function(req,res) {
 		case 'rc.vizor.io':
 		case 'vizor.io':
 		case '360vr.io':
-			featuredGraph = '/data/graph/v/hrpfbjje86s5.json'
+			featuredGraph = '/data/graph/vizor/threesixty.json'
 			break;
 	}
 	res.redirect(featuredGraph)
