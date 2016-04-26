@@ -29,6 +29,12 @@ function render404(res) {
 	})
 }
 
+function isGraphOwner(user, graph) {
+	return user && 
+		((user.id === graph._creator.id) ||
+		(user.id === graph._creator.toString()))
+}
+
 function makeHashid(serial) {
 	return hashids.encode(serial)
 }
@@ -161,7 +167,12 @@ GraphController.prototype.userIndex = function(req, res, next) {
 				return next()
 			}
 
-			list = list.map(function(graph) {
+			list = list
+			.filter(function(graph) {
+				return !graph.private || isGraphOwner(req.user, graph)
+					
+			})
+			.map(function(graph) {
 				return prettyPrintGraphInfo(graph.toJSON())
 			})
 
@@ -191,8 +202,9 @@ GraphController.prototype.userIndex = function(req, res, next) {
 }
 
 // GET /graph
-GraphController.prototype.index = function(req, res) {
+GraphController.prototype.adminIndex = function(req, res) {
 	var user = req.user
+
 	this._service.listWithPreviews()
 	.then(function(list) {
 		if (req.xhr || req.path.slice(-5) === '.json')
@@ -257,10 +269,9 @@ GraphController.prototype.edit = function(req, res, next) {
 
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
-		if (graph && graph.editable === false) {
-			if (!req.user || req.user.id !== graph._creator.id) {
+		if (graph && (graph.editable === false || graph.private === true)) {
+			if (!isGraphOwner(req.user, graph))
 				return render404(res)
-			}
 		}
 
 		EditLog.hasEditsByName(that.redisClient, req.params.path.substring(1))

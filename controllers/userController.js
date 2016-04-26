@@ -458,14 +458,16 @@ exports.getAccountProfile = function(req, res) {
  		},
  		function(user, done) {
  			var mail = {
- 				to: [ { email: user.email } ],
+ 				to: user.email,
  				from: 'info@vizor.io',
  				subject: 'Your Vizor password has been changed',
+ 				html: 'Hello,<br><br>' +
+	 				'This is a confirmation that the password for your account ' + user.email + ' has just been changed.<br><br>',
  				text: 'Hello,\n\n' +
- 				'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+	 				'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n',
  			}
 
- 			mailer.send(mail.to, mail.subject, mail.text)
+ 			mailer.send(mail.to, mail.subject, mail.html, mail.text)
  			.then(function() {
  				req.flash('success', { message: 'Success! Your password has been changed.' })
  				done()
@@ -551,16 +553,20 @@ exports.getAccountProfile = function(req, res) {
  		},
  		function(token, user, done) {
  			var mail = {
- 				to: [ { email: user.email } ],
+ 				to: user.email,
  				from: 'info@vizor.io',
  				subject: 'Reset your password on Vizor',
+ 				html: 'You are receiving this email because you (or someone else) have requested the reset of the password for your account.<br/><br/>' +
+ 				'Please click on the following link, or paste this into your browser to complete the process:<br/><br/>' +
+ 				'http://' + req.headers.host + '/reset/' + token + '<br/><br/>' +
+ 				'If you did not request this, please ignore this email and your password will remain unchanged.<br/><br/>',
  				text: 'You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n' +
  				'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
  				'http://' + req.headers.host + '/reset/' + token + '\n\n' +
  				'If you did not request this, please ignore this email and your password will remain unchanged.\n'
  			}
 
- 			mailer.send(mail.to, mail.subject, mail.text)
+ 			mailer.send(mail.to, mail.subject, mail.html, mail.text)
  			.then(function() {
 				if (!wantJSON) {
 					req.flash('info', {
