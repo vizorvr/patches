@@ -476,7 +476,7 @@ VizorWebVRAdapter.prototype.amendVRManagerInstructions = function() {
 }
 
 VizorWebVRAdapter.prototype.getCurrentManagerMode = function() {
-	return this._manager ? this._manager.mode : 1
+	return this._manager.mode
 }
 
 VizorWebVRAdapter.prototype.isVRMode = function() {
