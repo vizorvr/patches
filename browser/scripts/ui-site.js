@@ -281,7 +281,7 @@ var siteUI = new function() {
 		var $homePlayerContainer = jQuery('#player_home');
 		
 		$(window).on('vizorLoaded', function() {
-			E2.app.canInitiateCameraMove = function(){return false};	// disable panning on homepage player, see #790
+			// E2.app.canInitiateCameraMove = function(){return false};	// disable panning on homepage player, see #790
 			E2.app.calculateCanvasArea = function() {
                 return{
                     width: $homePlayerContainer.innerWidth(),
@@ -289,7 +289,7 @@ var siteUI = new function() {
                 }
             }
 
-			WebVRConfig.canInitiateCameraMove = E2.app.canInitiateCameraMove // see above
+			// WebVRConfig.canInitiateCameraMove = E2.app.canInitiateCameraMove // see above
 			WebVRConfig.getContainerMeta = E2.app.calculateCanvasArea
 		});
 
