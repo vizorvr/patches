@@ -3270,6 +3270,14 @@ body.bHome.layoutMobile #contentwrap #featuredVR h2 {
 body.bHome.layoutMobile #contentwrap #featuredVR h2 {
   text-align: center;
 }
+@media screen and (-webkit-min-device-pixel-ratio: 3) {
+  body.bHome.layoutMobile.deviceMobile.uaChrome #contentwrap section#featuredVR article.graph.small {
+    width: 360px;
+    max-width: 99%;
+    height: 206px;
+    max-height: none;
+  }
+}
 body.bHome.layoutTablet #contentwrap header {
   height: 60px;
 }
