@@ -2,7 +2,7 @@
 
 	var UrlStereoCubeMap = E2.plugins.url_stereo_cubemap_generator = function(core, node) {
 		Plugin.apply(this, arguments)
-		this.desc = 'Load a stereo cubemap from a URL. JPEG and PNG supported. Hover over the Browse button to select an existing image from the library.'
+		this.desc = 'Load a stereo cubemap. JPEG and PNG supported. Click the Browse button to select an existing image from the library.'
 		
 		this.input_slots = []
 
@@ -25,13 +25,11 @@
 		this.loadingTexture = new THREE.CubeTexture([
 			loadTex, loadTex, loadTex, loadTex, loadTex, loadTex
 		])
-		this.loadingTexture.needsUpdate = true
 
 		var defTex = E2.core.assetLoader.defaultTexture.image
 		this.defaultTexture = new THREE.CubeTexture([
 			defTex, defTex, defTex, defTex, defTex, defTex
 		])
-		this.defaultTexture.needsUpdate = true
 
 		this.leftTexture = this.loadingTexture
 		this.rightTexture = this.loadingTexture
@@ -119,12 +117,17 @@
 		E2.core.assetLoader
 		.loadAsset('image', this.state.url)
 		.then(function(img) {
+			that.waitingToLoad = false
 			that.makeTexturesFromImage(img)
 		})
 		.catch(function() {
 			that.leftTexture = that.defaultTexture
 			that.rightTexture = that.defaultTexture
+			this.leftTexture.needsUpdate = true
+			this.rightTexture.needsUpdate = true
 			that.waitingToLoad = false
+		})
+		.finally(function() {
 			that.updated = true
 		})
 		
