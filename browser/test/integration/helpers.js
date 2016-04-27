@@ -102,7 +102,6 @@ var setupWebVRAdapter = exports.setupWebVRAdapter = function() {
 
 }
 exports.reset = function() {
-	global.E2 = {}
 	global.window = global
 
 	global.window.screen = {width: 1280, height: 720}

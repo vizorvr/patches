@@ -4,7 +4,7 @@ var isNode = typeof(process) !== 'undefined'
 var when = isNode ? require('when') : window.when
 
 if (isNode)
-	var E2 = require('../browser/scripts/core').E2
+	E2 = require('../browser/scripts/core').E2
 
 var loadingPlugins = Object.keys(E2.LOADING_NODES)
 
