@@ -250,7 +250,7 @@ function CreatePlayer(vr_devices, cb) {
 
 	// Shared gl context for three
 	var gl_attributes = {
-		alpha: false,
+		alpha: true,
 		depth: true,
 		stencil: true,
 		antialias: false,
